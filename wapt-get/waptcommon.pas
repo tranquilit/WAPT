@@ -222,14 +222,8 @@ begin
 
   http.Request.BasicAuthentication:=True;
 
-  ssl := copy(fileURL, 1, length('https://')) = 'https://';
-  if (ssl) then
-  begin
-    ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-	  HTTP.IOHandler := ssl_handler;
-  end
-  else
-    ssl_handler := Nil;
+  ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
+	HTTP.IOHandler := ssl_handler;
 
   OutputFile :=TFileStream.Create(DestFileName,fmCreate);
   progress :=  TIdProgressProxy.Create(Nil);
@@ -290,14 +284,8 @@ begin
   else
     http.Request.UserAgent:=userAgent;
 
-  ssl := copy(fileUrl, 1, length('https://')) = 'https://';
-  if (ssl) then
-  begin
-    ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-	  HTTP.IOHandler := ssl_handler;
-  end
-  else
-    ssl_handler := Nil;
+  ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
+	HTTP.IOHandler := ssl_handler;
 
   try
     try
@@ -335,14 +323,8 @@ begin
   else
     http.Request.UserAgent:=userAgent;
 
-  ssl := copy(url, 1, length('https://')) = 'https://';
-  if (ssl) then
-  begin
-    ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-	  HTTP.IOHandler := ssl_handler;
-  end
-  else
-    ssl_handler := Nil;
+  ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
+	HTTP.IOHandler := ssl_handler;
 
   try
     try
@@ -391,14 +373,8 @@ begin
   else
     http.Request.UserAgent:=userAgent;
 
-  ssl := copy(url, 1, length('https://')) = 'https://';
-  if (ssl) then
-  begin
-    ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-	  http.IOHandler := ssl_handler;
-  end
-  else
-    ssl_handler := Nil;
+  ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
+	http.IOHandler := ssl_handler;
 
   if user <>'' then
   begin
@@ -514,15 +490,8 @@ begin
         action := '/'+action;
 
       url := GetWaptLocalURL+action;
-      ssl := copy(url, 1, length('https://')) = 'https://';
-      if (ssl) then
-      begin
-        ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-    	  HTTP.IOHandler := ssl_handler;
-      end
-      else
-        ssl_handler := Nil;
-
+      ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
+    	HTTP.IOHandler := ssl_handler;
 
       strresult := http.Get(url);
       Result := SO(strresult);
@@ -1098,18 +1067,13 @@ begin
   http := TIdHTTP.Create;
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
   http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent;
+  http.HandleRedirects:=True;
 
   if UseProxyForServer then
     IdConfigureProxy(http,HttpProxy);
 
-  ssl := copy(waptserver, 1, length('https://')) = 'https://';
-  if (ssl) then
-  begin
-    ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
-	  http.IOHandler := ssl_handler;
-  end
-  else
-    ssl_handler := Nil;
+  ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+	http.IOHandler := ssl_handler;
 
   St := TIdMultiPartFormDataStream.Create;
   try
