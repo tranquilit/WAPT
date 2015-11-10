@@ -524,6 +524,7 @@ type
     function InventoryData(uuid: String): ISuperObject;
     procedure PythonOutputSendData(Sender: TObject; const Data: ansistring);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: ISuperObject);
+    procedure TriggerActionOnHostPackages(AAction, title, errortitle: String);
     procedure UpdateHostPages(Sender: TObject);
   public
     { public declarations }
@@ -2072,7 +2073,7 @@ begin
   ActEnglish.Checked := DMPython.Language='en';
 end;
 
-procedure TVisWaptGUI.ActForgetPackagesExecute(Sender: TObject);
+procedure TVisWaptGUI.TriggerActionOnHostPackages(AAction,title,errortitle:String);
 var
   uuid,sel, package, res, packages : ISuperObject;
 begin
@@ -2081,33 +2082,34 @@ begin
     sel := GridHostPackages.SelectedRows;
     if Dialogs.MessageDlg(
        rsConfirmCaption,
-       format(rsConfirmHostForgetsPackages, [IntToStr(sel.AsArray.Length), GridHosts.FocusedRow.S['host.computer_fqdn']]),
+       format(title, [IntToStr(sel.AsArray.Length), Join(',',ExtractField(GridHosts.SelectedRows,'host.computer_fqdn'))]),
        mtConfirmation,
        mbYesNoCancel,
        0) = mrYes then
     begin
-      packages := TSuperObject.Create(stArray);
-      for package in sel do
-        packages.AsArray.Add(package.S['package']);
-
-      uuid := GridHosts.FocusedRow['uuid'];
-      if (uuid<>Nil) and (packages.AsArray.Length>0) then
+      packages := ExtractField(sel,'package');
+      uuid := ExtractField(GridHosts.SelectedRows,'uuid');
+      if (uuid.AsArray.Length>0) and (packages.AsArray.Length>0) then
       try
-          res := WAPTServerJsonGet(
-            'api/v1/host_forget_packages?uuid=%s&packages=%s',
-            [uuid.asString, Join(',',packages)]);
-          if not res.B['success'] then
+          res := WAPTServerJsonPost(
+            AAction,[],SO(['uuid',uuid,'package',packages]));
+          if not res.B['success'] or (res['result'].A['errors'].Length>0) then
             Raise Exception.Create(res.S['msg']);
+
       except
         on E:Exception do
-          ShowMessage(Format(rsForgetPackageError,
+          ShowMessage(Format(errortitle,
               [ Join(',',packages),e.Message]));
       end;
     end;
-    UpdateHostPages(Sender);
+    UpdateHostPages(Nil);
   end;
 end;
 
+procedure TVisWaptGUI.ActForgetPackagesExecute(Sender: TObject);
+begin
+  TriggerActionOnHostPackages('api/v1/host_forget_packages',rsConfirmHostForgetsPackages,rsForgetPackageError);
+end;
 
 procedure TVisWaptGUI.ActFrenchExecute(Sender: TObject);
 begin
@@ -2259,75 +2261,13 @@ begin
 end;
 
 procedure TVisWaptGUI.ActPackageInstallExecute(Sender: TObject);
-var
-  uuid,sel, package, res, packages : ISuperObject;
 begin
-  if GridHostPackages.Focused and (GridHosts.FocusedRow<>Nil) then
-  begin
-    sel := GridHostPackages.SelectedRows;
-    if Dialogs.MessageDlg(
-       rsConfirmCaption,
-       format(rsConfirmPackageInstall, [IntToStr(sel.AsArray.Length), GridHosts.FocusedRow.S['host.computer_fqdn']]),
-       mtConfirmation,
-       mbYesNoCancel,
-       0) = mrYes then
-    begin
-      packages := TSuperObject.Create(stArray);
-      for package in sel do
-        packages.AsArray.Add(package.S['package']);
-
-      uuid := GridHosts.FocusedRow['uuid'];
-      if (uuid<>Nil) and (packages.AsArray.Length>0) then
-      try
-          res := WAPTServerJsonGet(
-            'api/v1/host_install_packages?uuid=%s&packages=%s',
-            [uuid.asString, Join(',',packages)]);
-          if not res.B['success'] then
-            Raise Exception.Create(res.S['msg']);
-      except
-        on E:Exception do
-          ShowMessage(Format(rsPackageInstallError,
-              [ Join(',',packages),e.Message]));
-      end;
-    end;
-    UpdateHostPages(Sender);
-  end;
+  TriggerActionOnHostPackages('api/v1/host_install_packages',rsConfirmPackageInstall,rsPackageInstallError);
 end;
 
 procedure TVisWaptGUI.ActPackageRemoveExecute(Sender: TObject);
-var
-  uuid,sel, package, res, packages : ISuperObject;
 begin
-  if GridHostPackages.Focused and (GridHosts.FocusedRow<>Nil) then
-  begin
-    sel := GridHostPackages.SelectedRows;
-    if Dialogs.MessageDlg(
-       rsConfirmCaption,
-       format(rsConfirmRmPackagesFromHost, [IntToStr(sel.AsArray.Length), GridHosts.FocusedRow.S['host.computer_fqdn']]),
-       mtConfirmation,
-       mbYesNoCancel,
-       0) = mrYes then
-    begin
-      packages := TSuperObject.Create(stArray);
-      for package in sel do
-        packages.AsArray.Add(package.S['package']);
-
-      uuid := GridHosts.FocusedRow['uuid'];
-      if (uuid<>Nil) and (packages.AsArray.Length>0) then
-      try
-          res := WAPTServerJsonGet(
-            'api/v1/host_remove_packages?uuid=%s&packages=%s',
-            [uuid.asString, Join(',',packages)]);
-          if not res.B['success'] then
-            Raise Exception.Create(res.S['msg']);
-      except
-        on E:Exception do
-          ShowMessage(Format(rsPackageRemoveError,
-              [ Join(',',packages),e.Message]));
-      end;
-    end;
-    UpdateHostPages(Sender);
-  end;
+  TriggerActionOnHostPackages('api/v1/host_remove_packages',rsConfirmRmPackagesFromHost,rsPackageRemoveError);
 end;
 
 procedure TVisWaptGUI.ActRDPExecute(Sender: TObject);

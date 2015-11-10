@@ -72,7 +72,7 @@ interface
   function IdHttpGetString(const url: ansistring; enableProxy:Boolean= False;
       ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET';userAGent:String=''):RawByteString;
   function IdHttpPostData(const url: Ansistring; const Data: RawByteString; enableProxy:Boolean= False;
-     ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';userAgent:String=''):RawByteString;
+     ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';userAgent:String='';ContentType:String='application/json'):RawByteString;
 
   function GetReachableIP(IPS:ISuperObject;port:word):String;
 
@@ -356,7 +356,7 @@ begin
 end;
 
 function IdHttpPostData(const url: Ansistring; const Data: RawByteString; enableProxy:Boolean= False;
-   ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';userAgent:String=''):RawByteString;
+   ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';userAgent:String='';ContentType:String='application/json'):RawByteString;
 var
   http:TIdHTTP;
   DataStream:TStringStream;
@@ -372,6 +372,10 @@ begin
     http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent
   else
     http.Request.UserAgent:=userAgent;
+
+  http.Request.ContentType:=ContentType;
+  http.Request.ContentEncoding:='UTF-8';
+
 
   ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
 	http.IOHandler := ssl_handler;

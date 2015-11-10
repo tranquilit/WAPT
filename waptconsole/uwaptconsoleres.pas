@@ -82,6 +82,7 @@ resourcestring
   rsPackageInstallError = 'Error while triggering package install/upgrade %s: %s';
 
 
+
   rsReallowPackagesOnHost = 'Selection of package(s) to remove from conflict list';
   rsRmBundleFromHosts = 'Selection of package bundles for removing from the selected hosts';
   rsNoBundle = 'There is no package bundle.'; // 'Il n''y a aucun groupe.'; TODO : pas assez explicite ?
