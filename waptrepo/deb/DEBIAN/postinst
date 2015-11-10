@@ -6,7 +6,7 @@ id -u wapt
 if [ "$?" -eq 0 ] ; then
   echo "wapt user already exists, skipping user creation"
 else
-  echo "wapt user doest not exists, creating user"
+  echo "wapt user does not exists, creating user"
   useradd --system -g www-data wapt
 fi
 
