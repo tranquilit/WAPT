@@ -140,6 +140,7 @@ except Exception as e:
     exit(1)
 
 print >> sys.stderr, "adding symlink for wapt-serverpostconf"
+mkdir_p('builddir/usr/bin')
 os.symlink('/opt/wapt/waptserver/scripts/postconf.py', 'builddir/usr/bin/wapt-serverpostconf')
 
 print >> sys.stderr, "copying apache-related goo"
