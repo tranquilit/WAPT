@@ -106,6 +106,7 @@ __all__ = \
  'killalltasks',
  'killtree',
  'local_admins',
+ 'local_drives',
  'local_groups',
  'local_users',
  'local_desktops',
@@ -245,6 +246,8 @@ import email.utils
 from waptpackage import PackageEntry
 from waptpackage import Version as Version
 from types import ModuleType
+
+import wmi
 
 from iniparse import RawConfigParser
 import keyfinder
@@ -2427,8 +2430,32 @@ def host_info():
 
     info['current_user'] = get_loggedinusers()
     info['windows_startup_items'] = win_startup_info()
+
+    info['local_drives'] = local_drives()
+
     return info
 
+def local_drives():
+    w = wmi.WMI()
+    keystr = ['DriveType','Description','FileSystem','Name','VolumeSerialNumber']
+    keyint = ['FreeSpace','Size']
+    result = {}
+    for disk in w.Win32_LogicalDisk():
+        details = {}
+        for key in keystr:
+            details[key] = getattr(disk,key)
+        for key in keyint:
+            val = getattr(disk,key)
+            if val is not None:
+                details[key] = int(getattr(disk,key))
+            else:
+                details[key] = None
+        if details.get('Size',0)>0:
+            details['FreePercent'] =int(details.get('FreeSpace',0) * 100 / details['Size'])
+        letter = disk.Caption
+        result[letter.replace(':','')] = details
+
+    return result
 
 # from http://stackoverflow.com/questions/580924/python-windows-file-version-attribute
 def get_file_properties(fname):
