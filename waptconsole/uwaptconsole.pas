@@ -3151,10 +3151,17 @@ end;
 procedure TVisWaptGUI.GridGroupsGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
   TextType: TVSTTextType; var CellText: string);
+var
+  colname:String;
 begin
-  if ((Sender as TSOGrid).Header.Columns[Column] as TSOGridColumn).PropertyName =
-    'depends' then
-    StrReplace(CellText, ',', #13#10, [rfReplaceAll]);
+  if celltext<>'' then
+  begin
+    colname := ((Sender as TSOGrid).Header.Columns[Column] as TSOGridColumn).PropertyName;
+    if  (colname = 'depends') or (colname = 'conflicts') then
+      StrReplace(CellText, ',', #13#10, [rfReplaceAll]);
+    if (colname = 'size') or (colname ='installed_size') then
+      CellText := FormatFloat('# ##0 kB',StrToInt(CellText) div 1024);
+  end;
 end;
 
 procedure TVisWaptGUI.GridGroupsInitNode(Sender: TBaseVirtualTree;

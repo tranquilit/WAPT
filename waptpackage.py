@@ -254,12 +254,12 @@ class PackageEntry(object):
         self.conflicts=''
         self.sources=''
         self.filename=''
-        self.size=''
+        self.size=None
         self.md5sum=''
         self.repo_url=''
         self.repo=repo
         self.localpath=''
-        self.installed_size=''
+        self.installed_size=None
         self.calculated_attributes=[]
 
     def parse_version(self):
@@ -438,6 +438,11 @@ class PackageEntry(object):
                     raise Exception(u'Invalid line (no ":" found) : %s' % line)
                 (param,value) = (line[:sc].strip(),line[sc+1:].strip())
                 param = param.lower()
+                if param in ('size','installed_size'):
+                    try:
+                        value = int(value)
+                    except:
+                        pass
                 setattr(self,param,value)
 
         if not type(fname) is list and os.path.isfile(fname):

@@ -2198,15 +2198,8 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             MaxWidth = 200
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
-            Position = 2
-            Text = 'Status'
-            PropertyName = 'status'
-          end        
-          item
-            MaxWidth = 200
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-            Position = 3
+            Position = 2
             Text = 'Version'
             Width = 94
             PropertyName = 'version'
@@ -2214,7 +2207,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-            Position = 4
+            Position = 3
             Text = 'Description'
             Width = 333
             PropertyName = 'description'
@@ -2222,22 +2215,30 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-            Position = 5
+            Position = 4
             Text = 'Dependencies'
             Width = 345
             PropertyName = 'depends'
           end        
           item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 6
-            Text = 'Installed by'
-            PropertyName = 'explicit_by'
-          end        
-          item
-            Position = 7
+            Position = 5
             Text = 'Conflicts'
             Width = 205
             PropertyName = 'conflicts'
+          end        
+          item
+            Alignment = taRightJustify
+            Position = 6
+            Text = 'Size'
+            Width = 92
+            PropertyName = 'size'
+          end        
+          item
+            Alignment = taRightJustify
+            Position = 7
+            Text = 'Installed size'
+            Width = 106
+            PropertyName = 'installed_size'
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]

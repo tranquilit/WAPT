@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   Buttons, ComCtrls, StdCtrls, ActnList, Menus, sogrid, DefaultTranslator,
-  uWaptConsoleRes;
+  uWaptConsoleRes, VirtualTrees, superobject;
 
 type
 
@@ -38,6 +38,9 @@ type
     procedure EdSearch1KeyPress(Sender: TObject; var Key: char);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormShow(Sender: TObject);
+    procedure GridExternalPackagesGetText(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; RowData, CellData: ISuperObject;
+      Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
   private
     function updateprogress(receiver: TObject; current, total: integer
       ): boolean;
@@ -52,7 +55,7 @@ var
 implementation
 
 uses uwaptconsole,tiscommon,soutils,waptcommon,
-    dmwaptpython,superobject,uvisloading,uvisprivatekeyauth, uWaptRes,md5;
+    dmwaptpython,uvisloading,uvisprivatekeyauth, uWaptRes,md5;
 
 {$R *.lfm}
 
@@ -84,6 +87,17 @@ begin
   GridExternalPackages.LoadSettingsFromIni(Appuserinipath) ;
   urlExternalRepo.Caption:=  WaptTemplatesRepo;
   ActSearchExternalPackage.Execute;
+end;
+
+procedure TVisImportPackage.GridExternalPackagesGetText(
+  Sender: TBaseVirtualTree; Node: PVirtualNode; RowData,
+  CellData: ISuperObject; Column: TColumnIndex; TextType: TVSTTextType;
+  var CellText: string);
+begin
+  if (CellText<>'') and  ( ((Sender as TSOGrid).Header.Columns[Column] as TSOGridColumn).PropertyName = 'size') then
+  begin
+    CellText := FormatFloat('# ##0 kB',StrToInt(CellText) div 1024);
+  end;
 end;
 
 procedure TVisImportPackage.ActWAPTLocalConfigExecute(Sender: TObject);

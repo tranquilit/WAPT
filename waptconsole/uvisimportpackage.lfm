@@ -2,10 +2,10 @@ object VisImportPackage: TVisImportPackage
   Left = 492
   Height = 571
   Top = 261
-  Width = 844
+  Width = 1024
   Caption = 'Import packages'
   ClientHeight = 571
-  ClientWidth = 844
+  ClientWidth = 1024
   OnClose = FormClose
   OnShow = FormShow
   Position = poMainFormCenter
@@ -14,14 +14,14 @@ object VisImportPackage: TVisImportPackage
     Left = 0
     Height = 31
     Top = 540
-    Width = 844
+    Width = 1024
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 31
-    ClientWidth = 844
+    ClientWidth = 1024
     TabOrder = 2
     object BitBtn2: TBitBtn
-      Left = 763
+      Left = 943
       Height = 27
       Top = 3
       Width = 75
@@ -33,11 +33,12 @@ object VisImportPackage: TVisImportPackage
       TabOrder = 0
     end
     object ButPackageDuplicate: TBitBtn
-      Left = 652
+      Left = 832
       Height = 26
-      Top = 4
+      Top = 3
       Width = 103
       Action = ActPackageDuplicate
+      Anchors = [akTop, akRight]
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
@@ -81,7 +82,8 @@ object VisImportPackage: TVisImportPackage
     Left = 0
     Height = 510
     Top = 30
-    Width = 844
+    Width = 1024
+    OnGetText = GridExternalPackagesGetText
     Align = alClient
     Color = clWhite
     Header.AutoSizeIndex = -1
@@ -97,20 +99,13 @@ object VisImportPackage: TVisImportPackage
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
         Position = 1
         Text = 'Package'
-        Width = 292
+        Width = 223
         PropertyName = 'package'
       end    
       item
         MaxWidth = 200
-        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
-        Position = 2
-        Text = 'Status'
-        PropertyName = 'status'
-      end    
-      item
-        MaxWidth = 200
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-        Position = 3
+        Position = 2
         Text = 'Version'
         Width = 97
         PropertyName = 'version'
@@ -118,24 +113,33 @@ object VisImportPackage: TVisImportPackage
       item
         MaxWidth = 400
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-        Position = 4
+        Position = 3
         Text = 'Description'
-        Width = 216
+        Width = 203
         PropertyName = 'description'
       end    
       item
         MaxWidth = 400
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-        Position = 5
+        Position = 4
         Text = 'Dependencies'
-        Width = 242
+        Width = 197
         PropertyName = 'depends'
       end    
       item
+        Alignment = taRightJustify
+        Position = 5
+        Text = 'Size'
+        Width = 88
+        PropertyName = 'size'
+      end    
+      item
+        Alignment = taRightJustify
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
         Position = 6
-        Text = 'Installed by'
-        PropertyName = 'explicit_by'
+        Text = 'Installed Size'
+        Width = 127
+        PropertyName = 'installed_size'
       end>
     Header.DefaultHeight = 17
     Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
@@ -155,11 +159,11 @@ object VisImportPackage: TVisImportPackage
     Left = 0
     Height = 30
     Top = 0
-    Width = 844
+    Width = 1024
     Align = alTop
     BevelOuter = bvNone
     ClientHeight = 30
-    ClientWidth = 844
+    ClientWidth = 1024
     TabOrder = 0
     object EdSearch1: TEdit
       Left = 4
@@ -217,7 +221,7 @@ object VisImportPackage: TVisImportPackage
       AnchorSideLeft.Side = asrBottom
       AnchorSideRight.Control = Panel8
       AnchorSideRight.Side = asrBottom
-      Left = 769
+      Left = 949
       Height = 25
       Top = 2
       Width = 75
@@ -228,7 +232,7 @@ object VisImportPackage: TVisImportPackage
     end
     object urlExternalRepo: TLabel
       AnchorSideRight.Control = ButExtRepoChange
-      Left = 744
+      Left = 924
       Height = 13
       Top = 9
       Width = 20
