@@ -1779,6 +1779,9 @@ class WaptPackageForget(WaptTask):
         return __(u"Forget {packagenames} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=self.packagenames)
 
 
+    def same_action(self,other):
+        return (self.__class__ == other.__class__) and (self.packagename == other.packagename)
+
 
 def firewall_running():
     if setuphelpers.service_installed('MpsSvc'):
