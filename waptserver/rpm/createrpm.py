@@ -134,6 +134,9 @@ except Exception as e:
     print >> sys.stderr, 'error: \n%s'%e
     exit(1)
 
+print >> sys.stderr, "adding symlink for wapt-serverpostconf"
+os.symlink('/opt/wapt/waptserver/scripts/postconf.py', 'builddir/usr/bin/wapt-serverpostconf')
+
 print >> sys.stderr, "copying apache-related goo"
 try:
     apache_dir = './builddir/opt/wapt/waptserver/apache/'
