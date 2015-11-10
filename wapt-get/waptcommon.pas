@@ -1171,7 +1171,7 @@ begin
       else
         result := destpem;
       // create a .pfx .p12 for ms signtool
-      if ExecuteProcess(opensslbin,'pkcs12 -export -in -inkey '+destpem+' -in '+destcrt+' -out '+destp12+' -name "'+commonname+'" -passout pass:',[]) <> 0 then
+      if ExecuteProcess(opensslbin,'pkcs12 -export -inkey '+destpem+' -in '+destcrt+' -out '+destp12+' -name "'+commonname+'" -passout pass:',[]) <> 0 then
         raise Exception.Create('Unable to create p12 file for signtool');
     finally
       SysUtils.DeleteFile(opensslcfg_fn);
