@@ -20,7 +20,9 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+
 __version__ = "1.3.2"
+
 import os
 import sys
 
@@ -49,7 +51,6 @@ usage="""\
 
 Build a "Packages" file from all wapt file in the specified directory
 """
-
 
 def main():
     if len(sys.argv) < 2:
