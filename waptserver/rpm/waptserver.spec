@@ -48,6 +48,7 @@ mkdir -p %{buildroot}/etc/init.d/
 /opt/wapt
 /opt/wapt/lib/*
 /etc/logrotate.d/waptserver
+/usr/bin/*
 
 %attr(755,root,root)/etc/init.d/waptserver
 %attr(755,root,root)/opt/wapt/waptserver/scripts/postconf.py

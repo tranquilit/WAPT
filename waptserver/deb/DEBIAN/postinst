@@ -33,6 +33,8 @@ if os.path.exists(inifile) and not os.path.islink(inifile):
 subprocess.check_output('chown -R wapt:root /opt/wapt/conf',shell=True)
 subprocess.check_output('chmod 644 /opt/wapt/conf/waptserver.ini',shell=True)
 
+subprocess.check_output('chmod 755 /opt/wapt/waptserver/scripts/postconf.py', shell=True)
+
 def cleanup_ini_file():
     CFG_PATH = "/opt/wapt/waptserver/waptserver.ini"
 
