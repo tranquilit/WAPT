@@ -109,7 +109,6 @@ type
     ActRDP: TAction;
     ActVNC: TAction;
     ActPackageRemove: TAction;
-    ActLocalhostInstall: TAction;
     ActEditpackage: TAction;
     ActExecCode: TAction;
     ActEvaluate: TAction;
@@ -136,9 +135,7 @@ type
     actQuit: TAction;
     ActAddGroup: TAction;
     ActSearchHost: TAction;
-    ActLocalhostUpgrade: TAction;
     ActPackagesUpdate: TAction;
-    ActLocalhostRemove: TAction;
     ActSearchPackage: TAction;
     ActionList1: TActionList;
     BitBtn1: TBitBtn;
@@ -279,7 +276,6 @@ type
     Label9: TLabel;
     MainMenu1: TMainMenu;
     MemoLog: TMemo;
-    MenuItem1: TMenuItem;
     MenuItem10: TMenuItem;
     MenuItem11: TMenuItem;
     MenuItem12: TMenuItem;
@@ -288,7 +284,6 @@ type
     MenuItem15: TMenuItem;
     MenuItem16: TMenuItem;
     MenuItem18: TMenuItem;
-    MenuItem2: TMenuItem;
     MenuItem21: TMenuItem;
     MenuItem22: TMenuItem;
     MenuItem24: TMenuItem;
@@ -405,12 +400,10 @@ type
     procedure ActHostsDeleteExecute(Sender: TObject);
     procedure actHostSelectAllExecute(Sender: TObject);
     procedure ActLocalhostInstallExecute(Sender: TObject);
-    procedure ActLocalhostInstallUpdate(Sender: TObject);
     procedure ActAddGroupExecute(Sender: TObject);
     procedure actQuitExecute(Sender: TObject);
     procedure actRefreshExecute(Sender: TObject);
     procedure ActLocalhostRemoveExecute(Sender: TObject);
-    procedure ActLocalhostRemoveUpdate(Sender: TObject);
     procedure ActSearchHostExecute(Sender: TObject);
     procedure ActSearchPackageExecute(Sender: TObject);
     procedure ActPackagesUpdateExecute(Sender: TObject);
@@ -1188,13 +1181,6 @@ begin
   if (HostPages.ActivePage = pgTasks) and (MainPages.ActivePage=pgInventory) then
     UpdateHostPages(Self);
 end;
-
-procedure TVisWaptGUI.ActLocalhostInstallUpdate(Sender: TObject);
-begin
-  //ActLocalhostInstall.Enabled := GridPackages.SelectedCount > 0;
-  ActLocalhostInstall.Enabled := False;
-end;
-
 
 procedure TVisWaptGUI.ActAddGroupExecute(Sender: TObject);
 begin
@@ -2623,12 +2609,6 @@ begin
       end;
     ActSearchPackage.Execute;
   end;
-end;
-
-procedure TVisWaptGUI.ActLocalhostRemoveUpdate(Sender: TObject);
-begin
-  //ActLocalhostRemove.Enabled := GridPackages.SelectedCount > 0;
-  ActLocalhostRemove.Enabled := False;
 end;
 
 procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
