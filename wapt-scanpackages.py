@@ -27,11 +27,7 @@ import os
 import sys
 
 try:
-    # XXX this command might be installed as a symlink, the sys.path
-    # code that follows won't function properly.  Thankfuly, python is
-    # smart and automatically prepends both the symlink's directory
-    # and the symlink's target directory to sys.path.
-    wapt_root_dir = os.path.abspath(os.path.dirname(script_name))
+    wapt_root_dir = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
