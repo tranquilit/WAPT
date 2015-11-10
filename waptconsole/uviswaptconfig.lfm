@@ -2,25 +2,25 @@ object VisWAPTConfig: TVisWAPTConfig
   Left = 683
   Height = 401
   Top = 237
-  Width = 523
+  Width = 591
   BorderStyle = bsDialog
   Caption = 'Locale WAPT configuration'
   ClientHeight = 401
-  ClientWidth = 523
+  ClientWidth = 591
   Font.CharSet = ANSI_CHARSET
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Pitch = fpVariable
   Font.Quality = fqDraft
   OnShow = FormShow
-  Position = poMainFormCenter
+  Position = poScreenCenter
   ShowHint = True
   LCLVersion = '1.3'
   object ButtonPanel1: TButtonPanel
     Left = 6
     Height = 34
     Top = 361
-    Width = 511
+    Width = 579
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
     HelpButton.Name = 'HelpButton'
@@ -39,7 +39,7 @@ object VisWAPTConfig: TVisWAPTConfig
     Left = 0
     Height = 355
     Top = 0
-    Width = 523
+    Width = 591
     ActivePage = pgBase
     Align = alClient
     TabIndex = 0
@@ -48,7 +48,7 @@ object VisWAPTConfig: TVisWAPTConfig
       Caption = 'Base'
       ChildSizing.TopBottomSpacing = 15
       ClientHeight = 329
-      ClientWidth = 515
+      ClientWidth = 583
       object eddefault_package_prefix: TLabeledEdit
         Left = 166
         Height = 21
@@ -191,7 +191,7 @@ object VisWAPTConfig: TVisWAPTConfig
         TabOrder = 1
       end
       object labStatusRepo: TLabel
-        Left = 390
+        Left = 428
         Height = 13
         Top = 57
         Width = 31
@@ -199,7 +199,7 @@ object VisWAPTConfig: TVisWAPTConfig
         ParentColor = False
       end
       object labStatusServer: TLabel
-        Left = 390
+        Left = 428
         Height = 13
         Top = 81
         Width = 31
@@ -211,7 +211,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Height = 21
         Hint = 'E.g. : http://wapt.tranquilit.local/wapt'#13#10'Leave empty for auto DNS discovery'
         Top = 54
-        Width = 196
+        Width = 230
         EditLabel.AnchorSideTop.Control = edrepo_url
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = edrepo_url
@@ -233,7 +233,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Height = 21
         Hint = 'E.g. : https://srvwapt.tranquilit.local'#13#10'Leave empty if you don''t want a central management server.'
         Top = 78
-        Width = 196
+        Width = 230
         EditLabel.AnchorSideTop.Control = edwapt_server
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = edwapt_server
@@ -260,13 +260,13 @@ object VisWAPTConfig: TVisWAPTConfig
         TabOrder = 2
       end
       object ImgStatusRepo: TImage
-        Left = 366
+        Left = 404
         Height = 21
         Top = 54
         Width = 20
       end
       object ImgStatusServer: TImage
-        Left = 366
+        Left = 404
         Height = 21
         Top = 78
         Width = 20
