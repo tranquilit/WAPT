@@ -28,8 +28,8 @@ chmod 755 /var/www/wapt-host/
 chmod 755 /var/www/waptwua/
 
 
-chmod +x /opt/wapt/waptpackage.py
-chmod +x /opt/wapt/wapt-scanpackages.py
 /usr/bin/python /opt/wapt/wapt-scanpackages.py /var/www/wapt/
+chmod a+x /opt/wapt/waptpackage.py
+chmod a+x /opt/wapt/wapt-scanpackages.py
 
 exit 0
