@@ -32,7 +32,11 @@ cd .. && python createrpm.py
  /var/www/html/wapt-host
  /var/www/html/wapt-group
 
- %attr(755,root,root)/opt/wapt/wapt-scanpackages.py
+%attr(755,wapt,www-data)/var/www/html/wapt/
+%attr(755,wapt,www-data)/var/www/html/waptdev/
+%attr(755,wapt,www-data)/var/www/html/wapt-group/
+%attr(755,wapt,www-data)/var/www/html/wapt-host/
+%attr(755,root,root)/opt/wapt/wapt-scanpackages.py
 
 %pre
 getent passwd wapt >/dev/null || \
