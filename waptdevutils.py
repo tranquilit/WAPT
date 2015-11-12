@@ -167,7 +167,7 @@ def update_external_repo(repourl,search_string,proxy=None,mywapt=None,newer_only
                 (prefix,name) = package.package.split('-',1)
                 my_package_name = "%s-%s" % (my_prefix,name)
             else:
-                my_package_name = package.name
+                my_package_name = package.package
             my_packages = mywapt.is_available(my_package_name)
             if my_packages and Version(my_packages[-1].version)<Version(package.version):
                 result.append(package)
