@@ -44,6 +44,7 @@ __all__ = \
  'add_to_system_path',
  'add_user_to_group',
  'adjust_current_privileges',
+ 'all_files',
  'application_data',
  'bookmarks',
  'common_desktop',
@@ -768,6 +769,19 @@ def default_overwrite_older(src,dst):
     else:
         logger.debug(u'Overwriting file on target is older than source: "%s"' % (dst,))
         return True
+
+
+def all_files(rootdir):
+    rootdir = os.path.abspath(rootdir)
+    result = []
+    for fn in os.listdir(rootdir):
+        full_fn = os.path.join(rootdir,fn)
+        if os.path.isdir(full_fn):
+            result.extend(all_files(full_fn))
+        else:
+            result.append(full_fn)
+    return result
+
 
 
 def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy,enable_replace_at_reboot=True):

@@ -2939,10 +2939,20 @@ class Wapt(object):
         assert os.path.isdir(rootdir)
         assert isinstance(manifest,list) or isinstance(manifest,tuple)
         errors = []
+        expected = []
         for (filename,sha1) in manifest:
-            fullpath = os.path.join(rootdir,filename)
+            fullpath = os.path.abspath(os.path.join(rootdir,filename))
+            expected.append(fullpath)
             if sha1 != sha1_for_file(fullpath):
                 errors.append(filename)
+        files = setuphelpers.all_files(rootdir)
+        # removes files which are not in manifest by design
+        for fn in ('WAPT/signature','WAPT/manifest.sha1'):
+            full_fn = os.path.abspath(os.path.join(rootdir,fn))
+            if full_fn in files:
+                files.remove(full_fn)
+        # add in errors list files found but not expected...
+        errors.extend([ fn for fn in files if fn not in expected])
         return errors
 
     def set_local_password(self,user='admin',pwd='password'):
