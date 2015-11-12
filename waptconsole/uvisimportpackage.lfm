@@ -241,6 +241,15 @@ object VisImportPackage: TVisImportPackage
       Caption = 'Url: '
       ParentColor = False
     end
+    object cbNewerThanMine: TCheckBox
+      Left = 248
+      Height = 17
+      Top = 5
+      Width = 172
+      Caption = 'Newer packages than mine only'
+      OnClick = cbNewerThanMineClick
+      TabOrder = 3
+    end
   end
   object ActionList1: TActionList
     Images = ActionsImages

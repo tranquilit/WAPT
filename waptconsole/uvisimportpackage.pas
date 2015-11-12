@@ -24,6 +24,7 @@ type
     ButExtRepoChange: TBitBtn;
     ButPackageDuplicate: TBitBtn;
     butSearchExternalPackages: TBitBtn;
+    cbNewerThanMine: TCheckBox;
     EdSearch1: TEdit;
     GridExternalPackages: TSOGrid;
     MenuItem25: TMenuItem;
@@ -35,6 +36,7 @@ type
     procedure ActSearchExternalPackageExecute(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
     procedure ButExtRepoChangeClick(Sender: TObject);
+    procedure cbNewerThanMineClick(Sender: TObject);
     procedure EdSearch1KeyPress(Sender: TObject; var Key: char);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormShow(Sender: TObject);
@@ -65,6 +67,11 @@ procedure TVisImportPackage.ButExtRepoChangeClick(Sender: TObject);
 begin
   ActWAPTLocalConfigExecute(self);
   urlExternalRepo.Caption := format(rsUrl, [WaptTemplatesRepo]);
+end;
+
+procedure TVisImportPackage.cbNewerThanMineClick(Sender: TObject);
+begin
+  ActSearchExternalPackageExecute(Sender);
 end;
 
 procedure TVisImportPackage.EdSearch1KeyPress(Sender: TObject; var Key: char);
@@ -119,8 +126,8 @@ begin
     proxy := '"'+waptcommon.HttpProxy+'"'
   else
     proxy := 'None';
-  expr := format('waptdevutils.update_external_repo("%s","%s",%s)',
-    [WaptTemplatesRepo(AppIniFilename) , EdSearch1.Text, proxy]);
+  expr := format('waptdevutils.update_external_repo("%s","%s",proxy=%s,mywapt=mywapt,newer_only=%s)',
+    [WaptTemplatesRepo(AppIniFilename) , EdSearch1.Text, proxy, BoolToStr(cbNewerThanMine.Checked,'True','False')]);
   packages := DMPython.RunJSON(expr);
   GridExternalPackages.Data := packages;
 end;
