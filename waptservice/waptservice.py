@@ -1430,7 +1430,7 @@ class WaptServiceRestart(WaptTask):
         tmp_bat.write('net start waptservice\n')
         tmp_bat.write('del "%s"\n'%tmp_bat.name)
         tmp_bat.close()
-        self.add_at_cmd(tmp_bat.name)
+        setuphelpers.create_onetime_task('waptservicerestart',tmp_bat.name,'')
         output = __(u'WaptService restarted using batch file %s') % (tmp_bat.name,)
         self.result = {'result':'OK','message':output}
 

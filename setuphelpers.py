@@ -3047,7 +3047,7 @@ def create_daily_task(name,cmd,parameters, max_runtime=10, repeat_minutes=None, 
     #exit_code, startup_error_code = task.GetExitCode()
     return task
 
-def create_onetime_task(name,cmd,parameters, delay_minutes=2,max_runtime=10, retry_count=3,retry_delay_minutes=1):
+def create_onetime_task(name,cmd,parameters=None, delay_minutes=2,max_runtime=10, retry_count=3,retry_delay_minutes=1):
     """creates a one time Windows scheduled task and activate it.
     """
     ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler,None,
@@ -3059,7 +3059,8 @@ def create_onetime_task(name,cmd,parameters, delay_minutes=2,max_runtime=10, ret
 
     task = ts.NewWorkItem(name)
     task.SetApplicationName(cmd)
-    task.SetParameters(parameters)
+    if parameters is not None:
+        task.SetParameters(parameters)
     task.SetAccountInformation('', None)
     if max_runtime:
         task.SetMaxRunTime(max_runtime * 60*1000)
