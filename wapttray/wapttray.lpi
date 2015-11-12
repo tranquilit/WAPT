@@ -21,7 +21,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="3"/>
       <RevisionNr Value="3"/>
-      <BuildNr Value="2"/>
+      <BuildNr Value="11"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Tray Icon" ProductName="WAPT" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -38,71 +38,64 @@
         <CommandLineParams Value="--lang=en"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="6">
+    <RequiredPackages Count="7">
       <Item1>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="pltis_wapt"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_delphizmq"/>
+        <PackageName Value="pl_indy"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_delphizmq"/>
       </Item3>
       <Item4>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_utils"/>
       </Item4>
       <Item5>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pltis_superobject"/>
       </Item5>
       <Item6>
-        <PackageName Value="LCL"/>
+        <PackageName Value="FCL"/>
       </Item6>
+      <Item7>
+        <PackageName Value="LCL"/>
+      </Item7>
     </RequiredPackages>
-    <Units Count="8">
+    <Units Count="6">
       <Unit0>
         <Filename Value="wapttray.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="wapttray"/>
       </Unit0>
       <Unit1>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="waptcommon"/>
-      </Unit1>
-      <Unit2>
         <Filename Value="udmwapttray.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DMWaptTray"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="uDMWAPTTray"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="udmwapttray.lfm"/>
+        <IsPartOfProject Value="True"/>
       </Unit2>
       <Unit3>
-        <Filename Value="udmwapttray.lfm"/>
+        <Filename Value="uwapttray.lfm"/>
         <IsPartOfProject Value="True"/>
       </Unit3>
       <Unit4>
-        <Filename Value="uwapttray.lfm"/>
-        <IsPartOfProject Value="True"/>
-      </Unit4>
-      <Unit5>
         <Filename Value="uwapttray.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisWAPTTray"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uwapttray"/>
-      </Unit5>
-      <Unit6>
+      </Unit4>
+      <Unit5>
         <Filename Value="uwapttrayres.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uWaptTrayRes"/>
-      </Unit6>
-      <Unit7>
-        <Filename Value="..\wapt-get\waptwinutils.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="waptwinutils"/>
-      </Unit7>
+      </Unit5>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

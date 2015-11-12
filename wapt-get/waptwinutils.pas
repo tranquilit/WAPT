@@ -88,7 +88,7 @@ function SHA256Hash(FilePath: ansistring): ansistring;
 implementation
 
 uses Variants, registry, sysconst, JwaIpHlpApi,
-  JwaIpTypes, JwaWinDNS, JwaWinsock2, tisinifiles, soutils, DCPsha1,DCPsha256;
+  JwaIpTypes, JwaWinDNS, JwaWinsock2, tisinifiles, soutils, DCPsha1, DCPsha256;
 
 
 function BinToStr(const Bin: array of byte): ansistring;

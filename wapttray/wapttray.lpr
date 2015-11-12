@@ -29,9 +29,8 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Translations, Forms,Interfaces,
-  waptcommon,uDMWAPTTray, uwapttray, uwapttrayres,
-  DefaultTranslator,
-  waptwinutils;
+  uDMWAPTTray, uwapttray, uwapttrayres,
+  DefaultTranslator,waptcommon;
 
 {$R *.res}
 

@@ -1,5 +1,5 @@
 package      : tis-waptupgrade
-version      : 1.3.3.6-1496
+version      : 1.3.3.10-1504
 architecture : all
 section      : base
 priority     : optional
