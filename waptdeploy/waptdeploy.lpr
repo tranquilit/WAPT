@@ -208,6 +208,21 @@ Connection: Keep-Alive}
     end;
   end;
 
+  function WaptBaseDir: Utf8String;
+  begin
+    if FileExists('c:\wapt') then
+      Result := 'c:\wapt'
+    else
+    if FileExists(SysUtils.GetEnvironmentVariable('ProgramFiles(x86)') +
+      '\wapt') then
+      Result := SysUtils.GetEnvironmentVariable('ProgramFiles(x86)') + '\wapt'
+    else
+    if FileExists(SysUtils.GetEnvironmentVariable('ProgramFiles') + '\wapt') then
+      Result := SysUtils.GetEnvironmentVariable('ProgramFiles') + '\wapt'
+    else
+      Result := 'c:\wapt';
+  end;
+
 
 var
   tmpDir, waptsetupPath, localVersion, requiredVersion, getVersion: ansistring;
