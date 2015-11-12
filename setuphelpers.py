@@ -53,6 +53,7 @@ __all__ = \
  'create_daily_task',
  'create_desktop_shortcut',
  'create_group',
+ 'create_onetime_task',
  'create_programs_menu_shortcut',
  'create_shortcut',
  'create_user',
@@ -3042,6 +3043,44 @@ def create_daily_task(name,cmd,parameters, max_runtime=10, repeat_minutes=None, 
     else:
         raise KeyError("%s already exists" % name)
 
+    task = ts.Activate(name)
+    #exit_code, startup_error_code = task.GetExitCode()
+    return task
+
+def create_onetime_task(name,cmd,parameters, delay_minutes=2,max_runtime=10, retry_count=3,retry_delay_minutes=1):
+    """creates a one time Windows scheduled task and activate it.
+    """
+    ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler,None,
+                                    pythoncom.CLSCTX_INPROC_SERVER,
+                                    taskscheduler.IID_ITaskScheduler)
+
+    if task_exists(name):
+        delete_task(name)
+
+    task = ts.NewWorkItem(name)
+    task.SetApplicationName(cmd)
+    task.SetParameters(parameters)
+    task.SetAccountInformation('', None)
+    if max_runtime:
+        task.SetMaxRunTime(max_runtime * 60*1000)
+    #task.SetErrorRetryCount(retry_count)
+    #task.SetErrorRetryInterval(retry_delay_minutes)
+    task.SetFlags(task.GetFlags() | taskscheduler.TASK_FLAG_DELETE_WHEN_DONE)
+    ts.AddWorkItem(name, task)
+    run_time = time.localtime(time.time() + delay_minutes*60)
+    tr_ind, tr = task.CreateTrigger()
+    tt = tr.GetTrigger()
+    tt.Flags = 0
+    tt.BeginYear = int(time.strftime('%Y', run_time))
+    tt.BeginMonth = int(time.strftime('%m', run_time))
+    tt.BeginDay = int(time.strftime('%d', run_time))
+    tt.StartMinute = int(time.strftime('%M', run_time))
+    tt.StartHour = int(time.strftime('%H', run_time))
+    tt.TriggerType = int(taskscheduler.TASK_TIME_TRIGGER_ONCE)
+    tr.SetTrigger(tt)
+    pf = task.QueryInterface(pythoncom.IID_IPersistFile)
+    pf.Save(None,1)
+    #task.Run()
     task = ts.Activate(name)
     #exit_code, startup_error_code = task.GetExitCode()
     return task
