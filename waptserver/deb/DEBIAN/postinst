@@ -47,10 +47,10 @@ def cleanup_ini_file():
         cfg.read(CFG_PATH)
         if not cfg.has_option("uwsgi", "enable-threads"):
             cfg.set("uwsgi", "enable-threads", "true")
-            with open(CFG_PATH, 'wb') as out:
-                cfg.write(out)
         if cfg.has_option("uwsgi","spooler"):
             cfg.remove_option('uwsgi','spooler')
+        with open(CFG_PATH, 'wb') as out:
+            cfg.write(out)
     except Exception:
         import traceback
         print "Error when amending" + CFG_PATH
