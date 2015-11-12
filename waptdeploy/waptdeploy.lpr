@@ -22,7 +22,7 @@ uses
   var
     port, Data, notify: string;
   begin
-    port := WaptIniReadString('waptservice_port', '8088');
+    port := WaptGuessedIniReadString('waptservice_port', '8088');
     if notify_server then
       notify:='1'
     else
@@ -86,7 +86,7 @@ Connection: Keep-Alive}
     url, dnsdomain: ansistring;
     PackagesDate: TDateTime;
   begin
-    Result := WaptIniReadString('repo_url', '');
+    Result := WaptGuessedIniReadString('repo_url', '');
     if Result <> '' then
       exit;
 

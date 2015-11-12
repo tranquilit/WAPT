@@ -77,8 +77,8 @@ function BasicRegistrationData: ISuperObject;
 
 function ReadRegEntry(strSubKey, strValueName: ansistring): ansistring;
 
-function WaptGetIniPath: string;
-function WaptIniReadString(Parameter, DefaultValue: string): string;
+function WaptGuessIniPath: string;
+function WaptGuessedIniReadString(Parameter, DefaultValue: string): string;
 function LocalWaptVersion: ansistring;
 
 function SHA1Hash(FilePath: ansistring): ansistring;
@@ -712,7 +712,7 @@ var
 begin
   Data := SO;
   computer := ComputerSystem;
-  uuid := WaptIniReadString('uuid', computer.S['uuid']);
+  uuid := WaptGuessedIniReadString('uuid', computer.S['uuid']);
 
   Data.S['uuid'] := uuid;
   Data.S['wapt.wapt-exe-version'] := LocalWaptVersion;
@@ -791,7 +791,7 @@ begin
     raise Exception.Create('Wrong key HKLM\' + strSubKey);
 end;
 
-function WaptGetIniPath: string;
+function WaptGuessIniPath: string;
 begin
   if FileExists('c:\wapt\wapt-get.ini') then
     Result := 'c:\wapt\wapt-get.ini'
@@ -806,10 +806,10 @@ begin
     Result := 'c:\wapt\wapt-get.ini';
 end;
 
-function WaptIniReadString(Parameter, DefaultValue: string): string;
+function WaptGuessedIniReadString(Parameter, DefaultValue: string): string;
 begin
-  if FileExists(WaptGetIniPath) then
-    Result := IniReadString(WaptGetIniPath, 'global', Parameter, DefaultValue)
+  if FileExists(WaptGuessIniPath) then
+    Result := IniReadString(WaptGuessIniPath, 'global', Parameter, DefaultValue)
   else
     Result := DefaultValue;
 end;
