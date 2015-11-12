@@ -93,7 +93,7 @@ uses Variants, registry, sysconst, JwaIpHlpApi,
 
 function BinToStr(const Bin: array of byte): ansistring;
 const
-  HexSymbols = '0123456789ABCDEF';
+  HexSymbols = '0123456789abcdef';
 var
   i: integer;
 begin

@@ -335,8 +335,8 @@ begin
       writeln('Wget new waptagent ' + waptsetupurl);
       wget(waptsetupurl, waptsetupPath,Nil,Nil,True,False);
 
-      if hashString='' then
-        hashString:=StrSplit(FileToString(WaptBaseDir+'\waptagent.sha256'),' ')[0];
+      if (hashString='') and FileExists(WaptBaseDir+'\waptupgrade\waptagent.sha256') then
+        hashString:=StrSplit(FileToString(WaptBaseDir+'\waptupgrade\waptagent.sha256'),' ')[0];
 
       if (HashString <> '')then
       begin
@@ -348,7 +348,9 @@ begin
           ExitCode:=10;
           Exit;
         end;
-      end;
+      end
+      else
+        Writeln('Warning: No hash provided to check waptagent.exe. either put the sha256 hash in command line or in c:\wapt\waptupgrade\waptagent.sha256');
 
       getVersion := GetApplicationVersion(waptsetupPath);
       writeln('Got version: ' + getVersion);

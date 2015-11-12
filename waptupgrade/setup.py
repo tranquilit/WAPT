@@ -5,6 +5,9 @@ import _winreg
 import tempfile
 import shutil
 import hashlib
+import time
+import pythoncom
+from win32com.taskscheduler import taskscheduler
 
 # registry key(s) where WAPT will find how to remove the application(s)
 uninstallkey = []
@@ -14,6 +17,7 @@ def update_sources():
          'common.py',
          'setuphelpers.py',
          'wapt-get.exe',
+         'waptdeploy.exe',
          'wapt-get.exe.manifest',
          'wapt-get.py',
          'waptdevutils.py',
@@ -30,31 +34,6 @@ def update_sources():
          'waptservice',
          'languages',
          'revision.txt',
-
-
-         r'lib\site-packages\babel\__init__.py',
-         r'lib\site-packages\babel\_compat.py',
-         r'lib\site-packages\babel\core.py',
-         r'lib\site-packages\babel\global.dat',
-         r'lib\site-packages\babel\localtime',
-         r'lib\site-packages\babel\plural.py',
-         r'lib\site-packages\babel\localedata\en.dat',
-         r'lib\site-packages\babel\localedata\fr.dat',
-         r'lib\site-packages\babel\messages',
-         r'lib\site-packages\babel\support.py',
-         r'lib\site-packages\babel\compat.py',
-         r'lib\site-packages\babel\dates.py',
-         r'lib\site-packages\babel\localedata.py',
-         r'lib\site-packages\babel\numbers.py',
-         r'lib\site-packages\babel\util.py',
-
-         r'lib\site-packages\flask_babel',
-         r'lib\site-packages\pytz',
-         r'lib\site-packages\speaklater',
-         r'lib\site-packages\requests_kerberos_sspi',
-         r'lib\site-packages\lib\site-packages\flask_kerberos_sspi.py',
-         r'lib\site-packages\kerberos_sspi.py',
-         r'lib\site-packages\wapt.pth',
     ]
 
     def ignore(src,names):
@@ -175,12 +154,6 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
 
 
 
-def add_at_cmd(cmd,delay=1):
-    import datetime
-    at_time = (datetime.datetime.now() + datetime.timedelta(minutes=delay)).strftime('%H:%M:%S')
-    print(run('at %s "%s"'%(at_time,cmd)))
-
-
 def sha1_for_file(fname, block_size=2**20):
     f = open(fname,'rb')
     sha1 = hashlib.sha1()
@@ -191,44 +164,84 @@ def sha1_for_file(fname, block_size=2**20):
         sha1.update(data)
     return sha1.hexdigest()
 
-def create_waptagent_install():
-    waptagent_path = tempfile.mktemp(prefix='waptagent-',suffix='.exe')
+
+def sha256_for_file(fname, block_size=2**20):
+    f = open(fname,'rb')
+    sha256 = hashlib.sha256()
+    while True:
+        data = f.read(block_size)
+        if not data:
+            break
+        sha256.update(data)
+    return sha256.hexdigest()
+
+
+def download_waptagent(waptagent_path,sha256):
     if WAPT.repositories:
         for r in WAPT.repositories:
             try:
                 waptagent_url = "%s/waptagent.exe" % r.repo_url
                 print('Trying %s'%waptagent_url)
                 print wget(waptagent_url,waptagent_path)
-                wapt_agent_sha1 =  sha1_for_file(waptagent_path)
+                wapt_agent_sha256 =  sha256_for_file(waptagent_path)
                 # eefac39c40fdb2feb4aa920727a43d48817eb4df   waptagent.exe
-                expected_sha1 = open('waptagent.sha1','r').read().splitlines()[0].split()[0]
-                if expected_sha1 != wapt_agent_sha1:
-                    print('Error : bad  SHA1 for the downloaded waptagent.exe\n Expected : %s \n Found : %s '%(expected_sha1,wapt_agent_sha1))
+                if expected_sha256 != wapt_agent_sha256:
+                    print('Error : bad  SHA256 for the downloaded waptagent.exe\n Expected : %s \n Found : %s '%(expected_sha256,wapt_agent_sha256))
                     continue
-                tmp_bat = tempfile.NamedTemporaryFile(prefix='waptagent',suffix='.cmd',mode='wt',delete=False)
-                print('Create bat file %s' % tmp_bat)
-                # wait for remaining task to complete...
-                tmp_bat.write('wapt-get update\n')
-                tmp_bat.write('net stop waptservice\n')
-                tmp_bat.write('net stop waptmongodb\n')
-                tmp_bat.write('net stop waptserver\n')
-                tmp_bat.write('taskkill /f /im:wapttray.exe\n')
-                tmp_bat.write('taskkill /f /im:waptconsole.exe\n')
-                tmp_bat.write('taskkill /f /im:wapt-get.exe\n')
-                tmp_bat.write('taskkill /f /im:waptexit.exe\n')
-                tmp_bat.write('\n')
-                tmp_bat.write('"%s" /VERYSILENT\n'%waptagent_path)
-                tmp_bat.write('wapt-get register\n')
-                tmp_bat.write('del "%s"\n'%waptagent_path)
-                tmp_bat.write('del "%s"\n'%tmp_bat.name)
-                tmp_bat.close()
-                print('Schedule delayed launch of bat file %s' % tmp_bat)
-                print add_at_cmd(tmp_bat.name)
-                return tmp_bat.name
+                return waptagent_url
             except Exception as e:
                 print('Error when trying %s: %s'%(r.name,e))
         error('No proper waptagent downlaoded')
     error('No repository found for the download of waptagent.exe')
+
+
+def create_onetime_task(name,cmd,parameters, delay_minutes=2,max_runtime=10, retry_count=3,retry_delay_minutes=1):
+    """creates a one time Windows scheduled task and activate it.
+    """
+    ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler,None,
+                                    pythoncom.CLSCTX_INPROC_SERVER,
+                                    taskscheduler.IID_ITaskScheduler)
+
+    if task_exists(name):
+        delete_task(name)
+
+    task = ts.NewWorkItem(name)
+    task.SetApplicationName(cmd)
+    task.SetParameters(parameters)
+    task.SetAccountInformation('', None)
+    if max_runtime:
+        task.SetMaxRunTime(max_runtime * 60*1000)
+    #task.SetErrorRetryCount(retry_count)
+    #task.SetErrorRetryInterval(retry_delay_minutes)
+    task.SetFlags(task.GetFlags() | taskscheduler.TASK_FLAG_DELETE_WHEN_DONE)
+    ts.AddWorkItem(name, task)
+    run_time = time.localtime(time.time() + delay_minutes*60)
+    tr_ind, tr = task.CreateTrigger()
+    tt = tr.GetTrigger()
+    tt.Flags = 0
+    tt.BeginYear = int(time.strftime('%Y', run_time))
+    tt.BeginMonth = int(time.strftime('%m', run_time))
+    tt.BeginDay = int(time.strftime('%d', run_time))
+    tt.StartMinute = int(time.strftime('%M', run_time))
+    tt.StartHour = int(time.strftime('%H', run_time))
+    tt.TriggerType = int(taskscheduler.TASK_TIME_TRIGGER_ONCE)
+    tr.SetTrigger(tt)
+    pf = task.QueryInterface(pythoncom.IID_IPersistFile)
+    pf.Save(None,1)
+    #task.Run()
+    task = ts.Activate(name)
+    #exit_code, startup_error_code = task.GetExitCode()
+    return task
+
+
+def full_waptagent_install():
+    # get it from
+    waptagent_path = makepath(WAPT.wapt_base_dir,'waptupgrade','waptagent.exe')
+    expected_sha256 = open('waptagent.sha256','r').read().splitlines()[0].split()[0]
+    if not isfile(waptagent_path) or sha256_for_file(waptagent_path) != expected_sha256:
+        download_waptagent(waptagent_path,expected_sha256)
+    create_onetime_task('fullwaptupgrade',waptagent_path,'/VERYSILENT')
+
 
 def install():
     # if you want to modify the keys depending on environment (win32/win64... params..)
@@ -242,7 +255,7 @@ def install():
         print('Your current wapt (%s) is more recent than the upgrade package (%s). Skipping...'%(wapt_version,control.version))
     elif wapt_version.members[0:3] < Version(control.version).members[0:3]:
         print('Your current wapt version (%s) is too old to be upgraded, a full waptagent.exe'%wapt_version)
-        create_waptagent_install()
+        full_waptagent_install()
     else:
         print(u'Partial upgrade of WAPT client')
         killalltasks('wapttray.exe')
@@ -284,6 +297,8 @@ def install():
                 tmp_bat.write('net start waptservice\n')
                 tmp_bat.write('del "%s"\n'%tmp_bat.name)
                 tmp_bat.close()
-                add_at_cmd(tmp_bat.name)
+                create_onetime_task('waptrestart',tmp_bat.name)
         print(u'Upgrade done')
 
+if __name__ == '__main__':
+    create_onetime_task('fullwaptupgrade','c:/tranquilit/wapt/waptupgrade/waptagent.exe','/VERYSILENT')

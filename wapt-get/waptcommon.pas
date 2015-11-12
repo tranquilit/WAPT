@@ -1199,17 +1199,15 @@ begin
     if not FileExists(inno_fn) then
         raise Exception.CreateFmt(rsInnoSetupUnavailable, [inno_fn]);
     Run(format('"%s"  %s',[inno_fn,custom_iss]),'',3600000,'','','',OnProgress);
-    Result := destination + outputname + '.exe';
-    // Create waptagent.sha1
-    signtool := wapt_base_dir + 'utils\signtool.exe';
+    Result := AppendPathDelim(destination) + outputname + '.exe';
+    signtool :=  AppendPathDelim(wapt_base_dir) + 'utils\signtool.exe';
     p12keyPath := ChangeFileExt(GetWaptPrivateKeyPath,'.p12');
     if FileExists(signtool) and FileExists(p12keypath) then
       Run(format('"%s" sign /f "%s" "%s"',[signtool,p12keypath,Result]),'',3600000,'','','',OnProgress);
 
-    StringToFile(wapt_base_dir + '\waptupgrade\waptagent.sha1',SHA1Print(SHA1File(Result,2 shl 20))+' waptagent.exe');
+    // Create waptagent.sha256
+    StringToFile(wapt_base_dir + '\waptupgrade\waptagent.sha256',SHA256Hash(Result)+'  waptagent.exe');
 end;
-
-
 
 function GetReachableIP(IPS:ISuperObject;port:word):String;
 var

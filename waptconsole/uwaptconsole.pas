@@ -1333,8 +1333,10 @@ var
   waptsetupPath, buildDir: string;
   ini: TIniFile;
   SORes: ISuperObject;
+  FatUpgrade:Boolean;
 begin
-    if (waptcommon.DefaultPackagePrefix = '') then
+  FatUpgrade := True;
+  if (waptcommon.DefaultPackagePrefix = '') then
   begin
     ShowMessage(rsWaptPackagePrefixMissing);
     ActWAPTLocalConfig.Execute;
@@ -1356,7 +1358,11 @@ begin
         fnPublicCert.Clear;
       edWaptServerUrl.Text := ini.ReadString('global', 'wapt_server', '');
       edRepoUrl.Text := ini.ReadString('global', 'repo_url', '');
-      fnWaptDirectory.Directory := GetTempDir(False);
+      if FatUpgrade then
+        // include waptagent.exe in waptupgrade package...
+        fnWaptDirectory.Directory := waptpath+'\waptupgrade'
+      else
+        fnWaptDirectory.Directory := GetTempDir(False);
       if ShowModal = mrOk then
       begin
         CurrentVisLoading := TVisLoading.Create(Self);
@@ -1411,7 +1417,8 @@ begin
                 if SORes.S['status'] = 'OK' then
                 begin
                   ShowMessage(format(rsWaptSetupUploadSuccess, []));
-                  DeleteFileUTF8(waptsetupPath);
+                  if not FatUpgrade then
+                    DeleteFileUTF8(waptsetupPath);
                 end
                 else
                   ShowMessage(format(rsWaptUploadError, [SORes.S['message']]));
