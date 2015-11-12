@@ -550,7 +550,7 @@ begin
       SORes := WAPTServerJsonMultipartFilePost(edWAPTServerURL1.Text,'upload_waptsetup',[],'file',waptsetupPath,'admin',EdPwd1.Text,@IdHTTPWork);
       Finish;
       if SORes.S['status'] = 'OK' then
-        ShowMessageFmt(rsWaptSetupUploadSuccess, [])
+        ShowMessageFmt(rsWaptSetupUploadSuccess, [edWAPTServerURL1.Text])
       else
         ShowMessageFmt(rsWaptUploadError, [SORes.S['message']]);
     except

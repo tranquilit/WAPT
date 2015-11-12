@@ -1417,13 +1417,9 @@ class WaptServiceRestart(WaptTask):
         for k in args:
             setattr(self,k,args[k])
 
-    def add_at_cmd(self,cmd,delay=1):
-        import datetime
-        at_time = (datetime.datetime.now() + datetime.timedelta(minutes=delay)).strftime('%H:%M:%S')
-        logger.info(setuphelpers.run('at %s "%s"'%(at_time,cmd)))
-
     def _run(self):
         """Launch an external 'wapt-get waptupgrade' process to upgrade local copy of wapt client"""
+        """
         tmp_bat = tempfile.NamedTemporaryFile(prefix='waptrestart',suffix='.cmd',mode='wt',delete=False)
         tmp_bat.write('ping -n 2 127.0.0.1 >nul\n')
         tmp_bat.write('net stop waptservice\n')
@@ -1431,7 +1427,9 @@ class WaptServiceRestart(WaptTask):
         tmp_bat.write('del "%s"\n'%tmp_bat.name)
         tmp_bat.close()
         setuphelpers.create_onetime_task('waptservicerestart',tmp_bat.name,'')
-        output = __(u'WaptService restarted using batch file %s') % (tmp_bat.name,)
+        """
+        setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C "net stop waptservice & net start waptservice"')
+        output = __(u'WaptService restart planned')
         self.result = {'result':'OK','message':output}
 
     def __unicode__(self):
