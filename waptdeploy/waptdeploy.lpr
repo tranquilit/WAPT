@@ -318,9 +318,11 @@ begin
     Writeln(rsUsage1);
     Writeln(Format(rsUsage2, [minversion]));
     Writeln(Format(rsUsage3, [defaultwapt]));
-    Writeln(Format(rsUsage4, []));
-    Writeln(Format(rsUsage5, []));
-    Writeln(Format(rsUsage6, []));
+    Writeln(rsUsage4);
+    Writeln(rsUsage5);
+    Writeln(rsUsage6);
+    Writeln(rsUsage7);
+    Writeln(rsUsage8);
     Exit;
   end;
 
