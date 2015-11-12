@@ -176,7 +176,7 @@ def sha256_for_file(fname, block_size=2**20):
     return sha256.hexdigest()
 
 
-def download_waptagent(waptagent_path,sha256):
+def download_waptagent(waptagent_path,expected_sha256):
     if WAPT.repositories:
         for r in WAPT.repositories:
             try:
@@ -236,11 +236,13 @@ def create_onetime_task(name,cmd,parameters, delay_minutes=2,max_runtime=10, ret
 
 def full_waptagent_install():
     # get it from
-    waptagent_path = makepath(WAPT.wapt_base_dir,'waptupgrade','waptagent.exe')
+    waptagent_path = makepath(WAPT.wapt_base_dir,'cache','waptagent.exe')
     expected_sha256 = open('waptagent.sha256','r').read().splitlines()[0].split()[0]
+    if isfile('waptagent.exe'):
+        filecopyto('waptagent.exe',waptagent_path)
     if not isfile(waptagent_path) or sha256_for_file(waptagent_path) != expected_sha256:
         download_waptagent(waptagent_path,expected_sha256)
-    create_onetime_task('fullwaptupgrade',waptagent_path,'/VERYSILENT')
+    create_onetime_task('fullwaptupgrade',waptagent_path,'/VERYSILENT',delay_minutes=15)
 
 
 def install():
