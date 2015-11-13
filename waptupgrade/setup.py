@@ -239,7 +239,7 @@ def full_waptagent_install():
     # get it from
     waptagent_path = makepath(tempfile.tempdir,'waptagent.exe')
     waptdeploy_path = makepath(tempfile.tempdir,'waptdeploy.exe')
-    filecopyto(makepath('patchs','waptdeploy.exe'),waptupgradedir)
+    filecopyto(makepath('patchs','waptdeploy.exe'),waptdeploy_path)
 
     expected_sha256 = open('waptagent.sha256','r').read().splitlines()[0].split()[0]
     if isfile('waptagent.exe'):
@@ -247,7 +247,7 @@ def full_waptagent_install():
     if not isfile(waptagent_path) or sha256_for_file(waptagent_path) != expected_sha256:
         download_waptagent(waptagent_path,expected_sha256)
     #create_onetime_task('fullwaptupgrade',waptagent_path,'/VERYSILENT',delay_minutes=15)
-    create_onetime_task('fullwaptupgrade',waptagent_path,'--hash=%s --waptsetupurl=%s --wait=15'%(expected_sha256,waptagent_path),delay_minutes=1)
+    create_onetime_task('fullwaptupgrade',waptdeploy_path,'--hash=%s --waptsetupurl=%s --wait=15'%(expected_sha256,waptagent_path),delay_minutes=1)
 
 
 def install():
