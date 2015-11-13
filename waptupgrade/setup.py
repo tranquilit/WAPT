@@ -211,6 +211,7 @@ def create_onetime_task(name,cmd,parameters, delay_minutes=2,max_runtime=10, ret
     task.SetAccountInformation('', None)
     if max_runtime:
         task.SetMaxRunTime(max_runtime * 60*1000)
+    # not implemented...
     #task.SetErrorRetryCount(retry_count)
     #task.SetErrorRetryInterval(retry_delay_minutes)
     task.SetFlags(task.GetFlags() | taskscheduler.TASK_FLAG_DELETE_WHEN_DONE)
@@ -236,13 +237,17 @@ def create_onetime_task(name,cmd,parameters, delay_minutes=2,max_runtime=10, ret
 
 def full_waptagent_install():
     # get it from
-    waptagent_path = makepath(WAPT.wapt_base_dir,'cache','waptagent.exe')
+    waptagent_path = makepath(tempfile.tempdir,'waptagent.exe')
+    waptdeploy_path = makepath(tempfile.tempdir,'waptdeploy.exe')
+    filecopyto(makepath('patchs','waptdeploy.exe'),waptupgradedir)
+
     expected_sha256 = open('waptagent.sha256','r').read().splitlines()[0].split()[0]
     if isfile('waptagent.exe'):
         filecopyto('waptagent.exe',waptagent_path)
     if not isfile(waptagent_path) or sha256_for_file(waptagent_path) != expected_sha256:
         download_waptagent(waptagent_path,expected_sha256)
-    create_onetime_task('fullwaptupgrade',waptagent_path,'/VERYSILENT',delay_minutes=15)
+    #create_onetime_task('fullwaptupgrade',waptagent_path,'/VERYSILENT',delay_minutes=15)
+    create_onetime_task('fullwaptupgrade',waptagent_path,'--hash=%s --waptsetupurl=%s --wait=15'%(expected_sha256,waptagent_path),delay_minutes=1)
 
 
 def install():
@@ -303,4 +308,5 @@ def install():
         print(u'Upgrade done')
 
 if __name__ == '__main__':
-    create_onetime_task('fullwaptupgrade','c:/tranquilit/wapt/waptupgrade/waptagent.exe','/VERYSILENT')
+    pass
+    #create_onetime_task('fullwaptupgrade','c:/tranquilit/wapt/waptupgrade/waptagent.exe','/VERYSILENT')
