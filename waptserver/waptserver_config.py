@@ -32,8 +32,6 @@ sys.path.insert(0,os.path.join(wapt_root_dir))
 sys.path.insert(1,os.path.join(wapt_root_dir,'lib'))
 sys.path.insert(2,os.path.join(wapt_root_dir,'lib','site-packages'))
 
-from huey import Huey
-from huey.backends.sqlite_backend import SqliteQueue
 import ConfigParser
 import tempfile
 
@@ -125,8 +123,3 @@ def load_config(cfgfile=_default_config_file):
         conf['waptwua_folder'] = conf['wapt_folder'] + 'wua'
 
     return conf
-
-
-conf = load_config()
-_queue = SqliteQueue('wapt', conf['wapt_huey_db'])
-huey = Huey(_queue)

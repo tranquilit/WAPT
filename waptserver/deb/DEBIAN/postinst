@@ -33,7 +33,9 @@ if os.path.exists(inifile) and not os.path.islink(inifile):
 
 
 subprocess.check_output('find /opt/wapt -type f -exec chmod 644 {} +',shell=True)
+subprocess.check_output('find /opt/wapt -type f ! -name waptserver.ini -exec chown root:root {} +',shell=True)
 subprocess.check_output('find /opt/wapt -type d ! -name conf ! -name log -exec chmod 755 {} +',shell=True)
+subprocess.check_output('find /opt/wapt -type d ! -name conf ! -name log -exec chown root:root {} +',shell=True)
 subprocess.check_output('chown -R wapt:root /opt/wapt/conf',shell=True)
 subprocess.check_output('chown -R wapt:root /opt/wapt/log',shell=True)
 subprocess.check_output('chmod 755 /opt/wapt/waptserver/scripts/postconf.py', shell=True)

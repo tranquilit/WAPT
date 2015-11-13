@@ -68,7 +68,7 @@ import re
 
 from waptpackage import *
 from waptserver_utils import *
-from waptserver_config import conf, huey
+import waptserver_config
 
 import wakeonlan.wol
 
@@ -105,6 +105,8 @@ app = Flask(__name__,static_folder='./templates/static')
 app.config['CONFIG_FILE'] = config_file
 
 babel = Babel(app)
+
+conf = waptserver_config.load_config(config_file)
 
 ALLOWED_EXTENSIONS = set(['wapt'])
 
