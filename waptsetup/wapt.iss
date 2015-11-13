@@ -57,6 +57,9 @@ Source: "..\wapt-get.exe.manifest"; DestDir: "{app}";
 Source: "..\dmidecode.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\waptexit.exe"; DestDir: "{app}"; Flags: ignoreversion
 
+; deployment/upgrade tool
+Source: "..\waptdeploy.exe"; DestDir: "{app}"; Flags: ignoreversion
+
 ; translations
 Source: "..\languages\*"; DestDir: "{app}\languages\"; Flags: createallsubdirs recursesubdirs;
 
