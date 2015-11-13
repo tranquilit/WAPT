@@ -476,6 +476,7 @@ var
 
 
 begin
+  ssl_handler := Nil;
   http := TIdHTTP.Create;
   try
     try
@@ -505,6 +506,8 @@ begin
     end;
   finally
     http.Free;
+    if Assigned(ssl_handler) then
+      FreeAndNil(ssl_handler);
   end;
 end;
 
