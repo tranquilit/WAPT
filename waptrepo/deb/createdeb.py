@@ -43,6 +43,7 @@ def rsync(src,dst):
         "--exclude 'deb'",
         "--exclude '.git'",
         "--exclude '.gitignore'",
+        "--exclude 'rpm'",
         "-aP",
     ])
     rsync_source = src
