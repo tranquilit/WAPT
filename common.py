@@ -3146,7 +3146,7 @@ class Wapt(object):
 
                 # get uninstallkey from setup module (string or array of strings)
                 if hasattr(setup,'uninstallkey'):
-                    new_uninstall_key = setup.uninstallkey
+                    new_uninstall_key = ensure_list(setup.uninstallkey)
                     # check that uninstallkey(s) are in registry
                     if not self.dry_run:
                         key_errors = []
