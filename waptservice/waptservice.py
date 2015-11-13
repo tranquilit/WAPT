@@ -1799,7 +1799,7 @@ class WaptPackageForget(WaptTask):
 
 
     def same_action(self,other):
-        return (self.__class__ == other.__class__) and (self.packagename == other.packagename)
+        return (self.__class__ == other.__class__) and (self.packagenames == other.packagenames)
 
 
 def firewall_running():
