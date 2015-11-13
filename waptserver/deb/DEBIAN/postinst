@@ -68,6 +68,11 @@ def check_if_running(process_name):
         return False
 
 
+def enforce_permissions():
+    subprocess.check_output('chown', '-R', 'root:root', '/opt/wapt')
+    subprocess.check_output('chown', '-R', 'wapt:root', '/opt/wapt/conf', '/opt/wapt/log')
+
+
 # restart server if conf file is there and if it was already running
 if os.path.exists('/opt/wapt/conf/waptserver.ini'):
     if check_if_running('waptserver')==True:
