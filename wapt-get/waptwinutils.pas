@@ -77,6 +77,7 @@ function BasicRegistrationData: ISuperObject;
 
 function ReadRegEntry(strSubKey, strValueName: ansistring): ansistring;
 
+function WaptGuessBaseDir: Utf8String;
 function WaptGuessIniPath: string;
 function WaptGuessedIniReadString(Parameter, DefaultValue: string): string;
 function LocalWaptVersion: ansistring;
@@ -790,6 +791,23 @@ begin
   else
     raise Exception.Create('Wrong key HKLM\' + strSubKey);
 end;
+
+function WaptGuessBaseDir: Utf8String;
+begin
+  if FileExists('c:\wapt') then
+    Result := 'c:\wapt'
+  else
+  if FileExists(SysUtils.GetEnvironmentVariable('ProgramFiles(x86)') +
+    '\wapt') then
+    Result := SysUtils.GetEnvironmentVariable('ProgramFiles(x86)') + '\wapt'
+  else
+  if FileExists(SysUtils.GetEnvironmentVariable('ProgramFiles') + '\wapt') then
+    Result := SysUtils.GetEnvironmentVariable('ProgramFiles') + '\wapt'
+  else
+    Result := 'c:\wapt';
+end;
+
+
 
 function WaptGuessIniPath: string;
 begin
