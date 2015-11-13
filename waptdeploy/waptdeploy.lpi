@@ -24,7 +24,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="3"/>
       <RevisionNr Value="3"/>
-      <BuildNr Value="13"/>
+      <BuildNr Value="14"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT auto deploy" LegalCopyright="Tranquil IT Systems" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -36,6 +36,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <CommandLineParams Value="--waptsetupurl=waptagent.exe"/>
       </local>
     </RunParams>
     <RequiredPackages Count="5">

@@ -16,6 +16,33 @@ uses
   tiscommon,
   waptwinutils;
 
+  procedure WaitPendingTasks(timeout:Integer);
+  var
+    port, Data: string;
+    start:TDatetime;
+    SOData:ISuperObject;
+  begin
+    port := WaptGuessedIniReadString('waptservice_port', '8088');
+    start := Now;
+    while (Now - start)*24*60 < timeout do
+    try
+      Data := httpGetString('http://127.0.0.1:' + port + '/tasks.json');
+      SOData := SO(Data);
+      If SOData = Nil then
+        Break;
+      if (SOData<>Nil) and (ObjectIsNull(SOData['running']) and (SOData.A['pending'].Length=0)) then
+        Break;
+      Write('Waiting pending tasks to complete for '+FloatToStr(int(timeout*60 - (Now - start)*24*60*60))+'sec'#13);
+      Sleep(3000);
+    except
+      on E:Exception do
+      begin
+        Writeln('Unable to speak with waptservice... continue ('+E.Message+')');
+        Break;
+      end;
+    end;
+    Writeln();
+  end;
 
   // Trigger a local update of available packages. (require local service to be running)
   function UpdateStatus(notify_server:Boolean): ansistring;
@@ -208,24 +235,9 @@ Connection: Keep-Alive}
     end;
   end;
 
-  function WaptBaseDir: Utf8String;
-  begin
-    if FileExists('c:\wapt') then
-      Result := 'c:\wapt'
-    else
-    if FileExists(SysUtils.GetEnvironmentVariable('ProgramFiles(x86)') +
-      '\wapt') then
-      Result := SysUtils.GetEnvironmentVariable('ProgramFiles(x86)') + '\wapt'
-    else
-    if FileExists(SysUtils.GetEnvironmentVariable('ProgramFiles') + '\wapt') then
-      Result := SysUtils.GetEnvironmentVariable('ProgramFiles') + '\wapt'
-    else
-      Result := 'c:\wapt';
-  end;
-
 
 var
-  tmpDir, waptsetupPath, localVersion, requiredVersion, getVersion: ansistring;
+  waptsetupPath, localVersion, requiredVersion, getVersion: ansistring;
   res: ansistring;
   waptdeploy, waptsetupurl, hashString: ansistring;
 
@@ -235,6 +247,8 @@ const
   defaultwapt: ansistring = 'wapt';
   minversion: ansistring = '1.3.3.0';
   _mainrepo: ansistring = '';
+  wait_minutes: integer = 0;
+  isTemporary: Boolean = False;
 
 var
   cmdparams: TDynStringArray;
@@ -280,8 +294,11 @@ begin
     Writeln(rsUsage6);
     Writeln(rsUsage7);
     Writeln(rsUsage8);
+    Writeln(rsUsage9);
     Exit;
   end;
+
+  isTemporary := cmdoptions.AsObject.Exists('temporary');
 
   if cmdoptions.AsObject.Exists('force') then
   begin
@@ -300,6 +317,9 @@ begin
     if Length(cmdparams) >= 1 then
       requiredVersion := cmdparams[0];
   end;
+
+  if cmdoptions.AsObject.Exists('wait') then
+    wait_minutes := cmdoptions.I['wait'];
 
   hashString := '';
   if cmdoptions.AsObject.Exists('hash') then
@@ -343,15 +363,27 @@ begin
       if waptsetupurl='' then
         waptsetupurl := mainrepo + '/waptagent.exe';
 
-      tmpDir := GetUniqueTempdir('wapt');
-      mkdir(tmpDir);
-      waptsetupPath := tmpDir + '\waptagent.exe';
-      Writeln('Wapt agent path: ' + waptsetupPath);
-      writeln('Wget new waptagent ' + waptsetupurl);
-      wget(waptsetupurl, waptsetupPath,Nil,Nil,True,False);
+      if pos('http',waptsetupurl)=1 then
+      begin
+        // http mode
+        isTemporary := True;
+        waptsetupPath := GetTempDir + '\waptagent.exe';
+        Writeln('Wapt agent path: ' + waptsetupPath);
+        writeln('Wget new waptagent ' + waptsetupurl);
+        wget(waptsetupurl, waptsetupPath,Nil,Nil,True,False);
+      end
+      else
+      begin
+        //file mode
+        waptsetupPath := ExpandFileName(IncludeTrailingPathDelimiter(ExtractFileDir(paramstr(0)))+waptsetupurl);
+        Writeln('Wapt agent local path: ' + waptsetupPath);
+      end;
 
-      if (hashString='') and FileExists(WaptBaseDir+'\waptupgrade\waptagent.sha256') then
-        hashString:=StrSplit(FileToString(WaptBaseDir+'\waptupgrade\waptagent.sha256'),' ')[0];
+      if (hashString='') and FileExists(WaptGuessBaseDir+'\waptupgrade\waptagent.sha256') then
+      begin
+        writeln('Got hash from '+ WaptGuessBaseDir+'\waptupgrade\waptagent.sha256');
+        hashString:=StrSplit(FileToString(WaptGuessBaseDir+'\waptupgrade\waptagent.sha256'),' ')[0];
+      end;
 
       if (HashString <> '')then
       begin
@@ -362,19 +394,25 @@ begin
           WriteLn(rsHashError);
           ExitCode:=10;
           Exit;
-        end;
+        end
+        else
+          WriteLn('OK : Hash of waptagent match expected hash.');
       end
       else
-        Writeln('Warning: No hash provided to check waptagent.exe. either put the sha256 hash in command line or in c:\wapt\waptupgrade\waptagent.sha256');
+        Writeln('WARNING: No hash provided to check waptagent.exe. either put the sha256 hash in command line or in c:\wapt\waptupgrade\waptagent.sha256');
 
       getVersion := GetApplicationVersion(waptsetupPath);
       writeln('Got version: ' + getVersion);
       if (requiredVersion = 'force') or
         (CompareVersion(getVersion, requiredVersion) >= 0) then
       begin
+        if wait_minutes>0 then
+          WaitPendingTasks(wait_minutes);
+
         setupcmdline:=waptsetupPath + ' /VERYSILENT /MERGETASKS=""' + mergetasks + '""';
         writeln(Format(rsInstall,[setupcmdline]));
         res := '';
+        writeln('Launching '+setupcmdline);
         if GetDosOutput(setupcmdline, '', res) then
         begin
           writeln(Format(rsInstallOK, [LocalWaptVersion]))
@@ -394,11 +432,8 @@ begin
       end;
     finally
       writeln(rsCleanup);
-      if DirectoryExists(tmpDir) then
-      begin
+      if FileExists(waptsetupPath) and IsTemporary then
         DeleteFile(waptsetupPath);
-        RemoveDirectory(pansichar(tmpDir));
-      end;
       UpdateStatus(True);
     end
   else
