@@ -53,8 +53,8 @@ Build a "Packages" file from all wapt file in the specified directory
 """
 
 def main():
-    if len(sys.argv) < 2:
-        logger.error('Usage: wapt-scanpackage <wapt_directory>')
+    if len(sys.argv) != 2:
+        logger.error('Usage: wapt-scanpackages <wapt_directory>')
         sys.exit(1)
     wapt_path = sys.argv[1]
     if os.path.exists(wapt_path)==False:
