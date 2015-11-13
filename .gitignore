@@ -60,3 +60,5 @@ waptupgrade/patchs/
 /waptserver/mongodb/mongod.cfg
 /profilemigration
 /waptupgrade/waptagent.sha1
+*.deb
+*.rpm
