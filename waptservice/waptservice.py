@@ -87,6 +87,8 @@ import setuphelpers
 from setuphelpers import Version
 from waptpackage import PackageEntry
 
+import windnsquery
+
 try:
     from waptwua import WaptWUA
     app.register_blueprint(waptwua.waptwua)
@@ -110,16 +112,22 @@ v = (sys.version_info.major, sys.version_info.minor)
 if v != (2, 7):
     raise Exception('waptservice supports only Python 2.7, not %d.%d' % v)
 
+logger = logging.getLogger()
 
 def get_authorized_callers_ip(waptserver_url=None):
     """Returns list of IP allowed to request actions with check_caller decorator"""
     ips = []
     if waptserver_url:
+        waptserver_hostname = urlparse(waptserver_url).hostname
         try:
-            ips.append(socket.gethostbyname( urlparse(waptserver_url).hostname))
+            ips.append(socket.gethostbyname(waptserver_hostname))
         except socket.gaierror as e:
             # no network connection to resolve hostname
-            logger.debug('Unable to resolve authorized caller for %s : %s'%(waptserver_url,e))
+            logger.warning('Unable to resolve authorized caller for %s using socket : %s'%(waptserver_hostname,e))
+        try:
+            ips.extend(windnsquery.dnsquery_a(waptserver_hostname))
+        except Exception as e:
+            logger.warning('Unable to resolve authorized caller for %s using windns : %s'%(waptserver_hostname,e))
     return ips
 
 class WaptEvent(object):
@@ -569,7 +577,14 @@ def allow_waptserver_or_local_auth(f):
                 return authenticate()
             logging.info("user %s authenticated" % auth.username)
         else:
-            logger.debug(u'Forbidden: caller src address {} is not in authorized list {}'.format(request.remote_addr,app.waptconfig.authorized_callers_ip))
+            logger.info(u'Forbidden: caller src address {} is not in authorized list {}'.format(request.remote_addr,app.waptconfig.authorized_callers_ip))
+            # try to reacquire IP of waptserver
+            try:
+                if app.waptconfig.waptserver:
+                    app.waptconfig.authorized_callers_ip = get_authorized_callers_ip(app.waptconfig.waptserver.server_url)
+            except Exception as e:
+                logger.debug('Unable to acquire IP of waptserver : %s' % e)
+
             return forbidden()
         return f(*args, **kwargs)
     return decorated
@@ -580,7 +595,13 @@ def allow_waptserver_or_local_unauth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if not request.remote_addr in (app.waptconfig.authorized_callers_ip + ['127.0.0.1']):
-            logger.debug(u'Forbidden: caller src address {} is not in authorized list {}'.format(request.remote_addr,app.waptconfig.authorized_callers_ip))
+            logger.info(u'Forbidden: caller src address {} is not in authorized list {}'.format(request.remote_addr,app.waptconfig.authorized_callers_ip))
+            # try to reacquire IP of waptserver
+            try:
+                if app.waptconfig.waptserver:
+                    app.waptconfig.authorized_callers_ip = get_authorized_callers_ip(app.waptconfig.waptserver.server_url)
+            except Exception as e:
+                logger.debug('Unable to acquire IP of waptserver : %s' % e)
             return forbidden()
         if request.remote_addr != '127.0.0.1':
             uuid = wapt().host_uuid
@@ -2230,7 +2251,6 @@ if __name__ == "__main__":
 
     (options,args)=parser.parse_args()
 
-    logger = logging.getLogger()
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
 
 
