@@ -8,10 +8,10 @@ import ConfigParser
 import time
 
 subprocess.check_output('update-rc.d waptserver defaults',shell=True)
-subprocess.check_output('touch  /var/log/waptserver.log',shell=True)
-subprocess.check_output('touch  /var/run/waptserver.pid',shell=True)
+subprocess.check_output('touch /var/log/waptserver.log',shell=True)
+subprocess.check_output('touch /var/run/waptserver.pid',shell=True)
 subprocess.check_output('chown wapt:root /var/log/waptserver.log',shell=True)
-subprocess.check_output('chown wapt:root  /var/run/waptserver.pid',shell=True)
+subprocess.check_output('chown wapt:root /var/run/waptserver.pid',shell=True)
 
 # cleanup leftovers
 
