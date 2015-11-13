@@ -207,7 +207,6 @@ var
   http:TIdHTTP;
   OutputFile:TFileStream;
   progress : TIdProgressProxy;
-  ssl: boolean;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
 
 begin
@@ -272,7 +271,6 @@ end;
 function IdWget_Try(const fileURL: Utf8String; enableProxy: Boolean;userAgent:String=''): boolean;
 var
   http:TIdHTTP;
-  ssl: boolean;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
 
 begin
@@ -312,7 +310,6 @@ function IdHttpGetString(const url: ansistring; enableProxy:Boolean= False;
     ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET';userAGent:String=''):RawByteString;
 var
   http:TIdHTTP;
-  ssl: boolean;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
 begin
   http := TIdHTTP.Create;
@@ -360,7 +357,6 @@ function IdHttpPostData(const url: Ansistring; const Data: RawByteString; enable
 var
   http:TIdHTTP;
   DataStream:TStringStream;
-  ssl: boolean;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
 
 begin
@@ -1063,7 +1059,6 @@ function WAPTServerJsonMultipartFilePost(waptserver, action: String;
 var
   res:String;
   http:TIdHTTP;
-  ssl: boolean;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
   St:TIdMultiPartFormDataStream;
 begin
