@@ -30,10 +30,14 @@ if os.path.exists(inifile) and not os.path.islink(inifile):
         os.symlink('../conf/waptserver.ini',inifile)
     except Exception:
         pass
-subprocess.check_output('chown -R wapt:root /opt/wapt/conf',shell=True)
-subprocess.check_output('chmod 644 /opt/wapt/conf/waptserver.ini',shell=True)
 
+
+subprocess.check_output('find /opt/wapt -type f -exec chmod 644 {} +',shell=True)
+subprocess.check_output('find /opt/wapt -type d ! -name conf ! -name log -exec chmod 755 {} +',shell=True)
+subprocess.check_output('chown -R wapt:root /opt/wapt/conf',shell=True)
+subprocess.check_output('chown -R wapt:root /opt/wapt/log',shell=True)
 subprocess.check_output('chmod 755 /opt/wapt/waptserver/scripts/postconf.py', shell=True)
+
 
 def cleanup_ini_file():
     CFG_PATH = "/opt/wapt/waptserver/waptserver.ini"
@@ -66,11 +70,6 @@ def check_if_running(process_name):
         return True
     except Exception:
         return False
-
-
-def enforce_permissions():
-    subprocess.check_output('chown', '-R', 'root:root', '/opt/wapt')
-    subprocess.check_output('chown', '-R', 'wapt:root', '/opt/wapt/conf', '/opt/wapt/log')
 
 
 # restart server if conf file is there and if it was already running
