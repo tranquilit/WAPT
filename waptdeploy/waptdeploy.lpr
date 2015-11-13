@@ -375,7 +375,11 @@ begin
       else
       begin
         //file mode
-        waptsetupPath := ExpandFileName(IncludeTrailingPathDelimiter(ExtractFileDir(paramstr(0)))+waptsetupurl);
+        if FileExists(waptsetupurl) then
+          waptsetupPath := ExpandFileName(waptsetupurl)
+        else
+          waptsetupPath := ExpandFileName(IncludeTrailingPathDelimiter(ExtractFileDir(paramstr(0)))+waptsetupurl);
+
         Writeln('Wapt agent local path: ' + waptsetupPath);
       end;
 
