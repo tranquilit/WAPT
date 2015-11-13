@@ -367,10 +367,10 @@ begin
       begin
         // http mode
         isTemporary := True;
-        waptsetupPath := GetTempDir + '\waptagent.exe';
+        waptsetupPath := IncludeTrailingPathDelimiter(GetTempDir)+'waptagent.exe';
         Writeln('Wapt agent path: ' + waptsetupPath);
-        writeln('Wget new waptagent ' + waptsetupurl);
-        wget(waptsetupurl, waptsetupPath,Nil,Nil,True,False);
+        writeln('Wget new waptagent from ' + waptsetupurl);
+        wget(waptsetupurl, waptsetupPath,Nil,Nil,True,True);
       end
       else
       begin
@@ -403,7 +403,11 @@ begin
           WriteLn('OK : Hash of waptagent match expected hash.');
       end
       else
-        Writeln('WARNING: No hash provided to check waptagent.exe. either put the sha256 hash in command line or in c:\wapt\waptupgrade\waptagent.sha256');
+      begin
+        Writeln('ERROR: No hash provided to check waptagent.exe. either put the sha256 hash in command line or in c:\wapt\waptupgrade\waptagent.sha256');
+        ExitCode:=10;
+        Exit;
+      end;
 
       getVersion := GetApplicationVersion(waptsetupPath);
       writeln('Got version: ' + getVersion);

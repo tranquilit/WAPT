@@ -247,7 +247,8 @@ def full_waptagent_install():
     if not isfile(waptagent_path) or sha256_for_file(waptagent_path) != expected_sha256:
         download_waptagent(waptagent_path,expected_sha256)
     #create_onetime_task('fullwaptupgrade',waptagent_path,'/VERYSILENT',delay_minutes=15)
-    create_onetime_task('fullwaptupgrade',waptdeploy_path,'--hash=%s --waptsetupurl=%s --wait=15'%(expected_sha256,waptagent_path),delay_minutes=1)
+    # use embedded waptagent.exe, wait 15 minutes for other tasks to complete.
+    create_onetime_task('fullwaptupgrade',waptdeploy_path,'--hash=%s --waptsetupurl=%s --wait=15 --temporary'%(expected_sha256,waptagent_path),delay_minutes=1)
 
 
 def install():
