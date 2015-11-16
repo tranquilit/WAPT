@@ -44,6 +44,7 @@ def update_sources():
                     result.append(name)
         return result
 
+    # either temporary dir or local manage c:\wapt\waptupgrade
     checkout_dir = os.path.abspath(os.path.join(os.getcwd(),'..'))
     # cleanup patchs dir
     if os.path.exists(os.path.join(checkout_dir,'waptupgrade','patchs')):
@@ -51,7 +52,7 @@ def update_sources():
 
     os.makedirs(os.path.join(checkout_dir,'waptupgrade','patchs'))
     for f in files:
-        fn = os.path.join(checkout_dir,f)
+        fn = os.path.join(WAPT.wapt_base_dir,f)
         target_fn = os.path.join(checkout_dir,'waptupgrade','patchs',f)
         if os.path.isfile(fn):
             if not os.path.exists(os.path.dirname(target_fn)):
