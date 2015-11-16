@@ -309,6 +309,11 @@ def install():
                 create_onetime_task('waptrestart',tmp_bat.name)
         print(u'Upgrade done')
 
+    #remove winshell in root waptdir
+    for fn in glob.glob(makepath(WAPT.wapt_base_dir,'winshell.py*')):
+        print(u'Removing old %s' % fn)
+        remove_file(fn)
+
 if __name__ == '__main__':
     pass
     #create_onetime_task('fullwaptupgrade','c:/tranquilit/wapt/waptupgrade/waptagent.exe','/VERYSILENT')
