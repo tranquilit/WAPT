@@ -20,8 +20,28 @@ for cleanup_dir in ('rpm','mongodb','spool','uninstall_service.bat'):
     if os.path.exists(mypath):
         shutil.rmtree(mypath)
 
+def cleanup_ini_file():
+    OLD_CFG_PATH = "/opt/wapt/waptserver/waptserver.ini"
 
-subprocess.check_output('chown wapt:root /opt/wapt/log',shell=True)
+    if not os.path.exists(OLD_CFG_PATH):
+        print "No config file found at " + OLD_CFG_PATH
+        exit(0)
+
+    try:
+        cfg = ConfigParser.RawConfigParser()
+        cfg.read(OLD_CFG_PATH)
+        if not cfg.has_option("uwsgi", "enable-threads"):
+            cfg.set("uwsgi", "enable-threads", "true")
+        if cfg.has_option("uwsgi","spooler"):
+            cfg.remove_option('uwsgi','spooler')
+        with open(OLD_CFG_PATH, 'wb') as out:
+            cfg.write(out)
+    except Exception:
+        import traceback
+        print "Error when amending" + OLD_CFG_PATH
+        traceback.print_exc()
+        exit(0)
+cleanup_ini_file()
 
 inifile = '/opt/wapt/waptserver/waptserver.ini'
 if os.path.exists(inifile) and not os.path.islink(inifile):
@@ -41,31 +61,6 @@ subprocess.check_output('chmod 750 /opt/wapt/conf',shell=True)
 subprocess.check_output('chown -R wapt:root /opt/wapt/log',shell=True)
 subprocess.check_output('chmod 755 /opt/wapt/log',shell=True)
 subprocess.check_output('chmod 755 /opt/wapt/waptserver/scripts/postconf.py', shell=True)
-
-
-def cleanup_ini_file():
-    CFG_PATH = "/opt/wapt/waptserver/waptserver.ini"
-
-    if not os.path.exists(CFG_PATH):
-        print "No config file found at " + CFG_PATH
-        exit(0)
-
-    try:
-        cfg = ConfigParser.RawConfigParser()
-        cfg.read(CFG_PATH)
-        if not cfg.has_option("uwsgi", "enable-threads"):
-            cfg.set("uwsgi", "enable-threads", "true")
-        if cfg.has_option("uwsgi","spooler"):
-            cfg.remove_option('uwsgi','spooler')
-        with open(CFG_PATH, 'wb') as out:
-            cfg.write(out)
-    except Exception:
-        import traceback
-        print "Error when amending" + CFG_PATH
-        traceback.print_exc()
-        exit(0)
-
-cleanup_ini_file()
 
 
 def check_if_running(process_name):
