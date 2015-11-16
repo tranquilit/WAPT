@@ -647,7 +647,7 @@ class WaptBaseRepo(object):
             else:
                 return True
 
-    def search(self,searchwords = [],sections=[]):
+    def search(self,searchwords = [],sections=[],newest_only=False):
         """Return list of package entries
             with description or name matching all the searchwords and section in
             provided sections list
@@ -671,7 +671,17 @@ class WaptBaseRepo(object):
                     selected = False
             if selected:
                 result.append(package)
-        return sorted(result)
+        if newest_only:
+            filtered = []
+            last_package_name = None
+            for package in sorted(result,reverse=True):
+                if package.package != last_package_name:
+                    filtered.append(package)
+                last_package_name = package.package
+            return list(reversed(filtered))
+        else:
+            return sorted(result)
+
 
     def packages_matching(self,package_cond):
         """Return an ordered list of available packages entries which match

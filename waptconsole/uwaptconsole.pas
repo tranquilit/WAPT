@@ -6,10 +6,12 @@ interface
 
 uses
   Classes, SysUtils, Windows, ActiveX, Types, Forms, Controls, Graphics,
-  Dialogs, Buttons, FileUtil, SynEdit, SynHighlighterPython, TplStatusBarUnit,
-  vte_json, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, jsonparser,
-  superobject, VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading, IdComponent,
-  DefaultTranslator, GetText, uWaptConsoleRes;
+  Dialogs, Buttons, FileUtil, SynEdit, SynHighlighterPython, FZCommon,
+  ELDsgxPropStore, OMultiPanel, RxIniPropStorage, RxHistoryNavigator,
+  TplStatusBarUnit, TplSmartGridUnit, vte_json, ExtCtrls, StdCtrls, ComCtrls,
+  ActnList, Menus, jsonparser, superobject, VirtualTrees, VarPyth, ImgList,
+  SOGrid, uvisloading, IdComponent, DefaultTranslator, GetText, uWaptConsoleRes,
+  SearchEdit;
 
 type
 
@@ -48,6 +50,7 @@ type
     ButHostSearch1: TBitBtn;
     ButPackagesUpdate1: TBitBtn;
     cbForcedWSUSscanDownload: TCheckBox;
+    cbNewestOnly: TCheckBox;
     EdPackage: TLabeledEdit;
     EdHardwareFilter: TEdit;
     EdVersion: TLabeledEdit;
@@ -166,7 +169,7 @@ type
     cbWUADiscarded: TCheckBox;
     EdSoftwaresFilter: TEdit;
     EdRunningStatus: TEdit;
-    EdSearchGroups: TEdit;
+    EdSearchGroups: TSearchEdit;
     GridGroups: TSOGrid;
     GridHostWinUpdates: TSOGrid;
     GridHostTasksPending: TSOGrid;
@@ -247,9 +250,9 @@ type
     EdModelName: TEdit;
     EdUpdateDate: TEdit;
     EdUser: TEdit;
-    EdSearchHost: TEdit;
+    EdSearchHost: TSearchEdit;
     EdRun: TEdit;
-    EdSearch: TEdit;
+    EdSearch: TSearchEdit;
     GridHosts: TSOGrid;
     GridhostInventory: TVirtualJSONInspector;
     ImageList1: TImageList;
@@ -416,6 +419,7 @@ type
     procedure cbGroupsDropDown(Sender: TObject);
     procedure cbGroupsSelect(Sender: TObject);
     procedure cbMaskSystemComponentsClick(Sender: TObject);
+    procedure cbNewestOnlyClick(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure cbWUAPendingChange(Sender: TObject);
     procedure cbWUCriticalClick(Sender: TObject);
@@ -2723,8 +2727,8 @@ var
 begin
   //packages := VarPythonEval(Format('"%s".split()',[EdSearch.Text]));
   //packages := MainModule.mywapt.search(VarPythonEval(Format('"%s".split()',[EdSearch.Text])));
-  expr := format('mywapt.search(r"%s".decode(''utf8'').split(),section_filter="base")',
-    [EdSearch.Text]);
+  expr := format('mywapt.search(r"%s".decode(''utf8'').split(),section_filter="base,restricted",newest_only=%s)',
+    [EdSearch.Text,  BoolToStr(cbNewestOnly.Checked,'True','False') ]);
   packages := DMPython.RunJSON(expr);
 
   GridPackages.Data := packages;
@@ -2931,6 +2935,11 @@ end;
 procedure TVisWaptGUI.cbMaskSystemComponentsClick(Sender: TObject);
 begin
   GridHostSoftwares.Data := FilterSoftwares(Gridhosts.FocusedRow['softwares']);
+end;
+
+procedure TVisWaptGUI.cbNewestOnlyClick(Sender: TObject);
+begin
+  ActSearchPackage.Execute;
 end;
 
 function checkReadWriteAccess(dir: string): boolean;

@@ -4000,7 +4000,7 @@ class Wapt(object):
         result['remove'] = [p[1].asrequirement() for p in depends['remove']]
         return result
 
-    def search(self,searchwords=[],exclude_host_repo=True,section_filter=None):
+    def search(self,searchwords=[],exclude_host_repo=True,section_filter=None,newest_only=False):
         """Returns a list of packages which have the searchwords in their description
 
         Args:
@@ -4030,8 +4030,16 @@ class Wapt(object):
             else:
                 p['installed'] = None
                 p['status'] = '-'
-
-        return available
+        if newest_only:
+            filtered = []
+            last_package_name = None
+            for package in sorted(available,reverse=True):
+                if package.package != last_package_name:
+                    filtered.append(package)
+                last_package_name = package.package
+            return list(reversed(filtered))
+        else:
+            return available
 
     def list(self,searchwords=[]):
         """Returns a list of installed packages which have the searchwords

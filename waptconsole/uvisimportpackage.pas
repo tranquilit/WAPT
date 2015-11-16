@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   Buttons, ComCtrls, StdCtrls, ActnList, Menus, sogrid, DefaultTranslator,
-  uWaptConsoleRes, VirtualTrees, superobject;
+  uWaptConsoleRes, VirtualTrees, superobject,SearchEdit;
 
 type
 
@@ -25,7 +25,8 @@ type
     ButPackageDuplicate: TBitBtn;
     butSearchExternalPackages: TBitBtn;
     cbNewerThanMine: TCheckBox;
-    EdSearch1: TEdit;
+    cbNewestOnly: TCheckBox;
+    EdSearch1: TSearchEdit;
     GridExternalPackages: TSOGrid;
     MenuItem25: TMenuItem;
     Panel1: TPanel;
@@ -126,8 +127,11 @@ begin
     proxy := '"'+waptcommon.HttpProxy+'"'
   else
     proxy := 'None';
-  expr := format('waptdevutils.update_external_repo("%s","%s",proxy=%s,mywapt=mywapt,newer_only=%s)',
-    [WaptTemplatesRepo(AppIniFilename) , EdSearch1.Text, proxy, BoolToStr(cbNewerThanMine.Checked,'True','False')]);
+  expr := format('waptdevutils.update_external_repo("%s","%s",proxy=%s,mywapt=mywapt,newer_only=%s,newest_only=%s)',
+    [WaptTemplatesRepo(AppIniFilename) ,
+      EdSearch1.Text, proxy,
+      BoolToStr(cbNewerThanMine.Checked,'True','False'),
+      BoolToStr(cbNewestOnly.Checked,'True','False')]);
   packages := DMPython.RunJSON(expr);
   GridExternalPackages.Data := packages;
 end;

@@ -25,9 +25,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 681
     Top = 0
     Width = 1277
-    ActivePage = pgPrivateRepo
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -44,12 +44,17 @@ object VisWaptGUI: TVisWaptGUI
         ClientHeight = 54
         ClientWidth = 1269
         TabOrder = 1
-        object EdSearchHost: TEdit
+        object EdSearchHost: TSearchEdit
           Left = 60
           Height = 21
           Top = 4
           Width = 128
+          ExecuteDelay = 600
+          OnExecute = ActSearchHostExecute
+          Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
+          Font.Color = clGray
           OnKeyPress = EdSearchHostKeyPress
+          ParentFont = False
           TabOrder = 0
         end
         object Label5: TLabel
@@ -1095,13 +1100,13 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostWUA: TTabSheet
           Caption = 'Windows updates'
-          ClientHeight = 543
+          ClientHeight = 536
           ClientWidth = 564
           object GridHostWinUpdates: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 517
+            Height = 510
             Top = 26
             Width = 564
             OnGetText = GridHostWinUpdatesGetText
@@ -1227,7 +1232,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgTasks: TTabSheet
           Caption = 'Tasks'
-          ClientHeight = 543
+          ClientHeight = 536
           ClientWidth = 564
           object HostTaskRunningProgress: TProgressBar
             Left = 4
@@ -1301,14 +1306,14 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 488
+            Top = 481
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
           end
           object PageControl1: TPageControl
             Left = 0
-            Height = 386
+            Height = 379
             Top = 102
             Width = 564
             ActivePage = TabSheet1
@@ -1318,11 +1323,11 @@ object VisWaptGUI: TVisWaptGUI
             TabOrder = 3
             object TabSheet1: TTabSheet
               Caption = 'Pending'
-              ClientHeight = 360
+              ClientHeight = 353
               ClientWidth = 556
               object GridHostTasksPending: TSOGrid
                 Left = 0
-                Height = 358
+                Height = 351
                 Top = 2
                 Width = 556
                 Align = alClient
@@ -1722,7 +1727,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel6: TPanel
             Left = 0
             Height = 50
-            Top = 493
+            Top = 486
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -2070,12 +2075,18 @@ object VisWaptGUI: TVisWaptGUI
           }
           TabOrder = 1
         end
-        object EdSearchGroups: TEdit
+        object EdSearchGroups: TSearchEdit
           Left = 4
           Height = 21
           Top = 4
-          Width = 136
+          Width = 144
+          EmptyText = 'Type name or description'
+          ExecuteDelay = 400
+          OnExecute = ActSearchGroupsExecute
+          Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
+          Font.Color = clGray
           OnKeyPress = EdSearchGroupsKeyPress
+          ParentFont = False
           TabOrder = 0
         end
         object btAddGroup: TBitBtn
@@ -2276,16 +2287,22 @@ object VisWaptGUI: TVisWaptGUI
         ClientHeight = 30
         ClientWidth = 1269
         TabOrder = 0
-        object EdSearch: TEdit
+        object EdSearch: TSearchEdit
           Left = 4
           Height = 21
-          Top = 2
-          Width = 128
+          Top = 4
+          Width = 144
+          EmptyText = 'Type name or description'
+          ExecuteDelay = 400
+          OnExecute = ActSearchPackageExecute
+          Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
+          Font.Color = clGray
           OnKeyPress = EdSearchKeyPress
+          ParentFont = False
           TabOrder = 0
         end
         object butSearchPackages: TBitBtn
-          Left = 140
+          Left = 156
           Height = 25
           Top = 2
           Width = 96
@@ -2329,7 +2346,7 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 1
         end
         object ButPackagesUpdate: TBitBtn
-          Left = 236
+          Left = 372
           Height = 25
           Top = 2
           Width = 224
@@ -2373,7 +2390,7 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 2
         end
         object BitBtn1: TBitBtn
-          Left = 460
+          Left = 596
           Height = 25
           Top = 2
           Width = 167
@@ -2417,7 +2434,7 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 3
         end
         object BitBtn2: TBitBtn
-          Left = 628
+          Left = 764
           Height = 25
           Top = 2
           Width = 159
@@ -2460,6 +2477,17 @@ object VisWaptGUI: TVisWaptGUI
           }
           TabOrder = 4
         end
+        object cbNewestOnly: TCheckBox
+          Left = 260
+          Height = 17
+          Top = 6
+          Width = 101
+          Caption = 'Last version only'
+          Checked = True
+          OnClick = cbNewestOnlyClick
+          State = cbChecked
+          TabOrder = 5
+        end
       end
       object Panel2: TPanel
         Left = 979
@@ -2478,6 +2506,7 @@ object VisWaptGUI: TVisWaptGUI
           Top = 244
           Width = 290
           Align = alClient
+          ReadOnly = True
           TabOrder = 0
         end
         object Panel8: TPanel
@@ -2508,6 +2537,7 @@ object VisWaptGUI: TVisWaptGUI
             EditLabel.Caption = 'Package'
             EditLabel.ParentColor = False
             LabelPosition = lpLeft
+            ReadOnly = True
             TabOrder = 0
           end
           object EdVersion: TLabeledEdit
@@ -2545,6 +2575,7 @@ object VisWaptGUI: TVisWaptGUI
             Height = 80
             Top = 52
             Width = 192
+            ReadOnly = True
             ScrollBars = ssAutoVertical
             TabOrder = 2
           end
@@ -2553,6 +2584,7 @@ object VisWaptGUI: TVisWaptGUI
             Height = 80
             Top = 140
             Width = 192
+            ReadOnly = True
             ScrollBars = ssAutoVertical
             TabOrder = 3
           end

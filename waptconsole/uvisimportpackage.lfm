@@ -165,12 +165,18 @@ object VisImportPackage: TVisImportPackage
     ClientHeight = 30
     ClientWidth = 1024
     TabOrder = 0
-    object EdSearch1: TEdit
+    object EdSearch1: TSearchEdit
       Left = 4
       Height = 21
       Top = 2
       Width = 136
+      EmptyText = 'Type name or description'
+      ExecuteDelay = 400
+      OnExecute = ActSearchExternalPackageExecute
+      Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
+      Font.Color = clGray
       OnKeyPress = EdSearch1KeyPress
+      ParentFont = False
       TabOrder = 0
     end
     object butSearchExternalPackages: TBitBtn
@@ -242,13 +248,24 @@ object VisImportPackage: TVisImportPackage
       ParentColor = False
     end
     object cbNewerThanMine: TCheckBox
-      Left = 248
+      Left = 408
       Height = 17
       Top = 5
       Width = 172
       Caption = 'Newer packages than mine only'
       OnClick = cbNewerThanMineClick
       TabOrder = 3
+    end
+    object cbNewestOnly: TCheckBox
+      Left = 256
+      Height = 17
+      Top = 5
+      Width = 101
+      Caption = 'Last version only'
+      Checked = True
+      OnClick = cbNewerThanMineClick
+      State = cbChecked
+      TabOrder = 4
     end
   end
   object ActionList1: TActionList

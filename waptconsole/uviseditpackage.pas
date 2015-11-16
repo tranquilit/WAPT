@@ -554,7 +554,7 @@ var
   expr: UTF8String;
   packages: ISuperObject;
 begin
-  expr := format('mywapt.search(r"%s".decode(''utf8'').split())', [EdSearch.Text]);
+  expr := format('mywapt.search(r"%s".decode(''utf8'').split(),newest_only=True)', [EdSearch.Text]);
   packages := DMPython.RunJSON(expr);
   GridPackages.Data := packages;
   GridPackages.Header.AutoFitColumns(False);
