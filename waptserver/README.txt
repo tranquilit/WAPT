@@ -1,9 +1,10 @@
-WAPTServer serves wapt packages and desktops configuration on the network
-It is made of two services :
-* WAPTServer, a python based service, which depends on waptmongodb
-* WAPTmongodb service, a mongodb database that store clients machines inventory
+WAPTServer serves wapt packages and desktops configuration on the network.
 
-Note : 
-* MongoDB is not in the lastest version, due to a bug on the service start/stop mechanism in mogodb > 2.1
+It is composed of two services:
 
+* WAPTServer, a python based service, which depends on mongodb
+* a mongodb database that stores the inventory of client machines
 
+Note: on Windows, MongoDB is packaged as the WAPTMongodb service.
+It is not in the latest version, due to a bug in the service
+start/stop mechanism in mogodb > 2.1
