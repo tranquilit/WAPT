@@ -34,6 +34,7 @@ def update_sources():
          'waptservice',
          'languages',
          'revision.txt',
+         'version',
     ]
 
     def ignore(src,names):
@@ -44,16 +45,15 @@ def update_sources():
                     result.append(name)
         return result
 
-    # either temporary dir or local manage c:\wapt\waptupgrade
-    checkout_dir = os.path.abspath(os.path.join(os.getcwd(),'..'))
+    checkout_dir = os.getcwd()
     # cleanup patchs dir
-    if os.path.exists(os.path.join(checkout_dir,'waptupgrade','patchs')):
-        shutil.rmtree(os.path.join(checkout_dir,'waptupgrade','patchs'))
+    if os.path.exists(os.path.join(checkout_dir,'patchs')):
+        shutil.rmtree(os.path.join(checkout_dir,'patchs'))
 
-    os.makedirs(os.path.join(checkout_dir,'waptupgrade','patchs'))
+    os.makedirs(os.path.join(checkout_dir,'patchs'))
     for f in files:
         fn = os.path.join(WAPT.wapt_base_dir,f)
-        target_fn = os.path.join(checkout_dir,'waptupgrade','patchs',f)
+        target_fn = os.path.join(checkout_dir,'patchs',f)
         if os.path.isfile(fn):
             if not os.path.exists(os.path.dirname(target_fn)):
                 os.makedirs(os.path.dirname(target_fn))
@@ -69,8 +69,8 @@ def update_sources():
 def update_control(entry):
     """Update package control file before build-upload"""
     if update_sources():
-        waptget = get_file_properties(r'patchs\wapt-get.exe')
-        rev = open('../version').read().strip()
+        waptget = get_file_properties(makepath('patchs','wapt-get.exe'))
+        rev = open(makepath('patchs','version')).read().strip()
         entry.package = '%s-waptupgrade' % WAPT.config.get('global','default_package_prefix')
         entry.version = '%s-%s' % (waptget['FileVersion'],rev)
     else:
