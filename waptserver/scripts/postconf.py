@@ -259,9 +259,9 @@ def main():
     if not waptserver_ini.has_option('options', 'server_uuid'):
         waptserver_ini.set('options', 'server_uuid', str(uuid.uuid1()))
 
-    with open('/opt/wapt/waptserver/waptserver.ini','w') as inifile:
-        subprocess.check_output("/bin/chmod 640 /opt/wapt/waptserver/waptserver.ini",shell=True)
-        subprocess.check_output("/bin/chown wapt /opt/wapt/waptserver/waptserver.ini",shell=True)
+    with open('/opt/wapt/conf/waptserver.ini','w') as inifile:
+        subprocess.check_output("/bin/chmod 640 /opt/wapt/conf/waptserver.ini",shell=True)
+        subprocess.check_output("/bin/chown wapt /opt/wapt/conf/waptserver.ini",shell=True)
         waptserver_ini.write(inifile)
 
     final_msg = [
