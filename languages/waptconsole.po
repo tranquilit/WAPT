@@ -445,6 +445,15 @@ msgstr ""
 msgid "Import packages"
 msgstr ""
 
+#: tvisimportpackage.cbnewerthanmine.caption
+msgid "Newer packages than mine only"
+msgstr ""
+
+#: tvisimportpackage.cbnewestonly.caption
+msgctxt "tvisimportpackage.cbnewestonly.caption"
+msgid "Last version only"
+msgstr ""
+
 #: tvisimportpackage.urlexternalrepo.caption
 msgid "Url: "
 msgstr ""
@@ -880,21 +889,6 @@ msgctxt "tviswaptgui.actimportfromrepo.caption"
 msgid "Import from internet"
 msgstr ""
 
-#: tviswaptgui.actlocalhostinstall.caption
-msgctxt "tviswaptgui.actlocalhostinstall.caption"
-msgid "Install"
-msgstr ""
-
-#: tviswaptgui.actlocalhostremove.caption
-msgctxt "tviswaptgui.actlocalhostremove.caption"
-msgid "Uninstall package"
-msgstr ""
-
-#: tviswaptgui.actlocalhostupgrade.caption
-msgctxt "tviswaptgui.actlocalhostupgrade.caption"
-msgid "System update"
-msgstr ""
-
 #: tviswaptgui.actpackageinstall.caption
 msgctxt "TVISWAPTGUI.ACTPACKAGEINSTALL.CAPTION"
 msgid "Install package"
@@ -1178,6 +1172,11 @@ msgstr ""
 #: tviswaptgui.cbneedupgrade.caption
 msgctxt "TVISWAPTGUI.CBNEEDUPGRADE.CAPTION"
 msgid "Needs updating"
+msgstr ""
+
+#: tviswaptgui.cbnewestonly.caption
+msgctxt "TVISWAPTGUI.CBNEWESTONLY.CAPTION"
+msgid "Last version only"
 msgstr ""
 
 #: tviswaptgui.cbsearchall.caption
