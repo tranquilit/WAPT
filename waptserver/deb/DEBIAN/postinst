@@ -7,6 +7,11 @@ import sys
 import ConfigParser
 import time
 
+
+OLD_CFG_PATH = '/opt/wapt/waptserver/waptserver.ini'
+NEW_CFG_PATH = '/opt/wapt/conf/waptserver.ini'
+
+
 subprocess.check_output('update-rc.d waptserver defaults',shell=True)
 
 
@@ -23,9 +28,8 @@ for cleanup_dir in ('rpm','mongodb','spool','uninstall_service.bat'):
     if os.path.exists(mypath):
         shutil.rmtree(mypath)
 
-def cleanup_ini_file():
-    OLD_CFG_PATH = "/opt/wapt/waptserver/waptserver.ini"
 
+def cleanup_ini_file():
     if not os.path.exists(OLD_CFG_PATH):
         print("No config file found at " + OLD_CFG_PATH)
         return
@@ -47,13 +51,14 @@ def cleanup_ini_file():
 
 cleanup_ini_file()
 
-inifile = '/opt/wapt/waptserver/waptserver.ini'
-if os.path.exists(inifile) and not os.path.islink(inifile):
+
+if os.path.exists(OLD_CFG_PATH) and not os.path.islink(OLD_CFG_PATH):
     try:
-        os.rename(inifile, '/opt/wapt/conf/waptserver.ini')
-        os.symlink('../conf/waptserver.ini',inifile)
+        os.rename(OLD_CFG_PATH, NEW_CFG_PATH)
+        os.symlink(NEW_CFG_PATH, OLD_CFG_PATH)
     except Exception:
         pass
+
 
 print("Tightening up permissions")
 subprocess.check_output('find /opt/wapt -type f -exec chmod 644 {} +',shell=True)
