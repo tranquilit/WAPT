@@ -25,7 +25,7 @@ def cleanup_ini_file():
 
     if not os.path.exists(OLD_CFG_PATH):
         print "No config file found at " + OLD_CFG_PATH
-        exit(0)
+        return
 
     try:
         cfg = ConfigParser.RawConfigParser()
