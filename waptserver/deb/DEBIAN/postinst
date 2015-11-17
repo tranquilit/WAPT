@@ -20,9 +20,9 @@ subprocess.check_output('touch /var/log/waptserver.log',shell=True)
 subprocess.check_output('touch /var/run/waptserver.pid',shell=True)
 subprocess.check_output('chown wapt:root /var/log/waptserver.log',shell=True)
 subprocess.check_output('chown wapt:root /var/run/waptserver.pid',shell=True)
-print("OK")
 
 
+print("Cleaning up leftovers")
 for cleanup_dir in ('rpm','mongodb','spool','uninstall_service.bat'):
     mypath = os.path.join('/opt/wapt/waptserver',cleanup_dir)
     if os.path.exists(mypath):
@@ -70,7 +70,6 @@ subprocess.check_output('chmod 750 /opt/wapt/conf',shell=True)
 subprocess.check_output('chown -R wapt:root /opt/wapt/log',shell=True)
 subprocess.check_output('chmod 755 /opt/wapt/log',shell=True)
 subprocess.check_output('chmod 755 /opt/wapt/waptserver/scripts/postconf.py', shell=True)
-print("OK")
 
 
 def check_if_running(process_name):
@@ -84,6 +83,7 @@ def check_if_running(process_name):
 # restart server if conf file is there and if it was already running
 if os.path.exists('/opt/wapt/conf/waptserver.ini'):
     if check_if_running('waptserver'):
+        print("Restarting server")
         subprocess.check_output('service waptserver stop',shell=True)
         time.sleep(2)
         # XXX temporary: clean up leftover waptserver processes
