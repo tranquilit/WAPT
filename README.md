@@ -25,15 +25,10 @@ Composants de WAPT
 Environnement Python
 --------------------
 
-* Python 2.7.6
-* Python 2.7 setuptools-0.6c11 : https://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win32-py2.7.exe
+* Python 2.7.10
 * Python 2.7 M2Crypto-0.21.1 : http://chandlerproject.org/pub/Projects/MeTooCrypto/M2Crypto-0.21.1.win32-py2.7.msi
-* Python 2.7 pyOpenSSL-0.13 : http://www.egenix.com/products/python/pyOpenSSL/
-* Python 2.7 pycrypto-2.6 : http://www.voidspace.org.uk/downloads/pycrypto26/pycrypto-2.6.win32-py2.7.exe
-* Python 2.7 psutil-2.0.0 : https://pypi.python.org/pypi/psutil
+* Python 2.7 psutil-3.2.1 : https://pypi.python.org/pypi/psutil
 * Python 2.7 pyzmq-2.2.0 : https://github.com/downloads/zeromq/pyzmq/pyzmq-2.2.0.win32-py2.7.msi
-* Python 2.7 PySVN 1.7.8-1546 : http://pysvn.tigris.org/files/documents/1233/49313/py27-pysvn-svn1711-1.7.8-1546.exe
-* dnspython : http://www.dnspython.org/
 * pywin32 : http://sourceforge.net/projects/pywin32/
 * flask + dependences : http://flask.pocoo.org/
 * kerberos_sspi : https://github.com/may-day/kerberos-sspi
