@@ -172,7 +172,7 @@ object VisImportPackage: TVisImportPackage
       Width = 136
       EmptyText = 'Type name or description'
       ExecuteDelay = 400
-      OnExecute = ActSearchExternalPackageExecute
+      OnExecute = EdSearch1Execute
       Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
       Font.Color = clGray
       OnKeyPress = EdSearch1KeyPress

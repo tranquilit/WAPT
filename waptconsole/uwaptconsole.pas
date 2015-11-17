@@ -429,6 +429,8 @@ type
     procedure CheckBox_errorChange(Sender: TObject);
     procedure EdHardwareFilterChange(Sender: TObject);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
+    procedure EdSearchExecute(Sender: TObject);
+    procedure EdSearchGroupsExecute(Sender: TObject);
     procedure EdSearchGroupsKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchHostExecute(Sender: TObject);
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
@@ -668,6 +670,18 @@ begin
     ActEvaluate.Execute;
 end;
 
+procedure TVisWaptGUI.EdSearchExecute(Sender: TObject);
+begin
+  if EdSearch.Modified then
+    ActSearchPackageExecute(Sender);
+end;
+
+procedure TVisWaptGUI.EdSearchGroupsExecute(Sender: TObject);
+begin
+  if EdSearchGroups.Modified then
+    ActSearchGroupsExecute(Sender);
+end;
+
 procedure TVisWaptGUI.EdSearchGroupsKeyPress(Sender: TObject; var Key: char);
 begin
   if key=#13 then
@@ -681,7 +695,6 @@ procedure TVisWaptGUI.EdSearchHostExecute(Sender: TObject);
 begin
   if EdSearchHost.Modified then
     ActSearchHostExecute(Sender);
-  EdSearchHost.Modified:=False;
 end;
 
 procedure TVisWaptGUI.EdSearchHostKeyPress(Sender: TObject; var Key: char);
@@ -2483,6 +2496,7 @@ var
   expr: UTF8String;
   groups: ISuperObject;
 begin
+  EdSearchGroups.Modified := False;
   expr := format('mywapt.search(r"%s".decode(''utf8'').split(),section_filter="group")',
     [EdSearchGroups.Text]);
   groups := DMPython.RunJSON(expr);
@@ -2642,6 +2656,7 @@ var
   previous_uuid: string;
   i: integer;
 begin
+  EdSearchHost.Modified:=False;
   columns := TSuperObject.Create(stArray);
   for i:=0 to GridHosts.Header.Columns.Count-1 do
     if coVisible in GridHosts.Header.Columns[i].Options then
@@ -2733,6 +2748,7 @@ var
   expr: UTF8String;
   packages: ISuperObject;
 begin
+  EdSearch.Modified:=False;
   //packages := VarPythonEval(Format('"%s".split()',[EdSearch.Text]));
   //packages := MainModule.mywapt.search(VarPythonEval(Format('"%s".split()',[EdSearch.Text])));
   expr := format('mywapt.search(r"%s".decode(''utf8'').split(),section_filter="base,restricted",newest_only=%s)',

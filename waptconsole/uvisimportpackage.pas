@@ -38,6 +38,7 @@ type
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
     procedure ButExtRepoChangeClick(Sender: TObject);
     procedure cbNewerThanMineClick(Sender: TObject);
+    procedure EdSearch1Execute(Sender: TObject);
     procedure EdSearch1KeyPress(Sender: TObject; var Key: char);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormShow(Sender: TObject);
@@ -73,6 +74,13 @@ end;
 procedure TVisImportPackage.cbNewerThanMineClick(Sender: TObject);
 begin
   ActSearchExternalPackageExecute(Sender);
+end;
+
+procedure TVisImportPackage.EdSearch1Execute(Sender: TObject);
+begin
+  if EdSearch1.Modified then
+    ActSearchExternalPackageExecute(Sender);
+  EdSearch1.Modified:=False;
 end;
 
 procedure TVisImportPackage.EdSearch1KeyPress(Sender: TObject; var Key: char);
@@ -123,6 +131,7 @@ var
   packages: ISuperObject;
   proxy:String;
 begin
+  EdSearch1.Modified:=False;
   if waptcommon.UseProxyForTemplates then
     proxy := '"'+waptcommon.HttpProxy+'"'
   else

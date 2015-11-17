@@ -94,6 +94,7 @@ type
     procedure ActSearchPackageExecute(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure EdPackageKeyPress(Sender: TObject; var Key: char);
+    procedure EdSearchExecute(Sender: TObject);
     procedure EdSearchKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
     procedure EdSectionChange(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -335,6 +336,12 @@ begin
       Key:=#0;
 end;
 
+procedure TVisEditPackage.EdSearchExecute(Sender: TObject);
+begin
+  if EdSearch.Modified then
+    ActEditSearchExecute(Sender);
+end;
+
 procedure TVisEditPackage.EdSearchKeyDown(Sender: TObject; var Key: word;
   Shift: TShiftState);
 begin
@@ -554,6 +561,7 @@ var
   expr: UTF8String;
   packages: ISuperObject;
 begin
+  EdSearch.Modified:=False;
   expr := format('mywapt.search(r"%s".decode(''utf8'').split(),newest_only=True)', [EdSearch.Text]);
   packages := DMPython.RunJSON(expr);
   GridPackages.Data := packages;

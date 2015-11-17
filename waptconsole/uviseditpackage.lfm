@@ -1018,7 +1018,7 @@ object VisEditPackage: TVisEditPackage
         Width = 136
         EmptyText = 'Type search keywords'
         ExecuteDelay = 400
-        OnExecute = ActEditSearchExecute
+        OnExecute = EdSearchExecute
         Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
         Font.Color = clGray
         OnKeyDown = EdSearchKeyDown
