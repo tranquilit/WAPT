@@ -1010,17 +1010,23 @@ object VisEditPackage: TVisEditPackage
       ClientHeight = 44
       ClientWidth = 290
       TabOrder = 0
-      object EdSearch: TEdit
+      object EdSearch: TSearchEdit
         Left = 4
         Height = 21
         Hint = 'Use keywords to narrow search.'
         Top = 17
         Width = 136
+        EmptyText = 'Type search keywords'
+        ExecuteDelay = 400
+        OnExecute = ActEditSearchExecute
+        Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
+        Font.Color = clGray
         OnKeyDown = EdSearchKeyDown
+        ParentFont = False
         TabOrder = 0
       end
       object butSearchPackages1: TBitBtn
-        Left = 148
+        Left = 149
         Height = 25
         Top = 15
         Width = 120

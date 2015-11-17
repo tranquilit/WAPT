@@ -49,8 +49,8 @@ object VisWaptGUI: TVisWaptGUI
           Height = 21
           Top = 4
           Width = 128
-          ExecuteDelay = 600
-          OnExecute = ActSearchHostExecute
+          ExecuteDelay = 650
+          OnExecute = EdSearchHostExecute
           Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
           Font.Color = clGray
           OnKeyPress = EdSearchHostKeyPress

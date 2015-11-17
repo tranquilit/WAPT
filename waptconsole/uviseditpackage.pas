@@ -10,7 +10,7 @@ uses
   Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, Buttons,
   superobject, VirtualTrees,
   VarPyth, types, ActiveX, LCLIntf, LCL, sogrid, vte_json, DefaultTranslator,
-  uWaptConsoleRes;
+  uWaptConsoleRes,SearchEdit;
 
 type
 
@@ -39,7 +39,7 @@ type
     cbShowLog: TCheckBox;
     Eddescription: TLabeledEdit;
     EdPackage: TLabeledEdit;
-    EdSearch: TEdit;
+    EdSearch: TSearchEdit;
     EdSection: TComboBox;
     EdSourceDir: TEdit;
     EdVersion: TLabeledEdit;

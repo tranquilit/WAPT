@@ -430,6 +430,7 @@ type
     procedure EdHardwareFilterChange(Sender: TObject);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchGroupsKeyPress(Sender: TObject; var Key: char);
+    procedure EdSearchHostExecute(Sender: TObject);
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure EdSoftwaresFilterChange(Sender: TObject);
@@ -674,6 +675,13 @@ begin
     EdSearchGroups.SelectAll;
     ActSearchGroups.Execute;
   end;
+end;
+
+procedure TVisWaptGUI.EdSearchHostExecute(Sender: TObject);
+begin
+  if EdSearchHost.Modified then
+    ActSearchHostExecute(Sender);
+  EdSearchHost.Modified:=False;
 end;
 
 procedure TVisWaptGUI.EdSearchHostKeyPress(Sender: TObject; var Key: char);
