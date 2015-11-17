@@ -8,12 +8,12 @@ import ConfigParser
 import time
 
 subprocess.check_output('update-rc.d waptserver defaults',shell=True)
-print "Setting up pid and log files"
+print("Setting up pid and log files")
 subprocess.check_output('touch /var/log/waptserver.log',shell=True)
 subprocess.check_output('touch /var/run/waptserver.pid',shell=True)
 subprocess.check_output('chown wapt:root /var/log/waptserver.log',shell=True)
 subprocess.check_output('chown wapt:root /var/run/waptserver.pid',shell=True)
-print "OK"
+print("OK")
 
 # cleanup leftovers
 
@@ -26,7 +26,7 @@ def cleanup_ini_file():
     OLD_CFG_PATH = "/opt/wapt/waptserver/waptserver.ini"
 
     if not os.path.exists(OLD_CFG_PATH):
-        print "No config file found at " + OLD_CFG_PATH
+        print("No config file found at " + OLD_CFG_PATH)
         return
 
     try:
@@ -40,9 +40,10 @@ def cleanup_ini_file():
             cfg.write(out)
     except Exception:
         import traceback
-        print "Error when amending" + OLD_CFG_PATH
+        print("Error when amending" + OLD_CFG_PATH)
         traceback.print_exc()
         exit(0)
+
 cleanup_ini_file()
 
 inifile = '/opt/wapt/waptserver/waptserver.ini'
@@ -53,7 +54,7 @@ if os.path.exists(inifile) and not os.path.islink(inifile):
     except Exception:
         pass
 
-print "Tightening up permissions"
+print("Tightening up permissions")
 subprocess.check_output('find /opt/wapt -type f -exec chmod 644 {} +',shell=True)
 subprocess.check_output('find /opt/wapt -type f ! -name waptserver.ini -exec chown root:root {} +',shell=True)
 subprocess.check_output('find /opt/wapt -type d ! -name conf ! -name log -exec chmod 755 {} +',shell=True)
@@ -63,7 +64,7 @@ subprocess.check_output('chmod 750 /opt/wapt/conf',shell=True)
 subprocess.check_output('chown -R wapt:root /opt/wapt/log',shell=True)
 subprocess.check_output('chmod 755 /opt/wapt/log',shell=True)
 subprocess.check_output('chmod 755 /opt/wapt/waptserver/scripts/postconf.py', shell=True)
-print "OK"
+print("OK")
 
 def check_if_running(process_name):
     try:
@@ -88,16 +89,16 @@ if os.path.exists('/opt/wapt/conf/waptserver.ini'):
     else:
         subprocess.check_output('/etc/init.d/waptserver start',shell=True)
 else:
-    print (""" '\e[1;31m%-6s\e[m\n' "The installation of waptserver is finished!" """)
-    print (""" '\e[1;31m%-6s\e[m\n' "For postconf please run: /usr/bin/python /opt/wapt/waptserver/scripts/postconf.py" """)
+    print(""" '\e[1;31m%-6s\e[m\n' "The installation of waptserver is finished!" """)
+    print(""" '\e[1;31m%-6s\e[m\n' "For postconf please run: /usr/bin/python /opt/wapt/waptserver/scripts/postconf.py" """)
 
 
 # Backward compat
 agent='/var/www/wapt/waptagent.exe'
 setup='/var/www/wapt/waptsetup.exe'
 if os.path.exists(setup) and not os.path.islink(setup):
-    print ('Moving regular file %s to %s.old for compatibility reasons.'% (setup,setup,))
+    print('Moving regular file %s to %s.old for compatibility reasons.'% (setup,setup,))
     os.rename(setup,"%s.old" % setup)
-    print ("Creating symlink from %s to %s for compatibility reasons." % (setup,agent))
+    print("Creating symlink from %s to %s for compatibility reasons." % (setup,agent))
     os.symlink(agent,setup)
 sys.exit(0)
