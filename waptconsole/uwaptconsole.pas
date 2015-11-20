@@ -84,6 +84,7 @@ type
     MenuItem73: TMenuItem;
     pgWindowsUpdates: TTabSheet;
     PopupDelete: TPopupMenu;
+    Splitter6: TSplitter;
     WSUSActions: TActionList;
     ActWUANewGroup: TAction;
     ActWUAProductsSelection: TAction;

@@ -25,9 +25,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 681
     Top = 0
     Width = 1277
-    ActivePage = pgPrivateRepo
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -481,7 +481,7 @@ object VisWaptGUI: TVisWaptGUI
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 324
+            Height = 319
             Top = 122
             Width = 564
             Align = alBottom
@@ -887,6 +887,15 @@ object VisWaptGUI: TVisWaptGUI
               ScrollBars = ssAutoBoth
               TabOrder = 0
             end
+          end
+          object Splitter6: TSplitter
+            Cursor = crVSplit
+            Left = 0
+            Height = 5
+            Top = 441
+            Width = 564
+            Align = alBottom
+            ResizeAnchor = akBottom
           end
         end
         object pgHostInventory: TTabSheet
