@@ -312,15 +312,15 @@ def ensure_unicode(data):
         if type(data) is types.StringType:
             return unicode(data, 'utf8', 'replace')
         if isinstance(data,WindowsError):
-            return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding()))
+            return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding(),'replace'))
         if isinstance(data,(UnicodeDecodeError,UnicodeEncodeError)):
             return u"%s : faulty string is '%s'" % (data,repr(data.args[1]))
         if isinstance(data,Exception):
             try:
-                return u"%s: %s" % (data.__class__.__name__,("%s"%data).decode(sys.getfilesystemencoding()))
+                return u"%s: %s" % (data.__class__.__name__,("%s"%data).decode(sys.getfilesystemencoding(),'replace'))
             except:
                 try:
-                    return u"%s: %s" % (data.__class__.__name__,("%s"%data).decode('utf8'))
+                    return u"%s: %s" % (data.__class__.__name__,("%s"%data).decode('utf8','replace'))
                 except:
                     try:
                         return u"%s: %s" % (data.__class__.__name__,u"%s"%data)
