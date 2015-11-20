@@ -4613,7 +4613,10 @@ class Wapt(object):
 
                             session_db.update_install_status(install_id,'RUNNING','Launch session_setup()\n')
                             result = setup.session_setup()
-                            session_db.update_install_status(install_id,'OK','session_setup() done\n')
+                            if result:
+                                session_db.update_install_status(install_id,'RETRY','session_setup() done\n')
+                            else:
+                                session_db.update_install_status(install_id,'OK','session_setup() done\n')
                             return result
 
                         except Exception,e:
