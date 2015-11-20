@@ -614,7 +614,7 @@ def import_setup(setupfilename,modulename=''):
         #py_mod = import_code(codecs.open(setupfilename,'r').read(), modulename)
         return py_mod
     except Exception as e:
-        logger.critical(u'Error importing %s : %s'%(setupfilename,traceback.format_exc()))
+        logger.critical(u'Error importing %s :\n%s'%(setupfilename,ensure_unicode(traceback.format_exc())))
         raise
 
 def remove_encoding_declaration(source):
@@ -872,7 +872,7 @@ class WaptBaseDB(object):
             self.commit()
         else:
             self.rollback()
-            logger.debug(u'Error at DB exit %s, rollbacking\n%s' % (value,traceback.format_tb(tb)))
+            logger.debug(u'Error at DB exit %s, rollbacking\n%s' % (value,ensure_unicode(traceback.format_tb(tb))))
 
     @property
     def db_version(self):
@@ -3133,7 +3133,7 @@ class Wapt(object):
                         logger.info(u"  executing install script")
                         exitstatus = setup.install()
                     except Exception,e:
-                        logger.critical(u'Fatal error in install script: %s:%s' % (ensure_unicode(e),traceback.format_exc()))
+                        logger.critical(u'Fatal error in install script: %s:\n%s' % (ensure_unicode(e),ensure_unicode(traceback.format_exc())))
                         raise
                 else:
                     logger.warning(u'Dry run, not actually running setup.install()')

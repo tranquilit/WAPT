@@ -2020,13 +2020,13 @@ class WaptTaskManager(threading.Thread):
                     except Exception as e:
                         if self.running_task:
                             self.running_task.logs.append(u"{}".format(setuphelpers.ensure_unicode(e)))
-                            self.running_task.logs.append(traceback.format_exc())
+                            self.running_task.logs.append(setuphelpers.ensure_unicode(traceback.format_exc()))
                             self.running_task.summary = u"{}".format(setuphelpers.ensure_unicode(e))
                             self.tasks_error.append(self.running_task)
                             self.broadcast_tasks_status(str('ERROR'),self.running_task)
                         logger.critical(setuphelpers.ensure_unicode(e))
                         try:
-                            logger.debug(traceback.format_exc())
+                            logger.debug(setuphelpers.ensure_unicode(traceback.format_exc()))
                         except:
                             print "Traceback error"
                 finally:
@@ -2047,7 +2047,7 @@ class WaptTaskManager(threading.Thread):
                 try:
                     self.check_scheduled_tasks()
                 except Exception as e:
-                    logger.warning(u'Error checking scheduled tasks : %s' % traceback.format_exc())
+                    logger.warning(u'Error checking scheduled tasks : %s' % setuphelpers.ensure_unicode(traceback.format_exc()))
                 logger.debug(u"{} i'm still alive... but nothing to do".format(datetime.datetime.now()))
 
     def tasks_status(self):

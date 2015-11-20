@@ -1026,7 +1026,7 @@ def main():
                 sys.exit(1)
 
         except Exception as e:
-            print "FATAL ERROR : %s" % (ensure_unicode(e),)
+            print u"FATAL ERROR : %s" % (ensure_unicode(e),)
             if logger.level == logging.DEBUG:
                 raise
             sys.exit(3)
