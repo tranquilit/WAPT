@@ -189,9 +189,13 @@ def start_waptserver():
 
 def setup_firewall():
     if type_redhat():
-        subprocess.check_output(['firewall-cmd', '--permanent', '--add-port=443/tcp'])
-        subprocess.check_output(['firewall-cmd', '--permanent', '--add-port=80/tcp'])
-        subprocess.check_output(['firewall-cmd', '--reload'])
+        if subprocess.call(['firewall-cmd', '--state'], stdout=open(os.devnull, 'w')) == 0:
+            subprocess.check_output(['firewall-cmd', '--permanent', '--add-port=443/tcp'])
+            subprocess.check_output(['firewall-cmd', '--permanent', '--add-port=80/tcp'])
+            subprocess.check_output(['firewall-cmd', '--reload'])
+        else:
+            subprocess.check_output(['firewall-offline-cmd', '--add-port=443/tcp'])
+            subprocess.check_output(['firewall-offline-cmd', '--add-port=80/tcp'])
 
 
 # main program
