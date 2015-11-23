@@ -445,6 +445,15 @@ msgstr "verändern"
 msgid "Import packages"
 msgstr "Pakete einführen"
 
+#: tvisimportpackage.cbnewerthanmine.caption
+msgid "Newer packages than mine only"
+msgstr ""
+
+#: tvisimportpackage.cbnewestonly.caption
+msgctxt "tvisimportpackage.cbnewestonly.caption"
+msgid "Last version only"
+msgstr ""
+
 #: tvisimportpackage.urlexternalrepo.caption
 msgid "Url: "
 msgstr "Url: "
@@ -902,21 +911,6 @@ msgctxt "tviswaptgui.actimportfromrepo.caption"
 msgid "Import from internet"
 msgstr "Von Repository importieren"
 
-#: tviswaptgui.actlocalhostinstall.caption
-msgctxt "tviswaptgui.actlocalhostinstall.caption"
-msgid "Install"
-msgstr "Installation"
-
-#: tviswaptgui.actlocalhostremove.caption
-msgctxt "tviswaptgui.actlocalhostremove.caption"
-msgid "Uninstall package"
-msgstr "Packet deinstallieren"
-
-#: tviswaptgui.actlocalhostupgrade.caption
-msgctxt "tviswaptgui.actlocalhostupgrade.caption"
-msgid "System update"
-msgstr "System aktualisieren"
-
 #: tviswaptgui.actpackageinstall.caption
 msgctxt "TVISWAPTGUI.ACTPACKAGEINSTALL.CAPTION"
 msgid "Install package"
@@ -1221,6 +1215,11 @@ msgstr "Systemkomponenten ausblenden"
 msgctxt "TVISWAPTGUI.CBNEEDUPGRADE.CAPTION"
 msgid "Needs updating"
 msgstr "Muss aktualisiert werden"
+
+#: tviswaptgui.cbnewestonly.caption
+msgctxt "tviswaptgui.cbnewestonly.caption"
+msgid "Last version only"
+msgstr ""
 
 #: tviswaptgui.cbsearchall.caption
 msgid "All"
@@ -2212,6 +2211,11 @@ msgstr "wupanright"
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -2278,6 +2282,9 @@ msgstr "Sind Sie sich sicher, dass Sie %s die Pakete vom Host %s vergessen wolle
 #: uwaptconsoleres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
@@ -2660,6 +2667,9 @@ msgstr "Fehler beim erstellen des Pakets"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -2876,6 +2886,8 @@ msgstr "Anwendung: %s -h "
 #| "Wapt-get version: %s\n"
 #| "Waptconsole version : %s\n"
 #| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
 msgctxt "uwaptconsoleres.rsversion"
 msgid ""
 "Waptconsole version : %s\n"
@@ -2941,6 +2953,8 @@ msgstr ""
 #| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -2951,6 +2965,9 @@ msgstr ""
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
 #| msgid ""
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
 #| "Required server version: %s\n"
