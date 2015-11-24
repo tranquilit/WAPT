@@ -56,6 +56,9 @@ import threading
 import traceback
 import uuid
 
+import random
+import string
+
 from waptpackage import *
 import locale
 
@@ -100,6 +103,7 @@ import setuphelpers
 from setuphelpers import ensure_unicode,datetime2isodate,httpdatetime2isodate,ensure_list
 
 import types
+import gc
 
 logger = logging.getLogger()
 
@@ -496,6 +500,9 @@ def create_self_signed_key(orgname,
     os.unlink(opensslcfg_fn)
     return {'pem_filename':destpem,'crt_filename':destcrt}
 
+def generate_unique_string():
+    return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
+
 
 def default_json(o):
     """callback to extend handling of json.dumps"""
@@ -588,7 +595,7 @@ def get_manifest_data(source_root, target_root=u'', excludes = [u'.svn',u'.git',
     return result
 
 
-def import_code(code,name,add_to_sys_modules=0):
+def import_code(code,name='',add_to_sys_modules=0):
     """
     Import dynamically generated code as a module. code is the
     object containing the code (a string, a file handle or an
@@ -611,6 +618,11 @@ def import_code(code,name,add_to_sys_modules=0):
     """
     import sys,imp
 
+    if not name:
+        name = '__waptsetup_%s__'%generate_unique_string()
+        #name = '__waptsetup__'
+
+    logger.debug('Import source code as %s'%(name))
     module = imp.new_module(name)
 
     exec code in module.__dict__
@@ -625,10 +637,12 @@ def import_setup(setupfilename,modulename=''):
     try:
         mod_name,file_ext = os.path.splitext(os.path.split(setupfilename)[-1])
         if not modulename:
-            modulename=mod_name
+            #modulename=mod_name
+            modulename = '__waptsetup_%s__'%generate_unique_string()
         # can debug but keep module in memory
+        logger.debug('Import source %s as %s'%(setupfilename,modulename))
         py_mod = imp.load_source(modulename, setupfilename)
-        # can not debug but memory iis not cumbered with setup.py modules
+        # can not debug but memory is not cumbered with setup.py modules
         #py_mod = import_code(codecs.open(setupfilename,'r').read(), modulename)
         return py_mod
     except Exception as e:
@@ -3114,7 +3128,7 @@ class Wapt(object):
 
                 # import the setup module from package file
                 logger.info(u"  sourcing install file %s " % ensure_unicode(setup_filename) )
-                setup = import_setup(setup_filename,'__waptsetup__')
+                setup = import_setup(setup_filename)
                 required_params = []
 
                 # be sure some minimal functions are available in setup module at install step
@@ -3171,7 +3185,7 @@ class Wapt(object):
 
                 # get uninstallkey from setup module (string or array of strings)
                 if hasattr(setup,'uninstallkey'):
-                    new_uninstall_key = ensure_list(setup.uninstallkey)
+                    new_uninstall_key = ensure_list(setup.uninstallkey)[:]
                     # check that uninstallkey(s) are in registry
                     if not self.dry_run:
                         key_errors = []
@@ -3190,7 +3204,7 @@ class Wapt(object):
 
                 # get uninstallstring from setup module (string or array of strings)
                 if hasattr(setup,'uninstallstring'):
-                    uninstallstring = setup.uninstallstring
+                    uninstallstring = setup.uninstallstring[:]
                 else:
                     uninstallstring = None
                 logger.info(u'  uninstall keys : %s' % (new_uninstall_key,))
@@ -3227,10 +3241,14 @@ class Wapt(object):
                 logger.critical(ensure_unicode(e))
             raise e
         finally:
+            gc.collect()
             if 'setup' in dir():
+                setup_name = setup.__name__[:]
+                logger.debug('Removing module: %s, refcnt: %s'%(setup_name,sys.getrefcount(setup)))
                 del setup
-                if '__waptsetup__' in sys.modules:
-                    del sys.modules['__waptsetup__']
+                if setup_name in sys.modules:
+                    del sys.modules[setup_name]
+
             sys.stdout = old_stdout
             sys.stderr = old_stderr
             sys.path = oldpath
@@ -4070,7 +4088,7 @@ class Wapt(object):
         """Returns a list of installed packages which have the searchwords
            in their description
         """
-        return self.waptdb.installed_search(searchwords=searchwords,include_errors=True)
+        return self.waptdb.installed_search(searchwords=searchwords,)
 
     def check_downloads(self,apackages=None):
         """Return list of available package entries not yet in cache
@@ -4399,7 +4417,7 @@ class Wapt(object):
                 sys.path = [os.getcwd()] + sys.path
                 logger.debug(u'new sys.path %s' % sys.path)
             logger.debug(u'Sourcing %s' % os.path.join(directoryname,'setup.py'))
-            setup = import_setup(os.path.join(directoryname,'setup.py'),'__waptsetup__')
+            setup = import_setup(os.path.join(directoryname,'setup.py'))
              # be sure some minimal functions are available in setup module at install step
             logger.debug(u'Source import OK')
 
@@ -4481,9 +4499,10 @@ class Wapt(object):
 
         finally:
             if 'setup' in dir():
+                setup_name = setup.__name__
                 del setup
-                if '__waptsetup__' in sys.modules:
-                    del sys.modules['__waptsetup__']
+                if setup_name in sys.modules:
+                    del sys.modules[setup_name]
             sys.path = oldpath
             logger.debug(u'  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
@@ -4585,7 +4604,7 @@ class Wapt(object):
                     # source setup.py to get session_setup func
                     if os.path.isdir(packagename):
                         package_fn = os.path.join(packagename,'setup.py')
-                        setup = import_setup(package_fn,'__waptsetup__')
+                        setup = import_setup(package_fn)
                         logger.debug(u'Source import OK from %s' % package_fn)
                     else:
                         logger.debug(u'Sourcing setup from DB (only if session_setup found)')
@@ -4593,7 +4612,7 @@ class Wapt(object):
                         if not setuppy:
                             raise Exception('Source setup.py of package %s not stored in local database' % packagename)
                         if 'session_setup()' in setuppy:
-                            setup = import_code(setuppy,'__waptsetup__')
+                            setup = import_code(setuppy)
                             logger.debug(u'Source setup.py import OK from database')
                         else:
                             setup = None
@@ -4668,9 +4687,11 @@ class Wapt(object):
                 finally:
                     # cleanup
                     if 'setup' in dir():
+                        setup_name = setup.__name__
+                        logger.debug('Removing module %s'%setup_name)
                         del setup
-                        if '__waptsetup__' in sys.modules:
-                            del sys.modules['__waptsetup__']
+                        if setup_name in sys.modules:
+                            del sys.modules[setup_name]
                     sys.path = oldpath
                     logger.debug(u'  Change current directory to %s.' % previous_cwd)
                     os.chdir(previous_cwd)
@@ -4687,11 +4708,11 @@ class Wapt(object):
             previous_cwd = os.getcwd()
             if os.path.isdir(packagename):
                 entry = PackageEntry().load_control_from_wapt(packagename)
-                setup = import_setup(os.path.join(packagename,'setup.py'),'__waptsetup__')
+                setup = import_setup(os.path.join(packagename,'setup.py'))
             else:
                 logger.debug(u'Sourcing setup from DB')
                 entry = self.is_installed(packagename)
-                setup = import_code(entry['setuppy'],'__waptsetup__')
+                setup = import_code(entry['setuppy'])
 
             required_params = []
              # be sure some minimal functions are available in setup module at install step
@@ -4729,9 +4750,10 @@ class Wapt(object):
                 #raise Exception(u'No uninstall() function in setup.py for package %s' % packagename)
         finally:
             if 'setup' in dir():
+                setup_name = setup.__name__
                 del setup
-                if '__waptsetup__' in sys.modules:
-                    del sys.modules['__waptsetup__']
+                if setup_name in sys.modules:
+                    del sys.modules[setup_name]
 
             sys.path = oldpath
             logger.debug(u'  Change current directory to %s' % previous_cwd)
