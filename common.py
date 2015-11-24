@@ -1519,7 +1519,7 @@ class WaptDB(WaptBaseDB):
         else:
             return None
 
-    def installed_search(self,searchwords=[]):
+    def installed_search(self,searchwords=[],include_errors=True):
         """Return a list of installed package entries"""
         if not isinstance(searchwords,list) and not isinstance(searchwords,tuple):
             searchwords = [searchwords]
@@ -1529,6 +1529,8 @@ class WaptDB(WaptBaseDB):
         else:
             words = [ "%"+w.lower()+"%" for w in searchwords ]
             search = ["lower(l.package || (case when r.description is NULL then '' else r.description end) ) like ?"] *  len(words)
+        if not include_errors:
+            search.append('l.install_status in ("OK","UNKNOWN")')
         q = self.query_package_entry("""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,
                 r.section,r.priority,r.maintainer,r.description,r.depends,r.conflicts,r.sources,r.filename,r.size,
@@ -1539,17 +1541,22 @@ class WaptDB(WaptBaseDB):
            """ % " and ".join(search),words)
         return q
 
-    def installed_matching(self,package_cond):
+    def installed_matching(self,package_cond,include_errors=False):
         """Return True if one properly installed package match the package condition 'tis-package (>=version)' """
         package = REGEX_PACKAGE_CONDITION.match(package_cond).groupdict()['package']
+        if include_errors:
+            status = '"OK","UNKNOWN","ERROR"'
+        else:
+            status = '"OK","UNKNOWN"'
+
         q = self.query_package_entry("""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,l.explicit_by,
                 r.section,r.priority,r.maintainer,r.description,r.depends,r.conflicts,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo
                 from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
-              where l.package=? and l.install_status in ("OK","UNKNOWN")
-           """,(package,))
+              where l.package=? and l.install_status in (%s)
+           """ % status,(package,))
         return q[0] if q and q[0].match(package_cond) else None
 
     def upgradeable(self,include_errors=True):
@@ -4063,7 +4070,7 @@ class Wapt(object):
         """Returns a list of installed packages which have the searchwords
            in their description
         """
-        return self.waptdb.installed_search(searchwords=searchwords,)
+        return self.waptdb.installed_search(searchwords=searchwords,include_errors=True)
 
     def check_downloads(self,apackages=None):
         """Return list of available package entries not yet in cache
@@ -4941,7 +4948,7 @@ class Wapt(object):
         result['target'] = directoryname
         return result
 
-    def is_installed(self,packagename):
+    def is_installed(self,packagename,include_errors=False):
         """Checks if a package is installed.
         Return package entry and additional local status or None
 
@@ -4955,7 +4962,7 @@ class Wapt(object):
                           * install_params
                           * install_status
         """
-        return self.waptdb.installed_matching(packagename)
+        return self.waptdb.installed_matching(packagename,include_errors=include_errors)
 
     def installed(self,include_errors=False):
         """Returns all installed packages with their status
