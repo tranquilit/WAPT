@@ -14,7 +14,7 @@ resourcestring
   rsWininetSetFlagsError = 'Internal error in SetToIgnoreCerticateErrors when trying to set wininet INTERNET_OPTION_SECURITY_FLAGS flag . %s';
   rsUnknownError = 'Unknown error in SetToIgnoreCerticateErrors. %s';
 
-  rsUsage1 = 'Usage : waptdeploy.exe [min_wapt_version]';
+  rsUsage1 = 'Usage : waptdeploy.exe --hash=<sha256hash> --minversion=<min_wapt_version>';
   rsUsage2 = '  Download waptagent.exe from WAPT repository and launch it if local version is obsolete (< %s or < parameter 1 or < --minversion parameter)';
   rsUsage3 = ' --force : install waptagent.exe even if version doesn''t match';
   rsUsage4 = ' --minversion=1.2.3 : install waptagent.exe even if installed version is less than that';
