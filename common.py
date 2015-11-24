@@ -1519,8 +1519,8 @@ class WaptDB(WaptBaseDB):
         else:
             return None
 
-    def installed_search(self,searchwords=[],include_errors=True):
-        """Return a list of installed package entries"""
+    def installed_search(self,searchwords=[],include_errors=False):
+        """Return a list of installed package entries based on search keywords"""
         if not isinstance(searchwords,list) and not isinstance(searchwords,tuple):
             searchwords = [searchwords]
         if not searchwords:
@@ -1542,7 +1542,7 @@ class WaptDB(WaptBaseDB):
         return q
 
     def installed_matching(self,package_cond,include_errors=False):
-        """Return True if one properly installed package match the package condition 'tis-package (>=version)' """
+        """Return True if one properly installed (if include_errors=False) package match the package condition 'tis-package (>=version)' """
         package = REGEX_PACKAGE_CONDITION.match(package_cond).groupdict()['package']
         if include_errors:
             status = '"OK","UNKNOWN","ERROR"'
