@@ -59,7 +59,6 @@ is_encrypt_private_key = common.private_key_has_password
 is_match_password = common.check_key_password
 import tempfile
 
-
 def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wapt_server='',destination='',company=''):
     r"""Build a customized waptsetup with provided certificate included.
     Returns filename
@@ -101,10 +100,10 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wa
     run('"%s"  %s' % (inno_directory,custom_iss))
     #print('%s compiled successfully' % (outputfile, ))
 
-    # create a sha1 file for waptupgrade package
+    # create a sha256 file for waptupgrade package
     result = os.path.abspath(os.path.join(destination,os.path.basename(outputfile)))
-    with open(makepath(wapt.wapt_base_dir,'waptupgrade','waptagent.sha1'),'wb') as f:
-        f.write("%s %s\n" % (sha1_for_file(result),'waptagent.exe'))
+    with open(makepath(wapt.wapt_base_dir,'waptupgrade','waptagent.sha256'),'wb') as f:
+        f.write("%s %s\n" % (sha256_for_file(result),'waptagent.exe'))
     return result
 
 

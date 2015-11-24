@@ -197,6 +197,7 @@ __all__ = \
  'dateof',
  'ensure_list',
  'reg_enum_subkeys',
+ 'reg_enum_values',
  'win_startup_info',
  ]
 

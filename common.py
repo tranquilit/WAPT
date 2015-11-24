@@ -325,6 +325,24 @@ def sha1_for_data(data):
     sha1.update(data)
     return sha1.hexdigest()
 
+def sha256_for_file(fname, block_size=2**20):
+    f = open(fname,'rb')
+    sha256 = hashlib.sha256()
+    while True:
+        data = f.read(block_size)
+        if not data:
+            break
+        sha256.update(data)
+    return sha256.hexdigest()
+
+
+def sha256_for_data(data):
+    assert(isinstance(data,str))
+    sha256 = hashlib.sha256()
+    sha256.update(data)
+    return sha256.hexdigest()
+
+
 
 def pwd_callback(*args):
     """Default password callback for opening private keys"""
