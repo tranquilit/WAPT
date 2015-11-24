@@ -139,7 +139,6 @@ type
     function updateprogress(receiver: TObject; current, total: integer): boolean;
   public
     { public declarations }
-    waptpath: string;
     IsHost: boolean;
     isGroup: boolean;
     IsNewPackage: boolean;
@@ -676,8 +675,6 @@ end;
 
 procedure TVisEditPackage.FormCreate(Sender: TObject);
 begin
-  waptpath := ExtractFileDir(ParamStr(0));
-
   GridPackages.Clear;
   MemoLog.Clear;
 
@@ -718,18 +715,13 @@ begin
 end;
 
 
-function MkTempDir(prefix: string = ''): string;
-var
-  i: integer;
+function UniqueTempDir(prefix: string = ''): string;
 begin
   if prefix = '' then
     prefix := 'wapt';
-  i := 0;
   repeat
-    Inc(i);
     Result := GetTempDir(False) + prefix + IntToStr(Random(maxint));
   until not DirectoryExists(Result) and not FileExists(Result);
-  //MkDir(Result);
 end;
 
 procedure TVisEditPackage.SetPackageRequest(AValue: string);
@@ -748,7 +740,7 @@ begin
     begin
       if IsHost then
       begin
-        target_directory := MkTempDir();
+        target_directory := UniqueTempDir();
         FisTempSourcesDir := True;
         res := DMPython.RunJSON(
           format('mywapt.edit_host("%s",target_directory=r"%s".decode(''utf8''),use_local_sources=False)',
