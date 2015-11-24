@@ -727,9 +727,9 @@ begin
   i := 0;
   repeat
     Inc(i);
-    Result := GetTempDir(False) + prefix + FormatFloat('0000', i);
+    Result := GetTempDir(False) + prefix + IntToStr(Random(maxint));
   until not DirectoryExists(Result) and not FileExists(Result);
-  MkDir(Result);
+  //MkDir(Result);
 end;
 
 procedure TVisEditPackage.SetPackageRequest(AValue: string);
