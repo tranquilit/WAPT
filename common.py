@@ -4286,6 +4286,10 @@ class Wapt(object):
         result['repositories'] = [ r.as_dict() for r in self.repositories]
         if self.waptserver:
             result['waptserver'] = self.waptserver.as_dict()
+        # memory usage
+        current_process = psutil.Process()
+        result['wapt-memory-usage'] = vars(current_process.memory_info())
+
         return result
 
     def reachable_ip(self):
