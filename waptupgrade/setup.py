@@ -262,7 +262,7 @@ def install():
         error('WAPT current version can not be found in registry (key is "WAPT_is1"), aborting...')
     if wapt_version > Version(control.version):
         print('Your current wapt (%s) is more recent than the upgrade package (%s). Skipping...'%(wapt_version,control.version))
-    elif wapt_version.members[0:3] < Version(control.version).members[0:3]:
+    elif wapt_version.members[0:2] < Version(control.version).members[0:2]:
         print('Your current wapt version (%s) is too old to be upgraded, a full waptagent.exe install will be planned for %s'%(wapt_version,time.ctime(time.time() + 1*60)))
         full_waptagent_install()
     else:
