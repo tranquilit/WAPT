@@ -253,7 +253,7 @@ begin
     Exit;
   end
   else
-  if not HasOption('D','direct') and StrIsOneOf(action,['update','upgrade','longtask','cancel','cancel-all','tasks','wuascan','wuadownload','wuainstall'])
+  if not HasOption('D','direct') and StrIsOneOf(action,['update','upgrade','register','longtask','cancel','cancel-all','tasks','wuascan','wuadownload','wuainstall'])
     and CheckOpenPort(waptservice_port,'127.0.0.1',200) then
   begin
     writeln('About to speak to waptservice...');
@@ -262,147 +262,161 @@ begin
     check_thread.Start;
     tasks := TSuperObject.create(stArray);
     try
-      res := Nil;
-      //test longtask
-      if action='longtask' then
-      begin
-        Logger('Call longtask URL...',DEBUG);
-        res := WAPTLocalJsonGet('longtask.json');
-        if res = Nil then
-          WriteLn(format(rsLongtaskError, [res.S['message']]))
-        else
-          tasks.AsArray.Add(res);
-        Logger('Task '+res.S['id']+' added to queue',DEBUG);
-      end
-      else
-      if action='tasks' then
-      begin
-        res := WAPTLocalJsonGet('tasks.json');
-        if res = Nil then
-          WriteLn(format(rsTaskListError, [res.S['message']]))
-        else
-        begin
-          if res['running'].DataType<>stNull then
-            writeln(format(rsRunningTask,[ res['running'].I['id'],res['running'].S['description'],res['running'].S['runstatus']]))
-          else
-            writeln(rsNoRunningTask);
-          if res['pending'].AsArray.length>0 then
-            writeln(rsPending);
-            for task in res['pending'] do
-              writeln('  '+task.S['id']+' '+task.S['description']);
-        end;
-      end
-      else
-      if action='cancel' then
-      begin
-        res := WAPTLocalJsonGet('cancel_running_task.json');
-        if res = Nil then
-          WriteLn(format(rsErrorCanceling, [res.S['message']]))
-        else
-          if res.DataType<>stNull then
-            writeln(format(rsCanceledTask, [res.S['description']]))
-          else
-            writeln(rsNoRunningTask);
-      end
-      else
-      if (action='cancel-all') or (action='cancelall') then
-      begin
-        res := WAPTLocalJsonGet('cancel_all_tasks.json');
-        if res = Nil then
-          WriteLn(format(rsErrorCanceling, [res.S['message']]))
-        else
-          if res.DataType<>stNull then
-          begin
-            for task in res do
-              writeln(format(rsCanceledTask, [task.S['description']]))
-          end
-          else
-            writeln(rsNoRunningTask);
-      end
-      else
-      if action='update' then
-      begin
-        Logger('Call update URL...',DEBUG);
-        res := WAPTLocalJsonGet('update.json?notify_user=0');
-        if res = Nil then
-          WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
-        else
-          tasks.AsArray.Add(res);
-        Logger('Task '+res.S['id']+' added to queue',DEBUG);
-      end
-      else
-      if (action='install') or (action='remove') then
-      begin
-        Logger('Call '+action+'?package='+packages,DEBUG);
-        if HasOption('f','force') then
-          res := WAPTLocalJsonGet(Action+'.json?package='+packages+'&force=1&notify_user=0')
-        else
-          res := WAPTLocalJsonGet(Action+'.json?package='+packages+'&notify_user=0');
-        if res = Nil then
-          WriteLn(format(rsErrorWithMessage, [res.S['message']]))
-        else
-          tasks.AsArray.Add(res);
-        Logger('Task '+res.S['id']+' added to queue',DEBUG);
-      end
-      else if action='upgrade' then
-      begin
-        Logger('Call upgrade URL...',DEBUG);
-        res := WAPTLocalJsonGet('upgrade.json?notify_user=0');
-        if res.S['result']<>'OK' then
-          WriteLn(format(rsErrorLaunchingUpgrade, [res.S['message']]))
-        else
-          for task in res['content'] do
-            tasks.AsArray.Add(task);
-            Logger('Task '+task.S['id']+' added to queue',DEBUG);
-      end
-      else
-      if action='wuascan' then
-      begin
-        res := WAPTLocalJsonGet('waptwua_scan?notify_user=1');
-        if res = Nil then
-          WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
-        else
-          tasks.AsArray.Add(res);
-        Logger('Task '+res.S['id']+' added to queue',DEBUG);
-      end
-      else
-      if action='wuadownload' then
-      begin
-        res := WAPTLocalJsonGet('waptwua_download?notify_user=1');
-        if res = Nil then
-          WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
-        else
-          tasks.AsArray.Add(res);
-        Logger('Task '+res.S['id']+' added to queue',DEBUG);
-      end
-      else
-      if action='wuainstall' then
-      begin
-        res := WAPTLocalJsonGet('waptwua_install?notify_user=1');
-        if res = Nil then
-          WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
-        else
-          tasks.AsArray.Add(res);
-        Logger('Task '+res.S['id']+' added to queue',DEBUG);
-      end;
-
-      while (tasks.AsArray.Length > 0) and not (Terminated) and not check_thread.Finished do
       try
-        //if no message from service since more that 1 min, check if remaining tasks in queue...
-        if (now-lastMessageTime>1*1/24/60) and (remainingtasks.AsArray.Length=0) then
-          raise Exception.create('Timeout waiting for events')
-        else
+        res := Nil;
+        //test longtask
+        if action='longtask' then
         begin
-          Sleep(1000);
-          write('.');
+          Logger('Call longtask URL...',DEBUG);
+          res := WAPTLocalJsonGet('longtask.json');
+          if res = Nil then
+            WriteLn(format(rsLongtaskError, [res.S['message']]))
+          else
+            tasks.AsArray.Add(res);
+          Logger('Task '+res.S['id']+' added to queue',DEBUG);
+        end
+        else
+        if action='tasks' then
+        begin
+          res := WAPTLocalJsonGet('tasks.json');
+          if res = Nil then
+            WriteLn(format(rsTaskListError, [res.S['message']]))
+          else
+          begin
+            if res['running'].DataType<>stNull then
+              writeln(format(rsRunningTask,[ res['running'].I['id'],res['running'].S['description'],res['running'].S['runstatus']]))
+            else
+              writeln(rsNoRunningTask);
+            if res['pending'].AsArray.length>0 then
+              writeln(rsPending);
+              for task in res['pending'] do
+                writeln('  '+task.S['id']+' '+task.S['description']);
+          end;
+        end
+        else
+        if action='cancel' then
+        begin
+          res := WAPTLocalJsonGet('cancel_running_task.json');
+          if res = Nil then
+            WriteLn(format(rsErrorCanceling, [res.S['message']]))
+          else
+            if res.DataType<>stNull then
+              writeln(format(rsCanceledTask, [res.S['description']]))
+            else
+              writeln(rsNoRunningTask);
+        end
+        else
+        if (action='cancel-all') or (action='cancelall') then
+        begin
+          res := WAPTLocalJsonGet('cancel_all_tasks.json');
+          if res = Nil then
+            WriteLn(format(rsErrorCanceling, [res.S['message']]))
+          else
+            if res.DataType<>stNull then
+            begin
+              for task in res do
+                writeln(format(rsCanceledTask, [task.S['description']]))
+            end
+            else
+              writeln(rsNoRunningTask);
+        end
+        else
+        if action='update' then
+        begin
+          Logger('Call update URL...',DEBUG);
+          res := WAPTLocalJsonGet('update.json?notify_user=0');
+          if res = Nil then
+            WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
+          else
+            tasks.AsArray.Add(res);
+          Logger('Task '+res.S['id']+' added to queue',DEBUG);
+        end
+        else
+        if action='register' then
+        begin
+          Logger('Call register URL...',DEBUG);
+          res := WAPTLocalJsonGet('register.json?notify_user=0&notify_server=1');
+          if res = Nil then
+            WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
+          else
+            tasks.AsArray.Add(res);
+          Logger('Task '+res.S['id']+' added to queue',DEBUG);
+        end
+        else
+        if (action='install') or (action='remove') then
+        begin
+          Logger('Call '+action+'?package='+packages,DEBUG);
+          if HasOption('f','force') then
+            res := WAPTLocalJsonGet(Action+'.json?package='+packages+'&force=1&notify_user=0')
+          else
+            res := WAPTLocalJsonGet(Action+'.json?package='+packages+'&notify_user=0');
+          if res = Nil then
+            WriteLn(format(rsErrorWithMessage, [res.S['message']]))
+          else
+            tasks.AsArray.Add(res);
+          Logger('Task '+res.S['id']+' added to queue',DEBUG);
+        end
+        else if action='upgrade' then
+        begin
+          Logger('Call upgrade URL...',DEBUG);
+          res := WAPTLocalJsonGet('upgrade.json?notify_user=0');
+          if res.S['result']<>'OK' then
+            WriteLn(format(rsErrorLaunchingUpgrade, [res.S['message']]))
+          else
+            for task in res['content'] do
+              tasks.AsArray.Add(task);
+              Logger('Task '+task.S['id']+' added to queue',DEBUG);
+        end
+        else
+        if action='wuascan' then
+        begin
+          res := WAPTLocalJsonGet('waptwua_scan?notify_user=1');
+          if res = Nil then
+            WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
+          else
+            tasks.AsArray.Add(res);
+          Logger('Task '+res.S['id']+' added to queue',DEBUG);
+        end
+        else
+        if action='wuadownload' then
+        begin
+          res := WAPTLocalJsonGet('waptwua_download?notify_user=1');
+          if res = Nil then
+            WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
+          else
+            tasks.AsArray.Add(res);
+          Logger('Task '+res.S['id']+' added to queue',DEBUG);
+        end
+        else
+        if action='wuainstall' then
+        begin
+          res := WAPTLocalJsonGet('waptwua_install?notify_user=1');
+          if res = Nil then
+            WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
+          else
+            tasks.AsArray.Add(res);
+          Logger('Task '+res.S['id']+' added to queue',DEBUG);
+        end;
+
+        while (tasks.AsArray.Length > 0) and not (Terminated) and not check_thread.Finished do
+        try
+          //if no message from service since more that 1 min, check if remaining tasks in queue...
+          if (now-lastMessageTime>1*1/24/60) and (remainingtasks.AsArray.Length=0) then
+            raise Exception.create('Timeout waiting for events')
+          else
+          begin
+            Sleep(1000);
+            write('.');
+          end;
+        except
+          writeln(rsCanceled);
+          for task in tasks do
+              WAPTLocalJsonGet('cancel_task.json?id='+task.S['id']);
         end;
       except
-        writeln(rsCanceled);
-        for task in tasks do
-            WAPTLocalJsonGet('cancel_task.json?id='+task.S['id']);
-        break;
+        ExitCode:=3;
+        raise;
       end;
-
     finally
       for task in tasks do
           WAPTLocalJsonGet('cancel_task.json?id='+task.S['id']);
