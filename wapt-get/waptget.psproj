@@ -58,14 +58,18 @@ FileName=C:\tranquilit\wapt\waptpackage.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node8]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptwua.py
+FileName=C:\tranquilit\wapt\wapt-scanpackages.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node9]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptwua.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node10]
 ClassName=TProjectFileNode
 FileName=C:\tranquilit\wapt\waptserver\wsus.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=10
+Count=11
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
@@ -340,7 +344,7 @@ Name=test failure
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-f download tis-msoffice2003
+Parameters=install tis-error
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
