@@ -2209,7 +2209,10 @@ def install_service():
         "DisplayName" : "sz:WAPTService",
         "AppStdout" : r"expand_sz:{}".format(os.path.join(waptconfig.log_directory,'waptservice.log')),
         "Parameters\\AppStderr" : r"expand_sz:{}".format(os.path.join(waptconfig.log_directory,'waptservice.log')),
+        "Parameters\\AppStdout" : r"expand_sz:{}".format(os.path.join(waptconfig.log_directory,'waptservice.log')),
         "Parameters\\AppParameters" : r'expand_sz:"{}"'.format(os.path.abspath(__file__)),
+        "Parameters\\AppRotateFiles": 1,
+        "Parameters\\AppRotateBytes": 10*1024*1024,
         }
 
     root = setuphelpers.HKEY_LOCAL_MACHINE
