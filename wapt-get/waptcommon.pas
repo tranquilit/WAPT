@@ -63,8 +63,8 @@ interface
   function GetLocalIP: string;
 
   //call url action on waptserver. action can contains formatting chars like %s which will be replaced by args with the Format function.
-  function WAPTServerJsonGet(action: String;args:Array of const;method:AnsiString='GET'): ISuperObject; //use global credentials and proxy settings
-  function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject): ISuperObject; //use global credentials and proxy settings
+  function WAPTServerJsonGet(action: String;args:Array of const;method:AnsiString='GET';ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
+  function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject;ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
   function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=1000):ISuperObject;
 
   Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean=False;userAgent:String=''): boolean;
@@ -419,7 +419,7 @@ begin
 end;
 
 
-function WAPTServerJsonGet(action: String; args: array of const;method:AnsiString='GET'): ISuperObject;
+function WAPTServerJsonGet(action: String; args: array of const;method:AnsiString='GET';ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject;
 var
   strresult : String;
 begin
@@ -429,7 +429,7 @@ begin
     action := '/'+action;
   if length(args)>0 then
     action := format(action,args);
-  strresult:=IdhttpGetString(GetWaptServerURL+action,UseProxyForServer,4000,60000,60000,waptServerUser, waptServerPassword,method);
+  strresult:=IdhttpGetString(GetWaptServerURL+action,UseProxyForServer,ConnectTimeout,SendTimeout ,ReceiveTimeout,waptServerUser, waptServerPassword,method);
   Result := SO(strresult);
 end;
 
@@ -448,7 +448,7 @@ begin
 end;
 
 function WAPTServerJsonPost(action: String; args: array of const;
-  data: ISuperObject): ISuperObject;
+  data: ISuperObject;ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject;
 var
   res:String;
 begin
@@ -458,7 +458,7 @@ begin
     action := '/'+action;
   if length(args)>0 then
     action := format(action,args);
-  res := IdhttpPostData(GetWaptServerURL+action, data.AsJson, UseProxyForServer,4000,60000,60000,WaptServerUser,WaptServerPassword);
+  res := IdhttpPostData(GetWaptServerURL+action, data.AsJson, UseProxyForServer,ConnectTimeout,SendTimeout,ReceiveTimeout,WaptServerUser,WaptServerPassword);
   result := SO(res);
 end;
 
@@ -469,8 +469,6 @@ var
   http:TIdHTTP;
   ssl: boolean;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
-
-
 begin
   ssl_handler := Nil;
   http := TIdHTTP.Create;

@@ -313,7 +313,7 @@ begin
   begin
     edWAPTRepoURL.Enabled := False;
     edWAPTServerURL.Enabled := False;
-    edWAPTRepoURL.Text := Format('https://%s/wapt',[EdWAPTServerName.Text]);
+    edWAPTRepoURL.Text := Format('http://%s/wapt',[EdWAPTServerName.Text]);
     edWAPTServerURL.Text := Format('https://%s',[EdWAPTServerName.Text]);
   end
   else
@@ -383,6 +383,9 @@ var
   retry:integer;
   res:String;
   GUID: TGuid;
+  sores: ISuperobject;
+  taskid:integer;
+  done:boolean;
 begin
   CurrentVisLoading := TVisLoading.Create(Self);
   with CurrentVisLoading do
@@ -441,33 +444,50 @@ begin
       ProgressStep(6,8);
       Run('cmd /C net start waptservice');
 
-      ProgressTitle(WAPTServerJsonGet('ping',[]).S['msg']);
-      ProgressTitle(WAPTLocalJsonGet('runstatus','','',5000).S['0.value']);
+      retry := 3;
+      repeat
+        sores := WAPTServerJsonGet('ping',[],'GET',6000);
+        if sores<>Nil then
+          ProgressTitle(sores.S['msg']);
+        dec(Retry);
+      until (retry<=0) or((sores<>Nil) and sores.B['success']);
+
+      retry := 3;
+      repeat
+        sores := WAPTLocalJsonGet('runstatus','','',5000);
+        if sores<>Nil then
+          ProgressTitle(sores.S['0.value']);
+        dec(Retry);
+      until (retry<=0) or (sores<>Nil);
 
       ProgressTitle(rsRegisteringHostOnServer);
-      ProgressStep(7,8);
-
-
-      ProgressTitle(WAPTLocalJsonGet('update.json?notify_server=1','','',5000).S['description']);
-
-      {retry := 0;
-      ProgressTitle(rsRegisteringHostOnServer);
-      while retry<4 do
-      try
-        res := runwapt('{app}\wapt-get.exe -ldebug -D register');
-        break;
-      except
-        ProgressTitle(Format(rsRetryRegisteringHostOnServer+' (error : '+res+')',[retry]));
-        Showmessage(res);
-        Sleep(2000);
-        inc(retry);
-      end;}
+      retry := 3;
+      taskid:=-1;
+      repeat
+        sores := WAPTLocalJsonGet('update.json?notify_server=1','','',5000);
+        if sores<>Nil then
+        begin
+          ProgressTitle(sores.S['description']);
+          taskid := sores.I['id'];
+        end;
+        dec(Retry);
+      until (retry<=0) or (taskid>=0);
 
       ProgressTitle(rsUpdatingLocalPackages);
+      repeat
+        sores := WAPTLocalJsonGet('task.json?id='+inttostr(taskid),'','',5000);
+        if sores<>Nil then
+        begin
+          ProgressTitle(sores.S['summary']);
+          done := sores.S['finish_date'] <> '';
+        end;
+        if not done then
+          Sleep(2000);
+        dec(Retry);
+      until (retry<=0) or done;
       ProgressStep(8,8);
       //runwapt('{app}\wapt-get.exe -D update');
       //ProgressTitle(WAPTLocalJsonGet('update.json?notify_server=1','','',5000).S['description']);
-
       ActNext.Execute;
 
 
