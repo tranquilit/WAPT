@@ -56,6 +56,7 @@ begin
   begin
     if not DirectoryExists(ExtractFileDir(AValue)) then
       mkdir(ExtractFileDir(AValue));
+    //Initialize waptconsole parameters with local workstation wapt-get parameters...
     if not FileExists(AValue) then
       CopyFile(WaptIniFilename,AValue);
     st := TStringList.Create;

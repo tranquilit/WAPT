@@ -101,7 +101,7 @@ end;
 procedure TVisImportPackage.FormShow(Sender: TObject);
 begin
   GridExternalPackages.LoadSettingsFromIni(Appuserinipath) ;
-  urlExternalRepo.Caption:=  WaptTemplatesRepo;
+  urlExternalRepo.Caption:=  WaptTemplatesRepo(AppIniFilename);
   ActSearchExternalPackage.Execute;
 end;
 
@@ -120,6 +120,7 @@ procedure TVisImportPackage.ActWAPTLocalConfigExecute(Sender: TObject);
 begin
   if (VisWaptGUI<>Nil) and  VisWaptGUI.EditIniFile then
   begin
+    urlExternalRepo.Caption:=  WaptTemplatesRepo(AppIniFilename);
     GridExternalPackages.Clear;
     ActSearchExternalPackage.Execute;
   end;
@@ -192,7 +193,7 @@ begin
       try
         if not FileExists(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
         begin
-          IdWget(WaptTemplatesRepo + '/' + Filename.AsArray[0].AsString,
+          IdWget(WaptTemplatesRepo(AppIniFilename) + '/' + Filename.AsArray[0].AsString,
             target, ProgressForm, @updateprogress, UseProxyForTemplates);
           if (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
             raise Exception.CreateFmt(rsDownloadCurrupted,[Filename.AsArray[0].AsString]);
