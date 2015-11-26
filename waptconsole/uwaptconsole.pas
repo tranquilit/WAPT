@@ -1874,7 +1874,7 @@ begin
   else
   begin
     res := WAPTServerJsonGet('api/v2/wsusscan2_history?limit=1&skipped=0',[]);
-    if res.B['success'] and (res.A['result'].Length>0) and not StrIsOneOf(res.S['result[0].status'],['finished','error']) then
+    if res.B['success'] and (res.A['result'].Length>0) and not StrIsOneOf(res.S['result[0].status'],['finished','error'],False) then
     begin
       if MessageDlg(rsConfirmCaption,'A download task is already in progress, do you still want to append a task ?',mtConfirmation, mbYesNoCancel,0) <> mrYes then
         Exit;
@@ -3483,7 +3483,7 @@ procedure TVisWaptGUI.GridPackagesPaintText(Sender: TBaseVirtualTree;
   const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
   TextType: TVSTTextType);
 begin
-  if StrIsOneOf(GridPackages.GetCellStrValue(Node, 'status'), ['I', 'U']) then
+  if StrIsOneOf(GridPackages.GetCellStrValue(Node, 'status'), ['I', 'U'],False) then
     TargetCanvas.Font.style := TargetCanvas.Font.style + [fsBold]
   else
     TargetCanvas.Font.style := TargetCanvas.Font.style - [fsBold];

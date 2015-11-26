@@ -836,7 +836,7 @@ function WaptUseLocalConnectionProxy(inifilename:String=''): Boolean;
 begin
   if inifilename='' then
      inifilename:=WaptIniFilename;
-  Result := StrIsOneOf(IniReadString (inifilename,'Global','use_local_connection_proxy'),['True','true','1'] );
+  Result := StrIsOneOf(IniReadString (inifilename,'Global','use_local_connection_proxy'),['True','true','1'],False);
 end;
 
 //////

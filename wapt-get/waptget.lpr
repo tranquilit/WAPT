@@ -257,8 +257,6 @@ begin
       NextIsParamValue := StrIsOneOf(Params[i],['-c','-r','-l','-p','-s','-e','-k','-w','-U','-g','-t','-L'])
   end;
 
-  //Action := Params[ParamCount];
-
   // parse parameters
   if HasOption('?') or HasOption('h','help') then
   begin
@@ -310,8 +308,10 @@ begin
     Exit;
   end
   else
-  if not HasOption('D','direct') and StrIsOneOf(action,['update','upgrade','register','install','remove','longtask','cancel','cancel-all','tasks','wuascan','wuadownload','wuainstall'])
-    and CheckOpenPort(waptservice_port,'127.0.0.1',200) then
+  // use http service mode if --service or not --direct or not (--service and isadmin
+  if  ((not IsAdminLoggedOn or HasOption('S','service')) and not HasOption('D','direct')) and
+      StrIsOneOf(action,['update','upgrade','register','install','remove','longtask','cancel','cancel-all','tasks','wuascan','wuadownload','wuainstall']) and
+      CheckOpenPort(waptservice_port,'127.0.0.1',200) then
   begin
     writeln('About to speak to waptservice...');
     // launch task in waptservice, waits for its termination

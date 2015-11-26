@@ -448,7 +448,7 @@ begin
       repeat
         sores := WAPTServerJsonGet('ping',[],'GET',6000);
         if sores<>Nil then
-          ProgressTitle(sores.S['msg']);
+          ProgressTitle(sores.S['msg'])
         else
           sleep(2000);
         dec(Retry);
@@ -459,7 +459,7 @@ begin
       repeat
         sores := WAPTLocalJsonGet('runstatus','','',5000);
         if sores<>Nil then
-          ProgressTitle(sores.S['0.value']);
+          ProgressTitle(sores.S['0.value'])
         else
           sleep(2000);
         dec(Retry);
