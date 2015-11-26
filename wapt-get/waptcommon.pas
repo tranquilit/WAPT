@@ -25,7 +25,7 @@ unit waptcommon;
 interface
   uses
      Classes, SysUtils, Windows,
-     SuperObject,IdComponent,tiscommon,tisstrings, DefaultTranslator;
+     SuperObject,IdComponent,IdHttp,tiscommon,tisstrings, DefaultTranslator;
 
   type
       TProgressCallback=function(Receiver:TObject;current,total:Integer):Boolean of object;
@@ -65,7 +65,7 @@ interface
   //call url action on waptserver. action can contains formatting chars like %s which will be replaced by args with the Format function.
   function WAPTServerJsonGet(action: String;args:Array of const;method:AnsiString='GET';ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
   function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject;ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
-  function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=1000):ISuperObject;
+  function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=1000;OnAuthorization:TIdOnAuthorization=Nil;RetryCount:Integer=3):ISuperObject;
 
   Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean=False;userAgent:String=''): boolean;
   Function IdWget_Try(const fileURL: Utf8String;enableProxy:Boolean=False;userAgent:String=''): boolean;
@@ -126,8 +126,8 @@ implementation
 
 uses FileUtil, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2,
-  IdHttp,IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,IdURI,
-  gettext,IdStack,IdCompressorZLib,sha1;
+  IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,IdURI,
+  gettext,IdStack,IdCompressorZLib,sha1,IdAuthentication;
 
 const
   CacheWaptServerUrl: AnsiString = 'None';
@@ -463,7 +463,7 @@ begin
 end;
 
 function WAPTLocalJsonGet(action: String; user: AnsiString;
-  password: AnsiString; timeout: integer): ISuperObject;
+  password: AnsiString; timeout: integer;OnAuthorization:TIdOnAuthorization=Nil;RetryCount:Integer=3): ISuperObject;
 var
   url,strresult : String;
   http:TIdHTTP;
@@ -478,11 +478,13 @@ begin
       http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent;
       http.ConnectTimeout:=timeout;
 
-      if user <>'' then
+      if (user<>'') or (OnAuthorization <> Nil) then
       begin
-        http.Request.BasicAuthentication:=True;
-        http.Request.Username:=user;
-        http.Request.Password:=password;
+        http.Request.Authentication := TIdBasicAuthentication.Create;
+        http.Request.Authentication.Username:=user;
+        http.Request.Authentication.Password:=password;
+        http.MaxAuthRetries := 2;
+        http.OnAuthorization:=OnAuthorization;
       end;
 
       if copy(action,length(action),1)<>'/' then
@@ -491,8 +493,17 @@ begin
       url := GetWaptLocalURL+action;
       ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
     	HTTP.IOHandler := ssl_handler;
-
-      strresult := http.Get(url);
+      strresult := '';
+      repeat
+        try
+          strresult := http.Get(url);
+        except
+          Sleep(1000);
+          Dec(RetryCount);
+          if (RetryCount<=0) then
+            raise;
+        end;
+      until (strresult<>'') or (RetryCount<=0);
       Result := SO(strresult);
 
     except

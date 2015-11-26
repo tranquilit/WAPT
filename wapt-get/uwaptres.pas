@@ -29,6 +29,7 @@ resourcestring
   rsErrorCanceling = 'Error cancelling: %s';
   rsCanceledTask = 'Cancelled %s';
   rsErrorLaunchingUpdate = 'Error launching update: %s';
+  rsErrorLaunchingRegister = 'Error launching register: %s';
   rsErrorWithMessage = 'Error : %s';
   rsErrorLaunchingUpgrade = 'Error launching upgrade: %s';
   rsCanceled = 'canceled';

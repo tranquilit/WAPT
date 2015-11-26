@@ -31,19 +31,19 @@ uses
   Classes, SysUtils, CustApp,
   { you can add units after this }
   Interfaces,Windows, PythonEngine, zmqapi, superobject,soutils,
-  tislogging,uWaptRes,waptcommon,waptwinutils,tiscommon,tisstrings;
+  tislogging,uWaptRes,waptcommon,waptwinutils,tiscommon,tisstrings,IdAuthentication;
 type
   { pwaptget }
 
   pwaptget = class(TCustomApplication)
   private
+    localuser,localpassword:AnsiString;
     FRepoURL: String;
     function GetRepoURL: String;
+    procedure HTTPLogin(Sender: TObject; Authentication: TIdAuthentication; var Handled: Boolean);
     procedure SetRepoURL(AValue: String);
   protected
     APythonEngine: TPythonEngine;
-
-
     procedure DoRun; override;
   public
     Action : String;
@@ -142,10 +142,69 @@ begin
   end;
 end;
 
+
 { pwaptget }
 
 var
   Application: pwaptget;
+
+  function GetPassword(const InputMask: Char = '*'): string;
+  var
+    OldMode: Cardinal;
+    c: char;
+  begin
+    Result:='';
+    GetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), OldMode);
+    SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), OldMode and not (ENABLE_LINE_INPUT or ENABLE_ECHO_INPUT));
+    try
+      while not Eof do
+      begin
+        Read(c);
+        if c = #13 then // Carriage Return
+          Break;
+        if (c = #8) then  // Back Space
+        begin
+          if (Length(Result) > 0) then
+          begin
+            Delete(Result, Length(Result), 1);
+            Write(#8);
+          end;
+        end
+        else
+        begin
+          Result := Result + c;
+          Write(InputMask);
+        end;
+      end;
+    finally
+      SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), OldMode);
+    end;
+  end;
+
+procedure pwaptget.HTTPLogin(Sender: TObject; Authentication: TIdAuthentication; var Handled: Boolean);
+var
+  newuser:AnsiString;
+begin
+  if (localuser<>'') and (localpassword<>'') then
+  begin
+    Authentication.Username:=localuser;
+    Authentication.Password:=localpassword;
+  end
+  else
+  begin
+    Write('Waptservice User ('+localuser+') :');
+    readln(newuser);
+    if newuser<>'' then
+      Authentication.Username:=newuser;
+    Write('Password: ');
+    Authentication.Password := GetPassword;
+    WriteLn;
+    Handled := (Authentication.Password='');
+    // cache for next use
+    localuser := Authentication.Username;
+    localpassword := Authentication.Password;
+  end;
+end;
 
 function pwaptget.GetRepoURL: String;
 begin
@@ -165,7 +224,7 @@ var
   MainModule : TStringList;
   logleveloption : String;
   Res,task:ISuperobject;
-  packages:String;
+  package,sopackages:ISuperObject;
 
   procedure SetFlag( AFlag: PInt; AValue : Boolean );
   begin
@@ -180,7 +239,7 @@ var
   NextIsParamValue:Boolean;
 begin
   Action:='';
-  packages:='';
+  sopackages  := TSuperObject.Create(stArray);
 
   NextIsParamValue := False;
 
@@ -191,15 +250,13 @@ begin
       if (action='') then
         Action := lowercase(Params[i])
       else
-        if packages='' then
-          packages := Params[i]
-        else
-          packages:=packages+','+Params[i];
+        sopackages.AsArray.Add(Params[i]);
       NextIsParamValue := False;
     end
     else
       NextIsParamValue := StrIsOneOf(Params[i],['-c','-r','-l','-p','-s','-e','-k','-w','-U','-g','-t','-L'])
   end;
+
   //Action := Params[ParamCount];
 
   // parse parameters
@@ -253,7 +310,7 @@ begin
     Exit;
   end
   else
-  if not HasOption('D','direct') and StrIsOneOf(action,['update','upgrade','register','longtask','cancel','cancel-all','tasks','wuascan','wuadownload','wuainstall'])
+  if not HasOption('D','direct') and StrIsOneOf(action,['update','upgrade','register','install','remove','longtask','cancel','cancel-all','tasks','wuascan','wuadownload','wuainstall'])
     and CheckOpenPort(waptservice_port,'127.0.0.1',200) then
   begin
     writeln('About to speak to waptservice...');
@@ -335,9 +392,9 @@ begin
         if action='register' then
         begin
           Logger('Call register URL...',DEBUG);
-          res := WAPTLocalJsonGet('register.json?notify_user=0&notify_server=1');
-          if res = Nil then
-            WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
+          res := WAPTLocalJsonGet('register.json?notify_user=0&notify_server=1','admin','',1000,HTTPLogin);
+          if (res = Nil) or (res.AsObject=Nil) or not res.AsObject.Exists('id') then
+            WriteLn(format(rsErrorLaunchingRegister, [res.AsString]))
           else
             tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
@@ -345,16 +402,35 @@ begin
         else
         if (action='install') or (action='remove') then
         begin
-          Logger('Call '+action+'?package='+packages,DEBUG);
-          if HasOption('f','force') then
-            res := WAPTLocalJsonGet(Action+'.json?package='+packages+'&force=1&notify_user=0')
-          else
-            res := WAPTLocalJsonGet(Action+'.json?package='+packages+'&notify_user=0');
-          if res = Nil then
-            WriteLn(format(rsErrorWithMessage, [res.S['message']]))
-          else
-            tasks.AsArray.Add(res);
-          Logger('Task '+res.S['id']+' added to queue',DEBUG);
+          for package in sopackages do
+          begin
+            Logger('Call '+action+'?package='+package.AsString,DEBUG);
+            if HasOption('f','force') then
+              res := WAPTLocalJsonGet(Action+'.json?package='+package.AsString+'&force=1&notify_user=0','admin','',1000,HTTPLogin)
+            else
+              res := WAPTLocalJsonGet(Action+'.json?package='+package.AsString+'&notify_user=0','admin','',1000,HTTPLogin);
+            if action='install' then
+            begin
+              // single action
+              if (res = Nil) or (res.AsObject=Nil) or not res.AsObject.Exists('id') then
+                WriteLn(format(rsErrorWithMessage, [res.AsString]))
+              else
+                tasks.AsArray.Add(res);
+            end
+            else
+            if action='remove' then
+            begin
+              // list of actions..
+              if (res = Nil) or (res.AsArray=Nil) then
+                WriteLn(format(rsErrorWithMessage, [res.AsString]))
+              else
+              for task in res do
+              begin
+                tasks.AsArray.Add(task);
+                Logger('Task '+task.S['id']+' added to queue',DEBUG);
+              end;
+            end;
+          end;
         end
         else if action='upgrade' then
         begin
@@ -364,8 +440,10 @@ begin
             WriteLn(format(rsErrorLaunchingUpgrade, [res.S['message']]))
           else
             for task in res['content'] do
+            begin
               tasks.AsArray.Add(task);
               Logger('Task '+task.S['id']+' added to queue',DEBUG);
+            end;
         end
         else
         if action='wuascan' then
@@ -414,6 +492,7 @@ begin
               WAPTLocalJsonGet('cancel_task.json?id='+task.S['id']);
         end;
       except
+        localpassword := '';
         ExitCode:=3;
         raise;
       end;
@@ -538,7 +617,9 @@ begin
         if (status = 'FINISH') or (status = 'ERROR') or (status = 'CANCEL') then
         begin
           removeTask(msg.I['id']);
-          WriteLn(msg.S['summary'])
+          WriteLn(msg.S['summary']);
+          if (status = 'ERROR') or (status = 'CANCEL') then
+            ExitCode:=3;
         end;
       end;
     end

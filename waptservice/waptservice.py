@@ -525,7 +525,7 @@ def check_auth(logon_name, password):
             domain = logon_name.split('@')[1]
         else:
             username = logon_name
-        logger.debug("authentification for %s\\%s " % (domain,username))
+        logger.debug("Checking authentification for domain: %s user: %s" % (domain,username))
 
         try:
             huser = win32security.LogonUser (
@@ -575,7 +575,7 @@ def allow_waptserver_or_local_auth(f):
             logging.info("authenticating : %s" % auth.username)
             if not check_auth(auth.username, auth.password):
                 return authenticate()
-            logging.info("user %s authenticated" % auth.username)
+            logging.info("user %s authentication success" % auth.username)
         else:
             logger.info(u'Forbidden: caller src address {} is not in authorized list {}'.format(request.remote_addr,app.waptconfig.authorized_callers_ip))
             # try to reacquire IP of waptserver
@@ -1603,9 +1603,11 @@ class WaptRegisterComputer(WaptTask):
             except Exception as e:
                 self.result = {}
                 self.summary = __(u"Error while sending inventory to the server : {}").format(setuphelpers.ensure_unicode(e))
+                raise
         else:
             self.result = {}
             self.summary = __(u'WAPT Server is not avalable')
+            raise Exception(self.summary)
 
     def __unicode__(self):
         return __(u"Update server with this host's inventory")
@@ -1632,6 +1634,7 @@ class WaptCleanup(WaptTask):
         except Exception as e:
             self.result = {}
             self.summary = __(u"Error while clearing local cache : {}").format(setuphelpers.ensure_unicode(e))
+            raise Exception(self.summary)
 
     def __unicode__(self):
         return __(u"Clear local package cache")
@@ -1745,7 +1748,10 @@ class WaptPackageInstall(WaptTask):
             s.append(__(u'Unavailable : {}').format(unavailable))
         self.summary = u"\n".join(s)
         if self.result['errors']:
-            raise Exception(__('Error during install of {}:{}').format(self.packagename,self.result))
+            raise Exception(__('Error during install of {}: errors in packages {}').format(
+                    self.packagename,
+                    ','.join([ p[1].package for p in self.result['errors']]),
+                    ))
 
     def as_dict(self):
         d = WaptTask.as_dict(self)
