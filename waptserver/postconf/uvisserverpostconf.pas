@@ -449,14 +449,19 @@ begin
         sores := WAPTServerJsonGet('ping',[],'GET',6000);
         if sores<>Nil then
           ProgressTitle(sores.S['msg']);
+        else
+          sleep(2000);
         dec(Retry);
       until (retry<=0) or((sores<>Nil) and sores.B['success']);
+      Sleep(2000);
 
       retry := 3;
       repeat
         sores := WAPTLocalJsonGet('runstatus','','',5000);
         if sores<>Nil then
           ProgressTitle(sores.S['0.value']);
+        else
+          sleep(2000);
         dec(Retry);
       until (retry<=0) or (sores<>Nil);
 
@@ -470,6 +475,8 @@ begin
           ProgressTitle(sores.S['description']);
           taskid := sores.I['id'];
         end;
+        if not taskid<0 then
+          Sleep(2000);
         dec(Retry);
       until (retry<=0) or (taskid>=0);
 

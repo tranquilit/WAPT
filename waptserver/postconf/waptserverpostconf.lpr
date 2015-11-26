@@ -14,7 +14,6 @@ uses
   { you can add units after this }
   DefaultTranslator;
 
-
 {$R *.res}
 {$R languages.rc}
 
