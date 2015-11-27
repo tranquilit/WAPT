@@ -2508,14 +2508,29 @@ def get_file_properties(fname):
             ## print str_info
             props[propName] = (win32api.GetFileVersionInfo(fname, strInfoPath) or '').strip()
 
-        # backslash as parm returns dictionary of numeric info corresponding to VS_FIXEDFILEINFO struc
-        fixedInfo = win32api.GetFileVersionInfo(fname, '\\')
-        props['FileVersion'] = "%d.%d.%d.%d" % (fixedInfo['FileVersionMS'] / 65536,
-                fixedInfo['FileVersionMS'] % 65536, fixedInfo['FileVersionLS'] / 65536,
-                fixedInfo['FileVersionLS'] % 65536)
-
     except Exception,e:
         logger.warning(u"%s" % ensure_unicode(e))
+        # backslash as parm returns dictionary of numeric info corresponding to VS_FIXEDFILEINFO struc
+
+    if not props['FileVersion']:
+        try:
+            fixedInfo = win32api.GetFileVersionInfo(fname, '\\')
+            props['FileVersion'] = u"%d.%d.%d.%d" % (fixedInfo['FileVersionMS'] / 65536,
+                    fixedInfo['FileVersionMS'] % 65536, fixedInfo['FileVersionLS'] / 65536,
+                    fixedInfo['FileVersionLS'] % 65536)
+        except Exception,e:
+            logger.warning(u"%s" % ensure_unicode(e))
+            # backslash as parm returns dictionary of numeric info corresponding to VS_FIXEDFILEINFO struc
+
+    if not props['ProductVersion']:
+        try:
+            fixedInfo = win32api.GetFileVersionInfo(fname, '\\')
+            props['ProductVersion'] = u"%d.%d.%d.%d" % (fixedInfo['ProductVersionMS'] / 65536,
+                    fixedInfo['ProductVersionMS'] % 65536, fixedInfo['ProductVersionLS'] / 65536,
+                    fixedInfo['ProductVersionLS'] % 65536)
+        except Exception,e:
+            logger.warning(u"%s" % ensure_unicode(e))
+            # backslasfh as parm returns dictionary of numeric info corresponding to VS_FIXEDFILEINFO struc
 
     return props
 
