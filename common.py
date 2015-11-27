@@ -2984,7 +2984,7 @@ class Wapt(object):
             expected.append(fullpath)
             if sha1 != sha1_for_file(fullpath):
                 errors.append(filename)
-        files = setuphelpers.all_files(rootdir)
+        files = setuphelpers.all_files(ensure_unicode(rootdir))
         # removes files which are not in manifest by design
         for fn in ('WAPT/signature','WAPT/manifest.sha1'):
             full_fn = os.path.abspath(os.path.join(rootdir,fn))
