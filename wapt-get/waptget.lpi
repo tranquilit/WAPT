@@ -24,7 +24,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="3"/>
       <RevisionNr Value="4"/>
-      <BuildNr Value="1"/>
+      <BuildNr Value="2"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -69,7 +69,6 @@
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="252"/>
@@ -81,10 +80,13 @@
       <Unit1>
         <Filename Value="waptcommon.pas"/>
         <UnitName Value="waptcommon"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="481"/>
-        <CursorPos X="19" Y="504"/>
+        <TopLine Value="824"/>
+        <CursorPos X="13" Y="839"/>
         <UsageCount Value="206"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
@@ -224,11 +226,11 @@
       <Unit19>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
         <UnitName Value="tiscommon"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="141"/>
         <CursorPos X="1" Y="164"/>
-        <UsageCount Value="18"/>
+        <UsageCount Value="19"/>
         <Bookmarks Count="1">
           <Item0 X="74" Y="303" ID="1"/>
         </Bookmarks>
@@ -237,21 +239,21 @@
       <Unit20>
         <Filename Value="..\..\pltis_utils\tisstrings.pas"/>
         <UnitName Value="tisstrings"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="611"/>
         <CursorPos X="55" Y="632"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit20>
       <Unit21>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp"/>
         <UnitName Value="CustApp"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="227"/>
         <CursorPos X="24" Y="252"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit21>
       <Unit22>
@@ -546,7 +548,7 @@
         <UsageCount Value="9"/>
       </Unit57>
     </Units>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="waptget.lpr"/>
         <Caret Line="644" Column="3" TopLine="620"/>
@@ -663,6 +665,10 @@
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp"/>
         <Caret Line="86" Column="99" TopLine="63"/>
       </Position29>
+      <Position30>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="504" Column="19" TopLine="481"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
