@@ -1945,6 +1945,11 @@ class WaptTaskManager(threading.Thread):
     def check_scheduled_tasks(self):
         """Add update/upgrade tasks if elapsed time since last update/upgrade is over"""
         logger.debug(u'Check scheduled tasks')
+
+        if datetime.datetime.now() - self.start_time >= datetime.timedelta(days=1):
+            self.start_time = datetime.datetime.now()
+            self.add_task(WaptServiceRestart())
+
         if common.running_on_ac() and waptconfig.waptupgrade_task_period is not None:
             if self.last_upgrade is None or (time.time()-self.last_upgrade)/60>waptconfig.waptupgrade_task_period:
                 try:
@@ -1984,6 +1989,7 @@ class WaptTaskManager(threading.Thread):
             # already initialized.
             pass
 
+        self.start_time = datetime.datetime.now()
         self.wapt = Wapt(config_filename=self.config_filename)
         self.events = self.setup_event_queue()
         self.firewall_running = firewall_running()
