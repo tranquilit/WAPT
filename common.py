@@ -1744,7 +1744,7 @@ class WaptDB(WaptBaseDB):
         with self:
             self.db.execute('delete from wapt_package where repo=?',(repo_name,))
 
-def get_server_certificate(url):
+def get_pem_server_certificate(url):
     """Retrieve certificate for further checks"""
     url = urlparse(url)
     if url.scheme == 'https':
@@ -1755,9 +1755,15 @@ def get_server_certificate(url):
         # try a connection to get server certificate
         conn.connect((url.hostname, url.port or 443))
         cert_chain = conn.get_peer_cert_chain()
-        return [c.as_text() for c in cert_chain]
+        return "\n".join(
+            ["""\
+# Issuer: %s
+# Subject: %s
+%s
+""" % (c.get_issuer().as_text(),c.get_subject().as_text(),c.as_pem() )for c in cert_chain])
     else:
         return None
+
 
 class WaptServer(object):
     """Manage connection to waptserver"""
@@ -1790,22 +1796,17 @@ class WaptServer(object):
             return None
 
 
-    def get_server_certificate(self):
+    def save_server_certificate(self,server_dir=None):
         """Retrieve certificate of https server for further checks"""
-        url = urlparse(self.server_url)
-        if url.scheme == 'https':
-            context = SSL.Context();
-            context.set_allow_unknown_ca(True)
-            context.set_verify(SSL.verify_none, True)
-            conn = SSL.Connection(context)
-            # try a connection to get server certificate
-            conn.connect((url.hostname, url.port or 443))
-            cert_chain = conn.get_peer_cert_chain()
-            for c in cert_chain:
-                if c.get_subject().as_text().split('=')[1] == url.hostname:
-                    return c.as_pem()
-        return None
-
+        pem = get_pem_server_certificate(self.server_url)
+        if pem:
+            url = urlparse(self.server_url)
+            if self.verify_cert and isinstance(self.verify_cert,bool):
+                pem_fn = os.path.join(server_dir,url.hostname+'.pem')
+            else:
+                pem_fn = self.verify_cert
+        open(pem_fn,'wb').write(pem)
+        return pem_fn
 
     def reset_network(self):
         """called by wapt when network configuration has changed"""
@@ -1928,7 +1929,10 @@ class WaptServer(object):
                 self.dnsdomain = config.get(section,'dnsdomain')
 
             if config.has_option(section,'verify_cert'):
-                self.verify_cert = config.getboolean(section,'verify_cert')
+                try:
+                    self.verify_cert = config.getboolean(section,'verify_cert')
+                except:
+                    self.verify_cert = config.get(section,'verify_cert')
             else:
                 self.verify_cert = False
 

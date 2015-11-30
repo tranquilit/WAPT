@@ -1027,7 +1027,10 @@ class WaptRemoteRepo(WaptBaseRepo):
             self.repo_url = config.get(section,'repo_url')
 
         if config.has_option(section,'verify_cert'):
-            self.verify_cert = config.getboolean(section,'verify_cert')
+            try:
+                self.verify_cert = config.getboolean(section,'verify_cert')
+            except:
+                self.verify_cert = config.get(section,'verify_cert')
         else:
             self.verify_cert = False
 
