@@ -1933,6 +1933,8 @@ class WaptServer(object):
                     self.verify_cert = config.getboolean(section,'verify_cert')
                 except:
                     self.verify_cert = config.get(section,'verify_cert')
+                    if not os.path.isfile(self.verify_cert):
+                        logger.warning(u'waptserver certificate %s declared in configuration file can not be found. Waptserver communication will fail' % self.verify_cert)
             else:
                 self.verify_cert = False
 
@@ -4197,7 +4199,7 @@ class Wapt(object):
             return result
         else:
             logger.info('WAPT Server is not available to store current host status')
-            return json.dumps(inv,indent=True)
+            return False
 
     def waptserver_available(self):
         """Test reachability of waptserver.

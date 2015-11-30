@@ -937,13 +937,18 @@ def main():
             elif action == 'update-status':
                 if mywapt.waptserver:
                     result = mywapt.update_server_status()
-                    if options.json_output:
-                        jsonresult['result'] = result
+                    if result:
+                        if options.json_output:
+                            jsonresult['result'] = result
+                        else:
+                            logger.debug(u"Inventory sent to server: %s", result)
+                            print u"Inventory correctly sent to server %s." % (mywapt.waptserver.server_url,)
                     else:
-                        logger.debug(u"Inventory sent to server: %s", result)
-                        print u"Inventory correctly sent to server %s." % (mywapt.waptserver.server_url,)
+                        print u"waptserver is not available. Update of status not sent"
+                        sys.exit(3)
                 else:
                     print u"No waptserver defined. Update of status unavailable"
+                    sys.exit(3)
 
             elif action == 'inventory':
                 if options.json_output:
