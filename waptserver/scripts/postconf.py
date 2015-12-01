@@ -45,10 +45,10 @@ import platform
 import re
 
 def type_debian():
-    return platform.dist()[0] in ('debian','ubuntu')
+    return platform.dist()[0].lower() in ('debian','ubuntu')
 
 def type_redhat():
-    return platform.dist()[0] in ('redhat','centos','fedora')
+    return platform.dist()[0].lower() in ('redhat','centos','fedora')
 
 # for python < 2.7
 if "check_output" not in dir( subprocess ): # duck punch it in!
