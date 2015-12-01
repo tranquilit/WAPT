@@ -53,7 +53,7 @@ _defaults = {
     'waptwua_folder': '', # default: wapt_wolder + 'wua'
 }
 
-_default_config_file = os.path.join(wapt_root_dir, 'waptserver', 'waptserver.ini')
+_default_config_file = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
 
 def load_config(cfgfile=_default_config_file):
 
