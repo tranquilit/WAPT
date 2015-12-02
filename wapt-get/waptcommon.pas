@@ -56,6 +56,8 @@ interface
   Function GetMainWaptRepo:String;   // read from ini, if empty, do a discovery using dns
   Function GetWaptServerURL:String;  // read ini. if no wapt_server key -> return '', return value in inifile or perform a DNS discovery
 
+  function GetWaptServerCertificateFilename(inifilename:AnsiString=''):AnsiString;
+
   function ReadWaptConfig(inifile:String = ''): Boolean; //read global parameters from wapt-get ini file
 
   function GetEthernetInfo(ConnectedOnly:Boolean):ISuperObject;
@@ -201,6 +203,27 @@ begin
   end;
 end;
 
+type
+  TSSLVerifyCert = class(TObject)
+    hostname:AnsiString;
+    constructor Create(ahostname:AnsiString);
+    function VerifypeerCertificate(Certificate: TIdX509; AOk: Boolean; ADepth, AError: Integer): Boolean;
+  end;
+
+constructor TSSLVerifyCert.Create(ahostname:AnsiString);
+begin
+  hostname:=ahostname;
+end;
+
+function TSSLVerifyCert.VerifypeerCertificate(Certificate: TIdX509; AOk: Boolean; ADepth, AError: Integer): Boolean;
+var
+  s:String;
+begin
+  s := Certificate.Subject.OneLine;
+  //check subject is hostname
+  Result := AOk and (RightStr(LowerCase(s),length('cn='+hostname))=LowerCase('cn='+hostname));
+end;
+
 function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver: TObject;
   progressCallback: TProgressCallback; enableProxy: Boolean;userAgent:String=''): boolean;
 var
@@ -305,13 +328,29 @@ begin
   end;
 end;
 
+function GetHostFromURL(url:AnsiString):AnsiString;
+var
+  uri : TIdURI;
+begin
+  uri := TIdURI.Create(url);
+  try
+    Result := uri.Host;
+  finally
+    uri.Free;
+  end;
+end;
 
 function IdHttpGetString(const url: ansistring; enableProxy:Boolean= False;
     ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET';userAGent:String=''):RawByteString;
 var
   http:TIdHTTP;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
+  sslCheck:TSSLVerifyCert;
+  certfile:AnsiString;
 begin
+  sslCheck:=Nil;
+  ssl_handler:=Nil;
+
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
@@ -321,8 +360,22 @@ begin
     http.Request.UserAgent:=userAgent;
 
   ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-	HTTP.IOHandler := ssl_handler;
+  sslCheck := TSSLVerifyCert.Create(GetHostFromURL(url));
 
+  certfile:=GetWaptServerCertificateFilename;
+  if (certfile<>'') then
+  begin
+    ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
+    ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
+    //Self signed
+    if certfile<>'1' then
+    begin
+      ssl_handler.SSLOptions.RootCertFile :=certfile;
+      ssl_handler.SSLOptions.CertFile:=certfile;
+    end;
+  end;
+
+  HTTP.IOHandler := ssl_handler;
   try
     try
       http.ConnectTimeout:=ConnectTimeout;
@@ -349,6 +402,8 @@ begin
     http.Free;
     if Assigned(ssl_handler) then
       FreeAndNil(ssl_handler);
+    if Assigned(sslCheck) then
+      FreeAndNil(sslCheck);
   end;
 end;
 
@@ -752,6 +807,21 @@ begin
   if wapt_config_filename = '' then
       wapt_config_filename := ExtractFilePath(ParamStr(0))+'wapt-get.ini';
   result :=  wapt_config_filename;
+end;
+
+function GetWaptServerCertificateFilename(inifilename:AnsiString=''): AnsiString;
+begin
+  if inifilename='' then
+     inifilename:=WaptIniFilename;
+  Result := IniReadString(inifilename,'Global','verify_cert','');
+  if (Result <> '') and not FileExists(Result) then
+  begin
+    if StrIsOneOf(Result,['0','false','no',''],False) then
+      Result := ''
+    else
+      if StrIsOneOf(Result,['1','true','yes'],False) then
+        Result := '1';
+  end;
 end;
 
 function ReadWaptConfig(inifile:String = ''): Boolean;

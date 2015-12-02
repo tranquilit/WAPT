@@ -24,7 +24,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="3"/>
       <RevisionNr Value="4"/>
-      <BuildNr Value="3"/>
+      <BuildNr Value="4"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -64,7 +64,7 @@
         <PackageName Value="pltis_superobject"/>
       </Item7>
     </RequiredPackages>
-    <Units Count="58">
+    <Units Count="59">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -72,7 +72,7 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="252"/>
-        <CursorPos X="65" Y="261"/>
+        <CursorPos X="23" Y="259"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -83,8 +83,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="824"/>
-        <CursorPos X="72" Y="846"/>
+        <TopLine Value="191"/>
+        <CursorPos X="83" Y="213"/>
         <UsageCount Value="206"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -226,7 +226,6 @@
       <Unit19>
         <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
         <UnitName Value="tiscommon"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="141"/>
         <CursorPos X="1" Y="164"/>
@@ -234,27 +233,22 @@
         <Bookmarks Count="1">
           <Item0 X="74" Y="303" ID="1"/>
         </Bookmarks>
-        <Loaded Value="True"/>
       </Unit19>
       <Unit20>
         <Filename Value="..\..\pltis_utils\tisstrings.pas"/>
         <UnitName Value="tisstrings"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="611"/>
         <CursorPos X="55" Y="632"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit20>
       <Unit21>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp"/>
         <UnitName Value="CustApp"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="227"/>
         <CursorPos X="24" Y="252"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit21>
       <Unit22>
         <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwawindns.pas"/>
@@ -547,127 +541,137 @@
         <CursorPos X="1" Y="77"/>
         <UsageCount Value="9"/>
       </Unit57>
+      <Unit58>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <UnitName Value="IdSSLOpenSSL"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="167"/>
+        <CursorPos X="48" Y="185"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit58>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="644" Column="3" TopLine="620"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="441" Column="83" TopLine="417"/>
       </Position1>
       <Position2>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="452" Column="18" TopLine="428"/>
       </Position2>
       <Position3>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="314" Column="93" TopLine="295"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="485" Column="83" TopLine="461"/>
       </Position3>
       <Position4>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="312" Column="1" TopLine="295"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="2248" Column="49" TopLine="2224"/>
       </Position4>
       <Position5>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="313" Column="1" TopLine="295"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="2321" Column="28" TopLine="2297"/>
       </Position5>
       <Position6>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="333" Column="49" TopLine="83"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="2322" Column="28" TopLine="2298"/>
       </Position6>
       <Position7>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="250" Column="41" TopLine="243"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="2536" Column="51" TopLine="2512"/>
       </Position7>
       <Position8>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="248" Column="1" TopLine="243"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="2589" Column="51" TopLine="2561"/>
       </Position8>
       <Position9>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="249" Column="15" TopLine="243"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="2639" Column="37" TopLine="2615"/>
       </Position9>
       <Position10>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="248" Column="1" TopLine="243"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="24" Column="72" TopLine="9"/>
       </Position10>
       <Position11>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="257" Column="40" TopLine="238"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="161" Column="48" TopLine="137"/>
       </Position11>
       <Position12>
-        <Filename Value="..\..\pltis_utils\tisstrings.pas"/>
-        <Caret Line="628" Column="44" TopLine="622"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="162" Column="66" TopLine="138"/>
       </Position12>
       <Position13>
-        <Filename Value="..\..\pltis_utils\tisstrings.pas"/>
-        <Caret Line="580" Column="3" TopLine="574"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="180" Column="27" TopLine="151"/>
       </Position13>
       <Position14>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="312" Column="26" TopLine="298"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="183" Column="31" TopLine="159"/>
       </Position14>
       <Position15>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="248" Column="1" TopLine="234"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="185" Column="17" TopLine="161"/>
       </Position15>
       <Position16>
-        <Filename Value="..\..\pltis_utils\tisstrings.pas"/>
-        <Caret Line="627" Column="27" TopLine="613"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="187" Column="25" TopLine="163"/>
       </Position16>
       <Position17>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="257" Column="38" TopLine="234"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="195" Column="41" TopLine="171"/>
       </Position17>
       <Position18>
-        <Filename Value="..\..\pltis_utils\tisstrings.pas"/>
-        <Caret Line="626" Column="66" TopLine="617"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="276" Column="14" TopLine="252"/>
       </Position18>
       <Position19>
-        <Filename Value="..\..\pltis_utils\tisstrings.pas"/>
-        <Caret Line="628" Column="38" TopLine="611"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="401" Column="31" TopLine="377"/>
       </Position19>
       <Position20>
-        <Filename Value="..\..\pltis_utils\tisstrings.pas"/>
-        <Caret Line="151" Column="88" TopLine="142"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="415" Column="26" TopLine="391"/>
       </Position20>
       <Position21>
-        <Filename Value="..\..\pltis_utils\tisstrings.pas"/>
-        <Caret Line="153" Column="10" TopLine="142"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="441" Column="83" TopLine="417"/>
       </Position21>
       <Position22>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="261" Column="9" TopLine="233"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="452" Column="31" TopLine="428"/>
       </Position22>
       <Position23>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="273" Column="3" TopLine="252"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="2330" Column="3" TopLine="2317"/>
       </Position23>
       <Position24>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp"/>
-        <Caret Line="394" Column="3" TopLine="386"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="2536" Column="51" TopLine="2512"/>
       </Position24>
       <Position25>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp"/>
-        <Caret Line="359" Column="3" TopLine="350"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="2578" Column="51" TopLine="2554"/>
       </Position25>
       <Position26>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp"/>
-        <Caret Line="86" Column="71" TopLine="73"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="2582" Column="28" TopLine="2558"/>
       </Position26>
       <Position27>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="2583" Column="28" TopLine="2559"/>
       </Position27>
       <Position28>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp"/>
-        <Caret Line="37" Column="26" TopLine="13"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="2639" Column="37" TopLine="2615"/>
       </Position28>
       <Position29>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp"/>
-        <Caret Line="86" Column="99" TopLine="63"/>
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <Caret Line="106" Column="1" TopLine="106"/>
       </Position29>
       <Position30>
         <Filename Value="waptcommon.pas"/>
-        <Caret Line="504" Column="19" TopLine="481"/>
+        <Caret Line="343" Column="1" TopLine="318"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>
