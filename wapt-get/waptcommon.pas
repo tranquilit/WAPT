@@ -413,8 +413,13 @@ var
   http:TIdHTTP;
   DataStream:TStringStream;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
+  sslCheck:TSSLVerifyCert;
+  certfile:AnsiString;
 
 begin
+  sslCheck:=Nil;
+  ssl_handler:=Nil;
+
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
   http.Compressor := TIdCompressorZLib.Create;
@@ -429,7 +434,22 @@ begin
 
 
   ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-	http.IOHandler := ssl_handler;
+  sslCheck := TSSLVerifyCert.Create(GetHostFromURL(url));
+
+  certfile:=GetWaptServerCertificateFilename;
+  if (certfile<>'') then
+  begin
+    ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
+    ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
+    //Self signed
+    if certfile<>'1' then
+    begin
+      ssl_handler.SSLOptions.RootCertFile :=certfile;
+      ssl_handler.SSLOptions.CertFile:=certfile;
+    end;
+  end;
+
+  http.IOHandler := ssl_handler;
 
   if user <>'' then
   begin
@@ -470,6 +490,8 @@ begin
     http.Free;
     if Assigned(ssl_handler) then
       FreeAndNil(ssl_handler);
+    if Assigned(sslCheck) then
+      FreeAndNil(sslCheck);
   end;
 end;
 
