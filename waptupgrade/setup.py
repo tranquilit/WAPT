@@ -35,7 +35,6 @@ def update_sources():
          'languages',
          'revision.txt',
          'version',
-		 'lib/site-packages/zmq',
     ]
 
     def ignore(src,names):
