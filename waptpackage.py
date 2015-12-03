@@ -162,7 +162,7 @@ class Version(object):
     True
     """
 
-    def __init__(self,version):
+    def __init__(self,version,members_count=None):
         if version is None:
             version = ''
         assert isinstance(version,types.ModuleType) or isinstance(version,str) or isinstance(version,unicode) or isinstance(version,Version)
@@ -173,6 +173,11 @@ class Version(object):
         else:
             self.versionstring = version
         self.members = [ v.strip() for v in self.versionstring.split('.')]
+        if members_count is not None:
+            if len(self.members)<members_count:
+                self.members.extend(['0'] * (members_count-len(self.members)))
+            else:
+                del self.members[members_count:]
 
     def __cmp__(self,aversion):
         def nat_cmp(a, b):
