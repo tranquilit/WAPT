@@ -299,7 +299,7 @@ def create_onetime_task(name,cmd,parameters, delay_minutes=2,max_runtime=10, ret
     return task
 
 
-def full_waptagent_install(at_startup=False):
+def full_waptagent_install(min_version,at_startup=False):
     # get it from
     waptagent_path = makepath(tempfile.gettempdir(),'waptagent.exe')
     waptdeploy_path = makepath(tempfile.gettempdir(),'waptdeploy.exe')
@@ -313,18 +313,19 @@ def full_waptagent_install(at_startup=False):
     #create_onetime_task('fullwaptupgrade',waptagent_path,'/VERYSILENT',delay_minutes=15)
 
     if at_startup or isrunning('waptexit.exe'):
-        cmd = "'%s' --hash=%s --waptsetupurl=%s --wait=15 --temporary" %(waptdeploy_path,expected_sha256,waptagent_path)
+        cmd = '%s --hash=%s --waptsetupurl=%s --wait=15 --temporary --min_version=%s' %(waptdeploy_path,expected_sha256,waptagent_path,min_version)
         if not at_startup:
             print('waptexit is running, scheduling a one time task at system startup with command %s'%cmd)
         # task at system startup
         try:
             run('schtasks /Create /RU SYSTEM /SC ONSTART /TN waptupgradetmp /TR "%s" /F /V1 /Z' % cmd)
         except:
-            # windows xp doesn't support one time startup task
-            run('schtasks /Create /RU SYSTEM /SC ONSTART /TN waptupgradetmp /TR "%s" /F' % cmd)
+            # windows xp doesn't support one time startup task /Z nor /F
+            run_notfatal('schtasks /Delete /TN waptupgradetmp /F')
+            run('schtasks /Create /RU SYSTEM /SC ONSTART /TN waptupgradetmp /TR "%s"' % cmd)
     else:
         # use embedded waptagent.exe, wait 15 minutes for other tasks to complete.
-        create_onetime_task('fullwaptupgrade',waptdeploy_path,'--hash=%s --waptsetupurl=%s --wait=15 --temporary'%(expected_sha256,waptagent_path),delay_minutes=1)
+        create_onetime_task('fullwaptupgrade',waptdeploy_path,'--hash=%s --waptsetupurl=%s --wait=15 --temporary --min_version=%s'%(expected_sha256,waptagent_path,min_version),delay_minutes=1)
 
 
 def install():
@@ -354,7 +355,7 @@ def install():
         print('Your current wapt (%s) is more recent than the upgrade package (%s). Skipping...'%(installed_wapt_version,control.version))
     elif Version(installed_wapt_version,4) < Version(package_wapt_version,4):
         print('Your current wapt version (%s) is too old to be upgraded, a full waptagent.exe install will be planned for %s'%(installed_wapt_version,time.ctime(time.time() + 1*60)))
-        full_waptagent_install()
+        full_waptagent_install(str(Version(package_wapt_version,4)))
     else:
         print(u'Partial upgrade of WAPT client')
         killalltasks('wapttray.exe')
