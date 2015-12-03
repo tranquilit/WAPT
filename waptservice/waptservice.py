@@ -2143,9 +2143,10 @@ class WaptTaskManager(threading.Thread):
             return cancelled
 
     def start_ipaddr_monitoring(self):
+        nac = ctypes.windll.iphlpapi.NotifyAddrChange
         def addr_change(wapt):
             while True:
-                ctypes.windll.iphlpapi.NotifyAddrChange(0, 0)
+                nac(0, 0)
                 wapt.add_task(WaptNetworkReconfig())
 
         nm = threading.Thread(target=addr_change,args=(self,))
@@ -2154,9 +2155,10 @@ class WaptTaskManager(threading.Thread):
         logger.debug(u"Wapt network address monitoring started")
 
     def start_network_monitoring(self):
+        nrc = ctypes.windll.iphlpapi.NotifyRouteChange
         def connected_change(taskman):
+            nrc(0, 0)
             while True:
-                ctypes.windll.iphlpapi.NotifyRouteChange(0, 0)
                 taskman.add_task(WaptNetworkReconfig())
 
         nm = threading.Thread(target=connected_change,args=(self,))
