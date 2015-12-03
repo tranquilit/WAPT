@@ -313,19 +313,19 @@ def full_waptagent_install(min_version,at_startup=False):
     #create_onetime_task('fullwaptupgrade',waptagent_path,'/VERYSILENT',delay_minutes=15)
 
     if at_startup or isrunning('waptexit.exe'):
-        cmd = '%s --hash=%s --waptsetupurl=%s --wait=15 --temporary --min_version=%s' %(waptdeploy_path,expected_sha256,waptagent_path,min_version)
+        cmd = '%s --hash=%s --waptsetupurl=%s --wait=15 --temporary --force --minversion=%s' %(waptdeploy_path,expected_sha256,waptagent_path,min_version)
         if not at_startup:
             print('waptexit is running, scheduling a one time task at system startup with command %s'%cmd)
         # task at system startup
         try:
-            run('schtasks /Create /RU SYSTEM /SC ONSTART /TN waptupgradetmp /TR "%s" /F /V1 /Z' % cmd)
+            run('schtasks /Create /RU SYSTEM /SC ONSTART /TN fullwaptupgrade /TR "%s" /F /V1 /Z' % cmd)
         except:
             # windows xp doesn't support one time startup task /Z nor /F
             run_notfatal('schtasks /Delete /TN waptupgradetmp /F')
-            run('schtasks /Create /RU SYSTEM /SC ONSTART /TN waptupgradetmp /TR "%s"' % cmd)
+            run('schtasks /Create /RU SYSTEM /SC ONSTART /TN fullwaptupgrade /TR "%s"' % cmd)
     else:
         # use embedded waptagent.exe, wait 15 minutes for other tasks to complete.
-        create_onetime_task('fullwaptupgrade',waptdeploy_path,'--hash=%s --waptsetupurl=%s --wait=15 --temporary --min_version=%s'%(expected_sha256,waptagent_path,min_version),delay_minutes=1)
+        create_onetime_task('fullwaptupgrade',waptdeploy_path,'--hash=%s --waptsetupurl=%s --wait=15 --temporary --force --minversion=%s'%(expected_sha256,waptagent_path,min_version),delay_minutes=1)
 
 
 def install():
