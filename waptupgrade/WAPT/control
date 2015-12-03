@@ -1,5 +1,5 @@
 package      : tis-waptupgrade
-version      : 1.3.3.10-1504
+version      : 1.3.4.5-0
 architecture : all
 section      : base
 priority     : optional
@@ -9,6 +9,6 @@ description  : Upgrades main Wapt client files
  wapttray.exe
  waptservice files
  waptdevutils.py
-depends      : 
-conflicts    : 
+depends      :
+conflicts    :
 sources      : https://srvdev/sources/tis-waptupgrade-wapt/trunk
