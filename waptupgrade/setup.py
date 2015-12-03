@@ -337,10 +337,11 @@ def install():
     installed_wapt = installed_softwares(uninstallkey='WAPT_is1')
     if installed_wapt:
         wapt_version = installed_wapt[0]['version'].replace('WAPT ','')
-        if '-' in installed_wapt_version:
+        if '-' in wapt_version:
             (installed_wapt_version,installed_packaging) = wapt_version.split('-')
             installed_packaging = int(installed_packaging)
         else:
+            installed_wapt_version = wapt_version
             installed_packaging = 0
     else:
         print('WAPT current version can not be found in registry (key is "WAPT_is1") ...full upgrade')
