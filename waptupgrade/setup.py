@@ -336,9 +336,9 @@ def install():
 
     installed_wapt = installed_softwares(uninstallkey='WAPT_is1')
     if installed_wapt:
-        installed_wapt_version = installed_wapt[0]['version'].replace('WAPT ','')
+        wapt_version = installed_wapt[0]['version'].replace('WAPT ','')
         if '-' in installed_wapt_version:
-            (wapt_version,installed_packaging) = wapt_version.split('-')
+            (installed_wapt_version,installed_packaging) = wapt_version.split('-')
             installed_packaging = int(installed_packaging)
         else:
             installed_packaging = 0
@@ -407,4 +407,3 @@ def install():
 
 if __name__ == '__main__':
     pass
-    #create_onetime_task('fullwaptupgrade','c:/tranquilit/wapt/waptupgrade/waptagent.exe','/VERYSILENT')
