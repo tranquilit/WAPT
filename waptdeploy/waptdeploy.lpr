@@ -298,6 +298,20 @@ begin
     Exit;
   end;
 
+  if ProcessExists('waptdeploy.exe') then
+  begin
+    WriteLn('A waptdeploy process is already running. Aborting');
+    ExitCode:=11;
+    Exit;
+  end;
+
+  if ProcessExists('waptagent.exe') then
+  begin
+    WriteLn('A waptagent process is already running. Aborting');
+    ExitCode:=11;
+    Exit;
+  end;
+
   isTemporary := cmdoptions.AsObject.Exists('temporary');
 
   if cmdoptions.AsObject.Exists('force') then
