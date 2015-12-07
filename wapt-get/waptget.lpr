@@ -196,6 +196,8 @@ begin
     readln(newuser);
     if newuser<>'' then
       Authentication.Username:=newuser;
+    if Authentication.Username='' then
+      raise Exception.Create('Empty user');
     Write('Password: ');
     Authentication.Password := GetPassword;
     WriteLn;
