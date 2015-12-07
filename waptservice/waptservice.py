@@ -1463,12 +1463,13 @@ class WaptUpdate(WaptTask):
         self.priority = 10
         self.notify_server_on_start = False
         self.notify_server_on_finish = True
+        self.force = False
         for k in args:
             setattr(self,k,args[k])
 
     def _run(self):
         self.wapt.check_install_running()
-        self.result = self.wapt.update()
+        self.result = self.wapt.update(force=self.force,register=self.notify_server_on_finish)
         """result: {
             count: 176,
             added: [ ],
