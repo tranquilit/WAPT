@@ -69,12 +69,12 @@ interface
   function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject;ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
   function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=1000;OnAuthorization:TIdOnAuthorization=Nil;RetryCount:Integer=3):ISuperObject;
 
-  Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean=False;userAgent:String=''): boolean;
-  Function IdWget_Try(const fileURL: Utf8String;enableProxy:Boolean=False;userAgent:String=''): boolean;
+  Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean=False;userAgent:String='';VerifyCertificateFilename:String=''): boolean;
+  Function IdWget_Try(const fileURL: Utf8String;enableProxy:Boolean=False;userAgent:String='';VerifyCertificateFilename:String=''): boolean;
   function IdHttpGetString(const url: ansistring; enableProxy:Boolean= False;
-      ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET';userAGent:String=''):RawByteString;
+      ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET';userAGent:String='';VerifyCertificateFilename:String=''):RawByteString;
   function IdHttpPostData(const url: Ansistring; const Data: RawByteString; enableProxy:Boolean= False;
-     ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';userAgent:String='';ContentType:String='application/json'):RawByteString;
+     ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';userAgent:String='';ContentType:String='application/json';VerifyCertificateFilename:String=''):RawByteString;
 
   function GetReachableIP(IPS:ISuperObject;port:word):String;
 
@@ -203,6 +203,18 @@ begin
   end;
 end;
 
+function GetHostFromURL(url:AnsiString):AnsiString;
+var
+  uri : TIdURI;
+begin
+  uri := TIdURI.Create(url);
+  try
+    Result := uri.Host;
+  finally
+    uri.Free;
+  end;
+end;
+
 type
   TSSLVerifyCert = class(TObject)
     hostname:AnsiString;
@@ -225,14 +237,18 @@ begin
 end;
 
 function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver: TObject;
-  progressCallback: TProgressCallback; enableProxy: Boolean;userAgent:String=''): boolean;
+  progressCallback: TProgressCallback; enableProxy: Boolean;userAgent:String='';VerifyCertificateFilename:String=''): boolean;
 var
   http:TIdHTTP;
   OutputFile:TFileStream;
   progress : TIdProgressProxy;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
+  sslCheck:TSSLVerifyCert;
 
 begin
+  sslCheck:=Nil;
+  ssl_handler:=Nil;
+
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
@@ -244,14 +260,29 @@ begin
 
   http.Request.BasicAuthentication:=True;
 
-  ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-	HTTP.IOHandler := ssl_handler;
-
   OutputFile :=TFileStream.Create(DestFileName,fmCreate);
   progress :=  TIdProgressProxy.Create(Nil);
   progress.progressCallback:=progressCallback;
   progress.CBReceiver:=CBReceiver;
   try
+    // init ssl stack
+    ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
+  	HTTP.IOHandler := ssl_handler;
+    sslCheck := TSSLVerifyCert.Create(GetHostFromURL(fileurl));
+
+    // init check of https server certificate
+    if (VerifyCertificateFilename<>'') and (VerifyCertificateFilename <>'0') then
+    begin
+      ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
+      ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
+      //Self signed
+      if VerifyCertificateFilename<>'1' then
+      begin
+        ssl_handler.SSLOptions.RootCertFile :=VerifyCertificateFilename;
+        ssl_handler.SSLOptions.CertFile:=VerifyCertificateFilename;
+      end;
+    end;
+
     try
       //http.ConnectTimeout := ConnectTimeout;
       if enableProxy then
@@ -288,15 +319,20 @@ begin
     http.Free;
     if Assigned(ssl_handler) then
       FreeAndNil(ssl_handler);
+    if Assigned(sslCheck) then
+      FreeAndNil(sslCheck);
   end;
 end;
 
-function IdWget_Try(const fileURL: Utf8String; enableProxy: Boolean;userAgent:String=''): boolean;
+function IdWget_Try(const fileURL: Utf8String; enableProxy: Boolean;userAgent:String='';VerifyCertificateFilename:String=''): boolean;
 var
   http:TIdHTTP;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
-
+  sslCheck:TSSLVerifyCert;
 begin
+  sslCheck:=Nil;
+  ssl_handler:=Nil;
+
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
@@ -305,10 +341,25 @@ begin
   else
     http.Request.UserAgent:=userAgent;
 
-  ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-	HTTP.IOHandler := ssl_handler;
-
   try
+    // init ssl stack
+    ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
+  	HTTP.IOHandler := ssl_handler;
+    sslCheck := TSSLVerifyCert.Create(GetHostFromURL(fileurl));
+
+    // init check of https server certificate
+    if (VerifyCertificateFilename<>'') and (VerifyCertificateFilename <>'0') then
+    begin
+      ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
+      ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
+      //Self signed
+      if VerifyCertificateFilename<>'1' then
+      begin
+        ssl_handler.SSLOptions.RootCertFile :=VerifyCertificateFilename;
+        ssl_handler.SSLOptions.CertFile:=VerifyCertificateFilename;
+      end;
+    end;
+
     try
       http.ConnectTimeout := 1000;
       if enableProxy then
@@ -325,28 +376,17 @@ begin
     http.Free;
     if Assigned(ssl_handler) then
       FreeAndNil(ssl_handler);
-  end;
-end;
-
-function GetHostFromURL(url:AnsiString):AnsiString;
-var
-  uri : TIdURI;
-begin
-  uri := TIdURI.Create(url);
-  try
-    Result := uri.Host;
-  finally
-    uri.Free;
+    if Assigned(sslCheck) then
+      FreeAndNil(sslCheck);
   end;
 end;
 
 function IdHttpGetString(const url: ansistring; enableProxy:Boolean= False;
-    ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET';userAGent:String=''):RawByteString;
+    ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET';userAGent:String='';VerifyCertificateFilename:String=''):RawByteString;
 var
   http:TIdHTTP;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
   sslCheck:TSSLVerifyCert;
-  certfile:AnsiString;
 begin
   sslCheck:=Nil;
   ssl_handler:=Nil;
@@ -359,24 +399,25 @@ begin
   else
     http.Request.UserAgent:=userAgent;
 
-  ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-  sslCheck := TSSLVerifyCert.Create(GetHostFromURL(url));
-
-  certfile:=GetWaptServerCertificateFilename;
-  if (certfile<>'') then
-  begin
-    ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
-    ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
-    //Self signed
-    if certfile<>'1' then
-    begin
-      ssl_handler.SSLOptions.RootCertFile :=certfile;
-      ssl_handler.SSLOptions.CertFile:=certfile;
-    end;
-  end;
-
-  HTTP.IOHandler := ssl_handler;
   try
+    // init ssl stack
+    ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
+  	HTTP.IOHandler := ssl_handler;
+    sslCheck := TSSLVerifyCert.Create(GetHostFromURL(url));
+
+    // init check of https server certificate
+    if (VerifyCertificateFilename<>'') and (VerifyCertificateFilename <>'0') then
+    begin
+      ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
+      ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
+      //Self signed
+      if VerifyCertificateFilename<>'1' then
+      begin
+        ssl_handler.SSLOptions.RootCertFile :=VerifyCertificateFilename;
+        ssl_handler.SSLOptions.CertFile:=VerifyCertificateFilename;
+      end;
+    end;
+
     try
       http.ConnectTimeout:=ConnectTimeout;
       if user <>'' then
@@ -408,13 +449,12 @@ begin
 end;
 
 function IdHttpPostData(const url: Ansistring; const Data: RawByteString; enableProxy:Boolean= False;
-   ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';userAgent:String='';ContentType:String='application/json'):RawByteString;
+   ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';userAgent:String='';ContentType:String='application/json';VerifyCertificateFilename:String=''):RawByteString;
 var
   http:TIdHTTP;
   DataStream:TStringStream;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
   sslCheck:TSSLVerifyCert;
-  certfile:AnsiString;
 
 begin
   sslCheck:=Nil;
@@ -432,25 +472,6 @@ begin
   http.Request.ContentType:=ContentType;
   http.Request.ContentEncoding:='UTF-8';
 
-
-  ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-  sslCheck := TSSLVerifyCert.Create(GetHostFromURL(url));
-
-  certfile:=GetWaptServerCertificateFilename;
-  if (certfile<>'') then
-  begin
-    ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
-    ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
-    //Self signed
-    if certfile<>'1' then
-    begin
-      ssl_handler.SSLOptions.RootCertFile :=certfile;
-      ssl_handler.SSLOptions.CertFile:=certfile;
-    end;
-  end;
-
-  http.IOHandler := ssl_handler;
-
   if user <>'' then
   begin
     http.Request.BasicAuthentication:=True;
@@ -463,6 +484,24 @@ begin
   progress.progressCallback:=progressCallback;
   progress.CBReceiver:=CBReceiver;}
   try
+    // init ssl stack
+    ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
+  	HTTP.IOHandler := ssl_handler;
+    sslCheck := TSSLVerifyCert.Create(GetHostFromURL(url));
+
+    // init check of https server certificate
+    if (VerifyCertificateFilename<>'') and (VerifyCertificateFilename <>'0') then
+    begin
+      ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
+      ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
+      //Self signed
+      if VerifyCertificateFilename<>'1' then
+      begin
+        ssl_handler.SSLOptions.RootCertFile :=VerifyCertificateFilename;
+        ssl_handler.SSLOptions.CertFile:=VerifyCertificateFilename;
+      end;
+    end;
+
     try
       http.ConnectTimeout := ConnectTimeout;
       if enableProxy then
@@ -506,7 +545,8 @@ begin
     action := '/'+action;
   if length(args)>0 then
     action := format(action,args);
-  strresult:=IdhttpGetString(GetWaptServerURL+action,UseProxyForServer,ConnectTimeout,SendTimeout ,ReceiveTimeout,waptServerUser, waptServerPassword,method);
+  strresult:=IdhttpGetString(GetWaptServerURL+action,UseProxyForServer,ConnectTimeout,SendTimeout ,ReceiveTimeout,
+    waptServerUser,waptServerPassword,method,'',GetWaptServerCertificateFilename);
   Result := SO(strresult);
 end;
 
@@ -520,7 +560,8 @@ begin
     action := '/'+action;
   if length(args)>0 then
     action := format(action,args);
-  strresult:=IdhttpGetString(GetWaptServerURL+action,UseProxyForServer,4000,60000,60000,waptServerUser, waptServerPassword);
+  strresult:=IdhttpGetString(GetWaptServerURL+action,UseProxyForServer,4000,60000,60000,waptServerUser, waptServerPassword,
+    'DELETE','',GetWaptServerCertificateFilename);
   Result := SO(strresult);
 end;
 
@@ -535,7 +576,8 @@ begin
     action := '/'+action;
   if length(args)>0 then
     action := format(action,args);
-  res := IdhttpPostData(GetWaptServerURL+action, data.AsJson, UseProxyForServer,ConnectTimeout,SendTimeout,ReceiveTimeout,WaptServerUser,WaptServerPassword);
+  res := IdhttpPostData(GetWaptServerURL+action, data.AsJson, UseProxyForServer,ConnectTimeout,SendTimeout,ReceiveTimeout,
+    WaptServerUser,WaptServerPassword,'','application/json',GetWaptServerCertificateFilename);
   result := SO(res);
 end;
 
@@ -704,7 +746,7 @@ begin
 end;
 
 
-function GetWaptServerURL: string;
+function GetWaptServerURL: String;
 var
   dnsdomain, url: ansistring;
   rec, recs, ConnectedIps, ServerIp: ISuperObject;
@@ -835,7 +877,7 @@ function GetWaptServerCertificateFilename(inifilename:AnsiString=''): AnsiString
 begin
   if inifilename='' then
      inifilename:=WaptIniFilename;
-  Result := IniReadString(inifilename,'Global','verify_cert','');
+  Result := IniReadString(inifilename,'global','verify_cert','');
   if (Result <> '') and not FileExists(Result) then
   begin
     if StrIsOneOf(Result,['0','false','no',''],False) then
@@ -845,6 +887,7 @@ begin
         Result := '1';
   end;
 end;
+
 
 function ReadWaptConfig(inifile:String = ''): Boolean;
 var
