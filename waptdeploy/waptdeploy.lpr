@@ -245,7 +245,7 @@ var
 
 const
   defaultwapt: ansistring = 'wapt';
-  minversion: ansistring = '1.3.4.5';
+  minversion: ansistring = '1.3.4.6';
   _mainrepo: ansistring = '';
   wait_minutes: integer = 0;
   isTemporary: Boolean = False;
@@ -280,6 +280,14 @@ begin
   result := _mainrepo;
 end;
 
+// remove schudled task if still
+procedure DeleteFullWaptUpgradeTask;
+var
+  status:Integer;
+begin
+  RunTask('schtasks /Delete /TN fullwaptupgrade /F',status);
+end;
+
 begin
   cmdparams := CommandParams;
   cmdoptions := CommandOptions;
@@ -298,6 +306,8 @@ begin
     Exit;
   end;
 
+  isTemporary := cmdoptions.AsObject.Exists('temporary');
+
   if ProcessExists('waptdeploy.exe') then
   begin
     WriteLn('A waptdeploy process is already running. Aborting');
@@ -311,8 +321,6 @@ begin
     ExitCode:=11;
     Exit;
   end;
-
-  isTemporary := cmdoptions.AsObject.Exists('temporary');
 
   if cmdoptions.AsObject.Exists('force') then
   begin
@@ -456,6 +464,8 @@ begin
       writeln(rsCleanup);
       if FileExists(waptsetupPath) and IsTemporary then
         DeleteFile(waptsetupPath);
+      if isTemporary then
+        DeleteFullWaptUpgradeTask;
       UpdateStatus(True);
     end
   else
