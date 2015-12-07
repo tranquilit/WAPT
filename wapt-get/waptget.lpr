@@ -381,7 +381,10 @@ begin
         if action='update' then
         begin
           Logger('Call update URL...',DEBUG);
-          res := WAPTLocalJsonGet('update.json?notify_user=0');
+          if HasOption('f','force') then
+            res := WAPTLocalJsonGet('update.json?notify_user=0&force=1')
+          else
+            res := WAPTLocalJsonGet('update.json?notify_user=0');
           if res = Nil then
             WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
           else
