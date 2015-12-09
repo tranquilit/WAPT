@@ -334,6 +334,7 @@ def install():
     if installed_softwares(uninstallkey='WAPT Server_is1'):
         error('Wapt server installed on this host. Aborting')
 
+    """
     installed_wapt = installed_softwares(uninstallkey='WAPT_is1')
     if installed_wapt:
         wapt_version = installed_wapt[0]['version'].replace('WAPT ','')
@@ -347,6 +348,9 @@ def install():
         print('WAPT current version can not be found in registry (key is "WAPT_is1") ...full upgrade')
         installed_wapt_version = '0.0.0'
         installed_packaging = 0
+    """
+    status = WAPT.wapt_status()
+    installed_wapt_version = status['wapt-exe-version']
 
     # get upgrade package informations
     (package_wapt_version,package_packaging) = control.version.split('-')
