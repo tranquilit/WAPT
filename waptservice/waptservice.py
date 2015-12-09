@@ -123,11 +123,12 @@ def get_authorized_callers_ip(waptserver_url=None):
             ips.append(socket.gethostbyname(waptserver_hostname))
         except socket.gaierror as e:
             # no network connection to resolve hostname
-            logger.warning('Unable to resolve authorized caller for %s using socket : %s'%(waptserver_hostname,e))
+            logger.info('Unable to resolve authorized caller for %s using socket : %s'%(waptserver_hostname,e))
         try:
             ips.extend(windnsquery.dnsquery_a(waptserver_hostname))
         except Exception as e:
             logger.warning('Unable to resolve authorized caller for %s using windns : %s'%(waptserver_hostname,e))
+        logger.debug('Authorized callers found : %s' % (ips,))
     return ips
 
 class WaptEvent(object):
@@ -561,6 +562,11 @@ def allow_waptserver_or_local_auth(f):
     """Restrict access to localhost authenticated or waptserver IP"""
     @wraps(f)
     def decorated(*args, **kwargs):
+        try:
+            if not app.waptconfig.authorized_callers_ip and app.waptconfig.waptserver:
+                app.waptconfig.authorized_callers_ip = get_authorized_callers_ip(app.waptconfig.waptserver.server_url)
+        except Exception as e:
+            logger.debug('Unable to acquire IP of waptserver : %s' % e)
         if request.remote_addr in app.waptconfig.authorized_callers_ip:
             uuid = wapt().host_uuid
             if not 'uuid' in request.args or request.args['uuid'] != uuid:
@@ -594,6 +600,11 @@ def allow_waptserver_or_local_unauth(f):
     """Restrict access to localhost unauthenticated or waptserver IP"""
     @wraps(f)
     def decorated(*args, **kwargs):
+        try:
+            if not app.waptconfig.authorized_callers_ip and app.waptconfig.waptserver:
+                app.waptconfig.authorized_callers_ip = get_authorized_callers_ip(app.waptconfig.waptserver.server_url)
+        except Exception as e:
+            logger.debug('Unable to acquire IP of waptserver : %s' % e)
         if not request.remote_addr in (app.waptconfig.authorized_callers_ip + ['127.0.0.1']):
             logger.info(u'Forbidden: caller src address {} is not in authorized list {}'.format(request.remote_addr,app.waptconfig.authorized_callers_ip))
             # try to reacquire IP of waptserver
@@ -1394,13 +1405,6 @@ class WaptNetworkReconfig(WaptTask):
         self.wapt.load_config(waptconfig.config_filename)
         self.wapt.network_reconfigure()
         waptconfig.load()
-        # http
-        if waptconfig.waptserver is not None:
-            if waptconfig.waptservice_port is not None:
-                check_open_port(waptconfig.waptservice_port)
-            # https
-            if waptconfig.waptservice_sslport is not None:
-                check_open_port(waptconfig.waptservice_sslport)
         self.result = waptconfig.as_dict()
         self.notify_server_on_finish = self.wapt.waptserver_available()
 
@@ -1809,7 +1813,7 @@ class WaptPackageForget(WaptTask):
         return (self.__class__ == other.__class__) and (self.packagenames == other.packagenames)
 
 
-def firewall_running():
+def is_firewall_running():
     if setuphelpers.service_installed('MpsSvc'):
         return setuphelpers.service_is_running('MpsSvc')
     else:
@@ -1974,14 +1978,6 @@ class WaptTaskManager(threading.Thread):
                 except Exception as e:
                     logger.debug(u'Error for update in check_scheduled_tasks: %s'%e)
 
-    def check_firewall(self):
-        if not self.firewall_running:
-            if firewall_running():
-                self.firewall_running = True
-                self.add_task(WaptNetworkReconfig())
-            else:
-                self.firewall_running = False
-
     def run(self):
         """Queue management, event processing"""
         try:
@@ -1993,7 +1989,7 @@ class WaptTaskManager(threading.Thread):
         self.start_time = datetime.datetime.now()
         self.wapt = Wapt(config_filename=self.config_filename)
         self.events = self.setup_event_queue()
-        self.firewall_running = firewall_running()
+        self.firewall_running = is_firewall_running()
         logger.info(u'Wapt tasks management initialized with {} configuration, thread ID {}'.format(self.config_filename,threading.current_thread().ident))
 
         self.start_network_monitoring()
@@ -2005,7 +2001,6 @@ class WaptTaskManager(threading.Thread):
                 # check wapt configuration, reload ini file if changed
                 # reload wapt config
                 self.check_configuration()
-                self.check_firewall()
 
                 # check tasks queue
                 self.running_task = self.tasks_queue.get(timeout=waptconfig.waptservice_poll_timeout)
