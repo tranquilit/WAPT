@@ -2158,8 +2158,8 @@ class WaptTaskManager(threading.Thread):
     def start_network_monitoring(self):
         nrc = ctypes.windll.iphlpapi.NotifyRouteChange
         def connected_change(taskman):
-            nrc(0, 0)
             while True:
+                nrc(0, 0)
                 taskman.add_task(WaptNetworkReconfig())
 
         nm = threading.Thread(target=connected_change,args=(self,))
