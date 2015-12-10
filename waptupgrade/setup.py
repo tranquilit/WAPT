@@ -331,7 +331,7 @@ def full_waptagent_install(min_version,at_startup=False):
 def install():
     # if you want to modify the keys depending on environment (win32/win64... params..)
     import common
-    if installed_softwares(uninstallkey='WAPT Server_is1'):
+    if installed_softwares('WAPT Server_is1'):
         error('Wapt server installed on this host. Aborting')
 
     """
