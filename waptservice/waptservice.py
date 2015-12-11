@@ -762,7 +762,7 @@ def all_packages():
                     rows.append(pe)
         except sqlite3.Error, e:
             logger.critical(u"*********** Error %s:" % e.args[0])
-    if request.args.get('format','html')=='json' or request.url.endswith('.json'):
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(rows), mimetype='application/json')
     else:
         return render_template('list.html',packages=rows,format_isodate=format_isodate,Version=setuphelpers.Version)

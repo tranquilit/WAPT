@@ -399,7 +399,9 @@ class PackageEntry(object):
         if not search:
             return True
         else:
-            result = re.match(r'\b{}'.format(search.replace(' ',r'.*\b')),self.description,re.IGNORECASE)
+            found = re.search(r'\b{}'.format(search.replace(' ',r'.*\b')),self.package+' '+self.description,re.IGNORECASE)
+            return found is not None
+
 
     def load_control_from_dict(self,adict):
         for k in adict:
