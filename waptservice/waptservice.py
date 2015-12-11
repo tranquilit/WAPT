@@ -705,6 +705,8 @@ def status():
             cur = con.cursor()
             cur.execute(query)
             rows = []
+            search = request.args.get('q','')
+
             for row in cur.fetchall():
                 pe = PackageEntry()
                 rec_dict = dict((cur.description[idx][0], value) for idx, value in enumerate(row))
@@ -720,7 +722,9 @@ def status():
                     pe.repo_version = max(Version(v) for v in pe.get('repo_versions','').split('|'))
                 else:
                     pe.repo_version = None
-                rows.append(pe)
+
+                if not search or pe.match_search(search):
+                    rows.append(pe)
 
             #rows = [ waptpackage.PackageEntry().load_control_from_dict(dict(x)) for x in cur.fetchall() ]
         except sqlite3.Error, e:
@@ -755,11 +759,24 @@ def all_packages():
             for row in cur.fetchall():
                 pe = PackageEntry().load_control_from_dict(
                     dict((cur.description[idx][0], value) for idx, value in enumerate(row)))
+                if not search or pe.match_search(search):
+                    rows.append(pe)
+
+            if request.args.get('latest','0') == '1':
+                filtered = []
+                last_package_name = None
+                for package in sorted(rows,reverse=True):
+                    if package.package != last_package_name:
+                        filtered.append(package)
+                    last_package_name = package.package
+                rows = list(reversed(filtered))
+
+            for pe in rows:
                 # hack to enable proper version comparison in templates
                 pe.install_version = Version(pe.install_version)
                 pe.version = Version(pe.version)
-                if not search or pe.match_search(search):
-                    rows.append(pe)
+
+
         except sqlite3.Error, e:
             logger.critical(u"*********** Error %s:" % e.args[0])
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):

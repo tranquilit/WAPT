@@ -399,7 +399,7 @@ class PackageEntry(object):
         if not search:
             return True
         else:
-            found = re.search(r'\b{}'.format(search.replace(' ',r'.*\b')),self.package+' '+self.description,re.IGNORECASE)
+            found = re.search(r'\b{}'.format(search.replace(' ',r'.*\b')),u'%s %s' % (self.package,self.description),re.IGNORECASE)
             return found is not None
 
 
