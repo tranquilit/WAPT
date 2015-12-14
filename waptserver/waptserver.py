@@ -90,7 +90,7 @@ try:
 except Exception:
     pass
 
-DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir,'waptserver','waptserver.ini')
+DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir,'conf','waptserver.ini')
 config_file = DEFAULT_CONFIG_FILE
 
 # If we run under uWSGI, retrieve the config from the same ini file
