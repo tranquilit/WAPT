@@ -3075,7 +3075,7 @@ def create_onetime_task(name,cmd,parameters=None, delay_minutes=2,max_runtime=10
     """creates a one time Windows scheduled task and activate it.
     """
     run_time = time.localtime(time.time() + delay_minutes*60)
-    if False and windows_version()<Version('10.0.0'):
+    if windows_version()<Version('10.0.0'):
         ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler,None,
                                         pythoncom.CLSCTX_INPROC_SERVER,
                                         taskscheduler.IID_ITaskScheduler)
