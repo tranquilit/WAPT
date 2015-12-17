@@ -684,7 +684,7 @@ object VisWaptGUI: TVisWaptGUI
             TabOrder = 0
             object Label1: TLabel
               Left = 7
-              Height = 13
+              Height = 18
               Top = 80
               Width = 96
               AutoSize = False
@@ -694,7 +694,7 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Label3: TLabel
               Left = 335
-              Height = 13
+              Height = 18
               Top = 36
               Width = 80
               Anchors = [akTop, akRight]
@@ -704,7 +704,7 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Label4: TLabel
               Left = 335
-              Height = 13
+              Height = 18
               Top = 80
               Width = 80
               Anchors = [akTop, akRight]
@@ -714,7 +714,7 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Label2: TLabel
               Left = 335
-              Height = 13
+              Height = 18
               Top = 14
               Width = 80
               Anchors = [akTop, akRight]
@@ -724,7 +724,7 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Label6: TLabel
               Left = 7
-              Height = 13
+              Height = 18
               Top = 14
               Width = 96
               AutoSize = False
@@ -734,7 +734,7 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Label7: TLabel
               Left = 7
-              Height = 13
+              Height = 18
               Top = 60
               Width = 96
               AutoSize = False
@@ -744,7 +744,7 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Label8: TLabel
               Left = 7
-              Height = 13
+              Height = 18
               Top = 36
               Width = 96
               AutoSize = False
@@ -754,7 +754,7 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Label9: TLabel
               Left = 335
-              Height = 13
+              Height = 18
               Top = 60
               Width = 80
               Anchors = [akTop, akRight]
@@ -844,7 +844,7 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Label12: TLabel
               Left = 7
-              Height = 13
+              Height = 18
               Top = 101
               Width = 96
               AutoSize = False

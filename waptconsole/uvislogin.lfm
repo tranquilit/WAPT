@@ -25,7 +25,7 @@ object VisLogin: TVisLogin
   end
   object laPassword: TLabel
     Left = 136
-    Height = 13
+    Height = 17
     Top = 78
     Width = 136
     Alignment = taRightJustify
@@ -43,7 +43,7 @@ object VisLogin: TVisLogin
   end
   object labUser: TLabel
     Left = 138
-    Height = 13
+    Height = 18
     Top = 51
     Width = 133
     Alignment = taRightJustify
@@ -53,7 +53,7 @@ object VisLogin: TVisLogin
   end
   object labServer: TLabel
     Left = 136
-    Height = 13
+    Height = 18
     Top = 22
     Width = 135
     Alignment = taRightJustify
