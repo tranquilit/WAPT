@@ -58,6 +58,7 @@ type
     GridWSUSScan: TSOGrid;
     GridWSUSAllowedClassifications: TSOGrid;
     GridWSUSForbiddenWindowsUpdates: TSOGrid;
+    Image1: TImage;
     Label10: TLabel;
     Label16: TLabel;
     Label17: TLabel;
@@ -178,7 +179,6 @@ type
     GridHostTasksErrors: TSOGrid;
     HostRunningTaskLog: TMemo;
     ActionsImages: TImageList;
-    Image1: TImage;
     Label11: TLabel;
     Label12: TLabel;
     HostRunningTask: TLabeledEdit;

@@ -18,6 +18,7 @@ type
     edPassword: TEdit;
     edUser: TEdit;
     edWaptServerName: TEdit;
+    Image1: TImage;
     labServer: TLabel;
     laPassword: TLabel;
     labUser: TLabel;
