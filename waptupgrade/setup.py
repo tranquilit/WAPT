@@ -8,6 +8,7 @@ import hashlib
 import time
 import pythoncom
 from win32com.taskscheduler import taskscheduler
+import platform
 
 # registry key(s) where WAPT will find how to remove the application(s)
 uninstallkey = []
