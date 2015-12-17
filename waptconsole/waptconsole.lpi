@@ -11,6 +11,7 @@
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
       <XPManifest>
+        <DpiAware Value="True"/>
         <ExecutionLevel Value="1"/>
       </XPManifest>
       <Icon Value="0"/>
@@ -41,66 +42,69 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="19">
+    <RequiredPackages Count="20">
       <Item1>
-        <PackageName Value="pl_fzcontrols"/>
+        <PackageName Value="pl_bgrabitmap"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_exdesign"/>
+        <PackageName Value="pl_fzcontrols"/>
       </Item2>
       <Item3>
-        <PackageName Value="pl_rx"/>
+        <PackageName Value="pl_exdesign"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_luicontrols"/>
+        <PackageName Value="pl_rx"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_lclextensions"/>
+        <PackageName Value="pl_luicontrols"/>
       </Item5>
       <Item6>
-        <PackageName Value="pl_lazsolutions"/>
+        <PackageName Value="pl_lclextensions"/>
       </Item6>
       <Item7>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="pl_lazsolutions"/>
       </Item7>
       <Item8>
-        <PackageName Value="MultiThreadProcsLaz"/>
+        <PackageName Value="pl_indy"/>
       </Item8>
       <Item9>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="MultiThreadProcsLaz"/>
       </Item9>
       <Item10>
-        <PackageName Value="pl_excontrols"/>
+        <PackageName Value="pltis_wapt"/>
       </Item10>
       <Item11>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pl_excontrols"/>
       </Item11>
       <Item12>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="pltis_utils"/>
       </Item12>
       <Item13>
-        <PackageName Value="pl_virtualtrees"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item13>
       <Item14>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pl_virtualtrees"/>
       </Item14>
       <Item15>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="pltis_superobject"/>
       </Item15>
       <Item16>
-        <PackageName Value="pl_virtualtreesextra"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item16>
       <Item17>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item17>
       <Item18>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="FCL"/>
       </Item18>
       <Item19>
-        <PackageName Value="LCL"/>
+        <PackageName Value="SynEdit"/>
       </Item19>
+      <Item20>
+        <PackageName Value="LCL"/>
+      </Item20>
     </RequiredPackages>
-    <Units Count="27">
+    <Units Count="28">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -259,6 +263,7 @@
         <Filename Value="uviswuaclassificationsselect.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisWUAClassificationsSelect"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisWUAClassificationsSelect"/>
       </Unit20>
@@ -298,6 +303,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptwinutils"/>
       </Unit26>
+      <Unit27>
+        <Filename Value="uscaledpi.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UScaleDPI"/>
+      </Unit27>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -311,6 +321,10 @@
       <OtherUnitFiles Value="..\wapt-get"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
+    <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
+      <SmallerCode Value="True"/>
+    </CodeGeneration>
     <Linking>
       <Debugging>
         <UseLineInfoUnit Value="False"/>

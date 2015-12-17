@@ -2,23 +2,19 @@ object VisApropos: TVisApropos
   Left = 427
   Height = 324
   Top = 239
-  Width = 376
+  Width = 372
   BorderStyle = bsDialog
   Caption = 'About WAPTConsole'
   ClientHeight = 324
-  ClientWidth = 376
-  Font.CharSet = ANSI_CHARSET
-  Font.Height = -11
-  Font.Name = 'Tahoma'
-  Font.Pitch = fpVariable
-  Font.Quality = fqDraft
+  ClientWidth = 372
   OnCreate = FormCreate
   LCLVersion = '1.3'
   object Image1: TImage
-    Left = 4
-    Height = 314
-    Top = 4
+    Left = 0
+    Height = 324
+    Top = 0
     Width = 164
+    Align = alLeft
     AutoSize = True
     OnClick = Image1Click
     Picture.Data = {
@@ -6465,6 +6461,8 @@ object VisApropos: TVisApropos
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
     }
+    Proportional = True
+    Stretch = True
   end
   object LabInfos: TLabel
     Left = 172

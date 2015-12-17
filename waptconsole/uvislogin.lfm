@@ -2,23 +2,19 @@ object VisLogin: TVisLogin
   Left = 784
   Height = 153
   Top = 479
-  Width = 426
+  Width = 443
   BorderStyle = bsDialog
   Caption = 'WAPT authentication'
   ClientHeight = 153
-  ClientWidth = 426
+  ClientWidth = 443
   Color = clWhite
-  Font.CharSet = ANSI_CHARSET
-  Font.Height = -11
-  Font.Name = 'Tahoma'
-  Font.Pitch = fpVariable
-  Font.Quality = fqDraft
+  OnCreate = FormCreate
   OnShow = FormShow
   Position = poScreenCenter
   ShowHint = True
   LCLVersion = '1.3'
   object edPassword: TEdit
-    Left = 262
+    Left = 278
     Height = 21
     Top = 74
     Width = 124
@@ -28,7 +24,7 @@ object VisLogin: TVisLogin
     TabOrder = 3
   end
   object laPassword: TLabel
-    Left = 120
+    Left = 136
     Height = 13
     Top = 78
     Width = 136
@@ -38,7 +34,7 @@ object VisLogin: TVisLogin
     ParentColor = False
   end
   object edUser: TEdit
-    Left = 262
+    Left = 278
     Height = 21
     Top = 48
     Width = 124
@@ -46,7 +42,7 @@ object VisLogin: TVisLogin
     Text = 'admin'
   end
   object labUser: TLabel
-    Left = 122
+    Left = 138
     Height = 13
     Top = 51
     Width = 133
@@ -56,7 +52,7 @@ object VisLogin: TVisLogin
     ParentColor = False
   end
   object labServer: TLabel
-    Left = 120
+    Left = 136
     Height = 13
     Top = 22
     Width = 135
@@ -66,7 +62,7 @@ object VisLogin: TVisLogin
     ParentColor = False
   end
   object edWaptServerName: TEdit
-    Left = 262
+    Left = 278
     Height = 21
     Top = 19
     Width = 122
@@ -78,7 +74,7 @@ object VisLogin: TVisLogin
     Left = 6
     Height = 34
     Top = 113
-    Width = 414
+    Width = 431
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
     HelpButton.Name = 'HelpButton'
@@ -92,7 +88,7 @@ object VisLogin: TVisLogin
     ShowButtons = [pbOK, pbCancel]
   end
   object BitBtn1: TBitBtn
-    Left = 392
+    Left = 408
     Height = 26
     Hint = 'Configure WAPT console'
     Top = 16
@@ -498,5 +494,7 @@ object VisLogin: TVisLogin
       212A90F20052EE45A72C236CFF66B2B3832FCB02FE3FD6B2AB650FAE6C2D0000
       000049454E44AE426082
     }
+    Proportional = True
+    Stretch = True
   end
 end

@@ -6,11 +6,7 @@ object visGroupChoice: TvisGroupChoice
   Caption = 'Package selection'
   ClientHeight = 549
   ClientWidth = 705
-  Font.CharSet = ANSI_CHARSET
-  Font.Height = -11
-  Font.Name = 'Tahoma'
-  Font.Pitch = fpVariable
-  Font.Quality = fqDraft
+  OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '1.3'

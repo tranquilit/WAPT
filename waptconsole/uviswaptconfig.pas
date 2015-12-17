@@ -59,6 +59,7 @@ type
     procedure edServerAddressEnter(Sender: TObject);
     procedure edServerAddressExit(Sender: TObject);
     procedure edServerAddressKeyPress(Sender: TObject; var Key: char);
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure HelpButtonClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
@@ -73,7 +74,7 @@ var
   VisWAPTConfig: TVisWAPTConfig;
 
 implementation
-uses waptcommon,LCLIntf,IDURI,superobject,uWaptConsoleRes;
+uses waptcommon,LCLIntf,IDURI,superobject,uWaptConsoleRes,uScaleDPI;
 {$R *.lfm}
 
 { TVisWAPTConfig }
@@ -239,6 +240,13 @@ procedure TVisWAPTConfig.edServerAddressKeyPress(Sender: TObject; var Key: char
 begin
   if key=#13 then
     Button2Click(sender);
+end;
+
+procedure TVisWAPTConfig.FormCreate(Sender: TObject);
+begin
+    ScaleDPI(Self,96); // 96 is the DPI you designed
+    ScaleImageList(ImageList1,96);
+
 end;
 
 procedure TVisWAPTConfig.FormShow(Sender: TObject);

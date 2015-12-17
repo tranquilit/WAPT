@@ -12,6 +12,7 @@ object visPrivateKeyAuth: TvisPrivateKeyAuth
   Font.Name = 'Tahoma'
   Font.Pitch = fpVariable
   Font.Quality = fqDraft
+  OnCreate = FormCreate
   Position = poScreenCenter
   LCLVersion = '1.3'
   object edPasswordKey: TEdit
@@ -61,7 +62,7 @@ object visPrivateKeyAuth: TvisPrivateKeyAuth
     Left = 18
     Height = 13
     Top = 41
-    Width = 137
+    Width = 110
     Caption = 'Private key password :'
     ParentColor = False
   end
@@ -69,7 +70,7 @@ object visPrivateKeyAuth: TvisPrivateKeyAuth
     Left = 16
     Height = 13
     Top = 16
-    Width = 22
+    Width = 28
     Caption = 'Key : '
     ParentColor = False
   end

@@ -39,7 +39,7 @@ var
   VisLoading: TVisLoading;
 
 implementation
-uses uWaptConsoleRes;
+uses uWaptConsoleRes,uScaleDPI;
 {$R *.lfm}
 
 { TVisLoading }
@@ -54,6 +54,7 @@ end;
 
 procedure TVisLoading.FormCreate(Sender: TObject);
 begin
+  ScaleDPI(Self,96); // 96 is the DPI you designed
   AProgressBar.Min:=0;
 end;
 

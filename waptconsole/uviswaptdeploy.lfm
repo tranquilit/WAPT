@@ -8,11 +8,6 @@ object viswaptdeploy: Tviswaptdeploy
   ClientWidth = 639
   Constraints.MinHeight = 418
   Constraints.MinWidth = 427
-  Font.CharSet = ANSI_CHARSET
-  Font.Height = -11
-  Font.Name = 'Tahoma'
-  Font.Pitch = fpVariable
-  Font.Quality = fqDraft
   OnCreate = FormCreate
   Position = poMainFormCenter
   ShowHint = True
@@ -107,7 +102,7 @@ object viswaptdeploy: Tviswaptdeploy
       Left = 8
       Height = 52
       Top = 4
-      Width = 560
+      Width = 541
       Caption = 'This method lets you deploy waptagent.exe onto all hosts via psexec.'#13#10'Make sure IPC$ administrative share can be accessed.'#13#10'On Win XP specifically, the Simple File Sharing feature should be disabled (explorer / tools / Folder options / View '#13#10' Uncheck "Use simple file sharing").'
       ParentColor = False
     end
@@ -155,7 +150,7 @@ object viswaptdeploy: Tviswaptdeploy
       Left = 8
       Height = 13
       Top = 7
-      Width = 234
+      Width = 216
       Caption = 'List of hosts on which WAPT will be installed :'
       ParentColor = False
     end

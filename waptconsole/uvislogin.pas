@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, Buttons, ButtonPanel, LCLType,uwaptconsole,waptcommon, DefaultTranslator;
+  ExtCtrls, Buttons, ButtonPanel, LCLType,uwaptconsole,waptcommon, DefaultTranslator,UScaleDPI;
 
 type
 
@@ -25,6 +25,7 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure edPasswordKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     { private declarations }
@@ -50,6 +51,11 @@ begin
   end;
 end;
 
+procedure TVisLogin.FormCreate(Sender: TObject);
+begin
+  ScaleDPI(Self,96); // 96 is the DPI you designed
+end;
+
 procedure TVisLogin.FormShow(Sender: TObject);
 begin
   if edUser.Text<>'' then
@@ -64,6 +70,8 @@ begin
     edWaptServerName.Text:=waptcommon.GetWaptServerURL;
   end;
 end;
+
+
 
 end.
 

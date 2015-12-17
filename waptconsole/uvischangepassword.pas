@@ -18,6 +18,7 @@ type
     EdNewPassword1: TLabeledEdit;
     EdOldPassword: TLabeledEdit;
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
+    procedure FormCreate(Sender: TObject);
   private
     { private declarations }
   public
@@ -28,7 +29,7 @@ var
   VisChangePassword: TVisChangePassword;
 
 implementation
-uses waptcommon;
+uses waptcommon,UScaleDPI;
 
 {$R *.lfm}
 
@@ -61,6 +62,12 @@ begin
       CanClose:=False;
     end;
   end;
+end;
+
+procedure TVisChangePassword.FormCreate(Sender: TObject);
+begin
+    ScaleDPI(Self,96); // 96 is the DPI you designed
+
 end;
 
 end.

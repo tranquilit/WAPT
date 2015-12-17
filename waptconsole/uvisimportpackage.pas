@@ -41,6 +41,7 @@ type
     procedure EdSearch1Execute(Sender: TObject);
     procedure EdSearch1KeyPress(Sender: TObject; var Key: char);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure GridExternalPackagesGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; RowData, CellData: ISuperObject;
@@ -59,7 +60,7 @@ var
 implementation
 
 uses uwaptconsole,tiscommon,soutils,waptcommon,
-    dmwaptpython,uvisloading,uvisprivatekeyauth, uWaptRes,md5;
+    dmwaptpython,uvisloading,uvisprivatekeyauth, uWaptRes,md5,uScaleDPI;
 
 {$R *.lfm}
 
@@ -96,6 +97,13 @@ procedure TVisImportPackage.FormClose(Sender: TObject;
   var CloseAction: TCloseAction);
 begin
   GridExternalPackages.SaveSettingsToIni(Appuserinipath) ;
+end;
+
+procedure TVisImportPackage.FormCreate(Sender: TObject);
+begin
+    ScaleDPI(Self,96); // 96 is the DPI you designed
+    ScaleImageList(ActionsImages,96);
+
 end;
 
 procedure TVisImportPackage.FormShow(Sender: TObject);

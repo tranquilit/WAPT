@@ -557,7 +557,7 @@ uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings, soutils,
   uvisgroupchoice, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
   uVisImportPackage, uVisWUAGroup, uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect, PythonEngine, Clipbrd, RegExpr, tisinifiles,
-  IdURI;
+  IdURI,uScaleDPI;
 
 {$R *.lfm}
 
@@ -2983,6 +2983,9 @@ end;
 
 procedure TVisWaptGUI.FormCreate(Sender: TObject);
 begin
+  ScaleDPI(Self,96); // 96 is the DPI you designed
+  ScaleImageList(ImageList1,96);
+  ScaleImageList(ActionsImages,96);
   waptpath := ExtractFileDir(ParamStr(0));
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
 end;

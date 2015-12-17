@@ -21,6 +21,7 @@ type
     laPassword: TLabel;
     Panel1: TPanel;
     procedure edPasswordKeyKeyPress(Sender: TObject; var Key: char);
+    procedure FormCreate(Sender: TObject);
   private
     { private declarations }
   public
@@ -34,7 +35,7 @@ var
 
 implementation
 
-uses waptcommon, dmwaptpython;
+uses waptcommon, dmwaptpython,uSCaleDPI;
 
 {$R *.lfm}
 const
@@ -85,6 +86,12 @@ begin
   begin
      BitBtn1.Click;
   end;
+end;
+
+procedure TvisPrivateKeyAuth.FormCreate(Sender: TObject);
+begin
+    ScaleDPI(Self,96); // 96 is the DPI you designed
+
 end;
 
 end.

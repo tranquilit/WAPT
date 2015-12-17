@@ -61,7 +61,7 @@ var
 implementation
 
 {$R *.lfm}
-uses tiscommon,waptcommon,IdHTTP;
+uses tiscommon,waptcommon,IdHTTP,UScaleDPI;
 
 { TVisHostsUpgrade }
 
@@ -119,6 +119,8 @@ end;
 
 procedure TVisHostsUpgrade.FormCreate(Sender: TObject);
 begin
+  ScaleDPI(Self,96); // 96 is the DPI you designed
+  ScaleImageList(ImageList1,96);
   Action := 'upgrade_host';
 end;
 

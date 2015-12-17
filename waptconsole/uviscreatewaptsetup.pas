@@ -28,6 +28,7 @@ type
     Label5: TLabel;
     Panel1: TPanel;
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
+    procedure FormCreate(Sender: TObject);
   private
     { private declarations }
   public
@@ -42,7 +43,7 @@ implementation
 {$R *.lfm}
 
 uses
-  uWaptRes;
+  uWaptRes,UScaleDPI;
 
 { TVisCreateWaptSetup }
 procedure TVisCreateWaptSetup.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -61,6 +62,11 @@ begin
       CanClose:=False;
     end
   end;
+end;
+
+procedure TVisCreateWaptSetup.FormCreate(Sender: TObject);
+begin
+  ScaleDPI(Self,96); // 96 is the DPI you designed
 end;
 
 end.

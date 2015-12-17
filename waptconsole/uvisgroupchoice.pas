@@ -28,6 +28,7 @@ type
     procedure cbBaseClick(Sender: TObject);
     procedure EdSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
       );
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     { private declarations }
@@ -39,6 +40,8 @@ var
   visGroupChoice: TvisGroupChoice;
 
 implementation
+
+uses uSCaleDPI;
 
 {$R *.lfm}
 
@@ -76,6 +79,12 @@ begin
     EdSearch.SelectAll;
     ActSearch.Execute;
   end;
+end;
+
+procedure TvisGroupChoice.FormCreate(Sender: TObject);
+begin
+    ScaleDPI(Self,96); // 96 is the DPI you designed
+
 end;
 
 procedure TvisGroupChoice.FormShow(Sender: TObject);

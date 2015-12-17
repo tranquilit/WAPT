@@ -36,6 +36,7 @@ type
     Shape1: TShape;
     StaticText1: TStaticText;
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
+    procedure FormCreate(Sender: TObject);
   private
     { private declarations }
   public
@@ -49,7 +50,7 @@ implementation
 {$R *.lfm}
 
 uses
-  uWaptRes;
+  uWaptRes,uSCaleDPI;
 
 { TVisCreateKey }
 
@@ -71,6 +72,12 @@ begin
       end
       else
           CanClose:=True;
+end;
+
+procedure TVisCreateKey.FormCreate(Sender: TObject);
+begin
+    ScaleDPI(Self,96); // 96 is the DPI you designed
+
 end;
 
 end.

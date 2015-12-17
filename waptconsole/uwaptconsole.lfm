@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
   Left = 375
   Height = 843
-  Top = 154
+  Top = 134
   Width = 1277
   Caption = 'WAPT console'
   ClientHeight = 824
@@ -32,7 +32,7 @@ object VisWaptGUI: TVisWaptGUI
       object Panel10: TPanel
         Left = 0
         Height = 54
-        Top = 51
+        Top = 49
         Width = 1269
         Align = alTop
         BevelOuter = bvNone
@@ -242,8 +242,8 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridHosts: TSOGrid
         Left = 0
-        Height = 550
-        Top = 105
+        Height = 552
+        Top = 103
         Width = 692
         OnGetText = GridHostsGetText
         Align = alClient
@@ -459,8 +459,8 @@ object VisWaptGUI: TVisWaptGUI
       end
       object HostPages: TPageControl
         Left = 697
-        Height = 550
-        Top = 105
+        Height = 552
+        Top = 103
         Width = 572
         ActivePage = pgPackages
         Align = alRight
@@ -470,13 +470,13 @@ object VisWaptGUI: TVisWaptGUI
         object pgPackages: TTabSheet
           AnchorSideTop.Side = asrBottom
           Caption = 'Overview'
-          ClientHeight = 524
+          ClientHeight = 526
           ClientWidth = 564
           object GridHostPackages: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 307
+            Height = 309
             Top = 122
             Width = 564
             Align = alBottom
@@ -866,7 +866,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel5: TPanel
             Left = 0
             Height = 90
-            Top = 434
+            Top = 436
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -887,7 +887,7 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 429
+            Top = 431
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
@@ -970,7 +970,6 @@ object VisWaptGUI: TVisWaptGUI
               Width = 1
               Color = clDefault
               ParentColor = False
-              ParentFont = True
               Transparent = False
             end
           end
@@ -1757,15 +1756,15 @@ object VisWaptGUI: TVisWaptGUI
       end
       object Splitter4: TSplitter
         Left = 692
-        Height = 550
-        Top = 105
+        Height = 552
+        Top = 103
         Width = 5
         Align = alRight
         ResizeAnchor = akRight
       end
       object ToolBar1: TToolBar
         Left = 0
-        Height = 51
+        Height = 49
         Top = 0
         Width = 1269
         ButtonHeight = 37
@@ -1814,12 +1813,12 @@ object VisWaptGUI: TVisWaptGUI
         end
         object Image1: TImage
           Cursor = crHandPoint
-          Left = 1115
-          Height = 49
+          Left = 1116
+          Height = 47
           Top = 2
-          Width = 154
+          Width = 153
+          AntialiasingMode = amOn
           Align = alRight
-          AutoSize = True
           OnClick = Image1Click
           Picture.Data = {
             1754506F727461626C654E6574776F726B477261706869637515000089504E47
@@ -1996,6 +1995,8 @@ object VisWaptGUI: TVisWaptGUI
             F1EB430A7C743E273EB6EE4842BF103F914E25CBBBC87DF2F10BE4FF01BCE966
             6EE1ADEFFE0000000049454E44AE426082
           }
+          Proportional = True
+          Stretch = True
         end
       end
     end

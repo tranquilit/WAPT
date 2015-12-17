@@ -8,11 +8,6 @@ object VisEditPackage: TVisEditPackage
   ClientWidth = 949
   Constraints.MinHeight = 400
   Constraints.MinWidth = 800
-  Font.CharSet = ANSI_CHARSET
-  Font.Height = -11
-  Font.Name = 'Tahoma'
-  Font.Pitch = fpVariable
-  Font.Quality = fqDraft
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
@@ -74,6 +69,11 @@ object VisEditPackage: TVisEditPackage
             PropertyName = 'depends'
           end>
         Header.DefaultHeight = 17
+        Header.Font.CharSet = ANSI_CHARSET
+        Header.Font.Height = -11
+        Header.Font.Name = 'Tahoma'
+        Header.Font.Pitch = fpVariable
+        Header.Font.Quality = fqDraft
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.Style = hsFlatButtons
         PopupMenu = PopupMenuEditDepends
@@ -139,6 +139,11 @@ object VisEditPackage: TVisEditPackage
             PropertyName = 'depends'
           end>
         Header.DefaultHeight = 17
+        Header.Font.CharSet = ANSI_CHARSET
+        Header.Font.Height = -11
+        Header.Font.Name = 'Tahoma'
+        Header.Font.Pitch = fpVariable
+        Header.Font.Quality = fqDraft
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.Style = hsFlatButtons
         PopupMenu = PopupMenuEditConflicts
@@ -156,13 +161,13 @@ object VisEditPackage: TVisEditPackage
     object pgDevelop: TTabSheet
       Caption = 'setup.py'
       ClientHeight = 391
-      ClientWidth = 502
+      ClientWidth = 651
       TabVisible = False
       inline EdSetupPy: TSynEdit
         Left = 0
         Height = 357
         Top = 34
-        Width = 502
+        Width = 651
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -685,11 +690,11 @@ object VisEditPackage: TVisEditPackage
         Left = 0
         Height = 34
         Top = 0
-        Width = 502
+        Width = 651
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 502
+        ClientWidth = 651
         TabOrder = 1
         object butInitWapt: TBitBtn
           Left = 0
@@ -1143,6 +1148,11 @@ object VisEditPackage: TVisEditPackage
           PropertyName = 'explicit_by'
         end>
       Header.DefaultHeight = 17
+      Header.Font.CharSet = ANSI_CHARSET
+      Header.Font.Height = -11
+      Header.Font.Name = 'Tahoma'
+      Header.Font.Pitch = fpVariable
+      Header.Font.Quality = fqDraft
       Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
       Header.SortColumn = 0
       Header.Style = hsFlatButtons

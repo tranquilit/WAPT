@@ -49,13 +49,14 @@ var
   viswaptdeploy: Tviswaptdeploy;
 
 implementation
-uses tiscommon,waptcommon;
+uses tiscommon,waptcommon,UScaleDPI;
 {$R *.lfm}
 
 { Tviswaptdeploy }
 
 procedure Tviswaptdeploy.FormCreate(Sender: TObject);
 begin
+  ScaleDPI(Self,96); // 96 is the DPI you designed
   EdDomaine.Text := GetDomainName;
 end;
 

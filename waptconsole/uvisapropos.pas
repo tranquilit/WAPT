@@ -29,13 +29,14 @@ var
   VisApropos: TVisApropos;
 
 implementation
-uses tiscommon,waptcommon,LCLIntf;
+uses tiscommon,waptcommon,LCLIntf,UScaleDPI;
 {$R *.lfm}
 
 { TVisApropos }
 
 procedure TVisApropos.FormCreate(Sender: TObject);
 begin
+  ScaleDPI(Self,96); // 96 is the DPI you designed
   LabInfos.Caption := format(rsVersion, [GetApplicationVersion, GetApplicationVersion(WaptgetPath)]);
 end;
 
