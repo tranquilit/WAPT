@@ -69,11 +69,6 @@ object VisEditPackage: TVisEditPackage
             PropertyName = 'depends'
           end>
         Header.DefaultHeight = 17
-        Header.Font.CharSet = ANSI_CHARSET
-        Header.Font.Height = -11
-        Header.Font.Name = 'Tahoma'
-        Header.Font.Pitch = fpVariable
-        Header.Font.Quality = fqDraft
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.Style = hsFlatButtons
         PopupMenu = PopupMenuEditDepends
@@ -139,11 +134,6 @@ object VisEditPackage: TVisEditPackage
             PropertyName = 'depends'
           end>
         Header.DefaultHeight = 17
-        Header.Font.CharSet = ANSI_CHARSET
-        Header.Font.Height = -11
-        Header.Font.Name = 'Tahoma'
-        Header.Font.Pitch = fpVariable
-        Header.Font.Quality = fqDraft
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.Style = hsFlatButtons
         PopupMenu = PopupMenuEditConflicts
@@ -1148,11 +1138,6 @@ object VisEditPackage: TVisEditPackage
           PropertyName = 'explicit_by'
         end>
       Header.DefaultHeight = 17
-      Header.Font.CharSet = ANSI_CHARSET
-      Header.Font.Height = -11
-      Header.Font.Name = 'Tahoma'
-      Header.Font.Pitch = fpVariable
-      Header.Font.Quality = fqDraft
       Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
       Header.SortColumn = 0
       Header.Style = hsFlatButtons

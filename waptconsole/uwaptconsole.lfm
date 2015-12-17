@@ -435,8 +435,8 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'host.domain_controller_address'
           end>
         Header.DefaultHeight = 17
-        Header.MaxHeight = 17
-        Header.MinHeight = 17
+        Header.Height = 18
+        Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.Style = hsFlatButtons
         Images = ImageList1
@@ -476,8 +476,8 @@ object VisWaptGUI: TVisWaptGUI
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 309
-            Top = 122
+            Height = 312
+            Top = 119
             Width = 564
             Align = alBottom
             Anchors = [akTop, akLeft, akRight, akBottom]
@@ -656,6 +656,7 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'architecture'
               end>
             Header.DefaultHeight = 17
+            Header.Height = 18
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
             Header.Style = hsFlatButtons
             Images = ImageList1
@@ -673,14 +674,13 @@ object VisWaptGUI: TVisWaptGUI
           object Panel9: TPanel
             AnchorSideBottom.Control = GridHostPackages
             Left = 0
-            Height = 120
+            Height = 117
             Top = 0
             Width = 564
             Align = alTop
             BevelOuter = bvNone
-            ClientHeight = 120
+            ClientHeight = 117
             ClientWidth = 564
-            Constraints.MaxHeight = 120
             TabOrder = 0
             object Label1: TLabel
               Left = 7
@@ -775,7 +775,7 @@ object VisWaptGUI: TVisWaptGUI
             object EdDescription: TEdit
               Left = 108
               Height = 21
-              Top = 32
+              Top = 31
               Width = 216
               Anchors = [akLeft, akRight]
               Color = 15066597
@@ -785,7 +785,7 @@ object VisWaptGUI: TVisWaptGUI
             object EdOS: TEdit
               Left = 108
               Height = 21
-              Top = 54
+              Top = 52
               Width = 216
               Anchors = [akLeft, akRight]
               Color = 15066597
@@ -795,7 +795,7 @@ object VisWaptGUI: TVisWaptGUI
             object EdIPAddress: TEdit
               Left = 108
               Height = 21
-              Top = 76
+              Top = 74
               Width = 216
               Anchors = [akLeft, akRight]
               Color = 15066597
@@ -815,7 +815,7 @@ object VisWaptGUI: TVisWaptGUI
             object EdModelName: TEdit
               Left = 419
               Height = 21
-              Top = 32
+              Top = 31
               Width = 132
               Anchors = [akRight]
               Color = 15066597
@@ -825,7 +825,7 @@ object VisWaptGUI: TVisWaptGUI
             object EdUpdateDate: TEdit
               Left = 419
               Height = 21
-              Top = 54
+              Top = 52
               Width = 132
               Anchors = [akRight]
               Color = 15066597
@@ -835,7 +835,7 @@ object VisWaptGUI: TVisWaptGUI
             object EdUser: TEdit
               Left = 419
               Height = 21
-              Top = 76
+              Top = 74
               Width = 132
               Anchors = [akRight]
               Color = 15066597
@@ -855,7 +855,7 @@ object VisWaptGUI: TVisWaptGUI
             object EdRunningStatus: TEdit
               Left = 108
               Height = 21
-              Top = 98
+              Top = 95
               Width = 216
               Anchors = [akLeft, akRight]
               Color = 15066597

@@ -5,7 +5,7 @@ unit UScaleDPI;
 interface
 
 uses
-  Forms, Controls, ComCtrls;
+  Forms, Graphics, Controls, ComCtrls;
 
 procedure HighDPI(FromDPI: Integer);
 procedure ScaleDPI(Control: TControl; FromDPI: Integer);
@@ -15,7 +15,7 @@ function DoScaleY(Size: Integer; FromDPI: Integer): integer;
 
 implementation
 
-uses Classes, Graphics, VirtualTrees,sogrid,vte_json;
+uses Classes;
 
 procedure HighDPI(FromDPI: Integer);
 var
@@ -140,79 +140,6 @@ begin
     with ToolBarControl do begin
       ButtonWidth:=ScaleX(ButtonWidth,FromDPI);
       ButtonHeight:=ScaleY(ButtonHeight,FromDPI);
-    end;
-  end;
-
-  if Control is TSOGrid then
-  begin
-    With Control as TSOGrid do
-    begin
-      DefaultNodeHeight := ScaleY(DefaultNodeHeight,FromDPI);
-      Header.MinHeight:=ScaleY(Header.MinHeight,FromDPI);;
-      Header.MaxHeight:=ScaleY(Header.MaxHeight,FromDPI);;
-      Header.Height:=ScaleY(Header.Height,FromDPI);;
-      Font.Height := 0;
-      for i := 0 to header.Columns.Count-1 do
-      begin
-        header.Columns[i].MinWidth:=ScaleX(header.Columns[i].MinWidth,FromDPI);
-        header.Columns[i].MaxWidth:=ScaleX(header.Columns[i].MaxWidth,FromDPI);
-        header.Columns[i].Width:=ScaleX(header.Columns[i].Width,FromDPI);
-      end;
-    end;
-  end;
-
-  if Control is TVirtualJSONTreeView then
-  begin
-    With Control as TVirtualJSONTreeView do
-    begin
-      DefaultNodeHeight := ScaleY(DefaultNodeHeight,FromDPI);
-      Header.MinHeight:=ScaleY(Header.MinHeight,FromDPI);;
-      Header.MaxHeight:=ScaleY(Header.MaxHeight,FromDPI);;
-      Header.Height:=ScaleY(Header.Height,FromDPI);;
-      Font.Height := 0;
-      for i := 0 to header.Columns.Count-1 do
-      begin
-        header.Columns[i].MinWidth:=ScaleX(header.Columns[i].MinWidth,FromDPI);
-        header.Columns[i].MaxWidth:=ScaleX(header.Columns[i].MaxWidth,FromDPI);
-        header.Columns[i].Width:=ScaleX(header.Columns[i].Width,FromDPI);
-      end;
-    end;
-  end;
-
-
-  if Control is TVirtualDrawTree  then
-  begin
-    With Control as TVirtualDrawTree do
-    begin
-      DefaultNodeHeight := ScaleY(DefaultNodeHeight,FromDPI);
-      Header.MinHeight:=ScaleY(Header.MinHeight,FromDPI);;
-      Header.MaxHeight:=ScaleY(Header.MaxHeight,FromDPI);;
-      Header.Height:=ScaleY(Header.Height,FromDPI);;
-      Font.Height := 0;
-      for i := 0 to header.Columns.Count-1 do
-      begin
-        header.Columns[i].MinWidth:=ScaleX(header.Columns[i].MinWidth,FromDPI);
-        header.Columns[i].MaxWidth:=ScaleX(header.Columns[i].MaxWidth,FromDPI);
-        header.Columns[i].Width:=ScaleX(header.Columns[i].Width,FromDPI);
-      end;
-    end;
-  end;
-
-  if Control is TVirtualStringTree  then
-  begin
-    With Control as TVirtualStringTree do
-    begin
-      DefaultNodeHeight := ScaleY(DefaultNodeHeight,FromDPI);
-      Header.MinHeight:=ScaleY(Header.MinHeight,FromDPI);;
-      Header.MaxHeight:=ScaleY(Header.MaxHeight,FromDPI);;
-      Header.Height:=ScaleY(Header.Height,FromDPI);;
-      Font.Height := 0;
-      for i := 0 to header.Columns.Count-1 do
-      begin
-        header.Columns[i].MinWidth:=ScaleX(header.Columns[i].MinWidth,FromDPI);
-        header.Columns[i].MaxWidth:=ScaleX(header.Columns[i].MaxWidth,FromDPI);
-        header.Columns[i].Width:=ScaleX(header.Columns[i].Width,FromDPI);
-      end;
     end;
   end;
 

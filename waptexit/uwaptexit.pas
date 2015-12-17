@@ -53,7 +53,7 @@ var
 
 implementation
 
-uses soutils,IniFiles,waptcommon;
+uses soutils,IniFiles,waptcommon,uScaleDPI;
 {$R *.lfm}
 
 { TVisWaptExit }
@@ -123,6 +123,9 @@ procedure TVisWaptExit.FormCreate(Sender: TObject);
 var
   ini:TIniFile;
 begin
+  ScaleDPI(Self,96); // 96 is the DPI you designed
+  ScaleImageList(ImageList1,96);
+
   //Load config
   ini := TIniFile.Create(WaptIniFilename);
   try

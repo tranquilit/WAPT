@@ -42,67 +42,64 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="20">
+    <RequiredPackages Count="19">
       <Item1>
-        <PackageName Value="pl_bgrabitmap"/>
+        <PackageName Value="pl_fzcontrols"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_fzcontrols"/>
+        <PackageName Value="pl_exdesign"/>
       </Item2>
       <Item3>
-        <PackageName Value="pl_exdesign"/>
+        <PackageName Value="pl_rx"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_rx"/>
+        <PackageName Value="pl_luicontrols"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_luicontrols"/>
+        <PackageName Value="pl_lclextensions"/>
       </Item5>
       <Item6>
-        <PackageName Value="pl_lclextensions"/>
+        <PackageName Value="pl_lazsolutions"/>
       </Item6>
       <Item7>
-        <PackageName Value="pl_lazsolutions"/>
+        <PackageName Value="pl_indy"/>
       </Item7>
       <Item8>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="MultiThreadProcsLaz"/>
       </Item8>
       <Item9>
-        <PackageName Value="MultiThreadProcsLaz"/>
+        <PackageName Value="pltis_wapt"/>
       </Item9>
       <Item10>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="pl_excontrols"/>
       </Item10>
       <Item11>
-        <PackageName Value="pl_excontrols"/>
+        <PackageName Value="pltis_utils"/>
       </Item11>
       <Item12>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item12>
       <Item13>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="pl_virtualtrees"/>
       </Item13>
       <Item14>
-        <PackageName Value="pl_virtualtrees"/>
+        <PackageName Value="pltis_superobject"/>
       </Item14>
       <Item15>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item15>
       <Item16>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item16>
       <Item17>
-        <PackageName Value="pl_virtualtreesextra"/>
+        <PackageName Value="FCL"/>
       </Item17>
       <Item18>
-        <PackageName Value="FCL"/>
+        <PackageName Value="SynEdit"/>
       </Item18>
       <Item19>
-        <PackageName Value="SynEdit"/>
-      </Item19>
-      <Item20>
         <PackageName Value="LCL"/>
-      </Item20>
+      </Item19>
     </RequiredPackages>
     <Units Count="28">
       <Unit0>

@@ -1,12 +1,12 @@
 object VisLogin: TVisLogin
   Left = 784
-  Height = 153
+  Height = 160
   Top = 479
-  Width = 443
+  Width = 442
   BorderStyle = bsDialog
   Caption = 'WAPT authentication'
-  ClientHeight = 153
-  ClientWidth = 443
+  ClientHeight = 160
+  ClientWidth = 442
   Color = clWhite
   OnCreate = FormCreate
   OnShow = FormShow
@@ -73,8 +73,8 @@ object VisLogin: TVisLogin
   object ButtonPanel1: TButtonPanel
     Left = 6
     Height = 34
-    Top = 113
-    Width = 431
+    Top = 120
+    Width = 430
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
     HelpButton.Name = 'HelpButton'
@@ -181,11 +181,13 @@ object VisLogin: TVisLogin
   end
   object Image1: TImage
     Cursor = crHandPoint
-    Left = 16
-    Height = 90
-    Top = 8
+    Left = 4
+    Height = 110
+    Top = 4
     Width = 155
-    AutoSize = True
+    Align = alLeft
+    BorderSpacing.Around = 4
+    Center = True
     Picture.Data = {
       1754506F727461626C654E6574776F726B477261706869630E26000089504E47
       0D0A1A0A0000000D494844520000009B0000005A0806000000AFD5249D000000
