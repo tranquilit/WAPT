@@ -271,50 +271,14 @@ def create_onetime_task(name,cmd,parameters=None, delay_minutes=2,max_runtime=10
     """creates a one time Windows scheduled task and activate it.
     """
     run_time = time.localtime(time.time() + delay_minutes*60)
-    if windows_version()<Version('10.0.0'):
-        ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler,None,
-                                        pythoncom.CLSCTX_INPROC_SERVER,
-                                        taskscheduler.IID_ITaskScheduler)
-
-        if task_exists(name):
-            delete_task(name)
-
-        task = ts.NewWorkItem(name)
-        task.SetApplicationName(cmd)
-        if parameters is not None:
-            task.SetParameters(parameters)
-        task.SetAccountInformation('', None)
-        if max_runtime:
-            task.SetMaxRunTime(max_runtime * 60*1000)
-        #task.SetErrorRetryCount(retry_count)
-        #task.SetErrorRetryInterval(retry_delay_minutes)
-        task.SetFlags(task.GetFlags() | taskscheduler.TASK_FLAG_DELETE_WHEN_DONE)
-        ts.AddWorkItem(name, task)
-        tr_ind, tr = task.CreateTrigger()
-        tt = tr.GetTrigger()
-        tt.Flags = 0
-        tt.BeginYear = int(time.strftime('%Y', run_time))
-        tt.BeginMonth = int(time.strftime('%m', run_time))
-        tt.BeginDay = int(time.strftime('%d', run_time))
-        tt.StartMinute = int(time.strftime('%M', run_time))
-        tt.StartHour = int(time.strftime('%H', run_time))
-        tt.TriggerType = int(taskscheduler.TASK_TIME_TRIGGER_ONCE)
-        tr.SetTrigger(tt)
-        pf = task.QueryInterface(pythoncom.IID_IPersistFile)
-        pf.Save(None,1)
-        #task.Run()
-        task = ts.Activate(name)
-        #exit_code, startup_error_code = task.GetExitCode()
-        return task
-    else:
-        # task
-        hour_min = time.strftime('%H:%M', run_time)
-        try:
-            return run('schtasks /Create /SC ONCE /TN "%s" /TR "\'%s\' %s" /ST %s /RU SYSTEM /F /V1 /Z' % (name,cmd,parameters,hour_min))
-        except:
-            # windows xp doesn't support one time startup task /Z nor /F
-            run_notfatal('schtasks /Delete /TN "%s" /F'%name)
-            return run('schtasks /Create /RU SYSTEM /SC ONCE /TN "%s" /TR  "\'%s\' %s" /ST %s /RU SYSTEM' % (name,cmd,parameters,hour_min))
+    # task
+    hour_min = time.strftime('%H:%M', run_time)
+    try:
+        return run('schtasks /Create /SC ONCE /TN "%s" /TR "\'%s\' %s" /ST %s /RU SYSTEM /F /V1 /Z' % (name,cmd,parameters,hour_min))
+    except:
+        # windows xp doesn't support one time startup task /Z nor /F
+        run_notfatal('schtasks /Delete /TN "%s" /F'%name)
+        return run('schtasks /Create /RU SYSTEM /SC ONCE /TN "%s" /TR  "\'%s\' %s" /ST %s /RU SYSTEM' % (name,cmd,parameters,hour_min))
 
 
 def full_waptagent_install(min_version,at_startup=False):
@@ -336,14 +300,14 @@ def full_waptagent_install(min_version,at_startup=False):
             print('waptexit is running, scheduling a one time task at system startup with command %s'%cmd)
         # task at system startup
         try:
-            run('schtasks /Create /RU SYSTEM /SC ONSTART /TN fullwaptupgrade /TR "%s" /F /V1 /Z' % cmd)
+            print run('schtasks /Create /RU SYSTEM /SC ONSTART /TN fullwaptupgrade /TR "%s" /F /V1 /Z' % cmd)
         except:
             # windows xp doesn't support one time startup task /Z nor /F
             run_notfatal('schtasks /Delete /TN fullwaptupgrade /F')
-            run('schtasks /Create /RU SYSTEM /SC ONSTART /TN fullwaptupgrade /TR "%s"' % cmd)
+            print run('schtasks /Create /RU SYSTEM /SC ONSTART /TN fullwaptupgrade /TR "%s"' % cmd)
     else:
         # use embedded waptagent.exe, wait 15 minutes for other tasks to complete.
-        create_onetime_task('fullwaptupgrade',waptdeploy_path,'--hash=%s --waptsetupurl=%s --wait=15 --temporary --force --minversion=%s'%(expected_sha256,waptagent_path,min_version),delay_minutes=1)
+        print create_onetime_task('fullwaptupgrade',waptdeploy_path,'--hash=%s --waptsetupurl=%s --wait=15 --temporary --force --minversion=%s'%(expected_sha256,waptagent_path,min_version),delay_minutes=1)
 
 
 def install():
