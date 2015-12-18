@@ -422,7 +422,7 @@ begin
       ProgressTitle(rsSettingServerPassword);
       ProgressStep(3,8);
 
-      IniWriteString(WaptBaseDir+'\waptserver\waptserver.ini' ,'Options','wapt_password',sha1.SHA1Print(sha1.SHA1String(EdPwd1.Text)));
+      IniWriteString(WaptBaseDir+'\conf\waptserver.ini' ,'Options','wapt_password',sha1.SHA1Print(sha1.SHA1String(EdPwd1.Text)));
 
       if CBOpenFirewall.Checked then
       begin

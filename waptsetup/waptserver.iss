@@ -38,7 +38,7 @@ Source: "..\lib\site-packages\pymongo\*"; DestDir: "{app}\lib\site-packages\pymo
 
 ; Sources for server application
 Source: "waptserver.iss"; DestDir: "{app}\waptsetup";
-Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\waptserver"; DestName: "waptserver.ini"
+Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName: "waptserver.ini"
 Source: "..\waptserver\*.py"; DestDir: "{app}\waptserver";       
 Source: "..\waptserver\*.template"; DestDir: "{app}\waptserver";  
 Source: "..\waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs
