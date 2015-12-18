@@ -3082,7 +3082,7 @@ def create_onetime_task(name,cmd,parameters=None, delay_minutes=2,max_runtime=10
     except:
         # windows xp doesn't support one time startup task /Z nor /F
         run_notfatal('schtasks /Delete /TN "%s" /F'%name)
-        return run('schtasks /Create /SC ONCE /TN "%s" /TR  "\'%s\' %s" /ST %s /RU SYSTEM' % (name,cmd,parameters,hour_min))
+        return run('schtasks /Create /SC ONCE /TN "%s" /TR  "%s %s" /ST %s /RU SYSTEM' % (name,cmd,parameters,hour_min))
 
 
 def get_current_user():
