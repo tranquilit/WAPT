@@ -435,7 +435,7 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'host.domain_controller_address'
           end>
         Header.DefaultHeight = 17
-        Header.Height = 18
+        Header.Height = 19
         Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.Style = hsFlatButtons
@@ -895,11 +895,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostInventory: TTabSheet
           Caption = 'Hardware inventory'
-          ClientHeight = 536
+          ClientHeight = 526
           ClientWidth = 564
           object GridhostInventory: TVirtualJSONInspector
             Left = 0
-            Height = 496
+            Height = 486
             Top = 40
             Width = 564
             PropertyDefs = <>
@@ -919,7 +919,9 @@ object VisWaptGUI: TVisWaptGUI
                 Text = 'Value'
                 Width = 410
               end>
-            Header.DefaultHeight = 17
+            Header.DefaultHeight = 19
+            Header.Height = 19
+            Header.MinHeight = 19
             Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
             Header.Style = hsFlatButtons
             TabOrder = 0
@@ -976,11 +978,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgSoftwares: TTabSheet
           Caption = 'Software inventory'
-          ClientHeight = 536
+          ClientHeight = 526
           ClientWidth = 564
           object GridHostSoftwares: TSOGrid
             Left = 0
-            Height = 506
+            Height = 496
             Top = 30
             Width = 564
             Align = alClient
@@ -1047,6 +1049,7 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'system_component'
               end>
             Header.DefaultHeight = 17
+            Header.Height = 19
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
             Header.Style = hsFlatButtons
             TabOrder = 0
@@ -1098,13 +1101,13 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostWUA: TTabSheet
           Caption = 'Windows updates'
-          ClientHeight = 536
+          ClientHeight = 526
           ClientWidth = 564
           object GridHostWinUpdates: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 510
+            Height = 500
             Top = 26
             Width = 564
             OnGetText = GridHostWinUpdatesGetText
@@ -1176,6 +1179,8 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'downloaded'
               end>
             Header.DefaultHeight = 17
+            Header.Height = 19
+            Header.MinHeight = 19
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
             Header.SortColumn = 1
             Header.Style = hsFlatButtons
@@ -1230,7 +1235,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgTasks: TTabSheet
           Caption = 'Tasks'
-          ClientHeight = 536
+          ClientHeight = 526
           ClientWidth = 564
           object HostTaskRunningProgress: TProgressBar
             Left = 4
@@ -1304,14 +1309,14 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 481
+            Top = 471
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
           end
           object PageControl1: TPageControl
             Left = 0
-            Height = 379
+            Height = 369
             Top = 102
             Width = 564
             ActivePage = TabSheet1
@@ -1321,11 +1326,11 @@ object VisWaptGUI: TVisWaptGUI
             TabOrder = 3
             object TabSheet1: TTabSheet
               Caption = 'Pending'
-              ClientHeight = 353
+              ClientHeight = 343
               ClientWidth = 556
               object GridHostTasksPending: TSOGrid
                 Left = 0
-                Height = 351
+                Height = 341
                 Top = 2
                 Width = 556
                 Align = alClient
@@ -1437,7 +1442,9 @@ object VisWaptGUI: TVisWaptGUI
                     Width = 21
                     PropertyName = 'pidlist'
                   end>
-                Header.DefaultHeight = 17
+                Header.DefaultHeight = 19
+                Header.Height = 19
+                Header.MinHeight = 19
                 Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
                 Header.SortColumn = 0
                 Header.SortDirection = sdDescending
@@ -1456,11 +1463,11 @@ object VisWaptGUI: TVisWaptGUI
             end
             object TabSheet2: TTabSheet
               Caption = 'Done'
-              ClientHeight = 360
+              ClientHeight = 343
               ClientWidth = 556
               object GridHostTasksDone: TSOGrid
                 Left = 0
-                Height = 358
+                Height = 341
                 Top = 2
                 Width = 556
                 Align = alClient
@@ -1572,6 +1579,8 @@ object VisWaptGUI: TVisWaptGUI
                     PropertyName = 'pidlist'
                   end>
                 Header.DefaultHeight = 17
+                Header.Height = 19
+                Header.MinHeight = 19
                 Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
                 Header.SortColumn = 0
                 Header.SortDirection = sdDescending
@@ -1590,11 +1599,11 @@ object VisWaptGUI: TVisWaptGUI
             end
             object TabSheet3: TTabSheet
               Caption = 'Errors'
-              ClientHeight = 360
+              ClientHeight = 343
               ClientWidth = 556
               object GridHostTasksErrors: TSOGrid
                 Left = 0
-                Height = 358
+                Height = 341
                 Top = 2
                 Width = 556
                 Align = alClient
@@ -1705,6 +1714,8 @@ object VisWaptGUI: TVisWaptGUI
                     PropertyName = 'pidlist'
                   end>
                 Header.DefaultHeight = 17
+                Header.Height = 19
+                Header.MinHeight = 19
                 Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
                 Header.SortColumn = 0
                 Header.SortDirection = sdDescending
@@ -1725,7 +1736,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel6: TPanel
             Left = 0
             Height = 50
-            Top = 486
+            Top = 476
             Width = 564
             Align = alBottom
             BevelOuter = bvNone

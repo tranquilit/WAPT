@@ -1062,11 +1062,11 @@ begin
             if tasksresult <> nil then
             begin
               running := tasksresult['running'];
-              if not GridHostTasksPending.Focused then
+              if not GridHostTasksPending.Focused and not MemoTaskLog.Focused then
                 GridHostTasksPending.Data := tasksresult['pending'];
-              if not GridHostTasksDone.Focused then
+              if not GridHostTasksDone.Focused and not MemoTaskLog.Focused then
                 GridHostTasksDone.Data := tasksresult['done'];
-              if not GridHostTasksErrors.Focused then
+              if not GridHostTasksErrors.Focused and not MemoTaskLog.Focused then
                 GridHostTasksErrors.Data := tasksresult['errors'];
               if running <> nil then
               begin
