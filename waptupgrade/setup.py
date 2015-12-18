@@ -272,13 +272,13 @@ def create_onetime_task(name,cmd,parameters=None, delay_minutes=2,max_runtime=10
     """
     run_time = time.localtime(time.time() + delay_minutes*60)
     # task
-    hour_min = time.strftime('%H:%M', run_time)
+    hour_min = time.strftime('%H:%M:%S', run_time)
     try:
         return run('schtasks /Create /SC ONCE /TN "%s" /TR "\'%s\' %s" /ST %s /RU SYSTEM /F /V1 /Z' % (name,cmd,parameters,hour_min))
     except:
         # windows xp doesn't support one time startup task /Z nor /F
         run_notfatal('schtasks /Delete /TN "%s" /F'%name)
-        return run('schtasks /Create /RU SYSTEM /SC ONCE /TN "%s" /TR  "\'%s\' %s" /ST %s /RU SYSTEM' % (name,cmd,parameters,hour_min))
+        return run('schtasks /Create /SC ONCE /TN "%s" /TR  "\'%s\' %s" /ST %s /RU SYSTEM' % (name,cmd,parameters,hour_min))
 
 
 def full_waptagent_install(min_version,at_startup=False):

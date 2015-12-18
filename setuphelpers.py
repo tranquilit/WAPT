@@ -3075,13 +3075,14 @@ def create_onetime_task(name,cmd,parameters=None, delay_minutes=2,max_runtime=10
     """creates a one time Windows scheduled task and activate it.
     """
     run_time = time.localtime(time.time() + delay_minutes*60)
-    hour_min = time.strftime('%H:%M', run_time)
+    # task
+    hour_min = time.strftime('%H:%M:%S', run_time)
     try:
         return run('schtasks /Create /SC ONCE /TN "%s" /TR "\'%s\' %s" /ST %s /RU SYSTEM /F /V1 /Z' % (name,cmd,parameters,hour_min))
     except:
         # windows xp doesn't support one time startup task /Z nor /F
         run_notfatal('schtasks /Delete /TN "%s" /F'%name)
-        return run('schtasks /Create %s /SC ONCE /TN "%s" /TR  "\'%s\' %s" /ST %s /RU SYSTEM' % ( name,cmd,parameters,hour_min))
+        return run('schtasks /Create /SC ONCE /TN "%s" /TR  "\'%s\' %s" /ST %s /RU SYSTEM' % (name,cmd,parameters,hour_min))
 
 
 def get_current_user():
