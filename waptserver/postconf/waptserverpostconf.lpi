@@ -21,7 +21,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="3"/>
       <RevisionNr Value="4"/>
-      <BuildNr Value="6"/>
+      <BuildNr Value="7"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -35,34 +35,40 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="9">
+    <RequiredPackages Count="11">
       <Item1>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item2>
       <Item3>
-        <PackageName Value="HtmlComp"/>
+        <PackageName Value="pltis_wapt"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_richview"/>
+        <PackageName Value="pl_indy"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_rx"/>
+        <PackageName Value="HtmlComp"/>
       </Item5>
       <Item6>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pl_richview"/>
       </Item6>
       <Item7>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pl_rx"/>
       </Item7>
       <Item8>
-        <PackageName Value="pl_luicontrols"/>
+        <PackageName Value="pltis_utils"/>
       </Item8>
       <Item9>
-        <PackageName Value="LCL"/>
+        <PackageName Value="pltis_superobject"/>
       </Item9>
+      <Item10>
+        <PackageName Value="pl_luicontrols"/>
+      </Item10>
+      <Item11>
+        <PackageName Value="LCL"/>
+      </Item11>
     </RequiredPackages>
     <Units Count="3">
       <Unit0>
