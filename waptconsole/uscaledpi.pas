@@ -179,6 +179,42 @@ begin
     end;
   end;
 
+  if Control is TVirtualJSONInspector then
+  begin
+    With Control as TVirtualJSONInspector do
+    begin
+      DefaultNodeHeight := ScaleY(DefaultNodeHeight,FromDPI);
+      Header.MinHeight:=ScaleY(Header.MinHeight,FromDPI);;
+      Header.MaxHeight:=ScaleY(Header.MaxHeight,FromDPI);;
+      Header.Height:=ScaleY(Header.Height,FromDPI);;
+      Font.Height := 0;
+      for i := 0 to header.Columns.Count-1 do
+      begin
+        header.Columns[i].MinWidth:=ScaleX(header.Columns[i].MinWidth,FromDPI);
+        header.Columns[i].MaxWidth:=ScaleX(header.Columns[i].MaxWidth,FromDPI);
+        header.Columns[i].Width:=ScaleX(header.Columns[i].Width,FromDPI);
+      end;
+    end;
+  end;
+
+  if Control is TVirtualJSONListView then
+  begin
+    With Control as TVirtualJSONListView do
+    begin
+      DefaultNodeHeight := ScaleY(DefaultNodeHeight,FromDPI);
+      Header.MinHeight:=ScaleY(Header.MinHeight,FromDPI);;
+      Header.MaxHeight:=ScaleY(Header.MaxHeight,FromDPI);;
+      Header.Height:=ScaleY(Header.Height,FromDPI);;
+      Font.Height := 0;
+      for i := 0 to header.Columns.Count-1 do
+      begin
+        header.Columns[i].MinWidth:=ScaleX(header.Columns[i].MinWidth,FromDPI);
+        header.Columns[i].MaxWidth:=ScaleX(header.Columns[i].MaxWidth,FromDPI);
+        header.Columns[i].Width:=ScaleX(header.Columns[i].Width,FromDPI);
+      end;
+    end;
+  end;
+
 
   if Control is TWinControl then begin
     WinControl:=TWinControl(Control);
