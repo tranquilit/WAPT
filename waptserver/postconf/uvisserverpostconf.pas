@@ -127,14 +127,16 @@ var
   VisWAPTServerPostConf: TVisWAPTServerPostConf;
 
 implementation
-uses LCLIntf, Windows,waptcommon,waptwinutils,tisinifiles,superobject,
-    tiscommon,tisstrings,IniFiles,sha1;
+uses LCLIntf, Windows, waptcommon, waptwinutils, UScaleDPI, tisinifiles,
+  superobject, tiscommon, tisstrings, IniFiles, sha1;
 {$R *.lfm}
 
 { TVisWAPTServerPostConf }
 
 procedure TVisWAPTServerPostConf.FormCreate(Sender: TObject);
 begin
+  ScaleDPI(Self,96);
+  HTMLViewer1.DefFontSize := ScaleY(HTMLViewer1.DefFontSize,96);
   ReadWaptConfig(WaptBaseDir+'wapt-get.ini');
   PagesControl.ShowTabs:=False;
   PagesControl.ActivePageIndex:=0;

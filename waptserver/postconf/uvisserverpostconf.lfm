@@ -8,11 +8,6 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
   ClientWidth = 680
   Constraints.MinHeight = 345
   Constraints.MinWidth = 680
-  Font.CharSet = ANSI_CHARSET
-  Font.Height = -11
-  Font.Name = 'Tahoma'
-  Font.Pitch = fpVariable
-  Font.Quality = fqDraft
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poDefaultPosOnly
@@ -268,12 +263,6 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Top = 40
         Width = 62
         Caption = 'Key name :'
-        Font.CharSet = ANSI_CHARSET
-        Font.Color = clBlack
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Pitch = fpVariable
-        Font.Quality = fqDraft
         Font.Style = [fsBold]
         ParentColor = False
         ParentFont = False
@@ -349,12 +338,6 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Top = 16
         Width = 96
         Caption = 'Target directory:'
-        Font.CharSet = ANSI_CHARSET
-        Font.Color = clBlack
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Pitch = fpVariable
-        Font.Quality = fqDraft
         Font.Style = [fsBold]
         ParentColor = False
         ParentFont = False

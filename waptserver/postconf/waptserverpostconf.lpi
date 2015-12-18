@@ -8,7 +8,6 @@
       <MainUnit Value="0"/>
       <Title Value="waptserverpostconf"/>
       <ResourceType Value="res"/>
-      <UseXPManifest Value="True"/>
       <Icon Value="0"/>
     </General>
     <i18n>
@@ -69,7 +68,7 @@
         <PackageName Value="LCL"/>
       </Item11>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="5">
       <Unit0>
         <Filename Value="waptserverpostconf.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -88,6 +87,19 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="uWaptServerRes"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="..\..\waptconsole\uscaledpi.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UScaleDPI"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\..\waptconsole\uvisloading.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisLoading"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uvisloading"/>
+      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
