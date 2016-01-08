@@ -4695,7 +4695,7 @@ class Wapt(object):
                         print 'No session-setup.',
                 finally:
                     # cleanup
-                    if 'setup' in dir():
+                    if 'setup' in dir() and setup is not None:
                         setup_name = setup.__name__
                         logger.debug('Removing module %s'%setup_name)
                         del setup
