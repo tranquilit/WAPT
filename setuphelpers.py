@@ -3071,6 +3071,34 @@ def windows_version():
     except:
         return Version(platform.win32_ver()[1])
 
+# https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832(v=vs.85).aspx
+# https://msdn.microsoft.com/en-us/library/windows/desktop/dn481241(v=vs.85).aspx
+Windows10 = Version('10.0',2)
+WindowsServer2016TechnicalPreview = Version('10.0',2)
+
+Windows81 = Version('6.3',2)
+WindowsServer2012R2 = Version('6.3',2)
+
+Windows8 = Version('6.2',2)
+WindowsServer2012 = Version('6.2',2)
+
+Windows7 = Version('6.1',2)
+WindowsServer2008R2 = Version('6.1',2)
+
+WindowsServer2008 = Version('6.0',2)
+WindowsVista = Version('6.0',2)
+
+WindowsServer2003R2 = Version('5.2',2)
+WindowsServer2003 = Version('5.2',2)
+WindowsXP64 = Version('5.2',2)
+
+WindowsEmbeddedStandard2009 = WindowsXP = Version('5.1',2)
+WindowsXP = Version('5.1',2)
+
+Windows2000 = Version('5.0',2)
+
+
+
 def create_onetime_task(name,cmd,parameters=None, delay_minutes=2,max_runtime=10, retry_count=3,retry_delay_minutes=1):
     """creates a one time Windows scheduled task and activate it.
     """
