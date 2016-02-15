@@ -160,6 +160,7 @@ __all__ = \
  'service_installed',
  'service_is_running',
  'service_is_stopped',
+ 'service_restart',
  'service_start',
  'service_stop',
  'set_environ_variable',
@@ -2788,7 +2789,6 @@ def service_installed(service_name):
 
 def service_start(service_name):
     """Start a service by its service name
-
     """
     logger.debug('Starting service %s' % service_name)
     win32serviceutil.StartService(service_name)
@@ -2796,10 +2796,20 @@ def service_start(service_name):
 
 
 def service_stop(service_name):
+    """Stop a service by its service name
+    """
     logger.debug('Stopping service %s' % service_name)
     win32serviceutil.StopService(service_name)
     win32api.Sleep(2000)
     return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_STOPPED, waitSecs=4)
+
+def service_restart(service_name):
+    """Restart a service by its service name
+    """
+    logger.debug('Restarting service %s' % service_name)
+    win32serviceutil.RestartService(service_name)
+    win32api.Sleep(2000)
+    return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_RUNNING, waitSecs=4)
 
 
 def service_is_running(service_name):
