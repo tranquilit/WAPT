@@ -2328,7 +2328,8 @@ def win_startup_info():
     return result
 
 
-def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_BIOS','Win32_NetworkAdapter','Win32_Printer','Win32_VideoController','Win32_LogicalDisk']):
+def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_BIOS','Win32_NetworkAdapter','Win32_Printer','Win32_VideoController','Win32_LogicalDisk'],
+        exclude_subkeys=['OEMLogoBitmap']):
     """Get WMI machine informations as dictionaries
 
     """
@@ -2342,16 +2343,18 @@ def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_B
             for cs2 in cs:
                 na.append({})
                 for k in cs2.properties.keys():
-                    prop = cs2.wmi_property(k)
-                    if prop:
-                        na[-1][k] = prop.Value
+                    if not k in exclude_subkeys:
+                        prop = cs2.wmi_property(k)
+                        if prop:
+                            na[-1][k] = prop.Value
         elif len(cs)>0:
             result[key] = {}
             if cs:
                 for k in cs[0].properties.keys():
-                    prop = cs[0].wmi_property(k)
-                    if prop:
-                        result[key][k] = prop.Value
+                    if not k in exclude_subkeys:
+                        prop = cs[0].wmi_property(k)
+                        if prop:
+                            result[key][k] = prop.Value
     return result
 
 
