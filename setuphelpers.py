@@ -557,7 +557,7 @@ def remove_user_desktop_shortcut(label):
         label += '.lnk'
     remove_file(os.path.join(desktop(0),label))
 
-def wgets(url,proxies=None,verify_cert=False):
+def wgets(url,proxies=None,verify_cert=False,referer=None,user_agent=None):
     """Return the content of a remote resource as a String with a http get request.
 
     Raise an exception if remote data can't be retrieved.
@@ -572,7 +572,15 @@ def wgets(url,proxies=None,verify_cert=False):
     >>> "msg" in data
     True
     """
-    r = requests.get(url,proxies=proxies,verify=verify_cert)
+    if verify_cert == False:
+        requests.packages.urllib3.disable_warnings()
+    header=default_http_headers()
+    if referer != None:
+        header.update({'referer': '%s' % referer})
+    if user_agent != None:
+        header.update({'user-agent': '%s' % user_agent})
+
+    r = requests.get(url,proxies=proxies,verify=verify_cert,headers=header)
     if r.ok:
         return r.text
     else:
@@ -585,7 +593,7 @@ def default_http_headers():
         'user-agent':'wapt/{}'.format(__version__),
         }
 
-def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False):
+def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False,referer=None,user_agent=None):
     r"""Copy the contents of a file from a given URL to a local file.
     >>> respath = wget('http://wapt.tranquil.it/wapt/tis-firefox_28.0.0-1_all.wapt','c:\\tmp\\test.wapt',proxies={'http':'http://proxy:3128'})
     ???
@@ -632,7 +640,15 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
     if not os.path.isdir(dir):
         os.makedirs(dir)
 
-    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout,verify=verify_cert,headers=default_http_headers() )
+    if verify_cert == False:
+        requests.packages.urllib3.disable_warnings()
+    header=default_http_headers()
+    if referer != None:
+        header.update({'referer': '%s' % referer})
+    if user_agent != None:
+        header.update({'user-agent': '%s' % user_agent})
+
+    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout,verify=verify_cert,headers=header)
 
     total_bytes = int(httpreq.headers['content-length'])
     # 1Mb max, 1kb min
