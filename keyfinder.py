@@ -286,7 +286,14 @@ def msoKeyDecode(regkey, ID=False):
 
 
 def GetMSDPID3(sHivePath):
-    """return dict (sProdID, sMSKey)"""
+    """return dict (sProdID, sMSKey)
+        sHivePath must  contain the DigitalProductID key
+        GetMSDPID3(r'SOFTWARE\Wow6432Node\Microsoft\Office\14.0\Registration\{90140000-003D-0000-0000-0000000FF1CE}')
+            {'key_match': True,
+             'product_id': u'***',
+             'product_key': '***',
+             'product_partnr': '****'}
+    """
 
     """
     var
