@@ -71,6 +71,7 @@ __all__ = \
  'delete_task',
  'delete_user',
  'desktop',
+ 'dir_is_empty',
  'disable_file_system_redirection',
  'disable_task',
  'dmi_info',
@@ -80,6 +81,7 @@ __all__ = \
  'error',
  'filecopyto',
  'find_processes',
+ 'file_is_locked',
  'get_appath',
  'get_computername',
  'get_current_user',
@@ -791,6 +793,28 @@ def default_overwrite_older(src,dst):
         logger.debug(u'Overwriting file on target is older than source: "%s"' % (dst,))
         return True
 
+def dir_is_empty(path):
+    """Check if a directory is empty"""
+    return isdir(path) and len(os.listdir(path)) == 0
+
+def file_is_locked(path,timeout=5):
+    """Chack if a file is locked. waits timout seconds  for the release"""
+    count = timeout
+    while count>0:
+        try:
+            f = open(path,'wb')
+            return False
+        except IOError as e:
+            if e.errno==13:
+                count -=1
+                if count<0:
+                    return True
+                else:
+                    print('Waiting for %s to be released...'%path)
+                    time.sleep(1)
+            else:
+                raise
+    return True
 
 def all_files(rootdir):
     rootdir = os.path.abspath(rootdir)
@@ -1559,7 +1583,7 @@ def registry_delete(root,path,valuename):
         with reg_openkey_noredir(root,path,sam=KEY_WRITE) as key:
             return _winreg.DeleteValue(key,valuename)
     except WindowsError as e:
-        logger.warning('registry_delete:%s'%ensure_unicode(e))
+        logger.warning(u'registry_delete:%s'%ensure_unicode(e))
     return result
 
 def registry_deletekey(root,path,keyname):
@@ -1581,7 +1605,7 @@ def registry_deletekey(root,path,keyname):
         with reg_openkey_noredir(root,path,sam=KEY_WRITE) as key:
             return _winreg.DeleteKey(key,keyname)
     except WindowsError as e:
-        logger.warning('registry_deletekey:%s'%ensure_unicode(e))
+        logger.warning(u'registry_deletekey:%s'%ensure_unicode(e))
     return result
 
 
@@ -2759,7 +2783,7 @@ def remove_file(path):
         try:
             os.unlink(path)
         except Exception as e:
-            logger.critical('Unable to remove file %s : error %s' %(path,e))
+            logger.critical(u'Unable to remove file %s : error %s' %(path,e))
     else:
         logger.info(u"File %s doesn't exist, so not removed" % (path))
 
@@ -2807,7 +2831,7 @@ def service_installed(service_name):
 def service_start(service_name):
     """Start a service by its service name
     """
-    logger.debug('Starting service %s' % service_name)
+    logger.debug(u'Starting service %s' % service_name)
     win32serviceutil.StartService(service_name)
     return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_RUNNING, waitSecs=4)
 
@@ -2815,7 +2839,7 @@ def service_start(service_name):
 def service_stop(service_name):
     """Stop a service by its service name
     """
-    logger.debug('Stopping service %s' % service_name)
+    logger.debug(u'Stopping service %s' % service_name)
     win32serviceutil.StopService(service_name)
     win32api.Sleep(2000)
     return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_STOPPED, waitSecs=4)
@@ -2823,7 +2847,7 @@ def service_stop(service_name):
 def service_restart(service_name):
     """Restart a service by its service name
     """
-    logger.debug('Restarting service %s' % service_name)
+    logger.debug(u'Restarting service %s' % service_name)
     win32serviceutil.RestartService(service_name)
     win32api.Sleep(2000)
     return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_RUNNING, waitSecs=4)
@@ -2884,7 +2908,7 @@ def register_dll(dllpath):
     """
     dll = ctypes.windll[dllpath]
     result = dll.DllRegisterServer()
-    logger.info('DLL %s registered' % dllpath)
+    logger.info(u'DLL %s registered' % dllpath)
     if result:
         raise Exception(u'Register DLL %s failed, code %i' % (dllpath,result))
 
@@ -2895,7 +2919,7 @@ def unregister_dll(dllpath):
     """
     dll = ctypes.windll[dllpath]
     result = dll.DllUnregisterServer()
-    logger.info('DLL %s unregistered' % dllpath)
+    logger.info(u'DLL %s unregistered' % dllpath)
     if result:
         raise Exception(u'Unregister DLL %s failed, code %i' % (dllpath,result))
 
