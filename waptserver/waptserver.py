@@ -970,6 +970,10 @@ def trigger_wakeonlan():
         if macs:
             logger.info(_("Sending magic wakeonlan packets to {} for machine {}").format(macs,host_data['host']['computer_fqdn']))
             wakeonlan.wol.send_magic_packet(*macs)
+            for line in host_data['host']['networking']:
+                if 'broadcast' in line:
+                    broadcast = line['broadcast']
+                    wakeonlan.wol.send_magic_packet(*macs,ip_address='%s' % broadcast)
             msg = _(u"Wakeonlan packets sent to {} for machine {}").format(macs,host_data['host']['computer_fqdn'])
             result = dict(macs=macs,host=host_data['host']['computer_fqdn'],uuid=uuid)
         else:
