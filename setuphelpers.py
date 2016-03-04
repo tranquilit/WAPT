@@ -802,7 +802,7 @@ def file_is_locked(path,timeout=5):
     count = timeout
     while count>0:
         try:
-            f = open(path,'wb')
+            f = open(path,'ab')
             return False
         except IOError as e:
             if e.errno==13:
