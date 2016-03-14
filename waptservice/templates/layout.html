@@ -1,78 +1,80 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<!--
-Design by Free CSS Templates
-http://www.freecsstemplates.org
-Released for free under a Creative Commons Attribution 2.5 License
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/static/images/favicon.ico">
 
-Name       : Indication
-Description: A two-column, fixed-width design with dark color scheme.
-Version    : 1.0
-Released   : 20090910
-
--->
-
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta name="keywords" content="" />
-    <meta name="description" content="" />
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <title>{{ _("WAPT Service status") }}</title>
 
-    <!-- Styles -->
-    <link rel="stylesheet" type="text/css" href="/static/styles/datatables.css">
-    <link rel="stylesheet" type="text/css" href="/static/styles/style.css">
-    <!-- Scripts
-	<link rel="stylesheet" type="text/css" href="/static/styles/jquery.alerts.css"> -->
+    <!-- Bootstrap core CSS -->
+    <link href="/static/styles/bootstrap.css" rel="stylesheet">
 
-    <!-- Scripts
-    <script type=text/javascript   src="/static/js/jquery.min.js"></script>
-    <script type=text/javascript   src="/static/js/jquery.dataTables.js"></script>
-    <script type=text/javascript   src="/static/js/jquery.alerts.js"></script>
-    <script type=text/javascript   src="/static/js/jquery.ui.draggable.js"></script>-->
-</head>
-<body background='/static/images/bg_body.gif'>
-<div id="wrapper">
-	<div id="header">
-		<div id="logo">
-			<h1><a href="/">{{ _("WAPT Service") }}</a></h1>
-			<p> {{ _("design by TIS") }}</p>
-		</div>
-	</div>
-	<!-- end #header -->
-	<div id="menu">
-		<ul>
-			<li><a href="/">{{ _("WAPT") }}</a></li>
-			<li><a href="/status">{{ _("Installed packages") }}</a></li>
-			<li><a href="/list">{{ _("List of packages") }}</a></li>
-			<li><a href="/tasks">{{ _("Tasks") }}</a></li>
-		</ul>
-	</div>
-        <!-- end #menu -->
-        <div id="page">
-        <div id="page-bgtop">
-        <div id="page-bgbtm">
-                <div id="content">
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class=flashes>
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
-{% block content %}
-{% endblock %}
-                </div>
-                <div style="clear: both;">&nbsp;</div>
+    <!-- Custom styles for this template -->
+    <link href="/static/styles/offcanvas.css" rel="stylesheet">
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/bootstrap.js"></script>
+
+
+  </head>
+
+  <body background='/static/images/bg_body.gif'>
+
+    <nav class="navbar navbar-fixed-top navbar-inverse">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <!--<a class="navbar-brand" href="#">TIS Backup GUI</a>-->
+          <a class="navbar-brand" href="#"><img style=" margin-top:-13px;"
+             src="/static/images/tis.png"></a>
         </div>
-        <!-- end #page -->
-</div>
-        </div>
-        <!-- end #footer -->
-</div>
-        <div id="footer">
-                <p>{{ _('Copyright (c) 2012 Tranquil IT Systems. All rights reserved. Design by <a href="http://www.tranquil-it-systems.fr/">TIS</a>.') }}</p>
-        </div>
-</body>
-</html>
+
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li {% if request.path == "/" %}class="active"{% endif %} ><a href="/">{{ _("WAPT") }}</a></li>
+			<li {% if request.path == "/status" %}class="active"{% endif %} ><a href="/status">{{ _("Installed packages") }}</a></li>
+			<li {% if request.path == "/list" %}class="active"{% endif %} ><a href="/list">{{ _("List of packages") }}</a></li>
+			<li {% if request.path == "/tasks" %}class="active"{% endif %} ><a href="/tasks">{{ _("Tasks") }}</a></li>
+          </ul>
+        </div><!-- /.nav-collapse -->
+
+      </div><!-- /.container -->
+    </nav><!-- /.navbar -->
+
+    <div class="container">
+      <div class="row">
+	{% block content %}
+	{% endblock %}
+
+      </div><!--/row-->
+
+      <hr>
+
+      <footer>
+        <p>Copyright (c) 2016 Tranquil IT Systems. All rights reserved. Design by TIS.</p>
+      </footer>
+
+    </div><!--/.container-->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+<!--    <script src="/static/js/jquery.js"></script> -->
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/static/js/ie10-viewport-bug-workaround.js"></script>
+
+    <script src="/static/js/offcanvas.js"></script>
+
+</body></html>
+
