@@ -758,7 +758,7 @@ def all_packages(page=1):
             cur.execute(query)
             rows = []
 
-            search = request.args.get('q','').encode('utf8')
+            search = request.args.get('q','').encode('utf8').replace('\\', '')
             for row in cur.fetchall():
                 pe = PackageEntry().load_control_from_dict(
                     dict((cur.description[idx][0], value) for idx, value in enumerate(row)))
