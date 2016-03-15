@@ -32,7 +32,12 @@ location.reload(true);
 </div>
 <br/>
 
-{{ pagination.info }}
+<form class="navbar-form navbar-left" role="search" method="GET" action="/list">
+    <div class="form-group">
+        <input type="text" name="q" class="form-control" placeholder="Rechercher..." value="{{ request.args.q }}">
+    </div>
+</form>
+
 {{ pagination.links }}
 
 {% set cols = ['package','install_version','install_status','install_date'] %}
