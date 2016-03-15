@@ -46,6 +46,7 @@ from rocket import Rocket
 
 # flask
 from flask import request, Flask,Response, send_from_directory, send_file, session, g, redirect, url_for, abort, render_template, flash, stream_with_context
+from flask.ext.paginate import Pagination
 import jinja2
 from werkzeug import secure_filename
 from werkzeug.utils import html
@@ -735,11 +736,13 @@ def status():
         return render_template('status.html',packages=rows,format_isodate=format_isodate,Version=setuphelpers.Version)
 
 
-@app.route('/list')
-@app.route('/packages')
+
+@app.route('/list/pg<int:page>')
 @app.route('/packages.json')
+@app.route('/packages')
+@app.route('/list')
 @allow_local
-def all_packages():
+def all_packages(page=1):
     with sqlite3.connect(app.waptconfig.dbpath) as con:
         try:
             con.row_factory=sqlite3.Row
@@ -782,8 +785,19 @@ def all_packages():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(rows), mimetype='application/json')
     else:
-        return render_template('list.html',packages=rows,format_isodate=format_isodate,Version=setuphelpers.Version)
+        total = len(rows)
+        per_page = 30
 
+        _min = per_page * (page - 1)
+        _max = _min + per_page
+        pagination = Pagination(css_framework='foundation', page=page, total=total, search=False, per_page=per_page)
+        return render_template(
+            'list.html',
+            packages=rows[_min:_max],
+            format_isodate=format_isodate,
+            Version=setuphelpers.Version,
+            pagination=pagination,
+        )
 
 @app.route('/package_icon')
 @allow_local

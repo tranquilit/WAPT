@@ -25,11 +25,16 @@ location.reload(true);
 }
 </script>
 <h1>{{ _("Available packages") }}</h1>
-<span >
-<input class="btn btn-default" onclick='refresh()' type="button" name="update" value="{{ _('Update available packages') }}"/>
-<input class="btn btn-default" onclick="location.href='cleanup'" type="button" name="cleanup" value="{{ _('Clear package cache') }}"/>
-<input class="btn btn-default" onclick="location.href='upgrade'" type="button" name="upgrade" value="{{ _ ('Upgrade system') }}"/>
-</span>
+<div class="panel">
+<input class="col-md-4 btn btn-default" onclick='refresh()' type="button" name="update" value="{{ _('Update available packages') }}"/>
+<input class="col-md-4 span4 btn btn-default" onclick="location.href='/cleanup'" type="button" name="cleanup" value="{{ _('Clear package cache') }}"/>
+<input class="col-md-4 span4 btn btn-default" onclick="location.href='/upgrade'" type="button" name="upgrade" value="{{ _ ('Upgrade system') }}"/>
+</div>
+<br/>
+
+{{ pagination.info }}
+{{ pagination.links }}
+
 {% set cols = ['package','install_version','install_status','install_date'] %}
 {% set cols_header = [_('package'),_('install_version'),_('install_status'),_('install_date')] %}
 <table class="table table-striped" cellspacing=0 cellpadding=4 class=sample>
@@ -60,7 +65,7 @@ location.reload(true);
           {%if c=='install_date' and p[c] %}
 		      {{format_isodate(p[c])}}
           {%elif c=='package'%}
-		      <img class=package-icon src="package_icon?package={{p.package}}">
+		      <img class=package-icon src="/package_icon?package={{p.package}}">
               <p>{{link("package_details?package="+package_version,p[c])}}
               <span class="package-version">{{p.version}}</span></p>
               <p class="package-description">{{p.description}}</p>
@@ -81,4 +86,7 @@ location.reload(true);
 	</tr>
     {% endfor %}
 </table>
+
+{{ pagination.links }}
+
 {% endblock %}
