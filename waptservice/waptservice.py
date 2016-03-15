@@ -787,6 +787,7 @@ def all_packages(page=1):
     else:
         total = len(rows)
         per_page = 30
+
         try:
             search = search
         except NameError:
