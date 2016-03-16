@@ -35,6 +35,7 @@ location.reload(true);
 <form class="navbar-form navbar-left" role="search" method="GET" action="/list">
     <div class="form-group">
         <input type="text" name="q" class="form-control" placeholder="Rechercher..." value="{{ request.args.q }}">
+        <input type="checkbox" name="latest_only" class="form-control" checked="checked">{{ _("Latest version only?") }}
     </div>
 </form>
 
