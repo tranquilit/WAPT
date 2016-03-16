@@ -1,31 +1,29 @@
 # French translations for PROJECT.
-# Copyright (C) 2015 ORGANIZATION
+# Copyright (C) 2016 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
-# Mael Cadorel <mcadorel@tranquil.it>, 2015.
-#
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
+# mcadorel <mcadorel@tranquil.it>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-02-24 11:06+0100\n"
-"PO-Revision-Date: 2015-02-23 17:10+0100\n"
-"Last-Translator: Jeremie Courreges-Anglas <jca@tranquil.it>\n"
+"POT-Creation-Date: 2016-03-16 15:31+0100\n"
+"PO-Revision-Date: 2016-03-16 15:39+0200\n"
+"Last-Translator: mcadorel <mcadorel@tranquil.it>\n"
 "Language-Team: Technique TIS <technique@tranquil.it>\n"
-"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 1.3\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
+"Generated-By: Babel 2.2.0\n"
 
-#: waptservice.py:129
-msgid "Invalid log level: {}"
-msgstr ""
-
-#: waptservice.py:267
+#: waptservice.py:254
 msgid "FATAL. Couldn't open config file : {}"
 msgstr "Erreur fatale. Impossible d'ouvrir le fichier : {}"
 
-#: waptservice.py:351
+#: waptservice.py:338
 msgid ""
 "FATAL, configuration file {} has no section [global]. Please check "
 "Waptserver documentation"
@@ -33,232 +31,45 @@ msgstr ""
 "Erreur fatale. Le fichier de configuration {} n'a pas de section "
 "[global]. Veuillez vous référer à la documentation de WAPTserver."
 
-#: waptservice.py:806
+#: waptservice.py:917
 msgid "Update status"
 msgstr "Statut des mises à jour"
 
-#: waptservice.py:844
+#: waptservice.py:955
 msgid "Reload configuration"
 msgstr "Recharger la configuration"
 
-#: waptservice.py:884
+#: waptservice.py:995
 msgid "Download upgrades"
 msgstr "Télécharger les mises à jour"
 
-#: waptservice.py:915
+#: waptservice.py:1026
 msgid "Installed software update"
 msgstr "Mises à jour des logiciels installés"
 
-#: waptservice.py:945
+#: waptservice.py:1056
 msgid "LongTask"
 msgstr ""
 
-#: waptservice.py:960
+#: waptservice.py:1071
 msgid "Cleanup"
 msgstr ""
 
-#: waptservice.py:976
+#: waptservice.py:1087
 msgid "Trace of the installation of {}"
 msgstr "Traces de l'installation de {}"
 
-#: waptservice.py:1006
+#: waptservice.py:1117
 msgid "Saving host to the WAPT server"
 msgstr "Enregistrement de la machine sur le serveur WAPT."
 
-#: waptservice.py:1019
+#: waptservice.py:1130
 msgid "Inventory of the host"
 msgstr "Inventaire de la machine"
 
-#: waptservice.py:1295
-msgid ""
-"{classname} {id} created {create_date} started:{start_date} "
-"finished:{finish_date} "
+#: waptservice.py:2324
+msgid "Invalid log level: {}"
 msgstr ""
-"{classname} {id} créé le {create_date} commencé le : {start_date} terminé"
-" le :{finish_date} "
-
-#: waptservice.py:1353
-msgid "Reconfiguring network access"
-msgstr "Reconfiguration de l'accès au réseau"
-
-#: waptservice.py:1372
-msgid "Upgrading WAPT client"
-msgstr "Mise à jour du client WAPT"
-
-#: waptservice.py:1400
-#, python-format
-msgid "WaptService restarted using batch file %s"
-msgstr "WaptService relancé avec le fichier batch %s"
-
-#: waptservice.py:1404
-msgid "Restarting local WAPT service"
-msgstr "Redémarrage du service WAPT local"
-
-#: waptservice.py:1432
-msgid "{} new package(s)"
-msgstr "{} nouveau(x) paquet(s)"
-
-#: waptservice.py:1434
-msgid "{} removed package(s)"
-msgstr "{} paquet(s) retiré(s)"
-
-#: waptservice.py:1435
-msgid "{} package(s) in the repository"
-msgstr "{} paquet(s) dans le dépôt"
-
-#: waptservice.py:1442
-msgid "Packages to be updated : {}"
-msgstr "Paquets à mettre à jour : {}"
-
-#: waptservice.py:1444
-msgid "Packages with errors : {}"
-msgstr "Paquets avec des erreurs : {}"
-
-#: waptservice.py:1446 waptservice.py:1501
-msgid "System up-to-date"
-msgstr "Le système est à jour"
-
-#: waptservice.py:1450
-msgid "Updating available packages"
-msgstr "Mise à jour de la liste des paquets disponibles"
-
-#: waptservice.py:1493 waptservice.py:1686
-msgid "Installed : {}"
-msgstr "Installé : {}"
-
-#: waptservice.py:1495 waptservice.py:1688
-msgid "Updated : {}"
-msgstr "Mis à jour : {}"
-
-#: waptservice.py:1497 waptservice.py:1690 waptservice.py:1726
-msgid "Errors : {}"
-msgstr "Erreurs: {}"
-
-#: waptservice.py:1499 waptservice.py:1692
-msgid "Unavailable : {}"
-msgstr "Indisponible(s) : {}"
-
-#: waptservice.py:1506
-msgid "Update packages installed on host"
-msgstr "Mettre à jour les paquets installés sur la machine"
-
-#: waptservice.py:1523
-msgid "WAPT Server has been notified"
-msgstr "Le serveur WAPT a été notifié"
-
-#: waptservice.py:1526
-msgid "Error while sending to the server : {}"
-msgstr "Erreur lors de l'envoi au serveur : {}"
-
-#: waptservice.py:1529
-msgid "WAPT Server is not available"
-msgstr "Le serveur WAPT n'est pas disponible"
-
-#: waptservice.py:1532
-msgid "Update server with this host's status"
-msgstr "Informer le serveur du statut de cette machine"
-
-#: waptservice.py:1549
-msgid "Inventory has been sent to the WAPT server"
-msgstr "L'inventaire a été envoyé au serveur WAPT"
-
-#: waptservice.py:1552
-msgid "Error while sending inventory to the server : {}"
-msgstr "Erreur lors de l'envoi de l'inventaire au serveur : {}"
-
-#: waptservice.py:1555
-msgid "WAPT Server is not avalable"
-msgstr "Le serveur WAPT n'est pas disponible"
-
-#: waptservice.py:1558
-msgid "Update server with this host's inventory"
-msgstr "Informer le serveur de l'inventaire de cette machine"
-
-#: waptservice.py:1578
-msgid "Packages erased : {}"
-msgstr "Paquets effacés : {}"
-
-#: waptservice.py:1581
-msgid "Error while clearing local cache : {}"
-msgstr "Erreur lors du vidage du cache local : {}"
-
-#: waptservice.py:1584
-msgid "Clear local package cache"
-msgstr "Vider le cache de paquets"
-
-#: waptservice.py:1609
-msgid "raising an error for Test WaptLongTask"
-msgstr "remontée d'une erreur pour le test WaptLongTask"
-
-#: waptservice.py:1615
-msgid "Test long running task of {}s"
-msgstr ""
-
-#: waptservice.py:1634
-#, python-format
-msgid "Downloading %s : %s"
-msgstr "Téléchargement de %s : %s"
-
-#: waptservice.py:1641
-msgid "Error while downloading {packagename}: {error}"
-msgstr "Erreur lors du téléchargement de {packagename}: {error}"
-
-#: waptservice.py:1644
-msgid "Done downloading {packagename}. {speed} kB/s"
-msgstr "Téléchargement de {packagename} terminé. ({speed} kB/s)"
-
-#: waptservice.py:1646
-msgid "Done downloading {packagename}."
-msgstr "Téléchargement de {packagename} terminé."
-
-#: waptservice.py:1659
-msgid "Download of {packagename} (tâche #{id})"
-msgstr "Téléchargement de {packagename} (tâche #{id})"
-
-#: waptservice.py:1695
-msgid "Error during install of {}:{}"
-msgstr "Erreur lors de l'installation de {} : {}"
-
-#: waptservice.py:1707
-msgid "Installation of {packagename} (task #{id})"
-msgstr "Installation de {packagename} (task #{id})"
-
-#: waptservice.py:1724
-msgid "Removed : {}"
-msgstr "Retiré(s) : {}"
-
-#: waptservice.py:1730
-msgid "Uninstall of {packagename} (task #{id})"
-msgstr "Désinstallation de {packagename} (task #{id})"
-
-#: waptservice.py:1740
-#, python-format
-msgid "Packages removed from database : %s"
-msgstr "Paquets retirés de la base : %s"
-
-#: waptservice.py:1742
-msgid "No package removed from database."
-msgstr "Aucun paquet retiré de la base."
-
-#: waptservice.py:1745
-msgid "Forget {packagenames} (task #{id})"
-msgstr "Oubli de {packagenames} (task #{id})"
-
-#: waptservice.py:1937
-msgid "Running: {description}"
-msgstr "En cours : {description}"
-
-#: waptservice.py:1945
-msgid ""
-"Done: {description}\n"
-"{summary}"
-msgstr ""
-"Terminé : {description}\n"
-"{summary}"
-
-#: waptservice.py:1951
-msgid "Canceled"
-msgstr "Annulé"
 
 #: templates/download.html:4
 msgid "Downloads"
@@ -368,91 +179,79 @@ msgstr "Nom de produit du système : {0}"
 msgid "Installing {0} <a href=\"task?id={1}\">task {1}"
 msgstr ""
 
-#: templates/layout.html:19
+#: templates/layout.html:12
 msgid "WAPT Service status"
 msgstr "Statut du service WAPT"
 
-#: templates/layout.html:37
-msgid "WAPT Service"
-msgstr "Service WAPT"
-
-#: templates/layout.html:38
-msgid "design by TIS"
-msgstr ""
-
-#: templates/layout.html:44
+#: templates/layout.html:45
 msgid "WAPT"
 msgstr ""
 
-#: templates/layout.html:45 templates/status.html:6
+#: templates/layout.html:46 templates/status.html:6
 msgid "Installed packages"
 msgstr "Paquets installés"
 
-#: templates/layout.html:46
+#: templates/layout.html:47
 msgid "List of packages"
 msgstr "Liste des paquets"
 
-#: templates/layout.html:47
+#: templates/layout.html:48
 msgid "Tasks"
 msgstr "Tâches"
-
-#: templates/layout.html:75
-msgid ""
-"Copyright (c) 2012 Tranquil IT Systems. All rights reserved. Design by <a"
-" href=\"http://www.tranquil-it-systems.fr/\">TIS</a>."
-msgstr ""
-"Copyright (c) 2012 Tranquil IT Systems. Tous droits réservés. Design by "
-"<a href=\"http://www.tranquil-it-systems.fr/\">TIS</a>."
 
 #: templates/list.html:27
 msgid "Available packages"
 msgstr "Paquets disponibles"
 
-#: templates/list.html:28
+#: templates/list.html:29
 msgid "Update available packages"
 msgstr "Mettre à jour la liste des paquets disponibles"
 
-#: templates/list.html:29
+#: templates/list.html:30
 msgid "Clear package cache"
 msgstr "Vider le cache de paquets"
 
-#: templates/list.html:30
+#: templates/list.html:31
 msgid "Upgrade system"
 msgstr "Upgrader le système"
 
-#: templates/list.html:32 templates/package_details.html:5
+#: templates/list.html:38
+msgid "Latest version only?"
+msgstr "N'afficher que la dernière version ?"
+
+#: templates/list.html:45 templates/package_details.html:5
 msgid "package"
 msgstr "paquet"
 
-#: templates/list.html:32
+#: templates/list.html:45
 msgid "install_version"
-msgstr ""
+msgstr "Version installée"
 
-#: templates/list.html:32
+#: templates/list.html:45
 msgid "install_status"
-msgstr ""
+msgstr "Statut de l'installation"
 
-#: templates/list.html:32
+#: templates/list.html:45
 msgid "install_date"
-msgstr ""
+msgstr "Date d'installation"
 
-#: templates/list.html:38 templates/status.html:13
+#: templates/list.html:51 templates/status.html:13
 msgid "Action"
 msgstr "Action"
 
-#: templates/list.html:71 templates/status.html:51
+#: templates/list.html:84 templates/status.html:51
 msgid "Remove"
 msgstr "Supprimer"
 
-#: templates/list.html:73
+#: templates/list.html:86
 msgid "Downgrade"
 msgstr "Downgrade"
 
-#: templates/list.html:75
+#: templates/list.html:88
 msgid "Upgrade"
 msgstr "Upgrade"
 
-#: templates/list.html:77 templates/package_details.html:17
+#: templates/list.html:90 templates/package_details.html:17
 msgid "Install"
 msgstr "Installer"
 
@@ -520,3 +319,203 @@ msgstr "En cours : {0}"
 msgid "Cancel"
 msgstr "Annuler"
 
+#: templates/waptwua.html:19
+#, fuzzy
+msgid "Installed Windows updates"
+msgstr "Mises à jour des logiciels installés"
+
+#: templates/waptwua.html:20
+msgid "Pending Windows updates"
+msgstr ""
+
+#: templates/waptwua.html:21
+msgid "Discarded Windows updates"
+msgstr ""
+
+#: templates/waptwua.html:24
+msgid "KB"
+msgstr ""
+
+#: templates/waptwua.html:24
+msgid "Title"
+msgstr ""
+
+#: templates/waptwua.html:24
+msgid "Classification"
+msgstr ""
+
+#: templates/waptwua.html:24
+msgid "Severity"
+msgstr ""
+
+#: templates/waptwua.html:24
+msgid "UUID"
+msgstr ""
+
+#: templates/waptwua.html:24
+msgid "Date"
+msgstr ""
+
+#: templates/waptwua.html:24
+#, fuzzy
+msgid "Downloaded"
+msgstr "{0} téléchargé"
+
+#~ msgid ""
+#~ "{classname} {id} created {create_date} "
+#~ "started:{start_date} finished:{finish_date} "
+#~ msgstr ""
+#~ "{classname} {id} créé le {create_date} "
+#~ "commencé le : {start_date} terminé le"
+#~ " :{finish_date} "
+
+#~ msgid "Reconfiguring network access"
+#~ msgstr "Reconfiguration de l'accès au réseau"
+
+#~ msgid "Upgrading WAPT client"
+#~ msgstr "Mise à jour du client WAPT"
+
+#~ msgid "WaptService restarted using batch file %s"
+#~ msgstr "WaptService relancé avec le fichier batch %s"
+
+#~ msgid "Restarting local WAPT service"
+#~ msgstr "Redémarrage du service WAPT local"
+
+#~ msgid "{} new package(s)"
+#~ msgstr "{} nouveau(x) paquet(s)"
+
+#~ msgid "{} removed package(s)"
+#~ msgstr "{} paquet(s) retiré(s)"
+
+#~ msgid "{} package(s) in the repository"
+#~ msgstr "{} paquet(s) dans le dépôt"
+
+#~ msgid "Packages to be updated : {}"
+#~ msgstr "Paquets à mettre à jour : {}"
+
+#~ msgid "Packages with errors : {}"
+#~ msgstr "Paquets avec des erreurs : {}"
+
+#~ msgid "System up-to-date"
+#~ msgstr "Le système est à jour"
+
+#~ msgid "Updating available packages"
+#~ msgstr "Mise à jour de la liste des paquets disponibles"
+
+#~ msgid "Installed : {}"
+#~ msgstr "Installé : {}"
+
+#~ msgid "Updated : {}"
+#~ msgstr "Mis à jour : {}"
+
+#~ msgid "Errors : {}"
+#~ msgstr "Erreurs: {}"
+
+#~ msgid "Unavailable : {}"
+#~ msgstr "Indisponible(s) : {}"
+
+#~ msgid "Update packages installed on host"
+#~ msgstr "Mettre à jour les paquets installés sur la machine"
+
+#~ msgid "WAPT Server has been notified"
+#~ msgstr "Le serveur WAPT a été notifié"
+
+#~ msgid "Error while sending to the server : {}"
+#~ msgstr "Erreur lors de l'envoi au serveur : {}"
+
+#~ msgid "WAPT Server is not available"
+#~ msgstr "Le serveur WAPT n'est pas disponible"
+
+#~ msgid "Update server with this host's status"
+#~ msgstr "Informer le serveur du statut de cette machine"
+
+#~ msgid "Inventory has been sent to the WAPT server"
+#~ msgstr "L'inventaire a été envoyé au serveur WAPT"
+
+#~ msgid "Error while sending inventory to the server : {}"
+#~ msgstr "Erreur lors de l'envoi de l'inventaire au serveur : {}"
+
+#~ msgid "WAPT Server is not avalable"
+#~ msgstr "Le serveur WAPT n'est pas disponible"
+
+#~ msgid "Update server with this host's inventory"
+#~ msgstr "Informer le serveur de l'inventaire de cette machine"
+
+#~ msgid "Packages erased : {}"
+#~ msgstr "Paquets effacés : {}"
+
+#~ msgid "Error while clearing local cache : {}"
+#~ msgstr "Erreur lors du vidage du cache local : {}"
+
+#~ msgid "Clear local package cache"
+#~ msgstr "Vider le cache de paquets"
+
+#~ msgid "raising an error for Test WaptLongTask"
+#~ msgstr "remontée d'une erreur pour le test WaptLongTask"
+
+#~ msgid "Test long running task of {}s"
+#~ msgstr ""
+
+#~ msgid "Downloading %s : %s"
+#~ msgstr "Téléchargement de %s : %s"
+
+#~ msgid "Error while downloading {packagename}: {error}"
+#~ msgstr "Erreur lors du téléchargement de {packagename}: {error}"
+
+#~ msgid "Done downloading {packagename}. {speed} kB/s"
+#~ msgstr "Téléchargement de {packagename} terminé. ({speed} kB/s)"
+
+#~ msgid "Done downloading {packagename}."
+#~ msgstr "Téléchargement de {packagename} terminé."
+
+#~ msgid "Download of {packagename} (tâche #{id})"
+#~ msgstr "Téléchargement de {packagename} (tâche #{id})"
+
+#~ msgid "Error during install of {}:{}"
+#~ msgstr "Erreur lors de l'installation de {} : {}"
+
+#~ msgid "Installation of {packagename} (task #{id})"
+#~ msgstr "Installation de {packagename} (task #{id})"
+
+#~ msgid "Removed : {}"
+#~ msgstr "Retiré(s) : {}"
+
+#~ msgid "Uninstall of {packagename} (task #{id})"
+#~ msgstr "Désinstallation de {packagename} (task #{id})"
+
+#~ msgid "Packages removed from database : %s"
+#~ msgstr "Paquets retirés de la base : %s"
+
+#~ msgid "No package removed from database."
+#~ msgstr "Aucun paquet retiré de la base."
+
+#~ msgid "Forget {packagenames} (task #{id})"
+#~ msgstr "Oubli de {packagenames} (task #{id})"
+
+#~ msgid "Running: {description}"
+#~ msgstr "En cours : {description}"
+
+#~ msgid ""
+#~ "Done: {description}\n"
+#~ "{summary}"
+#~ msgstr ""
+#~ "Terminé : {description}\n"
+#~ "{summary}"
+
+#~ msgid "Canceled"
+#~ msgstr "Annulé"
+
+#~ msgid "WAPT Service"
+#~ msgstr "Service WAPT"
+
+#~ msgid "design by TIS"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Copyright (c) 2012 Tranquil IT Systems."
+#~ " All rights reserved. Design by <a"
+#~ " href=\"http://www.tranquil-it-systems.fr/\">TIS</a>."
+#~ msgstr ""
+#~ "Copyright (c) 2012 Tranquil IT Systems."
+#~ " Tous droits réservés. Design by <a"
+#~ " href=\"http://www.tranquil-it-systems.fr/\">TIS</a>."
