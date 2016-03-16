@@ -736,6 +736,17 @@ def status():
         return render_template('status.html',packages=rows,format_isodate=format_isodate,Version=setuphelpers.Version)
 
 
+def latest_only(packages):
+    index = {}
+    for p in sorted(packages, reverse=True):
+        if not p.package in index:
+            p.previous = []
+            index[p.package] = p
+        else:
+            index[p.package].previous.append(p)
+
+    return index.values()
+
 
 @app.route('/list/pg<int:page>')
 @app.route('/packages.json')
@@ -774,6 +785,7 @@ def all_packages(page=1):
                     last_package_name = package.package
                 rows = list(reversed(filtered))
 
+            rows = latest_only(rows)
             for pe in rows:
                 # hack to enable proper version comparison in templates
                 pe.install_version = Version(pe.install_version)
@@ -2330,7 +2342,6 @@ if __name__ == "__main__":
     task_manager = WaptTaskManager(config_filename = waptconfig.config_filename)
     task_manager.daemon = True
     task_manager.start()
-
     if options.devel:
         app.run(host='0.0.0.0',port=30888,debug=False)
     else:
