@@ -41,7 +41,9 @@
 			{{format_isodate(p[c[0]])}}
 		{%elif c[0]=='install_output' %}
             <td width=30%>
-			{{p[c[0]].replace('\n','<br>')|safe}}
+                <div class="pre-scrollable">
+                    {{p[c[0]].replace('\n','<br>')|safe}}
+                </div>
 		{%else%}
             <td>
 			{{p[c[0]] or '-'}}
