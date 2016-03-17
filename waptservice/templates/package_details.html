@@ -2,7 +2,7 @@
 {% block content %}
 <h1><img class=package-icon src="package_icon?package={{data.package}}"> {{data.package}} {{data.version}}</h1>'
 <ul>
-{% for attrib in [_('package'),_('version'),_('description'),_('maintainer')] %}
+{% for attrib in [_('package'),_('version'),_('description'),_('maintainer'),_('install_status')] %}
     <li><strong>{{ attrib }}</strong> : {{data[attrib]}}</li>
 {% endfor %}
 {%if data.depends %}

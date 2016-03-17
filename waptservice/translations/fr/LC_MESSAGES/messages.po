@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-03-16 15:31+0100\n"
-"PO-Revision-Date: 2016-03-16 15:39+0200\n"
+"POT-Creation-Date: 2016-03-17 12:35+0100\n"
+"PO-Revision-Date: 2016-03-17 12:37+0200\n"
 "Last-Translator: mcadorel <mcadorel@tranquil.it>\n"
 "Language-Team: Technique TIS <technique@tranquil.it>\n"
 "Language: fr\n"
@@ -216,8 +216,8 @@ msgid "Upgrade system"
 msgstr "Upgrader le système"
 
 #: templates/list.html:38
-msgid "Latest version only?"
-msgstr "N'afficher que la dernière version ?"
+msgid "Show all versions?"
+msgstr "Afficher toutes les versions ?"
 
 #: templates/list.html:45 templates/package_details.html:5
 msgid "package"
@@ -227,7 +227,7 @@ msgstr "paquet"
 msgid "install_version"
 msgstr "Version installée"
 
-#: templates/list.html:45
+#: templates/list.html:45 templates/package_details.html:5
 msgid "install_status"
 msgstr "Statut de l'installation"
 
@@ -239,7 +239,7 @@ msgstr "Date d'installation"
 msgid "Action"
 msgstr "Action"
 
-#: templates/list.html:84 templates/status.html:51
+#: templates/list.html:84 templates/status.html:53
 msgid "Remove"
 msgstr "Supprimer"
 
@@ -362,12 +362,7 @@ msgid "Downloaded"
 msgstr "{0} téléchargé"
 
 #~ msgid ""
-#~ "{classname} {id} created {create_date} "
-#~ "started:{start_date} finished:{finish_date} "
 #~ msgstr ""
-#~ "{classname} {id} créé le {create_date} "
-#~ "commencé le : {start_date} terminé le"
-#~ " :{finish_date} "
 
 #~ msgid "Reconfiguring network access"
 #~ msgstr "Reconfiguration de l'accès au réseau"
@@ -495,13 +490,6 @@ msgstr "{0} téléchargé"
 #~ msgid "Running: {description}"
 #~ msgstr "En cours : {description}"
 
-#~ msgid ""
-#~ "Done: {description}\n"
-#~ "{summary}"
-#~ msgstr ""
-#~ "Terminé : {description}\n"
-#~ "{summary}"
-
 #~ msgid "Canceled"
 #~ msgstr "Annulé"
 
@@ -511,11 +499,5 @@ msgstr "{0} téléchargé"
 #~ msgid "design by TIS"
 #~ msgstr ""
 
-#~ msgid ""
-#~ "Copyright (c) 2012 Tranquil IT Systems."
-#~ " All rights reserved. Design by <a"
-#~ " href=\"http://www.tranquil-it-systems.fr/\">TIS</a>."
-#~ msgstr ""
-#~ "Copyright (c) 2012 Tranquil IT Systems."
-#~ " Tous droits réservés. Design by <a"
-#~ " href=\"http://www.tranquil-it-systems.fr/\">TIS</a>."
+#~ msgid "Latest version only?"
+#~ msgstr "N'afficher que la dernière version ?"

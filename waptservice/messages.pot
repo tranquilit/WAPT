@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-03-16 15:31+0100\n"
+"POT-Creation-Date: 2016-03-17 12:35+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -212,7 +212,7 @@ msgid "Upgrade system"
 msgstr ""
 
 #: templates/list.html:38
-msgid "Latest version only?"
+msgid "Show all versions?"
 msgstr ""
 
 #: templates/list.html:45 templates/package_details.html:5
@@ -223,7 +223,7 @@ msgstr ""
 msgid "install_version"
 msgstr ""
 
-#: templates/list.html:45
+#: templates/list.html:45 templates/package_details.html:5
 msgid "install_status"
 msgstr ""
 
@@ -235,7 +235,7 @@ msgstr ""
 msgid "Action"
 msgstr ""
 
-#: templates/list.html:84 templates/status.html:51
+#: templates/list.html:84 templates/status.html:53
 msgid "Remove"
 msgstr ""
 

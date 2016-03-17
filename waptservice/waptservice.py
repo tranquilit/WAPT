@@ -785,7 +785,7 @@ def all_packages(page=1):
                     last_package_name = package.package
                 rows = list(reversed(filtered))
 
-            if request.args.get('latest_only',''):
+            if not request.args.get('all_versions',''):
                 rows = sorted(latest_only(rows))
             for pe in rows:
                 # hack to enable proper version comparison in templates
