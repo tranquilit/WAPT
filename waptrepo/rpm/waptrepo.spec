@@ -1,6 +1,6 @@
 %define _topdir   .
 Name:		tis-waptrepo
-Version:	1.3.3
+Version:	1.3.6
 Release:	1%{?dist}
 Summary:	WAPT Repo
 BuildArch:	noarch
