@@ -2,7 +2,7 @@
 %define buildroot ./builddir
 
 Name:	tis-waptserver
-Version:	1.3.3
+Version:	1.3.6
 Release:	1%{?dist}
 Summary:	WAPT Server
 BuildArch:	noarch
