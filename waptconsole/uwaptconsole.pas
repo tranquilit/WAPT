@@ -3130,7 +3130,7 @@ begin
     if  (colname = 'depends') or (colname = 'conflicts') then
       StrReplace(CellText, ',', #13#10, [rfReplaceAll]);
     if (colname = 'size') or (colname ='installed_size') then
-      CellText := FormatFloat('# ##0 kB',StrToInt(CellText) div 1024);
+      CellText := FormatFloat('# ##0 kB',StrToInt64(CellText) div 1024);
   end;
 end;
 
