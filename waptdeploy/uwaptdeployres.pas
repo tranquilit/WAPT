@@ -16,7 +16,7 @@ resourcestring
 
   rsUsage1 = 'Usage : waptdeploy.exe --hash=<sha256hash> --minversion=<min_wapt_version>';
   rsUsage2 = '  Download waptagent.exe from WAPT repository and launch it if local version is obsolete (< %s or < parameter 1 or < --minversion parameter)';
-  rsUsage3 = ' --force : install waptagent.exe even if version doesn''t match';
+  rsUsage3 = ' --force : install waptagent.exe even if not needed';
   rsUsage4 = ' --minversion=1.2.3 : install waptagent.exe if installed version is less than that';
   rsUsage5 = ' --repo_url=http://wapt/wapt : location of repository where to lookup waptdeploy.version and to get waptagent.exe';
   rsUsage6 = ' --waptsetupurl=http://wapt/wapt/waptagent.exe : location where to download setup exe. (default=<repo_url>/waptagent.exe';
