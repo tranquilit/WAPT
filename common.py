@@ -3302,17 +3302,18 @@ class Wapt(object):
     def get_sources(self,package):
         """Download sources of package (if referenced in package as a https svn)
            in the current directory"""
+        sources_url = None
+        entry = None
         entries = self.waptdb.packages_matching(package)
         if entries:
             entry = entries[-1]
-        else:
-            raise Exception('Package %s is not available'%package)
-
-        if not entry.sources:
+            if entry.sources:
+                sources_url = entry.sources
+        if not sources_url:
             if self.config.has_option('global','default_sources_url'):
-                entry.sources = self.config.get('global','default_sources_url') % {'packagename':package}
+                sources_url = self.config.get('global','default_sources_url') % {'packagename':package}
 
-        if not entry.sources:
+        if not sources_url:
             raise Exception('No sources defined in package control file and no default_sources_url in config file')
         if "PROGRAMW6432" in os.environ:
             svncmd = os.path.join(os.environ['PROGRAMW6432'],'TortoiseSVN','bin','svn.exe')
@@ -3323,15 +3324,18 @@ class Wapt(object):
             raise Exception(u'svn.exe command not available, please install TortoiseSVN with commandline tools')
 
         # checkout directory
-        co_dir = self.get_default_development_dir(entry.package, section = entry.section)
+        if entry:
+            co_dir = self.get_default_development_dir(entry.package, section = entry.section)
+        else:
+            co_dir = self.get_default_development_dir(package)
 
-        logger.info(u'sources : %s'% entry.sources)
+        logger.info(u'sources : %s'% sources_url)
         logger.info(u'checkout dir : %s'% co_dir)
         # if already checked out...
         if os.path.isdir(os.path.join(co_dir,'.svn')):
             print ensure_unicode(self.run(u'"%s" up "%s"' % (svncmd,co_dir)))
         else:
-            print ensure_unicode(self.run(u'"%s" co "%s" "%s"' % (svncmd,entry.sources,co_dir)))
+            print ensure_unicode(self.run(u'"%s" co "%s" "%s"' % (svncmd,sources_url,co_dir)))
         return co_dir
 
     def last_install_log(self,packagename):
