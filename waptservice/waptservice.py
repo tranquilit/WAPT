@@ -2054,7 +2054,7 @@ class WaptTaskManager(threading.Thread):
                 # check tasks queue
                 self.running_task = self.tasks_queue.get(timeout=waptconfig.waptservice_poll_timeout)
                 try:
-                    # don't send update_run status fir udapstatus itself...
+                    # don't send update_run status for updatestatus itself...
                     self.broadcast_tasks_status(str('START'),self.running_task)
                     if self.running_task.notify_server_on_start:
                         self.update_runstatus(__(u'Running: {description}').format(description=self.running_task) )
