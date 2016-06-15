@@ -1402,6 +1402,8 @@ def reg_value_exists(rootkey, subkeypath,value_name):
     """
     try:
         with reg_openkey_noredir(rootkey,subkeypath) as key:
+            if isinstance(value_name,unicode):
+                value_name = value_name.encode(locale.getpreferredencoding())
             value = _winreg.QueryValueEx(key,value_name)[0]
             return True
 
@@ -1427,11 +1429,12 @@ def reg_getvalue(key,name,default=None):
         int or str or list: depends on type of value named name.
     """
     try:
+        if isinstance(name,unicode):
+            name = name.encode(locale.getpreferredencoding())
         value = _winreg.QueryValueEx(key,name)[0]
-        if type(value) is types.StringTypes:
-            return ensure_unicode(value)
-        else:
-            return value
+        if isinstance(value,str):
+            value = value.decode(locale.getpreferredencoding())
+        return value
     except WindowsError,e:
         if e.errno in(259,2):
             # WindowsError: [Errno 259] No more data is available
@@ -1448,6 +1451,10 @@ def reg_setvalue(key,name,value,type=_winreg.REG_SZ ):
          name : value name
          type : type of value (REG_SZ,REG_MULTI_SZ,REG_DWORD,REG_EXPAND_SZ)
     """
+    if isinstance(name,unicode):
+        name = name.encode(locale.getpreferredencoding())
+    if isinstance(value,unicode):
+        value = value.encode(locale.getpreferredencoding())
     return _winreg.SetValueEx(key,name,0,type,value)
 
 
@@ -1457,6 +1464,8 @@ def reg_delvalue(key,name):
          name : value name
     """
     try:
+        if isinstance(name,unicode):
+            name = name.encode(locale.getpreferredencoding())
         _winreg.DeleteValue(key,name)
         return True
     except WindowsError,e:
@@ -1494,6 +1503,8 @@ def reg_enum_values(rootkey):
             except:
                 pass
             if name is not None:
+                if isinstance(value,str):
+                    value = value.decode(locale.getpreferredencoding())
                 yield (name,value,_type)
             i += 1
         except WindowsError,e:
@@ -1565,6 +1576,8 @@ def registry_set(root,path,keyname,value,type=None):
                 type = REG_DWORD
             else:
                 type = REG_SZ
+        if isinstance(value,unicode):
+            value = value.encode(locale.getpreferredencoding())
         return reg_setvalue(key,keyname,value,type=type)
 
 def registry_delete(root,path,valuename):
@@ -1605,6 +1618,8 @@ def registry_deletekey(root,path,keyname):
     path = path.replace(u'/',u'\\')
     try:
         with reg_openkey_noredir(root,path,sam=KEY_WRITE) as key:
+            if isinstance(keyname,unicode):
+                keyname = keyname.encode(locale.getpreferredencoding())
             return _winreg.DeleteKey(key,keyname)
     except WindowsError as e:
         logger.warning(u'registry_deletekey:%s'%ensure_unicode(e))
