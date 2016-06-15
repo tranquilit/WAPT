@@ -1341,6 +1341,8 @@ def reg_openkey_noredir(rootkey, subkeypath, sam=_winreg.KEY_READ,create_if_miss
     >>>
 
     """
+    if isinstance(subkeypath,unicode):
+        subkeypath = subkeypath.encode(locale.getpreferredencoding())
     try:
         if platform.machine() == 'AMD64':
             result = _winreg.OpenKey(rootkey,subkeypath,0, sam | _winreg.KEY_WOW64_64KEY)
