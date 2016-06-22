@@ -19,11 +19,12 @@ type
     actSkip: TAction;
     ActUpgrade: TAction;
     BitBtn1: TBitBtn;
-    BitBtn2: TBitBtn;
+    ButUpgradeNow: TBitBtn;
     CheckBox1: TCheckBox;
     Image1: TImage;
     ImageList1: TImageList;
-    Label1: TLabel;
+    LabIntro: TLabel;
+    LabDontShutdown: TLabel;
     Memo1: TMemo;
     panHaut: TPanel;
     panBas: TPanel;
@@ -88,6 +89,9 @@ begin
     CountDown := 0;
     ActUpgrade.Caption:=rsUpdatingSoftware;
     actSkip.Caption:=rsInterruptUpdate;
+    ButUpgradeNow.Visible := False;
+    LabIntro.Visible := False;
+    LabDontShutdown.Visible := True;
   finally
     Timer1.Enabled := True;
   end;

@@ -27,7 +27,7 @@ object VisWaptExit: TVisWaptExit
     ClientWidth = 402
     Constraints.MinWidth = 395
     TabOrder = 0
-    object Label1: TLabel
+    object LabIntro: TLabel
       Left = 12
       Height = 26
       Top = 8
@@ -79,7 +79,7 @@ object VisWaptExit: TVisWaptExit
       }
       TabOrder = 0
     end
-    object BitBtn2: TBitBtn
+    object ButUpgradeNow: TBitBtn
       Left = 12
       Height = 30
       Top = 40
@@ -204,6 +204,23 @@ object VisWaptExit: TVisWaptExit
       Top = 109
       Width = 180
       TabOrder = 3
+    end
+    object LabDontShutdown: TLabel
+      Left = 12
+      Height = 38
+      Top = 24
+      Width = 240
+      Caption = 'Upgrades in progress...'#13#10'Don''t shutdown your computer !'
+      Font.CharSet = ANSI_CHARSET
+      Font.Color = clRed
+      Font.Height = -16
+      Font.Name = 'Arial'
+      Font.Pitch = fpVariable
+      Font.Quality = fqDraft
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      Visible = False
     end
   end
   object panBas: TPanel

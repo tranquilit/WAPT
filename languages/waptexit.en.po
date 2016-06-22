@@ -1,7 +1,7 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-msgid "Do you wish to apply them now ?"
+msgid "Don't shutdown you computer !"
 msgstr ""
 
 #: tviswaptexit.actshowdetails.caption
@@ -20,7 +20,12 @@ msgstr ""
 msgid "Launching updates..."
 msgstr ""
 
-#: tviswaptexit.label1.caption
+#: tviswaptexit.labdontshutdown.caption
+msgid "Upgrades in progress..."
+msgstr ""
+
+#: tviswaptexit.labintro.caption
+msgctxt "tviswaptexit.labintro.caption"
 msgid "There are installs or updates pending."
 msgstr ""
 

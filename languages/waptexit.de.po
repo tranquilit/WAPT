@@ -28,15 +28,18 @@ msgstr "Pakete installieren/updaten"
 msgid "Launching updates..."
 msgstr "Start der Updates..."
 
-#: tviswaptexit.label1.caption
+#: tviswaptexit.labdontshutdown.caption
+msgid "Upgrades in progress..."
+msgstr ""
+
+#: tviswaptexit.labintro.caption
+msgctxt "tviswaptexit.labintro.caption"
 msgid "There are installs or updates pending."
 msgstr "Es gibt ausstehende Installationen oder Updates"
 
 #: uwaptexitres.rserrorwininetflags
 msgid "Internal error in SetToIgnoreCerticateErrors when trying to get wininet flags. %s"
-msgstr ""
-"Interner Fehler in SetToIgnoreCerticateErrors beim Versuch wininet flags zu "
-"erhalten. %s"
+msgstr "Interner Fehler in SetToIgnoreCerticateErrors beim Versuch wininet flags zu erhalten. %s"
 
 #: uwaptexitres.rsinterruptupdate
 msgid "Interrupt software update"
@@ -99,9 +102,7 @@ msgstr "Bestätigen"
 
 #: uwaptres.rsconfirmcancelpostconfig
 msgid "Are you sure you want to cancel configuring WAPT server ?"
-msgstr ""
-"Sind Sie sich sicher das du die Konfiguartion vom WAPT Server abbrechen "
-"wollen?"
+msgstr "Sind Sie sich sicher das du die Konfiguartion vom WAPT Server abbrechen wollen?"
 
 #: uwaptres.rsconfirmcaption
 msgctxt "uwaptres.rsconfirmcaption"
@@ -115,8 +116,7 @@ msgstr "Entfernen bestätigen"
 
 #: uwaptres.rsconfirmhostforgetspackages
 msgid "Are you sure you want to forget %s packages from host %s ?"
-msgstr ""
-"Sind Sie sich sicher, dass Sie %s die Pakete vom Host %s vergessen wollen?"
+msgstr "Sind Sie sich sicher, dass Sie %s die Pakete vom Host %s vergessen wollen?"
 
 #: uwaptres.rsconfirmimport
 msgid ""
@@ -126,7 +126,7 @@ msgid ""
 msgstr ""
 "Sind Sie sich sicher, dass Sie es auf Ihren Aufbewahrungsort\n"
 "%s\n"
-"importieren wollen?"
+"importieren wollen?\n"
 
 #: uwaptres.rsconfirmimportcaption
 msgid "Confirm import"
@@ -134,18 +134,15 @@ msgstr "Einführen bestätigen"
 
 #: uwaptres.rsconfirmrmhostsfromlist
 msgid "Are you sure you want to remove %s hosts from the list ?"
-msgstr ""
-"Sind Sie sich sicher, dass Sie %s Hosts von der Liste entfernen möchten?"
+msgstr "Sind Sie sich sicher, dass Sie %s Hosts von der Liste entfernen möchten?"
 
 #: uwaptres.rsconfirmrmmultiplepackages
 msgid "Are you sure you want to remove the selected packages from the server ?"
-msgstr ""
-"Sind Sie sich sicher, dass Sie die ausgewählten Pakete entfernen möchten?"
+msgstr "Sind Sie sich sicher, dass Sie die ausgewählten Pakete entfernen möchten?"
 
 #: uwaptres.rsconfirmrmonepackage
 msgid "Are you sure you want to remove this package from the server ?"
-msgstr ""
-"Sind Sie sich sicher, dass Sie dieses Paket vom Server entfernen möchten?"
+msgstr "Sind Sie sich sicher, dass Sie dieses Paket vom Server entfernen möchten?"
 
 #: uwaptres.rsconfirmrmpackagecaption
 msgctxt "uwaptres.rsconfirmrmpackagecaption"
@@ -154,9 +151,7 @@ msgstr "Entfernen bestätigen"
 
 #: uwaptres.rsconfirmrmpackagesfromhost
 msgid "Are you sure you want to remove %s package(s) from the selected host(s) %s ?"
-msgstr ""
-"Sind Sie sich sicher, dass Sie %s Pakete von den ausgewählten Hosts %s "
-"enfernen möchten?"
+msgstr "Sind Sie sich sicher, dass Sie %s Pakete von den ausgewählten Hosts %s enfernen möchten?"
 
 #: uwaptres.rscreationinprogress
 msgid "Creation in progress."
@@ -164,9 +159,7 @@ msgstr "Die Kreation ist im Gange."
 
 #: uwaptres.rsdefinewaptdevpath
 msgid "Please select a directory on your package development host before editing a package bundle."
-msgstr ""
-"Bitte wählen Sie ein Verzeichnis in Ihrer  Host Paketentwicklung bevor der "
-"Berarbeitung eines Packet-Bündel."
+msgstr "Bitte wählen Sie ein Verzeichnis in Ihrer  Host Paketentwicklung bevor der Berarbeitung eines Packet-Bündel."
 
 #: uwaptres.rsdeletingelement
 msgid "Removing %s"
@@ -301,9 +294,7 @@ msgstr "Host Konfiguraion bearbeiten"
 
 #: uwaptres.rsignoredconfictingpackages
 msgid "Warning : couldn't find package(s) %s ; conflicting package(s) have been ignored."
-msgstr ""
-"Warnung: konnte das Packet nicht finden %s ; widersprüchliche Pakete wurden "
-"ignoriert."
+msgstr "Warnung: konnte das Packet nicht finden %s ; widersprüchliche Pakete wurden ignoriert."
 
 #: uwaptres.rsignoredpackages
 msgid "Warning : couldn't find package(s) %s ; ignoring them."
@@ -323,8 +314,7 @@ msgstr "Falsches Passwort."
 
 #: uwaptres.rsinnosetupunavailable
 msgid "Innosetup is unavailable (path : %s), please install it first."
-msgstr ""
-"Innosetup ist nicht verfügbar (Pfad : %s), installieren Sie es bitte zuerst."
+msgstr "Innosetup ist nicht verfügbar (Pfad : %s), installieren Sie es bitte zuerst."
 
 #: uwaptres.rsinputkeyname
 msgid "Please input a key name."
@@ -352,9 +342,7 @@ msgstr "Ungültige DNS"
 
 #: uwaptres.rsinvaliddnsfallback
 msgid "This DNS name is not valid, would you like to use the IP address instead ?"
-msgstr ""
-"Dieser DNS Name ist nicht gültig, wollen Sie lieber stattdessen die IP-"
-"Adresse verwenden ?"
+msgstr "Dieser DNS Name ist nicht gültig, wollen Sie lieber stattdessen die IP-Adresse verwenden ?"
 
 #: uwaptres.rsinvalidwaptsetupdir
 msgid "WAPTsetup directory is not valid : %s"
@@ -406,8 +394,7 @@ msgstr "Die fertige Konfiguration der Pakete für die Benutzersitzung"
 
 #: uwaptres.rspackageconfigerror
 msgid "Error while configuring packages for the current user session"
-msgstr ""
-"Fehler bei der Konfiguration der Pakete für die aktuelle Benutzersitzung"
+msgstr "Fehler bei der Konfiguration der Pakete für die aktuelle Benutzersitzung"
 
 #: uwaptres.rspackagecreationerror
 msgid "Error while creating package : %s"
@@ -421,7 +408,7 @@ msgid ""
 msgstr ""
 "Sind Sie sich sicher, dass Sie die Paket(e) duplizieren möchten\n"
 "%s\n"
-"in Ihrem Repository?"
+"in Ihrem Repository?\n"
 
 #: uwaptres.rspackageduplicateconfirmcaption
 msgid "Confirm duplication of package"
@@ -659,3 +646,4 @@ msgstr "Win32 Exe wrapper: %s %s"
 #: uwaptres.rswinterruptreceived
 msgid "W: interrupt received, killing serverâ¦"
 msgstr "Unterbrechung empfangen, zerstört serverâ¦"
+
