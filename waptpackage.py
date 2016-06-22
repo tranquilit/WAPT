@@ -173,11 +173,10 @@ class Version(object):
         else:
             self.versionstring = version
         self.members = [ v.strip() for v in self.versionstring.split('.')]
+        self.members_count = members_count
         if members_count is not None:
             if len(self.members)<members_count:
                 self.members.extend(['0'] * (members_count-len(self.members)))
-            else:
-                del self.members[members_count:]
 
     def __cmp__(self,aversion):
         def nat_cmp(a, b):
@@ -196,8 +195,8 @@ class Version(object):
             return cmp(alphanum_key(a), alphanum_key(b))
 
         if not isinstance(aversion,Version):
-            aversion = Version(aversion)
-        for i in range(0,min([len(self.members),len(aversion.members)])):
+            aversion = Version(aversion,self.members_count)
+        for i in range(0,min([self.members_count or len(self.members),aversion.members_count or len(aversion.members)])):
             i1,i2  = self.members[i], aversion.members[i]
             v = nat_cmp(i1,i2)
             if v:
@@ -209,7 +208,6 @@ class Version(object):
 
     def __repr__(self):
         return "Version('{}')".format('.'.join(self.members))
-
 
 class PackageRequest(object):
     """Package and version request / condition

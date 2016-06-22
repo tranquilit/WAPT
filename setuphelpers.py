@@ -1032,7 +1032,7 @@ def run(*cmd,**kwargs):
     else:
         on_write = None
 
-    proc = psutil.Popen(*cmd, bufsize=1, stdout=PIPE, stderr=PIPE,**kwargs)
+    proc = psutil.Popen(*cmd, bufsize=1, stdin=PIPE, stdout=PIPE, stderr=PIPE,**kwargs)
     # keep track of launched pid if required by providing a pidlist argument to run
     if not proc.pid in pidlist:
         pidlist.append(proc.pid)
@@ -3333,7 +3333,7 @@ def need_install(key,min_version=None,force=False):
     else:
         current = installed_softwares(uninstallkey=key)
         for soft in current:
-            if not min_version or Version(soft['version']) >= Version(min_version):
+            if not min_version or Version(min_version) <= soft['version']:
                 return False
         return True
 
