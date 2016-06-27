@@ -120,7 +120,7 @@ procedure TVisImportPackage.GridExternalPackagesGetText(
 begin
   if (CellText<>'') and  ( ((Sender as TSOGrid).Header.Columns[Column] as TSOGridColumn).PropertyName = 'size') then
   begin
-    CellText := FormatFloat('# ##0 kB',StrToInt(CellText) div 1024);
+    CellText := FormatFloat('# ##0 kB',StrToInt64(CellText) div 1024);
   end;
 end;
 
