@@ -86,7 +86,7 @@ from M2Crypto.EVP import EVPError
 
 from urlparse import urlparse
 try:
-    from requests_kerberos_sspi import HTTPKerberosAuth,OPTIONAL
+    from requests_kerberos import HTTPKerberosAuth,OPTIONAL
     has_kerberos = True
 except:
     has_kerberos = False
