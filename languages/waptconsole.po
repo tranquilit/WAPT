@@ -1028,6 +1028,10 @@ msgctxt "TVISWAPTGUI.ACTTRIGGERWAPTWUA_SCAN.CAPTION"
 msgid "Trigger the scan of missing Windows Updates"
 msgstr ""
 
+#: tviswaptgui.actuninstallsoft.caption
+msgid "Uninstall remotely"
+msgstr ""
+
 #: tviswaptgui.actvnc.caption
 msgctxt "tviswaptgui.actvnc.caption"
 msgid "Connect via VNC"
