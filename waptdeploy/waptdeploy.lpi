@@ -15,7 +15,6 @@
       <ResourceType Value="res"/>
     </General>
     <i18n>
-      <EnableI18N Value="True"/>
       <OutDir Value="..\languages"/>
     </i18n>
     <VersionInfo>
@@ -24,6 +23,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="3"/>
       <RevisionNr Value="6"/>
+      <BuildNr Value="1"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT auto deploy" LegalCopyright="Tranquil IT Systems" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -78,8 +78,6 @@
     </Parsing>
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>
-      <RelocatableUnit Value="True"/>
-      <SmallerCode Value="True"/>
     </CodeGeneration>
     <Linking>
       <Debugging>
@@ -87,7 +85,6 @@
         <StripSymbols Value="True"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
-      <LinkSmart Value="True"/>
     </Linking>
     <Other>
       <Verbosity>

@@ -25,7 +25,7 @@ unit waptwinutils;
 interface
 
 uses
-  Classes,windows,SysUtils,superobject, ShellApi, JwaWinbase;
+  Classes,windows,SysUtils,superobject, ShellApi;
 
 function DNSAQuery(name:AnsiString):ISuperObject;
 function DNSSRVQuery(name:AnsiString):ISuperObject;
@@ -938,7 +938,7 @@ function Run(CmdLine: WideString;
   const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString='';onpoll:TNotifyEvent=Nil): RawByteString;
 var
   mySecurityAttributes: SECURITY_ATTRIBUTES;
-  myStartupInfo: STARTUPINFOW;
+  myStartupInfo: STARTUPINFO;
   myProcessInfo: PROCESS_INFORMATION;
   hPipeInputRead, hPipeInputWrite: THandle;
   hPipeOutputRead, hPipeOutputWrite: THandle;
