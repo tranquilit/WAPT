@@ -117,6 +117,9 @@ action is either :
   upload-package  <filenames> : upload package to repository (using winscp for example.)
   update-packages <directory> : rebuild a "Packages" file for http package repository
 
+  get-server-certificate : get the public key from waptserver and save it to <waptbasedir>\\ssl\\server
+  enable-check-certificate ! get the public key from waptserver,save it to <waptbasedir>\\ssl\\server and enable verify in config file.
+
 """
 
 parser=OptionParser(usage=usage,version='wapt-get.py ' + __version__+' common.py '+common.__version__+' setuphelpers.py '+setuphelpers.__version__)
@@ -1008,6 +1011,26 @@ def main():
                         ('install_date',16),
                         ('description',80)),
                         callback=cb)
+
+            elif action == 'get-server-certificate':
+                if mywapt.waptserver and mywapt.waptserver_available():
+                    result = mywapt.waptserver.save_server_certificate(os.path.join(mywapt.wapt_base_dir,'ssl','server'))
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print('Server certificate written to %s' % result)
+
+            elif action == 'enable-check-certificate':
+                if mywapt.waptserver and mywapt.waptserver_available():
+                    result = mywapt.waptserver.save_server_certificate(os.path.join(mywapt.wapt_base_dir,'ssl','server'))
+                    setuphelpers.inifile_writestring(mywapt.config_filename,'global','verify_cert',result)
+                else:
+                    result = ''
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print('Server certificate written to %s' % result)
+                    print('wapt config file updated')
 
             elif action == 'add-icon':
                 if len(args) < 2:
