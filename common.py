@@ -1800,12 +1800,16 @@ class WaptServer(object):
         pem = get_pem_server_certificate(self.server_url)
         if pem:
             url = urlparse(self.server_url)
-            if self.verify_cert and isinstance(self.verify_cert,bool):
-                pem_fn = os.path.join(server_dir,url.hostname+'.pem')
-            else:
+            if isinstance(self.verify_cert,str) or isinstance(self.verify_cert,unicode):
                 pem_fn = self.verify_cert
-        open(pem_fn,'wb').write(pem)
-        return pem_fn
+            else:
+                pem_fn = os.path.join(server_dir,url.hostname+'.pem')
+            if not os.path.isdir(server_dir):
+                os.makedirs(server_dir)
+            open(pem_fn,'wb').write(pem)
+            return pem_fn
+        else:
+            return None
 
     def reset_network(self):
         """called by wapt when network configuration has changed"""
