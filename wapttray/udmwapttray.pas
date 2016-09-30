@@ -124,7 +124,7 @@ var
   DMWaptTray: TDMWaptTray;
 
 implementation
-uses LCLIntf,Forms,dialogs,windows,graphics,tiscommon,
+uses LCLIntf,Forms,dialogs,windows,graphics,tiscommon,tisinifiles,
     waptcommon,waptwinutils,soutils,tisstrings,IdException;
 
 {$R *.lfm}
@@ -330,7 +330,7 @@ begin
   check_waptservice := TCheckWaptservice.Create(Self);
   check_waptservice.Start;
 
-  notify_user := True;
+  notify_user:= IniReadBool(WaptIniFilename,'global','notify_user',Win32MajorVersion<=6 );
 
   ActForceRegister.Visible := waptcommon.GetWaptServerURL <>'';
 
@@ -516,7 +516,7 @@ begin
         begin
           trayHint:= taskresult.S['runstatus'];
           if taskresult.B['notify_user'] then
-             task_notify_user:=True
+            task_notify_user:=True
           else
             task_notify_user:=False;
         end
@@ -535,7 +535,7 @@ begin
           else
             TrayIcon1.BalloonHint := rsError;
           TrayIcon1.BalloonFlags:=bfError;
-          if not popupvisible and task_notify_user then
+          if not popupvisible and notify_user and task_notify_user then
             TrayIcon1.ShowBalloonHint;
         end
         else
@@ -549,7 +549,7 @@ begin
 
           TrayIcon1.BalloonFlags:=bfInfo;
           current_task := taskresult;
-          if not popupvisible and task_notify_user then
+          if not popupvisible and notify_user and task_notify_user then
             TrayIcon1.ShowBalloonHint;
         end
         else
@@ -558,7 +558,7 @@ begin
           trayMode:= tmRunning;
           TrayIcon1.BalloonHint :=  utf8Encode(taskresult.S['description']+#13#10+Format('%.0f%%',[taskresult.D['progress']]));
           TrayIcon1.BalloonFlags:=bfInfo;
-          if not popupvisible and task_notify_user then
+          if not popupvisible and notify_user and task_notify_user then
             TrayIcon1.ShowBalloonHint;
           current_task := taskresult;
         end
@@ -582,14 +582,14 @@ begin
           begin
              TrayIcon1.BalloonHint := utf8Encode(format(rsCanceling, [taskresult.S['description']]));
              TrayIcon1.BalloonFlags:=bfWarning;
-             if not popupvisible and task_notify_user  then
+             if not popupvisible and notify_user and task_notify_user  then
                 TrayIcon1.ShowBalloonHint;
           end
           else
           begin
             TrayIcon1.BalloonHint := utf8Encode(rsNoTaskCanceled);
             TrayIcon1.BalloonFlags:=bfInfo;
-            if not popupvisible and task_notify_user  then
+            if not popupvisible and notify_user and task_notify_user  then
               TrayIcon1.ShowBalloonHint;
           end
         end;
@@ -745,7 +745,8 @@ begin
       TrayIcon1.BalloonHint:=rsChecking
     else
       TrayIcon1.BalloonHint:=rsErrorWhileChecking;
-    TrayIcon1.ShowBalloonHint;
+    if notify_user then
+      TrayIcon1.ShowBalloonHint;
   except
     on E:Exception do
       begin
