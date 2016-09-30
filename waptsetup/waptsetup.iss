@@ -28,7 +28,7 @@ Source: "..\waptdevutils.py"; DestDir: "{app}";
 
 [Setup]
 OutputBaseFilename=waptsetup
-DefaultDirName="C:\wapt"
+DefaultDirName={pf}\wapt
 WizardImageFile=..\tranquilit.bmp
 
 [Languages]

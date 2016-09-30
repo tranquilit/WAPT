@@ -67,7 +67,7 @@ Name: "{app}\waptserver\apache-win32\ssl"
 
 [Setup]
 OutputBaseFilename=waptserversetup
-DefaultDirName="C:\wapt"
+DefaultDirName={pf}\wapt
 WizardImageFile=..\tranquilit.bmp
 
 [INI]
