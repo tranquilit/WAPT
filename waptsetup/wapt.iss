@@ -122,7 +122,8 @@ Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tm
 Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "Mise à jour des librairies MS VC++ pour openssl"; Description: "Mise à jour des librairies MS VC++"; Tasks: installredist2008unchecked
 ;Filename: "{app}\wapt-get.exe"; Parameters: "upgradedb"; Flags: runhidden; StatusMsg: "Upgrading local sqlite database structure"; Description: "Upgrade packages list"
 ; rights rw for Admins and System, ro for users and authenticated users on wapt directory
-Filename: "cmd"; Parameters: "/C echo O| cacls {app} /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)(A;OICI;0x1200a9;;;BU)(A;OICI;0x1201a9;;;AU)"""; Tasks:installService; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt..."; Description: "Mise en place des droits sur le répertoire wapt"
+Filename: "cmd"; Parameters: "/C echo O| cacls {app} /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)(A;OICI;0x1200a9;;;BU)(A;OICI;0x1201a9;;;AU)"""; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt..."; Description: "Mise en place des droits sur le répertoire wapt"
+Filename: "cmd"; Parameters: "/C icacls.exe {app} /inheritance:r"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wap..."; Description: "Suppression héritage des droits sur wapt"
 
 ; if waptservice
 Filename: "{app}\waptpython.exe"; Parameters: """{app}\waptservice\waptservice.py"" install"; Tasks:installService ; Flags: runhidden; StatusMsg: "Installation du service WAPT"; Description: "Installation du service WAPT"
