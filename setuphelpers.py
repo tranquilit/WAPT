@@ -2387,7 +2387,7 @@ def win_startup_info():
     return result
 
 
-def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_BIOS','Win32_NetworkAdapter','Win32_Printer','Win32_VideoController','Win32_LogicalDisk'],
+def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_BIOS','Win32_NetworkAdapter','Win32_Printer','Win32_VideoController','Win32_LogicalDisk','Win32_OperatingSystem'],
         exclude_subkeys=['OEMLogoBitmap']):
     """Get WMI machine informations as dictionaries
 
