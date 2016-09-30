@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="1.3.6"
+__version__="1.3.7"
 
 import os,sys
 try:

@@ -22,7 +22,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="3"/>
-      <RevisionNr Value="6"/>
+      <RevisionNr Value="7"/>
       <BuildNr Value="1"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT auto deploy" LegalCopyright="Tranquil IT Systems" ProductVersion=""/>
     </VersionInfo>
