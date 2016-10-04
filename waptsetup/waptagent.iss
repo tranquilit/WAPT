@@ -9,6 +9,6 @@
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {#default_repo_url};
 
 [Setup]
-DefaultDirName={pf}\wapt
+DefaultDirName=c:\wapt
 OutputBaseFilename=waptagent
 
