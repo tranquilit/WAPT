@@ -802,6 +802,7 @@ object VisEditPackage: TVisEditPackage
       EditLabel.ParentColor = False
       LabelPosition = lpLeft
       TabOrder = 0
+      OnExit = EdPackageExit
       OnKeyPress = EdPackageKeyPress
     end
     object EdVersion: TLabeledEdit

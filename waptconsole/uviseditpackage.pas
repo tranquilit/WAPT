@@ -93,6 +93,7 @@ type
     procedure ActExecCodeExecute(Sender: TObject);
     procedure ActSearchPackageExecute(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
+    procedure EdPackageExit(Sender: TObject);
     procedure EdPackageKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchExecute(Sender: TObject);
     procedure EdSearchKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
@@ -327,6 +328,11 @@ begin
     DMPython.PythonEng.ExecString('logger.setLevel(logging.WARNING)');
 end;
 
+procedure TVisEditPackage.EdPackageExit(Sender: TObject);
+begin
+  EdPackage.Text:=Trim(LowerCase(EdPackage.Text));
+end;
+
 procedure TVisEditPackage.EdPackageKeyPress(Sender: TObject; var Key: char);
 begin
 
@@ -524,12 +530,12 @@ begin
     end
     else
     begin
-      PackageEdited.S['package'] := EdPackage.Text;
-      PackageEdited.S['version'] := EdVersion.Text;
+      PackageEdited.S['package'] := StringReplace(trim(lowercase(EdPackage.Text)),' ','',[rfReplaceAll]);
+      PackageEdited.S['version'] := trim(lowercase(EdVersion.Text));
       PackageEdited.S['description'] := UTF8Decode(EdDescription.Text);
-      PackageEdited.S['section'] := EdSection.Text;
-      PackageEdited.S['depends'] := Depends;
-      PackageEdited.S['conflicts'] := Conflicts;
+      PackageEdited.S['section'] :=  trim(lowercase(EdSection.Text));
+      PackageEdited.S['depends'] :=  trim(lowercase(Depends));
+      PackageEdited.S['conflicts'] :=  trim(lowercase(Conflicts));
       DMPython.PythonEng.ExecString('p = waptpackage.PackageEntry()');
       DMPython.PythonEng.ExecString(
         format('p.load_control_from_dict(json.loads(r''%s''))', [utf8Encode(PackageEdited.AsJson)]));

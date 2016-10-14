@@ -64,6 +64,7 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.ParentColor = False
         LabelPosition = lpLeft
         TabOrder = 5
+        OnExit = eddefault_package_prefixExit
       end
       object edprivate_key: TFileNameEdit
         Left = 166
@@ -271,7 +272,7 @@ object VisWAPTConfig: TVisWAPTConfig
     object pgAdvanced: TTabSheet
       Caption = 'Advanced'
       ClientHeight = 329
-      ClientWidth = 515
+      ClientWidth = 583
       object eddefault_sources_root: TDirectoryEdit
         Left = 307
         Height = 21

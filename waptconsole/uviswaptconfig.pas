@@ -54,6 +54,7 @@ type
     procedure Button2Click(Sender: TObject);
     procedure cbManualClick(Sender: TObject);
     procedure cbUseProxyForTemplateClick(Sender: TObject);
+    procedure eddefault_package_prefixExit(Sender: TObject);
     procedure edrepo_urlExit(Sender: TObject);
     procedure edServerAddressChange(Sender: TObject);
     procedure edServerAddressEnter(Sender: TObject);
@@ -119,6 +120,11 @@ end;
 procedure TVisWAPTConfig.cbUseProxyForTemplateClick(Sender: TObject);
 begin
   edhttp_proxy.Enabled:=cbUseProxyForTemplate.Checked;
+end;
+
+procedure TVisWAPTConfig.eddefault_package_prefixExit(Sender: TObject);
+begin
+  eddefault_package_prefix.Text:=trim(LowerCase(eddefault_package_prefix.Text));
 end;
 
 procedure TVisWAPTConfig.edrepo_urlExit(Sender: TObject);

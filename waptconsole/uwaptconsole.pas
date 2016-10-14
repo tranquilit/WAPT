@@ -2882,7 +2882,7 @@ begin
         edwapt_server.Text := inifile.ReadString('global', 'wapt_server', '');
 
         eddefault_sources_root.Text :=
-          inifile.ReadString('global', 'default_sources_root', '');
+          inifile.ReadString('global', 'default_sources_root', 'c:\waptdev');
         edprivate_key.Text := inifile.ReadString('global', 'private_key', '');
         edtemplates_repo_url.Text :=
           inifile.readString('global', 'templates_repo_url', '');
@@ -2914,7 +2914,7 @@ begin
           inifile.WriteString('global', 'repo_url', edrepo_url.Text);
           inifile.WriteString('global', 'http_proxy', edhttp_proxy.Text);
           inifile.WriteString('global', 'default_package_prefix',
-            eddefault_package_prefix.Text);
+            LowerCase(eddefault_package_prefix.Text));
           inifile.WriteString('global', 'wapt_server', edwapt_server.Text);
           inifile.WriteString('global', 'default_sources_root',
             eddefault_sources_root.Text);
@@ -2928,8 +2928,6 @@ begin
             cbUseProxyForRepo.Checked);
           inifile.WriteBool('global', 'send_usage_report',
             cbSendStats.Checked);
-          inifile.WriteString('global', 'default_sources_root',
-            eddefault_sources_root.Text);
           //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
 
           if cbLanguage.ItemIndex=0 then
