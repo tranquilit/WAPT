@@ -99,6 +99,7 @@ def update_sources():
          'languages',
          'revision.txt',
          'version',
+         'vcredist/icacls.exe',
     ]
 
     def ignore(src,names):
@@ -385,6 +386,8 @@ def install():
                 tmp_bat.write('del "%s"\n'%tmp_bat.name)
                 tmp_bat.close()
                 create_onetime_task('waptrestart',tmp_bat.name)
+        # fix ACL on wapt folder : remove inheritance
+        run([makepath(WAPT.wapt_base_dir,'vc_redist','icacls.exe'),WAPT.wapt_base_dir,'/inheritance:r'])
         print(u'Upgrade done')
 
     #remove winshell in root waptdir
