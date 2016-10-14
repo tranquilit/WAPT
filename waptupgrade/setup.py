@@ -99,7 +99,7 @@ def update_sources():
          'languages',
          'revision.txt',
          'version',
-         'vcredist/icacls.exe',
+         'vc_redist/icacls.exe',
     ]
 
     def ignore(src,names):
