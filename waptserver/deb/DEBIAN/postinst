@@ -70,6 +70,10 @@ subprocess.check_output('chmod 750 /opt/wapt/conf',shell=True)
 subprocess.check_output('chown -R wapt:root /opt/wapt/log',shell=True)
 subprocess.check_output('chmod 755 /opt/wapt/log',shell=True)
 subprocess.check_output('chmod 755 /opt/wapt/waptserver/scripts/postconf.py', shell=True)
+subprocess.check_output('mkdir -p /var/www/wapt/icons',shell=True)
+subprocess.check_output('mkdir -p /var/www/wapt-host',shell=True)
+subprocess.check_output('chown -R wapt:root /var/www/wapt',shell=True)
+subprocess.check_output('chown -R wapt:root /var/www/wapt-host',shell=True)
 
 
 def check_if_running(process_name):
