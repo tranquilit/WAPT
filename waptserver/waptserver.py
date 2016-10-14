@@ -139,6 +139,16 @@ def get_wapt_exe_version(exe):
     return (present, version)
 
 
+def sha256_for_file(fname, block_size=2**20):
+    f = open(fname,'rb')
+    sha256 = hashlib.sha256()
+    while True:
+        data = f.read(block_size)
+        if not data:
+            break
+        sha256.update(data)
+    return sha256.hexdigest()
+
 def get_db():
     """Opens a new database connection if there is none yet for the
     current application context.
@@ -275,10 +285,12 @@ def index():
     agent_style = setup_style = deploy_style = disk_space_style = 'style="color: red;"'
 
     agent_present, agent_version = get_wapt_exe_version(waptagent)
+    agent_sha256 = None
     if agent_present:
         agent_style = ''
         if agent_version is not None:
             agent_status = agent_version
+            agent_sha256 = sha256_for_file(waptagent)
         else:
             agent_status = 'ERROR'
 
@@ -318,7 +330,7 @@ def index():
     data = {
         'wapt': {
             'server': { 'status': __version__ },
-            'agent': { 'status': agent_status, 'style': agent_style },
+            'agent': { 'status': agent_status, 'style': agent_style, 'sha256':agent_sha256 },
             'setup': { 'status': setup_status, 'style': setup_style },
             'deploy': { 'status': deploy_status, 'style': deploy_style },
             'mongodb': { 'status': mongodb_status },
@@ -1827,7 +1839,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if options.devel:
-        app.run(host='0.0.0.0',port=30880,debug=False)
+        app.run(host='0.0.0.0',port=30880,debug=True)
     else:
         port = conf['waptserver_port']
         server = Rocket(('127.0.0.1', port), 'wsgi', {"wsgi_app":app})
