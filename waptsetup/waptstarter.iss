@@ -17,6 +17,9 @@ Source: "waptsetup.iss"; DestDir: "{app}\waptsetup";
 Source: "services.iss"; DestDir: "{app}\waptsetup";
 Source: "..\wapt.ico"; DestDir: "{app}";
 
+; authorized public keys
+Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs
+
 [Setup]
 OutputBaseFilename=waptstarter
 DefaultDirName={pf}\wapt

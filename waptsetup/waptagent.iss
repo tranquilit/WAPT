@@ -5,6 +5,10 @@
 #define AppName "WaptAgent"
 #include "wapt.iss"
 
+[Files]
+; authorized public keys
+Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs
+
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {#default_repo_url};
 
