@@ -72,8 +72,6 @@ Source: "..\vc_redist\*"; DestDir: "{app}\vc_redist";
 ; config file sample
 Source: "..\wapt-get.ini.tmpl"; DestDir: "{app}"; 
 
-; authorized public keys
-Source: "..\ssl\*"; DestDir: "{app}\ssl"; Tasks: install_certificates; Flags: createallsubdirs recursesubdirs
 
 [Dirs]
 Name: "{app}\ssl"

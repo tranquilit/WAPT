@@ -27,6 +27,8 @@ Source: "..\waptconsole.exe.manifest"; DestDir: "{app}";
 Source: "..\waptconsole.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\waptdevutils.py"; DestDir: "{app}";
 
+; authorized public keys
+Source: "..\ssl\*"; DestDir: "{app}\ssl"; Tasks: install_certificates; Flags: createallsubdirs recursesubdirs
 
 [Setup]
 OutputBaseFilename=waptsetup
