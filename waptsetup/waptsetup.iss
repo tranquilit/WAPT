@@ -46,6 +46,7 @@ Name: verify_server_certificate; Description: "{cm:EnableCheckCertificate}"; Fla
 
 
 [INI]
+Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL}; Tasks: not use_waptserver; AfterInstall: RemoveWaptServer;
 Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL}; Tasks: use_waptserver;
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL};
 Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; Tasks: use_waptserver;
@@ -143,7 +144,7 @@ begin
     result := ExpandConstant('{param:waptserver|unknown}');
     if result='unknown' then
     begin
-      result := GetIniString('Global', 'waptserver', 'unknown', ExpandConstant('{app}\wapt-get.ini'))
+      result := GetIniString('Global', 'wapt_server', 'unknown', ExpandConstant('{app}\wapt-get.ini'))
       if result='unknown' then
       begin
         if WizardSilent then
@@ -167,7 +168,7 @@ begin
     result := ExpandConstant('{param:waptserver|unknown}');
     if result='unknown' then
     begin
-      result := GetIniString('Global', 'waptserver', 'unknown', ExpandConstant('{app}\wapt-get.ini'))
+      result := GetIniString('Global', 'wapt_server', 'unknown', ExpandConstant('{app}\wapt-get.ini'))
       if result='unknown' then
       begin
         if WizardSilent then
@@ -179,6 +180,10 @@ begin
   end;
 end;
 
+procedure RemoveWaptServer();
+begin
+  DeleteIniEntry('Global','wapt_server',ExpandConstant('{app}\wapt-get.ini'));
+end;
 
 procedure InitializeWizard;
 begin
