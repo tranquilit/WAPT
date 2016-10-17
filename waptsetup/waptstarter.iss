@@ -6,6 +6,7 @@
 #define output_dir "."
 #define Company "Tranquil IT Systems"
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
+#define install_certs "checked"
 
 #include "wapt.iss"
 
@@ -24,10 +25,6 @@ Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs
 OutputBaseFilename=waptstarter
 DefaultDirName={pf}\wapt
 WizardImageFile=..\tranquilit.bmp
-
-
-;[Tasks]
-;Name: use_hostpackages; Description: "Use automatic host management based on hostname packages"; Flags: unchecked;
 
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {#default_repo_url};

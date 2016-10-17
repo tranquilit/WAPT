@@ -72,8 +72,12 @@ Source: "..\vc_redist\*"; DestDir: "{app}\vc_redist";
 ; config file sample
 Source: "..\wapt-get.ini.tmpl"; DestDir: "{app}"; 
 
+; authorized public keys
+Source: "..\ssl\*"; DestDir: "{app}\ssl"; Tasks: install_certificates; Flags: createallsubdirs recursesubdirs
+
 [Dirs]
-Name: "{app}"; Permissions: everyone-readexec authusers-readexec admins-full  
+Name: "{app}\ssl"
+Name: "{app}"; Permissions: everyone-readexec authusers-readexec admins-full   
 
 [Setup]
 AppName={#AppName}
@@ -100,8 +104,6 @@ LicenseFile=..\COPYING.txt
 RestartIfNeededByRun=False
 SetupIconFile=..\wapt.ico
 
-
-
 #ifdef signtool
 SignTool={#signtool}
 #endif
@@ -125,7 +127,10 @@ Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe {app} /inheritance:r
 
 ; if waptservice
 Filename: "{app}\waptpython.exe"; Parameters: """{app}\waptservice\waptservice.py"" install"; Tasks:installService ; Flags: runhidden; StatusMsg: "Installation du service WAPT"; Description: "Installation du service WAPT"
+Filename: "sc"; Parameters: "delete waptservice"; Flags: runhidden; Tasks: not installService; WorkingDir: "{tmp}"; StatusMsg: "Suppression du service wapt..."; Description: "Suppression du service wapt..."
 Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser skipifsilent postinstall; StatusMsg: "Lancement de l'icône de notification"; Description: "Lancement de l'icône de notification"
+
+
 
 [Icons]
 Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\wapttray.exe"; Flags: excludefromshowinnewinstall;
@@ -182,6 +187,7 @@ de.LaunchSession=WAPT setup Sitzung bei eröffnung der Sitzung starten
 var
   teWaptRepoUrl:TEdit;
 
+ 
 function RunCmd(cmd:AnsiString;RaiseOnError:Boolean):AnsiString;
 var
   ErrorCode: Integer;
