@@ -143,7 +143,7 @@ end;
 
 function GetInitialWaptServerURL(Param: String):String;
 begin
-    result := ExpandConstant('{param:waptserver|unknown}');
+    result := ExpandConstant('{param:wapt_server|unknown}');
     if result='unknown' then
     begin
       result := GetIniString('Global', 'wapt_server', 'unknown', ExpandConstant('{app}\wapt-get.ini'))
