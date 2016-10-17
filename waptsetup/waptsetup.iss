@@ -101,22 +101,6 @@ begin
    teWaptRepoUrl.Enabled:= not rbDnsServer.Checked;
 end;
 
-function GetInitialRepoURL(Param:String):String;
-begin
-    result := ExpandConstant('{param:repo_url|unknown}');
-    if result='unknown' then
-    begin
-      result := GetIniString('Global', 'repo_url', 'unknown', ExpandConstant('{app}\wapt-get.ini'))
-      if result='unknown' then
-      begin
-        if WizardSilent then
-          result := '{#default_repo_url}'
-        else
-          result := 'unknown';
-      end;
-    end;
-end;
-
 function GetRepoURL(Param:String):String;
 begin
   if rbDnsServer.Checked and not rbStaticUrl.Checked then
@@ -128,35 +112,9 @@ begin
   begin
     result := ExpandConstant('{param:repo_url|unknown}');
     if result='unknown' then
-    begin
-      result := GetIniString('Global', 'repo_url', 'unknown', ExpandConstant('{app}\wapt-get.ini'))
-      if result='unknown' then
-      begin
-        if WizardSilent then
-          result := '{#default_repo_url}'
-        else
-          result := 'unknown';
-      end;
-    end;
+      result := GetIniString('Global', 'repo_url','{#default_repo_url}', ExpandConstant('{app}\wapt-get.ini'))
   end;
 end;
-
-function GetInitialWaptServerURL(Param: String):String;
-begin
-    result := ExpandConstant('{param:wapt_server|unknown}');
-    if result='unknown' then
-    begin
-      result := GetIniString('Global', 'wapt_server', 'unknown', ExpandConstant('{app}\wapt-get.ini'))
-      if result='unknown' then
-      begin
-        if WizardSilent then
-          result := '{#default_wapt_server}'
-        else
-          result := 'unknown';
-      end;
-    end;
-end;
-
 
 function GetWaptServerURL(Param: String):String;
 begin
@@ -169,16 +127,7 @@ begin
   begin
     result := ExpandConstant('{param:wapt_server|unknown}');
     if result='unknown' then
-    begin
-      result := GetIniString('Global', 'wapt_server', 'unknown', ExpandConstant('{app}\wapt-get.ini'))
-      if result='unknown' then
-      begin
-        if WizardSilent then
-          result := '{#default_wapt_server}'
-        else
-          result := 'unknown';
-      end;
-    end;
+      result := GetIniString('Global', 'wapt_server','{#default_wapt_server}', ExpandConstant('{app}\wapt-get.ini'));
   end;
 end;
 
