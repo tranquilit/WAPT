@@ -85,7 +85,7 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wa
         elif line.startswith('#define Company'):
             new_iss.append('#define Company "%s"' % (company))
         elif line.startswith('#define install_certs'):
-            new_iss.append('#define install_certs "checked"')
+            new_iss.append('#define install_certs')
         elif line.startswith('WizardImageFile='):
             pass
         elif not line.startswith('#define signtool'):
