@@ -163,11 +163,11 @@ begin
   if rbDnsServer.Checked and not rbStaticUrl.Checked then
     result := ''
   else
-  if teWaptRepoUrl.Text <> 'unknown' then
+  if teWaptServerURL.Text <> 'unknown' then
     result := teWaptServerURL.Text
   else
   begin
-    result := ExpandConstant('{param:waptserver|unknown}');
+    result := ExpandConstant('{param:wapt_server|unknown}');
     if result='unknown' then
     begin
       result := GetIniString('Global', 'wapt_server', 'unknown', ExpandConstant('{app}\wapt-get.ini'))
