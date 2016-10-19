@@ -196,8 +196,15 @@ class Version(object):
 
         if not isinstance(aversion,Version):
             aversion = Version(aversion,self.members_count)
-        for i in range(0,min([self.members_count or len(self.members),aversion.members_count or len(aversion.members)])):
-            i1,i2  = self.members[i], aversion.members[i]
+        for i in range(0,max([len(self.members),len(aversion.members)])):
+            if i<len(self.members):
+                i1 = self.members[i]
+            else:
+                i1 = ''
+            if i<aversion.members:
+                i2 = aversion.members[i]
+            else:
+                i2=''
             v = nat_cmp(i1,i2)
             if v:
                 return v
