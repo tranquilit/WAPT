@@ -160,6 +160,8 @@ class Version(object):
     True
     >>> Version('0.1.2') == Version('0.1.2')
     True
+    >>> Version('7') < Version('7.1')
+    True
     """
 
     def __init__(self,version,members_count=None):
@@ -201,7 +203,7 @@ class Version(object):
                 i1 = self.members[i]
             else:
                 i1 = ''
-            if i<aversion.members:
+            if i<len(aversion.members):
                 i2 = aversion.members[i]
             else:
                 i2=''
