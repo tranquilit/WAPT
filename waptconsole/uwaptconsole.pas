@@ -420,6 +420,7 @@ type
     procedure ApplicationProperties1Exception(Sender: TObject; E: Exception);
     procedure cbGroupsDropDown(Sender: TObject);
     procedure cbGroupsSelect(Sender: TObject);
+    procedure CBInverseSelectClick(Sender: TObject);
     procedure cbMaskSystemComponentsClick(Sender: TObject);
     procedure cbNewestOnlyClick(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
@@ -436,7 +437,6 @@ type
     procedure EdSearchGroupsKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchHostExecute(Sender: TObject);
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
-    procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure EdSoftwaresFilterChange(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -701,21 +701,7 @@ end;
 
 procedure TVisWaptGUI.EdSearchHostKeyPress(Sender: TObject; var Key: char);
 begin
-  if Key = #13 then
-  begin
-    EdSearchHost.SelectAll;
-    ActSearchHost.Execute;
-  end;
-end;
-
-procedure TVisWaptGUI.EdSearchKeyPress(Sender: TObject; var Key: char);
-begin
-  if Key = #13 then
-  begin
-    EdSearch.SelectAll;
-    ActSearchPackage.Execute;
-  end;
-
+  Gridhosts.Clear;
 end;
 
 procedure TVisWaptGUI.EdSoftwaresFilterChange(Sender: TObject);
@@ -2698,7 +2684,7 @@ begin
       begin
         fields.AsArray.Add('packages.package');
       end;
-      urlParams.AsArray.Add(format('filter=%s:%s',[join(',',fields),EdSearchHost.Text]));
+      urlParams.AsArray.Add(format('filter=%s:%s',[join(',',fields),EncodeURIComponent(EdSearchHost.Text)]));
       if CBInverseSelect.Checked then
         urlParams.AsArray.Add(format('not_filter=1',[]));
     end;
@@ -2866,6 +2852,16 @@ begin
   ActSearchHost.Execute;
 end;
 
+type
+  THackSearchEdit=class(TSearchEdit);
+
+procedure TVisWaptGUI.CBInverseSelectClick(Sender: TObject);
+begin
+  Gridhosts.Clear;
+  EdSearchHost.Modified := True;
+  THackSearchEdit(EdSearchHost).Change;
+end;
+
 function TVisWaptGUI.EditIniFile: boolean;
 var
   inifile: TIniFile;
@@ -2960,7 +2956,8 @@ end;
 
 procedure TVisWaptGUI.cbMaskSystemComponentsClick(Sender: TObject);
 begin
-  GridHostSoftwares.Data := FilterSoftwares(Gridhosts.FocusedRow['softwares']);
+  if Gridhosts.FocusedRow<>Nil then
+    GridHostSoftwares.Data := FilterSoftwares(Gridhosts.FocusedRow['softwares']);
 end;
 
 procedure TVisWaptGUI.cbNewestOnlyClick(Sender: TObject);
@@ -3081,13 +3078,6 @@ var
   i:integer;
 begin
   MemoLog.Clear;
-  ActPackagesUpdate.Execute;
-
-  MainPages.ActivePage := pgInventory;
-  MainPagesChange(Sender);
-
-  HostPages.ActivePage := pgPackages;
-
   // saves default initial config...
   Gridhosts.SaveSettingsToIni(Appuserinipath+'.default');
   GridPackages.SaveSettingsToIni(Appuserinipath+'.default');
@@ -3111,6 +3101,12 @@ begin
     (WSUSActions.Actions[i] as TAction).Visible:=waptcommon.waptwua_enabled;
   end;
 
+  ActPackagesUpdate.Execute;
+
+  MainPages.ActivePage := pgInventory;
+  MainPagesChange(Sender);
+
+  HostPages.ActivePage := pgPackages;
 end;
 
 procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;

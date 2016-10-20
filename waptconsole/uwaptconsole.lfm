@@ -246,6 +246,7 @@ object VisWaptGUI: TVisWaptGUI
           Top = 6
           Width = 41
           Caption = 'NOT'
+          OnClick = CBInverseSelectClick
           TabOrder = 10
         end
       end
@@ -2384,7 +2385,6 @@ object VisWaptGUI: TVisWaptGUI
           OnExecute = EdSearchExecute
           Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
           Font.Color = clGray
-          OnKeyPress = EdSearchKeyPress
           ParentFont = False
           TabOrder = 0
         end
