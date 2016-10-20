@@ -1607,7 +1607,7 @@ class WaptDB(WaptBaseDB):
                 try:
                     result[repo.name] = repo.update_db(waptdb=self,force=force)
                 except Exception,e:
-                    logger.debug(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
+                    logger.warning(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
         return result
 
     def build_depends(self,packages):
@@ -2007,6 +2007,12 @@ class WaptServer(object):
         if not res['success']:
             raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['msg']))
 
+    def __repr__(self):
+        try:
+            return '<WaptServer %s>' % self.server_url
+        except:
+            return '<WaptServer %s>' % 'unknown'
+
 
 class WaptRepo(WaptRemoteRepo):
     """Gives access to a remote http repository, with a zipped Packages packages index
@@ -2285,6 +2291,12 @@ class WaptRepo(WaptRemoteRepo):
             }
         return result
 
+    def __repr__(self):
+        try:
+            return '<WaptRepo %s>' % self.repo_url
+        except:
+            return '<WaptRepo %s>' % 'unknown'
+
 class WaptHostRepo(WaptRepo):
     """Dummy http repository for host packages"""
 
@@ -2345,7 +2357,7 @@ class WaptHostRepo(WaptRepo):
 
                             package = PackageEntry()
                             package.load_control_from_wapt(control)
-                            logger.info(u"%s (%s)" % (package.package,package.version))
+                            logger.debug(u"%s (%s)" % (package.package,package.version))
                             package.repo_url = self.repo_url
                             package.repo = self.name
                             waptdb.add_package_entry(package)
@@ -2859,6 +2871,14 @@ class Wapt(object):
             raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['message']))
 
     def upload_package(self,cmd_dict,wapt_server_user=None,wapt_server_passwd=None):
+        """Method to upload a package using Shell command (like scp) instead of http upload
+            You must define first a command in inifile with the form :
+                upload_cmd="c:\Program Files"\putty\pscp -v -l waptserver %(waptfile)s srvwapt:/var/www/%(waptdir)s/
+            or
+                upload_cmd="C:\Program Files\WinSCP\WinSCP.exe" root@wapt.tranquilit.local /upload %(waptfile)s
+            You can define a "after_upload" shell command. Typical use is to update the Packages index
+                after_upload="c:\Program Files"\putty\plink -v -l waptserver srvwapt.tranquilit.local "python /opt/wapt/wapt-scanpackages.py /var/www/%(waptdir)s/"
+        """
         if not self.upload_cmd and not wapt_server_user:
             wapt_server_user = raw_input('WAPT Server user :')
             wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
@@ -4396,7 +4416,12 @@ class Wapt(object):
         logger.info('Signing package manifest %s using private key %s'%(zip_or_directoryname,private_key))
         signature = ssl_sign_content(manifest,private_key=private_key,callback=callback)
         if os.path.isfile(zip_or_directoryname):
-            waptzip.writestr('WAPT/signature',signature.encode('base64'),compress_type=zipfile.ZIP_STORED)
+            try:
+                # check if zip is already signed. Can not replace the signature in Zip, so raise an error.
+                sign_info = waptzip.getinfo('WAPT/signature')
+                raise Exception('The package %s has been  already signed on %s' % (zip_or_directoryname,datetime.datetime(*sign_info.date_time).ctime()))
+            except KeyError:
+                waptzip.writestr('WAPT/signature',signature.encode('base64'),compress_type=zipfile.ZIP_STORED)
         else:
             open(os.path.join(zip_or_directoryname,'WAPT','signature'),'w').write(signature.encode('base64'))
 
