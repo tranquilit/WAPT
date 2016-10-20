@@ -1181,7 +1181,8 @@ def get_hosts():
         groups (csvlist of packages) : hosts with packages
         columns (csvlist of columns) :
         uuid (csvlist of uuid): <uuid1[,uuid2,...]>): filter based on uuid
-        filter (csvlist of field:regular expression): filter based on attributes
+        filter (csvlist of field):regular expression: filter based on attributes
+        not_filter (0,1):
 
     Returns:
         result (dict): {'records':[],'files':[]}
@@ -1240,18 +1241,26 @@ def get_hosts():
 
         columns = ['.'.join(c) for c in new_tree]
 
+        not_filter = request.args.get('not_filter',0)
+
         # build filter
         if 'uuid' in request.args:
             query = dict(uuid=request.args['uuid'])
         elif 'filter' in request.args:
             (search_fields,search_expr) = request.args['filter'].split(':',1)
+            if search_expr.startswith('not '):
+                not_filter = 1
+                search_expr = search_expr.split(' ',1)[1]
             if search_fields.strip() and search_expr.strip():
-                query = {'$or':[ {fn:re.compile(search_expr, re.IGNORECASE)} for fn in ensure_list(search_fields)]}
+                filter_field_list = ensure_list(search_fields)
+                if not_filter:
+                    query = {'$and':[ {fn:{'$not':re.compile(search_expr, re.IGNORECASE)}} for fn in filter_field_list]}
+                else:
+                    query = {'$or':[ {fn:re.compile(search_expr, re.IGNORECASE)} for fn in ensure_list(filter_field_list)]}
             else:
                 query = {}
         else:
             query = {}
-
 
         if 'has_errors' in request.args and request.args['has_errors']:
             query["packages.install_status"] = "ERROR"
