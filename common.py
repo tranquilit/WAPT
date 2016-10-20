@@ -364,29 +364,68 @@ def ssl_sign_content(content,private_key,callback=pwd_callback):
     return signature
 
 
-def ssl_cert_organisation(public_cert):
-    if not os.path.isfile(public_cert):
-        raise Exception('Public certificate %s not found' % public_cert)
-    crt = X509.load_cert(public_cert)
-    return crt.get_subject().O
+class SSLCertificate(object):
+    def __init__(self,public_cert):
+        if not os.path.isfile(public_cert):
+            raise Exception('Public certificate %s not found' % public_cert)
+        self.crt = X509.load_cert(public_cert)
 
+    @property
+    def organisation(self):
+        return self.crt.get_subject().O
 
-def ssl_cert_cn(public_cert):
-    if not os.path.isfile(public_cert):
-        raise Exception('Public certificate %s not found' % public_cert)
-    crt = X509.load_cert(public_cert)
-    return crt.get_subject().CN
+    @property
+    def cn(self):
+        return self.crt.get_subject().CN
 
-def ssl_cert_subject(public_cert):
-    if not os.path.isfile(public_cert):
-        raise Exception('Public certificate %s not found' % public_cert)
-    crt = X509.load_cert(public_cert)
-    subject = crt.get_subject()
-    result = {}
-    for key in subject.nid.keys():
-        result[key] = getattr(subject,key)
-    return result
+    @property
+    def subject(self):
+        subject = self.crt.get_subject()
+        result = {}
+        for key in subject.nid.keys():
+            result[key] = getattr(subject,key)
+        return result
 
+    @property
+    def subject_dn(self):
+        return self.crt.get_subject().as_text()
+
+    @property
+    def fingerprint(self):
+        return self.crt.get_fingerprint()
+
+    @property
+    def issuer(self):
+        data = self.crt.get_issuer()
+        result = {}
+        for key in data.nid.keys():
+            result[key] = getattr(data,key)
+        return result
+
+    @property
+    def issuer_dn(self):
+        return self.crt.get_issuer().as_text()
+
+    def verify_content(self,content,signature):
+        u"""Check that the signature matches the content, using the provided list of public keys
+            Content, signature are String
+            public_certs is either a filename or a list of filenames
+        """
+        rsa = self.crt.get_pubkey().get_rsa()
+        pubkey = EVP.PKey()
+        pubkey.assign_rsa(rsa)
+        pubkey.verify_init()
+        pubkey.verify_update(content)
+        if pubkey.verify_final(signature):
+            return self.subject_dn
+        raise Exception('SSL signature verification failed for certificate %s'%self.subject_dn)
+
+    def __dir__(self):
+        return ['issuer_dn','fingerprint','subject_dn','cn']
+
+    def __iter__(self):
+        for k in dir(self):
+            yield k,getattr(self,k)
 
 def ssl_verify_content(content,signature,public_certs):
     u"""Check that the signature matches the content, using the provided list of public keys
@@ -403,18 +442,12 @@ def ssl_verify_content(content,signature,public_certs):
     assert isinstance(public_certs,str) or isinstance(public_certs,unicode) or isinstance(public_certs,list)
     if not isinstance(public_certs,list):
         public_certs = [public_certs]
-    for fn in public_certs:
-        if not os.path.isfile(fn):
-            raise Exception('Public certificate %s not found' % fn)
     for public_cert in public_certs:
-        crt = X509.load_cert(public_cert)
-        rsa = crt.get_pubkey().get_rsa()
-        pubkey = EVP.PKey()
-        pubkey.assign_rsa(rsa)
-        pubkey.verify_init()
-        pubkey.verify_update(content)
-        if pubkey.verify_final(signature):
-            return crt.get_subject().as_text()
+        crt = SSLCertificate(public_cert)
+        try:
+            return crt.verify_content(content,signature)
+        except:
+            pass
     raise Exception('SSL signature verification failed, either none public certificates match signature or signed content has been changed')
 
 
@@ -2808,7 +2841,7 @@ class Wapt(object):
         destpem = os.path.join(destdir,'%s.pem' % hostname)
         destcrt = os.path.join(destdir,'%s.crt' % hostname)
         if os.path.isfile(destcrt):
-            cn = ssl_cert_cn(destcrt)
+            cn = SSLCertificate(destcrt).cn
         else:
             cn = None
         # check if host
@@ -4174,6 +4207,15 @@ class Wapt(object):
         finally:
             self.runstatus=''
 
+    def authorized_certificates(self):
+        """return a list of autorized package signers for this host
+        """
+        result = []
+        for fn in self.public_certs:
+            crt = SSLCertificate(fn)
+            result.append(dict(crt))
+        return result
+
     def register_computer(self,description=None):
         """Send computer informations to WAPT Server
             if description is provided, updates local registry with new description
@@ -4292,6 +4334,7 @@ class Wapt(object):
         result['setuphelpers-version'] = setuphelpers.__version__
         result['wapt-py-version'] = __version__
         result['common-version'] = __version__
+        result['authorized-certificates'] = self.authorized_certificates()
 
         # read from config
         if self.config.has_option('global','waptservice_sslport'):
@@ -4485,6 +4528,9 @@ class Wapt(object):
             logger.info(u'Load control informations from control file')
             entry.load_control_from_wapt(directoryname)
 
+            # to avoid double increment when update_control is used.
+            inc_done = False
+
             # optionally, setup.py can update some attributes of control files using
             # a procedure called update_control(package_entry)
             # this can help automates version maintenance
@@ -4505,6 +4551,7 @@ class Wapt(object):
                     if (older_packages and entry<=older_packages[-1]):
                         entry.version = older_packages[-1].version
                         entry.inc_build()
+                        inc_done = True
                         logger.warning(u'Older package with same name exists, incrementing packaging version to %s' % (entry.version,))
 
                 # save control file
@@ -4517,7 +4564,8 @@ class Wapt(object):
             if not entry.architecture in ArchitecturesList:
                 raise Exception(u'Architecture should one of %s' % (ArchitecturesList,))
 
-            if inc_package_release:
+            # increment inconditionally the package buuld nr.
+            if not inc_done and inc_package_release:
                 entry.inc_build()
                 entry.save_control_to_wapt(directoryname)
 
