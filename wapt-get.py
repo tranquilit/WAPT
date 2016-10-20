@@ -92,10 +92,13 @@ action is either :
   reset-uuid        : reset host's UUID to the uuid provided by the BIOS.
   generate-uuid     : regenerate a random host's UUID, stored in wapt-get.ini.
 
+  get-server-certificate : get the public key from waptserver and save it to <waptbasedir>\\ssl\\server
+  enable-check-certificate : get the public key from waptserver,save it to <waptbasedir>\\ssl\\server and enable verify in config file.
+
  For user session setup
   session-setup [packages,ALL] : setup local user environment for specific or all installed packages
 
- For packages development
+ For packages development (Wapt default configuration is taken from user's waptconsole.ini if it exists)
   list-registry [keywords]  : list installed software from Windows Registry
   sources <package>         : checkout or update sources of a package from SVN repository (if attribute Sources was supplied in control file)
   make-template <installer-path> [<packagename> [<source directoryname>]] : initializes a package template with an installer (exe or msi)
@@ -117,14 +120,14 @@ action is either :
   upload-package  <filenames> : upload package to repository (using winscp for example.)
   update-packages <directory> : rebuild a "Packages" file for http package repository
 
-  get-server-certificate : get the public key from waptserver and save it to <waptbasedir>\\ssl\\server
-  enable-check-certificate ! get the public key from waptserver,save it to <waptbasedir>\\ssl\\server and enable verify in config file.
-
 """
 
 parser=OptionParser(usage=usage,version='wapt-get.py ' + __version__+' common.py '+common.__version__+' setuphelpers.py '+setuphelpers.__version__)
 
-parser.add_option("-c","--config", dest="config", default=os.path.join(os.path.dirname(sys.argv[0]),'wapt-get.ini') , help="Config file full path (default: %default)")
+default_waptservice_ini=os.path.join(os.path.dirname(sys.argv[0]),'wapt-get.ini')
+default_waptconsole_ini=os.path.expandvars('%LOCALAPPDATA%\\waptconsole\\waptconsole.ini')
+
+parser.add_option("-c","--config", dest="config", default=None, help="Config file full path (default: %default)")
 parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
 parser.add_option("-D","--direct",    dest="direct",    default=False, action='store_true', help="Don't use http service for update/upgrade (default: %default)")
 parser.add_option("-S","--service",    dest="service",    default=False, action='store_true', help="User http service for update/upgrade/install/remove (default: %default)")
@@ -158,7 +161,6 @@ sys.stderr = codecs.getwriter(encoding)(sys.stderr,'replace')
 
 # setup Logger
 logger = logging.getLogger()
-config_file = options.config
 loglevel = options.loglevel
 
 if len(logger.handlers) < 1:
@@ -263,7 +265,16 @@ def main():
             sys.exit(2)
 
         action = args[0]
-
+        development_actions = ['sources','make-template',
+            'make-host-template','make-group-template','build-package',
+            'sign-package','build-upload','duplicate','edit','edit-host',
+            'upload-package','update-packages']
+        if not options.config:
+            if action in development_actions and os.path.isfile(default_waptconsole_ini):
+                config_file = default_waptconsole_ini
+                logger.info(u'Development mode, using Waptconsole configuration')
+            else:
+                config_file = default_waptservice_ini
         # Config file
         if not os.path.isfile(config_file):
             logger.error((u"Error : could not find file : %s"
@@ -297,6 +308,17 @@ def main():
             logger.info(u'Interactive user :%s' % (mywapt.user,))
 
         mywapt.dry_run = options.dry_run
+
+        # development mode, using a memory DB.
+        if config_file == default_waptconsole_ini:
+            mywapt.dbpath = r':memory:'
+            mywapt.use_hostpackages = False
+            logger.info('Updating in-memory packages index from repositories...')
+            update_result = mywapt.update(register=False)
+            logger.info('Configuration file : %s' % config_file)
+            logger.info('  waptserver     : %s' % mywapt.waptserver)
+            logger.info('  repositories   : %s' % mywapt.repositories)
+            logger.info('  packages count : %s' % update_result['count'])
 
         logger.debug(u'WAPT base directory : %s' % mywapt.wapt_base_dir)
         logger.debug(u'Package cache dir : %s' % mywapt.package_cache_dir)
@@ -712,6 +734,9 @@ def main():
                 if len(args) < 2:
                     print u"You must provide at least one source directory for package building"
                     sys.exit(1)
+                if not mywapt.private_key or not os.path.isfile(mywapt.private_key):
+                    print u"You must provide the filepath to a private key in the [global]->private_key key of configuration %s" %config_file
+                    sys.exit(1)
                 packages = []
                 for source_dir in [os.path.abspath(p) for p in args[1:]]:
                     source_dir = guess_package_root_dir(source_dir)
@@ -806,6 +831,9 @@ def main():
             elif action == 'sign-package':
                 if len(args) < 2:
                     print u"You must provide at least one source directory or package to sign"
+                    sys.exit(1)
+                if not mywapt.private_key or not os.path.isfile(mywapt.private_key):
+                    print u"You must provide the filepath to a private key in the [global]->private_key key of configuration %s" %config_file
                     sys.exit(1)
                 for waptfile in [os.path.abspath(p) for p in args[1:]]:
                     waptfile = guess_package_root_dir(waptfile)

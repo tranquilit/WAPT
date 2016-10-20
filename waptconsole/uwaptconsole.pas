@@ -51,6 +51,7 @@ type
     ButPackagesUpdate1: TBitBtn;
     cbForcedWSUSscanDownload: TCheckBox;
     cbNewestOnly: TCheckBox;
+    CBInverseSelect: TCheckBox;
     EdPackage: TLabeledEdit;
     EdHardwareFilter: TEdit;
     EdVersion: TLabeledEdit;
@@ -2698,6 +2699,8 @@ begin
         fields.AsArray.Add('packages.package');
       end;
       urlParams.AsArray.Add(format('filter=%s:%s',[join(',',fields),EdSearchHost.Text]));
+      if CBInverseSelect.Checked then
+        urlParams.AsArray.Add(format('not_filter=1',[]));
     end;
 
     if cbHasErrors.Checked then

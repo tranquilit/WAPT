@@ -1,11 +1,11 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 375
-  Height = 843
-  Top = 134
-  Width = 1277
+  Left = 394
+  Height = 753
+  Top = 121
+  Width = 1028
   Caption = 'WAPT console'
-  ClientHeight = 824
-  ClientWidth = 1277
+  ClientHeight = 734
+  ClientWidth = 1028
   Constraints.MinHeight = 600
   Constraints.MinWidth = 800
   Menu = MainMenu1
@@ -17,9 +17,9 @@ object VisWaptGUI: TVisWaptGUI
   LCLVersion = '1.3'
   object MainPages: TPageControl
     Left = 0
-    Height = 681
+    Height = 591
     Top = 0
-    Width = 1277
+    Width = 1028
     ActivePage = pgInventory
     Align = alClient
     TabIndex = 0
@@ -27,21 +27,22 @@ object VisWaptGUI: TVisWaptGUI
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
       Caption = 'Inventory'
-      ClientHeight = 655
-      ClientWidth = 1269
+      ClientHeight = 565
+      ClientWidth = 1020
       object Panel10: TPanel
         Left = 0
         Height = 54
         Top = 49
-        Width = 1269
+        Width = 1020
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 54
-        ClientWidth = 1269
+        ClientWidth = 1020
         TabOrder = 1
         object EdSearchHost: TSearchEdit
-          Left = 60
+          Left = 92
           Height = 21
+          Hint = 'Regular expressions allowed'
           Top = 4
           Width = 128
           EmptyText = 'Search keywords'
@@ -56,13 +57,13 @@ object VisWaptGUI: TVisWaptGUI
         object Label5: TLabel
           Left = 6
           Height = 13
-          Top = 8
+          Top = 7
           Width = 33
           Caption = 'Search'
           ParentColor = False
         end
         object cbNeedUpgrade: TCheckBox
-          Left = 388
+          Left = 412
           Height = 17
           Top = 30
           Width = 95
@@ -71,7 +72,7 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 9
         end
         object cbHasErrors: TCheckBox
-          Left = 388
+          Left = 412
           Height = 17
           Top = 6
           Width = 70
@@ -80,7 +81,7 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 2
         end
         object ButHostSearch: TBitBtn
-          Left = 204
+          Left = 228
           Height = 25
           Top = 2
           Width = 180
@@ -180,7 +181,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object Label13: TLabel
           AnchorSideRight.Side = asrBottom
-          Left = 1089
+          Left = 840
           Height = 13
           Top = 22
           Width = 122
@@ -191,7 +192,7 @@ object VisWaptGUI: TVisWaptGUI
           ParentColor = False
         end
         object labSelected: TLabel
-          Left = 1225
+          Left = 976
           Height = 13
           Top = 22
           Width = 6
@@ -201,7 +202,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object Label11: TLabel
           AnchorSideRight.Side = asrBottom
-          Left = 1089
+          Left = 840
           Height = 13
           Top = 7
           Width = 128
@@ -212,7 +213,7 @@ object VisWaptGUI: TVisWaptGUI
           ParentColor = False
         end
         object LabelComputersNumber: TLabel
-          Left = 1225
+          Left = 976
           Height = 13
           Top = 7
           Width = 6
@@ -239,12 +240,20 @@ object VisWaptGUI: TVisWaptGUI
           Caption = 'Groups'
           ParentColor = False
         end
+        object CBInverseSelect: TCheckBox
+          Left = 52
+          Height = 17
+          Top = 6
+          Width = 41
+          Caption = 'NOT'
+          TabOrder = 10
+        end
       end
       object GridHosts: TSOGrid
         Left = 0
-        Height = 552
+        Height = 462
         Top = 103
-        Width = 692
+        Width = 443
         OnGetText = GridHostsGetText
         Align = alClient
         ChangeDelay = 50
@@ -458,8 +467,8 @@ object VisWaptGUI: TVisWaptGUI
         ZebraPaint = True
       end
       object HostPages: TPageControl
-        Left = 697
-        Height = 552
+        Left = 448
+        Height = 462
         Top = 103
         Width = 572
         ActivePage = pgPackages
@@ -470,13 +479,13 @@ object VisWaptGUI: TVisWaptGUI
         object pgPackages: TTabSheet
           AnchorSideTop.Side = asrBottom
           Caption = 'Overview'
-          ClientHeight = 526
+          ClientHeight = 436
           ClientWidth = 564
           object GridHostPackages: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 312
+            Height = 222
             Top = 119
             Width = 564
             Align = alBottom
@@ -866,7 +875,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel5: TPanel
             Left = 0
             Height = 90
-            Top = 436
+            Top = 346
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -887,7 +896,7 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 431
+            Top = 341
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
@@ -1766,8 +1775,8 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object Splitter4: TSplitter
-        Left = 692
-        Height = 552
+        Left = 443
+        Height = 462
         Top = 103
         Width = 5
         Align = alRight
@@ -1777,7 +1786,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 49
         Top = 0
-        Width = 1269
+        Width = 1020
         ButtonHeight = 37
         Caption = 'ToolBar1'
         Images = ActionsImages
@@ -1824,7 +1833,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object Image1: TImage
           Cursor = crHandPoint
-          Left = 1116
+          Left = 867
           Height = 47
           Top = 2
           Width = 153
@@ -3768,29 +3777,29 @@ object VisWaptGUI: TVisWaptGUI
   object PanDebug: TPanel
     Left = 0
     Height = 118
-    Top = 686
-    Width = 1277
+    Top = 596
+    Width = 1028
     Align = alBottom
     ClientHeight = 118
-    ClientWidth = 1277
+    ClientWidth = 1028
     TabOrder = 2
     Visible = False
     object Panel7: TPanel
       Left = 1
       Height = 116
       Top = 1
-      Width = 1275
+      Width = 1026
       Align = alClient
       BevelOuter = bvNone
       Caption = 'Panel7'
       ClientHeight = 116
-      ClientWidth = 1275
+      ClientWidth = 1026
       TabOrder = 0
       object MemoLog: TMemo
         Left = 0
         Height = 100
         Top = 0
-        Width = 664
+        Width = 415
         Align = alClient
         Lines.Strings = (
           ''
@@ -3798,7 +3807,7 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 0
       end
       object jsonlog: TVirtualJSONInspector
-        Left = 669
+        Left = 420
         Height = 100
         Top = 0
         Width = 606
@@ -3826,7 +3835,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.SelectionOptions = [toExtendedFocus]
       end
       object Splitter2: TSplitter
-        Left = 664
+        Left = 415
         Height = 100
         Top = 0
         Width = 5
@@ -3837,14 +3846,14 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 16
         Top = 100
-        Width = 1275
+        Width = 1026
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 16
-        ClientWidth = 1275
+        ClientWidth = 1026
         TabOrder = 3
         object cbShowLog: TCheckBox
-          Left = 484
+          Left = 235
           Height = 17
           Top = -2
           Width = 79
@@ -3860,23 +3869,23 @@ object VisWaptGUI: TVisWaptGUI
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 681
-    Width = 1277
+    Top = 591
+    Width = 1028
     Align = alBottom
     ResizeAnchor = akBottom
   end
   object plStatusBar1: TplStatusBar
     Left = 0
     Height = 20
-    Top = 804
-    Width = 1277
+    Top = 714
+    Width = 1028
     Panels = <    
       item
         Width = 200
       end>
     SimplePanel = False
     object ProgressBar1: TProgressBar
-      Left = 989
+      Left = 740
       Height = 16
       Top = 3
       Width = 264
