@@ -600,6 +600,8 @@ def extract_iconpng_from_wapt(fname):
 
 
 class WaptBaseRepo(object):
+    """Base abstract class for a Wapt Packages repository
+    """
     def __init__(self,name='abstract'):
         self.name = name
         self._packages = None
@@ -738,6 +740,15 @@ class WaptBaseRepo(object):
 
 
 class WaptLocalRepo(WaptBaseRepo):
+    """Index of Wapt local repository.
+        Index of packages is located in a Packages zip file, having one
+            Packages file, containing the concatenated content of "control"
+            files of the packages.
+
+            A blank line means new package.
+    >>> localrepo = WaptLocalRepo('c:/wapt/cache')
+    >>> localrepo.update()
+    """
     def __init__(self,localpath='/var/www/wapt',name='waptlocal'):
         WaptBaseRepo.__init__(self,name=name)
         self.localpath = localpath.rstrip(os.path.sep)
@@ -756,6 +767,13 @@ class WaptLocalRepo(WaptBaseRepo):
         >>> isinstance(repo.packages,list)
         True
         """
+        # if index was not initialized, try to create one
+        if not os.path.isfile(self.packages_path):
+            try:
+                self.update_packages_index()
+            except:
+                logger.warning('Unable to initialize the local Packages index in %s' % self.packages_path)
+
         # Packages file is a zipfile with one Packages file inside
         if os.path.isfile(self.packages_path):
             self._packages_date = datetime2isodate(datetime.datetime.utcfromtimestamp(os.stat(self.packages_path).st_mtime))
@@ -777,7 +795,7 @@ class WaptLocalRepo(WaptBaseRepo):
                 if start != end:
                     package = PackageEntry()
                     package.load_control_from_wapt(packages_lines[start:end])
-                    logger.info(u"%s (%s)" % (package.package,package.version))
+                    logger.debug(u"%s (%s)" % (package.package,package.version))
                     package.repo_url = 'file:///%s'%(self.localpath.replace('\\','/'))
                     package.repo = self.name
                     package.localpath = self.localpath
@@ -839,15 +857,15 @@ class WaptLocalRepo(WaptBaseRepo):
                 if os.path.basename(fname) in old_entries:
                     entry.load_control_from_wapt(fname,calc_md5=False)
                     if not force_all and entry == old_entries[os.path.basename(fname)]:
-                        logger.info(u"  Keeping %s" % fname)
+                        logger.debug(u"  Keeping %s" % fname)
                         kept.append(fname)
                         entry = old_entries[os.path.basename(fname)]
                     else:
-                        logger.info(u"  Processing %s" % fname)
+                        logger.debug(u"  Processing %s" % fname)
                         entry.load_control_from_wapt(fname)
                         processed.append(fname)
                 else:
-                    logger.info(u"  Processing %s" % fname)
+                    logger.debug(u"  Processing %s" % fname)
                     entry.load_control_from_wapt(fname)
                     processed.append(fname)
                 packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
@@ -863,7 +881,7 @@ class WaptLocalRepo(WaptBaseRepo):
                         icon = extract_iconpng_from_wapt(fname)
                         open(icon_fn,'wb').write(icon)
                     except Exception as e:
-                        logger.info(r"Unable to extract icon for %s:%s"%(fname,e))
+                        logger.warning(r"Unable to extract icon for %s:%s"%(fname,e))
 
             except Exception,e:
                 print e
@@ -1135,7 +1153,7 @@ class WaptRemoteRepo(WaptBaseRepo):
             if start != end:
                 package = PackageEntry()
                 package.load_control_from_wapt(packages_lines[start:end])
-                logger.info(u"%s (%s)" % (package.package,package.version))
+                logger.debug(u"%s (%s)" % (package.package,package.version))
                 package.repo_url = self.repo_url
                 package.repo = self.name
                 new_packages.append(package)
