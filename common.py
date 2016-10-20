@@ -1803,7 +1803,7 @@ class WaptServer(object):
             if isinstance(self.verify_cert,str) or isinstance(self.verify_cert,unicode):
                 pem_fn = self.verify_cert
             else:
-                pem_fn = os.path.join(server_dir,url.hostname+'.pem')
+                pem_fn = os.path.join(server_dir,url.hostname+'.crt')
             if not os.path.isdir(server_dir):
                 os.makedirs(server_dir)
             open(pem_fn,'wb').write(pem)
