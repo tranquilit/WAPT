@@ -276,7 +276,6 @@ def get_timezone():
 
 @app.route('/')
 def index():
-
     waptagent = os.path.join(conf['wapt_folder'], 'waptagent.exe')
     waptsetup = os.path.join(conf['wapt_folder'], 'waptsetup-tis.exe')
     waptdeploy = os.path.join(conf['wapt_folder'], 'waptdeploy.exe')
@@ -1024,6 +1023,39 @@ def trigger_waptwua_install():
     return proxy_host_request(request,'waptwua_install.json')
 
 
+@app.route('/api/v2/waptagent_version')
+@requires_auth
+def waptagent_version():
+    try:
+        start = time.time()
+        waptagent = os.path.join(conf['wapt_folder'], 'waptagent.exe')
+        agent_present, agent_version = get_wapt_exe_version(waptagent)
+        waptagent_timestamp = None
+        agent_sha256 = None
+        if agent_present and agent_version is not None:
+            agent_sha256 = sha256_for_file(waptagent)
+            waptagent_timestamp = datetime2isodate(datetime.datetime.fromtimestamp(os.path.getmtime(waptagent)))
+            msg = 'waptagent version: %s'%agent_version
+        else:
+            msg = 'waptagent not generated'
+
+        result = dict(
+            waptagent_version=agent_version,
+            waptagent_sha256=agent_sha256,
+            )
+
+        result = dict(
+            waptagent_version = agent_version,
+            waptagent_sha256 = agent_sha256,
+            waptagent_timestamp = waptagent_timestamp,
+            request_time = time.time() - start,
+            )
+    except Exception as e:
+        return make_response_from_exception(e)
+
+    return make_response(result=result,msg=msg,status=200)
+
+
 @app.route('/api/v1/host_forget_packages',methods=['GET','POST'])
 @requires_auth
 def host_forget_packages():
@@ -1194,6 +1226,7 @@ def get_hosts():
           filter=<csvlist of fields>:regular expression
     """
     try:
+        start_time = time.time()
         default_columns = [u'host_status',
                          u'update_status',
                          u'reachable',
@@ -1249,9 +1282,12 @@ def get_hosts():
             query = dict(uuid=request.args['uuid'])
         elif 'filter' in request.args:
             (search_fields,search_expr) = request.args['filter'].split(':',1)
-            if search_expr.startswith('not '):
+            if search_expr.startswith('not ') or search_expr.startswith('!'):
                 not_filter = 1
-                search_expr = search_expr.split(' ',1)[1]
+                if search_expr.startswith('not '):
+                    search_expr = search_expr.split(' ',1)[1]
+                else:
+                    search_expr = search_expr[1:]
             if search_fields.strip() and search_expr.strip():
                 filter_field_list = ensure_list(search_fields)
                 if not_filter:
@@ -1335,10 +1371,11 @@ def get_hosts():
             else:
                 msg = '{} hosts returned'.format(len(result))
 
+
     except Exception as e:
         return make_response_from_exception(e)
 
-    return make_response(result=result,msg=msg,status=200)
+    return make_response(result=result,msg=msg,status=200,request_time=time.time()-start_time)
 
 @app.route('/api/v1/host_data')
 @requires_auth
@@ -1350,6 +1387,7 @@ def host_data():
           field=packages, dmi or softwares
     """
     try:
+        start_time = time.time()
         # build filter
         if 'uuid' in request.args:
             uuid = request.args['uuid']
@@ -1367,6 +1405,7 @@ def host_data():
         else:
             msg = '{} data for host {}'.format(field,uuid)
 
+
     except Exception as e:
         return make_response_from_exception(e)
 
@@ -1379,7 +1418,7 @@ def host_data():
         success = True
         error_code = None
 
-    return make_response(result=result,msg=msg,success=success,error_code=error_code,status=200)
+    return make_response(result=result,msg=msg,success=success,error_code=error_code,status=200,request_time=time.time()-start_time)
 
 
 @app.route('/api/v1/hosts',methods=['POST'])
@@ -1389,6 +1428,8 @@ def update_hosts():
         post data is a json list of host data
         for each host, the key is the uuid
     """
+    start_time = time.time()
+
     post_data = ensure_list(json.loads(request.data))
     msg = []
     result = []
@@ -1414,7 +1455,7 @@ def update_hosts():
     except Exception as e:
         return make_response_from_exception(e)
 
-    return make_response(result=result,msg='\n'.join(msg),status=200)
+    return make_response(result=result,msg='\n'.join(msg),status=200,request_time=time.time()-start_time)
 
 @app.route('/api/v1/host_cancel_task')
 @requires_auth

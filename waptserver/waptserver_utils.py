@@ -195,7 +195,7 @@ __all__ += ['setloglevel']
 
 
 ##### API V2 #####
-def make_response(result = {},success=True,error_code='',msg='',status=200):
+def make_response(result = {},success=True,error_code='',msg='',status=200,request_time=None):
     data = dict(
             success = success,
             msg = msg,
@@ -204,6 +204,7 @@ def make_response(result = {},success=True,error_code='',msg='',status=200):
         data['error_code'] = error_code
     else:
         data['result'] = result
+    data['request_time'] = request_time
     return flask.Response(
             response=bson.json_util.dumps(data),
             status=status,
