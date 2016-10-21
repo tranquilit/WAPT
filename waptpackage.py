@@ -779,13 +779,6 @@ class WaptLocalRepo(WaptBaseRepo):
         >>> isinstance(repo.packages,list)
         True
         """
-        # if index was not initialized, try to create one
-        if not os.path.isfile(self.packages_path):
-            try:
-                self.update_packages_index()
-            except:
-                logger.warning('Unable to initialize the local Packages index in %s' % self.packages_path)
-
         # Packages file is a zipfile with one Packages file inside
         if os.path.isfile(self.packages_path):
             self._packages_date = datetime2isodate(datetime.datetime.utcfromtimestamp(os.stat(self.packages_path).st_mtime))
