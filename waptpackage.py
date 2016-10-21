@@ -525,11 +525,10 @@ signer            : %(signer)s
 signer_fingerprint: %(signer_fingerprint)s
 min_wapt_version  : %(min_wapt_version)s
 maturity          : %(maturity)s
-
 """  % self.__dict__
         if with_non_control_attributes:
             for att in self.non_control_attributes:
-                val += u"%-13s: %s\n" % (att, getattr(self,att))
+                val += u"%-18s: %s\n" % (att, getattr(self,att))
         return val
 
     def make_package_filename(self):
