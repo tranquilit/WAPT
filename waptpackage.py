@@ -247,7 +247,7 @@ class PackageEntry(object):
 
     """
     required_attributes = ['package','version','architecture',]
-    optional_attributes = ['section','priority','maintainer','description','depends','conflicts','sources','installed_size','signer','signer_fingerprint','min_wapt_version']
+    optional_attributes = ['section','priority','maintainer','description','depends','conflicts','sources','installed_size','maturity','signer','signer_fingerprint','min_wapt_version']
     non_control_attributes = ['localpath','filename','size','repo_url','md5sum','repo',]
 
     @property
@@ -271,10 +271,11 @@ class PackageEntry(object):
         self.repo_url=''
         self.repo=repo
         self.localpath=''
+        self.maturity=''
         self.signer=''
         self.signer_fingerprint=''
         self.min_wapt_version=''
-        self.installed_size=None
+        self.installed_size=''
 
         self.calculated_attributes=[]
 
@@ -509,16 +510,22 @@ class PackageEntry(object):
 
     def ascontrol(self,with_non_control_attributes = False):
         val = u"""\
-package      : %(package)s
-version      : %(version)s
-architecture : %(architecture)s
-section      : %(section)s
-priority     : %(priority)s
-maintainer   : %(maintainer)s
-description  : %(description)s
-depends      : %(depends)s
-conflicts    : %(conflicts)s
-sources      : %(sources)s
+package           : %(package)s
+version           : %(version)s
+architecture      : %(architecture)s
+section           : %(section)s
+priority          : %(priority)s
+maintainer        : %(maintainer)s
+description       : %(description)s
+depends           : %(depends)s
+conflicts         : %(conflicts)s
+sources           : %(sources)s
+installed_size    : %(installed_size)s
+signer            : %(signer)s
+signer_fingerprint: %(signer_fingerprint)s
+min_wapt_version  : %(min_wapt_version)s
+maturity          : %(maturity)s
+
 """  % self.__dict__
         if with_non_control_attributes:
             for att in self.non_control_attributes:
@@ -536,9 +543,11 @@ sources      : %(sources)s
         if self.section not in ['host','group'] and not (self.package and self.version and self.architecture):
             raise Exception(u'Not enough information to build the package filename for %s (%s)'%(self.package,self.version))
         if self.section in ['host','group']:
+            # we don't keep version for
             return self.package+'.wapt'
         else:
-            return self.package + '_' + self.version + '_' +  self.architecture  + '.wapt'
+            # includes only non empty fields
+            return '_'.join([f for f in (self.package,self.version,self.architecture,self.maturity) if f]) + '.wapt'
 
     def asrequirement(self):
         """resturn package and version for designing this package in depends or install actions
@@ -548,7 +557,7 @@ sources      : %(sources)s
         """
         return "%s (=%s)" % (self.package,self.version)
 
-    property
+    @property
     def download_url(self):
         return self.repo_url+'/'+self.filename.strip('./')
 
