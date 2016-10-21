@@ -933,11 +933,13 @@ var
 begin
   TimerTasks.Enabled := False;
   RowSO := Gridhosts.FocusedRow;
+
   if (RowSO <> nil) then
   begin
     currhost := RowSO.S['uuid'];
     if HostPages.ActivePage = pgPackages then
     begin
+      GridHostPackages.Clear;
       packages := RowSO['packages'];
       if (packages = nil) or (packages.AsArray = nil) then
       try
@@ -995,6 +997,7 @@ begin
     end
     else if HostPages.ActivePage = pgSoftwares then
     begin
+      GridHostSoftwares.Clear;
       //Cache collection in grid data
       softwares := RowSO['softwares'];
       if (softwares = nil) or (softwares.AsArray = nil) then
@@ -1033,10 +1036,9 @@ begin
     end
     else if HostPages.ActivePage = pgHostInventory then
     begin
+      GridhostInventory.Clear;
       if GridHosts.FocusedRow <> Nil then
         EdHardwareFilterChange(EdHardwareFilter)
-      else
-        GridhostInventory.Clear;
     end
     else if HostPages.ActivePage = pgTasks then
     begin
