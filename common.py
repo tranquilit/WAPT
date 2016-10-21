@@ -354,15 +354,24 @@ def pwd_callback(*args):
     return getpass.getpass('Private key password :').encode('ascii')
 
 
-def ssl_sign_content(content,private_key,callback=pwd_callback):
-    """ Sign content with the private_key, return the signature"""
-    assert os.path.isfile(private_key)
-    key = EVP.load_key(private_key,callback=callback)
-    key.sign_init()
-    key.sign_update(content)
-    signature = key.sign_final()
-    return signature
 
+class SSLPrivateKey(object):
+    def __init__(self,private_key,callback=pwd_callback):
+        if not os.path.isfile(private_key):
+            raise Exception('Private key %s not found' % private_key)
+        self.key = EVP.load_key(private_key,callback=callback)
+
+    def sign_content(self,content):
+        """ Sign content with the private_key, return the signature"""
+        self.key.sign_init()
+        self.key.sign_update(content)
+        signature = self.key.sign_final()
+        return signature
+
+    def match_cert(self,crt):
+        if not isinstance(crt,SSLCertificate):
+            crt = SSLCertificate(crt)
+        return crt.get_pubkey().get_modulus() == self.key.get_modulus()
 
 class SSLCertificate(object):
     def __init__(self,public_cert):
@@ -420,11 +429,14 @@ class SSLCertificate(object):
             return self.subject_dn
         raise Exception('SSL signature verification failed for certificate %s'%self.subject_dn)
 
-    def __dir__(self):
-        return ['issuer_dn','fingerprint','subject_dn','cn']
+    def match_key(self,key):
+        """Check if certificate match the given provate key"""
+        if not isinstance(key,SSLPrivateKey):
+            key = SSLPrivateKey(key)
+        return self.crt.get_pubkey().get_modulus() == key.key.get_modulus()
 
     def __iter__(self):
-        for k in dir(self):
+        for k in ['issuer_dn','fingerprint','subject_dn','cn']:
             yield k,getattr(self,k)
 
 def ssl_verify_content(content,signature,public_certs):
@@ -434,8 +446,8 @@ def ssl_verify_content(content,signature,public_certs):
     >>> if not os.path.isfile('c:/private/test.pem'):
     ...     key = create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sebastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
     >>> my_content = 'Un test de contenu'
-    >>> my_signature = ssl_sign_content(my_content,'c:/private/test.pem')
-    >>> ssl_verify_content(my_content,my_signature,'c:/private/test.crt')
+    >>> my_signature = SSLPrivateKey('c:/private/test.pem').sign_content(my_content)
+    >>> SSLCertificate('c:/private/test.crt').verify_content(my_content,my_signature)
     'C=FR, L=St Sebastien sur Loire, O=Tranquil IT, CN=wapt.tranquil.it/emailAddress=...@tranquil.it'
     """
     assert isinstance(signature,str)
@@ -2488,7 +2500,7 @@ class Wapt(object):
         self.repositories = []
 
         self.dry_run = False
-        self.private_key = ''
+
         self.upload_cmd = None
         self.upload_cmd_host = self.upload_cmd
         self.after_upload = None
@@ -2519,6 +2531,10 @@ class Wapt(object):
         self.user = setuphelpers.get_current_user()
         self.usergroups = None
 
+        # keep private key in cache
+        self._private_key = ''
+        self.private_key_cache = None
+
         self.waptserver = None
         self.config_filedate = None
         self.load_config(config_filename = self.config_filename)
@@ -2532,8 +2548,19 @@ class Wapt(object):
         # events handler
         self.events = None
 
+
         import pythoncom
         pythoncom.CoInitialize()
+
+    @property
+    def private_key(self):
+        return self._private_key
+
+    @private_key.setter
+    def private_key(self,value):
+        if value != self._private_key:
+            self.private_key_cache = None
+            self._private_key = value
 
     def as_dict(self):
         result = {}
@@ -4450,11 +4477,18 @@ class Wapt(object):
         if not isinstance(zip_or_directoryname,unicode):
             zip_or_directoryname = unicode(zip_or_directoryname)
         if not private_key:
+            # get the default one, perhaps already cached
             private_key = self.private_key
-        if not private_key:
-            raise Exception('Private key filename not set in private_key')
-        if not os.path.isfile(private_key):
-            raise Exception('Private key file %s not found' % private_key)
+            if private_key:
+                key = self.private_key_cache = self.private_key_cache or SSLPrivateKey(private_key,callback=callback)
+            else:
+                raise Exception('Private key filename not set in private_key')
+        else:
+            # specific
+            if not os.path.isfile(private_key):
+                raise Exception('Private key file %s not found' % private_key)
+            key = SSLPrivateKey(private_key,callback=callback)
+
         if os.path.isfile(zip_or_directoryname):
             waptzip = ZipFile(zip_or_directoryname,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
             manifest = waptzip.open('WAPT/manifest.sha1').read()
@@ -4463,8 +4497,8 @@ class Wapt(object):
             manifest = json.dumps(manifest_data,indent=True)
             open(os.path.join(zip_or_directoryname,'WAPT','manifest.sha1'),'w').write(manifest)
 
-        logger.info('Signing package manifest %s using private key %s'%(zip_or_directoryname,private_key))
-        signature = ssl_sign_content(manifest,private_key=private_key,callback=callback)
+        logger.info('Signing package manifest %s using private key %s' % (zip_or_directoryname,private_key))
+        signature = key.sign_content(manifest)
         if os.path.isfile(zip_or_directoryname):
             try:
                 # check if zip is already signed. Can not replace the signature in Zip, so raise an error.
@@ -4477,7 +4511,7 @@ class Wapt(object):
 
         return signature.encode('base64')
 
-    def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','*.pyc','src'],target_directory=None):
+    def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','*.pyc','src'],target_directory=None,include_signer=True,callback=pwd_callback):
         """Build the WAPT package from a directory
 
         Call update_control from setup.py if this function is defined.
@@ -4574,6 +4608,25 @@ class Wapt(object):
             # increment inconditionally the package buuld nr.
             if not inc_done and inc_package_release:
                 entry.inc_build()
+
+            if include_signer:
+                if self.private_key and os.path.isfile(self.private_key):
+                    key = self.private_key_cache = self.private_key_cache or SSLPrivateKey(self.private_key,callback=pwd_callback)
+                    # find proper certificate
+                    for fn in self.public_certs:
+                        crt = SSLCertificate(fn)
+                        if crt.match_key(key):
+                            break
+                        else:
+                            crt = None
+                    if not crt:
+                        raise Exception('No matching certificate found for private key %s'%self.private_key)
+                    entry.signer = crt.cn
+                    entry.signer_fingerprint = crt.fingerprint
+                    logger.info('Signer: %s'%entry.signer)
+                    logger.info('Signer fingerprint: %s'%entry.signer_fingerprint)
+
+            if inc_package_release or include_signer:
                 entry.save_control_to_wapt(directoryname)
 
             entry.filename = entry.make_package_filename()
@@ -4585,6 +4638,10 @@ class Wapt(object):
                 raise Exception('Bad target directory %s for package build' % target_directory)
 
             result_filename = os.path.abspath(os.path.join(target_directory,entry.filename))
+            if os.path.isfile(result_filename):
+                logger.info('Target package already exists, removing %s' % result_filename)
+                os.unlink(result_filename)
+
             entry.localpath = target_directory
 
             allfiles = create_recursive_zip_signed(
@@ -4658,11 +4715,15 @@ class Wapt(object):
             else:
                 logger.critical(u'Directory %s not found' % source_dir)
 
-        result = []
-        logger.info(u'Uploading files...')
-        for buildresult in buildresults:
-            upload_res = self.http_upload_package(buildresult['package'],wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
-            result.append(buildresult)
+        try:
+            result = []
+            logger.info(u'Uploading files...')
+            for buildresult in buildresults:
+                upload_res = self.http_upload_package(buildresult['package'],wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
+                result.append(buildresult)
+        finally:
+            global key_passwd
+            key_passwd = None
         return result
 
     def cleanup_session_setup(self):
