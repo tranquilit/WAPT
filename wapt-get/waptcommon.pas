@@ -122,7 +122,7 @@ const
 
   AdvancedMode:Boolean = False;
 
-  WAPTServerMinVersion='1.3.4';
+  WAPTServerMinVersion='1.3.7';
 
 implementation
 

@@ -41,7 +41,7 @@ var
   DMPython: TDMPython;
 
 implementation
-uses waptcommon,inifiles;
+uses waptcommon,inifiles,forms,controls;
 {$R *.lfm}
 
 procedure TDMPython.SetWaptConfigFileName(AValue: String);
@@ -50,10 +50,13 @@ var
   ini : TInifile;
   i: integer;
 begin
-  if FWaptConfigFileName=AValue then Exit;
+  if FWaptConfigFileName=AValue then
+    Exit;
+
   FWaptConfigFileName:=AValue;
   if AValue<>'' then
-  begin
+  try
+    Screen.Cursor:=crHourGlass;
     if not DirectoryExists(ExtractFileDir(AValue)) then
       mkdir(ExtractFileDir(AValue));
     //Initialize waptconsole parameters with local workstation wapt-get parameters...
@@ -103,6 +106,8 @@ begin
         ini.Free;
       end;
     end;
+  finally
+    Screen.Cursor:=crDefault;
   end;
 end;
 
