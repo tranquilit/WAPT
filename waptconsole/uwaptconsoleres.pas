@@ -11,6 +11,10 @@ resourcestring
 
   { --- MESSAGES DANS LA CONSOLE WAPT --- }
   { Messages dans uwaptconsole.pas }
+  rsLoadPackages = 'Loading Packages index';
+  rsLoadInventory = 'Loading hosts inventory';
+  rsLoadSettings = 'Loading application settings';
+
   rsFatalError = 'Failed to retrieve task.';
   rsInstalling = 'Installing %s...';
   rsDefineWaptdevPath = 'Please select a directory on your package development host before editing a package bundle.';

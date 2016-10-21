@@ -3077,36 +3077,49 @@ procedure TVisWaptGUI.FormShow(Sender: TObject);
 var
   i:integer;
 begin
-  MemoLog.Clear;
-  // saves default initial config...
-  Gridhosts.SaveSettingsToIni(Appuserinipath+'.default');
-  GridPackages.SaveSettingsToIni(Appuserinipath+'.default');
-  GridGroups.SaveSettingsToIni(Appuserinipath+'.default');
-  GridHostPackages.SaveSettingsToIni(Appuserinipath+'.default');
-  GridHostSoftwares.SaveSettingsToIni(Appuserinipath+'.default');
+  CurrentVisLoading := TVisLoading.Create(Nil);
+  with CurrentVisLoading do
+  try
+    MemoLog.Clear;
+    ProgressTitle(rsLoadSettings);
+    Start(3);
+    ProgressStep(0,3);
+    // saves default initial config...
+    Gridhosts.SaveSettingsToIni(Appuserinipath+'.default');
+    GridPackages.SaveSettingsToIni(Appuserinipath+'.default');
+    GridGroups.SaveSettingsToIni(Appuserinipath+'.default');
+    GridHostPackages.SaveSettingsToIni(Appuserinipath+'.default');
+    GridHostSoftwares.SaveSettingsToIni(Appuserinipath+'.default');
 
+    Gridhosts.LoadSettingsFromIni(Appuserinipath);
+    GridPackages.LoadSettingsFromIni(Appuserinipath);
+    GridGroups.LoadSettingsFromIni(Appuserinipath);
+    GridHostPackages.LoadSettingsFromIni(Appuserinipath);
+    GridHostSoftwares.LoadSettingsFromIni(Appuserinipath);
 
-  Gridhosts.LoadSettingsFromIni(Appuserinipath);
-  GridPackages.LoadSettingsFromIni(Appuserinipath);
-  GridGroups.LoadSettingsFromIni(Appuserinipath);
-  GridHostPackages.LoadSettingsFromIni(Appuserinipath);
-  GridHostSoftwares.LoadSettingsFromIni(Appuserinipath);
+    plStatusBar1.Panels[0].Text :=ApplicationName+' '+GetApplicationVersion;
 
-  plStatusBar1.Panels[0].Text :=ApplicationName+' '+GetApplicationVersion;
+    pgWindowsUpdates.TabVisible:=waptcommon.waptwua_enabled;
+    pgHostWUA.TabVisible:=waptcommon.waptwua_enabled;
+    for i:=0 to WSUSActions.ActionCount-1 do
+    begin
+      (WSUSActions.Actions[i] as TAction).Visible:=waptcommon.waptwua_enabled;
+    end;
 
-  pgWindowsUpdates.TabVisible:=waptcommon.waptwua_enabled;
-  pgHostWUA.TabVisible:=waptcommon.waptwua_enabled;
-  for i:=0 to WSUSActions.ActionCount-1 do
-  begin
-    (WSUSActions.Actions[i] as TAction).Visible:=waptcommon.waptwua_enabled;
+    ProgressTitle(rsLoadPackages);
+    ProgressStep(2,3);
+    ActPackagesUpdate.Execute;
+
+    ProgressTitle(rsLoadInventory);
+    ProgressStep(3,3);
+    MainPages.ActivePage := pgInventory;
+    MainPagesChange(Sender);
+
+    HostPages.ActivePage := pgPackages;
+
+  finally
+    Free;
   end;
-
-  ActPackagesUpdate.Execute;
-
-  MainPages.ActivePage := pgInventory;
-  MainPagesChange(Sender);
-
-  HostPages.ActivePage := pgPackages;
 end;
 
 procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
@@ -3596,10 +3609,13 @@ begin
   if MainPages.ActivePage = pgInventory then
   try
     Screen.Cursor:=crHourGlass;
-
     CopyMenu(PopupMenuHosts, MenuItem24);
     if GridHosts.Data = nil then
+    begin
       ActSearchHost.Execute;
+      //EdSearchHost.Modified := True;
+      //THackSearchEdit(EdSearchHost).Change;
+    end;
     EdSearchHost.SetFocus;
   finally
     Screen.Cursor:=crDefault;
@@ -3608,14 +3624,22 @@ begin
   begin
     CopyMenu(PopupMenuPackages, MenuItem24);
     if GridPackages.Data = nil then
+    begin
       ActSearchPackage.Execute;
+      //EdSearch.Modified := True;
+      //THackSearchEdit(EdSearch).Change;
+    end;
     EdSearch.SetFocus;
   end
   else if MainPages.ActivePage = pgGroups then
   begin
     CopyMenu(PopupMenuGroups, MenuItem24);
     if GridGroups.Data = nil then
+    begin
       ActSearchGroups.Execute;
+      //EdSearchGroups.Modified := True;
+      //THackSearchEdit(EdSearchGroups).Change;
+    end;
     EdSearchGroups.SetFocus;
   end
   else if MainPages.ActivePage = pgWindowsUpdates then
