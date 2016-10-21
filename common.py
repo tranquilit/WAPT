@@ -3111,6 +3111,9 @@ class Wapt(object):
         previous_uninstall = self.registry_uninstall_snapshot()
         entry = PackageEntry()
         entry.load_control_from_wapt(fname)
+        if entry.min_wapt_version and Version(entry.min_wapt_version)>Version(setuphelpers.__version__):
+            raise Exception('This package requires  a newer Wapt agent. Minimum version: %s' % entry.min_wapt_version)
+
         self.runstatus=u"Installing package %s version %s ..." % (entry.package,entry.version)
         old_stdout = sys.stdout
         old_stderr = sys.stderr

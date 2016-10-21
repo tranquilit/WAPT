@@ -247,7 +247,7 @@ class PackageEntry(object):
 
     """
     required_attributes = ['package','version','architecture',]
-    optional_attributes = ['section','priority','maintainer','description','depends','conflicts','sources','installed_size']
+    optional_attributes = ['section','priority','maintainer','description','depends','conflicts','sources','installed_size','signer','signer_fingerprint','min_wapt_version']
     non_control_attributes = ['localpath','filename','size','repo_url','md5sum','repo',]
 
     @property
@@ -271,7 +271,11 @@ class PackageEntry(object):
         self.repo_url=''
         self.repo=repo
         self.localpath=''
+        self.signer=''
+        self.signer_fingerprint=''
+        self.min_wapt_version=''
         self.installed_size=None
+
         self.calculated_attributes=[]
 
     def parse_version(self):
