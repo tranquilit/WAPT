@@ -19,6 +19,7 @@ type
     edUser: TEdit;
     edWaptServerName: TEdit;
     Image1: TImage;
+    LabVersion: TLabel;
     labServer: TLabel;
     laPassword: TLabel;
     labUser: TLabel;
@@ -37,7 +38,7 @@ var
   VisLogin: TVisLogin;
 
 implementation
-
+uses tiscommon;
 {$R *.lfm}
 
 { TVisLogin }
@@ -54,6 +55,7 @@ end;
 procedure TVisLogin.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
+  LabVersion.Caption := ApplicationName+' '+GetApplicationVersion;
 end;
 
 procedure TVisLogin.FormShow(Sender: TObject);

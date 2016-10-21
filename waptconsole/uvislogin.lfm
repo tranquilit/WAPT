@@ -86,6 +86,14 @@ object VisLogin: TVisLogin
     CancelButton.DefaultCaption = True
     TabOrder = 4
     ShowButtons = [pbOK, pbCancel]
+    object LabVersion: TLabel
+      Left = 0
+      Height = 13
+      Top = 0
+      Width = 52
+      Caption = 'LabVersion'
+      ParentColor = False
+    end
   end
   object BitBtn1: TBitBtn
     Left = 408
