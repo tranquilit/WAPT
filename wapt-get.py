@@ -296,6 +296,14 @@ def main():
         if options.private_key:
             mywapt.private_key = options.private_key
 
+        # key password management
+        def pwd_callback(*args):
+            """Password callback for opening private keysin suppli password file"""
+            return open(options.private_key_passwd,'r').read().splitlines()[0].strip()
+
+        if options.private_key_passwd:
+            mywapt.key_passwd_callback = pwd_callback
+
         if options.language:
             mywapt.language = options.language
 
@@ -676,7 +684,8 @@ def main():
                 if len(args) < 3:
                     print u"You must provide the source package and the new name"
                     sys.exit(1)
-                result = mywapt.duplicate_package(*args[1:4],target_directory='',build=False)
+                result = mywapt.duplicate_package(*args[1:4],target_directory='',
+                    build=False)
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
@@ -755,29 +764,12 @@ def main():
                                     print u" %s" % f[0]
                             print('...done. Package filename %s' % (package_fn,))
 
-                            def pwd_callback(*args):
-                                """Default password callback for opening private keys"""
-                                return open(options.private_key_passwd,'r').read()
-
-                            def pwd_callback2(*args):
-                                """Default password callback for opening private keys"""
-                                global key_passwd
-                                if not key_passwd:
-                                    key_passwd = getpass.getpass('Private key password :').encode('ascii')
-                                return key_passwd
-
                             if mywapt.private_key:
                                 print('Signing %s' % package_fn)
-                                if options.private_key_passwd:
-                                    signature = mywapt.sign_package(
-                                        package_fn,
-                                        excludes=common.ensure_list(options.excludes),
-                                        callback=pwd_callback)
-                                else:
-                                    signature = mywapt.sign_package(
-                                        package_fn,
-                                        excludes=common.ensure_list(options.excludes),
-                                        callback=pwd_callback2)
+                                signature = mywapt.sign_package(
+                                    package_fn,
+                                    excludes=common.ensure_list(options.excludes)
+                                    )
                                 print u"Package %s signed : signature :\n%s" % (package_fn,signature)
                             else:
                                 logger.warning(u'No private key provided, package %s is unsigned !' % package_fn)
@@ -841,7 +833,8 @@ def main():
                         print('Signing %s' % waptfile)
                         signature = mywapt.sign_package(
                             waptfile,
-                            excludes=common.ensure_list(options.excludes))
+                            excludes=common.ensure_list(options.excludes)
+                            )
                         print u"Package %s signed : signature :\n%s" % (
                             waptfile, signature)
                         sys.exit(0)

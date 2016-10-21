@@ -346,14 +346,11 @@ def sha256_for_data(data):
     sha256.update(data)
     return sha256.hexdigest()
 
-
-
 def pwd_callback(*args):
-    """Default password callback for opening private keys"""
+    """Default password callback for opening private keys.
+    """
     import getpass
-    return getpass.getpass('Private key password :').encode('ascii')
-
-
+    return getpass.getpass().encode('ascii')
 
 class SSLPrivateKey(object):
     def __init__(self,private_key,callback=pwd_callback):
@@ -2533,7 +2530,7 @@ class Wapt(object):
 
         # keep private key in cache
         self._private_key = ''
-        self.private_key_cache = None
+        self._private_key_cache = None
 
         self.waptserver = None
         self.config_filedate = None
@@ -2549,6 +2546,18 @@ class Wapt(object):
         self.events = None
 
 
+        self._key_passwd_cache = None
+
+        def _cache_passwd_callback(*args):
+            """Default password callback for opening private keys.
+            """
+            if not self._key_passwd_cache:
+                import getpass
+                self._key_passwd_cache = getpass.getpass()
+            return self._key_passwd_cache.encode('ascii')
+
+        self.key_passwd_callback = _cache_passwd_callback
+
         import pythoncom
         pythoncom.CoInitialize()
 
@@ -2559,7 +2568,7 @@ class Wapt(object):
     @private_key.setter
     def private_key(self,value):
         if value != self._private_key:
-            self.private_key_cache = None
+            self._private_key_cache = None
             self._private_key = value
 
     def as_dict(self):
@@ -4457,7 +4466,15 @@ class Wapt(object):
                 return r
         return None
 
-    def sign_package(self,zip_or_directoryname,excludes=['.svn','.git','.gitignore','*.pyc','src'],private_key=None,callback=pwd_callback):
+    @property
+    def private_key_cache(self):
+        # lazzy loading of privatekey
+        # TODO : check that private key file has not been updated since last loading...
+        if not self._private_key_cache:
+            self._private_key_cache = SSLPrivateKey(self.private_key,callback=self.key_passwd_callback)
+        return self._private_key_cache
+
+    def sign_package(self,zip_or_directoryname,excludes=['.svn','.git','.gitignore','*.pyc','src'],private_key=None,callback=None):
         """Calc the signature of the WAPT/manifest.sha1 file and put/replace it in ZIP or directory.
             if directory, creates WAPT/manifest.sha1 and add it to the content of package
             create a WAPT/signature file and it to directory or zip file.
@@ -4476,13 +4493,14 @@ class Wapt(object):
         """
         if not isinstance(zip_or_directoryname,unicode):
             zip_or_directoryname = unicode(zip_or_directoryname)
+        if not callback:
+            callback = self.key_passwd_callback
         if not private_key:
             # get the default one, perhaps already cached
             private_key = self.private_key
-            if private_key:
-                key = self.private_key_cache = self.private_key_cache or SSLPrivateKey(private_key,callback=callback)
-            else:
+            if not private_key:
                 raise Exception('Private key filename not set in private_key')
+            key = self.private_key_cache
         else:
             # specific
             if not os.path.isfile(private_key):
@@ -4496,6 +4514,8 @@ class Wapt(object):
             manifest_data = get_manifest_data(zip_or_directoryname,excludes=excludes)
             manifest = json.dumps(manifest_data,indent=True)
             open(os.path.join(zip_or_directoryname,'WAPT','manifest.sha1'),'w').write(manifest)
+
+        # TODO : check that control signer_fingerprint is same as current key
 
         logger.info('Signing package manifest %s using private key %s' % (zip_or_directoryname,private_key))
         signature = key.sign_content(manifest)
@@ -4511,7 +4531,11 @@ class Wapt(object):
 
         return signature.encode('base64')
 
-    def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','*.pyc','src'],target_directory=None,include_signer=True,callback=pwd_callback):
+    def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','*.pyc','src'],
+                target_directory=None,
+                include_signer=True,
+                private_key=None,
+                callback=None):
         """Build the WAPT package from a directory
 
         Call update_control from setup.py if this function is defined.
@@ -4610,21 +4634,27 @@ class Wapt(object):
                 entry.inc_build()
 
             if include_signer:
-                if self.private_key and os.path.isfile(self.private_key):
-                    key = self.private_key_cache = self.private_key_cache or SSLPrivateKey(self.private_key,callback=pwd_callback)
-                    # find proper certificate
-                    for fn in self.public_certs:
-                        crt = SSLCertificate(fn)
-                        if crt.match_key(key):
-                            break
-                        else:
-                            crt = None
-                    if not crt:
-                        raise Exception('No matching certificate found for private key %s'%self.private_key)
-                    entry.signer = crt.cn
-                    entry.signer_fingerprint = crt.fingerprint
-                    logger.info('Signer: %s'%entry.signer)
-                    logger.info('Signer fingerprint: %s'%entry.signer_fingerprint)
+                if not private_key:
+                    private_key = self.private_key
+                    key = self.private_key_cache
+                else:
+                    if not callback:
+                        callback = self.key_passwd_callback
+                    key = SSLPrivateKey(private_key,callback)
+
+                # find proper certificate
+                for fn in self.public_certs:
+                    crt = SSLCertificate(fn)
+                    if crt.match_key(key):
+                        break
+                    else:
+                        crt = None
+                if not crt:
+                    raise Exception('No matching certificate found for private key %s'%self.private_key)
+                entry.signer = crt.cn
+                entry.signer_fingerprint = crt.fingerprint
+                logger.info('Signer: %s'%entry.signer)
+                logger.info('Signer fingerprint: %s'%entry.signer_fingerprint)
 
             if inc_package_release or include_signer:
                 entry.save_control_to_wapt(directoryname)
@@ -4674,56 +4704,38 @@ class Wapt(object):
         if not self.private_key or not os.path.isfile(self.private_key):
             raise Exception('Unable to build %s, private key %s not provided or not present'%(sources_directories,self.private_key))
 
+        def pwd_callback(*args):
+            """Default password callback for opening private keys"""
+            if not isinstance(private_key_passwd,str):
+                return private_key_passwd.encode('ascii')
+            else:
+                return private_key_passwd
+
+        callback = None
+        if private_key_passwd is not None:
+            callback = pwd_callback
+
         for source_dir in [os.path.abspath(p) for p in sources_directories]:
             if os.path.isdir(source_dir):
                 logger.info(u'Building  %s' % source_dir)
-                if inc_package_release==False:
-                    buildresult = self.build_package(source_dir,target_directory=target_directory)
-                else:
-                    buildresult = self.build_package(source_dir,inc_package_release=True,target_directory=target_directory)
+                buildresult = self.build_package(source_dir,inc_package_release=inc_package_release,target_directory=target_directory,callback=callback)
                 package_fn = buildresult['filename']
                 if package_fn:
                     buildresults.append(buildresult)
                     logger.info(u'...done. Package filename %s' % (package_fn,))
-
-                    def pwd_callback(*args):
-                        """Default password callback for opening private keys"""
-                        if not isinstance(private_key_passwd,str):
-                            return private_key_passwd.encode('ascii')
-                        else:
-                            return private_key_passwd
-
-                    def pwd_callback2(*args):
-                        """Default password callback for opening private keys"""
-                        global key_passwd
-                        if not key_passwd:
-                            key_passwd = getpass.getpass('Private key password :').encode('ascii')
-                        return key_passwd
-
-                    if self.private_key:
-                        logger.info('Signing %s' % package_fn)
-                        if private_key_passwd is None:
-                            signature = self.sign_package(package_fn,callback=pwd_callback2)
-                        else:
-                            signature = self.sign_package(package_fn,callback=pwd_callback)
-                        logger.debug(u"Package %s signed : signature :\n%s" % (package_fn,signature))
-                    else:
-                        logger.warning(u'No private key provided, package %s is unsigned !' % package_fn)
-
+                    logger.info('Signing %s' % package_fn)
+                    signature = self.sign_package(package_fn,callback=callback)
+                    logger.debug(u"Package %s signed : signature :\n%s" % (package_fn,signature))
                 else:
                     logger.critical(u'package %s not created' % package_fn)
             else:
                 logger.critical(u'Directory %s not found' % source_dir)
 
-        try:
-            result = []
-            logger.info(u'Uploading files...')
-            for buildresult in buildresults:
-                upload_res = self.http_upload_package(buildresult['package'],wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
-                result.append(buildresult)
-        finally:
-            global key_passwd
-            key_passwd = None
+        result = []
+        logger.info(u'Uploading files...')
+        for buildresult in buildresults:
+            upload_res = self.http_upload_package(buildresult['package'],wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
+            result.append(buildresult)
         return result
 
     def cleanup_session_setup(self):
@@ -5834,87 +5846,6 @@ class Wapt(object):
                 result['missing'].append(package_name)
         return result
 
-    def add_iconpng_wapt(self,package,iconpath='',private_key_passwd=None):
-        """Add a WAPT/icon.png file to existing WAPT package without icon
-        #>>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
-        #>>> res = wapt.add_iconpng_wapt('tis-firefox')
-        """
-        if not os.path.isfile(package) and not self.is_available(package):
-            raise Exception('{} package does not exist'.format(package))
-        has_icon = None
-        if os.path.isfile(package):
-            with zipfile.ZipFile(fname,'r',allowZip64=True) as myzip:
-                try:
-                    icon_info = myzip.getinfo(u'WAPT/icon.png')
-                    logger.warning(u'Already an icon in package {}, keeping it'.format(package))
-                    has_icon = True
-                except KeyError:
-                    has_icon = False
-        if not has_icon:
-            tempdir = tempfile.mkdtemp()
-            try:
-                result = self.edit_package(package,target_directory = tempdir)
-                target_icon_path = os.path.join(result['target'],'WAPT','icon.png')
-                has_icon = os.path.exists(target_icon_path)
-                if not has_icon:
-                    if not os.path.isfile(iconpath):
-                        # we take an icon in the local cache ...
-                        iconpath = os.path.join(self.package_cache_dir,u'icons',u'{}.png'.format(result['package'].package))
-                        if not os.path.isfile(iconpath):
-                            # try to find an icon in the first exe file we find...
-                            logger.info(u'No suitable icon in cache, trying exe')
-                            try:
-                                from extract_icon import extract_icon
-                            except ImportError as e:
-                                print "Missing extract_icon ior PIL package, install additional waptdev package"
-                                raise
-                            for exefile in glob.glob( os.path.join(result['target'],'*.exe')):
-                                try:
-                                    icon = extract_icon(exefile)
-                                    if len(icon)>10:
-                                        logger.info(u'Using icon from {}'.format(exefile))
-                                        with open(target_icon_path,'wb') as png:
-                                            png.write(icon)
-                                            has_icon = True
-                                            break
-                                except:
-                                    pass
-                            if not has_icon:
-                                raise Exception('{} icon does not exist'.format(iconpath))
-                        else:
-                            shutil.copyfile(iconpath,target_icon_path)
-
-                    build = self.build_package(result['target'])
-
-                    def pwd_callback(*args):
-                        """Default password callback for opening private keys"""
-                        return private_key_passwd
-
-                    def pwd_callback2(*args):
-                        """Default password callback for opening private keys"""
-                        global key_passwd
-                        if not key_passwd:
-                            key_passwd = getpass.getpass('Private key password :').encode('ascii')
-                        return key_passwd
-
-                    if self.private_key:
-                        print('Signing %s' % build['filename'])
-                        if private_key_passwd is None:
-                            signature = self.sign_package(build['filename'],callback=pwd_callback2)
-                        else:
-                            signature = self.sign_package(build['filename'],callback=pwd_callback)
-
-                    if not signature:
-                        raise Exception('Unable to sign package {}'.format(package))
-                    logger.info(u'Package {} successfully built'.format(build['filename']))
-                    return build
-                else:
-                    logger.warning(u'There is already an icon in package {}, keeping it'.format(package))
-                    return None
-            finally:
-                shutil.rmtree(tempdir,ignore_errors=True)
-        else:
-            return None
 
     def network_reconfigure(self):
         """Called whenever the network configuration has changed"""
