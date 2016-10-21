@@ -284,16 +284,6 @@ def index():
     agent_status = setup_status = deploy_status = mongodb_status = 'N/A'
     agent_style = setup_style = deploy_style = disk_space_style = 'style="color: red;"'
 
-    agent_present, agent_version = get_wapt_exe_version(waptagent)
-    agent_sha256 = None
-    if agent_present:
-        agent_style = ''
-        if agent_version is not None:
-            agent_status = agent_version
-            agent_sha256 = sha256_for_file(waptagent)
-        else:
-            agent_status = 'ERROR'
-
     setup_present, setup_version = get_wapt_exe_version(waptsetup)
     if setup_present:
         setup_style = ''
@@ -301,6 +291,17 @@ def index():
             setup_status = setup_version
         else:
             setup_status = 'ERROR'
+
+    agent_present, agent_version = get_wapt_exe_version(waptagent)
+    agent_sha256 = None
+    if agent_present:
+        if agent_version is not None:
+            agent_status = agent_version
+            agent_sha256 = sha256_for_file(waptagent)
+            if Version(agent_version) >= Version(setup_version):
+                agent_style = ''
+        else:
+            agent_status = 'ERROR'
 
     deploy_present, deploy_version = get_wapt_exe_version(waptdeploy)
     if deploy_present:
@@ -1848,7 +1849,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if options.devel:
-        app.run(host='0.0.0.0',port=30880,debug=True)
+        app.run(host='0.0.0.0',port=30880,debug=False)
     else:
         port = conf['waptserver_port']
         server = Rocket(('127.0.0.1', port), 'wsgi', {"wsgi_app":app})
