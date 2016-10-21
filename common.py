@@ -588,13 +588,17 @@ def create_recursive_zip_signed(zipfn, source_root, target_root = u"",excludes =
                 break
         if excluded:
             continue
-        if os.path.isfile(os.path.join(source_root, item)):
-            if logger: logger.debug(u' adding file %s' % os.path.join(source_root, item))
-            zipf.write(os.path.join(source_root, item), os.path.join(target_root,item))
-            result.append([os.path.join(target_root,item),sha1_for_file(os.path.join(source_root, item))])
-        elif os.path.isdir(os.path.join(source_root, item)):
-            if logger: logger.debug(u'Add directory %s' % os.path.join(source_root, item))
-            result.extend(create_recursive_zip_signed(zipf, os.path.join(source_root, item), os.path.join(target_root,item),excludes))
+        source_item_fn = os.path.join(source_root, item)
+        zip_item_fn = os.path.join(target_root,item)
+        if zip_item_fn in ('WAPT\\manifest.sha1','WAPT\\signature'):
+            continue
+        if os.path.isfile(source_item_fn):
+            if logger: logger.debug(u' adding file %s' % source_item_fn)
+            zipf.write(source_item_fn, zip_item_fn)
+            result.append([zip_item_fn,sha1_for_file(source_item_fn)])
+        elif os.path.isdir(source_item_fn):
+            if logger: logger.debug(u'Add directory %s' % source_item_fn)
+            result.extend(create_recursive_zip_signed(zipf, source_item_fn, zip_item_fn,excludes))
     if isinstance(zipfn,str) or isinstance(zipfn,unicode):
         if logger:
             logger.debug(u'  adding sha1 hash for all %i files' % len(result))
