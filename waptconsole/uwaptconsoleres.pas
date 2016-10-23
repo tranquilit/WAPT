@@ -48,6 +48,9 @@ resourcestring
   rsWaptServerOldVersion = 'Warning, the version of the server is too old.'#13#10'Current server version: %s'#13#10'Required server version: %s';
   rsUnknownVersion = 'Unknown version';
 
+  rsWaptAgentOldVersion = 'Warning, the version of the waptagent.exe installer is too old.'#13#10'Current waptagent.exe version: %s'#13#10'waptsetup-tis.exe version: %s';
+  rsWaptAgentNotPresent = 'Warning, waptsetup-tis.exe or waptagent.exe not present on server, please install or build them.';
+
   rsWaptAgentUploadSuccess = 'Successfully uploaded WAPT agent !';
   rsWaptAgentUploadError = 'Error while uploading WAPT agent : %s';
   rsWaptAgentSetupSuccess = 'waptagent.exe successfully created : %s';

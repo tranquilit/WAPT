@@ -3031,6 +3031,7 @@ begin
                   on E:Exception do
                     ShowMessageFmt(rsWaptServerOldVersion,[rsUnknownVersion,WAPTServerMinVersion]);
               end;
+
           except
             on E:Exception do
               ShowMessageFmt(rsWaptServerError,[e.Message]);
@@ -3078,6 +3079,7 @@ end;
 procedure TVisWaptGUI.FormShow(Sender: TObject);
 var
   i:integer;
+  sores: ISuperObject;
 begin
   CurrentVisLoading := TVisLoading.Create(Nil);
   with CurrentVisLoading do
@@ -3118,6 +3120,17 @@ begin
     MainPagesChange(Sender);
 
     HostPages.ActivePage := pgPackages;
+
+    // check waptagent version
+    sores := WAPTServerJsonGet('api/v2/waptagent_version', []);
+    try
+      if sores.B['success'] and (CompareVersion(sores['result'].S['waptagent_version'],sores['result'].S['waptsetup_version'])<0) then
+        ShowMessageFmt(rsWaptAgentOldVersion,[sores['result'].S['waptagent_version'],sores['result'].S['waptsetup_version']]);
+    except
+        //on E:Exception do
+        //  ShowMessageFmt(rsWaptAgentNotPresent,[rsUnknownVersion,WAPTServerMinVersion]);
+    end;
+
 
   finally
     Free;
