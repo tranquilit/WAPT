@@ -4634,12 +4634,18 @@ class Wapt(object):
                 entry.inc_build()
 
             if include_signer:
+                if not callback:
+                    callback = self.key_passwd_callback
+                else:
+                    self.key_passwd_callback = callback
+
+                # use cached key file if not provided
+                # the password will be retrieved by the self.key_passwd_callback
                 if not private_key:
                     private_key = self.private_key
                     key = self.private_key_cache
                 else:
-                    if not callback:
-                        callback = self.key_passwd_callback
+                    # use provided key filename, use provided callback.
                     key = SSLPrivateKey(private_key,callback)
 
                 # find proper certificate
