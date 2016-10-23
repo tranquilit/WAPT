@@ -1035,19 +1035,29 @@ def waptagent_version():
         if agent_present and agent_version is not None:
             agent_sha256 = sha256_for_file(waptagent)
             waptagent_timestamp = datetime2isodate(datetime.datetime.fromtimestamp(os.path.getmtime(waptagent)))
-            msg = 'waptagent version: %s'%agent_version
-        else:
-            msg = 'waptagent not generated'
 
-        result = dict(
-            waptagent_version=agent_version,
-            waptagent_sha256=agent_sha256,
-            )
+        waptsetup = os.path.join(conf['wapt_folder'], 'waptsetup-tis.exe')
+        setup_present, setup_version = get_wapt_exe_version(waptsetup)
+        waptsetup_timestamp = None
+        if setup_present and setup_version is not None:
+            waptsetup_timestamp = datetime2isodate(datetime.datetime.fromtimestamp(os.path.getmtime(waptsetup)))
+
+        if agent_present and setup_present and Version(agent_version)>=Version(setup_version):
+            msg = 'OK : waptagent.exe %s >= waptsetup %s' % (agent_version,setup_version)
+        elif agent_present and setup_present and Version(agent_version)<Version(setup_version):
+            msg = 'Problem : waptagent.exe %s is older than waptsetup %s, and must be regenerated.' % (agent_version,setup_version)
+        elif not agent_present and setup_present:
+            msg = 'Problem : waptagent.exe not found. It should be compiled from waptconsole.'
+        elif not setup_present:
+            msg = 'Problem : waptsetup-tis.exe not found on repository.'
+
 
         result = dict(
             waptagent_version = agent_version,
             waptagent_sha256 = agent_sha256,
             waptagent_timestamp = waptagent_timestamp,
+            waptsetup_version = setup_version,
+            waptsetup_timestamp = waptsetup_timestamp,
             request_time = time.time() - start,
             )
     except Exception as e:
