@@ -2433,7 +2433,7 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 1
         end
         object ButPackagesUpdate: TBitBtn
-          Left = 412
+          Left = 444
           Height = 25
           Top = 2
           Width = 208
@@ -2477,7 +2477,7 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 2
         end
         object BitBtn1: TBitBtn
-          Left = 620
+          Left = 652
           Height = 25
           Top = 2
           Width = 167
@@ -2521,10 +2521,10 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 3
         end
         object BitBtn2: TBitBtn
-          Left = 788
+          Left = 820
           Height = 25
           Top = 2
-          Width = 159
+          Width = 184
           Action = ActImportFromFile
           Glyph.Data = {
             36040000424D3604000000000000360000002800000010000000100000000100

@@ -249,7 +249,7 @@ object VisImportPackage: TVisImportPackage
       ParentColor = False
     end
     object cbNewerThanMine: TCheckBox
-      Left = 408
+      Left = 448
       Height = 17
       Top = 5
       Width = 172
