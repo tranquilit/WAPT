@@ -125,7 +125,7 @@ action is either :
 parser=OptionParser(usage=usage,version='wapt-get.py ' + __version__+' common.py '+common.__version__+' setuphelpers.py '+setuphelpers.__version__)
 
 default_waptservice_ini=os.path.join(os.path.dirname(sys.argv[0]),'wapt-get.ini')
-default_waptconsole_ini=os.path.expandvars('%LOCALAPPDATA%\\waptconsole\\waptconsole.ini')
+default_waptconsole_ini=setuphelpers.makepath(setuphelpers.user_local_appdata(),'waptconsole','waptconsole.ini')
 
 parser.add_option("-c","--config", dest="config", default=None, help="Config file full path (default: %default)")
 parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")

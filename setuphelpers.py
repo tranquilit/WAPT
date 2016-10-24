@@ -184,6 +184,7 @@ __all__ = \
  'uninstall_key_exists',
  'unset_environ_variable',
  'user_appdata',
+ 'user_local_appdata',
  'user_desktop',
  'wget',
  'wgets',
@@ -2905,6 +2906,14 @@ def user_appdata():
     """
     return ensure_unicode((winshell.get_path(shellcon.CSIDL_APPDATA)))
 
+
+def user_local_appdata():
+    r"""Return the local appdata profile of current user
+
+    Returns:
+        str: path like u'C:\\Users\\user\\AppData\\Local'
+    """
+    return ensure_unicode((winshell.get_path(shellcon.CSIDL_LOCAL_APPDATA)))
 
 def mkdirs(path):
     """Create directory path if it doesn't exists yet
