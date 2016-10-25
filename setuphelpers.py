@@ -2231,7 +2231,7 @@ def register_uninstall(uninstallkey,uninstallstring,win64app=False,
     with reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (root,uninstallkey.encode(locale.getpreferredencoding())),
            sam=_winreg.KEY_ALL_ACCESS,create_if_missing=True) as appkey:
         reg_setvalue(appkey,'UninstallString',uninstallstring)
-        reg_setvalue(appkey,'install_date',currentdate())
+        reg_setvalue(appkey,'InstallDate',currentdate())
         if quiet_uninstall_string:
             reg_setvalue(appkey,'QuietUninstallString',quiet_uninstall_string)
         else:
