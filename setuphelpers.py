@@ -665,7 +665,7 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
     httpreq.raise_for_status()
 
     total_bytes = int(httpreq.headers['content-length'])
-    target_free_bytes = get_disk_free_space(os.path.abspath(target))
+    target_free_bytes = get_disk_free_space(os.path.dirname(os.path.abspath(target)))
     if total_bytes > target_free_bytes:
         raise Exception('wget : not enough free space on target drive to get %s MB. Total size: %s MB. Free space: %s MB' % (url,total_bytes // (1024*1024),target_free_bytes // (1024*1024)))
 
