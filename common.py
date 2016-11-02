@@ -3035,6 +3035,61 @@ class Wapt(object):
         # return pids of install in progress
         return result
 
+
+    @property
+    def pre_shutdown_timeout(self):
+        """get / set the pre shutdown timeout shutdown tasks.
+        """
+        with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\gpsvc') as key:
+            ms = setuphelpers.reg_getvalue(key,'PreshutdownTimeout',None)
+            if ms:
+                return ms / (60*1000)
+            else:
+                return None
+
+    @pre_shutdown_timeout.setter
+    def pre_shutdown_timeout(self,minutes):
+        """Set PreshutdownTimeout"""
+        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\gpsvc',sam=setuphelpers.KEY_WRITE)
+        if not key:
+            raise Exception('The PreshutdownTimeout can only be changed with System Account rights')
+        setuphelpers.reg_setvalue(key,'PreshutdownTimeout',minutes*60*1000,setuphelpers.REG_DWORD)
+
+    @property
+    def max_gpo_script_wait(self):
+        """get / set the MaxGPOScriptWait.
+        """
+        with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System') as key:
+            ms = setuphelpers.reg_getvalue(key,'MaxGPOScriptWait',None)
+            if ms:
+                return ms / (60*1000)
+            else:
+                return None
+
+    @max_gpo_script_wait.setter
+    def max_gpo_script_wait(self,minutes):
+        """Set MaxGPOScriptWait"""
+        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',sam=setuphelpers.KEY_WRITE)
+        if not key:
+            raise Exception('The MaxGPOScriptWait can only be changed with System Account rights')
+        setuphelpers.reg_setvalue(key,'MaxGPOScriptWait',minutes*60*1000,setuphelpers.REG_DWORD)
+
+
+    @property
+    def hiberboot_enabled(self):
+        """get HiberbootEnabled.
+        """
+        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SYSTEM\CurrentControlSet\Control\Session Manager\Power')
+        return key and setuphelpers.reg_getvalue(key,'HiberbootEnabled',None)
+
+    @hiberboot_enabled.setter
+    def hiberboot_enabled(self,enabled):
+        """Set HiberbootEnabled (0/1)"""
+        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager\Power',sam=setuphelpers.KEY_WRITE)
+        if key:
+            setuphelpers.reg_setvalue(key,'HiberbootEnabled',enabled,setuphelpers.REG_DWORD)
+
+
     def registry_uninstall_snapshot(self):
         """Return list of uninstall ID from registry
              launched before and after an installation to capture uninstallkey

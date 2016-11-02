@@ -202,7 +202,8 @@ class WaptServiceConfig(object):
 
     global_attributes = ['config_filename','waptservice_user','waptservice_password',
          'MAX_HISTORY','waptservice_port','waptservice_sslport',
-         'dbpath','loglevel','log_directory','waptserver','authorized_callers_ip']
+         'dbpath','loglevel','log_directory','waptserver','authorized_callers_ip',
+         'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout']
 
     def __init__(self,config_filename=None):
         if not config_filename:
@@ -243,6 +244,9 @@ class WaptServiceConfig(object):
 
         self.config_filedate = None
 
+        self.hiberboot_enabled = None
+        self.max_gpo_script_wait = None
+        self.pre_shutdown_timeout = None
 
     def load(self):
         """Load waptservice parameters from global wapt-get.ini file"""
@@ -333,6 +337,18 @@ class WaptServiceConfig(object):
                 self.authorized_callers_ip = get_authorized_callers_ip(self.waptserver.server_url)
             else:
                 self.waptserver = None
+
+            # settings for waptexit / shutdown policy
+            #   recommended settings :
+            #       hiberboot_enabled = 0
+            #       max_gpo_script_wait = 180
+            #       pre_shutdown_timeout = 180
+            for param in ('hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout'):
+                if config.has_option('global',param):
+                    setattr(self,param,config.getint('global',param)
+                else:
+                    setattr(self,param,None)
+
 
         else:
             raise Exception (_("FATAL, configuration file {} has no section [global]. Please check Waptserver documentation").format(self.config_filename))
@@ -462,7 +478,16 @@ app_babel = Babel(app)
 def wapt():
     if not hasattr(g,'wapt'):
         g.wapt = Wapt(config_filename = waptconfig.config_filename)
-    g.wapt.reload_config_if_updated()
+    # apply settings
+    if g.wapt.reload_config_if_updated():
+        #apply waptservice / waptexit specific settings
+        if waptconfig.max_gpo_script_wait:
+            g.wapt.max_gpo_script_wait = waptconfig.max_gpo_script_wait
+        if waptconfig.pre_shutdown_timeout:
+            g.wapt.pre_shutdown_timeout = waptconfig.pre_shutdown_timeout
+        if waptconfig.hiberboot_enabled:
+            g.wapt.hiberboot_enabled = waptconfig.hiberboot_enabled
+
     return g.wapt
 
 @app.before_first_request
