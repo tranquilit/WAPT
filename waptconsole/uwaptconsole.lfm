@@ -222,7 +222,7 @@ object VisWaptGUI: TVisWaptGUI
           ParentColor = False
         end
         object cbGroups: TComboBox
-          Left = 540
+          Left = 564
           Height = 21
           Top = 4
           Width = 160
@@ -233,10 +233,11 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 3
         end
         object Label15: TLabel
-          Left = 496
+          Left = 524
           Height = 13
-          Top = 8
+          Top = 7
           Width = 34
+          Alignment = taRightJustify
           Caption = 'Groups'
           ParentColor = False
         end
