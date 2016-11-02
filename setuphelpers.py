@@ -101,6 +101,7 @@ __all__ = \
  'inifile_readstring',
  'inifile_writestring',
  'installed_softwares',
+ 'install_location',
  'installed_windows_updates',
  'install_exe_if_needed',
  'install_msi_if_needed',
@@ -2206,13 +2207,30 @@ def installed_softwares(keywords='',uninstallkey=None):
         result.extend(list_fromkey("Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall"))
     return result
 
+def install_location(uninstallkey):
+    """Return the install location of the software given its uninstall key
+        or None if not found
+    >>> install_location('winscp3_is1')
+    u'C:\\Program Files\\WinSCP\\'
+    """
+    for soft in installed_softwares(uninstallkey=uninstallkey):
+        return soft.get('install_location',None)
+    return None
 
 def currentdate():
+    """
+    >>> currentdate()
+    '20161102'
+    """
     import time
     return time.strftime('%Y%m%d')
 
 
 def currentdatetime():
+    """
+    >>> currentdatetime()
+    '20161102-193600'
+    """
     import time
     return time.strftime('%Y%m%d-%H%M%S')
 
@@ -2281,6 +2299,7 @@ def unregister_uninstall(uninstallkey,win64app=False):
         except WindowsError,e:
             logger.warning(u'Unable to remove key %s, error : %s' % (ensure_unicode(root),ensure_unicode(e)))
 
+# aliases
 wincomputername = win32api.GetComputerName
 windomainname = win32api.GetDomainName
 
@@ -2394,7 +2413,14 @@ def dmi_info():
 
 
 def win_startup_info():
-    """Return the application started at boot or login"""
+    """Return the applications started at boot or login
+
+    Returns:
+        dict : {'common_startup': [{'command': '',
+                                    'name': ''},]
+               'run':            [{'command': '',
+                                   'name': ''},]
+    """
     result = {'run':[],'common_startup':[]}
     with reg_openkey_noredir(HKEY_LOCAL_MACHINE,makepath('Software','Microsoft','Windows','CurrentVersion','Run')) as run_key:
         for (name,value,_type) in reg_enum_values(run_key):
