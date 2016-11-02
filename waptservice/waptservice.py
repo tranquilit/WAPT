@@ -345,7 +345,7 @@ class WaptServiceConfig(object):
             #       pre_shutdown_timeout = 180
             for param in ('hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout'):
                 if config.has_option('global',param):
-                    setattr(self,param,config.getint('global',param)
+                    setattr(self,param,config.getint('global',param))
                 else:
                     setattr(self,param,None)
 
@@ -475,19 +475,31 @@ app.waptconfig = waptconfig
 
 app_babel = Babel(app)
 
+def apply_host_settings(waptconfig):
+    #apply waptservice / waptexit specific settings
+    wapt = Wapt(config_filename = waptconfig.config_filename)
+    try:
+        if waptconfig.max_gpo_script_wait is not None and wapt.max_gpo_script_wait != waptconfig.max_gpo_script_wait:
+            logger.info('Setting max_gpo_script_wait to %s'%waptconfig.max_gpo_script_wait)
+            wapt.max_gpo_script_wait = waptconfig.max_gpo_script_wait
+        if waptconfig.pre_shutdown_timeout is not None and wapt.pre_shutdown_timeout != waptconfig.pre_shutdown_timeout:
+            logger.info('Setting pre_shutdown_timeout to %s'%waptconfig.pre_shutdown_timeout)
+            wapt.pre_shutdown_timeout = waptconfig.pre_shutdown_timeout
+        if waptconfig.hiberboot_enabled is not None and wapt.hiberboot_enabled != waptconfig.hiberboot_enabled:
+            logger.info('Setting hiberboot_enabled to %s'%waptconfig.hiberboot_enabled)
+            wapt.hiberboot_enabled = waptconfig.hiberboot_enabled
+    except Exception as e:
+        logger.critical('Unable to set shutdown policies : %s' % e)
+
+
 def wapt():
     if not hasattr(g,'wapt'):
         g.wapt = Wapt(config_filename = waptconfig.config_filename)
+        apply_host_settings(waptconfig)
     # apply settings
-    if g.wapt.reload_config_if_updated():
+    elif g.wapt.reload_config_if_updated():
         #apply waptservice / waptexit specific settings
-        if waptconfig.max_gpo_script_wait:
-            g.wapt.max_gpo_script_wait = waptconfig.max_gpo_script_wait
-        if waptconfig.pre_shutdown_timeout:
-            g.wapt.pre_shutdown_timeout = waptconfig.pre_shutdown_timeout
-        if waptconfig.hiberboot_enabled:
-            g.wapt.hiberboot_enabled = waptconfig.hiberboot_enabled
-
+        apply_host_settings(waptconfig)
     return g.wapt
 
 @app.before_first_request
@@ -2364,12 +2376,15 @@ if __name__ == "__main__":
     waptconfig.config_filename = options.config
     waptconfig.load()
 
+    # setup basic settings
+    apply_host_settings(waptconfig)
+
     # starts one WaptTasksManager
     task_manager = WaptTaskManager(config_filename = waptconfig.config_filename)
     task_manager.daemon = True
     task_manager.start()
     if options.devel:
-        app.run(host='0.0.0.0',port=30888,debug=False)
+        app.run(host='0.0.0.0',port=8088,debug=False)
     else:
         #logger.setLevel(logging.DEBUG)
 

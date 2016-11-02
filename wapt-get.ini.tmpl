@@ -92,9 +92,19 @@ default_sources_suffix=wapt
 
 ;repositories=private,tranquilit
 
+;;;;;;;;;;;
+; shutdown policy
+; to allow large install to complete
+;max_gpo_script_wait = 180
+;pre_shutdown_timeout = 180
+; to avoid deep sleep shutdown instead of full shutdown which prevent waptexit to run properly
+;hiberboot_enabled = 0
+
+
 [private]
 repo_url=http://wapt/wapt
 
 [tranquilit]
 repo_url=http://wapt.tranquil.it/wapt
 default_source_url=https://dev.tranquil.it/wapt/
+
