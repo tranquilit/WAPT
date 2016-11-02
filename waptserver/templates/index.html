@@ -153,7 +153,7 @@ has been installed, you can find it in your console.
 <p>You can deploy the WAPT agent using a GPO and the <strong><a href="/wapt/waptdeploy.exe">waptdeploy</a></strong> downloader.
 See <a href=https://dev.tranquil.it/wiki/WAPT_-_D%C3%A9ploiement_de_WAPT_par_GPO>Déploiement par GPO avec WaptDeploy par un partage http</a></p>
 {% if data.wapt.agent.sha256 %}
-<pre>waptdeploy --hash={{ data.wapt.agent.sha256|safe }} --minversion={{ data.wapt.agent.status }} --wait=15</pre>
+<pre>waptdeploy.exe --hash={{ data.wapt.agent.sha256|safe }} --minversion={{ data.wapt.agent.status }} --wait=15</pre>
 {% endif %}
 <p>{{ _("""
 For further information, be sure to check the documentation at <a href=\"http://dev.tranquil.it/\">dev.tranquil.it</a> or on
