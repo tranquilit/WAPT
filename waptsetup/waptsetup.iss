@@ -210,8 +210,8 @@ begin
     rbDnsServer.Checked := (teWaptRepoUrl.Text='');
     rbStaticUrl.Checked := (teWaptRepoUrl.Text<>'') and (teWaptRepoUrl.Text<>'unknown');
 
-	  teWaptServerUrl.Visible := IsTaskSelected('use_waptserver');
-    TLabelServer.Visible := teWaptServerUrl.Visible;
+	//teWaptServerUrl.Visible := IsTaskSelected('use_waptserver');
+    //TLabelServer.Visible := teWaptServerUrl.Visible;
   end
 end;
 
