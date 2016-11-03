@@ -39,7 +39,8 @@ Name: "{commondesktop}\WaptStarter"; IconFilename: "{app}\wapt.ico"; Filename: "
 
 [Run]
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
-Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: {cm:UpdateOnShutdown}; Description: "{cm:UpdateOnShutdown}"
+;Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: {cm:UpdateOnShutdown}; Description: "{cm:UpdateOnShutdown}"
+Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhidden; StatusMsg: {cm:UpdateOnShutdown}; Description: "{cm:UpdateOnShutdown}"
 
 [Languages]
 Name:"en";MessagesFile: "compiler:Default.isl"

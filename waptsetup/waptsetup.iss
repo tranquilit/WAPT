@@ -28,12 +28,14 @@ Source: "..\waptconsole.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\waptdevutils.py"; DestDir: "{app}";
 
 ; authorized public keys
-Source: "..\ssl\*"; DestDir: "{app}\ssl"; Tasks: install_certificates; Flags: createallsubdirs recursesubdirs
+;Source: "..\ssl\*"; DestDir: "{app}\ssl"; Tasks: install_certificates; Flags: createallsubdirs recursesubdirs
+Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs
 
 [Setup]
 OutputBaseFilename=waptsetup
 DefaultDirName=c:\wapt
 WizardImageFile=..\tranquilit.bmp
+DisableProgramGroupPage=yes
 
 [Languages]
 Name:"en"; MessagesFile: "compiler:Default.isl"
@@ -41,27 +43,32 @@ Name:"fr";MessagesFile: "compiler:Languages\French.isl"
 Name:"de";MessagesFile: "compiler:Languages\German.isl"
 
 [Tasks]
-Name: install_certificates; Description: "{cm:InstallSSLCertificates}";  Flags: {#install_certs};
-Name: use_waptserver; Description: "{cm:UseWaptServer}"; 
-Name: autorunSessionSetup; Description: "{cm:StartAfterSetup}";
-Name: verify_server_certificate; Description: "{cm:EnableCheckCertificate}"; Flags: unchecked;
+;Name: install_certificates; Description: "{cm:InstallSSLCertificates}";  Flags: {#install_certs};
+;Name: use_waptserver; Description: "{cm:UseWaptServer}"; hidden;
+;Name: autorunSessionSetup; Description: "{cm:StartAfterSetup}";
+;Name: verify_server_certificate; Description: "{cm:EnableCheckCertificate}"; Flags: unchecked;
 
 
 [INI]
-Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL}; Tasks: not use_waptserver; AfterInstall: RemoveWaptServer;
-Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL}; Tasks: use_waptserver;
+;Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL}; Tasks: not use_waptserver; AfterInstall: RemoveWaptServer;
+;Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL}; Tasks: use_waptserver;
+Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL}; 
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL};
-Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; Tasks: use_waptserver;
-Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "0"; Tasks: not use_waptserver;
+Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; 
+;Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; Tasks: use_waptserver;
+;Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "0"; Tasks: not use_waptserver;
 
 [Run]
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct enable-check-certificate"; Tasks: verify_server_certificate;  Flags: runhidden postinstall; StatusMsg: StatusMsg: {cm:EnableCheckCertificate}; Description: "{cm:EnableCheckCertificate}"
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Tasks: use_waptserver; Flags: runhidden postinstall; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
+;Filename: "{app}\wapt-get.exe"; Parameters: "--direct enable-check-certificate"; Tasks: verify_server_certificate;  Flags: runhidden postinstall; StatusMsg: StatusMsg: {cm:EnableCheckCertificate}; Description: "{cm:EnableCheckCertificate}"
+;Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Tasks: use_waptserver; Flags: runhidden postinstall; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Flags: runhidden postinstall; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden postinstall; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
-Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: {cm:UpdatePkgUponShutdown}; Description: "{cm:UpdatePkgUponShutdown}"
+;Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: {cm:UpdatePkgUponShutdown}; Description: "{cm:UpdatePkgUponShutdown}"
+Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhidden; StatusMsg: {cm:UpdatePkgUponShutdown}; Description: "{cm:UpdatePkgUponShutdown}"
 
 [Icons]
-Name: "{commonstartup}\WAPT session setup"; Tasks: autorunSessionSetup; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
+;Name: "{commonstartup}\WAPT session setup"; Tasks: autorunSessionSetup; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
+Name: "{commonstartup}\WAPT session setup"; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
 
 [CustomMessages]
 ;English translations here
@@ -71,7 +78,7 @@ en.UpdateAvailablePkg=Update the list of packages available on the main reposito
 en.UpdatePkgUponShutdown=Update packages upon shutdown
 en.EnableCheckCertificate=Get and enable the check of WaptServer https certificate
 en.UseWaptServer=Report computer status to a waptserver and enable remote management
-en.InstallSSLCertificates=Install the certificates of authorized packages providers
+en.InstallSSLCertificates=Install the certificates provided by this installer
 
 ;French translations here
 fr.StartAfterSetup=Lancer WAPT session setup à l'ouverture de session
@@ -80,7 +87,7 @@ fr.UpdateAvailablePkg=Mise à jour des paquets disponibles sur le dépôt princi
 fr.UpdatePkgUponShutdown=Mise à jour des paquets à l'extinction du poste
 fr.EnableCheckCertificate=Activer la vérification du certificat https du serveur Wapt
 fr.UseWaptServer=Activer l'utilisation d'un serveur Wapt et la gestion centralisée de cet ordinateur
-fr.InstallSSLCertificates=Installer les certificats des fournisseurs de paquets.
+fr.InstallSSLCertificates=Installer les certificats fournis par cet installeur.
 
 ;German translation here
 de.StartAfterSetup=WAPT Setup-Sitzung bei Sitzungseröffnung starten

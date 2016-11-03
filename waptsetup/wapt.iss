@@ -123,7 +123,7 @@ Filename: "cmd"; Parameters: "/C echo O| cacls {app} /S:""D:PAI(A;OICI;FA;;;BA)(
 Filename: "cmd"; Parameters: "/C icacls.exe {app} /inheritance:r"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wap..."; Description: "Suppression héritage des droits sur wapt"
 Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe {app} /inheritance:r"; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wap..."; Description: "Suppression héritage des droits sur wapt"
 
-; if waptservice
+; if waptservicex
 Filename: "{app}\waptpython.exe"; Parameters: """{app}\waptservice\waptservice.py"" install"; Tasks:installService ; Flags: runhidden; StatusMsg: "Installation du service WAPT"; Description: "Installation du service WAPT"
 Filename: "sc"; Parameters: "delete waptservice"; Flags: runhidden; Tasks: not installService; WorkingDir: "{tmp}"; StatusMsg: "Suppression du service wapt..."; Description: "Suppression du service wapt..."
 Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser skipifsilent postinstall; StatusMsg: "Lancement de l'icône de notification"; Description: "Lancement de l'icône de notification"
@@ -142,7 +142,7 @@ Name: installredist2008; Description: "{cm:InstallVCpp}";  Check: VCRedistNeedsI
 ; l'utilisateur de forcer la reinstallation de VC++, et il n'existe pas de moyen
 ; de modifier dynamiquement le flag "unchecked" 
 Name: installredist2008unchecked; Description: "{cm:ForceVCppReinstall}"; Check: not VCRedistNeedsInstall(); Flags: unchecked
-Name: autoUpgradePolicy; Description: "{cm:UpdatePkgUponShutdown}";
+;Name: autoUpgradePolicy; Description: "{cm:UpdatePkgUponShutdown}";
 
 [InstallDelete]
 Type: filesandordirs; Name: {app}\lib\site-packages
