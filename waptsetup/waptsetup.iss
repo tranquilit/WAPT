@@ -169,7 +169,7 @@ begin
   TLabelServer.Parent := CustomPage.Surface; 
   TLabelServer.Left := rbStaticUrl.Left + 14; 
   TLabelServer.Caption := 'Server URL:';
-  TLabelServer.Top := TLabelServer.Top + rbDnsServer.Height + 7 * ScaleY(15);
+  TLabelServer.Top := TLabelServer.Top + rbDnsServer.Height + 9 * ScaleY(15);
 
   teWaptRepoUrl := TEdit.Create(WizardForm);
   teWaptRepoUrl.Parent := CustomPage.Surface; 
@@ -178,12 +178,27 @@ begin
   teWaptRepoUrl.Top := teWaptRepoUrl.Top + rbDnsServer.Height + 5 * ScaleY(15);
   teWaptRepoUrl.text := 'unknown';
 
+  TLabelRepo := TLabel.Create(WizardForm);
+  TLabelRepo.Parent := CustomPage.Surface; 
+  TLabelRepo.Left := teWaptRepoUrl.Left + 5;
+  TLabelRepo.Caption := 'example: http://srvwapt.domain.lan/wapt';
+  TLabelRepo.Top := teWaptRepoUrl.Top + teWaptRepoUrl.Height + ScaleY(2);
+
+
   teWaptServerUrl := TEdit.Create(WizardForm);;
   teWaptServerUrl.Parent := CustomPage.Surface; 
   teWaptServerUrl.Left :=TLabelServer.Left + TLabelServer.Width+5;
   teWaptServerUrl.Width :=CustomPage.SurfaceWidth - rbStaticUrl.Width;
-  teWaptServerUrl.Top := teWaptServerUrl.Top + teWaptRepoUrl.Height + 7 * ScaleY(15); 
+  teWaptServerUrl.Top := teWaptServerUrl.Top + teWaptRepoUrl.Height + 9 * ScaleY(15); 
   teWaptServerUrl.Text := 'unknown';  
+
+  TLabelServer := TLabel.Create(WizardForm);
+  TLabelServer.Parent := CustomPage.Surface; 
+  TLabelServer.Left := teWaptServerUrl.Left + 5; 
+  TLabelServer.Caption := 'example: https://srvwapt.domain.lan';
+  TLabelServer.Top := teWaptServerUrl.Top + teWaptServerUrl.Height + ScaleY(2);
+
+
 end;
 
 
