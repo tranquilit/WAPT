@@ -195,7 +195,6 @@ type
     MenuItem20: TMenuItem;
     MenuItem25: TMenuItem;
     MenuItem28: TMenuItem;
-    MenuItem33: TMenuItem;
     MenuItem34: TMenuItem;
     MenuItem35: TMenuItem;
     MenuItem36: TMenuItem;
@@ -3125,7 +3124,10 @@ begin
     sores := WAPTServerJsonGet('api/v2/waptagent_version', []);
     try
       if sores.B['success'] and (CompareVersion(sores['result'].S['waptagent_version'],sores['result'].S['waptsetup_version'])<0) then
-        ShowMessageFmt(rsWaptAgentOldVersion,[sores['result'].S['waptagent_version'],sores['result'].S['waptsetup_version']]);
+          MessageDlg('waptgent.exe / waptsetup mismatch',
+            Format(rsWaptAgentOldVersion,[sores['result'].S['waptagent_version'],sores['result'].S['waptsetup_version']]),
+            mtWarning,
+            [mbOK],'');
     except
         //on E:Exception do
         //  ShowMessageFmt(rsWaptAgentNotPresent,[rsUnknownVersion,WAPTServerMinVersion]);

@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 394
+  Left = 364
   Height = 753
-  Top = 121
+  Top = 133
   Width = 1028
   Caption = 'WAPT console'
   ClientHeight = 734
@@ -4784,9 +4784,6 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem47: TMenuItem
       Caption = '-'
-    end
-    object MenuItem33: TMenuItem
-      Action = ActHostWaptUpgrade
     end
     object MenuItem21: TMenuItem
       Action = ActHostsDelete

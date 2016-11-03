@@ -89,9 +89,6 @@ object DMWaptTray: TDMWaptTray
       object MenuItem21: TMenuItem
         Caption = '-'
       end
-      object MenuItem3: TMenuItem
-        Action = ActWaptUpgrade
-      end
       object MenuItem12: TMenuItem
         Action = ActForceRegister
       end
@@ -205,7 +202,7 @@ object DMWaptTray: TDMWaptTray
       OnUpdate = ActUpdateUpdate
     end
     object ActReloadConfig: TAction
-      Caption = 'Reload service configuration'
+      Caption = 'Reload network related service configuration'
       OnExecute = ActReloadConfigExecute
       OnUpdate = ActUpdateUpdate
     end

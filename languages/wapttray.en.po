@@ -30,7 +30,7 @@ msgid "Quit"
 msgstr ""
 
 #: tdmwapttray.actreloadconfig.caption
-msgid "Reload service configuration"
+msgid "Reload network related service configuration"
 msgstr ""
 
 #: tdmwapttray.actserviceenable.caption
