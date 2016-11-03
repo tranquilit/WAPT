@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.7"
+__version__ = "1.3.8"
 import os
 import re
 import logging
@@ -786,6 +786,7 @@ class LogInstallOutput(object):
 
 
 ###########
+# TODO : remove duplicate of setuphelpers
 def reg_openkey_noredir(key, sub_key, sam=KEY_READ):
     try:
         if platform.machine() == 'AMD64':
@@ -3040,20 +3041,24 @@ class Wapt(object):
     def pre_shutdown_timeout(self):
         """get / set the pre shutdown timeout shutdown tasks.
         """
-        with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\gpsvc') as key:
-            ms = setuphelpers.reg_getvalue(key,'PreshutdownTimeout',None)
-            if ms:
-                return ms / (60*1000)
-            else:
-                return None
+        if setuphelpers.reg_key_exists(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\gpsvc'):
+            with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\gpsvc') as key:
+                ms = setuphelpers.reg_getvalue(key,'PreshutdownTimeout',None)
+                if ms:
+                    return ms / (60*1000)
+                else:
+                    return None
+        else:
+            return None
 
     @pre_shutdown_timeout.setter
     def pre_shutdown_timeout(self,minutes):
         """Set PreshutdownTimeout"""
-        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\gpsvc',sam=setuphelpers.KEY_WRITE)
-        if not key:
-            raise Exception('The PreshutdownTimeout can only be changed with System Account rights')
-        setuphelpers.reg_setvalue(key,'PreshutdownTimeout',minutes*60*1000,setuphelpers.REG_DWORD)
+        if setuphelpers.reg_key_exists(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\gpsvc'):
+            key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\gpsvc',sam=setuphelpers.KEY_WRITE)
+            if not key:
+                raise Exception('The PreshutdownTimeout can only be changed with System Account rights')
+            setuphelpers.reg_setvalue(key,'PreshutdownTimeout',minutes*60*1000,setuphelpers.REG_DWORD)
 
     @property
     def max_gpo_script_wait(self):
