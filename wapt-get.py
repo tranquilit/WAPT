@@ -636,7 +636,7 @@ def main():
                 if len(args) < 2:
                     print u"You must provide the directory"
                     sys.exit(1)
-                result = update_packages(args[1])
+                result = update_packages(args[1],force=options.force)
 
                 if options.json_output:
                     jsonresult['result'] = result
