@@ -274,13 +274,13 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Top = 40
         Width = 176
         OnExit = EdKeyNameExit
-        TabOrder = 0
+        TabOrder = 1
       end
       object Label10: TLabel
         Left = 12
         Height = 13
         Hint = 'Main site country code'
-        Top = 102
+        Top = 119
         Width = 139
         Caption = 'Country (2 chars. E.g. : FR):'
         ParentColor = False
@@ -290,7 +290,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object Label12: TLabel
         Left = 12
         Height = 13
-        Top = 126
+        Top = 151
         Width = 26
         Caption = 'City :'
         ParentColor = False
@@ -299,7 +299,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Left = 12
         Height = 13
         Hint = 'Your company name'
-        Top = 150
+        Top = 175
         Width = 65
         Caption = 'Organisation:'
         ParentColor = False
@@ -308,18 +308,9 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Left = 12
         Height = 13
         Hint = 'E.g. : IT department.'
-        Top = 174
+        Top = 199
         Width = 39
         Caption = 'Service:'
-        ParentColor = False
-      end
-      object Label15: TLabel
-        Left = 12
-        Height = 13
-        Hint = 'WAPT server name. E.g. : srvwapt.tranquilit.local'
-        Top = 198
-        Width = 70
-        Caption = 'Server FQDN :'
         ParentColor = False
       end
       object Label16: TLabel
@@ -345,51 +336,43 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object edCountry: TEdit
         Left = 176
         Height = 21
-        Top = 102
+        Top = 119
         Width = 32
         MaxLength = 2
-        TabOrder = 1
+        TabOrder = 4
         Text = 'FR'
       end
       object edLocality: TEdit
         Left = 176
         Height = 21
         Hint = 'E.g. : Nantes'
-        Top = 126
+        Top = 143
         Width = 176
-        TabOrder = 2
+        TabOrder = 5
       end
       object edOrganization: TEdit
         Left = 176
         Height = 21
         Hint = 'E.g. : Tranquil It Systems'
-        Top = 150
+        Top = 167
         Width = 176
-        TabOrder = 3
+        TabOrder = 7
       end
       object edUnit: TEdit
         Left = 176
         Height = 21
         Hint = 'E.g. : IT'
-        Top = 174
+        Top = 191
         Width = 176
-        TabOrder = 4
-      end
-      object edCommonName: TEdit
-        Left = 176
-        Height = 21
-        Hint = 'E.g. : srvwapt.tranquilit.local'
-        Top = 198
-        Width = 176
-        TabOrder = 5
+        TabOrder = 8
       end
       object edEmail: TEdit
         Left = 176
         Height = 21
         Hint = 'E.g. : technique@tranquil-it-systems.fr'
-        Top = 222
+        Top = 214
         Width = 176
-        TabOrder = 6
+        TabOrder = 9
       end
       object DirectoryCert: TDirectoryEdit
         Left = 176
@@ -400,14 +383,15 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         ShowHidden = False
         ButtonWidth = 23
         NumGlyphs = 1
+        Flat = True
         MaxLength = 0
-        TabOrder = 7
+        TabOrder = 0
       end
       object Shape1: TShape
         AnchorSideRight.Side = asrBottom
         Left = -33
         Height = 2
-        Top = 71
+        Top = 88
         Width = 413
         Anchors = [akTop]
         BorderSpacing.Left = 5
@@ -415,16 +399,16 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       object StaticText1: TStaticText
         Left = 114
         Height = 14
-        Top = 78
+        Top = 95
         Width = 97
         AutoSize = True
         Caption = 'Optional information'
-        TabOrder = 8
+        TabOrder = 3
       end
       object BitBtn5: TBitBtn
         Left = 9
         Height = 25
-        Top = 254
+        Top = 246
         Width = 136
         Action = ActCreateKey
         Glyph.Data = {
@@ -463,19 +447,19 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
           FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
         }
-        TabOrder = 9
+        TabOrder = 10
       end
       object EdPrivateKeyFN: TEdit
         Left = 160
         Height = 21
-        Top = 254
+        Top = 246
         Width = 248
-        TabOrder = 10
+        TabOrder = 11
       end
       object Memo3: TMemo
-        Left = 20
+        Left = 340
         Height = 40
-        Top = 62
+        Top = 112
         Width = 381
         Lines.Strings = (
           '<html>'
@@ -501,9 +485,33 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           '</body>'
           '</html>'
         )
-        TabOrder = 11
+        TabOrder = 6
         Visible = False
         WordWrap = False
+      end
+      object Label15: TLabel
+        Left = 12
+        Height = 13
+        Top = 64
+        Width = 115
+        Caption = 'Common Name(CN) :'
+        Font.CharSet = ANSI_CHARSET
+        Font.Color = clBlack
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Pitch = fpVariable
+        Font.Quality = fqDraft
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
+      end
+      object edCommonName: TEdit
+        Left = 176
+        Height = 21
+        Hint = 'This information will be used as Signer identification in packages'
+        Top = 64
+        Width = 176
+        TabOrder = 2
       end
     end
     object pgDevparam: TTabSheet
@@ -793,6 +801,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         HideDirectories = False
         ButtonWidth = 23
         NumGlyphs = 1
+        Flat = True
         MaxLength = 0
         TabOrder = 1
       end
@@ -864,6 +873,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         ShowHidden = False
         ButtonWidth = 23
         NumGlyphs = 1
+        Flat = True
         MaxLength = 0
         TabOrder = 4
         Visible = False

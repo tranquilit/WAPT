@@ -619,6 +619,10 @@ end;
 procedure TVisWAPTServerPostConf.EdKeyNameExit(Sender: TObject);
 begin
   EdKeyName.Text:= MakeIdent(EdKeyName.Text);
+  if edCommonName.Text='' then
+    edCommonName.Text := EdKeyName.Text;
+  if edOrganization.Text='' then
+    edOrganization.Text:=edCommonName.Text;
 end;
 
 end.

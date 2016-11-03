@@ -1,8 +1,3 @@
-msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
-msgstr "Content-Type: text/plain; charset=UTF-8"
-
-msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
-msgstr ""
 
 #: tvisloading.amessage.caption
 msgid "Loading..."
@@ -68,7 +63,7 @@ msgid "Open firewall ports 80 and 443 to allow access for packages and inventory
 msgstr ""
 
 #: tviswaptserverpostconf.edcommonname.hint
-msgid "E.g. : srvwapt.tranquilit.local"
+msgid "This information will be used as Signer identification in packages"
 msgstr ""
 
 #: tviswaptserverpostconf.edcountry.text
@@ -198,11 +193,7 @@ msgid "E.g. : IT department."
 msgstr ""
 
 #: tviswaptserverpostconf.label15.caption
-msgid "Server FQDN :"
-msgstr ""
-
-#: tviswaptserverpostconf.label15.hint
-msgid "WAPT server name. E.g. : srvwapt.tranquilit.local"
+msgid "Common Name(CN) :"
 msgstr ""
 
 #: tviswaptserverpostconf.label16.caption
