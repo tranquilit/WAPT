@@ -2092,6 +2092,11 @@ object VisWaptGUI: TVisWaptGUI
             Text = 'Conflicts'
             Width = 186
             PropertyName = 'conflicts'
+          end        
+          item
+            Position = 8
+            Text = 'Signer'
+            PropertyName = 'signer'
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
@@ -2339,6 +2344,12 @@ object VisWaptGUI: TVisWaptGUI
             Text = 'Installed size'
             Width = 106
             PropertyName = 'installed_size'
+          end        
+          item
+            Position = 8
+            Text = 'Signer'
+            Width = 122
+            PropertyName = 'signer'
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
