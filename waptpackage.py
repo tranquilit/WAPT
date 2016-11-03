@@ -247,7 +247,7 @@ class PackageEntry(object):
 
     """
     required_attributes = ['package','version','architecture',]
-    optional_attributes = ['section','priority','maintainer','description','depends','conflicts','sources','installed_size','maturity','signer','signer_fingerprint','min_wapt_version']
+    optional_attributes = ['section','priority','maintainer','description','depends','conflicts','sources','installed_size','maturity','signer','signer_fingerprint','min_wapt_version','locale']
     non_control_attributes = ['localpath','filename','size','repo_url','md5sum','repo',]
 
     @property
@@ -274,6 +274,7 @@ class PackageEntry(object):
         self.maturity=''
         self.signer=''
         self.signer_fingerprint=''
+        self.locale=''
         self.min_wapt_version=''
         self.installed_size=''
 
@@ -525,6 +526,7 @@ signer            : %(signer)s
 signer_fingerprint: %(signer_fingerprint)s
 min_wapt_version  : %(min_wapt_version)s
 maturity          : %(maturity)s
+locale            : %(locale)s
 """  % self.__dict__
         if with_non_control_attributes:
             for att in self.non_control_attributes:
@@ -546,7 +548,7 @@ maturity          : %(maturity)s
             return self.package+'.wapt'
         else:
             # includes only non empty fields
-            return '_'.join([f for f in (self.package,self.version,self.architecture,self.maturity) if f]) + '.wapt'
+            return '_'.join([f for f in (self.package,self.version,self.architecture,self.maturity,self.locale) if f]) + '.wapt'
 
     def asrequirement(self):
         """resturn package and version for designing this package in depends or install actions
@@ -1269,7 +1271,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                     errors.append((download_url,"%s" % e))
         return {"downloaded":downloaded,"skipped":skipped,"errors":errors}
 
-def update_packages(adir):
+def update_packages(adir,force=False):
     """Helper function to update a local packages index
 
     This function is used on repositories to rescan all packages and
@@ -1296,7 +1298,7 @@ def update_packages(adir):
     ["test (=10)"]
     """
     repo = WaptLocalRepo(localpath=adir)
-    return repo.update_packages_index()
+    return repo.update_packages_index(force_all=force)
 
 if __name__ == '__main__':
     import doctest
