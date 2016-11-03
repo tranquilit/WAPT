@@ -24,6 +24,7 @@ object VisCreateKey: TVisCreateKey
     Top = 253
     Width = 432
     Align = alBottom
+    BevelOuter = bvNone
     ClientHeight = 27
     ClientWidth = 432
     TabOrder = 1
@@ -58,6 +59,7 @@ object VisCreateKey: TVisCreateKey
     Top = 0
     Width = 432
     Align = alClient
+    BevelOuter = bvNone
     ClientHeight = 253
     ClientWidth = 432
     TabOrder = 0
@@ -84,13 +86,14 @@ object VisCreateKey: TVisCreateKey
       Hint = 'e.g. : tranquilit'
       Top = 40
       Width = 176
+      OnEditingDone = EdOrgNameEditingDone
       TabOrder = 1
     end
     object Label10: TLabel
       Left = 12
       Height = 13
       Hint = 'Main site country code'
-      Top = 102
+      Top = 122
       Width = 139
       Caption = 'Country (2 chars. E.g. : FR):'
       ParentColor = False
@@ -100,7 +103,7 @@ object VisCreateKey: TVisCreateKey
     object Label12: TLabel
       Left = 12
       Height = 13
-      Top = 126
+      Top = 146
       Width = 26
       Caption = 'City :'
       ParentColor = False
@@ -109,7 +112,7 @@ object VisCreateKey: TVisCreateKey
       Left = 12
       Height = 13
       Hint = 'Your company name'
-      Top = 150
+      Top = 170
       Width = 65
       Caption = 'Organisation:'
       ParentColor = False
@@ -118,18 +121,9 @@ object VisCreateKey: TVisCreateKey
       Left = 12
       Height = 13
       Hint = 'E.g. : IT department.'
-      Top = 174
+      Top = 194
       Width = 42
       Caption = 'Service :'
-      ParentColor = False
-    end
-    object Label15: TLabel
-      Left = 12
-      Height = 13
-      Hint = 'WAPT server name. E.g. : srvwapt.tranquilit.local'
-      Top = 198
-      Width = 70
-      Caption = 'Server FQDN :'
       ParentColor = False
     end
     object Label16: TLabel
@@ -161,41 +155,33 @@ object VisCreateKey: TVisCreateKey
     object edCountry: TEdit
       Left = 176
       Height = 21
-      Top = 102
+      Top = 122
       Width = 32
       MaxLength = 2
-      TabOrder = 3
+      TabOrder = 4
       Text = 'FR'
     end
     object edLocality: TEdit
       Left = 176
       Height = 21
       Hint = 'E.g. : Nantes'
-      Top = 126
+      Top = 146
       Width = 176
-      TabOrder = 4
+      TabOrder = 5
     end
     object edOrganization: TEdit
       Left = 176
       Height = 21
       Hint = 'E.g. : Tranquil It Systems'
-      Top = 150
+      Top = 170
       Width = 176
-      TabOrder = 5
+      TabOrder = 6
     end
     object edUnit: TEdit
       Left = 176
       Height = 21
       Hint = 'E.g. : IT'
-      Top = 174
-      Width = 176
-      TabOrder = 6
-    end
-    object edCommonName: TEdit
-      Left = 176
-      Height = 21
-      Hint = 'E.g. : srvwapt.tranquilit.local'
-      Top = 198
+      Top = 194
       Width = 176
       TabOrder = 7
     end
@@ -216,6 +202,7 @@ object VisCreateKey: TVisCreateKey
       ShowHidden = False
       ButtonWidth = 23
       NumGlyphs = 1
+      Flat = True
       MaxLength = 0
       TabOrder = 0
     end
@@ -223,7 +210,7 @@ object VisCreateKey: TVisCreateKey
       AnchorSideRight.Side = asrBottom
       Left = 9
       Height = 2
-      Top = 71
+      Top = 91
       Width = 413
       Anchors = [akTop]
       BorderSpacing.Left = 5
@@ -231,10 +218,34 @@ object VisCreateKey: TVisCreateKey
     object StaticText1: TStaticText
       Left = 114
       Height = 14
-      Top = 78
+      Top = 98
       Width = 97
       AutoSize = True
       Caption = 'Optional information'
+      TabOrder = 3
+    end
+    object Label15: TLabel
+      Left = 12
+      Height = 13
+      Top = 64
+      Width = 115
+      Caption = 'Common Name(CN) :'
+      Font.CharSet = ANSI_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Pitch = fpVariable
+      Font.Quality = fqDraft
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+    end
+    object edCommonName: TEdit
+      Left = 176
+      Height = 21
+      Hint = 'This information will be used as Signer identification in packages'
+      Top = 64
+      Width = 176
       TabOrder = 2
     end
   end

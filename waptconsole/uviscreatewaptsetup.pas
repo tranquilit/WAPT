@@ -27,8 +27,10 @@ type
     Label4: TLabel;
     Label5: TLabel;
     Panel1: TPanel;
+    procedure fnPublicCertEditingDone(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     { private declarations }
   public
@@ -43,7 +45,7 @@ implementation
 {$R *.lfm}
 
 uses
-  uWaptRes,UScaleDPI;
+  uWaptRes,UScaleDPI, dmwaptpython;
 
 { TVisCreateWaptSetup }
 procedure TVisCreateWaptSetup.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -64,9 +66,23 @@ begin
   end;
 end;
 
+procedure TVisCreateWaptSetup.fnPublicCertEditingDone(Sender: TObject);
+begin
+  if FileExists(fnPublicCert.FileName) then
+    edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[fnPublicCert.FileName]));
+
+end;
+
 procedure TVisCreateWaptSetup.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
+end;
+
+procedure TVisCreateWaptSetup.FormShow(Sender: TObject);
+begin
+  if edOrgName.Text='' then
+    if FileExists(fnPublicCert.FileName) then
+      edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[fnPublicCert.FileName]));
 end;
 
 end.

@@ -16,8 +16,8 @@ type
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     DirectoryCert: TDirectoryEdit;
-    edCountry: TEdit;
     edCommonName: TEdit;
+    edCountry: TEdit;
     edEmail: TEdit;
     edUnit: TEdit;
     edOrganization: TEdit;
@@ -35,6 +35,7 @@ type
     Panel2: TPanel;
     Shape1: TShape;
     StaticText1: TStaticText;
+    procedure EdOrgNameEditingDone(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
   private
@@ -50,7 +51,7 @@ implementation
 {$R *.lfm}
 
 uses
-  uWaptRes,uSCaleDPI;
+  uWaptRes,uSCaleDPI, dmwaptpython;
 
 { TVisCreateKey }
 
@@ -72,6 +73,19 @@ begin
       end
       else
           CanClose:=True;
+end;
+
+procedure TVisCreateKey.EdOrgNameEditingDone(Sender: TObject);
+var
+  pemfn:String;
+  crtfn:String;
+begin
+  pemfn:=DirectoryCert.Directory+'\'+EdOrgName.Text+'.pem';
+  crtfn:=DirectoryCert.Directory+'\'+EdOrgName.Text+'.crt';
+  if FileExists(crtfn) then
+    edCommonName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[crtfn]))
+  else if edCommonName.text='' then
+    edCommonName.Text:=EdOrgName.text;
 end;
 
 procedure TVisCreateKey.FormCreate(Sender: TObject);
