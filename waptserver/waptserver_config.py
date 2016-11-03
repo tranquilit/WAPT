@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="1.3.7"
+__version__="1.3.8"
 
 import os,sys
 try:
@@ -104,8 +104,6 @@ def load_config(cfgfile=_default_config_file):
 
     if _config.has_option('options', 'wapt_password'):
         conf['wapt_password'] = _config.get('options', 'wapt_password')
-    if not conf['wapt_password']:
-        raise Exception('wapt_password not defined in config file, Please check the waptserver documentation.')
 
     if _config.has_option('options', 'wapt_user'):
         conf['wapt_user'] = _config.get('options', 'wapt_user')

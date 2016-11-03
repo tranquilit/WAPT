@@ -43,7 +43,7 @@ msgid "Generate private key and self-signed certificate"
 msgstr ""
 
 #: tviscreatekey.edcommonname.hint
-msgid "E.g. : srvwapt.tranquilit.local"
+msgid "This information will be used as Signer identification in packages"
 msgstr ""
 
 #: tviscreatekey.edcountry.text
@@ -107,11 +107,7 @@ msgid "E.g. : IT department."
 msgstr ""
 
 #: tviscreatekey.label15.caption
-msgid "Server FQDN :"
-msgstr ""
-
-#: tviscreatekey.label15.hint
-msgid "WAPT server name. E.g. : srvwapt.tranquilit.local"
+msgid "Common Name(CN) :"
 msgstr ""
 
 #: tviscreatekey.label16.caption
@@ -1028,10 +1024,6 @@ msgctxt "TVISWAPTGUI.ACTTRIGGERWAPTWUA_SCAN.CAPTION"
 msgid "Trigger the scan of missing Windows Updates"
 msgstr ""
 
-#: tviswaptgui.actuninstallsoft.caption
-msgid "Uninstall remotely"
-msgstr ""
-
 #: tviswaptgui.actvnc.caption
 msgctxt "tviswaptgui.actvnc.caption"
 msgid "Connect via VNC"
@@ -1169,6 +1161,10 @@ msgctxt "TVISWAPTGUI.CBHASERRORS.CAPTION"
 msgid "Has errors"
 msgstr ""
 
+#: tviswaptgui.cbinverseselect.caption
+msgid "NOT"
+msgstr ""
+
 #: tviswaptgui.cbmasksystemcomponents.caption
 msgid "Hide system components"
 msgstr ""
@@ -1233,6 +1229,10 @@ msgstr ""
 
 #: tviswaptgui.edrun.text
 msgid "mywapt.update()"
+msgstr ""
+
+#: tviswaptgui.edsearchhost.hint
+msgid "Regular expressions allowed"
 msgstr ""
 
 #: tviswaptgui.edversion.editlabel.caption
@@ -2452,6 +2452,18 @@ msgctxt "uwaptconsoleres.rskeyalreadyexists"
 msgid "Key %s already exists, please pick another name."
 msgstr ""
 
+#: uwaptconsoleres.rsloadinventory
+msgid "Loading hosts inventory"
+msgstr ""
+
+#: uwaptconsoleres.rsloadpackages
+msgid "Loading Packages index"
+msgstr ""
+
+#: uwaptconsoleres.rsloadsettings
+msgid "Loading application settings"
+msgstr ""
+
 #: uwaptconsoleres.rslongtaskerror
 msgctxt "uwaptconsoleres.rslongtaskerror"
 msgid "Error launching longtask: %s"
@@ -2689,6 +2701,17 @@ msgid ""
 "Wapt-get version: %s\n"
 msgstr ""
 
+#: uwaptconsoleres.rswaptagentnotpresent
+msgid "Warning, waptsetup-tis.exe or waptagent.exe not present on server, please install or build them."
+msgstr ""
+
+#: uwaptconsoleres.rswaptagentoldversion
+msgid ""
+"Warning, the version of the waptagent.exe installer is too old.\n"
+"Current waptagent.exe version: %s\n"
+"waptsetup-tis.exe version: %s\n"
+msgstr ""
+
 #: uwaptconsoleres.rswaptagentsetuperror
 msgctxt "uwaptconsoleres.rswaptagentsetuperror"
 msgid "Error while creating waptagent.exe: %s"
@@ -2743,7 +2766,9 @@ msgstr ""
 
 #: uwaptconsoleres.rswaptsetupuploadsuccess
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"
-msgid "WAPT agent and upgrade package successfully created and uploaded to the main repository"
+msgid ""
+"WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+"Don't forget to change the hash of waptagent.exe in your GPO\n"
 msgstr ""
 
 #: uwaptconsoleres.rswaptupgrade

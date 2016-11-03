@@ -57,8 +57,10 @@ msgid "Generate private key and self-signed certificate"
 msgstr "Créer une clé privée et un certificat auto-signé"
 
 #: tviscreatekey.edcommonname.hint
-msgid "E.g. : srvwapt.tranquilit.local"
-msgstr "Exemple : srvwapt.tranquilit.local"
+#, fuzzy
+#| msgid "E.g. : srvwapt.tranquilit.local"
+msgid "This information will be used as Signer identification in packages"
+msgstr "Cette information sera utilisée comme identification du signataire de paquets"
 
 #: tviscreatekey.edcountry.text
 msgid "FR"
@@ -121,12 +123,8 @@ msgid "E.g. : IT department."
 msgstr "E.g. : DSI"
 
 #: tviscreatekey.label15.caption
-msgid "Server FQDN :"
-msgstr "FQDN du serveur :"
-
-#: tviscreatekey.label15.hint
-msgid "WAPT server name. E.g. : srvwapt.tranquilit.local"
-msgstr "Nom du serveur WAPT. Par exemple : srvwapt.tranquilit.local"
+msgid "Common Name(CN) :"
+msgstr "Common Name (CN) :"
 
 #: tviscreatekey.label16.caption
 msgid "E-mail address :"
@@ -1076,10 +1074,6 @@ msgctxt "tviswaptgui.acttriggerwaptwua_scan.caption"
 msgid "Trigger the scan of missing Windows Updates"
 msgstr "Lancer le recherche des Mises à jour Windows à appliquer"
 
-#: tviswaptgui.actuninstallsoft.caption
-msgid "Uninstall remotely"
-msgstr ""
-
 #: tviswaptgui.actvnc.caption
 msgctxt "tviswaptgui.actvnc.caption"
 msgid "Connect via VNC"
@@ -1225,6 +1219,10 @@ msgctxt "TVISWAPTGUI.CBHASERRORS.CAPTION"
 msgid "Has errors"
 msgstr "Ont des erreurs"
 
+#: tviswaptgui.cbinverseselect.caption
+msgid "NOT"
+msgstr "NOT"
+
 #: tviswaptgui.cbmasksystemcomponents.caption
 msgid "Hide system components"
 msgstr "Ne pas afficher les composants système"
@@ -1290,6 +1288,10 @@ msgstr "Paquet"
 #: tviswaptgui.edrun.text
 msgid "mywapt.update()"
 msgstr ""
+
+#: tviswaptgui.edsearchhost.hint
+msgid "Regular expressions allowed"
+msgstr "Expressions régulières autorisées"
 
 #: tviswaptgui.edversion.editlabel.caption
 msgctxt "tviswaptgui.edversion.editlabel.caption"
@@ -2187,68 +2189,6 @@ msgid "wupanright"
 msgstr ""
 
 #: uwaptconsoleres.rsaddadsgroups
-#, fuzzy
-#| msgid ""
-#| "This will get the Active Directory groups of each selected host and \n"
-#| "add the matching Wapt packages to dependencies of the host\n"
-#| "if the package exists.\n"
-#| "\n"
-#| "Are you sure to continue ?\n"
-#| "This will get the Active Directory groups of each selected host and \n"
-#| "add the matching Wapt packages to dependencies of the host\n"
-#| "if the package exists.\n"
-#| "\n"
-#| "Are you sure to continue ?\n"
-#| "This will get the Active Directory groups of each selected host and \n"
-#| "add the matching Wapt packages to dependencies of the host\n"
-#| "if the package exists.\n"
-#| "\n"
-#| "Are you sure to continue ?\n"
-#| "This will get the Active Directory groups of each selected host and \n"
-#| "add the matching Wapt packages to dependencies of the host\n"
-#| "if the package exists.\n"
-#| "\n"
-#| "Are you sure to continue ?\n"
-#| "This will get the Active Directory groups of each selected host and \n"
-#| "add the matching Wapt packages to dependencies of the host\n"
-#| "if the package exists.\n"
-#| "\n"
-#| "Are you sure to continue ?\n"
-#| "This will get the Active Directory groups of each selected host and \n"
-#| "add the matching Wapt packages to dependencies of the host\n"
-#| "if the package exists.\n"
-#| "\n"
-#| "Are you sure to continue ?\n"
-#| "This will get the Active Directory groups of each selected host and \n"
-#| "add the matching Wapt packages to dependencies of the host\n"
-#| "if the package exists.\n"
-#| "\n"
-#| "Are you sure to continue ?\n"
-#| "This will get the Active Directory groups of each selected host and \n"
-#| "add the matching Wapt packages to dependencies of the host\n"
-#| "if the package exists.\n"
-#| "\n"
-#| "Are you sure to continue ?\n"
-#| "This will get the Active Directory groups of each selected host and \n"
-#| "add the matching Wapt packages to dependencies of the host\n"
-#| "if the package exists.\n"
-#| "\n"
-#| "Are you sure to continue ?\n"
-#| "This will get the Active Directory groups of each selected host and \n"
-#| "add the matching Wapt packages to dependencies of the host\n"
-#| "if the package exists.\n"
-#| "\n"
-#| "Are you sure to continue ?\n"
-#| "This will get the Active Directory groups of each selected host and \n"
-#| "add the matching Wapt packages to dependencies of the host\n"
-#| "if the package exists.\n"
-#| "\n"
-#| "Are you sure to continue ?\n"
-#| "This will get the Active Directory groups of each selected host and \n"
-#| "add the matching Wapt packages to dependencies of the host\n"
-#| "if the package exists.\n"
-#| "\n"
-#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -2313,44 +2253,6 @@ msgid "Are you sure you want to forget %s packages from host %s ?"
 msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 
 #: uwaptconsoleres.rsconfirmimport
-#, fuzzy
-#| msgid ""
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
 msgctxt "uwaptconsoleres.rsconfirmimport"
 msgid ""
 "Are you sure you want to import\n"
@@ -2633,6 +2535,18 @@ msgctxt "uwaptconsoleres.rskeyalreadyexists"
 msgid "Key %s already exists, please pick another name."
 msgstr "La clé %s existe déjà, merci de choisir un nom différent."
 
+#: uwaptconsoleres.rsloadinventory
+msgid "Loading hosts inventory"
+msgstr "Changement de l'inventaire des machines"
+
+#: uwaptconsoleres.rsloadpackages
+msgid "Loading Packages index"
+msgstr "Chargement de l'index des paquest"
+
+#: uwaptconsoleres.rsloadsettings
+msgid "Loading application settings"
+msgstr "Chargement des paramètres de l'application"
+
 #: uwaptconsoleres.rslongtaskerror
 msgctxt "uwaptconsoleres.rslongtaskerror"
 msgid "Error launching longtask: %s"
@@ -2673,11 +2587,6 @@ msgid "Error while creating package : %s"
 msgstr "Erreur lors de la création du paquet : %s"
 
 #: uwaptconsoleres.rspackageduplicateconfirm
-#, fuzzy
-#| msgid ""
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -2878,6 +2787,19 @@ msgid ""
 "Wapt-get version: %s\n"
 msgstr ""
 
+#: uwaptconsoleres.rswaptagentnotpresent
+msgid "Warning, waptsetup-tis.exe or waptagent.exe not present on server, please install or build them."
+msgstr "Attention, waptsetup-tis.exe ou waptagent.exe ne sont pas présents sur le serveur."
+
+#: uwaptconsoleres.rswaptagentoldversion
+msgid ""
+"Warning, the version of the waptagent.exe installer is too old.\n"
+"Current waptagent.exe version: %s\n"
+"waptsetup-tis.exe version: %s\n"
+msgstr "Attention, la version de l'installeur waptagent.exe est trop vieille.\n"
+"Version actuelle de waptagent.exe: %s\n"
+"Version de waptsetup-tis.exe: %s\n"
+
 #: uwaptconsoleres.rswaptagentsetuperror
 msgctxt "uwaptconsoleres.rswaptagentsetuperror"
 msgid "Error while creating waptagent.exe: %s"
@@ -2913,10 +2835,6 @@ msgid "You must first define the Package prefix in preferences"
 msgstr "Vous devez d'abord définir le préfixe des paquets dans les préférences"
 
 #: uwaptconsoleres.rswaptservererror
-#, fuzzy
-#| msgid ""
-#| "Error on WAPT server:\n"
-#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -2925,11 +2843,6 @@ msgstr ""
 "%s\n"
 
 #: uwaptconsoleres.rswaptserveroldversion
-#, fuzzy
-#| msgid ""
-#| "Warning, the version of the server is too old.\n"
-#| "Current server version: %s\n"
-#| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
 "Current server version: %s\n"
@@ -2945,11 +2858,13 @@ msgid "Error while creating agent : %s"
 msgstr "Erreur lors de la création de l'agent : %s"
 
 #: uwaptconsoleres.rswaptsetupuploadsuccess
-#, fuzzy
-#| msgid "WAPT agent successfully created and uploaded to the repository : %s"
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"
-msgid "WAPT agent and upgrade package successfully created and uploaded to the main repository"
-msgstr "L'agent WAPT ainsi que le paquet de mise à jour ont bien été créés et chargés dans le dépôt principal"
+msgid ""
+"WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+"Don't forget to change the hash of waptagent.exe in your GPO\n"
+msgstr ""
+"L'agent WAPT ainsi que le paquet de mise à jour ont bien été créés et chargés dans le dépôt principal\n"
+"N'oubliez pas de changer le hash de waptagent.exe dans votre GPO\n"
 
 #: uwaptconsoleres.rswaptupgrade
 msgctxt "uwaptconsoleres.rswaptupgrade"
