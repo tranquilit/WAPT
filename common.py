@@ -413,9 +413,13 @@ class SSLCertificate(object):
         return self.crt.get_issuer().as_text()
 
     def verify_content(self,content,signature):
-        u"""Check that the signature matches the content, using the provided list of public keys
-            Content, signature are String
-            public_certs is either a filename or a list of filenames
+        u"""Check that the signature matches the content
+
+        Args:
+            content (str) : content to check
+            signature (str) : ssl signature of the content
+        Return
+            str: subject (CN) of current certificate or raise an exception if no match
         """
         rsa = self.crt.get_pubkey().get_rsa()
         pubkey = EVP.PKey()
@@ -427,7 +431,7 @@ class SSLCertificate(object):
         raise Exception('SSL signature verification failed for certificate %s'%self.subject_dn)
 
     def match_key(self,key):
-        """Check if certificate match the given provate key"""
+        """Check if certificate matches the given private key"""
         if not isinstance(key,SSLPrivateKey):
             key = SSLPrivateKey(key)
         return self.crt.get_pubkey().get_modulus() == key.key.get_modulus()
@@ -1066,7 +1070,7 @@ class WaptBaseDB(object):
             raise
 
 class WaptSessionDB(WaptBaseDB):
-    curr_db_version = '20140410'
+    curr_db_version = '20161103'
 
     def __init__(self,username=''):
         super(WaptSessionDB,self).__init__(None)
@@ -1201,7 +1205,7 @@ PackageKey = namedtuple('package',('packagename','version'))
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
 
-    curr_db_version = '20140410'
+    curr_db_version = '20161103'
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
@@ -1224,7 +1228,12 @@ class WaptDB(WaptBaseDB):
           conflicts varchar(800),
           sources varchar(255),
           repo_url varchar(255),
-          repo varchar(255)
+          repo varchar(255),
+          signer varchar(255),
+          signer_fingerprint varchar(255),
+          min_wapt_version varchar(255),
+          maturity varchar(255),
+          locale varchar(255)
         )"""
                         )
         self.db.execute("""
@@ -1238,6 +1247,8 @@ class WaptDB(WaptBaseDB):
           version_pinning varchar(255),
           explicit_by varchar(255),
           architecture varchar(255),
+          maturity varchar(255),
+          locale varchar(255),
           install_date varchar(255),
           install_status varchar(255),
           install_output TEXT,
@@ -1303,6 +1314,8 @@ class WaptDB(WaptBaseDB):
           package varchar(255),
           version varchar(255),
           architecture varchar(255),
+          maturity varchar(255),
+          locale varchar(255),
           install_date varchar(255),
           install_status varchar(255),
           install_output TEXT
@@ -1330,6 +1343,10 @@ class WaptDB(WaptBaseDB):
                     sources='',
                     repo_url='',
                     repo='',
+                    signer='',
+                    signer_fingerprint='',
+                    maturity='',
+                    locale='',
                     ):
 
         with self:
@@ -1349,8 +1366,12 @@ class WaptDB(WaptBaseDB):
                     conflicts,
                     sources,
                     repo_url,
-                    repo
-                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    repo,
+                    signer,
+                    signer_fingerprint,
+                    maturity,
+                    locale
+                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,(
                      package,
                      version,
@@ -1366,13 +1387,18 @@ class WaptDB(WaptBaseDB):
                      conflicts,
                      sources,
                      repo_url,
-                     repo
+                     repo,
+                     signer,
+                     signer_fingerprint,
+                     maturity,
+                     locale
                      )
                    )
             return cur.lastrowid
 
     def add_package_entry(self,package_entry):
-        cur = self.db.execute("""delete from wapt_package where package=? and version=?""" ,(package_entry.package,package_entry.version))
+        cur = self.db.execute("""delete from wapt_package where package=? and version=? and architecture=? and maturity=? and locale=?""" ,
+            (package_entry.package,package_entry.version,package_entry.architecture,package_entry.maturity,package_entry.locale))
 
         with self:
             self.add_package(package=package_entry.package,
@@ -1390,9 +1416,13 @@ class WaptDB(WaptBaseDB):
                              sources=package_entry.sources,
                              repo_url=package_entry.repo_url,
                              repo=package_entry.repo,
+                             signer=package_entry.signer,
+                             signer_fingerprint=package_entry.signer_fingerprint,
+                             maturity=package_entry.maturity,
+                             locale=package_entry.locale,
                              )
 
-    def add_start_install(self,package,version,architecture,params_dict={},explicit_by=None):
+    def add_start_install(self,package,version,architecture,params_dict={},explicit_by=None,maturity='',locale=''):
         """Register the start of installation in local db
             params_dict is the dictionary pf parameters provided on command line with --params
               or by the server
@@ -1414,8 +1444,10 @@ class WaptDB(WaptBaseDB):
                     install_output,
                     install_params,
                     explicit_by,
-                    process_id
-                    ) values (?,?,?,?,?,?,?,?,?)
+                    process_id,
+                    maturity,
+                    locale
+                    ) values (?,?,?,?,?,?,?,?,?,?,?)
                 """,(
                      package,
                      version,
@@ -1425,7 +1457,9 @@ class WaptDB(WaptBaseDB):
                      '',
                      json.dumps(params_dict),
                      explicit_by,
-                     os.getpid()
+                     os.getpid(),
+                     maturity,
+                     locale
                    ))
             return cur.lastrowid
 
@@ -1549,9 +1583,12 @@ class WaptDB(WaptBaseDB):
         sql = ["""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,
                 r.section,r.priority,r.maintainer,r.description,r.depends,r.conflicts,r.sources,r.filename,r.size,
-                r.repo_url,r.md5sum,r.repo
+                r.repo_url,r.md5sum,r.repo,l.maturity,l.locale
                 from wapt_localstatus l
-                left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
+                left join wapt_package r on r.package=l.package and l.version=r.version and
+                    (l.architecture is null or l.architecture=r.architecture) and
+                    (l.maturity is null or l.maturity=r.maturity) and
+                    (l.locale is null or l.locale=r.locale)
            """]
         if not include_errors:
             sql.append('where l.install_status in ("OK","UNKNOWN")')
@@ -1567,9 +1604,13 @@ class WaptDB(WaptBaseDB):
         sql = ["""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,l.setuppy,
                 r.section,r.priority,r.maintainer,r.description,r.depends,r.conflicts,r.sources,r.filename,r.size,
-                r.repo_url,r.md5sum,r.repo
+                r.repo_url,r.md5sum,r.repo,l.maturity,l.locale
                 from wapt_localstatus l
-                left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
+                left join wapt_package r on
+                    r.package=l.package and l.version=r.version and
+                    (l.architecture is null or l.architecture=r.architecture) and
+                    (l.maturity is null or l.maturity=r.maturity) and
+                    (l.locale is null or l.locale=r.locale)
                 where l.id = ?
            """]
 
