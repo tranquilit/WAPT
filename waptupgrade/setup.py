@@ -276,7 +276,7 @@ def create_onetime_task(name,cmd,parameters=None, delay_minutes=2,max_runtime=10
     hour_min = time.strftime('%H:%M:%S', run_time)
     if windows_version() < '5.2':
         # for win XP
-        system_account = 'NT AUTHORITY\\SYSTEM'
+        system_account = r'"NT AUTHORITY\SYSTEM"'
     else:
         system_account = 'SYSTEM'
     try:
