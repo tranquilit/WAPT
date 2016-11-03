@@ -20,6 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+__version__ = "1.3.8"
 import os,sys
 try:
     wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)),'../..'))
@@ -241,7 +242,7 @@ def main():
 
     if not waptserver_ini.has_option('options', 'wapt_password') or \
             not waptserver_ini.get('options', 'wapt_password') or \
-            postconf.yesno("Do you want to reset admin password ?") == postconf.DIALOG_OK:
+            postconf.yesno("Do you want to reset admin password ?",yes_label='skip',no_label='reset') != postconf.DIALOG_OK:
         wapt_password_ok = False
         while not wapt_password_ok:
             wapt_password = ''
