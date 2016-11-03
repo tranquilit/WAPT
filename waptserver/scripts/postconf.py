@@ -211,7 +211,9 @@ def main():
             subprocess.check_call(['setsebool', '-P', 'httpd_can_network_connect', '1'])
             postconf.msgbox('SELinux correctly configured for Apache reverse proxy')
 
-    shutil.copyfile('/opt/wapt/waptserver/waptserver.ini.template','/opt/wapt/conf/waptserver.ini')
+    if not os.path.isfile('/opt/wapt/conf/waptserver.ini'):
+        shutil.copyfile('/opt/wapt/waptserver/waptserver.ini.template','/opt/wapt/conf/waptserver.ini')
+
     waptserver_ini = iniparse.RawConfigParser()
 
     waptserver_ini.readfp(file('/opt/wapt/conf/waptserver.ini', 'rU'))
@@ -237,28 +239,31 @@ def main():
     if os.path.exists(os.path.join(wapt_root_dir, 'waptserver', 'wsus.py')):
         waptserver_ini.set('uwsgi', 'attach-daemon', '/usr/bin/python /opt/wapt/waptserver/wapthuey.py wsus.huey')
 
-    wapt_password_ok = False
-    while not wapt_password_ok:
-        wapt_password = ''
-        wapt_password_check = ''
+    if not waptserver_ini.has_option('options', 'wapt_password') or \
+            not waptserver_ini.get('options', 'wapt_password') or \
+            postconf.yesno("Do you want to reset admin password ?") == postconf.DIALOG_OK:
+        wapt_password_ok = False
+        while not wapt_password_ok:
+            wapt_password = ''
+            wapt_password_check = ''
 
-        while wapt_password == '':
-            (code,wapt_password) = postconf.passwordbox("Please enter the wapt server password:  ", insecure=True)
-            if code != postconf.DIALOG_OK:
-                exit(0)
+            while wapt_password == '':
+                (code,wapt_password) = postconf.passwordbox("Please enter the wapt server password:  ", insecure=True)
+                if code != postconf.DIALOG_OK:
+                    exit(0)
 
-        while wapt_password_check == '':
-            (code,wapt_password_check) = postconf.passwordbox("Please enter the wapt server password again:  ", insecure=True)
-            if code != postconf.DIALOG_OK:
-                exit(0)
+            while wapt_password_check == '':
+                (code,wapt_password_check) = postconf.passwordbox("Please enter the wapt server password again:  ", insecure=True)
+                if code != postconf.DIALOG_OK:
+                    exit(0)
 
-        if wapt_password != wapt_password_check:
-            postconf.msgbox('Password mismatch!')
-        else:
-            wapt_password_ok = True
+            if wapt_password != wapt_password_check:
+                postconf.msgbox('Password mismatch!')
+            else:
+                wapt_password_ok = True
 
-    password = hashlib.sha1(wapt_password).hexdigest()
-    waptserver_ini.set('options','wapt_password',password)
+        password = hashlib.sha1(wapt_password).hexdigest()
+        waptserver_ini.set('options','wapt_password',password)
 
     if not waptserver_ini.has_option('options', 'server_uuid'):
         waptserver_ini.set('options', 'server_uuid', str(uuid.uuid1()))
@@ -280,7 +285,6 @@ def main():
     reply = postconf.yesno("Do you want to configure apache?")
     if reply == postconf.DIALOG_OK:
         try:
-
             fqdn = socket.getfqdn()
             if not fqdn:
                 fqdn = 'wapt'
