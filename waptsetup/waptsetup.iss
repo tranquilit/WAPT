@@ -5,7 +5,7 @@
 #define AppName "WAPT"
 #define output_dir "."
 #define Company "Tranquil IT Systems"
-#define install_certs "unchecked"
+#define install_certs 0
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
 #include "wapt.iss"
@@ -29,7 +29,7 @@ Source: "..\waptdevutils.py"; DestDir: "{app}";
 
 ; authorized public keys
 ;Source: "..\ssl\*"; DestDir: "{app}\ssl"; Tasks: install_certificates; Flags: createallsubdirs recursesubdirs
-Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs
+Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs; Check: InstallCertCheck();
 
 [Setup]
 OutputBaseFilename=waptsetup
@@ -230,4 +230,8 @@ begin
   end
 end;
 
+function InstallCertCheck:Boolean;
+begin
+	Result := {#install_certs} <> 0;
+end;
 

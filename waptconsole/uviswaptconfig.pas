@@ -75,7 +75,7 @@ var
   VisWAPTConfig: TVisWAPTConfig;
 
 implementation
-uses waptcommon,LCLIntf,IDURI,superobject,uWaptConsoleRes,uScaleDPI;
+uses waptcommon,LCLIntf,IDURI,superobject,uWaptConsoleRes,uScaleDPI,tisstrings;
 {$R *.lfm}
 
 { TVisWAPTConfig }
@@ -117,6 +117,16 @@ begin
   end;
 end;
 
+function MakeIdent(st:String):String;
+var
+  i:integer;
+begin
+  result :='';
+  for i := 1 to length(st) do
+    if CharIsValidIdentifierLetter(st[i]) then
+      result := Result+st[i];
+end;
+
 procedure TVisWAPTConfig.cbUseProxyForTemplateClick(Sender: TObject);
 begin
   edhttp_proxy.Enabled:=cbUseProxyForTemplate.Checked;
@@ -124,7 +134,7 @@ end;
 
 procedure TVisWAPTConfig.eddefault_package_prefixExit(Sender: TObject);
 begin
-  eddefault_package_prefix.Text:=trim(LowerCase(eddefault_package_prefix.Text));
+  eddefault_package_prefix.Text:=LowerCase(MakeIdent(eddefault_package_prefix.Text));
 end;
 
 procedure TVisWAPTConfig.edrepo_urlExit(Sender: TObject);

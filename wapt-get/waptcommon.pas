@@ -1317,7 +1317,7 @@ begin
         else if startswith(line,'#define Company') then
             new_iss.AsArray.Add(format('#define Company "%s"' ,[company]))
         else if startswith(line,'#define install_certs') then
-            new_iss.AsArray.Add(format('#define install_certs' ,[]))
+            new_iss.AsArray.Add(format('#define install_certs 1' ,[]))
         else if startswith(line,'WizardImageFile=') then
 
         else if startswith(line,'OutputBaseFilename') then
