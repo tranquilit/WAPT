@@ -6,7 +6,7 @@
 #define output_dir "."
 #define Company "Tranquil IT Systems"
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
-#define install_certs "unchecked"
+#define install_certs 0
 
 #include "wapt.iss"
 
@@ -188,4 +188,9 @@ begin
 
   Result := Reply = IDIGNORE;
 
+end;
+
+function InstallCertCheck:Boolean;
+begin
+	Result := {#install_certs} <> 0;
 end;
