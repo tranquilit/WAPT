@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.8"
+__version__ = "1.3.9"
 
 __all__ = [
     'md5_for_file',
@@ -1143,6 +1143,9 @@ class WaptRemoteRepo(WaptBaseRepo):
         """
         if self._packages is None:
             self._packages = []
+        if not self.repo_url:
+            raise Exception('Repository URL for %s is not defined' % self.name)
+
         new_packages = []
         logger.debug(u'Read remote Packages zip file %s' % self.packages_url)
         packages_answer = requests.get(self.packages_url,proxies=self.proxies,timeout=self.timeout, verify=self.verify_cert,headers=default_http_headers())
