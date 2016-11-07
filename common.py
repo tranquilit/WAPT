@@ -456,8 +456,8 @@ def ssl_verify_content(content,signature,public_certs):
     if not isinstance(public_certs,list):
         public_certs = [public_certs]
     for public_cert in public_certs:
-        crt = SSLCertificate(public_cert)
         try:
+            crt = SSLCertificate(public_cert)
             return crt.verify_content(content,signature)
         except:
             pass
