@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.8"
+__version__ = "1.3.9"
 import os
 import re
 import logging
@@ -2120,21 +2120,27 @@ class WaptRepo(WaptRemoteRepo):
             proxies (dict): configuration of http proxies as defined for requests
             timeout (float): timeout in seconds for the connection to the rmeote repository
             dnsdomain (str): DNS domain to use for autodiscovery of URL if url is not supplied.
-                             if this is not supplied, DNS domain is taken from computer registry.
         """
 
         WaptRemoteRepo.__init__(self,url=url,name=name,proxies=proxies,timeout=timeout)
         self._cached_dns_repo_url = None
-        if dnsdomain:
-            self.dnsdomain = dnsdomain
-        else:
-            self.dnsdomain = setuphelpers.get_domain_fromregistry()
+        self._dnsdomain = dnsdomain
 
     def reset_network(self):
         """called by wapt when network configuration has changed"""
         self._cached_dns_repo_url = None
         self._packages = None
         self._packages_date = None
+
+    @property
+    def dnsdomain(self):
+        return self._dnsdomain
+
+    @dnsdomain.setter
+    def dnsdomain(self,value):
+        if value != self._dnsdomain:
+            self._dnsdomain = value
+            self._cached_dns_repo_url = None
 
     @property
     def repo_url(self):
@@ -2160,8 +2166,10 @@ class WaptRepo(WaptRemoteRepo):
         if self._repo_url:
             return self._repo_url
         else:
-            if not self._cached_dns_repo_url:
+            if not self._cached_dns_repo_url and self.dnsdomain:
                 self._cached_dns_repo_url = self.find_wapt_repo_url()
+            elif not self.dnsdomain:
+                raise Exception('No dnsdomain defined for repo %s'%self.name)
             return self._cached_dns_repo_url
 
     @repo_url.setter
@@ -2362,9 +2370,11 @@ class WaptRepo(WaptRemoteRepo):
                 Use name of repo as section name if section is not provided.
                 Use 'global' if no section named section in ini file
         """
+        if not section:
+             section = self.name
+        if not config.has_section(section):
+            section = 'global'
         WaptRemoteRepo.load_config(self,config,section)
-        if section is None:
-			section = 'global'
         if config.has_section(section) and config.has_option(section,'dnsdomain'):
             self.dnsdomain = config.get(section,'dnsdomain')
         return self
@@ -2381,9 +2391,9 @@ class WaptRepo(WaptRemoteRepo):
 
     def __repr__(self):
         try:
-            return '<WaptRepo %s>' % self.repo_url
+            return '<WaptRepo %s for domain %s>' % (self.repo_url,self.dnsdomain)
         except:
-            return '<WaptRepo %s>' % 'unknown'
+            return '<WaptRepo %s for domain %s>' % ('unknown',self.dnsdomain)
 
 class WaptHostRepo(WaptRepo):
     """Dummy http repository for host packages"""
@@ -2478,7 +2488,7 @@ class WaptHostRepo(WaptRepo):
         if self._repo_url:
             return self._repo_url
         else:
-            if not self._cached_dns_repo_url:
+            if not self._cached_dns_repo_url and self.dnsdomain:
                 main = self.find_wapt_repo_url()
                 if main:
                     self._cached_dns_repo_url = main +'-host'
@@ -2507,6 +2517,12 @@ class WaptHostRepo(WaptRepo):
         if section is None or section == 'global':
             self._repo_url = None
         return self
+
+    def __repr__(self):
+        try:
+            return '<WaptHostRepo %s for domain %s>' % (self.repo_url,self.dnsdomain)
+        except:
+            return '<WaptHostRepo %s for domain %s>' % ('unknown',self.dnsdomain)
 
 
 ######################"""
@@ -2665,26 +2681,26 @@ class Wapt(object):
         """
         # default config file
         defaults = {
-            'repo_url':'',
-            'templates_repo_url':'',
-            'private_key':'',
             'loglevel':'warning',
             'default_package_prefix':'tis',
             'default_sources_suffix':'wapt',
             'default_sources_root':'c:\\waptdev',
-            'default_sources_url':'',
-            'upload_cmd':'',
-            'upload_cmd_host':'',
-            'after_upload':'',
-            'http_proxy':'',
             'use_http_proxy_for_repo':'0',
             'use_http_proxy_for_server':'0',
             'use_http_proxy_for_templates':'0',
             'tray_check_interval':2,
             'service_interval':2,
-            'use_hostpackages':'1',
+            'use_hostpackages':'0',
             'timeout':5.0,
             'wapt_server_timeout':10.0,
+            # optional...
+            'templates_repo_url':'',
+            'private_key':'',
+            'default_sources_url':'',
+            'upload_cmd':'',
+            'upload_cmd_host':'',
+            'after_upload':'',
+            'http_proxy':'',
             }
 
         if not self.config:
@@ -2755,12 +2771,14 @@ class Wapt(object):
             logger.info(u'Other repositories : %s' % (names,))
             for name in names:
                 if name:
-                    w = WaptRepo(name=name).load_config(self.config)
+                    w = WaptRepo(name=name).load_config(self.config,section=name)
                     self.repositories.append(w)
                     logger.debug(u'    %s:%s' % (w.name,w._repo_url))
+
         # last is main repository so it overrides the secondary repositories
-        main = WaptRepo(name='global').load_config(self.config)
-        self.repositories.append(main)
+        if self.config.has_option('global','repo_url'):
+            w = WaptRepo(name='global').load_config(self.config)
+            self.repositories.append(w)
 
         # True if we want to use automatic host package based on host fqdn
         #   privacy problem as there is a request to wapt repo to get
@@ -2784,16 +2802,23 @@ class Wapt(object):
 
     def add_hosts_repo(self):
         """Add an automatic host repository, remove existing WaptHostRepo last one before"""
-        if self.repositories and isinstance(self.repositories[-1],WaptHostRepo):
+        while self.repositories and isinstance(self.repositories[-1],WaptHostRepo):
             del self.repositories[-1]
-        host_repo = WaptHostRepo(name='wapt-host').load_config(self.config)
-        if self.repositories:
+
+        if self.config.has_section('wapt-host'):
+            section = 'wapt-host'
+        else:
+            section = None
+        host_repo = WaptHostRepo(name='wapt-host').load_config(self.config,section)
+        self.repositories.append(host_repo)
+
+        # in case host repo is guessed from main repo (no specific section
+        if section is None and self.repositories:
             main = self.repositories[-1]
             if main._repo_url and not host_repo._repo_url:
                 host_repo.repo_url = main._repo_url+'-host'
-            self.repositories.append(host_repo)
-        else:
-            raise Exception('host-repo : No main repository URL, unable to derive hosts URL from repo URL. Either define an explicit host repository or define first a main repository')
+            else:
+                raise Exception('host-repo : No main repository URL, unable to derive hosts URL from repo URL. Either define an explicit host repository or define first a main repository')
 
     def reload_config_if_updated(self):
         """Check if config file has been updated,
