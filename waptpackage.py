@@ -250,7 +250,7 @@ class PackageEntry(object):
     optional_attributes = ['maintainer','description','depends','conflicts','maturity','locale','sources','installed_size','min_wapt_version',
         'signer','signer_fingerprint','signature','signature_date']
     non_control_attributes = ['localpath','filename','size','repo_url','md5sum','repo',]
-    signed_attributes = required_attributes+['depends','conflicts']
+    signed_attributes = required_attributes+['depends','conflicts','maturity']
 
     @property
     def all_attributes(self):
@@ -453,7 +453,7 @@ class PackageEntry(object):
             if line.startswith(' '):
                 # additional lines begin with a space!
                 value = getattr(self,param)
-                value += '\n '
+                value += '\n'
                 value += line.strip()
                 setattr(self,param,value)
             else:
@@ -597,7 +597,7 @@ class PackageEntry(object):
         Returns:
             None
         """
-        self.signature = self.get_signature(private_key)
+        self.signature = self.get_signature(private_key).encode('base64')[0:-1]
         self.signature_date = time.strftime('%Y%m%d-%H%M%S')
         self.signer = certificate.cn
         self.signer_fingerprint = certificate.fingerprint
@@ -618,7 +618,7 @@ class PackageEntry(object):
         """
         if not self.signature:
             raise Exception('This control data is not signed')
-        return certificate.verify_content(self.signed_content(),self.signature)
+        return certificate.verify_content(self.signed_content(),self.signature.decode('base64'))
 
 def extract_iconpng_from_wapt(fname):
     """Return the content of WAPT/icon.png if it exists, a unknown.png file content if not

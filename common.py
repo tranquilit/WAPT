@@ -4825,8 +4825,7 @@ class Wapt(object):
                         crt = None
                 if not crt:
                     raise Exception('No matching certificate found for private key %s'%self.private_key)
-                entry.signer = crt.cn
-                entry.signer_fingerprint = crt.fingerprint
+                entry.sign_control(key,crt)
                 logger.info('Signer: %s'%entry.signer)
                 logger.info('Signer fingerprint: %s'%entry.signer_fingerprint)
 
