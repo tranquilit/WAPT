@@ -83,6 +83,7 @@ from ctypes import wintypes
 
 from M2Crypto import EVP, X509, SSL
 from M2Crypto.EVP import EVPError
+from M2Crypto import BIO,RSA
 
 from urlparse import urlparse
 try:
@@ -356,10 +357,16 @@ class SSLPrivateKey(object):
     def __init__(self,private_key,callback=pwd_callback):
         if not os.path.isfile(private_key):
             raise Exception('Private key %s not found' % private_key)
-        self.key = EVP.load_key(private_key,callback=callback)
+        self.rsa = RSA.load_key(private_key,callback=callback)
+        self.key = EVP.PKey()
+        self.key.assign_rsa(self.rsa)
 
     def sign_content(self,content):
         """ Sign content with the private_key, return the signature"""
+        if isinstance(content,unicode):
+            content = content.encode('utf8')
+        if not isinstance(content,str):
+            content = jsondump(content)
         self.key.sign_init()
         self.key.sign_update(content)
         signature = self.key.sign_final()
@@ -370,11 +377,23 @@ class SSLPrivateKey(object):
             crt = SSLCertificate(crt)
         return crt.get_pubkey().get_modulus() == self.key.get_modulus()
 
+    def encrypt(self,content):
+        """Encrypt a message will can be decrypted with the public key"""
+        return self.rsa.private_encrypt(content,RSA.pkcs1_padding)
+
+    def decrypt(self,content):
+        """Decrypt a message encrypted with the public key"""
+        return self.rsa.private_decrypt(content,RSA.pkcs1_oaep_padding)
+
+
 class SSLCertificate(object):
     def __init__(self,public_cert):
         if not os.path.isfile(public_cert):
             raise Exception('Public certificate %s not found' % public_cert)
         self.crt = X509.load_cert(public_cert)
+        self.rsa = self.crt.get_pubkey().get_rsa()
+        self.key = EVP.PKey()
+        self.key.assign_rsa(self.rsa)
 
     @property
     def organisation(self):
@@ -416,17 +435,19 @@ class SSLCertificate(object):
         u"""Check that the signature matches the content
 
         Args:
-            content (str) : content to check
+            content (str) : content to check. if not str, the structure will be converted to json first
             signature (str) : ssl signature of the content
+
         Return
             str: subject (CN) of current certificate or raise an exception if no match
         """
-        rsa = self.crt.get_pubkey().get_rsa()
-        pubkey = EVP.PKey()
-        pubkey.assign_rsa(rsa)
-        pubkey.verify_init()
-        pubkey.verify_update(content)
-        if pubkey.verify_final(signature):
+        if isinstance(content,unicode):
+            content = content.encode('utf8')
+        if not isinstance(content,str):
+            content = jsondump(content)
+        self.key.verify_init()
+        self.key.verify_update(content)
+        if self.key.verify_final(signature):
             return self.subject_dn
         raise Exception('SSL signature verification failed for certificate %s'%self.subject_dn)
 
@@ -439,6 +460,17 @@ class SSLCertificate(object):
     def __iter__(self):
         for k in ['issuer_dn','fingerprint','subject_dn','cn']:
             yield k,getattr(self,k)
+
+    def encrypt(self,content):
+        """Encrypt a message will can be decrypted with the private key"""
+        rsa = self.crt.get_pubkey().get_rsa()
+        return rsa.public_encrypt(content, RSA.pkcs1_oaep_padding)
+
+    def decrypt(self,content):
+        """Decrypt a message encrypted with the private key"""
+        rsa = self.crt.get_pubkey().get_rsa()
+        return rsa.public_decrypt(content, RSA.pkcs1_padding)
+
 
 def ssl_verify_content(content,signature,public_certs):
     u"""Check that the signature matches the content, using the provided list of public keys
@@ -1016,7 +1048,7 @@ class WaptBaseDB(object):
             # use cached value to avoid infinite loop
             old_structure_version = self._db_version
             if old_structure_version >= self.curr_db_version and not force:
-                logger.critical(u'upgrade db aborted : current structure version %s is newer or equal to requested structure version %s' % (old_structure_version,self.curr_db_version))
+                logger.warning(u'upgrade db aborted : current structure version %s is newer or equal to requested structure version %s' % (old_structure_version,self.curr_db_version))
                 return (old_structure_version,old_structure_version)
 
             logger.info(u'Upgrade database schema')
@@ -1205,7 +1237,7 @@ PackageKey = namedtuple('package',('packagename','version'))
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
 
-    curr_db_version = '20161103'
+    curr_db_version = '20161109'
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
@@ -1231,6 +1263,8 @@ class WaptDB(WaptBaseDB):
           repo varchar(255),
           signer varchar(255),
           signer_fingerprint varchar(255),
+          signature varchar(255),
+          signature_date varchar(255),
           min_wapt_version varchar(255),
           maturity varchar(255),
           locale varchar(255)
@@ -1347,6 +1381,8 @@ class WaptDB(WaptBaseDB):
                     signer_fingerprint='',
                     maturity='',
                     locale='',
+                    signature='',
+                    signature_date='',
                     ):
 
         with self:
@@ -1370,8 +1406,10 @@ class WaptDB(WaptBaseDB):
                     signer,
                     signer_fingerprint,
                     maturity,
-                    locale
-                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    locale,
+                    signature,
+                    signature_date
+                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,(
                      package,
                      version,
@@ -1391,7 +1429,9 @@ class WaptDB(WaptBaseDB):
                      signer,
                      signer_fingerprint,
                      maturity,
-                     locale
+                     locale,
+                     signature,
+                     signature_date
                      )
                    )
             return cur.lastrowid
@@ -1420,6 +1460,8 @@ class WaptDB(WaptBaseDB):
                              signer_fingerprint=package_entry.signer_fingerprint,
                              maturity=package_entry.maturity,
                              locale=package_entry.locale,
+                             signature=package_entry.signature,
+                             signature_date=package_entry.signature_date,
                              )
 
     def add_start_install(self,package,version,architecture,params_dict={},explicit_by=None,maturity='',locale=''):

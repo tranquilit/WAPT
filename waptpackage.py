@@ -246,9 +246,11 @@ class PackageEntry(object):
     """Package attributes coming from either control files in WAPT package or local DB
 
     """
-    required_attributes = ['package','version','architecture',]
-    optional_attributes = ['section','priority','maintainer','description','depends','conflicts','sources','installed_size','maturity','signer','signer_fingerprint','min_wapt_version','locale']
+    required_attributes = ['package','version','architecture','section','priority']
+    optional_attributes = ['maintainer','description','depends','conflicts','maturity','locale','sources','installed_size','min_wapt_version',
+        'signer','signer_fingerprint','signature','signature_date']
     non_control_attributes = ['localpath','filename','size','repo_url','md5sum','repo',]
+    signed_attributes = required_attributes+['depends','conflicts']
 
     @property
     def all_attributes(self):
@@ -274,6 +276,8 @@ class PackageEntry(object):
         self.maturity=''
         self.signer=''
         self.signer_fingerprint=''
+        self.signature=''
+        self.signature_date=''
         self.locale=''
         self.min_wapt_version=''
         self.installed_size=''
@@ -510,28 +514,18 @@ class PackageEntry(object):
             myzip.close()
 
     def ascontrol(self,with_non_control_attributes = False):
-        val = u"""\
-package           : %(package)s
-version           : %(version)s
-architecture      : %(architecture)s
-section           : %(section)s
-priority          : %(priority)s
-maintainer        : %(maintainer)s
-description       : %(description)s
-depends           : %(depends)s
-conflicts         : %(conflicts)s
-sources           : %(sources)s
-installed_size    : %(installed_size)s
-signer            : %(signer)s
-signer_fingerprint: %(signer_fingerprint)s
-min_wapt_version  : %(min_wapt_version)s
-maturity          : %(maturity)s
-locale            : %(locale)s
-"""  % self.__dict__
+        val = []
+        attrs = self.required_attributes+self.optional_attributes
         if with_non_control_attributes:
-            for att in self.non_control_attributes:
-                val += u"%-18s: %s\n" % (att, getattr(self,att))
-        return val
+            attrs.extend(self.non_control_attributes)
+
+        def escape_cr(s):
+            # format multi-lines description with a space at each line start
+            return re.sub(r'$(\n)(?=^[!\w])',r'\n ',s,flags=re.MULTILINE)
+
+        for att in attrs:
+            val.append(u"%-18s: %s" % (att, escape_cr(getattr(self,att))))
+        return u'\n'.join(val)
 
     def make_package_filename(self):
         """Return the standard package filename based on current attributes
@@ -585,6 +579,46 @@ locale            : %(locale)s
                 return
         raise Exception(u'no build/packaging part in version number %s' % self.version)
 
+    def signed_content(self):
+        return {att:getattr(self,att,None) for att in self.signed_attributes}
+
+    def get_signature(self,private_key):
+        signed_content = private_key.sign_content(self.signed_content())
+        return signed_content
+
+    def sign_control(self,private_key,certificate):
+        """Sign the contractual attributes of the control file using
+            the provided key, add certificate Fingerprint and CN too
+
+        Args:
+            private_key (SSLPrivateKey)
+            certificate (SSLCertificate)
+
+        Returns:
+            None
+        """
+        self.signature = self.get_signature(private_key)
+        self.signature_date = time.strftime('%Y%m%d-%H%M%S')
+        self.signer = certificate.cn
+        self.signer_fingerprint = certificate.fingerprint
+
+    def check_signature(self,certificate):
+        """Check if control important data das not been changed since signature
+
+        >>> from waptpackage import *
+        >>> from common import SSLPrivateKey,SSLCertificate
+        >>> k = SSLPrivateKey('c:/private/test.pem')
+        >>> c = SSLCertificate('c:/private/test.crt')
+
+        >>> p = PackageEntry('test',version='1.0-0')
+        >>> p.depends = 'test'
+        >>> p.sign_control(k,c)
+        >>> p.check_signature(c)
+
+        """
+        if not self.signature:
+            raise Exception('This control data is not signed')
+        return certificate.verify_content(self.signed_content(),self.signature)
 
 def extract_iconpng_from_wapt(fname):
     """Return the content of WAPT/icon.png if it exists, a unknown.png file content if not
