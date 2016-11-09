@@ -58,6 +58,7 @@ import email
 import datetime
 import tempfile
 import email.utils
+from waptcrypto import *
 
 logger = logging.getLogger()
 
