@@ -786,6 +786,20 @@ class WaptBaseRepo(object):
             self._load_packages_index()
         return self._index.get(packagename,default)
 
+    def check_control_signature(self,package_entry,public_certs):
+        """ """
+        if not package_entry.signature:
+            logger.warning('Package control %s on repo %s is not signed... not checking' % (package_entry.asrequirement(),package_entry.repo))
+            return None
+        for public_cert in public_certs:
+            try:
+                crt = SSLCertificate(public_cert)
+                return package_entry.check_signature(crt)
+            except:
+                pass
+        raise Exception('SSL signature verification failed for control %s, either none public certificates match signature or signed content has been changed'%package_entry.asrequirement())
+
+
 
 class WaptLocalRepo(WaptBaseRepo):
     """Index of Wapt local repository.

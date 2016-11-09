@@ -33,7 +33,7 @@
     exported functions instead of local Wapt functions (except crypto signatures)
 
 """
-__version__ = "1.3.8"
+__version__ = "1.3.9"
 
 import sys,os
 import shutil
@@ -42,6 +42,7 @@ import common
 import json
 
 from setuphelpers import *
+from waptutils import *
 from waptpackage import *
 
 import active_directory

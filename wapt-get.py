@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.8"
+__version__ = "1.3.9"
 
 import codecs
 import getpass
@@ -32,20 +32,17 @@ import shutil
 import sys
 
 from optparse import OptionParser
+from waptutils import *
 
 from waptpackage import PackageEntry
 from waptpackage import update_packages
 
 import common
 
-from common import jsondump
-from common import ppdicttable
 from common import Wapt
 from common import WaptDB
 
 import setuphelpers
-from setuphelpers import ensure_unicode,ensure_list
-
 
 v = (sys.version_info.major, sys.version_info.minor)
 if v != (2, 7):

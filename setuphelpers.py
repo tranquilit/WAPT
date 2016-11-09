@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.8"
+__version__ = "1.3.9"
 
 __all__ = \
 ['EWaptSetupException',
@@ -255,6 +255,8 @@ import re
 import threading
 import codecs
 import email.utils
+
+from waptutils import *
 from waptpackage import PackageEntry
 from waptpackage import Version as Version
 from types import ModuleType
@@ -291,81 +293,6 @@ def ensure_dir(filename):
     if not os.path.isdir(d):
         os.makedirs(d)
 
-
-# from opsi
-def ensure_unicode(data):
-    ur"""Return a unicode string from data object
-
-    It is sometimes diffcult to know in advance what we will get from command line
-     application output.
-
-    This is to ensure we get a (not always accurate) representation of the data
-     mainly for logging purpose.
-
-    Args:
-        data: either str or unicode or object having a __unicode__ or WindowsError or Exception
-    Returns:
-        unicode: unicode string representing the data
-
-    >>> ensure_unicode(str('éé'))
-    u'\xe9\xe9'
-    >>> ensure_unicode(u'éé')
-    u'\xe9\xe9'
-    >>> ensure_unicode(Exception("test"))
-    u'Exception: test'
-    >>> ensure_unicode(Exception())
-    u'Exception: '
-    """
-    try:
-        if type(data) is types.UnicodeType:
-            return data
-        if type(data) is types.StringType:
-            return unicode(data, 'utf8', 'replace')
-        if isinstance(data,WindowsError):
-            return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding(),'replace'))
-        if isinstance(data,(UnicodeDecodeError,UnicodeEncodeError)):
-            return u"%s : faulty string is '%s'" % (data,repr(data.args[1]))
-        if isinstance(data,Exception):
-            try:
-                return u"%s: %s" % (data.__class__.__name__,("%s"%data).decode(sys.getfilesystemencoding(),'replace'))
-            except:
-                try:
-                    return u"%s: %s" % (data.__class__.__name__,("%s"%data).decode('utf8','replace'))
-                except:
-                    try:
-                        return u"%s: %s" % (data.__class__.__name__,u"%s"%data)
-                    except:
-                        return u"%s" % (data.__class__.__name__,)
-        if hasattr(data, '__unicode__'):
-            try:
-                return data.__unicode__()
-            except:
-                pass
-        return unicode(data)
-    except:
-        if logger.level != logging.DEBUG:
-            return("Error in ensure_unicode / %s"%(repr(data)))
-        else:
-            raise
-
-
-def ensure_list(csv_or_list,ignore_empty_args=True,allow_none = False):
-    """if argument is not a list, return a list from a csv string"""
-    if csv_or_list is None:
-        if allow_none:
-            return None
-        else:
-            return []
-
-    if isinstance(csv_or_list,tuple):
-        return list(csv_or_list)
-    elif not isinstance(csv_or_list,list):
-        if ignore_empty_args:
-            return [s.strip() for s in csv_or_list.split(',') if s.strip() != '']
-        else:
-            return [s.strip() for s in csv_or_list.split(',')]
-    else:
-        return csv_or_list
 
 def create_shortcut(path, target='', arguments='', wDir='', icon=''):
     r"""Create a windows shortcut
@@ -3539,48 +3466,6 @@ def local_desktops():
             else:
                 raise
     return result
-
-def datetime2isodate(adatetime = None):
-    if not adatetime:
-        adatetime = datetime.datetime.now()
-    assert(isinstance(adatetime,datetime.datetime))
-    return adatetime.isoformat()
-
-
-def httpdatetime2isodate(httpdate):
-    """convert a date string as returned in http headers or mail headers to isodate
-    >>> import requests
-    >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
-    >>> len(httpdatetime2isodate(last_modified)) == 19
-    True
-    """
-    return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
-
-
-def isodate2datetime(isodatestr):
-    # we remove the microseconds part as it is not working for python2.5 strptime
-    return datetime.datetime.strptime(isodatestr.split('.')[0] , "%Y-%m-%dT%H:%M:%S")
-
-
-def time2display(adatetime):
-    return adatetime.strftime("%Y-%m-%d %H:%M")
-
-
-def hours_minutes(hours):
-    if hours is None:
-        return None
-    else:
-        return "%02i:%02i" % ( int(hours) , int((hours - int(hours)) * 60.0))
-
-
-def fileisodate(filename):
-    return datetime.datetime.fromtimestamp(os.stat(filename).st_mtime).isoformat()
-
-
-def dateof(adatetime):
-    return adatetime.replace(hour=0,minute=0,second=0,microsecond=0)
-
-
 
 class EWaptSetupException(Exception):
     pass

@@ -22,6 +22,8 @@ Source: "..\pywintypes27.dll"; DestDir: "{app}";
 Source: "..\lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.pyc,test,*.~*,pymongo,*.chm,testsuite,Demos,test,HTML"
 
 ; wapt sources
+Source: "..\waptutils.py"; DestDir: "{app}"; 
+Source: "..\waptcrypto.py"; DestDir: "{app}"; 
 Source: "..\common.py"; DestDir: "{app}"; 
 Source: "..\waptpackage.py"; DestDir: "{app}"; 
 Source: "..\wapt-get.py"; DestDir: "{app}"; 

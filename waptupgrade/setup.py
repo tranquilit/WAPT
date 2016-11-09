@@ -78,6 +78,8 @@ class Version(object):
 
 def update_sources():
     files = [
+         'waptutils.py',
+         'waptcrypto.py',
          'common.py',
          'setuphelpers.py',
          'wapt-get.exe',

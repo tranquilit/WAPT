@@ -21,6 +21,7 @@
 #
 # -----------------------------------------------------------------------
 __version__ = "1.3.9"
+
 import os
 import re
 import logging
@@ -81,10 +82,6 @@ from ntsecuritycon import DOMAIN_GROUP_RID_ADMINS,DOMAIN_GROUP_RID_USERS
 import ctypes
 from ctypes import wintypes
 
-from M2Crypto import EVP, X509, SSL
-from M2Crypto.EVP import EVPError
-from M2Crypto import BIO,RSA
-
 from urlparse import urlparse
 try:
     from requests_kerberos import HTTPKerberosAuth,OPTIONAL
@@ -97,442 +94,19 @@ from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,\
     QueryInfoKey,DeleteValue,DeleteKey,\
     KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY,KEY_ALL_ACCESS
 
-import struct
-
 import re
-import setuphelpers
-from setuphelpers import ensure_unicode,datetime2isodate,httpdatetime2isodate,ensure_list
-
+import struct
 import types
 import gc
+
+
+from waptutils import *
+from waptcrypto import *
+import setuphelpers
 
 logger = logging.getLogger()
 
 ArchitecturesList = ('all','x86','x64')
-
-
-#####################################
-# http://code.activestate.com/recipes/498181-add-thousands-separator-commas-to-formatted-number/
-# Code from Michael Robellard's comment made 28 Feb 2010
-# Modified for leading +, -, space on 1 Mar 2010 by Glenn Linderman
-#
-# Tail recursion removed and  leading garbage handled on March 12 2010, Alessandro Forghieri
-def splitThousands( s, tSep=',', dSep='.'):
-    '''Splits a general float on thousands. GIGO on general input'''
-    if s == None:
-        return 0
-    if not isinstance( s, str ):
-        s = str( s )
-
-    cnt=0
-    numChars=dSep+'0123456789'
-    ls=len(s)
-    while cnt < ls and s[cnt] not in numChars: cnt += 1
-
-    lhs = s[ 0:cnt ]
-    s = s[ cnt: ]
-    if dSep == '':
-        cnt = -1
-    else:
-        cnt = s.rfind( dSep )
-    if cnt > 0:
-        rhs = dSep + s[ cnt+1: ]
-        s = s[ :cnt ]
-    else:
-        rhs = ''
-
-    splt=''
-    while s != '':
-        splt= s[ -3: ] + tSep + splt
-        s = s[ :-3 ]
-
-    return lhs + splt[ :-1 ] + rhs
-
-
-def convert_bytes(bytes):
-    if bytes is None:
-        return None
-    else:
-        bytes = float(bytes)
-        if bytes >= 1099511627776:
-            terabytes = bytes / 1099511627776
-            size = '%.2fT' % terabytes
-        elif bytes >= 1073741824:
-            gigabytes = bytes / 1073741824
-            size = '%.2fG' % gigabytes
-        elif bytes >= 1048576:
-            megabytes = bytes / 1048576
-            size = '%.2fM' % megabytes
-        elif bytes >= 1024:
-            kilobytes = bytes / 1024
-            size = '%.2fK' % kilobytes
-        else:
-            size = '%.2fb' % bytes
-        return size
-
-# adapted from opsi
-
-
-## {{{ http://code.activestate.com/recipes/81189/ (r2)
-def pptable(cursor, data=None, rowlens=0, callback=None):
-    """
-    pretty print a query result as a table
-    callback is a function called for each field (fieldname,value) to format the output
-    """
-    def defaultcb(fieldname,value):
-        return value
-
-    if not callback:
-        callback = defaultcb
-
-    d = cursor.description
-    if not d:
-        return "#### NO RESULTS ###"
-    names = []
-    lengths = []
-    rules = []
-    if not data:
-        data = cursor.fetchall()
-    for dd in d:    # iterate over description
-        l = dd[1]
-        if not l:
-            l = 12              # or default arg ...
-        l = max(l, len(dd[0]))  # handle long names
-        names.append(dd[0])
-        lengths.append(l)
-    for col in range(len(lengths)):
-        if rowlens:
-            rls = [len(row[col]) for row in data if row[col]]
-        lengths[col] = max([lengths[col]]+rls)
-        rules.append("-"*lengths[col])
-
-    format = u" ".join(["%%-%ss" % l for l in lengths])
-    result = [format % tuple(names)]
-    result.append(format % tuple(rules))
-    for row in data:
-        row_cb=[]
-        for col in range(len(d)):
-            row_cb.append(callback(d[col][0],row[col]))
-        result.append(format % tuple(row_cb))
-    return u"\n".join(result)
-## end of http://code.activestate.com/recipes/81189/ }}}
-
-
-def ppdicttable(alist, columns = [], callback=None):
-    """
-    pretty print a list of dict as a table
-    columns is an ordered list of (fieldname,width)
-    callback is a function called for each field (fieldname,value) to format the output
-    """
-    def defaultcb(fieldname,value):
-        return value
-
-    if not callback:
-        callback = defaultcb
-
-    if not alist:
-        return "#### NO RESULTS ###"
-
-    lengths = [c[1] for c in columns]
-    names = [c[0] for c in columns]
-    rules = []
-    for col in range(len(lengths)):
-        rules.append("-"*lengths[col])
-
-    format = u" ".join(["%%-%ss" % l for l in lengths])
-    result = [format % tuple(names)]
-    result.append(format % tuple(rules))
-    for row in alist:
-        row_cb=[]
-        for (name,width)in columns:
-            if isinstance(row,dict):
-                row_cb.append(callback(name,row.get(name,None)))
-            else:
-                row_cb.append(callback(name,getattr(row,name,None)))
-        result.append(format % tuple(row_cb))
-    return u"\n".join(result)
-## end of http://code.activestate.com/recipes/81189/ }}}
-
-
-def html_table(cur,callback=None):
-    """
-        cur est un cursor issu d'une requete
-        callback est une fonction qui prend (rowmap,fieldname,value)
-        et renvoie une representation texte
-    """
-    def safe_unicode(iso):
-        if iso is None:
-            return None
-        elif isinstance(iso, str):
-            return iso.decode(locale.getpreferredencoding())
-        else:
-            return iso
-
-    def itermap(cur):
-        for row in cur:
-            yield dict((cur.description[idx][0], value)
-                       for idx, value in enumerate(row))
-
-    head=u"<tr>"+"".join(["<th>"+c[0]+"</th>" for c in cur.description])+"</tr>"
-    lines=""
-    if callback:
-        for r in itermap(cur):
-            lines=lines+"<tr>"+"".join(["<td>"+str(callback(r,c[0],safe_unicode(r[c[0]])))+"</td>" for c in cur.description])+"</tr>"
-    else:
-        for r in cur:
-            lines=lines+"<tr>"+"".join(["<td>"+safe_unicode(c)+"</td>" for c in r])+"</tr>"
-
-    return "<table border=1  cellpadding=2 cellspacing=0>%s%s</table>" % (head,lines)
-
-
-def merge_dict(d1,d2):
-    """merge similar dict"""
-    result = copy.deepcopy(d1)
-    for k in d2:
-        if k in result:
-            if isinstance(result[k],list):
-                for item in d2[k]:
-                    if not item in result[k]:
-                        result[k].append(item)
-            elif isinstance(result[k],dict):
-                result[k]=merge_dict(result[k],d2[k])
-            else:
-                raise Exception('Unsupported merge')
-        else:
-            result[k] = d2[k]
-    return result
-
-
-def read_in_chunks(f, chunk_size=1024*128):
-    """Lazy function (generator) to read a file piece by piece.
-    Default chunk size: 128k."""
-    while True:
-        data = f.read(chunk_size)
-        if not data:
-            break
-        yield data
-
-
-def sha1_for_file(fname, block_size=2**20):
-    f = open(fname,'rb')
-    sha1 = hashlib.sha1()
-    while True:
-        data = f.read(block_size)
-        if not data:
-            break
-        sha1.update(data)
-    return sha1.hexdigest()
-
-
-def sha1_for_data(data):
-    assert(isinstance(data,str))
-    sha1 = hashlib.sha1()
-    sha1.update(data)
-    return sha1.hexdigest()
-
-def sha256_for_file(fname, block_size=2**20):
-    f = open(fname,'rb')
-    sha256 = hashlib.sha256()
-    while True:
-        data = f.read(block_size)
-        if not data:
-            break
-        sha256.update(data)
-    return sha256.hexdigest()
-
-
-def sha256_for_data(data):
-    assert(isinstance(data,str))
-    sha256 = hashlib.sha256()
-    sha256.update(data)
-    return sha256.hexdigest()
-
-def pwd_callback(*args):
-    """Default password callback for opening private keys.
-    """
-    import getpass
-    return getpass.getpass().encode('ascii')
-
-class SSLPrivateKey(object):
-    def __init__(self,private_key,callback=pwd_callback):
-        if not os.path.isfile(private_key):
-            raise Exception('Private key %s not found' % private_key)
-        self.rsa = RSA.load_key(private_key,callback=callback)
-        self.key = EVP.PKey()
-        self.key.assign_rsa(self.rsa)
-
-    def sign_content(self,content):
-        """ Sign content with the private_key, return the signature"""
-        if isinstance(content,unicode):
-            content = content.encode('utf8')
-        if not isinstance(content,str):
-            content = jsondump(content)
-        self.key.sign_init()
-        self.key.sign_update(content)
-        signature = self.key.sign_final()
-        return signature
-
-    def match_cert(self,crt):
-        if not isinstance(crt,SSLCertificate):
-            crt = SSLCertificate(crt)
-        return crt.get_pubkey().get_modulus() == self.key.get_modulus()
-
-    def encrypt(self,content):
-        """Encrypt a message will can be decrypted with the public key"""
-        return self.rsa.private_encrypt(content,RSA.pkcs1_padding)
-
-    def decrypt(self,content):
-        """Decrypt a message encrypted with the public key"""
-        return self.rsa.private_decrypt(content,RSA.pkcs1_oaep_padding)
-
-
-class SSLCertificate(object):
-    def __init__(self,public_cert):
-        if not os.path.isfile(public_cert):
-            raise Exception('Public certificate %s not found' % public_cert)
-        self.crt = X509.load_cert(public_cert)
-        self.rsa = self.crt.get_pubkey().get_rsa()
-        self.key = EVP.PKey()
-        self.key.assign_rsa(self.rsa)
-
-    @property
-    def organisation(self):
-        return self.crt.get_subject().O
-
-    @property
-    def cn(self):
-        return self.crt.get_subject().CN
-
-    @property
-    def subject(self):
-        subject = self.crt.get_subject()
-        result = {}
-        for key in subject.nid.keys():
-            result[key] = getattr(subject,key)
-        return result
-
-    @property
-    def subject_dn(self):
-        return self.crt.get_subject().as_text()
-
-    @property
-    def fingerprint(self):
-        return self.crt.get_fingerprint()
-
-    @property
-    def issuer(self):
-        data = self.crt.get_issuer()
-        result = {}
-        for key in data.nid.keys():
-            result[key] = getattr(data,key)
-        return result
-
-    @property
-    def issuer_dn(self):
-        return self.crt.get_issuer().as_text()
-
-    def verify_content(self,content,signature):
-        u"""Check that the signature matches the content
-
-        Args:
-            content (str) : content to check. if not str, the structure will be converted to json first
-            signature (str) : ssl signature of the content
-
-        Return
-            str: subject (CN) of current certificate or raise an exception if no match
-        """
-        if isinstance(content,unicode):
-            content = content.encode('utf8')
-        if not isinstance(content,str):
-            content = jsondump(content)
-        self.key.verify_init()
-        self.key.verify_update(content)
-        if self.key.verify_final(signature):
-            return self.subject_dn
-        raise Exception('SSL signature verification failed for certificate %s'%self.subject_dn)
-
-    def match_key(self,key):
-        """Check if certificate matches the given private key"""
-        if not isinstance(key,SSLPrivateKey):
-            key = SSLPrivateKey(key)
-        return self.crt.get_pubkey().get_modulus() == key.key.get_modulus()
-
-    def __iter__(self):
-        for k in ['issuer_dn','fingerprint','subject_dn','cn']:
-            yield k,getattr(self,k)
-
-    def encrypt(self,content):
-        """Encrypt a message will can be decrypted with the private key"""
-        rsa = self.crt.get_pubkey().get_rsa()
-        return rsa.public_encrypt(content, RSA.pkcs1_oaep_padding)
-
-    def decrypt(self,content):
-        """Decrypt a message encrypted with the private key"""
-        rsa = self.crt.get_pubkey().get_rsa()
-        return rsa.public_decrypt(content, RSA.pkcs1_padding)
-
-
-def ssl_verify_content(content,signature,public_certs):
-    u"""Check that the signature matches the content, using the provided list of public keys
-        Content, signature are String
-        public_certs is either a filename or a list of filenames
-    >>> if not os.path.isfile('c:/private/test.pem'):
-    ...     key = create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sebastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
-    >>> my_content = 'Un test de contenu'
-    >>> my_signature = SSLPrivateKey('c:/private/test.pem').sign_content(my_content)
-    >>> SSLCertificate('c:/private/test.crt').verify_content(my_content,my_signature)
-    'C=FR, L=St Sebastien sur Loire, O=Tranquil IT, CN=wapt.tranquil.it/emailAddress=...@tranquil.it'
-    """
-    assert isinstance(signature,str)
-    assert isinstance(public_certs,str) or isinstance(public_certs,unicode) or isinstance(public_certs,list)
-    if not isinstance(public_certs,list):
-        public_certs = [public_certs]
-    for public_cert in public_certs:
-        try:
-            crt = SSLCertificate(public_cert)
-            return crt.verify_content(content,signature)
-        except:
-            pass
-    raise Exception('SSL signature verification failed, either none public certificates match signature or signed content has been changed')
-
-
-def private_key_has_password(key):
-    r"""Return True if key can not be loaded without password
-    >>> private_key_has_password(r'c:/tranquilit/wapt/tests/ssl/test.pem')
-    False
-    >>> private_key_has_password(r'c:/tmp/ko.pem')
-    True
-    """
-    def callback(*args):
-        return ""
-    try:
-        EVP.load_key(key, callback)
-    except Exception as e:
-        if "bad password" in str(e):
-            return True
-        else:
-            print str(e)
-            return True
-    return False
-
-
-def check_key_password(key_filename,password=""):
-    """Check if provided password is valid to read the PEM private key
-    >>> if not os.path.isfile('c:/private/test.pem'):
-    ...     create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sebastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
-    >>> check_key_password('c:/private/test.pem','')
-    True
-    >>> check_key_password('c:/private/ko.pem','')
-    False
-    """
-    def callback(*args):
-        return password
-    try:
-        EVP.load_key(key_filename, callback)
-    except EVPError:
-        return False
-    return True
-
 
 def create_self_signed_key(orgname,
         wapt_base_dir=None,
@@ -544,7 +118,7 @@ def create_self_signed_key(orgname,
         commonname='',
         email='',
     ):
-    ur"""Creates a self signed key/certificate without password
+    ur"""Creates a self signed key/certificate without password using openssl.exe
     return a dict {'crt_filename': 'c:\\private\\test.crt', 'pem_filename': 'c:\\private\\test.pem'}
     >>> if os.path.isfile('c:/private/test.pem'):
     ...     os.unlink('c:/private/test.pem')
@@ -578,32 +152,6 @@ def create_self_signed_key(orgname,
     os.unlink(opensslcfg_fn)
     return {'pem_filename':destpem,'crt_filename':destcrt}
 
-def generate_unique_string():
-    return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
-
-
-def default_json(o):
-    """callback to extend handling of json.dumps"""
-    if hasattr(o,'as_dict'):
-        return o.as_dict()
-    elif hasattr(o,'as_json'):
-        return o.as_json()
-    elif isinstance(o,datetime.datetime):
-        return o.isoformat()
-    else:
-        return u"%s" % (ensure_unicode(o),)
-
-
-def jsondump(o,**kwargs):
-    """Dump argument to json format, including datetime
-    and customized classes with as_dict or as_json callables
-    >>> class MyClass(object):
-    ...    def as_dict(self):
-    ...        return {'test':'a','adate2':datetime.date(2014,03,15)}
-    >>> jsondump({'adate':datetime.date(2014,03,14),'an_object':MyClass()})
-    '{"adate": "2014-03-14", "an_object": {"test": "a", "adate2": "2014-03-15"}}'
-    """
-    return json.dumps(o,default=default_json,**kwargs)
 
 
 def create_recursive_zip_signed(zipfn, source_root, target_root = u"",excludes = [u'.svn',u'.git',u'.gitignore',u'*.pyc',u'*.dbg',u'src']):
@@ -784,7 +332,7 @@ def running_on_ac():
 
 def uac_enabled():
     """Return True if UAC is enabled"""
-    with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System') as k:
+    with setuphelpers.reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System') as k:
         return QueryValueEx(k,'EnableLUA')[1] == 0
 
 ###########################"
@@ -819,19 +367,6 @@ class LogInstallOutput(object):
             return self.console.__getattrib__(name)
         else:
             return self.console.__getattribute__(name)
-
-
-###########
-# TODO : remove duplicate of setuphelpers
-def reg_openkey_noredir(key, sub_key, sam=KEY_READ):
-    try:
-        if platform.machine() == 'AMD64':
-            return OpenKey(key,sub_key,0, sam | KEY_WOW64_64KEY)
-        else:
-            return OpenKey(key,sub_key,0,sam)
-    except WindowsError,e:
-        if e.errno == 2:
-            raise WindowsError(e.errno,'The key %s can not be opened' % sub_key)
 
 
 ##################
@@ -1714,7 +1249,7 @@ class WaptDB(WaptBaseDB):
                 result[p.package] = available
         return result
 
-    def update_repos_list(self,repos_list,proxies=None,force=False):
+    def update_repos_list(self,repos_list,proxies=None,force=False,public_certs=[]):
         """update the packages database with Packages files from the url repos_list
             removes obsolete records for repositories which are no more referenced
             repos_list : list of all the repositories objects referenced by the system
@@ -1735,7 +1270,7 @@ class WaptDB(WaptBaseDB):
             for repo in repos_list:
                 logger.info(u'Getting packages from %s' % repo.repo_url)
                 try:
-                    result[repo.name] = repo.update_db(waptdb=self,force=force)
+                    result[repo.name] = repo.update_db(waptdb=self,force=force,public_certs=public_certs)
                 except Exception,e:
                     logger.warning(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
         return result
@@ -2351,8 +1886,7 @@ class WaptRepo(WaptRemoteRepo):
             logger.debug(u'Waptrepo.find_wapt_repo_url: exception: %s' % (e,))
             raise
 
-
-    def update_db(self,force=False,waptdb=None):
+    def update_db(self,force=False,waptdb=None,public_certs=[]):
         """Get Packages from http repo and update local package database
             return last-update header
 
@@ -2393,7 +1927,12 @@ class WaptRepo(WaptRemoteRepo):
 
                     waptdb.purge_repo(self.name)
                     for package in self.packages:
-                        waptdb.add_package_entry(package)
+                        try:
+                            self.check_control_signature(package,public_certs)
+                            waptdb.add_package_entry(package)
+                        except:
+                            logger.critical('Invalid signature for package control entry %s on repo %s : discarding' % (package.asrequirement(),self.name) )
+
                     logger.debug(u'Storing last-modified header for repo_url %s : %s' % (self.repo_url,self.packages_date))
                     waptdb.set_param('last-%s' % self.repo_url[:59],self.packages_date)
                     waptdb.set_param('last-url-%s' % self.name, self.repo_url)
@@ -2447,7 +1986,7 @@ class WaptHostRepo(WaptRepo):
     def _load_packages_index(self):
         self._packages = []
 
-    def update_db(self,force=False,waptdb=None):
+    def update_db(self,force=False,waptdb=None,public_certs=[]):
         """get a list of host packages from remote repo"""
         current_host = setuphelpers.get_hostname()
         if not current_host in self.hosts_list:
@@ -2459,7 +1998,7 @@ class WaptHostRepo(WaptRepo):
                 self.packages.append(entry)
         return result
 
-    def update_host(self,host,waptdb,force=False):
+    def update_host(self,host,waptdb,force=False,public_certs=[]):
         """Update host package from repo.
            Stores last-http-date in database/
             returns (host package entry,entry date on server)
@@ -2500,7 +2039,11 @@ class WaptHostRepo(WaptRepo):
                             logger.debug(u"%s (%s)" % (package.package,package.version))
                             package.repo_url = self.repo_url
                             package.repo = self.name
-                            waptdb.add_package_entry(package)
+                            try:
+                                self.check_control_signature(package,public_certs)
+                                waptdb.add_package_entry(package)
+                            except:
+                                logger.critical('Invalid signature for package control entry %s : discarding' % package.asrequirement())
 
                             logger.debug(u'Commit wapt_package updates')
                             waptdb.set_param(host_cachedate,host_package_date)
@@ -3150,7 +2693,7 @@ class Wapt(object):
         """get / set the pre shutdown timeout shutdown tasks.
         """
         if setuphelpers.reg_key_exists(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\gpsvc'):
-            with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\gpsvc') as key:
+            with setuphelpers.reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\gpsvc') as key:
                 ms = setuphelpers.reg_getvalue(key,'PreshutdownTimeout',None)
                 if ms:
                     return ms / (60*1000)
@@ -3163,7 +2706,7 @@ class Wapt(object):
     def pre_shutdown_timeout(self,minutes):
         """Set PreshutdownTimeout"""
         if setuphelpers.reg_key_exists(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\gpsvc'):
-            key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\gpsvc',sam=setuphelpers.KEY_WRITE)
+            key = setuphelpers.reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\gpsvc',sam=setuphelpers.KEY_WRITE)
             if not key:
                 raise Exception('The PreshutdownTimeout can only be changed with System Account rights')
             setuphelpers.reg_setvalue(key,'PreshutdownTimeout',minutes*60*1000,setuphelpers.REG_DWORD)
@@ -3172,7 +2715,7 @@ class Wapt(object):
     def max_gpo_script_wait(self):
         """get / set the MaxGPOScriptWait.
         """
-        with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System') as key:
+        with setuphelpers.reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System') as key:
             ms = setuphelpers.reg_getvalue(key,'MaxGPOScriptWait',None)
             if ms:
                 return ms / (60*1000)
@@ -3182,7 +2725,7 @@ class Wapt(object):
     @max_gpo_script_wait.setter
     def max_gpo_script_wait(self,minutes):
         """Set MaxGPOScriptWait"""
-        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',sam=setuphelpers.KEY_WRITE)
+        key = setuphelpers.reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',sam=setuphelpers.KEY_WRITE)
         if not key:
             raise Exception('The MaxGPOScriptWait can only be changed with System Account rights')
         setuphelpers.reg_setvalue(key,'MaxGPOScriptWait',minutes*60*1000,setuphelpers.REG_DWORD)
@@ -3192,13 +2735,13 @@ class Wapt(object):
     def hiberboot_enabled(self):
         """get HiberbootEnabled.
         """
-        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SYSTEM\CurrentControlSet\Control\Session Manager\Power')
+        key = setuphelpers.reg_openkey_noredir(HKEY_LOCAL_MACHINE, r'SYSTEM\CurrentControlSet\Control\Session Manager\Power')
         return key and setuphelpers.reg_getvalue(key,'HiberbootEnabled',None)
 
     @hiberboot_enabled.setter
     def hiberboot_enabled(self,enabled):
         """Set HiberbootEnabled (0/1)"""
-        key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager\Power',sam=setuphelpers.KEY_WRITE)
+        key = setuphelpers.reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager\Power',sam=setuphelpers.KEY_WRITE)
         if key:
             setuphelpers.reg_setvalue(key,'HiberbootEnabled',enabled,setuphelpers.REG_DWORD)
 
@@ -3208,7 +2751,7 @@ class Wapt(object):
              launched before and after an installation to capture uninstallkey
         """
         result = []
-        with reg_openkey_noredir(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall") as key:
+        with setuphelpers.reg_openkey_noredir(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall") as key:
             try:
                 i = 0
                 while True:
@@ -3223,7 +2766,7 @@ class Wapt(object):
                     raise
 
         if platform.machine() == 'AMD64':
-            with reg_openkey_noredir(HKEY_LOCAL_MACHINE,"Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall") as key:
+            with setuphelpers.reg_openkey_noredir(HKEY_LOCAL_MACHINE,"Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall") as key:
                 try:
                     i = 0
                     while True:
@@ -3696,7 +3239,7 @@ class Wapt(object):
         """
         previous = self.waptdb.known_packages()
         # (main repo is at the end so that it will used in priority)
-        self.waptdb.update_repos_list(self.repositories,proxies=self.proxies,force=force)
+        self.waptdb.update_repos_list(self.repositories,proxies=self.proxies,force=force,public_certs=self.public_certs)
 
         current = self.waptdb.known_packages()
         result = {
@@ -6028,7 +5571,7 @@ class Wapt(object):
             if not self.disable_update_server_status and self.waptserver_available():
                 self.update_server_status()
         except Exception as e:
-            logger.warning(u'Problème lors du changement de réseau : %s'%setuphelpers.ensure_unicode(e))
+            logger.warning(u'Problème lors du changement de réseau : %s'%ensure_unicode(e))
 
     def add_upgrade_shutdown_policy(self):
         """Add a local shitdown policy to upgrade system"""

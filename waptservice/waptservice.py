@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.8"
+__version__ = "1.3.9"
 
 import time
 import sys
@@ -82,6 +82,8 @@ import psutil
 import tempfile
 
 # wapt specific stuff
+from waptutils import *
+
 import common
 from common import Wapt
 import setuphelpers
@@ -399,7 +401,7 @@ def beautify(c):
     elif isinstance(c,unicode):
         return jinja2.Markup(c.replace('\r\n','<br>').replace('\n','<br>'))
     elif isinstance(c,str):
-        return jinja2.Markup(setuphelpers.ensure_unicode(c).replace('\r\n','<br>').replace('\n','<br>'))
+        return jinja2.Markup(ensure_unicode(c).replace('\r\n','<br>').replace('\n','<br>'))
     elif isinstance(c,PackageEntry):
         return jinja2.Markup('<a href="%s">%s</a>'%(url_for('package_details',package=c.asrequirement()),c.asrequirement()))
     elif isinstance(c,dict) or (hasattr(c,'keys') and callable(c.keys)):
@@ -417,7 +419,7 @@ def beautify(c):
         else:
             return ''
     else:
-        return jinja2.Markup(u"<pre>{}</pre>".format(setuphelpers.ensure_unicode(c)))
+        return jinja2.Markup(u"<pre>{}</pre>".format(ensure_unicode(c)))
 
 
 def ssl_required(fn):
@@ -901,7 +903,7 @@ def package_details():
     try:
         data = wapt().is_available(package)
     except Exception as e:
-        data = {'errors':[ setuphelpers.ensure_unicode(e) ]}
+        data = {'errors':[ ensure_unicode(e) ]}
 
     # take the newest...
     data = data and data[-1].as_dict()
@@ -924,7 +926,7 @@ def get_runstatus():
             rows = cur.fetchall()
             data = [dict(ix) for ix in rows]
         except Exception as e:
-            logger.critical(u"*********** error " + setuphelpers.ensure_unicode(e))
+            logger.critical(u"*********** error " + ensure_unicode(e))
     return Response(common.jsondump(data), mimetype='application/json')
 
 @app.route('/check_ssl')
@@ -947,7 +949,7 @@ def get_checkupgrades():
             cur.execute(query)
             data = json.loads(cur.fetchone()['value'])
         except Exception as e :
-            logger.critical(u"*********** error %s"  % (setuphelpers.ensure_unicode(e)))
+            logger.critical(u"*********** error %s"  % (ensure_unicode(e)))
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -1117,7 +1119,7 @@ def install_log():
         packagename = request.args.get('package')
         data = wapt().last_install_log(packagename)
     except Exception as e:
-        data = {'result':'ERROR','message': u'{}'.format(setuphelpers.ensure_unicode(e))}
+        data = {'result':'ERROR','message': u'{}'.format(ensure_unicode(e))}
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -1346,8 +1348,8 @@ class EventsPrinter:
         '''Logs written output to listeners'''
         if text and text != '\n':
             if self.events:
-                self.events.send_multipart([str('PRINT'),(setuphelpers.ensure_unicode(text)).encode('utf8')])
-            self.logs.append(setuphelpers.ensure_unicode(text))
+                self.events.send_multipart([str('PRINT'),(ensure_unicode(text)).encode('utf8')])
+            self.logs.append(ensure_unicode(text))
 
 
 def eventprintinfo(func):
@@ -1667,7 +1669,7 @@ class WaptUpdateServerStatus(WaptTask):
                 self.summary = __(u'WAPT Server has been notified')
             except Exception as e:
                 self.result = {}
-                self.summary = __(u"Error while sending to the server : {}").format(setuphelpers.ensure_unicode(e))
+                self.summary = __(u"Error while sending to the server : {}").format(ensure_unicode(e))
         else:
             self.result = {}
             self.summary = __(u'WAPT Server is not available')
@@ -1693,7 +1695,7 @@ class WaptRegisterComputer(WaptTask):
                 self.summary = __(u"Inventory has been sent to the WAPT server")
             except Exception as e:
                 self.result = {}
-                self.summary = __(u"Error while sending inventory to the server : {}").format(setuphelpers.ensure_unicode(e))
+                self.summary = __(u"Error while sending inventory to the server : {}").format(ensure_unicode(e))
                 raise
         else:
             self.result = {}
@@ -1724,7 +1726,7 @@ class WaptCleanup(WaptTask):
             self.summary = __(u"Packages erased : {}").format(cjoin(self.result))
         except Exception as e:
             self.result = {}
-            self.summary = __(u"Error while clearing local cache : {}").format(setuphelpers.ensure_unicode(e))
+            self.summary = __(u"Error while clearing local cache : {}").format(ensure_unicode(e))
             raise Exception(self.summary)
 
     def __unicode__(self):
@@ -1981,7 +1983,7 @@ class WaptTaskManager(threading.Thread):
                 if result['uuid']:
                     self.last_update_server_date = datetime.datetime.now()
             except Exception as e:
-                logger.debug(u'Unable to update server status: %s' % setuphelpers.ensure_unicode(e))
+                logger.debug(u'Unable to update server status: %s' % ensure_unicode(e))
 
     def broadcast_tasks_status(self,topic,task):
         """topic : ADD START FINISH CANCEL ERROR
@@ -2107,20 +2109,20 @@ class WaptTaskManager(threading.Thread):
 
                     except common.EWaptCancelled as e:
                         if self.running_task:
-                            self.running_task.logs.append(u"{}".format(setuphelpers.ensure_unicode(e)))
+                            self.running_task.logs.append(u"{}".format(ensure_unicode(e)))
                             self.running_task.summary = __(u"Canceled")
                             self.tasks_cancelled.append(self.running_task)
                             self.broadcast_tasks_status(str('CANCEL'),self.running_task)
                     except Exception as e:
                         if self.running_task:
-                            self.running_task.logs.append(u"{}".format(setuphelpers.ensure_unicode(e)))
-                            self.running_task.logs.append(setuphelpers.ensure_unicode(traceback.format_exc()))
-                            self.running_task.summary = u"{}".format(setuphelpers.ensure_unicode(e))
+                            self.running_task.logs.append(u"{}".format(ensure_unicode(e)))
+                            self.running_task.logs.append(ensure_unicode(traceback.format_exc()))
+                            self.running_task.summary = u"{}".format(ensure_unicode(e))
                             self.tasks_error.append(self.running_task)
                             self.broadcast_tasks_status(str('ERROR'),self.running_task)
-                        logger.critical(setuphelpers.ensure_unicode(e))
+                        logger.critical(ensure_unicode(e))
                         try:
-                            logger.debug(setuphelpers.ensure_unicode(traceback.format_exc()))
+                            logger.debug(ensure_unicode(traceback.format_exc()))
                         except:
                             print "Traceback error"
                 finally:
@@ -2141,7 +2143,7 @@ class WaptTaskManager(threading.Thread):
                 try:
                     self.check_scheduled_tasks()
                 except Exception as e:
-                    logger.warning(u'Error checking scheduled tasks : %s' % setuphelpers.ensure_unicode(traceback.format_exc()))
+                    logger.warning(u'Error checking scheduled tasks : %s' % ensure_unicode(traceback.format_exc()))
                 logger.debug(u"{} i'm still alive... but nothing to do".format(datetime.datetime.now()))
 
     def tasks_status(self):
