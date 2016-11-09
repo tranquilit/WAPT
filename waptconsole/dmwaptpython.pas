@@ -72,7 +72,7 @@ begin
       st.Append('import waptpackage');
       st.Append('import waptdevutils');
       st.Append('import setuphelpers');
-      st.Append('from common import jsondump');
+      st.Append('from waptutils import jsondump');
       st.Append('logger = logging.getLogger()');
       st.Append('logging.basicConfig(level=logging.WARNING)');
       st.Append(format('mywapt = common.Wapt(config_filename=r"%s".decode(''utf8''),disable_update_server_status=True)',[AValue]));
