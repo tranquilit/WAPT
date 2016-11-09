@@ -521,7 +521,10 @@ class PackageEntry(object):
 
         def escape_cr(s):
             # format multi-lines description with a space at each line start
-            return re.sub(r'$(\n)(?=^[!\w])',r'\n ',s,flags=re.MULTILINE)
+            if s and (isinstance(s,str) or isinstance(s,unicode)):
+                return re.sub(r'$(\n)(?=^[!\w])',r'\n ',s,flags=re.MULTILINE)
+            else:
+                return s
 
         for att in attrs:
             val.append(u"%-18s: %s" % (att, escape_cr(getattr(self,att))))
@@ -1352,6 +1355,9 @@ def update_packages(adir,force=False):
     return repo.update_packages_index(force_all=force)
 
 if __name__ == '__main__':
+    r = WaptLocalRepo('c:/wapt/cache')
+    r.update_packages_index()
+    exit()
     import doctest
     import sys
     reload(sys)

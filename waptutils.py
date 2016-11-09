@@ -31,6 +31,7 @@ import time
 import json
 import random
 import string
+import email
 
 logger = logging.getLogger()
 
