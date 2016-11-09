@@ -522,7 +522,7 @@ class PackageEntry(object):
         def escape_cr(s):
             # format multi-lines description with a space at each line start
             if s and (isinstance(s,str) or isinstance(s,unicode)):
-                return re.sub(r'$(\n)(?=^[!\w])',r'\n ',s,flags=re.MULTILINE)
+                return re.sub(r'$(\n)(?=^\S)',r'\n ',s,flags=re.MULTILINE)
             else:
                 return s
 
