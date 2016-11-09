@@ -23,8 +23,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="3"/>
-      <RevisionNr Value="8"/>
-      <BuildNr Value="2"/>
+      <RevisionNr Value="9"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -72,8 +71,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="171"/>
-        <CursorPos X="45" Y="188"/>
+        <TopLine Value="19"/>
+        <CursorPos X="81" Y="41"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -81,10 +80,12 @@
       <Unit1>
         <Filename Value="waptcommon.pas"/>
         <UnitName Value="waptcommon"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="437"/>
-        <CursorPos X="63" Y="445"/>
+        <TopLine Value="120"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="206"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
@@ -422,10 +423,12 @@
       <Unit43>
         <Filename Value="waptdb.pas"/>
         <UnitName Value="waptdb"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="25"/>
-        <CursorPos X="4" Y="31"/>
-        <UsageCount Value="6"/>
+        <TopLine Value="55"/>
+        <CursorPos X="20" Y="48"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit43>
       <Unit44>
@@ -548,7 +551,7 @@
         <UsageCount Value="11"/>
       </Unit58>
     </Units>
-    <JumpHistory Count="5" HistoryIndex="4">
+    <JumpHistory Count="7" HistoryIndex="6">
       <Position1>
         <Filename Value="waptget.lpr"/>
         <Caret Line="385" Column="34" TopLine="357"/>
@@ -569,6 +572,14 @@
         <Filename Value="waptget.lpr"/>
         <Caret Line="158" Column="23" TopLine="128"/>
       </Position5>
+      <Position6>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="111" Column="18" TopLine="111"/>
+      </Position6>
+      <Position7>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="34" Column="30" TopLine="16"/>
+      </Position7>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -609,7 +620,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="13">
+    <BreakPoints Count="14">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsGlobal"/>
@@ -701,6 +712,13 @@
         <Source Value="..\..\pltis_utils\tisstrings.pas"/>
         <Line Value="583"/>
       </Item13>
+      <Item14>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="waptdb.pas"/>
+        <Line Value="63"/>
+      </Item14>
     </BreakPoints>
     <Exceptions Count="3">
       <Item1>
