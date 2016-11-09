@@ -2390,6 +2390,10 @@ class Wapt(object):
         while self.repositories and isinstance(self.repositories[-1],WaptHostRepo):
             del self.repositories[-1]
 
+        main = None
+        if self.repositories:
+            main = self.repositories[-1]
+
         if self.config.has_section('wapt-host'):
             section = 'wapt-host'
         else:
@@ -2397,13 +2401,11 @@ class Wapt(object):
         host_repo = WaptHostRepo(name='wapt-host').load_config(self.config,section)
         self.repositories.append(host_repo)
 
-        # in case host repo is guessed from main repo (no specific section
-        if section is None and self.repositories:
-            main = self.repositories[-1]
+        # in case host repo is guessed from main repo (no specific section) ans main repor_url is set
+        if section is None and main:
             if main._repo_url and not host_repo._repo_url:
                 host_repo.repo_url = main._repo_url+'-host'
-            else:
-                raise Exception('host-repo : No main repository URL, unable to derive hosts URL from repo URL. Either define an explicit host repository or define first a main repository')
+
 
     def reload_config_if_updated(self):
         """Check if config file has been updated,
