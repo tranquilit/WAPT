@@ -32,6 +32,7 @@ import json
 import random
 import string
 import email
+import copy
 
 logger = logging.getLogger()
 

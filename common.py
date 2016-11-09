@@ -2843,6 +2843,19 @@ class Wapt(object):
             print u'Warning : %s' % e
             return ''
 
+    def check_control_signature(self,package_entry):
+        """ """
+        if not package_entry.signature:
+            logger.warning('Package control %s on repo %s is not signed... not checking' % (package_entry.asrequirement(),package_entry.repo))
+            return None
+        for public_cert in self.public_certs:
+            try:
+                crt = SSLCertificate(public_cert)
+                return package_entry.check_signature(crt)
+            except:
+                pass
+        raise Exception('SSL signature verification failed for control %s, either none public certificates match signature or signed content has been changed'%package_entry.asrequirement())
+
     def install_wapt(self,fname,params_dict={},explicit_by=None):
         """Install a single wapt package given its WAPT filename.
         return install status"""
@@ -2861,7 +2874,9 @@ class Wapt(object):
         entry = PackageEntry()
         entry.load_control_from_wapt(fname)
         if entry.min_wapt_version and Version(entry.min_wapt_version)>Version(setuphelpers.__version__):
-            raise Exception('This package requires  a newer Wapt agent. Minimum version: %s' % entry.min_wapt_version)
+            raise Exception('This package requires a newer Wapt agent. Minimum version: %s' % entry.min_wapt_version)
+
+        self.check_control_signature(entry)
 
         self.runstatus=u"Installing package %s version %s ..." % (entry.package,entry.version)
         old_stdout = sys.stdout

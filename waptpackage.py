@@ -927,6 +927,9 @@ class WaptLocalRepo(WaptBaseRepo):
                     entry.load_control_from_wapt(fname)
                     processed.append(fname)
                 packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
+                # add a blank line between each package control
+                packages_lines.append('')
+
                 self._packages.append(entry)
                 # index last version
                 if entry.package not in self._index or self._index[entry.package] < entry:
@@ -1355,8 +1358,11 @@ def update_packages(adir,force=False):
     return repo.update_packages_index(force_all=force)
 
 if __name__ == '__main__':
-    r = WaptLocalRepo('c:/wapt/cache')
-    r.update_packages_index()
+    r = WaptRemoteRepo('http://wapt.tranquilit.local/wapt')
+    r.update()
+
+    r = WaptRemoteRepo('http://wapt.tranquilit.local/wapt')
+    r.update()
     exit()
     import doctest
     import sys
