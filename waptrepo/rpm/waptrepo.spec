@@ -23,6 +23,8 @@ cd .. && python createrpm.py
 %defattr(644,root,root,755)
 
 /opt/wapt/waptrepo/VERSION
+/opt/wapt/waptcrypto.py
+/opt/wapt/waptutils.py
 /opt/wapt/waptpackage.py
 /opt/wapt/wapt-scanpackages.pyc
 /opt/wapt/wapt-scanpackages.pyo

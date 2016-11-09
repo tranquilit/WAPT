@@ -97,6 +97,8 @@ version_file.close()
 
 print 'copie des fichiers waptrepo'
 rsync(source_dir,'./builddir/opt/wapt/')
+copyfile(makepath(wapt_source_dir,'waptcrypto.py'),
+         './builddir/opt/wapt/waptcrypto.py')
 copyfile(makepath(wapt_source_dir,'waptutils.py'),
          './builddir/opt/wapt/waptutils.py')
 copyfile(makepath(wapt_source_dir,'waptpackage.py'),
