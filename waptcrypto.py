@@ -30,6 +30,7 @@ from M2Crypto import EVP, X509, SSL
 from M2Crypto.EVP import EVPError
 from M2Crypto import BIO,RSA
 
+from waptutils import *
 
 def check_key_password(key_filename,password=""):
     """Check if provided password is valid to read the PEM private key
