@@ -137,6 +137,7 @@ __all__ = \
  'reg_getvalue',
  'reg_openkey_noredir',
  'reg_setvalue',
+ 'reg_key_exists',
  'register_dll',
  'register_ext',
  'register_uninstall',
