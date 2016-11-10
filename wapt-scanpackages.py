@@ -24,6 +24,7 @@ __version__ = "1.3.9"
 
 import os
 import sys
+from waptpackage import update_packages
 
 try:
     wapt_root_dir = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
@@ -38,24 +39,46 @@ from optparse import OptionParser
 import logging
 
 logger = logging.getLogger()
-hdlr = logging.StreamHandler(sys.stderr)
-hdlr.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
-logger.addHandler(hdlr)
-logger.setLevel(logging.INFO)
 
-from waptpackage import update_packages
-
-usage="""\
+__doc__ = """\
 %prog <wapt_directory>
 
 Build a "Packages" file from all wapt file in the specified directory
 """
 
+def setloglevel(loglevel):
+    """set loglevel as string"""
+    if loglevel in ('debug','warning','info','error','critical'):
+        numeric_level = getattr(logging, loglevel.upper(), None)
+        if not isinstance(numeric_level, int):
+            raise ValueError('Invalid log level: %s' % loglevel)
+        logger.setLevel(numeric_level)
+
+
+
 def main():
-    if len(sys.argv) != 2:
-        logger.error('Usage: wapt-scanpackages <wapt_directory>')
+    parser=OptionParser(usage=__doc__)
+    parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
+    (options,args) = parser.parse_args()
+
+    loglevel = options.loglevel
+
+    if len(logger.handlers) < 1:
+        hdlr = logging.StreamHandler(sys.stderr)
+        hdlr.setFormatter(logging.Formatter(
+            u'%(asctime)s %(levelname)s %(message)s'))
+        logger.addHandler(hdlr)
+
+    if loglevel:
+        setloglevel(loglevel)
+    else:
+        setloglevel('warning')
+
+    if len(args) != 1:
+        parser.usage
         sys.exit(1)
-    wapt_path = sys.argv[1]
+
+    wapt_path = args[0]
     if os.path.exists(wapt_path)==False:
         logger.error("Directory does not exist: %s", wapt_path)
         sys.exit(1)

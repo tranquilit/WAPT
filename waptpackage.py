@@ -835,7 +835,7 @@ class WaptLocalRepo(WaptBaseRepo):
         """
         # Packages file is a zipfile with one Packages file inside
         if os.path.isfile(self.packages_path):
-            self._packages_date = datetime2isodate(datetime.datetime.utcfromtimestamp(os.stat(self.packages_path).st_mtime))
+            self._packages_date = fileisoutcdate(self.packages_path)
             packages_file = zipfile.ZipFile(self.packages_path)
             try:
                 packages_lines = packages_file.read(name='Packages').decode('utf8').splitlines()
@@ -894,7 +894,9 @@ class WaptLocalRepo(WaptBaseRepo):
             self._packages = []
         old_entries = {}
         for package in self.packages:
-            old_entries[os.path.basename(package.filename)] = package
+            # keep only entries which are older than index. Other should be recalculated.
+            if fileisoutcdate(os.path.join(self.localpath,os.path.basename(package.filename))) <= self._packages_date:
+                old_entries[os.path.basename(package.filename)] = package
 
         if not os.path.isdir(self.localpath):
             raise Exception(u'%s is not a directory' % (self.localpath))
@@ -943,7 +945,7 @@ class WaptLocalRepo(WaptBaseRepo):
                         icon = extract_iconpng_from_wapt(fname)
                         open(icon_fn,'wb').write(icon)
                     except Exception as e:
-                        logger.warning(r"Unable to extract icon for %s:%s"%(fname,e))
+                        logger.info(r"Unable to extract icon for %s:%s"%(fname,e))
 
             except Exception,e:
                 print e
@@ -1355,15 +1357,11 @@ def update_packages(adir,force=False):
     >>> [p for p in l2 if p not in l1]
     ["test (=10)"]
     """
-    repo = WaptLocalRepo(localpath=adir)
+    repo = WaptLocalRepo(localpath=os.path.abspath(adir))
     return repo.update_packages_index(force_all=force)
 
 if __name__ == '__main__':
-    r = WaptRemoteRepo('http://wapt.tranquilit.local/wapt')
-    r.update()
-
-    r = WaptRemoteRepo('http://wapt.tranquilit.local/wapt')
-    r.update()
+    update_packages('c:/wapt/cache')
     exit()
     import doctest
     import sys
