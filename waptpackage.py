@@ -885,18 +885,23 @@ class WaptLocalRepo(WaptBaseRepo):
         Extract icons from packages (WAPT/icon.png) and stores them in <repo path>/icons/<package name>.png
 
         """
-        packages_fname = os.path.join(self.localpath,'Packages')
-        icons_path = os.path.join(self.localpath,'icons')
+        packages_fname = os.path.abspath(os.path.join(self.localpath,'Packages'))
+        icons_path = os.path.abspath(os.path.join(self.localpath,'icons'))
         if not os.path.isdir(icons_path):
             os.makedirs(icons_path)
 
         if force_all:
             self._packages = []
+
         old_entries = {}
         for package in self.packages:
             # keep only entries which are older than index. Other should be recalculated.
-            if fileisoutcdate(os.path.join(self.localpath,os.path.basename(package.filename))) <= self._packages_date:
-                old_entries[os.path.basename(package.filename)] = package
+            localwaptfile = os.path.join(self.localpath,os.path.basename(package.filename))
+            if os.path.isfile(localwaptfile):
+                if fileisoutcdate(localwaptfile) <= self._packages_date:
+                    old_entries[os.path.basename(package.filename)] = package
+                else:
+                    logger.info("Don't keep old entry for %s, wapt package is newer than index..." % package.asrequirement())
 
         if not os.path.isdir(self.localpath):
             raise Exception(u'%s is not a directory' % (self.localpath))
@@ -945,7 +950,7 @@ class WaptLocalRepo(WaptBaseRepo):
                         icon = extract_iconpng_from_wapt(fname)
                         open(icon_fn,'wb').write(icon)
                     except Exception as e:
-                        logger.info(r"Unable to extract icon for %s:%s"%(fname,e))
+                        logger.debug(r"Unable to extract icon for %s:%s"%(fname,e))
 
             except Exception,e:
                 print e
@@ -953,14 +958,25 @@ class WaptLocalRepo(WaptBaseRepo):
                 errors.append(fname)
 
         logger.info(u"Writing new %s" % packages_fname)
-        myzipfile = zipfile.ZipFile(packages_fname, "w",compression=zipfile.ZIP_DEFLATED)
         try:
-            zi = zipfile.ZipInfo(u"Packages",date_time = time.localtime())
-            zi.compress_type = zipfile.ZIP_DEFLATED
-            myzipfile.writestr(zi,u'\n'.join(packages_lines).encode('utf8'))
-            logger.info(u"Finished")
-        finally:
-            myzipfile.close()
+            tmp_packages_fname = packages_fname+'.%s'%datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+            myzipfile = zipfile.ZipFile(tmp_packages_fname, "w",compression=zipfile.ZIP_DEFLATED)
+            try:
+                zi = zipfile.ZipInfo(u"Packages",date_time = time.localtime())
+                zi.compress_type = zipfile.ZIP_DEFLATED
+                myzipfile.writestr(zi,u'\n'.join(packages_lines).encode('utf8'))
+                myzipfile.close()
+                myzipfile = None
+                os.rename(tmp_packages_fname,packages_fname)
+                logger.info(u"Finished")
+            finally:
+                if myzipfile:
+                    myzipfile.close()
+        except Exception as e:
+            if os.path.isfile(tmp_packages_fname):
+                os.unlink(tmp_packages_fname)
+            logger.critical('Unable to create new Packages file : %s' % e)
+            raise
         return {'processed':processed,'kept':kept,'errors':errors,'packages_filename':packages_fname}
 
     def is_available(self):
@@ -1361,8 +1377,6 @@ def update_packages(adir,force=False):
     return repo.update_packages_index(force_all=force)
 
 if __name__ == '__main__':
-    update_packages('c:/wapt/cache')
-    exit()
     import doctest
     import sys
     reload(sys)

@@ -58,6 +58,7 @@ def setloglevel(loglevel):
 
 def main():
     parser=OptionParser(usage=__doc__)
+    parser.add_option("-f","--force",    dest="force",    default=False, action='store_true', help="Force (default: %default)")
     parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
     (options,args) = parser.parse_args()
 
@@ -85,8 +86,11 @@ def main():
     if os.path.isdir(wapt_path)==False:
         logger.error("%s is not a directory", wapt_path)
         sys.exit(1)
-    res = update_packages(wapt_path)
+
+    res = update_packages(wapt_path,force = options.force)
+
     if res and os.name == 'posix':
+        logger.info('Set Packages file ownership to wapt')
         import pwd
         pwd_entry = pwd.getpwnam('wapt')
         uid, gid = pwd_entry.pw_uid, pwd_entry.pw_gid

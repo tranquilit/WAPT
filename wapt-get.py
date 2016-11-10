@@ -439,6 +439,7 @@ def main():
                     print u"Display package control data for %s\n" % (','.join(args[1:]),)
                     for p in result:
                         print p.ascontrol(with_non_control_attributes=True)
+                        print
 
             elif action == 'show-params':
                 if len(args) < 2:
@@ -886,9 +887,12 @@ def main():
                     jsonresult['result'] = result
                 else:
                     print ppdicttable(result, (
-                        ('status',10),
-                        ('package',30),
+                        (('status','Stat'),10),
+                        (('package','Package'),30),
                         ('version',10),
+                        (('architecture','Arc'),3),
+                        (('maturity','Val'),3),
+                        (('locale','Loc'),3),
                         ('description',80),
                         ('repo',10)))
 
