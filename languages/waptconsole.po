@@ -2226,7 +2226,7 @@ msgstr ""
 
 #: uwaptconsoleres.rscreationinprogress
 msgctxt "uwaptconsoleres.rscreationinprogress"
-msgid "Creation in progress."
+msgid "Building..."
 msgstr ""
 
 #: uwaptconsoleres.rsdefaultusagestatsurl
@@ -2500,7 +2500,7 @@ msgstr ""
 
 #: uwaptconsoleres.rspackagecreationerror
 msgctxt "uwaptconsoleres.rspackagecreationerror"
-msgid "Error while creating package : %s"
+msgid "Error while building package : %s"
 msgstr ""
 
 #: uwaptconsoleres.rspackageduplicateconfirm
@@ -2719,7 +2719,7 @@ msgstr ""
 
 #: uwaptconsoleres.rswaptagentsetupsuccess
 msgctxt "uwaptconsoleres.rswaptagentsetupsuccess"
-msgid "waptagent.exe successfully created : %s"
+msgid "waptagent.exe successfully built : %s"
 msgstr ""
 
 #: uwaptconsoleres.rswaptagentuploaderror
@@ -2767,7 +2767,7 @@ msgstr ""
 #: uwaptconsoleres.rswaptsetupuploadsuccess
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"
 msgid ""
-"WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+"WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
 "Don't forget to change the hash of waptagent.exe in your GPO\n"
 msgstr ""
 
@@ -2777,7 +2777,7 @@ msgid " waptupgrade : upgrade wapt-get.exe and database"
 msgstr ""
 
 #: uwaptconsoleres.rswaptupgradepackagebuilderror
-msgid "Unable to create WAPT Upgrade package"
+msgid "Unable to build WAPT Upgrade package"
 msgstr ""
 
 #: uwaptconsoleres.rswaptupgradepackagebuilt

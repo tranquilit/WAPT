@@ -23,14 +23,14 @@ resourcestring
   rsPublicKeyGenFailure = 'The generation of the public key has failed.';
   rsPublicKeyGenError = 'Error during key generation : %s';
 
-  rsCreationInProgress = 'Creation in progress.';
+  rsCreationInProgress = 'Building...';
   rsProgressTitle = 'Started uploading to WAPT server...';  // TODO more meaningful var name
-  rsWaptSetupUploadSuccess = 'WAPT agent and upgrade package successfully created and uploaded to the main repository'#13#10'Don''t forget to change the hash of waptagent.exe in your GPO';
+  rsWaptSetupUploadSuccess = 'WAPT agent and upgrade package successfully built and uploaded to the main repository'#13#10'Don''t forget to change the hash of waptagent.exe in your GPO';
   rsWaptUploadError = 'Error while uploading WAPT agent to the repository : %s';
   rsWaptSetupError = 'Error while creating agent : %s';
 
   rsWaptUpgradePackageBuilt = 'WAPT Upgrade package built and uploaded successfully';
-  rsWaptUpgradePackageBuildError = 'Unable to create WAPT Upgrade package';
+  rsWaptUpgradePackageBuildError = 'Unable to build WAPT Upgrade package';
 
   rsForcedUninstallPackages = 'Selection of packages to force-remove from the hosts';
   rsDependencies = 'Selection of packages to add to the hosts as dependencies';
@@ -53,7 +53,7 @@ resourcestring
 
   rsWaptAgentUploadSuccess = 'Successfully uploaded WAPT agent !';
   rsWaptAgentUploadError = 'Error while uploading WAPT agent : %s';
-  rsWaptAgentSetupSuccess = 'waptagent.exe successfully created : %s';
+  rsWaptAgentSetupSuccess = 'waptagent.exe successfully built : %s';
   rsWaptAgentSetupError = 'Error while creating waptagent.exe: %s';
 
   rsConfirmRmOnePackage = 'Are you sure you want to remove this package from the server ?';
@@ -140,7 +140,7 @@ resourcestring
 
   rsSaveMods = 'Save changes ?';
   rsUploading = 'Uploading';
-  rsPackageCreationError = 'Error while creating package : %s';
+  rsPackageCreationError = 'Error while building package : %s';
   rsHostConfigEditCaption = 'Edit host configuration';
   rsPackagesNeededOnHostCaption = 'Packages needed on host';
 

@@ -2309,8 +2309,8 @@ msgstr "Êtes-vous sûr(e) de vouloir supprimer %s paquet(s) de la/des machine(s
 
 #: uwaptconsoleres.rscreationinprogress
 msgctxt "uwaptconsoleres.rscreationinprogress"
-msgid "Creation in progress."
-msgstr "Création en cours."
+msgid "Building..."
+msgstr "Compilation en cours."
 
 #: uwaptconsoleres.rsdefaultusagestatsurl
 msgid "http://wapt.tranquil.it/usage_stats"
@@ -2583,8 +2583,8 @@ msgstr " -r --repo : URL des librairies des dépendances"
 
 #: uwaptconsoleres.rspackagecreationerror
 msgctxt "uwaptconsoleres.rspackagecreationerror"
-msgid "Error while creating package : %s"
-msgstr "Erreur lors de la création du paquet : %s"
+msgid "Error while building package : %s"
+msgstr "Erreur lors de la compilation du paquet : %s"
 
 #: uwaptconsoleres.rspackageduplicateconfirm
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
@@ -2796,7 +2796,8 @@ msgid ""
 "Warning, the version of the waptagent.exe installer is too old.\n"
 "Current waptagent.exe version: %s\n"
 "waptsetup-tis.exe version: %s\n"
-msgstr "Attention, la version de l'installeur waptagent.exe est trop vieille.\n"
+msgstr ""
+"Attention, la version de l'installeur waptagent.exe est trop vieille.\n"
 "Version actuelle de waptagent.exe: %s\n"
 "Version de waptsetup-tis.exe: %s\n"
 
@@ -2807,8 +2808,8 @@ msgstr "Erreur lors de la création du waptagent.exe : %s"
 
 #: uwaptconsoleres.rswaptagentsetupsuccess
 msgctxt "uwaptconsoleres.rswaptagentsetupsuccess"
-msgid "waptagent.exe successfully created : %s"
-msgstr "waptagent.exe a bien été créé : %s"
+msgid "waptagent.exe successfully built : %s"
+msgstr "waptagent.exe a bien été compilé : %s"
 
 #: uwaptconsoleres.rswaptagentuploaderror
 msgctxt "uwaptconsoleres.rswaptagentuploaderror"
@@ -2835,6 +2836,10 @@ msgid "You must first define the Package prefix in preferences"
 msgstr "Vous devez d'abord définir le préfixe des paquets dans les préférences"
 
 #: uwaptconsoleres.rswaptservererror
+#, fuzzy
+#| msgid ""
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -2843,6 +2848,11 @@ msgstr ""
 "%s\n"
 
 #: uwaptconsoleres.rswaptserveroldversion
+#, fuzzy
+#| msgid ""
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
 "Current server version: %s\n"
@@ -2858,9 +2868,13 @@ msgid "Error while creating agent : %s"
 msgstr "Erreur lors de la création de l'agent : %s"
 
 #: uwaptconsoleres.rswaptsetupuploadsuccess
+#, fuzzy
+#| msgid ""
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"
 msgid ""
-"WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+"WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
 "Don't forget to change the hash of waptagent.exe in your GPO\n"
 msgstr ""
 "L'agent WAPT ainsi que le paquet de mise à jour ont bien été créés et chargés dans le dépôt principal\n"
@@ -2872,7 +2886,9 @@ msgid " waptupgrade : upgrade wapt-get.exe and database"
 msgstr "waptupgade : upgrade wapt-get.exe et la base de données"
 
 #: uwaptconsoleres.rswaptupgradepackagebuilderror
-msgid "Unable to create WAPT Upgrade package"
+#, fuzzy
+#| msgid "Unable to create WAPT Upgrade package"
+msgid "Unable to build WAPT Upgrade package"
 msgstr "Création impossible du paquet de mise à jour WAPT"
 
 #: uwaptconsoleres.rswaptupgradepackagebuilt

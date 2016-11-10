@@ -1993,7 +1993,7 @@ class WaptHostRepo(WaptRepo):
             self.hosts_list.append(current_host)
         result = ''
         for host in self.hosts_list:
-            (entry,result) = self.update_host(host,waptdb,force=force)
+            (entry,result) = self.update_host(host,waptdb,force=force,public_certs=public_certs)
             if not entry in self.packages:
                 self.packages.append(entry)
         return result
