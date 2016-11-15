@@ -111,7 +111,7 @@ def splitThousands( s, tSep=',', dSep='.'):
     return lhs + splt[ :-1 ] + rhs
 
 
-def convert_bytes(bytes):
+def format_bytes(bytes):
     if bytes is None:
         return None
     else:
