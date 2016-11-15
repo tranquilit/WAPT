@@ -248,7 +248,9 @@ class PackageEntry(object):
 
     """
     required_attributes = ['package','version','architecture','section','priority']
-    optional_attributes = ['maintainer','description','depends','conflicts','maturity','locale','sources','installed_size','min_wapt_version',
+    optional_attributes = ['maintainer','description','depends','conflicts','maturity',
+        'locale','min_os_version','max_os_version','min_wapt_version',
+        'sources','installed_size',
         'signer','signer_fingerprint','signature','signature_date']
     non_control_attributes = ['localpath','filename','size','repo_url','md5sum','repo',]
     signed_attributes = required_attributes+['depends','conflicts','maturity']
@@ -263,8 +265,8 @@ class PackageEntry(object):
         self.package=package
         self.version=version
         self.architecture='all'
-        self.section=''
-        self.priority=''
+        self.section='base'
+        self.priority='optional'
         self.maintainer=''
         self.description=''
         self.depends=''
@@ -281,7 +283,9 @@ class PackageEntry(object):
         self.signer_fingerprint=''
         self.signature=''
         self.signature_date=''
-        self.locale=''
+        self.locale='all'
+        self.min_os_version=''
+        self.max_os_version=''
         self.min_wapt_version=''
         self.installed_size=''
 
@@ -516,11 +520,8 @@ class PackageEntry(object):
             myzip.writestr(u'WAPT/control',self.ascontrol().encode('utf8'))
             myzip.close()
 
-    def ascontrol(self,with_non_control_attributes = False):
+    def ascontrol(self,with_non_control_attributes = False,with_empty_attributes=False):
         val = []
-        attrs = self.required_attributes+self.optional_attributes
-        if with_non_control_attributes:
-            attrs.extend(self.non_control_attributes)
 
         def escape_cr(s):
             # format multi-lines description with a space at each line start
@@ -529,8 +530,14 @@ class PackageEntry(object):
             else:
                 return s
 
-        for att in attrs:
-            val.append(u"%-18s: %s" % (att, escape_cr(getattr(self,att))))
+        for att in self.required_attributes+self.optional_attributes:
+            if with_empty_attributes or getattr(self,att):
+                val.append(u"%-18s: %s" % (att, escape_cr(getattr(self,att))))
+
+        if with_non_control_attributes:
+            for att in self.w:
+                if getattr(self,att):
+                    val.append(u"%-18s: %s" % (att, escape_cr(getattr(self,att))))
         return u'\n'.join(val)
 
     def make_package_filename(self):

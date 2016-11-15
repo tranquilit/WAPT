@@ -1921,6 +1921,8 @@ class WaptRepo(WaptRemoteRepo):
         if force or self.repo_url != last_url or self.need_update(last_modified):
             old_packages = self._packages
             old_packages_date = self._packages_date
+            os_version = setuphelpers.windows_version()
+
             with waptdb:
                 try:
                     logger.debug(u'Read remote Packages index file %s' % self.packages_url)
@@ -1940,6 +1942,11 @@ class WaptRepo(WaptRemoteRepo):
                                 waptdb.add_package_entry(package)
                             except:
                                 logger.critical('Invalid signature for package control entry %s on repo %s : discarding' % (package.asrequirement(),self.name) )
+
+                    if package.min_os_version and os_version < Version(package.min_os_version):
+                        logger.debug('Discarding package %s, requires OS version > %s' % (package.asrequirement(),package.min_os_version))
+                    if package.max_os_version and os_version > Version(package.max_os_version):
+                        logger.debug('Discarding package %s, requires OS version < %s' % (package.asrequirement(),package.max_os_version))
 
                     logger.debug(u'Storing last-modified header for repo_url %s : %s' % (self.repo_url,self.packages_date))
                     waptdb.set_param('last-%s' % self.repo_url[:59],self.packages_date)
@@ -2881,8 +2888,22 @@ class Wapt(object):
         previous_uninstall = self.registry_uninstall_snapshot()
         entry = PackageEntry()
         entry.load_control_from_wapt(fname)
+
         if entry.min_wapt_version and Version(entry.min_wapt_version)>Version(setuphelpers.__version__):
             raise Exception('This package requires a newer Wapt agent. Minimum version: %s' % entry.min_wapt_version)
+
+        # check if there is enough space for final install
+        # TODO : space for the temporary unzip ?
+        free_disk_space = setuphelpers.get_disk_free_space(setuphelpers.programfiles)
+        if entry.installed_size and free_disk_space < entry.installed_size:
+            raise Exception('This package requires at least %s free space. The "Program File"s drive has only %s free space' %
+                (format_bytes(entry.installed_size),format_bytes(free_disk_space)))
+
+        os_version = setuphelpers.windows_version()
+        if entry.min_os_version and os_version < Version(entry.min_os_version):
+            raise Exception('This package requires that OS be at least %s' % entry.min_os_version)
+        if entry.max_os_version and os_version > Version(entry.max_os_version):
+            raise Exception('This package requires that OS be at most %s' % entry.min_os_version)
 
         self.check_control_signature(entry)
 
