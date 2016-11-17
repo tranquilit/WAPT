@@ -167,6 +167,8 @@ def ppdicttable(alist, columns = [], callback=None):
     for row in alist:
         row_cb=[]
         for (name,width)in columns:
+            if isinstance(name,(list,tuple)):
+                name = name[0]
             if isinstance(row,dict):
                 row_cb.append(callback(name,row.get(name,None)))
             else:
