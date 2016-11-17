@@ -149,7 +149,7 @@ class SSLPrivateKey(object):
             crt = SSLCertificate(fn)
             if crt.match_key(self):
                 result.append(crt)
-        return crt
+        return result
 
     def encrypt(self,content):
         """Encrypt a message will can be decrypted with the public key"""

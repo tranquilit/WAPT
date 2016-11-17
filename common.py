@@ -4213,7 +4213,7 @@ class Wapt(object):
         Args:
             zip_or_directoryname: filename or path for the wapt package's content
             excludes: list of patterns to exclude from
-            private_key: path to the proivate key to use for SSL signing.
+            private_key: path to the private key to use for SSL signing.
             callback: ref to the function to call if a password is required for opening the private key.
 
         Returns:
@@ -4237,7 +4237,15 @@ class Wapt(object):
 
         if os.path.isfile(zip_or_directoryname):
             waptzip = ZipFile(zip_or_directoryname,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
-            manifest = waptzip.open('WAPT/manifest.sha1').read()
+            with waptzip:
+                manifest = waptzip.open('WAPT/manifest.sha1').read()
+                try:
+                    sign_info = waptzip.getinfo('WAPT/signature')
+                    already_signed = True
+                except KeyError:
+                    already_signed = False
+                # resign the control with same key
+                pe = PackageEntry().load_control_from_wapt(waptzip.open('WAPT/control').read().decode('utf8').splitlines())
         else:
             manifest_data = get_manifest_data(zip_or_directoryname,excludes=excludes)
             manifest = json.dumps(manifest_data,indent=True)
@@ -4248,12 +4256,23 @@ class Wapt(object):
         logger.info('Signing package manifest %s using private key %s' % (zip_or_directoryname,private_key))
         signature = key.sign_content(manifest)
         if os.path.isfile(zip_or_directoryname):
-            try:
-                # check if zip is already signed. Can not replace the signature in Zip, so raise an error.
-                sign_info = waptzip.getinfo('WAPT/signature')
-                raise Exception('The package %s has been  already signed on %s' % (zip_or_directoryname,datetime.datetime(*sign_info.date_time).ctime()))
-            except KeyError:
+            sevenzip = setuphelpers.makepath(setuphelpers.programfiles64,'7-Zip','7z.exe')
+            if not os.path.isfile(sevenzip):
+                sevenzip = setuphelpers.makepath(setuphelpers.programfiles32,'7-Zip','7z.exe')
+            # check if zip is already signed. Can not replace the signature in Zip, so raise an error.
+
+            # try to remove the signature if 7-Zip is installed
+            if already_signed and os.path.isfile(sevenzip):
+                logger.info('Trying to remove existing signature and control and to replace with new one')
+                setuphelpers.run([sevenzip,'d',zip_or_directoryname,'WAPT/signature','WAPT/control'])
+                already_signed = False
+            if not already_signed:
+                waptzip = ZipFile(zip_or_directoryname,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
+                pe.sign_control(key,key.matching_certs(os.path.dirname(key.private_key))[-1])
+                waptzip.writestr('WAPT/control',pe.ascontrol(),compress_type=zipfile.ZIP_STORED)
                 waptzip.writestr('WAPT/signature',signature.encode('base64'),compress_type=zipfile.ZIP_STORED)
+            else:
+                raise Exception('The package %s has already been signed on %s' % (zip_or_directoryname,datetime.datetime(*sign_info.date_time).ctime()))
         else:
             open(os.path.join(zip_or_directoryname,'WAPT','signature'),'w').write(signature.encode('base64'))
 
@@ -5707,6 +5726,9 @@ def check_user_membership(user_name,password,domain_name,group_name):
 Version = setuphelpers.Version  # obsolete
 
 if __name__ == '__main__':
+    w = Wapt()
+    w.sign_package(r'C:\tranquilit\tis-libreoffice_5.2.3.3-28_all.wapt')
+    sys.exit(0)
     import doctest
     import sys
     reload(sys)
