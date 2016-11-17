@@ -25,6 +25,7 @@ __version__ = "1.3.9"
 import os,sys
 import codecs
 import hashlib
+import glob
 
 from M2Crypto import EVP, X509, SSL
 from M2Crypto.EVP import EVPError
@@ -141,6 +142,14 @@ class SSLPrivateKey(object):
         if not isinstance(crt,SSLCertificate):
             crt = SSLCertificate(crt)
         return crt.get_pubkey().get_modulus() == self.key.get_modulus()
+
+    def matching_certs(self,cert_dir):
+        result = []
+        for fn in glob.glob(os.path.join(cert_dir,'*.crt')):
+            crt = SSLCertificate(fn)
+            if crt.match_key(self):
+                result.append(crt)
+        return crt
 
     def encrypt(self,content):
         """Encrypt a message will can be decrypted with the public key"""

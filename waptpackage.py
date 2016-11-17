@@ -650,7 +650,6 @@ def extract_iconpng_from_wapt(fname):
 
     return iconpng
 
-
 class WaptBaseRepo(object):
     """Base abstract class for a Wapt Packages repository
     """
