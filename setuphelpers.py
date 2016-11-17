@@ -195,6 +195,7 @@ __all__ = \
  'winshell',
  'wmi_info',
  'wmi_info_basic',
+ 'wmi_as_struct',
  'windows_version',
  'datetime2isodate',
  'httpdatetime2isodate',
@@ -2360,15 +2361,18 @@ def win_startup_info():
 
 
 def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_BIOS','Win32_NetworkAdapter','Win32_Printer','Win32_VideoController','Win32_LogicalDisk','Win32_OperatingSystem'],
-        exclude_subkeys=['OEMLogoBitmap']):
+        exclude_subkeys=['OEMLogoBitmap'],**where):
     """Get WMI machine informations as dictionaries
 
     """
     result = {}
-    import wmi
     wm = wmi.WMI()
     for key in keys:
-        cs = getattr(wm,key)()
+        wmiclass = getattr(wm,key)
+        if where:
+            cs = wmiclass.query(**where)
+        else:
+            cs = wmiclass()
         if len(cs)>1:
             na = result[key] = []
             for cs2 in cs:
@@ -2388,6 +2392,27 @@ def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_B
                             result[key][k] = prop.Value
     return result
 
+def wmi_as_struct(wmi_object,exclude_subkeys=['OEMLogoBitmap']):
+    """Convert a wmi object to a simple python list/dict structure"""
+    result = None
+    if len(wmi_object)>1:
+        na = result = []
+        for cs2 in wmi_object:
+            na.append({})
+            for k in cs2.properties.keys():
+                if not k in exclude_subkeys:
+                    prop = cs2.wmi_property(k)
+                    if prop:
+                        na[-1][k] = prop.Value
+    elif len(wmi_object)>0:
+        result = {}
+        if wmi_object:
+            for k in wmi_object[0].properties.keys():
+                if not k in exclude_subkeys:
+                    prop = wmi_object[0].wmi_property(k)
+                    if prop:
+                        result[k] = prop.Value
+    return result
 
 def wmi_info_basic():
     """Return uuid, serial, model, vendor from WMI
@@ -2398,6 +2423,10 @@ def wmi_info_basic():
     >>> r = wmi_info_basic()
     >>> 'System_Information' in r
     True
+    """
+    result = {u'System_Information':
+            wmi_as_struct(wmi.WMI().Win32_ComputerSystemProduct.query(fields=['UUID','IdentifyingNumber','Name','Vendor']))
+            }
     """
     res = run('echo "" | wmic PATH Win32_ComputerSystemProduct GET UUID,IdentifyingNumber,Name,Vendor /VALUE')
     wmiout = {}
@@ -2413,6 +2442,7 @@ def wmi_info_basic():
                 u'Serial_Number':wmiout[u'IdentifyingNumber'],
                 }
             }
+    """
     return result
 
 def critical_system_pending_updates():
@@ -2488,10 +2518,10 @@ def host_info():
 
 def local_drives():
     w = wmi.WMI()
-    keystr = ['DriveType','Description','FileSystem','Name','VolumeSerialNumber']
+    keystr = ['Caption','DriveType','Description','FileSystem','Name','VolumeSerialNumber']
     keyint = ['FreeSpace','Size']
     result = {}
-    for disk in w.Win32_LogicalDisk():
+    for disk in w.Win32_LogicalDisk(fields=keystr+keyint):
         details = {}
         for key in keystr:
             details[key] = getattr(disk,key)
@@ -3419,10 +3449,9 @@ def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefor
             caller_globals['uninstallkey'].append(key)
 
 
-def installed_windows_updates():
+def installed_windows_updates(**filter):
     """return list of installed updates, indepently from WUA agent"""
-    return wmi_info(keys=['Win32_QuickFixEngineering'])['Win32_QuickFixEngineering']
-
+    return wmi_as_struct(wmi.WMI().Win32_QuickFixEngineering.query(**filter))
 
 def local_desktops():
     """Return a list of all local user's desktops paths
