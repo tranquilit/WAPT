@@ -5726,9 +5726,6 @@ def check_user_membership(user_name,password,domain_name,group_name):
 Version = setuphelpers.Version  # obsolete
 
 if __name__ == '__main__':
-    w = Wapt()
-    w.sign_package(r'C:\tranquilit\tis-libreoffice_5.2.3.3-28_all.wapt')
-    sys.exit(0)
     import doctest
     import sys
     reload(sys)

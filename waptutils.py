@@ -371,3 +371,12 @@ def dateof(adatetime):
     return adatetime.replace(hour=0,minute=0,second=0,microsecond=0)
 
 
+if __name__ == '__main__':
+    import doctest
+    import sys
+    reload(sys)
+    sys.setdefaultencoding("UTF-8")
+    import doctest
+    doctest.ELLIPSIS_MARKER = '???'
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
+    sys.exit(0)
