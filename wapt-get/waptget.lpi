@@ -24,6 +24,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="3"/>
       <RevisionNr Value="9"/>
+      <BuildNr Value="1"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -68,7 +69,6 @@
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="19"/>
@@ -80,10 +80,11 @@
       <Unit1>
         <Filename Value="waptcommon.pas"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="2"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="120"/>
-        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1390"/>
+        <CursorPos X="1" Y="1420"/>
         <UsageCount Value="206"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -423,12 +424,10 @@
       <Unit43>
         <Filename Value="waptdb.pas"/>
         <UnitName Value="waptdb"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="55"/>
+        <TopLine Value="53"/>
         <CursorPos X="20" Y="48"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit43>
       <Unit44>
@@ -551,7 +550,7 @@
         <UsageCount Value="11"/>
       </Unit58>
     </Units>
-    <JumpHistory Count="7" HistoryIndex="6">
+    <JumpHistory Count="8" HistoryIndex="7">
       <Position1>
         <Filename Value="waptget.lpr"/>
         <Caret Line="385" Column="34" TopLine="357"/>
@@ -580,6 +579,10 @@
         <Filename Value="waptget.lpr"/>
         <Caret Line="34" Column="30" TopLine="16"/>
       </Position7>
+      <Position8>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="132" Column="41" TopLine="120"/>
+      </Position8>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
