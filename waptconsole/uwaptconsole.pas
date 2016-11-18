@@ -6,9 +6,9 @@ interface
 
 uses
   Classes, SysUtils, Windows, ActiveX, Types, Forms, Controls, Graphics,
-  Dialogs, Buttons, FileUtil, SynEdit, SynHighlighterPython, FZCommon,
-  ELDsgxPropStore, OMultiPanel, RxIniPropStorage, RxHistoryNavigator,
-  TplStatusBarUnit, TplSmartGridUnit, vte_json, ExtCtrls, StdCtrls, ComCtrls,
+  Dialogs, Buttons, FileUtil, SynEdit, SynHighlighterPython,
+  TplStatusBarUnit,
+  ELDsgxPropStore, OMultiPanel, RxIniPropStorage, vte_json, ExtCtrls, StdCtrls, ComCtrls,
   ActnList, Menus, jsonparser, superobject, VirtualTrees, VarPyth, ImgList,
   SOGrid, uvisloading, IdComponent, DefaultTranslator, GetText, uWaptConsoleRes,
   SearchEdit;
