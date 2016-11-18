@@ -330,13 +330,11 @@ end;
 
 procedure TVisEditPackage.EdPackageExit(Sender: TObject);
 begin
-  EdPackage.Text:=Trim(LowerCase(EdPackage.Text));
+  EdPackage.Text:=Trim(EdPackage.Text);
 end;
 
 procedure TVisEditPackage.EdPackageKeyPress(Sender: TObject; var Key: char);
 begin
-
-  key := lowerCase(key);
   if not (key in ['a'..'z','0'..'9','-',#8,#9]) then
       Key:=#0;
 end;
@@ -530,12 +528,12 @@ begin
     end
     else
     begin
-      PackageEdited.S['package'] := StringReplace(trim(lowercase(EdPackage.Text)),' ','',[rfReplaceAll]);
+      PackageEdited.S['package'] := StringReplace(trim(EdPackage.Text),' ','',[rfReplaceAll]);
       PackageEdited.S['version'] := trim(lowercase(EdVersion.Text));
       PackageEdited.S['description'] := UTF8Decode(EdDescription.Text);
       PackageEdited.S['section'] :=  trim(lowercase(EdSection.Text));
-      PackageEdited.S['depends'] :=  trim(lowercase(Depends));
-      PackageEdited.S['conflicts'] :=  trim(lowercase(Conflicts));
+      PackageEdited.S['depends'] :=  trim(Depends);
+      PackageEdited.S['conflicts'] :=  trim(Conflicts);
       DMPython.PythonEng.ExecString('p = waptpackage.PackageEntry()');
       DMPython.PythonEng.ExecString(
         format('p.load_control_from_dict(json.loads(r"""%s"""))', [utf8Encode(PackageEdited.AsJson)]));
