@@ -1838,11 +1838,10 @@ class WaptPackageInstall(WaptTask):
         if unavailable:
             s.append(__(u'Unavailable : {}').format(unavailable))
         self.summary = u"\n".join(s)
-        if self.result['errors']:
+        if self.result.get('errors',[]):
             raise Exception(__('Error during install of {}: errors in packages {}').format(
                     self.packagename,
-                    ','.join([ p[1].package for p in self.result['errors']]),
-                    ))
+                    self.result.get('errors',[])))
 
     def as_dict(self):
         d = WaptTask.as_dict(self)
