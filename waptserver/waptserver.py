@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="1.3.8"
+__version__="1.3.8.3"
 
 import os,sys
 try:
@@ -1805,7 +1805,7 @@ def install_windows_service():
     make_mongod_config(wapt_root_dir)
 
     service_binary =os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe'))
-    service_parameters = "%s %s %s" % (
+    service_parameters = '"%s" "%s" "%s"' % (
         os.path.join(wapt_root_dir,'waptserver','mongodb','mongod.py'),
         os.path.join(wapt_root_dir,'waptserver','mongodb','mongod.exe'),
         os.path.join(wapt_root_dir,'waptserver','mongodb','mongod.cfg')
@@ -1823,7 +1823,7 @@ def install_windows_service():
 
     # register waptserver
     service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe'))
-    service_parameters = os.path.abspath(__file__)
+    service_parameters = '"%s"' % os.path.abspath(__file__)
     service_logfile = os.path.join(log_directory,'nssm_waptserver.log')
     service_dependencies = 'WAPTMongodb'
     if install_apache_service:
