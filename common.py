@@ -2851,7 +2851,7 @@ class Wapt(object):
         for public_cert in self.public_certs:
             try:
                 crt = SSLCertificate(public_cert)
-                return package_entry.check_signature(crt)
+                return package_entry.check_control_signature(crt)
             except:
                 pass
         raise Exception('SSL signature verification failed for control %s, either none public certificates match signature or signed content has been changed'%package_entry.asrequirement())
@@ -4269,7 +4269,7 @@ class Wapt(object):
             if not already_signed:
                 waptzip = ZipFile(zip_or_directoryname,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
                 pe.sign_control(key,key.matching_certs(os.path.dirname(key.private_key))[-1])
-                waptzip.writestr('WAPT/control',pe.ascontrol(),compress_type=zipfile.ZIP_STORED)
+                waptzip.writestr('WAPT/control',pe.ascontrol().encode('utf8'),compress_type=zipfile.ZIP_STORED)
                 waptzip.writestr('WAPT/signature',signature.encode('base64'),compress_type=zipfile.ZIP_STORED)
             else:
                 raise Exception('The package %s has already been signed on %s' % (zip_or_directoryname,datetime.datetime(*sign_info.date_time).ctime()))

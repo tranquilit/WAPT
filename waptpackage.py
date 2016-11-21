@@ -253,6 +253,8 @@ class PackageEntry(object):
     non_control_attributes = ['localpath','filename','size','repo_url','md5sum','repo',]
     signed_attributes = required_attributes+['depends','conflicts','maturity']
 
+    manifest_filename_excludes = ['WAPT/signature','WAPT/manifest.sha1']
+
     @property
     def all_attributes(self):
         return self.required_attributes + self.optional_attributes + self.non_control_attributes + self.calculated_attributes
@@ -606,7 +608,7 @@ class PackageEntry(object):
         self.signer = certificate.cn
         self.signer_fingerprint = certificate.fingerprint
 
-    def check_signature(self,certificate):
+    def check_control_signature(self,certificate):
         """Check if control important data das not been changed since signature
 
         >>> from waptpackage import *
@@ -617,12 +619,53 @@ class PackageEntry(object):
         >>> p = PackageEntry('test',version='1.0-0')
         >>> p.depends = 'test'
         >>> p.sign_control(k,c)
-        >>> p.check_signature(c)
+        >>> p.check_control_signature(c)
 
         """
         if not self.signature:
             raise Exception('This control data is not signed')
         return certificate.verify_content(self.signed_content(),self.signature.decode('base64'))
+
+    def build_manifest(self,exclude_filenames = None,block_size=2**20):
+        if not os.path.isfile(self.wapt_fullpath()):
+            raise Exception(u"%s is not a Wapt package" % self.wapt_fullpath())
+        if exclude_filenames is None:
+            exclude_filenames = self.manifest_filename_excludes
+        waptzip = zipfile.ZipFile(self.wapt_fullpath(),'r',allowZip64=True)
+        manifest = {}
+        for fn in waptzip.filelist:
+            if not fn.filename in exclude_filenames:
+                shasum = hashlib.sha1()
+                file_data = waptzip.open(fn)
+                while True:
+                    data = file_data.read(block_size)
+                    if not data:
+                        break
+                    shasum.update(data)
+                shasum.update(data)
+                manifest[fn.filename] = shasum.hexdigest()
+        return manifest
+
+    def sign_package(self,private_key,certificate):
+        if not os.path.isfile(self.wapt_fullpath()):
+            raise Exception(u"%s is not a Wapt package" % self.wapt_fullpath())
+        package_fn = self.wapt_fullpath()
+        logger.debug('Signing %s with key %s, and certificate cn %s' % (package_fn,private_key,certificate.cn))
+        # sign the control
+        self.sign_control(private_key,certificate)
+        control = self.ascontrol().encode('utf8')
+        manifest_data = self.build_manifest(exclude_filenames = self.manifest_filename_excludes+['WAPT/control'])
+        manifest_data['WAPT/control'] = sha1_for_data(control)
+        # convert to list of list...
+        wapt_manifest = json.dumps( manifest_data.items())
+        signature = private_key.sign_content(wapt_manifest)
+        zip_remove_files(package_fn,['WAPT/control','WAPT/manifest.sha1','WAPT/signature'])
+        waptzip = zipfile.ZipFile(self.wapt_fullpath(),'a',allowZip64=True)
+        with waptzip:
+            waptzip.writestr('WAPT/control',control)
+            waptzip.writestr('WAPT/manifest.sha1',wapt_manifest)
+            waptzip.writestr('WAPT/signature',signature.encode('base64'))
+
 
 def extract_iconpng_from_wapt(fname):
     """Return the content of WAPT/icon.png if it exists, a unknown.png file content if not
@@ -797,7 +840,7 @@ class WaptBaseRepo(object):
         for public_cert in public_certs:
             try:
                 crt = SSLCertificate(public_cert)
-                return package_entry.check_signature(crt)
+                return package_entry.check_control_signature(crt)
             except:
                 pass
         raise Exception('SSL signature verification failed for control %s, either none public certificates match signature or signed content has been changed'%package_entry.asrequirement())

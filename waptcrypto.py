@@ -108,7 +108,7 @@ class SSLPrivateKey(object):
     def __init__(self,private_key,callback=pwd_callback):
         if not os.path.isfile(private_key):
             raise Exception('Private key %s not found' % private_key)
-        self.private_key = private_key
+        self.private_key_filename = private_key
         self.pwd_callback = callback
         self._rsa = None
         self._key = None
@@ -116,7 +116,7 @@ class SSLPrivateKey(object):
     @property
     def rsa(self):
         if not self._rsa:
-            self._rsa = RSA.load_key(self.private_key,callback=self.pwd_callback)
+            self._rsa = RSA.load_key(self.private_key_filename,callback=self.pwd_callback)
         return self._rsa
 
     @property
@@ -162,11 +162,32 @@ class SSLPrivateKey(object):
 
 class SSLCertificate(object):
     def __init__(self,public_cert):
-        if not os.path.isfile(public_cert):
-            raise Exception('Public certificate %s not found' % public_cert)
-        self.crt = X509.load_cert(public_cert)
+        self._public_cert_filename = None
+        self._crt = None
         self._rsa = None
         self._key = None
+        self.public_cert_filename = public_cert
+
+    @property
+    def public_cert_filename(self):
+        return self._public_cert_filename
+
+    @public_cert_filename.setter
+    def public_cert_filename(self,value):
+        if value != self._public_cert_filename:
+            self._public_cert_filename = value
+            self._crt = None
+            self._rsa = None
+            self._key = None
+            self._crt = None
+            if not os.path.isfile(value):
+                raise Exception('Public certificate %s not found' % value)
+
+    @property
+    def crt(self):
+        if self._crt is None:
+            self._crt = X509.load_cert(self._public_cert_filename)
+        return self._crt
 
     @property
     def rsa(self):

@@ -24,6 +24,7 @@ __version__ = "1.3.9"
 
 import os
 import re
+import subprocess
 import logging
 import types
 import datetime
@@ -33,6 +34,42 @@ import random
 import string
 import email
 import copy
+import platform
+
+if platform.system() == 'Windows':
+    try:
+        import ctypes
+        class _disable_file_system_redirection:
+            r"""Context manager to disable temporarily the wow3264 file redirector
+
+            >>> with disable_file_system_redirection():
+            ...     winshell.get_path(shellcon.CSIDL_PROGRAM_FILES)
+            u'C:\\Program Files (x86)'
+            """
+            _disable = ctypes.windll.kernel32.Wow64DisableWow64FsRedirection
+            _revert = ctypes.windll.kernel32.Wow64RevertWow64FsRedirection
+            def __enter__(self):
+                if self._disable:
+                    self.old_value = ctypes.c_long()
+                    self.success = self._disable(ctypes.byref(self.old_value))
+            def __exit__(self, type, value, traceback):
+                if self._revert and self.success:
+                    self._revert(self.old_value)
+    except Exception as e:
+        print('Unable to create disable_file_system_redirection class : %s'%e)
+        class _disable_file_system_redirection:
+            def __enter__(self):
+                pass
+
+            def __exit__(self, type, value, traceback):
+                pass
+
+    def _programfiles():
+        """Return native program directory, ie C:\Program Files for both 64 and 32 bits"""
+        if 'PROGRAMW6432' in os.environ:
+            return os.environ['PROGRAMW6432']
+        else:
+            return os.environ['PROGRAMFILES']
 
 logger = logging.getLogger()
 
@@ -370,6 +407,32 @@ def fileisoutcdate(filename):
 def dateof(adatetime):
     return adatetime.replace(hour=0,minute=0,second=0,microsecond=0)
 
+
+def zip_remove_files(zipfilename,filenames):
+    """Remove a list of files from a ZIP using 7-zip or zip (python ZipFile can't do that
+
+    >>> zip_remove_files('c:/wapt/cache/tis-java8_8.111-23_all.wapt',['WAPT/signature'])
+    """
+
+    try:
+        if platform.system() == 'Windows':
+            with _disable_file_system_redirection():
+                sevenzip = os.path.join(_programfiles(),'7-zip','7z.exe')
+                if not os.path.isfile(sevenzip):
+                    sevenzip = os.path.join(os.path.expandvars('%ProgramFiles(x86)%'),'7-zip','7z.exe')
+                if not os.path.isfile(sevenzip):
+                    raise Exception('7-Zip is not installed, unable to remove files %s from %s' % (filenames,zipfilename))
+                if os.path.isfile(zipfilename+'.tmp'):
+                    os.unlink(zipfilename+'.tmp')
+                result = subprocess.check_call([sevenzip,'d',zipfilename]+filenames)
+        else:
+            if platform.system() == 'Linux':
+                result = subprocess.check_call(['zip','-d',zipfilename]+filenames)
+    except Exception as e:
+        if os.path.isfile(zipfilename+'.tmp'):
+            os.unlink(zipfilename+'.tmp')
+        raise Exception('Unable to remove files %s from %s: error %s' % (filenames,zipfilename,e))
+    return result
 
 if __name__ == '__main__':
     import doctest
