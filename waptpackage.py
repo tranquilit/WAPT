@@ -665,6 +665,7 @@ class PackageEntry(object):
             waptzip.writestr('WAPT/control',control)
             waptzip.writestr('WAPT/manifest.sha1',wapt_manifest)
             waptzip.writestr('WAPT/signature',signature.encode('base64'))
+        return signature.encode('base64')
 
 
 def extract_iconpng_from_wapt(fname):
