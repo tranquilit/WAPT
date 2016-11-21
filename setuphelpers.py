@@ -2624,7 +2624,7 @@ def get_msi_properties(msi_filename):
         try:
             result[ensure_unicode(r.GetString(1))] = ensure_unicode(r.GetString(2))
         except:
-            logger.warning(u"erreur pour %s" % ensure_unicode(r.GetString(0)))
+            logger.warning(u"get_msi_properties : error for string %s" % ensure_unicode(r.GetString(0)))
         try:
             r = view.Fetch()
         except:
