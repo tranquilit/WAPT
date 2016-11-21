@@ -335,7 +335,7 @@ end;
 
 procedure TVisEditPackage.EdPackageKeyPress(Sender: TObject; var Key: char);
 begin
-  if not (key in ['a'..'z','0'..'9','-',#8,#9]) then
+  if not (lowercase(key) in ['a'..'z','0'..'9','-',#8,#9]) then
       Key:=#0;
 end;
 
