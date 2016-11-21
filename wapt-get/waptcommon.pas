@@ -1344,7 +1344,7 @@ begin
     inno_fn :=  wapt_base_dir + '\waptsetup' + '\innosetup' + '\ISCC.exe';
     if not FileExists(inno_fn) then
         raise Exception.CreateFmt(rsInnoSetupUnavailable, [inno_fn]);
-    Run(format('"%s"  %s',[inno_fn,custom_iss]),'',3600000,'','','',OnProgress);
+    Run(format('"%s"  "%s"',[inno_fn,custom_iss]),'',3600000,'','','',OnProgress);
     Result := AppendPathDelim(destination) + outputname + '.exe';
     signtool :=  AppendPathDelim(wapt_base_dir) + 'utils\signtool.exe';
     p12keyPath := ChangeFileExt(GetWaptPrivateKeyPath,'.p12');
