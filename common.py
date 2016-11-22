@@ -1933,20 +1933,21 @@ class WaptRepo(WaptRemoteRepo):
 
                     waptdb.purge_repo(self.name)
                     for package in self.packages:
-                        if package.min_wapt_version and Version(package.min_wapt_version)<Version(setuphelpers.__version__):
+                        if package.min_wapt_version and Version(package.min_wapt_version)>Version(setuphelpers.__version__):
                             logger.debug('Skipping package %s, requires a newer Wapt agent. Minimum version: %s' % (package.asrequirement(),package.min_wapt_version))
                             continue
-                        else:
-                            try:
-                                self.check_control_signature(package,public_certs)
-                                waptdb.add_package_entry(package)
-                            except:
-                                logger.critical('Invalid signature for package control entry %s on repo %s : discarding' % (package.asrequirement(),self.name) )
+                        if package.min_os_version and os_version < Version(package.min_os_version):
+                            logger.debug('Discarding package %s, requires OS version > %s' % (package.asrequirement(),package.min_os_version))
+                            continue
+                        if package.max_os_version and os_version > Version(package.max_os_version):
+                            logger.debug('Discarding package %s, requires OS version < %s' % (package.asrequirement(),package.max_os_version))
+                            continue
 
-                    if package.min_os_version and os_version < Version(package.min_os_version):
-                        logger.debug('Discarding package %s, requires OS version > %s' % (package.asrequirement(),package.min_os_version))
-                    if package.max_os_version and os_version > Version(package.max_os_version):
-                        logger.debug('Discarding package %s, requires OS version < %s' % (package.asrequirement(),package.max_os_version))
+                        try:
+                            self.check_control_signature(package,public_certs)
+                            waptdb.add_package_entry(package)
+                        except:
+                            logger.critical('Invalid signature for package control entry %s on repo %s : discarding' % (package.asrequirement(),self.name) )
 
                     logger.debug(u'Storing last-modified header for repo_url %s : %s' % (self.repo_url,self.packages_date))
                     waptdb.set_param('last-%s' % self.repo_url[:59],self.packages_date)

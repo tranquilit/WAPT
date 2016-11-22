@@ -535,7 +535,7 @@ class PackageEntry(object):
                 val.append(u"%-18s: %s" % (att, escape_cr(getattr(self,att))))
 
         if with_non_control_attributes:
-            for att in self.w:
+            for att in self.non_control_attributes:
                 if getattr(self,att):
                     val.append(u"%-18s: %s" % (att, escape_cr(getattr(self,att))))
         return u'\n'.join(val)
