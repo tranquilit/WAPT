@@ -66,18 +66,22 @@ FileName=C:\tranquilit\wapt\wapt-scanpackages.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node10]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptutils.py
+FileName=C:\tranquilit\wapt\wapt-signpackages.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node11]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptwua.py
+FileName=C:\tranquilit\wapt\waptutils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node12]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptwua.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node13]
 ClassName=TProjectFileNode
 FileName=C:\tranquilit\wapt\waptserver\wsus.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=13
+Count=14
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
@@ -1477,8 +1481,31 @@ WorkingDirectory=$[ActiveScript-Dir]
 ShortCut=0
 MessagesFormat=$[FileName] $[LineNumber]
 
+[Project\ChildNodes\Node1\ChildNodes\Node59]
+ClassName=TProjectRunConfiguationNode
+Name=sign-packages
+
+[Project\ChildNodes\Node1\ChildNodes\Node59\RunConfig]
+ScriptName=C:\tranquilit\wapt\wapt-signpackages.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=-ldebug -k c:\private\ko.pem -c c:\private\tranquilit.crt c:\wapt\cache\*.wapt 
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node59\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
+
 [Project\ChildNodes\Node1\ChildNodes]
-Count=59
+Count=60
 
 [Project\ChildNodes]
 Count=2

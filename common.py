@@ -918,6 +918,7 @@ class WaptDB(WaptBaseDB):
                     locale='',
                     signature='',
                     signature_date='',
+                    min_wapt_version=''
                     ):
 
         with self:
@@ -943,8 +944,9 @@ class WaptDB(WaptBaseDB):
                     maturity,
                     locale,
                     signature,
-                    signature_date
-                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    signature_date,
+                    min_wapt_version
+                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,(
                      package,
                      version,
@@ -966,7 +968,8 @@ class WaptDB(WaptBaseDB):
                      maturity,
                      locale,
                      signature,
-                     signature_date
+                     signature_date,
+                     min_wapt_version,
                      )
                    )
             return cur.lastrowid
@@ -997,6 +1000,7 @@ class WaptDB(WaptBaseDB):
                              locale=package_entry.locale,
                              signature=package_entry.signature,
                              signature_date=package_entry.signature_date,
+                             min_wapt_version=package_entry.min_wapt_version,
                              )
 
     def add_start_install(self,package,version,architecture,params_dict={},explicit_by=None,maturity='',locale=''):
@@ -1927,11 +1931,15 @@ class WaptRepo(WaptRemoteRepo):
 
                     waptdb.purge_repo(self.name)
                     for package in self.packages:
-                        try:
-                            self.check_control_signature(package,public_certs)
-                            waptdb.add_package_entry(package)
-                        except:
-                            logger.critical('Invalid signature for package control entry %s on repo %s : discarding' % (package.asrequirement(),self.name) )
+                        if package.min_wapt_version and Version(package.min_wapt_version)<Version(setuphelpers.__version__):
+                            logger.debug('Skipping package %s, requires a newer Wapt agent. Minimum version: %s' % (package.asrequirement(),package.min_wapt_version))
+                            continue
+                        else:
+                            try:
+                                self.check_control_signature(package,public_certs)
+                                waptdb.add_package_entry(package)
+                            except:
+                                logger.critical('Invalid signature for package control entry %s on repo %s : discarding' % (package.asrequirement(),self.name) )
 
                     logger.debug(u'Storing last-modified header for repo_url %s : %s' % (self.repo_url,self.packages_date))
                     waptdb.set_param('last-%s' % self.repo_url[:59],self.packages_date)
@@ -4236,7 +4244,12 @@ class Wapt(object):
             key = SSLPrivateKey(private_key,callback=callback)
 
         # get matching certificate
-        cert = key.matching_certs(os.path.dirname(key.private_key_filename))[-1]
+        try:
+            cert = SSLCertificate(key.private_key_filename)
+            # try loading x509
+            logger.debug('Using identity : %s' % cert.cn)
+        except:
+            cert = key.matching_certs(os.path.dirname(key.private_key_filename))[-1]
         pe =  PackageEntry().load_control_from_wapt(zip_or_directoryname)
         return pe.sign_package(key,cert)
 
