@@ -85,7 +85,7 @@ def main():
         sys.exit(1)
 
     key = SSLPrivateKey(options.private_key)
-    cert = SSLCertificate(options.public_key)
+    cert = SSLCertificate(options.public_key or options.private_key)
 
     waptpackages = []
     for arg in args:
