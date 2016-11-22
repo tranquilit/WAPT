@@ -424,7 +424,9 @@ def zip_remove_files(zipfilename,filenames):
                     raise Exception('7-Zip is not installed, unable to remove files %s from %s' % (filenames,zipfilename))
                 if os.path.isfile(zipfilename+'.tmp'):
                     os.unlink(zipfilename+'.tmp')
-                result = subprocess.check_call([sevenzip,'d',zipfilename]+filenames)
+                si = subprocess.STARTUPINFO()
+                si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+                result = subprocess.check_call([sevenzip,'d',zipfilename]+filenames,startupinfo = si)
         else:
             if platform.system() == 'Linux':
                 result = subprocess.check_call(['zip','-d',zipfilename]+filenames)

@@ -283,7 +283,7 @@ class PackageEntry(object):
         self.signer_fingerprint=''
         self.signature=''
         self.signature_date=''
-        self.locale='all'
+        self.locale=''
         self.min_os_version=''
         self.max_os_version=''
         self.min_wapt_version=''
@@ -654,7 +654,10 @@ class PackageEntry(object):
         return manifest
 
     def sign_package(self,private_key,certificate):
-        if not os.path.isfile(self.wapt_fullpath()):
+        """Append control, manifest.sha1 and signature to zip apt package
+            If these files are already in the package, they are first removed.
+        """
+        if not os.path.isfile(self.wapt_fullpath()) and not os.path.isdir(self.wapt_fullpath()):
             raise Exception(u"%s is not a Wapt package" % self.wapt_fullpath())
         start_time = time.time()
         package_fn = self.wapt_fullpath()
@@ -667,7 +670,10 @@ class PackageEntry(object):
         # convert to list of list...
         wapt_manifest = json.dumps( manifest_data.items())
         signature = private_key.sign_content(wapt_manifest)
-        zip_remove_files(package_fn,['WAPT/control','WAPT/manifest.sha1','WAPT/signature'])
+        if 'WAPT/control' in manifest_data or \
+           'WAPT/manifest.sha1' in manifest_data or \
+           'WAPT/signature' in manifest_data:
+            zip_remove_files(package_fn,['WAPT/control','WAPT/manifest.sha1','WAPT/signature'])
         waptzip = zipfile.ZipFile(self.wapt_fullpath(),'a',allowZip64=True)
         with waptzip:
             waptzip.writestr('WAPT/control',control)
@@ -948,17 +954,19 @@ class WaptLocalRepo(WaptBaseRepo):
         old_entries = {}
         for package in self.packages:
             # keep only entries which are older than index. Other should be recalculated.
-            localwaptfile = os.path.join(self.localpath,os.path.basename(package.filename))
+            localwaptfile = os.path.abspath(os.path.join(self.localpath,os.path.basename(package.filename)))
             if os.path.isfile(localwaptfile):
                 if fileisoutcdate(localwaptfile) <= self._packages_date:
                     old_entries[os.path.basename(package.filename)] = package
                 else:
                     logger.info("Don't keep old entry for %s, wapt package is newer than index..." % package.asrequirement())
+            else:
+                logger.info('Stripping entry without matching file : %s'%localwaptfile)
 
         if not os.path.isdir(self.localpath):
             raise Exception(u'%s is not a directory' % (self.localpath))
 
-        waptlist = glob.glob(os.path.join(self.localpath,'*.wapt'))
+        waptlist = glob.glob(os.path.abspath(os.path.join(self.localpath,'*.wapt')))
         packages_lines = []
         kept = []
         processed = []
@@ -971,21 +979,27 @@ class WaptLocalRepo(WaptBaseRepo):
 
         for fname in waptlist:
             try:
+                package_filename = os.path.basename(fname)
                 entry = PackageEntry()
-                if os.path.basename(fname) in old_entries:
+                if package_filename in old_entries:
                     entry.load_control_from_wapt(fname,calc_md5=False)
-                    if not force_all and entry == old_entries[os.path.basename(fname)]:
-                        logger.debug(u"  Keeping %s" % fname)
+                    if not force_all and entry == old_entries[package_filename]:
+                        logger.debug(u"  Keeping %s" % package_filename)
                         kept.append(fname)
-                        entry = old_entries[os.path.basename(fname)]
+                        entry = old_entries[package_filename]
                     else:
-                        logger.debug(u"  Processing %s" % fname)
+                        logger.info(u"  Processing %s" % fname)
                         entry.load_control_from_wapt(fname)
                         processed.append(fname)
                 else:
-                    logger.debug(u"  Processing %s" % fname)
+                    logger.info(u"  Processing %s" % fname)
                     entry.load_control_from_wapt(fname)
                     processed.append(fname)
+                    theoritical_package_filename =  entry.make_package_filename()
+                    if package_filename != theoritical_package_filename:
+                        logger.warning('Package filename %s should be %s to comply with control metadata. Renaming...'%(package_filename,theoritical_package_filename))
+                        os.rename(fname,os.path.join(os.path.dirname(fname),theoritical_package_filename))
+
                 packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
                 # add a blank line between each package control
                 packages_lines.append('')
@@ -1019,6 +1033,7 @@ class WaptLocalRepo(WaptBaseRepo):
                 myzipfile.writestr(zi,u'\n'.join(packages_lines).encode('utf8'))
                 myzipfile.close()
                 myzipfile = None
+                os.unlink(packages_fname)
                 os.rename(tmp_packages_fname,packages_fname)
                 logger.info(u"Finished")
             finally:
@@ -1429,6 +1444,9 @@ def update_packages(adir,force=False):
     return repo.update_packages_index(force_all=force)
 
 if __name__ == '__main__':
+    r = WaptLocalRepo('c:/wapt/cache')
+    r.update_packages_index()
+    sys.exit(0)
     import doctest
     import sys
     reload(sys)
