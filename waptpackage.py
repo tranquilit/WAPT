@@ -649,6 +649,7 @@ class PackageEntry(object):
     def sign_package(self,private_key,certificate):
         if not os.path.isfile(self.wapt_fullpath()):
             raise Exception(u"%s is not a Wapt package" % self.wapt_fullpath())
+        start_time = time.time()
         package_fn = self.wapt_fullpath()
         logger.debug('Signing %s with key %s, and certificate cn %s' % (package_fn,private_key,certificate.cn))
         # sign the control
@@ -665,6 +666,7 @@ class PackageEntry(object):
             waptzip.writestr('WAPT/control',control)
             waptzip.writestr('WAPT/manifest.sha1',wapt_manifest)
             waptzip.writestr('WAPT/signature',signature.encode('base64'))
+        logger.debug('Time for signing %s : %s' % (package_fn,time.time()-start_time))
         return signature.encode('base64')
 
 
