@@ -207,6 +207,14 @@ __all__ = \
  'reg_enum_values',
  'win_startup_info',
  'WindowsVersions',
+ 'get_profiles_users',
+ 'get_last_logged_on_user',
+ 'get_user_from_sid',
+ 'get_profile_path',
+ 'wua_agent_version',
+ 'local_admins',
+ 'local_group_memberships',
+ 'local_group_members',
  ]
 
 import os
@@ -2552,11 +2560,67 @@ def host_info():
     info['virtual_memory'] = memory_status().ullTotalVirtual
 
     info['current_user'] = get_loggedinusers()
+    info['profiles_users'] = get_profiles_users()
+    info['last_logged_on_user'] = get_last_logged_on_user()
+    info['local_administrators'] = local_admins()
+
     info['windows_startup_items'] = win_startup_info()
 
     info['local_drives'] = local_drives()
+    info['wua_agent_version'] = wua_agent_version()
 
     return info
+
+def wua_agent_version():
+    try:
+        return get_file_properties(makepath(system32(),'wuapi.dll'))['ProductVersion']
+    except Exception as e:
+        return '0.0.0'
+
+def get_profile_path(sid):
+    """Return the filesystem path to profile of user with SID sid"""
+    return os.path.expandvars(
+        registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\%s' % sid,'ProfileImagePath'))
+
+def get_user_from_profpath(sid):
+    """extrapolate user from the profile directory path"""
+    try:
+        if not isinstance(sid,(str,unicode)):
+            sid = ("%s" % sid).split(':')[1]
+        profpath = get_profile_path(sid)
+        user = os.path.basename(profpath)
+        return user
+    except:
+        return None
+
+def get_user_from_sid(sid,controller=None):
+    """Returns domain\\user for the given sid
+        sid is either a string or a PySID
+    """
+    try:
+        if isinstance(sid,str) or isinstance(sid,unicode):
+            pysid = win32security.ConvertStringSidToSid(sid)
+        else:
+            pysid = sid
+        name, domain, type = win32security.LookupAccountSid (controller, pysid)
+        return "%s\\%s" % (domain,name)
+    except win32security.error as e:
+        logger.critical(u'Unable to GET username from SID %s : %s' % ("%s" % sid,e))
+        # try from directory
+        return get_user_from_profpath(sid)
+
+def get_profiles_users(domain_sid=None):
+    """Return list of locally created profiles usernames"""
+    result = []
+    profiles_path = r'SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList'
+    for profsid in reg_enum_subkeys(reg_openkey_noredir(HKEY_LOCAL_MACHINE,profiles_path)):
+        if not domain_sid or (profsid.startswith('S-') and profsid.rsplit('-',1)[0] == domain_sid) and isdir(get_profile_path(profsid)):
+            result.append(get_user_from_sid(profsid))
+    return result
+
+def get_last_logged_on_user():
+    last_logged_on_user = registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI','LastLoggedOnUser','')
+    return last_logged_on_user
 
 def local_drives():
     w = wmi.WMI()
@@ -2783,6 +2847,15 @@ def local_admins():
     [u'Administrateur', u'cyg_user', u'install', u'toto']    """
     return [g['name'] for g  in win32net.NetUserEnum(None,2)[0] if g['priv'] == win32netcon.USER_PRIV_ADMIN ]
 
+def local_group_memberships(username):
+    """List the local groups a user is member Of"""
+    return win32net.NetUserGetLocalGroups(None,username)
+
+def local_group_members(groupname):
+    result = []
+    for item in win32net.NetLocalGroupGetMembers(None,groupname,3)[0]:
+        result.append(item['domainandname'])
+    return result
 
 def adjust_current_privileges(priv, enable = 1):
     # Get the process token.
