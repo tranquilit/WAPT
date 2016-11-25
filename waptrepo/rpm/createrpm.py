@@ -95,11 +95,13 @@ copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
 
 if platform.dist()[0] in ('debian','ubuntu'):
     os.makedirs('BUILDROOT/var/www/wapt')
+    os.makedirs('BUILDROOT/var/www/waptwua')
     os.makedirs('BUILDROOT/var/www/waptdev')
     os.makedirs('BUILDROOT/var/www/wapt-host')
     os.makedirs('BUILDROOT/var/www/wapt-group')
 elif platform.dist()[0] in ('centos','redhat','ubuntu'):
     os.makedirs('BUILDROOT/var/www/html/wapt')
+    os.makedirs('BUILDROOT/var/www/html/waptwua')
     os.makedirs('BUILDROOT/var/www/html/waptdev')
     os.makedirs('BUILDROOT/var/www/html/wapt-host')
     os.makedirs('BUILDROOT/var/www/html/wapt-group')
