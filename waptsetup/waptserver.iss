@@ -79,7 +79,7 @@ Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1
 [RUN]
 ;Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: {cm:UpdatePkg}; Description: "{cm:UpdatePkg}"
 Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhidden; StatusMsg: {cm:UpdatePkg}; Description: "{cm:UpdatePkg}"
-Filename: "{app}\waptpython.exe"; Parameters: """{app}\waptserver\waptserver.py"" install {code:GetWaptServerInstallFlags}"; StatusMsg: {cm:RegisteringService}; Description: "{cm:SetupService}"
+Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptserver\waptserver.py"" install {code:GetWaptServerInstallFlags}"; StatusMsg: {cm:RegisteringService}; Description: "{cm:SetupService}"
 Filename: "{app}\waptserverpostconf.exe"; Parameters: "-l {code:CurrentLanguage}"; Flags: nowait postinstall runascurrentuser skipifsilent; StatusMsg: {cm:LaunchingPostconf}; Description: "{cm:LaunchingPostconf}"
 
 [Icons]
