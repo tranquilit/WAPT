@@ -1,0 +1,3 @@
+[submodule "waptwua"]
+	path = waptwua
+	url = http://dcardon@git.tranquilit.local/gitblit/r/wapt/waptwua.git
