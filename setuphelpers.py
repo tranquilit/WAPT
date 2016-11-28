@@ -2563,7 +2563,7 @@ def get_user_from_sid(sid,controller=None):
         name, domain, type = win32security.LookupAccountSid (controller, pysid)
         return "%s\\%s" % (domain,name)
     except win32security.error as e:
-        logger.critical(u'Unable to GET username from SID %s : %s' % ("%s" % sid,e))
+        logger.debug(u'Unable to GET username from SID %s : %s' % ("%s" % sid,e))
         # try from directory
         return get_user_from_profpath(sid)
 
