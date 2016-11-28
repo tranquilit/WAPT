@@ -31,6 +31,7 @@ cd .. && python createrpm.py
 /opt/wapt/waptpackage.pyc
 /opt/wapt/waptpackage.pyo
 /var/www/html/wapt
+/var/www/html/waptwua
 /var/www/html/wapt-host
 /var/www/html/wapt-group
 
@@ -38,6 +39,7 @@ cd .. && python createrpm.py
 %attr(755,wapt,apache)/var/www/html/waptdev/
 %attr(755,wapt,apache)/var/www/html/wapt-group/
 %attr(755,wapt,apache)/var/www/html/wapt-host/
+%attr(755,wapt,apache)/var/www/html/waptwua/
 %attr(755,root,root)/opt/wapt/wapt-scanpackages.py
 
 %pre
