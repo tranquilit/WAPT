@@ -255,6 +255,9 @@ class PackageEntry(object):
     non_control_attributes = ['localpath','filename','size','repo_url','md5sum','repo',]
     signed_attributes = required_attributes+['depends','conflicts','maturity']
 
+    # these attributes are not kept when duplicating / editing a package
+    not_duplicated_attributes =  ['signature','signer','signer_fingerprint','signature_date']
+
     manifest_filename_excludes = ['WAPT/signature','WAPT/manifest.sha1']
 
     @property

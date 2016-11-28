@@ -154,11 +154,9 @@ def create_self_signed_key(orgname,
 
 
 
-def create_recursive_zip_signed(zipfn, source_root, target_root = u"",excludes = [u'.svn',u'.git',u'.gitignore',u'*.pyc',u'*.dbg',u'src']):
+def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.svn',u'.git',u'.gitignore',u'*.pyc',u'*.dbg',u'src']):
     """Create a zip file with filename zipf from source_root directory with target_root as new root.
        Don't include file which match excludes file pattern
-       add a file WAPT/manifest.sha1 with sha1 hash of all files
-       add a file WAPT/signature with the bas64 encoded signature of WAPT/manifest.sha1
     """
     result = []
     if not isinstance(source_root,unicode):
@@ -183,45 +181,20 @@ def create_recursive_zip_signed(zipfn, source_root, target_root = u"",excludes =
             continue
         source_item_fn = os.path.join(source_root, item)
         zip_item_fn = os.path.join(target_root,item)
+        # exclude manifest and signature which are added afterward
         if zip_item_fn in ('WAPT\\manifest.sha1','WAPT\\signature'):
             continue
         if os.path.isfile(source_item_fn):
             if logger: logger.debug(u' adding file %s' % source_item_fn)
             zipf.write(source_item_fn, zip_item_fn)
-            result.append([zip_item_fn,sha1_for_file(source_item_fn)])
+            result.append(zip_item_fn)
         elif os.path.isdir(source_item_fn):
             if logger: logger.debug(u'Add directory %s' % source_item_fn)
-            result.extend(create_recursive_zip_signed(zipf, source_item_fn, zip_item_fn,excludes))
+            result.extend(create_recursive_zip(zipf, source_item_fn, zip_item_fn,excludes))
     if isinstance(zipfn,str) or isinstance(zipfn,unicode):
         if logger:
             logger.debug(u'  adding sha1 hash for all %i files' % len(result))
-        # Write a file with all sha1 hashes of all files
-        manifest = [ r for r in result if r[0] not in ('WAPT\\manifest.sha1','WAPT\\signature') ]
-        manifest_data = json.dumps(manifest,indent=True)
-        zipf.writestr(os.path.join(target_root,'WAPT/manifest.sha1'), manifest_data)
         zipf.close()
-    return result
-
-
-def get_manifest_data(source_root, target_root=u'', excludes = [u'.svn',u'.git',u'.gitignore',u'*.pyc',u'*.dbg',u'src']):
-    """Return a list of [filenames,sha1 hash] from files from source_root directory with target_root as new root.
-       Don't include file which match excludes file pattern
-    """
-    result = []
-    for item in os.listdir(source_root):
-        excluded = False
-        for x in excludes:
-            excluded = fnmatch.fnmatch(item,x)
-            if excluded:
-                break
-        if target_root == 'WAPT' and item in ('manifest.sha1','signature'):
-            excluded = True
-        if excluded:
-            continue
-        if os.path.isfile(os.path.join(source_root, item)):
-            result.append([os.path.join(target_root,item),sha1_for_file(os.path.join(source_root, item))])
-        elif os.path.isdir(os.path.join(source_root, item)):
-            result.extend(get_manifest_data(os.path.join(source_root, item), os.path.join(target_root,item),excludes))
     return result
 
 
@@ -4423,7 +4396,7 @@ class Wapt(object):
 
             entry.localpath = target_directory
 
-            allfiles = create_recursive_zip_signed(
+            allfiles = create_recursive_zip(
                 zipfn = result_filename,
                 source_root = directoryname,
                 target_root = '' ,
@@ -5399,7 +5372,12 @@ class Wapt(object):
         # duplicate package informations
         dest_control = PackageEntry()
         for a in source_control.required_attributes + source_control.optional_attributes:
-            dest_control[a] = source_control[a]
+            if not a in source_control.not_duplicated_attributes:
+                dest_control[a] = source_control[a]
+
+        # reset sources URL
+        if newname and source_control.package != newname:
+            dest_control['sources']= ''
 
         # add / remove dependencies from copy
         prev_depends = ensure_list(dest_control.depends)
