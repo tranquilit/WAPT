@@ -290,7 +290,10 @@ def create_onetime_task(name,cmd,parameters=None, delay_minutes=2,max_runtime=10
 def full_waptagent_install(min_version,at_startup=False):
     # get it from
     waptagent_path = makepath(tempfile.gettempdir(),'waptagent.exe')
-    waptdeploy_path = makepath(tempfile.gettempdir(),'waptdeploy.exe')
+    waptdeploy_path = makepath(tempfile.gettempdir(),'waptdeploy-%s.exe'%currentdatetime())
+    if isfile(waptdeploy_path):
+        remove_file(waptdeploy_path)
+
     filecopyto(makepath('patchs','waptdeploy.exe'),waptdeploy_path)
 
     expected_sha256 = open('waptagent.sha256','r').read().splitlines()[0].split()[0]
