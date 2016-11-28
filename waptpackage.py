@@ -1033,7 +1033,8 @@ class WaptLocalRepo(WaptBaseRepo):
                 myzipfile.writestr(zi,u'\n'.join(packages_lines).encode('utf8'))
                 myzipfile.close()
                 myzipfile = None
-                os.unlink(packages_fname)
+                if os.path.isfile(packages_fname):
+                    os.unlink(packages_fname)
                 os.rename(tmp_packages_fname,packages_fname)
                 logger.info(u"Finished")
             finally:
