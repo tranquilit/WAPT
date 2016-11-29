@@ -1915,6 +1915,9 @@ class WaptRepo(WaptRemoteRepo):
                         if package.max_os_version and os_version > Version(package.max_os_version):
                             logger.debug('Discarding package %s, requires OS version < %s' % (package.asrequirement(),package.max_os_version))
                             continue
+                        if package.architecture == 'x64' and not setuphelpers.iswin64():
+                            logger.debug('Discarding package %s, requires OS with x64 architecture' % (package.asrequirement(),))
+                            continue
 
                         try:
                             self.check_control_signature(package,public_certs)

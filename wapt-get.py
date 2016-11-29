@@ -650,7 +650,9 @@ def main():
                 if len(args) < 2:
                     print u"You must provide the package name"
                     sys.exit(1)
-                os.startfile(mywapt.get_sources(args[1]))
+                result = mywapt.get_sources(args[1])
+                os.startfile(result)
+                wapt_sources_edit(result)
 
             elif action == 'make-template':
                 if len(args) < 2:
