@@ -50,11 +50,11 @@ FileName=C:\tranquilit\wapt\waptdevutils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node6]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-get.py
+FileName=C:\tranquilit\wapt\wapt-get.ini
 
 [Project\ChildNodes\Node0\ChildNodes\Node7]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-get.ini
+FileName=C:\tranquilit\wapt\wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node8]
 ClassName=TProjectFileNode
@@ -1391,13 +1391,13 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node55]
 ClassName=TProjectRunConfiguationNode
-Name=edit "tis-vlc(=2.0.8-1)"
+Name=edit "tis-vlc(=2.2.1-1)"
 
 [Project\ChildNodes\Node1\ChildNodes\Node55\RunConfig]
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=edit "tis-vlc(=2.0.8-1)"
+Parameters=-ldebug edit "tis-vlc(=2.2.1-1)"
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1489,7 +1489,7 @@ Name=sign-packages
 ScriptName=C:\tranquilit\wapt\wapt-signpackages.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug -k c:\private\ko.pem -c c:\private\tranquilit.crt c:\wapt\cache\*.wapt 
+Parameters=-ldebug -k c:\private\ko.pem -c c:\private\tranquilit.crt c:\wapt\cache\*.wapt
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log

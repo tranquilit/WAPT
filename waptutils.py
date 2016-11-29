@@ -46,8 +46,12 @@ if platform.system() == 'Windows':
             ...     winshell.get_path(shellcon.CSIDL_PROGRAM_FILES)
             u'C:\\Program Files (x86)'
             """
-            _disable = ctypes.windll.kernel32.Wow64DisableWow64FsRedirection
-            _revert = ctypes.windll.kernel32.Wow64RevertWow64FsRedirection
+            try:
+                _disable = ctypes.windll.kernel32.Wow64DisableWow64FsRedirection
+                _revert = ctypes.windll.kernel32.Wow64RevertWow64FsRedirection
+            except:
+                _disable = None
+                _revert = None
             def __enter__(self):
                 if self._disable:
                     self.old_value = ctypes.c_long()
@@ -56,7 +60,6 @@ if platform.system() == 'Windows':
                 if self._revert and self.success:
                     self._revert(self.old_value)
     except Exception as e:
-        print('Unable to create disable_file_system_redirection class : %s'%e)
         class _disable_file_system_redirection:
             def __enter__(self):
                 pass
