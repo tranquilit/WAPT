@@ -269,9 +269,10 @@ def main():
         if not options.config:
             if action in development_actions and os.path.isfile(default_waptconsole_ini):
                 config_file = default_waptconsole_ini
-                logger.info(u'Development mode, using Waptconsole configuration')
+                logger.info(u'/!\ Development mode, using Waptconsole configuration %s '%config_file)
             else:
                 config_file = default_waptservice_ini
+                logger.info(u'Using local waptservice configuration %s '%config_file)
         # Config file
         if not os.path.isfile(config_file):
             logger.error((u"Error : could not find file : %s"
@@ -761,7 +762,7 @@ def main():
                             if not options.json_output:
                                 print u"Package %s content:" % (result['package'].asrequirement(),)
                                 for f in result['files']:
-                                    print u" %s" % f[0]
+                                    print u" %s" % f
                             print('...done. Package filename %s' % (package_fn,))
 
                             if mywapt.private_key:
