@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 364
+  Left = 278
   Height = 753
-  Top = 133
+  Top = 128
   Width = 1028
   Caption = 'WAPT console'
   ClientHeight = 734
@@ -4244,6 +4244,30 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 38
       OnExecute = ActTriggerWakeOnLanExecute
     end
+    object ActRemoteAssist: TAction
+      Category = 'Host'
+      Caption = 'Assistance à distance'
+      OnExecute = ActRemoteAssistExecute
+      OnUpdate = ActRemoteAssistUpdate
+    end
+    object ActComputerMgmt: TAction
+      Category = 'Host'
+      Caption = 'Gérer l''ordinateur'
+      OnExecute = ActComputerMgmtExecute
+      OnUpdate = ActComputerMgmtUpdate
+    end
+    object ActComputerUsers: TAction
+      Category = 'Host'
+      Caption = 'Gérer les utilisateur et groupes'
+      OnExecute = ActComputerUsersExecute
+      OnUpdate = ActComputerUsersUpdate
+    end
+    object ActComputerServices: TAction
+      Category = 'Host'
+      Caption = 'Gérer les services'
+      OnExecute = ActComputerServicesExecute
+      OnUpdate = ActComputerServicesUpdate
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 144
@@ -4943,6 +4967,21 @@ object VisWaptGUI: TVisWaptGUI
         D6FFCED4D6FFCED4D6FFCDD4D6FFCDD3D5FFCDD3D5FFCAD2D4FFCAD2D3FFC9D1
         D3FFC8D1D2FFC7D0D1FFC6CFD1FFCED5D7FFF0FBFFFFF0FBFFFF
       }
+    end
+    object MenuItem1: TMenuItem
+      Action = ActRemoteAssist
+    end
+    object MenuItem2: TMenuItem
+      Caption = 'Gestion Windows de l''ordinateur'
+      object MenuItem23: TMenuItem
+        Action = ActComputerMgmt
+      end
+      object MenuItem33: TMenuItem
+        Action = ActComputerUsers
+      end
+      object MenuItem50: TMenuItem
+        Action = ActComputerServices
+      end
     end
     object MenuItem77: TMenuItem
       Action = ActTriggerWakeOnLan
