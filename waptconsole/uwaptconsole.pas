@@ -31,6 +31,10 @@ type
     ActAddADSGroups: TAction;
     ActHostsDeleteHostPackage: TAction;
     ActGerman: TAction;
+    ActComputerMgmt: TAction;
+    ActComputerUsers: TAction;
+    ActComputerServices: TAction;
+    ActRemoteAssist: TAction;
     ActTriggerWakeOnLan: TAction;
     ActWSUSSaveBuildRules: TAction;
     ActWUAAddForbiddenUpdate: TAction;
@@ -72,7 +76,12 @@ type
     Label22: TLabel;
     Label23: TLabel;
     LabErrorRegHardware: TLabel;
+    MenuItem1: TMenuItem;
     MenuItem17: TMenuItem;
+    MenuItem2: TMenuItem;
+    MenuItem23: TMenuItem;
+    MenuItem33: TMenuItem;
+    MenuItem50: TMenuItem;
     MenuItem74: TMenuItem;
     MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
@@ -344,6 +353,12 @@ type
     procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
     procedure ActCleanCacheExecute(Sender: TObject);
+    procedure ActComputerMgmtExecute(Sender: TObject);
+    procedure ActComputerMgmtUpdate(Sender: TObject);
+    procedure ActComputerServicesExecute(Sender: TObject);
+    procedure ActComputerServicesUpdate(Sender: TObject);
+    procedure ActComputerUsersExecute(Sender: TObject);
+    procedure ActComputerUsersUpdate(Sender: TObject);
     procedure ActCreateCertificateExecute(Sender: TObject);
     procedure ActCreateWaptSetupExecute(Sender: TObject);
     procedure ActDeleteGroupExecute(Sender: TObject);
@@ -353,6 +368,8 @@ type
     procedure ActDeployWaptExecute(Sender: TObject);
     procedure ActGermanExecute(Sender: TObject);
     procedure ActGermanUpdate(Sender: TObject);
+    procedure ActRemoteAssistExecute(Sender: TObject);
+    procedure ActRemoteAssistUpdate(Sender: TObject);
     procedure ActTriggerWakeOnLanExecute(Sender: TObject);
     procedure ActTriggerWaptwua_downloadExecute(Sender: TObject);
     procedure ActTriggerWaptwua_installExecute(Sender: TObject);
@@ -1678,6 +1695,81 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.ActComputerMgmtExecute(Sender: TObject);
+var
+  ip: ansistring;
+begin
+  if (Gridhosts.FocusedRow <> nil) and
+    (Gridhosts.FocusedRow.S['host.connected_ips'] <> '') then
+  begin
+    ip := GetReachableIP(Gridhosts.FocusedRow['host.connected_ips'],3389);
+    if ip <> '' then
+      ShellExecute(0, '', PAnsiChar('compmgmt.msc'), PAnsichar(' -a /computer=' + ip), nil, SW_SHOW)
+    else
+      ShowMessage(rsNoreachableIP);
+  end;
+end;
+
+procedure TVisWaptGUI.ActComputerMgmtUpdate(Sender: TObject);
+begin
+  try
+    ActComputerMgmt.Enabled := (Gridhosts.FocusedRow <> nil) and (Gridhosts.FocusedRow.S['host.connected_ips']<>'');
+  except
+    ActComputerMgmt.Enabled := False;
+  end;
+
+end;
+
+procedure TVisWaptGUI.ActComputerServicesExecute(Sender: TObject);
+var
+  ip: ansistring;
+begin
+  if (Gridhosts.FocusedRow <> nil) and
+    (Gridhosts.FocusedRow.S['host.connected_ips'] <> '') then
+  begin
+    ip := GetReachableIP(Gridhosts.FocusedRow['host.connected_ips'],3389);
+    if ip <> '' then
+      ShellExecute(0, '', PAnsiChar('services.msc'), PAnsichar(' -a /computer=' + ip), nil, SW_SHOW)
+    else
+      ShowMessage(rsNoreachableIP);
+  end;
+end;
+
+procedure TVisWaptGUI.ActComputerServicesUpdate(Sender: TObject);
+begin
+  try
+    ActComputerServices.Enabled := (Gridhosts.FocusedRow <> nil) and (Gridhosts.FocusedRow.S['host.connected_ips']<>'');
+  except
+   ActComputerServices.Enabled := False;
+  end;
+
+end;
+
+procedure TVisWaptGUI.ActComputerUsersExecute(Sender: TObject);
+var
+  ip: ansistring;
+begin
+  if (Gridhosts.FocusedRow <> nil) and
+    (Gridhosts.FocusedRow.S['host.connected_ips'] <> '') then
+  begin
+    ip := GetReachableIP(Gridhosts.FocusedRow['host.connected_ips'],3389);
+    if ip <> '' then
+      ShellExecute(0, '', PAnsiChar('Lusrmgr.msc'), PAnsichar(' -a /computer=' + ip), nil, SW_SHOW)
+    else
+      ShowMessage(rsNoreachableIP);
+  end;
+end;
+
+procedure TVisWaptGUI.ActComputerUsersUpdate(Sender: TObject);
+begin
+  try
+    ActComputerUsers.Enabled := (Gridhosts.FocusedRow <> nil) and (Gridhosts.FocusedRow.S['host.connected_ips']<>'');
+  except
+    ActComputerUsers.Enabled := False;
+  end;
+
+end;
+
 procedure TVisWaptGUI.ActDeleteGroupExecute(Sender: TObject);
 var
   message: string = rsConfirmRmOnePackage;
@@ -1784,6 +1876,31 @@ end;
 procedure TVisWaptGUI.ActGermanUpdate(Sender: TObject);
 begin
   ActGerman.Checked := DMPython.Language='de';
+end;
+
+procedure TVisWaptGUI.ActRemoteAssistExecute(Sender: TObject);
+var
+  ip: ansistring;
+begin
+  if (Gridhosts.FocusedRow <> nil) and
+    (Gridhosts.FocusedRow.S['host.connected_ips'] <> '') then
+  begin
+    ip := GetReachableIP(Gridhosts.FocusedRow['host.connected_ips'],3389);
+    if ip <> '' then
+      ShellExecute(0, '', PAnsiChar('msra'), PAnsichar('/offerRA ' + ip), nil, SW_SHOW)
+    else
+      ShowMessage(rsNoreachableIP);
+  end;
+end;
+
+procedure TVisWaptGUI.ActRemoteAssistUpdate(Sender: TObject);
+begin
+  try
+    ActRemoteAssist.Enabled := (Gridhosts.FocusedRow <> nil) and (Gridhosts.FocusedRow.S['host.connected_ips']<>'');
+  except
+    ActRemoteAssist.Enabled := False;
+  end;
+
 end;
 
 procedure TVisWaptGUI.ActTriggerWakeOnLanExecute(Sender: TObject);
