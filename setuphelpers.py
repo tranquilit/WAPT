@@ -138,7 +138,6 @@ __all__ = \
  'reg_openkey_noredir',
  'reg_setvalue',
  'reg_key_exists',
- 'reg_key_exists',
  'reg_value_exists',
  'register_dll',
  'register_ext',
@@ -307,86 +306,10 @@ def ensure_dir(filename):
     if not os.path.isdir(d):
         os.makedirs(d)
 
-
-# from opsi
-def ensure_unicode(data):
-    ur"""Return a unicode string from data object
-
-    It is sometimes diffcult to know in advance what we will get from command line
-     application output.
-
-    This is to ensure we get a (not always accurate) representation of the data
-     mainly for logging purpose.
-
-    Args:
-        data: either str or unicode or object having a __unicode__ or WindowsError or Exception
-    Returns:
-        unicode: unicode string representing the data
-
-    >>> ensure_unicode(str('éé'))
-    u'\xe9\xe9'
-    >>> ensure_unicode(u'éé')
-    u'\xe9\xe9'
-    >>> ensure_unicode(Exception("test"))
-    u'Exception: test'
-    >>> ensure_unicode(Exception())
-    u'Exception: '
-    """
-    try:
-        if type(data) is types.UnicodeType:
-            return data
-        if type(data) is types.StringType:
-            return unicode(data, 'utf8', 'replace')
-        if isinstance(data,WindowsError):
-            return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding(),'replace'))
-        if isinstance(data,(UnicodeDecodeError,UnicodeEncodeError)):
-            return u"%s : faulty string is '%s'" % (data,repr(data.args[1]))
-        if isinstance(data,Exception):
-            try:
-                return u"%s: %s" % (data.__class__.__name__,("%s"%data).decode(sys.getfilesystemencoding(),'replace'))
-            except:
-                try:
-                    return u"%s: %s" % (data.__class__.__name__,("%s"%data).decode('utf8','replace'))
-                except:
-                    try:
-                        return u"%s: %s" % (data.__class__.__name__,u"%s"%data)
-                    except:
-                        return u"%s" % (data.__class__.__name__,)
-        if hasattr(data, '__unicode__'):
-            try:
-                return data.__unicode__()
-            except:
-                pass
-        return unicode(data)
-    except:
-        if logger.level != logging.DEBUG:
-            return("Error in ensure_unicode / %s"%(repr(data)))
-        else:
-            raise
-
 class CalledProcessErrorOutput(subprocess.CalledProcessError):
     """CalledProcessError with printed output"""
     def __str__(self):
         return "Command '%s' returned non-zero exit status %d.\nOutput:%s" % (self.cmd, self.returncode,self.output.encode(sys.getfilesystemencoding(),errors='replace'))
-
-
-def ensure_list(csv_or_list,ignore_empty_args=True,allow_none = False):
-    """if argument is not a list, return a list from a csv string"""
-    if csv_or_list is None:
-        if allow_none:
-            return None
-        else:
-            return []
-
-    if isinstance(csv_or_list,tuple):
-        return list(csv_or_list)
-    elif not isinstance(csv_or_list,list):
-        if ignore_empty_args:
-            return [s.strip() for s in csv_or_list.split(',') if s.strip() != '']
-        else:
-            return [s.strip() for s in csv_or_list.split(',')]
-    else:
-        return csv_or_list
 
 def create_shortcut(path, target='', arguments='', wDir='', icon=''):
     r"""Create a windows shortcut
