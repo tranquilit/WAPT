@@ -137,6 +137,8 @@ __all__ = \
  'reg_getvalue',
  'reg_openkey_noredir',
  'reg_setvalue',
+ 'reg_key_exists',
+ 'reg_value_exists',
  'register_dll',
  'register_ext',
  'register_uninstall',
@@ -160,6 +162,8 @@ __all__ = \
  'run',
  'run_notfatal',
  'run_task',
+ 'run_powershell',
+ 'remove_metroapp',
  'sendto',
  'service_installed',
  'service_is_running',
@@ -355,6 +359,11 @@ def ensure_unicode(data):
             return("Error in ensure_unicode / %s"%(repr(data)))
         else:
             raise
+
+class CalledProcessErrorOutput(subprocess.CalledProcessError):
+    """CalledProcessError with printed output"""
+    def __str__(self):
+        return "Command '%s' returned non-zero exit status %d.\nOutput:%s" % (self.cmd, self.returncode,self.output.encode(sys.getfilesystemencoding(),errors='replace'))
 
 
 def ensure_list(csv_or_list,ignore_empty_args=True,allow_none = False):
@@ -975,11 +984,11 @@ class TimeoutExpired(Exception):
                 (self.cmd, self.timeout, self.output))
 
 
-def run(*cmd,**kwargs):
+def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=None,pidlist=None,return_stderr=True,**kwargs):
     r"""Run the command cmd in a shell and return the output and error text as string
 
     Args:
-        *cmd : command and arguments, either as a string or as a list of arguments
+        cmd : command and arguments, either as a string or as a list of arguments
 
     Kwargs:
         shell (boolean) : True is assumed
@@ -989,6 +998,8 @@ def run(*cmd,**kwargs):
                         func(linestr)
         accept_returncodes (list) : list of return code which are considered OK default = (0,1601)
         pidlist (list): external list where to append the pid of the launched process.
+        return_stderr (bool or list) : if True, the error lines are returned to caller in result.
+                                       if a list is provided, the error lines are appended to this list
 
         all other parameters from the psutil.Popen constructor are accepted
 
@@ -1020,6 +1031,19 @@ def run(*cmd,**kwargs):
     logger.info(u'Run "%s"' % (ensure_unicode(cmd),))
     output = []
 
+    if return_stderr is None or return_stderr == False:
+        return_stderr = []
+    elif not isinstance(return_stderr,list):
+        return_stderr = output
+
+    if pidlist is None:
+        pidlist = []
+
+    proc = psutil.Popen(cmd, bufsize=1, stdin=PIPE, stdout=PIPE, stderr=PIPE,**kwargs)
+    # keep track of launched pid if required by providing a pidlist argument to run
+    if not proc.pid in pidlist:
+        pidlist.append(proc.pid)
+
     def worker(pipe,on_write=None):
         while True:
             line = pipe.readline()
@@ -1028,41 +1052,10 @@ def run(*cmd,**kwargs):
             else:
                 if on_write:
                     on_write(line)
-                output.append(line)
-
-    if 'timeout' in kwargs:
-        timeout = kwargs['timeout']
-        del kwargs['timeout']
-    else:
-        timeout = 10*60.0
-
-    if not "shell" in kwargs:
-        kwargs['shell']=True
-
-    if not 'accept_returncodes' in kwargs:
-        # 1603 : souvent renvoyé quand déjà installé.
-        # 3010 : reboot required.
-        valid_returncodes = [0,1603,3010]
-    else:
-        valid_returncodes = kwargs['accept_returncodes']
-        del kwargs['accept_returncodes']
-
-    if 'pidlist' in kwargs and isinstance(kwargs['pidlist'],list):
-        pidlist = kwargs['pidlist']
-        kwargs.pop('pidlist')
-    else:
-        pidlist = []
-
-    if 'on_write' in kwargs and isinstance(kwargs['on_write'],types.FunctionType):
-        on_write = kwargs['on_write']
-        kwargs.pop('on_write')
-    else:
-        on_write = None
-
-    proc = psutil.Popen(*cmd, bufsize=1, stdin=PIPE, stdout=PIPE, stderr=PIPE,**kwargs)
-    # keep track of launched pid if required by providing a pidlist argument to run
-    if not proc.pid in pidlist:
-        pidlist.append(proc.pid)
+                if pipe == proc.stderr:
+                    return_stderr.append(ensure_unicode(line))
+                else:
+                    output.append(ensure_unicode(line))
 
     stdout_worker = RunReader(worker, proc.stdout,on_write)
     stderr_worker = RunReader(worker, proc.stderr,on_write)
@@ -1074,25 +1067,28 @@ def run(*cmd,**kwargs):
         if proc.pid in pidlist:
             pidlist.remove(proc.pid)
             killtree(proc.pid)
-        raise TimeoutExpired(cmd,''.join(output),timeout)
+        raise TimeoutExpired(cmd,u''.join(output),timeout)
     stderr_worker.join(timeout)
     if stderr_worker.is_alive():
         if proc.pid in pidlist:
             pidlist.remove(proc.pid)
             killtree(proc.pid)
-        raise TimeoutExpired(cmd,''.join(output),timeout)
+        raise TimeoutExpired(cmd,u''.join(output),timeout)
     proc.returncode = _subprocess.GetExitCodeProcess(proc._handle)
     if proc.pid in pidlist:
         pidlist.remove(proc.pid)
         killtree(proc.pid)
-    if not proc.returncode in valid_returncodes:
-        raise subprocess.CalledProcessError(proc.returncode,cmd,''.join(output))
+    if not proc.returncode in accept_returncodes:
+        if return_stderr != output:
+            raise CalledProcessErrorOutput(proc.returncode,cmd,''.join(output+return_stderr))
+        else:
+            raise CalledProcessErrorOutput(proc.returncode,cmd,''.join(output))
     else:
         if proc.returncode == 0:
             logger.info(u'%s command returns code %s' % (ensure_unicode(cmd),proc.returncode))
         else:
             logger.warning(u'%s command returns code %s' % (ensure_unicode(cmd),proc.returncode))
-    return ensure_unicode(''.join(output))
+    return u''.join(output)
 
 
 def run_notfatal(*cmd,**args):
@@ -3613,6 +3609,42 @@ def local_desktops():
                 raise
     return result
 
+def run_powershell(cmd,output_format='json',**kwargs):
+    """Run a command/script (possibly multiline) using powershell, return output in text format
+        If format is 'json', the result is piped to ConvertTo and converted back to a python dict for convenient use
+    """
+    cmd = ensure_unicode(cmd)
+    if output_format == 'json':
+        output_format_ps = 'text'
+        cmd = '(%s) | ConvertTo-Json' % cmd
+    else:
+        output_format_ps = output_format
+    # command is a utf16 without bom encoded with base54 without \n
+    # we should not get stderr so that ouput can be decoded as json. stderr get progress report...
+    if not 'return_stderr' in kwargs or not isinstance(return_stderr,list):
+        return_stderr = []
+    else:
+        kwargs.pop('return_stderr')
+    result = run(u'powershell -ExecutionPolicy Unrestricted -OutputFormat %s -encodedCommand %s' %
+            (output_format_ps,
+             cmd.encode('utf-16le').encode('base64').replace('\n','')),
+             return_stderr = return_stderr,
+            **kwargs)
+    #remove comments...
+    if output_format.lower() == 'xml':
+        lines = [l for l in result.splitlines() if not l.strip().startswith('#')]
+        import xml.etree.ElementTree as ET
+        return ET.fromstringlist(lines)
+    elif output_format.lower() == 'json':
+        import json
+        lines = [l for l in result.splitlines() if not l.strip().startswith('#')]
+        return json.loads(u'\n'.join(lines))
+    else:
+        return result
+
+def remove_metroapp(package):
+    return run_powershell('Get-AppxPackage %s | Remove-AppxPackage' % package)
+
 def datetime2isodate(adatetime = None):
     if not adatetime:
         adatetime = datetime.datetime.now()
@@ -3658,9 +3690,6 @@ def dateof(adatetime):
 class EWaptSetupException(Exception):
     pass
 
-CalledProcessError = subprocess.CalledProcessError
-
-
 def error(reason):
     """Raise a WAPT fatal error"""
     raise EWaptSetupException(u'Fatal error : %s' % reason)
@@ -3668,7 +3697,6 @@ def error(reason):
 """Specific parameters for install scripts"""
 params = {}
 control = PackageEntry()
-
 
 if __name__=='__main__':
     import doctest
