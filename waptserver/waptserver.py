@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__="1.3.8.3"
+__version__="1.3.8.4"
 
 import os,sys
 try:
@@ -870,7 +870,7 @@ def proxy_host_request(request,action):
                             args_url.append('%s=%s' % (key,value))
                     args['args_url'] = '&'.join(args_url)
 
-                    client_result = requests.get("%(protocol)s://%(address)s:%(port)d/%(action)s?%(args_url)s" % args ,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
+                    client_result = requests.get("%(protocol)s://%(address)s:%(port)d/%(action)s?%(args_url)s" % args ,proxies={'http':None,'https':None},verify=False, timeout=conf['clients_read_timeout']).text
                     try:
                         client_result = json.loads(client_result)
                         if not isinstance(client_result,list):
@@ -911,7 +911,7 @@ def trigger_upgrade():
             args = {}
             args.update(listening_address)
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/upgrade.json?uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/upgrade.json?uuid=%(uuid)s" % args,proxies={'http':None,'https':None},verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 result = client_result['content']
@@ -952,7 +952,7 @@ def trigger_update():
             args.update(listening_address)
             args['notify_user'] = notify_user
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies=None,verify=False, timeout=conf['clients_read_timeout']).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" % args,proxies={'http':None,'https':None},verify=False, timeout=conf['clients_read_timeout']).text
             try:
                 client_result = json.loads(client_result)
                 msg = _(u"Triggered task: {}").format(client_result['description'])
@@ -1117,7 +1117,7 @@ def host_tasks_status():
             args = {}
             args.update(listening_address)
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json?uuid=%(uuid)s" % args,proxies=None,verify=False,timeout=conf['client_tasks_timeout']).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/tasks.json?uuid=%(uuid)s" % args,proxies={'http':None,'https':None},verify=False,timeout=conf['client_tasks_timeout']).text
             try:
                 client_result = json.loads(client_result)
             except ValueError:
@@ -1481,7 +1481,7 @@ def host_cancel_task():
             args = {}
             args.update(listening_address)
             args['uuid'] = uuid
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/cancel_running_task.json?uuid=%(uuid)s" % args,proxies=None,verify=False,timeout=conf['client_tasks_timeout']).text
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/cancel_running_task.json?uuid=%(uuid)s" % args,proxies={'http':None,'https':None},verify=False,timeout=conf['client_tasks_timeout']).text
             try:
                 client_result = json.loads(client_result)
             except ValueError:
