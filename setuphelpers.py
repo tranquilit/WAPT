@@ -3566,7 +3566,7 @@ def local_desktops():
 
 def run_powershell(cmd,output_format='json',**kwargs):
     """Run a command/script (possibly multiline) using powershell, return output in text format
-        If format is 'json', the result is piped to ConvertTo and converted back to a python dict for convenient use
+        If format is 'json', the result is piped to ConvertTo-Json and converted back to a python dict for convenient use
     """
     cmd = ensure_unicode(cmd)
     if output_format == 'json':
@@ -3593,7 +3593,10 @@ def run_powershell(cmd,output_format='json',**kwargs):
     elif output_format.lower() == 'json':
         import json
         lines = [l for l in result.splitlines() if not l.strip().startswith('#')]
-        return json.loads(u'\n'.join(lines))
+        try:
+            return json.loads(u'\n'.join(lines))
+        except ValueError as e:
+            raise CalledProcessErrorOutput(0,cmd,result)
     else:
         return result
 
