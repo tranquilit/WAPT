@@ -3597,7 +3597,7 @@ def local_desktops():
 
 def run_powershell(cmd,output_format='json',**kwargs):
     """Run a command/script (possibly multiline) using powershell, return output in text format
-        If format is 'json', the result is piped to ConvertTo and converted back to a python dict for convenient use
+        If format is 'json', the result is piped to ConvertTo-Json and converted back to a python dict for convenient use
     """
     cmd = ensure_unicode(cmd)
     if output_format == 'json':
@@ -3611,11 +3611,16 @@ def run_powershell(cmd,output_format='json',**kwargs):
         return_stderr = []
     else:
         kwargs.pop('return_stderr')
-    result = run(u'powershell -ExecutionPolicy Unrestricted -OutputFormat %s -encodedCommand %s' %
-            (output_format_ps,
-             cmd.encode('utf-16le').encode('base64').replace('\n','')),
-             return_stderr = return_stderr,
-            **kwargs)
+    try:
+        with disable_file_system_redirection():
+            result = run(u'powershell -ExecutionPolicy Unrestricted -OutputFormat %s -encodedCommand %s' %
+                    (output_format_ps,
+                     cmd.encode('utf-16le').encode('base64').replace('\n','')),
+                     return_stderr = return_stderr,
+                    **kwargs)
+    except CalledProcessErrorOutput as e:
+        raise CalledProcessErrorOutput(e.returncode,cmd,e.output)
+
     #remove comments...
     if output_format.lower() == 'xml':
         lines = [l for l in result.splitlines() if not l.strip().startswith('#')]
@@ -3624,12 +3629,21 @@ def run_powershell(cmd,output_format='json',**kwargs):
     elif output_format.lower() == 'json':
         import json
         lines = [l for l in result.splitlines() if not l.strip().startswith('#')]
-        return json.loads(u'\n'.join(lines))
+        if not lines:
+            return None
+        else:
+            try:
+                return json.loads(u'\n'.join(lines))
+            except ValueError as e:
+                raise ValueError(u'%s returned non json data:\n%s' % (cmd,result))
     else:
         return result
 
 def remove_metroapp(package):
-    return run_powershell('Get-AppxPackage %s | Remove-AppxPackage' % package)
+    run_powershell('Get-AppxPackage %s --AllUsers| Remove-AppxPackage' % package)
+    run_powershell("""Get-AppXProvisionedPackage -Online |
+            where DisplayName -EQ %s |
+            Remove-AppxProvisionedPackage -Online"""%app)
 
 def datetime2isodate(adatetime = None):
     if not adatetime:
