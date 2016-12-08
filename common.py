@@ -2882,7 +2882,9 @@ class Wapt(object):
         if entry.max_os_version and os_version > Version(entry.max_os_version):
             raise Exception('This package requires that OS be at most %s' % entry.min_os_version)
 
-        self.check_control_signature(entry)
+        # don't check in developper mode
+        if os.path.isfile(fname):
+            self.check_control_signature(entry)
 
         self.runstatus=u"Installing package %s version %s ..." % (entry.package,entry.version)
         old_stdout = sys.stdout
@@ -2916,7 +2918,7 @@ class Wapt(object):
 
             self.check_cancelled()
             logger.info(u"Installing package %s"%(ensure_unicode(fname),))
-            # case where fname is a wapt zipped file, else directory (during developement)
+            # case where fname is a wapt zipped file, else directory (during development)
             istemporary = False
 
             if os.path.isfile(fname):
