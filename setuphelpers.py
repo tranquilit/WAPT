@@ -3580,11 +3580,16 @@ def run_powershell(cmd,output_format='json',**kwargs):
         return_stderr = []
     else:
         kwargs.pop('return_stderr')
-    result = run(u'powershell -ExecutionPolicy Unrestricted -OutputFormat %s -encodedCommand %s' %
-            (output_format_ps,
-             cmd.encode('utf-16le').encode('base64').replace('\n','')),
-             return_stderr = return_stderr,
-            **kwargs)
+    try:
+        with disable_file_system_redirection():
+            result = run(u'powershell -ExecutionPolicy Unrestricted -OutputFormat %s -encodedCommand %s' %
+                    (output_format_ps,
+                     cmd.encode('utf-16le').encode('base64').replace('\n','')),
+                     return_stderr = return_stderr,
+                    **kwargs)
+    except CalledProcessErrorOutput as e:
+        raise CalledProcessErrorOutput(e.returncode,cmd,e.output)
+
     #remove comments...
     if output_format.lower() == 'xml':
         lines = [l for l in result.splitlines() if not l.strip().startswith('#')]
@@ -3593,10 +3598,13 @@ def run_powershell(cmd,output_format='json',**kwargs):
     elif output_format.lower() == 'json':
         import json
         lines = [l for l in result.splitlines() if not l.strip().startswith('#')]
-        try:
-            return json.loads(u'\n'.join(lines))
-        except ValueError as e:
-            raise CalledProcessErrorOutput(0,cmd,result)
+        if not lines:
+            return None
+        else:
+            try:
+                return json.loads(u'\n'.join(lines))
+            except ValueError as e:
+                raise ValueError(u'%s returned non json data:\n%s' % (cmd,result))
     else:
         return result
 
