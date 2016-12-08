@@ -23,6 +23,7 @@
 __version__ = "1.3.9"
 
 import os
+import sys
 import re
 import subprocess
 import logging
