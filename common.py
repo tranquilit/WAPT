@@ -1695,7 +1695,7 @@ class WaptDB(WaptBaseDB):
                 try:
                     result[repo.name] = repo.update_db(waptdb=self,force=force)
                 except Exception,e:
-                    logger.warning(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
+                    logger.info(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
         return result
 
     def build_depends(self,packages):
