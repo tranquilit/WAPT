@@ -2475,7 +2475,7 @@ def wmi_info_basic():
     >>> 'System_Information' in r
     True
     """
-    return wmi_info(keys=['Win32_ComputerSystemProduct'])
+    return {'System_Information': wmi_info(keys=['Win32_ComputerSystemProduct'])['Win32_ComputerSystemProduct']}
 
 def critical_system_pending_updates():
     """Return list of not installed critical updates
