@@ -2475,21 +2475,7 @@ def wmi_info_basic():
     >>> 'System_Information' in r
     True
     """
-    res = run('echo "" | wmic PATH Win32_ComputerSystemProduct GET UUID,IdentifyingNumber,Name,Vendor /VALUE')
-    wmiout = {}
-    for line in res.splitlines():
-        if line.strip():
-            (key,value) = line.strip().split('=',1)
-            wmiout[key] = value
-    result = {
-            u'System_Information':{
-                u'UUID':wmiout[u'UUID'],
-                u'Manufacturer':wmiout[u'Vendor'],
-                u'Product_Name':wmiout[u'Name'],
-                u'Serial_Number':wmiout[u'IdentifyingNumber'],
-                }
-            }
-    return result
+    return wmi_info(keys=['Win32_ComputerSystemProduct'])
 
 def critical_system_pending_updates():
     """Return list of not installed critical updates
