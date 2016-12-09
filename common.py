@@ -356,7 +356,8 @@ class SSLPrivateKey(object):
     def __init__(self,private_key,callback=pwd_callback):
         if not os.path.isfile(private_key):
             raise Exception('Private key %s not found' % private_key)
-        self.key = EVP.load_key(private_key,callback=callback)
+        self.private_key = private_key
+        self.key = EVP.load_key(self.private_key,callback=callback)
 
     def sign_content(self,content):
         """ Sign content with the private_key, return the signature"""
@@ -4025,7 +4026,7 @@ class Wapt(object):
                             logger.info(u"  Use cached package file from " + fullpackagepath)
                             skip = True
                         else:
-                            logger.critical(u"Cached file MD5 doesn't match MD5 found in packages index. Discarding cached file")
+                            logger.info(u"  Cached file MD5 doesn't match MD5 found in packages index. Discarding cached file")
                             os.remove(fullpackagepath)
                 except Exception,e:
                     # error : reload
@@ -4750,12 +4751,23 @@ class Wapt(object):
                     key = SSLPrivateKey(private_key,callback)
 
                 # find proper certificate
-                for fn in self.public_certs:
+                crt = None
+
+                # first check in same directory as key
+                for fn in glob.glob(os.path.join(os.path.dirname(key.private_key),'*.crt')):
                     crt = SSLCertificate(fn)
                     if crt.match_key(key):
                         break
                     else:
                         crt = None
+                # then in wapt ssl dir
+                if not crt:
+                    for fn in self.public_certs:
+                        crt = SSLCertificate(fn)
+                        if crt.match_key(key):
+                            break
+                        else:
+                            crt = None
                 if not crt:
                     raise Exception('No matching certificate found for private key %s'%self.private_key)
                 entry.signer = crt.cn
