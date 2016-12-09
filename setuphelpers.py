@@ -2896,8 +2896,8 @@ def makepath(a, *p):
 
     In particular, removes ending path separators (backslashes) from components
 
-    >>> makepath('c:',programfiles)
-    'C:\\Program Files'
+    >>> makepath(programfiles,'Mozilla','Firefox')
+    'C:\\Program Files\\Mozilla\\Firefox'
     """
     p = [e.lstrip(os.path.sep) for e in p]
     return os.path.join(a, *p)
