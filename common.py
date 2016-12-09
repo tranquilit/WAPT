@@ -372,10 +372,11 @@ class SSLPrivateKey(object):
         return crt.get_pubkey().get_modulus() == self.key.get_modulus()
 
 class SSLCertificate(object):
-    def __init__(self,public_cert):
+    def __init__(self,public_cert,ignore_validity_checks=True):
         if not os.path.isfile(public_cert):
             raise Exception('Public certificate %s not found' % public_cert)
         self.crt = X509.load_cert(public_cert)
+        self.ignore_validity_checks = ignore_validity_checks
 
     @property
     def organisation(self):
@@ -399,7 +400,7 @@ class SSLCertificate(object):
 
     @property
     def fingerprint(self):
-        return self.crt.get_fingerprint()
+        return self.crt.get_fingerprint(md='sha1')
 
     @property
     def issuer(self):
@@ -437,6 +438,26 @@ class SSLCertificate(object):
             key = SSLPrivateKey(key)
         return self.crt.get_pubkey().get_modulus() == key.key.get_modulus()
 
+    @property
+    def not_before(self):
+        result = self.crt.get_not_before().get_datetime()
+        return result
+
+    @property
+    def not_after(self):
+        result = self.crt.get_not_after().get_datetime()
+        return result
+
+    def is_valid(self,issuer_cert=None,purpose=None):
+        """Check validity of certificate
+                not before / not after
+        """
+        if self.ignore_validity_checks:
+            return True
+        nb,na = self.not_before,self.not_after
+        now = datetime.datetime.now(nb.tzinfo)
+        return now >= nb and now <= na
+
     def __iter__(self):
         for k in ['issuer_dn','fingerprint','subject_dn','cn']:
             yield k,getattr(self,k)
@@ -458,10 +479,14 @@ def ssl_verify_content(content,signature,public_certs):
         public_certs = [public_certs]
     for public_cert in public_certs:
         crt = SSLCertificate(public_cert)
-        try:
-            return crt.verify_content(content,signature)
-        except:
-            pass
+        if crt.is_valid():
+            try:
+                return crt.verify_content(content,signature)
+            except:
+                pass
+        else:
+            logger.warning('Certificate %s is not valid'%public_cert)
+
     raise Exception('SSL signature verification failed, either none public certificates match signature or signed content has been changed')
 
 
