@@ -43,26 +43,6 @@
 #include "windows.h"
 #undef WRITE_RESTRICTED // stop anyone using the wrong one accidently...
 
-// Python 2.3 doesn't have Py_CLEAR...
-#if (PY_VERSION_HEX < 0x02040000)
-#ifndef Py_CLEAR
-#define Py_CLEAR(op)				\
-        do {                            	\
-                if (op) {			\
-                        PyObject *_py_tmp = (PyObject *)(op);	\
-                        (op) = NULL;		\
-                        Py_DECREF(_py_tmp);	\
-                }				\
-        } while (0)
-#endif
-// or Py_RETURN_NONE
-#ifndef Py_RETURN_NONE
-/* Macro for returning Py_None from a function */
-#define Py_RETURN_NONE return Py_INCREF(Py_None), Py_None
-#endif
-
-#endif //  (PY_VERSION_HEX < 0x02040000)
-
 
 // Helpers for our modules.
 // Some macros to help the pywin32 modules co-exist in py2x and py3k.
@@ -178,10 +158,6 @@ typedef long Py_hash_t;
 typedef Py_ssize_t Py_hash_t;
 #endif
 
-#if PY_VERSION_HEX < 0x02030000
-#define PyLong_AsUnsignedLongMask PyLong_AsUnsignedLong
-#endif
-
 // This only enables runtime checks in debug builds - so we use
 // our own so we can enable it always should we desire...
 #define PyWin_SAFE_DOWNCAST Py_SAFE_DOWNCAST
@@ -266,7 +242,9 @@ PYWINTYPES_EXPORT void PyWinObject_FreeWCHAR(WCHAR *pResult);
 // Its not clear how to resolve this, but while VS2003 is the default
 // compiler, that is what must work.
 // py2.5 on x64 also needs it, and that is min x64 we support
-#if (PY_VERSION_HEX >= 0x02060000) || defined(_WIN64)
+// The main difference seems to be whether the compiler has /Zc:wchar_t (Treat wchar_t as a builtin type)
+// on by default, and according to MSDN, _NATIVE_WCHAR_T_DEFINED is the way to check for it
+#ifdef _NATIVE_WCHAR_T_DEFINED
 inline BOOL PyWinObject_AsWCHAR(PyObject *stringObject, unsigned short **pResult, BOOL bNoneOK = FALSE, DWORD *pResultLen = NULL)
 {
     return PyWinObject_AsWCHAR(stringObject, (WCHAR **)pResult, bNoneOK, pResultLen);
@@ -284,6 +262,25 @@ PYWINTYPES_EXPORT BOOL PyWinObject_AsString(PyObject *stringObject, char **pResu
 // And free it when finished.
 PYWINTYPES_EXPORT void PyWinObject_FreeString(char *pResult);
 PYWINTYPES_EXPORT void PyWinObject_FreeString(WCHAR *pResult);
+
+// Automatically freed WCHAR that can be used anywhere WCHAR * is required
+class TmpWCHAR
+{
+public:
+	WCHAR *tmp;
+	TmpWCHAR() { tmp=NULL; }
+	TmpWCHAR(WCHAR *t) { tmp=t; }
+	WCHAR * operator= (WCHAR *t){
+		PyWinObject_FreeWCHAR(tmp);
+		tmp=t;
+		return t;
+		}
+	WCHAR ** operator& () {return &tmp;}
+	boolean operator== (WCHAR *t) { return tmp==t; }
+	operator WCHAR *() { return tmp; }
+	~TmpWCHAR() { PyWinObject_FreeWCHAR(tmp); }
+};
+
 
 // Buffer functions that can be used in place of 's#' input format or PyString_AsStringAndSize
 // for 64-bit compatibility and API consistency
@@ -366,7 +363,7 @@ PYWINTYPES_EXPORT PyObject *PyWinObject_FromTCHAR(const char *str, Py_ssize_t le
 #endif // UNICODE
 
 // String support for buffers allocated via CoTaskMemAlloc and CoTaskMemFree
-PYWINTYPES_EXPORT BOOL PyWinObject_AsTaskAllocatedWCHAR(PyObject *stringObject, WCHAR **ppResult, BOOL bNoneOK /*= FALSE*/,DWORD *pResultLen /*= NULL*/);
+PYWINTYPES_EXPORT BOOL PyWinObject_AsTaskAllocatedWCHAR(PyObject *stringObject, WCHAR **ppResult, BOOL bNoneOK = FALSE, DWORD *pResultLen = NULL);
 PYWINTYPES_EXPORT void PyWinObject_FreeTaskAllocatedWCHAR(WCHAR * str);
 
 PYWINTYPES_EXPORT void PyWinObject_FreeString(char *str);
@@ -415,16 +412,6 @@ inline BOOL PyWinLong_AsDWORD_PTR(PyObject *ob, DWORD_PTR *r) {
     return PyWinLong_AsVoidPtr(ob, (void **)r);
 }
 
-// Some boolean helpers for Python 2.2 and earlier
-#if (PY_VERSION_HEX < 0x02030000 && !defined(PYWIN_NO_BOOL_FROM_LONG))
-// PyBool_FromLong only in 2.3 and later
-inline PyObject *PyBool_FromLong(long v)
-{
-	PyObject *ret= v ? Py_True : Py_False;
-	Py_INCREF(ret);
-    return ret;
-}
-#endif
 
 /*
 ** OVERLAPPED Object and API
@@ -783,73 +770,6 @@ extern PYWINTYPES_EXPORT void PyWinGlobals_Free();
 
 extern PYWINTYPES_EXPORT void PyWin_MakePendingCalls();
 
-// For 2.3, use the PyGILState_ calls
-#if (PY_VERSION_HEX >= 0x02030000)
-#define PYWIN_USE_GILSTATE
-#endif
-
-#ifndef PYWIN_USE_GILSTATE
-
-class CEnterLeavePython {
-public:
-	CEnterLeavePython() {
-		acquired = FALSE;
-		acquire();
-	}
-	void acquire() {
-		if (acquired)
-			return;
-		created = PyWinThreadState_Ensure();
-#ifndef PYCOM_USE_FREE_THREAD
-		PyWinInterpreterLock_Acquire();
-#endif
-		if (created) {
-			// If pending python calls are waiting as we enter Python,
-			// it will generally mean an asynch signal handler, etc.
-			// We can either call it here, or wait for Python to call it
-			// as part of its "every 'n' opcodes" check.  If we wait for
-			// Python to check it and the pending call raises an exception,
-			// then it is _our_ code that will fail - this is unfair,
-			// as the signal was raised before we were entered - indeed,
-			// we may be directly responding to the signal!
-			// Thus, we flush all the pending calls here, and report any
-			// exceptions via our normal exception reporting mechanism.
-			// (of which we don't have, but not to worry... :)
-			// We can then execute our code in the knowledge that only
-			// signals raised _while_ we are executing will cause exceptions.
-			PyWin_MakePendingCalls();
-		}
-		acquired = TRUE;
-	}
-	~CEnterLeavePython() {
-		if (acquired)
-			release();
-	}
-	void release() {
-	// The interpreter state must be cleared
-	// _before_ we release the lock, as some of
-	// the sys. attributes cleared (eg, the current exception)
-	// may need the lock to invoke their destructors - 
-	// specifically, when exc_value is a class instance, and
-	// the exception holds the last reference!
-		if ( !acquired )
-			return;
-		if ( created )
-			PyWinThreadState_Clear();
-#ifndef PYCOM_USE_FREE_THREAD
-		PyWinInterpreterLock_Release();
-#endif
-		if ( created )
-			PyWinThreadState_Free();
-		acquired = FALSE;
-	}
-private:
-	BOOL created;
-	BOOL acquired;
-};
-
-#else // PYWIN_USE_GILSTATE
-
 class CEnterLeavePython {
 public:
 	CEnterLeavePython() {
@@ -872,7 +792,7 @@ private:
 	PyGILState_STATE state;
 	BOOL released;
 };
-#endif // PYWIN_USE_GILSTATE
+
 
 // A helper for simple exception handling.
 // try/__try

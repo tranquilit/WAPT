@@ -27,11 +27,13 @@ import codecs
 import hashlib
 import glob
 
-from M2Crypto import EVP, X509, SSL
+from M2Crypto import EVP, X509, SSL, BIO
 from M2Crypto.EVP import EVPError
 from M2Crypto import BIO,RSA
 
 from waptutils import *
+
+import datetime
 
 def check_key_password(key_filename,password=""):
     """Check if provided password is valid to read the PEM private key
@@ -104,11 +106,101 @@ def pwd_callback(*args):
     return getpass.getpass().encode('ascii')
 
 
+class SSLCAChain(object):
+    BEGIN_KEY = '-----BEGIN ENCRYPTED PRIVATE KEY-----'
+    END_KEY = '-----END ENCRYPTED PRIVATE KEY-----'
+    BEGIN_CERTIFICATE = '-----BEGIN CERTIFICATE-----'
+    END_CERTIFICATE = '-----END CERTIFICATE-----'
+
+    def __init__(self,callback=pwd_callback):
+        self._keys = {}
+        self._certificates = {}
+        self.callback = callback
+
+    def add_pems(self,cert_pattern_or_dir='*.crt',load_keys=False):
+        if os.path.isdir(cert_pattern_or_dir):
+            # load pems from provided directory
+            for fn in glob.glob(os.path.join(cert_pattern_or_dir,'*.crt'))+glob.glob(os.path.join(cert_pattern_or_dir,'*.pem')):
+                self.add_pem(fn,load_keys=load_keys)
+        else:
+            # load pems based on file wildcards
+            for fn in glob.glob(cert_pattern_or_dir):
+                self.add_pem(fn,load_keys=load_keys)
+
+    def add_pem(self,filename,load_keys=False):
+        # parse a bundle PEM with multiple key / certificates
+        lines = open(filename,'r').read().splitlines()
+        inkey = False
+        incert = False
+        tmplines = []
+        for line in lines:
+            if line == self.BEGIN_CERTIFICATE:
+                tmplines = [line]
+                incert = True
+            elif line == self.END_CERTIFICATE:
+                tmplines.append(line)
+                crt =  X509.load_cert_string('\n'.join(tmplines))
+                self._certificates[crt.get_fingerprint(md='sha1')] = SSLCertificate(filename,crt=crt)
+                incert = False
+                tmplines = []
+            elif line == self.BEGIN_KEY:
+                tmplines = [line]
+                inkey = True
+            elif line == self.END_KEY:
+                tmplines.append(line)
+                if load_keys:
+                    key = EVP.load_key_string('\n'.join(tmplines),callback=self.callback)
+                    self._keys[key.get_modulus()] = SSLPrivateKey(filename,key=key,callback=self.callback)
+                inkey = False
+                tmplines = []
+            else:
+                if inkey or incert:
+                    tmplines.append(line)
+
+    def key(self,modulus):
+        return self._keys.get(modulus,None)
+
+    def certificate(self,sha1_fingerprint=None,subject_hash=None):
+        if subject_hash:
+            certs = [crt for crt in self.certificates() if crt.subject_hash == subject_hash]
+            if certs:
+                return certs[0]
+            else:
+                return None
+        else:
+            return self._certificates.get(sha1_fingerprint,None)
+
+    def keys(self):
+        return self._keys.values()
+
+    def certificates(self):
+        return self._certificates.values()
+
+    def matching_certs(self,key):
+        return [crt for crt in self.certificates() if crt.is_valid() and crt.match_key(key)]
+
+    def certificate_chain(self,crt):
+        result = [crt]
+        issuer = self.certificate(subject_hash=crt.crt.get_issuer().as_hash())
+        while issuer:
+            result.append(issuer)
+            issuer_subject_hash = issuer.crt.get_issuer().as_hash()
+            new_issuer = self.certificate(subject_hash=issuer_subject_hash)
+            if new_issuer == issuer:
+                break
+            else:
+                issuer = new_issuer
+        return result
+
+
 class SSLPrivateKey(object):
-    def __init__(self,private_key,callback=pwd_callback):
-        if not os.path.isfile(private_key):
-            raise Exception('Private key %s not found' % private_key)
+    def __init__(self,private_key=None,key=None,callback=pwd_callback):
         self.private_key_filename = private_key
+        if key:
+            self.key = key
+        else:
+            if not os.path.isfile(private_key):
+                raise Exception('Private key %s not found' % private_key)
         self.pwd_callback = callback
         self._rsa = None
         self._key = None
@@ -141,7 +233,7 @@ class SSLPrivateKey(object):
         """Check if provided public certificate matches the current private key"""
         if not isinstance(crt,SSLCertificate):
             crt = SSLCertificate(crt)
-        return crt.get_pubkey().get_modulus() == self.key.get_modulus()
+        return crt.crt.get_pubkey().get_modulus() == self.key.get_modulus()
 
     def matching_certs(self,cert_dir):
         result = []
@@ -159,14 +251,24 @@ class SSLPrivateKey(object):
         """Decrypt a message encrypted with the public key"""
         return self.rsa.private_decrypt(content,RSA.pkcs1_oaep_padding)
 
+    @property
+    def modulus(self):
+        return self.key.get_modulus()
+
+    def __cmp__(self,key):
+        return cmp(self.modulus,key.modulus)
+
 
 class SSLCertificate(object):
-    def __init__(self,public_cert):
+    def __init__(self,public_cert=None,crt=None,ignore_validity_checks=True):
         self._public_cert_filename = None
         self._crt = None
         self._rsa = None
         self._key = None
         self.public_cert_filename = public_cert
+        if crt:
+            self._crt = crt
+        self.ignore_validity_checks = ignore_validity_checks
 
     @property
     def public_cert_filename(self):
@@ -219,12 +321,16 @@ class SSLCertificate(object):
         return result
 
     @property
+    def subject_hash(self):
+        return self.crt.get_subject().as_hash()
+
+    @property
     def subject_dn(self):
         return self.crt.get_subject().as_text()
 
     @property
-    def fingerprint(self):
-        return self.crt.get_fingerprint()
+    def fingerprint(self,md='sha1'):
+        return self.crt.get_fingerprint(md=md)
 
     @property
     def issuer(self):
@@ -264,9 +370,49 @@ class SSLCertificate(object):
             key = SSLPrivateKey(key)
         return self.crt.get_pubkey().get_modulus() == key.key.get_modulus()
 
+    @property
+    def not_before(self):
+        result = self.crt.get_not_before().get_datetime()
+        return result
+
+    @property
+    def not_after(self):
+        result = self.crt.get_not_after().get_datetime()
+        return result
+
+    def is_valid(self,issuer_cert=None,cn=None,purpose=None,ca_bundle=None):
+        """Check validity of certificate
+                not before / not after
+            if ca_bundle is provided, check that the certificate is issued by a known ca
+            if issuer_cert is provided, check that the certificate is issued by this issuer
+        """
+        if self.ignore_validity_checks:
+            return True
+        nb,na = self.not_before,self.not_after
+        now = datetime.datetime.now(nb.tzinfo)
+        return \
+            (cn is None or cn == self.cn) and \
+            now >= nb and now <= na and \
+            (issuer_cert is None or issuer_cert == self.issuer) and \
+            (ca_bundle is None or ca_bundle.check_is_known_issuer(self))
+
     def __iter__(self):
         for k in ['issuer_dn','fingerprint','subject_dn','cn']:
             yield k,getattr(self,k)
+
+    def __str__(self):
+        return u'SSLCertificate cn=%s'%self.cn
+
+    def __repr__(self):
+        return u'<SSLCertificate cn=%s / issuer=%s / validity=%s - %s>'%(self.cn,self.issuer.get('CN','?'),self.not_before.strftime('%Y-%m-%d'),self.not_after.strftime('%Y-%m-%d'))
+
+    def __cmp__(self,crt):
+        if isinstance(crt,SSLCertificate):
+            return cmp(self.fingerprint,crt.fingerprint)
+        elif isinstance(crt,dict):
+            return cmp(self.subject,crt)
+        else:
+            raise ValueError('Can not compare SSLCertificate with %s'%(typeof(crt)))
 
     def encrypt(self,content):
         """Encrypt a message will can be decrypted with the private key"""
@@ -295,11 +441,15 @@ def ssl_verify_content(content,signature,public_certs):
     if not isinstance(public_certs,list):
         public_certs = [public_certs]
     for public_cert in public_certs:
-        try:
-            crt = SSLCertificate(public_cert)
-            return crt.verify_content(content,signature)
-        except:
-            pass
+        crt = SSLCertificate(public_cert)
+        if crt.is_valid():
+            try:
+                return crt.verify_content(content,signature)
+            except:
+                pass
+        else:
+            logger.warning('Certificate %s is not valid'%public_cert)
+
     raise Exception('SSL signature verification failed, either none public certificates match signature or signed content has been changed')
 
 

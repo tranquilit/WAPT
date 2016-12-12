@@ -227,6 +227,7 @@ public:
 extern PYCOM_EXPORT PyTypeObject PyOleEmptyType;     // equivalent to VT_EMPTY
 extern PYCOM_EXPORT PyTypeObject PyOleMissingType;     // special Python handling.
 extern PYCOM_EXPORT PyTypeObject PyOleArgNotFoundType;     // special VT_ERROR value
+extern PYCOM_EXPORT PyTypeObject PyOleNothingType;     // special VT_ERROR value
 
 // ALL of these set an appropriate Python error on bad return.
 
@@ -246,6 +247,18 @@ PYCOM_EXPORT BOOL PyCom_InterfaceFromPyInstanceOrObject(
 	LPVOID *ppv,
 	BOOL bNoneOK=TRUE
 	);
+
+// Release an arbitary COM pointer.
+// NOTE: the PRECALL/POSTCALL stuff is probably not strictly necessary
+// since the PyGILSTATE stuff has been in place (and even then, it only
+// mattered when it was the last Release() on a Python implemented object)
+#define PYCOM_RELEASE(pUnk) { \
+	if (pUnk) { \
+		PY_INTERFACE_PRECALL; \
+		(pUnk)->Release(); \
+		PY_INTERFACE_POSTCALL; \
+	} \
+}
 
 // Given an IUnknown and an Interface ID, create and return an object
 // of the appropriate type. eg IID_Unknown->PyIUnknown,
@@ -280,6 +293,7 @@ PYCOM_EXPORT PyObject *PyCom_PyObjectFromSAFEARRAY(SAFEARRAY *psa, VARENUM vt = 
 PYCOM_EXPORT BOOL PyCom_PyObjectAsSTGOPTIONS(PyObject *obstgoptions, STGOPTIONS **ppstgoptions);
 #endif
 PYCOM_EXPORT PyObject *PyCom_PyObjectFromSTATPROPSETSTG(STATPROPSETSTG *pStat);
+PYCOM_EXPORT BOOL PyCom_PyObjectAsSTATPROPSETSTG(PyObject *, STATPROPSETSTG *);
 
 // Currency support.
 PYCOM_EXPORT PyObject *PyObject_FromCurrency(CURRENCY &cy);
@@ -402,7 +416,7 @@ PYCOM_EXPORT BOOL PyCom_MakeOlePythonCall(PyObject *handler, DISPPARAMS FAR* par
 	EXCEPINFO FAR* pexcepinfo, UINT FAR* puArgErr, PyObject *addnlArgs);
 
 /////////////////////////////////////////////////////////////////////////////
-// class PyOleEmpty
+// Various special purpose singletons
 class PYCOM_EXPORT PyOleEmpty : public PyObject
 {
 public:
@@ -420,6 +434,13 @@ class PYCOM_EXPORT PyOleArgNotFound : public PyObject
 public:
 	PyOleArgNotFound();
 };
+
+class PYCOM_EXPORT PyOleNothing : public PyObject
+{
+public:
+	PyOleNothing();
+};
+
 
 // We need to dynamically create C++ Python objects
 // These helpers allow each type object to create it.
@@ -742,5 +763,25 @@ PYCOM_EXPORT PyObject *MakeOLECHARToObj(const OLECHAR * str, int numChars);
 PYCOM_EXPORT PyObject *MakeOLECHARToObj(const OLECHAR * str);
 
 PYCOM_EXPORT void PyCom_LogF(const char *fmt, ...);
+
+// Generic conversion from python sequence to VT_VECTOR array
+// Resulting array must be freed with CoTaskMemFree
+template <typename arraytype>
+BOOL SeqToVector(PyObject *ob, arraytype **pA, ULONG *pcount, BOOL (*converter)(PyObject *, arraytype *)){
+	TmpPyObject seq = PyWinSequence_Tuple(ob, pcount);
+	if (seq == NULL)
+		return FALSE;
+	*pA = (arraytype *)CoTaskMemAlloc(*pcount * sizeof(arraytype));
+	if (*pA == NULL){
+		PyErr_NoMemory();
+		return FALSE;
+		}
+	for (ULONG i=0; i<*pcount; i++){
+		PyObject *item = PyTuple_GET_ITEM((PyObject *)seq, i);
+		if (!(*converter)(item, &(*pA)[i]))
+			return FALSE;
+		}
+	return TRUE;
+}
 
 #endif // __PYTHONCOM_H__
