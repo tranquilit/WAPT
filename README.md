@@ -27,7 +27,7 @@ Environnement Python
 
 * Python 2.7.10
 * Python 2.7 M2Crypto-0.21.1 : http://chandlerproject.org/pub/Projects/MeTooCrypto/M2Crypto-0.21.1.win32-py2.7.msi
-* Python 2.7 psutil-3.2.1 : https://pypi.python.org/pypi/psutil
+* Python 2.7 psutil-3.2.1 (<=3.4.2 pour compatibilité XP): https://pypi.python.org/pypi/psutil
 * Python 2.7 pyzmq-2.2.0 : https://github.com/downloads/zeromq/pyzmq/pyzmq-2.2.0.win32-py2.7.msi
 * pywin32 : http://sourceforge.net/projects/pywin32/
 * flask + dependences : http://flask.pocoo.org/
