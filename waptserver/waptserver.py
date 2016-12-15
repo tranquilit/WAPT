@@ -787,7 +787,7 @@ def ping():
         conf['server_uuid'] = server_uuid
         reload_config()
     return make_response(
-        msg = _('WAPT Server running'), result = dict(
+        msg = _(u'WAPT Server running'), result = dict(
             version = __version__,
             api_root='/api/',
             api_version='v1',
@@ -883,15 +883,15 @@ def proxy_host_request(request,action):
                         else:
                             raise Exception(client_result)
             except Exception as e:
-                result['errors'].append(dict( uuid = uuid, msg = '%s'% e, computer_fqdn=host_data.get('host',{}).get('computer_fqdn','')))
+                result['errors'].append(dict( uuid = uuid, msg = u'%s' % e, computer_fqdn=host_data.get('host',{}).get('computer_fqdn','')))
 
 
-        msg = ['Success : %s, Errors: %s' % (len(result['success']),len(result['errors']))]
+        msg = [u'Success : %s, Errors: %s' % (len(result['success']),len(result['errors']))]
         if result['errors']:
-            msg.extend(['%s: %s' % (e['computer_fqdn'],e['msg']) for e in result['errors']])
+            msg.extend([u'%s: %s' % (e['computer_fqdn'],e['msg']) for e in result['errors']])
 
         return make_response(result,
-            msg = '\n- '.join(msg),
+            msg = u'\n- '.join(msg),
             success = True)
     except Exception, e:
         return make_response_from_exception(e)
@@ -1043,13 +1043,13 @@ def waptagent_version():
             waptsetup_timestamp = datetime2isodate(datetime.datetime.fromtimestamp(os.path.getmtime(waptsetup)))
 
         if agent_present and setup_present and Version(agent_version)>=Version(setup_version):
-            msg = 'OK : waptagent.exe %s >= waptsetup %s' % (agent_version,setup_version)
+            msg = u'OK : waptagent.exe %s >= waptsetup %s' % (agent_version,setup_version)
         elif agent_present and setup_present and Version(agent_version)<Version(setup_version):
-            msg = 'Problem : waptagent.exe %s is older than waptsetup %s, and must be regenerated.' % (agent_version,setup_version)
+            msg = u'Problem : waptagent.exe %s is older than waptsetup %s, and must be regenerated.' % (agent_version,setup_version)
         elif not agent_present and setup_present:
-            msg = 'Problem : waptagent.exe not found. It should be compiled from waptconsole.'
+            msg = u'Problem : waptagent.exe not found. It should be compiled from waptconsole.'
         elif not setup_present:
-            msg = 'Problem : waptsetup-tis.exe not found on repository.'
+            msg = u'Problem : waptsetup-tis.exe not found on repository.'
 
 
         result = dict(
@@ -1128,7 +1128,7 @@ def host_tasks_status():
         else:
             raise EWaptMissingHostData(_("The host reachability is not defined."))
         return make_response(client_result,
-            msg = "Tasks status retrieved properly",
+            msg = u"Tasks status retrieved properly",
             success = isinstance(client_result,dict),)
     except Exception, e:
         return make_response_from_exception(e)
@@ -1143,7 +1143,7 @@ def get_groups():
         packages = WaptLocalRepo(conf['wapt_folder'])
 
         groups = [ p.as_dict() for p in packages.packages if p.section == 'group']
-        msg = '{} Packages for section group'.format(len(groups))
+        msg = u'{} Packages for section group'.format(len(groups))
 
     except Exception as e:
         return make_response_from_exception(e)
@@ -1367,19 +1367,19 @@ def get_hosts():
 
         if  'uuid' in request.args:
             if len(result) == 0:
-                msg = 'No data found for uuid {}'.format(request.args['uuid'])
+                msg = u'No data found for uuid {}'.format(request.args['uuid'])
             else:
-                msg = 'host data fields {} returned for uuid {}'.format(','.join(columns),request.args['uuid'])
+                msg = u'host data fields {} returned for uuid {}'.format(','.join(columns),request.args['uuid'])
         elif 'filter' in request.args:
             if len(result) == 0:
-                msg = 'No data found for filter {}'.format(request.args['filter'])
+                msg = u'No data found for filter {}'.format(request.args['filter'])
             else:
-                msg = '{} hosts returned for filter {}'.format(len(result),request.args['filter'])
+                msg = u'{} hosts returned for filter {}'.format(len(result),request.args['filter'])
         else:
             if len(result) == 0:
-                msg = 'No data found'
+                msg = u'No data found'
             else:
-                msg = '{} hosts returned'.format(len(result))
+                msg = u'{} hosts returned'.format(len(result))
 
 
     except Exception as e:
@@ -1413,7 +1413,7 @@ def host_data():
         if data is None:
             raise EWaptUnknownHost('Host {} not found in database'.format(uuid) )
         else:
-            msg = '{} data for host {}'.format(field,uuid)
+            msg = u'{} data for host {}'.format(field,uuid)
 
 
     except Exception as e:
@@ -1421,7 +1421,7 @@ def host_data():
 
     result = data.get(field,None)
     if result is None:
-        msg = 'No {} data for host {}'.format(field,uuid)
+        msg = u'No {} data for host {}'.format(field,uuid)
         success = False
         error_code = 'empty_data'
     else:
