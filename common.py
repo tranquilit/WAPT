@@ -4510,8 +4510,12 @@ class Wapt(object):
 
         """
         if description:
-            out = self.run("echo "" | WMIC os set description='%s'" % description.encode(sys.getfilesystemencoding()))
-            logger.info(out)
+            with setuphelpers.disable_file_system_redirection():
+                try:
+                    out = self.run("WMIC os set description='%s'" % description.encode(sys.getfilesystemencoding()))
+                except:
+                    out = self.run("""echo "" | WMIC os set description='%s'""" % description.encode(sys.getfilesystemencoding()))
+                logger.info(out)
 
         self.delete_param('uuid')
         inv = self.inventory()
