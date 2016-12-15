@@ -550,64 +550,62 @@ class WaptBaseDB(object):
 
     def upgradedb(self,force=False):
         """Update local database structure to current version if rules are described in db_upgrades"""
-        try:
-            self.begin()
-            backupfn = ''
-            # use cached value to avoid infinite loop
-            old_structure_version = self._db_version
-            if old_structure_version >= self.curr_db_version and not force:
-                logger.warning(u'upgrade db aborted : current structure version %s is newer or equal to requested structure version %s' % (old_structure_version,self.curr_db_version))
-                return (old_structure_version,old_structure_version)
+        with self:
+            try:
+                backupfn = ''
+                # use cached value to avoid infinite loop
+                old_structure_version = self._db_version
+                if old_structure_version >= self.curr_db_version and not force:
+                    logger.warning(u'upgrade db aborted : current structure version %s is newer or equal to requested structure version %s' % (old_structure_version,self.curr_db_version))
+                    return (old_structure_version,old_structure_version)
 
-            logger.info(u'Upgrade database schema')
-            if self.dbpath != ':memory:':
-                # we will backup old data in a file so that we can rollback
-                backupfn = tempfile.mktemp('.sqlite')
-                logger.debug(u' copy old data to %s' % backupfn)
-                shutil.copy(self.dbpath,backupfn)
-            else:
-                backupfn = None
+                logger.info(u'Upgrade database schema')
+                if self.dbpath != ':memory:':
+                    # we will backup old data in a file so that we can rollback
+                    backupfn = tempfile.mktemp('.sqlite')
+                    logger.debug(u' copy old data to %s' % backupfn)
+                    shutil.copy(self.dbpath,backupfn)
+                else:
+                    backupfn = None
 
-            # we will backup old data in dictionaries to convert them to new structure
-            logger.debug(u' backup data in memory')
-            old_datas = {}
-            tables = [ c[0] for c in self.db.execute('SELECT name FROM sqlite_master WHERE type = "table" and name like "wapt_%"').fetchall()]
-            for tablename in tables:
-                old_datas[tablename] = self.query('select * from %s' % tablename)
-                logger.debug(u' %s table : %i records' % (tablename,len(old_datas[tablename])))
+                # we will backup old data in dictionaries to convert them to new structure
+                logger.debug(u' backup data in memory')
+                old_datas = {}
+                tables = [ c[0] for c in self.db.execute('SELECT name FROM sqlite_master WHERE type = "table" and name like "wapt_%"').fetchall()]
+                for tablename in tables:
+                    old_datas[tablename] = self.query('select * from %s' % tablename)
+                    logger.debug(u' %s table : %i records' % (tablename,len(old_datas[tablename])))
 
-            logger.debug(u' drop tables')
-            for tablename in tables:
-                self.db.execute('drop table if exists %s' % tablename)
+                logger.debug(u' drop tables')
+                for tablename in tables:
+                    self.db.execute('drop table if exists %s' % tablename)
 
-            # create new empty structure
-            logger.debug(u' recreates new tables ')
-            new_structure_version = self.initdb()
-            del(self.db_version)
-            # append old data in new tables
-            logger.debug(u' fill with old data')
-            for tablename in tables:
-                if old_datas[tablename]:
-                    logger.debug(u' process table %s' % tablename)
-                    allnewcolumns = [ c[0] for c in self.db.execute('select * from %s limit 0' % tablename).description]
-                    # take only old columns which match a new column in new structure
-                    oldcolumns = [ k for k in old_datas[tablename][0] if k in allnewcolumns ]
+                # create new empty structure
+                logger.debug(u' recreates new tables ')
+                new_structure_version = self.initdb()
+                del(self.db_version)
+                # append old data in new tables
+                logger.debug(u' fill with old data')
+                for tablename in tables:
+                    if old_datas[tablename]:
+                        logger.debug(u' process table %s' % tablename)
+                        allnewcolumns = [ c[0] for c in self.db.execute('select * from %s limit 0' % tablename).description]
+                        # take only old columns which match a new column in new structure
+                        oldcolumns = [ k for k in old_datas[tablename][0] if k in allnewcolumns ]
 
-                    insquery = "insert into %s (%s) values (%s)" % (tablename,",".join(oldcolumns),",".join("?" * len(oldcolumns)))
-                    for rec in old_datas[tablename]:
-                        logger.debug(u' %s' %[ rec[oldcolumns[i]] for i in range(0,len(oldcolumns))])
-                        self.db.execute(insquery,[ rec[oldcolumns[i]] for i in range(0,len(oldcolumns))] )
+                        insquery = "insert into %s (%s) values (%s)" % (tablename,",".join(oldcolumns),",".join("?" * len(oldcolumns)))
+                        for rec in old_datas[tablename]:
+                            logger.debug(u' %s' %[ rec[oldcolumns[i]] for i in range(0,len(oldcolumns))])
+                            self.db.execute(insquery,[ rec[oldcolumns[i]] for i in range(0,len(oldcolumns))] )
 
-            # be sure to put back new version in table as db upgrade has put the old value in table
-            self.db_version = new_structure_version
-            self.commit()
-            return (old_structure_version,new_structure_version)
-        except Exception,e:
-            self.rollback()
-            if backupfn:
-                logger.critical(u"UpgradeDB ERROR : %s, copy back backup database %s" % (e,backupfn))
-                shutil.copy(backupfn,self.dbpath)
-            raise
+                # be sure to put back new version in table as db upgrade has put the old value in table
+                self.db_version = new_structure_version
+                return (old_structure_version,new_structure_version)
+            except Exception,e:
+                if backupfn:
+                    logger.critical(u"UpgradeDB ERROR : %s, copy back backup database %s" % (e,backupfn))
+                    shutil.copy(backupfn,self.dbpath)
+                raise
 
 class WaptSessionDB(WaptBaseDB):
     curr_db_version = '20161103'
