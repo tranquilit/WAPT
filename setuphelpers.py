@@ -2920,7 +2920,7 @@ def remove_tree(*args, **kwargs):
         kwargs['ignore_errors'] = True
     return shutil.rmtree(*args, **kwargs)
 
-def makepath(a, *p):
+def makepath(*p):
     r"""Create a path given the components passed, but with saner defaults
     than os.path.join.
 
@@ -2929,8 +2929,16 @@ def makepath(a, *p):
     >>> makepath('c:',programfiles)
     'C:\\Program Files'
     """
-    p = [e.lstrip(os.path.sep) for e in p]
-    return os.path.join(a, *p)
+    parts = []
+    for part in p:
+        # workaround for bad designed functions
+        if hasattr(part,'__call__'):
+            part = part()
+        part = part.lstrip(os.path.sep)
+        if part.endswith(':'):
+            part += os.path.sep
+        parts.append(part)
+    return os.path.join(*parts)
 
 def service_installed(service_name):
     """Return True if the service is installed"""
