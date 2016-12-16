@@ -62,7 +62,7 @@ interface
 
   function GetEthernetInfo(ConnectedOnly:Boolean):ISuperObject;
   function LocalSysinfo: ISuperObject;
-  function GetLocalIP: string;
+  function GetLocalIP: Ansistring;
 
   //call url action on waptserver. action can contains formatting chars like %s which will be replaced by args with the Format function.
   function WAPTServerJsonGet(action: String;args:Array of const;method:AnsiString='GET';ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
@@ -89,15 +89,19 @@ interface
           organization,
           orgunit,
           commonname,
-          email:String
-      ):String;
+          email:Utf8String
+      ):Utf8String;
 
   function WAPTServerJsonMultipartFilePost(waptserver,action: String;args:Array of const;
       FileArg,FileName:String;
       user:AnsiString='';password:AnsiString='';OnHTTPWork:TWorkEvent=Nil):ISuperObject;
 
-  function CreateWaptSetup(default_public_cert:String='';default_repo_url:String='';
-            default_wapt_server:String='';destination:String='';company:String='';OnProgress:TNotifyEvent = Nil;OverrideBaseName:String=''):String;
+  function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8String='';
+            default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;OverrideBaseName:Utf8String=''):Utf8String;
+
+  function pyformat(template:String;params:ISuperobject):String;
+  function pyformat(template:Utf8String;params:ISuperobject):Utf8String; overload;
+
 
 const
   waptwua_enabled : boolean = False;
@@ -126,14 +130,14 @@ const
 
 implementation
 
-uses FileUtil, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
+uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2,
   IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,IdURI,
-  gettext,IdStack,IdCompressorZLib,sha1,IdAuthentication;
+  gettext,IdStack,IdCompressorZLib,sha1,IdAuthentication,shfolder,Dialogs;
 
 const
   CacheWaptServerUrl: AnsiString = 'None';
-  wapt_config_filename : String = '';
+  wapt_config_filename : Utf8String = '';
 
 procedure IdConfigureProxy(http:TIdHTTP;ProxyUrl:String);
 var
@@ -586,7 +590,6 @@ function WAPTLocalJsonGet(action: String; user: AnsiString;
 var
   url,strresult : String;
   http:TIdHTTP;
-  ssl: boolean;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
 begin
   ssl_handler := Nil;
@@ -848,28 +851,44 @@ end;
 
 function WaptgetPath: Utf8String;
 begin
-  result := ExtractFilePath(ParamStr(0))+'wapt-get.exe'
+  result := ExtractFilePath(ParamStrUtf8(0))+'wapt-get.exe'
 end;
 
 function WaptservicePath: Utf8String;
 begin
-  result := ExtractFilePath(ParamStr(0))+'waptservice.exe'
+  result := ExtractFilePath(ParamStrUtf8(0))+'waptservice.exe'
+end;
+
+function GetSpecialFolderPath(folder : integer) : widestring;
+const
+   SHGFP_TYPE_CURRENT = 0;
+var
+   path: array [0..MAX_PATH] of widechar;
+begin
+   if SUCCEEDED(SHGetFolderPathW(0,folder,0,SHGFP_TYPE_CURRENT, @path[0])) then
+      Result := IncludeTrailingPathDelimiter(path)
+   else
+     Result := '';
+   ShowMessage(Result);
 end;
 
 function AppLocalDir: Utf8String;
 begin
-  result := GetAppConfigDir(False);
+
+  Result :=  IncludeTrailingPathDelimiter(UTF16ToUTF8(GetSpecialFolderPath(CSIDL_LOCAL_APPDATA)))+ApplicationName;
+  //result := AnsiToUtf8(GetAppConfigDir(False));
 end;
 
 function AppIniFilename: Utf8String;
 begin
-  result := GetAppConfigDir(False)+ApplicationName+'.ini';
+  Result :=  IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetSpecialFolderPath(CSIDL_LOCAL_APPDATA))+ApplicationName)+ApplicationName+'.ini';
+  //result := AnsiToUtf8(GetAppConfigDir(False))+ApplicationName+'.ini';
 end;
 
 function WaptIniFilename: Utf8String;
 begin
   if wapt_config_filename = '' then
-      wapt_config_filename := ExtractFilePath(ParamStr(0))+'wapt-get.ini';
+      wapt_config_filename := ExtractFilePath(ParamStrUTF8(0))+'wapt-get.ini';
   result :=  wapt_config_filename;
 end;
 
@@ -914,8 +933,8 @@ begin
     Language := '';
     // override lang setting
     for i := 1 to Paramcount - 1 do
-      if (ParamStrUTF8(i) = '--LANG') or (ParamStrUTF8(i) = '-l') or
-        (ParamStrUTF8(i) = '--lang') then
+      if (ParamStrUtf8(i) = '--LANG') or (ParamStrUtf8(i) = '-l') or
+        (ParamStr(i) = '--lang') then
         begin
           Language := ParamStrUTF8(i + 1);
           FallBackLanguage := copy(ParamStrUTF8(i + 1),1,2);
@@ -925,8 +944,8 @@ begin
     begin
       Language := IniReadString(inifile,'global','language','');       ;
       FallBackLanguage := copy(Language,1,2);
-      if FallBackLanguage ='' then
-          GetLanguageIDs(Language,FallBackLanguage);
+      //if FallBackLanguage ='' then
+      //    GetLanguageIDs(Language,FallBackLanguage);
     end;
 
     waptserver_port := IniReadInteger(inifile,'global','waptserver_port',80);
@@ -1067,7 +1086,7 @@ end;
 const
   CFormatIPMask = '%d.%d.%d.%d';
 
-function GetLocalIP: string;
+function GetLocalIP: Ansistring;
 var
 {$IFDEF UNIX}
   VProcess: TProcess;
@@ -1075,7 +1094,7 @@ var
 {$IFDEF MSWINDOWS}
   VWSAData: TWSAData;
   VHostEnt: PHostEnt;
-  VName: string;
+  VName: Ansistring;
 {$ENDIF}
 begin
   Result := '';
@@ -1099,9 +1118,9 @@ begin
       WSAStartup(2, VWSAData);
 {$HINTS ON}
       SetLength(VName, 255);
-      GetHostName(PChar(VName), 255);
-      SetLength(VName, StrLen(PChar(VName)));
-      VHostEnt := GetHostByName(PChar(VName));
+      GetHostName(PAnsiChar(VName), 255);
+      SetLength(VName, StrLen(PAnsiChar(VName)));
+      VHostEnt := GetHostByName(PAnsiChar(VName));
       with VHostEnt^ do
         Result := Format(CFormatIPMask, [Byte(h_addr^[0]), Byte(h_addr^[1]),
           Byte(h_addr^[2]), Byte(h_addr^[3])]);
@@ -1197,6 +1216,16 @@ begin
     Result := StringReplace(Result,'%('+key.AsString+')s',params.S[key.AsString],[rfReplaceAll]);
 end;
 
+function pyformat(template:Utf8String;params:ISuperobject):Utf8String; overload;
+var
+  key:ISuperObject;
+begin
+  Result := template;
+  for key in params.AsObject.GetNames do
+    Result := UTF8StringReplace(Result,'%('+key.AsString+')s',params.S[key.AsString],[rfReplaceAll]);
+end;
+
+
 function WAPTServerJsonMultipartFilePost(waptserver, action: String;
   args: array of const; FileArg, FileName: String;
   user: AnsiString; password: AnsiString; OnHTTPWork: TWorkEvent): ISuperObject;
@@ -1251,10 +1280,10 @@ function CreateSelfSignedCert(orgname,
         organization,
         orgunit,
         commonname,
-        email:String
-    ):String;
+        email:Utf8String
+    ):Utf8String;
 var
-  opensslbin,opensslcfg,opensslcfg_fn,destpem,destcrt,destp12 : String;
+  opensslbin,opensslcfg,opensslcfg_fn,destpem,destcrt,destp12 : Utf8String;
   params : ISuperObject;
 begin
     destpem := AppendPathDelim(destdir)+orgname+'.pem';
@@ -1263,19 +1292,19 @@ begin
     if not DirectoryExists(destdir) then
         mkdir(destdir);
     params := TSuperObject.Create;
-    params.S['country'] := country;
-    params.S['locality'] :=locality;
-    params.S['organization'] := organization;
-    params.S['unit'] := orgunit;
-    params.S['commonname'] := commonname;
-    params.S['email'] := email;
+    params.S['country'] := UTF8Decode(country);
+    params.S['locality'] :=UTF8Decode(locality);
+    params.S['organization'] := UTF8Decode(organization);
+    params.S['unit'] := UTF8Decode(orgunit);
+    params.S['commonname'] := UTF8Decode(commonname);
+    params.S['email'] := UTF8Decode(email);
 
     opensslbin :=  AppendPathDelim(wapt_base_dir)+'lib\site-packages\M2Crypto\openssl.exe';
     opensslcfg :=  pyformat(FileToString(AppendPathDelim(wapt_base_dir) + 'templates\openssl_template.cfg'),params);
     opensslcfg_fn := AppendPathDelim(destdir)+'openssl.cfg';
     StringToFile(opensslcfg_fn,opensslcfg);
     try
-      SetEnvironmentVariable(PAnsiChar('OPENSSL_CONF'),PAnsiChar(opensslcfg_fn));
+      SetEnvironmentVariableW(PWideChar('OPENSSL_CONF'),PWideChar(opensslcfg_fn));
       if ExecuteProcess(opensslbin,'req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout "'+destpem+'" -out "'+destcrt+'"',[]) <> 0 then
         result :=''
       else
@@ -1288,14 +1317,14 @@ begin
     end;
 end;
 
-function CreateWaptSetup(default_public_cert:String='';default_repo_url:String='';
-          default_wapt_server:String='';destination:String='';company:String='';OnProgress:TNotifyEvent = Nil;OverrideBaseName:String=''):String;
+function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8String='';
+          default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;OverrideBaseName:Utf8String=''):Utf8String;
 var
-  iss_template,custom_iss,source,target,outputname,junk : String;
+  iss_template,custom_iss,source,target,outputname,junk : utf8String;
   iss,new_iss,line : ISuperObject;
-  wapt_base_dir,inno_fn,p12keypath,signtool: String;
+  wapt_base_dir,inno_fn,p12keypath,signtool: Utf8String;
 
-  function startswith(st:ISuperObject;subst:String):Boolean;
+  function startswith(st:ISuperObject;subst:Utf8String):Boolean;
   begin
     result := (st <>Nil) and (st.DataType = stString) and (pos(subst,trim(st.AsString))=1)
   end;
@@ -1323,21 +1352,21 @@ begin
         else if startswith(line,'OutputBaseFilename') then
             begin
                 if length(OverrideBaseName) <> 0 then
-                    outputname := OverrideBaseName
+                begin
+                    outputname := OverrideBaseName;
+                    new_iss.AsArray.Add(format('OutputBaseFilename=%s' ,[outputname]));
+                end
                 else
-                    StrSplit(line.AsString,'=',outputname,junk)
-                ;
-                new_iss.AsArray.Add(format('OutputBaseFilename=%s' ,[outputname]));
+                    new_iss.AsArray.Add(line);
             end
         else if not startswith(line,'#define signtool') then
-            new_iss.AsArray.Add(line)
-        ;
+            new_iss.AsArray.Add(line);
     end;
 
     source := default_public_cert;
     target := ExtractFileDir(iss_template) + '  \..\ssl\' + ExtractFileName(source);
-    if not FileExists(target) then
-      if not FileUtil.CopyFile(source,target,True) then
+    if not FileExistsUTF8(target) then
+      if not CopyFileW(PWideChar(source),PWideChar(target),True) then
         raise Exception.CreateFmt(rsCertificateCopyFailure,[source,target]);
     StringToFile(custom_iss,SOUtils.Join(#13#10,new_iss));
 
@@ -1411,7 +1440,7 @@ end;
 initialization
 //  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;
     //Raise Exception.Create('Unable to initialize ActiveX layer');
-   GetLanguageIDs(Language,FallBackLanguage);
+   //GetLanguageIDs(Language,FallBackLanguage);
    waptwua_enabled := FileExists(WaptBaseDir+'\waptwua.py');
 
 finalization
