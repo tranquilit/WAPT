@@ -228,7 +228,6 @@ import tempfile
 import shutil
 import shlex
 
-import _subprocess
 import subprocess
 from subprocess import Popen, PIPE
 import psutil
@@ -306,7 +305,7 @@ def ensure_dir(filename):
 
 # from opsi
 def ensure_unicode(data):
-    ur"""Return a unicode string from data object
+    u"""Return a unicode string from data object
 
     It is sometimes diffcult to know in advance what we will get from command line
      application output.
@@ -647,11 +646,11 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
                 else:
                     try:
                         if received == 0:
-                            print u"Downloading %s (%.1f Mb)" % (url,int(total)/1024/1024)
+                            print(u"Downloading %s (%.1f Mb)" % (url,int(total)/1024/1024))
                         elif received>=total:
-                            print u"  -> download finished (%.0f Kb/s)" % (total /(1024.0*(time.time()+.001-start_time)))
+                            print(u"  -> download finished (%.0f Kb/s)" % (total /(1024.0*(time.time()+.001-start_time))))
                         else:
-                            print u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed ),
+                            print(u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed))
                     except:
                         return False
                 return True
@@ -835,6 +834,7 @@ def file_is_locked(path,timeout=5):
     while count>0:
         try:
             f = open(path,'ab')
+            f.close()
             return False
         except IOError as e:
             if e.errno==13:
@@ -935,12 +935,12 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
                     else:
                         raise
 
-        except (IOError, os.error), why:
+        except (IOError, os.error) as why:
             logger.critical(u'Error copying from "%s" to "%s" : %s' % (ensure_unicode(src),ensure_unicode(dst),ensure_unicode(why)))
             errors.append((srcname, dstname, str(why)))
         # catch the Error from the recursive copytree so that we can
         # continue with other files
-        except shutil.Error, err:
+        except shutil.Error as err:
             #errors.extend(err.args[0])
             errors.append(err)
     try:
@@ -948,7 +948,7 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
     except WindowsError:
         # can't copy file access times on Windows
         pass
-    except OSError, why:
+    except OSError as why:
         errors.extend((src, dst, str(why)))
     if errors:
         raise shutil.Error(errors)
@@ -966,8 +966,8 @@ class RunReader(threading.Thread):
     def run(self):
         try:
             self.callable(*self.args, **self.kwargs)
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(u"%s"%e)
 
 
 class TimeoutExpired(Exception):
@@ -1028,6 +1028,7 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=Non
     ...     print('timeout')
     timeout
     """
+    import _winapi
     logger.info(u'Run "%s"' % (ensure_unicode(cmd),))
     output = []
 
@@ -1074,7 +1075,7 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=Non
             pidlist.remove(proc.pid)
             killtree(proc.pid)
         raise TimeoutExpired(cmd,u''.join(output),timeout)
-    proc.returncode = _subprocess.GetExitCodeProcess(proc._handle)
+    proc.returncode = _winapi.GetExitCodeProcess(proc._handle)
     if proc.pid in pidlist:
         pidlist.remove(proc.pid)
         killtree(proc.pid)
@@ -1097,8 +1098,8 @@ def run_notfatal(*cmd,**args):
     """
     try:
         return run(*cmd,**args)
-    except Exception,e:
-        print u'Warning : %s' % ensure_unicode(e)
+    except Exception as e:
+        print(u'Warning : %s' % ensure_unicode(e))
         return ''
 
 
@@ -1372,7 +1373,7 @@ def reg_openkey_noredir(rootkey, subkeypath, sam=_winreg.KEY_READ,create_if_miss
         else:
             result = _winreg.OpenKey(rootkey,subkeypath,0,sam)
         return result
-    except WindowsError,e:
+    except WindowsError as e:
         if e.errno == 2:
             if create_if_missing:
                 if platform.machine() == 'AMD64':
@@ -1458,7 +1459,7 @@ def reg_getvalue(key,name,default=None):
         if isinstance(value,str):
             value = value.decode(locale.getpreferredencoding())
         return value
-    except WindowsError,e:
+    except WindowsError as e:
         if e.errno in(259,2):
             # WindowsError: [Errno 259] No more data is available
             # WindowsError: [Error 2] Le fichier spécifié est introuvable
@@ -1491,7 +1492,7 @@ def reg_delvalue(key,name):
             name = name.encode(locale.getpreferredencoding())
         _winreg.DeleteValue(key,name)
         return True
-    except WindowsError,e:
+    except WindowsError as e:
         # WindowsError: [Errno 2] : file does not exist
         if e.winerror == 2:
             return False
@@ -1508,7 +1509,7 @@ def reg_enum_subkeys(rootkey):
             if subkey_name is not None:
                 yield subkey_name
             i += 1
-        except WindowsError,e:
+        except WindowsError as e:
             # WindowsError: [Errno 259] No more data is available
             if e.winerror == 259:
                 break
@@ -1530,7 +1531,7 @@ def reg_enum_values(rootkey):
                     value = value.decode(locale.getpreferredencoding())
                 yield (name,value,_type)
             i += 1
-        except WindowsError,e:
+        except WindowsError as e:
             # WindowsError: [Errno 259] No more data is available
             if e.winerror == 259:
                 break
@@ -2199,7 +2200,7 @@ def installed_softwares(keywords='',uninstallkey=None):
                             'publisher':publisher,
                             'system_component':system_component,})
                     i += 1
-                except WindowsError,e:
+                except WindowsError as e:
                     # WindowsError: [Errno 259] No more data is available
                     if e.winerror == 259:
                         break
@@ -2293,14 +2294,14 @@ def unregister_uninstall(uninstallkey,win64app=False):
             root = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"+uninstallkey
         try:
             _winreg.DeleteKeyEx(_winreg.HKEY_LOCAL_MACHINE,root.encode(locale.getpreferredencoding()))
-        except WindowsError,e:
+        except WindowsError as e:
             logger.warning(u'Unable to remove key %s, error : %s' % (ensure_unicode(root),ensure_unicode(e)))
 
     else:
         root = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"+uninstallkey
         try:
             _winreg.DeleteKey(_winreg.HKEY_LOCAL_MACHINE,root.encode(locale.getpreferredencoding()))
-        except WindowsError,e:
+        except WindowsError as e:
             logger.warning(u'Unable to remove key %s, error : %s' % (ensure_unicode(root),ensure_unicode(e)))
 
 # aliases
@@ -2392,7 +2393,7 @@ def dmi_info():
                 else:
                     result[key]  = currobject
                 if l.startswith('\t'):
-                    print l
+                    print(l)
             else:
                 if not l.startswith('\t\t'):
                     currarray = []
@@ -2400,7 +2401,7 @@ def dmi_info():
                         (name,value)=l.split(':',1)
                         currobject[name.strip().replace(' ','_')]=value.strip()
                     else:
-                        print "Error in line : %s" % l
+                        print("Error in line : %s" % l)
                 else:
                     # first line of array
                     if not currarray:
@@ -2661,7 +2662,7 @@ def get_file_properties(fname):
             ## print str_info
             props[propName] = (win32api.GetFileVersionInfo(fname, strInfoPath) or '').strip()
 
-    except Exception,e:
+    except Exception as e:
         logger.warning(u"%s" % ensure_unicode(e))
         # backslash as parm returns dictionary of numeric info corresponding to VS_FIXEDFILEINFO struc
 
@@ -2671,7 +2672,7 @@ def get_file_properties(fname):
             props['FileVersion'] = u"%d.%d.%d.%d" % (fixedInfo['FileVersionMS'] / 65536,
                     fixedInfo['FileVersionMS'] % 65536, fixedInfo['FileVersionLS'] / 65536,
                     fixedInfo['FileVersionLS'] % 65536)
-        except Exception,e:
+        except Exception as e:
             logger.warning(u"%s" % ensure_unicode(e))
             # backslash as parm returns dictionary of numeric info corresponding to VS_FIXEDFILEINFO struc
 
@@ -2681,7 +2682,7 @@ def get_file_properties(fname):
             props['ProductVersion'] = u"%d.%d.%d.%d" % (fixedInfo['ProductVersionMS'] / 65536,
                     fixedInfo['ProductVersionMS'] % 65536, fixedInfo['ProductVersionLS'] / 65536,
                     fixedInfo['ProductVersionLS'] % 65536)
-        except Exception,e:
+        except Exception as e:
             logger.warning(u"%s" % ensure_unicode(e))
             # backslasfh as parm returns dictionary of numeric info corresponding to VS_FIXEDFILEINFO struc
 
@@ -2945,7 +2946,7 @@ def service_installed(service_name):
     try:
         service_is_running(service_name)
         return True
-    except win32service.error,e :
+    except win32service.error as e :
         if e.winerror == 1060:
             return False
         else:
@@ -3595,7 +3596,7 @@ def local_desktops():
                 result.append(makepath(image_path,'Bureau'))
 
             i += 1
-        except WindowsError,e:
+        except WindowsError as e:
             # WindowsError: [Errno 259] No more data is available
             if e.winerror == 259:
                 break
