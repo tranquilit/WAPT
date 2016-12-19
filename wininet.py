@@ -22,6 +22,7 @@
 #
 # -----------------------------------------------------------------------
 
+from __future__ import print_function
 import sys,time
 from ctypes import *
 from ctypes.wintypes import DWORD
@@ -360,5 +361,5 @@ class WinInet:
 if __name__ == '__main__':
     inet = WinInet()
     status, data = inet.doUrlGet("login?openerp_login=admin&openerp_password=xxx", "srvwapt", {}, "", "",port=8000)
-    print "s", status
-    print "d", data
+    print("s", status)
+    print("d", data)

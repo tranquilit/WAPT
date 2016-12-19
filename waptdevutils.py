@@ -33,6 +33,7 @@
     exported functions instead of local Wapt functions (except crypto signatures)
 
 """
+from __future__ import print_function
 __version__ = "1.3.8"
 
 import sys,os
@@ -389,7 +390,7 @@ def add_ads_groups(waptconfigfile,hosts_list,wapt_server_user,wapt_server_passwd
     for h in hosts:
         try:
             hostname = h['host']['computer_fqdn']
-            print 'Computer %s... ' % hostname,
+            print('Computer %s... ' % hostname, end=' ')
 
             groups = get_computer_groups(h['host']['computer_name'])
             wapt_groups = h['depends']
@@ -407,7 +408,7 @@ def add_ads_groups(waptconfigfile,hosts_list,wapt_server_user,wapt_server_passwd
                     control.save_control_to_wapt(package['source_dir'])
                     buid_res = wapt.build_upload(package['source_dir'], private_key_passwd = key_password, wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd,
                         inc_package_release=True)[0]
-                    print "  done, new packages: %s" % (','.join(additional))
+                    print("  done, new packages: %s" % (','.join(additional)))
                     if os.path.isfile(buid_res['filename']):
                         os.remove(buid_res['filename'])
                     result.append(hostname)
@@ -416,7 +417,7 @@ def add_ads_groups(waptconfigfile,hosts_list,wapt_server_user,wapt_server_passwd
                     if os.path.isdir(tmpdir):
                         rmtree(tmpdir)
         except Exception as e:
-            print " error %s" % e
+            print(" error %s" % e)
             raise
 
     return result

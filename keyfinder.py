@@ -32,6 +32,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+from __future__ import print_function
 __version__ = "1.0.0"
 
 import platform,sys,os
@@ -67,7 +68,7 @@ def reg_openkey_noredir(key, sub_key, sam=_winreg.KEY_READ,create_if_missing=Fal
             return _winreg.OpenKey(key,sub_key,0, sam | _winreg.KEY_WOW64_64KEY)
         else:
             return _winreg.OpenKey(key,sub_key,0,sam)
-    except WindowsError,e:
+    except WindowsError as e:
         if e.errno == 2:
             if create_if_missing:
                 if platform.machine() == 'AMD64':
@@ -86,7 +87,7 @@ def reg_getvalue(key,name,default=None):
     """
     try:
         return _winreg.QueryValueEx(key,name)[0]
-    except WindowsError,e:
+    except WindowsError as e:
         if e.errno in(259,2):
             # WindowsError: [Errno 259] No more data is available
             # WindowsError: [Error 2] Le fichier spécifié est introuvable
@@ -360,4 +361,4 @@ def windows_product_infos():
     return infos
 
 if __name__=='__main__':
-    print windows_product_infos()
+    print(windows_product_infos())

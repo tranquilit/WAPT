@@ -20,6 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+from __future__ import print_function
 __version__ = "1.3.8.6"
 import os
 import re
@@ -620,7 +621,7 @@ def private_key_has_password(key):
         if "bad password" in str(e):
             return True
         else:
-            print str(e)
+            print(str(e))
             return True
     return False
 
@@ -816,7 +817,7 @@ def import_code(code,name='',add_to_sys_modules=0):
     logger.debug('Import source code as %s'%(name))
     module = imp.new_module(name)
 
-    exec code in module.__dict__
+    exec(code, module.__dict__)
     if add_to_sys_modules:
         sys.modules[name] = module
 
@@ -938,7 +939,7 @@ def reg_openkey_noredir(key, sub_key, sam=KEY_READ):
             return OpenKey(key,sub_key,0, sam | KEY_WOW64_64KEY)
         else:
             return OpenKey(key,sub_key,0,sam)
-    except WindowsError,e:
+    except WindowsError as e:
         if e.errno == 2:
             raise WindowsError(e.errno,'The key %s can not be opened' % sub_key)
 
@@ -978,7 +979,7 @@ def tryurl(url,proxies=None,timeout=2,auth=None,verify_cert=False):
             return True
         else:
             headers.raise_for_status()
-    except Exception,e:
+    except Exception as e:
         logger.debug(u'  Not available : %s' % ensure_unicode(e))
         return False
 
@@ -1203,7 +1204,7 @@ class WaptBaseDB(object):
                 self.db_version = new_structure_version
             self.commit()
             return (old_structure_version,new_structure_version)
-        except Exception,e:
+        except Exception as e:
             self.rollback()
             if backupfn:
                 logger.critical(u"UpgradeDB ERROR : %s, copy back backup database %s" % (e,backupfn))
@@ -1827,15 +1828,15 @@ class WaptDB(WaptBaseDB):
         """
         with self:
             result = {}
-            logger.debug(u'Remove unknown repositories from packages table and params (%s)' %(','.join('"%s"'% r.name for r in repos_list,),)  )
-            self.db.execute('delete from wapt_package where repo not in (%s)' % (','.join('"%s"'% r.name for r in repos_list,)))
-            self.db.execute('delete from wapt_params where name like "last-http%%" and name not in (%s)' % (','.join('"last-%s"'% r.repo_url for r in repos_list,)))
-            self.db.execute('delete from wapt_params where name like "last-url-%%" and name not in (%s)' % (','.join('"last-url-%s"'% r.name for r in repos_list,)))
+            logger.debug(u'Remove unknown repositories from packages table and params (%s)' %(','.join('"%s"'% r.name for r in repos_list),)  )
+            self.db.execute('delete from wapt_package where repo not in (%s)' % (','.join('"%s"'% r.name for r in repos_list)))
+            self.db.execute('delete from wapt_params where name like "last-http%%" and name not in (%s)' % (','.join('"last-%s"'% r.repo_url for r in repos_list)))
+            self.db.execute('delete from wapt_params where name like "last-url-%%" and name not in (%s)' % (','.join('"last-url-%s"'% r.name for r in repos_list)))
             for repo in repos_list:
                 logger.info(u'Getting packages from %s' % repo.repo_url)
                 try:
                     result[repo.name] = repo.update_db(waptdb=self,force=force)
-                except Exception,e:
+                except Exception as e:
                     logger.info(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
         return result
 
@@ -2113,7 +2114,7 @@ class WaptServer(object):
                 logger.warning(u'Local DNS domain not found, skipping SRV _waptserver._tcp search ')
 
             return None
-        except Exception  as e:
+        except Exception as e:
             logger.debug(u'WaptServer.find_wapt_server_url: DNS resolver exception: %s' % (e,))
             raise
 
@@ -2379,7 +2380,7 @@ class WaptRepo(WaptRemoteRepo):
                                 else:
                                     url = 'http://%s:%i/wapt' % (wapthost,port)
                                     servers.append([not is_inmysubnets(ip),priority,-weight,url])
-                        except Exception,e:
+                        except Exception as e:
                             logging.debug('Unable to resolve %s : error %s' % (wapthost,ensure_unicode(e),))
 
                     servers.sort()
@@ -2945,7 +2946,7 @@ class Wapt(object):
         """
         if os.path.exists(self.config_filename):
             new_config_filedate = os.stat(self.config_filename).st_mtime
-            if new_config_filedate<>self.config_filedate:
+            if new_config_filedate!=self.config_filedate:
                 self.load_config()
                 return new_config_filedate
             else:
@@ -2988,7 +2989,7 @@ class Wapt(object):
             if not self.disable_update_server_status and self.waptserver_available():
                 try:
                     self.update_server_status()
-                except Exception,e:
+                except Exception as e:
                     logger.warning(u'Unable to contact server to register current status')
                     logger.debug(u'Unable to update server with current status : %s' % ensure_unicode(e))
 
@@ -3289,7 +3290,7 @@ class Wapt(object):
                     subkey = EnumKey(key, i)
                     result.append(subkey)
                     i += 1
-            except WindowsError,e:
+            except WindowsError as e:
                 # WindowsError: [Errno 259] No more data is available
                 if e.winerror == 259:
                     pass
@@ -3304,7 +3305,7 @@ class Wapt(object):
                         subkey = EnumKey(key, i)
                         result.append(subkey)
                         i += 1
-                except WindowsError,e:
+                except WindowsError as e:
                     # WindowsError: [Errno 259] No more data is available
                     if e.winerror == 259:
                         pass
@@ -3368,8 +3369,8 @@ class Wapt(object):
         returns output, don't raise exception if exitcode is not null but return '' """
         try:
             return self.run(*cmd,**args)
-        except Exception,e:
-            print u'Warning : %s' % e
+        except Exception as e:
+            print(u'Warning : %s' % e)
             return ''
 
     def install_wapt(self,fname,params_dict={},explicit_by=None):
@@ -3518,7 +3519,7 @@ class Wapt(object):
                     try:
                         logger.info(u"  executing install script")
                         exitstatus = setup.install()
-                    except Exception,e:
+                    except Exception as e:
                         logger.critical(u'Fatal error in install script: %s:\n%s' % (ensure_unicode(e),ensure_unicode(traceback.format_exc())))
                         raise
                 else:
@@ -3578,11 +3579,11 @@ class Wapt(object):
             self.waptdb.update_install_status(install_id,status,'',str(new_uninstall_key) if new_uninstall_key else '',str(uninstallstring) if uninstallstring else '')
             return self.waptdb.install_status(install_id)
 
-        except Exception,e:
+        except Exception as e:
             if install_id:
                 try:
                     self.waptdb.update_install_status(install_id,'ERROR',ensure_unicode(e))
-                except Exception,e2:
+                except Exception as e2:
                     logger.critical(ensure_unicode(e2))
             else:
                 logger.critical(ensure_unicode(e))
@@ -3636,7 +3637,7 @@ class Wapt(object):
             logger.debug(u"store status in DB")
             self.write_param('last_update_status',jsondump(status))
             return status
-        except Exception,e:
+        except Exception as e:
             logger.critical(u'Unable to store status of update in DB : %s'% ensure_unicode(e))
             if logger.level == logging.DEBUG:
                 raise
@@ -3675,9 +3676,9 @@ class Wapt(object):
         logger.info(u'checkout dir : %s'% co_dir)
         # if already checked out...
         if os.path.isdir(os.path.join(co_dir,'.svn')):
-            print ensure_unicode(self.run(u'"%s" up "%s"' % (svncmd,co_dir)))
+            print(ensure_unicode(self.run(u'"%s" up "%s"' % (svncmd,co_dir))))
         else:
-            print ensure_unicode(self.run(u'"%s" co "%s" "%s"' % (svncmd,sources_url,co_dir)))
+            print(ensure_unicode(self.run(u'"%s" co "%s" "%s"' % (svncmd,sources_url,co_dir))))
         return co_dir
 
     def last_install_log(self,packagename):
@@ -3747,7 +3748,7 @@ class Wapt(object):
                     try:
                         os.remove(f)
                         result.append(f)
-                    except Exception,e:
+                    except Exception as e:
                         logger.warning(u'Unable to remove %s : %s' % (f,ensure_unicode(e)))
         return result
 
@@ -4087,7 +4088,7 @@ class Wapt(object):
 
             for (request,p) in to_install:
                 try:
-                    print u"Installing %s" % (p.package,)
+                    print(u"Installing %s" % (p.package,))
                     result = self.install_wapt(fname(p.filename),
                         params_dict = params_dict,
                         explicit_by=self.user if request in apackages else None
@@ -4168,7 +4169,7 @@ class Wapt(object):
                         else:
                             logger.info(u"  Cached file MD5 doesn't match MD5 found in packages index. Discarding cached file")
                             os.remove(fullpackagepath)
-                except Exception,e:
+                except Exception as e:
                     # error : reload
                     logger.debug(u'Cache file %s is corrupted, reloading it. Error : %s' % (fullpackagepath,e) )
 
@@ -4180,7 +4181,7 @@ class Wapt(object):
                         try:
                             if total>1:
                                 stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
-                                print stat,
+                                print(stat, end=' ')
                             else:
                                 stat = ''
                             self.runstatus='Downloading %s : %s' % (entry.package,stat)
@@ -4263,7 +4264,7 @@ class Wapt(object):
                                 try:
                                     logger.info(u'Running %s' % guid)
                                     logger.info(self.run(guid))
-                                except Exception,e:
+                                except Exception as e:
                                     logger.warning(u"Warning : %s" % ensure_unicode(e))
 
                     elif mydict['uninstall_key']:
@@ -4285,8 +4286,8 @@ class Wapt(object):
                                     uninstall_cmd = self.uninstall_cmd(guid)
                                     if uninstall_cmd:
                                         logger.info(u'Launch uninstall cmd %s' % (uninstall_cmd,))
-                                        print ensure_unicode(self.run(uninstall_cmd))
-                                except Exception,e:
+                                        print(ensure_unicode(self.run(uninstall_cmd)))
+                                except Exception as e:
                                     logger.critical(u"Critical error during uninstall cmd %s: %s" % (uninstall_cmd,ensure_unicode(e)))
                                     result['errors'].append(package)
                                     if not force:
@@ -4548,7 +4549,7 @@ class Wapt(object):
             try:
                 result = self.waptserver.post('update_host',data=json.dumps(inv))
                 logger.info(u'Status on server %s updated properly'%self.waptserver.server_url)
-            except Exception,e:
+            except Exception as e:
                 result = None
                 logger.warning(u'Unable to update server status : %s' % ensure_unicode(e))
             # force register if computer has not been registered or hostname has changed
@@ -4825,9 +4826,9 @@ class Wapt(object):
                 raise Exception('Encoding of setup.py is not utf8')
 
             if hasattr(setup,'uninstallstring'):
-                mandatory = [('install',types.FunctionType) ,('uninstallstring',types.ListType),]
+                mandatory = [('install',types.FunctionType) ,('uninstallstring',list),]
             else:
-                mandatory = [('install',types.FunctionType) ,('uninstallkey',types.ListType),]
+                mandatory = [('install',types.FunctionType) ,('uninstallkey',list),]
             for (attname,atttype) in mandatory:
                 if not hasattr(setup,attname):
                     raise Exception('setup.py has no %s (%s)' % (attname,atttype))
@@ -5106,7 +5107,7 @@ class Wapt(object):
                                 session_db.update_install_status(install_id,'OK','session_setup() done\n')
                             return result
 
-                        except Exception,e:
+                        except Exception as e:
                             if install_id:
                                 try:
                                     try:
@@ -5114,7 +5115,7 @@ class Wapt(object):
                                     except:
                                         uerror = ensure_unicode(e)
                                     session_db.update_install_status(install_id,'ERROR',uerror)
-                                except Exception,e2:
+                                except Exception as e2:
                                     logger.critical(ensure_unicode(e2))
                             else:
                                 logger.critical(ensure_unicode(e))
@@ -5126,7 +5127,7 @@ class Wapt(object):
                             sys.path = oldpath
 
                     else:
-                        print 'No session-setup.',
+                        print('No session-setup.', end=' ')
                 finally:
                     # cleanup
                     if 'setup' in dir() and setup is not None:
@@ -5139,7 +5140,7 @@ class Wapt(object):
                     logger.debug(u'  Change current directory to %s.' % previous_cwd)
                     os.chdir(previous_cwd)
             else:
-                print 'Already installed.',
+                print('Already installed.', end=' ')
 
     def uninstall(self,packagename,params_dict={}):
         """Launch the uninstall script of an installed package"

@@ -20,6 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+from __future__ import print_function
 __version__ = "1.3.8.6"
 
 __all__ = \
@@ -330,9 +331,9 @@ def ensure_unicode(data):
     u'Exception: '
     """
     try:
-        if type(data) is types.UnicodeType:
+        if type(data) is str:
             return data
-        if type(data) is types.StringType:
+        if type(data) is bytes:
             return unicode(data, 'utf8', 'replace')
         if isinstance(data,WindowsError):
             return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding(),'replace'))
