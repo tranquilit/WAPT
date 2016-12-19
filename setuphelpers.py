@@ -245,6 +245,8 @@ import win32pdhutil
 import msilib
 import win32service
 import win32serviceutil
+import win32process
+
 import glob
 import ctypes
 
@@ -1028,7 +1030,6 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=Non
     ...     print('timeout')
     timeout
     """
-    import _winapi
     logger.info(u'Run "%s"' % (ensure_unicode(cmd),))
     output = []
 
@@ -1075,7 +1076,7 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=Non
             pidlist.remove(proc.pid)
             killtree(proc.pid)
         raise TimeoutExpired(cmd,u''.join(output),timeout)
-    proc.returncode = _winapi.GetExitCodeProcess(proc._handle)
+    proc.returncode = win32process.GetExitCodeProcess(proc._handle)
     if proc.pid in pidlist:
         pidlist.remove(proc.pid)
         killtree(proc.pid)
