@@ -1140,13 +1140,16 @@ class WaptBaseDB(object):
         with self:
             self.db.execute('delete from wapt_params where name=?',(name,))
 
-    def query(self,query, args=(), one=False):
+    def query(self,query, args=(), one=False,as_dict=True):
         """
         execute la requete query sur la db et renvoie un tableau de dictionnaires
         """
         cur = self.db.execute(query, args)
-        rv = [dict((cur.description[idx][0], value)
+        if as_dict:
+            rv = [dict((cur.description[idx][0], value)
                    for idx, value in enumerate(row)) for row in cur.fetchall()]
+        else:
+            rv = cur.fetchall()
         return (rv[0] if rv else None) if one else rv
 
 
@@ -3575,8 +3578,12 @@ class Wapt(object):
                             time.sleep(2)
                     else:
                         logger.warning(u"Unable to clean tmp dir")
-
-            self.waptdb.update_install_status(install_id,status,'',str(new_uninstall_key) if new_uninstall_key else '',str(uninstallstring) if uninstallstring else '')
+            # rowid,install_status,install_output,uninstall_key=None,uninstall_string=None
+            self.waptdb.update_install_status(install_id,
+                install_status=status,
+                install_output='',
+                uninstall_key=str(new_uninstall_key) if new_uninstall_key else '',
+                uninstall_string=str(uninstallstring) if uninstallstring else '')
             return self.waptdb.install_status(install_id)
 
         except Exception as e:
@@ -4181,7 +4188,7 @@ class Wapt(object):
                         try:
                             if total>1:
                                 stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
-                                print(stat, end=' ')
+                                print(stat,end='')
                             else:
                                 stat = ''
                             self.runstatus='Downloading %s : %s' % (entry.package,stat)
