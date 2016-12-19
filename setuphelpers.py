@@ -653,7 +653,7 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
                         elif received>=total:
                             print(u"  -> download finished (%.0f Kb/s)" % (total /(1024.0*(time.time()+.001-start_time))))
                         else:
-                            print(u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed))
+                            print(u'%i / %i (%.0f%%) (%.0f KB/s)' % (received,total,100.0*received/total,speed),end='\r')
                     except:
                         return False
                 return True
