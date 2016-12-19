@@ -24,7 +24,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="3"/>
       <RevisionNr Value="8"/>
-      <BuildNr Value="5"/>
+      <BuildNr Value="6"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -70,12 +70,10 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="171"/>
-        <CursorPos X="95" Y="196"/>
+        <CursorPos X="109" Y="186"/>
         <UsageCount Value="222"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
@@ -325,9 +323,9 @@
         <Filename Value="..\..\pltis_utils\tisutils.pas"/>
         <UnitName Value="tisutils"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="55"/>
-        <CursorPos X="1" Y="66"/>
-        <UsageCount Value="9"/>
+        <TopLine Value="22"/>
+        <CursorPos X="1" Y="64"/>
+        <UsageCount Value="10"/>
       </Unit31>
       <Unit32>
         <Filename Value="C:\codetyphon\fpcsrc\rtl\win\sysutils.pp"/>
@@ -548,28 +546,7 @@
         <UsageCount Value="11"/>
       </Unit58>
     </Units>
-    <JumpHistory Count="5" HistoryIndex="4">
-      <Position1>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="385" Column="34" TopLine="357"/>
-      </Position1>
-      <Position2>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="484" Column="31" TopLine="466"/>
-      </Position2>
-      <Position3>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position3>
-      <Position4>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="40" Column="28" TopLine="8"/>
-      </Position4>
-      <Position5>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="158" Column="23" TopLine="128"/>
-      </Position5>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>

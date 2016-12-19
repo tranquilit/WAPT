@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.8.5"
+__version__ = "1.3.8.6"
 
 __all__ = [
     'md5_for_file',
