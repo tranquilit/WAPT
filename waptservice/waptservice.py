@@ -73,8 +73,8 @@ import locale
 import datetime
 import copy
 
-from . import ssl
-from .ssl import SSLError
+import ssl
+from ssl import SSLError
 
 import pythoncom
 import ctypes
