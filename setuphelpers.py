@@ -20,7 +20,6 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from __future__ import print_function
 __version__ = "1.3.9"
 
 __all__ = \
@@ -309,6 +308,7 @@ def ensure_dir(filename):
 
 class CalledProcessErrorOutput(subprocess.CalledProcessError):
     """CalledProcessError with printed output"""
+
     def __str__(self):
         return "Command '%s' returned non-zero exit status %d.\nOutput:%s" % (self.cmd, self.returncode,self.output.encode(sys.getfilesystemencoding(),errors='replace'))
 
@@ -579,7 +579,7 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
                         elif received>=total:
                             print(u"  -> download finished (%.0f Kb/s)" % (total /(1024.0*(time.time()+.001-start_time))))
                         else:
-                            print(u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed ), end=' ')
+                            print(u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed))
                     except:
                         return False
                 return True
@@ -1008,15 +1008,15 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=Non
         killtree(proc.pid)
     if not proc.returncode in accept_returncodes:
         if return_stderr != output:
-            raise CalledProcessErrorOutput(proc.returncode,cmd,''.join(output+return_stderr))
+            raise CalledProcessErrorOutput(proc.returncode,cmd,u''.join(output+return_stderr))
         else:
-            raise CalledProcessErrorOutput(proc.returncode,cmd,''.join(output))
+            raise CalledProcessErrorOutput(proc.returncode,cmd,u''.join(output))
     else:
         if proc.returncode == 0:
             logger.info(u'%s command returns code %s' % (ensure_unicode(cmd),proc.returncode))
         else:
             logger.warning(u'%s command returns code %s' % (ensure_unicode(cmd),proc.returncode))
-    return u''.join(output)
+    return ensure_unicode(''.join(output))
 
 
 def run_notfatal(*cmd,**args):
