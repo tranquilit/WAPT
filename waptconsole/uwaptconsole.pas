@@ -2871,7 +2871,7 @@ var
   res: variant;
 begin
   //test avec un variant ;)
-  res := MainModule.mywapt.update(Register := False);
+  res := MainModule.mywapt.update(register := False,filter_on_host_cap := False);
 
   ActSearchPackage.Execute;
   ActSearchGroups.Execute;
