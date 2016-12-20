@@ -1,3 +1,3 @@
 [submodule "waptwua"]
 	path = waptwua
-	url = http://htouvet@git.tranquilit.local/gitblit/r/wapt/waptwua.git
+	url = ssh://git.tranquilit.local:29418/wapt/waptwua.git
