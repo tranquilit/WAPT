@@ -852,13 +852,18 @@ class WaptBaseRepo(object):
         return self._index.get(packagename,default)
 
     def check_control_signature(self,package_entry,public_certs):
-        """ """
+        """Check control signature against a list of public certificates
+            public_certs (list of crt paths or SSLCertificate instances)
+        """
         if not package_entry.signature:
             logger.warning('Package control %s on repo %s is not signed... not checking' % (package_entry.asrequirement(),package_entry.repo))
             return None
         for public_cert in public_certs:
             try:
-                crt = SSLCertificate(public_cert)
+                if not isinstance(public_cert,SSLCertificate):
+                    crt = SSLCertificate(public_cert)
+                else:
+                    crt = public_cert
                 return package_entry.check_control_signature(crt)
             except:
                 pass
