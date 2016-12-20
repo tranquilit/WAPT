@@ -20,7 +20,6 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from __future__ import print_function
 __version__ = "1.3.9"
 
 import codecs
@@ -522,7 +521,7 @@ def main():
                     packages_list = args[1:]
                 for packagename in packages_list:
                     try:
-                        print(u"Configuring %s ..." % (packagename,), end=' ')
+                        print(u"Configuring %s ..." % (packagename,))
                         packagename = guess_package_root_dir(packagename)
                         result.append(mywapt.session_setup(packagename,force=options.force))
                         print("Done")
@@ -543,7 +542,7 @@ def main():
                     sys.exit(1)
 
                 for packagename in args[1:]:
-                    print(u"Uninstalling %s ..." % (packagename,), end=' ')
+                    print(u"Uninstalling %s ..." % (packagename,))
                     packagename = guess_package_root_dir(packagename)
                     print(mywapt.uninstall(packagename,params_dict=params_dict))
                     print(u"Uninstallation done")

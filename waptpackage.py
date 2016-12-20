@@ -372,7 +372,7 @@ class PackageEntry(object):
             else:
                 v1, v2 = self.parse_version(), parse_major_minor_patch_build(entry_or_version)
                 return compare_by_keys(v1, v2)
-        except ValueError,e:
+        except ValueError as e:
             logger.warning("%s" % e)
             if isinstance(entry_or_version,PackageEntry):
                 return cmp((self.package,self.version),(entry_or_version.package,entry_or_version.version))
@@ -1027,8 +1027,8 @@ class WaptLocalRepo(WaptBaseRepo):
                     except Exception as e:
                         logger.debug(r"Unable to extract icon for %s:%s"%(fname,e))
 
-            except Exception,e:
-                print e
+            except Exception as e:
+                print(e)
                 logger.critical("package %s: %s" % (fname,e))
                 errors.append(fname)
 
@@ -1097,11 +1097,11 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
                 else:
                     try:
                         if received == 0:
-                            print u"Downloading %s (%.1f Mb)" % (url,int(total)/1024/1024)
+                            print(u"Downloading %s (%.1f Mb)" % (url,int(total)/1024/1024))
                         elif received>=total:
-                            print u"  -> download finished (%.0f Kb/s)" % (total /(1024.0*(time.time()+.001-start_time)))
+                            print(u"  -> download finished (%.0f Kb/s)" % (total /(1024.0*(time.time()+.001-start_time))))
                         else:
-                            print u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed ),
+                            print(u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed ))
                     except:
                         return False
                 return True
@@ -1396,7 +1396,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                         else:
                             logger.critical(u"Cached file MD5 doesn't match MD5 found in packages index. Discarding cached file")
                             os.remove(fullpackagepath)
-                except Exception,e:
+                except Exception as e:
                     # error : reload
                     logger.debug(u'Cache file %s is corrupted, reloading it. Error : %s' % (fullpackagepath,e) )
 
@@ -1407,7 +1407,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                         try:
                             if total>1:
                                 stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
-                                print stat,
+                                print(stat)
                             else:
                                 stat = ''
                         except:

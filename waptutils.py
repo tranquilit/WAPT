@@ -297,7 +297,7 @@ def jsondump(o,**kwargs):
 
 # from opsi
 def ensure_unicode(data):
-    ur"""Return a unicode string from data object
+    u"""Return a unicode string from data object
 
     It is sometimes diffcult to know in advance what we will get from command line
      application output.
