@@ -19,6 +19,8 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+from __future__ import print_function
+from __future__ import absolute_import
 __version__ = "1.3.9"
 
 import time
@@ -71,8 +73,8 @@ import locale
 import datetime
 import copy
 
-import ssl
-from ssl import SSLError
+from . import ssl
+from .ssl import SSLError
 
 import pythoncom
 import ctypes
@@ -360,7 +362,7 @@ class WaptServiceConfig(object):
         Return None if config has not changed or date of new config file if reloaded"""
         if os.path.exists(self.config_filename):
             new_config_filedate = os.stat(self.config_filename).st_mtime
-            if new_config_filedate<>self.config_filedate:
+            if new_config_filedate!=self.config_filedate:
                 logger.info(u'Reloading configuration')
                 self.load()
                 return new_config_filedate
@@ -767,7 +769,7 @@ def status():
                     rows.append(pe)
 
             #rows = [ waptpackage.PackageEntry().load_control_from_dict(dict(x)) for x in cur.fetchall() ]
-        except sqlite3.Error, e:
+        except sqlite3.Error as e:
             logger.critical(u"*********** Error %s:" % e.args[0])
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(rows), mimetype='application/json')
@@ -832,7 +834,7 @@ def all_packages(page=1):
                 pe.version = Version(pe.version)
 
 
-        except sqlite3.Error, e:
+        except sqlite3.Error as e:
             logger.critical(u"*********** Error %s:" % e.args[0])
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(rows), mimetype='application/json')
@@ -2123,7 +2125,7 @@ class WaptTaskManager(threading.Thread):
                         try:
                             logger.debug(ensure_unicode(traceback.format_exc()))
                         except:
-                            print "Traceback error"
+                            print("Traceback error")
                 finally:
                     self.tasks_queue.task_done()
                     self.update_runstatus('')

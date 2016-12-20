@@ -618,8 +618,14 @@ class PackageEntry(object):
         self.signer = certificate.cn
         self.signer_fingerprint = certificate.fingerprint
 
-    def check_control_signature(self,certificate):
-        """Check if control important data das not been changed since signature
+    def check_control_signature(self,public_certs):
+        """Check control signature against a list of public certificates
+
+        Args:
+            public_certs (list of crt paths or SSLCertificate instances)
+
+        Returns:
+            matchine SSLCertificate
 
         >>> from waptpackage import *
         >>> from common import SSLPrivateKey,SSLCertificate
@@ -630,11 +636,25 @@ class PackageEntry(object):
         >>> p.depends = 'test'
         >>> p.sign_control(k,c)
         >>> p.check_control_signature(c)
-
         """
         if not self.signature:
-            raise Exception('This control data is not signed')
-        return certificate.verify_content(self.signed_content(),self.signature.decode('base64'))
+            logger.warning('Package control %s on repo %s is not signed... not checking' % (self.asrequirement(),self.repo))
+            return None
+        signed_content = self.signed_content()
+        signature_raw = self.signature.decode('base64')
+        if not isinstance(public_certs,list):
+            public_certs = [public_certs]
+        for public_cert in public_certs:
+            try:
+                if not isinstance(public_cert,SSLCertificate):
+                    crt = SSLCertificate(public_cert)
+                else:
+                    crt = public_cert
+                if crt.verify_content(signed_content,signature_raw):
+                    return crt
+            except:
+                pass
+        raise Exception('SSL signature verification failed for control %s, either none public certificates match signature or signed content has been changed' % self.asrequirement())
 
     def build_manifest(self,exclude_filenames = None,block_size=2**20):
         if not os.path.isfile(self.wapt_fullpath()):
@@ -850,25 +870,6 @@ class WaptBaseRepo(object):
         if self._packages is None:
             self._load_packages_index()
         return self._index.get(packagename,default)
-
-    def check_control_signature(self,package_entry,public_certs):
-        """Check control signature against a list of public certificates
-            public_certs (list of crt paths or SSLCertificate instances)
-        """
-        if not package_entry.signature:
-            logger.warning('Package control %s on repo %s is not signed... not checking' % (package_entry.asrequirement(),package_entry.repo))
-            return None
-        for public_cert in public_certs:
-            try:
-                if not isinstance(public_cert,SSLCertificate):
-                    crt = SSLCertificate(public_cert)
-                else:
-                    crt = public_cert
-                return package_entry.check_control_signature(crt)
-            except:
-                pass
-        raise Exception('SSL signature verification failed for control %s, either none public certificates match signature or signed content has been changed'%package_entry.asrequirement())
-
 
 
 class WaptLocalRepo(WaptBaseRepo):

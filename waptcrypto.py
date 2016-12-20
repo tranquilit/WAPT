@@ -20,6 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+from __future__ import print_function
 __version__ = "1.3.9"
 
 import os,sys
@@ -468,7 +469,7 @@ def private_key_has_password(key):
         if "bad password" in str(e):
             return True
         else:
-            print str(e)
+            print(str(e))
             return True
     return False
 

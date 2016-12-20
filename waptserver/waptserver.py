@@ -20,6 +20,8 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+from __future__ import print_function
+from __future__ import absolute_import
 __version__="1.3.9"
 
 import os,sys
@@ -67,8 +69,8 @@ import Queue
 import re
 
 from waptpackage import *
-from waptserver_utils import *
-import waptserver_config
+from .waptserver_utils import *
+from . import waptserver_config
 
 import wakeonlan.wol
 
@@ -573,13 +575,13 @@ def install_wapt(computer_name,authentication_file):
         raise Exception(u"%s" % e.output)
 
     cmd = '/usr/bin/smbclient -A "%s" //%s/c\\$ -c "put waptagent.exe" ' % (authentication_file, computer_name)
-    print subprocess.check_output(cmd,shell=True)
+    print(subprocess.check_output(cmd,shell=True))
 
     cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\waptagent.exe  /MERGETASKS=""useWaptServer"" /VERYSILENT"  ' % (authentication_file, computer_name)
-    print subprocess.check_output(cmd,shell=True)
+    print(subprocess.check_output(cmd,shell=True))
 
     cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\wapt\\wapt-get.exe register"' % (authentication_file, computer_name)
-    print subprocess.check_output(cmd,shell=True)
+    print(subprocess.check_output(cmd,shell=True))
 
     cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\wapt\\wapt-get.exe --version"' % (authentication_file, computer_name)
     return subprocess.check_output(cmd,shell=True)
@@ -623,7 +625,7 @@ def deploy_wapt():
         else:
             raise Exception(_("Unsupported HTTP method."))
 
-    except Exception, e:
+    except Exception as e:
         result = { 'status' : 'ERROR', 'message': u"%s" % e  }
 
     return  Response(response=json.dumps(result),
@@ -690,7 +692,7 @@ def delete_package(filename=""):
         else:
             result = dict(status='ERROR',message="The file %s doesn't exist in wapt folder (%s)" % (filename, conf['wapt_folder']))
 
-    except Exception, e:
+    except Exception as e:
         result = { 'status' : 'ERROR', 'message': u"%s" % e  }
 
     return  Response(response=json.dumps(result),
@@ -812,7 +814,7 @@ def trigger_reachable_discovery():
         message = _(u'Hosts scan launched')
         result = dict(thread_ident = g.check_hosts_thread.ident )
 
-    except Exception, e:
+    except Exception as e:
             return make_response_from_exception(e)
     return make_response(result,msg = message)
 
@@ -831,7 +833,7 @@ def host_reachable_ip():
         except Exception as e:
             raise EWaptHostUnreachable(_("Couldn't connect to web service : {}.").format(e))
 
-    except Exception, e:
+    except Exception as e:
             return make_response_from_exception(e)
     return make_response(result)
 
@@ -893,7 +895,7 @@ def proxy_host_request(request,action):
         return make_response(result,
             msg = '\n- '.join(msg),
             success = True)
-    except Exception, e:
+    except Exception as e:
         return make_response_from_exception(e)
 
 
@@ -930,7 +932,7 @@ def trigger_upgrade():
         return make_response(result,
             msg = msg,
             success = client_result['result'] == 'OK',)
-    except Exception, e:
+    except Exception as e:
         return make_response_from_exception(e)
 
 
@@ -966,7 +968,7 @@ def trigger_update():
         return make_response(client_result,
             msg = msg,
             success = True)
-    except Exception, e:
+    except Exception as e:
         return make_response_from_exception(e)
 
 
@@ -993,7 +995,7 @@ def trigger_wakeonlan():
         return make_response(result,
             msg = msg,
             success = True)
-    except Exception, e:
+    except Exception as e:
         return make_response_from_exception(e)
 
 
@@ -1130,7 +1132,7 @@ def host_tasks_status():
         return make_response(client_result,
             msg = "Tasks status retrieved properly",
             success = isinstance(client_result,dict),)
-    except Exception, e:
+    except Exception as e:
         return make_response_from_exception(e)
 
 @app.route('/api/v1/groups')
@@ -1494,7 +1496,7 @@ def host_cancel_task():
         return make_response(client_result,
             msg = "Task canceled",
             success = isinstance(client_result,dict),)
-    except Exception, e:
+    except Exception as e:
         return make_response_from_exception(e)
 
 
