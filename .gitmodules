@@ -1,0 +1,4 @@
+[submodule "waptwua"]
+	path = waptwua
+	url = ssh://htouvet@git.tranquilit.local:29418/wapt/waptwua.git
+	branch = master
