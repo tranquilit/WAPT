@@ -1224,13 +1224,14 @@ class WaptDB(WaptBaseDB):
                 result[p.package] = available
         return result
 
-    def update_repos_list(self,repos_list,proxies=None,force=False,public_certs=[]):
+    def update_repos_list(self,repos_list,proxies=None,force=False,public_certs=[],filter_on_host_cap=True):
         """update the packages database with Packages files from the url repos_list
             removes obsolete records for repositories which are no more referenced
             repos_list : list of all the repositories objects referenced by the system
                           as returned by Wapt.repositories
             force : update repository even if date of packages index is same as
                     last retrieved date
+            public_certs :
         return a dictionary of update_db results for each repository name
             which has been accessed.
         >>> wapt = Wapt(config_filename = 'c:/tranquilit/wapt/tests/wapt-get.ini' )
@@ -1245,7 +1246,7 @@ class WaptDB(WaptBaseDB):
             for repo in repos_list:
                 logger.info(u'Getting packages from %s' % repo.repo_url)
                 try:
-                    result[repo.name] = repo.update_db(waptdb=self,force=force,public_certs=public_certs)
+                    result[repo.name] = repo.update_db(waptdb=self,force=force,public_certs=public_certs,filter_on_host_cap=filter_on_host_cap)
                 except Exception,e:
                     logger.warning(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
         return result
@@ -1861,7 +1862,7 @@ class WaptRepo(WaptRemoteRepo):
             logger.debug(u'Waptrepo.find_wapt_repo_url: exception: %s' % (e,))
             raise
 
-    def update_db(self,force=False,waptdb=None,public_certs=[]):
+    def update_db(self,force=False,waptdb=None,public_certs=[],filter_on_host_cap=True):
         """Get Packages from http repo and update local package database
             return last-update header
 
@@ -1872,6 +1873,7 @@ class WaptRepo(WaptRemoteRepo):
             force (bool): get index from remote repo even if creation date is not newer
                           than the datetime stored in local status database
             waptdb (WaptDB): instance of Wapt status database.
+            public_certs (list) :
 
         Returns:
             isodatetime: date of Packages index
@@ -1904,18 +1906,19 @@ class WaptRepo(WaptRemoteRepo):
 
                     waptdb.purge_repo(self.name)
                     for package in self.packages:
-                        if package.min_wapt_version and Version(package.min_wapt_version)>Version(setuphelpers.__version__):
-                            logger.debug('Skipping package %s, requires a newer Wapt agent. Minimum version: %s' % (package.asrequirement(),package.min_wapt_version))
-                            continue
-                        if package.min_os_version and os_version < Version(package.min_os_version):
-                            logger.debug('Discarding package %s, requires OS version > %s' % (package.asrequirement(),package.min_os_version))
-                            continue
-                        if package.max_os_version and os_version > Version(package.max_os_version):
-                            logger.debug('Discarding package %s, requires OS version < %s' % (package.asrequirement(),package.max_os_version))
-                            continue
-                        if package.architecture == 'x64' and not setuphelpers.iswin64():
-                            logger.debug('Discarding package %s, requires OS with x64 architecture' % (package.asrequirement(),))
-                            continue
+                        if filter_on_host_cap:
+                            if package.min_wapt_version and Version(package.min_wapt_version)>Version(setuphelpers.__version__):
+                                logger.debug('Skipping package %s, requires a newer Wapt agent. Minimum version: %s' % (package.asrequirement(),package.min_wapt_version))
+                                continue
+                            if package.min_os_version and os_version < Version(package.min_os_version):
+                                logger.debug('Discarding package %s, requires OS version > %s' % (package.asrequirement(),package.min_os_version))
+                                continue
+                            if package.max_os_version and os_version > Version(package.max_os_version):
+                                logger.debug('Discarding package %s, requires OS version < %s' % (package.asrequirement(),package.max_os_version))
+                                continue
+                            if package.architecture == 'x64' and not setuphelpers.iswin64():
+                                logger.debug('Discarding package %s, requires OS with x64 architecture' % (package.asrequirement(),))
+                                continue
 
                         try:
                             self.check_control_signature(package,public_certs)
@@ -1991,7 +1994,16 @@ class WaptHostRepo(WaptRepo):
     def update_host(self,host,waptdb,force=False,public_certs=[]):
         """Update host package from repo.
            Stores last-http-date in database/
-            returns (host package entry,entry date on server)
+
+        Args:
+            host (str): fqdn of host for which to retrieve host package
+            waptdb (WaptDB) : to check/store last modified date of host package
+            force (bool) : force wget even if http date of remote file has not changed
+            public_certs (list of paths or SSLCertificates) : Certificates against which to check control signature
+
+        Returns;
+            list of (host package entry,entry date on server)
+
 
         >>> repo = WaptHostRepo(name='wapt-host',timeout=4)
         >>> print repo.dnsdomain
@@ -3248,13 +3260,17 @@ class Wapt(object):
                         logger.warning(u'Unable to remove %s : %s' % (f,ensure_unicode(e)))
         return result
 
-    def update(self,force=False,register=True):
+    def update(self,force=False,register=True,filter_on_host_cap=True):
         """Update local database with packages definition from repositories
 
         Args:
             force (boolean):    update even if Packages index on repository has not been
                                 updated since last update (based on http headers)
             register (boolean): Send informations about status of local packages to waptserver
+            filter_on_host_cap (boolean) : restrict list of retrieved packages to those matching current os / architecture
+
+        Returns;
+            list of (host package entry,entry date on server)
 
         Returns:
             dict: {"added","removed","count","repos","upgrades","date"}
@@ -3267,7 +3283,7 @@ class Wapt(object):
         """
         previous = self.waptdb.known_packages()
         # (main repo is at the end so that it will used in priority)
-        self.waptdb.update_repos_list(self.repositories,proxies=self.proxies,force=force,public_certs=self.public_certs)
+        self.waptdb.update_repos_list(self.repositories,proxies=self.proxies,force=force,public_certs=self.public_certs,filter_on_host_cap=filter_on_host_cap)
 
         current = self.waptdb.known_packages()
         result = {
