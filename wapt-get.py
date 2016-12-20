@@ -445,7 +445,7 @@ def main():
                         print()
                         try:
                             crt = control.check_control_signature(mywapt.authorized_certificates())
-                            print('Package control signature checked properly by certificate %s' % crt.cn)
+                            print('Package control signature checked properly by certificate %s (fingerprint: %s )' % (crt.cn,crt.fingerprint))
                         except:
                             print('WARNING: control data signature is invalid !!')
 

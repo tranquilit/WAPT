@@ -4006,7 +4006,7 @@ class Wapt(object):
         result = []
         for fn in self.public_certs:
             crt = SSLCertificate(fn)
-            result.append(dict(crt))
+            result.append(crt)
         return result
 
     def register_computer(self,description=None):
@@ -4127,7 +4127,7 @@ class Wapt(object):
         result['setuphelpers-version'] = setuphelpers.__version__
         result['wapt-py-version'] = __version__
         result['common-version'] = __version__
-        result['authorized-certificates'] = self.authorized_certificates()
+        result['authorized-certificates'] = [dict(crt) for crt in self.authorized_certificates()]
 
         # read from config
         if self.config.has_option('global','waptservice_sslport'):
