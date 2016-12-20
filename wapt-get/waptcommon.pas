@@ -861,28 +861,26 @@ end;
 
 function GetSpecialFolderPath(folder : integer) : widestring;
 const
-   SHGFP_TYPE_CURRENT = 0;
+  SHGFP_TYPE_CURRENT = 0;
 var
-   path: array [0..MAX_PATH] of widechar;
+  path: array [0..MAX_PATH] of widechar;
 begin
-   if SUCCEEDED(SHGetFolderPathW(0,folder,0,SHGFP_TYPE_CURRENT, @path[0])) then
-      Result := IncludeTrailingPathDelimiter(path)
-   else
-     Result := '';
-   ShowMessage(Result);
+  if SUCCEEDED(SHGetFolderPathW(0,folder,0,SHGFP_TYPE_CURRENT, @path[0])) then
+    Result := IncludeTrailingPathDelimiter(path)
+  else
+    Result := '';
 end;
 
 function AppLocalDir: Utf8String;
 begin
-
-  Result :=  IncludeTrailingPathDelimiter(UTF16ToUTF8(GetSpecialFolderPath(CSIDL_LOCAL_APPDATA)))+ApplicationName;
-  //result := AnsiToUtf8(GetAppConfigDir(False));
+  //Result :=  IncludeTrailingPathDelimiter(UTF16ToUTF8(GetSpecialFolderPath(CSIDL_LOCAL_APPDATA)))+ApplicationName;
+  result := AnsiToUtf8(GetAppConfigDir(False));
 end;
 
 function AppIniFilename: Utf8String;
 begin
-  Result :=  IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetSpecialFolderPath(CSIDL_LOCAL_APPDATA))+ApplicationName)+ApplicationName+'.ini';
-  //result := AnsiToUtf8(GetAppConfigDir(False))+ApplicationName+'.ini';
+  //Result :=  IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetSpecialFolderPath(CSIDL_LOCAL_APPDATA))+ApplicationName)+ApplicationName+'.ini';
+  result := AnsiToUtf8(GetAppConfigDir(False))+ApplicationName+'.ini';
 end;
 
 function WaptIniFilename: Utf8String;
