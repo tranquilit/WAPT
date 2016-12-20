@@ -2276,6 +2276,7 @@ class Wapt(object):
             'upload_cmd_host':'',
             'after_upload':'',
             'http_proxy':'',
+            'wua_enabled':'0',
             }
 
         if not self.config:
@@ -2361,6 +2362,10 @@ class Wapt(object):
         self._use_hostpackages = None
         if self.config.has_option('global','use_hostpackages'):
             self.use_hostpackages = self.config.getboolean('global','use_hostpackages')
+
+        self.wua_enabled = False
+        if self.config.has_option('global','wua_enabled'):
+            self.wua_enabled = self.config.getboolean('global','wua_enabled')
 
     def write_config(self,config_filename=None):
         """Update configuration parameters to supplied inifilename
