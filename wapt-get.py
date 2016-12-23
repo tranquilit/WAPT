@@ -890,7 +890,7 @@ def main():
                 if options.update_packages:
                     print(u"Update package list")
                     mywapt.update()
-                result = mywapt.search(args[1:],
+                result = mywapt.search([ensure_unicode(w) for w in args[1:]],
                                        section_filter=options.section_filter)
                 if options.json_output:
                     jsonresult['result'] = result
