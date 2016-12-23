@@ -917,6 +917,32 @@ class TimeoutExpired(Exception):
                 (self.cmd, self.timeout, self.output))
 
 
+class RunOutput(unicode):
+    u"""Subclass of unicode to return returncode from runned command in addition to output
+
+    >>> run(r'cmd /C dir c:\toto ',accept_returncodes=[0,1])
+    No handlers could be found for logger "root"
+    <RunOuput returncode :[0, 1]>
+     Le volume dans le lecteur C n'a pas de nom.
+     Le numéro de série du volume est 74EF-5918
+
+    Fichier introuvable
+     Répertoire de c:\
+    """
+
+    def __new__(cls, value):
+        if isinstance(value,list):
+            value = u''.join([ensure_unicode(line) for line in value])
+        self = super(RunOutput, cls).__new__(cls, value)
+        self.returncode = None
+        return self
+
+    def __repr__(self):
+        return "<RunOuput returncode :%s>\n%s"%(self.returncode,self.encode(sys.getfilesystemencoding(),'replace'))
+
+    def __str__(self):
+        return self.encode(sys.getfilesystemencoding(),'replace')
+
 def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=None,pidlist=None,return_stderr=True,**kwargs):
     r"""Run the command cmd in a shell and return the output and error text as string
 
@@ -1021,7 +1047,9 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=Non
             logger.info(u'%s command returns code %s' % (ensure_unicode(cmd),proc.returncode))
         else:
             logger.warning(u'%s command returns code %s' % (ensure_unicode(cmd),proc.returncode))
-    return u''.join(output)
+    result = RunOutput(output)
+    result.returncode = proc.returncode
+    return result
 
 
 def run_notfatal(*cmd,**args):
