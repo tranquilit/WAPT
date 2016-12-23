@@ -809,7 +809,8 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
         dst (str): path to target directory (created if not present)
         ignore (func) : callback func(root_dir,filenames) which returns names to ignore
         onreplace (func) : callback func(src,dst):boolean called when a file will be replaced to decide what to do.
-                        default is to not replace if target exist. can be default_override or default_override_older.
+                        default is to not replace if target exists. can be default_overwrite or default_overwrite_older or
+                        custom function.
         oncopy (func) : callback func(msg,src,dst) called when a file is copied.
                         default is to log in debug level the operation
         enable_replace_at_reboot (boolean): if True, files which are locked will be scheduled for replace at next reboot
