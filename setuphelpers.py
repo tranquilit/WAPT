@@ -98,6 +98,9 @@ __all__ = \
  'glob',
  'host_info',
  'inifile_hasoption',
+ 'inifile_hassection',
+ 'inifile_deleteoption',
+ 'inifile_deletesection',
  'inifile_readstring',
  'inifile_writestring',
  'installed_softwares',
@@ -1649,6 +1652,69 @@ def inifile_hasoption(inifilename,section,key):
     inifile = RawConfigParser()
     inifile.read(inifilename)
     return inifile.has_section(section) and inifile.has_option(section,key)
+
+
+def inifile_hassection(inifilename,section):
+    """Check if an option is present in section of the inifile
+
+    Args:
+        inifilename (str): Path to the ini file
+        section (str): section
+
+    Returns:
+        boolean : True if the key exists
+
+    >>> inifile_writestring('c:/tranquilit/wapt/tests/test.ini','global','version','1.1.2')
+    >>> print inifile_hassection('c:/tranquilit/wapt/tests/test.ini','global')
+    True
+
+    """
+    inifile = RawConfigParser()
+    inifile.read(inifilename)
+    return inifile.has_section(section)
+
+
+def inifile_deleteoption(inifilename,section,key):
+    """Remove a key within the section of the inifile
+
+    Args:
+        inifilename (str): Path to the ini file
+        section (str): section
+        key (str): value key of option to remove
+
+    Returns:
+        boolean : True if the key/option has been removed
+
+    >>> inifile_writestring('c:/tranquilit/wapt/tests/test.ini','global','version','1.1.2')
+    >>> print inifile_hasoption('c:/tranquilit/wapt/tests/test.ini','global','version')
+    True
+    >>> print inifile_deleteoption('c:/tranquilit/wapt/tests/test.ini','global','version')
+    False
+
+    """
+    inifile = RawConfigParser()
+    inifile.read(inifilename)
+    inifile.remove_option(section,key)
+    inifile.write(open(inifilename,'w'))
+    return inifile.has_section(section) and not inifile.has_option(section,key)
+
+
+def inifile_deletesection(inifilename,section):
+    """Remove a section within the inifile
+
+    Args:
+        inifilename (str): Path to the ini file
+        section (str): section to remove
+
+    Returns:
+        boolean : True if the section has been removed
+
+    """
+    inifile = RawConfigParser()
+    inifile.read(inifilename)
+    inifile.remove_section(section,section)
+    inifile.write(open(inifilename,'w'))
+    return not inifile.has_section(section)
 
 
 def inifile_readstring(inifilename,section,key,default=None):
