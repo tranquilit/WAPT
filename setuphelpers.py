@@ -899,7 +899,7 @@ class RunReader(threading.Thread):
         try:
             self.callable(*self.args, **self.kwargs)
         except Exception as e:
-            print(e)
+            print(ensure_unicode(e))
 
 
 class TimeoutExpired(Exception):
