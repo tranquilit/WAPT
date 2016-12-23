@@ -1585,8 +1585,8 @@ def registry_delete(root,path,valuename):
         logger.warning(u'registry_delete:%s'%ensure_unicode(e))
     return result
 
-def registry_deletekey(root,path,keyname):
-    """Delete the key under specified registry path and all its values.
+def registry_deletekey(root,path,keyname,force=False):
+    r"""Delete the key under specified registry path and all its values and subkeys.
 
     the path can be either with backslash or slash
     if the key has sub keys, the function fails.
@@ -1597,15 +1597,33 @@ def registry_deletekey(root,path,keyname):
                            or "software\\wow6432node\\microsoft\\windows\\currentversion"
         keyname : Name of key
 
+    >>> from winsys import registry
+    >>> py27 = registry.Registry(r'HKEY_LOCAL_MACHINE\Software\Python\PythonCore\2.7')
+    >>> py27.copy(r'HKEY_LOCAL_MACHINE\Software\Python\PythonCore\test')
+    >>> registry_deletekey(HKEY_LOCAL_MACHINE,'Software\\Python\\PythonCore','test')
+    True
     """
+    def makeregpath(root,*path):
+        hives = {
+            HKEY_CLASSES_ROOT: u'HKEY_CLASSES_ROOT',
+            HKEY_CURRENT_CONFIG: u'HKEY_CURRENT_CONFIG',
+            HKEY_CURRENT_USER: u'HKEY_CURRENT_USER',
+            HKEY_LOCAL_MACHINE: u'HKEY_LOCAL_MACHINE',
+            HKEY_USERS: u'HKEY_USERS',
+            }
+        return makepath(hives[root],*path)
+
     result = False
     path = path.replace(u'/',u'\\')
     try:
-        with reg_openkey_noredir(root,path,sam=KEY_WRITE) as key:
-            if isinstance(keyname,unicode):
-                keyname = keyname.encode(locale.getpreferredencoding())
-            return _winreg.DeleteKey(key,keyname)
-    except WindowsError as e:
+        if len(path.split(u'\\')) <= 1 and not force:
+            raise Exception(u'The registry path %s is too short...too dangerous to remove it')
+        from winsys import registry,exc
+        rootpath = makeregpath(root,path)
+        registry.delete(rootpath,keyname)
+        root = registry.Registry(rootpath)
+        result = not keyname in [os.path.basename(k.as_string()) for k in root.keys()]
+    except (WindowsError,exc.x_not_found) as e:
         logger.warning(u'registry_deletekey:%s'%ensure_unicode(e))
     return result
 
