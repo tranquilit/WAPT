@@ -1615,11 +1615,11 @@ def registry_deletekey(root,path,keyname,force=False):
 
     result = False
     path = path.replace(u'/',u'\\')
+    from winsys import registry,exc
     try:
-        if len(path.split(u'\\')) <= 1 and not force:
-            raise Exception(u'The registry path %s is too short...too dangerous to remove it')
-        from winsys import registry,exc
         rootpath = makeregpath(root,path)
+        if len(rootpath.split(u'\\')) <= 1 and not force:
+            raise Exception(u'The registry path %s is too short...too dangerous to remove it'%rootpath)
         registry.delete(rootpath,keyname)
         root = registry.Registry(rootpath)
         result = not keyname in [os.path.basename(k.as_string()) for k in root.keys()]
