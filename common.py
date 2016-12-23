@@ -1116,17 +1116,17 @@ class WaptDB(WaptBaseDB):
             searchwords = [searchwords]
         if not searchwords:
             words = []
-            search = ['1=1']
+            search = [u'1=1']
         else:
-            words = [ "%"+w.lower()+"%" for w in searchwords ]
-            search = ["lower(description || package) like ?"] *  len(words)
+            words = [ u"%"+w.lower()+"%" for w in searchwords ]
+            search = [u"lower(description || package) like ?"] *  len(words)
         if exclude_host_repo:
-            search.append('repo <> "wapt-host"')
+            search.append(u'repo <> "wapt-host"')
         if section_filter:
             section_filter = ensure_list(section_filter)
-            search.append('section in ( %s )' %  ",".join(['"%s"' % x for x in  section_filter]))
+            search.append(u'section in ( %s )' %  u",".join(['"%s"' % x for x in  section_filter]))
 
-        result = self.query_package_entry("select * from wapt_package where %s" % " and ".join(search),words)
+        result = self.query_package_entry(u"select * from wapt_package where %s" % " and ".join(search),words)
         result.sort()
         return result
 
