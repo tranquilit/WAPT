@@ -310,7 +310,11 @@ class CalledProcessErrorOutput(subprocess.CalledProcessError):
     """CalledProcessError with printed output"""
 
     def __str__(self):
-        return "Command '%s' returned non-zero exit status %d.\nOutput:%s" % (self.cmd, self.returncode,self.output.encode(sys.getfilesystemencoding(),errors='replace'))
+        try:
+            return "Command '%s' returned non-zero exit status %d.\nOutput:%s" % (self.cmd, self.returncode,self.output.encode(sys.getfilesystemencoding(),errors='replace'))
+        except:
+            return "Command '%s' returned non-zero exit status %d.\nOutput:%s" % (self.cmd, self.returncode,self.output)
+
 
 def create_shortcut(path, target='', arguments='', wDir='', icon=''):
     r"""Create a windows shortcut
@@ -1016,7 +1020,7 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=Non
             logger.info(u'%s command returns code %s' % (ensure_unicode(cmd),proc.returncode))
         else:
             logger.warning(u'%s command returns code %s' % (ensure_unicode(cmd),proc.returncode))
-    return ensure_unicode(''.join(output))
+    return u''.join(output)
 
 
 def run_notfatal(*cmd,**args):

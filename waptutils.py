@@ -320,9 +320,9 @@ def ensure_unicode(data):
     u'Exception: '
     """
     try:
-        if type(data) is str:
+        if type(data) is types.UnicodeType:
             return data
-        if type(data) is bytes:
+        if type(data) is types.StringType:
             return unicode(data, 'utf8', 'replace')
         if isinstance(data,WindowsError):
             return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding(),'replace'))
