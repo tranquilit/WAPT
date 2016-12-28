@@ -13,6 +13,9 @@ Prefix:		/opt
 
 Requires:  httpd dialog pytz m2crypto python-passlib python-requests
 
+# Turn off the brp-python-bytecompile script
+%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
+
 %description
 
 %install
@@ -26,10 +29,6 @@ cd .. && python createrpm.py
 /opt/wapt/waptcrypto.py
 /opt/wapt/waptutils.py
 /opt/wapt/waptpackage.py
-/opt/wapt/wapt-scanpackages.pyc
-/opt/wapt/wapt-scanpackages.pyo
-/opt/wapt/waptpackage.pyc
-/opt/wapt/waptpackage.pyo
 /var/www/html/wapt
 /var/www/html/waptwua
 /var/www/html/wapt-host
