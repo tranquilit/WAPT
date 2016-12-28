@@ -62,7 +62,21 @@ wapt_source_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpa
 source_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 print wapt_source_dir
 sys.path.insert(0, wapt_source_dir)
-from waptpackage import __version__ as wapt_version
+
+def get_wapt_version():
+    """get wapt version from waptpackage file without importing it (otherwinse
+       we get import error on build farm due to M2Crypto
+       """
+    from common import Version
+    with open('%s/waptpackage.py' % wapt_source_dir,'r') as file_source :
+        for line in file_source.readlines():
+            if line.strip().startswith('__version__'):
+                version =  line.split('=')[1].strip()
+                break
+    if str(Version(version))==version:
+        return version
+
+wapt_version = get_wapt_version()
 
 if not wapt_version:
     print 'version "%s" incorrecte dans waptpackage.py' % (wapt_version,)
