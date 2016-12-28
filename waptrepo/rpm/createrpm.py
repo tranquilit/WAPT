@@ -66,6 +66,7 @@ sys.path.insert(0, wapt_source_dir)
 def get_wapt_version():
     """get wapt version from waptpackage file without importing it (otherwinse
        we get import error on build farm due to M2Crypto
+       it would be better to reimplement this using an AST
        """
     from common import Version
     with open('%s/waptpackage.py' % wapt_source_dir,'r') as file_source :
@@ -73,8 +74,8 @@ def get_wapt_version():
             if line.strip().startswith('__version__'):
                 version =  line.split('=')[1].strip()
                 break
-    if str(Version(version))==version:
-        return version
+    # we should check the version number is well formated
+    return version
 
 wapt_version = get_wapt_version()
 
