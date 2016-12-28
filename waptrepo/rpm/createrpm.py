@@ -52,6 +52,10 @@ def rsync(src,dst):
         rsync_option,rsync_source,rsync_destination)
     os.system(rsync_command)
 
+if os.name!='posix':
+    print "script has to be run on CentOS"
+    sys.exit(1)
+
 makepath = os.path.join
 from shutil import copyfile
 
@@ -68,7 +72,6 @@ def get_wapt_version():
        we get import error on build farm due to M2Crypto
        it would be better to reimplement this using an AST
        """
-    from common import Version
     with open('%s/waptpackage.py' % wapt_source_dir,'r') as file_source :
         for line in file_source.readlines():
             if line.strip().startswith('__version__'):
