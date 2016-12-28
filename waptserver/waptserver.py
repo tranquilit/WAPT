@@ -618,36 +618,6 @@ def upload_waptsetup():
                     mimetype="application/json")
 
 
-def install_wapt(computer_name, authentication_file):
-    cmd = '/usr/bin/smbclient -G -E -A %s  //%s/IPC$ -c listconnect ' % (
-        authentication_file, computer_name)
-    try:
-        subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
-    except subprocess.CalledProcessError as e:
-        if "NT_STATUS_LOGON_FAILURE" in e.output:
-            raise Exception(_("Incorrect credentials."))
-        if "NT_STATUS_CONNECTION_REFUSED" in e.output:
-            raise Exception(_("Couldn't access IPC$ share."))
-
-        raise Exception(u"%s" % e.output)
-
-    cmd = '/usr/bin/smbclient -A "%s" //%s/c\\$ -c "put waptagent.exe" ' % (
-        authentication_file, computer_name)
-    print(subprocess.check_output(cmd, shell=True))
-
-    cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\waptagent.exe  /MERGETASKS=""useWaptServer"" /VERYSILENT"  ' % (
-        authentication_file, computer_name)
-    print(subprocess.check_output(cmd, shell=True))
-
-    cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\wapt\\wapt-get.exe register"' % (
-        authentication_file, computer_name)
-    print(subprocess.check_output(cmd, shell=True))
-
-    cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\wapt\\wapt-get.exe --version"' % (
-        authentication_file, computer_name)
-    return subprocess.check_output(cmd, shell=True)
-
-
 @app.route('/deploy_wapt', methods=['POST'])
 @requires_auth
 def deploy_wapt():
