@@ -382,25 +382,6 @@ def tryurl(url,proxies=None,timeout=2,auth=None,verify_cert=False):
         return False
 
 
-def force_utf8_no_bom(filename):
-    """Check if the file is encoded in utf8 readable encoding without BOM
-         rewrite the file in place if not compliant.
-    """
-    BUFSIZE = 4096
-    BOMLEN = len(codecs.BOM_UTF8)
-
-    content = open(filename, mode='rb').read(BOMLEN)
-    if content.startswith(codecs.BOM_UTF8):
-        content = open(filename,'rb').read()
-        open(filename, mode='wb').write(content[BOMLEN:])
-    else:
-        try:
-            content = codecs.open(filename, encoding='utf8').read()
-        except:
-            content = codecs.open(filename, encoding='iso8859-15').read()
-            codecs.open(filename, mode='wb', encoding='utf8').write(content)
-
-
 class EWaptCancelled(Exception):
     pass
 

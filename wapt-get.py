@@ -349,17 +349,17 @@ def main():
                     print(u"You must provide at least one package name")
                     sys.exit(1)
 
-                if os.path.isdir(args[1]) or os.path.isfile(args[1]):
-                    if action == 'install':
-                        print(u"Installing WAPT file %s" % ensure_unicode(args[1]))
-                        # abort if there is already a running install in progress
-                        if running_install:
-                            raise Exception(u'Running wapt progresses (%s), please wait...' % (running_install,))
-                        result = {u'install':[]}
-                        for fn in args[1:]:
-                            fn = guess_package_root_dir(fn)
-                            res = mywapt.install_wapt(fn,params_dict = params_dict)
-                            result['install'].append((fn,res))
+                if os.path.isdir(args[1]) or os.path.isfile(args[1]) or '*' in args[1]:
+                    all_args = expand_args(args[1:])
+                    print(u"Installing WAPT files %s" % ", ".join(all_args))
+                    # abort if there is already a running install in progress
+                    if running_install:
+                        raise Exception(u'Running wapt progresses (%s), please wait...' % (running_install,))
+                    result = {u'install':[]}
+                    for fn in all_args:
+                        fn = guess_package_root_dir(fn)
+                        res = mywapt.install_wapt(fn,params_dict = params_dict)
+                        result['install'].append((fn,res))
                 else:
                     print(u"%sing WAPT packages %s" % (action,','.join(args[1:])))
                     if options.update_packages:
@@ -754,7 +754,9 @@ def main():
                     print(u"You must provide the filepath to a private key in the [global]->private_key key of configuration %s" %config_file)
                     sys.exit(1)
                 packages = []
-                for source_dir in [os.path.abspath(p) for p in args[1:]]:
+                all_args = expand_args(args[1:])
+                print("Building packages %s" % ", ".join(all_args))
+                for source_dir in all_args:
                     source_dir = guess_package_root_dir(source_dir)
                     if os.path.isdir(source_dir):
                         print('Building  %s' % source_dir)
@@ -834,7 +836,10 @@ def main():
                 if not mywapt.private_key or not os.path.isfile(mywapt.private_key):
                     print(u"You must provide the filepath to a private key in the [global]->private_key key of configuration %s" %config_file)
                     sys.exit(1)
-                for waptfile in [os.path.abspath(p) for p in args[1:]]:
+
+                all_args = expand_args(args[1:])
+                print("Signing packages %s" % ", ".join(all_args))
+                for waptfile in all_args:
                     waptfile = guess_package_root_dir(waptfile)
                     if os.path.isdir(waptfile) or os.path.isfile(waptfile):
                         print('Signing %s' % waptfile)
@@ -844,10 +849,10 @@ def main():
                             )
                         print(u"Package %s signed : signature :\n%s" % (
                             waptfile, signature))
-                        sys.exit(0)
                     else:
                         logger.critical(u'Package %s not found' % waptfile)
                         sys.exit(1)
+                sys.exit(0)
 
             elif action == 'upload-package':
                 if len(args) < 2:

@@ -36,6 +36,8 @@ import string
 import email
 import copy
 import platform
+import codecs
+import glob
 
 if platform.system() == 'Windows':
     try:
@@ -413,6 +415,23 @@ def fileisoutcdate(filename):
 def dateof(adatetime):
     return adatetime.replace(hour=0,minute=0,second=0,microsecond=0)
 
+def force_utf8_no_bom(filename):
+    """Check if the file is encoded in utf8 readable encoding without BOM
+         rewrite the file in place if not compliant.
+    """
+    BUFSIZE = 4096
+    BOMLEN = len(codecs.BOM_UTF8)
+
+    content = open(filename, mode='rb').read(BOMLEN)
+    if content.startswith(codecs.BOM_UTF8):
+        content = open(filename,'rb').read()
+        open(filename, mode='wb').write(content[BOMLEN:])
+    else:
+        try:
+            content = codecs.open(filename, encoding='utf8').read()
+        except:
+            content = codecs.open(filename, encoding='iso8859-15').read()
+            codecs.open(filename, mode='wb', encoding='utf8').write(content)
 
 def zip_remove_files(zipfilename,filenames):
     """Remove a list of files from a ZIP using 7-zip or zip (python ZipFile can't do that
@@ -441,6 +460,14 @@ def zip_remove_files(zipfilename,filenames):
             os.unlink(zipfilename+'.tmp')
         raise Exception('Unable to remove files %s from %s: error %s' % (filenames,zipfilename,e))
     return result
+
+def expand_args(args):
+    """Return list of unicode file paths expanded from wildcard list args"""
+    all_args = []
+    for a in ensure_list(args):
+        all_args.extend([os.path.abspath(p) for p in glob.glob(ensure_unicode(a))])
+    return all_args
+
 
 if __name__ == '__main__':
     import doctest
