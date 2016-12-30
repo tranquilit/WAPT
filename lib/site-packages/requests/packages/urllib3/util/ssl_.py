@@ -1,12 +1,17 @@
+from __future__ import absolute_import
+import errno
+import warnings
+import hmac
+
 from binascii import hexlify, unhexlify
 from hashlib import md5, sha1, sha256
 
-from ..exceptions import SSLError, InsecurePlatformWarning
+from ..exceptions import SSLError, InsecurePlatformWarning, SNIMissingWarning
 
 
 SSLContext = None
 HAS_SNI = False
-create_default_context = None
+IS_PYOPENSSL = False
 
 # Maps the length of a digest to a possible hash function producing this digest
 HASHFUNC_MAP = {
@@ -15,8 +20,23 @@ HASHFUNC_MAP = {
     64: sha256,
 }
 
-import errno
-import warnings
+
+def _const_compare_digest_backport(a, b):
+    """
+    Compare two digests of equal length in constant time.
+
+    The digests must be of type str/bytes.
+    Returns True if the digests match, and False otherwise.
+    """
+    result = abs(len(a) - len(b))
+    for l, r in zip(bytearray(a), bytearray(b)):
+        result |= l ^ r
+    return result == 0
+
+
+_const_compare_digest = getattr(hmac, 'compare_digest',
+                                _const_compare_digest_backport)
+
 
 try:  # Test for SSL features
     import ssl
@@ -42,14 +62,25 @@ except ImportError:
 # The general intent is:
 # - Prefer cipher suites that offer perfect forward secrecy (DHE/ECDHE),
 # - prefer ECDHE over DHE for better performance,
-# - prefer any AES-GCM over any AES-CBC for better performance and security,
-# - use 3DES as fallback which is secure but slow,
+# - prefer any AES-GCM and ChaCha20 over any AES-CBC for better performance and
+#   security,
+# - prefer AES-GCM over ChaCha20 because hardware-accelerated AES is common,
 # - disable NULL authentication, MD5 MACs and DSS for security reasons.
-DEFAULT_CIPHERS = (
-    'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+HIGH:'
-    'DH+HIGH:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+HIGH:RSA+3DES:!aNULL:'
-    '!eNULL:!MD5'
-)
+DEFAULT_CIPHERS = ':'.join([
+    'ECDH+AESGCM',
+    'ECDH+CHACHA20',
+    'DH+AESGCM',
+    'DH+CHACHA20',
+    'ECDH+AES256',
+    'DH+AES256',
+    'ECDH+AES128',
+    'DH+AES',
+    'RSA+AESGCM',
+    'RSA+AES',
+    '!aNULL',
+    '!eNULL',
+    '!MD5',
+])
 
 try:
     from ssl import SSLContext  # Modern SSL?
@@ -90,13 +121,14 @@ except ImportError:
                 )
             self.ciphers = cipher_suite
 
-        def wrap_socket(self, socket, server_hostname=None):
+        def wrap_socket(self, socket, server_hostname=None, server_side=False):
             warnings.warn(
                 'A true SSLContext object is not available. This prevents '
                 'urllib3 from configuring SSL appropriately and may cause '
-                'certain SSL connections to fail. For more information, see '
-                'https://urllib3.readthedocs.org/en/latest/security.html'
-                '#insecureplatformwarning.',
+                'certain SSL connections to fail. You can upgrade to a newer '
+                'version of Python to solve this. For more information, see '
+                'https://urllib3.readthedocs.io/en/latest/advanced-usage.html'
+                '#ssl-warnings',
                 InsecurePlatformWarning
             )
             kwargs = {
@@ -105,6 +137,7 @@ except ImportError:
                 'ca_certs': self.ca_certs,
                 'cert_reqs': self.verify_mode,
                 'ssl_version': self.protocol,
+                'server_side': server_side,
             }
             if self.supports_set_ciphers:  # Platform-specific: Python 2.7+
                 return wrap_socket(socket, ciphers=self.ciphers, **kwargs)
@@ -134,7 +167,7 @@ def assert_fingerprint(cert, fingerprint):
 
     cert_digest = hashfunc(cert).digest()
 
-    if cert_digest != fingerprint_bytes:
+    if not _const_compare_digest(cert_digest, fingerprint_bytes):
         raise SSLError('Fingerprints did not match. Expected "{0}", got "{1}".'
                        .format(fingerprint, hexlify(cert_digest)))
 
@@ -264,6 +297,9 @@ def ssl_wrap_socket(sock, keyfile=None, certfile=None, cert_reqs=None,
     """
     context = ssl_context
     if context is None:
+        # Note: This branch of code and all the variables in it are no longer
+        # used by urllib3 itself. We should consider deprecating and removing
+        # this code.
         context = create_urllib3_context(ssl_version, cert_reqs,
                                          ciphers=ciphers)
 
@@ -278,9 +314,23 @@ def ssl_wrap_socket(sock, keyfile=None, certfile=None, cert_reqs=None,
             if e.errno == errno.ENOENT:
                 raise SSLError(e)
             raise
+    elif getattr(context, 'load_default_certs', None) is not None:
+        # try to load OS default certs; works well on Windows (require Python3.4+)
+        context.load_default_certs()
 
     if certfile:
         context.load_cert_chain(certfile, keyfile)
     if HAS_SNI:  # Platform-specific: OpenSSL with enabled SNI
         return context.wrap_socket(sock, server_hostname=server_hostname)
+
+    warnings.warn(
+        'An HTTPS request has been made, but the SNI (Subject Name '
+        'Indication) extension to TLS is not available on this platform. '
+        'This may cause the server to present an incorrect TLS '
+        'certificate, which can cause validation failures. You can upgrade to '
+        'a newer version of Python to solve this. For more information, see '
+        'https://urllib3.readthedocs.io/en/latest/advanced-usage.html'
+        '#ssl-warnings',
+        SNIMissingWarning
+    )
     return context.wrap_socket(sock)
