@@ -42,7 +42,7 @@ __all__ = [
 ]
 
 import os
-import zipfile
+import custom_zip as zipfile
 import StringIO
 import hashlib
 import logging
@@ -693,16 +693,21 @@ class PackageEntry(object):
         # convert to list of list...
         wapt_manifest = json.dumps( manifest_data.items())
         signature = private_key.sign_content(wapt_manifest)
-        if 'WAPT/control' in manifest_data or \
-           'WAPT/manifest.sha1' in manifest_data or \
-           'WAPT/signature' in manifest_data:
-            zip_remove_files(package_fn,['WAPT/control','WAPT/manifest.sha1','WAPT/signature'])
         waptzip = zipfile.ZipFile(self.wapt_fullpath(),'a',allowZip64=True)
         with waptzip:
+            filenames = waptzip.namelist()
+            if 'WAPT/control' in filenames:
+                waptzip.remove('WAPT/control')
             waptzip.writestr('WAPT/control',control)
+
+            if 'WAPT/manifest.sha1' in filenames:
+                waptzip.remove('WAPT/manifest.sha1')
             waptzip.writestr('WAPT/manifest.sha1',wapt_manifest)
+
+            if 'WAPT/signature' in filenames:
+                waptzip.remove('WAPT/signature')
             waptzip.writestr('WAPT/signature',signature.encode('base64'))
-        logger.debug('Time for signing %s : %s' % (package_fn,time.time()-start_time))
+
         return signature.encode('base64')
 
 
