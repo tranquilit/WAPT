@@ -28,7 +28,9 @@ import os
 import sys
 try:
     wapt_root_dir = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), '..'))
+        os.path.join(
+            os.path.dirname(__file__),
+            '..'))
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
@@ -162,8 +164,10 @@ def get_db():
     """
     if not hasattr(g, 'db'):
         try:
-            logger.debug('Connecting to mongo db %s:%s' %
-                         (conf['mongodb_ip'], int(conf['mongodb_port'])))
+            logger.debug(
+                'Connecting to mongo db %s:%s' %
+                (conf['mongodb_ip'], int(
+                    conf['mongodb_port'])))
             mongo_client = MongoClient(
                 conf['mongodb_ip'], int(
                     conf['mongodb_port']))
@@ -248,12 +252,14 @@ def check_auth(username, password):
 
     if sha512_crypt.identify(conf['wapt_password']):
         pass_sha512_crypt_ok = sha512_crypt.verify(
-            password, conf['wapt_password'])
+            password,
+            conf['wapt_password'])
     else:
         try:
             if bcrypt.identify(conf['wapt_password']):
                 pass_bcrypt_crypt_ok = bcrypt.verify(
-                    password, conf['wapt_password'])
+                    password,
+                    conf['wapt_password'])
         except Exception:
             pass
 
@@ -420,7 +426,8 @@ def update_host():
                 if not 'check_hosts_thread' in g or not g.check_hosts_thread.is_alive():
                     logger.info('Creates check hosts thread for %s' % (uuid,))
                     g.check_hosts_thread = CheckHostsWaptService(
-                        timeout=conf['clients_connect_timeout'], uuids=[uuid])
+                        timeout=conf['clients_connect_timeout'],
+                        uuids=[uuid])
                     g.check_hosts_thread.start()
                 else:
                     logger.info(
@@ -429,8 +436,9 @@ def update_host():
                     g.check_hosts_thread.queue.append(data)
 
             else:
-                result = dict(status='ERROR',
-                              message="update_host: No uuid supplied")
+                result = dict(
+                    status='ERROR',
+                    message="update_host: No uuid supplied")
         else:
             result = dict(
                 status='ERROR',
@@ -460,8 +468,10 @@ def upload_package(filename=""):
         if request.method == 'POST':
             if filename and allowed_file(filename):
                 tmp_target = os.path.join(
-                    conf['wapt_folder'], secure_filename(
-                        filename + '.tmp'))
+                    conf['wapt_folder'],
+                    secure_filename(
+                        filename +
+                        '.tmp'))
                 with open(tmp_target, 'wb') as f:
                     data = request.stream.read(65535)
                     try:
@@ -479,7 +489,8 @@ def upload_package(filename=""):
                 else:
                     if PackageEntry().load_control_from_wapt(tmp_target):
                         target = os.path.join(
-                            conf['wapt_folder'], secure_filename(filename))
+                            conf['wapt_folder'],
+                            secure_filename(filename))
                         if os.path.isfile(target):
                             os.unlink(target)
                         os.rename(tmp_target, target)
@@ -490,7 +501,8 @@ def upload_package(filename=""):
                                 data['processed'])), result=data)
                     else:
                         result = dict(
-                            status='ERROR', message=_('Not a valid wapt package'))
+                            status='ERROR',
+                            message=_('Not a valid wapt package'))
                         os.unlink(tmp_target)
             else:
                 result = dict(status='ERROR', message=_('Wrong file type'))
@@ -524,14 +536,17 @@ def upload_host():
                 if os.path.isfile(tmp_target):
                     try:
                         # try to read attributes...
-                        entry = PackageEntry().load_control_from_wapt(tmp_target)
+                        entry = PackageEntry().load_control_from_wapt(
+                            tmp_target)
                         if os.path.isfile(target):
                             os.unlink(target)
                         os.rename(tmp_target, target)
                         data = update_packages(wapt_host_folder)
                         result = dict(
-                            status='OK', message=_('File {} uploaded to {}').format(
-                                file.filename, target))
+                            status='OK',
+                            message=_('File {} uploaded to {}').format(
+                                file.filename,
+                                target))
                     except:
                         if os.path.isfile(tmp_target):
                             os.unlink(tmp_target)
@@ -543,8 +558,9 @@ def upload_host():
             else:
                 result = dict(status='ERROR', message=_('Wrong file type'))
         else:
-            result = dict(status='ERROR', message=_(
-                'No package file provided in request'))
+            result = dict(
+                status='ERROR',
+                message=_('No package file provided in request'))
     except:
         # remove temporary
         if os.path.isfile(tmp_target):
@@ -571,8 +587,10 @@ def upload_waptsetup():
             if file and "waptagent.exe" in file.filename:
                 filename = secure_filename(file.filename)
                 tmp_target = os.path.join(
-                    conf['wapt_folder'], secure_filename(
-                        '.' + filename))
+                    conf['wapt_folder'],
+                    secure_filename(
+                        '.' +
+                        filename))
                 target = os.path.join(
                     conf['wapt_folder'],
                     secure_filename(filename))
@@ -583,8 +601,9 @@ def upload_waptsetup():
                         message=_('Problem during upload'))
                 else:
                     os.rename(tmp_target, target)
-                    result = dict(status='OK', message=_(
-                        '{} uploaded').format((filename,)))
+                    result = dict(
+                        status='OK', message=_('{} uploaded').format(
+                            (filename,)))
 
                 # Compat with older clients: provide a waptsetup.exe ->
                 # waptagent.exe alias
@@ -604,8 +623,9 @@ def upload_waptsetup():
                     shutil.copyfile(waptagent, waptsetup)
 
             else:
-                result = dict(status='ERROR', message=_(
-                    'Wrong file name (version conflict?)'))
+                result = dict(
+                    status='ERROR',
+                    message=_('Wrong file name (version conflict?)'))
         else:
             result = dict(status='ERROR', message=_('Unsupported method'))
     except:
@@ -616,6 +636,36 @@ def upload_waptsetup():
     return Response(response=json.dumps(result),
                     status=200,
                     mimetype="application/json")
+
+
+def install_wapt(computer_name, authentication_file):
+    cmd = '/usr/bin/smbclient -G -E -A %s  //%s/IPC$ -c listconnect ' % (
+        authentication_file, computer_name)
+    try:
+        subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
+    except subprocess.CalledProcessError as e:
+        if "NT_STATUS_LOGON_FAILURE" in e.output:
+            raise Exception(_("Incorrect credentials."))
+        if "NT_STATUS_CONNECTION_REFUSED" in e.output:
+            raise Exception(_("Couldn't access IPC$ share."))
+
+        raise Exception(u"%s" % e.output)
+
+    cmd = '/usr/bin/smbclient -A "%s" //%s/c\\$ -c "put waptagent.exe" ' % (
+        authentication_file, computer_name)
+    print(subprocess.check_output(cmd, shell=True))
+
+    cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\waptagent.exe  /MERGETASKS=""useWaptServer"" /VERYSILENT"  ' % (
+        authentication_file, computer_name)
+    print(subprocess.check_output(cmd, shell=True))
+
+    cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\wapt\\wapt-get.exe register"' % (
+        authentication_file, computer_name)
+    print(subprocess.check_output(cmd, shell=True))
+
+    cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\wapt\\wapt-get.exe --version"' % (
+        authentication_file, computer_name)
+    return subprocess.check_output(cmd, shell=True)
 
 
 @app.route('/deploy_wapt', methods=['POST'])
@@ -699,7 +749,10 @@ def login():
                         new_hash = hashlib.sha1(
                             d["newPass"].encode('utf8')).hexdigest()
                         rewrite_config_item(
-                            config_file, 'options', 'wapt_password', new_hash)
+                            config_file,
+                            'options',
+                            'wapt_password',
+                            new_hash)
                         conf['wapt_password'] = new_hash
                         reload_config()
                     return "True"
@@ -820,12 +873,13 @@ def get_ip_port(host_data, recheck=False, timeout=None):
 
     if 'wapt' in host_data:
         if not recheck and host_data['wapt'].get('listening_address', None) and \
-            'address' in host_data['wapt']['listening_address'] and \
+                'address' in host_data['wapt']['listening_address'] and \
                 host_data['wapt']['listening_address']['address']:
             return host_data['wapt']['listening_address']
         else:
             port = host_data['wapt'].get(
-                'waptservice_port', conf['waptservice_port'])
+                'waptservice_port',
+                conf['waptservice_port'])
             return dict(
                 protocol=host_data['wapt'].get('waptservice_protocol', 'http'),
                 address=get_reachable_ip(
@@ -955,7 +1009,8 @@ def proxy_host_request(request, action):
                         if not isinstance(client_result, list):
                             client_result = [client_result]
                         msg = _(u"Triggered tasks: {}").format(
-                            ','.join(t['description'] for t in client_result))
+                            ','.join(
+                                t['description'] for t in client_result))
                         result['success'].append(
                             dict(
                                 uuid=uuid,
@@ -1002,8 +1057,8 @@ def trigger_upgrade():
     """Proxy the wapt upgrade action to the client"""
     try:
         uuid = request.args['uuid']
-        host_data = hosts().find_one({"uuid": uuid}, fields={
-            'uuid': 1, 'wapt': 1, 'host.connected_ips': 1})
+        host_data = hosts().find_one(
+            {"uuid": uuid}, fields={'uuid': 1, 'wapt': 1, 'host.connected_ips': 1})
         listening_address = get_ip_port(host_data)
         msg = u''
         if listening_address and listening_address[
@@ -1031,7 +1086,8 @@ def trigger_upgrade():
                     packages = [t['description']
                                 for t in result if t['classname'] != 'WaptUpgrade']
                     msg = _(u"Triggered {} task(s):\n{}").format(
-                        len(packages), '\n'.join(packages))
+                        len(packages),
+                        '\n'.join(packages))
             except ValueError:
                 if 'Restricted access' in client_result:
                     raise EWaptForbiddden(client_result)
@@ -1055,8 +1111,8 @@ def trigger_update():
         notify_user = request.args.get('notify_user', 0)
         notify_server = request.args.get('notify_server', 1)
 
-        host_data = hosts().find_one({"uuid": uuid}, fields={
-            'uuid': 1, 'wapt': 1, 'host.connected_ips': 1})
+        host_data = hosts().find_one(
+            {"uuid": uuid}, fields={'uuid': 1, 'wapt': 1, 'host.connected_ips': 1})
         listening_address = get_ip_port(host_data)
         msg = u''
         if listening_address and listening_address[
@@ -1099,25 +1155,32 @@ def trigger_update():
 def trigger_wakeonlan():
     try:
         uuid = request.args['uuid']
-        host_data = hosts().find_one({"uuid": uuid}, fields={
-            'uuid': 1, 'host': 1, 'computer_fqdn': 1})
+        host_data = hosts().find_one(
+            {"uuid": uuid}, fields={'uuid': 1, 'host': 1, 'computer_fqdn': 1})
 
         macs = host_data['host']['mac']
         msg = u''
         if macs:
             logger.info(
                 _("Sending magic wakeonlan packets to {} for machine {}").format(
-                    macs, host_data['host']['computer_fqdn']))
+                    macs,
+                    host_data['host']['computer_fqdn']))
             wakeonlan.wol.send_magic_packet(*macs)
             for line in host_data['host']['networking']:
                 if 'broadcast' in line:
                     broadcast = line['broadcast']
                     wakeonlan.wol.send_magic_packet(
-                        *macs, ip_address='%s' % broadcast)
+                        *
+                        macs,
+                        ip_address='%s' %
+                        broadcast)
             msg = _(u"Wakeonlan packets sent to {} for machine {}").format(
-                macs, host_data['host']['computer_fqdn'])
-            result = dict(macs=macs, host=host_data['host'][
-                          'computer_fqdn'], uuid=uuid)
+                macs,
+                host_data['host']['computer_fqdn'])
+            result = dict(
+                macs=macs,
+                host=host_data['host']['computer_fqdn'],
+                uuid=uuid)
         else:
             raise EWaptMissingHostData(
                 _("No MAC address found for this host in database"))
@@ -1248,8 +1311,8 @@ def host_tasks_status():
     """Proxy the get tasks status action to the client"""
     try:
         uuid = request.args['uuid']
-        host_data = hosts().find_one({"uuid": uuid}, fields={
-            'wapt': 1, 'host.connected_ips': 1})
+        host_data = hosts().find_one(
+            {"uuid": uuid}, fields={'wapt': 1, 'host.connected_ips': 1})
         #listening_address = get_ip_port(host_data)
         listening_address = host_data['wapt'].get('listening_address', None)
 
@@ -1327,8 +1390,8 @@ def hosts_delete():
         elif 'filter' in request.args:
             (search_fields, search_expr) = request.args['filter'].split(':', 1)
             if search_fields.strip() and search_expr.strip():
-                query = {'$or': [{fn: re.compile(
-                    search_expr, re.IGNORECASE)} for fn in ensure_list(search_fields)]}
+                query = {'$or': [
+                    {fn: re.compile(search_expr, re.IGNORECASE)} for fn in ensure_list(search_fields)]}
             else:
                 raise Exception('Neither uuid nor filter provided in query')
         else:
@@ -1343,8 +1406,10 @@ def hosts_delete():
         if 'delete_packages' in request.args and request.args[
                 'delete_packages'] == '1':
             selected = hosts().find(
-                query, fields={
-                    'uuid': 1, 'host.computer_fqdn': 1})
+                query,
+                fields={
+                    'uuid': 1,
+                    'host.computer_fqdn': 1})
             if selected:
                 for host in selected:
                     result['records'].append(
@@ -1358,8 +1423,8 @@ def hosts_delete():
                         if os.path.isfile(fn):
                             result['files'].append(fn)
                             os.remove(fn)
-                msg.append('{} files removed from host repository'.format(
-                    len(result['files'])))
+                msg.append(
+                    '{} files removed from host repository'.format(len(result['files'])))
             else:
                 msg.append('No host found in DB')
 
@@ -1433,7 +1498,8 @@ def get_hosts():
         columns = ['uuid', 'host', 'wapt', 'update_status']
         other_columns = ensure_list(
             request.args.get(
-                'columns', default_columns))
+                'columns',
+                default_columns))
 
         # add request columns
         for fn in other_columns:
@@ -1467,8 +1533,8 @@ def get_hosts():
             if search_fields.strip() and search_expr.strip():
                 filter_field_list = ensure_list(search_fields)
                 if not_filter:
-                    query = {'$and': [{fn: {'$not': re.compile(
-                        search_expr, re.IGNORECASE)}} for fn in filter_field_list]}
+                    query = {'$and': [
+                        {fn: {'$not': re.compile(search_expr, re.IGNORECASE)}} for fn in filter_field_list]}
                 else:
                     query = {'$or': [{fn: re.compile(
                         search_expr, re.IGNORECASE)} for fn in ensure_list(filter_field_list)]}
@@ -1493,7 +1559,8 @@ def get_hosts():
             if (('depends' in columns) or len(groups) >
                     0) and 'host' in host and 'computer_fqdn' in host['host']:
                 host_package = hosts_packages_repo.get(
-                    host['host']['computer_fqdn'], None)
+                    host['host']['computer_fqdn'],
+                    None)
                 if host_package:
                     depends = ensure_list(host_package.depends.split(','))
                     host['depends'] = [d for d in depends
@@ -1539,14 +1606,16 @@ def get_hosts():
                 msg = 'No data found for uuid {}'.format(request.args['uuid'])
             else:
                 msg = 'host data fields {} returned for uuid {}'.format(
-                    ','.join(columns), request.args['uuid'])
+                    ','.join(columns),
+                    request.args['uuid'])
         elif 'filter' in request.args:
             if len(result) == 0:
                 msg = 'No data found for filter {}'.format(
                     request.args['filter'])
             else:
                 msg = '{} hosts returned for filter {}'.format(
-                    len(result), request.args['filter'])
+                    len(result),
+                    request.args['filter'])
         else:
             if len(result) == 0:
                 msg = 'No data found'
@@ -1556,8 +1625,8 @@ def get_hosts():
     except Exception as e:
         return make_response_from_exception(e)
 
-    return make_response(result=result, msg=msg, status=200,
-                         request_time=time.time() - start_time)
+    return make_response(
+        result=result, msg=msg, status=200, request_time=time.time() - start_time)
 
 
 @app.route('/api/v1/host_data')
@@ -1624,13 +1693,14 @@ def update_hosts():
             if not 'uuid' in data:
                 raise Exception('No uuid provided in post host data')
             uuid = data["uuid"]
-            result.append(hosts().update(
-                {'uuid': uuid}, {"$set": data}, upsert=True))
+            result.append(
+                hosts().update({'uuid': uuid}, {"$set": data}, upsert=True))
             # check if client is reachable
             if not 'check_hosts_thread' in g or not g.check_hosts_thread.is_alive():
                 logger.info('Creates check hosts thread for %s' % (uuid,))
                 g.check_hosts_thread = CheckHostsWaptService(
-                    timeout=conf['clients_connect_timeout'], uuids=[uuid])
+                    timeout=conf['clients_connect_timeout'],
+                    uuids=[uuid])
                 g.check_hosts_thread.start()
             else:
                 logger.info(
@@ -1652,8 +1722,8 @@ def update_hosts():
 def host_cancel_task():
     try:
         uuid = request.args['uuid']
-        host_data = hosts().find_one({"uuid": uuid}, fields={
-            'wapt': 1, 'host.connected_ips': 1})
+        host_data = hosts().find_one(
+            {"uuid": uuid}, fields={'wapt': 1, 'host.connected_ips': 1})
         #listening_address = get_ip_port(host_data)
         listening_address = host_data['wapt'].get('listening_address', None)
 
@@ -1739,6 +1809,7 @@ def usage_statistics():
 
 ##################################################################
 class CheckHostWorker(threading.Thread):
+
     """Worker which pulls a host data from queue, checks reachability, and stores result in db
     """
 
@@ -1752,7 +1823,9 @@ class CheckHostWorker(threading.Thread):
     def check_host(self, host_data):
         try:
             listening_info = get_ip_port(
-                host_data, recheck=True, timeout=self.timeout)
+                host_data,
+                recheck=True,
+                timeout=self.timeout)
             # update timestamp
             listening_info['timestamp'] = datetime2isodate()
             return listening_info
@@ -1769,8 +1842,8 @@ class CheckHostWorker(threading.Thread):
                 listening_infos = self.check_host(host_data)
                 with MongoClient(conf['mongodb_ip'], int(conf['mongodb_port'])) as mongo_client:
                     # stores result
-                    mongo_client.wapt.hosts.update({"_id": host_data['_id']}, {
-                                                   "$set": {'wapt.listening_address': listening_infos}})
+                    mongo_client.wapt.hosts.update(
+                        {"_id": host_data['_id']}, {"$set": {'wapt.listening_address': listening_infos}})
                     logger.debug(
                         "Client check %s finished with %s" %
                         (self.ident, listening_infos))
@@ -1781,6 +1854,7 @@ class CheckHostWorker(threading.Thread):
 
 
 class CheckHostsWaptService(threading.Thread):
+
     """Thread which check which IP is reachable for all registered hosts
         The result is stored in MongoDB database as wapt.listening_address
         {protocol
@@ -1818,11 +1892,15 @@ class CheckHostsWaptService(threading.Thread):
             logger.debug('Reset listening status timestamps of hosts')
             try:
                 mongoclient.wapt.hosts.update(
-                    query, {"$set": {'wapt.listening_address.timestamp': ''}}, multi=True)
+                    query, {
+                        "$set": {
+                            'wapt.listening_address.timestamp': ''}}, multi=True)
             except Exception as e:
                 logger.debug('error resetting timestamp %s' % e)
                 mongoclient.wapt.hosts.update(
-                    query, {"$unset": {'wapt.listening_address': 1}}, multi=True)
+                    query, {
+                        "$unset": {
+                            'wapt.listening_address': 1}}, multi=True)
 
             queue = Queue.Queue()
             for data in mongoclient.wapt.hosts.find(query, fields=fields):
@@ -2153,8 +2231,8 @@ if __name__ == "__main__":
         os.mkdir(log_directory)
 
     hdlr = logging.FileHandler(os.path.join(log_directory, 'waptserver.log'))
-    hdlr.setFormatter(logging.Formatter(
-        '%(asctime)s %(levelname)s %(message)s'))
+    hdlr.setFormatter(
+        logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
     logger.addHandler(hdlr)
 
     # Setup initial directories
