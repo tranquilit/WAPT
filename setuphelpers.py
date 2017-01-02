@@ -3523,12 +3523,12 @@ def need_install(key,min_version=None,force=False):
         boolean
 
     """
-    if force or not key:
+    if force or key is None:
         return True
     else:
         current = installed_softwares(uninstallkey=key)
         for soft in current:
-            if not min_version or Version(min_version) <= soft['version']:
+            if min_version is None or Version(min_version) <= soft['version']:
                 return False
         return True
 
