@@ -127,7 +127,7 @@ Filename: "cmd"; Parameters: "/C echo O| cacls {app} /S:""D:PAI(A;OICI;FA;;;BA)(
 Filename: "cmd"; Parameters: "/C icacls.exe {app} /inheritance:r"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt..."; Description: "Suppression héritage des droits sur wapt"
 Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe {app} /inheritance:r"; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt..."; Description: "Suppression héritage des droits sur wapt"
 
-; if waptservicex
+; if waptservice
 Filename: "{app}\waptpython.exe"; Parameters: """{app}\waptservice\waptservice.py"" install"; Tasks:installService ; Flags: runhidden; StatusMsg: "Installation du service WAPT"; Description: "Installation du service WAPT"
 Filename: "sc"; Parameters: "delete waptservice"; Flags: runhidden; Tasks: not installService; WorkingDir: "{tmp}"; StatusMsg: "Suppression du service wapt..."; Description: "Suppression du service wapt..."
 Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser skipifsilent postinstall; StatusMsg: "Lancement de l'icône de notification"; Description: "Lancement de l'icône de notification"
@@ -138,7 +138,7 @@ Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait r
 Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\wapttray.exe"; Flags: excludefromshowinnewinstall;
 
 [Tasks]
-Name: installService; Description: "{cm:InstallWAPservice}";
+Name: installService; Description: "{cm:InstallWAPTservice}";
 Name: autorunTray; Description: "{cm:LaunchIcon}"; Flags: unchecked;
 Name: installredist2008; Description: "{cm:InstallVCpp}";  Check: VCRedistNeedsInstall();
 ; Duplication helas necessaire.
@@ -157,10 +157,11 @@ Filename: "taskkill"; Parameters: "/t /im ""waptconsole.exe"" /f"; Flags: runhid
 Filename: "taskkill"; Parameters: "/t /im ""wapttray.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de l'icône de notification"
 Filename: "net"; Parameters: "stop waptservice"; Flags: runhidden; StatusMsg: "Arrêt du service WAPT"
 Filename: "sc"; Parameters: "delete waptservice"; Flags: runhidden; StatusMsg: "Désinstallation du service WAPT"
+Filename: "taskkill"; Parameters: "/t /im ""waptpython.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de waptpython"
 
 [CustomMessages]
 ;French translations here
-fr.InstallWAPservice=Installer le service WAPT
+fr.InstallWAPTservice=Installer le service WAPT
 fr.LaunchIcon=Lancer l'icône de notification lors de l'ouverture de session
 fr.InstallVCpp=Installer les redistribuables VC++ 2008 (pour openssl)
 fr.ForceVCppReinstall=Forcer la réinstallation des redistribuables VC++ 2008 (pour openssl)
@@ -168,7 +169,7 @@ fr.UpdatePkgUponShutdown=Proposer la mise à jour des paquets à l'extinction du
 fr.LaunchSession=Lancer WAPT session setup à l'ouverture de session
 
 ;English translations here
-en.InstallWAPservice=Install WAPT service
+en.InstallWAPTservice=Install WAPT service
 en.LaunchIcon=Launch notification icon upon session opening
 en.InstallVCpp=Install VC++ 2008 redistributables (for openssl)
 en.ForceVCppReinstall=Force-reinstall VC++ 2008 redistributables (for openssl)
@@ -176,7 +177,7 @@ en.UpdatePkgUponShutdown=Ask to update packages upon shutdown
 en.LaunchSession=Launch WAPT setup session upon session opening
 
 ;German translations here
-de.InstallWAPservice=WAPT service installieren
+de.InstallWAPTservice=WAPT service installieren
 de.LaunchIcon=Benachrichtigungssymbol bei Sitzungseröffnung starten
 de.InstallVCpp=VC++ 2008 die Redistributables (für openssl) installieren
 de.ForceVCppReinstall=Force- VC++ 2008 redistributables (für openssl) deinstallieren
@@ -212,67 +213,79 @@ begin
   end;
 end;
 
-function InitializeSetup(): Boolean;
+procedure CurStepChanged(CurStep: TSetupStep);
 var
   Reply, ResultCode: Integer;
   ServiceStatus: LongWord;
   NetstatOutput, ConflictingService: AnsiString;
 begin
-
-  // terminate waptconsole
-  if Exec('taskkill', '/t /im "waptconsole.exe" /f', '', SW_HIDE,
-     ewWaitUntilTerminated, ResultCode) then
+  if CurStep = ssInstall then
   begin
-    // handle success if necessary; ResultCode contains the exit code
+    // terminate waptconsole
+    Exec('taskkill', '/t /im "waptconsole.exe" /f', '', SW_HIDE,
+       ewWaitUntilTerminated, ResultCode);
+
+    // Proceed Setup
+    Exec('net', 'stop waptservice', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    
+  #ifdef waptserver
+
+    Exec('net', 'stop waptserver', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec('net', 'stop waptapache', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec('net', 'stop waptmongodb', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+
+  #endif
+
+    Exec('taskkill', '/t /im "wapttray.exe" /f', '', SW_HIDE,
+       ewWaitUntilTerminated, ResultCode);
+
+    Exec('taskkill', '/t /im "waptexit.exe" /f', '', SW_HIDE,
+       ewWaitUntilTerminated, ResultCode);
+
+    // terminate additional waptpython
+    Exec('taskkill', '/t /im "waptpython.exe" /f', '', SW_HIDE,
+       ewWaitUntilTerminated, ResultCode);
+
+    Exec('taskkill', '/t /im "pyscripter.exe" /f', '', SW_HIDE,
+       ewWaitUntilTerminated, ResultCode);
+
+    repeat
+      ConflictingService := '';
+
+      NetstatOutput := RunCmd('netstat -a -n -p tcp', True);
+      if Pos('0.0.0.0:8088 ', NetstatOutput) > 0 then
+        ConflictingService := '8088'
+  #ifdef waptserver
+      else if Pos('0.0.0.0:8080 ', NetstatOutput) > 0 then
+        ConflictingService := '8080'
+  #endif
+      ;
+
+      if ConflictingService <> '' then
+      begin
+        Reply := MsgBox('A conflicting service is running on port '+ConflictingService+'. '+
+                        'This is not supported and you should probably abort the installer. '+
+                        'Visit http://dev.tranquil.it/ for documentation about WAPT.',
+                        mbError, MB_ABORTRETRYIGNORE);
+        if Reply = IDABORT then
+          Abort;
+      end;
+    until (ConflictingService = '') or (Reply = IDIGNORE);
+    
+    //Result := True;
   end
-  else begin
-    // handle failure if necessary; ResultCode contains the error code
+  else if CurStep = ssDone then
+  begin
+    if ServiceExists('waptservice') then
+      SimpleStartService('waptservice',True,True);
   end;
-
-  // Proceed Setup
-  Exec('net', 'stop waptservice', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  
-#ifdef waptserver
-
-  Exec('net', 'stop waptserver', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  Exec('net', 'stop waptapache', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  Exec('net', 'stop waptmongodb', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-
-#endif
-
-  repeat
-
-    ConflictingService := '';
-
-    NetstatOutput := RunCmd('netstat -a -n -p tcp', True);
-    if Pos('0.0.0.0:8088 ', NetstatOutput) > 0 then
-      ConflictingService := '8088'
-#ifdef waptserver
-    else if Pos('0.0.0.0:8080 ', NetstatOutput) > 0 then
-      ConflictingService := '8080'
-#endif
-    ;
-
-    if ConflictingService <> '' then
-    begin
-      Reply := MsgBox('A conflicting service is running on port '+ConflictingService+'. '+
-                      'This is not supported and you should probably abort the installer. '+
-                      'Visit http://dev.tranquil.it/ for documentation about WAPT.',
-                      mbError, MB_ABORTRETRYIGNORE);
-      if Reply = IDABORT then
-        Abort;
-    end;
-
-  until (ConflictingService = '') or (Reply = IDIGNORE);
-  
-  Result := True;
 end;
 
+{
 procedure DeinitializeSetup();
 begin
-  if ServiceExists('waptservice') then
-    SimpleStartService('waptservice',True,True); 
 end;
+}
 
 procedure killtask(name:String);
 var
