@@ -2596,10 +2596,10 @@ def host_info():
     info['system_manufacturer'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\BIOS','SystemManufacturer')
     info['system_productname'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\BIOS','SystemProductName')
 
-    info['computer_name'] =  wincomputername()
-    info['computer_fqdn'] =  get_hostname()
-    info['dns_domain'] = get_domain_fromregistry()
-    info['workgroup_name'] = windomainname()
+    info['computer_name'] =  ensure_unicode(wincomputername())
+    info['computer_fqdn'] =  ensure_unicode(get_hostname())
+    info['dns_domain'] = ensure_unicode(get_domain_fromregistry())
+    info['workgroup_name'] = ensure_unicode(windomainname())
 
     try:
         import win32security
@@ -2618,8 +2618,8 @@ def host_info():
     info['win64'] = iswin64()
     info['description'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\LanmanServer\Parameters','srvcomment')
 
-    info['registered_organization'] =  registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOrganization')
-    info['registered_owner'] =  registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOwner')
+    info['registered_organization'] =  ensure_unicode(registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOrganization'))
+    info['registered_owner'] =  ensure_unicode(registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOwner'))
     win_info = keyfinder.windows_product_infos()
     info['windows_version'] =  platform.platform()
     info['windows_product_infos'] =  win_info
