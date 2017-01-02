@@ -3621,7 +3621,7 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
     """
     if not isfile(exe):
         error('setup exe file %s not found in package' % exe)
-    if silentflags is not None:
+    if silentflags is None:
         silentflags = getsilentflags(exe)
     # use empty string to ignore version checking
     if min_version is None:
