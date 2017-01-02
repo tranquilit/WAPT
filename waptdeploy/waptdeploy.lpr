@@ -245,7 +245,7 @@ var
 
 const
   defaultwapt: ansistring = 'wapt';
-  minversion: ansistring = '1.3.8.0';
+  minversion: ansistring = '1.3.9.4';
   _mainrepo: ansistring = '';
   wait_minutes: integer = 0;
   isTemporary: Boolean = False;
@@ -438,6 +438,13 @@ begin
       begin
         if wait_minutes>0 then
           WaitPendingTasks(wait_minutes);
+
+        if ProcessExists('waptpython.exe') then
+        begin
+          WriteLn('A waptpython process is running. Aborting');
+          ExitCode:=11;
+          Exit;
+        end;
 
         setupcmdline:=waptsetupPath + ' /VERYSILENT /MERGETASKS=""' + mergetasks + '""';
         writeln(Format(rsInstall,[setupcmdline]));
