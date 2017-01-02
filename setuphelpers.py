@@ -3512,13 +3512,15 @@ def getproductprops(installer_path):
 
 
 
-def need_install(key,min_version=None,force=False):
+def need_install(key,min_version=None,force=False,get_version=None):
     """Return True if the software with key can be found in uninstall registry
         and the registred version is equal or greater than min_version
 
     Args:
         key (str) : uninstall key
         min_version (str) : minimum version or None if don't check verion
+        get_version (callable) : optional func to get installed software version from one installed_softwares item
+            if not provided, version is taken from 'version' attribute in uninstall registry
     Returns:
         boolean
 
@@ -3528,11 +3530,17 @@ def need_install(key,min_version=None,force=False):
     else:
         current = installed_softwares(uninstallkey=key)
         for soft in current:
-            if min_version is None or Version(min_version) <= soft['version']:
+            if min_version is None:
+                return False
+            if get_version is not None:
+                installed_version = get_version(soft)
+            else:
+                installed_version = soft['version']
+            if Version(min_version) <= installed_version:
                 return False
         return True
 
-def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=[0,1603,3010],timeout=300,properties={}):
+def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=[0,1603,3010],timeout=300,properties={},get_version=None):
     """Install silently the supplied msi file, and add the uninstall key to
     global uninstall key list
 
@@ -3565,10 +3573,10 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
     WAPT = caller_globals.get('WAPT',None)
     force = WAPT and WAPT.options.force
 
-    if not min_version:
+    if min_version is not None:
         min_version = getproductprops(msi)['version']
 
-    if need_install(key,min_version=min_version,force=force):
+    if need_install(key,min_version=min_version,force=force,get_version=get_version):
         if killbefore:
             killalltasks(killbefore)
         props = ' '.join(["%s=%s" % (k,v) for (k,v) in properties.iteritems()])
@@ -3583,7 +3591,7 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
         if 'uninstallkey' in caller_globals and not key in caller_globals['uninstallkey']:
             caller_globals['uninstallkey'].append(key)
 
-def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefore=[],accept_returncodes=[0,1603,3010],timeout=300):
+def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbefore=[],accept_returncodes=[0,1603,3010],timeout=300,get_version=None):
     """Install silently the supplied setup executable file, and add the uninstall key to
     global uninstallkey list if it is defined.
 
@@ -3602,15 +3610,17 @@ def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefor
                             if not provided, guess it from exe setup file properties.
         kill_before (list of str) : processes to kill before setup, to avoid file locks
                                     issues.
+        get_version (callable) : optional func to get installed software version from one entry retunred by installed_softwares
+            if not provided, version is taken from 'version' attribute in uninstall registry
     Returns:
         None
 
     """
     if not isfile(exe):
         error('setup exe file %s not found in package' % exe)
-    if not silentflags:
+    if silentflags is not None:
         silentflags = getsilentflags(exe)
-    if not min_version:
+    if min_version is not None:
         min_version = getproductprops(exe)['version']
 
     import inspect
@@ -3618,13 +3628,13 @@ def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefor
     WAPT = caller_globals.get('WAPT',None)
     force = WAPT and WAPT.options.force
 
-    if need_install(key,min_version=min_version,force=force):
+    if need_install(key,min_version=min_version,force=force,get_version=get_version):
         if killbefore:
             killalltasks(killbefore)
         run(r'"%s" %s' % (exe,silentflags),accept_returncodes=accept_returncodes,timeout=timeout)
         if key and not installed_softwares(uninstallkey=key):
             error('Setup %s has been ran but the uninstall key %s can not be found' % (exe,key))
-        if key and min_version and need_install(key,min_version=min_version,force=False):
+        if key and min_version is not None and need_install(key,min_version=min_version,force=False):
             error('Setup %s has been and uninstall key %s found but version is not good' % (exe,key))
     else:
         print('Exe setup %s already installed. Skipping' % exe)
