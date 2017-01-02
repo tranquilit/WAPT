@@ -30,6 +30,7 @@ Source: "..\wapt-get.py"; DestDir: "{app}";
 Source: "..\keyfinder.py"; DestDir: "{app}"; 
 Source: "..\setuphelpers.py"; DestDir: "{app}"; 
 Source: "..\windnsquery.py"; DestDir: "{app}"; 
+Source: "..\custom_zip.py"; DestDir: "{app}"; 
 Source: "..\COPYING.txt"; DestDir: "{app}";
 Source: "..\version"; DestDir: "{app}";
 Source: "..\revision.txt"; DestDir: "{app}";
