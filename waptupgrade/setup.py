@@ -92,6 +92,7 @@ def update_sources():
          'waptwua.py',
          'wapttray.exe',
          'waptexit.exe',
+         'custom_zip.py',
          'keyfinder.py',
          'COPYING.txt',
          'templates',
