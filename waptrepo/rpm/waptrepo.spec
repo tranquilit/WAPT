@@ -29,6 +29,7 @@ cd .. && python createrpm.py
 /opt/wapt/waptcrypto.py
 /opt/wapt/waptutils.py
 /opt/wapt/waptpackage.py
+/opt/wapt/custom_zip.py
 /var/www/html/wapt
 /var/www/html/waptwua
 /var/www/html/wapt-host
