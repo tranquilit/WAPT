@@ -114,7 +114,8 @@ copyfile(makepath(wapt_source_dir,'waptpackage.py'),
          'BUILDROOT/opt/wapt/waptpackage.py')
 copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
          'BUILDROOT/opt/wapt/wapt-scanpackages.py')
-
+copyfile(makepath(wapt_source_dir,'custom_zip.py'),
+         'BUILDROOT/opt/wapt/custom_zip.py')
 if platform.dist()[0] in ('debian','ubuntu'):
     os.makedirs('BUILDROOT/var/www/wapt')
     os.makedirs('BUILDROOT/var/www/waptwua')

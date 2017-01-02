@@ -101,6 +101,8 @@ copyfile(makepath(wapt_source_dir,'waptcrypto.py'),
          './builddir/opt/wapt/waptcrypto.py')
 copyfile(makepath(wapt_source_dir,'waptutils.py'),
          './builddir/opt/wapt/waptutils.py')
+copyfile(makepath(wapt_source_dir,'custom_zip.py'),
+         './builddir/opt/wapt/custom_zip.py')
 copyfile(makepath(wapt_source_dir,'waptpackage.py'),
          './builddir/opt/wapt/waptpackage.py')
 copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
