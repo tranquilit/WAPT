@@ -1827,6 +1827,7 @@ def replace_at_next_reboot(tmp_filename,target_filename):
     """
     if not tmp_filename:
         tmp_filename=target_filename+'.pending'
+
     with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'System\CurrentControlSet\Control\Session Manager',sam=KEY_WRITE|KEY_READ) as key:
         pending = reg_getvalue(key,'PendingFileRenameOperations',default=[])
         tmp = '\??\{}'.format(tmp_filename)
@@ -3518,7 +3519,7 @@ def need_install(key,min_version=None,force=False,get_version=None):
 
     Args:
         key (str) : uninstall key
-        min_version (str) : minimum version or None if don't check verion
+        min_version (str) : minimum version or None if don't check verion (like when key is specific for each soft version)
         get_version (callable) : optional func to get installed software version from one installed_softwares item
             if not provided, version is taken from 'version' attribute in uninstall registry
     Returns:
@@ -3553,7 +3554,8 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
     Args:
         msi (str) : path to the MSI file
         min_version (str) : if installed version is equal or gretaer than this, don't install
-                            if not provided, guess it from exe setup file properties.
+                            if not provided (None), guess it from exe setup file properties.
+                            if == '': ignore version check.
         kill_before (list of str) : processes to kill before setup, to avoid file locks
                                     issues.
         accept_returncodes (list of int) : return codes which are acceptable and don't raise exception
@@ -3573,17 +3575,17 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
     WAPT = caller_globals.get('WAPT',None)
     force = WAPT and WAPT.options.force
 
-    if min_version is not None:
+    if min_version is None:
         min_version = getproductprops(msi)['version']
 
-    if need_install(key,min_version=min_version,force=force,get_version=get_version):
+    if need_install(key,min_version=min_version or None,force=force,get_version=get_version):
         if killbefore:
             killalltasks(killbefore)
         props = ' '.join(["%s=%s" % (k,v) for (k,v) in properties.iteritems()])
         run(r'msiexec /norestart /q /i "%s" %s' % (msi,props),accept_returncodes=accept_returncodes,timeout=timeout)
         if key and not installed_softwares(uninstallkey=key):
             error('MSI %s has been installed but the uninstall key %s can not be found' % (msi,key))
-        if key and min_version and need_install(key,min_version=min_version,force=False):
+        if key and min_version and need_install(key,min_version=min_version or None,force=False):
             error('MSI %s has been installed and the uninstall key %s found but version is not good' % (msi,key))
     else:
         print('MSI %s already installed. Skipping msiexec' % msi)
@@ -3607,7 +3609,8 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
                             if not provided, tries to guess them.
         key (str) : uninstall key to check in registry and to add to uninstallkey global list
         min_version (str) : if installed version is equal or gretaer than this, don't install
-                            if not provided, guess it from exe setup file properties.
+                            if not provided (None), guess it from exe setup file properties.
+                            if == '': ignore version check.
         kill_before (list of str) : processes to kill before setup, to avoid file locks
                                     issues.
         get_version (callable) : optional func to get installed software version from one entry retunred by installed_softwares
@@ -3620,7 +3623,8 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
         error('setup exe file %s not found in package' % exe)
     if silentflags is not None:
         silentflags = getsilentflags(exe)
-    if min_version is not None:
+    # use empty string to ignore version checking
+    if min_version is None:
         min_version = getproductprops(exe)['version']
 
     import inspect
@@ -3628,13 +3632,13 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
     WAPT = caller_globals.get('WAPT',None)
     force = WAPT and WAPT.options.force
 
-    if need_install(key,min_version=min_version,force=force,get_version=get_version):
+    if need_install(key,min_version=min_version or None,force=force,get_version=get_version):
         if killbefore:
             killalltasks(killbefore)
         run(r'"%s" %s' % (exe,silentflags),accept_returncodes=accept_returncodes,timeout=timeout)
         if key and not installed_softwares(uninstallkey=key):
             error('Setup %s has been ran but the uninstall key %s can not be found' % (exe,key))
-        if key and min_version is not None and need_install(key,min_version=min_version,force=False):
+        if key and min_version is not None and need_install(key,min_version=min_version or None,force=False):
             error('Setup %s has been and uninstall key %s found but version is not good' % (exe,key))
     else:
         print('Exe setup %s already installed. Skipping' % exe)
