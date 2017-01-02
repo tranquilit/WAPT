@@ -38,6 +38,7 @@ import copy
 import platform
 import codecs
 import glob
+import requests
 
 if platform.system() == 'Windows':
     try:
@@ -467,6 +468,89 @@ def expand_args(args):
     for a in ensure_list(args):
         all_args.extend([os.path.abspath(p) for p in glob.glob(ensure_unicode(a))])
     return all_args
+
+def default_http_headers():
+    return {
+        'cache-control':'no-cache',
+        'pragma':'no-cache',
+        'user-agent':'wapt/{}'.format(__version__),
+        }
+
+def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False):
+    r"""Copy the contents of a file from a given URL to a local file.
+    >>> respath = wget('http://wapt.tranquil.it/wapt/tis-firefox_28.0.0-1_all.wapt','c:\\tmp\\test.wapt',proxies={'http':'http://proxy:3128'})
+    ???
+    >>> os.stat(respath).st_size>10000
+    True
+    >>> respath = wget('http://localhost:8088/runstatus','c:\\tmp\\test.json')
+    ???
+    """
+    start_time = time.time()
+    last_time_display = 0.0
+    last_downloaded = 0
+
+    def reporthook(received,total):
+        total = float(total)
+        if total>1 and received>1:
+            # print only every second or at end
+            if (time.time()-start_time>1) and ((time.time()-last_time_display>=1) or (received>=total)):
+                speed = received /(1024.0 * (time.time()-start_time))
+                if printhook:
+                    printhook(received,total,speed,url)
+                else:
+                    try:
+                        if received == 0:
+                            print(u"Downloading %s (%.1f Mb)" % (url,int(total)/1024/1024))
+                        elif received>=total:
+                            print(u"  -> download finished (%.0f Kb/s)" % (total /(1024.0*(time.time()+.001-start_time))))
+                        else:
+                            print(u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed ))
+                    except:
+                        return False
+                return True
+            else:
+                return False
+
+    if os.path.isdir(target):
+        target = os.path.join(target,'')
+
+    (dir,filename) = os.path.split(target)
+    if not filename:
+        filename = url.split('/')[-1]
+    if not dir:
+        dir = os.getcwd()
+
+    if not os.path.isdir(dir):
+        os.makedirs(dir)
+
+    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout,verify=verify_cert,headers=default_http_headers())
+
+    total_bytes = int(httpreq.headers['content-length'])
+    # 1Mb max, 1kb min
+    chunk_size = min([1024*1024,max([total_bytes/100,2048])])
+
+    cnt = 0
+    reporthook(last_downloaded,total_bytes)
+
+    with open(os.path.join(dir,filename),'wb') as output_file:
+        last_time_display = time.time()
+        last_downloaded = 0
+        if httpreq.ok:
+            for chunk in httpreq.iter_content(chunk_size=chunk_size):
+                output_file.write(chunk)
+                if download_timeout is not None and (time.time()-start_time>download_timeout):
+                    raise requests.Timeout(r'Download of %s takes more than the requested %ss'%(url,download_timeout))
+                if reporthook(cnt*len(chunk),total_bytes):
+                    last_time_display = time.time()
+                last_downloaded += len(chunk)
+                cnt +=1
+            if reporthook(last_downloaded,total_bytes):
+                last_time_display = time.time()
+        else:
+            httpreq.raise_for_status()
+
+    return os.path.join(dir,filename)
+
 
 
 if __name__ == '__main__':
