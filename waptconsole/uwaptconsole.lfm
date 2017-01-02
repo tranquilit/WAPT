@@ -47,7 +47,6 @@ object VisWaptGUI: TVisWaptGUI
           Width = 128
           EmptyText = 'Search keywords'
           ExecuteDelay = 650
-          OnExecute = EdSearchHostExecute
           Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
           Font.Color = clGray
           OnKeyPress = EdSearchHostKeyPress

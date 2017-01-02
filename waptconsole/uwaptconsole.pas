@@ -717,7 +717,10 @@ end;
 
 procedure TVisWaptGUI.EdSearchHostKeyPress(Sender: TObject; var Key: char);
 begin
-  Gridhosts.Clear;
+  if key = #13 then
+    ActSearchHost.execute
+  else
+    Gridhosts.Clear;
 end;
 
 procedure TVisWaptGUI.EdSoftwaresFilterChange(Sender: TObject);
