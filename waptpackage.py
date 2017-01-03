@@ -1548,9 +1548,6 @@ def update_packages(adir,force=False):
     return repo.update_packages_index(force_all=force)
 
 if __name__ == '__main__':
-    r = WaptLocalRepo('c:/wapt/cache')
-    r.update_packages_index()
-    sys.exit(0)
     import doctest
     import sys
     reload(sys)

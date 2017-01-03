@@ -2579,6 +2579,17 @@ def critical_system_pending_updates():
     searchResult = updateSearcher.Search("IsInstalled=0 and Type='Software'")
     return [ update.Title for update in searchResult.Updates if update.MsrcSeverity == 'Critical']
 
+
+def get_default_gateways():
+    import wmi
+    wmi_obj = wmi.WMI()
+    connections = wmi_obj.query("select IPAddress,DefaultIPGateway from Win32_NetworkAdapterConfiguration where IPEnabled=TRUE")
+    result = []
+    for connection in connections:
+        if connection.DefaultIPGateway:
+            result.append(connection.DefaultIPGateway[0])
+    return result
+
 def host_info():
     """Read main workstation informations, returned as a dict
 
@@ -2676,7 +2687,7 @@ def get_user_from_sid(sid,controller=None):
         name, domain, type = win32security.LookupAccountSid (controller, pysid)
         return "%s\\%s" % (domain,name)
     except win32security.error as e:
-        logger.debug(u'Unable to GET username from SID %s : %s' % ("%s" % sid,e))
+        logger.debug(u'Unable to GET username from SID %s : %s, using profile directory instead' % ("%s" % sid,e))
         # try from directory
         return get_user_from_profpath(sid)
 
@@ -3741,7 +3752,10 @@ def run_powershell(cmd,output_format='json',**kwargs):
         return result
 
 def remove_metroapp(package):
-    return run_powershell('Get-AppxPackage %s | Remove-AppxPackage' % package)
+    run_powershell('Get-AppxPackage %s --AllUsers| Remove-AppxPackage' % package)
+    run_powershell("""Get-AppXProvisionedPackage -Online |
+            where DisplayName -EQ %s |
+            Remove-AppxProvisionedPackage -Online"""%app)
 
 def datetime2isodate(adatetime = None):
     if not adatetime:

@@ -519,13 +519,16 @@ class WaptBaseDB(object):
         with self:
             self.db.execute('delete from wapt_params where name=?',(name,))
 
-    def query(self,query, args=(), one=False):
+    def query(self,query, args=(), one=False,as_dict=True):
         """
         execute la requete query sur la db et renvoie un tableau de dictionnaires
         """
         cur = self.db.execute(query, args)
-        rv = [dict((cur.description[idx][0], value)
+        if as_dict:
+            rv = [dict((cur.description[idx][0], value)
                    for idx, value in enumerate(row)) for row in cur.fetchall()]
+        else:
+            rv = cur.fetchall()
         return (rv[0] if rv else None) if one else rv
 
 
@@ -1703,7 +1706,7 @@ class WaptRepo(WaptRemoteRepo):
             if not self._cached_dns_repo_url and self.dnsdomain:
                 self._cached_dns_repo_url = self.find_wapt_repo_url()
             elif not self.dnsdomain:
-                raise Exception('No dnsdomain defined for repo %s'%self.name)
+                raise Exception(u'No dnsdomain defined for repo %s'%self.name)
             return self._cached_dns_repo_url
 
     @repo_url.setter
@@ -2095,7 +2098,43 @@ class WaptHostRepo(WaptRepo):
 
 ######################"""
 
-key_passwd = None
+class WaptLogger(object):
+    """Context handler to log all print messages to a wapt package install log"""
+    def __init__(self,wapt=None,package=None):
+        self.wapt = wapt
+        self.package = package
+        self.old_stdout = None
+        self.old_stderr = None
+        self.install_output = None
+        self.install_id = None
+
+        if wapt and package:
+            with self.wapt.waptdb as waptdb:
+                cur = waptdb.db.execute("""select rowid from wapt_localstatus where package=?""" ,(self.package,))
+                pe = cur.fetchone()
+                if not pe:
+                    logger.critical('WaptLogger can not log info, target package %s not found in local Wapt DB install status'%package)
+                else:
+                    self.install_id = pe[0]
+
+    def __enter__(self):
+        if self.wapt and self.package and self.install_id is not None:
+            self.old_stdout = sys.stdout
+            self.old_stderr = sys.stderr
+            sys.stderr = sys.stdout = self.install_output = LogInstallOutput(sys.stderr,self.wapt.waptdb,self.install_id)
+
+    def __exit__(self, type, value, tb):
+        if self.wapt and self.package and self.install_id is not None:
+            sys.stdout = self.old_stdout
+            sys.stderr = self.old_stderr
+            if not tb:
+                self.wapt.waptdb.update_install_status(self.install_id,'OK','')
+            else:
+                self.wapt.waptdb.update_install_status(self.install_id,'ERROR',traceback.format_exc())
+            self.wapt.update_server_status()
+            self.install_id = None
+            self.install_output = None
+            self.wapt = None
 
 
 class Wapt(object):
@@ -3998,8 +4037,12 @@ class Wapt(object):
 
         """
         if description:
-            out = self.run("echo "" | WMIC os set description='%s'" % description.encode(sys.getfilesystemencoding()))
-            logger.info(out)
+            with setuphelpers.disable_file_system_redirection():
+                try:
+                    out = self.run("WMIC os set description='%s'" % description.encode(sys.getfilesystemencoding()))
+                except:
+                    out = self.run("""echo "" | WMIC os set description='%s'""" % description.encode(sys.getfilesystemencoding()))
+                logger.info(out)
 
         self.delete_param('uuid')
         inv = self.inventory()
@@ -5581,7 +5624,7 @@ class Wapt(object):
             if not self.disable_update_server_status and self.waptserver_available():
                 self.update_server_status()
         except Exception as e:
-            logger.warning(u'Problème lors du changement de réseau : %s'%ensure_unicode(e))
+            logger.warning(u'WAPT was unable to reconfigure properly after network changes : %s'%ensure_unicode(e))
 
     def add_upgrade_shutdown_policy(self):
         """Add a local shitdown policy to upgrade system"""

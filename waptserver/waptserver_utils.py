@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
-__version__="1.3.9"
+__version__="1.3.10"
 
 import bson.json_util
 import datetime
@@ -86,7 +86,7 @@ def mkdir_p(path):
     import errno
     try:
         os.makedirs(path)
-    except OSError, exc:
+    except OSError as exc:
         if exc.errno == errno.EEXIST and os.path.isdir(path):
             pass
         else:
