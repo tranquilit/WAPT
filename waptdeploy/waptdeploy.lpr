@@ -439,13 +439,6 @@ begin
         if wait_minutes>0 then
           WaitPendingTasks(wait_minutes);
 
-        if ProcessExists('waptpython.exe') then
-        begin
-          WriteLn('A waptpython process is running. Aborting');
-          ExitCode:=11;
-          Exit;
-        end;
-
         setupcmdline:=waptsetupPath + ' /VERYSILENT /MERGETASKS=""' + mergetasks + '""';
         writeln(Format(rsInstall,[setupcmdline]));
         res := '';

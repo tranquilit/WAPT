@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Windows, ActiveX, Types, Forms, Controls, Graphics,
-  Dialogs, Buttons, FileUtil, SynEdit, SynHighlighterPython,
+  Dialogs, Buttons, FileUtil,LazFileUtils, LazUTF8, SynEdit, SynHighlighterPython,
   TplStatusBarUnit,
   ELDsgxPropStore, OMultiPanel, RxIniPropStorage, vte_json, ExtCtrls, StdCtrls, ComCtrls,
   ActnList, Menus, jsonparser, superobject, VirtualTrees, VarPyth, ImgList,
@@ -720,7 +720,9 @@ begin
   if key = #13 then
     ActSearchHost.execute
   else
-    Gridhosts.Clear;
+    if CharIsAlphaNum(Key) then
+      Gridhosts.Clear;
+
 end;
 
 procedure TVisWaptGUI.EdSoftwaresFilterChange(Sender: TObject);
@@ -1294,8 +1296,8 @@ end;
 
 procedure TVisWaptGUI.ActCreateCertificateExecute(Sender: TObject);
 var
-  params, certFile: string;
-  Result: ISuperObject;
+  params, certFile: utf8string;
+  Result: Utf8String;
   done: boolean;
 begin
   with TVisCreateKey.Create(Self) do
@@ -1303,37 +1305,30 @@ begin
       repeat
         if ShowModal = mrOk then
           try
-            DMPython.PythonEng.ExecString('import common');
-            params := '';
-            params := params + format('orgname=r"%s",', [edOrgName.Text]);
-            params := params + format('destdir=r"%s",', [DirectoryCert.Directory]);
-            params := params + format('country=r"%s".decode(''utf8''),',
-              [edCountry.Text]);
-            params := params + format('locality=r"%s".decode(''utf8''),',
-              [edLocality.Text]);
-            params := params + format('organization=r"%s".decode(''utf8''),',
-              [edOrganization.Text]);
-            params := params + format('unit=r"%s".decode(''utf8''),', [edUnit.Text]);
-            params := params + format('commonname=r"%s",', [edCommonName.Text]);
-            params := params + format('email=r"%s",', [edEmail.Text]);
-            params := params + format('wapt_base_dir=r"%s",', [waptpath]);
-            Result := DMPython.RunJSON(
-              format('common.create_self_signed_key(%s)', [params]),
-              jsonlog);
-            done := FileExists(Result.S['pem_filename']);
+            result := CreateSelfSignedCert(
+              edOrgName.Text,
+              waptpath,
+              DirectoryCert.Directory,
+              edCountry.Text,
+              edLocality.Text,
+              edOrganization.Text,
+              edUnit.Text,
+              edCommonName.Text,
+              edEmail.Text);
+
+            done := FileExistsUTF8(Result);
             if done then
             begin
               ShowMessageFmt(rsPublicKeyGenSuccess,
-                [Result.S['pem_filename']]);
-              certFile := Result.S['pem_filename'];
-              StrReplace(certFile, '.pem', '.crt');
+                [Result]);
+              certFile := ChangeFileExt(Result,'.crt');
               if not CopyFile(PChar(certFile),
                 PChar(waptpath + '\ssl\' + ExtractFileName(certFile)), True) then
                 ShowMessage(rsPublicKeyGenFailure);
 
               with TINIFile.Create(AppIniFilename) do
                 try
-                  WriteString('global', 'private_key', Result.S['pem_filename']);
+                  WriteString('global', 'private_key', Result);
                 finally
                   Free;
                 end;
@@ -2663,8 +2658,6 @@ begin
 end;
 
 procedure TVisWaptGUI.ActEvaluateExecute(Sender: TObject);
-var
-  sob: ISuperObject;
 begin
   MemoLog.Clear;
   if cbShowLog.Checked then
@@ -2673,8 +2666,7 @@ begin
     MemoLog.Lines.Add('########## Start of Output of """' + EdRun.Text +
       '""" : ########');
   end;
-
-  sob := DMPython.RunJSON(EdRun.Text, jsonlog);
+  DMPython.RunJSON(EdRun.Text, jsonlog);
 end;
 
 procedure TVisWaptGUI.ActExecCodeExecute(Sender: TObject);
@@ -3086,12 +3078,12 @@ begin
   ActSearchPackage.Execute;
 end;
 
-function checkReadWriteAccess(dir: string): boolean;
+function checkReadWriteAccess(dir: Utf8string): boolean;
 var
-  fn: string;
+  fn: Utf8string;
 begin
   try
-    fn := FileUtil.GetTempFilename(dir, 'test');
+    fn := LazFileUtils.GetTempFileNameUTF8(dir, 'test');
     StringToFile(fn, '');
     FileUtil.DeleteFileUTF8(fn);
     Result := True;
@@ -3112,16 +3104,16 @@ end;
 function TVisWaptGUI.Login: boolean;
 var
   cred, resp, sores: ISuperObject;
-  localfn: string;
+  localfn: utf8string;
 begin
   Result := False;
   // Initialize user local config file with global wapt settings
   localfn := GetAppConfigDir(False) + ApplicationName + '.ini';
-  if not FileExists(localfn) then
+  if not FileExistsUTF8(localfn) then
   begin
-    if not DirectoryExists(GetAppConfigDir(False)) then
+    if not DirectoryExistsUTF8(GetAppConfigDir(False)) then
       MkDir(GetAppConfigDir(False));
-    FileUtil.CopyFile(WaptIniFilename, localfn, True);
+    CopyFile(Utf8ToAnsi(WaptIniFilename), Utf8ToAnsi(localfn), True);
   end;
 
   ActReloadConfig.Execute;
@@ -3384,7 +3376,7 @@ begin
           Result := CompareVersion(Join('-',d1),Join('-',d2))
       else
       if (pos('host.mac', propname) > 0) then
-        Result := CompareStr(d1.AsString, d2.AsString)
+        Result := UTF8CompareText(d1.AsString, d2.AsString)
       else
       begin
         CompResult := d1.Compare(d2);
@@ -3392,7 +3384,7 @@ begin
           cpLess: Result := -1;
           cpEqu: Result := 0;
           cpGreat: Result := 1;
-          cpError: Result := strcompare(n1.S[propname], n2.S[propname]);
+          cpError: Result := UTF8CompareText(n1.S[propname], n2.S[propname]);
         end;
       end;
     end

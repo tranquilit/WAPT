@@ -5,7 +5,7 @@ unit dmwaptpython;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, PythonEngine, PythonGUIInputOutput, VarPyth,
+  Classes, SysUtils, FileUtil,LazFileUtils, PythonEngine, PythonGUIInputOutput, VarPyth,
   vte_json, superobject, fpjson, jsonparser, DefaultTranslator;
 
 type
@@ -20,9 +20,9 @@ type
   private
     FLanguage: String;
     jsondata:TJSONData;
-    FWaptConfigFileName: String;
+    FWaptConfigFileName: Utf8String;
     procedure LoadJson(data: UTF8String);
-    procedure SetWaptConfigFileName(AValue: String);
+    procedure SetWaptConfigFileName(AValue: Utf8String);
     procedure SetLanguage(AValue: String);
 
     { private declarations }
@@ -30,7 +30,7 @@ type
     { public declarations }
     WAPT:Variant;
 
-    property WaptConfigFileName:String read FWaptConfigFileName write SetWaptConfigFileName;
+    property WaptConfigFileName:Utf8String read FWaptConfigFileName write SetWaptConfigFileName;
     function RunJSON(expr: UTF8String; jsonView: TVirtualJSONInspector=
       nil): ISuperObject;
 
@@ -41,10 +41,10 @@ var
   DMPython: TDMPython;
 
 implementation
-uses waptcommon,inifiles,forms,controls;
+uses waptcommon,inifiles,forms,controls,dialogs;
 {$R *.lfm}
 
-procedure TDMPython.SetWaptConfigFileName(AValue: String);
+procedure TDMPython.SetWaptConfigFileName(AValue: Utf8String);
 var
   St:TStringList;
   ini : TInifile;
@@ -60,8 +60,8 @@ begin
     if not DirectoryExists(ExtractFileDir(AValue)) then
       mkdir(ExtractFileDir(AValue));
     //Initialize waptconsole parameters with local workstation wapt-get parameters...
-    if not FileExists(AValue) then
-      CopyFile(WaptIniFilename,AValue);
+    if not FileExistsUTF8(AValue) then
+      CopyFile(Utf8ToAnsi(WaptIniFilename),Utf8ToAnsi(AValue),True);
     st := TStringList.Create;
     try
       st.Append('import logging');
