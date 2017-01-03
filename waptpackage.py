@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.9"
+__version__ = "1.3.10"
 
 __all__ = [
     'md5_for_file',
@@ -710,6 +710,179 @@ class PackageEntry(object):
 
         return signature.encode('base64')
 
+class WaptPackageDev(PackageEntry):
+    """Source package directory"""
+
+    def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','*.pyc','src'],
+                target_directory=None):
+        """Build the WAPT package from a directory
+
+        Zip the content of directory. Add a manifest.sha1 file with sha1 hash of
+          the content of each file.
+
+        Args:
+            directoryname (str): source root directory of package to build
+            inc_package_release (boolean): increment the version of package in control file.
+
+        Returns:
+            dict: {'filename':waptfilename,'files':[list of files],'package':PackageEntry}
+        """
+        if not isinstance(directoryname,unicode):
+            directoryname = unicode(directoryname)
+        result_filename = u''
+        if not os.path.isdir(os.path.join(directoryname,'WAPT')):
+            raise Exception('Error building package : There is no WAPT directory in %s' % directoryname)
+        if not os.path.isfile(os.path.join(directoryname,'WAPT','control')):
+            raise Exception('Error building package : There is no control file in WAPT directory')
+        if not os.path.isfile(os.path.join(directoryname,'setup.py')):
+            raise Exception('Error building package : There is no setup.py file in %s' % directoryname)
+        oldpath = sys.path
+        try:
+            previous_cwd = os.getcwd()
+            logger.debug(u'  Change current directory to %s' % directoryname)
+            os.chdir(directoryname)
+            if not os.getcwd() in sys.path:
+                sys.path = [os.getcwd()] + sys.path
+                logger.debug(u'new sys.path %s' % sys.path)
+            logger.debug(u'Sourcing %s' % os.path.join(directoryname,'setup.py'))
+            setup = import_setup(os.path.join(directoryname,'setup.py'))
+             # be sure some minimal functions are available in setup module at install step
+            logger.debug(u'Source import OK')
+
+            # check minimal requirements of setup.py
+            # check encoding
+            try:
+                codecs.open(os.path.join(directoryname,'setup.py'),mode='r',encoding='utf8')
+            except:
+                raise Exception('Encoding of setup.py is not utf8')
+
+            if hasattr(setup,'uninstallstring'):
+                mandatory = [('install',types.FunctionType) ,('uninstallstring',list),]
+            else:
+                mandatory = [('install',types.FunctionType) ,('uninstallkey',list),]
+            for (attname,atttype) in mandatory:
+                if not hasattr(setup,attname):
+                    raise Exception('setup.py has no %s (%s)' % (attname,atttype))
+
+            control_filename = os.path.join(directoryname,'WAPT','control')
+            force_utf8_no_bom(control_filename)
+
+            entry = PackageEntry()
+            logger.info(u'Load control informations from control file')
+            entry.load_control_from_wapt(directoryname)
+
+            # to avoid double increment when update_control is used.
+            inc_done = False
+
+            # optionally, setup.py can update some attributes of control files using
+            # a procedure called update_control(package_entry)
+            # this can help automates version maintenance
+            # a check of version collision is operated automatically
+            if hasattr(setup,'update_control'):
+                logger.info(u'Update control informations with update_control function from setup.py file')
+                setattr(setup,'run',self.run)
+                setattr(setup,'run_notfatal',self.run_notfatal)
+                setattr(setup,'user',self.user)
+                setattr(setup,'usergroups',self.usergroups)
+                setattr(setup,'WAPT',self)
+                setattr(setup,'language',self.language or setuphelpers.get_language() )
+                setup.update_control(entry)
+
+                if inc_package_release:
+                    logger.debug(u'Check existing versions and increment it')
+                    older_packages = self.is_available(entry.package)
+                    if (older_packages and entry<=older_packages[-1]):
+                        entry.version = older_packages[-1].version
+                        entry.inc_build()
+                        inc_done = True
+                        logger.warning(u'Older package with same name exists, incrementing packaging version to %s' % (entry.version,))
+
+                # save control file
+                entry.save_control_to_wapt(directoryname)
+
+            # check version syntax
+            parse_major_minor_patch_build(entry.version)
+
+            # check architecture
+            if not entry.architecture in ArchitecturesList:
+                raise Exception(u'Architecture should one of %s' % (ArchitecturesList,))
+
+            # increment inconditionally the package buuld nr.
+            if not inc_done and inc_package_release:
+                entry.inc_build()
+
+            if include_signer:
+                if not callback:
+                    callback = self.key_passwd_callback
+                else:
+                    self.key_passwd_callback = callback
+
+                # use cached key file if not provided
+                # the password will be retrieved by the self.key_passwd_callback
+                if not private_key:
+                    private_key = self.private_key
+                    key = self.private_key_cache
+                else:
+                    # use provided key filename, use provided callback.
+                    key = SSLPrivateKey(private_key,callback)
+
+                # find proper certificate
+                for fn in self.public_certs:
+                    crt = SSLCertificate(fn)
+                    if crt.match_key(key):
+                        break
+                    else:
+                        crt = None
+                if not crt:
+                    raise Exception('No matching certificate found for private key %s'%self.private_key)
+                entry.sign_control(key,crt)
+                logger.info('Signer: %s'%entry.signer)
+                logger.info('Signer fingerprint: %s'%entry.signer_fingerprint)
+
+            if inc_package_release or include_signer:
+                entry.save_control_to_wapt(directoryname)
+
+            entry.filename = entry.make_package_filename()
+            logger.debug(u'Control data : \n%s' % entry.ascontrol())
+            if target_directory is None:
+                target_directory = os.path.abspath(os.path.join( directoryname,'..'))
+
+            if not os.path.isdir(target_directory):
+                raise Exception('Bad target directory %s for package build' % target_directory)
+
+            result_filename = os.path.abspath(os.path.join(target_directory,entry.filename))
+            if os.path.isfile(result_filename):
+                logger.info('Target package already exists, removing %s' % result_filename)
+                os.unlink(result_filename)
+
+            entry.localpath = target_directory
+
+            allfiles = create_recursive_zip(
+                zipfn = result_filename,
+                source_root = directoryname,
+                target_root = '' ,
+                excludes=excludes)
+            return {'filename':result_filename,'files':allfiles,'package':entry}
+
+        finally:
+            if 'setup' in dir():
+                setup_name = setup.__name__
+                del setup
+                if setup_name in sys.modules:
+                    del sys.modules[setup_name]
+            sys.path = oldpath
+            logger.debug(u'  Change current directory to %s' % previous_cwd)
+            os.chdir(previous_cwd)
+
+
+
+class WaptPackage(PackageEntry):
+    """Built Wapt package zip file"""
+    def __init__(self,package_filename):
+        PackageEntry.__init__(self)
+        self.package_filename = package_filename
+
+
 
 def extract_iconpng_from_wapt(fname):
     """Return the content of WAPT/icon.png if it exists, a unknown.png file content if not
@@ -1068,90 +1241,6 @@ class WaptLocalRepo(WaptBaseRepo):
             return self._packages_date
         else:
             return None
-
-
-def default_http_headers():
-    return {
-        'cache-control':'no-cache',
-        'pragma':'no-cache',
-        'user-agent':'wapt/{}'.format(__version__),
-        }
-
-# todo : remove from setuphelpers...
-def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False):
-    r"""Copy the contents of a file from a given URL to a local file.
-    >>> respath = wget('http://wapt.tranquil.it/wapt/tis-firefox_28.0.0-1_all.wapt','c:\\tmp\\test.wapt',proxies={'http':'http://proxy:3128'})
-    ???
-    >>> os.stat(respath).st_size>10000
-    True
-    >>> respath = wget('http://localhost:8088/runstatus','c:\\tmp\\test.json')
-    ???
-    """
-    start_time = time.time()
-    last_time_display = 0.0
-    last_downloaded = 0
-
-    def reporthook(received,total):
-        total = float(total)
-        if total>1 and received>1:
-            # print only every second or at end
-            if (time.time()-start_time>1) and ((time.time()-last_time_display>=1) or (received>=total)):
-                speed = received /(1024.0 * (time.time()-start_time))
-                if printhook:
-                    printhook(received,total,speed,url)
-                else:
-                    try:
-                        if received == 0:
-                            print(u"Downloading %s (%.1f Mb)" % (url,int(total)/1024/1024))
-                        elif received>=total:
-                            print(u"  -> download finished (%.0f Kb/s)" % (total /(1024.0*(time.time()+.001-start_time))))
-                        else:
-                            print(u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed ))
-                    except:
-                        return False
-                return True
-            else:
-                return False
-
-    if os.path.isdir(target):
-        target = os.path.join(target,'')
-
-    (dir,filename) = os.path.split(target)
-    if not filename:
-        filename = url.split('/')[-1]
-    if not dir:
-        dir = os.getcwd()
-
-    if not os.path.isdir(dir):
-        os.makedirs(dir)
-
-    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout,verify=verify_cert,headers=default_http_headers())
-
-    total_bytes = int(httpreq.headers['content-length'])
-    # 1Mb max, 1kb min
-    chunk_size = min([1024*1024,max([total_bytes/100,2048])])
-
-    cnt = 0
-    reporthook(last_downloaded,total_bytes)
-
-    with open(os.path.join(dir,filename),'wb') as output_file:
-        last_time_display = time.time()
-        last_downloaded = 0
-        if httpreq.ok:
-            for chunk in httpreq.iter_content(chunk_size=chunk_size):
-                output_file.write(chunk)
-                if download_timeout is not None and (time.time()-start_time>download_timeout):
-                    raise requests.Timeout(r'Download of %s takes more than the requested %ss'%(url,download_timeout))
-                if reporthook(cnt*len(chunk),total_bytes):
-                    last_time_display = time.time()
-                last_downloaded += len(chunk)
-                cnt +=1
-            if reporthook(last_downloaded,total_bytes):
-                last_time_display = time.time()
-        else:
-            httpreq.raise_for_status()
-
-    return os.path.join(dir,filename)
 
 
 class WaptRemoteRepo(WaptBaseRepo):

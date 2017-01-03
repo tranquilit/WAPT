@@ -21,7 +21,7 @@
 # -----------------------------------------------------------------------
 from __future__ import print_function
 from __future__ import absolute_import
-__version__ = "1.3.9"
+__version__ = "1.3.10"
 
 import time
 import sys

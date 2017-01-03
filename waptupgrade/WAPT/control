@@ -1,14 +1,20 @@
-package      : tis-waptupgrade
-version      : 1.3.9-0
-architecture : all
-section      : base
-priority     : optional
-maintainer   : Hubert TOUVET
-description  : Upgrades main Wapt client files
+package           : tis-waptupgrade
+version           : 1.3.9.3-1499
+architecture      : all
+section           : base
+priority          : optional
+maintainer        : Hubert TOUVET
+description       : Upgrades main Wapt client files
  wapt-get.exe, wapt-get.py, common.py, waptpackage.py, setuphelpers.py
  wapttray.exe
  waptservice files
  waptdevutils.py
-depends      : 
-conflicts    : 
-sources      : https://srvdev/sources/tis-waptupgrade-wapt/trunk
+sources           : https://srvdev/sources/tis-waptupgrade-wapt/trunk
+signer            : Tranquil IT Systems
+signer_fingerprint: AF476B94F584B0AF7C1DD2AADA333AC736447AFD
+signature         : 0LYCnFCQsxeSRt3zrW+GH9UojMO3TG4OkgwSTJgNK5k/VWMge/Dg5BozhipbxUP0RldN/U2DxxMc
+ GQL+dwgxEuS5BM9qAXu8HDqu4IzphTG5xXFnL3gbqzbXDw6/JUO9l1VPol7Mw0PB/U0sSuAU9Vg7
+ gv9hXvJiZKVmH12nI6KyapNn+VL7UycDcLpgQnhKFETZ4ARunxyP3HkIJW2r6J5i/Bqy3k5Kx3dO
+ +eb4DPuK0HZSleKAaLU9leMDa70ImvaI645KhuR9e8/xyO0M9Yuo2k2kU/EzHd/MHIdzwz/0p4Lg
+ 00LfOB6Pv4v1BCyrKnATO6ioVAW+WO6cL+JE8w==
+signature_date    : 20170102-160318

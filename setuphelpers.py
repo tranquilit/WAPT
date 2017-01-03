@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.9"
+__version__ = "1.3.10"
 
 __all__ = \
 ['EWaptSetupException',
