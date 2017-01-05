@@ -1281,12 +1281,12 @@ function CreateSelfSignedCert(orgname,
         email:Utf8String
     ):Utf8String;
 var
-  opensslbin,opensslcfg,opensslcfg_fn,destpem,destcrt,destp12 : Utf8String;
+  opensslbin,opensslcfg,opensslcfg_fn,destpem,destcrt,destp12 : AnsiString;
   params : ISuperObject;
 begin
-    destpem := AppendPathDelim(destdir)+orgname+'.pem';
-    destcrt := AppendPathDelim(destdir)+orgname+'.crt';
-    destp12 := AppendPathDelim(destdir)+orgname+'.p12';
+    destpem := Utf8ToAnsi(AppendPathDelim(destdir)+orgname+'.pem');
+    destcrt := Utf8ToAnsi(AppendPathDelim(destdir)+orgname+'.crt');
+    destp12 := Utf8ToAnsi(AppendPathDelim(destdir)+orgname+'.p12');
     if not DirectoryExists(destdir) then
         mkdir(destdir);
     params := TSuperObject.Create;
@@ -1300,15 +1300,15 @@ begin
     opensslbin :=  AppendPathDelim(wapt_base_dir)+'lib\site-packages\M2Crypto\openssl.exe';
     opensslcfg :=  pyformat(FileToString(AppendPathDelim(wapt_base_dir) + 'templates\openssl_template.cfg'),params);
     opensslcfg_fn := AppendPathDelim(destdir)+'openssl.cfg';
-    StringToFile(opensslcfg_fn,opensslcfg);
+    StringToFile(opensslcfg_fn,Utf8ToAnsi(opensslcfg));
     try
-      SetEnvironmentVariableW(PWideChar('OPENSSL_CONF'),PWideChar(opensslcfg_fn));
+      SetEnvironmentVariable('OPENSSL_CONF', PChar(opensslcfg_fn));
       if ExecuteProcess(opensslbin,'req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout "'+destpem+'" -out "'+destcrt+'"',[]) <> 0 then
         result :=''
       else
-        result := destpem;
+        result := AnsiToUtf8(destpem);
       // create a .pfx .p12 for ms signtool
-      if ExecuteProcess(opensslbin,'pkcs12 -export -inkey '+destpem+' -in '+destcrt+' -out '+destp12+' -name "'+commonname+'" -passout pass:',[]) <> 0 then
+      if ExecuteProcess(opensslbin,'pkcs12 -export -inkey "'+destpem+'" -in "'+destcrt+'" -out "'+destp12+'" -name "'+ commonname+'" -passout pass:',[]) <> 0 then
         raise Exception.Create('Unable to create p12 file for signtool');
     finally
       SysUtils.DeleteFile(opensslcfg_fn);
