@@ -1,0 +1,145 @@
+html,
+body {
+    background-color: #f8f8f8;
+}
+
+footer {
+    background-color: #222222;
+    bottom: 0;
+    display: block;
+}
+
+.banner {
+    background-color: #f8f8f8;
+    vertical-align: center;
+    text-align: center;
+}
+
+#logo {
+    transform: translateY(15%);
+}
+
+#btn-contact {
+    transform: translateY(70%);
+}
+
+.navbar {
+    background-color: #222222;
+}
+
+.navbar .navbar-nav>li>a {
+    text-transform: uppercase;
+    color: white;
+    background-color: #222222;
+}
+
+.navbar .navbar-nav>li>a:hover {
+    color: #fec503;
+    background-color: #3B3B3B;
+}
+
+.navbar .navbar-nav>li>a:focus {
+    color: #fec503;
+    background-color: #222222;
+}
+
+.navbar .navbar-nav>li>a:active {
+    color: #fec503;
+    background-color: #222222;
+}
+
+.dropdown-menu {
+    background-color: #222222;
+}
+
+.dropdown-menu>li>a:hover {
+    background-color: #222222;
+    color: #fec503;
+}
+
+.dropdown-menu li a {
+    color: white;
+}
+
+.navbar-default .navbar-nav > .open > a:focus{
+    background-color: #3B3B3B;
+    color: #fec503;
+}
+
+.contact {
+    background-color: #222222;
+    color: white;
+}
+
+.contact p {
+    margin-bottom: 0px;
+}
+
+.copyright {
+    margin: 5px 0px 5px;
+}
+
+.text-primary {
+    color: #f3b144;
+}
+
+.homepage {
+    min-height: calc( 100vh - 302px);
+}
+
+@media screen and (max-width: 991px) {
+        .banner {
+        margin-top: 52px;
+    }
+    .homepage {
+        margin-top: 52px;
+    }
+    .navbar {
+        position: fixed;
+        top: 0px;
+        width: 100%;
+        z-index: 10;
+    }
+    .navbar-header {
+        float: none;
+    }
+    .navbar-toggle {
+        display: block;
+    }
+    .navbar-collapse {
+        border-top: 1px solid transparent;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .navbar-collapse.collapse {
+        display: none!important;
+    }
+    .navbar-nav {
+        float: none!important;
+        margin: 7.5px -15px;
+    }
+    .navbar-nav>li {
+        float: none;
+    }
+    .navbar-nav>li>a {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    .collapse.in{
+        display:block !important;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .navbar {
+        position: fixed;
+        top: 0px;
+        width: 100%;
+        z-index: 10;
+    }
+    .dropdown-menu {
+        text-align: center;
+    }
+    .container {
+        text-align: center;
+    }
+}
