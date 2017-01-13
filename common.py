@@ -2867,7 +2867,7 @@ class Wapt(object):
         try:
             return self.run(*cmd,**args)
         except Exception as e:
-            print(u'Warning : %s' % e)
+            print(u'Warning : %s' % ensure_unicode(e))
             return ''
 
     def check_control_signature(self,package_entry):
