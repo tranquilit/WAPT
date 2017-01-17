@@ -85,6 +85,7 @@ __all__ = \
  'get_appath',
  'get_computername',
  'get_current_user',
+ 'get_default_gateways',
  'get_domain_fromregistry',
  'get_file_properties',
  'get_hostname',
@@ -1623,8 +1624,8 @@ def registry_deletekey(root,path,keyname,force=False):
         rootpath = makeregpath(root,path)
         if len(rootpath.split(u'\\')) <= 1 and not force:
             raise Exception(u'The registry path %s is too short...too dangerous to remove it'%rootpath)
-        registry.delete(rootpath,keyname)
-        root = registry.Registry(rootpath)
+        registry.delete(rootpath,keyname,access = _winreg.KEY_READ| _winreg.KEY_WOW64_64KEY | _winreg.KEY_WRITE)
+        root = registry.Registry(rootpath,access = _winreg.KEY_READ| _winreg.KEY_WOW64_64KEY | _winreg.KEY_WRITE)
         result = not keyname in [os.path.basename(k.as_string()) for k in root.keys()]
     except (WindowsError,exc.x_not_found) as e:
         logger.warning(u'registry_deletekey:%s'%ensure_unicode(e))
@@ -2548,22 +2549,6 @@ def wmi_info_basic():
     result = {u'System_Information':
             wmi_as_struct(wmi.WMI().Win32_ComputerSystemProduct.query(fields=['UUID','IdentifyingNumber','Name','Vendor']))
             }
-    """
-    res = run('echo "" | wmic PATH Win32_ComputerSystemProduct GET UUID,IdentifyingNumber,Name,Vendor /VALUE')
-    wmiout = {}
-    for line in res.splitlines():
-        if line.strip():
-            (key,value) = line.strip().split('=',1)
-            wmiout[key] = value
-    result = {
-            u'System_Information':{
-                u'UUID':wmiout[u'UUID'],
-                u'Manufacturer':wmiout[u'Vendor'],
-                u'Product_Name':wmiout[u'Name'],
-                u'Serial_Number':wmiout[u'IdentifyingNumber'],
-                }
-            }
-    """
     return result
 
 def critical_system_pending_updates():
