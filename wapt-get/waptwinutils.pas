@@ -20,7 +20,7 @@ unit waptwinutils;
 #
 # -----------------------------------------------------------------------
 }
-{$mode delphiunicode}
+{.$mode delphiunicode}
 
 interface
 

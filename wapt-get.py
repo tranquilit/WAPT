@@ -320,7 +320,7 @@ def main():
             mywapt.dbpath = r':memory:'
             mywapt.use_hostpackages = False
             logger.info('Updating in-memory packages index from repositories...')
-            update_result = mywapt.update(register=False)
+            update_result = mywapt.update(register=False,filter_on_host_cap=False)
             logger.info('Configuration file : %s' % config_file)
             logger.info('  waptserver     : %s' % mywapt.waptserver)
             logger.info('  repositories   : %s' % mywapt.repositories)
@@ -431,7 +431,7 @@ def main():
                 else:
                     if options.update_packages:
                         print(u"Update packages list")
-                        mywapt.update()
+                        mywapt.update(register=False,filter_on_host_cap=False)
                     for packagename in args[1:]:
                         result.extend(mywapt.waptdb.packages_matching(packagename))
 

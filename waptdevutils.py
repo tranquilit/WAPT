@@ -202,7 +202,7 @@ def get_packages_filenames(waptconfigfile,packages_names):
     else:
         wapt.repositories[0].proxies = {'http':None,'https':None}
     # be sure to be up to date
-    wapt.update(register=False)
+    wapt.update(register=False, filter_on_host_cap=False)
     packages_names = ensure_list(packages_names)
     for name in packages_names:
         entries = wapt.is_available(name)
@@ -374,7 +374,7 @@ def add_ads_groups(waptconfigfile,hosts_list,wapt_server_user,wapt_server_passwd
     wapt.dbpath=':memory:'
 
     # get current packages status from repositories
-    wapt.update()
+    wapt.update(register=False,filter_on_host_cap=False)
 
     hosts_list = ensure_list(hosts_list)
 
@@ -430,7 +430,7 @@ def create_waptwua_package(waptconfigfile,wuagroup='default',wapt_server_user=No
     wapt.dbpath = r':memory:'
     wapt.use_hostpackages = False
     # be sure to be up to date
-    wapt.update(register=False)
+    wapt.update(register=False,filter_on_host_cap=False)
     packagename = '{}-waptwua-{}'.format(wapt.config.get('global','default_package_prefix'),wuagroup)
     """
     packages = wapt.is_available(packagename)
