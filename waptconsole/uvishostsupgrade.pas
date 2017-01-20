@@ -90,7 +90,7 @@ begin
     ProgressGrid.InvalidateFordata(host);
     Application.ProcessMessages;
     try
-      res := WAPTServerJsonGet('%s?uuid=%s&notify_server=%i',[action,host.S['uuid'],integer(notifyServer)]);
+      res := WAPTServerJsonGet('%S?uuid=%S&notify_server=%D',[action,host.S['uuid'],integer(notifyServer)]);
       // new behaviour
       if (res<>Nil) and res.AsObject.Exists('success') then
       begin
@@ -122,6 +122,7 @@ begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
   ScaleImageList(ImageList1,96);
   Action := 'upgrade_host';
+  notifyServer:=True;
 end;
 
 procedure TVisHostsUpgrade.ProgressGridDragAllowed(Sender: TBaseVirtualTree;

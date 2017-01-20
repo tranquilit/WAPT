@@ -934,7 +934,7 @@ var
   sores:ISuperObject;
 begin
   try
-    sores := WAPTServerJsonGet('api/v1/hosts?columns=dmi&uuid=%s',[uuid]);
+    sores := WAPTServerJsonGet('api/v1/hosts?columns=dmi&uuid=%S',[uuid]);
     if (sores<>nil) and sores.B['success'] then
     begin
       if sores['result'].AsArray.Length>0 then
@@ -964,7 +964,7 @@ begin
       packages := RowSO['packages'];
       if (packages = nil) or (packages.AsArray = nil) then
       try
-        sores := WAPTServerJsonGet('api/v1/host_data?field=packages&uuid=%s',[currhost]);
+        sores := WAPTServerJsonGet('api/v1/host_data?field=packages&uuid=%S',[currhost]);
         if sores.B['success'] then
         begin
           RowSO['packages'] := sores['result'];
@@ -1023,7 +1023,7 @@ begin
       softwares := RowSO['softwares'];
       if (softwares = nil) or (softwares.AsArray = nil) then
       try
-        sores := WAPTServerJsonGet('api/v1/host_data?field=softwares&uuid=%s',[currhost]);
+        sores := WAPTServerJsonGet('api/v1/host_data?field=softwares&uuid=%S',[currhost]);
         if sores.B['success'] then
           softwares := sores['result']
         else
@@ -1040,7 +1040,7 @@ begin
       waptwua := RowSO['waptwua'];
       if (waptwua = nil) or (waptwua.AsArray = nil) then
       try
-        sores := WAPTServerJsonGet('api/v1/host_data?field=waptwua&uuid=%s',[currhost]);
+        sores := WAPTServerJsonGet('api/v1/host_data?field=waptwua&uuid=%S',[currhost]);
         if sores.B['success'] then
           waptwua := sores['result']
         else
@@ -1065,7 +1065,7 @@ begin
     begin
       try
         try
-          sores := WAPTServerJsonGet('api/v1/host_tasks_status?uuid=%s', [currhost]);
+          sores := WAPTServerJsonGet('api/v1/host_tasks_status?uuid=%S', [currhost]);
           if sores.B['success'] then
           begin
             tasksresult := sores['result'];
@@ -1199,7 +1199,7 @@ begin
     ids.AsArray.Add(node['uuid']);
 
   args['ids'] := ids;
-  res := WAPTServerJsonGet('api/v2/wsusscan2_history?uuid=%s',[Join(',',ids)],'DELETE');
+  res := WAPTServerJsonGet('api/v2/wsusscan2_history?uuid=%S',[Join(',',ids)],'DELETE');
   if res.B['success'] then
     ActWSUSRefreshCabHistory.Execute
   else
@@ -1630,7 +1630,7 @@ begin
   begin
     currhost := GridHosts.FocusedRow.S['uuid'];
 
-    sores := WAPTServerJsonGet('api/v1/host_cancel_task?uuid=%s', [currhost]);
+    sores := WAPTServerJsonGet('api/v1/host_cancel_task?uuid=%S', [currhost]);
     if sores.B['success'] then
     begin
       taskresult := sores['result'];
@@ -1792,7 +1792,7 @@ begin
           Inc(i);
           group := GridPackages.GetCellStrValue(N, 'filename');
           ProgressTitle(format(rsDeletingElement, [group]));
-          res := WAPTServerJsonGet('delete_package/%s',[group]);
+          res := WAPTServerJsonGet('delete_package/%S',[group]);
           if not ObjectIsNull(res['error']) then
             raise Exception.Create(res.S['error']);
           N := GridGroups.GetNextSelected(N);
@@ -1836,7 +1836,7 @@ begin
           Inc(i);
           package := GridPackages.GetCellStrValue(N, 'filename');
           ProgressTitle(format(rsDeletingElement, [package]));
-          res := WAPTServerJsonGet('delete_package/%s',[package]);
+          res := WAPTServerJsonGet('delete_package/%S',[package]);
           if not ObjectIsNull(res['error']) then
             raise Exception.Create(res.S['error']);
           N := GridPackages.GetNextSelected(N);
@@ -1983,7 +1983,7 @@ begin
         Exit;
     end;
   end;
-  res := WAPTServerJsonGet('api/v2/download_wsusscan?force=%d',[forced]);
+  res := WAPTServerJsonGet('api/v2/download_wsusscan?force=%D',[forced]);
   ActWSUSRefreshCabHistory.Execute;
   {skipped := res.B['result.skipped'];
   if skipped then
