@@ -1057,6 +1057,8 @@ def trigger_upgrade():
     """Proxy the wapt upgrade action to the client"""
     try:
         uuid = request.args['uuid']
+        notify_user = request.args.get('notify_user', 0)
+        notify_server = request.args.get('notify_server', 1)
         host_data = hosts().find_one(
             {"uuid": uuid}, fields={'uuid': 1, 'wapt': 1, 'host.connected_ips': 1})
         listening_address = get_ip_port(host_data)
@@ -1069,8 +1071,10 @@ def trigger_upgrade():
             args = {}
             args.update(listening_address)
             args['uuid'] = uuid
+            args['notify_user'] = notify_user
+            args['notify_server'] = notify_server
             client_result = requests.get(
-                "%(protocol)s://%(address)s:%(port)d/upgrade.json?uuid=%(uuid)s" %
+                "%(protocol)s://%(address)s:%(port)d/upgrade.json?notify_user=%(notify_user)s&notify_server=%(notify_server)s&uuid=%(uuid)s" %
                 args,
                 proxies={
                     'http': None,
@@ -1123,9 +1127,10 @@ def trigger_update():
             args = {}
             args.update(listening_address)
             args['notify_user'] = notify_user
+            args['notify_server'] = notify_server
             args['uuid'] = uuid
             client_result = requests.get(
-                "%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s&notify_server=1&uuid=%(uuid)s" %
+                "%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s&notify_server=%(notify_server)s&uuid=%(uuid)s" %
                 args,
                 proxies={
                     'http': None,
