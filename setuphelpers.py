@@ -228,6 +228,12 @@ __all__ = \
 
 import os
 import sys
+
+# be sure to be able to load win32apu.pyd dll
+dlls = [os.path.join(os.path.dirname(__file__),dllloc) for dllloc in ['DLLs',r'lib\site-packages\win32','']]
+dlls.append(os.environ['PATH'])
+os.environ['PATH'] = os.pathsep.join(dlls)
+
 import logging
 import tempfile
 import shutil
@@ -237,6 +243,7 @@ import _subprocess
 import subprocess
 from subprocess import Popen, PIPE
 import psutil
+
 
 import win32api
 import win32net
@@ -3537,6 +3544,37 @@ def need_install(key,min_version=None,force=False,get_version=None):
                 return False
         return True
 
+def installed_soft_matching(key,min_version=None,get_version=None):
+    """Return soft entry if the software with key can be found in uninstall registry
+        and the registered version is equal or greater than min_version
+
+      Return None if no installed software matches
+
+    Args:
+        key (str) : uninstall key
+        min_version (str) : minimum version or None if don't check verion (like when key is specific for each soft version)
+        get_version (callable) : optional func to get installed software version from one installed_softwares item
+            if not provided, version is taken from 'version' attribute in uninstall registry
+    Returns:
+        soft entry or None
+
+    """
+    if key is None:
+        return None
+    else:
+        current = installed_softwares(uninstallkey=key)
+        for soft in current:
+            if min_version is None:
+                return soft
+            if get_version is not None:
+                installed_version = get_version(soft)
+            else:
+                installed_version = soft['version']
+            if Version(min_version) <= installed_version:
+                return soft
+        return None
+
+
 def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=[0,1603,3010],timeout=300,properties={},get_version=None):
     """Install silently the supplied msi file, and add the uninstall key to
     global uninstall key list
@@ -3574,7 +3612,9 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
     if min_version is None:
         min_version = getproductprops(msi)['version']
 
-    if need_install(key,min_version=min_version or None,force=force,get_version=get_version):
+    previous_matching_installed = installed_soft_matching(key,min_version=min_version or None,get_version=get_version)
+
+    if force or not previous_matching_installed:
         if killbefore:
             killalltasks(killbefore)
         props = ' '.join(["%s=%s" % (k,v) for (k,v) in properties.iteritems()])
@@ -3584,8 +3624,9 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
         if key and min_version and need_install(key,min_version=min_version or None,force=False):
             error('MSI %s has been installed and the uninstall key %s found but version is not good' % (msi,key))
     else:
-        print('MSI %s already installed. Skipping msiexec' % msi)
-    if key:
+        print('MSI %s already installed (Key found: %s, Version %s. Skipping msiexec' % (msi,previous_matching_installed['key'],key['version']))
+
+    if key and (previous_matching_installed is None or force):
         if 'uninstallkey' in caller_globals and not key in caller_globals['uninstallkey']:
             caller_globals['uninstallkey'].append(key)
 
