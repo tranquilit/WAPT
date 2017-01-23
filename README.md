@@ -108,6 +108,7 @@ Ouvrir successivement les paquets suivants, et les compiler.
 * pltis_python4delphi.lpk (installation dans l'IDE)
 * pltis_delphizmq.lpk
 * thtmlport\package\htmlcomp.lpk
+* WAPT\apt-get\pltis_wapt.plk
 
 Compilation exécutables 
 ----------------
