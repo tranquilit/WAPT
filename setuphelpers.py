@@ -228,6 +228,12 @@ __all__ = \
 
 import os
 import sys
+
+# be sure to be able to load win32apu.pyd dll
+dlls = [os.path.join(os.path.dirname(__file__),dllloc) for dllloc in ['DLLs',r'lib\site-packages\win32','']]
+dlls.append(os.environ['PATH'])
+os.environ['PATH'] = os.pathsep.join(dlls)
+
 import logging
 import tempfile
 import shutil
