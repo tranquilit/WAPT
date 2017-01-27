@@ -1903,6 +1903,9 @@ class WaptRepo(WaptRemoteRepo):
                             if package.architecture == 'x64' and not setuphelpers.iswin64():
                                 logger.debug('Discarding package %s, requires OS with x64 architecture' % (package.asrequirement(),))
                                 continue
+                            if package.architecture == 'x86' and setuphelpers.iswin64():
+                                logger.debug('Discarding package %s, target OS with x86-32 architecture' % (package.asrequirement(),))
+                                continue
 
                         try:
                             package.check_control_signature(public_certs)
