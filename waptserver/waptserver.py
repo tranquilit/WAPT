@@ -43,8 +43,10 @@ import time
 import json
 import hashlib
 from passlib.hash import sha512_crypt, bcrypt
-import pymongo
-from pymongo import MongoClient
+
+from peewee import *
+from waptserver_model import WaptHosts,init_db,wapt_db
+
 from werkzeug.utils import secure_filename
 from functools import wraps
 import logging
@@ -155,14 +157,8 @@ def get_db():
     """
     if not hasattr(g, 'db'):
         try:
-            logger.debug(
-                'Connecting to mongo db %s:%s' %
-                (conf['mongodb_ip'], int(
-                    conf['mongodb_port'])))
-            mongo_client = MongoClient(
-                conf['mongodb_ip'], int(
-                    conf['mongodb_port']))
-            g.mongo_client = mongo_client
+            logger.debug('Connecting to wapt db %s:%s')
+            g.db_connection = wap
             g.db = mongo_client.wapt
         except Exception as e:
             raise Exception(
@@ -1601,6 +1597,7 @@ def get_hosts():
             try:
                 if 'update_status' in host:
                     us = host['update_status']
+
                     if us.get('errors', []):
                         host['host_status'] = 'ERROR'
                     elif us.get('upgrades', []):
