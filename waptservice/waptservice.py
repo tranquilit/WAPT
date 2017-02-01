@@ -48,7 +48,7 @@ from rocket import Rocket
 
 # flask
 from flask import request, Flask,Response, send_from_directory, send_file, session, g, redirect, url_for, abort, render_template, flash, stream_with_context
-from flask.ext.paginate import Pagination
+from flask_paginate import Pagination
 import jinja2
 from werkzeug import secure_filename
 from werkzeug.utils import html
@@ -105,7 +105,7 @@ from gettext import gettext
 # i18n
 from flask_babel import Babel
 try:
-    from flask.ext.babel import gettext
+    from flask_babel import gettext
 except ImportError:
     gettext = (lambda s:s)
 _ = gettext
