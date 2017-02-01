@@ -86,7 +86,9 @@ class ContextTerminated(ZMQError):
     
     .. versionadded:: 13.0
     """
-    pass
+    def __init__(self, errno='ignored', msg='ignored'):
+        from zmq import ETERM
+        super(ContextTerminated, self).__init__(ETERM)
 
 
 class Again(ZMQError):
@@ -94,7 +96,11 @@ class Again(ZMQError):
     
     .. versionadded:: 13.0
     """
-    pass
+
+    def __init__(self, errno='ignored', msg='ignored'):
+        from zmq import EAGAIN
+        super(Again, self).__init__(EAGAIN)
+
 
 try:
     InterruptedError
@@ -109,7 +115,10 @@ class InterruptedSystemCall(ZMQError, InterruptedError):
     
     .. versionadded:: 14.7
     """
-    
+
+    def __init__(self, errno='ignored', msg='ignored'):
+        super(InterruptedSystemCall, self).__init__(EINTR)
+
     def __str__(self):
         s = super(InterruptedSystemCall, self).__str__()
         return s + ": This call should have been retried. Please report this to pyzmq."
@@ -120,7 +129,7 @@ def _check_rc(rc, errno=None):
     
     and raising the appropriate Exception class
     """
-    if rc < 0:
+    if rc == -1:
         if errno is None:
             from zmq.backend import zmq_errno
             errno = zmq_errno()

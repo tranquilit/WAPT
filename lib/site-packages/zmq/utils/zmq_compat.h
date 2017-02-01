@@ -35,6 +35,11 @@
 
 #if ZMQ_VERSION_MAJOR >= 4
 // nothing to remove
+    #if ZMQ_VERSION_MINOR == 0
+        // zmq 4.1 deprecates zmq_utils.h
+        // we only get zmq_curve_keypair from it
+        #include "zmq_utils.h"
+    #endif
 #else
     #define zmq_curve_keypair(z85_public_key, z85_secret_key) _missing
 #endif
@@ -78,3 +83,4 @@
     #define zmq_socket_monitor(s, addr, flags) _missing
 
 #endif
+

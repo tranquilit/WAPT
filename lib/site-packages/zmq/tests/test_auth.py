@@ -16,6 +16,7 @@ from zmq.auth.thread import ThreadAuthenticator
 from zmq.eventloop import ioloop, zmqstream
 from zmq.tests import (BaseZMQTestCase, SkipTest)
 
+
 class BaseAuthTestCase(BaseZMQTestCase):
     def setUp(self):
         if zmq.zmq_version_info() < (4,0):
@@ -23,7 +24,7 @@ class BaseAuthTestCase(BaseZMQTestCase):
         try:
             zmq.curve_keypair()
         except zmq.ZMQError:
-            raise SkipTest("security requires libzmq to be linked against libsodium")
+            raise SkipTest("security requires libzmq to have curve support")
         super(BaseAuthTestCase, self).setUp()
         # enable debug logging while we run tests
         logging.getLogger('zmq.auth').setLevel(logging.DEBUG)
@@ -100,7 +101,8 @@ class TestThreadAuthentication(BaseAuthTestCase):
         port = server.bind_to_random_port(iface)
         client.connect("%s:%i" % (iface, port))
         msg = [b"Hello World"]
-        server.send_multipart(msg)
+        if server.poll(1000, zmq.POLLOUT):
+            server.send_multipart(msg)
         if client.poll(1000):
             rcvd_msg = client.recv_multipart()
             self.assertEqual(rcvd_msg, msg)
@@ -113,6 +115,8 @@ class TestThreadAuthentication(BaseAuthTestCase):
         # go through our authentication infrastructure at all.
         self.auth.stop()
         self.auth = None
+        # use a new context, so ZAP isn't inherited
+        self.context = self.Context()
         
         server = self.socket(zmq.PUSH)
         client = self.socket(zmq.PULL)
@@ -241,20 +245,20 @@ def with_ioloop(method, expect_success=True):
     """decorator for running tests with an IOLoop"""
     def test_method(self):
         r = method(self)
-        
+
         loop = self.io_loop
         if expect_success:
             self.pullstream.on_recv(self.on_message_succeed)
         else:
             self.pullstream.on_recv(self.on_message_fail)
         
-        t = loop.time()
-        loop.add_callback(self.attempt_connection)
-        loop.add_callback(self.send_msg)
+        loop.call_later(1, self.attempt_connection)
+        loop.call_later(1.2, self.send_msg)
+        
         if expect_success:
-            loop.add_timeout(t + 1, self.on_test_timeout_fail)
+            loop.call_later(2, self.on_test_timeout_fail)
         else:
-            loop.add_timeout(t + 1, self.on_test_timeout_succeed)
+            loop.call_later(2, self.on_test_timeout_succeed)
         
         loop.start()
         if self.fail_msg:
