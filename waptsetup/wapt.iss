@@ -6,6 +6,7 @@
 [Files]
 ; local python interpreter
 Source: "..\waptpython.exe"; DestDir: "{app}";
+Source: "..\waptpythonw.exe"; DestDir: "{app}";
 Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
 Source: "..\libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdirs  ; Excludes: "*.pyc,test,*.~*,pydoc_data,tests,demos,testsuite,doc,samples,pil" 
 Source: "..\Microsoft.VC90.CRT.manifest"; DestDir: "{app}";
