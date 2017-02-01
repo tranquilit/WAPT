@@ -4289,7 +4289,12 @@ class Wapt(object):
             # try loading x509
             logger.debug('Using identity : %s' % cert.cn)
         except:
-            cert = key.matching_certs(os.path.dirname(key.private_key_filename))[-1]
+            certs = sorted(c for c in key.matching_certs(os.path.dirname(key.private_key_filename)))
+            if not certs:
+                raise Exception('Can not find a valid certificate matching the key %s in same PEM file or in directory %s' % (private_key,os.path.dirname(key.private_key_filename)))
+            else:
+                # use most recent
+                cert = certs[-1]
         pe =  PackageEntry().load_control_from_wapt(zip_or_directoryname)
         return pe.sign_package(key,cert)
 
