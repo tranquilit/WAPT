@@ -2193,12 +2193,13 @@ def uninstall_key_exists(uninstallkey):
     return False
 
 
-def installed_softwares(keywords='',uninstallkey=None):
+def installed_softwares(keywords='',uninstallkey=None,name=None):
     """return list of installed software from registry (both 32bit and 64bit
 
     Args;
         keywords (str or list): string to lookup in key, display_name or publisher fields
         uninstallkey : filter on a specific uninstall key instead of fuzzy search
+        name (str regexp) : filter on a regular expression on software name
 
     Returns
         dict: {'key', 'name', 'version', 'install_date', 'install_location'
@@ -2210,6 +2211,12 @@ def installed_softwares(keywords='',uninstallkey=None):
     ...         print uninstall_cmd(soft['key'])
     ???
     """
+
+    if name is not None:
+        name_re = re.compile(name)
+    else:
+        name_re = None
+
     def check_words(target,words):
         mywords = target.lower()
         result = not words or mywords
@@ -2242,7 +2249,8 @@ def installed_softwares(keywords='',uninstallkey=None):
                     else:
                         system_component = 0
                     if (uninstallkey is None and display_name and check_words(subkey+' '+display_name+' '+publisher,mykeywords)) or\
-                            (uninstallkey is not None and (subkey == uninstallkey)):
+                            (uninstallkey is not None and (subkey == uninstallkey)) or\
+                            (name_re is not None and name_re.match(display_name)):
                         result.append({'key':subkey,
                             'name':display_name,
                             'version':display_version,
@@ -2260,7 +2268,7 @@ def installed_softwares(keywords='',uninstallkey=None):
                         raise
         return result
     result = list_fromkey("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
-    if platform.machine() == 'AMD64':
+    if iswin64():
         result.extend(list_fromkey("Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall"))
     return result
 
