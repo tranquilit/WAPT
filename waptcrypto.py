@@ -195,6 +195,11 @@ class SSLCAChain(object):
 
 class SSLPrivateKey(object):
     def __init__(self,private_key=None,key=None,callback=pwd_callback):
+        """Args:
+            private_key (str) : Filename Path to PEM encoded Private Key
+            key (PKey) : Public/[private]  PKey structure
+            callback (func) : Called to provide password for the key if needed
+        """
         self.private_key_filename = private_key
         if key:
             self.key = key
@@ -207,6 +212,7 @@ class SSLPrivateKey(object):
 
     @property
     def rsa(self):
+        """access to RSA keys"""
         if not self._rsa:
             self._rsa = RSA.load_key(self.private_key_filename,callback=self.pwd_callback)
         return self._rsa
@@ -260,7 +266,12 @@ class SSLPrivateKey(object):
 
 
 class SSLCertificate(object):
+    """Hold a X509 public certificate"""
     def __init__(self,public_cert=None,crt=None,ignore_validity_checks=True):
+        """
+            public_cert (str): Path to X509 encoded certificate
+            crt (
+        """
         self._public_cert_filename = None
         self._crt = None
         self._rsa = None
@@ -293,12 +304,14 @@ class SSLCertificate(object):
 
     @property
     def rsa(self):
+        """Return public RSA keys"""
         if not self._rsa:
             self._rsa = self.crt.get_pubkey().get_rsa()
         return self._rsa
 
     @property
     def key(self):
+        """Return public key"""
         if not self._key:
             self._key = EVP.PKey()
             self._key.assign_rsa(self.rsa)
