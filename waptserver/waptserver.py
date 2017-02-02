@@ -79,9 +79,9 @@ import waptserver_config
 import wakeonlan.wol
 
 # i18n
-from flask.ext.babel import Babel
+from flask_babel import Babel
 try:
-    from flask.ext.babel import gettext
+    from flask_babel import gettext
 except ImportError:
     gettext = (lambda s: s)
 _ = gettext
@@ -827,6 +827,21 @@ def serve_icons(iconfilename):
         r.headers.add_header(
             'content-length', int(os.path.getsize(os.path.join(icons_folder, iconfilename))))
     return r
+
+@app.route('/css/<string:fn>')
+@app.route('/fonts/<string:fn>')
+@app.route('/img/<string:fn>')
+@app.route('/js/<string:fn>')
+def serve_static(fn):
+    """Serve"""
+    rootdir = os.path.join(app.template_folder,request.path.split('/')[1])
+    if fn is not None:
+        fn = secure_filename(fn)
+        r = send_from_directory(rootdir, fn)
+        if 'content-length' not in r.headers:
+            r.headers.add_header(
+                'content-length', int(os.path.getsize(os.path.join(rootdir, fn))))
+        return r
 
 
 @app.route('/wapt-host/<string:input_package_name>')
