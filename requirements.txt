@@ -16,7 +16,7 @@ MarkupSafe==0.23
 packaging==16.8
 passlib==1.7.1
 peewee==2.8.5
-psutil==5.1.0
+psutil==3.4.2
 pymongo==3.4.0
 pyparsing==2.1.10
 python-engineio==1.1.2
