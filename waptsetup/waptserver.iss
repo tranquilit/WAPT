@@ -36,6 +36,7 @@ Source: "..\waptserverpostconf.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\waptdeploy.exe"; DestDir: "{app}\waptserver\repository\wapt\"; Flags: ignoreversion
 ; pymongo
 Source: "..\lib\site-packages\pymongo\*"; DestDir: "{app}\lib\site-packages\pymongo"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.pyc,test,*.~*,*.chm,testsuite,Demos,test,HTML"
+Source: "..\lib\site-packages\bson\*"; DestDir: "{app}\lib\site-packages\bson"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.pyc,test,*.~*,*.chm,testsuite,Demos,test,HTML"
 
 ; Sources for server application
 Source: "waptserver.iss"; DestDir: "{app}\waptsetup";
