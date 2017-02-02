@@ -8,7 +8,7 @@
 Source: "..\waptpython.exe"; DestDir: "{app}";
 Source: "..\waptpythonw.exe"; DestDir: "{app}";
 Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
-Source: "..\libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdirs  ; Excludes: "*.pyc,test,*.~*,pydoc_data,tests,demos,testsuite,doc,samples,pil" 
+Source: "..\libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdirs  ; Excludes: "*.pyc,*.pyo,test,*.~*,pydoc_data,tests,demos,testsuite,doc,samples,pil" 
 Source: "..\Microsoft.VC90.CRT.manifest"; DestDir: "{app}";
 Source: "..\msvcm90.dll"; DestDir: "{app}";
 Source: "..\msvcp90.dll"; DestDir: "{app}";
@@ -20,7 +20,7 @@ Source: "..\pywintypes27.dll"; DestDir: "{app}";
 ;Source: "..\sqlite3.dll"; DestDir: "{app}"; 
 
 ; additional python modules
-Source: "..\lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.pyc,test,*.~*,pymongo,*.chm,testsuite,Demos,test,HTML"
+Source: "..\lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.dist-info,*.pyc,*.pyo,test,*.~*,pymongo,gridfs,bson,*.chm,testsuite,Demos,tests,examples,HTML,pip,lxml,scintilla,idle,pywin32.chm,gevent,engineio,eventlet,ensurepip,idlelib,flask_admin,huey"
 
 ; wapt sources
 Source: "..\waptutils.py"; DestDir: "{app}"; 
