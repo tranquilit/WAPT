@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.10"
+__version__ = "1.3.11"
 
 __all__ = [
     'md5_for_file',
@@ -114,42 +114,6 @@ def make_version(major_minor_patch_build):
     else:
         return p1
 
-def datetime2isodate(adatetime = None):
-    if not adatetime:
-        adatetime = datetime.datetime.now()
-    assert(isinstance(adatetime,datetime.datetime))
-    return adatetime.isoformat()
-
-
-def httpdatetime2isodate(httpdate):
-    """convert a date string as returned in http headers or mail headers to isodate
-
-    >>> import requests
-    >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
-    >>> len(httpdatetime2isodate(last_modified)) == 19
-    True
-    """
-    return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
-
-
-def ensure_list(csv_or_list,ignore_empty_args=True,allow_none = False):
-    """if argument is not a list, return a list from a csv string"""
-    if csv_or_list is None:
-        if allow_none:
-            return None
-        else:
-            return []
-
-    if isinstance(csv_or_list,tuple):
-        return list(csv_or_list)
-    elif not isinstance(csv_or_list,list):
-        if ignore_empty_args:
-            return [s.strip() for s in csv_or_list.split(',') if s.strip() != '']
-        else:
-            return [s.strip() for s in csv_or_list.split(',')]
-    else:
-        return csv_or_list
-
 
 class Version(object):
     """Version object of form 0.0.0
@@ -170,9 +134,9 @@ class Version(object):
             version = ''
         assert isinstance(version,types.ModuleType) or isinstance(version,str) or isinstance(version,unicode) or isinstance(version,Version)
         if isinstance(version,types.ModuleType):
-            self.versionstring = version.__version__
+            self.versionstring =  getattr(version,'__version__',None)
         elif isinstance(version,Version):
-            self.versionstring = version.versionstring
+            self.versionstring = getattr(version,'versionstring',None)
         else:
             self.versionstring = version
         self.members = [ v.strip() for v in self.versionstring.split('.')]
@@ -638,8 +602,7 @@ class PackageEntry(object):
         >>> p.check_control_signature(c)
         """
         if not self.signature:
-            logger.warning('Package control %s on repo %s is not signed... not checking' % (self.asrequirement(),self.repo))
-            return None
+            raise Exception('Package control %s on repo %s is not signed' % (self.asrequirement(),self.repo))
         signed_content = self.signed_content()
         signature_raw = self.signature.decode('base64')
         if not isinstance(public_certs,list):
@@ -715,169 +678,12 @@ class WaptPackageDev(PackageEntry):
 
     def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','*.pyc','src'],
                 target_directory=None):
-        """Build the WAPT package from a directory
-
-        Zip the content of directory. Add a manifest.sha1 file with sha1 hash of
-          the content of each file.
-
-        Args:
-            directoryname (str): source root directory of package to build
-            inc_package_release (boolean): increment the version of package in control file.
-
-        Returns:
-            dict: {'filename':waptfilename,'files':[list of files],'package':PackageEntry}
-        """
-        if not isinstance(directoryname,unicode):
-            directoryname = unicode(directoryname)
-        result_filename = u''
-        if not os.path.isdir(os.path.join(directoryname,'WAPT')):
-            raise Exception('Error building package : There is no WAPT directory in %s' % directoryname)
-        if not os.path.isfile(os.path.join(directoryname,'WAPT','control')):
-            raise Exception('Error building package : There is no control file in WAPT directory')
-        if not os.path.isfile(os.path.join(directoryname,'setup.py')):
-            raise Exception('Error building package : There is no setup.py file in %s' % directoryname)
-        oldpath = sys.path
-        try:
-            previous_cwd = os.getcwd()
-            logger.debug(u'  Change current directory to %s' % directoryname)
-            os.chdir(directoryname)
-            if not os.getcwd() in sys.path:
-                sys.path = [os.getcwd()] + sys.path
-                logger.debug(u'new sys.path %s' % sys.path)
-            logger.debug(u'Sourcing %s' % os.path.join(directoryname,'setup.py'))
-            setup = import_setup(os.path.join(directoryname,'setup.py'))
-             # be sure some minimal functions are available in setup module at install step
-            logger.debug(u'Source import OK')
-
-            # check minimal requirements of setup.py
-            # check encoding
-            try:
-                codecs.open(os.path.join(directoryname,'setup.py'),mode='r',encoding='utf8')
-            except:
-                raise Exception('Encoding of setup.py is not utf8')
-
-            if hasattr(setup,'uninstallstring'):
-                mandatory = [('install',types.FunctionType) ,('uninstallstring',list),]
-            else:
-                mandatory = [('install',types.FunctionType) ,('uninstallkey',list),]
-            for (attname,atttype) in mandatory:
-                if not hasattr(setup,attname):
-                    raise Exception('setup.py has no %s (%s)' % (attname,atttype))
-
-            control_filename = os.path.join(directoryname,'WAPT','control')
-            force_utf8_no_bom(control_filename)
-
-            entry = PackageEntry()
-            logger.info(u'Load control informations from control file')
-            entry.load_control_from_wapt(directoryname)
-
-            # to avoid double increment when update_control is used.
-            inc_done = False
-
-            # optionally, setup.py can update some attributes of control files using
-            # a procedure called update_control(package_entry)
-            # this can help automates version maintenance
-            # a check of version collision is operated automatically
-            if hasattr(setup,'update_control'):
-                logger.info(u'Update control informations with update_control function from setup.py file')
-                setattr(setup,'run',self.run)
-                setattr(setup,'run_notfatal',self.run_notfatal)
-                setattr(setup,'user',self.user)
-                setattr(setup,'usergroups',self.usergroups)
-                setattr(setup,'WAPT',self)
-                setattr(setup,'language',self.language or setuphelpers.get_language() )
-                setup.update_control(entry)
-
-                if inc_package_release:
-                    logger.debug(u'Check existing versions and increment it')
-                    older_packages = self.is_available(entry.package)
-                    if (older_packages and entry<=older_packages[-1]):
-                        entry.version = older_packages[-1].version
-                        entry.inc_build()
-                        inc_done = True
-                        logger.warning(u'Older package with same name exists, incrementing packaging version to %s' % (entry.version,))
-
-                # save control file
-                entry.save_control_to_wapt(directoryname)
-
-            # check version syntax
-            parse_major_minor_patch_build(entry.version)
-
-            # check architecture
-            if not entry.architecture in ArchitecturesList:
-                raise Exception(u'Architecture should one of %s' % (ArchitecturesList,))
-
-            # increment inconditionally the package buuld nr.
-            if not inc_done and inc_package_release:
-                entry.inc_build()
-
-            if include_signer:
-                if not callback:
-                    callback = self.key_passwd_callback
-                else:
-                    self.key_passwd_callback = callback
-
-                # use cached key file if not provided
-                # the password will be retrieved by the self.key_passwd_callback
-                if not private_key:
-                    private_key = self.private_key
-                    key = self.private_key_cache
-                else:
-                    # use provided key filename, use provided callback.
-                    key = SSLPrivateKey(private_key,callback)
-
-                # find proper certificate
-                for fn in self.public_certs:
-                    crt = SSLCertificate(fn)
-                    if crt.match_key(key):
-                        break
-                    else:
-                        crt = None
-                if not crt:
-                    raise Exception('No matching certificate found for private key %s'%self.private_key)
-                entry.sign_control(key,crt)
-                logger.info('Signer: %s'%entry.signer)
-                logger.info('Signer fingerprint: %s'%entry.signer_fingerprint)
-
-            if inc_package_release or include_signer:
-                entry.save_control_to_wapt(directoryname)
-
-            entry.filename = entry.make_package_filename()
-            logger.debug(u'Control data : \n%s' % entry.ascontrol())
-            if target_directory is None:
-                target_directory = os.path.abspath(os.path.join( directoryname,'..'))
-
-            if not os.path.isdir(target_directory):
-                raise Exception('Bad target directory %s for package build' % target_directory)
-
-            result_filename = os.path.abspath(os.path.join(target_directory,entry.filename))
-            if os.path.isfile(result_filename):
-                logger.info('Target package already exists, removing %s' % result_filename)
-                os.unlink(result_filename)
-
-            entry.localpath = target_directory
-
-            allfiles = create_recursive_zip(
-                zipfn = result_filename,
-                source_root = directoryname,
-                target_root = '' ,
-                excludes=excludes)
-            return {'filename':result_filename,'files':allfiles,'package':entry}
-
-        finally:
-            if 'setup' in dir():
-                setup_name = setup.__name__
-                del setup
-                if setup_name in sys.modules:
-                    del sys.modules[setup_name]
-            sys.path = oldpath
-            logger.debug(u'  Change current directory to %s' % previous_cwd)
-            os.chdir(previous_cwd)
-
+        raise NotImplementedError()
 
 
 class WaptPackage(PackageEntry):
     """Built Wapt package zip file"""
+
     def __init__(self,package_filename):
         PackageEntry.__init__(self)
         self.package_filename = package_filename
@@ -913,11 +719,14 @@ def extract_iconpng_from_wapt(fname):
 class WaptBaseRepo(object):
     """Base abstract class for a Wapt Packages repository
     """
-    def __init__(self,name='abstract'):
+    def __init__(self,name='abstract',public_certs=None):
         self.name = name
         self._packages = None
         self._index = {}
         self._packages_date = None
+
+        # if not None, control's signature will be check against this certificates list
+        self.public_certs = public_certs
 
     def _load_packages_index(self):
         self._packages = []
@@ -937,6 +746,10 @@ class WaptBaseRepo(object):
         if self._packages is None:
             self._load_packages_index()
         return self._packages_date
+
+    def is_available(self):
+        # return isodate of last updates of the repo is available else None
+        return self.packages_date
 
     def need_update(self,last_modified=None):
         """Check if packges index has changed on repo and local db needs an update
@@ -964,10 +777,10 @@ class WaptBaseRepo(object):
             if not last_modified:
                 last_modified = self._packages_date
             if last_modified:
-                logger.debug(u'Check last-modified header for %s to avoid unecessary update' % (self.packages_url,))
+                logger.debug(u'Check last-modified header for %s to avoid unecessary update' % (self.name,))
                 current_update = self.is_available()
                 if current_update == last_modified:
-                    logger.info(u'Index from %s has not been updated (last update %s), skipping update' % (self.packages_url,current_update))
+                    logger.info(u'Index from %s has not been updated (last update %s), skipping update' % (self.name,current_update))
                     return False
                 else:
                     return True
@@ -1060,8 +873,8 @@ class WaptLocalRepo(WaptBaseRepo):
     >>> localrepo = WaptLocalRepo('c:/wapt/cache')
     >>> localrepo.update()
     """
-    def __init__(self,localpath='/var/www/wapt',name='waptlocal'):
-        WaptBaseRepo.__init__(self,name=name)
+    def __init__(self,localpath='/var/www/wapt',name='waptlocal',public_certs=None):
+        WaptBaseRepo.__init__(self,name=name,public_certs=public_certs)
         self.localpath = localpath.rstrip(os.path.sep)
         self.packages_path = os.path.join(self.localpath,'Packages')
 
@@ -1104,7 +917,6 @@ class WaptLocalRepo(WaptBaseRepo):
                     package.repo = self.name
                     package.localpath = self.localpath
                     package.filename = package.make_package_filename()
-                    self._packages.append(package)
                     # index last version
                     if package.package not in self._index or self._index[package.package] < package:
                         self._index[package.package] = package
@@ -1252,7 +1064,7 @@ class WaptRemoteRepo(WaptBaseRepo):
     True
     """
 
-    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2):
+    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2,public_certs=None):
         """Initialize a repo at url "url".
 
         Args:
@@ -1262,7 +1074,7 @@ class WaptRemoteRepo(WaptBaseRepo):
             proxies (dict): configuration of http proxies as defined for requests
             timeout (float): timeout in seconds for the connection to the rmeote repository
         """
-        WaptBaseRepo.__init__(self,name=name)
+        WaptBaseRepo.__init__(self,name=name,public_certs=public_certs)
         if url and url[-1]=='/':
             url = url.rstrip('/')
         self._repo_url = url
@@ -1410,7 +1222,10 @@ class WaptRemoteRepo(WaptBaseRepo):
                 logger.debug(u"%s (%s)" % (package.package,package.version))
                 package.repo_url = self.repo_url
                 package.repo = self.name
-                new_packages.append(package)
+                if self.public_certs is None or package.check_control_signature(self.public_certs):
+                    new_packages.append(package)
+                else:
+                    logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.public_certs))
 
         for line in packages_lines:
             if line.strip()=='':
@@ -1553,6 +1368,15 @@ if __name__ == '__main__':
     reload(sys)
     sys.setdefaultencoding("UTF-8")
     import doctest
+
+    logging.basicConfig()
+    logger = logging.getLogger()
+    logger.setLevel('DEBUG')
+    logger.addHandler(logging.StreamHandler())
+    logger.debug('Test')
+
+    sys.exit(0)
+
     doctest.ELLIPSIS_MARKER = '???'
     doctest.testmod(optionflags=doctest.ELLIPSIS)
     sys.exit(0)

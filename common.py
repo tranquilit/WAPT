@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.10"
+__version__ = "1.3.11"
 
 import os
 import re
@@ -1208,14 +1208,14 @@ class WaptDB(WaptBaseDB):
                 result[p.package] = available
         return result
 
-    def update_repos_list(self,repos_list,proxies=None,force=False,public_certs=[],filter_on_host_cap=True):
+    def update_repos_list(self,repos_list,proxies=None,force=False,filter_on_host_cap=True):
         """update the packages database with Packages files from the url repos_list
             removes obsolete records for repositories which are no more referenced
             repos_list : list of all the repositories objects referenced by the system
                           as returned by Wapt.repositories
             force : update repository even if date of packages index is same as
                     last retrieved date
-            public_certs :
+
         return a dictionary of update_db results for each repository name
             which has been accessed.
         >>> wapt = Wapt(config_filename = 'c:/tranquilit/wapt/tests/wapt-get.ini' )
@@ -1230,7 +1230,7 @@ class WaptDB(WaptBaseDB):
             for repo in repos_list:
                 logger.info(u'Getting packages from %s' % repo.repo_url)
                 try:
-                    result[repo.name] = repo.update_db(waptdb=self,force=force,public_certs=public_certs,filter_on_host_cap=filter_on_host_cap)
+                    result[repo.name] = repo.update_db(waptdb=self,force=force,filter_on_host_cap=filter_on_host_cap)
                 except Exception as e:
                     logger.warning(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
         return result
@@ -1267,7 +1267,7 @@ class WaptDB(WaptBaseDB):
 
         def dodepends(explored,packages,depth,missing):
             if depth>MAXDEPTH:
-                raise Exception.create('Max depth in build dependencies reached, aborting')
+                raise Exception('Max depth in build dependencies reached, aborting')
             alldepends = []
             # loop over all package names
             for package in packages:
@@ -1367,6 +1367,14 @@ class WaptDB(WaptBaseDB):
         """
         with self:
             self.db.execute('delete from wapt_package where repo=?',(repo_name,))
+
+    def params(self,packagename):
+        """Return install parameters associated with a package"""
+        with self:
+            cur = self.db.execute("""select install_params from wapt_localstatus where package=?""" ,(packagename,))
+            rows = cur.fetchall()
+            if rows:
+                return json.loads(rows[0][0])
 
 def get_pem_server_certificate(url):
     """Retrieve certificate for further checks"""
@@ -1647,7 +1655,7 @@ class WaptRepo(WaptRemoteRepo):
     >>> len(packages)
     """
 
-    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2,dnsdomain=None):
+    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2,dnsdomain=None,public_certs=None):
         """Initialize a repo at url "url".
 
         Args:
@@ -1657,9 +1665,13 @@ class WaptRepo(WaptRemoteRepo):
             proxies (dict): configuration of http proxies as defined for requests
             timeout (float): timeout in seconds for the connection to the rmeote repository
             dnsdomain (str): DNS domain to use for autodiscovery of URL if url is not supplied.
+
+        .. versionchanged:: 1.3.11
+           public_certs (list):  list of trusted SSL certificates to filter out untrusted entries.
+                                 if None, no check is performed. All antries are accepted.
         """
 
-        WaptRemoteRepo.__init__(self,url=url,name=name,proxies=proxies,timeout=timeout)
+        WaptRemoteRepo.__init__(self,url=url,name=name,proxies=proxies,timeout=timeout,public_certs=public_certs)
         self._cached_dns_repo_url = None
         self._dnsdomain = dnsdomain
 
@@ -1777,7 +1789,7 @@ class WaptRepo(WaptRemoteRepo):
                                 if port == 80:
                                     url = 'http://%s/wapt' % (wapthost,)
                                     servers.append([not is_inmysubnets(ip),priority,-weight,url])
-                                elif a.port == 443:
+                                elif port == 443:
                                     url = 'https://%s/wapt' % (wapthost)
                                     servers.append([not is_inmysubnets(ip),priority,-weight,url])
                                 else:
@@ -1846,7 +1858,7 @@ class WaptRepo(WaptRemoteRepo):
             logger.debug(u'Waptrepo.find_wapt_repo_url: exception: %s' % (e,))
             raise
 
-    def update_db(self,force=False,waptdb=None,public_certs=[],filter_on_host_cap=True):
+    def update_db(self,force=False,waptdb=None,filter_on_host_cap=True):
         """Get Packages from http repo and update local package database
             return last-update header
 
@@ -1857,7 +1869,6 @@ class WaptRepo(WaptRemoteRepo):
             force (bool): get index from remote repo even if creation date is not newer
                           than the datetime stored in local status database
             waptdb (WaptDB): instance of Wapt status database.
-            public_certs (list) :
 
         Returns:
             isodatetime: date of Packages index
@@ -1908,7 +1919,8 @@ class WaptRepo(WaptRemoteRepo):
                                 continue
 
                         try:
-                            package.check_control_signature(public_certs)
+                            if self.public_certs is not None:
+                                package.check_control_signature(self.public_certs)
                             waptdb.add_package_entry(package)
                         except:
                             logger.critical('Invalid signature for package control entry %s on repo %s : discarding' % (package.asrequirement(),self.name) )
@@ -1959,26 +1971,29 @@ class WaptRepo(WaptRemoteRepo):
 class WaptHostRepo(WaptRepo):
     """Dummy http repository for host packages"""
 
-    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2,dnsdomain=None,hosts=[]):
-        WaptRepo.__init__(self,url=url,name=name,proxies=proxies,timeout = timeout,dnsdomain=dnsdomain)
+    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2,dnsdomain=None,hosts=[],public_certs=None):
+        WaptRepo.__init__(self,url=url,name=name,proxies=proxies,timeout = timeout,dnsdomain=dnsdomain,public_certs=public_certs)
         self.hosts_list = hosts
 
     def _load_packages_index(self):
         self._packages = []
 
-    def update_db(self,force=False,waptdb=None,public_certs=[],filter_on_host_cap=True):
+    def update_db(self,force=False,waptdb=None,filter_on_host_cap=True):
         """get a list of host packages from remote repo"""
         current_host = setuphelpers.get_hostname()
         if not current_host in self.hosts_list:
             self.hosts_list.append(current_host)
         result = ''
         for host in self.hosts_list:
-            (entry,result) = self.update_host(host,waptdb,force=force,public_certs=public_certs)
+            (entry,result) = self.update_host(host,waptdb,force=force)
             if not entry in self.packages:
-                self.packages.append(entry)
+                if self.public_certs is None or entry.check_control_signature(self.public_certs):
+                    self.packages.append(entry)
+                else:
+                    logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (entry.asrequirement(),self.name,self.public_certs))
         return result
 
-    def update_host(self,host,waptdb,force=False,public_certs=[]):
+    def update_host(self,host,waptdb,force=False):
         """Update host package from repo.
            Stores last-http-date in database/
 
@@ -2029,10 +2044,11 @@ class WaptHostRepo(WaptRepo):
                             package.repo_url = self.repo_url
                             package.repo = self.name
                             try:
-                                package.check_control_signature(public_certs)
+                                if self.public_certs is not None:
+                                    package.check_control_signature(self.public_certs)
                                 waptdb.add_package_entry(package)
                             except:
-                                logger.critical('Invalid signature for package control entry %s : discarding' % package.asrequirement())
+                                logger.critical("Control data of host package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.public_certs))
 
                             logger.debug(u'Commit wapt_package updates')
                             waptdb.set_param(host_cachedate,host_package_date)
@@ -2873,13 +2889,6 @@ class Wapt(object):
             print(u'Warning : %s' % ensure_unicode(e))
             return ''
 
-    def check_control_signature(self,package_entry):
-        """ """
-        if not package_entry.signature:
-            logger.warning('Package control %s on repo %s is not signed... not checking' % (package_entry.asrequirement(),package_entry.repo))
-            return None
-        return package_entry.check_control_signature(self.authorized_certificates())
-
     def install_wapt(self,fname,params_dict={},explicit_by=None):
         """Install a single wapt package given its WAPT filename.
         return install status"""
@@ -3280,10 +3289,15 @@ class Wapt(object):
     def update(self,force=False,register=True,filter_on_host_cap=True):
         """Update local database with packages definition from repositories
 
+        .. versionchanged:: 1.3.11
+           If self.strict_control_signature is False, control signatures are not checked else
+               package entries with no matching certificates are discarded.
+
         Args:
             force (boolean):    update even if Packages index on repository has not been
                                 updated since last update (based on http headers)
             register (boolean): Send informations about status of local packages to waptserver
+        .. versionadded 1.3.10::
             filter_on_host_cap (boolean) : restrict list of retrieved packages to those matching current os / architecture
 
         Returns;
@@ -3300,7 +3314,8 @@ class Wapt(object):
         """
         previous = self.waptdb.known_packages()
         # (main repo is at the end so that it will used in priority)
-        self.waptdb.update_repos_list(self.repositories,proxies=self.proxies,force=force,public_certs=self.public_certs,filter_on_host_cap=filter_on_host_cap)
+        self.waptdb.update_repos_list(self.repositories,proxies=self.proxies,force=force,
+            filter_on_host_cap=filter_on_host_cap)
 
         current = self.waptdb.known_packages()
         result = {
@@ -3332,7 +3347,7 @@ class Wapt(object):
             apackages (str or list): list of packages for which to check missing dependencies.
             forceupgrade (boolean): if True, check if the current installed packages is the latest available
             force (boolean): if True, install the latest version even if the package is already there and match the requirement
-            assume_removed (list): list of packagename which are assumed to be absent even if they are installed to check the
+            assume_removed (list): list of packagename which are assumed to be absent even if they are actually installed to check the
                                     consequences of removal of packages, implies force=True
         Returns:
             dict : {'additional' 'upgrade' 'install' 'skipped' 'unavailable', 'remove'} with list of [packagerequest,matching PackageEntry]
@@ -3606,7 +3621,7 @@ class Wapt(object):
         actions['downloads'] = downloaded
         logger.debug(u'Downloaded : %s' % (downloaded,))
 
-        def fname(packagefilename):
+        def get_fname(packagefilename):
             return os.path.join(self.package_cache_dir,packagefilename)
         if not download_only:
             # switch to manual mode
@@ -3618,7 +3633,7 @@ class Wapt(object):
             for (request,p) in to_install:
                 try:
                     print(u"Installing %s" % (p.package,))
-                    result = self.install_wapt(fname(p.filename),
+                    result = self.install_wapt(get_fname(p.filename),
                         params_dict = params_dict,
                         explicit_by=self.user if request in apackages else None
                         )
@@ -4200,7 +4215,7 @@ class Wapt(object):
         """
         try:
             if self.waptserver and self.waptserver.server_url:
-                host = urlparse(w.waptserver.server_url).hostname
+                host = urlparse(self.waptserver.server_url).hostname
                 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 s.settimeout(1)
                 s.connect((host, 0))
@@ -5504,9 +5519,9 @@ class Wapt(object):
         """
         if self.config.has_option('global','waptupgrade_url'):
             upgradeurl = self.config.get('global','waptupgrade_url')
-        raise NotImplemented()
+        raise NotImplementedError()
 
-    def packages_add_depends(packages,append_depends):
+    def packages_add_depends(self,packages,append_depends):
         """ Add a list of dependencies to existing packages, inc version and build-upload
             packages : list of package names
             append_depends : list of dependencies packages
