@@ -184,6 +184,12 @@ begin
         mtConfirmation, mbYesNoCancel, 0) <> mrYes then
     Exit;
 
+  if FileNames.AsArray.Length<=0 then
+  begin
+    ShowMessage(rsNoPackage);
+    Exit;
+  end;
+
   if not DirectoryExists(AppLocalDir + 'cache') then
     mkdir(AppLocalDir + 'cache');
 

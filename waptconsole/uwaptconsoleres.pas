@@ -172,9 +172,7 @@ resourcestring
   rsDuplicating = 'Package(s) %s is being duplicated.';
   rsDuplicateSuccess = 'Package(s) %s successfully duplicated.';
   rsDuplicateFailure = 'Error while duplicating the package(s).';
-
-
-
+  rsNoPackage = 'No package found. Check authorized certificates';
 
 
 
