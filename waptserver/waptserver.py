@@ -22,7 +22,7 @@
 # -----------------------------------------------------------------------
 from __future__ import print_function
 from __future__ import absolute_import
-__version__ = "1.3.10"
+__version__ = "1.3.11"
 
 import os
 import sys
@@ -960,7 +960,7 @@ def host_reachable_ip():
     try:
         try:
             uuid = request.args['uuid']
-            host_data = hosts().find_one({"uuid": uuid}, fields={
+            host_data = hosts().find_one({"uuid": uuid}, projection={
                 'uuid': 1, 'host.computer_fqdn': 1, 'wapt': 1, 'host.connected_ips': 1})
             result = get_ip_port(host_data)
         except Exception as e:
@@ -990,7 +990,7 @@ def proxy_host_request(request, action):
         result = dict(success=[], errors=[])
         for uuid in uuids:
             try:
-                host_data = hosts().find_one({"uuid": uuid}, fields={
+                host_data = hosts().find_one({"uuid": uuid}, projection={
                     'uuid': 1, 'wapt': 1, 'host.connected_ips': 1, 'host.computer_fqdn': 1})
                 listening_address = get_ip_port(host_data)
                 msg = u''
@@ -1075,7 +1075,7 @@ def trigger_upgrade():
         notify_user = request.args.get('notify_user', 0)
         notify_server = request.args.get('notify_server', 1)
         host_data = hosts().find_one(
-            {"uuid": uuid}, fields={'uuid': 1, 'wapt': 1, 'host.connected_ips': 1})
+            {"uuid": uuid}, projection={'uuid': 1, 'wapt': 1, 'host.connected_ips': 1})
         listening_address = get_ip_port(host_data)
         msg = u''
         if listening_address and listening_address[
@@ -1131,7 +1131,7 @@ def trigger_update():
         notify_server = request.args.get('notify_server', 1)
 
         host_data = hosts().find_one(
-            {"uuid": uuid}, fields={'uuid': 1, 'wapt': 1, 'host.connected_ips': 1})
+            {"uuid": uuid}, projection={'uuid': 1, 'wapt': 1, 'host.connected_ips': 1})
         listening_address = get_ip_port(host_data)
         msg = u''
         if listening_address and listening_address[
@@ -1176,7 +1176,7 @@ def trigger_wakeonlan():
     try:
         uuid = request.args['uuid']
         host_data = hosts().find_one(
-            {"uuid": uuid}, fields={'uuid': 1, 'host': 1, 'computer_fqdn': 1})
+            {"uuid": uuid}, projection={'uuid': 1, 'host': 1, 'computer_fqdn': 1})
 
         macs = host_data['host']['mac']
         msg = u''
@@ -1332,7 +1332,7 @@ def host_tasks_status():
     try:
         uuid = request.args['uuid']
         host_data = hosts().find_one(
-            {"uuid": uuid}, fields={'wapt': 1, 'host.connected_ips': 1})
+            {"uuid": uuid}, projection={'wapt': 1, 'host.connected_ips': 1})
         #listening_address = get_ip_port(host_data)
         listening_address = host_data['wapt'].get('listening_address', None)
 
@@ -1427,7 +1427,7 @@ def hosts_delete():
                 'delete_packages'] == '1':
             selected = hosts().find(
                 query,
-                fields={
+                projection={
                     'uuid': 1,
                     'host.computer_fqdn': 1})
             if selected:
@@ -1574,7 +1574,7 @@ def get_hosts():
         groups = ensure_list(request.args.get('groups', ''))
 
         result = []
-        for host in hosts().find(query, fields={col: 1 for col in columns}):
+        for host in hosts().find(query, projection={col: 1 for col in columns}):
             host.pop("_id")
             if (('depends' in columns) or len(groups) >
                     0) and 'host' in host and 'computer_fqdn' in host['host']:
@@ -1671,7 +1671,7 @@ def host_data():
         else:
             raise EWaptMissingParameter('Parameter field is missing')
 
-        data = hosts().find_one({'uuid': uuid}, fields={field: 1})
+        data = hosts().find_one({'uuid': uuid}, projection={field: 1})
         if data is None:
             raise EWaptUnknownHost(
                 'Host {} not found in database'.format(uuid))
@@ -1743,7 +1743,7 @@ def host_cancel_task():
     try:
         uuid = request.args['uuid']
         host_data = hosts().find_one(
-            {"uuid": uuid}, fields={'wapt': 1, 'host.connected_ips': 1})
+            {"uuid": uuid}, projection={'wapt': 1, 'host.connected_ips': 1})
         #listening_address = get_ip_port(host_data)
         listening_address = host_data['wapt'].get('listening_address', None)
 
@@ -1923,7 +1923,7 @@ class CheckHostsWaptService(threading.Thread):
                             'wapt.listening_address': 1}}, multi=True)
 
             queue = Queue.Queue()
-            for data in mongoclient.wapt.hosts.find(query, fields=fields):
+            for data in mongoclient.wapt.hosts.find(query, projection=fields):
                 logger.debug(
                     'Hosts %s pushed in check IP queue' %
                     data['uuid'])
