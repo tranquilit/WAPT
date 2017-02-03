@@ -33,7 +33,7 @@
     exported functions instead of local Wapt functions (except crypto signatures)
 
 """
-__version__ = "1.3.10"
+__version__ = "1.3.11"
 
 import sys,os
 import shutil
@@ -276,11 +276,11 @@ def duplicate_from_external_repo(waptconfigfile,package_filename):
 def check_uac():
     res = uac_enabled()
     if res:
-        messagebox(_('UAC Warning'),_("""The UAC (user account control) is activated on this computer.
+        messagebox('UAC Warning',"""The UAC (user account control) is activated on this computer.
         For Wapt package development and debugging, it is recommended to disable UAC.
 
         If you modify the UAC setting, you must reboot your system to take changes in account.
-        """))
+        """)
         shell_launch('UserAccountControlSettings.exe')
 
 def wapt_sources_edit(wapt_sources_dir):

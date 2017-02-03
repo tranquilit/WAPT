@@ -21,7 +21,7 @@
 # -----------------------------------------------------------------------
 from __future__ import print_function
 from __future__ import absolute_import
-__version__ = "1.3.10"
+__version__ = "1.3.11"
 
 import time
 import sys
@@ -50,7 +50,7 @@ from rocket import Rocket
 from flask import request, Flask,Response, send_from_directory, send_file, session, g, redirect, url_for, abort, render_template, flash, stream_with_context
 from flask_paginate import Pagination
 import jinja2
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from werkzeug.utils import html
 
 from urlparse import urlparse
@@ -93,12 +93,6 @@ from setuphelpers import Version
 from waptpackage import PackageEntry
 
 import windnsquery
-
-try:
-    from waptwua import WaptWUA
-    app.register_blueprint(waptwua.waptwua)
-except Exception as e:
-    pass
 
 from gettext import gettext
 
@@ -147,7 +141,7 @@ class WaptEvent(object):
         self.runstatus = runstatus
 
         self.id = None
-        self.ttl = DEFAULT_TTL
+        self.ttl = self.DEFAULT_TTL
         self.date = time.time()
         # list of ids of subscribers which have not yet retrieved the event
         self.subscribers = []
@@ -427,7 +421,7 @@ def beautify(c):
 def ssl_required(fn):
     @wraps(fn)
     def decorated_view(*args, **kwargs):
-        if current_app.config.get("SSL"):
+        if app.config.get("SSL"):
             if request.is_secure:
                 return fn(*args, **kwargs)
             else:
@@ -473,6 +467,12 @@ waptconfig = WaptServiceConfig()
 app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['SECRET_KEY'] = waptconfig.secret_key
+
+try:
+    from waptwua import WaptWUA
+    app.register_blueprint(waptwua.waptwua)
+except Exception as e:
+    pass
 
 app.jinja_env.filters['beautify'] = beautify
 app.waptconfig = waptconfig
@@ -1293,9 +1293,9 @@ def task():
     all_tasks = tasks['done']+tasks['pending']+tasks['errors']
     if tasks['running']:
         all_tasks.append(tasks['running'])
-    task = [task for task in all_tasks if task and task['id'] == id]
-    if task:
-        task = task[0]
+    all_tasks = [task for task in all_tasks if task and task['id'] == id]
+    if all_tasks:
+        task = all_tasks[0]
     else:
         task = {}
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -1885,7 +1885,8 @@ class WaptPackageRemove(WaptPackageInstall):
 
 class WaptPackageForget(WaptTask):
     def __init__(self,packagenames):
-        super(WaptPackageForget,self).__init__(packagenames=packagenames)
+        super(WaptPackageForget,self).__init__()
+        self.packagenames = packagenames
 
     def _run(self):
         self.result = self.wapt.forget_packages(self.packagenames)

@@ -23,6 +23,7 @@
 
 __version__="1.3.11"
 
+import sys
 import bson.json_util
 import datetime
 import email.utils
@@ -34,6 +35,7 @@ import os
 import pymongo
 import requests
 import traceback
+import time
 
 __all__ = []
 
@@ -129,6 +131,7 @@ def wget(url,target,proxies=None,connect_timeout=10,download_timeout=None, chunk
     chunk_size = min([1024*1024,max([total_bytes/100,2048])])
 
     httpreq.raise_for_status()
+    start_time = time.time()
 
     with open(os.path.join(dir,filename),'wb') as output_file:
         downloaded_bytes = 0
@@ -187,7 +190,7 @@ def setloglevel(logger,loglevel):
     if loglevel in ('debug','warning','info','error','critical'):
         numeric_level = getattr(logging, loglevel.upper(), None)
         if not isinstance(numeric_level, int):
-            raise ValueError(_('Invalid log level: {}'.format(loglevel)))
+            raise ValueError('Invalid log level: {}'.format(loglevel))
         logger.setLevel(numeric_level)
 
 __all__ += ['logger']
@@ -225,7 +228,8 @@ def make_response_from_exception(exception,error_code='',status=200):
             )
     if utils_devel_mode:
         data['msg'] = traceback.format_exc()
-        raise
+        etype, value, tb = sys.exc_info()
+        raise value
     else:
         data['msg'] = u"%s" % (exception,)
     return flask.Response(

@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.10"
+__version__ = "1.3.11"
 
 import codecs
 import getpass
@@ -199,10 +199,10 @@ class JsonOutput(object):
             self.output.append(txt)
 
     def __getattrib__(self, name):
-        if hasattr(self.console,'__getattrib__'):
-            return self.console.__getattrib__(name)
+        if hasattr(self.output,'__getattrib__'):
+            return self.output.__getattrib__(name)
         else:
-            return self.console.__getattribute__(name)
+            return self.output.__getattribute__(name)
 
 
 def wapt_sources_edit(wapt_sources_dir):
@@ -454,7 +454,7 @@ def main():
                     sys.exit(1)
                 for packagename in args[1:]:
                     params = mywapt.waptdb.params(packagename)
-                    print(u"%s" % params)
+                    print(u"%s : %s" % (packagename,params))
 
             elif action == 'list-registry':
                 result = setuphelpers.installed_softwares(' '.join(args[1:]))
@@ -1073,11 +1073,13 @@ def main():
                     print(u"You must provide the package to edit")
                     sys.exit(1)
                 if len(args) >= 3:
-                    result = mywapt.add_iconpng_wapt(
-                        package=args[1],
-                        iconpath=args[2])
+                    raise NotImplementedError
+                    ##result = mywapt.add_iconpng_wapt(
+                    ##    package=args[1],
+                    ##    iconpath=args[2])
                 else:
-                    result = mywapt.add_iconpng_wapt(package=args[1])
+                    raise NotImplementedError
+                    ##result = mywapt.add_iconpng_wapt(package=args[1])
                 mywapt.upload_package({
                     'waptfile':result['filename'],
                     'waptdir':'wapt',

@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.10"
+__version__ = "1.3.11"
 
 __all__ = \
 ['EWaptSetupException',
@@ -550,108 +550,6 @@ def wgets(url,proxies=None,verify_cert=False,referer=None,user_agent=None):
         return r.text
     else:
         r.raise_for_status()
-
-def default_http_headers():
-    return {
-        'cache-control':'no-cache',
-        'pragma':'no-cache',
-        'user-agent':'wapt/{}'.format(__version__),
-        }
-
-def get_disk_free_space(filepath):
-    """
-    Returns the number of free bytes on the drive that filepath is on
-    """
-    secs_per_cluster, bytes_per_sector, free_clusters, total_clusters = win32file.GetDiskFreeSpace(filepath)
-    return secs_per_cluster * bytes_per_sector * free_clusters
-
-def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False,referer=None,user_agent=None):
-    r"""Copy the contents of a file from a given URL to a local file.
-    >>> respath = wget('http://wapt.tranquil.it/wapt/tis-firefox_28.0.0-1_all.wapt','c:\\tmp\\test.wapt',proxies={'http':'http://proxy:3128'})
-    ???
-    >>> os.stat(respath).st_size>10000
-    True
-    >>> respath = wget('http://localhost:8088/runstatus','c:\\tmp\\test.json')
-    ???
-    """
-    start_time = time.time()
-    last_time_display = 0.0
-    last_downloaded = 0
-
-    def reporthook(received,total):
-        total = float(total)
-        if total>1 and received>1:
-            # print only every second or at end
-            if (time.time()-start_time>1) and ((time.time()-last_time_display>=1) or (received>=total)):
-                speed = received /(1024.0 * (time.time()-start_time))
-                if printhook:
-                    printhook(received,total,speed,url)
-                else:
-                    try:
-                        if received == 0:
-                            print(u"Downloading %s (%.1f Mb)" % (url,int(total)/1024/1024))
-                        elif received>=total:
-                            print(u"  -> download finished (%.0f Kb/s)" % (total /(1024.0*(time.time()+.001-start_time))))
-                        else:
-                            print(u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed))
-                    except:
-                        return False
-                return True
-            else:
-                return False
-
-    if os.path.isdir(target):
-        target = os.path.join(target,'')
-
-    (dir,filename) = os.path.split(target)
-    if not filename:
-        filename = url.split('/')[-1]
-    if not dir:
-        dir = os.getcwd()
-
-    if not os.path.isdir(dir):
-        os.makedirs(dir)
-
-    if verify_cert == False:
-        requests.packages.urllib3.disable_warnings()
-    header=default_http_headers()
-    if referer != None:
-        header.update({'referer': '%s' % referer})
-    if user_agent != None:
-        header.update({'user-agent': '%s' % user_agent})
-
-    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout,verify=verify_cert,headers=header)
-
-    httpreq.raise_for_status()
-
-    total_bytes = int(httpreq.headers['content-length'])
-    target_free_bytes = get_disk_free_space(os.path.dirname(os.path.abspath(target)))
-    if total_bytes > target_free_bytes:
-        raise Exception('wget : not enough free space on target drive to get %s MB. Total size: %s MB. Free space: %s MB' % (url,total_bytes // (1024*1024),target_free_bytes // (1024*1024)))
-
-    # 1Mb max, 1kb min
-    chunk_size = min([1024*1024,max([total_bytes/100,2048])])
-
-    cnt = 0
-    reporthook(last_downloaded,total_bytes)
-
-    with open(os.path.join(dir,filename),'wb') as output_file:
-        last_time_display = time.time()
-        last_downloaded = 0
-        if httpreq.ok:
-            for chunk in httpreq.iter_content(chunk_size=chunk_size):
-                output_file.write(chunk)
-                if download_timeout is not None and (time.time()-start_time>download_timeout):
-                    raise requests.Timeout(r'Download of %s takes more than the requested %ss'%(url,download_timeout))
-                if reporthook(cnt*len(chunk),total_bytes):
-                    last_time_display = time.time()
-                last_downloaded += len(chunk)
-                cnt +=1
-            if reporthook(last_downloaded,total_bytes):
-                last_time_display = time.time()
-
-
-    return os.path.join(dir,filename)
 
 
 def filecopyto(filename,target):
@@ -1630,7 +1528,8 @@ def registry_deletekey(root,path,keyname,force=False):
         rootpath = makeregpath(root,path)
         if len(rootpath.split(u'\\')) <= 1 and not force:
             raise Exception(u'The registry path %s is too short...too dangerous to remove it'%rootpath)
-        registry.delete(rootpath,keyname,access = _winreg.KEY_READ| _winreg.KEY_WOW64_64KEY | _winreg.KEY_WRITE)
+        ## Issue here with KEY_WOW64_64KEY !
+        registry.delete(rootpath,keyname)
         root = registry.Registry(rootpath,access = _winreg.KEY_READ| _winreg.KEY_WOW64_64KEY | _winreg.KEY_WRITE)
         result = not keyname in [os.path.basename(k.as_string()) for k in root.keys()]
     except (WindowsError,exc.x_not_found) as e:
@@ -1719,7 +1618,7 @@ def inifile_deletesection(inifilename,section):
     """
     inifile = RawConfigParser()
     inifile.read(inifilename)
-    inifile.remove_section(section,section)
+    inifile.remove_section(section)
     inifile.write(open(inifilename,'w'))
     return not inifile.has_section(section)
 
@@ -2199,6 +2098,8 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
     Args;
         keywords (str or list): string to lookup in key, display_name or publisher fields
         uninstallkey : filter on a specific uninstall key instead of fuzzy search
+
+    .. versionchanged:: 1.3.11
         name (str regexp) : filter on a regular expression on software name
 
     Returns
@@ -3754,49 +3655,7 @@ def remove_metroapp(package):
     run_powershell('Get-AppxPackage %s --AllUsers| Remove-AppxPackage' % package)
     run_powershell("""Get-AppXProvisionedPackage -Online |
             where DisplayName -EQ %s |
-            Remove-AppxProvisionedPackage -Online"""%app)
-
-def datetime2isodate(adatetime = None):
-    if not adatetime:
-        adatetime = datetime.datetime.now()
-    assert(isinstance(adatetime,datetime.datetime))
-    return adatetime.isoformat()
-
-
-def httpdatetime2isodate(httpdate):
-    """convert a date string as returned in http headers or mail headers to isodate
-    >>> import requests
-    >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
-    >>> len(httpdatetime2isodate(last_modified)) == 19
-    True
-    """
-    return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
-
-
-def isodate2datetime(isodatestr):
-    # we remove the microseconds part as it is not working for python2.5 strptime
-    return datetime.datetime.strptime(isodatestr.split('.')[0] , "%Y-%m-%dT%H:%M:%S")
-
-
-def time2display(adatetime):
-    return adatetime.strftime("%Y-%m-%d %H:%M")
-
-
-def hours_minutes(hours):
-    if hours is None:
-        return None
-    else:
-        return "%02i:%02i" % ( int(hours) , int((hours - int(hours)) * 60.0))
-
-
-def fileisodate(filename):
-    return datetime.datetime.fromtimestamp(os.stat(filename).st_mtime).isoformat()
-
-
-def dateof(adatetime):
-    return adatetime.replace(hour=0,minute=0,second=0,microsecond=0)
-
-
+            Remove-AppxProvisionedPackage -Online""" % package)
 
 class EWaptSetupException(Exception):
     pass

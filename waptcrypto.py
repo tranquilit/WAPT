@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.10"
+__version__ = "1.3.11"
 
 import os,sys
 import codecs
@@ -425,7 +425,7 @@ class SSLCertificate(object):
         elif isinstance(crt,dict):
             return cmp(self.subject,crt)
         else:
-            raise ValueError('Can not compare SSLCertificate with %s'%(typeof(crt)))
+            raise ValueError('Can not compare SSLCertificate with %s'%(type(crt)))
 
     def encrypt(self,content):
         """Encrypt a message will can be decrypted with the private key"""

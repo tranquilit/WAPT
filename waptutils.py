@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.10"
+__version__ = "1.3.11"
 
 import os
 import sys
@@ -39,6 +39,7 @@ import platform
 import codecs
 import glob
 import requests
+import locale
 
 if platform.system() == 'Windows':
     try:
@@ -476,7 +477,20 @@ def default_http_headers():
         'user-agent':'wapt/{}'.format(__version__),
         }
 
-def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False):
+def get_disk_free_space(filepath):
+    """
+    Returns the number of free bytes on the drive that filepath is on
+    """
+    if os.name == 'nt':
+        import win32file
+        secs_per_cluster, bytes_per_sector, free_clusters, total_clusters = win32file.GetDiskFreeSpace(filepath)
+        return secs_per_cluster * bytes_per_sector * free_clusters
+    else:
+        import shutil
+        total, used, free = shutil.disk_usage(filepath)
+        return free
+
+def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False,referer=None,user_agent=None):
     r"""Copy the contents of a file from a given URL to a local file.
     >>> respath = wget('http://wapt.tranquil.it/wapt/tis-firefox_28.0.0-1_all.wapt','c:\\tmp\\test.wapt',proxies={'http':'http://proxy:3128'})
     ???
@@ -504,7 +518,7 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
                         elif received>=total:
                             print(u"  -> download finished (%.0f Kb/s)" % (total /(1024.0*(time.time()+.001-start_time))))
                         else:
-                            print(u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed ))
+                            print(u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed))
                     except:
                         return False
                 return True
@@ -523,9 +537,23 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
     if not os.path.isdir(dir):
         os.makedirs(dir)
 
-    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout,verify=verify_cert,headers=default_http_headers())
+    if verify_cert == False:
+        requests.packages.urllib3.disable_warnings()
+    header=default_http_headers()
+    if referer != None:
+        header.update({'referer': '%s' % referer})
+    if user_agent != None:
+        header.update({'user-agent': '%s' % user_agent})
+
+    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout,verify=verify_cert,headers=header)
+
+    httpreq.raise_for_status()
 
     total_bytes = int(httpreq.headers['content-length'])
+    target_free_bytes = get_disk_free_space(os.path.dirname(os.path.abspath(target)))
+    if total_bytes > target_free_bytes:
+        raise Exception('wget : not enough free space on target drive to get %s MB. Total size: %s MB. Free space: %s MB' % (url,total_bytes // (1024*1024),target_free_bytes // (1024*1024)))
+
     # 1Mb max, 1kb min
     chunk_size = min([1024*1024,max([total_bytes/100,2048])])
 
@@ -546,12 +574,9 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
                 cnt +=1
             if reporthook(last_downloaded,total_bytes):
                 last_time_display = time.time()
-        else:
-            httpreq.raise_for_status()
+
 
     return os.path.join(dir,filename)
-
-
 
 if __name__ == '__main__':
     import doctest

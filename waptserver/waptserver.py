@@ -45,7 +45,7 @@ import hashlib
 from passlib.hash import sha512_crypt, bcrypt
 import pymongo
 from pymongo import MongoClient
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from functools import wraps
 import logging
 import ConfigParser
@@ -73,6 +73,8 @@ import Queue
 import re
 
 from waptpackage import *
+from waptcrypto import *
+
 from waptserver_utils import *
 import waptserver_config
 
@@ -145,17 +147,6 @@ def get_wapt_exe_version(exe):
         if pe is not None:
             pe.close()
     return (present, version)
-
-
-def sha256_for_file(fname, block_size=2**20):
-    f = open(fname, 'rb')
-    sha256 = hashlib.sha256()
-    while True:
-        data = f.read(block_size)
-        if not data:
-            break
-        sha256.update(data)
-    return sha256.hexdigest()
 
 
 def get_db():
