@@ -2355,8 +2355,10 @@ class Wapt(object):
             self.public_certs_dir = self.config.get('global','public_certs_dir')
         else:
             self.public_certs_dir = os.path.join(self.wapt_base_dir,'ssl')
-        # get the list of certificates to use :
+        # get the global list of certificates to use for default package checking :
         self.public_certs = glob.glob(os.path.join(self.public_certs_dir,'*.crt')) + glob.glob(os.path.join(self.public_certs_dir,'*.cer'))
+        if not self.public_certs:
+            logger.warning('No certificates found in %s for package validation, packages install will certainly fail' % self.public_certs_dir)
 
         if self.config.has_option('global','upload_cmd'):
             self.upload_cmd = self.config.get('global','upload_cmd')
