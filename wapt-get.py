@@ -273,6 +273,8 @@ def main():
             else:
                 config_file = default_waptservice_ini
                 logger.info(u'Using local waptservice configuration %s '%config_file)
+        else:
+            config_file = options.config
         # Config file
         if not os.path.isfile(config_file):
             logger.error((u"Error : could not find file : %s"
