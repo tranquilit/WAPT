@@ -1440,9 +1440,9 @@ end;
 
 
 initialization
-//  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;
+   //  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;
     //Raise Exception.Create('Unable to initialize ActiveX layer');
-   //GetLanguageIDs(Language,FallBackLanguage);
+   GetLanguageIDs(Language,FallBackLanguage);
    waptwua_enabled := FileExists(WaptBaseDir+'\waptwua.py');
 
 finalization
