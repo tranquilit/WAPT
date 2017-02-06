@@ -1281,7 +1281,7 @@ function CreateSelfSignedCert(orgname,
         email:Utf8String
     ):Utf8String;
 var
-  opensslbin,opensslcfg,opensslcfg_fn,destpem,destcrt,destp12 : Utf8String;
+  opensslbin,opensslcfg,opensslcfg_fn,destpem,destcrt,destp12,cmd : Utf8String;
   params : ISuperObject;
 begin
     destpem := AppendPathDelim(destdir)+orgname+'.pem';
@@ -1302,9 +1302,13 @@ begin
     opensslcfg_fn := AppendPathDelim(destdir)+'openssl.cfg';
     StringToFile(opensslcfg_fn,opensslcfg);
     try
-      SetEnvironmentVariableW(PWideChar('OPENSSL_CONF'),PWideChar(opensslcfg_fn));
+      SetEnvironmentVariable(PChar('OPENSSL_CONF'),PChar(Utf8ToAnsi(opensslcfg_fn)));
+      cmd := 'set OPENSSL_CONF='+opensslcfg_fn+'#13#10'+opensslbin+' req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout "'+destpem+'" -out "'+destcrt+'"';
       if ExecuteProcess(opensslbin,'req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout "'+destpem+'" -out "'+destcrt+'"',[]) <> 0 then
-        result :=''
+      begin
+        result :='';
+        raise Exception.Create('Unable to create key and self signed x509 certificate#13#10'+cmd);
+      end
       else
         result := destpem;
       // create a .pfx .p12 for ms signtool
