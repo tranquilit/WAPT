@@ -20,9 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from __future__ import print_function
-from __future__ import absolute_import
-__version__="1.3.8.5"
+__version__="1.3.8.7"
 
 import os,sys
 try:
