@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """Implementation of ISesNework in Python."""
-from __future__ import print_function
 # From UbuntuOne
 
 import logging

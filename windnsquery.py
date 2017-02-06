@@ -25,8 +25,7 @@
 #
 # -----------------------------------------------------------------------
 
-from __future__ import print_function
-__version__ = "1.2.2"
+__version__ = "1.3.8.7"
 
 import ctypes
 from ctypes import wintypes

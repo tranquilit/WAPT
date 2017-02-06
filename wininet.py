@@ -22,7 +22,6 @@
 #
 # -----------------------------------------------------------------------
 
-from __future__ import print_function
 import sys,time
 from ctypes import *
 from ctypes.wintypes import DWORD

@@ -32,7 +32,6 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from __future__ import print_function
 __version__ = "1.0.0"
 
 import platform,sys,os
