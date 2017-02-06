@@ -54,7 +54,6 @@ begin
     Exit;
 
   FWaptConfigFileName:=AValue;
-  ShowMessage(AValue);
   if AValue<>'' then
   try
     Screen.Cursor:=crHourGlass;
