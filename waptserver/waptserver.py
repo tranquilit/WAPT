@@ -67,8 +67,8 @@ import Queue
 import re
 
 from waptpackage import *
-from .waptserver_utils import *
-from . import waptserver_config
+from waptserver_utils import *
+import waptserver_config
 
 import wakeonlan.wol
 
