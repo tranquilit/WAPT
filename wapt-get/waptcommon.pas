@@ -126,14 +126,14 @@ const
 
   AdvancedMode:Boolean = False;
 
-  WAPTServerMinVersion='1.3.7';
+  WAPTServerMinVersion='1.3.8';
 
 implementation
 
 uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2,
   IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,IdURI,
-  gettext,IdStack,IdCompressorZLib,sha1,IdAuthentication,shfolder,Dialogs;
+  gettext,IdStack,IdCompressorZLib,sha1,IdAuthentication,shfolder;
 
 const
   CacheWaptServerUrl: AnsiString = 'None';
