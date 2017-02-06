@@ -50,7 +50,7 @@ interface
   function WaptgetPath: Utf8String; // c:\wapt\wapt-get.exe
   function WaptservicePath: Utf8String; //c:\wapt\waptservice.exe # obsolete
   function WaptDBPath: Utf8String;
-  function WaptTemplatesRepo(inifilename:String=''): Utf8String; // http://wapt.tranquil.it/wapt/
+  function WaptTemplatesRepo(inifilename:String=''): Utf8String; // https://store.wapt.fr/wapt/
 
   function GetWaptRepoURL: Utf8String; // from wapt-get.ini, can be empty
   Function GetMainWaptRepo:String;   // read from ini, if empty, do a discovery using dns
@@ -979,7 +979,7 @@ begin
      inifilename:=WaptIniFilename;
   Result := IniReadString(inifilename,'Global','templates_repo_url');
   if Result = '' then
-      Result:='http://wapt.tranquil.it/wapt/';
+      Result:='https://store.wapt.fr/wapt/';
 end;
 
 

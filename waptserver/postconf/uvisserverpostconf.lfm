@@ -535,7 +535,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         EditLabel.Caption = 'URL to the package model repository'
         EditLabel.ParentColor = False
         TabOrder = 0
-        Text = 'http://wapt.tranquil.it/wapt'
+        Text = 'https://store.wapt.fr/wapt'
         Visible = False
       end
       object EdDefaultPrefix: TLabeledEdit
@@ -588,7 +588,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           '<body>'
           ''
           '<b>Tranquil IT Systems</b> provides an array of WAPT packages '
-          'at <a href="http://wapt.tranquil.it">wapt.tranquil.it</a> <br>'
+          'at <a href="https://store.wapt.fr">store.wapt.fr</a> <br>'
           'For a quick start with your new WAPT installation, download ready-made'
           'packages and deploy them onto your network .<br>'
           ''

@@ -195,7 +195,7 @@ def get_packages_filenames(waptconfigfile,packages_names):
     wapt.use_hostpackages = False
     # force to use alternate templates repo
     repo = wapt.config.get('global','templates_repo_url')
-    wapt.repositories[0].repo_url = repo if repo else 'http://wapt.tranquil.it/wapt'
+    wapt.repositories[0].repo_url = repo if repo else 'https://store.wapt.fr/wapt'
     if wapt.use_http_proxy_for_templates:
         wapt.repositories[0].proxies =  {'http':wapt.config.get('global','http_proxy'),'https':wapt.config.get('global','http_proxy')}
     else:

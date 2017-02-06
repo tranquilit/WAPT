@@ -93,7 +93,7 @@ object VisWAPTConfig: TVisWAPTConfig
       object edtemplates_repo_url: TLabeledEdit
         Left = 164
         Height = 21
-        Hint = 'E.g. : http://wapt.tranquil.it/wapt'#13#10'Used by WAPT console for duplicating packages.'
+        Hint = 'E.g. : https://store.wapt.fr/wapt'#13#10'Used by WAPT console for duplicating packages.'
         Top = 202
         Width = 220
         EditLabel.AnchorSideTop.Control = edtemplates_repo_url
@@ -109,7 +109,7 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.ParentColor = False
         LabelPosition = lpLeft
         TabOrder = 7
-        Text = 'http://wapt.tranquil.it/wapt'
+        Text = 'https://store.wapt.fr/wapt'
       end
       object edhttp_proxy: TLabeledEdit
         Left = 164
