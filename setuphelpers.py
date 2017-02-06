@@ -23,7 +23,8 @@
 __version__ = "1.3.8.7"
 
 __all__ = \
-['EWaptSetupException',
+['CalledProcessError',
+ 'EWaptSetupException',
  'HKEY_CLASSES_ROOT',
  'HKEY_CURRENT_CONFIG',
  'HKEY_CURRENT_USER',
@@ -3695,7 +3696,7 @@ def fileisodate(filename):
 def dateof(adatetime):
     return adatetime.replace(hour=0,minute=0,second=0,microsecond=0)
 
-
+CalledProcessError = subprocess.CalledProcessError
 
 class EWaptSetupException(Exception):
     pass
