@@ -203,10 +203,10 @@ class JsonOutput(object):
             self.output.append(txt)
 
     def __getattrib__(self, name):
-        if hasattr(self.console,'__getattrib__'):
-            return self.console.__getattrib__(name)
+        if hasattr(self.output,'__getattrib__'):
+            return self.output.__getattrib__(name)
         else:
-            return self.console.__getattribute__(name)
+            return self.output.__getattribute__(name)
 
 
 def wapt_sources_edit(wapt_sources_dir):
@@ -431,7 +431,7 @@ def main():
                     sys.exit(1)
                 result = []
                 if os.path.isdir(args[1]) or os.path.isfile(args[1]):
-                    result.append[PackageEntry().load_control_from_wapt(args[1])]
+                    result.append(PackageEntry().load_control_from_wapt(args[1]))
                 else:
                     if options.update_packages:
                         print(u"Update packages list")
@@ -452,7 +452,8 @@ def main():
                     sys.exit(1)
                 for packagename in args[1:]:
                     params = mywapt.waptdb.params(packagename)
-                    print(u"%s" % params)
+                    print(u"%s : %s" % (packagename,params))
+
 
             elif action == 'list-registry':
                 result = setuphelpers.installed_softwares(' '.join(args[1:]))

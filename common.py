@@ -1875,7 +1875,7 @@ class WaptDB(WaptBaseDB):
 
         def dodepends(explored,packages,depth,missing):
             if depth>MAXDEPTH:
-                raise Exception.create('Max depth in build dependencies reached, aborting')
+                raise Exception('Max depth in build dependencies reached, aborting')
             alldepends = []
             # loop over all package names
             for package in packages:
@@ -1975,6 +1975,14 @@ class WaptDB(WaptBaseDB):
         """
         with self:
             self.db.execute('delete from wapt_package where repo=?',(repo_name,))
+
+    def params(self,packagename):
+        """Return install parameters associated with a package"""
+        with self:
+            cur = self.db.execute("""select install_params from wapt_localstatus where package=?""" ,(packagename,))
+            rows = cur.fetchall()
+            if rows:
+                return json.loads(rows[0][0])
 
 def get_pem_server_certificate(url):
     """Retrieve certificate for further checks"""
@@ -2377,7 +2385,7 @@ class WaptRepo(WaptRemoteRepo):
                                 if port == 80:
                                     url = 'http://%s/wapt' % (wapthost,)
                                     servers.append([not is_inmysubnets(ip),priority,-weight,url])
-                                elif a.port == 443:
+                                elif port == 443:
                                     url = 'https://%s/wapt' % (wapthost)
                                     servers.append([not is_inmysubnets(ip),priority,-weight,url])
                                 else:
@@ -4678,7 +4686,7 @@ class Wapt(object):
         """
         try:
             if self.waptserver and self.waptserver.server_url:
-                host = urlparse(w.waptserver.server_url).hostname
+                host = urlparse(self.waptserver.server_url).hostname
                 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 s.settimeout(1)
                 s.connect((host, 0))
@@ -6008,9 +6016,9 @@ class Wapt(object):
         """
         if self.config.has_option('global','waptupgrade_url'):
             upgradeurl = self.config.get('global','waptupgrade_url')
-        raise NotImplemented()
+        raise NotImplementedError()
 
-    def packages_add_depends(packages,append_depends):
+    def packages_add_depends(self,packages,append_depends):
         """ Add a list of dependencies to existing packages, inc version and build-upload
             packages : list of package names
             append_depends : list of dependencies packages

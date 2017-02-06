@@ -642,6 +642,9 @@ class WaptBaseRepo(object):
             self._load_packages_index()
         return self._packages_date
 
+    def is_available(self):
+        return self.packages_date
+
     def need_update(self,last_modified=None):
         """Check if packges index has changed on repo and local db needs an update
 
@@ -668,10 +671,10 @@ class WaptBaseRepo(object):
             if not last_modified:
                 last_modified = self._packages_date
             if last_modified:
-                logger.debug(u'Check last-modified header for %s to avoid unecessary update' % (self.packages_url,))
+                logger.debug(u'Check last-modified header for repo %s to avoid unecessary update' % (self.name,))
                 current_update = self.is_available()
                 if current_update == last_modified:
-                    logger.info(u'Index from %s has not been updated (last update %s), skipping update' % (self.packages_url,current_update))
+                    logger.info(u'Index for repo %s has not been updated (last update %s), skipping update' % (self.name,current_update))
                     return False
                 else:
                     return True

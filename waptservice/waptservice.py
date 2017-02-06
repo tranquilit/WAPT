@@ -74,6 +74,7 @@ import datetime
 import copy
 
 from ssl import SSLError
+import ssl
 
 import pythoncom
 import ctypes
@@ -90,12 +91,6 @@ from setuphelpers import Version
 from waptpackage import PackageEntry
 
 import windnsquery
-
-try:
-    from waptwua import WaptWUA
-    app.register_blueprint(waptwua.waptwua)
-except Exception as e:
-    pass
 
 from gettext import gettext
 
@@ -144,7 +139,7 @@ class WaptEvent(object):
         self.runstatus = runstatus
 
         self.id = None
-        self.ttl = DEFAULT_TTL
+        self.ttl = self.DEFAULT_TTL
         self.date = time.time()
         # list of ids of subscribers which have not yet retrieved the event
         self.subscribers = []
@@ -424,7 +419,7 @@ def beautify(c):
 def ssl_required(fn):
     @wraps(fn)
     def decorated_view(*args, **kwargs):
-        if current_app.config.get("SSL"):
+        if app.config.get("SSL"):
             if request.is_secure:
                 return fn(*args, **kwargs)
             else:
@@ -470,6 +465,12 @@ waptconfig = WaptServiceConfig()
 app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['SECRET_KEY'] = waptconfig.secret_key
+
+try:
+    from waptwua import WaptWUA
+    app.register_blueprint(waptwua.waptwua)
+except Exception as e:
+    pass
 
 app.jinja_env.filters['beautify'] = beautify
 app.waptconfig = waptconfig
