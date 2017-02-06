@@ -339,7 +339,7 @@ def ensure_unicode(data):
     """
     try:
         if type(data) is str:
-            return data
+            return data.decode(sys.getfilesystemencoding(),'replace')
         if type(data) is bytes:
             return unicode(data, 'utf8', 'replace')
         if isinstance(data,WindowsError):
