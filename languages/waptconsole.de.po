@@ -781,6 +781,18 @@ msgctxt "tviswaptgui.actcleancache.hint"
 msgid "Remove all packages locall cached by WaptConsole"
 msgstr "Alle lokalen Zwischengespeicherte Packete bei WaptCosole entfernen "
 
+#: tviswaptgui.actcomputermgmt.caption
+msgid "Gérer l'ordinateur"
+msgstr ""
+
+#: tviswaptgui.actcomputerservices.caption
+msgid "Gérer les services"
+msgstr ""
+
+#: tviswaptgui.actcomputerusers.caption
+msgid "Gérer les utilisateur et groupes"
+msgstr ""
+
 #: tviswaptgui.actcreatecertificate.caption
 #, fuzzy
 #| msgid "Generate self-signed certificate"
@@ -964,6 +976,10 @@ msgstr "Hostbestand aktualisieren"
 msgctxt "tviswaptgui.actreloadconfig.caption"
 msgid "Reload preferences"
 msgstr "wapt-get.ini neu laden"
+
+#: tviswaptgui.actremoteassist.caption
+msgid "Assistance à distance"
+msgstr ""
 
 #: tviswaptgui.actremoveconflicts.caption
 msgctxt "tviswaptgui.actremoveconflicts.caption"
@@ -1433,6 +1449,10 @@ msgstr "&Tools"
 msgctxt "tviswaptgui.menuitem17.caption"
 msgid "-"
 msgstr "Sprache"
+
+#: tviswaptgui.menuitem2.caption
+msgid "Gestion Windows de l'ordinateur"
+msgstr ""
 
 #: tviswaptgui.menuitem24.caption
 msgid "&Edit"
@@ -2234,6 +2254,11 @@ msgstr "wupanright"
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -2300,6 +2325,9 @@ msgstr "Sind Sie sich sicher, dass Sie %s die Pakete vom Host %s vergessen wolle
 #: uwaptconsoleres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
@@ -2653,6 +2681,10 @@ msgctxt "uwaptconsoleres.rsnobundle"
 msgid "There is no package bundle."
 msgstr "Es gibt keine Packet Bündel."
 
+#: uwaptconsoleres.rsnopackage
+msgid "No package found. Check authorized certificates"
+msgstr ""
+
 #: uwaptconsoleres.rsnoreachableip
 msgid "None IP reachable for this host. Check firewall, routes and remote service status"
 msgstr "Keine IP erreichbar für diesen Host. Überprüfen Sie die Firewall, die Routes und den Remote-Service-Status"
@@ -2677,6 +2709,9 @@ msgstr "Fehler beim erstellen des Pakets"
 #: uwaptconsoleres.rspackageduplicateconfirm
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
@@ -2938,6 +2973,8 @@ msgstr "Anwendung: %s -h "
 #| "Wapt-get version: %s\n"
 #| "Waptconsole version : %s\n"
 #| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
 msgctxt "uwaptconsoleres.rsversion"
 msgid ""
 "Waptconsole version : %s\n"
@@ -3022,6 +3059,8 @@ msgstr ""
 #| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -3032,6 +3071,9 @@ msgstr ""
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
 #| msgid ""
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
 #| "Required server version: %s\n"
@@ -3087,7 +3129,9 @@ msgstr "Fehler beim erstellen des agent : %s"
 
 #: uwaptconsoleres.rswaptsetupuploadsuccess
 #, fuzzy
-#| msgid "WAPT agent and upgrade package successfully created and uploaded to the main repository"
+#| msgid ""
+#| "WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"
 msgid ""
 "WAPT agent and upgrade package successfully built and uploaded to the main repository\n"

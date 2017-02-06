@@ -2504,6 +2504,10 @@ msgctxt "uwaptconsoleres.rsnobundle"
 msgid "There is no package bundle."
 msgstr ""
 
+#: uwaptconsoleres.rsnopackage
+msgid "No package found. Check authorized certificates"
+msgstr ""
+
 #: uwaptconsoleres.rsnoreachableip
 msgid "None IP reachable for this host. Check firewall, routes and remote service status"
 msgstr ""

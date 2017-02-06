@@ -795,6 +795,18 @@ msgctxt "tviswaptgui.actcleancache.hint"
 msgid "Remove all packages locall cached by WaptConsole"
 msgstr "Effacer les paquets mis en cache localement par WaptConsole"
 
+#: tviswaptgui.actcomputermgmt.caption
+msgid "Gérer l'ordinateur"
+msgstr ""
+
+#: tviswaptgui.actcomputerservices.caption
+msgid "Gérer les services"
+msgstr ""
+
+#: tviswaptgui.actcomputerusers.caption
+msgid "Gérer les utilisateur et groupes"
+msgstr ""
+
 #: tviswaptgui.actcreatecertificate.caption
 #, fuzzy
 #| msgid "Generate self-signed certificate"
@@ -978,6 +990,10 @@ msgstr "Actualiser l'inventaire des postes"
 msgctxt "tviswaptgui.actreloadconfig.caption"
 msgid "Reload preferences"
 msgstr "Recharger les préférences"
+
+#: tviswaptgui.actremoteassist.caption
+msgid "Assistance à distance"
+msgstr ""
 
 #: tviswaptgui.actremoveconflicts.caption
 msgctxt "tviswaptgui.actremoveconflicts.caption"
@@ -1445,6 +1461,10 @@ msgstr "&Outils"
 msgctxt "tviswaptgui.menuitem17.caption"
 msgid "-"
 msgstr "-"
+
+#: tviswaptgui.menuitem2.caption
+msgid "Gestion Windows de l'ordinateur"
+msgstr ""
 
 #: tviswaptgui.menuitem24.caption
 msgid "&Edit"
@@ -2189,6 +2209,13 @@ msgid "wupanright"
 msgstr ""
 
 #: uwaptconsoleres.rsaddadsgroups
+#, fuzzy
+#| msgid ""
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -2253,6 +2280,11 @@ msgid "Are you sure you want to forget %s packages from host %s ?"
 msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 
 #: uwaptconsoleres.rsconfirmimport
+#, fuzzy
+#| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 msgctxt "uwaptconsoleres.rsconfirmimport"
 msgid ""
 "Are you sure you want to import\n"
@@ -2567,6 +2599,10 @@ msgctxt "uwaptconsoleres.rsnobundle"
 msgid "There is no package bundle."
 msgstr "Il n'y a pas de groupe de paquets."
 
+#: uwaptconsoleres.rsnopackage
+msgid "No package found. Check authorized certificates"
+msgstr ""
+
 #: uwaptconsoleres.rsnoreachableip
 msgid "None IP reachable for this host. Check firewall, routes and remote service status"
 msgstr "Aucune IP n'est accessible pour cette machine. Vérifiez le firewall, les routes et l'état du service distant."
@@ -2587,6 +2623,11 @@ msgid "Error while building package : %s"
 msgstr "Erreur lors de la compilation du paquet : %s"
 
 #: uwaptconsoleres.rspackageduplicateconfirm
+#, fuzzy
+#| msgid ""
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -2792,6 +2833,11 @@ msgid "Warning, waptsetup-tis.exe or waptagent.exe not present on server, please
 msgstr "Attention, waptsetup-tis.exe ou waptagent.exe ne sont pas présents sur le serveur."
 
 #: uwaptconsoleres.rswaptagentoldversion
+#, fuzzy
+#| msgid ""
+#| "Warning, the version of the waptagent.exe installer is too old.\n"
+#| "Current waptagent.exe version: %s\n"
+#| "waptsetup-tis.exe version: %s\n"
 msgid ""
 "Warning, the version of the waptagent.exe installer is too old.\n"
 "Current waptagent.exe version: %s\n"
@@ -2840,6 +2886,8 @@ msgstr "Vous devez d'abord définir le préfixe des paquets dans les préférenc
 #| msgid ""
 #| "Error on WAPT server:\n"
 #| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -2850,6 +2898,9 @@ msgstr ""
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
 #| msgid ""
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
 #| "Required server version: %s\n"
@@ -2871,6 +2922,8 @@ msgstr "Erreur lors de la création de l'agent : %s"
 #, fuzzy
 #| msgid ""
 #| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"
 msgid ""

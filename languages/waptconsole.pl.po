@@ -761,6 +761,18 @@ msgctxt "tviswaptgui.actcleancache.hint"
 msgid "Remove all packages locall cached by WaptConsole"
 msgstr ""
 
+#: tviswaptgui.actcomputermgmt.caption
+msgid "Gérer l'ordinateur"
+msgstr ""
+
+#: tviswaptgui.actcomputerservices.caption
+msgid "Gérer les services"
+msgstr ""
+
+#: tviswaptgui.actcomputerusers.caption
+msgid "Gérer les utilisateur et groupes"
+msgstr ""
+
 #: tviswaptgui.actcreatecertificate.caption
 msgctxt "tviswaptgui.actcreatecertificate.caption"
 msgid "Build certificate"
@@ -933,6 +945,10 @@ msgstr ""
 #: tviswaptgui.actreloadconfig.caption
 msgctxt "tviswaptgui.actreloadconfig.caption"
 msgid "Reload preferences"
+msgstr ""
+
+#: tviswaptgui.actremoteassist.caption
+msgid "Assistance à distance"
 msgstr ""
 
 #: tviswaptgui.actremoveconflicts.caption
@@ -1383,6 +1399,10 @@ msgstr ""
 #: tviswaptgui.menuitem17.caption
 msgctxt "tviswaptgui.menuitem17.caption"
 msgid "-"
+msgstr ""
+
+#: tviswaptgui.menuitem2.caption
+msgid "Gestion Windows de l'ordinateur"
 msgstr ""
 
 #: tviswaptgui.menuitem24.caption
@@ -2482,6 +2502,10 @@ msgstr ""
 #: uwaptconsoleres.rsnobundle
 msgctxt "uwaptconsoleres.rsnobundle"
 msgid "There is no package bundle."
+msgstr ""
+
+#: uwaptconsoleres.rsnopackage
+msgid "No package found. Check authorized certificates"
 msgstr ""
 
 #: uwaptconsoleres.rsnoreachableip
