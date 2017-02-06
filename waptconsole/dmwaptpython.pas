@@ -41,7 +41,7 @@ var
   DMPython: TDMPython;
 
 implementation
-uses waptcommon,inifiles,forms,controls,dialogs;
+uses waptcommon,inifiles,forms,controls;
 {$R *.lfm}
 
 procedure TDMPython.SetWaptConfigFileName(AValue: Utf8String);
