@@ -117,6 +117,7 @@ __all__ = \
  'local_groups',
  'local_users',
  'local_desktops',
+ 'local_users_profiles',
  'logger',
  'makepath',
  'memory_status',
@@ -3597,6 +3598,48 @@ def local_desktops():
             if isdir(makepath(image_path,'Bureau')):
                 result.append(makepath(image_path,'Bureau'))
 
+            i += 1
+        except WindowsError as e:
+            # WindowsError: [Errno 259] No more data is available
+            if e.winerror == 259:
+                break
+            else:
+                raise
+    return result
+
+
+def local_users_profiles():
+    """Return a list of all local user's profile paths
+
+    Args:
+        None
+
+    Returns:
+        list : list of desktop path
+
+    >>> local_desktops()
+    [u'C:\\Windows\\ServiceProfiles\\LocalService',
+     u'C:\\Windows\\ServiceProfiles\\NetworkService',
+     u'C:\\Users\\install',
+     u'C:\\Users\\UpdatusUser',
+     u'C:\\Users\\administrateur',
+     u'C:\\Users\\htouvet-adm']
+    """
+    result = []
+    profiles_path = r'SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList'
+    key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,profiles_path)
+
+    import _winreg
+    import locale
+    os_encoding=locale.getpreferredencoding()
+    i = 0
+    while True:
+        try:
+            profid = _winreg.EnumKey(key, i).decode(os_encoding)
+            prof_key = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s"%(profiles_path,profid))
+            image_path = reg_getvalue(prof_key,'ProfileImagePath','')
+            if isdir(image_path):
+                result.append(image_path)
             i += 1
         except WindowsError as e:
             # WindowsError: [Errno 259] No more data is available
