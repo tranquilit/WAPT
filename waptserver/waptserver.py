@@ -41,7 +41,7 @@ import hashlib
 from passlib.hash import sha512_crypt,bcrypt
 import pymongo
 from pymongo import MongoClient
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from functools import wraps
 import logging
 import ConfigParser
@@ -75,9 +75,9 @@ from . import waptserver_config
 import wakeonlan.wol
 
 # i18n
-from flask.ext.babel import Babel
+from flask_babel import Babel
 try:
-    from flask.ext.babel import gettext
+    from flask_babel import gettext
 except ImportError:
     gettext = (lambda s:s)
 _ = gettext

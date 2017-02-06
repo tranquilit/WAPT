@@ -19,8 +19,6 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from __future__ import print_function
-from __future__ import absolute_import
 __version__ = "1.3.8.5"
 
 import time
@@ -48,9 +46,9 @@ from rocket import Rocket
 
 # flask
 from flask import request, Flask,Response, send_from_directory, send_file, session, g, redirect, url_for, abort, render_template, flash, stream_with_context
-from flask.ext.paginate import Pagination
+from flask_paginate import Pagination
 import jinja2
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from werkzeug.utils import html
 
 from urlparse import urlparse

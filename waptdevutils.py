@@ -33,7 +33,6 @@
     exported functions instead of local Wapt functions (except crypto signatures)
 
 """
-from __future__ import print_function
 __version__ = "1.3.8"
 
 import sys,os
@@ -390,7 +389,7 @@ def add_ads_groups(waptconfigfile,hosts_list,wapt_server_user,wapt_server_passwd
     for h in hosts:
         try:
             hostname = h['host']['computer_fqdn']
-            print('Computer %s... ' % hostname, end=' ')
+            print('Computer %s... ' % hostname)
 
             groups = get_computer_groups(h['host']['computer_name'])
             wapt_groups = h['depends']

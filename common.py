@@ -20,7 +20,6 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from __future__ import print_function
 __version__ = "1.3.8.6"
 import os
 import re
@@ -4196,7 +4195,7 @@ class Wapt(object):
                         try:
                             if total>1:
                                 stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
-                                print(stat,end='')
+                                print(stat)
                             else:
                                 stat = ''
                             self.runstatus='Downloading %s : %s' % (entry.package,stat)
@@ -5142,7 +5141,7 @@ class Wapt(object):
                             sys.path = oldpath
 
                     else:
-                        print('No session-setup.', end=' ')
+                        print('No session-setup.')
                 finally:
                     # cleanup
                     if 'setup' in dir() and setup is not None:
@@ -5155,7 +5154,7 @@ class Wapt(object):
                     logger.debug(u'  Change current directory to %s.' % previous_cwd)
                     os.chdir(previous_cwd)
             else:
-                print('Already installed.', end=' ')
+                print('Already installed.')
 
     def uninstall(self,packagename,params_dict={}):
         """Launch the uninstall script of an installed package"

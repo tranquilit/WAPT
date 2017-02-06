@@ -20,7 +20,6 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from __future__ import print_function
 __version__ = "1.3.8.6"
 
 __all__ = [
@@ -955,7 +954,7 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
                         elif received>=total:
                             print(u"  -> download finished (%.0f Kb/s)" % (total /(1024.0*(time.time()+.001-start_time))))
                         else:
-                            print(u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed ), end=' ')
+                            print(u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total,speed ))
                     except:
                         return False
                 return True
@@ -1258,7 +1257,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                         try:
                             if total>1:
                                 stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
-                                print(stat, end=' ')
+                                print(stat)
                             else:
                                 stat = ''
                         except:
