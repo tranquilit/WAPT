@@ -86,6 +86,7 @@ __all__ = \
  'get_appath',
  'get_computername',
  'get_current_user',
+ 'get_default_gateways',
  'get_domain_fromregistry',
  'get_file_properties',
  'get_hostname',
@@ -99,6 +100,9 @@ __all__ = \
  'glob',
  'host_info',
  'inifile_hasoption',
+ 'inifile_hassection',
+ 'inifile_deleteoption',
+ 'inifile_deletesection',
  'inifile_readstring',
  'inifile_writestring',
  'installed_softwares',
@@ -200,6 +204,7 @@ __all__ = \
  'winshell',
  'wmi_info',
  'wmi_info_basic',
+ 'wmi_as_struct',
  'windows_version',
  'datetime2isodate',
  'httpdatetime2isodate',
@@ -230,6 +235,7 @@ import tempfile
 import shutil
 import shlex
 
+import _subprocess
 import subprocess
 from subprocess import Popen, PIPE
 import psutil
@@ -365,8 +371,12 @@ def ensure_unicode(data):
 
 class CalledProcessErrorOutput(subprocess.CalledProcessError):
     """CalledProcessError with printed output"""
+
     def __str__(self):
-        return "Command '%s' returned non-zero exit status %d.\nOutput:%s" % (self.cmd, self.returncode,self.output.encode(sys.getfilesystemencoding(),errors='replace'))
+        try:
+            return "Command '%s' returned non-zero exit status %d.\nOutput:%s" % (self.cmd, self.returncode,self.output.encode(sys.getfilesystemencoding(),errors='replace'))
+        except:
+            return "Command '%s' returned non-zero exit status %d.\nOutput:%s" % (self.cmd, self.returncode,self.output)
 
 
 def ensure_list(csv_or_list,ignore_empty_args=True,allow_none = False):
@@ -881,7 +891,8 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
         dst (str): path to target directory (created if not present)
         ignore (func) : callback func(root_dir,filenames) which returns names to ignore
         onreplace (func) : callback func(src,dst):boolean called when a file will be replaced to decide what to do.
-                        default is to not replace if target exist. can be default_override or default_override_older.
+                        default is to not replace if target exists. can be default_overwrite or default_overwrite_older or
+                        custom function.
         oncopy (func) : callback func(msg,src,dst) called when a file is copied.
                         default is to log in debug level the operation
         enable_replace_at_reboot (boolean): if True, files which are locked will be scheduled for replace at next reboot
@@ -971,7 +982,7 @@ class RunReader(threading.Thread):
         try:
             self.callable(*self.args, **self.kwargs)
         except Exception as e:
-            print(u"%s"%e)
+            print(ensure_unicode(e))
 
 
 class TimeoutExpired(Exception):
@@ -987,6 +998,32 @@ class TimeoutExpired(Exception):
         return ("Command '%s' timed out after %s seconds with output '%s'" %
                 (self.cmd, self.timeout, self.output))
 
+
+class RunOutput(unicode):
+    u"""Subclass of unicode to return returncode from runned command in addition to output
+
+    >>> run(r'cmd /C dir c:\toto ',accept_returncodes=[0,1])
+    No handlers could be found for logger "root"
+    <RunOuput returncode :[0, 1]>
+     Le volume dans le lecteur C n'a pas de nom.
+     Le numéro de série du volume est 74EF-5918
+
+    Fichier introuvable
+     Répertoire de c:\
+    """
+
+    def __new__(cls, value):
+        if isinstance(value,list):
+            value = u''.join([ensure_unicode(line) for line in value])
+        self = super(RunOutput, cls).__new__(cls, value)
+        self.returncode = None
+        return self
+
+    def __repr__(self):
+        return "<RunOuput returncode :%s>\n%s"%(self.returncode,self.encode(sys.getfilesystemencoding(),'replace'))
+
+    def __str__(self):
+        return self.encode(sys.getfilesystemencoding(),'replace')
 
 def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=None,pidlist=None,return_stderr=True,**kwargs):
     r"""Run the command cmd in a shell and return the output and error text as string
@@ -1078,21 +1115,23 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=Non
             pidlist.remove(proc.pid)
             killtree(proc.pid)
         raise TimeoutExpired(cmd,u''.join(output),timeout)
-    proc.returncode = win32process.GetExitCodeProcess(proc._handle)
+    proc.returncode = _subprocess.GetExitCodeProcess(proc._handle)
     if proc.pid in pidlist:
         pidlist.remove(proc.pid)
         killtree(proc.pid)
     if not proc.returncode in accept_returncodes:
         if return_stderr != output:
-            raise CalledProcessErrorOutput(proc.returncode,cmd,''.join(output+return_stderr))
+            raise CalledProcessErrorOutput(proc.returncode,cmd,u''.join(output+return_stderr))
         else:
-            raise CalledProcessErrorOutput(proc.returncode,cmd,''.join(output))
+            raise CalledProcessErrorOutput(proc.returncode,cmd,u''.join(output))
     else:
         if proc.returncode == 0:
             logger.info(u'%s command returns code %s' % (ensure_unicode(cmd),proc.returncode))
         else:
             logger.warning(u'%s command returns code %s' % (ensure_unicode(cmd),proc.returncode))
-    return u''.join(output)
+    result = RunOutput(output)
+    result.returncode = proc.returncode
+    return result
 
 
 def run_notfatal(*cmd,**args):
@@ -1676,6 +1715,69 @@ def inifile_hasoption(inifilename,section,key):
     return inifile.has_section(section) and inifile.has_option(section,key)
 
 
+def inifile_hassection(inifilename,section):
+    """Check if an option is present in section of the inifile
+
+    Args:
+        inifilename (str): Path to the ini file
+        section (str): section
+
+    Returns:
+        boolean : True if the key exists
+
+    >>> inifile_writestring('c:/tranquilit/wapt/tests/test.ini','global','version','1.1.2')
+    >>> print inifile_hassection('c:/tranquilit/wapt/tests/test.ini','global')
+    True
+
+    """
+    inifile = RawConfigParser()
+    inifile.read(inifilename)
+    return inifile.has_section(section)
+
+
+def inifile_deleteoption(inifilename,section,key):
+    """Remove a key within the section of the inifile
+
+    Args:
+        inifilename (str): Path to the ini file
+        section (str): section
+        key (str): value key of option to remove
+
+    Returns:
+        boolean : True if the key/option has been removed
+
+    >>> inifile_writestring('c:/tranquilit/wapt/tests/test.ini','global','version','1.1.2')
+    >>> print inifile_hasoption('c:/tranquilit/wapt/tests/test.ini','global','version')
+    True
+    >>> print inifile_deleteoption('c:/tranquilit/wapt/tests/test.ini','global','version')
+    False
+
+    """
+    inifile = RawConfigParser()
+    inifile.read(inifilename)
+    inifile.remove_option(section,key)
+    inifile.write(open(inifilename,'w'))
+    return inifile.has_section(section) and not inifile.has_option(section,key)
+
+
+def inifile_deletesection(inifilename,section):
+    """Remove a section within the inifile
+
+    Args:
+        inifilename (str): Path to the ini file
+        section (str): section to remove
+
+    Returns:
+        boolean : True if the section has been removed
+
+    """
+    inifile = RawConfigParser()
+    inifile.read(inifilename)
+    inifile.remove_section(section)
+    inifile.write(open(inifilename,'w'))
+    return not inifile.has_section(section)
+
+
 def inifile_readstring(inifilename,section,key,default=None):
     """Read a string parameter from inifile
 
@@ -2144,12 +2246,15 @@ def uninstall_key_exists(uninstallkey):
     return False
 
 
-def installed_softwares(keywords='',uninstallkey=None):
+def installed_softwares(keywords='',uninstallkey=None,name=None):
     """return list of installed software from registry (both 32bit and 64bit
 
     Args;
         keywords (str or list): string to lookup in key, display_name or publisher fields
         uninstallkey : filter on a specific uninstall key instead of fuzzy search
+
+    .. versionchanged:: 1.3.11
+        name (str regexp) : filter on a regular expression on software name
 
     Returns
         dict: {'key', 'name', 'version', 'install_date', 'install_location'
@@ -2161,6 +2266,12 @@ def installed_softwares(keywords='',uninstallkey=None):
     ...         print uninstall_cmd(soft['key'])
     ???
     """
+
+    if name is not None:
+        name_re = re.compile(name)
+    else:
+        name_re = None
+
     def check_words(target,words):
         mywords = target.lower()
         result = not words or mywords
@@ -2193,7 +2304,8 @@ def installed_softwares(keywords='',uninstallkey=None):
                     else:
                         system_component = 0
                     if (uninstallkey is None and display_name and check_words(subkey+' '+display_name+' '+publisher,mykeywords)) or\
-                            (uninstallkey is not None and (subkey == uninstallkey)):
+                            (uninstallkey is not None and (subkey == uninstallkey)) or\
+                            (name_re is not None and name_re.match(display_name)):
                         result.append({'key':subkey,
                             'name':display_name,
                             'version':display_version,
@@ -2211,7 +2323,7 @@ def installed_softwares(keywords='',uninstallkey=None):
                         raise
         return result
     result = list_fromkey("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
-    if platform.machine() == 'AMD64':
+    if iswin64():
         result.extend(list_fromkey("Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall"))
     return result
 
@@ -2440,15 +2552,18 @@ def win_startup_info():
 
 
 def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_BIOS','Win32_NetworkAdapter','Win32_Printer','Win32_VideoController','Win32_LogicalDisk','Win32_OperatingSystem'],
-        exclude_subkeys=['OEMLogoBitmap']):
+        exclude_subkeys=['OEMLogoBitmap'],**where):
     """Get WMI machine informations as dictionaries
 
     """
     result = {}
-    import wmi
     wm = wmi.WMI()
     for key in keys:
-        cs = getattr(wm,key)()
+        wmiclass = getattr(wm,key)
+        if where:
+            cs = wmiclass.query(**where)
+        else:
+            cs = wmiclass()
         if len(cs)>1:
             na = result[key] = []
             for cs2 in cs:
@@ -2468,6 +2583,27 @@ def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_B
                             result[key][k] = prop.Value
     return result
 
+def wmi_as_struct(wmi_object,exclude_subkeys=['OEMLogoBitmap']):
+    """Convert a wmi object to a simple python list/dict structure"""
+    result = None
+    if len(wmi_object)>1:
+        na = result = []
+        for cs2 in wmi_object:
+            na.append({})
+            for k in cs2.properties.keys():
+                if not k in exclude_subkeys:
+                    prop = cs2.wmi_property(k)
+                    if prop:
+                        na[-1][k] = prop.Value
+    elif len(wmi_object)>0:
+        result = {}
+        if wmi_object:
+            for k in wmi_object[0].properties.keys():
+                if not k in exclude_subkeys:
+                    prop = wmi_object[0].wmi_property(k)
+                    if prop:
+                        result[k] = prop.Value
+    return result
 
 def wmi_info_basic():
     """Return uuid, serial, model, vendor from WMI
@@ -2479,7 +2615,10 @@ def wmi_info_basic():
     >>> 'System_Information' in r
     True
     """
-    return {'System_Information': wmi_info(keys=['Win32_ComputerSystemProduct'])['Win32_ComputerSystemProduct']}
+    result = {u'System_Information':
+            wmi_as_struct(wmi.WMI().Win32_ComputerSystemProduct.query(fields=['UUID','IdentifyingNumber','Name','Vendor']))
+            }
+    return result
 
 def critical_system_pending_updates():
     """Return list of not installed critical updates
@@ -2493,6 +2632,17 @@ def critical_system_pending_updates():
     updateSearcher = updateSession.CreateupdateSearcher()
     searchResult = updateSearcher.Search("IsInstalled=0 and Type='Software'")
     return [ update.Title for update in searchResult.Updates if update.MsrcSeverity == 'Critical']
+
+
+def get_default_gateways():
+    import wmi
+    wmi_obj = wmi.WMI()
+    connections = wmi_obj.query("select IPAddress,DefaultIPGateway from Win32_NetworkAdapterConfiguration where IPEnabled=TRUE")
+    result = []
+    for connection in connections:
+        if connection.DefaultIPGateway:
+            result.append(connection.DefaultIPGateway[0])
+    return result
 
 def host_info():
     """Read main workstation informations, returned as a dict
@@ -2511,10 +2661,10 @@ def host_info():
     info['system_manufacturer'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\BIOS','SystemManufacturer')
     info['system_productname'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\BIOS','SystemProductName')
 
-    info['computer_name'] =  wincomputername()
-    info['computer_fqdn'] =  get_hostname()
-    info['dns_domain'] = get_domain_fromregistry()
-    info['workgroup_name'] = windomainname()
+    info['computer_name'] =  ensure_unicode(wincomputername())
+    info['computer_fqdn'] =  ensure_unicode(get_hostname())
+    info['dns_domain'] = ensure_unicode(get_domain_fromregistry())
+    info['workgroup_name'] = ensure_unicode(windomainname())
 
     try:
         import win32security
@@ -2533,8 +2683,8 @@ def host_info():
     info['win64'] = iswin64()
     info['description'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\LanmanServer\Parameters','srvcomment')
 
-    info['registered_organization'] =  registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOrganization')
-    info['registered_owner'] =  registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOwner')
+    info['registered_organization'] =  ensure_unicode(registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOrganization'))
+    info['registered_owner'] =  ensure_unicode(registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOwner'))
     win_info = keyfinder.windows_product_infos()
     info['windows_version'] =  platform.platform()
     info['windows_product_infos'] =  win_info
@@ -2610,10 +2760,10 @@ def get_last_logged_on_user():
 
 def local_drives():
     w = wmi.WMI()
-    keystr = ['DriveType','Description','FileSystem','Name','VolumeSerialNumber']
+    keystr = ['Caption','DriveType','Description','FileSystem','Name','VolumeSerialNumber']
     keyint = ['FreeSpace','Size']
     result = {}
-    for disk in w.Win32_LogicalDisk():
+    for disk in w.Win32_LogicalDisk(fields=keystr+keyint):
         details = {}
         for key in keystr:
             details[key] = getattr(disk,key)
@@ -3436,27 +3586,35 @@ def getproductprops(installer_path):
 
 
 
-def need_install(key,min_version=None,force=False):
+def need_install(key,min_version=None,force=False,get_version=None):
     """Return True if the software with key can be found in uninstall registry
         and the registred version is equal or greater than min_version
 
     Args:
         key (str) : uninstall key
-        min_version (str) : minimum version or None if don't check verion
+        min_version (str) : minimum version or None if don't check verion (like when key is specific for each soft version)
+        get_version (callable) : optional func to get installed software version from one installed_softwares item
+            if not provided, version is taken from 'version' attribute in uninstall registry
     Returns:
         boolean
 
     """
-    if force or not key:
+    if force or key is None:
         return True
     else:
         current = installed_softwares(uninstallkey=key)
         for soft in current:
-            if not min_version or Version(min_version) <= soft['version']:
+            if min_version is None:
+                return False
+            if get_version is not None:
+                installed_version = get_version(soft)
+            else:
+                installed_version = soft['version']
+            if Version(min_version) <= installed_version:
                 return False
         return True
 
-def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=[0,1603,3010],timeout=300,properties={}):
+def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=[0,1603,3010],timeout=300,properties={},get_version=None):
     """Install silently the supplied msi file, and add the uninstall key to
     global uninstall key list
 
@@ -3469,7 +3627,8 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
     Args:
         msi (str) : path to the MSI file
         min_version (str) : if installed version is equal or gretaer than this, don't install
-                            if not provided, guess it from exe setup file properties.
+                            if not provided (None), guess it from exe setup file properties.
+                            if == '': ignore version check.
         kill_before (list of str) : processes to kill before setup, to avoid file locks
                                     issues.
         accept_returncodes (list of int) : return codes which are acceptable and don't raise exception
@@ -3489,17 +3648,17 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
     WAPT = caller_globals.get('WAPT',None)
     force = WAPT and WAPT.options.force
 
-    if not min_version:
+    if min_version is None:
         min_version = getproductprops(msi)['version']
 
-    if need_install(key,min_version=min_version,force=force):
+    if need_install(key,min_version=min_version or None,force=force,get_version=get_version):
         if killbefore:
             killalltasks(killbefore)
         props = ' '.join(["%s=%s" % (k,v) for (k,v) in properties.iteritems()])
         run(r'msiexec /norestart /q /i "%s" %s' % (msi,props),accept_returncodes=accept_returncodes,timeout=timeout)
         if key and not installed_softwares(uninstallkey=key):
             error('MSI %s has been installed but the uninstall key %s can not be found' % (msi,key))
-        if key and min_version and need_install(key,min_version=min_version,force=False):
+        if key and min_version and need_install(key,min_version=min_version or None,force=False):
             error('MSI %s has been installed and the uninstall key %s found but version is not good' % (msi,key))
     else:
         print('MSI %s already installed. Skipping msiexec' % msi)
@@ -3507,7 +3666,7 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
         if 'uninstallkey' in caller_globals and not key in caller_globals['uninstallkey']:
             caller_globals['uninstallkey'].append(key)
 
-def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefore=[],accept_returncodes=[0,1603,3010],timeout=300):
+def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbefore=[],accept_returncodes=[0,1603,3010],timeout=300,get_version=None):
     """Install silently the supplied setup executable file, and add the uninstall key to
     global uninstallkey list if it is defined.
 
@@ -3523,18 +3682,22 @@ def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefor
                             if not provided, tries to guess them.
         key (str) : uninstall key to check in registry and to add to uninstallkey global list
         min_version (str) : if installed version is equal or gretaer than this, don't install
-                            if not provided, guess it from exe setup file properties.
+                            if not provided (None), guess it from exe setup file properties.
+                            if == '': ignore version check.
         kill_before (list of str) : processes to kill before setup, to avoid file locks
                                     issues.
+        get_version (callable) : optional func to get installed software version from one entry retunred by installed_softwares
+            if not provided, version is taken from 'version' attribute in uninstall registry
     Returns:
         None
 
     """
     if not isfile(exe):
         error('setup exe file %s not found in package' % exe)
-    if not silentflags:
+    if silentflags is None:
         silentflags = getsilentflags(exe)
-    if not min_version:
+    # use empty string to ignore version checking
+    if min_version is None:
         min_version = getproductprops(exe)['version']
 
     import inspect
@@ -3542,13 +3705,13 @@ def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefor
     WAPT = caller_globals.get('WAPT',None)
     force = WAPT and WAPT.options.force
 
-    if need_install(key,min_version=min_version,force=force):
+    if need_install(key,min_version=min_version or None,force=force,get_version=get_version):
         if killbefore:
             killalltasks(killbefore)
         run(r'"%s" %s' % (exe,silentflags),accept_returncodes=accept_returncodes,timeout=timeout)
         if key and not installed_softwares(uninstallkey=key):
             error('Setup %s has been ran but the uninstall key %s can not be found' % (exe,key))
-        if key and min_version and need_install(key,min_version=min_version,force=False):
+        if key and min_version is not None and need_install(key,min_version=min_version or None,force=False):
             error('Setup %s has been and uninstall key %s found but version is not good' % (exe,key))
     else:
         print('Exe setup %s already installed. Skipping' % exe)
@@ -3558,10 +3721,9 @@ def install_exe_if_needed(exe,silentflags='',key=None,min_version=None,killbefor
             caller_globals['uninstallkey'].append(key)
 
 
-def installed_windows_updates():
+def installed_windows_updates(**filter):
     """return list of installed updates, indepently from WUA agent"""
-    return wmi_info(keys=['Win32_QuickFixEngineering'])['Win32_QuickFixEngineering']
-
+    return wmi_as_struct(wmi.WMI().Win32_QuickFixEngineering.query(**filter))
 
 def local_desktops():
     """Return a list of all local user's desktops paths
