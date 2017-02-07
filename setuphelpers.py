@@ -226,6 +226,7 @@ __all__ = \
  'local_admins',
  'local_group_memberships',
  'local_group_members',
+ 'set_computer_description',
  ]
 
 import os
@@ -259,6 +260,7 @@ import win32pdhutil
 import msilib
 import win32service
 import win32serviceutil
+import win32process
 import glob
 import ctypes
 
@@ -677,6 +679,7 @@ def file_is_locked(path,timeout=5):
     while count>0:
         try:
             f = open(path,'ab')
+            f.close()
             return False
         except IOError as e:
             if e.errno==13:
@@ -2468,6 +2471,12 @@ def wmi_info_basic():
             }
     return result
 
+def set_computer_description(description):
+    """Change the computer descrption"""
+    for win32_os in wmi.WMI().Win32_OperatingSystem():
+        win32_os.Description = description
+
+
 def critical_system_pending_updates():
     """Return list of not installed critical updates
 
@@ -2755,13 +2764,28 @@ def add_user_to_group (user, group):
     user_group_info = dict (
       domainandname = user
     )
-    win32net.NetLocalGroupAddMembers (None, group, 3, [user_group_info])
+    try:
+        win32net.NetLocalGroupAddMembers (None, group, 3, [user_group_info])
+    except win32net.error as e:
+        # pass if already member of the group
+        if e[0] != 1378:
+            raise
+        else:
+            logger.debug(u'add_user_to_group %s %s : %s'% (user,group,ensure_unicode(e)))
+
 
 def remove_user_from_group (user, group):
     """Remove membership from a local group for a user
 
     """
-    win32net.NetLocalGroupDelMembers (None, group, [user])
+    try:
+        win32net.NetLocalGroupDelMembers (None, group, [user])
+    except win32net.error as e:
+        # pass if not member of the group
+        if e[0] != 1377:
+            raise
+        else:
+            logger.debug(u'remove_user_from_group %s %s : %s'% (user,group,ensure_unicode(e)))
 
 def delete_user (user):
     """Delete a local user
@@ -2922,17 +2946,25 @@ def remove_tree(*args, **kwargs):
         kwargs['ignore_errors'] = True
     return shutil.rmtree(*args, **kwargs)
 
-def makepath(a, *p):
+def makepath(*p):
     r"""Create a path given the components passed, but with saner defaults
     than os.path.join.
 
     In particular, removes ending path separators (backslashes) from components
 
-    >>> makepath(programfiles,'Mozilla','Firefox')
-    'C:\\Program Files\\Mozilla\\Firefox'
+    >>> makepath('c:',programfiles)
+    'C:\\Program Files'
     """
-    p = [e.lstrip(os.path.sep) for e in p]
-    return os.path.join(a, *p)
+    parts = []
+    for part in p:
+        # workaround for bad designed functions
+        if hasattr(part,'__call__'):
+            part = part()
+        part = part.lstrip(os.path.sep)
+        if part.endswith(':'):
+            part += os.path.sep
+        parts.append(part)
+    return os.path.join(*parts)
 
 def service_installed(service_name):
     """Return True if the service is installed"""
