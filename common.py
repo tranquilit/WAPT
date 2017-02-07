@@ -4912,11 +4912,6 @@ class Wapt(object):
                 # find proper certificate
                 crt = None
 
-                # first in same PEM file as key
-                crt = SSLCertificate(key.private_key)
-                if not crt.is_valid() or not crt.match_key(key):
-                    crt = None
-
                 # then in same directory as key
                 if not crt:
                     for fn in glob.glob(os.path.join(os.path.dirname(key.private_key),'*.crt')):
