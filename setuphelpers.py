@@ -226,6 +226,7 @@ __all__ = \
  'local_admins',
  'local_group_memberships',
  'local_group_members',
+ 'set_computer_description',
  ]
 
 import os
@@ -2625,6 +2626,12 @@ def wmi_info_basic():
             }
     return result
 
+def set_computer_description(description):
+    """Change the computer descrption"""
+    for win32_os in wmi.WMI().Win32_OperatingSystem():
+        win32_os.Description = description
+
+
 def critical_system_pending_updates():
     """Return list of not installed critical updates
 
@@ -2912,17 +2919,31 @@ def add_user_to_group (user, group):
     user_group_info = dict (
       domainandname = user
     )
-    win32net.NetLocalGroupAddMembers (None, group, 3, [user_group_info])
+    try:
+        win32net.NetLocalGroupAddMembers (None, group, 3, [user_group_info])
+    except win32net.error as e:
+        # pass if already member of the group
+        if e[0] != 1378:
+            raise
+        else:
+            logger.debug(u'add_user_to_group %s %s : %s'% (user,group,ensure_unicode(e)))
+
 
 def remove_user_from_group (user, group):
     """Remove membership from a local group for a user
 
     """
-    win32net.NetLocalGroupDelMembers (None, group, [user])
+    try:
+        win32net.NetLocalGroupDelMembers (None, group, [user])
+    except win32net.error as e:
+        # pass if not member of the group
+        if e[0] != 1377:
+            raise
+        else:
+            logger.debug(u'remove_user_from_group %s %s : %s'% (user,group,ensure_unicode(e)))
 
 def delete_user (user):
     """Delete a local user
-
     """
     try:
         win32net.NetUserDel (None, user)
