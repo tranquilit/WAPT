@@ -226,6 +226,13 @@ def wapt_sources_edit(wapt_sources_dir):
     else:
         os.startfile(wapt_sources_dir)
 
+def expand_args(args):
+    """Return list of unicode file paths expanded from wildcard list args"""
+    all_args = []
+    for a in ensure_list(args):
+        all_args.extend([os.path.abspath(p) for p in glob.glob(ensure_unicode(a))])
+    return all_args
+
 def guess_package_root_dir(fn):
     """return the root dir of package development dir given
             control fn,
@@ -272,9 +279,10 @@ def main():
         if not options.config:
             if action in development_actions and os.path.isfile(default_waptconsole_ini):
                 config_file = default_waptconsole_ini
-                logger.info(u'Development mode, using Waptconsole configuration')
+                logger.info(u'/!\ Development mode, using Waptconsole configuration %s '%config_file)
             else:
                 config_file = default_waptservice_ini
+                logger.info(u'Using local waptservice configuration %s '%config_file)
         else:
             config_file = options.config
         # Config file
@@ -353,17 +361,17 @@ def main():
                     print(u"You must provide at least one package name")
                     sys.exit(1)
 
-                if os.path.isdir(args[1]) or os.path.isfile(args[1]):
-                    if action == 'install':
-                        print(u"Installing WAPT file %s" % ensure_unicode(args[1]))
-                        # abort if there is already a running install in progress
-                        if running_install:
-                            raise Exception(u'Running wapt progresses (%s), please wait...' % (running_install,))
-                        result = {u'install':[]}
-                        for fn in args[1:]:
-                            fn = guess_package_root_dir(fn)
-                            res = mywapt.install_wapt(fn,params_dict = params_dict)
-                            result['install'].append((fn,res))
+                if os.path.isdir(args[1]) or os.path.isfile(args[1]) or '*' in args[1]:
+                    all_args = expand_args(args[1:])
+                    print(u"Installing WAPT files %s" % ", ".join(all_args))
+                    # abort if there is already a running install in progress
+                    if running_install:
+                        raise Exception(u'Running wapt progresses (%s), please wait...' % (running_install,))
+                    result = {u'install':[]}
+                    for fn in all_args:
+                        fn = guess_package_root_dir(fn)
+                        res = mywapt.install_wapt(fn,params_dict = params_dict)
+                        result['install'].append((fn,res))
                 else:
                     print(u"%sing WAPT packages %s" % (action,','.join(args[1:])))
                     if options.update_packages:
@@ -429,19 +437,24 @@ def main():
                     print(u"You must provide at least one package name to show")
                     sys.exit(1)
                 result = []
-                if os.path.isdir(args[1]) or os.path.isfile(args[1]):
-                    result.append(PackageEntry().load_control_from_wapt(args[1]))
-                else:
-                    if options.update_packages:
+                if options.update_packages:
+                    if not options.json_output:
                         print(u"Update packages list")
-                        mywapt.update()
-                    for packagename in args[1:]:
-                        result.extend(mywapt.waptdb.packages_matching(packagename))
+                    mywapt.update()
+
+                all_args = expand_args(args[1:])
+                if all_args:
+                    if os.path.isdir(arg) or os.path.isfile(arg):
+                        control = PackageEntry().load_control_from_wapt(arg)
+                        result.append(control)
+                else:
+                    for arg in args[1:]:
+                        result.extend(mywapt.waptdb.packages_matching(arg))
 
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
-                    print(u"Display package control data for %s\n" % (','.join(args[1:]),))
+                    print(u"Display package control data for %s\n" % (','.join(all_args),))
                     for p in result:
                         print(p.ascontrol(with_non_control_attributes=True))
 
@@ -655,7 +668,9 @@ def main():
                 if len(args) < 2:
                     print(u"You must provide the package name")
                     sys.exit(1)
-                os.startfile(mywapt.get_sources(args[1]))
+                result = mywapt.get_sources(args[1])
+                os.startfile(result)
+                wapt_sources_edit(result)
 
             elif action == 'make-template':
                 if len(args) < 2:
@@ -750,7 +765,9 @@ def main():
                     print(u"You must provide the filepath to a private key in the [global]->private_key key of configuration %s" %config_file)
                     sys.exit(1)
                 packages = []
-                for source_dir in [os.path.abspath(p) for p in args[1:]]:
+                all_args = expand_args(args[1:])
+                print("Building packages %s" % ", ".join(all_args))
+                for source_dir in all_args:
                     source_dir = guess_package_root_dir(source_dir)
                     if os.path.isdir(source_dir):
                         print('Building  %s' % source_dir)
@@ -764,7 +781,7 @@ def main():
                             if not options.json_output:
                                 print(u"Package %s content:" % (result['package'].asrequirement(),))
                                 for f in result['files']:
-                                    print(u" %s" % f[0])
+                                    print(u" %s" % f)
                             print('...done. Package filename %s' % (package_fn,))
 
                             if mywapt.private_key:
@@ -830,7 +847,10 @@ def main():
                 if not mywapt.private_key or not os.path.isfile(mywapt.private_key):
                     print(u"You must provide the filepath to a private key in the [global]->private_key key of configuration %s" %config_file)
                     sys.exit(1)
-                for waptfile in [os.path.abspath(p) for p in args[1:]]:
+
+                all_args = expand_args(args[1:])
+                print("Signing packages %s" % ", ".join(all_args))
+                for waptfile in all_args:
                     waptfile = guess_package_root_dir(waptfile)
                     if os.path.isdir(waptfile) or os.path.isfile(waptfile):
                         print('Signing %s' % waptfile)
@@ -840,10 +860,10 @@ def main():
                             )
                         print(u"Package %s signed : signature :\n%s" % (
                             waptfile, signature))
-                        sys.exit(0)
                     else:
                         logger.critical(u'Package %s not found' % waptfile)
                         sys.exit(1)
+                sys.exit(0)
 
             elif action == 'upload-package':
                 if len(args) < 2:
@@ -886,7 +906,7 @@ def main():
                 if options.update_packages:
                     print(u"Update package list")
                     mywapt.update()
-                result = mywapt.search(args[1:],
+                result = mywapt.search([ensure_unicode(w) for w in args[1:]],
                                        section_filter=options.section_filter)
                 if options.json_output:
                     jsonresult['result'] = result
