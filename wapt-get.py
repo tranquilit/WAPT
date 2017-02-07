@@ -444,9 +444,10 @@ def main():
 
                 all_args = expand_args(args[1:])
                 if all_args:
-                    if os.path.isdir(arg) or os.path.isfile(arg):
-                        control = PackageEntry().load_control_from_wapt(arg)
-                        result.append(control)
+                    for arg in all_args:
+                        if os.path.isdir(arg) or os.path.isfile(arg):
+                            control = PackageEntry().load_control_from_wapt(arg)
+                            result.append(control)
                 else:
                     for arg in args[1:]:
                         result.extend(mywapt.waptdb.packages_matching(arg))
@@ -764,42 +765,55 @@ def main():
                 if not mywapt.private_key or not os.path.isfile(mywapt.private_key):
                     print(u"You must provide the filepath to a private key in the [global]->private_key key of configuration %s" %config_file)
                     sys.exit(1)
-                packages = []
-                all_args = expand_args(args[1:])
-                print("Building packages %s" % ", ".join(all_args))
-                for source_dir in all_args:
-                    source_dir = guess_package_root_dir(source_dir)
-                    if os.path.isdir(source_dir):
-                        print('Building  %s' % source_dir)
-                        result = mywapt.build_package(
-                            source_dir,
-                            inc_package_release=options.increlease,
-                            excludes=ensure_list(options.excludes))
-                        package_fn = result['filename']
-                        if package_fn:
-                            packages.append(result)
-                            if not options.json_output:
-                                print(u"Package %s content:" % (result['package'].asrequirement(),))
-                                for f in result['files']:
-                                    print(u" %s" % f)
-                            print('...done. Package filename %s' % (package_fn,))
 
-                            if mywapt.private_key:
-                                print('Signing %s' % package_fn)
-                                signature = mywapt.sign_package(
-                                    package_fn,
-                                    excludes=common.ensure_list(options.excludes)
-                                    )
-                                print(u"Package %s signed : signature :\n%s" % (package_fn,signature))
+                packages = []
+                errors = []
+
+                all_args = expand_args(args[1:])
+                print("Building packages %s packages" % len(all_args))
+
+                for source_dir in all_args:
+                    try:
+                        source_dir = guess_package_root_dir(source_dir)
+                        if os.path.isdir(source_dir):
+                            print('Building  %s' % source_dir)
+                            result = mywapt.build_package(
+                                source_dir,
+                                inc_package_release=options.increlease,
+                                excludes=ensure_list(options.excludes))
+                            package_fn = result['filename']
+                            if package_fn:
+                                packages.append(result)
+                                if not options.json_output:
+                                    print(u"Package %s content:" % (result['package'].asrequirement(),))
+                                    for f in result['files']:
+                                        print(u" %s" % f)
+                                print('...done. Package filename %s' % (package_fn,))
+
+                                if mywapt.private_key:
+                                    print('Signing %s' % package_fn)
+                                    signature = mywapt.sign_package(
+                                        package_fn,
+                                        excludes=common.ensure_list(options.excludes)
+                                        )
+                                    print(u"Package %s signed : signature :\n%s" % (package_fn,signature))
+                                else:
+                                    logger.warning(u'No private key provided, package %s is unsigned !' % package_fn)
+
                             else:
-                                logger.warning(u'No private key provided, package %s is unsigned !' % package_fn)
+                                logger.critical(u'package %s not created' % package_fn)
 
                         else:
-                            logger.critical(u'package %s not created' % package_fn)
-                            sys.exit(1)
-                    else:
-                        logger.critical(u'Directory %s not found' % source_dir)
-                        sys.exit(1)
+                            logger.critical(u'Directory %s not found' % source_dir)
+                    except Exception as e:
+                        errors.append(source_dir)
+                        print(u'  ERROR building %s: %s' % (source_dir,e))
+
+                print(u'%s packages successfully built'%len(packages))
+                print(u'%s packages failed '%len(errors))
+
+                if errors:
+                    print(u'List of errors :\n%s'%('\n '.join(errors)))
 
                 # continue with upload
                 if action == 'build-upload':
@@ -851,18 +865,20 @@ def main():
                 all_args = expand_args(args[1:])
                 print("Signing packages %s" % ", ".join(all_args))
                 for waptfile in all_args:
-                    waptfile = guess_package_root_dir(waptfile)
-                    if os.path.isdir(waptfile) or os.path.isfile(waptfile):
-                        print('Signing %s' % waptfile)
-                        signature = mywapt.sign_package(
-                            waptfile,
-                            excludes=common.ensure_list(options.excludes)
-                            )
-                        print(u"Package %s signed : signature :\n%s" % (
-                            waptfile, signature))
-                    else:
-                        logger.critical(u'Package %s not found' % waptfile)
-                        sys.exit(1)
+                    try:
+                        waptfile = guess_package_root_dir(waptfile)
+                        if os.path.isdir(waptfile) or os.path.isfile(waptfile):
+                            print('Signing %s' % waptfile)
+                            signature = mywapt.sign_package(
+                                waptfile,
+                                excludes=common.ensure_list(options.excludes)
+                                )
+                            print(u"   OK: Package %s signed : signature :\n%s" % (
+                                waptfile, signature))
+                        else:
+                            logger.critical(u'Package %s not found' % waptfile)
+                    except Exception as e:
+                        print(u'   ERROR: %s: %s'% (waptfile,e))
                 sys.exit(0)
 
             elif action == 'upload-package':
