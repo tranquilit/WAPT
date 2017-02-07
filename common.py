@@ -350,6 +350,7 @@ def pwd_callback(*args):
     """Default password callback for opening private keys.
     """
     import getpass
+    print('Please enter the password to decrypt private key:')
     return getpass.getpass().encode('ascii')
 
 class SSLPrivateKey(object):
@@ -360,6 +361,7 @@ class SSLPrivateKey(object):
         else:
             if not os.path.isfile(private_key):
                 raise Exception('Private key %s not found' % private_key)
+            print(u'Loading private key %s'%private_key)
             self.key = EVP.load_key(self.private_key,callback=callback)
 
     def sign_content(self,content):
@@ -381,6 +383,8 @@ class SSLPrivateKey(object):
     def __cmp__(self,key):
         return cmp(self.modulus,key.modulus)
 
+    def __repr__(self):
+        return '<SSLPrivateKey(private_key=%s)>'% (repr(self.private_key),)
 
 class SSLCertificate(object):
     def __init__(self,public_cert=None,crt=None,ignore_validity_checks=True):
@@ -395,18 +399,19 @@ class SSLCertificate(object):
 
     @property
     def organisation(self):
-        return self.crt.get_subject().O
+        return ensure_unicode(self.crt.get_subject().O)
 
     @property
     def cn(self):
-        return self.crt.get_subject().CN
+        # should be returned as utf8 by openssl -> return unicode
+        return ensure_unicode(self.crt.get_subject().CN)
 
     @property
     def subject(self):
         subject = self.crt.get_subject()
         result = {}
         for key in subject.nid.keys():
-            result[key] = getattr(subject,key)
+            result[key] =  ensure_unicode(getattr(subject,key))
         return result
 
     @property
@@ -422,7 +427,7 @@ class SSLCertificate(object):
         data = self.crt.get_issuer()
         result = {}
         for key in data.nid.keys():
-            result[key] = getattr(data,key)
+            result[key] =  ensure_unicode(getattr(data,key))
         return result
 
     @property
@@ -451,7 +456,11 @@ class SSLCertificate(object):
         """Check if certificate matches the given private key"""
         if not isinstance(key,SSLPrivateKey):
             key = SSLPrivateKey(key)
-        return self.crt.get_pubkey().get_modulus() == key.key.get_modulus()
+        return self.modulus == key.modulus
+
+    @property
+    def modulus(self):
+        return self.crt.get_pubkey().get_modulus()
 
     @property
     def not_before(self):
@@ -481,11 +490,12 @@ class SSLCertificate(object):
         for k in ['issuer_dn','fingerprint','subject_dn','cn']:
             yield k,getattr(self,k)
 
-    def __str__(self):
-        return u'SSLCertificate cn=%s'%self.cn
-
     def __repr__(self):
-        return u'<SSLCertificate cn=%s / issuer=%s / validity=%s - %s>'%(self.cn,self.issuer.get('CN','?'),self.not_before.strftime('%Y-%m-%d'),self.not_after.strftime('%Y-%m-%d'))
+        return '<SSLCertificate(public_cert=%s) cn=%s / issuer=%s / validity=%s - %s >'%(
+                repr(self.public_cert),
+                repr(self.cn),repr(self.issuer.get('CN','?')),
+                self.not_before.strftime('%Y-%m-%d'),self.not_after.strftime('%Y-%m-%d'),
+                )
 
     def __cmp__(self,crt):
         return cmp(self.fingerprint,crt.fingerprint)
@@ -584,20 +594,20 @@ def create_self_signed_key(orgname,
     if not os.path.isdir(destdir):
         os.makedirs(destdir)
     params = {
-        'country':country,
-        'locality':locality,
-        'organization':organization,
-        'unit':unit,
-        'commonname':commonname,
-        'email':email,
+        u'country':country,
+        u'locality':locality,
+        u'organization':organization,
+        u'unit':unit,
+        u'commonname':commonname,
+        u'email':email,
     }
     opensslbin = os.path.join(wapt_base_dir,'lib','site-packages','M2Crypto','openssl.exe')
     opensslcfg = codecs.open(os.path.join(wapt_base_dir,'templates','openssl_template.cfg'),'r',encoding='utf8').read() % params
     opensslcfg_fn = os.path.join(destdir,'openssl.cfg')
     codecs.open(opensslcfg_fn,'w',encoding='utf8').write(opensslcfg)
     os.environ['OPENSSL_CONF'] =  opensslcfg_fn
-    out = setuphelpers.run(u'%(opensslbin)s req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout "%(destpem)s" -out "%(destcrt)s"' %
-        {'opensslbin':opensslbin,'orgname':orgname,'destcrt':destcrt,'destpem':destpem})
+    out = setuphelpers.run(u'%(opensslbin)s req -x509 -utf8  -nodes -days 3650 -newkey rsa:2048 -keyout "%(destpem)s" -out "%(destcrt)s"' %
+        {u'opensslbin':opensslbin,u'orgname':orgname,u'destcrt':destcrt,u'destpem':destpem})
     os.unlink(opensslcfg_fn)
     return {'pem_filename':destpem,'crt_filename':destcrt}
 
@@ -4849,7 +4859,7 @@ class Wapt(object):
                 else:
                     logger.info('Signing with identity from certificate %s' % crt.public_cert)
 
-                entry.signer = crt.cn
+                entry.signer = ensure_unicode(crt.cn)
                 entry.signer_fingerprint = crt.fingerprint
                 logger.info('Signer: %s'%entry.signer)
                 logger.info('Signer fingerprint: %s'%entry.signer_fingerprint)
