@@ -338,12 +338,15 @@ def ensure_unicode(data):
     u'Exception: '
     """
     try:
+        if data is None:
+            return None
         if isinstance(data,types.UnicodeType):
             return data
-        if isinstance(data,str):
-            return data.decode(sys.getfilesystemencoding(),'replace')
         if isinstance(data,types.StringType):
-            return unicode(data, 'utf8', 'replace')
+            try:
+                return data.decode('utf8')
+            except:
+                return data.decode(sys.getfilesystemencoding(),'replace')
         if isinstance(data,WindowsError):
             return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding(),'replace'))
         if isinstance(data,(UnicodeDecodeError,UnicodeEncodeError)):
