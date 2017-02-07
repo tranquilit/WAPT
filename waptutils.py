@@ -302,18 +302,14 @@ def jsondump(o,**kwargs):
 # from opsi
 def ensure_unicode(data):
     u"""Return a unicode string from data object
-
-    It is sometimes diffcult to know in advance what we will get from command line
+    It is sometimes difficult to know in advance what we will get from command line
      application output.
-
     This is to ensure we get a (not always accurate) representation of the data
      mainly for logging purpose.
-
     Args:
         data: either str or unicode or object having a __unicode__ or WindowsError or Exception
     Returns:
         unicode: unicode string representing the data
-
     >>> ensure_unicode(str('éé'))
     u'\xe9\xe9'
     >>> ensure_unicode(u'éé')
@@ -324,12 +320,15 @@ def ensure_unicode(data):
     u'Exception: '
     """
     try:
+        if data is None:
+            return None
         if isinstance(data,types.UnicodeType):
             return data
-        if isinstance(data,str):
-            return data.decode(sys.getfilesystemencoding(),'replace')
         if isinstance(data,types.StringType):
-            return unicode(data, 'utf8', 'replace')
+            try:
+                return data.decode('utf8')
+            except:
+                return data.decode(sys.getfilesystemencoding(),'replace')
         if isinstance(data,WindowsError):
             return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding(),'replace'))
         if isinstance(data,(UnicodeDecodeError,UnicodeEncodeError)):
