@@ -118,7 +118,7 @@ def create_self_signed_key(orgname,
         commonname='',
         email='',
     ):
-    ur"""Creates a self signed key/certificate without password using openssl.exe
+    ur"""Creates a self signed key/certificate without password
     return a dict {'crt_filename': 'c:\\private\\test.crt', 'pem_filename': 'c:\\private\\test.pem'}
     >>> if os.path.isfile('c:/private/test.pem'):
     ...     os.unlink('c:/private/test.pem')
@@ -135,20 +135,20 @@ def create_self_signed_key(orgname,
     if not os.path.isdir(destdir):
         os.makedirs(destdir)
     params = {
-        'country':country,
-        'locality':locality,
-        'organization':organization,
-        'unit':unit,
-        'commonname':commonname,
-        'email':email,
+        u'country':country,
+        u'locality':locality,
+        u'organization':organization,
+        u'unit':unit,
+        u'commonname':commonname,
+        u'email':email,
     }
     opensslbin = os.path.join(wapt_base_dir,'lib','site-packages','M2Crypto','openssl.exe')
     opensslcfg = codecs.open(os.path.join(wapt_base_dir,'templates','openssl_template.cfg'),'r',encoding='utf8').read() % params
     opensslcfg_fn = os.path.join(destdir,'openssl.cfg')
     codecs.open(opensslcfg_fn,'w',encoding='utf8').write(opensslcfg)
     os.environ['OPENSSL_CONF'] =  opensslcfg_fn
-    out = setuphelpers.run(u'%(opensslbin)s req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout "%(destpem)s" -out "%(destcrt)s"' %
-        {'opensslbin':opensslbin,'orgname':orgname,'destcrt':destcrt,'destpem':destpem})
+    out = setuphelpers.run(u'%(opensslbin)s req -x509 -utf8  -nodes -days 3650 -newkey rsa:2048 -keyout "%(destpem)s" -out "%(destcrt)s"' %
+        {u'opensslbin':opensslbin,u'orgname':orgname,u'destcrt':destcrt,u'destpem':destpem})
     os.unlink(opensslcfg_fn)
     return {'pem_filename':destpem,'crt_filename':destcrt}
 
@@ -279,34 +279,6 @@ def adjust_privileges():
     return win32security.AdjustTokenPrivileges(htoken, 0, privileges)
 
 
-class SYSTEM_POWER_STATUS(ctypes.Structure):
-    _fields_ = [
-        ('ACLineStatus', wintypes.BYTE),
-        ('BatteryFlag', wintypes.BYTE),
-        ('BatteryLifePercent', wintypes.BYTE),
-        ('Reserved1', wintypes.BYTE),
-        ('BatteryLifeTime', wintypes.DWORD),
-        ('BatteryFullLifeTime', wintypes.DWORD),
-    ]
-
-SYSTEM_POWER_STATUS_P = ctypes.POINTER(SYSTEM_POWER_STATUS)
-GetSystemPowerStatus = ctypes.windll.kernel32.GetSystemPowerStatus
-GetSystemPowerStatus.argtypes = [SYSTEM_POWER_STATUS_P]
-GetSystemPowerStatus.restype = wintypes.BOOL
-
-def running_on_ac():
-    """Return True if computer is connected to AC power supply
-    """
-    status = SYSTEM_POWER_STATUS()
-    if not GetSystemPowerStatus(ctypes.pointer(status)):
-        raise ctypes.WinError()
-    return status.ACLineStatus == 1
-
-
-def uac_enabled():
-    """Return True if UAC is enabled"""
-    with setuphelpers.reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System') as k:
-        return QueryValueEx(k,'EnableLUA')[1] == 0
 
 ###########################"
 class LogInstallOutput(object):

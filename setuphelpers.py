@@ -169,6 +169,7 @@ __all__ = \
  'run_notfatal',
  'run_task',
  'run_powershell',
+ 'running_on_ac',
  'remove_metroapp',
  'sendto',
  'service_installed',
@@ -227,6 +228,7 @@ __all__ = \
  'local_group_memberships',
  'local_group_members',
  'set_computer_description',
+ 'uac_enabled',
  ]
 
 import os
@@ -261,8 +263,10 @@ import msilib
 import win32service
 import win32serviceutil
 import win32process
-import glob
 import ctypes
+from ctypes import wintypes
+
+import glob
 
 import requests
 import time
@@ -3732,6 +3736,36 @@ def remove_metroapp(package):
     run_powershell("""Get-AppXProvisionedPackage -Online |
             where DisplayName -EQ %s |
             Remove-AppxProvisionedPackage -Online""" % package)
+
+
+class SYSTEM_POWER_STATUS(ctypes.Structure):
+    _fields_ = [
+        ('ACLineStatus', wintypes.BYTE),
+        ('BatteryFlag', wintypes.BYTE),
+        ('BatteryLifePercent', wintypes.BYTE),
+        ('Reserved1', wintypes.BYTE),
+        ('BatteryLifeTime', wintypes.DWORD),
+        ('BatteryFullLifeTime', wintypes.DWORD),
+    ]
+
+SYSTEM_POWER_STATUS_P = ctypes.POINTER(SYSTEM_POWER_STATUS)
+GetSystemPowerStatus = ctypes.windll.kernel32.GetSystemPowerStatus
+GetSystemPowerStatus.argtypes = [SYSTEM_POWER_STATUS_P]
+GetSystemPowerStatus.restype = wintypes.BOOL
+
+def running_on_ac():
+    """Return True if computer is connected to AC power supply
+    """
+    status = SYSTEM_POWER_STATUS()
+    if not GetSystemPowerStatus(ctypes.pointer(status)):
+        raise ctypes.WinError()
+    return status.ACLineStatus == 1
+
+
+def uac_enabled():
+    """Return True if UAC is enabled"""
+    with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System') as k:
+        return _winreg.QueryValueEx(k,'EnableLUA')[1] == 0
 
 CalledProcessError = subprocess.CalledProcessError
 
