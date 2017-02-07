@@ -5740,6 +5740,9 @@ def check_user_membership(user_name,password,domain_name,group_name):
 Version = setuphelpers.Version  # obsolete
 
 if __name__ == '__main__':
+    r = WaptRepo(dnsdomain='tranquilit.local')
+    print r.find_wapt_repo_url()
+    sys.exit(1)
     import doctest
     import sys
     reload(sys)
