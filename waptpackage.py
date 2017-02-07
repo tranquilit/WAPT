@@ -917,6 +917,7 @@ class WaptLocalRepo(WaptBaseRepo):
                     package.repo = self.name
                     package.localpath = self.localpath
                     package.filename = package.make_package_filename()
+                    self._packages.append(package)
                     # index last version
                     if package.package not in self._index or self._index[package.package] < package:
                         self._index[package.package] = package
@@ -1363,6 +1364,9 @@ def update_packages(adir,force=False):
     return repo.update_packages_index(force_all=force)
 
 if __name__ == '__main__':
+    r = WaptLocalRepo('c:/tranquilit/wapt')
+    print len(r.packages)
+    sys.exit(1)
     import doctest
     import sys
     reload(sys)
