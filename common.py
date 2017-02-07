@@ -81,7 +81,7 @@ from ntsecuritycon import DOMAIN_GROUP_RID_ADMINS,DOMAIN_GROUP_RID_USERS
 import ctypes
 from ctypes import wintypes
 
-from M2Crypto import EVP, X509, SSL, BIO
+from M2Crypto import EVP, X509, SSL
 from M2Crypto.EVP import EVPError
 
 from urlparse import urlparse
@@ -351,92 +351,6 @@ def pwd_callback(*args):
     """
     import getpass
     return getpass.getpass().encode('ascii')
-
-class SSLCAChain(object):
-    BEGIN_KEY = '-----BEGIN ENCRYPTED PRIVATE KEY-----'
-    END_KEY = '-----END ENCRYPTED PRIVATE KEY-----'
-    BEGIN_CERTIFICATE = '-----BEGIN CERTIFICATE-----'
-    END_CERTIFICATE = '-----END CERTIFICATE-----'
-
-    def __init__(self,callback=pwd_callback):
-        self._keys = {}
-        self._certificates = {}
-        self.callback = callback
-
-    def add_pems(self,cert_pattern_or_dir='*.crt',load_keys=False):
-        if os.path.isdir(cert_pattern_or_dir):
-            # load pems from provided directory
-            for fn in glob.glob(os.path.join(cert_pattern_or_dir,'*.crt'))+glob.glob(os.path.join(cert_pattern_or_dir,'*.pem')):
-                self.add_pem(fn,load_keys=load_keys)
-        else:
-            # load pems based on file wildcards
-            for fn in glob.glob(cert_pattern_or_dir):
-                self.add_pem(fn,load_keys=load_keys)
-
-    def add_pem(self,filename,load_keys=False):
-        # parse a bundle PEM with multiple key / certificates
-        lines = open(filename,'r').read().splitlines()
-        inkey = False
-        incert = False
-        tmplines = []
-        for line in lines:
-            if line == self.BEGIN_CERTIFICATE:
-                tmplines = [line]
-                incert = True
-            elif line == self.END_CERTIFICATE:
-                tmplines.append(line)
-                crt =  X509.load_cert_string('\n'.join(tmplines))
-                self._certificates[crt.get_fingerprint(md='sha1')] = SSLCertificate(filename,crt=crt)
-                incert = False
-                tmplines = []
-            elif line == self.BEGIN_KEY:
-                tmplines = [line]
-                inkey = True
-            elif line == self.END_KEY:
-                tmplines.append(line)
-                if load_keys:
-                    key = EVP.load_key_string('\n'.join(tmplines),callback=self.callback)
-                    self._keys[key.get_modulus()] = SSLPrivateKey(filename,key=key,callback=self.callback)
-                inkey = False
-                tmplines = []
-            else:
-                if inkey or incert:
-                    tmplines.append(line)
-
-    def key(self,modulus):
-        return self._keys.get(modulus,None)
-
-    def certificate(self,sha1_fingerprint=None,subject_hash=None):
-        if subject_hash:
-            certs = [crt for crt in self.certificates() if crt.subject_hash == subject_hash]
-            if certs:
-                return certs[0]
-            else:
-                return None
-        else:
-            return self._certificates.get(sha1_fingerprint,None)
-
-    def keys(self):
-        return self._keys.values()
-
-    def certificates(self):
-        return self._certificates.values()
-
-    def matching_certs(self,key):
-        return [crt for crt in self.certificates() if crt.is_valid() and crt.match_key(key)]
-
-    def certificate_chain(self,crt):
-        result = [crt]
-        issuer = self.certificate(subject_hash=crt.crt.get_issuer().as_hash())
-        while issuer:
-            result.append(issuer)
-            issuer_subject_hash = issuer.crt.get_issuer().as_hash()
-            new_issuer = self.certificate(subject_hash=issuer_subject_hash)
-            if new_issuer == issuer:
-                break
-            else:
-                issuer = new_issuer
-        return result
 
 class SSLPrivateKey(object):
     def __init__(self,private_key=None,key=None,callback=pwd_callback):
@@ -4075,6 +3989,7 @@ class Wapt(object):
             manifest = json.loads(manifest_content)
             signature = waptfile.open(u'WAPT/signature').read().decode('base64')
             try:
+                logger.debug(u'Verify package against certificates : %s' % (','.join(self.public_certs)))
                 subject = ssl_verify_content(manifest_content,signature,self.public_certs)
                 logger.info(u'Package issued by %s' % (subject,))
             except:
