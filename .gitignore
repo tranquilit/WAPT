@@ -71,3 +71,5 @@ waptupgrade/patchs/
 /pip-selfcheck.json
 /share/doc/*
 /readme.txt
+/DLLs
+/libs

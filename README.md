@@ -65,7 +65,14 @@ Pour une installation propre de zéro:
  c:
  mkdir c:\tranquilit
  git clone git@github.com:tranquilit/WAPT.git
- c:\python27\scripts\virtualenv wapt  
+ c:\python27\scripts\virtualenv c:\tranquilit\wapt  
+ xcopy /I /E /F /Y c:\python27\libs c:\tranquilit\wapt\libs
+ xcopy /I /E /F /Y c:\python27\DLLs c:\tranquilit\wapt\DLLs
+ xcopy /I /E /F /Y /EXCLUDE:c:\tranquilit\wapt\libexcludes.txt c:\python27\lib c:\tranquilit\wapt\lib
+ 
+ c:\python27\scripts\virtualenv --relocatable wapt
+ cd c:\tranquilit\wapt
+ c:\tranquilit\wapt\Scripts\activate.bat
  pip install --upgrade pip setuptools wheel virtualenv
  pip install pypiwin32
  wget "https://downloads.sourceforge.net/project/pywin32/pywin32/Build%20220/pywin32-220.win32-py2.7.exe?r=&ts=1486553375&use_mirror=kent" --no-check-certificate
