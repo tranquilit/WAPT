@@ -41,7 +41,7 @@ Environnement Python
 Le dépôt git est un virtualenv.
 
 Pour installer/mettre à jour les dépendances python : 
-
+```
  c:
  mkdir c:\tranquilit
  git clone git@github.com:tranquilit/WAPT.git
@@ -49,6 +49,7 @@ Pour installer/mettre à jour les dépendances python :
  scripts\activate
   
  pip install -r requirements.txt
+```
 
 Les dépendances problématiques (pas de pip) : pywin32, m2crypto, pefile, 
 
@@ -60,7 +61,7 @@ Pour une installation propre de zéro:
 * installer virtualenv : pip install virtualenv
 
 * Créer virtualenv
-
+```
  c:
  mkdir c:\tranquilit
  c:\python27\scripts\virtualenv wapt  
@@ -77,7 +78,8 @@ Pour une installation propre de zéro:
  copy Scripts\python.exe waptpython.exe
  copy Scripts\pythonw.exe waptpythonw.exe
  
- 
+```
+
 
 Environnement CodeTyphon / Lazarus
 ---------------------
