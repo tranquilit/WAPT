@@ -38,6 +38,40 @@ Environnement Python
 * wmi : http://timgolden.me.uk/python/wmi/index.html
 * winshell : https://github.com/tjguk/winshell
 
+Le dépôt git est un virtualenv.
+
+Pour installer/mettre à jour les dépendances python : 
+
+ c:
+ mkdir c:\tranquilit
+ git clone git@github.com:tranquilit/WAPT.git
+ cd \tranquilit\wapt\
+ scripts\activate
+  
+ pip install -r requirements.txt
+
+Les dépendances problématiques (pas de pip) : pywin32, m2crypto, pefile, 
+
+Pour une installation propre de zéro:
+
+* Installer python2.7.12 depuis https://www.python.org/ftp/python/2.7.12/python-2.7.12.msi
+* Upgrader python-setuptools : c:\python27\python -m pip install -U pip setuptools
+* Télécharger pywin32 depuis : https://downloads.sourceforge.net/project/pywin32/pywin32/Build%20220/pywin32-220.win32-py2.7.exe?r=&ts=1486553375&use_mirror=kent
+* installer virtualenv : pip install virtualenv
+
+* Créer virtualenv
+
+ c:
+ mkdir c:\tranquilit
+ c:\python27\scripts\virtualenv wapt  
+ pip install --upgrade pip setuptools wheel virtualenv
+ pip install pypiwin32
+ Scripts\easy_install.exe C:\Users\user1\Downloads\pywin32-220.win32-py2.7.exe
+ wget https://raw.githubusercontent.com/tranquilit/WAPT/master/requirements.txt
+ pip install -r requirements.txt
+ pip install M2CryptoWin32
+ 
+
 Environnement CodeTyphon / Lazarus
 ---------------------
 Base fpc+lazarus (dans la pratique, on installe CodeTyphon) : 
