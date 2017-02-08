@@ -80,6 +80,9 @@ Pour une installation propre de zéro:
  pip install -r requirements.txt
  pip install M2CryptoWin32
  
+ copy /Y lib\site-packages\pywin32-220-py2.7-win32.egg\py*.dll .
+ copy /Y c:\windows\SysWOW64\python27.dll .
+ 
  copy /Y lib\site-packages\M2Crypto\*.dll .
  copy /Y utils\openssl.exe lib\site-packages\M2Crypto\
  copy /Y Scripts\python.exe waptpython.exe
