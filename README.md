@@ -66,10 +66,14 @@ Pour une installation propre de zéro:
  c:\python27\scripts\virtualenv wapt  
  pip install --upgrade pip setuptools wheel virtualenv
  pip install pypiwin32
- Scripts\easy_install.exe C:\Users\user1\Downloads\pywin32-220.win32-py2.7.exe
+ wget "https://downloads.sourceforge.net/project/pywin32/pywin32/Build%20220/pywin32-220.win32-py2.7.exe?r=&ts=1486553375&use_mirror=kent" --no-check-certificate
+ Scripts\easy_install.exe pywin32-220.win32-py2.7.exe
  wget https://raw.githubusercontent.com/tranquilit/WAPT/master/requirements.txt
  pip install -r requirements.txt
  pip install M2CryptoWin32
+ 
+ copy lib\site-packages\M2Crypto\*.dll .
+ copy utils\openssl.exe lib\site-packages\M2Crypto\
  
  
 
