@@ -38,9 +38,9 @@ Environnement Python
 * wmi : http://timgolden.me.uk/python/wmi/index.html
 * winshell : https://github.com/tjguk/winshell
 
-Le dépôt git est un virtualenv.
+Création d'un environnement de développement avec virtualenv:
+---------------------------------------------
 
-Pour installer/mettre à jour les dépendances python : 
 ```
  c:
  mkdir c:\tranquilit
@@ -64,6 +64,7 @@ Pour une installation propre de zéro:
 ```
  c:
  mkdir c:\tranquilit
+ git clone git@github.com:tranquilit/WAPT.git
  c:\python27\scripts\virtualenv wapt  
  pip install --upgrade pip setuptools wheel virtualenv
  pip install pypiwin32
@@ -73,13 +74,12 @@ Pour une installation propre de zéro:
  pip install -r requirements.txt
  pip install M2CryptoWin32
  
- copy lib\site-packages\M2Crypto\*.dll .
- copy utils\openssl.exe lib\site-packages\M2Crypto\
- copy Scripts\python.exe waptpython.exe
- copy Scripts\pythonw.exe waptpythonw.exe
+ copy /Y lib\site-packages\M2Crypto\*.dll .
+ copy /Y utils\openssl.exe lib\site-packages\M2Crypto\
+ copy /Y Scripts\python.exe waptpython.exe
+ copy /Y Scripts\pythonw.exe waptpythonw.exe
  
 ```
-
 
 Environnement CodeTyphon / Lazarus
 ---------------------
