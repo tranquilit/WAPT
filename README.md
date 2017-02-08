@@ -74,6 +74,8 @@ Pour une installation propre de zéro:
  
  copy lib\site-packages\M2Crypto\*.dll .
  copy utils\openssl.exe lib\site-packages\M2Crypto\
+ copy Scripts\python.exe waptpython.exe
+ copy Scripts\pythonw.exe waptpythonw.exe
  
  
 
