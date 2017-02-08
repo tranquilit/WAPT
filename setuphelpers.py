@@ -834,8 +834,8 @@ class TimeoutExpired(Exception):
                 (self.cmd, self.timeout, self.output))
 
 
-class RunOutput(unicode):
-    u"""Subclass of unicode to return returncode from runned command in addition to output
+class RunOutput(str):
+    u"""Subclass of str (bytes) to return returncode from runned command in addition to output
 
     >>> run(r'cmd /C dir c:\toto ',accept_returncodes=[0,1])
     No handlers could be found for logger "root"
@@ -845,20 +845,20 @@ class RunOutput(unicode):
 
     Fichier introuvable
      Répertoire de c:\
+
+    .. versionchanged:: 1.3.11
+          subclass str(bytes string) and not unicode
     """
 
     def __new__(cls, value):
         if isinstance(value,list):
-            value = u''.join([ensure_unicode(line) for line in value])
+            value = ''.join(value)
         self = super(RunOutput, cls).__new__(cls, value)
         self.returncode = None
         return self
 
     def __repr__(self):
-        return "<RunOuput returncode :%s>\n%s"%(self.returncode,self.encode(sys.getfilesystemencoding(),'replace'))
-
-    def __str__(self):
-        return self.encode(sys.getfilesystemencoding(),'replace')
+        return "<RunOuput returncode :%s>\n%s"%(self.returncode,repr(self.__str__()))
 
 def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=None,pidlist=None,return_stderr=True,**kwargs):
     r"""Run the command cmd in a shell and return the output and error text as string
@@ -871,7 +871,7 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=Non
         timeout (int) : maximum time to wait for cmd completion is second (default = 600)
                         a TimeoutExpired exception is raised if tiemout is reached.
         on_write : callback when a new line is printed on stdout or stderr by the subprocess
-                        func(linestr)
+                        func(unicode_line). arg is enforced to unicode
         accept_returncodes (list) : list of return code which are considered OK default = (0,1601)
         pidlist (list): external list where to append the pid of the launched process.
         return_stderr (bool or list) : if True, the error lines are returned to caller in result.
@@ -880,14 +880,22 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=Non
         all other parameters from the psutil.Popen constructor are accepted
 
     Returns:
-        unicode : merged output of stdout and stderr streams
+        RunOutput : bytes like output of stdout and optionnaly stderr streams.
+                    returncode attribute
 
     Exceptions:
         CalledProcessError: if return code of cmd is not in accept_returncodes list
         TimeoutExpired:  if process is running for more than timeout time.
 
+    .. versionchanged:: 1.3.9
+            return_stderr parameters to disable stderr or get it in a separate list
+            return value has a returncode attribute to
+
+    .. versionchanged:: 1.3.11
+            output is not forced to unicode
+
     >>> run(r'dir /B c:\windows\explorer.exe')
-    u'explorer.exe\r\n'
+    'explorer.exe\r\n'
 
     >>> out = []
     >>> pids = []
@@ -927,11 +935,11 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=Non
                 break
             else:
                 if on_write:
-                    on_write(line)
+                    on_write(ensure_unicode(line))
                 if pipe == proc.stderr:
-                    return_stderr.append(ensure_unicode(line))
+                    return_stderr.append(line)
                 else:
-                    output.append(ensure_unicode(line))
+                    output.append(line)
 
     stdout_worker = RunReader(worker, proc.stdout,on_write)
     stderr_worker = RunReader(worker, proc.stderr,on_write)
@@ -972,6 +980,9 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=Non
 def run_notfatal(*cmd,**args):
     """Runs the command and wait for it termination, returns output
     Ignore exit status code of command, return '' instead
+
+    .. versionchanged:: 1.3.11
+          output is not enforced to unicode
     """
     try:
         return run(*cmd,**args)
@@ -3281,7 +3292,10 @@ def create_daily_task(name,cmd,parameters, max_runtime=10, repeat_minutes=None, 
     return task
 
 def windows_version():
-    """see https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832(v=vs.85).aspx"""
+    """see https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832(v=vs.85).aspx
+
+    .. versionadded:: 1.3.5
+    """
     try:
         return Version(platform.win32_ver()[1],3)
     except:
@@ -3289,6 +3303,10 @@ def windows_version():
 
 
 class WindowsVersions:
+    """Helper class to get numbered windows version from windows name version
+
+    ... versionadded:: 1.3.5
+    """
     # https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832(v=vs.85).aspx
     # https://msdn.microsoft.com/en-us/library/windows/desktop/dn481241(v=vs.85).aspx
     Windows10 = Version('10.0',2)
@@ -3514,6 +3532,11 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
     Returns:
         None
 
+    .. versionadded:: 1.3.2
+
+    .. versionchanged:: 1.3.10
+          added get_version callback for non conventional setup.exe
+
     """
     if not isfile(msi):
         error('msi file %s not found in package' % msi)
@@ -3567,6 +3590,11 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
     Returns:
         None
 
+
+    .. versionadded:: 1.3.2
+
+    .. versionchanged:: 1.3.10
+          added get_version callback for non conventional setup.exe
     """
     if not isfile(exe):
         error('setup exe file %s not found in package' % exe)
@@ -3598,7 +3626,11 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
 
 
 def installed_windows_updates(**filter):
-    """return list of installed updates, indepently from WUA agent"""
+    """return list of installed updates, indepently from WUA agent
+
+    .. versionadded:: 1.3.3
+
+    """
     return wmi_as_struct(wmi.WMI().Win32_QuickFixEngineering.query(**filter))
 
 def local_desktops():
@@ -3617,6 +3649,9 @@ def local_desktops():
      u'C:\\Users\\UpdatusUser\\Desktop',
      u'C:\\Users\\administrateur\\Desktop',
      u'C:\\Users\\htouvet-adm\\Desktop']
+
+    .. versionadded:: 1.2.3
+
     """
     result = []
     profiles_path = r'SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList'
@@ -3662,6 +3697,9 @@ def local_users_profiles():
      u'C:\\Users\\UpdatusUser',
      u'C:\\Users\\administrateur',
      u'C:\\Users\\htouvet-adm']
+
+    .. versionadded:: 1.3.9
+
     """
     result = []
     profiles_path = r'SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList'
@@ -3690,6 +3728,8 @@ def local_users_profiles():
 def run_powershell(cmd,output_format='json',**kwargs):
     """Run a command/script (possibly multiline) using powershell, return output in text format
         If format is 'json', the result is piped to ConvertTo-Json and converted back to a python dict for convenient use
+
+    .. versionadded:: 1.3.9
     """
     cmd = ensure_unicode(cmd)
     if output_format == 'json':
@@ -3732,6 +3772,10 @@ def run_powershell(cmd,output_format='json',**kwargs):
         return result
 
 def remove_metroapp(package):
+    """Uninstall and remove a metro package from the computer
+
+    .. versionadded:: 1.3.9
+    """
     run_powershell('Get-AppxPackage %s --AllUsers| Remove-AppxPackage' % package)
     run_powershell("""Get-AppXProvisionedPackage -Online |
             where DisplayName -EQ %s |
@@ -3755,6 +3799,9 @@ GetSystemPowerStatus.restype = wintypes.BOOL
 
 def running_on_ac():
     """Return True if computer is connected to AC power supply
+
+    .. versionadded:: 1.3.9
+
     """
     status = SYSTEM_POWER_STATUS()
     if not GetSystemPowerStatus(ctypes.pointer(status)):
@@ -3763,7 +3810,11 @@ def running_on_ac():
 
 
 def uac_enabled():
-    """Return True if UAC is enabled"""
+    """Return True if UAC is enabled
+
+    .. versionadded:: 1.3.9
+
+    """
     with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System') as k:
         return _winreg.QueryValueEx(k,'EnableLUA')[1] == 0
 
