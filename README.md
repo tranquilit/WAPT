@@ -41,25 +41,12 @@ Environnement Python
 Création d'un environnement de développement avec virtualenv:
 ---------------------------------------------
 
-```
- c:
- mkdir c:\tranquilit
- git clone git@github.com:tranquilit/WAPT.git
- cd \tranquilit\wapt\
- scripts\activate
-  
- pip install -r requirements.txt
-```
-
-Les dépendances problématiques (pas de pip) : pywin32, m2crypto, pefile, 
-
 Pour une installation propre de zéro:
 
 * Installer python2.7.12 depuis https://www.python.org/ftp/python/2.7.12/python-2.7.12.msi
 * Upgrader python-setuptools : c:\python27\python -m pip install -U pip setuptools
 * Télécharger pywin32 depuis : https://downloads.sourceforge.net/project/pywin32/pywin32/Build%20220/pywin32-220.win32-py2.7.exe?r=&ts=1486553375&use_mirror=kent
 * installer virtualenv : pip install virtualenv
-
 * Créer virtualenv
 ```
  c:
