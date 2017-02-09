@@ -9,10 +9,10 @@ Source: "..\waptpython.exe"; DestDir: "{app}";
 Source: "..\waptpythonw.exe"; DestDir: "{app}";
 Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
 Source: "..\libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdirs  ; Excludes: "*.pyc,*.pyo,test,*.~*,pydoc_data,tests,demos,testsuite,doc,samples,pil" 
-Source: "..\Microsoft.VC90.CRT.manifest"; DestDir: "{app}";
-Source: "..\msvcm90.dll"; DestDir: "{app}";
-Source: "..\msvcp90.dll"; DestDir: "{app}";
-Source: "..\msvcr90.dll"; DestDir: "{app}";
+;Source: "..\Microsoft.VC90.CRT.manifest"; DestDir: "{app}";
+;Source: "..\msvcm90.dll"; DestDir: "{app}";
+;Source: "..\msvcp90.dll"; DestDir: "{app}";
+;Source: "..\msvcr90.dll"; DestDir: "{app}";
 Source: "..\python27.dll"; DestDir: "{app}";
 Source: "..\pythoncom27.dll"; DestDir: "{app}";
 Source: "..\pythoncomloader27.dll"; DestDir: "{app}";
