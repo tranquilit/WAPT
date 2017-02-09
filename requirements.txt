@@ -11,6 +11,7 @@ Flask==0.12
 flask-hmacauth==0.3.9
 flask-paginate==0.4.5
 Flask-SocketIO==2.8.2
+Flask-Babel==0.11.1
 huey==1.2.2
 iniparse==0.4
 isort==4.2.5
