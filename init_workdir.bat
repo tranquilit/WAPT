@@ -1,4 +1,6 @@
 
+git clean -xfd
+
 virtualenv . --distribute
 xcopy /I /E /F /Y c:\python27\libs libs
 xcopy /I /E /F /Y c:\python27\DLLs DLLs
