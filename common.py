@@ -5171,7 +5171,7 @@ class Wapt(object):
                     # use the current local development
                     if use_local_sources:
                         if entry>local_dev_entry:
-                            raise Exception('A newer package version %s is already in repository "%s", local sources %s is %s, aborting' % (entry.asrequirement(),entry.repo,target_directory, local_dev_entry.asrequirement()))
+                            raise Exception(u'A newer package version %s is already in repository "%s", local sources %s is %s, aborting' % (entry.asrequirement(),entry.repo,target_directory, local_dev_entry.asrequirement()))
                         if local_dev_entry.match(hostname):
                             # update depends list
                             prev_depends = ensure_list(local_dev_entry.depends)
@@ -5200,7 +5200,7 @@ class Wapt(object):
                             self.add_pyscripter_project(target_directory)
                             return {'target':target_directory,'source_dir':target_directory,'package':local_dev_entry}
                         else:
-                            raise Exception('Local target %s directory is the sources of a different package %s than expected %s' % (target_directory,local_dev_entry.package,hostname))
+                            raise Exception(u'Local target %s directory is the sources of a different package %s than expected %s' % (target_directory,local_dev_entry.package,hostname))
                     else:
                         raise Exception('directory %s is already a package development directory, aborting.' % target_directory)
                 elif os.path.isdir(target_directory) and os.listdir(target_directory):
@@ -5223,7 +5223,7 @@ class Wapt(object):
                 # create new host package from template
                 return self.make_host_template(packagename=hostname,directoryname=target_directory,depends=append_depends,description=description)
         else:
-            raise Exception('No Wapthost repository defined')
+            raise Exception(u'No Wapthost repository defined')
 
     def forget_packages(self,packages_list):
         """Remove install status for packages from local database
