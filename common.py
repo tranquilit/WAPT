@@ -5163,7 +5163,7 @@ class Wapt(object):
 
         # check if host package exists on repos
         if self.repositories and isinstance(self.repositories[-1],WaptHostRepo):
-            (entry,entry_date) = self.repositories[-1].update_host(hostname,self.waptdb,public_certs=self.public_certs)
+            (entry,entry_date) = self.repositories[-1].update_host(hostname,self.waptdb)
             if entry:
                 # target is already an "in-progress" package developement
                 local_dev_entry = self.is_wapt_package_development_dir(target_directory)
