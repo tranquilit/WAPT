@@ -3739,7 +3739,7 @@ def run_powershell(cmd,output_format='json',**kwargs):
         output_format_ps = output_format
     # command is a utf16 without bom encoded with base54 without \n
     # we should not get stderr so that ouput can be decoded as json. stderr get progress report...
-    if not 'return_stderr' in kwargs or not isinstance(return_stderr,list):
+    if not 'return_stderr' in kwargs or not isinstance(kwargs['return_stderr'],list):
         return_stderr = []
     else:
         kwargs.pop('return_stderr')

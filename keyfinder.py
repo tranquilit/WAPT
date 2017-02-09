@@ -37,6 +37,7 @@ __version__ = "1.0.0"
 import platform,sys,os
 import math
 import _winreg
+import string
 
 ###########
 HKEY_CLASSES_ROOT = _winreg.HKEY_CLASSES_ROOT
@@ -157,7 +158,7 @@ def WinVersion():
     windows = registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','ProductName','')
     if windows:
         return windows
-    if IsWinNT4():
+    if isWinNT4():
         return 'Microsoft Windows NT'
 #b24chrs = (string.digits + string.ascii_uppercase)[:24]
 generic_b24chrs = '0123456789ABCDEFGHIJKLMN'
