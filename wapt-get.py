@@ -444,16 +444,24 @@ def main():
 
                 if options.json_output:
                     jsonresult['result'] = result
+                    for p in result:
+                        try:
+                            crt = control.check_control_signature(mywapt.authorized_certificates())
+                            print('%s OK control signature checked properly by certificate %s (fingerprint: %s )' % (p.filename,crt.cn,crt.fingerprint))
+                        except Exception as e:
+                            print('%s ERROR control signature can not be validated with certificates %s' % (p.filename,mywapt.authorized_certificates()))
                 else:
                     print(u"Display package control data for %s\n" % (','.join(all_args),))
                     for p in result:
                         print(p.ascontrol(with_non_control_attributes=True))
-                        print()
+                        print('')
                         try:
+                            logger.info(u'Verifying package control signature against certificates %s' % mywapt.authorized_certificates())
                             crt = control.check_control_signature(mywapt.authorized_certificates())
-                            print('Package control signature checked properly by certificate %s (fingerprint: %s )' % (crt.cn,crt.fingerprint))
+                            print('OK Package control signature checked properly by certificate %s (fingerprint: %s )' % (crt.cn,crt.fingerprint))
                         except:
-                            print('WARNING: control data signature is invalid !!')
+                            print('WARNING: control data signature can not be validated with certificates %s' %mywapt.authorized_certificates())
+                        print('')
 
             elif action == 'show-params':
                 if len(args) < 2:
@@ -786,7 +794,7 @@ def main():
                                 print('...done. Package filename %s' % (package_fn,))
 
                                 if mywapt.private_key:
-                                    print('Signing %s' % package_fn)
+                                    print('Signing %s with key %s' % (package_fn,mywapt.private_key))
                                     signature = mywapt.sign_package(
                                         package_fn,
                                         excludes=common.ensure_list(options.excludes)
@@ -863,7 +871,7 @@ def main():
                     try:
                         waptfile = guess_package_root_dir(waptfile)
                         if os.path.isdir(waptfile) or os.path.isfile(waptfile):
-                            print('Signing %s' % waptfile)
+                            print('Signing %s with key %s' % (waptfile,mywapt.private_key))
                             signature = mywapt.sign_package(
                                 waptfile,
                                 excludes=common.ensure_list(options.excludes)

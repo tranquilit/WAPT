@@ -2960,10 +2960,11 @@ class Wapt(object):
                     if self.public_certs and os.path.isfile(signature_filename):
                         signature = open(signature_filename,'r').read().decode('base64')
                         try:
+                            logger.info(u'Verifying package content signature against certificates %s' %self.public_certs)
                             subject = ssl_verify_content(manifest_data,signature,self.public_certs)
-                            logger.info(u'Package issued by %s' % (subject,))
+                            logger.info(u'OK Package issued by %s' % (subject,))
                         except:
-                            raise Exception(u'Package file %s signature is invalid' % fname)
+                            raise Exception(u'Package file %s content signature is invalid' % fname)
                     else:
                         raise Exception(u'No certificate provided for %s or package does not contain a signature' % fname)
 
@@ -3579,10 +3580,11 @@ class Wapt(object):
             manifest = json.loads(manifest_content)
             signature = waptfile.open(u'WAPT/signature').read().decode('base64')
             try:
+                logger.info(u'Verifying package content signature against certificates %s' %self.public_certs)
                 subject = ssl_verify_content(manifest_content,signature,self.public_certs)
-                logger.info(u'Package issued by %s' % (subject,))
+                logger.info(u'OK Package issued by %s' % (subject,))
             except:
-                raise Exception(u'Package file %s signature is invalid' % ensure_unicode(fname))
+                raise Exception(u'Package file %s content signature is invalid' % ensure_unicode(fname))
 
             for (fn,sha1) in manifest:
                 if fn == 'WAPT\\control':
@@ -4015,6 +4017,7 @@ class Wapt(object):
         """return a list of autorized package signers for this host
         """
         result = []
+        logger.debug('Getting authorized certificates from %s' % self.public_certs)
         for fn in self.public_certs:
             crt = SSLCertificate(fn)
             result.append(crt)
@@ -4270,26 +4273,37 @@ class Wapt(object):
             # specific
             if not os.path.isfile(private_key):
                 raise Exception('Private key file %s not found' % private_key)
+            logger.info('Loading private key %s'%private_key)
             key = SSLPrivateKey(private_key,callback=callback)
 
         # get matching certificate
         try:
-            cert = SSLCertificate(key.private_key_filename)
-            # try loading x509
-            logger.debug('Using identity : %s' % cert.cn)
+            logger.debug(u'Trying to get matching certificate from pem CA file : %s' % key.private_key_filename)
+            ca = SSLCAChain()
+            ca.add_pem(key.private_key_filename)
+            certs = ca.matching_certs(key)
+            if certs:
+                cert = certs[-1]
+                logger.debug(u'Using certificate %s in pem file %s' % (cert,key.private_key_filename))
+            else:
+                cert = None
+                raise Exception(u'No matching certificate in PEM file %s'%key.private_key_filename)
         except:
+            logger.debug(u'Trying to find matching certificate in directory %s' % os.path.dirname(key.private_key_filename))
             certs = sorted(c for c in key.matching_certs(os.path.dirname(key.private_key_filename)))
             if not certs:
-                raise Exception('Can not find a valid certificate matching the key %s in same PEM file or in directory %s' % (private_key,os.path.dirname(key.private_key_filename)))
+                raise Exception(u'Can not find a valid certificate matching the key %s in same PEM file or in directory %s' % (private_key,os.path.dirname(key.private_key_filename)))
             else:
                 # use most recent
                 cert = certs[-1]
+                logger.debug(u'Using certificate %s' % cert)
+        logger.info(u'Using identity : %s' % cert.cn)
         pe =  PackageEntry().load_control_from_wapt(zip_or_directoryname)
         return pe.sign_package(key,cert)
 
     def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','*.pyc','src'],
                 target_directory=None,
-                include_signer=True,
+                include_signer=False,
                 private_key=None,
                 callback=None):
         """Build the WAPT package from a directory
@@ -4484,7 +4498,7 @@ class Wapt(object):
                 if package_fn:
                     buildresults.append(buildresult)
                     logger.info(u'...done. Package filename %s' % (package_fn,))
-                    logger.info('Signing %s' % package_fn)
+                    logger.info('Signing %s with key %s' % (package_fn,self.private_key))
                     signature = self.sign_package(package_fn,callback=callback)
                     logger.debug(u"Package %s signed : signature :\n%s" % (package_fn,signature))
                 else:
