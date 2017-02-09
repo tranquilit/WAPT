@@ -4,12 +4,10 @@ program waptdeploy;
 
 uses
   Classes,
-  Windows,
   SysUtils,
   uwaptdeployres,
   superobject,
   tiswinhttp,
-  DCPsha256,
   synautil,
   soutils,
   tisstrings,
