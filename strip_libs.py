@@ -11,7 +11,7 @@
 
 import sys,os,glob,re,winshell
 
-def keepit(fn,words=['fr','de','en','us','pt','pl','uk']):
+def keepit(fn,words=['fr_','de_','en_','us_','pt_','pl_','uk_']):
     result = False
     for k in words:
         if k.lower() in os.path.basename(fn).lower():
@@ -19,15 +19,20 @@ def keepit(fn,words=['fr','de','en','us','pt','pl','uk']):
             break
     return result
 
-for fn in glob.glob('c:/tranquilit/wapt/lib/site-packages/babel/locale-data/*'):
+for fn in glob.glob(r'lib\site-packages\babel\locale-data\*'):
     if not keepit(fn):
-        print('delete %s' %fn)
         os.unlink(fn)
 
-for fn in glob.glob(r'C:\tranquilit\wapt\lib\site-packages\pytz\zoneinfo\*'):
+for fn in glob.glob(r'lib\site-packages\pytz\zoneinfo\*'):
     if not keepit(fn,['europe','etc','us','gb','portugal','france','cet','est','gmt','met','poland','utc','zone','universal','factory']):
-        print('delete %s' %fn)
-        if os.path.isdir(fn):
-            winshell.delete_file(fn,no_confirm=True)
+        if os.path.isdir(os.path.abspath(fn)):
+            print('delete %s' %fn)
+            winshell.delete_file(os.path.abspath(fn),no_confirm=True)
         else:
             os.unlink(fn)
+
+for dirfn in [
+        ]:
+    if os.path.isdir(os.path.abspath(dirfn)):
+        winshell.delete_file(os.path.abspath(dirfn),no_confirm=True)
+
