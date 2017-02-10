@@ -1022,7 +1022,7 @@ class RunOutput(unicode):
         return self
 
     def __repr__(self):
-        return "<RunOuput returncode :%s>\n%s"%(self.returncode,self.encode(sys.getfilesystemencoding(),'replace'))
+        return "<RunOuput returncode :%s>\n%s" % (self.returncode,repr(self.__str__))
 
     def __str__(self):
         return self.encode(sys.getfilesystemencoding(),'replace')
