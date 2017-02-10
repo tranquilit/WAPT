@@ -109,9 +109,11 @@ mkdir_p("builddir/opt/wapt/lib/site-packages")
 mkdir_p("builddir/opt/wapt/waptserver")
 
 print('Create a build environment virtualenv')
-subprocess.check_output(r'virtualenv ./builddir/opt/wapt/waptserver',shell=True)
+subprocess.check_output(r'virtualenv ./builddir/opt/wapt --system-site-packages',shell=True)
+subprocess.check_output(r'virtualenv ./builddir/opt/wapt --relocatable',shell=True)
+
 print('Install additional libraries in build environment virtualenv')
-subprocess.check_output(r'./builddir/opt/wapt/waptserver/bin/pip install -r ../../requirements-server.txt',shell=True)
+subprocess.check_output(r'./builddir/opt/wapt/bin/pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages',shell=True)
 
 print >> sys.stderr, 'copying the waptserver files'
 rsync(source_dir,'./builddir/opt/wapt/',excludes=['apache-win32', 'mongodb', 'postconf', 'repository', 'rpm','uninstall-services.bat','deb'])

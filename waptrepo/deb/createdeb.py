@@ -76,7 +76,7 @@ new_umask = 022
 old_umask = os.umask(new_umask)
 if new_umask != old_umask:
     print >> sys.stderr, 'umask fixed (previous %03o, current %03o)' % (old_umask, new_umask)
- 
+
 # remove old debs
 for filename in glob.glob("tis-waptrepo*.deb"):
     print "destruction de %s" % filename
@@ -107,6 +107,11 @@ copyfile(makepath(wapt_source_dir,'waptpackage.py'),
          './builddir/opt/wapt/waptpackage.py')
 copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
          './builddir/opt/wapt/wapt-scanpackages.py')
+copyfile(makepath(wapt_source_dir,'wapt-signpackages.py'),
+         './builddir/opt/wapt/wapt-signpackages.py')
+
+subprocess.check_output(r'chmod +x ./builddir/opt/wapt/wapt-scanpackages.py',shell=True)
+subprocess.check_output(r'chmod +x ./builddir/opt/wapt/wapt-signpackages.py',shell=True)
 
 print 'copie des fichiers control et postinst'
 copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
