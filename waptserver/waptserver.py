@@ -424,7 +424,7 @@ def update_host():
                     logger.info(
                         'Reuses current check hosts thread for %s' %
                         (uuid,))
-                    g.check_hosts_thread.queue.append(data)
+                    g.check_hosts_thread.queue.put(data)
 
             else:
                 result = dict(
@@ -1717,7 +1717,7 @@ def update_hosts():
                 logger.info(
                     'Reuses current check hosts thread for %s' %
                     (uuid,))
-                g.check_hosts_thread.queue.append(data)
+                g.check_hosts_thread.queue.put(data)
 
             msg.append('host {} updated in DB'.format(uuid))
 
@@ -1885,6 +1885,9 @@ class CheckHostsWaptService(threading.Thread):
         else:
             self.workers_count = 20
 
+        self.queue = Queue.Queue()
+
+
     def run(self):
         logger.debug(
             'Client-listening %s address checker thread started' %
@@ -1913,21 +1916,20 @@ class CheckHostsWaptService(threading.Thread):
                         "$unset": {
                             'wapt.listening_address': 1}}, multi=True)
 
-            queue = Queue.Queue()
             for data in mongoclient.wapt.hosts.find(query, projection=fields):
                 logger.debug(
                     'Hosts %s pushed in check IP queue' %
                     data['uuid'])
-                queue.put(data)
+                self.queue.put(data)
 
             logger.debug('Create %i workers' % self.workers_count)
             for i in range(self.workers_count):
-                CheckHostWorker(queue, self.timeout)
+                CheckHostWorker(self.queue, self.timeout)
 
             logger.debug(
                 '%s CheckHostsWaptService waiting for check queue to be empty' %
                 (self.ident))
-            queue.join()
+            self.queue.join()
             logger.debug(
                 '%s CheckHostsWaptService workers all terminated' %
                 (self.ident))

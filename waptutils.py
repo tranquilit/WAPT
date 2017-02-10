@@ -329,7 +329,7 @@ def ensure_unicode(data):
                 return data.decode('utf8')
             except:
                 return data.decode(sys.getfilesystemencoding(),'replace')
-        if isinstance(data,WindowsError):
+        if platform.system() == 'Windows' and isinstance(data,WindowsError):
             return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding(),'replace'))
         if isinstance(data,(UnicodeDecodeError,UnicodeEncodeError)):
             return u"%s : faulty string is '%s'" % (data,repr(data.args[1]))
