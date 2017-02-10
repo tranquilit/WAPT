@@ -328,10 +328,7 @@ class CalledProcessErrorOutput(subprocess.CalledProcessError):
     """CalledProcessError with printed output"""
 
     def __str__(self):
-        try:
-            return "Command '%s' returned non-zero exit status %d.\nOutput:%s" % (self.cmd, self.returncode,self.output.encode(sys.getfilesystemencoding(),errors='replace'))
-        except:
-            return "Command '%s' returned non-zero exit status %d.\nOutput:%s" % (self.cmd, self.returncode,self.output)
+        return "Command %s returned non-zero exit status %d.\nOutput:%s" % (repr(self.cmd), self.returncode,repr(self.output))
 
 
 def create_shortcut(path, target='', arguments='', wDir='', icon=''):
