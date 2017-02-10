@@ -41,7 +41,7 @@ Environnement Python
 Création d'un environnement de développement avec virtualenv:
 ---------------------------------------------
 
-Pour une installation propre de zéro:
+Pour une installation propre de zéro sur Windows:
 
 * Installer python2.7.12 depuis https://www.python.org/ftp/python/2.7.12/python-2.7.12.msi
 * Upgrader python-setuptools : c:\python27\python -m pip install -U pip setuptools
@@ -76,6 +76,18 @@ Pour une installation propre de zéro:
  copy /Y Scripts\python.exe waptpython.exe
  copy /Y Scripts\pythonw.exe waptpythonw.exe
  
+```
+Environnement de build sur Linux Debian
+---------------------------------------
+```
+
+mkdir /opt/wapt/waptserver
+cd /opt/wapt/waptserver
+
+apt-get install python-virtualenv
+virtualenv .
+bin/pip install -r requirements-server.txt
+
 ```
 
 Environnement CodeTyphon / Lazarus

@@ -108,9 +108,12 @@ mkdir_p("builddir/opt/wapt/log")
 mkdir_p("builddir/opt/wapt/lib/site-packages")
 mkdir_p("builddir/opt/wapt/waptserver")
 
+subprocess.check_output(r'virtualenv ./builddir/opt/wapt/waptserver',shell=True)
+subprocess.check_output(r'./builddir/opt/wapt/waptserver/bin/pip install -r requirements-server.txt',shell=True)
+
 print >> sys.stderr, 'copying the waptserver files'
 rsync(source_dir,'./builddir/opt/wapt/',excludes=['apache-win32', 'mongodb', 'postconf', 'repository', 'rpm','uninstall-services.bat','deb'])
-for lib in ('requests','iniparse','dns','pefile.py','rocket','pymongo','bson','flask','werkzeug','jinja2','itsdangerous.py','markupsafe', 'dialog.py', 'babel', 'flask_babel', 'huey','wakeonlan'):
+for lib in ('dialog.py', 'pefile.py'):
     rsync(makepath(wapt_source_dir,'lib','site-packages',lib),'./builddir/opt/wapt/lib/site-packages/')
 
 print >> sys.stderr, 'copying control and postinst package metadata'
