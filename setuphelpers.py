@@ -379,11 +379,7 @@ class CalledProcessErrorOutput(subprocess.CalledProcessError):
     """CalledProcessError with printed output"""
 
     def __str__(self):
-        try:
-            return "Command '%s' returned non-zero exit status %d.\nOutput:%s" % (self.cmd, self.returncode,self.output.encode(sys.getfilesystemencoding(),errors='replace'))
-        except:
-            return "Command '%s' returned non-zero exit status %d.\nOutput:%s" % (self.cmd, self.returncode,self.output)
-
+        return "Command %s returned non-zero exit status %d.\nOutput:%s" % (repr(self.cmd), self.returncode,repr(self.output))
 
 def ensure_list(csv_or_list,ignore_empty_args=True,allow_none = False):
     """if argument is not a list, return a list from a csv string"""
