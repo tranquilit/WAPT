@@ -19,8 +19,6 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from __future__ import print_function
-from __future__ import absolute_import
 __version__ = "1.3.11"
 
 import time
@@ -2255,7 +2253,6 @@ class WaptTaskManager(threading.Thread):
     def __unicode__(self):
         return "\n".join(self.tasks_status())
 
-
 def install_service():
     """Setup waptservice as a windows Service managed by nssm
     >>> install_service()
@@ -2280,12 +2277,12 @@ def install_service():
     if setuphelpers.service_installed('waptservice'):
         if not setuphelpers.service_is_stopped('waptservice'):
             logger.info(u'Stop running waptservice')
-            setuphelpers.run('net stop waptservice')
+            setuphelpers.service_stop('waptservice')
             while not setuphelpers.service_is_stopped('waptservice'):
                 logger.debug(u'Waiting for waptservice to terminate')
                 time.sleep(2)
         logger.info(u'Unregister existing waptservice')
-        setuphelpers.run('sc delete waptservice')
+        setuphelpers.service_delete('waptservice')
 
     if setuphelpers.iswin64():
         nssm = os.path.join(wapt_root_dir,'waptservice','win64','nssm.exe')
