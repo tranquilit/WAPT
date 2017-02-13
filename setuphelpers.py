@@ -229,6 +229,7 @@ __all__ = \
  'local_group_members',
  'set_computer_description',
  'uac_enabled',
+ 'unzip',
  ]
 
 import os
@@ -3818,6 +3819,69 @@ def uac_enabled():
     """
     with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System') as k:
         return _winreg.QueryValueEx(k,'EnableLUA')[1] == 0
+
+
+def unzip(zipfn,target=None,filenames=None):
+    """Unzip the files from zipfile with patterns in filenames to target directory
+
+    Args:
+        zipfn (str) : path to zipfile. (can be relative to temporary unzip location of package)
+        target (str) : target location. Defaults to dirname(zipfile) + basename(zipfile)
+        filenames (str or list of str): list of filenames / glob patterns (path sep is normally a slash)
+    Returns:
+        list : list of extracted files
+
+    >>> unzip(r'C:\tranquilit\wapt\tests\packages\tis-7zip_9.2.0-15_all.wapt')
+    [u'C:\\tranquilit\\wapt\\tests\\packages\\tis-7zip_9.2.0-15_all\\7z920-x64.msi',
+     u'C:\\tranquilit\\wapt\\tests\\packages\\tis-7zip_9.2.0-15_all\\7z920.msi',
+     u'C:\\tranquilit\\wapt\\tests\\packages\\tis-7zip_9.2.0-15_all\\setup.py',
+     u'C:\\tranquilit\\wapt\\tests\\packages\\tis-7zip_9.2.0-15_all\\WAPT/control',
+     u'C:\\tranquilit\\wapt\\tests\\packages\\tis-7zip_9.2.0-15_all\\WAPT/wapt.psproj',
+     u'C:\\tranquilit\\wapt\\tests\\packages\\tis-7zip_9.2.0-15_all\\WAPT/manifest.sha1',
+     u'C:\\tranquilit\\wapt\\tests\\packages\\tis-7zip_9.2.0-15_all\\WAPT/signature']
+
+    >>> unzip(r'C:\tranquilit\wapt\tests\packages\tis-7zip_9.2.0-15_all.wapt',filenames=['*.msi','*.py'])
+    [u'C:\\tranquilit\\wapt\\tests\\packages\\tis-7zip_9.2.0-15_all\\7z920-x64.msi',
+     u'C:\\tranquilit\\wapt\\tests\\packages\\tis-7zip_9.2.0-15_all\\7z920.msi',
+     u'C:\\tranquilit\\wapt\\tests\\packages\\tis-7zip_9.2.0-15_all\\setup.py']
+
+    >>> unzip(r'C:\tranquilit\wapt\tests\packages\tis-7zip_9.2.0-15_all.wapt',filenames='WAPT/*')
+    [u'C:\\tranquilit\\wapt\\tests\\packages\\tis-7zip_9.2.0-15_all\\WAPT/control',
+     u'C:\\tranquilit\\wapt\\tests\\packages\\tis-7zip_9.2.0-15_all\\WAPT/wapt.psproj',
+     u'C:\\tranquilit\\wapt\\tests\\packages\\tis-7zip_9.2.0-15_all\\WAPT/manifest.sha1',
+     u'C:\\tranquilit\\wapt\\tests\\packages\\tis-7zip_9.2.0-15_all\\WAPT/signature']
+
+    >>> unzip(r'C:\tranquilit\wapt\tests\packages\tis-7zip_9.2.0-15_all.wapt',filenames='WAPT/control')
+    [u'C:\\tranquilit\\wapt\\tests\\packages\\tis-7zip_9.2.0-15_all\\WAPT\\control']
+
+    ... versionadded:: 1.3.11
+
+    """
+    from custom_zip import ZipFile
+    from glob import fnmatch
+    zipf = ZipFile(zipfn,allowZip64=True)
+    if target is None:
+        target=makepath(os.path.dirname(os.path.abspath(zipfn)),os.path.splitext(os.path.basename(zipfn))[0])
+
+    filenames = [ pattern.replace('\\','/') for pattern in ensure_list(filenames)]
+
+    def match(fn,filenames):
+        # return True if fn matches one of the pattern in filenames
+        if filenames is None:
+            return True
+        else:
+            for pattern in filenames:
+                if fnmatch.fnmatch(fn,pattern):
+                    return True
+            return False
+    if filenames is not None:
+        all_files = [fn for fn in zipf.namelist() if match(fn,filenames)]
+        zipf.extractall(target,members=all_files)
+    else:
+        all_files = zipf.namelist()
+        zipf.extractall(target)
+
+    return [makepath(target,fn.replace('/',os.sep)) for fn in all_files]
 
 CalledProcessError = subprocess.CalledProcessError
 
