@@ -173,6 +173,7 @@ __all__ = \
  'remove_metroapp',
  'sendto',
  'service_installed',
+ 'service_delete',
  'service_is_running',
  'service_is_stopped',
  'service_restart',
@@ -2993,6 +2994,15 @@ def service_installed(service_name):
             return False
         else:
             raise
+
+def service_delete(service_name):
+    hscm = win32service.OpenSCManager(None,None,win32service.SC_MANAGER_ALL_ACCESS)
+    try:
+        hs = win32serviceutil.SmartOpenService(hscm, service_name, win32service.SERVICE_ALL_ACCESS)
+        win32service.DeleteService(hs)
+        win32service.CloseServiceHandle(hs)
+    finally:
+        win32service.CloseServiceHandle(hscm)
 
 
 def service_start(service_name):
