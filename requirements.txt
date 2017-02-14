@@ -27,6 +27,7 @@ packaging==16.8
 passlib==1.7.1
 peewee==2.8.5
 psutil==3.4.2
+psycopg2==2.6.2
 pylint==1.6.5
 pymongo==3.4.0
 pyparsing==2.1.10
