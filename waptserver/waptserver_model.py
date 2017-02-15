@@ -26,8 +26,17 @@ class BaseModel(Model):
 
 class WaptHosts(BaseModel):
     uuid = CharField(primary_key=True,unique=True)
-    host_fqdn = CharField(null=True,index=True)
-    host_data = BinaryJSONField(null=True)
+    computer_fqdn = CharField(null=True,index=True)
+    reachable = CharField(null=True)
+    host_status = CharField(null=True)
+    last_query_date = CharField(null=True)
+
+    wapt = BinaryJSONField(null=True)
+    update_status = BinaryJSONField(null=True)
+    packages = BinaryJSONField(null=True)
+    softwares = BinaryJSONField(null=True)
+    host = BinaryJSONField(null=True)
+
     created_on = DateTimeField(null=True,default=datetime.datetime.now)
     created_by = DateTimeField(null=True)
     updated_on = DateTimeField(null=True,default=datetime.datetime.now)
@@ -122,7 +131,8 @@ def import_shapers():
 
 #init_db(False)
 #load_json(r"c:\tmp\*.json")
-print WaptHosts.get(Hosts.uuid == 'sd')
+#print WaptHosts.get(Hosts.uuid == 'sd')
+test_pg()
 
 
 
