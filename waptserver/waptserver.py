@@ -20,8 +20,6 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from __future__ import print_function
-from __future__ import absolute_import
 __version__ = "1.3.11"
 
 import os
@@ -151,37 +149,10 @@ def get_wapt_exe_version(exe):
     return (present, version)
 
 
-def get_db():
-    """Opens a new database connection if there is none yet for the
-    current application context.
-    """
-    if not hasattr(g, 'db'):
-        try:
-            logger.debug('Connecting to wapt db %s:%s')
-            g.db_connection = wap
-            g.db = mongo_client.wapt
-        except Exception as e:
-            raise Exception(
-                _("Could not connect to mongodb database: {}.").format(
-                    (repr(e),)))
-    return g.db
-
-
 def hosts():
     """ Get hosts collection from db
     """
-    if not hasattr(g, 'hosts'):
-        try:
-            logger.debug('Add hosts collection to current request context')
-            g.hosts = get_db().hosts
-            g.hosts.ensure_index('uuid', unique=True)
-            g.hosts.ensure_index('computer_name', unique=False)
-        except Exception as e:
-            raise Exception(
-                _("Could not get hosts collection from db: {}.").format(
-                    (repr(e),)))
-    return g.hosts
-
+    return WaptHosts
 
 @app.teardown_appcontext
 def close_db(error):
@@ -191,10 +162,6 @@ def close_db(error):
         del g.hosts
     if hasattr(g, 'db'):
         del g.db
-    if hasattr(g, 'mongo_client'):
-        logger.debug('del mongo_client instance')
-        del g.mongo_client
-
 
 def requires_auth(f):
     @wraps(f)
@@ -262,14 +229,25 @@ def authenticate():
 
 
 def get_host_data(uuid, filter={}, delete_id=True):
-    if filter:
-        data = hosts().find_one({"uuid": uuid}, filter)
-    else:
-        data = hosts().find_one({"uuid": uuid})
-    if data and delete_id:
-        data.pop("_id")
-    return data
+    """Return all the data for host uuid
 
+    Args:
+        uuid : uinque id of host to retrieve
+        Filter (dict) : Filter out the returned fields.
+                        mongostyle: {'fieldname':1/0,}
+        delete_id (bool) : remove mongo unique _id attribute from result
+
+    Returns:
+        dict : data retrieved from DB
+    """
+    if filter:
+        # select only fields with key:1
+        data = WaptHosts.select(
+            *[getattr(WaptHosts, f) for f in [k for k in filter.keys if filter[k]]]
+            ).where(WaptHosts.uuid==uuid).first(1)
+    else:
+        data = WaptHosts.get(uuid=uuid)
+    return data
 
 @babel.localeselector
 def get_locale():
@@ -297,7 +275,7 @@ def index():
     waptsetup = os.path.join(conf['wapt_folder'], 'waptsetup-tis.exe')
     waptdeploy = os.path.join(conf['wapt_folder'], 'waptdeploy.exe')
 
-    agent_status = setup_status = deploy_status = mongodb_status = 'N/A'
+    agent_status = setup_status = deploy_status = db_status = 'N/A'
     agent_style = setup_style = deploy_style = disk_space_style = 'style="color: red;"'
 
     setup_present, setup_version = get_wapt_exe_version(waptsetup)
@@ -329,9 +307,9 @@ def index():
 
     try:
         get_db()
-        mongodb_status = 'OK'
+        db_status = 'OK'
     except Exception as e:
-        mongodb_status = 'ERROR'
+        db_status = 'ERROR'
 
     try:
         space = get_disk_space(conf['wapt_folder'])
@@ -350,7 +328,7 @@ def index():
             'agent': {'status': agent_status, 'style': agent_style, 'sha256': agent_sha256},
             'setup': {'status': setup_status, 'style': setup_style},
             'deploy': {'status': deploy_status, 'style': deploy_style},
-            'mongodb': {'status': mongodb_status},
+            'db': {'status': db_status},
             'disk_space': {'status': disk_space_str, 'style': disk_space_style},
         }
     }
@@ -359,19 +337,38 @@ def index():
 
 
 def update_data(data):
-    """Helper function to update host data in mongodb
+    """Helper function to update host data in db
         data is a dict with at least 'uuid' key and other key to add/update
         - insert or update data based on uuid match
         - update last_query_date key to current datetime
         returns whole dict for the updated host data
     """
+    uuid = data['uuid']
     data['last_query_date'] = datetime2isodate()
-    host = get_host_data(data["uuid"], delete_id=False)
-    if host:
-        hosts().update({"_id": host['_id']}, {"$set": data})
-    else:
-        host_id = hosts().insert(data)
-    return get_host_data(data["uuid"], filter={"uuid": 1, "host": 1})
+    try:
+        # simulates an upsert statement based on uuid PK
+        try:
+            # wapt update_status packages softwares host
+            newhost = WaptHosts()
+            for k in data.keys():
+                if hasattr(newhost,k):
+                    setattr(newhost,k,data[k])
+            newhost.save(force_insert=True)
+        except IntegrityError as e:
+            wapt_db.rollback()
+            updates = {}
+            for k in data.keys():
+                if hasattr(WaptHosts,k):
+                    updates[k] = data[k]
+            updates['updated_on'] = datetime.datetime.now()
+            WaptHosts.update(
+                **updates
+                ).where(WaptHosts.uuid == uuid)
+    except Exception as e:
+        logger.critical(u'Error updating data for %s : %s'%(uuid,ensure_unicode(e)))
+        wapt_db.rollback()
+
+    return WaptHosts.select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.host).where(WaptHosts.uuid == uuid).first(1)
 
 
 def get_reachable_ip(ips=[], waptservice_port=conf[
@@ -873,20 +870,20 @@ def get_ip_port(host_data, recheck=False, timeout=None):
     if not host_data:
         raise EWaptUnknownHost(_('Unknown uuid'))
 
-    if 'wapt' in host_data:
-        if not recheck and host_data['wapt'].get('listening_address', None) and \
-                'address' in host_data['wapt']['listening_address'] and \
-                host_data['wapt']['listening_address']['address']:
-            return host_data['wapt']['listening_address']
+    if host_data.wapt:
+        if not recheck and host_data.wapt.get('listening_address', None) and \
+                'address' in host_data.wapt['listening_address'] and \
+                host_data.wapt['listening_address']['address']:
+            return host_data.wapt['listening_address']
         else:
-            port = host_data['wapt'].get(
+            port = host_data.wapt.get(
                 'waptservice_port',
                 conf['waptservice_port'])
             return dict(
-                protocol=host_data['wapt'].get('waptservice_protocol', 'http'),
+                protocol=host_data.wapt.get('waptservice_protocol', 'http'),
                 address=get_reachable_ip(
                     ensure_list(
-                        host_data['host']['connected_ips']),
+                        host_data.host['connected_ips']),
                     waptservice_port=port,
                     timeout=timeout),
                 port=port,
@@ -894,7 +891,7 @@ def get_ip_port(host_data, recheck=False, timeout=None):
     else:
         raise EWaptHostUnreachable(
             _('No reachable IP for {}').format(
-                host_data['uuid']))
+                host_data.uuid))
 
 
 @app.route('/ping')
@@ -947,8 +944,10 @@ def host_reachable_ip():
     try:
         try:
             uuid = request.args['uuid']
-            host_data = hosts().find_one({"uuid": uuid}, projection={
-                'uuid': 1, 'host.computer_fqdn': 1, 'wapt': 1, 'host.connected_ips': 1})
+            host_data = WaptHosts
+                        .select(WaptHosts.uuid,WaptHosts.wapt,WaptHosts.host)
+                        .where(WaptHosts.uuid==uuid)
+                        .first(1)
             result = get_ip_port(host_data)
         except Exception as e:
             raise EWaptHostUnreachable(
@@ -977,12 +976,13 @@ def proxy_host_request(request, action):
         result = dict(success=[], errors=[])
         for uuid in uuids:
             try:
-                host_data = hosts().find_one({"uuid": uuid}, projection={
-                    'uuid': 1, 'wapt': 1, 'host.connected_ips': 1, 'host.computer_fqdn': 1})
+                host_data = WaptHosts
+                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)
+                        .where(WaptHosts.uuid==uuid)
+                        .first(1)
                 listening_address = get_ip_port(host_data)
                 msg = u''
-                if listening_address and listening_address[
-                        'address'] and listening_address['port']:
+                if listening_address and listening_address['address'] and listening_address['port']:
                     logger.info(
                         "Launching %s with args %s for %s at address %s..." %
                         (action, all_args, uuid, listening_address['address']))
@@ -1017,9 +1017,7 @@ def proxy_host_request(request, action):
                             dict(
                                 uuid=uuid,
                                 msg=msg,
-                                computer_fqdn=host_data['host'].get(
-                                    'computer_fqdn',
-                                    '')))
+                                computer_fqdn=host_data.computer_fqdn))
                     except ValueError:
                         if 'Restricted access' in client_result:
                             raise EWaptForbiddden(client_result)
@@ -1031,11 +1029,9 @@ def proxy_host_request(request, action):
                         uuid=uuid,
                         msg='%s' %
                         e,
-                        computer_fqdn=host_data.get(
-                            'host',
-                            {}).get(
-                            'computer_fqdn',
-                            '')))
+                        computer_fqdn=host_data.computer_fqdn,
+                        )
+                    )
 
         msg = [
             'Success : %s, Errors: %s' %
@@ -1061,8 +1057,10 @@ def trigger_upgrade():
         uuid = request.args['uuid']
         notify_user = request.args.get('notify_user', 0)
         notify_server = request.args.get('notify_server', 1)
-        host_data = hosts().find_one(
-            {"uuid": uuid}, projection={'uuid': 1, 'wapt': 1, 'host.connected_ips': 1})
+        host_data = WaptHosts
+                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)
+                        .where(WaptHosts.uuid==uuid)
+                        .first(1)
         listening_address = get_ip_port(host_data)
         msg = u''
         if listening_address and listening_address[
@@ -1117,8 +1115,10 @@ def trigger_update():
         notify_user = request.args.get('notify_user', 0)
         notify_server = request.args.get('notify_server', 1)
 
-        host_data = hosts().find_one(
-            {"uuid": uuid}, projection={'uuid': 1, 'wapt': 1, 'host.connected_ips': 1})
+        host_data = WaptHosts
+                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)
+                        .where(WaptHosts.uuid==uuid)
+                        .first(1)
         listening_address = get_ip_port(host_data)
         msg = u''
         if listening_address and listening_address[
@@ -1162,16 +1162,17 @@ def trigger_update():
 def trigger_wakeonlan():
     try:
         uuid = request.args['uuid']
-        host_data = hosts().find_one(
-            {"uuid": uuid}, projection={'uuid': 1, 'host': 1, 'computer_fqdn': 1})
-
+        host_data = WaptHosts
+                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)
+                        .where(WaptHosts.uuid==uuid)
+                        .first(1)
         macs = host_data['host']['mac']
         msg = u''
         if macs:
             logger.info(
                 _("Sending magic wakeonlan packets to {} for machine {}").format(
                     macs,
-                    host_data['host']['computer_fqdn']))
+                    host_data.computer_fqdn)
             wakeonlan.wol.send_magic_packet(*macs)
             for line in host_data['host']['networking']:
                 if 'broadcast' in line:
@@ -1183,10 +1184,10 @@ def trigger_wakeonlan():
                         broadcast)
             msg = _(u"Wakeonlan packets sent to {} for machine {}").format(
                 macs,
-                host_data['host']['computer_fqdn'])
+                host_data.computer_fqdn)
             result = dict(
                 macs=macs,
-                host=host_data['host']['computer_fqdn'],
+                host=host_data.computer_fqdn,
                 uuid=uuid)
         else:
             raise EWaptMissingHostData(
@@ -1318,11 +1319,11 @@ def host_tasks_status():
     """Proxy the get tasks status action to the client"""
     try:
         uuid = request.args['uuid']
-        host_data = hosts().find_one(
-            {"uuid": uuid}, projection={'wapt': 1, 'host.connected_ips': 1})
-        #listening_address = get_ip_port(host_data)
-        listening_address = host_data['wapt'].get('listening_address', None)
-
+        host_data = WaptHosts
+                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)
+                        .where(WaptHosts.uuid==uuid)
+                        .first(1)
+        listening_address = host_data.wapt.get('listening_address', None)
         if listening_address and listening_address[
                 'address'] and listening_address['port']:
             logger.info(
@@ -1362,9 +1363,7 @@ def get_groups():
     """List of packages having section == group
     """
     try:
-
         packages = WaptLocalRepo(conf['wapt_folder'])
-
         groups = [p.as_dict()
                   for p in packages.packages if p.section == 'group']
         msg = '{} Packages for section group'.format(len(groups))
@@ -1373,6 +1372,36 @@ def get_groups():
         return make_response_from_exception(e)
 
     return make_response(result=groups, msg=msg, status=200)
+
+def build_hosts_filter(model,filter_expr):
+    """Legacy helper function to translate waptconsole <=1.3.11 hosts filter
+        into peewee model where clause.
+    Args:
+        filter_dict (str) : field1,field4,field5:search_regexp
+    """
+    (search_fields, search_expr) = filter_expr.split(':', 1)
+    if search_expr.startswith('not ') or search_expr.startswith('!'):
+        not_filter = 1
+        if search_expr.startswith('not '):
+            search_expr = search_expr.split(' ', 1)[1]
+        else:
+            search_expr = search_expr[1:]
+    else:
+        not_filter = 0
+
+    if search_fields.strip() and search_expr.strip():
+        result = None
+        for fn in ensure_list(search_fields):
+            clause = model._meta.fields[fn].regexp(ur'***(?i)%s' % search_expr)
+            if result is None:
+                result = clause
+            else:
+                result = result | clause
+        if not_filter:
+            result = result.__invert__()
+        return result
+    else:r
+        raise Exception('Invalid filter provided in query. Should be f1,f2,f3:regexp ')
 
 
 @app.route('/api/v1/hosts', methods=['DELETE'])
@@ -1393,14 +1422,9 @@ def hosts_delete():
     try:
         # build filter
         if 'uuid' in request.args:
-            query = {'uuid': {'$in': ensure_list(request.args['uuid'])}}
+            query = WaptHosts.uuid.in_(ensure_list(request.args['uuid']))
         elif 'filter' in request.args:
-            (search_fields, search_expr) = request.args['filter'].split(':', 1)
-            if search_fields.strip() and search_expr.strip():
-                query = {'$or': [
-                    {fn: re.compile(search_expr, re.IGNORECASE)} for fn in ensure_list(search_fields)]}
-            else:
-                raise Exception('Neither uuid nor filter provided in query')
+            query = build_hosts_filter(request.args['filter'])
         else:
             raise Exception('Neither uuid nor filter provided in query')
 
@@ -1412,20 +1436,15 @@ def hosts_delete():
 
         if 'delete_packages' in request.args and request.args[
                 'delete_packages'] == '1':
-            selected = hosts().find(
-                query,
-                projection={
-                    'uuid': 1,
-                    'host.computer_fqdn': 1})
+            selected = WaptHosts.select(WaptHosts.uuid,WaptHosts.computer_fqdn).where(filter)
             if selected:
                 for host in selected:
                     result['records'].append(
                         dict(
-                            uuid=host['uuid'],
-                            computer_fqdn=host['host']['computer_fqdn']))
-                    if host['host']['computer_fqdn'] in hosts_packages_repo:
-                        fn = hosts_packages_repo[
-                            host['host']['computer_fqdn']].wapt_fullpath()
+                            uuid=host.uuid,
+                            computer_fqdn=host.computer_fqdn))
+                    if host.computer_fqdn in hosts_packages_repo:
+                        fn = hosts_packages_repo[host.computer_fqdn].wapt_fullpath()
                         logger.debug('Trying to remove %s' % fn)
                         if os.path.isfile(fn):
                             result['files'].append(fn)
@@ -1435,19 +1454,22 @@ def hosts_delete():
             else:
                 msg.append('No host found in DB')
 
-        remove_result = hosts().remove(query)
-        if not remove_result['ok'] == 1:
-            raise Exception(
-                'Error removing hosts from DB: %s' %
-                (remove_result['err'],))
-
-        nb = remove_result['n']
-        msg.append('{} hosts removed from DB'.format(nb))
+        remove_result = WaptHosts.delete().where(query).execute()
+        msg.append('{} hosts removed from DB'.format(remove_result))
 
     except Exception as e:
+        wapt_db.rollback()
         return make_response_from_exception(e)
 
     return make_response(result=result, msg='\n'.join(msg), status=200)
+
+
+def build_fields_list(model,mongoproj):
+    """Returns a list of peewee fields based on a mongo style projection
+            For compatibility with waptconsole <= 1.3.11
+    """
+    result =[]
+    for fn in mongoproj.keys():
 
 
 @app.route('/api/v1/hosts', methods=['GET'])
@@ -1528,15 +1550,10 @@ def get_hosts():
 
         # build filter
         if 'uuid' in request.args:
-            query = dict(uuid=request.args['uuid'])
+            query = uuid.in_(ensure_list(request.args['uuid']))
         elif 'filter' in request.args:
-            (search_fields, search_expr) = request.args['filter'].split(':', 1)
-            if search_expr.startswith('not ') or search_expr.startswith('!'):
-                not_filter = 1
-                if search_expr.startswith('not '):
-                    search_expr = search_expr.split(' ', 1)[1]
-                else:
-                    search_expr = search_expr[1:]
+            query = build_hosts_filter(WaptHosts,request.args['filter'])
+
             if search_fields.strip() and search_expr.strip():
                 filter_field_list = ensure_list(search_fields)
                 if not_filter:

@@ -11,6 +11,7 @@
 
 from peewee import *
 from playhouse.postgres_ext import *
+from playhouse.signals import Model, pre_save, post_save
 from waptutils import ensure_unicode
 import json
 import codecs
@@ -27,6 +28,7 @@ class BaseModel(Model):
 class WaptHosts(BaseModel):
     uuid = CharField(primary_key=True,unique=True)
     computer_fqdn = CharField(null=True,index=True)
+    description = CharField(null=True,index=True)
     reachable = CharField(null=True)
     host_status = CharField(null=True)
     last_query_date = CharField(null=True)
@@ -36,6 +38,8 @@ class WaptHosts(BaseModel):
     packages = BinaryJSONField(null=True)
     softwares = BinaryJSONField(null=True)
     host = BinaryJSONField(null=True)
+    dmi = BinaryJSONField(null=True)
+    wmi = BinaryJSONField(null=True)
 
     created_on = DateTimeField(null=True,default=datetime.datetime.now)
     created_by = DateTimeField(null=True)
@@ -43,7 +47,17 @@ class WaptHosts(BaseModel):
     updated_by = DateTimeField(null=True)
 
     def __repr__(self):
-        return "<Host fqdn=%s / uuid=%s>"% (self.host_fqdn,self.uuid)
+        return "<Host fqdn=%s / uuid=%s>"% (self.computer_fqdn,self.uuid)
+
+    def fieldbyname(self,fieldname):
+        return self._meta.fields[fieldbyname]
+
+@pre_save(sender=WaptHosts)
+def model_audit(model_class, instance, created):
+    if WaptHosts.host in instance.dirty_fields:
+        instance.computer_fqdn = instance.host.get('computer_fqdn',None)
+        instance.description = instance.host.get('description',None)
+    instance.updated_on = datetime.datetime.now()
 
 def init_db(drop=False):
     wapt_db.get_conn()
@@ -67,26 +81,6 @@ def mongo_data(ip='10.10.2.26',port=27017):
         result.append(h)
     return result
 
-def test_pg():
-    init_db()
-
-    r = WaptHosts.create(uuid=data['uuid'],host_fqdn=data['host']['computer_fqdn'],host_data=data)
-    print r.uuid
-    for h in WaptHosts.select().where(Hosts.uuid == r.uuid):
-        print h.host_data['uuid']
-
-    for h in WaptHosts.select().where(Hosts.host_data['uuid'] == r.uuid):
-        print h.host_data['host']['computer_fqdn']
-
-    print list(WaptHosts.select(WaptHosts.uuid,WaptHosts.host_fqdn).where(WaptHosts.host_data['host']['description'].regexp('.*Papin.*') ))
-    for r in wapt_db.execute_sql("""select host_fqdn,
-                                           jsonb_extract_path_text(host_data,'wapt','listening_address','address') as listening_address,
-                                           jsonb_extract_path_text(host_data,'host_status') as host_status
-                                        from wapthosts where jsonb_extract_path_text(host_data,'wapt','listening_address','address') ilike '10.10.12%%'
-                                """):
-        print r
-
-
 def create_import_data(ip='10.10.2.26',fn=None):
     print('Read mongo data from %s ...'%ip)
     d = mongo_data(ip=ip)
@@ -102,18 +96,33 @@ def load_json(filenames=r'c:\tmp\*.json'):
     import glob
     for fn in glob.glob(filenames):
         print('Loading %s'%fn)
-        data = json.load(codecs.open(fn,'rb',encoding='utf8'))
+        recs = json.load(codecs.open(fn,'rb',encoding='utf8'))
 
-        for host in data:
-            computer_fqdn = host['host']['computer_fqdn']
+        for rec in recs:
+            computer_fqdn = rec['host']['computer_fqdn']
+            uuid = rec['uuid']
             try:
                 try:
-                    WaptHosts.create(uuid=host['uuid'],host_fqdn=host['host']['computer_fqdn'],host_data=host)
-                    print('%s Inserted'%computer_fqdn)
+                    # wapt update_status packages softwares host
+                    newhost = WaptHosts()
+                    for k in rec.keys():
+                        if hasattr(newhost,k):
+                            setattr(newhost,k,rec[k])
+                        else:
+                            print 'unknown key %s' % k
+                    newhost.save(force_insert=True)
+                    print('%s Inserted (%s)'%(newhost.computer_fqdn,newhost.uuid))
                 except IntegrityError as e:
                     wapt_db.rollback()
-                    WaptHosts.update(host_fqdn=host['host']['computer_fqdn'],host_data=host).where(WaptHosts.uuid == host['uuid'])
-                    print('%s Inserted'%computer_fqdn)
+                    updates = {}
+                    for k in rec.keys():
+                        if hasattr(WaptHosts,k):
+                            updates[k] = rec[k]
+                    updates['updated_on'] = datetime.datetime.now()
+                    WaptHosts.update(
+                        **updates
+                        ).where(WaptHosts.uuid == uuid)
+                    print('%s Updated'%computer_fqdn)
             except Exception as e:
                 print(u'Error for %s : %s'%(ensure_unicode(computer_fqdn),ensure_unicode(e)))
                 wapt_db.rollback()
@@ -127,12 +136,19 @@ def import_shapers():
     init_db(False)
     load_json(r'c:\tmp\shapers\*.json')
 
-#import_shapers()
+def tests():
+    print WaptHosts.select().count()
+    for h in WaptHosts.select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.host,WaptHosts.wapt).where(WaptHosts.wapt['waptserver']['dnsdomain'] == 'aspoland.lan' ):
+        print h.computer_fqdn,h.host['windows_version'],h.wapt['wapt-exe-version']
 
-#init_db(False)
-#load_json(r"c:\tmp\*.json")
-#print WaptHosts.get(Hosts.uuid == 'sd')
-test_pg()
 
+if __name__ == '__main__':
+    #import_shapers()
+    #init_db(True)
+    #init_db(False)
+    #load_json(r"c:\tmp\shapers\*.json")
+    #print WaptHosts.get(Hosts.uuid == 'sd')
+    #test_pg()
+    tests()
 
 
