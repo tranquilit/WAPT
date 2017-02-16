@@ -122,6 +122,28 @@ def enable_debian_vhost():
     void = subprocess.check_output(['a2ensite', 'wapt.conf'], stderr=subprocess.STDOUT)
     void = subprocess.check_output(['/etc/init.d/apache2', 'graceful'], stderr=subprocess.STDOUT)
 
+def ensure_postgresql_db(db_name='wapt',db_owner='wapt',db_password=''):
+    """ create postgresql wapt db and user if it does not exists """
+    if type_redhat():
+        print "TODO"
+        sys.exit(1)
+    elif type_debian():
+        subprocess.check_output('systemctl start postgresql',shell=True)
+        subprocess.check_output(['systemctl', 'enable', 'postgresql'])
+
+    val = subprocess.check_output(""" sudo -u postgres psql template1 -c "select count(usename) from pg_catalog.pg_user where usename='wapt';" """, shell=True)
+    if '(1 row)' in val:
+        print ("user wapt already exists, skipping user and db creation ")
+    else:
+        print ("we suppose that the db does not exist either (or the installation has been screwed up")
+        if db_password.strip()=='':
+            subprocess.check_output(""" sudo -u postgres psql template1 -c "create user %s ; " """ % (db_owner), shell=True)
+        else:
+            subprocess.check_output(""" sudo -u postgres psql template1 -c "create user %s with password '%s'; " """ % (db_owner,db_password), shell=True)
+        subprocess.check_output(""" sudo -u postgres psql template1 -c "create database %s with owner=%s encoding='utf-8'; " """ % (db_name,db_user), shell=True)
+
+
+
 
 def enable_redhat_vhost():
     if os.path.exists('/etc/httpd/conf.d/ssl.conf'):
@@ -178,12 +200,26 @@ def setup_firewall():
             subprocess.check_output(['firewall-offline-cmd', '--add-port=80/tcp'])
 
 
+def check_mongo2pgsql_upgrade_need():
+    # convert mongo to pogresql
+    # backup mongo
+    # turn off and disable mongodb
+    pass
+
+def upgrade_mongo2pgsql():
+    pass
+
+
 # main program
 def main():
+    # TODO : check debian / ubuntu / centos / redhat version
 
     if postconf.yesno("Do you want to launch post configuration tool ?") != postconf.DIALOG_OK:
         print "canceling wapt postconfiguration"
         sys.exit(1)
+
+
+    # TODO : check if it a new install or an upgrade (upgrade from mongodb to postgresql)
 
     if type_redhat():
         if re.match('^SELinux status:.*enabled', subprocess.check_output('sestatus')):
@@ -197,6 +233,10 @@ def main():
     waptserver_ini = iniparse.RawConfigParser()
 
     waptserver_ini.readfp(file('/opt/wapt/conf/waptserver.ini', 'rU'))
+
+    # add user db and password in ini file
+
+    ensure_postgresql_db()
 
     # no trailing slash
 
@@ -215,6 +255,7 @@ def main():
         # for install on windows
         # keep in sync with waptserver.py
         wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
+
 
     if os.path.exists(os.path.join(wapt_root_dir, 'waptserver', 'wsus.py')):
         waptserver_ini.set('uwsgi', 'attach-daemon', '/usr/bin/python /opt/wapt/waptserver/wapthuey.py wsus.huey')
@@ -257,9 +298,7 @@ def main():
         'Postconfiguration completed.',
         ]
 
-    enable_mongod()
     enable_waptserver()
-    start_mongod()
     start_waptserver()
 
     reply = postconf.yesno("Do you want to configure apache?")
