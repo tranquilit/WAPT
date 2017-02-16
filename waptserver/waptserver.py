@@ -944,10 +944,10 @@ def host_reachable_ip():
     try:
         try:
             uuid = request.args['uuid']
-            host_data = WaptHosts
-                        .select(WaptHosts.uuid,WaptHosts.wapt,WaptHosts.host)
-                        .where(WaptHosts.uuid==uuid)
-                        .first(1)
+            host_data = WaptHosts \
+                    .select(WaptHosts.uuid,WaptHosts.wapt,WaptHosts.host) \
+                    .where(WaptHosts.uuid==uuid) \
+                    .first(1)
             result = get_ip_port(host_data)
         except Exception as e:
             raise EWaptHostUnreachable(
@@ -976,9 +976,9 @@ def proxy_host_request(request, action):
         result = dict(success=[], errors=[])
         for uuid in uuids:
             try:
-                host_data = WaptHosts
-                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)
-                        .where(WaptHosts.uuid==uuid)
+                host_data = WaptHosts \
+                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host) \
+                        .where(WaptHosts.uuid==uuid) \
                         .first(1)
                 listening_address = get_ip_port(host_data)
                 msg = u''
@@ -1057,9 +1057,9 @@ def trigger_upgrade():
         uuid = request.args['uuid']
         notify_user = request.args.get('notify_user', 0)
         notify_server = request.args.get('notify_server', 1)
-        host_data = WaptHosts
-                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)
-                        .where(WaptHosts.uuid==uuid)
+        host_data = WaptHosts \
+                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host) \
+                        .where(WaptHosts.uuid==uuid) \
                         .first(1)
         listening_address = get_ip_port(host_data)
         msg = u''
@@ -1115,9 +1115,9 @@ def trigger_update():
         notify_user = request.args.get('notify_user', 0)
         notify_server = request.args.get('notify_server', 1)
 
-        host_data = WaptHosts
-                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)
-                        .where(WaptHosts.uuid==uuid)
+        host_data = WaptHosts \
+                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host) \
+                        .where(WaptHosts.uuid==uuid) \
                         .first(1)
         listening_address = get_ip_port(host_data)
         msg = u''
@@ -1162,9 +1162,9 @@ def trigger_update():
 def trigger_wakeonlan():
     try:
         uuid = request.args['uuid']
-        host_data = WaptHosts
-                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)
-                        .where(WaptHosts.uuid==uuid)
+        host_data = WaptHosts \
+                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host) \
+                        .where(WaptHosts.uuid==uuid) \
                         .first(1)
         macs = host_data['host']['mac']
         msg = u''
@@ -1172,7 +1172,7 @@ def trigger_wakeonlan():
             logger.info(
                 _("Sending magic wakeonlan packets to {} for machine {}").format(
                     macs,
-                    host_data.computer_fqdn)
+                    host_data.computer_fqdn))
             wakeonlan.wol.send_magic_packet(*macs)
             for line in host_data['host']['networking']:
                 if 'broadcast' in line:
@@ -1319,9 +1319,9 @@ def host_tasks_status():
     """Proxy the get tasks status action to the client"""
     try:
         uuid = request.args['uuid']
-        host_data = WaptHosts
-                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)
-                        .where(WaptHosts.uuid==uuid)
+        host_data = WaptHosts \
+                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host) \
+                        .where(WaptHosts.uuid==uuid) \
                         .first(1)
         listening_address = host_data.wapt.get('listening_address', None)
         if listening_address and listening_address[
@@ -1400,7 +1400,7 @@ def build_hosts_filter(model,filter_expr):
         if not_filter:
             result = result.__invert__()
         return result
-    else:r
+    else:
         raise Exception('Invalid filter provided in query. Should be f1,f2,f3:regexp ')
 
 
@@ -1470,7 +1470,7 @@ def build_fields_list(model,mongoproj):
     """
     result =[]
     for fn in mongoproj.keys():
-
+        pass
 
 @app.route('/api/v1/hosts', methods=['GET'])
 @requires_auth
@@ -1906,7 +1906,10 @@ class CheckHostsWaptService(threading.Thread):
         logger.debug(
             'Client-listening %s address checker thread started' %
             self.ident)
-        with MongoClient(conf['mongodb_ip'], int(conf['mongodb_port'])) as mongoclient:
+        # TODO : convert to postgresql
+        return
+#        with MongoClient(conf['mongodb_ip'], int(conf['mongodb_port'])) as mongoclient:
+        with None:
             fields = {
                 'uuid': 1,
                 'host.computer_fqdn': 1,
