@@ -9,6 +9,19 @@
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 
+import os
+import sys
+try:
+    wapt_root_dir = os.path.abspath( os.path.join(  os.path.dirname(__file__),'..'))
+except:
+    wapt_root_dir = 'c:/tranquilit/wapt'
+
+sys.path.insert(0, os.path.join(wapt_root_dir))
+sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
+sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
+
+
+
 from peewee import *
 from playhouse.postgres_ext import *
 from playhouse.signals import Model, pre_save, post_save
@@ -18,7 +31,10 @@ import codecs
 import datetime
 import os
 
-wapt_db = PostgresqlExtDatabase('wapt', user='postgres')
+
+
+
+wapt_db = PostgresqlExtDatabase('wapt', user='wapt')
 
 class BaseModel(Model):
     """A base model that will use our Postgresql database"""
@@ -144,11 +160,11 @@ def tests():
 
 if __name__ == '__main__':
     #import_shapers()
-    #init_db(True)
+    init_db(True)
     #init_db(False)
     #load_json(r"c:\tmp\shapers\*.json")
     #print WaptHosts.get(Hosts.uuid == 'sd')
     #test_pg()
-    tests()
+    #tests()
 
 
