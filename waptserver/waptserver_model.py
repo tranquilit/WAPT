@@ -44,7 +44,9 @@ class WaptHosts(BaseModel):
     uuid = CharField(primary_key=True,unique=True)
     computer_fqdn = CharField(null=True,index=True)
     description = CharField(null=True,index=True)
+
     reachable = CharField(null=True)
+    listening_status = BinaryJSONField(null=True)
     host_status = CharField(null=True)
     last_query_date = CharField(null=True)
 
@@ -154,17 +156,18 @@ def import_shapers():
 
 def tests():
     print WaptHosts.select().count()
+    print list(WaptHosts.select(WaptHosts.computer_fqdn,WaptHosts.wapt['wapt-exe-version']).tuples())
+    print list(WaptHosts.select(WaptHosts.computer_fqdn,WaptHosts.wapt['wapt-exe-version'].alias('waptversion')).dicts())
     for h in WaptHosts.select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.host,WaptHosts.wapt).where(WaptHosts.wapt['waptserver']['dnsdomain'] == 'aspoland.lan' ):
         print h.computer_fqdn,h.host['windows_version'],h.wapt['wapt-exe-version']
 
-
 if __name__ == '__main__':
     #import_shapers()
-    init_db(True)
+    #init_db(True)
     #init_db(False)
     #load_json(r"c:\tmp\shapers\*.json")
     #print WaptHosts.get(Hosts.uuid == 'sd')
     #test_pg()
-    #tests()
+    tests()
 
 
