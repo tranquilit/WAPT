@@ -3473,7 +3473,7 @@ procedure TVisWaptGUI.GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
   var Ghosted: boolean; var ImageIndex: integer; var ImageList: TCustomImageList);
 var
   RowSO, status,
-  reachable,timestamp: ISuperObject;
+  reachable: ISuperObject;
 begin
   if TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'host_status' then
   begin
@@ -3496,17 +3496,20 @@ begin
   else if TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'reachable' then
   begin
     ImageIndex:=-1;
-    reachable := GridHostPackages.GetCellData(Node, 'wapt.listening_address.address', Nil);
-    timestamp := GridHostPackages.GetCellData(Node, 'wapt.listening_address.timestamp', Nil);
-    if (reachable<>Nil) and (timestamp<>Nil) then
+    reachable := GridHostPackages.GetCellData(Node, 'reachable', Nil);
+    if (reachable<>Nil)then
     begin
-      if (reachable.AsString <> '') and (timestamp.AsString <> '') then
+      if (reachable.AsString = 'OK') then
         ImageIndex := 4
-      else if (reachable.AsString = '') and (timestamp.AsString <> '') then
+      else if (reachable.AsString = 'UNREACHABLE') then
         ImageIndex := 5
-      else if (timestamp.AsString = '') then
+      else if (reachable.AsString = 'UNKNOWN') then
         ImageIndex := 6
+      else
+        ImageIndex := 6;
     end
+    else
+      ImageIndex := 6
   end;
 end;
 
