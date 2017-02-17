@@ -25,16 +25,15 @@ sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 from peewee import *
 from playhouse.postgres_ext import *
 from playhouse.signals import Model, pre_save, post_save
+from playhouse.shortcuts import dict_to_model,model_to_dict
 from waptutils import ensure_unicode
 import json
 import codecs
 import datetime
 import os
 
-
-
-
-wapt_db = PostgresqlExtDatabase('wapt', user='wapt')
+# You must be sure your database is an instance of PostgresqlExtDatabase in order to use the JSONField.
+wapt_db = PostgresqlExtDatabase('wapt', user='wapt',password='wapt')
 
 class BaseModel(Model):
     """A base model that will use our Postgresql database"""
@@ -65,8 +64,9 @@ class WaptHosts(BaseModel):
     def __repr__(self):
         return "<Host fqdn=%s / uuid=%s>"% (self.computer_fqdn,self.uuid)
 
-    def fieldbyname(self,fieldname):
-        return self._meta.fields[fieldbyname]
+    @classmethod
+    def fieldbyname(cls,fieldname):
+        return cls._meta.fields[fieldname]
 
 @pre_save(sender=WaptHosts)
 def model_audit(model_class, instance, created):
