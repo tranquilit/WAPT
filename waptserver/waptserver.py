@@ -1400,7 +1400,7 @@ def build_hosts_filter(model,filter_expr):
         if not_filter:
             result = result.__invert__()
         return result
-    else:r
+    else:
         raise Exception('Invalid filter provided in query. Should be f1,f2,f3:regexp ')
 
 
@@ -1470,6 +1470,9 @@ def build_fields_list(model,mongoproj):
     """
     result =[]
     for fn in mongoproj.keys():
+        if fn in model._meta.fields:
+            result.append(model._meta.fields[fn])
+    return result
 
 
 @app.route('/api/v1/hosts', methods=['GET'])
@@ -1557,7 +1560,7 @@ def get_hosts():
         if 'has_errors' in request.args and request.args['has_errors']:
             query = query & (WaptHosts.packages['install_status'] == "ERROR")
         if "need_upgrade" in request.args and request.args['need_upgrade']:
-            query = query & (WaptHosts.update_status['upgrades'] > 0}
+            query = query &  (WaptHosts.update_status['upgrades'] > 0)
 
         hosts_packages_repo = WaptLocalRepo(conf['wapt_folder'] + '-host')
         packages_repo = WaptLocalRepo(conf['wapt_folder'])
@@ -1565,8 +1568,7 @@ def get_hosts():
         groups = ensure_list(request.args.get('groups', ''))
 
         result = []
-        for host in WaptHosts.select(build_fields_list(WaptHosts,{col: 1 for col in columns}).where(query):
-            host.pop("_id")
+        for host in WaptHosts.select(build_fields_list(WaptHosts,{col: 1 for col in columns})).where(query):
             if (('depends' in columns) or len(groups) >
                     0) and 'host' in host and 'computer_fqdn' in host['host']:
                 host_package = hosts_packages_repo.get(
