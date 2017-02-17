@@ -897,27 +897,31 @@ def get_ip_port(host_data, recheck=False, timeout=None):
     """
     if not timeout:
         timeout = conf['clients_connect_timeout']
-    if not host_data:
+    if not host_data or not 'uuid' in host_data:
         raise EWaptUnknownHost(_('Unknown uuid'))
 
-    if host_data.get('wapt',None):
-        if not recheck and host_data.get('wapt',{}).get('listening_address', None) and \
-                'address' in host_data['wapt']['listening_address'] and \
-                host_data['wapt']['listening_address']['address']:
-            return host_data['wapt']['listening_address']
-        else:
-            port = host_data.get('wapt',{}).get(
-                'waptservice_port',
-                conf['waptservice_port'])
-            return dict(
-                protocol=host_data.get('wapt',{}).get('waptservice_protocol', 'http'),
-                address=get_reachable_ip(
-                    ensure_list(
-                        host_data.get('host',{}).get('connected_ips','')),
-                    waptservice_port=port,
-                    timeout=timeout),
-                port=port,
-                timestamp=datetime2isodate())
+    if not recheck and host_data.get('listening_address',None):
+        # use data stored in DB
+        return dict(
+            protocol=host_data.get('listening_protocol', 'http'),
+            address=host_data.get('listening_address',None),
+            port=host_data.get('listening_port',8088),
+            timestamp=host_data.get('listening_timestamp',None),
+            )
+    elif host_data.get('wapt',None) and host_data.get('host',{}).get('connected_ips',''):
+        # check using date pushed by host
+        port = host_data['wapt'].get(
+            'waptservice_port',
+            conf['waptservice_port'])
+        return dict(
+            protocol=host_data['wapt'].get('waptservice_protocol', 'http'),
+            address=get_reachable_ip(
+                ensure_list(
+                    host_data.get('host',{}).get('connected_ips','')),
+                waptservice_port=port,
+                timeout=timeout),
+            port=port,
+            timestamp=datetime2isodate())
     else:
         raise EWaptHostUnreachable(
             _('No reachable IP for {}').format(
@@ -977,8 +981,15 @@ def host_reachable_ip():
             host_data = WaptHosts\
                         .select(WaptHosts.uuid,WaptHosts.wapt,WaptHosts.host)\
                         .where(WaptHosts.uuid==uuid)\
+                        .dicts()\
                         .first(1)
             result = get_ip_port(host_data)
+            WaptHosts.update(
+                    listening_protocol=result['protocol'],
+                    listening_address=result['address'],
+                    listening_port=int(result['port']),
+                    listening_timestamp=result['timestamp'],
+                ).where(WaptHosts.uuid == uuid).execute()
         except Exception as e:
             raise EWaptHostUnreachable(
                 _("Couldn't connect to web service : {}.").format(e))
@@ -1009,8 +1020,9 @@ def proxy_host_request(request, action):
                 host_data = WaptHosts\
                         .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)\
                         .where(WaptHosts.uuid==uuid)\
+                        .dicts()\
                         .first(1)
-                listening_address = get_ip_port(host_data._data)
+                listening_address = get_ip_port(host_data)
                 msg = u''
                 if listening_address and listening_address['address'] and listening_address['port']:
                     logger.info(
@@ -1090,6 +1102,7 @@ def trigger_upgrade():
         host_data = WaptHosts\
                         .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)\
                         .where(WaptHosts.uuid==uuid)\
+                        .dicts()\
                         .first(1)
         listening_address = get_ip_port(host_data)
         msg = u''
@@ -1148,6 +1161,7 @@ def trigger_update():
         host_data = WaptHosts\
                         .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)\
                         .where(WaptHosts.uuid==uuid)\
+                        .dicts()\
                         .first(1)
         listening_address = get_ip_port(host_data)
         msg = u''
@@ -1352,8 +1366,9 @@ def host_tasks_status():
         host_data = WaptHosts\
                         .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)\
                         .where(WaptHosts.uuid==uuid)\
+                        .dicts()\
                         .first(1)
-        listening_address = host_data.wapt.get('listening_address', None)
+        listening_address = get_ip_port(host_data)
         if listening_address and listening_address[
                 'address'] and listening_address['port']:
             logger.info(
@@ -1693,6 +1708,9 @@ def host_data():
 
         if 'field' in request.args:
             field = request.args['field']
+            if not field in WaptHosts._meta.fields:
+                raise EWaptMissingParameter('Parameter field %s is unknown'%field)
+
         else:
             raise EWaptMissingParameter('Parameter field is missing')
 
@@ -1773,10 +1791,9 @@ def host_cancel_task():
         host_data = WaptHosts\
                 .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)\
                 .where(WaptHosts.uuid==uuid)\
+                .dicts()\
                 .first(1)
-        #listening_address = get_ip_port(host_data)
-        listening_address = host_data.wapt.get('listening_address', None)
-
+        listening_address = get_ip_port(host_data)
         if listening_address and listening_address[
                 'address'] and listening_address['port']:
             logger.info(
@@ -1879,7 +1896,7 @@ class CheckHostWorker(threading.Thread):
             # update timestamp
             listening_info['timestamp'] = datetime2isodate()
             return listening_info
-        except:
+        except Exception as e:
             # return "not reachable" information
             return dict(protocol='', address='', port=conf[
                         'waptservice_port'], timestamp=datetime2isodate())
@@ -1890,14 +1907,20 @@ class CheckHostWorker(threading.Thread):
             try:
                 host_data = self.queue.get(timeout=2)
                 listening_infos = self.check_host(host_data)
-                WaptHosts.update(listening_address=listening_infos).where(WaptHosts.uuid == host_data.uuid).execute()
+                WaptHosts.update(
+                    listening_protocol=listening_infos['protocol'],
+                    listening_address=listening_infos['address'],
+                    listening_port=listening_infos['port'],
+                    listening_timestamp=listening_infos['timestamp'],
+                    )\
+                    .where(WaptHosts.uuid == host_data['uuid'])\
+                    .execute()
                 logger.debug(
                         "Client check %s finished with %s" %
                         (self.ident, listening_infos))
                 self.queue.task_done()
                 wapt_db.commit()
             except Queue.Empty:
-                wapt_db.rollback()
                 break
         logger.debug('worker %s finished' % self.ident)
 
@@ -1931,7 +1954,15 @@ class CheckHostsWaptService(threading.Thread):
             'Client-listening %s address checker thread started' %
             self.ident)
 
-        fields = [WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt]
+        fields = [WaptHosts.uuid,
+                  WaptHosts.computer_fqdn,
+                  WaptHosts.listening_timestamp,
+                  WaptHosts.listening_protocol,
+                  WaptHosts.listening_address,
+                  WaptHosts.listening_port,
+                  WaptHosts.wapt,
+                  WaptHosts.host,
+                  ]
         if self.uuids:
             where_clause = WaptHosts.uuid.in_(self.uuids)
         else:
@@ -1943,9 +1974,9 @@ class CheckHostsWaptService(threading.Thread):
             query = query.where(where_clause)
 
         logger.debug('Reset listening status timestamps of hosts')
-        WaptHosts.update(listening_address=None).where(where_clause).execute()
+        WaptHosts.update(listening_timestamp=None).where(where_clause).execute()
 
-        for data in query:
+        for data in query.dicts():
             logger.debug(
                 'Hosts %s pushed in check IP queue' %
                 data['uuid'])

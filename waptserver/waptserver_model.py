@@ -1,13 +1,25 @@
-#-------------------------------------------------------------------------------
-# Name:        module1
-# Purpose:
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# -----------------------------------------------------------------------
+#    This file is part of WAPT
+#    Copyright (C) 2013  Tranquil IT Systems http://www.tranquil.it
+#    WAPT aims to help Windows systems administrators to deploy
+#    setup and update applications on users PC.
 #
-# Author:      htouvet
+#    WAPT is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
 #
-# Created:     27/01/2017
-# Copyright:   (c) htouvet 2017
-# Licence:     <your licence>
-#-------------------------------------------------------------------------------
+#    WAPT is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
+#
+# -----------------------------------------------------------------------
 
 import os
 import sys
@@ -45,8 +57,13 @@ class WaptHosts(BaseModel):
     computer_fqdn = CharField(null=True,index=True)
     description = CharField(null=True,index=True)
 
-    reachable = CharField(null=True)
-    listening_status = BinaryJSONField(null=True)
+    reachable = CharField(20,null=True)
+
+    listening_protocol = CharField(10,null=True)
+    listening_address = CharField(null=True)
+    listening_port = IntegerField(null=True)
+    listening_timestamp = CharField(null=True)
+
     host_status = CharField(null=True)
     last_query_date = CharField(null=True)
 
