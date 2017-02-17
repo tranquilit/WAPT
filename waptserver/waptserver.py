@@ -365,7 +365,7 @@ def update_data(data):
             updates['updated_on'] = datetime.datetime.now()
             WaptHosts.update(
                 **updates
-                ).where(WaptHosts.uuid == uuid)
+                ).where(WaptHosts.uuid == uuid).execute()
     except Exception as e:
         logger.critical(u'Error updating data for %s : %s'%(uuid,ensure_unicode(e)))
         wapt_db.rollback()
@@ -1549,6 +1549,10 @@ def get_hosts():
                            u'reachable',
                            u'computer_fqdn',
                            u'description',
+                           u'listening_protocol',
+                           u'listening_address',
+                           u'listening_port',
+                           u'listening_timestamp',
                            u'host.system_manufacturer',
                            u'host.system_productname',
                            u'dmi.Chassis_Information.Serial_Number',
@@ -1572,7 +1576,11 @@ def get_hosts():
 
         # keep only top tree nodes (mongo doesn't want fields like {'wapt':1,'wapt.listening_address':1} !
         # minimum columns
-        columns = ['uuid', 'host', 'wapt', 'update_status']
+        columns = ['uuid', 'host', 'wapt', 'update_status',
+                       u'listening_protocol',
+                       u'listening_address',
+                       u'listening_port',
+                       u'listening_timestamp']
         other_columns = ensure_list(
             request.args.get(
                 'columns',
@@ -1639,10 +1647,9 @@ def get_hosts():
                 continue
 
             try:
-                la = host['wapt']['listening_address']
-                if la['address'] and la['timestamp']:
+                if host['listening_address'] and host['listening_timestamp']:
                     reachable = 'OK'
-                elif not la['address'] and la['timestamp']:
+                elif not host['listening_address'] and host['listening_timestamp']:
                     reachable = 'UNREACHABLE'
                 else:
                     reachable = 'UNKNOWN'
@@ -1651,7 +1658,7 @@ def get_hosts():
                 host['reachable'] = 'UNKNOWN'
 
             try:
-                us = host.update_status
+                us = host['update_status']
                 if us.get('errors', []):
                     host['host_status'] = 'ERROR'
                 elif us.get('upgrades', []):
@@ -1717,6 +1724,7 @@ def host_data():
         data = WaptHosts\
                         .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.fieldbyname(field))\
                         .where(WaptHosts.uuid==uuid)\
+                        .dicts()\
                         .first(1)
         if data is None:
             raise EWaptUnknownHost(
@@ -1727,7 +1735,7 @@ def host_data():
     except Exception as e:
         return make_response_from_exception(e)
 
-    result = getattr(data,field,None)
+    result = data.get(field,None)
     if result is None:
         msg = 'No {} data for host {}'.format(field, uuid)
         success = False
@@ -2344,7 +2352,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if options.devel:
-        app.run(host='0.0.0.0', port=30880, debug=False)
+        app.run(host='0.0.0.0', port=8080, debug=False)
     else:
         port = conf['waptserver_port']
         server = Rocket(('127.0.0.1', port), 'wsgi', {"wsgi_app": app})

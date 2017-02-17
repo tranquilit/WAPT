@@ -24,12 +24,11 @@
 __version__="1.3.11"
 
 import sys
-import bson.json_util
+import json
 import datetime
 import email.utils
 import errno
 import flask
-import json
 import logging
 import os
 import pymongo
@@ -209,7 +208,7 @@ def make_response(result = {},success=True,error_code='',msg='',status=200,reque
         data['result'] = result
     data['request_time'] = request_time
     return flask.Response(
-            response=bson.json_util.dumps(data),
+            response=json.dumps(data),
             status=status,
             mimetype="application/json")
 
