@@ -909,19 +909,38 @@ def get_ip_port(host_data, recheck=False, timeout=None):
             timestamp=host_data.get('listening_timestamp',None),
             )
     elif host_data.get('wapt',None) and host_data.get('host',{}).get('connected_ips',''):
-        # check using date pushed by host
-        port = host_data['wapt'].get(
-            'waptservice_port',
-            conf['waptservice_port'])
+        # check using http
+        ips = ensure_list(host_data.get('host',{}).get('connected_ips',''))
+        protocol = host_data['wapt'].get('waptservice_protocol', 'http')
+        port = host_data['wapt'].get('waptservice_port',conf['waptservice_port'])
+        address = None
+
+        for ip in ips:
+            try:
+                req = requests.head('%s://%s:%s/ping'%(protocol,ip,port),
+                        proxies = {'http':None,'https':None},
+                        verify=False,
+                        timeout=timeout,
+                        )
+                req.raise_for_status()
+                address = ip
+                break
+            except:
+                pass
+
+        # optionnally try socket
+        if False:
+            address = get_reachable_ip(
+                    ips,
+                    waptservice_port=port,
+                    timeout=timeout)
+
         return dict(
-            protocol=host_data['wapt'].get('waptservice_protocol', 'http'),
-            address=get_reachable_ip(
-                ensure_list(
-                    host_data.get('host',{}).get('connected_ips','')),
-                waptservice_port=port,
-                timeout=timeout),
+            protocol=protocol,
+            address=address,
             port=port,
-            timestamp=datetime2isodate())
+            timestamp=datetime2isodate(),
+            )
     else:
         raise EWaptHostUnreachable(
             _('No reachable IP for {}').format(
