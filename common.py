@@ -2648,7 +2648,7 @@ class Wapt(object):
         else:
             if self.upload_cmd:
                 cmd_dict['waptfile'] = ' '.join(cmd_dict['waptfile'])
-                return dict(status='OK',message=ensure_unicode(self.run(self.upload_cmd % cmd_dict)))
+                return dict(status='OK',message=self.run(self.upload_cmd % cmd_dict))
             else:
                 for file in cmd_dict['waptfile']:
                     # file is surrounded by quotes for shell usage
@@ -2852,13 +2852,13 @@ class Wapt(object):
             raise EWaptCancelled(msg)
 
     def run(self,*arg,**args):
-        return setuphelpers.run(*arg,pidlist=self.pidlist,**args)
+        return ensure_unicode(setuphelpers.run(*arg,pidlist=self.pidlist,**args))
 
     def run_notfatal(self,*cmd,**args):
         """Runs the command and wait for it termination
         returns output, don't raise exception if exitcode is not null but return '' """
         try:
-            return self.run(*cmd,**args)
+            return ensure_unicode(self.run(*cmd,**args))
         except Exception as e:
             print(u'Warning : %s' % ensure_unicode(e))
             return ''
@@ -3185,9 +3185,9 @@ class Wapt(object):
         logger.info(u'checkout dir : %s'% co_dir)
         # if already checked out...
         if os.path.isdir(os.path.join(co_dir,'.svn')):
-            print(ensure_unicode(self.run(u'"%s" up "%s"' % (svncmd,co_dir))))
+            print(self.run(u'"%s" up "%s"' % (svncmd,co_dir)))
         else:
-            print(ensure_unicode(self.run(u'"%s" co "%s" "%s"' % (svncmd,sources_url,co_dir))))
+            print(self.run(u'"%s" co "%s" "%s"' % (svncmd,sources_url,co_dir)))
         return co_dir
 
     def last_install_log(self,packagename):
@@ -3806,7 +3806,7 @@ class Wapt(object):
                                     uninstall_cmd = self.uninstall_cmd(guid)
                                     if uninstall_cmd:
                                         logger.info(u'Launch uninstall cmd %s' % (uninstall_cmd,))
-                                        print(ensure_unicode(self.run(uninstall_cmd)))
+                                        print(self.run(uninstall_cmd))
                                 except Exception as e:
                                     logger.critical(u"Critical error during uninstall cmd %s: %s" % (uninstall_cmd,ensure_unicode(e)))
                                     result['errors'].append(package)
@@ -4037,7 +4037,7 @@ class Wapt(object):
                     out = self.run("WMIC os set description='%s'" % description.encode(sys.getfilesystemencoding()))
                 except:
                     out = self.run("""echo "" | WMIC os set description='%s'""" % description.encode(sys.getfilesystemencoding()))
-                logger.info(out)
+                logger.info(ensure_unicode(out))
 
         self.delete_param('uuid')
         inv = self.inventory()
