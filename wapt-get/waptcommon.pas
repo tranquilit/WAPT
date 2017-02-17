@@ -391,6 +391,7 @@ var
   http:TIdHTTP;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
   sslCheck:TSSLVerifyCert;
+  compressor: TIdCompressorZLib;
 begin
   sslCheck:=Nil;
   ssl_handler:=Nil;
@@ -408,6 +409,7 @@ begin
     ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
   	HTTP.IOHandler := ssl_handler;
     sslCheck := TSSLVerifyCert.Create(GetHostFromURL(url));
+    compressor :=  TIdCompressorZLib.Create(Nil);
 
     // init check of https server certificate
     if (VerifyCertificateFilename<>'') and (VerifyCertificateFilename <>'0') then
@@ -431,6 +433,8 @@ begin
         http.Request.Password:=password;
       end;
 
+      http.Compressor := compressor;
+
       if enableProxy then
         IdConfigureProxy(http,HttpProxy);
 
@@ -449,6 +453,8 @@ begin
       FreeAndNil(ssl_handler);
     if Assigned(sslCheck) then
       FreeAndNil(sslCheck);
+    if Assigned(compressor) then
+      FreeAndNil(compressor);
   end;
 end;
 
