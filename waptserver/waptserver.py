@@ -1474,7 +1474,7 @@ def build_hosts_filter(model,filter_expr):
             else:
                 result = result | clause
         if not_filter:
-            result = ~ result
+            result = ~result
         return result
     else:
         raise Exception('Invalid filter provided in query. Should be f1,f2,f3:regexp ')
@@ -1642,11 +1642,16 @@ def get_hosts():
             query = WaptHosts.uuid.in_(ensure_list(request.args['uuid']))
         elif 'filter' in request.args:
             query = build_hosts_filter(WaptHosts,request.args['filter'])
+        else:
+            query = ~(WaptHosts.uuid.is_null())
 
         if 'has_errors' in request.args and request.args['has_errors']:
             query = query & (WaptHosts.packages['install_status'] == "ERROR")
         if "need_upgrade" in request.args and request.args['need_upgrade']:
             query = query &  (WaptHosts.update_status['upgrades'] > 0)
+
+        if not_filter:
+            query = ~ query
 
         hosts_packages_repo = WaptLocalRepo(conf['wapt_folder'] + '-host')
         packages_repo = WaptLocalRepo(conf['wapt_folder'])
@@ -1657,6 +1662,7 @@ def get_hosts():
         req = WaptHosts.select(*build_fields_list(WaptHosts,{col: 1 for col in columns})).dicts()
         if query:
             req = req.where(query)
+
         for host in req:
             if (('depends' in columns) or len(groups) >
                     0) and host.get('computer_fqdn',None):
