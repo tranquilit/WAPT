@@ -45,6 +45,7 @@ import socket
 import uuid
 import platform
 import re
+import psutil
 
 def type_debian():
     return platform.dist()[0].lower() in ('debian','ubuntu')
@@ -164,18 +165,29 @@ def enable_redhat_vhost():
         subprocess.check_output('mv /etc/httpd/conf.d/ssl.conf /etc/httpd/conf.d/ssl.conf.disabled',shell=True)
 
 
+def disable_mongod():
+    if type_redhat():
+        subprocess.check_output(['systemctl', 'disable', 'mongod'])
+    elif type_debian():
+        subprocess.check_output(['update-rc.d', 'mongodb', 'disable'])
+
 def enable_mongod():
     if type_redhat():
         subprocess.check_output(['systemctl', 'enable', 'mongod'])
     elif type_debian():
         subprocess.check_output(['update-rc.d', 'mongodb', 'enable'])
 
-
 def start_mongod():
     if type_redhat():
-        subprocess.check_output(['service', 'mongod', 'restart'])
+        subprocess.check_output(['service', 'mongod', 'start'])
     elif type_debian():
-        subprocess.check_output(['service', 'mongodb', 'restart'])
+        subprocess.check_output(['service', 'mongodb', 'start'])
+
+def stop_mongod():
+    if type_redhat():
+        subprocess.check_output(['service', 'mongod', 'stop'])
+    elif type_debian():
+        subprocess.check_output(['service', 'mongodb', 'stop'])
 
 
 def enable_apache():
@@ -214,14 +226,30 @@ def setup_firewall():
             subprocess.check_output(['firewall-offline-cmd', '--add-port=80/tcp'])
 
 
-def check_mongo2pgsql_upgrade_need():
-    # convert mongo to pogresql
-    # backup mongo
-    # turn off and disable mongodb
-    pass
-
-def upgrade_mongo2pgsql():
-    pass
+def check_mongo2pgsql_upgrade_needed(waptserver_ini):
+    """ return  0 if nothing needed
+                1 if upgrade needed
+                2 if something is not clear
+    """
+    mongodb_configured=0
+    for proc in psutil.process_iter():
+        if proc.name() == 'mongod':
+            print ("mongodb process running, need to migrate")
+            print(proc)
+            mongodb_configured= mongodb_configured + 1
+    
+    if waptserver_ini.has_option('options','mongodb_port'):
+        mongodb_configured= mongodb_configured + 1
+        
+    if waptserver_ini.has_option('options','mongodb_ip'):
+        mongodb_configured= mongodb_configured + 1
+    if mongodb_configured ==0:
+        return 0
+    elif mongodb_configured ==3:
+        return 1
+    else:
+        print ('current configuration not correct, missing parameter or running mongodb process, cannot migrate automatically, please check your installation')
+        return 2
 
 
 # main program
@@ -254,8 +282,17 @@ def main():
     print ("create database schema")
     subprocess.check_output(""" sudo -u wapt python /opt/wapt/waptserver/waptserver_model.py init_db """, shell=True)
 
-    # no trailing slash
+    mongo_update_status = check_mongo2pgsql_upgrade_needed(waptserver_ini)
+    if mongo_update_status==0:
+        print ("already running postgresql, nothing to do")
+    elif mongo_update_status==1:
+        print ("need to upgrade from mongodb to postgres, please launch python /opt/wapt/waptserver/waptserver_model.py upgrade2postgres")
+        sys.exit(1)
+    elif mongo_update_status==2:
+        print ("something not normal please check your installation first")
+        sys.exit(1)
 
+    # no trailing slash
     if type_debian():
         wapt_folder = '/var/www/wapt'
     elif type_redhat():
