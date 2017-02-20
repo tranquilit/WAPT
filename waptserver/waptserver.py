@@ -43,6 +43,8 @@ import hashlib
 from passlib.hash import sha512_crypt, bcrypt
 
 from peewee import *
+from playhouse.postgres_ext import *
+
 from waptserver_model import WaptHosts,init_db,wapt_db,model_to_dict,dict_to_model
 
 from werkzeug.utils import secure_filename
@@ -1456,13 +1458,23 @@ def build_hosts_filter(model,filter_expr):
     if search_fields.strip() and search_expr.strip():
         result = None
         for fn in ensure_list(search_fields):
-            clause = model._meta.fields[fn].regexp(ur'***(?i)%s' % search_expr)
+            members = fn.split('.')
+            if isinstance(model._meta.fields[members[0]],(JSONField,BinaryJSONField)):
+                if len(members)==1:
+                    clause =  SQL("%s::text ~* '%s'" % (fn,search_expr))
+                else:
+                    # (wapt->'waptserver'->'dnsdomain')::text ~* 'asfrance.lan'
+                    clause = SQL("(%s->%s)::text ~* '%s'" % (members[0],'->'.join(["'%s'" % f for f in members[1:]]),search_expr))
+                    # model._meta.fields[members[0]].path(members[1:]).regexp(ur'(?i)%s' % search_expr)
+            else:
+                clause = model._meta.fields[fn].regexp(ur'(?i)%s' % search_expr)
+
             if result is None:
                 result = clause
             else:
                 result = result | clause
         if not_filter:
-            result = result.__invert__()
+            result = ~ result
         return result
     else:
         raise Exception('Invalid filter provided in query. Should be f1,f2,f3:regexp ')
