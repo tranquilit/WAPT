@@ -113,7 +113,8 @@ subprocess.check_output(r'apt-get install -y virtualenv python-setuptools python
 
 print('Create a build environment virtualenv')
 subprocess.check_output(r'virtualenv ./builddir/opt/wapt --system-site-packages',shell=True)
-subprocess.check_output(r'virtualenv ./builddir/opt/wapt --relocatable',shell=True)
+#subprocess.check_output(r'virtualenv ./builddir/opt/wapt --relocatable',shell=True)
+#sys.exit(1)
 
 print('Install additional libraries in build environment virtualenv')
 subprocess.check_output(r'./builddir/opt/wapt/bin/pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages',shell=True)

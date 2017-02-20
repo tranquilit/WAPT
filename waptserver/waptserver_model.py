@@ -179,12 +179,21 @@ def tests():
         print h.computer_fqdn,h.host['windows_version'],h.wapt['wapt-exe-version']
 
 if __name__ == '__main__':
+    print sys.argv
+    if len(sys.argv)>1:
+        print sys.argv[1]
+        if sys.argv[1]=='init_db':
+            print ("initializing wapt database")
+            init_db(False)
+            sys.exit(0)
+    else:
+        print ("usage : waptserver_model.py init_db")
     #import_shapers()
     #init_db(True)
     #init_db(False)
     #load_json(r"c:\tmp\shapers\*.json")
     #print WaptHosts.get(Hosts.uuid == 'sd')
     #test_pg()
-    tests()
+    #tests()
 
 
