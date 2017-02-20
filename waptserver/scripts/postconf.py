@@ -253,7 +253,6 @@ def main():
     ensure_postgresql_db()
     print ("create database schema")
     subprocess.check_output(""" sudo -u wapt python /opt/wapt/waptserver/waptserver_model.py init_db """, shell=True)
-    sys.exit(1)
 
     # no trailing slash
 
