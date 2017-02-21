@@ -1584,12 +1584,12 @@ def get_hosts():
                            u'listening_address',
                            u'listening_port',
                            u'listening_timestamp',
-                           u'host.system_manufacturer',
-                           u'host.system_productname',
-                           u'dmi.Chassis_Information.Serial_Number',
-                           u'last_query_date',
-                           u'host.mac',
-                           u'host.connected_ips',
+                           u'manufacturer',
+                           u'productname',
+                           u'serialnr',
+                           u'last_seen_on',
+                           u'mac_addresses',
+                           u'connected_ips',
                            u'wapt.*',
                            u'uuid',
                            u'md5sum',
@@ -1601,13 +1601,14 @@ def get_hosts():
                            u'host.domain_name',
                            u'host.domain_controller_address',
                            u'depends',
-                           u'dmi.Chassis_Information.Type',
-                           u'host.windows_product_infos.product_key',
-                           u'host.windows_product_infos.version']
+                           u'computer_type',
+                           u'os_name',
+                           u'os_version',]
 
         # keep only top tree nodes (mongo doesn't want fields like {'wapt':1,'wapt.listening_address':1} !
         # minimum columns
-        columns = ['uuid', 'host', 'wapt', 'update_status',
+        columns = ['uuid', 'host_status','update_status','computer_fqdn','description',
+                       u'wapt',
                        u'listening_protocol',
                        u'listening_address',
                        u'listening_port',
@@ -1664,6 +1665,7 @@ def get_hosts():
             req = req.where(query)
 
         for host in req:
+
             if (('depends' in columns) or len(groups) >
                     0) and host.get('computer_fqdn',None):
                 host_package = hosts_packages_repo.get(

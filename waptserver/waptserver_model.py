@@ -28,6 +28,8 @@ import datetime
 import subprocess
 import getpass
 import traceback
+import platform
+
 try:
     wapt_root_dir = os.path.abspath( os.path.join(  os.path.dirname(__file__),'..'))
 except:
@@ -61,8 +63,24 @@ class WaptHosts(BaseModel):
     uuid = CharField(primary_key=True,unique=True)
     computer_fqdn = CharField(null=True,index=True)
     description = CharField(null=True,index=True)
-
     reachable = CharField(20,null=True)
+
+    computer_type = CharField(null=True)  # tower, laptop,etc..
+    computer_architecture = CharField(null=True)  # tower, laptop,etc..
+    manufacturer = CharField(null=True)
+    productname = CharField(null=True)
+    serialnr = CharField(null=True)
+
+    os_name = CharField(null=True)
+    os_version = CharField(null=True)
+    os_architecture = CharField(null=True)
+
+    connected_ips = CharField(null=True)
+    mac_addresses = CharField(null=True)
+    gateways = CharField(null=True)
+    networks = CharField(null=True)
+
+    connected_users = CharField(null=True)
 
     listening_protocol = CharField(10,null=True)
     listening_address = CharField(null=True)
@@ -70,16 +88,21 @@ class WaptHosts(BaseModel):
     listening_timestamp = CharField(null=True)
 
     host_status = CharField(null=True)
-    last_query_date = CharField(null=True)
+    last_seen_on = CharField(null=True)
 
+    # raw data from hosts
     wapt = BinaryJSONField(null=True)
+    # running, pending, errors, finished
+    # upgradable, errors,
     update_status = BinaryJSONField(null=True)
     packages = BinaryJSONField(null=True)
     softwares = BinaryJSONField(null=True)
+
     host = BinaryJSONField(null=True)
     dmi = BinaryJSONField(null=True)
     wmi = BinaryJSONField(null=True)
 
+    # audit data
     created_on = DateTimeField(null=True,default=datetime.datetime.now)
     created_by = DateTimeField(null=True)
     updated_on = DateTimeField(null=True,default=datetime.datetime.now)
@@ -92,11 +115,57 @@ class WaptHosts(BaseModel):
     def fieldbyname(cls,fieldname):
         return cls._meta.fields[fieldname]
 
+def dictgetpath(adict,pathstr,str_or_json=True):
+    result = adict
+    for k in pathstr.split('.'):
+        if isinstance(k,(str,unicode)) and isinstance(result,dict):
+            result = result.get(k)
+        elif isinstance(k,int) and isinstance(result,list) and k<len(result):
+            result = result[k]
+        elif k == '*' and isinstance(result,list):
+            continue
+        elif isinstance(k,(str,unicode)) and isinstance(result,list):
+            result = [item.get(k) for item in result if item.get(k)]
+        else:
+            result = None
+            break
+        if result is None:
+            break
+    if str_or_json and not isinstance(result,(str,unicode)):
+        return json.dumps(result)
+    else:
+        return result
+
 @pre_save(sender=WaptHosts)
-def model_audit(model_class, instance, created):
-    if WaptHosts.host in instance.dirty_fields:
-        instance.computer_fqdn = instance.host.get('computer_fqdn',None)
-        instance.description = instance.host.get('description',None)
+def wapthosts_model_audit(model_class, instance, created):
+    if (created or WaptHosts.host in instance.dirty_fields) and instance.host:
+        extractmap = [
+            ['computer_fqdn','computer_fqdn'],
+            ['description','description'],
+            ['manufacturer','system_manufacturer'],
+            ['productname','system_productname'],
+            ['os_name','windows_product_infos.version'],
+            ['os_version','windows_product_infos.windows_version'],
+            ['connected_ips','connected_ips'],
+            ['mac_addresses','mac'],
+            ]
+        for field,attribute in extractmap:
+            setattr(instance,field,dictgetpath(instance.host,attribute))
+
+        instance.os_architecture = 'x64' and instance.host.get('win64','?') or 'x86'
+
+    if (created or WaptHosts.dmi in instance.dirty_fields) and instance.dmi:
+        extractmap = [
+            ['serialnr','Chassis_Information.Serial_Number'],
+            ['computer_type','Chassis_Information.Type'],
+            ]
+        for field,attribute in extractmap:
+            setattr(instance,field,dictgetpath(instance.dmi,attribute))
+
+    if not instance.connected_ips:
+        instance.connected_ips = dictgetpath(instance.host,'networking.*.addr')
+
+
     instance.updated_on = datetime.datetime.now()
 
 def init_db(drop=False):
@@ -134,6 +203,9 @@ def create_import_data(ip='127.0.0.1',fn=None):
 
 def load_json(filenames=r'c:\tmp\*.json'):
     import glob
+    convert_map = {
+        'last_query_date':'last_seen_on',
+    }
     for fn in glob.glob(filenames):
         print('Loading %s'%fn)
         recs = json.load(codecs.open(fn,'rb',encoding='utf8'))
@@ -146,24 +218,20 @@ def load_json(filenames=r'c:\tmp\*.json'):
                     # wapt update_status packages softwares host
                     newhost = WaptHosts()
                     for k in rec.keys():
-                        if hasattr(newhost,k):
-                            setattr(newhost,k,rec[k])
+                        if hasattr(newhost,convert_map.get(k,k)):
+                            setattr(newhost,convert_map.get(k,k),rec[k])
                         else:
                             print 'unknown key %s' % k
                     newhost.save(force_insert=True)
                     print('%s Inserted (%s)'%(newhost.computer_fqdn,newhost.uuid))
                 except IntegrityError as e:
                     wapt_db.rollback()
-                    updates = {}
+                    updhost = WaptHosts.get(uuid=uuid)
                     for k in rec.keys():
-                        if hasattr(WaptHosts,k):
-                            updates[k] = rec[k]
-                    updates['updated_on'] = datetime.datetime.now()
-                    WaptHosts.update(
-                        **updates
-                        ).where(WaptHosts.uuid == uuid)
+                        if hasattr(updhost,convert_map.get(k,k)):
+                            setattr(updhost,convert_map.get(k,k),rec[k])
+                    updhost.save()
                     print('%s Updated'%computer_fqdn)
-                    raise e
             except Exception as e:
                 print(u'Error for %s : %s'%(ensure_unicode(computer_fqdn),ensure_unicode(e)))
                 wapt_db.rollback()
@@ -215,7 +283,7 @@ def upgrade2postgres():
     for proc in psutil.process_iter():
         if proc.name() == 'mongod':
             mongo_running=True
-    if mongo_running==False:
+    if not mongo_running:
         print ("mongodb process not running, please check your configuration. Perhaps migration of data has already been done...")
     val = subprocess.check_output("""  psql wapt -c " SELECT datname FROM pg_database WHERE datname='wapt';   " """, shell=True)
     if 'wapt' not in val:
@@ -228,14 +296,15 @@ def upgrade2postgres():
         # TODO : check that data is properly imported
         subprocess.check_output('systemctl stop mongodb')
         subprocess.check_output('systemctl disable mongodb')
-        
+
     except Exception as e:
         traceback.print_stack()
         print ('Exception while loading data, please check current configuration')
 
 
 if __name__ == '__main__':
-    if getpass.getuser()!='wapt':
+    import_shapers()
+    if platform.system != 'Windows' and getpass.getuser()!='wapt':
         print """you should run this program as wapt:
                      sudo -u wapt python /opt/wapt/waptserver/waptserver_model.py  <action>"""
         sys.exit(1)
@@ -251,7 +320,7 @@ if __name__ == '__main__':
             comment_mongodb_lines()
             #upgrade2postgres()
     else:
-        print ("""usage : 
+        print ("""usage :
                 python waptserver_model.py init_db
                 python waptserver_model.py upgrade2postgres
                 """)

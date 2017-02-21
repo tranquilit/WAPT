@@ -1000,15 +1000,15 @@ begin
         RowSO['packages'] := nil;
       end;
       EdHostname.Text := UTF8Encode(RowSO.S['host.computer_name']);
-      EdDescription.Text := UTF8Encode(RowSO.S['host.description']);
+      EdDescription.Text := UTF8Encode(RowSO.S['description']);
       EdOS.Text := RowSO.S['host.windows_product_infos.version'];
       if RowSO['host.connected_ips'].DataType=stArray then
-        EdIPAddress.Text := soutils.join(',',RowSO['host.connected_ips'])
+        EdIPAddress.Text := soutils.join(',',RowSO['connected_ips'])
       else
-        EdIPAddress.Text := RowSO.S['host.connected_ips'];
-      EdManufacturer.Text := UTF8Encode(RowSO.S['host.system_manufacturer']);
-      EdModelName.Text := UTF8Encode(RowSO.S['host.system_productname']);
-      EdUpdateDate.Text := UTF8Encode(RowSO.S['last_query_date']);
+        EdIPAddress.Text := RowSO.S['connected_ips'];
+      EdManufacturer.Text := UTF8Encode(RowSO.S['manufacturer']);
+      EdModelName.Text := UTF8Encode(RowSO.S['productname']);
+      EdUpdateDate.Text := UTF8Encode(RowSO.S['last_seen_on']);
       If RowSO['host.current_user'].DataType=stArray then
         EdUser.Text := UTF8Encode(soutils.join(',',RowSO['host.current_user']))
       else
