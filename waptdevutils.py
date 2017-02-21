@@ -361,7 +361,8 @@ def get_computer_groups(computername):
     if computer:
         computer_groups = computer.memberOf
         if computer_groups:
-            computer_groups = ensure_list(computer_groups)
+            if not isinstance(computer_groups,list):
+                computer_groups = [computer_groups]
             for group in computer_groups:
                 # extract first component of group's DN
                 cn = group.split(',')[0].split('=')[1]
