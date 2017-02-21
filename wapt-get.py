@@ -146,6 +146,7 @@ parser.add_option("-t","--maxttl", type='int',  dest="max_ttl", default=60, help
 parser.add_option("-L","--language",    dest="language",    default=setuphelpers.get_language(), help="Override language for install (example : fr) (default: %default)")
 parser.add_option("--wapt-server-user", dest="wapt_server_user", default=None, help="User to upload packages to waptserver. (default: %default)")
 parser.add_option("--wapt-server-passwd", dest="wapt_server_passwd", default=None, help="Password to upload packages to waptserver. (default: %default)")
+parser.add_option("--log-to-windows-events",dest="log_to_windows_events",    default=False, action='store_true', help="Log steps to the Windows event log (default: %default)")
 
 (options,args) = parser.parse_args()
 
@@ -165,7 +166,6 @@ if len(logger.handlers) < 1:
     hdlr.setFormatter(logging.Formatter(
         u'%(asctime)s %(levelname)s %(message)s'))
     logger.addHandler(hdlr)
-
 
 def setloglevel(loglevel):
     """set loglevel as string"""
@@ -292,6 +292,16 @@ def main():
             setloglevel(loglevel)
 
         mywapt.options = options
+
+        if options.log_to_windows_events:
+            try:
+                from logging.handlers import NTEventLogHandler
+                hdlr = NTEventLogHandler('wapt-get')
+                logger.addHandler(hdlr)
+            except Exception as e:
+                print('Unable to initialize windows log Event handler: %s' % e)
+
+
 
         if options.private_key:
             mywapt.private_key = options.private_key

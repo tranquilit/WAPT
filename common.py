@@ -2280,6 +2280,7 @@ class Wapt(object):
         # default config file
         defaults = {
             'loglevel':'warning',
+            'log_to_windows_events':0,
             'default_package_prefix':'tis',
             'default_sources_suffix':'wapt',
             'default_sources_root':'c:\\waptdev',

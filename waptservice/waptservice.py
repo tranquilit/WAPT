@@ -199,7 +199,7 @@ class WaptServiceConfig(object):
     global_attributes = ['config_filename','waptservice_user','waptservice_password',
          'MAX_HISTORY','waptservice_port','waptservice_sslport',
          'dbpath','loglevel','log_directory','waptserver','authorized_callers_ip',
-         'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout']
+         'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout','log_to_windows_events']
 
     def __init__(self,config_filename=None):
         if not config_filename:
@@ -230,6 +230,8 @@ class WaptServiceConfig(object):
         self.log_directory = os.path.join(wapt_root_dir,'log')
         if not os.path.exists(self.log_directory):
             os.mkdir(self.log_directory)
+
+        self.log_to_windows_events = False
 
         self.waptserver = None
         self.authorized_callers_ip = []
@@ -327,6 +329,9 @@ class WaptServiceConfig(object):
             elif options.loglevel is None:
                 # default to warning
                 setloglevel(logger,'warning')
+
+            if config.has_option('global','log_to_windows_events'):
+                self.log_to_windows_events = config.getboolean('global','log_to_windows_events')
 
             if config.has_option('global','wapt_server'):
                 self.waptserver = common.WaptServer().load_config(config)
@@ -2353,7 +2358,6 @@ if __name__ == "__main__":
 
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
 
-
     def setloglevel(logger,loglevel):
         """set loglevel as string"""
         if loglevel in ('debug','warning','info','error','critical'):
@@ -2361,10 +2365,6 @@ if __name__ == "__main__":
             if not isinstance(numeric_level, int):
                 raise ValueError(_('Invalid log level: {}').format(loglevel))
             logger.setLevel(numeric_level)
-
-    # force loglevel
-    if options.loglevel is not None:
-        setloglevel(logger,options.loglevel)
 
     if args  and args[0] == 'doctest':
         import doctest
@@ -2376,6 +2376,18 @@ if __name__ == "__main__":
 
     waptconfig.config_filename = options.config
     waptconfig.load()
+
+    # force loglevel
+    if waptconfig.loglevel is not None:
+        setloglevel(logger,waptconfig.loglevel)
+
+    if waptconfig.log_to_windows_events:
+        try:
+            from logging.handlers import NTEventLogHandler
+            hdlr = NTEventLogHandler('waptservice')
+            logger.addHandler(hdlr)
+        except Exception as e:
+            print('Unable to initialize windows log Event handler: %s' % e)
 
     # setup basic settings
     apply_host_settings(waptconfig)
