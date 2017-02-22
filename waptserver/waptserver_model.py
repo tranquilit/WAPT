@@ -172,6 +172,22 @@ def wapthosts_model_audit(model_class, instance, created):
     if not instance.connected_ips:
         instance.connected_ips = dictgetpath(instance.host,'networking.*.addr')
 
+    if (created or WaptHosts.packages in instance.dirty_fields or WaptHosts.update_status in instance.dirty_fields):
+        instance.host_status = None
+        if instance.update_status:
+            if instance.update_status.get('errors', []):
+                instance.host_status = 'ERROR'
+            elif instance.update_status.get('upgrades', []):
+                instance.host_status = 'TO-UPGRADE'
+        if not instance.host_status:
+            for package in instance.packages:
+                if package['install_status'] == 'ERROR':
+                    instance.host_status = 'ERROR'
+                    break
+                if package['install_status'] == 'NEED-UPGRADE':
+                    instance.host_status = 'TO-UPGRADE'
+                    break
+        instance.host_status = 'OK'
 
     instance.updated_on = datetime.datetime.now()
 
@@ -310,8 +326,8 @@ def upgrade2postgres():
 
 
 if __name__ == '__main__':
-    init_db(True)
-    import_shapers()
+    #init_db(True)
+    #import_shapers()
     if platform.system != 'Windows' and getpass.getuser()!='wapt':
         print """you should run this program as wapt:
                      sudo -u wapt python /opt/wapt/waptserver/waptserver_model.py  <action>"""

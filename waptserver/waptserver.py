@@ -899,7 +899,7 @@ def get_ip_port(host_data, recheck=False, timeout=None):
 
         for ip in ips:
             try:
-                req = requests.head('%s://%s:%s/ping'%(protocol,ip,port),
+                req = requests.head('%s://%s:%s/ping?uuid=%s'%(protocol,ip,port,host_data.get('uuid',None)),
                         proxies = {'http':None,'https':None},
                         verify=False,
                         timeout=timeout,
@@ -1061,7 +1061,8 @@ def proxy_host_request(request, action):
                             'http': None,
                             'https': None},
                         verify=False,
-                        timeout=conf['clients_read_timeout']).text
+                        timeout=conf['clients_read_timeout'],
+                        ).text
                     try:
                         client_result = json.loads(client_result)
                         if not isinstance(client_result, list):
@@ -1623,6 +1624,7 @@ def get_hosts():
                        'last_seen_on',
                        'update_status',
                        'computer_fqdn',
+                       'computer_name',
                        'description',
                        'wapt',
                        'listening_protocol',
@@ -1664,9 +1666,9 @@ def get_hosts():
             query = ~(WaptHosts.uuid.is_null())
 
         if 'has_errors' in request.args and request.args['has_errors']:
-            query = query & (WaptHosts.packages['install_status'] == "ERROR")
+            query = query & (WaptHosts.host_status == 'ERROR')
         if "need_upgrade" in request.args and request.args['need_upgrade']:
-            query = query &  (WaptHosts.update_status['upgrades'] > 0)
+            query = query & (WaptHosts.host_status.in_(['ERROR','TO_UPGRADE']))
 
         if not_filter:
             query = ~ query
@@ -1714,13 +1716,14 @@ def get_hosts():
                 host['reachable'] = 'UNKNOWN'
 
             try:
-                us = host['update_status']
-                if us.get('errors', []):
-                    host['host_status'] = 'ERROR'
-                elif us.get('upgrades', []):
-                    host['host_status'] = 'TO-UPGRADE'
-                else:
-                    host['host_status'] = 'OK'
+                if not host['host_status']:
+                    us = host['update_status']
+                    if us.get('errors', []):
+                        host['host_status'] = 'ERROR'
+                    elif us.get('upgrades', []):
+                        host['host_status'] = 'TO-UPGRADE'
+                    else:
+                        host['host_status'] = 'OK'
             except:
                 host['host_status'] = '?'
 
