@@ -31,7 +31,6 @@ import errno
 import flask
 import logging
 import os
-import pymongo
 import requests
 import traceback
 import time
