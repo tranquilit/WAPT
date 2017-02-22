@@ -935,7 +935,7 @@ var
   sores:ISuperObject;
 begin
   try
-    sores := WAPTServerJsonGet('api/v1/hosts?columns=dmi&uuid=%S',[uuid]);
+    sores := WAPTServerJsonGet('api/v1/hosts?columns=dmi,wmi,host&uuid=%S',[uuid]);
     if (sores<>nil) and sores.B['success'] then
     begin
       if sores['result'].AsArray.Length>0 then
@@ -3385,11 +3385,12 @@ begin
     begin
       if (pos('version', propname) > 0) then
         Result := CompareVersion(d1.AsString, d2.AsString)
-      else if (pos('connected_ips', propname) > 0) then
+      {else if (pos('connected_ips', propname) > 0) then
           Result := CompareVersion(Join('-',d1),Join('-',d2))
       else
-      if (pos('host.mac', propname) > 0) then
+      if (pos('mac_addresses', propname) > 0) then
         Result := UTF8CompareText(d1.AsString, d2.AsString)
+      }
       else
       begin
         CompResult := d1.Compare(d2);
