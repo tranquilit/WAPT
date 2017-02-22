@@ -109,7 +109,7 @@ mkdir_p("builddir/opt/wapt/lib/site-packages")
 mkdir_p("builddir/opt/wapt/waptserver")
 
 # for some reason the virtualenv does not build itself right if we don't have pip systemwide...
-subprocess.check_output(r'apt-get install -y python-virtualenv python-setuptools python-pip python-dev',shell=True)
+subprocess.check_output(r'sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev',shell=True)
 
 print('Create a build environment virtualenv')
 subprocess.check_output(r'virtualenv ./builddir/opt/wapt --system-site-packages',shell=True)
