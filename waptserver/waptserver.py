@@ -1579,6 +1579,7 @@ def get_hosts():
                            u'update_status',
                            u'reachable',
                            u'computer_fqdn',
+                           u'computer_name',
                            u'description',
                            u'listening_protocol',
                            u'listening_address',
@@ -1590,6 +1591,7 @@ def get_hosts():
                            u'last_seen_on',
                            u'mac_addresses',
                            u'connected_ips',
+                           u'current_user',
                            u'wapt.*',
                            u'uuid',
                            u'md5sum',
@@ -1607,7 +1609,8 @@ def get_hosts():
 
         # keep only top tree nodes (mongo doesn't want fields like {'wapt':1,'wapt.listening_address':1} !
         # minimum columns
-        columns = ['uuid', 'host_status','update_status','computer_fqdn','description',
+        columns = ['uuid', 'host_status','update_status','computer_fqdn','computer_name','description',
+                       u'current_user',
                        u'wapt',
                        u'listening_protocol',
                        u'listening_address',

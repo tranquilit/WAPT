@@ -101,6 +101,7 @@ object VisEditPackage: TVisEditPackage
         Top = 0
         Width = 651
         Align = alClient
+        BorderStyle = bsNone
         Color = clWhite
         Header.AutoSizeIndex = -1
         Header.Columns = <        

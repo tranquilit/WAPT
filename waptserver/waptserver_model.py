@@ -65,6 +65,10 @@ class WaptHosts(BaseModel):
     description = CharField(null=True,index=True)
     reachable = CharField(20,null=True)
 
+    # netbios name
+    computer_name = CharField(null=True)
+    current_user = CharField(null=True)
+
     computer_type = CharField(null=True)  # tower, laptop,etc..
     computer_architecture = CharField(null=True)  # tower, laptop,etc..
     manufacturer = CharField(null=True)
@@ -141,6 +145,7 @@ def wapthosts_model_audit(model_class, instance, created):
     if (created or WaptHosts.host in instance.dirty_fields) and instance.host:
         extractmap = [
             ['computer_fqdn','computer_fqdn'],
+            ['computer_name','computer_name'],
             ['description','description'],
             ['manufacturer','system_manufacturer'],
             ['productname','system_productname'],
@@ -148,6 +153,7 @@ def wapthosts_model_audit(model_class, instance, created):
             ['os_version','windows_product_infos.windows_version'],
             ['connected_ips','connected_ips'],
             ['mac_addresses','mac'],
+            ['current_user','current_user'],
             ]
         for field,attribute in extractmap:
             setattr(instance,field,dictgetpath(instance.host,attribute))
@@ -303,6 +309,7 @@ def upgrade2postgres():
 
 
 if __name__ == '__main__':
+    #init_db(True)
     import_shapers()
     if platform.system != 'Windows' and getpass.getuser()!='wapt':
         print """you should run this program as wapt:

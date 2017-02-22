@@ -999,20 +999,20 @@ begin
       except
         RowSO['packages'] := nil;
       end;
-      EdHostname.Text := UTF8Encode(RowSO.S['host.computer_name']);
+      EdHostname.Text := UTF8Encode(RowSO.S['computer_name']);
       EdDescription.Text := UTF8Encode(RowSO.S['description']);
-      EdOS.Text := RowSO.S['host.windows_product_infos.version'];
-      if RowSO['host.connected_ips'].DataType=stArray then
+      EdOS.Text := RowSO.S['os_name'];
+      if RowSO['connected_ips'].DataType=stArray then
         EdIPAddress.Text := soutils.join(',',RowSO['connected_ips'])
       else
         EdIPAddress.Text := RowSO.S['connected_ips'];
       EdManufacturer.Text := UTF8Encode(RowSO.S['manufacturer']);
       EdModelName.Text := UTF8Encode(RowSO.S['productname']);
       EdUpdateDate.Text := UTF8Encode(RowSO.S['last_seen_on']);
-      If RowSO['host.current_user'].DataType=stArray then
-        EdUser.Text := UTF8Encode(soutils.join(',',RowSO['host.current_user']))
+      If RowSO['current_user'].DataType=stArray then
+        EdUser.Text := UTF8Encode(soutils.join(',',RowSO['current_user']))
       else
-        EdUser.Text := UTF8Encode(RowSO.S['host.current_user']);
+        EdUser.Text := UTF8Encode(RowSO.S['current_user']);
       EdRunningStatus.Text := UTF8Encode(RowSO.S['update_status.runstatus']);
       GridHostPackages.Data := RowSO['packages'];
     end
@@ -1502,7 +1502,7 @@ begin
     try
       Hosts := TSuperObject.Create(stArray);
       for host in GridHosts.SelectedRows do
-        hosts.AsArray.Add(host.S['host.computer_fqdn']);
+        hosts.AsArray.Add(host.S['computer_fqdn']);
       Start(GridHosts.SelectedRows.AsArray.Length);
       ProgressTitle(rsCreationInProgress);
 
@@ -1543,7 +1543,7 @@ begin
     Hosts := TSuperObject.Create(stArray);
 
     for host in GridHosts.SelectedRows do
-      hosts.AsArray.Add(host.S['host.computer_fqdn']);
+      hosts.AsArray.Add(host.S['computer_fqdn']);
 
     //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
     args := '';
@@ -1594,7 +1594,7 @@ begin
       Screen.Cursor := crHourGlass;
       Hosts := TSuperObject.Create(stArray);
       for host in GridHosts.SelectedRows do
-        hosts.AsArray.Add(host.S['host.computer_fqdn']);
+        hosts.AsArray.Add(host.S['computer_fqdn']);
 
       //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
       args := '';
@@ -1698,9 +1698,9 @@ var
   ip: ansistring;
 begin
   if (Gridhosts.FocusedRow <> nil) and
-    (Gridhosts.FocusedRow.S['host.connected_ips'] <> '') then
+    (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
   begin
-    ip := GetReachableIP(Gridhosts.FocusedRow['host.connected_ips'],3389);
+    ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],3389);
     if ip <> '' then
       ShellExecute(0, '', PAnsiChar('compmgmt.msc'), PAnsichar(' -a /computer=' + ip), nil, SW_SHOW)
     else
@@ -1711,7 +1711,7 @@ end;
 procedure TVisWaptGUI.ActComputerMgmtUpdate(Sender: TObject);
 begin
   try
-    ActComputerMgmt.Enabled := (Gridhosts.FocusedRow <> nil) and (Gridhosts.FocusedRow.S['host.connected_ips']<>'');
+    ActComputerMgmt.Enabled := (Gridhosts.FocusedRow <> nil) and (Gridhosts.FocusedRow.S['connected_ips']<>'');
   except
     ActComputerMgmt.Enabled := False;
   end;
@@ -1723,9 +1723,9 @@ var
   ip: ansistring;
 begin
   if (Gridhosts.FocusedRow <> nil) and
-    (Gridhosts.FocusedRow.S['host.connected_ips'] <> '') then
+    (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
   begin
-    ip := GetReachableIP(Gridhosts.FocusedRow['host.connected_ips'],3389);
+    ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],3389);
     if ip <> '' then
       ShellExecute(0, '', PAnsiChar('services.msc'), PAnsichar(' -a /computer=' + ip), nil, SW_SHOW)
     else
@@ -1736,7 +1736,7 @@ end;
 procedure TVisWaptGUI.ActComputerServicesUpdate(Sender: TObject);
 begin
   try
-    ActComputerServices.Enabled := (Gridhosts.FocusedRow <> nil) and (Gridhosts.FocusedRow.S['host.connected_ips']<>'');
+    ActComputerServices.Enabled := (Gridhosts.FocusedRow <> nil) and (Gridhosts.FocusedRow.S['connected_ips']<>'');
   except
    ActComputerServices.Enabled := False;
   end;
@@ -1748,7 +1748,7 @@ var
   ip: ansistring;
 begin
   if (Gridhosts.FocusedRow <> nil) and
-    (Gridhosts.FocusedRow.S['host.connected_ips'] <> '') then
+    (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
   begin
     ip := GetReachableIP(Gridhosts.FocusedRow['host.connected_ips'],3389);
     if ip <> '' then
@@ -1761,7 +1761,7 @@ end;
 procedure TVisWaptGUI.ActComputerUsersUpdate(Sender: TObject);
 begin
   try
-    ActComputerUsers.Enabled := (Gridhosts.FocusedRow <> nil) and (Gridhosts.FocusedRow.S['host.connected_ips']<>'');
+    ActComputerUsers.Enabled := (Gridhosts.FocusedRow <> nil) and (Gridhosts.FocusedRow.S['connected_ips']<>'');
   except
     ActComputerUsers.Enabled := False;
   end;
@@ -1881,7 +1881,7 @@ var
   ip: ansistring;
 begin
   if (Gridhosts.FocusedRow <> nil) and
-    (Gridhosts.FocusedRow.S['host.connected_ips'] <> '') then
+    (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
   begin
     ip := GetReachableIP(Gridhosts.FocusedRow['host.connected_ips'],3389);
     if ip <> '' then
@@ -1894,7 +1894,7 @@ end;
 procedure TVisWaptGUI.ActRemoteAssistUpdate(Sender: TObject);
 begin
   try
-    ActRemoteAssist.Enabled := (Gridhosts.FocusedRow <> nil) and (Gridhosts.FocusedRow.S['host.connected_ips']<>'');
+    ActRemoteAssist.Enabled := (Gridhosts.FocusedRow <> nil) and (Gridhosts.FocusedRow.S['connected_ips']<>'');
   except
     ActRemoteAssist.Enabled := False;
   end;
@@ -2182,9 +2182,9 @@ var
 begin
   if GridHosts.FocusedRow<>Nil then
   begin
-    hostname := GridHosts.FocusedRow.S['host.computer_fqdn'];
+    hostname := GridHosts.FocusedRow.S['computer_fqdn'];
     uuid := GridHosts.FocusedRow.S['uuid'];
-    desc := GridHosts.FocusedRow.S['host.description'];
+    desc := GridHosts.FocusedRow.S['description'];
 
     if EditHost(hostname, AdvancedMode, uuid,UTF8Encode(desc)) <> nil then
       ActSearchHost.Execute;
@@ -2403,7 +2403,7 @@ var
   ip: ansistring;
 begin
   if (Gridhosts.FocusedRow <> nil) and
-    (Gridhosts.FocusedRow.S['host.connected_ips'] <> '') then
+    (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
   begin
     ip := GetReachableIP(Gridhosts.FocusedRow['host.connected_ips'],3389);
     if ip <> '' then
@@ -2416,7 +2416,7 @@ end;
 procedure TVisWaptGUI.ActRDPUpdate(Sender: TObject);
 begin
   try
-    ActRDP.Enabled := (Gridhosts.FocusedRow <> nil) and (Gridhosts.FocusedRow.S['host.connected_ips']<>'');
+    ActRDP.Enabled := (Gridhosts.FocusedRow <> nil) and (Gridhosts.FocusedRow.S['connected_ips']<>'');
   except
     ActRDP.Enabled := False;
   end;
@@ -2466,7 +2466,7 @@ begin
 
     Hosts := TSuperObject.Create(stArray);
     for host in GridHosts.SelectedRows do
-      hosts.AsArray.Add(host.S['host.computer_fqdn']);
+      hosts.AsArray.Add(host.S['computer_fqdn']);
 
     //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
     args := '';
@@ -2524,7 +2524,7 @@ begin
 
     Hosts := TSuperObject.Create(stArray);
     for host in GridHosts.SelectedRows do
-      hosts.AsArray.Add(host.S['host.computer_fqdn']);
+      hosts.AsArray.Add(host.S['computer_fqdn']);
 
     //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
     args := '';
@@ -2908,7 +2908,7 @@ var
   ip: ansistring;
 begin
   if (Gridhosts.FocusedRow <> nil) and
-    (Gridhosts.FocusedRow.S['host.connected_ips'] <> '') then
+    (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
   begin
     ip := GetReachableIP(Gridhosts.FocusedRow['host.connected_ips'],5900);
     if ip<>'' then
@@ -2923,7 +2923,7 @@ procedure TVisWaptGUI.ActVNCUpdate(Sender: TObject);
 begin
   try
     ActVNC.Enabled := (Gridhosts.FocusedRow <> nil) and
-      (Gridhosts.FocusedRow.S['host.connected_ips'] <> '') and
+      (Gridhosts.FocusedRow.S['connected_ips'] <> '') and
       FileExists('C:\Program Files\TightVNC\tvnviewer.exe');
   except
     ActVNC.Enabled := False;
