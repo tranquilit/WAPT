@@ -80,10 +80,10 @@ class WaptHosts(BaseModel):
     os_version = CharField(null=True)
     os_architecture = CharField(null=True)
 
-    connected_ips = CharField(null=True)
-    mac_addresses = CharField(null=True)
-    gateways = CharField(null=True)
-    networks = CharField(null=True)
+    connected_ips = ArrayField(CharField,null=True)
+    mac_addresses = ArrayField(CharField,null=True)
+    gateways = ArrayField(CharField,null=True)
+    networks = ArrayField(CharField,null=True)
 
     connected_users = CharField(null=True)
 
@@ -123,7 +123,7 @@ class WaptHosts(BaseModel):
     def fieldbyname(cls,fieldname):
         return cls._meta.fields[fieldname]
 
-def dictgetpath(adict,pathstr,str_or_json=True):
+def dictgetpath(adict,pathstr):
     result = adict
     for k in pathstr.split('.'):
         if isinstance(k,(str,unicode)) and isinstance(result,dict):
@@ -139,10 +139,7 @@ def dictgetpath(adict,pathstr,str_or_json=True):
             break
         if result is None:
             break
-    if str_or_json and not isinstance(result,(str,unicode)):
-        return json.dumps(result)
-    else:
-        return result
+    return result
 
 @pre_save(sender=WaptHosts)
 def wapthosts_model_audit(model_class, instance, created):
@@ -313,7 +310,7 @@ def upgrade2postgres():
 
 
 if __name__ == '__main__':
-    #init_db(True)
+    init_db(True)
     import_shapers()
     if platform.system != 'Windows' and getpass.getuser()!='wapt':
         print """you should run this program as wapt:

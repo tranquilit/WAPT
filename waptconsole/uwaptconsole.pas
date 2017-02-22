@@ -536,6 +536,7 @@ type
     function FilterHostWinUpdates(wua: ISuperObject): ISuperObject;
     function FilterWindowsUpdate(wua: ISuperObject): ISuperObject;
     function FilterWinProducts(products: ISuperObject): ISuperObject;
+    function GetSelectedUUID: ISuperObject;
     { private declarations }
     procedure GridLoadData(grid: TSOGrid; jsondata: string);
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
@@ -2623,6 +2624,15 @@ begin
     end;
 end;
 
+function TVisWaptGUI.GetSelectedUUID:ISuperObject;
+var
+  host:ISuperObject;
+begin
+  result := TSuperObject.Create(stArray);
+  for host in GridHosts.SelectedRows do
+    result.AsArray.Add(host.S['uuid']);
+end;
+
 procedure TVisWaptGUI.ActTriggerHostUpgradeExecute(Sender: TObject);
 begin
   with TVisHostsUpgrade.Create(Self) do
@@ -2773,15 +2783,15 @@ begin
     begin
       if cbSearchHost.Checked = True then
       begin
-        fields.AsArray.Add('host.computer_fqdn');
-        fields.AsArray.Add('host.description');
-        fields.AsArray.Add('host.system_manufacturer');
-        fields.AsArray.Add('host.computer_name');
-        fields.AsArray.Add('host.system_productname');
+        fields.AsArray.Add('computer_fqdn');
+        fields.AsArray.Add('description');
+        fields.AsArray.Add('manufacturer');
+        fields.AsArray.Add('computer_name');
+        fields.AsArray.Add('productname');
         fields.AsArray.Add('host.connected_ips');
-        fields.AsArray.Add('host.mac');
-        fields.AsArray.Add('host.current_user');
-        fields.AsArray.Add('dmi.Chassis_Information.Serial_Number');
+        fields.AsArray.Add('mac_addresses');
+        fields.AsArray.Add('current_user');
+        fields.AsArray.Add('serialnr');
       end;
 
       if cbSearchDMI.Checked = True then
@@ -2888,17 +2898,20 @@ end;
 
 procedure TVisWaptGUI.ActTriggerHostsListeningExecute(Sender: TObject);
 var
-  res:ISuperObject;
+  params,res,sel,uuids:ISuperObject;
 begin
   try
-    res := WAPTServerJsonGet('api/v1/trigger_reachable_discovery',[]);
+    params := SO();
+    params['uuids'] := GetSelectedUUID;
+
+    res := WAPTServerJsonPost('api/v1/trigger_reachable_discovery?',[],params);
     if res.B['success'] then
       ShowMessageFmt('%s',[res.S['msg']])
     else
-      ShowMessageFmt('Unable to trigger discovery of listening IP on wapt server: %s',[res.S['msg']]);
+      ShowMessageFmt('Unable to trigger discovery of listening IP on wapt server: %S',[res.S['msg']]);
   except
     on E:Exception do
-      ShowMessageFmt('Unable to trigger discovery of listening IP on wapt server: %s',[UTF8Encode(E.Message)]);
+      ShowMessageFmt('Unable to trigger discovery of listening IP on wapt server: %S',[UTF8Encode(E.Message)]);
   end;
 
 end;

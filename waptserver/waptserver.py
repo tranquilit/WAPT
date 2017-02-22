@@ -229,26 +229,6 @@ def authenticate():
         {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 
-def get_host_data(uuid, filter={}):
-    """Return all the data for host uuid
-
-    Args:
-        uuid : uinque id of host to retrieve
-        Filter (dict) : Filter out the returned fields.
-                        mongostyle: {'fieldname':1/0,}
-    Returns:
-        dict : data retrieved from DB
-    """
-    if filter:
-        # select only fields with key:1
-        data = WaptHosts.select(build_fields_list(WaptHosts,filter))\
-                    .where(WaptHosts.uuid==uuid)\
-                    .dicts()\
-                    .first(1)
-    else:
-        data = WaptHosts.get(uuid=uuid).dicts()
-    return data
-
 @babel.localeselector
 def get_locale():
     browser_lang = request.accept_languages.best_match(['en', 'fr'])
@@ -946,7 +926,7 @@ def get_ip_port(host_data, recheck=False, timeout=None):
     else:
         raise EWaptHostUnreachable(
             _('No reachable IP for {}').format(
-                host_data.uuid))
+                host_data['uuid']))
 
 
 @app.route('/ping')
@@ -969,7 +949,7 @@ def ping():
     )
 
 
-@app.route('/api/v1/trigger_reachable_discovery')
+@app.route('/api/v1/trigger_reachable_discovery',methods=['GET','POST'])
 @requires_auth
 def trigger_reachable_discovery():
     """Launch a separate thread to check all reachable IP and update database with results.
@@ -981,6 +961,9 @@ def trigger_reachable_discovery():
                 del(g.check_hosts_thread)
         g.check_hosts_thread = CheckHostsWaptService(
             timeout=conf['clients_connect_timeout'])
+        # in case a POST is issued with a selection of uuids to scan.
+        g.check_hosts_thread.uuids = request.json.get('uuids',None) or None
+
         g.check_hosts_thread.start()
         message = _(u'Hosts scan launched')
         result = dict(thread_ident=g.check_hosts_thread.ident)
@@ -1000,7 +983,12 @@ def host_reachable_ip():
         try:
             uuid = request.args['uuid']
             host_data = WaptHosts\
-                        .select(WaptHosts.uuid,WaptHosts.wapt,WaptHosts.host)\
+                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,
+                                WaptHosts.listening_address,
+                                WaptHosts.listening_port,
+                                WaptHosts.listening_protocol,
+                                WaptHosts.listening_timestamp,
+                                 )\
                         .where(WaptHosts.uuid==uuid)\
                         .dicts()\
                         .first(1)
@@ -1039,7 +1027,12 @@ def proxy_host_request(request, action):
         for uuid in uuids:
             try:
                 host_data = WaptHosts\
-                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)\
+                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,
+                                WaptHosts.listening_address,
+                                WaptHosts.listening_port,
+                                WaptHosts.listening_protocol,
+                                WaptHosts.listening_timestamp,
+                                 )\
                         .where(WaptHosts.uuid==uuid)\
                         .dicts()\
                         .first(1)
@@ -1121,7 +1114,12 @@ def trigger_upgrade():
         notify_user = request.args.get('notify_user', 0)
         notify_server = request.args.get('notify_server', 1)
         host_data = WaptHosts\
-                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)\
+                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,
+                                WaptHosts.listening_address,
+                                WaptHosts.listening_port,
+                                WaptHosts.listening_protocol,
+                                WaptHosts.listening_timestamp,
+                                 )\
                         .where(WaptHosts.uuid==uuid)\
                         .dicts()\
                         .first(1)
@@ -1180,7 +1178,12 @@ def trigger_update():
         notify_server = request.args.get('notify_server', 1)
 
         host_data = WaptHosts\
-                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)\
+                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,
+                                WaptHosts.listening_address,
+                                WaptHosts.listening_port,
+                                WaptHosts.listening_protocol,
+                                WaptHosts.listening_timestamp,
+                                 )\
                         .where(WaptHosts.uuid==uuid)\
                         .dicts()\
                         .first(1)
@@ -1385,10 +1388,15 @@ def host_tasks_status():
     try:
         uuid = request.args['uuid']
         host_data = WaptHosts\
-                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)\
-                        .where(WaptHosts.uuid==uuid)\
-                        .dicts()\
-                        .first(1)
+                    .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,
+                            WaptHosts.listening_address,
+                            WaptHosts.listening_port,
+                            WaptHosts.listening_protocol,
+                            WaptHosts.listening_timestamp,
+                             )\
+                    .where(WaptHosts.uuid==uuid)\
+                    .dicts()\
+                    .first(1)
         listening_address = get_ip_port(host_data)
         if listening_address and listening_address[
                 'address'] and listening_address['port']:
@@ -1466,6 +1474,8 @@ def build_hosts_filter(model,filter_expr):
                     # (wapt->'waptserver'->'dnsdomain')::text ~* 'asfrance.lan'
                     clause = SQL("(%s->%s)::text ~* '%s'" % (members[0],'->'.join(["'%s'" % f for f in members[1:]]),search_expr))
                     # model._meta.fields[members[0]].path(members[1:]).regexp(ur'(?i)%s' % search_expr)
+            elif isinstance(model._meta.fields[members[0]],ArrayField):
+                clause = SQL("%s::text ~* '%s'" % (fn,search_expr))
             else:
                 clause = model._meta.fields[fn].regexp(ur'(?i)%s' % search_expr)
 
@@ -1575,44 +1585,51 @@ def get_hosts():
     """
     try:
         start_time = time.time()
-        default_columns = [u'host_status',
-                           u'update_status',
-                           u'reachable',
-                           u'computer_fqdn',
-                           u'description',
-                           u'listening_protocol',
-                           u'listening_address',
-                           u'listening_port',
-                           u'listening_timestamp',
-                           u'manufacturer',
-                           u'productname',
-                           u'serialnr',
-                           u'last_seen_on',
-                           u'mac_addresses',
-                           u'connected_ips',
-                           u'wapt.*',
-                           u'uuid',
-                           u'md5sum',
-                           u'purchase_order',
-                           u'purchase_date',
-                           u'groups',
-                           u'attributes',
-                           u'host.domain_controller',
-                           u'host.domain_name',
-                           u'host.domain_controller_address',
-                           u'depends',
-                           u'computer_type',
-                           u'os_name',
-                           u'os_version',]
+        default_columns = ['host_status',
+                           'update_status',
+                           'reachable',
+                           'computer_fqdn',
+                           'description',
+                           'current_user',
+                           'listening_protocol',
+                           'listening_address',
+                           'listening_port',
+                           'listening_timestamp',
+                           'manufacturer',
+                           'productname',
+                           'serialnr',
+                           'last_seen_on',
+                           'mac_addresses',
+                           'connected_ips',
+                           'wapt.*',
+                           'uuid',
+                           'md5sum',
+                           'purchase_order',
+                           'purchase_date',
+                           'groups',
+                           'attributes',
+                           'host.domain_controller',
+                           'host.domain_name',
+                           'host.domain_controller_address',
+                           'depends',
+                           'computer_type',
+                           'os_name',
+                           'os_version',]
 
         # keep only top tree nodes (mongo doesn't want fields like {'wapt':1,'wapt.listening_address':1} !
         # minimum columns
-        columns = ['uuid', 'host_status','update_status','computer_fqdn','description',
-                       u'wapt',
-                       u'listening_protocol',
-                       u'listening_address',
-                       u'listening_port',
-                       u'listening_timestamp']
+        columns = ['uuid',
+                       'host_status',
+                       'last_seen_on',
+                       'update_status',
+                       'computer_fqdn',
+                       'description',
+                       'wapt',
+                       'listening_protocol',
+                       'listening_address',
+                       'listening_port',
+                       'listening_timestamp',
+                       'current_user']
         other_columns = ensure_list(
             request.args.get(
                 'columns',
@@ -1836,10 +1853,15 @@ def host_cancel_task():
     try:
         uuid = request.args['uuid']
         host_data = WaptHosts\
-                .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)\
-                .where(WaptHosts.uuid==uuid)\
-                .dicts()\
-                .first(1)
+                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,
+                                WaptHosts.listening_address,
+                                WaptHosts.listening_port,
+                                WaptHosts.listening_protocol,
+                                WaptHosts.listening_timestamp,
+                                 )\
+                        .where(WaptHosts.uuid==uuid)\
+                        .dicts()\
+                        .first(1)
         listening_address = get_ip_port(host_data)
         if listening_address and listening_address[
                 'address'] and listening_address['port']:
@@ -1989,9 +2011,9 @@ class CheckHostsWaptService(threading.Thread):
         self.timeout = timeout
         self.uuids = uuids
         if self.uuids:
-            self.workers_count = min(len(uuids), 20)
+            self.workers_count = min(len(uuids), 30)
         else:
-            self.workers_count = 20
+            self.workers_count = 30
 
         self.queue = Queue.Queue()
 
