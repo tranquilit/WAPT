@@ -117,7 +117,7 @@ subprocess.check_output(r'virtualenv ./builddir/opt/wapt --system-site-packages'
 #sys.exit(1)
 
 print('Install additional libraries in build environment virtualenv')
-subprocess.check_output(r'./builddir/opt/wapt/bin/pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages',shell=True)
+subprocess.check_output(r'./builddir/opt/wapt/bin/pip install -r ../../requirements-server-debian.txt -t ./builddir/opt/wapt/lib/site-packages',shell=True)
 
 print >> sys.stderr, 'copying the waptserver files'
 rsync(source_dir,'./builddir/opt/wapt/',excludes=['apache-win32', 'mongodb', 'postconf', 'repository', 'rpm','uninstall-services.bat','deb'])
