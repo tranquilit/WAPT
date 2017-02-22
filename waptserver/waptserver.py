@@ -286,8 +286,8 @@ def index():
             deploy_status = 'ERROR'
 
     try:
-        get_db()
-        db_status = 'OK'
+        cnt = 'wapthosst' in wapt_db.get_tables()
+        db_status = 'OK (%s hosts)'%cnt
     except Exception as e:
         db_status = 'ERROR'
 
