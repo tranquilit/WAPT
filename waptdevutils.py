@@ -361,7 +361,7 @@ def get_computer_groups(computername):
     if computer:
         computer_groups = computer.memberOf
         if computer_groups:
-            if not isinstance(computer_groups,list):
+            if not isinstance(computer_groups,(list,tuple)):
                 computer_groups = [computer_groups]
             for group in computer_groups:
                 # extract first component of group's DN
