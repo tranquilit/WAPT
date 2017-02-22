@@ -10,7 +10,7 @@
     <title>{{ _("WAPT - Apt-get for Windows") }}</title>
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet" type='text/css'>
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type='text/css'>
+    <link href="	css/font-awesome.min.css" rel="stylesheet" type='text/css'>
     <link href="css/style.css" rel="stylesheet" type='text/css'>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -28,9 +28,9 @@
                     <a href="#" title="Tranquil IT Systems" rel="home"><img class="thumbnail" src="img/tis_new.png"></a>
                 </div>
                 <div class="col-md-8 col-sx-12">
-                    <h1>{{ _("WAPT - Apt-get for Windows") }}</h1> </div>
+                    <h1>{{ _("WAPT Server") }}</h1> </div>
                 <div class="col-md-2 col-sx-12" id="btn-contact">
-                    <a target="_blank" href="http://www.tranquil-it-systems.fr/societe/contactez-nous/" title="Contactez-nous !">
+                    <a target="_blank" href="https://www.tranquil.it/page/contactus" title="Contactez-nous !">
                         <p class="btn btn-primary btn-block">{{ _("Contact Us") }}</p>
                     </a>
                 </div>
@@ -50,7 +50,7 @@
                     <li class="dropdown"> <a class="dropdown-toggle" data-toggle="dropdown" href="#">Dépôts<span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a target="_blank" href="http://wapt.tranquil.it/">{{ _("TIS repository") }}</a></li>
-                            <li><a target="_blank" href="file:///U:/marketing/console_wapt_html/private_repository.html">{{ _("Private repository") }}</a></li>
+                            <li><a target="_blank" href="/wapt/">{{ _("Private repository") }}</a></li>
                         </ul>
                     </li>
                     <li> <a class="dropdown-toggle" data-toggle="dropdown" href="#">WAPTServer<span class="caret"></span></a>
@@ -66,13 +66,13 @@
                             <li><a href="http://lists.tranquil.it/listinfo/wapt">{{ _("Subscribe") }}</a></li>
                         </ul>
                     </li>
-                    <li> <a href="#">Gestion de Bugs (roundup)</a> </li>
+                    <li> <a href="https://roundup.tranquil.it/wapt/">Gestion de Bugs (roundup)</a> </li>
                     <li> <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ _("Help") }}<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a target="_blank" href="http://dev.tranquil.it/index.php/WAPT">Wiki WAPT</a></li>
-                            <li><a target="_blank" href="http://wapt/wapt/doc/">Documentation</a></li>
-                            <li><a target="_blank" href="https://forum.tranquil.it/">Forum</a></li>
-                        </ul>
+						<ul class="dropdown-menu">
+							<li><a target="_blank" href="https://www.wapt.fr/">Homepage WAPT</a></li>
+							<li><a target="_blank" href="https://www.wapt.fr/fr/doc/">Documentation</a></li>
+							<li><a target="_blank" href="https://forum.tranquil.it/">Forum</a></li>
+						</ul>
                     </li>
                 </ul>
             </div>
@@ -87,7 +87,7 @@
                 <p>{{ _(""" WAPT server is managed through a WAPT console installed on a Windows system. When installing the WAPT server on Windows, the console is installed by default and can be found under the start menu. """) }}</p>
                 <p> {{ _(""" When installing the server on Linux, the <a href=\"/wapt/waptsetup-tis.exe\">WAPT client</a> should be installed on an administration machine, then run from 'Start/All programs'. """) }} </p>
                 <p>{{ _(""" To manually add a new host to the WAPT server, download the <a href=\"/wapt/waptagent.exe\">WAPT agent</a> from the menu to the right. The agent has been properly configured by the server so the default parameters should work. Once the WAPT client has been installed, you can find it in your console. """) }} </p>
-                <p>{{ _(""" For further information, be sure to check the documentation at <a href=\"http://dev.tranquil.it/\">dev.tranquil.it</a> or on mailing-list. """) }} </p>
+                <p>{{ _(""" For further information, be sure to check the documentation at <a href=\"https://www.wapt.fr/\">dev.tranquil.it</a> or on mailing-list. """) }} </p>
             </div>
             <div class="col-md-3 col-sx-12">
                 <div id="home" class="widget-area span-3 last" role="complementary">
@@ -138,7 +138,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <h4>Contact</h4>
-                        <p><a target="_blank" href="https://tranquil.it/societe/contactez-nous/">{{ _("Contact Us") }}</a></p>
+                        <p><a target="_blank" href="https://www.tranquil.it/page/contactus">{{ _("Contact Us") }}</a></p>
                         <p>{{ _("References") }}</p>
                         <p>{{ _("Actuality") }}</p>
                         <p>{{ _("Team") }}</p>

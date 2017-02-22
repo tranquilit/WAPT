@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.11"
+__version__ = "1.4.0"
 
 import os
 import sys
@@ -2396,7 +2396,7 @@ if __name__ == "__main__":
         port = conf['waptserver_port']
         server = Rocket(('127.0.0.1', port), 'wsgi', {"wsgi_app": app})
         try:
-            logger.info("starting waptserver")
+            logger.info("starting waptserver %s" % __version__)
             server.start()
         except KeyboardInterrupt:
             logger.info("stopping waptserver")

@@ -20,8 +20,8 @@ msgstr ""
 "X-Generator: Poedit 1.8.11\n"
 
 #: waptserver.py:178
-msgid "Could not connect to mongodb database: {}."
-msgstr "Impossible de se connecter à la base de données mongodb : {}."
+msgid "Could not connect to database: {}."
+msgstr "Impossible de se connecter à la base de données : {}."
 
 #: waptserver.py:194
 msgid "Could not get hosts collection from db: {}."
@@ -245,7 +245,7 @@ msgid ""
 "from 'Start/All programs'. "
 msgstr ""
 "Lors de l'installation du serveur WAPT sous Linux, le <a href=\"/wapt/waptsetup-"
-"tis.exe\">client WAPT</a> doit être une machine d'administration, puis le lancé "
+"tis.exe\">client WAPT</a> doit être une machine d'administration, lancer waptconsole "
 "depuis 'Démarrer/Programmes'. "
 
 #: templates/index.html:89
@@ -287,8 +287,8 @@ msgid "WAPT Deploy version:"
 msgstr "Version WAPT Deploy :"
 
 #: templates/index.html:99
-msgid "MongoDB status:"
-msgstr "Statut de MongoDB:"
+msgid "DB status:"
+msgstr "Statut de la base:"
 
 #: templates/index.html:100
 msgid "Disk space:"
