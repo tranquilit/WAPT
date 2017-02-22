@@ -72,9 +72,9 @@ interface
   Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean=False;userAgent:String='';VerifyCertificateFilename:String=''): boolean;
   Function IdWget_Try(const fileURL: Utf8String;enableProxy:Boolean=False;userAgent:String='';VerifyCertificateFilename:String=''): boolean;
   function IdHttpGetString(const url: ansistring; enableProxy:Boolean= False;
-      ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET';userAGent:String='';VerifyCertificateFilename:String=''):RawByteString;
+      ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET';userAGent:String='';VerifyCertificateFilename:String='';AcceptType:String='application/json'):RawByteString;
   function IdHttpPostData(const url: Ansistring; const Data: RawByteString; enableProxy:Boolean= False;
-     ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';userAgent:String='';ContentType:String='application/json';VerifyCertificateFilename:String=''):RawByteString;
+     ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';userAgent:String='';ContentType:String='application/json';VerifyCertificateFilename:String='';AcceptType:String='application/json'):RawByteString;
 
   function GetReachableIP(IPS:ISuperObject;port:word):String;
 
@@ -386,12 +386,12 @@ begin
 end;
 
 function IdHttpGetString(const url: ansistring; enableProxy:Boolean= False;
-    ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET';userAGent:String='';VerifyCertificateFilename:String=''):RawByteString;
+    ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET';userAGent:String='';VerifyCertificateFilename:String='';
+    AcceptType:String='application/json' ):RawByteString;
 var
   http:TIdHTTP;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
   sslCheck:TSSLVerifyCert;
-  compressor: TIdCompressorZLib;
 begin
   sslCheck:=Nil;
   ssl_handler:=Nil;
@@ -404,12 +404,15 @@ begin
   else
     http.Request.UserAgent:=userAgent;
 
+  http.compressor :=  TIdCompressorZLib.Create(Nil);
+
   try
     // init ssl stack
     ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
   	HTTP.IOHandler := ssl_handler;
     sslCheck := TSSLVerifyCert.Create(GetHostFromURL(url));
-    compressor :=  TIdCompressorZLib.Create(Nil);
+
+    http.Request.Accept := AcceptType;
 
     // init check of https server certificate
     if (VerifyCertificateFilename<>'') and (VerifyCertificateFilename <>'0') then
@@ -433,8 +436,6 @@ begin
         http.Request.Password:=password;
       end;
 
-      http.Compressor := compressor;
-
       if enableProxy then
         IdConfigureProxy(http,HttpProxy);
 
@@ -448,23 +449,28 @@ begin
       on E:EIdReadTimeout do Result := '';
     end;
   finally
+    if Assigned(http.Compressor) then
+    begin
+      http.Compressor.Free;
+      http.Compressor := Nil;
+    end;
     http.Free;
     if Assigned(ssl_handler) then
       FreeAndNil(ssl_handler);
     if Assigned(sslCheck) then
       FreeAndNil(sslCheck);
-    if Assigned(compressor) then
-      FreeAndNil(compressor);
   end;
 end;
 
 function IdHttpPostData(const url: Ansistring; const Data: RawByteString; enableProxy:Boolean= False;
-   ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';userAgent:String='';ContentType:String='application/json';VerifyCertificateFilename:String=''):RawByteString;
+   ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';userAgent:String='';ContentType:String='application/json';VerifyCertificateFilename:String='';
+   AcceptType:String='application/json'):RawByteString;
 var
   http:TIdHTTP;
   DataStream:TStringStream;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
   sslCheck:TSSLVerifyCert;
+  compressor: TIdCompressorZLib;
 
 begin
   sslCheck:=Nil;
@@ -481,6 +487,8 @@ begin
 
   http.Request.ContentType:=ContentType;
   http.Request.ContentEncoding:='UTF-8';
+
+  http.Request.Accept:=AcceptType;
 
   if user <>'' then
   begin
