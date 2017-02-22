@@ -20,6 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+__version__ = "1.4.0"
 
 import os
 import sys
@@ -99,9 +100,12 @@ class WaptHosts(BaseModel):
     # running, pending, errors, finished
     # upgradable, errors,
     update_status = BinaryJSONField(null=True)
+
+    # to do : moved to separate tables the json packages and softwares
     packages = BinaryJSONField(null=True)
     softwares = BinaryJSONField(null=True)
 
+    # variable structures... so keep them as json
     host = BinaryJSONField(null=True)
     dmi = BinaryJSONField(null=True)
     wmi = BinaryJSONField(null=True)
