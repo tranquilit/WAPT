@@ -263,7 +263,7 @@ class PackageEntry(object):
 
     @property
     def all_attributes(self):
-        return self.required_attributes + self.optional_attributes + self.non_control_attributes + self.calculated_attributes
+        return self.required_attributes + self.optional_attributes + self.non_control_attributes + self._calculated_attributes
 
     def __init__(self,package='',version='0',repo='',waptfile=None):
         self.package=package
@@ -293,7 +293,7 @@ class PackageEntry(object):
         self.min_wapt_version=''
         self.installed_size=''
 
-        self.calculated_attributes=[]
+        self._calculated_attributes=[]
         if waptfile:
             if os.path.isfile(waptfile):
                 self.load_control_from_wapt(waptfile)
@@ -320,6 +320,19 @@ class PackageEntry(object):
         for key in self.all_attributes:
             yield (key, getattr(self,key))
 
+    def as_dict(self):
+        return dict(self)
+
+    def __unicode__(self):
+        return self.ascontrol(with_non_control_attributes=True)
+
+    def __str__(self):
+        return self.__unicode__()
+
+    def __repr__(self):
+        return u"PackageEntry('%s','%s') %s" % (self.package,self.version,
+            ','.join(["%s=%s"%(key,getattr(self,key)) for key in ('architecture','maturity','locale') if (getattr(self,key) and getattr(self,key) != 'all')]))
+
     def get(self,name,default=None):
         """Get PackageEntry property like a dict
 
@@ -338,7 +351,7 @@ class PackageEntry(object):
         if name is str or name is unicode:
             name = name.lower()
         if name not in self.all_attributes:
-            self.calculated_attributes.append(name)
+            self._calculated_attributes.append(name)
         setattr(self,name,value)
 
     def __len__(self):
@@ -446,7 +459,7 @@ class PackageEntry(object):
         for k in adict:
             setattr(self,k,adict[k])
             if not k in self.all_attributes:
-                self.calculated_attributes.append(k)
+                self._calculated_attributes.append(k)
         return self
 
     def load_control_from_wapt(self,fname,calc_md5=True):
@@ -576,19 +589,6 @@ class PackageEntry(object):
     @property
     def download_url(self):
         return self.repo_url+'/'+self.filename.strip('./')
-
-    def as_dict(self):
-        return self.__dict__
-
-    def __unicode__(self):
-        return self.ascontrol(with_non_control_attributes=True)
-
-    def __str__(self):
-        return self.__unicode__()
-
-    def __repr__(self):
-        return u"PackageEntry('%s','%s') %s" % (self.package,self.version,
-            ','.join(["%s=%s"%(key,getattr(self,key)) for key in ('architecture','maturity','locale') if (getattr(self,key) and getattr(self,key) != 'all')]))
 
     def inc_build(self):
         """Increment last number part of version"""

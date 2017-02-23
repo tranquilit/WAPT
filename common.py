@@ -963,7 +963,7 @@ class WaptDB(WaptBaseDB):
                      datetime2isodate(),
                      'INIT',
                      '',
-                     json.dumps(params_dict),
+                     jsondump(params_dict),
                      explicit_by,
                      os.getpid(),
                      maturity,
@@ -1030,7 +1030,7 @@ class WaptDB(WaptBaseDB):
                     set setuppy=?,install_params=? where rowid = ?
                 """,(
                      remove_encoding_declaration(setuppy),
-                     json.dumps(install_params),
+                     jsondump(install_params),
                      rowid,
                      )
                    )
@@ -1326,7 +1326,7 @@ class WaptDB(WaptBaseDB):
                 setattr(pe,k,rec_dict[k])
                 # add joined field to calculated attributes list
                 if not k in pe.all_attributes:
-                    pe.calculated_attributes.append(k)
+                    pe._calculated_attributes.append(k)
             result.append(pe)
         if one and result:
             result = sorted(result)[-1]
@@ -4044,9 +4044,9 @@ class Wapt(object):
         inv = self.inventory()
         inv['uuid'] = self.host_uuid
         if self.waptserver:
-            return self.waptserver.post('add_host',data = json.dumps(inv))
+            return self.waptserver.post('add_host',data = jsondump(inv))
         else:
-            return json.dumps(inv,indent=True)
+            return jsondump(inv,indent=True)
 
     def get_last_update_status(self):
         status = json.loads(self.read_param('last_update_status','{"date": "", "running_tasks": [], "errors": [], "upgrades": []}'))
@@ -4069,7 +4069,7 @@ class Wapt(object):
 
         if self.waptserver_available():
             try:
-                result = self.waptserver.post('update_host',data=json.dumps(inv))
+                result = self.waptserver.post('update_host',data=jsondump(inv))
                 logger.info(u'Status on server %s updated properly'%self.waptserver.server_url)
             except Exception as e:
                 result = None
