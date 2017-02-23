@@ -340,14 +340,11 @@ def update_data(data):
             newhost.save(force_insert=True)
         except IntegrityError as e:
             wapt_db.rollback()
-            updates = {}
+            updhost = WaptHosts.get(uuid=uuid)
             for k in data.keys():
-                if hasattr(WaptHosts,k):
-                    updates[k] = data[k]
-            updates['updated_on'] = datetime.datetime.now()
-            WaptHosts.update(
-                **updates
-                ).where(WaptHosts.uuid == uuid).execute()
+                if hasattr(updhost,k):
+                    setattr(updhost,k,data[k])
+            updhost.save()
     except Exception as e:
         logger.critical(u'Error updating data for %s : %s'%(uuid,ensure_unicode(e)))
         wapt_db.rollback()
