@@ -1751,7 +1751,7 @@ begin
   if (Gridhosts.FocusedRow <> nil) and
     (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
   begin
-    ip := GetReachableIP(Gridhosts.FocusedRow['host.connected_ips'],3389);
+    ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],3389);
     if ip <> '' then
       ShellExecute(0, '', PAnsiChar('Lusrmgr.msc'), PAnsichar(' -a /computer=' + ip), nil, SW_SHOW)
     else
@@ -1884,7 +1884,7 @@ begin
   if (Gridhosts.FocusedRow <> nil) and
     (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
   begin
-    ip := GetReachableIP(Gridhosts.FocusedRow['host.connected_ips'],3389);
+    ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],3389);
     if ip <> '' then
       ShellExecute(0, '', PAnsiChar('msra'), PAnsichar('/offerRA ' + ip), nil, SW_SHOW)
     else
@@ -2211,7 +2211,7 @@ begin
     sel := GridHostPackages.SelectedRows;
     if Dialogs.MessageDlg(
        rsConfirmCaption,
-       format(title, [IntToStr(sel.AsArray.Length), Join(',',ExtractField(GridHosts.SelectedRows,'host.computer_fqdn'))]),
+       format(title, [IntToStr(sel.AsArray.Length), Join(',',ExtractField(GridHosts.SelectedRows,'computer_fqdn'))]),
        mtConfirmation,
        mbYesNoCancel,
        0) = mrYes then
@@ -2406,7 +2406,7 @@ begin
   if (Gridhosts.FocusedRow <> nil) and
     (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
   begin
-    ip := GetReachableIP(Gridhosts.FocusedRow['host.connected_ips'],3389);
+    ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],3389);
     if ip <> '' then
       ShellExecute(0, '', PAnsiChar('mstsc'), PAnsichar('/v:' + ip), nil, SW_SHOW)
     else
@@ -2788,7 +2788,7 @@ begin
         fields.AsArray.Add('manufacturer');
         fields.AsArray.Add('computer_name');
         fields.AsArray.Add('productname');
-        fields.AsArray.Add('host.connected_ips');
+        fields.AsArray.Add('connected_ips');
         fields.AsArray.Add('mac_addresses');
         fields.AsArray.Add('current_user');
         fields.AsArray.Add('serialnr');
@@ -2923,7 +2923,7 @@ begin
   if (Gridhosts.FocusedRow <> nil) and
     (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
   begin
-    ip := GetReachableIP(Gridhosts.FocusedRow['host.connected_ips'],5900);
+    ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],5900);
     if ip<>'' then
       ShellExecute(0, '', PAnsiChar('C:\Program Files\TightVNC\tvnviewer.exe'),
         PAnsichar(ip), nil, SW_SHOW)
