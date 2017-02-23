@@ -192,6 +192,8 @@ class SSLCAChain(object):
                 issuer = new_issuer
         return result
 
+class SSLVerifyException(Exception):
+    pass
 
 class SSLPrivateKey(object):
     def __init__(self,private_key=None,key=None,callback=pwd_callback):
@@ -375,7 +377,7 @@ class SSLCertificate(object):
         self.key.verify_update(content)
         if self.key.verify_final(signature):
             return self.subject_dn
-        raise Exception('SSL signature verification failed for certificate %s'%self.subject_dn)
+        raise SSLVerifyException('SSL signature verification failed for certificate %s'%self.subject_dn)
 
     def match_key(self,key):
         """Check if certificate matches the given private key"""
@@ -458,12 +460,12 @@ def ssl_verify_content(content,signature,public_certs):
         if crt.is_valid():
             try:
                 return crt.verify_content(content,signature)
-            except:
+            except SSLVerifyException :
                 pass
         else:
             logger.warning('Certificate %s is not valid'%public_cert)
-
-    raise Exception('SSL signature verification failed, either none public certificates match signature or signed content has been changed')
+    # no certificate can verify the content
+    raise SSLVerifyException('SSL signature verification failed, either none public certificates match signature or signed content has been changed')
 
 
 def private_key_has_password(key):
