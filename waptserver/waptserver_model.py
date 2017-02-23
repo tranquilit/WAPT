@@ -41,11 +41,11 @@ sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
 sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 
 
-
 from peewee import *
 from playhouse.postgres_ext import *
-from playhouse.signals import Model, pre_save, post_save
 from playhouse.shortcuts import dict_to_model,model_to_dict
+from playhouse.signals import Model, pre_save, post_save
+
 from waptutils import ensure_unicode
 import json
 import codecs
@@ -61,7 +61,7 @@ class BaseModel(Model):
         database = wapt_db
 
 class WaptHosts(BaseModel):
-    uuid = CharField(primary_key=True,unique=True)
+    uuid = CharField(unique=True)
     computer_fqdn = CharField(null=True,index=True)
     description = CharField(null=True,index=True)
     reachable = CharField(20,null=True)
@@ -84,6 +84,7 @@ class WaptHosts(BaseModel):
     mac_addresses = ArrayField(CharField,null=True)
     gateways = ArrayField(CharField,null=True)
     networks = ArrayField(CharField,null=True)
+    dnsdomain = CharField(null=True)
 
     connected_users = CharField(null=True)
 
@@ -123,6 +124,32 @@ class WaptHosts(BaseModel):
     def fieldbyname(cls,fieldname):
         return cls._meta.fields[fieldname]
 
+class WaptPackagesInstallStatus(BaseModel):
+    host = ForeignKeyField(WaptHosts,on_delete='CASCADE',on_update='CASCADE')
+    package = CharField(null=True)
+    version = CharField(null=True)
+    architecture = CharField(null=True)
+    locale= CharField(null=True)
+    maturity = CharField(null=True)
+    description = TextField(null=True)
+    signer=CharField(null=True)
+    install_status=CharField(null=True)
+    install_date=CharField(null=True)
+    install_output = TextField(null=True)
+    install_params=CharField(null=True)
+
+
+class WaptHostSoftwares(BaseModel):
+    host = ForeignKeyField(WaptHosts,on_delete='CASCADE',on_update='CASCADE')
+    name = CharField(max_length=2000,null=True)
+    version = CharField(null=True)
+    publisher = CharField(null=True)
+    key = CharField(max_length=600,null=True)
+    system_component = CharField(null=True)
+    uninstall_string = CharField(max_length=2000,null=True)
+    install_date = CharField(null=True)
+    install_location = CharField(max_length=2000,null=True)
+
 def dictgetpath(adict,pathstr):
     result = adict
     for k in pathstr.split('.'):
@@ -155,6 +182,8 @@ def wapthosts_model_audit(model_class, instance, created):
             ['connected_ips','connected_ips'],
             ['mac_addresses','mac'],
             ['current_user','current_user'],
+            ['dnsdomain','dnsdomain'],
+            ['gateways','gateways'],
             ]
         for field,attribute in extractmap:
             setattr(instance,field,dictgetpath(instance.host,attribute))
@@ -189,6 +218,36 @@ def wapthosts_model_audit(model_class, instance, created):
                     break
         instance.host_status = 'OK'
 
+@post_save(sender=WaptHosts)
+def wapthosts_model_postsave(model_class, instance, created):
+    # stores packages in WaptPackagesInstallStatus
+    if (created or WaptHosts.packages in instance.dirty_fields):
+        if not created:
+            WaptPackagesInstallStatus.delete().where(WaptPackagesInstallStatus.host == instance.id).execute()
+        packages = []
+        for package in instance.packages:
+            package['host'] = instance.id
+            packages.append(dict( [(k,v) for k,v in package.iteritems() if k in WaptPackagesInstallStatus._meta.fields] ))
+
+        try:
+            WaptPackagesInstallStatus.insert_many(packages).execute()
+        except DataError as e:
+            print packages
+
+    # stores packages in WaptPackagesInstallStatus
+    if (created or WaptHosts.softwares in instance.dirty_fields):
+        if not created:
+            WaptHostSoftwares.delete().where(WaptHostSoftwares.host == instance.id).execute()
+        softwares = []
+        for software in instance.softwares:
+            software['host'] = instance.id
+            softwares.append(dict( [(k,v) for k,v in software.iteritems() if k in WaptHostSoftwares._meta.fields] ))
+
+        try:
+            WaptHostSoftwares.insert_many(softwares).execute()
+        except DataError as e:
+            print softwares
+
     instance.updated_on = datetime.datetime.now()
 
 def init_db(drop=False):
@@ -197,9 +256,10 @@ def init_db(drop=False):
         wapt_db.execute_sql('CREATE EXTENSION hstore;')
     except:
         wapt_db.rollback()
-    if drop and 'WaptHosts'.lower() in wapt_db.get_tables():
-        wapt_db.drop_table(WaptHosts)
-    wapt_db.create_tables([WaptHosts],safe=True)
+    if drop:
+        for table in reversed([WaptHosts,WaptHostSoftwares,WaptPackagesInstallStatus]):
+            table.drop_table(fail_silently=True)
+    wapt_db.create_tables([WaptHosts,WaptHostSoftwares,WaptPackagesInstallStatus],safe=True)
 
 def mongo_data(ip='127.0.0.1',port=27017):
     """For raw import from mongo"""
