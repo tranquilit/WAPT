@@ -131,13 +131,16 @@ class WaptPackagesInstallStatus(BaseModel):
     architecture = CharField(null=True)
     locale= CharField(null=True)
     maturity = CharField(null=True)
+    section= CharField(null=True)
+    priority = CharField(null=True)
+    signer = CharField(null=True)
+    signer_fingerprint = CharField(null=True)
     description = TextField(null=True)
     signer=CharField(null=True)
     install_status=CharField(null=True)
     install_date=CharField(null=True)
     install_output = TextField(null=True)
     install_params=CharField(null=True)
-
 
 class WaptHostSoftwares(BaseModel):
     host = ForeignKeyField(WaptHosts,on_delete='CASCADE',on_update='CASCADE')
@@ -229,10 +232,7 @@ def wapthosts_model_postsave(model_class, instance, created):
             package['host'] = instance.id
             packages.append(dict( [(k,v) for k,v in package.iteritems() if k in WaptPackagesInstallStatus._meta.fields] ))
 
-        try:
-            WaptPackagesInstallStatus.insert_many(packages).execute()
-        except DataError as e:
-            print packages
+        WaptPackagesInstallStatus.insert_many(packages).execute()
 
     # stores packages in WaptPackagesInstallStatus
     if (created or WaptHosts.softwares in instance.dirty_fields):
@@ -243,10 +243,7 @@ def wapthosts_model_postsave(model_class, instance, created):
             software['host'] = instance.id
             softwares.append(dict( [(k,v) for k,v in software.iteritems() if k in WaptHostSoftwares._meta.fields] ))
 
-        try:
-            WaptHostSoftwares.insert_many(softwares).execute()
-        except DataError as e:
-            print softwares
+        WaptHostSoftwares.insert_many(softwares).execute()
 
     instance.updated_on = datetime.datetime.now()
 
