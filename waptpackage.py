@@ -651,15 +651,17 @@ class PackageEntry(object):
             public_certs = [public_certs]
         for public_cert in public_certs:
             try:
-                if not isinstance(public_cert,SSLCertificate):
+                if isinstance(public_cert,SSLCertificate):
+                    crt = public_cert
+                elif os.path.isfile(public_cert):
                     crt = SSLCertificate(public_cert)
                 else:
-                    crt = public_cert
+                    raise Exception('The public cert %s is neither a cert file nor a SSL Certificate object'%public_cert)
                 if crt.verify_content(signed_content,signature_raw):
                     return crt
-            except:
+            except SSLVerifyException:
                 pass
-        raise Exception('SSL signature verification failed for control %s, either none public certificates match signature or signed content has been changed' % self.asrequirement())
+        raise SSLVerifyException('SSL signature verification failed for control %s, either none public certificates match signature or signed content has been changed' % self.asrequirement())
 
     def build_manifest(self,exclude_filenames = None,block_size=2**20):
         if not os.path.isfile(self.wapt_fullpath()):
