@@ -214,6 +214,7 @@ def mongo_data(ip='127.0.0.1',port=27017):
     return result
 
 def create_import_data(ip='127.0.0.1',fn=None):
+    """Connect to a mongo instance and write all wapt.hosts collection as json into a file"""
     print('Read mongo data from %s ...'%ip)
     d = mongo_data(ip=ip)
     print('%s records read.'%len(d))
@@ -225,6 +226,8 @@ def create_import_data(ip='127.0.0.1',fn=None):
     print('File %s done.'%fn)
 
 def load_json(filenames=r'c:\tmp\*.json'):
+    """Read a json host collection exported from wapt mongo and creates
+            WaptHost DB instances"""
     import glob
     convert_map = {
         'last_query_date':'last_seen_on',
@@ -244,7 +247,7 @@ def load_json(filenames=r'c:\tmp\*.json'):
                         if hasattr(newhost,convert_map.get(k,k)):
                             setattr(newhost,convert_map.get(k,k),rec[k])
                         else:
-                            print 'unknown key %s' % k
+                            print '%s unknown key %s' % (computer_fqdn,k)
                     newhost.save(force_insert=True)
                     print('%s Inserted (%s)'%(newhost.computer_fqdn,newhost.uuid))
                 except IntegrityError as e:
@@ -253,6 +256,8 @@ def load_json(filenames=r'c:\tmp\*.json'):
                     for k in rec.keys():
                         if hasattr(updhost,convert_map.get(k,k)):
                             setattr(updhost,convert_map.get(k,k),rec[k])
+                        else:
+                            print '%s unknown key %s' % (computer_fqdn,k)
                     updhost.save()
                     print('%s Updated'%computer_fqdn)
             except Exception as e:
@@ -308,9 +313,11 @@ def upgrade2postgres():
             mongo_running=True
     if not mongo_running:
         print ("mongodb process not running, please check your configuration. Perhaps migration of data has already been done...")
+        sys.exit(1)
     val = subprocess.check_output("""  psql wapt -c " SELECT datname FROM pg_database WHERE datname='wapt';   " """, shell=True)
     if 'wapt' not in val:
         print ("missing wapt database, please create database first")
+        sys.exit(1)
     data_import_filename = "/tmp/waptupgrade_%s.json" % datetime.datetime.today().strftime('%Y%m%d-%h:%M:%s')
     print ("dumping mongodb data in %s " % data_import_filename)
     create_import_data(ip='127.0.0.1',fn=data_import_filename)
@@ -323,11 +330,13 @@ def upgrade2postgres():
     except Exception as e:
         traceback.print_stack()
         print ('Exception while loading data, please check current configuration')
+        sys.exit(1)
 
 
 if __name__ == '__main__':
     #init_db(True)
     #import_shapers()
+
     if platform.system != 'Windows' and getpass.getuser()!='wapt':
         print """you should run this program as wapt:
                      sudo -u wapt python /opt/wapt/waptserver/waptserver_model.py  <action>"""
@@ -348,12 +357,5 @@ if __name__ == '__main__':
                 python waptserver_model.py init_db
                 python waptserver_model.py upgrade2postgres
                 """)
-    #import_shapers()
-    #init_db(True)
-    #init_db(False)
-    #load_json(r"c:\tmp\shapers\*.json")
-    #print WaptHosts.get(Hosts.uuid == 'sd')
-    #test_pg()
-    #tests()
 
 
