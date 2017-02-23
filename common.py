@@ -4955,28 +4955,26 @@ class Wapt(object):
         return self.waptdb.packages_matching(packagename)
 
     def get_default_development_dir(self,packagecond,section='base'):
-        """Returns the default developement directory for package named <packagecond>
-           based on default_sources_root and default_sources_suffix ini parameters
+        """Returns the default development directory for package named <packagecond>
+           based on default_sources_root ini parameter if provided
 
         Args:
-            packagecond (str): packahe name or pacjage request "name (=version)"
+            packagecond (PackageEntry or str): either PackageEntry or a "name(=version)" string
 
         Returns:
-            str: path to local development directory
+            str: path to local proposed development directory
         """
-        packagename = REGEX_PACKAGE_CONDITION.match(packagecond).groupdict()['package']
-        default_root = 'c:\\waptdev\\%(package)s-%(suffix)s'
-        suffix = self.config.get('global','default_sources_suffix')
+        if not isinstance(packagecond,PackageEntry):
+            # assume something like "package(=version)"
+            package_and_version = REGEX_PACKAGE_CONDITION.match(packagecond).groupdict()
+            pe = PackageEntry(package_and_version['package'],package_and_version['version'] or '0')
+        else:
+            pe = packagecond
+
         root = self.config.get('global','default_sources_root')
         if not root:
-            raise Exception('default_sources_root is empty or not defined')
-        if section == 'host':
-            if self.config.has_option('global','default_sources_root_host'):
-                root = self.config.get('global','default_sources_root_host')
-
-        if not '%(package)s' in root:
-            root = os.path.join(root,'%(package)s-%(suffix)s')
-        return root % {'package':packagename,'section':section,'suffix':suffix}
+            root = tempfile.gettempdir()
+        return os.path.join(root, pe.make_package_edit_directory())
 
     def add_pyscripter_project(self,target_directory):
         """Add a pyscripter project file to package development directory.
@@ -5034,8 +5032,7 @@ class Wapt(object):
             entry = entries[-1]
             # the package can be downloaded
             if not target_directory:
-                target_directory = self.get_default_development_dir(entry.package,section=entry.section)
-            packagename = entry.package
+                target_directory =  self.get_default_development_dir(entry)
         else:
             # argument is a wapt package
             entry = self.is_wapt_package_file(packagerequest)
@@ -5044,7 +5041,6 @@ class Wapt(object):
                     target_directory = tempfile.mkdtemp(prefix="wapt")
                 zip = ZipFile(packagerequest)
                 zip.extractall(path=target_directory)
-                packagename = entry.package
                 packagerequest = entry.asrequirement()
             else:
                 raise Exception('%s is neither a package name nor a package filename' % packagerequest)
