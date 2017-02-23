@@ -21,24 +21,24 @@ object VisHostsUpgrade: TVisHostsUpgrade
     Header.Columns = <    
       item
         MaxWidth = 30
-        Position = 0
+        Position = 2
         Tag = 1
         Text = 'status'
         Width = 30
         PropertyName = 'status'
       end    
       item
-        Position = 1
+        Position = 0
         Text = 'Host'
         Width = 200
-        PropertyName = 'host.computer_fqdn'
+        PropertyName = 'computer_fqdn'
       end    
       item
-        Position = 2
+        Position = 1
         Tag = 2
         Text = 'IP'
         Width = 150
-        PropertyName = 'wapt.listening_address.address'
+        PropertyName = 'listening_address'
       end    
       item
         Position = 3
