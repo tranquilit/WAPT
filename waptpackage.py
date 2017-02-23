@@ -23,6 +23,7 @@
 __version__ = "1.4.0"
 
 __all__ = [
+    'control_to_dict',
     'md5_for_file',
     'parse_major_minor_patch_build',
     'make_version',
@@ -82,7 +83,7 @@ REGEX_PACKAGE_VERSION = re.compile(r'^(?P<major>[0-9]+)'
                     '(\-(?P<packaging>[0-9A-Za-z]+(\.[0-9A-Za-z]+)*))?$')
 
 # tis-exodus (>2.3.4-10)
-REGEX_PACKAGE_CONDITION = re.compile(r'(?P<package>[^\s()]+)\s*(\(\s*(?P<operator>[<=>]+)\s*(?P<version>\S+)\s*\))?')
+REGEX_PACKAGE_CONDITION = re.compile(r'(?P<package>[^\s()]+)\s*(\(\s*(?P<operator>[<=>]?)\s*(?P<version>\S+)\s*\))?')
 
 
 def parse_major_minor_patch_build(version):
@@ -193,7 +194,7 @@ class PackageRequest(object):
         self.package_request = package_request
         parts = REGEX_PACKAGE_CONDITION.match(self.package_request).groupdict()
         self.package = parts['package']
-        self.operator = parts['operator']
+        self.operator = parts['operator'] or '='
         self.version = Version(parts['version'])
 
     def __cmp__(self,other):
@@ -206,6 +207,42 @@ class PackageRequest(object):
 
     def __repr__(self):
         return "PackageRequest('{package} ({operator}{version})')".format(package=self.package,operator=self.operator,version=self.version)
+
+def control_to_dict(control,int_params=('size','installed_size')):
+    """Convert a control file like object
+          key1: value1
+          key2: value2
+          ...
+        list of lines into a dict
+        multilines strings begins with a space
+
+        breaks when an empty line is reached (limit between 2 package in Packages indexes)
+    """
+    result = {}
+    (key,value) = ('','')
+    while 1:
+        line = control.readline()
+        if not line or not line.strip():
+            break
+        if line.startswith(' '):
+            # additional lines begin with a space!
+            value = result[key]
+            value += '\n'
+            value += line.strip()
+            result[key] = value
+        else:
+            sc = line.find(':')
+            if sc<0:
+                raise Exception(u'Invalid line (no ":" found) : %s' % line)
+            (key,value) = (line[:sc].strip(),line[sc+1:].strip())
+            key = key.lower()
+            if key in int_params:
+                try:
+                    value = int(value)
+                except:
+                    pass
+            result[key] = value
+    return result
 
 class PackageEntry(object):
     """Package attributes coming from either control files in WAPT package or local DB
@@ -228,7 +265,7 @@ class PackageEntry(object):
     def all_attributes(self):
         return self.required_attributes + self.optional_attributes + self.non_control_attributes + self.calculated_attributes
 
-    def __init__(self,package='',version='0',repo=''):
+    def __init__(self,package='',version='0',repo='',waptfile=None):
         self.package=package
         self.version=version
         self.architecture='all'
@@ -257,6 +294,13 @@ class PackageEntry(object):
         self.installed_size=''
 
         self.calculated_attributes=[]
+        if waptfile:
+            if os.path.isfile(waptfile):
+                self.load_control_from_wapt(waptfile)
+            elif os.path.isdir(waptfile):
+                self.load_control_from_wapt(waptfile)
+            else:
+                raise Exception(u'Package filename or directory %s does not exist' % waptfile)
 
     def parse_version(self):
         """Parse version to major, minor, patch, pre-release, build parts.
@@ -271,6 +315,10 @@ class PackageEntry(object):
             return getattr(self,name)
         else:
             raise Exception(u'No such attribute : %s' % name)
+
+    def __iter__(self):
+        for key in self.all_attributes:
+            yield (key, getattr(self,key))
 
     def get(self,name,default=None):
         """Get PackageEntry property like a dict
@@ -419,29 +467,7 @@ class PackageEntry(object):
         else:
             raise Exception(u'No control found for %s' % (fname,))
 
-        (param,value) = ('','')
-        while 1:
-            line = control.readline()
-            if not line or not line.strip():
-                break
-            if line.startswith(' '):
-                # additional lines begin with a space!
-                value = getattr(self,param)
-                value += '\n'
-                value += line.strip()
-                setattr(self,param,value)
-            else:
-                sc = line.find(':')
-                if sc<0:
-                    raise Exception(u'Invalid line (no ":" found) : %s' % line)
-                (param,value) = (line[:sc].strip(),line[sc+1:].strip())
-                param = param.lower()
-                if param in ('size','installed_size'):
-                    try:
-                        value = int(value)
-                    except:
-                        pass
-                setattr(self,param,value)
+        self.load_control_from_dict(control_to_dict(control))
 
         if not type(fname) is list and os.path.isfile(fname):
             if calc_md5:
@@ -517,12 +543,27 @@ class PackageEntry(object):
         """
         if self.section not in ['host','group'] and not (self.package and self.version and self.architecture):
             raise Exception(u'Not enough information to build the package filename for %s (%s)'%(self.package,self.version))
-        if self.section in ['host','group']:
-            # we don't keep version for
+        if self.section == 'host':
             return self.package+'.wapt'
+        elif self.section ==  'group':
+            # we don't keep version for group
+            return '_'.join([f for f in (self.package,self.architecture,self.maturity,self.locale) if (f and f != 'all')]) + '.wapt'
         else:
             # includes only non empty fields
             return '_'.join([f for f in (self.package,self.version,self.architecture,self.maturity,self.locale) if f]) + '.wapt'
+
+    def make_package_edit_directory(self):
+        """Return the standard package directory to edit the package based on current attributes
+
+        Returns:
+            str:  standard package filename
+                  - packagename_arch_maturity_locale-wapt for softwares and groups
+                  - packagename-wapt for host.
+        """
+        if not (self.package):
+            raise Exception(u'Not enough information to build the package directory for %s'%(self.package))
+            # includes only non empty fields
+        return '_'.join([f for f in (self.package,self.architecture,self.maturity,self.locale) if (f and f != 'all')]) + '-wapt'
 
     def asrequirement(self):
         """resturn package and version for designing this package in depends or install actions
@@ -546,7 +587,8 @@ class PackageEntry(object):
         return self.__unicode__()
 
     def __repr__(self):
-        return u"PackageEntry('%s','%s')" % (self.package,self.version)
+        return u"PackageEntry('%s','%s') %s" % (self.package,self.version,
+            ','.join(["%s=%s"%(key,getattr(self,key)) for key in ('architecture','maturity','locale') if (getattr(self,key) and getattr(self,key) != 'all')]))
 
     def inc_build(self):
         """Increment last number part of version"""
@@ -672,6 +714,27 @@ class PackageEntry(object):
             waptzip.writestr('WAPT/signature',signature.encode('base64'))
 
         return signature.encode('base64')
+
+    def change_prefix(self,new_prefix):
+        """Change prefix of package name to new_prefix and return True if
+            it was really changed.
+        """
+        if '-' in self.package:
+            (old_prefix,name) = self.package.split('-',1)
+            if old_prefix != new_prefix:
+                self.package = '%s-%s' % (new_prefix,name)
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def invalidate_signature(self):
+        self.signature = None
+        self.signature_date = None
+        self.signer = None
+        self.signer_fingerprint = None
+
 
 class WaptPackageDev(PackageEntry):
     """Source package directory"""
