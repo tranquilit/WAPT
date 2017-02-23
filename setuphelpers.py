@@ -2538,7 +2538,7 @@ def host_info():
 
     info['computer_name'] =  ensure_unicode(wincomputername())
     info['computer_fqdn'] =  ensure_unicode(get_hostname())
-    info['dns_domain'] = ensure_unicode(get_domain_fromregistry())
+    info['dnsdomain'] = ensure_unicode(get_domain_fromregistry())
     info['workgroup_name'] = ensure_unicode(windomainname())
 
     try:
@@ -2555,14 +2555,14 @@ def host_info():
     info['networking'] = networking()
     info['connected_ips'] = socket.gethostbyname_ex(socket.gethostname())[2]
     info['mac'] = [ c['mac'] for c in networking() if 'mac' in c and 'addr' in c and c['addr'] in info['connected_ips']]
+
     info['win64'] = iswin64()
     info['description'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\LanmanServer\Parameters','srvcomment')
 
     info['registered_organization'] =  ensure_unicode(registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOrganization'))
     info['registered_owner'] =  ensure_unicode(registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOwner'))
-    win_info = keyfinder.windows_product_infos()
-    info['windows_version'] =  platform.platform()
-    info['windows_product_infos'] =  win_info
+    info['windows_version'] =  windows_version()
+    info['windows_product_infos'] =  keyfinder.windows_product_infos()
     info['installation_date'] = datetime.datetime.fromtimestamp(int(registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','InstallDate','0'))).isoformat()
 
     info['cpu_name'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\CentralProcessor\0','ProcessorNameString','').strip()
