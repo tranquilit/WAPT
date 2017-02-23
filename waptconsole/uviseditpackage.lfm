@@ -789,7 +789,6 @@ object VisEditPackage: TVisEditPackage
       Height = 21
       Top = 2
       Width = 264
-      CharCase = ecLowerCase
       EditLabel.AnchorSideTop.Control = EdPackage
       EditLabel.AnchorSideTop.Side = asrCenter
       EditLabel.AnchorSideRight.Control = EdPackage
