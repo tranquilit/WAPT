@@ -53,7 +53,8 @@ _defaults = {
     'waptwua_folder': '', # default: wapt_wolder + 'wua'
     # database URL. see : http://docs.peewee-orm.com/en/latest/peewee/playhouse.html#db-url
     # supported for 1.4.0 is postgresext
-    'db_url':'postgresext://wapt:wapt@localhost:5432/wapt'
+    # for direct access to local Postgres instance, using role (username) from current process user, simply put postgresext://wapt
+    'db_url':'postgresext://wapt'
 }
 
 _default_config_file = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
