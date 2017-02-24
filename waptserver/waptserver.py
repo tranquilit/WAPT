@@ -386,7 +386,7 @@ def update_host():
             uuid = data["uuid"]
             if uuid:
                 logger.info('Update host %s status' % (uuid,))
-                data['last_query_date'] = datetime2isodate()
+                data['last_seen_on'] = datetime2isodate()
                 db_data = update_data(data)
                 result = dict(
                     status='OK',
