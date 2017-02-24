@@ -1582,8 +1582,9 @@ def get_hosts():
                            'update_status',
                            'reachable',
                            'computer_fqdn',
+                           'dnsdomain',
                            'description',
-                           'current_user',
+                           'connected_users',
                            'listening_protocol',
                            'listening_address',
                            'listening_port',
@@ -1619,11 +1620,12 @@ def get_hosts():
                        'computer_name',
                        'description',
                        'wapt',
+                       'dnsdomain',
                        'listening_protocol',
                        'listening_address',
                        'listening_port',
                        'listening_timestamp',
-                       'current_user']
+                       'connected_users']
         other_columns = ensure_list(
             request.args.get(
                 'columns',
@@ -2411,7 +2413,7 @@ if __name__ == "__main__":
         app.run(host='0.0.0.0', port=8080, debug=False)
     else:
         port = conf['waptserver_port']
-        server = Rocket(('127.0.0.1', port), 'wsgi', {"wsgi_app": app})
+        server = Rocket(('0.0.0.0', port), 'wsgi', {"wsgi_app": app})
         try:
             logger.info("starting waptserver %s" % __version__)
             server.start()

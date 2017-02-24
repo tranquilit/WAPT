@@ -1010,10 +1010,10 @@ begin
       EdManufacturer.Text := UTF8Encode(RowSO.S['manufacturer']);
       EdModelName.Text := UTF8Encode(RowSO.S['productname']);
       EdUpdateDate.Text := UTF8Encode(RowSO.S['last_seen_on']);
-      If RowSO['current_user'].DataType=stArray then
-        EdUser.Text := UTF8Encode(soutils.join(',',RowSO['current_user']))
+      If RowSO['connected_users'].DataType=stArray then
+        EdUser.Text := UTF8Encode(soutils.join(',',RowSO['connected_users']))
       else
-        EdUser.Text := UTF8Encode(RowSO.S['current_user']);
+        EdUser.Text := UTF8Encode(RowSO.S['connected_users']);
       EdRunningStatus.Text := UTF8Encode(RowSO.S['update_status.runstatus']);
       GridHostPackages.Data := RowSO['packages'];
     end
@@ -2790,7 +2790,7 @@ begin
         fields.AsArray.Add('productname');
         fields.AsArray.Add('connected_ips');
         fields.AsArray.Add('mac_addresses');
-        fields.AsArray.Add('current_user');
+        fields.AsArray.Add('connected_users');
         fields.AsArray.Add('serialnr');
       end;
 

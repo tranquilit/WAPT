@@ -66,15 +66,13 @@ class BaseModel(SignaledModel):
         database = wapt_db
 
 class Hosts(BaseModel):
-    uuid = CharField(unique=True)
+    # from bios
+    uuid = CharField(primary_key=True)
+
+    # inventory type data (updated on register)
     computer_fqdn = CharField(null=True,index=True)
     description = CharField(null=True,index=True)
-    reachable = CharField(20,null=True)
-
-    # netbios name
     computer_name = CharField(null=True)
-    current_user = CharField(null=True)
-
     computer_type = CharField(null=True)  # tower, laptop,etc..
     computer_architecture = CharField(null=True)  # tower, laptop,etc..
     manufacturer = CharField(null=True)
@@ -85,13 +83,22 @@ class Hosts(BaseModel):
     os_version = CharField(null=True)
     os_architecture = CharField(null=True)
 
+    # variable structures... so keep them as json
+    dmi = BinaryJSONField(null=True)
+    wmi = BinaryJSONField(null=True)
+
+    # frequently updated data from host update_status
+    connected_users = ArrayField(CharField,null=True)
     connected_ips = ArrayField(CharField,null=True)
     mac_addresses = ArrayField(CharField,null=True)
     gateways = ArrayField(CharField,null=True)
     networks = ArrayField(CharField,null=True)
     dnsdomain = CharField(null=True)
 
-    connected_users = ArrayField(CharField,null=True)
+    host = BinaryJSONField(null=True)
+
+    # calculated by server when update_status
+    reachable = CharField(20,null=True)
 
     listening_protocol = CharField(10,null=True)
     listening_address = CharField(null=True)
@@ -101,20 +108,14 @@ class Hosts(BaseModel):
     host_status = CharField(null=True)
     last_seen_on = CharField(null=True)
 
-    # raw data from hosts
+    # raw json data
     wapt = BinaryJSONField(null=True)
-    # running, pending, errors, finished
-    # upgradable, errors,
+    # running, pending, errors, finished , upgradable, errors,
     update_status = BinaryJSONField(null=True)
 
     # to do : moved to separate tables the json packages and softwares
     packages = BinaryJSONField(null=True)
     softwares = BinaryJSONField(null=True)
-
-    # variable structures... so keep them as json
-    host = BinaryJSONField(null=True)
-    dmi = BinaryJSONField(null=True)
-    wmi = BinaryJSONField(null=True)
 
     # audit data
     created_on = DateTimeField(null=True,default=datetime.datetime.now)
@@ -130,8 +131,8 @@ class Hosts(BaseModel):
         return cls._meta.fields[fieldname]
 
 class HostPackagesStatus(BaseModel):
-    host = ForeignKeyField(Hosts,on_delete='CASCADE',on_update='CASCADE')
-    package = CharField(null=True)
+    host = ForeignKeyField(Hosts,related_name='host_uuid',on_delete='CASCADE',on_update='CASCADE')
+    package = CharField(null=True,index=True)
     version = CharField(null=True)
     architecture = CharField(null=True)
     locale= CharField(null=True)
@@ -156,7 +157,7 @@ class HostPackagesStatus(BaseModel):
 
 class HostSoftwares(BaseModel):
     host = ForeignKeyField(Hosts,on_delete='CASCADE',on_update='CASCADE')
-    name = CharField(max_length=2000,null=True)
+    name = CharField(max_length=2000,null=True,index=True)
     version = CharField(null=True)
     publisher = CharField(null=True)
     key = CharField(max_length=600,null=True)
@@ -234,7 +235,6 @@ def wapthosts_json(model_class, instance, created):
             ['connected_ips','connected_ips'],
             ['connected_users',('connected_users','current_user')],
             ['mac_addresses','mac'],
-            ['current_user','current_user'],
             ['dnsdomain',('dnsdomain','dns_domain')],
             ['gateways','gateways'],
             ]
@@ -273,10 +273,11 @@ def wapthosts_json(model_class, instance, created):
 
     # stores packages json data into separate HostPackagesStatus
     if (not created and Hosts.packages in instance.dirty_fields):
-        HostPackagesStatus.delete().where(HostPackagesStatus.host == instance.id).execute()
+        HostPackagesStatus.delete().where(HostPackagesStatus.host == instance.uuid).execute()
         packages = []
         for package in instance.packages:
-            package['host'] = instance.id
+            package['host'] = instance.uuid
+            # remove all unknown fields from json data
             packages.append(dict( [(k,v) for k,v in package.iteritems() if k in HostPackagesStatus._meta.fields] ))
         if packages:
             HostPackagesStatus.insert_many(packages).execute()
@@ -284,10 +285,11 @@ def wapthosts_json(model_class, instance, created):
     # stores packages in HostPackagesStatus
     if (not created and Hosts.softwares in instance.dirty_fields):
         # to be improved... removed all packages status  for this host
-        HostSoftwares.delete().where(HostSoftwares.host == instance.id).execute()
+        HostSoftwares.delete().where(HostSoftwares.host == instance.uuid).execute()
         softwares = []
         for software in instance.softwares:
-            software['host'] = instance.id
+            software['host'] = instance.uuid
+            # remove all unknown fields from json data
             softwares.append(dict( [(k,v) for k,v in software.iteritems() if k in HostSoftwares._meta.fields] ))
         if softwares:
             HostSoftwares.insert_many(softwares).execute()
@@ -297,21 +299,25 @@ def wapthosts_json(model_class, instance, created):
 def wapthosts_model_post_save(model_class, instance, created):
     # stores packages json data into separate HostPackagesStatus
     if (created):
+        HostPackagesStatus.delete().where(HostPackagesStatus.host == instance.uuid).execute()
         packages = []
         for package in instance.packages:
-            package['host'] = instance.id
+            package['host'] = instance.uuid
+            # remove all unknown fields from json data
             packages.append(dict( [(k,v) for k,v in package.iteritems() if k in HostPackagesStatus._meta.fields] ))
         if packages:
             HostPackagesStatus.insert_many(packages).execute()
 
-    # stores packages in HostPackagesStatus
-    if (created):
+        # to be improved... removed all packages status  for this host
+        HostSoftwares.delete().where(HostSoftwares.host == instance.uuid).execute()
         softwares = []
         for software in instance.softwares:
-            software['host'] = instance.id
+            software['host'] = instance.uuid
+            # remove all unknown fields from json data
             softwares.append(dict( [(k,v) for k,v in software.iteritems() if k in HostSoftwares._meta.fields] ))
         if softwares:
             HostSoftwares.insert_many(softwares).execute()
+
 
 
 def init_db(drop=False):
