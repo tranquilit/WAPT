@@ -2918,7 +2918,14 @@ class Wapt(object):
                     params_dict[name] = old_install_params[name]
 
         try:
-            install_id = self.waptdb.add_start_install(entry.package ,entry.version,entry.architecture,params_dict=params_dict,explicit_by=explicit_by)
+            install_id = self.waptdb.add_start_install(
+                package=entry.package ,
+                version=entry.version,
+                architecture=entry.architecture,
+                params_dict=params_dict,explicit_by=explicit_by,
+                maturity=entry.maturity,
+                locale=entry.locale,
+                )
             # we setup a redirection of stdout to catch print output from install scripts
             sys.stderr = sys.stdout = install_output = LogInstallOutput(sys.stderr,self.waptdb,install_id)
             """
