@@ -180,7 +180,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object Label13: TLabel
           AnchorSideRight.Side = asrBottom
-          Left = 840
+          Left = 826
           Height = 13
           Top = 22
           Width = 122
@@ -201,7 +201,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object Label11: TLabel
           AnchorSideRight.Side = asrBottom
-          Left = 840
+          Left = 820
           Height = 13
           Top = 7
           Width = 128
