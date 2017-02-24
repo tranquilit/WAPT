@@ -1066,7 +1066,7 @@ def proxy_host_request(request, action):
                             dict(
                                 uuid=uuid,
                                 msg=msg,
-                                computer_fqdn=host_data.computer_fqdn))
+                                computer_fqdn=host_data['computer_fqdn']))
                     except ValueError:
                         if 'Restricted access' in client_result:
                             raise EWaptForbiddden(client_result)
@@ -1078,7 +1078,7 @@ def proxy_host_request(request, action):
                         uuid=uuid,
                         msg='%s' %
                         e,
-                        computer_fqdn=host_data.computer_fqdn,
+                        computer_fqdn=host_data['computer_fqdn'],
                         )
                     )
 
