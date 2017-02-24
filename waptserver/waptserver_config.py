@@ -51,6 +51,9 @@ _defaults = {
     'waptserver_port': 8080,
     'waptservice_port': 8088,
     'waptwua_folder': '', # default: wapt_wolder + 'wua'
+    # database URL. see : http://docs.peewee-orm.com/en/latest/peewee/playhouse.html#db-url
+    # supported for 1.4.0 is postgresext
+    'db_url':'postgresext://wapt:wapt@localhost:5432/wapt'
 }
 
 _default_config_file = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
@@ -119,5 +122,8 @@ def load_config(cfgfile=_default_config_file):
         conf['waptwua_folder'] = _config.get('options', 'waptwua_folder').rstrip('/')
     if not conf['waptwua_folder']:
         conf['waptwua_folder'] = conf['wapt_folder'] + 'wua'
+
+    if _config.has_option('options', 'db_url'):
+        conf['db_url'] = _config.get('options', 'db_url')
 
     return conf

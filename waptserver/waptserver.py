@@ -45,7 +45,7 @@ from passlib.hash import sha512_crypt, bcrypt
 from peewee import *
 from playhouse.postgres_ext import *
 
-from waptserver_model import WaptHosts,init_db,wapt_db,model_to_dict,dict_to_model
+from waptserver_model import Hosts,HostSoftwares,HostPackagesStatus,init_db,wapt_db,model_to_dict,dict_to_model
 
 from werkzeug.utils import secure_filename
 from functools import wraps
@@ -150,11 +150,6 @@ def get_wapt_exe_version(exe):
             pe.close()
     return (present, version)
 
-
-def hosts():
-    """ Get hosts collection from db
-    """
-    return WaptHosts
 
 @app.teardown_appcontext
 def close_db(error):
@@ -333,14 +328,14 @@ def update_data(data):
         # simulates an upsert statement based on uuid PK
         try:
             # wapt update_status packages softwares host
-            newhost = WaptHosts()
+            newhost = Hosts()
             for k in data.keys():
                 if hasattr(newhost,k):
                     setattr(newhost,k,data[k])
             newhost.save(force_insert=True)
         except IntegrityError as e:
             wapt_db.rollback()
-            updhost = WaptHosts.get(uuid=uuid)
+            updhost = Hosts.get(uuid=uuid)
             for k in data.keys():
                 if hasattr(updhost,k):
                     setattr(updhost,k,data[k])
@@ -349,8 +344,8 @@ def update_data(data):
         logger.critical(u'Error updating data for %s : %s'%(uuid,ensure_unicode(e)))
         wapt_db.rollback()
 
-    result_query = WaptHosts.select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.host)
-    return result_query.where(WaptHosts.uuid == uuid).dicts().first(1)
+    result_query = Hosts.select(Hosts.uuid,Hosts.computer_fqdn,Hosts.host)
+    return result_query.where(Hosts.uuid == uuid).dicts().first(1)
 
 
 def get_reachable_ip(ips=[], waptservice_port=conf[
@@ -979,23 +974,23 @@ def host_reachable_ip():
     try:
         try:
             uuid = request.args['uuid']
-            host_data = WaptHosts\
-                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,
-                                WaptHosts.listening_address,
-                                WaptHosts.listening_port,
-                                WaptHosts.listening_protocol,
-                                WaptHosts.listening_timestamp,
+            host_data = Hosts\
+                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt,
+                                Hosts.listening_address,
+                                Hosts.listening_port,
+                                Hosts.listening_protocol,
+                                Hosts.listening_timestamp,
                                  )\
-                        .where(WaptHosts.uuid==uuid)\
+                        .where(Hosts.uuid==uuid)\
                         .dicts()\
                         .first(1)
             result = get_ip_port(host_data)
-            WaptHosts.update(
+            Hosts.update(
                     listening_protocol=result['protocol'],
                     listening_address=result['address'],
                     listening_port=int(result['port']),
                     listening_timestamp=result['timestamp'],
-                ).where(WaptHosts.uuid == uuid).execute()
+                ).where(Hosts.uuid == uuid).execute()
         except Exception as e:
             raise EWaptHostUnreachable(
                 _("Couldn't connect to web service : {}.").format(e))
@@ -1023,14 +1018,14 @@ def proxy_host_request(request, action):
         result = dict(success=[], errors=[])
         for uuid in uuids:
             try:
-                host_data = WaptHosts\
-                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,
-                                WaptHosts.listening_address,
-                                WaptHosts.listening_port,
-                                WaptHosts.listening_protocol,
-                                WaptHosts.listening_timestamp,
+                host_data = Hosts\
+                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt,
+                                Hosts.listening_address,
+                                Hosts.listening_port,
+                                Hosts.listening_protocol,
+                                Hosts.listening_timestamp,
                                  )\
-                        .where(WaptHosts.uuid==uuid)\
+                        .where(Hosts.uuid==uuid)\
                         .dicts()\
                         .first(1)
                 listening_address = get_ip_port(host_data)
@@ -1111,14 +1106,14 @@ def trigger_upgrade():
         uuid = request.args['uuid']
         notify_user = request.args.get('notify_user', 0)
         notify_server = request.args.get('notify_server', 1)
-        host_data = WaptHosts\
-                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,
-                                WaptHosts.listening_address,
-                                WaptHosts.listening_port,
-                                WaptHosts.listening_protocol,
-                                WaptHosts.listening_timestamp,
+        host_data = Hosts\
+                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt,
+                                Hosts.listening_address,
+                                Hosts.listening_port,
+                                Hosts.listening_protocol,
+                                Hosts.listening_timestamp,
                                  )\
-                        .where(WaptHosts.uuid==uuid)\
+                        .where(Hosts.uuid==uuid)\
                         .dicts()\
                         .first(1)
         listening_address = get_ip_port(host_data)
@@ -1175,14 +1170,14 @@ def trigger_update():
         notify_user = request.args.get('notify_user', 0)
         notify_server = request.args.get('notify_server', 1)
 
-        host_data = WaptHosts\
-                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,
-                                WaptHosts.listening_address,
-                                WaptHosts.listening_port,
-                                WaptHosts.listening_protocol,
-                                WaptHosts.listening_timestamp,
+        host_data = Hosts\
+                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt,
+                                Hosts.listening_address,
+                                Hosts.listening_port,
+                                Hosts.listening_protocol,
+                                Hosts.listening_timestamp,
                                  )\
-                        .where(WaptHosts.uuid==uuid)\
+                        .where(Hosts.uuid==uuid)\
                         .dicts()\
                         .first(1)
         listening_address = get_ip_port(host_data)
@@ -1228,9 +1223,9 @@ def trigger_update():
 def trigger_wakeonlan():
     try:
         uuid = request.args['uuid']
-        host_data = WaptHosts\
-                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,WaptHosts.host)\
-                        .where(WaptHosts.uuid==uuid)\
+        host_data = Hosts\
+                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt,Hosts.host)\
+                        .where(Hosts.uuid==uuid)\
                         .first(1)
         macs = host_data['host']['mac']
         msg = u''
@@ -1385,14 +1380,14 @@ def host_tasks_status():
     """Proxy the get tasks status action to the client"""
     try:
         uuid = request.args['uuid']
-        host_data = WaptHosts\
-                    .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,
-                            WaptHosts.listening_address,
-                            WaptHosts.listening_port,
-                            WaptHosts.listening_protocol,
-                            WaptHosts.listening_timestamp,
+        host_data = Hosts\
+                    .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt,
+                            Hosts.listening_address,
+                            Hosts.listening_port,
+                            Hosts.listening_protocol,
+                            Hosts.listening_timestamp,
                              )\
-                    .where(WaptHosts.uuid==uuid)\
+                    .where(Hosts.uuid==uuid)\
                     .dicts()\
                     .first(1)
         listening_address = get_ip_port(host_data)
@@ -1506,7 +1501,7 @@ def hosts_delete():
     try:
         # build filter
         if 'uuid' in request.args:
-            query = WaptHosts.uuid.in_(ensure_list(request.args['uuid']))
+            query = Hosts.uuid.in_(ensure_list(request.args['uuid']))
         elif 'filter' in request.args:
             query = build_hosts_filter(request.args['filter'])
         else:
@@ -1520,7 +1515,7 @@ def hosts_delete():
 
         if 'delete_packages' in request.args and request.args[
                 'delete_packages'] == '1':
-            selected = WaptHosts.select(WaptHosts.uuid,WaptHosts.computer_fqdn).where(filter)
+            selected = Hosts.select(Hosts.uuid,Hosts.computer_fqdn).where(filter)
             if selected:
                 for host in selected:
                     result['records'].append(
@@ -1538,7 +1533,7 @@ def hosts_delete():
             else:
                 msg.append('No host found in DB')
 
-        remove_result = WaptHosts.delete().where(query).execute()
+        remove_result = Hosts.delete().where(query).execute()
         msg.append('{} hosts removed from DB'.format(remove_result))
 
     except Exception as e:
@@ -1656,16 +1651,16 @@ def get_hosts():
 
         # build filter
         if 'uuid' in request.args:
-            query = WaptHosts.uuid.in_(ensure_list(request.args['uuid']))
+            query = Hosts.uuid.in_(ensure_list(request.args['uuid']))
         elif 'filter' in request.args:
-            query = build_hosts_filter(WaptHosts,request.args['filter'])
+            query = build_hosts_filter(Hosts,request.args['filter'])
         else:
-            query = ~(WaptHosts.uuid.is_null())
+            query = ~(Hosts.uuid.is_null())
 
         if 'has_errors' in request.args and request.args['has_errors']:
-            query = query & (WaptHosts.host_status == 'ERROR')
+            query = query & (Hosts.host_status == 'ERROR')
         if "need_upgrade" in request.args and request.args['need_upgrade']:
-            query = query & (WaptHosts.host_status.in_(['ERROR','TO_UPGRADE']))
+            query = query & (Hosts.host_status.in_(['ERROR','TO_UPGRADE']))
 
         if not_filter:
             query = ~ query
@@ -1676,7 +1671,7 @@ def get_hosts():
         groups = ensure_list(request.args.get('groups', ''))
 
         result = []
-        req = WaptHosts.select(*build_fields_list(WaptHosts,{col: 1 for col in columns})).dicts()
+        req = Hosts.select(*build_fields_list(Hosts,{col: 1 for col in columns})).dicts()
         if query:
             req = req.where(query)
 
@@ -1771,15 +1766,15 @@ def host_data():
 
         if 'field' in request.args:
             field = request.args['field']
-            if not field in WaptHosts._meta.fields:
+            if not field in Hosts._meta.fields:
                 raise EWaptMissingParameter('Parameter field %s is unknown'%field)
 
         else:
             raise EWaptMissingParameter('Parameter field is missing')
 
-        data = WaptHosts\
-                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.fieldbyname(field))\
-                        .where(WaptHosts.uuid==uuid)\
+        data = Hosts\
+                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.fieldbyname(field))\
+                        .where(Hosts.uuid==uuid)\
                         .dicts()\
                         .first(1)
         if data is None:
@@ -1852,14 +1847,14 @@ def update_hosts():
 def host_cancel_task():
     try:
         uuid = request.args['uuid']
-        host_data = WaptHosts\
-                        .select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.wapt,
-                                WaptHosts.listening_address,
-                                WaptHosts.listening_port,
-                                WaptHosts.listening_protocol,
-                                WaptHosts.listening_timestamp,
+        host_data = Hosts\
+                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt,
+                                Hosts.listening_address,
+                                Hosts.listening_port,
+                                Hosts.listening_protocol,
+                                Hosts.listening_timestamp,
                                  )\
-                        .where(WaptHosts.uuid==uuid)\
+                        .where(Hosts.uuid==uuid)\
                         .dicts()\
                         .first(1)
         listening_address = get_ip_port(host_data)
@@ -1976,13 +1971,13 @@ class CheckHostWorker(threading.Thread):
             try:
                 host_data = self.queue.get(timeout=2)
                 listening_infos = self.check_host(host_data)
-                WaptHosts.update(
+                Hosts.update(
                     listening_protocol=listening_infos['protocol'],
                     listening_address=listening_infos['address'],
                     listening_port=listening_infos['port'],
                     listening_timestamp=listening_infos['timestamp'],
                     )\
-                    .where(WaptHosts.uuid == host_data['uuid'])\
+                    .where(Hosts.uuid == host_data['uuid'])\
                     .execute()
                 logger.debug(
                         "Client check %s finished with %s" %
@@ -2023,27 +2018,27 @@ class CheckHostsWaptService(threading.Thread):
             'Client-listening %s address checker thread started' %
             self.ident)
 
-        fields = [WaptHosts.uuid,
-                  WaptHosts.computer_fqdn,
-                  WaptHosts.listening_timestamp,
-                  WaptHosts.listening_protocol,
-                  WaptHosts.listening_address,
-                  WaptHosts.listening_port,
-                  WaptHosts.wapt,
-                  WaptHosts.host,
+        fields = [Hosts.uuid,
+                  Hosts.computer_fqdn,
+                  Hosts.listening_timestamp,
+                  Hosts.listening_protocol,
+                  Hosts.listening_address,
+                  Hosts.listening_port,
+                  Hosts.wapt,
+                  Hosts.host,
                   ]
         if self.uuids:
-            where_clause = WaptHosts.uuid.in_(self.uuids)
+            where_clause = Hosts.uuid.in_(self.uuids)
         else:
             # slect only computer with connected ips or all ?
             where_clause = None
 
-        query = WaptHosts.select(*fields)
+        query = Hosts.select(*fields)
         if where_clause:
             query = query.where(where_clause)
 
         logger.debug('Reset listening status timestamps of hosts')
-        WaptHosts.update(listening_timestamp=None).where(where_clause).execute()
+        Hosts.update(listening_timestamp=None).where(where_clause).execute()
 
         for data in query.dicts():
             logger.debug(

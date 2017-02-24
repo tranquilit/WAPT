@@ -43,8 +43,10 @@ sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 
 from peewee import *
 from playhouse.postgres_ext import *
+
 from playhouse.shortcuts import dict_to_model,model_to_dict
-from playhouse.signals import Model, pre_save, post_save
+from playhouse import db_url
+from playhouse.signals import Model as SignaledModel, pre_save, post_save
 
 from waptutils import ensure_unicode
 import json
@@ -52,15 +54,18 @@ import codecs
 import datetime
 import os
 
-# You must be sure your database is an instance of PostgresqlExtDatabase in order to use the JSONField.
-wapt_db = PostgresqlExtDatabase('wapt', user='wapt',password='wapt')
+import waptserver_config
 
-class BaseModel(Model):
+# You must be sure your database is an instance of PostgresqlExtDatabase in order to use the JSONField.
+server_config = waptserver_config.load_config()
+wapt_db = db_url.connect(server_config['db_url'])
+
+class BaseModel(SignaledModel):
     """A base model that will use our Postgresql database"""
     class Meta:
         database = wapt_db
 
-class WaptHosts(BaseModel):
+class Hosts(BaseModel):
     uuid = CharField(unique=True)
     computer_fqdn = CharField(null=True,index=True)
     description = CharField(null=True,index=True)
@@ -86,7 +91,7 @@ class WaptHosts(BaseModel):
     networks = ArrayField(CharField,null=True)
     dnsdomain = CharField(null=True)
 
-    connected_users = CharField(null=True)
+    connected_users = ArrayField(CharField,null=True)
 
     listening_protocol = CharField(10,null=True)
     listening_address = CharField(null=True)
@@ -124,8 +129,8 @@ class WaptHosts(BaseModel):
     def fieldbyname(cls,fieldname):
         return cls._meta.fields[fieldname]
 
-class WaptPackagesInstallStatus(BaseModel):
-    host = ForeignKeyField(WaptHosts,on_delete='CASCADE',on_update='CASCADE')
+class HostPackagesStatus(BaseModel):
+    host = ForeignKeyField(Hosts,on_delete='CASCADE',on_update='CASCADE')
     package = CharField(null=True)
     version = CharField(null=True)
     architecture = CharField(null=True)
@@ -136,14 +141,21 @@ class WaptPackagesInstallStatus(BaseModel):
     signer = CharField(null=True)
     signer_fingerprint = CharField(null=True)
     description = TextField(null=True)
-    signer=CharField(null=True)
     install_status=CharField(null=True)
     install_date=CharField(null=True)
     install_output = TextField(null=True)
     install_params=CharField(null=True)
+    explicit_by=CharField(null=True)
+    repo_url=CharField(max_length=600,null=True)
+    # audit data
+    created_on = DateTimeField(null=True,default=datetime.datetime.now)
+    created_by = DateTimeField(null=True)
+    updated_on = DateTimeField(null=True,default=datetime.datetime.now)
+    updated_by = DateTimeField(null=True)
 
-class WaptHostSoftwares(BaseModel):
-    host = ForeignKeyField(WaptHosts,on_delete='CASCADE',on_update='CASCADE')
+
+class HostSoftwares(BaseModel):
+    host = ForeignKeyField(Hosts,on_delete='CASCADE',on_update='CASCADE')
     name = CharField(max_length=2000,null=True)
     version = CharField(null=True)
     publisher = CharField(null=True)
@@ -153,27 +165,64 @@ class WaptHostSoftwares(BaseModel):
     install_date = CharField(null=True)
     install_location = CharField(max_length=2000,null=True)
 
+    # audit data
+    created_on = DateTimeField(null=True,default=datetime.datetime.now)
+    created_by = DateTimeField(null=True)
+    updated_on = DateTimeField(null=True,default=datetime.datetime.now)
+    updated_by = DateTimeField(null=True)
+
 def dictgetpath(adict,pathstr):
-    result = adict
-    for k in pathstr.split('.'):
-        if isinstance(k,(str,unicode)) and isinstance(result,dict):
-            result = result.get(k)
-        elif isinstance(k,int) and isinstance(result,list) and k<len(result):
-            result = result[k]
-        elif k == '*' and isinstance(result,list):
-            continue
-        elif isinstance(k,(str,unicode)) and isinstance(result,list):
-            result = [item.get(k) for item in result if item.get(k)]
-        else:
-            result = None
-            break
-        if result is None:
+    """Iterates a list of path pathstr of the form 'key.subkey.sskey' and returns
+        the first occurence in adict which returns not None
+    """
+    if not isinstance(pathstr,(list,tuple)):
+        pathstr =[pathstr]
+    for path in pathstr:
+        result = adict
+        for k in path.split('.'):
+            if isinstance(k,(str,unicode)) and isinstance(result,dict):
+                # assume this level is an object and returns the specified key
+                result = result.get(k)
+            elif isinstance(k,int) and isinstance(result,list) and k<len(result):
+                # assume this levele is a list and return the n'th item
+                result = result[k]
+            elif k == '*' and isinstance(result,list):
+                # assume this level is an array, and iterates all items
+                continue
+            elif isinstance(k,(str,unicode)) and isinstance(result,list):
+                # iterate through a list returning only a key
+                result = [item.get(k) for item in result if item.get(k)]
+            else:
+                # key not found, we have to retry with next path
+                result = None
+                break
+        if result:
             break
     return result
 
-@pre_save(sender=WaptHosts)
-def wapthosts_model_audit(model_class, instance, created):
-    if (created or WaptHosts.host in instance.dirty_fields) and instance.host:
+@pre_save(sender=Hosts)
+def wapthosts_pre_save(model_class, instance, created):
+    if created:
+        instance.created_on = datetime.datetime.now()
+    instance.updated_on = datetime.datetime.now()
+
+@pre_save(sender=HostSoftwares)
+def hostsoftwares_pre_save(model_class, instance, created):
+    if created:
+        instance.created_on = datetime.datetime.now()
+    instance.updated_on = datetime.datetime.now()
+
+@pre_save(sender=HostPackagesStatus)
+def installstatus_pre_save(model_class, instance, created):
+    if created:
+        instance.created_on = datetime.datetime.now()
+    instance.updated_on = datetime.datetime.now()
+
+
+@pre_save(sender=Hosts)
+def wapthosts_json(model_class, instance, created):
+    """Stores in plain table fields data from json"""
+    if (created or Hosts.host in instance.dirty_fields) and instance.host:
         extractmap = [
             ['computer_fqdn','computer_fqdn'],
             ['computer_name','computer_name'],
@@ -181,11 +230,12 @@ def wapthosts_model_audit(model_class, instance, created):
             ['manufacturer','system_manufacturer'],
             ['productname','system_productname'],
             ['os_name','windows_product_infos.version'],
-            ['os_version','windows_product_infos.windows_version'],
+            ['os_version',('windows_version','windows_product_infos.windows_version')],
             ['connected_ips','connected_ips'],
+            ['connected_users',('connected_users','current_user')],
             ['mac_addresses','mac'],
             ['current_user','current_user'],
-            ['dnsdomain','dnsdomain'],
+            ['dnsdomain',('dnsdomain','dns_domain')],
             ['gateways','gateways'],
             ]
         for field,attribute in extractmap:
@@ -193,7 +243,7 @@ def wapthosts_model_audit(model_class, instance, created):
 
         instance.os_architecture = 'x64' and instance.host.get('win64','?') or 'x86'
 
-    if (created or WaptHosts.dmi in instance.dirty_fields) and instance.dmi:
+    if (created or Hosts.dmi in instance.dirty_fields) and instance.dmi:
         extractmap = [
             ['serialnr','Chassis_Information.Serial_Number'],
             ['computer_type','Chassis_Information.Type'],
@@ -204,7 +254,7 @@ def wapthosts_model_audit(model_class, instance, created):
     if not instance.connected_ips:
         instance.connected_ips = dictgetpath(instance.host,'networking.*.addr')
 
-    if (created or WaptHosts.packages in instance.dirty_fields or WaptHosts.update_status in instance.dirty_fields):
+    if (created or Hosts.packages in instance.dirty_fields or Hosts.update_status in instance.dirty_fields):
         instance.host_status = None
         if instance.update_status:
             if instance.update_status.get('errors', []):
@@ -221,31 +271,48 @@ def wapthosts_model_audit(model_class, instance, created):
                     break
         instance.host_status = 'OK'
 
-@post_save(sender=WaptHosts)
-def wapthosts_model_postsave(model_class, instance, created):
-    # stores packages in WaptPackagesInstallStatus
-    if (created or WaptHosts.packages in instance.dirty_fields):
-        if not created:
-            WaptPackagesInstallStatus.delete().where(WaptPackagesInstallStatus.host == instance.id).execute()
+    # stores packages json data into separate HostPackagesStatus
+    if (not created and Hosts.packages in instance.dirty_fields):
+        HostPackagesStatus.delete().where(HostPackagesStatus.host == instance.id).execute()
         packages = []
         for package in instance.packages:
             package['host'] = instance.id
-            packages.append(dict( [(k,v) for k,v in package.iteritems() if k in WaptPackagesInstallStatus._meta.fields] ))
+            packages.append(dict( [(k,v) for k,v in package.iteritems() if k in HostPackagesStatus._meta.fields] ))
+        if packages:
+            HostPackagesStatus.insert_many(packages).execute()
 
-        WaptPackagesInstallStatus.insert_many(packages).execute()
-
-    # stores packages in WaptPackagesInstallStatus
-    if (created or WaptHosts.softwares in instance.dirty_fields):
-        if not created:
-            WaptHostSoftwares.delete().where(WaptHostSoftwares.host == instance.id).execute()
+    # stores packages in HostPackagesStatus
+    if (not created and Hosts.softwares in instance.dirty_fields):
+        # to be improved... removed all packages status  for this host
+        HostSoftwares.delete().where(HostSoftwares.host == instance.id).execute()
         softwares = []
         for software in instance.softwares:
             software['host'] = instance.id
-            softwares.append(dict( [(k,v) for k,v in software.iteritems() if k in WaptHostSoftwares._meta.fields] ))
+            softwares.append(dict( [(k,v) for k,v in software.iteritems() if k in HostSoftwares._meta.fields] ))
+        if softwares:
+            HostSoftwares.insert_many(softwares).execute()
 
-        WaptHostSoftwares.insert_many(softwares).execute()
 
-    instance.updated_on = datetime.datetime.now()
+@post_save(sender=Hosts)
+def wapthosts_model_post_save(model_class, instance, created):
+    # stores packages json data into separate HostPackagesStatus
+    if (created):
+        packages = []
+        for package in instance.packages:
+            package['host'] = instance.id
+            packages.append(dict( [(k,v) for k,v in package.iteritems() if k in HostPackagesStatus._meta.fields] ))
+        if packages:
+            HostPackagesStatus.insert_many(packages).execute()
+
+    # stores packages in HostPackagesStatus
+    if (created):
+        softwares = []
+        for software in instance.softwares:
+            software['host'] = instance.id
+            softwares.append(dict( [(k,v) for k,v in software.iteritems() if k in HostSoftwares._meta.fields] ))
+        if softwares:
+            HostSoftwares.insert_many(softwares).execute()
+
 
 def init_db(drop=False):
     wapt_db.get_conn()
@@ -254,9 +321,9 @@ def init_db(drop=False):
     except:
         wapt_db.rollback()
     if drop:
-        for table in reversed([WaptHosts,WaptHostSoftwares,WaptPackagesInstallStatus]):
+        for table in reversed([Hosts,HostSoftwares,HostPackagesStatus]):
             table.drop_table(fail_silently=True)
-    wapt_db.create_tables([WaptHosts,WaptHostSoftwares,WaptPackagesInstallStatus],safe=True)
+    wapt_db.create_tables([Hosts,HostSoftwares,HostPackagesStatus],safe=True)
 
 def mongo_data(ip='127.0.0.1',port=27017):
     """For raw import from mongo"""
@@ -299,7 +366,7 @@ def load_json(filenames=r'c:\tmp\*.json'):
             try:
                 try:
                     # wapt update_status packages softwares host
-                    newhost = WaptHosts()
+                    newhost = Hosts()
                     for k in rec.keys():
                         if hasattr(newhost,convert_map.get(k,k)):
                             setattr(newhost,convert_map.get(k,k),rec[k])
@@ -309,7 +376,7 @@ def load_json(filenames=r'c:\tmp\*.json'):
                     print('%s Inserted (%s)'%(newhost.computer_fqdn,newhost.uuid))
                 except IntegrityError as e:
                     wapt_db.rollback()
-                    updhost = WaptHosts.get(uuid=uuid)
+                    updhost = Hosts.get(uuid=uuid)
                     for k in rec.keys():
                         if hasattr(updhost,convert_map.get(k,k)):
                             setattr(updhost,convert_map.get(k,k),rec[k])
@@ -332,10 +399,10 @@ def import_shapers():
     load_json(r'c:\tmp\shapers\*.json')
 
 def tests():
-    print WaptHosts.select().count()
-    print list(WaptHosts.select(WaptHosts.computer_fqdn,WaptHosts.wapt['wapt-exe-version']).tuples())
-    print list(WaptHosts.select(WaptHosts.computer_fqdn,WaptHosts.wapt['wapt-exe-version'].alias('waptversion')).dicts())
-    for h in WaptHosts.select(WaptHosts.uuid,WaptHosts.computer_fqdn,WaptHosts.host,WaptHosts.wapt).where(WaptHosts.wapt['waptserver']['dnsdomain'] == 'aspoland.lan' ):
+    print Hosts.select().count()
+    print list(Hosts.select(Hosts.computer_fqdn,Hosts.wapt['wapt-exe-version']).tuples())
+    print list(Hosts.select(Hosts.computer_fqdn,Hosts.wapt['wapt-exe-version'].alias('waptversion')).dicts())
+    for h in Hosts.select(Hosts.uuid,Hosts.computer_fqdn,Hosts.host,Hosts.wapt).where(Hosts.wapt['waptserver']['dnsdomain'] == 'aspoland.lan' ):
         print h.computer_fqdn,h.host['windows_version'],h.wapt['wapt-exe-version']
 
 def comment_mongodb_lines(conf_filename = '/opt/wapt/conf/waptserver.ini'):
