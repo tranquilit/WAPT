@@ -87,6 +87,12 @@
                 <p>{{ _(""" WAPT server is managed through a WAPT console installed on a Windows system. When installing the WAPT server on Windows, the console is installed by default and can be found under the start menu. """) }}</p>
                 <p> {{ _(""" When installing the server on Linux, the <a href=\"/wapt/waptsetup-tis.exe\">WAPT client</a> should be installed on an administration machine, then run from 'Start/All programs'. """) }} </p>
                 <p>{{ _(""" To manually add a new host to the WAPT server, download the <a href=\"/wapt/waptagent.exe\">WAPT agent</a> from the menu to the right. The agent has been properly configured by the server so the default parameters should work. Once the WAPT client has been installed, you can find it in your console. """) }} </p>
+				<p>You can deploy the WAPT agent using a GPO and the <strong><a href="/wapt/waptdeploy.exe">waptdeploy</a></strong> downloader.
+					See <a href=https://www.wapt.fr/fr/doc/Installation/wapt_deploy/index.html?highlight=gpo#creation-de-la-gpo-de-deploiement-avec-waptdeploy>Création de la GPO de déploiement avec WAPTdeploy</a></p>
+					{% if data.wapt.agent.sha256 %}
+					<pre>waptdeploy.exe --hash={{ data.wapt.agent.sha256|safe }} --minversion={{ data.wapt.agent.status }} --wait=15</pre>
+					{% endif %}
+
                 <p>{{ _(""" For further information, be sure to check the documentation at <a href=\"https://www.wapt.fr/\">dev.tranquil.it</a> or on mailing-list. """) }} </p>
             </div>
             <div class="col-md-3 col-sx-12">
