@@ -1083,7 +1083,7 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=Non
         pidlist = []
 
     try:
-        proc = psutil.Popen(cmd, bufsize=1, stdin=PIPE, stdout=PIPE, stderr=PIPE,**kwargs)
+        proc = psutil.Popen(cmd, shell=shell, bufsize=1, stdin=PIPE, stdout=PIPE, stderr=PIPE,**kwargs)
     except WindowsError as e:
         # be sure to not trigger encoding errors.
         raise WindowsError(e[0],repr(e[1]))
