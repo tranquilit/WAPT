@@ -923,7 +923,7 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=Non
         pidlist = []
 
     try:
-        proc = psutil.Popen(cmd, bufsize=1, stdin=PIPE, stdout=PIPE, stderr=PIPE,**kwargs)
+        proc = psutil.Popen(cmd, shell = shell, bufsize=1, stdin=PIPE, stdout=PIPE, stderr=PIPE,**kwargs)
     except WindowsError as e:
         # be sure to not trigger encoding errors.
         raise WindowsError(e[0],repr(e[1]))
@@ -3907,6 +3907,7 @@ params = {}
 control = PackageEntry()
 
 if __name__=='__main__':
+    run(r'C:\tranquilit\tis-7zip-wapt\7z1604-x64.msi')
     import doctest
     import sys
     reload(sys)
