@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.9.2"
+__version__ = "1.3.9.3"
 
 __all__ = \
 ['CalledProcessError',
@@ -1022,7 +1022,7 @@ class RunOutput(unicode):
         return self
 
     def __repr__(self):
-        return "<RunOuput returncode :%s>\n%s" % (self.returncode,repr(self.__str__))
+        return "<RunOuput returncode :%s>\n%s" % (self.returncode,unicode.__repr__(self))
 
     def __str__(self):
         return self.encode(sys.getfilesystemencoding(),'replace')

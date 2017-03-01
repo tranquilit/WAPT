@@ -33,7 +33,7 @@
     exported functions instead of local Wapt functions (except crypto signatures)
 
 """
-__version__ = "1.3.9.0"
+__version__ = "1.3.9.3"
 
 import sys,os
 import shutil
@@ -360,14 +360,14 @@ def get_computer_groups(computername):
     if computer:
         computer_groups = computer.memberOf
         if computer_groups:
-            if not isinstance(computer_groups,list):
+            if not isinstance(computer_groups,(tuple,list)):
                 computer_groups = [computer_groups]
             for group in computer_groups:
                 # extract first component of group's DN
                 cn = group.split(',')[0].split('=')[1]
                 groups.append(cn)
     return groups
-	
+
 def add_ads_groups(waptconfigfile,hosts_list,wapt_server_user,wapt_server_passwd,key_password=None):
     # initialise wapt api with local config file
     wapt = Wapt(config_filename = waptconfigfile)
