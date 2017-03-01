@@ -857,7 +857,7 @@ class RunOutput(str):
         return self
 
     def __repr__(self):
-        return "<RunOuput returncode :%s>\n%s"%(self.returncode,repr(self.__str__()))
+        return "<RunOuput returncode :%s>\n%s"%(self.returncode,str.__repr__(self))
 
 def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=None,pidlist=None,return_stderr=True,**kwargs):
     r"""Run the command cmd in a shell and return the output and error text as string
