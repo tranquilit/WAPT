@@ -1,7 +1,6 @@
 ﻿#define SrcApp AddBackslash(SourcePath) + "..\wapt-get.exe"
 #define FileVerStr GetFileVersion(SrcApp)
-#define StripBuild(str VerStr) Copy(VerStr, 1, RPos(".", VerStr)-1)
-#define AppVerStr StripBuild(FileVerStr)
+#define AppVerStr FileVerStr
 
 [Files]
 ; local python interpreter
