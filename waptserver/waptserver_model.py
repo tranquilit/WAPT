@@ -67,7 +67,7 @@ class BaseModel(SignaledModel):
 
 class Hosts(BaseModel):
     # from bios
-    uuid = CharField(primary_key=True)
+    uuid = CharField(primary_key=True,index=True)
 
     # inventory type data (updated on register)
     computer_fqdn = CharField(null=True,index=True)
