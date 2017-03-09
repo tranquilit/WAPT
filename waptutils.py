@@ -485,8 +485,14 @@ def get_disk_free_space(filepath):
         secs_per_cluster, bytes_per_sector, free_clusters, total_clusters = win32file.GetDiskFreeSpace(filepath)
         return secs_per_cluster * bytes_per_sector * free_clusters
     else:
-        import shutil
-        total, used, free = shutil.disk_usage(filepath)
+        # like shutil
+        def disk_usage(path):
+            st = os.statvfs(path)
+            free = st.f_bavail * st.f_frsize
+            total = st.f_blocks * st.f_frsize
+            used = (st.f_blocks - st.f_bfree) * st.f_frsize
+            return (total, used, free)
+        total, used, free = disk_usage(filepath)
         return free
 
 def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False,referer=None,user_agent=None):
