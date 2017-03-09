@@ -537,7 +537,7 @@ class PackageEntry(object):
                 return s
 
         for att in self.required_attributes+self.optional_attributes:
-            if with_empty_attributes or getattr(self,att):
+            if att in self.signed_attributes or with_empty_attributes or getattr(self,att):
                 val.append(u"%-18s: %s" % (att, escape_cr(getattr(self,att))))
 
         if with_non_control_attributes:
