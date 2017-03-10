@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.0"
+__version__ = "1.4.1"
 
 import os
 import sys
@@ -281,7 +281,7 @@ def index():
             deploy_status = 'ERROR'
 
     try:
-        cnt = 'wapthosst' in wapt_db.get_tables()
+        cnt = 'hosts' in wapt_db.get_tables()
         db_status = 'OK (%s hosts)'%cnt
     except Exception as e:
         db_status = 'ERROR'
@@ -847,7 +847,7 @@ def get_group_package(input_package_name):
     return r
 
 
-def get_ip_port(host_data, recheck=False, timeout=None):
+def get_ip_port(host_data, recheck=False, timeout=None, check_ping=False):
     """Return a dict protocol,address,port,timestamp for the supplied registered host
         - first check if wapt.listening_address is ok and recheck is False
         - if not present or recheck is True, check each of host.check connected_ips list with timeout
@@ -859,6 +859,8 @@ def get_ip_port(host_data, recheck=False, timeout=None):
             host.connected_ips
 
         recheck: force recheck even if listening_address
+        timeout (int) : http timeout, or socket connection timeout
+        check_ping (bool) : if True, check using http://host/ping else just check socket connection
 
     Returns;
         dict with keys:
@@ -889,21 +891,21 @@ def get_ip_port(host_data, recheck=False, timeout=None):
         port = host_data['wapt'].get('waptservice_port',conf['waptservice_port'])
         address = None
 
-        for ip in ips:
-            try:
-                req = requests.head('%s://%s:%s/ping?uuid=%s'%(protocol,ip,port,host_data.get('uuid',None)),
-                        proxies = {'http':None,'https':None},
-                        verify=False,
-                        timeout=timeout,
-                        )
-                req.raise_for_status()
-                address = ip
-                break
-            except:
-                pass
-
+        if check_ping:
+            for ip in ips:
+                try:
+                    req = requests.head('%s://%s:%s/ping?uuid=%s'%(protocol,ip,port,host_data.get('uuid',None)),
+                            proxies = {'http':None,'https':None},
+                            verify=False,
+                            timeout=timeout,
+                            )
+                    req.raise_for_status()
+                    address = ip
+                    break
+                except:
+                    pass
         # optionnally try socket
-        if False:
+        else:
             address = get_reachable_ip(
                     ips,
                     waptservice_port=port,
@@ -1460,17 +1462,20 @@ def build_hosts_filter(model,filter_expr):
         result = None
         for fn in ensure_list(search_fields):
             members = fn.split('.')
-            if isinstance(model._meta.fields[members[0]],(JSONField,BinaryJSONField)):
-                if len(members)==1:
-                    clause =  SQL("%s::text ~* '%s'" % (fn,search_expr))
+            rootfield = members[0]
+            if rootfield in model._meta.fields:
+                if isinstance(model._meta.fields[rootfield],(JSONField,BinaryJSONField)):
+                    if len(members)==1:
+                        clause =  SQL("%s::text ~* '%s'" % (fn,search_expr))
+                    else:
+                        # (wapt->'waptserver'->'dnsdomain')::text ~* 'asfrance.lan'
+                        clause = SQL("(%s->%s)::text ~* '%s'" % (rootfield,'->'.join(["'%s'" % f for f in members[1:]]),search_expr))
+                        # model._meta.fields[members[0]].path(members[1:]).regexp(ur'(?i)%s' % search_expr)
+                elif isinstance(model._meta.fields[rootfield],ArrayField):
+                    clause = SQL("%s::text ~* '%s'" % (fn,search_expr))
                 else:
-                    # (wapt->'waptserver'->'dnsdomain')::text ~* 'asfrance.lan'
-                    clause = SQL("(%s->%s)::text ~* '%s'" % (members[0],'->'.join(["'%s'" % f for f in members[1:]]),search_expr))
-                    # model._meta.fields[members[0]].path(members[1:]).regexp(ur'(?i)%s' % search_expr)
-            elif isinstance(model._meta.fields[members[0]],ArrayField):
-                clause = SQL("%s::text ~* '%s'" % (fn,search_expr))
-            else:
-                clause = model._meta.fields[fn].regexp(ur'(?i)%s' % search_expr)
+                    clause = model._meta.fields[fn].regexp(ur'(?i)%s' % search_expr)
+            # else ignored...
 
             if result is None:
                 result = clause
@@ -1551,6 +1556,13 @@ def build_fields_list(model,mongoproj):
     for fn in mongoproj.keys():
         if fn in model._meta.fields:
             result.append(model._meta.fields[fn])
+        else:
+            # jsonb sub fields.
+            parts = fn.split('.')
+            root = parts[0]
+            if root in model._meta.fields:
+                path = ','.join(parts[1:])
+                result.append(SQL("%s #>>'{%s}' as \"%s\" "%(root,path,fn.replace('.','-'))))
     return result
 
 
@@ -1595,7 +1607,7 @@ def get_hosts():
                            'last_seen_on',
                            'mac_addresses',
                            'connected_ips',
-                           'wapt.*',
+                           'wapt',
                            'uuid',
                            'md5sum',
                            'purchase_order',
@@ -1710,14 +1722,13 @@ def get_hosts():
                 host['reachable'] = 'UNKNOWN'
 
             try:
-                if not host['host_status']:
-                    us = host['update_status']
-                    if us.get('errors', []):
-                        host['host_status'] = 'ERROR'
-                    elif us.get('upgrades', []):
-                        host['host_status'] = 'TO-UPGRADE'
-                    else:
-                        host['host_status'] = 'OK'
+                us = host['update_status']
+                if us.get('errors', []):
+                    host['host_status'] = 'ERROR'
+                elif us.get('upgrades', []):
+                    host['host_status'] = 'TO-UPGRADE'
+                else:
+                    host['host_status'] = 'OK'
             except:
                 host['host_status'] = '?'
 
