@@ -759,7 +759,7 @@ def status():
                     setattr(pe,k,rec_dict[k])
                     # add joined field to calculated attributes list
                     if not k in pe.all_attributes:
-                        pe.calculated_attributes.append(k)
+                        pe._calculated_attributes.append(k)
                 # hack to enable proper version comparison in templates
                 pe.version = Version(pe.version)
                 # calc most up to date repo version
