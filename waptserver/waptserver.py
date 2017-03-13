@@ -1520,23 +1520,20 @@ def hosts_delete():
 
         if 'delete_packages' in request.args and request.args[
                 'delete_packages'] == '1':
-            selected = Hosts.select(Hosts.uuid,Hosts.computer_fqdn).where(filter)
-            if selected:
-                for host in selected:
-                    result['records'].append(
-                        dict(
-                            uuid=host.uuid,
-                            computer_fqdn=host.computer_fqdn))
-                    if host.computer_fqdn in hosts_packages_repo:
-                        fn = hosts_packages_repo[host.computer_fqdn].wapt_fullpath()
-                        logger.debug('Trying to remove %s' % fn)
-                        if os.path.isfile(fn):
-                            result['files'].append(fn)
-                            os.remove(fn)
-                msg.append(
-                    '{} files removed from host repository'.format(len(result['files'])))
-            else:
-                msg.append('No host found in DB')
+            selected = Hosts.select(Hosts.uuid,Hosts.computer_fqdn).where(query)
+            for host in selected:
+                result['records'].append(
+                    dict(
+                        uuid=host.uuid,
+                        computer_fqdn=host.computer_fqdn))
+                if host.computer_fqdn in hosts_packages_repo:
+                    fn = hosts_packages_repo[host.computer_fqdn].wapt_fullpath()
+                    logger.debug('Trying to remove %s' % fn)
+                    if os.path.isfile(fn):
+                        result['files'].append(fn)
+                        os.remove(fn)
+            msg.append(
+                '{} files removed from host repository'.format(len(result['files'])))
 
         remove_result = Hosts.delete().where(query).execute()
         msg.append('{} hosts removed from DB'.format(remove_result))
@@ -1579,6 +1576,7 @@ def get_hosts():
         uuid (csvlist of uuid): <uuid1[,uuid2,...]>): filter based on uuid
         filter (csvlist of field):regular expression: filter based on attributes
         not_filter (0,1):
+        limit (int) : 1000
 
     Returns:
         result (dict): {'records':[],'files':[]}
@@ -1679,13 +1677,15 @@ def get_hosts():
         if not_filter:
             query = ~ query
 
+        limit = int(request.args.get('limit',1000))
+
         hosts_packages_repo = WaptLocalRepo(conf['wapt_folder'] + '-host')
         packages_repo = WaptLocalRepo(conf['wapt_folder'])
 
         groups = ensure_list(request.args.get('groups', ''))
 
         result = []
-        req = Hosts.select(*build_fields_list(Hosts,{col: 1 for col in columns})).dicts()
+        req = Hosts.select(*build_fields_list(Hosts,{col: 1 for col in columns})).limit(limit).order_by(-Hosts.last_seen_on).dicts().dicts()
         if query:
             req = req.where(query)
 
