@@ -317,8 +317,8 @@ def full_waptagent_install(min_version,at_startup=False):
             print run('schtasks /Create /RU SYSTEM /SC ONSTART /TN fullwaptupgrade /TR "%s" /F /V1 /Z' % cmd)
         except:
             # windows xp doesn't support one time startup task /Z nor /F
-            run_notfatal('schtasks /Delete /TN fullwaptupgrade /F')
-            print run('schtasks /Create /RU SYSTEM /SC ONSTART /TN fullwaptupgrade /TR "%s"' % cmd)
+            print(ensure_unicode(run_notfatal(u'schtasks /Delete /TN fullwaptupgrade /F')))
+            print(ensure_unicode(run(u'schtasks /Create /RU SYSTEM /SC ONSTART /TN fullwaptupgrade /TR "%s"' % cmd)))
     else:
         # use embedded waptagent.exe, wait 15 minutes for other tasks to complete.
         print create_onetime_task('fullwaptupgrade',waptdeploy_path,'--hash=%s --waptsetupurl=%s --wait=15 --temporary --force --minversion=%s'%(expected_sha256,waptagent_path,min_version),delay_minutes=1)
