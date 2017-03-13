@@ -1238,6 +1238,14 @@ msgctxt "tviswaptgui.cbwuapending.caption"
 msgid "Pending"
 msgstr ""
 
+#: tviswaptgui.edhostslimit.editlabel.caption
+msgid "Max hosts count"
+msgstr ""
+
+#: tviswaptgui.edhostslimit.text
+msgid "1000"
+msgstr ""
+
 #: tviswaptgui.edpackage.editlabel.caption
 msgctxt "tviswaptgui.edpackage.editlabel.caption"
 msgid "Package"

@@ -31,12 +31,12 @@ object VisWaptGUI: TVisWaptGUI
       ClientWidth = 1020
       object Panel10: TPanel
         Left = 0
-        Height = 54
+        Height = 56
         Top = 49
         Width = 1020
         Align = alTop
         BevelOuter = bvNone
-        ClientHeight = 54
+        ClientHeight = 56
         ClientWidth = 1020
         TabOrder = 1
         object EdSearchHost: TSearchEdit
@@ -249,11 +249,33 @@ object VisWaptGUI: TVisWaptGUI
           OnClick = CBInverseSelectClick
           TabOrder = 10
         end
+        object EdHostsLimit: TLabeledEdit
+          Left = 644
+          Height = 21
+          Top = 30
+          Width = 80
+          EditLabel.AnchorSideTop.Control = EdHostsLimit
+          EditLabel.AnchorSideTop.Side = asrCenter
+          EditLabel.AnchorSideRight.Control = EdHostsLimit
+          EditLabel.AnchorSideBottom.Control = EdHostsLimit
+          EditLabel.AnchorSideBottom.Side = asrBottom
+          EditLabel.Left = 560
+          EditLabel.Height = 13
+          EditLabel.Top = 34
+          EditLabel.Width = 79
+          EditLabel.Caption = 'Max hosts count'
+          EditLabel.ParentColor = False
+          LabelPosition = lpLeft
+          LabelSpacing = 5
+          TabOrder = 11
+          Text = '1000'
+          OnExit = EdHostsLimitExit
+        end
       end
       object GridHosts: TSOGrid
         Left = 0
-        Height = 462
-        Top = 103
+        Height = 460
+        Top = 105
         Width = 443
         OnGetText = GridHostsGetText
         Align = alClient
@@ -469,8 +491,8 @@ object VisWaptGUI: TVisWaptGUI
       end
       object HostPages: TPageControl
         Left = 448
-        Height = 462
-        Top = 103
+        Height = 460
+        Top = 105
         Width = 572
         ActivePage = pgPackages
         Align = alRight
@@ -480,13 +502,13 @@ object VisWaptGUI: TVisWaptGUI
         object pgPackages: TTabSheet
           AnchorSideTop.Side = asrBottom
           Caption = 'Overview'
-          ClientHeight = 436
+          ClientHeight = 434
           ClientWidth = 564
           object GridHostPackages: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 222
+            Height = 220
             Top = 119
             Width = 564
             Align = alBottom
@@ -876,7 +898,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel5: TPanel
             Left = 0
             Height = 90
-            Top = 346
+            Top = 344
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -897,7 +919,7 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 341
+            Top = 339
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
@@ -1777,8 +1799,8 @@ object VisWaptGUI: TVisWaptGUI
       end
       object Splitter4: TSplitter
         Left = 443
-        Height = 462
-        Top = 103
+        Height = 460
+        Top = 105
         Width = 5
         Align = alRight
         ResizeAnchor = akRight

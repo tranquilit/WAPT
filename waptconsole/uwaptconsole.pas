@@ -75,6 +75,7 @@ type
     Label21: TLabel;
     Label22: TLabel;
     Label23: TLabel;
+    EdHostsLimit: TLabeledEdit;
     LabErrorRegHardware: TLabel;
     MenuItem1: TMenuItem;
     MenuItem17: TMenuItem;
@@ -447,6 +448,7 @@ type
     procedure cbNeedUpgradeClick(Sender: TObject);
     procedure CheckBox_errorChange(Sender: TObject);
     procedure EdHardwareFilterChange(Sender: TObject);
+    procedure EdHostsLimitExit(Sender: TObject);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchExecute(Sender: TObject);
     procedure EdSearchGroupsExecute(Sender: TObject);
@@ -581,6 +583,19 @@ uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings, soutils,
 
 { TVisWaptGUI }
 
+type TComponentsArray=Array of TComponent;
+
+function VarArrayOf(items: Array of const):TComponentsArray;
+var
+  i:integer;
+  c:TComponent;
+begin
+  SetLength(result,Length(items));
+  for i:=0 to length(items)-1 do
+    result[i] := TComponent(items[i].VObject);
+
+end;
+
 
 procedure TVisWaptGUI.DoProgress(ASender: TObject);
 begin
@@ -683,6 +698,11 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.EdHostsLimitExit(Sender: TObject);
+begin
+  EdHostsLimit.Text := IntToStr(StrToInt(EdHostsLimit.Text));
+end;
+
 procedure TVisWaptGUI.EdRunKeyPress(Sender: TObject; var Key: char);
 begin
   if Key = #13 then
@@ -733,18 +753,33 @@ begin
 
 end;
 
+
 procedure TVisWaptGUI.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
   ini : TIniFile;
   last_usage_report : TDateTime;
   stats: ISuperObject;
   stats_report_url:String;
+  CB: TComponent;
+  CBS: TComponentsArray;
 begin
   Gridhosts.SaveSettingsToIni(Appuserinipath);
   GridPackages.SaveSettingsToIni(Appuserinipath);
   GridGroups.SaveSettingsToIni(Appuserinipath);
   GridHostPackages.SaveSettingsToIni(Appuserinipath);
   GridHostSoftwares.SaveSettingsToIni(Appuserinipath);
+
+  // %APPDATA%\waptconsole\waptconsole.ini
+  ini := TIniFile.Create(Appuserinipath);
+  try
+    for CB in VarArrayOf([cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares]) do
+      ini.WriteBool(self.name,CB.Name,TCheckBox(CB).Checked);
+    ini.WriteInteger(self.name,EdHostsLimit.Name,StrToInt(EdHostsLimit.Text));
+  finally
+    ini.Free;
+  end;
+
+  // %LOCALAPPDATA%\waptconsole\waptconsole.ini
   ini := TIniFile.Create(AppIniFilename);
   try
     if ini.ReadBool('Global','send_usage_report',True) then
@@ -756,6 +791,10 @@ begin
         stats := WAPTServerJsonGet('api/v1/usage_statistics',[])['result'];
         IdHttpPostData(stats_report_url,stats.AsJSon,waptcommon.UseProxyForTemplates,4000,60000,60000,'','','Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko');
         ini.WriteDateTime('Global','last_usage_report',Now);
+        CBS := VarArrayOf([cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares]);
+        for CB in CBS do
+          ini.WriteBool('Global',CB.Name,TCheckBox(CB).Checked);
+
       except
         ini.WriteDateTime('Global','last_usage_report',Now);
       end;
@@ -763,6 +802,7 @@ begin
   finally
     ini.Free;
   end;
+
 end;
 
 function TVisWaptGUI.FilterSoftwares(softs: ISuperObject): ISuperObject;
@@ -2777,7 +2817,6 @@ begin
     Screen.cursor := crHourGlass;
 
     urlParams := TSuperObject.Create(stArray);
-
     fields := TSuperObject.Create(stArray);
     if EdSearchHost.Text <> '' then
     begin
@@ -2799,14 +2838,13 @@ begin
 
       if cbSearchSoftwares.Checked = True then
       begin
-        fields.AsArray.Add('softwares.name');
-        fields.AsArray.Add('softwares.key');
+        fields.AsArray.Add('hostsoftwares.name');
+        fields.AsArray.Add('hostsoftwares.key');
       end;
 
       if cbSearchPackages.Checked = True then
-      begin
-        fields.AsArray.Add('packages.package');
-      end;
+        fields.AsArray.Add('hostpackagestatus.package');
+
       urlParams.AsArray.Add(format('filter=%s:%s',[join(',',fields),EncodeURIComponent(EdSearchHost.Text)]));
       if CBInverseSelect.Checked then
         urlParams.AsArray.Add(format('not_filter=1',[]));
@@ -2822,6 +2860,7 @@ begin
       urlParams.AsArray.Add(Format('groups=%s',[cbGroups.Text]));
 
     urlParams.AsArray.Add('columns='+join(',',columns));
+    urlParams.AsArray.Add('limit='+EdHostsLimit.Text);
 
     if GridHosts.FocusedRow <> nil then
       previous_uuid := GridHosts.FocusedRow.S['uuid']
@@ -3204,6 +3243,8 @@ procedure TVisWaptGUI.FormShow(Sender: TObject);
 var
   i:integer;
   sores: ISuperObject;
+  CB:TComponent;
+  ini:TIniFile;
 begin
   CurrentVisLoading := TVisLoading.Create(Nil);
   with CurrentVisLoading do
@@ -3224,6 +3265,17 @@ begin
     GridGroups.LoadSettingsFromIni(Appuserinipath);
     GridHostPackages.LoadSettingsFromIni(Appuserinipath);
     GridHostSoftwares.LoadSettingsFromIni(Appuserinipath);
+
+    ini := TIniFile.Create(Appuserinipath);
+    try
+      for CB in VarArrayOf([cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares]) do
+        TCheckBox(CB).Checked := ini.ReadBool(self.Name,CB.Name,TCheckBox(CB).Checked);
+
+      EdHostsLimit.Text := ini.ReadString(self.name,EdHostsLimit.Name,EdHostsLimit.Text);
+      //ShowMessage(Appuserinipath+'/'+self.Name+'/'+EdHostsLimit.Name+'/'+ini.ReadString(name,EdHostsLimit.Name,'not found'));
+    finally
+      ini.Free;
+    end;
 
     plStatusBar1.Panels[0].Text :=ApplicationName+' '+GetApplicationVersion;
 
@@ -3531,15 +3583,31 @@ procedure TVisWaptGUI.GridHostsGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
   TextType: TVSTTextType; var CellText: string);
 
+var
+  propName:String;
 begin
-  if Node = nil then
+  if (Node = nil) or (CellData=Nil) then
     CellText := ''
   else
   begin
+    propName:=TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName;
+    if (RowData.AsObject<>nil) then
+    begin
+      // Hack to workaround automatix SO path decoding with .. dots in property names are replaced by ~
+      if (pos('.',propName)>0) then
+      begin
+        if pos('computer_fqdn',propName)>0 then
+          propname:=propName;
+        propName := StrReplaceChar(propName,'.','-');
+        if RowData.AsObject.Find(propName,Celldata) then
+          CellText := CellData.AsString;
+      end;
+    end;
+
     if (CellData <> nil) and (CellData.DataType = stArray) then
       CellText := soutils.Join(',', CellData);
 
-    if (TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName='last_query_date') or (TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName='wapt.listening_address.timestamp') then
+    if (propName='last_query_date') or (propName='listening_timestamp') then
         CellText := Copy(StrReplaceChar(CellText,'T',' '),1,19);
   end;
 end;

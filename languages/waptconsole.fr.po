@@ -1296,6 +1296,14 @@ msgctxt "tviswaptgui.cbwuapending.caption"
 msgid "Pending"
 msgstr "En attente"
 
+#: tviswaptgui.edhostslimit.editlabel.caption
+msgid "Max hosts count"
+msgstr "Nombre max"
+
+#: tviswaptgui.edhostslimit.text
+msgid "1000"
+msgstr ""
+
 #: tviswaptgui.edpackage.editlabel.caption
 msgctxt "tviswaptgui.edpackage.editlabel.caption"
 msgid "Package"
@@ -2923,8 +2931,7 @@ msgstr "Erreur lors de la création de l'agent : %s"
 #| msgid ""
 #| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
-#| "WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
-#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"
 msgid ""
 "WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
