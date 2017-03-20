@@ -859,7 +859,7 @@ class RunOutput(str):
     def __repr__(self):
         return "<RunOuput returncode :%s>\n%s"%(self.returncode,str.__repr__(self))
 
-def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=None,pidlist=None,return_stderr=True,**kwargs):
+def run(cmd,shell=True,timeout=600,accept_returncodes=[0,3010],on_write=None,pidlist=None,return_stderr=True,**kwargs):
     r"""Run the command cmd in a shell and return the output and error text as string
 
     Args:
@@ -892,6 +892,9 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,1603,3010],on_write=Non
 
     .. versionchanged:: 1.3.11
             output is not forced to unicode
+
+    .. versionchanged:: 1.4.1
+          error code 1603 is no longer accepted by default.
 
     >>> run(r'dir /B c:\windows\explorer.exe')
     'explorer.exe\r\n'
@@ -3520,7 +3523,7 @@ def need_install(key,min_version=None,force=False,get_version=None):
                 return False
         return True
 
-def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=[0,1603,3010],timeout=300,properties={},get_version=None):
+def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=[0,3010],timeout=300,properties={},get_version=None):
     """Install silently the supplied msi file, and add the uninstall key to
     global uninstall key list
 
@@ -3548,6 +3551,9 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
 
     .. versionchanged:: 1.3.10
           added get_version callback for non conventional setup.exe
+
+    .. versionchanged:: 1.4.1
+          error code 1603 is no longer accepted by default.
 
     """
     if not isfile(msi):
@@ -3577,7 +3583,7 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
         if 'uninstallkey' in caller_globals and not key in caller_globals['uninstallkey']:
             caller_globals['uninstallkey'].append(key)
 
-def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbefore=[],accept_returncodes=[0,1603,3010],timeout=300,get_version=None):
+def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbefore=[],accept_returncodes=[0,3010],timeout=300,get_version=None):
     """Install silently the supplied setup executable file, and add the uninstall key to
     global uninstallkey list if it is defined.
 
@@ -3607,6 +3613,10 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
 
     .. versionchanged:: 1.3.10
           added get_version callback for non conventional setup.exe
+
+    .. versionchanged:: 1.4.1
+          error code 1603 is no longer accepted by default.
+
     """
     if not isfile(exe):
         error('setup exe file %s not found in package' % exe)
