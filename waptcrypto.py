@@ -99,7 +99,7 @@ def sha256_for_data(data):
     return sha256.hexdigest()
 
 
-def pwd_callback(*args):
+def default_pwd_callback(*args):
     """Default password callback for opening private keys.
     """
     import getpass
@@ -112,9 +112,11 @@ class SSLCAChain(object):
     BEGIN_CERTIFICATE = '-----BEGIN CERTIFICATE-----'
     END_CERTIFICATE = '-----END CERTIFICATE-----'
 
-    def __init__(self,callback=pwd_callback):
+    def __init__(self,callback=None):
         self._keys = {}
         self._certificates = {}
+        if callback is None:
+            callback = default_pwd_callback
         self.callback = callback
 
     def add_pems(self,cert_pattern_or_dir='*.crt',load_keys=False):
@@ -196,7 +198,7 @@ class SSLVerifyException(Exception):
     pass
 
 class SSLPrivateKey(object):
-    def __init__(self,private_key=None,key=None,callback=pwd_callback):
+    def __init__(self,private_key=None,key=None,callback=None):
         """Args:
             private_key (str) : Filename Path to PEM encoded Private Key
             key (PKey) : Public/[private]  PKey structure
@@ -208,6 +210,8 @@ class SSLPrivateKey(object):
         else:
             if not os.path.isfile(private_key):
                 raise Exception('Private key %s not found' % private_key)
+        if callback is None:
+            callback = default_pwd_callback
         self.pwd_callback = callback
         self._rsa = None
         self._key = None

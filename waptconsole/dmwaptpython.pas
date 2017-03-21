@@ -19,9 +19,13 @@ type
     procedure DataModuleDestroy(Sender: TObject);
   private
     FLanguage: String;
+    FCachedPrivateKeyPassword: Ansistring;
     jsondata:TJSONData;
+
     FWaptConfigFileName: Utf8String;
+    function getprivateKeyPassword: Ansistring;
     procedure LoadJson(data: UTF8String);
+    procedure setprivateKeyPassword(AValue: Ansistring);
     procedure SetWaptConfigFileName(AValue: Utf8String);
     procedure SetLanguage(AValue: String);
 
@@ -29,6 +33,8 @@ type
   public
     { public declarations }
     WAPT:Variant;
+
+    property privateKeyPassword: Ansistring read getprivateKeyPassword write setprivateKeyPassword;
 
     property WaptConfigFileName:Utf8String read FWaptConfigFileName write SetWaptConfigFileName;
     function RunJSON(expr: UTF8String; jsonView: TVirtualJSONInspector=
@@ -41,7 +47,7 @@ var
   DMPython: TDMPython;
 
 implementation
-uses waptcommon,inifiles,forms,controls;
+uses waptcommon, uvisprivatekeyauth,inifiles,forms,controls;
 {$R *.lfm}
 
 procedure TDMPython.SetWaptConfigFileName(AValue: Utf8String);
@@ -174,6 +180,48 @@ begin
   finally
       FreeAndNil(P);
   end;
+end;
+
+function TDMPython.getprivateKeyPassword: Ansistring;
+var
+  KeyIsProtected:Boolean;
+begin
+  if not FileExists(GetWaptPrivateKeyPath) then
+    FCachedPrivateKeyPassword := ''
+  else
+  begin
+    KeyIsProtected := StrToBool(DMPython.RunJSON(
+      format('common.private_key_has_password(r"%s")',
+      [GetWaptPrivateKeyPath])).AsString);
+    if KeyIsProtected then
+      while not StrToBool(DMPython.RunJSON(format('common.check_key_password(r"%s","%s")',[GetWaptPrivateKeyPath, FCachedPrivateKeyPassword])).AsString) do
+      begin
+        with TvisPrivateKeyAuth.Create(Application.MainForm) do
+        try
+          laKeyPath.Caption := GetWaptPrivateKeyPath;
+          if ShowModal = mrOk then
+            FCachedPrivateKeyPassword := edPasswordKey.Text
+          else
+          begin
+            FCachedPrivateKeyPassword := '';
+            Result := FCachedPrivateKeyPassword;
+            Exit;
+          end;
+        finally
+          Free;
+        end;
+      end
+    else
+      FCachedPrivateKeyPassword :='';
+  end;
+  Result := FCachedPrivateKeyPassword;
+end;
+
+
+
+procedure TDMPython.setprivateKeyPassword(AValue: Ansistring);
+begin
+  FCachedPrivateKeyPassword:=AValue;
 end;
 
 

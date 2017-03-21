@@ -4269,14 +4269,15 @@ class Wapt(object):
         """
         if not isinstance(zip_or_directoryname,unicode):
             zip_or_directoryname = unicode(zip_or_directoryname)
-        if not callback:
-            callback = self.key_passwd_callback
         if not private_key:
             # get the default one, perhaps already cached
             private_key = self.private_key
             if not private_key:
                 raise Exception('Private key filename not set in private_key')
             key = self.private_key_cache
+            if callback:
+                key.pwd_callback = callback
+
         else:
             # specific
             if not os.path.isfile(private_key):
@@ -4287,7 +4288,7 @@ class Wapt(object):
         # get matching certificate
         try:
             logger.debug(u'Trying to get matching certificate from pem CA file : %s' % key.private_key_filename)
-            ca = SSLCAChain()
+            ca = SSLCAChain(callback=callback)
             ca.add_pem(key.private_key_filename)
             certs = ca.matching_certs(key)
             if certs:
@@ -4414,8 +4415,6 @@ class Wapt(object):
             if include_signer:
                 if not callback:
                     callback = self.key_passwd_callback
-                else:
-                    self.key_passwd_callback = callback
 
                 # use cached key file if not provided
                 # the password will be retrieved by the self.key_passwd_callback
@@ -5280,7 +5279,7 @@ class Wapt(object):
             build=True,
             excludes=['.svn','.git','.gitignore','*.pyc','src'],
             private_key=None,
-            callback=pwd_callback,
+            callback=default_pwd_callback,
             append_depends=None,
             remove_depends=None,
             append_conflicts=None,
@@ -5758,8 +5757,10 @@ def check_user_membership(user_name,password,domain_name,group_name):
 Version = setuphelpers.Version  # obsolete
 
 if __name__ == '__main__':
-    r = WaptRepo(dnsdomain='tranquilit.local')
-    print r.find_wapt_repo_url()
+
+    w = Wapt(config_filename='c:/users/htouvet/appdata/local/waptconsole/waptconsole.ini')
+    w.dbpath=':memory:'
+    w.build_upload('c:/wapt/waptupgrade',private_key_passwd='calimer0!')
     sys.exit(1)
     import doctest
     import sys
