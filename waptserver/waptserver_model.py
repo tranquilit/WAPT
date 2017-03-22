@@ -254,7 +254,7 @@ def wapthosts_json(model_class, instance, created):
     if not instance.connected_ips:
         instance.connected_ips = dictgetpath(instance.host,'networking.*.addr')
 
-    if (created or Hosts.packages in instance.dirty_fields or Hosts.update_status in instance.dirty_fields):
+    if not instance.host_status or created or Hosts.packages in instance.dirty_fields or Hosts.update_status in instance.dirty_fields:
         instance.host_status = None
         if instance.update_status:
             if instance.update_status.get('errors', []):
@@ -269,7 +269,8 @@ def wapthosts_json(model_class, instance, created):
                 if package['install_status'] == 'NEED-UPGRADE':
                     instance.host_status = 'TO-UPGRADE'
                     break
-        instance.host_status = 'OK'
+        if not instance.host_status:
+            instance.host_status = 'OK'
 
     # stores packages json data into separate HostPackagesStatus
     if (not created and Hosts.packages in instance.dirty_fields):
