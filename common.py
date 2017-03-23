@@ -341,17 +341,20 @@ def host_ipv4():
 
 
 def tryurl(url,proxies=None,timeout=2,auth=None,verify_cert=False):
+    # try to get header for the supplied URL, returns None if no answer within the specified timeout
+    # else return time to get he answer.
     try:
         logger.debug(u'  trying %s' % url)
+        starttime = time.time()
         headers = requests.head(url,proxies=proxies,timeout=timeout,auth=auth,verify=verify_cert,headers=default_http_headers())
         if headers.ok:
             logger.debug(u'  OK')
-            return True
+            return time.time() - starttime
         else:
             headers.raise_for_status()
     except Exception as e:
         logger.debug(u'  Not available : %s' % ensure_unicode(e))
-        return False
+        return None
 
 
 class EWaptCancelled(Exception):
@@ -1747,36 +1750,42 @@ class WaptRepo(WaptRemoteRepo):
                 try:
                     logger.debug(u'Trying _wapt._tcp.%s SRV records' % self.dnsdomain)
                     answers = windnsquery.dnsquery_srv('_wapt._tcp.%s' % self.dnsdomain)
-
-                    # list of (outside,priority,weight,url)
-                    servers = []
-                    for (priority,weight,wapthost,port) in answers:
-                        # get first numerical ipv4 from SRV name record
-                        try:
-                            ips = windnsquery.dnsquery_a(wapthost)
-                            if not ips:
-                                logger.debug('DNS Name %s is not resolvable' % wapthost)
-                            else:
-                                ip = ips[0]
-                                if port == 80:
-                                    url = 'http://%s/wapt' % (wapthost,)
-                                    servers.append([not is_inmysubnets(ip),priority,-weight,url])
-                                elif port == 443:
-                                    url = 'https://%s/wapt' % (wapthost)
-                                    servers.append([not is_inmysubnets(ip),priority,-weight,url])
-                                else:
-                                    url = 'http://%s:%i/wapt' % (wapthost,port)
-                                    servers.append([not is_inmysubnets(ip),priority,-weight,url])
-                        except Exception as e:
-                            logging.debug('Unable to resolve %s : error %s' % (wapthost,ensure_unicode(e),))
-
-                    servers.sort()
-                    for (outside,priority,weight,url) in servers:
-                        if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
-                            return url
-
                     if not answers:
                         logger.debug(u'  No _wapt._tcp.%s SRV record found' % self.dnsdomain)
+                    else:
+                        # list of (outside,priority,weight,url)
+                        servers = []
+                        for (priority,weight,wapthost,port) in answers:
+                            # get first numerical ipv4 from SRV name record
+                            try:
+                                ips = windnsquery.dnsquery_a(wapthost)
+                                if not ips:
+                                    logger.debug('DNS Name %s is not resolvable' % wapthost)
+                                else:
+                                    ip = ips[0]
+                                    if port == 80:
+                                        url = 'http://%s/wapt' % (wapthost,)
+                                        servers.append([not is_inmysubnets(ip),priority,-weight,url])
+                                    elif port == 443:
+                                        url = 'https://%s/wapt' % (wapthost)
+                                        servers.append([not is_inmysubnets(ip),priority,-weight,url])
+                                    else:
+                                        url = 'http://%s:%i/wapt' % (wapthost,port)
+                                        servers.append([not is_inmysubnets(ip),priority,-weight,url])
+                            except Exception as e:
+                                logging.debug('Unable to resolve %s : error %s' % (wapthost,ensure_unicode(e),))
+
+                        servers.sort()
+                        available_servers = []
+                        for (outside,priority,weight,url) in servers:
+                            probe_delay = tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies)
+                            if probe_delay is not None:
+                                available_servers.append([probe_delay,url])
+                        if available_servers:
+                            available_servers.sort()
+                            return available_servers[0][1]  # [delay,url]
+                        else:
+                            logger.debug(u'  No wapt repo reachable with SRV request within specified timeout %s' % (self.timeout))
 
                 except Exception as e:
                     logger.debug(u'  DNS resolver exception: %s' % (ensure_unicode(e),))
@@ -1786,18 +1795,28 @@ class WaptRepo(WaptRemoteRepo):
                 try:
                     logger.debug(u'Trying wapt.%s CNAME records' % self.dnsdomain)
                     answers = windnsquery.dnsquery_cname('wapt.%s' % self.dnsdomain)
-                    # list of (outside,priority,weight,url)
-                    servers = []
-
-                    for wapthost in answers:
-                        url = 'https://%s/wapt' % (wapthost,)
-                        if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
-                            return url
-                        url = 'http://%s/wapt' % (wapthost,)
-                        if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
-                            return url
                     if not answers:
                         logger.debug(u'  No working wapt.%s CNAME record found' % self.dnsdomain)
+                    else:
+                        # list of (outside,priority,weight,url)
+                        servers = []
+                        available_servers = []
+                        for wapthost in answers:
+                            url = 'https://%s/wapt' % (wapthost,)
+                            probe_delay = tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies)
+                            if probe_delay is not None:
+                                available_servers.append([probe_delay,url])
+                            else:
+                                probe_delay = tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies)
+                                if probe_delay is not None:
+                                    available_servers.append([probe_delay,url])
+
+                        if available_servers:
+                            available_servers.sort()
+                            return available_servers[0][1]  # [delay,url]
+                        else:
+                            logger.debug(u'  No wapt repo reachable using CNAME records within specified timeout %s' % (self.timeout))
+
 
                 except Exception as e:
                     logger.debug(u'  DNS error: %s' % (ensure_unicode(e),))
@@ -1815,7 +1834,7 @@ class WaptRepo(WaptRemoteRepo):
                         url = 'http://%s/wapt' % (wapthost,)
                         if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
                             return url
-                    if not answers:
+                    else:
                         logger.debug(u'  No %s A record found' % wapthost)
 
                 except Exception as e:
@@ -5757,10 +5776,9 @@ def check_user_membership(user_name,password,domain_name,group_name):
 Version = setuphelpers.Version  # obsolete
 
 if __name__ == '__main__':
-
-    w = Wapt(config_filename='c:/users/htouvet/appdata/local/waptconsole/waptconsole.ini')
+    w = Wapt(config_filename='c:/wapt/wapt-get.ini')
     w.dbpath=':memory:'
-    w.build_upload('c:/wapt/waptupgrade',private_key_passwd='calimer0!')
+    w.update(force=True)
     sys.exit(1)
     import doctest
     import sys
