@@ -148,5 +148,6 @@ Count=2
 [Project\ExtraPythonPath]
 Item0=C:\tranquilit\wapt\lib\site-packages
 Item1=C:\tranquilit\wapt
-Count=2
+Item2=C:\tranquilit\wapt\waptserver
+Count=3
 

@@ -895,9 +895,8 @@ def package_icon():
     try:
         icon = get_icon(package)
         return send_file(icon,'image/png',as_attachment=True,attachment_filename='{}.png'.format(package),cache_timeout=43200)
-    except requests.HTTPError as e:
-        icon = get_icon('unknown')
-        return send_file(icon,'image/png',as_attachment=True,attachment_filename='{}.png'.format('unknown'),cache_timeout=43200)
+    except requests.RequestException as e:
+        return send_from_directory(app.static_folder+'/images','unknown.png',mimetype='image/png',as_attachment=True,attachment_filename='{}.png'.format(package),cache_timeout=43200)
 
 @app.route('/package_details')
 @app.route('/package_details.json')

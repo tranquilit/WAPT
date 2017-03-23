@@ -131,12 +131,8 @@ FileName=C:\tranquilit\wapt\waptutils.py
 ClassName=TProjectFileNode
 FileName=C:\tranquilit\wapt\windnsquery.py
 
-[Project\ChildNodes\Node0\ChildNodes\Node17]
-ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wininet.py
-
 [Project\ChildNodes\Node0\ChildNodes]
-Count=18
+Count=17
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode

@@ -1721,7 +1721,7 @@ def get_hosts():
             except (KeyError, TypeError):
                 host['reachable'] = 'UNKNOWN'
 
-            try:
+            """try:
                 us = host['update_status']
                 if us.get('errors', []):
                     host['host_status'] = 'ERROR'
@@ -1731,6 +1731,7 @@ def get_hosts():
                     host['host_status'] = 'OK'
             except:
                 host['host_status'] = '?'
+            """ # updated by model listener or DB trigger
 
         if 'uuid' in request.args:
             if len(result) == 0:
