@@ -66,6 +66,9 @@ class BaseModel(SignaledModel):
         database = wapt_db
 
 class Hosts(BaseModel):
+    """
+    Inventory informations of a host
+    """
     # from bios
     uuid = CharField(primary_key=True,index=True)
 
@@ -83,10 +86,6 @@ class Hosts(BaseModel):
     os_version = CharField(null=True)
     os_architecture = CharField(null=True)
 
-    # variable structures... so keep them as json
-    dmi = BinaryJSONField(null=True)
-    wmi = BinaryJSONField(null=True)
-
     # frequently updated data from host update_status
     connected_users = ArrayField(CharField,null=True)
     connected_ips = ArrayField(CharField,null=True)
@@ -94,8 +93,6 @@ class Hosts(BaseModel):
     gateways = ArrayField(CharField,null=True)
     networks = ArrayField(CharField,null=True)
     dnsdomain = CharField(null=True)
-
-    host = BinaryJSONField(null=True)
 
     # calculated by server when update_status
     reachable = CharField(20,null=True)
@@ -113,9 +110,18 @@ class Hosts(BaseModel):
     # running, pending, errors, finished , upgradable, errors,
     update_status = BinaryJSONField(null=True)
 
+    host_info = BinaryJSONField(null=True)
+
     # to do : moved to separate tables the json packages and softwares
     packages = BinaryJSONField(null=True)
+
+    # windows registry
     softwares = BinaryJSONField(null=True)
+
+    # variable structures... so keep them as json
+    dmi = BinaryJSONField(null=True)
+    wmi = BinaryJSONField(null=True)
+
 
     # audit data
     created_on = DateTimeField(null=True,default=datetime.datetime.now)
@@ -130,8 +136,12 @@ class Hosts(BaseModel):
     def fieldbyname(cls,fieldname):
         return cls._meta.fields[fieldname]
 
+
 class HostPackagesStatus(BaseModel):
-    host = ForeignKeyField(Hosts,related_name='host_uuid',on_delete='CASCADE',on_update='CASCADE')
+    """
+    Stores the status of packages installed on a host
+    """
+    host = ForeignKeyField(Hosts,related_name='packages_status',on_delete='CASCADE',on_update='CASCADE')
     package = CharField(null=True,index=True)
     version = CharField(null=True)
     architecture = CharField(null=True)
@@ -148,15 +158,18 @@ class HostPackagesStatus(BaseModel):
     install_params=CharField(null=True)
     explicit_by=CharField(null=True)
     repo_url=CharField(max_length=600,null=True)
+
     # audit data
     created_on = DateTimeField(null=True,default=datetime.datetime.now)
     created_by = DateTimeField(null=True)
     updated_on = DateTimeField(null=True,default=datetime.datetime.now)
     updated_by = DateTimeField(null=True)
 
+    def __repr__(self):
+        return "<HostPackageStatus uuid=%s packages=%s (%s) install_status=%s>"% (self.uuid,self.package,self.version,self.install_status)
 
 class HostSoftwares(BaseModel):
-    host = ForeignKeyField(Hosts,on_delete='CASCADE',on_update='CASCADE')
+    host = ForeignKeyField(Hosts,related_name='softwares',on_delete='CASCADE',on_update='CASCADE')
     name = CharField(max_length=2000,null=True,index=True)
     version = CharField(null=True)
     publisher = CharField(null=True)
@@ -171,6 +184,46 @@ class HostSoftwares(BaseModel):
     created_by = DateTimeField(null=True)
     updated_on = DateTimeField(null=True,default=datetime.datetime.now)
     updated_by = DateTimeField(null=True)
+
+    def __repr__(self):
+        return "<HostSoftwares uuid=%s name=%s (%s) key=%s>"% (self.uuid,self.name,self.version,self.key)
+
+
+class HostGroups(BaseModel):
+    host = ForeignKeyField(Hosts,related_name='softwares',on_delete='CASCADE',on_update='CASCADE')
+    group_name = CharField(null=False,index=True)
+
+    # audit data
+    created_on = DateTimeField(null=True,default=datetime.datetime.now)
+    created_by = DateTimeField(null=True)
+    updated_on = DateTimeField(null=True,default=datetime.datetime.now)
+    updated_by = DateTimeField(null=True)
+
+    def __repr__(self):
+        return "<HostGroups uuid=%s group_name=%s>"% (self.uuid,self.group_name)
+
+
+class HostJsonRaw(BaseModel):
+    host = ForeignKeyField(Hosts,on_delete='CASCADE',on_update='CASCADE')
+
+    # audit data
+    created_on = DateTimeField(null=True,default=datetime.datetime.now)
+    created_by = DateTimeField(null=True)
+    updated_on = DateTimeField(null=True,default=datetime.datetime.now)
+    updated_by = DateTimeField(null=True)
+
+
+class HostWsus(BaseModel):
+    host = ForeignKeyField(Hosts,on_delete='CASCADE',on_update='CASCADE')
+    # windows updates
+    wsus = BinaryJSONField(null=True)
+
+    # audit data
+    created_on = DateTimeField(null=True,default=datetime.datetime.now)
+    created_by = DateTimeField(null=True)
+    updated_on = DateTimeField(null=True,default=datetime.datetime.now)
+    updated_by = DateTimeField(null=True)
+
 
 def dictgetpath(adict,pathstr):
     """Iterates a list of path pathstr of the form 'key.subkey.sskey' and returns
@@ -328,9 +381,9 @@ def init_db(drop=False):
     except:
         wapt_db.rollback()
     if drop:
-        for table in reversed([Hosts,HostSoftwares,HostPackagesStatus]):
+        for table in reversed([Hosts,HostPackagesStatus,HostSoftwares,HostJsonRaw,HostWsus]):
             table.drop_table(fail_silently=True)
-    wapt_db.create_tables([Hosts,HostSoftwares,HostPackagesStatus],safe=True)
+    wapt_db.create_tables([Hosts,HostPackagesStatus,HostSoftwares,HostJsonRaw,HostWsus],safe=True)
 
 def mongo_data(ip='127.0.0.1',port=27017):
     """For raw import from mongo"""
@@ -465,8 +518,8 @@ def upgrade2postgres():
 
 
 if __name__ == '__main__':
-    #init_db(True)
-    #import_shapers()
+    init_db(True)
+    import_shapers()
 
     if platform.system != 'Windows' and getpass.getuser()!='wapt':
         print """you should run this program as wapt:

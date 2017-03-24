@@ -3,7 +3,7 @@ Version: 0.0.7
 Section: base
 Priority: optional
 Architecture: all
-Depends: python, dialog, tis-waptrepo, python-m2crypto, python-passlib, uwsgi, uwsgi-plugin-python, python-tz, cabextract, postgresql (>=9.4), python-psycopg2,postgresql-contrib, sudo , python-psutil
+Depends: python, dialog, tis-waptrepo, python-m2crypto, python-passlib, uwsgi, uwsgi-plugin-python, python-tz, cabextract, postgresql (>=9.4), python-psycopg2,postgresql-contrib, sudo , python-psutil, libapache2-mod-auth-kerb,krb5-user,msktutil
 Recommends: tis-waptsetup, uwsgi-plugin-http
 Maintainer: TIS <technique@tranquil-it-systems.fr>
 Description: WAPT Server for linux

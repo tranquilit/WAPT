@@ -73,9 +73,10 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn):
         'windows': False,
         'debian': type_debian(),
         'redhat': type_redhat(),
-        'ssl': True,
+        'strict_https': True,
         'wapt_ssl_key_file': wapt_ssl_key_file,
         'wapt_ssl_cert_file': wapt_ssl_cert_file,
+        'fqdn': fqdn,
         }
 
     config_string = template.render(template_vars)
@@ -121,6 +122,7 @@ def enable_debian_vhost():
     void = subprocess.check_output(['a2enmod', 'ssl'], stderr=subprocess.STDOUT)
     void = subprocess.check_output(['a2enmod', 'proxy'], stderr=subprocess.STDOUT)
     void = subprocess.check_output(['a2enmod', 'proxy_http'], stderr=subprocess.STDOUT)
+    void = subprocess.check_output(['a2enmod', 'auth_kerb'], stderr=subprocess.STDOUT)
     void = subprocess.check_output(['a2ensite', 'wapt.conf'], stderr=subprocess.STDOUT)
     void = subprocess.check_output(['/etc/init.d/apache2', 'graceful'], stderr=subprocess.STDOUT)
 
@@ -163,6 +165,7 @@ def ensure_postgresql_db(db_name='wapt',db_owner='wapt',db_password=''):
 def enable_redhat_vhost():
     if os.path.exists('/etc/httpd/conf.d/ssl.conf'):
         subprocess.check_output('mv /etc/httpd/conf.d/ssl.conf /etc/httpd/conf.d/ssl.conf.disabled',shell=True)
+    #TODO : enable kerberos 
 
 
 def disable_mongod():
@@ -381,6 +384,7 @@ def main():
                         os.unlink('/etc/apache2/sites-available/wapt')
                     except Exception:
                         pass
+            # TODO : check first if fqdn is dns resolvable 
 
             make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn)
             final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
