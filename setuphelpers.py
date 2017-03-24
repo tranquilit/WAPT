@@ -261,7 +261,6 @@ import win32process
 import glob
 import ctypes
 
-from enum import Enum
 
 import requests
 import time
@@ -3531,14 +3530,14 @@ def get_appath(exename):
         with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\%s' % exename) as key:
             return reg_getvalue(key,None)
 
-class InstallerTypes(Enum):
+class InstallerTypes(object):
     MSI = 'MSI'
     InnoSetup = 'InnoSetup'
     InstallShield = 'InstallShield'
     SFXCab = 'SFXCab'
     SevenZIPSFX = 'SevenZIPSFX'
     NSIS = 'NSIS'
-    MSUWindowsUpdate = 'MSUWindowsUpdate'
+    MSU = 'MSU'
     ExeWinUpdates = 'ExeWindowsUpdate' # exe with wextract
     WExtract = 'WExtract' #
     APPX = 'WExtract'

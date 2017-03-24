@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.9.0"
+__version__ = "1.3.9.1"
 import os
 import re
 import logging
@@ -5191,7 +5191,17 @@ class Wapt(object):
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
             os.makedirs(os.path.join(directoryname,'WAPT'))
 
-        template = codecs.open(os.path.join(self.wapt_base_dir,'templates','setup_package_template.py'),encoding='utf8').read()%dict(
+        (installer_name,installer_ext) = os.path.splitext(installer)
+        if installer_ext == '.msi':
+            setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_msi.py')
+        elif installer_ext == '.msu':
+            setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_msu.py')
+        elif installer_ext == '.exe':
+            setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_exe.py')
+        else:
+            setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template.py')
+
+        template = codecs.open(setup_template,encoding='utf8').read()%dict(
             packagename=packagename,
             uninstallkey=uninstallkey,
             silentflags=silentflags,
