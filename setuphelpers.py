@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.9.3"
+__version__ = "1.3.9.4"
 
 __all__ = \
 ['CalledProcessError',
@@ -97,6 +97,8 @@ __all__ = \
  'get_task',
  'getproductprops',
  'getsilentflags',
+ 'InstallerTypes',
+ 'get_installer_type',
  'glob',
  'host_info',
  'inifile_hasoption',
@@ -259,6 +261,8 @@ import win32process
 import glob
 import ctypes
 
+from enum import Enum
+
 import requests
 import time
 import datetime
@@ -280,6 +284,7 @@ import email.utils
 from waptpackage import PackageEntry
 from waptpackage import Version as Version
 from types import ModuleType
+import inspect
 
 import wmi
 
@@ -398,6 +403,7 @@ def ensure_list(csv_or_list,ignore_empty_args=True,allow_none = False):
             return [s.strip() for s in csv_or_list.split(',')]
     else:
         return csv_or_list
+
 
 def create_shortcut(path, target='', arguments='', wDir='', icon=''):
     r"""Create a windows shortcut
@@ -565,6 +571,7 @@ def remove_programs_menu_shortcut(label):
         label += '.lnk'
     remove_file(makepath(start_menu(common=1),label))
 
+
 def remove_user_programs_menu_shortcut(label):
     """Remove a shortcut from the start menu of current user
 
@@ -585,6 +592,7 @@ def remove_desktop_shortcut(label):
         label += '.lnk'
     remove_file(os.path.join(desktop(1),label))
 
+
 def remove_user_desktop_shortcut(label):
     """Remove a shortcut from the desktop of current user
 
@@ -594,6 +602,7 @@ def remove_user_desktop_shortcut(label):
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
     remove_file(os.path.join(desktop(0),label))
+
 
 def wgets(url,proxies=None,verify_cert=False,referer=None,user_agent=None):
     """Return the content of a remote resource as a String with a http get request.
@@ -624,6 +633,7 @@ def wgets(url,proxies=None,verify_cert=False,referer=None,user_agent=None):
     else:
         r.raise_for_status()
 
+
 def default_http_headers():
     return {
         'cache-control':'no-cache',
@@ -631,12 +641,14 @@ def default_http_headers():
         'user-agent':'wapt/{}'.format(__version__),
         }
 
+
 def get_disk_free_space(filepath):
     """
     Returns the number of free bytes on the drive that filepath is on
     """
     secs_per_cluster, bytes_per_sector, free_clusters, total_clusters = win32file.GetDiskFreeSpace(filepath)
     return secs_per_cluster * bytes_per_sector * free_clusters
+
 
 def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False,referer=None,user_agent=None):
     r"""Copy the contents of a file from a given URL to a local file.
@@ -3519,6 +3531,57 @@ def get_appath(exename):
         with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\%s' % exename) as key:
             return reg_getvalue(key,None)
 
+class InstallerTypes(Enum):
+    MSI = 'MSI'
+    InnoSetup = 'InnoSetup'
+    InstallShield = 'InstallShield'
+    SFXCab = 'SFXCab'
+    SevenZIPSFX = 'SevenZIPSFX'
+    NSIS = 'NSIS'
+    MSUWindowsUpdate = 'MSUWindowsUpdate'
+    ExeWinUpdates = 'ExeWindowsUpdate' # exe with wextract
+    WExtract = 'WExtract' #
+    APPX = 'WExtract'
+    GenericInstaller = 'GenericInstaller'
+    UnknownInstaller = 'UnknownInstaller'
+    UnknownExeInstaller = 'UnknownExeInstaller'
+    MozillaInstaller = 'MozillaInstaller'
+
+
+def get_installer_type(installer_path):
+    """Returns (installer_type,silentflag)"""
+    (product_name,ext) = os.path.splitext(installer_path)
+    ext = ext.lower()
+    if ext == '.exe':
+        props = get_file_properties(installer_path)
+        if props.get('InternalName','').lower() == 'sfxcab.exe':
+            returns (InstallerTypes.SFXCab,'/quiet')
+        elif props.get('InternalName','').lower() == '7zs.sfx':
+            silentflag = (InstallerTypes.SFXCab,'/s')
+        elif props.get('InternalName','').lower() == 'setup launcher':
+            silentflag = (InstallerTypes.InstallShield,'/s')
+        elif props.get('InternalName','').lower() == 'wextract':
+            silentflag = (InstallerTypes.Wextract,'/Q')
+        else:
+            content = open(installer_path,'rb').read(600000)
+            if 'Inno.Setup' in content:
+                silentflag = (InstallerTypes.InnoSetup,'/VERYSILENT /SUPPRESSMSGBOXES /NORESTART')
+            elif 'Quiet installer' in content:
+                silentflag = (InstallerTypes.GenericInstaller,'-q')
+            elif 'nsis.sf.net' in content or 'Nullsoft.NSIS' in content:
+                silentflag = (InstallerTypes.NSIS,'/S')
+            elif ('Firefox Setup' in product_name) or ('Thunderbird Setup' in product_name):
+                silentflag = (InstallerTypes.MozillaInstaller,'-ms')
+            else:
+                silentflag = (InstallerTypes.UnknownExeInstaller,'/VERYSILENT')
+
+    elif ext == '.msi':
+        silentflag = (InstallerTypes.MSI,'/q /norestart')
+    elif ext == '.msu':
+        silentflag = (InstallerTypes.MSU,'/quiet /norestart')
+    else:
+        silentflag = (InstallerTypes.UnknownInstaller,'/VERYSILENT')
+    return silentflag
 
 
 def getsilentflags(installer_path):
@@ -3533,35 +3596,7 @@ def getsilentflags(installer_path):
     >>> getsilentflags(r'C:\tranquilit\wapt\tests\7z920.msi')
     '/q /norestart'
     """
-    (product_name,ext) = os.path.splitext(installer_path)
-    ext = ext.lower()
-    if ext=='.exe':
-        silentflag = '/VERYSILENT'
-        props = get_file_properties(installer_path)
-        if props.get('InternalName','').lower() == 'sfxcab.exe':
-            silentflag = '/quiet'
-        elif props.get('InternalName','').lower() == '7zs.sfx':
-            silentflag = '/s'
-        elif props.get('InternalName','').lower() == 'setup launcher':
-            silentflag = '/s'
-        elif props.get('InternalName','').lower() == 'wextract':
-            silentflag = '/Q'
-        else:
-            content = open(installer_path,'rb').read(600000)
-            if 'Inno.Setup' in content:
-                silentflag = '/VERYSILENT'
-            elif 'Quiet installer' in content:
-                silentflag = '-q'
-            elif 'nsis.sf.net' in content or 'Nullsoft.NSIS' in content:
-                silentflag = '/S'
-
-    elif ext=='.msi':
-        silentflag = '/q /norestart'
-    elif ext=='.msu':
-        silentflag = '/quiet /norestart'
-    else:
-        silentflag = ''
-    return silentflag
+    return get_installer_type(installer_path)[1]
 
 
 def getproductprops(installer_path):
@@ -3668,8 +3703,6 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
     if not isfile(msi):
         error('msi file %s not found in package' % msi)
     key = get_msi_properties(msi)['ProductCode']
-    # will try to add key in the caller's (setup.py) uninstallkey list
-    import inspect
     caller_globals = inspect.stack()[1][0].f_globals
     WAPT = caller_globals.get('WAPT',None)
     force = WAPT and WAPT.options.force
@@ -3726,7 +3759,6 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
     if min_version is None:
         min_version = getproductprops(exe)['version']
 
-    import inspect
     caller_globals = inspect.stack()[1][0].f_globals
     WAPT = caller_globals.get('WAPT',None)
     force = WAPT and WAPT.options.force
