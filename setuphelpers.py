@@ -3395,12 +3395,25 @@ def get_appath(exename):
     >>> get_appath('wapt-get.exe')
     u'C:\\wapt\\wapt-get.exe'
     """
-    if iswin64():
-        with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\App Paths\%s' % exename) as key:
-            return reg_getvalue(key,None)
-    else:
+    result = None
+    try:
         with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\%s' % exename) as key:
-            return reg_getvalue(key,None)
+            result = reg_getvalue(key,None)
+    except WindowsError as e:
+        if e.winerror == 2:
+            result = None
+        else:
+            raise
+    if iswin64() and not result:
+        try:
+            with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\App Paths\%s' % exename) as key:
+                result = reg_getvalue(key,None)
+        except WindowsError as e:
+            if e.winerror == 2:
+                result = None
+            else:
+                raise
+    return result
 
 
 
