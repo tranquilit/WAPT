@@ -978,7 +978,7 @@ def host_reachable_ip():
         try:
             uuid = request.args['uuid']
             host_data = Hosts\
-                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt,
+                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt_status,
                                 Hosts.listening_address,
                                 Hosts.listening_port,
                                 Hosts.listening_protocol,
@@ -1022,7 +1022,7 @@ def proxy_host_request(request, action):
         for uuid in uuids:
             try:
                 host_data = Hosts\
-                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt,
+                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt_status,
                                 Hosts.listening_address,
                                 Hosts.listening_port,
                                 Hosts.listening_protocol,
@@ -1110,7 +1110,8 @@ def trigger_upgrade():
         notify_user = request.args.get('notify_user', 0)
         notify_server = request.args.get('notify_server', 1)
         host_data = Hosts\
-                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt,
+                        .select(Hosts.uuid,Hosts.computer_fqdn,
+                                Hosts.wapt_status,
                                 Hosts.listening_address,
                                 Hosts.listening_port,
                                 Hosts.listening_protocol,
@@ -1174,7 +1175,7 @@ def trigger_update():
         notify_server = request.args.get('notify_server', 1)
 
         host_data = Hosts\
-                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt,
+                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt_status,
                                 Hosts.listening_address,
                                 Hosts.listening_port,
                                 Hosts.listening_protocol,
@@ -1227,7 +1228,7 @@ def trigger_wakeonlan():
     try:
         uuid = request.args['uuid']
         host_data = Hosts\
-                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt,Hosts.host_info)\
+                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt_status,Hosts.host_info)\
                         .where(Hosts.uuid==uuid)\
                         .first(1)
         macs = host_data['host_info']['mac']
@@ -1384,7 +1385,7 @@ def host_tasks_status():
     try:
         uuid = request.args['uuid']
         host_data = Hosts\
-                    .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt,
+                    .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt_status,
                             Hosts.listening_address,
                             Hosts.listening_port,
                             Hosts.listening_protocol,
@@ -1863,7 +1864,7 @@ def host_cancel_task():
     try:
         uuid = request.args['uuid']
         host_data = Hosts\
-                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt,
+                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt_status,
                                 Hosts.listening_address,
                                 Hosts.listening_port,
                                 Hosts.listening_protocol,
