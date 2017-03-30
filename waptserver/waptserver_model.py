@@ -466,10 +466,10 @@ def import_shapers():
 
 def tests():
     print Hosts.select().count()
-    print list(Hosts.select(Hosts.computer_fqdn,Hosts.wapt['wapt-exe-version']).tuples())
-    print list(Hosts.select(Hosts.computer_fqdn,Hosts.wapt['wapt-exe-version'].alias('waptversion')).dicts())
-    for h in Hosts.select(Hosts.uuid,Hosts.computer_fqdn,Hosts.host_info,Hosts.wapt).where(Hosts.wapt['waptserver']['dnsdomain'] == 'aspoland.lan' ):
-        print h.computer_fqdn,h.host_info['windows_version'],h.wapt['wapt-exe-version']
+    print list(Hosts.select(Hosts.computer_fqdn,Hosts.wapt_status['wapt-exe-version']).tuples())
+    print list(Hosts.select(Hosts.computer_fqdn,Hosts.wapt_status['wapt-exe-version'].alias('waptversion')).dicts())
+    for h in Hosts.select(Hosts.uuid,Hosts.computer_fqdn,Hosts.host_info,Hosts.wapt_status).where(Hosts.wapt_status['waptserver']['dnsdomain'] == 'aspoland.lan' ):
+        print h.computer_fqdn,h.host_info['windows_version'],h.wapt_status['wapt-exe-version']
 
 def comment_mongodb_lines(conf_filename = '/opt/wapt/conf/waptserver.ini'):
     if not os.path.exists(conf_filename):
