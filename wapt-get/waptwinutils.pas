@@ -716,11 +716,11 @@ begin
   uuid := WaptGuessedIniReadString('uuid', computer.S['uuid']);
 
   Data.S['uuid'] := uuid;
-  Data.S['wapt.wapt-exe-version'] := LocalWaptVersion;
-  Data.S['host.computer_name'] := GetComputerName;
-  Data.S['host.system_productname'] := computer.S['name'];
-  Data.S['host.system_manufacturer'] := computer.S['vendor'];
-  Data.S['host.system_serialnr'] := computer.S['identifyingnumber'];
+  Data.S['wapt_status.wapt-exe-version'] := LocalWaptVersion;
+  Data.S['host_info.computer_name'] := GetComputerName;
+  Data.S['host_info.system_productname'] := computer.S['name'];
+  Data.S['host._infosystem_manufacturer'] := computer.S['vendor'];
+  Data.S['host_info.system_serialnr'] := computer.S['identifyingnumber'];
   Data.S['dmi.Chassis_Information.Serial_Number'] := computer.S['identifyingnumber'];
   nw := NetworkConfig;
   for intf in nw do
@@ -738,10 +738,10 @@ begin
     "macaddress": "08:00:27:72:E9:E4",
     "dnsdomain": "tranquilit.local"
    }
-      Data.S['host.dns_domain'] := LowerCase(nw.AsArray[0].S['dnsdomain']);
-      Data.S['host.connected_ips'] := nw.AsArray[0].A['ipaddress'].S[0];
-      Data.S['host.mac'] := lowercase(nw.AsArray[0].S['macaddress']);
-      Data.S['host.computer_fqdn'] :=
+      Data.S['host_info.dns_domain'] := LowerCase(nw.AsArray[0].S['dnsdomain']);
+      Data.S['host_info.connected_ips'] := nw.AsArray[0].A['ipaddress'].S[0];
+      Data.S['host_info.mac'] := lowercase(nw.AsArray[0].S['macaddress']);
+      Data.S['host_info.computer_fqdn'] :=
         lowercase(nw.AsArray[0].S['dnshostname'] + '.' + nw.AsArray[0].S['dnsdomain']);
       break;
     end;

@@ -106,17 +106,16 @@ class Hosts(BaseModel):
     last_seen_on = CharField(null=True)
 
     # raw json data
-    wapt = BinaryJSONField(null=True)
+    wapt_status = BinaryJSONField(null=True)
     # running, pending, errors, finished , upgradable, errors,
-    update_status = BinaryJSONField(null=True)
-
+    last_update_status = BinaryJSONField(null=True)
     host_info = BinaryJSONField(null=True)
 
     # to do : moved to separate tables the json packages and softwares
-    packages = BinaryJSONField(null=True)
+    installed_packages = BinaryJSONField(null=True)
 
-    # windows registry
-    softwares = BinaryJSONField(null=True)
+    # softwares registered in windows registry
+    installed_softwares = BinaryJSONField(null=True)
 
     # variable structures... so keep them as json
     dmi = BinaryJSONField(null=True)
@@ -141,7 +140,7 @@ class HostPackagesStatus(BaseModel):
     """
     Stores the status of packages installed on a host
     """
-    host = ForeignKeyField(Hosts,related_name='packages_status',on_delete='CASCADE',on_update='CASCADE')
+    host = ForeignKeyField(Hosts,on_delete='CASCADE',on_update='CASCADE')
     package = CharField(null=True,index=True)
     version = CharField(null=True)
     architecture = CharField(null=True)
@@ -169,7 +168,7 @@ class HostPackagesStatus(BaseModel):
         return "<HostPackageStatus uuid=%s packages=%s (%s) install_status=%s>"% (self.uuid,self.package,self.version,self.install_status)
 
 class HostSoftwares(BaseModel):
-    host = ForeignKeyField(Hosts,related_name='softwares',on_delete='CASCADE',on_update='CASCADE')
+    host = ForeignKeyField(Hosts,on_delete='CASCADE',on_update='CASCADE')
     name = CharField(max_length=2000,null=True,index=True)
     version = CharField(null=True)
     publisher = CharField(null=True)
@@ -190,7 +189,7 @@ class HostSoftwares(BaseModel):
 
 
 class HostGroups(BaseModel):
-    host = ForeignKeyField(Hosts,related_name='softwares',on_delete='CASCADE',on_update='CASCADE')
+    host = ForeignKeyField(Hosts,on_delete='CASCADE',on_update='CASCADE')
     group_name = CharField(null=False,index=True)
 
     # audit data
@@ -276,7 +275,7 @@ def installstatus_pre_save(model_class, instance, created):
 @pre_save(sender=Hosts)
 def wapthosts_json(model_class, instance, created):
     """Stores in plain table fields data from json"""
-    if (created or Hosts.host in instance.dirty_fields) and instance.host:
+    if (created or Hosts.host_info in instance.dirty_fields) and instance.host_info:
         extractmap = [
             ['computer_fqdn','computer_fqdn'],
             ['computer_name','computer_name'],
@@ -292,9 +291,9 @@ def wapthosts_json(model_class, instance, created):
             ['gateways','gateways'],
             ]
         for field,attribute in extractmap:
-            setattr(instance,field,dictgetpath(instance.host,attribute))
+            setattr(instance,field,dictgetpath(instance.host_info,attribute))
 
-        instance.os_architecture = 'x64' and instance.host.get('win64','?') or 'x86'
+        instance.os_architecture = 'x64' and instance.host_info.get('win64','?') or 'x86'
 
     if (created or Hosts.dmi in instance.dirty_fields) and instance.dmi:
         extractmap = [
@@ -305,17 +304,18 @@ def wapthosts_json(model_class, instance, created):
             setattr(instance,field,dictgetpath(instance.dmi,attribute))
 
     if not instance.connected_ips:
-        instance.connected_ips = dictgetpath(instance.host,'networking.*.addr')
+        instance.connected_ips = dictgetpath(instance.host_info,'networking.*.addr')
 
-    if not instance.host_status or created or Hosts.packages in instance.dirty_fields or Hosts.update_status in instance.dirty_fields:
+    # update host update status based on update_status json data or packages collection
+    if not instance.host_status or created or Hosts.installed_packages in instance.dirty_fields or Hosts.last_update_status in instance.dirty_fields:
         instance.host_status = None
-        if instance.update_status:
-            if instance.update_status.get('errors', []):
+        if instance.last_update_status:
+            if instance.last_update_status.get('errors', []):
                 instance.host_status = 'ERROR'
-            elif instance.update_status.get('upgrades', []):
+            elif instance.last_update_status.get('upgrades', []):
                 instance.host_status = 'TO-UPGRADE'
         if not instance.host_status:
-            for package in instance.packages:
+            for package in instance.installed_packages:
                 if package['install_status'] == 'ERROR':
                     instance.host_status = 'ERROR'
                     break
@@ -326,22 +326,22 @@ def wapthosts_json(model_class, instance, created):
             instance.host_status = 'OK'
 
     # stores packages json data into separate HostPackagesStatus
-    if (not created and Hosts.packages in instance.dirty_fields):
+    if (not created and Hosts.installed_packages in instance.dirty_fields):
         HostPackagesStatus.delete().where(HostPackagesStatus.host == instance.uuid).execute()
         packages = []
-        for package in instance.packages:
+        for package in instance.installed_packages:
             package['host'] = instance.uuid
             # remove all unknown fields from json data
             packages.append(dict( [(k,v) for k,v in package.iteritems() if k in HostPackagesStatus._meta.fields] ))
         if packages:
             HostPackagesStatus.insert_many(packages).execute()
 
-    # stores packages in HostPackagesStatus
-    if (not created and Hosts.softwares in instance.dirty_fields):
+    # stores softwares in HostSoftwares
+    if (not created and Hosts.installed_softwares in instance.dirty_fields):
         # to be improved... removed all packages status  for this host
         HostSoftwares.delete().where(HostSoftwares.host == instance.uuid).execute()
         softwares = []
-        for software in instance.softwares:
+        for software in instance.installed_softwares:
             software['host'] = instance.uuid
             # remove all unknown fields from json data
             softwares.append(dict( [(k,v) for k,v in software.iteritems() if k in HostSoftwares._meta.fields] ))
@@ -355,7 +355,7 @@ def wapthosts_model_post_save(model_class, instance, created):
     if (created):
         HostPackagesStatus.delete().where(HostPackagesStatus.host == instance.uuid).execute()
         packages = []
-        for package in instance.packages:
+        for package in instance.installed_packages:
             package['host'] = instance.uuid
             # remove all unknown fields from json data
             packages.append(dict( [(k,v) for k,v in package.iteritems() if k in HostPackagesStatus._meta.fields] ))
@@ -365,7 +365,7 @@ def wapthosts_model_post_save(model_class, instance, created):
         # to be improved... removed all packages status  for this host
         HostSoftwares.delete().where(HostSoftwares.host == instance.uuid).execute()
         softwares = []
-        for software in instance.softwares:
+        for software in instance.installed_softwares:
             software['host'] = instance.uuid
             # remove all unknown fields from json data
             softwares.append(dict( [(k,v) for k,v in software.iteritems() if k in HostSoftwares._meta.fields] ))
@@ -432,6 +432,10 @@ def load_json(filenames=r'c:\tmp\*.json'):
                             setattr(newhost,convert_map.get(k,k),rec[k])
                         else:
                             print '%s unknown key %s' % (computer_fqdn,k)
+
+                    if 'host' in rec:
+                        newhost.host_info = rec.get('host')
+
                     newhost.save(force_insert=True)
                     print('%s Inserted (%s)'%(newhost.computer_fqdn,newhost.uuid))
                 except IntegrityError as e:
@@ -442,6 +446,8 @@ def load_json(filenames=r'c:\tmp\*.json'):
                             setattr(updhost,convert_map.get(k,k),rec[k])
                         else:
                             print '%s unknown key %s' % (computer_fqdn,k)
+                    if 'host' in rec:
+                        newhost.host_info = rec.get('host')
                     updhost.save()
                     print('%s Updated'%computer_fqdn)
             except Exception as e:
@@ -462,8 +468,8 @@ def tests():
     print Hosts.select().count()
     print list(Hosts.select(Hosts.computer_fqdn,Hosts.wapt['wapt-exe-version']).tuples())
     print list(Hosts.select(Hosts.computer_fqdn,Hosts.wapt['wapt-exe-version'].alias('waptversion')).dicts())
-    for h in Hosts.select(Hosts.uuid,Hosts.computer_fqdn,Hosts.host,Hosts.wapt).where(Hosts.wapt['waptserver']['dnsdomain'] == 'aspoland.lan' ):
-        print h.computer_fqdn,h.host['windows_version'],h.wapt['wapt-exe-version']
+    for h in Hosts.select(Hosts.uuid,Hosts.computer_fqdn,Hosts.host_info,Hosts.wapt).where(Hosts.wapt['waptserver']['dnsdomain'] == 'aspoland.lan' ):
+        print h.computer_fqdn,h.host_info['windows_version'],h.wapt['wapt-exe-version']
 
 def comment_mongodb_lines(conf_filename = '/opt/wapt/conf/waptserver.ini'):
     if not os.path.exists(conf_filename):
@@ -518,8 +524,8 @@ def upgrade2postgres():
 
 
 if __name__ == '__main__':
-    init_db(True)
-    import_shapers()
+    #init_db(True)
+    #import_shapers()
 
     if platform.system != 'Windows' and getpass.getuser()!='wapt':
         print """you should run this program as wapt:

@@ -4087,11 +4087,11 @@ class Wapt(object):
         >>>
         """
         inv = {'uuid': self.host_uuid}
-        inv['wapt'] = self.wapt_status()
-        inv['host'] = setuphelpers.host_info()
-        inv['softwares'] = setuphelpers.installed_softwares('')
-        inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
-        inv['update_status'] = self.get_last_update_status()
+        inv['wapt_status'] = self.wapt_status()
+        inv['host_info'] = setuphelpers.host_info()
+        inv['installed_softwares'] = setuphelpers.installed_softwares('')
+        inv['installed_packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
+        inv['last_update_status'] = self.get_last_update_status()
 
         if self.waptserver_available():
             try:
@@ -4101,7 +4101,7 @@ class Wapt(object):
                 result = None
                 logger.warning(u'Unable to update server status : %s' % ensure_unicode(e))
             # force register if computer has not been registered or hostname has changed
-            if not result or not 'host' in result or result['host']['computer_fqdn'] != setuphelpers.get_hostname():
+            if not result or not 'host_info' in result or result['host_info']['computer_fqdn'] != setuphelpers.get_hostname():
                 self.register_computer()
             return result
         else:
@@ -4235,18 +4235,20 @@ class Wapt(object):
         """Return full inventory of the computer as a dictionary.
 
         Returns:
-            dict: {'host','wapt','dmi','softwares','packages'}
+            dict: {'host_info','wapt_status','dmi','installed_softwares','installed_packages'}
+
+        ...changed: 1.4.1: renamed keys
         """
         inv = {}
-        inv['host'] = setuphelpers.host_info()
+        inv['host_info'] = setuphelpers.host_info()
         inv['dmi'] = setuphelpers.dmi_info()
         try:
             inv['wmi'] = setuphelpers.wmi_info()
         except:
             logger.warning('WMI unavailable')
-        inv['wapt'] = self.wapt_status()
-        inv['softwares'] = setuphelpers.installed_softwares('')
-        inv['packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
+        inv['wapt_status'] = self.wapt_status()
+        inv['installed_softwares'] = setuphelpers.installed_softwares('')
+        inv['installed_packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
         """
         try:
             inv['qfe'] = setuphelpers.installed_windows_updates()

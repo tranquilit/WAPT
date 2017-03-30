@@ -749,7 +749,7 @@ end;
 procedure TVisWaptGUI.EdSoftwaresFilterChange(Sender: TObject);
 begin
   if (Gridhosts.FocusedRow <> nil) then
-    GridHostSoftwares.Data := FilterSoftwares(Gridhosts.FocusedRow['softwares']);
+    GridHostSoftwares.Data := FilterSoftwares(Gridhosts.FocusedRow['installed_softwares']);
 
 end;
 
@@ -1002,15 +1002,15 @@ begin
     if HostPages.ActivePage = pgPackages then
     begin
       GridHostPackages.Clear;
-      packages := RowSO['packages'];
+      packages := RowSO['installed_packages'];
       if (packages = nil) or (packages.AsArray = nil) then
       try
-        sores := WAPTServerJsonGet('api/v1/host_data?field=packages&uuid=%S',[currhost]);
+        sores := WAPTServerJsonGet('api/v1/host_data?field=installed_packages&uuid=%S',[currhost]);
         if sores.B['success'] then
         begin
-          RowSO['packages'] := sores['result'];
+          RowSO['installed_packages'] := sores['result'];
           // add missing packages
-          additional := RowSO['update_status.pending.additional'];
+          additional := RowSO['last_update_status.pending.additional'];
           if (additional<>Nil) and (additional.AsArray.Length>0) then
           begin
             for packagereq in additional do
@@ -1018,13 +1018,13 @@ begin
               package := TSuperObject.Create();
               package['package'] := packagereq;
               package.S['install_status'] := 'MISSING';
-              RowSO.A['packages'].Add(package);
+              RowSO.A['installed_packages'].Add(package);
             end;
           end;
-          upgrades := RowSO['update_status.pending.upgrade'];
+          upgrades := RowSO['last_update_status.pending.upgrade'];
           if (upgrades<>Nil) and (upgrades.AsArray.Length>0) then
           begin
-            for package in RowSO['packages'] do
+            for package in RowSO['installed_packages'] do
             begin
               for packagereq in upgrades do
               begin
@@ -1036,9 +1036,9 @@ begin
           end;
         end
         else
-          RowSO['packages'] := nil;
+          RowSO['installed_packages'] := nil;
       except
-        RowSO['packages'] := nil;
+        RowSO['installed_packages'] := nil;
       end;
       EdHostname.Text := UTF8Encode(RowSO.S['computer_name']);
       EdDescription.Text := UTF8Encode(RowSO.S['description']);
@@ -1054,17 +1054,17 @@ begin
         EdUser.Text := UTF8Encode(soutils.join(',',RowSO['connected_users']))
       else
         EdUser.Text := UTF8Encode(RowSO.S['connected_users']);
-      EdRunningStatus.Text := UTF8Encode(RowSO.S['update_status.runstatus']);
-      GridHostPackages.Data := RowSO['packages'];
+      EdRunningStatus.Text := UTF8Encode(RowSO.S['last_update_status.runstatus']);
+      GridHostPackages.Data := RowSO['installed_packages'];
     end
     else if HostPages.ActivePage = pgSoftwares then
     begin
       GridHostSoftwares.Clear;
       //Cache collection in grid data
-      softwares := RowSO['softwares'];
+      softwares := RowSO['installed_softwares'];
       if (softwares = nil) or (softwares.AsArray = nil) then
       try
-        sores := WAPTServerJsonGet('api/v1/host_data?field=softwares&uuid=%S',[currhost]);
+        sores := WAPTServerJsonGet('api/v1/host_data?field=installed_softwares&uuid=%S',[currhost]);
         if sores.B['success'] then
           softwares := sores['result']
         else
@@ -1072,7 +1072,7 @@ begin
       except
         softwares := nil;
       end;
-      RowSO['softwares'] := softwares;
+      RowSO['installed_softwares'] := softwares;
       GridHostSoftwares.Data := FilterSoftwares(softwares);
     end
     else if HostPages.ActivePage = pgHostWUA then
@@ -3121,7 +3121,7 @@ end;
 procedure TVisWaptGUI.cbMaskSystemComponentsClick(Sender: TObject);
 begin
   if Gridhosts.FocusedRow<>Nil then
-    GridHostSoftwares.Data := FilterSoftwares(Gridhosts.FocusedRow['softwares']);
+    GridHostSoftwares.Data := FilterSoftwares(Gridhosts.FocusedRow['installed_softwares']);
 end;
 
 procedure TVisWaptGUI.cbNewestOnlyClick(Sender: TObject);

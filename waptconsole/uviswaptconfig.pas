@@ -106,7 +106,7 @@ begin
   begin
     if edServerAddress.Text <> '' then
     begin
-      edrepo_url.Text := 'http://'+edServerAddress.Text+'/wapt';
+      edrepo_url.Text := 'https://'+edServerAddress.Text+'/wapt';
       edwapt_server.Text := 'https://'+edServerAddress.Text;
     end
     else
@@ -182,7 +182,7 @@ begin
         if not cbManual.Checked then
         if edServerAddress.Text <> '' then
         begin
-          edrepo_url.Text := 'http://'+edServerAddress.Text+'/wapt';
+          edrepo_url.Text := 'https://'+edServerAddress.Text+'/wapt';
           edwapt_server.Text := 'https://'+edServerAddress.Text;
         end
         else

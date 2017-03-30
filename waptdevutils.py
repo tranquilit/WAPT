@@ -135,7 +135,7 @@ def diff_computer_ad_wapt(wapt,wapt_server_user='admin',wapt_server_passwd=None)
     ???
     """
     computer_ad =  set([ c['dnshostname'].lower() for c in active_directory.search("objectClass='computer'") if c['dnshostname'] and c.operatingSystem and c.operatingSystem.startswith('Windows')])
-    computer_wapt = set( [ c['host']['computer_fqdn'].lower() for c in  wapt.waptserver.get('api/v1/hosts?columns=host.computer_fqdn',auth=(wapt_server_user,wapt_server_passwd))['result']])
+    computer_wapt = set( [ c['host_info']['computer_fqdn'].lower() for c in  wapt.waptserver.get('api/v1/hosts?columns=host.computer_fqdn',auth=(wapt_server_user,wapt_server_passwd))['result']])
     diff = list(computer_ad-computer_wapt)
     return diff
 
@@ -149,7 +149,7 @@ def diff_computer_wapt_ad(wapt,wapt_server_user='admin',wapt_server_passwd=None)
     ???
     """
     computer_ad =  set([ c['dnshostname'].lower() for c in active_directory.search("objectClass='computer'") if c['dnshostname']])
-    computer_wapt = set( [ c['host']['computer_fqdn'].lower() for c in  wapt.waptserver.get('api/v1/hosts?columns=host.computer_fqdn',auth=(wapt_server_user,wapt_server_passwd))['result']])
+    computer_wapt = set( [ c['computer_fqdn'].lower() for c in  wapt.waptserver.get('api/v1/hosts?columns=computer_fqdn',auth=(wapt_server_user,wapt_server_passwd))['result']])
     result = list(computer_wapt - computer_ad)
     return result
 
@@ -380,9 +380,9 @@ def add_ads_groups(waptconfigfile,hosts_list,wapt_server_user,wapt_server_passwd
     hosts_list = ensure_list(hosts_list)
 
     # get the collection of hosts from waptserver inventory
-    all_hosts = wapt.waptserver.get('api/v1/hosts?columns=uuid,host.computer_fqdn,depends',auth=(wapt_server_user,wapt_server_passwd))['result']
+    all_hosts = wapt.waptserver.get('api/v1/hosts?columns=uuid,computer_fqdn,depends',auth=(wapt_server_user,wapt_server_passwd))['result']
     if hosts_list:
-        hosts = [ h for h in all_hosts if h['host']['computer_fqdn'] in hosts_list]
+        hosts = [ h for h in all_hosts if h['computer_fqdn'] in hosts_list]
     else:
         hosts = hosts_list
 
@@ -390,10 +390,10 @@ def add_ads_groups(waptconfigfile,hosts_list,wapt_server_user,wapt_server_passwd
 
     for h in hosts:
         try:
-            hostname = h['host']['computer_fqdn']
+            hostname = h['computer_fqdn']
             print 'Computer %s... ' % hostname,
 
-            groups = get_computer_groups(h['host']['computer_name'])
+            groups = get_computer_groups(h['computer_name'])
             wapt_groups = h['depends']
             additional = [ group for group in groups if not group in wapt_groups and wapt.is_available(group) ]
 

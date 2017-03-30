@@ -311,7 +311,7 @@ def index():
     return render_template("index.html", data=data)
 
 
-def update_data(data):
+def update_host_data(data):
     """Helper function to insert or update host data in db
 
     Args :
@@ -332,6 +332,7 @@ def update_data(data):
             for k in data.keys():
                 if hasattr(newhost,k):
                     setattr(newhost,k,data[k])
+
             newhost.save(force_insert=True)
         except IntegrityError as e:
             wapt_db.rollback()
@@ -344,7 +345,7 @@ def update_data(data):
         logger.critical(u'Error updating data for %s : %s'%(uuid,ensure_unicode(e)))
         wapt_db.rollback()
 
-    result_query = Hosts.select(Hosts.uuid,Hosts.computer_fqdn,Hosts.host)
+    result_query = Hosts.select(Hosts.uuid,Hosts.computer_fqdn,Hosts.host_info)
     return result_query.where(Hosts.uuid == uuid).dicts().first(1)
 
 
@@ -387,7 +388,7 @@ def update_host():
             if uuid:
                 logger.info('Update host %s status' % (uuid,))
                 data['last_seen_on'] = datetime2isodate()
-                db_data = update_data(data)
+                db_data = update_host_data(data)
                 result = dict(
                     status='OK',
                     message="update_host",
@@ -884,11 +885,11 @@ def get_ip_port(host_data, recheck=False, timeout=None, check_ping=False):
             port=host_data.get('listening_port',8088),
             timestamp=host_data.get('listening_timestamp',None),
             )
-    elif host_data.get('wapt',None) and host_data.get('host',{}).get('connected_ips',''):
+    elif host_data.get('wapt_status',None) and host_data.get('host_info',{}).get('connected_ips',''):
         # check using http
-        ips = ensure_list(host_data.get('host',{}).get('connected_ips',''))
-        protocol = host_data['wapt'].get('waptservice_protocol', 'http')
-        port = host_data['wapt'].get('waptservice_port',conf['waptservice_port'])
+        ips = ensure_list(host_data.get('host_info',{}).get('connected_ips',''))
+        protocol = host_data['wapt_status'].get('waptservice_protocol', 'http')
+        port = host_data['wapt_status'].get('waptservice_port',conf['waptservice_port'])
         address = None
 
         if check_ping:
@@ -1226,10 +1227,10 @@ def trigger_wakeonlan():
     try:
         uuid = request.args['uuid']
         host_data = Hosts\
-                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt,Hosts.host)\
+                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt,Hosts.host_info)\
                         .where(Hosts.uuid==uuid)\
                         .first(1)
-        macs = host_data['host']['mac']
+        macs = host_data['host_info']['mac']
         msg = u''
         if macs:
             logger.info(
@@ -1237,7 +1238,7 @@ def trigger_wakeonlan():
                     macs,
                     host_data.computer_fqdn))
             wakeonlan.wol.send_magic_packet(*macs)
-            for line in host_data['host']['networking']:
+            for line in host_data['host_info']['networking']:
                 if 'broadcast' in line:
                     broadcast = line['broadcast']
                     wakeonlan.wol.send_magic_packet(
@@ -1589,7 +1590,7 @@ def get_hosts():
     try:
         start_time = time.time()
         default_columns = ['host_status',
-                           'update_status',
+                           'last_update_status',
                            'reachable',
                            'computer_fqdn',
                            'dnsdomain',
@@ -1605,7 +1606,7 @@ def get_hosts():
                            'last_seen_on',
                            'mac_addresses',
                            'connected_ips',
-                           'wapt',
+                           'wapt_status',
                            'uuid',
                            'md5sum',
                            'purchase_order',
@@ -1625,11 +1626,11 @@ def get_hosts():
         columns = ['uuid',
                        'host_status',
                        'last_seen_on',
-                       'update_status',
+                       'last_update_status',
                        'computer_fqdn',
                        'computer_name',
                        'description',
-                       'wapt',
+                       'wapt_status',
                        'dnsdomain',
                        'listening_protocol',
                        'listening_address',
@@ -1722,7 +1723,7 @@ def get_hosts():
                 host['reachable'] = 'UNKNOWN'
 
             """try:
-                us = host['update_status']
+                us = host['last_update_status']
                 if us.get('errors', []):
                     host['host_status'] = 'ERROR'
                 elif us.get('upgrades', []):
@@ -1832,7 +1833,7 @@ def update_hosts():
             if not 'uuid' in data:
                 raise Exception('No uuid provided in post host data')
             uuid = data["uuid"]
-            result.append(update_data(data))
+            result.append(update_host_data(data))
 
             # check if client is reachable
             if not 'check_hosts_thread' in g or not g.check_hosts_thread.is_alive():
@@ -2038,8 +2039,8 @@ class CheckHostsWaptService(threading.Thread):
                   Hosts.listening_protocol,
                   Hosts.listening_address,
                   Hosts.listening_port,
-                  Hosts.wapt,
-                  Hosts.host,
+                  Hosts.wapt_status,
+                  Hosts.host_info,
                   ]
         if self.uuids:
             where_clause = Hosts.uuid.in_(self.uuids)
