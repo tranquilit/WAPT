@@ -411,10 +411,15 @@ def create_import_data(ip='127.0.0.1',fn=None):
 
 def load_json(filenames=r'c:\tmp\*.json'):
     """Read a json host collection exported from wapt mongo and creates
-            WaptHost DB instances"""
+            Wapt PG Host DB instances"""
     import glob
     convert_map = {
         'last_query_date':'last_seen_on',
+        'update_status':'last_update_status',
+        'softwares':'installed_softwares',
+        'packages':'installed_packages',
+        'wapt':'wapt_status',
+        'host':'host_info',
     }
     for fn in glob.glob(filenames):
         print('Loading %s'%fn)
@@ -536,16 +541,14 @@ if __name__ == '__main__':
         print sys.argv[1]
         if sys.argv[1]=='init_db':
             print ("initializing wapt database")
-            init_db(False)
+            init_db(True)
             sys.exit(0)
         if sys.argv[1] == 'upgrade2postgres':
             print('upgrading from mongodb to postgres')
             comment_mongodb_lines()
-            #upgrade2postgres()
+            upgrade2postgres()
     else:
         print ("""usage :
                 python waptserver_model.py init_db
                 python waptserver_model.py upgrade2postgres
                 """)
-
-
