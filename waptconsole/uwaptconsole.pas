@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Windows, ActiveX, Types, Forms, Controls, Graphics,
   Dialogs, Buttons, FileUtil,LazFileUtils, LazUTF8, SynEdit, SynHighlighterPython,
   TplStatusBarUnit,
-  ELDsgxPropStore, OMultiPanel, RxIniPropStorage, vte_json, ExtCtrls, StdCtrls, ComCtrls,
+  vte_json, ExtCtrls, StdCtrls, ComCtrls,
   ActnList, Menus, jsonparser, superobject, VirtualTrees, VarPyth, ImgList,
   SOGrid, uvisloading, IdComponent, DefaultTranslator, GetText, uWaptConsoleRes,
   SearchEdit;
@@ -34,6 +34,7 @@ type
     ActComputerMgmt: TAction;
     ActComputerUsers: TAction;
     ActComputerServices: TAction;
+    ActmakePackageTemplate: TAction;
     ActRemoteAssist: TAction;
     ActTriggerWakeOnLan: TAction;
     ActWSUSSaveBuildRules: TAction;
@@ -82,9 +83,12 @@ type
     MenuItem23: TMenuItem;
     MenuItem33: TMenuItem;
     MenuItem50: TMenuItem;
+    MenuItem51: TMenuItem;
     MenuItem74: TMenuItem;
+    MenuItem75: TMenuItem;
     MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
+    odSelectInstaller: TOpenDialog;
     Panel13: TPanel;
     Panel14: TPanel;
     Panel8: TPanel;
@@ -368,6 +372,7 @@ type
     procedure ActDeployWaptExecute(Sender: TObject);
     procedure ActGermanExecute(Sender: TObject);
     procedure ActGermanUpdate(Sender: TObject);
+    procedure ActmakePackageTemplateExecute(Sender: TObject);
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
     procedure ActTriggerWakeOnLanExecute(Sender: TObject);
@@ -456,6 +461,9 @@ type
     procedure EdSoftwaresFilterChange(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure FormDragOver(Sender, Source: TObject; X, Y: Integer;
+      State: TDragState; var Accept: Boolean);
+    procedure FormDropFiles(Sender: TObject; const FileNames: array of String);
     procedure FormShow(Sender: TObject);
     procedure GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
@@ -540,6 +548,7 @@ type
     procedure GridLoadData(grid: TSOGrid; jsondata: string);
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
     function InventoryData(uuid: String): ISuperObject;
+    procedure MakePackageTemplate(AInstallerFileName: String);
     procedure PythonOutputSendData(Sender: TObject; const Data: ansistring);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: ISuperObject);
     procedure TriggerActionOnHostPackages(AAction, title, errortitle: String);
@@ -574,7 +583,7 @@ uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings, soutils,
   uvisgroupchoice, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
   uVisImportPackage, uVisWUAGroup, uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect, PythonEngine, Clipbrd, RegExpr, tisinifiles,
-  IdURI,uScaleDPI;
+  uScaleDPI, uVisPackageWizard;
 
 {$R *.lfm}
 
@@ -1876,6 +1885,11 @@ begin
   ActGerman.Checked := DMPython.Language='de';
 end;
 
+procedure TVisWaptGUI.ActmakePackageTemplateExecute(Sender: TObject);
+begin
+  MakePackageTemplate('');
+end;
+
 procedure TVisWaptGUI.ActRemoteAssistExecute(Sender: TObject);
 var
   ip: ansistring;
@@ -3101,6 +3115,48 @@ begin
   waptpath := ExtractFileDir(ParamStr(0));
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
 end;
+
+procedure TVisWaptGUI.FormDragOver(Sender, Source: TObject; X, Y: Integer;
+  State: TDragState; var Accept: Boolean);
+begin
+  if MainPages.ActivePage = pgPrivateRepo then
+    Accept:=True;
+end;
+
+procedure TVisWaptGUI.FormDropFiles(Sender: TObject;
+  const FileNames: array of String);
+begin
+  if MainPages.ActivePage = pgPrivateRepo then
+  begin
+    MakePackageTemplate(FileNames[0]);
+  end;
+end;
+
+procedure TVisWaptGUI.MakePackageTemplate(AInstallerFileName: String);
+var
+  installInfos,sores:ISUperObject;
+begin
+  With TVisPackageWizard.Create(self) do
+  try
+    InstallerFilename:=AInstallerFileName;
+    if (ShowModal = mrOk) then
+    begin
+      Screen.cursor := crHourGlass;
+      if FileExists(EdInstallerPath.FileName) then
+      try
+        sores := DMPython.RunJSON(format('common.wapt_sources_edit(mywapt.make_package_template(r"%s",r"%s",version="%s",description=r"%s",uninstallkey=r"%s"))',
+            [EdInstallerPath.FileName,EdPackageName.text,EdVersion.Text,EdDescription.Text,EdUninstallKey.Text]))
+      finally
+        Screen.cursor := crDefault;
+      end
+      else
+        ShowMessage('The installer filename '+EdInstallerPath.FileName+' does not exists !');
+    end;
+  finally
+    Free;
+  end;
+end;
+
 
 function TVisWaptGUI.Login: boolean;
 var

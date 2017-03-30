@@ -14,6 +14,7 @@ type
   { TVisImportPackage }
 
   TVisImportPackage = class(TForm)
+    ActPackageEdit: TAction;
     ActionList1: TActionList;
     ActionsImages: TImageList;
     ActPackageDuplicate: TAction;
@@ -23,17 +24,22 @@ type
     BitBtn2: TBitBtn;
     ButExtRepoChange: TBitBtn;
     ButPackageDuplicate: TBitBtn;
+    ButPackageDuplicate1: TBitBtn;
     butSearchExternalPackages: TBitBtn;
     cbNewerThanMine: TCheckBox;
     cbNewestOnly: TCheckBox;
     EdSearch1: TSearchEdit;
     GridExternalPackages: TSOGrid;
+    MenuItem1: TMenuItem;
     MenuItem25: TMenuItem;
     Panel1: TPanel;
     Panel8: TPanel;
     PopupMenuPackages: TPopupMenu;
     urlExternalRepo: TLabel;
     procedure ActPackageDuplicateExecute(Sender: TObject);
+    procedure ActPackageDuplicateUpdate(Sender: TObject);
+    procedure ActPackageEditExecute(Sender: TObject);
+    procedure ActPackageEditUpdate(Sender: TObject);
     procedure ActSearchExternalPackageExecute(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
     procedure ButExtRepoChangeClick(Sender: TObject);
@@ -247,6 +253,83 @@ begin
     Free;
   end;
   ModalResult:=mrOK;
+end;
+
+procedure TVisImportPackage.ActPackageDuplicateUpdate(Sender: TObject);
+begin
+  ActPackageDuplicate.Enabled:=GridExternalPackages.SelectedCount>0;
+end;
+
+procedure TVisImportPackage.ActPackageEditExecute(Sender: TObject);
+var
+  target,sourceDir: string;
+  package,uploadResult, FileName, FileNames, listPackages,Sources,aDir: ISuperObject;
+
+begin
+  if DefaultPackagePrefix='' then
+  begin
+    ShowMessage(rsWaptPackagePrefixMissing);
+    ActWAPTLocalConfig.Execute;
+    Exit;
+  end;
+
+  listPackages := TSuperObject.create(stArray);
+  for package in GridExternalPackages.SelectedRows do
+    listPackages.AsArray.Add(package.S['package']+'(='+package.S['version']+')');
+
+  //calcule liste de tous les fichiers wapt + md5  nécessaires y compris les dépendances
+  FileNames := DMPython.RunJSON(format('waptdevutils.get_packages_filenames(r"%s".decode(''utf8''),"%s",with_depends=False)',
+        [AppIniFilename,Join(',',listPackages)]));
+
+  if not DirectoryExists(AppLocalDir + 'cache') then
+    mkdir(AppLocalDir + 'cache');
+
+  with  TVisLoading.Create(Self) do
+  try
+    Sources := TSuperObject.Create(stArray) ;
+    //Téléchargement en batchs
+    for Filename in FileNames do
+    begin
+      Application.ProcessMessages;
+      ProgressTitle(
+        format(rsDownloadingPackage, [Filename.AsArray[0].AsString]));
+      target := AppLocalDir + 'cache\' + Filename.AsArray[0].AsString;
+      try
+        if not FileExists(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
+        begin
+          IdWget(WaptTemplatesRepo(AppIniFilename) + '/' + Filename.AsArray[0].AsString,
+            target, ProgressForm, @updateprogress, UseProxyForTemplates);
+          if (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
+            raise Exception.CreateFmt(rsDownloadCurrupted,[Filename.AsArray[0].AsString]);
+        end;
+      except
+        on e:Exception do
+        begin
+          ShowMessage(rsDlCanceled+' : '+e.Message);
+          if FileExists(target) then
+            DeleteFileUTF8(Target);
+          exit;
+        end;
+      end;
+    end;
+
+    for Filename in FileNames do
+    begin
+      ProgressTitle(format(rsDuplicating, [Filename.AsArray[0].AsString]));
+      Application.ProcessMessages;
+      sourceDir := DMPython.RunJSON(
+        Format('common.wapt_sources_edit(waptdevutils.duplicate_from_external_repo(r"%s",r"%s",r"",))',
+        [AppIniFilename,AppLocalDir + 'cache\' + Filename.AsArray[0].AsString])).AsString;
+    end;
+  finally
+    Free;
+  end;
+  ModalResult:=mrOK;
+end;
+
+procedure TVisImportPackage.ActPackageEditUpdate(Sender: TObject);
+begin
+  ActPackageEdit.Enabled:=GridExternalPackages.SelectedCount = 1;
 end;
 
 function TVisImportPackage.updateprogress(receiver: TObject;

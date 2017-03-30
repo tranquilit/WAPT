@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.9.4"
+__version__ = "1.3.12.0"
 
 __all__ = \
 ['CalledProcessError',
@@ -98,7 +98,7 @@ __all__ = \
  'getproductprops',
  'getsilentflags',
  'InstallerTypes',
- 'get_installer_type',
+ 'get_installer_defaults',
  'glob',
  'host_info',
  'inifile_hasoption',
@@ -3547,40 +3547,81 @@ class InstallerTypes(object):
     MozillaInstaller = 'MozillaInstaller'
 
 
-def get_installer_type(installer_path):
-    """Returns (installer_type,silentflag)"""
+def get_installer_defaults(installer_path):
+    """Returns guessed default values for package templates based on installer binary
+
+    Args:
+        installer_path (str): filepath to installer
+
+    Returns:
+        dict:
+
+    >>> get_installer_defaults(r'c:\tranquilit\wapt\tests\SumatraPDF-3.1.1-install.exe')
+    {'description': u'SumatraPDF Installer (Krzysztof Kowalczyk)',
+     'filename': 'SumatraPDF-3.1.1-install.exe',
+     'silentflags': '/VERYSILENT',
+     'simplename': u'sumatrapdf-installer',
+     'type': 'UnknownExeInstaller',
+     'version': u'3.1.1'}
+
+    >>> get_installer_defaults(r'c:\tranquilit\wapt\tests\7z920.msi')
+    {'description': u'7-Zip 9.20 (Igor Pavlov)',
+     'filename': '7z920.msi',
+     'silentflags': '/q /norestart',
+     'simplename': u'7-zip-9.20',
+     'type': 'MSI',
+     'version': u'9.20.00.0'}
+
+    """
     (product_name,ext) = os.path.splitext(installer_path)
     ext = ext.lower()
+    props = getproductprops(installer_path)
+    simplename = re.sub(r'[\s\(\)]+','-',props['product'].lower())
+    description = props['description']
+    publisher = props['publisher']
+    version = props['version'] or '0.0.0'
+
+    result = dict(filename=os.path.basename(installer_path),
+        simplename=simplename,
+        version=version,
+        description=description,
+        silentflags='',
+        type=None,
+        uninstallkey=None,
+        architecture='all')
+
     if ext == '.exe':
-        props = get_file_properties(installer_path)
-        if props.get('InternalName','').lower() == 'sfxcab.exe':
-            returns (InstallerTypes.SFXCab,'/quiet')
-        elif props.get('InternalName','').lower() == '7zs.sfx':
-            silentflag = (InstallerTypes.SFXCab,'/s')
-        elif props.get('InternalName','').lower() == 'setup launcher':
-            silentflag = (InstallerTypes.InstallShield,'/s')
-        elif props.get('InternalName','').lower() == 'wextract':
-            silentflag = (InstallerTypes.Wextract,'/Q')
+        exe_props = get_file_properties(installer_path)
+
+        if exe_props.get('InternalName','').lower() == 'sfxcab.exe':
+            result.update(dict(type=InstallerTypes.SFXCab,silentflags='/quiet'))
+        elif exe_props.get('InternalName','').lower() == '7zs.sfx':
+            result.update(dict(type=InstallerTypes.SFXCab,silentflags='/s'))
+        elif exe_props.get('InternalName','').lower() == 'setup launcher':
+            result.update(dict(type=InstallerTypes.InstallShield,silentflags='/s'))
+        elif exe_props.get('InternalName','').lower() == 'wextract':
+            result.update(dict(type=InstallerTypes.Wextract,silentflags='/Q'))
         else:
             content = open(installer_path,'rb').read(600000)
             if 'Inno.Setup' in content:
-                silentflag = (InstallerTypes.InnoSetup,'/VERYSILENT /SUPPRESSMSGBOXES /NORESTART')
+                result.update(dict(type=InstallerTypes.InnoSetup,silentflags='/VERYSILENT /SUPPRESSMSGBOXES /NORESTART'))
             elif 'Quiet installer' in content:
-                silentflag = (InstallerTypes.GenericInstaller,'-q')
+                result.update(dict(type=InstallerTypes.GenericInstaller,silentflags='-q'))
             elif 'nsis.sf.net' in content or 'Nullsoft.NSIS' in content:
-                silentflag = (InstallerTypes.NSIS,'/S')
+                result.update(dict(type=InstallerTypes.NSIS,silentflags='/S'))
             elif ('Firefox Setup' in product_name) or ('Thunderbird Setup' in product_name):
-                silentflag = (InstallerTypes.MozillaInstaller,'-ms')
+                result.update(dict(type=InstallerTypes.MozillaInstaller,silentflags='-ms'))
             else:
-                silentflag = (InstallerTypes.UnknownExeInstaller,'/VERYSILENT')
+                result.update(dict(type=InstallerTypes.UnknownExeInstaller,silentflags='/VERYSILENT'))
 
     elif ext == '.msi':
-        silentflag = (InstallerTypes.MSI,'/q /norestart')
+        msi_props = get_msi_properties(installer_path)
+        result.update(dict(type=InstallerTypes.MSI,silentflags='/q /norestart',uninstallkey=props['ProductCode']))
     elif ext == '.msu':
-        silentflag = (InstallerTypes.MSU,'/quiet /norestart')
+        result.update(dict(type=InstallerTypes.MSU,silentflags='/quiet /norestart'))
     else:
-        silentflag = (InstallerTypes.UnknownInstaller,'/VERYSILENT')
-    return silentflag
+        result.update(dict(type=InstallerTypes.UnknownInstaller,silentflags='/VERYSILENT'))
+    return result
 
 
 def getsilentflags(installer_path):
@@ -3595,7 +3636,7 @@ def getsilentflags(installer_path):
     >>> getsilentflags(r'C:\tranquilit\wapt\tests\7z920.msi')
     '/q /norestart'
     """
-    return get_installer_type(installer_path)[1]
+    return get_installer_defaults(installer_path)['silentflags']
 
 
 def getproductprops(installer_path):
@@ -3643,7 +3684,6 @@ def getproductprops(installer_path):
     props['version'] = version
     props['publisher'] = publisher
     return props
-
 
 
 def need_install(key,min_version=None,force=False,get_version=None):

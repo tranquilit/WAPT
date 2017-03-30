@@ -123,6 +123,7 @@ const
   FallBackLanguage:String = '';
 
   DefaultPackagePrefix:String = '';
+  DefaultSourcesRoot:String = '';
 
   AdvancedMode:Boolean = False;
 
@@ -958,6 +959,7 @@ begin
     AdvancedMode := IniReadBool(inifile,'global','advanced_mode',False);
 
     DefaultPackagePrefix := IniReadString(inifile,'global','default_package_prefix','');
+    DefaultSourcesRoot := IniReadString(inifile,'global','default_sources_root','');
 
     Result := True
   end;

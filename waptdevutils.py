@@ -33,7 +33,7 @@
     exported functions instead of local Wapt functions (except crypto signatures)
 
 """
-__version__ = "1.3.9.3"
+__version__ = "1.3.12.0"
 
 import sys,os
 import shutil
@@ -178,7 +178,7 @@ def update_external_repo(repourl,search_string,proxy=None,mywapt=None,newer_only
     else:
         return packages
 
-def get_packages_filenames(waptconfigfile,packages_names):
+def get_packages_filenames(waptconfigfile,packages_names,with_depends=True):
     """Returns list of package filenames (latest version) and md5 matching comma separated list of packages names and their dependencies
         helps to batch download a list of selected packages using tools like curl or wget
 
@@ -208,14 +208,14 @@ def get_packages_filenames(waptconfigfile,packages_names):
         if entries:
             pe = entries[-1]
             result.append((pe.filename,pe.md5sum,))
-            if pe.depends:
+            if with_depends and pe.depends:
                 for (fn,md5) in get_packages_filenames(waptconfigfile,pe.depends):
                     if not fn in result:
                         result.append((fn,md5,))
     return result
 
 
-def duplicate_from_external_repo(waptconfigfile,package_filename):
+def duplicate_from_external_repo(waptconfigfile,package_filename,target_directory=None):
     r"""Duplicate a downloaded package to match prefix defined in waptconfigfile
        renames all dependencies
       returns source directory
@@ -244,7 +244,7 @@ def duplicate_from_external_repo(waptconfigfile,package_filename):
     oldname = PackageEntry().load_control_from_wapt(package_filename).package
     newname = rename_package(oldname,prefix)
 
-    res = wapt.duplicate_package(package_filename,newname,build=False,auto_inc_version=True)
+    res = wapt.duplicate_package(package_filename,newname,target_directory=target_directory, build=False,auto_inc_version=True)
     result = res['source_dir']
 
     # renames dependencies
@@ -271,6 +271,7 @@ def duplicate_from_external_repo(waptconfigfile,package_filename):
         package.save_control_to_wapt(result)
 
     return result
+
 
 def check_uac():
     res = uac_enabled()

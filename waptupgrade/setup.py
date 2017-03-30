@@ -100,6 +100,10 @@ def update_sources():
          'revision.txt',
          'version',
          'vc_redist/icacls.exe',
+         'templates/setup_package_template_exe.py',
+         'templates/setup_package_template_msi.py',
+         'templates/setup_package_template_msu.py',
+         'templates/setup_package_template_dir.py',
     ]
 
     def ignore(src,names):

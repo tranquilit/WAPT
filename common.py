@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.9.1"
+__version__ = "1.3.12.0"
 import os
 import re
 import logging
@@ -5135,7 +5135,7 @@ class Wapt(object):
             logger.debug(u'  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
 
-    def make_package_template(self,installer_path,packagename='',directoryname='',section='',description='',depends=''):
+    def make_package_template(self,installer_path,packagename='',directoryname='',section='',description=None,depends='',version=None,silentflags=None,uninstallkey=None):
         r"""Build a skeleton of WAPT package based on the properties of the supplied installer
            Return the path of the skeleton
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
@@ -5160,30 +5160,35 @@ class Wapt(object):
              directoryname = os.path.abspath(directoryname)
 
         installer = os.path.basename(installer_path)
-        uninstallkey = ''
+        uninstallkey = uninstallkey or  ''
+
+        ## TODO : use get_installer_defaults
 
         if not os.path.exists(installer_path):
             raise Exception('The parameter "%s" is neither a file or a directory, it must be the path to a directory, or an .exe or .msi installer' % installer_path)
         if os.path.isfile(installer_path):
             # case of an installer
             props = setuphelpers.getproductprops(installer_path)
-            silentflags = setuphelpers.getsilentflags(installer_path)
+            silentflags = silentflags or setuphelpers.getsilentflags(installer_path)
             # for MSI, uninstallkey is in properties
-            if 'ProductCode' in props:
+            if not uninstallkey and 'ProductCode' in props:
                 uninstallkey = '"%s"' % props['ProductCode']
         else:
             # case of a directory
             props = {
                 'product':installer,
                 'description':installer,
-                'version':'0',
+                'version': '0',
                 'publisher':ensure_unicode(setuphelpers.get_current_user())
                 }
-            silentflags = ''
+            silentflags = silentflags or ''
 
         if not packagename:
             simplename = re.sub(r'[\s\(\)]+','',props['product'].lower())
             packagename = '%s-%s' %  (self.config.get('global','default_package_prefix'),simplename)
+
+        description = description or 'Automatic package for %s ' % props['description']
+        version = version or props['version']
 
         if not directoryname:
             directoryname = self.get_default_development_dir(packagename,section='base')
@@ -5207,7 +5212,7 @@ class Wapt(object):
             silentflags=silentflags,
             installer = installer,
             product=props['product'],
-            description=props['description'],
+            description=description,
             )
         setuppy_filename = os.path.join(directoryname,'setup.py')
         if not os.path.isfile(setuppy_filename):
@@ -5225,7 +5230,7 @@ class Wapt(object):
             entry = PackageEntry()
             entry.package = packagename
             entry.architecture='all'
-            entry.description = description or 'automatic package for %s ' % props['description']
+            entry.description = description
             try:
                 entry.maintainer = ensure_unicode(win32api.GetUserNameEx(3))
             except:
@@ -5236,7 +5241,7 @@ class Wapt(object):
 
             entry.priority = 'optional'
             entry.section = section or 'base'
-            entry.version = props['version']+'-0'
+            entry.version = version+'-0'
             entry.depends = depends
             if self.config.has_option('global','default_sources_url'):
                 entry.sources = self.config.get('global','default_sources_url') % {'packagename':packagename}
@@ -6087,6 +6092,27 @@ class Wapt(object):
         if not os.path.isfile(waptexit_path):
             raise Exception('Can not find %s'%waptexit_path)
         return setuphelpers.remove_shutdown_script(waptexit_path,'')
+
+def wapt_sources_edit(wapt_sources_dir):
+    """Utility to open Pyscripter with package source if it is installed
+    else open the development directory in Shell Explorer.
+    """
+    psproj_filename = os.path.join(wapt_sources_dir,'WAPT','wapt.psproj')
+    control_filename = os.path.join(wapt_sources_dir,'WAPT','control')
+    setup_filename = os.path.join(wapt_sources_dir,'setup.py')
+    pyscripter_filename = os.path.join(setuphelpers.programfiles32,
+                                       'PyScripter', 'PyScripter.exe')
+    if os.path.isfile(pyscripter_filename) and os.path.isfile(psproj_filename):
+        import psutil
+        p = psutil.Popen('"%s" --newinstance --project "%s" "%s" "%s"' % (
+                         pyscripter_filename,
+                         psproj_filename,
+                         setup_filename,
+                         control_filename),
+                         cwd=os.path.join(setuphelpers.programfiles32,
+                                          'PyScripter'))
+    else:
+        os.startfile(wapt_sources_dir)
 
 def sid_from_rid(domain_controller, rid):
     """Return SID structure based on supplied domain controller's domain and supplied rid

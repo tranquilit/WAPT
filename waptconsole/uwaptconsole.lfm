@@ -3,6 +3,7 @@ object VisWaptGUI: TVisWaptGUI
   Height = 753
   Top = 157
   Width = 1028
+  AllowDropFiles = True
   Caption = 'WAPT console'
   ClientHeight = 734
   ClientWidth = 1028
@@ -11,6 +12,8 @@ object VisWaptGUI: TVisWaptGUI
   Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDragOver = FormDragOver
+  OnDropFiles = FormDropFiles
   OnShow = FormShow
   Position = poDefault
   ShowHint = True
@@ -2710,8 +2713,8 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgWindowsUpdates: TTabSheet
       Caption = 'Windows Updates'
-      ClientHeight = 655
-      ClientWidth = 1269
+      ClientHeight = 565
+      ClientWidth = 1020
       object BitBtn9: TBitBtn
         Left = 316
         Height = 32
@@ -2734,7 +2737,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 4
         Height = 168
         Top = 50
-        Width = 1258
+        Width = 1009
         Align = alCustom
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 2
@@ -2868,7 +2871,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridWSUSAllowedClassifications: TSOGrid
         Left = 4
-        Height = 371
+        Height = 281
         Top = 242
         Width = 288
         Align = alCustom
@@ -2930,7 +2933,7 @@ object VisWaptGUI: TVisWaptGUI
       object BitBtn11: TBitBtn
         Left = 4
         Height = 32
-        Top = 621
+        Top = 531
         Width = 288
         Action = ActWUAAddAllowedClassification
         Anchors = [akLeft, akBottom]
@@ -2938,7 +2941,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridWSUSAllowedWindowsUpdates: TSOGrid
         Left = 300
-        Height = 371
+        Height = 281
         Top = 242
         Width = 560
         Anchors = [akTop, akLeft, akBottom]
@@ -3060,7 +3063,7 @@ object VisWaptGUI: TVisWaptGUI
       object BitBtn15: TBitBtn
         Left = 304
         Height = 32
-        Top = 621
+        Top = 531
         Width = 292
         Action = ActWUAAddAllowedUpdate
         Anchors = [akLeft, akBottom]
@@ -3069,7 +3072,7 @@ object VisWaptGUI: TVisWaptGUI
       object BitBtn13: TBitBtn
         Left = 872
         Height = 32
-        Top = 621
+        Top = 531
         Width = 300
         Action = ActWUAAddForbiddenUpdate
         Anchors = [akLeft, akBottom]
@@ -3077,9 +3080,9 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridWSUSForbiddenWindowsUpdates: TSOGrid
         Left = 868
-        Height = 371
+        Height = 281
         Top = 242
-        Width = 389
+        Width = 140
         Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Top = 2
         Color = clWhite
@@ -3225,14 +3228,14 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgSources: TTabSheet
       Caption = 'Sources'
-      ClientHeight = 655
-      ClientWidth = 1269
+      ClientHeight = 565
+      ClientWidth = 1020
       TabVisible = False
       inline testedit: TSynEdit
         Left = 0
-        Height = 621
+        Height = 531
         Top = 34
-        Width = 1269
+        Width = 1020
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -3751,11 +3754,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 34
         Top = 0
-        Width = 1269
+        Width = 1020
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 1269
+        ClientWidth = 1020
         TabOrder = 1
         object butInitWapt: TBitBtn
           Left = 4
@@ -4267,6 +4270,12 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActComputerServicesExecute
       OnUpdate = ActComputerServicesUpdate
     end
+    object ActmakePackageTemplate: TAction
+      Category = 'Tools'
+      Caption = 'Make package template from setup file'
+      ImageIndex = 13
+      OnExecute = ActmakePackageTemplateExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 144
@@ -4469,6 +4478,12 @@ object VisWaptGUI: TVisWaptGUI
         Action = ActCleanCache
       end
       object MenuItem17: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem51: TMenuItem
+        Action = ActmakePackageTemplate
+      end
+      object MenuItem75: TMenuItem
         Caption = '-'
       end
       object MenuItem31: TMenuItem
@@ -7069,6 +7084,13 @@ object VisWaptGUI: TVisWaptGUI
   object ApplicationProperties1: TApplicationProperties
     OnException = ApplicationProperties1Exception
     left = 360
+    top = 472
+  end
+  object odSelectInstaller: TOpenDialog
+    Title = 'Select an installer executable or msi'
+    Filter = 'Installer Files (*.exe;*.msi;*.msu;*.appx)|*.exe;*.msi;*.msu;*.appx|All files|*.*'
+    Options = [ofPathMustExist, ofEnableSizing, ofViewDetail]
+    left = 600
     top = 472
   end
 end
