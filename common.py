@@ -1391,11 +1391,15 @@ class WaptServer(object):
         else:
             self.dnsdomain = setuphelpers.get_domain_fromregistry()
 
+    def get_computer_principal(self):
+        return '%s@%s' % (setuphelpers.get_computername().upper(),self.dnsdomain.upper())
+
+
     def auth(self):
         if self._server_url:
             scheme = urlparse(self._server_url).scheme
             if scheme == 'https' and has_kerberos and self.use_kerberos:
-                return HTTPKerberosAuth(mutual_authentication=OPTIONAL)
+                return HTTPKerberosAuth(mutual_authentication=OPTIONAL,principal=self.get_computer_principal())
                 # TODO : simple auth if kerberos is not available...
             else:
                 return None
