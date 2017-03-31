@@ -3161,7 +3161,7 @@ begin
 
           uploadResult := DMPython.RunJSON(
             format(
-            'mywapt.build_upload(r"%s",private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=True)',
+            'mywapt.build_upload(r"%s".decode("utf8"),private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=True)',
             [packageSources.AsString, privateKeyPassword, waptServerUser,
             waptServerPassword]), VisWaptGUI.jsonlog);
 
