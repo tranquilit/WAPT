@@ -1011,14 +1011,14 @@ begin
       EdHostname.Text := UTF8Encode(RowSO.S['host.computer_name']);
       EdDescription.Text := UTF8Encode(RowSO.S['host.description']);
       EdOS.Text := RowSO.S['host.windows_product_infos.version'];
-      if RowSO['host.connected_ips'].DataType=stArray then
+      if (RowSO['host.connected_ips'] <> Nil) and (RowSO['host.connected_ips'].DataType=stArray) then
         EdIPAddress.Text := soutils.join(',',RowSO['host.connected_ips'])
       else
         EdIPAddress.Text := RowSO.S['host.connected_ips'];
       EdManufacturer.Text := UTF8Encode(RowSO.S['host.system_manufacturer']);
       EdModelName.Text := UTF8Encode(RowSO.S['host.system_productname']);
       EdUpdateDate.Text := UTF8Encode(RowSO.S['last_query_date']);
-      If RowSO['host.current_user'].DataType=stArray then
+      If  (RowSO['host.current_user']<>Nil) and (RowSO['host.current_user'].DataType=stArray) then
         EdUser.Text := UTF8Encode(soutils.join(',',RowSO['host.current_user']))
       else
         EdUser.Text := UTF8Encode(RowSO.S['host.current_user']);
@@ -3134,18 +3134,40 @@ end;
 
 procedure TVisWaptGUI.MakePackageTemplate(AInstallerFileName: String);
 var
-  installInfos,sores:ISUperObject;
+  installInfos,packageSources,uploadResult:ISUperObject;
+  res: Integer;
 begin
   With TVisPackageWizard.Create(self) do
   try
     InstallerFilename:=AInstallerFileName;
-    if (ShowModal = mrOk) then
+    res := ShowModal;
+    // mrYes : build-upload, mrOK : make-template only
+    if (res = mrOk) or (res = mrYes) then
     begin
       Screen.cursor := crHourGlass;
       if FileExists(EdInstallerPath.FileName) then
       try
-        sores := DMPython.RunJSON(format('common.wapt_sources_edit(mywapt.make_package_template(r"%s",r"%s",version="%s",description=r"%s",uninstallkey=r"%s"))',
-            [EdInstallerPath.FileName,EdPackageName.text,EdVersion.Text,EdDescription.Text,EdUninstallKey.Text]))
+        if res = mrOK then
+        begin
+          packageSources := DMPython.RunJSON(format('common.wapt_sources_edit(mywapt.make_package_template(r"%s".decode("utf8"),r"%s",version="%s",description=r"""%s""".decode("utf8"),uninstallkey=r"%s"))',
+              [EdInstallerPath.FileName,EdPackageName.text,EdVersion.Text,EdDescription.Text,EdUninstallKey.Text]));
+          ShowMessage('The package sources are available in '+packageSources.AsString);
+        end
+        else
+        begin
+          // returns the dev sources path
+          packageSources := DMPython.RunJSON(format('mywapt.make_package_template(r"%s".decode("utf8"),r"%s",version="%s",description=r"""%s""".decode("utf8"),uninstallkey=r"%s")',
+              [EdInstallerPath.FileName,EdPackageName.text,EdVersion.Text,EdDescription.Text,EdUninstallKey.Text]));
+
+          uploadResult := DMPython.RunJSON(
+            format(
+            'mywapt.build_upload(r"%s",private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=True)',
+            [packageSources.AsString, privateKeyPassword, waptServerUser,
+            waptServerPassword]), VisWaptGUI.jsonlog);
+
+          ActPackagesUpdate.Execute;
+          ShowMessage('The package is built and uploaded and sources are available in '+packageSources.AsString);
+        end;
       finally
         Screen.cursor := crDefault;
       end

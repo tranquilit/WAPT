@@ -6095,7 +6095,13 @@ class Wapt(object):
 
 def wapt_sources_edit(wapt_sources_dir):
     """Utility to open Pyscripter with package source if it is installed
-    else open the development directory in Shell Explorer.
+        else open the development directory in Shell Explorer.
+
+    Args
+        wapt_sources_dir (str): directory path of  teh wapt package sources
+
+    Returns:
+        str: sources path
     """
     psproj_filename = os.path.join(wapt_sources_dir,'WAPT','wapt.psproj')
     control_filename = os.path.join(wapt_sources_dir,'WAPT','control')
@@ -6113,6 +6119,7 @@ def wapt_sources_edit(wapt_sources_dir):
                                           'PyScripter'))
     else:
         os.startfile(wapt_sources_dir)
+    return wapt_sources_dir
 
 def sid_from_rid(domain_controller, rid):
     """Return SID structure based on supplied domain controller's domain and supplied rid

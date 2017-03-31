@@ -15,15 +15,18 @@ object VisPackageWizard: TVisPackageWizard
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
     HelpButton.Name = 'HelpButton'
-    HelpButton.Caption = '&Show config file'
+    HelpButton.Hint = 'Build the package, sign it and upload to default repository.'
+    HelpButton.Caption = 'Build and upload...'
     HelpButton.DefaultCaption = False
+    HelpButton.Enabled = False
+    HelpButton.OnClick = HelpButtonClick
     CloseButton.Name = 'CloseButton'
     CloseButton.DefaultCaption = True
     CloseButton.Enabled = False
     CancelButton.Name = 'CancelButton'
     CancelButton.DefaultCaption = True
-    TabOrder = 0
-    ShowButtons = [pbOK, pbCancel]
+    TabOrder = 3
+    ShowButtons = [pbOK, pbCancel, pbHelp]
   end
   object EdPackageName: TLabeledEdit
     Left = 104
@@ -55,7 +58,7 @@ object VisPackageWizard: TVisPackageWizard
     ButtonWidth = 23
     NumGlyphs = 1
     MaxLength = 0
-    TabOrder = 2
+    TabOrder = 0
   end
   object Label1: TLabel
     Left = 20
@@ -74,11 +77,11 @@ object VisPackageWizard: TVisPackageWizard
     BevelOuter = bvNone
     ClientHeight = 128
     ClientWidth = 504
-    TabOrder = 3
+    TabOrder = 2
     object EdUninstallKey: TLabeledEdit
       Left = 104
       Height = 21
-      Top = 104
+      Top = 95
       Width = 376
       EditLabel.AnchorSideTop.Control = EdUninstallKey
       EditLabel.AnchorSideTop.Side = asrCenter
@@ -87,7 +90,7 @@ object VisPackageWizard: TVisPackageWizard
       EditLabel.AnchorSideBottom.Side = asrBottom
       EditLabel.Left = 41
       EditLabel.Height = 13
-      EditLabel.Top = 108
+      EditLabel.Top = 99
       EditLabel.Width = 60
       EditLabel.Caption = 'Uninstall key'
       EditLabel.ParentColor = False
@@ -168,11 +171,11 @@ object VisPackageWizard: TVisPackageWizard
       EditLabel.AnchorSideRight.Control = EdVersion
       EditLabel.AnchorSideBottom.Control = EdVersion
       EditLabel.AnchorSideBottom.Side = asrBottom
-      EditLabel.Left = 66
+      EditLabel.Left = 19
       EditLabel.Height = 13
       EditLabel.Top = 4
-      EditLabel.Width = 35
-      EditLabel.Caption = 'Version'
+      EditLabel.Width = 82
+      EditLabel.Caption = 'Software Version'
       EditLabel.ParentColor = False
       LabelPosition = lpLeft
       TabOrder = 4

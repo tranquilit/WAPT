@@ -25,6 +25,7 @@ type
     Label2: TLabel;
     Panel1: TPanel;
     procedure EdInstallerPathAcceptFileName(Sender: TObject; var Value: String);
+    procedure HelpButtonClick(Sender: TObject);
   private
     FInstallerFilename: String;
     procedure SetInstallerFilename(AValue: String);
@@ -51,6 +52,11 @@ begin
   InstallerFilename:=Value;
 end;
 
+procedure TVisPackageWizard.HelpButtonClick(Sender: TObject);
+begin
+  ModalResult:=mrYes;
+end;
+
 procedure TVisPackageWizard.SetInstallerFilename(AValue: String);
 var
   installInfos,sores:ISUperObject;
@@ -62,10 +68,12 @@ begin
   begin
     installInfos := DMPython.RunJSON(Format('setuphelpers.get_installer_defaults(r"%s")',[AValue]));
     EdPackageName.text := DefaultPackagePrefix+'-'+installInfos.S['simplename'];
-    EdDescription.Text := installInfos.S['description'];
+    EdDescription.Text := UTF8Encode(installInfos.S['description']);
     EdVersion.Text := installInfos.S['version'];
     EdSilentFlags.Text := installInfos.S['silentflags'];
     EdUninstallKey.Text := installInfos.S['uninstallkey'];
+
+    ButtonPanel1.HelpButton.Enabled:= ExtractFileExt(FInstallerFilename) ='.msi';
   end;
 end;
 
