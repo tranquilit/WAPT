@@ -496,6 +496,55 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
+#: tvispackagewizard.buttonpanel1.helpbutton.caption
+msgid "Build and upload..."
+msgstr ""
+
+#: tvispackagewizard.buttonpanel1.helpbutton.hint
+msgid "Build the package, sign it and upload to default repository."
+msgstr ""
+
+#: tvispackagewizard.caption
+msgid "Package Wizard"
+msgstr ""
+
+#: tvispackagewizard.edarchitecture.text
+msgid "all"
+msgstr ""
+
+#: tvispackagewizard.eddescription.editlabel.caption
+msgctxt "tvispackagewizard.eddescription.editlabel.caption"
+msgid "Description"
+msgstr ""
+
+#: tvispackagewizard.edpackagename.editlabel.caption
+msgid "Package name"
+msgstr ""
+
+#: tvispackagewizard.edsilentflags.editlabel.caption
+msgid "Silent flags"
+msgstr ""
+
+#: tvispackagewizard.edsilentflags.text
+msgid "/VERYSILENT"
+msgstr ""
+
+#: tvispackagewizard.eduninstallkey.editlabel.caption
+msgid "Uninstall key"
+msgstr ""
+
+#: tvispackagewizard.edversion.editlabel.caption
+msgid "Software Version"
+msgstr ""
+
+#: tvispackagewizard.label1.caption
+msgid "Installer / Setup"
+msgstr ""
+
+#: tvispackagewizard.label2.caption
+msgid "Architecture"
+msgstr ""
+
 #: tvisprivatekeyauth.caption
 msgid "Private key authentication"
 msgstr ""

@@ -75,7 +75,7 @@ begin
   EdInstallerPath.FileName:=FInstallerFilename;
   if (AValue <> '') and FileExists(AValue) then
   begin
-    installInfos := DMPython.RunJSON(Format('setuphelpers.get_installer_defaults(r"%s")',[AValue]));
+    installInfos := DMPython.RunJSON(Format('setuphelpers.get_installer_defaults(r"%s".decode("utf8"))',[AValue]));
     EdPackageName.text := DefaultPackagePrefix+'-'+installInfos.S['simplename'];
     EdDescription.Text := UTF8Encode(installInfos.S['description']);
     EdVersion.Text := installInfos.S['version'];

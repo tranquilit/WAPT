@@ -515,6 +515,55 @@ msgstr "Utilisateur"
 msgid "Password"
 msgstr "Mot de passe"
 
+#: tvispackagewizard.buttonpanel1.helpbutton.caption
+msgid "Build and upload..."
+msgstr ""
+
+#: tvispackagewizard.buttonpanel1.helpbutton.hint
+msgid "Build the package, sign it and upload to default repository."
+msgstr ""
+
+#: tvispackagewizard.caption
+msgid "Package Wizard"
+msgstr ""
+
+#: tvispackagewizard.edarchitecture.text
+msgid "all"
+msgstr ""
+
+#: tvispackagewizard.eddescription.editlabel.caption
+msgctxt "tvispackagewizard.eddescription.editlabel.caption"
+msgid "Description"
+msgstr "Description"
+
+#: tvispackagewizard.edpackagename.editlabel.caption
+msgid "Package name"
+msgstr ""
+
+#: tvispackagewizard.edsilentflags.editlabel.caption
+msgid "Silent flags"
+msgstr ""
+
+#: tvispackagewizard.edsilentflags.text
+msgid "/VERYSILENT"
+msgstr ""
+
+#: tvispackagewizard.eduninstallkey.editlabel.caption
+msgid "Uninstall key"
+msgstr ""
+
+#: tvispackagewizard.edversion.editlabel.caption
+msgid "Software Version"
+msgstr ""
+
+#: tvispackagewizard.label1.caption
+msgid "Installer / Setup"
+msgstr ""
+
+#: tvispackagewizard.label2.caption
+msgid "Architecture"
+msgstr ""
+
 #: tvisprivatekeyauth.caption
 msgid "Private key authentication"
 msgstr "Authentification de la clé privée"
@@ -2220,6 +2269,11 @@ msgstr ""
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -2286,6 +2340,9 @@ msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 #: uwaptconsoleres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
@@ -2634,6 +2691,9 @@ msgstr "Erreur lors de la création du paquet : %s"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -2847,6 +2907,9 @@ msgstr "Attention, waptsetup-tis.exe ou waptagent.exe ne sont pas présents sur 
 #| "Warning, the version of the waptagent.exe installer is too old.\n"
 #| "Current waptagent.exe version: %s\n"
 #| "waptsetup-tis.exe version: %s\n"
+#| "Warning, the version of the waptagent.exe installer is too old.\n"
+#| "Current waptagent.exe version: %s\n"
+#| "waptsetup-tis.exe version: %s\n"
 msgid ""
 "Warning, the version of the waptagent.exe installer is too old.\n"
 "Current waptagent.exe version: %s\n"
@@ -2897,6 +2960,8 @@ msgstr "Vous devez d'abord définir le préfixe des paquets dans les préférenc
 #| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -2907,6 +2972,9 @@ msgstr ""
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
 #| msgid ""
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
 #| "Required server version: %s\n"
@@ -2930,6 +2998,8 @@ msgstr "Erreur lors de la création de l'agent : %s"
 #: uwaptconsoleres.rswaptsetupuploadsuccess
 #, fuzzy
 #| msgid ""
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
