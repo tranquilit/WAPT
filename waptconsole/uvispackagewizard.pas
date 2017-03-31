@@ -5,8 +5,8 @@ unit uVisPackageWizard;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, SynEdit, Forms, Controls, Graphics, Dialogs,
-  ButtonPanel, ExtCtrls, EditBtn, StdCtrls;
+  SysUtils, Forms, Controls,
+  ButtonPanel, ExtCtrls, EditBtn, StdCtrls, Classes,DefaultTranslator;
 
 type
 
@@ -25,6 +25,7 @@ type
     Label2: TLabel;
     Panel1: TPanel;
     procedure EdInstallerPathAcceptFileName(Sender: TObject; var Value: String);
+    procedure FormCreate(Sender: TObject);
     procedure HelpButtonClick(Sender: TObject);
   private
     FInstallerFilename: String;
@@ -40,7 +41,7 @@ var
 
 implementation
 
-uses dmwaptpython,superobject,waptcommon;
+uses dmwaptpython,superobject,uWaptRes,uWaptConsoleRes,waptcommon,UScaleDPI;
 
 {$R *.lfm}
 
@@ -50,6 +51,14 @@ procedure TVisPackageWizard.EdInstallerPathAcceptFileName(Sender: TObject;
   var Value: String);
 begin
   InstallerFilename:=Value;
+end;
+
+procedure TVisPackageWizard.FormCreate(Sender: TObject);
+begin
+  ScaleDPI(Self,96); // 96 is the DPI you designed
+  //ScaleImageList(ImageList1,96);
+  //ScaleImageList(ActionsImages,96);
+
 end;
 
 procedure TVisPackageWizard.HelpButtonClick(Sender: TObject);

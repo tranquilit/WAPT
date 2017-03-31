@@ -6,6 +6,7 @@ object VisPackageWizard: TVisPackageWizard
   Caption = 'Package Wizard'
   ClientHeight = 255
   ClientWidth = 504
+  OnCreate = FormCreate
   LCLVersion = '1.3'
   object ButtonPanel1: TButtonPanel
     Left = 6

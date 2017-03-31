@@ -5,8 +5,8 @@ unit uVisCreateKey;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  StdCtrls, Buttons, EditBtn, DefaultTranslator, uWaptConsoleRes;
+  Classes, SysUtils, Forms, Controls, Dialogs, ExtCtrls,
+  StdCtrls, Buttons, EditBtn, DefaultTranslator;
 
 type
 
@@ -51,7 +51,7 @@ implementation
 {$R *.lfm}
 
 uses
-  uWaptRes,uSCaleDPI, dmwaptpython;
+  uWaptConsoleRes,uWaptRes,uSCaleDPI, dmwaptpython;
 
 { TVisCreateKey }
 

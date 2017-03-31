@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  StdCtrls, DefaultTranslator, uWaptConsoleRes;
+  StdCtrls, DefaultTranslator;
 
 type
 
@@ -29,7 +29,7 @@ var
   VisApropos: TVisApropos;
 
 implementation
-uses tiscommon,waptcommon,LCLIntf,UScaleDPI;
+uses uWaptConsoleRes,tiscommon,waptcommon,LCLIntf,UScaleDPI;
 {$R *.lfm}
 
 { TVisApropos }

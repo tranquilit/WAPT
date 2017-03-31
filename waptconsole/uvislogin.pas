@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, Buttons, ButtonPanel, LCLType,uwaptconsole,waptcommon, DefaultTranslator,UScaleDPI;
+  ExtCtrls, Buttons, ButtonPanel, LCLType;
 
 type
 
@@ -38,7 +38,7 @@ var
   VisLogin: TVisLogin;
 
 implementation
-uses tiscommon;
+uses uwaptconsole,waptcommon, DefaultTranslator,UScaleDPI,tiscommon;
 {$R *.lfm}
 
 { TVisLogin }

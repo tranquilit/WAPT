@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   Buttons, ComCtrls, StdCtrls, ActnList, Menus, sogrid, DefaultTranslator,
-  uWaptConsoleRes, VirtualTrees, superobject,SearchEdit;
+  VirtualTrees, superobject,SearchEdit;
 
 type
 
@@ -66,7 +66,7 @@ var
 implementation
 
 uses uwaptconsole,tiscommon,soutils,waptcommon,
-    dmwaptpython,uvisloading,uvisprivatekeyauth, uWaptRes,md5,uScaleDPI;
+    dmwaptpython,uvisloading,uvisprivatekeyauth, uWaptRes,md5,uScaleDPI,uWaptConsoleRes;
 
 {$R *.lfm}
 

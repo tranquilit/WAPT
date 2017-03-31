@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ButtonPanel,
-  ExtCtrls, DefaultTranslator, uWaptConsoleRes;
+  ExtCtrls, DefaultTranslator;
 
 type
 
@@ -29,7 +29,7 @@ var
   VisChangePassword: TVisChangePassword;
 
 implementation
-uses waptcommon,UScaleDPI;
+uses uWaptConsoleRes,waptcommon,UScaleDPI;
 
 {$R *.lfm}
 

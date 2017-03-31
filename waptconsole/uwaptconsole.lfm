@@ -427,6 +427,7 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'host.domain_controller'
           end        
           item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 20
             Tag = 20
             Text = 'Groups'

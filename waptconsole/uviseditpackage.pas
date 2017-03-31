@@ -10,7 +10,7 @@ uses
   Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, Buttons,
   superobject, VirtualTrees,
   VarPyth, types, ActiveX, LCLIntf, LCL, sogrid, vte_json, DefaultTranslator,
-  uWaptConsoleRes,SearchEdit;
+  SearchEdit;
 
 type
 
@@ -164,7 +164,7 @@ var
 
 implementation
 
-uses soutils, LCLType, waptcommon, dmwaptpython, jwawinuser, uvisloading,
+uses uWaptConsoleRes,soutils, LCLType, waptcommon, dmwaptpython, jwawinuser, uvisloading,
   uvisprivatekeyauth, uwaptconsole, tiscommon, uWaptRes,UScaleDPI;
 
 {$R *.lfm}

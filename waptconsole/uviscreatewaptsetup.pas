@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  EditBtn, ExtCtrls, Buttons, ActnList, DefaultTranslator, uWaptConsoleRes;
+  EditBtn, ExtCtrls, Buttons, ActnList, DefaultTranslator;
 
 type
 
@@ -45,7 +45,7 @@ implementation
 {$R *.lfm}
 
 uses
-  uWaptRes,UScaleDPI, dmwaptpython;
+  uWaptConsoleRes,uWaptRes,UScaleDPI, dmwaptpython;
 
 { TVisCreateWaptSetup }
 procedure TVisCreateWaptSetup.FormCloseQuery(Sender: TObject; var CanClose: boolean);
