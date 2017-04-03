@@ -314,7 +314,7 @@ def wapthosts_json(model_class, instance, created):
                 instance.host_status = 'ERROR'
             elif instance.last_update_status.get('upgrades', []):
                 instance.host_status = 'TO-UPGRADE'
-        if not instance.host_status:
+        if not instance.host_status and instance.installed_packages:
             for package in instance.installed_packages:
                 if package['install_status'] == 'ERROR':
                     instance.host_status = 'ERROR'
@@ -326,13 +326,14 @@ def wapthosts_json(model_class, instance, created):
             instance.host_status = 'OK'
 
     # stores packages json data into separate HostPackagesStatus
-    if (not created and Hosts.installed_packages in instance.dirty_fields):
+    if not created and Hosts.installed_packages in instance.dirty_fields:
         HostPackagesStatus.delete().where(HostPackagesStatus.host == instance.uuid).execute()
         packages = []
-        for package in instance.installed_packages:
-            package['host'] = instance.uuid
-            # remove all unknown fields from json data
-            packages.append(dict( [(k,v) for k,v in package.iteritems() if k in HostPackagesStatus._meta.fields] ))
+        if instance.installed_packages:
+            for package in instance.installed_packages:
+                package['host'] = instance.uuid
+                # remove all unknown fields from json data
+                packages.append(dict( [(k,v) for k,v in package.iteritems() if k in HostPackagesStatus._meta.fields] ))
         if packages:
             HostPackagesStatus.insert_many(packages).execute()
 
