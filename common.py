@@ -5213,6 +5213,7 @@ class Wapt(object):
             installer = installer,
             product=props['product'],
             description=description,
+            version=version,
             )
         setuppy_filename = os.path.join(directoryname,'setup.py')
         if not os.path.isfile(setuppy_filename):
