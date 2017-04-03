@@ -3304,7 +3304,7 @@ class Wapt(object):
         try:
             return self.run(*cmd,**args)
         except Exception as e:
-            print(u'Warning : %s' % e)
+            print('Warning : %s' % repr(e))
             return ''
 
     def install_wapt(self,fname,params_dict={},explicit_by=None):

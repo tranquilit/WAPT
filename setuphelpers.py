@@ -1158,7 +1158,7 @@ def run_notfatal(*cmd,**args):
     try:
         return run(*cmd,**args)
     except Exception as e:
-        print(u'Warning : %s' % ensure_unicode(e))
+        print('Warning : %s' % repr(e))
         return ''
 
 

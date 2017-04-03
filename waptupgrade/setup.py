@@ -272,6 +272,17 @@ def windows_version():
     except:
         return Version(platform.win32_ver()[1])
 
+# recopied here as the code in wapt < 1.3.12 is bugged in case of decode errors.
+def run_notfatal(*cmd,**args):
+    """Runs the command and wait for it termination, returns output
+    Ignore exit status code of command, return '' instead
+    """
+    try:
+        return run(*cmd,**args)
+    except Exception as e:
+        print('Warning : %s' % repr(e))
+        return ''
+
 def create_onetime_task(name,cmd,parameters=None, delay_minutes=2,max_runtime=10, retry_count=3,retry_delay_minutes=1):
     """creates a one time Windows scheduled task and activate it.
     """
