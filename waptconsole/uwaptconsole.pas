@@ -3676,7 +3676,7 @@ procedure TVisWaptGUI.GridPackagesChange(Sender: TBaseVirtualTree; Node: PVirtua
 begin
   if GridPackages.FocusedRow <> Nil then
   begin
-    MemoGroupeDescription.Lines.Text := GridPackages.FocusedRow.S['description'];
+    MemoGroupeDescription.Lines.Text := UTF8Encode(GridPackages.FocusedRow.S['description']);
     EdPackage.Text:=GridPackages.FocusedRow.S['package'];
     EdVersion.Text:=GridPackages.FocusedRow.S['version'];
     EdDepends.Lines.Text := StringReplace(GridPackages.FocusedRow.S['depends'],',',#13#10,[rfReplaceAll]);
