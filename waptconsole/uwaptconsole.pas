@@ -2277,7 +2277,7 @@ end;
 
 procedure TVisWaptGUI.ActHelpExecute(Sender: TObject);
 begin
-  OpenDocument('http://dev.tranquil.it/index.php/WAPT_-_apt-get_pour_Windows');
+  OpenDocument('https://doc.wapt.fr');
 end;
 
 procedure TVisWaptGUI.ActHostsActionsUpdate(Sender: TObject);

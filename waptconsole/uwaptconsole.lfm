@@ -23,9 +23,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 591
     Top = 0
     Width = 1028
-    ActivePage = pgPrivateRepo
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -2294,6 +2294,7 @@ object VisWaptGUI: TVisWaptGUI
             MaxWidth = 100
             Position = 0
             Text = 'Section'
+            Width = 71
             PropertyName = 'section'
           end        
           item
@@ -2301,7 +2302,7 @@ object VisWaptGUI: TVisWaptGUI
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 1
             Text = 'Package'
-            Width = 180
+            Width = 125
             PropertyName = 'package'
           end        
           item
@@ -2309,7 +2310,7 @@ object VisWaptGUI: TVisWaptGUI
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 2
             Text = 'Version'
-            Width = 94
+            Width = 79
             PropertyName = 'version'
           end        
           item
@@ -2325,13 +2326,13 @@ object VisWaptGUI: TVisWaptGUI
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 4
             Text = 'Dependencies'
-            Width = 345
+            Width = 108
             PropertyName = 'depends'
           end        
           item
             Position = 5
             Text = 'Conflicts'
-            Width = 205
+            Width = 127
             PropertyName = 'conflicts'
           end        
           item
@@ -2350,9 +2351,59 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             Position = 8
+            Tag = 10
             Text = 'Signer'
-            Width = 122
+            Width = 106
             PropertyName = 'signer'
+          end        
+          item
+            Position = 9
+            Tag = 11
+            Text = 'Sign on'
+            Width = 109
+            PropertyName = 'signature_date'
+          end        
+          item
+            Position = 10
+            Tag = 7
+            Text = 'Arch'
+            Width = 53
+            PropertyName = 'architecture'
+          end        
+          item
+            Position = 11
+            Tag = 8
+            Text = 'Locale'
+            Width = 53
+            PropertyName = 'locale'
+          end        
+          item
+            Position = 12
+            Tag = 9
+            Text = 'Maturity'
+            Width = 59
+            PropertyName = 'maturity'
+          end        
+          item
+            Position = 13
+            Tag = 12
+            Text = 'Min OS version'
+            Width = 60
+            PropertyName = 'min_os_version'
+          end        
+          item
+            Position = 14
+            Tag = 13
+            Text = 'Max OS version'
+            Width = 63
+            PropertyName = 'max_os_version'
+          end        
+          item
+            Position = 15
+            Tag = 14
+            Text = 'Min Wapt version'
+            Width = 69
+            PropertyName = 'min_wapt_version'
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
