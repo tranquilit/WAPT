@@ -394,7 +394,7 @@ def add_ads_groups(waptconfigfile,hosts_list,wapt_server_user,wapt_server_passwd
             print('Computer %s... ' % hostname)
 
             groups = get_computer_groups(h['host']['computer_name'])
-            wapt_groups = h['depends']
+            wapt_groups = h.get('depends',[])
             additional = [ group for group in groups if not group in wapt_groups and wapt.is_available(group) ]
 
             if additional:
