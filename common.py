@@ -4458,6 +4458,7 @@ class Wapt(object):
         self.delete_param('uuid')
         inv = self.inventory()
         inv['uuid'] = self.host_uuid
+        inv['update_status'] = self.get_last_update_status()
         if self.waptserver:
             return self.waptserver.post('add_host',data = json.dumps(inv))
         else:
