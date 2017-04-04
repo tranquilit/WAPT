@@ -3354,6 +3354,13 @@ begin
       StrReplace(CellText, ',', #13#10, [rfReplaceAll]);
     if (colname = 'size') or (colname ='installed_size') then
       CellText := FormatFloat('# ##0 kB',StrToInt64(CellText) div 1024);
+
+    // awfull hack to workaround the bad wordwrap break of last line for multilines cells...
+    // the problem is probably in the LCL... ?
+    if  (colname = 'description') or (colname = 'depends') or (colname = 'conflicts') then
+      CellText := CellText + #13#10;
+    if (colname = 'description') then
+      CellText := UTF8Encode(Celltext);
   end;
 end;
 
