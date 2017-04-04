@@ -3979,6 +3979,7 @@ object VisWaptGUI: TVisWaptGUI
       Hint = 'Edit host configuration'
       ImageIndex = 10
       OnExecute = ActEditHostPackageExecute
+      OnUpdate = ActEditHostPackageUpdate
     end
     object ActPackagesUpdate: TAction
       Category = 'Host'

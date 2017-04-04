@@ -82,13 +82,15 @@ resourcestring
 
   rsWaptPackagePrefixMissing = 'You must first define the Package prefix in preferences';
 
+  rsPackageSourcesAvailable = 'The package sources are available in %s';
+  rsPackageBuiltSourcesAvailable = 'The package is built and uploaded and sources are available in %s';
+  rsInstallerFileNotFound =  'The installer filename %s does not exists !';
+
   rsConfirmRmPackagesFromHost = 'Are you sure you want to remove %s package(s) from the selected host(s) %s ?';
   rsPackageRemoveError = 'Error while removing package %s: %s';
 
   rsConfirmPackageInstall = 'Are you sure you want to install/upgrade %s package(s) for the selected host(s) %s ?';
   rsPackageInstallError = 'Error while triggering package install/upgrade %s: %s';
-
-
 
   rsReallowPackagesOnHost = 'Selection of package(s) to remove from conflict list';
   rsRmBundleFromHosts = 'Selection of package bundles for removing from the selected hosts';

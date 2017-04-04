@@ -370,6 +370,7 @@ type
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActDeployWaptExecute(Sender: TObject);
+    procedure ActEditHostPackageUpdate(Sender: TObject);
     procedure ActGermanExecute(Sender: TObject);
     procedure ActGermanUpdate(Sender: TObject);
     procedure ActmakePackageTemplateExecute(Sender: TObject);
@@ -1875,6 +1876,11 @@ begin
     end;
 end;
 
+procedure TVisWaptGUI.ActEditHostPackageUpdate(Sender: TObject);
+begin
+  ActEditHostPackage.Enabled:=(GridHosts.SelectedCount=1);
+end;
+
 procedure TVisWaptGUI.ActGermanExecute(Sender: TObject);
 begin
   DMPython.Language:='de';
@@ -3150,7 +3156,7 @@ begin
         begin
           packageSources := DMPython.RunJSON(format('common.wapt_sources_edit(mywapt.make_package_template(r"%s".decode("utf8"),r"%s",version="%s",description=r"""%s""".decode("utf8"),uninstallkey=r"%s"))',
               [EdInstallerPath.FileName,EdPackageName.text,EdVersion.Text,EdDescription.Text,EdUninstallKey.Text]));
-          ShowMessage('The package sources are available in '+packageSources.AsString);
+          ShowMessageFmt(rsPackageSourcesAvailable,[packageSources.AsString]);
         end
         else
         begin
@@ -3165,13 +3171,13 @@ begin
             waptServerPassword]), VisWaptGUI.jsonlog);
 
           ActPackagesUpdate.Execute;
-          ShowMessage('The package is built and uploaded and sources are available in '+packageSources.AsString);
+          ShowMessageFmt(rsPackageBuiltSourcesAvailable,[packageSources.AsString]);
         end;
       finally
         Screen.cursor := crDefault;
       end
       else
-        ShowMessage('The installer filename '+EdInstallerPath.FileName+' does not exists !');
+        ShowMessageFmt(rsInstallerFileNotFound,[EdInstallerPath.FileName]);
     end;
   finally
     Free;
