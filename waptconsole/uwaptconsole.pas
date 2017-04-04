@@ -3414,6 +3414,7 @@ begin
         'OK': ImageIndex := 0;
         'ERROR': ImageIndex := 2;
         'NEED-UPGRADE': ImageIndex := 1;
+        'RUNNING': ImageIndex := 6;
         'MISSING': ImageIndex := 7;
       end;
     end;

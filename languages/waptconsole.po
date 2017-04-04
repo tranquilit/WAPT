@@ -414,6 +414,10 @@ msgstr ""
 msgid "Import..."
 msgstr ""
 
+#: tvisimportpackage.actpackageedit.caption
+msgid "Download and Edit"
+msgstr ""
+
 #: tvisimportpackage.actrefresh.caption
 msgctxt "TVISIMPORTPACKAGE.ACTREFRESH.CAPTION"
 msgid "Refresh"

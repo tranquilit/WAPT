@@ -144,6 +144,7 @@ object VisImportPackage: TVisImportPackage
         MaxWidth = 400
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
         Position = 1
+        Tag = 1
         Text = 'Package'
         Width = 223
         PropertyName = 'package'
@@ -152,6 +153,7 @@ object VisImportPackage: TVisImportPackage
         MaxWidth = 200
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
         Position = 2
+        Tag = 2
         Text = 'Version'
         Width = 97
         PropertyName = 'version'
@@ -160,6 +162,7 @@ object VisImportPackage: TVisImportPackage
         MaxWidth = 400
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
         Position = 3
+        Tag = 3
         Text = 'Description'
         Width = 203
         PropertyName = 'description'
@@ -168,6 +171,7 @@ object VisImportPackage: TVisImportPackage
         MaxWidth = 400
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
         Position = 4
+        Tag = 4
         Text = 'Dependencies'
         Width = 197
         PropertyName = 'depends'
@@ -175,6 +179,7 @@ object VisImportPackage: TVisImportPackage
       item
         Alignment = taRightJustify
         Position = 5
+        Tag = 5
         Text = 'Size'
         Width = 88
         PropertyName = 'size'
@@ -183,9 +188,66 @@ object VisImportPackage: TVisImportPackage
         Alignment = taRightJustify
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
         Position = 6
+        Tag = 6
         Text = 'Installed Size'
         Width = 127
         PropertyName = 'installed_size'
+      end    
+      item
+        Position = 7
+        Tag = 7
+        Text = 'Arch'
+        Width = 53
+        PropertyName = 'architecture'
+      end    
+      item
+        Position = 8
+        Tag = 8
+        Text = 'Locale'
+        Width = 53
+        PropertyName = 'locale'
+      end    
+      item
+        Position = 9
+        Tag = 9
+        Text = 'Maturity'
+        Width = 59
+        PropertyName = 'maturity'
+      end    
+      item
+        Position = 10
+        Tag = 10
+        Text = 'Signer'
+        Width = 106
+        PropertyName = 'signer'
+      end    
+      item
+        Position = 11
+        Tag = 11
+        Text = 'Sign on'
+        Width = 109
+        PropertyName = 'signature_date'
+      end    
+      item
+        Position = 12
+        Tag = 12
+        Text = 'Min OS version'
+        Width = 60
+        PropertyName = 'min_os_version'
+      end    
+      item
+        Position = 13
+        Tag = 13
+        Text = 'Max OS version'
+        Width = 63
+        PropertyName = 'max_os_version'
+      end    
+      item
+        Position = 14
+        Tag = 14
+        Text = 'Min Wapt version'
+        Width = 69
+        PropertyName = 'min_wapt_version'
       end>
     Header.DefaultHeight = 17
     Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
