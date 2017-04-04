@@ -906,7 +906,8 @@ begin
   end;
 end;
 
-
+// Read Wapt config from inifile, set global const wapt_config_filename
+// if inifile is empty, read from result of WaptIniFilename (wapt_config_filename if set, appinifile if exists, else wapt-get.ini)
 function ReadWaptConfig(inifile:String = ''): Boolean;
 var
   i: Integer;
@@ -917,7 +918,7 @@ begin
   if inifile='' then
     inifile:=WaptIniFilename;
 
-  if (inifile<>'') and  (wapt_config_filename='') then
+  if (inifile<>'') then
     wapt_config_filename := inifile;
 
   if not FileExistsUTF8(inifile) then

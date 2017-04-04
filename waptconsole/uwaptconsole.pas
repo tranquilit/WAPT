@@ -10,7 +10,7 @@ uses
   TplStatusBarUnit,
   vte_json, ExtCtrls, StdCtrls, ComCtrls,
   ActnList, Menus, jsonparser, superobject, VirtualTrees, VarPyth, ImgList,
-  SOGrid, uvisloading, IdComponent, DefaultTranslator, GetText, uWaptConsoleRes,
+  SOGrid, uvisloading, IdComponent, DefaultTranslator, GetText,
   SearchEdit;
 
 type
@@ -577,7 +577,7 @@ var
 
 implementation
 
-uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings, soutils,
+uses LCLIntf, LCLType, IniFiles, uWaptConsoleRes, uvisprivatekeyauth, tisstrings, soutils,
   waptcommon, waptwinutils, tiscommon, uVisCreateKey, uVisCreateWaptSetup,
   dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
   uvisgroupchoice, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
@@ -3077,8 +3077,7 @@ begin
 
   finally
     inifile.Free;
-    waptcommon.ReadWaptConfig(AppIniFilename);
-    DMPython.Language:=Language;
+
   end;
 end;
 
