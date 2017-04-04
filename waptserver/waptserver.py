@@ -1196,6 +1196,8 @@ def hosts_delete():
                         if os.path.isfile(fn):
                             result['files'].append(fn)
                             os.remove(fn)
+
+                update_packages(hosts_packages_repo)
                 msg.append('{} files removed from host repository'.format(len(result['files'])))
             else:
                 msg.append('No host found in DB')
