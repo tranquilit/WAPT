@@ -222,7 +222,7 @@ begin
       WUAGroupRules.Merge(item['rules']);
 
       EdWUAGroupName.Text:=FWUAGroup;
-      EdWUAGroupDescription.Text := item.S['description'];
+      EdWUAGroupDescription.Text := utf8encode(item.S['description']);
 
       GridWUARules.LoadData;
       WUARulesModified:=False;
@@ -382,7 +382,7 @@ begin
   wsus_rules := TSuperObject.Create();
   wsus_rules.S['group'] := WUAGroup;
   wsus_rules['rules']   := WUAGroupRules;
-  wsus_rules.S['description']   := EdWUAGroupDescription.Text;
+  wsus_rules.S['description']   := UTF8Decode(EdWUAGroupDescription.Text);
   WAPTServerJsonPost('api/v2/windows_updates_rules?group=%s',[WUAGroup],wsus_rules);
   WUARulesModified := False;
   ModalResult:=mrOK;
