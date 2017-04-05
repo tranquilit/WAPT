@@ -49,28 +49,28 @@ default_sources_suffix=wapt
 ; command to run for uploading a package to your server (wapt-get upload-package or build-upload)
 ; if no command is supplied, it is assumed your wapt server is running waptserver and support http upload with POST 
 ; with files encoded
-;upload_cmd="C:\Program Files\WinSCP\WinSCP.exe" root@bureau.tranquil.it /upload %(filenames)s
-; you could put your public authorization key in server's /root/.ssh/authorized_keys
+;upload_cmd="C:\Program Files\WinSCP\WinSCP.exe" wapt@srvwapt.tranquilit.local /upload %(filenames)s
+; you could put your public authorization key in server's /opt/wapt/.ssh/authorized_keys
 ; example if you have cygwin :
 ;   create key : c:\cygwin\bin\ssh localhost ssh-keygen
-;   copy key :   c:\cygwin\bin\ssh localhost ssh-copy-id -i ~/.ssh/id_dsa root@srvwapt
-;upload_cmd="c:\Program Files"\putty\pscp -v -l waptserver %(filenames)s srvwapt:/var/www/wapt/
+;   copy key :   c:\cygwin\bin\ssh localhost ssh-copy-id -i ~/.ssh/id_dsa wapt@srvwapt.tranquilit.local
+; then with putty (wapt user is assumed as copied wapt files should belong to it)
+;upload_cmd="c:\Program Files (x86)"\putty\pscp -v -l wapt %(filenames)s srvwapt.tranquilit.local:/var/www/wapt/
 
-; command to run (deprecated by http upload)
-;after_upload="c:\Program Files"\putty\plink -v -l waptserver srvwapt "python /opt/wapt/wapt-scanpackages.py /var/www/wapt/"
+; command to run (deprecated by http upload) : for example to update Packages index.
+;after_upload="c:\Program Files (x86)"\putty\plink -v -l wapt srvwapt.tranquilit.local "python /opt/wapt/wapt-scanpackages.py /var/www/wapt/"
 
-; define a wapt_server key only if one is running
+; define a wapt_server key only if one server is running
 ; a wapt server support the following url :
 ; if not present : no waptserver, if empty : use DNS SRV record _waptserver._tcp.mondomaine.local
 ;wapt_server=https://wapt.tranquil.it
 
-; for windows task scheduling wapt-get create-tasks to create scheduled tasks (when waptservice is not installed)
+; for windows task scheduling "wapt-get setup-tasks" to create windows scheduled tasks (when waptservice is not installed)
 ;waptupgrade_task_period=360
 ;waptupgrade_task_maxruntime=360
 
 ;waptupdate_task_period=30
 ;waptupdate_task_maxruntime=10
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; wapt_service configuration. Use windows security by default
