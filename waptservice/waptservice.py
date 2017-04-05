@@ -1545,7 +1545,7 @@ class WaptServiceRestart(WaptTask):
         tmp_bat.close()
         setuphelpers.create_onetime_task('waptservicerestart',tmp_bat.name,'')
         """
-        setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C \'net stop waptservice & net start waptservice\'"')
+        setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice')
         output = __(u'WaptService restart planned')
         self.result = {'result':'OK','message':output}
 
