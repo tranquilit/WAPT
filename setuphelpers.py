@@ -2192,11 +2192,12 @@ def uninstall_cmd(guid):
                     cmd = _winreg.QueryValueEx(key,'UninstallString')[0]
                     if 'msiexec' in cmd.lower():
                         cmd = cmd.replace('/I','/X').replace('/i','/X')
-                        args = shlex.split(cmd,posix=False)
-                        if not '/q' in cmd.lower():
-                            args.append('/q')
                         if not '/norestart' in cmd.lower():
-                            args.append('/norestart')
+                            cmd = cmd.replace('/X','/norestart /X')
+                        if not '/q' in cmd.lower():
+                            cmd = cmd.replace('/X','/q /X')
+
+                        args = shlex.split(cmd,posix=False)
 
                     else:
                         # separer commande et parametres pour eventuellement
@@ -3724,6 +3725,9 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
 
     The matching is done on key
 
+    .. versionchanged::
+        removed 1603 error from default accepted return code
+
     Args:
         msi (str) : path to the MSI file
         min_version (str) : if installed version is equal or gretaer than this, don't install
@@ -3756,7 +3760,7 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
         run(r'msiexec /norestart /q /i "%s" %s' % (msi,props),accept_returncodes=accept_returncodes,timeout=timeout)
         if key and not installed_softwares(uninstallkey=key):
             error('MSI %s has been installed but the uninstall key %s can not be found' % (msi,key))
-        if key and min_version and need_install(key,min_version=min_version or None,force=False):
+        if key and min_version and need_install(key,min_version=min_version or None,force=False,get_version=get_version):
             error('MSI %s has been installed and the uninstall key %s found but version is not good' % (msi,key))
     else:
         print('MSI %s already installed. Skipping msiexec' % msi)
@@ -3808,7 +3812,7 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
         run(r'"%s" %s' % (exe,silentflags),accept_returncodes=accept_returncodes,timeout=timeout)
         if key and not installed_softwares(uninstallkey=key):
             error('Setup %s has been ran but the uninstall key %s can not be found' % (exe,key))
-        if key and min_version is not None and need_install(key,min_version=min_version or None,force=False):
+        if key and min_version is not None and need_install(key,min_version=min_version or None,force=False,get_version=get_version):
             error('Setup %s has been and uninstall key %s found but version is not good' % (exe,key))
     else:
         print('Exe setup %s already installed. Skipping' % exe)
