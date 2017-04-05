@@ -55,10 +55,10 @@ default_sources_suffix=wapt
 ;   create key : c:\cygwin\bin\ssh localhost ssh-keygen
 ;   copy key :   c:\cygwin\bin\ssh localhost ssh-copy-id -i ~/.ssh/id_dsa wapt@srvwapt.tranquilit.local
 ; then with putty (wapt user is assumed as copied wapt files should belong to it)
-;upload_cmd="c:\Program Files (x86)"\putty\pscp -v -l wapt %(filenames)s srvwapt.tranquilit.local:/var/www/wapt/
+;upload_cmd="c:\Program Files (x86)"\putty\pscp -v -i c:\private\mykey.pem -l wapt %(filenames)s srvwapt.tranquilit.local:/var/www/wapt/
 
 ; command to run (deprecated by http upload) : for example to update Packages index.
-;after_upload="c:\Program Files (x86)"\putty\plink -v -l wapt srvwapt.tranquilit.local "python /opt/wapt/wapt-scanpackages.py /var/www/wapt/"
+;after_upload="c:\Program Files (x86)"\putty\plink -v -l wapt srvwapt.tranquilit.local "python /opt/wapt/wapt-scanpackages.py /var/www/wapt/ -l info"
 
 ; define a wapt_server key only if one server is running
 ; a wapt server support the following url :
