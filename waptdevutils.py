@@ -339,6 +339,7 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
             # build and sign
             res = wapt.build_package(edit_res['source_dir'],inc_package_release = True,callback = pwd_callback)
             # returns res dict: {'filename':waptfilename,'files':[list of files],'package':PackageEntry}
+            signature = wapt.sign_package(res['filename'],callback=pwd_callback)
             build_res.append(res)
             package_files.append(res['filename'])
 
@@ -460,6 +461,8 @@ def create_waptwua_package(waptconfigfile,wuagroup='default',wapt_server_user=No
 
 
 if __name__ == '__main__':
+    edit_hosts_depends(r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini','htlaptop.tranquilit.local',['socle'],wapt_server_user='admin',wapt_server_passwd='calimero')
+    sys.exit(1)
     import doctest
     import sys
     reload(sys)
