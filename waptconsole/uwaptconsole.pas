@@ -2484,28 +2484,33 @@ begin
     if (packages = nil) or (packages.AsArray.Length = 0) then
       Exit;
 
-    Hosts := TSuperObject.Create(stArray);
-    for host in GridHosts.SelectedRows do
-      hosts.AsArray.Add(host.S['host.computer_fqdn']);
+    try
+      Screen.Cursor := crHourGlass;
+      Hosts := TSuperObject.Create(stArray);
+      for host in GridHosts.SelectedRows do
+        hosts.AsArray.Add(host.S['host.computer_fqdn']);
 
-    //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
-    args := '';
-    args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
-    args := args + format('hosts_list = r"%s".decode(''utf8''),',
-      [soutils.Join(',', hosts)]);
-    args := args + format('append_depends = "",', []);
-    args := args + format('remove_depends = "",', []);
-    args := args + format('append_conflicts = "",', []);
-    args := args + format('remove_conflicts = r"%s".decode(''utf8''),',
-      [soutils.Join(',', packages)]);
-    if privateKeyPassword <> '' then
-      args := args + format('key_password = "%s".decode(''utf8''),',
-        [privateKeyPassword]);
-    args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
-    args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
-      [waptServerPassword]);
-    res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
-    ShowMessage(IntToStr(res.AsArray.Length) + ' postes modifiés');
+      //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
+      args := '';
+      args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
+      args := args + format('hosts_list = r"%s".decode(''utf8''),',
+        [soutils.Join(',', hosts)]);
+      args := args + format('append_depends = "",', []);
+      args := args + format('remove_depends = "",', []);
+      args := args + format('append_conflicts = "",', []);
+      args := args + format('remove_conflicts = r"%s".decode(''utf8''),',
+        [soutils.Join(',', packages)]);
+      if privateKeyPassword <> '' then
+        args := args + format('key_password = "%s".decode(''utf8''),',
+          [privateKeyPassword]);
+      args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
+      args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
+        [waptServerPassword]);
+      res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
+    finally
+      Screen.Cursor:=crDefault;
+      ShowMessage(IntToStr(res.AsArray.Length) + ' postes modifiés');
+    end;
   end;
 end;
 
@@ -2542,26 +2547,31 @@ begin
     if (packages = nil) or (packages.AsArray.Length = 0) then
       Exit;
 
-    Hosts := TSuperObject.Create(stArray);
-    for host in GridHosts.SelectedRows do
-      hosts.AsArray.Add(host.S['host.computer_fqdn']);
+    try
+      Screen.Cursor := crHourGlass;
+      Hosts := TSuperObject.Create(stArray);
+      for host in GridHosts.SelectedRows do
+        hosts.AsArray.Add(host.S['host.computer_fqdn']);
 
-    //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
-    args := '';
-    args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
-    args := args + format('hosts_list = r"%s".decode(''utf8''),',
-      [soutils.Join(',', hosts)]);
-    args := args + format('append_depends = [],', []);
-    args := args + format('remove_depends = r"%s".decode(''utf8''),',
-      [soutils.Join(',', packages)]);
-    if privateKeyPassword <> '' then
-      args := args + format('key_password = "%s".decode(''utf8''),',
-        [privateKeyPassword]);
-    args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
-    args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
-      [waptServerPassword]);
-    res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
-    ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
+      //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
+      args := '';
+      args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
+      args := args + format('hosts_list = r"%s".decode(''utf8''),',
+        [soutils.Join(',', hosts)]);
+      args := args + format('append_depends = [],', []);
+      args := args + format('remove_depends = r"%s".decode(''utf8''),',
+        [soutils.Join(',', packages)]);
+      if privateKeyPassword <> '' then
+        args := args + format('key_password = "%s".decode(''utf8''),',
+          [privateKeyPassword]);
+      args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
+      args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
+        [waptServerPassword]);
+      res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
+    finally
+      Screen.cursor := crDefault;
+      ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
+    end;
   end;
 end;
 

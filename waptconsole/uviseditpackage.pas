@@ -612,7 +612,7 @@ begin
     Free;
   end;
 
-  if (Result<>Nil) and (Result.B['success']) then
+  if (Result<>Nil) and (Result.AsArray<>Nil) and (Result.AsArray.Length>0) then
     ModalResult := mrOk
 end;
 

@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.12.0"
+__version__ = "1.3.12.3"
 import os
 import re
 import logging
@@ -4956,7 +4956,9 @@ class Wapt(object):
 
         logger.info(u'Uploading %s files...' % len(buildresults))
         upload_res = self.http_upload_package([buildresult['filename'] for buildresult in buildresults],wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
-        return upload_res
+        if buildresults and not upload_res:
+            raise Exception('Packages built but no package were uploaded')
+        return buildresults
 
     def cleanup_session_setup(self):
         """Remove all current user session_setup informations for removed packages
