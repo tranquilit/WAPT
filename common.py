@@ -5170,7 +5170,6 @@ class Wapt(object):
         >>> import shutil
         >>> shutil.rmtree(tmpdir)
         """
-        packagename = packagename.lower()
         if installer_path:
             installer_path = os.path.abspath(installer_path)
         if directoryname:
@@ -5292,14 +5291,11 @@ class Wapt(object):
         >>> import shutil
         >>> shutil.rmtree(tmpdir)
         """
-        packagename = packagename.lower()
         if directoryname:
              directoryname = os.path.abspath(directoryname)
 
         if not packagename:
             packagename = setuphelpers.get_hostname().lower()
-        else:
-            packagename = packagename.lower()
 
         if not directoryname:
             directoryname = self.get_default_development_dir(packagename,section=section)
@@ -5808,7 +5804,6 @@ class Wapt(object):
              target_directory = os.path.abspath(target_directory)
 
         if newname:
-            newname = newname.lower()
             while newname.endswith('.wapt'):
                 dot_wapt = newname.rfind('.wapt')
                 newname = newname[0:dot_wapt]
