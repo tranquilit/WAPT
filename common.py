@@ -3088,9 +3088,9 @@ class Wapt(object):
             wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
         auth =  (wapt_server_user, wapt_server_passwd)
 
-        if self.upload_cmd_host:
-            args = " ".join("%s" % fn for fn in filenames)
-            return dict(status='OK',message=ensure_unicode(self.run(self.upload_cmd_host % args)))
+        if self.upload_cmd:
+            args = dict(filenames = " ".join('"%s"' % fn for fn in filenames),)
+            return dict(status='OK',message=ensure_unicode(self.run(self.upload_cmd % args )))
         else:
             is_hosts = None
             files = {}
