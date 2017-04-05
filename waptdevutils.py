@@ -320,15 +320,24 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
     append_conflicts = ensure_list(append_conflicts)
     remove_conflicts = ensure_list(remove_conflicts)
 
+    def pwd_callback(*args):
+        """Default password callback for opening private keys"""
+        if not isinstance(private_key_passwd,str):
+            return private_key_passwd.encode('ascii')
+        else:
+            return private_key_passwd
+
     result = []
-    sources = []
+    package_files = []
     build_res = []
+    sources = []
     try:
         for host in hosts_list:
             logger.debug(u'Edit host %s : +%s -%s'%(
                 host,
                 append_depends,
                 remove_depends))
+
             target_dir = tempfile.mkdtemp('wapt')
             edit_res = wapt.edit_host(host,
                 use_local_sources = False,
@@ -339,8 +348,15 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
                 remove_conflicts = remove_conflicts,
                 )
             sources.append(edit_res)
-        logger.debug(u'Build upload %s'%[r['source_dir'] for r in sources])
-        build_res = wapt.build_upload([r['source_dir'] for r in sources],private_key_passwd = key_password,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
+            # build and sign
+            res = wapt.build_package(edit_res['source_dir'],inc_package_release = True,callback = pwd_callback)
+            # returns res dict: {'filename':waptfilename,'files':[list of files],'package':PackageEntry}
+            build_res.append(res)
+            package_files.append(res['filename'])
+
+        # upload all in one step...
+        wapt.http_upload_package(package_files,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
+
     finally:
         logger.debug('Cleanup')
         for s in sources:

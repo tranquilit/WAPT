@@ -466,9 +466,13 @@ def upload_package(filename=""):
 @requires_auth
 def upload_host():
     try:
-        file = request.files['file']
-        if file:
-            logger.debug('uploading host file : %s' % file)
+        starttime = time.time()
+        done = []
+        files = request.files.keys()
+        logger.info('Upload of %s host packages'%len(files))
+        for fkey in files:
+            file = request.files[fkey]
+            logger.debug('uploading host file : %s' % fkey)
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 wapt_host_folder = os.path.join(conf['wapt_folder']+'-host')
@@ -482,29 +486,22 @@ def upload_host():
                         if os.path.isfile(target):
                             os.unlink(target)
                         os.rename(tmp_target,target)
-                        data = update_packages(wapt_host_folder)
-                        result = dict(status='OK',message=_('File {} uploaded to {}').format(file.filename,target))
+                        done.append(filename)
                     except:
                         if os.path.isfile(tmp_target):
                             os.unlink(tmp_target)
                         raise
-                else:
-                    result = dict(status='ERROR',message=_('No data received'))
-            else:
-                result = dict(status='ERROR',message=_('Wrong file type'))
-        else:
-            result = dict(status='ERROR',message=_('No package file provided in request'))
-    except:
+        spenttime = time.time() - starttime
+        if done:
+            data = update_packages(wapt_host_folder)
+        print spenttime
+        return make_response(result=done,msg=_('%s Host packages uploaded').format(len(done)),request_time = spenttime)
+
+    except Exception as e:
         # remove temporary
         if os.path.isfile(tmp_target):
             os.unlink(tmp_target)
-        e = sys.exc_info()
-        logger.critical(repr(traceback.format_exc()))
-        result = dict(status='ERROR',message='upload_host: %s'%(e,))
-    return  Response(response=json.dumps(result),
-                         status=200,
-                         mimetype="application/json")
-
+        return make_response_from_exception(e,status='201')
 
 @app.route('/upload_waptsetup',methods=['POST'])
 @requires_auth

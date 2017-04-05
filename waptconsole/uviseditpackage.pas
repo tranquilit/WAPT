@@ -612,7 +612,7 @@ begin
     Free;
   end;
 
-  if (Result<>Nil) and (Result.AsArray <> nil) and (Result.AsArray[0]['filename']<>Nil) then
+  if (Result<>Nil) and (Result.B['success']) then
     ModalResult := mrOk
 end;
 

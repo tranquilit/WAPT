@@ -1233,7 +1233,7 @@ class WaptRemoteRepo(WaptBaseRepo):
             download_url = entry.repo_url+'/'+packagefilename
             fullpackagepath = os.path.join(target_dir,packagefilename)
             skip = False
-            if os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath)>0 and usecache:
+            if usecache and os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath)>0:
                 # check version
                 try:
                     cached = PackageEntry()

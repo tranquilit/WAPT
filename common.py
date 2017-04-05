@@ -3017,9 +3017,9 @@ class Wapt(object):
         return {'pem_filename':destpem,'crt_filename':destcrt}
 
 
-    def http_upload_package(self,package,wapt_server_user=None,wapt_server_passwd=None):
+    def http_upload_package(self,packages,wapt_server_user=None,wapt_server_passwd=None):
         r"""Upload a package or host package to the waptserver.
-                package : either the filename of a wapt package, or a PackageEntry
+                packages : either the filename of a wapt package, or a PackageEntry, or a list
                 wapt_server_user   :
                 wapt_server_passwd :
             >>> from common import *
@@ -3030,8 +3030,7 @@ class Wapt(object):
             {'target': u'c:\\users\\htouvet\\appdata\\local\\temp\\toto.wapt', 'package': PackageEntry('toto','119')}
             >>> wapt.http_upload_package(d['package'],wapt_server_user='admin',wapt_server_passwd='password')
             """
-        if not (isinstance(package,(str,unicode)) and os.path.isfile(package)) and not isinstance(package,PackageEntry):
-            raise Exception('No package file to upload')
+        packages = ensure_list(packages)
 
         auth = None
         if not wapt_server_user:
@@ -3045,23 +3044,37 @@ class Wapt(object):
                 wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
             auth =  (wapt_server_user, wapt_server_passwd)
 
-        if not isinstance(package,PackageEntry):
-            pe = PackageEntry().load_control_from_wapt(package)
-            package_filename = package
-        else:
-            pe = package
-            package_filename = pe.wapt_fullpath()
-        with open(package_filename,'rb') as afile:
-            if pe.section == 'host':
-                #res = self.waptserver.post('upload_host',files={'file':afile},auth=auth)
-                res = self.waptserver.post('upload_host',files={'file':afile},auth=auth,timeout=300)
-            else:
-                res = self.waptserver.post('upload_package/%s'%os.path.basename(package_filename),data=afile,auth=auth,timeout=300)
-            return res
-        if res['status'] != 'OK':
-            raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['message']))
+        files = {}
+        is_hosts = True
 
-    def upload_package(self,cmd_dict,wapt_server_user=None,wapt_server_passwd=None):
+        for package in packages:
+            if not isinstance(package,PackageEntry):
+                pe = PackageEntry().load_control_from_wapt(package)
+                package_filename = package
+            else:
+                pe = package
+                package_filename = pe.wapt_fullpath()
+
+            if pe.section != 'host':
+                is_hosts = False
+
+            files[os.path.basename(package_filename)] = open(package_filename,'rb')
+
+        try:
+            if is_hosts:
+                logger.info('Uploading %s host packages' % len(files))
+                res = self.waptserver.post('upload_host',files=files,auth=auth,timeout=300)
+            else:
+                res = []
+                for fn in files:
+                    logger.info('Uploading %s' % fn)
+                    res.append(self.waptserver.post('upload_package/%s'%os.path.basename(package_filename),data=files[fn],auth=auth,timeout=300))
+        finally:
+            for f in files.values():
+                f.close()
+        return res
+
+    def upload_package(self,filenames,wapt_server_user=None,wapt_server_passwd=None):
         """Method to upload a package using Shell command (like scp) instead of http upload
             You must define first a command in inifile with the form :
                 upload_cmd="c:\Program Files"\putty\pscp -v -l waptserver %(waptfile)s srvwapt:/var/www/%(waptdir)s/
@@ -3075,34 +3088,37 @@ class Wapt(object):
             wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
         auth =  (wapt_server_user, wapt_server_passwd)
 
-        if cmd_dict['waptdir'] == "wapt-host":
-            if self.upload_cmd_host:
-                cmd_dict['waptfile'] = ' '.join(cmd_dict['waptfile'])
-                return dict(status='OK',message=self.run(self.upload_cmd_host % cmd_dict))
-            else:
-                #upload par http vers un serveur WAPT  (url POST upload_host)
-                for file in cmd_dict['waptfile']:
-                    file = file[1:-1]
-                    with open(file,'rb') as afile:
-                        res = self.waptserver.post('upload_host',files={'file':afile},auth=auth,timeout=300)
-                    if res['status'] != 'OK':
-                        raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['message']))
-                return res
-
+        if self.upload_cmd_host:
+            args = " ".join("%s" % fn for fn in filenames)
+            return dict(status='OK',message=ensure_unicode(self.run(self.upload_cmd_host % args)))
         else:
-            if self.upload_cmd:
-                cmd_dict['waptfile'] = ' '.join(cmd_dict['waptfile'])
-                return dict(status='OK',message=ensure_unicode(self.run(self.upload_cmd % cmd_dict)))
-            else:
-                for file in cmd_dict['waptfile']:
-                    # file is surrounded by quotes for shell usage
-                    file = file[1:-1]
-                    #upload par http vers un serveur WAPT  (url POST upload_package)
-                    with open(file,'rb') as afile:
-                        res = self.waptserver.post('upload_package/%s'%os.path.basename(file),data=afile,auth=auth,timeout=300)
-                    if res['status'] != 'OK':
-                        raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['message']))
-                return res
+            is_hosts = None
+            files = {}
+            for fn in filenames:
+                files[os.path.basename(fn)] = open(fn,'rb')
+                # check if same kind of Packages
+                if is_hosts is None:
+                    pe = PackageEntry()
+                    pe.load_control_from_wapt(fn)
+                    is_hosts = pe.section == 'host'
+                #else:
+                #    if (pe.section == 'host') != is_hosts:
+                #        raise Exception("You can't upload host packages and non host packages in the same time batch'
+            try:
+                if is_hosts:
+                    res = self.waptserver.post('upload_host',files=files,auth=auth,timeout=300)
+                else:
+                    for (fn,f) in files.iteritems():
+                        print('Uploading %s' % fn)
+                        res = self.waptserver.post('upload_package/%s'%fn,data=f,auth=auth,timeout=300)
+                    else:
+                        res = dict(status='ERROR',message='No package to upload')
+            finally:
+                for f in files.values():
+                    f.close()
+
+            return res
+
 
     def check_install_running(self,max_ttl=60):
         """ Check if an install is in progress, return list of pids of install in progress
@@ -4938,12 +4954,9 @@ class Wapt(object):
             else:
                 logger.critical(u'Directory %s not found' % source_dir)
 
-        result = []
-        logger.info(u'Uploading files...')
-        for buildresult in buildresults:
-            upload_res = self.http_upload_package(buildresult['package'],wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
-            result.append(buildresult)
-        return result
+        logger.info(u'Uploading %s files...' % len(buildresults))
+        upload_res = self.http_upload_package([buildresult['filename'] for buildresult in buildresults],wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
+        return upload_res
 
     def cleanup_session_setup(self):
         """Remove all current user session_setup informations for removed packages
