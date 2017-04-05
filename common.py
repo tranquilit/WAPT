@@ -3066,9 +3066,9 @@ class Wapt(object):
                 res = self.waptserver.post('upload_host',files=files,auth=auth,timeout=300)
             else:
                 res = []
-                for fn in files:
+                for (fn,f) in files.iteritems():
                     logger.info('Uploading %s' % fn)
-                    res.append(self.waptserver.post('upload_package/%s'%os.path.basename(package_filename),data=files[fn],auth=auth,timeout=300))
+                    res.append(self.waptserver.post('upload_package/%s'%os.path.basename(fn),data=f,auth=auth,timeout=300))
         finally:
             for f in files.values():
                 f.close()
@@ -3105,14 +3105,15 @@ class Wapt(object):
                 #    if (pe.section == 'host') != is_hosts:
                 #        raise Exception("You can't upload host packages and non host packages in the same time batch'
             try:
-                if is_hosts:
-                    res = self.waptserver.post('upload_host',files=files,auth=auth,timeout=300)
+                if not files:
+                    res = dict(status='ERROR',message='No package to upload')
                 else:
-                    for (fn,f) in files.iteritems():
-                        print('Uploading %s' % fn)
-                        res = self.waptserver.post('upload_package/%s'%fn,data=f,auth=auth,timeout=300)
+                    if is_hosts:
+                        res = self.waptserver.post('upload_host',files=files,auth=auth,timeout=300)
                     else:
-                        res = dict(status='ERROR',message='No package to upload')
+                        for (fn,f) in files.iteritems():
+                            print('Uploading %s' % fn)
+                            res = self.waptserver.post('upload_package/%s'%os.path.basename(fn),data=f,auth=auth,timeout=300)
             finally:
                 for f in files.values():
                     f.close()
