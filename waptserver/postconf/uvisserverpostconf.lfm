@@ -18,10 +18,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Height = 315
     Top = 0
     Width = 434
-    ActivePage = pgParameters
+    ActivePage = pgDevparam
     Align = alClient
     MultiLine = True
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 0
     OnChange = PagesControlChange
     Options = [nboMultiLine]
@@ -177,8 +177,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           ''
           'For further information :'
           '<a '
-          'href="http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configur'
-          'ation_champDNS.html">Configuring a WAPT infrastructure</a>.'
+          'href="https://doc.wapt.fr/Installation/waptserver/dns/introduction_dns.html">DNS records instructions</a>.'
           ''
           '</body>'
           '</html>'
@@ -242,8 +241,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           'console.<br /> '
           'For further information :<br /> '
           '<a '
-          'href=''http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_'
-          'wapt.html''>Generating a WAPT certificate</a>. '
+          'href="https://doc.wapt.fr/Installation/wapt_certificate/index.html"</a>. '
           '</body>'
           '</html>'
         )
@@ -998,15 +996,13 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             'Well done, your WAPT server is now operational..<br>'
             'Check the documentation '
             'at <a'
-            'href="http://dev.tranquil.it/scenari/guide_admin/co/generation_waptse'
-            'tup_personnalise_waptconsole.html">Generating'
+            'href="https://doc.wapt.fr/Utilisation/index.html">Generating'
             'from the WAPT console</a>'
             '<br>'
             'To deploy the WAPT agent onto your network, check '
             'the'
             'documentation <a'
-            'href="http://dev.tranquil.it/index.php/WAPT_-_D'
-            '%C3%A9ploiement_de_WAPT_par_GPO"/>Deploying WAPT via '
+            'href="https://doc.wapt.fr/Installation/wapt_deploy/index.html"/>Deploying WAPT via '
             'GPO</a>'
             '</body>'
             '</html>'

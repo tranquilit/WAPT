@@ -509,8 +509,8 @@ def create_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=
     Returns:
         str: Path to the shortcut
 
-    >>> create_programs_menu_shortcut('Dev-TranquilIT', target='http://dev.tranquil.it')
-    u'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Dev-TranquilIT.url'
+    >>> create_programs_menu_shortcut('Doc-TranquilIT', target='https://doc.wapt.fr')
+    u'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Doc-TranquilIT.url'
     >>> create_programs_menu_shortcut('Console WAPT', target=makepath('c:/wapt','waptconsole.exe'))
     u'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Console WAPT.lnk'
 
@@ -542,8 +542,8 @@ def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', 
     Returns:
         str: Path to the shortcut
 
-    >>> create_user_programs_menu_shortcut('Dev-TranquilIT', target='http://dev.tranquil.it')
-    u'C:\\Users\\htouvet\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Dev-TranquilIT.url'
+    >>> create_user_programs_menu_shortcut('Doc-TranquilIT', target='https://doc.wapt.fr')
+    u'C:\\Users\\htouvet\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Doc-TranquilIT.url'
     >>> create_user_programs_menu_shortcut('Console WAPT', target=makepath('c:/wapt','waptconsole.exe'))
     u'C:\\Users\\htouvet\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Console WAPT.lnk'
     """

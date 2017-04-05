@@ -59,8 +59,8 @@ body.custom-background { background-color: #f1f1f1; }
 <ul id="menu-main" class="menu">
   <li id="menu-item-2912" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-567 current_page_item menu-item-2912"><a href="#">{{ _("Home") }}</a></li>
   <li id="menu-item-3070" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3070"><a href="/wapt/">{{ _("Private repository") }}</a></li>
-  <li id="menu-item-310" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-310"><a href="http://wapt.tranquil.it/">{{ _("TIS repositories") }}</a></li>
-  <li id="menu-item-311" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-311"><a href="http://dev.tranquil.it/index.php/WAPT">{{ _("WAPT Wiki") }}</a></li>
+  <li id="menu-item-310" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-310"><a href="https://store.wapt.fr/">{{ _("TIS repositories") }}</a></li>
+  <li id="menu-item-311" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-311"><a href="https://doc.wapt.fr">{{ _("WAPT Wiki") }}</a></li>
   <li id="menu-item-2443" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2443"><a href="http://lists.tranquil.it/pipermail/wapt/">{{ _("Mailing list") }}</a></li>
 </ul>
 </div>
@@ -105,7 +105,7 @@ body.custom-background { background-color: #f1f1f1; }
     <tr>
       <td bgcolor="#f6f6f6">
       <ul>
-        <li><a href="http://dev.tranquil.it/index.php/WAPT_-_apt-get_pour_Windows">{{ _("WAPT Wiki&nbsp;") }}</a></li>
+        <li><a href="https://www.wapt.fr">{{ _("WAPT Documentation&nbsp;") }}</a></li>
         <li><a title="Support niveau 3" href="http://lists.tranquil.it/listinfo/wapt">{{ _("mailing list archive") }}</a></li>
         <li><a href="http://roundup.tranquil.it/wapt/"><span style="text-decoration: underline;">{{ _("Issue tracker (roundup)") }}</span></a><br>
         </li>
@@ -122,7 +122,7 @@ body.custom-background { background-color: #f1f1f1; }
     <tr>
       <td bgcolor="#f6f6f6">
       <ul class="sub-menu">
-        <li><a title={{ _("Our solutions") }} href="http://www.tranquil.it">{{ _("Tranquil IT Systems") }}</a></li>
+        <li><a title={{ _("Our solutions") }} href="https://www.tranquil.it">{{ _("Tranquil IT Systems") }}</a></li>
         <li><a href="http://dev.tranquil.it/index.php/WAPT_-_Int%C3%A9grateurs">{{ _("WAPT providers") }}</a><br>
         </li>
       </ul>
@@ -151,12 +151,12 @@ to the right. The agent has been properly configured by the server so the defaul
 has been installed, you can find it in your console.
 """) }}
 <p>You can deploy the WAPT agent using a GPO and the <strong><a href="/wapt/waptdeploy.exe">waptdeploy</a></strong> downloader.
-See <a href=https://dev.tranquil.it/wiki/WAPT_-_D%C3%A9ploiement_de_WAPT_par_GPO>Déploiement par GPO avec WaptDeploy par un partage http</a></p>
+See <a href=https://doc.wapt.fr/Installation/wapt_deploy/index.html#creation-de-la-gpo-de-deploiement-avec-waptdeploy>Déploiement par GPO avec WaptDeploy par un partage http</a></p>
 {% if data.wapt.agent.sha256 %}
 <pre>waptdeploy.exe --hash={{ data.wapt.agent.sha256|safe }} --minversion={{ data.wapt.agent.status }} --wait=15</pre>
 {% endif %}
 <p>{{ _("""
-For further information, be sure to check the documentation at <a href=\"http://dev.tranquil.it/\">dev.tranquil.it</a> or on
+For further information, be sure to check the documentation at <a href=\"https://doc.wapt.fr/\">doc.wapt.fr</a> or on
 mailing-list.
 """) }}
 </p>
