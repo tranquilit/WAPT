@@ -1289,9 +1289,9 @@ def task():
     all_tasks = tasks['done']+tasks['pending']+tasks['errors']
     if tasks['running']:
         all_tasks.append(tasks['running'])
-    task = [task for task in all_tasks if task and task['id'] == id]
-    if task:
-        task = task[0]
+    task_list = [atask for atask in all_tasks if atask and atask['id'] == id]
+    if task_list:
+        task = task_list[0]
     else:
         task = {}
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -1882,6 +1882,7 @@ class WaptPackageRemove(WaptPackageInstall):
 class WaptPackageForget(WaptTask):
     def __init__(self,packagenames):
         super(WaptPackageForget,self).__init__(packagenames=packagenames)
+        self.packagenames = packagenames
 
     def _run(self):
         self.result = self.wapt.forget_packages(self.packagenames)

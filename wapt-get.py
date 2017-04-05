@@ -823,8 +823,10 @@ def main():
                             wapt_server_user = options.wapt_server_user,
                             wapt_server_passwd=options.wapt_server_passwd))
                     if mywapt.after_upload:
-                        print('Run after upload script...')
-                        print(setuphelpers.run(mywapt.after_upload % cmd_dict))
+                        print('Run "after upload" script...')
+                        # can include %(filenames)s
+                        print(setuphelpers.run(mywapt.after_upload %
+                            {'filenames':u' '.join([u'"%s"' % f for f in waptfiles])}))
                 else:
                     print(u'\nYou can upload to repository with')
                     print(u'  %s upload-package %s ' % (
@@ -873,8 +875,10 @@ def main():
                         wapt_server_user = options.wapt_server_user,
                         wapt_server_passwd=options.wapt_server_passwd))
                 if mywapt.after_upload:
-                    print('Run after upload script...')
-                    print(setuphelpers.run(mywapt.after_upload % cmd_dict))
+                    print('Run "after upload" script...')
+                    # can include %(filenames)s
+                    print(setuphelpers.run(mywapt.after_upload %
+                        {'filenames':u' '.join([u'"%s"' % f for f in waptfiles])}))
 
             elif action == 'search':
                 if options.update_packages:

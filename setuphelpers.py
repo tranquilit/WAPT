@@ -3604,7 +3604,7 @@ def get_installer_defaults(installer_path):
         elif exe_props.get('InternalName','').lower() == 'setup launcher':
             result.update(dict(type=InstallerTypes.InstallShield,silentflags='/s'))
         elif exe_props.get('InternalName','').lower() == 'wextract':
-            result.update(dict(type=InstallerTypes.Wextract,silentflags='/Q'))
+            result.update(dict(type=InstallerTypes.WExtract,silentflags='/Q'))
         else:
             content = open(installer_path,'rb').read(600000)
             if 'Inno.Setup' in content:

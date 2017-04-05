@@ -276,24 +276,12 @@ def duplicate_from_external_repo(waptconfigfile,package_filename,target_director
 def check_uac():
     res = uac_enabled()
     if res:
-        messagebox(_('UAC Warning'),_("""The UAC (user account control) is activated on this computer.
+        messagebox('UAC Warning',"""The UAC (user account control) is activated on this computer.
         For Wapt package development and debugging, it is recommended to disable UAC.
 
         If you modify the UAC setting, you must reboot your system to take changes in account.
-        """))
+        """)
         shell_launch('UserAccountControlSettings.exe')
-
-def wapt_sources_edit(wapt_sources_dir):
-    """Launch pyscripter if installed, else explorer on supplied wapt sources dir"""
-    psproj_filename = os.path.join(wapt_sources_dir,'WAPT','wapt.psproj')
-    control_filename = os.path.join(wapt_sources_dir,'WAPT','control')
-    setup_filename = os.path.join(wapt_sources_dir,'setup.py')
-    pyscripter_filename = os.path.join(programfiles32,'PyScripter','PyScripter.exe')
-    if os.path.isfile(pyscripter_filename) and os.path.isfile(psproj_filename):
-        p = psutil.Popen('"%s" --newinstance --project "%s" "%s" "%s"' % (pyscripter_filename,psproj_filename,setup_filename,control_filename),
-            cwd = os.path.join(programfiles32,'PyScripter'))
-    else:
-        os.startfile(wapt_sources_dir)
 
 
 def edit_hosts_depends(waptconfigfile,hosts_list,
@@ -322,10 +310,10 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
 
     def pwd_callback(*args):
         """Default password callback for opening private keys"""
-        if not isinstance(private_key_passwd,str):
-            return private_key_passwd.encode('ascii')
+        if not isinstance(key_password,str):
+            return key_password.encode('ascii')
         else:
-            return private_key_passwd
+            return key_password
 
     result = []
     package_files = []

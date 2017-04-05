@@ -4033,8 +4033,9 @@ class Wapt(object):
         actions['downloads'] = downloaded
         logger.debug(u'Downloaded : %s' % (downloaded,))
 
-        def fname(packagefilename):
+        def full_fname(packagefilename):
             return os.path.join(self.package_cache_dir,packagefilename)
+
         if not download_only:
             # switch to manual mode
             for (request,p) in skipped:
@@ -4045,7 +4046,7 @@ class Wapt(object):
             for (request,p) in to_install:
                 try:
                     print(u"Installing %s" % (p.package,))
-                    result = self.install_wapt(fname(p.filename),
+                    result = self.install_wapt(full_fname(p.filename),
                         params_dict = params_dict,
                         explicit_by=self.user if request in apackages else None
                         )
