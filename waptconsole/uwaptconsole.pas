@@ -378,6 +378,7 @@ type
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
     procedure ActTriggerWakeOnLanExecute(Sender: TObject);
+    procedure ActTriggerWakeOnLanUpdate(Sender: TObject);
     procedure ActTriggerWaptwua_downloadExecute(Sender: TObject);
     procedure ActTriggerWaptwua_installExecute(Sender: TObject);
     procedure ActTriggerWaptwua_scanExecute(Sender: TObject);
@@ -1957,6 +1958,11 @@ begin
     end;
 end;
 
+procedure TVisWaptGUI.ActTriggerWakeOnLanUpdate(Sender: TObject);
+begin
+  ActTriggerHostsListening.Enabled := GridHosts.SelectedCount>0;
+end;
+
 procedure TVisWaptGUI.ActTriggerWaptwua_downloadExecute(Sender: TObject);
 begin
     with TVisHostsUpgrade.Create(Self) do
@@ -3215,7 +3221,6 @@ begin
   end;
 end;
 
-
 function TVisWaptGUI.Login: boolean;
 var
   cred, resp, sores: ISuperObject;
@@ -3808,7 +3813,7 @@ end;
 
 procedure TVisWaptGUI.Image1Click(Sender: TObject);
 begin
-  OpenDocument('http://www.tranquil.it');
+  OpenDocument('https://www.tranquil.it');
 end;
 
 procedure CopyMenu(menuItemSource: TPopupMenu; menuItemTarget: TMenuItem);

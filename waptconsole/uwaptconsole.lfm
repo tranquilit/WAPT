@@ -4299,6 +4299,7 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Power ON with WakeOnLan'
       ImageIndex = 38
       OnExecute = ActTriggerWakeOnLanExecute
+      OnUpdate = ActTriggerWakeOnLanUpdate
     end
     object ActRemoteAssist: TAction
       Category = 'Host'

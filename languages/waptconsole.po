@@ -492,6 +492,10 @@ msgctxt "TVISLOGIN.LABUSER.CAPTION"
 msgid "User"
 msgstr ""
 
+#: tvislogin.labversion.caption
+msgid "LabVersion"
+msgstr ""
+
 #: tvislogin.lapassword.caption
 msgid "Password"
 msgstr ""
