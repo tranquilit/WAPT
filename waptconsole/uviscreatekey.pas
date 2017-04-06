@@ -22,7 +22,7 @@ type
     edUnit: TEdit;
     edOrganization: TEdit;
     edLocality: TEdit;
-    EdOrgName: TEdit;
+    EdKeyFilename: TFileNameEdit;
     Label1: TLabel;
     Label10: TLabel;
     Label12: TLabel;
@@ -35,10 +35,13 @@ type
     Panel2: TPanel;
     Shape1: TShape;
     StaticText1: TStaticText;
-    procedure EdOrgNameEditingDone(Sender: TObject);
+    procedure EdKeyFilenameAcceptFileName(Sender: TObject; var Value: String);
+    procedure EdKeyFilenameExit(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
+    procedure SetDefaultCN;
     { private declarations }
   public
     { public declarations }
@@ -51,47 +54,82 @@ implementation
 {$R *.lfm}
 
 uses
-  uWaptConsoleRes,uWaptRes,uSCaleDPI, dmwaptpython;
+  uWaptConsoleRes,uWaptRes,uSCaleDPI, dmwaptpython,lazFileUtils;
 
 { TVisCreateKey }
 
 procedure TVisCreateKey.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 var
-  pemfn:String;
+  certFile:String;
 begin
-  pemfn:=DirectoryCert.Directory+'\'+EdOrgName.Text+'.pem';
-  if (ModalResult=mrOk) and (EdOrgName.Text = '') then
-     begin
-          showMessage(rsInputKeyName);
-          CanClose:=False;
-      end
+  certFile := AppendPathDelim(DirectoryCert.Directory)+ExtractFileNameOnly(EdKeyFileName.Text)+'.crt';
+
+  if (ModalResult=mrOk) then
+  begin
+    if Trim(edCommonName.Text) = ''then
+    begin
+      showMessage(rsInputCommonName);
+      CanClose:=False;
+    end else
+    if (EdKeyFileName.Text = '') then
+    begin
+      showMessage(rsInputKeyName);
+      CanClose:=False;
+    end else
+      CanClose:= not FileExists(certFile) or (Dialogs.MessageDlg('Confirm overwrite of certificate','Certificate '+certFile+' already exists. Confirm the overwrite of it',mtConfirmation,mbYesNoCancel,0) = mrYes)
+  end
   else
-      if (ModalResult=mrOk) and FileExists(pemfn) then
-      begin
-           ShowMessageFmt(rsKeyAlreadyExists,[pemfn]);
-           CanClose:=False;
-      end
-      else
-          CanClose:=True;
+    CanClose:=True;
 end;
 
-procedure TVisCreateKey.EdOrgNameEditingDone(Sender: TObject);
+procedure TVisCreateKey.SetDefaultCN;
 var
   pemfn:String;
   crtfn:String;
 begin
-  pemfn:=DirectoryCert.Directory+'\'+EdOrgName.Text+'.pem';
-  crtfn:=DirectoryCert.Directory+'\'+EdOrgName.Text+'.crt';
+  if FileExists(EdKeyFilename.FileName) then
+    pemfn := EdKeyFilename.FileName
+  else
+    pemfn := DirectoryCert.Directory+'\'+EdKeyFilename.Text+'.pem';
+
+  // by default check if already a certificate with same basename as private key in target directory...
+  crtfn := DirectoryCert.Directory+'\'+ExtractFileNameOnly(pemfn)+'.crt';
+
   if FileExists(crtfn) then
-    edCommonName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[crtfn]))
+    edCommonName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn or ""',[crtfn]))
+  // use file basename as CommonName
   else if edCommonName.text='' then
-    edCommonName.Text:=EdOrgName.text;
+    edCommonName.Text:=ExtractFileNameOnly(crtfn);
+end;
+
+procedure TVisCreateKey.EdKeyFilenameAcceptFileName(Sender: TObject;
+  var Value: String);
+begin
+  if UTF8Decode(Value) <> Value then
+  begin
+    ShowMessage('Bad key filename, use only ASCII characters');
+    Value :='';
+  end
+  else
+  begin
+    EdKeyFilename.FIlename := Value;
+    SetDefaultCN;
+  end;
+end;
+
+procedure TVisCreateKey.EdKeyFilenameExit(Sender: TObject);
+begin
+  SetDefaultCN;
 end;
 
 procedure TVisCreateKey.FormCreate(Sender: TObject);
 begin
-    ScaleDPI(Self,96); // 96 is the DPI you designed
+  ScaleDPI(Self,96); // 96 is the DPI you designed
+end;
 
+procedure TVisCreateKey.FormShow(Sender: TObject);
+begin
+  SetDefaultCN;
 end;
 
 end.

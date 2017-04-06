@@ -19,11 +19,12 @@ resourcestring
   rsInstalling = 'Installing %s...';
   rsDefineWaptdevPath = 'Please select a directory on your package development host before editing a package bundle.';
 
-  rsPublicKeyGenSuccess = 'Key %s has been successfully created.';
-  rsPublicKeyGenFailure = 'The generation of the public key has failed.';
+  rsPublicKeyGenSuccess = 'Public certificate %s has been successfully created.';
+  rsKeyPairGenSuccess = 'Private key %s and public certificate %s have been successfully created.';
+  rsPublicKeyGenFailure = 'The generation of the public certificate has failed.';
   rsPublicKeyGenError = 'Error during key generation : %s';
 
-  rsCreationInProgress = 'Creation in progress.';
+  rsCreationInProgress = 'Build in progress.';
   rsProgressTitle = 'Started uploading to WAPT server...';  // TODO more meaningful var name
   rsWaptSetupUploadSuccess = 'WAPT agent and upgrade package successfully created and uploaded to the main repository'#13#10'Don''t forget to change the hash of waptagent.exe in your GPO';
   rsWaptUploadError = 'Error while uploading WAPT agent to the repository : %s';
@@ -129,6 +130,7 @@ resourcestring
 
   { Messages dans uVisCreateKey }
   rsInputKeyName = 'Please input a key name.';
+  rsInputCommonName = 'Please input a Common Name to identify signer';
   rsKeyAlreadyExists = 'Key %s already exists, please pick another name.';
 
   { Messages dans uVisEditPackage.pas }

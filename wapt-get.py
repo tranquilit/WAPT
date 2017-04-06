@@ -1044,7 +1044,7 @@ def main():
 
             elif action == 'enable-check-certificate':
                 if mywapt.waptserver and mywapt.waptserver_available():
-                    result = mywapt.waptserver.save_server_certificate(os.path.join(mywapt.wapt_base_dir,'ssl','server'))
+                    result = mywapt.waptserver.save_server_certificate(os.path.join(mywapt.wapt_base_dir,'ssl','server'),overwrite = options.force)
                     setuphelpers.inifile_writestring(mywapt.config_filename,'global','verify_cert',result)
                 else:
                     result = ''

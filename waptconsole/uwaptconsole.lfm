@@ -4102,6 +4102,7 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Edit bundle'
       ImageIndex = 10
       OnExecute = ActEditGroupExecute
+      OnUpdate = ActEditGroupUpdate
     end
     object ActDeleteGroup: TAction
       Category = 'Bundles'

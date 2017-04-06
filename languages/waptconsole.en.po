@@ -62,10 +62,6 @@ msgstr ""
 msgid "E.g. : Tranquil It Systems"
 msgstr ""
 
-#: tviscreatekey.edorgname.hint
-msgid "e.g. : tranquilit"
-msgstr ""
-
 #: tviscreatekey.edunit.hint
 msgid "E.g. : IT"
 msgstr ""
@@ -119,7 +115,7 @@ msgid "Technical department e-mail address."
 msgstr ""
 
 #: tviscreatekey.label9.caption
-msgid "Key name :"
+msgid "Key filename :"
 msgstr ""
 
 #: tviscreatekey.label9.hint
@@ -2312,7 +2308,7 @@ msgstr ""
 
 #: uwaptconsoleres.rscreationinprogress
 msgctxt "uwaptconsoleres.rscreationinprogress"
-msgid "Creation in progress."
+msgid "Build in progress."
 msgstr ""
 
 #: uwaptconsoleres.rsdefaultusagestatsurl
@@ -2508,6 +2504,10 @@ msgctxt "uwaptconsoleres.rsinnosetupunavailable"
 msgid "Innosetup is unavailable (path : %s), please install it first."
 msgstr ""
 
+#: uwaptconsoleres.rsinputcommonname
+msgid "Please input a Common Name to identify signer"
+msgstr ""
+
 #: uwaptconsoleres.rsinputkeyname
 msgctxt "uwaptconsoleres.rsinputkeyname"
 msgid "Please input a key name."
@@ -2540,6 +2540,10 @@ msgstr ""
 #: uwaptconsoleres.rskeyalreadyexists
 msgctxt "uwaptconsoleres.rskeyalreadyexists"
 msgid "Key %s already exists, please pick another name."
+msgstr ""
+
+#: uwaptconsoleres.rskeypairgensuccess
+msgid "Private key %s and public certificate %s have been successfully created."
 msgstr ""
 
 #: uwaptconsoleres.rsloadinventory
@@ -2665,12 +2669,12 @@ msgstr ""
 
 #: uwaptconsoleres.rspublickeygenfailure
 msgctxt "uwaptconsoleres.rspublickeygenfailure"
-msgid "The generation of the public key has failed."
+msgid "The generation of the public certificate has failed."
 msgstr ""
 
 #: uwaptconsoleres.rspublickeygensuccess
 msgctxt "uwaptconsoleres.rspublickeygensuccess"
-msgid "Key %s has been successfully created."
+msgid "Public certificate %s has been successfully created."
 msgstr ""
 
 #: uwaptconsoleres.rsreallowpackagesonhost

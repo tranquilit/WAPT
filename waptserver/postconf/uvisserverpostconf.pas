@@ -523,7 +523,7 @@ end;
 
 procedure TVisWAPTServerPostConf.ActCreateKeyExecute(Sender: TObject);
 begin
-  EdPrivateKeyFN.Text := CreateSelfSignedCert( EdKeyName.Text,WaptBaseDir,DirectoryCert.Text,
+  EdPrivateKeyFN.Text := CreateSelfSignedCert(EdKeyName.Text,'',WaptBaseDir,DirectoryCert.Text,
     edCountry.Text,edLocality.Text,edOrganization.Text,edUnit.Text,edCommonName.Text,edEmail.Text);
 end;
 

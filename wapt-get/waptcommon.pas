@@ -81,7 +81,8 @@ interface
   //return ip for waptservice
   function WaptServiceReachableIP(UUID:String;hostdata:ISuperObject=Nil):String;
 
-  function CreateSelfSignedCert(orgname,
+  function CreateSelfSignedCert(keyfilename,
+          crtbasename,
           wapt_base_dir,
           destdir,
           country,
@@ -1273,7 +1274,8 @@ begin
   end;
 end;
 
-function CreateSelfSignedCert(orgname,
+function CreateSelfSignedCert(keyfilename,
+        crtbasename,
         wapt_base_dir,
         destdir,
         country,
@@ -1287,35 +1289,58 @@ var
   opensslbin,opensslcfg,opensslcfg_fn,destpem,destcrt,destp12 : AnsiString;
   params : ISuperObject;
 begin
-    destpem := Utf8ToAnsi(AppendPathDelim(destdir)+orgname+'.pem');
-    destcrt := Utf8ToAnsi(AppendPathDelim(destdir)+orgname+'.crt');
-    destp12 := Utf8ToAnsi(AppendPathDelim(destdir)+orgname+'.p12');
-    if not DirectoryExists(destdir) then
-        mkdir(destdir);
-    params := TSuperObject.Create;
-    params.S['country'] := UTF8Decode(country);
-    params.S['locality'] :=UTF8Decode(locality);
-    params.S['organization'] := UTF8Decode(organization);
-    params.S['unit'] := UTF8Decode(orgunit);
-    params.S['commonname'] := UTF8Decode(commonname);
-    params.S['email'] := UTF8Decode(email);
+  result := '';
+  if FileExists(keyfilename) then
+    destpem := keyfilename
+  else
+  begin
+    if ExtractFileNameOnly(keyfilename) = keyfilename then
+      destpem := Utf8ToAnsi(AppendPathDelim(destdir)+ExtractFileNameOnly(keyfilename)+'.pem')
+    else
+      destpem := keyfilename;
+  end;
+  if crtbasename = '' then
+    crtbasename := ExtractFileNameOnly(keyfilename);
 
-    opensslbin :=  AppendPathDelim(wapt_base_dir)+'lib\site-packages\M2Crypto\openssl.exe';
-    opensslcfg :=  pyformat(FileToString(AppendPathDelim(wapt_base_dir) + 'templates\openssl_template.cfg'),params);
-    opensslcfg_fn := AppendPathDelim(destdir)+'openssl.cfg';
-    StringToFile(opensslcfg_fn,Utf8ToAnsi(opensslcfg));
-    try
-      SetEnvironmentVariable('OPENSSL_CONF', PChar(opensslcfg_fn));
-      if ExecuteProcess(opensslbin,'req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout "'+destpem+'" -out "'+destcrt+'"',[]) <> 0 then
-        result :=''
-      else
-        result := AnsiToUtf8(destpem);
-      // create a .pfx .p12 for ms signtool
+  destcrt := Utf8ToAnsi(AppendPathDelim(destdir)+crtbasename+'.crt');
+  destp12 := Utf8ToAnsi(AppendPathDelim(destdir)+crtbasename+'.p12');
+  if not DirectoryExists(destdir) then
+      mkdir(destdir);
+
+  params := TSuperObject.Create;
+  params.S['country'] := UTF8Decode(country);
+  params.S['locality'] :=UTF8Decode(locality);
+  params.S['organization'] := UTF8Decode(organization);
+  params.S['unit'] := UTF8Decode(orgunit);
+  params.S['commonname'] := UTF8Decode(commonname);
+  params.S['email'] := UTF8Decode(email);
+
+  opensslbin :=  AppendPathDelim(wapt_base_dir)+'lib\site-packages\M2Crypto\openssl.exe';
+  opensslcfg :=  pyformat(FileToString(AppendPathDelim(wapt_base_dir) + 'templates\openssl_template.cfg'),params);
+  opensslcfg_fn := AppendPathDelim(destdir)+'openssl.cfg';
+  StringToFile(opensslcfg_fn,Utf8ToAnsi(opensslcfg));
+  try
+    SetEnvironmentVariable('OPENSSL_CONF', PChar(opensslcfg_fn));
+    // If private key  already exist, just recreate a self signed certificate
+    if not FileExists(destpem) then
+    begin
+      if ExecuteProcess(opensslbin,'req -x509 -nodes -days 3650 -newkey rsa:2048 -sha256 -keyout "'+destpem+'" -out "'+destcrt+'"',[]) = 0 then
+        result := destcrt;
+    end
+    else
+    begin
+      if ExecuteProcess(opensslbin,'req -key "'+destpem+'" -new -x509 -days 3650 -sha256 -out "'+destcrt+'"',[]) = 0 then
+        result := destcrt;
+    end;
+
+    // create a .pfx .p12 for ms signtool
+    if FileExists(destpem) and FileExists(destcrt) then
       if ExecuteProcess(opensslbin,'pkcs12 -export -inkey "'+destpem+'" -in "'+destcrt+'" -out "'+destp12+'" -name "'+ commonname+'" -passout pass:',[]) <> 0 then
         raise Exception.Create('Unable to create p12 file for signtool');
-    finally
-      SysUtils.DeleteFile(opensslcfg_fn);
-    end;
+
+  finally
+    SysUtils.DeleteFile(opensslcfg_fn);
+  end;
 end;
 
 function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8String='';

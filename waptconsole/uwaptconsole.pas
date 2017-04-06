@@ -370,6 +370,7 @@ type
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActDeployWaptExecute(Sender: TObject);
+    procedure ActEditGroupUpdate(Sender: TObject);
     procedure ActEditHostPackageUpdate(Sender: TObject);
     procedure ActGermanExecute(Sender: TObject);
     procedure ActGermanUpdate(Sender: TObject);
@@ -1306,17 +1307,29 @@ end;
 
 procedure TVisWaptGUI.ActCreateCertificateExecute(Sender: TObject);
 var
-  params, certFile: utf8string;
-  Result: Utf8String;
-  done: boolean;
+  pemfn, params, certFile,crtBaseName: utf8string;
+  CreatePrivateKey,done: boolean;
 begin
   with TVisCreateKey.Create(Self) do
     try
       repeat
+        with TINIFile.Create(AppIniFilename) do
+        try
+          EdKeyFileName.FileName := ReadString('global', 'private_key','');
+        finally
+          Free;
+        end;
         if ShowModal = mrOk then
           try
-            result := CreateSelfSignedCert(
-              edOrgName.Text,
+            CreatePrivateKey := not FileExists(EdKeyFileName.FileName);
+            if not CreatePrivateKey then
+              pemfn:=EdKeyFilename.FileName
+            else
+              pemfn:=DirectoryCert.Directory+'\'+EdKeyFileName.Text+'.pem';
+            crtBaseName:=ExtractFileNameOnly(pemfn);
+            certFile := CreateSelfSignedCert(
+              pemfn,
+              '',
               waptpath,
               DirectoryCert.Directory,
               edCountry.Text,
@@ -1326,19 +1339,23 @@ begin
               edCommonName.Text,
               edEmail.Text);
 
-            done := FileExistsUTF8(Result);
+            done := FileExistsUTF8(certFile);
             if done then
             begin
-              ShowMessageFmt(rsPublicKeyGenSuccess,
-                [Result]);
-              certFile := ChangeFileExt(Result,'.crt');
+              if CreatePrivateKey then
+                ShowMessageFmt(rsKeyPairGenSuccess,
+                  [pemfn,certFile])
+              else
+                ShowMessageFmt(rsPublicKeyGenSuccess,
+                  [certFile]);
+
               if not CopyFile(PChar(certFile),
                 PChar(waptpath + '\ssl\' + ExtractFileName(certFile)), True) then
                 ShowMessage(rsPublicKeyGenFailure);
 
               with TINIFile.Create(AppIniFilename) do
                 try
-                  WriteString('global', 'private_key', Result);
+                  WriteString('global', 'private_key', pemfn);
                 finally
                   Free;
                 end;
@@ -1351,7 +1368,6 @@ begin
               except
               end;
             end;
-
           except
             on e: Exception do
             begin
@@ -1874,6 +1890,11 @@ begin
     finally
       Free;
     end;
+end;
+
+procedure TVisWaptGUI.ActEditGroupUpdate(Sender: TObject);
+begin
+  ActEditGroup.Enabled:=GridGroups.SelectedCount=1;
 end;
 
 procedure TVisWaptGUI.ActEditHostPackageUpdate(Sender: TObject);
