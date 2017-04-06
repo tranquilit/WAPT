@@ -2841,7 +2841,7 @@ msgstr "Paquets nécessaires sur la machine"
 
 #: uwaptconsoleres.rspackagesourcesavailable
 msgid "The package sources are available in %s"
-msgstr "Les sources du paquet sont disponibles dans %"
+msgstr "Les sources du paquet sont disponibles dans %s"
 
 #: uwaptconsoleres.rspasswordchangeerror
 msgctxt "uwaptconsoleres.rspasswordchangeerror"
