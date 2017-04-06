@@ -3358,6 +3358,48 @@ class Wapt(object):
             print('Warning : %s' % repr(e))
             return ''
 
+    def _check_package_signature(self,packagetempdir,public_certs):
+        """Check the hash of files in package_dir and the manifest signature
+           against the authorized keys
+        Args:
+            packagetempdir (str) ; root dir of unzipped package files
+            public_certs (list) ; list of authorized certificate filepaths
+
+        Returns:
+            str : subject dn of matching certificate
+
+        Raise Exception if no certificate match is found.
+        """
+        manifest_filename = os.path.join( packagetempdir,'WAPT','manifest.sha1')
+        if os.path.isfile(manifest_filename):
+            manifest_data = open(manifest_filename,'r').read()
+            # check signature of manifest
+            signature_filename = os.path.join( packagetempdir,'WAPT','signature')
+            # if public key provided, and signature in wapt file, check it
+            if os.path.isfile(signature_filename):
+                pe = PackageEntry()
+                pe.load_control_from_wapt(packagetempdir)
+                # first check if signature can be decrypted by one of the public keys
+                signature = open(signature_filename,'r').read().decode('base64')
+                try:
+                    subject = ssl_verify_content(manifest_data,signature,public_certs)
+                    logger.info(u'Package issued by %s' % (subject,))
+                    return subject
+                except:
+                    raise Exception(u'Package file %s signature is invalid.\nEither the signer "%s" is not accepted by one the keys %s\nor signature is corrupted.' % \
+                        (packagetempdir,pe.signer,','.join(self.public_certs)))
+
+                # now check the integrity files
+                manifest = json.loads(manifest_data)
+                errors = self.corrupted_files_sha1(packagetempdir,manifest)
+                if errors:
+                    raise Exception(u'Error in package %s, files corrupted, SHA1 not matching for %s' % (packagetempdir,errors,))
+            else:
+                raise Exception(u'The package %s does not contain a signature' % packagetempdir)
+
+        else:
+            raise Exception(u'The package %s does not contain the manifest.sha1 file with content fingerprints' % packagetempdir)
+
     def install_wapt(self,fname,params_dict={},explicit_by=None):
         """Install a single wapt package given its WAPT filename.
         return install status"""
@@ -3430,24 +3472,7 @@ class Wapt(object):
                 self.check_cancelled()
                 manifest_filename = os.path.join( packagetempdir,'WAPT','manifest.sha1')
                 if os.path.isfile(manifest_filename):
-                    manifest_data = open(manifest_filename,'r').read()
-                    # check signature of manifest
-                    signature_filename = os.path.join( packagetempdir,'WAPT','signature')
-                    # if public key provided, and signature in wapt file, check it
-                    if self.public_certs and os.path.isfile(signature_filename):
-                        signature = open(signature_filename,'r').read().decode('base64')
-                        try:
-                            subject = ssl_verify_content(manifest_data,signature,self.public_certs)
-                            logger.info(u'Package issued by %s' % (subject,))
-                        except:
-                            raise Exception(u'Package file %s signature is invalid' % fname)
-                    else:
-                        raise Exception(u'No certificate provided for %s or package does not contain a signature' % fname)
-
-                    manifest = json.loads(manifest_data)
-                    errors = self.corrupted_files_sha1(packagetempdir,manifest)
-                    if errors:
-                        raise Exception(u'Error in package %s, files corrupted, SHA1 not matching for %s' % (fname,errors,))
+                    self._check_package_signature(packagetempdir)
                 else:
                     # we allow unsigned in development mode where fname is a directory
                     if istemporary:
@@ -5497,6 +5522,7 @@ class Wapt(object):
             append_conflicts=None,
             remove_conflicts=None,
             auto_inc_version=True,
+            check_signature=True,
             ):
         r"""Download an existing package from repositories into target_directory for modification
             if use_local_sources is True and no newer package exists on repos, updates current local edited data
@@ -5596,6 +5622,7 @@ class Wapt(object):
                 append_conflicts = append_conflicts,
                 remove_conflicts = remove_conflicts,
                 auto_inc_version = auto_inc_version,
+                check_signature = check_signature,
                 )
         else:
             # create a new one
@@ -5608,6 +5635,7 @@ class Wapt(object):
                 remove_depends = remove_depends,
                 append_conflicts = append_conflicts,
                 remove_conflicts = remove_conflicts,
+                check_signature = False,
                 )
 
     def is_wapt_package_development_dir(self,directory):
@@ -5672,7 +5700,7 @@ class Wapt(object):
 
         # check if host package exists on repos
         if self.repositories and isinstance(self.repositories[-1],WaptHostRepo):
-            (entry,entry_date) = self.repositories[-1].update_host(hostname,self.waptdb)
+            (entry,entry_date) = self.repositories[-1].update_host(hostname,self.waptdb,force=True)
             if entry:
                 # target is already an "in-progress" package developement
                 local_dev_entry = self.is_wapt_package_development_dir(target_directory)
@@ -5778,13 +5806,16 @@ class Wapt(object):
             remove_conflicts=None,
             auto_inc_version=True,
             usecache=True,
-            printhook=None):
+            printhook=None,
+            check_signature = True,
+            ):
         """Duplicate an existing package.
 
         Duplicate an existing package from declared repostory or file into targetdirectory with
           optional newname and version.
 
         Args:
+            packagename (str) :      packagename to duplicate, or filepath to a local package or package development directory.
             newname (str):           name of target package
             newversion (str):        version of target package. if None, use source package version
             target_directory (str):  path where to put development files. If None, use temporary. If empty, use default development dir
@@ -5795,6 +5826,8 @@ class Wapt(object):
             auto_inc_version (bool): if version is less than existing package in repo, set version to repo version+1
             usecache (bool):         If True, allow to use cached package in local repo instead of downloading it.
             printhook (func):        hook for download progress
+            check_signature (bool):  if True and source package name is not a development directory, source package files and signature are checked before duplicate.
+
 
         Returns:
             dict: {'target':new package if build, or 'source_dir':new source directory if not build ,'package':new PackageEntry}
@@ -5893,6 +5926,8 @@ class Wapt(object):
             logger.info(u'  unzipping %s to directory %s' % (source_filename,target_directory))
             zip = ZipFile(source_filename,allowZip64=True)
             zip.extractall(path=target_directory)
+            if check_signature:
+                self._check_package_signature(target_directory)
         else:
             source_package = self.is_available(packagename)
             if not source_package:
@@ -5915,6 +5950,9 @@ class Wapt(object):
             logger.info(u'  unzipping %s to directory %s' % (source_filename,target_directory))
             zip = ZipFile(source_filename,allowZip64=True)
             zip.extractall(path=target_directory)
+            if check_signature:
+                self._check_package_signature(target_directory)
+
 
         # duplicate package informations
         dest_control = PackageEntry()
