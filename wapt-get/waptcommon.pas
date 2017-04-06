@@ -1332,8 +1332,8 @@ var
 
 begin
     wapt_base_dir:= WaptBaseDir;
-    iss_template := wapt_base_dir + '\waptsetup' + '\waptsetup.iss';
-    custom_iss := wapt_base_dir + '\' + 'waptsetup' + '\' + 'custom_waptsetup.iss';
+    iss_template := AppendPathDelim(wapt_base_dir) + 'waptsetup\waptsetup.iss';
+    custom_iss := AppendPathDelim(wapt_base_dir) + 'waptsetup\custom_waptsetup.iss';
     iss := SplitLines(FileToString(iss_template));
     new_iss := TSuperObject.Create(stArray);
     for line in iss do
@@ -1365,13 +1365,13 @@ begin
     end;
 
     source := default_public_cert;
-    target := ExtractFileDir(iss_template) + '  \..\ssl\' + ExtractFileName(source);
+    target := ExpandFileName(AppendPathDelim(ExtractFileDir(iss_template))+ '..\ssl\' + ExtractFileName(source));
     if not FileExistsUTF8(target) then
-      if not CopyFileW(PWideChar(source),PWideChar(target),True) then
+      if not CopyFile(PChar(source),PChar(target),True) then
         raise Exception.CreateFmt(rsCertificateCopyFailure,[source,target]);
     StringToFile(custom_iss,SOUtils.Join(#13#10,new_iss));
 
-    inno_fn :=  wapt_base_dir + '\waptsetup' + '\innosetup' + '\ISCC.exe';
+    inno_fn :=  AppendPathDelim(wapt_base_dir) + 'waptsetup\innosetup\ISCC.exe';
     if not FileExists(inno_fn) then
         raise Exception.CreateFmt(rsInnoSetupUnavailable, [inno_fn]);
     Run(format('"%s"  "%s"',[inno_fn,custom_iss]),'',3600000,'','','',OnProgress);
@@ -1382,7 +1382,7 @@ begin
       Run(format('"%s" sign /f "%s" "%s"',[signtool,p12keypath,Result]),'',3600000,'','','',OnProgress);
 
     // Create waptagent.sha256
-    StringToFile(wapt_base_dir + '\waptupgrade\waptagent.sha256',SHA256Hash(Result)+'  waptagent.exe');
+    StringToFile(AppendPathDelim(wapt_base_dir) + 'waptupgrade\waptagent.sha256',SHA256Hash(Result)+'  waptagent.exe');
 end;
 
 function GetReachableIP(IPS:ISuperObject;port:word):String;
