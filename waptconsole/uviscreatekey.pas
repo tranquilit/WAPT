@@ -125,6 +125,7 @@ end;
 procedure TVisCreateKey.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
+  DirectoryCert.Directory := AppendPathDelim(GetUserDir)+'private';
 end;
 
 procedure TVisCreateKey.FormShow(Sender: TObject);
