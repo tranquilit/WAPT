@@ -12,6 +12,7 @@ object VisLogin: TVisLogin
   OnShow = FormShow
   Position = poScreenCenter
   ShowHint = True
+  ShowInTaskBar = stAlways
   LCLVersion = '1.3'
   object edPassword: TEdit
     Left = 278
