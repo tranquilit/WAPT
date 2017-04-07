@@ -3056,6 +3056,9 @@ begin
         edprivate_key.Text := inifile.ReadString('global', 'private_key', '');
         edtemplates_repo_url.Text :=
           inifile.readString('global', 'templates_repo_url', '');
+        EdAuthorizedCertsDir.Text :=
+          inifile.readString('global', 'authorized_certs_dir', AppendPathDelim(GetAppdataFolder)+'waptconsole\ssl');
+
         cbUseProxyForTemplate.Checked :=
           inifile.ReadBool('global', 'use_http_proxy_for_templates', edhttp_proxy.Text <> '');
         cbUseProxyForServer.Checked :=
@@ -3090,6 +3093,9 @@ begin
             eddefault_sources_root.Text);
           inifile.WriteString('global', 'private_key', edprivate_key.Text);
           inifile.WriteString('global', 'templates_repo_url', edtemplates_repo_url.Text);
+
+          inifile.WriteString('global', 'authorized_certs_dir',EdAuthorizedCertsDir.Text);
+
           inifile.WriteBool('global', 'use_http_proxy_for_templates',
             cbUseProxyForTemplate.Checked);
           inifile.WriteBool('global', 'use_http_proxy_for_server',

@@ -1,5 +1,8 @@
-msgid "Local directory for saving package development projects"
+msgid "Local directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projects"
 msgstr "Content-Type: text/plain; charset=UTF-8"
+
+msgid "Local directory for saving package development projects"
+msgstr ""
 
 #: tform1.buttonpanel1.helpbutton.caption
 msgctxt "TFORM1.BUTTONPANEL1.HELPBUTTON.CAPTION"
@@ -39,7 +42,7 @@ msgid "Old password :"
 msgstr ""
 
 #: tviscreatekey.caption
-msgid "Generate private key and self-signed certificate"
+msgid "Generate private key and self signed certificate"
 msgstr ""
 
 #: tviscreatekey.edcommonname.hint
@@ -67,7 +70,7 @@ msgid "E.g. : IT"
 msgstr ""
 
 #: tviscreatekey.label1.caption
-msgid "Target directory:"
+msgid "Target keys directory:"
 msgstr ""
 
 #: tviscreatekey.label1.hint
@@ -565,12 +568,21 @@ msgstr ""
 msgid "Private key password :"
 msgstr ""
 
-#: tviswaptconfig.button1.caption
-msgid "Show statistics"
+#: tviswaptconfig.actcheckandsetwaptserver.caption
+msgctxt "TVISWAPTCONFIG.ACTCHECKANDSETWAPTSERVER.CAPTION"
+msgid "Check and set"
 msgstr ""
 
-#: tviswaptconfig.button2.caption
-msgid "Check and set"
+#: tviswaptconfig.actcheckandsetwaptserver.hint
+msgid "Try to connect to waptserver and wapt_repo"
+msgstr ""
+
+#: tviswaptconfig.actdownloadcertificate.caption
+msgid "Browse certificates"
+msgstr ""
+
+#: tviswaptconfig.button1.caption
+msgid "Show statistics"
 msgstr ""
 
 #: tviswaptconfig.buttonpanel1.helpbutton.caption
@@ -579,7 +591,7 @@ msgid "&Show config file"
 msgstr ""
 
 #: tviswaptconfig.caption
-msgid "Locale WAPT configuration"
+msgid "WAPTConsole configuration"
 msgstr ""
 
 #: tviswaptconfig.cbdebugwindow.hint
@@ -656,11 +668,11 @@ msgid "External packages repository "
 msgstr ""
 
 #: tviswaptconfig.edtemplates_repo_url.hint
-msgid "E.g. : http://wapt.tranquil.it/wapt"
+msgid "E.g. : https://store.wapt.fr/wapt"
 msgstr ""
 
 #: tviswaptconfig.edtemplates_repo_url.text
-msgid "http://wapt.tranquil.it/wapt"
+msgid "https://store.wapt.fr/wapt"
 msgstr ""
 
 #: tviswaptconfig.edwapt_server.editlabel.caption
@@ -704,6 +716,10 @@ msgstr ""
 
 #: tviswaptconfig.label8.caption
 msgid "Send anonymous usage statistics to Tranquil IT"
+msgstr ""
+
+#: tviswaptconfig.label9.caption
+msgid "Authorized external keys dir"
 msgstr ""
 
 #: tviswaptconfig.labstatusrepo.caption

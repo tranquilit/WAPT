@@ -4,7 +4,7 @@ object VisWAPTConfig: TVisWAPTConfig
   Top = 283
   Width = 591
   BorderStyle = bsDialog
-  Caption = 'Locale WAPT configuration'
+  Caption = 'WAPTConsole configuration'
   ClientHeight = 401
   ClientWidth = 591
   OnCreate = FormCreate
@@ -71,12 +71,13 @@ object VisWAPTConfig: TVisWAPTConfig
         Height = 21
         Hint = 'E.g. : c:\private\tranquilit.pem'#13#10'Path to private key for signing new packages.'#13#10'Only suitable for development hosts.'
         Top = 146
-        Width = 196
+        Width = 220
         Filter = 'Fichiers PEM|*.pem|Tous les fichiers|*.*'
         FilterIndex = 0
         HideDirectories = False
         ButtonWidth = 23
         NumGlyphs = 1
+        Flat = True
         MaxLength = 0
         TabOrder = 6
       end
@@ -95,7 +96,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Height = 21
         Hint = 'E.g. : https://store.wapt.fr/wapt'#13#10'Used by WAPT console for duplicating packages.'
         Top = 202
-        Width = 220
+        Width = 222
         EditLabel.AnchorSideTop.Control = edtemplates_repo_url
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = edtemplates_repo_url
@@ -115,7 +116,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Left = 164
         Height = 21
         Hint = 'E.g. : http://proxy.tranquilit.local:3128'#13#10'Only required if a proxy is needed.'
-        Top = 250
+        Top = 277
         Width = 222
         EditLabel.AnchorSideTop.Control = edhttp_proxy
         EditLabel.AnchorSideTop.Side = asrCenter
@@ -124,7 +125,7 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.AnchorSideBottom.Side = asrBottom
         EditLabel.Left = 21
         EditLabel.Height = 13
-        EditLabel.Top = 254
+        EditLabel.Top = 281
         EditLabel.Width = 140
         EditLabel.Caption = 'http proxy to use (if needed)'
         EditLabel.ParentColor = False
@@ -135,7 +136,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Left = 164
         Height = 17
         Hint = 'Activate proxy when accessing the model repository'
-        Top = 231
+        Top = 258
         Width = 20
         Checked = True
         OnClick = cbUseProxyForTemplateClick
@@ -146,7 +147,7 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideRight.Control = cbUseProxyForTemplate
         Left = -106
         Height = 13
-        Top = 232
+        Top = 259
         Width = 267
         Alignment = taRightJustify
         Anchors = [akTop, akLeft, akRight]
@@ -181,14 +182,13 @@ object VisWAPTConfig: TVisWAPTConfig
       object Button2: TButton
         Left = 396
         Height = 25
-        Top = 6
-        Width = 104
-        Caption = 'Check and set'
-        OnClick = Button2Click
+        Top = 4
+        Width = 128
+        Action = ActCheckAndSetwaptserver
         TabOrder = 1
       end
       object labStatusRepo: TLabel
-        Left = 428
+        Left = 420
         Height = 13
         Top = 57
         Width = 31
@@ -196,7 +196,7 @@ object VisWAPTConfig: TVisWAPTConfig
         ParentColor = False
       end
       object labStatusServer: TLabel
-        Left = 428
+        Left = 420
         Height = 13
         Top = 81
         Width = 31
@@ -208,7 +208,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Height = 21
         Hint = 'E.g. : http://wapt.tranquilit.local/wapt'#13#10'Leave empty for auto DNS discovery'
         Top = 54
-        Width = 230
+        Width = 220
         EditLabel.AnchorSideTop.Control = edrepo_url
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = edrepo_url
@@ -230,7 +230,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Height = 21
         Hint = 'E.g. : https://srvwapt.tranquilit.local'#13#10'Leave empty if you don''t want a central management server.'
         Top = 78
-        Width = 230
+        Width = 220
         EditLabel.AnchorSideTop.Control = edwapt_server
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = edwapt_server
@@ -257,16 +257,47 @@ object VisWAPTConfig: TVisWAPTConfig
         TabOrder = 2
       end
       object ImgStatusRepo: TImage
-        Left = 404
+        Left = 396
         Height = 21
         Top = 54
         Width = 20
       end
       object ImgStatusServer: TImage
-        Left = 404
+        Left = 396
         Height = 21
         Top = 78
         Width = 20
+      end
+      object Label9: TLabel
+        Left = -117
+        Height = 13
+        Top = 228
+        Width = 273
+        Alignment = taRightJustify
+        AutoSize = False
+        Caption = 'Authorized external keys dir'
+        ParentColor = False
+      end
+      object EdAuthorizedCertsDir: TDirectoryEdit
+        Left = 164
+        Height = 21
+        Top = 226
+        Width = 222
+        DialogTitle = 'Select the directory where to lookup authorized certificates'
+        ShowHidden = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        Flat = True
+        MaxLength = 0
+        TabOrder = 10
+      end
+      object Button3: TButton
+        Left = 396
+        Height = 25
+        Top = 200
+        Width = 128
+        Action = ActDownloadCertificate
+        TabOrder = 11
       end
     end
     object pgAdvanced: TTabSheet
@@ -515,5 +546,19 @@ object VisWAPTConfig: TVisWAPTConfig
       36009F6B3983A06E3BB7A4713EE8A4713EE8A06E3BB79F6B39839F683800FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00
     }
+  end
+  object ActionList1: TActionList
+    left = 488
+    top = 152
+    object ActCheckAndSetwaptserver: TAction
+      Caption = 'Check and set'
+      Hint = 'Try to connect to waptserver and wapt_repo'
+      OnExecute = ActCheckAndSetwaptserverExecute
+    end
+    object ActDownloadCertificate: TAction
+      Caption = 'Browse certificates'
+      OnExecute = ActDownloadCertificateExecute
+      OnUpdate = ActDownloadCertificateUpdate
+    end
   end
 end

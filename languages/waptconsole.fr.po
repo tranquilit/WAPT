@@ -1,4 +1,4 @@
-msgid ""
+msgid "Local directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projects"
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
@@ -13,6 +13,9 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Local directory for saving package development projects"
+msgstr ""
 
 #: tform1.buttonpanel1.helpbutton.caption
 msgctxt "tform1.buttonpanel1.helpbutton.caption"
@@ -52,7 +55,9 @@ msgid "Old password :"
 msgstr "Ancien mot de passe :"
 
 #: tviscreatekey.caption
-msgid "Generate private key and self-signed certificate"
+#, fuzzy
+#| msgid "Generate private key and self-signed certificate"
+msgid "Generate private key and self signed certificate"
 msgstr "Créer une clé privée et un certificat auto-signé"
 
 #: tviscreatekey.edcommonname.hint
@@ -82,7 +87,9 @@ msgid "E.g. : IT"
 msgstr "Exemple : numérique"
 
 #: tviscreatekey.label1.caption
-msgid "Target directory:"
+#, fuzzy
+#| msgid "Target directory:"
+msgid "Target keys directory:"
 msgstr "Répertoire de destination :"
 
 #: tviscreatekey.label1.hint
@@ -586,13 +593,22 @@ msgstr ""
 msgid "Private key password :"
 msgstr "Mot de passe de la clé privée :"
 
+#: tviswaptconfig.actcheckandsetwaptserver.caption
+msgctxt "tviswaptconfig.actcheckandsetwaptserver.caption"
+msgid "Check and set"
+msgstr "Vérifier"
+
+#: tviswaptconfig.actcheckandsetwaptserver.hint
+msgid "Try to connect to waptserver and wapt_repo"
+msgstr ""
+
+#: tviswaptconfig.actdownloadcertificate.caption
+msgid "Browse certificates"
+msgstr ""
+
 #: tviswaptconfig.button1.caption
 msgid "Show statistics"
 msgstr "Afficher les statistiques"
-
-#: tviswaptconfig.button2.caption
-msgid "Check and set"
-msgstr "Vérifier"
 
 #: tviswaptconfig.buttonpanel1.helpbutton.caption
 msgctxt "tviswaptconfig.buttonpanel1.helpbutton.caption"
@@ -600,7 +616,9 @@ msgid "&Show config file"
 msgstr "&Voir le fichier de configuration"
 
 #: tviswaptconfig.caption
-msgid "Locale WAPT configuration"
+#, fuzzy
+#| msgid "Locale WAPT configuration"
+msgid "WAPTConsole configuration"
 msgstr "Configuration WAPT locale"
 
 #: tviswaptconfig.cbdebugwindow.hint
@@ -679,11 +697,15 @@ msgid "External packages repository "
 msgstr "Dépôt externe de paquets "
 
 #: tviswaptconfig.edtemplates_repo_url.hint
-msgid "E.g. : http://wapt.tranquil.it/wapt"
+#, fuzzy
+#| msgid "E.g. : http://wapt.tranquil.it/wapt"
+msgid "E.g. : https://store.wapt.fr/wapt"
 msgstr "Par exemple : http://wapt.tranquil.it/wapt"
 
 #: tviswaptconfig.edtemplates_repo_url.text
-msgid "http://wapt.tranquil.it/wapt"
+#, fuzzy
+#| msgid "http://wapt.tranquil.it/wapt"
+msgid "https://store.wapt.fr/wapt"
 msgstr "http://wapt.tranquil.it/wapt"
 
 #: tviswaptconfig.edwapt_server.editlabel.caption
@@ -736,6 +758,10 @@ msgstr "Voir les informations avancées"
 #: tviswaptconfig.label8.caption
 msgid "Send anonymous usage statistics to Tranquil IT"
 msgstr "Envoyer des statistiques anonymes à Tranquil IT"
+
+#: tviswaptconfig.label9.caption
+msgid "Authorized external keys dir"
+msgstr ""
 
 #: tviswaptconfig.labstatusrepo.caption
 msgctxt "tviswaptconfig.labstatusrepo.caption"
@@ -2277,7 +2303,6 @@ msgid "wupanright"
 msgstr ""
 
 #: uwaptconsoleres.rsaddadsgroups
-
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -2345,6 +2370,18 @@ msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 #, fuzzy
 #| msgid ""
 #| "Are you sure you want to import\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
 #| " to your repository ?\n"
 msgctxt "uwaptconsoleres.rsconfirmimport"
 msgid ""
@@ -2698,8 +2735,21 @@ msgid "Error while creating package : %s"
 msgstr "Erreur lors de la création du paquet : %s"
 
 #: uwaptconsoleres.rspackageduplicateconfirm
+#, fuzzy
 #| msgid ""
 #| "Are you sure you want to duplicate the package(s)\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
 #| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""

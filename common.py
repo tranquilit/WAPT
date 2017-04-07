@@ -3358,7 +3358,7 @@ class Wapt(object):
             print('Warning : %s' % repr(e))
             return ''
 
-    def _check_package_signature(self,packagetempdir,public_certs):
+    def _check_package_signature(self,packagetempdir,public_certs=None):
         """Check the hash of files in package_dir and the manifest signature
            against the authorized keys
         Args:
@@ -3370,6 +3370,8 @@ class Wapt(object):
 
         Raise Exception if no certificate match is found.
         """
+        if public_certs is None:
+            public_certs = self.public_certs
         manifest_filename = os.path.join( packagetempdir,'WAPT','manifest.sha1')
         if os.path.isfile(manifest_filename):
             manifest_data = open(manifest_filename,'r').read()

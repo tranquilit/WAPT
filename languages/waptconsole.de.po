@@ -1,5 +1,8 @@
-msgid "Local directory for saving package development projects"
+msgid "Local directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projects"
 msgstr "Content-Type: text/plain; charset=UTF-8"
+
+msgid "Local directory for saving package development projects"
+msgstr ""
 
 #: tform1.buttonpanel1.helpbutton.caption
 msgctxt "tform1.buttonpanel1.helpbutton.caption"
@@ -39,7 +42,9 @@ msgid "Old password :"
 msgstr "Altes Passwort:"
 
 #: tviscreatekey.caption
-msgid "Generate private key and self-signed certificate"
+#, fuzzy
+#| msgid "Generate private key and self-signed certificate"
+msgid "Generate private key and self signed certificate"
 msgstr "Den privaten Key und das selbstsignierte Zertifikat generieren"
 
 #: tviscreatekey.edcommonname.hint
@@ -69,7 +74,9 @@ msgid "E.g. : IT"
 msgstr "z. B. : IT"
 
 #: tviscreatekey.label1.caption
-msgid "Target directory:"
+#, fuzzy
+#| msgid "Target directory:"
+msgid "Target keys directory:"
 msgstr "Zielverzeichnis:"
 
 #: tviscreatekey.label1.hint
@@ -575,13 +582,22 @@ msgstr "laKeyPath"
 msgid "Private key password :"
 msgstr "Privates-Key Passwort:"
 
+#: tviswaptconfig.actcheckandsetwaptserver.caption
+msgctxt "tviswaptconfig.actcheckandsetwaptserver.caption"
+msgid "Check and set"
+msgstr "Prü­fen und einstellen"
+
+#: tviswaptconfig.actcheckandsetwaptserver.hint
+msgid "Try to connect to waptserver and wapt_repo"
+msgstr ""
+
+#: tviswaptconfig.actdownloadcertificate.caption
+msgid "Browse certificates"
+msgstr ""
+
 #: tviswaptconfig.button1.caption
 msgid "Show statistics"
 msgstr "Zeige Statistiken"
-
-#: tviswaptconfig.button2.caption
-msgid "Check and set"
-msgstr "Prü­fen und einstellen"
 
 #: tviswaptconfig.buttonpanel1.helpbutton.caption
 msgctxt "tviswaptconfig.buttonpanel1.helpbutton.caption"
@@ -589,7 +605,9 @@ msgid "&Show config file"
 msgstr "&Show config file"
 
 #: tviswaptconfig.caption
-msgid "Locale WAPT configuration"
+#, fuzzy
+#| msgid "Locale WAPT configuration"
+msgid "WAPTConsole configuration"
 msgstr "Lokale WAPT Konfiguration"
 
 #: tviswaptconfig.cbdebugwindow.hint
@@ -670,11 +688,15 @@ msgid "External packages repository "
 msgstr "URL auf das Packet-Repository-Modell"
 
 #: tviswaptconfig.edtemplates_repo_url.hint
-msgid "E.g. : http://wapt.tranquil.it/wapt"
+#, fuzzy
+#| msgid "E.g. : http://wapt.tranquil.it/wapt"
+msgid "E.g. : https://store.wapt.fr/wapt"
 msgstr "z. B. : http://wapt.tranquil.it/wapt"
 
 #: tviswaptconfig.edtemplates_repo_url.text
-msgid "http://wapt.tranquil.it/wapt"
+#, fuzzy
+#| msgid "http://wapt.tranquil.it/wapt"
+msgid "https://store.wapt.fr/wapt"
 msgstr "http://wapt.tranquil.it/wapt"
 
 #: tviswaptconfig.edwapt_server.editlabel.caption
@@ -727,6 +749,10 @@ msgstr "HTTP Proxy-Einstellungen"
 #: tviswaptconfig.label8.caption
 msgid "Send anonymous usage statistics to Tranquil IT"
 msgstr "Sende anonyme Nutzungsstatistiken an Tranquil IT"
+
+#: tviswaptconfig.label9.caption
+msgid "Authorized external keys dir"
+msgstr ""
 
 #: tviswaptconfig.labstatusrepo.caption
 msgctxt "tviswaptconfig.labstatusrepo.caption"
@@ -2372,6 +2398,26 @@ msgstr "wupanright"
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -2438,6 +2484,18 @@ msgstr "Sind Sie sich sicher, dass Sie %s die Pakete vom Host %s vergessen wolle
 #: uwaptconsoleres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
@@ -2928,6 +2986,18 @@ msgstr "Fehler beim erstellen des Pakets"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -3178,6 +3248,14 @@ msgstr "Anwendung: %s -h "
 #| "Wapt-get version: %s\n"
 #| "Waptconsole version : %s\n"
 #| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
 msgctxt "uwaptconsoleres.rsversion"
 msgid ""
 "Waptconsole version : %s\n"
@@ -3234,6 +3312,14 @@ msgstr ""
 #: uwaptconsoleres.rswaptservererror
 #, fuzzy
 #| msgid ""
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
 #| "Error on WAPT server:\n"
@@ -3359,6 +3445,18 @@ msgstr ""
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
 #| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
 "Current server version: %s\n"
@@ -3376,6 +3474,14 @@ msgstr "Fehler beim erstellen des agent : %s"
 #: uwaptconsoleres.rswaptsetupuploadsuccess
 #, fuzzy
 #| msgid ""
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
