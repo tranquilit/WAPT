@@ -1285,7 +1285,7 @@ function CreateSelfSignedCert(keyfilename,
         email:Utf8String
     ):Utf8String;
 var
-  opensslbin,opensslcfg,opensslcfg_fn,destpem,destcrt,destp12 : AnsiString;
+  opensslbin,opensslcfg,opensslcfg_fn,destpem,destcrt,destp12 : Utf8String;
   params : ISuperObject;
 begin
   result := '';
@@ -1294,17 +1294,17 @@ begin
   else
   begin
     if ExtractFileNameOnly(keyfilename) = keyfilename then
-      destpem := Utf8ToAnsi(AppendPathDelim(destdir)+ExtractFileNameOnly(keyfilename)+'.pem')
+      destpem := AppendPathDelim(destdir)+ExtractFileNameOnly(keyfilename)+'.pem'
     else
       destpem := keyfilename;
   end;
   if crtbasename = '' then
     crtbasename := ExtractFileNameOnly(keyfilename);
 
-  destcrt := Utf8ToAnsi(AppendPathDelim(destdir)+crtbasename+'.crt');
-  destp12 := Utf8ToAnsi(AppendPathDelim(destdir)+crtbasename+'.p12');
+  destcrt := AppendPathDelim(destdir)+crtbasename+'.crt';
+  destp12 := AppendPathDelim(destdir)+crtbasename+'.p12';
   if not DirectoryExists(destdir) then
-      mkdir(destdir);
+       CreateDir(destdir);
 
   params := TSuperObject.Create;
   params.S['country'] := UTF8Decode(country);
@@ -1317,7 +1317,7 @@ begin
   opensslbin :=  AppendPathDelim(wapt_base_dir)+'lib\site-packages\M2Crypto\openssl.exe';
   opensslcfg :=  pyformat(FileToString(AppendPathDelim(wapt_base_dir) + 'templates\openssl_template.cfg'),params);
   opensslcfg_fn := AppendPathDelim(destdir)+'openssl.cfg';
-  StringToFile(opensslcfg_fn,Utf8ToAnsi(opensslcfg));
+  StringToFile(opensslcfg_fn,opensslcfg);
   try
     SetEnvironmentVariable('OPENSSL_CONF', PChar(opensslcfg_fn));
     // If private key  already exist, just recreate a self signed certificate

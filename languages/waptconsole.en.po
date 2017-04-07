@@ -2715,6 +2715,14 @@ msgctxt "uwaptconsoleres.rsreallowpackagesonhost"
 msgid "Selection of package(s) to remove from conflict list"
 msgstr ""
 
+#: uwaptconsoleres.rsreloadwaptconsoleconfig
+msgid "Reloading WaptConsole configuration"
+msgstr ""
+
+#: uwaptconsoleres.rsreloadwaptserviceconfig
+msgid "Reloading WaptService configuration"
+msgstr ""
+
 #: uwaptconsoleres.rsrmbundlefromhosts
 msgctxt "uwaptconsoleres.rsrmbundlefromhosts"
 msgid "Selection of package bundles for removing from the selected hosts"

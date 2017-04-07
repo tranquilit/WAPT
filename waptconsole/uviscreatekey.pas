@@ -35,11 +35,11 @@ type
     Panel2: TPanel;
     Shape1: TShape;
     StaticText1: TStaticText;
+    procedure DirectoryCertAcceptFileName(Sender: TObject; var Value: String);
     procedure EdKeyFilenameAcceptFileName(Sender: TObject; var Value: String);
     procedure EdKeyFilenameExit(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
-    procedure FormShow(Sender: TObject);
   private
     procedure SetDefaultCN;
     { private declarations }
@@ -62,7 +62,7 @@ procedure TVisCreateKey.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 var
   certFile:String;
 begin
-  certFile := AppendPathDelim(DirectoryCert.Directory)+ExtractFileNameOnly(EdKeyFileName.Text)+'.crt';
+  certFile := AppendPathDelim(DirectoryCert.Text)+ExtractFileNameOnly(EdKeyFileName.Text)+'.crt';
 
   if (ModalResult=mrOk) then
   begin
@@ -90,10 +90,10 @@ begin
   if FileExists(EdKeyFilename.FileName) then
     pemfn := EdKeyFilename.FileName
   else
-    pemfn := DirectoryCert.Directory+'\'+EdKeyFilename.Text+'.pem';
+    pemfn := DirectoryCert.text+'\'+EdKeyFilename.Text+'.pem';
 
   // by default check if already a certificate with same basename as private key in target directory...
-  crtfn := DirectoryCert.Directory+'\'+ExtractFileNameOnly(pemfn)+'.crt';
+  crtfn := DirectoryCert.Text+'\'+ExtractFileNameOnly(pemfn)+'.crt';
 
   if FileExists(crtfn) then
     edCommonName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn or ""',[crtfn]))
@@ -117,6 +117,12 @@ begin
   end;
 end;
 
+procedure TVisCreateKey.DirectoryCertAcceptFileName(Sender: TObject;
+  var Value: String);
+begin
+  Value := ExtractFileDir(Value);
+end;
+
 procedure TVisCreateKey.EdKeyFilenameExit(Sender: TObject);
 begin
   SetDefaultCN;
@@ -125,11 +131,7 @@ end;
 procedure TVisCreateKey.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
-  DirectoryCert.Directory := AppendPathDelim(GetUserDir)+'private';
-end;
-
-procedure TVisCreateKey.FormShow(Sender: TObject);
-begin
+  DirectoryCert.Text:=AppendPathDelim(GetUserDir)+'private';
   SetDefaultCN;
 end;
 

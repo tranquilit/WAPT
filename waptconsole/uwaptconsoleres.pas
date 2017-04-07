@@ -134,6 +134,9 @@ resourcestring
   rsInputCommonName = 'Please input a Common Name to identify signer';
   rsKeyAlreadyExists = 'Key %s already exists, please pick another name.';
 
+  rsReloadWaptconsoleConfig = 'Reloading WaptConsole configuration';
+  rsReloadWaptserviceConfig = 'Reloading WaptService configuration';
+
   { Messages dans uVisEditPackage.pas }
   rsEditBundle = 'Edit package bundle.';
   rsEdPackage = 'Package bundle';

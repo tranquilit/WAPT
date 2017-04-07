@@ -1326,13 +1326,13 @@ begin
             if not CreatePrivateKey then
               pemfn:=EdKeyFilename.FileName
             else
-              pemfn:=DirectoryCert.Directory+'\'+EdKeyFileName.Text+'.pem';
+              pemfn:=AppendPathDelim(utf8Decode(DirectoryCert.Text))+ExtractFileNameOnly(utf8Decode(EdKeyFileName.Text))+'.pem';
             crtBaseName:=ExtractFileNameOnly(pemfn);
             certFile := CreateSelfSignedCert(
               pemfn,
               '',
               waptpath,
-              DirectoryCert.Directory,
+              utf8Decode(DirectoryCert.Text),
               edCountry.Text,
               edLocality.Text,
               edOrganization.Text,
@@ -1340,15 +1340,15 @@ begin
               edCommonName.Text,
               edEmail.Text);
 
-            done := FileExistsUTF8(certFile);
+            done := FileExists(certFile);
             if done then
             begin
               if CreatePrivateKey then
                 ShowMessageFmt(rsKeyPairGenSuccess,
-                  [pemfn,certFile])
+                  [UTF8Encode(pemfn),UTF8Encode(certFile)])
               else
                 ShowMessageFmt(rsPublicKeyGenSuccess,
-                  [certFile]);
+                  [UTF8Encode(certFile)]);
 
               if not CopyFile(PChar(certFile),
                 PChar(waptpath + '\ssl\' + ExtractFileName(certFile)), True) then
@@ -1361,12 +1361,25 @@ begin
                   Free;
                 end;
 
-              ActReloadConfigExecute(self);
-
+              CurrentVisLoading := TVisLoading.Create(Self);
+              with CurrentVisLoading do
               try
-                Run('cmd /C net stop waptservice');
-                Run('cmd /C net start waptservice');
-              except
+                ProgressTitle(rsReloadWaptserviceConfig);
+                Start(3);
+                ActReloadConfigExecute(self);
+                ProgressStep(1,3);
+                ProgressTitle(rsReloadWaptserviceConfig);
+                try
+                  Run('cmd /C net stop waptservice');
+                  ProgressStep(2,3);
+                  Run('cmd /C net start waptservice');
+                  ProgressStep(3,3);
+                except
+                end;
+
+              finally
+                Finish;
+                FreeAndNil(CurrentVisLoading);
               end;
             end;
           except
@@ -3238,7 +3251,7 @@ begin
   if not FileExistsUTF8(localfn) then
   begin
     if not DirectoryExistsUTF8(GetAppConfigDir(False)) then
-      MkDir(GetAppConfigDir(False));
+       CreateDirUTF8(GetAppConfigDir(False));
     CopyFile(Utf8ToAnsi(WaptIniFilename), Utf8ToAnsi(localfn), True);
   end;
 
