@@ -26,7 +26,7 @@ type
     ButPackageDuplicate: TBitBtn;
     ButPackageDuplicate1: TBitBtn;
     butSearchExternalPackages: TBitBtn;
-    CBCheckhttpsCeritficate: TCheckBox;
+    CBCheckhttpsCertificate: TCheckBox;
     cbNewerThanMine: TCheckBox;
     cbNewestOnly: TCheckBox;
     CBCheckSignature: TCheckBox;
@@ -70,7 +70,7 @@ var
 implementation
 
 uses uwaptconsole,tiscommon,soutils,waptcommon,
-    dmwaptpython,uvisloading,uvisprivatekeyauth, uWaptRes,md5,uScaleDPI,uWaptConsoleRes;
+    dmwaptpython,uvisloading,uvisprivatekeyauth, uWaptRes,md5,uScaleDPI,uWaptConsoleRes,tisinifiles;
 
 {$R *.lfm}
 
@@ -115,21 +115,26 @@ end;
 procedure TVisImportPackage.FormClose(Sender: TObject;
   var CloseAction: TCloseAction);
 begin
-  GridExternalPackages.SaveSettingsToIni(Appuserinipath) ;
+  GridExternalPackages.SaveSettingsToIni(Appuserinipath);
+  IniWriteBool(Appuserinipath,Name,CBCheckhttpsCertificate.Name,CBCheckhttpsCertificate.Checked);
+  IniWriteBool(Appuserinipath,Name,CBCheckSignature.Name,CBCheckSignature.Checked);
+
 end;
 
 procedure TVisImportPackage.FormCreate(Sender: TObject);
 begin
-    ScaleDPI(Self,96); // 96 is the DPI you designed
-    ScaleImageList(ActionsImages,96);
-
+  ScaleDPI(Self,96); // 96 is the DPI you designed
+  ScaleImageList(ActionsImages,96);
 end;
 
 procedure TVisImportPackage.FormShow(Sender: TObject);
 begin
-  CBCheckSignature.OnClick(Self);
-  GridExternalPackages.LoadSettingsFromIni(Appuserinipath) ;
+  CBCheckhttpsCertificate.Checked := IniReadBool(Appuserinipath,Name,CBCheckhttpsCertificate.Name,True);
+  CBCheckSignature.Checked := IniReadBool(Appuserinipath,Name,CBCheckSignature.Name,False);
+
+  GridExternalPackages.LoadSettingsFromIni(Appuserinipath);
   urlExternalRepo.Caption:= TemplatesRepoUrl;
+  CBCheckSignature.OnClick(Self);
   ActSearchExternalPackage.Execute;
 end;
 
@@ -175,7 +180,7 @@ begin
         EdSearch1.Text, proxy,
         BoolToStr(cbNewerThanMine.Checked,'True','False'),
         BoolToStr(cbNewestOnly.Checked,'True','False'),
-        BoolToStr(CBCheckhttpsCeritficate.Checked,'True','False')]);
+        BoolToStr(CBCheckhttpsCertificate.Checked,'True','False')]);
     packages := DMPython.RunJSON(expr);
     GridExternalPackages.Data := packages;
   except

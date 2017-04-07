@@ -2241,13 +2241,17 @@ var
   hostname,uuid,desc: ansistring;
 begin
   if GridHosts.FocusedRow<>Nil then
-  begin
+  try
     hostname := GridHosts.FocusedRow.S['host.computer_fqdn'];
     uuid := GridHosts.FocusedRow.S['uuid'];
     desc := GridHosts.FocusedRow.S['host.description'];
 
     if EditHost(hostname, AdvancedMode, uuid,UTF8Encode(desc)) <> nil then
       ActSearchHost.Execute;
+
+  except
+    on E:Exception do
+      ShowMessageFmt(rsEditHostError+#13#10#13#10+e.Message,[hostname]);
   end;
 end;
 

@@ -1,4 +1,4 @@
-msgid "Local directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projects"
+msgid "Local directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projects"
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tform1.buttonpanel1.helpbutton.caption
@@ -441,7 +441,8 @@ msgstr ""
 msgid "Import packages"
 msgstr ""
 
-#: tvisimportpackage.cbcheckhttpsceritficate.caption
+#: tvisimportpackage.cbcheckhttpscertificate.caption
+msgctxt "tvisimportpackage.cbcheckhttpscertificate.caption"
 msgid "Check https certificate"
 msgstr ""
 
@@ -2435,6 +2436,12 @@ msgstr ""
 #: uwaptconsoleres.rsedithostcaption
 msgctxt "uwaptconsoleres.rsedithostcaption"
 msgid "Edit host"
+msgstr ""
+
+#: uwaptconsoleres.rsedithosterror
+msgid ""
+"Unable to edit the host package %s.\n"
+"If package is signed with a foreign key, you may want to delete host package first to workaround the issue...\n"
 msgstr ""
 
 #: uwaptconsoleres.rsedpackage

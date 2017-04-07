@@ -750,8 +750,8 @@ begin
         target_directory := UniqueTempDir();
         FisTempSourcesDir := True;
         res := DMPython.RunJSON(
-          format('mywapt.edit_host("%s",target_directory=r"%s".decode(''utf8''),use_local_sources=False)',
-          [FPackageRequest, target_directory]));
+            format('mywapt.edit_host("%s",target_directory=r"%s".decode(''utf8''),use_local_sources=False)',
+            [FPackageRequest, target_directory]));
         EdPackage.EditLabel.Caption := 'Machine';
         Caption := rsHostConfigEditCaption;
         pgDepends.Caption := rsPackagesNeededOnHostCaption;

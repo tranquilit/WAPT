@@ -385,7 +385,7 @@ object VisImportPackage: TVisImportPackage
       TabOrder = 5
     end
   end
-  object CBCheckhttpsCeritficate: TCheckBox
+  object CBCheckhttpsCertificate: TCheckBox
     Left = 528
     Height = 17
     Top = 22

@@ -297,7 +297,9 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
         append_conflicts=[],
         remove_conflicts=[],
         key_password=None,
-        wapt_server_user=None,wapt_server_passwd=None):
+        wapt_server_user=None,wapt_server_passwd=None,
+        authorized_certs = None
+        ):
     """Add or remove packages from host packages
     >>> edit_hosts_depends('c:/wapt/wapt-get.ini','htlaptop.tranquilit.local','toto','tis-7zip','admin','password')
     """
@@ -341,6 +343,7 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
                 remove_depends = remove_depends,
                 append_conflicts = append_conflicts,
                 remove_conflicts = remove_conflicts,
+                authorized_certs = authorized_certs,
                 )
             sources.append(edit_res)
             # build and sign

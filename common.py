@@ -353,6 +353,16 @@ def pwd_callback(*args):
     print('Please enter the password to decrypt private key:')
     return getpass.getpass().encode('ascii')
 
+
+class EWaptBadSignature(Exception):
+    pass
+
+class EWaptCorruptedFiles(Exception):
+    pass
+
+class EWaptNotSigned(Exception):
+    pass
+
 class SSLPrivateKey(object):
     def __init__(self,private_key=None,key=None,callback=pwd_callback):
         self.private_key = private_key
@@ -459,7 +469,7 @@ class SSLCertificate(object):
         pubkey.verify_update(content)
         if pubkey.verify_final(signature):
             return self.subject_dn
-        raise Exception(u'SSL signature verification failed for certificate %s'%self.subject_dn)
+        raise EWaptBadSignature(u'SSL signature verification failed for certificate %s'%self.subject_dn)
 
     def match_key(self,key):
         """Check if certificate matches the given private key"""
@@ -541,12 +551,12 @@ def ssl_verify_content(content,signature,public_certs):
         if crt.is_valid():
             try:
                 return crt.verify_content(content,signature)
-            except:
+            except EWaptBadSignature:
                 pass
         else:
             logger.warning('Certificate %s is not valid'%public_cert)
 
-    raise Exception('SSL signature verification failed, either none public certificates match signature or signed content has been changed')
+    raise EWaptBadSignature('SSL signature verification failed, either none public certificates match signature or signature has been corrupted')
 
 
 def private_key_has_password(key):
@@ -954,7 +964,6 @@ def force_utf8_no_bom(filename):
 
 class EWaptCancelled(Exception):
     pass
-
 
 class WaptBaseDB(object):
     _dbpath = ''
@@ -3403,19 +3412,19 @@ class Wapt(object):
                     logger.info(u'Package issued by %s' % (subject,))
                     return subject
                 except:
-                    raise Exception(u'Package file %s signature is invalid.\nEither the signer "%s" is not accepted by one the keys %s\nor signature is corrupted.' % \
-                        (packagetempdir,pe.signer,','.join(self.public_certs)))
+                    raise EWaptBadSignature(u'Package file %s signature is invalid.\n\nThe signer "%s" is not accepted by one the following public keys:\n%s' % \
+                        (packagetempdir,pe.signer,'\n'.join(self.public_certs)))
 
                 # now check the integrity files
                 manifest = json.loads(manifest_data)
                 errors = self.corrupted_files_sha1(packagetempdir,manifest)
                 if errors:
-                    raise Exception(u'Error in package %s, files corrupted, SHA1 not matching for %s' % (packagetempdir,errors,))
+                    raise EWaptCorruptedFiles(u'Error in package %s, files corrupted, SHA1 not matching for %s' % (packagetempdir,errors,))
             else:
-                raise Exception(u'The package %s does not contain a signature' % packagetempdir)
+                raise EWaptNotSigned(u'The package %s does not contain a signature' % packagetempdir)
 
         else:
-            raise Exception(u'The package %s does not contain the manifest.sha1 file with content fingerprints' % packagetempdir)
+            raise EWaptNotSigned(u'The package %s does not contain the manifest.sha1 file with content fingerprints' % packagetempdir)
 
     def install_wapt(self,fname,params_dict={},explicit_by=None):
         """Install a single wapt package given its WAPT filename.
@@ -5708,22 +5717,28 @@ class Wapt(object):
         except:
             return False
 
-    def edit_host(self,hostname,target_directory='',use_local_sources=True,
+    def edit_host(self,
+            hostname,
+            target_directory='',
+            use_local_sources=True,
             append_depends=None,
             remove_depends=None,
             append_conflicts=None,
             remove_conflicts=None,
             printhook=None,
             description=None,
-            authorized_certs=None):
+            authorized_certs=None,
+            ):
         """Download and extract a host package from host repositories into target_directory for modification
                 Return dict {'target': 'c:\\\\tmp\\\\dummy', 'source_dir': 'c:\\\\tmp\\\\dummy', 'package': "dummy.tranquilit.local (=0)"}
 
+        Args:
            hostname          : fqdn of the host to edit
            target_directory  : where to place the developments files. if empty, use default one from wapt-get.ini configuration
            use_local_sources : don't raise an exception if local sources are newer or same than repo version
            append_depends    : list or comma separated list of package requirements
            remove_depends    : list or comma separated list of package requirements to remove
+           authorized_certs  : list of authorized certificate filenames. If None, use default from current wapt.
 
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> tmpdir = 'c:/tmp/dummy'
@@ -5740,6 +5755,9 @@ class Wapt(object):
             target_directory = self.get_default_development_dir(hostname,section='host')
 
         self.use_hostpackages = True
+
+        if authorized_certs is None:
+            authorized_certs = self.public_certs
 
         append_depends = ensure_list(append_depends)
         remove_depends = ensure_list(remove_depends)
@@ -5808,9 +5826,10 @@ class Wapt(object):
                         remove_depends = remove_depends,
                         append_conflicts = append_conflicts,
                         remove_conflicts = remove_conflicts,
-                        usecache=False,
-                        printhook=printhook,
-                        authorized_certs=authorized_certs)
+                        usecache = False,
+                        printhook = printhook,
+                        authorized_certs = authorized_certs,
+                        )
             elif os.path.isdir(target_directory) and os.listdir(target_directory):
                 raise Exception('directory %s is not empty, aborting.' % target_directory)
             else:

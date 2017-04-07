@@ -145,6 +145,7 @@ resourcestring
   rsEditHostCaption = 'Edit host';
   rsUpgradingHost = 'Upgrade triggered on the remote host.';
   rsUpgradeHostError = 'Failed to trigger upgrade : %s';
+  rsEditHostError =  'Unable to edit the host package %s.'#13#10'If package is signed with a foreign key, you may want to delete host package first to workaround the issue...';
 
   rsSaveMods = 'Save changes ?';
   rsUploading = 'Uploading';
