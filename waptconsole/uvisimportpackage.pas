@@ -69,7 +69,7 @@ var
 
 implementation
 
-uses uwaptconsole,tiscommon,soutils,waptcommon,
+uses uwaptconsole,tiscommon,soutils,waptcommon,VarPyth,
     dmwaptpython,uvisloading,uvisprivatekeyauth, uWaptRes,md5,uScaleDPI,uWaptConsoleRes,tisinifiles;
 
 {$R *.lfm}
@@ -156,6 +156,8 @@ begin
     dmpython.WaptConfigFileName:='';
     waptcommon.ReadWaptConfig(AppIniFilename);
     dmpython.WaptConfigFileName:=AppIniFilename;
+    MainModule.mywapt.update(Register := False);
+
 
     urlExternalRepo.Caption:=  TemplatesRepoUrl;
     GridExternalPackages.Clear;
