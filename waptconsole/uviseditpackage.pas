@@ -637,7 +637,6 @@ procedure TVisEditPackage.ActBUApplyExecute(Sender: TObject);
 begin
   ApplyUpdatesImmediately := True;
   ActBuildUpload.Execute;
-  ModalResult:=mrOK;
 end;
 
 procedure TVisEditPackage.ActAddDependsUpdate(Sender: TObject);
