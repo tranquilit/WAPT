@@ -126,8 +126,8 @@ object VisImportPackage: TVisImportPackage
   end
   object GridExternalPackages: TSOGrid
     Left = 0
-    Height = 510
-    Top = 30
+    Height = 502
+    Top = 38
     Width = 1024
     OnGetText = GridExternalPackagesGetText
     Align = alClient
@@ -265,12 +265,12 @@ object VisImportPackage: TVisImportPackage
   end
   object Panel8: TPanel
     Left = 0
-    Height = 30
+    Height = 38
     Top = 0
     Width = 1024
     Align = alTop
     BevelOuter = bvNone
-    ClientHeight = 30
+    ClientHeight = 38
     ClientWidth = 1024
     TabOrder = 0
     object EdSearch1: TSearchEdit
@@ -356,9 +356,9 @@ object VisImportPackage: TVisImportPackage
       ParentColor = False
     end
     object cbNewerThanMine: TCheckBox
-      Left = 448
+      Left = 256
       Height = 17
-      Top = 5
+      Top = 21
       Width = 172
       Caption = 'Newer packages than mine only'
       OnClick = cbNewerThanMineClick
@@ -376,7 +376,7 @@ object VisImportPackage: TVisImportPackage
       TabOrder = 4
     end
     object CBCheckSignature: TCheckBox
-      Left = 688
+      Left = 528
       Height = 17
       Top = 5
       Width = 140

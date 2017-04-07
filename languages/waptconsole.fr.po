@@ -2410,6 +2410,9 @@ msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 msgctxt "uwaptconsoleres.rsconfirmimport"
 msgid ""
 "Are you sure you want to import\n"
@@ -2599,6 +2602,10 @@ msgctxt "uwaptconsoleres.rserrorwithmessage"
 msgid "Error : %s"
 msgstr "Erreur : %s"
 
+#: uwaptconsoleres.rsfailedexternalrepoupdate
+msgid "Unable to get Packages index from %"
+msgstr "La récupération de l'index des paquets depuis %s a échoué"
+
 #: uwaptconsoleres.rsfailedimport
 msgctxt "uwaptconsoleres.rsfailedimport"
 msgid "Error during import."
@@ -2765,6 +2772,9 @@ msgstr "Erreur lors de la création du paquet : %s"
 #, fuzzy
 #| msgid ""
 #| "Are you sure you want to duplicate the package(s)\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
 #| " into your repository ?\n"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
@@ -3009,6 +3019,11 @@ msgid "Warning, waptsetup-tis.exe or waptagent.exe not present on server, please
 msgstr "Attention, waptsetup-tis.exe ou waptagent.exe ne sont pas présents sur le serveur."
 
 #: uwaptconsoleres.rswaptagentoldversion
+#, fuzzy
+#| msgid ""
+#| "Warning, the version of the waptagent.exe installer is too old.\n"
+#| "Current waptagent.exe version: %s\n"
+#| "waptsetup-tis.exe version: %s\n"
 msgid ""
 "Warning, the version of the waptagent.exe installer is too old.\n"
 "Current waptagent.exe version: %s\n"
@@ -3053,6 +3068,10 @@ msgid "You must first define the Package prefix in preferences"
 msgstr "Vous devez d'abord définir le préfixe des paquets dans les préférences"
 
 #: uwaptconsoleres.rswaptservererror
+#, fuzzy
+#| msgid ""
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -3061,6 +3080,11 @@ msgstr ""
 "%s\n"
 
 #: uwaptconsoleres.rswaptserveroldversion
+#, fuzzy
+#| msgid ""
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
 "Current server version: %s\n"
@@ -3076,6 +3100,10 @@ msgid "Error while creating agent : %s"
 msgstr "Erreur lors de la création de l'agent : %s"
 
 #: uwaptconsoleres.rswaptsetupuploadsuccess
+#, fuzzy
+#| msgid ""
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"
 msgid ""
 "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"

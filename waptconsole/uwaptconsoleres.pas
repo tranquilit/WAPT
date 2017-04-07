@@ -80,6 +80,7 @@ resourcestring
   rsUploadingPackagesToWaptSrv = 'Uploading %s packages to WAPT server...';
   rsSuccessfullyImported = '%s successfully imported.';
   rsFailedImport = 'Error during import.';
+  rsFailedExternalRepoUpdate = 'Unable to get Packages index from %';
 
   rsWaptPackagePrefixMissing = 'You must first define the Package prefix in preferences';
 

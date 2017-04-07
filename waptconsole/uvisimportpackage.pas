@@ -147,6 +147,10 @@ procedure TVisImportPackage.ActWAPTLocalConfigExecute(Sender: TObject);
 begin
   if (VisWaptGUI<>Nil) and  VisWaptGUI.EditIniFile then
   begin
+    dmpython.WaptConfigFileName:='';
+    waptcommon.ReadWaptConfig(AppIniFilename);
+    dmpython.WaptConfigFileName:=AppIniFilename;
+
     urlExternalRepo.Caption:=  TemplatesRepoUrl;
     GridExternalPackages.Clear;
     ActSearchExternalPackage.Execute;
@@ -164,13 +168,17 @@ begin
     proxy := '"'+waptcommon.HttpProxy+'"'
   else
     proxy := 'None';
-  expr := format('waptdevutils.update_external_repo("%s","%s",proxy=%s,mywapt=mywapt,newer_only=%s,newest_only=%s)',
-    [TemplatesRepoUrl,
-      EdSearch1.Text, proxy,
-      BoolToStr(cbNewerThanMine.Checked,'True','False'),
-      BoolToStr(cbNewestOnly.Checked,'True','False')]);
-  packages := DMPython.RunJSON(expr);
-  GridExternalPackages.Data := packages;
+  try
+    expr := format('waptdevutils.update_external_repo("%s","%s",proxy=%s,mywapt=mywapt,newer_only=%s,newest_only=%s)',
+      [waptcommon.TemplatesRepoUrl,
+        EdSearch1.Text, proxy,
+        BoolToStr(cbNewerThanMine.Checked,'True','False'),
+        BoolToStr(cbNewestOnly.Checked,'True','False')]);
+    packages := DMPython.RunJSON(expr);
+    GridExternalPackages.Data := packages;
+  except
+    on E:Exception do ShowMessageFmt(rsFailedExternalRepoUpdate,[waptcommon.TemplatesRepoUrl]);
+  end;
 end;
 
 procedure TVisImportPackage.ActPackageDuplicateExecute(Sender: TObject);
@@ -206,66 +214,71 @@ begin
   if not DirectoryExists(AppLocalDir + 'cache') then
     mkdir(AppLocalDir + 'cache');
 
-
-  with  TVisLoading.Create(Self) do
   try
-    Sources := TSuperObject.Create(stArray) ;
-    //Téléchargement en batchs
-    for Filename in FileNames do
-    begin
-      Application.ProcessMessages;
-      ProgressTitle(
-        format(rsDownloadingPackage, [Filename.AsArray[0].AsString]));
-      target := AppLocalDir + 'cache\' + Filename.AsArray[0].AsString;
-      try
-        if not FileExists(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
-        begin
-          IdWget(TemplatesRepoUrl + '/' + Filename.AsArray[0].AsString,
-            target, ProgressForm, @updateprogress, UseProxyForTemplates);
-          if (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
-            raise Exception.CreateFmt(rsDownloadCurrupted,[Filename.AsArray[0].AsString]);
-        end;
-      except
-        on e:Exception do
-        begin
-          ShowMessage(rsDlCanceled+' : '+e.Message);
-          if FileExists(target) then
-            DeleteFileUTF8(Target);
-          exit;
+    with  TVisLoading.Create(Self) do
+    try
+      Sources := TSuperObject.Create(stArray) ;
+      //Téléchargement en batchs
+      for Filename in FileNames do
+      begin
+        Application.ProcessMessages;
+        ProgressTitle(
+          format(rsDownloadingPackage, [Filename.AsArray[0].AsString]));
+        target := AppLocalDir + 'cache\' + Filename.AsArray[0].AsString;
+        try
+          if not FileExists(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
+          begin
+            IdWget(TemplatesRepoUrl + '/' + Filename.AsArray[0].AsString,
+              target, ProgressForm, @updateprogress, UseProxyForTemplates);
+            if (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
+              raise Exception.CreateFmt(rsDownloadCurrupted,[Filename.AsArray[0].AsString]);
+          end;
+        except
+          on e:Exception do
+          begin
+            ShowMessage(rsDlCanceled+' : '+e.Message);
+            if FileExists(target) then
+              DeleteFileUTF8(Target);
+            exit;
+          end;
         end;
       end;
-    end;
 
-    for Filename in FileNames do
-    begin
-      ProgressTitle(format(rsDuplicating, [Filename.AsArray[0].AsString]));
+      for Filename in FileNames do
+      begin
+        ProgressTitle(format(rsDuplicating, [Filename.AsArray[0].AsString]));
+        Application.ProcessMessages;
+        sourceDir := DMPython.RunJSON(
+          Format('waptdevutils.duplicate_from_external_repo(r"%s",r"%s",None,r"%s" or None)',
+          [AppIniFilename, AppLocalDir + 'cache\' + Filename.AsArray[0].AsString,AuthorizedExternalCertDir])).AsString;
+        sources.AsArray.Add('r"'+sourceDir+'"');
+      end;
+
+      ProgressTitle(format(rsUploadingPackagesToWaptSrv, [IntToStr(Sources.AsArray.Length)]));
       Application.ProcessMessages;
-      sourceDir := DMPython.RunJSON(
-        Format('waptdevutils.duplicate_from_external_repo(r"%s",r"%s",None,r"%s" or None)',
-        [AppIniFilename, AppLocalDir + 'cache\' + Filename.AsArray[0].AsString,AuthorizedExternalCertDir])).AsString;
-      sources.AsArray.Add('r"'+sourceDir+'"');
+
+      uploadResult := DMPython.RunJSON(
+        format('mywapt.build_upload([%s],private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=False)',
+        [Join(',',sources) , privateKeyPassword, waptServerUser, waptServerPassword]),
+        VisWaptGUI.jsonlog);
+      if (uploadResult <> Nil) and (uploadResult.AsArray.length=Sources.AsArray.Length) then
+      begin
+        ShowMessage(format(rsDuplicateSuccess, [ Join(',', listPackages)])) ;
+        ModalResult := mrOk;
+      end
+      else
+        ShowMessage(rsDuplicateFailure);
+    finally
+      for aDir in Sources do
+        DeleteDirectory(copy(aDir.AsString,3,length(aDir.AsString)-3),False);
+      Free;
     end;
+    ModalResult:=mrOK;
 
-    ProgressTitle(format(rsUploadingPackagesToWaptSrv, [IntToStr(Sources.AsArray.Length)]));
-    Application.ProcessMessages;
-
-    uploadResult := DMPython.RunJSON(
-      format('mywapt.build_upload([%s],private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=False)',
-      [Join(',',sources) , privateKeyPassword, waptServerUser, waptServerPassword]),
-      VisWaptGUI.jsonlog);
-    if (uploadResult <> Nil) and (uploadResult.AsArray.length=Sources.AsArray.Length) then
-    begin
-      ShowMessage(format(rsDuplicateSuccess, [ Join(',', listPackages)])) ;
-      ModalResult := mrOk;
-    end
-    else
-      ShowMessage(rsDuplicateFailure);
-  finally
-    for aDir in Sources do
-      DeleteDirectory(copy(aDir.AsString,3,length(aDir.AsString)-3),False);
-    Free;
+  except
+      on E:Exception do
+        ShowMessageFmt('Unable to import package : %s',[e.Message]);
   end;
-  ModalResult:=mrOK;
 end;
 
 procedure TVisImportPackage.ActPackageDuplicateUpdate(Sender: TObject);
@@ -297,47 +310,52 @@ begin
   if not DirectoryExists(AppLocalDir + 'cache') then
     mkdir(AppLocalDir + 'cache');
 
-  with  TVisLoading.Create(Self) do
   try
-    Sources := TSuperObject.Create(stArray) ;
-    //Téléchargement en batchs
-    for Filename in FileNames do
-    begin
-      Application.ProcessMessages;
-      ProgressTitle(
-        format(rsDownloadingPackage, [Filename.AsArray[0].AsString]));
-      target := AppLocalDir + 'cache\' + Filename.AsArray[0].AsString;
-      try
-        if not FileExists(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
-        begin
-          IdWget(TemplatesRepoUrl + '/' + Filename.AsArray[0].AsString,
-            target, ProgressForm, @updateprogress, UseProxyForTemplates);
-          if (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
-            raise Exception.CreateFmt(rsDownloadCurrupted,[Filename.AsArray[0].AsString]);
-        end;
-      except
-        on e:Exception do
-        begin
-          ShowMessage(rsDlCanceled+' : '+e.Message);
-          if FileExists(target) then
-            DeleteFileUTF8(Target);
-          exit;
+    with  TVisLoading.Create(Self) do
+    try
+      Sources := TSuperObject.Create(stArray) ;
+      //Téléchargement en batchs
+      for Filename in FileNames do
+      begin
+        Application.ProcessMessages;
+        ProgressTitle(
+          format(rsDownloadingPackage, [Filename.AsArray[0].AsString]));
+        target := AppLocalDir + 'cache\' + Filename.AsArray[0].AsString;
+        try
+          if not FileExists(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
+          begin
+            IdWget(TemplatesRepoUrl + '/' + Filename.AsArray[0].AsString,
+              target, ProgressForm, @updateprogress, UseProxyForTemplates);
+            if (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
+              raise Exception.CreateFmt(rsDownloadCurrupted,[Filename.AsArray[0].AsString]);
+          end;
+        except
+          on e:Exception do
+          begin
+            ShowMessage(rsDlCanceled+' : '+e.Message);
+            if FileExists(target) then
+              DeleteFileUTF8(Target);
+            exit;
+          end;
         end;
       end;
-    end;
 
-    for Filename in FileNames do
-    begin
-      ProgressTitle(format(rsDuplicating, [Filename.AsArray[0].AsString]));
-      Application.ProcessMessages;
-      sourceDir := DMPython.RunJSON(
-        Format('common.wapt_sources_edit(waptdevutils.duplicate_from_external_repo(r"%s",r"%s",None,r"%s" or None))',
-        [AppIniFilename, AppLocalDir + 'cache\' + Filename.AsArray[0].AsString, AuthorizedExternalCertDir])).AsString;
+      for Filename in FileNames do
+      begin
+        ProgressTitle(format(rsDuplicating, [Filename.AsArray[0].AsString]));
+        Application.ProcessMessages;
+        sourceDir := DMPython.RunJSON(
+          Format('common.wapt_sources_edit(waptdevutils.duplicate_from_external_repo(r"%s",r"%s",None,r"%s" or None))',
+          [AppIniFilename, AppLocalDir + 'cache\' + Filename.AsArray[0].AsString, AuthorizedExternalCertDir])).AsString;
+      end;
+    finally
+      Free;
     end;
-  finally
-    Free;
+    ModalResult:=mrOK;
+  except
+      on E:Exception do
+        ShowMessageFmt('Unable to import package : %s',[e.Message]);
   end;
-  ModalResult:=mrOK;
 end;
 
 procedure TVisImportPackage.ActPackageEditUpdate(Sender: TObject);

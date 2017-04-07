@@ -2468,6 +2468,10 @@ msgctxt "uwaptconsoleres.rserrorwithmessage"
 msgid "Error : %s"
 msgstr ""
 
+#: uwaptconsoleres.rsfailedexternalrepoupdate
+msgid "Unable to get Packages index from %"
+msgstr ""
+
 #: uwaptconsoleres.rsfailedimport
 msgctxt "uwaptconsoleres.rsfailedimport"
 msgid "Error during import."
