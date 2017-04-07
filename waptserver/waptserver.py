@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.12.4"
+__version__ = "1.3.12.10"
 
 import os,sys
 try:
@@ -1194,7 +1194,7 @@ def hosts_delete():
                             result['files'].append(fn)
                             os.remove(fn)
 
-                update_packages(hosts_packages_repo)
+                update_packages(hosts_packages_repo.localpath)
                 msg.append('{} files removed from host repository'.format(len(result['files'])))
             else:
                 msg.append('No host found in DB')
