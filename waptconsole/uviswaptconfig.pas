@@ -289,9 +289,9 @@ end;
 
 procedure TVisWAPTConfig.FormCreate(Sender: TObject);
 begin
-    ScaleDPI(Self,96); // 96 is the DPI you designed
-    ScaleImageList(ImageList1,96);
-    EdAuthorizedCertsDir.Directory:=AuthorizedCertsDir;
+  ScaleDPI(Self,96); // 96 is the DPI you designed
+  ScaleImageList(ImageList1,96);
+  EdAuthorizedCertsDir.Directory:=AuthorizedCertsDir;
 end;
 
 procedure TVisWAPTConfig.FormShow(Sender: TObject);

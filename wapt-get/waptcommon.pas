@@ -964,7 +964,7 @@ begin
 
     TemplatesRepoUrl := ReadString('Global','templates_repo_url','https://store.wapt.fr/wapt/');
 
-    AuthorizedCertsDir := ReadString('global', 'authorized_certs_dir', AppendPathDelim(GetLocalAppdataFolder)+'waptconsole\ssl');
+    AuthorizedCertsDir := ReadString('global', 'authorized_certs_dir', AppendPathDelim(GetAppdataFolder)+'waptconsole\ssl');
     if (AuthorizedCertsDir<>'') and not DirectoryExists(AuthorizedCertsDir) then
     try
       CreateDirUTF8(AuthorizedCertsDir);
