@@ -38,7 +38,7 @@ interface
         constructor Create(const msg: string;AHTTPStatus:Integer);
       end;
 
-  function GetWaptPrivateKeyPath: String;
+  function GetWaptPrivateKeyPath: Utf8String;
 
   Function GetWaptLocalURL:String;
 
@@ -834,9 +834,9 @@ begin
 end;
 
 
-function GetWaptPrivateKeyPath: String;
+function GetWaptPrivateKeyPath: Utf8String;
 begin
-  result := IniReadString(WaptIniFilename,'Global','private_key');
+  result := utf8Decode(IniReadString(WaptIniFilename,'Global','private_key'));
 end;
 
 function GetWaptLocalURL: String;

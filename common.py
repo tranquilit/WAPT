@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.12.9"
+__version__ = "1.3.12.10"
 import os
 import re
 import logging
@@ -362,7 +362,12 @@ class SSLPrivateKey(object):
             if not os.path.isfile(private_key):
                 raise Exception('Private key %s not found' % private_key)
             print(u'Loading private key %s'%private_key)
-            self.key = EVP.load_key(self.private_key,callback=callback)
+
+            # M2Crypto doesn't accept unicode.
+            if isinstance(self.private_key,unicode):
+                private_key = private_key.encode(sys.getfilesystemencoding())
+
+            self.key = EVP.load_key(private_key,callback=callback)
 
     def sign_content(self,content):
         """ Sign content with the private_key, return the signature"""
@@ -393,7 +398,11 @@ class SSLCertificate(object):
             self.crt = crt
         else:
             if not os.path.isfile(public_cert):
-                raise Exception('Certificate file %s not found' % public_cert)
+                raise Exception(u'Certificate file %s not found' % public_cert)
+
+            if isinstance(public_cert,unicode):
+                public_cert = public_cert.encode(sys.getfilesystemencoding())
+
             self.crt = X509.load_cert(public_cert)
         self.ignore_validity_checks = ignore_validity_checks
 
@@ -450,7 +459,7 @@ class SSLCertificate(object):
         pubkey.verify_update(content)
         if pubkey.verify_final(signature):
             return self.subject_dn
-        raise Exception('SSL signature verification failed for certificate %s'%self.subject_dn)
+        raise Exception(u'SSL signature verification failed for certificate %s'%self.subject_dn)
 
     def match_key(self,key):
         """Check if certificate matches the given private key"""
@@ -550,6 +559,8 @@ def private_key_has_password(key):
     def callback(*args):
         return ""
     try:
+        if isinstance(key,unicode):
+            key = key.encode(sys.getfilesystemencoding())
         EVP.load_key(key, callback)
     except Exception as e:
         if "bad password" in str(e):
@@ -572,6 +583,8 @@ def check_key_password(key_filename,password=""):
     def callback(*args):
         return password
     try:
+        if isinstance(key_filename,unicode):
+            key_filename = key_filename.encode(sys.getfilesystemencoding())
         EVP.load_key(key_filename, callback)
     except EVPError:
         return False
@@ -5026,9 +5039,9 @@ class Wapt(object):
         """
         sources_directories = ensure_list(sources_directories)
         buildresults = []
-
+        self.private_key = ensure_unicode(self.private_key)
         if not self.private_key or not os.path.isfile(self.private_key):
-            raise Exception('Unable to build %s, private key %s not provided or not present'%(sources_directories,self.private_key))
+            raise Exception(u'Unable to build %s, private key %s not provided or not present'%(sources_directories,self.private_key))
 
         def pwd_callback(*args):
             """Default password callback for opening private keys"""
