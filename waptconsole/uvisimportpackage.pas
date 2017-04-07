@@ -26,6 +26,7 @@ type
     ButPackageDuplicate: TBitBtn;
     ButPackageDuplicate1: TBitBtn;
     butSearchExternalPackages: TBitBtn;
+    CBCheckhttpsCeritficate: TCheckBox;
     cbNewerThanMine: TCheckBox;
     cbNewestOnly: TCheckBox;
     CBCheckSignature: TCheckBox;
@@ -169,15 +170,16 @@ begin
   else
     proxy := 'None';
   try
-    expr := format('waptdevutils.update_external_repo("%s","%s",proxy=%s,mywapt=mywapt,newer_only=%s,newest_only=%s)',
+    expr := format('waptdevutils.update_external_repo("%s","%s",proxy=%s,mywapt=mywapt,newer_only=%s,newest_only=%s,verify_cert=%s)',
       [waptcommon.TemplatesRepoUrl,
         EdSearch1.Text, proxy,
         BoolToStr(cbNewerThanMine.Checked,'True','False'),
-        BoolToStr(cbNewestOnly.Checked,'True','False')]);
+        BoolToStr(cbNewestOnly.Checked,'True','False'),
+        BoolToStr(CBCheckhttpsCeritficate.Checked,'True','False')]);
     packages := DMPython.RunJSON(expr);
     GridExternalPackages.Data := packages;
   except
-    on E:Exception do ShowMessageFmt(rsFailedExternalRepoUpdate,[waptcommon.TemplatesRepoUrl]);
+    on E:Exception do ShowMessageFmt(rsFailedExternalRepoUpdate+#13#10#13#10+E.Message,[waptcommon.TemplatesRepoUrl]);
   end;
 end;
 

@@ -441,6 +441,10 @@ msgstr ""
 msgid "Import packages"
 msgstr ""
 
+#: tvisimportpackage.cbcheckhttpsceritficate.caption
+msgid "Check https certificate"
+msgstr ""
+
 #: tvisimportpackage.cbchecksignature.caption
 msgid "Check package signature"
 msgstr ""

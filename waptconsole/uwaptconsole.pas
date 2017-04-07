@@ -3105,6 +3105,8 @@ begin
           inifile.WriteString('global', 'default_sources_root',
             eddefault_sources_root.Text);
           inifile.WriteString('global', 'private_key', edprivate_key.Text);
+          if edtemplates_repo_url.Text = '' then
+            edtemplates_repo_url.Text := 'https://store.wapt.fr/wapt';
           inifile.WriteString('global', 'templates_repo_url', edtemplates_repo_url.Text);
 
           inifile.WriteString('global', 'authorized_certs_dir',EdAuthorizedCertsDir.Text);
