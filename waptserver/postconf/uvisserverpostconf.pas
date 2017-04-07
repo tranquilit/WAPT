@@ -140,7 +140,7 @@ begin
   ReadWaptConfig(WaptBaseDir+'wapt-get.ini');
   PagesControl.ShowTabs:=False;
   PagesControl.ActivePageIndex:=0;
-  DirectoryCert.Directory:=AppendPathDelim(GetLocalAppdataFolder)+'private';
+  DirectoryCert.Directory:='c:\private';
 end;
 
 procedure TVisWAPTServerPostConf.FormShow(Sender: TObject);
@@ -316,7 +316,7 @@ begin
   begin
     edWAPTRepoURL.Enabled := False;
     edWAPTServerURL.Enabled := False;
-    edWAPTRepoURL.Text := Format('http://%s/wapt',[EdWAPTServerName.Text]);
+    edWAPTRepoURL.Text := Format('https://%s/wapt',[EdWAPTServerName.Text]);
     edWAPTServerURL.Text := Format('https://%s',[EdWAPTServerName.Text]);
   end
   else

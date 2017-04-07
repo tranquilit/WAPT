@@ -1,7 +1,7 @@
 object VisWAPTConfig: TVisWAPTConfig
-  Left = 1235
+  Left = 307
   Height = 401
-  Top = 283
+  Top = 239
   Width = 591
   BorderStyle = bsDialog
   Caption = 'WAPTConsole configuration'

@@ -54,7 +54,7 @@ implementation
 {$R *.lfm}
 
 uses
-  uWaptConsoleRes,uWaptRes,uSCaleDPI, dmwaptpython,lazFileUtils;
+  uWaptConsoleRes,uWaptRes,uSCaleDPI, dmwaptpython,lazFileUtils,waptcommon;
 
 { TVisCreateKey }
 
@@ -90,7 +90,7 @@ begin
   if FileExists(EdKeyFilename.FileName) then
     pemfn := EdKeyFilename.FileName
   else
-    pemfn := DirectoryCert.text+'\'+EdKeyFilename.Text+'.pem';
+    pemfn := DirectoryCert.text+'\'+ExtractFileNameOnly(EdKeyFilename.Text)+'.pem';
 
   // by default check if already a certificate with same basename as private key in target directory...
   crtfn := DirectoryCert.Text+'\'+ExtractFileNameOnly(pemfn)+'.crt';
@@ -129,9 +129,15 @@ begin
 end;
 
 procedure TVisCreateKey.FormCreate(Sender: TObject);
+var
+  pkey:Utf8String;
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
-  DirectoryCert.Text:=AppendPathDelim(GetUserDir)+'private';
+  pkey := waptcommon.GetWaptPrivateKeyPath;
+  if pkey<>'' then
+    DirectoryCert.Text:=ExtractFileDir(pkey)
+  else
+    DirectoryCert.Text:='c:\private';
   SetDefaultCN;
 end;
 
