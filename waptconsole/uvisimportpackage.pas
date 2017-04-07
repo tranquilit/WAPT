@@ -241,8 +241,8 @@ begin
       ProgressTitle(format(rsDuplicating, [Filename.AsArray[0].AsString]));
       Application.ProcessMessages;
       sourceDir := DMPython.RunJSON(
-        Format('waptdevutils.duplicate_from_external_repo(r"%s",r"%s",r"%s" or None)',
-        [AppIniFilename, AppLocalDir + 'cache\' + Filename.AsArray[0].AsString, AuthorizedCertsDir])).AsString;
+        Format('waptdevutils.duplicate_from_external_repo(r"%s",r"%s",None,r"%s" or None)',
+        [AppIniFilename, AppLocalDir + 'cache\' + Filename.AsArray[0].AsString,AuthorizedExternalCertDir])).AsString;
       sources.AsArray.Add('r"'+sourceDir+'"');
     end;
 
@@ -331,8 +331,8 @@ begin
       ProgressTitle(format(rsDuplicating, [Filename.AsArray[0].AsString]));
       Application.ProcessMessages;
       sourceDir := DMPython.RunJSON(
-        Format('common.wapt_sources_edit(waptdevutils.duplicate_from_external_repo(r"%s",r"%s",r"",r"%s" or None))',
-        [AppIniFilename, AppLocalDir + 'cache\' + Filename.AsArray[0].AsString, AuthorizedCertsDir])).AsString;
+        Format('common.wapt_sources_edit(waptdevutils.duplicate_from_external_repo(r"%s",r"%s",None,r"%s" or None))',
+        [AppIniFilename, AppLocalDir + 'cache\' + Filename.AsArray[0].AsString, AuthorizedExternalCertDir])).AsString;
     end;
   finally
     Free;

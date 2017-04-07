@@ -1,8 +1,5 @@
-msgid ""
-msgstr "Content-Type: text/plain; charset=UTF-8"
-
 msgid "Don't shutdown you computer !"
-msgstr ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tviswaptexit.actshowdetails.caption
 msgid "Show details"
