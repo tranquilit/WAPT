@@ -375,6 +375,17 @@ object VisImportPackage: TVisImportPackage
       State = cbChecked
       TabOrder = 4
     end
+    object CBCheckSignature: TCheckBox
+      Left = 688
+      Height = 17
+      Top = 5
+      Width = 140
+      Caption = 'Check package signature'
+      Checked = True
+      OnClick = CBCheckSignatureClick
+      State = cbChecked
+      TabOrder = 5
+    end
   end
   object ActionList1: TActionList
     Images = ActionsImages

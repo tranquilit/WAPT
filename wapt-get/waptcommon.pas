@@ -50,7 +50,6 @@ interface
   function WaptgetPath: Utf8String; // c:\wapt\wapt-get.exe
   function WaptservicePath: Utf8String; //c:\wapt\waptservice.exe # obsolete
   function WaptDBPath: Utf8String;
-  function WaptTemplatesRepo(inifilename:String=''): Utf8String; // https://store.wapt.fr/wapt/
 
   function GetWaptRepoURL: Utf8String; // from wapt-get.ini, can be empty
   Function GetMainWaptRepo:String;   // read from ini, if empty, do a discovery using dns
@@ -58,7 +57,7 @@ interface
 
   function GetWaptServerCertificateFilename(inifilename:AnsiString=''):AnsiString;
 
-  function ReadWaptConfig(inifile:String = ''): Boolean; //read global parameters from wapt-get ini file
+  function ReadWaptConfig(inifilename:String = ''): Boolean; //read global parameters from wapt-get ini file
 
   function GetEthernetInfo(ConnectedOnly:Boolean):ISuperObject;
   function LocalSysinfo: ISuperObject;
@@ -126,6 +125,9 @@ const
   DefaultPackagePrefix:String = '';
   DefaultSourcesRoot:String = '';
 
+  TemplatesRepoUrl: String = '';
+  AuthorizedCertsDir:Utf8String = '';
+
   AdvancedMode:Boolean = False;
 
   WAPTServerMinVersion='1.3.12';
@@ -135,7 +137,7 @@ implementation
 uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2,
   IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,IdURI,
-  gettext,IdStack,IdCompressorZLib,sha1,IdAuthentication,shfolder;
+  gettext,IdStack,IdCompressorZLib,sha1,IdAuthentication,shfolder,IniFiles;
 
 const
   CacheWaptServerUrl: AnsiString = 'None';
@@ -909,25 +911,27 @@ end;
 
 // Read Wapt config from inifile, set global const wapt_config_filename
 // if inifile is empty, read from result of WaptIniFilename (wapt_config_filename if set, appinifile if exists, else wapt-get.ini)
-function ReadWaptConfig(inifile:String = ''): Boolean;
+function ReadWaptConfig(inifilename:String = ''): Boolean;
 var
   i: Integer;
+  inifile: TIniFile;
 begin
   // reset cache
   CacheWaptServerUrl := 'None';
 
-  if inifile='' then
-    inifile:=WaptIniFilename;
+  if inifilename='' then
+    inifilename:=WaptIniFilename;
 
-  if (inifile<>'') then
-    wapt_config_filename := inifile;
+  if (inifilename<>'') then
+    wapt_config_filename := inifilename;
 
-  if not FileExistsUTF8(inifile) then
+  if not FileExistsUTF8(inifilename) then
     Result := False
   else
-  begin
-    waptservice_port := IniReadInteger(inifile,'global','waptservice_port',-1);
-    waptservice_sslport := IniReadInteger(inifile,'global','waptservice_sslport',-1);
+  with TIniFile.Create(inifilename) do
+  try
+    waptservice_port := ReadInteger('global','waptservice_port',-1);
+    waptservice_sslport := ReadInteger('global','waptservice_sslport',-1);
     if (waptservice_port<=0) and (waptservice_sslport<=0) then
       waptservice_port := 8088;
 
@@ -943,27 +947,39 @@ begin
 
     if Language = '' then
     begin
-      Language := IniReadString(inifile,'global','language','');       ;
+      Language := ReadString('global','language','');       ;
       FallBackLanguage := copy(Language,1,2);
       //if FallBackLanguage ='' then
       //    GetLanguageIDs(Language,FallBackLanguage);
     end;
 
-    waptserver_port := IniReadInteger(inifile,'global','waptserver_port',80);
-    waptserver_sslport := IniReadInteger(inifile,'global','waptserver_sslport',443);
-    zmq_port := IniReadInteger(inifile,'global','zmq_port',5000);
+    waptserver_port := ReadInteger('global','waptserver_port',80);
+    waptserver_sslport := ReadInteger('global','waptserver_sslport',443);
+    zmq_port := ReadInteger('global','zmq_port',5000);
 
-    HttpProxy := IniReadString(inifile,'global','http_proxy','');
-    UseProxyForRepo := IniReadBool(inifile,'global','use_http_proxy_for_repo',False);
-    UseProxyForServer := IniReadBool(inifile,'global','use_http_proxy_for_server',False);
-    UseProxyForTemplates := IniReadBool(inifile,'global','use_http_proxy_for_templates',False);
+    HttpProxy := ReadString('global','http_proxy','');
+    UseProxyForRepo := ReadBool('global','use_http_proxy_for_repo',False);
+    UseProxyForServer := ReadBool('global','use_http_proxy_for_server',False);
+    UseProxyForTemplates := ReadBool('global','use_http_proxy_for_templates',False);
 
-    AdvancedMode := IniReadBool(inifile,'global','advanced_mode',False);
+    TemplatesRepoUrl := ReadString('Global','templates_repo_url','https://store.wapt.fr/wapt/');
 
-    DefaultPackagePrefix := IniReadString(inifile,'global','default_package_prefix','');
-    DefaultSourcesRoot := IniReadString(inifile,'global','default_sources_root','');
+    AuthorizedCertsDir := ReadString('global', 'authorized_certs_dir', AppendPathDelim(GetLocalAppdataFolder)+'waptconsole\ssl');
+    if (AuthorizedCertsDir<>'') and not DirectoryExists(AuthorizedCertsDir) then
+    try
+      CreateDirUTF8(AuthorizedCertsDir);
+    finally
+    end;
+
+    AdvancedMode := ReadBool('global','advanced_mode',False);
+
+    DefaultPackagePrefix := ReadString('global','default_package_prefix','');
+    DefaultSourcesRoot := ReadString('global','default_sources_root','');
 
     Result := True
+
+  finally
+    Free;
   end;
 end;
 
@@ -977,23 +993,6 @@ begin
 end;
 
 
-function WaptTemplatesRepo(inifilename:String=''): Utf8String;
-begin
-  if inifilename='' then
-     inifilename:=WaptIniFilename;
-  Result := IniReadString(inifilename,'Global','templates_repo_url');
-  if Result = '' then
-      Result:='https://store.wapt.fr/wapt/';
-end;
-
-
-
-function WaptUseLocalConnectionProxy(inifilename:String=''): Boolean;
-begin
-  if inifilename='' then
-     inifilename:=WaptIniFilename;
-  Result := StrIsOneOf(IniReadString (inifilename,'Global','use_local_connection_proxy'),['True','true','1'],False);
-end;
 
 //////
 
@@ -1324,12 +1323,12 @@ begin
     // If private key  already exist, just recreate a self signed certificate
     if not FileExists(destpem) then
     begin
-      if ExecuteProcess(opensslbin,'req -x509 -nodes -days 3650 -newkey rsa:2048 -sha256 -keyout "'+destpem+'" -out "'+destcrt+'"',[]) = 0 then
+      if ExecuteProcess(opensslbin,'req -utf8 -x509 -nodes -days 3650 -newkey rsa:2048 -sha256 -keyout "'+destpem+'" -out "'+destcrt+'"',[]) = 0 then
         result := destcrt;
     end
     else
     begin
-      if ExecuteProcess(opensslbin,'req -key "'+destpem+'" -new -x509 -days 3650 -sha256 -out "'+destcrt+'"',[]) = 0 then
+      if ExecuteProcess(opensslbin,'req -utf8 -key "'+destpem+'" -new -x509 -days 3650 -sha256 -out "'+destcrt+'"',[]) = 0 then
         result := destcrt;
     end;
 
@@ -1460,8 +1459,6 @@ begin
     result := format('%s:%s',[IP_Port.AsArray.S[0],IP_Port.AsArray.S[1]]);
   end;
 end;
-
-
 
 initialization
    //  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;

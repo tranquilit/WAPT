@@ -28,6 +28,7 @@ type
     butSearchExternalPackages: TBitBtn;
     cbNewerThanMine: TCheckBox;
     cbNewestOnly: TCheckBox;
+    CBCheckSignature: TCheckBox;
     EdSearch1: TSearchEdit;
     GridExternalPackages: TSOGrid;
     MenuItem1: TMenuItem;
@@ -43,6 +44,7 @@ type
     procedure ActSearchExternalPackageExecute(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
     procedure ButExtRepoChangeClick(Sender: TObject);
+    procedure CBCheckSignatureClick(Sender: TObject);
     procedure cbNewerThanMineClick(Sender: TObject);
     procedure EdSearch1Execute(Sender: TObject);
     procedure EdSearch1KeyPress(Sender: TObject; var Key: char);
@@ -58,6 +60,7 @@ type
     { private declarations }
   public
     { public declarations }
+    AuthorizedExternalCertDir: String;
   end;
 
 var
@@ -75,7 +78,16 @@ uses uwaptconsole,tiscommon,soutils,waptcommon,
 procedure TVisImportPackage.ButExtRepoChangeClick(Sender: TObject);
 begin
   ActWAPTLocalConfigExecute(self);
-  urlExternalRepo.Caption := format(rsUrl, [WaptTemplatesRepo]);
+  urlExternalRepo.Caption := format(rsUrl, [TemplatesRepoUrl]);
+end;
+
+procedure TVisImportPackage.CBCheckSignatureClick(Sender: TObject);
+begin
+  if CBCheckSignature.Checked then
+    AuthorizedExternalCertDir := AuthorizedCertsDir
+  else
+    // disable check in duplicate_from_external_repo
+    AuthorizedExternalCertDir := '';
 end;
 
 procedure TVisImportPackage.cbNewerThanMineClick(Sender: TObject);
@@ -114,8 +126,9 @@ end;
 
 procedure TVisImportPackage.FormShow(Sender: TObject);
 begin
+  CBCheckSignature.OnClick(Self);
   GridExternalPackages.LoadSettingsFromIni(Appuserinipath) ;
-  urlExternalRepo.Caption:=  WaptTemplatesRepo(AppIniFilename);
+  urlExternalRepo.Caption:= TemplatesRepoUrl;
   ActSearchExternalPackage.Execute;
 end;
 
@@ -134,7 +147,7 @@ procedure TVisImportPackage.ActWAPTLocalConfigExecute(Sender: TObject);
 begin
   if (VisWaptGUI<>Nil) and  VisWaptGUI.EditIniFile then
   begin
-    urlExternalRepo.Caption:=  WaptTemplatesRepo(AppIniFilename);
+    urlExternalRepo.Caption:=  TemplatesRepoUrl;
     GridExternalPackages.Clear;
     ActSearchExternalPackage.Execute;
   end;
@@ -152,7 +165,7 @@ begin
   else
     proxy := 'None';
   expr := format('waptdevutils.update_external_repo("%s","%s",proxy=%s,mywapt=mywapt,newer_only=%s,newest_only=%s)',
-    [WaptTemplatesRepo(AppIniFilename) ,
+    [TemplatesRepoUrl,
       EdSearch1.Text, proxy,
       BoolToStr(cbNewerThanMine.Checked,'True','False'),
       BoolToStr(cbNewestOnly.Checked,'True','False')]);
@@ -207,7 +220,7 @@ begin
       try
         if not FileExists(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
         begin
-          IdWget(WaptTemplatesRepo(AppIniFilename) + '/' + Filename.AsArray[0].AsString,
+          IdWget(TemplatesRepoUrl + '/' + Filename.AsArray[0].AsString,
             target, ProgressForm, @updateprogress, UseProxyForTemplates);
           if (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
             raise Exception.CreateFmt(rsDownloadCurrupted,[Filename.AsArray[0].AsString]);
@@ -228,8 +241,8 @@ begin
       ProgressTitle(format(rsDuplicating, [Filename.AsArray[0].AsString]));
       Application.ProcessMessages;
       sourceDir := DMPython.RunJSON(
-        Format('waptdevutils.duplicate_from_external_repo(r"%s",r"%s")',
-        [AppIniFilename,AppLocalDir + 'cache\' + Filename.AsArray[0].AsString])).AsString;
+        Format('waptdevutils.duplicate_from_external_repo(r"%s",r"%s",r"%s" or None)',
+        [AppIniFilename, AppLocalDir + 'cache\' + Filename.AsArray[0].AsString, AuthorizedCertsDir])).AsString;
       sources.AsArray.Add('r"'+sourceDir+'"');
     end;
 
@@ -297,7 +310,7 @@ begin
       try
         if not FileExists(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
         begin
-          IdWget(WaptTemplatesRepo(AppIniFilename) + '/' + Filename.AsArray[0].AsString,
+          IdWget(TemplatesRepoUrl + '/' + Filename.AsArray[0].AsString,
             target, ProgressForm, @updateprogress, UseProxyForTemplates);
           if (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
             raise Exception.CreateFmt(rsDownloadCurrupted,[Filename.AsArray[0].AsString]);
@@ -318,8 +331,8 @@ begin
       ProgressTitle(format(rsDuplicating, [Filename.AsArray[0].AsString]));
       Application.ProcessMessages;
       sourceDir := DMPython.RunJSON(
-        Format('common.wapt_sources_edit(waptdevutils.duplicate_from_external_repo(r"%s",r"%s",r"",))',
-        [AppIniFilename,AppLocalDir + 'cache\' + Filename.AsArray[0].AsString])).AsString;
+        Format('common.wapt_sources_edit(waptdevutils.duplicate_from_external_repo(r"%s",r"%s",r"",r"%s" or None))',
+        [AppIniFilename, AppLocalDir + 'cache\' + Filename.AsArray[0].AsString, AuthorizedCertsDir])).AsString;
     end;
   finally
     Free;

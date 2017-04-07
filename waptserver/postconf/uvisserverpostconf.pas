@@ -140,6 +140,7 @@ begin
   ReadWaptConfig(WaptBaseDir+'wapt-get.ini');
   PagesControl.ShowTabs:=False;
   PagesControl.ActivePageIndex:=0;
+  DirectoryCert.Directory:=AppendPathDelim(GetLocalAppdataFolder)+'private';
 end;
 
 procedure TVisWAPTServerPostConf.FormShow(Sender: TObject);

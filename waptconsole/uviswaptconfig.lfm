@@ -96,7 +96,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Height = 21
         Hint = 'E.g. : https://store.wapt.fr/wapt'#13#10'Used by WAPT console for duplicating packages.'
         Top = 202
-        Width = 222
+        Width = 270
         EditLabel.AnchorSideTop.Control = edtemplates_repo_url
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = edtemplates_repo_url
@@ -281,8 +281,9 @@ object VisWAPTConfig: TVisWAPTConfig
       object EdAuthorizedCertsDir: TDirectoryEdit
         Left = 164
         Height = 21
+        Hint = 'When importing packages, check signature against certificates in this list'
         Top = 226
-        Width = 222
+        Width = 270
         DialogTitle = 'Select the directory where to lookup authorized certificates'
         ShowHidden = False
         ButtonWidth = 23
@@ -292,12 +293,20 @@ object VisWAPTConfig: TVisWAPTConfig
         TabOrder = 10
       end
       object Button3: TButton
-        Left = 396
+        Left = 460
         Height = 25
-        Top = 200
-        Width = 128
+        Top = 201
+        Width = 112
         Action = ActDownloadCertificate
         TabOrder = 11
+      end
+      object Button4: TButton
+        Left = 460
+        Height = 21
+        Top = 228
+        Width = 112
+        Action = ActOpenCertDir
+        TabOrder = 12
       end
     end
     object pgAdvanced: TTabSheet
@@ -559,6 +568,10 @@ object VisWAPTConfig: TVisWAPTConfig
       Caption = 'Browse certificates'
       OnExecute = ActDownloadCertificateExecute
       OnUpdate = ActDownloadCertificateUpdate
+    end
+    object ActOpenCertDir: TAction
+      Caption = 'Explore dir'
+      OnExecute = ActOpenCertDirExecute
     end
   end
 end

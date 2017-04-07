@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.12.4"
+__version__ = "1.3.12.9"
 import os
 import re
 import logging
@@ -600,8 +600,6 @@ def create_self_signed_key(orgname,
 
     destpem = os.path.join(destdir,'%s.pem' % orgname)
     destcrt = os.path.join(destdir,'%s.crt' % orgname)
-    if os.path.isfile(destpem):
-        raise Exception('Destination SSL key %s already exist' % destpem)
     if not os.path.isdir(destdir):
         os.makedirs(destdir)
     params = {
@@ -616,9 +614,13 @@ def create_self_signed_key(orgname,
     opensslcfg = codecs.open(os.path.join(wapt_base_dir,'templates','openssl_template.cfg'),'r',encoding='utf8').read() % params
     opensslcfg_fn = os.path.join(destdir,'openssl.cfg')
     codecs.open(opensslcfg_fn,'w',encoding='utf8').write(opensslcfg)
-    os.environ['OPENSSL_CONF'] =  opensslcfg_fn
-    out = setuphelpers.run(u'%(opensslbin)s req -x509 -utf8  -nodes -days 3650 -newkey rsa:2048 -keyout "%(destpem)s" -out "%(destcrt)s"' %
-        {u'opensslbin':opensslbin,u'orgname':orgname,u'destcrt':destcrt,u'destpem':destpem})
+    os.environ['OPENSSL_CONF'] =  opensslcfg_fn.encode('utf8')
+    if not os.path.isfile(destpem):
+        out = setuphelpers.run((u'%(opensslbin)s req -x509 -utf8  -nodes -days 3650 -sha256 -newkey rsa:2048 -keyout "%(destpem)s" -out "%(destcrt)s"' %
+            {u'opensslbin':opensslbin,u'orgname':orgname,u'destcrt':destcrt,u'destpem':destpem}))
+    else:
+        out = setuphelpers.run(u'%(opensslbin)s req -key "%(destpem)s" -utf8 -new -x509 -days 3650 -sha256 -out "%(destcrt)s"' %
+            {u'opensslbin':opensslbin,u'orgname':orgname,u'destcrt':destcrt,u'destpem':destpem})
     os.unlink(opensslcfg_fn)
     return {'pem_filename':destpem,'crt_filename':destcrt}
 
@@ -4513,6 +4515,9 @@ class Wapt(object):
 
     def authorized_certificates(self):
         """return a list of autorized package signers for this host
+
+        Returns:
+            list: list of certificates attributes as dicts
         """
         result = []
         for fn in self.public_certs:
@@ -4538,10 +4543,45 @@ class Wapt(object):
         inv = self.inventory()
         inv['uuid'] = self.host_uuid
         inv['update_status'] = self.get_last_update_status()
+        inv['host_certificate'] = self.create_or_update_host_certificate()
         if self.waptserver:
             return self.waptserver.post('add_host',data = json.dumps(inv))
         else:
             return json.dumps(inv,indent=True)
+
+    def create_or_update_host_certificate(self,force_recreate=False):
+        """Create a rsa key pair for the host and a x509 certiticate.
+            Location of key is <wapt_root>\private
+            Should be kept secret
+            restricted access to system account and administrators only.
+
+        Args:
+            force_recreate (bool): recreate key pair even if already exists for this FQDN.
+
+        Returns:
+            str: x509 certificate of this host.
+
+        """
+        # check ACL.
+        private_dir = os.path.join(self.wapt_base_dir,'private')
+        if not os.path.isdir(private_dir):
+            os.makedirs(private_dir)
+
+        key_filename = os.path.join(private_dir,setuphelpers.get_hostname()+'.pem')
+        crt_filename = os.path.join(private_dir,setuphelpers.get_hostname()+'.crt')
+
+        if force_recreate or not os.path.isfile(key_filename) or not os.path.isfile(crt_filename):
+            logger.info('Creates host keys pair and x509 certificate %s' % crt_filename)
+            key_crt = create_self_signed_key(orgname = setuphelpers.get_hostname(),
+                    destdir=private_dir,
+                    organization=setuphelpers.registered_organization(),
+                    commonname = setuphelpers.get_hostname(),
+                    )
+            key_filename = key_crt['pem_filename']
+            crt_filename = key_crt['crt_filename']
+
+        # check validity
+        return open(crt_filename,'rb').read()
 
     def get_last_update_status(self):
         status = json.loads(self.read_param('last_update_status','{"date": "", "running_tasks": [], "errors": [], "upgrades": []}'))
@@ -5524,7 +5564,7 @@ class Wapt(object):
             append_conflicts=None,
             remove_conflicts=None,
             auto_inc_version=True,
-            check_signature=True,
+            authorized_certs=None,
             ):
         r"""Download an existing package from repositories into target_directory for modification
             if use_local_sources is True and no newer package exists on repos, updates current local edited data
@@ -5624,7 +5664,7 @@ class Wapt(object):
                 append_conflicts = append_conflicts,
                 remove_conflicts = remove_conflicts,
                 auto_inc_version = auto_inc_version,
-                check_signature = check_signature,
+                authorized_certs = authorized_certs,
                 )
         else:
             # create a new one
@@ -5637,7 +5677,7 @@ class Wapt(object):
                 remove_depends = remove_depends,
                 append_conflicts = append_conflicts,
                 remove_conflicts = remove_conflicts,
-                check_signature = False,
+                authorized_certs = False,
                 )
 
     def is_wapt_package_development_dir(self,directory):
@@ -5661,7 +5701,8 @@ class Wapt(object):
             append_conflicts=None,
             remove_conflicts=None,
             printhook=None,
-            description=None):
+            description=None,
+            authorized_certs=None):
         """Download and extract a host package from host repositories into target_directory for modification
                 Return dict {'target': 'c:\\\\tmp\\\\dummy', 'source_dir': 'c:\\\\tmp\\\\dummy', 'package': "dummy.tranquilit.local (=0)"}
 
@@ -5755,7 +5796,8 @@ class Wapt(object):
                         append_conflicts = append_conflicts,
                         remove_conflicts = remove_conflicts,
                         usecache=False,
-                        printhook=printhook)
+                        printhook=printhook,
+                        authorized_certs=authorized_certs)
             elif os.path.isdir(target_directory) and os.listdir(target_directory):
                 raise Exception('directory %s is not empty, aborting.' % target_directory)
             else:
@@ -5809,7 +5851,7 @@ class Wapt(object):
             auto_inc_version=True,
             usecache=True,
             printhook=None,
-            check_signature = True,
+            authorized_certs = None,
             ):
         """Duplicate an existing package.
 
@@ -5828,7 +5870,7 @@ class Wapt(object):
             auto_inc_version (bool): if version is less than existing package in repo, set version to repo version+1
             usecache (bool):         If True, allow to use cached package in local repo instead of downloading it.
             printhook (func):        hook for download progress
-            check_signature (bool):  if True and source package name is not a development directory, source package files and signature are checked before duplicate.
+            authorized_certs (bool): list of authorized certificate filenames to check authenticity of source packages. If None, no check is performed.
 
 
         Returns:
@@ -5928,8 +5970,8 @@ class Wapt(object):
             logger.info(u'  unzipping %s to directory %s' % (source_filename,target_directory))
             zip = ZipFile(source_filename,allowZip64=True)
             zip.extractall(path=target_directory)
-            if check_signature:
-                self._check_package_signature(target_directory)
+            if authorized_certs is not None:
+                self._check_package_signature(target_directory,authorized_certs)
         else:
             source_package = self.is_available(packagename)
             if not source_package:
@@ -5952,8 +5994,8 @@ class Wapt(object):
             logger.info(u'  unzipping %s to directory %s' % (source_filename,target_directory))
             zip = ZipFile(source_filename,allowZip64=True)
             zip.extractall(path=target_directory)
-            if check_signature:
-                self._check_package_signature(target_directory)
+            if authorized_certs is not None:
+                self._check_package_signature(target_directory,authorized_certs)
 
 
         # duplicate package informations
@@ -6311,8 +6353,9 @@ def check_user_membership(user_name,password,domain_name,group_name):
 Version = setuphelpers.Version  # obsolete
 
 if __name__ == '__main__':
+    #create_self_signed_key(u'testé',destdir=u'c:\\user\\été\\ssl',commonname=u'accentué')
     import doctest
-    import sys
+    import sysedit_pa
     reload(sys)
     sys.setdefaultencoding("UTF-8")
     import doctest

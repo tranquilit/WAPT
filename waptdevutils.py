@@ -215,7 +215,7 @@ def get_packages_filenames(waptconfigfile,packages_names,with_depends=True):
     return result
 
 
-def duplicate_from_external_repo(waptconfigfile,package_filename,target_directory=None):
+def duplicate_from_external_repo(waptconfigfile,package_filename,target_directory=None,authorized_certs_dir=None):
     r"""Duplicate a downloaded package to match prefix defined in waptconfigfile
        renames all dependencies
       returns source directory
@@ -244,7 +244,13 @@ def duplicate_from_external_repo(waptconfigfile,package_filename,target_director
     oldname = PackageEntry().load_control_from_wapt(package_filename).package
     newname = rename_package(oldname,prefix)
 
-    res = wapt.duplicate_package(package_filename,newname,target_directory=target_directory, build=False,auto_inc_version=True)
+    if authorized_certs_dir is None:
+        #authorized_certs = wapt.public_certs
+        authorized_certs = None
+    else:
+        authorized_certs = glob.glob(makepath(authorized_certs_dir,'*.crt'))
+
+    res = wapt.duplicate_package(package_filename,newname,target_directory=target_directory, build=False,auto_inc_version=True,authorized_certs = authorized_certs)
     result = res['source_dir']
 
     # renames dependencies

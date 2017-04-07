@@ -16,10 +16,12 @@ type
   TVisWAPTConfig = class(TForm)
     ActCheckAndSetwaptserver: TAction;
     ActDownloadCertificate: TAction;
+    ActOpenCertDir: TAction;
     ActionList1: TActionList;
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
+    Button4: TButton;
     ButtonPanel1: TButtonPanel;
     cbManual: TCheckBox;
     cbSendStats: TCheckBox;
@@ -59,6 +61,7 @@ type
     procedure ActCheckAndSetwaptserverExecute(Sender: TObject);
     procedure ActDownloadCertificateExecute(Sender: TObject);
     procedure ActDownloadCertificateUpdate(Sender: TObject);
+    procedure ActOpenCertDirExecute(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure cbManualClick(Sender: TObject);
     procedure cbUseProxyForTemplateClick(Sender: TObject);
@@ -114,6 +117,13 @@ end;
 procedure TVisWAPTConfig.ActDownloadCertificateUpdate(Sender: TObject);
 begin
   ActDownloadCertificate.Enabled:=edtemplates_repo_url.text <> '';;
+end;
+
+procedure TVisWAPTConfig.ActOpenCertDirExecute(Sender: TObject);
+begin
+  if not DirectoryExists(EdAuthorizedCertsDir.Directory) then
+    mkdir(EdAuthorizedCertsDir.Directory);
+  OpenDocument(EdAuthorizedCertsDir.Directory);
 end;
 
 procedure TVisWAPTConfig.cbManualClick(Sender: TObject);
@@ -281,7 +291,7 @@ procedure TVisWAPTConfig.FormCreate(Sender: TObject);
 begin
     ScaleDPI(Self,96); // 96 is the DPI you designed
     ScaleImageList(ImageList1,96);
-
+    EdAuthorizedCertsDir.Directory:=AuthorizedCertsDir;
 end;
 
 procedure TVisWAPTConfig.FormShow(Sender: TObject);

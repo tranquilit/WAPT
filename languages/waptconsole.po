@@ -1,8 +1,5 @@
-msgid "Local directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projects"
+msgid "Local directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projectsLocal directory for saving package development projects"
 msgstr "Content-Type: text/plain; charset=UTF-8"
-
-msgid "Local directory for saving package development projects"
-msgstr ""
 
 #: tform1.buttonpanel1.helpbutton.caption
 msgctxt "TFORM1.BUTTONPANEL1.HELPBUTTON.CAPTION"
@@ -444,6 +441,10 @@ msgstr ""
 msgid "Import packages"
 msgstr ""
 
+#: tvisimportpackage.cbchecksignature.caption
+msgid "Check package signature"
+msgstr ""
+
 #: tvisimportpackage.cbnewerthanmine.caption
 msgid "Newer packages than mine only"
 msgstr ""
@@ -581,6 +582,10 @@ msgstr ""
 msgid "Browse certificates"
 msgstr ""
 
+#: tviswaptconfig.actopencertdir.caption
+msgid "Explore dir"
+msgstr ""
+
 #: tviswaptconfig.button1.caption
 msgid "Show statistics"
 msgstr ""
@@ -621,6 +626,10 @@ msgstr ""
 #: tviswaptconfig.cbuseproxyfortemplate.hint
 msgctxt "TVISWAPTCONFIG.CBUSEPROXYFORTEMPLATE.HINT"
 msgid "Activate proxy when accessing the model repository"
+msgstr ""
+
+#: tviswaptconfig.edauthorizedcertsdir.hint
+msgid "When importing packages, check signature against certificates in this list"
 msgstr ""
 
 #: tviswaptconfig.eddefault_package_prefix.editlabel.caption
