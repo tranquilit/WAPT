@@ -2958,7 +2958,7 @@ begin
   dmpython.WaptConfigFileName:=AppIniFilename;
   pgSources.TabVisible := AdvancedMode;
   PanDebug.Visible := AdvancedMode;
-
+  ActPackagesUpdate.Execute;
 end;
 
 procedure TVisWaptGUI.ActTriggerHostsListeningExecute(Sender: TObject);

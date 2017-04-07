@@ -358,7 +358,7 @@ object VisImportPackage: TVisImportPackage
     object cbNewerThanMine: TCheckBox
       Left = 256
       Height = 17
-      Top = 21
+      Top = 17
       Width = 172
       Caption = 'Newer packages than mine only'
       OnClick = cbNewerThanMineClick
@@ -367,7 +367,7 @@ object VisImportPackage: TVisImportPackage
     object cbNewestOnly: TCheckBox
       Left = 256
       Height = 17
-      Top = 5
+      Top = 2
       Width = 101
       Caption = 'Last version only'
       Checked = True
@@ -378,7 +378,7 @@ object VisImportPackage: TVisImportPackage
     object CBCheckSignature: TCheckBox
       Left = 528
       Height = 17
-      Top = 5
+      Top = 2
       Width = 140
       Caption = 'Check package signature'
       OnClick = CBCheckSignatureClick
@@ -388,7 +388,7 @@ object VisImportPackage: TVisImportPackage
   object CBCheckhttpsCertificate: TCheckBox
     Left = 528
     Height = 17
-    Top = 22
+    Top = 17
     Width = 128
     Caption = 'Check https certificate'
     Checked = True
