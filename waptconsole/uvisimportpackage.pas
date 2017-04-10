@@ -116,8 +116,8 @@ procedure TVisImportPackage.FormClose(Sender: TObject;
   var CloseAction: TCloseAction);
 begin
   GridExternalPackages.SaveSettingsToIni(Appuserinipath);
-  IniWriteBool(Appuserinipath,Name,CBCheckhttpsCertificate.Name,CBCheckhttpsCertificate.Checked);
-  IniWriteBool(Appuserinipath,Name,CBCheckSignature.Name,CBCheckSignature.Checked);
+  IniWriteBool(Appuserinipath,ClassName,CBCheckhttpsCertificate.Name,CBCheckhttpsCertificate.Checked);
+  IniWriteBool(Appuserinipath,ClassName,CBCheckSignature.Name,CBCheckSignature.Checked);
 
 end;
 
@@ -129,8 +129,8 @@ end;
 
 procedure TVisImportPackage.FormShow(Sender: TObject);
 begin
-  CBCheckhttpsCertificate.Checked := IniReadBool(Appuserinipath,Name,CBCheckhttpsCertificate.Name,True);
-  CBCheckSignature.Checked := IniReadBool(Appuserinipath,Name,CBCheckSignature.Name,False);
+  CBCheckhttpsCertificate.Checked := IniReadBool(Appuserinipath,ClassName,CBCheckhttpsCertificate.Name,True);
+  CBCheckSignature.Checked := IniReadBool(Appuserinipath,ClassName,CBCheckSignature.Name,False);
 
   GridExternalPackages.LoadSettingsFromIni(Appuserinipath);
   urlExternalRepo.Caption:= TemplatesRepoUrl;
