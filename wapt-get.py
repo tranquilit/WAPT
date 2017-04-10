@@ -819,9 +819,14 @@ def main():
                 if action == 'build-upload':
                     waptfiles =  [p['filename'] for p in packages]
 
-                    print(mywapt.upload_package(waptfiles,
+                    res = mywapt.upload_package(waptfiles,
                             wapt_server_user = options.wapt_server_user,
-                            wapt_server_passwd=options.wapt_server_passwd))
+                            wapt_server_passwd=options.wapt_server_passwd)
+                    if res['result'] != 'OK':
+                        print(u'Error when uploading package : %s' % res['message'])
+                    else:
+                        print(u'Package uploaded successfully: %s' % res['message'])
+
                     if mywapt.after_upload:
                         print('Run "after upload" script...')
                         # can include %(filenames)s
@@ -830,8 +835,8 @@ def main():
                 else:
                     print(u'\nYou can upload to repository with')
                     print(u'  %s upload-package %s ' % (
-                        sys.argv[0],'"%s"' % (
-                            ' '.join(['"s"' % p['filename'] for p in packages]),
+                        sys.argv[0],'%s' % (
+                            ' '.join(['"%s"' % p['filename'] for p in packages]),
                         )
                     ))
 
