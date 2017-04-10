@@ -1686,6 +1686,7 @@ def install_windows_nssm_service(service_name,service_binary,service_parameters,
         "AppStdout" : r"expand_sz:{}".format(service_logfile),
         "Parameters\\AppStderr" : r"expand_sz:{}".format(service_logfile),
         "Parameters\\AppParameters" : r'expand_sz:{}'.format(service_parameters),
+        "Parameters\\AppNoConsole":1,
         }
 
 
