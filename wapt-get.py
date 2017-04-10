@@ -822,7 +822,7 @@ def main():
                     res = mywapt.upload_package(waptfiles,
                             wapt_server_user = options.wapt_server_user,
                             wapt_server_passwd=options.wapt_server_passwd)
-                    if res['result'] != 'OK':
+                    if res['status'] != 'OK':
                         print(u'Error when uploading package : %s' % res['message'])
                     else:
                         print(u'Package uploaded successfully: %s' % res['message'])
