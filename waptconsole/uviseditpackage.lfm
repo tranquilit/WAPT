@@ -1243,6 +1243,7 @@ object VisEditPackage: TVisEditPackage
     object ActBuildUpload: TAction
       Caption = 'Activate package'
       OnExecute = ActBuildUploadExecute
+      OnUpdate = ActEditSavePackageUpdate
     end
     object ActEditSearch: TAction
       Caption = 'Search'
@@ -1276,6 +1277,7 @@ object VisEditPackage: TVisEditPackage
       Caption = 'Save and apply to host'
       ImageIndex = 34
       OnExecute = ActBUApplyExecute
+      OnUpdate = ActEditSavePackageUpdate
     end
     object ActEditRemoveConflicts: TAction
       Caption = 'Unblock package'

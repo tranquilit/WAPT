@@ -2243,6 +2243,8 @@ begin
   if GridHosts.FocusedRow<>Nil then
   try
     hostname := GridHosts.FocusedRow.S['host.computer_fqdn'];
+    if hostname = '' then
+      raise Exception.Create('Hostname is unknown, can not Create or Edit a package for this machine');
     uuid := GridHosts.FocusedRow.S['uuid'];
     desc := GridHosts.FocusedRow.S['host.description'];
 

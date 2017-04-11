@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.12.10"
+__version__ = "1.3.12.13"
 import os
 import re
 import logging
@@ -5616,6 +5616,9 @@ class Wapt(object):
         >>> shutil.rmtree(tmpdir)
 
         """
+        if authorized_certs is None:
+            authorized_certs = self.public_certs
+
         # check if available in repos
         entries = self.is_available(packagerequest)
         if entries:
@@ -5634,11 +5637,10 @@ class Wapt(object):
                 zip.extractall(path=target_directory)
                 packagename = entry.package
                 packagerequest = entry.asrequirement()
+                if authorized_certs is not None:
+                    self._check_package_signature(target_directory,authorized_certs)
             else:
                 raise Exception('%s is neither a package name nor a package filename' % packagerequest)
-
-        if authorized_certs is None:
-            authorized_certs = self.public_certs
 
         append_depends = ensure_list(append_depends)
         remove_depends = ensure_list(remove_depends)
@@ -5981,61 +5983,66 @@ class Wapt(object):
                 if  pe.package != source_control.package or pe > source_control:
                     raise Exception('Target directory "%s" is not empty and contains either another package or a newer version, aborting.' % target_directory)
 
-        # duplicate a development directory tree
-        if os.path.isdir(packagename):
-            source_control = PackageEntry().load_control_from_wapt(packagename)
-            if not newname:
-                newname = source_control.package
-            if target_directory == '':
-                target_directory = self.get_default_development_dir(newname,section=source_control.section)
-            if target_directory is None:
-                target_directory = tempfile.mkdtemp('wapt')
-            # check if we will not overwrite newer package or different package
-            check_target_directory(target_directory,source_control)
-            if packagename != target_directory:
-                shutil.copytree(packagename,target_directory)
-        # duplicate a wapt file
-        elif os.path.isfile(packagename):
-            source_filename = packagename
-            source_control = PackageEntry().load_control_from_wapt(source_filename)
-            if not newname:
-                newname = source_control.package
-            if target_directory == '':
-                target_directory = self.get_default_development_dir(newname,section=source_control.section)
-            if target_directory is None:
-                target_directory = tempfile.mkdtemp('wapt')
-            # check if we will not overwrite newer package or different package
-            check_target_directory(target_directory,source_control)
-            logger.info(u'  unzipping %s to directory %s' % (source_filename,target_directory))
-            zip = ZipFile(source_filename,allowZip64=True)
-            zip.extractall(path=target_directory)
-            if authorized_certs is not None:
-                self._check_package_signature(target_directory,authorized_certs)
-        else:
-            source_package = self.is_available(packagename)
-            if not source_package:
-                raise Exception('Package %s is not available is current repositories.'%(packagename,))
-            # duplicate package from a repository
-            filenames = self.download_packages([packagename],usecache=usecache,printhook=printhook)
-            package_paths = filenames['downloaded'] or filenames['skipped']
-            if not package_paths:
-                raise Exception('Unable to download package %s'%(packagename,))
-            source_filename = package_paths[0]
-            source_control = PackageEntry().load_control_from_wapt(source_filename)
-            if not newname:
-                newname = source_control.package
-            if target_directory == '':
-                target_directory = self.get_default_development_dir(newname,section=source_control.section)
-            if target_directory is None:
-                target_directory = tempfile.mkdtemp('wapt')
-            # check if we will not overwrite newer package or different package
-            check_target_directory(target_directory,source_control)
-            logger.info(u'  unzipping %s to directory %s' % (source_filename,target_directory))
-            zip = ZipFile(source_filename,allowZip64=True)
-            zip.extractall(path=target_directory)
-            if authorized_certs is not None:
-                self._check_package_signature(target_directory,authorized_certs)
+        try:
+            # duplicate a development directory tree
+            if os.path.isdir(packagename):
+                source_control = PackageEntry().load_control_from_wapt(packagename)
+                if not newname:
+                    newname = source_control.package
+                if target_directory == '':
+                    target_directory = self.get_default_development_dir(newname,section=source_control.section)
+                if target_directory is None:
+                    target_directory = tempfile.mkdtemp('wapt')
+                # check if we will not overwrite newer package or different package
+                check_target_directory(target_directory,source_control)
+                if packagename != target_directory:
+                    shutil.copytree(packagename,target_directory)
+            # duplicate a wapt file
+            elif os.path.isfile(packagename):
+                source_filename = packagename
+                source_control = PackageEntry().load_control_from_wapt(source_filename)
+                if not newname:
+                    newname = source_control.package
+                if target_directory == '':
+                    target_directory = self.get_default_development_dir(newname,section=source_control.section)
+                if target_directory is None:
+                    target_directory = tempfile.mkdtemp('wapt')
+                # check if we will not overwrite newer package or different package
+                check_target_directory(target_directory,source_control)
+                logger.info(u'  unzipping %s to directory %s' % (source_filename,target_directory))
+                zip = ZipFile(source_filename,allowZip64=True)
+                zip.extractall(path=target_directory)
+                if authorized_certs is not None:
+                    self._check_package_signature(target_directory,authorized_certs)
 
+            else:
+                source_package = self.is_available(packagename)
+                if not source_package:
+                    raise Exception('Package %s is not available is current repositories.'%(packagename,))
+                # duplicate package from a repository
+                filenames = self.download_packages([packagename],usecache=usecache,printhook=printhook)
+                package_paths = filenames['downloaded'] or filenames['skipped']
+                if not package_paths:
+                    raise Exception('Unable to download package %s'%(packagename,))
+                source_filename = package_paths[0]
+                source_control = PackageEntry().load_control_from_wapt(source_filename)
+                if not newname:
+                    newname = source_control.package
+                if target_directory == '':
+                    target_directory = self.get_default_development_dir(newname,section=source_control.section)
+                if target_directory is None:
+                    target_directory = tempfile.mkdtemp('wapt')
+                # check if we will not overwrite newer package or different package
+                check_target_directory(target_directory,source_control)
+                logger.info(u'  unzipping %s to directory %s' % (source_filename,target_directory))
+                zip = ZipFile(source_filename,allowZip64=True)
+                zip.extractall(path=target_directory)
+                if authorized_certs is not None:
+                    self._check_package_signature(target_directory,authorized_certs)
+
+        except (EWaptBadSignature,EWaptCorruptedFiles):
+            setuphelpers.remove_tree(target_directory)
+            raise
 
         # duplicate package informations
         dest_control = PackageEntry()

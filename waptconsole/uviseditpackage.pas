@@ -549,7 +549,7 @@ end;
 
 procedure TVisEditPackage.ActEditSavePackageUpdate(Sender: TObject);
 begin
-  ActEditSavePackage.Enabled := IsUpdated;
+  (Sender as TAction).Enabled := (EdPackage.Text<>'') and  IsUpdated;
 end;
 
 function TVisEditPackage.GetIsUpdated: boolean;
@@ -739,6 +739,8 @@ var
 begin
   if FPackageRequest = AValue then
     Exit;
+  if AValue='' then
+    raise Exception.Create('Can not edit an Empty package name');
   Screen.Cursor := crHourGlass;
   try
     FPackageRequest := AValue;
@@ -790,6 +792,7 @@ begin
               end;
 
             res := DMPython.RunJSON(format('mywapt.edit_package(r"%s")', [filePath]));
+            FisTempSourcesDir := True;
           finally
             Free;
           end;
