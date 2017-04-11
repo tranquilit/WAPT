@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.12.10"
+__version__ = "1.3.12.13"
 
 __all__ = [
     'md5_for_file',
@@ -434,8 +434,8 @@ class PackageEntry(object):
         if type(fname) is list:
             control =  StringIO.StringIO(u'\n'.join(fname))
         elif os.path.isfile(fname):
-            myzip = zipfile.ZipFile(fname,'r',allowZip64=True)
-            control = StringIO.StringIO(myzip.open(u'WAPT/control').read().decode('utf8'))
+            with zipfile.ZipFile(fname,'r',allowZip64=True) as myzip:
+                control = StringIO.StringIO(myzip.open(u'WAPT/control').read().decode('utf8'))
         elif os.path.isdir(fname):
             control = codecs.open(os.path.join(fname,'WAPT','control'),'r',encoding='utf8')
         else:
@@ -490,24 +490,28 @@ class PackageEntry(object):
            - a path to the directory of wapt file unzipped content (debugging)
         """
         if os.path.isdir(fname):
-            codecs.open(os.path.join(fname,u'WAPT','control'),'w',encoding='utf8').write(self.ascontrol())
+            with codecs.open(os.path.join(fname,u'WAPT','control'),'w',encoding='utf8') as control_file:
+                control_file.write(self.ascontrol())
         else:
-            if os.path.isfile(fname):
-                myzip = zipfile.ZipFile(fname,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
-                try:
-                    zi = myzip.getinfo(u'WAPT/control')
-                    control_exist = True
-                except:
-                    control_exist = False
-                    self.filename = os.path.basename(fname)
-                    self.localpath = os.path.dirname(os.path.abspath(fname))
-                if control_exist:
+            myzip = None
+            try:
+                if os.path.isfile(fname):
+                    myzip = zipfile.ZipFile(fname,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
+                    try:
+                        zi = myzip.getinfo(u'WAPT/control')
+                        control_exist = True
+                    except:
+                        control_exist = False
+                        self.filename = os.path.basename(fname)
+                        self.localpath = os.path.dirname(os.path.abspath(fname))
+                    if control_exist:
+                        raise Exception(u'control file already exist in WAPT file %s' % fname)
+                else:
+                    myzip = zipfile.ZipFile(fname,'w',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
+                myzip.writestr(u'WAPT/control',self.ascontrol().encode('utf8'))
+            finally:
+                if myzip:
                     myzip.close()
-                    raise Exception(u'control file already exist in WAPT file %s' % fname)
-            else:
-                myzip = zipfile.ZipFile(fname,'w',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
-            myzip.writestr(u'WAPT/control',self.ascontrol().encode('utf8'))
-            myzip.close()
 
     def ascontrol(self,with_non_control_attributes = False):
         val = u"""\
@@ -592,11 +596,11 @@ def extract_iconpng_from_wapt(fname):
     """
     iconpng = None
     if os.path.isfile(fname):
-        myzip = zipfile.ZipFile(fname,'r',allowZip64=True)
-        try:
-            iconpng = myzip.open(u'WAPT/icon.png').read()
-        except:
-            pass
+        with zipfile.ZipFile(fname,'r',allowZip64=True) as myzip:
+            try:
+                iconpng = myzip.open(u'WAPT/icon.png').read()
+            except:
+                pass
     elif os.path.isdir(fname):
         png_path = os.path.join(fname,'WAPT','icon.png')
         if os.path.isfile(png_path):
@@ -787,11 +791,9 @@ class WaptLocalRepo(WaptBaseRepo):
         # Packages file is a zipfile with one Packages file inside
         if os.path.isfile(self.packages_path):
             self._packages_date = datetime2isodate(datetime.datetime.utcfromtimestamp(os.stat(self.packages_path).st_mtime))
-            packages_file = zipfile.ZipFile(self.packages_path)
-            try:
+            with zipfile.ZipFile(self.packages_path) as packages_file:
                 packages_lines = packages_file.read(name='Packages').decode('utf8').splitlines()
-            finally:
-                packages_file.close()
+
             if self._packages is not None:
                 del(self._packages[:])
             else:
@@ -899,14 +901,12 @@ class WaptLocalRepo(WaptBaseRepo):
                 errors.append(fname)
 
         logger.info(u"Writing new %s" % packages_fname)
-        myzipfile = zipfile.ZipFile(packages_fname, "w",compression=zipfile.ZIP_DEFLATED)
-        try:
+        with zipfile.ZipFile(packages_fname, "w",compression=zipfile.ZIP_DEFLATED) as myzipfile:
             zi = zipfile.ZipInfo(u"Packages",date_time = time.localtime())
             zi.compress_type = zipfile.ZIP_DEFLATED
             myzipfile.writestr(zi,u'\n'.join(packages_lines).encode('utf8'))
             logger.info(u"Finished")
-        finally:
-            myzipfile.close()
+
         return {'processed':processed,'kept':kept,'errors':errors,'packages_filename':packages_fname}
 
     def is_available(self):

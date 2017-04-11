@@ -3484,9 +3484,9 @@ class Wapt(object):
             if os.path.isfile(fname):
                 packagetempdir = tempfile.mkdtemp(prefix="wapt")
                 logger.info(u'  unzipping %s to temporary %s' % (ensure_unicode(fname),ensure_unicode(packagetempdir)))
-                zip = ZipFile(fname)
-                zip.extractall(path=packagetempdir)
-                istemporary = True
+                with ZipFile(fname) as zip:
+                    zip.extractall(path=packagetempdir)
+                    istemporary = True
             elif os.path.isdir(fname):
                 packagetempdir = fname
             else:
@@ -4095,17 +4095,17 @@ class Wapt(object):
 
         # check downloaded packages signatures and merge control data in local database
         for fname in downloaded['downloaded'] + downloaded['skipped']:
-            waptfile = zipfile.ZipFile(fname,'r',allowZip64=True)
-            control = waptfile.open(u'WAPT/control').read().decode('utf8')
-            manifest_content = waptfile.open(u'WAPT/manifest.sha1').read()
-            manifest = json.loads(manifest_content)
-            signature = waptfile.open(u'WAPT/signature').read().decode('base64')
-            try:
-                logger.debug(u'Verify package against certificates : %s' % (','.join(self.public_certs)))
-                subject = ssl_verify_content(manifest_content,signature,self.public_certs)
-                logger.info(u'Package issued by %s' % (subject,))
-            except:
-                raise Exception(u'Package file %s signature is invalid' % ensure_unicode(fname))
+            with zipfile.ZipFile(fname,'r',allowZip64=True) as waptfile:
+                control = waptfile.open(u'WAPT/control').read().decode('utf8')
+                manifest_content = waptfile.open(u'WAPT/manifest.sha1').read()
+                manifest = json.loads(manifest_content)
+                signature = waptfile.open(u'WAPT/signature').read().decode('base64')
+                try:
+                    logger.debug(u'Verify package against certificates : %s' % (','.join(self.public_certs)))
+                    subject = ssl_verify_content(manifest_content,signature,self.public_certs)
+                    logger.info(u'Package issued by %s' % (subject,))
+                except:
+                    raise Exception(u'Package file %s signature is invalid' % ensure_unicode(fname))
 
             for (fn,sha1) in manifest:
                 if fn == 'WAPT\\control':
@@ -5633,12 +5633,16 @@ class Wapt(object):
             if entry:
                 if not target_directory:
                     target_directory = tempfile.mkdtemp(prefix="wapt")
-                zip = ZipFile(packagerequest)
-                zip.extractall(path=target_directory)
-                packagename = entry.package
-                packagerequest = entry.asrequirement()
-                if authorized_certs is not None:
-                    self._check_package_signature(target_directory,authorized_certs)
+                with ZipFile(packagerequest) as zip:
+                    try:
+                        zip.extractall(path=target_directory)
+                        packagename = entry.package
+                        packagerequest = entry.asrequirement()
+                        if authorized_certs is not None:
+                            self._check_package_signature(target_directory,authorized_certs)
+                    except (EWaptBadSignature,EWaptCorruptedFiles):
+                        setuphelpers.remove_tree(target_directory)
+                        raise
             else:
                 raise Exception('%s is neither a package name nor a package filename' % packagerequest)
 
@@ -6010,10 +6014,14 @@ class Wapt(object):
                 # check if we will not overwrite newer package or different package
                 check_target_directory(target_directory,source_control)
                 logger.info(u'  unzipping %s to directory %s' % (source_filename,target_directory))
-                zip = ZipFile(source_filename,allowZip64=True)
-                zip.extractall(path=target_directory)
-                if authorized_certs is not None:
-                    self._check_package_signature(target_directory,authorized_certs)
+                with ZipFile(source_filename,allowZip64=True) as zip:
+                    try:
+                        zip.extractall(path=target_directory)
+                        if authorized_certs is not None:
+                            self._check_package_signature(target_directory,authorized_certs)
+                    except (EWaptBadSignature,EWaptCorruptedFiles):
+                        setuphelpers.remove_tree(target_directory)
+                        raise
 
             else:
                 source_package = self.is_available(packagename)
@@ -6035,10 +6043,14 @@ class Wapt(object):
                 # check if we will not overwrite newer package or different package
                 check_target_directory(target_directory,source_control)
                 logger.info(u'  unzipping %s to directory %s' % (source_filename,target_directory))
-                zip = ZipFile(source_filename,allowZip64=True)
-                zip.extractall(path=target_directory)
-                if authorized_certs is not None:
-                    self._check_package_signature(target_directory,authorized_certs)
+                with ZipFile(source_filename,allowZip64=True) as zip:
+                    try:
+                        zip.extractall(path=target_directory)
+                        if authorized_certs is not None:
+                            self._check_package_signature(target_directory,authorized_certs)
+                    except (EWaptBadSignature,EWaptCorruptedFiles):
+                        setuphelpers.remove_tree(target_directory)
+                        raise
 
         except (EWaptBadSignature,EWaptCorruptedFiles):
             setuphelpers.remove_tree(target_directory)
