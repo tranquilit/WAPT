@@ -5596,6 +5596,10 @@ class Wapt(object):
         Args:
             packagerequest (str)        : path to existing wapt file, or package request
             use_local_sources (boolean) : don't raise an exception if target exist and match package version
+            append_depends    : list or comma separated list of package requirements
+            remove_depends    : list or comma separated list of package requirements to remove
+            auto_inc_version (bool) :
+            authorized_certs  : list of authorized certificate filenames. If None, use default from current wapt.
 
         Returns:
             dict : {'target':target_directory,'source_dir':target_directory,'package':package_entry}
@@ -5632,6 +5636,9 @@ class Wapt(object):
                 packagerequest = entry.asrequirement()
             else:
                 raise Exception('%s is neither a package name nor a package filename' % packagerequest)
+
+        if authorized_certs is None:
+            authorized_certs = self.public_certs
 
         append_depends = ensure_list(append_depends)
         remove_depends = ensure_list(remove_depends)
