@@ -95,7 +95,7 @@ def load_config(cfgfile=_default_config_file):
         conf['mongodb_port'] = _config.getint('options', 'mongodb_port')
 
     if _config.has_option('options', 'secret_key'):
-        config['secret_key'] = _config.get('options','secret_key')
+        conf['secret_key'] = _config.get('options','secret_key')
 
     if _config.has_option('options', 'server_uuid'):
         conf['server_uuid'] = _config.get('options', 'server_uuid')

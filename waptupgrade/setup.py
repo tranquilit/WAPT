@@ -103,6 +103,10 @@ def update_sources():
          'revision.txt',
          'version',
          'vc_redist/icacls.exe',
+         'templates/setup_package_template_exe.py',
+         'templates/setup_package_template_msi.py',
+         'templates/setup_package_template_msu.py',
+         'templates/setup_package_template_dir.py',
     ]
 
     def ignore(src,names):
@@ -271,6 +275,17 @@ def windows_version():
     except:
         return Version(platform.win32_ver()[1])
 
+# recopied here as the code in wapt < 1.3.12 is bugged in case of decode errors.
+def run_notfatal(*cmd,**args):
+    """Runs the command and wait for it termination, returns output
+    Ignore exit status code of command, return '' instead
+    """
+    try:
+        return run(*cmd,**args)
+    except Exception as e:
+        print('Warning : %s' % repr(e))
+        return ''
+
 def create_onetime_task(name,cmd,parameters=None, delay_minutes=2,max_runtime=10, retry_count=3,retry_delay_minutes=1):
     """creates a one time Windows scheduled task and activate it.
     """
@@ -317,8 +332,8 @@ def full_waptagent_install(min_version,at_startup=False):
             print run('schtasks /Create /RU SYSTEM /SC ONSTART /TN fullwaptupgrade /TR "%s" /F /V1 /Z' % cmd)
         except:
             # windows xp doesn't support one time startup task /Z nor /F
-            print(ensure_unicode(run_notfatal(u'schtasks /Delete /TN fullwaptupgrade /F')))
-            print(ensure_unicode(run(u'schtasks /Create /RU SYSTEM /SC ONSTART /TN fullwaptupgrade /TR "%s"' % cmd)))
+            run_notfatal('schtasks /Delete /TN fullwaptupgrade /F')
+            print run('schtasks /Create /RU SYSTEM /SC ONSTART /TN fullwaptupgrade /TR "%s"' % cmd)
     else:
         # use embedded waptagent.exe, wait 15 minutes for other tasks to complete.
         print create_onetime_task('fullwaptupgrade',waptdeploy_path,'--hash=%s --waptsetupurl=%s --wait=15 --temporary --force --minversion=%s'%(expected_sha256,waptagent_path,min_version),delay_minutes=1)
