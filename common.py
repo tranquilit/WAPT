@@ -130,8 +130,6 @@ def create_self_signed_key(orgname,
 
     destpem = os.path.join(destdir,'%s.pem' % orgname)
     destcrt = os.path.join(destdir,'%s.crt' % orgname)
-    if os.path.isfile(destpem):
-        raise Exception('Destination SSL key %s already exist' % destpem)
     if not os.path.isdir(destdir):
         os.makedirs(destdir)
     params = {
@@ -146,9 +144,13 @@ def create_self_signed_key(orgname,
     opensslcfg = codecs.open(os.path.join(wapt_base_dir,'templates','openssl_template.cfg'),'r',encoding='utf8').read() % params
     opensslcfg_fn = os.path.join(destdir,'openssl.cfg')
     codecs.open(opensslcfg_fn,'w',encoding='utf8').write(opensslcfg)
-    os.environ['OPENSSL_CONF'] =  opensslcfg_fn
-    out = setuphelpers.run(u'%(opensslbin)s req -x509 -utf8  -nodes -days 3650 -newkey rsa:2048 -keyout "%(destpem)s" -out "%(destcrt)s"' %
-        {u'opensslbin':opensslbin,u'orgname':orgname,u'destcrt':destcrt,u'destpem':destpem})
+    os.environ['OPENSSL_CONF'] =  opensslcfg_fn.encode('utf8')
+    if not os.path.isfile(destpem):
+        out = setuphelpers.run((u'%(opensslbin)s req -x509 -utf8  -nodes -days 3650 -sha256 -newkey rsa:2048 -keyout "%(destpem)s" -out "%(destcrt)s"' %
+            {u'opensslbin':opensslbin,u'orgname':orgname,u'destcrt':destcrt,u'destpem':destpem}))
+    else:
+        out = setuphelpers.run(u'%(opensslbin)s req -key "%(destpem)s" -utf8 -new -x509 -days 3650 -sha256 -out "%(destcrt)s"' %
+            {u'opensslbin':opensslbin,u'orgname':orgname,u'destcrt':destcrt,u'destpem':destpem})
     os.unlink(opensslcfg_fn)
     return {'pem_filename':destpem,'crt_filename':destcrt}
 
