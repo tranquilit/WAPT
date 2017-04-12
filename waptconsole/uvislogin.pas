@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, Buttons, ButtonPanel, LCLType,uwaptconsole,waptcommon, DefaultTranslator,UScaleDPI;
+  ExtCtrls, Buttons, ButtonPanel, LCLType;
 
 type
 
@@ -28,6 +28,7 @@ type
       Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure Image1Click(Sender: TObject);
   private
     { private declarations }
   public
@@ -38,7 +39,7 @@ var
   VisLogin: TVisLogin;
 
 implementation
-uses tiscommon;
+uses LCLIntf,  uwaptconsole,waptcommon, DefaultTranslator,UScaleDPI,tiscommon;
 {$R *.lfm}
 
 { TVisLogin }
@@ -62,6 +63,11 @@ procedure TVisLogin.FormShow(Sender: TObject);
 begin
   if edUser.Text<>'' then
     edPassword.SetFocus;
+end;
+
+procedure TVisLogin.Image1Click(Sender: TObject);
+begin
+  OpenDocument('https://www.tranquil.it');
 end;
 
 procedure TVisLogin.BitBtn1Click(Sender: TObject);

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, ButtonPanel, ActnList, sogrid, superobject, dmwaptpython, LCLType, DefaultTranslator;
+  ExtCtrls, ButtonPanel, ActnList, sogrid, superobject, LCLType, DefaultTranslator;
 
 type
 
@@ -41,7 +41,7 @@ var
 
 implementation
 
-uses uSCaleDPI;
+uses uSCaleDPI,dmwaptpython;
 
 {$R *.lfm}
 

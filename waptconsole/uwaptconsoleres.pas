@@ -19,18 +19,19 @@ resourcestring
   rsInstalling = 'Installing %s...';
   rsDefineWaptdevPath = 'Please select a directory on your package development host before editing a package bundle.';
 
-  rsPublicKeyGenSuccess = 'Key %s has been successfully created.';
-  rsPublicKeyGenFailure = 'The generation of the public key has failed.';
+  rsPublicKeyGenSuccess = 'Public certificate %s has been successfully created.';
+  rsKeyPairGenSuccess = 'Private key %s and public certificate %s have been successfully created.';
+  rsPublicKeyGenFailure = 'The generation of the public certificate has failed.';
   rsPublicKeyGenError = 'Error during key generation : %s';
 
-  rsCreationInProgress = 'Building...';
+  rsCreationInProgress = 'Build in progress.';
   rsProgressTitle = 'Started uploading to WAPT server...';  // TODO more meaningful var name
-  rsWaptSetupUploadSuccess = 'WAPT agent and upgrade package successfully built and uploaded to the main repository'#13#10'Don''t forget to change the hash of waptagent.exe in your GPO';
+  rsWaptSetupUploadSuccess = 'WAPT agent and upgrade package successfully created and uploaded to the main repository'#13#10'Don''t forget to change the hash of waptagent.exe in your GPO';
   rsWaptUploadError = 'Error while uploading WAPT agent to the repository : %s';
   rsWaptSetupError = 'Error while creating agent : %s';
 
   rsWaptUpgradePackageBuilt = 'WAPT Upgrade package built and uploaded successfully';
-  rsWaptUpgradePackageBuildError = 'Unable to build WAPT Upgrade package';
+  rsWaptUpgradePackageBuildError = 'Unable to create WAPT Upgrade package';
 
   rsForcedUninstallPackages = 'Selection of packages to force-remove from the hosts';
   rsDependencies = 'Selection of packages to add to the hosts as dependencies';
@@ -79,8 +80,13 @@ resourcestring
   rsUploadingPackagesToWaptSrv = 'Uploading %s packages to WAPT server...';
   rsSuccessfullyImported = '%s successfully imported.';
   rsFailedImport = 'Error during import.';
+  rsFailedExternalRepoUpdate = 'Unable to get Packages index from %';
 
   rsWaptPackagePrefixMissing = 'You must first define the Package prefix in preferences';
+
+  rsPackageSourcesAvailable = 'The package sources are available in %s';
+  rsPackageBuiltSourcesAvailable = 'The package is built and uploaded and sources are available in %s';
+  rsInstallerFileNotFound =  'The installer filename %s does not exists !';
 
   rsConfirmRmPackagesFromHost = 'Are you sure you want to remove %s package(s) from the selected host(s) %s ?';
   rsPackageRemoveError = 'Error while removing package %s: %s';
@@ -127,7 +133,11 @@ resourcestring
 
   { Messages dans uVisCreateKey }
   rsInputKeyName = 'Please input a key name.';
+  rsInputCommonName = 'Please input a Common Name to identify signer';
   rsKeyAlreadyExists = 'Key %s already exists, please pick another name.';
+
+  rsReloadWaptconsoleConfig = 'Reloading WaptConsole configuration';
+  rsReloadWaptserviceConfig = 'Reloading WaptService configuration';
 
   { Messages dans uVisEditPackage.pas }
   rsEditBundle = 'Edit package bundle.';
@@ -137,6 +147,7 @@ resourcestring
   rsEditHostCaption = 'Edit host';
   rsUpgradingHost = 'Upgrade triggered on the remote host.';
   rsUpgradeHostError = 'Failed to trigger upgrade : %s';
+  rsEditHostError =  'Unable to edit the host package %s.'#13#10'If package is signed with a foreign key, you may want to delete host package first to workaround the issue...';
 
   rsSaveMods = 'Save changes ?';
   rsUploading = 'Uploading';

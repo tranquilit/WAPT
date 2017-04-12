@@ -173,7 +173,7 @@ begin
   if GridWinUpdates.FocusedRow <> Nil then
   begin
     EdTitle.Lines.Text := GridWinUpdates.FocusedRow.S['title'];
-    EdDescription.Lines.Text := GridWinUpdates.FocusedRow.S['description'];
+    EdDescription.Lines.Text := utf8Encode(GridWinUpdates.FocusedRow.S['description']);
   end
   else
   begin

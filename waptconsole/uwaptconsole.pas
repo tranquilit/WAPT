@@ -34,6 +34,7 @@ type
     ActComputerMgmt: TAction;
     ActComputerUsers: TAction;
     ActComputerServices: TAction;
+    ActmakePackageTemplate: TAction;
     ActRemoteAssist: TAction;
     ActTriggerWakeOnLan: TAction;
     ActWSUSSaveBuildRules: TAction;
@@ -83,9 +84,12 @@ type
     MenuItem23: TMenuItem;
     MenuItem33: TMenuItem;
     MenuItem50: TMenuItem;
+    MenuItem51: TMenuItem;
     MenuItem74: TMenuItem;
+    MenuItem75: TMenuItem;
     MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
+    odSelectInstaller: TOpenDialog;
     Panel13: TPanel;
     Panel14: TPanel;
     Panel8: TPanel;
@@ -367,11 +371,15 @@ type
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActDeployWaptExecute(Sender: TObject);
+    procedure ActEditGroupUpdate(Sender: TObject);
+    procedure ActEditHostPackageUpdate(Sender: TObject);
     procedure ActGermanExecute(Sender: TObject);
     procedure ActGermanUpdate(Sender: TObject);
+    procedure ActmakePackageTemplateExecute(Sender: TObject);
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
     procedure ActTriggerWakeOnLanExecute(Sender: TObject);
+    procedure ActTriggerWakeOnLanUpdate(Sender: TObject);
     procedure ActTriggerWaptwua_downloadExecute(Sender: TObject);
     procedure ActTriggerWaptwua_installExecute(Sender: TObject);
     procedure ActTriggerWaptwua_scanExecute(Sender: TObject);
@@ -458,6 +466,9 @@ type
     procedure EdSoftwaresFilterChange(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure FormDragOver(Sender, Source: TObject; X, Y: Integer;
+      State: TDragState; var Accept: Boolean);
+    procedure FormDropFiles(Sender: TObject; const FileNames: array of String);
     procedure FormShow(Sender: TObject);
     procedure GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
@@ -543,6 +554,7 @@ type
     procedure GridLoadData(grid: TSOGrid; jsondata: string);
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
     function InventoryData(uuid: String): ISuperObject;
+    procedure MakePackageTemplate(AInstallerFileName: String);
     procedure PythonOutputSendData(Sender: TObject; const Data: ansistring);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: ISuperObject);
     procedure TriggerActionOnHostPackages(AAction, title, errortitle: String);
@@ -577,7 +589,7 @@ uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings, soutils,
   uvisgroupchoice, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
   uVisImportPackage, uVisWUAGroup, uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect, PythonEngine, Clipbrd, RegExpr, tisinifiles,
-  IdURI,uScaleDPI;
+  IdURI,uScaleDPI, uVisPackageWizard;
 
 {$R *.lfm}
 
@@ -1337,19 +1349,31 @@ end;
 
 procedure TVisWaptGUI.ActCreateCertificateExecute(Sender: TObject);
 var
-  params, certFile: utf8string;
-  Result: Utf8String;
-  done: boolean;
+  pemfn, params, certFile,crtBaseName: utf8string;
+  CreatePrivateKey,done: boolean;
 begin
   with TVisCreateKey.Create(Self) do
     try
       repeat
+        with TINIFile.Create(AppIniFilename) do
+        try
+          EdKeyFileName.FileName := ReadString('global', 'private_key','');
+        finally
+          Free;
+        end;
         if ShowModal = mrOk then
           try
-            result := CreateSelfSignedCert(
-              edOrgName.Text,
+            CreatePrivateKey := not FileExists(EdKeyFileName.FileName);
+            if not CreatePrivateKey then
+              pemfn:=EdKeyFilename.FileName
+            else
+              pemfn:=AppendPathDelim(utf8Decode(DirectoryCert.Text))+ExtractFileNameOnly(utf8Decode(EdKeyFileName.Text))+'.pem';
+            crtBaseName:=ExtractFileNameOnly(pemfn);
+            certFile := CreateSelfSignedCert(
+              pemfn,
+              '',
               waptpath,
-              DirectoryCert.Directory,
+              utf8Decode(DirectoryCert.Text),
               edCountry.Text,
               edLocality.Text,
               edOrganization.Text,
@@ -1357,32 +1381,48 @@ begin
               edCommonName.Text,
               edEmail.Text);
 
-            done := FileExistsUTF8(Result);
+            done := FileExists(certFile);
             if done then
             begin
-              ShowMessageFmt(rsPublicKeyGenSuccess,
-                [Result]);
-              certFile := ChangeFileExt(Result,'.crt');
+              if CreatePrivateKey then
+                ShowMessageFmt(rsKeyPairGenSuccess,
+                  [UTF8Encode(pemfn),UTF8Encode(certFile)])
+              else
+                ShowMessageFmt(rsPublicKeyGenSuccess,
+                  [UTF8Encode(certFile)]);
+
               if not CopyFile(PChar(certFile),
                 PChar(waptpath + '\ssl\' + ExtractFileName(certFile)), True) then
                 ShowMessage(rsPublicKeyGenFailure);
 
               with TINIFile.Create(AppIniFilename) do
                 try
-                  WriteString('global', 'private_key', Result);
+                  WriteString('global', 'private_key', pemfn);
                 finally
                   Free;
                 end;
 
-              ActReloadConfigExecute(self);
-
+              CurrentVisLoading := TVisLoading.Create(Self);
+              with CurrentVisLoading do
               try
-                Run('cmd /C net stop waptservice');
-                Run('cmd /C net start waptservice');
-              except
+                ProgressTitle(rsReloadWaptserviceConfig);
+                Start(3);
+                ActReloadConfigExecute(self);
+                ProgressStep(1,3);
+                ProgressTitle(rsReloadWaptserviceConfig);
+                try
+                  Run('cmd /C net stop waptservice');
+                  ProgressStep(2,3);
+                  Run('cmd /C net start waptservice');
+                  ProgressStep(3,3);
+                except
+                end;
+
+              finally
+                Finish;
+                FreeAndNil(CurrentVisLoading);
               end;
             end;
-
           except
             on e: Exception do
             begin
@@ -1463,7 +1503,7 @@ begin
               if RightStr(buildDir,1) = '\' then
                 buildDir := copy(buildDir,1,length(buildDir)-1);
               SORes := DMPython.RunJSON(format('mywapt.build_upload(r"%s",private_key_passwd="%s",wapt_server_user="%s",wapt_server_passwd="%s",inc_package_release=True,target_directory=r"%s")',[
-                  waptpath+'\waptupgrade',DMPython.privateKeyPassword,WaptServerUser,WaptServerPassword,buildDir]));
+                  waptpath+'\waptupgrade',privateKeyPassword,WaptServerUser,WaptServerPassword,buildDir]));
               if FileExists(SORes.AsArray[0].S['filename']) then
               begin
                 ProgressTitle(rsWaptUpgradePackageBuilt);
@@ -1556,9 +1596,9 @@ begin
       args := args + format('append_conflicts = r"%s".decode(''utf8''),',
         [soutils.Join(',', packages)]);
       args := args + format('remove_conflicts = "",', []);
-      if DMPython.privateKeyPassword <> '' then
+      if privateKeyPassword <> '' then
         args := args + format('key_password = "%s".decode(''utf8''),',
-          [DMPython.privateKeyPassword]);
+          [privateKeyPassword]);
       args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
       args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
         [waptServerPassword]);
@@ -1590,9 +1630,9 @@ begin
     args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
     args := args + format('hosts_list = r"%s".decode(''utf8''),',
       [soutils.Join(',', hosts)]);
-    if DMPython.privateKeyPassword <> '' then
+    if privateKeyPassword <> '' then
       args := args + format('key_password = "%s".decode(''utf8''),',
-        [DMPython.privateKeyPassword]);
+        [privateKeyPassword]);
     args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
     args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
       [waptServerPassword]);
@@ -1646,9 +1686,9 @@ begin
       args := args + format('remove_depends = "",', []);
       args := args + format('append_conflicts = "",', []);
       args := args + format('remove_conflicts = "",', []);
-      if DMPython.privateKeyPassword <> '' then
+      if privateKeyPassword <> '' then
         args := args + format('key_password = "%s".decode(''utf8''),',
-          [DMPython.privateKeyPassword]);
+          [privateKeyPassword]);
       args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
       args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
         [waptServerPassword]);
@@ -1906,6 +1946,16 @@ begin
     end;
 end;
 
+procedure TVisWaptGUI.ActEditGroupUpdate(Sender: TObject);
+begin
+  ActEditGroup.Enabled:=GridGroups.SelectedCount=1;
+end;
+
+procedure TVisWaptGUI.ActEditHostPackageUpdate(Sender: TObject);
+begin
+  ActEditHostPackage.Enabled:=(GridHosts.SelectedCount=1);
+end;
+
 procedure TVisWaptGUI.ActGermanExecute(Sender: TObject);
 begin
   DMPython.Language:='de';
@@ -1914,6 +1964,11 @@ end;
 procedure TVisWaptGUI.ActGermanUpdate(Sender: TObject);
 begin
   ActGerman.Checked := DMPython.Language='de';
+end;
+
+procedure TVisWaptGUI.ActmakePackageTemplateExecute(Sender: TObject);
+begin
+  MakePackageTemplate('');
 end;
 
 procedure TVisWaptGUI.ActRemoteAssistExecute(Sender: TObject);
@@ -1954,6 +2009,11 @@ begin
     finally
       Free;
     end;
+end;
+
+procedure TVisWaptGUI.ActTriggerWakeOnLanUpdate(Sender: TObject);
+begin
+  ActTriggerHostsListening.Enabled := GridHosts.SelectedCount>0;
 end;
 
 procedure TVisWaptGUI.ActTriggerWaptwua_downloadExecute(Sender: TObject);
@@ -2096,9 +2156,9 @@ begin
     args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
     args := args + format('wuagroup = r"%s".decode(''utf8''),',
       ['default']);
-    if DMPython.privateKeyPassword <> '' then
+    if privateKeyPassword <> '' then
       args := args + format('key_password = "%s".decode(''utf8''),',
-        [DMPython.privateKeyPassword]);
+        [privateKeyPassword]);
     args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
     args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
       [waptServerPassword]);
@@ -2221,13 +2281,17 @@ var
   hostname,uuid,desc: ansistring;
 begin
   if GridHosts.FocusedRow<>Nil then
-  begin
+  try
     hostname := GridHosts.FocusedRow.S['computer_fqdn'];
     uuid := GridHosts.FocusedRow.S['uuid'];
     desc := GridHosts.FocusedRow.S['description'];
 
     if EditHost(hostname, AdvancedMode, uuid,UTF8Encode(desc)) <> nil then
       ActSearchHost.Execute;
+
+  except
+    on E:Exception do
+      ShowMessageFmt(rsEditHostError+#13#10#13#10+e.Message,[hostname]);
   end;
 end;
 
@@ -2297,7 +2361,7 @@ end;
 
 procedure TVisWaptGUI.ActHelpExecute(Sender: TObject);
 begin
-  OpenDocument('http://dev.tranquil.it/index.php/WAPT_-_apt-get_pour_Windows');
+  OpenDocument('https://doc.wapt.fr');
 end;
 
 procedure TVisWaptGUI.ActHostsActionsUpdate(Sender: TObject);
@@ -2351,7 +2415,7 @@ begin
         uploadResult := DMPython.RunJSON(
           format(
           'mywapt.build_upload([%s],private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=False)',
-          [soutils.Join(',', sources), DMPython.privateKeyPassword, waptServerUser,
+          [soutils.Join(',', sources), privateKeyPassword, waptServerUser,
           waptServerPassword]), VisWaptGUI.jsonlog);
         if (uploadResult <> nil) and
           (uploadResult.AsArray.length = Sources.AsArray.Length) then
@@ -2504,28 +2568,33 @@ begin
     if (packages = nil) or (packages.AsArray.Length = 0) then
       Exit;
 
-    Hosts := TSuperObject.Create(stArray);
-    for host in GridHosts.SelectedRows do
-      hosts.AsArray.Add(host.S['computer_fqdn']);
+    try
+      Screen.Cursor := crHourGlass;
+      Hosts := TSuperObject.Create(stArray);
+      for host in GridHosts.SelectedRows do
+        hosts.AsArray.Add(host.S['host.computer_fqdn']);
 
-    //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
-    args := '';
-    args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
-    args := args + format('hosts_list = r"%s".decode(''utf8''),',
-      [soutils.Join(',', hosts)]);
-    args := args + format('append_depends = "",', []);
-    args := args + format('remove_depends = "",', []);
-    args := args + format('append_conflicts = "",', []);
-    args := args + format('remove_conflicts = r"%s".decode(''utf8''),',
-      [soutils.Join(',', packages)]);
-    if DMPython.privateKeyPassword <> '' then
-      args := args + format('key_password = "%s".decode(''utf8''),',
-        [DMPython.privateKeyPassword]);
-    args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
-    args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
-      [waptServerPassword]);
-    res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
-    ShowMessage(IntToStr(res.AsArray.Length) + ' postes modifiés');
+      //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
+      args := '';
+      args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
+      args := args + format('hosts_list = r"%s".decode(''utf8''),',
+        [soutils.Join(',', hosts)]);
+      args := args + format('append_depends = "",', []);
+      args := args + format('remove_depends = "",', []);
+      args := args + format('append_conflicts = "",', []);
+      args := args + format('remove_conflicts = r"%s".decode(''utf8''),',
+        [soutils.Join(',', packages)]);
+      if privateKeyPassword <> '' then
+        args := args + format('key_password = "%s".decode(''utf8''),',
+          [privateKeyPassword]);
+      args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
+      args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
+        [waptServerPassword]);
+      res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
+    finally
+      Screen.Cursor:=crDefault;
+      ShowMessage(IntToStr(res.AsArray.Length) + ' postes modifiés');
+    end;
   end;
 end;
 
@@ -2562,26 +2631,31 @@ begin
     if (packages = nil) or (packages.AsArray.Length = 0) then
       Exit;
 
-    Hosts := TSuperObject.Create(stArray);
-    for host in GridHosts.SelectedRows do
-      hosts.AsArray.Add(host.S['computer_fqdn']);
+    try
+      Screen.Cursor := crHourGlass;
+      Hosts := TSuperObject.Create(stArray);
+      for host in GridHosts.SelectedRows do
+        hosts.AsArray.Add(host.S['host.computer_fqdn']);
 
-    //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
-    args := '';
-    args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
-    args := args + format('hosts_list = r"%s".decode(''utf8''),',
-      [soutils.Join(',', hosts)]);
-    args := args + format('append_depends = [],', []);
-    args := args + format('remove_depends = r"%s".decode(''utf8''),',
-      [soutils.Join(',', packages)]);
-    if DMPython.privateKeyPassword <> '' then
-      args := args + format('key_password = "%s".decode(''utf8''),',
-        [DMPython.privateKeyPassword]);
-    args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
-    args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
-      [waptServerPassword]);
-    res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
-    ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
+      //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
+      args := '';
+      args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
+      args := args + format('hosts_list = r"%s".decode(''utf8''),',
+        [soutils.Join(',', hosts)]);
+      args := args + format('append_depends = [],', []);
+      args := args + format('remove_depends = r"%s".decode(''utf8''),',
+        [soutils.Join(',', packages)]);
+      if privateKeyPassword <> '' then
+        args := args + format('key_password = "%s".decode(''utf8''),',
+          [privateKeyPassword]);
+      args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
+      args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
+        [waptServerPassword]);
+      res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
+    finally
+      Screen.cursor := crDefault;
+      ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
+    end;
   end;
 end;
 
@@ -2931,7 +3005,7 @@ begin
   dmpython.WaptConfigFileName:=AppIniFilename;
   pgSources.TabVisible := AdvancedMode;
   PanDebug.Visible := AdvancedMode;
-
+  ActPackagesUpdate.Execute;
 end;
 
 procedure TVisWaptGUI.ActTriggerHostsListeningExecute(Sender: TObject);
@@ -3049,6 +3123,9 @@ begin
         edprivate_key.Text := inifile.ReadString('global', 'private_key', '');
         edtemplates_repo_url.Text :=
           inifile.readString('global', 'templates_repo_url', '');
+        EdAuthorizedCertsDir.Text :=
+          inifile.readString('global', 'authorized_certs_dir', AppendPathDelim(GetAppdataFolder)+'waptconsole\ssl');
+
         cbUseProxyForTemplate.Checked :=
           inifile.ReadBool('global', 'use_http_proxy_for_templates', edhttp_proxy.Text <> '');
         cbUseProxyForServer.Checked :=
@@ -3082,7 +3159,12 @@ begin
           inifile.WriteString('global', 'default_sources_root',
             eddefault_sources_root.Text);
           inifile.WriteString('global', 'private_key', edprivate_key.Text);
+          if edtemplates_repo_url.Text = '' then
+            edtemplates_repo_url.Text := 'https://store.wapt.fr/wapt';
           inifile.WriteString('global', 'templates_repo_url', edtemplates_repo_url.Text);
+
+          inifile.WriteString('global', 'authorized_certs_dir',EdAuthorizedCertsDir.Text);
+
           inifile.WriteBool('global', 'use_http_proxy_for_templates',
             cbUseProxyForTemplate.Checked);
           inifile.WriteBool('global', 'use_http_proxy_for_server',
@@ -3113,8 +3195,7 @@ begin
 
   finally
     inifile.Free;
-    waptcommon.ReadWaptConfig(AppIniFilename);
-    DMPython.Language:=Language;
+
   end;
 end;
 
@@ -3152,6 +3233,69 @@ begin
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
 end;
 
+procedure TVisWaptGUI.FormDragOver(Sender, Source: TObject; X, Y: Integer;
+  State: TDragState; var Accept: Boolean);
+begin
+  if MainPages.ActivePage = pgPrivateRepo then
+    Accept:=True;
+end;
+
+procedure TVisWaptGUI.FormDropFiles(Sender: TObject;
+  const FileNames: array of String);
+begin
+  if MainPages.ActivePage = pgPrivateRepo then
+  begin
+    MakePackageTemplate(FileNames[0]);
+  end;
+end;
+
+procedure TVisWaptGUI.MakePackageTemplate(AInstallerFileName: String);
+var
+  installInfos,packageSources,uploadResult:ISUperObject;
+  res: Integer;
+begin
+  With TVisPackageWizard.Create(self) do
+  try
+    InstallerFilename:=AInstallerFileName;
+    res := ShowModal;
+    // mrYes : build-upload, mrOK : make-template only
+    if (res = mrOk) or (res = mrYes) then
+    begin
+      Screen.cursor := crHourGlass;
+      if FileExists(EdInstallerPath.FileName) then
+      try
+        if res = mrOK then
+        begin
+          packageSources := DMPython.RunJSON(format('common.wapt_sources_edit(mywapt.make_package_template(r"%s".decode("utf8"),r"%s",version="%s",description=r"""%s""".decode("utf8"),uninstallkey=r"%s"))',
+              [EdInstallerPath.FileName,EdPackageName.text,EdVersion.Text,EdDescription.Text,EdUninstallKey.Text]));
+          ShowMessageFmt(rsPackageSourcesAvailable,[packageSources.AsString]);
+        end
+        else
+        begin
+          // returns the dev sources path
+          packageSources := DMPython.RunJSON(format('mywapt.make_package_template(r"%s".decode("utf8"),r"%s",version="%s",description=r"""%s""".decode("utf8"),uninstallkey=r"%s")',
+              [EdInstallerPath.FileName,EdPackageName.text,EdVersion.Text,EdDescription.Text,EdUninstallKey.Text]));
+
+          uploadResult := DMPython.RunJSON(
+            format(
+            'mywapt.build_upload(r"%s".decode("utf8"),private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=True)',
+            [packageSources.AsString, privateKeyPassword, waptServerUser,
+            waptServerPassword]), VisWaptGUI.jsonlog);
+
+          ActPackagesUpdate.Execute;
+          ShowMessageFmt(rsPackageBuiltSourcesAvailable,[packageSources.AsString]);
+        end;
+      finally
+        Screen.cursor := crDefault;
+      end
+      else
+        ShowMessageFmt(rsInstallerFileNotFound,[EdInstallerPath.FileName]);
+    end;
+  finally
+    Free;
+  end;
+end;
+
 function TVisWaptGUI.Login: boolean;
 var
   cred, resp, sores: ISuperObject;
@@ -3163,7 +3307,7 @@ begin
   if not FileExistsUTF8(localfn) then
   begin
     if not DirectoryExistsUTF8(GetAppConfigDir(False)) then
-      MkDir(GetAppConfigDir(False));
+       CreateDirUTF8(GetAppConfigDir(False));
     CopyFile(Utf8ToAnsi(WaptIniFilename), Utf8ToAnsi(localfn), True);
   end;
 
@@ -3334,6 +3478,13 @@ begin
       StrReplace(CellText, ',', #13#10, [rfReplaceAll]);
     if (colname = 'size') or (colname ='installed_size') then
       CellText := FormatFloat('# ##0 kB',StrToInt64(CellText) div 1024);
+
+    // awfull hack to workaround the bad wordwrap break of last line for multilines cells...
+    // the problem is probably in the LCL... ?
+    if  (colname = 'description') or (colname = 'depends') or (colname = 'conflicts') then
+      CellText := CellText + #13#10;
+    if (colname = 'description') then
+      CellText := UTF8Encode(Celltext);
   end;
 end;
 
@@ -3394,6 +3545,7 @@ begin
         'OK': ImageIndex := 0;
         'ERROR': ImageIndex := 2;
         'NEED-UPGRADE': ImageIndex := 1;
+        'RUNNING': ImageIndex := 6;
         'MISSING': ImageIndex := 7;
       end;
     end;
@@ -3675,7 +3827,7 @@ procedure TVisWaptGUI.GridPackagesChange(Sender: TBaseVirtualTree; Node: PVirtua
 begin
   if GridPackages.FocusedRow <> Nil then
   begin
-    MemoGroupeDescription.Lines.Text := GridPackages.FocusedRow.S['description'];
+    MemoGroupeDescription.Lines.Text := UTF8Encode(GridPackages.FocusedRow.S['description']);
     EdPackage.Text:=GridPackages.FocusedRow.S['package'];
     EdVersion.Text:=GridPackages.FocusedRow.S['version'];
     EdDepends.Lines.Text := StringReplace(GridPackages.FocusedRow.S['depends'],',',#13#10,[rfReplaceAll]);
@@ -3769,7 +3921,7 @@ end;
 
 procedure TVisWaptGUI.Image1Click(Sender: TObject);
 begin
-  OpenDocument('http://www.tranquil.it');
+  OpenDocument('https://www.tranquil.it');
 end;
 
 procedure CopyMenu(menuItemSource: TPopupMenu; menuItemTarget: TMenuItem);

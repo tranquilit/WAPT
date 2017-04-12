@@ -738,7 +738,7 @@ begin
     "macaddress": "08:00:27:72:E9:E4",
     "dnsdomain": "tranquilit.local"
    }
-      Data.S['host_info.dns_domain'] := LowerCase(nw.AsArray[0].S['dnsdomain']);
+      Data.S['host_info.dnsdomain'] := LowerCase(nw.AsArray[0].S['dnsdomain']);
       Data.S['host_info.connected_ips'] := nw.AsArray[0].A['ipaddress'].S[0];
       Data.S['host_info.mac'] := lowercase(nw.AsArray[0].S['macaddress']);
       Data.S['host_info.computer_fqdn'] :=

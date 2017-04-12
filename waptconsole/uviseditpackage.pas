@@ -10,7 +10,7 @@ uses
   Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, Buttons,
   superobject, VirtualTrees,
   VarPyth, types, ActiveX, LCLIntf, LCL, sogrid, vte_json, DefaultTranslator,
-  uWaptConsoleRes,SearchEdit;
+  SearchEdit;
 
 type
 
@@ -164,7 +164,7 @@ var
 
 implementation
 
-uses soutils, LCLType, waptcommon, dmwaptpython, jwawinuser, uvisloading,
+uses uWaptConsoleRes,soutils, LCLType, waptcommon, dmwaptpython, jwawinuser, uvisloading,
   uvisprivatekeyauth, uwaptconsole, tiscommon, uWaptRes,UScaleDPI;
 
 {$R *.lfm}
@@ -548,7 +548,7 @@ end;
 
 procedure TVisEditPackage.ActEditSavePackageUpdate(Sender: TObject);
 begin
-  ActEditSavePackage.Enabled := IsUpdated;
+  (Sender as TAction).Enabled := (EdPackage.Text<>'') and  IsUpdated;
 end;
 
 function TVisEditPackage.GetIsUpdated: boolean;
@@ -591,7 +591,7 @@ begin
     try
       Result := DMPython.RunJSON(format(
         'mywapt.build_upload(r"%s".decode(''utf8''),r"%s",r"%s",r"%s",True)',
-        [FSourcePath, DMPython.privateKeyPassword, waptServerUser, waptServerPassword]), jsonlog);
+        [FSourcePath, privateKeyPassword, waptServerUser, waptServerPassword]), jsonlog);
       if FisTempSourcesDir then
       begin
         FileUtil.DeleteDirectory(FSourcePath, False);
@@ -611,7 +611,7 @@ begin
     Free;
   end;
 
-  if (Result<>Nil) and (Result.AsArray <> nil) and (Result.AsArray[0]['filename']<>Nil) then
+  if (Result<>Nil) and (Result.AsArray<>Nil) and (Result.AsArray.Length>0) then
     ModalResult := mrOk
 end;
 
@@ -636,7 +636,6 @@ procedure TVisEditPackage.ActBUApplyExecute(Sender: TObject);
 begin
   ApplyUpdatesImmediately := True;
   ActBuildUpload.Execute;
-  ModalResult:=mrOK;
 end;
 
 procedure TVisEditPackage.ActAddDependsUpdate(Sender: TObject);
@@ -739,6 +738,8 @@ var
 begin
   if FPackageRequest = AValue then
     Exit;
+  if AValue='' then
+    raise Exception.Create('Can not edit an Empty package name');
   Screen.Cursor := crHourGlass;
   try
     FPackageRequest := AValue;
@@ -749,8 +750,8 @@ begin
         target_directory := UniqueTempDir();
         FisTempSourcesDir := True;
         res := DMPython.RunJSON(
-          format('mywapt.edit_host("%s",target_directory=r"%s".decode(''utf8''),use_local_sources=False)',
-          [FPackageRequest, target_directory]));
+            format('mywapt.edit_host("%s",target_directory=r"%s".decode(''utf8''),use_local_sources=False)',
+            [FPackageRequest, target_directory]));
         EdPackage.EditLabel.Caption := 'Machine';
         Caption := rsHostConfigEditCaption;
         pgDepends.Caption := rsPackagesNeededOnHostCaption;
@@ -790,6 +791,7 @@ begin
               end;
 
             res := DMPython.RunJSON(format('mywapt.edit_package(r"%s")', [filePath]));
+            FisTempSourcesDir := True;
           finally
             Free;
           end;

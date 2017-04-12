@@ -38,7 +38,7 @@ interface
         constructor Create(const msg: string;AHTTPStatus:Integer);
       end;
 
-  function GetWaptPrivateKeyPath: String;
+  function GetWaptPrivateKeyPath: Utf8String;
 
   Function GetWaptLocalURL:String;
 
@@ -58,7 +58,7 @@ interface
 
   function GetWaptServerCertificateFilename(inifilename:AnsiString=''):AnsiString;
 
-  function ReadWaptConfig(inifile:String = ''): Boolean; //read global parameters from wapt-get ini file
+  function ReadWaptConfig(inifilename:String = ''): Boolean; //read global parameters from wapt-get ini file
 
   function GetEthernetInfo(ConnectedOnly:Boolean):ISuperObject;
   function LocalSysinfo: ISuperObject;
@@ -81,7 +81,8 @@ interface
   //return ip for waptservice
   function WaptServiceReachableIP(UUID:String;hostdata:ISuperObject=Nil):String;
 
-  function CreateSelfSignedCert(orgname,
+  function CreateSelfSignedCert(keyfilename,
+          crtbasename,
           wapt_base_dir,
           destdir,
           country,
@@ -123,6 +124,10 @@ const
   FallBackLanguage:String = '';
 
   DefaultPackagePrefix:String = '';
+  DefaultSourcesRoot:String = '';
+
+  TemplatesRepoUrl: String = '';
+  AuthorizedCertsDir:Utf8String = '';
 
   AdvancedMode:Boolean = False;
 
@@ -133,7 +138,7 @@ implementation
 uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2,
   IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,IdURI,
-  gettext,IdStack,IdCompressorZLib,sha1,IdAuthentication,shfolder;
+  gettext,IdStack,IdCompressorZLib,sha1,IdAuthentication,shfolder,IniFiles;
 
 const
   CacheWaptServerUrl: AnsiString = 'None';
@@ -844,9 +849,9 @@ begin
 end;
 
 
-function GetWaptPrivateKeyPath: String;
+function GetWaptPrivateKeyPath: Utf8String;
 begin
-  result := IniReadString(WaptIniFilename,'Global','private_key');
+  result := utf8Decode(IniReadString(WaptIniFilename,'Global','private_key'));
 end;
 
 function GetWaptLocalURL: String;
@@ -919,26 +924,29 @@ begin
   end;
 end;
 
-
-function ReadWaptConfig(inifile:String = ''): Boolean;
+// Read Wapt config from inifile, set global const wapt_config_filename
+// if inifile is empty, read from result of WaptIniFilename (wapt_config_filename if set, appinifile if exists, else wapt-get.ini)
+function ReadWaptConfig(inifilename:String = ''): Boolean;
 var
   i: Integer;
+  inifile: TIniFile;
 begin
   // reset cache
   CacheWaptServerUrl := 'None';
 
-  if inifile='' then
-    inifile:=WaptIniFilename;
+  if inifilename='' then
+    inifilename:=WaptIniFilename;
 
-  if (inifile<>'') and  (wapt_config_filename='') then
-    wapt_config_filename := inifile;
+  if (inifilename<>'') then
+    wapt_config_filename := inifilename;
 
-  if not FileExistsUTF8(inifile) then
+  if not FileExistsUTF8(inifilename) then
     Result := False
   else
-  begin
-    waptservice_port := IniReadInteger(inifile,'global','waptservice_port',-1);
-    waptservice_sslport := IniReadInteger(inifile,'global','waptservice_sslport',-1);
+  with TIniFile.Create(inifilename) do
+  try
+    waptservice_port := ReadInteger('global','waptservice_port',-1);
+    waptservice_sslport := ReadInteger('global','waptservice_sslport',-1);
     if (waptservice_port<=0) and (waptservice_sslport<=0) then
       waptservice_port := 8088;
 
@@ -954,26 +962,39 @@ begin
 
     if Language = '' then
     begin
-      Language := IniReadString(inifile,'global','language','');       ;
+      Language := ReadString('global','language','');       ;
       FallBackLanguage := copy(Language,1,2);
       //if FallBackLanguage ='' then
       //    GetLanguageIDs(Language,FallBackLanguage);
     end;
 
-    waptserver_port := IniReadInteger(inifile,'global','waptserver_port',80);
-    waptserver_sslport := IniReadInteger(inifile,'global','waptserver_sslport',443);
-    zmq_port := IniReadInteger(inifile,'global','zmq_port',5000);
+    waptserver_port := ReadInteger('global','waptserver_port',80);
+    waptserver_sslport := ReadInteger('global','waptserver_sslport',443);
+    zmq_port := ReadInteger('global','zmq_port',5000);
 
-    HttpProxy := IniReadString(inifile,'global','http_proxy','');
-    UseProxyForRepo := IniReadBool(inifile,'global','use_http_proxy_for_repo',False);
-    UseProxyForServer := IniReadBool(inifile,'global','use_http_proxy_for_server',False);
-    UseProxyForTemplates := IniReadBool(inifile,'global','use_http_proxy_for_templates',False);
+    HttpProxy := ReadString('global','http_proxy','');
+    UseProxyForRepo := ReadBool('global','use_http_proxy_for_repo',False);
+    UseProxyForServer := ReadBool('global','use_http_proxy_for_server',False);
+    UseProxyForTemplates := ReadBool('global','use_http_proxy_for_templates',False);
 
-    AdvancedMode := IniReadBool(inifile,'global','advanced_mode',False);
+    TemplatesRepoUrl := ReadString('Global','templates_repo_url','https://store.wapt.fr/wapt/');
 
-    DefaultPackagePrefix := IniReadString(inifile,'global','default_package_prefix','');
+    AuthorizedCertsDir := ReadString('global', 'authorized_certs_dir', AppendPathDelim(GetAppdataFolder)+'waptconsole\ssl');
+    if (AuthorizedCertsDir<>'') and not DirectoryExists(AuthorizedCertsDir) then
+    try
+      CreateDirUTF8(AuthorizedCertsDir);
+    finally
+    end;
+
+    AdvancedMode := ReadBool('global','advanced_mode',False);
+
+    DefaultPackagePrefix := ReadString('global','default_package_prefix','');
+    DefaultSourcesRoot := ReadString('global','default_sources_root','');
 
     Result := True
+
+  finally
+    Free;
   end;
 end;
 
@@ -987,23 +1008,6 @@ begin
 end;
 
 
-function WaptTemplatesRepo(inifilename:String=''): Utf8String;
-begin
-  if inifilename='' then
-     inifilename:=WaptIniFilename;
-  Result := IniReadString(inifilename,'Global','templates_repo_url');
-  if Result = '' then
-      Result:='https://store.wapt.fr/wapt/';
-end;
-
-
-
-function WaptUseLocalConnectionProxy(inifilename:String=''): Boolean;
-begin
-  if inifilename='' then
-     inifilename:=WaptIniFilename;
-  Result := StrIsOneOf(IniReadString (inifilename,'Global','use_local_connection_proxy'),['True','true','1'],False);
-end;
 
 //////
 
@@ -1284,7 +1288,8 @@ begin
   end;
 end;
 
-function CreateSelfSignedCert(orgname,
+function CreateSelfSignedCert(keyfilename,
+        crtbasename,
         wapt_base_dir,
         destdir,
         country,
@@ -1295,38 +1300,61 @@ function CreateSelfSignedCert(orgname,
         email:Utf8String
     ):Utf8String;
 var
-  opensslbin,opensslcfg,opensslcfg_fn,destpem,destcrt,destp12 : AnsiString;
+  opensslbin,opensslcfg,opensslcfg_fn,destpem,destcrt,destp12 : Utf8String;
   params : ISuperObject;
 begin
-    destpem := Utf8ToAnsi(AppendPathDelim(destdir)+orgname+'.pem');
-    destcrt := Utf8ToAnsi(AppendPathDelim(destdir)+orgname+'.crt');
-    destp12 := Utf8ToAnsi(AppendPathDelim(destdir)+orgname+'.p12');
-    if not DirectoryExists(destdir) then
-        mkdir(destdir);
-    params := TSuperObject.Create;
-    params.S['country'] := UTF8Decode(country);
-    params.S['locality'] :=UTF8Decode(locality);
-    params.S['organization'] := UTF8Decode(organization);
-    params.S['unit'] := UTF8Decode(orgunit);
-    params.S['commonname'] := UTF8Decode(commonname);
-    params.S['email'] := UTF8Decode(email);
+  result := '';
+  if FileExists(keyfilename) then
+    destpem := keyfilename
+  else
+  begin
+    if ExtractFileNameOnly(keyfilename) = keyfilename then
+      destpem := AppendPathDelim(destdir)+ExtractFileNameOnly(keyfilename)+'.pem'
+    else
+      destpem := keyfilename;
+  end;
+  if crtbasename = '' then
+    crtbasename := ExtractFileNameOnly(keyfilename);
 
-    opensslbin :=  AppendPathDelim(wapt_base_dir)+'lib\site-packages\M2Crypto\openssl.exe';
-    opensslcfg :=  pyformat(FileToString(AppendPathDelim(wapt_base_dir) + 'templates\openssl_template.cfg'),params);
-    opensslcfg_fn := AppendPathDelim(destdir)+'openssl.cfg';
-    StringToFile(opensslcfg_fn,Utf8ToAnsi(opensslcfg));
-    try
-      SetEnvironmentVariable('OPENSSL_CONF', PChar(opensslcfg_fn));
-      if ExecuteProcess(opensslbin,'req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout "'+destpem+'" -out "'+destcrt+'"',[]) <> 0 then
-        result :=''
-      else
-        result := AnsiToUtf8(destpem);
-      // create a .pfx .p12 for ms signtool
+  destcrt := AppendPathDelim(destdir)+crtbasename+'.crt';
+  destp12 := AppendPathDelim(destdir)+crtbasename+'.p12';
+  if not DirectoryExists(destdir) then
+       CreateDir(destdir);
+
+  params := TSuperObject.Create;
+  params.S['country'] := UTF8Decode(country);
+  params.S['locality'] :=UTF8Decode(locality);
+  params.S['organization'] := UTF8Decode(organization);
+  params.S['unit'] := UTF8Decode(orgunit);
+  params.S['commonname'] := UTF8Decode(commonname);
+  params.S['email'] := UTF8Decode(email);
+
+  opensslbin :=  AppendPathDelim(wapt_base_dir)+'lib\site-packages\M2Crypto\openssl.exe';
+  opensslcfg :=  pyformat(FileToString(AppendPathDelim(wapt_base_dir) + 'templates\openssl_template.cfg'),params);
+  opensslcfg_fn := AppendPathDelim(destdir)+'openssl.cfg';
+  StringToFile(opensslcfg_fn,opensslcfg);
+  try
+    SetEnvironmentVariable('OPENSSL_CONF', PChar(opensslcfg_fn));
+    // If private key  already exist, just recreate a self signed certificate
+    if not FileExists(destpem) then
+    begin
+      if ExecuteProcess(opensslbin,'req -utf8 -x509 -nodes -days 3650 -newkey rsa:2048 -sha256 -keyout "'+destpem+'" -out "'+destcrt+'"',[]) = 0 then
+        result := destcrt;
+    end
+    else
+    begin
+      if ExecuteProcess(opensslbin,'req -utf8 -key "'+destpem+'" -new -x509 -days 3650 -sha256 -out "'+destcrt+'"',[]) = 0 then
+        result := destcrt;
+    end;
+
+    // create a .pfx .p12 for ms signtool
+    if FileExists(destpem) and FileExists(destcrt) then
       if ExecuteProcess(opensslbin,'pkcs12 -export -inkey "'+destpem+'" -in "'+destcrt+'" -out "'+destp12+'" -name "'+ commonname+'" -passout pass:',[]) <> 0 then
         raise Exception.Create('Unable to create p12 file for signtool');
-    finally
-      SysUtils.DeleteFile(opensslcfg_fn);
-    end;
+
+  finally
+    SysUtils.DeleteFile(opensslcfg_fn);
+  end;
 end;
 
 function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8String='';
@@ -1343,8 +1371,8 @@ var
 
 begin
     wapt_base_dir:= WaptBaseDir;
-    iss_template := wapt_base_dir + '\waptsetup' + '\waptsetup.iss';
-    custom_iss := wapt_base_dir + '\' + 'waptsetup' + '\' + 'custom_waptsetup.iss';
+    iss_template := AppendPathDelim(wapt_base_dir) + 'waptsetup\waptsetup.iss';
+    custom_iss := AppendPathDelim(wapt_base_dir) + 'waptsetup\custom_waptsetup.iss';
     iss := SplitLines(FileToString(iss_template));
     new_iss := TSuperObject.Create(stArray);
     for line in iss do
@@ -1376,13 +1404,13 @@ begin
     end;
 
     source := default_public_cert;
-    target := ExtractFileDir(iss_template) + '  \..\ssl\' + ExtractFileName(source);
+    target := ExpandFileName(AppendPathDelim(ExtractFileDir(iss_template))+ '..\ssl\' + ExtractFileName(source));
     if not FileExistsUTF8(target) then
-      if not CopyFileW(PWideChar(source),PWideChar(target),True) then
+      if not CopyFile(PChar(source),PChar(target),True) then
         raise Exception.CreateFmt(rsCertificateCopyFailure,[source,target]);
     StringToFile(custom_iss,SOUtils.Join(#13#10,new_iss));
 
-    inno_fn :=  wapt_base_dir + '\waptsetup' + '\innosetup' + '\ISCC.exe';
+    inno_fn :=  AppendPathDelim(wapt_base_dir) + 'waptsetup\innosetup\ISCC.exe';
     if not FileExists(inno_fn) then
         raise Exception.CreateFmt(rsInnoSetupUnavailable, [inno_fn]);
     Run(format('"%s"  "%s"',[inno_fn,custom_iss]),'',3600000,'','','',OnProgress);
@@ -1393,7 +1421,7 @@ begin
       Run(format('"%s" sign /f "%s" "%s"',[signtool,p12keypath,Result]),'',3600000,'','','',OnProgress);
 
     // Create waptagent.sha256
-    StringToFile(wapt_base_dir + '\waptupgrade\waptagent.sha256',SHA256Hash(Result)+'  waptagent.exe');
+    StringToFile(AppendPathDelim(wapt_base_dir) + 'waptupgrade\waptagent.sha256',SHA256Hash(Result)+'  waptagent.exe');
 end;
 
 function GetReachableIP(IPS:ISuperObject;port:word):String;
