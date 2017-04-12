@@ -643,20 +643,12 @@ def dnsquery_srv(name,opt=DNS_QUERY_BYPASS_CACHE | DNS_QUERY_NO_LOCAL_NAME | DNS
 
 
 if __name__ == "__main__":
-    print(dnsquery_a('wapt.tranquilit.local'))
-
-    res =  dnsquery_raw("www.google.com", DNS_TYPE_A , opt=DNS_QUERY_BYPASS_CACHE | DNS_QUERY_NO_LOCAL_NAME | DNS_QUERY_NO_HOSTS_FILE)
-    print(ipv4_to_str(res.contents.Data.A.IpAddress))
-
-    res =  dnsquery_raw("_wapt._tcp.tranquilit.local", DNS_TYPE_SRV , opt=DNS_QUERY_BYPASS_CACHE | DNS_QUERY_NO_LOCAL_NAME | DNS_QUERY_NO_HOSTS_FILE)
-    r = res
-    while r:
-        if r.contents.wType == DNS_TYPE_SRV:
-            print(r.contents.pName,r.contents.Data.SRV.pNameTarget,r.contents.Data.SRV.wPort)
-        elif r.contents.wType == DNS_TYPE_A:
-            print(r.contents.pName,ipv4_to_str(r.contents.Data.A.IpAddress))
-        else:
-            print(r.contents.pName,r.contents.wType)
-        r = r.contents.pNext
-    print(dnsquery_a('wapt'))
+    import doctest
+    import sysedit_pa
+    reload(sys)
+    sys.setdefaultencoding("UTF-8")
+    import doctest
+    doctest.ELLIPSIS_MARKER = '???'
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
+    sys.exit(0)
 

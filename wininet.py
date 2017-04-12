@@ -358,7 +358,11 @@ class WinInet:
         return (status, data)
 
 if __name__ == '__main__':
-    inet = WinInet()
-    status, data = inet.doUrlGet("login?openerp_login=admin&openerp_password=xxx", "srvwapt", {}, "", "",port=8000)
-    print("s", status)
-    print("d", data)
+    import doctest
+    import sysedit_pa
+    reload(sys)
+    sys.setdefaultencoding("UTF-8")
+    import doctest
+    doctest.ELLIPSIS_MARKER = '???'
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
+    sys.exit(0)

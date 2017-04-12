@@ -471,8 +471,6 @@ def create_waptwua_package(waptconfigfile,wuagroup='default',wapt_server_user=No
 
 
 if __name__ == '__main__':
-    edit_hosts_depends(r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini','htlaptop.tranquilit.local',['socle'],wapt_server_user='admin',wapt_server_passwd='calimero')
-    sys.exit(1)
     import doctest
     import sys
     reload(sys)
