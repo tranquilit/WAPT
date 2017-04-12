@@ -2924,9 +2924,9 @@ class Wapt(object):
         """Runs the command and wait for it termination
         returns output, don't raise exception if exitcode is not null but return '' """
         try:
-            return ensure_unicode(self.run(*cmd,**args))
+            return self.run(*cmd,**args)
         except Exception as e:
-            print(u'Warning : %s' % ensure_unicode(e))
+            print('Warning : %s' % repr(e))
             return ''
 
     def install_wapt(self,fname,params_dict={},explicit_by=None):
