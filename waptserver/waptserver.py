@@ -432,18 +432,14 @@ def update_host():
                         mimetype="application/json")
 
 
-@app.route('/upload_package/<string:filename>', methods=['POST'])
+@app.route('/upload_package/<string:filename>',methods=['POST'])
 @requires_auth
 def upload_package(filename=""):
     try:
         tmp_target = ''
         if request.method == 'POST':
             if filename and allowed_file(filename):
-                tmp_target = os.path.join(
-                    conf['wapt_folder'],
-                    secure_filename(
-                        filename +
-                        '.tmp'))
+                tmp_target = os.path.join(conf['wapt_folder'], secure_filename(filename+'.tmp'))
                 with open(tmp_target, 'wb') as f:
                     data = request.stream.read(65535)
                     try:
@@ -455,94 +451,74 @@ def upload_package(filename=""):
                         raise
 
                 if not os.path.isfile(tmp_target):
-                    result = dict(
-                        status='ERROR',
-                        message=_('Problem during upload'))
+                    result = dict(status='ERROR',message=_('Problem during upload'))
                 else:
                     if PackageEntry().load_control_from_wapt(tmp_target):
-                        target = os.path.join(
-                            conf['wapt_folder'],
-                            secure_filename(filename))
+                        target = os.path.join(conf['wapt_folder'], secure_filename(filename))
                         if os.path.isfile(target):
                             os.unlink(target)
-                        os.rename(tmp_target, target)
+                        os.rename(tmp_target,target)
                         data = update_packages(conf['wapt_folder'])
-                        result = dict(
-                            status='OK', message='%s uploaded, %i packages analysed' %
-                            (filename, len(
-                                data['processed'])), result=data)
+                        result = dict(status='OK',message='%s uploaded, %i packages analysed'%(filename,len(data['processed'])),result=data)
                     else:
-                        result = dict(
-                            status='ERROR',
-                            message=_('Not a valid wapt package'))
+                        result = dict(status='ERROR',message=_('Not a valid wapt package'))
                         os.unlink(tmp_target)
             else:
-                result = dict(status='ERROR', message=_('Wrong file type'))
+                result = dict(status='ERROR',message=_('Wrong file type'))
         else:
-            result = dict(status='ERROR', message=_('Unsupported method'))
+            result = dict(status='ERROR',message=_('Unsupported method'))
     except:
         # remove temporary
         if os.path.isfile(tmp_target):
             os.unlink(tmp_target)
         e = sys.exc_info()
         logger.critical(repr(traceback.format_exc()))
-        result = dict(status='ERROR', message=_('unexpected: {}').format((e,)))
-    return Response(response=json.dumps(result),
-                    status=200,
-                    mimetype="application/json")
+        result = dict(status='ERROR',message=_('unexpected: {}').format((e,)))
+    return  Response(response=json.dumps(result),
+                         status=200,
+                         mimetype="application/json")
 
 
-@app.route('/upload_host', methods=['POST'])
+@app.route('/upload_host',methods=['POST'])
 @requires_auth
 def upload_host():
     try:
-        file = request.files['file']
-        if file:
-            logger.debug('uploading host file : %s' % file)
+        starttime = time.time()
+        done = []
+        files = request.files.keys()
+        logger.info('Upload of %s host packages'%len(files))
+        for fkey in files:
+            file = request.files[fkey]
+            logger.debug('uploading host file : %s' % fkey)
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                wapt_host_folder = os.path.join(conf['wapt_folder'] + '-host')
-                tmp_target = os.path.join(wapt_host_folder, filename + '.tmp')
+                wapt_host_folder = os.path.join(conf['wapt_folder']+'-host')
+                tmp_target = os.path.join(wapt_host_folder, filename+'.tmp')
                 target = os.path.join(wapt_host_folder, filename)
                 file.save(tmp_target)
                 if os.path.isfile(tmp_target):
                     try:
                         # try to read attributes...
-                        entry = PackageEntry().load_control_from_wapt(
-                            tmp_target)
+                        entry = PackageEntry().load_control_from_wapt(tmp_target)
                         if os.path.isfile(target):
                             os.unlink(target)
-                        os.rename(tmp_target, target)
-                        data = update_packages(wapt_host_folder)
-                        result = dict(
-                            status='OK',
-                            message=_('File {} uploaded to {}').format(
-                                file.filename,
-                                target))
+                        os.rename(tmp_target,target)
+                        done.append(filename)
                     except:
                         if os.path.isfile(tmp_target):
                             os.unlink(tmp_target)
                         raise
-                else:
-                    result = dict(
-                        status='ERROR',
-                        message=_('No data received'))
-            else:
-                result = dict(status='ERROR', message=_('Wrong file type'))
-        else:
-            result = dict(
-                status='ERROR',
-                message=_('No package file provided in request'))
-    except:
+        spenttime = time.time() - starttime
+        if done:
+            data = update_packages(wapt_host_folder)
+        print spenttime
+        return make_response(result=done,msg=_('%s Host packages uploaded').format(len(done)),request_time = spenttime)
+
+    except Exception as e:
         # remove temporary
         if os.path.isfile(tmp_target):
             os.unlink(tmp_target)
-        e = sys.exc_info()
-        logger.critical(repr(traceback.format_exc()))
-        result = dict(status='ERROR', message='upload_host: %s' % (e,))
-    return Response(response=json.dumps(result),
-                    status=200,
-                    mimetype="application/json")
+        return make_response_from_exception(e,status='201')
 
 
 @app.route('/upload_waptsetup', methods=['POST'])
@@ -558,27 +534,16 @@ def upload_waptsetup():
             file = request.files['file']
             if file and "waptagent.exe" in file.filename:
                 filename = secure_filename(file.filename)
-                tmp_target = os.path.join(
-                    conf['wapt_folder'],
-                    secure_filename(
-                        '.' +
-                        filename))
-                target = os.path.join(
-                    conf['wapt_folder'],
-                    secure_filename(filename))
+                tmp_target = os.path.join(conf['wapt_folder'], secure_filename('.'+filename))
+                target = os.path.join(conf['wapt_folder'], secure_filename(filename))
                 file.save(tmp_target)
                 if not os.path.isfile(tmp_target):
-                    result = dict(
-                        status='ERROR',
-                        message=_('Problem during upload'))
+                    result = dict(status='ERROR',message=_('Problem during upload'))
                 else:
-                    os.rename(tmp_target, target)
-                    result = dict(
-                        status='OK', message=_('{} uploaded').format(
-                            (filename,)))
+                    os.rename(tmp_target,target)
+                    result = dict(status='OK',message=_('{} uploaded').format((filename,)))
 
-                # Compat with older clients: provide a waptsetup.exe ->
-                # waptagent.exe alias
+                # Compat with older clients: provide a waptsetup.exe -> waptagent.exe alias
                 if os.path.exists(waptsetup):
                     if not os.path.exists(waptsetup + '.old'):
                         try:
@@ -595,19 +560,17 @@ def upload_waptsetup():
                     shutil.copyfile(waptagent, waptsetup)
 
             else:
-                result = dict(
-                    status='ERROR',
-                    message=_('Wrong file name (version conflict?)'))
+                result = dict(status='ERROR',message=_('Wrong file name (version conflict?)'))
         else:
-            result = dict(status='ERROR', message=_('Unsupported method'))
+            result = dict(status='ERROR',message=_('Unsupported method'))
     except:
         e = sys.exc_info()
         if tmp_target and os.path.isfile(tmp_target):
             os.unlink(tmp_target)
-        result = dict(status='ERROR', message=_('unexpected: {}').format((e,)))
-    return Response(response=json.dumps(result),
-                    status=200,
-                    mimetype="application/json")
+        result = dict(status='ERROR',message=_('unexpected: {}').format((e,)))
+    return  Response(response=json.dumps(result),
+                         status=200,
+                         mimetype="application/json")
 
 
 def install_wapt(computer_name, authentication_file):
@@ -707,24 +670,18 @@ def reload_config():
         except ImportError:
             pass
 
-
-@app.route('/login', methods=['POST'])
+@app.route('/login',methods=['POST'])
 def login():
     config_file = app.config['CONFIG_FILE']
 
     try:
         if request.method == 'POST':
-            d = json.loads(request.data)
+            d= json.loads(request.data)
             if "username" in d and "password" in d:
                 if check_auth(d["username"], d["password"]):
                     if "newPass" in d:
-                        new_hash = hashlib.sha1(
-                            d["newPass"].encode('utf8')).hexdigest()
-                        rewrite_config_item(
-                            config_file,
-                            'options',
-                            'wapt_password',
-                            new_hash)
+                        new_hash = hashlib.sha1(d["newPass"].encode('utf8')).hexdigest()
+                        rewrite_config_item(config_file, 'options', 'wapt_password', new_hash)
                         conf['wapt_password'] = new_hash
                         reload_config()
                     return "True"
@@ -740,31 +697,26 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-
 @app.route('/delete_package/<string:filename>')
 @requires_auth
 def delete_package(filename=""):
-    fullpath = os.path.join(conf['wapt_folder'], filename)
+    fullpath = os.path.join(conf['wapt_folder'],filename)
     try:
         if os.path.isfile(fullpath):
             os.unlink(fullpath)
             data = update_packages(conf['wapt_folder'])
-            if os.path.isfile("%s.zsync" % (fullpath,)):
-                os.unlink("%s.zsync" % (fullpath,))
-            result = dict(
-                status='OK', message="Package deleted %s" %
-                (fullpath,), result=data)
+            if os.path.isfile("%s.zsync"%(fullpath,)):
+                os.unlink("%s.zsync"%(fullpath,))
+            result = dict(status='OK',message="Package deleted %s" % (fullpath,),result=data)
         else:
-            result = dict(
-                status='ERROR', message="The file %s doesn't exist in wapt folder (%s)" %
-                (filename, conf['wapt_folder']))
+            result = dict(status='ERROR',message="The file %s doesn't exist in wapt folder (%s)" % (filename, conf['wapt_folder']))
 
     except Exception as e:
-        result = {'status': 'ERROR', 'message': u"%s" % e}
+        result = { 'status' : 'ERROR', 'message': u"%s" % e  }
 
-    return Response(response=json.dumps(result),
-                    status=200,
-                    mimetype="application/json")
+    return  Response(response=json.dumps(result),
+                         status=200,
+                         mimetype="application/json")
 
 
 @app.route('/wapt/')
@@ -1534,6 +1486,7 @@ def hosts_delete():
                     if os.path.isfile(fn):
                         result['files'].append(fn)
                         os.remove(fn)
+            update_packages(hosts_packages_repo.localpath)
             msg.append(
                 '{} files removed from host repository'.format(len(result['files'])))
 
@@ -2131,7 +2084,8 @@ def install_windows_nssm_service(
         "AppStdout": r"expand_sz:{}".format(service_logfile),
         "Parameters\\AppStderr": r"expand_sz:{}".format(service_logfile),
         "Parameters\\AppParameters": r'expand_sz:{}'.format(service_parameters),
-    }
+        "Parameters\\AppNoConsole":1,
+        }
 
     root = setuphelpers.HKEY_LOCAL_MACHINE
     base = r'SYSTEM\CurrentControlSet\services\%s' % service_name
@@ -2409,7 +2363,7 @@ if __name__ == "__main__":
             raise Exception(
                 _("Folder missing : {}-group.").format(conf['wapt_folder']))
 
-    if args and args[0] == 'doctest':
+    if args and args[0] == 'd•octest':
         import doctest
         sys.exit(doctest.testmod())
 
