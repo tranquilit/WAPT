@@ -1409,18 +1409,41 @@ class WaptServer(object):
             return None
 
 
-    def save_server_certificate(self,server_dir=None):
-        """Retrieve certificate of https server for further checks"""
+    def save_server_certificate(self,server_ssl_dir=None,overwrite=False):
+        """Retrieve certificate of https server for further checks
+        Args:
+            server_ssl_dir (str): Directory where to save x509 certificate file
+
+        Returns:
+            str : full path to x509 certificate file.
+
+        """
         pem = get_pem_server_certificate(self.server_url)
         if pem:
             url = urlparse(self.server_url)
             if isinstance(self.verify_cert,str) or isinstance(self.verify_cert,unicode):
                 pem_fn = self.verify_cert
             else:
-                pem_fn = os.path.join(server_dir,url.hostname+'.crt')
-            if not os.path.isdir(server_dir):
-                os.makedirs(server_dir)
+                pem_fn = os.path.join(server_ssl_dir,url.hostname+'.crt')
+            if not os.path.isdir(server_ssl_dir):
+                os.makedirs(server_ssl_dir)
+            if os.path.isfile(pem_fn):
+                try:
+                    # compare current and new cert
+                    old_cert = SSLCertificate(pem_fn)
+                    new_cert = SSLCertificate(crt = X509.load_cert_string(pem))
+                    if (old_cert.fingerprint != new_cert.fingerprint):
+                        if not overwrite:
+                            raise Exception('Can not save server certificate, a file with same name already exists in %s' % pem_fn)
+                        else:
+                            logger.info('Overwriting old server certificate %s with new one %s'%(old_cert.fingerprint,new_cert.fingerprint))
+                except Exception as e:
+                    logger.critical('save_server_certificate : %s')
+                    if overwrite:
+                        pass
+
             open(pem_fn,'wb').write(pem)
+            logger.info('New certificate %s with fingerprint %s saved to %s'%(new_cert.cn,new_cert.fingerprint,pem_fn))
             return pem_fn
         else:
             return None
