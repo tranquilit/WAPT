@@ -33,7 +33,7 @@
     exported functions instead of local Wapt functions (except crypto signatures)
 
 """
-__version__ = "1.4.0"
+__version__ = "1.4.1"
 
 import sys,os
 import shutil
@@ -154,7 +154,7 @@ def diff_computer_wapt_ad(wapt,wapt_server_user='admin',wapt_server_passwd=None)
     return result
 
 
-def update_external_repo(repourl,search_string,proxy=None,mywapt=None,newer_only=False,newest_only=False):
+def update_external_repo(repourl,search_string,proxy=None,mywapt=None,newer_only=False,newest_only=False,verify_cert=True):
     """Get a list of entries from external templates public repository matching search_string
     >>> firefox = update_tis_repo(r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini","tis-firefox-esr")
     >>> isinstance(firefox,list) and firefox[-1].package == 'tis-firefox-esr'
@@ -162,6 +162,7 @@ def update_external_repo(repourl,search_string,proxy=None,mywapt=None,newer_only
     """
     proxies =  {'http':proxy,'https':proxy}
     repo = WaptRepo(url=repourl,proxies=proxies)
+    repo.verify_cert = verify_cert
     packages = repo.search(search_string,newest_only=newest_only)
     if mywapt and newer_only:
         my_prefix = mywapt.config.get('global','default_package_prefix')
@@ -179,7 +180,7 @@ def update_external_repo(repourl,search_string,proxy=None,mywapt=None,newer_only
     else:
         return packages
 
-def get_packages_filenames(waptconfigfile,packages_names):
+def get_packages_filenames(waptconfigfile,packages_names,with_depends=True):
     """Returns list of package filenames (latest version) and md5 matching comma separated list of packages names and their dependencies
         helps to batch download a list of selected packages using tools like curl or wget
 
@@ -209,14 +210,14 @@ def get_packages_filenames(waptconfigfile,packages_names):
         if entries:
             pe = entries[-1]
             result.append((pe.filename,pe.md5sum,))
-            if pe.depends:
+            if with_depends and pe.depends:
                 for (fn,md5) in get_packages_filenames(waptconfigfile,pe.depends):
                     if not fn in result:
                         result.append((fn,md5,))
     return result
 
 
-def duplicate_from_external_repo(waptconfigfile,package_filename):
+def duplicate_from_external_repo(waptconfigfile,package_filename,target_directory=None,authorized_certs_dir=None):
     r"""Duplicate a downloaded package to match prefix defined in waptconfigfile
        renames all dependencies
       returns source directory
@@ -245,7 +246,13 @@ def duplicate_from_external_repo(waptconfigfile,package_filename):
     oldname = PackageEntry().load_control_from_wapt(package_filename).package
     newname = rename_package(oldname,prefix)
 
-    res = wapt.duplicate_package(package_filename,newname,build=False,auto_inc_version=True)
+    if authorized_certs_dir is None:
+        #authorized_certs = wapt.public_certs
+        authorized_certs = None
+    else:
+        authorized_certs = glob.glob(makepath(authorized_certs_dir,'*.crt'))
+
+    res = wapt.duplicate_package(package_filename,newname,target_directory=target_directory, build=False,auto_inc_version=True,authorized_certs = authorized_certs)
     result = res['source_dir']
 
     # renames dependencies
@@ -272,6 +279,7 @@ def duplicate_from_external_repo(waptconfigfile,package_filename):
         package.save_control_to_wapt(result)
 
     return result
+
 
 def check_uac():
     res = uac_enabled()
@@ -302,7 +310,9 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
         append_conflicts=[],
         remove_conflicts=[],
         key_password=None,
-        wapt_server_user=None,wapt_server_passwd=None):
+        wapt_server_user=None,wapt_server_passwd=None,
+        authorized_certs = None
+        ):
     """Add or remove packages from host packages
     >>> edit_hosts_depends('c:/wapt/wapt-get.ini','htlaptop.tranquilit.local','toto','tis-7zip','admin','password')
     """
@@ -320,15 +330,24 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
     append_conflicts = ensure_list(append_conflicts)
     remove_conflicts = ensure_list(remove_conflicts)
 
+    def pwd_callback(*args):
+        """Default password callback for opening private keys"""
+        if not isinstance(key_password,str):
+            return key_password.encode('ascii')
+        else:
+            return key_password
+
     result = []
-    sources = []
+    package_files = []
     build_res = []
+    sources = []
     try:
         for host in hosts_list:
             logger.debug(u'Edit host %s : +%s -%s'%(
                 host,
                 append_depends,
                 remove_depends))
+
             target_dir = tempfile.mkdtemp('wapt')
             edit_res = wapt.edit_host(host,
                 use_local_sources = False,
@@ -337,10 +356,19 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
                 remove_depends = remove_depends,
                 append_conflicts = append_conflicts,
                 remove_conflicts = remove_conflicts,
+                authorized_certs = authorized_certs,
                 )
             sources.append(edit_res)
-        logger.debug(u'Build upload %s'%[r['source_dir'] for r in sources])
-        build_res = wapt.build_upload([r['source_dir'] for r in sources],private_key_passwd = key_password,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
+            # build and sign
+            res = wapt.build_package(edit_res['source_dir'],inc_package_release = True,callback = pwd_callback)
+            # returns res dict: {'filename':waptfilename,'files':[list of files],'package':PackageEntry}
+            signature = wapt.sign_package(res['filename'],callback=pwd_callback)
+            build_res.append(res)
+            package_files.append(res['filename'])
+
+        # upload all in one step...
+        wapt.http_upload_package(package_files,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
+
     finally:
         logger.debug('Cleanup')
         for s in sources:
@@ -361,7 +389,7 @@ def get_computer_groups(computername):
     if computer:
         computer_groups = computer.memberOf
         if computer_groups:
-            if not isinstance(computer_groups,(list,tuple)):
+            if not isinstance(computer_groups,(tuple,list)):
                 computer_groups = [computer_groups]
             for group in computer_groups:
                 # extract first component of group's DN
@@ -409,7 +437,7 @@ def add_ads_groups(waptconfigfile,hosts_list,wapt_server_user,wapt_server_passwd
                     control.save_control_to_wapt(package['source_dir'])
                     buid_res = wapt.build_upload(package['source_dir'], private_key_passwd = key_password, wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd,
                         inc_package_release=True)[0]
-                    print "  done, new packages: %s" % (','.join(additional))
+                    print("  done, new packages: %s" % (','.join(additional)))
                     if os.path.isfile(buid_res['filename']):
                         os.remove(buid_res['filename'])
                     result.append(hostname)
@@ -418,7 +446,7 @@ def add_ads_groups(waptconfigfile,hosts_list,wapt_server_user,wapt_server_passwd
                     if os.path.isdir(tmpdir):
                         rmtree(tmpdir)
         except Exception as e:
-            print " error %s" % e
+            print(" error %s" % e)
             raise
 
     return result
