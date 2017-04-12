@@ -1,4 +1,4 @@
-msgid "Local directory for saving package development projects"
+msgid "Local directory for saving package development projectsLocal directory for saving package development projects"
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tform1.buttonpanel1.helpbutton.caption
@@ -603,11 +603,11 @@ msgid "External packages repository "
 msgstr ""
 
 #: tviswaptconfig.edtemplates_repo_url.hint
-msgid "E.g. : http://wapt.tranquil.it/wapt"
+msgid "E.g. : https://store.wapt.fr/wapt"
 msgstr ""
 
 #: tviswaptconfig.edtemplates_repo_url.text
-msgid "http://wapt.tranquil.it/wapt"
+msgid "https://store.wapt.fr/wapt"
 msgstr ""
 
 #: tviswaptconfig.edwapt_server.editlabel.caption
@@ -2254,7 +2254,7 @@ msgstr ""
 
 #: uwaptconsoleres.rscreationinprogress
 msgctxt "uwaptconsoleres.rscreationinprogress"
-msgid "Building..."
+msgid "Build in progress."
 msgstr ""
 
 #: uwaptconsoleres.rsdefaultusagestatsurl
@@ -2350,6 +2350,12 @@ msgctxt "uwaptconsoleres.rsedithostcaption"
 msgid "Edit host"
 msgstr ""
 
+#: uwaptconsoleres.rsedithosterror
+msgid ""
+"Unable to edit the host package %s.\n"
+"If package is signed with a foreign key, you may want to delete host package first to workaround the issue...\n"
+msgstr ""
+
 #: uwaptconsoleres.rsedpackage
 msgctxt "uwaptconsoleres.rsedpackage"
 msgid "Package bundle"
@@ -2383,6 +2389,10 @@ msgstr ""
 #: uwaptconsoleres.rserrorwithmessage
 msgctxt "uwaptconsoleres.rserrorwithmessage"
 msgid "Error : %s"
+msgstr ""
+
+#: uwaptconsoleres.rsfailedexternalrepoupdate
+msgid "Unable to get Packages index from %"
 msgstr ""
 
 #: uwaptconsoleres.rsfailedimport
@@ -2450,6 +2460,10 @@ msgctxt "uwaptconsoleres.rsinnosetupunavailable"
 msgid "Innosetup is unavailable (path : %s), please install it first."
 msgstr ""
 
+#: uwaptconsoleres.rsinputcommonname
+msgid "Please input a Common Name to identify signer"
+msgstr ""
+
 #: uwaptconsoleres.rsinputkeyname
 msgctxt "uwaptconsoleres.rsinputkeyname"
 msgid "Please input a key name."
@@ -2458,6 +2472,10 @@ msgstr ""
 #: uwaptconsoleres.rsinputpubkeypath
 msgctxt "uwaptconsoleres.rsinputpubkeypath"
 msgid "Please input path to public key"
+msgstr ""
+
+#: uwaptconsoleres.rsinstallerfilenotfound
+msgid "The installer filename %s does not exists !"
 msgstr ""
 
 #: uwaptconsoleres.rsinstalling
@@ -2478,6 +2496,10 @@ msgstr ""
 #: uwaptconsoleres.rskeyalreadyexists
 msgctxt "uwaptconsoleres.rskeyalreadyexists"
 msgid "Key %s already exists, please pick another name."
+msgstr ""
+
+#: uwaptconsoleres.rskeypairgensuccess
+msgid "Private key %s and public certificate %s have been successfully created."
 msgstr ""
 
 #: uwaptconsoleres.rsloadinventory
@@ -2530,6 +2552,10 @@ msgctxt "uwaptconsoleres.rsoptrepo"
 msgid " -r --repo : URL of dependencies libs"
 msgstr ""
 
+#: uwaptconsoleres.rspackagebuiltsourcesavailable
+msgid "The package is built and uploaded and sources are available in %s"
+msgstr ""
+
 #: uwaptconsoleres.rspackagecreationerror
 msgctxt "uwaptconsoleres.rspackagecreationerror"
 msgid "Error while building package : %s"
@@ -2567,6 +2593,10 @@ msgctxt "uwaptconsoleres.rspackagesneededonhostcaption"
 msgid "Packages needed on host"
 msgstr ""
 
+#: uwaptconsoleres.rspackagesourcesavailable
+msgid "The package sources are available in %s"
+msgstr ""
+
 #: uwaptconsoleres.rspasswordchangeerror
 msgctxt "uwaptconsoleres.rspasswordchangeerror"
 msgid "Error : %s"
@@ -2599,17 +2629,25 @@ msgstr ""
 
 #: uwaptconsoleres.rspublickeygenfailure
 msgctxt "uwaptconsoleres.rspublickeygenfailure"
-msgid "The generation of the public key has failed."
+msgid "The generation of the public certificate has failed."
 msgstr ""
 
 #: uwaptconsoleres.rspublickeygensuccess
 msgctxt "uwaptconsoleres.rspublickeygensuccess"
-msgid "Key %s has been successfully created."
+msgid "Public certificate %s has been successfully created."
 msgstr ""
 
 #: uwaptconsoleres.rsreallowpackagesonhost
 msgctxt "uwaptconsoleres.rsreallowpackagesonhost"
 msgid "Selection of package(s) to remove from conflict list"
+msgstr ""
+
+#: uwaptconsoleres.rsreloadwaptconsoleconfig
+msgid "Reloading WaptConsole configuration"
+msgstr ""
+
+#: uwaptconsoleres.rsreloadwaptserviceconfig
+msgid "Reloading WaptService configuration"
 msgstr ""
 
 #: uwaptconsoleres.rsrmbundlefromhosts
@@ -2799,7 +2837,7 @@ msgstr ""
 #: uwaptconsoleres.rswaptsetupuploadsuccess
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"
 msgid ""
-"WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
+"WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 "Don't forget to change the hash of waptagent.exe in your GPO\n"
 msgstr ""
 
@@ -2809,7 +2847,7 @@ msgid " waptupgrade : upgrade wapt-get.exe and database"
 msgstr ""
 
 #: uwaptconsoleres.rswaptupgradepackagebuilderror
-msgid "Unable to build WAPT Upgrade package"
+msgid "Unable to create WAPT Upgrade package"
 msgstr ""
 
 #: uwaptconsoleres.rswaptupgradepackagebuilt

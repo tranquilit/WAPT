@@ -12,6 +12,7 @@ object VisLogin: TVisLogin
   OnShow = FormShow
   Position = poScreenCenter
   ShowHint = True
+  ShowInTaskBar = stAlways
   LCLVersion = '1.3'
   object edPassword: TEdit
     Left = 278
@@ -196,6 +197,7 @@ object VisLogin: TVisLogin
     Align = alLeft
     BorderSpacing.Around = 4
     Center = True
+    OnClick = Image1Click
     Picture.Data = {
       1754506F727461626C654E6574776F726B477261706869630E26000089504E47
       0D0A1A0A0000000D494844520000009B0000005A0806000000AFD5249D000000

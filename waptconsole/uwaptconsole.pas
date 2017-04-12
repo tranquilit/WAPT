@@ -1503,7 +1503,7 @@ begin
               if RightStr(buildDir,1) = '\' then
                 buildDir := copy(buildDir,1,length(buildDir)-1);
               SORes := DMPython.RunJSON(format('mywapt.build_upload(r"%s",private_key_passwd="%s",wapt_server_user="%s",wapt_server_passwd="%s",inc_package_release=True,target_directory=r"%s")',[
-                  waptpath+'\waptupgrade',privateKeyPassword,WaptServerUser,WaptServerPassword,buildDir]));
+                  waptpath+'\waptupgrade',dmpython.privateKeyPassword,WaptServerUser,WaptServerPassword,buildDir]));
               if FileExists(SORes.AsArray[0].S['filename']) then
               begin
                 ProgressTitle(rsWaptUpgradePackageBuilt);
@@ -1596,9 +1596,9 @@ begin
       args := args + format('append_conflicts = r"%s".decode(''utf8''),',
         [soutils.Join(',', packages)]);
       args := args + format('remove_conflicts = "",', []);
-      if privateKeyPassword <> '' then
+      if dmpython.privateKeyPassword <> '' then
         args := args + format('key_password = "%s".decode(''utf8''),',
-          [privateKeyPassword]);
+          [dmpython.privateKeyPassword]);
       args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
       args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
         [waptServerPassword]);
@@ -1630,9 +1630,9 @@ begin
     args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
     args := args + format('hosts_list = r"%s".decode(''utf8''),',
       [soutils.Join(',', hosts)]);
-    if privateKeyPassword <> '' then
+    if dmpython.privateKeyPassword <> '' then
       args := args + format('key_password = "%s".decode(''utf8''),',
-        [privateKeyPassword]);
+        [dmpython.privateKeyPassword]);
     args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
     args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
       [waptServerPassword]);
@@ -1686,9 +1686,9 @@ begin
       args := args + format('remove_depends = "",', []);
       args := args + format('append_conflicts = "",', []);
       args := args + format('remove_conflicts = "",', []);
-      if privateKeyPassword <> '' then
+      if dmpython.privateKeyPassword <> '' then
         args := args + format('key_password = "%s".decode(''utf8''),',
-          [privateKeyPassword]);
+          [dmpython.privateKeyPassword]);
       args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
       args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
         [waptServerPassword]);
@@ -2156,9 +2156,9 @@ begin
     args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
     args := args + format('wuagroup = r"%s".decode(''utf8''),',
       ['default']);
-    if privateKeyPassword <> '' then
+    if dmpython.privateKeyPassword <> '' then
       args := args + format('key_password = "%s".decode(''utf8''),',
-        [privateKeyPassword]);
+        [dmpython.privateKeyPassword]);
     args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
     args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
       [waptServerPassword]);
@@ -2415,7 +2415,7 @@ begin
         uploadResult := DMPython.RunJSON(
           format(
           'mywapt.build_upload([%s],private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=False)',
-          [soutils.Join(',', sources), privateKeyPassword, waptServerUser,
+          [soutils.Join(',', sources), dmpython.privateKeyPassword, waptServerUser,
           waptServerPassword]), VisWaptGUI.jsonlog);
         if (uploadResult <> nil) and
           (uploadResult.AsArray.length = Sources.AsArray.Length) then
@@ -2584,9 +2584,9 @@ begin
       args := args + format('append_conflicts = "",', []);
       args := args + format('remove_conflicts = r"%s".decode(''utf8''),',
         [soutils.Join(',', packages)]);
-      if privateKeyPassword <> '' then
+      if dmpython.privateKeyPassword <> '' then
         args := args + format('key_password = "%s".decode(''utf8''),',
-          [privateKeyPassword]);
+          [dmpython.privateKeyPassword]);
       args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
       args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
         [waptServerPassword]);
@@ -2645,9 +2645,9 @@ begin
       args := args + format('append_depends = [],', []);
       args := args + format('remove_depends = r"%s".decode(''utf8''),',
         [soutils.Join(',', packages)]);
-      if privateKeyPassword <> '' then
+      if dmpython.privateKeyPassword <> '' then
         args := args + format('key_password = "%s".decode(''utf8''),',
-          [privateKeyPassword]);
+          [dmpython.privateKeyPassword]);
       args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
       args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
         [waptServerPassword]);
@@ -3279,7 +3279,7 @@ begin
           uploadResult := DMPython.RunJSON(
             format(
             'mywapt.build_upload(r"%s".decode("utf8"),private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=True)',
-            [packageSources.AsString, privateKeyPassword, waptServerUser,
+            [packageSources.AsString, dmpython.privateKeyPassword, waptServerUser,
             waptServerPassword]), VisWaptGUI.jsonlog);
 
           ActPackagesUpdate.Execute;

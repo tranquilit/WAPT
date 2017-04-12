@@ -109,7 +109,7 @@ begin
       on E:Exception do
       begin
         host.S['status'] := 'ERROR';
-        host.S['message'] := host.S['message']+' '+e.Message;
+        host.S['message'] := host.S['message']+' '+UTF8Decode(e.Message);
         ProgressGrid.InvalidateFordata(host);
         Application.ProcessMessages;
       end;

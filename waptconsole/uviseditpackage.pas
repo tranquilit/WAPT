@@ -591,7 +591,7 @@ begin
     try
       Result := DMPython.RunJSON(format(
         'mywapt.build_upload(r"%s".decode(''utf8''),r"%s",r"%s",r"%s",True)',
-        [FSourcePath, privateKeyPassword, waptServerUser, waptServerPassword]), jsonlog);
+        [FSourcePath, dmpython.privateKeyPassword, waptServerUser, waptServerPassword]), jsonlog);
       if FisTempSourcesDir then
       begin
         FileUtil.DeleteDirectory(FSourcePath, False);

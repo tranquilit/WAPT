@@ -50,7 +50,6 @@ interface
   function WaptgetPath: Utf8String; // c:\wapt\wapt-get.exe
   function WaptservicePath: Utf8String; //c:\wapt\waptservice.exe # obsolete
   function WaptDBPath: Utf8String;
-  function WaptTemplatesRepo(inifilename:String=''): Utf8String; // https://store.wapt.fr/wapt/
 
   function GetWaptRepoURL: Utf8String; // from wapt-get.ini, can be empty
   Function GetMainWaptRepo:String;   // read from ini, if empty, do a discovery using dns

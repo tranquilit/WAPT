@@ -1,4 +1,4 @@
-msgid "Local directory for saving package development projects"
+msgid "Local directory for saving package development projectsLocal directory for saving package development projects"
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tform1.buttonpanel1.helpbutton.caption
@@ -615,11 +615,15 @@ msgid "External packages repository "
 msgstr "URL auf das Packet-Repository-Modell"
 
 #: tviswaptconfig.edtemplates_repo_url.hint
-msgid "E.g. : http://wapt.tranquil.it/wapt"
+#, fuzzy
+#| msgid "E.g. : http://wapt.tranquil.it/wapt"
+msgid "E.g. : https://store.wapt.fr/wapt"
 msgstr "z. B. : http://wapt.tranquil.it/wapt"
 
 #: tviswaptconfig.edtemplates_repo_url.text
-msgid "http://wapt.tranquil.it/wapt"
+#, fuzzy
+#| msgid "http://wapt.tranquil.it/wapt"
+msgid "https://store.wapt.fr/wapt"
 msgstr "http://wapt.tranquil.it/wapt"
 
 #: tviswaptconfig.edwapt_server.editlabel.caption
@@ -2272,6 +2276,16 @@ msgstr "wupanright"
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -2383,6 +2397,12 @@ msgstr "Sind Sie sich sicher, dass Sie %s die Pakete vom Host %s vergessen wolle
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 msgctxt "uwaptconsoleres.rsconfirmimport"
 msgid ""
 "Are you sure you want to import\n"
@@ -2437,9 +2457,9 @@ msgstr "Sind Sie sich sicher, dass Sie %s Pakete von den ausgewählten Hosts %s 
 
 #: uwaptconsoleres.rscreationinprogress
 #, fuzzy
-#| msgid "Creation in progress."
+#| msgid "Building..."
 msgctxt "uwaptconsoleres.rscreationinprogress"
-msgid "Building..."
+msgid "Build in progress."
 msgstr "Die Erstellug ist im Gange."
 
 #: uwaptconsoleres.rsdefaultusagestatsurl
@@ -2535,6 +2555,12 @@ msgctxt "uwaptconsoleres.rsedithostcaption"
 msgid "Edit host"
 msgstr "Host bearbeiten"
 
+#: uwaptconsoleres.rsedithosterror
+msgid ""
+"Unable to edit the host package %s.\n"
+"If package is signed with a foreign key, you may want to delete host package first to workaround the issue...\n"
+msgstr ""
+
 #: uwaptconsoleres.rsedpackage
 msgctxt "uwaptconsoleres.rsedpackage"
 msgid "Package bundle"
@@ -2569,6 +2595,10 @@ msgstr "Fehler beim Start vom Update: %s"
 msgctxt "uwaptconsoleres.rserrorwithmessage"
 msgid "Error : %s"
 msgstr "Fehler : %s"
+
+#: uwaptconsoleres.rsfailedexternalrepoupdate
+msgid "Unable to get Packages index from %"
+msgstr ""
 
 #: uwaptconsoleres.rsfailedimport
 msgctxt "uwaptconsoleres.rsfailedimport"
@@ -2635,6 +2665,10 @@ msgctxt "uwaptconsoleres.rsinnosetupunavailable"
 msgid "Innosetup is unavailable (path : %s), please install it first."
 msgstr "Innosetup ist nicht verfügbar (Pfad : %s), installieren Sie es bitte zuerst."
 
+#: uwaptconsoleres.rsinputcommonname
+msgid "Please input a Common Name to identify signer"
+msgstr ""
+
 #: uwaptconsoleres.rsinputkeyname
 msgctxt "uwaptconsoleres.rsinputkeyname"
 msgid "Please input a key name."
@@ -2644,6 +2678,10 @@ msgstr "Bitte geben Sie dem Key einen Namen."
 msgctxt "uwaptconsoleres.rsinputpubkeypath"
 msgid "Please input path to public key"
 msgstr "Bitte geben Sie dem Pfad einen öffentlichen Key."
+
+#: uwaptconsoleres.rsinstallerfilenotfound
+msgid "The installer filename %s does not exists !"
+msgstr ""
 
 #: uwaptconsoleres.rsinstalling
 msgctxt "uwaptconsoleres.rsinstalling"
@@ -2664,6 +2702,10 @@ msgstr "WAPTsetup Verzeichnis ist nicht gültig: %s"
 msgctxt "uwaptconsoleres.rskeyalreadyexists"
 msgid "Key %s already exists, please pick another name."
 msgstr "Key %s ist bereits vorhanden, bitte wählen Sie einen anderen Namen."
+
+#: uwaptconsoleres.rskeypairgensuccess
+msgid "Private key %s and public certificate %s have been successfully created."
+msgstr ""
 
 #: uwaptconsoleres.rsloadinventory
 msgid "Loading hosts inventory"
@@ -2715,6 +2757,10 @@ msgctxt "uwaptconsoleres.rsoptrepo"
 msgid " -r --repo : URL of dependencies libs"
 msgstr "-r --repo :URL der Abhänigkeiten libs"
 
+#: uwaptconsoleres.rspackagebuiltsourcesavailable
+msgid "The package is built and uploaded and sources are available in %s"
+msgstr ""
+
 #: uwaptconsoleres.rspackagecreationerror
 #, fuzzy
 #| msgid "Error while creating package : %s"
@@ -2725,6 +2771,12 @@ msgstr "Fehler beim erstellen des Pakets"
 #: uwaptconsoleres.rspackageduplicateconfirm
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
@@ -2804,6 +2856,10 @@ msgctxt "uwaptconsoleres.rspackagesneededonhostcaption"
 msgid "Packages needed on host"
 msgstr "Pakete auf dem Host benötigt"
 
+#: uwaptconsoleres.rspackagesourcesavailable
+msgid "The package sources are available in %s"
+msgstr ""
+
 #: uwaptconsoleres.rspasswordchangeerror
 msgctxt "uwaptconsoleres.rspasswordchangeerror"
 msgid "Error : %s"
@@ -2835,19 +2891,31 @@ msgid "Error during key generation : %s"
 msgstr "Fehler bei der Keyerzeugung : %s"
 
 #: uwaptconsoleres.rspublickeygenfailure
+#, fuzzy
+#| msgid "The generation of the public key has failed."
 msgctxt "uwaptconsoleres.rspublickeygenfailure"
-msgid "The generation of the public key has failed."
+msgid "The generation of the public certificate has failed."
 msgstr "Die Erzeugung des öffentlichen Key ist gescheitert."
 
 #: uwaptconsoleres.rspublickeygensuccess
+#, fuzzy
+#| msgid "Key %s has been successfully created."
 msgctxt "uwaptconsoleres.rspublickeygensuccess"
-msgid "Key %s has been successfully created."
+msgid "Public certificate %s has been successfully created."
 msgstr "Schlüssel %s wurde erfolgreich erstellt."
 
 #: uwaptconsoleres.rsreallowpackagesonhost
 msgctxt "uwaptconsoleres.rsreallowpackagesonhost"
 msgid "Selection of package(s) to remove from conflict list"
 msgstr "Auswahl der Packete von den Konflikt Liste entfernen"
+
+#: uwaptconsoleres.rsreloadwaptconsoleconfig
+msgid "Reloading WaptConsole configuration"
+msgstr ""
+
+#: uwaptconsoleres.rsreloadwaptserviceconfig
+msgid "Reloading WaptService configuration"
+msgstr ""
 
 #: uwaptconsoleres.rsrmbundlefromhosts
 msgctxt "uwaptconsoleres.rsrmbundlefromhosts"
@@ -2996,6 +3064,10 @@ msgstr "Anwendung: %s -h "
 #| "Wapt-get version: %s\n"
 #| "Waptconsole version : %s\n"
 #| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
 msgctxt "uwaptconsoleres.rsversion"
 msgid ""
 "Waptconsole version : %s\n"
@@ -3084,6 +3156,10 @@ msgstr ""
 #| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -3094,6 +3170,12 @@ msgstr ""
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
 #| msgid ""
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
 #| "Required server version: %s\n"
@@ -3160,9 +3242,13 @@ msgstr "Fehler beim erstellen des agent : %s"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"
 msgid ""
-"WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
+"WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 "Don't forget to change the hash of waptagent.exe in your GPO\n"
 msgstr "WAPT agent und Upgrade Paket erfolgreich erstellt und hochgeladen auf das Haupt-Repository"
 
@@ -3173,8 +3259,8 @@ msgstr "waptupgrade: aktualisiere wapt-get.exe und Datenbank"
 
 #: uwaptconsoleres.rswaptupgradepackagebuilderror
 #, fuzzy
-#| msgid "Unable to create WAPT Upgrade package"
-msgid "Unable to build WAPT Upgrade package"
+#| msgid "Unable to build WAPT Upgrade package"
+msgid "Unable to create WAPT Upgrade package"
 msgstr "Nicht in der Lage WAPT Upgrade Pakete zu erstellen"
 
 #: uwaptconsoleres.rswaptupgradepackagebuilt

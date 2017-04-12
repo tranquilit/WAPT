@@ -20,32 +20,32 @@ object VisHostsUpgrade: TVisHostsUpgrade
     Header.AutoSizeIndex = -1
     Header.Columns = <    
       item
-        Position = 1
-        Text = 'Status'
-        Width = 30
-        PropertyName = 'status'
-      end    
-      item
         MaxWidth = 30
-        Position = 0
-        Tag = 1
+        Position = 3
         Text = 'status'
         Width = 30
         PropertyName = 'status'
       end    
       item
-        Position = 2
-        Tag = 2
+        Position = 0
+        Tag = 1
         Text = 'Host'
         Width = 200
         PropertyName = 'computer_fqdn'
       end    
       item
-        Position = 3
-        Tag = 3
+        Position = 1
+        Tag = 2
         Text = 'IP'
         Width = 150
         PropertyName = 'listening_address'
+      end    
+      item
+        Position = 2
+        Tag = 3
+        Text = 'Status'
+        Width = 30
+        PropertyName = 'status'
       end    
       item
         Position = 4

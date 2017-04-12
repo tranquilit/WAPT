@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.1"
+__version__ = "1.4.2"
 
 __all__ = \
 ['CalledProcessError',
@@ -2534,7 +2534,7 @@ def host_info():
     .. versionchanged:: 1.4.1
          returned keys changed :
            dns_domain -> dnsdomain
-           
+
     >>> hi = host_info()
     >>> 'computer_fqdn' in hi and 'connected_ips' in hi and 'computer_name' in hi and 'mac' in hi
     True

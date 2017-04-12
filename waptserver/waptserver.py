@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.1"
+__version__ = "1.4.2"
 
 import os
 import sys
@@ -1400,7 +1400,7 @@ def build_hosts_filter(model,filter_expr):
     """Legacy helper function to translate waptconsole <=1.3.11 hosts filter
         into peewee model where clause.
     Args:
-        filter_dict (str) : field1,field4,field5:search_regexp
+        filter_expr (str) : field1,field4,field5:search_regexp
     """
     (search_fields, search_expr) = filter_expr.split(':', 1)
     if search_expr.startswith('not ') or search_expr.startswith('!'):
@@ -1462,7 +1462,7 @@ def hosts_delete():
         if 'uuid' in request.args:
             query = Hosts.uuid.in_(ensure_list(request.args['uuid']))
         elif 'filter' in request.args:
-            query = build_hosts_filter(request.args['filter'])
+            query = build_hosts_filter(Hosts,request.args['filter'])
         else:
             raise Exception('Neither uuid nor filter provided in query')
 
@@ -2363,7 +2363,7 @@ if __name__ == "__main__":
             raise Exception(
                 _("Folder missing : {}-group.").format(conf['wapt_folder']))
 
-    if args and args[0] == 'd•octest':
+    if args and args[0] == 'dï¿½octest':
         import doctest
         sys.exit(doctest.testmod())
 

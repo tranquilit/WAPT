@@ -1,8 +1,9 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 278
+  Left = 326
   Height = 753
-  Top = 128
+  Top = 141
   Width = 1028
+  AllowDropFiles = True
   Caption = 'WAPT console'
   ClientHeight = 734
   ClientWidth = 1028
@@ -11,6 +12,8 @@ object VisWaptGUI: TVisWaptGUI
   Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDragOver = FormDragOver
+  OnDropFiles = FormDropFiles
   OnShow = FormShow
   Position = poDefault
   ShowHint = True
@@ -31,12 +34,12 @@ object VisWaptGUI: TVisWaptGUI
       ClientWidth = 1020
       object Panel10: TPanel
         Left = 0
-        Height = 56
+        Height = 54
         Top = 49
         Width = 1020
         Align = alTop
         BevelOuter = bvNone
-        ClientHeight = 56
+        ClientHeight = 54
         ClientWidth = 1020
         TabOrder = 1
         object EdSearchHost: TSearchEdit
@@ -2371,6 +2374,55 @@ object VisWaptGUI: TVisWaptGUI
             Text = 'Signer'
             Width = 122
             PropertyName = 'signer'
+          end        
+          item
+            Position = 9
+            Tag = 11
+            Text = 'Sign on'
+            Width = 109
+            PropertyName = 'signature_date'
+          end        
+          item
+            Position = 10
+            Tag = 7
+            Text = 'Arch'
+            Width = 53
+            PropertyName = 'architecture'
+          end        
+          item
+            Position = 11
+            Tag = 8
+            Text = 'Locale'
+            Width = 53
+            PropertyName = 'locale'
+          end        
+          item
+            Position = 12
+            Tag = 9
+            Text = 'Maturity'
+            Width = 59
+            PropertyName = 'maturity'
+          end        
+          item
+            Position = 13
+            Tag = 12
+            Text = 'Min OS version'
+            Width = 60
+            PropertyName = 'min_os_version'
+          end        
+          item
+            Position = 14
+            Tag = 13
+            Text = 'Max OS version'
+            Width = 63
+            PropertyName = 'max_os_version'
+          end        
+          item
+            Position = 15
+            Tag = 14
+            Text = 'Min Wapt version'
+            Width = 69
+            PropertyName = 'min_wapt_version'
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
@@ -3997,6 +4049,7 @@ object VisWaptGUI: TVisWaptGUI
       Hint = 'Edit host configuration'
       ImageIndex = 10
       OnExecute = ActEditHostPackageExecute
+      OnUpdate = ActEditHostPackageUpdate
     end
     object ActPackagesUpdate: TAction
       Category = 'Host'
@@ -4068,6 +4121,7 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Edit bundle'
       ImageIndex = 10
       OnExecute = ActEditGroupExecute
+      OnUpdate = ActEditGroupUpdate
     end
     object ActDeleteGroup: TAction
       Category = 'Bundles'
@@ -4264,6 +4318,7 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Power ON with WakeOnLan'
       ImageIndex = 38
       OnExecute = ActTriggerWakeOnLanExecute
+      OnUpdate = ActTriggerWakeOnLanUpdate
     end
     object ActRemoteAssist: TAction
       Category = 'Host'
@@ -4288,6 +4343,12 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Gérer les services'
       OnExecute = ActComputerServicesExecute
       OnUpdate = ActComputerServicesUpdate
+    end
+    object ActmakePackageTemplate: TAction
+      Category = 'Tools'
+      Caption = 'Make package template from setup file'
+      ImageIndex = 13
+      OnExecute = ActmakePackageTemplateExecute
     end
   end
   object PopupMenuPackages: TPopupMenu
@@ -4491,6 +4552,48 @@ object VisWaptGUI: TVisWaptGUI
         Action = ActCleanCache
       end
       object MenuItem17: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem51: TMenuItem
+        Action = ActmakePackageTemplate
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF002A8BC6002889C5BE2687C5C42485
+          C400196B3788196B37F2196B37FF196B37F2196B3788FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF003093CA002E90C9A52C8EC8FE8FCDEBFF6FB7E2FF2C7C
+          7DFF288C53FF64BA8DFF95D2B2FF64BA8DFF288C53FF196B378CFFFFFF00FFFF
+          FF00369ACD003498CC853295CBEF82C4E5FFCCF4FFFFC4EFFFFF8BD2F1FF1E6F
+          3FFF62BA8BFF60BA87FFFFFFFFFF60B987FF67BC8FFF196B37F73DA2D0003BA0
+          CF00399DCEDB7DC0E0FFC7EEFCFFCCF2FFFFA8E8FFFF94E0FEFF41BAE7FF317B
+          4CFF9CD4B6FFFFFFFFFFFFFFFFFFFFFFFFFF95D2B2FF196B37FF40A5D2BB77BD
+          DCFFBFE5F6FFDBF6FFFFC1EEFFFFA5E5FFFF9FE3FFFF94E1FEFF46C1EAFF4488
+          61FF90D3B1FF92D6B1FFFFFFFFFF65BC8CFF67BC8FFF196C3AFD42A8D3F9E7FB
+          FEFFDDF6FFFFC1EFFFFFB7EBFFFFABE8FFFFA4E4FFFF96E1FEFF48C6EBFF49A6
+          A8FF61AB81FF95D4B4FFBAE6D0FF6ABB8FFF2D8F57FF1E7775FC44AAD4F0E2F6
+          FCFFD4F3FFFFC9F0FFFFBEEDFFFFB3EAFFFFADE7FFFF7CD9FEFF48C7EFFF43C4
+          EAFF4EAAADFF579674FF4F8E66FF408660FF5AA09DFF2687C5F047ADD5F0E2F6
+          FCFFD7F4FFFFCEF2FFFFC8EFFFFFBAEBFFFF92DBFBFF56C1F1FF48C2F9FF3BBD
+          F0FF47C5ECFF45BDE9FF42B5E6FF47B1E6FF88CAEEFF288AC6F049B0D6F0E2F6
+          FDFFDAF4FFFFD5F3FFFFBDEBFFFF89D5F7FF69C9F5FF4CB4E9FF8DDAFBFF8CDC
+          FFFF48C4F9FF38B6ECFF48BFE8FF4FBBE8FF8CD0F0FF2B8DC7F04BB2D7F0E2F8
+          FDFFD4F3FFFFB0E4FAFF86CFF1FF7FD0F5FF78D0F5FF4CB1E4FFB0E4FAFFB6E9
+          FFFF9BE1FFFF78D6FEFF40BDF5FF3DB5E9FF90D5F1FF2D8FC8F04DB4D8FBE1F8
+          FEFFCDEBF9FF92D2EDFF84CCEBFF6FBFE5FF56B1DBFF3B94C8FFCEECFAFFD9F5
+          FFFFB9EAFFFF95DFFEFF77D5FFFFA5E4FFFF84DCFBFF2F92C9FB4FB7D99F4DB5
+          D9FEA5D9EDFFD2EBF5FFBEDEEDFF95C9DEFF89C3DBFF70B8D6FF69B9DDFF90D7
+          F5FF7FCFF5FF9DDBF8FFAAE3FAFF84CAECFF51A6D5FF3295CBA6FFFFFF004FB7
+          D9004EB5D9C27EC6E0FFD1EEF7FFF6FFFFFFF0FEFFFFCBEDFBFF50ADDAFF8BD7
+          F7FFAAE1F9FF95D6F2FF62B2DBFF399DCEC8369ACD00FFFFFF00FFFFFF00FFFF
+          FF004FB7DA004EB6D9004CB4D8DB92CFE5FFE6F8FCFFE3F6FEFFAFDDF2FFB2E4
+          F7FF72C0E1FF3FA4D1E03DA2D0003BA0CF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF004EB6D9004DB4D8844BB2D7EF9CD5EAFF88CCE7FF45AC
+          D5F344AAD48C42A7D300FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF004DB4D8004BB2D8AF4AB0D7BC48AE
+          D600FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+        }
+      end
+      object MenuItem75: TMenuItem
         Caption = '-'
       end
       object MenuItem31: TMenuItem
@@ -7091,6 +7194,13 @@ object VisWaptGUI: TVisWaptGUI
   object ApplicationProperties1: TApplicationProperties
     OnException = ApplicationProperties1Exception
     left = 360
+    top = 472
+  end
+  object odSelectInstaller: TOpenDialog
+    Title = 'Select an installer executable or msi'
+    Filter = 'Installer Files (*.exe;*.msi;*.msu;*.appx)|*.exe;*.msi;*.msu;*.appx|All files|*.*'
+    Options = [ofPathMustExist, ofEnableSizing, ofViewDetail]
+    left = 600
     top = 472
   end
 end

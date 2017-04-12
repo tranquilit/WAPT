@@ -1,11 +1,11 @@
 object VisCreateKey: TVisCreateKey
-  Left = 866
-  Height = 280
-  Top = 553
+  Left = 501
+  Height = 281
+  Top = 326
   Width = 432
   BorderStyle = bsDialog
-  Caption = 'Generate private key and self-signed certificate'
-  ClientHeight = 280
+  Caption = 'Generate private key and self signed certificate'
+  ClientHeight = 281
   ClientWidth = 432
   Font.CharSet = ANSI_CHARSET
   Font.Color = clBlack
@@ -21,7 +21,7 @@ object VisCreateKey: TVisCreateKey
   object Panel1: TPanel
     Left = 0
     Height = 27
-    Top = 253
+    Top = 254
     Width = 432
     Align = alBottom
     BevelOuter = bvNone
@@ -55,12 +55,12 @@ object VisCreateKey: TVisCreateKey
   end
   object Panel2: TPanel
     Left = 0
-    Height = 253
+    Height = 254
     Top = 0
     Width = 432
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 253
+    ClientHeight = 254
     ClientWidth = 432
     TabOrder = 0
     object Label9: TLabel
@@ -68,8 +68,8 @@ object VisCreateKey: TVisCreateKey
       Height = 13
       Hint = 'E.g. ''tranquilit''. Please don''t use any special characters.'
       Top = 40
-      Width = 62
-      Caption = 'Key name :'
+      Width = 79
+      Caption = 'Key filename :'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clBlack
       Font.Height = -11
@@ -80,20 +80,11 @@ object VisCreateKey: TVisCreateKey
       ParentColor = False
       ParentFont = False
     end
-    object EdOrgName: TEdit
-      Left = 176
-      Height = 21
-      Hint = 'e.g. : tranquilit'
-      Top = 40
-      Width = 176
-      OnEditingDone = EdOrgNameEditingDone
-      TabOrder = 1
-    end
     object Label10: TLabel
-      Left = 12
+      Left = 9
       Height = 13
       Hint = 'Main site country code'
-      Top = 122
+      Top = 120
       Width = 139
       Caption = 'Country (2 chars. E.g. : FR):'
       ParentColor = False
@@ -101,36 +92,36 @@ object VisCreateKey: TVisCreateKey
       ShowHint = True
     end
     object Label12: TLabel
-      Left = 12
+      Left = 9
       Height = 13
-      Top = 146
+      Top = 144
       Width = 26
       Caption = 'City :'
       ParentColor = False
     end
     object Label13: TLabel
-      Left = 12
+      Left = 9
       Height = 13
       Hint = 'Your company name'
-      Top = 170
+      Top = 168
       Width = 65
       Caption = 'Organisation:'
       ParentColor = False
     end
     object Label14: TLabel
-      Left = 12
+      Left = 9
       Height = 13
       Hint = 'E.g. : IT department.'
-      Top = 194
+      Top = 192
       Width = 42
       Caption = 'Service :'
       ParentColor = False
     end
     object Label16: TLabel
-      Left = 12
+      Left = 9
       Height = 13
       Hint = 'Technical department e-mail address.'
-      Top = 222
+      Top = 220
       Width = 76
       Caption = 'E-mail address :'
       ParentColor = False
@@ -140,8 +131,8 @@ object VisCreateKey: TVisCreateKey
       Height = 13
       Hint = 'Where to save the private key. This directory must be secure.'
       Top = 16
-      Width = 96
-      Caption = 'Target directory:'
+      Width = 126
+      Caption = 'Target keys directory:'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clBlack
       Font.Height = -11
@@ -153,58 +144,45 @@ object VisCreateKey: TVisCreateKey
       ParentFont = False
     end
     object edCountry: TEdit
-      Left = 176
+      Left = 173
       Height = 21
-      Top = 122
+      Top = 120
       Width = 32
       MaxLength = 2
       TabOrder = 4
       Text = 'FR'
     end
     object edLocality: TEdit
-      Left = 176
+      Left = 173
       Height = 21
       Hint = 'E.g. : Nantes'
-      Top = 146
+      Top = 144
       Width = 176
       TabOrder = 5
     end
     object edOrganization: TEdit
-      Left = 176
+      Left = 173
       Height = 21
       Hint = 'E.g. : Tranquil It Systems'
-      Top = 170
+      Top = 168
       Width = 176
       TabOrder = 6
     end
     object edUnit: TEdit
-      Left = 176
+      Left = 173
       Height = 21
       Hint = 'E.g. : IT'
-      Top = 194
+      Top = 192
       Width = 176
       TabOrder = 7
     end
     object edEmail: TEdit
-      Left = 176
+      Left = 173
       Height = 21
       Hint = 'E.g. : technique@tranquil-it-systems.fr'
-      Top = 222
+      Top = 220
       Width = 176
       TabOrder = 8
-    end
-    object DirectoryCert: TDirectoryEdit
-      Left = 176
-      Height = 21
-      Top = 16
-      Width = 208
-      Directory = 'C:\private'
-      ShowHidden = False
-      ButtonWidth = 23
-      NumGlyphs = 1
-      Flat = True
-      MaxLength = 0
-      TabOrder = 0
     end
     object Shape1: TShape
       AnchorSideRight.Side = asrBottom
@@ -216,9 +194,9 @@ object VisCreateKey: TVisCreateKey
       BorderSpacing.Left = 5
     end
     object StaticText1: TStaticText
-      Left = 114
+      Left = 112
       Height = 14
-      Top = 98
+      Top = 96
       Width = 97
       AutoSize = True
       Caption = 'Optional information'
@@ -247,6 +225,36 @@ object VisCreateKey: TVisCreateKey
       Top = 64
       Width = 176
       TabOrder = 2
+    end
+    object EdKeyFilename: TFileNameEdit
+      Left = 176
+      Height = 21
+      Top = 40
+      Width = 208
+      OnAcceptFileName = EdKeyFilenameAcceptFileName
+      DialogOptions = [ofNoTestFileCreate, ofEnableSizing, ofViewDetail]
+      Filter = 'X509 private key files (*.pem)|*.pem|All files (*.*)|*.*'
+      FilterIndex = 0
+      HideDirectories = False
+      ButtonWidth = 23
+      NumGlyphs = 1
+      Flat = True
+      MaxLength = 0
+      TabOrder = 1
+      OnExit = EdKeyFilenameExit
+    end
+    object DirectoryCert: TDirectoryEdit
+      Left = 176
+      Height = 21
+      Top = 11
+      Width = 208
+      DialogTitle = 'Select traget directory for keys and certificates'
+      ShowHidden = False
+      ButtonWidth = 23
+      NumGlyphs = 1
+      Flat = True
+      MaxLength = 0
+      TabOrder = 0
     end
   end
 end

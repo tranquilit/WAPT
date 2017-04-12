@@ -1,28 +1,185 @@
-object Form1: TForm1
+object VisPackageWizard: TVisPackageWizard
   Left = 366
-  Height = 473
+  Height = 255
   Top = 210
-  Width = 560
-  Caption = 'Form1'
-  ClientHeight = 473
-  ClientWidth = 560
+  Width = 504
+  Caption = 'Package Wizard'
+  ClientHeight = 255
+  ClientWidth = 504
+  OnCreate = FormCreate
   LCLVersion = '1.3'
   object ButtonPanel1: TButtonPanel
     Left = 6
     Height = 34
-    Top = 433
-    Width = 548
+    Top = 215
+    Width = 492
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
     HelpButton.Name = 'HelpButton'
-    HelpButton.Caption = '&Show config file'
+    HelpButton.Hint = 'Build the package, sign it and upload to default repository.'
+    HelpButton.Caption = 'Build and upload...'
     HelpButton.DefaultCaption = False
+    HelpButton.Enabled = False
+    HelpButton.OnClick = HelpButtonClick
     CloseButton.Name = 'CloseButton'
     CloseButton.DefaultCaption = True
     CloseButton.Enabled = False
     CancelButton.Name = 'CancelButton'
     CancelButton.DefaultCaption = True
-    TabOrder = 0
+    TabOrder = 3
     ShowButtons = [pbOK, pbCancel, pbHelp]
+  end
+  object EdPackageName: TLabeledEdit
+    Left = 104
+    Height = 21
+    Top = 40
+    Width = 192
+    EditLabel.AnchorSideTop.Control = EdPackageName
+    EditLabel.AnchorSideTop.Side = asrCenter
+    EditLabel.AnchorSideRight.Control = EdPackageName
+    EditLabel.AnchorSideBottom.Control = EdPackageName
+    EditLabel.AnchorSideBottom.Side = asrBottom
+    EditLabel.Left = 32
+    EditLabel.Height = 13
+    EditLabel.Top = 44
+    EditLabel.Width = 69
+    EditLabel.Caption = 'Package name'
+    EditLabel.ParentColor = False
+    LabelPosition = lpLeft
+    TabOrder = 1
+  end
+  object EdInstallerPath: TFileNameEdit
+    Left = 104
+    Height = 21
+    Top = 8
+    Width = 368
+    OnAcceptFileName = EdInstallerPathAcceptFileName
+    FilterIndex = 0
+    HideDirectories = False
+    ButtonWidth = 23
+    NumGlyphs = 1
+    MaxLength = 0
+    TabOrder = 0
+  end
+  object Label1: TLabel
+    Left = 20
+    Height = 13
+    Top = 11
+    Width = 77
+    Caption = 'Installer / Setup'
+    ParentColor = False
+  end
+  object Panel1: TPanel
+    Left = 0
+    Height = 128
+    Top = 81
+    Width = 504
+    Align = alBottom
+    BevelOuter = bvNone
+    ClientHeight = 128
+    ClientWidth = 504
+    TabOrder = 2
+    object EdUninstallKey: TLabeledEdit
+      Left = 104
+      Height = 21
+      Top = 95
+      Width = 376
+      EditLabel.AnchorSideTop.Control = EdUninstallKey
+      EditLabel.AnchorSideTop.Side = asrCenter
+      EditLabel.AnchorSideRight.Control = EdUninstallKey
+      EditLabel.AnchorSideBottom.Control = EdUninstallKey
+      EditLabel.AnchorSideBottom.Side = asrBottom
+      EditLabel.Left = 41
+      EditLabel.Height = 13
+      EditLabel.Top = 99
+      EditLabel.Width = 60
+      EditLabel.Caption = 'Uninstall key'
+      EditLabel.ParentColor = False
+      LabelPosition = lpLeft
+      TabOrder = 4
+    end
+    object Label2: TLabel
+      Left = 256
+      Height = 13
+      Top = 2
+      Width = 59
+      Caption = 'Architecture'
+      ParentColor = False
+      Visible = False
+    end
+    object EdArchitecture: TComboBox
+      Left = 320
+      Height = 21
+      Top = 0
+      Width = 64
+      ItemHeight = 13
+      ItemIndex = 0
+      Items.Strings = (
+        'all'
+        'x86'
+        'x64'
+      )
+      TabOrder = 1
+      Text = 'all'
+      Visible = False
+    end
+    object EdDescription: TLabeledEdit
+      Left = 104
+      Height = 21
+      Top = 32
+      Width = 376
+      EditLabel.AnchorSideTop.Control = EdDescription
+      EditLabel.AnchorSideTop.Side = asrCenter
+      EditLabel.AnchorSideRight.Control = EdDescription
+      EditLabel.AnchorSideBottom.Control = EdDescription
+      EditLabel.AnchorSideBottom.Side = asrBottom
+      EditLabel.Left = 48
+      EditLabel.Height = 13
+      EditLabel.Top = 36
+      EditLabel.Width = 53
+      EditLabel.Caption = 'Description'
+      EditLabel.ParentColor = False
+      LabelPosition = lpLeft
+      TabOrder = 2
+    end
+    object EdSilentFlags: TLabeledEdit
+      Left = 104
+      Height = 21
+      Top = 64
+      Width = 376
+      EditLabel.AnchorSideTop.Control = EdSilentFlags
+      EditLabel.AnchorSideTop.Side = asrCenter
+      EditLabel.AnchorSideRight.Control = EdSilentFlags
+      EditLabel.AnchorSideBottom.Control = EdSilentFlags
+      EditLabel.AnchorSideBottom.Side = asrBottom
+      EditLabel.Left = 49
+      EditLabel.Height = 13
+      EditLabel.Top = 68
+      EditLabel.Width = 52
+      EditLabel.Caption = 'Silent flags'
+      EditLabel.ParentColor = False
+      LabelPosition = lpLeft
+      TabOrder = 3
+      Text = '/VERYSILENT'
+    end
+    object EdVersion: TLabeledEdit
+      Left = 104
+      Height = 21
+      Top = 0
+      Width = 112
+      EditLabel.AnchorSideTop.Control = EdVersion
+      EditLabel.AnchorSideTop.Side = asrCenter
+      EditLabel.AnchorSideRight.Control = EdVersion
+      EditLabel.AnchorSideBottom.Control = EdVersion
+      EditLabel.AnchorSideBottom.Side = asrBottom
+      EditLabel.Left = 19
+      EditLabel.Height = 13
+      EditLabel.Top = 4
+      EditLabel.Width = 82
+      EditLabel.Caption = 'Software Version'
+      EditLabel.ParentColor = False
+      LabelPosition = lpLeft
+      TabOrder = 0
+    end
   end
 end

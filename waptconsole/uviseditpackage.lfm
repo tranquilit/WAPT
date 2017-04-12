@@ -70,7 +70,7 @@ object VisEditPackage: TVisEditPackage
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-        Header.Style = hsFlatButtons
+        Header.Style = hsPlates
         PopupMenu = PopupMenuEditDepends
         TabOrder = 0
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
@@ -136,7 +136,7 @@ object VisEditPackage: TVisEditPackage
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-        Header.Style = hsFlatButtons
+        Header.Style = hsPlates
         PopupMenu = PopupMenuEditConflicts
         TabOrder = 0
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
@@ -1141,7 +1141,7 @@ object VisEditPackage: TVisEditPackage
       Header.DefaultHeight = 17
       Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
       Header.SortColumn = 0
-      Header.Style = hsFlatButtons
+      Header.Style = hsPlates
       PopupMenu = PopupPackages
       TabOrder = 1
       TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
@@ -1243,6 +1243,7 @@ object VisEditPackage: TVisEditPackage
     object ActBuildUpload: TAction
       Caption = 'Activate package'
       OnExecute = ActBuildUploadExecute
+      OnUpdate = ActEditSavePackageUpdate
     end
     object ActEditSearch: TAction
       Caption = 'Search'
@@ -1276,6 +1277,7 @@ object VisEditPackage: TVisEditPackage
       Caption = 'Save and apply to host'
       ImageIndex = 34
       OnExecute = ActBUApplyExecute
+      OnUpdate = ActEditSavePackageUpdate
     end
     object ActEditRemoveConflicts: TAction
       Caption = 'Unblock package'

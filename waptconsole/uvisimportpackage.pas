@@ -268,7 +268,7 @@ begin
 
       uploadResult := DMPython.RunJSON(
         format('mywapt.build_upload([%s],private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=False)',
-        [Join(',',sources) , privateKeyPassword, waptServerUser, waptServerPassword]),
+        [Join(',',sources) , dmpython.privateKeyPassword, waptServerUser, waptServerPassword]),
         VisWaptGUI.jsonlog);
       if (uploadResult <> Nil) and (uploadResult.AsArray.length=Sources.AsArray.Length) then
       begin
