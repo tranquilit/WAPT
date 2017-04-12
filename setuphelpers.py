@@ -97,6 +97,8 @@ __all__ = \
  'get_task',
  'getproductprops',
  'getsilentflags',
+ 'InstallerTypes',
+ 'get_installer_defaults',
  'glob',
  'host_info',
  'inifile_hasoption',
@@ -293,6 +295,7 @@ from waptutils import *
 from waptpackage import PackageEntry
 from waptpackage import Version as Version
 from types import ModuleType
+import inspect
 
 import wmi
 
@@ -471,8 +474,8 @@ def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', 
     Returns:
         str: Path to the shortcut
 
-    >>> create_user_programs_menu_shortcut('Dev-TranquilIT', target='http://dev.tranquil.it')
-    u'C:\\Users\\htouvet\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Dev-TranquilIT.url'
+    >>> create_user_programs_menu_shortcut('Doc-TranquilIT', target='https://doc.wapt.fr')
+    u'C:\\Users\\htouvet\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Doc-TranquilIT.url'
     >>> create_user_programs_menu_shortcut('Console WAPT', target=makepath('c:/wapt','waptconsole.exe'))
     u'C:\\Users\\htouvet\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Console WAPT.lnk'
     """
@@ -845,7 +848,7 @@ class RunOutput(str):
     Fichier introuvable
      Répertoire de c:\
 
-    .. versionchanged:: 1.3.11
+    .. versionchanged:: 1.4.0
           subclass str(bytes string) and not unicode
     """
 
@@ -890,7 +893,7 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,3010],on_write=None,pid
             return_stderr parameters to disable stderr or get it in a separate list
             return value has a returncode attribute to
 
-    .. versionchanged:: 1.3.11
+    .. versionchanged:: 1.4.0
             output is not forced to unicode
 
     .. versionchanged:: 1.4.1
@@ -987,13 +990,13 @@ def run_notfatal(*cmd,**args):
     """Runs the command and wait for it termination, returns output
     Ignore exit status code of command, return '' instead
 
-    .. versionchanged:: 1.3.11
+    .. versionchanged:: 1.4.0
           output is not enforced to unicode
     """
     try:
         return run(*cmd,**args)
     except Exception as e:
-        print(u'Warning : %s' % ensure_unicode(e))
+        print('Warning : %s' % repr(e))
         return ''
 
 
@@ -2528,6 +2531,10 @@ def host_info():
     Returns:
         dict: main properties of host, networking and windows system
 
+    .. versionchanged:: 1.4.1
+         returned keys changed :
+           dns_domain -> dnsdomain
+           
     >>> hi = host_info()
     >>> 'computer_fqdn' in hi and 'connected_ips' in hi and 'computer_name' in hi and 'mac' in hi
     True
@@ -3415,6 +3422,98 @@ def get_appath(exename):
                 raise
     return result
 
+class InstallerTypes(object):
+    MSI = 'MSI'
+    InnoSetup = 'InnoSetup'
+    InstallShield = 'InstallShield'
+    SFXCab = 'SFXCab'
+    SevenZIPSFX = 'SevenZIPSFX'
+    NSIS = 'NSIS'
+    MSU = 'MSU'
+    ExeWinUpdates = 'ExeWindowsUpdate' # exe with wextract
+    WExtract = 'WExtract' #
+    APPX = 'WExtract'
+    GenericInstaller = 'GenericInstaller'
+    UnknownInstaller = 'UnknownInstaller'
+    UnknownExeInstaller = 'UnknownExeInstaller'
+    MozillaInstaller = 'MozillaInstaller'
+
+
+def get_installer_defaults(installer_path):
+    """Returns guessed default values for package templates based on installer binary
+
+    Args:
+        installer_path (str): filepath to installer
+
+    Returns:
+        dict:
+
+    >>> get_installer_defaults(r'c:\tranquilit\wapt\tests\SumatraPDF-3.1.1-install.exe')
+    {'description': u'SumatraPDF Installer (Krzysztof Kowalczyk)',
+     'filename': 'SumatraPDF-3.1.1-install.exe',
+     'silentflags': '/VERYSILENT',
+     'simplename': u'sumatrapdf-installer',
+     'type': 'UnknownExeInstaller',
+     'version': u'3.1.1'}
+
+    >>> get_installer_defaults(r'c:\tranquilit\wapt\tests\7z920.msi')
+    {'description': u'7-Zip 9.20 (Igor Pavlov)',
+     'filename': '7z920.msi',
+     'silentflags': '/q /norestart',
+     'simplename': u'7-zip-9.20',
+     'type': 'MSI',
+     'version': u'9.20.00.0'}
+
+    """
+    (product_name,ext) = os.path.splitext(installer_path)
+    ext = ext.lower()
+    props = getproductprops(installer_path)
+    simplename = re.sub(r'[\s\(\)]+','-',props['product'].lower())
+    description = props['description']
+    publisher = props['publisher']
+    version = props['version'] or '0.0.0'
+
+    result = dict(filename=os.path.basename(installer_path),
+        simplename=simplename,
+        version=version,
+        description=description,
+        silentflags='',
+        type=None,
+        uninstallkey=None,
+        architecture='all')
+
+    if ext == '.exe':
+        exe_props = get_file_properties(installer_path)
+
+        if exe_props.get('InternalName','').lower() == 'sfxcab.exe':
+            result.update(dict(type=InstallerTypes.SFXCab,silentflags='/quiet'))
+        elif exe_props.get('InternalName','').lower() == '7zs.sfx':
+            result.update(dict(type=InstallerTypes.SFXCab,silentflags='/s'))
+        elif exe_props.get('InternalName','').lower() == 'setup launcher':
+            result.update(dict(type=InstallerTypes.InstallShield,silentflags='/s'))
+        elif exe_props.get('InternalName','').lower() == 'wextract':
+            result.update(dict(type=InstallerTypes.WExtract,silentflags='/Q'))
+        else:
+            content = open(installer_path,'rb').read(600000)
+            if 'Inno.Setup' in content:
+                result.update(dict(type=InstallerTypes.InnoSetup,silentflags='/VERYSILENT /SUPPRESSMSGBOXES /NORESTART'))
+            elif 'Quiet installer' in content:
+                result.update(dict(type=InstallerTypes.GenericInstaller,silentflags='-q'))
+            elif 'nsis.sf.net' in content or 'Nullsoft.NSIS' in content:
+                result.update(dict(type=InstallerTypes.NSIS,silentflags='/S'))
+            elif ('Firefox Setup' in product_name) or ('Thunderbird Setup' in product_name):
+                result.update(dict(type=InstallerTypes.MozillaInstaller,silentflags='-ms'))
+            else:
+                result.update(dict(type=InstallerTypes.UnknownExeInstaller,silentflags='/VERYSILENT'))
+
+    elif ext == '.msi':
+        msi_props = get_msi_properties(installer_path)
+        result.update(dict(type=InstallerTypes.MSI,silentflags='/q /norestart',uninstallkey=props['ProductCode']))
+    elif ext == '.msu':
+        result.update(dict(type=InstallerTypes.MSU,silentflags='/quiet /norestart'))
+    else:
+        result.update(dict(type=InstallerTypes.UnknownInstaller,silentflags='/VERYSILENT'))
+    return result
 
 
 def getsilentflags(installer_path):
@@ -3429,35 +3528,7 @@ def getsilentflags(installer_path):
     >>> getsilentflags(r'C:\tranquilit\wapt\tests\7z920.msi')
     '/q /norestart'
     """
-    (product_name,ext) = os.path.splitext(installer_path)
-    ext = ext.lower()
-    if ext=='.exe':
-        silentflag = '/VERYSILENT'
-        props = get_file_properties(installer_path)
-        if props.get('InternalName','').lower() == 'sfxcab.exe':
-            silentflag = '/quiet'
-        elif props.get('InternalName','').lower() == '7zs.sfx':
-            silentflag = '/s'
-        elif props.get('InternalName','').lower() == 'setup launcher':
-            silentflag = '/s'
-        elif props.get('InternalName','').lower() == 'wextract':
-            silentflag = '/Q'
-        else:
-            content = open(installer_path,'rb').read(600000)
-            if 'Inno.Setup' in content:
-                silentflag = '/VERYSILENT'
-            elif 'Quiet installer' in content:
-                silentflag = '-q'
-            elif 'nsis.sf.net' in content or 'Nullsoft.NSIS' in content:
-                silentflag = '/S'
-
-    elif ext=='.msi':
-        silentflag = '/q /norestart'
-    elif ext=='.msu':
-        silentflag = '/quiet /norestart'
-    else:
-        silentflag = ''
-    return silentflag
+    return get_installer_defaults(installer_path)['silentflags']
 
 
 def getproductprops(installer_path):
@@ -3572,8 +3643,6 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
     if not isfile(msi):
         error('msi file %s not found in package' % msi)
     key = get_msi_properties(msi)['ProductCode']
-    # will try to add key in the caller's (setup.py) uninstallkey list
-    import inspect
     caller_globals = inspect.stack()[1][0].f_globals
     WAPT = caller_globals.get('WAPT',None)
     force = WAPT and WAPT.options.force
@@ -3639,7 +3708,6 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
     if min_version is None:
         min_version = getproductprops(exe)['version']
 
-    import inspect
     caller_globals = inspect.stack()[1][0].f_globals
     WAPT = caller_globals.get('WAPT',None)
     force = WAPT and WAPT.options.force
@@ -3930,7 +3998,6 @@ params = {}
 control = PackageEntry()
 
 if __name__=='__main__':
-    run(r'C:\tranquilit\tis-7zip-wapt\7z1604-x64.msi')
     import doctest
     import sys
     reload(sys)
