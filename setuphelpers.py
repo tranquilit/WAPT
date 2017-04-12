@@ -970,9 +970,9 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,3010],on_write=None,pid
         killtree(proc.pid)
     if not proc.returncode in accept_returncodes:
         if return_stderr != output:
-            raise CalledProcessErrorOutput(proc.returncode,cmd,u''.join(output+return_stderr))
+            raise CalledProcessErrorOutput(proc.returncode,cmd,''.join(output+return_stderr))
         else:
-            raise CalledProcessErrorOutput(proc.returncode,cmd,u''.join(output))
+            raise CalledProcessErrorOutput(proc.returncode,cmd,''.join(output))
     else:
         if proc.returncode == 0:
             logger.info(u'%s command returns code %s' % (ensure_unicode(cmd),proc.returncode))
