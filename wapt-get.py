@@ -830,40 +830,26 @@ def main():
 
                 # continue with upload
                 if action == 'build-upload':
-                    print('Uploading files...')
-                    # groups by www target : wapt or wapt-host
-                    hosts = ('wapt-host',[])
-                    others = ('wapt',[])
-                    # split by destination
-                    for p in packages:
-                        if p['package'].section == 'host':
-                            hosts[1].append(p['filename'])
-                        else:
-                            others[1].append(p['filename'])
-                    for package_group in (hosts,others):
-                        if package_group[1]:
-                            # add quotes for command line
-                            files_list = ['"%s"' % f for f in package_group[1]]
-                            cmd_dict = {
-                                'waptfile': files_list,
-                                'waptdir':package_group[0],
-                            }
-                            res = mywapt.upload_package(cmd_dict,
-                                wapt_server_user = options.wapt_server_user,
-                                wapt_server_passwd=options.wapt_server_passwd)
-                            print('Status : %s, %s' % (
-                                res['status'], res['message']))
+                    waptfiles =  [p['filename'] for p in packages]
 
-                            if package_group != hosts:
-                                if mywapt.after_upload:
-                                    print('Run after upload script...')
-                                    print(setuphelpers.run(mywapt.after_upload % cmd_dict))
+                    res = mywapt.upload_package(waptfiles,
+                            wapt_server_user = options.wapt_server_user,
+                            wapt_server_passwd=options.wapt_server_passwd)
+                    if res['status'] != 'OK':
+                        print(u'Error when uploading package : %s' % res['message'])
+                    else:
+                        print(u'Package uploaded successfully: %s' % res['message'])
 
+                    if mywapt.after_upload:
+                        print('Run "after upload" script...')
+                        # can include %(filenames)s
+                        print(setuphelpers.run(mywapt.after_upload %
+                            {'filenames':u' '.join([u'"%s"' % f for f in waptfiles])}))
                 else:
                     print(u'\nYou can upload to repository with')
                     print(u'  %s upload-package %s ' % (
-                        sys.argv[0],'"%s"' % (
-                            ' '.join([p['filename'] for p in packages]),
+                        sys.argv[0],'%s' % (
+                            ' '.join(['"%s"' % p['filename'] for p in packages]),
                         )
                     ))
 
@@ -902,34 +888,14 @@ def main():
                 for a in args[1:]:
                     waptfiles += glob.glob(a)
 
-                # groups by www target : wapt or wapt-host
-                hosts = ('wapt-host',[])
-                others = ('wapt',[])
-                # split by destination
-                for w in waptfiles:
-                    p = PackageEntry()
-                    p.load_control_from_wapt(w)
-                    if p.section == 'host':
-                        hosts[1].append(w)
-                    else:
-                        others[1].append(w)
-
-                for package_group in (hosts,others):
-                    if package_group[1]:
-                        # add quotes for command line
-                        files_list = ['"%s"' % f for f in package_group[1]]
-                        cmd_dict = {
-                            'waptfile': files_list,
-                            'waptdir':package_group[0],
-                        }
-
-                        print(mywapt.upload_package(cmd_dict,
-                            wapt_server_user = options.wapt_server_user,
-                            wapt_server_passwd=options.wapt_server_passwd))
-                        if package_group != hosts:
-                            if mywapt.after_upload:
-                                print('Run after upload script...')
-                                print(setuphelpers.run(mywapt.after_upload % cmd_dict))
+                print(mywapt.upload_package(waptfiles,
+                        wapt_server_user = options.wapt_server_user,
+                        wapt_server_passwd=options.wapt_server_passwd))
+                if mywapt.after_upload:
+                    print('Run "after upload" script...')
+                    # can include %(filenames)s
+                    print(setuphelpers.run(mywapt.after_upload %
+                        {'filenames':u' '.join([u'"%s"' % f for f in waptfiles])}))
 
             elif action == 'search':
                 if options.update_packages:
@@ -1098,7 +1064,7 @@ def main():
 
             elif action == 'enable-check-certificate':
                 if mywapt.waptserver and mywapt.waptserver_available():
-                    result = mywapt.waptserver.save_server_certificate(os.path.join(mywapt.wapt_base_dir,'ssl','server'))
+                    result = mywapt.waptserver.save_server_certificate(os.path.join(mywapt.wapt_base_dir,'ssl','server'),overwrite = options.force)
                     setuphelpers.inifile_writestring(mywapt.config_filename,'global','verify_cert',result)
                 else:
                     result = ''
@@ -1113,17 +1079,12 @@ def main():
                     print(u"You must provide the package to edit")
                     sys.exit(1)
                 if len(args) >= 3:
-                    raise NotImplementedError
-                    ##result = mywapt.add_iconpng_wapt(
-                    ##    package=args[1],
-                    ##    iconpath=args[2])
+                    result = mywapt.add_iconpng_wapt(
+                        package=args[1],
+                        iconpath=args[2])
                 else:
-                    raise NotImplementedError
-                    ##result = mywapt.add_iconpng_wapt(package=args[1])
-                mywapt.upload_package({
-                    'waptfile':result['filename'],
-                    'waptdir':'wapt',
-                    },
+                    result = mywapt.add_iconpng_wapt(package=args[1])
+                mywapt.upload_package(result['filename'],
                     wapt_server_user = options.wapt_server_user,
                     wapt_server_passwd=options.wapt_server_passwd)
                 if options.json_output:

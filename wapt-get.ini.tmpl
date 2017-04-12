@@ -1,12 +1,20 @@
 [global]
+;;;;;;;
+; If repo_url is left blank, a DNS query is performed on the dnsdomain zone for a SRV record _wapt._tcp.mydomain.lan
+; if several records are returned, the IP in same subnet as host is choosen first if available else other are checked in turn 
 repo_url=
 dbdir = c:\wapt\db
+
+; or more precisely :
+; dbpath = c:\wapt\db\waptdb.sqlite
 
 ; Enable or disable the automatic install of a Wapt package named like the host's FQDN
 ;  If disabled, administrator can not remotely manage the packages that must be installed.
 ;  If Enabled, the host's packages created by waptconsole  are downloaded and applied on the host.
 ; Host packages are downloaded from a repository located on same http server as main repo, 
 ;  wapt append a '-host' at the end of main repo URL to compose the host packages repository URL.
+; the Hosts packages repository can be defined explicitely with a section named [wapt-host] in this file
+;   with the explicit repo_url key.
 ; By default, use_hostpackages is disabled.
 ;use_hostpackages = 1
 
@@ -30,7 +38,7 @@ default_sources_root=c:\waptdev
 default_sources_root_host=c:\waptdev\hosts
 
 ; From where copy templates packages in waptconsole
-;templates_repo_url=http://wapt.tranquil.it/wapt
+;templates_repo_url=https://store.wapt.fr/wapt
 
 ; default prefix to add to software name when creating package templates
 default_package_prefix=tis
@@ -39,41 +47,34 @@ default_package_prefix=tis
 default_sources_suffix=wapt
 
 ; command to run for uploading a package to your server (wapt-get upload-package or build-upload)
-; if no command is supplied, it is assumed your wapt server is running waptserver and support /upload_package POST with a file form-encoded parameter
-;upload_cmd="C:\Program Files\WinSCP\WinSCP.exe" root@bureau.tranquil.it /upload %(waptfile)s
-; you could put your public authorization key in server's /root/.ssh/authorized_keys
+; if no command is supplied, it is assumed your wapt server is running waptserver and support http upload with POST 
+; with files encoded
+;upload_cmd="C:\Program Files\WinSCP\WinSCP.exe" wapt@srvwapt.tranquilit.local /upload %(filenames)s
+; you could put your public authorization key in server's /opt/wapt/.ssh/authorized_keys
 ; example if you have cygwin :
 ;   create key : c:\cygwin\bin\ssh localhost ssh-keygen
-;   copy key :   c:\cygwin\bin\ssh localhost ssh-copy-id -i ~/.ssh/id_dsa root@srvwapt
-;upload_cmd="c:\Program Files"\putty\pscp -v -l waptserver %(waptfile)s srvwapt:/var/www/%(waptdir)s/
+;   copy key :   c:\cygwin\bin\ssh localhost ssh-copy-id -i ~/.ssh/id_dsa wapt@srvwapt.tranquilit.local
+; then with putty (wapt user is assumed as copied wapt files should belong to it)
+;upload_cmd="c:\Program Files (x86)\putty\pscp -v -i c:\private\mykey.pem -l wapt %(filenames)s srvwapt.tranquilit.local:/var/www/wapt/
 
-; command to run (deprecated by http upload)
-;after_upload="c:\Program Files"\putty\plink -v -l waptserver srvwapt "python /var/www/wapt/wapt-scanpackages.py /var/www/%(waptdir)s/"
+; command to run (deprecated by http upload) : for example to update Packages index.
+;after_upload="c:\Program Files (x86)\putty\plink" -v -i c:\private\mykey.pem -l wapt srvwapt.tranquilit.local "python /opt/wapt/wapt-scanpackages.py /var/www/wapt/ -l info"
 
-; command to use to upload host package to your server (wapt-get upload-package or build-upload of a host package)
-; if no command is supplied, it is assumed your wapt server is running waptserver and support /upload_host POST with a file form-encoded parameter
-;upload_cmd_host="c:\Program Files"\putty\pscp -v -l waptserver %(waptfile)s srvwapt:/var/www/wapt-host/
-
-; define a wapt_server only if one is running
+; define a wapt_server key only if one server is running
 ; a wapt server support the following url :
-;   /add_host
-;   /update_host
-;   /upload_package
-;   /upload_host
 ; if not present : no waptserver, if empty : use DNS SRV record _waptserver._tcp.mondomaine.local
-;wapt_server=http://wapt.tranquil.it/waptserver
+;wapt_server=https://wapt.tranquil.it
 
-; for windows task scheduling wapt-get 
+; for windows task scheduling "wapt-get setup-tasks" to create windows scheduled tasks (when waptservice is not installed)
 ;waptupgrade_task_period=360
 ;waptupgrade_task_maxruntime=360
 
 ;waptupdate_task_period=30
 ;waptupdate_task_maxruntime=10
 
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; wapt_service configuration. Use windows security by default
+; password can be set with command "wapt-get setlocalpassword"
 ;wapt_user=admin
 ;wapt_password=5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
 ;waptservice_port=8088
@@ -100,6 +101,14 @@ default_sources_suffix=wapt
 ; to avoid deep sleep shutdown instead of full shutdown which prevent waptexit to run properly
 ;hiberboot_enabled = 0
 
+;;;;;;;;;;;;;;;;;;;;;;;;
+; When DNS query is used to lookup wapt_server or repo_url, define explicitely the dnsdomain zone to lookup.
+;dnsdomain=tranquilit.local
+
+;;;;;;;;;;;;;;
+; enable ssl certificate validation for wapt_server and repo_url https://
+; can be activated easily for main repo with command "wapt-get enable-check-certificate"
+;verify_cert=c:\wapt\ssl\server\srvwapt.tranquilit.local
 
 [private]
 repo_url=http://wapt/wapt
@@ -107,4 +116,8 @@ repo_url=http://wapt/wapt
 [tranquilit]
 repo_url=http://wapt.tranquil.it/wapt
 default_source_url=https://dev.tranquil.it/wapt/
+
+;;; explicit repository for host packages (in case this one is centralized for example
+;[wapt-host]
+;repo_url=https://srvwapt.tranquilit.local/wapt-host
 
