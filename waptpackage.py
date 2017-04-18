@@ -40,6 +40,17 @@ __all__ = [
     'update_packages',
     'REGEX_PACKAGE_VERSION',
     'REGEX_PACKAGE_CONDITION',
+    'EWaptBadSignature',
+    'EWaptCorruptedFiles',
+    'EWaptNotSigned',
+    'EWaptBadControl',
+    'EWaptBadSetup',
+    'EWaptMissingPrivateKey',
+    'EWaptMissingCertificate',
+    'EWaptNeedsNewerAgent',
+    'EWaptDiskSpace',
+    'EWaptBadTargetOS',
+    'EWaptNotAPackage',
 ]
 
 import os
@@ -115,6 +126,38 @@ def make_version(major_minor_patch_build):
     else:
         return p1
 
+class EWaptBadSignature(Exception):
+    pass
+
+class EWaptCorruptedFiles(Exception):
+    pass
+
+class EWaptNotSigned(Exception):
+    pass
+
+class EWaptBadControl(Exception):
+    pass
+
+class EWaptBadSetup(Exception):
+    pass
+
+class EWaptMissingPrivateKey(Exception):
+    pass
+
+class EWaptMissingCertificate(Exception):
+    pass
+
+class EWaptNeedsNewerAgent(Exception):
+    pass
+
+class EWaptDiskSpace(Exception):
+    pass
+
+class EWaptBadTargetOS(Exception):
+    pass
+
+class EWaptNotAPackage(Exception):
+    pass
 
 class Version(object):
     """Version object of form 0.0.0
@@ -233,7 +276,7 @@ def control_to_dict(control,int_params=('size','installed_size')):
         else:
             sc = line.find(':')
             if sc<0:
-                raise Exception(u'Invalid line (no ":" found) : %s' % line)
+                raise EWaptBadControl(u'Invalid line (no ":" found) : %s' % line)
             (key,value) = (line[:sc].strip(),line[sc+1:].strip())
             key = key.lower()
             if key in int_params:
@@ -300,7 +343,7 @@ class PackageEntry(object):
             elif os.path.isdir(waptfile):
                 self.load_control_from_wapt(waptfile)
             else:
-                raise Exception(u'Package filename or directory %s does not exist' % waptfile)
+                raise EWaptBadControl(u'Package filename or directory %s does not exist' % waptfile)
 
     def parse_version(self):
         """Parse version to major, minor, patch, pre-release, build parts.
@@ -478,7 +521,7 @@ class PackageEntry(object):
         elif os.path.isdir(fname):
             control = codecs.open(os.path.join(fname,'WAPT','control'),'r',encoding='utf8')
         else:
-            raise Exception(u'No control found for %s' % (fname,))
+            raise EWaptBadControl(u'No control found for %s' % (fname,))
 
         self.load_control_from_dict(control_to_dict(control))
 
@@ -603,7 +646,7 @@ class PackageEntry(object):
                 version_parts[part] = "%i" % (int(version_parts[part])+1,)
                 self.version = make_version(version_parts)
                 return
-        raise Exception(u'no build/packaging part in version number %s' % self.version)
+        raise EWaptBadControl(u'no build/packaging part in version number %s' % self.version)
 
     def signed_content(self):
         return {att:getattr(self,att,None) for att in self.signed_attributes}
@@ -648,7 +691,7 @@ class PackageEntry(object):
         >>> p.check_control_signature(c)
         """
         if not self.signature:
-            raise Exception('Package control %s on repo %s is not signed' % (self.asrequirement(),self.repo))
+            raise EWaptNotSigned('Package control %s on repo %s is not signed' % (self.asrequirement(),self.repo))
         signed_content = self.signed_content()
         signature_raw = self.signature.decode('base64')
         if not isinstance(public_certs,list):
@@ -660,7 +703,7 @@ class PackageEntry(object):
                 elif os.path.isfile(public_cert):
                     crt = SSLCertificate(public_cert)
                 else:
-                    raise Exception('The public cert %s is neither a cert file nor a SSL Certificate object'%public_cert)
+                    raise EWaptMissingCertificate('The public cert %s is neither a cert file nor a SSL Certificate object' % public_cert)
                 if crt.verify_content(signed_content,signature_raw):
                     return crt
             except SSLVerifyException:

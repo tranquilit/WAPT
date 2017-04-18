@@ -2986,26 +2986,26 @@ class Wapt(object):
         logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
         status = 'INIT'
         if not self.public_certs:
-            raise Exception(u'install_wapt %s: No public Key provided for package signature checking.'%(fname,))
+            raise EWaptMissingCertificate(u'install_wapt %s: No public Key provided for package signature checking.'%(fname,))
         previous_uninstall = self.registry_uninstall_snapshot()
         entry = PackageEntry()
         entry.load_control_from_wapt(fname)
 
         if entry.min_wapt_version and Version(entry.min_wapt_version)>Version(setuphelpers.__version__):
-            raise Exception('This package requires a newer Wapt agent. Minimum version: %s' % entry.min_wapt_version)
+            raise EWaptNeedsNewerAgent('This package requires a newer Wapt agent. Minimum version: %s' % entry.min_wapt_version)
 
         # check if there is enough space for final install
         # TODO : space for the temporary unzip ?
         free_disk_space = setuphelpers.get_disk_free_space(setuphelpers.programfiles)
         if entry.installed_size and free_disk_space < entry.installed_size:
-            raise Exception('This package requires at least %s free space. The "Program File"s drive has only %s free space' %
+            raise EWaptDiskSpace('This package requires at least %s free space. The "Program File"s drive has only %s free space' %
                 (format_bytes(entry.installed_size),format_bytes(free_disk_space)))
 
         os_version = setuphelpers.windows_version()
         if entry.min_os_version and os_version < Version(entry.min_os_version):
-            raise Exception('This package requires that OS be at least %s' % entry.min_os_version)
+            raise EWaptBadTargetOS('This package requires that OS be at least %s' % entry.min_os_version)
         if entry.max_os_version and os_version > Version(entry.max_os_version):
-            raise Exception('This package requires that OS be at most %s' % entry.min_os_version)
+            raise EWaptBadTargetOS('This package requires that OS be at most %s' % entry.min_os_version)
 
         # don't check in developper mode
         if os.path.isfile(fname):
@@ -3062,7 +3062,7 @@ class Wapt(object):
             elif os.path.isdir(fname):
                 packagetempdir = fname
             else:
-                raise Exception(u'%s is not a file nor a directory, aborting.' % ensure_unicode(fname))
+                raise EWaptNotAPackage(u'%s is not a file nor a directory, aborting.' % ensure_unicode(fname))
 
             try:
                 previous_cwd = os.getcwd()
@@ -3074,7 +3074,7 @@ class Wapt(object):
                 else:
                     # we allow unsigned in development mode where fname is a directory
                     if istemporary:
-                        raise Exception(u'Package %s does not contain a manifest.sha1 file, and unsigned packages install is not allowed' % fname)
+                        raise EWaptNotSigned(u'Package %s does not contain a manifest.sha1 file, and unsigned packages install is not allowed' % fname)
 
                 self.check_cancelled()
                 setup_filename = os.path.join( packagetempdir,'setup.py')
@@ -3681,18 +3681,18 @@ class Wapt(object):
                 control = waptfile.open(u'WAPT/control').read().decode('utf8')
                 manifest_content = waptfile.open(u'WAPT/manifest.sha1').read()
                 manifest = json.loads(manifest_content)
-                signature = waptfile.open(u'WAPT/signature').read().decode('base64')
                 try:
+                    signature = waptfile.open(u'WAPT/signature').read().decode('base64')
                     logger.debug(u'Verify package against certificates : %s' % (','.join(self.public_certs)))
                     subject = ssl_verify_content(manifest_content,signature,self.public_certs)
                     logger.info(u'Package issued by %s' % (subject,))
                 except:
-                    raise Exception(u'Package file %s signature is invalid' % ensure_unicode(fname))
+                    raise EWaptBadSignature(u'Package file %s signature is invalid' % ensure_unicode(fname))
 
             for (fn,sha1) in manifest:
                 if fn == 'WAPT\\control':
                     if sha1 != sha1_for_data(control.encode('utf8')):
-                        raise Exception("WAPT/control file of %s is corrupted, sha1 digests don't match" % ensure_unicode(fname))
+                        raise EWaptCorruptedFiles("WAPT/control file of %s is corrupted, sha1 digests don't match" % ensure_unicode(fname))
                     break
             # Merge updated control data
             # TODO
@@ -4407,7 +4407,7 @@ class Wapt(object):
             # get the default one, perhaps already cached
             private_key = self.private_key
             if not private_key:
-                raise Exception('Private key filename not set in private_key')
+                raise EWaptMissingPrivateKey('Private key filename not set in private_key')
             key = self.private_key_cache
             if callback:
                 key.pwd_callback = callback
@@ -4415,7 +4415,7 @@ class Wapt(object):
         else:
             # specific
             if not os.path.isfile(private_key):
-                raise Exception('Private key file %s not found' % private_key)
+                raise EWaptMissingPrivateKey('Private key file %s not found' % private_key)
             logger.info('Loading private key %s'%private_key)
             key = SSLPrivateKey(private_key,callback=callback)
 
@@ -4430,12 +4430,12 @@ class Wapt(object):
                 logger.debug(u'Using certificate %s in pem file %s' % (cert,key.private_key_filename))
             else:
                 cert = None
-                raise Exception(u'No matching certificate in PEM file %s'%key.private_key_filename)
+                raise EWaptMissingCertificate(u'No matching certificate in PEM file %s'%key.private_key_filename)
         except:
             logger.debug(u'Trying to find matching certificate in directory %s' % os.path.dirname(key.private_key_filename))
             certs = sorted(c for c in key.matching_certs(os.path.dirname(key.private_key_filename)))
             if not certs:
-                raise Exception(u'Can not find a valid certificate matching the key %s in same PEM file or in directory %s' % (private_key,os.path.dirname(key.private_key_filename)))
+                raise EWaptMissingCertificate(u'Can not find a valid certificate matching the key %s in same PEM file or in directory %s' % (private_key,os.path.dirname(key.private_key_filename)))
             else:
                 # use most recent
                 cert = certs[-1]
@@ -4466,11 +4466,11 @@ class Wapt(object):
             directoryname = unicode(directoryname)
         result_filename = u''
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
-            raise Exception('Error building package : There is no WAPT directory in %s' % directoryname)
+            raise EWaptNotAPackage('Error building package : There is no WAPT directory in %s' % directoryname)
         if not os.path.isfile(os.path.join(directoryname,'WAPT','control')):
-            raise Exception('Error building package : There is no control file in WAPT directory')
+            raise EWaptNotAPackage('Error building package : There is no control file in WAPT directory')
         if not os.path.isfile(os.path.join(directoryname,'setup.py')):
-            raise Exception('Error building package : There is no setup.py file in %s' % directoryname)
+            raise EWaptNotAPackage('Error building package : There is no setup.py file in %s' % directoryname)
         oldpath = sys.path
         try:
             previous_cwd = os.getcwd()
@@ -4489,7 +4489,7 @@ class Wapt(object):
             try:
                 codecs.open(os.path.join(directoryname,'setup.py'),mode='r',encoding='utf8')
             except:
-                raise Exception('Encoding of setup.py is not utf8')
+                raise EWaptBadSetup('Encoding of setup.py is not utf8')
 
             if hasattr(setup,'uninstallstring'):
                 mandatory = [('install',types.FunctionType) ,('uninstallstring',list),]
@@ -4497,7 +4497,7 @@ class Wapt(object):
                 mandatory = [('install',types.FunctionType) ,('uninstallkey',list),]
             for (attname,atttype) in mandatory:
                 if not hasattr(setup,attname):
-                    raise Exception('setup.py has no %s (%s)' % (attname,atttype))
+                    raise EWaptBadSetup('setup.py has no %s (%s)' % (attname,atttype))
 
             control_filename = os.path.join(directoryname,'WAPT','control')
             force_utf8_no_bom(control_filename)
@@ -4540,7 +4540,7 @@ class Wapt(object):
 
             # check architecture
             if not entry.architecture in ArchitecturesList:
-                raise Exception(u'Architecture should one of %s' % (ArchitecturesList,))
+                raise EWaptBadControl(u'Architecture should one of %s' % (ArchitecturesList,))
 
             # increment inconditionally the package buuld nr.
             if not inc_done and inc_package_release:
@@ -4567,7 +4567,7 @@ class Wapt(object):
                     else:
                         crt = None
                 if not crt:
-                    raise Exception('No matching certificate found for private key %s'%self.private_key)
+                    raise EWaptMissingCertificate('No matching certificate found for private key %s'%self.private_key)
                 entry.sign_control(key,crt)
                 logger.info('Signer: %s'%entry.signer)
                 logger.info('Signer fingerprint: %s'%entry.signer_fingerprint)
@@ -4618,7 +4618,7 @@ class Wapt(object):
         buildresults = []
 
         if not self.private_key or not os.path.isfile(self.private_key):
-            raise Exception('Unable to build %s, private key %s not provided or not present'%(sources_directories,self.private_key))
+            raise EWaptMissingPrivateKey('Unable to build %s, private key %s not provided or not present'%(sources_directories,self.private_key))
 
         def pwd_callback(*args):
             """Default password callback for opening private keys"""
@@ -5137,12 +5137,12 @@ class Wapt(object):
             None
         """
         psproj_filename = os.path.join(target_directory,'WAPT','wapt.psproj')
-        if not os.path.isfile(psproj_filename):
-            # supply some variables to psproj template
-            datas = self.as_dict()
-            datas['target_directory'] = target_directory
-            proj_template = codecs.open(os.path.join(self.wapt_base_dir,'templates','wapt.psproj'),encoding='utf8').read()%datas
-            codecs.open(psproj_filename,'w',encoding='utf8').write(proj_template)
+        #if not os.path.isfile(psproj_filename):
+        # supply some variables to psproj template
+        datas = self.as_dict()
+        datas['target_directory'] = target_directory
+        proj_template = codecs.open(os.path.join(self.wapt_base_dir,'templates','wapt.psproj'),encoding='utf8').read()%datas
+        codecs.open(psproj_filename,'w',encoding='utf8').write(proj_template)
 
     def edit_package(self,packagerequest,
             target_directory='',
@@ -5210,7 +5210,7 @@ class Wapt(object):
                         setuphelpers.remove_tree(target_directory)
                         raise
             else:
-                raise Exception('%s is neither a package name nor a package filename' % packagerequest)
+                raise EWaptNotAPackage('%s is neither a package name nor a package filename' % packagerequest)
 
         append_depends = ensure_list(append_depends)
         remove_depends = ensure_list(remove_depends)
@@ -5538,7 +5538,7 @@ class Wapt(object):
 
         if build:
             if not private_key or not os.path.isfile(private_key) :
-                raise Exception('Would be unable to build %s after duplication, private key %s not provided or not present'%(packagename,private_key))
+                raise EWaptMissingPrivateKey('Would be unable to build %s after duplication, private key %s not provided or not present'%(packagename,private_key))
 
         # default empty result
         result = {}
