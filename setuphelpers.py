@@ -47,6 +47,8 @@ __all__ = \
  'adjust_current_privileges',
  'all_files',
  'application_data',
+ 'battery_lifetime',
+ 'battery_percent',
  'bookmarks',
  'common_desktop',
  'control',
@@ -3910,6 +3912,30 @@ def running_on_ac():
     if not GetSystemPowerStatus(ctypes.pointer(status)):
         raise ctypes.WinError()
     return status.ACLineStatus == 1
+
+
+def battery_lifetime():
+    """Return battery life in seconds
+
+    .. versionadded:: 1.4.2
+
+    """
+    status = SYSTEM_POWER_STATUS()
+    if not GetSystemPowerStatus(ctypes.pointer(status)):
+        raise ctypes.WinError()
+    return status.BatteryLifeTime
+
+
+def battery_percent():
+    """Return battery level in percent
+
+    .. versionadded:: 1.4.2
+
+    """
+    status = SYSTEM_POWER_STATUS()
+    if not GetSystemPowerStatus(ctypes.pointer(status)):
+        raise ctypes.WinError()
+    return status.BatteryLifePercent
 
 
 def uac_enabled():
