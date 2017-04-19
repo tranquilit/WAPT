@@ -13,6 +13,10 @@
       <Title Value="waptdeploy"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <XPManifest>
+        <ExecutionLevel Value="2"/>
+      </XPManifest>
     </General>
     <i18n>
       <OutDir Value="..\languages"/>

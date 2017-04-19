@@ -286,6 +286,29 @@ begin
   RunTask('schtasks /Delete /TN fullwaptupgrade /F',status);
 end;
 
+function wget_retry(waptsetupurl, waptsetupPath:String):boolean;
+var
+  retryCount:integer;
+  headers:String;
+begin
+  retryCount := 5;
+  while retryCount>0 do
+  try
+    headers := httpGetHeaders(waptsetupurl,True);
+    result := wget(waptsetupurl, waptsetupPath,Nil,Nil,True,True);
+  except
+    on E:EHTTPException do
+    begin
+      dec(retryCount);
+      if retryCount <= 0 then
+        raise
+      else
+        Sleep(5000);
+    end;
+  end;
+end;
+
+
 begin
   cmdparams := CommandParams;
   cmdoptions := CommandOptions;
@@ -351,27 +374,9 @@ begin
 
   waptsetupurl := '';
   writeln('WAPT version: ' + localVersion);
-  if (requiredVersion = '') or (requiredVersion = 'force') then
-  begin
-    requiredVersion := minversion;
-    try
-      writeln('Trying to get '+mainrepo + '/waptdeploy.version ...');
-      waptdeploy := httpGetString(mainrepo + '/waptdeploy.version');
-      waptdeploy := StringReplace(waptdeploy, #13#10, #10, [rfReplaceAll]);
-      requiredVersion := trim(StrToken(waptdeploy, #10));
-      if requiredVersion = '' then
-        requiredVersion := minversion;
-      waptsetupurl := trim(StrToken(waptdeploy, #10));
-      if waptsetupurl = '' then
-        waptsetupurl := mainrepo + '/waptagent.exe';
-      writeln('Got waptdeploy.version');
-      writeln('   required version:' + requiredVersion);
-      writeln('   download URL :' + waptsetupurl);
-    except
+
+  if (requiredVersion = '') then
       requiredVersion := minversion;
-      waptsetupurl := mainrepo + '/waptagent.exe';
-    end;
-  end;
 
   writeln('WAPT required version: ' + requiredVersion);
   if (localVersion = '') or (CompareVersion(localVersion, requiredVersion) < 0) or
@@ -390,7 +395,7 @@ begin
         waptsetupPath := IncludeTrailingPathDelimiter(GetTempDir)+'waptagent.exe';
         Writeln('Wapt agent path: ' + waptsetupPath);
         writeln('Wget new waptagent from ' + waptsetupurl);
-        wget(waptsetupurl, waptsetupPath,Nil,Nil,True,True);
+        wget_retry(waptsetupurl, waptsetupPath);
       end
       else
       begin
