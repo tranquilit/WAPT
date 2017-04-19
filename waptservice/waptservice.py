@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.1"
+__version__ = "1.4.2"
 
 import time
 import sys
@@ -2047,7 +2047,7 @@ class WaptTaskManager(threading.Thread):
             self.start_time = datetime.datetime.now()
             self.add_task(WaptServiceRestart())
 
-        if waptconfig.waptupgrade_task_period is not None and common.running_on_ac():
+        if waptconfig.waptupgrade_task_period is not None and setuphelpers.running_on_ac():
             if self.last_upgrade is None or (time.time()-self.last_upgrade)/60>waptconfig.waptupgrade_task_period:
                 try:
                     actions = self.wapt.list_upgrade()
