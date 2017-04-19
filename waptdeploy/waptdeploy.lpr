@@ -296,7 +296,9 @@ begin
   try
     Writeln('Trying to reach '+waptsetupurl+'...');
     headers := httpGetHeaders(waptsetupurl,True);
+    Writeln('Reachable, downloading...');
     result := wget(waptsetupurl, waptsetupPath,Nil,Nil,True,True);
+    Writeln('Done.');
     break;
   except
     on E:EHTTPException do
@@ -477,6 +479,7 @@ begin
   else
   begin
     writeln(rsNothingToDo);
+    writeln('Update host status on the server');
     UpdateStatus(False);
   end;
 
