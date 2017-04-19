@@ -4,7 +4,7 @@ Version=2.6.0.0
 [Project]
 ClassName=TProjectRootNode
 StoreRelativePaths=TRUE
-ShowFileExtensions=FALSE
+ShowFileExtensions=TRUE
 
 [Project\ChildNodes\Node0]
 ClassName=TProjectFilesNode

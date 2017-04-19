@@ -159,6 +159,33 @@ class EWaptBadTargetOS(Exception):
 class EWaptNotAPackage(Exception):
     pass
 
+class EWaptInstallError(Exception):
+    """Exception raised during installation of package
+        msg is logged in local install database
+        if retry_count is None, install will be retried indefinitely until success
+        else install is retried at most retry_count times/
+    """
+    def __init__(self,msg,install_status='ERROR',retry_count=None):
+        Exception.__init__(self,msg)
+        self.install_status = install_status
+        self.retry_count = retry_count
+
+
+class EWaptInstallPostponed(EWaptInstallError):
+    def __init__(self,msg,install_status='POSTPONED',retry_count=5,grace_delay=3600):
+        EWaptInstallError.__init__(self,msg,install_status,retry_count)
+        self.grace_delay = grace_delay
+
+class EWaptUnavailablePackage(EWaptInstallError):
+    pass
+
+class EWaptRemoveError(Exception):
+    pass
+
+class EWaptConfigurationError(Exception):
+    pass
+
+
 class Version(object):
     """Version object of form 0.0.0
         can compare with respect to natural numbering and not alphabetical
