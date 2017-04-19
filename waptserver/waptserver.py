@@ -1417,7 +1417,12 @@ def build_hosts_filter(model,filter_expr):
         for fn in ensure_list(search_fields):
             members = fn.split('.')
             rootfield = members[0]
-            if rootfield in model._meta.fields:
+            # external collections...
+            if rootfield == 'installed_softwares':
+                clause = Hosts.uuid.in_(HostSoftwares.select(HostSoftwares.host).where(HostSoftwares.key.regexp(ur'(?i)%s' % search_expr) | HostSoftwares.name.regexp(ur'(?i)%s' % search_expr)))
+            elif rootfield == 'installed_packages':
+                clause = Hosts.uuid.in_(HostPackagesStatus.select(HostPackagesStatus.host).where(HostPackagesStatus.package.regexp(ur'(?i)%s' % search_expr)))
+            elif rootfield in model._meta.fields:
                 if isinstance(model._meta.fields[rootfield],(JSONField,BinaryJSONField)):
                     if len(members)==1:
                         clause =  SQL("%s::text ~* '%s'" % (fn,search_expr))

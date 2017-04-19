@@ -2891,6 +2891,7 @@ begin
 
     urlParams := TSuperObject.Create(stArray);
     fields := TSuperObject.Create(stArray);
+
     if EdSearchHost.Text <> '' then
     begin
       if cbSearchHost.Checked = True then
@@ -2907,18 +2908,22 @@ begin
       end;
 
       if cbSearchDMI.Checked = True then
+      begin
         fields.AsArray.Add('dmi');
+        fields.AsArray.Add('wmi');
+      end;
 
       if cbSearchSoftwares.Checked = True then
       begin
-        fields.AsArray.Add('hostsoftwares.name');
-        fields.AsArray.Add('hostsoftwares.key');
+        fields.AsArray.Add('installed_softwares.key');
+        fields.AsArray.Add('installed_softwares.name');
       end;
 
       if cbSearchPackages.Checked = True then
-        fields.AsArray.Add('hostpackagestatus.package');
+        fields.AsArray.Add('installed_packages.name');
 
       urlParams.AsArray.Add(format('filter=%s:%s',[join(',',fields),EncodeURIComponent(EdSearchHost.Text)]));
+
       if CBInverseSelect.Checked then
         urlParams.AsArray.Add(format('not_filter=1',[]));
     end;
