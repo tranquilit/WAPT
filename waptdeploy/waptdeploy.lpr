@@ -294,11 +294,14 @@ begin
   retryCount := 5;
   while retryCount>0 do
   try
+    Writeln('Trying to reach '+waptsetupurl+'...');
     headers := httpGetHeaders(waptsetupurl,True);
     result := wget(waptsetupurl, waptsetupPath,Nil,Nil,True,True);
+    break;
   except
     on E:EHTTPException do
     begin
+      Writeln('Error trying to get '+waptsetupurl+' : '+E.Message+'... sleeping');
       dec(retryCount);
       if retryCount <= 0 then
         raise
