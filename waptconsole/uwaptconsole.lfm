@@ -133,7 +133,7 @@ object VisWaptGUI: TVisWaptGUI
           Width = 31
           Caption = 'All'
           Checked = True
-          OnClick = cbNeedUpgradeClick
+          OnClick = cbSearchAllClick
           State = cbChecked
           TabOrder = 4
         end
@@ -449,6 +449,7 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'host.domain_controller'
           end        
           item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 20
             Tag = 20
             Text = 'Groups'
@@ -930,11 +931,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostInventory: TTabSheet
           Caption = 'Hardware inventory'
-          ClientHeight = 526
+          ClientHeight = 436
           ClientWidth = 564
           object GridhostInventory: TVirtualJSONInspector
             Left = 0
-            Height = 486
+            Height = 396
             Top = 40
             Width = 564
             PropertyDefs = <>
@@ -2460,14 +2461,14 @@ object VisWaptGUI: TVisWaptGUI
         ClientHeight = 30
         ClientWidth = 1020
         TabOrder = 0
-        object EdSearch: TSearchEdit
+        object EdSearchPackage: TSearchEdit
           Left = 4
           Height = 21
           Top = 4
           Width = 144
           EmptyText = 'Type name or description'
           ExecuteDelay = 400
-          OnExecute = EdSearchExecute
+          OnExecute = EdSearchPackageExecute
           Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
           Font.Color = clGray
           ParentFont = False

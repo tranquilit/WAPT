@@ -267,7 +267,7 @@ type
     EdUser: TEdit;
     EdSearchHost: TSearchEdit;
     EdRun: TEdit;
-    EdSearch: TSearchEdit;
+    EdSearchPackage: TSearchEdit;
     GridHosts: TSOGrid;
     GridhostInventory: TVirtualJSONInspector;
     ImageList1: TImageList;
@@ -448,6 +448,7 @@ type
     procedure CBInverseSelectClick(Sender: TObject);
     procedure cbMaskSystemComponentsClick(Sender: TObject);
     procedure cbNewestOnlyClick(Sender: TObject);
+    procedure cbSearchAllClick(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure cbWUAPendingChange(Sender: TObject);
     procedure cbWUCriticalClick(Sender: TObject);
@@ -458,7 +459,7 @@ type
     procedure EdHardwareFilterChange(Sender: TObject);
     procedure EdHostsLimitExit(Sender: TObject);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
-    procedure EdSearchExecute(Sender: TObject);
+    procedure EdSearchPackageExecute(Sender: TObject);
     procedure EdSearchGroupsExecute(Sender: TObject);
     procedure EdSearchGroupsKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchHostExecute(Sender: TObject);
@@ -674,18 +675,9 @@ end;
 procedure TVisWaptGUI.cbNeedUpgradeClick(Sender: TObject);
 begin
   Gridhosts.Clear;
-  if (sender = cbSearchAll) then
-  begin
-    if cbSearchAll.Checked then
-    begin
-      cbSearchDMI.Checked := True;
-      cbSearchSoftwares.Checked := True;
-      cbSearchPackages.Checked := True;
-      cbSearchHost.Checked := True;
-    end
-  end
-  else
-    cbSearchAll.Checked:= cbSearchDMI.Checked and cbSearchSoftwares.Checked and cbSearchPackages.Checked and cbSearchHost.Checked;
+  if (EdSearchHost.Text<>'')  and
+    (cbSearchDMI.Checked or cbSearchSoftwares.Checked or cbSearchPackages.Checked or cbSearchHost.Checked) then
+        ActSearchHostExecute(Sender);
 end;
 
 procedure TVisWaptGUI.CheckBox_errorChange(Sender: TObject);
@@ -699,11 +691,11 @@ var
 begin
   if (Gridhosts.FocusedRow <> nil) then
   begin
-    data := Gridhosts.FocusedRow['_host_data'];
+    data := Gridhosts.FocusedRow['_host_infos'];
     if data = Nil then
     begin
       data := InventoryData(GridHosts.FocusedRow.S['uuid']);
-      Gridhosts.FocusedRow['_host_data'] := data;
+      Gridhosts.FocusedRow['_host_infos'] := data;
     end;
     TreeLoadData(GridhostInventory, FilterHardware(data));
     GridhostInventory.FullExpand;
@@ -721,9 +713,9 @@ begin
     ActEvaluate.Execute;
 end;
 
-procedure TVisWaptGUI.EdSearchExecute(Sender: TObject);
+procedure TVisWaptGUI.EdSearchPackageExecute(Sender: TObject);
 begin
-  if EdSearch.Modified then
+  if EdSearchPackage.Modified then
     ActSearchPackageExecute(Sender);
 end;
 
@@ -2978,11 +2970,11 @@ var
   expr: UTF8String;
   packages: ISuperObject;
 begin
-  EdSearch.Modified:=False;
-  //packages := VarPythonEval(Format('"%s".split()',[EdSearch.Text]));
-  //packages := MainModule.mywapt.search(VarPythonEval(Format('"%s".split()',[EdSearch.Text])));
+  EdSearchPackage.Modified:=False;
+  //packages := VarPythonEval(Format('"%s".split()',[EdSearchPackage.Text]));
+  //packages := MainModule.mywapt.search(VarPythonEval(Format('"%s".split()',[EdSearchPackage.Text])));
   expr := format('mywapt.search(r"%s".decode(''utf8'').split(),section_filter="base,restricted",newest_only=%s)',
-    [EdSearch.Text,  BoolToStr(cbNewestOnly.Checked,'True','False') ]);
+    [EdSearchPackage.Text,  BoolToStr(cbNewestOnly.Checked,'True','False') ]);
   packages := DMPython.RunJSON(expr);
 
   GridPackages.Data := packages;
@@ -3213,6 +3205,26 @@ end;
 procedure TVisWaptGUI.cbNewestOnlyClick(Sender: TObject);
 begin
   ActSearchPackage.Execute;
+end;
+
+procedure TVisWaptGUI.cbSearchAllClick(Sender: TObject);
+begin
+  Gridhosts.Clear;
+  if cbSearchAll.Checked then
+  begin
+    cbSearchDMI.Checked := True;
+    cbSearchSoftwares.Checked := True;
+    cbSearchPackages.Checked := True;
+    cbSearchHost.Checked := True;
+  end
+  else
+  if not cbSearchAll.Checked then
+  begin
+    cbSearchDMI.Checked := False;
+    cbSearchSoftwares.Checked := False;
+    cbSearchPackages.Checked := False;
+    cbSearchHost.Checked := False;
+  end;
 end;
 
 function checkReadWriteAccess(dir: Utf8string): boolean;
@@ -3996,10 +4008,10 @@ begin
     if GridPackages.Data = nil then
     begin
       ActSearchPackage.Execute;
-      //EdSearch.Modified := True;
-      //THackSearchEdit(EdSearch).Change;
+      //EdSearchPackage.Modified := True;
+      //THackSearchEdit(EdSearchPackage).Change;
     end;
-    EdSearch.SetFocus;
+    EdSearchPackage.SetFocus;
   end
   else if MainPages.ActivePage = pgGroups then
   begin

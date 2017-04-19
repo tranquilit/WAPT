@@ -897,6 +897,10 @@ msgctxt "tviswaptgui.actimportfromrepo.caption"
 msgid "Import from internet"
 msgstr ""
 
+#: tviswaptgui.actmakepackagetemplate.caption
+msgid "Make package template from setup file"
+msgstr ""
+
 #: tviswaptgui.actpackageinstall.caption
 msgctxt "TVISWAPTGUI.ACTPACKAGEINSTALL.CAPTION"
 msgid "Install package"
@@ -1491,6 +1495,11 @@ msgstr ""
 msgid "Delete task"
 msgstr ""
 
+#: tviswaptgui.menuitem75.caption
+msgctxt "tviswaptgui.menuitem75.caption"
+msgid "-"
+msgstr ""
+
 #: tviswaptgui.menuitem76.caption
 msgctxt "TVISWAPTGUI.MENUITEM76.CAPTION"
 msgid "Remove"
@@ -1502,6 +1511,10 @@ msgstr ""
 
 #: tviswaptgui.menuitem9.caption
 msgid "Reopen"
+msgstr ""
+
+#: tviswaptgui.odselectinstaller.title
+msgid "Select an installer executable or msi"
 msgstr ""
 
 #: tviswaptgui.opendialogwapt.title
