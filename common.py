@@ -4144,7 +4144,8 @@ class Wapt(object):
         self.delete_param('uuid')
         inv = self.inventory()
         inv['uuid'] = self.host_uuid
-        inv['last_update_status'] = self.get_last_update_status()        inv['host_certificate'] = self.create_or_update_host_certificate()
+        inv['last_update_status'] = self.get_last_update_status()
+        inv['host_certificate'] = self.create_or_update_host_certificate()
         if self.waptserver:
             return self.waptserver.post('add_host',data = jsondump(inv))
         else:
