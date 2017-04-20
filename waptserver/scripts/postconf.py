@@ -73,10 +73,11 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn):
         'windows': False,
         'debian': type_debian(),
         'redhat': type_redhat(),
-        'strict_https': True,
+        'strict_https': False,
         'wapt_ssl_key_file': wapt_ssl_key_file,
         'wapt_ssl_cert_file': wapt_ssl_cert_file,
         'fqdn': fqdn,
+        'use_kerberos': False,
         }
 
     config_string = template.render(template_vars)
@@ -215,7 +216,8 @@ def enable_waptserver():
 
 
 def start_waptserver():
-    subprocess.check_output(['service', 'waptserver', 'restart'])
+#    subprocess.check_output(['service', 'waptserver', 'restart'])
+    print (subprocess.check_output("systemctl restart waptserver",shell=True))
 
 
 def setup_firewall():
@@ -237,22 +239,14 @@ def check_mongo2pgsql_upgrade_needed(waptserver_ini):
     mongodb_configured=0
     for proc in psutil.process_iter():
         if proc.name() == 'mongod':
-            print ("mongodb process running, need to migrate")
-            print(proc)
-            mongodb_configured= mongodb_configured + 1
-    
-    if waptserver_ini.has_option('options','mongodb_port'):
-        mongodb_configured= mongodb_configured + 1
-        
-    if waptserver_ini.has_option('options','mongodb_ip'):
-        mongodb_configured= mongodb_configured + 1
-    if mongodb_configured ==0:
-        return 0
-    elif mongodb_configured ==3:
-        return 1
-    else:
-        print ('current configuration not correct, missing parameter or running mongodb process, cannot migrate automatically, please check your installation')
-        return 2
+            if postconf.yesno("It is necessary to migrate current database backend from mongodb to postgres. Press yes to start migration",no_label='cancel')== postconf.DIALOG_OK:
+                print ("mongodb process running, need to migrate")
+                print (subprocess.check_output("sudo -u wapt /usr/bin/python /opt/wapt/waptserver/waptserver_model.py  upgrade2postgres",shell=True))
+                print (subprocess.check_output("systemctl stop mongodb",shell=True))
+                print (subprocess.check_output("systemctl disable mongodb",shell=True))
+            else:
+                print ("Post configuration aborted")
+                sys.exit(1)
 
 
 # main program
@@ -353,7 +347,7 @@ def main():
     final_msg = [
         'Postconfiguration completed.',
         ]
-
+    postconf.msgbox("Press ok to start waptserver")
     enable_waptserver()
     start_waptserver()
 
