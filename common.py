@@ -34,11 +34,13 @@ import tempfile
 import hashlib
 import glob
 import codecs
+import base64
+import zlib
 import sqlite3
 import json
 import StringIO
 import requests
-
+import cPickle
 try:
     import requests.packages.urllib3
     requests.packages.urllib3.disable_warnings()
@@ -68,6 +70,7 @@ from iniparse import RawConfigParser
 from optparse import OptionParser
 
 from collections import namedtuple
+from collections import OrderedDict
 from types import ModuleType
 
 import shutil
@@ -1591,7 +1594,7 @@ class WaptServer(object):
         else:
             raise Exception(u'Wapt server url not defined or not found in DNS')
 
-    def post(self,action,data=None,files=None,auth=None,timeout=None):
+    def post(self,action,data=None,files=None,auth=None,timeout=None,signature=None):
         """ """
         surl = self.server_url
         if surl:
@@ -1601,7 +1604,26 @@ class WaptServer(object):
                     'Content-type': 'binary/octet-stream',
                     'Content-transfer-encoding': 'binary',
                     })
-            req = requests.post("%s/%s" % (surl,action),data=data,files=files,proxies=self.proxies,verify=self.verify_cert,timeout=timeout or self.timeout,auth=auth or self.auth(),headers=headers)
+                headers['Content-Encoding'] = 'gzip'
+                data = zlib.compress(data)
+
+            if signature:
+                # remove ending \n in encoded base64 signature
+                headers.update({
+                    'X-Host-signature': base64.b64encode(signature['signature']),
+                    'X-Signed-attributes': ','.join(signature['signed_attributes']),
+                    })
+
+
+
+            req = requests.post("%s/%s" % (surl,action),
+                    data=data,
+                    files=files,
+                    proxies=self.proxies,
+                    verify=self.verify_cert,
+                    timeout=timeout or self.timeout,
+                    auth=auth or self.auth(),
+                    headers=headers)
             req.raise_for_status()
             return json.loads(req.content)
         else:
@@ -2236,6 +2258,9 @@ class Wapt(object):
         self._private_key = ''
         self._private_key_cache = None
 
+        # host key cache
+        self._host_key = None
+
         self.waptserver = None
         self.config_filedate = None
         self.load_config(config_filename = self.config_filename)
@@ -2440,6 +2465,9 @@ class Wapt(object):
         self.waptwua_enabled = False
         if self.config.has_option('global','waptwua_enabled'):
             self.waptwua_enabled = self.config.getboolean('global','waptwua_enabled')
+
+        # clear host key cache
+        self._host_key = None
 
     def write_config(self,config_filename=None):
         """Update configuration parameters to supplied inifilename
@@ -4144,12 +4172,26 @@ class Wapt(object):
         self.delete_param('uuid')
         inv = self.inventory()
         inv['uuid'] = self.host_uuid
-        inv['last_update_status'] = self.get_last_update_status()
         inv['host_certificate'] = self.create_or_update_host_certificate()
         if self.waptserver:
             return self.waptserver.post('add_host',data = jsondump(inv))
         else:
             return jsondump(inv,indent=True)
+
+    def get_host_key_filename(self):
+        # check ACL.
+        private_dir = os.path.join(self.wapt_base_dir,'private')
+        if not os.path.isdir(private_dir):
+            os.makedirs(private_dir)
+
+        return os.path.join(private_dir,setuphelpers.get_hostname()+'.pem')
+
+    def get_host_certificate_filename(self):
+        # check ACL.
+        private_dir = os.path.join(self.wapt_base_dir,'private')
+        if not os.path.isdir(private_dir):
+            os.makedirs(private_dir)
+        return os.path.join(private_dir,setuphelpers.get_hostname()+'.crt')
 
     def create_or_update_host_certificate(self,force_recreate=False):
         """Create a rsa key pair for the host and a x509 certiticate.
@@ -4164,13 +4206,16 @@ class Wapt(object):
             str: x509 certificate of this host.
 
         """
-        # check ACL.
-        private_dir = os.path.join(self.wapt_base_dir,'private')
+        key_filename = self.get_host_key_filename()
+        private_dir = os.path.dirname(key_filename)
+        # check ACL ?
         if not os.path.isdir(private_dir):
             os.makedirs(private_dir)
 
-        key_filename = os.path.join(private_dir,setuphelpers.get_hostname()+'.pem')
         crt_filename = os.path.join(private_dir,setuphelpers.get_hostname()+'.crt')
+
+        # clear cache
+        self._host_key = None
 
         if force_recreate or not os.path.isfile(key_filename) or not os.path.isfile(crt_filename):
             logger.info('Creates host keys pair and x509 certificate %s' % crt_filename)
@@ -4185,6 +4230,64 @@ class Wapt(object):
         # check validity
         return open(crt_filename,'rb').read()
 
+    def get_host_key(self):
+        if self._host_key is None:
+            # create keys pair / certificate if not yet initialised
+            if not os.path.isfile(self.get_host_key_filename()):
+                self.create_or_update_host_certificate()
+            self._host_key = SSLPrivateKey(self.get_host_key_filename())
+        return self._host_key
+
+    def sign_host_content(self,data,signed_attributes=None):
+        """Sign a dictionary with host private key with sha256 + RSA
+            dictionnary is first serialized as json
+        Args:
+            data (dict) : data to sign
+            signed_attributes (list):
+                    if supplied restricts the list of attributes to include in signature
+                    alse if None, sign all the attributes.
+        Returns
+            dict :
+                signed_attributes
+                signature : base64 encoded RSA signature of sha256 hash of the json dump
+        """
+        key = self.get_host_key()
+        if signed_attributes is None:
+            signed_attributes = data.keys()
+            signed_data = data
+        else:
+            # sign only a subset of the root attributes
+            signed_data = dict([(k,data[k]) for k in signed_attributes])
+
+        return dict(
+            signed_attributes = signed_attributes,
+            signature = key.sign_content(signed_data),
+            method = 'sha256RSA',
+            )
+
+    def check_signed_host_content(self,data,signed_attributes,signature):
+        """Sign a dictionary with host private key with sha256 + RSA
+            dictionnary is first serialized as json
+        Args:
+            data (dict) : data to sign
+            signed_attributes (list):
+                    if supplied restricts the list of attributes to include in signature
+                    alse if None, sign all the attributes.
+        Returns
+            dict :
+                signed_attributes
+                signature : base64 encoded RSA signature of sha256 hash of the json dump
+        """
+        public_key = SSLCertificate(self.get_host_certificate_filename())
+        if signed_attributes is None:
+            signed_attributes = data.keys()
+            signed_data = data
+        else:
+            # sign only a subset of the root attributes
+            signed_data = dict([(k,data[k]) for k in signed_attributes])
+
+        return public_key.verify_content(signed_data,signature)
+
     def get_last_update_status(self):
         status = json.loads(self.read_param('last_update_status','{"date": "", "running_tasks": [], "errors": [], "upgrades": []}'))
         status['runstatus'] = self.read_param('runstatus','')
@@ -4197,24 +4300,45 @@ class Wapt(object):
         >>> s = wapt.update_server_status()
         >>>
         """
-        inv = {'uuid': self.host_uuid}
-        inv['wapt_status'] = self.wapt_status()
-        inv['host_info'] = setuphelpers.host_info()
-        inv['installed_softwares'] = setuphelpers.installed_softwares('')
-        inv['installed_packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
-        inv['last_update_status'] = self.get_last_update_status()
+        def _add_data_if_updated(inv,key,data,old_hashes,new_hashes):
+            """Add the data to inv as key if modified since last update_server_status"""
+            newhash = hashlib.sha1(cPickle.dumps(data)).digest()
+            oldhash = old_hashes.get(key,None)
+            if oldhash != newhash:
+                inv[key] = data
+                new_hashes[key] = newhash
 
         if self.waptserver_available():
+            # avoid sending data to the server if it has not been updated.
             try:
-                result = self.waptserver.post('update_host',data=jsondump(inv))
+                new_hashes = {}
+                old_hashes = getattr(self,'_update_server_hashes',{})
+                inv = {'uuid': self.host_uuid}
+                inv['wapt_status'] = self.wapt_status()
+
+                _add_data_if_updated(inv,'host_info',setuphelpers.host_info(),old_hashes,new_hashes)
+                _add_data_if_updated(inv,'installed_softwares',setuphelpers.installed_softwares(''),old_hashes,new_hashes)
+                _add_data_if_updated(inv,'installed_packages',[p.as_dict() for p in self.waptdb.installed(include_errors=True).values()],old_hashes,new_hashes)
+                _add_data_if_updated(inv,'last_update_status', self.get_last_update_status(),old_hashes,new_hashes)
+
+                result = self.waptserver.post('update_host',data = jsondump(inv),signature = self.sign_host_content(inv))
+
+                # stores for next round.
+                old_hashes.update(new_hashes)
+                self._update_server_hashes = old_hashes
                 logger.info(u'Status on server %s updated properly'%self.waptserver.server_url)
             except Exception as e:
                 result = None
                 logger.warning(u'Unable to update server status : %s' % ensure_unicode(e))
             # force register if computer has not been registered or hostname has changed
-            if not result or not 'host_info' in result or result['host_info']['computer_fqdn'] != setuphelpers.get_hostname():
-                self.register_computer()
-            return result
+            if result:
+                db_data = result.get('result',None)
+                if not db_data or db_data.get('computer_fqdn',None) != setuphelpers.get_hostname():
+                    self.register_computer()
+                return db_data
+            else:
+                logger.warning('update_server_status: server returned no data, check server version')
+                return False
         else:
             logger.info('WAPT Server is not available to store current host status')
             return False
@@ -5978,10 +6102,20 @@ def check_user_membership(user_name,password,domain_name,group_name):
 Version = setuphelpers.Version  # obsolete
 
 if __name__ == '__main__':
-    w = Wapt(config_filename='c:/wapt/wapt-get.ini')
-    w.dbpath=':memory:'
-    w.update(force=True)
-    sys.exit(1)
+    #w = Wapt(config_filename='c:/tranquilit/wapt/wapt-get.ini')
+    #w.dbpath=':memory:'
+    #w.update()
+    #w.update_server_status()
+    #w.update_server_status()
+
+    #w.update(force=True)
+    #inv = w.inventory()
+    #s = w.sign_host_content(inv)
+
+    #inv = w.inventory()
+    #print w.check_signed_host_content(inv,s['signed_attributes'],s['signature'])
+
+    #sys.exit(1)
     import doctest
     import sys
     reload(sys)
