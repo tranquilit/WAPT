@@ -1604,8 +1604,9 @@ class WaptServer(object):
                     'Content-type': 'binary/octet-stream',
                     'Content-transfer-encoding': 'binary',
                     })
-                headers['Content-Encoding'] = 'gzip'
-                data = zlib.compress(data)
+                if isinstance(data,str):
+                    headers['Content-Encoding'] = 'gzip'
+                    data = zlib.compress(data)
 
             if signature:
                 # remove ending \n in encoded base64 signature
@@ -1613,8 +1614,6 @@ class WaptServer(object):
                     'X-Host-signature': base64.b64encode(signature['signature']),
                     'X-Signed-attributes': ','.join(signature['signed_attributes']),
                     })
-
-
 
             req = requests.post("%s/%s" % (surl,action),
                     data=data,
