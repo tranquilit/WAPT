@@ -443,6 +443,12 @@ class SSLCertificate(object):
         rsa = self.crt.get_pubkey().get_rsa()
         return rsa.public_decrypt(content, RSA.pkcs1_padding)
 
+    def extensions(self):
+        result = {}
+        for i in range(0,self.crt.get_ext_count()):
+            e =  self.crt.get_ext_at(i)
+            result[e.get_name()] = e.get_value()
+        return result
 
 def ssl_verify_content(content,signature,public_certs):
     u"""Check that the signature matches the content, using the provided list of public keys
