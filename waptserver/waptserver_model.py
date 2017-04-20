@@ -353,7 +353,7 @@ def wapthosts_json(model_class, instance, created):
 @post_save(sender=Hosts)
 def wapthosts_model_post_save(model_class, instance, created):
     # stores packages json data into separate HostPackagesStatus
-    if (created):
+    if created:
         HostPackagesStatus.delete().where(HostPackagesStatus.host == instance.uuid).execute()
         packages = []
         for package in instance.installed_packages:
