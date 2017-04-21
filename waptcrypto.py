@@ -24,6 +24,7 @@ __version__ = "1.4.2"
 
 import os,sys
 import codecs
+import base64
 import hashlib
 import glob
 

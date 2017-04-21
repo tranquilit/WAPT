@@ -52,6 +52,9 @@ from functools import wraps
 import logging
 import ConfigParser
 import codecs
+import base64
+import zlib
+
 import zipfile
 import platform
 import socket
@@ -61,7 +64,7 @@ import subprocess
 import tempfile
 import traceback
 import datetime
-import uuid
+import uuid as uuid_
 import email.utils
 import collections
 import urlparse
@@ -325,8 +328,9 @@ def update_host_data(data):
     """
     uuid = data['uuid']
     try:
-        # simulates an upsert statement based on uuid PK
-        try:
+        existing = Hosts.select(Hosts.uuid,Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
+        if not existing:
+            logger.debug('Inserting new host %s with fields %s'%(uuid,data.keys()))
             # wapt update_status packages softwares host
             newhost = Hosts()
             for k in data.keys():
@@ -334,8 +338,8 @@ def update_host_data(data):
                     setattr(newhost,k,data[k])
 
             newhost.save(force_insert=True)
-        except IntegrityError as e:
-            wapt_db.rollback()
+        else:
+            logger.debug('Updating %s for fields %s'%(uuid,data.keys()))
             updhost = Hosts.get(uuid=uuid)
             for k in data.keys():
                 if hasattr(updhost,k):
@@ -382,17 +386,19 @@ def get_reachable_ip(ips=[], waptservice_port=conf[
 def update_host():
     """Update localstatus of computer, and return known registration info"""
     try:
-        data = json.loads(request.data)
+        starttime = time.time()
+        if request.headers.get('Content-Encoding') == 'gzip':
+            data = json.loads(zlib.decompress(request.data))
+        else:
+            data = json.loads(request.data)
         if data:
             uuid = data["uuid"]
             if uuid:
                 logger.info('Update host %s status' % (uuid,))
                 data['last_seen_on'] = datetime2isodate()
                 db_data = update_host_data(data)
-                result = dict(
-                    status='OK',
-                    message="update_host",
-                    result=db_data)
+                result = db_data
+                message="update_host",
 
                 # check if client is reachable
                 if not 'check_hosts_thread' in g or not g.check_hosts_thread.is_alive():
@@ -408,29 +414,14 @@ def update_host():
                     g.check_hosts_thread.queue.put(data)
 
             else:
-                result = dict(
-                    status='ERROR',
-                    message="update_host: No uuid supplied")
+                raise Exception("update_host: No uuid supplied")
         else:
-            result = dict(
-                status='ERROR',
-                message="update_host: No data supplied")
+            raise Exception("update_host: No data supplied")
+
+        return make_response(result=result,msg=message,request_time = time.time() - starttime)
 
     except Exception as e:
-        result = dict(
-            status='ERROR', message='%s: %s' %
-            ('update_host', e), result=None)
-
-    # backward... to fix !
-    if result['status'] == 'OK':
-        return Response(response=json.dumps(result['result']),
-                        status=200,
-                        mimetype="application/json")
-    else:
-        return Response(response=json.dumps(result),
-                        status=200,
-                        mimetype="application/json")
-
+        return make_response_from_exception(e)
 
 @app.route('/upload_package/<string:filename>',methods=['POST'])
 @requires_auth
@@ -881,7 +872,7 @@ def ping():
     config_file = app.config['CONFIG_FILE']
 
     if conf['server_uuid'] == '':
-        server_uuid = str(uuid.uuid1())
+        server_uuid = str(uuid_.uuid1())
         rewrite_config_item(config_file, 'options', 'server_uuid', server_uuid)
         conf['server_uuid'] = server_uuid
         reload_config()
