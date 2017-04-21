@@ -353,7 +353,7 @@ def wapthosts_json(model_class, instance, created):
 @post_save(sender=Hosts)
 def wapthosts_model_post_save(model_class, instance, created):
     # stores packages json data into separate HostPackagesStatus
-    if (created):
+    if created:
         HostPackagesStatus.delete().where(HostPackagesStatus.host == instance.uuid).execute()
         packages = []
         for package in instance.installed_packages:
@@ -386,22 +386,12 @@ def init_db(drop=False):
             table.drop_table(fail_silently=True)
     wapt_db.create_tables([Hosts,HostPackagesStatus,HostSoftwares,HostJsonRaw,HostWsus],safe=True)
 
-def mongo_data(ip='127.0.0.1',port=27017):
-    """For raw import from mongo"""
-    from pymongo import MongoClient
-    mongo_client = MongoClient(ip,port)
-    db = mongo_client.wapt
-    hosts = db.hosts
-    result = []
-    for h in hosts.find():
-        h.pop("_id")
-        result.append(h)
-    return result
 
 def create_import_data(ip='127.0.0.1',fn=None):
     """Connect to a mongo instance and write all wapt.hosts collection as json into a file"""
-    print('Read mongo data from %s ...'%ip)
-    d = mongo_data(ip=ip)
+    output = subprocess.check_output('/usr/bin/python /opt/wapt/waptserver/scripts/get_mongodb_data.py',shell=True)
+    print('Read mongo data from json dump ')
+    d =json.loads(output)
     print('%s records read.'%len(d))
     if fn is None:
         fn = "%s.json"%ip
@@ -520,11 +510,9 @@ def upgrade2postgres():
     try:
         load_json(filenames=data_import_filename)
         # TODO : check that data is properly imported
-        subprocess.check_output('systemctl stop mongodb')
-        subprocess.check_output('systemctl disable mongodb')
 
     except Exception as e:
-        traceback.print_stack()
+        traceback.print_exc(file=sys.stdout)
         print ('Exception while loading data, please check current configuration')
         sys.exit(1)
 
@@ -535,7 +523,9 @@ if __name__ == '__main__':
 
     if platform.system != 'Windows' and getpass.getuser()!='wapt':
         print """you should run this program as wapt:
-                     sudo -u wapt python /opt/wapt/waptserver/waptserver_model.py  <action>"""
+                     sudo -u wapt python /opt/wapt/waptserver/waptserver_model.py  <action>
+                 actions : init_db
+                           upgrade2postgres"""
         sys.exit(1)
     print sys.argv
     if len(sys.argv)>1:
