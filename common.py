@@ -1609,10 +1609,8 @@ class WaptServer(object):
                     data = zlib.compress(data)
 
             if signature:
-                # remove ending \n in encoded base64 signature
                 headers.update({
-                    'X-Host-signature': base64.b64encode(signature['signature']),
-                    'X-Signed-attributes': ','.join(signature['signed_attributes']),
+                    'X-Signature': base64.b64encode(signature),
                     })
 
             req = requests.post("%s/%s" % (surl,action),
@@ -4237,62 +4235,22 @@ class Wapt(object):
             self._host_key = SSLPrivateKey(self.get_host_key_filename())
         return self._host_key
 
-    def sign_host_content(self,data,signed_attributes=None):
-        """Sign a dictionary with host private key with sha256 + RSA
-            dictionnary is first serialized as json
+    def sign_host_content(self,data):
+        """Sign data str with host private key with sha256 + RSA
         Args:
-            data (dict) : data to sign
-            signed_attributes (list):
-                    if supplied restricts the list of attributes to include in signature
-                    alse if None, sign all the attributes.
+            data (str) : data to sign
         Returns
-            dict :
-                signed_attributes
-                signature : base64 encoded RSA signature of sha256 hash of the json dump
+            str:
         """
         key = self.get_host_key()
-        if signed_attributes is None:
-            signed_attributes = data.keys()
-            signed_data = data
-        else:
-            # sign only a subset of the root attributes
-            signed_data = dict([(k,data[k]) for k in signed_attributes])
-
-        return dict(
-            signed_attributes = signed_attributes,
-            signature = key.sign_content(signed_data),
-            method = 'sha256RSA',
-            )
-
-    def check_signed_host_content(self,data,signed_attributes,signature):
-        """Sign a dictionary with host private key with sha256 + RSA
-            dictionnary is first serialized as json
-        Args:
-            data (dict) : data to sign
-            signed_attributes (list):
-                    if supplied restricts the list of attributes to include in signature
-                    alse if None, sign all the attributes.
-        Returns
-            dict :
-                signed_attributes
-                signature : base64 encoded RSA signature of sha256 hash of the json dump
-        """
-        public_key = SSLCertificate(self.get_host_certificate_filename())
-        if signed_attributes is None:
-            signed_attributes = data.keys()
-            signed_data = data
-        else:
-            # sign only a subset of the root attributes
-            signed_data = dict([(k,data[k]) for k in signed_attributes])
-
-        return public_key.verify_content(signed_data,signature)
+        return key.sign_content(sha256_for_data(str(data)))
 
     def get_last_update_status(self):
         status = json.loads(self.read_param('last_update_status','{"date": "", "running_tasks": [], "errors": [], "upgrades": []}'))
         status['runstatus'] = self.read_param('runstatus','')
-        return json.loads(json.dumps(status))
+        return json.loads(jsondump(status))
 
-    def update_server_status(self):
+    def update_server_status(self,force=False):
         """Send packages and software informations to WAPT Server, don't send dmi
 
         >>> wapt = Wapt()
@@ -4303,7 +4261,7 @@ class Wapt(object):
             """Add the data to inv as key if modified since last update_server_status"""
             newhash = hashlib.sha1(cPickle.dumps(data)).digest()
             oldhash = old_hashes.get(key,None)
-            if oldhash != newhash:
+            if force or oldhash != newhash:
                 inv[key] = data
                 new_hashes[key] = newhash
 
@@ -4320,7 +4278,11 @@ class Wapt(object):
                 _add_data_if_updated(inv,'installed_packages',[p.as_dict() for p in self.waptdb.installed(include_errors=True).values()],old_hashes,new_hashes)
                 _add_data_if_updated(inv,'last_update_status', self.get_last_update_status(),old_hashes,new_hashes)
 
-                result = self.waptserver.post('update_host',data = jsondump(inv),signature = self.sign_host_content(inv))
+                data = jsondump(inv)
+                signature = self.sign_host_content(data)
+                logger.debug('Signature for supplied data: %s' % signature)
+
+                result = self.waptserver.post('update_host',data = data, signature = signature)
 
                 # stores for next round.
                 old_hashes.update(new_hashes)
@@ -6102,7 +6064,6 @@ Version = setuphelpers.Version  # obsolete
 
 if __name__ == '__main__':
     #w = Wapt(config_filename='c:/tranquilit/wapt/wapt-get.ini')
-    #w.dbpath=':memory:'
     #w.update()
     #w.update_server_status()
     #w.update_server_status()

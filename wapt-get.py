@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.1"
+__version__ = "1.4.3"
 
 import codecs
 import getpass
@@ -406,7 +406,7 @@ def main():
                         print(u' === Unavailable packages ===\n%s' % '\n'.join(["  %-30s" % s[0] for s in  result['unavailable']]))
                 if mywapt.waptserver:
                     try:
-                        mywapt.update_server_status()
+                        mywapt.update_server_status(force=options.force)
                     except Exception as e:
                         logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
 
@@ -531,7 +531,7 @@ def main():
 
                 if mywapt.waptserver:
                     try:
-                        mywapt.update_server_status()
+                        mywapt.update_server_status(force=options.force)
                     except Exception as e:
                         logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
 
@@ -617,7 +617,7 @@ def main():
                                 print(u"\n=== %s packages ===\n%s" % (k,'\n'.join( ["  %-30s | %s (%s)" % (s[0],s[1].package,s[1].version) for s in  result[k]]),))
                 if mywapt.waptserver:
                     try:
-                        mywapt.update_server_status()
+                        mywapt.update_server_status(force=options.force)
                     except Exception as e:
                         logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
                 sys.exit(0)
@@ -962,7 +962,7 @@ def main():
                 result = mywapt.generate_host_uuid(forced_uuid=uuid)
 
                 if mywapt.waptserver:
-                    mywapt.update_server_status()
+                    mywapt.update_server_status(force=options.force)
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
@@ -981,7 +981,7 @@ def main():
 
             elif action == 'update-status':
                 if mywapt.waptserver:
-                    result = mywapt.update_server_status()
+                    result = mywapt.update_server_status(force=options.force)
                     if result:
                         if options.json_output:
                             jsonresult['result'] = result

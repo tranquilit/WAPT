@@ -23,9 +23,6 @@
 __version__ = "1.4.3"
 
 import sys
-import json
-import datetime
-import email.utils
 import errno
 import flask
 import logging
@@ -33,16 +30,12 @@ import os
 import requests
 import traceback
 import time
+from waptutils import jsondump
 
 __all__ = [
-    'ensure_list',
     'mkdir_p',
     'utils_set_devel_mode',
-    'wget',
     'get_disk_space',
-    'datetime2isodate',
-    'isodate2datetime',
-    'httpdatetime2isodate',
     'logger',
     'setloglevel',
     'make_response',
@@ -55,41 +48,6 @@ __all__ = [
     'EWaptSignalReceived',
     'EWaptDatabaseError',
 ]
-
-##### Date/Time utilities #####
-def datetime2isodate(adatetime = None):
-    if not adatetime:
-        adatetime = datetime.datetime.now()
-    assert(isinstance(adatetime,datetime.datetime))
-    return adatetime.isoformat()
-
-def isodate2datetime(isodatestr):
-    # we remove the microseconds part as it is not working for python2.5 strptime
-    return datetime.datetime.strptime(isodatestr.split('.')[0] , "%Y-%m-%dT%H:%M:%S")
-
-def httpdatetime2isodate(httpdate):
-    """convert a date string as returned in http headers or mail headers to isodate
-    >>> import requests
-    >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
-    >>> len(httpdatetime2isodate(last_modified)) == 19
-    True
-    """
-    return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
-
-##### Misc. utilities #####
-def ensure_list(csv_or_list,ignore_empty_args=True):
-    """if argument is not a list, return a list from a csv string"""
-    if csv_or_list is None:
-        return []
-    if isinstance(csv_or_list,tuple):
-        return list(csv_or_list)
-    elif not isinstance(csv_or_list,list):
-        if ignore_empty_args:
-            return [s.strip() for s in csv_or_list.split(',') if s.strip() != '']
-        else:
-            return [s.strip() for s in csv_or_list.split(',')]
-    else:
-        return csv_or_list
 
 utils_devel_mode = False
 def utils_set_devel_mode(devel):
@@ -105,65 +63,6 @@ def mkdir_p(path):
             pass
         else:
             raise
-
-def wget(url,target,proxies=None,connect_timeout=10,download_timeout=None, chunk_callback=None):
-    r"""Copy the contents of a file from a given URL to a local file.
-    >>> respath = wget('http://wapt.tranquil.it/wapt/tis-firefox_28.0.0-1_all.wapt','c:\\tmp\\test.wapt',proxies={'http':'http://proxy:3128'})
-    ???
-    >>> os.stat(respath).st_size>10000
-    True
-    >>> respath = wget('http://localhost:8088/runstatus','c:\\tmp\\test.json')
-    ???
-    """
-
-    def default_chunk_callback(expected_size, downloaded_size):
-        # nothing
-        pass
-
-    if chunk_callback is None:
-        chunk_callback = default_chunk_callback
-
-    if os.path.isdir(target):
-        target = os.path.join(target,'')
-
-    (dir,filename) = os.path.split(target)
-    if not filename:
-        filename = url.split('/')[-1]
-    if not dir:
-        dir = os.getcwd()
-
-    if not os.path.isdir(dir):
-        os.makedirs(dir)
-
-    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout, verify=False)
-
-    total_bytes = int(httpreq.headers['content-length'])
-
-    # 1MB max, 2KB min
-    chunk_size = min([1024*1024,max([total_bytes/100,2048])])
-
-    httpreq.raise_for_status()
-    start_time = time.time()
-
-    with open(os.path.join(dir,filename),'wb') as output_file:
-        downloaded_bytes = 0
-        if httpreq.ok:
-            for chunk in httpreq.iter_content(chunk_size=chunk_size):
-                chunk_callback(total_bytes, downloaded_bytes)
-                output_file.write(chunk)
-                if download_timeout is not None and (time.time()-start_time>download_timeout):
-                    raise requests.Timeout(r'Download of %s takes more than the requested %ss'%(url,download_timeout))
-                if len(chunk) != 0:
-                    downloaded_bytes += len(chunk)
-                    chunk_callback(total_bytes, downloaded_bytes)
-
-    # restore mtime of file if information is provided.
-    if 'last-modified' in httpreq.headers:
-        last_modified = httpreq.headers['last-modified']
-        unix_timestamp = float(email.utils.mktime_tz(email.utils.parsedate_tz(last_modified)))
-        os.utime(os.path.join(dir,filename),(unix_timestamp,unix_timestamp))
-    return os.path.join(dir,filename)
-
 
 def get_disk_space(directory):
 
@@ -211,7 +110,7 @@ def make_response(result = {},success=True,error_code='',msg='',status=200,reque
         data['result'] = result
     data['request_time'] = request_time
     return flask.Response(
-            response=json.dumps(data),
+            response=jsondump(data),
             status=status,
             mimetype="application/json")
 
@@ -235,10 +134,9 @@ def make_response_from_exception(exception,error_code='',status=200):
     else:
         data['msg'] = u"%s" % (exception,)
     return flask.Response(
-            response=json.dumps(data),
+            response=jsondump(data),
             status=status,
             mimetype="application/json")
-
 
 
 ##### Custom exceptions #####

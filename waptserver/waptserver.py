@@ -67,6 +67,7 @@ import datetime
 import uuid as uuid_
 import email.utils
 import collections
+from collections import OrderedDict
 import urlparse
 import stat
 import pefile
@@ -290,7 +291,7 @@ def index():
         db_status = 'ERROR'
 
     try:
-        space = get_disk_space(conf['wapt_folder'])
+        space = get_disk_free_space(conf['wapt_folder'])
         if not space:
             raise Exception('Disk info not found')
         percent_free = (space[0] * 100) / space[1]
@@ -323,12 +324,19 @@ def update_host_data(data):
                         eld insert
                       only keys in data are pushed to DB.
                         Other data (fields) are left untouched
+        signature (str) : check the supplied data with host certificate before updating the DB
+        signed_attributes (list):
     Returns:
         dict : host data from db after update
     """
     uuid = data['uuid']
     try:
         existing = Hosts.select(Hosts.uuid,Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
+        if existing:
+            hostname = existing.computer_fqdn
+        else:
+            hostname = data.get('computer_fqdn',None)
+
         if not existing:
             logger.debug('Inserting new host %s with fields %s'%(uuid,data.keys()))
             # wapt update_status packages softwares host
@@ -340,18 +348,20 @@ def update_host_data(data):
             newhost.save(force_insert=True)
         else:
             logger.debug('Updating %s for fields %s'%(uuid,data.keys()))
+
             updhost = Hosts.get(uuid=uuid)
             for k in data.keys():
                 if hasattr(updhost,k):
                     setattr(updhost,k,data[k])
             updhost.save()
+
+        result_query = Hosts.select(Hosts.uuid,Hosts.computer_fqdn,Hosts.host_info)
+        return result_query.where(Hosts.uuid == uuid).dicts().first(1)
+
     except Exception as e:
         logger.critical(u'Error updating data for %s : %s'%(uuid,ensure_unicode(e)))
         wapt_db.rollback()
-
-    result_query = Hosts.select(Hosts.uuid,Hosts.computer_fqdn,Hosts.host_info)
-    return result_query.where(Hosts.uuid == uuid).dicts().first(1)
-
+        raise
 
 def get_reachable_ip(ips=[], waptservice_port=conf[
                      'waptservice_port'], timeout=conf['clients_connect_timeout']):
@@ -387,16 +397,43 @@ def update_host():
     """Update localstatus of computer, and return known registration info"""
     try:
         starttime = time.time()
+
         if request.headers.get('Content-Encoding') == 'gzip':
-            data = json.loads(zlib.decompress(request.data))
+            raw_data = zlib.decompress(request.data)
         else:
-            data = json.loads(request.data)
+            raw_data = request.data
+
+        data = json.loads(raw_data)
+
         if data:
             uuid = data["uuid"]
             if uuid:
                 logger.info('Update host %s status' % (uuid,))
                 data['last_seen_on'] = datetime2isodate()
+                signature_b64 = request.headers.get('X-Signature',None)
+                if signature_b64:
+                    signature = signature_b64.decode('base64')
+                else:
+                    signature = None
+
+                if signature:
+                    if request.path == '/add_host':
+                        host_cert = SSLCertificate(crt_string = data['host_certificate'])
+                    else:
+                        host_cert = SSLCertificate(crt_string = Hosts.select(Hosts.host_certificate).where(Hosts.uuid == uuid).first().host_certificate)
+
+                    if host_cert:
+                        logger.debug('About to check supplied data signature with certificate %s' % host_cert.cn)
+                        host_dn = host_cert.verify_content(sha256_for_data(raw_data),signature)
+
+                        logger.info('Data successfully checked with certificate CN %s for %s'% (host_dn,uuid))
+                    else:
+                        raise EWaptMissingCertificate('There is no public certificate for checking signed data from %s' % (uuid))
+                else:
+                    logger.warning('No signature for supplied data for %s' % (uuid))
+
                 db_data = update_host_data(data)
+
                 result = db_data
                 message="update_host",
 

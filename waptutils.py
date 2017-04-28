@@ -434,34 +434,6 @@ def force_utf8_no_bom(filename):
             content = codecs.open(filename, encoding='iso8859-15').read()
             codecs.open(filename, mode='wb', encoding='utf8').write(content)
 
-def zip_remove_files(zipfilename,filenames):
-    """Remove a list of files from a ZIP using 7-zip or zip (python ZipFile can't do that
-
-    >>> zip_remove_files('c:/wapt/cache/tis-java8_8.111-23_all.wapt',['WAPT/signature'])
-    """
-
-    try:
-        if platform.system() == 'Windows':
-            with _disable_file_system_redirection():
-                sevenzip = os.path.join(_programfiles(),'7-zip','7z.exe')
-                if not os.path.isfile(sevenzip):
-                    sevenzip = os.path.join(os.path.expandvars('%ProgramFiles(x86)%'),'7-zip','7z.exe')
-                if not os.path.isfile(sevenzip):
-                    raise Exception('7-Zip is not installed, unable to remove files %s from %s' % (filenames,zipfilename))
-                if os.path.isfile(zipfilename+'.tmp'):
-                    os.unlink(zipfilename+'.tmp')
-                si = subprocess.STARTUPINFO()
-                si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-                result = subprocess.check_call([sevenzip,'d',zipfilename]+filenames,startupinfo = si)
-        else:
-            if platform.system() == 'Linux':
-                result = subprocess.check_call(['zip','-d',zipfilename]+filenames)
-    except Exception as e:
-        if os.path.isfile(zipfilename+'.tmp'):
-            os.unlink(zipfilename+'.tmp')
-        raise Exception('Unable to remove files %s from %s: error %s' % (filenames,zipfilename,e))
-    return result
-
 def expand_args(args):
     """Return list of unicode file paths expanded from wildcard list args"""
     all_args = []

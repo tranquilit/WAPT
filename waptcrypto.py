@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.2"
+__version__ = "1.4.3"
 
 import os,sys
 import codecs
@@ -142,7 +142,7 @@ class SSLCAChain(object):
                 incert = True
             elif line == self.END_CERTIFICATE:
                 tmplines.append(line)
-                crt =  X509.load_cert_string('\n'.join(tmplines))
+                crt =  X509.load_cert_string(str('\n'.join(tmplines)))
                 self._certificates[crt.get_fingerprint(md='sha1')] = SSLCertificate(filename,crt=crt)
                 incert = False
                 tmplines = []
@@ -152,7 +152,7 @@ class SSLCAChain(object):
             elif line == self.END_KEY:
                 tmplines.append(line)
                 if load_keys:
-                    key = EVP.load_key_string('\n'.join(tmplines),callback=self.callback)
+                    key = EVP.load_key_string(str('\n'.join(tmplines)),callback=self.callback)
                     self._keys[key.get_modulus()] = SSLPrivateKey(filename,key=key,callback=self.callback)
                 inkey = False
                 tmplines = []
@@ -274,18 +274,22 @@ class SSLPrivateKey(object):
 
 class SSLCertificate(object):
     """Hold a X509 public certificate"""
-    def __init__(self,public_cert=None,crt=None,ignore_validity_checks=True):
+    def __init__(self,crt_filename=None,crt=None,crt_string=None,ignore_validity_checks=True):
         """
-            public_cert (str): Path to X509 encoded certificate
-            crt (
+        Args:
+            public_cert (str): File Path to X509 encoded certificate
+            crt (: X509 SSL Object
+            crt_string (str): X09 PEM encoded string
         """
         self._public_cert_filename = None
         self._crt = None
         self._rsa = None
         self._key = None
-        self.public_cert_filename = public_cert
+        self.public_cert_filename = crt_filename
         if crt:
             self._crt = crt
+        elif crt_string:
+            self._crt = X509.load_cert_string(str(crt_string))
         self.ignore_validity_checks = ignore_validity_checks
 
     @property
