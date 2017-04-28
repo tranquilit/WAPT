@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.2"
+__version__ = "1.4.3"
 
 import sys
 import json
@@ -34,7 +34,27 @@ import requests
 import traceback
 import time
 
-__all__ = []
+__all__ = [
+    'ensure_list',
+    'mkdir_p',
+    'utils_set_devel_mode',
+    'wget',
+    'get_disk_space',
+    'datetime2isodate',
+    'isodate2datetime',
+    'httpdatetime2isodate',
+    'logger',
+    'setloglevel',
+    'make_response',
+    'make_response_from_exception',
+    'EWaptMissingHostData',
+    'EWaptUnknownHost',
+    'EWaptHostUnreachable',
+    'EWaptForbiddden',
+    'EWaptMissingParameter',
+    'EWaptSignalReceived',
+    'EWaptDatabaseError',
+]
 
 ##### Date/Time utilities #####
 def datetime2isodate(adatetime = None):
@@ -55,11 +75,6 @@ def httpdatetime2isodate(httpdate):
     True
     """
     return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
-
-__all__ += ['datetime2isodate']
-__all__ += ['isodate2datetime']
-__all__ += ['httpdatetime2isodate']
-
 
 ##### Misc. utilities #####
 def ensure_list(csv_or_list,ignore_empty_args=True):
@@ -171,13 +186,6 @@ def get_disk_space(directory):
     return ret
 
 
-__all__ += ['ensure_list']
-__all__ += ['mkdir_p']
-__all__ += ['utils_set_devel_mode']
-__all__ += ['wget']
-__all__ += ['get_disk_space']
-
-
 ##### Logging #####
 logger = logging.getLogger()
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
@@ -189,9 +197,6 @@ def setloglevel(logger,loglevel):
         if not isinstance(numeric_level, int):
             raise ValueError('Invalid log level: {}'.format(loglevel))
         logger.setLevel(numeric_level)
-
-__all__ += ['logger']
-__all__ += ['setloglevel']
 
 
 ##### API V2 #####
@@ -234,8 +239,6 @@ def make_response_from_exception(exception,error_code='',status=200):
             status=status,
             mimetype="application/json")
 
-__all__ += ['make_response']
-__all__ += ['make_response_from_exception']
 
 
 ##### Custom exceptions #####
@@ -260,10 +263,3 @@ class EWaptSignalReceived(Exception):
 class EWaptDatabaseError(Exception):
     pass
 
-__all__ += ['EWaptMissingHostData']
-__all__ += ['EWaptUnknownHost']
-__all__ += ['EWaptHostUnreachable']
-__all__ += ['EWaptForbiddden']
-__all__ += ['EWaptMissingParameter']
-__all__ += ['EWaptSignalReceived']
-__all__ += ['EWaptDatabaseError']

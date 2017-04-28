@@ -43,17 +43,19 @@ sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 
 import logging
 import ConfigParser
+from optparse import OptionParser
 
 from playhouse.migrate import *
 from waptserver_model import *
-
-from optparse import OptionParser
+from waptserver_utils import *
 
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
 config_file = DEFAULT_CONFIG_FILE
 
 # setup logging
 logger = logging.getLogger()
+
+logging.basicConfig()
 
 parser = OptionParser(usage=usage, version='waptserver.py ' + __version__)
 parser.add_option(
@@ -66,7 +68,7 @@ parser.add_option(
     "-l",
     "--loglevel",
     dest="loglevel",
-    default=None,
+    default='info',
     type='choice',
     choices=[
         'debug',
@@ -87,6 +89,11 @@ parser.add_option(
 (options, args) = parser.parse_args()
 
 migrator = PostgresqlMigrator(wapt_db)
+
+utils_set_devel_mode(options.devel)
+
+if options.loglevel is not None:
+    setloglevel(logger, options.loglevel)
 
 logging.info('Current DB: %s version: %s' % (wapt_db.connect_kwargs,get_db_version()))
 
