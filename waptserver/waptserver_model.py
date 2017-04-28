@@ -40,7 +40,6 @@ sys.path.insert(0, os.path.join(wapt_root_dir))
 sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
 sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 
-
 from peewee import *
 from playhouse.postgres_ext import *
 
@@ -65,6 +64,16 @@ class BaseModel(SignaledModel):
     class Meta:
         database = wapt_db
 
+class ServerAttribs(BaseModel):
+    """key/value registry"""
+    key = CharField(primary_key=True,null=False,index=True)
+    value = BinaryJSONField(null=True)
+
+    @classmethod
+    def dump(cls):
+        for key,value in cls.select(cls.key,cls.value).tuples():
+            print(u"%s: %s" % (key,repr(value)))
+
 class Hosts(BaseModel):
     """
     Inventory informations of a host
@@ -81,6 +90,8 @@ class Hosts(BaseModel):
     manufacturer = CharField(null=True)
     productname = CharField(null=True)
     serialnr = CharField(null=True)
+
+    host_certificate = TextField(null=True,help_text='Host public X509 certificate')
 
     os_name = CharField(null=True)
     os_version = CharField(null=True)
@@ -516,6 +527,11 @@ def upgrade2postgres():
         print ('Exception while loading data, please check current configuration')
         sys.exit(1)
 
+def get_db_version():
+    if not 'serverattribs' in wapt_db.get_tables():
+        return '1.4.1'
+    else:
+        return ServerAttribs.get(key='db_version').value
 
 if __name__ == '__main__':
     #init_db(True)
