@@ -2367,7 +2367,7 @@ def dmi_info():
 
     result = {}
     try:
-        dmiout = run('dmidecode -q',shell=False)
+        dmiout = ensure_unicode(run('dmidecode -q',shell=False))
         new_section = True
         for l in dmiout.splitlines():
             if not l.strip() or l.startswith('#'):
@@ -3229,7 +3229,7 @@ def delete_task(name):
 
 def disable_task(name):
     """Disable a Windows scheduled task"""
-    return run('schtasks /Change /TN "%s" /DISABLE' % name)
+    return ensure_unicode(run('schtasks /Change /TN "%s" /DISABLE' % name))
     """
     task = get_task(name)
     task.SetFlags(task.GetFlags() | taskscheduler.TASK_FLAG_DISABLED)
@@ -3245,7 +3245,7 @@ def enable_task(name):
     Args:
         name (str) : name of the tasks as created in create_daily_task
     """
-    return run('schtasks /Change /TN "%s" /ENABLE' % name)
+    return ensure_unicode(run('schtasks /Change /TN "%s" /ENABLE' % name))
 
     """
     task = get_task(name)
@@ -3365,11 +3365,11 @@ def create_onetime_task(name,cmd,parameters=None, delay_minutes=2,max_runtime=10
     # task
     hour_min = time.strftime('%H:%M:%S', run_time)
     try:
-        return run('schtasks /Create /SC ONCE /TN "%s" /TR "\'%s\' %s" /ST %s /RU SYSTEM /F /V1 /Z' % (name,cmd,parameters,hour_min))
+        return ensure_unicode(run('schtasks /Create /SC ONCE /TN "%s" /TR "\'%s\' %s" /ST %s /RU SYSTEM /F /V1 /Z' % (name,cmd,parameters,hour_min)))
     except:
         # windows xp doesn't support one time startup task /Z nor /F
         run_notfatal('schtasks /Delete /TN "%s" /F'%name)
-        return run('schtasks /Create /SC ONCE /TN "%s" /TR  "%s %s" /ST %s /RU SYSTEM' % (name,cmd,parameters,hour_min))
+        return ensure_unicode(run('schtasks /Create /SC ONCE /TN "%s" /TR  "%s %s" /ST %s /RU SYSTEM' % (name,cmd,parameters,hour_min)))
 
 
 def get_current_user():

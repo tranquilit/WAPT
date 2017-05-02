@@ -1516,7 +1516,7 @@ class WaptClientUpgrade(WaptTask):
     def _run(self):
         """Launch an external 'wapt-get waptupgrade' process to upgrade local copy of wapt client"""
         from setuphelpers import run
-        output = run('"%s" %s' % (os.path.join(wapt_root_dir,'wapt-get.exe'),'waptupgrade'))
+        output = ensure_unicode(run('"%s" %s' % (os.path.join(wapt_root_dir,'wapt-get.exe'),'waptupgrade')))
         self.result = {'result':'OK','message':output}
 
     def __unicode__(self):
