@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.2"
+__version__ = "1.4.3"
 
 import os
 import sys
@@ -329,21 +329,27 @@ def update_host_data(data):
     Returns:
         dict : host data from db after update
     """
+    migrate_map_13_14 = {
+        'packages':'installed_packages',
+        'softwares':'installed_softwares',
+        'update_status':'last_update_status',
+        'host':'host_info',
+        'wapt':'wapt_status',
+        'update_status':'last_update_status',
+        }
+
     uuid = data['uuid']
     try:
         existing = Hosts.select(Hosts.uuid,Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
-        if existing:
-            hostname = existing.computer_fqdn
-        else:
-            hostname = data.get('computer_fqdn',None)
-
         if not existing:
             logger.debug('Inserting new host %s with fields %s'%(uuid,data.keys()))
             # wapt update_status packages softwares host
             newhost = Hosts()
             for k in data.keys():
-                if hasattr(newhost,k):
-                    setattr(newhost,k,data[k])
+                # manage field renaming between 1.3 and >= 1.4
+                target_key = migrate_map_13_14.get(k,k)
+                if hasattr(newhost,target_key):
+                    setattr(newhost,target_key,data[k])
 
             newhost.save(force_insert=True)
         else:
@@ -351,8 +357,10 @@ def update_host_data(data):
 
             updhost = Hosts.get(uuid=uuid)
             for k in data.keys():
-                if hasattr(updhost,k):
-                    setattr(updhost,k,data[k])
+                # manage field renaming between 1.3 and >= 1.4
+                target_key = migrate_map_13_14.get(k,k)
+                if hasattr(updhost,target_key):
+                    setattr(updhost,target_key,data[k])
             updhost.save()
 
         result_query = Hosts.select(Hosts.uuid,Hosts.computer_fqdn,Hosts.host_info)
@@ -1208,16 +1216,18 @@ def trigger_wakeonlan():
     try:
         uuid = request.args['uuid']
         host_data = Hosts\
-                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt_status,Hosts.host_info)\
+                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.mac_addresses,Hosts.wapt_status,Hosts.host_info)\
                         .where(Hosts.uuid==uuid)\
+                        .dicts()\
                         .first(1)
-        macs = host_data['host_info']['mac']
+        macs = host_data['mac_addresses']
         msg = u''
         if macs:
             logger.info(
                 _("Sending magic wakeonlan packets to {} for machine {}").format(
                     macs,
-                    host_data.computer_fqdn))
+                    host_data['computer_fqdn']
+                    ))
             wakeonlan.wol.send_magic_packet(*macs)
             for line in host_data['host_info']['networking']:
                 if 'broadcast' in line:
@@ -1229,10 +1239,10 @@ def trigger_wakeonlan():
                         broadcast)
             msg = _(u"Wakeonlan packets sent to {} for machine {}").format(
                 macs,
-                host_data.computer_fqdn)
+                host_data['computer_fqdn'])
             result = dict(
                 macs=macs,
-                host=host_data.computer_fqdn,
+                host=host_data['computer_fqdn'],
                 uuid=uuid)
         else:
             raise EWaptMissingHostData(
