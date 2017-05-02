@@ -329,21 +329,27 @@ def update_host_data(data):
     Returns:
         dict : host data from db after update
     """
+    migrate_map_13_14 = {
+        'packages':'installed_packages',
+        'softwares':'installed_softwares',
+        'update_status':'last_update_status',
+        'host':'host_info',
+        'wapt':'wapt_status',
+        'update_status':'last_update_status',
+        }
+
     uuid = data['uuid']
     try:
         existing = Hosts.select(Hosts.uuid,Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
-        if existing:
-            hostname = existing.computer_fqdn
-        else:
-            hostname = data.get('computer_fqdn',None)
-
         if not existing:
             logger.debug('Inserting new host %s with fields %s'%(uuid,data.keys()))
             # wapt update_status packages softwares host
             newhost = Hosts()
             for k in data.keys():
-                if hasattr(newhost,k):
-                    setattr(newhost,k,data[k])
+                # manage field renaming between 1.3 and >= 1.4
+                target_key = migrate_map_13_14.get(k,k)
+                if hasattr(newhost,target_key):
+                    setattr(newhost,target_key,data[k])
 
             newhost.save(force_insert=True)
         else:
@@ -351,8 +357,10 @@ def update_host_data(data):
 
             updhost = Hosts.get(uuid=uuid)
             for k in data.keys():
-                if hasattr(updhost,k):
-                    setattr(updhost,k,data[k])
+                # manage field renaming between 1.3 and >= 1.4
+                target_key = migrate_map_13_14.get(k,k)
+                if hasattr(updhost,target_key):
+                    setattr(updhost,target_key,data[k])
             updhost.save()
 
         result_query = Hosts.select(Hosts.uuid,Hosts.computer_fqdn,Hosts.host_info)
