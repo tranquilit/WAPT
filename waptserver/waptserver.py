@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.2"
+__version__ = "1.4.3"
 
 import os
 import sys
@@ -1210,6 +1210,7 @@ def trigger_wakeonlan():
         host_data = Hosts\
                         .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt_status,Hosts.host_info)\
                         .where(Hosts.uuid==uuid)\
+                        .dicts()\
                         .first(1)
         macs = host_data['host_info']['mac']
         msg = u''
