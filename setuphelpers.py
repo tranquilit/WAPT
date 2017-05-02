@@ -271,6 +271,7 @@ import win32serviceutil
 import win32process
 import ctypes
 from ctypes import wintypes
+import wmi
 
 import glob
 
@@ -299,7 +300,7 @@ from waptpackage import Version as Version
 from types import ModuleType
 import inspect
 
-import wmi
+import json
 
 from iniparse import RawConfigParser
 import keyfinder
@@ -3850,22 +3851,22 @@ def run_powershell(cmd,output_format='json',**kwargs):
         kwargs.pop('return_stderr')
     try:
         with disable_file_system_redirection():
-            result = ensure_unicode(run(u'powershell -ExecutionPolicy Unrestricted -OutputFormat %s -encodedCommand %s' %
+            result = run(u'powershell -ExecutionPolicy Unrestricted -OutputFormat %s -encodedCommand %s' %
                     (output_format_ps,
                      cmd.encode('utf-16le').encode('base64').replace('\n','')),
                      return_stderr = return_stderr,
-                    **kwargs))
+                    **kwargs)
     except CalledProcessErrorOutput as e:
         raise CalledProcessErrorOutput(e.returncode,cmd,e.output)
 
     #remove comments...
     if output_format.lower() == 'xml':
-        lines = [l for l in result.splitlines() if not l.strip().startswith('#')]
+        print result
+        lines = [l for l in result.splitlines() if not l.strip().startswith('#') and l.strip()]
         import xml.etree.ElementTree as ET
         return ET.fromstringlist(lines)
     elif output_format.lower() == 'json':
-        import json
-        lines = [l for l in result.splitlines() if not l.strip().startswith('#')]
+        lines = [l for l in ensure_unicode(result).splitlines() if not l.strip().startswith('#')]
         if not lines:
             return None
         else:
