@@ -8,7 +8,7 @@ Werkzeug==0.11.15
 argparse==1.2.1
 bson==0.4.3
 click==6.7
-distribute==0.6.24
+#distribute==0.6.24
 huey==1.2.2
 iniparse==0.4
 itsdangerous==0.24

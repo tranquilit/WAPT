@@ -2,18 +2,18 @@
 %define buildroot ./builddir
 
 Name:	tis-waptserver
-Version:	1.3.10
+Version:	1.4.3
 Release:	1%{?dist}
 Summary:	WAPT Server
-BuildArch:	noarch
+BuildArch:	x86_64
 
 Group:	        Development/Tools
 License:	GPL
-URL:		http://dev.tranquil.it
+URL:		https://wapt.fr
 Source0:	./waptserver/
 Prefix:		/opt
 
-Requires:  httpd mod_ssl python-pymongo mongodb-server dialog uwsgi-plugin-python uwsgi pytz m2crypto python-passlib python-netifaces python-urllib3 cabextract python-requests python-flask
+Requires:  httpd mod_ssl python-pymongo dialog uwsgi-plugin-python uwsgi pytz m2crypto python-passlib python-netifaces python-urllib3 cabextract python-requests python-flask postgresql94-server python-psutil
 
 # Turn off the brp-python-bytecompile script
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
@@ -45,7 +45,7 @@ mkdir -p %{buildroot}/etc/init.d/
 %files
 %defattr(644,root,root,755)
 
-/opt/wapt
+/opt/wapt/waptserver/*
 /opt/wapt/lib/*
 /etc/logrotate.d/waptserver
 /usr/bin/*

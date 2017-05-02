@@ -1,5 +1,5 @@
 Name:		tis-waptsetup
-Version:	1.3.10
+Version:	1.4.3
 Release:	1%{?dist}
 Summary:	WAPT Setup executables
 BuildArch:	noarch
