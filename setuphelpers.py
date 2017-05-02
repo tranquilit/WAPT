@@ -3850,11 +3850,11 @@ def run_powershell(cmd,output_format='json',**kwargs):
         kwargs.pop('return_stderr')
     try:
         with disable_file_system_redirection():
-            result = run(u'powershell -ExecutionPolicy Unrestricted -OutputFormat %s -encodedCommand %s' %
+            result = ensure_unicode(run(u'powershell -ExecutionPolicy Unrestricted -OutputFormat %s -encodedCommand %s' %
                     (output_format_ps,
                      cmd.encode('utf-16le').encode('base64').replace('\n','')),
                      return_stderr = return_stderr,
-                    **kwargs)
+                    **kwargs))
     except CalledProcessErrorOutput as e:
         raise CalledProcessErrorOutput(e.returncode,cmd,e.output)
 
