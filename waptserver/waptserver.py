@@ -1208,17 +1208,18 @@ def trigger_wakeonlan():
     try:
         uuid = request.args['uuid']
         host_data = Hosts\
-                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt_status,Hosts.host_info)\
+                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.mac_addresses,Hosts.wapt_status,Hosts.host_info)\
                         .where(Hosts.uuid==uuid)\
                         .dicts()\
                         .first(1)
-        macs = host_data['host_info']['mac']
+        macs = host_data['mac_addresses']
         msg = u''
         if macs:
             logger.info(
                 _("Sending magic wakeonlan packets to {} for machine {}").format(
                     macs,
-                    host_data.computer_fqdn))
+                    host_data['computer_fqdn']
+                    ))
             wakeonlan.wol.send_magic_packet(*macs)
             for line in host_data['host_info']['networking']:
                 if 'broadcast' in line:
@@ -1230,10 +1231,10 @@ def trigger_wakeonlan():
                         broadcast)
             msg = _(u"Wakeonlan packets sent to {} for machine {}").format(
                 macs,
-                host_data.computer_fqdn)
+                host_data['computer_fqdn'])
             result = dict(
                 macs=macs,
-                host=host_data.computer_fqdn,
+                host=host_data['computer_fqdn'],
                 uuid=uuid)
         else:
             raise EWaptMissingHostData(
