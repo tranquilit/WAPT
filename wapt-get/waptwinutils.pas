@@ -719,7 +719,7 @@ begin
   Data.S['wapt_status.wapt-exe-version'] := LocalWaptVersion;
   Data.S['host_info.computer_name'] := GetComputerName;
   Data.S['host_info.system_productname'] := computer.S['name'];
-  Data.S['host._infosystem_manufacturer'] := computer.S['vendor'];
+  Data.S['host_info.system_manufacturer'] := computer.S['vendor'];
   Data.S['host_info.system_serialnr'] := computer.S['identifyingnumber'];
   Data.S['dmi.Chassis_Information.Serial_Number'] := computer.S['identifyingnumber'];
   nw := NetworkConfig;

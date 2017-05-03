@@ -1565,7 +1565,7 @@ def registry_deletekey(root,path,keyname,force=False):
         root = registry.Registry(rootpath,access = _winreg.KEY_READ| _winreg.KEY_WOW64_64KEY | _winreg.KEY_WRITE)
         result = not keyname in [os.path.basename(k.as_string()) for k in root.keys()]
     except (WindowsError,exc.x_not_found) as e:
-        logger.warning(u'registry_deletekey:%s'%ensure_unicode(e))
+        logger.warning(u'registry_deletekey:%s' % repr(e))
     return result
 
 

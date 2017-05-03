@@ -100,9 +100,9 @@ if __name__ == '__main__':
     result = {}
     for h in hosts['result']:
         try:
-            hostname = h['host']['computer_fqdn']
-            current_user = h['host']['current_user']
-            ips = h['host']['connected_ips']
+            hostname = h['computer_fqdn']
+            current_user = h['connected_users']
+            ips = h['connected_ips']
             sites_host = []
             #list les sites possibles pour cette IP
             for ip in ips:

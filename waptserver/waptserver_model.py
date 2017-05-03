@@ -176,7 +176,7 @@ class HostPackagesStatus(BaseModel):
     updated_by = DateTimeField(null=True)
 
     def __repr__(self):
-        return "<HostPackageStatus uuid=%s packages=%s (%s) install_status=%s>"% (self.uuid,self.package,self.version,self.install_status)
+        return "<HostPackageStatus uuid=%s packages=%s (%s) install_status=%s>"% (self.id,self.package,self.version,self.install_status)
 
 class HostSoftwares(BaseModel):
     host = ForeignKeyField(Hosts,on_delete='CASCADE',on_update='CASCADE')

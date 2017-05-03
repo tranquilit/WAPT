@@ -26,3 +26,4 @@ wapt_password=
 #client_tasks_timeout=0.3
 #client_connect_timeout=1
 #client_read_timeout=10
+#db_url=postgresext:///wapt

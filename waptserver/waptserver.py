@@ -1906,38 +1906,34 @@ def host_cancel_task():
 @app.route('/api/v1/usage_statistics')
 def usage_statistics():
     """returns some anonymous usage statistics to give an idea of depth of use"""
-    hosts = get_db().hosts
     try:
-        stats = hosts.aggregate([
-            {'$unwind': '$packages'},
-            {'$group':
-                {'_id': '$uuid',
-                    'last_query_date': {'$first': {'$substr': ['$last_query_date', 0, 10]}},
-                    'count': {'$sum': 1},
-                    'ok': {'$sum': {'$cond': [{'$eq': ['$packages.install_status', 'OK']}, 1, 0]}},
-                    'has_error': {'$first': {'$cond': [{'$ne': ['$update_status.errors', []]}, 1, 0]}},
-                    'need_upgrade': {'$first': {'$cond': [{'$ne': ['$update_status.upgrades', []]}, 1, 0]}},
-                 }},
-            {'$group':
-                {'_id': 1,
-                    'hosts_count': {'$sum': 1},
-                    'oldest_query': {'$min': '$last_query_date'},
-                    'newest_query': {'$max': '$last_query_date'},
-                    'packages_count_max': {'$max': '$count'},
-                    'packages_count_avg': {'$avg': '$count'},
-                    'packages_count_ok': {'$sum': '$ok'},
-                    'hosts_count_has_error': {'$sum': '$has_error'},
-                    'hosts_count_need_upgrade': {'$sum': '$need_upgrade'},
-                 }},
-        ])
-        del(stats['result'][0]['_id'])
+        host_data = Hosts.select(
+            fn.count(Hosts.uuid).alias('hosts_count'),
+            fn.min(Hosts.last_seen_on).alias('oldest_query'),
+            fn.max(Hosts.last_seen_on).alias('newest_query'),
+            ).dicts().first()
+
+        installed_packages = HostPackagesStatus.select(
+            HostPackagesStatus.install_status,
+            fn.count(HostPackagesStatus.id),
+            )\
+            .group_by(HostPackagesStatus.install_status)\
+            .dicts()
+
+
+        stats = {
+                    'hosts_count': host_data['hosts_count'],
+                    'oldest_query': host_data['oldest_query'],
+                    'newest_query': host_data['newest_query'],
+                    'packages_count_max': None,
+                    'packages_count_avg': None,
+                    'packages_count_ok': None,
+                    'hosts_count_has_error': None,
+                    'hosts_count_need_upgrade': None,
+                 }
+
     except:
-        # fallback for old mongo without aggregate framework
-        stats = {}
-        stats['result'] = [
-            {
-                'hosts_count': hosts.count(),
-            }]
+        pass
 
     result = dict(
         uuid=conf['server_uuid'],
@@ -1946,7 +1942,7 @@ def usage_statistics():
         version=__version__,
         date=datetime2isodate(),
     )
-    result.update(stats['result'][0])
+    result.update(stats)
     return make_response(msg=_('Anomnymous usage statistics'), result=result)
 
 

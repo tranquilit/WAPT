@@ -979,7 +979,7 @@ var
   sores:ISuperObject;
 begin
   try
-    sores := WAPTServerJsonGet('api/v1/hosts?columns=dmi,wmi,host&uuid=%S',[uuid]);
+    sores := WAPTServerJsonGet('api/v1/hosts?columns=dmi,wmi,host_info&uuid=%S',[uuid]);
     if (sores<>nil) and sores.B['success'] then
     begin
       if sores['result'].AsArray.Length>0 then
@@ -3775,7 +3775,7 @@ begin
     if (CellData <> nil) and (CellData.DataType = stArray) then
       CellText := soutils.Join(',', CellData);
 
-    if (propName='last_query_date') or (propName='listening_timestamp') then
+    if (propName='last_seen_on') or (propName='listening_timestamp') then
         CellText := Copy(StrReplaceChar(CellText,'T',' '),1,19);
   end;
 end;

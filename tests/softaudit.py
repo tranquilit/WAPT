@@ -28,16 +28,16 @@ if __name__ == '__main__':
     wapt.dbpath=':memory:'
 
     # get the collection of *all* hosts from waptserver inventory
-    hosts =  wapt.waptserver.get('api/v1/hosts?columns=uuid,host.computer_fqdn',auth=('admin',server_password))
+    hosts =  wapt.waptserver.get('api/v1/hosts?columns=uuid,computer_fqdn,connected_ips,description',auth=('admin',server_password))
 
     print(u'Logiciels installés depuis %s jours sur les %s machines de wapt:\n'%(options.days,len(hosts['result'])))
     for h in hosts['result']:
         try:
             uuid = h['uuid']
 
-            hostname = h['host']['computer_fqdn']
-            ip = ','.join(h['host']['connected_ips'])
-            description = h['host']['description']
+            hostname = h['computer_fqdn']
+            ip = ','.join(h['connected_ips'])
+            description = h['description']
 
             softs = wapt.waptserver.get('api/v1/host_data?uuid=%s&field=softwares'%(uuid,),auth=('admin',server_password)).get('result',[])
             datemin = compact_date(datetime.datetime.now()-datetime.timedelta(days=options.days)) # forme YYYYMMDD 20161007

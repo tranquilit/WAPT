@@ -92,10 +92,10 @@ if __name__ == '__main__':
 
     for h in hosts['result']:
         try:
-            hostname = h['host']['computer_fqdn']
+            hostname = h['computer_fqdn']
             print 'Computer %s... ' % hostname,
 
-            groups = base_packages + get_computer_groups(h['host']['computer_name'])
+            groups = base_packages + get_computer_groups(h['computer_name'])
 
             # try to get comp
 
