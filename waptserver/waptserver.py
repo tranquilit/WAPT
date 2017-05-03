@@ -380,7 +380,7 @@ def update_host_data(data):
                     set_host_field(updhost,target_key,data[k])
             updhost.save()
 
-        result_query = Hosts.select(Hosts.uuid,Hosts.computer_fqdn,Hosts.host_info)
+        result_query = Hosts.select(Hosts.uuid,Hosts.computer_fqdn)
         return result_query.where(Hosts.uuid == uuid).dicts().first(1)
 
     except Exception as e:
@@ -1808,27 +1808,33 @@ def host_data():
 
         if 'field' in request.args:
             field = request.args['field']
-            if not field in Hosts._meta.fields:
+            if not field in Hosts._meta.fields.keys() + ['installed_softwares','installed_packages','waptwua']:
                 raise EWaptMissingParameter('Parameter field %s is unknown'%field)
-
         else:
             raise EWaptMissingParameter('Parameter field is missing')
 
-        data = Hosts\
+        if field == 'installed_softwares':
+            result = list(HostSoftwares.select().where(HostSoftwares.host == uuid).dicts())
+        elif field == 'installed_packages':
+            result = list(HostPackagesStatus.select().where(HostPackagesStatus.host == uuid).dicts())
+        else:
+            data = Hosts\
                         .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.fieldbyname(field))\
                         .where(Hosts.uuid==uuid)\
                         .dicts()\
                         .first(1)
-        if data is None:
-            raise EWaptUnknownHost(
-                'Host {} not found in database'.format(uuid))
-        else:
-            msg = '{} data for host {}'.format(field, uuid)
+
+            if data is None:
+                raise EWaptUnknownHost(
+                    'Host {} not found in database'.format(uuid))
+            result = data.get(field,None)
+        msg = '{} data for host {}'.format(field, uuid)
 
     except Exception as e:
+        if utils_devel_mode:
+            raise
         return make_response_from_exception(e)
 
-    result = data.get(field,None)
     if result is None:
         msg = 'No {} data for host {}'.format(field, uuid)
         success = False
