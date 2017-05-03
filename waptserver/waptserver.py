@@ -315,6 +315,23 @@ def index():
     return render_template("index.html", data=data)
 
 
+def set_host_field(host,fieldname,data):
+    # these attributes can be transfered as dict
+    if fieldname in ['installed_softwares','installed_packages']:
+        # in case data is transfered as list of tuples instead of list of dict (more compact)
+        if data and isinstance(data[0],list):
+            rec_data = []
+            fieldnames = data[0]
+            for rec in data[1:]:
+                r = zip(fieldnames,rec)
+                rec_data.append(r)
+            setattr(host,fieldname,rec_data)
+        else:
+            setattr(host,fieldname,data)
+    else:
+        setattr(host,fieldname,data)
+    return host
+
 def update_host_data(data):
     """Helper function to insert or update host data in db
 
@@ -327,7 +344,7 @@ def update_host_data(data):
         signature (str) : check the supplied data with host certificate before updating the DB
         signed_attributes (list):
     Returns:
-        dict : host data from db after update
+        dict : with uuid,computer_fqdn,host_info from db after update
     """
     migrate_map_13_14 = {
         'packages':'installed_packages',
@@ -349,7 +366,7 @@ def update_host_data(data):
                 # manage field renaming between 1.3 and >= 1.4
                 target_key = migrate_map_13_14.get(k,k)
                 if hasattr(newhost,target_key):
-                    setattr(newhost,target_key,data[k])
+                    set_host_field(newhost,target_key,data[k])
 
             newhost.save(force_insert=True)
         else:
@@ -360,7 +377,7 @@ def update_host_data(data):
                 # manage field renaming between 1.3 and >= 1.4
                 target_key = migrate_map_13_14.get(k,k)
                 if hasattr(updhost,target_key):
-                    setattr(updhost,target_key,data[k])
+                    set_host_field(updhost,target_key,data[k])
             updhost.save()
 
         result_query = Hosts.select(Hosts.uuid,Hosts.computer_fqdn,Hosts.host_info)
@@ -370,6 +387,7 @@ def update_host_data(data):
         logger.critical(u'Error updating data for %s : %s'%(uuid,ensure_unicode(e)))
         wapt_db.rollback()
         raise
+
 
 def get_reachable_ip(ips=[], waptservice_port=conf[
                      'waptservice_port'], timeout=conf['clients_connect_timeout']):
@@ -399,6 +417,7 @@ def get_reachable_ip(ips=[], waptservice_port=conf[
     return None
 
 
+@app.route('/register', methods=['POST'])
 @app.route('/add_host', methods=['POST'])
 @app.route('/update_host', methods=['POST'])
 def update_host():
@@ -419,16 +438,27 @@ def update_host():
                 logger.info('Update host %s status' % (uuid,))
                 data['last_seen_on'] = datetime2isodate()
                 signature_b64 = request.headers.get('X-Signature',None)
+                signer = request.headers.get('X-Signer',None)
                 if signature_b64:
                     signature = signature_b64.decode('base64')
                 else:
                     signature = None
 
                 if signature:
-                    if request.path == '/add_host':
+                    # when registering, mutual authentication is assumed by kerberos
+                    # on apache reverse proxy level
+                    if request.path in  ['/add_host','/register']:
                         host_cert = SSLCertificate(crt_string = data['host_certificate'])
                     else:
-                        host_cert = SSLCertificate(crt_string = Hosts.select(Hosts.host_certificate).where(Hosts.uuid == uuid).first().host_certificate)
+                        # get certificate from DB to check/authenticate submitted data.
+                        existing_host = Hosts.select(Hosts.host_certificate,Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
+                        if existing_host:
+                            if existing_host.host_certificate:
+                                host_cert = SSLCertificate(crt_string = existing_host.host_certificate)
+                            else:
+                                raise EWaptMissingCertificate('Host certificate of %s (%s) is not in database, please register first.' % (uuid,existing_host.computer_fqdn))
+                        else:
+                            raise EWaptMissingCertificate('You try to update status of an unknown host %s (%s). Please register first.' % (uuid,data.get('computer_fqdn','unknown')))
 
                     if host_cert:
                         logger.debug('About to check supplied data signature with certificate %s' % host_cert.cn)
