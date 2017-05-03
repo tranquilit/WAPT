@@ -1061,22 +1061,28 @@ def main():
             elif action == 'get-server-certificate':
                 if mywapt.waptserver and mywapt.waptserver_available():
                     result = mywapt.waptserver.save_server_certificate(os.path.join(mywapt.wapt_base_dir,'ssl','server'))
-                if options.json_output:
-                    jsonresult['result'] = result
+                    if options.json_output:
+                        jsonresult['result'] = result
+                    else:
+                        print('Server certificate written to %s' % result)
                 else:
-                    print('Server certificate written to %s' % result)
+                    print('Server not available')
 
             elif action == 'enable-check-certificate':
                 if mywapt.waptserver and mywapt.waptserver_available():
                     result = mywapt.waptserver.save_server_certificate(os.path.join(mywapt.wapt_base_dir,'ssl','server'),overwrite = options.force)
-                    setuphelpers.inifile_writestring(mywapt.config_filename,'global','verify_cert',result)
+                    if result:
+                        setuphelpers.inifile_writestring(mywapt.config_filename,'global','verify_cert',result)
+                        if options.json_output:
+                            jsonresult['result'] = result
+                        else:
+                            print('Server certificate written to %s' % result)
+                            print('wapt config file updated')
+                    else:
+                        print('No server certificate retrieved')
                 else:
-                    result = ''
-                if options.json_output:
-                    jsonresult['result'] = result
-                else:
-                    print('Server certificate written to %s' % result)
-                    print('wapt config file updated')
+                    print('Server not available')
+
 
             elif action == 'add-icon':
                 if len(args) < 2:
