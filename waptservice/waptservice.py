@@ -2423,9 +2423,18 @@ if __name__ == "__main__":
         if waptconfig.waptservice_port:
             port_config.append(('0.0.0.0', waptconfig.waptservice_port))
         if waptconfig.waptservice_sslport:
-            port_config.append(('0.0.0.0', waptconfig.waptservice_sslport,
-                            os.path.join(wapt_root_dir,r'waptservice','ssl','waptservice.pem'),
-                            os.path.join(wapt_root_dir,r'waptservice','ssl','waptservice.crt')))
+            # try to use host SSL key for waptservice local webservice
+            wapt_tmp = Wapt(config_filename = waptconfig.config_filename)
+            try:
+                wapt_tmp.create_or_update_host_certificate()
+                key = wapt.get_host_key_filename()
+                cert = wapt.get_host_certificate_filename()
+                logger.info(u'Waptservice https using key: %s and certificate: %s'%(key,cert))
+            except:
+                logger.critical('Unable to create/get host key and certificate, using default generic ones')
+                key = os.path.join(wapt_root_dir,r'waptservice','ssl','waptservice.pem')
+                cert = os.path.join(wapt_root_dir,r'waptservice','ssl','waptservice.crt')
+            port_config.append(('0.0.0.0', waptconfig.waptservice_sslport,key,cert))
         server = Rocket(port_config,'wsgi', {"wsgi_app":app})
 
         try:
