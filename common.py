@@ -1440,14 +1440,14 @@ class WaptServer(object):
                             raise Exception('Can not save server certificate, a file with same name already exists in %s' % pem_fn)
                         else:
                             logger.info('Overwriting old server certificate %s with new one %s'%(old_cert.fingerprint,new_cert.fingerprint))
+                    open(pem_fn,'wb').write(pem)
+                    logger.info('New certificate %s with fingerprint %s saved to %s'%(new_cert.cn,new_cert.fingerprint,pem_fn))
+                    return pem_fn
                 except Exception as e:
-                    logger.critical('save_server_certificate : %s')
-                    if overwrite:
-                        pass
-
-            open(pem_fn,'wb').write(pem)
-            logger.info('New certificate %s with fingerprint %s saved to %s'%(new_cert.cn,new_cert.fingerprint,pem_fn))
-            return pem_fn
+                    logger.critical('save_server_certificate : %s'% repr(e))
+                    raise
+            else:
+                return None
         else:
             return None
 
@@ -4324,7 +4324,6 @@ class Wapt(object):
 
                 data = jsondump(inv)
                 signature = self.sign_host_content(data)
-                logger.debug('Signature for supplied data: %s' % signature)
 
                 result = self.waptserver.post('update_host',
                     data = data,
