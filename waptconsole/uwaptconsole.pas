@@ -995,7 +995,7 @@ end;
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
   currhost,packagename : ansistring;
-  RowSO, package,packagereq, packages, softwares, waptwua,dmi,tasksresult, running,sores,additional,upgrades: ISuperObject;
+  RowSO, package,packagereq, packages, softwares, waptwua,dmi,tasksresult, running,sores,additional,upgrades,errors: ISuperObject;
 begin
   TimerTasks.Enabled := False;
   RowSO := Gridhosts.FocusedRow;
@@ -1035,6 +1035,19 @@ begin
                 packagename:= Trim(copy(packagereq.AsString,1,pos('(',packagereq.AsString)-1));
                 if package.S['package'] = packagename then
                   package.S['install_status'] := 'NEED-UPGRADE';
+              end;
+            end;
+          end;
+          errors := RowSO['last_update_status.errors'];
+          if (errors<>Nil) and (errors.AsArray.Length>0) then
+          begin
+            for package in RowSO['installed_packages'] do
+            begin
+              for packagereq in errors do
+              begin
+                packagename:= Trim(copy(packagereq.AsString,1,pos('(',packagereq.AsString)-1));
+                if package.S['package'] = packagename then
+                  package.S['install_status'] := 'ERROR-UPGRADE';
               end;
             end;
           end;
@@ -3560,7 +3573,7 @@ begin
     begin
       case install_status.AsString of
         'OK': ImageIndex := 0;
-        'ERROR': ImageIndex := 2;
+        'ERROR-UPGRADE','ERROR': ImageIndex := 2;
         'NEED-UPGRADE': ImageIndex := 1;
         'RUNNING': ImageIndex := 6;
         'MISSING': ImageIndex := 7;
