@@ -2427,11 +2427,11 @@ if __name__ == "__main__":
             wapt_tmp = Wapt(config_filename = waptconfig.config_filename)
             try:
                 wapt_tmp.create_or_update_host_certificate()
-                key = wapt.get_host_key_filename()
-                cert = wapt.get_host_certificate_filename()
+                key = wapt_tmp.get_host_key_filename()
+                cert = wapt_tmp.get_host_certificate_filename()
                 logger.info(u'Waptservice https using key: %s and certificate: %s'%(key,cert))
-            except:
-                logger.critical('Unable to create/get host key and certificate, using default generic ones')
+            except Exception as e:
+                logger.critical('Unable to create/get host key and certificate, using default generic ones. %s' % repr(e))
                 key = os.path.join(wapt_root_dir,r'waptservice','ssl','waptservice.pem')
                 cert = os.path.join(wapt_root_dir,r'waptservice','ssl','waptservice.crt')
             port_config.append(('0.0.0.0', waptconfig.waptservice_sslport,key,cert))
