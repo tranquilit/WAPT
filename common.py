@@ -1594,7 +1594,7 @@ class WaptServer(object):
         else:
             raise Exception(u'Wapt server url not defined or not found in DNS')
 
-    def post(self,action,data=None,files=None,auth=None,timeout=None,signature=None):
+    def post(self,action,data=None,files=None,auth=None,timeout=None,signature=None,signer=None):
         """ """
         surl = self.server_url
         if surl:
@@ -1611,6 +1611,10 @@ class WaptServer(object):
             if signature:
                 headers.update({
                     'X-Signature': base64.b64encode(signature),
+                    })
+            if signer:
+                headers.update({
+                    'X-Signer': signer,
                     })
 
             req = requests.post("%s/%s" % (surl,action),
@@ -4170,10 +4174,16 @@ class Wapt(object):
         inv = self.inventory()
         inv['uuid'] = self.host_uuid
         inv['host_certificate'] = self.create_or_update_host_certificate()
+        data = jsondump(inv)
         if self.waptserver:
-            return self.waptserver.post('add_host',data = jsondump(inv))
+            return self.waptserver.post('add_host',
+                data = data ,
+                signature = self.sign_host_content(data),
+                signer = self.get_host_certificate().cn
+                )
         else:
             return jsondump(inv,indent=True)
+
 
     def get_host_key_filename(self):
         # check ACL.
@@ -4183,12 +4193,23 @@ class Wapt(object):
 
         return os.path.join(private_dir,setuphelpers.get_hostname()+'.pem')
 
+
     def get_host_certificate_filename(self):
         # check ACL.
         private_dir = os.path.join(self.wapt_base_dir,'private')
         if not os.path.isdir(private_dir):
             os.makedirs(private_dir)
         return os.path.join(private_dir,setuphelpers.get_hostname()+'.crt')
+
+
+    def get_host_certificate(self):
+        """Return the current host certificate.
+
+        Returns:
+            SSLCertificate: host public certificate.
+        """
+        return SSLCertificate(self.get_host_certificate_filename())
+
 
     def create_or_update_host_certificate(self,force_recreate=False):
         """Create a rsa key pair for the host and a x509 certiticate.
@@ -4228,6 +4249,11 @@ class Wapt(object):
         return open(crt_filename,'rb').read()
 
     def get_host_key(self):
+        """Return private key used to sign uploaded data from host
+
+        Returns:
+            SSLPrivateKey: Private key used to sign data posted by host.
+        """
         if self._host_key is None:
             # create keys pair / certificate if not yet initialised
             if not os.path.isfile(self.get_host_key_filename()):
@@ -4238,20 +4264,37 @@ class Wapt(object):
     def sign_host_content(self,data):
         """Sign data str with host private key with sha256 + RSA
         Args:
-            data (str) : data to sign
+            data (bytes) : data to sign
         Returns
-            str:
+            bytes: signature of sha256 hash of data.
         """
         key = self.get_host_key()
         return key.sign_content(sha256_for_data(str(data)))
 
     def get_last_update_status(self):
+        """Get update status of host as stored at the end of last operation.
+
+        Returns:
+            dict:
+                'date': timestamp of last operation
+                'runstatus': last printed message of wapt core
+                'running_tasks': list of tasks
+                'errors': list of packages not installed properly
+                'upgrades': list of packages which need to be upgraded
+        """
         status = json.loads(self.read_param('last_update_status','{"date": "", "running_tasks": [], "errors": [], "upgrades": []}'))
         status['runstatus'] = self.read_param('runstatus','')
         return json.loads(jsondump(status))
 
     def update_server_status(self,force=False):
-        """Send packages and software informations to WAPT Server, don't send dmi
+        """Send host_info, installed packages and installed softwares,
+            and last update status informations to WAPT Server,
+            but don't send register info like dmi or wmi.
+
+        .. versionchanged:: 1.4.3
+            if last status has been properly sent to server and data has not changed,
+                don't push data again to server.
+            the hash is stored in memory, so is not pass across threads or processes.
 
         >>> wapt = Wapt()
         >>> s = wapt.update_server_status()
@@ -4265,6 +4308,7 @@ class Wapt(object):
                 inv[key] = data
                 new_hashes[key] = newhash
 
+        result = None
         if self.waptserver_available():
             # avoid sending data to the server if it has not been updated.
             try:
@@ -4282,27 +4326,39 @@ class Wapt(object):
                 signature = self.sign_host_content(data)
                 logger.debug('Signature for supplied data: %s' % signature)
 
-                result = self.waptserver.post('update_host',data = data, signature = signature)
+                result = self.waptserver.post('update_host',
+                    data = data,
+                    signature = signature,
+                    signer = self.get_host_certificate().cn
+                    )
+                if result and result['success']:
+                    # stores for next round.
+                    old_hashes.update(new_hashes)
+                    self._update_server_hashes = old_hashes
+                    logger.info(u'Status on server %s updated properly'%self.waptserver.server_url)
+                else:
+                    logger.info(u'Error updating Status on server %s: %s' % (self.waptserver.server_url,result and result['msg'] or 'No message'))
 
-                # stores for next round.
-                old_hashes.update(new_hashes)
-                self._update_server_hashes = old_hashes
-                logger.info(u'Status on server %s updated properly'%self.waptserver.server_url)
             except Exception as e:
-                result = None
                 logger.warning(u'Unable to update server status : %s' % ensure_unicode(e))
+
             # force register if computer has not been registered or hostname has changed
-            if result:
+            # this should work only if computer can authenticate on wapt server using
+            # kerberos (if enabled...)
+            if result and result['success']:
                 db_data = result.get('result',None)
                 if not db_data or db_data.get('computer_fqdn',None) != setuphelpers.get_hostname():
-                    self.register_computer()
-                return db_data
+                    logger.warning('Host on the server is not known or not known under this FQDN name (known as %s). Trying to register the computer...'%(db_data and db_data.get('computer_fqdn',None) or None))
+                    result = self.register_computer()
+                    if result and result['success']:
+                        logger.warning('New registration successfull')
+                    else:
+                        logger.critical('Unable to register: %s' % result and result['msg'])
             else:
-                logger.warning('update_server_status: server returned no data, check server version')
-                return False
+                logger.warning('update_server_status: server returned bad status %s, check server version'%(result,))
         else:
             logger.info('WAPT Server is not available to store current host status')
-            return False
+        return result
 
     def waptserver_available(self):
         """Test reachability of waptserver.

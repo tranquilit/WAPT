@@ -987,7 +987,11 @@ def main():
                             jsonresult['result'] = result
                         else:
                             logger.debug(u"Inventory sent to server: %s", result)
-                            print(u"Inventory correctly sent to server %s." % (mywapt.waptserver.server_url,))
+                            if result['success']:
+                                print(u"Inventory correctly sent to server %s." % (mywapt.waptserver.server_url,))
+                            else:
+                                print(u"Failed to send inventory to server %s: %s" % (mywapt.waptserver.server_url,result['msg']))
+
                     else:
                         print(u"waptserver is not available. Update of status not sent")
                         sys.exit(3)
