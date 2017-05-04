@@ -19,7 +19,7 @@ Source: "..\pywintypes27.dll"; DestDir: "{app}";
 ;Source: "..\sqlite3.dll"; DestDir: "{app}"; 
 
 ; additional python modules
-Source: "..\lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.dist-info,*.pyc,*.pyo,test,*.~*,pymongo,gridfs,bson,*.chm,testsuite,Demos,tests,examples,HTML,pip,lxml,scintilla,idle,pywin32.chm,gevent,engineio,eventlet,ensurepip,idlelib,flask_admin,huey,pylint,colorama,isort,mccabe*,wrapt"
+Source: "..\lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.dist-info,*.pyc,*.pyo,test,*.~*,bson,*.chm,testsuite,Demos,tests,examples,HTML,pip,lxml,scintilla,idle,pywin32.chm,gevent,engineio,eventlet,ensurepip,idlelib,flask_admin,huey,pylint,colorama,isort,mccabe*,wrapt"
 
 ; wapt sources
 Source: "..\waptutils.py"; DestDir: "{app}"; 
@@ -232,7 +232,6 @@ begin
 
     Exec('net', 'stop waptserver', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec('net', 'stop waptapache', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-    Exec('net', 'stop waptmongodb', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
 
   #endif
 

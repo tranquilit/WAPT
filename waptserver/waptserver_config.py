@@ -40,8 +40,6 @@ _defaults = {
     'clients_connect_timeout': 5,
     'clients_read_timeout': 5,
     'loglevel': 'warning',
-    'mongodb_ip': "127.0.0.1",
-    'mongodb_port': 27017,
     'secret_key': 'NOT DEFINED',
     'server_uuid': '',
     'wapt_folder': os.path.join(wapt_root_dir, 'waptserver','repository','wapt'),
@@ -87,12 +85,6 @@ def load_config(cfgfile=_default_config_file):
 
     if _config.has_option('options', 'loglevel'):
         conf['loglevel'] = _config.get('options', 'loglevel')
-
-    if _config.has_option('options', 'mongodb_ip'):
-        conf['mongodb_ip'] = _config.get('options', 'mongodb_ip')
-
-    if _config.has_option('options', 'mongodb_port'):
-        conf['mongodb_port'] = _config.getint('options', 'mongodb_port')
 
     if _config.has_option('options', 'secret_key'):
         conf['secret_key'] = _config.get('options','secret_key')

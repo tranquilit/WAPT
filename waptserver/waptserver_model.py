@@ -476,7 +476,7 @@ def init_db(drop=False):
 # TODO : move to waptserver_upgrade with plain mongo connection.
 def create_import_data(ip='127.0.0.1',fn=None):
     """Connect to a mongo instance and write all wapt.hosts collection as json into a file"""
-    output = subprocess.check_output('/usr/bin/python /opt/wapt/waptserver/scripts/get_mongodb_data.py',shell=True)
+    output = subprocess.check_output('mongoexport -d wapt -c hosts',shell=True)
     print('Read mongo data from json dump ')
     d =json.loads(output)
     print('%s records read.'%len(d))

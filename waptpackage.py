@@ -218,6 +218,12 @@ def control_to_dict(control,int_params=('size','installed_size')):
         multilines strings begins with a space
 
         breaks when an empty line is reached (limit between 2 package in Packages indexes)
+    Args:
+        control (file): file like object to read control from (until an empty line is reached)
+        int_params (list): attributes which must be converted to int
+
+    Returns:
+        dict
     """
     result = {}
     (key,value) = ('','')

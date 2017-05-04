@@ -1971,7 +1971,7 @@ class CheckHostWorker(threading.Thread):
 class CheckHostsWaptService(threading.Thread):
 
     """Thread which check which IP is reachable for all registered hosts
-        The result is stored in MongoDB database as wapt.listening_address
+        The result is stored in server database as wapt.listening_address
         {protocol
          address
          port}
@@ -2050,7 +2050,7 @@ def install_windows_nssm_service(
         os.path.abspath(__file__),
         os.path.join(log_directory,'nssm_waptserver.log'),
         service_logfile,
-        'WAPTMongodb WAPTApache')
+        'WAPTApache')
     """
     import setuphelpers
     from setuphelpers import registry_set, REG_DWORD, REG_EXPAND_SZ, REG_MULTI_SZ, REG_SZ
@@ -2114,7 +2114,7 @@ def install_windows_nssm_service(
             keyname = None
         registry_set(root, path, keyname, value, type=datatypes[valuetype])
 
-    if service_dependencies is not None:
+    if service_dependencies:
         logger.info(
             'Register dependencies for service "%s" with nssm : %s ' %
             (service_name, service_dependencies))
@@ -2204,49 +2204,11 @@ def make_httpd_config(wapt_root_dir, wapt_folder):
     dst_file.close()
 
 
-def make_mongod_config(wapt_root_dir):
-    import jinja2
-
-    conf_dir = os.path.join(wapt_root_dir, 'waptserver', 'mongodb')
-    file_name = 'mongod.cfg'
-    conf_file = os.path.join(conf_dir, file_name)
-    jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(conf_dir))
-    template = jinja_env.get_template(file_name + '.j2')
-    template_variables = {
-        'dbpath': os.path.join(conf_dir, 'data'),
-        'logpath': os.path.join(conf_dir, 'log', 'mongodb.log'),
-        'mongodb_port': int(conf['mongodb_port']),
-    }
-    config_string = template.render(template_variables)
-    dst_file = file(conf_file, 'wt')
-    dst_file.write(config_string)
-    dst_file.close()
-
-
 def install_windows_service():
-    """Setup waptserver, waptmongodb et waptapache as a windows Service managed by nssm
+    """Setup waptserver, waptapache as a windows Service managed by nssm
     >>> install_windows_service([])
     """
     install_apache_service = not options.without_apache  # '--without-apache' not in options
-
-    # register mongodb server
-    make_mongod_config(wapt_root_dir)
-
-    service_binary = os.path.abspath(
-        os.path.join(
-            wapt_root_dir,
-            'waptpython.exe'))
-    service_parameters = '"%s" "%s" "%s"' % (
-        os.path.join(wapt_root_dir, 'waptserver', 'mongodb', 'mongod.py'),
-        os.path.join(wapt_root_dir, 'waptserver', 'mongodb', 'mongod.exe'),
-        os.path.join(wapt_root_dir, 'waptserver', 'mongodb', 'mongod.cfg')
-    )
-    service_logfile = os.path.join(log_directory, 'nssm_waptmongodb.log')
-    install_windows_nssm_service(
-        "WAPTMongodb",
-        service_binary,
-        service_parameters,
-        service_logfile)
 
     # register apache frontend
     if install_apache_service:
@@ -2273,9 +2235,10 @@ def install_windows_service():
             'waptpython.exe'))
     service_parameters = '"%s"' % os.path.abspath(__file__)
     service_logfile = os.path.join(log_directory, 'nssm_waptserver.log')
-    service_dependencies = 'WAPTMongodb'
     if install_apache_service:
-        service_dependencies += ' WAPTApache'
+        service_dependencies = ''
+    else:
+        service_dependencies = ''
     install_windows_nssm_service(
         "WAPTServer",
         service_binary,

@@ -13,7 +13,7 @@ URL:		https://wapt.fr
 Source0:	./waptserver/
 Prefix:		/opt
 
-Requires:  httpd mod_ssl python-pymongo dialog uwsgi-plugin-python uwsgi pytz m2crypto python-passlib python-netifaces python-urllib3 cabextract python-requests python-flask postgresql94-server python-psutil
+Requires:  httpd mod_ssl dialog uwsgi-plugin-python uwsgi pytz m2crypto python-passlib python-netifaces python-urllib3 cabextract python-requests python-flask postgresql94-server python-psutil
 
 # Turn off the brp-python-bytecompile script
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
@@ -37,7 +37,7 @@ mkdir -p %{buildroot}/etc/init.d/
 #rsync -aP ../../../waptserver/scripts/waptserver-init-centos %{buildroot}/etc/init.d/waptserver
 #rsync -aP ../../../waptserver/scripts/postconf.py %{buildroot}/opt/wapt/waptserver/scripts/
 
-#for libname in  'requests iniparse dns pefile.py rocket pymongo bson flask werkzeug jinja2 itsdangerous.py markupsafe dialog.py babel flask_babel' ; do \
+#for libname in  'requests iniparse dns pefile.py rocket bson flask werkzeug jinja2 itsdangerous.py markupsafe dialog.py babel flask_babel' ; do \
 #    rsync ../../../lib/site-packages/${i} lib),'./builddir/opt/wapt/lib/site-packages/')
 
 (cd .. && python ./createrpm.py)

@@ -34,8 +34,6 @@ Source: "..\waptserverpostconf.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 ; deployment/upgrade tool
 Source: "..\waptdeploy.exe"; DestDir: "{app}\waptserver\repository\wapt\"; Flags: ignoreversion
-; pymongo
-Source: "..\lib\site-packages\pymongo\*"; DestDir: "{app}\lib\site-packages\pymongo"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.pyc,test,*.~*,*.chm,testsuite,Demos,test,HTML"
 Source: "..\lib\site-packages\bson\*"; DestDir: "{app}\lib\site-packages\bson"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.pyc,test,*.~*,*.chm,testsuite,Demos,test,HTML"
 
 ; Sources for server application
@@ -46,7 +44,6 @@ Source: "..\waptserver\*.template"; DestDir: "{app}\waptserver";
 Source: "..\waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs
 Source: "..\waptserver\translations\*"; DestDir: "{app}\waptserver\translations"; Flags: createallsubdirs recursesubdirs
 Source: "..\waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs
-Source: "..\waptserver\mongodb\mongod.*"; DestDir: "{app}\waptserver\mongodb"; Flags: createallsubdirs recursesubdirs
 Source: "..\waptserver\apache-win32\*"; DestDir: "{app}\waptserver\apache-win32"; Flags: createallsubdirs recursesubdirs
 
 ; For UninstallRun
@@ -63,8 +60,6 @@ Name: "{app}\waptserver\log"
 Name: "{app}\waptserver\repository\wapt"
 Name: "{app}\waptserver\repository\wapt-host"
 Name: "{app}\waptserver\repository\wapt-group"
-Name: "{app}\waptserver\mongodb\data"
-Name: "{app}\waptserver\mongodb\log"
 Name: "{app}\waptserver\apache-win32\ssl"
 
 [Setup]

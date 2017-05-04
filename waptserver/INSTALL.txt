@@ -1,39 +1,18 @@
 ﻿==Installation on Windows==
 Configuration of WAPTServer on windows
 
-C:\WAPT\waptserver\mongodb\mongod.exe --config c:\wapt\waptserver\mongodb\mongod.cfg --install
-c:\wapt\waptpython.exe c:\wapt\waptserver\waptserver_servicewrapper.py --startup=auto install 
+Install PostgreSQL >= 9.4 server (https://get.enterprisedb.com/postgresql/postgresql-9.4.11-2-windows-x64.exe) 
+c:\wapt\waptpython.exe c:\wapt\waptserver\waptserver.py --startup=auto install 
 
-net start waptmongodb
-net start waptserver
+net start WAPTApache
+net start WAPTServer
+
+Uninstall of WAPTServer services
+--------------------------------
+
+net stop WAPTServer
+sc delete WAPTServer
+net stop WAPTApache
+sc delete WAPTApache
 
 
-Uninstall of waptserver services
-
-net stop waptserver
-sc delete waptserver
-net stop waptmongodb
-sc delete waptmongodb
-
-==Installation on Linux==
-
-Installation des dépendances 
- apt-get install python python-dev mongodb build-essential python-dev python-setuptools
- easy_install flask uwsgi pymongo requests
- 
-
-Création de l'utilisateur waptserver et des fichiers de log 
- useradd -d /opt/waptserver waptserver
- touch  /var/log/waptserver.log
- touch  /var/run/waptserver.pid
- chown waptserver  /var/log/waptserver.log
- chown waptserver  /var/run/waptserver.pid
- chown waptserver  -R /opt/waptserver
-
-Mise en place du script init.d 
- cp /opt/waptserver/scripts/waptserver-init /etc/init.d/waptserver
- chmod +x /etc/init.d/waptserver
-
-Lancer les services 
- update-rc.d waptserver defaults 
- /etc/init.d/waptserver start
