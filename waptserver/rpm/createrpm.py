@@ -99,7 +99,7 @@ mkdir_p("builddir/opt/wapt/lib/site-packages")
 
 # we use pip and virtualenv to get the wapt dependencies. virtualenv usage here is a bit awkward, it can probably be improved. For instance, it install a outdated version of pip that cannot install Rocket dependencies...
 # for some reason the virtualenv does not build itself right if we don't have pip systemwide...
-subprocess.check_output(r'sudo yum install -y python-virtualenv python-setuptools python-pip python-devel',shell=True)
+#subprocess.check_output(r'sudo yum install -y python-virtualenv python-setuptools python-pip python-devel',shell=True)
 print('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
 subprocess.check_output(r'virtualenv ./pylibs --system-site-packages',shell=True)
 print('Install additional libraries in build environment virtualenv')

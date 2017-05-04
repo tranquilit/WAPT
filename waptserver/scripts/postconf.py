@@ -281,7 +281,8 @@ def main():
 
     mongo_update_status = check_mongo2pgsql_upgrade_needed(waptserver_ini)
     if mongo_update_status==0:
-        print ("already running postgresql, nothing to do")
+        print ("already running postgresql, trying to upgrade sructure")
+        subprocess.check_output(""" sudo -u wapt python /opt/wapt/waptserver/waptserver_upgrade.py """, shell=True)
     elif mongo_update_status==1:
         print ("need to upgrade from mongodb to postgres, please launch python /opt/wapt/waptserver/waptserver_model.py upgrade2postgres")
         sys.exit(1)
