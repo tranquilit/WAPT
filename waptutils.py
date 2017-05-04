@@ -336,11 +336,14 @@ def ensure_unicode(data):
                         try:
                             return data.decode(sys.getfilesystemencoding())
                         except UnicodeError:
-                            return data.decode(sys.getdefaultencoding(),'replace')
+                            return data.decode(sys.getdefaultencoding(),'ignore')
                 else:
                     return data.decode(sys.getfilesystemencoding(),'replace')
         if platform.system() == 'Windows' and isinstance(data,WindowsError):
-            return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding(),'replace'))
+            try:
+                return u"%s : %s" % (data.args[0], data.args[1].decode('cp850'))
+            except UnicodeError:
+                return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding(),'ignore'))
         if isinstance(data,UnicodeError):
             return u"%s : faulty string is '%s'" % (data,repr(data.args[1]))
         if isinstance(data,Exception):
