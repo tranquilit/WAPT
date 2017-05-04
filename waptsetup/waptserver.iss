@@ -34,7 +34,6 @@ Source: "..\waptserverpostconf.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 ; deployment/upgrade tool
 Source: "..\waptdeploy.exe"; DestDir: "{app}\waptserver\repository\wapt\"; Flags: ignoreversion
-Source: "..\lib\site-packages\bson\*"; DestDir: "{app}\lib\site-packages\bson"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.pyc,test,*.~*,*.chm,testsuite,Demos,test,HTML"
 
 ; Sources for server application
 Source: "waptserver.iss"; DestDir: "{app}\waptsetup";
