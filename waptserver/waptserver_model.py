@@ -42,6 +42,7 @@ sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 
 from peewee import *
 from playhouse.postgres_ext import *
+from playhouse.pool import PooledPostgresqlExtDatabase
 
 from playhouse.shortcuts import dict_to_model,model_to_dict
 from playhouse import db_url
@@ -568,9 +569,9 @@ def upgrade2postgres():
 
 def get_db_version():
     if not 'serverattribs' in wapt_db.get_tables():
-        return Version('1.4.1')
+        return Version('1.4.1',4)
     else:
-        return Version(ServerAttribs.get(key='db_version').value)
+        return Version(ServerAttribs.get(key='db_version').value,4)
 
 if __name__ == '__main__':
     #init_db(True)

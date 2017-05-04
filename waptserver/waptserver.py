@@ -162,6 +162,8 @@ def close_db(error):
         wapt_db.commit()
     except:
         wapt_db.rollback()
+    #if not wapt_db.is_closed():
+    #    wapt_db.close()
 
 def requires_auth(f):
     @wraps(f)

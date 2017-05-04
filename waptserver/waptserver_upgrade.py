@@ -131,7 +131,7 @@ if get_db_version() < '1.4.3':
         v.save()
 
 # from 1.4.3 to 1.4.4
-if get_db_version() < '1.4.4':
+if get_db_version() < '1.4.3.1':
     with wapt_db.transaction():
         logging.info('Migrating from %s to %s' % (get_db_version(),'1.4.4'))
         columns = [c.name for c in wapt_db.get_columns('hosts')]
@@ -145,6 +145,6 @@ if get_db_version() < '1.4.4':
         migrate(*opes)
 
         (v,created) = ServerAttribs.get_or_create(key='db_version')
-        v.value = '1.4.4'
+        v.value = '1.4.3.1'
         v.save()
 
