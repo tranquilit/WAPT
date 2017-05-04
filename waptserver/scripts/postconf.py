@@ -241,7 +241,7 @@ def check_mongo2pgsql_upgrade_needed(waptserver_ini):
         if proc.name() == 'mongod':
             if postconf.yesno("It is necessary to migrate current database backend from mongodb to postgres. Press yes to start migration",no_label='cancel')== postconf.DIALOG_OK:
                 print ("mongodb process running, need to migrate")
-                print (subprocess.check_output("sudo -u wapt /usr/bin/python /opt/wapt/waptserver/waptserver_model.py  upgrade2postgres",shell=True))
+                print (subprocess.check_output("sudo -u wapt /usr/bin/python /opt/wapt/waptserver/waptserver_upgrade.py upgrade2postgres",shell=True))
                 print (subprocess.check_output("systemctl stop mongodb",shell=True))
                 print (subprocess.check_output("systemctl disable mongodb",shell=True))
             else:
@@ -281,10 +281,10 @@ def main():
 
     mongo_update_status = check_mongo2pgsql_upgrade_needed(waptserver_ini)
     if mongo_update_status==0:
-        print ("already running postgresql, trying to upgrade sructure")
-        subprocess.check_output(""" sudo -u wapt python /opt/wapt/waptserver/waptserver_upgrade.py """, shell=True)
+        print ("already running postgresql, trying to upgrade structure")
+        subprocess.check_output(""" sudo -u wapt python /opt/wapt/waptserver/waptserver_upgrade.py upgrade_structure""", shell=True)
     elif mongo_update_status==1:
-        print ("need to upgrade from mongodb to postgres, please launch python /opt/wapt/waptserver/waptserver_model.py upgrade2postgres")
+        print ("need to upgrade from mongodb to postgres, please launch python /opt/wapt/waptserver/waptserver_upgrade.py upgrade2postgres")
         sys.exit(1)
     elif mongo_update_status==2:
         print ("something not normal please check your installation first")
@@ -306,7 +306,6 @@ def main():
         # for install on windows
         # keep in sync with waptserver.py
         wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
-
 
     if os.path.exists(os.path.join(wapt_root_dir, 'waptserver', 'wsus.py')):
         waptserver_ini.set('uwsgi', 'attach-daemon', '/usr/bin/python /opt/wapt/waptserver/wapthuey.py wsus.huey')

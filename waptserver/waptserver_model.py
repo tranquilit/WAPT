@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.4"
+__version__ = "1.4.3.1"
 
 import os
 import sys
@@ -385,7 +385,7 @@ def update_host_data(data):
                 logger.critical('Unable to update installed_packages for %s' % uuid)
 
         result_query = Hosts.select(Hosts.uuid,Hosts.computer_fqdn)
-        return result_query.where(Hosts.uuid == uuid).dicts().first(1)
+        return result_query.where(Hosts.uuid == uuid).dicts().dicts().first(1)
 
     except Exception as e:
         logger.critical(u'Error updating data for %s : %s'%(uuid,ensure_unicode(e)))
@@ -474,99 +474,6 @@ def init_db(drop=False):
             table.drop_table(fail_silently=True)
     wapt_db.create_tables([Hosts,HostPackagesStatus,HostSoftwares,HostJsonRaw,HostWsus],safe=True)
 
-# TODO : move to waptserver_upgrade with plain mongo connection.
-def create_import_data(ip='127.0.0.1',fn=None):
-    """Connect to a mongo instance and write all wapt.hosts collection as json into a file"""
-    output = subprocess.check_output('mongoexport -d wapt -c hosts',shell=True)
-    print('Read mongo data from json dump ')
-    d =json.loads(output)
-    print('%s records read.'%len(d))
-    if fn is None:
-        fn = "%s.json"%ip
-
-    #0000 is not accepted by postgresql
-    open(fn,'wb').write(json.dumps(d).replace('\u0000',' '))
-    print('File %s done.'%fn)
-
-def load_json(filenames=r'c:\tmp\*.json'):
-    """Read a json host collection exported from wapt mongo and creates
-            Wapt PG Host DB instances"""
-    import glob
-    for fn in glob.glob(filenames):
-        print('Loading %s'%fn)
-        recs = json.load(codecs.open(fn,'rb',encoding='utf8'))
-
-        for rec in recs:
-            computer_fqdn = rec['host']['computer_fqdn']
-            uuid = rec['uuid']
-            try:
-                print update_host_data(rec)
-            except Exception as e:
-                print(u'Error for %s : %s'%(ensure_unicode(computer_fqdn),ensure_unicode(e)))
-                wapt_db.rollback()
-                raise e
-
-# TODO : test data, move somewhere else.
-def import_shapers():
-    for ip in ('wapt-shapers.intra.sermo.fr','wapt-polska.intra.sermo.fr','wapt-india.intra.sermo.fr','wapt-china.intra.sermo.fr'):
-        fn = r'c:\tmp\shapers\%s.json' % ip
-        if not os.path.isfile(fn):
-            create_import_data(ip,fn)
-
-    init_db(False)
-    load_json(r'c:\tmp\shapers\*.json')
-
-
-def comment_mongodb_lines(conf_filename = '/opt/wapt/conf/waptserver.ini'):
-    if not os.path.exists(conf_filename):
-        print ("file %s does not exists!! Exiting " %  conf_filename)
-        sys.exit(1)
-    data = open(conf_filename)
-    new_conf_file_data = ""
-    modified = False
-    for line in data.readlines():
-        line = line.strip()
-        if "mongodb_port" in line:
-            line = '#%s' % line
-            modified = True
-        elif 'mongodb_ip' in line:
-            line = '#%s' % line
-            modified = True
-        new_conf_file_data = new_conf_file_data + line + '\n'
-    print new_conf_file_data
-    if modified ==True:
-        os.rename (conf_filename,"%s.%s" % (conf_filename,datetime.datetime.today().strftime('%Y%m%d-%H:%M:%S')))
-        with open(conf_filename, "w") as text_file:
-            text_file.write(new_conf_file_data)
-
-# TODO : move to waptserver_upgrade
-def upgrade2postgres():
-    # check if mongo is runnina
-    print "upgrading data from mongodb to postgresql"
-    mongo_running = False
-    for proc in psutil.process_iter():
-        if proc.name() == 'mongod':
-            mongo_running=True
-    if not mongo_running:
-        print ("mongodb process not running, please check your configuration. Perhaps migration of data has already been done...")
-        sys.exit(1)
-    val = subprocess.check_output("""  psql wapt -c " SELECT datname FROM pg_database WHERE datname='wapt';   " """, shell=True)
-    if 'wapt' not in val:
-        print ("missing wapt database, please create database first")
-        sys.exit(1)
-    data_import_filename = "/tmp/waptupgrade_%s.json" % datetime.datetime.today().strftime('%Y%m%d-%h:%M:%s')
-    print ("dumping mongodb data in %s " % data_import_filename)
-    create_import_data(ip='127.0.0.1',fn=data_import_filename)
-    try:
-        load_json(filenames=data_import_filename)
-        # TODO : check that data is properly imported
-
-    except Exception as e:
-        traceback.print_exc(file=sys.stdout)
-        print ('Exception while loading data, please check current configuration')
-        sys.exit(1)
-
-
 def get_db_version():
     if not 'serverattribs' in wapt_db.get_tables():
         return Version('1.4.1',4)
@@ -574,28 +481,26 @@ def get_db_version():
         return Version(ServerAttribs.get(key='db_version').value,4)
 
 if __name__ == '__main__':
-    #init_db(True)
-    #import_shapers()
-
     if platform.system != 'Windows' and getpass.getuser()!='wapt':
         print """you should run this program as wapt:
                      sudo -u wapt python /opt/wapt/waptserver/waptserver_model.py  <action>
                  actions : init_db
                            upgrade2postgres"""
         sys.exit(1)
+
     print sys.argv
     if len(sys.argv)>1:
         print sys.argv[1]
         if sys.argv[1]=='init_db':
-            print ("initializing wapt database")
+            print ("initializing missing wapt tables without dropping data.")
+            init_db(False)
+            sys.exit(0)
+        if sys.argv[1]=='reset_db':
+            print ("Drop existing tables and recreate wapt tables.")
             init_db(True)
             sys.exit(0)
-        if sys.argv[1] == 'upgrade2postgres':
-            print('upgrading from mongodb to postgres')
-            comment_mongodb_lines()
-            upgrade2postgres()
     else:
         print ("""usage :
                 python waptserver_model.py init_db
-                python waptserver_model.py upgrade2postgres
+                python waptserver_model.py reset_db
                 """)
