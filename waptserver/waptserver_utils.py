@@ -35,6 +35,7 @@ from waptutils import jsondump
 __all__ = [
     'mkdir_p',
     'utils_set_devel_mode',
+    'utils_devel_mode',
     'get_disk_space',
     'logger',
     'setloglevel',

@@ -356,6 +356,11 @@ def update_host():
         else:
             raw_data = request.data
 
+        # problem with \u0000 utf8 char and postgresql json fields...
+        if '\u0000' in raw_data:
+            logger.warning('Workaround \\u0000 not handled by postgresql json for %s')
+            raw_data = raw_data.replace('\u0000',' ')
+
         data = json.loads(raw_data)
 
         if data:
@@ -901,10 +906,14 @@ def trigger_reachable_discovery():
         g.check_hosts_thread = CheckHostsWaptService(
             timeout=conf['clients_connect_timeout'])
         # in case a POST is issued with a selection of uuids to scan.
-        g.check_hosts_thread.uuids = request.json.get('uuids',None) or None
+        uuids = request.json.get('uuids',None) or None
+        g.check_hosts_thread.uuids = uuids
 
         g.check_hosts_thread.start()
-        message = _(u'Hosts scan launched')
+        if uuids is not None:
+            message = _(u'Hosts scan launched for %s host(s)' % len(uuids))
+        else:
+            message = _(u'Hosts scan launched for all hosts')
         result = dict(thread_ident=g.check_hosts_thread.ident)
 
     except Exception as e:
