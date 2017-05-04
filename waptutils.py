@@ -327,16 +327,26 @@ def ensure_unicode(data):
         if isinstance(data,types.StringType):
             try:
                 return data.decode('utf8')
-            except:
-                return data.decode(sys.getfilesystemencoding(),'replace')
+            except UnicodeError:
+                if platform.system() == 'Windows':
+                    try:
+                        # cmd output mostly cp850 in france ?
+                        return data.decode('cp850')
+                    except UnicodeError:
+                        try:
+                            return data.decode(sys.getfilesystemencoding())
+                        except UnicodeError:
+                            return data.decode(sys.getdefaultencoding(),'replace')
+                else:
+                    return data.decode(sys.getfilesystemencoding(),'replace')
         if platform.system() == 'Windows' and isinstance(data,WindowsError):
             return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding(),'replace'))
-        if isinstance(data,(UnicodeDecodeError,UnicodeEncodeError)):
+        if isinstance(data,UnicodeError):
             return u"%s : faulty string is '%s'" % (data,repr(data.args[1]))
         if isinstance(data,Exception):
             try:
                 return u"%s: %s" % (data.__class__.__name__,("%s"%data).decode(sys.getfilesystemencoding(),'replace'))
-            except:
+            except UnicodeError:
                 try:
                     return u"%s: %s" % (data.__class__.__name__,("%s"%data).decode('utf8','replace'))
                 except:
@@ -350,7 +360,7 @@ def ensure_unicode(data):
             except:
                 pass
         return unicode(data)
-    except:
+    except UnicodeError:
         if logger.level != logging.DEBUG:
             return("Error in ensure_unicode / %s"%(repr(data)))
         else:
