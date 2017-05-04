@@ -133,7 +133,7 @@ if get_db_version() < '1.4.3':
 # from 1.4.3 to 1.4.4
 if get_db_version() < '1.4.3.1':
     with wapt_db.transaction():
-        logging.info('Migrating from %s to %s' % (get_db_version(),'1.4.4'))
+        logging.info('Migrating from %s to %s' % (get_db_version(),'1.4.3.1'))
         columns = [c.name for c in wapt_db.get_columns('hosts')]
         opes = []
         if not 'last_logged_on_user' in columns:
