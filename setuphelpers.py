@@ -835,8 +835,7 @@ class TimeoutExpired(Exception):
         self.timeout = timeout
 
     def __str__(self):
-        return ("Command '%s' timed out after %s seconds with output '%s'" %
-                (self.cmd, self.timeout, self.output))
+        return "Command '%s' timed out after %s seconds with output '%s'" % (self.cmd, self.timeout, repr(self.output))
 
 
 class RunOutput(str):
@@ -963,13 +962,13 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,3010],on_write=None,pid
         if proc.pid in pidlist:
             pidlist.remove(proc.pid)
             killtree(proc.pid)
-        raise TimeoutExpired(cmd,u''.join(output),timeout)
+        raise TimeoutExpired(cmd,''.join(output),timeout)
     stderr_worker.join(timeout)
     if stderr_worker.is_alive():
         if proc.pid in pidlist:
             pidlist.remove(proc.pid)
             killtree(proc.pid)
-        raise TimeoutExpired(cmd,u''.join(output),timeout)
+        raise TimeoutExpired(cmd,''.join(output),timeout)
     proc.returncode = _subprocess.GetExitCodeProcess(proc._handle)
     if proc.pid in pidlist:
         pidlist.remove(proc.pid)
