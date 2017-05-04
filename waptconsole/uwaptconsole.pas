@@ -3024,7 +3024,9 @@ var
 begin
   try
     params := SO();
-    params['uuids'] := GetSelectedUUID;
+    uuids := GetSelectedUUID;
+    if (uuids<>Nil) and (uuids.AsArray.Length > 1) then
+      params['uuids'] := uuids;
 
     res := WAPTServerJsonPost('api/v1/trigger_reachable_discovery?',[],params);
     if res.B['success'] then
@@ -3035,7 +3037,6 @@ begin
     on E:Exception do
       ShowMessageFmt('Unable to trigger discovery of listening IP on wapt server: %S',[UTF8Encode(E.Message)]);
   end;
-
 end;
 
 procedure TVisWaptGUI.ActVNCExecute(Sender: TObject);
