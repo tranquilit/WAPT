@@ -555,6 +555,76 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
 
     return os.path.join(dir,filename)
 
+class Version(object):
+    """Version object of form 0.0.0
+        can compare with respect to natural numbering and not alphabetical
+
+    >>> Version('0.10.2') > Version('0.2.5')
+    True
+    >>> Version('0.1.2') < Version('0.2.5')
+    True
+    >>> Version('0.1.2') == Version('0.1.2')
+    True
+    >>> Version('7') < Version('7.1')
+    True
+    """
+
+    def __init__(self,version,members_count=None):
+        if version is None:
+            version = ''
+        assert isinstance(version,types.ModuleType) or isinstance(version,str) or isinstance(version,unicode) or isinstance(version,Version)
+        if isinstance(version,types.ModuleType):
+            self.versionstring =  getattr(version,'__version__',None)
+        elif isinstance(version,Version):
+            self.versionstring = getattr(version,'versionstring',None)
+        else:
+            self.versionstring = version
+        self.members = [ v.strip() for v in self.versionstring.split('.')]
+        self.members_count = members_count
+        if members_count is not None:
+            if len(self.members)<members_count:
+                self.members.extend(['0'] * (members_count-len(self.members)))
+
+    def __cmp__(self,aversion):
+        def nat_cmp(a, b):
+            a = a or ''
+            b = b or ''
+
+            def convert(text):
+                if text.isdigit():
+                    return int(text)
+                else:
+                    return text.lower()
+
+            def alphanum_key(key):
+                return [convert(c) for c in re.split('([0-9]+)', key)]
+
+            return cmp(alphanum_key(a), alphanum_key(b))
+
+        if not isinstance(aversion,Version):
+            aversion = Version(aversion,self.members_count)
+        for i in range(0,max([len(self.members),len(aversion.members)])):
+            if i<len(self.members):
+                i1 = self.members[i]
+            else:
+                i1 = ''
+            if i<len(aversion.members):
+                i2 = aversion.members[i]
+            else:
+                i2=''
+            v = nat_cmp(i1,i2)
+            if v:
+                return v
+        return 0
+
+    def __str__(self):
+        return '.'.join(self.members)
+
+    def __repr__(self):
+        return "Version('{}')".format('.'.join(self.members))
+
+
+
 if __name__ == '__main__':
     import doctest
     import sys

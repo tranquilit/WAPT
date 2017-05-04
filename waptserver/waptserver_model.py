@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.3"
+__version__ = "1.4.4"
 
 import os
 import sys
@@ -47,7 +47,7 @@ from playhouse.shortcuts import dict_to_model,model_to_dict
 from playhouse import db_url
 from playhouse.signals import Model as SignaledModel, pre_save, post_save
 
-from waptutils import ensure_unicode
+from waptutils import ensure_unicode,Version
 import json
 import codecs
 import datetime
@@ -115,6 +115,7 @@ class Hosts(BaseModel):
 
     host_status = CharField(null=True)
     last_seen_on = CharField(null=True)
+    last_logged_on_user = CharField(null=True)
 
     # raw json data
     wapt_status = BinaryJSONField(null=True)
@@ -122,16 +123,9 @@ class Hosts(BaseModel):
     last_update_status = BinaryJSONField(null=True)
     host_info = BinaryJSONField(null=True)
 
-    # to do : moved to separate tables the json packages and softwares
-    installed_packages = BinaryJSONField(null=True)
-
-    # softwares registered in windows registry
-    installed_softwares = BinaryJSONField(null=True)
-
     # variable structures... so keep them as json
     dmi = BinaryJSONField(null=True)
     wmi = BinaryJSONField(null=True)
-
 
     # audit data
     created_on = DateTimeField(null=True,default=datetime.datetime.now)
@@ -264,17 +258,153 @@ def dictgetpath(adict,pathstr):
             break
     return result
 
+def set_host_field(host,fieldname,data):
+    # these attributes can be transfered as dict
+    if fieldname in ['installed_softwares','installed_packages']:
+        # in case data is transfered as list of tuples instead of list of dict (more compact)
+        if data and isinstance(data[0],list):
+            rec_data = []
+            fieldnames = data[0]
+            for rec in data[1:]:
+                r = zip(fieldnames,rec)
+                rec_data.append(r)
+            setattr(host,fieldname,rec_data)
+        else:
+            setattr(host,fieldname,data)
+    else:
+        setattr(host,fieldname,data)
+    return host
+
+
+def update_installed_packages(uuid,installed_packages):
+    """Stores packages json data into separate HostPackagesStatus
+
+    Args:
+        uuid (str) : unique ID of host
+        installed_packages (list): data from host
+    Returns:
+
+    """
+    # TODO : be smarter : insert / update / delete instead of delete all / insert all ?
+    # is it faster ?
+    HostPackagesStatus.delete().where(HostPackagesStatus.host == uuid).execute()
+    packages = []
+    for package in installed_packages:
+        package['host'] = uuid
+        # filter out all unknown fields from json data for the SQL insert
+        packages.append(dict( [(k,v) for k,v in package.iteritems() if k in HostPackagesStatus._meta.fields] ))
+    if packages:
+        return HostPackagesStatus.insert_many(packages).execute()
+    else:
+        return True
+
+
+def update_installed_softwares(uuid,installed_softwares):
+    """Stores softwares json data into separate HostSoftwares table
+
+    Args:
+        uuid (str) : unique ID of host
+        installed_packages (list): data from host
+    Returns:
+
+    """
+    # TODO : be smarter : insert / update / delete instead of delete all / insert all ?
+    HostSoftwares.delete().where(HostSoftwares.host == uuid).execute()
+    softwares = []
+    for software in installed_softwares:
+        software['host'] = uuid
+        # filter out all unknown fields from json data for the SQL insert
+        softwares.append(dict( [(k,v) for k,v in software.iteritems() if k in HostSoftwares._meta.fields] ))
+    if softwares:
+        return HostSoftwares.insert_many(softwares).execute()
+    else:
+        return True
+
+
+def update_host_data(data):
+    """Helper function to insert or update host data in db
+
+    Args :
+        data (dict) : data to push in DB with at least 'uuid' key
+                        if uuid key already exists, update the data
+                        eld insert
+                      only keys in data are pushed to DB.
+                        Other data (fields) are left untouched
+        signature (str) : check the supplied data with host certificate before updating the DB
+        signed_attributes (list):
+    Returns:
+        dict : with uuid,computer_fqdn,host_info from db after update
+    """
+    migrate_map_13_14 = {
+        'packages':None,
+        'installed_packages':None,
+        'softwares':None,
+        'installed_softwares':None,
+
+        'update_status':'last_update_status',
+        'host':'host_info',
+        'wapt':'wapt_status',
+        'update_status':'last_update_status',
+        }
+
+    uuid = data['uuid']
+    try:
+        existing = Hosts.select(Hosts.uuid,Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
+        if not existing:
+            logger.debug('Inserting new host %s with fields %s'%(uuid,data.keys()))
+            # wapt update_status packages softwares host
+            newhost = Hosts()
+            for k in data.keys():
+                # manage field renaming between 1.3 and >= 1.4
+                target_key = migrate_map_13_14.get(k,k)
+                if target_key and hasattr(newhost,target_key):
+                    set_host_field(newhost,target_key,data[k])
+
+            newhost.save(force_insert=True)
+        else:
+            logger.debug('Updating %s for fields %s'%(uuid,data.keys()))
+
+            updhost = Hosts.get(uuid=uuid)
+            for k in data.keys():
+                # manage field renaming between 1.3 and >= 1.4
+                target_key = migrate_map_13_14.get(k,k)
+                if target_key and hasattr(updhost,target_key):
+                    set_host_field(updhost,target_key,data[k])
+            updhost.save()
+
+        # separate tables
+        if ('installed_softwares' in data) or ('softwares' in data):
+            installed_softwares = data.get('installed_softwares',data.get('softwares',None))
+            if not update_installed_softwares(uuid,installed_softwares):
+                logger.critical('Unable to update installed_softwares for %s' % uuid)
+
+        if ('installed_packages' in data) or ('packages' in data):
+            installed_packages = data.get('installed_packages',data.get('packages',None))
+            if not update_installed_packages(uuid,installed_packages):
+                logger.critical('Unable to update installed_packages for %s' % uuid)
+
+        result_query = Hosts.select(Hosts.uuid,Hosts.computer_fqdn)
+        return result_query.where(Hosts.uuid == uuid).dicts().first(1)
+
+    except Exception as e:
+        logger.critical(u'Error updating data for %s : %s'%(uuid,ensure_unicode(e)))
+        wapt_db.rollback()
+        raise
+
+
 @pre_save(sender=Hosts)
 def wapthosts_pre_save(model_class, instance, created):
     if created:
         instance.created_on = datetime.datetime.now()
     instance.updated_on = datetime.datetime.now()
 
+
 @pre_save(sender=HostSoftwares)
 def hostsoftwares_pre_save(model_class, instance, created):
     if created:
         instance.created_on = datetime.datetime.now()
     instance.updated_on = datetime.datetime.now()
+
 
 @pre_save(sender=HostPackagesStatus)
 def installstatus_pre_save(model_class, instance, created):
@@ -286,6 +416,7 @@ def installstatus_pre_save(model_class, instance, created):
 @pre_save(sender=Hosts)
 def wapthosts_json(model_class, instance, created):
     """Stores in plain table fields data from json"""
+    # extract data from json into plain table fields
     if (created or Hosts.host_info in instance.dirty_fields) and instance.host_info:
         extractmap = [
             ['computer_fqdn','computer_fqdn'],
@@ -297,10 +428,12 @@ def wapthosts_json(model_class, instance, created):
             ['os_version',('windows_version','windows_product_infos.windows_version')],
             ['connected_ips','connected_ips'],
             ['connected_users',('connected_users','current_user')],
+            ['last_loggged_on_user','last_loggged_on_user'],
             ['mac_addresses','mac'],
             ['dnsdomain',('dnsdomain','dns_domain')],
             ['gateways','gateways'],
             ]
+
         for field,attribute in extractmap:
             setattr(instance,field,dictgetpath(instance.host_info,attribute))
 
@@ -328,55 +461,6 @@ def wapthosts_json(model_class, instance, created):
         if not instance.host_status:
             instance.host_status = 'OK'
 
-    # stores packages json data into separate HostPackagesStatus
-    if not created and Hosts.installed_packages in instance.dirty_fields:
-        HostPackagesStatus.delete().where(HostPackagesStatus.host == instance.uuid).execute()
-        packages = []
-        if instance.installed_packages:
-            for package in instance.installed_packages:
-                package['host'] = instance.uuid
-                # remove all unknown fields from json data
-                packages.append(dict( [(k,v) for k,v in package.iteritems() if k in HostPackagesStatus._meta.fields] ))
-        if packages:
-            HostPackagesStatus.insert_many(packages).execute()
-
-    # stores softwares in HostSoftwares
-    if (not created and Hosts.installed_softwares in instance.dirty_fields):
-        # to be improved... removed all packages status  for this host
-        HostSoftwares.delete().where(HostSoftwares.host == instance.uuid).execute()
-        softwares = []
-        for software in instance.installed_softwares:
-            software['host'] = instance.uuid
-            # remove all unknown fields from json data
-            softwares.append(dict( [(k,v) for k,v in software.iteritems() if k in HostSoftwares._meta.fields] ))
-        if softwares:
-            HostSoftwares.insert_many(softwares).execute()
-
-
-@post_save(sender=Hosts)
-def wapthosts_model_post_save(model_class, instance, created):
-    # stores packages json data into separate HostPackagesStatus
-    if created:
-        HostPackagesStatus.delete().where(HostPackagesStatus.host == instance.uuid).execute()
-        packages = []
-        for package in instance.installed_packages:
-            package['host'] = instance.uuid
-            # remove all unknown fields from json data
-            packages.append(dict( [(k,v) for k,v in package.iteritems() if k in HostPackagesStatus._meta.fields] ))
-        if packages:
-            HostPackagesStatus.insert_many(packages).execute()
-
-        # to be improved... removed all packages status  for this host
-        HostSoftwares.delete().where(HostSoftwares.host == instance.uuid).execute()
-        softwares = []
-        for software in instance.installed_softwares:
-            software['host'] = instance.uuid
-            # remove all unknown fields from json data
-            softwares.append(dict( [(k,v) for k,v in software.iteritems() if k in HostSoftwares._meta.fields] ))
-        if softwares:
-            HostSoftwares.insert_many(softwares).execute()
-
-
 
 def init_db(drop=False):
     wapt_db.get_conn()
@@ -389,7 +473,7 @@ def init_db(drop=False):
             table.drop_table(fail_silently=True)
     wapt_db.create_tables([Hosts,HostPackagesStatus,HostSoftwares,HostJsonRaw,HostWsus],safe=True)
 
-
+# TODO : move to waptserver_upgrade with plain mongo connection.
 def create_import_data(ip='127.0.0.1',fn=None):
     """Connect to a mongo instance and write all wapt.hosts collection as json into a file"""
     output = subprocess.check_output('/usr/bin/python /opt/wapt/waptserver/scripts/get_mongodb_data.py',shell=True)
@@ -407,14 +491,6 @@ def load_json(filenames=r'c:\tmp\*.json'):
     """Read a json host collection exported from wapt mongo and creates
             Wapt PG Host DB instances"""
     import glob
-    convert_map = {
-        'last_query_date':'last_seen_on',
-        'update_status':'last_update_status',
-        'softwares':'installed_softwares',
-        'packages':'installed_packages',
-        'wapt':'wapt_status',
-        'host':'host_info',
-    }
     for fn in glob.glob(filenames):
         print('Loading %s'%fn)
         recs = json.load(codecs.open(fn,'rb',encoding='utf8'))
@@ -423,37 +499,13 @@ def load_json(filenames=r'c:\tmp\*.json'):
             computer_fqdn = rec['host']['computer_fqdn']
             uuid = rec['uuid']
             try:
-                try:
-                    # wapt update_status packages softwares host
-                    newhost = Hosts()
-                    for k in rec.keys():
-                        if hasattr(newhost,convert_map.get(k,k)):
-                            setattr(newhost,convert_map.get(k,k),rec[k])
-                        else:
-                            print '%s unknown key %s' % (computer_fqdn,k)
-
-                    if 'host' in rec:
-                        newhost.host_info = rec.get('host')
-
-                    newhost.save(force_insert=True)
-                    print('%s Inserted (%s)'%(newhost.computer_fqdn,newhost.uuid))
-                except IntegrityError as e:
-                    wapt_db.rollback()
-                    updhost = Hosts.get(uuid=uuid)
-                    for k in rec.keys():
-                        if hasattr(updhost,convert_map.get(k,k)):
-                            setattr(updhost,convert_map.get(k,k),rec[k])
-                        else:
-                            print '%s unknown key %s' % (computer_fqdn,k)
-                    if 'host' in rec:
-                        newhost.host_info = rec.get('host')
-                    updhost.save()
-                    print('%s Updated'%computer_fqdn)
+                print update_host_data(rec)
             except Exception as e:
                 print(u'Error for %s : %s'%(ensure_unicode(computer_fqdn),ensure_unicode(e)))
                 wapt_db.rollback()
                 raise e
 
+# TODO : test data, move somewhere else.
 def import_shapers():
     for ip in ('wapt-shapers.intra.sermo.fr','wapt-polska.intra.sermo.fr','wapt-india.intra.sermo.fr','wapt-china.intra.sermo.fr'):
         fn = r'c:\tmp\shapers\%s.json' % ip
@@ -463,12 +515,6 @@ def import_shapers():
     init_db(False)
     load_json(r'c:\tmp\shapers\*.json')
 
-def tests():
-    print Hosts.select().count()
-    print list(Hosts.select(Hosts.computer_fqdn,Hosts.wapt_status['wapt-exe-version']).tuples())
-    print list(Hosts.select(Hosts.computer_fqdn,Hosts.wapt_status['wapt-exe-version'].alias('waptversion')).dicts())
-    for h in Hosts.select(Hosts.uuid,Hosts.computer_fqdn,Hosts.host_info,Hosts.wapt_status).where(Hosts.wapt_status['waptserver']['dnsdomain'] == 'aspoland.lan' ):
-        print h.computer_fqdn,h.host_info['windows_version'],h.wapt_status['wapt-exe-version']
 
 def comment_mongodb_lines(conf_filename = '/opt/wapt/conf/waptserver.ini'):
     if not os.path.exists(conf_filename):
@@ -492,7 +538,7 @@ def comment_mongodb_lines(conf_filename = '/opt/wapt/conf/waptserver.ini'):
         with open(conf_filename, "w") as text_file:
             text_file.write(new_conf_file_data)
 
-
+# TODO : move to waptserver_upgrade
 def upgrade2postgres():
     # check if mongo is runnina
     print "upgrading data from mongodb to postgresql"
@@ -519,11 +565,12 @@ def upgrade2postgres():
         print ('Exception while loading data, please check current configuration')
         sys.exit(1)
 
+
 def get_db_version():
     if not 'serverattribs' in wapt_db.get_tables():
-        return '1.4.1'
+        return Version('1.4.1')
     else:
-        return ServerAttribs.get(key='db_version').value
+        return Version(ServerAttribs.get(key='db_version').value)
 
 if __name__ == '__main__':
     #init_db(True)

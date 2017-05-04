@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.3"
+__version__ = "1.4.4"
 usage = """\
 %prog [-c configfile] [-l loglevel]
 
@@ -113,7 +113,6 @@ if get_db_version() < '1.4.2':
         HostJsonRaw.create_table(fail_silently=True)
         HostWsus.create_table(fail_silently=True)
 
-        ServerAttribs.create_table(fail_silently=True)
         (v,created) = ServerAttribs.get_or_create(key='db_version')
         v.value = '1.4.2'
         v.save()
@@ -123,10 +122,29 @@ if get_db_version() < '1.4.3':
     with wapt_db.transaction():
         logging.info('Migrating from %s to %s' % (get_db_version(),'1.4.3'))
         if not [c.name for c in wapt_db.get_columns('hosts') if c.name == 'host_certificate']:
-            migrate(migrator.add_column(Hosts._meta.name,'host_certificate',Hosts.host_certificate))
+            migrate(
+                migrator.add_column(Hosts._meta.name,'host_certificate',Hosts.host_certificate),
+                )
 
-        ServerAttribs.create_table(fail_silently=True)
         (v,created) = ServerAttribs.get_or_create(key='db_version')
         v.value = '1.4.3'
+        v.save()
+
+# from 1.4.3 to 1.4.4
+if get_db_version() < '1.4.4':
+    with wapt_db.transaction():
+        logging.info('Migrating from %s to %s' % (get_db_version(),'1.4.4'))
+        columns = [c.name for c in wapt_db.get_columns('hosts')]
+        opes = []
+        if not 'last_logged_on_user' in columns:
+            opes.append(migrator.add_column(Hosts._meta.name,'last_logged_on_user',Hosts.last_logged_on_user))
+        if 'installed_sofwares' in columns:
+            opes.append(migrator.drop_column(Hosts._meta.name,'installed_sofwares'))
+        if 'installed_sofwares' in columns:
+            opes.append(migrator.drop_column(Hosts._meta.name,'installed_packages'))
+        migrate(*opes)
+
+        (v,created) = ServerAttribs.get_or_create(key='db_version')
+        v.value = '1.4.4'
         v.save()
 

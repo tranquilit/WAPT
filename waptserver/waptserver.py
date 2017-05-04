@@ -45,7 +45,7 @@ from passlib.hash import sha512_crypt, bcrypt
 from peewee import *
 from playhouse.postgres_ext import *
 
-from waptserver_model import Hosts,HostSoftwares,HostPackagesStatus,init_db,wapt_db,model_to_dict,dict_to_model
+from waptserver_model import Hosts,HostSoftwares,HostPackagesStatus,init_db,wapt_db,model_to_dict,dict_to_model,update_host_data
 
 from werkzeug.utils import secure_filename
 from functools import wraps
@@ -313,80 +313,6 @@ def index():
     }
 
     return render_template("index.html", data=data)
-
-
-def set_host_field(host,fieldname,data):
-    # these attributes can be transfered as dict
-    if fieldname in ['installed_softwares','installed_packages']:
-        # in case data is transfered as list of tuples instead of list of dict (more compact)
-        if data and isinstance(data[0],list):
-            rec_data = []
-            fieldnames = data[0]
-            for rec in data[1:]:
-                r = zip(fieldnames,rec)
-                rec_data.append(r)
-            setattr(host,fieldname,rec_data)
-        else:
-            setattr(host,fieldname,data)
-    else:
-        setattr(host,fieldname,data)
-    return host
-
-def update_host_data(data):
-    """Helper function to insert or update host data in db
-
-    Args :
-        data (dict) : data to push in DB with at least 'uuid' key
-                        if uuid key already exists, update the data
-                        eld insert
-                      only keys in data are pushed to DB.
-                        Other data (fields) are left untouched
-        signature (str) : check the supplied data with host certificate before updating the DB
-        signed_attributes (list):
-    Returns:
-        dict : with uuid,computer_fqdn,host_info from db after update
-    """
-    migrate_map_13_14 = {
-        'packages':'installed_packages',
-        'softwares':'installed_softwares',
-        'update_status':'last_update_status',
-        'host':'host_info',
-        'wapt':'wapt_status',
-        'update_status':'last_update_status',
-        }
-
-    uuid = data['uuid']
-    try:
-        existing = Hosts.select(Hosts.uuid,Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
-        if not existing:
-            logger.debug('Inserting new host %s with fields %s'%(uuid,data.keys()))
-            # wapt update_status packages softwares host
-            newhost = Hosts()
-            for k in data.keys():
-                # manage field renaming between 1.3 and >= 1.4
-                target_key = migrate_map_13_14.get(k,k)
-                if hasattr(newhost,target_key):
-                    set_host_field(newhost,target_key,data[k])
-
-            newhost.save(force_insert=True)
-        else:
-            logger.debug('Updating %s for fields %s'%(uuid,data.keys()))
-
-            updhost = Hosts.get(uuid=uuid)
-            for k in data.keys():
-                # manage field renaming between 1.3 and >= 1.4
-                target_key = migrate_map_13_14.get(k,k)
-                if hasattr(updhost,target_key):
-                    set_host_field(updhost,target_key,data[k])
-            updhost.save()
-
-        result_query = Hosts.select(Hosts.uuid,Hosts.computer_fqdn)
-        return result_query.where(Hosts.uuid == uuid).dicts().first(1)
-
-    except Exception as e:
-        logger.critical(u'Error updating data for %s : %s'%(uuid,ensure_unicode(e)))
-        wapt_db.rollback()
-        raise
 
 
 def get_reachable_ip(ips=[], waptservice_port=conf[
