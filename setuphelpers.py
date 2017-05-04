@@ -828,6 +828,14 @@ class RunReader(threading.Thread):
 class TimeoutExpired(Exception):
     """This exception is raised when the timeout expires while waiting for a
     child process.
+
+    >>> try:
+    ...     run('ping -t 10.10.1.67',timeout=5)
+    ... except TimeoutExpired as e:
+    ...     print e.output
+    ...     raise
+    ...
+
     """
     def __init__(self, cmd, output=None, timeout=None):
         self.cmd = cmd
