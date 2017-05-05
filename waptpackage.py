@@ -341,11 +341,14 @@ class PackageEntry(object):
             ','.join(["%s=%s"%(key,getattr(self,key)) for key in ('architecture','maturity','locale') if (getattr(self,key) and getattr(self,key) != 'all')]))
 
     def get(self,name,default=None):
-        """Get PackageEntry property like a dict
+        """Get PackageEntry property.
 
-        >>> r = WaptLocalRepo('C:\\wapt\\waptserver\\repository\\wapt-host')
-        >>> print(dict(r['htlaptop.tranquilit.local']))
+        Args:
+            name (str): property to get. name is forced to lowercase.
+            default (any) : value to return in case the property doesn't not exist.
 
+        Returns:
+            any : property value
         """
         if name is str or name is unicode:
             name = name.lower()
