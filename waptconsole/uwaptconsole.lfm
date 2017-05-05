@@ -415,7 +415,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 16
+            Position = 15
             Tag = 16
             Text = 'purchase_order'
             Width = 100
@@ -424,7 +424,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 17
+            Position = 16
             Tag = 17
             Text = 'purchase_date'
             Width = 100
@@ -433,7 +433,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 18
+            Position = 17
             Tag = 18
             Text = 'attributes'
             Width = 100
@@ -441,21 +441,21 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 19
+            Position = 18
             Tag = 19
             Text = 'Domain controller'
             PropertyName = 'host_info/domain_controller'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 20
+            Position = 19
             Tag = 20
             Text = 'Groups'
             Width = 64
             PropertyName = 'depends'
           end        
           item
-            Position = 21
+            Position = 20
             Tag = 21
             Text = 'Domaine'
             Width = 80
@@ -463,7 +463,7 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 22
+            Position = 21
             Tag = 22
             Text = 'Domain controller address'
             PropertyName = 'host_info/domain_controller_address'
@@ -591,6 +591,14 @@ object VisWaptGUI: TVisWaptGUI
                 Text = 'Installed by'
                 Width = 100
                 PropertyName = 'explicit_by'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 10
+                Tag = 11
+                Text = 'md5sum'
+                Width = 100
+                PropertyName = 'md5sum'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
