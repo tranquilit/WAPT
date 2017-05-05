@@ -394,7 +394,7 @@ object VisWaptGUI: TVisWaptGUI
             Tag = 13
             Text = 'WAPT version'
             Width = 80
-            PropertyName = 'wapt.wapt-exe-version'
+            PropertyName = 'wapt_status.wapt-exe-version'
           end        
           item
             MaxWidth = 400
@@ -446,7 +446,7 @@ object VisWaptGUI: TVisWaptGUI
             Position = 19
             Tag = 19
             Text = 'Domain controller'
-            PropertyName = 'host.domain_controller'
+            PropertyName = 'host_info/domain_controller'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
@@ -461,14 +461,14 @@ object VisWaptGUI: TVisWaptGUI
             Tag = 21
             Text = 'Domaine'
             Width = 80
-            PropertyName = 'host.domain_name'
+            PropertyName = 'host_info/domain_name'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 22
             Tag = 22
             Text = 'Domain controller address'
-            PropertyName = 'host.domain_controller_address'
+            PropertyName = 'host_info/domain_controller_address'
           end>
         Header.DefaultHeight = 17
         Header.Height = 19
@@ -7008,13 +7008,6 @@ object VisWaptGUI: TVisWaptGUI
     left = 456
     top = 144
   end
-  object TimerWUALoadWinUpdates: TTimer
-    Enabled = False
-    Interval = 400
-    OnTimer = TimerWUALoadWinUpdatesTimer
-    left = 360
-    top = 144
-  end
   object PopupWUAUpdates: TPopupMenu
     left = 568
     top = 176
@@ -7203,5 +7196,12 @@ object VisWaptGUI: TVisWaptGUI
     Options = [ofPathMustExist, ofEnableSizing, ofViewDetail]
     left = 600
     top = 472
+  end
+  object TimerWUALoadWinUpdates: TTimer
+    Enabled = False
+    Interval = 400
+    OnTimer = TimerWUALoadWinUpdatesTimer
+    left = 360
+    top = 144
   end
 end

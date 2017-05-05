@@ -101,6 +101,7 @@ type
     pgWindowsUpdates: TTabSheet;
     PopupDelete: TPopupMenu;
     Splitter6: TSplitter;
+    TimerWUALoadWinUpdates: TTimer;
     WSUSActions: TActionList;
     ActWUANewGroup: TAction;
     ActWUAProductsSelection: TAction;
@@ -282,7 +283,6 @@ type
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
     pgHostWUA: TTabSheet;
-    TimerWUALoadWinUpdates: TTimer;
     TimerTasks: TTimer;
     Label2: TLabel;
     Label3: TLabel;
@@ -3653,7 +3653,7 @@ begin
   if (Source = GridhostInventory) then
   begin
     // drop d'un nouvel attribut
-    propname := GridhostInventory.Path(GridhostInventory.FocusedNode, 0, ttNormal, '.');
+    propname := GridhostInventory.Path(GridhostInventory.FocusedNode, 0, ttNormal, '/');
     propname := copy(propname, 1, length(propname) - 1);
     col := Gridhosts.FindColumnByPropertyName(propname);
     if col = nil then
@@ -3675,7 +3675,7 @@ begin
   // dragDrop d'un attribut pour enrichir la grille des hosts
   if (Source = GridhostInventory) then
   begin
-    propname := GridhostInventory.Path(GridhostInventory.FocusedNode, 0, ttNormal, '.');
+    propname := GridhostInventory.Path(GridhostInventory.FocusedNode, 0, ttNormal, '/');
     propname := copy(propname, 1, length(propname) - 1);
 
     Accept := (GridHosts.FindColumnByPropertyName(propname) = nil);

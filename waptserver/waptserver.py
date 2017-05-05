@@ -1519,11 +1519,11 @@ def build_fields_list(model,mongoproj):
             result.append(model._meta.fields[fn])
         else:
             # jsonb sub fields.
-            parts = fn.split('.')
+            parts = fn.split('/')
             root = parts[0]
             if root in model._meta.fields:
                 path = ','.join(parts[1:])
-                result.append(SQL("%s #>>'{%s}' as \"%s\" "%(root,path,fn.replace('.','-'))))
+                result.append(SQL("%s #>>'{%s}' as \"%s\" "%(root,path,fn)))
     return result
 
 
@@ -1576,9 +1576,9 @@ def get_hosts():
                            'purchase_date',
                            'groups',
                            'attributes',
-                           'host.domain_controller',
-                           'host.domain_name',
-                           'host.domain_controller_address',
+                           'host_info.domain_controller',
+                           'host_info.domain_name',
+                           'host_info.domain_controller_address',
                            'depends',
                            'computer_type',
                            'os_name',
@@ -1609,17 +1609,6 @@ def get_hosts():
         for fn in other_columns:
             if not fn in columns:
                 columns.append(fn)
-
-        # remove children
-        columns_tree = sorted([c.split('.') for c in columns])
-        last = None
-        new_tree = []
-        for col in columns_tree:
-            if last is None or col[:len(last)] != last:
-                new_tree.append(col)
-                last = col
-
-        columns = ['.'.join(c) for c in new_tree]
 
         not_filter = request.args.get('not_filter', 0)
 
