@@ -77,18 +77,22 @@ FileName=$[Project-Path]waptserver_model.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node11]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver_utils.py
+FileName=$[Project-Path]waptserver_upgrade.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node12]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptutils.py
+FileName=$[Project-Path]waptserver_utils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node13]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptutils.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node14]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]wsus.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=14
+Count=15
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode

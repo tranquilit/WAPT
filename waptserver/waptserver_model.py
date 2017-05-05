@@ -486,15 +486,18 @@ def init_db(drop=False):
     except:
         wapt_db.rollback()
     if drop:
-        for table in reversed([Hosts,HostPackagesStatus,HostSoftwares,HostJsonRaw,HostWsus]):
+        for table in reversed([ServerAttribs,Hosts,HostPackagesStatus,HostSoftwares,HostJsonRaw,HostWsus]):
             table.drop_table(fail_silently=True)
-    wapt_db.create_tables([Hosts,HostPackagesStatus,HostSoftwares,HostJsonRaw,HostWsus],safe=True)
+    wapt_db.create_tables([ServerAttribs,Hosts,HostPackagesStatus,HostSoftwares,HostJsonRaw,HostWsus],safe=True)
 
 def get_db_version():
     if not 'serverattribs' in wapt_db.get_tables():
         return Version('1.4.1',4)
     else:
-        return Version(ServerAttribs.get(key='db_version').value,4)
+        try:
+            return Version(ServerAttribs.get(key='db_version').value,4)
+        except:
+            return Version('1.4.1',4)
 
 if __name__ == '__main__':
     if platform.system != 'Windows' and getpass.getuser()!='wapt':
