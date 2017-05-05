@@ -1533,7 +1533,7 @@ def registry_delete(root,path,valuename):
     return result
 
 def registry_deletekey(root,path,keyname,force=False):
-    r"""Delete the key under specified registry path and all its values and subkeys.
+    r"""Delete the key under specified registry path and all its values.
 
     the path can be either with backslash or slash
     if the key has sub keys, the function fails.
@@ -1549,6 +1549,19 @@ def registry_deletekey(root,path,keyname,force=False):
     >>> py27.copy(r'HKEY_LOCAL_MACHINE\Software\Python\PythonCore\test')
     >>> registry_deletekey(HKEY_LOCAL_MACHINE,'Software\\Python\\PythonCore','test')
     True
+    """
+    # revert to old 'non recursive' way as winsys doesn't handle.
+    result = False
+    path = path.replace(u'/',u'\\')
+    try:
+        with reg_openkey_noredir(root,path,sam=KEY_WRITE) as key:
+            if isinstance(keyname,unicode):
+                keyname = keyname.encode(locale.getpreferredencoding())
+            return _winreg.DeleteKey(key,keyname)
+    except WindowsError as e:
+        logger.warning(u'registry_deletekey:%s'%ensure_unicode(e))
+    return result
+
     """
     def makeregpath(root,*path):
         hives = {
@@ -1574,7 +1587,7 @@ def registry_deletekey(root,path,keyname,force=False):
     except (WindowsError,exc.x_not_found) as e:
         logger.warning(u'registry_deletekey:%s' % repr(e))
     return result
-
+    """
 
 def inifile_hasoption(inifilename,section,key):
     """Check if an option is present in section of the inifile
