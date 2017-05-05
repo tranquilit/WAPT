@@ -75,6 +75,22 @@ class ServerAttribs(BaseModel):
         for key,value in cls.select(cls.key,cls.value).tuples():
             print(u"%s: %s" % (key,repr(value)))
 
+    @classmethod
+    def get_value(cls,key):
+        v = cls.select(cls.value).where(cls.key == key).dicts().first()
+        if v:
+            return v['value']
+        else:
+            return None
+
+    @classmethod
+    def set_value(cls,key,value):
+        with cls._meta.database.atomic():
+            try:
+                cls.create(key=key,value=value)
+            except IntegrityError:
+                cls.update(value=value).where(cls.key == key).execute()
+
 class Hosts(BaseModel):
     """
     Inventory informations of a host

@@ -45,7 +45,7 @@ from passlib.hash import sha512_crypt, bcrypt
 from peewee import *
 from playhouse.postgres_ext import *
 
-from waptserver_model import Hosts,HostSoftwares,HostPackagesStatus,init_db,wapt_db,model_to_dict,dict_to_model,update_host_data
+from waptserver_model import Hosts,HostSoftwares,HostPackagesStatus,ServerAttribs,get_db_version,init_db,wapt_db,model_to_dict,dict_to_model,update_host_data
 
 from werkzeug.utils import secure_filename
 from functools import wraps
@@ -287,13 +287,12 @@ def index():
             deploy_status = 'ERROR'
 
     try:
-        cnt = 'hosts' in wapt_db.get_tables()
-        db_status = 'OK (%s hosts)'%cnt
+        db_status = 'OK (%s)' % get_db_version()
     except Exception as e:
         db_status = 'ERROR'
 
     try:
-        space = get_disk_free_space(conf['wapt_folder'])
+        space = get_disk_space(conf['wapt_folder'])
         if not space:
             raise Exception('Disk info not found')
         percent_free = (space[0] * 100) / space[1]
