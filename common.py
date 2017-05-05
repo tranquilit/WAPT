@@ -2570,10 +2570,16 @@ class Wapt(object):
             if registered_hostname != current_hostname:
                 # forget old host package if any as it is not relevant anymore
                 self.forget_packages(registered_hostname)
-
-            logger.info('Unknown UUID or hostname has changed: reading host UUID from wmi informations')
-            inv = setuphelpers.wmi_info_basic()
-            value = inv['System_Information']['UUID']
+            logger.info('Unknown UUID or hostname has changed: reading host UUID')
+            ini = RawConfigParser()
+            ini.read(self.config_filename)
+            if ini.has_option('global','uuid'):
+                logger.info('reading custom host UUID from wapt-get.ini file.')
+                value = ini.get('global','uuid')
+            else:
+                logger.info('reading custom host UUID from WMI System Information.')
+                inv = setuphelpers.wmi_info_basic()
+                value = inv['System_Information']['UUID']
             self.write_param('uuid',value)
             self.write_param('hostname',current_hostname)
         return value
