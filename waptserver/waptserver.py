@@ -1625,7 +1625,7 @@ def get_hosts():
         if 'has_errors' in request.args and request.args['has_errors']:
             query = query & (Hosts.host_status == 'ERROR')
         if "need_upgrade" in request.args and request.args['need_upgrade']:
-            query = query & (Hosts.host_status.in_(['ERROR','TO_UPGRADE']))
+            query = query & (Hosts.host_status.in_(['ERROR','TO-UPGRADE']))
 
         if not_filter:
             query = ~ query
