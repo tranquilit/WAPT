@@ -675,7 +675,7 @@ end;
 procedure TVisWaptGUI.cbNeedUpgradeClick(Sender: TObject);
 begin
   Gridhosts.Clear;
-  if (EdSearchHost.Text<>'')  and
+  if (length(EdSearchHost.Text)>5)  and
     (cbSearchDMI.Checked or cbSearchSoftwares.Checked or cbSearchPackages.Checked or cbSearchHost.Checked) then
         ActSearchHostExecute(Sender);
 end;

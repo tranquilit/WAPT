@@ -1176,6 +1176,10 @@ msgstr ""
 msgid "Force download even if already up to date"
 msgstr ""
 
+#: tviswaptgui.cbgroups.hint
+msgid "Filter hosts which have this direct package dependency"
+msgstr ""
+
 #: tviswaptgui.cbhaserrors.caption
 msgctxt "TVISWAPTGUI.CBHASERRORS.CAPTION"
 msgid "Has errors"
@@ -1183,6 +1187,10 @@ msgstr ""
 
 #: tviswaptgui.cbinverseselect.caption
 msgid "NOT"
+msgstr ""
+
+#: tviswaptgui.cbinverseselect.hint
+msgid "Negative search : returns hosts Not matching"
 msgstr ""
 
 #: tviswaptgui.cbmasksystemcomponents.caption
@@ -1207,17 +1215,33 @@ msgstr ""
 msgid "Hardware"
 msgstr ""
 
+#: tviswaptgui.cbsearchdmi.hint
+msgid "Search in DMI/WMI infos"
+msgstr ""
+
 #: tviswaptgui.cbsearchhost.caption
 msgid "Host"
+msgstr ""
+
+#: tviswaptgui.cbsearchhost.hint
+msgid "Search in host_info field"
 msgstr ""
 
 #: tviswaptgui.cbsearchpackages.caption
 msgid "Packages"
 msgstr ""
 
+#: tviswaptgui.cbsearchpackages.hint
+msgid "search in installed packages"
+msgstr ""
+
 #: tviswaptgui.cbsearchsoftwares.caption
 msgctxt "tviswaptgui.cbsearchsoftwares.caption"
 msgid "Software"
+msgstr ""
+
+#: tviswaptgui.cbsearchsoftwares.hint
+msgid "Search in installed softwares"
 msgstr ""
 
 #: tviswaptgui.cbshowlog.caption
@@ -1244,6 +1268,10 @@ msgstr ""
 
 #: tviswaptgui.edhostslimit.editlabel.caption
 msgid "Max hosts count"
+msgstr ""
+
+#: tviswaptgui.edhostslimit.hint
+msgid "Limt the count of hosts returned from server"
 msgstr ""
 
 #: tviswaptgui.edhostslimit.text

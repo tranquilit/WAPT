@@ -1226,6 +1226,10 @@ msgstr "WAPT Gerät"
 msgid "Force download even if already up to date"
 msgstr "Download erzwingen, wenn es aktuell ist"
 
+#: tviswaptgui.cbgroups.hint
+msgid "Filter hosts which have this direct package dependency"
+msgstr ""
+
 #: tviswaptgui.cbhaserrors.caption
 msgctxt "TVISWAPTGUI.CBHASERRORS.CAPTION"
 msgid "Has errors"
@@ -1233,6 +1237,10 @@ msgstr "Hat Fehler"
 
 #: tviswaptgui.cbinverseselect.caption
 msgid "NOT"
+msgstr ""
+
+#: tviswaptgui.cbinverseselect.hint
+msgid "Negative search : returns hosts Not matching"
 msgstr ""
 
 #: tviswaptgui.cbmasksystemcomponents.caption
@@ -1257,18 +1265,34 @@ msgstr "Alles"
 msgid "Hardware"
 msgstr "Hardware"
 
+#: tviswaptgui.cbsearchdmi.hint
+msgid "Search in DMI/WMI infos"
+msgstr ""
+
 #: tviswaptgui.cbsearchhost.caption
 msgid "Host"
 msgstr "Host"
+
+#: tviswaptgui.cbsearchhost.hint
+msgid "Search in host_info field"
+msgstr ""
 
 #: tviswaptgui.cbsearchpackages.caption
 msgid "Packages"
 msgstr "Packete"
 
+#: tviswaptgui.cbsearchpackages.hint
+msgid "search in installed packages"
+msgstr ""
+
 #: tviswaptgui.cbsearchsoftwares.caption
 msgctxt "tviswaptgui.cbsearchsoftwares.caption"
 msgid "Software"
 msgstr "Software"
+
+#: tviswaptgui.cbsearchsoftwares.hint
+msgid "Search in installed softwares"
+msgstr ""
 
 #: tviswaptgui.cbshowlog.caption
 msgctxt "tviswaptgui.cbshowlog.caption"
@@ -1294,6 +1318,10 @@ msgstr "Ausstehend"
 
 #: tviswaptgui.edhostslimit.editlabel.caption
 msgid "Max hosts count"
+msgstr ""
+
+#: tviswaptgui.edhostslimit.hint
+msgid "Limt the count of hosts returned from server"
 msgstr ""
 
 #: tviswaptgui.edhostslimit.text
@@ -2304,6 +2332,16 @@ msgstr "wupanright"
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -2370,6 +2408,12 @@ msgstr "Sind Sie sich sicher, dass Sie %s die Pakete vom Host %s vergessen wolle
 #: uwaptconsoleres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
@@ -2846,6 +2890,12 @@ msgstr "Fehler beim erstellen des Pakets"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -3094,6 +3144,10 @@ msgstr "Anwendung: %s -h "
 #| "Wapt-get version: %s\n"
 #| "Waptconsole version : %s\n"
 #| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
 msgctxt "uwaptconsoleres.rsversion"
 msgid ""
 "Waptconsole version : %s\n"
@@ -3152,6 +3206,10 @@ msgstr ""
 #: uwaptconsoleres.rswaptservererror
 #, fuzzy
 #| msgid ""
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
 #| "Error on WAPT server:\n"
@@ -3252,6 +3310,12 @@ msgstr ""
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
 #| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
 "Current server version: %s\n"
@@ -3274,6 +3338,10 @@ msgstr "Fehler beim erstellen des agent : %s"
 #| "WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"

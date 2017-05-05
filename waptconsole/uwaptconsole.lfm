@@ -43,7 +43,7 @@ object VisWaptGUI: TVisWaptGUI
         ClientWidth = 1020
         TabOrder = 1
         object EdSearchHost: TSearchEdit
-          Left = 92
+          Left = 117
           Height = 21
           Hint = 'Regular expressions allowed'
           Top = 4
@@ -65,7 +65,7 @@ object VisWaptGUI: TVisWaptGUI
           ParentColor = False
         end
         object cbNeedUpgrade: TCheckBox
-          Left = 412
+          Left = 437
           Height = 17
           Top = 30
           Width = 95
@@ -74,7 +74,7 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 9
         end
         object cbHasErrors: TCheckBox
-          Left = 412
+          Left = 437
           Height = 17
           Top = 6
           Width = 70
@@ -83,7 +83,7 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 2
         end
         object ButHostSearch: TBitBtn
-          Left = 228
+          Left = 253
           Height = 25
           Top = 2
           Width = 180
@@ -140,6 +140,7 @@ object VisWaptGUI: TVisWaptGUI
         object cbSearchHost: TCheckBox
           Left = 68
           Height = 17
+          Hint = 'Search in host_info field'
           Top = 30
           Width = 42
           Caption = 'Host'
@@ -151,6 +152,7 @@ object VisWaptGUI: TVisWaptGUI
         object cbSearchDMI: TCheckBox
           Left = 144
           Height = 17
+          Hint = 'Search in DMI/WMI infos'
           Top = 30
           Width = 67
           Caption = 'Hardware'
@@ -162,6 +164,7 @@ object VisWaptGUI: TVisWaptGUI
         object cbSearchSoftwares: TCheckBox
           Left = 228
           Height = 17
+          Hint = 'Search in installed softwares'
           Top = 30
           Width = 64
           Caption = 'Software'
@@ -173,6 +176,7 @@ object VisWaptGUI: TVisWaptGUI
         object cbSearchPackages: TCheckBox
           Left = 308
           Height = 17
+          Hint = 'search in installed packages'
           Top = 30
           Width = 65
           Caption = 'Packages'
@@ -224,8 +228,9 @@ object VisWaptGUI: TVisWaptGUI
           ParentColor = False
         end
         object cbGroups: TComboBox
-          Left = 564
+          Left = 589
           Height = 21
+          Hint = 'Filter hosts which have this direct package dependency'
           Top = 4
           Width = 160
           ItemHeight = 13
@@ -235,7 +240,7 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 3
         end
         object Label15: TLabel
-          Left = 524
+          Left = 549
           Height = 13
           Top = 7
           Width = 34
@@ -244,8 +249,9 @@ object VisWaptGUI: TVisWaptGUI
           ParentColor = False
         end
         object CBInverseSelect: TCheckBox
-          Left = 52
+          Left = 67
           Height = 17
+          Hint = 'Negative search : returns hosts Not matching'
           Top = 6
           Width = 41
           Caption = 'NOT'
@@ -253,8 +259,9 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 10
         end
         object EdHostsLimit: TLabeledEdit
-          Left = 644
+          Left = 669
           Height = 21
+          Hint = 'Limt the count of hosts returned from server'
           Top = 30
           Width = 80
           EditLabel.AnchorSideTop.Control = EdHostsLimit
@@ -262,7 +269,7 @@ object VisWaptGUI: TVisWaptGUI
           EditLabel.AnchorSideRight.Control = EdHostsLimit
           EditLabel.AnchorSideBottom.Control = EdHostsLimit
           EditLabel.AnchorSideBottom.Side = asrBottom
-          EditLabel.Left = 560
+          EditLabel.Left = 585
           EditLabel.Height = 13
           EditLabel.Top = 34
           EditLabel.Width = 79
@@ -404,15 +411,6 @@ object VisWaptGUI: TVisWaptGUI
             Text = 'uuid'
             Width = 100
             PropertyName = 'uuid'
-          end        
-          item
-            MaxWidth = 400
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 15
-            Tag = 15
-            Text = 'md5sum'
-            Width = 100
-            PropertyName = 'md5sum'
           end        
           item
             MaxWidth = 400
@@ -593,14 +591,6 @@ object VisWaptGUI: TVisWaptGUI
                 Text = 'Installed by'
                 Width = 100
                 PropertyName = 'explicit_by'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 10
-                Tag = 11
-                Text = 'md5sum'
-                Width = 100
-                PropertyName = 'md5sum'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
