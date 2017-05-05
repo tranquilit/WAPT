@@ -788,6 +788,8 @@ def main():
                 for source_dir in all_args:
                     try:
                         source_dir = guess_package_root_dir(source_dir)
+                        package_fn = None
+
                         if os.path.isdir(source_dir):
                             print('Building  %s' % source_dir)
                             result = mywapt.build_package(
@@ -796,12 +798,11 @@ def main():
                                 excludes=ensure_list(options.excludes))
                             package_fn = result['filename']
                             if package_fn:
-                                packages.append(result)
                                 if not options.json_output:
                                     print(u"Package %s content:" % (result['package'].asrequirement(),))
                                     for f in result['files']:
                                         print(u" %s" % f)
-                                print('...done. Package filename %s' % (package_fn,))
+                                print('...done building. Package filename %s' % (package_fn,))
 
                                 if mywapt.private_key:
                                     print('Signing %s with key %s' % (package_fn,mywapt.private_key))
@@ -810,6 +811,7 @@ def main():
                                         excludes=common.ensure_list(options.excludes)
                                         )
                                     print(u"Package %s signed : signature :\n%s" % (package_fn,signature))
+                                    packages.append(result)
                                 else:
                                     logger.warning(u'No private key provided, package %s is unsigned !' % package_fn)
 
@@ -819,6 +821,9 @@ def main():
                         else:
                             logger.critical(u'Directory %s not found' % source_dir)
                     except Exception as e:
+                        # remove potentially broken or unsigned resulting package file
+                        if package_fn and os.path.isfile(package_fn):
+                            os.unlink(package_fn)
                         errors.append(source_dir)
                         print(u'  ERROR building %s: %s' % (source_dir,e))
 

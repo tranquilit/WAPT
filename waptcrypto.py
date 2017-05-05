@@ -36,6 +36,18 @@ from waptutils import *
 
 import datetime
 
+class SSLVerifyException(Exception):
+    pass
+
+class EWaptEmptyPassword(Exception):
+    pass
+
+class EWaptMissingPrivateKey(Exception):
+    pass
+
+class EWaptMissingCertificate(Exception):
+    pass
+
 def check_key_password(key_filename,password=""):
     """Check if provided password is valid to read the PEM private key
     >>> if not os.path.isfile('c:/private/test.pem'):
@@ -104,7 +116,13 @@ def default_pwd_callback(*args):
     """Default password callback for opening private keys.
     """
     import getpass
-    return getpass.getpass().encode('ascii')
+    i = 3
+    while i>0:
+        i -= 1
+        pwd = getpass.getpass().encode('ascii')
+        if pwd:
+            return pwd
+    raise EWaptEmptyPassword('A non empty password is required')
 
 
 class SSLCAChain(object):
@@ -195,9 +213,6 @@ class SSLCAChain(object):
                 issuer = new_issuer
         return result
 
-class SSLVerifyException(Exception):
-    pass
-
 class SSLPrivateKey(object):
     def __init__(self,private_key=None,key=None,callback=None):
         """Args:
@@ -210,7 +225,7 @@ class SSLPrivateKey(object):
             self.key = key
         else:
             if not os.path.isfile(private_key):
-                raise Exception('Private key %s not found' % private_key)
+                raise EWaptMissingPrivateKey('Private key %s not found' % private_key)
         if callback is None:
             callback = default_pwd_callback
         self.pwd_callback = callback
@@ -305,7 +320,7 @@ class SSLCertificate(object):
             self._key = None
             self._crt = None
             if not os.path.isfile(value):
-                raise Exception('Public certificate %s not found' % value)
+                raise EWaptMissingCertificate('Public certificate %s not found' % value)
 
     @property
     def crt(self):

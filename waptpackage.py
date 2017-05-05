@@ -44,8 +44,6 @@ __all__ = [
     'EWaptNotSigned',
     'EWaptBadControl',
     'EWaptBadSetup',
-    'EWaptMissingPrivateKey',
-    'EWaptMissingCertificate',
     'EWaptNeedsNewerAgent',
     'EWaptDiskSpace',
     'EWaptBadTargetOS',
@@ -139,12 +137,6 @@ class EWaptBadControl(Exception):
     pass
 
 class EWaptBadSetup(Exception):
-    pass
-
-class EWaptMissingPrivateKey(Exception):
-    pass
-
-class EWaptMissingCertificate(Exception):
     pass
 
 class EWaptNeedsNewerAgent(Exception):

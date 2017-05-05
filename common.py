@@ -2283,7 +2283,14 @@ class Wapt(object):
             """
             if not self._key_passwd_cache:
                 import getpass
-                self._key_passwd_cache = getpass.getpass()
+                i = 3
+                while i>0:
+                    i -=1
+                    self._key_passwd_cache = getpass.getpass()
+                    if self._key_passwd_cache:
+                        break
+            if not self._key_passwd_cache:
+                raise EWaptEmptyPassword('A non empty password is required')
             return self._key_passwd_cache.encode('ascii')
 
         self.key_passwd_callback = _cache_passwd_callback
