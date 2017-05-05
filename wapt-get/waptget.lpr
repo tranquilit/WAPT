@@ -312,7 +312,7 @@ begin
   else
   // use http service mode if --service or not --direct or not (--service and isadmin
   if  ((not IsAdminLoggedOn or HasOption('S','service')) and not HasOption('D','direct')) and
-      StrIsOneOf(action,['update','upgrade','register','install','remove','longtask','cancel','cancel-all','tasks','wuascan','wuadownload','wuainstall']) and
+      StrIsOneOf(action,['update','upgrade','register','install','remove','forget','longtask','cancel','cancel-all','tasks','wuascan','wuadownload','wuainstall']) and
       CheckOpenPort(waptservice_port,'127.0.0.1',200) then
   begin
     writeln('About to speak to waptservice...');
@@ -405,7 +405,7 @@ begin
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
         end
         else
-        if (action='install') or (action='remove') then
+        if (action='install') or (action='remove') or (action='forget') then
         begin
           for package in sopackages do
           begin
@@ -414,7 +414,7 @@ begin
               res := WAPTLocalJsonGet(Action+'.json?package='+package.AsString+'&force=1&notify_user=0','admin','',1000,HTTPLogin)
             else
               res := WAPTLocalJsonGet(Action+'.json?package='+package.AsString+'&notify_user=0','admin','',1000,HTTPLogin);
-            if action='install' then
+            if (action='install') or (action='forget')  then
             begin
               // single action
               if (res = Nil) or (res.AsObject=Nil) or not res.AsObject.Exists('id') then
@@ -423,7 +423,7 @@ begin
                 tasks.AsArray.Add(res);
             end
             else
-            if action='remove' then
+            if (action='remove') then
             begin
               // list of actions..
               if (res = Nil) or (res.AsArray=Nil) then

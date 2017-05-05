@@ -72,8 +72,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="86" Y="11"/>
+        <TopLine Value="408"/>
+        <CursorPos X="58" Y="419"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -81,10 +81,12 @@
       <Unit1>
         <Filename Value="waptcommon.pas"/>
         <UnitName Value="waptcommon"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1389"/>
-        <CursorPos X="28" Y="1394"/>
+        <TopLine Value="93"/>
+        <CursorPos X="3" Y="109"/>
         <UsageCount Value="206"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
@@ -548,7 +550,7 @@
         <UsageCount Value="11"/>
       </Unit58>
     </Units>
-    <JumpHistory Count="7" HistoryIndex="6">
+    <JumpHistory Count="19" HistoryIndex="18">
       <Position1>
         <Filename Value="waptget.lpr"/>
         <Caret Line="385" Column="34" TopLine="357"/>
@@ -577,6 +579,54 @@
         <Filename Value="waptget.lpr"/>
         <Caret Line="34" Column="30" TopLine="16"/>
       </Position7>
+      <Position8>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="9" Column="47" TopLine="1"/>
+      </Position8>
+      <Position9>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="315" Column="160" TopLine="290"/>
+      </Position9>
+      <Position10>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="408" Column="28" TopLine="383"/>
+      </Position10>
+      <Position11>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="317" Column="31" TopLine="304"/>
+      </Position11>
+      <Position12>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="490" Column="31" TopLine="471"/>
+      </Position12>
+      <Position13>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="622" Column="51" TopLine="597"/>
+      </Position13>
+      <Position14>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="626" Column="30" TopLine="601"/>
+      </Position14>
+      <Position15>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="299" Column="36" TopLine="284"/>
+      </Position15>
+      <Position16>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="360" Column="33" TopLine="335"/>
+      </Position16>
+      <Position17>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="372" Column="33" TopLine="347"/>
+      </Position17>
+      <Position18>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="391" Column="33" TopLine="366"/>
+      </Position18>
+      <Position19>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="402" Column="33" TopLine="377"/>
+      </Position19>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

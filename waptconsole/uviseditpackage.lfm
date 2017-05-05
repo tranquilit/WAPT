@@ -785,16 +785,16 @@ object VisEditPackage: TVisEditPackage
     ClientWidth = 949
     TabOrder = 0
     object EdPackage: TLabeledEdit
-      Left = 56
+      Left = 80
       Height = 21
       Top = 2
-      Width = 264
+      Width = 240
       EditLabel.AnchorSideTop.Control = EdPackage
       EditLabel.AnchorSideTop.Side = asrCenter
       EditLabel.AnchorSideRight.Control = EdPackage
       EditLabel.AnchorSideBottom.Control = EdPackage
       EditLabel.AnchorSideBottom.Side = asrBottom
-      EditLabel.Left = 13
+      EditLabel.Left = 37
       EditLabel.Height = 13
       EditLabel.Top = 6
       EditLabel.Width = 40
@@ -806,7 +806,7 @@ object VisEditPackage: TVisEditPackage
       OnKeyPress = EdPackageKeyPress
     end
     object EdVersion: TLabeledEdit
-      Left = 56
+      Left = 80
       Height = 21
       Top = 24
       Width = 76
@@ -815,7 +815,7 @@ object VisEditPackage: TVisEditPackage
       EditLabel.AnchorSideRight.Control = EdVersion
       EditLabel.AnchorSideBottom.Control = EdVersion
       EditLabel.AnchorSideBottom.Side = asrBottom
-      EditLabel.Left = 18
+      EditLabel.Left = 42
       EditLabel.Height = 13
       EditLabel.Top = 28
       EditLabel.Width = 35
@@ -827,17 +827,17 @@ object VisEditPackage: TVisEditPackage
       Text = ' '
     end
     object Eddescription: TLabeledEdit
-      Left = 408
+      Left = 440
       Height = 21
       Top = 2
-      Width = 537
+      Width = 505
       Anchors = [akTop, akLeft, akRight]
       EditLabel.AnchorSideTop.Control = Eddescription
       EditLabel.AnchorSideTop.Side = asrCenter
       EditLabel.AnchorSideRight.Control = Eddescription
       EditLabel.AnchorSideBottom.Control = Eddescription
       EditLabel.AnchorSideBottom.Side = asrBottom
-      EditLabel.Left = 352
+      EditLabel.Left = 384
       EditLabel.Height = 13
       EditLabel.Top = 6
       EditLabel.Width = 53
@@ -848,17 +848,17 @@ object VisEditPackage: TVisEditPackage
       Text = ' '
     end
     object EdSourceDir: TEdit
-      Left = 432
+      Left = 440
       Height = 21
       Top = 24
-      Width = 369
+      Width = 361
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 4
       Text = ' '
       Visible = False
     end
     object Label4: TLabel
-      Left = 344
+      Left = 360
       Height = 13
       Top = 29
       Width = 79
@@ -867,7 +867,7 @@ object VisEditPackage: TVisEditPackage
       Visible = False
     end
     object EdSection: TComboBox
-      Left = 188
+      Left = 208
       Height = 21
       Top = 24
       Width = 132
@@ -886,7 +886,7 @@ object VisEditPackage: TVisEditPackage
       Visible = False
     end
     object Label5: TLabel
-      Left = 144
+      Left = 168
       Height = 13
       Top = 29
       Width = 35
