@@ -66,7 +66,7 @@ logging.basicConfig()
 def create_import_data(ip='127.0.0.1',fn=None):
     """Connect to a mongo instance and write all wapt.hosts collection as json into a file"""
     print('Read mongo data from %s...' % ip)
-    d = json.load(subprocess.subprocess.Popen('mongoexport -h %s -d wapt -c hosts' % ip,shell=True))
+    d = json.load(os.popen('mongoexport -h %s -d wapt -c hosts  --jsonArray' % ip))
     print('%s records read.'%len(d))
     if fn is None:
         fn = "%s.json"%ip
