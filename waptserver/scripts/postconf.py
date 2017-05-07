@@ -130,8 +130,8 @@ def enable_debian_vhost():
 def ensure_postgresql_db(db_name='wapt',db_owner='wapt',db_password=''):
     """ create postgresql wapt db and user if it does not exists """
     if type_redhat():
-        print "TODO"
-        sys.exit(1)
+        # we have to check what postgres we use between the upstream packages and the software collection ones
+        pass
     elif type_debian():
         subprocess.check_output('systemctl start postgresql',shell=True)
         subprocess.check_output(['systemctl', 'enable', 'postgresql'])

@@ -68,16 +68,6 @@ if len(sys.argv) > 2:
     print >> sys.stderr, "wrong number of parameters (0 or 1)"
     sys.exit(1)
 
-deb_revision = None
-if len(sys.argv) >= 2:
-    try:
-        deb_revision = int(sys.argv[1])
-        if deb_revision <= 0:
-            raise Exception()
-    except:
-        print >> sys.stderr, "wrong parameter `%s' (should be a positive integer)" % (sys.argv[1],)
-        sys.exit(1)
-
 new_umask = 022
 old_umask = os.umask(new_umask)
 if new_umask != old_umask:
@@ -91,7 +81,8 @@ if not wapt_version:
     print >> sys.stderr, u'version not found in %s/waptserver.py' % os.path.abspath('..')
     sys.exit(1)
 
-control_file = './builddir/DEBIAN/control'
+# gcc is for pip package install
+print(subprocess.check_output("yum install -y python-virtualenv gcc",shell=True))
 
 print >> sys.stderr, 'creating the package tree'
 mkdir_p("builddir/opt/wapt/lib")
@@ -100,6 +91,7 @@ mkdir_p("builddir/opt/wapt/lib/site-packages")
 # we use pip and virtualenv to get the wapt dependencies. virtualenv usage here is a bit awkward, it can probably be improved. For instance, it install a outdated version of pip that cannot install Rocket dependencies...
 # for some reason the virtualenv does not build itself right if we don't have pip systemwide...
 #subprocess.check_output(r'sudo yum install -y python-virtualenv python-setuptools python-pip python-devel',shell=True)
+shutil.rmtree("pylibs")
 print('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
 subprocess.check_output(r'virtualenv ./pylibs --system-site-packages',shell=True)
 print('Install additional libraries in build environment virtualenv')
@@ -110,12 +102,6 @@ print >> sys.stderr, 'copying the waptserver files'
 rsync(source_dir,'./builddir/opt/wapt/',excludes=['postconf','mongod.exe','bin','include'])
 for lib in ('requests','iniparse','dns','pefile.py','rocket','flask','werkzeug','jinja2','itsdangerous.py','markupsafe', 'dialog.py', 'babel', 'flask_babel', 'huey', 'wakeonlan'):
     rsync(makepath(wapt_source_dir,'lib','site-packages',lib),'./builddir/opt/wapt/lib/site-packages/')
-
-# debian specific
-#print >> sys.stderr, 'copying control and postinst package metadata'
-#copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
-#copyfile('./DEBIAN/postinst','./builddir/DEBIAN/postinst')
-#copyfile('./DEBIAN/preinst','./builddir/DEBIAN/preinst')
 
 print >> sys.stderr, "copying the startup script /etc/init.d/waptserver"
 try:
@@ -143,6 +129,15 @@ except Exception as e:
     print >> sys.stderr, 'error: \n%s'%e
     exit(1)
 
+print >> sys.stderr, "copying logrotate script /etc/rsyslog.d/waptserver.conf"
+try:
+    mkdir_p('./builddir/etc/rsyslog.d/')
+    shutil.copyfile('../scripts/waptserver-rsyslog','./builddir/etc/rsyslog.d/waptserver.conf')
+    subprocess.check_output('chown root:root ./builddir/etc/rsyslog.d/waptserver.conf',shell=True)
+except Exception as e:
+    print >> sys.stderr, 'error: \n%s'%e
+    exit(1)
+
 print >> sys.stderr, "adding symlink for wapt-serverpostconf"
 mkdir_p('builddir/usr/bin')
 os.symlink('/opt/wapt/waptserver/scripts/postconf.py', 'builddir/usr/bin/wapt-serverpostconf')
@@ -157,24 +152,3 @@ except Exception as e:
     print >> sys.stderr, 'error: \n%s'%e
     exit(1)
 
-deb_version = wapt_version
-if deb_revision:
-    deb_version += '-' + str(deb_revision)
-
-#debian specific
-#print >> sys.stderr, 'replacing the revision in the control file'
-#replaceAll(control_file,'0.0.7',deb_version)
-
-#debian specific
-#os.chmod('./builddir/DEBIAN/postinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
-#os.chmod('./builddir/DEBIAN/preinst',stat.S_IRWXU| stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
-
-#print >> sys.stderr, 'creating the Debian package'
-#output_file = 'tis-waptserver-%s.deb' % (deb_version)
-#dpkg_command = 'dpkg-deb --build builddir %s' % output_file
-#ret = os.system(dpkg_command)
-#status = ret >> 8
-#if status == 0:
-#    os.link(output_file, 'tis-waptserver.deb')
-#    shutil.rmtree("builddir")
-#sys.exit(status)
