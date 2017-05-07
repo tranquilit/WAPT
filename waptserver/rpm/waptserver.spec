@@ -48,6 +48,7 @@ mkdir -p %{buildroot}/etc/init.d/
 /opt/wapt/waptserver/*
 /opt/wapt/lib/*
 /etc/logrotate.d/waptserver
+/etc/rsyslog.d/waptserver.conf
 /usr/bin/*
 
 %attr(755,root,root)/etc/init.d/waptserver
