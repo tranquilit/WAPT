@@ -125,7 +125,7 @@ conf = waptserver_config.load_config(config_file)
 ALLOWED_EXTENSIONS = set(['wapt'])
 
 # setup logging
-logger = logging.getLogger()
+logger = logging.getLogger("waptserver")
 
 try:
     import wsus
@@ -2300,7 +2300,11 @@ if __name__ == "__main__":
     if not os.path.exists(log_directory):
         os.mkdir(log_directory)
 
-    hdlr = logging.FileHandler(os.path.join(log_directory, 'waptserver.log'))
+    if platform.system()=='Linux':
+        hdlr = logging.handlers.SysLogHandler('/dev/log')
+    else:
+        hdlr = logging.FileHandler(os.path.join(log_directory, 'waptserver.log'))
+
     hdlr.setFormatter(
         logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
     logger.addHandler(hdlr)

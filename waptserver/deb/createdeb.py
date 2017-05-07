@@ -150,6 +150,17 @@ except Exception as e:
     print >> sys.stderr, 'error: \n%s'%e
     exit(1)
 
+print >> sys.stderr, "copying logrotate script /etc/rsyslog.d/waptserver.conf"
+try:
+    mkdir_p('./builddir/etc/rsyslog.d/')
+    shutil.copyfile('../scripts/waptserver-rsyslog','./builddir/etc/rsyslog.d/waptserver.conf')
+    subprocess.check_output('chown root:root ./builddir/etc/rsyslog.d/waptserver.conf',shell=True)
+except Exception as e:
+    print >> sys.stderr, 'error: \n%s'%e
+    exit(1)
+
+
+
 print >> sys.stderr, "adding symlink for wapt-serverpostconf"
 mkdir_p('builddir/usr/bin')
 os.symlink('/opt/wapt/waptserver/scripts/postconf.py', 'builddir/usr/bin/wapt-serverpostconf')

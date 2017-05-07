@@ -75,6 +75,9 @@ subprocess.check_output('mkdir -p /var/www/wapt-host',shell=True)
 subprocess.check_output('chown -R wapt:root /var/www/wapt',shell=True)
 subprocess.check_output('chown -R wapt:root /var/www/wapt-host',shell=True)
 
+print("Restarting rsyslog")
+subprocess.check_output('systemctl restart rsyslog',shell=True)
+
 
 def check_if_running(process_name):
     try:
