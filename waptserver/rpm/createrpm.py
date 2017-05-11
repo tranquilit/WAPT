@@ -98,7 +98,7 @@ subprocess.check_output(r'virtualenv ./pylibs --system-site-packages',shell=True
 print('Install additional libraries in build environment virtualenv')
 print(subprocess.check_output(r'source ./pylibs/bin/activate ; pip install --upgrade pip ' ,shell=True))
 print(subprocess.check_output(r'source ./pylibs/bin/activate ; pip install -r ../../requirements-server-debian.txt -t ./builddir/opt/wapt/lib/site-packages',shell=True))
-rsync('./pylibs/lib/','./buildir/opt/wapt/lib/')
+rsync('./pylibs/lib/','./builddir/opt/wapt/lib/')
 print >> sys.stderr, 'copying the waptserver files'
 rsync(source_dir,'./builddir/opt/wapt/',excludes=['postconf','mongod.exe','bin','include'])
 for lib in ('requests','iniparse','dns','pefile.py','rocket','flask','werkzeug','jinja2','itsdangerous.py','markupsafe', 'dialog.py', 'babel', 'flask_babel', 'huey', 'wakeonlan'):
