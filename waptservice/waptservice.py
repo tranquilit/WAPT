@@ -88,7 +88,7 @@ import common
 from common import Wapt
 import setuphelpers
 from setuphelpers import Version
-from waptpackage import PackageEntry
+from waptpackage import PackageEntry,WaptLocalRepo,WaptPackage
 
 import windnsquery
 
@@ -226,7 +226,7 @@ class WaptServiceConfig(object):
         self.secret_key = '1234567890'
 
         self.dbpath = os.path.join(wapt_root_dir,'db','waptdb.sqlite')
-        self.loglevel = "info"
+        self.loglevel = "warning"
         self.log_directory = os.path.join(wapt_root_dir,'log')
         if not os.path.exists(self.log_directory):
             os.mkdir(self.log_directory)
@@ -1339,6 +1339,27 @@ def cancel_task():
     else:
         return render_template('default.html',data=data)
 
+
+@app.route('/wapt/<string:input_package_name>')
+@allow_local
+def get_wapt_package(input_package_name):
+    package_name = secure_filename(input_package_name)
+    cache_dir = wapt().package_cache_dir
+    local_fn = os.path.join(cache_dir,package_name)
+    force = int(request.args.get('force','0')) == 1
+
+    if package_name == 'Packages' and (not os.path.isfile(local_fn) or force):
+        local_repo = WaptLocalRepo(cache_dir)
+        local_repo.update_packages_index(force_all=force)
+
+    if os.path.isfile(local_fn):
+        r = send_from_directory(cache_dir, package_name)
+        if 'content-length' not in r.headers:
+            r.headers.add_header(
+                'content-length', int(os.path.getsize(local_fn)))
+        return r
+    else:
+        return Response(status=404)
 
 class EventsPrinter:
     '''EventsPrinter class which serves to emulates a file object and logs
