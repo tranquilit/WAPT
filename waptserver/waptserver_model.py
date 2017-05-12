@@ -289,6 +289,13 @@ def set_host_field(host,fieldname,data):
         else:
             setattr(host,fieldname,data)
     else:
+        # awfull hack for data containing null char, not accepted by postgresql.
+        if fieldname in ('wmi','dmi'):
+            jsonrepr = json.dumps(data)
+            if '\u0000' in jsonrepr:
+                logger.warning('Workaround \\u0000 not handled by postgresql json for host %s field %s' % (getattr(host,'uuid','???'),fieldname))
+                data = json.loads(jsonrepr.replace('\u0000',' '))
+
         setattr(host,fieldname,data)
     return host
 

@@ -50,6 +50,7 @@ from waptserver_model import Hosts,HostSoftwares,HostPackagesStatus,ServerAttrib
 from werkzeug.utils import secure_filename
 from functools import wraps
 import logging
+import logging.handlers
 import ConfigParser
 import codecs
 import base64
@@ -356,11 +357,6 @@ def update_host():
             raw_data = zlib.decompress(request.data)
         else:
             raw_data = request.data
-
-        # problem with \u0000 utf8 char and postgresql json fields...
-        if '\u0000' in raw_data:
-            logger.warning('Workaround \\u0000 not handled by postgresql json for %s')
-            raw_data = raw_data.replace('\u0000',' ')
 
         data = json.loads(raw_data)
 
