@@ -209,7 +209,7 @@ object VisWaptExit: TVisWaptExit
       Left = 12
       Height = 38
       Top = 24
-      Width = 240
+      Width = 246
       Caption = 'Upgrades in progress...'#13#10'Don''t shutdown your computer !'
       Font.CharSet = ANSI_CHARSET
       Font.Color = clRed
