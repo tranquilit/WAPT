@@ -1057,7 +1057,9 @@ class WaptLocalRepo(WaptBaseRepo):
                 entry = PackageEntry()
                 if package_filename in old_entries:
                     entry.load_control_from_wapt(fname,calc_md5=False)
-                    if not force_all and entry == old_entries[package_filename] and entry.signature == old_entries[package_filename].signature:
+                    if not force_all and entry == old_entries[package_filename] and \
+                                entry.signature == old_entries[package_filename].signature and \
+                                entry.signature_date == old_entries[package_filename].signature_date:
                         logger.debug(u"  Keeping %s" % package_filename)
                         kept.append(fname)
                         entry = old_entries[package_filename]
