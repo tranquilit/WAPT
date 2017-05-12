@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-
+from __future__ import print_function
 import os,glob,sys,stat
 import shutil
 import fileinput
@@ -48,7 +48,7 @@ def rsync(src,dst,excludes=[]):
     rsync_source = src
     rsync_destination = dst
     rsync_command = '/usr/bin/rsync %s "%s" "%s"'%(rsync_option,rsync_source,rsync_destination)
-    print >> sys.stderr, rsync_command
+    print( rsync_command,file=sys.stderr)
     os.system(rsync_command)
 
 makepath = os.path.join
@@ -61,36 +61,40 @@ wapt_source_dir = os.path.abspath('../..')
 source_dir = os.path.abspath('..')
 
 if platform.system()!='Linux':
-    print >> sys.stderr, "this script should be used on debian linux"
+    print( "this script should be used on debian linux",file=sys.stderr)
     sys.exit(1)
 
 if len(sys.argv) > 2:
-    print >> sys.stderr, "wrong number of parameters (0 or 1)"
+    print("wrong number of parameters (0 or 1)",file=sys.stderr)
     sys.exit(1)
 
 new_umask = 022
 old_umask = os.umask(new_umask)
 if new_umask != old_umask:
-    print >> sys.stderr, 'umask fixed (previous %03o, current %03o)' % (old_umask, new_umask)
+    print( 'umask fixed (previous %03o, current %03o)' % (old_umask, new_umask),file=sys.stderr)
 
 for line in open('%s/waptserver.py'% source_dir):
     if line.strip().startswith('__version__'):
         wapt_version = line.split('=')[1].strip().replace('"','').replace("'","")
 
 if not wapt_version:
-    print >> sys.stderr, u'version not found in %s/waptserver.py' % os.path.abspath('..')
+    print( u'version not found in %s/waptserver.py' % os.path.abspath('..'),file=sys.stderr)
     sys.exit(1)
 
 # gcc is for pip package install
 print(subprocess.check_output("yum install -y python-virtualenv gcc",shell=True))
 
-print >> sys.stderr, 'creating the package tree'
+print('creating the package tree',file=sys.stderr)
+
+if os.path.exists('builddir'):
+    print('cleaning up builddir directory')
+    shutil.rmtree('builddir')
+
 mkdir_p("builddir/opt/wapt/lib")
 mkdir_p("builddir/opt/wapt/lib/site-packages")
 
 # we use pip and virtualenv to get the wapt dependencies. virtualenv usage here is a bit awkward, it can probably be improved. For instance, it install a outdated version of pip that cannot install Rocket dependencies...
 # for some reason the virtualenv does not build itself right if we don't have pip systemwide...
-#subprocess.check_output(r'sudo yum install -y python-virtualenv python-setuptools python-pip python-devel',shell=True)
 if os.path.exists("pylibs"):
     shutil.rmtree("pylibs")
 print('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
@@ -99,12 +103,12 @@ print('Install additional libraries in build environment virtualenv')
 print(subprocess.check_output(r'source ./pylibs/bin/activate ; pip install --upgrade pip ' ,shell=True))
 print(subprocess.check_output(r'source ./pylibs/bin/activate ; pip install -r ../../requirements-server-debian.txt -t ./builddir/opt/wapt/lib/site-packages',shell=True))
 rsync('./pylibs/lib/','./builddir/opt/wapt/lib/')
-print >> sys.stderr, 'copying the waptserver files'
+print('copying the waptserver files',file=sys.stderr)
 rsync(source_dir,'./builddir/opt/wapt/',excludes=['postconf','mongod.exe','bin','include'])
 for lib in ('requests','iniparse','dns','pefile.py','rocket','flask','werkzeug','jinja2','itsdangerous.py','markupsafe', 'dialog.py', 'babel', 'flask_babel', 'huey', 'wakeonlan'):
     rsync(makepath(wapt_source_dir,'lib','site-packages',lib),'./builddir/opt/wapt/lib/site-packages/')
 
-print >> sys.stderr, "copying the startup script /etc/init.d/waptserver"
+print("copying the startup script /etc/init.d/waptserver",file=sys.stderr)
 try:
     mkdir_p('./builddir/etc/init.d/')
     if platform.dist()[0] in ('debian','ubuntu'):
@@ -112,44 +116,44 @@ try:
     elif platform.dist()[0] in ('centos','redhat','fedora'):
         copyfile('../scripts/waptserver-init-centos','./builddir/etc/init.d/waptserver')
     else:
-        print "unsupported distrib"
+        print( "unsupported distrib")
         sys.exit(1)
 
     subprocess.check_output('chmod 755 ./builddir/etc/init.d/waptserver',shell=True)
     subprocess.check_output('chown root:root ./builddir/etc/init.d/waptserver',shell=True)
 except Exception as e:
-    print >> sys.stderr, 'error: \n%s'%e
+    print (sys.stderr, 'error: \n%s'%e,file=sys.stderr)
     exit(1)
 
-print >> sys.stderr, "copying logrotate script /etc/logrotate.d/waptserver"
+print ( "copying logrotate script /etc/logrotate.d/waptserver",file=sys.stderr)
 try:
     mkdir_p('./builddir/etc/logrotate.d/')
     shutil.copyfile('../scripts/waptserver-logrotate','./builddir/etc/logrotate.d/waptserver')
     subprocess.check_output('chown root:root ./builddir/etc/logrotate.d/waptserver',shell=True)
 except Exception as e:
-    print >> sys.stderr, 'error: \n%s'%e
+    print ( 'error: \n%s'%e,file=sys.stderr)
     exit(1)
 
-print >> sys.stderr, "copying logrotate script /etc/rsyslog.d/waptserver.conf"
+print ( "copying logrotate script /etc/rsyslog.d/waptserver.conf",file=sys.stderr)
 try:
     mkdir_p('./builddir/etc/rsyslog.d/')
     shutil.copyfile('../scripts/waptserver-rsyslog','./builddir/etc/rsyslog.d/waptserver.conf')
     subprocess.check_output('chown root:root ./builddir/etc/rsyslog.d/waptserver.conf',shell=True)
 except Exception as e:
-    print >> sys.stderr, 'error: \n%s'%e
+    print( 'error: \n%s'%e,file=sys.stderr)
     exit(1)
 
-print >> sys.stderr, "adding symlink for wapt-serverpostconf"
+print( "adding symlink for wapt-serverpostconf",file=sys.stderr)
 mkdir_p('builddir/usr/bin')
 os.symlink('/opt/wapt/waptserver/scripts/postconf.py', 'builddir/usr/bin/wapt-serverpostconf')
 
-print >> sys.stderr, "copying apache-related goo"
+print( "copying apache-related goo",file=sys.stderr)
 try:
     apache_dir = './builddir/opt/wapt/waptserver/apache/'
     mkdir_p(apache_dir + '/ssl')
     subprocess.check_output(['chmod', '0700', apache_dir + '/ssl'])
     copyfile('../apache-win32/conf/httpd.conf.j2', apache_dir + 'httpd.conf.j2')
 except Exception as e:
-    print >> sys.stderr, 'error: \n%s'%e
+    print ( 'error: \n%s'%e,file=sys.stderr)
     exit(1)
 
