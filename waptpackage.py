@@ -48,6 +48,7 @@ __all__ = [
     'EWaptDiskSpace',
     'EWaptBadTargetOS',
     'EWaptNotAPackage',
+    'EWaptDownloadError',
 ]
 
 import os
@@ -125,6 +126,9 @@ def make_version(major_minor_patch_build):
         return p1
 
 class EWaptBadSignature(Exception):
+    pass
+
+class EWaptDownloadError(Exception):
     pass
 
 class EWaptCorruptedFiles(Exception):
@@ -1053,7 +1057,7 @@ class WaptLocalRepo(WaptBaseRepo):
                 entry = PackageEntry()
                 if package_filename in old_entries:
                     entry.load_control_from_wapt(fname,calc_md5=False)
-                    if not force_all and entry == old_entries[package_filename]:
+                    if not force_all and entry == old_entries[package_filename] and entry.signature == old_entries[package_filename].signature:
                         logger.debug(u"  Keeping %s" % package_filename)
                         kept.append(fname)
                         entry = old_entries[package_filename]
