@@ -21,11 +21,16 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import print_function
-import os,glob,sys,stat
+import os
+import glob
+import sys
+import stat
 import shutil
 import fileinput
 import subprocess
-import platform, errno
+import platform
+import errno
+
 
 def mkdir_p(path):
     try:
@@ -33,22 +38,27 @@ def mkdir_p(path):
     except OSError as exc:  # Python >2.5
         if exc.errno == errno.EEXIST and os.path.isdir(path):
             pass
-        else: raise
+        else:
+            raise
 
-def replaceAll(file,searchExp,replaceExp):
+
+def replaceAll(file, searchExp, replaceExp):
     for line in fileinput.input(file, inplace=1):
         if searchExp in line:
-            line = line.replace(searchExp,replaceExp)
+            line = line.replace(searchExp, replaceExp)
         sys.stdout.write(line)
 
-def rsync(src,dst,excludes=[]):
+
+def rsync(src, dst, excludes=[]):
     rsync_option = " --exclude 'postconf' --exclude 'mongodb' --exclude 'rpm' --exclude '*.pyc' --exclude '*.pyo' --exclude '.svn' --exclude 'apache-win32' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -aP"
     if excludes:
-        rsync_option = rsync_option + ' '.join(" --exclude '%s'" % x for x in excludes)
+        rsync_option = rsync_option + \
+            ' '.join(" --exclude '%s'" % x for x in excludes)
     rsync_source = src
     rsync_destination = dst
-    rsync_command = '/usr/bin/rsync %s "%s" "%s"'%(rsync_option,rsync_source,rsync_destination)
-    print( rsync_command,file=sys.stderr)
+    rsync_command = '/usr/bin/rsync %s "%s" "%s"' % (
+        rsync_option, rsync_source, rsync_destination)
+    print(rsync_command, file=sys.stderr)
     os.system(rsync_command)
 
 makepath = os.path.join
@@ -60,31 +70,35 @@ wapt_source_dir = os.path.abspath('../..')
 # waptrepo
 source_dir = os.path.abspath('..')
 
-if platform.system()!='Linux':
-    print( "this script should be used on debian linux",file=sys.stderr)
+if platform.system() != 'Linux':
+    print("this script should be used on debian linux", file=sys.stderr)
     sys.exit(1)
 
 if len(sys.argv) > 2:
-    print("wrong number of parameters (0 or 1)",file=sys.stderr)
+    print("wrong number of parameters (0 or 1)", file=sys.stderr)
     sys.exit(1)
 
 new_umask = 022
 old_umask = os.umask(new_umask)
 if new_umask != old_umask:
-    print( 'umask fixed (previous %03o, current %03o)' % (old_umask, new_umask),file=sys.stderr)
+    print('umask fixed (previous %03o, current %03o)' %
+          (old_umask, new_umask), file=sys.stderr)
 
-for line in open('%s/waptserver.py'% source_dir):
+for line in open('%s/waptserver.py' % source_dir):
     if line.strip().startswith('__version__'):
-        wapt_version = line.split('=')[1].strip().replace('"','').replace("'","")
+        wapt_version = line.split('=')[
+            1].strip().replace('"', '').replace("'", "")
 
 if not wapt_version:
-    print( u'version not found in %s/waptserver.py' % os.path.abspath('..'),file=sys.stderr)
+    print(u'version not found in %s/waptserver.py' %
+          os.path.abspath('..'), file=sys.stderr)
     sys.exit(1)
 
 # gcc is for pip package install
-print(subprocess.check_output("yum install -y python-virtualenv gcc",shell=True))
+print(subprocess.check_output(
+    "yum install -y python-virtualenv gcc", shell=True))
 
-print('creating the package tree',file=sys.stderr)
+print('creating the package tree', file=sys.stderr)
 
 if os.path.exists('builddir'):
     print('cleaning up builddir directory')
@@ -94,66 +108,83 @@ mkdir_p("builddir/opt/wapt/lib")
 mkdir_p("builddir/opt/wapt/lib/site-packages")
 
 # we use pip and virtualenv to get the wapt dependencies. virtualenv usage here is a bit awkward, it can probably be improved. For instance, it install a outdated version of pip that cannot install Rocket dependencies...
-# for some reason the virtualenv does not build itself right if we don't have pip systemwide...
+# for some reason the virtualenv does not build itself right if we don't
+# have pip systemwide...
 if os.path.exists("pylibs"):
     shutil.rmtree("pylibs")
-print('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-subprocess.check_output(r'virtualenv ./pylibs --system-site-packages',shell=True)
+print(
+    'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
+subprocess.check_output(
+    r'virtualenv ./pylibs --system-site-packages', shell=True)
 print('Install additional libraries in build environment virtualenv')
-print(subprocess.check_output(r'source ./pylibs/bin/activate ; pip install --upgrade pip ' ,shell=True))
-print(subprocess.check_output(r'source ./pylibs/bin/activate ; pip install -r ../../requirements-server-debian.txt -t ./builddir/opt/wapt/lib/site-packages',shell=True))
-rsync('./pylibs/lib/','./builddir/opt/wapt/lib/')
-print('copying the waptserver files',file=sys.stderr)
-rsync(source_dir,'./builddir/opt/wapt/',excludes=['postconf','mongod.exe','bin','include'])
-for lib in ('requests','iniparse','dns','pefile.py','rocket','flask','werkzeug','jinja2','itsdangerous.py','markupsafe', 'dialog.py', 'babel', 'flask_babel', 'huey', 'wakeonlan'):
-    rsync(makepath(wapt_source_dir,'lib','site-packages',lib),'./builddir/opt/wapt/lib/site-packages/')
+print(subprocess.check_output(
+    r'source ./pylibs/bin/activate ; pip install --upgrade pip ', shell=True))
+print(subprocess.check_output(
+    r'source ./pylibs/bin/activate ; pip install -r ../../requirements-server-debian.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True))
+rsync('./pylibs/lib/', './builddir/opt/wapt/lib/')
+print('copying the waptserver files', file=sys.stderr)
+rsync(source_dir, './builddir/opt/wapt/',
+      excludes=['postconf', 'mongod.exe', 'bin', 'include'])
+for lib in ('requests', 'iniparse', 'dns', 'pefile.py', 'rocket', 'flask', 'werkzeug', 'jinja2', 'itsdangerous.py', 'markupsafe', 'dialog.py', 'babel', 'flask_babel', 'huey', 'wakeonlan'):
+    rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),
+          './builddir/opt/wapt/lib/site-packages/')
 
-print("copying the startup script /etc/init.d/waptserver",file=sys.stderr)
+print("copying the startup script /etc/init.d/waptserver", file=sys.stderr)
 try:
     mkdir_p('./builddir/etc/init.d/')
-    if platform.dist()[0] in ('debian','ubuntu'):
-        copyfile('../scripts/waptserver-init','./builddir/etc/init.d/waptserver')
-    elif platform.dist()[0] in ('centos','redhat','fedora'):
-        copyfile('../scripts/waptserver-init-centos','./builddir/etc/init.d/waptserver')
+    if platform.dist()[0] in ('debian', 'ubuntu'):
+        copyfile('../scripts/waptserver-init',
+                 './builddir/etc/init.d/waptserver')
+    elif platform.dist()[0] in ('centos', 'redhat', 'fedora'):
+        copyfile('../scripts/waptserver-init-centos',
+                 './builddir/etc/init.d/waptserver')
     else:
-        print( "unsupported distrib")
+        print("unsupported distrib")
         sys.exit(1)
 
-    subprocess.check_output('chmod 755 ./builddir/etc/init.d/waptserver',shell=True)
-    subprocess.check_output('chown root:root ./builddir/etc/init.d/waptserver',shell=True)
+    subprocess.check_output(
+        'chmod 755 ./builddir/etc/init.d/waptserver', shell=True)
+    subprocess.check_output(
+        'chown root:root ./builddir/etc/init.d/waptserver', shell=True)
 except Exception as e:
-    print (sys.stderr, 'error: \n%s'%e,file=sys.stderr)
+    print (sys.stderr, 'error: \n%s' % e, file=sys.stderr)
     exit(1)
 
-print ( "copying logrotate script /etc/logrotate.d/waptserver",file=sys.stderr)
+print ("copying logrotate script /etc/logrotate.d/waptserver", file=sys.stderr)
 try:
     mkdir_p('./builddir/etc/logrotate.d/')
-    shutil.copyfile('../scripts/waptserver-logrotate','./builddir/etc/logrotate.d/waptserver')
-    subprocess.check_output('chown root:root ./builddir/etc/logrotate.d/waptserver',shell=True)
+    shutil.copyfile('../scripts/waptserver-logrotate',
+                    './builddir/etc/logrotate.d/waptserver')
+    subprocess.check_output(
+        'chown root:root ./builddir/etc/logrotate.d/waptserver', shell=True)
 except Exception as e:
-    print ( 'error: \n%s'%e,file=sys.stderr)
+    print ('error: \n%s' % e, file=sys.stderr)
     exit(1)
 
-print ( "copying logrotate script /etc/rsyslog.d/waptserver.conf",file=sys.stderr)
+print ("copying logrotate script /etc/rsyslog.d/waptserver.conf",
+       file=sys.stderr)
 try:
     mkdir_p('./builddir/etc/rsyslog.d/')
-    shutil.copyfile('../scripts/waptserver-rsyslog','./builddir/etc/rsyslog.d/waptserver.conf')
-    subprocess.check_output('chown root:root ./builddir/etc/rsyslog.d/waptserver.conf',shell=True)
+    shutil.copyfile('../scripts/waptserver-rsyslog',
+                    './builddir/etc/rsyslog.d/waptserver.conf')
+    subprocess.check_output(
+        'chown root:root ./builddir/etc/rsyslog.d/waptserver.conf', shell=True)
 except Exception as e:
-    print( 'error: \n%s'%e,file=sys.stderr)
+    print('error: \n%s' % e, file=sys.stderr)
     exit(1)
 
-print( "adding symlink for wapt-serverpostconf",file=sys.stderr)
+print("adding symlink for wapt-serverpostconf", file=sys.stderr)
 mkdir_p('builddir/usr/bin')
-os.symlink('/opt/wapt/waptserver/scripts/postconf.py', 'builddir/usr/bin/wapt-serverpostconf')
+os.symlink('/opt/wapt/waptserver/scripts/postconf.py',
+           'builddir/usr/bin/wapt-serverpostconf')
 
-print( "copying apache-related goo",file=sys.stderr)
+print("copying apache-related goo", file=sys.stderr)
 try:
     apache_dir = './builddir/opt/wapt/waptserver/apache/'
     mkdir_p(apache_dir + '/ssl')
     subprocess.check_output(['chmod', '0700', apache_dir + '/ssl'])
-    copyfile('../apache-win32/conf/httpd.conf.j2', apache_dir + 'httpd.conf.j2')
+    copyfile('../apache-win32/conf/httpd.conf.j2',
+             apache_dir + 'httpd.conf.j2')
 except Exception as e:
-    print ( 'error: \n%s'%e,file=sys.stderr)
+    print ('error: \n%s' % e, file=sys.stderr)
     exit(1)
-
