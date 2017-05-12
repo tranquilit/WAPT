@@ -136,31 +136,31 @@ def ensure_postgresql_db(db_name='wapt',db_owner='wapt',db_password=''):
         subprocess.check_output('systemctl start postgresql',shell=True)
         subprocess.check_output(['systemctl', 'enable', 'postgresql'])
 
-    val = subprocess.check_output(""" sudo -u postgres psql template1 -c " select usename from pg_catalog.pg_user where usename='wapt';"  """, shell=True)
+    val = subprocess.check_output(""" sudo -u postgres psql template1 -c " select usename from pg_catalog.pg_user where usename='wapt';"  """, shell=True,cwd='/opt/wapt')
     if 'wapt' in val:
         print ("user wapt already exists, skipping creating user  ")
     else:
         print ("we suppose that the db does not exist either (or the installation has been screwed up")
         if db_password.strip()=='':
-            subprocess.check_output(""" sudo -u postgres psql template1 -c "create user %s ; " """ % (db_owner), shell=True)
+            subprocess.check_output(""" sudo -u postgres psql template1 -c "create user %s ; " """ % (db_owner), shell=True,cwd='/opt/wapt/')
         else:
-            subprocess.check_output(""" sudo -u postgres psql template1 -c "create user %s with password '%s'; " """ % (db_owner,db_password), shell=True)
+            subprocess.check_output(""" sudo -u postgres psql template1 -c "create user %s with password '%s'; " """ % (db_owner,db_password), shell=True,cwd='/opt/wapt/')
 
     val = ''
     #val = subprocess.check_output(""" sudo -u postgres psql template1 -c "select schema_name from information_schema.schemata where schema_name='wapt'; "  """, shell= True)
-    val = subprocess.check_output(""" sudo -u postgres psql template1 -c " SELECT datname FROM pg_database WHERE datname='wapt';   " """, shell=True)
+    val = subprocess.check_output(""" sudo -u postgres psql template1 -c " SELECT datname FROM pg_database WHERE datname='wapt';   " """, shell=True,cwd='/opt/wapt/')
 
     if 'wapt' in val:
         print ("db already exists, skipping db creation")
     else:
         print ('creating db wapt')
-        subprocess.check_output(""" sudo -u postgres psql template1 -c "create database %s with owner=%s encoding='utf-8'; " """ % (db_name,db_owner), shell=True)
+        subprocess.check_output(""" sudo -u postgres psql template1 -c "create database %s with owner=%s encoding='utf-8'; " """ % (db_name,db_owner), shell=True,cwd='/opt/wapt/')
     val=''
-    val = subprocess.check_output(""" sudo -u postgres psql wapt -c "select * from pg_extension where extname='hstore';" """, shell=True)
+    val = subprocess.check_output(""" sudo -u postgres psql wapt -c "select * from pg_extension where extname='hstore';" """, shell=True,cwd='/opt/wapt/')
     if 'hstore' in val:
         print ("hstore extension already loading into database, skipping create extension")
     else:
-        subprocess.check_output("""  sudo -u postgres psql wapt -c "CREATE EXTENSION hstore;" """, shell=True)
+        subprocess.check_output("""  sudo -u postgres psql wapt -c "CREATE EXTENSION hstore;" """, shell=True,cwd='/opt/wapt/')
 
 
 def enable_redhat_vhost():
