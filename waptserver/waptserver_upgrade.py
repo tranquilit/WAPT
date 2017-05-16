@@ -204,6 +204,18 @@ def upgrade_postgres():
             v.value = '1.4.3.1'
             v.save()
 
+    # from 1.4.3.1 to 1.4.3.2
+    if get_db_version() < '1.4.3.2':
+        with wapt_db.transaction():
+            logging.info('Migrating from %s to %s' % (get_db_version(),'1.4.3.2'))
+            wapt_db.execute_sql('''
+                ALTER TABLE hostsoftwares
+                    ALTER COLUMN publisher TYPE character varying(2000)
+                    ALTER COLUMN version TYPE character varying(1000);''')
+            (v,created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = '1.4.3.2'
+            v.save()
+
 if __name__ == '__main__':
     parser = OptionParser(usage=usage, version='waptserver.py ' + __version__)
     parser.add_option(
