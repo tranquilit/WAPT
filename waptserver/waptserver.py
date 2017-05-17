@@ -1435,11 +1435,14 @@ def build_hosts_filter(model,filter_expr):
                 else:
                     clause = model._meta.fields[fn].regexp(ur'(?i)%s' % search_expr)
             # else ignored...
+            else:
+                clause = None
 
             if result is None:
                 result = clause
             else:
-                result = result | clause
+                if clause is not None:
+                    result = result | clause
         if not_filter:
             result = ~result
         return result
@@ -1684,24 +1687,24 @@ def get_hosts():
 
         if 'uuid' in request.args:
             if len(result) == 0:
-                msg = 'No data found for uuid {}'.format(request.args['uuid'])
+                msg = u'No data found for uuid {}'.format(request.args['uuid'])
             else:
-                msg = 'host data fields {} returned for uuid {}'.format(
-                    ','.join(columns),
+                msg = u'host data fields {} returned for uuid {}'.format(
+                    u','.join(columns),
                     request.args['uuid'])
         elif 'filter' in request.args:
             if len(result) == 0:
-                msg = 'No data found for filter {}'.format(
+                msg = u'No data found for filter {}'.format(
                     request.args['filter'])
             else:
-                msg = '{} hosts returned for filter {}'.format(
+                msg = u'{} hosts returned for filter {}'.format(
                     len(result),
                     request.args['filter'])
         else:
             if len(result) == 0:
-                msg = 'No data found'
+                msg = u'No data found'
             else:
-                msg = '{} hosts returned'.format(len(result))
+                msg = u'{} hosts returned'.format(len(result))
 
     except Exception as e:
         return make_response_from_exception(e)
