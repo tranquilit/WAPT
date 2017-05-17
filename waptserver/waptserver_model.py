@@ -290,7 +290,7 @@ def set_host_field(host,fieldname,data):
             setattr(host,fieldname,data)
     else:
         # awfull hack for data containing null char, not accepted by postgresql.
-        if fieldname in ('wmi','dmi'):
+        if fieldname in ('host_info','wmi','dmi'):
             jsonrepr = json.dumps(data)
             if '\u0000' in jsonrepr:
                 logger.warning('Workaround \\u0000 not handled by postgresql json for host %s field %s' % (getattr(host,'uuid','???'),fieldname))
@@ -496,7 +496,8 @@ def init_db(drop=False):
         for table in reversed([ServerAttribs,Hosts,HostPackagesStatus,HostSoftwares,HostJsonRaw,HostWsus]):
             table.drop_table(fail_silently=True)
     wapt_db.create_tables([ServerAttribs,Hosts,HostPackagesStatus,HostSoftwares,HostJsonRaw,HostWsus],safe=True)
-    ServerAttribs.set_value('db_version',__version__)
+    if drop:
+        ServerAttribs.set_value('db_version',__version__)
 
 def get_db_version():
     if not 'serverattribs' in wapt_db.get_tables():
