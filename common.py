@@ -4174,6 +4174,10 @@ class Wapt(object):
     def register_computer(self,description=None):
         """Send computer informations to WAPT Server
             if description is provided, updates local registry with new description
+
+        Returns:
+            dict: response from server.
+
         >>> wapt = Wapt()
         >>> s = wapt.register_computer()
         >>>
@@ -4185,7 +4189,9 @@ class Wapt(object):
             except Exception as e:
                 logger.critical(u'Unable to change computer description to %s: %s' % (description,e))
 
+        # force regenerating uuid
         self.delete_param('uuid')
+
         inv = self.inventory()
         inv['uuid'] = self.host_uuid
         inv['host_certificate'] = self.create_or_update_host_certificate()
@@ -4197,8 +4203,11 @@ class Wapt(object):
                 signer = self.get_host_certificate().cn
                 )
         else:
-            return jsondump(inv,indent=True)
-
+            return dict(
+                success = False,
+                msg = u'No WAPT server defined',
+                data = data,
+                )
 
     def get_host_key_filename(self):
         # check ACL.
@@ -4511,6 +4520,7 @@ class Wapt(object):
         try:
             inv['wmi'] = setuphelpers.wmi_info()
         except:
+            inv['wmi'] = None
             logger.warning('WMI unavailable')
         inv['wapt_status'] = self.wapt_status()
         inv['installed_softwares'] = setuphelpers.installed_softwares('')
