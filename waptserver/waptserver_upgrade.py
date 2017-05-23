@@ -81,16 +81,20 @@ def load_json(filenames=r'c:\tmp\*.json',add_test_prefix=None):
     for fn in glob.glob(filenames):
         print('Loading %s'%fn)
         recs = json.load(codecs.open(fn,'rb',encoding='utf8'))
+        if isinstance(recs,dict):
+            recs = [recs]
         print('%s recs to load'%len(recs))
 
         for rec in recs:
             # to duplicate data for testing
             if add_test_prefix:
-                 rec['host']['computer_fqdn'] =  add_test_prefix+'-'+rec['host']['computer_fqdn']
+                 rec['host_info']['computer_fqdn'] =  add_test_prefix+'-'+rec['host_info']['computer_fqdn']
                  rec['uuid'] = add_test_prefix+'-'+rec['uuid']
 
-            computer_fqdn = rec['host']['computer_fqdn']
-            uuid = rec['uuid']
+            uuid = rec.get('uuid',rec['wmi']['Win32_ComputerSystemProduct']['UUID'])
+            if not 'uuid' in rec:
+                rec['uuid'] = uuid
+            computer_fqdn = rec.get('host_info',rec.get('host'))['computer_fqdn']
             try:
                 print update_host_data(rec)
             except Exception as e:
