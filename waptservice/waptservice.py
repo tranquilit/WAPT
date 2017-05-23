@@ -2243,7 +2243,7 @@ def install_service():
 
 
 # Websocket stuff
-class WaptRemoteCalls(LoggingSocketIONamespace):
+class WaptRemoteCalls(SocketIONamespace):
 
     def initialize(self):
         """Initialize custom variables here.
@@ -2258,10 +2258,25 @@ class WaptRemoteCalls(LoggingSocketIONamespace):
         task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
         global task_manager
         data = task_manager.add_task(task).as_dict()
-        self.emit('update_result',data)
+        self.emit('trigger_update_result',data)
+
+    def on_trigger_upgrade(self,args):
+        print('Update triggered by SocketIO')
+        task = WaptUpgrade()
+        task.force = int(args.get('force','0')) != 0
+        task.notify_user = int(args.get('notify_user','1')) != 0
+        task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
+        global task_manager
+        data = task_manager.add_task(task).as_dict()
+        self.emit('trigger_upgrade_result',data)
+
+    def on_open(self):
+        print('connected!')
+        super(SocketIONamespace, self).on_open()
 
     def on_connect(self):
         print('connected!')
+        super(SocketIONamespace, self).on_connect()
 
     def on_disconnect(self):
         print('Client disconnected!')
