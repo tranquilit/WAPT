@@ -430,20 +430,7 @@ def update_host():
                 db_data = update_host_data(data)
 
                 result = db_data
-                message="update_host",
-
-                # check if client is reachable
-                if not 'check_hosts_thread' in g or not g.check_hosts_thread.is_alive():
-                    logger.info('Creates check hosts thread for %s' % (uuid,))
-                    g.check_hosts_thread = CheckHostsWaptService(
-                        timeout=conf['clients_connect_timeout'],
-                        uuids=[uuid])
-                    g.check_hosts_thread.start()
-                else:
-                    logger.info(
-                        'Reuses current check hosts thread for %s' %
-                        (uuid,))
-                    g.check_hosts_thread.queue.put(data)
+                message="update_host"
 
             else:
                 raise Exception("update_host: No uuid supplied")
@@ -924,22 +911,26 @@ def trigger_reachable_discovery():
     """Launch a separate thread to check all reachable IP and update database with results.
     """
     try:
-        # check if client is reachable
-        if 'check_hosts_thread' in g:
-            if not g.check_hosts_thread.is_alive():
-                del(g.check_hosts_thread)
-        g.check_hosts_thread = CheckHostsWaptService(
-            timeout=conf['clients_connect_timeout'])
         # in case a POST is issued with a selection of uuids to scan.
         uuids = request.json.get('uuids',None) or None
-        g.check_hosts_thread.uuids = uuids
-
-        g.check_hosts_thread.start()
         if uuids is not None:
             message = _(u'Hosts scan launched for %s host(s)' % len(uuids))
         else:
             message = _(u'Hosts scan launched for all hosts')
-        result = dict(thread_ident=g.check_hosts_thread.ident)
+
+        if uuids:
+            where_clause = Hosts.uuid.in_(self.uuids)
+        else:
+            # slect only computer with connected ips or all ?
+            where_clause = None
+
+        query = Hosts.select(*fields)
+        if where_clause:
+            query = query.where(where_clause)
+
+        logger.debug('Reset listening status timestamps of hosts')
+        Hosts.update(listening_timestamp=None,listening_protocol=None).where(where_clause).execute()
+        result = emit('ping')
 
     except Exception as e:
         return make_response_from_exception(e)
@@ -1947,15 +1938,16 @@ def trigger_sio_update():
 
         print('send update to all')
         # how to find SID ??
-        sid = None
-        socketio.emit('trigger_update',request.args, room = sid)
-
-        result = request.args
-        msg = request.path
-
-        return make_response(result,
-                             msg=msg,
-                             success=True)
+        host = Hosts.select(Hosts.computer_fqdn,Hosts.listening_address).where((Hosts.uuid==uuid) & (Hosts.listening_protocol == 'websockets')).first()
+        if host:
+            socketio.emit('trigger_update',request.args, room = host.listening_address)
+            result = request.args
+            msg = 'Update launched on %s' % host.computer_fqdn
+            return make_response(result,
+                                 msg=msg,
+                                 success=True)
+        else:
+            raise EWaptHostUnreachable('Host not connected, Websocket sid not in database')
     except Exception as e:
         return make_response_from_exception(e)
 
@@ -1970,21 +1962,25 @@ def testsio():
 def on_trigger_update_result(result):
     """Return from update on client"""
     print('Trigger Update result : %s (uuid:%s)' %(result,request.args['uuid']))
+    # send to all waptconsole wtaching this host.
+    emit('trigger_update_result',result,room = request.args['uuid'])
 
 @socketio.on('trigger_upgrate_result')
 def on_trigger_upgrade_result(result):
-    """Return from update on client"""
-    print('Triiger Upgrade result : %s (uuid:%s)' %(result,request.args['uuid']))
+    """Return from the launch of upgrade on a client"""
+    print('Trigger Upgrade result : %s (uuid:%s)' %(result,request.args['uuid']))
+    emit('trigger_upgrade_result',result,room = request.args['uuid'])
 
-@socketio.on('install_result')
+@socketio.on('trigger_install_result')
 def on_install_result(result):
-    pass
+    print('Trigger install result : %s (uuid:%s)' %(result,request.args['uuid']))
+    emit('trigger_install_result',result,room = request.args['uuid'])
 
-@socketio.on('remove_result')
+@socketio.on('trigger_remove_result')
 def on_remove_result(result):
     pass
 
-@socketio.on('forget_result')
+@socketio.on('trigger_forget_result')
 def on_forget_result(result):
     pass
 
@@ -1994,135 +1990,26 @@ def on_ping():
 
 @socketio.on('connect')
 def on_waptclient_connect():
-    print('Socket.IO connection from %s' % request.sid)
-    print("Host %s" % request.headers['Host'])
+    uuid = request.args.get('uuid',None)
+    print('Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
+    print Hosts.update(
+        listening_timestamp=datetime2isodate(),
+        listening_protocol='websockets',
+        listening_address=request.sid,
+        ).where(Hosts.uuid == uuid).execute()
 
 @socketio.on('disconnect')
 def on_waptclient_disconnect():
-    print('Socket.IO disconnected %s' % request.sid)
+    uuid = request.args.get('uuid',None)
+    print('Socket.IO disconnection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
+    Hosts.update(
+        listening_timestamp=datetime2isodate(),
+        listening_protocol=None,
+        listening_address=None,
+        ).where(Hosts.uuid == uuid).execute()
 
 ######### end websockets
 
-
-##################################################################
-class CheckHostWorker(threading.Thread):
-
-    """Worker which pulls a host data from queue, checks reachability, and stores result in db
-    """
-
-    def __init__(self, queue, timeout):
-        threading.Thread.__init__(self)
-        self.queue = queue
-        self.timeout = timeout
-        self.daemon = True
-        self.start()
-
-    def check_host(self, host_data):
-        try:
-            listening_info = get_ip_port(
-                host_data,
-                recheck=True,
-                timeout=self.timeout)
-            # update timestamp
-            listening_info['timestamp'] = datetime2isodate()
-            return listening_info
-        except Exception as e:
-            # return "not reachable" information
-            return dict(protocol='', address='', port=conf[
-                        'waptservice_port'], timestamp=datetime2isodate())
-
-    def run(self):
-        logger.debug('worker %s running' % self.ident)
-        while True:
-            try:
-                host_data = self.queue.get(timeout=2)
-                listening_infos = self.check_host(host_data)
-                Hosts.update(
-                    listening_protocol=listening_infos['protocol'],
-                    listening_address=listening_infos['address'],
-                    listening_port=listening_infos['port'],
-                    listening_timestamp=listening_infos['timestamp'],
-                    )\
-                    .where(Hosts.uuid == host_data['uuid'])\
-                    .execute()
-                logger.debug(
-                        "Client check %s finished with %s" %
-                        (self.ident, listening_infos))
-                self.queue.task_done()
-                wapt_db.commit()
-            except Queue.Empty:
-                break
-        logger.debug('worker %s finished' % self.ident)
-
-
-class CheckHostsWaptService(threading.Thread):
-
-    """Thread which check which IP is reachable for all registered hosts
-        The result is stored in server database as wapt.listening_address
-        {protocol
-         address
-         port}
-       if poll_interval is not None, the thread runs indefinetely/
-       if poll_interval is None, one check of all hosts is performed.
-    """
-
-    def __init__(self, timeout=2, uuids=[]):
-        threading.Thread.__init__(self)
-        self.daemon = True
-        self.timeout = timeout
-        self.uuids = uuids
-        if self.uuids:
-            self.workers_count = min(len(uuids), 30)
-        else:
-            self.workers_count = 30
-
-        self.queue = Queue.Queue()
-
-
-    def run(self):
-        logger.debug(
-            'Client-listening %s address checker thread started' %
-            self.ident)
-
-        fields = [Hosts.uuid,
-                  Hosts.computer_fqdn,
-                  Hosts.listening_timestamp,
-                  Hosts.listening_protocol,
-                  Hosts.listening_address,
-                  Hosts.listening_port,
-                  Hosts.wapt_status,
-                  Hosts.host_info,
-                  ]
-        if self.uuids:
-            where_clause = Hosts.uuid.in_(self.uuids)
-        else:
-            # slect only computer with connected ips or all ?
-            where_clause = None
-
-        query = Hosts.select(*fields)
-        if where_clause:
-            query = query.where(where_clause)
-
-        logger.debug('Reset listening status timestamps of hosts')
-        Hosts.update(listening_timestamp=None).where(where_clause).execute()
-
-        for data in query.dicts():
-            logger.debug(
-                'Hosts %s pushed in check IP queue' %
-                data['uuid'])
-            self.queue.put(data)
-
-        logger.debug('Create %i workers' % self.workers_count)
-        for i in range(self.workers_count):
-            CheckHostWorker(self.queue, self.timeout)
-
-        logger.debug(
-            '%s CheckHostsWaptService waiting for check queue to be empty' %
-            (self.ident))
-        self.queue.join()
-        logger.debug(
-            '%s CheckHostsWaptService workers all terminated' %
-            (self.ident))
 
 
 #################################################
@@ -2443,6 +2330,7 @@ if __name__ == "__main__":
 
     logger.info('Waptserver starting...')
     port = conf['waptserver_port']
+    print Hosts.update(listening_protocol=None).where(not(Hosts.listening_protocol.is_null)).execute()
     socketio.run(app,host='0.0.0.0', port=port, debug=options.devel,use_reloader=options.devel)
     logger.info('Waptserver stopped')
 
