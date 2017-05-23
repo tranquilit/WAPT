@@ -48,6 +48,7 @@ __all__ = [
     'EWaptMissingParameter',
     'EWaptSignalReceived',
     'EWaptDatabaseError',
+    'EWaptAuthenticationFailure',
 ]
 
 utils_devel_mode = False
@@ -162,3 +163,5 @@ class EWaptSignalReceived(Exception):
 class EWaptDatabaseError(Exception):
     pass
 
+class EWaptAuthenticationFailure(Exception):
+    pass

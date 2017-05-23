@@ -19,8 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.3.2"
-
+__version__ = "1.5.0.0"
 import time
 import sys
 import os
@@ -50,6 +49,8 @@ from flask_paginate import Pagination
 import jinja2
 from werkzeug.utils import secure_filename
 from werkzeug.utils import html
+
+from socketIO_client import SocketIO, LoggingSocketIONamespace,SocketIONamespace
 
 from urlparse import urlparse
 from functools import wraps
@@ -420,51 +421,6 @@ def beautify(c):
     else:
         return jinja2.Markup(u"<pre>{}</pre>".format(ensure_unicode(c)))
 
-
-def ssl_required(fn):
-    @wraps(fn)
-    def decorated_view(*args, **kwargs):
-        if app.config.get("SSL"):
-            if request.is_secure:
-                return fn(*args, **kwargs)
-            else:
-                return redirect(request.url.replace("http://", "https://"))
-
-        return fn(*args, **kwargs)
-    return decorated_view
-
-
-def check_open_port(portnumber=8088):
-    """Configure local firewall to accept incoming request to specified tcp port
-    >>> check_open_port(8088)
-    """
-    import win32serviceutil
-    import platform
-    import win32service
-    win_major_version = int(platform.win32_ver()[1].split('.')[0])
-    try:
-        if win_major_version<6:
-            #check if firewall is running
-            if win32serviceutil.QueryServiceStatus( 'SharedAccess', None)[1]==win32service.SERVICE_RUNNING:
-                logger.info(u"Firewall started, checking for port openning...")
-                #WinXP 2003
-                if 'waptservice' not in setuphelpers.run_notfatal('netsh firewall show portopening'):
-                    logger.info(u"Adding a firewall rule to open port %s"%portnumber)
-                    setuphelpers.run_notfatal("""netsh.exe firewall add portopening name="waptservice %s" port=%s protocol=TCP profile=ALL"""%(portnumber,portnumber))
-                else:
-                    logger.info(u"port %s already opened, skipping firewall configuration"%(portnumber,))
-        else:
-            if win32serviceutil.QueryServiceStatus('MpsSvc', None)[1]==win32service.SERVICE_RUNNING:
-                logger.info(u"Firewall started, checking for port openning...")
-                if 'waptservice' not in setuphelpers.run_notfatal('netsh advfirewall firewall show rule name="waptservice %s"'%(portnumber,)):
-                    logger.info(u"No port opened for waptservice, opening port %s"%portnumber)
-                    #win Vista and higher
-                    setuphelpers.run_notfatal("""netsh advfirewall firewall add rule name="waptservice %s" dir=in action=allow protocol=TCP localport=%s remoteip=%s """%(portnumber,portnumber,','.join(waptconfig.authorized_callers_ip)))
-                else:
-                    logger.info(u"port %s already opened, skipping firewall configuration"%(portnumber,))
-    except Exception as e:
-        logger.info('Unable to check if port %s is opened : %s' % (portnumber,e))
-
 waptconfig = WaptServiceConfig()
 
 app = Flask(__name__)
@@ -603,69 +559,6 @@ def check_auth(logon_name, password):
     else:
         return True
 
-def allow_waptserver_or_local_auth(f):
-    """Restrict access to localhost authenticated or waptserver IP"""
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        try:
-            if not app.waptconfig.authorized_callers_ip and app.waptconfig.waptserver:
-                app.waptconfig.authorized_callers_ip = get_authorized_callers_ip(app.waptconfig.waptserver.server_url)
-        except Exception as e:
-            logger.debug('Unable to acquire IP of waptserver : %s' % e)
-        if request.remote_addr in app.waptconfig.authorized_callers_ip:
-            uuid = wapt().host_uuid
-            if not 'uuid' in request.args or request.args['uuid'] != uuid:
-                return badtarget()
-            return f(*args, **kwargs)
-        elif request.remote_addr == '127.0.0.1':
-            auth = request.authorization
-            if not auth:
-                logging.info('no credential given')
-                return authenticate()
-
-            logging.info("authenticating : %s" % auth.username)
-            if not check_auth(auth.username, auth.password):
-                return authenticate()
-            logging.info("user %s authentication success" % auth.username)
-        else:
-            logger.info(u'Forbidden: caller src address {} is not in authorized list {}'.format(request.remote_addr,app.waptconfig.authorized_callers_ip))
-            # try to reacquire IP of waptserver
-            try:
-                if app.waptconfig.waptserver:
-                    app.waptconfig.authorized_callers_ip = get_authorized_callers_ip(app.waptconfig.waptserver.server_url)
-            except Exception as e:
-                logger.debug('Unable to acquire IP of waptserver : %s' % e)
-
-            return forbidden()
-        return f(*args, **kwargs)
-    return decorated
-
-
-def allow_waptserver_or_local_unauth(f):
-    """Restrict access to localhost unauthenticated or waptserver IP"""
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        try:
-            if not app.waptconfig.authorized_callers_ip and app.waptconfig.waptserver:
-                app.waptconfig.authorized_callers_ip = get_authorized_callers_ip(app.waptconfig.waptserver.server_url)
-        except Exception as e:
-            logger.debug('Unable to acquire IP of waptserver : %s' % e)
-        if not request.remote_addr in (app.waptconfig.authorized_callers_ip + ['127.0.0.1']):
-            logger.info(u'Forbidden: caller src address {} is not in authorized list {}'.format(request.remote_addr,app.waptconfig.authorized_callers_ip))
-            # try to reacquire IP of waptserver
-            try:
-                if app.waptconfig.waptserver:
-                    app.waptconfig.authorized_callers_ip = get_authorized_callers_ip(app.waptconfig.waptserver.server_url)
-            except Exception as e:
-                logger.debug('Unable to acquire IP of waptserver : %s' % e)
-            return forbidden()
-        if request.remote_addr != '127.0.0.1':
-            uuid = wapt().host_uuid
-            if not 'uuid' in request.args or request.args['uuid'] != uuid:
-                return badtarget()
-        return f(*args, **kwargs)
-    return decorated
-
 def allow_local(f):
     """Restrict access to localhost authenticated or waptserver IP"""
     @wraps(f)
@@ -696,7 +589,6 @@ def allow_local_auth(f):
     return decorated
 
 
-
 @app_babel.localeselector
 def get_locale():
      browser_lang = request.accept_languages.best_match(['en', 'fr'])
@@ -716,7 +608,7 @@ def get_timezone():
 
 
 @app.route('/ping')
-@allow_waptserver_or_local_unauth
+@allow_local
 def ping():
     if 'uuid' in request.args:
         w = wapt()
@@ -918,7 +810,7 @@ def package_details():
 
 
 @app.route('/runstatus')
-@allow_waptserver_or_local_unauth
+@allow_local
 def get_runstatus():
     data = []
     with sqlite3.connect(app.waptconfig.dbpath) as con:
@@ -934,7 +826,7 @@ def get_runstatus():
     return Response(common.jsondump(data), mimetype='application/json')
 
 @app.route('/check_ssl')
-@allow_waptserver_or_local_unauth
+@allow_local
 def check_ssk():
     data = common.jsondump(request.input_stream._sock.getpeercert(binary_form=False))
     return Response(data, mimetype='application/json')
@@ -942,7 +834,7 @@ def check_ssk():
 
 @app.route('/checkupgrades')
 @app.route('/checkupgrades.json')
-@allow_waptserver_or_local_unauth
+@allow_local
 def get_checkupgrades():
     with sqlite3.connect(app.waptconfig.dbpath) as con:
         con.row_factory=sqlite3.Row
@@ -962,7 +854,7 @@ def get_checkupgrades():
 
 @app.route('/waptupgrade')
 @app.route('/waptupgrade.json')
-@allow_waptserver_or_local_unauth
+@allow_local
 def waptclientupgrade():
     """Launch an external 'wapt-get waptupgrade' process to upgrade local copy of wapt client"""
     data = task_manager.add_task(WaptClientUpgrade()).as_dict()
@@ -974,7 +866,7 @@ def waptclientupgrade():
 
 @app.route('/waptservicerestart')
 @app.route('/waptservicerestart.json')
-@allow_waptserver_or_local_unauth
+@allow_local
 def waptservicerestart():
     """Restart local waptservice using a spawned batch file"""
     data = task_manager.add_task(WaptServiceRestart()).as_dict()
@@ -986,7 +878,7 @@ def waptservicerestart():
 
 @app.route('/reload_config')
 @app.route('/reload_config.json')
-@allow_waptserver_or_local_unauth
+@allow_local
 def reload_config():
     """trigger reload of wapt-get.ini file for the service"""
     force = int(request.args.get('force','0')) == 1
@@ -1001,7 +893,7 @@ def reload_config():
 
 @app.route('/upgrade')
 @app.route('/upgrade.json')
-@allow_waptserver_or_local_unauth
+@allow_local
 def upgrade():
     force = int(request.args.get('force','0')) != 0
     notify_user = int(request.args.get('notify_user','1')) != 0
@@ -1022,7 +914,7 @@ def upgrade():
 
 @app.route('/download_upgrades')
 @app.route('/download_upgrades.json')
-@allow_waptserver_or_local_unauth
+@allow_local
 def download_upgrades():
     force = int(request.args.get('force','0')) != 0
     notify_user = int(request.args.get('notify_user','0')) != 0
@@ -1040,7 +932,7 @@ def download_upgrades():
 
 @app.route('/upgrade2')
 @app.route('/upgrade2.json')
-@allow_waptserver_or_local_unauth
+@allow_local
 def upgrade2():
     notify_user = request.args.get('notify_user',None)
     if notify_user is not None:
@@ -1056,7 +948,7 @@ def upgrade2():
 
 @app.route('/update')
 @app.route('/update.json')
-@allow_waptserver_or_local_unauth
+@allow_local
 def update():
     task = WaptUpdate()
     task.force = int(request.args.get('force','0')) != 0
@@ -1071,7 +963,7 @@ def update():
 
 @app.route('/update_status')
 @app.route('/update_status.json')
-@allow_waptserver_or_local_unauth
+@allow_local
 def update_status():
     task = WaptUpdateServerStatus()
     data = task_manager.add_task(task).as_dict()
@@ -1083,7 +975,7 @@ def update_status():
 
 @app.route('/longtask')
 @app.route('/longtask.json')
-@allow_waptserver_or_local_unauth
+@allow_local
 def longtask():
     notify_user = request.args.get('notify_user',None)
     if notify_user is not None:
@@ -1102,7 +994,7 @@ def longtask():
 @app.route('/cleanup')
 @app.route('/cleanup.json')
 @app.route('/clean')
-@allow_waptserver_or_local_unauth
+@allow_local
 def cleanup():
     task = WaptCleanup()
     task.force = int(request.args.get('force','0')) == 1
@@ -1116,7 +1008,7 @@ def cleanup():
 
 @app.route('/install_log')
 @app.route('/install_log.json')
-@allow_waptserver_or_local_auth
+@allow_local_auth
 def install_log():
     logger.info(u"show install log")
     try:
@@ -1148,7 +1040,7 @@ def disable():
 
 @app.route('/register')
 @app.route('/register.json')
-@allow_waptserver_or_local_auth
+@allow_local_auth
 def register():
     logger.info(u"register computer")
     notify_user = int(request.args.get('notify_user','0')) == 1
@@ -1162,7 +1054,7 @@ def register():
 
 @app.route('/inventory')
 @app.route('/inventory.json')
-@allow_waptserver_or_local_auth
+@allow_local_auth
 def inventory():
     logger.info(u"Inventory")
     #wapt=Wapt(config_filename=app.waptconfig.config_filename)
@@ -1176,7 +1068,7 @@ def inventory():
 @app.route('/install', methods=['GET'])
 @app.route('/install.json', methods=['GET'])
 @app.route('/install.html', methods=['GET'])
-@allow_waptserver_or_local_auth
+@allow_local_auth
 def install():
     package = request.args.get('package')
     force = int(request.args.get('force','0')) == 1
@@ -1191,7 +1083,7 @@ def install():
 
 @app.route('/package_download')
 @app.route('/package_download.json')
-@allow_waptserver_or_local_auth
+@allow_local_auth
 def package_download():
     package = request.args.get('package')
     logger.info(u"download package %s" % package)
@@ -1207,7 +1099,7 @@ def package_download():
 
 @app.route('/remove', methods=['GET'])
 @app.route('/remove.json', methods=['GET'])
-@allow_waptserver_or_local_auth
+@allow_local_auth
 def remove():
     package = request.args.get('package')
     packages = package.split(',')
@@ -1225,7 +1117,7 @@ def remove():
 
 @app.route('/forget', methods=['GET'])
 @app.route('/forget.json', methods=['GET'])
-@allow_waptserver_or_local_auth
+@allow_local_auth
 def forget():
     package = request.args.get('package')
     packages = package.split(',')
@@ -1258,7 +1150,7 @@ def index():
 
 @app.route('/tasks')
 @app.route('/tasks.json')
-@allow_waptserver_or_local_unauth
+@allow_local
 def tasks():
     data = task_manager.tasks_status()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -1269,7 +1161,7 @@ def tasks():
 
 @app.route('/tasks_status')
 @app.route('/tasks_status.json')
-@allow_waptserver_or_local_unauth
+@allow_local
 def tasks_status():
     all = task_manager.tasks_status()
     data = []
@@ -1288,7 +1180,7 @@ def tasks_status():
 @app.route('/task')
 @app.route('/task.json')
 @app.route('/task.html')
-@allow_waptserver_or_local_unauth
+@allow_local
 def task():
     id = int(request.args['id'])
     tasks = task_manager.tasks_status()
@@ -1309,7 +1201,7 @@ def task():
 @app.route('/cancel_all_tasks')
 @app.route('/cancel_all_tasks.html')
 @app.route('/cancel_all_tasks.json')
-@allow_waptserver_or_local_unauth
+@allow_local
 def cancel_all_tasks():
     data = task_manager.cancel_all_tasks()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -1320,7 +1212,7 @@ def cancel_all_tasks():
 
 @app.route('/cancel_running_task')
 @app.route('/cancel_running_task.json')
-@allow_waptserver_or_local_unauth
+@allow_local
 def cancel_running_task():
     data = task_manager.cancel_running_task()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -1330,7 +1222,7 @@ def cancel_running_task():
 
 @app.route('/cancel_task')
 @app.route('/cancel_task.json')
-@allow_waptserver_or_local_unauth
+@allow_local
 def cancel_task():
     id = int(request.args['id'])
     data = task_manager.cancel_task(id)
@@ -2282,15 +2174,6 @@ def install_service():
     """Setup waptservice as a windows Service managed by nssm
     >>> install_service()
     """
-    logger.info(u'Open port on firewall')
-    # http
-    if waptconfig.waptserver is not None:
-        if waptconfig.waptservice_port is not None:
-            check_open_port(waptconfig.waptservice_port)
-        # https
-        if waptconfig.waptservice_sslport is not None:
-            check_open_port(waptconfig.waptservice_sslport)
-
     from setuphelpers import registry_set,REG_DWORD,REG_EXPAND_SZ,REG_MULTI_SZ,REG_SZ
     datatypes = {
         'dword':REG_DWORD,
@@ -2358,6 +2241,35 @@ def install_service():
     logger.info(u'Allow authenticated users to start/stop waptservice')
     setuphelpers.run('sc sdset waptservice D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)(A;;CCLCSWRPWPDTLOCRRC;;;S-1-5-11)S:(AU;FA;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;WD)');
 
+
+# Websocket stuff
+class WaptRemoteCalls(LoggingSocketIONamespace):
+
+    def initialize(self):
+        """Initialize custom variables here.
+        You can override this method."""
+        print('New waptremotrcall created...')
+
+    def on_trigger_update(self,args):
+        print('Update triggered by SocketIO')
+        task = WaptUpdate()
+        task.force = int(args.get('force','0')) != 0
+        task.notify_user = int(args.get('notify_user','1')) != 0
+        task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
+        global task_manager
+        data = task_manager.add_task(task).as_dict()
+        self.emit('update_result',data)
+
+    def on_connect(self):
+        print('connected!')
+
+    def on_disconnect(self):
+        print('Client disconnected!')
+
+    def on_message(self,message):
+        print('message : %s' % message)
+
+
 if __name__ == "__main__":
     usage="""\
     %prog -c configfile [action]
@@ -2414,60 +2326,40 @@ if __name__ == "__main__":
     apply_host_settings(waptconfig)
 
     # starts one WaptTasksManager
+    print('Starting task queue')
     task_manager = WaptTaskManager(config_filename = waptconfig.config_filename)
     task_manager.daemon = True
     task_manager.start()
-    if options.devel:
-        app.run(host='0.0.0.0',port=8088,debug=False)
+    print('Task queue running')
+
+    if waptconfig.waptserver:
+        waptserver_url = urlparse(waptconfig.waptserver.server_url)
+        if waptserver_url.port is None and waptserver_url.scheme == 'https':
+            waptserver_url.port = 443
+        with Wapt(config_filename = waptconfig.config_filename) as tmp_wapt:
+            print('Starting socketio on %s:%s...' % (waptserver_url.hostname,waptserver_url.port))
+            socketIO = SocketIO(host = waptserver_url.hostname,port = waptserver_url.port,
+                wait_for_connection = True,
+                hurry_intervals = 5,
+                params = {'uuid':tmp_wapt.host_uuid})
+            wapt_remote_calls = socketIO.define(WaptRemoteCalls)
+        wapt_remote_calls.emit('new connection',socketIO._engineIO_session.id)
+
+        print('Socket IO Started.')
+        socketIO.wait()
     else:
-        #logger.setLevel(logging.DEBUG)
+        socketIO = None
 
-        # hack to authenticate clients using client ssl certificates
-        import rocket.listener
-        # copy from rocket/listener.py
-        def wrap_socket(self, sock):
-            try:
-                sock = ssl.wrap_socket(sock,
-                                       keyfile = self.interface[2],
-                                       certfile = self.interface[3],
-                                       server_side = True,
-                                       ssl_version = ssl.PROTOCOL_SSLv23,
-                                       ca_certs = os.path.join(wapt_root_dir,r'waptservice','ssl','caserver.pem'),
-                                       cert_reqs = ssl.CERT_REQUIRED )
-            except SSLError:
-                pass
-
-            return sock
-
-        #rocket.listener.Listener.wrap_socket = wrap_socket
+    if options.devel:
+        app.run(host='127.0.0.1',port=8088,debug=False)
+    else:
         port_config = []
         if waptconfig.waptservice_port:
-            port_config.append(('0.0.0.0', waptconfig.waptservice_port))
-        if waptconfig.waptservice_sslport:
-            # try to use host SSL key for waptservice local webservice
-            wapt_tmp = Wapt(config_filename = waptconfig.config_filename)
+            port_config.append(('127.0.0.1', waptconfig.waptservice_port))
+            server = Rocket(port_config,'wsgi', {"wsgi_app":app})
             try:
-                wapt_tmp.create_or_update_host_certificate()
-                key = wapt_tmp.get_host_key_filename()
-                cert = wapt_tmp.get_host_certificate_filename()
-                logger.info(u'Waptservice https using key: %s and certificate: %s'%(key,cert))
-            except Exception as e:
-                logger.critical('Unable to create/get host key and certificate, using default generic ones. %s' % repr(e))
-                key = os.path.join(wapt_root_dir,r'waptservice','ssl','waptservice.pem')
-                cert = os.path.join(wapt_root_dir,r'waptservice','ssl','waptservice.crt')
-            port_config.append(('0.0.0.0', waptconfig.waptservice_sslport,key,cert))
-        server = Rocket(port_config,'wsgi', {"wsgi_app":app})
-
-        try:
-            logger.info(u"starting waptservice")
-            # http
-            if waptconfig.waptserver is not None:
-                if waptconfig.waptservice_port is not None:
-                    check_open_port(waptconfig.waptservice_port)
-                # https
-                if waptconfig.waptservice_sslport is not None:
-                    check_open_port(waptconfig.waptservice_sslport)
-            server.start()
-        except KeyboardInterrupt:
-            logger.info(u"stopping waptservice")
-            server.stop()
+                logger.info(u"starting waptservice")
+                server.start()
+            except KeyboardInterrupt:
+                logger.info(u"stopping waptservice")
+                server.stop()
