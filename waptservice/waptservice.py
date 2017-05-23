@@ -2468,19 +2468,22 @@ if __name__ == "__main__":
 
         def run_socketio():
             while True:
-                with Wapt(config_filename = waptconfig.config_filename) as tmp_wapt:
-                    print('Starting socketio on %s:%s...' % (waptserver_url.hostname,waptserver_url.port))
-                    socketio_client = SocketIO(host = waptserver_url.hostname,port = waptserver_url.port,
-                        wait_for_connection = True,
-                        hurry_intervals = 5,
-                        params = {'uuid':tmp_wapt.host_uuid})
-                    wapt_remote_calls = socketio_client.define(WaptRemoteCalls)
-                wapt_remote_calls.emit('new connection',socketio_client._engineIO_session.id)
+                try:
+                    with Wapt(config_filename = waptconfig.config_filename) as tmp_wapt:
+                        print('Starting socketio on %s:%s...' % (waptserver_url.hostname,waptserver_url.port))
+                        socketio_client = SocketIO(host = waptserver_url.hostname,port = waptserver_url.port,
+                            wait_for_connection = True,
+                            hurry_intervals = 5,
+                            params = {'uuid':tmp_wapt.host_uuid})
+                        wapt_remote_calls = socketio_client.define(WaptRemoteCalls)
+                    wapt_remote_calls.emit('new connection',socketio_client._engineIO_session.id)
 
-                print('Socket IO Started.')
-                socketio_client.wait()
+                    print('Socket IO Started.')
+                    socketio_client.wait()
+                except Exception as e:
+                    logger.critical('Error in socket io connection %s' % repr(e))
                 print('Socket IO Stopped....')
-                time.sleep(5)
+                time.sleep(10)
 
         sio = threading.Thread(target=run_socketio)
         sio.start()
