@@ -1654,7 +1654,7 @@ def host_tasks_status():
                 socketio.sleep(0.05)
 
             msg = 'Tasks status for %s' % host_data['computer_fqdn']
-            return make_response(result[0],
+            return make_response(result[0]['result'],
                                  msg=msg,
                                  success=True,
                                  request_time = time.time() - start_time,

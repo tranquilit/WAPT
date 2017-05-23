@@ -1123,7 +1123,7 @@ begin
     begin
       try
         try
-          sores := WAPTServerJsonGet('api/v1/host_tasks_status?uuid=%S', [currhost]);
+          sores := WAPTServerJsonGet('api/v3/host_tasks_status?uuid=%S', [currhost]);
           if sores.B['success'] then
           begin
             tasksresult := sores['result'];
@@ -1715,7 +1715,7 @@ begin
   begin
     currhost := GridHosts.FocusedRow.S['uuid'];
 
-    sores := WAPTServerJsonGet('api/v1/host_cancel_task?uuid=%S', [currhost]);
+    sores := WAPTServerJsonGet('api/v3/trigger_cancel_task?uuid=%S', [currhost]);
     if sores.B['success'] then
     begin
       taskresult := sores['result'];
@@ -2026,7 +2026,7 @@ begin
     with TVisHostsUpgrade.Create(Self) do
     try
       Caption:= rsTriggerWAPTWUA_Scan;
-      action := 'api/v2/trigger_waptwua_download';
+      action := 'api/v3/trigger_waptwua_download';
       hosts := Gridhosts.SelectedRows;
 
       if ShowModal = mrOk then
@@ -2042,7 +2042,7 @@ begin
     with TVisHostsUpgrade.Create(Self) do
     try
       Caption:= rsTriggerWAPTWUA_Scan;
-      action := 'api/v2/trigger_waptwua_install';
+      action := 'api/v3/trigger_waptwua_install';
       hosts := Gridhosts.SelectedRows;
 
       if ShowModal = mrOk then
@@ -2058,7 +2058,7 @@ begin
   with TVisHostsUpgrade.Create(Self) do
     try
       Caption:= rsTriggerWAPTWUA_Scan;
-      action := 'api/v2/trigger_waptwua_scan';
+      action := 'api/v3/trigger_waptwua_scan';
       hosts := Gridhosts.SelectedRows;
 
       if ShowModal = mrOk then
@@ -2345,7 +2345,7 @@ end;
 
 procedure TVisWaptGUI.ActForgetPackagesExecute(Sender: TObject);
 begin
-  TriggerActionOnHostPackages('api/v1/host_forget_packages',rsConfirmHostForgetsPackages,rsForgetPackageError);
+  TriggerActionOnHostPackages('api/v3/trigger_forget_packages',rsConfirmHostForgetsPackages,rsForgetPackageError);
 end;
 
 procedure TVisWaptGUI.ActFrenchExecute(Sender: TObject);
@@ -2499,12 +2499,12 @@ end;
 
 procedure TVisWaptGUI.ActPackageInstallExecute(Sender: TObject);
 begin
-  TriggerActionOnHostPackages('api/v1/host_install_packages',rsConfirmPackageInstall,rsPackageInstallError);
+  TriggerActionOnHostPackages('api/v3/trigger_install_package',rsConfirmPackageInstall,rsPackageInstallError);
 end;
 
 procedure TVisWaptGUI.ActPackageRemoveExecute(Sender: TObject);
 begin
-  TriggerActionOnHostPackages('api/v1/host_remove_packages',rsConfirmRmPackagesFromHost,rsPackageRemoveError);
+  TriggerActionOnHostPackages('api/v3/trigger_remove_package',rsConfirmRmPackagesFromHost,rsPackageRemoveError);
 end;
 
 procedure TVisWaptGUI.ActRDPExecute(Sender: TObject);
@@ -2731,7 +2731,7 @@ begin
   with TVisHostsUpgrade.Create(Self) do
     try
       Caption:= rsTriggerHostsUpdate;
-      action := 'api/v1/trigger_update';
+      action := 'api/v3/trigger_update';
       notifyServer := True;
       hosts := Gridhosts.SelectedRows;
 
@@ -2756,7 +2756,7 @@ begin
   with TVisHostsUpgrade.Create(Self) do
     try
       Caption:= rsTriggerHostsUpgrade;
-      action := 'api/v1/trigger_upgrade';
+      action := 'api/v3/trigger_upgrade';
       hosts := Gridhosts.SelectedRows;
 
       if ShowModal = mrOk then
