@@ -496,8 +496,6 @@ type
     procedure GridHostsDragOver(Sender: TBaseVirtualTree; Source: TObject;
       Shift: TShiftState; State: TDragState; const Pt: TPoint;
       Mode: TDropMode; var Effect: DWORD; var Accept: boolean);
-    procedure GridHostsEdited(Sender: TBaseVirtualTree; Node: PVirtualNode;
-      Column: TColumnIndex);
     procedure GridHostsEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var Allowed: boolean);
     procedure GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
@@ -508,6 +506,8 @@ type
       RowData, CellData: ISuperObject; Column: TColumnIndex;
       TextType: TVSTTextType; var CellText: string);
     procedure GridHostsHeaderDblClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
+    procedure GridHostsNewText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; const NewText: String);
     procedure GridHostTasksPendingChange(Sender: TBaseVirtualTree;
       Node: PVirtualNode);
     procedure GridHostWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;
@@ -3684,27 +3684,19 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.GridHostsEdited(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Column: TColumnIndex);
-var
-  res: ISuperObject;
-begin
-  if TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'description' then
-  begin
-    res := WAPTServerJsonGet('api/v3/trigger_register?computer_description=%s',[ ]);
-    if res.B['success'] and (res.A['result'].Length>0) then
-    begin
-      if MessageDlg(rsConfirmCaption,'A download task is already in progress, do you still want to append a task ?',mtConfirmation, mbYesNoCancel,0) <> mrYes then
-        Exit;
-    end;
-
-  end;
-end;
-
 procedure TVisWaptGUI.GridHostsEditing(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; var Allowed: boolean);
+var
+  col: TSOGridColumn;
 begin
-  Allowed := TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'description';
+  if column>=0 then
+  begin
+    col := GridHosts.Header.Columns[Column] as TSOGridColumn;
+    Allowed := (col<>Nil) and (col.PropertyName = 'description');
+  end
+  else
+    Allowed := False;
+
 end;
 
 procedure TVisWaptGUI.GridLoadData(grid: TSOGrid; jsondata: string);
@@ -3817,6 +3809,32 @@ procedure TVisWaptGUI.GridHostsHeaderDblClick(Sender: TVTHeader;
   HitInfo: TVTHeaderHitInfo);
 begin
   exit;
+end;
+
+procedure TVisWaptGUI.GridHostsNewText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; const NewText: String);
+var
+  args,res: ISuperObject;
+begin
+  if (GridHosts.Header.Columns[Column]  as TSOGridColumn).PropertyName = 'description' then
+  begin
+    if MessageDlg(rsConfirmCaption,'Do you really want to change description to '+NewText+' ?',mtConfirmation, mbYesNoCancel,0) = mrYes then
+    begin
+      args := SO();
+      args.S['computer_description'] := NewText;
+      res := WAPTServerJsonPost('api/v3/trigger_register?uuid=%s',[GridHosts.FocusedRow.S['uuid']],args);
+      if not res.B['success'] then
+      begin
+        GridHosts.CancelEditNode;
+        Abort;
+      end;
+    end
+    else
+    begin
+      GridHosts.CancelEditNode;
+      Abort;
+    end;
+  end;
 end;
 
 procedure TVisWaptGUI.GridHostTasksPendingChange(Sender: TBaseVirtualTree;
