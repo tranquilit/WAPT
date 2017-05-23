@@ -20,8 +20,13 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.3.2"
+__version__ = "1.5.0.0"
 
+# monkeypatching for eventlet greenthreads
+from eventlet import monkey_patch
+monkey_patch()
+
+#
 import os
 import sys
 try:
@@ -37,6 +42,9 @@ sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
 sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 
 from flask import request, Flask, Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
+from flask_socketio import SocketIO, disconnect, send, emit
+#from flask_login import current_user
+
 import time
 import json
 import hashlib
@@ -49,6 +57,7 @@ from waptserver_model import Hosts,HostSoftwares,HostPackagesStatus,ServerAttrib
 
 from werkzeug.utils import secure_filename
 from functools import wraps
+
 import logging
 import logging.handlers
 import ConfigParser
@@ -122,11 +131,15 @@ app.config['CONFIG_FILE'] = config_file
 babel = Babel(app)
 
 conf = waptserver_config.load_config(config_file)
+app.config['SECRET_KEY'] = conf.get('secret_key','secretkey!!')
 
 ALLOWED_EXTENSIONS = set(['wapt'])
 
 # setup logging
 logger = logging.getLogger("waptserver")
+
+# chain SocketIO server
+socketio = SocketIO(app,logger=logger)
 
 try:
     import wsus
@@ -165,6 +178,16 @@ def close_db(error):
         wapt_db.rollback()
     #if not wapt_db.is_closed():
     #    wapt_db.close()
+
+
+def sio_authenticated_only(f):
+    @functools.wraps(f)
+    def wrapped(*args, **kwargs):
+        if not current_user.is_authenticated:
+            disconnect()
+        else:
+            return f(*args, **kwargs)
+    return wrapped
 
 def requires_auth(f):
     @wraps(f)
@@ -345,7 +368,6 @@ def get_reachable_ip(ips=[], waptservice_port=conf[
     return None
 
 
-@app.route('/register', methods=['POST'])
 @app.route('/add_host', methods=['POST'])
 @app.route('/update_host', methods=['POST'])
 def update_host():
@@ -367,6 +389,9 @@ def update_host():
                 data['last_seen_on'] = datetime2isodate()
                 signature_b64 = request.headers.get('X-Signature',None)
                 signer = request.headers.get('X-Signer',None)
+
+                authenticated_user = request.headers.get('X-Aitheticated-User',None)
+
                 if signature_b64:
                     signature = signature_b64.decode('base64')
                 else:
@@ -375,8 +400,12 @@ def update_host():
                 if signature:
                     # when registering, mutual authentication is assumed by kerberos
                     # on apache reverse proxy level
-                    if request.path in  ['/add_host','/register']:
+                    if request.path in  ['/add_host']:
                         host_cert = SSLCertificate(crt_string = data['host_certificate'])
+                        if not authenticated_user:
+                            raise EWaptAuthenticationFailure('add_host : Missing authentication header')
+                        if authenticated_user.lower().replace('@','.') != host_cert.cn.lower():
+                            raise EWaptAuthenticationFailure('add_host : Mismatch between authendtication header %s and Certificate commonName' % (authenticated_user,host_cert.cn))
                     else:
                         # get certificate from DB to check/authenticate submitted data.
                         existing_host = Hosts.select(Hosts.host_certificate,Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
@@ -654,7 +683,6 @@ def rewrite_config_item(cfg_file, *args):
 # On Rocket we rely on inter-threads synchronization,
 # thus the variable you want to sync MUST be declared as a *global*
 # On Unix we ask uwsgi to perform a graceful restart.
-
 
 def reload_config():
     if os.name == "posix":
@@ -1906,6 +1934,76 @@ def usage_statistics():
     return make_response(msg=_('Anomnymous usage statistics'), result=result)
 
 
+####### Test Websockets
+
+@app.route('/api/v3/trigger_update')
+@requires_auth
+def trigger_sio_update():
+    """Proxy the wapt update action to the client using websockets"""
+    try:
+        uuid = request.args['uuid']
+        notify_user = request.args.get('notify_user', 0)
+        notify_server = request.args.get('notify_server', 1)
+
+        print('send update to all')
+        # how to find SID ??
+        sid = None
+        socketio.emit('trigger_update',request.args, room = sid)
+
+        result = request.args
+        msg = request.path
+
+        return make_response(result,
+                             msg=msg,
+                             success=True)
+    except Exception as e:
+        return make_response_from_exception(e)
+
+
+# Socket.Io Stuff
+
+@app.route('/testsio')
+def testsio():
+    return render_template('testsio.html', async_mode=socketio.async_mode)
+
+@socketio.on('trigger_update_result')
+def on_trigger_update_result(result):
+    """Return from update on client"""
+    print('Trigger Update result : %s (uuid:%s)' %(result,request.args['uuid']))
+
+@socketio.on('trigger_upgrate_result')
+def on_trigger_upgrade_result(result):
+    """Return from update on client"""
+    print('Triiger Upgrade result : %s (uuid:%s)' %(result,request.args['uuid']))
+
+@socketio.on('install_result')
+def on_install_result(result):
+    pass
+
+@socketio.on('remove_result')
+def on_remove_result(result):
+    pass
+
+@socketio.on('forget_result')
+def on_forget_result(result):
+    pass
+
+@socketio.on('wapt_ping')
+def on_ping():
+    emit('wapt_pong')
+
+@socketio.on('connect')
+def on_waptclient_connect():
+    print('Socket.IO connection from %s' % request.sid)
+    print("Host %s" % request.headers['Host'])
+
+@socketio.on('disconnect')
+def on_waptclient_disconnect():
+    print('Socket.IO disconnected %s' % request.sid)
+
+######### end websockets
+
+
 ##################################################################
 class CheckHostWorker(threading.Thread):
 
@@ -2329,7 +2427,7 @@ if __name__ == "__main__":
             raise Exception(
                 _("Folder missing : {}-group.").format(conf['wapt_folder']))
 
-    if args and args[0] == 'd�octest':
+    if args and args[0] == 'doctest':
         import doctest
         sys.exit(doctest.testmod())
 
@@ -2343,14 +2441,9 @@ if __name__ == "__main__":
         test()
         sys.exit(0)
 
-    if options.devel:
-        app.run(host='0.0.0.0', port=8080, debug=False)
-    else:
-        port = conf['waptserver_port']
-        server = Rocket(('0.0.0.0', port), 'wsgi', {"wsgi_app": app})
-        try:
-            logger.info("starting waptserver %s" % __version__)
-            server.start()
-        except KeyboardInterrupt:
-            logger.info("stopping waptserver")
-            server.stop()
+    logger.info('Waptserver starting...')
+    port = conf['waptserver_port']
+    socketio.run(app,host='0.0.0.0', port=port, debug=options.devel,use_reloader=options.devel)
+    logger.info('Waptserver stopped')
+
+
