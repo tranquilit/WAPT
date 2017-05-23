@@ -46,11 +46,16 @@ from rocket import Rocket
 # flask
 from flask import request, Flask,Response, send_from_directory, send_file, session, g, redirect, url_for, abort, render_template, flash, stream_with_context
 from flask_paginate import Pagination
+
 import jinja2
 from werkzeug.utils import secure_filename
 from werkzeug.utils import html
 
 from socketIO_client import SocketIO, LoggingSocketIONamespace,SocketIONamespace
+
+#import flask_socketio
+#from eventlet import wsgi
+#import eventlet
 
 from urlparse import urlparse
 from functools import wraps
@@ -110,7 +115,12 @@ v = (sys.version_info.major, sys.version_info.minor)
 if v != (2, 7):
     raise Exception('waptservice supports only Python 2.7, not %d.%d' % v)
 
-logger = logging.getLogger()
+logger = logging.getLogger('waptservice')
+logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+logger.setLevel(logging.DEBUG)
+logger.debug('test')
+logger.critical('test2')
+
 
 def get_authorized_callers_ip(waptserver_url=None):
     """Returns list of IP allowed to request actions with check_caller decorator"""
@@ -218,7 +228,7 @@ class WaptServiceConfig(object):
         self.waptservice_sslport = None
 
         # zeroMQ publishing socket
-        self.zmq_port = 5000
+        self.zmq_port = None
 
         # default language
         self.language = locale.getdefaultlocale()[0]
@@ -426,6 +436,9 @@ waptconfig = WaptServiceConfig()
 app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['SECRET_KEY'] = waptconfig.secret_key
+
+# chain SocketIO server
+#socketio_server = flask_socketio.SocketIO(app,logger=logger)
 
 try:
     from waptwua import WaptWUA
@@ -1597,18 +1610,20 @@ class WaptUpdateServerStatus(WaptTask):
 
 class WaptRegisterComputer(WaptTask):
     """Send workstation status to server"""
-    def __init__(self,**args):
+    def __init__(self,computer_description = None,**args):
         super(WaptRegisterComputer,self).__init__(**args)
         self.priority = 10
         self.notify_server_on_start = False
         self.notify_server_on_finish = False
+        self.computer_description = computer_description
         for k in args:
             setattr(self,k,args[k])
+
 
     def _run(self):
         if self.wapt.waptserver_available():
             try:
-                self.result = self.wapt.register_computer()
+                self.result = self.wapt.register_computer(description = self.computer_description)
                 self.summary = __(u"Inventory has been sent to the WAPT server")
             except Exception as e:
                 self.result = {}
@@ -1897,10 +1912,14 @@ class WaptTaskManager(threading.Thread):
         if self.wapt.waptserver_available():
             try:
                 result = self.wapt.update_server_status()
-                if result['uuid']:
+                if result and result['success'] and result['result']['uuid']:
                     self.last_update_server_date = datetime.datetime.now()
+                elif result and not result['success']:
+                        logger.critical('Unable to update server status: %s' % result['msd'])
+                else:
+                    raise Exception('No answer')
             except Exception as e:
-                logger.debug(u'Unable to update server status: %s' % ensure_unicode(e))
+                logger.debug('Unable to update server status: %s' % repr(e))
 
     def broadcast_tasks_status(self,topic,task):
         """topic : ADD START FINISH CANCEL ERROR
@@ -2037,6 +2056,7 @@ class WaptTaskManager(threading.Thread):
                             self.running_task.summary = u"{}".format(ensure_unicode(e))
                             self.tasks_error.append(self.running_task)
                             self.broadcast_tasks_status(str('ERROR'),self.running_task)
+                        raise
                         logger.critical(ensure_unicode(e))
                         try:
                             logger.debug(ensure_unicode(traceback.format_exc()))
@@ -2301,6 +2321,15 @@ class WaptRemoteCalls(SocketIONamespace):
         if result_callback:
             result_callback(make_response(data))
 
+    def on_trigger_register(self,args,result_callback=None):
+        task = WaptRegisterComputer(args.get('computer_description',None))
+        task.force = int(args.get('force','0')) != 0
+        task.notify_user = int(args.get('notify_user','1')) != 0
+        task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
+        data = self.task_manager.add_task(task).as_dict()
+        if result_callback:
+            result_callback(make_response(data))
+
     def on_get_tasks_status(self,args,result_callback=None):
         data = self.task_manager.tasks_status()
         if result_callback:
@@ -2366,7 +2395,7 @@ class WaptRemoteCalls(SocketIONamespace):
     def on_message(self,message):
         print('message : %s' % message)
 
-    def on_event(self,event,args):
+    def on_event(self,event,*args):
         print('event : %s, args: %s' % (event,args))
 
 
@@ -2389,8 +2418,6 @@ if __name__ == "__main__":
 
     (options,args)=parser.parse_args()
 
-    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
-
     def setloglevel(logger,loglevel):
         """set loglevel as string"""
         if loglevel in ('debug','warning','info','error','critical'):
@@ -2411,7 +2438,9 @@ if __name__ == "__main__":
     waptconfig.load()
 
     # force loglevel
-    if waptconfig.loglevel is not None:
+    if options.loglevel:
+        setloglevel(logger,options.loglevel)
+    elif waptconfig.loglevel is not None:
         setloglevel(logger,waptconfig.loglevel)
 
     if waptconfig.log_to_windows_events:
@@ -2436,23 +2465,34 @@ if __name__ == "__main__":
         waptserver_url = urlparse(waptconfig.waptserver.server_url)
         if waptserver_url.port is None and waptserver_url.scheme == 'https':
             waptserver_url.port = 443
-        with Wapt(config_filename = waptconfig.config_filename) as tmp_wapt:
-            print('Starting socketio on %s:%s...' % (waptserver_url.hostname,waptserver_url.port))
-            socketIO = SocketIO(host = waptserver_url.hostname,port = waptserver_url.port,
-                wait_for_connection = True,
-                hurry_intervals = 5,
-                params = {'uuid':tmp_wapt.host_uuid})
-            wapt_remote_calls = socketIO.define(WaptRemoteCalls)
-        wapt_remote_calls.emit('new connection',socketIO._engineIO_session.id)
 
-        print('Socket IO Started.')
-        socketIO.wait()
-    else:
-        socketIO = None
+        def run_socketio():
+            while True:
+                with Wapt(config_filename = waptconfig.config_filename) as tmp_wapt:
+                    print('Starting socketio on %s:%s...' % (waptserver_url.hostname,waptserver_url.port))
+                    socketio_client = SocketIO(host = waptserver_url.hostname,port = waptserver_url.port,
+                        wait_for_connection = True,
+                        hurry_intervals = 5,
+                        params = {'uuid':tmp_wapt.host_uuid})
+                    wapt_remote_calls = socketio_client.define(WaptRemoteCalls)
+                wapt_remote_calls.emit('new connection',socketio_client._engineIO_session.id)
+
+                print('Socket IO Started.')
+                socketio_client.wait()
+                print('Socket IO Stopped....')
+                time.sleep(5)
+
+        sio = threading.Thread(target=run_socketio)
+        sio.start()
 
     if options.devel:
+        #socketio_server.run(app,host='127.0.0.1', port=8088)
+
+        print('Starting local dev waptservice...')
         app.run(host='127.0.0.1',port=8088,debug=False)
     else:
+        #wsgi.server(eventlet.listen(('', 8088)), app)
+
         port_config = []
         if waptconfig.waptservice_port:
             port_config.append(('127.0.0.1', waptconfig.waptservice_port))

@@ -486,6 +486,7 @@ object VisWaptGUI: TVisWaptGUI
         OnCompareNodes = GridHostsCompareNodes
         OnDragOver = GridHostsDragOver
         OnDragDrop = GridHostsDragDrop
+        OnEdited = GridHostsEdited
         OnEditing = GridHostsEditing
         OnGetImageIndexEx = GridHostsGetImageIndexEx
         OnHeaderDblClick = GridHostsHeaderDblClick

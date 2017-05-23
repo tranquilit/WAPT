@@ -82,7 +82,6 @@ import urlparse
 import stat
 import pefile
 import itsdangerous
-from rocket import Rocket
 import thread
 import threading
 import Queue
@@ -374,10 +373,10 @@ def update_host():
                     # on apache reverse proxy level
                     if request.path in  ['/add_host']:
                         host_cert = SSLCertificate(crt_string = data['host_certificate'])
-                        if not authenticated_user:
-                            raise EWaptAuthenticationFailure('add_host : Missing authentication header')
-                        if authenticated_user.lower().replace('@','.') != host_cert.cn.lower():
-                            raise EWaptAuthenticationFailure('add_host : Mismatch between authendtication header %s and Certificate commonName' % (authenticated_user,host_cert.cn))
+                        #if not authenticated_user:
+                        #    raise EWaptAuthenticationFailure('add_host : Missing authentication header')
+                        #if authenticated_user.lower().replace('@','.') != host_cert.cn.lower():
+                        #    raise EWaptAuthenticationFailure('add_host : Mismatch between authendtication header %s and Certificate commonName' % (authenticated_user,host_cert.cn))
                     else:
                         # get certificate from DB to check/authenticate submitted data.
                         existing_host = Hosts.select(Hosts.host_certificate,Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
@@ -639,10 +638,6 @@ def rewrite_config_item(cfg_file, *args):
         config.write(cfg)
 
 # Reload config file.
-# On Rocket we rely on inter-threads synchronization,
-# thus the variable you want to sync MUST be declared as a *global*
-# On Unix we ask uwsgi to perform a graceful restart.
-
 def reload_config():
     if os.name == "posix":
         try:
@@ -994,9 +989,9 @@ def trigger_wakeonlan():
         return make_response_from_exception(e)
 
 
-@app.route('/api/v3/trigger_host_inventory', methods=['GET', 'POST'])
+@app.route('/api/v3/trigger_register', methods=['GET', 'POST'])
 @requires_auth
-def trigger_host_inventory():
+def trigger_host_register():
     """Proxy the wapt update action to the client"""
     return proxy_host_request(request, 'trigger_register')
 

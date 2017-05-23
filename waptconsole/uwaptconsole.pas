@@ -496,6 +496,8 @@ type
     procedure GridHostsDragOver(Sender: TBaseVirtualTree; Source: TObject;
       Shift: TShiftState; State: TDragState; const Pt: TPoint;
       Mode: TDropMode; var Effect: DWORD; var Accept: boolean);
+    procedure GridHostsEdited(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex);
     procedure GridHostsEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var Allowed: boolean);
     procedure GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
@@ -2537,7 +2539,7 @@ begin
   with TVisHostsUpgrade.Create(Self) do
   try
     Caption:= rsTriggerHostsUpdate;
-    action := 'api/v2/trigger_host_inventory';
+    action := 'api/v3/trigger_register';
     hosts := Gridhosts.SelectedRows;
 
     if ShowModal = mrOk then
@@ -3682,10 +3684,27 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.GridHostsEdited(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex);
+var
+  res: ISuperObject;
+begin
+  if TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'description' then
+  begin
+    res := WAPTServerJsonGet('api/v3/trigger_register?computer_description=%s',[ ]);
+    if res.B['success'] and (res.A['result'].Length>0) then
+    begin
+      if MessageDlg(rsConfirmCaption,'A download task is already in progress, do you still want to append a task ?',mtConfirmation, mbYesNoCancel,0) <> mrYes then
+        Exit;
+    end;
+
+  end;
+end;
+
 procedure TVisWaptGUI.GridHostsEditing(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; var Allowed: boolean);
 begin
-  Allowed := False;
+  Allowed := TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'description';
 end;
 
 procedure TVisWaptGUI.GridLoadData(grid: TSOGrid; jsondata: string);
