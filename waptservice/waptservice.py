@@ -2464,14 +2464,18 @@ if __name__ == "__main__":
     if waptconfig.waptserver:
         waptserver_url = urlparse(waptconfig.waptserver.server_url)
         if waptserver_url.port is None and waptserver_url.scheme == 'https':
-            waptserver_url.port = 443
+            ws_port = 443
+            ws_host = 'https://'+waptserver_url.hostname
+        else:
+            ws_port = 80
+            ws_host = waptserver_url.hostname
 
         def run_socketio():
             while True:
                 try:
                     with Wapt(config_filename = waptconfig.config_filename) as tmp_wapt:
                         print('Starting socketio on %s:%s...' % (waptserver_url.hostname,waptserver_url.port))
-                        socketio_client = SocketIO(host = waptserver_url.hostname,port = waptserver_url.port,
+                        socketio_client = SocketIO(host=ws_host, port=ws_port, verify=tmp_wapt.waptserver.verify_cert,
                             wait_for_connection = True,
                             hurry_intervals = 5,
                             params = {'uuid':tmp_wapt.host_uuid})
