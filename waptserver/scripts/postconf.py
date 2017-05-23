@@ -123,6 +123,8 @@ def enable_debian_vhost():
     void = subprocess.check_output(['a2enmod', 'ssl'], stderr=subprocess.STDOUT)
     void = subprocess.check_output(['a2enmod', 'proxy'], stderr=subprocess.STDOUT)
     void = subprocess.check_output(['a2enmod', 'proxy_http'], stderr=subprocess.STDOUT)
+    void = subprocess.check_output(['a2enmod', 'rewrite'], stderr=subprocess.STDOUT)
+    void = subprocess.check_output(['a2enmod', 'proxy_wstunnel'], stderr=subprocess.STDOUT)
     void = subprocess.check_output(['a2enmod', 'auth_kerb'], stderr=subprocess.STDOUT)
     void = subprocess.check_output(['a2ensite', 'wapt.conf'], stderr=subprocess.STDOUT)
     void = subprocess.check_output(['/etc/init.d/apache2', 'graceful'], stderr=subprocess.STDOUT)
