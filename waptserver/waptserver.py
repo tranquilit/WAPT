@@ -340,34 +340,6 @@ def index():
     return render_template("index.html", data=data)
 
 
-def get_reachable_ip(ips=[], waptservice_port=conf[
-                     'waptservice_port'], timeout=conf['clients_connect_timeout']):
-    """Try to establish a TCP connection to each IP of ips list on waptservice_port
-        return first successful IP
-
-    Args:
-        ips (list of str, or str) :
-            list of IP to try
-            ips is either a single IP, or a list of IP, or a CSV list of IP
-        waptservice_port : tcp port to try to connect to
-        timeout: connection timeout
-
-    Returns:
-        str : first IP which is successful with or empty string if no ip is is successful
-    """
-    ips = ensure_list(ips)
-    for ip in ips:
-        try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.settimeout(timeout)
-            s.connect((ip, conf['waptservice_port']))
-            s.close()
-            return ip
-        except:
-            pass
-    return None
-
-
 @app.route('/add_host', methods=['POST'])
 @app.route('/update_host', methods=['POST'])
 def update_host():
@@ -809,82 +781,6 @@ def get_group_package(input_package_name):
     return r
 
 
-def get_ip_port(host_data, recheck=False, timeout=None, check_ping=False):
-    """Return a dict protocol,address,port,timestamp for the supplied registered host
-        - first check if wapt.listening_address is ok and recheck is False
-        - if not present or recheck is True, check each of host.check connected_ips list with timeout
-
-    Args:
-        host_data (dict):  host registration data with at least
-            wapt.listening_address.address
-            wapt.waptservice_port
-            host.connected_ips
-
-        recheck: force recheck even if listening_address
-        timeout (int) : http timeout, or socket connection timeout
-        check_ping (bool) : if True, check using http://host/ping else just check socket connection
-
-    Returns;
-        dict with keys:
-            protocol
-            address
-            port
-            timestamp
-
-
-    """
-    if not timeout:
-        timeout = conf['clients_connect_timeout']
-    if not host_data or not 'uuid' in host_data:
-        raise EWaptUnknownHost(_('Unknown uuid'))
-
-    if not recheck and host_data.get('listening_address',None):
-        # use data stored in DB
-        return dict(
-            protocol=host_data.get('listening_protocol', 'http'),
-            address=host_data.get('listening_address',None),
-            port=host_data.get('listening_port',8088),
-            timestamp=host_data.get('listening_timestamp',None),
-            )
-    elif host_data.get('wapt_status',None) and host_data.get('host_info',{}).get('connected_ips',''):
-        # check using http
-        ips = ensure_list(host_data.get('host_info',{}).get('connected_ips',''))
-        protocol = host_data['wapt_status'].get('waptservice_protocol', 'http')
-        port = host_data['wapt_status'].get('waptservice_port',conf['waptservice_port'])
-        address = None
-
-        if check_ping:
-            for ip in ips:
-                try:
-                    req = requests.head('%s://%s:%s/ping?uuid=%s'%(protocol,ip,port,host_data.get('uuid',None)),
-                            proxies = {'http':None,'https':None},
-                            verify=False,
-                            timeout=timeout,
-                            )
-                    req.raise_for_status()
-                    address = ip
-                    break
-                except:
-                    pass
-        # optionnally try socket
-        else:
-            address = get_reachable_ip(
-                    ips,
-                    waptservice_port=port,
-                    timeout=timeout)
-
-        return dict(
-            protocol=protocol,
-            address=address,
-            port=port,
-            timestamp=datetime2isodate(),
-            )
-    else:
-        raise EWaptHostUnreachable(
-            _('No reachable IP for {}').format(
-                host_data['uuid']))
-
-
 @app.route('/ping')
 def ping():
     config_file = app.config['CONFIG_FILE']
@@ -898,7 +794,7 @@ def ping():
         msg=_('WAPT Server running'), result=dict(
             version=__version__,
             api_root='/api/',
-            api_version='v1',
+            api_version='v3',
             uuid=conf['server_uuid'],
             date=datetime2isodate(),
         )
@@ -930,263 +826,126 @@ def trigger_reachable_discovery():
 
         logger.debug('Reset listening status timestamps of hosts')
         Hosts.update(listening_timestamp=None,listening_protocol=None).where(where_clause).execute()
-        result = emit('ping')
+        emit('ping')
 
     except Exception as e:
         return make_response_from_exception(e)
-    return make_response(result, msg=message)
-
-
-@app.route('/api/v1/host_reachable_ip')
-@requires_auth
-def host_reachable_ip():
-    """Check if supplied host's waptservice can be reached
-            param uuid : host uuid
-    """
-    try:
-        try:
-            uuid = request.args['uuid']
-            host_data = Hosts\
-                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt_status,
-                                Hosts.listening_address,
-                                Hosts.listening_port,
-                                Hosts.listening_protocol,
-                                Hosts.listening_timestamp,
-                                 )\
-                        .where(Hosts.uuid==uuid)\
-                        .dicts()\
-                        .first(1)
-            result = get_ip_port(host_data)
-            Hosts.update(
-                    listening_protocol=result['protocol'],
-                    listening_address=result['address'],
-                    listening_port=int(result['port']),
-                    listening_timestamp=result['timestamp'],
-                ).where(Hosts.uuid == uuid).execute()
-        except Exception as e:
-            raise EWaptHostUnreachable(
-                _("Couldn't connect to web service : {}.").format(e))
-
-    except Exception as e:
-        return make_response_from_exception(e)
-    return make_response(result)
+    return make_response(msg=message)
 
 
 def proxy_host_request(request, action):
-    """Proxy the wapt forget action to the client
-            uuid
-            packages
-            notify_user
-            notify_server
+    """Proxy a waptconsole action to wapt clients using websockets
+            uuid: can be a list or a single uuid
+            notify_user: 0/1
+            notify_server: 0/1
+    Returns:
+        dict:
+            'success':
+            'errors':
     """
     try:
+        start_time = time.time()
         all_args = {k: v for k, v in request.args.iteritems()}
         if request.json:
             all_args.update(request.json)
 
         uuids = ensure_list(all_args['uuid'])
         del(all_args['uuid'])
+        timeout = request.args.get('timeout',conf.get('clients_read_timeout',5))
 
         result = dict(success=[], errors=[])
+        tasks = []
         for uuid in uuids:
             try:
                 host_data = Hosts\
-                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt_status,
+                        .select(Hosts.uuid,Hosts.computer_fqdn,
                                 Hosts.listening_address,
                                 Hosts.listening_port,
                                 Hosts.listening_protocol,
                                 Hosts.listening_timestamp,
                                  )\
-                        .where(Hosts.uuid==uuid)\
+                        .where((Hosts.uuid==uuid) and ~Hosts.listening_address.is_null() and (Hosts.listening_protocol=='websockets'))\
                         .dicts()\
                         .first(1)
-                listening_address = get_ip_port(host_data)
-                msg = u''
-                if listening_address and listening_address['address'] and listening_address['port']:
+                if host_data:
+                    msg = u''
                     logger.info(
                         "Launching %s with args %s for %s at address %s..." %
-                        (action, all_args, uuid, listening_address['address']))
-                    args = dict(all_args)
-                    args.update(listening_address)
-                    args['uuid'] = uuid
-                    args['action'] = action
-                    args_url = []
-                    for (key, value) in args.iteritems():
-                        if isinstance(value, list):
-                            args_url.append('%s=%s' % (key, ','.join(value)))
-                        else:
-                            args_url.append('%s=%s' % (key, value))
-                    args['args_url'] = '&'.join(args_url)
+                        (action, all_args, uuid,host_data['listening_address']))
 
-                    client_result = requests.get(
-                        "%(protocol)s://%(address)s:%(port)d/%(action)s?%(args_url)s" %
-                        args,
-                        proxies={
-                            'http': None,
-                            'https': None},
-                        verify=False,
-                        timeout=conf['clients_read_timeout'],
-                        ).text
-                    try:
-                        client_result = json.loads(client_result)
-                        if not isinstance(client_result, list):
-                            client_result = [client_result]
-                        msg = _(u"Triggered tasks: {}").format(
-                            ','.join(
-                                t['description'] for t in client_result))
-                        result['success'].append(
-                            dict(
-                                uuid=uuid,
-                                msg=msg,
-                                computer_fqdn=host_data['computer_fqdn']))
-                    except ValueError:
-                        if 'Restricted access' in client_result:
-                            raise EWaptForbiddden(client_result)
-                        else:
-                            raise Exception(client_result)
+                    args = dict(all_args)
+                    sid = host_data['listening_address']
+                    computer_fqdn = host_data['computer_fqdn']
+
+                    def emit_action(sid,uuid,action,action_args,computer_fqdn,timeout=5):
+                        try:
+                            got_result = []
+                            def result_callback(data):
+                                got_result.append(data)
+
+                            logger.debug('Emit %s to %s (%s)' % (action,uuid,computer_fqdn))
+                            socketio.emit(action,action_args,room=sid,callback=result_callback)
+                            # with for asynchronous answer...
+                            wait_loop = timeout * 20
+                            while not got_result:
+                                wait_loop -=1
+                                if wait_loop < 0:
+                                    raise EWaptTimeoutWaitingForResult('Timeout, client did not send result within %s s'%timeout)
+                                socketio.sleep(0.05)
+
+                            # action succedded
+                            result['success'].append(
+                                dict(
+                                    uuid=uuid,
+                                    msg=msg,
+                                    computer_fqdn=computer_fqdn,
+                                    result=got_result[0],
+                                    ))
+                        except Exception as e:
+                            result['errors'].append(
+                                dict(
+                                    uuid=uuid,
+                                    msg='%s' % repr(e),
+                                    computer_fqdn='',
+                                    ))
+
+                    tasks.append(socketio.start_background_task(emit_action,sid=sid,uuid=uuid,action=action,action_args=args,computer_fqdn=computer_fqdn))
+                else:
+                    result['errors'].append(
+                        dict(
+                            uuid=uuid,
+                            msg='Host %s is not registered or not connected wia websockets' % uuid,
+                            computer_fqdn='',
+                            ))
             except Exception as e:
                 result['errors'].append(
                     dict(
                         uuid=uuid,
-                        msg='%s' %
-                        e,
-                        computer_fqdn=host_data['computer_fqdn'],
-                        )
-                    )
+                        msg='Host %s error %s' % (uuid,repr(e)),
+                        computer_fqdn='',
+                        ))
 
-        msg = [
-            'Success : %s, Errors: %s' %
-            (len(
-                result['success']), len(
-                result['errors']))]
+        # wait for all background tasks to terminate or timeout...
+        # assume the timeout should be longer if more hosts to perform
+        wait_loop = timeout * len(tasks)
+        while True:
+            running = [ t for t in tasks if t.is_alive() ]
+            if not running:
+                break
+            wait_loop -=1
+            if wait_loop < 0:
+                break
+            socketio.sleep(1)
+
+        msg = [ 'Success : %s, Errors: %s' % (len(result['success']), len(result['errors']))]
         if result['errors']:
             msg.extend(['%s: %s' % (e['computer_fqdn'], e['msg'])
                         for e in result['errors']])
 
         return make_response(result,
                              msg='\n- '.join(msg),
-                             success=True)
-    except Exception as e:
-        return make_response_from_exception(e)
-
-
-@app.route('/api/v1/trigger_upgrade')
-@requires_auth
-def trigger_upgrade():
-    """Proxy the wapt upgrade action to the client"""
-    try:
-        uuid = request.args['uuid']
-        notify_user = request.args.get('notify_user', 0)
-        notify_server = request.args.get('notify_server', 1)
-        host_data = Hosts\
-                        .select(Hosts.uuid,Hosts.computer_fqdn,
-                                Hosts.wapt_status,
-                                Hosts.listening_address,
-                                Hosts.listening_port,
-                                Hosts.listening_protocol,
-                                Hosts.listening_timestamp,
-                                 )\
-                        .where(Hosts.uuid==uuid)\
-                        .dicts()\
-                        .first(1)
-        listening_address = get_ip_port(host_data)
-        msg = u''
-        if listening_address and listening_address[
-                'address'] and listening_address['port']:
-            logger.info(
-                "Triggering upgrade for %s at address %s..." %
-                (uuid, listening_address['address']))
-            args = {}
-            args.update(listening_address)
-            args['uuid'] = uuid
-            args['notify_user'] = notify_user
-            args['notify_server'] = notify_server
-            client_result = requests.get(
-                "%(protocol)s://%(address)s:%(port)d/upgrade.json?notify_user=%(notify_user)s&notify_server=%(notify_server)s&uuid=%(uuid)s" %
-                args,
-                proxies={
-                    'http': None,
-                    'https': None},
-                verify=False,
-                timeout=conf['clients_read_timeout']).text
-            try:
-                client_result = json.loads(client_result)
-                result = client_result['content']
-                if len(result) <= 1:
-                    msg = _(u"Nothing to upgrade.")
-                else:
-                    packages = [t['description']
-                                for t in result if t['classname'] != 'WaptUpgrade']
-                    msg = _(u"Triggered {} task(s):\n{}").format(
-                        len(packages),
-                        '\n'.join(packages))
-            except ValueError:
-                if 'Restricted access' in client_result:
-                    raise EWaptForbiddden(client_result)
-                else:
-                    raise Exception(client_result)
-        else:
-            raise EWaptMissingHostData(_("The WAPT service is unreachable."))
-        return make_response(result,
-                             msg=msg,
-                             success=client_result['result'] == 'OK',)
-    except Exception as e:
-        return make_response_from_exception(e)
-
-
-@app.route('/api/v1/trigger_update')
-@requires_auth
-def trigger_update():
-    """Proxy the wapt update action to the client"""
-    try:
-        uuid = request.args['uuid']
-        notify_user = request.args.get('notify_user', 0)
-        notify_server = request.args.get('notify_server', 1)
-
-        host_data = Hosts\
-                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt_status,
-                                Hosts.listening_address,
-                                Hosts.listening_port,
-                                Hosts.listening_protocol,
-                                Hosts.listening_timestamp,
-                                 )\
-                        .where(Hosts.uuid==uuid)\
-                        .dicts()\
-                        .first(1)
-        listening_address = get_ip_port(host_data)
-        msg = u''
-        if listening_address and listening_address[
-                'address'] and listening_address['port']:
-            logger.info(
-                "Triggering update for %s at address %s..." %
-                (uuid, listening_address['address']))
-            args = {}
-            args.update(listening_address)
-            args['notify_user'] = notify_user
-            args['notify_server'] = notify_server
-            args['uuid'] = uuid
-            client_result = requests.get(
-                "%(protocol)s://%(address)s:%(port)d/update.json?notify_user=%(notify_user)s&notify_server=%(notify_server)s&uuid=%(uuid)s" %
-                args,
-                proxies={
-                    'http': None,
-                    'https': None},
-                verify=False,
-                timeout=conf['clients_read_timeout']).text
-            try:
-                client_result = json.loads(client_result)
-                msg = _(u"Triggered task: {}").format(
-                    client_result['description'])
-            except ValueError:
-                if 'Restricted access' in client_result:
-                    raise EWaptForbiddden(client_result)
-                else:
-                    raise Exception(client_result)
-        else:
-            raise EWaptMissingHostData(_("The WAPT service is unreachable."))
-        return make_response(client_result,
-                             msg=msg,
-                             success=True)
+                             success=len(result['success'])>0,
+                             request_time = time.time() - start_time)
     except Exception as e:
         return make_response_from_exception(e)
 
@@ -1235,32 +994,32 @@ def trigger_wakeonlan():
         return make_response_from_exception(e)
 
 
-@app.route('/api/v2/trigger_host_inventory', methods=['GET', 'POST'])
+@app.route('/api/v3/trigger_host_inventory', methods=['GET', 'POST'])
 @requires_auth
 def trigger_host_inventory():
     """Proxy the wapt update action to the client"""
-    return proxy_host_request(request, 'register.json')
+    return proxy_host_request(request, 'trigger_register')
 
 
-@app.route('/api/v2/trigger_waptwua_scan', methods=['GET', 'POST'])
+@app.route('/api/v3/trigger_waptwua_scan', methods=['GET', 'POST'])
 @requires_auth
 def trigger_waptwua_scan():
     """Proxy the wapt update action to the client"""
-    return proxy_host_request(request, 'waptwua_scan.json')
+    return proxy_host_request(request, 'trigger_waptwua_scan')
 
 
-@app.route('/api/v2/trigger_waptwua_download', methods=['GET', 'POST'])
+@app.route('/api/v3/trigger_waptwua_download', methods=['GET', 'POST'])
 @requires_auth
 def trigger_waptwua_download():
     """Proxy the wapt download action to the client"""
-    return proxy_host_request(request, 'waptwua_download.json')
+    return proxy_host_request(request, 'trigger_waptwua_download')
 
 
-@app.route('/api/v2/trigger_waptwua_install', methods=['GET', 'POST'])
+@app.route('/api/v3/trigger_waptwua_install', methods=['GET', 'POST'])
 @requires_auth
 def trigger_waptwua_install():
     """Proxy the wapt scan action to the client"""
-    return proxy_host_request(request, 'waptwua_install.json')
+    return proxy_host_request(request, 'trigger_waptwua_install')
 
 
 @app.route('/api/v2/waptagent_version')
@@ -1312,7 +1071,7 @@ def waptagent_version():
     return make_response(result=result, msg=msg, status=200)
 
 
-@app.route('/api/v1/host_forget_packages', methods=['GET', 'POST'])
+@app.route('/api/v3/trigger_forget_packages', methods=['GET', 'POST'])
 @requires_auth
 def host_forget_packages():
     """Proxy the wapt forget action to the client
@@ -1321,10 +1080,10 @@ def host_forget_packages():
             notify_user
             notify_server
     """
-    return proxy_host_request(request, 'forget.json')
+    return proxy_host_request(request, 'trigger_forget_packages')
 
 
-@app.route('/api/v1/host_remove_packages', methods=['GET', 'POST'])
+@app.route('/api/v3/trigger_remove_packages', methods=['GET', 'POST'])
 @requires_auth
 def host_remove_packages():
     """Proxy the wapt remove action to the client
@@ -1334,10 +1093,10 @@ def host_remove_packages():
             notify_server
             force
     """
-    return proxy_host_request(request, 'remove.json')
+    return proxy_host_request(request, 'trigger_remove_packages')
 
 
-@app.route('/api/v1/host_install_packages', methods=['GET', 'POST'])
+@app.route('/api/v3/trigger_install_packages', methods=['GET', 'POST'])
 @requires_auth
 def host_install_packages():
     """Proxy the wapt install action to the client
@@ -1346,58 +1105,12 @@ def host_install_packages():
             notify_user
             notify_server
     """
-    return proxy_host_request(request, 'install.json')
+    return proxy_host_request(request, 'trigger_install_packages')
 
-
-@app.route('/api/v1/host_tasks_status')
+@app.route('/api/v3/trigger_cancel_task')
 @requires_auth
-def host_tasks_status():
-    """Proxy the get tasks status action to the client"""
-    try:
-        uuid = request.args['uuid']
-        host_data = Hosts\
-                    .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt_status,
-                            Hosts.listening_address,
-                            Hosts.listening_port,
-                            Hosts.listening_protocol,
-                            Hosts.listening_timestamp,
-                             )\
-                    .where(Hosts.uuid==uuid)\
-                    .dicts()\
-                    .first(1)
-        listening_address = get_ip_port(host_data)
-        if listening_address and listening_address[
-                'address'] and listening_address['port']:
-            logger.info(
-                "Get tasks status for %s at address %s..." %
-                (uuid, listening_address['address']))
-            args = {}
-            args.update(listening_address)
-            args['uuid'] = uuid
-            client_result = requests.get(
-                "%(protocol)s://%(address)s:%(port)d/tasks.json?uuid=%(uuid)s" %
-                args,
-                proxies={
-                    'http': None,
-                    'https': None},
-                verify=False,
-                timeout=conf['client_tasks_timeout']).text
-            try:
-                client_result = json.loads(client_result)
-            except ValueError:
-                if 'Restricted access' in client_result:
-                    raise EWaptForbiddden(client_result)
-                else:
-                    raise Exception(client_result)
-        else:
-            raise EWaptMissingHostData(
-                _("The host reachability is not defined."))
-        return make_response(client_result,
-                             msg="Tasks status retrieved properly",
-                             success=isinstance(client_result, dict),)
-    except Exception as e:
-        return make_response_from_exception(e)
-
+def host_cancel_task():
+    return proxy_host_request(request, 'trigger_cancel_task')
 
 @app.route('/api/v1/groups')
 @requires_auth
@@ -1790,98 +1503,6 @@ def host_data():
                          error_code=error_code, status=200, request_time=time.time() - start_time)
 
 
-@app.route('/api/v1/hosts', methods=['POST'])
-@requires_auth
-def update_hosts():
-    """update one or several hosts
-        post data is a json list of host data
-        for each host, the key is the uuid
-    """
-    start_time = time.time()
-
-    post_data = ensure_list(json.loads(request.data))
-    msg = []
-    result = []
-
-    try:
-        for data in post_data:
-            # build filter
-            if not 'uuid' in data:
-                raise Exception('No uuid provided in post host data')
-            uuid = data["uuid"]
-            result.append(update_host_data(data))
-
-            # check if client is reachable
-            if not 'check_hosts_thread' in g or not g.check_hosts_thread.is_alive():
-                logger.info('Creates check hosts thread for %s' % (uuid,))
-                g.check_hosts_thread = CheckHostsWaptService(
-                    timeout=conf['clients_connect_timeout'],
-                    uuids=[uuid])
-                g.check_hosts_thread.start()
-            else:
-                logger.info(
-                    'Reuses current check hosts thread for %s' %
-                    (uuid,))
-                g.check_hosts_thread.queue.put(data)
-
-            msg.append('host {} updated in DB'.format(uuid))
-
-    except Exception as e:
-        return make_response_from_exception(e)
-
-    return make_response(result=result, msg='\n'.join(
-        msg), status=200, request_time=time.time() - start_time)
-
-
-@app.route('/api/v1/host_cancel_task')
-@requires_auth
-def host_cancel_task():
-    try:
-        uuid = request.args['uuid']
-        host_data = Hosts\
-                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt_status,
-                                Hosts.listening_address,
-                                Hosts.listening_port,
-                                Hosts.listening_protocol,
-                                Hosts.listening_timestamp,
-                                 )\
-                        .where(Hosts.uuid==uuid)\
-                        .dicts()\
-                        .first(1)
-        listening_address = get_ip_port(host_data)
-        if listening_address and listening_address[
-                'address'] and listening_address['port']:
-            logger.info(
-                "Get tasks status for %s at address %s..." %
-                (uuid, listening_address['address']))
-            args = {}
-            args.update(listening_address)
-            args['uuid'] = uuid
-            client_result = requests.get(
-                "%(protocol)s://%(address)s:%(port)d/cancel_running_task.json?uuid=%(uuid)s" %
-                args,
-                proxies={
-                    'http': None,
-                    'https': None},
-                verify=False,
-                timeout=conf['client_tasks_timeout']).text
-            try:
-                client_result = json.loads(client_result)
-            except ValueError:
-                if 'Restricted access' in client_result:
-                    raise EWaptForbiddden(client_result)
-                else:
-                    raise Exception(client_result)
-        else:
-            raise EWaptMissingHostData(
-                _("The host reachability is not defined."))
-        return make_response(client_result,
-                             msg="Task canceled",
-                             success=isinstance(client_result, dict),)
-    except Exception as e:
-        return make_response_from_exception(e)
-
-
 @app.route('/api/v1/usage_statistics')
 def usage_statistics():
     """returns some anonymous usage statistics to give an idea of depth of use"""
@@ -1936,8 +1557,6 @@ def trigger_sio_update():
         notify_user = request.args.get('notify_user', 0)
         notify_server = request.args.get('notify_server', 1)
 
-        print('send update to all')
-        # how to find SID ??
         host = Hosts.select(Hosts.computer_fqdn,Hosts.listening_address).where((Hosts.uuid==uuid) & (Hosts.listening_protocol == 'websockets')).first()
         if host:
             socketio.emit('trigger_update',request.args, room = host.listening_address)
@@ -1952,17 +1571,105 @@ def trigger_sio_update():
         return make_response_from_exception(e)
 
 
-# Socket.Io Stuff
+@app.route('/api/v3/trigger_upgrade')
+@requires_auth
+def trigger_sio_upgrade():
+    """Proxy the wapt update action to the client using websockets"""
+    try:
+        uuid = request.args['uuid']
+        notify_user = request.args.get('notify_user', 0)
+        notify_server = request.args.get('notify_server', 1)
 
-@app.route('/testsio')
-def testsio():
-    return render_template('testsio.html', async_mode=socketio.async_mode)
+        host = Hosts.select(Hosts.computer_fqdn,Hosts.listening_address).where((Hosts.uuid==uuid) & (Hosts.listening_protocol == 'websockets')).first()
+        if host:
+            socketio.emit('trigger_upgrade',request.args, room = host.listening_address)
+            result = request.args
+            msg = 'Upgrade launched on %s' % host.computer_fqdn
+            return make_response(result,
+                                 msg=msg,
+                                 success=True)
+        else:
+            raise EWaptHostUnreachable('Host not connected, Websocket sid not in database')
+    except Exception as e:
+        return make_response_from_exception(e)
+
+
+
+@app.route('/api/v3/trigger_install')
+@requires_auth
+def trigger_sio_install():
+    """Proxy the wapt update action to the client using websockets"""
+    try:
+        uuid = request.args['uuid']
+        notify_user = request.args.get('notify_user', 0)
+        notify_server = request.args.get('notify_server', 1)
+
+        host = Hosts.select(Hosts.computer_fqdn,Hosts.listening_address).where((Hosts.uuid==uuid) & (Hosts.listening_protocol == 'websockets')).first()
+        if host:
+            socketio.emit('trigger_update',request.args, room = host.listening_address)
+            result = request.args
+            msg = 'Install launched on %s' % host.computer_fqdn
+            return make_response(result,
+                                 msg=msg,
+                                 success=True)
+        else:
+            raise EWaptHostUnreachable('Host not connected, Websocket sid not in database')
+    except Exception as e:
+        return make_response_from_exception(e)
+
+
+@app.route('/api/v3/host_tasks_status')
+@requires_auth
+def host_tasks_status():
+    """Proxy the get tasks status action to the client"""
+    try:
+        uuid = request.args['uuid']
+        timeout = request.args.get('timeout',conf['client_tasks_timeout'])
+        start_time = time.time()
+        host_data = Hosts\
+                    .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt_status,
+                            Hosts.listening_address,
+                            Hosts.listening_port,
+                            Hosts.listening_protocol,
+                            Hosts.listening_timestamp,
+                             )\
+                    .where(Hosts.uuid==uuid)\
+                    .dicts()\
+                    .first(1)
+        if host_data:
+            result = []
+
+            def result_callback(data):
+                result.append(data)
+
+            socketio.emit('get_tasks_status',request.args, room = host_data['listening_address'],callback=result_callback)
+            #socketio.
+
+            print('waiting...')
+            wait_loop = timeout * 20
+            while not result:
+                wait_loop -=1
+                if wait_loop < 0:
+                    raise EWaptTimeoutWaitingForResult('Timeout, client did not send result within %s s'%timeout)
+                socketio.sleep(0.05)
+
+            msg = 'Tasks status for %s' % host_data['computer_fqdn']
+            return make_response(result[0],
+                                 msg=msg,
+                                 success=True,
+                                 request_time = time.time() - start_time,
+                                 )
+        else:
+            raise EWaptHostUnreachable('Host not connected, Websocket sid not in database')
+
+    except Exception as e:
+        return make_response_from_exception(e)
 
 @socketio.on('trigger_update_result')
 def on_trigger_update_result(result):
     """Return from update on client"""
     print('Trigger Update result : %s (uuid:%s)' %(result,request.args['uuid']))
-    # send to all waptconsole wtaching this host.
+    # send to all waptconsole warching this host.
     emit('trigger_update_result',result,room = request.args['uuid'])
 
 @socketio.on('trigger_upgrate_result')
@@ -1976,14 +1683,6 @@ def on_install_result(result):
     print('Trigger install result : %s (uuid:%s)' %(result,request.args['uuid']))
     emit('trigger_install_result',result,room = request.args['uuid'])
 
-@socketio.on('trigger_remove_result')
-def on_remove_result(result):
-    pass
-
-@socketio.on('trigger_forget_result')
-def on_forget_result(result):
-    pass
-
 @socketio.on('wapt_ping')
 def on_ping():
     emit('wapt_pong')
@@ -1992,7 +1691,8 @@ def on_ping():
 def on_waptclient_connect():
     uuid = request.args.get('uuid',None)
     print('Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
-    print Hosts.update(
+    # stores sid in database
+    Hosts.update(
         listening_timestamp=datetime2isodate(),
         listening_protocol='websockets',
         listening_address=request.sid,
@@ -2002,6 +1702,7 @@ def on_waptclient_connect():
 def on_waptclient_disconnect():
     uuid = request.args.get('uuid',None)
     print('Socket.IO disconnection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
+    # clear sid in database
     Hosts.update(
         listening_timestamp=datetime2isodate(),
         listening_protocol=None,

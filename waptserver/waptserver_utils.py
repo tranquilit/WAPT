@@ -49,6 +49,7 @@ __all__ = [
     'EWaptSignalReceived',
     'EWaptDatabaseError',
     'EWaptAuthenticationFailure',
+    'EWaptTimeoutWaitingForResult',
 ]
 
 utils_devel_mode = False
@@ -164,4 +165,7 @@ class EWaptDatabaseError(Exception):
     pass
 
 class EWaptAuthenticationFailure(Exception):
+    pass
+
+class EWaptTimeoutWaitingForResult(Exception):
     pass

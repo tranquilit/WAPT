@@ -36,7 +36,7 @@ import ConfigParser
 import tempfile
 
 _defaults = {
-    'client_tasks_timeout': 0.5,
+    'client_tasks_timeout': 1,
     'clients_connect_timeout': 5,
     'clients_read_timeout': 5,
     'loglevel': 'warning',

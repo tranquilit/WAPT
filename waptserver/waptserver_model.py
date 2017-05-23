@@ -354,8 +354,6 @@ def update_host_data(data):
                         eld insert
                       only keys in data are pushed to DB.
                         Other data (fields) are left untouched
-        signature (str) : check the supplied data with host certificate before updating the DB
-        signed_attributes (list):
     Returns:
         dict : with uuid,computer_fqdn,host_info from db after update
     """

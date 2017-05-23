@@ -2243,46 +2243,131 @@ def install_service():
 
 
 # Websocket stuff
+##### API V2 #####
+def make_response(result = {},success=True,error_code='',msg='',request_time=None):
+    data = dict(
+            success = success,
+            msg = msg,
+            )
+    if not success:
+        data['error_code'] = error_code
+    else:
+        data['result'] = result
+    data['request_time'] = request_time
+    return data
+
+def make_response_from_exception(exception,error_code=''):
+    """Return a dict for websocket result callback from exception
+        success : False
+        msg : message from exception
+        error_code : classname of exception if not provided
+   """
+    if not error_code:
+        error_code = type(exception).__name__.lower()
+    data = dict(
+            success = False,
+            error_code = error_code
+            )
+    data['msg'] = "%s" % repr(exception)
+    return data
+
+
 class WaptRemoteCalls(SocketIONamespace):
 
     def initialize(self):
         """Initialize custom variables here.
         You can override this method."""
-        print('New waptremotrcall created...')
+        print('New waptremotecall instance created...')
+        global task_manager
+        self.task_manager = task_manager
 
-    def on_trigger_update(self,args):
+    def on_trigger_update(self,args,result_callback=None):
         print('Update triggered by SocketIO')
         task = WaptUpdate()
         task.force = int(args.get('force','0')) != 0
         task.notify_user = int(args.get('notify_user','1')) != 0
         task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
-        global task_manager
-        data = task_manager.add_task(task).as_dict()
-        self.emit('trigger_update_result',data)
+        data = self.task_manager.add_task(task).as_dict()
+        if result_callback:
+            result_callback(make_response(data))
 
-    def on_trigger_upgrade(self,args):
+    def on_trigger_upgrade(self,args,result_callback=None):
         print('Update triggered by SocketIO')
         task = WaptUpgrade()
         task.force = int(args.get('force','0')) != 0
         task.notify_user = int(args.get('notify_user','1')) != 0
         task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
-        global task_manager
-        data = task_manager.add_task(task).as_dict()
-        self.emit('trigger_upgrade_result',data)
+        data = self.task_manager.add_task(task).as_dict()
+        if result_callback:
+            result_callback(make_response(data))
 
-    def on_open(self):
-        print('connected!')
-        super(SocketIONamespace, self).on_open()
+    def on_get_tasks_status(self,args,result_callback=None):
+        data = self.task_manager.tasks_status()
+        if result_callback:
+            result_callback(make_response(data))
 
-    def on_connect(self):
-        print('connected!')
-        super(SocketIONamespace, self).on_connect()
+    def on_trigger_install_packages(self,args,result_callback=None):
+        try:
+            packagenames = ensure_list(args['package'])
+            data = []
+            for packagename in packagenames:
+                task = WaptPackageInstall(packagename=packagename)
+                task.force = int(args.get('force','0')) != 0
+                task.notify_user = int(args.get('notify_user','1')) != 0
+                task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
+                data.append(self.task_manager.add_task(task).as_dict())
+            if result_callback:
+                result_callback(make_response(data))
+        except Exception as e:
+            if result_callback:
+                result_callback(make_response_from_exception(e))
 
-    def on_disconnect(self):
-        print('Client disconnected!')
+    def on_trigger_remove_packages(self,args,result_callback=None):
+        try:
+            packagenames = ensure_list(args['package'])
+            data = []
+            for packagename in packagenames:
+                task = WaptPackageRemove(packagename=packagename)
+                task.force = int(args.get('force','0')) != 0
+                task.notify_user = int(args.get('notify_user','1')) != 0
+                task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
+                data.append(self.task_manager.add_task(task).as_dict())
+            if result_callback:
+                result_callback(make_response(data))
+        except Exception as e:
+            if result_callback:
+                result_callback(make_response_from_exception(e))
+
+    def on_trigger_forget_packages(self,args,result_callback=None):
+        try:
+            packagenames = ensure_list(args['package'])
+            data = []
+            for packagename in packagenames:
+                task = WaptPackageForget(packagenames=packagename)
+                task.force = int(args.get('force','0')) != 0
+                task.notify_user = int(args.get('notify_user','1')) != 0
+                task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
+                data.append(self.task_manager.add_task(task).as_dict())
+            if result_callback:
+                result_callback(make_response(data))
+        except Exception as e:
+            if result_callback:
+                result_callback(make_response_from_exception(e))
+
+    def on_trigger_longtask(self,args,result_callback=None):
+        task = WaptLongTask()
+        task.force = int(args.get('force','0')) != 0
+        task.notify_user = int(args.get('notify_user','1')) != 0
+        task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
+        data = self.task_manager.add_task(task).as_dict()
+        if result_callback:
+            result_callback(make_response(data))
 
     def on_message(self,message):
         print('message : %s' % message)
+
+    def on_event(self,event,args):
+        print('event : %s, args: %s' % (event,args))
 
 
 if __name__ == "__main__":
