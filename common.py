@@ -2184,6 +2184,7 @@ class WaptLogger(object):
             self.old_stdout = sys.stdout
             self.old_stderr = sys.stderr
             sys.stderr = sys.stdout = self.install_output = LogInstallOutput(sys.stderr,self.wapt.waptdb,self.install_id)
+        return self
 
     def __exit__(self, type, value, tb):
         if self.wapt and self.package and self.install_id is not None:
@@ -2297,6 +2298,12 @@ class Wapt(object):
 
         import pythoncom
         pythoncom.CoInitialize()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, tb):
+        pass
 
     @property
     def private_key(self):
