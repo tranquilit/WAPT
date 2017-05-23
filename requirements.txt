@@ -50,9 +50,11 @@ requests==2.14.2
 requests-kerberos==0.11.0
 Rocket==1.2.4
 six==1.10.0
+socketio-client==0.7.2
 virtualenv==15.1.0
 wakeonlan==0.2.2
 Werkzeug==0.11.15
+websocket-client==0.40.0
 winkerberos==0.6.0
 winshell==0.6
 WMI==1.4.9
