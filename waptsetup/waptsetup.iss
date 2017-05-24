@@ -61,8 +61,8 @@ Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1
 [Run]
 ;Filename: "{app}\wapt-get.exe"; Parameters: "--direct enable-check-certificate"; Tasks: verify_server_certificate;  Flags: runhidden postinstall; StatusMsg: StatusMsg: {cm:EnableCheckCertificate}; Description: "{cm:EnableCheckCertificate}"
 ;Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Tasks: use_waptserver; Flags: runhidden postinstall; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Flags: runhidden postinstall; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden postinstall; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Flags: runasoriginaluser runhidden postinstall; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runasoriginaluser runhidden postinstall; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
 ;Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: {cm:UpdatePkgUponShutdown}; Description: "{cm:UpdatePkgUponShutdown}"
 Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhidden; StatusMsg: {cm:UpdatePkgUponShutdown}; Description: "{cm:UpdatePkgUponShutdown}"
 
