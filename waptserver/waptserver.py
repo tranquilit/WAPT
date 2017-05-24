@@ -796,32 +796,29 @@ def ping():
     )
 
 
-@app.route('/api/v1/trigger_reachable_discovery',methods=['GET','POST'])
+@app.route('/api/v3/reset_hosts_sid',methods=['GET','POST'])
 @requires_auth
-def trigger_reachable_discovery():
+def reset_hosts_sid():
     """Launch a separate thread to check all reachable IP and update database with results.
     """
     try:
         # in case a POST is issued with a selection of uuids to scan.
         uuids = request.json.get('uuids',None) or None
         if uuids is not None:
-            message = _(u'Hosts scan launched for %s host(s)' % len(uuids))
+            message = _(u'Hosts connection reset launched for %s host(s)' % len(uuids))
         else:
-            message = _(u'Hosts scan launched for all hosts')
+            message = _(u'Hosts connection reset launched for all hosts')
 
-        if uuids:
-            where_clause = Hosts.uuid.in_(self.uuids)
-        else:
-            # slect only computer with connected ips or all ?
-            where_clause = None
+        def target(uuids):
+            logger.debug('Reset wsocket.io SID and timestamps of hosts')
+            if uuids:
+                where_clause = Hosts.uuid.in_(uuids)
+            else:
+                where_clause = None
+            Hosts.update(listening_timestamp=None,listening_protocol=None).where(where_clause).execute()
+            emit('ping')
 
-        query = Hosts.select(*fields)
-        if where_clause:
-            query = query.where(where_clause)
-
-        logger.debug('Reset listening status timestamps of hosts')
-        Hosts.update(listening_timestamp=None,listening_protocol=None).where(where_clause).execute()
-        emit('ping')
+        socketio.start_background_task(target=target,uuids=uuids)
 
     except Exception as e:
         return make_response_from_exception(e)
