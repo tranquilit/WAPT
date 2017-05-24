@@ -43,6 +43,7 @@ type
     FCountDown: Integer;
     procedure SetCountDown(AValue: Integer);
     { private declarations }
+    function  allow_cancel_upgrade:Boolean;
   public
     { public declarations }
     upgrades,tasks,running,pending : ISuperObject;
@@ -59,8 +60,12 @@ uses soutils,IniFiles,waptcommon,uScaleDPI;
 
 { TVisWaptExit }
 
-const
-  allow_cancel_upgrade:Boolean = True;
+const FAllow_cancel_upgrade:Boolean = True;
+
+function  TVisWaptExit.allow_cancel_upgrade:Boolean;
+begin
+  Result := FAllow_cancel_upgrade and ((running=Nil) or (Running.datatype=stNull));
+end;
 
 function GetWaptLocalURL: String;
 begin
@@ -133,7 +138,7 @@ begin
   //Load config
   ini := TIniFile.Create(WaptIniFilename);
   try
-    allow_cancel_upgrade := ini.ReadBool('global','allow_cancel_upgrade',allow_cancel_upgrade);
+    Fallow_cancel_upgrade := ini.ReadBool('global','allow_cancel_upgrade',allow_cancel_upgrade);
   finally
     ini.Free;
   end;

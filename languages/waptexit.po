@@ -1,5 +1,8 @@
-msgid "Do you wish to apply them now ?Don't shutdown you computer !Don't shutdown you computer !"
+msgid "Do you wish to apply them now ?Don't shutdown you computer !Don't shutdown you computer !Don't shutdown your computer !"
 msgstr "Content-Type: text/plain; charset=UTF-8"
+
+msgid "Don't shutdown your computer !"
+msgstr ""
 
 #: tviswaptexit.actshowdetails.caption
 msgid "Show details"

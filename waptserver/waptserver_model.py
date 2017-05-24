@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.3.1"
+__version__ = "1.4.3.2"
 
 import os
 import sys
@@ -192,8 +192,8 @@ class HostPackagesStatus(BaseModel):
 class HostSoftwares(BaseModel):
     host = ForeignKeyField(Hosts,on_delete='CASCADE',on_update='CASCADE')
     name = CharField(max_length=2000,null=True,index=True)
-    version = CharField(null=True)
-    publisher = CharField(null=True)
+    version = CharField(max_length=1000,null=True)
+    publisher = CharField(max_length=2000,null=True)
     key = CharField(max_length=600,null=True)
     system_component = CharField(null=True)
     uninstall_string = CharField(max_length=2000,null=True)
@@ -289,6 +289,13 @@ def set_host_field(host,fieldname,data):
         else:
             setattr(host,fieldname,data)
     else:
+        # awfull hack for data containing null char, not accepted by postgresql.
+        if fieldname in ('host_info','wmi','dmi'):
+            jsonrepr = json.dumps(data)
+            if '\u0000' in jsonrepr:
+                logger.warning('Workaround \\u0000 not handled by postgresql json for host %s field %s' % (getattr(host,'uuid','???'),fieldname))
+                data = json.loads(jsonrepr.replace('\u0000',' '))
+
         setattr(host,fieldname,data)
     return host
 
@@ -489,6 +496,8 @@ def init_db(drop=False):
         for table in reversed([ServerAttribs,Hosts,HostPackagesStatus,HostSoftwares,HostJsonRaw,HostWsus]):
             table.drop_table(fail_silently=True)
     wapt_db.create_tables([ServerAttribs,Hosts,HostPackagesStatus,HostSoftwares,HostJsonRaw,HostWsus],safe=True)
+    if drop:
+        ServerAttribs.set_value('db_version',__version__)
 
 def get_db_version():
     if not 'serverattribs' in wapt_db.get_tables():

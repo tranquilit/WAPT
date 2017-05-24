@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.3"
+__version__ = "1.4.3.2"
 
 import os
 import re
@@ -149,10 +149,10 @@ def create_self_signed_key(orgname,
     codecs.open(opensslcfg_fn,'w',encoding='utf8').write(opensslcfg)
     os.environ['OPENSSL_CONF'] =  opensslcfg_fn.encode('utf8')
     if not os.path.isfile(destpem):
-        out = setuphelpers.run((u'%(opensslbin)s req -x509 -utf8  -nodes -days 3650 -sha256 -newkey rsa:2048 -keyout "%(destpem)s" -out "%(destcrt)s"' %
+        out = setuphelpers.run((u'"%(opensslbin)s" req -x509 -utf8  -nodes -days 3650 -sha256 -newkey rsa:2048 -keyout "%(destpem)s" -out "%(destcrt)s"' %
             {u'opensslbin':opensslbin,u'orgname':orgname,u'destcrt':destcrt,u'destpem':destpem}))
     else:
-        out = setuphelpers.run(u'%(opensslbin)s req -key "%(destpem)s" -utf8 -new -x509 -days 3650 -sha256 -out "%(destcrt)s"' %
+        out = setuphelpers.run(u'"%(opensslbin)s" req -key "%(destpem)s" -utf8 -new -x509 -days 3650 -sha256 -out "%(destcrt)s"' %
             {u'opensslbin':opensslbin,u'orgname':orgname,u'destcrt':destcrt,u'destpem':destpem})
     os.unlink(opensslcfg_fn)
     return {'pem_filename':destpem,'crt_filename':destcrt}
@@ -3754,6 +3754,8 @@ class Wapt(object):
 
             for (request,p) in to_install:
                 try:
+                    if not os.path.isfile(full_fname(p.filename)):
+                        raise EWaptDownloadError('Package file %s not downloaded properly.' % p.filename)
                     print(u"Installing %s" % (p.package,))
                     result = self.install_wapt(full_fname(p.filename),
                         params_dict = params_dict,
@@ -4172,6 +4174,10 @@ class Wapt(object):
     def register_computer(self,description=None):
         """Send computer informations to WAPT Server
             if description is provided, updates local registry with new description
+
+        Returns:
+            dict: response from server.
+
         >>> wapt = Wapt()
         >>> s = wapt.register_computer()
         >>>
@@ -4183,7 +4189,9 @@ class Wapt(object):
             except Exception as e:
                 logger.critical(u'Unable to change computer description to %s: %s' % (description,e))
 
+        # force regenerating uuid
         self.delete_param('uuid')
+
         inv = self.inventory()
         inv['uuid'] = self.host_uuid
         inv['host_certificate'] = self.create_or_update_host_certificate()
@@ -4195,8 +4203,11 @@ class Wapt(object):
                 signer = self.get_host_certificate().cn
                 )
         else:
-            return jsondump(inv,indent=True)
-
+            return dict(
+                success = False,
+                msg = u'No WAPT server defined',
+                data = data,
+                )
 
     def get_host_key_filename(self):
         # check ACL.
@@ -4509,6 +4520,7 @@ class Wapt(object):
         try:
             inv['wmi'] = setuphelpers.wmi_info()
         except:
+            inv['wmi'] = None
             logger.warning('WMI unavailable')
         inv['wapt_status'] = self.wapt_status()
         inv['installed_softwares'] = setuphelpers.installed_softwares('')

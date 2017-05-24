@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.3"
+__version__ = "1.4.3.2"
 
 import codecs
 import getpass
@@ -937,7 +937,11 @@ def main():
                         jsonresult['result'] = result
                     else:
                         logger.debug(u"Registering host info against server: %s", result)
-                        print(u"Host correctly registered against server %s." % (mywapt.waptserver.server_url,))
+                        if not result['success']:
+                            print(u"Error when registering host against server %s: %s" % (mywapt.waptserver.server_url,result['msg']))
+                            sys.exit(1)
+                        else:
+                            print(u"Host correctly registered against server %s." % (mywapt.waptserver.server_url,))
                 else:
                     print(u"No waptserver defined. Register unavailable")
                     sys.exit(1)
@@ -993,7 +997,7 @@ def main():
                         else:
                             logger.debug(u"Inventory sent to server: %s", result)
                             if result['success']:
-                                print(u"Inventory correctly sent to server %s." % (mywapt.waptserver.server_url,))
+                                print(u"Updated host status correctly sent to server %s." % (mywapt.waptserver.server_url,))
                             else:
                                 print(u"Failed to send inventory to server %s: %s" % (mywapt.waptserver.server_url,result['msg']))
 

@@ -46,7 +46,7 @@ python-socketio==1.6.3
 pytz==2016.10
 pywin32==220
 pyzmq==16.0.2
-requests==2.13.0
+requests==2.14.2
 requests-kerberos==0.11.0
 Rocket==1.2.4
 six==1.10.0

@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.3.1"
+__version__ = "1.4.3.2"
 
 __all__ = \
 ['CalledProcessError',
@@ -136,6 +136,7 @@ __all__ = \
  'need_install',
  'os',
  'params',
+ 'pending_reboot_reasons',
  'programfiles',
  'programfiles32',
  'programfiles64',
@@ -2523,7 +2524,6 @@ def set_computer_description(description):
     for win32_os in wmi.WMI().Win32_OperatingSystem():
         win32_os.Description = description
 
-
 def critical_system_pending_updates():
     """Return list of not installed critical updates
 
@@ -2536,6 +2536,25 @@ def critical_system_pending_updates():
     updateSearcher = updateSession.CreateupdateSearcher()
     searchResult = updateSearcher.Search("IsInstalled=0 and Type='Software'")
     return [ update.Title for update in searchResult.Updates if update.MsrcSeverity == 'Critical']
+
+def pending_reboot_reasons():
+    """Return the list of reasons requiring a pending reboot the computer
+        If list is empty, no reboot is needed.
+
+    Returns:
+        list : list of Windows Update, CBS Updates or File Renames
+    """
+    result = []
+    reboot_required = registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update','RebootRequired',0)
+    if reboot_required:
+        result.append('Windows Update: %s' % reboot_required)
+    reboot_pending = registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing','RebootPending',0)
+    if reboot_pending:
+        result.append('CBS Updates: %s' % reboot_pending)
+    renames_pending = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager','PendingFileRenameOperations',None)
+    if renames_pending:
+        result.append('File renames: %s' % renames_pending)
+    return result
 
 
 def get_default_gateways():

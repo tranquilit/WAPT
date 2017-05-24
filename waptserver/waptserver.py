@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.3.1"
+__version__ = "1.4.3.2"
 
 import os
 import sys
@@ -50,6 +50,7 @@ from waptserver_model import Hosts,HostSoftwares,HostPackagesStatus,ServerAttrib
 from werkzeug.utils import secure_filename
 from functools import wraps
 import logging
+import logging.handlers
 import ConfigParser
 import codecs
 import base64
@@ -356,11 +357,6 @@ def update_host():
             raw_data = zlib.decompress(request.data)
         else:
             raw_data = request.data
-
-        # problem with \u0000 utf8 char and postgresql json fields...
-        if '\u0000' in raw_data:
-            logger.warning('Workaround \\u0000 not handled by postgresql json for %s')
-            raw_data = raw_data.replace('\u0000',' ')
 
         data = json.loads(raw_data)
 
@@ -1439,11 +1435,14 @@ def build_hosts_filter(model,filter_expr):
                 else:
                     clause = model._meta.fields[fn].regexp(ur'(?i)%s' % search_expr)
             # else ignored...
+            else:
+                clause = None
 
             if result is None:
                 result = clause
             else:
-                result = result | clause
+                if clause is not None:
+                    result = result | clause
         if not_filter:
             result = ~result
         return result
@@ -1688,24 +1687,24 @@ def get_hosts():
 
         if 'uuid' in request.args:
             if len(result) == 0:
-                msg = 'No data found for uuid {}'.format(request.args['uuid'])
+                msg = u'No data found for uuid {}'.format(request.args['uuid'])
             else:
-                msg = 'host data fields {} returned for uuid {}'.format(
-                    ','.join(columns),
+                msg = u'host data fields {} returned for uuid {}'.format(
+                    u','.join(columns),
                     request.args['uuid'])
         elif 'filter' in request.args:
             if len(result) == 0:
-                msg = 'No data found for filter {}'.format(
+                msg = u'No data found for filter {}'.format(
                     request.args['filter'])
             else:
-                msg = '{} hosts returned for filter {}'.format(
+                msg = u'{} hosts returned for filter {}'.format(
                     len(result),
                     request.args['filter'])
         else:
             if len(result) == 0:
-                msg = 'No data found'
+                msg = u'No data found'
             else:
-                msg = '{} hosts returned'.format(len(result))
+                msg = u'{} hosts returned'.format(len(result))
 
     except Exception as e:
         return make_response_from_exception(e)
