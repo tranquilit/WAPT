@@ -1,4 +1,4 @@
-msgid "Don't shutdown your computer !"
+msgid "Don't shutdown your computer !Don't shutdown your computer !"
 msgstr ""
 "PO-Revision-Date: 2015-02-10 17:27+0200\n"
 "Last-Translator: mcadorel-adm <ss>\n"
