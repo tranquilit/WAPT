@@ -252,7 +252,7 @@ begin
         Result := PackageEdited;
         if (result<>Nil) and ApplyUpdatesImmediately and (uuid<>'')  then
         begin
-          res := WAPTServerJsonGet('api/v1/trigger_upgrade?uuid=%s',[uuid]);
+          res := WAPTServerJsonGet('api/v3/trigger_upgrade?uuid=%s',[uuid]);
           if res.B['success']  then
             ShowMessage(rsUpgradingHost)
           else
