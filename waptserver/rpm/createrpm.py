@@ -105,6 +105,8 @@ if os.path.exists('builddir'):
     shutil.rmtree('builddir')
 
 mkdir_p("builddir/opt/wapt/lib")
+mkdir_p("builddir/opt/wapt/conf")
+mkdir_p("builddir/opt/wapt/log")
 mkdir_p("builddir/opt/wapt/lib/site-packages")
 
 # we use pip and virtualenv to get the wapt dependencies. virtualenv usage here is a bit awkward, it can probably be improved. For instance, it install a outdated version of pip that cannot install Rocket dependencies...
@@ -125,9 +127,6 @@ rsync('./pylibs/lib/', './builddir/opt/wapt/lib/')
 print('copying the waptserver files', file=sys.stderr)
 rsync(source_dir, './builddir/opt/wapt/',
       excludes=['postconf', 'mongod.exe', 'bin', 'include'])
-for lib in ('requests', 'iniparse', 'dns', 'pefile.py', 'rocket', 'flask', 'werkzeug', 'jinja2', 'itsdangerous.py', 'markupsafe', 'dialog.py', 'babel', 'flask_babel', 'huey', 'wakeonlan'):
-    rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),
-          './builddir/opt/wapt/lib/site-packages/')
 
 print("copying the startup script /etc/init.d/waptserver", file=sys.stderr)
 try:
