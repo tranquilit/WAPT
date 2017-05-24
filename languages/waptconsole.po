@@ -39,10 +39,15 @@ msgid "Old password :"
 msgstr ""
 
 #: tviscreatekey.caption
-msgid "Generate private key and self-signed certificate"
+msgid "Generate private key and self signed certificate"
+msgstr ""
+
+#: tviscreatekey.cbcodesigning.caption
+msgid "Is code signing certificate (package development)"
 msgstr ""
 
 #: tviscreatekey.edcommonname.hint
+msgctxt "tviscreatekey.edcommonname.hint"
 msgid "This information will be used as Signer identification in packages"
 msgstr ""
 
@@ -54,6 +59,15 @@ msgstr ""
 msgid "E.g. : technique@tranquil-it-systems.fr"
 msgstr ""
 
+#: tviscreatekey.edkeypassword.hint
+msgid "Used to decrypt or encrypt private jkey"
+msgstr ""
+
+#: tviscreatekey.edkeypassword2.hint
+msgctxt "TVISCREATEKEY.EDKEYPASSWORD2.HINT"
+msgid "This information will be used as Signer identification in packages"
+msgstr ""
+
 #: tviscreatekey.edlocality.hint
 msgid "E.g. : Nantes"
 msgstr ""
@@ -62,16 +76,12 @@ msgstr ""
 msgid "E.g. : Tranquil It Systems"
 msgstr ""
 
-#: tviscreatekey.edorgname.hint
-msgid "e.g. : tranquilit"
-msgstr ""
-
 #: tviscreatekey.edunit.hint
 msgid "E.g. : IT"
 msgstr ""
 
 #: tviscreatekey.label1.caption
-msgid "Target directory:"
+msgid "Target keys directory:"
 msgstr ""
 
 #: tviscreatekey.label1.hint
@@ -118,8 +128,16 @@ msgstr ""
 msgid "Technical department e-mail address."
 msgstr ""
 
+#: tviscreatekey.label17.caption
+msgid "Private key password"
+msgstr ""
+
+#: tviscreatekey.label19.caption
+msgid "Confirm password"
+msgstr ""
+
 #: tviscreatekey.label9.caption
-msgid "Key name :"
+msgid "Key filename :"
 msgstr ""
 
 #: tviscreatekey.label9.hint
