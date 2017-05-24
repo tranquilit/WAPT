@@ -1,4 +1,4 @@
-msgid "Do you wish to apply them now ?Don't shutdown your computer !"
+msgid "Do you wish to apply them now ?Don't shutdown your computer !Don't shutdown your computer !"
 msgstr ""
 "PO-Revision-Date: 2015-09-09 09:52+0200\n"
 "Last-Translator: Jessica <jgreulich@tranquil.it>\n"
