@@ -2463,11 +2463,15 @@ if __name__ == "__main__":
 
     if waptconfig.waptserver:
         waptserver_url = urlparse(waptconfig.waptserver.server_url)
-        if waptserver_url.port is None and waptserver_url.scheme == 'https':
-            ws_port = 443
-            ws_host = 'https://'+waptserver_url.hostname
+        if waptserver_url.port is None:
+            if waptserver_url.scheme == 'https':
+                ws_port = 443
+                ws_host = 'https://'+waptserver_url.hostname
+            else:
+                ws_port = 80
+                ws_host = waptserver_url.hostname
         else:
-            ws_port = 80
+            ws_port = waptserver_url.port
             ws_host = waptserver_url.hostname
 
         ## TODO : recreate thread if waptserver attribute in wapt-get.ini config file is changed
