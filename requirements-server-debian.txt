@@ -23,3 +23,4 @@ netifaces==0.10.4
 python-engineio==1.1.2
 python-socketio==1.6.3
 Flask-SocketIO==2.8.2
+eventlet==0.21.0

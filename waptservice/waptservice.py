@@ -1579,7 +1579,7 @@ class WaptUpgrade(WaptTask):
         self.summary = u"\n".join(s)
 
     def __unicode__(self):
-        return __(u'Update packages installed on host')
+        return __(u'Upgrade packages installed on host')
 
 
 class WaptUpdateServerStatus(WaptTask):
