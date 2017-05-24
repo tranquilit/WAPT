@@ -3030,7 +3030,7 @@ begin
     if (uuids<>Nil) and (uuids.AsArray.Length > 1) then
       params['uuids'] := uuids;
 
-    res := WAPTServerJsonPost('api/v1/trigger_reachable_discovery?',[],params);
+    res := WAPTServerJsonPost('api/v3/reset_hosts_sid?',[],params);
     if res.B['success'] then
       ShowMessageFmt('%s',[res.S['msg']])
     else

@@ -382,23 +382,16 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'mac_addresses'
           end        
           item
+            MaxWidth = 400
             Position = 11
             Tag = 11
-            Text = 'Listening IP'
-            Width = 75
-            PropertyName = 'listening_address'
-          end        
-          item
-            MaxWidth = 400
-            Position = 12
-            Tag = 12
             Text = 'IP addresses'
             Width = 100
             PropertyName = 'connected_ips'
           end        
           item
-            Position = 13
-            Tag = 13
+            Position = 12
+            Tag = 12
             Text = 'WAPT version'
             Width = 80
             PropertyName = 'wapt_status.wapt-exe-version'
@@ -406,8 +399,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 14
-            Tag = 14
+            Position = 13
+            Tag = 13
             Text = 'uuid'
             Width = 100
             PropertyName = 'uuid'
@@ -415,8 +408,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 15
-            Tag = 16
+            Position = 14
+            Tag = 14
             Text = 'purchase_order'
             Width = 100
             PropertyName = 'purchase_order'
@@ -424,8 +417,8 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 16
-            Tag = 17
+            Position = 15
+            Tag = 15
             Text = 'purchase_date'
             Width = 100
             PropertyName = 'purchase_date'
@@ -433,38 +426,45 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 17
-            Tag = 18
+            Position = 16
+            Tag = 16
             Text = 'attributes'
             Width = 100
             PropertyName = 'attributes'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 18
-            Tag = 19
+            Position = 17
+            Tag = 17
             Text = 'Domain controller'
             PropertyName = 'host_info/domain_controller'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 19
-            Tag = 20
+            Position = 18
+            Tag = 18
             Text = 'Groups'
             Width = 64
             PropertyName = 'depends'
           end        
           item
-            Position = 20
-            Tag = 21
+            Position = 19
+            Tag = 19
             Text = 'Domaine'
             Width = 80
             PropertyName = 'host_info/domain_name'
           end        
           item
+            Position = 20
+            Tag = 20
+            Text = 'Listening address'
+            Width = 75
+            PropertyName = 'listening_address'
+          end        
+          item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 21
-            Tag = 22
+            Tag = 21
             Text = 'Domain controller address'
             PropertyName = 'host_info/domain_controller_address'
           end>
@@ -497,9 +497,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 462
         Top = 103
         Width = 572
-        ActivePage = pgTasks
+        ActivePage = pgPackages
         Align = alRight
-        TabIndex = 4
+        TabIndex = 0
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -1270,7 +1270,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgTasks: TTabSheet
           Caption = 'Tasks'
-          ClientHeight = 436
+          ClientHeight = 692
           ClientWidth = 564
           object HostTaskRunningProgress: TProgressBar
             Left = 4
@@ -1344,14 +1344,14 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 381
+            Top = 637
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
           end
           object PageControl1: TPageControl
             Left = 0
-            Height = 279
+            Height = 535
             Top = 102
             Width = 564
             ActivePage = TabSheet1
@@ -1361,11 +1361,11 @@ object VisWaptGUI: TVisWaptGUI
             TabOrder = 3
             object TabSheet1: TTabSheet
               Caption = 'Pending'
-              ClientHeight = 253
+              ClientHeight = 509
               ClientWidth = 556
               object GridHostTasksPending: TSOGrid
                 Left = 0
-                Height = 251
+                Height = 507
                 Top = 2
                 Width = 556
                 Align = alClient
@@ -1771,7 +1771,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel6: TPanel
             Left = 0
             Height = 50
-            Top = 386
+            Top = 642
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
