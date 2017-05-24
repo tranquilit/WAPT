@@ -15,8 +15,12 @@ type
   TVisCreateKey = class(TForm)
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
+    CBCodeSigning: TCheckBox;
     DirectoryCert: TDirectoryEdit;
     edCommonName: TEdit;
+    edCertBaseName: TEdit;
+    EdKeyPassword: TEdit;
+    EdKeypassword2: TEdit;
     edCountry: TEdit;
     edEmail: TEdit;
     edUnit: TEdit;
@@ -30,6 +34,9 @@ type
     Label14: TLabel;
     Label15: TLabel;
     Label16: TLabel;
+    Label17: TLabel;
+    Label18: TLabel;
+    Label19: TLabel;
     Label9: TLabel;
     Panel1: TPanel;
     Panel2: TPanel;
@@ -45,6 +52,7 @@ type
     { private declarations }
   public
     { public declarations }
+    procedure MakeCertName;
   end;
 
 var
@@ -59,11 +67,7 @@ uses
 { TVisCreateKey }
 
 procedure TVisCreateKey.FormCloseQuery(Sender: TObject; var CanClose: boolean);
-var
-  certFile:String;
 begin
-  certFile := AppendPathDelim(DirectoryCert.Text)+ExtractFileNameOnly(EdKeyFileName.Text)+'.crt';
-
   if (ModalResult=mrOk) then
   begin
     if Trim(edCommonName.Text) = ''then
@@ -100,6 +104,17 @@ begin
   // use file basename as CommonName
   else if edCommonName.text='' then
     edCommonName.Text:=ExtractFileNameOnly(crtfn);
+end;
+
+procedure TVisCreateKey.MakeCertName;
+var
+  certFile:String;
+begin
+  if edCertBaseName.Text
+  certFile := AppendPathDelim(DirectoryCert.Text)+ExtractFileNameOnly(EdKeyFileName.Text)+'.crt';
+  if FileExists(certFile) then
+    certFile := AppendPathDelim(DirectoryCert.Text)+ExtractFileNameOnly(EdKeyFileName.Text)+'-'+FormatDateTime('yyyymmdd-hhnnss',Date)+'.crt';
+
 end;
 
 procedure TVisCreateKey.EdKeyFilenameAcceptFileName(Sender: TObject;

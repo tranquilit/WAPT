@@ -1386,7 +1386,9 @@ begin
               edOrganization.Text,
               edUnit.Text,
               edCommonName.Text,
-              edEmail.Text);
+              edEmail.Text,
+              EdKeyPassword.Text,
+              CBCodeSigning.Checked);
 
             done := FileExists(certFile);
             if done then
@@ -3743,7 +3745,9 @@ begin
       if (status <> nil) then
       begin
         ImageList := ImageList1;
-        if status.AsString = 'ERROR' then
+        if status.AsString = 'RUNNING' then
+          ImageIndex := 6
+        else if status.AsString = 'ERROR' then
           ImageIndex := 2
         else if status.AsString = 'TO-UPGRADE' then
           ImageIndex := 1

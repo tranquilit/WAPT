@@ -89,7 +89,9 @@ interface
           organization,
           orgunit,
           commonname,
-          email:Utf8String
+          email,
+          keypassword:Utf8String;
+          codesigning:Boolean
       ):Utf8String;
 
   function WAPTServerJsonMultipartFilePost(waptserver,action: String;args:Array of const;
@@ -1296,11 +1298,14 @@ function CreateSelfSignedCert(keyfilename,
         organization,
         orgunit,
         commonname,
-        email:Utf8String
+        email,
+        keypassword:Utf8String;
+        codesigning:Boolean
     ):Utf8String;
 var
   opensslbin,opensslcfg,opensslcfg_fn,destpem,destcrt,destp12 : Utf8String;
   params : ISuperObject;
+  returnCode:integer;
 begin
   result := '';
   if FileExists(keyfilename) then
@@ -1327,6 +1332,10 @@ begin
   params.S['unit'] := UTF8Decode(orgunit);
   params.S['commonname'] := UTF8Decode(commonname);
   params.S['email'] := UTF8Decode(email);
+  if codesigning then
+    params.S['req_extensions'] := 'v3_ca_codesign_reqext'
+  else
+    params.S['req_extensions'] := 'v3_ca';
 
   opensslbin :=  AppendPathDelim(wapt_base_dir)+'lib\site-packages\M2Crypto\openssl.exe';
   opensslcfg :=  pyformat(FileToString(AppendPathDelim(wapt_base_dir) + 'templates\openssl_template.cfg'),params);
@@ -1334,21 +1343,25 @@ begin
   StringToFile(opensslcfg_fn,opensslcfg);
   try
     SetEnvironmentVariable('OPENSSL_CONF', PChar(opensslcfg_fn));
-    // If private key  already exist, just recreate a self signed certificate
+
+    // Create private key  if not already exist
     if not FileExists(destpem) then
     begin
-      if ExecuteProcess(opensslbin,'req -utf8 -x509 -nodes -days 3650 -newkey rsa:2048 -sha256 -keyout "'+destpem+'" -out "'+destcrt+'"',[]) = 0 then
-        result := destcrt;
-    end
-    else
-    begin
-      if ExecuteProcess(opensslbin,'req -utf8 -key "'+destpem+'" -new -x509 -days 3650 -sha256 -out "'+destcrt+'"',[]) = 0 then
-        result := destcrt;
+      if keypassword<>'' then
+        returnCode := ExecuteProcess(opensslbin,'genrsa -aes128 -passout pass:"'+keypassword+'" -out "'+destpem+'" 2048',[])
+      else
+        returnCode := ExecuteProcess(opensslbin,'genrsa -nodes -out "'+destpem+'" 2048',[]);
+        //returnCode := ExecuteProcess(opensslbin,'req -utf8 -x509 -nodes -days 3650 -newkey rsa:2048 -sha256 -keyout "'+destpem+'" -out "'+destcrt+'"',[]);
     end;
+
+    returnCode := ExecuteProcess(opensslbin,'req -utf8 -passin pass:"'+keypassword+'" -key "'+destpem+'" -new -x509 -days 3650 -sha256 -out "'+destcrt+'"',[]);
+
+    if returnCode= 0 then
+      result := destcrt;
 
     // create a .pfx .p12 for ms signtool
     if FileExists(destpem) and FileExists(destcrt) then
-      if ExecuteProcess(opensslbin,'pkcs12 -export -inkey "'+destpem+'" -in "'+destcrt+'" -out "'+destp12+'" -name "'+ commonname+'" -passout pass:',[]) <> 0 then
+      if ExecuteProcess(opensslbin,'pkcs12 -export -inkey "'+destpem+'" -in "'+destcrt+'" -out "'+destp12+'" -name "'+ commonname+'" -passin pass:"'+keypassword+'" -passout pass:'+keypassword,[]) <> 0 then
         raise Exception.Create('Unable to create p12 file for signtool');
 
   finally
