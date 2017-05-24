@@ -1915,7 +1915,7 @@ class WaptTaskManager(threading.Thread):
                 if result and result['success'] and result['result']['uuid']:
                     self.last_update_server_date = datetime.datetime.now()
                 elif result and not result['success']:
-                        logger.critical('Unable to update server status: %s' % result['msd'])
+                    logger.critical('Unable to update server status: %s' % result['msg'])
                 else:
                     raise Exception('No answer')
             except Exception as e:
@@ -2470,6 +2470,7 @@ if __name__ == "__main__":
             ws_port = 80
             ws_host = waptserver_url.hostname
 
+        ## TODO : recreate thread if waptserver attribute in wapt-get.ini config file is changed
         def run_socketio():
             while True:
                 try:
