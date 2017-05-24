@@ -1,0 +1,14 @@
+[Unit]
+Description=Wapt Server
+After=network.target
+
+[Service]
+User=wapt
+Group=www-data
+WorkingDirectory=/opt/wapt
+ExecStart=/usr/bin/python /opt/wapt/waptserver/waptserver.py
+Restart=on-failure
+
+
+[Install]
+WantedBy=multi-user.target
