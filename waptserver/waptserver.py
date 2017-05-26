@@ -22,11 +22,6 @@
 # -----------------------------------------------------------------------
 __version__ = "1.5.0.0"
 
-# monkeypatching for eventlet greenthreads
-from eventlet import monkey_patch
-monkey_patch()
-
-#
 import os
 import sys
 try:
@@ -40,6 +35,10 @@ except:
 sys.path.insert(0, os.path.join(wapt_root_dir))
 sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
 sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
+
+# monkeypatching for eventlet greenthreads
+from eventlet import monkey_patch
+monkey_patch()
 
 from flask import request, Flask, Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
 from flask_socketio import SocketIO, disconnect, send, emit
