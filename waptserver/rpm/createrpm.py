@@ -50,7 +50,7 @@ def replaceAll(file, searchExp, replaceExp):
 
 
 def rsync(src, dst, excludes=[]):
-    rsync_option = " --exclude 'postconf' --exclude 'mongodb' --exclude 'rpm' --exclude '*.pyc' --exclude '*.pyo' --exclude '.svn' --exclude 'apache-win32' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -aP"
+    rsync_option = " --exclude 'postconf' --exclude 'mongodb' --exclude 'rpm' --exclude '*.pyc' --exclude '*.pyo' --exclude '.svn' --exclude 'apache-win32' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -a --stats"
     if excludes:
         rsync_option = rsync_option + \
             ' '.join(" --exclude '%s'" % x for x in excludes)
