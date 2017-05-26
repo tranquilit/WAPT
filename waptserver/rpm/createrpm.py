@@ -128,23 +128,12 @@ print('copying the waptserver files', file=sys.stderr)
 rsync(source_dir, './builddir/opt/wapt/',
       excludes=['postconf', 'mongod.exe', 'bin', 'include'])
 
-print("copying the startup script /etc/init.d/waptserver", file=sys.stderr)
+print("copying systemd startup script", file=sys.stderr)
+relative_dest_dir = '/usr/lib/systemd/system/'
+build_dest_dir = os.path.join('./builddir/',relative_dest_dir)
 try:
-    mkdir_p('./builddir/etc/init.d/')
-    if platform.dist()[0] in ('debian', 'ubuntu'):
-        copyfile('../scripts/waptserver-init',
-                 './builddir/etc/init.d/waptserver')
-    elif platform.dist()[0] in ('centos', 'redhat', 'fedora'):
-        copyfile('../scripts/waptserver-init-centos',
-                 './builddir/etc/init.d/waptserver')
-    else:
-        print("unsupported distrib")
-        sys.exit(1)
-
-    subprocess.check_output(
-        'chmod 755 ./builddir/etc/init.d/waptserver', shell=True)
-    subprocess.check_output(
-        'chown root:root ./builddir/etc/init.d/waptserver', shell=True)
+    mkdir_p(build_dest_dir)
+    copyfile('../scripts/waptserver.service', os.path.join(build_dest_dir,'waptserver.service'))
 except Exception as e:
     print (sys.stderr, 'error: \n%s' % e, file=sys.stderr)
     exit(1)

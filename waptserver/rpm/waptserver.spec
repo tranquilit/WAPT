@@ -2,7 +2,7 @@
 %define buildroot ./builddir
 
 Name:	tis-waptserver
-Version:	1.4.3
+Version:	%{_version}
 Release:	1%{?dist}
 Summary:	WAPT Server
 BuildArch:	x86_64
@@ -13,7 +13,7 @@ URL:		https://wapt.fr
 Source0:	./waptserver/
 Prefix:		/opt
 
-Requires:  httpd mod_ssl dialog uwsgi-plugin-python uwsgi pytz m2crypto python-passlib python-netifaces python-urllib3 cabextract python-requests python-flask python-psutil python-psycopg2
+Requires:  httpd mod_ssl dialog uwsgi-plugin-python pytz m2crypto python-passlib python-netifaces python-urllib3 cabextract python-requests python-flask python-psutil python-psycopg2
 
 # Turn off the brp-python-bytecompile script
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
@@ -31,7 +31,7 @@ mkdir -p %{buildroot}/opt/wapt/waptserver
 mkdir -p %{buildroot}/opt/wapt/waptserver/scripts
 ln -sf ../conf/waptserver.ini %{buildroot}/opt/wapt/waptserver/waptserver.ini
 
-mkdir -p %{buildroot}/etc/init.d/
+mkdir -p %{buildroot}/usr/lib/systemd/
 
 #rsync -aP --exclude 'scripts/waptserver-init-centos' --exclude '*.pyc' --exclude '.svn' --exclude 'apache-win32' --exclude 'deb' --exclude 'rpm' --exclude '.git' --exclude '.gitignore' -aP ../../../waptserver/ %{buildroot}/opt/wapt/waptserver
 #rsync -aP ../../../waptserver/scripts/waptserver-init-centos %{buildroot}/etc/init.d/waptserver
@@ -49,9 +49,8 @@ mkdir -p %{buildroot}/etc/init.d/
 /opt/wapt/lib/*
 /etc/logrotate.d/waptserver
 /etc/rsyslog.d/waptserver.conf
-/usr/bin/*
+/usr/bin/wapt-serverpostconf
 
-%attr(755,root,root)/etc/init.d/waptserver
 %attr(755,root,root)/opt/wapt/waptserver/scripts/postconf.py
 
 %attr(755,wapt,root)/opt/wapt/conf

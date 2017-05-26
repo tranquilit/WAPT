@@ -209,13 +209,8 @@ def start_apache():
     elif type_debian():
         subprocess.check_output(['service', 'apache2', 'restart'])
 
-
 def enable_waptserver():
-    if type_redhat():
-        subprocess.check_output(['chkconfig', '--add', 'waptserver'])
-    elif type_debian():
-        subprocess.check_output(['update-rc.d', 'waptserver', 'enable'])
-
+    print(subprocess.check_output('systemctl restart waptserver',shell=True))
 
 def start_waptserver():
 #    subprocess.check_output(['service', 'waptserver', 'restart'])
