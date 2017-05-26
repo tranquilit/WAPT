@@ -50,7 +50,7 @@ def replaceAll(file, searchExp, replaceExp):
 
 
 def rsync(src, dst, excludes=[]):
-    rsync_option = " --exclude 'postconf' --exclude 'mongodb' --exclude 'rpm' --exclude '*.pyc' --exclude '*.pyo' --exclude '.svn' --exclude 'apache-win32' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -aP"
+    rsync_option = " --exclude 'postconf' --exclude 'mongodb' --exclude 'rpm' --exclude '*.pyc' --exclude '*.pyo' --exclude '.svn' --exclude 'apache-win32' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -a --stats"
     if excludes:
         rsync_option = rsync_option + \
             ' '.join(" --exclude '%s'" % x for x in excludes)
@@ -105,6 +105,8 @@ if os.path.exists('builddir'):
     shutil.rmtree('builddir')
 
 mkdir_p("builddir/opt/wapt/lib")
+mkdir_p("builddir/opt/wapt/conf")
+mkdir_p("builddir/opt/wapt/log")
 mkdir_p("builddir/opt/wapt/lib/site-packages")
 
 # we use pip and virtualenv to get the wapt dependencies. virtualenv usage here is a bit awkward, it can probably be improved. For instance, it install a outdated version of pip that cannot install Rocket dependencies...
@@ -125,27 +127,13 @@ rsync('./pylibs/lib/', './builddir/opt/wapt/lib/')
 print('copying the waptserver files', file=sys.stderr)
 rsync(source_dir, './builddir/opt/wapt/',
       excludes=['postconf', 'mongod.exe', 'bin', 'include'])
-for lib in ('requests', 'iniparse', 'dns', 'pefile.py', 'rocket', 'flask', 'werkzeug', 'jinja2', 'itsdangerous.py', 'markupsafe', 'dialog.py', 'babel', 'flask_babel', 'huey', 'wakeonlan'):
-    rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),
-          './builddir/opt/wapt/lib/site-packages/')
 
-print("copying the startup script /etc/init.d/waptserver", file=sys.stderr)
+print("copying systemd startup script", file=sys.stderr)
+relative_dest_dir = '/usr/lib/systemd/system/'
+build_dest_dir = os.path.join('./builddir/',relative_dest_dir)
 try:
-    mkdir_p('./builddir/etc/init.d/')
-    if platform.dist()[0] in ('debian', 'ubuntu'):
-        copyfile('../scripts/waptserver-init',
-                 './builddir/etc/init.d/waptserver')
-    elif platform.dist()[0] in ('centos', 'redhat', 'fedora'):
-        copyfile('../scripts/waptserver-init-centos',
-                 './builddir/etc/init.d/waptserver')
-    else:
-        print("unsupported distrib")
-        sys.exit(1)
-
-    subprocess.check_output(
-        'chmod 755 ./builddir/etc/init.d/waptserver', shell=True)
-    subprocess.check_output(
-        'chown root:root ./builddir/etc/init.d/waptserver', shell=True)
+    mkdir_p(build_dest_dir)
+    copyfile('../scripts/waptserver.service', os.path.join(build_dest_dir,'waptserver.service'))
 except Exception as e:
     print (sys.stderr, 'error: \n%s' % e, file=sys.stderr)
     exit(1)

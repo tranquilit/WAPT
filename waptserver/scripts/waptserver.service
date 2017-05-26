@@ -1,0 +1,13 @@
+[Unit]
+Description=WAPT Server startup script
+After=syslog.target
+
+[Service]
+Type=simple
+PIDFile=/var/run/waptserver.pid
+User=wapt
+ExecStart=/usr/bin/python2 /opt/wapt/waptserver/waptserver.py
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
