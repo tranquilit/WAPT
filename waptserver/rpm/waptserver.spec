@@ -37,7 +37,7 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 
 %files
 %defattr(644,root,root,755)
-
+/usr/lib/systemd/system/waptserver.service
 /opt/wapt/waptserver/*
 /opt/wapt/lib/*
 /etc/logrotate.d/waptserver
