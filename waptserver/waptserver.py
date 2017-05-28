@@ -2023,7 +2023,11 @@ if __name__ == "__main__":
     logger.info('Waptserver starting...')
     port = conf['waptserver_port']
     print Hosts.update(listening_protocol=None).where(not(Hosts.listening_protocol.is_null)).execute()
-    socketio.run(app,host='0.0.0.0', port=port, debug=options.devel,use_reloader=options.devel)
+    
+    if options.devel==True:
+        socketio.run(app,host='0.0.0.0', port=port, debug=options.devel,use_reloader=options.devel)
+    else:
+        socketio.run(app,host='127.0.0.1', port=port, debug=options.devel,use_reloader=options.devel)
     logger.info('Waptserver stopped')
 
 
