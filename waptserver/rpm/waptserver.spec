@@ -13,7 +13,7 @@ URL:		https://wapt.fr
 Source0:	./waptserver/
 Prefix:		/opt
 
-Requires:  httpd mod_ssl dialog uwsgi-plugin-python pytz m2crypto python-passlib python-netifaces python-urllib3 cabextract python-requests python-flask python-psutil python-psycopg2 python2-dialog
+Requires:  httpd mod_ssl dialog uwsgi-plugin-python pytz m2crypto python-passlib python-netifaces python-urllib3 cabextract python-requests python-flask python-psutil python-psycopg2 python2-dialog postgresql94-server postgresql94-contrib
 
 # Turn off the brp-python-bytecompile script
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
@@ -32,13 +32,6 @@ mkdir -p %{buildroot}/opt/wapt/waptserver/scripts
 ln -sf ../conf/waptserver.ini %{buildroot}/opt/wapt/waptserver/waptserver.ini
 
 mkdir -p %{buildroot}/usr/lib/systemd/
-
-#rsync -aP --exclude 'scripts/waptserver-init-centos' --exclude '*.pyc' --exclude '.svn' --exclude 'apache-win32' --exclude 'deb' --exclude 'rpm' --exclude '.git' --exclude '.gitignore' -aP ../../../waptserver/ %{buildroot}/opt/wapt/waptserver
-#rsync -aP ../../../waptserver/scripts/waptserver-init-centos %{buildroot}/etc/init.d/waptserver
-#rsync -aP ../../../waptserver/scripts/postconf.py %{buildroot}/opt/wapt/waptserver/scripts/
-
-#for libname in  'requests iniparse dns pefile.py rocket bson flask werkzeug jinja2 itsdangerous.py markupsafe dialog.py babel flask_babel' ; do \
-#    rsync ../../../lib/site-packages/${i} lib),'./builddir/opt/wapt/lib/site-packages/')
 
 (cd .. && python ./createrpm.py)
 

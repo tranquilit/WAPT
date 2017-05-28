@@ -135,7 +135,7 @@ subprocess.check_output(
 
 print('Install additional libraries in build environment virtualenv')
 subprocess.check_output(
-    r'./builddir/opt/wapt/bin/pip install -r ../../requirements-server-debian.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True)
+    r'./builddir/opt/wapt/bin/pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True)
 
 print('copying the waptserver files', file=sys.stderr)
 rsync(source_dir, './builddir/opt/wapt/',
