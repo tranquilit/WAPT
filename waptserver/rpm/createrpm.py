@@ -129,8 +129,7 @@ rsync(source_dir, './builddir/opt/wapt/',
       excludes=['postconf', 'mongod.exe', 'bin', 'include'])
 
 print("copying systemd startup script", file=sys.stderr)
-relative_dest_dir = '/usr/lib/systemd/system/'
-build_dest_dir = os.path.join('./builddir/',relative_dest_dir)
+build_dest_dir = './builddir/usr/lib/systemd/system/' 
 try:
     mkdir_p(build_dest_dir)
     copyfile('../scripts/waptserver.service', os.path.join(build_dest_dir,'waptserver.service'))
