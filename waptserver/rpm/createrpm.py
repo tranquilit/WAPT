@@ -122,7 +122,7 @@ print('Install additional libraries in build environment virtualenv')
 print(subprocess.check_output(
     r'source ./pylibs/bin/activate ; pip install --upgrade pip ', shell=True))
 print(subprocess.check_output(
-    r'source ./pylibs/bin/activate ; pip install -r ../../requirements-server-debian.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True))
+    r'source ./pylibs/bin/activate ; pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True))
 rsync('./pylibs/lib/', './builddir/opt/wapt/lib/')
 print('copying the waptserver files', file=sys.stderr)
 rsync(source_dir, './builddir/opt/wapt/',
