@@ -13,7 +13,7 @@ URL:		https://wapt.fr
 Source0:	./waptserver/
 Prefix:		/opt
 
-Requires:  httpd mod_ssl dialog uwsgi-plugin-python pytz m2crypto python-passlib python-netifaces python-urllib3 cabextract python-requests python-flask python-psutil python-psycopg2
+Requires:  httpd mod_ssl dialog uwsgi-plugin-python pytz m2crypto python-passlib python-netifaces python-urllib3 cabextract python-requests python-flask python-psutil python-psycopg2 python2-dialog
 
 # Turn off the brp-python-bytecompile script
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
