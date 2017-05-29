@@ -111,6 +111,7 @@ const
   waptserver_port:integer = 80;
   waptserver_sslport:integer = 443;
   zmq_port:integer = 5000;
+  waptservice_timeout:integer = 2000;
 
   WaptServerUser: AnsiString ='admin';
   WaptServerPassword: Ansistring ='';
@@ -949,6 +950,8 @@ begin
     waptservice_sslport := ReadInteger('global','waptservice_sslport',-1);
     if (waptservice_port<=0) and (waptservice_sslport<=0) then
       waptservice_port := 8088;
+
+    waptservice_timeout := ReadInteger('global','waptservice_timeout',2) div 1000;
 
     Language := '';
     // override lang setting

@@ -133,12 +133,12 @@ begin
       HandleMessage;
       if zmq_socket.context.Terminated then
       begin
-        Writeln(rsWinterruptReceived);
+        Writeln(utf8decode(rsWinterruptReceived));
         break;
       end;
     end;
   finally
-    writeln(rsStopListening);
+    writeln(utf8decode(rsStopListening));
   end;
 end;
 
@@ -263,14 +263,16 @@ begin
   if HasOption('?') or HasOption('h','help') then
   begin
     writeln(utf8decode(rsOptRepo));
-    writeln(utf8decode(rsWaptUpgrade));
+    writeln(utf8decode(rsWaptgetHelp));
   end;
+
+  if HasOption('c','config') then
+    ReadWaptConfig(GetOptionValue('c','config'))
+  else
+    ReadWaptConfig();
 
   if HasOption('r','repo') then
     RepoURL := GetOptionValue('r','repo');
-
-  if HasOption('c','config') then
-    ReadWaptConfig(GetOptionValue('c','config'));
 
   if HasOption('l','loglevel') then
   begin
@@ -313,7 +315,7 @@ begin
   // use http service mode if --service or not --direct or not (--service and isadmin
   if  ((not IsAdminLoggedOn or HasOption('S','service')) and not HasOption('D','direct')) and
       StrIsOneOf(action,['update','upgrade','register','install','remove','forget','longtask','cancel','cancel-all','tasks','wuascan','wuadownload','wuainstall']) and
-      CheckOpenPort(waptservice_port,'127.0.0.1',200) then
+      CheckOpenPort(waptservice_port,'127.0.0.1',waptservice_timeout) then
   begin
     writeln('About to speak to waptservice...');
     // launch task in waptservice, waits for its termination
@@ -329,7 +331,7 @@ begin
           Logger('Call longtask URL...',DEBUG);
           res := WAPTLocalJsonGet('longtask.json');
           if res = Nil then
-            WriteLn(format(rsLongtaskError, [res.S['message']]))
+            WriteLn(utf8decode((format(rsLongtaskError, [res.S['message']]))))
           else
             tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
@@ -339,17 +341,17 @@ begin
         begin
           res := WAPTLocalJsonGet('tasks.json');
           if res = Nil then
-            WriteLn(format(rsTaskListError, [res.S['message']]))
+            WriteLn(utf8decode(format(rsTaskListError, [res.S['message']])))
           else
           begin
             if res['running'].DataType<>stNull then
-              writeln(format(rsRunningTask,[ res['running'].I['id'],res['running'].S['description'],res['running'].S['runstatus']]))
+              writeln(utf8decode(format(rsRunningTask,[ res['running'].I['id'],res['running'].S['description'],res['running'].S['runstatus']])))
             else
-              writeln(rsNoRunningTask);
+              writeln(utf8decode(rsNoRunningTask));
             if res['pending'].AsArray.length>0 then
-              writeln(rsPending);
+              writeln(utf8decode(rsPending));
               for task in res['pending'] do
-                writeln('  '+task.S['id']+' '+task.S['description']);
+                writeln(utf8decode('  '+task.S['id']+' '+task.S['description']));
           end;
         end
         else
@@ -357,10 +359,10 @@ begin
         begin
           res := WAPTLocalJsonGet('cancel_running_task.json');
           if res = Nil then
-            WriteLn(format(rsErrorCanceling, [res.S['message']]))
+            WriteLn(utf8decode(format(rsErrorCanceling, [res.S['message']])))
           else
             if res.DataType<>stNull then
-              writeln(format(rsCanceledTask, [res.S['description']]))
+              writeln(utf8decode(format(rsCanceledTask, [res.S['description']])))
             else
               writeln(rsNoRunningTask);
         end
@@ -369,15 +371,15 @@ begin
         begin
           res := WAPTLocalJsonGet('cancel_all_tasks.json');
           if res = Nil then
-            WriteLn(format(rsErrorCanceling, [res.S['message']]))
+            WriteLn(utf8decode(format(rsErrorCanceling, [res.S['message']])))
           else
             if res.DataType<>stNull then
             begin
               for task in res do
-                writeln(format(rsCanceledTask, [task.S['description']]))
+                writeln(utf8decode(format(rsCanceledTask, [task.S['description']])))
             end
             else
-              writeln(rsNoRunningTask);
+              writeln(utf8decode(rsNoRunningTask));
         end
         else
         if action='update' then
@@ -388,7 +390,7 @@ begin
           else
             res := WAPTLocalJsonGet('update.json?notify_user=0');
           if res = Nil then
-            WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
+            WriteLn(utf8decode(format(rsErrorLaunchingUpdate, [res.S['message']])))
           else
             tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
@@ -399,7 +401,7 @@ begin
           Logger('Call register URL...',DEBUG);
           res := WAPTLocalJsonGet('register.json?notify_user=0&notify_server=1','admin','',1000,HTTPLogin);
           if (res = Nil) or (res.AsObject=Nil) or not res.AsObject.Exists('id') then
-            WriteLn(format(rsErrorLaunchingRegister, [res.AsString]))
+            WriteLn(utf8decode(format(rsErrorLaunchingRegister, [res.AsString])))
           else
             tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
@@ -418,7 +420,7 @@ begin
             begin
               // single action
               if (res = Nil) or (res.AsObject=Nil) or not res.AsObject.Exists('id') then
-                WriteLn(format(rsErrorWithMessage, [res.AsString]))
+                WriteLn(utf8decode(format(rsErrorWithMessage, [res.AsString])))
               else
                 tasks.AsArray.Add(res);
             end
@@ -427,7 +429,7 @@ begin
             begin
               // list of actions..
               if (res = Nil) or (res.AsArray=Nil) then
-                WriteLn(format(rsErrorWithMessage, [res.AsString]))
+                WriteLn(utf8decode(format(rsErrorWithMessage, [res.AsString])))
               else
               for task in res do
               begin
@@ -442,7 +444,7 @@ begin
           Logger('Call upgrade URL...',DEBUG);
           res := WAPTLocalJsonGet('upgrade.json?notify_user=0');
           if res.S['result']<>'OK' then
-            WriteLn(format(rsErrorLaunchingUpgrade, [res.S['message']]))
+            WriteLn(utf8decode(format(rsErrorLaunchingUpgrade, [res.S['message']])))
           else
             for task in res['content'] do
             begin
@@ -455,7 +457,7 @@ begin
         begin
           res := WAPTLocalJsonGet('waptwua_scan?notify_user=1');
           if res = Nil then
-            WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
+            WriteLn(utf8decode(format(rsErrorLaunchingUpdate, [res.S['message']])))
           else
             tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
@@ -465,7 +467,7 @@ begin
         begin
           res := WAPTLocalJsonGet('waptwua_download?notify_user=1');
           if res = Nil then
-            WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
+            WriteLn(utf8decode(format(rsErrorLaunchingUpdate, [res.S['message']])))
           else
             tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
@@ -475,7 +477,7 @@ begin
         begin
           res := WAPTLocalJsonGet('waptwua_install?notify_user=1');
           if res = Nil then
-            WriteLn(format(rsErrorLaunchingUpdate, [res.S['message']]))
+            WriteLn(utf8decode(format(rsErrorLaunchingUpdate, [res.S['message']])))
           else
             tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
@@ -562,7 +564,7 @@ end;
 procedure pwaptget.WriteHelp;
 begin
   { add your help code here }
-  writeln(format(rsUsage, [ExeName]));
+  writeln(utf8decode(format(rsUsage, [ExeName])));
   writeln(rsInstallOn);
 end;
 
@@ -617,7 +619,7 @@ begin
         if (status = 'START') then
           writeln(msg.S['description']);
         if (status = 'PROGRESS') then
-          write(format(rsCompletionProgress,[utf8encode(msg.S['runstatus']), msg.D['progress']])+#13);
+          write(utf8decode(format(rsCompletionProgress,[msg.S['runstatus'], msg.D['progress']])+#13));
         //catch finish of task
         if (status = 'FINISH') or (status = 'ERROR') or (status = 'CANCEL') then
         begin
