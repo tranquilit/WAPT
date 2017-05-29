@@ -13,7 +13,10 @@ resourcestring
   rsWinterruptReceived = 'W: interrupt received, killing server…';
   rsStopListening = 'Stop listening to events';
   rsOptRepo = ' -r --repo : URL of dependencies libs';
-  rsWaptUpgrade = ' waptupgrade : upgrade wapt-get.exe and database';
+  rsWaptgetHelp = ' waptupgrade : upgrade wapt-get.exe and database'#13#10+
+                  ' tasks : check if some tasks are running or pending in queue'#13#10+
+                  ' dnsdebug : display some informations about DNS configuration.'#13#10
+                 ;
   rsWin32exeWrapper = 'Win32 Exe wrapper: %s %s';
   rsWaptGetUpgrade = 'WAPT-GET Upgrade using repository at %s';
   rsDNSserver = 'DNS Server : %s';
