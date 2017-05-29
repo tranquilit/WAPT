@@ -141,7 +141,7 @@ begin
   ini := TIniFile.Create(WaptIniFilename);
   try
     Fallow_cancel_upgrade := ini.ReadBool('global','allow_cancel_upgrade',allow_cancel_upgrade);
-    waptservice_timeout := ini.ReadInteger('global','waptservice_timeout',2000);
+    waptservice_timeout := ini.ReadInteger('global','waptservice_timeout',2)*1000;
   finally
     ini.Free;
   end;

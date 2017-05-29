@@ -617,6 +617,7 @@ begin
       http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
       http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent;
       http.ConnectTimeout:=timeout;
+      http.ReadTimeout:=timeout;
 
       if (user<>'') or (OnAuthorization <> Nil) then
       begin
