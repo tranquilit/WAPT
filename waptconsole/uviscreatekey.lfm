@@ -67,7 +67,7 @@ object VisCreateKey: TVisCreateKey
       Left = 9
       Height = 13
       Hint = 'E.g. ''tranquilit''. Please don''t use any special characters.'
-      Top = 32
+      Top = 34
       Width = 79
       Caption = 'Key filename :'
       Font.CharSet = ANSI_CHARSET
