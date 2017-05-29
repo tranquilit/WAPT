@@ -2321,8 +2321,11 @@ class WaptRemoteCalls(SocketIONamespace):
             actions = wapt.list_upgrade()
 
         to_install = actions['upgrade']+actions['additional']+actions['install']
+        all_tasks = []
+
         for req in to_install:
             all_tasks.append(self.task_manager.add_task(WaptPackageInstall(req,force=force),notify_user=notify_user).as_dict())
+
         all_tasks.append(self.task_manager.add_task(WaptUpgrade(),notify_user=notify_user).as_dict())
         all_tasks.append(self.task_manager.add_task(WaptCleanup(),notify_user=False))
 
