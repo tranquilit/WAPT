@@ -2316,8 +2316,10 @@ class WaptRemoteCalls(SocketIONamespace):
         force = int(args.get('force','0')) != 0
         notify_user = int(args.get('notify_user','1')) != 0
         notify_server_on_finish = int(args.get('notify_server','0')) != 0
-        wapt().update(force=force)
-        actions = wapt().list_upgrade()
+        with Wapt(config_filename = waptconfig.config_filename) as wapt:
+            wapt.update(force=force)
+            actions = wapt.list_upgrade()
+
         to_install = actions['upgrade']+actions['additional']+actions['install']
         for req in to_install:
             all_tasks.append(self.task_manager.add_task(WaptPackageInstall(req,force=force),notify_user=notify_user).as_dict())
