@@ -2330,7 +2330,7 @@ class WaptRemoteCalls(SocketIONamespace):
         all_tasks.append(self.task_manager.add_task(WaptCleanup(),notify_user=False))
 
         if result_callback:
-            result_callback(make_response(data))
+            result_callback(make_response(all_tasks))
 
     def on_trigger_register(self,args,result_callback=None):
         task = WaptRegisterComputer(args.get('computer_description',None))
