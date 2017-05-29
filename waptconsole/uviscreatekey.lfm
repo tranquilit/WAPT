@@ -224,6 +224,7 @@ object VisCreateKey: TVisCreateKey
       Hint = 'This information will be used as Signer identification in packages'
       Top = 120
       Width = 174
+      OnExit = edCommonNameExit
       TabOrder = 4
     end
     object EdKeyFilename: TFileNameEdit

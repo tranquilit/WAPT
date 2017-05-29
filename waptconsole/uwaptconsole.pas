@@ -1375,10 +1375,10 @@ begin
               pemfn:=EdKeyFilename.FileName
             else
               pemfn:=AppendPathDelim(utf8Decode(DirectoryCert.Text))+ExtractFileNameOnly(utf8Decode(EdKeyFileName.Text))+'.pem';
-            crtBaseName:=ExtractFileNameOnly(pemfn);
+            crtBaseName:=edCertBaseName.Text;
             certFile := CreateSelfSignedCert(
               pemfn,
-              '',
+              crtBaseName,
               waptpath,
               utf8Decode(DirectoryCert.Text),
               edCountry.Text,

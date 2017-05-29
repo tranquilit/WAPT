@@ -43,6 +43,7 @@ type
     Shape1: TShape;
     StaticText1: TStaticText;
     procedure DirectoryCertAcceptFileName(Sender: TObject; var Value: String);
+    procedure edCommonNameExit(Sender: TObject);
     procedure EdKeyFilenameAcceptFileName(Sender: TObject; var Value: String);
     procedure EdKeyFilenameExit(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -53,6 +54,7 @@ type
   public
     { public declarations }
     procedure MakeCertName;
+    Function GetCertFilename:String;
   end;
 
 var
@@ -80,7 +82,7 @@ begin
       showMessage(rsInputKeyName);
       CanClose:=False;
     end else
-      CanClose:= not FileExists(certFile) or (Dialogs.MessageDlg('Confirm overwrite of certificate','Certificate '+certFile+' already exists. Confirm the overwrite of it',mtConfirmation,mbYesNoCancel,0) = mrYes)
+      CanClose:= not FileExists(GetCertFilename) or (Dialogs.MessageDlg('Confirm overwrite of certificate','Certificate '+GetCertFilename+' already exists. Confirm the overwrite of it',mtConfirmation,mbYesNoCancel,0) = mrYes)
   end
   else
     CanClose:=True;
@@ -110,11 +112,15 @@ procedure TVisCreateKey.MakeCertName;
 var
   certFile:String;
 begin
-  if edCertBaseName.Text
   certFile := AppendPathDelim(DirectoryCert.Text)+ExtractFileNameOnly(EdKeyFileName.Text)+'.crt';
   if FileExists(certFile) then
     certFile := AppendPathDelim(DirectoryCert.Text)+ExtractFileNameOnly(EdKeyFileName.Text)+'-'+FormatDateTime('yyyymmdd-hhnnss',Date)+'.crt';
+  edCertBaseName.Text:=ExtractFileNameOnly(certFile);
+end;
 
+function TVisCreateKey.GetCertFilename: String;
+begin
+  Result := AppendPathDelim(DirectoryCert.Text)+edCertBaseName.Text;
 end;
 
 procedure TVisCreateKey.EdKeyFilenameAcceptFileName(Sender: TObject;
@@ -136,6 +142,11 @@ procedure TVisCreateKey.DirectoryCertAcceptFileName(Sender: TObject;
   var Value: String);
 begin
   Value := ExtractFileDir(Value);
+end;
+
+procedure TVisCreateKey.edCommonNameExit(Sender: TObject);
+begin
+  MakeCertName;
 end;
 
 procedure TVisCreateKey.EdKeyFilenameExit(Sender: TObject);
