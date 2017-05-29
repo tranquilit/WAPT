@@ -72,6 +72,13 @@ procedure TVisCreateKey.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
   if (ModalResult=mrOk) then
   begin
+    if not FileExists(EdKeyFilename.Text) and (EdKeyPassword.Text<>'') and (EdKeyPassword.Text<>EdKeypassword2.Text) then
+    begin
+      CanClose:=False;
+      ShowMessage('Please confirm the password for the encryption of the new private key');
+      EdKeypassword2.SetFocus;
+    end
+    else
     if Trim(edCommonName.Text) = ''then
     begin
       showMessage(rsInputCommonName);
