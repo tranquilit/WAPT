@@ -22,6 +22,9 @@ msgstr ""
 "X-Generator: Virtaal 0.7.1\n"
 "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html\n"
 
+msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
+msgstr ""
+
 #: tvisloading.amessage.caption
 msgid "Loading..."
 msgstr "Laden..."
@@ -148,7 +151,9 @@ msgid "URL to the the public repository whence base packages should be duplicate
 msgstr "URL auf die der öffentliche Repository, woraus die Basispakete vervielfältig werden sollen."
 
 #: tviswaptserverpostconf.edtemplatesrepourl.text
-msgid "http://wapt.tranquil.it/wapt"
+#, fuzzy
+#| msgid "http://wapt.tranquil.it/wapt"
+msgid "https://store.wapt.fr/wapt"
 msgstr "http://wapt.tranquil.it/wapt"
 
 #: tviswaptserverpostconf.edunit.hint

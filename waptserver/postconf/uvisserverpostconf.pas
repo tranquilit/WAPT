@@ -525,7 +525,7 @@ end;
 procedure TVisWAPTServerPostConf.ActCreateKeyExecute(Sender: TObject);
 begin
   EdPrivateKeyFN.Text := CreateSelfSignedCert(EdKeyName.Text,'',WaptBaseDir,DirectoryCert.Text,
-    edCountry.Text,edLocality.Text,edOrganization.Text,edUnit.Text,edCommonName.Text,edEmail.Text);
+    edCountry.Text,edLocality.Text,edOrganization.Text,edUnit.Text,edCommonName.Text,edEmail.Text,'',True);
 end;
 
 procedure TVisWAPTServerPostConf.ActCheckDNSExecute(Sender: TObject);
