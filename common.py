@@ -3126,62 +3126,65 @@ class Wapt(object):
                         raise EWaptNotSigned(u'Package %s does not contain a manifest.sha1 file, and unsigned packages install is not allowed' % fname)
 
                 self.check_cancelled()
+                exitstatus = None
                 setup_filename = os.path.join( packagetempdir,'setup.py')
-                os.chdir(os.path.dirname(setup_filename))
-                if not os.getcwd() in sys.path:
-                    sys.path.append(os.getcwd())
+                # in case we have no setup.py
+                if os.path.isfile(setup_filename):
+                    os.chdir(os.path.dirname(setup_filename))
+                    if not os.getcwd() in sys.path:
+                        sys.path.append(os.getcwd())
 
-                # import the setup module from package file
-                logger.info(u"  sourcing install file %s " % ensure_unicode(setup_filename) )
-                setup = import_setup(setup_filename)
-                required_params = []
+                    # import the setup module from package file
+                    logger.info(u"  sourcing install file %s " % ensure_unicode(setup_filename) )
+                    setup = import_setup(setup_filename)
+                    required_params = []
 
-                # be sure some minimal functions are available in setup module at install step
-                setattr(setup,'basedir',os.path.dirname(setup_filename))
-                # redefine run to add reference to wapt.pidlist
-                setattr(setup,'run',self.run)
-                setattr(setup,'run_notfatal',self.run_notfatal)
-                setattr(setup,'WAPT',self)
-                setattr(setup,'control',entry)
-                setattr(setup,'language',self.language or setuphelpers.get_language() )
+                    # be sure some minimal functions are available in setup module at install step
+                    setattr(setup,'basedir',os.path.dirname(setup_filename))
+                    # redefine run to add reference to wapt.pidlist
+                    setattr(setup,'run',self.run)
+                    setattr(setup,'run_notfatal',self.run_notfatal)
+                    setattr(setup,'WAPT',self)
+                    setattr(setup,'control',entry)
+                    setattr(setup,'language',self.language or setuphelpers.get_language() )
 
-                setattr(setup,'user',self.user)
-                setattr(setup,'usergroups',self.usergroups)
+                    setattr(setup,'user',self.user)
+                    setattr(setup,'usergroups',self.usergroups)
 
-                # get definitions of required parameters from setup module
-                if hasattr(setup,'required_params'):
-                    required_params = setup.required_params
+                    # get definitions of required parameters from setup module
+                    if hasattr(setup,'required_params'):
+                        required_params = setup.required_params
 
-                # get value of required parameters if not already supplied
-                for p in required_params:
-                    if not p in params_dict:
-                        if not is_system_user():
-                            params_dict[p] = raw_input(u"%s: " % p)
-                        else:
-                            raise Exception(u'Required parameters %s is not supplied' % p)
-                logger.info(u'Install parameters : %s' % (params_dict,))
+                    # get value of required parameters if not already supplied
+                    for p in required_params:
+                        if not p in params_dict:
+                            if not is_system_user():
+                                params_dict[p] = raw_input(u"%s: " % p)
+                            else:
+                                raise Exception(u'Required parameters %s is not supplied' % p)
+                    logger.info(u'Install parameters : %s' % (params_dict,))
 
-                # set params dictionary
-                if not hasattr(setup,'params'):
-                    # create a params variable for the setup module
-                    setattr(setup,'params',params_dict)
-                else:
-                    # update the already created params with additional params from command line
-                    setup.params.update(params_dict)
+                    # set params dictionary
+                    if not hasattr(setup,'params'):
+                        # create a params variable for the setup module
+                        setattr(setup,'params',params_dict)
+                    else:
+                        # update the already created params with additional params from command line
+                        setup.params.update(params_dict)
 
-                # store source of install and params in DB for future use (upgrade, session_setup, uninstall)
-                self.waptdb.store_setuppy(install_id, setuppy = codecs.open(setup_filename,'r',encoding='utf-8').read(),install_params=params_dict)
+                    # store source of install and params in DB for future use (upgrade, session_setup, uninstall)
+                    self.waptdb.store_setuppy(install_id, setuppy = codecs.open(setup_filename,'r',encoding='utf-8').read(),install_params=params_dict)
 
-                if not self.dry_run:
-                    try:
-                        logger.info(u"  executing install script")
-                        exitstatus = setup.install()
-                    except Exception as e:
-                        logger.critical(u'Fatal error in install script: %s:\n%s' % (ensure_unicode(e),ensure_unicode(traceback.format_exc())))
-                        raise
-                else:
-                    logger.warning(u'Dry run, not actually running setup.install()')
-                    exitstatus = None
+                    if not self.dry_run:
+                        try:
+                            logger.info(u"  executing install script")
+                            exitstatus = setup.install()
+                        except Exception as e:
+                            logger.critical(u'Fatal error in install script: %s:\n%s' % (ensure_unicode(e),ensure_unicode(traceback.format_exc())))
+                            raise
+                    else:
+                        logger.warning(u'Dry run, not actually running setup.install()')
+                        exitstatus = None
 
                 if exitstatus is None or exitstatus == 0:
                     status = 'OK'
@@ -4637,147 +4640,150 @@ class Wapt(object):
         if not isinstance(directoryname,unicode):
             directoryname = unicode(directoryname)
         result_filename = u''
+        # some checks
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
             raise EWaptNotAPackage('Error building package : There is no WAPT directory in %s' % directoryname)
         if not os.path.isfile(os.path.join(directoryname,'WAPT','control')):
             raise EWaptNotAPackage('Error building package : There is no control file in WAPT directory')
-        if not os.path.isfile(os.path.join(directoryname,'setup.py')):
-            raise EWaptNotAPackage('Error building package : There is no setup.py file in %s' % directoryname)
-        oldpath = sys.path
-        try:
-            previous_cwd = os.getcwd()
-            logger.debug(u'  Change current directory to %s' % directoryname)
-            os.chdir(directoryname)
-            if not os.getcwd() in sys.path:
-                sys.path = [os.getcwd()] + sys.path
-                logger.debug(u'new sys.path %s' % sys.path)
-            logger.debug(u'Sourcing %s' % os.path.join(directoryname,'setup.py'))
-            setup = import_setup(os.path.join(directoryname,'setup.py'))
-             # be sure some minimal functions are available in setup module at install step
-            logger.debug(u'Source import OK')
 
-            # check minimal requirements of setup.py
-            # check encoding
+        control_filename = os.path.join(directoryname,'WAPT','control')
+        force_utf8_no_bom(control_filename)
+
+        entry = PackageEntry()
+        logger.info(u'Load control informations from control file')
+        entry.load_control_from_wapt(directoryname)
+
+        # to avoid double increment when update_control is used.
+        inc_done = False
+
+        # optionally, setup.py can update some attributes of control files using
+        # a procedure called update_control(package_entry)
+        # this can help automates version maintenance
+        # a check of version collision is operated automatically
+        if os.path.isfile(os.path.join(directoryname,'setup.py')):
+            oldpath = sys.path
             try:
-                codecs.open(os.path.join(directoryname,'setup.py'),mode='r',encoding='utf8')
-            except:
-                raise EWaptBadSetup('Encoding of setup.py is not utf8')
+                previous_cwd = os.getcwd()
+                logger.debug(u'  Change current directory to %s' % directoryname)
+                os.chdir(directoryname)
+                if not os.getcwd() in sys.path:
+                    sys.path = [os.getcwd()] + sys.path
+                    logger.debug(u'new sys.path %s' % sys.path)
+                logger.debug(u'Sourcing %s' % os.path.join(directoryname,'setup.py'))
+                setup = import_setup(os.path.join(directoryname,'setup.py'))
+                 # be sure some minimal functions are available in setup module at install step
+                logger.debug(u'Source import OK')
 
-            if hasattr(setup,'uninstallstring'):
-                mandatory = [('install',types.FunctionType) ,('uninstallstring',list),]
-            else:
-                mandatory = [('install',types.FunctionType) ,('uninstallkey',list),]
-            for (attname,atttype) in mandatory:
-                if not hasattr(setup,attname):
-                    raise EWaptBadSetup('setup.py has no %s (%s)' % (attname,atttype))
+                # check minimal requirements of setup.py
+                # check encoding
+                try:
+                    codecs.open(os.path.join(directoryname,'setup.py'),mode='r',encoding='utf8')
+                except:
+                    raise EWaptBadSetup('Encoding of setup.py is not utf8')
 
-            control_filename = os.path.join(directoryname,'WAPT','control')
-            force_utf8_no_bom(control_filename)
-
-            entry = PackageEntry()
-            logger.info(u'Load control informations from control file')
-            entry.load_control_from_wapt(directoryname)
-
-            # to avoid double increment when update_control is used.
-            inc_done = False
-
-            # optionally, setup.py can update some attributes of control files using
-            # a procedure called update_control(package_entry)
-            # this can help automates version maintenance
-            # a check of version collision is operated automatically
-            if hasattr(setup,'update_control'):
-                logger.info(u'Update control informations with update_control function from setup.py file')
-                setattr(setup,'run',self.run)
-                setattr(setup,'run_notfatal',self.run_notfatal)
-                setattr(setup,'user',self.user)
-                setattr(setup,'usergroups',self.usergroups)
-                setattr(setup,'WAPT',self)
-                setattr(setup,'language',self.language or setuphelpers.get_language() )
-                setup.update_control(entry)
-
-                if inc_package_release:
-                    logger.debug(u'Check existing versions and increment it')
-                    older_packages = self.is_available(entry.package)
-                    if (older_packages and entry<=older_packages[-1]):
-                        entry.version = older_packages[-1].version
-                        entry.inc_build()
-                        inc_done = True
-                        logger.warning(u'Older package with same name exists, incrementing packaging version to %s' % (entry.version,))
-
-                # save control file
-                entry.save_control_to_wapt(directoryname)
-
-            # check version syntax
-            parse_major_minor_patch_build(entry.version)
-
-            # check architecture
-            if not entry.architecture in ArchitecturesList:
-                raise EWaptBadControl(u'Architecture should one of %s' % (ArchitecturesList,))
-
-            # increment inconditionally the package buuld nr.
-            if not inc_done and inc_package_release:
-                entry.inc_build()
-
-            if include_signer:
-                if not callback:
-                    callback = self.key_passwd_callback
-
-                # use cached key file if not provided
-                # the password will be retrieved by the self.key_passwd_callback
-                if not private_key:
-                    private_key = self.private_key
-                    key = self.private_key_cache
+                if hasattr(setup,'uninstallstring'):
+                    mandatory = [('install',types.FunctionType) ,('uninstallstring',list),]
                 else:
-                    # use provided key filename, use provided callback.
-                    key = SSLPrivateKey(private_key,callback)
+                    mandatory = [('install',types.FunctionType) ,('uninstallkey',list),]
+                for (attname,atttype) in mandatory:
+                    if not hasattr(setup,attname):
+                        raise EWaptBadSetup('setup.py has no %s (%s)' % (attname,atttype))
 
-                # find proper certificate
-                for fn in self.public_certs:
-                    crt = SSLCertificate(fn)
-                    if crt.match_key(key):
-                        break
-                    else:
-                        crt = None
-                if not crt:
-                    raise EWaptMissingCertificate('No matching certificate found for private key %s'%self.private_key)
-                entry.sign_control(key,crt)
-                logger.info('Signer: %s'%entry.signer)
-                logger.info('Signer fingerprint: %s'%entry.signer_fingerprint)
+                if hasattr(setup,'update_control'):
+                    logger.info(u'Update control informations with update_control function from setup.py file')
+                    setattr(setup,'run',self.run)
+                    setattr(setup,'run_notfatal',self.run_notfatal)
+                    setattr(setup,'user',self.user)
+                    setattr(setup,'usergroups',self.usergroups)
+                    setattr(setup,'WAPT',self)
+                    setattr(setup,'language',self.language or setuphelpers.get_language() )
+                    setup.update_control(entry)
 
-            if inc_package_release or include_signer:
-                entry.save_control_to_wapt(directoryname)
+            # restore path and current working dir
+            finally:
+                if 'setup' in dir():
+                    setup_name = setup.__name__
+                    del setup
+                    if setup_name in sys.modules:
+                        del sys.modules[setup_name]
+                sys.path = oldpath
+                logger.debug(u'  Change current directory to %s' % previous_cwd)
+                os.chdir(previous_cwd)
 
-            entry.filename = entry.make_package_filename()
-            logger.debug(u'Control data : \n%s' % entry.ascontrol())
-            if target_directory is None:
-                target_directory = os.path.abspath(os.path.join( directoryname,'..'))
+        if inc_package_release:
+            logger.debug(u'Check existing versions and increment it')
+            older_packages = self.is_available(entry.package)
+            if (older_packages and entry<=older_packages[-1]):
+                entry.version = older_packages[-1].version
+                entry.inc_build()
+                inc_done = True
+                logger.warning(u'Older package with same name exists, incrementing packaging version to %s' % (entry.version,))
 
-            if not os.path.isdir(target_directory):
-                raise Exception('Bad target directory %s for package build' % target_directory)
+        # save control file
+        entry.save_control_to_wapt(directoryname)
 
-            result_filename = os.path.abspath(os.path.join(target_directory,entry.filename))
-            if os.path.isfile(result_filename):
-                logger.info('Target package already exists, removing %s' % result_filename)
-                os.unlink(result_filename)
+        # check version syntax
+        parse_major_minor_patch_build(entry.version)
 
-            entry.localpath = target_directory
+        # check architecture
+        if not entry.architecture in ArchitecturesList:
+            raise EWaptBadControl(u'Architecture should one of %s' % (ArchitecturesList,))
 
-            allfiles = create_recursive_zip(
-                zipfn = result_filename,
-                source_root = directoryname,
-                target_root = '' ,
-                excludes=excludes)
-            return {'filename':result_filename,'files':allfiles,'package':entry}
+        # increment inconditionally the package buuld nr.
+        if not inc_done and inc_package_release:
+            entry.inc_build()
 
-        finally:
-            if 'setup' in dir():
-                setup_name = setup.__name__
-                del setup
-                if setup_name in sys.modules:
-                    del sys.modules[setup_name]
-            sys.path = oldpath
-            logger.debug(u'  Change current directory to %s' % previous_cwd)
-            os.chdir(previous_cwd)
+        if include_signer:
+            if not callback:
+                callback = self.key_passwd_callback
+
+            # use cached key file if not provided
+            # the password will be retrieved by the self.key_passwd_callback
+            if not private_key:
+                private_key = self.private_key
+                key = self.private_key_cache
+            else:
+                # use provided key filename, use provided callback.
+                key = SSLPrivateKey(private_key,callback)
+
+            # find proper certificate
+            for fn in self.public_certs:
+                crt = SSLCertificate(fn)
+                if crt.match_key(key):
+                    break
+                else:
+                    crt = None
+            if not crt:
+                raise EWaptMissingCertificate('No matching certificate found for private key %s'%self.private_key)
+            entry.sign_control(key,crt)
+            logger.info('Signer: %s'%entry.signer)
+            logger.info('Signer fingerprint: %s'%entry.signer_fingerprint)
+
+        if inc_package_release or include_signer:
+            entry.save_control_to_wapt(directoryname)
+
+        entry.filename = entry.make_package_filename()
+        logger.debug(u'Control data : \n%s' % entry.ascontrol())
+        if target_directory is None:
+            target_directory = os.path.abspath(os.path.join( directoryname,'..'))
+
+        if not os.path.isdir(target_directory):
+            raise Exception('Bad target directory %s for package build' % target_directory)
+
+        result_filename = os.path.abspath(os.path.join(target_directory,entry.filename))
+        if os.path.isfile(result_filename):
+            logger.info('Target package already exists, removing %s' % result_filename)
+            os.unlink(result_filename)
+
+        entry.localpath = target_directory
+
+        allfiles = create_recursive_zip(
+            zipfn = result_filename,
+            source_root = directoryname,
+            target_root = '' ,
+            excludes=excludes)
+        return {'filename':result_filename,'files':allfiles,'package':entry}
+
 
     def build_upload(self,sources_directories,private_key_passwd=None,wapt_server_user=None,wapt_server_passwd=None,inc_package_release=False,target_directory=None):
         """Build a list of packages and upload the resulting packages to the main repository.
