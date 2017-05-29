@@ -2404,10 +2404,10 @@ class WaptRemoteCalls(SocketIONamespace):
             result_callback(make_response(data))
 
     def on_message(self,message):
-        print('message : %s' % message)
+        logger.debug(u'socket.io message : %s' % message)
 
     def on_event(self,event,*args):
-        print('event : %s, args: %s' % (event,args))
+        logger.debug(u'socket.io event : %s, args: %s' % (event,args))
 
 
 if __name__ == "__main__":
