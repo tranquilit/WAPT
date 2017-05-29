@@ -197,8 +197,14 @@ class SSLCAChain(object):
     def certificates(self):
         return self._certificates.values()
 
-    def matching_certs(self,key):
-        return [crt for crt in self.certificates() if crt.is_valid() and crt.match_key(key)]
+    def matching_certs(self,key,ca=None,code_signing=None,valid=None):
+        return [
+            crt for crt in self.certificates() if
+                (valid is None or crt.is_valid() == valid) and
+                (code_signing is None or crt.is_code_signing == code_signing) and
+                (ca is None or crt.is_ca() == ca) and
+                crt.match_key(key)
+                ]
 
     def certificate_chain(self,crt):
         result = [crt]
@@ -263,12 +269,18 @@ class SSLPrivateKey(object):
             crt = SSLCertificate(crt)
         return crt.crt.get_pubkey().get_modulus() == self.key.get_modulus()
 
-    def matching_certs(self,cert_dir):
+
+    def matching_certs(self,cert_dir=None,ca=None,code_signing=None,valid=None):
+        if cert_dir is None and self.private_key_filename:
+            cert_dir = os.path.dirname(self.private_key_filename)
         result = []
         for fn in glob.glob(os.path.join(cert_dir,'*.crt')):
             crt = SSLCertificate(fn)
-            if crt.match_key(self):
-                result.append(crt)
+            if (valid is None or crt.is_valid() == valid) and\
+               (code_signing is None or crt.is_code_signing() == code_signing) and\
+               (ca is None or crt.is_ca() == ca) and\
+               crt.match_key(self):
+                    result.append(crt)
         return result
 
     def encrypt(self,content):
@@ -419,6 +431,10 @@ class SSLCertificate(object):
         result = self.crt.get_not_after().get_datetime()
         return result
 
+    def is_revoked(self):
+        ca_info = self.extensions
+        return False
+
     def is_valid(self,issuer_cert=None,cn=None,purpose=None,ca_bundle=None):
         """Check validity of certificate
                 not before / not after
@@ -467,8 +483,21 @@ class SSLCertificate(object):
         result = {}
         for i in range(0,self.crt.get_ext_count()):
             e =  self.crt.get_ext_at(i)
-            result[e.get_name()] = e.get_value()
+            prop = e.get_name()
+            if prop in result:
+                # convert to list as several items in the property
+                result[prop] = [result[prop]].append(e.get_value())
+            else:
+                result[prop] = e.get_value()
         return result
+
+    def is_ca(self):
+        """Return Tue if certificate has CA:TRUE baisc contraints"""
+        return 'CA:TRUE' in ensure_list(self.extensions().get('basicConstraints',''))
+
+    def is_code_signing(self):
+        """Return True id certificate has 'Code Signing' in its extenedKeyUsage"""
+        return 'Code Signing' in ensure_list(self.extensions().get('extendedKeyUsage',''))
 
 def ssl_verify_content(content,signature,public_certs):
     u"""Check that the signature matches the content, using the provided list of public keys
