@@ -46,6 +46,11 @@ msgstr ""
 msgid "Is code signing certificate (package development)"
 msgstr ""
 
+#: tviscreatekey.edcertbasename.hint
+msgctxt "tviscreatekey.edcertbasename.hint"
+msgid "This information will be used as Signer identification in packages"
+msgstr ""
+
 #: tviscreatekey.edcommonname.hint
 msgctxt "tviscreatekey.edcommonname.hint"
 msgid "This information will be used as Signer identification in packages"
@@ -130,6 +135,10 @@ msgstr ""
 
 #: tviscreatekey.label17.caption
 msgid "Private key password"
+msgstr ""
+
+#: tviscreatekey.label18.caption
+msgid "Certificate name"
 msgstr ""
 
 #: tviscreatekey.label19.caption
