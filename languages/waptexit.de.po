@@ -1,5 +1,4 @@
-msgid "Do you wish to apply them now ?Don't shutdown your computer !Don't shutdown your computer !"
-msgstr ""
+
 "PO-Revision-Date: 2015-09-09 09:52+0200\n"
 "Last-Translator: Jessica <jgreulich@tranquil.it>\n"
 "Language: fr\n"
@@ -10,7 +9,7 @@ msgstr ""
 "Wollen Sie sie jetzt anwenden ?\n"
 
 msgid "Don't shutdown your computer !"
-msgstr ""
+msgstr "Fahren Sie den Computer nicht herunter !"
 
 #: tviswaptexit.actshowdetails.caption
 msgid "Show details"
