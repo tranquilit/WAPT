@@ -815,7 +815,7 @@ def reset_hosts_sid():
             else:
                 where_clause = None
             Hosts.update(listening_timestamp=None,listening_protocol=None).where(where_clause).execute()
-            emit('ping')
+            socketio.emit('wapt_ping')
 
         socketio.start_background_task(target=target,uuids=uuids)
 
@@ -1546,6 +1546,8 @@ def usage_statistics():
 def trigger_sio_update():
     """Proxy the wapt update action to the client using websockets"""
     try:
+        return proxy_host_request(request,'trigger_update')
+
         uuid = request.args['uuid']
         notify_user = request.args.get('notify_user', 0)
         notify_server = request.args.get('notify_server', 1)
@@ -1666,47 +1668,69 @@ def on_trigger_update_result(result):
     """Return from update on client"""
     print('Trigger Update result : %s (uuid:%s)' %(result,request.args['uuid']))
     # send to all waptconsole warching this host.
-    emit('trigger_update_result',result,room = request.args['uuid'])
+    emit('trigger_update_result',result,room = request.args['uuid'], include_self=False)
 
 @socketio.on('trigger_upgrate_result')
 def on_trigger_upgrade_result(result):
     """Return from the launch of upgrade on a client"""
     print('Trigger Upgrade result : %s (uuid:%s)' %(result,request.args['uuid']))
-    emit('trigger_upgrade_result',result,room = request.args['uuid'])
+    emit('trigger_upgrade_result',result,room = request.args['uuid'], include_self=False)
 
 @socketio.on('trigger_install_result')
 def on_install_result(result):
     print('Trigger install result : %s (uuid:%s)' %(result,request.args['uuid']))
-    emit('trigger_install_result',result,room = request.args['uuid'])
-
-@socketio.on('wapt_ping')
-def on_ping():
-    emit('wapt_pong')
+    emit('trigger_install_result',result,room = request.args['uuid'], include_self=False)
 
 @socketio.on('connect')
 def on_waptclient_connect():
     uuid = request.args.get('uuid',None)
-    print('Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
+    logger.info('Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
     # stores sid in database
     Hosts.update(
         listening_timestamp=datetime2isodate(),
         listening_protocol='websockets',
         listening_address=request.sid,
+        reachable='OK',
+        ).where(Hosts.uuid == uuid).execute()
+
+@socketio.on('wapt_pong')
+def on_wapt_pong():
+    print('wapt_pong')
+    uuid = request.args.get('uuid',None)
+    logger.info('Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
+    # stores sid in database
+    Hosts.update(
+        listening_timestamp=datetime2isodate(),
+        listening_protocol='websockets',
+        listening_address=request.sid,
+        reachable='OK',
         ).where(Hosts.uuid == uuid).execute()
 
 @socketio.on('disconnect')
 def on_waptclient_disconnect():
     uuid = request.args.get('uuid',None)
-    print('Socket.IO disconnection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
+    logger.info('Socket.IO disconnection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
     # clear sid in database
     Hosts.update(
         listening_timestamp=datetime2isodate(),
         listening_protocol=None,
         listening_address=None,
+        reachable = 'UNREACHABLE',
         ).where(Hosts.uuid == uuid).execute()
 
-######### end websockets
+@socketio.on('join')
+def on_join(data):
+    room = request.args.get('uuid',None)
+    if room:
+        join_room(room)
 
+@socketio.on('leave')
+def on_leave(data):
+    room = request.args.get('uuid',None)
+    if room:
+        leave_room(room)
+
+######### end websockets
 
 
 #################################################

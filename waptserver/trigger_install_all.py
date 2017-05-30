@@ -28,13 +28,6 @@ usage = """\
 import os
 import sys
 
-sys.path.insert(0, os.path.join(wapt_root_dir))
-sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
-sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
-
-import glob
-import requests
-
 try:
     wapt_root_dir = os.path.abspath(
         os.path.join(
@@ -43,7 +36,12 @@ try:
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
+sys.path.insert(0, os.path.join(wapt_root_dir))
+sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
+sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 
+import glob
+import requests
 
 import logging
 import ConfigParser
@@ -93,7 +91,7 @@ if __name__ == '__main__':
 
     (options, packages) = parser.parse_args()
     if not packages:
-        print(parser.usage())
+        print(parser.usage)
         sys.exit(1)
 
     timeout = 0.5
