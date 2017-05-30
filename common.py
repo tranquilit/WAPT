@@ -142,6 +142,7 @@ def create_self_signed_key(orgname,
         u'unit':unit,
         u'commonname':commonname,
         u'email':email,
+        u'req_extensions':'v3_ca',
     }
     opensslbin = os.path.join(wapt_base_dir,'lib','site-packages','M2Crypto','openssl.exe')
     opensslcfg = codecs.open(os.path.join(wapt_base_dir,'templates','openssl_template.cfg'),'r',encoding='utf8').read() % params
