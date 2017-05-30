@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.7"
+__version__ = "1.5.0"
 
 
 # from https://support.microsoft.com/en-us/kb/290158
