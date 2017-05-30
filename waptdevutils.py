@@ -360,7 +360,7 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
                 )
             sources.append(edit_res)
             # build and sign
-            res = wapt.build_package(edit_res['source_dir'],inc_package_release = True,callback = pwd_callback)
+            res = wapt.build_package(edit_res['source_dir'],inc_package_release = True)
             # returns res dict: {'filename':waptfilename,'files':[list of files],'package':PackageEntry}
             signature = wapt.sign_package(res['filename'],callback=pwd_callback)
             build_res.append(res)
