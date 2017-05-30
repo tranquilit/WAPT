@@ -2541,12 +2541,12 @@ end;
 
 procedure TVisWaptGUI.ActPackageInstallExecute(Sender: TObject);
 begin
-  TriggerActionOnHostPackages('api/v3/trigger_install_package',rsConfirmPackageInstall,rsPackageInstallError);
+  TriggerActionOnHostPackages('api/v3/trigger_install_packages',rsConfirmPackageInstall,rsPackageInstallError);
 end;
 
 procedure TVisWaptGUI.ActPackageRemoveExecute(Sender: TObject);
 begin
-  TriggerActionOnHostPackages('api/v3/trigger_remove_package',rsConfirmRmPackagesFromHost,rsPackageRemoveError);
+  TriggerActionOnHostPackages('api/v3/trigger_remove_packages',rsConfirmRmPackagesFromHost,rsPackageRemoveError);
 end;
 
 procedure TVisWaptGUI.ActRDPExecute(Sender: TObject);
