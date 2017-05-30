@@ -27,6 +27,11 @@ usage = """\
 
 import os
 import sys
+
+sys.path.insert(0, os.path.join(wapt_root_dir))
+sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
+sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
+
 import glob
 import requests
 
@@ -38,9 +43,7 @@ try:
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
-sys.path.insert(0, os.path.join(wapt_root_dir))
-sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
-sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
+
 
 import logging
 import ConfigParser
@@ -113,7 +116,6 @@ if __name__ == '__main__':
                         proxies={'http':None,'https':None},verify=False, timeout=options.timeout).text
                     try:
                         client_result = json.loads(client_result)
-                        result = client_result['content']
                         print 'OK'
                         break
                     except ValueError:
