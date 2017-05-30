@@ -1551,7 +1551,7 @@ def trigger_sio_update():
         notify_server = request.args.get('notify_server', 1)
 
         host = Hosts.select(Hosts.computer_fqdn,Hosts.listening_address).where((Hosts.uuid==uuid) & (Hosts.listening_protocol == 'websockets')).first()
-        if host:
+        if host and host.listening_address:
             socketio.emit('trigger_update',request.args, room = host.listening_address)
             result = request.args
             msg = 'Update launched on %s' % host.computer_fqdn
@@ -1575,7 +1575,7 @@ def trigger_sio_upgrade():
         timeout = request.args.get('timeout',conf.get('clients_read_timeout',5))
 
         host = Hosts.select(Hosts.computer_fqdn,Hosts.listening_address).where((Hosts.uuid==uuid) & (Hosts.listening_protocol == 'websockets')).first()
-        if host:
+        if host and host.listening_address:
             result = []
 
             socketio.emit('trigger_upgrade',request.args, room = host.listening_address,callback = on_trigger_upgrade_result)
@@ -1632,7 +1632,7 @@ def host_tasks_status():
                     .where(Hosts.uuid==uuid)\
                     .dicts()\
                     .first(1)
-        if host_data:
+        if host_data and host_data.get('listening_address',None):
             result = []
 
             def result_callback(data):
