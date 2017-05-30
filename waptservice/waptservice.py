@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.0"
+__version__ = "1.5.0.2"
 import time
 import sys
 import os
@@ -38,7 +38,6 @@ import ConfigParser
 from optparse import OptionParser
 
 import hashlib
-import socket
 import requests
 
 from rocket import Rocket
@@ -77,13 +76,9 @@ import locale
 import datetime
 import copy
 
-import ssl
-from ssl import SSLError
-
 import pythoncom
 import ctypes
 import win32security
-import psutil
 
 import tempfile
 
@@ -120,24 +115,6 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
 logger.setLevel(logging.DEBUG)
 logger.debug('test')
 logger.critical('test2')
-
-
-def get_authorized_callers_ip(waptserver_url=None):
-    """Returns list of IP allowed to request actions with check_caller decorator"""
-    ips = []
-    if waptserver_url:
-        waptserver_hostname = urlparse(waptserver_url).hostname
-        try:
-            ips.append(socket.gethostbyname(waptserver_hostname))
-        except socket.gaierror as e:
-            # no network connection to resolve hostname
-            logger.info('Unable to resolve authorized caller for %s using socket : %s'%(waptserver_hostname,e))
-        try:
-            ips.extend(windnsquery.dnsquery_a(waptserver_hostname))
-        except Exception as e:
-            logger.warning('Unable to resolve authorized caller for %s using windns : %s'%(waptserver_hostname,e))
-        logger.debug('Authorized callers found : %s' % (ips,))
-    return ips
 
 class WaptEvent(object):
     """Store single event with list of subscribers"""
@@ -208,7 +185,7 @@ class WaptServiceConfig(object):
     """
 
     global_attributes = ['config_filename','waptservice_user','waptservice_password',
-         'MAX_HISTORY','waptservice_port','waptservice_sslport',
+         'MAX_HISTORY','waptservice_port',
          'dbpath','loglevel','log_directory','waptserver','authorized_callers_ip',
          'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout','log_to_windows_events']
 
@@ -225,7 +202,6 @@ class WaptServiceConfig(object):
 
         # http localserver
         self.waptservice_port = 8088
-        self.waptservice_sslport = None
 
         # zeroMQ publishing socket
         self.zmq_port = None
@@ -287,15 +263,6 @@ class WaptServiceConfig(object):
             else:
                 self.waptservice_port=8088
 
-            if config.has_option('global','waptservice_sslport'):
-                port = config.get('global','waptservice_sslport')
-                if port:
-                    self.waptservice_sslport = int(port)
-                else:
-                    self.waptservice_sslport = None
-            else:
-                self.waptservice_sslport=None
-
             if config.has_option('global','zmq_port'):
                 self.zmq_port = int(config.get('global','zmq_port'))
             else:
@@ -346,7 +313,6 @@ class WaptServiceConfig(object):
 
             if config.has_option('global','wapt_server'):
                 self.waptserver = common.WaptServer().load_config(config)
-                self.authorized_callers_ip = get_authorized_callers_ip(self.waptserver.server_url)
             else:
                 self.waptserver = None
 
@@ -452,7 +418,8 @@ app.waptconfig = waptconfig
 app_babel = Babel(app)
 
 def apply_host_settings(waptconfig):
-    #apply waptservice / waptexit specific settings
+    """Apply waptservice / waptexit specific settings
+    """
     wapt = Wapt(config_filename = waptconfig.config_filename)
     try:
         if waptconfig.max_gpo_script_wait is not None and wapt.max_gpo_script_wait != waptconfig.max_gpo_script_wait:
@@ -469,10 +436,11 @@ def apply_host_settings(waptconfig):
 
 
 def wapt():
+    """Flask request contextual cached Wapt instance access"""
     if not hasattr(g,'wapt'):
         g.wapt = Wapt(config_filename = waptconfig.config_filename)
         apply_host_settings(waptconfig)
-    # apply settings
+    # apply settings if changed at each wapt access...
     elif g.wapt.reload_config_if_updated():
         #apply waptservice / waptexit specific settings
         apply_host_settings(waptconfig)
@@ -522,7 +490,10 @@ def authenticate():
 
 def check_auth(logon_name, password):
     """This function is called to check if a username /
-    password combination is valid.
+        password combination is valid against local waptservice admin configuration
+        or Local Admins.
+        If NOPASSWORD is set for wapt admin in wapt-get.ini, any user/password match
+        (for waptstarter standalone usage)
     """
     if app.waptconfig.waptservice_password != 'NOPASSWORD':
         if len(logon_name) ==0 or len(password)==0:
@@ -573,7 +544,7 @@ def check_auth(logon_name, password):
         return True
 
 def allow_local(f):
-    """Restrict access to localhost authenticated or waptserver IP"""
+    """Restrict access to localhost"""
     @wraps(f)
     def decorated(*args, **kwargs):
         if request.remote_addr in ['127.0.0.1']:
@@ -583,7 +554,7 @@ def allow_local(f):
     return decorated
 
 def allow_local_auth(f):
-    """Restrict access to localhost authenticated or waptserver IP"""
+    """Restrict access to localhost authenticated"""
     @wraps(f)
     def decorated(*args, **kwargs):
         if request.remote_addr in ['127.0.0.1']:
@@ -837,12 +808,6 @@ def get_runstatus():
         except Exception as e:
             logger.critical(u"*********** error " + ensure_unicode(e))
     return Response(common.jsondump(data), mimetype='application/json')
-
-@app.route('/check_ssl')
-@allow_local
-def check_ssk():
-    data = common.jsondump(request.input_stream._sock.getpeercert(binary_form=False))
-    return Response(data, mimetype='application/json')
 
 
 @app.route('/checkupgrades')
@@ -1462,15 +1427,6 @@ class WaptServiceRestart(WaptTask):
 
     def _run(self):
         """Launch an external 'wapt-get waptupgrade' process to upgrade local copy of wapt client"""
-        """
-        tmp_bat = tempfile.NamedTemporaryFile(prefix='waptrestart',suffix='.cmd',mode='wt',delete=False)
-        tmp_bat.write('ping -n 2 127.0.0.1 >nul\n')
-        tmp_bat.write('net stop waptservice\n')
-        tmp_bat.write('net start waptservice\n')
-        tmp_bat.write('del "%s"\n'%tmp_bat.name)
-        tmp_bat.close()
-        setuphelpers.create_onetime_task('waptservicerestart',tmp_bat.name,'')
-        """
         setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice')
         output = __(u'WaptService restart planned')
         self.result = {'result':'OK','message':output}
@@ -2490,7 +2446,7 @@ if __name__ == "__main__":
             while True:
                 try:
                     with Wapt(config_filename = waptconfig.config_filename) as tmp_wapt:
-                        print('Starting socketio on %s:%s...' % (waptserver_url.hostname,waptserver_url.port))
+                        logger.info('Starting socketio on %s:%s...' % (waptserver_url.hostname,waptserver_url.port))
                         socketio_client = SocketIO(host=ws_host, port=ws_port, verify=tmp_wapt.waptserver.verify_cert,
                             wait_for_connection = True,
                             hurry_intervals = 5,
@@ -2498,11 +2454,11 @@ if __name__ == "__main__":
                         wapt_remote_calls = socketio_client.define(WaptRemoteCalls)
                     wapt_remote_calls.emit('new connection',socketio_client._engineIO_session.id)
 
-                    print('Socket IO Started.')
+                    logger.info('Socket IO Started.')
                     socketio_client.wait()
                 except Exception as e:
                     logger.critical('Error in socket io connection %s' % repr(e))
-                print('Socket IO Stopped....')
+                logger.info('Socket IO Stopped....')
                 time.sleep(10)
 
         sio = threading.Thread(target=run_socketio)
