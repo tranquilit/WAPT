@@ -34,6 +34,8 @@ type
     ActComputerMgmt: TAction;
     ActComputerUsers: TAction;
     ActComputerServices: TAction;
+    ActOldTriggerUpdate: TAction;
+    ActOldTriggerUpgrade: TAction;
     ActmakePackageTemplate: TAction;
     ActRemoteAssist: TAction;
     ActTriggerWakeOnLan: TAction;
@@ -89,6 +91,10 @@ type
     MenuItem75: TMenuItem;
     MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
+    MenuItem78: TMenuItem;
+    MenuItem79: TMenuItem;
+    MenuItem80: TMenuItem;
+    MenuItem81: TMenuItem;
     odSelectInstaller: TOpenDialog;
     Panel13: TPanel;
     Panel14: TPanel;
@@ -376,6 +382,8 @@ type
     procedure ActGermanExecute(Sender: TObject);
     procedure ActGermanUpdate(Sender: TObject);
     procedure ActmakePackageTemplateExecute(Sender: TObject);
+    procedure ActOldTriggerUpdateExecute(Sender: TObject);
+    procedure ActOldTriggerUpgradeExecute(Sender: TObject);
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
     procedure ActTriggerWakeOnLanExecute(Sender: TObject);
@@ -1978,6 +1986,36 @@ end;
 procedure TVisWaptGUI.ActmakePackageTemplateExecute(Sender: TObject);
 begin
   MakePackageTemplate('');
+end;
+
+procedure TVisWaptGUI.ActOldTriggerUpdateExecute(Sender: TObject);
+begin
+  with TVisHostsUpgrade.Create(Self) do
+    try
+      Caption:= rsTriggerHostsUpgrade;
+      action := 'api/v1/trigger_upgrade';
+      hosts := Gridhosts.SelectedRows;
+
+      if ShowModal = mrOk then
+        actRefresh.Execute;
+    finally
+      Free;
+    end;
+end;
+
+procedure TVisWaptGUI.ActOldTriggerUpgradeExecute(Sender: TObject);
+begin
+  with TVisHostsUpgrade.Create(Self) do
+    try
+      Caption:= rsTriggerHostsUpgrade;
+      action := 'api/v1/trigger_upgrade';
+      hosts := Gridhosts.SelectedRows;
+
+      if ShowModal = mrOk then
+        actRefresh.Execute;
+    finally
+      Free;
+    end;
 end;
 
 procedure TVisWaptGUI.ActRemoteAssistExecute(Sender: TObject);

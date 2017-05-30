@@ -928,6 +928,14 @@ msgstr ""
 msgid "Make package template from setup file"
 msgstr ""
 
+#: tviswaptgui.actoldtriggerupdate.caption
+msgid "Old Trigger Hosts Update"
+msgstr ""
+
+#: tviswaptgui.actoldtriggerupgrade.caption
+msgid "Old Trigger Hosts Upgrade"
+msgstr ""
+
 #: tviswaptgui.actpackageinstall.caption
 msgctxt "TVISWAPTGUI.ACTPACKAGEINSTALL.CAPTION"
 msgid "Install package"
@@ -1560,8 +1568,17 @@ msgctxt "TVISWAPTGUI.MENUITEM76.CAPTION"
 msgid "Remove"
 msgstr ""
 
+#: tviswaptgui.menuitem78.caption
+msgid "Pre 1.5.0"
+msgstr ""
+
 #: tviswaptgui.menuitem8.caption
 msgid "Open..."
+msgstr ""
+
+#: tviswaptgui.menuitem81.caption
+msgctxt "TVISWAPTGUI.MENUITEM81.CAPTION"
+msgid "-"
 msgstr ""
 
 #: tviswaptgui.menuitem9.caption
