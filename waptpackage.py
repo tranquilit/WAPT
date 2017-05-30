@@ -701,7 +701,7 @@ class PackageEntry(object):
             raise Exception(u"%s is not a Wapt package" % self.wapt_fullpath())
         start_time = time.time()
         package_fn = self.wapt_fullpath()
-        logger.debug('Signing %s with key %s, and certificate cn %s' % (package_fn,private_key,certificate.cn))
+        logger.debug('Signing %s with key %s, and certificate CN "%s"' % (package_fn,private_key,certificate.cn))
         # sign the control
         self.sign_control(private_key,certificate)
         control = self.ascontrol().encode('utf8')
@@ -751,7 +751,7 @@ class PackageEntry(object):
 class WaptPackageDev(PackageEntry):
     """Source package directory"""
 
-    def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','*.pyc','src'],
+    def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','setup.pyc'],
                 target_directory=None):
         raise NotImplementedError()
 

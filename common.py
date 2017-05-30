@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.3.2"
+__version__ = "1.5.0.1"
 
 import os
 import re
@@ -3033,6 +3033,7 @@ class Wapt(object):
         self.check_cancelled(u'Install of %s cancelled before starting up'%ensure_unicode(fname))
         logger.info(u"Register start of install %s as user %s to local DB with params %s" % (ensure_unicode(fname), setuphelpers.get_current_user(), params_dict))
         logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
+
         status = 'INIT'
         if not self.public_certs:
             raise EWaptMissingCertificate(u'install_wapt %s: No public Key provided for package signature checking.'%(fname,))
@@ -3086,16 +3087,6 @@ class Wapt(object):
                 )
             # we setup a redirection of stdout to catch print output from install scripts
             sys.stderr = sys.stdout = install_output = LogInstallOutput(sys.stderr,self.waptdb,install_id)
-            """
-            hdlr = logging.StreamHandler(install_output)
-            hdlr.setFormatter(logging.Formatter(u'%(asctime)s %(levelname)s %(message)s'))
-            if logger.handlers:
-                old_hdlr = logger.handlers[0]
-                logger.handlers[0] = hdlr
-            else:
-                old_hdlr = None
-                logger.addHandler(hdlr)
-            """
 
             self.check_cancelled()
             logger.info(u"Installing package %s"%(ensure_unicode(fname),))
@@ -3127,8 +3118,12 @@ class Wapt(object):
 
                 self.check_cancelled()
                 exitstatus = None
+                new_uninstall_key = None
+                uninstallstring = None
+
                 setup_filename = os.path.join( packagetempdir,'setup.py')
-                # in case we have no setup.py
+
+                # take in account the case we have no setup.py
                 if os.path.isfile(setup_filename):
                     os.chdir(os.path.dirname(setup_filename))
                     if not os.getcwd() in sys.path:
@@ -3186,39 +3181,42 @@ class Wapt(object):
                         logger.warning(u'Dry run, not actually running setup.install()')
                         exitstatus = None
 
-                if exitstatus is None or exitstatus == 0:
+                    if exitstatus is None or exitstatus == 0:
+                        status = 'OK'
+                    else:
+                        status = exitstatus
+
+                    # get uninstallkey from setup module (string or array of strings)
+                    if hasattr(setup,'uninstallkey'):
+                        new_uninstall_key = ensure_list(setup.uninstallkey)[:]
+                        # check that uninstallkey(s) are in registry
+                        if not self.dry_run:
+                            key_errors = []
+                            for key in new_uninstall_key:
+                                if not setuphelpers.uninstall_key_exists(uninstallkey=key):
+                                    key_errors.append(key)
+                            if key_errors:
+                                if len(key_errors)>1:
+                                    raise Exception(u'The uninstall keys: \n%s\n have not been found in system registry after softwares installation.' % ('\n'.join(key_errors),))
+                                else:
+                                    raise Exception(u'The uninstall key: %s has not been found in system registry after software installation.' % (' '.join(key_errors),))
+
+                    else:
+                        new_uninstall = self.registry_uninstall_snapshot()
+                        new_uninstall_key = [ k for k in new_uninstall if not k in previous_uninstall]
+
+                    # get uninstallstring from setup module (string or array of strings)
+                    if hasattr(setup,'uninstallstring'):
+                        uninstallstring = setup.uninstallstring[:]
+                    else:
+                        uninstallstring = None
+                    logger.info(u'  uninstall keys : %s' % (new_uninstall_key,))
+                    logger.info(u'  uninstall strings : %s' % (uninstallstring,))
+
+                    logger.info(u"Install script finished with status %s" % status)
+                else:
+                    logger.info(u'No setup.py')
                     status = 'OK'
-                else:
-                    status = 'ERROR'
-
-                # get uninstallkey from setup module (string or array of strings)
-                if hasattr(setup,'uninstallkey'):
-                    new_uninstall_key = ensure_list(setup.uninstallkey)[:]
-                    # check that uninstallkey(s) are in registry
-                    if not self.dry_run:
-                        key_errors = []
-                        for key in new_uninstall_key:
-                            if not setuphelpers.uninstall_key_exists(uninstallkey=key):
-                                key_errors.append(key)
-                        if key_errors:
-                            if len(key_errors)>1:
-                                raise Exception(u'The uninstall keys: \n%s\n have not been found in system registry after softwares installation.' % ('\n'.join(key_errors),))
-                            else:
-                                raise Exception(u'The uninstall key: %s has not been found in system registry after software installation.' % (' '.join(key_errors),))
-
-                else:
-                    new_uninstall = self.registry_uninstall_snapshot()
-                    new_uninstall_key = [ k for k in new_uninstall if not k in previous_uninstall]
-
-                # get uninstallstring from setup module (string or array of strings)
-                if hasattr(setup,'uninstallstring'):
-                    uninstallstring = setup.uninstallstring[:]
-                else:
-                    uninstallstring = None
-                logger.info(u'  uninstall keys : %s' % (new_uninstall_key,))
-                logger.info(u'  uninstall strings : %s' % (uninstallstring,))
-
-                logger.info(u"Install script finished with status %s" % status)
 
             finally:
                 if istemporary:
@@ -3235,6 +3233,7 @@ class Wapt(object):
                             time.sleep(2)
                     else:
                         logger.warning(u"Unable to clean tmp dir")
+
             # rowid,install_status,install_output,uninstall_key=None,uninstall_string=None
             self.waptdb.update_install_status(install_id,
                 install_status=status,
@@ -4557,7 +4556,7 @@ class Wapt(object):
             self._private_key_cache = SSLPrivateKey(self.private_key,callback=self.key_passwd_callback)
         return self._private_key_cache
 
-    def sign_package(self,zip_or_directoryname,excludes=['.svn','.git','.gitignore','*.pyc','src'],private_key=None,callback=None):
+    def sign_package(self,zip_or_directoryname,excludes=['.svn','.git','.gitignore','*.pyc','src'],private_key=None,certificate=None,callback=None):
         """Calc the signature of the WAPT/manifest.sha1 file and put/replace it in ZIP or directory.
             if directory, creates WAPT/manifest.sha1 and add it to the content of package
             create a WAPT/signature file and it to directory or zip file.
@@ -4594,36 +4593,38 @@ class Wapt(object):
             logger.info('Loading private key %s'%private_key)
             key = SSLPrivateKey(private_key,callback=callback)
 
-        # get matching certificate
-        try:
-            logger.debug(u'Trying to get matching certificate from pem CA file : %s' % key.private_key_filename)
-            ca = SSLCAChain(callback=callback)
-            ca.add_pem(key.private_key_filename)
-            certs = ca.matching_certs(key)
-            if certs:
-                cert = certs[-1]
-                logger.debug(u'Using certificate %s in pem file %s' % (cert,key.private_key_filename))
-            else:
-                cert = None
-                raise EWaptMissingCertificate(u'No matching certificate in PEM file %s'%key.private_key_filename)
-        except:
-            logger.debug(u'Trying to find matching certificate in directory %s' % os.path.dirname(key.private_key_filename))
-            certs = sorted(c for c in key.matching_certs(os.path.dirname(key.private_key_filename)))
-            if not certs:
-                raise EWaptMissingCertificate(u'Can not find a valid certificate matching the key %s in same PEM file or in directory %s' % (private_key,os.path.dirname(key.private_key_filename)))
-            else:
-                # use most recent
-                cert = certs[-1]
-                logger.debug(u'Using certificate %s' % cert)
+        cert = certificate
+        if not cert:
+            # get matching certificate
+            try:
+                logger.debug(u'Trying to get matching certificate from pem CA file : %s' % key.private_key_filename)
+                ca = SSLCAChain(callback=callback)
+                ca.add_pem(key.private_key_filename)
+                certs = ca.matching_certs(key)
+                if certs:
+                    cert = certs[-1]
+                    logger.debug(u'Using certificate %s in pem file %s' % (cert,key.private_key_filename))
+                else:
+                    cert = None
+                    raise EWaptMissingCertificate(u'No matching certificate in PEM file %s'%key.private_key_filename)
+            except:
+                logger.debug(u'Trying to find matching certificate in directory %s' % os.path.dirname(key.private_key_filename))
+                certs = sorted(c for c in key.matching_certs(os.path.dirname(key.private_key_filename)))
+                if not certs:
+                    raise EWaptMissingCertificate(u'Can not find a valid certificate matching the key %s in same PEM file or in directory %s' % (private_key,os.path.dirname(key.private_key_filename)))
+                else:
+                    # use most recent
+                    cert = certs[-1]
+                    logger.debug(u'Using certificate %s' % cert)
+        elif not cert.match_key(key):
+            raise EWaptBadCertificate('Certificate %s doesn''t match the private key %s' % (cert,key))
+
         logger.info(u'Using identity : %s' % cert.cn)
         pe =  PackageEntry().load_control_from_wapt(zip_or_directoryname)
         return pe.sign_package(key,cert)
 
-    def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','*.pyc','src'],
-                target_directory=None,
-                include_signer=False,
-                private_key=None,
-                callback=None):
+    def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','setup.pyc'],
+                target_directory=None):
         """Build the WAPT package from a directory
 
         Call update_control from setup.py if this function is defined.
@@ -4733,33 +4734,8 @@ class Wapt(object):
         if not inc_done and inc_package_release:
             entry.inc_build()
 
-        if include_signer:
-            if not callback:
-                callback = self.key_passwd_callback
 
-            # use cached key file if not provided
-            # the password will be retrieved by the self.key_passwd_callback
-            if not private_key:
-                private_key = self.private_key
-                key = self.private_key_cache
-            else:
-                # use provided key filename, use provided callback.
-                key = SSLPrivateKey(private_key,callback)
-
-            # find proper certificate
-            for fn in self.public_certs:
-                crt = SSLCertificate(fn)
-                if crt.match_key(key):
-                    break
-                else:
-                    crt = None
-            if not crt:
-                raise EWaptMissingCertificate('No matching certificate found for private key %s'%self.private_key)
-            entry.sign_control(key,crt)
-            logger.info('Signer: %s'%entry.signer)
-            logger.info('Signer fingerprint: %s'%entry.signer_fingerprint)
-
-        if inc_package_release or include_signer:
+        if inc_package_release:
             entry.save_control_to_wapt(directoryname)
 
         entry.filename = entry.make_package_filename()
@@ -4812,7 +4788,7 @@ class Wapt(object):
         for source_dir in [os.path.abspath(p) for p in sources_directories]:
             if os.path.isdir(source_dir):
                 logger.info(u'Building  %s' % source_dir)
-                buildresult = self.build_package(source_dir,inc_package_release=inc_package_release,target_directory=target_directory,callback=callback)
+                buildresult = self.build_package(source_dir,inc_package_release=inc_package_release,target_directory=target_directory)
                 package_fn = buildresult['filename']
                 if package_fn:
                     buildresults.append(buildresult)

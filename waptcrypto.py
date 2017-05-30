@@ -48,6 +48,9 @@ class EWaptMissingPrivateKey(Exception):
 class EWaptMissingCertificate(Exception):
     pass
 
+class EWaptBadCertificate(Exception):
+    pass
+
 def check_key_password(key_filename,password=""):
     """Check if provided password is valid to read the PEM private key
     >>> if not os.path.isfile('c:/private/test.pem'):
@@ -209,7 +212,7 @@ class SSLCAChain(object):
     def certificate_chain(self,crt):
         result = [crt]
         issuer = self.certificate(subject_hash=crt.crt.get_issuer().as_hash())
-        while issuer:
+        while issuer and issuer != result[-1] and issuer.is_ca():
             result.append(issuer)
             issuer_subject_hash = issuer.crt.get_issuer().as_hash()
             new_issuer = self.certificate(subject_hash=issuer_subject_hash)
@@ -297,6 +300,9 @@ class SSLPrivateKey(object):
 
     def __cmp__(self,key):
         return cmp(self.modulus,key.modulus)
+
+    def __repr__(self):
+        return '<SSLPrivateKey %s>' % repr(self.private_key_filename)
 
 
 class SSLCertificate(object):
@@ -459,11 +465,16 @@ class SSLCertificate(object):
         return u'SSLCertificate cn=%s'%self.cn
 
     def __repr__(self):
-        return u'<SSLCertificate cn=%s / issuer=%s / validity=%s - %s>'%(self.cn,self.issuer.get('CN','?'),self.not_before.strftime('%Y-%m-%d'),self.not_after.strftime('%Y-%m-%d'))
+        return '<SSLCertificate cn=%s / issuer=%s / validity=%s - %s / Code-Signing=%s / CA=%s>'%\
+            (repr(self.cn),repr(self.issuer.get('CN','?')),
+            self.not_before.strftime('%Y-%m-%d'),
+            self.not_after.strftime('%Y-%m-%d'),
+            self.is_code_signing(),self.is_ca())
 
     def __cmp__(self,crt):
         if isinstance(crt,SSLCertificate):
-            return cmp(self.fingerprint,crt.fingerprint)
+            return cmp((self.is_valid(),self.is_code_signing(),self.not_before,self.not_after,self.fingerprint),
+                            (crt.is_valid(),crt.is_code_signing(),crt.not_before,crt.not_after,crt.fingerprint))
         elif isinstance(crt,dict):
             return cmp(self.subject,crt)
         else:
