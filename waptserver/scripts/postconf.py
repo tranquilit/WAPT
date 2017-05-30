@@ -179,16 +179,16 @@ def get_mongodb_service_name():
         raise Exception()
 
 def disable_mongod():
-    print(subprocess.check_output('systemctl disable %s ' % get_mongodb_service_name(),shell=True)
+    print(subprocess.check_output('systemctl disable %s ' % get_mongodb_service_name(),shell=True))
 
 def enable_mongod():
-    print(subprocess.check_output('systemctl enable %s ' % get_mongodb_service_name(),shell=True)
+    print(subprocess.check_output('systemctl enable %s ' % get_mongodb_service_name(),shell=True))
 
 def start_mongod():
-    print(subprocess.check_output('systemctl start %s ' % get_mongodb_service_name(),shell=True)
+    print(subprocess.check_output('systemctl start %s ' % get_mongodb_service_name(),shell=True))
 
 def stop_mongod():
-    print(subprocess.check_output('systemctl stop %s ' % get_mongodb_service_name(),shell=True)
+/bin/bash: q: command not found
 
 def get_apache_service_name():
     if type_redhat():
