@@ -2283,7 +2283,7 @@ class WaptRemoteCalls(SocketIONamespace):
             all_tasks.append(self.task_manager.add_task(WaptPackageInstall(req,force=force),notify_user=notify_user).as_dict())
 
         all_tasks.append(self.task_manager.add_task(WaptUpgrade(),notify_user=notify_user).as_dict())
-        all_tasks.append(self.task_manager.add_task(WaptCleanup(),notify_user=False))
+        all_tasks.append(self.task_manager.add_task(WaptCleanup(),notify_user=False).as_dict())
 
         if result_callback:
             result_callback(make_response(all_tasks))

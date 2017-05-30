@@ -1566,7 +1566,42 @@ def trigger_sio_update():
 @requires_auth
 def old_trigger_upgrade():
     """Proxy the wapt upgrade action to the client"""
-    return proxy_host_request(request,'upgrade.json')
+    uuid = request.args['uuid']
+    notify_user = request.args.get('notify_user', 0)
+    notify_server = request.args.get('notify_server', 1)
+    timeout = request.args.get('timeout',conf.get('clients_read_timeout',5))
+
+    try:
+        host = Hosts.select(Hosts.computer_fqdn,
+            Hosts.listening_address,Hosts.listening_port).where((Hosts.uuid==uuid) & (~Hosts.listening_protocol.is_null() )).first()
+        if host:
+            args['uuid'] = uuid
+            args['address'] = Hosts.listening_address
+            args['protocol'] = Hosts.listening_protocol
+            args['port'] = Hosts.listening_port
+
+            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/upgrade.json?uuid=%(uuid)s" % args,proxies={'http':None,'https':None},verify=False, timeout=timeout).text
+            try:
+                client_result = json.loads(client_result)
+                result = client_result['content']
+                if len(result)<=1:
+                    msg = _(u"Nothing to upgrade.")
+                else:
+                    packages= [t['description'] for t in result if t['classname'] != 'WaptUpgrade']
+                    msg = _(u"Triggered {} task(s):\n{}").format(len(packages),'\n'.join(packages))
+            except ValueError:
+                if 'Restricted access' in client_result:
+                    raise EWaptForbiddden(client_result)
+                else:
+                    raise Exception(client_result)
+        else:
+            raise EWaptMissingHostData("The host is unknown")
+        return make_response(result,
+            msg = msg,
+            success = client_result['result'] == 'OK',)
+    except Exception as e:
+        return make_response_from_exception(e)
+
 
 
 @app.route('/api/v1/trigger_update')
@@ -1584,6 +1619,7 @@ def trigger_sio_upgrade():
         uuid = request.args['uuid']
         notify_user = request.args.get('notify_user', 0)
         notify_server = request.args.get('notify_server', 1)
+        timeout = request.args.get('timeout',conf.get('clients_read_timeout',5))
 
         host = Hosts.select(Hosts.computer_fqdn,Hosts.listening_address).where((Hosts.uuid==uuid) & (Hosts.listening_protocol == 'websockets')).first()
         if host:
