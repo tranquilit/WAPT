@@ -170,50 +170,44 @@ def enable_redhat_vhost():
         subprocess.check_output('mv /etc/httpd/conf.d/ssl.conf /etc/httpd/conf.d/ssl.conf.disabled',shell=True)
     #TODO : enable kerberos 
 
+def get_mongodb_service_name():
+    if type_redhat():
+        return 'mongod'
+    elif type_debian():
+        return 'mongodb'
+    else:
+        raise Exception()
 
 def disable_mongod():
-    if type_redhat():
-        subprocess.check_output(['systemctl', 'disable', 'mongod'])
-    elif type_debian():
-        subprocess.check_output(['update-rc.d', 'mongodb', 'disable'])
+    print(subprocess.check_output('systemctl disable %s ' % get_mongodb_service_name(),shell=True)
 
 def enable_mongod():
-    if type_redhat():
-        subprocess.check_output(['systemctl', 'enable', 'mongod'])
-    elif type_debian():
-        subprocess.check_output(['update-rc.d', 'mongodb', 'enable'])
+    print(subprocess.check_output('systemctl enable %s ' % get_mongodb_service_name(),shell=True)
 
 def start_mongod():
-    if type_redhat():
-        subprocess.check_output(['service', 'mongod', 'start'])
-    elif type_debian():
-        subprocess.check_output(['service', 'mongodb', 'start'])
+    print(subprocess.check_output('systemctl start %s ' % get_mongodb_service_name(),shell=True)
 
 def stop_mongod():
-    if type_redhat():
-        subprocess.check_output(['service', 'mongod', 'stop'])
-    elif type_debian():
-        subprocess.check_output(['service', 'mongodb', 'stop'])
+    print(subprocess.check_output('systemctl stop %s ' % get_mongodb_service_name(),shell=True)
 
+def get_apache_service_name():
+    if type_redhat():
+        return 'httpd'
+    elif type_debian():
+        return 'apache2'
+    else:
+        raise Exception()
 
 def enable_apache():
-    if type_redhat():
-        subprocess.check_output(['systemctl', 'enable', 'httpd'])
-    elif type_debian():
-        subprocess.check_output(['update-rc.d', 'apache2', 'enable'])
-
+    print(subprocess.check_output('systemctl enable %s' % get_apache_service_name(), shell=True))
 
 def start_apache():
-    if type_redhat():
-        subprocess.check_output(['service', 'httpd', 'restart'])
-    elif type_debian():
-        subprocess.check_output(['service', 'apache2', 'restart'])
+    print(subprocess.check_output('systemctl restart %s ' % get_apache_service_name(),shell=True))
 
 def enable_waptserver():
     print(subprocess.check_output('systemctl restart waptserver',shell=True))
 
 def start_waptserver():
-#    subprocess.check_output(['service', 'waptserver', 'restart'])
     print (subprocess.check_output("systemctl restart waptserver",shell=True))
 
 

@@ -153,16 +153,13 @@ subprocess.check_output(
 subprocess.check_output(
     r'find ./builddir/opt/wapt/ -type d -exec chmod 755 {} \;', shell=True)
 
-print("copying the startup script /etc/init.d/waptserver", file=sys.stderr)
+print("copying systemd startup script", file=sys.stderr)
+systemd_build_dest_dir = './builddir/usr/lib/systemd/system/'
 try:
-    mkdir_p('./builddir/etc/init.d/')
-    copyfile('../scripts/waptserver-init', './builddir/etc/init.d/waptserver')
-    subprocess.check_output(
-        'chmod 755 ./builddir/etc/init.d/waptserver', shell=True)
-    subprocess.check_output(
-        'chown root:root ./builddir/etc/init.d/waptserver', shell=True)
+    mkdir_p(systemd_build_dest_dir)
+    copyfile('../scripts/waptserver.service', os.path.join(systemd_build_dest_dir,'waptserver.service'))
 except Exception as e:
-    print('error: \n%s' % e, file=sys.stderr)
+    print (sys.stderr, 'error: \n%s' % e, file=sys.stderr)
     exit(1)
 
 print("copying logrotate script /etc/logrotate.d/waptserver", file=sys.stderr)

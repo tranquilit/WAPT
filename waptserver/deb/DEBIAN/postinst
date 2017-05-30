@@ -12,7 +12,7 @@ OLD_CFG_PATH = '/opt/wapt/waptserver/waptserver.ini'
 NEW_CFG_PATH = '/opt/wapt/conf/waptserver.ini'
 
 
-subprocess.check_output('update-rc.d waptserver defaults',shell=True)
+subprocess.check_output('systemctl enable  waptserver',shell=True)
 
 
 print("Setting up pid and log files")
