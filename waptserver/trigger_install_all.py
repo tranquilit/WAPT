@@ -110,11 +110,11 @@ if __name__ == '__main__':
             for address in ensure_list(host.connected_ips):
                 try:
                     args['address'] = address
-                    client_result = requests.get("http://%(address)s:8088/install.json?uuid=%(uuid)s&package=%(package)s" % args,
+                    client_result = requests.get("http://%(address)s:8088/install.json?uuid=%(uuid)s&package=%(package)s&force=1" % args,
                         proxies={'http':None,'https':None},verify=False, timeout=options.timeout).text
                     try:
                         client_result = json.loads(client_result)
-                        print 'OK'
+                        print('OK task #%s'%result['id'])
                         break
                     except ValueError:
                         if 'Restricted access' in client_result:
