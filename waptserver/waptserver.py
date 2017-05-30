@@ -858,7 +858,8 @@ def proxy_host_request(request, action):
                         .where((Hosts.uuid==uuid) and ~Hosts.listening_address.is_null() and (Hosts.listening_protocol=='websockets'))\
                         .dicts()\
                         .first(1)
-                if host_data:
+
+                if host_data and host_data.get('listening_address',None):
                     msg = u''
                     logger.info(
                         "Launching %s with args %s for %s at address %s..." %
@@ -899,8 +900,9 @@ def proxy_host_request(request, action):
                                     msg='%s' % repr(e),
                                     computer_fqdn='',
                                     ))
+                    if sid:
+                        tasks.append(socketio.start_background_task(emit_action,sid=sid,uuid=uuid,action=action,action_args=args,computer_fqdn=computer_fqdn))
 
-                    tasks.append(socketio.start_background_task(emit_action,sid=sid,uuid=uuid,action=action,action_args=args,computer_fqdn=computer_fqdn))
                 else:
                     result['errors'].append(
                         dict(
@@ -1562,55 +1564,6 @@ def trigger_sio_update():
         return make_response_from_exception(e)
 
 
-@app.route('/api/v1/trigger_upgrade')
-@requires_auth
-def old_trigger_upgrade():
-    """Proxy the wapt upgrade action to the client"""
-    uuid = request.args['uuid']
-    notify_user = request.args.get('notify_user', 0)
-    notify_server = request.args.get('notify_server', 1)
-    timeout = request.args.get('timeout',conf.get('clients_read_timeout',5))
-
-    try:
-        host = Hosts.select(Hosts.computer_fqdn,
-            Hosts.listening_address,Hosts.listening_port).where((Hosts.uuid==uuid) & (~Hosts.listening_protocol.is_null() )).first()
-        if host:
-            args['uuid'] = uuid
-            args['address'] = Hosts.listening_address
-            args['protocol'] = Hosts.listening_protocol
-            args['port'] = Hosts.listening_port
-
-            client_result = requests.get("%(protocol)s://%(address)s:%(port)d/upgrade.json?uuid=%(uuid)s" % args,proxies={'http':None,'https':None},verify=False, timeout=timeout).text
-            try:
-                client_result = json.loads(client_result)
-                result = client_result['content']
-                if len(result)<=1:
-                    msg = _(u"Nothing to upgrade.")
-                else:
-                    packages= [t['description'] for t in result if t['classname'] != 'WaptUpgrade']
-                    msg = _(u"Triggered {} task(s):\n{}").format(len(packages),'\n'.join(packages))
-            except ValueError:
-                if 'Restricted access' in client_result:
-                    raise EWaptForbiddden(client_result)
-                else:
-                    raise Exception(client_result)
-        else:
-            raise EWaptMissingHostData("The host is unknown")
-        return make_response(result,
-            msg = msg,
-            success = client_result['result'] == 'OK',)
-    except Exception as e:
-        return make_response_from_exception(e)
-
-
-
-@app.route('/api/v1/trigger_update')
-@requires_auth
-def old_trigger_update():
-    """Proxy the wapt upgrade action to the client"""
-    return proxy_host_request(request,'update.json')
-
-
 @app.route('/api/v3/trigger_upgrade')
 @requires_auth
 def trigger_sio_upgrade():
@@ -1624,17 +1577,8 @@ def trigger_sio_upgrade():
         host = Hosts.select(Hosts.computer_fqdn,Hosts.listening_address).where((Hosts.uuid==uuid) & (Hosts.listening_protocol == 'websockets')).first()
         if host:
             result = []
-            def result_callback(data):
-                result.append(data)
 
-            socketio.emit('trigger_upgrade',request.args, room = host.listening_address, callback = result_callback)
-
-            wait_loop = timeout * 20
-            while not result:
-                wait_loop -=1
-                if wait_loop < 0:
-                    raise EWaptTimeoutWaitingForResult('Timeout, client did not send result within %s s'%timeout)
-                socketio.sleep(0.05)
+            socketio.emit('trigger_upgrade',request.args, room = host.listening_address,callback = on_trigger_upgrade_result)
 
             msg = 'Upgrade launched on %s' % host.computer_fqdn
             return make_response(result,
