@@ -1562,6 +1562,20 @@ def trigger_sio_update():
         return make_response_from_exception(e)
 
 
+@app.route('/api/v1/trigger_upgrade')
+@requires_auth
+def old_trigger_upgrade():
+    """Proxy the wapt upgrade action to the client"""
+    return proxy_host_request(request,'upgrade.json')
+
+
+@app.route('/api/v1/trigger_update')
+@requires_auth
+def old_trigger_update():
+    """Proxy the wapt upgrade action to the client"""
+    return proxy_host_request(request,'update.json')
+
+
 @app.route('/api/v3/trigger_upgrade')
 @requires_auth
 def trigger_sio_upgrade():
@@ -2023,7 +2037,7 @@ if __name__ == "__main__":
     logger.info('Waptserver starting...')
     port = conf['waptserver_port']
     print Hosts.update(listening_protocol=None).where(not(Hosts.listening_protocol.is_null)).execute()
-    
+
     if options.devel==True:
         socketio.run(app,host='0.0.0.0', port=port, debug=options.devel,use_reloader=options.devel)
     else:
