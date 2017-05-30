@@ -2012,7 +2012,6 @@ class WaptTaskManager(threading.Thread):
                             self.running_task.summary = u"{}".format(ensure_unicode(e))
                             self.tasks_error.append(self.running_task)
                             self.broadcast_tasks_status(str('ERROR'),self.running_task)
-                        raise
                         logger.critical(ensure_unicode(e))
                         try:
                             logger.debug(ensure_unicode(traceback.format_exc()))
