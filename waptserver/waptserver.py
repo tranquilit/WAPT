@@ -1587,8 +1587,19 @@ def trigger_sio_upgrade():
 
         host = Hosts.select(Hosts.computer_fqdn,Hosts.listening_address).where((Hosts.uuid==uuid) & (Hosts.listening_protocol == 'websockets')).first()
         if host:
-            socketio.emit('trigger_upgrade',request.args, room = host.listening_address)
-            result = request.args
+            result = []
+            def result_callback(data):
+                result.append(data)
+
+            socketio.emit('trigger_upgrade',request.args, room = host.listening_address, callback = result_callback)
+
+            wait_loop = timeout * 20
+            while not result:
+                wait_loop -=1
+                if wait_loop < 0:
+                    raise EWaptTimeoutWaitingForResult('Timeout, client did not send result within %s s'%timeout)
+                socketio.sleep(0.05)
+
             msg = 'Upgrade launched on %s' % host.computer_fqdn
             return make_response(result,
                                  msg=msg,
