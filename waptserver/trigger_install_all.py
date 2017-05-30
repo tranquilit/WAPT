@@ -21,8 +21,16 @@
 #
 # -----------------------------------------------------------------------
 __version__ = "1.5.0"
-usage = """\
-%prog [-c configfile] [-l loglevel] package
+usage = """
+This script if aimed at triggering package upgrade through direct http call
+for client waptagent <=1.4. It is usefull for triggering upgrades from earlier
+waptagent version to wapt 1.5 which uses websockets.
+
+Note :
+client version<=1.4 are polled from the server using http requests.
+client version >=1.5 use websockets from clients. 
+
+trigger_install_all.py [-c configfile] [-l loglevel] [-t timeout] package
 """
 
 import os
@@ -110,10 +118,24 @@ if __name__ == '__main__':
             for address in ensure_list(host.connected_ips):
                 try:
                     args['address'] = address
-                    client_result = requests.get("http://%(address)s:8088/install.json?uuid=%(uuid)s&package=%(package)s" % args,
+                    print ("sending update command")
+                    client_result = requests.get("http://%(address)s:8088/register.json?uuid=%(uuid)s&force=1&notify_server=1" % args,
                         proxies={'http':None,'https':None},verify=False, timeout=options.timeout).text
                     try:
                         client_result = json.loads(client_result)
+                        print client_result
+                    except ValueError:
+                        if 'Restricted access' in client_result:
+                            print('Forbidden %s' % host.computer_fqdn)
+                        else:
+                            print('Error %s : %s' % repr(e))
+
+                    print ("sending install command")
+                    client_result = requests.get("http://%(address)s:8088/install.json?uuid=%(uuid)s&package=%(package)s&force=1" % args,
+                        proxies={'http':None,'https':None},verify=False, timeout=options.timeout).text
+                    try:
+                        client_result = json.loads(client_result)
+                        print json.dumps(client_result,indent=True)
                         print 'OK'
                         break
                     except ValueError:
