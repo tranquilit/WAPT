@@ -23,7 +23,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="5"/>
-      <BuildNr Value="2"/>
+      <BuildNr Value="3"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion="1.5.0"/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -72,7 +72,7 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="218"/>
-        <CursorPos X="116" Y="241"/>
+        <CursorPos X="144" Y="247"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>

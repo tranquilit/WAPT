@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.0"
+__version__ = "1.5.0.3"
 
 import os
 import sys
@@ -1730,6 +1730,11 @@ def on_leave(data):
     room = request.args.get('uuid',None)
     if room:
         leave_room(room)
+
+@socketio.on_error()
+def on_wapt_socketio_error(e):
+    logger.critical('Socket IO : An error has occurred for sid %s, uuid:%s : %s' % (request.sid,request.args.get('uuid',None),repr(e)))
+
 
 ######### end websockets
 
