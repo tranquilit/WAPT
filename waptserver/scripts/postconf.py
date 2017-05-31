@@ -127,7 +127,7 @@ def enable_debian_vhost():
     void = subprocess.check_output(['a2enmod', 'proxy_wstunnel'], stderr=subprocess.STDOUT)
     void = subprocess.check_output(['a2enmod', 'auth_kerb'], stderr=subprocess.STDOUT)
     void = subprocess.check_output(['a2ensite', 'wapt.conf'], stderr=subprocess.STDOUT)
-    void = subprocess.check_output(['/etc/init.d/apache2', 'graceful'], stderr=subprocess.STDOUT)
+    void = subprocess.check_output('systemctl restart apache2',shell=True, stderr=subprocess.STDOUT)
 
 def ensure_postgresql_db(db_name='wapt',db_owner='wapt',db_password=''):
     """ create postgresql wapt db and user if it does not exists """
@@ -188,7 +188,7 @@ def start_mongod():
     print(subprocess.check_output('systemctl start %s ' % get_mongodb_service_name(),shell=True))
 
 def stop_mongod():
-/bin/bash: q: command not found
+    print(subprocess.check_output('systemctl stop %s ' % get_mongodb_service_name(),shell=True))
 
 def get_apache_service_name():
     if type_redhat():
