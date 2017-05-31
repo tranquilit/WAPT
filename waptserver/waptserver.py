@@ -174,8 +174,8 @@ def close_db(error):
         wapt_db.commit()
     except:
         wapt_db.rollback()
-    #if not wapt_db.is_closed():
-    #    wapt_db.close()
+    if not wapt_db.is_closed():
+        wapt_db.close()
 
 
 def sio_authenticated_only(f):
@@ -1663,6 +1663,8 @@ def host_tasks_status():
     except Exception as e:
         return make_response_from_exception(e)
 
+# SocketIO Callbacks / handlers
+
 @socketio.on('trigger_update_result')
 def on_trigger_update_result(result):
     """Return from update on client"""
@@ -1684,40 +1686,58 @@ def on_install_result(result):
 @socketio.on('reconnect')
 @socketio.on('connect')
 def on_waptclient_connect():
-    uuid = request.args.get('uuid',None)
-    logger.info('Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
-    # stores sid in database
-    Hosts.update(
-        listening_timestamp=datetime2isodate(),
-        listening_protocol='websockets',
-        listening_address=request.sid,
-        reachable='OK',
-        ).where(Hosts.uuid == uuid).execute()
+    try:
+        uuid = request.args.get('uuid',None)
+        logger.info('Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
+        # stores sid in database
+        Hosts.update(
+            listening_timestamp=datetime2isodate(),
+            listening_protocol='websockets',
+            listening_address=request.sid,
+            reachable='OK',
+            ).where(Hosts.uuid == uuid).execute()
+        wapt_db.commit()
+    except:
+        wapt_db.rollback()
+    if not wapt_db.is_closed():
+        wapt_db.close()
 
 @socketio.on('wapt_pong')
 def on_wapt_pong():
-    print('wapt_pong')
-    uuid = request.args.get('uuid',None)
-    logger.info('Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
-    # stores sid in database
-    Hosts.update(
-        listening_timestamp=datetime2isodate(),
-        listening_protocol='websockets',
-        listening_address=request.sid,
-        reachable='OK',
-        ).where(Hosts.uuid == uuid).execute()
+    try:
+        print('wapt_pong')
+        uuid = request.args.get('uuid',None)
+        logger.info('Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
+        # stores sid in database
+        Hosts.update(
+            listening_timestamp=datetime2isodate(),
+            listening_protocol='websockets',
+            listening_address=request.sid,
+            reachable='OK',
+            ).where(Hosts.uuid == uuid).execute()
+        wapt_db.commit()
+    except:
+        wapt_db.rollback()
+    if not wapt_db.is_closed():
+        wapt_db.close()
 
 @socketio.on('disconnect')
 def on_waptclient_disconnect():
-    uuid = request.args.get('uuid',None)
-    logger.info('Socket.IO disconnection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
-    # clear sid in database
-    Hosts.update(
-        listening_timestamp=datetime2isodate(),
-        listening_protocol=None,
-        listening_address=None,
-        reachable = 'UNREACHABLE',
-        ).where(Hosts.uuid == uuid).execute()
+    try:
+        uuid = request.args.get('uuid',None)
+        logger.info('Socket.IO disconnection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
+        # clear sid in database
+        Hosts.update(
+            listening_timestamp=datetime2isodate(),
+            listening_protocol=None,
+            listening_address=None,
+            reachable = 'UNREACHABLE',
+            ).where(Hosts.uuid == uuid).execute()
+        wapt_db.commit()
+    except:
+        wapt_db.rollback()
+    if not wapt_db.is_closed():
+        wapt_db.close()
 
 @socketio.on('join')
 def on_join(data):
@@ -2058,6 +2078,7 @@ if __name__ == "__main__":
     logger.info('Waptserver starting...')
     port = conf['waptserver_port']
     print Hosts.update(listening_protocol=None).where(not(Hosts.listening_protocol.is_null)).execute()
+    wapt_db.close()
 
     if options.devel==True:
         socketio.run(app,host='0.0.0.0', port=port, debug=options.devel,use_reloader=options.devel)
