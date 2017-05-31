@@ -112,9 +112,6 @@ if v != (2, 7):
 
 logger = logging.getLogger('waptservice')
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
-logger.setLevel(logging.DEBUG)
-logger.debug('test')
-logger.critical('test2')
 
 class WaptEvent(object):
     """Store single event with list of subscribers"""
