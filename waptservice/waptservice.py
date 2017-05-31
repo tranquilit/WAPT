@@ -233,6 +233,11 @@ class WaptServiceConfig(object):
         self.max_gpo_script_wait = None
         self.pre_shutdown_timeout = None
 
+        self.websockets_proto = None
+        self.websockets_host = None
+        self.websockets_port = None
+        self.websockets_verify_cert = False
+
     def load(self):
         """Load waptservice parameters from global wapt-get.ini file"""
         config = ConfigParser.RawConfigParser()
@@ -313,8 +318,29 @@ class WaptServiceConfig(object):
 
             if config.has_option('global','wapt_server'):
                 self.waptserver = common.WaptServer().load_config(config)
+                waptserver_url = urlparse(self.waptserver.server_url)
+                if waptserver_url.port is None:
+                    if waptserver_url.scheme == 'https':
+                        self.websockets_port = 443
+                        self.websockets_host = waptserver_url.hostname
+                        self.websockets_proto = 'https'
+                        self.websockets_verify_cert = self.waptserver.verify_cert
+                    else:
+                        self.websockets_port = 80
+                        self.websockets_host = waptserver_url.hostname
+                        self.websockets_proto = 'http'
+                else:
+                    self.websockets_port = waptserver_url.port
+                    self.websockets_host = waptserver_url.hostname
+                    self.websockets_proto = 'http'
+                self.websockets_verify_cert = self.waptserver.verify_cert
+
             else:
                 self.waptserver = None
+                self.websockets_host = None
+                self.websockets_proto = None
+                self.websockets_port = None
+                self.websockets_verify_cert = False
 
             # settings for waptexit / shutdown policy
             #   recommended settings :
@@ -326,7 +352,6 @@ class WaptServiceConfig(object):
                     setattr(self,param,config.getint('global',param))
                 else:
                     setattr(self,param,None)
-
 
         else:
             raise Exception (_("FATAL, configuration file {} has no section [global]. Please check Waptserver documentation").format(self.config_filename))
@@ -2247,12 +2272,12 @@ def make_response_from_exception(exception,error_code=''):
     return data
 
 
-class WaptRemoteCalls(SocketIONamespace):
+class WaptSocketIORemoteCalls(SocketIONamespace):
 
     def initialize(self):
         """Initialize custom variables here.
         You can override this method."""
-        print('New waptremotecall instance created...')
+        logger.debug('New waptremotecall instance created...')
         global task_manager
         self.task_manager = task_manager
 
@@ -2369,6 +2394,41 @@ class WaptRemoteCalls(SocketIONamespace):
         logger.debug(u'socket.io event : %s, args: %s' % (event,args))
 
 
+class WaptSocketIOClient(threading.Thread):
+    def __init__(self,config_filename = 'c:/wapt/wapt-get.ini'):
+        threading.Thread.__init__(self)
+        self.status_lock = threading.RLock()
+        self.config_filename = config_filename
+        self.task_manager = task_manager
+        self.config = WaptServiceConfig(config_filename)
+        self.socketio_client = None
+        self.wapt_remote_calls = None
+
+    def run(self):
+        self.config.reload_if_updated()
+        while True:
+            try:
+                with Wapt(config_filename = self.config.config_filename) as tmp_wapt:
+                    logger.info('Starting socketio on "%s://%s:%s" ...' % (self.config.websockets_proto,self.config.websockets_host,self.config.websockets_host))
+                    self.socketio_client = SocketIO(
+                            host="%s://%s" % (self.config.websockets_proto,self.config.websockets_host),
+                            port=self.config.websockets_port,
+                            verify=self.config.websockets_verify_cert,
+                            wait_for_connection = True,
+                            hurry_intervals = 5,
+                            params = {'uuid':tmp_wapt.host_uuid})
+                    self.wapt_remote_calls = self.socketio_client.define(WaptSocketIORemoteCalls)
+                logger.info('Socket IO Started.')
+                while not self.config.reload_if_updated():
+                    self.socketio_client.wait(10)
+                    logger.debug('Check Websocket config')
+
+            except Exception as e:
+                logger.critical('Error in socket io connection %s' % repr(e))
+                raise
+            logger.info('Socket IO Stopped....')
+            time.sleep(10)
+
 if __name__ == "__main__":
     usage="""\
     %prog -c configfile [action]
@@ -2432,39 +2492,7 @@ if __name__ == "__main__":
     print('Task queue running')
 
     if waptconfig.waptserver:
-        waptserver_url = urlparse(waptconfig.waptserver.server_url)
-        if waptserver_url.port is None:
-            if waptserver_url.scheme == 'https':
-                ws_port = 443
-                ws_host = 'https://'+waptserver_url.hostname
-            else:
-                ws_port = 80
-                ws_host = waptserver_url.hostname
-        else:
-            ws_port = waptserver_url.port
-            ws_host = waptserver_url.hostname
-
-        ## TODO : recreate thread if waptserver attribute in wapt-get.ini config file is changed
-        def run_socketio():
-            while True:
-                try:
-                    with Wapt(config_filename = waptconfig.config_filename) as tmp_wapt:
-                        logger.info('Starting socketio on %s:%s...' % (waptserver_url.hostname,waptserver_url.port))
-                        socketio_client = SocketIO(host=ws_host, port=ws_port, verify=tmp_wapt.waptserver.verify_cert,
-                            wait_for_connection = True,
-                            hurry_intervals = 5,
-                            params = {'uuid':tmp_wapt.host_uuid})
-                        wapt_remote_calls = socketio_client.define(WaptRemoteCalls)
-                    wapt_remote_calls.emit('new connection',socketio_client._engineIO_session.id)
-
-                    logger.info('Socket IO Started.')
-                    socketio_client.wait()
-                except Exception as e:
-                    logger.critical('Error in socket io connection %s' % repr(e))
-                logger.info('Socket IO Stopped....')
-                time.sleep(10)
-
-        sio = threading.Thread(target=run_socketio)
+        sio = WaptSocketIOClient(waptconfig.config_filename)
         sio.start()
 
     if options.devel:
