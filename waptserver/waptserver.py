@@ -1681,6 +1681,7 @@ def on_install_result(result):
     print('Trigger install result : %s (uuid:%s)' %(result,request.args['uuid']))
     emit('trigger_install_result',result,room = request.args['uuid'], include_self=False)
 
+@socketio.on('reconnect')
 @socketio.on('connect')
 def on_waptclient_connect():
     uuid = request.args.get('uuid',None)
