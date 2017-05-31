@@ -176,10 +176,10 @@ end;
 procedure TVisHostsUpgrade.ProgressGridMeasureItem(Sender: TBaseVirtualTree;
   TargetCanvas: TCanvas; Node: PVirtualNode; var NodeHeight: Integer);
 begin
-  if Sender.MultiLine[Node] then
-    NodeHeight := ProgressGrid.ComputeNodeHeight(TargetCanvas, Node, 3);
+{  if Sender.MultiLine[Node] then
+    NodeHeight := ProgressGrid.ComputeNodeHeight(TargetCanvas, Node, 4,'X');
   if NodeHeight < ProgressGrid.DefaultNodeHeight then
-    NodeHeight:=ProgressGrid.DefaultNodeHeight;
+    NodeHeight:=ProgressGrid.DefaultNodeHeight;}
 end;
 
 procedure TVisHostsUpgrade.ActStopExecute(Sender: TObject);
