@@ -2358,6 +2358,10 @@ class WaptRemoteCalls(SocketIONamespace):
         if result_callback:
             result_callback(make_response(data))
 
+    def on_wapt_ping(self,args):
+        print('wapt_ping... %s'% (args,))
+        self.emit('wapt_pong')
+
     def on_message(self,message):
         logger.debug(u'socket.io message : %s' % message)
 

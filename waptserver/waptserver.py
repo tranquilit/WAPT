@@ -855,7 +855,7 @@ def proxy_host_request(request, action):
                                 Hosts.listening_protocol,
                                 Hosts.listening_timestamp,
                                  )\
-                        .where((Hosts.uuid==uuid) and ~Hosts.listening_address.is_null() and (Hosts.listening_protocol=='websockets'))\
+                        .where((Hosts.uuid==uuid) & (~Hosts.listening_address.is_null()) & (Hosts.listening_protocol=='websockets'))\
                         .dicts()\
                         .first(1)
 
@@ -928,7 +928,7 @@ def proxy_host_request(request, action):
             wait_loop -=1
             if wait_loop < 0:
                 break
-            socketio.sleep(1)
+            socketio.sleep(0.05)
 
         msg = [ 'Success : %s, Errors: %s' % (len(result['success']), len(result['errors']))]
         if result['errors']:
