@@ -166,7 +166,8 @@ def close_db(error):
         wapt_db.commit()
     except:
         wapt_db.rollback()
-
+    if not wapt_db.is_closed():
+        wapt_db.close()
 
 def sio_authenticated_only(f):
     @functools.wraps(f)
@@ -850,7 +851,7 @@ def proxy_host_request(request, action):
             try:
                 host_data = Hosts\
                         .select(Hosts.uuid,Hosts.computer_fqdn,
-                                Hosts.
+                                Hosts.server_uuid,
                                 Hosts.listening_address,
                                 Hosts.listening_port,
                                 Hosts.listening_protocol,
@@ -1573,6 +1574,8 @@ def trigger_sio_update():
 def trigger_sio_upgrade():
     """Proxy the wapt update action to the client using websockets"""
     try:
+        return proxy_host_request(request,'trigger_upgrade')
+
         uuid = request.args['uuid']
         notify_user = request.args.get('notify_user', 0)
         notify_server = request.args.get('notify_server', 1)
@@ -1643,7 +1646,6 @@ def host_tasks_status():
                 result.append(data)
 
             socketio.emit('get_tasks_status',request.args, room = host_data['listening_address'],callback=result_callback)
-            #socketio.
 
             print('waiting...')
             wait_loop = timeout * 20
@@ -1670,20 +1672,25 @@ def host_tasks_status():
 @socketio.on('trigger_update_result')
 def on_trigger_update_result(result):
     """Return from update on client"""
-    print('Trigger Update result : %s (uuid:%s)' %(result,request.args['uuid']))
+    logger.debug('Trigger Update result : %s (uuid:%s)' %(result,request.args['uuid']))
     # send to all waptconsole warching this host.
     socketio.emit('trigger_update_result',result,room = request.args['uuid'], include_self=False)
 
-@socketio.on('trigger_upgrate_result')
+@socketio.on('trigger_upgrade_result')
 def on_trigger_upgrade_result(result):
     """Return from the launch of upgrade on a client"""
-    print('Trigger Upgrade result : %s (uuid:%s)' %(result,request.args['uuid']))
-    socketio.emit('trigger_upgrade_result',result,room = request.args['uuid'], include_self=True)
+    logger.debug('Trigger Upgrade result : %s (uuid:%s)' %(result,request.args['uuid']))
+    socketio.emit('trigger_upgrade_result',result,room = request.args['uuid'], include_self=False)
 
-@socketio.on('trigger_install_result')
-def on_install_result(result):
-    print('Trigger install result : %s (uuid:%s)' %(result,request.args['uuid']))
-    socketio.emit('trigger_install_result',result,room = request.args['uuid'], include_self=False)
+@socketio.on('trigger_install_packages_result')
+def on_trigger_install_packages_result(result):
+    logger.debug('Trigger install result : %s (uuid:%s)' %(result,request.args['uuid']))
+    socketio.emit('trigger_install_packages_result',result,room = request.args['uuid'], include_self=False)
+
+@socketio.on('trigger_remove_packages_result')
+def on_trigger_remove_packages_result(result):
+    logger.debug('Trigger remove result : %s (uuid:%s)' %(result,request.args['uuid']))
+    socketio.emit('trigger_remove_packages_result',result,room = request.args['uuid'], include_self=False)
 
 @socketio.on('reconnect')
 @socketio.on('connect')
@@ -2083,6 +2090,8 @@ if __name__ == "__main__":
         try:
             logger.info('Reset connections SID for former hosts on this server')
             hosts_count = Hosts.update(
+                    reachable = 'UNKNOWN',
+                    server_uuid=None,
                     listening_protocol=None,
                     listening_address=None,
                 ).where(
@@ -2095,6 +2104,9 @@ if __name__ == "__main__":
             logger.critical('Trying to upgrade database structure, error was : %s' % repr(e))
             import waptserver_upgrade
             waptserver_upgrade.upgrade_postgres()
+
+    if not wapt_db.is_closed():
+        wapt_db.close()
 
     if options.devel==True:
         socketio.run(app,host='0.0.0.0', port=port, debug=options.devel,use_reloader=options.devel)

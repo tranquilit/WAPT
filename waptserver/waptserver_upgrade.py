@@ -161,7 +161,7 @@ def upgrade_postgres():
     # from 1.4.1 to 1.4.2
     if get_db_version() < '1.4.2':
         with wapt_db.transaction():
-            logging.info('Migrating from %s to %s' % (get_db_version(),'1.4.2'))
+            logger.info('Migrating from %s to %s' % (get_db_version(),'1.4.2'))
             migrate(
                 migrator.rename_column(Hosts._meta.name,'host','host_info'),
                 migrator.rename_column(Hosts._meta.name,'wapt','wapt_status'),
@@ -181,7 +181,7 @@ def upgrade_postgres():
     next_version = '1.4.3'
     if get_db_version() < next_version:
         with wapt_db.transaction():
-            logging.info('Migrating from %s to %s' % (get_db_version(),next_version))
+            logger.info('Migrating from %s to %s' % (get_db_version(),next_version))
             if not [c.name for c in wapt_db.get_columns('hosts') if c.name == 'host_certificate']:
                 migrate(
                     migrator.add_column(Hosts._meta.name,'host_certificate',Hosts.host_certificate),
@@ -194,7 +194,7 @@ def upgrade_postgres():
     next_version = '1.4.3.1'
     if get_db_version() < next_version:
         with wapt_db.transaction():
-            logging.info('Migrating from %s to %s' % (get_db_version(),next_version))
+            logger.info('Migrating from %s to %s' % (get_db_version(),next_version))
             columns = [c.name for c in wapt_db.get_columns('hosts')]
             opes = []
             if not 'last_logged_on_user' in columns:
@@ -212,7 +212,7 @@ def upgrade_postgres():
     next_version = '1.4.3.2'
     if get_db_version() < next_version:
         with wapt_db.transaction():
-            logging.info('Migrating from %s to %s' % (get_db_version(),next_version))
+            logger.info('Migrating from %s to %s' % (get_db_version(),next_version))
             wapt_db.execute_sql('''\
                 ALTER TABLE hostsoftwares
                     ALTER COLUMN publisher TYPE character varying(2000),
@@ -224,7 +224,7 @@ def upgrade_postgres():
     next_version = '1.5.0.4'
     if get_db_version() < next_version:
         with wapt_db.transaction():
-            logging.info('Migrating from %s to %s' % (get_db_version(),next_version))
+            logger.info('Migrating from %s to %s' % (get_db_version(),next_version))
             columns = [c.name for c in wapt_db.get_columns('hosts')]
             opes = []
             if not 'server_uuid' in columns:
