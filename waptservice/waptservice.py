@@ -2292,7 +2292,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
             result_callback(make_response(data))
 
     def on_trigger_upgrade(self,args,result_callback=None):
-        print('Update triggered by SocketIO')
+        print('Upgrade triggered by SocketIO')
         force = int(args.get('force','0')) != 0
         notify_user = int(args.get('notify_user','1')) != 0
         notify_server_on_finish = int(args.get('notify_server','0')) != 0

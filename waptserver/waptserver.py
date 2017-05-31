@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.3"
+__version__ = "1.5.0.4"
 
 import os
 import sys
@@ -115,14 +115,6 @@ except Exception:
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
 config_file = DEFAULT_CONFIG_FILE
 
-# If we run under uWSGI, retrieve the config from the same ini file
-try:
-    import uwsgi
-    if uwsgi.magic_table['P']:
-        config_file = uwsgi.magic_table['P']
-except Exception:
-    pass
-
 app = Flask(__name__, static_folder='./templates/static')
 app.config['CONFIG_FILE'] = config_file
 
@@ -174,8 +166,6 @@ def close_db(error):
         wapt_db.commit()
     except:
         wapt_db.rollback()
-    if not wapt_db.is_closed():
-        wapt_db.close()
 
 
 def sio_authenticated_only(f):
@@ -638,12 +628,11 @@ def rewrite_config_item(cfg_file, *args):
 
 # Reload config file.
 def reload_config():
-    if os.name == "posix":
-        try:
-            import uwsgi
-            uwsgi.reload()
-        except ImportError:
-            pass
+    try:
+        global conf
+        conf = waptserver_config.load_config(app.config['CONFIG_FILE'])
+    except Exception as e:
+        logger.critical('Unable to reload server config : %s' % repr(e))
 
 @app.route('/login',methods=['POST'])
 def login():
@@ -775,6 +764,17 @@ def get_group_package(input_package_name):
     return r
 
 
+def get_server_uuid():
+    """Create and/or returns this server UUID"""
+    server_uuid = conf.get('server_uuid',None)
+    if not server_uuid:
+        server_uuid = str(uuid_.uuid1())
+        rewrite_config_item(app.config['CONFIG_FILE'], 'options', 'server_uuid', server_uuid)
+        conf['server_uuid'] = server_uuid
+        reload_config()
+    return server_uuid
+
+
 @app.route('/ping')
 def ping():
     config_file = app.config['CONFIG_FILE']
@@ -850,12 +850,13 @@ def proxy_host_request(request, action):
             try:
                 host_data = Hosts\
                         .select(Hosts.uuid,Hosts.computer_fqdn,
+                                Hosts.
                                 Hosts.listening_address,
                                 Hosts.listening_port,
                                 Hosts.listening_protocol,
                                 Hosts.listening_timestamp,
                                  )\
-                        .where((Hosts.uuid==uuid) & (~Hosts.listening_address.is_null()) & (Hosts.listening_protocol=='websockets'))\
+                        .where((Hosts.server_uuid == get_server_uuid()) & (Hosts.uuid==uuid) & (~Hosts.listening_address.is_null()) & (Hosts.listening_protocol=='websockets'))\
                         .dicts()\
                         .first(1)
 
@@ -1319,6 +1320,7 @@ def get_hosts():
                        'description',
                        'wapt_status',
                        'dnsdomain',
+                       'server_uuid',
                        'listening_protocol',
                        'listening_address',
                        'listening_port',
@@ -1670,18 +1672,18 @@ def on_trigger_update_result(result):
     """Return from update on client"""
     print('Trigger Update result : %s (uuid:%s)' %(result,request.args['uuid']))
     # send to all waptconsole warching this host.
-    emit('trigger_update_result',result,room = request.args['uuid'], include_self=False)
+    socketio.emit('trigger_update_result',result,room = request.args['uuid'], include_self=False)
 
 @socketio.on('trigger_upgrate_result')
 def on_trigger_upgrade_result(result):
     """Return from the launch of upgrade on a client"""
     print('Trigger Upgrade result : %s (uuid:%s)' %(result,request.args['uuid']))
-    emit('trigger_upgrade_result',result,room = request.args['uuid'], include_self=False)
+    socketio.emit('trigger_upgrade_result',result,room = request.args['uuid'], include_self=True)
 
 @socketio.on('trigger_install_result')
 def on_install_result(result):
     print('Trigger install result : %s (uuid:%s)' %(result,request.args['uuid']))
-    emit('trigger_install_result',result,room = request.args['uuid'], include_self=False)
+    socketio.emit('trigger_install_result',result,room = request.args['uuid'], include_self=False)
 
 @socketio.on('reconnect')
 @socketio.on('connect')
@@ -1691,16 +1693,17 @@ def on_waptclient_connect():
         logger.info('Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
         # stores sid in database
         Hosts.update(
+            server_uuid = get_server_uuid(),
             listening_timestamp=datetime2isodate(),
             listening_protocol='websockets',
             listening_address=request.sid,
             reachable='OK',
             ).where(Hosts.uuid == uuid).execute()
+        print('sio connect: commit')
         wapt_db.commit()
     except:
         wapt_db.rollback()
-    if not wapt_db.is_closed():
-        wapt_db.close()
+
 
 @socketio.on('wapt_pong')
 def on_wapt_pong():
@@ -1710,16 +1713,16 @@ def on_wapt_pong():
         logger.info('Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
         # stores sid in database
         Hosts.update(
+            server_uuid = get_server_uuid(),
             listening_timestamp=datetime2isodate(),
             listening_protocol='websockets',
             listening_address=request.sid,
             reachable='OK',
             ).where(Hosts.uuid == uuid).execute()
+        print('sio pong: commit')
         wapt_db.commit()
     except:
         wapt_db.rollback()
-    if not wapt_db.is_closed():
-        wapt_db.close()
 
 @socketio.on('disconnect')
 def on_waptclient_disconnect():
@@ -1728,6 +1731,7 @@ def on_waptclient_disconnect():
         logger.info('Socket.IO disconnection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
         # clear sid in database
         Hosts.update(
+            server_uuid = None,
             listening_timestamp=datetime2isodate(),
             listening_protocol=None,
             listening_address=None,
@@ -1736,8 +1740,6 @@ def on_waptclient_disconnect():
         wapt_db.commit()
     except:
         wapt_db.rollback()
-    if not wapt_db.is_closed():
-        wapt_db.close()
 
 @socketio.on('join')
 def on_join(data):
@@ -2077,13 +2079,25 @@ if __name__ == "__main__":
 
     logger.info('Waptserver starting...')
     port = conf['waptserver_port']
-    print Hosts.update(listening_protocol=None).where(not(Hosts.listening_protocol.is_null)).execute()
-    wapt_db.close()
+    while True:
+        try:
+            logger.info('Reset connections SID for former hosts on this server')
+            hosts_count = Hosts.update(
+                    listening_protocol=None,
+                    listening_address=None,
+                ).where(
+                    (Hosts.listening_protocol=='websockets') & (Hosts.server_uuid == get_server_uuid())
+                ).execute()
+            wapt_db.commit()
+            break
+        except Exception as e:
+            wapt_db.rollback()
+            logger.critical('Trying to upgrade database structure, error was : %s' % repr(e))
+            import waptserver_upgrade
+            waptserver_upgrade.upgrade_postgres()
 
     if options.devel==True:
         socketio.run(app,host='0.0.0.0', port=port, debug=options.devel,use_reloader=options.devel)
     else:
         socketio.run(app,host='127.0.0.1', port=port, debug=options.devel,use_reloader=options.devel)
     logger.info('Waptserver stopped')
-
-
