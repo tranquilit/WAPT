@@ -2288,6 +2288,9 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
         task.notify_user = int(args.get('notify_user','1')) != 0
         task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
         data = self.task_manager.add_task(task).as_dict()
+
+        self.emit('trigger_update_result',{'result':data})
+
         if result_callback:
             result_callback(make_response(data))
 
@@ -2308,6 +2311,8 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
 
         all_tasks.append(self.task_manager.add_task(WaptUpgrade(),notify_user=notify_user).as_dict())
         all_tasks.append(self.task_manager.add_task(WaptCleanup(),notify_user=False).as_dict())
+
+        self.emit('trigger_upgrade_result',{'result':all_tasks})
 
         if result_callback:
             result_callback(make_response(all_tasks))
@@ -2336,6 +2341,9 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                 task.notify_user = int(args.get('notify_user','1')) != 0
                 task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
                 data.append(self.task_manager.add_task(task).as_dict())
+
+            self.emit('trigger_install_packages_result',{'result':data})
+
             if result_callback:
                 result_callback(make_response(data))
         except Exception as e:
@@ -2352,6 +2360,9 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                 task.notify_user = int(args.get('notify_user','1')) != 0
                 task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
                 data.append(self.task_manager.add_task(task).as_dict())
+
+            self.emit('trigger_remove_packages_result',{'result':data})
+
             if result_callback:
                 result_callback(make_response(data))
         except Exception as e:
@@ -2368,6 +2379,9 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                 task.notify_user = int(args.get('notify_user','1')) != 0
                 task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
                 data.append(self.task_manager.add_task(task).as_dict())
+
+            self.emit('trigger_forget_packages_result',{'result':data})
+
             if result_callback:
                 result_callback(make_response(data))
         except Exception as e:
