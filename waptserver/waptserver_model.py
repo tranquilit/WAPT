@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.3.2"
+__version__ = "1.5.0.0"
 
 import os
 import sys
@@ -45,7 +45,6 @@ from playhouse.postgres_ext import *
 from playhouse.pool import PooledPostgresqlExtDatabase
 
 from playhouse.shortcuts import dict_to_model,model_to_dict
-from playhouse import db_url
 from playhouse.signals import Model as SignaledModel, pre_save, post_save
 
 from waptutils import ensure_unicode,Version
@@ -58,7 +57,13 @@ import waptserver_config
 
 # You must be sure your database is an instance of PostgresqlExtDatabase in order to use the JSONField.
 server_config = waptserver_config.load_config()
-wapt_db = db_url.connect(server_config['db_url'])
+wapt_db = PooledPostgresqlExtDatabase(
+    database = server_config['db_name'],
+    host = server_config['db_host'],
+    user = server_config['db_user'],
+    password = server_config['db_password'],
+    max_connections = server_config['db_max_connections'],
+    stale_timeout =  server_config['db_stale_timeout'])
 
 class BaseModel(SignaledModel):
     """A base model that will use our Postgresql database"""
