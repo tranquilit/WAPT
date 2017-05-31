@@ -49,10 +49,12 @@ _defaults = {
     'waptserver_port': 8080,
     'waptservice_port': 8088,
     'waptwua_folder': '', # default: wapt_folder + 'wua'
-    # database URL. see : http://docs.peewee-orm.com/en/latest/peewee/playhouse.html#db-url
-    # supported for 1.4.0 is postgresext
-    # for direct access to local Postgres instance, using role (username) from current process user, simply put postgresext://wapt
-    'db_url':'postgresext:///wapt'
+    'db_name':'wapt',
+    'db_host':None,
+    'db_user':None,
+    'db_password':None,
+    'db_max_connections':8,
+    'db_stale_timeout':300,
 }
 
 _default_config_file = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
@@ -116,7 +118,12 @@ def load_config(cfgfile=_default_config_file):
     if not conf['waptwua_folder']:
         conf['waptwua_folder'] = conf['wapt_folder'] + 'wua'
 
-    if _config.has_option('options', 'db_url'):
-        conf['db_url'] = _config.get('options', 'db_url')
+    for param in ('db_name','db_host','db_user','db_password'):
+        if _config.has_option('options', param):
+            conf[param] = _config.get('options', param)
+
+    for param in ('db_max_connections','db_stale_timeout'):
+        if _config.has_option('options', param):
+            conf[param] = _config.getint('options', param)
 
     return conf
