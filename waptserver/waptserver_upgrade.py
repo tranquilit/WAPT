@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.4.3"
+__version__ = "1.5.0"
 usage = """\
 %prog [-c configfile] [-l loglevel] action
 
@@ -177,23 +177,23 @@ def upgrade_postgres():
             v.value = '1.4.2'
             v.save()
 
-    # from 1.4.2 to 1.4.3
-    if get_db_version() < '1.4.3':
+    next_version = '1.4.3'
+    if get_db_version() < next_version:
         with wapt_db.transaction():
-            logging.info('Migrating from %s to %s' % (get_db_version(),'1.4.3'))
+            logging.info('Migrating from %s to %s' % (get_db_version(),next_version))
             if not [c.name for c in wapt_db.get_columns('hosts') if c.name == 'host_certificate']:
                 migrate(
                     migrator.add_column(Hosts._meta.name,'host_certificate',Hosts.host_certificate),
                     )
 
             (v,created) = ServerAttribs.get_or_create(key='db_version')
-            v.value = '1.4.3'
+            v.value = next_version
             v.save()
 
-    # from 1.4.3 to 1.4.3.1
-    if get_db_version() < '1.4.3.1':
+    next_version = '1.4.3.1'
+    if get_db_version() < next_version:
         with wapt_db.transaction():
-            logging.info('Migrating from %s to %s' % (get_db_version(),'1.4.3.1'))
+            logging.info('Migrating from %s to %s' % (get_db_version(),next_version))
             columns = [c.name for c in wapt_db.get_columns('hosts')]
             opes = []
             if not 'last_logged_on_user' in columns:
@@ -205,19 +205,27 @@ def upgrade_postgres():
             migrate(*opes)
 
             (v,created) = ServerAttribs.get_or_create(key='db_version')
-            v.value = '1.4.3.1'
+            v.value = next_version
             v.save()
 
-    # from 1.4.3.1 to 1.4.3.2
-    if get_db_version() < '1.4.3.2':
+    next_version = '1.4.3.2'
+    if get_db_version() < next_version:
         with wapt_db.transaction():
-            logging.info('Migrating from %s to %s' % (get_db_version(),'1.4.3.2'))
+            logging.info('Migrating from %s to %s' % (get_db_version(),next_version))
             wapt_db.execute_sql('''\
                 ALTER TABLE hostsoftwares
                     ALTER COLUMN publisher TYPE character varying(2000),
                     ALTER COLUMN version TYPE character varying(1000);''')
             (v,created) = ServerAttribs.get_or_create(key='db_version')
-            v.value = '1.4.3.2'
+            v.value = next_version
+            v.save()
+
+    next_version = '1.5.0.0'
+    if get_db_version() < next_version:
+        with wapt_db.transaction():
+            logging.info('Migrating from %s to %s' % (get_db_version(),next_version))
+            (v,created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
             v.save()
 
 if __name__ == '__main__':

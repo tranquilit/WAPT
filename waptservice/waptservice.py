@@ -2425,7 +2425,6 @@ class WaptSocketIOClient(threading.Thread):
 
             except Exception as e:
                 logger.critical('Error in socket io connection %s' % repr(e))
-                raise
             logger.info('Socket IO Stopped....')
             time.sleep(10)
 
