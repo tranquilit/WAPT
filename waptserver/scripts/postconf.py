@@ -46,6 +46,9 @@ import uuid
 import platform
 import re
 import psutil
+import datetime
+import string
+import random
 
 def type_debian():
     return platform.dist()[0].lower() in ('debian','ubuntu')
@@ -259,10 +262,22 @@ def main():
 
     if not os.path.isfile('/opt/wapt/conf/waptserver.ini'):
         shutil.copyfile('/opt/wapt/waptserver/waptserver.ini.template','/opt/wapt/conf/waptserver.ini')
+    else:
+        print('making a backup copy of the configuration file')
+        datetime_now = datetime.datetime.now()
+        shutil.copyfile('/opt/wapt/conf/waptserver.ini','/opt/wapt/conf/waptserver.ini.bck_%s'%  datetime_now.isoformat() )
 
     waptserver_ini = iniparse.RawConfigParser()
 
     waptserver_ini.readfp(file('/opt/wapt/conf/waptserver.ini', 'rU'))
+
+    if waptserver_ini.has_section('uwsgi'):
+        print ('Remove uwsgi options, not used anymore')
+        waptserver_ini.remove_section('uwsgi') 
+
+    # add secret key initialisation string (for session token)
+    if not waptserver_ini.has_option('options','secret_key'):
+        waptserver_ini.set('options','secret_key',''.join(random.SystemRandom().choice(string.letters + string.digits) for _ in range(64)))
 
     # add user db and password in ini file
 
@@ -286,7 +301,6 @@ def main():
         wapt_folder = '/var/www/wapt'
     elif type_redhat():
         wapt_folder = '/var/www/html/wapt'
-        waptserver_ini.set('uwsgi','gid','httpd')
     else:
         print ('distrib not supported')
         sys.exit(1)
@@ -298,8 +312,8 @@ def main():
         # keep in sync with waptserver.py
         wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
 
-    if os.path.exists(os.path.join(wapt_root_dir, 'waptserver', 'wsus.py')):
-        waptserver_ini.set('uwsgi', 'attach-daemon', '/usr/bin/python /opt/wapt/waptserver/wapthuey.py wsus.huey')
+#    if os.path.exists(os.path.join(wapt_root_dir, 'waptserver', 'wsus.py')):
+#        waptserver_ini.set('uwsgi', 'attach-daemon', '/usr/bin/python /opt/wapt/waptserver/wapthuey.py wsus.huey')
 
     if not waptserver_ini.has_option('options', 'wapt_password') or \
             not waptserver_ini.get('options', 'wapt_password') or \
@@ -334,6 +348,8 @@ def main():
         subprocess.check_output("/bin/chmod 640 /opt/wapt/conf/waptserver.ini",shell=True)
         subprocess.check_output("/bin/chown wapt /opt/wapt/conf/waptserver.ini",shell=True)
         waptserver_ini.write(inifile)
+
+    # TODO : remove mongodb lines that are commented out     
 
     final_msg = [
         'Postconfiguration completed.',
