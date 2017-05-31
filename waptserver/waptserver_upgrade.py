@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0"
+__version__ = "1.5.0.4"
 usage = """\
 %prog [-c configfile] [-l loglevel] action
 
@@ -61,6 +61,7 @@ config_file = DEFAULT_CONFIG_FILE
 # setup logging
 logger = logging.getLogger()
 logging.basicConfig()
+logger = logging.getLogger('waptserver')
 
 # TODO : move to waptserver_upgrade with plain mongo connection.
 def create_import_data(ip='127.0.0.1',fn=None):
@@ -155,7 +156,7 @@ def upgrade2postgres():
 def upgrade_postgres():
     init_db(False)
     migrator = PostgresqlMigrator(wapt_db)
-    logging.info('Current DB: %s version: %s' % (wapt_db.connect_kwargs,get_db_version()))
+    logger.info('Current DB: %s version: %s' % (wapt_db.connect_kwargs,get_db_version()))
 
     # from 1.4.1 to 1.4.2
     if get_db_version() < '1.4.2':
@@ -220,10 +221,15 @@ def upgrade_postgres():
             v.value = next_version
             v.save()
 
-    next_version = '1.5.0.0'
+    next_version = '1.5.0.4'
     if get_db_version() < next_version:
         with wapt_db.transaction():
             logging.info('Migrating from %s to %s' % (get_db_version(),next_version))
+            columns = [c.name for c in wapt_db.get_columns('hosts')]
+            opes = []
+            if not 'server_uuid' in columns:
+                opes.append(migrator.add_column(Hosts._meta.name,'server_uuid',Hosts.server_uuid))
+            migrate(*opes)
             (v,created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
             v.save()

@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.3"
+__version__ = "1.5.0.4"
 
 import os
 import sys
@@ -48,6 +48,8 @@ from playhouse.shortcuts import dict_to_model,model_to_dict
 from playhouse.signals import Model as SignaledModel, pre_save, post_save
 
 from waptutils import ensure_unicode,Version
+from waptserver_utils import setloglevel
+
 import json
 import codecs
 import datetime
@@ -57,6 +59,12 @@ import waptserver_config
 
 # You must be sure your database is an instance of PostgresqlExtDatabase in order to use the JSONField.
 server_config = waptserver_config.load_config()
+
+import logging
+logger = logging.getLogger('peewee')
+setloglevel(logger,server_config['loglevel'])
+
+logger.debug('DB connection pool : %s'%server_config['db_max_connections'])
 wapt_db = PooledPostgresqlExtDatabase(
     database = server_config['db_name'],
     host = server_config['db_host'],
@@ -64,6 +72,7 @@ wapt_db = PooledPostgresqlExtDatabase(
     password = server_config['db_password'],
     max_connections = server_config['db_max_connections'],
     stale_timeout =  server_config['db_stale_timeout'])
+
 
 class BaseModel(SignaledModel):
     """A base model that will use our Postgresql database"""
@@ -130,7 +139,10 @@ class Hosts(BaseModel):
     # calculated by server when update_status
     reachable = CharField(20,null=True)
 
+    # for websockets
+    server_uuid = CharField(null=True)
     listening_protocol = CharField(10,null=True)
+    # in case of websockets, this stores the sid
     listening_address = CharField(null=True)
     listening_port = IntegerField(null=True)
     listening_timestamp = CharField(null=True)
