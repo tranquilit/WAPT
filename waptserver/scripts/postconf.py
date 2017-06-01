@@ -80,6 +80,7 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force
     # write the apache configuration fragment
     jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(apache_dir))
     template = jinja_env.get_template('httpd.conf.j2')
+    krb5_realm = '.'.join(fqdn.split('.')[1:]).upper()
 
     template_vars = {
         'wapt_repository_path': os.path.dirname(wapt_folder),
@@ -93,6 +94,7 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force
         'fqdn': fqdn,
         'use_kerberos': use_kerberos,
         'use_hsts': use_hsts,
+        'KRB5_REALM': krb5_realm
         }
 
     config_string = template.render(template_vars)
@@ -141,6 +143,7 @@ def enable_debian_vhost():
     void = subprocess.check_output(['a2enmod', 'rewrite'], stderr=subprocess.STDOUT)
     void = subprocess.check_output(['a2enmod', 'proxy_wstunnel'], stderr=subprocess.STDOUT)
     void = subprocess.check_output(['a2enmod', 'auth_kerb'], stderr=subprocess.STDOUT)
+    void = subprocess.check_output(['a2enmod', 'headers'], stderr=subprocess.STDOUT)
     void = subprocess.check_output(['a2ensite', 'wapt.conf'], stderr=subprocess.STDOUT)
     void = subprocess.check_output('systemctl restart apache2',shell=True, stderr=subprocess.STDOUT)
 
@@ -382,6 +385,9 @@ def main():
 
     if not waptserver_ini.has_option('options', 'server_uuid'):
         waptserver_ini.set('options', 'server_uuid', str(uuid.uuid1()))
+
+    if options.use_kerberos:
+        waptserver_ini.set('options','use_kerberos','True')
 
     with open('/opt/wapt/conf/waptserver.ini','w') as inifile:
         subprocess.check_output("/bin/chmod 640 /opt/wapt/conf/waptserver.ini",shell=True)

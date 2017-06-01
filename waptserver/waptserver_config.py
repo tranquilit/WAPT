@@ -55,6 +55,7 @@ _defaults = {
     'db_password':None,
     'db_max_connections':100,
     'db_stale_timeout':300,
+    'use_kerberos':False,
 }
 
 _default_config_file = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
@@ -125,5 +126,9 @@ def load_config(cfgfile=_default_config_file):
     for param in ('db_max_connections','db_stale_timeout'):
         if _config.has_option('options', param):
             conf[param] = _config.getint('options', param)
+
+    if _config.has_option('options', 'use_kerberos'):
+        conf['use_kerberos'] = _config.getboolean('options', 'use_kerberos')
+
 
     return conf
