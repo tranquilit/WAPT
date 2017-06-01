@@ -234,7 +234,7 @@ class WaptServiceConfig(object):
         self.websockets_host = None
         self.websockets_port = None
         self.websockets_verify_cert = False
-        self.websockets_ping = 60
+        self.websockets_ping = 120
         self.websockets_retry_delay = 60
         self.websockets_check_config_interval = 60
 
@@ -325,7 +325,6 @@ class WaptServiceConfig(object):
                         self.websockets_port = 443
                         self.websockets_host = waptserver_url.hostname
                         self.websockets_proto = 'https'
-                        self.websockets_verify_cert = self.waptserver.verify_cert
                     else:
                         self.websockets_port = 80
                         self.websockets_host = waptserver_url.hostname
@@ -334,6 +333,15 @@ class WaptServiceConfig(object):
                     self.websockets_port = waptserver_url.port
                     self.websockets_host = waptserver_url.hostname
                     self.websockets_proto = 'http'
+
+            if config.has_option('global','websockets_verify_cert'):
+                try:
+                    self.websockets_verify_cert = config.getboolean('global','websockets_verify_cert')
+                except:
+                    self.websockets_verify_cert = config.get('global','websockets_verify_cert')
+                    if not os.path.isfile(self.websockets_verify_cert):
+                        logger.warning(u'websockets_verify_cert certificate %s declared in configuration file can not be found. Waptserver websockets communication will fail' % self.websockets_verify_cert)
+            else:
                 self.websockets_verify_cert = self.waptserver.verify_cert
 
             if config.has_option('global','websockets_ping'):
@@ -2434,13 +2442,14 @@ class WaptSocketIOClient(threading.Thread):
         while True:
             try:
                 with Wapt(config_filename = self.config.config_filename) as tmp_wapt:
-                    logger.info('Starting socketio on "%s://%s:%s" ...' % (self.config.websockets_proto,self.config.websockets_host,self.config.websockets_host))
+                    logger.info('Starting socketio on "%s://%s:%s" ...' % (self.config.websockets_proto,self.config.websockets_host,self.config.websockets_port))
+                    logger.debug('Certificate checking : %s' %  self.config.websockets_verify_cert)
                     self.socketio_client = SocketIO(
                             host="%s://%s" % (self.config.websockets_proto,self.config.websockets_host),
                             port=self.config.websockets_port,
                             verify=self.config.websockets_verify_cert,
                             wait_for_connection = False,
-                            hurry_interval_in_seconds = 5,
+                            hurry_interval_in_seconds = 10,
                             ping_interval = self.config.websockets_ping,
                             params = {'uuid':tmp_wapt.host_uuid})
                     self.wapt_remote_calls = self.socketio_client.define(WaptSocketIORemoteCalls)
