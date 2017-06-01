@@ -40,6 +40,11 @@ import codecs
 import glob
 import requests
 import locale
+import custom_zip as zipfile
+from custom_zip import ZipFile
+import tempfile
+import fnmatch
+
 
 if platform.system() == 'Windows':
     try:
@@ -636,6 +641,87 @@ class Version(object):
     def __repr__(self):
         return "Version('{}')".format('.'.join(self.members))
 
+def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.svn',u'.git',u'.gitignore',u'*.pyc',u'*.dbg',u'src']):
+    """Create a zip file with filename zipf from source_root directory with target_root as new root.
+       Don't include file which match excludes file pattern
+    """
+    result = []
+    if not isinstance(source_root,unicode):
+        source_root = unicode(source_root)
+    if not isinstance(source_root,unicode):
+        source_root = unicode(source_root)
+
+    if isinstance(zipfn,str) or isinstance(zipfn,unicode):
+        if logger: logger.debug(u'Create zip file %s' % zipfn)
+        zipf = ZipFile(zipfn,'w',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
+    elif isinstance(zipfn,ZipFile):
+        zipf = zipfn
+    else:
+        raise Exception('zipfn must be either a filename (string) or an ZipFile')
+    for item in os.listdir(source_root):
+        excluded = False
+        for x in excludes:
+            excluded = fnmatch.fnmatch(item,x)
+            if excluded:
+                break
+        if excluded:
+            continue
+        source_item_fn = os.path.join(source_root, item)
+        zip_item_fn = os.path.join(target_root,item)
+        # exclude manifest and signature which are added afterward
+        if zip_item_fn in ('WAPT\\manifest.sha1','WAPT\\signature'):
+            continue
+        if os.path.isfile(source_item_fn):
+            if logger: logger.debug(u' adding file %s' % source_item_fn)
+            zipf.write(source_item_fn, zip_item_fn)
+            result.append(zip_item_fn)
+        elif os.path.isdir(source_item_fn):
+            if logger: logger.debug(u'Add directory %s' % source_item_fn)
+            result.extend(create_recursive_zip(zipf, source_item_fn, zip_item_fn,excludes))
+    if isinstance(zipfn,str) or isinstance(zipfn,unicode):
+        if logger:
+            logger.debug(u'  adding sha1 hash for all %i files' % len(result))
+        zipf.close()
+    return result
+
+
+def find_all_files(rootdir,include_patterns=None,exclude_patterns=None):
+    """Generator which recursively find all files from rootdir and sub directories
+        matching the (dos style) patterns (example: *.exe)
+    """
+    rootdir = os.path.abspath(rootdir)
+
+    if include_patterns and not isinstance(include_patterns,list):
+        include_patterns = [include_patterns]
+
+    if exclude_patterns and not isinstance(exclude_patterns,list):
+        exclude_patterns = [exclude_patterns]
+
+    def match(fn):
+        if include_patterns:
+            result = False
+            for pattern in include_patterns:
+                if glob.fnmatch.fnmatch(fn,pattern):
+                    result = True
+                    break
+        else:
+            result = True
+
+        if exclude_patterns:
+            for pattern in exclude_patterns:
+                if glob.fnmatch.fnmatch(fn,pattern):
+                    result = False
+                    break
+        return result
+
+    result = []
+    for fn in os.listdir(rootdir):
+        full_fn = os.path.join(rootdir,fn)
+        if os.path.isdir(full_fn):
+            result.extend(find_all_files(full_fn,include_patterns,exclude_patterns))
+        else:
+            if match(fn):
+                yield full_fn
 
 
 if __name__ == '__main__':
