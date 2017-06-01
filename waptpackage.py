@@ -155,6 +155,9 @@ class EWaptBadTargetOS(Exception):
 class EWaptNotAPackage(Exception):
     pass
 
+class EWaptPackageSignError(Exception):
+    pass
+
 class EWaptInstallError(Exception):
     """Exception raised during installation of package
         msg is logged in local install database
@@ -476,7 +479,7 @@ class PackageEntry(object):
            - a list with the lines from control file
            - a path to the directory of wapt file unzipped content (debugging)
         """
-        if type(fname) is list:
+        if isinstance(fname,list):
             control =  StringIO.StringIO(u'\n'.join(fname))
         elif os.path.isfile(fname):
             with zipfile.ZipFile(fname,'r',allowZip64=True) as myzip:
@@ -484,11 +487,14 @@ class PackageEntry(object):
         elif os.path.isdir(fname):
             control = codecs.open(os.path.join(fname,'WAPT','control'),'r',encoding='utf8')
         else:
-            raise EWaptBadControl(u'No control found for %s' % (fname,))
+            raise EWaptBadControl(u'Bad or no control found for %s' % (fname,))
 
         self.load_control_from_dict(control_to_dict(control))
 
-        if not type(fname) is list and os.path.isfile(fname):
+        if isinstance(fname,list):
+            self.filename = self.make_package_filename()
+            self.localpath = ''
+        elif os.path.isfile(fname):
             if calc_md5:
                 self.md5sum = md5_for_file(fname)
             else:
@@ -496,9 +502,9 @@ class PackageEntry(object):
             self.size = os.path.getsize(fname)
             self.filename = os.path.basename(fname)
             self.localpath = os.path.dirname(os.path.abspath(fname))
-        else:
-            self.filename = self.make_package_filename()
-            self.localpath = ''
+        elif os.path.isdir(fname):
+            self.filename = ''
+            self.localpath = os.path.abspath(fname)
         return self
 
     def wapt_fullpath(self):
@@ -673,7 +679,7 @@ class PackageEntry(object):
                 pass
         raise SSLVerifyException('SSL signature verification failed for control %s, either none public certificates match signature or signed content has been changed' % self.asrequirement())
 
-    def build_manifest(self,exclude_filenames = None,block_size=2**20):
+    def build_manifest(self,exclude_filenames = None,block_size=2**20,forbidden_files=[]):
         if not os.path.isfile(self.wapt_fullpath()):
             raise Exception(u"%s is not a Wapt package" % self.wapt_fullpath())
         if exclude_filenames is None:
@@ -682,6 +688,8 @@ class PackageEntry(object):
         manifest = {}
         for fn in waptzip.filelist:
             if not fn.filename in exclude_filenames:
+                if fn.filename in forbidden_files:
+                    raise EWaptPackageSignError('File %s is not allowed.'% fn.filename)
                 shasum = hashlib.sha1()
                 file_data = waptzip.open(fn)
                 while True:
@@ -704,8 +712,22 @@ class PackageEntry(object):
         logger.debug('Signing %s with key %s, and certificate CN "%s"' % (package_fn,private_key,certificate.cn))
         # sign the control
         self.sign_control(private_key,certificate)
+
         control = self.ascontrol().encode('utf8')
-        manifest_data = self.build_manifest(exclude_filenames = self.manifest_filename_excludes+['WAPT/control'])
+        excludes = self.manifest_filename_excludes
+        excludes.append('WAPT/control')
+
+        forbidden_files = []
+        # removes setup.py
+        # if file is in forbidden_files, raise an exception.
+        if not certificate.is_code_signing:
+            forbidden_files.append('setup.py')
+
+        try:
+            manifest_data = self.build_manifest(exclude_filenames = excludes,forbidden_files = forbidden_files)
+        except EWaptPackageSignError as e:
+            raise EWaptBadCertificate('Certificate %s doesn''t allow to sign packages with setup.py file.' % certificate.public_cert_filename)
+
         manifest_data['WAPT/control'] = sha1_for_data(control)
         # convert to list of list...
         wapt_manifest = json.dumps( manifest_data.items())
@@ -713,6 +735,7 @@ class PackageEntry(object):
         waptzip = zipfile.ZipFile(self.wapt_fullpath(),'a',allowZip64=True)
         with waptzip:
             filenames = waptzip.namelist()
+
             if 'WAPT/control' in filenames:
                 waptzip.remove('WAPT/control')
             waptzip.writestr('WAPT/control',control)
@@ -746,6 +769,148 @@ class PackageEntry(object):
         self.signature_date = None
         self.signer = None
         self.signer_fingerprint = None
+
+    def list_corrupted_files(self):
+        """check hexdigest sha for the files in manifest
+        returns a list of non matching files (corrupted files)"""
+        if not os.path.isdir(self.localpath):
+            raise EWaptNotAPackage(u'Check package files : %s is not a valid package directory.'%self.localpath)
+
+        manifest_filename = os.path.join(self.localpath,'WAPT','manifest.sha1')
+        if not os.path.isfile(manifest_filename):
+            raise EWaptBadSignature(u'Check package files : not manifest file in %s directory.'%self.localpath)
+
+        with open(manifest_filename,'r') as manifest_file:
+            manifest = json.loads(manifest_file.read())
+            if not isinstance(manifest,list):
+                raise EWaptBadSignature(u'Check package files : manifest file in %s is invalid.'%self.localpath)
+
+        errors = []
+        expected = []
+
+        for (filename,sha1) in manifest:
+            fullpath = os.path.abspath(os.path.join(self.localpath,filename))
+            expected.append(fullpath)
+            if sha1 != sha1_for_file(fullpath):
+                errors.append(filename)
+
+        files = setuphelpers.all_files(ensure_unicode(self.localpath))
+        # removes files which are not in manifest by design
+        for fn in ('WAPT/signature','WAPT/manifest.sha1'):
+            full_fn = os.path.abspath(os.path.join(self.localpath,fn))
+            if full_fn in files:
+                files.remove(full_fn)
+        # add in errors list files found but not expected...
+        errors.extend([ fn for fn in files if fn not in expected])
+        return errors
+
+    def check_package_signature(self,public_certs):
+        """Check the hash of files in package_dir and the manifest signature
+           against the authorized keys
+        Args:
+            public_certs (list) ; list of authorized certificate filepaths
+
+        Returns:
+            str : subject dn of matching certificate
+
+        Raise Exception if no certificate match is found.
+        """
+        if not public_certs:
+            raise EWaptBadCertificate('No certificate to check package signature')
+
+        if not os.path.isdir(self.localpath):
+            raise EWaptNotAPackage(u'Check package signature : %s is not a valid package directory.'%self.localpath)
+
+        manifest_filename = os.path.join(self.localpath,'WAPT','manifest.sha1')
+        if os.path.isfile(manifest_filename):
+            manifest_data = open(manifest_filename,'r').read()
+            # check signature of manifest
+            signature_filename = os.path.join(self.localpath,'WAPT','signature')
+            # if public key provided, and signature in wapt file, check it
+            if os.path.isfile(signature_filename):
+                # first check if signature can be decrypted by one of the public keys
+                signature = open(signature_filename,'r').read().decode('base64')
+                try:
+                    subject = ssl_verify_content(manifest_data,signature,public_certs)
+                    logger.info(u'Package issued by %s' % (subject,))
+                    return subject
+                except:
+                    raise EWaptBadSignature(u'Package file %s signature is invalid.\n\nThe signer "%s" is not accepted by one the following public keys:\n%s' % \
+                        (self.localpath,self.signer,'\n'.join(self.public_certs)))
+
+                # now check the integrity files
+                manifest = json.loads(manifest_data)
+                errors = self.list_corrupted_files()
+                if errors:
+                    raise EWaptCorruptedFiles(u'Error in package %s, files corrupted, SHA not matching for %s' % (self.localpath,errors,))
+            else:
+                raise EWaptNotSigned(u'The package in %s does not contain a signature' % self.localpath)
+        else:
+            raise EWaptNotSigned(u'The package in %s does not contain the manifest.sha1 file with content fingerprints' % self.localpath)
+
+
+        """Check control signature against a list of public certificates
+
+        Args:
+            public_certs (list of crt paths or SSLCertificate instances)
+
+        Returns:
+            matchine SSLCertificate
+
+        >>>
+
+        """
+        if not self.signature:
+            raise EWaptNotSigned('Package control %s on repo %s is not signed' % (self.asrequirement(),self.repo))
+        signed_content = self.signed_content()
+        signature_raw = self.signature.decode('base64')
+        if not isinstance(public_certs,list):
+            public_certs = [public_certs]
+        for public_cert in public_certs:
+            try:
+                if isinstance(public_cert,SSLCertificate):
+                    crt = public_cert
+                elif os.path.isfile(public_cert):
+                    crt = SSLCertificate(public_cert)
+                else:
+                    raise EWaptMissingCertificate('The public cert %s is neither a cert file nor a SSL Certificate object' % public_cert)
+                if crt.verify_content(signed_content,signature_raw):
+                    return crt
+            except SSLVerifyException:
+                pass
+        raise SSLVerifyException('SSL signature verification failed for control %s, either none public certificates match signature or signed content has been changed' % self.asrequirement())
+
+    def unzip_package(self,target_dir=None,authorized_certs=None):
+        """Unzip package and optionnally check content
+
+        Args:
+            target_dir (str): where to unzip package content. If Noe, a temp dir is created
+            authorized_certs (list) : list of Certificates to check content. If None, no check is done
+
+        Returns:
+            str : path to unzipped files
+
+        Exceptions:
+            EWaptNotAPackage, EWaptBadSignature,EWaptCorruptedFiles
+            if check is not successful, unzipped files are deleted.
+        """
+        if not os.path.isfile(self.wapt_fullpath()):
+            raise EWaptNotAPackage('unzip_package : Package %s does not exists' % ensure_unicode(self.wapt_fullpath()))
+        if not target_dir:
+            target_dir = tempfile.mkdtemp(prefix="wapt")
+
+        logger.info(u'Unzipping package %s to directory %s' % (self.wapt_fullpath(),ensure_unicode(target_dir)))
+        with ZipFile(fname) as zip:
+            try:
+                zip.extractall(path=packagetempdir)
+                if authorized_certs is not None:
+                    self.check_package_signature(target_dir,authorized_certs)
+            except Exception as e:
+                if os.path.isdir(target_dir):
+                    setuphelpers.remove_tree(target_dir)
+                raise
+
+        return target_dir
 
 
 class WaptPackageDev(PackageEntry):

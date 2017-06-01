@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.3"
+__version__ = "1.5.0.5"
 
 import os
 import re
@@ -2923,28 +2923,6 @@ class Wapt(object):
         """return the (quiet) command stored in registry to uninstall a software given its registry key"""
         return setuphelpers.uninstall_cmd(guid)
 
-    def corrupted_files_sha1(self,rootdir,manifest):
-        """check hexdigest sha1 for the files in manifest
-        returns a list of non matching files (corrupted files)"""
-        assert os.path.isdir(rootdir)
-        assert isinstance(manifest,list) or isinstance(manifest,tuple)
-        errors = []
-        expected = []
-        for (filename,sha1) in manifest:
-            fullpath = os.path.abspath(os.path.join(rootdir,filename))
-            expected.append(fullpath)
-            if sha1 != sha1_for_file(fullpath):
-                errors.append(filename)
-        files = setuphelpers.all_files(ensure_unicode(rootdir))
-        # removes files which are not in manifest by design
-        for fn in ('WAPT/signature','WAPT/manifest.sha1'):
-            full_fn = os.path.abspath(os.path.join(rootdir,fn))
-            if full_fn in files:
-                files.remove(full_fn)
-        # add in errors list files found but not expected...
-        errors.extend([ fn for fn in files if fn not in expected])
-        return errors
-
     def set_local_password(self,user='admin',pwd='password'):
         """Set admin/password local auth for waptservice in ini file as a sha256 hex hash"""
         conf = RawConfigParser()
@@ -2979,49 +2957,6 @@ class Wapt(object):
             print('Warning : %s' % repr(e))
             return ''
 
-    def _check_package_signature(self,packagetempdir,public_certs=None):
-        """Check the hash of files in package_dir and the manifest signature
-           against the authorized keys
-        Args:
-            packagetempdir (str) ; root dir of unzipped package files
-            public_certs (list) ; list of authorized certificate filepaths
-
-        Returns:
-            str : subject dn of matching certificate
-
-        Raise Exception if no certificate match is found.
-        """
-        if public_certs is None:
-            public_certs = self.public_certs
-        manifest_filename = os.path.join( packagetempdir,'WAPT','manifest.sha1')
-        if os.path.isfile(manifest_filename):
-            manifest_data = open(manifest_filename,'r').read()
-            # check signature of manifest
-            signature_filename = os.path.join( packagetempdir,'WAPT','signature')
-            # if public key provided, and signature in wapt file, check it
-            if os.path.isfile(signature_filename):
-                pe = PackageEntry()
-                pe.load_control_from_wapt(packagetempdir)
-                # first check if signature can be decrypted by one of the public keys
-                signature = open(signature_filename,'r').read().decode('base64')
-                try:
-                    subject = ssl_verify_content(manifest_data,signature,public_certs)
-                    logger.info(u'Package issued by %s' % (subject,))
-                    return subject
-                except:
-                    raise EWaptBadSignature(u'Package file %s signature is invalid.\n\nThe signer "%s" is not accepted by one the following public keys:\n%s' % \
-                        (packagetempdir,pe.signer,'\n'.join(self.public_certs)))
-
-                # now check the integrity files
-                manifest = json.loads(manifest_data)
-                errors = self.corrupted_files_sha1(packagetempdir,manifest)
-                if errors:
-                    raise EWaptCorruptedFiles(u'Error in package %s, files corrupted, SHA1 not matching for %s' % (packagetempdir,errors,))
-            else:
-                raise EWaptNotSigned(u'The package %s does not contain a signature' % packagetempdir)
-
-        else:
-            raise EWaptNotSigned(u'The package %s does not contain the manifest.sha1 file with content fingerprints' % packagetempdir)
 
     def install_wapt(self,fname,params_dict={},explicit_by=None):
         """Install a single wapt package given its WAPT filename.
@@ -3060,7 +2995,10 @@ class Wapt(object):
 
         # don't check in developper mode
         if os.path.isfile(fname):
-            entry.check_control_signature(self.authorized_certificates())
+            cert = entry.check_control_signature(self.authorized_certificates())
+            logger.info(u'Control data for package %s verified by certificate %s' % (setuphelpers.ensure_unicode(fname),cert))
+        else:
+            logger.info(u'Developper mode, don''t check control signature for %s' % setuphelpers.ensure_unicode(fname))
 
         self.runstatus=u"Installing package %s version %s ..." % (entry.package,entry.version)
         old_stdout = sys.stdout
@@ -3095,11 +3033,10 @@ class Wapt(object):
             istemporary = False
 
             if os.path.isfile(fname):
-                packagetempdir = tempfile.mkdtemp(prefix="wapt")
-                logger.info(u'  unzipping %s to temporary %s' % (ensure_unicode(fname),ensure_unicode(packagetempdir)))
-                with ZipFile(fname) as zip:
-                    zip.extractall(path=packagetempdir)
-                    istemporary = True
+                packagetempdir = entry.unzip_package()
+                istemporary = True
+                # take infos from unzipped data
+                entry = PackageEntry().load_control_from_wapt(packagetempdir)
             elif os.path.isdir(fname):
                 packagetempdir = fname
             else:
@@ -3107,17 +3044,14 @@ class Wapt(object):
 
             try:
                 previous_cwd = os.getcwd()
-                # chech sha1
                 self.check_cancelled()
-                manifest_filename = os.path.join( packagetempdir,'WAPT','manifest.sha1')
-                if os.path.isfile(manifest_filename):
-                    self._check_package_signature(packagetempdir)
-                else:
-                    # we allow unsigned in development mode where fname is a directory
-                    if istemporary:
-                        raise EWaptNotSigned(u'Package %s does not contain a manifest.sha1 file, and unsigned packages install is not allowed' % fname)
+
+                # check signature and files sha if not developper mode
+                if istemporary:
+                    entry.check_package_signature(self.authorized_certificates())
 
                 self.check_cancelled()
+
                 exitstatus = None
                 new_uninstall_key = None
                 uninstallstring = None
@@ -5354,16 +5288,7 @@ class Wapt(object):
             if entry:
                 if not target_directory:
                     target_directory = tempfile.mkdtemp(prefix="wapt")
-                with ZipFile(packagerequest) as zip:
-                    try:
-                        zip.extractall(path=target_directory)
-                        packagename = entry.package
-                        packagerequest = entry.asrequirement()
-                        if authorized_certs is not None:
-                            self._check_package_signature(target_directory,authorized_certs)
-                    except (EWaptBadSignature,EWaptCorruptedFiles):
-                        setuphelpers.remove_tree(target_directory)
-                        raise
+                entry.unzip_package(target_dir=target_directory, authorized_certs=authorized_certs)
             else:
                 raise EWaptNotAPackage('%s is neither a package name nor a package filename' % packagerequest)
 
@@ -5708,74 +5633,54 @@ class Wapt(object):
                 if  pe.package != source_control.package or pe > source_control:
                     raise Exception('Target directory "%s" is not empty and contains either another package or a newer version, aborting.' % target_directory)
 
-        try:
-            # duplicate a development directory tree
-            if os.path.isdir(packagename):
-                source_control = PackageEntry().load_control_from_wapt(packagename)
-                if not newname:
-                    newname = source_control.package
-                if target_directory == '':
-                    target_directory = self.get_default_development_dir(newname,section=source_control.section)
-                if target_directory is None:
-                    target_directory = tempfile.mkdtemp('wapt')
-                # check if we will not overwrite newer package or different package
-                check_target_directory(target_directory,source_control)
-                if packagename != target_directory:
-                    shutil.copytree(packagename,target_directory)
-            # duplicate a wapt file
-            elif os.path.isfile(packagename):
-                source_filename = packagename
-                source_control = PackageEntry().load_control_from_wapt(source_filename)
-                if not newname:
-                    newname = source_control.package
-                if target_directory == '':
-                    target_directory = self.get_default_development_dir(newname,section=source_control.section)
-                if target_directory is None:
-                    target_directory = tempfile.mkdtemp('wapt')
-                # check if we will not overwrite newer package or different package
-                check_target_directory(target_directory,source_control)
-                logger.info(u'  unzipping %s to directory %s' % (source_filename,target_directory))
-                with ZipFile(source_filename,allowZip64=True) as zip:
-                    try:
-                        zip.extractall(path=target_directory)
-                        if authorized_certs is not None:
-                            self._check_package_signature(target_directory,authorized_certs)
-                    except (EWaptBadSignature,EWaptCorruptedFiles):
-                        setuphelpers.remove_tree(target_directory)
-                        raise
+        # duplicate a development directory tree
+        if os.path.isdir(packagename):
+            source_control = PackageEntry().load_control_from_wapt(packagename)
+            if not newname:
+                newname = source_control.package
+            if target_directory == '':
+                target_directory = self.get_default_development_dir(newname,section=source_control.section)
+            if target_directory is None:
+                target_directory = tempfile.mkdtemp('wapt')
+            # check if we will not overwrite newer package or different package
+            check_target_directory(target_directory,source_control)
+            if packagename != target_directory:
+                shutil.copytree(packagename,target_directory)
+        # duplicate a wapt file
+        elif os.path.isfile(packagename):
+            source_filename = packagename
+            source_control = PackageEntry().load_control_from_wapt(source_filename)
+            if not newname:
+                newname = source_control.package
+            if target_directory == '':
+                target_directory = self.get_default_development_dir(newname,section=source_control.section)
+            if target_directory is None:
+                target_directory = tempfile.mkdtemp('wapt')
+            # check if we will not overwrite newer package or different package
+            check_target_directory(target_directory,source_control)
+            source_control.unzip_package(target_dir=target_directory,authorized_certs=authorized_certs)
 
-            else:
-                source_package = self.is_available(packagename)
-                if not source_package:
-                    raise Exception('Package %s is not available is current repositories.'%(packagename,))
-                # duplicate package from a repository
-                filenames = self.download_packages([packagename],usecache=usecache,printhook=printhook)
-                package_paths = filenames['downloaded'] or filenames['skipped']
-                if not package_paths:
-                    raise Exception('Unable to download package %s'%(packagename,))
-                source_filename = package_paths[0]
-                source_control = PackageEntry().load_control_from_wapt(source_filename)
-                if not newname:
-                    newname = source_control.package
-                if target_directory == '':
-                    target_directory = self.get_default_development_dir(newname,section=source_control.section)
-                if target_directory is None:
-                    target_directory = tempfile.mkdtemp('wapt')
-                # check if we will not overwrite newer package or different package
-                check_target_directory(target_directory,source_control)
-                logger.info(u'  unzipping %s to directory %s' % (source_filename,target_directory))
-                with ZipFile(source_filename,allowZip64=True) as zip:
-                    try:
-                        zip.extractall(path=target_directory)
-                        if authorized_certs is not None:
-                            self._check_package_signature(target_directory,authorized_certs)
-                    except (EWaptBadSignature,EWaptCorruptedFiles):
-                        setuphelpers.remove_tree(target_directory)
-                        raise
+        else:
+            source_package = self.is_available(packagename)
+            if not source_package:
+                raise Exception('Package %s is not available is current repositories.'%(packagename,))
+            # duplicate package from a repository
+            filenames = self.download_packages([packagename],usecache=usecache,printhook=printhook)
+            package_paths = filenames['downloaded'] or filenames['skipped']
+            if not package_paths:
+                raise Exception('Unable to download package %s'%(packagename,))
+            source_filename = package_paths[0]
+            source_control = PackageEntry().load_control_from_wapt(source_filename)
+            if not newname:
+                newname = source_control.package
+            if target_directory == '':
+                target_directory = self.get_default_development_dir(newname,section=source_control.section)
+            if target_directory is None:
+                target_directory = tempfile.mkdtemp('wapt')
+            # check if we will not overwrite newer package or different package
+            check_target_directory(target_directory,source_control)
+            source_control.unzip_package(target_dir=target_directory,authorized_certs=authorized_certs)
 
-        except (EWaptBadSignature,EWaptCorruptedFiles):
-            setuphelpers.remove_tree(target_directory)
-            raise
 
         # duplicate package informations
         dest_control = PackageEntry()
