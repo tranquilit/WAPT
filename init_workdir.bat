@@ -7,7 +7,7 @@ xcopy /I /E /F /Y c:\python27\DLLs DLLs
 xcopy /I /E /F /Y /EXCLUDE:libexcludes.txt c:\python27\lib lib
 
 virtualenv --relocatable .
-Scripts\pip install --upgrade pip setuptools wheel virtualenv
+Scripts\pip install --upgrade pip setuptools wheel virtualenv six
 Scripts\easy_install.exe c:\binaries\pywin32-220.win32-py2.7.exe
 Scripts\pip install -r requirements.txt
 

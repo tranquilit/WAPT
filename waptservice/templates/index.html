@@ -19,11 +19,17 @@
     </ul>
 </li>
 <li>{{ _("Authorized certificates:") }}
-    <ul>
+    <table border=1>
+    <thead><th>File</th><th>CN</th><th>Issued by</th><th>Code signing</th></thead>
 {% for certificate in wapt.authorized_certificates() %}
-        <li><b>"{{ certificate.cn }}"</b> issued by <b>"{{ certificate.issuer_dn }}"</b> (Code signing: <b>{{ certificate.is_code_signing }}</b>) </li>
+        <tr>
+            <td>{{ certificate.public_cert_filename }}</td>
+            <td>{{ certificate.cn }}</td>
+            <td>{{ certificate.issuer_dn }}</td>
+            <td>{{ certificate.is_code_signing }}</td>
+        </tr>
 {% endfor %}
-    </ul>
+    </table>
 </li>
 </ul>
 
