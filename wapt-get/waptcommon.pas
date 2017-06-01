@@ -1369,7 +1369,7 @@ begin
         raise Exception.Create('Unable to create p12 file for signtool');
 
   finally
-    SysUtils.DeleteFile(opensslcfg_fn);
+    //SysUtils.DeleteFile(opensslcfg_fn);
   end;
 end;
 
