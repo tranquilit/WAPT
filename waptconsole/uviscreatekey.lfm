@@ -149,7 +149,7 @@ object VisCreateKey: TVisCreateKey
       Top = 216
       Width = 32
       MaxLength = 2
-      TabOrder = 7
+      TabOrder = 8
       Text = 'FR'
     end
     object edLocality: TEdit
@@ -158,7 +158,7 @@ object VisCreateKey: TVisCreateKey
       Hint = 'E.g. : Nantes'
       Top = 240
       Width = 176
-      TabOrder = 8
+      TabOrder = 9
     end
     object edOrganization: TEdit
       Left = 174
@@ -166,7 +166,7 @@ object VisCreateKey: TVisCreateKey
       Hint = 'E.g. : Tranquil It Systems'
       Top = 264
       Width = 176
-      TabOrder = 9
+      TabOrder = 10
     end
     object edUnit: TEdit
       Left = 174
@@ -174,7 +174,7 @@ object VisCreateKey: TVisCreateKey
       Hint = 'E.g. : IT'
       Top = 288
       Width = 176
-      TabOrder = 10
+      TabOrder = 11
     end
     object edEmail: TEdit
       Left = 174
@@ -182,7 +182,7 @@ object VisCreateKey: TVisCreateKey
       Hint = 'E.g. : technique@tranquil-it-systems.fr'
       Top = 312
       Width = 176
-      TabOrder = 11
+      TabOrder = 12
     end
     object Shape1: TShape
       AnchorSideRight.Side = asrBottom
@@ -200,7 +200,7 @@ object VisCreateKey: TVisCreateKey
       Width = 97
       AutoSize = True
       Caption = 'Optional information'
-      TabOrder = 6
+      TabOrder = 7
     end
     object Label15: TLabel
       Left = 8
@@ -340,7 +340,7 @@ object VisCreateKey: TVisCreateKey
       Hint = 'This information will be used as Signer identification in packages'
       Top = 168
       Width = 174
-      TabOrder = 12
+      TabOrder = 6
     end
   end
 end
