@@ -53,7 +53,7 @@ _defaults = {
     'db_host':None,
     'db_user':None,
     'db_password':None,
-    'db_max_connections':8,
+    'db_max_connections':100,
     'db_stale_timeout':300,
 }
 
