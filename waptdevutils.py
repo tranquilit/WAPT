@@ -361,10 +361,9 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
             sources.append(edit_res)
             # build and sign
             res = wapt.build_package(edit_res['source_dir'],inc_package_release = True)
-            # returns res dict: {'filename':waptfilename,'files':[list of files],'package':PackageEntry}
-            signature = wapt.sign_package(res['filename'],callback=pwd_callback)
+            signature = wapt.sign_package(res,callback=pwd_callback)
             build_res.append(res)
-            package_files.append(res['filename'])
+            package_files.append(res)
 
         # upload all in one step...
         wapt.http_upload_package(package_files,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
@@ -376,8 +375,8 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
                 if os.path.isdir(s['source_dir']):
                     shutil.rmtree(s['source_dir'])
             for s in build_res:
-                if os.path.isfile(s['filename']):
-                    os.unlink(s['filename'])
+                if os.path.isfile(s):
+                    os.unlink(s)
         except WindowsError as e:
             logger.critical('Unable to remove temporary directory %s: %s'% (s,repr(e)))
     return build_res
@@ -441,8 +440,8 @@ def add_ads_groups(waptconfigfile,hosts_list,wapt_server_user,wapt_server_passwd
                     buid_res = wapt.build_upload(package['source_dir'], private_key_passwd = key_password, wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd,
                         inc_package_release=True)[0]
                     print("  done, new packages: %s" % (','.join(additional)))
-                    if os.path.isfile(buid_res['filename']):
-                        os.remove(buid_res['filename'])
+                    if os.path.isfile(buid_res):
+                        os.remove(buid_res)
                     result.append(hostname)
                 finally:
                     # cleanup of temporary
@@ -480,7 +479,7 @@ def create_waptwua_package(waptconfigfile,wuagroup='default',wapt_server_user=No
         inc_package_release=True)
     if isdir(res['target']):
         remove_tree(res['target'])
-    packagefilename = build_res[0]['filename']
+    packagefilename = build_res[0]
     if isfile(packagefilename):
         remove_file(packagefilename)
     return build_res

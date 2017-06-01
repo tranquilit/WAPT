@@ -28,8 +28,6 @@ import logging
 import datetime
 import time
 import sys
-import zipfile
-from zipfile import ZipFile
 import tempfile
 import hashlib
 import glob
@@ -62,7 +60,6 @@ import uuid
 import random
 import string
 
-from waptpackage import *
 import locale
 
 import shlex
@@ -102,14 +99,13 @@ import struct
 import types
 import gc
 
-
 from waptutils import *
 from waptcrypto import *
+from waptpackage import *
+
 import setuphelpers
 
 logger = logging.getLogger()
-
-ArchitecturesList = ('all','x86','x64')
 
 def create_self_signed_key(orgname,
         wapt_base_dir=None,
@@ -159,49 +155,6 @@ def create_self_signed_key(orgname,
     return {'pem_filename':destpem,'crt_filename':destcrt}
 
 
-
-def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.svn',u'.git',u'.gitignore',u'*.pyc',u'*.dbg',u'src']):
-    """Create a zip file with filename zipf from source_root directory with target_root as new root.
-       Don't include file which match excludes file pattern
-    """
-    result = []
-    if not isinstance(source_root,unicode):
-        source_root = unicode(source_root)
-    if not isinstance(source_root,unicode):
-        source_root = unicode(source_root)
-
-    if isinstance(zipfn,str) or isinstance(zipfn,unicode):
-        if logger: logger.debug(u'Create zip file %s' % zipfn)
-        zipf = ZipFile(zipfn,'w',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
-    elif isinstance(zipfn,ZipFile):
-        zipf = zipfn
-    else:
-        raise Exception('zipfn must be either a filename (string) or an ZipFile')
-    for item in os.listdir(source_root):
-        excluded = False
-        for x in excludes:
-            excluded = fnmatch.fnmatch(item,x)
-            if excluded:
-                break
-        if excluded:
-            continue
-        source_item_fn = os.path.join(source_root, item)
-        zip_item_fn = os.path.join(target_root,item)
-        # exclude manifest and signature which are added afterward
-        if zip_item_fn in ('WAPT\\manifest.sha1','WAPT\\signature'):
-            continue
-        if os.path.isfile(source_item_fn):
-            if logger: logger.debug(u' adding file %s' % source_item_fn)
-            zipf.write(source_item_fn, zip_item_fn)
-            result.append(zip_item_fn)
-        elif os.path.isdir(source_item_fn):
-            if logger: logger.debug(u'Add directory %s' % source_item_fn)
-            result.extend(create_recursive_zip(zipf, source_item_fn, zip_item_fn,excludes))
-    if isinstance(zipfn,str) or isinstance(zipfn,unicode):
-        if logger:
-            logger.debug(u'  adding sha1 hash for all %i files' % len(result))
-        zipf.close()
-    return result
 
 
 def import_code(code,name='',add_to_sys_modules=0):
@@ -1661,7 +1614,7 @@ class WaptServer(object):
             package_filename = package
         else:
             pe = package
-            package_filename = pe.wapt_fullpath()
+            package_filename = pe.localpath
 
         with open(package_filename,'rb') as afile:
             res = json.loads(self.post('api/v1/upload_package?filename=%s' % os.path.basename(package_filename),data=afile,auth=auth,timeout=timeout))
@@ -2708,7 +2661,7 @@ class Wapt(object):
                 package_filename = package
             else:
                 pe = package
-                package_filename = pe.wapt_fullpath()
+                package_filename = pe.localpath
 
             if pe.section != 'host':
                 is_hosts = False
@@ -4669,31 +4622,17 @@ class Wapt(object):
         if not inc_done and inc_package_release:
             entry.inc_build()
 
-
         if inc_package_release:
             entry.save_control_to_wapt(directoryname)
 
-        entry.filename = entry.make_package_filename()
-        logger.debug(u'Control data : \n%s' % entry.ascontrol())
         if target_directory is None:
             target_directory = os.path.abspath(os.path.join( directoryname,'..'))
 
         if not os.path.isdir(target_directory):
             raise Exception('Bad target directory %s for package build' % target_directory)
 
-        result_filename = os.path.abspath(os.path.join(target_directory,entry.filename))
-        if os.path.isfile(result_filename):
-            logger.info('Target package already exists, removing %s' % result_filename)
-            os.unlink(result_filename)
-
-        entry.localpath = target_directory
-
-        allfiles = create_recursive_zip(
-            zipfn = result_filename,
-            source_root = directoryname,
-            target_root = '' ,
-            excludes=excludes)
-        return {'filename':result_filename,'files':allfiles,'package':entry}
+        result_filename = entry.build_package(excludes = excludes,target_directory = target_directory)
+        return result_filename
 
 
     def build_upload(self,sources_directories,private_key_passwd=None,wapt_server_user=None,wapt_server_passwd=None,inc_package_release=False,target_directory=None):
@@ -4723,21 +4662,20 @@ class Wapt(object):
         for source_dir in [os.path.abspath(p) for p in sources_directories]:
             if os.path.isdir(source_dir):
                 logger.info(u'Building  %s' % source_dir)
-                buildresult = self.build_package(source_dir,inc_package_release=inc_package_release,target_directory=target_directory)
-                package_fn = buildresult['filename']
+                package_fn = self.build_package(source_dir,inc_package_release=inc_package_release,target_directory=target_directory)
                 if package_fn:
-                    buildresults.append(buildresult)
                     logger.info(u'...done. Package filename %s' % (package_fn,))
                     logger.info('Signing %s with key %s' % (package_fn,self.private_key))
                     signature = self.sign_package(package_fn,callback=callback)
                     logger.debug(u"Package %s signed : signature :\n%s" % (package_fn,signature))
+                    buildresults.append(package_fn)
                 else:
                     logger.critical(u'package %s not created' % package_fn)
             else:
                 logger.critical(u'Directory %s not found' % source_dir)
 
         logger.info(u'Uploading %s files...' % len(buildresults))
-        upload_res = self.http_upload_package([buildresult['filename'] for buildresult in buildresults],wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
+        upload_res = self.http_upload_package(buildresults,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
         if buildresults and not upload_res:
             raise Exception('Packages built but no package were uploaded')
         return buildresults
@@ -5288,7 +5226,7 @@ class Wapt(object):
             if entry:
                 if not target_directory:
                     target_directory = tempfile.mkdtemp(prefix="wapt")
-                entry.unzip_package(target_dir=target_directory, authorized_certs=authorized_certs)
+                entry.unzip_package(target_dir=target_directory, check_with_certs =authorized_certs)
             else:
                 raise EWaptNotAPackage('%s is neither a package name nor a package filename' % packagerequest)
 
@@ -5658,7 +5596,7 @@ class Wapt(object):
                 target_directory = tempfile.mkdtemp('wapt')
             # check if we will not overwrite newer package or different package
             check_target_directory(target_directory,source_control)
-            source_control.unzip_package(target_dir=target_directory,authorized_certs=authorized_certs)
+            source_control.unzip_package(target_dir=target_directory,check_with_certs=authorized_certs)
 
         else:
             source_package = self.is_available(packagename)
@@ -5679,8 +5617,7 @@ class Wapt(object):
                 target_directory = tempfile.mkdtemp('wapt')
             # check if we will not overwrite newer package or different package
             check_target_directory(target_directory,source_control)
-            source_control.unzip_package(target_dir=target_directory,authorized_certs=authorized_certs)
-
+            source_control.unzip_package(target_dir=target_directory,check_with_certs=authorized_certs)
 
         # duplicate package informations
         dest_control = PackageEntry()

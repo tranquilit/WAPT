@@ -794,16 +794,11 @@ def main():
 
                         if os.path.isdir(source_dir):
                             print('Building  %s' % source_dir)
-                            result = mywapt.build_package(
+                            package_fn = mywapt.build_package(
                                 source_dir,
                                 inc_package_release=options.increlease,
                                 excludes=ensure_list(options.excludes))
-                            package_fn = result['filename']
                             if package_fn:
-                                if not options.json_output:
-                                    print(u"Package %s content:" % (result['package'].asrequirement(),))
-                                    for f in result['files']:
-                                        print(u" %s" % f)
                                 print('...done building. Package filename %s' % (package_fn,))
 
                                 if mywapt.private_key:
@@ -813,7 +808,7 @@ def main():
                                         excludes=common.ensure_list(options.excludes)
                                         )
                                     print(u"Package %s signed : signature :\n%s" % (package_fn,signature))
-                                    packages.append(result)
+                                    packages.append(package_fn)
                                 else:
                                     logger.warning(u'No private key provided, package %s is unsigned !' % package_fn)
 
@@ -837,7 +832,7 @@ def main():
 
                 # continue with upload
                 if action == 'build-upload':
-                    waptfiles =  [p['filename'] for p in packages]
+                    waptfiles = packages
 
                     res = mywapt.upload_package(waptfiles,
                             wapt_server_user = options.wapt_server_user,
@@ -856,7 +851,7 @@ def main():
                     print(u'\nYou can upload to repository with')
                     print(u'  %s upload-package %s ' % (
                         sys.argv[0],'%s' % (
-                            ' '.join(['"%s"' % p['filename'] for p in packages]),
+                            ' '.join(['"%s"' % p for p in packages]),
                         )
                     ))
 
