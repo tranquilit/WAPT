@@ -2619,7 +2619,7 @@ begin
       Screen.Cursor := crHourGlass;
       Hosts := TSuperObject.Create(stArray);
       for host in GridHosts.SelectedRows do
-        hosts.AsArray.Add(host.S['host.computer_fqdn']);
+        hosts.AsArray.Add(host.S['computer_fqdn']);
 
       //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
       args := '';
@@ -2682,7 +2682,7 @@ begin
       Screen.Cursor := crHourGlass;
       Hosts := TSuperObject.Create(stArray);
       for host in GridHosts.SelectedRows do
-        hosts.AsArray.Add(host.S['host.computer_fqdn']);
+        hosts.AsArray.Add(host.S['computer_fqdn']);
 
       //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
       args := '';

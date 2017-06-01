@@ -371,12 +371,15 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
 
     finally:
         logger.debug('Cleanup')
-        for s in sources:
-            if os.path.isdir(s['source_dir']):
-                shutil.rmtree(s['source_dir'])
-        for s in build_res:
-            if os.path.isfile(s['filename']):
-                os.unlink(s['filename'])
+        try:
+            for s in sources:
+                if os.path.isdir(s['source_dir']):
+                    shutil.rmtree(s['source_dir'])
+            for s in build_res:
+                if os.path.isfile(s['filename']):
+                    os.unlink(s['filename'])
+        except WindowsError as e:
+            logger.critical('Unable to remove temporary directory %s: %s'% (s,repr(e)))
     return build_res
 
 
