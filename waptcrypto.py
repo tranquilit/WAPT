@@ -205,14 +205,14 @@ class SSLCAChain(object):
             crt for crt in self.certificates() if
                 (valid is None or crt.is_valid() == valid) and
                 (code_signing is None or crt.is_code_signing == code_signing) and
-                (ca is None or crt.is_ca() == ca) and
+                (ca is None or crt.is_ca == ca) and
                 crt.match_key(key)
                 ]
 
     def certificate_chain(self,crt):
         result = [crt]
         issuer = self.certificate(subject_hash=crt.crt.get_issuer().as_hash())
-        while issuer and issuer != result[-1] and issuer.is_ca():
+        while issuer and issuer != result[-1] and issuer.is_ca:
             result.append(issuer)
             issuer_subject_hash = issuer.crt.get_issuer().as_hash()
             new_issuer = self.certificate(subject_hash=issuer_subject_hash)
@@ -281,8 +281,8 @@ class SSLPrivateKey(object):
             try:
                 crt = SSLCertificate(fn)
                 if (valid is None or crt.is_valid() == valid) and\
-                   (code_signing is None or crt.is_code_signing() == code_signing) and\
-                   (ca is None or crt.is_ca() == ca) and\
+                   (code_signing is None or crt.is_code_signing == code_signing) and\
+                   (ca is None or crt.is_ca == ca) and\
                    crt.match_key(self):
                         result.append(crt)
             except ValueError as e:
@@ -461,7 +461,7 @@ class SSLCertificate(object):
             (ca_bundle is None or ca_bundle.check_is_known_issuer(self))
 
     def __iter__(self):
-        for k in ['issuer_dn','fingerprint','subject_dn','cn']:
+        for k in ['issuer_dn','fingerprint','subject_dn','cn','is_code_signing','is_ca']:
             yield k,getattr(self,k)
 
     def __str__(self):
@@ -472,12 +472,12 @@ class SSLCertificate(object):
             (repr(self.cn),repr(self.issuer.get('CN','?')),
             self.not_before.strftime('%Y-%m-%d'),
             self.not_after.strftime('%Y-%m-%d'),
-            self.is_code_signing(),self.is_ca())
+            self.is_code_signing,self.is_ca)
 
     def __cmp__(self,crt):
         if isinstance(crt,SSLCertificate):
-            return cmp((self.is_valid(),self.is_code_signing(),self.not_before,self.not_after,self.fingerprint),
-                            (crt.is_valid(),crt.is_code_signing(),crt.not_before,crt.not_after,crt.fingerprint))
+            return cmp((self.is_valid(),self.is_code_signing,self.not_before,self.not_after,self.fingerprint),
+                            (crt.is_valid(),crt.is_code_signing,crt.not_before,crt.not_after,crt.fingerprint))
         elif isinstance(crt,dict):
             return cmp(self.subject,crt)
         else:
@@ -505,13 +505,36 @@ class SSLCertificate(object):
                 result[prop] = e.get_value()
         return result
 
+    @property
     def is_ca(self):
         """Return Tue if certificate has CA:TRUE baisc contraints"""
         return 'CA:TRUE' in ensure_list(self.extensions().get('basicConstraints',''))
 
+    @property
     def is_code_signing(self):
         """Return True id certificate has 'Code Signing' in its extenedKeyUsage"""
         return 'Code Signing' in ensure_list(self.extensions().get('extendedKeyUsage',''))
+
+    def verify(self,CAfile):
+        """Check validity of certificate against list of CA and validity
+        Raise error if not OK
+        """
+        wapt_basedir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
+        openssl_bin = os.path.join(wapt_basedir,'lib','site-packages','M2Crypto','openssl.exe')
+        certfile = self.public_cert_filename
+        print '"%(openssl_bin)s" -CAfile "%(CAfile)s" "%(certfile)s"' % locals()
+        check_output = os.popen('"%(openssl_bin)s" verify -CAfile "%(CAfile)s" "%(certfile)s"' % locals(),stderr=subprocess.STDOUT).read()
+        errors = []
+        result = False
+        for output in check_output:
+            if output.startswith('error'):
+                errors.append(output.rsplit(':',1)[1])
+            if output=='OK':
+                result = True
+        logger.debug(check_output)
+        if not result:
+            raise EWaptBadCertificate('Certificate errors for %s: %s' % (self.public_cert_filename,', '.join(errors)))
+        return result
 
 def ssl_verify_content(content,signature,public_certs):
     u"""Check that the signature matches the content, using the provided list of public keys
