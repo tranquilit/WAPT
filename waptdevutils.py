@@ -371,12 +371,15 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
 
     finally:
         logger.debug('Cleanup')
-        for s in sources:
-            if os.path.isdir(s['source_dir']):
-                shutil.rmtree(s['source_dir'])
-        for s in build_res:
-            if os.path.isfile(s['filename']):
-                os.unlink(s['filename'])
+        try:
+            for s in sources:
+                if os.path.isdir(s['source_dir']):
+                    shutil.rmtree(s['source_dir'])
+            for s in build_res:
+                if os.path.isfile(s['filename']):
+                    os.unlink(s['filename'])
+        except WindowsError as e:
+            logger.critical('Unable to remove temporary directory %s: %s'% (s,repr(e)))
     return build_res
 
 
@@ -484,6 +487,8 @@ def create_waptwua_package(waptconfigfile,wuagroup='default',wapt_server_user=No
 
 
 if __name__ == '__main__':
+    print edit_hosts_depends('C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini','htlaptop.tranquilit.local',remove_depends=['tis-disable-smb1'],key_password='calimer0!')
+    sys.exit(1)
     import doctest
     import sys
     reload(sys)
