@@ -339,8 +339,8 @@ class WaptServiceConfig(object):
             if config.has_option('global','websockets_ping'):
                 self.websockets_ping = config.getint('global','websockets_ping')
 
-            if config.has_option('global','websockets_retry_timeout'):
-                self.websockets_retry_timeout = config.getint('global','websockets_retry_timeout')
+            if config.has_option('global','websockets_retry_delay'):
+                self.websockets_retry_delay = config.getint('global','websockets_retry_delay')
 
             if config.has_option('global','websockets_check_config_interval'):
                 self.websockets_check_config_interval = config.getint('global','websockets_check_config_interval')
@@ -2451,8 +2451,8 @@ class WaptSocketIOClient(threading.Thread):
 
             except Exception as e:
                 logger.critical('Error in socket io connection %s' % repr(e))
-            logger.info('Socket IO Stopped, waiting %ss before retrying' % self.config.websockets_retry_timeout)
-            time.sleep(self.config.websockets_retry_timeout)
+            logger.info('Socket IO Stopped, waiting %ss before retrying' % self.config.websockets_retry_delay)
+            time.sleep(self.config.websockets_retry_delay)
 
 if __name__ == "__main__":
     usage="""\
