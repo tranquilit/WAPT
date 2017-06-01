@@ -12,11 +12,18 @@
 <li>{{ _("Configuration file: {0}").format(wapt.config_filename) }}</li>
 <li>{{ _("Current status: {0}").format(wapt.runstatus or 'Up to date') }}</li>
 <li>{{ _("Last update status:") }}
-<ul>
-<li>{{ _("Date: {0}").format(update_status['date']) }}</li>
-<li>{{ _("Upgradeable packages: {0}").format(', '.join(update_status['upgrades']) or 'None') }}</li>
-<li>{{ _("Errors: {0}").format(', '.join(update_status['errors']) or 'None') }}</li>
-</ul>
+    <ul>
+        <li>{{ _("Date: {0}").format(update_status['date']) }}</li>
+        <li>{{ _("Upgradeable packages: {0}").format(', '.join(update_status['upgrades']) or 'None') }}</li>
+        <li>{{ _("Errors: {0}").format(', '.join(update_status['errors']) or 'None') }}</li>
+    </ul>
+</li>
+<li>{{ _("Authorized certificates:") }}
+    <ul>
+{% for certificate in wapt.authorized_certificates() %}
+        <li><b>"{{ certificate.cn }}"</b> issued by <b>"{{ certificate.issuer_dn }}"</b> (Code signing: <b>{{ certificate.is_code_signing }}</b>) </li>
+{% endfor %}
+    </ul>
 </li>
 </ul>
 
