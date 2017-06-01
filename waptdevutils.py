@@ -487,8 +487,6 @@ def create_waptwua_package(waptconfigfile,wuagroup='default',wapt_server_user=No
 
 
 if __name__ == '__main__':
-    print edit_hosts_depends('C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini','htlaptop.tranquilit.local',remove_depends=['tis-disable-smb1'],key_password='calimer0!')
-    sys.exit(1)
     import doctest
     import sys
     reload(sys)
