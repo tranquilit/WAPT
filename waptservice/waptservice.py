@@ -234,6 +234,10 @@ class WaptServiceConfig(object):
         self.websockets_host = None
         self.websockets_port = None
         self.websockets_verify_cert = False
+        self.websockets_ping = 60
+        self.websockets_retry_delay = 60
+        self.websockets_check_config_interval = 60
+
 
     def load(self):
         """Load waptservice parameters from global wapt-get.ini file"""
@@ -331,6 +335,16 @@ class WaptServiceConfig(object):
                     self.websockets_host = waptserver_url.hostname
                     self.websockets_proto = 'http'
                 self.websockets_verify_cert = self.waptserver.verify_cert
+
+            if config.has_option('global','websockets_ping'):
+                self.websockets_ping = config.getint('global','websockets_ping')
+
+            if config.has_option('global','websockets_retry_timeout'):
+                self.websockets_retry_timeout = config.getint('global','websockets_retry_timeout')
+
+            if config.has_option('global','websockets_check_config_interval'):
+                self.websockets_check_config_interval = config.getint('global','websockets_check_config_interval')
+
 
             else:
                 self.waptserver = None
@@ -2425,19 +2439,20 @@ class WaptSocketIOClient(threading.Thread):
                             host="%s://%s" % (self.config.websockets_proto,self.config.websockets_host),
                             port=self.config.websockets_port,
                             verify=self.config.websockets_verify_cert,
-                            wait_for_connection = True,
-                            hurry_intervals = 5,
+                            wait_for_connection = False,
+                            hurry_interval_in_seconds = 5,
+                            ping_interval = self.config.websockets_ping,
                             params = {'uuid':tmp_wapt.host_uuid})
                     self.wapt_remote_calls = self.socketio_client.define(WaptSocketIORemoteCalls)
                 logger.info('Socket IO Started.')
                 while not self.config.reload_if_updated():
-                    self.socketio_client.wait(10)
+                    self.socketio_client.wait(self.config.websockets_check_config_interval)
                     logger.debug('Check Websocket config')
 
             except Exception as e:
                 logger.critical('Error in socket io connection %s' % repr(e))
-            logger.info('Socket IO Stopped....')
-            time.sleep(10)
+            logger.info('Socket IO Stopped, waiting %ss before retrying' % self.config.websockets_retry_timeout)
+            time.sleep(self.config.websockets_retry_timeout)
 
 if __name__ == "__main__":
     usage="""\
