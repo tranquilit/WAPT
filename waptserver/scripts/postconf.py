@@ -20,7 +20,13 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.3.8"
+__version__ = "1.5.0"
+
+usage = """\
+%prog [--use-kerberos] [--use-hsts] [--force-https]"""
+
+
+
 import os,sys
 try:
     wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)),'../..'))
@@ -50,6 +56,11 @@ import datetime
 import string
 import random
 
+import ConfigParser
+from optparse import OptionParser
+
+
+
 def type_debian():
     return platform.dist()[0].lower() in ('debian','ubuntu')
 
@@ -58,7 +69,7 @@ def type_redhat():
 
 postconf = dialog.Dialog(dialog="dialog")
 
-def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn):
+def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force_https,use_hsts):
     if wapt_folder.endswith('\\') or wapt_folder.endswith('/'):
         wapt_folder = wapt_folder[:-1]
 
@@ -76,11 +87,12 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn):
         'windows': False,
         'debian': type_debian(),
         'redhat': type_redhat(),
-        'strict_https': False,
+        'force_https': force_https,
         'wapt_ssl_key_file': wapt_ssl_key_file,
         'wapt_ssl_cert_file': wapt_ssl_cert_file,
         'fqdn': fqdn,
-        'use_kerberos': False,
+        'use_kerberos': use_kerberos,
+        'use_hsts': use_hsts,
         }
 
     config_string = template.render(template_vars)
@@ -247,6 +259,33 @@ def check_mongo2pgsql_upgrade_needed(waptserver_ini):
 def main():
     # TODO : check debian / ubuntu / centos / redhat version
 
+    parser = OptionParser(usage=usage, version='waptserver.py ' + __version__)
+    parser.add_option(
+        "-k",
+        "--use-kerberos",
+        dest="use_kerberos",
+        default=False,
+        action='store_true',
+        help="Use kerberos for host registration (default: False)")
+    parser.add_option(
+        "-s",
+        "--force-https",
+        dest="force_https",
+        default=False,
+        action='store_true',
+        help="Use https only, http is 301 redirected to https (default: False). Requires a proper DNS name")
+    parser.add_option(
+        "-t",
+        "--use-hsts",
+        dest="use_hsts",
+        default=False,
+        action='store_true',
+        help="Add HSTS configuration on https connection")
+
+    
+
+    (options, args) = parser.parse_args()
+
     if postconf.yesno("Do you want to launch post configuration tool ?") != postconf.DIALOG_OK:
         print "canceling wapt postconfiguration"
         sys.exit(1)
@@ -387,7 +426,7 @@ def main():
                         pass
             # TODO : check first if fqdn is dns resolvable 
 
-            make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn)
+            make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn, options.use_kerberos, options.force_https, options.use_hsts)
             final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
             if type_debian():
                 enable_debian_vhost()
