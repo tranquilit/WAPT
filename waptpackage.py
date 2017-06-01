@@ -39,6 +39,7 @@ __all__ = [
     'update_packages',
     'REGEX_PACKAGE_VERSION',
     'REGEX_PACKAGE_CONDITION',
+    'ArchitecturesList',
     'EWaptBadSignature',
     'EWaptCorruptedFiles',
     'EWaptNotSigned',
@@ -306,10 +307,11 @@ class PackageEntry(object):
         self.repo_url=''
         self.repo=repo
 
-        # full filename of package if built
-        self.localpath=None
         # directory if unzipped package files
         self.sourcespath=None
+
+        # full filename of package if built
+        self.localpath=None
 
         self._calculated_attributes=[]
         if waptfile:
@@ -623,7 +625,7 @@ class PackageEntry(object):
         return self.repo_url+'/'+self.filename.strip('./')
 
     def inc_build(self):
-        """Increment last number part of version"""
+        """Increment last number part of version in memory"""
         version_parts = self.parse_version()
         for part in ('packaging','subpatch','patch','minor','major'):
             if part in version_parts and version_parts[part] != None and\
@@ -698,7 +700,7 @@ class PackageEntry(object):
             excludes=excludes)
         return result_filename
 
-    def sign_control(self,private_key,certificate):
+    def _sign_control(self,private_key,certificate):
         """Sign the contractual attributes of the control file using
             the provided key, add certificate Fingerprint and CN too
 
@@ -715,7 +717,7 @@ class PackageEntry(object):
         self.signer_fingerprint = certificate.fingerprint
 
     def check_control_signature(self,public_certs):
-        """Check control signature against a list of public certificates
+        """Check in memory control signature against a list of public certificates
 
         Args:
             public_certs (list of crt paths or SSLCertificate instances)
@@ -730,7 +732,7 @@ class PackageEntry(object):
 
         >>> p = PackageEntry('test',version='1.0-0')
         >>> p.depends = 'test'
-        >>> p.sign_control(k,c)
+        >>> p._sign_control(k,c)
         >>> p.check_control_signature(c)
         """
         if not self.signature:
@@ -754,11 +756,21 @@ class PackageEntry(object):
         raise SSLVerifyException('SSL signature verification failed for control %s, either none public certificates match signature or signed content has been changed' % self.asrequirement())
 
     def build_manifest(self,exclude_filenames = None,block_size=2**20,forbidden_files=[]):
-        if not os.path.isfile(self.wapt_fullpath()):
-            raise Exception(u"%s is not a Wapt package" % self.wapt_fullpath())
+        """Calc the manifest of an already built wapt package/
+
+
+        Returns:
+            dict: {filepath:shasum,}
+        """
+        if not self.localpath:
+            raise Exception(u'Wapt package "%s" is not yet built' % self.sourcespath)
+
+        if not os.path.isfile(self.localpath):
+            raise Exception(u'%s is not a Wapt package' % self.localpath)
+
         if exclude_filenames is None:
             exclude_filenames = self.manifest_filename_excludes
-        waptzip = zipfile.ZipFile(self.wapt_fullpath(),'r',allowZip64=True)
+        waptzip = zipfile.ZipFile(self.localpath,'r',allowZip64=True)
         manifest = {}
         for fn in waptzip.filelist:
             if not fn.filename in exclude_filenames:
@@ -776,8 +788,13 @@ class PackageEntry(object):
         return manifest
 
     def sign_package(self,private_key,certificate):
-        """Append control, manifest.sha1 and signature to zip apt package
+        """Sign an already built package.
+            Should follow immediately the build_package step.
+
+            Append signed control, manifest.sha1 and signature to zip wapt package
             If these files are already in the package, they are first removed.
+
+            Use the self.localpath attribute to get location of waptfile build file.
         """
         if not os.path.isfile(self.localpath) and not os.path.isdir(self.localpath):
             raise Exception(u"%s is not a Wapt package" % self.localpath)
@@ -785,7 +802,7 @@ class PackageEntry(object):
         package_fn = self.localpath
         logger.debug('Signing %s with key %s, and certificate CN "%s"' % (package_fn,private_key,certificate.cn))
         # sign the control
-        self.sign_control(private_key,certificate)
+        self._sign_control(private_key,certificate)
 
         control = self.ascontrol().encode('utf8')
         excludes = self.manifest_filename_excludes
@@ -969,7 +986,7 @@ class PackageEntry(object):
         if check_with_certs is not None and not isinstance(check_with_certs,list):
             check_with_certs = [check_with_certs]
 
-        logger.info(u'Unzipping package %s to directory %s' % (self.wapt_fullpath(),ensure_unicode(target_dir)))
+        logger.info(u'Unzipping package %s to directory %s' % (self.localpath,ensure_unicode(target_dir)))
         with ZipFile(self.localpath) as zip:
             try:
                 zip.extractall(path=target_dir)
