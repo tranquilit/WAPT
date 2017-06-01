@@ -26,7 +26,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="5"/>
-      <BuildNr Value="3"/>
+      <BuildNr Value="5"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT auto deploy" LegalCopyright="Tranquil IT Systems" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
