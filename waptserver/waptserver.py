@@ -330,6 +330,7 @@ def index():
 
 
 @app.route('/add_host', methods=['POST'])
+@app.route('/add_host', methods=['GET'])
 @app.route('/update_host', methods=['POST'])
 def update_host():
     """Update localstatus of computer, and return known registration info"""
@@ -351,7 +352,12 @@ def update_host():
                 signature_b64 = request.headers.get('X-Signature',None)
                 signer = request.headers.get('X-Signer',None)
 
-                authenticated_user = request.headers.get('X-Aitheticated-User',None)
+                authenticated_user = request.headers.get('X-Authenticated-User',None)
+                if authenticated_user:
+                    authenticated_user = authenticated_user.lower().replace('$','')
+
+                logger.debug(request.headers)
+                logger.debug('authenticated computer : %s ' % authenticated_user) 
 
                 if signature_b64:
                     signature = signature_b64.decode('base64')
@@ -363,10 +369,11 @@ def update_host():
                     # on apache reverse proxy level
                     if request.path in  ['/add_host']:
                         host_cert = SSLCertificate(crt_string = data['host_certificate'])
-                        #if not authenticated_user:
-                        #    raise EWaptAuthenticationFailure('add_host : Missing authentication header')
-                        #if authenticated_user.lower().replace('@','.') != host_cert.cn.lower():
-                        #    raise EWaptAuthenticationFailure('add_host : Mismatch between authendtication header %s and Certificate commonName' % (authenticated_user,host_cert.cn))
+                        if conf['use_kerberos']:
+                            if not authenticated_user:
+                                raise EWaptAuthenticationFailure('add_host : Missing authentication header')
+                            if authenticated_user.lower().replace('@','.') != host_cert.cn.lower():
+                                raise EWaptAuthenticationFailure('add_host : Mismatch between authendtication header %s and Certificate commonName' % (authenticated_user,host_cert.cn))
                     else:
                         # get certificate from DB to check/authenticate submitted data.
                         existing_host = Hosts.select(Hosts.host_certificate,Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
