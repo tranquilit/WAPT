@@ -279,11 +279,11 @@ class PackageEntry(object):
     def all_attributes(self):
         return self.required_attributes + self.optional_attributes + self.non_control_attributes + self._calculated_attributes
 
-    def __init__(self,package='',version='0',repo='',waptfile=None):
+    def __init__(self,package='',version='0',repo='',waptfile=None, section = 'base'):
         self.package=package
         self.version=version
         self.architecture='all'
-        self.section='base'
+        self.section=section
         self.priority='optional'
         self.maintainer=''
         self.description=''
@@ -485,7 +485,7 @@ class PackageEntry(object):
                 self._calculated_attributes.append(k)
         return self
 
-    def load_control_from_wapt(self,fname,calc_md5=True):
+    def load_control_from_wapt(self,fname=None,calc_md5=True):
         """Load package attributes from the control file (utf8 encoded) included in WAPT zipfile fname
 
           fname can be
@@ -493,13 +493,22 @@ class PackageEntry(object):
            - a list with the lines from control file
            - a path to the directory of wapt file unzipped content (debugging)
         """
+        if fname is None:
+            if self.sourcespath and os.path.isdir(self.sourcespath):
+                fname = self.sourcespath
+            elif self.localpath and os.path.isfile(self.localpath):
+                fname = self.localpath
+
         if isinstance(fname,list):
             control =  StringIO.StringIO(u'\n'.join(fname))
         elif os.path.isfile(fname):
             with zipfile.ZipFile(fname,'r',allowZip64=True) as myzip:
                 control = StringIO.StringIO(myzip.open(u'WAPT/control').read().decode('utf8'))
         elif os.path.isdir(fname):
-            control = codecs.open(os.path.join(fname,'WAPT','control'),'r',encoding='utf8')
+            try:
+                control = codecs.open(os.path.join(fname,'WAPT','control'),'r',encoding='utf8')
+            except Exception as e:
+                raise EWaptBadControl(e)
         else:
             raise EWaptBadControl(u'Bad or no control found for %s' % (fname,))
 
@@ -522,42 +531,91 @@ class PackageEntry(object):
             self.sourcespath = os.path.abspath(fname)
         return self
 
-    def wapt_fullpath(self):
-        """return full local path of wapt package if built"""
-        return self.localpath
-
-    def save_control_to_wapt(self,fname):
+    def save_control_to_wapt(self,fname=None,force=True):
         """Save package attributes to the control file (utf8 encoded)
-
           fname can be
            - the path to WAPT file itelsef (zip file)
            - a path to the directory of wapt file unzipped content (debugging)
+
+        if no fname, save to <self.sourcespath>/WAPT/control if sourcespath exists
+        or <self.localpath> zip file if exists.
+
+        Update self.locapath or self.sourcespath if not already set.
+
+        Args:
+            fname (str) : base directoy of waptpackage or filepath of Zipped Packges.
+                          If None, use self.sourcespath if exists, or self.localpath if exists
+
+            force (bool) : write control in wapt zip file even if it already exist
+        Returns:
+            PackageEntry : None if nothing written, or previous PackageEntry if new data written
+
+        Raise Exception if fname is None and no sourcespath and no localpath
+        Raise Exception if control exists and force is False
+
         """
-        if os.path.isdir(fname):
-            with codecs.open(os.path.join(fname,u'WAPT','control'),'w',encoding='utf8') as control_file:
-                control_file.write(self.ascontrol())
-        else:
-            myzip = None
-            try:
-                if os.path.isfile(fname):
-                    myzip = zipfile.ZipFile(fname,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
+        if fname is None:
+            if self.sourcespath and os.path.isdir(self.sourcespath):
+                fname = self.sourcespath
+            elif self.localpath and os.path.isfile(self.localpath):
+                fname = self.localpath
+
+        if fname is None:
+            raise Exception('Needs a wapt package directory root or WaptPackage filename to save control to')
+
+        try:
+            old_control = PackageEntry(waptfile = fname)
+        except EWaptBadControl:
+            old_control = None
+
+        # wether data is different
+        write_needed = not old_control or (old_control.ascontrol() != self.ascontrol())
+
+        if not force and old_control and write_needed:
+            raise Exception(u'control file already exist in WAPT file %s' % fname)
+
+        if write_needed:
+            if os.path.isdir(fname):
+                if not os.path.isdir(os.path.join(fname,'WAPT')):
+                    os.makedirs(os.path.join(fname,'WAPT'))
+                with codecs.open(os.path.join(fname,u'WAPT','control'),'w',encoding='utf8') as control_file:
+                    control_file.write(self.ascontrol())
+                if not self.sourcespath:
+                    self.sourcespath = fname
+                return old_control
+            else:
+                myzip = zipfile.ZipFile(fname,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
+                try:
                     try:
-                        zi = myzip.getinfo(u'WAPT/control')
-                        control_exist = True
-                    except:
-                        control_exist = False
-                        self.filename = os.path.basename(fname)
-                        self.localpath = os.path.abspath(fname)
-                    if control_exist:
-                        raise Exception(u'control file already exist in WAPT file %s' % fname)
-                else:
-                    myzip = zipfile.ZipFile(fname,'w',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
-                myzip.writestr(u'WAPT/control',self.ascontrol().encode('utf8'))
-            finally:
-                if myzip:
-                    myzip.close()
+                        previous_zi = myzip.getinfo(u'WAPT/control')
+                        myzip.remove(u'WAPT/control')
+                    except Exception as e:
+                        print("OK %s" % repr(e))
+                    myzip.writestr(u'WAPT/control',self.ascontrol().encode('utf8'))
+                    if not self.localpath:
+                        self.localpath = fname
+                    return old_control
+                finally:
+                    if myzip:
+                        myzip.close()
+        else:
+            return None
 
     def ascontrol(self,with_non_control_attributes = False,with_empty_attributes=False):
+        """Return control attributes and values as stored in control packages file
+
+        Each attribute on a line with key : value
+        If value is multiline, new line begin with a space.
+
+        Args:
+            with_non_control_attributes (bool) : weither to include all attributes or only those
+                                                 relevant for final package content.
+
+            with_empty_attributes (bool) : weither to include attribute with empty value too or only
+                                           non empty and/or signed attributes
+        Returns:
+            str:
+        """
         val = []
 
         def escape_cr(s):
@@ -582,19 +640,21 @@ class PackageEntry(object):
 
     def make_package_filename(self):
         """Return the standard package filename based on current attributes
-
+            parts of control which are either 'all' or empty are not included in filename
         Returns:
             str:  standard package filename
-                  - packagename_version_arch.wapt for softwares
-                  - packagename.wapt for group and host.
+                  - packagename.wapt for host
+                  - packagename_arch_maturity_locale.wapt for group
+                  - packagename_version_arch_maturity_locale.wapt for others
         """
         if self.section not in ['host','group'] and not (self.package and self.version and self.architecture):
             raise Exception(u'Not enough information to build the package filename for %s (%s)'%(self.package,self.version))
+
         if self.section == 'host':
             return self.package+'.wapt'
         elif self.section ==  'group':
             # we don't keep version for group
-            return '_'.join([f for f in (self.package,self.architecture,self.maturity,self.locale) if (f and f != 'all')]) + '.wapt'
+            return self.package + '_'.join([f for f in (self.architecture,self.maturity,self.locale) if (f and f != 'all')]) + '.wapt'
         else:
             # includes only non empty fields
             return '_'.join([f for f in (self.package,self.version,self.architecture,self.maturity,self.locale) if f]) + '.wapt'
@@ -636,9 +696,12 @@ class PackageEntry(object):
         raise EWaptBadControl(u'no build/packaging part in version number %s' % self.version)
 
     def signed_content(self):
+        """Return the signed control informations"""
         return {att:getattr(self,att,None) for att in self.signed_attributes}
 
     def get_signature(self,private_key):
+        """Returns the signature of control informations"""
+        assert(isinstance(private_key,SSLPrivateKey))
         signed_content = private_key.sign_content(self.signed_content())
         return signed_content
 
@@ -646,13 +709,19 @@ class PackageEntry(object):
     def build_package(self,excludes=['.svn','.git','.gitignore','setup.pyc'],target_directory=None):
         """Build the WAPT package, stores the result in target_directory
 
-        Zip the content of directory.
+        Zip the content of self.sourcespath directory into a zipfile
+            named with default package filename based on control attributes.
+
+        Update filename attribute.
+        Update localpath attribute with result filepath.
 
         Args:
-            directoryname (str): source root directory of package to build
+            excludes (list) : list of patterns for source files to exclude from built package.
+            target_directory (str): target directory where to store built package.
+                                 If None, use parent directory of package sources dircetory.
 
         Returns:
-            str: waptfilename
+            str: full filepath to built wapt package
         """
 
         result_filename = u''
@@ -840,6 +909,18 @@ class PackageEntry(object):
 
         return signature.encode('base64')
 
+    def _get_package_zipentry(self,filename):
+        """Open wapt zipfile and return one package zipfile entry
+            could fail if zip file is already opened elsewhere...
+        Returns
+            zip
+        """
+        with zipfile.ZipFile(self.localpath,'r',allowZip64=True) as waptzip:
+            try:
+                return zipfile.getinfo(filename)
+            except:
+                return None
+
     def change_prefix(self,new_prefix):
         """Change prefix of package name to new_prefix and return True if
             it was really changed.
@@ -855,25 +936,39 @@ class PackageEntry(object):
             return False
 
     def invalidate_signature(self):
+        """Remove all signature informations from control and unzipped package directory"""
+        # remove control signature
         self.signature = None
         self.signature_date = None
         self.signer = None
         self.signer_fingerprint = None
 
+        # remove package / files signature if sources entry.
+        if self.sourcespath and os.path.isdir(self.sourcespath):
+            manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha1')
+            if os.path.isfile(manifest_filename):
+                os.remove(manifest_filename)
+
+            signature_filename = os.path.join(self.sourcespath,'WAPT','signature')
+            if os.path.isfile(signature_filename):
+                os.remove(signature_filename)
+
     def list_corrupted_files(self):
         """check hexdigest sha for the files in manifest
-        returns a list of non matching files (corrupted files)"""
+           returns a list of non matching files (corrupted files)
+
+        """
         if not os.path.isdir(self.sourcespath):
-            raise EWaptNotSourcesDirPackage(u'Check package files : %s is not a valid package directory.'%self.sourcespath)
+            raise EWaptNotSourcesDirPackage(u'%s is not a valid package directory.'%self.sourcespath)
 
         manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha1')
         if not os.path.isfile(manifest_filename):
-            raise EWaptBadSignature(u'Check package files : not manifest file in %s directory.'%self.sourcespath)
+            raise EWaptBadSignature(u'no manifest file in %s directory.'%self.sourcespath)
 
         with open(manifest_filename,'r') as manifest_file:
             manifest = json.loads(manifest_file.read())
             if not isinstance(manifest,list):
-                raise EWaptBadSignature(u'Check package files : manifest file in %s is invalid.'%self.sourcespath)
+                raise EWaptBadSignature(u'manifest file in %s is invalid.'%self.sourcespath)
 
         errors = []
         expected = []
@@ -906,15 +1001,15 @@ class PackageEntry(object):
         Raise Exception if no certificate match is found.
         """
         if not public_certs:
-            raise EWaptBadCertificate('No certificate to check package signature')
+            raise EWaptBadCertificate(u'No supplied certificate to check package signature')
         if not isinstance(public_certs,list):
             public_certs = [public_certs]
 
         if not self.sourcespath:
-            raise EWaptNotSourcesDirPackage(u'Check package signature : Package entry is is not a unzipped sources package directory.')
+            raise EWaptNotSourcesDirPackage(u'Package entry is not an unzipped sources package directory.')
 
         if not os.path.isdir(self.sourcespath):
-            raise EWaptNotAPackage(u'Check package signature : %s is not a valid package directory.'%self.sourcespath)
+            raise EWaptNotAPackage(u'%s is not a valid package directory.'% self.sourcespath)
 
         verified_by = None
 
@@ -925,7 +1020,7 @@ class PackageEntry(object):
 
             has_setup_py = os.path.isfile(os.path.join(self.sourcespath,'setup.py'))
             if has_setup_py:
-                logger.info('Package has a setup.py, code signing certificate required')
+                logger.info(u'Package has a setup.py, code signing certificate is required.')
 
             signature_filename = os.path.join(self.sourcespath,'WAPT','signature')
             # if public key provided, and signature in wapt file, check it
@@ -937,21 +1032,21 @@ class PackageEntry(object):
                     for cert in reversed(sorted(public_certs)):
                         logger.debug('Checking with %s' % cert)
                         if cert.verify_content(manifest_data,signature):
-                            if has_setup_py and cert.is_code_signing:
+                            if not has_setup_py or cert.is_code_signing:
                                 logger.debug('OK with %s' % cert)
                                 verified_by = cert
                                 break
                             else:
-                                logger.debug('signature OK but not a code signing certificate, skipping: %s' % cert)
+                                logger.debug(u'Signature OK but not a code signing certificate, skipping: %s' % cert)
                     if verified_by:
                         logger.info(u'Package issued by %s' % (verified_by.subject,))
                     else:
-                        raise EWaptBadSignature('No matching certificate found or bad signature')
+                        raise EWaptBadSignature(u'No matching certificate found or bad signature')
                 except:
                     raise EWaptBadSignature(u'Package file %s signature is invalid.\n\nThe signer "%s" is not accepted by one the following public keys:\n%s' % \
                         (self.sourcespath,self.signer,u'\n'.join([u'%s' % cert for cert in public_certs])))
 
-                # now check the integrity files
+                # now check the integrity of files
                 errors = self.list_corrupted_files()
                 if errors:
                     raise EWaptCorruptedFiles(u'Error in package dir %s, files corrupted, SHA not matching for %s' % (self.sourcespath,errors,))
@@ -970,7 +1065,7 @@ class PackageEntry(object):
             check_with_certs (list) : list of Certificates to check content. If None, no check is done
 
         Returns:
-            str : path to unzipped files
+            str : path to unzipped packages files
 
         Exceptions:
             EWaptNotAPackage, EWaptBadSignature,EWaptCorruptedFiles
@@ -987,7 +1082,7 @@ class PackageEntry(object):
             check_with_certs = [check_with_certs]
 
         logger.info(u'Unzipping package %s to directory %s' % (self.localpath,ensure_unicode(target_dir)))
-        with ZipFile(self.localpath) as zip:
+        with ZipFile(self.localpath,allowZip64=True) as zip:
             try:
                 zip.extractall(path=target_dir)
                 self.sourcespath = target_dir
@@ -1003,7 +1098,7 @@ class PackageEntry(object):
                 raise
         return self.sourcespath
 
-    def remove_localsources(self):
+    def delete_localsources(self):
         """Remove the unzipped local directory
         """
         if self.sourcespath and os.path.isdir(self.sourcespath):
