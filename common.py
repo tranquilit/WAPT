@@ -3617,7 +3617,7 @@ class Wapt(object):
         for fname in downloaded['downloaded'] + downloaded['skipped']:
             with zipfile.ZipFile(fname,'r',allowZip64=True) as waptfile:
                 control = waptfile.open(u'WAPT/control').read().decode('utf8')
-                manifest_content = waptfile.open(u'WAPT/manifest.sha1').read()
+                manifest_content = waptfile.open(u'WAPT/manifest.sha256').read()
                 manifest = json.loads(manifest_content)
                 try:
                     signature = waptfile.open(u'WAPT/signature').read().decode('base64')
@@ -3627,10 +3627,10 @@ class Wapt(object):
                 except:
                     raise EWaptBadSignature(u'Package file %s signature is invalid' % ensure_unicode(fname))
 
-            for (fn,sha1) in manifest:
+            for (fn,sha256) in manifest:
                 if fn == 'WAPT\\control':
-                    if sha1 != sha1_for_data(control.encode('utf8')):
-                        raise EWaptCorruptedFiles("WAPT/control file of %s is corrupted, sha1 digests don't match" % ensure_unicode(fname))
+                    if sha1 != sha256_for_data(control.encode('utf8')):
+                        raise EWaptCorruptedFiles("WAPT/control file of %s is corrupted, sha256 digests don't match" % ensure_unicode(fname))
                     break
             # Merge updated control data
             # TODO
@@ -4444,11 +4444,11 @@ class Wapt(object):
         return self._private_key_cache
 
     def sign_package(self,zip_or_directoryname,excludes=['.svn','.git','.gitignore','*.pyc','src'],private_key=None,certificate=None,callback=None):
-        """Calc the signature of the WAPT/manifest.sha1 file and put/replace it in ZIP or directory.
-            if directory, creates WAPT/manifest.sha1 and add it to the content of package
+        """Calc the signature of the WAPT/manifest.sha256 file and put/replace it in ZIP or directory.
+            if directory, creates WAPT/manifest.sha256 and add it to the content of package
             create a WAPT/signature file and it to directory or zip file.
 
-            known issue : if zip file already contains a manifest.sha1 file, it is not removed, so there will be
+            known issue : if zip file already contains a manifest.sha256 file, it is not removed, so there will be
                           2 manifest files in zip / wapt package.
 
         Args:
@@ -4458,7 +4458,7 @@ class Wapt(object):
             callback: ref to the function to call if a password is required for opening the private key.
 
         Returns:
-            str: base64 encoded signature of manifest.sha1 file (content
+            str: base64 encoded signature of manifest.sha256 file (content
         """
         if not isinstance(zip_or_directoryname,unicode):
             zip_or_directoryname = unicode(zip_or_directoryname)
@@ -4515,7 +4515,7 @@ class Wapt(object):
         """Build the WAPT package from a directory
 
         Call update_control from setup.py if this function is defined.
-        Then zip the content of directory. Add a manifest.sha1 file with sha1 hash of
+        Then zip the content of directory. Add a manifest.sha256 file with sha256 hash of
           the content of each file.
 
         Args:
@@ -5662,7 +5662,7 @@ class Wapt(object):
         self.add_pyscripter_project(target_directory)
 
         # remove manifest and signature
-        manifest_filename = os.path.join( target_directory,'WAPT','manifest.sha1')
+        manifest_filename = os.path.join( target_directory,'WAPT','manifest.sha256')
         if os.path.isfile(manifest_filename):
             os.unlink(manifest_filename)
 

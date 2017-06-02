@@ -273,7 +273,7 @@ class PackageEntry(object):
     # these attributes are not kept when duplicating / editing a package
     not_duplicated_attributes =  ['signature','signer','signer_fingerprint','signature_date']
 
-    manifest_filename_excludes = ['WAPT/signature','WAPT/manifest.sha1']
+    manifest_filename_excludes = ['WAPT/signature','WAPT/manifest.sha256']
 
     @property
     def all_attributes(self):
@@ -845,7 +845,7 @@ class PackageEntry(object):
             if not fn.filename in exclude_filenames:
                 if fn.filename in forbidden_files:
                     raise EWaptPackageSignError('File %s is not allowed.'% fn.filename)
-                shasum = hashlib.sha1()
+                shasum = hashlib.sha256()
                 file_data = waptzip.open(fn)
                 while True:
                     data = file_data.read(block_size)
@@ -860,7 +860,7 @@ class PackageEntry(object):
         """Sign an already built package.
             Should follow immediately the build_package step.
 
-            Append signed control, manifest.sha1 and signature to zip wapt package
+            Append signed control, manifest.sha256 and signature to zip wapt package
             If these files are already in the package, they are first removed.
 
             Use the self.localpath attribute to get location of waptfile build file.
@@ -887,7 +887,7 @@ class PackageEntry(object):
         except EWaptPackageSignError as e:
             raise EWaptBadCertificate('Certificate %s doesn''t allow to sign packages with setup.py file.' % certificate.public_cert_filename)
 
-        manifest_data['WAPT/control'] = sha1_for_data(control)
+        manifest_data['WAPT/control'] = sha256_for_data(control)
         # convert to list of list...
         wapt_manifest = json.dumps( manifest_data.items())
         signature = private_key.sign_content(wapt_manifest)
@@ -899,9 +899,9 @@ class PackageEntry(object):
                 waptzip.remove('WAPT/control')
             waptzip.writestr('WAPT/control',control)
 
-            if 'WAPT/manifest.sha1' in filenames:
-                waptzip.remove('WAPT/manifest.sha1')
-            waptzip.writestr('WAPT/manifest.sha1',wapt_manifest)
+            if 'WAPT/manifest.sha256' in filenames:
+                waptzip.remove('WAPT/manifest.sha256')
+            waptzip.writestr('WAPT/manifest.sha256',wapt_manifest)
 
             if 'WAPT/signature' in filenames:
                 waptzip.remove('WAPT/signature')
@@ -945,7 +945,7 @@ class PackageEntry(object):
 
         # remove package / files signature if sources entry.
         if self.sourcespath and os.path.isdir(self.sourcespath):
-            manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha1')
+            manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha256')
             if os.path.isfile(manifest_filename):
                 os.remove(manifest_filename)
 
@@ -961,7 +961,7 @@ class PackageEntry(object):
         if not os.path.isdir(self.sourcespath):
             raise EWaptNotSourcesDirPackage(u'%s is not a valid package directory.'%self.sourcespath)
 
-        manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha1')
+        manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha256')
         if not os.path.isfile(manifest_filename):
             raise EWaptBadSignature(u'no manifest file in %s directory.'%self.sourcespath)
 
@@ -973,15 +973,15 @@ class PackageEntry(object):
         errors = []
         expected = []
 
-        for (filename,sha1) in manifest:
+        for (filename,sha256) in manifest:
             fullpath = os.path.abspath(os.path.join(self.sourcespath,filename))
             expected.append(fullpath)
-            if sha1 != sha1_for_file(fullpath):
+            if sha256 != sha256_for_file(fullpath):
                 errors.append(filename)
 
         files = list(find_all_files(ensure_unicode(self.sourcespath)))
         # removes files which are not in manifest by design
-        for fn in ('WAPT/signature','WAPT/manifest.sha1'):
+        for fn in ('WAPT/signature','WAPT/manifest.sha256'):
             full_fn = os.path.abspath(os.path.join(self.sourcespath,fn))
             if full_fn in files:
                 files.remove(full_fn)
@@ -1013,7 +1013,7 @@ class PackageEntry(object):
 
         verified_by = None
 
-        manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha1')
+        manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha256')
         if os.path.isfile(manifest_filename):
             manifest_data = open(manifest_filename,'r').read()
             manifest_filelist = json.loads(manifest_data)
@@ -1054,7 +1054,7 @@ class PackageEntry(object):
             else:
                 raise EWaptNotSigned(u'The package dir in %s does not contain a signature' % self.sourcespath)
         else:
-            raise EWaptNotSigned(u'The package dir in %s does not contain the manifest.sha1 file with content fingerprints' % self.sourcespath)
+            raise EWaptNotSigned(u'The package dir in %s does not contain the manifest.sha256 file with content fingerprints' % self.sourcespath)
 
 
     def unzip_package(self,target_dir=None,check_with_certs=None):
