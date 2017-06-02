@@ -121,7 +121,7 @@ var
 begin
   certFile := AppendPathDelim(DirectoryCert.Text)+ExtractFileNameOnly(EdKeyFileName.Text)+'.crt';
   if FileExists(certFile) then
-    certFile := AppendPathDelim(DirectoryCert.Text)+ExtractFileNameOnly(EdKeyFileName.Text)+'-'+FormatDateTime('yyyymmdd-hhnnss',Date)+'.crt';
+    certFile := AppendPathDelim(DirectoryCert.Text)+ExtractFileNameOnly(EdKeyFileName.Text)+'-'+FormatDateTime('yyyymmdd-hhnnss',Now)+'.crt';
   edCertBaseName.Text:=ExtractFileNameOnly(certFile);
 end;
 

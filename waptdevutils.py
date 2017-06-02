@@ -284,6 +284,9 @@ def duplicate_from_external_repo(waptconfigfile,package_filename,target_director
 
 
 def build_waptupgrade_package(waptconfigfile,target_directory,wapt_server_user,wapt_server_passwd,key_password=None):
+    if target_directory is None:
+        target_directory = tempfile.gettempdir()
+
     if not wapt_server_user:
         wapt_server_user = raw_input('WAPT Server user :')
     if not wapt_server_passwd:
@@ -303,7 +306,11 @@ def build_waptupgrade_package(waptconfigfile,target_directory,wapt_server_user,w
     wapt.key_passwd_callback = pwd_callback
 
     waptget = get_file_properties('wapt-get.exe')
-    entry = PackageEntry(waptfile = os.path.join(wapt.wapt_base_dir,'waptupgrade'))
+    entry = PackageEntry(waptfile = makepath(wapt.wapt_base_dir,'waptupgrade'))
+    patchs_dir = makepath(entry.sourcespath,'patchs')
+    mkdirs(patchs_dir)
+    filecopyto(makepath(wapt.wapt_base_dir,'waptdeploy.exe'),makepath(patchs_dir,'waptdeploy.exe'))
+
     entry.package = '%s-waptupgrade' % wapt.config.get('global','default_package_prefix')
     rev = entry.version.split('-')[1]
     entry.version = '%s-%s' % (waptget['FileVersion'],rev)
