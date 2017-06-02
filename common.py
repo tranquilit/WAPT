@@ -4537,98 +4537,13 @@ class Wapt(object):
         control_filename = os.path.join(directoryname,'WAPT','control')
         force_utf8_no_bom(control_filename)
 
-        entry = PackageEntry()
         logger.info(u'Load control informations from control file')
-        entry.load_control_from_wapt(directoryname)
-
-        # to avoid double increment when update_control is used.
-        inc_done = False
-
-        # optionally, setup.py can update some attributes of control files using
-        # a procedure called update_control(package_entry)
-        # this can help automates version maintenance
-        # a check of version collision is operated automatically
-        if os.path.isfile(os.path.join(directoryname,'setup.py')):
-            oldpath = sys.path
-            try:
-                previous_cwd = os.getcwd()
-                logger.debug(u'  Change current directory to %s' % directoryname)
-                os.chdir(directoryname)
-                if not os.getcwd() in sys.path:
-                    sys.path = [os.getcwd()] + sys.path
-                    logger.debug(u'new sys.path %s' % sys.path)
-                logger.debug(u'Sourcing %s' % os.path.join(directoryname,'setup.py'))
-                setup = import_setup(os.path.join(directoryname,'setup.py'))
-                 # be sure some minimal functions are available in setup module at install step
-                logger.debug(u'Source import OK')
-
-                # check minimal requirements of setup.py
-                # check encoding
-                try:
-                    codecs.open(os.path.join(directoryname,'setup.py'),mode='r',encoding='utf8')
-                except:
-                    raise EWaptBadSetup('Encoding of setup.py is not utf8')
-
-                if hasattr(setup,'uninstallstring'):
-                    mandatory = [('install',types.FunctionType) ,('uninstallstring',list),]
-                else:
-                    mandatory = [('install',types.FunctionType) ,('uninstallkey',list),]
-                for (attname,atttype) in mandatory:
-                    if not hasattr(setup,attname):
-                        raise EWaptBadSetup('setup.py has no %s (%s)' % (attname,atttype))
-
-                if hasattr(setup,'update_control'):
-                    logger.info(u'Update control informations with update_control function from setup.py file')
-                    setattr(setup,'run',self.run)
-                    setattr(setup,'run_notfatal',self.run_notfatal)
-                    setattr(setup,'user',self.user)
-                    setattr(setup,'usergroups',self.usergroups)
-                    setattr(setup,'WAPT',self)
-                    setattr(setup,'language',self.language or setuphelpers.get_language() )
-                    setup.update_control(entry)
-
-            # restore path and current working dir
-            finally:
-                if 'setup' in dir():
-                    setup_name = setup.__name__
-                    del setup
-                    if setup_name in sys.modules:
-                        del sys.modules[setup_name]
-                sys.path = oldpath
-                logger.debug(u'  Change current directory to %s' % previous_cwd)
-                os.chdir(previous_cwd)
-
-        if inc_package_release:
-            logger.debug(u'Check existing versions and increment it')
-            older_packages = self.is_available(entry.package)
-            if (older_packages and entry<=older_packages[-1]):
-                entry.version = older_packages[-1].version
-                entry.inc_build()
-                inc_done = True
-                logger.warning(u'Older package with same name exists, incrementing packaging version to %s' % (entry.version,))
-
-        # save control file
-        entry.save_control_to_wapt(directoryname)
-
-        # check version syntax
-        parse_major_minor_patch_build(entry.version)
-
-        # check architecture
-        if not entry.architecture in ArchitecturesList:
-            raise EWaptBadControl(u'Architecture should one of %s' % (ArchitecturesList,))
+        entry = PackageEntry(waptfile = directoryname)
 
         # increment inconditionally the package buuld nr.
-        if not inc_done and inc_package_release:
-            entry.inc_build()
-
         if inc_package_release:
-            entry.save_control_to_wapt(directoryname)
-
-        if target_directory is None:
-            target_directory = os.path.abspath(os.path.join( directoryname,'..'))
-
-        if not os.path.isdir(target_directory):
-            raise Exception('Bad target directory %s for package build' % target_directory)
+            entry.inc_build()
+            entry.save_control_to_wapt()
 
         result_filename = entry.build_package(excludes = excludes,target_directory = target_directory)
         return result_filename
