@@ -2448,6 +2448,7 @@ class WaptSocketIOClient(threading.Thread):
                     self.socketio_client = SocketIO(
                             host="%s://%s" % (self.config.websockets_proto,self.config.websockets_host),
                             port=self.config.websockets_port,
+                            proxies=self.config.waptserver.proxies,
                             verify=self.config.websockets_verify_cert,
                             wait_for_connection = False,
                             hurry_interval_in_seconds = 10,
