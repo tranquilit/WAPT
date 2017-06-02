@@ -785,11 +785,11 @@ class PackageEntry(object):
         self.signer = certificate.cn
         self.signer_fingerprint = certificate.fingerprint
 
-    def check_control_signature(self,public_certs):
+    def check_control_signature(self,authorized_certs):
         """Check in memory control signature against a list of public certificates
 
         Args:
-            public_certs (list of crt paths or SSLCertificate instances)
+            authorized_certs (list of crt paths or SSLCertificate instances)
 
         Returns:
             matchine SSLCertificate
@@ -808,9 +808,9 @@ class PackageEntry(object):
             raise EWaptNotSigned('Package control %s on repo %s is not signed' % (self.asrequirement(),self.repo))
         signed_content = self.signed_content()
         signature_raw = self.signature.decode('base64')
-        if not isinstance(public_certs,list):
-            public_certs = [public_certs]
-        for public_cert in public_certs:
+        if not isinstance(authorized_certs,list):
+            authorized_certs = [authorized_certs]
+        for public_cert in authorized_certs:
             try:
                 if isinstance(public_cert,SSLCertificate):
                     crt = public_cert
@@ -909,7 +909,7 @@ class PackageEntry(object):
 
         return signature.encode('base64')
 
-    def _get_package_zipentry(self,filename):
+    def _get_package_zip_entry(self,filename):
         """Open wapt zipfile and return one package zipfile entry
             could fail if zip file is already opened elsewhere...
         Returns
@@ -917,7 +917,7 @@ class PackageEntry(object):
         """
         with zipfile.ZipFile(self.localpath,'r',allowZip64=True) as waptzip:
             try:
-                return zipfile.getinfo(filename)
+                return waptzip.getinfo(filename)
             except:
                 return None
 
@@ -989,21 +989,21 @@ class PackageEntry(object):
         errors.extend([ fn for fn in files if fn not in expected])
         return errors
 
-    def check_package_signature(self,public_certs):
+    def check_package_signature(self,authorized_certs):
         """Check the hash of files in unzipped package_dir and the manifest signature
            against the authorized keys
         Args:
-            public_certs (list) ; list of authorized certificate filepaths
+            authorized_certs (list) ; list of authorized certificate filepaths
 
         Returns:
             SSLcertificate : matching certificate
 
         Raise Exception if no certificate match is found.
         """
-        if not public_certs:
+        if not authorized_certs:
             raise EWaptBadCertificate(u'No supplied certificate to check package signature')
-        if not isinstance(public_certs,list):
-            public_certs = [public_certs]
+        if not isinstance(authorized_certs,list):
+            authorized_certs = [authorized_certs]
 
         if not self.sourcespath:
             raise EWaptNotSourcesDirPackage(u'Package entry is not an unzipped sources package directory.')
@@ -1029,7 +1029,7 @@ class PackageEntry(object):
                 with open(signature_filename,'r') as signature_file:
                     signature = signature_file.read().decode('base64')
                 try:
-                    for cert in reversed(sorted(public_certs)):
+                    for cert in reversed(sorted(authorized_certs)):
                         logger.debug('Checking with %s' % cert)
                         if cert.verify_content(manifest_data,signature):
                             if not has_setup_py or cert.is_code_signing:
@@ -1044,7 +1044,7 @@ class PackageEntry(object):
                         raise EWaptBadSignature(u'No matching certificate found or bad signature')
                 except:
                     raise EWaptBadSignature(u'Package file %s signature is invalid.\n\nThe signer "%s" is not accepted by one the following public keys:\n%s' % \
-                        (self.sourcespath,self.signer,u'\n'.join([u'%s' % cert for cert in public_certs])))
+                        (self.asrequirement(),self.signer,u'\n'.join([u'%s' % cert for cert in authorized_certs])))
 
                 # now check the integrity of files
                 errors = self.list_corrupted_files()
@@ -1073,6 +1073,10 @@ class PackageEntry(object):
         """
         if not os.path.isfile(self.localpath):
             raise EWaptNotAPackage('unzip_package : Package %s does not exists' % ensure_unicode(self.localpath))
+
+        if target_dir is not None and not isinstance(target_dir,(unicode,str)):
+            raise Exception('Provide a valid directory name to unzip package to')
+
         if not target_dir:
             target_dir = tempfile.mkdtemp(prefix="wapt")
         else:
@@ -1155,14 +1159,14 @@ def extract_iconpng_from_wapt(fname):
 class WaptBaseRepo(object):
     """Base abstract class for a Wapt Packages repository
     """
-    def __init__(self,name='abstract',public_certs=None):
+    def __init__(self,name='abstract',authorized_certs=None):
         self.name = name
         self._packages = None
         self._index = {}
         self._packages_date = None
 
         # if not None, control's signature will be check against this certificates list
-        self.public_certs = public_certs
+        self.authorized_certs = authorized_certs
 
     def _load_packages_index(self):
         self._packages = []
@@ -1309,8 +1313,8 @@ class WaptLocalRepo(WaptBaseRepo):
     >>> localrepo = WaptLocalRepo('c:/wapt/cache')
     >>> localrepo.update()
     """
-    def __init__(self,localpath='/var/www/wapt',name='waptlocal',public_certs=None):
-        WaptBaseRepo.__init__(self,name=name,public_certs=public_certs)
+    def __init__(self,localpath='/var/www/wapt',name='waptlocal',authorized_certs=None):
+        WaptBaseRepo.__init__(self,name=name,authorized_certs=authorized_certs)
         self.localpath = localpath.rstrip(os.path.sep)
         self.packages_path = os.path.join(self.localpath,'Packages')
 
@@ -1495,7 +1499,7 @@ class WaptRemoteRepo(WaptBaseRepo):
     True
     """
 
-    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2,public_certs=None):
+    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2,authorized_certs=None):
         """Initialize a repo at url "url".
 
         Args:
@@ -1505,7 +1509,7 @@ class WaptRemoteRepo(WaptBaseRepo):
             proxies (dict): configuration of http proxies as defined for requests
             timeout (float): timeout in seconds for the connection to the rmeote repository
         """
-        WaptBaseRepo.__init__(self,name=name,public_certs=public_certs)
+        WaptBaseRepo.__init__(self,name=name,authorized_certs=authorized_certs)
         if url and url[-1]=='/':
             url = url.rstrip('/')
         self._repo_url = url
@@ -1653,10 +1657,10 @@ class WaptRemoteRepo(WaptBaseRepo):
                 logger.debug(u"%s (%s)" % (package.package,package.version))
                 package.repo_url = self.repo_url
                 package.repo = self.name
-                if self.public_certs is None or package.check_control_signature(self.public_certs):
+                if self.authorized_certs is None or package.check_control_signature(self.authorized_certs):
                     new_packages.append(package)
                 else:
-                    logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.public_certs))
+                    logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.authorized_certs))
 
         for line in packages_lines:
             if line.strip()=='':

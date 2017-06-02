@@ -114,7 +114,7 @@ except EWaptCorruptedFiles as e:
 
 p2.build_package()
 p2.sign_package(key,codeur)
-p2.unzip_package()
+p2.unzip_package(check_with_certs = certificates.certificates())
 cert = p2.check_package_signature(certificates.certificates())
 p2.delete_localsources()
 
@@ -167,4 +167,3 @@ pe.unzip_package()
 pe.check_package_signature(gest)
 pe.check_package_signature(codeur)
 pe.delete_localsources()
-

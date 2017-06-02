@@ -43,6 +43,7 @@ import json
 
 from setuphelpers import *
 from waptutils import *
+from waptcrypto import *
 from waptpackage import *
 
 import active_directory
@@ -217,7 +218,7 @@ def get_packages_filenames(waptconfigfile,packages_names,with_depends=True):
     return result
 
 
-def duplicate_from_external_repo(waptconfigfile,package_filename,target_directory=None,authorized_certs_dir=None):
+def duplicate_from_external_repo(waptconfigfile,package_filename,target_directory=None,authorized_certs=None):
     r"""Duplicate a downloaded package to match prefix defined in waptconfigfile
        renames all dependencies
       returns source directory
@@ -246,11 +247,13 @@ def duplicate_from_external_repo(waptconfigfile,package_filename,target_director
     oldname = PackageEntry().load_control_from_wapt(package_filename).package
     newname = rename_package(oldname,prefix)
 
-    if authorized_certs_dir is None:
-        #authorized_certs = wapt.public_certs
-        authorized_certs = None
-    else:
-        authorized_certs = glob.glob(makepath(authorized_certs_dir,'*.crt'))
+    # authorized_certs is a directoyr instead a list of certificates.
+    if authorized_certs is not None and not isinstance(authorized_certs,list):
+        bundle = SSLCAChain()
+        bundle.add_pems(makepath(authorized_certs,'*.crt'))
+        bundle.add_pems(makepath(authorized_certs,'*.cer'))
+        bundle.add_pems(makepath(authorized_certs,'*.pem'))
+        authorized_certs = bundle.certificates()
 
     res = wapt.duplicate_package(package_filename,newname,target_directory=target_directory, build=False,auto_inc_version=True,authorized_certs = authorized_certs)
     result = res['source_dir']
