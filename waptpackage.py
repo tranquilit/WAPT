@@ -1025,7 +1025,7 @@ class PackageEntry(object):
             signature_filename = os.path.join(self.sourcespath,'WAPT','signature')
             # if public key provided, and signature in wapt file, check it
             if os.path.isfile(signature_filename):
-                # first check if signature can be decrypted by one of the public keys
+                # first check if signature can be decrypted by any of the public keys
                 with open(signature_filename,'r') as signature_file:
                     signature = signature_file.read().decode('base64')
                 try:
@@ -1043,7 +1043,7 @@ class PackageEntry(object):
                     else:
                         raise EWaptBadSignature(u'No matching certificate found or bad signature')
                 except:
-                    raise EWaptBadSignature(u'Package file %s signature is invalid.\n\nThe signer "%s" is not accepted by one the following public keys:\n%s' % \
+                    raise EWaptBadSignature(u'Package file %s signature is invalid.\n\nThe signer "%s" is not accepted by any of the following public keys:\n%s' % \
                         (self.asrequirement(),self.signer,u'\n'.join([u'%s' % cert for cert in authorized_certs])))
 
                 # now check the integrity of files

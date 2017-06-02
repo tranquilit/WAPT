@@ -34,12 +34,12 @@ object VisWaptGUI: TVisWaptGUI
       ClientWidth = 1020
       object Panel10: TPanel
         Left = 0
-        Height = 54
+        Height = 55
         Top = 49
         Width = 1020
         Align = alTop
         BevelOuter = bvNone
-        ClientHeight = 54
+        ClientHeight = 55
         ClientWidth = 1020
         TabOrder = 1
         object EdSearchHost: TSearchEdit
@@ -65,18 +65,18 @@ object VisWaptGUI: TVisWaptGUI
           ParentColor = False
         end
         object cbNeedUpgrade: TCheckBox
-          Left = 437
+          Left = 444
           Height = 17
-          Top = 30
+          Top = 17
           Width = 95
           Caption = 'Needs updating'
           OnClick = cbNeedUpgradeClick
           TabOrder = 9
         end
         object cbHasErrors: TCheckBox
-          Left = 437
+          Left = 444
           Height = 17
-          Top = 6
+          Top = 1
           Width = 70
           Caption = 'Has errors'
           OnClick = cbNeedUpgradeClick
@@ -228,7 +228,7 @@ object VisWaptGUI: TVisWaptGUI
           ParentColor = False
         end
         object cbGroups: TComboBox
-          Left = 589
+          Left = 644
           Height = 21
           Hint = 'Filter hosts which have this direct package dependency'
           Top = 4
@@ -240,7 +240,7 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 3
         end
         object Label15: TLabel
-          Left = 549
+          Left = 604
           Height = 13
           Top = 7
           Width = 34
@@ -259,7 +259,7 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 10
         end
         object EdHostsLimit: TLabeledEdit
-          Left = 669
+          Left = 724
           Height = 21
           Hint = 'Limt the count of hosts returned from server'
           Top = 30
@@ -269,7 +269,7 @@ object VisWaptGUI: TVisWaptGUI
           EditLabel.AnchorSideRight.Control = EdHostsLimit
           EditLabel.AnchorSideBottom.Control = EdHostsLimit
           EditLabel.AnchorSideBottom.Side = asrBottom
-          EditLabel.Left = 585
+          EditLabel.Left = 640
           EditLabel.Height = 13
           EditLabel.Top = 34
           EditLabel.Width = 79
@@ -281,11 +281,20 @@ object VisWaptGUI: TVisWaptGUI
           Text = '1000'
           OnExit = EdHostsLimitExit
         end
+        object cbReachable: TCheckBox
+          Left = 444
+          Height = 17
+          Top = 31
+          Width = 98
+          Caption = 'Reachables only'
+          OnClick = cbNeedUpgradeClick
+          TabOrder = 12
+        end
       end
       object GridHosts: TSOGrid
         Left = 0
-        Height = 462
-        Top = 103
+        Height = 461
+        Top = 104
         Width = 443
         OnGetText = GridHostsGetText
         Align = alClient
@@ -494,8 +503,8 @@ object VisWaptGUI: TVisWaptGUI
       end
       object HostPages: TPageControl
         Left = 448
-        Height = 462
-        Top = 103
+        Height = 461
+        Top = 104
         Width = 572
         ActivePage = pgPackages
         Align = alRight
@@ -505,13 +514,13 @@ object VisWaptGUI: TVisWaptGUI
         object pgPackages: TTabSheet
           AnchorSideTop.Side = asrBottom
           Caption = 'Overview'
-          ClientHeight = 436
+          ClientHeight = 435
           ClientWidth = 564
           object GridHostPackages: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 222
+            Height = 221
             Top = 119
             Width = 564
             Align = alBottom
@@ -901,7 +910,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel5: TPanel
             Left = 0
             Height = 90
-            Top = 346
+            Top = 345
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -922,7 +931,7 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 341
+            Top = 340
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
@@ -1802,8 +1811,8 @@ object VisWaptGUI: TVisWaptGUI
       end
       object Splitter4: TSplitter
         Left = 443
-        Height = 462
-        Top = 103
+        Height = 461
+        Top = 104
         Width = 5
         Align = alRight
         ResizeAnchor = akRight
@@ -4229,7 +4238,7 @@ object VisWaptGUI: TVisWaptGUI
       Hint = 'Remove all packages locall cached by WaptConsole'
       OnExecute = ActCleanCacheExecute
     end
-    object ActHostsDeleteHostPackage: TAction
+    object ActHostsDeleteHostAndConfig: TAction
       Category = 'hosts'
       Caption = 'Remove host configuration and inventory '
       ImageIndex = 6
@@ -4359,6 +4368,13 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'hosts'
       Caption = 'Old Trigger Hosts Update'
       OnExecute = ActOldTriggerUpdateExecute
+    end
+    object ActHostsDeletePackage: TAction
+      Category = 'hosts'
+      Caption = 'Remove Host configuration only'
+      ImageIndex = 6
+      OnExecute = ActHostsDeleteExecute
+      OnUpdate = ActHostsActionsUpdate
     end
   end
   object PopupMenuPackages: TPopupMenu
@@ -4983,7 +4999,7 @@ object VisWaptGUI: TVisWaptGUI
       }
     end
     object MenuItem57: TMenuItem
-      Action = ActHostsDeleteHostPackage
+      Action = ActHostsDeleteHostAndConfig
       Bitmap.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
@@ -5020,6 +5036,9 @@ object VisWaptGUI: TVisWaptGUI
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
+    end
+    object MenuItem82: TMenuItem
+      Action = ActHostsDeletePackage
     end
     object MenuItem25: TMenuItem
       Caption = '-'

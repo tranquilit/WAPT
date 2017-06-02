@@ -1242,6 +1242,10 @@ msgctxt "TVISWAPTGUI.CBNEWESTONLY.CAPTION"
 msgid "Last version only"
 msgstr ""
 
+#: tviswaptgui.cbreachable.caption
+msgid "Reachables only"
+msgstr ""
+
 #: tviswaptgui.cbsearchall.caption
 msgid "All"
 msgstr ""

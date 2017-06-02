@@ -357,7 +357,7 @@ def update_host():
                     authenticated_user = authenticated_user.lower().replace('$','')
 
                 logger.debug(request.headers)
-                logger.debug('authenticated computer : %s ' % authenticated_user) 
+                logger.debug('authenticated computer : %s ' % authenticated_user)
 
                 if signature_b64:
                     signature = signature_b64.decode('base64')
@@ -1214,8 +1214,7 @@ def hosts_delete():
         hosts_packages_repo = WaptLocalRepo(conf['wapt_folder'] + '-host')
         packages_repo = WaptLocalRepo(conf['wapt_folder'])
 
-        if 'delete_packages' in request.args and request.args[
-                'delete_packages'] == '1':
+        if 'delete_packages' in request.args and request.args['delete_packages'] == '1':
             selected = Hosts.select(Hosts.uuid,Hosts.computer_fqdn).where(query)
             for host in selected:
                 result['records'].append(
@@ -1232,8 +1231,9 @@ def hosts_delete():
             msg.append(
                 '{} files removed from host repository'.format(len(result['files'])))
 
-        remove_result = Hosts.delete().where(query).execute()
-        msg.append('{} hosts removed from DB'.format(remove_result))
+        if 'delete_inventory' in request.args and request.args['delete_inventory'] == '1':
+            remove_result = Hosts.delete().where(query).execute()
+            msg.append('{} hosts removed from DB'.format(remove_result))
 
     except Exception as e:
         wapt_db.rollback()
@@ -1360,14 +1360,13 @@ def get_hosts():
             query = query & (Hosts.host_status == 'ERROR')
         if "need_upgrade" in request.args and request.args['need_upgrade']:
             query = query & (Hosts.host_status.in_(['ERROR','TO-UPGRADE']))
+        if 'reachable' in request.args and (request.args['reachable'] == '1'):
+            query = query & (Hosts.reachable == 'OK')
 
         if not_filter:
             query = ~ query
 
         limit = int(request.args.get('limit',1000))
-
-        hosts_packages_repo = WaptLocalRepo(conf['wapt_folder'] + '-host')
-        packages_repo = WaptLocalRepo(conf['wapt_folder'])
 
         groups = ensure_list(request.args.get('groups', ''))
 
@@ -1376,49 +1375,30 @@ def get_hosts():
         if query:
             req = req.where(query)
 
-        for host in req:
+        if ('depends' in columns) or len(groups)>0:
+            hosts_packages_repo = WaptLocalRepo(conf['wapt_folder'] + '-host')
+            packages_repo = WaptLocalRepo(conf['wapt_folder'])
 
-            if (('depends' in columns) or len(groups) >
-                    0) and host.get('computer_fqdn',None):
-                host_package = hosts_packages_repo.get(
-                    host.get('computer_fqdn',None),
-                    None)
-                if host_package:
-                    depends = ensure_list(host_package.depends.split(','))
-                    host['depends'] = [d for d in depends
-                                       if (d in packages_repo and packages_repo[d].section == 'group')]
+            for host in req:
+                if host.get('computer_fqdn',None):
+                    host_package = hosts_packages_repo.get(
+                        host.get('computer_fqdn',None),
+                        None)
+                    if host_package:
+                        depends = ensure_list(host_package.depends.split(','))
+                        host['depends'] = [d for d in depends
+                                           if (d in packages_repo and packages_repo[d].section == 'group')]
+                    else:
+                        depends = []
                 else:
                     depends = []
-            else:
-                depends = []
 
-            if not groups or list(set(groups) & set(depends)):
-                result.append(host)
-            else:
-                continue
-
-            try:
-                if host['listening_address'] and host['listening_timestamp']:
-                    reachable = 'OK'
-                elif not host['listening_address'] and host['listening_timestamp']:
-                    reachable = 'UNREACHABLE'
+                if not groups or list(set(groups) & set(depends)):
+                    result.append(host)
                 else:
-                    reachable = 'UNKNOWN'
-                host['reachable'] = reachable
-            except (KeyError, TypeError):
-                host['reachable'] = 'UNKNOWN'
-
-            """try:
-                us = host['last_update_status']
-                if us.get('errors', []):
-                    host['host_status'] = 'ERROR'
-                elif us.get('upgrades', []):
-                    host['host_status'] = 'TO-UPGRADE'
-                else:
-                    host['host_status'] = 'OK'
-            except:
-                host['host_status'] = '?'
-            """ # updated by model listener or DB trigger
+                    continue
+        else:
+            result = list(req)
 
         if 'uuid' in request.args:
             if len(result) == 0:

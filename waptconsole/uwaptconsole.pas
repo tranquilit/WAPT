@@ -29,11 +29,12 @@ type
     ActEnglish: TAction;
     ActCleanCache: TAction;
     ActAddADSGroups: TAction;
-    ActHostsDeleteHostPackage: TAction;
+    ActHostsDeleteHostAndConfig: TAction;
     ActGerman: TAction;
     ActComputerMgmt: TAction;
     ActComputerUsers: TAction;
     ActComputerServices: TAction;
+    ActHostsDeletePackage: TAction;
     ActOldTriggerUpdate: TAction;
     ActOldTriggerUpgrade: TAction;
     ActmakePackageTemplate: TAction;
@@ -57,6 +58,7 @@ type
     ButHostSearch1: TBitBtn;
     ButPackagesUpdate1: TBitBtn;
     cbForcedWSUSscanDownload: TCheckBox;
+    cbReachable: TCheckBox;
     cbNewestOnly: TCheckBox;
     CBInverseSelect: TCheckBox;
     EdPackage: TLabeledEdit;
@@ -95,6 +97,7 @@ type
     MenuItem79: TMenuItem;
     MenuItem80: TMenuItem;
     MenuItem81: TMenuItem;
+    MenuItem82: TMenuItem;
     odSelectInstaller: TOpenDialog;
     Panel13: TPanel;
     Panel14: TPanel;
@@ -2333,8 +2336,7 @@ begin
     uuid := GridHosts.FocusedRow.S['uuid'];
     desc := GridHosts.FocusedRow.S['description'];
 
-    if EditHost(hostname, AdvancedMode, uuid,UTF8Encode(desc)) <> nil then
-      ActSearchHost.Execute;
+    EditHost(hostname, AdvancedMode, uuid,UTF8Encode(desc))
 
   except
     on E:Exception do
@@ -2859,7 +2861,7 @@ begin
   begin
     sel := GridHosts.SelectedRows;
 
-    if Sender = ActHostsDeleteHostPackage then
+    if Sender = ActHostsDeleteHostAndConfig then
       msg := format(rsConfirmRmHostsPackagesFromList, [IntToStr(sel.AsArray.Length)])
     else
       msg := format(rsConfirmRmHostsFromList, [IntToStr(sel.AsArray.Length)]);
@@ -2873,14 +2875,17 @@ begin
     begin
       uuids := Join(',',ExtractField(sel,'uuid'));
       // delete host packages too...
-      if Sender = ActHostsDeleteHostPackage then
-        res := WAPTServerJsonGet('api/v1/hosts_delete?uuid=%s&delete_packages=1',[uuids])
-      else
-        res := WAPTServerJsonGet('api/v1/hosts_delete?uuid=%s',[uuids]);
+      if Sender = ActHostsDeleteHostAndConfig then
+        res := WAPTServerJsonGet('api/v1/hosts_delete?uuid=%s&delete_packages=1&delete_inventory=1',[uuids])
+      else if Sender = ActHostsDelete then
+        res := WAPTServerJsonGet('api/v1/hosts_delete?uuid=%s&delete_inventory=1',[uuids])
+      else if Sender = ActHostsDeletePackage then
+        res := WAPTServerJsonGet('api/v1/hosts_delete?uuid=%s&delete_packages=1',[uuids]);
+
       if res.B['success'] then
         ShowMessageFmt('%s',[res.S['msg']])
       else
-        ShowMessageFmt('Unable to remove hosts from DB: %s',[res.S['msg']]);
+        ShowMessageFmt('Unable to remove %s: %s',[(Sender as TAction).Caption, res.S['msg']]);
       ActSearchHost.Execute;
     end;
   end;
@@ -2977,6 +2982,9 @@ begin
 
     if cbHasErrors.Checked then
       urlParams.AsArray.Add('has_errors=1');
+
+    if cbReachable.Checked then
+      urlParams.AsArray.Add('reachable=1');
 
     if cbNeedUpgrade.Checked then
       urlParams.AsArray.Add('need_upgrade=1');
