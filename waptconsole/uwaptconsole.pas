@@ -35,8 +35,6 @@ type
     ActComputerUsers: TAction;
     ActComputerServices: TAction;
     ActHostsDeletePackage: TAction;
-    ActOldTriggerUpdate: TAction;
-    ActOldTriggerUpgrade: TAction;
     ActmakePackageTemplate: TAction;
     ActRemoteAssist: TAction;
     ActTriggerWakeOnLan: TAction;
