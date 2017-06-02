@@ -669,7 +669,7 @@ def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.sv
         source_item_fn = os.path.join(source_root, item)
         zip_item_fn = os.path.join(target_root,item)
         # exclude manifest and signature which are added afterward
-        if zip_item_fn in ('WAPT\\manifest.sha1','WAPT\\signature'):
+        if zip_item_fn in ('WAPT\\manifest.sha256','WAPT\\signature'):
             continue
         if os.path.isfile(source_item_fn):
             if logger: logger.debug(u' adding file %s' % source_item_fn)
@@ -680,7 +680,7 @@ def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.sv
             result.extend(create_recursive_zip(zipf, source_item_fn, zip_item_fn,excludes))
     if isinstance(zipfn,str) or isinstance(zipfn,unicode):
         if logger:
-            logger.debug(u'  adding sha1 hash for all %i files' % len(result))
+            logger.debug(u'  adding sha256 hash for all %i files' % len(result))
         zipf.close()
     return result
 

@@ -255,12 +255,13 @@ class SSLPrivateKey(object):
             self._key.assign_rsa(self.rsa)
         return self._key
 
-    def sign_content(self,content):
+    def sign_content(self,content,md='sha256'):
         """ Sign content with the private_key, return the signature"""
         if isinstance(content,unicode):
             content = content.encode('utf8')
         if not isinstance(content,str):
             content = jsondump(content)
+        self.key.reset_context(md=md)
         self.key.sign_init()
         self.key.sign_update(content)
         signature = self.key.sign_final()
@@ -404,7 +405,7 @@ class SSLCertificate(object):
     def issuer_dn(self):
         return self.crt.get_issuer().as_text()
 
-    def verify_content(self,content,signature):
+    def verify_content(self,content,signature,md='sha256'):
         u"""Check that the signature matches the content
 
         Args:
@@ -418,6 +419,7 @@ class SSLCertificate(object):
             content = content.encode('utf8')
         if not isinstance(content,str):
             content = jsondump(content)
+        self.key.reset_context(md=md)
         self.key.verify_init()
         self.key.verify_update(content)
         if self.key.verify_final(signature):
@@ -537,9 +539,20 @@ class SSLCertificate(object):
         return result
 
 def ssl_verify_content(content,signature,public_certs):
-    u"""Check that the signature matches the content, using the provided list of public keys
-        Content, signature are String
-        public_certs is either a filename or a list of filenames
+    u"""Check that the signature matches the content, using the provided list of public keys filenames
+
+    Args:
+        content (str) : data to check signature against
+        signature (str) : signature to check
+        public_certs is either a filename or a list of x509 pem encoded certifcates filenames.
+
+    Returns:
+        str: subject_dn of matching certificate
+
+    Raise:
+        SSLVerifyException if no certificate found which can check signature.
+
+
     >>> if not os.path.isfile('c:/private/test.pem'):
     ...     key = create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sebastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
     >>> my_content = 'Un test de contenu'
@@ -566,6 +579,9 @@ def ssl_verify_content(content,signature,public_certs):
 
 def private_key_has_password(key):
     r"""Return True if key can not be loaded without password
+
+    Args;
+
     >>> private_key_has_password(r'c:/tranquilit/wapt/tests/ssl/test.pem')
     False
     >>> private_key_has_password(r'c:/tmp/ko.pem')
