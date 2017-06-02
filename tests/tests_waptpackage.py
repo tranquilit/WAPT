@@ -54,7 +54,7 @@ certificates = SSLCAChain()
 certificates.add_pems('c:/wapt/ssl/*.crt')
 print certificates.certificates()
 
-p = PackageEntry().load_control_from_wapt('c:/tranquilit/tis-wapttest-wapt')
+p = PackageEntry(waptfile= 'c:/tranquilit/tis-wapttest-wapt')
 print ensure_unicode(p)
 p.inc_build()
 print p.build_package()
@@ -81,7 +81,7 @@ except EWaptBadCertificate as e:
 print p.sign_package(key,codeur)
 print('OK, codeur')
 
-p2= PackageEntry().load_control_from_wapt(p.localpath)
+p2= PackageEntry(waptfile = p.localpath)
 print ensure_unicode(p2)
 
 print p2.check_control_signature(certificates.certificates())
@@ -116,7 +116,7 @@ p2.build_package()
 p2.sign_package(key,codeur)
 p2.unzip_package()
 cert = p2.check_package_signature(certificates.certificates())
-p2.remove_localsources()
+p2.delete_localsources()
 
 logger.debug('Corruption control')
 try:
@@ -133,7 +133,7 @@ p2.build_package()
 p2.sign_package(key,codeur)
 p2.unzip_package()
 cert = p2.check_package_signature(certificates.certificates())
-p2.remove_localsources()
+p2.delete_localsources()
 
 logger.debug('Corruption attribut control')
 try:
@@ -147,4 +147,24 @@ except SSLVerifyException as e:
 
 logger.debug('OK !')
 
-p2.remove_localsources()
+p2.delete_localsources()
+
+pe = PackageEntry('htlaptop.tranquilit.local',section='host')
+pe.depends = 'tis-7zip'
+old_pe = pe.save_control_to_wapt(fname = tempfile.mkdtemp('wapt'))
+assert(old_pe is None)
+package_filename = pe.build_package()
+assert(os.path.isfile(package_filename))
+signature = pe.sign_package(key,gest)
+assert(isinstance(signature,str))
+
+pe = PackageEntry(waptfile = package_filename)
+pe.inc_build()
+old_pe = pe.save_control_to_wapt()
+signature = pe.sign_package(key,gest)
+pe.unzip_package()
+
+pe.check_package_signature(gest)
+pe.check_package_signature(codeur)
+pe.delete_localsources()
+
