@@ -333,6 +333,13 @@ class WaptServiceConfig(object):
                     self.websockets_port = waptserver_url.port
                     self.websockets_host = waptserver_url.hostname
                     self.websockets_proto = 'http'
+            else:
+                self.waptserver = None
+                self.websockets_host = None
+                self.websockets_proto = None
+                self.websockets_port = None
+                self.websockets_verify_cert = False
+
 
             if config.has_option('global','websockets_verify_cert'):
                 try:
@@ -354,12 +361,6 @@ class WaptServiceConfig(object):
                 self.websockets_check_config_interval = config.getint('global','websockets_check_config_interval')
 
 
-            else:
-                self.waptserver = None
-                self.websockets_host = None
-                self.websockets_proto = None
-                self.websockets_port = None
-                self.websockets_verify_cert = False
 
             # settings for waptexit / shutdown policy
             #   recommended settings :
