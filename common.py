@@ -1636,7 +1636,7 @@ class WaptRepo(WaptRemoteRepo):
     >>> len(packages)
     """
 
-    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2,dnsdomain=None,public_certs=None):
+    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2,dnsdomain=None,authorized_certs=None):
         """Initialize a repo at url "url".
 
         Args:
@@ -1648,11 +1648,11 @@ class WaptRepo(WaptRemoteRepo):
             dnsdomain (str): DNS domain to use for autodiscovery of URL if url is not supplied.
 
         .. versionchanged:: 1.4.0
-           public_certs (list):  list of trusted SSL certificates to filter out untrusted entries.
+           authorized_certs (list):  list of trusted SSL certificates to filter out untrusted entries.
                                  if None, no check is performed. All antries are accepted.
         """
 
-        WaptRemoteRepo.__init__(self,url=url,name=name,proxies=proxies,timeout=timeout,public_certs=public_certs)
+        WaptRemoteRepo.__init__(self,url=url,name=name,proxies=proxies,timeout=timeout,authorized_certs=authorized_certs)
         self._cached_dns_repo_url = None
         self._dnsdomain = dnsdomain
 
@@ -1916,8 +1916,8 @@ class WaptRepo(WaptRemoteRepo):
                                 continue
 
                         try:
-                            if self.public_certs is not None:
-                                package.check_control_signature(self.public_certs)
+                            if self.authorized_certs is not None:
+                                package.check_control_signature(self.authorized_certs)
                             waptdb.add_package_entry(package)
                         except:
                             logger.critical('Invalid signature for package control entry %s on repo %s : discarding' % (package.asrequirement(),self.name) )
@@ -1968,8 +1968,8 @@ class WaptRepo(WaptRemoteRepo):
 class WaptHostRepo(WaptRepo):
     """Dummy http repository for host packages"""
 
-    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2,dnsdomain=None,hosts=[],public_certs=None):
-        WaptRepo.__init__(self,url=url,name=name,proxies=proxies,timeout = timeout,dnsdomain=dnsdomain,public_certs=public_certs)
+    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2,dnsdomain=None,hosts=[],authorized_certs=None):
+        WaptRepo.__init__(self,url=url,name=name,proxies=proxies,timeout = timeout,dnsdomain=dnsdomain,authorized_certs=authorized_certs)
         self.hosts_list = hosts
 
     def _load_packages_index(self):
@@ -1984,10 +1984,10 @@ class WaptHostRepo(WaptRepo):
         for host in self.hosts_list:
             (entry,result) = self.update_host(host,waptdb,force=force)
             if not entry in self.packages:
-                if self.public_certs is None or entry.check_control_signature(self.public_certs):
+                if self.authorized_certs is None or entry.check_control_signature(self.authorized_certs):
                     self.packages.append(entry)
                 else:
-                    logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (entry.asrequirement(),self.name,self.public_certs))
+                    logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (entry.asrequirement(),self.name,self.authorized_certs))
         return result
 
     def update_host(self,host,waptdb,force=False):
@@ -1998,7 +1998,6 @@ class WaptHostRepo(WaptRepo):
             host (str): fqdn of host for which to retrieve host package
             waptdb (WaptDB) : to check/store last modified date of host package
             force (bool) : force wget even if http date of remote file has not changed
-            public_certs (list of paths or SSLCertificates) : Certificates against which to check control signature
 
         Returns;
             list of (host package entry,entry date on server)
@@ -2041,11 +2040,11 @@ class WaptHostRepo(WaptRepo):
                             package.repo_url = self.repo_url
                             package.repo = self.name
                             try:
-                                if self.public_certs is not None:
-                                    package.check_control_signature(self.public_certs)
+                                if self.authorized_certs is not None:
+                                    package.check_control_signature(self.authorized_certs)
                                 waptdb.add_package_entry(package)
                             except:
-                                logger.critical("Control data of host package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.public_certs))
+                                logger.critical("Control data of host package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.authorized_certs))
 
                             logger.debug(u'Commit wapt_package updates')
                             waptdb.set_param(host_cachedate,host_package_date)
@@ -5210,7 +5209,7 @@ class Wapt(object):
 
         """
         if authorized_certs is None:
-            authorized_certs = self.public_certs
+            authorized_certs = self.authorized_certificates()
 
         # check if available in repos
         entries = self.is_available(packagerequest)
@@ -5354,7 +5353,7 @@ class Wapt(object):
         self.use_hostpackages = True
 
         if authorized_certs is None:
-            authorized_certs = self.public_certs
+            authorized_certs = self.authorized_certificates()
 
         append_depends = ensure_list(append_depends)
         remove_depends = ensure_list(remove_depends)
@@ -5499,7 +5498,7 @@ class Wapt(object):
             auto_inc_version (bool): if version is less than existing package in repo, set version to repo version+1
             usecache (bool):         If True, allow to use cached package in local repo instead of downloading it.
             printhook (func):        hook for download progress
-            authorized_certs (bool): list of authorized certificate filenames to check authenticity of source packages. If None, no check is performed.
+            authorized_certs (list): list of authorized certificate (SSLPublicCertificate) to check authenticity of source packages. If None, no check is performed.
 
 
         Returns:
