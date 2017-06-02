@@ -414,6 +414,8 @@ class SSLCertificate(object):
 
         Return
             str: subject (CN) of current certificate or raise an exception if no match
+
+        Raise SSLVerifyException
         """
         if isinstance(content,unicode):
             content = content.encode('utf8')

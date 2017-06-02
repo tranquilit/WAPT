@@ -1031,13 +1031,17 @@ class PackageEntry(object):
                 try:
                     for cert in reversed(sorted(authorized_certs)):
                         logger.debug('Checking with %s' % cert)
-                        if cert.verify_content(manifest_data,signature):
+                        try:
+                            cert.verify_content(manifest_data,signature)
                             if not has_setup_py or cert.is_code_signing:
                                 logger.debug('OK with %s' % cert)
                                 verified_by = cert
                                 break
                             else:
                                 logger.debug(u'Signature OK but not a code signing certificate, skipping: %s' % cert)
+                        except SSLVerifyException as e:
+                            logger.debug(u'Check failed with certificate %s'%cert)
+
                     if verified_by:
                         logger.info(u'Package issued by %s' % (verified_by.subject,))
                     else:
@@ -1354,7 +1358,7 @@ class WaptLocalRepo(WaptBaseRepo):
                     package.repo_url = 'file:///%s'%(self.localpath.replace('\\','/'))
                     package.repo = self.name
                     package.filename = package.make_package_filename()
-                    package.localpath = None
+                    package.localpath = os.path.join(self.localpath,package.filename)
                     self._packages.append(package)
                     # index last version
                     if package.package not in self._index or self._index[package.package] < package:

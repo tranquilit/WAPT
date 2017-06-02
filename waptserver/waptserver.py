@@ -1222,7 +1222,7 @@ def hosts_delete():
                         uuid=host.uuid,
                         computer_fqdn=host.computer_fqdn))
                 if host.computer_fqdn in hosts_packages_repo:
-                    fn = hosts_packages_repo[host.computer_fqdn].wapt_fullpath()
+                    fn = hosts_packages_repo[host.computer_fqdn].localpath
                     logger.debug('Trying to remove %s' % fn)
                     if os.path.isfile(fn):
                         result['files'].append(fn)
