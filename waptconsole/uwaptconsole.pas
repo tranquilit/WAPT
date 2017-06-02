@@ -1520,12 +1520,12 @@ begin
               buildDir := GetTempDir(False);
               if RightStr(buildDir,1) = '\' then
                 buildDir := copy(buildDir,1,length(buildDir)-1);
-              SORes := DMPython.RunJSON(format('mywapt.build_upload(r"%s",private_key_passwd="%s",wapt_server_user="%s",wapt_server_passwd="%s",inc_package_release=True,target_directory=r"%s")',[
-                  waptpath+'\waptupgrade',dmpython.privateKeyPassword,WaptServerUser,WaptServerPassword,buildDir]));
-              if FileExists(SORes.AsArray[0].S['filename']) then
+              SORes := DMPython.RunJSON(format('waptdevutils.build_waptupgrade_package(r"%s",%s,r"%s",r"%s",r"%s")',[
+                 AppIniFilename,'None',WaptServerUser,WaptServerPassword,dmpython.privateKeyPassword]));
+              if FileExists(SORes.S['localpath']) then
               begin
                 ProgressTitle(rsWaptUpgradePackageBuilt);
-                DeleteFileUTF8(SORes.AsArray[0].S['filename']);
+                DeleteFileUTF8(SORes.S['localpath']);
               end;
             except
               On E:Exception do

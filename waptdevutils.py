@@ -127,7 +127,6 @@ def upload_wapt_setup(wapt,waptsetup_path, wapt_server_user, wapt_server_passwd,
         res = json.loads(req.content)
     return res
 
-
 def diff_computer_ad_wapt(wapt,wapt_server_user='admin',wapt_server_passwd=None):
     """Return the list of computers in the Active Directory but not registred in Wapt database
 
@@ -282,6 +281,45 @@ def duplicate_from_external_repo(waptconfigfile,package_filename,target_director
         package.save_control_to_wapt(result)
 
     return result
+
+
+def build_waptupgrade_package(waptconfigfile,target_directory,wapt_server_user,wapt_server_passwd,key_password=None):
+    if not wapt_server_user:
+        wapt_server_user = raw_input('WAPT Server user :')
+    if not wapt_server_passwd:
+        wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
+
+    wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
+    wapt.dbpath = r':memory:'
+    wapt.use_hostpackages = False
+
+    def pwd_callback(*args):
+        """Default password callback for opening private keys"""
+        if not isinstance(key_password,str):
+            return key_password.encode('ascii')
+        else:
+            return key_password
+
+    wapt.key_passwd_callback = pwd_callback
+
+    waptget = get_file_properties('wapt-get.exe')
+    entry = PackageEntry(waptfile = os.path.join(wapt.wapt_base_dir,'waptupgrade'))
+    entry.package = '%s-waptupgrade' % wapt.config.get('global','default_package_prefix')
+    rev = entry.version.split('-')[1]
+    entry.version = '%s-%s' % (waptget['FileVersion'],rev)
+    entry.inc_build()
+    entry.save_control_to_wapt()
+    entry.build_package(target_directory=target_directory)
+    key = wapt.private_key_cache
+    certs = wapt.private_key_cache.matching_certs(wapt.public_certs_dir,code_signing = True)
+    if certs:
+        cert = certs[0]
+    else:
+        raise Exception(u'No code signing certificate found for key %s' % wapt.private_key)
+    entry.sign_package(key,cert)
+
+    wapt.http_upload_package(entry.localpath,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
+    return entry.as_dict()
 
 
 def check_uac():

@@ -899,9 +899,13 @@ msgctxt "TVISWAPTGUI.ACTHOSTSDELETE.HINT"
 msgid "Remove from inventory"
 msgstr ""
 
-#: tviswaptgui.acthostsdeletehostpackage.caption
-msgctxt "tviswaptgui.acthostsdeletehostpackage.caption"
+#: tviswaptgui.acthostsdeletehostandconfig.caption
+msgctxt "tviswaptgui.acthostsdeletehostandconfig.caption"
 msgid "Remove host configuration and inventory "
+msgstr ""
+
+#: tviswaptgui.acthostsdeletepackage.caption
+msgid "Remove Host configuration only"
 msgstr ""
 
 #: tviswaptgui.acthostwaptupgrade.caption
@@ -926,14 +930,6 @@ msgstr ""
 
 #: tviswaptgui.actmakepackagetemplate.caption
 msgid "Make package template from setup file"
-msgstr ""
-
-#: tviswaptgui.actoldtriggerupdate.caption
-msgid "Old Trigger Hosts Update"
-msgstr ""
-
-#: tviswaptgui.actoldtriggerupgrade.caption
-msgid "Old Trigger Hosts Upgrade"
 msgstr ""
 
 #: tviswaptgui.actpackageinstall.caption
@@ -1576,8 +1572,18 @@ msgstr ""
 msgid "Pre 1.5.0"
 msgstr ""
 
+#: tviswaptgui.menuitem79.caption
+msgctxt "tviswaptgui.menuitem79.caption"
+msgid "Old Trigger Hosts Update"
+msgstr ""
+
 #: tviswaptgui.menuitem8.caption
 msgid "Open..."
+msgstr ""
+
+#: tviswaptgui.menuitem80.caption
+msgctxt "tviswaptgui.menuitem80.caption"
+msgid "Old Trigger Hosts Upgrade"
 msgstr ""
 
 #: tviswaptgui.menuitem81.caption
