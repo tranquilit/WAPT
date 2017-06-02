@@ -5258,18 +5258,6 @@ object VisWaptGUI: TVisWaptGUI
     object MenuItem62: TMenuItem
       Action = ActRefreshHostInventory
     end
-    object MenuItem81: TMenuItem
-      Caption = '-'
-    end
-    object MenuItem78: TMenuItem
-      Caption = 'Pre 1.5.0'
-      object MenuItem79: TMenuItem
-        Caption = 'Old Trigger Hosts Update'
-      end
-      object MenuItem80: TMenuItem
-        Caption = 'Old Trigger Hosts Upgrade'
-      end
-    end
   end
   object ImageList1: TImageList
     left = 472

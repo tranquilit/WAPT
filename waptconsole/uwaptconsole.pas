@@ -91,10 +91,6 @@ type
     MenuItem75: TMenuItem;
     MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
-    MenuItem78: TMenuItem;
-    MenuItem79: TMenuItem;
-    MenuItem80: TMenuItem;
-    MenuItem81: TMenuItem;
     MenuItem82: TMenuItem;
     odSelectInstaller: TOpenDialog;
     Panel13: TPanel;
