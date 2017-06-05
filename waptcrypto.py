@@ -192,7 +192,7 @@ class SSLCAChain(object):
     def certificates(self):
         return self._certificates.values()
 
-    def matching_certs(self,key,ca=None,code_signing=None,valid=None):
+    def matching_certs(self,key,ca=None,code_signing=None,valid=True):
         return [
             crt for crt in self.certificates() if
                 (valid is None or crt.is_valid() == valid) and
@@ -462,7 +462,7 @@ class SSLCertificate(object):
         ca_info = self.extensions
         return False
 
-    def is_valid(self,issuer_cert=None,cn=None,purpose=None,ca_bundle=None):
+    def is_valid(self,ca_bundle=None):
         """Check validity of certificate
                 not before / not after
             if ca_bundle is provided, check that the certificate is issued by a known ca
@@ -475,7 +475,6 @@ class SSLCertificate(object):
         return \
             (cn is None or cn == self.cn) and \
             now >= nb and now <= na and \
-            (issuer_cert is None or issuer_cert == self.issuer) and \
             (ca_bundle is None or ca_bundle.check_is_known_issuer(self))
 
     def __iter__(self):

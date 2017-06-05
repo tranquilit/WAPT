@@ -37,18 +37,12 @@ def setloglevel(logger,loglevel):
 
 setloglevel(logger,'debug')
 
+
 from waptutils import *
 from waptcrypto import *
 from waptpackage import *
 from common import *
 
-w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
-w.dbpath=':memory:'
-
-print w.update()
-print w.list_upgrade()
-print w.repositories
-print w.waptserver
 
 certificates = SSLCAChain()
 certificates.add_pems('c:/wapt/ssl/*.crt')
@@ -71,6 +65,27 @@ assert(codeur.is_code_signing)
 gest = SSLCertificate(r'c:\wapt\ssl\150-20170529-000000.crt')
 print("gestionnaire : %s" %gest)
 assert(not gest.is_code_signing)
+
+t1 = time.time()
+s = key.sign_content(sha256_for_file(r'C:\tranquilit\tis-lazarus-wapt\lazarus-1.6.0-fpc-3.0.0-win32.exe'))
+codeur.verify_content(sha256_for_file(r'C:\tranquilit\tis-lazarus-wapt\lazarus-1.6.0-fpc-3.0.0-win32.exe'),s)
+print time.time()-t1
+
+t1 = time.time()
+s = key.sign_content(sha256_for_file(r'C:\tranquilit\tis-lazarus-wapt\lazarus-1.6.0-fpc-3.0.0-win32.exe'))
+codeur.verify_content(sha256_for_file(r'C:\tranquilit\tis-lazarus-wapt\lazarus-1.6.0-fpc-3.0.0-win32.exe'),s)
+print time.time()-t1
+
+t1 = time.time()
+s = key.sign_content(open(r'C:\tranquilit\tis-lazarus-wapt\lazarus-1.6.0-fpc-3.0.0-win32.exe','rb'))
+codeur.verify_content(open(r'C:\tranquilit\tis-lazarus-wapt\lazarus-1.6.0-fpc-3.0.0-win32.exe','rb'),s)
+print time.time()-t1
+
+t1 = time.time()
+s = key.sign_content(open(r'C:\tranquilit\tis-lazarus-wapt\lazarus-1.6.0-fpc-3.0.0-win32.exe','rb'))
+codeur.verify_content(open(r'C:\tranquilit\tis-lazarus-wapt\lazarus-1.6.0-fpc-3.0.0-win32.exe','rb'),s)
+print time.time()-t1
+
 
 try:
     print p.sign_package(key,gest)
@@ -167,3 +182,14 @@ pe.unzip_package()
 pe.check_package_signature(gest)
 pe.check_package_signature(codeur)
 pe.delete_localsources()
+
+w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
+w.dbpath=':memory:'
+
+print w.update()
+
+
+print w.list_upgrade()
+print w.repositories
+print w.waptserver
+
