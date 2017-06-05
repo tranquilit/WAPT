@@ -62,7 +62,8 @@ default_sources_suffix=wapt
 
 ; define a wapt_server key only if one server is running
 ; a wapt server support the following url :
-; if not present : no waptserver, if empty : use DNS SRV record _waptserver._tcp.mondomaine.local
+; if not present : no waptserver is queried
+; if empty : use DNS SRV record _waptserver._tcp.mondomaine.local
 ;wapt_server=https://wapt.tranquil.it
 
 ; for windows task scheduling "wapt-get setup-tasks" to create windows scheduled tasks (when waptservice is not installed)
@@ -71,6 +72,20 @@ default_sources_suffix=wapt
 
 ;waptupdate_task_period=30
 ;waptupdate_task_maxruntime=10
+
+; websocket ping to keep http/1.1 tcp connection up in nat and proxy 
+;websockets_ping=60
+; in case socket.IO connection fails, wait before retrying
+;websockets_retry_delay=10
+; check every n seconds if wapt-get.ini has changed and reconnect socket.io with new parameters if changed. 
+;websockets_check_config_interval=5
+
+; for https waptserver / wapt_repo connections : 0 disable/1 enable or path to certificate(s)  of the server 
+;verify_cert = C:\wapt\ssl\server\wapt142.tranquilit.local.crt
+;verify_cert = 1
+; for tls websockets : check certificate : 1 or disable check 0
+;websockets_verify_cert=C:\tranquilit\wapt\ssl\server\wapt142.tranquilit.local.crt
+;websockets_verify_cert=0
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; wapt_service configuration. Use windows security by default
@@ -83,6 +98,7 @@ default_sources_suffix=wapt
 ; waptexit
 ; Enable disable button to cancel upgrade at computer shutdown (waptexit.exe)
 ;allow_cancel_upgrade=1
+;waptservice_timeout=15
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Proxy enable : 1 / disable : 0
