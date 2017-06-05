@@ -236,7 +236,7 @@ class WaptServiceConfig(object):
         self.websockets_verify_cert = False
         self.websockets_ping = 120
         self.websockets_retry_delay = 60
-        self.websockets_check_config_interval = 60
+        self.websockets_check_config_interval = 120
 
 
     def load(self):
@@ -2431,7 +2431,6 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
 class WaptSocketIOClient(threading.Thread):
     def __init__(self,config_filename = 'c:/wapt/wapt-get.ini'):
         threading.Thread.__init__(self)
-        self.status_lock = threading.RLock()
         self.config_filename = config_filename
         self.task_manager = task_manager
         self.config = WaptServiceConfig(config_filename)
@@ -2440,30 +2439,39 @@ class WaptSocketIOClient(threading.Thread):
 
     def run(self):
         self.config.reload_if_updated()
-        while True:
-            try:
-                with Wapt(config_filename = self.config.config_filename) as tmp_wapt:
-                    logger.info('Starting socketio on "%s://%s:%s" ...' % (self.config.websockets_proto,self.config.websockets_host,self.config.websockets_port))
-                    logger.debug('Certificate checking : %s' %  self.config.websockets_verify_cert)
-                    self.socketio_client = SocketIO(
-                            host="%s://%s" % (self.config.websockets_proto,self.config.websockets_host),
-                            port=self.config.websockets_port,
-                            proxies=self.config.waptserver.proxies,
-                            verify=self.config.websockets_verify_cert,
-                            wait_for_connection = False,
-                            hurry_interval_in_seconds = 10,
-                            ping_interval = self.config.websockets_ping,
-                            params = {'uuid':tmp_wapt.host_uuid})
-                    self.wapt_remote_calls = self.socketio_client.define(WaptSocketIORemoteCalls)
-                logger.info('Socket IO Started.')
-                while not self.config.reload_if_updated():
-                    self.socketio_client.wait(self.config.websockets_check_config_interval)
-                    logger.debug('Check Websocket config')
+        with Wapt(config_filename = self.config.config_filename) as tmp_wapt:
+            logger.info('Starting socketio on "%s://%s:%s" ...' % (self.config.websockets_proto,self.config.websockets_host,self.config.websockets_port))
+            logger.debug('Certificate checking : %s' %  self.config.websockets_verify_cert)
+            while True:
+                try:
+                    if not self.socketio_client:
+                        self.socketio_client = SocketIO(
+                                host="%s://%s" % (self.config.websockets_proto,self.config.websockets_host),
+                                port=self.config.websockets_port,
+                                proxies=self.config.waptserver.proxies,
+                                verify=self.config.websockets_verify_cert,
+                                wait_for_connection = False,
+                                hurry_interval_in_seconds = 10,
+                                ping_interval = self.config.websockets_ping,
+                                params = {'uuid':tmp_wapt.host_uuid})
+                        self.wapt_remote_calls = self.socketio_client.define(WaptSocketIORemoteCalls)
 
-            except Exception as e:
-                logger.critical('Error in socket io connection %s' % repr(e))
-            logger.info('Socket IO Stopped, waiting %ss before retrying' % self.config.websockets_retry_delay)
-            time.sleep(self.config.websockets_retry_delay)
+                    if self.socketio_client:
+                        self.socketio_client.connect()
+                        if self.socketio_client.connected:
+                            logger.info('Socket IO listening for %ss' % self.config.websockets_check_config_interval )
+                            self.socketio_client.wait(self.config.websockets_check_config_interval)
+                    self.config.reload_if_updated()
+                except Exception as e:
+                    logger.debug('Error in socket io connection %s' % repr(e))
+                    if self.socketio_client:
+                        try:
+                            self.socketio_client.disconnect()
+                            self.socketio_client.connect()
+                        except:
+                            pass
+                    logger.info('Socket IO Stopped, waiting %ss before retrying' % self.config.websockets_retry_delay)
+                    time.sleep(self.config.websockets_retry_delay)
 
 if __name__ == "__main__":
     usage="""\
