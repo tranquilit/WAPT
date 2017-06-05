@@ -707,7 +707,7 @@ class PackageEntry(object):
     def get_signature(self,private_key):
         """Returns the signature of control informations"""
         assert(isinstance(private_key,SSLPrivateKey))
-        signed_content = private_key.sign_content(self.signed_content(),self._default_md)
+        signed_content = private_key.sign_content(self.signed_content(),self._md or self._default_md)
         return signed_content
 
 
@@ -899,11 +899,11 @@ class PackageEntry(object):
         except EWaptPackageSignError as e:
             raise EWaptBadCertificate('Certificate %s doesn''t allow to sign packages with setup.py file.' % certificate.public_cert_filename)
 
-        manifest_data['WAPT/control'] = hexdigest_for_data(control,md = self._default_md)
+        manifest_data['WAPT/control'] = hexdigest_for_data(control,md = self._md or self._default_md)
         # convert to list of list...
         wapt_manifest = json.dumps( manifest_data.items())
         # sign with default md
-        signature = private_key.sign_content(wapt_manifest,md=self._default_md)
+        signature = private_key.sign_content(wapt_manifest,md=self._md or self._default_md)
         waptzip = zipfile.ZipFile(self.localpath,'a',allowZip64=True)
         with waptzip:
             filenames = waptzip.namelist()
@@ -912,8 +912,9 @@ class PackageEntry(object):
                 waptzip.remove('WAPT/control')
             waptzip.writestr('WAPT/control',control)
 
-            if self.get_manifest_filename() in filenames:
-                waptzip.remove(self.get_manifest_filename())
+            for md in ('sha1','sha256'):
+                if self.get_manifest_filename(md=md) in filenames:
+                    waptzip.remove(self.get_manifest_filename(md=md))
             waptzip.writestr(self.get_manifest_filename(),wapt_manifest)
 
             if 'WAPT/signature' in filenames:
