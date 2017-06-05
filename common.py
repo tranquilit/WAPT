@@ -3615,25 +3615,8 @@ class Wapt(object):
 
         # check downloaded packages signatures and merge control data in local database
         for fname in downloaded['downloaded'] + downloaded['skipped']:
-            with zipfile.ZipFile(fname,'r',allowZip64=True) as waptfile:
-                control = waptfile.open(u'WAPT/control').read().decode('utf8')
-                manifest_content = waptfile.open(u'WAPT/manifest.sha256').read()
-                manifest = json.loads(manifest_content)
-                try:
-                    signature = waptfile.open(u'WAPT/signature').read().decode('base64')
-                    logger.debug(u'Verify package against certificates : %s' % (','.join(self.public_certs)))
-                    subject = ssl_verify_content(manifest_content,signature,self.public_certs)
-                    logger.info(u'Package issued by %s' % (subject,))
-                except:
-                    raise EWaptBadSignature(u'Package file %s signature is invalid' % ensure_unicode(fname))
-
-            for (fn,sha256) in manifest:
-                if fn == 'WAPT\\control':
-                    if sha1 != sha256_for_data(control.encode('utf8')):
-                        raise EWaptCorruptedFiles("WAPT/control file of %s is corrupted, sha256 digests don't match" % ensure_unicode(fname))
-                    break
-            # Merge updated control data
-            # TODO
+            pe = PackageEntry(fname)
+            pe.check_control_signature(self.authorized_certificates())
 
         actions['downloads'] = downloaded
         logger.debug(u'Downloaded : %s' % (downloaded,))
@@ -4181,7 +4164,7 @@ class Wapt(object):
             self._host_key = SSLPrivateKey(self.get_host_key_filename())
         return self._host_key
 
-    def sign_host_content(self,data):
+    def sign_host_content(self,data,md='sha256'):
         """Sign data str with host private key with sha256 + RSA
         Args:
             data (bytes) : data to sign
@@ -4189,7 +4172,7 @@ class Wapt(object):
             bytes: signature of sha256 hash of data.
         """
         key = self.get_host_key()
-        return key.sign_content(sha256_for_data(str(data)))
+        return key.sign_content(hexdigest_for_data(str(data),md = md))
 
     def get_last_update_status(self):
         """Get update status of host as stored at the end of last operation.
@@ -4243,7 +4226,7 @@ class Wapt(object):
                 _add_data_if_updated(inv,'last_update_status', self.get_last_update_status(),old_hashes,new_hashes)
 
                 data = jsondump(inv)
-                signature = self.sign_host_content(data)
+                signature = self.sign_host_content(data,)
 
                 result = self.waptserver.post('update_host',
                     data = data,

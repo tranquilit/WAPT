@@ -79,41 +79,44 @@ def read_in_chunks(f, chunk_size=1024*128):
         yield data
 
 
+def hexdigest_for_file(fname, block_size=2**20,md='sha256'):
+    if md == 'sha1':
+        sha = hashlib.sha1()
+    elif md == 'sha256':
+        sha = hashlib.sha256()
+    else:
+        raise Exception('md %s not handled' % md)
+    with open(fname,'rb') as f:
+        while True:
+            data = f.read(block_size)
+            if not data:
+                break
+            sha.update(data)
+        return sha.hexdigest()
+
 def sha1_for_file(fname, block_size=2**20):
-    f = open(fname,'rb')
-    sha1 = hashlib.sha1()
-    while True:
-        data = f.read(block_size)
-        if not data:
-            break
-        sha1.update(data)
-    return sha1.hexdigest()
-
-
-def sha1_for_data(data):
-    assert(isinstance(data,str))
-    sha1 = hashlib.sha1()
-    sha1.update(data)
-    return sha1.hexdigest()
-
+    return hexdigest_for_file(fname, block_size=2**20,md='sha1')
 
 def sha256_for_file(fname, block_size=2**20):
-    f = open(fname,'rb')
-    sha256 = hashlib.sha256()
-    while True:
-        data = f.read(block_size)
-        if not data:
-            break
-        sha256.update(data)
-    return sha256.hexdigest()
+    return hexdigest_for_file(fname, block_size=2**20,md='sha256')
+
+def hexdigest_for_data(data,md='sha256'):
+    if md == 'sha1':
+        sha = hashlib.sha1()
+    elif md == 'sha256':
+        sha = hashlib.sha256()
+    else:
+        raise Exception('md %s not handled' % md)
+    assert(isinstance(data,str))
+    sha.update(data)
+    return sha.hexdigest()
 
 
 def sha256_for_data(data):
-    assert(isinstance(data,str))
-    sha256 = hashlib.sha256()
-    sha256.update(data)
-    return sha256.hexdigest()
+    return hexdigest_for_data(data,md='sha256')
 
+def sha1_for_data(data):
+    return hexdigest_for_data(data,md='sha1')
 
 def default_pwd_callback(*args):
     """Default password callback for opening private keys.
@@ -539,44 +542,6 @@ class SSLCertificate(object):
         if not result:
             raise EWaptBadCertificate('Certificate errors for %s: %s' % (self.public_cert_filename,', '.join(errors)))
         return result
-
-def ssl_verify_content(content,signature,public_certs):
-    u"""Check that the signature matches the content, using the provided list of public keys filenames
-
-    Args:
-        content (str) : data to check signature against
-        signature (str) : signature to check
-        public_certs is either a filename or a list of x509 pem encoded certifcates filenames.
-
-    Returns:
-        str: subject_dn of matching certificate
-
-    Raise:
-        SSLVerifyException if no certificate found which can check signature.
-
-
-    >>> if not os.path.isfile('c:/private/test.pem'):
-    ...     key = create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sebastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
-    >>> my_content = 'Un test de contenu'
-    >>> my_signature = SSLPrivateKey('c:/private/test.pem').sign_content(my_content)
-    >>> SSLCertificate('c:/private/test.crt').verify_content(my_content,my_signature)
-    'C=FR, L=St Sebastien sur Loire, O=Tranquil IT, CN=wapt.tranquil.it/emailAddress=...@tranquil.it'
-    """
-    assert isinstance(signature,str)
-    assert isinstance(public_certs,str) or isinstance(public_certs,unicode) or isinstance(public_certs,list)
-    if not isinstance(public_certs,list):
-        public_certs = [public_certs]
-    for public_cert in public_certs:
-        crt = SSLCertificate(public_cert)
-        if crt.is_valid():
-            try:
-                return crt.verify_content(content,signature)
-            except SSLVerifyException :
-                pass
-        else:
-            logger.warning('Certificate %s is not valid'%public_cert)
-    # no certificate can verify the content
-    raise SSLVerifyException('SSL signature verification failed, either none public certificates match signature or signed content has been changed')
 
 
 def private_key_has_password(key):

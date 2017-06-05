@@ -387,7 +387,15 @@ def update_host():
 
                     if host_cert:
                         logger.debug('About to check supplied data signature with certificate %s' % host_cert.cn)
-                        host_dn = host_cert.verify_content(sha256_for_data(raw_data),signature)
+                        try:
+                            host_dn = host_cert.verify_content(sha256_for_data(raw_data),signature)
+                        except Exception as e:
+                            # for pre 1.5 wapt clients
+                            logger.debug("Error %s , trying sha1"%e)
+                            if request.headers.get('User-Agent') != 'wapt/1.4.3':
+                                host_dn = host_cert.verify_content(sha1_for_data(raw_data),signature,md='sha1')
+                            else:
+                                host_dn = 'failed'
 
                         logger.info('Data successfully checked with certificate CN %s for %s'% (host_dn,uuid))
                     else:
@@ -408,6 +416,7 @@ def update_host():
         return make_response(result=result,msg=message,request_time = time.time() - starttime)
 
     except Exception as e:
+        logger.critical('update_host failed for %s: %s' % (uuid,repr(e)))
         return make_response_from_exception(e)
 
 @app.route('/upload_package/<string:filename>',methods=['POST'])
@@ -1371,7 +1380,7 @@ def get_hosts():
         groups = ensure_list(request.args.get('groups', ''))
 
         result = []
-        req = Hosts.select(*build_fields_list(Hosts,{col: 1 for col in columns})).limit(limit).order_by(-Hosts.last_seen_on).dicts().dicts()
+        req = Hosts.select(*build_fields_list(Hosts,{col: 1 for col in columns})).limit(limit).order_by(SQL('last_seen_on desc NULLS LAST')).dicts().dicts()
         if query:
             req = req.where(query)
 

@@ -273,13 +273,13 @@ class PackageEntry(object):
     # these attributes are not kept when duplicating / editing a package
     not_duplicated_attributes =  ['signature','signer','signer_fingerprint','signature_date']
 
-    manifest_filename_excludes = ['WAPT/signature','WAPT/manifest.sha256']
+    manifest_filename_excludes = ['WAPT/signature','WAPT/manifest.sha256','WAPT/manifest.sha1']
 
     @property
     def all_attributes(self):
         return self.required_attributes + self.optional_attributes + self.non_control_attributes + self._calculated_attributes
 
-    def __init__(self,package='',version='0',repo='',waptfile=None, section = 'base'):
+    def __init__(self,package='',version='0',repo='',waptfile=None, section = 'base',_default_md = 'sha256'):
         self.package=package
         self.version=version
         self.architecture='all'
@@ -321,6 +321,9 @@ class PackageEntry(object):
                 self.load_control_from_wapt(waptfile)
             else:
                 raise EWaptBadControl(u'Package filename or directory %s does not exist' % waptfile)
+
+        self._default_md = _default_md
+        self._md = None
 
     def parse_version(self):
         """Parse version to major, minor, patch, pre-release, build parts.
@@ -563,6 +566,8 @@ class PackageEntry(object):
         if fname is None:
             raise Exception('Needs a wapt package directory root or WaptPackage filename to save control to')
 
+        fname = os.path.abspath(fname)
+
         try:
             old_control = PackageEntry(waptfile = fname)
         except EWaptBadControl:
@@ -590,7 +595,7 @@ class PackageEntry(object):
                         previous_zi = myzip.getinfo(u'WAPT/control')
                         myzip.remove(u'WAPT/control')
                     except Exception as e:
-                        print("OK %s" % repr(e))
+                        logger.debug("OK %s" % repr(e))
                     myzip.writestr(u'WAPT/control',self.ascontrol().encode('utf8'))
                     if not self.localpath:
                         self.localpath = fname
@@ -702,7 +707,7 @@ class PackageEntry(object):
     def get_signature(self,private_key):
         """Returns the signature of control informations"""
         assert(isinstance(private_key,SSLPrivateKey))
-        signed_content = private_key.sign_content(self.signed_content())
+        signed_content = private_key.sign_content(self.signed_content(),self._default_md)
         return signed_content
 
 
@@ -818,8 +823,14 @@ class PackageEntry(object):
                     crt = SSLCertificate(public_cert)
                 else:
                     raise EWaptMissingCertificate('The public cert %s is neither a cert file nor a SSL Certificate object' % public_cert)
-                if crt.verify_content(signed_content,signature_raw):
-                    return crt
+                try:
+                    if crt.verify_content(signed_content,signature_raw,md=self._default_md):
+                        self._md = self._default_md
+                        return crt
+                except:
+                    if crt.verify_content(signed_content,signature_raw,md='sha1'):
+                        self._md = 'sha1'
+                        return crt
             except SSLVerifyException:
                 pass
         raise SSLVerifyException('SSL signature verification failed for control %s, either none public certificates match signature or signed content has been changed' % self.asrequirement())
@@ -887,10 +898,11 @@ class PackageEntry(object):
         except EWaptPackageSignError as e:
             raise EWaptBadCertificate('Certificate %s doesn''t allow to sign packages with setup.py file.' % certificate.public_cert_filename)
 
-        manifest_data['WAPT/control'] = sha256_for_data(control)
+        manifest_data['WAPT/control'] = hexdigest_for_data(control,md = self._default_md)
         # convert to list of list...
         wapt_manifest = json.dumps( manifest_data.items())
-        signature = private_key.sign_content(wapt_manifest)
+        # sign with default md
+        signature = private_key.sign_content(wapt_manifest,md=self._default_md)
         waptzip = zipfile.ZipFile(self.localpath,'a',allowZip64=True)
         with waptzip:
             filenames = waptzip.namelist()
@@ -899,15 +911,23 @@ class PackageEntry(object):
                 waptzip.remove('WAPT/control')
             waptzip.writestr('WAPT/control',control)
 
-            if 'WAPT/manifest.sha256' in filenames:
-                waptzip.remove('WAPT/manifest.sha256')
-            waptzip.writestr('WAPT/manifest.sha256',wapt_manifest)
+            if self.get_manifest_filename() in filenames:
+                waptzip.remove(self.get_manifest_filename())
+            waptzip.writestr(self.get_manifest_filename(),wapt_manifest)
 
             if 'WAPT/signature' in filenames:
                 waptzip.remove('WAPT/signature')
             waptzip.writestr('WAPT/signature',signature.encode('base64'))
 
+        self._md = self._default_md
         return signature.encode('base64')
+
+    def get_manifest_filename(self,md = None):
+        if md is None:
+            md = self._md
+        if md is None:
+            md = self._default_md
+        return 'WAPT/manifest.%s' % md
 
     def _get_package_zip_entry(self,filename):
         """Open wapt zipfile and return one package zipfile entry
@@ -973,15 +993,15 @@ class PackageEntry(object):
         errors = []
         expected = []
 
-        for (filename,sha256) in manifest:
+        for (filename,hexdigest) in manifest:
             fullpath = os.path.abspath(os.path.join(self.sourcespath,filename))
             expected.append(fullpath)
-            if sha256 != sha256_for_file(fullpath):
+            if hexdigest != hexdigest_for_file(fullpath,md = self._default_md):
                 errors.append(filename)
 
         files = list(find_all_files(ensure_unicode(self.sourcespath)))
         # removes files which are not in manifest by design
-        for fn in ('WAPT/signature','WAPT/manifest.sha256'):
+        for fn in self.manifest_filename_excludes:
             full_fn = os.path.abspath(os.path.join(self.sourcespath,fn))
             if full_fn in files:
                 files.remove(full_fn)
@@ -1013,7 +1033,15 @@ class PackageEntry(object):
 
         verified_by = None
 
+        # fallback to sha1 if sha256 not present
         manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha256')
+        if os.path.isfile(manifest_filename):
+            self._md = 'sha256'
+        else:
+            manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha1')
+            if os.path.isfile(manifest_filename):
+                self._md = 'sha1'
+
         if os.path.isfile(manifest_filename):
             manifest_data = open(manifest_filename,'r').read()
             manifest_filelist = json.loads(manifest_data)
@@ -1032,7 +1060,7 @@ class PackageEntry(object):
                     for cert in reversed(sorted(authorized_certs)):
                         logger.debug('Checking with %s' % cert)
                         try:
-                            cert.verify_content(manifest_data,signature)
+                            cert.verify_content(manifest_data,signature,md = self._md)
                             if not has_setup_py or cert.is_code_signing:
                                 logger.debug('OK with %s' % cert)
                                 verified_by = cert

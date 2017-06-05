@@ -641,7 +641,8 @@ class Version(object):
     def __repr__(self):
         return "Version('{}')".format('.'.join(self.members))
 
-def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.svn',u'.git',u'.gitignore',u'*.pyc',u'*.dbg',u'src']):
+def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.svn',u'.git',u'.gitignore',u'*.pyc',u'*.dbg',u'src'],
+        excludes_full=[os.path.join('WAPT','manifest.sha256'),os.path.join('WAPT','manifest.sha1'),os.path.join('WAPT','signature')]):
     """Create a zip file with filename zipf from source_root directory with target_root as new root.
        Don't include file which match excludes file pattern
     """
@@ -669,7 +670,7 @@ def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.sv
         source_item_fn = os.path.join(source_root, item)
         zip_item_fn = os.path.join(target_root,item)
         # exclude manifest and signature which are added afterward
-        if zip_item_fn in ('WAPT\\manifest.sha256','WAPT\\signature'):
+        if zip_item_fn in excludes_full:
             continue
         if os.path.isfile(source_item_fn):
             if logger: logger.debug(u' adding file %s' % source_item_fn)
@@ -677,10 +678,8 @@ def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.sv
             result.append(zip_item_fn)
         elif os.path.isdir(source_item_fn):
             if logger: logger.debug(u'Add directory %s' % source_item_fn)
-            result.extend(create_recursive_zip(zipf, source_item_fn, zip_item_fn,excludes))
+            result.extend(create_recursive_zip(zipf, source_item_fn, zip_item_fn,excludes=excludes,excludes_full=excludes_full))
     if isinstance(zipfn,str) or isinstance(zipfn,unicode):
-        if logger:
-            logger.debug(u'  adding sha256 hash for all %i files' % len(result))
         zipf.close()
     return result
 
