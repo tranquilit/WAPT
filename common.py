@@ -5118,11 +5118,12 @@ class Wapt(object):
                 target_directory = self.get_default_development_dir(entry.package,section=entry.section)
             packagename = entry.package
         else:
-            # argument is a wapt package filename
+            # argument is a wapt package filename, replace packagerequest wit entry
             entry = PackageEntry(waptfile=packagerequest)
             if not target_directory:
                 target_directory = tempfile.mkdtemp(prefix="wapt")
             entry.unzip_package(target_dir=target_directory, check_with_certs =authorized_certs)
+            packagerequest = entry.asrequirement()
 
         append_depends = ensure_list(append_depends)
         remove_depends = ensure_list(remove_depends)
