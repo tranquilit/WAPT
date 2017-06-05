@@ -36,8 +36,7 @@ import ConfigParser
 import tempfile
 
 _defaults = {
-    'client_tasks_timeout': 1,
-    'clients_connect_timeout': 5,
+    'client_tasks_timeout': 5,
     'clients_read_timeout': 5,
     'loglevel': 'warning',
     'secret_key': 'NOT DEFINED',
@@ -79,9 +78,6 @@ def load_config(cfgfile=_default_config_file):
 
     if _config.has_option('options', 'client_tasks_timeout'):
         conf['client_tasks_timeout'] = int(_config.get('options', 'client_tasks_timeout'))
-
-    if _config.has_option('options', 'clients_connect_timeout'):
-        conf['clients_connect_timeout'] = int(_config.get('options', 'clients_connect_timeout'))
 
     if _config.has_option('options', 'clients_read_timeout'):
         conf['clients_read_timeout'] = int(_config.get('options', 'clients_read_timeout'))
