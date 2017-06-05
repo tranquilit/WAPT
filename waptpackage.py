@@ -857,7 +857,14 @@ class PackageEntry(object):
             if not fn.filename in exclude_filenames:
                 if fn.filename in forbidden_files:
                     raise EWaptPackageSignError('File %s is not allowed.'% fn.filename)
-                shasum = hashlib.sha256()
+                md = self._md or self._default_md
+                if md =='sha1':
+                    shasum = hashlib.sha1()
+                elif md =='sha256':
+                    shasum = hashlib.sha256()
+                else:
+                    raise Exception('md %s is not supported' % md)
+
                 file_data = waptzip.open(fn)
                 while True:
                     data = file_data.read(block_size)

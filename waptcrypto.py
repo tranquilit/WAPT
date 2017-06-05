@@ -86,6 +86,7 @@ def hexdigest_for_file(fname, block_size=2**20,md='sha256'):
         sha = hashlib.sha256()
     else:
         raise Exception('md %s not handled' % md)
+
     with open(fname,'rb') as f:
         while True:
             data = f.read(block_size)
