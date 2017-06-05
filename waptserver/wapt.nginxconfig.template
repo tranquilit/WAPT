@@ -4,11 +4,14 @@ server {
 
     index index.html index.htm index.nginx-debian.html;
 
-    location ~ /wapt.* {
+    location ~ ^/wapt.* {
         root /var/www;
     }
 
     location / {
+        proxy_headers_hash_max_size 512;
+        client_max_body_size 3G;
+
         proxy_set_header X-Real-IP  $remote_addr;
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -39,11 +42,14 @@ server {
 
     index index.html index.htm index.nginx-debian.html;
 
-    location ~ /wapt.* {
+    location ~ ^/wapt.* {
         root /var/www;
     }
 
     location / {
+        proxy_headers_hash_max_size 512;
+        client_max_body_size 3G;
+
         proxy_set_header X-Real-IP  $remote_addr;
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
