@@ -65,6 +65,7 @@ def main():
     parser.add_option("-k","--private-key", dest="private_key", default='', help="Path to the PEM RSA private key to sign packages.  (default: %default)")
     #parser.add_option("-w","--private-key-passwd", dest="private_key_passwd", default='', help="Path to the password of the private key. (default: %default)")
     parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
+    parser.add_option("-m","--message-digest", dest="md", default='sha256', type='choice',  choices=['sha1','sha256'], help="Message digest type for signatures.  (default: %default)")
     (options,args) = parser.parse_args()
 
     loglevel = options.loglevel
@@ -87,13 +88,17 @@ def main():
     key = SSLPrivateKey(options.private_key)
     cert = SSLCertificate(options.public_key or options.private_key)
 
+    args = ensure_list(args)
+
     waptpackages = []
     for arg in args:
         waptpackages.extend(glob.glob(arg))
 
     for waptpackage in waptpackages:
         print('Processing %s'%waptpackage)
-        pe = PackageEntry().load_control_from_wapt(waptpackage)
+        pe = PackageEntry(waptfile = waptpackage)
+        # force md
+        pe._md = options.md
         pe.sign_package(key,cert)
         print('Done')
 
