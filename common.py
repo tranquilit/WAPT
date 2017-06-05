@@ -1900,19 +1900,19 @@ class WaptRepo(WaptRemoteRepo):
                     for package in self.packages:
                         if filter_on_host_cap:
                             if package.min_wapt_version and Version(package.min_wapt_version)>Version(setuphelpers.__version__):
-                                logger.debug('Skipping package %s, requires a newer Wapt agent. Minimum version: %s' % (package.asrequirement(),package.min_wapt_version))
+                                logger.debug('Skipping package %s on repo %s, requires a newer Wapt agent. Minimum version: %s' % (package.asrequirement(),self.name,package.min_wapt_version))
                                 continue
                             if package.min_os_version and os_version < Version(package.min_os_version):
-                                logger.debug('Discarding package %s, requires OS version > %s' % (package.asrequirement(),package.min_os_version))
+                                logger.debug('Discarding package %s on repo %s, requires OS version > %s' % (package.asrequirement(),self.name,package.min_os_version))
                                 continue
                             if package.max_os_version and os_version > Version(package.max_os_version):
-                                logger.debug('Discarding package %s, requires OS version < %s' % (package.asrequirement(),package.max_os_version))
+                                logger.debug('Discarding package %s on repo %s, requires OS version < %s' % (package.asrequirement(),self.name,package.max_os_version))
                                 continue
                             if package.architecture == 'x64' and not setuphelpers.iswin64():
-                                logger.debug('Discarding package %s, requires OS with x64 architecture' % (package.asrequirement(),))
+                                logger.debug('Discarding package %s on repo %s, requires OS with x64 architecture' % (package.asrequirement(),self.name,))
                                 continue
                             if package.architecture == 'x86' and setuphelpers.iswin64():
-                                logger.debug('Discarding package %s, target OS with x86-32 architecture' % (package.asrequirement(),))
+                                logger.debug('Discarding package %s on repo %s, target OS with x86-32 architecture' % (package.asrequirement(),self.name,))
                                 continue
 
                         try:
@@ -3615,7 +3615,7 @@ class Wapt(object):
 
         # check downloaded packages signatures and merge control data in local database
         for fname in downloaded['downloaded'] + downloaded['skipped']:
-            pe = PackageEntry(fname)
+            pe = PackageEntry(waptfile = fname)
             pe.check_control_signature(self.authorized_certificates())
 
         actions['downloads'] = downloaded

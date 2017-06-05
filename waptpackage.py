@@ -829,6 +829,7 @@ class PackageEntry(object):
                         return crt
                 except:
                     if crt.verify_content(signed_content,signature_raw,md='sha1'):
+                        logger.debug('Fallback to sha1 digest for package''s control signature')
                         self._md = 'sha1'
                         return crt
             except SSLVerifyException:
@@ -982,8 +983,15 @@ class PackageEntry(object):
             raise EWaptNotSourcesDirPackage(u'%s is not a valid package directory.'%self.sourcespath)
 
         manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha256')
-        if not os.path.isfile(manifest_filename):
-            raise EWaptBadSignature(u'no manifest file in %s directory.'%self.sourcespath)
+        if os.path.isfile(manifest_filename):
+            self._md = 'sha256'
+        else:
+            manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha1')
+            if os.path.isfile(manifest_filename):
+                logger.debug('Fallback to sha1 digest for package files digest')
+                self._md = 'sha1'
+            else:
+                raise EWaptBadSignature(u'no manifest file in %s directory.'%self.sourcespath)
 
         with open(manifest_filename,'r') as manifest_file:
             manifest = json.loads(manifest_file.read())
@@ -996,7 +1004,7 @@ class PackageEntry(object):
         for (filename,hexdigest) in manifest:
             fullpath = os.path.abspath(os.path.join(self.sourcespath,filename))
             expected.append(fullpath)
-            if hexdigest != hexdigest_for_file(fullpath,md = self._default_md):
+            if hexdigest != hexdigest_for_file(fullpath,md = self._md):
                 errors.append(filename)
 
         files = list(find_all_files(ensure_unicode(self.sourcespath)))
@@ -1040,6 +1048,7 @@ class PackageEntry(object):
         else:
             manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha1')
             if os.path.isfile(manifest_filename):
+                logger.debug('Fallback to sha1 digest for package files manifest')
                 self._md = 'sha1'
 
         if os.path.isfile(manifest_filename):
