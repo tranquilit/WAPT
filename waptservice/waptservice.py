@@ -234,7 +234,7 @@ class WaptServiceConfig(object):
         self.websockets_host = None
         self.websockets_port = None
         self.websockets_verify_cert = False
-        self.websockets_ping = 120
+        self.websockets_ping = 10
         self.websockets_retry_delay = 60
         self.websockets_check_config_interval = 120
 
@@ -2444,28 +2444,38 @@ class WaptSocketIOClient(threading.Thread):
             logger.debug('Certificate checking : %s' %  self.config.websockets_verify_cert)
             while True:
                 try:
-                    if not self.socketio_client:
+                    if not self.socketio_client and self.config.websockets_host:
+                        logger.debug('Creating socketio client')
+                        logger.debug('Proxies : %s'%self.config.waptserver.proxies)
+                        # bug in socketio... ? we must not pass proxies at all (even None) if we don"t want to switch to polling mode...
+                        kwargs = {}
+                        if self.config.waptserver.proxies and self.config.waptserver.proxies.get(self.config.websockets_proto,None) is not None:
+                            kwargs['proxies'] = self.config.waptserver.proxies
+
                         self.socketio_client = SocketIO(
                                 host="%s://%s" % (self.config.websockets_proto,self.config.websockets_host),
                                 port=self.config.websockets_port,
-                                proxies=self.config.waptserver.proxies,
                                 verify=self.config.websockets_verify_cert,
                                 wait_for_connection = False,
-                                hurry_interval_in_seconds = 10,
+                                transport = ['websocket'],
                                 ping_interval = self.config.websockets_ping,
-                                params = {'uuid':tmp_wapt.host_uuid})
+                                params = {'uuid':tmp_wapt.host_uuid},
+                                **kwargs)
+                        #logger.debug(self.socketio_client._engineIO_session.ping_interval)
                         self.wapt_remote_calls = self.socketio_client.define(WaptSocketIORemoteCalls)
 
-                    if self.socketio_client:
-                        self.socketio_client.connect()
+                    if self.socketio_client and self.config.websockets_host:
+                        if not self.socketio_client.connected:
+                            self.socketio_client.connect()
                         if self.socketio_client.connected:
                             logger.info('Socket IO listening for %ss' % self.config.websockets_check_config_interval )
                             self.socketio_client.wait(self.config.websockets_check_config_interval)
                     self.config.reload_if_updated()
                 except Exception as e:
                     logger.debug('Error in socket io connection %s' % repr(e))
-                    if self.socketio_client:
+                    if self.socketio_client and self.config.websockets_host:
                         try:
+                            logger.debug('Creating socketio client')
                             self.socketio_client.disconnect()
                             self.socketio_client.connect()
                         except:
