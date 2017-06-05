@@ -80,20 +80,14 @@ def read_in_chunks(f, chunk_size=1024*128):
 
 
 def hexdigest_for_file(fname, block_size=2**20,md='sha256'):
-    if md == 'sha1':
-        sha = hashlib.sha1()
-    elif md == 'sha256':
-        sha = hashlib.sha256()
-    else:
-        raise Exception('md %s not handled' % md)
-
+    digest = hashlib.new(md)
     with open(fname,'rb') as f:
         while True:
             data = f.read(block_size)
             if not data:
                 break
-            sha.update(data)
-        return sha.hexdigest()
+            digest.update(data)
+        return digest.hexdigest()
 
 def sha1_for_file(fname, block_size=2**20):
     return hexdigest_for_file(fname, block_size=2**20,md='sha1')
@@ -102,16 +96,10 @@ def sha256_for_file(fname, block_size=2**20):
     return hexdigest_for_file(fname, block_size=2**20,md='sha256')
 
 def hexdigest_for_data(data,md='sha256'):
-    if md == 'sha1':
-        sha = hashlib.sha1()
-    elif md == 'sha256':
-        sha = hashlib.sha256()
-    else:
-        raise Exception('md %s not handled' % md)
+    digest = hashlib.new(md)
     assert(isinstance(data,str))
-    sha.update(data)
-    return sha.hexdigest()
-
+    digest.update(data)
+    return digest.hexdigest()
 
 def sha256_for_data(data):
     return hexdigest_for_data(data,md='sha256')
@@ -259,15 +247,25 @@ class SSLPrivateKey(object):
             self._key.assign_rsa(self.rsa)
         return self._key
 
-    def sign_content(self,content,md='sha256'):
+    def sign_content(self,content,md='sha256',block_size=2**20):
         """ Sign content with the private_key, return the signature"""
-        if isinstance(content,unicode):
-            content = content.encode('utf8')
-        if not isinstance(content,str):
-            content = jsondump(content)
         self.key.reset_context(md=md)
         self.key.sign_init()
-        self.key.sign_update(content)
+        if isinstance(content,unicode):
+            content = content.encode('utf8')
+        elif isinstance(content,(list,dict)):
+            content = jsondump(content)
+        if isinstance(content,str):
+            self.key.sign_update(content)
+        elif hasattr(content,'read'):
+            # file like objetc
+            while True:
+                data = content.read(block_size)
+                if not data:
+                    break
+                self.key.sign_update(data)
+        else:
+            raise Exception('Bad content type for sign_content, should be either str or file like')
         signature = self.key.sign_final()
         return signature
 
@@ -409,7 +407,7 @@ class SSLCertificate(object):
     def issuer_dn(self):
         return self.crt.get_issuer().as_text()
 
-    def verify_content(self,content,signature,md='sha256'):
+    def verify_content(self,content,signature,md='sha256',block_size=2**20):
         u"""Check that the signature matches the content
 
         Args:
@@ -421,13 +419,25 @@ class SSLCertificate(object):
 
         Raise SSLVerifyException
         """
-        if isinstance(content,unicode):
-            content = content.encode('utf8')
-        if not isinstance(content,str):
-            content = jsondump(content)
         self.key.reset_context(md=md)
         self.key.verify_init()
-        self.key.verify_update(content)
+        if isinstance(content,unicode):
+            content = content.encode('utf8')
+        elif isinstance(content,(list,dict)):
+            content = jsondump(content)
+
+        if isinstance(content,str):
+            self.key.verify_update(content)
+        elif hasattr(content,'read'):
+            # file like objetc
+            while True:
+                data = content.read(block_size)
+                if not data:
+                    break
+                self.key.verify_update(data)
+        else:
+            raise Exception('Bad content type for verify_content, should be either str or file like')
+
         if self.key.verify_final(signature):
             return self.subject_dn
         raise SSLVerifyException('SSL signature verification failed for certificate %s'%self.subject_dn)
