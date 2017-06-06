@@ -290,7 +290,7 @@ def main():
         if re.match('^SELinux status:.*enabled', subprocess.check_output('sestatus')):
             postconf.msgbox('SELinux detected, tweaking httpd permissions.')
             subprocess.check_call(['setsebool', '-P', 'httpd_can_network_connect', '1'])
-            postconf.msgbox('SELinux correctly configured for Nginx reverse proxy')
+            postconf.msgbox('SELinux correctly configured for Apache reverse proxy')
 
     if not os.path.isfile('/opt/wapt/conf/waptserver.ini'):
         shutil.copyfile('/opt/wapt/waptserver/waptserver.ini.template','/opt/wapt/conf/waptserver.ini')
@@ -413,7 +413,15 @@ def main():
             os.chown(dh_filename,pwd.getpwnam('root').pw_uid,grp.getgrnam('nginx').gr_gid)
             os.chmod(dh_filename,0o644)
 
+            if options.use_kerberos:
+                shutil.copyfile('/opt/wapt/waptserver/scripts/ngx_http_auth_spnego_module.so' ,'/usr/lib64/nginx/modules/ngx_http_auth_spnego_module.so')
+                shutil.copyfile('/opt/wapt/waptserver/scripts/mod-http_auth_spnego.conf','/usr/share/nginx/modules/mod-http_auth_spnego.conf')
+
             make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn, options.use_kerberos, options.force_https)
+
+
+
+
             final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
             if type_debian():
                 enable_debian_vhost()
@@ -428,13 +436,13 @@ def main():
 
         except subprocess.CalledProcessError as cpe:
             final_msg += [
-                'Error while trying to configure Nginx!',
+                'Error while trying to configure Apache!',
                 'errno = ' + str(cpe.returncode) + ', output: ' + cpe.output
                 ]
         except Exception as e:
             import traceback
             final_msg += [
-            'Error while trying to configure Nginx!',
+            'Error while trying to configure Apache!',
             traceback.format_exc()
             ]
 

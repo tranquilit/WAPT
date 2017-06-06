@@ -352,10 +352,19 @@ def update_host():
                 signature_b64 = request.headers.get('X-Signature',None)
                 signer = request.headers.get('X-Signer',None)
 
-                authenticated_user = request.headers.get('X-Authenticated-User',None)
+#                authenticated_user = request.headers.get('X-Authenticated-User',None)
+                authenticated_user = request.headers.get('Authorization', None)
+                                
                 if authenticated_user:
+                    if authenticated_user.startswith('Basic'):
+                        logger.debug( '#####################################')                   
+                        logger.debug(authenticated_user)
+                        authenticated_user = base64.b64decode(authenticated_user.replace('Basic','').strip())
+                        logger.debug(authenticated_user)
                     authenticated_user = authenticated_user.lower().replace('$','')
-
+                    if authenticated_user.endswith(':bogus_auth_gss_passwd'):
+                        authenticated_user = authenticated_user.replace(':bogus_auth_gss_passwd','')
+                authenticated_user = "%s.tranquilit.local" % authenticated_user
                 logger.debug(request.headers)
                 logger.debug('authenticated computer : %s ' % authenticated_user)
 
@@ -366,7 +375,7 @@ def update_host():
 
                 if signature:
                     # when registering, mutual authentication is assumed by kerberos
-                    # on apache reverse proxy level
+                    # on nginx reverse proxy level
                     if request.path in  ['/add_host']:
                         host_cert = SSLCertificate(crt_string = data['host_certificate'])
                         if conf['use_kerberos']:
