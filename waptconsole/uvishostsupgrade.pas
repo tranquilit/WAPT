@@ -61,13 +61,17 @@ var
 implementation
 
 {$R *.lfm}
-uses tiscommon,waptcommon,IdHTTP,UScaleDPI;
+uses tiscommon,waptcommon,IdHTTP,UScaleDPI,dmwaptpython,VarPyth;
 
 { TVisHostsUpgrade }
 
 procedure TVisHostsUpgrade.ActUpgradeExecute(Sender: TObject);
 var
-  res,host:ISuperObject;
+  SOAction, SOActions,res,host:ISuperObject;
+  actions_json,
+  conffile,keypassword:Variant;
+  signed_actions_json:String;
+  waptdevutils: Variant;
 begin
   Stopped := False;
   for host in ProgressGrid.Data do
@@ -80,6 +84,26 @@ begin
   end;
   ProgressGrid.Refresh;
 
+  SOActions := TSuperObject.Create(stArray);
+  for host in ProgressGrid.Data do
+  begin
+    SOAction := SO();
+    SOAction.S['action'] := action;
+    SOAction.S['uuid'] := host.S['uuid'];
+    if Fnotifyserver then
+      SOAction.I['notify_server'] := 1;
+    SOActions.AsArray.Add(SOAction);
+  end;
+
+  //transfer actions as json string to python
+  actions_json := SOActions.AsString;
+  conffile := AppIniFilename();
+  keypassword := dmpython.privateKeyPassword;
+  waptdevutils := Import('waptdevutils');
+  signed_actions_json := VarPythonAsString(waptdevutils.sign_actions(waptconfigfile:=conffile,actions:=actions_json,key_password:=keypassword));
+
+  SOActions := SO(signed_actions_json);
+
   for host in ProgressGrid.Data do
   begin
     if Stopped then Break;
@@ -90,7 +114,7 @@ begin
     ProgressGrid.InvalidateFordata(host);
     Application.ProcessMessages;
     try
-      res := WAPTServerJsonGet('%S?uuid=%S&notify_server=%D',[action,host.S['uuid'],integer(notifyServer)]);
+      res := WAPTServerJsonPost('/api/v3/trigger_host_action?uuid=%S&timeout=%D',[host.S['uuid'],1],SOActions);
       // new behaviour
       if (res<>Nil) and res.AsObject.Exists('success') then
       begin

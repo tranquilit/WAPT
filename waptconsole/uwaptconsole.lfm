@@ -4249,7 +4249,6 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'hosts'
       Caption = 'Update WAPT client'
       Hint = 'Run agent.exe in silent mode from <url-depot>/waptagent.exe'
-      OnExecute = ActHostWaptUpgradeExecute
       OnUpdate = ActHostsActionsUpdate
     end
     object ActTriggerHostUpdate: TAction

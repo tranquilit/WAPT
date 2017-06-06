@@ -575,7 +575,7 @@ def sign_actions(waptconfigfile,actions,key_password=None):
     key = wapt.private_key_cache
     cert = sorted(wapt.private_key_cache.matching_certs(valid=True))[-1]
 
-    if isinstance(actions,str):
+    if isinstance(actions,(str,unicode)):
         actions = json.loads(actions)
     assert(isinstance(actions,list))
 

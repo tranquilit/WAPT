@@ -379,8 +379,6 @@ type
     procedure ActGermanExecute(Sender: TObject);
     procedure ActGermanUpdate(Sender: TObject);
     procedure ActmakePackageTemplateExecute(Sender: TObject);
-    procedure ActOldTriggerUpdateExecute(Sender: TObject);
-    procedure ActOldTriggerUpgradeExecute(Sender: TObject);
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
     procedure ActTriggerWakeOnLanExecute(Sender: TObject);
@@ -426,7 +424,6 @@ type
     procedure ActTriggerHostUpdateExecute(Sender: TObject);
     procedure ActTriggerHostUpgradeExecute(Sender: TObject);
     procedure ActTriggerHostUpgradeUpdate(Sender: TObject);
-    procedure ActHostWaptUpgradeExecute(Sender: TObject);
     procedure ActEditPackageExecute(Sender: TObject);
     procedure ActEditpackageUpdate(Sender: TObject);
     procedure ActEvaluateExecute(Sender: TObject);
@@ -1985,36 +1982,6 @@ begin
   MakePackageTemplate('');
 end;
 
-procedure TVisWaptGUI.ActOldTriggerUpdateExecute(Sender: TObject);
-begin
-  with TVisHostsUpgrade.Create(Self) do
-    try
-      Caption:= rsTriggerHostsUpgrade;
-      action := 'api/v1/trigger_upgrade';
-      hosts := Gridhosts.SelectedRows;
-
-      if ShowModal = mrOk then
-        actRefresh.Execute;
-    finally
-      Free;
-    end;
-end;
-
-procedure TVisWaptGUI.ActOldTriggerUpgradeExecute(Sender: TObject);
-begin
-  with TVisHostsUpgrade.Create(Self) do
-    try
-      Caption:= rsTriggerHostsUpgrade;
-      action := 'api/v1/trigger_upgrade';
-      hosts := Gridhosts.SelectedRows;
-
-      if ShowModal = mrOk then
-        actRefresh.Execute;
-    finally
-      Free;
-    end;
-end;
-
 procedure TVisWaptGUI.ActRemoteAssistExecute(Sender: TObject);
 var
   ip: ansistring;
@@ -2350,7 +2317,12 @@ end;
 
 procedure TVisWaptGUI.TriggerActionOnHostPackages(AAction,title,errortitle:String);
 var
-  uuid,sel, package, res, packages : ISuperObject;
+  uuid,uuids,sel, package, packages : ISuperObject;
+  SOAction, SOActions,res,host:ISuperObject;
+  actions_json,
+  conffile,keypassword:Variant;
+  signed_actions_json:String;
+  waptdevutils: Variant;
 begin
   if GridHostPackages.Focused and (GridHosts.FocusedRow <> Nil) then
   begin
@@ -2363,14 +2335,39 @@ begin
        0) = mrYes then
     begin
       packages := ExtractField(sel,'package');
-      uuid := ExtractField(GridHosts.SelectedRows,'uuid');
-      if (uuid.AsArray.Length>0) and (packages.AsArray.Length>0) then
       try
-          res := WAPTServerJsonPost(
-            AAction,[],SO(['uuid',uuid,'package',packages,'notify_server','1']));
+        SOActions := TSuperObject.Create(stArray);
+        for host in GridHosts.SelectedRows do
+        begin
+          SOAction := SO();
+          SOAction.S['action'] := AAction;
+          SOAction.S['uuid'] := host.S['uuid'];
+          SOAction['packages'] := packages;
+          SOActions.AsArray.Add(SOAction);
+        end;
+
+        //transfer actions as json string to python
+        actions_json := SOActions.AsString;
+        conffile := AppIniFilename();
+        keypassword := dmpython.privateKeyPassword;
+        waptdevutils := Import('waptdevutils');
+        signed_actions_json := VarPythonAsString(waptdevutils.sign_actions(waptconfigfile:=conffile,actions:=actions_json,key_password:=keypassword));
+        SOActions := SO(signed_actions_json);
+
+        res := WAPTServerJsonPost('/api/v3/trigger_host_action?timeout=%D',[1],SOActions);
+        if (res<>Nil) and res.AsObject.Exists('success') then
+        begin
+          MemoLog.Append(res.AsString);
+          if res.AsObject.Exists('msg') then
+            ShowMessage(res.S['msg']);
+          {if res.B['success'] then
+            host.S['status'] := 'OK'
+          else
+            host.S['status'] := 'ERROR';}
+        end
+        else
           if not res.B['success'] or (res['result'].A['errors'].Length>0) then
             Raise Exception.Create(res.S['msg']);
-
       except
         on E:Exception do
           ShowMessage(Format(errortitle,
@@ -2383,7 +2380,7 @@ end;
 
 procedure TVisWaptGUI.ActForgetPackagesExecute(Sender: TObject);
 begin
-  TriggerActionOnHostPackages('api/v3/trigger_forget_packages',rsConfirmHostForgetsPackages,rsForgetPackageError);
+  TriggerActionOnHostPackages('trigger_forget_packages',rsConfirmHostForgetsPackages,rsForgetPackageError);
 end;
 
 procedure TVisWaptGUI.ActFrenchExecute(Sender: TObject);
@@ -2537,12 +2534,12 @@ end;
 
 procedure TVisWaptGUI.ActPackageInstallExecute(Sender: TObject);
 begin
-  TriggerActionOnHostPackages('api/v3/trigger_install_packages',rsConfirmPackageInstall,rsPackageInstallError);
+  TriggerActionOnHostPackages('trigger_install_packages',rsConfirmPackageInstall,rsPackageInstallError);
 end;
 
 procedure TVisWaptGUI.ActPackageRemoveExecute(Sender: TObject);
 begin
-  TriggerActionOnHostPackages('api/v3/trigger_remove_packages',rsConfirmRmPackagesFromHost,rsPackageRemoveError);
+  TriggerActionOnHostPackages('trigger_remove_packages',rsConfirmRmPackagesFromHost,rsPackageRemoveError);
 end;
 
 procedure TVisWaptGUI.ActRDPExecute(Sender: TObject);
@@ -2575,7 +2572,7 @@ begin
   with TVisHostsUpgrade.Create(Self) do
   try
     Caption:= rsTriggerHostsUpdate;
-    action := 'api/v3/trigger_register';
+    action := 'trigger_host_register';
     hosts := Gridhosts.SelectedRows;
 
     if ShowModal = mrOk then
@@ -2769,12 +2766,12 @@ begin
   with TVisHostsUpgrade.Create(Self) do
     try
       Caption:= rsTriggerHostsUpdate;
-      action := 'api/v3/trigger_update';
+      action := 'trigger_host_update';
       notifyServer := True;
       hosts := Gridhosts.SelectedRows;
 
-      if ShowModal = mrOk then
-        actRefresh.Execute;
+       if ShowModal = mrOk then;
+      //  actRefresh.Execute;
     finally
       Free;
     end;
@@ -2794,7 +2791,7 @@ begin
   with TVisHostsUpgrade.Create(Self) do
     try
       Caption:= rsTriggerHostsUpgrade;
-      action := 'api/v3/trigger_upgrade';
+      action := 'trigger_host_upgrade';
       hosts := Gridhosts.SelectedRows;
 
       if ShowModal = mrOk then
@@ -2807,20 +2804,6 @@ end;
 procedure TVisWaptGUI.ActTriggerHostUpgradeUpdate(Sender: TObject);
 begin
   (Sender as TAction).Enabled := GridHosts.SelectedCount > 0;
-end;
-
-procedure TVisWaptGUI.ActHostWaptUpgradeExecute(Sender: TObject);
-begin
-  with TVisHostsUpgrade.Create(Self) do
-    try
-      action := 'waptupgrade_host';
-      Caption := rsWaptClientUpdateOnHosts;
-      hosts := Gridhosts.SelectedRows;
-      if ShowModal = mrOk then
-        actRefresh.Execute;
-    finally
-      Free;
-    end;
 end;
 
 procedure TVisWaptGUI.ActEvaluateExecute(Sender: TObject);

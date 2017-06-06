@@ -90,6 +90,7 @@ from common import Wapt
 import setuphelpers
 from setuphelpers import Version
 from waptpackage import PackageEntry,WaptLocalRepo,WaptPackage
+from waptcrypto import SSLVerifyException
 
 import windnsquery
 
@@ -2291,7 +2292,7 @@ def make_response_from_exception(exception,error_code=''):
             success = False,
             error_code = error_code
             )
-    data['msg'] = "%s" % repr(exception)
+    data['msg'] = "Error on client: %s" % repr(exception)
     return data
 
 
@@ -2303,6 +2304,69 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
         logger.debug('New waptremotecall instance created...')
         global task_manager
         self.task_manager = task_manager
+        self.wapt = None
+
+
+    def on_trigger_host_action(self,args,result_callback=None):
+        print('Host action triggered by SocketIO')
+        try:
+            actions = args
+            if not isinstance(actions,list):
+                actions =[actions]
+            # check signatures
+            if not self.wapt:
+                raise Exception('Wapt not available')
+            for action in actions:
+                verified_by = None
+                for cert in self.wapt.authorized_certificates():
+                    try:
+                        verified_by = cert.verify_claim(action,max_age_secs=60)
+                    except SSLVerifyException as e:
+                        pass
+                if not verified_by:
+                    raise SSLVerifyException('Bad signature for action %s, aborting' % action)
+            result = []
+            for action in actions:
+                uuid = action['uuid']
+                if uuid != self.wapt.host_uuid:
+                    raise Exception('Task is not targeted to this host. task''s uuid does not match host''uuid')
+                name = action['action']
+                if name in ['trigger_host_update','trigger_host_upgrade','trigger_host_register']:
+                    if name == 'trigger_host_update':
+                        task = WaptUpdate()
+                    elif name == 'trigger_host_upgrade':
+                        task = WaptUpgrade()
+                    elif name == 'trigger_host_register':
+                        task = WaptRegisterComputer()
+                    task.force = action.get('force',False)
+                    task.notify_user = action.get('notify_user',False)
+                    task.notify_server_on_finish = action.get('notify_server',False)
+                    data = self.task_manager.add_task(task).as_dict()
+                    result.append(data)
+
+                elif name in  ['trigger_install_packages','trigger_remove_packages','trigger_forget_packages']:
+                    packagenames = ensure_list(action['packages'])
+                    for packagename in packagenames:
+                        if name == 'trigger_install_packages':
+                            task = WaptPackageInstall(packagename=packagename)
+                        elif name == 'trigger_remove_packages':
+                            task = WaptPackageRemove(packagename=packagename)
+                        elif name == 'trigger_forget_packages':
+                            task = WaptPackageForget(packagenames=packagename)
+                        task.force = action.get('force',False)
+                        task.notify_user = action.get('notify_user',False)
+                        task.notify_server_on_finish = action.get('notify_server',False)
+
+                        result.append(self.task_manager.add_task(task).as_dict())
+
+            #self.emit('trigger_update_result',{'result':data})
+
+            if result_callback:
+                result_callback(make_response(result))
+        except BaseException as e:
+            logger.info('Exception for actions %s: %s' % (repr(args),repr(e)))
+            if result_callback:
+                result_callback(make_response_from_exception(e))
 
     def on_trigger_update(self,args,result_callback=None):
         print('Update triggered by SocketIO')
@@ -2467,21 +2531,23 @@ class WaptSocketIOClient(threading.Thread):
                                 **kwargs)
                         #logger.debug(self.socketio_client._engineIO_session.ping_interval)
                         self.wapt_remote_calls = self.socketio_client.define(WaptSocketIORemoteCalls)
+                        self.wapt_remote_calls.wapt = tmp_wapt
 
                     if self.socketio_client and self.config.websockets_host:
                         if not self.socketio_client.connected:
-                            self.socketio_client.connect()
+                            self.socketio_client.connect('/')
                         if self.socketio_client.connected:
                             logger.info('Socket IO listening for %ss' % self.config.websockets_check_config_interval )
                             self.socketio_client.wait(self.config.websockets_check_config_interval)
                     self.config.reload_if_updated()
                 except Exception as e:
+                    raise
                     logger.debug('Error in socket io connection %s' % repr(e))
                     if self.socketio_client and self.config.websockets_host:
                         try:
                             logger.debug('Creating socketio client')
                             self.socketio_client.disconnect()
-                            self.socketio_client.connect()
+                            self.socketio_client.connect('/')
                         except:
                             pass
                     logger.info('Socket IO Stopped, waiting %ss before retrying' % self.config.websockets_retry_delay)

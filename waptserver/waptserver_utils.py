@@ -135,7 +135,7 @@ def make_response_from_exception(exception,error_code='',status=200):
         etype, value, tb = sys.exc_info()
         raise value
     else:
-        data['msg'] = u"%s" % (exception,)
+        data['msg'] = u"Error on server: %s" % (exception,)
     return flask.Response(
             response=jsondump(data),
             status=status,

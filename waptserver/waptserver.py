@@ -42,7 +42,7 @@ monkey_patch()
 
 from flask import request, Flask, Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
 from flask_socketio import SocketIO, disconnect, send, emit
-from flask_login import LoginManager,login_required,current_user,UserMixin
+#from flask_login import LoginManager,login_required,current_user,UserMixin
 
 import time
 import json
@@ -128,7 +128,7 @@ babel = Babel(app)
 conf = waptserver_config.load_config(config_file)
 app.config['SECRET_KEY'] = conf.get('secret_key','secretkey!!')
 
-
+"""
 class WaptComputerUser(UserMixin):
     pass
 
@@ -145,6 +145,7 @@ def load_user(userid):
         return User.query.get(int(userid))
     except (TypeError, ValueError):
         pass
+"""
 
 # chain SocketIO server
 socketio = SocketIO(app,logger=logger)
@@ -345,22 +346,6 @@ def index():
     }
 
     return render_template("index.html", data=data)
-
-
-@app.route('/host_connect', methods=['GET','POST'])
-def host_connect():
-    """Login on socketio for waptservice
-    """
-    try:
-        starttime = time.time()
-        data = json.loads(request.data)
-        if data:
-            uuid = data["uuid"]
-        return make_response(result=result,msg=message,request_time = time.time() - starttime)
-
-    except Exception as e:
-        logger.critical('host_connect failed for %s: %s' % (uuid,repr(e)))
-        return make_response_from_exception(e)
 
 
 @app.route('/add_host', methods=['POST'])
@@ -903,7 +888,7 @@ def proxy_host_request(request, action):
 
         uuids = ensure_list(all_args['uuid'])
         del(all_args['uuid'])
-        timeout = request.args.get('timeout',conf.get('clients_read_timeout',5))
+        timeout = float(request.args.get('timeout',conf.get('clients_read_timeout',5)))
 
         result = dict(success=[], errors=[])
         tasks = []
@@ -1619,7 +1604,7 @@ def trigger_sio_upgrade():
         uuid = request.args['uuid']
         notify_user = request.args.get('notify_user', 0)
         notify_server = request.args.get('notify_server', 1)
-        timeout = request.args.get('timeout',conf.get('clients_read_timeout',5))
+        timeout = float(request.args.get('timeout',conf.get('clients_read_timeout',5)))
 
         host = Hosts.select(Hosts.computer_fqdn,Hosts.listening_address).where((Hosts.uuid==uuid) & (Hosts.listening_protocol == 'websockets')).first()
         if host and host.listening_address:
@@ -1667,7 +1652,7 @@ def host_tasks_status():
     """Proxy the get tasks status action to the client"""
     try:
         uuid = request.args['uuid']
-        timeout = request.args.get('timeout',conf['client_tasks_timeout'])
+        timeout = float( request.args.get('timeout',conf['client_tasks_timeout']))
         start_time = time.time()
         host_data = Hosts\
                     .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt_status,
@@ -1706,6 +1691,80 @@ def host_tasks_status():
 
     except Exception as e:
         return make_response_from_exception(e)
+
+
+@app.route('/api/v3/trigger_host_action',methods=['POST'])
+@requires_auth
+def trigger_host_action():
+    """Proxy some single shot actions to the client using websockets"""
+    try:
+        timeout = float(request.args.get('timeout',conf['client_tasks_timeout']))
+        action_data = request.get_json()
+        if action_data:
+            if isinstance(action_data,list):
+                for action in action_data:
+                    if not action.get('signature',None):
+                        raise EWaptBadSignature('One or some actions not signed, not relayed')
+            else:
+                if not action_data.get('signature',None):
+                    raise EWaptBadSignature('Action is not signed, not relayed')
+        else:
+            raise EWaptForbiddden('Invalid action')
+        # TODO : check signer
+        last_uuid = None
+        host = None
+
+
+        if not isinstance(action_data,list):
+            action_data = [action_data]
+
+        result = []
+        errors = []
+        expected_result_count = len(action_data)
+        print "expected %s" % expected_result_count
+
+        def result_callback(data):
+            print data
+            result.append(data)
+            print "now expected %s" % expected_result_count
+
+        last_uuid = None
+        hostnames = []
+
+        for action in action_data:
+            uuid = action['uuid']
+            if last_uuid != uuid:
+                host = Hosts.select(Hosts.computer_fqdn,Hosts.listening_address).where((Hosts.uuid==uuid) & (Hosts.listening_protocol == 'websockets')).first()
+            if host:
+                if not host.computer_fqdn in hostnames:
+                    hostnames.append(host.computer_fqdn)
+                socketio.emit('trigger_host_action',action, room = host.listening_address,callback=result_callback)
+            else:
+                expected_result_count -= 1
+                errors.append('Host %s not connected, Websocket sid not in database' % uuid)
+            last_uuid = uuid
+
+        wait_loop = timeout * expected_result_count * 20
+        while len(result) < expected_result_count:
+            print len(result)
+            wait_loop -= 1
+            if wait_loop < 0:
+                raise EWaptTimeoutWaitingForResult('Timeout, client did not send result within %s s' % timeout)
+            socketio.sleep(0.05)
+
+        if errors and not result:
+            raise EWaptHostUnreachable('Targeted host(s) is/are not connected')
+
+        msg = '%s actions launched on %s' % (len(result),','.join(hostnames),)
+        if errors:
+            msg = msg+' Errors for %s hosts' % len(errors)
+        print result
+        return make_response([r.get('result',None) for r in result],
+                             msg=msg,
+                             success=True)
+    except Exception as e:
+        return make_response_from_exception(e)
+
 
 # SocketIO Callbacks / handlers
 
@@ -1746,7 +1805,6 @@ def on_waptclient_connect():
             listening_address=request.sid,
             reachable='OK',
             ).where(Hosts.uuid == uuid).execute()
-        print('sio connect: commit')
         wapt_db.commit()
     except:
         wapt_db.rollback()
