@@ -15,7 +15,7 @@ server {
 
     index index.html index.htm index.nginx-debian.html;
 
-    location ~ /wapt.* {
+    location ~ ^/wapt.* {
         root {{ wapt_repository_path }};
     }
 
@@ -64,7 +64,7 @@ server {
     index index.html;
 
 
-    location ~ /wapt.* {
+    location ~ ^/wapt.* {
         root "{{ wapt_repository_path }}";
     }
 
