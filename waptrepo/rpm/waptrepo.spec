@@ -44,7 +44,7 @@ cd .. && python createrpm.py
 
 %pre
 getent passwd wapt >/dev/null || \
-    useradd -r -g nginx) -d /opt/wapt -s /sbin/nologin \
+    useradd -r -g nginx -d /opt/wapt -s /sbin/nologin \
     -c "Non privileged account for waptserver" wapt
 exit 0
 
