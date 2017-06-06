@@ -278,6 +278,7 @@ begin
   try
     // init ssl stack
     ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
+    ssl_handler.SSLOptions.Method:=sslvSSLv23;
   	HTTP.IOHandler := ssl_handler;
     sslCheck := TSSLVerifyCert.Create(GetHostFromURL(fileurl));
 
@@ -355,6 +356,8 @@ begin
   try
     // init ssl stack
     ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
+    ssl_handler.SSLOptions.Method:=sslvSSLv23;
+
   	HTTP.IOHandler := ssl_handler;
     sslCheck := TSSLVerifyCert.Create(GetHostFromURL(fileurl));
 
@@ -416,7 +419,9 @@ begin
   try
     // init ssl stack
     ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-  	HTTP.IOHandler := ssl_handler;
+    ssl_handler.SSLOptions.Method:=sslvSSLv23;
+
+    HTTP.IOHandler := ssl_handler;
     sslCheck := TSSLVerifyCert.Create(GetHostFromURL(url));
 
     http.Request.Accept := AcceptType;
@@ -511,7 +516,9 @@ begin
   try
     // init ssl stack
     ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-  	HTTP.IOHandler := ssl_handler;
+    ssl_handler.SSLOptions.Method:=sslvSSLv23;
+
+    HTTP.IOHandler := ssl_handler;
     sslCheck := TSSLVerifyCert.Create(GetHostFromURL(url));
 
     // init check of https server certificate
@@ -636,7 +643,9 @@ begin
 
       url := GetWaptLocalURL+action;
       ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-    	HTTP.IOHandler := ssl_handler;
+      ssl_handler.SSLOptions.Method:=sslvSSLv23;
+
+      HTTP.IOHandler := ssl_handler;
       strresult := '';
       repeat
         try
@@ -1269,7 +1278,9 @@ begin
     IdConfigureProxy(http,HttpProxy);
 
   ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
-	http.IOHandler := ssl_handler;
+  ssl_handler.SSLOptions.Method:=sslvSSLv23;
+
+  http.IOHandler := ssl_handler;
 
   St := TIdMultiPartFormDataStream.Create;
   try
