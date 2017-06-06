@@ -532,6 +532,57 @@ def create_waptwua_package(waptconfigfile,wuagroup='default',wapt_server_user=No
         remove_file(packagefilename)
     return build_res
 
+def sign_actions(waptconfigfile,actions,key_password=None):
+    """Sign a list of claims with private key defined in waptconfigfile
+
+    Args:
+        waptconfigfile :
+        actions (list of dict): actions to sign
+
+    Returns:
+        str : python json representation of signed actions
+
+    >>> actions = [dict(action='install',package='tis-7zip'),dict(action='install',package='tis-firefox')]
+    >>> sign_actions(r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini",actions,'test')
+        [{'action': 'install',
+          'package': 'tis-7zip',
+          'signature': 'm/m/0kQFXq406MmTCjJdJ+C5zTgNvBX0+BzSnFmDJOVzmYD3HOcuROI60mr34qbUhDqG2ZOfmUbSLHCp5L8VnSm6h3uvc5xjXUWkbB8GRMS+q4yizMOQxwYHcw+X9bm4+9sW7m2IQXsXw66lYmaqPAWxk0C7ZOgyosJml2bGFTqp38a9hKSFIPJy0KxeshSlxne248MO1MoJB8iQrq823rm9SfoQNbpvAHfPrqHYw90nusvuzygH8UIqraquw2qg/ogQF8UN6kmhi+Vwyg4bCm7uV1499MntRS+wmV847Za/dwZKebN5aaBsoZRFe+PZjozrEaIvNKTvM1pr89BdSA==',
+          'signature_date': '2017-06-06T17:16:10.648000',
+          'signed_attributes': ['action', 'package'],
+          'signer': 'Moi-autre',
+          'signer_fingerprint': '195DEFCC322C945018E917BF217CD1323FC4C79F'},
+         {'action': 'install',
+          'package': 'tis-firefox',
+          'signature': 'lkh6YdFqfYtYwTJDyJgb9XkR7ioTL0tWKrbqJFNU/ty74c9vDlBqS2Kh2c8eW2k6BHx2hBsohTLhLlWrUZ/JbqV0DAo66oyq9WDrsMx6xOj9DNhJDPgZRLDZ0+d2h7vW1kRZ31f0MZpGaVXxHyshG2ts+8EYlcCzfg9kTVJjLtUGXKllEemVUIylhgP9+LMIBkg+K1JRo2cscvpJYBJxGnMMp84uw1xsO+japXguzF48Vpu1W6tjiEpDDxDKWe6/8UwU4kZ+UZgv/eoDZOE8y2eEP+9ich3YgMx9rE7T4ra5ad6kuAbfEiEkfNLCvMlIDc3p92Q60c/f6VilA63dmA==',
+          'signature_date': '2017-06-06T17:16:10.653000',
+          'signed_attributes': ['action', 'package'],
+          'signer': 'Moi-autre',
+          'signer_fingerprint': '195DEFCC322C945018E917BF217CD1323FC4C79F'}]
+    >>>
+    """
+    wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
+    wapt.dbpath = r':memory:'
+    wapt.use_hostpackages = False
+
+    def pwd_callback(*args):
+        """Default password callback for opening private keys"""
+        if not isinstance(key_password,str):
+            return key_password.encode('ascii')
+        else:
+            return key_password
+
+    wapt.key_passwd_callback = pwd_callback
+    key = wapt.private_key_cache
+    cert = sorted(wapt.private_key_cache.matching_certs(valid=True))[-1]
+
+    if isinstance(actions,str):
+        actions = json.loads(actions)
+    assert(isinstance(actions,list))
+
+    result = []
+    for action in actions:
+        result.append(key.sign_claim(action,certificate=cert))
+    return json.dumps(result)
 
 if __name__ == '__main__':
     import doctest
