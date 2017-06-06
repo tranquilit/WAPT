@@ -333,7 +333,7 @@ class SSLPrivateKey(object):
 
 class SSLCertificate(object):
     """Hold a X509 public certificate"""
-    def __init__(self,crt_filename=None,crt=None,crt_string=None,ignore_validity_checks=True):
+    def __init__(self,crt_filename=None,crt=None,crt_string=None,ignore_validity_checks=False):
         """
         Args:
             public_cert (str): File Path to X509 encoded certificate
@@ -493,7 +493,6 @@ class SSLCertificate(object):
         nb,na = self.not_before,self.not_after
         now = datetime.datetime.now(nb.tzinfo)
         return \
-            (cn is None or cn == self.cn) and \
             now >= nb and now <= na and \
             (ca_bundle is None or ca_bundle.check_is_known_issuer(self))
 
