@@ -44,9 +44,13 @@ from waptpackage import *
 from common import *
 
 
+
 certificates = SSLCAChain()
 certificates.add_pems('c:/wapt/ssl/*.crt')
 print certificates.certificates()
+
+#p = PackageEntry(waptfile=u'C:\\tranquilit\\wapt\\cache\\sfr-waptupgrade_1.5.0.5-1503_all.wapt')
+#p.check_control_signature(certificates.certificates())
 
 p = PackageEntry(waptfile= 'c:/tranquilit/tis-wapttest-wapt')
 print ensure_unicode(p)
@@ -65,6 +69,16 @@ assert(codeur.is_code_signing)
 gest = SSLCertificate(r'c:\wapt\ssl\150-20170529-000000.crt')
 print("gestionnaire : %s" %gest)
 assert(not gest.is_code_signing)
+
+action = dict(action='install',package='tis-7zip')
+action_signed = key.sign_claim(action,certificate=gest)
+print gest.verify_claim(action_signed)
+action_signed['package']='crapware'
+try:
+    print gest.verify_claim(action_signed)
+    raise Exception('erreur... devrait fail')
+except SSLVerifyException:
+    pass
 
 t1 = time.time()
 s = key.sign_content(sha256_for_file(r'C:\tranquilit\tis-lazarus-wapt\lazarus-1.6.0-fpc-3.0.0-win32.exe'))
