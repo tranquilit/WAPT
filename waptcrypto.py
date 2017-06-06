@@ -310,6 +310,26 @@ class SSLPrivateKey(object):
     def __repr__(self):
         return '<SSLPrivateKey %s>' % repr(self.private_key_filename)
 
+    def sign_claim(self,claim,attributes=None,certificate=None):
+        assert(isinstance(claim,dict))
+        if attributes is None:
+            attributes = claim.keys()
+        if certificate is None:
+            certificates = sorted(self.matching_certs(valid=True))
+            if certificates:
+                certificate = certificates[-1]
+            else:
+                raise EWaptBadCertificate('Missing certificate for %s' % self.private_key_filename)
+
+        reclaim = {att:claim.get(att,None) for att in attributes}
+        signature = base64.b64encode(self.sign_content(reclaim))
+        reclaim['signed_attributes'] = attributes
+        reclaim['signature'] = signature
+        reclaim['signer'] = certificate.cn
+        reclaim['signature_date'] = datetime.datetime.now().isoformat()
+        reclaim['signer_fingerprint'] = certificate.fingerprint
+        return reclaim
+
 
 class SSLCertificate(object):
     """Hold a X509 public certificate"""
@@ -552,6 +572,45 @@ class SSLCertificate(object):
         if not result:
             raise EWaptBadCertificate('Certificate errors for %s: %s' % (self.public_cert_filename,', '.join(errors)))
         return result
+
+    def verify_claim(self,claim,max_age_secs=None):
+        """Verify a simple dict signed with SSLPrivateKey.sign_claim
+        Args:
+            claim (dict) : with keys signature,signed_attributes,signer,signature_date
+        Returns:
+            dict: signature_date,signer,verified_by(cn)
+
+        >>> key = SSLPrivateKey('c:/private/150.pem')
+        >>> crt = SSLCertificate('c:/private/150.crt')
+        >>> action = dict(action='install',package='tis-7zip')
+        >>> action_signed
+            {'action': None,
+             'package': None,
+             'signature': 'jSJbX3sPmiEBRxN3Sue4fTSlJ2Q6llUSOIkleCm4NyFQlSc0KvLKbtlmHxvYV7mPW3TDYjfhkuQSG0ZfQQmo0r+zcA9ZL075P/vNLkxwElOYacMtBBObsxhPU7DKc4AdQMorgSfSEpW4a/Zq5VPJy9q6vBJxSzZjnHGmuPYlfQKuedP1dY6ifCrcAelKEZOKZl5LJl6e0NHeiXy3+3e4bm8V2VtDPCbvVKtIMRgA5qtDDrif3IauwzUyzEpnC0d229ynz6LAj5WdZR32HtV0g5aJ5ye5rQ+IAcGJSbxQ3EJZQhZy1wZ6WUVsF9/mXLbR/d1xRl9M0CqI+8eUvQWD2g==',
+             'signature_date': '20170606-163401',
+             'signed_attributes': ['action', 'package'],
+             'signer': '150',
+             'signer_fingerprint': '88654A5A946B8BFFFAC7F61A2E21B7F02168D5E4'}
+        >>> action_signed = key.sign_claim(action,certificate=crt)
+        >>> print crt.verify_claim(action_signed)
+        {'signer': '150', 'verified_by': '150', 'signature_date': '20170606-163401'}
+        """
+        assert(isinstance(claim,dict))
+        attributes = claim['signed_attributes']
+        reclaim = {att:claim.get(att,None) for att in attributes}
+        signature = claim['signature'].decode('base64')
+
+        if max_age_secs is not None:
+            signature_date = isodate2datetime(claim['signature_date'])
+            delta = abs(datetime.datetime.now() - signature_date)
+            if delta > datetime.timedelta(seconds=max_age_secs):
+                raise SSLVerifyException('Data too old or in the futur age : %ss...' % delta.seconds)
+        self.verify_content(reclaim,signature)
+        return dict(
+            signature_date=claim['signature_date'],
+            signer=claim['signer'],
+            verified_by=self.cn,
+            )
 
 
 def private_key_has_password(key):
