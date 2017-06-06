@@ -42,7 +42,7 @@ monkey_patch()
 
 from flask import request, Flask, Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
 from flask_socketio import SocketIO, disconnect, send, emit
-#from flask_login import current_user
+from flask_login import LoginManager,login_required,current_user,UserMixin
 
 import time
 import json
@@ -112,9 +112,14 @@ try:
 except Exception:
     pass
 
+ALLOWED_EXTENSIONS = set(['wapt'])
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
 config_file = DEFAULT_CONFIG_FILE
 
+# setup logging
+logger = logging.getLogger("waptserver")
+
+#
 app = Flask(__name__, static_folder='./templates/static')
 app.config['CONFIG_FILE'] = config_file
 
@@ -123,10 +128,23 @@ babel = Babel(app)
 conf = waptserver_config.load_config(config_file)
 app.config['SECRET_KEY'] = conf.get('secret_key','secretkey!!')
 
-ALLOWED_EXTENSIONS = set(['wapt'])
 
-# setup logging
-logger = logging.getLogger("waptserver")
+class WaptComputerUser(UserMixin):
+    pass
+
+class WaptConsoleUser(UserMixin):
+    pass
+
+# auth handling
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(userid):
+    try:
+        return User.query.get(int(userid))
+    except (TypeError, ValueError):
+        pass
 
 # chain SocketIO server
 socketio = SocketIO(app,logger=logger)
@@ -329,11 +347,28 @@ def index():
     return render_template("index.html", data=data)
 
 
+@app.route('/host_connect', methods=['GET','POST'])
+def host_connect():
+    """Login on socketio for waptservice
+    """
+    try:
+        starttime = time.time()
+        data = json.loads(request.data)
+        if data:
+            uuid = data["uuid"]
+        return make_response(result=result,msg=message,request_time = time.time() - starttime)
+
+    except Exception as e:
+        logger.critical('host_connect failed for %s: %s' % (uuid,repr(e)))
+        return make_response_from_exception(e)
+
+
 @app.route('/add_host', methods=['POST'])
 @app.route('/add_host', methods=['GET'])
 @app.route('/update_host', methods=['POST'])
 def update_host():
-    """Update localstatus of computer, and return known registration info"""
+    """Update localstatus of computer, and return known registration info
+    """
     try:
         starttime = time.time()
 

@@ -500,6 +500,11 @@ def wapthosts_json(model_class, instance, created):
         if not instance.host_status:
             instance.host_status = 'OK'
 
+def get_db_version():
+    try:
+        return Version(ServerAttribs.get(key='db_version').value,4)
+    except:
+        return None
 
 def init_db(drop=False):
     wapt_db.get_conn()
@@ -511,17 +516,96 @@ def init_db(drop=False):
         for table in reversed([ServerAttribs,Hosts,HostPackagesStatus,HostSoftwares,HostJsonRaw,HostWsus]):
             table.drop_table(fail_silently=True)
     wapt_db.create_tables([ServerAttribs,Hosts,HostPackagesStatus,HostSoftwares,HostJsonRaw,HostWsus],safe=True)
-    if drop:
-        ServerAttribs.set_value('db_version',__version__)
+    if get_db_version() != __version__:
+        with wapt_db.atomic():
+            upgrade_db_structure()
+            (v,created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = __version__
+            v.save()
+    return get_db_version()
 
-def get_db_version():
-    if not 'serverattribs' in wapt_db.get_tables():
-        return Version('1.4.1',4)
-    else:
-        try:
-            return Version(ServerAttribs.get(key='db_version').value,4)
-        except:
-            return Version('1.4.1',4)
+def upgrade_db_structure():
+    """Upgrade the tables version by version"""
+    from playhouse.migrate import PostgresqlMigrator,migrate
+    migrator = PostgresqlMigrator(wapt_db)
+    logger.info('Current DB: %s version: %s' % (wapt_db.connect_kwargs,get_db_version()))
+
+    # from 1.4.1 to 1.4.2
+    if get_db_version() < '1.4.2':
+        with wapt_db.atomic():
+            logger.info('Migrating from %s to %s' % (get_db_version(),'1.4.2'))
+            migrate(
+                migrator.rename_column(Hosts._meta.name,'host','host_info'),
+                migrator.rename_column(Hosts._meta.name,'wapt','wapt_status'),
+                migrator.rename_column(Hosts._meta.name,'update_status','last_update_status'),
+
+                migrator.rename_column(Hosts._meta.name,'softwares','installed_softwares'),
+                migrator.rename_column(Hosts._meta.name,'packages','installed_packages'),
+            )
+            HostGroups.create_table(fail_silently=True)
+            HostJsonRaw.create_table(fail_silently=True)
+            HostWsus.create_table(fail_silently=True)
+
+            (v,created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = '1.4.2'
+            v.save()
+
+    next_version = '1.4.3'
+    if get_db_version() < next_version:
+        with wapt_db.atomic():
+            logger.info('Migrating from %s to %s' % (get_db_version(),next_version))
+            if not [c.name for c in wapt_db.get_columns('hosts') if c.name == 'host_certificate']:
+                migrate(
+                    migrator.add_column(Hosts._meta.name,'host_certificate',Hosts.host_certificate),
+                    )
+
+            (v,created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
+    next_version = '1.4.3.1'
+    if get_db_version() < next_version:
+        with wapt_db.atomic():
+            logger.info('Migrating from %s to %s' % (get_db_version(),next_version))
+            columns = [c.name for c in wapt_db.get_columns('hosts')]
+            opes = []
+            if not 'last_logged_on_user' in columns:
+                opes.append(migrator.add_column(Hosts._meta.name,'last_logged_on_user',Hosts.last_logged_on_user))
+            if 'installed_sofwares' in columns:
+                opes.append(migrator.drop_column(Hosts._meta.name,'installed_sofwares'))
+            if 'installed_sofwares' in columns:
+                opes.append(migrator.drop_column(Hosts._meta.name,'installed_packages'))
+            migrate(*opes)
+
+            (v,created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
+    next_version = '1.4.3.2'
+    if get_db_version() < next_version:
+        with wapt_db.atomic():
+            logger.info('Migrating from %s to %s' % (get_db_version(),next_version))
+            wapt_db.execute_sql('''\
+                ALTER TABLE hostsoftwares
+                    ALTER COLUMN publisher TYPE character varying(2000),
+                    ALTER COLUMN version TYPE character varying(1000);''')
+            (v,created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
+    next_version = '1.5.0.4'
+    if get_db_version() < next_version:
+        with wapt_db.atomic():
+            logger.info('Migrating from %s to %s' % (get_db_version(),next_version))
+            columns = [c.name for c in wapt_db.get_columns('hosts')]
+            opes = []
+            if not 'server_uuid' in columns:
+                opes.append(migrator.add_column(Hosts._meta.name,'server_uuid',Hosts.server_uuid))
+            migrate(*opes)
+            (v,created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
 
 if __name__ == '__main__':
     if platform.system != 'Windows' and getpass.getuser()!='wapt':
@@ -531,7 +615,6 @@ if __name__ == '__main__':
                            upgrade2postgres"""
         sys.exit(1)
 
-    print sys.argv
     if len(sys.argv)>1:
         print sys.argv[1]
         if sys.argv[1]=='init_db':
