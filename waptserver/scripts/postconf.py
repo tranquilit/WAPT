@@ -290,7 +290,7 @@ def main():
         if re.match('^SELinux status:.*enabled', subprocess.check_output('sestatus')):
             postconf.msgbox('SELinux detected, tweaking httpd permissions.')
             subprocess.check_call(['setsebool', '-P', 'httpd_can_network_connect', '1'])
-            postconf.msgbox('SELinux correctly configured for Apache reverse proxy')
+            postconf.msgbox('SELinux correctly configured for Nginx reverse proxy')
 
     if not os.path.isfile('/opt/wapt/conf/waptserver.ini'):
         shutil.copyfile('/opt/wapt/waptserver/waptserver.ini.template','/opt/wapt/conf/waptserver.ini')
@@ -428,13 +428,13 @@ def main():
 
         except subprocess.CalledProcessError as cpe:
             final_msg += [
-                'Error while trying to configure Apache!',
+                'Error while trying to configure Nginx!',
                 'errno = ' + str(cpe.returncode) + ', output: ' + cpe.output
                 ]
         except Exception as e:
             import traceback
             final_msg += [
-            'Error while trying to configure Apache!',
+            'Error while trying to configure Nginx!',
             traceback.format_exc()
             ]
 
