@@ -2367,7 +2367,7 @@ begin
       if (uuid.AsArray.Length>0) and (packages.AsArray.Length>0) then
       try
           res := WAPTServerJsonPost(
-            AAction,[],SO(['uuid',uuid,'package',packages]));
+            AAction,[],SO(['uuid',uuid,'package',packages,'notify_server','1']));
           if not res.B['success'] or (res['result'].A['errors'].Length>0) then
             Raise Exception.Create(res.S['msg']);
 
