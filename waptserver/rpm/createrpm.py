@@ -95,8 +95,22 @@ if not wapt_version:
     sys.exit(1)
 
 # gcc is for pip package install
-print(subprocess.check_output(
-    "yum install -y python-virtualenv gcc", shell=True))
+def check_if_package_is_installed(package_name):
+    import yum
+    yb = yum.YumBase()
+    if yb.rpmdb.searchNevra(name=''):
+           return True
+    return False
+
+
+if not check_if_package_is_installed('python-virtualenv') or not check_if_package_is_installed('gcc'):
+    print ("""
+##############################################
+     Please install build time packages first:
+        yum install -y python-virtualenv gcc
+##############################################
+""")
+    sys.exit(1)
 
 print('creating the package tree', file=sys.stderr)
 
