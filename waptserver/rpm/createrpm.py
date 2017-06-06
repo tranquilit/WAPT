@@ -31,7 +31,6 @@ import subprocess
 import platform
 import errno
 
-
 def mkdir_p(path):
     try:
         os.makedirs(path)
@@ -94,14 +93,16 @@ if not wapt_version:
           os.path.abspath('..'), file=sys.stderr)
     sys.exit(1)
 
-# gcc is for pip package install
 def check_if_package_is_installed(package_name):
-    import yum
-    yb = yum.YumBase()
-    if yb.rpmdb.searchNevra(name=''):
-           return True
-    return False
-
+    # issue with yum module in buildbot, using dirty subprocess way...
+    try:
+        data = subprocess.check_output("rpm -q %s" % package_name,shell=True)
+    except:
+        return False
+    if data.strip().startswith('%s-' % package_name):
+        return True
+    else:
+        return False
 
 if not check_if_package_is_installed('python-virtualenv') or not check_if_package_is_installed('gcc'):
     print ("""
