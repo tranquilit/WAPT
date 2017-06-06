@@ -72,6 +72,7 @@ import email.utils
 import shutil
 from waptcrypto import *
 from waptutils import *
+import base64
 
 logger = logging.getLogger()
 
@@ -785,7 +786,7 @@ class PackageEntry(object):
         Returns:
             None
         """
-        self.signature = self.get_signature(private_key).encode('base64')[0:-1]
+        self.signature = base64.b64encode(self.get_signature(private_key))
         self.signature_date = time.strftime('%Y%m%d-%H%M%S')
         self.signer = certificate.cn
         self.signer_fingerprint = certificate.fingerprint

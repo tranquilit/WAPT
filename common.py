@@ -3924,7 +3924,8 @@ class Wapt(object):
             additional=[],
             remove=[])
         # only most up to date (first one in list)
-        result['upgrade'].extend([p[0].asrequirement() for p in self.waptdb.upgradeable().values() if p])
+        # put 'host' package at the end.
+        result['upgrade'].extend([p[0].asrequirement() for p in self.waptdb.upgradeable().values() if p and not p[0].section == 'host'])
         if self.use_hostpackages:
             host_package = self.check_host_package_outdated()
             if host_package:
