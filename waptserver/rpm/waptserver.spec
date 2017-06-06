@@ -13,7 +13,7 @@ URL:		https://wapt.fr
 Source0:	./waptserver/
 Prefix:		/opt
 
-Requires:  nginx dialog pytz m2crypto python-passlib cabextract python-psutil python-psycopg2 python2-dialog postgresql94-server postgresql94-contrib
+Requires:  nginx dialog pytz m2crypto python-passlib cabextract python-psutil python-psycopg2 python2-dialog postgresql94-server postgresql94-contrib msktutil krb5-workstation
 
 # Turn off the brp-python-bytecompile script
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
