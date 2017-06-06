@@ -1568,27 +1568,8 @@ msgctxt "TVISWAPTGUI.MENUITEM76.CAPTION"
 msgid "Remove"
 msgstr ""
 
-#: tviswaptgui.menuitem78.caption
-msgid "Pre 1.5.0"
-msgstr ""
-
-#: tviswaptgui.menuitem79.caption
-msgctxt "TVISWAPTGUI.MENUITEM79.CAPTION"
-msgid "Old Trigger Hosts Update"
-msgstr ""
-
 #: tviswaptgui.menuitem8.caption
 msgid "Open..."
-msgstr ""
-
-#: tviswaptgui.menuitem80.caption
-msgctxt "TVISWAPTGUI.MENUITEM80.CAPTION"
-msgid "Old Trigger Hosts Upgrade"
-msgstr ""
-
-#: tviswaptgui.menuitem81.caption
-msgctxt "TVISWAPTGUI.MENUITEM81.CAPTION"
-msgid "-"
 msgstr ""
 
 #: tviswaptgui.menuitem9.caption
