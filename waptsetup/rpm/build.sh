@@ -2,15 +2,15 @@
 
 set -ex
 
-rm -Rf rpmbuild
-mkdir -p rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+VERSION=$(python get_version.py)
 
-cp waptdeploy.exe rpmbuild/SOURCES
-cp waptsetup-tis.exe rpmbuild/SOURCES
+mkdir -p BUILD RPMS SPECS
+mkdir -p builddir
+cp waptdeploy.exe ./builddir
+cp waptsetup-tis.exe ./builddir
 
-cp waptsetup.spec rpmbuild/SPECS
-
-(cd rpmbuild && rpmbuild -bb -v --clean --define "_topdir $(pwd)" SPECS/waptsetup.spec)
+rpmbuild -bb -v --clean --buildroot $PWD/builddir --define "_version $VERSION"    ./waptsetup.spec
 
 rm -f tis-waptsetup.rpm
-cp rpmbuild/RPMS/noarch/tis-waptsetup*.rpm tis-waptsetup.rpm
+cp ./RPMS/noarch/tis-waptsetup*.rpm  .
+ln -s tis-waptsetup*.rpm tis-waptsetup.rpm
