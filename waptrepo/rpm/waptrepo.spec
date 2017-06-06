@@ -37,9 +37,9 @@ cd .. && python createrpm.py
 
 %attr(755,wapt,nginx)/var/www/html/wapt/
 %attr(755,wapt,nginx)/var/www/html/waptdev/
-%attr(755,wapt,nginx))/var/www/html/wapt-group/
-%attr(755,wapt,nginx))/var/www/html/wapt-host/
-%attr(755,wapt,nginx))/var/www/html/waptwua/
+%attr(755,wapt,nginx)/var/www/html/wapt-group/
+%attr(755,wapt,nginx)/var/www/html/wapt-host/
+%attr(755,wapt,nginx)/var/www/html/waptwua/
 %attr(755,root,root)/opt/wapt/wapt-scanpackages.py
 
 %pre
@@ -51,4 +51,6 @@ exit 0
 %post
 ln -sf /opt/wapt/wapt-scanpackages.py /usr/bin/wapt-scanpackages
 python /opt/wapt/wapt-scanpackages.py /var/www/html/wapt
+chown -R wapt:nginx /var/www/html/*
+
 exit 0

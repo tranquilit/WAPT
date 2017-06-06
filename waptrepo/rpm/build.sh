@@ -7,3 +7,5 @@ mkdir -p BUILD BUILDROOT RPMS
 rpmbuild -bb --define "_version $VERSION" --buildroot $PWD/BUILDROOT -v --clean waptrepo.spec
 rm -f tis-waptrepo.rpm
 cp RPMS/noarch/tis-waptrepo*.rpm .
+# temporary for buildbot
+ln -s tis-waptrepo-*.rpm tis-waptrepo.rpm
