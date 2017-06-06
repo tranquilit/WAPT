@@ -237,6 +237,7 @@ class WaptServiceConfig(object):
         self.websockets_ping = 10
         self.websockets_retry_delay = 60
         self.websockets_check_config_interval = 120
+        self.websockets_hurry_interval = 1
 
 
     def load(self):
@@ -360,6 +361,8 @@ class WaptServiceConfig(object):
             if config.has_option('global','websockets_check_config_interval'):
                 self.websockets_check_config_interval = config.getint('global','websockets_check_config_interval')
 
+            if config.has_option('global','websockets_hurry_interval'):
+                self.websockets_hurry_interval = config.getint('global','websockets_hurry_interval')
 
 
             # settings for waptexit / shutdown policy
@@ -2459,6 +2462,7 @@ class WaptSocketIOClient(threading.Thread):
                                 wait_for_connection = False,
                                 transport = ['websocket'],
                                 ping_interval = self.config.websockets_ping,
+                                hurry_interval_in_seconds = self.config.websockets_hurry_interval,
                                 params = {'uuid':tmp_wapt.host_uuid},
                                 **kwargs)
                         #logger.debug(self.socketio_client._engineIO_session.ping_interval)
