@@ -957,22 +957,6 @@ def download_upgrades():
         return render_template('default.html',data=data,title=_(u'Download upgrades'))
 
 
-@app.route('/upgrade2')
-@app.route('/upgrade2.json')
-@allow_local
-def upgrade2():
-    notify_user = request.args.get('notify_user',None)
-    if notify_user is not None:
-        notify_user=int(notify_user)
-    data1 = task_manager.add_task(WaptUpdate(),notify_user=notify_user).as_dict()
-    data2 = task_manager.add_task(WaptUpgrade(),notify_user=notify_user).as_dict()
-    data = {'result':'OK','content':[data1,data2]}
-    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
-        return Response(common.jsondump(data), mimetype='application/json')
-    else:
-        return render_template('default.html',data=data,title='Upgrade')
-
-
 @app.route('/update')
 @app.route('/update.json')
 @allow_local
@@ -2331,11 +2315,9 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                 if uuid != self.wapt.host_uuid:
                     raise Exception('Task is not targeted to this host. task''s uuid does not match host''uuid')
                 name = action['action']
-                if name in ['trigger_host_update','trigger_host_upgrade','trigger_host_register']:
+                if name in ['trigger_host_update','trigger_host_register']:
                     if name == 'trigger_host_update':
                         task = WaptUpdate()
-                    elif name == 'trigger_host_upgrade':
-                        task = WaptUpgrade()
                     elif name == 'trigger_host_register':
                         task = WaptRegisterComputer()
                     task.force = action.get('force',False)
@@ -2343,6 +2325,18 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     task.notify_server_on_finish = action.get('notify_server',False)
                     data = self.task_manager.add_task(task).as_dict()
                     result.append(data)
+
+                elif name == 'trigger_host_upgrade':
+                    upgrades = self.wapt.list_upgrade()
+                    notify_user = action.get('notify_user',False)
+                    notify_server_on_finish = action.get('notify_server',False)
+                    force = action.get('force',False)
+                    to_install = upgrades['upgrade']+upgrades['additional']+upgrades['install']
+                    for req in to_install:
+                        result.append(self.task_manager.add_task(WaptPackageInstall(req,force=force),notify_user=notify_user).as_dict())
+
+                    result.append(self.task_manager.add_task(WaptUpgrade(),notify_user=notify_user).as_dict())
+                    result.append(self.task_manager.add_task(WaptCleanup(),notify_user=False).as_dict())
 
                 elif name in  ['trigger_install_packages','trigger_remove_packages','trigger_forget_packages']:
                     packagenames = ensure_list(action['packages'])
@@ -2368,112 +2362,10 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
             if result_callback:
                 result_callback(make_response_from_exception(e))
 
-    def on_trigger_update(self,args,result_callback=None):
-        print('Update triggered by SocketIO')
-        task = WaptUpdate()
-        task.force = int(args.get('force','0')) != 0
-        task.notify_user = int(args.get('notify_user','1')) != 0
-        task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
-        data = self.task_manager.add_task(task).as_dict()
-
-        #self.emit('trigger_update_result',{'result':data})
-
-        if result_callback:
-            result_callback(make_response(data))
-
-    def on_trigger_upgrade(self,args,result_callback=None):
-        print('Upgrade triggered by SocketIO')
-        force = int(args.get('force','0')) != 0
-        notify_user = int(args.get('notify_user','1')) != 0
-        notify_server_on_finish = int(args.get('notify_server','0')) != 0
-        with Wapt(config_filename = waptconfig.config_filename) as wapt:
-            wapt.update(force=force)
-            actions = wapt.list_upgrade()
-
-        to_install = actions['upgrade']+actions['additional']+actions['install']
-        all_tasks = []
-
-        for req in to_install:
-            all_tasks.append(self.task_manager.add_task(WaptPackageInstall(req,force=force),notify_user=notify_user).as_dict())
-
-        all_tasks.append(self.task_manager.add_task(WaptUpgrade(),notify_user=notify_user).as_dict())
-        all_tasks.append(self.task_manager.add_task(WaptCleanup(),notify_user=False).as_dict())
-
-        #self.emit('trigger_upgrade_result',{'result':all_tasks})
-
-        if result_callback:
-            result_callback(make_response(all_tasks))
-
-    def on_trigger_register(self,args,result_callback=None):
-        task = WaptRegisterComputer(args.get('computer_description',None))
-        task.force = int(args.get('force','0')) != 0
-        task.notify_user = int(args.get('notify_user','1')) != 0
-        task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
-        data = self.task_manager.add_task(task).as_dict()
-        if result_callback:
-            result_callback(make_response(data))
-
     def on_get_tasks_status(self,args,result_callback=None):
         data = self.task_manager.tasks_status()
         if result_callback:
             result_callback(make_response(data))
-
-    def on_trigger_install_packages(self,args,result_callback=None):
-        try:
-            packagenames = ensure_list(args['package'])
-            data = []
-            for packagename in packagenames:
-                task = WaptPackageInstall(packagename=packagename)
-                task.force = int(args.get('force','0')) != 0
-                task.notify_user = int(args.get('notify_user','1')) != 0
-                task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
-                data.append(self.task_manager.add_task(task).as_dict())
-
-            self.emit('trigger_install_packages_result',{'result':data})
-
-            if result_callback:
-                result_callback(make_response(data))
-        except Exception as e:
-            if result_callback:
-                result_callback(make_response_from_exception(e))
-
-    def on_trigger_remove_packages(self,args,result_callback=None):
-        try:
-            packagenames = ensure_list(args['package'])
-            data = []
-            for packagename in packagenames:
-                task = WaptPackageRemove(packagename=packagename)
-                task.force = int(args.get('force','0')) != 0
-                task.notify_user = int(args.get('notify_user','1')) != 0
-                task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
-                data.append(self.task_manager.add_task(task).as_dict())
-
-            self.emit('trigger_remove_packages_result',{'result':data})
-
-            if result_callback:
-                result_callback(make_response(data))
-        except Exception as e:
-            if result_callback:
-                result_callback(make_response_from_exception(e))
-
-    def on_trigger_forget_packages(self,args,result_callback=None):
-        try:
-            packagenames = ensure_list(args['package'])
-            data = []
-            for packagename in packagenames:
-                task = WaptPackageForget(packagenames=packagename)
-                task.force = int(args.get('force','0')) != 0
-                task.notify_user = int(args.get('notify_user','1')) != 0
-                task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
-                data.append(self.task_manager.add_task(task).as_dict())
-
-            self.emit('trigger_forget_packages_result',{'result':data})
-
-            if result_callback:
-                result_callback(make_response(data))
-        except Exception as e:
-            if result_callback:
-                result_callback(make_response_from_exception(e))
 
     def on_trigger_longtask(self,args,result_callback=None):
         task = WaptLongTask()
