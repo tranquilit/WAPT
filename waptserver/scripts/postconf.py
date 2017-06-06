@@ -53,7 +53,8 @@ import psutil
 import datetime
 import string
 import random
-
+import pwd
+import grp
 import ConfigParser
 from optparse import OptionParser
 
@@ -392,7 +393,7 @@ def main():
     enable_waptserver()
     start_waptserver()
 
-    reply = postconf.yesno("Do you want to configure apache?")
+    reply = postconf.yesno("Do you want to configure nginx?")
     if reply == postconf.DIALOG_OK:
         try:
             fqdn = socket.getfqdn()
@@ -406,27 +407,18 @@ def main():
                 exit(1)
             else:
                 fqdn = reply
-
-            # cleanup of old naming convention for the wapt vhost definition
-            if type_debian():
-                if os.path.exists('/etc/apache2/sites-enabled/wapt'):
-                    try:
-                        os.unlink('/etc/apache2/sites-enabled/wapt')
-                    except Exception:
-                        pass
-                if os.path.exists('/etc/apache2/sites-available/wapt'):
-                    try:
-                        os.unlink('/etc/apache2/sites-available/wapt')
-                    except Exception:
-                        pass
-            # TODO : check first if fqdn is dns resolvable 
+            dh_filename = '/etc/ssl/certs/dhparam.pem'
+            if not os.path.exists(dh_filename):
+                print (subprocess.check_output('openssl dhparam -out %s  2048' % dh_filename , shell=True))
+            os.chown(dh_filename,pwd.getpwnam('root').pw_uid,grp.getgrnam('nginx').gr_gid)
+            os.chmod(dh_filename,0o644)
 
             make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn, options.use_kerberos, options.force_https)
             final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
             if type_debian():
                 enable_debian_vhost()
 
-            reply = postconf.yesno("The Apache config has been reloaded. Do you want to force-restart Apache?")
+            reply = postconf.yesno("The Nginx config is done. Do you want to force-restart ?")
             if reply == postconf.DIALOG_OK:
                 restart_nginx()
 
