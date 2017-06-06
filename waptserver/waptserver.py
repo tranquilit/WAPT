@@ -52,7 +52,9 @@ from passlib.hash import sha512_crypt, bcrypt
 from peewee import *
 from playhouse.postgres_ext import *
 
-from waptserver_model import Hosts,HostSoftwares,HostPackagesStatus,ServerAttribs,get_db_version,init_db,wapt_db,model_to_dict,dict_to_model,update_host_data
+from waptserver_model import Hosts,HostSoftwares,HostPackagesStatus,ServerAttribs
+from waptserver_model import get_db_version,init_db,wapt_db,model_to_dict,dict_to_model,update_host_data
+from waptserver_model import upgrade_db_structure
 
 from werkzeug.utils import secure_filename
 from functools import wraps
@@ -374,10 +376,10 @@ def update_host():
 
 #                authenticated_user = request.headers.get('X-Authenticated-User',None)
                 authenticated_user = request.headers.get('Authorization', None)
-                                
+
                 if authenticated_user:
                     if authenticated_user.startswith('Basic'):
-                        logger.debug( '#####################################')                   
+                        logger.debug( '#####################################')
                         logger.debug(authenticated_user)
                         authenticated_user = base64.b64decode(authenticated_user.replace('Basic','').strip())
                         logger.debug(authenticated_user)
@@ -1034,13 +1036,6 @@ def trigger_wakeonlan():
         return make_response_from_exception(e)
 
 
-@app.route('/api/v3/trigger_register', methods=['GET', 'POST'])
-@requires_auth
-def trigger_host_register():
-    """Proxy the wapt update action to the client"""
-    return proxy_host_request(request, 'trigger_register')
-
-
 @app.route('/api/v3/trigger_waptwua_scan', methods=['GET', 'POST'])
 @requires_auth
 def trigger_waptwua_scan():
@@ -1110,42 +1105,6 @@ def waptagent_version():
 
     return make_response(result=result, msg=msg, status=200)
 
-
-@app.route('/api/v3/trigger_forget_packages', methods=['GET', 'POST'])
-@requires_auth
-def host_forget_packages():
-    """Proxy the wapt forget action to the client
-            uuid
-            packages
-            notify_user
-            notify_server
-    """
-    return proxy_host_request(request, 'trigger_forget_packages')
-
-
-@app.route('/api/v3/trigger_remove_packages', methods=['GET', 'POST'])
-@requires_auth
-def host_remove_packages():
-    """Proxy the wapt remove action to the client
-            uuid
-            packages
-            notify_user
-            notify_server
-            force
-    """
-    return proxy_host_request(request, 'trigger_remove_packages')
-
-
-@app.route('/api/v3/trigger_install_packages', methods=['GET', 'POST'])
-@requires_auth
-def host_install_packages():
-    """Proxy the wapt install action to the client
-            uuid
-            packages
-            notify_user
-            notify_server
-    """
-    return proxy_host_request(request, 'trigger_install_packages')
 
 @app.route('/api/v3/trigger_cancel_task')
 @requires_auth
@@ -1565,85 +1524,6 @@ def usage_statistics():
     )
     result.update(stats)
     return make_response(msg=_('Anomnymous usage statistics'), result=result)
-
-
-####### Test Websockets
-
-@app.route('/api/v3/trigger_update')
-@requires_auth
-def trigger_sio_update():
-    """Proxy the wapt update action to the client using websockets"""
-    try:
-        return proxy_host_request(request,'trigger_update')
-
-        uuid = request.args['uuid']
-        notify_user = request.args.get('notify_user', 0)
-        notify_server = request.args.get('notify_server', 1)
-
-        host = Hosts.select(Hosts.computer_fqdn,Hosts.listening_address).where((Hosts.uuid==uuid) & (Hosts.listening_protocol == 'websockets')).first()
-        if host and host.listening_address:
-            socketio.emit('trigger_update',request.args, room = host.listening_address)
-            result = request.args
-            msg = 'Update launched on %s' % host.computer_fqdn
-            return make_response(result,
-                                 msg=msg,
-                                 success=True)
-        else:
-            raise EWaptHostUnreachable('Host not connected, Websocket sid not in database')
-    except Exception as e:
-        return make_response_from_exception(e)
-
-
-@app.route('/api/v3/trigger_upgrade')
-@requires_auth
-def trigger_sio_upgrade():
-    """Proxy the wapt update action to the client using websockets"""
-    try:
-        return proxy_host_request(request,'trigger_upgrade')
-
-        uuid = request.args['uuid']
-        notify_user = request.args.get('notify_user', 0)
-        notify_server = request.args.get('notify_server', 1)
-        timeout = float(request.args.get('timeout',conf.get('clients_read_timeout',5)))
-
-        host = Hosts.select(Hosts.computer_fqdn,Hosts.listening_address).where((Hosts.uuid==uuid) & (Hosts.listening_protocol == 'websockets')).first()
-        if host and host.listening_address:
-            result = []
-
-            socketio.emit('trigger_upgrade',request.args, room = host.listening_address,callback = on_trigger_upgrade_result)
-
-            msg = 'Upgrade launched on %s' % host.computer_fqdn
-            return make_response(result,
-                                 msg=msg,
-                                 success=True)
-        else:
-            raise EWaptHostUnreachable('Host not connected, Websocket sid not in database')
-    except Exception as e:
-        return make_response_from_exception(e)
-
-
-
-@app.route('/api/v3/trigger_install')
-@requires_auth
-def trigger_sio_install():
-    """Proxy the wapt update action to the client using websockets"""
-    try:
-        uuid = request.args['uuid']
-        notify_user = request.args.get('notify_user', 0)
-        notify_server = request.args.get('notify_server', 1)
-
-        host = Hosts.select(Hosts.computer_fqdn,Hosts.listening_address).where((Hosts.uuid==uuid) & (Hosts.listening_protocol == 'websockets')).first()
-        if host:
-            socketio.emit('trigger_update',request.args, room = host.listening_address)
-            result = request.args
-            msg = 'Install launched on %s' % host.computer_fqdn
-            return make_response(result,
-                                 msg=msg,
-                                 success=True)
-        else:
-            raise EWaptHostUnreachable('Host not connected, Websocket sid not in database')
-    except Exception as e:
-        return make_response_from_exception(e)
 
 
 @app.route('/api/v3/host_tasks_status')
@@ -2200,8 +2080,7 @@ if __name__ == "__main__":
         except Exception as e:
             wapt_db.rollback()
             logger.critical('Trying to upgrade database structure, error was : %s' % repr(e))
-            import waptserver_upgrade
-            waptserver_upgrade.upgrade_postgres()
+            upgrade_db_structure()
 
     if not wapt_db.is_closed():
         wapt_db.close()
