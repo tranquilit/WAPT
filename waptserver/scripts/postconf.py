@@ -23,9 +23,7 @@
 __version__ = "1.5.0"
 
 usage = """\
-%prog [--use-kerberos] [--use-hsts] [--force-https]"""
-
-
+%prog [--use-kerberos] [--force-https]"""
 
 import os,sys
 try:
@@ -69,17 +67,18 @@ def type_redhat():
 
 postconf = dialog.Dialog(dialog="dialog")
 
-def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force_https,use_hsts):
+def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force_https):
     if wapt_folder.endswith('\\') or wapt_folder.endswith('/'):
         wapt_folder = wapt_folder[:-1]
 
     apache_dir = os.path.join(waptserver_root_dir, 'apache')
+    scripts_dir = os.path.join(waptserver_root_dir, 'scripts')
     wapt_ssl_key_file = os.path.join(apache_dir,'ssl','key.pem')
     wapt_ssl_cert_file = os.path.join(apache_dir,'ssl','cert.pem')
 
     # write the apache configuration fragment
-    jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(apache_dir))
-    template = jinja_env.get_template('httpd.conf.j2')
+    jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(scripts_dir))
+    template = jinja_env.get_template('wapt.nginxconfig.template')
     krb5_realm = '.'.join(fqdn.split('.')[1:]).upper()
 
     template_vars = {
@@ -93,15 +92,14 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force
         'wapt_ssl_cert_file': wapt_ssl_cert_file,
         'fqdn': fqdn,
         'use_kerberos': use_kerberos,
-        'use_hsts': use_hsts,
         'KRB5_REALM': krb5_realm
         }
 
     config_string = template.render(template_vars)
     if type_debian():
-        dst_file = file('/etc/apache2/sites-available/wapt.conf', 'wt')
+        dst_file = file('/etc/nginx/sites-available/wapt.conf', 'wt')
     elif type_redhat():
-        dst_file = file('/etc/httpd/conf.d/wapt.conf', 'wt')
+        dst_file = file('/etc/nginx/conf.d/wapt.conf', 'wt')
     dst_file.write(config_string)
     dst_file.close()
 
@@ -182,12 +180,6 @@ def ensure_postgresql_db(db_name='wapt',db_owner='wapt',db_password=''):
     else:
         subprocess.check_output("""  sudo -u postgres psql wapt -c "CREATE EXTENSION hstore;" """, shell=True,cwd='/opt/wapt/')
 
-
-def enable_redhat_vhost():
-    if os.path.exists('/etc/httpd/conf.d/ssl.conf'):
-        subprocess.check_output('mv /etc/httpd/conf.d/ssl.conf /etc/httpd/conf.d/ssl.conf.disabled',shell=True)
-    #TODO : enable kerberos 
-
 def get_mongodb_service_name():
     if type_redhat():
         return 'mongod'
@@ -221,6 +213,12 @@ def enable_apache():
 
 def start_apache():
     print(subprocess.check_output('systemctl restart %s ' % get_apache_service_name(),shell=True))
+
+def enable_nginx():
+    print(subprocess.check_output('systemctl enable nginx', shell=True))
+
+def restart_nginx():
+    print(subprocess.check_output('systemctl restart nginx',shell=True))
 
 def enable_waptserver():
     print(subprocess.check_output('systemctl restart waptserver',shell=True))
@@ -277,15 +275,6 @@ def main():
         default=False,
         action='store_true',
         help="Use https only, http is 301 redirected to https (default: False). Requires a proper DNS name")
-    parser.add_option(
-        "-t",
-        "--use-hsts",
-        dest="use_hsts",
-        default=False,
-        action='store_true',
-        help="Add HSTS configuration on https connection")
-
-    
 
     (options, args) = parser.parse_args()
 
@@ -432,19 +421,17 @@ def main():
                         pass
             # TODO : check first if fqdn is dns resolvable 
 
-            make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn, options.use_kerberos, options.force_https, options.use_hsts)
+            make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn, options.use_kerberos, options.force_https)
             final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
             if type_debian():
                 enable_debian_vhost()
-            elif type_redhat():
-                enable_redhat_vhost()
 
             reply = postconf.yesno("The Apache config has been reloaded. Do you want to force-restart Apache?")
             if reply == postconf.DIALOG_OK:
-                start_apache()
+                restart_nginx()
 
-            enable_apache()
-            start_apache()
+            enable_nginx()
+            restart_nginx()
             setup_firewall()
 
         except subprocess.CalledProcessError as cpe:

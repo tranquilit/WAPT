@@ -13,7 +13,7 @@ URL:		https://wapt.fr
 Source0:	./waptserver/
 Prefix:		/opt
 
-Requires:  httpd mod_ssl dialog uwsgi-plugin-python pytz m2crypto python-passlib python-netifaces python-urllib3 cabextract python-requests python-flask python-psutil python-psycopg2 python2-dialog postgresql94-server postgresql94-contrib
+Requires:  nginx dialog pytz m2crypto python-passlib cabextract python-psutil python-psycopg2 python2-dialog postgresql94-server postgresql94-contrib
 
 # Turn off the brp-python-bytecompile script
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
@@ -63,3 +63,4 @@ if [ -e "$old_ini" ] && ! [ -L "$old_ini" ]; then
 	ln -s "$new_ini" "$old_ini"
     fi
 fi
+systemctl daemon-reload
