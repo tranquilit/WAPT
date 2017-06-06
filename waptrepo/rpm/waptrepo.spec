@@ -35,16 +35,16 @@ cd .. && python createrpm.py
 /var/www/html/wapt-host
 /var/www/html/wapt-group
 
-%attr(755,wapt,apache)/var/www/html/wapt/
-%attr(755,wapt,apache)/var/www/html/waptdev/
-%attr(755,wapt,apache)/var/www/html/wapt-group/
-%attr(755,wapt,apache)/var/www/html/wapt-host/
-%attr(755,wapt,apache)/var/www/html/waptwua/
+%attr(755,wapt,nginx)/var/www/html/wapt/
+%attr(755,wapt,nginx)/var/www/html/waptdev/
+%attr(755,wapt,nginx))/var/www/html/wapt-group/
+%attr(755,wapt,nginx))/var/www/html/wapt-host/
+%attr(755,wapt,nginx))/var/www/html/waptwua/
 %attr(755,root,root)/opt/wapt/wapt-scanpackages.py
 
 %pre
 getent passwd wapt >/dev/null || \
-    useradd -r -g apache -d /opt/wapt -s /sbin/nologin \
+    useradd -r -g nginx) -d /opt/wapt -s /sbin/nologin \
     -c "Non privileged account for waptserver" wapt
 exit 0
 
