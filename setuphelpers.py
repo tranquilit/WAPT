@@ -3649,6 +3649,26 @@ def need_install(key,min_version=None,force=False,get_version=None):
                 return False
         return True
 
+def remove_previous_version(key,max_version=None):
+    """Launch uninstalling the key if its version is inferior of the version supplied as parameter
+
+    Args:
+        key (str) : uninstall key to check in registry and to add to uninstallkey global list
+        max_version (str) : if installed version is inferior, Launch of uninstalling the key
+                            if not provided (None) launch of uninstalling the key
+
+    Returns:
+        None
+
+    """
+    for uninstall in installed_softwares(key):
+        if uninstall['key'] == key:
+            if max_version :
+                if Version(uninstall['version']) < Version(version) :
+                    run(uninstall_cmd(uninstall['key']))
+            else:
+                    run(uninstall_cmd(uninstall['key']))
+
 def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=[0,3010],timeout=300,properties={},get_version=None):
     """Install silently the supplied msi file, and add the uninstall key to
     global uninstall key list
