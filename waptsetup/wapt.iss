@@ -117,6 +117,9 @@ Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\wapt-ge
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_period; String: {#default_update_period}; Flags:  createkeyifdoesntexist 
 
+[Dirs]
+Name: "{app}\private"
+
 [Run]
 Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "Mise à jour des librairies MS VC++ pour openssl"; Description: "Mise à jour des librairies MS VC++"; Tasks: installredist2008
 ; Duplication necessaire, cf. [Tasks]
@@ -126,6 +129,13 @@ Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tm
 Filename: "cmd"; Parameters: "/C echo O| cacls {app} /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)(A;OICI;0x1200a9;;;BU)(A;OICI;0x1201a9;;;AU)"""; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt..."; Description: "Mise en place des droits sur le répertoire wapt"
 Filename: "cmd"; Parameters: "/C icacls.exe {app} /inheritance:r"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt..."; Description: "Suppression héritage des droits sur wapt"
 Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe {app} /inheritance:r"; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt..."; Description: "Suppression héritage des droits sur wapt"
+
+; protect waptagent private directory
+Filename: "cmd"; Parameters: "/C echo O| cacls {app}\private /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)"""; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt private..."; Description: "Mise en place des droits sur le répertoire wapt private"
+Filename: "cmd"; Parameters: "/C icacls.exe {app}\private /inheritance:r"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt private..."; Description: "Suppression héritage des droits sur wapt private"
+Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe {app}\private /inheritance:r"; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt private..."; Description: "Suppression héritage des droits sur wapt private"
+
+
 
 ; if waptservice
 Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptservice\waptservice.py"" install"; Tasks:installService ; Flags: runhidden; StatusMsg: "Installation du service WAPT"; Description: "Installation du service WAPT"
