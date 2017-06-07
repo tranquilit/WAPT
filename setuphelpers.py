@@ -3669,7 +3669,7 @@ def remove_previous_version(key,max_version=None):
             else:
                     run(uninstall_cmd(uninstall['key']))
 
-def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=[0,3010],timeout=300,properties={},get_version=None):
+def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=[0,3010],timeout=300,properties={},get_version=None,remove_old_version=False):
     """Install silently the supplied msi file, and add the uninstall key to
     global uninstall key list
 
@@ -3689,6 +3689,7 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
         accept_returncodes (list of int) : return codes which are acceptable and don't raise exception
         timeout int) : maximum run time of command in seconds bfore the child is killed and error is raised.
         properties (dict) : map (key=value) of properties for specific msi installation.
+        remove_old_version (booleen) : Defined if uninstalling the old version of the uninstallkey should be started.
 
     Returns:
         None
@@ -3701,6 +3702,10 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
     .. versionchanged:: 1.4.1
           error code 1603 is no longer accepted by default.
 
+    .. versionchanged:: 1.5
+          added remove_old_version for remove old version uninstallkey
+
+
     """
     if not isfile(msi):
         error('msi file %s not found in package' % msi)
@@ -3708,6 +3713,10 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
     caller_globals = inspect.stack()[1][0].f_globals
     WAPT = caller_globals.get('WAPT',None)
     force = WAPT and WAPT.options.force
+
+    if remove_old_version :
+        killalltasks(killbefore)
+        remove_previous_version(key,version)
 
     if min_version is None:
         min_version = getproductprops(msi)['version']
@@ -3727,7 +3736,7 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
         if 'uninstallkey' in caller_globals and not key in caller_globals['uninstallkey']:
             caller_globals['uninstallkey'].append(key)
 
-def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbefore=[],accept_returncodes=[0,3010],timeout=300,get_version=None):
+def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbefore=[],accept_returncodes=[0,3010],timeout=300,get_version=None,remove_old_version=False):
     """Install silently the supplied setup executable file, and add the uninstall key to
     global uninstallkey list if it is defined.
 
@@ -3749,6 +3758,9 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
                                     issues.
         get_version (callable) : optional func to get installed software version from one entry retunred by installed_softwares
             if not provided, version is taken from 'version' attribute in uninstall registry
+
+        remove_old_version (booleen) : Defined if uninstalling the old version of the uninstallkey should be started.
+
     Returns:
         None
 
@@ -3761,6 +3773,8 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
     .. versionchanged:: 1.4.1
           error code 1603 is no longer accepted by default.
 
+    .. versionchanged:: 1.5
+          added remove_old_version for remove old version uninstallkey
     """
     if not isfile(exe):
         error('setup exe file %s not found in package' % exe)
@@ -3773,6 +3787,10 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
     caller_globals = inspect.stack()[1][0].f_globals
     WAPT = caller_globals.get('WAPT',None)
     force = WAPT and WAPT.options.force
+
+    if remove_old_version :
+        killalltasks(killbefore)
+        remove_previous_version(key,version)
 
     if need_install(key,min_version=min_version or None,force=force,get_version=get_version):
         if killbefore:
