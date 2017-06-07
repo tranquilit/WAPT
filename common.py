@@ -4248,7 +4248,7 @@ class Wapt(object):
             # force register if computer has not been registered or hostname has changed
             # this should work only if computer can authenticate on wapt server using
             # kerberos (if enabled...)
-            if result and result['success']:
+            if result and not result['success']:
                 db_data = result.get('result',None)
                 if not db_data or db_data.get('computer_fqdn',None) != setuphelpers.get_hostname():
                     logger.warning('Host on the server is not known or not known under this FQDN name (known as %s). Trying to register the computer...'%(db_data and db_data.get('computer_fqdn',None) or None))
