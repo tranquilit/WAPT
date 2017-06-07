@@ -2433,7 +2433,6 @@ class WaptSocketIOClient(threading.Thread):
                             self.socketio_client.wait(self.config.websockets_check_config_interval)
                     self.config.reload_if_updated()
                 except Exception as e:
-                    raise
                     logger.debug('Error in socket io connection %s' % repr(e))
                     if self.socketio_client and self.config.websockets_host:
                         try:
