@@ -1,6 +1,7 @@
 [Unit]
 Description=WAPT Server startup script
 After=syslog.target
+After=postgresql-9.4.service
 
 [Service]
 Type=simple
