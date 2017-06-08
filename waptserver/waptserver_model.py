@@ -521,6 +521,13 @@ def init_db(drop=False):
         for table in reversed([ServerAttribs,Hosts,HostPackagesStatus,HostSoftwares,HostJsonRaw,HostWsus]):
             table.drop_table(fail_silently=True)
     wapt_db.create_tables([ServerAttribs,Hosts,HostPackagesStatus,HostSoftwares,HostJsonRaw,HostWsus],safe=True)
+
+    if get_db_version()==None:
+        # new database install, we setup the db_version key
+        (v,created) = ServerAttribs.get_or_create(key='db_version')
+        v.value = __version__
+        v.save()
+
     if get_db_version() != __version__:
         with wapt_db.atomic():
             upgrade_db_structure()
