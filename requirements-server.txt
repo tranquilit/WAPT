@@ -12,6 +12,7 @@ iniparse==0.4
 itsdangerous==0.24
 peewee==2.8.5
 pefile==2016.3.28
+psycopg2==2.7.1
 pytz==2016.10
 requests==2.13.0
 six==1.10.0
