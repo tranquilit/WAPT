@@ -1508,8 +1508,10 @@ class WaptServer(object):
                 # no server at all
                 self._server_url = ''
 
-            self.use_kerberos = config.has_option(section,'use_kerberos') and \
-                            config.getboolean(section,'use_kerberos')
+            if  config.has_option(section,'use_kerberos'):
+                self.use_kerberos =  config.getboolean(section,'use_kerberos')
+            else:
+                self.use_kerberos = True
 
             if config.has_option(section,'use_http_proxy_for_server') and config.getboolean(section,'use_http_proxy_for_server'):
                 if config.has_option(section,'http_proxy'):
