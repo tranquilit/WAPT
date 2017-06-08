@@ -84,7 +84,7 @@ from ctypes import wintypes
 
 from urlparse import urlparse
 try:
-    from requests_kerberos import HTTPKerberosAuth,OPTIONAL
+    from requests_kerberos import HTTPKerberosAuth,DISABLED
     has_kerberos = True
 except:
     has_kerberos = False
@@ -1358,7 +1358,7 @@ class WaptServer(object):
         if self._server_url:
             scheme = urlparse(self._server_url).scheme
             if scheme == 'https' and has_kerberos and self.use_kerberos:
-                return HTTPKerberosAuth(mutual_authentication=OPTIONAL,principal=self.get_computer_principal())
+                return HTTPKerberosAuth(mutual_authentication=DISABLED,principal=self.get_computer_principal())
                 # TODO : simple auth if kerberos is not available...
             else:
                 return None
