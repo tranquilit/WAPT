@@ -426,9 +426,10 @@ def update_host_data(data):
         return result_query.where(Hosts.uuid == uuid).dicts().dicts().first(1)
 
     except Exception as e:
+        logger.warning(traceback.format_exc())
         logger.critical(u'Error updating data for %s : %s'%(uuid,ensure_unicode(e)))
         wapt_db.rollback()
-        raise
+        raise e
 
 
 @pre_save(sender=Hosts)
@@ -475,8 +476,10 @@ def wapthosts_json(model_class, instance, created):
 
         for field,attribute in extractmap:
             setattr(instance,field,dictgetpath(instance.host_info,attribute))
-
-        instance.os_architecture = 'x64' and instance.host_info.get('win64','?') or 'x86'
+        try:
+            instance.os_architecture = 'x64' and instance.host_info.get('win64','?') or 'x86'
+        except:
+            instance.os_architecture = '?'
 
     if (created or Hosts.dmi in instance.dirty_fields) and instance.dmi:
         extractmap = [
@@ -488,17 +491,19 @@ def wapthosts_json(model_class, instance, created):
 
     if not instance.connected_ips:
         instance.connected_ips = dictgetpath(instance.host_info,'networking.*.addr')
-
-    # update host update status based on update_status json data or packages collection
-    if not instance.host_status or created or Hosts.last_update_status in instance.dirty_fields:
-        instance.host_status = None
-        if instance.last_update_status:
-            if instance.last_update_status.get('errors', []):
-                instance.host_status = 'ERROR'
-            elif instance.last_update_status.get('upgrades', []):
-                instance.host_status = 'TO-UPGRADE'
-        if not instance.host_status:
-            instance.host_status = 'OK'
+    try:
+        # update host update status based on update_status json data or packages collection
+        if not instance.host_status or created or Hosts.last_update_status in instance.dirty_fields:
+            instance.host_status = None
+            if instance.last_update_status:
+                if instance.last_update_status.get('errors', []):
+                    instance.host_status = 'ERROR'
+                elif instance.last_update_status.get('upgrades', []):
+                    instance.host_status = 'TO-UPGRADE'
+            if not instance.host_status:
+                instance.host_status = 'OK'
+    except:
+        pass
 
 def get_db_version():
     try:
