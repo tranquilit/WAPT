@@ -80,12 +80,12 @@ default_sources_suffix=wapt
 ; check every n seconds if wapt-get.ini has changed and reconnect socket.io with new parameters if changed. 
 ;websockets_check_config_interval=5
 
-; for https waptserver / wapt_repo connections : 0 disable/1 enable or path to certificate(s)  of the server 
+; for https waptserver / wapt_repo connections : 0 disable/1 enable or path to certificate(s)  of the server
 ;verify_cert = C:\wapt\ssl\server\wapt142.tranquilit.local.crt
 ;verify_cert = 1
-; for tls websockets : check certificate : 1 or disable check 0
+; for tls websockets : check certificate : 1 or disable check 0, if not set waptsockets_verify==verify_cert
 ;websockets_verify_cert=C:\tranquilit\wapt\ssl\server\wapt142.tranquilit.local.crt
-;websockets_verify_cert=0
+;websockets_verify_cert=1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; wapt_service configuration. Use windows security by default

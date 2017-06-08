@@ -1533,7 +1533,7 @@ class WaptServer(object):
                     if not os.path.isfile(self.verify_cert):
                         logger.warning(u'waptserver certificate %s declared in configuration file can not be found. Waptserver communication will fail' % self.verify_cert)
             else:
-                self.verify_cert = False
+                self.verify_cert = True
 
 
         return self
