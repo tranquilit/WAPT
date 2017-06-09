@@ -321,13 +321,18 @@ class SSLPrivateKey(object):
             else:
                 raise EWaptBadCertificate('Missing certificate for %s' % self.private_key_filename)
 
+        signature_attributes = ['signed_attributes','signer','signature_date','signer_fingerprint']
+        for att in signature_attributes:
+            if att in attributes:
+                attributes.remove(att)
+
         reclaim = {att:claim.get(att,None) for att in attributes}
-        signature = base64.b64encode(self.sign_content(reclaim))
-        reclaim['signed_attributes'] = attributes
-        reclaim['signature'] = signature
+        reclaim['signed_attributes'] = attributes+signature_attributes
         reclaim['signer'] = certificate.cn
         reclaim['signature_date'] = datetime.datetime.now().isoformat()
         reclaim['signer_fingerprint'] = certificate.fingerprint
+        signature = base64.b64encode(self.sign_content(reclaim))
+        reclaim['signature'] = signature
         return reclaim
 
 

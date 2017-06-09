@@ -263,29 +263,46 @@ class PackageEntry(object):
     """Package attributes coming from either control files in WAPT package or local DB
 
     """
+    # minim attributes for a valid control file
     required_attributes = ['package','version','architecture','section','priority']
     optional_attributes = ['maintainer','description','depends','conflicts','maturity',
         'locale','min_os_version','max_os_version','min_wapt_version',
-        'sources','installed_size',
-        'signer','signer_fingerprint','signature','signature_date']
-    non_control_attributes = ['localpath','filename','size','repo_url','md5sum','repo',]
-    signed_attributes = required_attributes+['depends','conflicts','maturity']
+        'sources','installed_size']
+    # attributes which are added by _sign_control
+    signature_attributes = ['signer','signer_fingerprint','signature','signature_date','signed_attributes']
+
+    # these attrbutes are not written to Package control file, but only in Packages repository index
+    non_control_attributes = ['localpath','sourcespath','filename','size','repo_url','md5sum','repo']
 
     # these attributes are not kept when duplicating / editing a package
-    not_duplicated_attributes =  ['signature','signer','signer_fingerprint','signature_date']
+    not_duplicated_attributes =  signature_attributes
 
+    # there files are not included in manifest file
     manifest_filename_excludes = ['WAPT/signature','WAPT/manifest.sha256','WAPT/manifest.sha1']
+
+    _calculated_attributes = []
 
     @property
     def all_attributes(self):
-        return self.required_attributes + self.optional_attributes + self.non_control_attributes + self._calculated_attributes
+        return self.required_attributes + self.optional_attributes + self.signature_attributes + self.non_control_attributes + self._calculated_attributes
+
+    def get_default_signed_attributes(self):
+         all = self.required_attributes+self.optional_attributes+self.signature_attributes
+         all.remove('signature')
+         return all
 
     def __init__(self,package='',version='0',repo='',waptfile=None, section = 'base',_default_md = 'sha256'):
+        """
+        """
+        # temporary attributes added by join queries from local Wapt database
+        self._calculated_attributes=[]
+
         self.package=package
         self.version=version
         self.architecture='all'
         self.section=section
         self.priority='optional'
+
         self.maintainer=''
         self.description=''
         self.depends=''
@@ -294,10 +311,13 @@ class PackageEntry(object):
         self.filename=''
         self.size=None
         self.maturity=''
-        self.signer=''
-        self.signer_fingerprint=''
-        self.signature=''
-        self.signature_date=''
+
+        self.signer=None
+        self.signer_fingerprint=None
+        self.signature=None
+        self.signature_date=None
+        self.signed_attributes=None
+
         self.locale=''
         self.min_os_version=''
         self.max_os_version=''
@@ -314,7 +334,6 @@ class PackageEntry(object):
         # full filename of package if built
         self.localpath=None
 
-        self._calculated_attributes=[]
         if waptfile:
             if os.path.isfile(waptfile):
                 self.load_control_from_wapt(waptfile)
@@ -375,11 +394,23 @@ class PackageEntry(object):
             return default
 
     def __setitem__(self,name,value):
+        """attribute which are not member of all_attributes list are considered _calculated
+
+        >>> p = PackageEntry('test')
+        >>> print p._calculated_attributes
+        []
+        >>> p.install_date = u'2017-06-09 12:00:00'
+        >>> print p._calculated_attributes
+        []
+        """
+        setattr(self,name,value)
+
+    def __setattr__(self,name,value):
         if name is str or name is unicode:
             name = name.lower()
         if name not in self.all_attributes:
             self._calculated_attributes.append(name)
-        setattr(self,name,value)
+        super(PackageEntry,self).__setattr__(name,value)
 
     def __len__(self):
         return len(self.all_attributes)
@@ -626,16 +657,20 @@ class PackageEntry(object):
 
         def escape_cr(s):
             # format multi-lines description with a space at each line start
+            # format list as csv
             if s and (isinstance(s,str) or isinstance(s,unicode)):
                 return re.sub(r'$(\n)(?=^\S)',r'\n ',s,flags=re.MULTILINE)
+            elif isinstance(s,list):
+                return ','.join([ensure_unicode(item) for item in s])
             else:
                 if s is None:
                     return ''
                 else:
                     return s
 
-        for att in self.required_attributes+self.optional_attributes:
-            if att in self.signed_attributes or with_empty_attributes or getattr(self,att):
+        for att in self.required_attributes+self.optional_attributes+self.signature_attributes:
+            # we add to the control file all signed attributes, the non empty ones, and all the other if required
+            if att in self.get_default_signed_attributes() or with_empty_attributes or getattr(self,att):
                 val.append(u"%-18s: %s" % (att, escape_cr(getattr(self,att))))
 
         if with_non_control_attributes:
@@ -701,16 +736,6 @@ class PackageEntry(object):
                 return
         raise EWaptBadControl(u'no build/packaging part in version number %s' % self.version)
 
-    def signed_content(self):
-        """Return the signed control informations"""
-        return {att:getattr(self,att,None) for att in self.signed_attributes}
-
-    def get_signature(self,private_key):
-        """Returns the signature of control informations"""
-        assert(isinstance(private_key,SSLPrivateKey))
-        signed_content = private_key.sign_content(self.signed_content(),self._md or self._default_md)
-        return signed_content
-
 
     def build_package(self,excludes=['.svn','.git','.gitignore','setup.pyc'],target_directory=None):
         """Build the WAPT package, stores the result in target_directory
@@ -775,6 +800,10 @@ class PackageEntry(object):
             excludes=excludes)
         return result_filename
 
+    def _signed_content(self):
+        """Return the signed control informations"""
+        return {att:getattr(self,att,None) for att in ensure_list(self.signed_attributes)}
+
     def _sign_control(self,private_key,certificate):
         """Sign the contractual attributes of the control file using
             the provided key, add certificate Fingerprint and CN too
@@ -784,12 +813,15 @@ class PackageEntry(object):
             certificate (SSLCertificate)
 
         Returns:
-            None
+            list: signed attributes
         """
-        self.signature = base64.b64encode(self.get_signature(private_key))
+        self.signed_attributes = ','.join(self.get_default_signed_attributes())
         self.signature_date = time.strftime('%Y%m%d-%H%M%S')
         self.signer = certificate.cn
         self.signer_fingerprint = certificate.fingerprint
+        self.signature = base64.b64encode(
+            private_key.sign_content(self._signed_content(),self._md or self._default_md))
+        return self.get_default_signed_attributes()
 
     def check_control_signature(self,authorized_certs):
         """Check in memory control signature against a list of public certificates
@@ -812,7 +844,7 @@ class PackageEntry(object):
         """
         if not self.signature:
             raise EWaptNotSigned('Package control %s on repo %s is not signed' % (self.asrequirement(),self.repo))
-        signed_content = self.signed_content()
+        signed_content = self._signed_content()
         signature_raw = self.signature.decode('base64')
         if not isinstance(authorized_certs,list):
             authorized_certs = [authorized_certs]
@@ -968,10 +1000,9 @@ class PackageEntry(object):
     def invalidate_signature(self):
         """Remove all signature informations from control and unzipped package directory"""
         # remove control signature
-        self.signature = None
-        self.signature_date = None
-        self.signer = None
-        self.signer_fingerprint = None
+        for att in self.signature_attributes:
+            if hasattr(self,att):
+                setattr(self,att,None)
 
         # remove package / files signature if sources entry.
         if self.sourcespath and os.path.isdir(self.sourcespath):
@@ -1013,7 +1044,10 @@ class PackageEntry(object):
         for (filename,hexdigest) in manifest:
             fullpath = os.path.abspath(os.path.join(self.sourcespath,filename))
             expected.append(fullpath)
-            if hexdigest != hexdigest_for_file(fullpath,md = self._md):
+            # file was expected but has disapeared...
+            if not os.path.isfile(fullpath):
+                errors.append(filename)
+            elif hexdigest != hexdigest_for_file(fullpath,md = self._md):
                 errors.append(filename)
 
         files = list(find_all_files(ensure_unicode(self.sourcespath)))
