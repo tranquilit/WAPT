@@ -2191,6 +2191,9 @@ class Wapt(object):
         self.use_http_proxy_for_server = False
         self.use_http_proxy_for_templates = False
 
+        self.forced_uuid = None
+        self.use_fqdn_as_uuid = False
+
         try:
             self.wapt_base_dir = os.path.dirname(__file__)
         except NameError:
@@ -2323,7 +2326,7 @@ class Wapt(object):
         # default config file
         defaults = {
             'loglevel':'warning',
-            'log_to_windows_events':0,
+            'log_to_windows_events':'0',
             'default_package_prefix':'tis',
             'default_sources_suffix':'wapt',
             'default_sources_root':'c:\\waptdev',
@@ -2403,10 +2406,15 @@ class Wapt(object):
             self.language = self.config.get('global','language')
 
         if self.config.has_option('global','uuid'):
-            forced_uuid = self.config.get('global','uuid')
-            if forced_uuid != self.host_uuid:
-                logger.debug('Storing new uuid in DB %s' % forced_uuid)
-                self.host_uuid = forced_uuid
+            self.forced_uuid = self.config.get('global','uuid')
+            if self.forced_uuid != self.host_uuid:
+                logger.debug('Storing new uuid in DB %s' % self.forced_uuid)
+                self.host_uuid = self.forced_uuid
+        else:
+            self.forced_uuid = None
+
+        if self.config.has_option('global','use_fqdn_as_uuid'):
+            self.use_fqdn_as_uuid = self.config.getboolean('global','use_fqdn_as_uuid')
 
         # Get the configuration of all repositories (url, ...)
         self.repositories = []
@@ -2532,26 +2540,31 @@ class Wapt(object):
 
     @property
     def host_uuid(self):
-        value = self.read_param('uuid')
+        previous_uuid = self.read_param('uuid')
+        new_uuid = None
+
         registered_hostname = self.read_param('hostname')
         current_hostname = setuphelpers.get_hostname()
-        if not value or registered_hostname != current_hostname:
+
+        if self.forced_uuid:
+            new_uuid = self.forced_uuid
+        elif self.use_fqdn_as_uuid:
+            new_uuid = current_hostname
+        else:
+            new_uuid = previous_uuid
+
+        if not previous_uuid or previous_uuid != new_uuid or registered_hostname != current_hostname:
             if registered_hostname != current_hostname:
                 # forget old host package if any as it is not relevant anymore
                 self.forget_packages(registered_hostname)
             logger.info('Unknown UUID or hostname has changed: reading host UUID')
-            ini = RawConfigParser()
-            ini.read(self.config_filename)
-            if ini.has_option('global','uuid'):
-                logger.info('reading custom host UUID from wapt-get.ini file.')
-                value = ini.get('global','uuid')
-            else:
+            if new_uuid is None:
                 logger.info('reading custom host UUID from WMI System Information.')
                 inv = setuphelpers.wmi_info_basic()
-                value = inv['System_Information']['UUID']
-            self.write_param('uuid',value)
+                new_uuid = inv['System_Information']['UUID']
+            self.write_param('uuid',new_uuid)
             self.write_param('hostname',current_hostname)
-        return value
+        return new_uuid
 
 
     @host_uuid.setter
