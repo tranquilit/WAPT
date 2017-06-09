@@ -37,6 +37,9 @@ from waptutils import *
 from waptpackage import PackageEntry
 from waptpackage import update_packages
 
+from waptcrypto import EWaptCryptoException
+from waptpackage import EWaptException
+
 import common
 
 from common import Wapt
@@ -458,9 +461,9 @@ def main():
                     jsonresult['result'] = result
                     for p in result:
                         try:
-                            crt = control.check_control_signature(mywapt.authorized_certificates())
+                            crt = p.check_control_signature(mywapt.authorized_certificates())
                             print('%s OK control signature checked properly by certificate %s (fingerprint: %s )' % (p.filename,crt.cn,crt.fingerprint))
-                        except Exception as e:
+                        except (EWaptCryptoException,EWaptException) as e:
                             print('%s ERROR control signature can not be validated with certificates %s' % (p.filename,mywapt.authorized_certificates()))
                 else:
                     print(u"Display package control data for %s\n" % (','.join(all_args),))
@@ -468,10 +471,10 @@ def main():
                         print(p.ascontrol(with_non_control_attributes=True))
                         print('')
                         try:
-                            logger.info(u'Verifying package control signature against certificates %s' % mywapt.authorized_certificates())
-                            crt = control.check_control_signature(mywapt.authorized_certificates())
+                            logger.info(u'Verifying package control signature against certificates %s' % ', '.join(['"%s"'%crt.cn for crt in  mywapt.authorized_certificates()]))
+                            crt = p.check_control_signature(mywapt.authorized_certificates())
                             print('OK Package control signature checked properly by certificate %s (fingerprint: %s )' % (crt.cn,crt.fingerprint))
-                        except:
+                        except (EWaptCryptoException,EWaptException) as e:
                             print('WARNING: control data signature can not be validated with certificates %s' %mywapt.authorized_certificates())
                         print('')
 
@@ -800,12 +803,17 @@ def main():
                                 excludes=ensure_list(options.excludes))
                             if package_fn:
                                 print('...done building. Package filename %s' % (package_fn,))
-
                                 if mywapt.private_key:
-                                    print('Signing %s with key %s' % (package_fn,mywapt.private_key))
+                                    print('Private key is %s'%mywapt.private_key)
+                                    certificates = mywapt.private_key_cache.matching_certs(valid=True,code_signing=True)
+                                    if not certificates:
+                                        raise EWaptException('No certificate found for signing with key %s' %  mywapt.private_key)
+                                    print('Signing %s with key %s and certificate %s (%s)' % (package_fn,mywapt.private_key,certificates[-1].cn,certificates[-1].public_cert_filename))
                                     signature = mywapt.sign_package(
                                         package_fn,
-                                        excludes=common.ensure_list(options.excludes)
+                                        private_key = mywapt.private_key,
+                                        excludes=common.ensure_list(options.excludes),
+                                        certificate = certificates[-1],
                                         )
                                     print(u"Package %s signed : signature :\n%s" % (package_fn,signature))
                                     packages.append(package_fn)

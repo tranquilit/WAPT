@@ -40,6 +40,7 @@ __all__ = [
     'REGEX_PACKAGE_VERSION',
     'REGEX_PACKAGE_CONDITION',
     'ArchitecturesList',
+    'EWaptException',
     'EWaptBadSignature',
     'EWaptCorruptedFiles',
     'EWaptNotSigned',
@@ -130,44 +131,47 @@ def make_version(major_minor_patch_build):
 
 ArchitecturesList = ('all','x86','x64')
 
-class EWaptBadSignature(Exception):
+class EWaptException(Exception):
     pass
 
-class EWaptDownloadError(Exception):
+class EWaptBadSignature(EWaptException):
     pass
 
-class EWaptCorruptedFiles(Exception):
+class EWaptDownloadError(EWaptException):
     pass
 
-class EWaptNotSigned(Exception):
+class EWaptCorruptedFiles(EWaptException):
     pass
 
-class EWaptBadControl(Exception):
+class EWaptNotSigned(EWaptException):
     pass
 
-class EWaptBadSetup(Exception):
+class EWaptBadControl(EWaptException):
     pass
 
-class EWaptNeedsNewerAgent(Exception):
+class EWaptBadSetup(EWaptException):
     pass
 
-class EWaptDiskSpace(Exception):
+class EWaptNeedsNewerAgent(EWaptException):
     pass
 
-class EWaptBadTargetOS(Exception):
+class EWaptDiskSpace(EWaptException):
     pass
 
-class EWaptNotAPackage(Exception):
+class EWaptBadTargetOS(EWaptException):
     pass
 
-class EWaptNotSourcesDirPackage(Exception):
+class EWaptNotAPackage(EWaptException):
+    pass
+
+class EWaptNotSourcesDirPackage(EWaptException):
     pass
 
 
-class EWaptPackageSignError(Exception):
+class EWaptPackageSignError(EWaptException):
     pass
 
-class EWaptInstallError(Exception):
+class EWaptInstallError(EWaptException):
     """Exception raised during installation of package
         msg is logged in local install database
         if retry_count is None, install will be retried indefinitely until success
@@ -802,7 +806,13 @@ class PackageEntry(object):
 
     def _signed_content(self):
         """Return the signed control informations"""
-        return {att:getattr(self,att,None) for att in ensure_list(self.signed_attributes)}
+        # workaround for migration
+        if not self.signed_attributes and self.signature_date < '20170609':
+            logger.warning('Package %s has old control signature style, some attributes are not checked. Please re-sign package' % (self.localpath or self.sourcespath or self.asrequirement()))
+            effective_signed_attributes = ['package','version','architecture','section','priority','depends','conflicts','maturity']
+        else:
+            effective_signed_attributes = self.signed_attributes
+        return {att:getattr(self,att,None) for att in ensure_list(effective_signed_attributes)}
 
     def _sign_control(self,private_key,certificate):
         """Sign the contractual attributes of the control file using
@@ -1505,6 +1515,14 @@ class WaptLocalRepo(WaptBaseRepo):
                 entry = PackageEntry()
                 if package_filename in old_entries:
                     entry.load_control_from_wapt(fname,calc_md5=False)
+
+                    if self.authorized_certs:
+                        try:
+                            entry.check_control_signature(self.authorized_certs)
+                        except (EWaptNotSigned,SSLVerifyException) as e:
+                            logger.critical(u'Package %s discarded because: %s'% (package_filename,e))
+                            continue
+
                     if not force_all and entry == old_entries[package_filename] and \
                                 entry.signature == old_entries[package_filename].signature and \
                                 entry.signature_date == old_entries[package_filename].signature_date:
@@ -1572,6 +1590,34 @@ class WaptLocalRepo(WaptBaseRepo):
             return self._packages_date
         else:
             return None
+
+    def load_config(self,config,section=None):
+        """Load waptrepo configuration from inifile section.
+
+                Use name of repo as section name if section is not provided.
+                Use 'global' if no section named section in ini file
+        Args:
+            config (RawConfigParser): ini configuration
+            section (str)           : section where to loads parameters
+                                      defaults to name of repository
+
+        Returns:
+            WaptRemoteRepo: return itself to chain calls.
+        """
+        if not section:
+             section = self.name
+        if not config.has_section(section):
+            section = 'global'
+
+        if config.has_option(section,'localpath'):
+            self.localpath = config.get(section,'localpath')
+
+        if config.has_option('global','public_certs_dir'):
+            bundle = SSLCAChain()
+            bundle.add_pems(config.get('global','public_certs_dir'))
+            self.authorized_certs = bundle.certificates()
+
+        return self
 
 
 class WaptRemoteRepo(WaptBaseRepo):
@@ -1661,6 +1707,12 @@ class WaptRemoteRepo(WaptBaseRepo):
 
         if config.has_option(section,'timeout'):
             self.timeout = config.getfloat(section,'timeout')
+
+        if config.has_option('global','public_certs_dir'):
+            bundle = SSLCAChain()
+            bundle.add_pems(config.get('global','public_certs_dir'))
+            self.authorized_certs = bundle.certificates()
+
         return self
 
     @property
@@ -1721,6 +1773,8 @@ class WaptRemoteRepo(WaptBaseRepo):
         if not self.repo_url:
             raise Exception('Repository URL for %s is not defined' % self.name)
 
+        self._index.clear()
+
         new_packages = []
         logger.debug(u'Read remote Packages zip file %s' % self.packages_url)
         packages_answer = requests.get(self.packages_url,proxies=self.proxies,timeout=self.timeout, verify=self.verify_cert,headers=default_http_headers())
@@ -1741,9 +1795,13 @@ class WaptRemoteRepo(WaptBaseRepo):
                 logger.debug(u"%s (%s)" % (package.package,package.version))
                 package.repo_url = self.repo_url
                 package.repo = self.name
-                if self.authorized_certs is None or package.check_control_signature(self.authorized_certs):
+                try:
+                    if self.authorized_certs is not None:
+                        package.check_control_signature(self.authorized_certs)
                     new_packages.append(package)
-                else:
+                    if package.package not in self._index or self._index[package.package] < package:
+                        self._index[package.package] = package
+                except (SSLVerifyException,EWaptNotSigned) as e:
                     logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.authorized_certs))
 
         for line in packages_lines:

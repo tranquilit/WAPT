@@ -299,12 +299,28 @@ def test_wapt_engine():
     w.dbpath=':memory:'
     print w.update()
     print w.list_upgrade()
-    print w.repositories
+    for r in w.repositories:
+        print r.authorized_certs
     print w.waptserver
+
+def test_oldsignature():
+    w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
+    w.dbpath=':memory:'
+    pe = PackageEntry(waptfile=r'C:\tranquilit\wapt\cache\tis-ms-pstools_1-5_all.wapt')
+    pe.check_control_signature(certificates.certificates(valid_only=False))
+
+def test_waptrepo():
+    r = WaptRemoteRepo('https://srvwapt.tranquilit.local/wapt',authorized_certs=certificates.certificates())
+    print r.packages_matching('tis-longtask')
+    #pe = PackageEntry(waptfile=r.download_packages('tis-longtask')['downloaded'][0])
+    #print pe
+
 
 if __name__ == '__main__':
     setup_test()
+    test_wapt_engine()
+    test_waptrepo()
+    test_oldsignature()
     test_build_sign_verify_package()
     test_sign_action()
     test_paquet_host()
-    test_wapt_engine()

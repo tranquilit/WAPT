@@ -27,6 +27,7 @@ import codecs
 import base64
 import hashlib
 import glob
+import subprocess
 
 from M2Crypto import EVP, X509, SSL, BIO
 from M2Crypto.EVP import EVPError
@@ -36,19 +37,28 @@ from waptutils import *
 
 import datetime
 
-class SSLVerifyException(Exception):
+class EWaptCryptoException(Exception):
     pass
 
-class EWaptEmptyPassword(Exception):
+class SSLVerifyException(EWaptCryptoException):
     pass
 
-class EWaptMissingPrivateKey(Exception):
+class EWaptEmptyPassword(EWaptCryptoException):
     pass
 
-class EWaptMissingCertificate(Exception):
+class EWaptMissingPrivateKey(EWaptCryptoException):
     pass
 
-class EWaptBadCertificate(Exception):
+class EWaptMissingCertificate(EWaptCryptoException):
+    pass
+
+class EWaptBadCertificate(EWaptCryptoException):
+    pass
+
+class EWaptCertificateUnknowIssuer(EWaptBadCertificate):
+    pass
+
+class EWaptCertificateExpired(EWaptBadCertificate):
     pass
 
 def check_key_password(key_filename,password=""):
@@ -114,6 +124,7 @@ def default_pwd_callback(*args):
     i = 3
     while i>0:
         i -= 1
+        print(args)
         pwd = getpass.getpass().encode('ascii')
         if pwd:
             return pwd
@@ -189,8 +200,8 @@ class SSLCAChain(object):
     def keys(self):
         return self._keys.values()
 
-    def certificates(self):
-        return self._certificates.values()
+    def certificates(self,valid_only=True):
+        return [crt for crt in self._certificates.values() if not valid_only or crt.is_valid()]
 
     def matching_certs(self,key,ca=None,code_signing=None,valid=True):
         return [
@@ -473,6 +484,32 @@ class SSLCertificate(object):
             key = SSLPrivateKey(key)
         return self.crt.get_pubkey().get_modulus() == key.key.get_modulus()
 
+    def matching_key_in_dirs(self,directories=None,password_callback=None):
+        """Return the first SSLPrivateKey matching this certificate
+
+        Args:
+            directories (list): list of directories to look for pem encoded private key files
+
+        Returns:
+            SSLPrivateKey : or None if nothing found.
+
+        >>> crt = SSL
+        """
+        directories = ensure_list(directories)
+        if password_callback is None:
+            password_callback = default_pwd_callback
+
+        for adir in directories:
+            for akeyfile in glob.glob(os.path.join(adir,'*.pem')):
+                try:
+                    key = SSLPrivateKey(os.path.abspath(akeyfile),callback = password_callback)
+                    if key.match_cert(self):
+                        return key
+                except Exception as e:
+                    print(akeyfile,e)
+                    pass
+        return None
+
     @property
     def not_before(self):
         result = self.crt.get_not_before().get_datetime()
@@ -556,25 +593,34 @@ class SSLCertificate(object):
         """Return True id certificate has 'Code Signing' in its extenedKeyUsage"""
         return 'Code Signing' in ensure_list(self.extensions().get('extendedKeyUsage',''))
 
-    def verify(self,CAfile):
+    def verify(self,CAfile,check_errors=True):
         """Check validity of certificate against list of CA and validity
         Raise error if not OK
         """
         wapt_basedir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
         openssl_bin = os.path.join(wapt_basedir,'lib','site-packages','M2Crypto','openssl.exe')
         certfile = self.public_cert_filename
-        print '"%(openssl_bin)s" -CAfile "%(CAfile)s" "%(certfile)s"' % locals()
-        check_output = os.popen('"%(openssl_bin)s" verify -CAfile "%(CAfile)s" "%(certfile)s"' % locals(),stderr=subprocess.STDOUT).read()
+        print '"%(openssl_bin)s" verify -CAfile "%(CAfile)s" "%(certfile)s"' % locals()
+        p = subprocess.Popen('"%(openssl_bin)s" verify -CAfile "%(CAfile)s" "%(certfile)s"' % locals(),stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        check_output = p.communicate()[0]
+
         errors = []
         result = False
-        for output in check_output:
+        for output in check_output.splitlines():
             if output.startswith('error'):
-                errors.append(output.rsplit(':',1)[1])
+                error = output.rsplit(':',1)[1]
+                if check_errors and 'certificate has expired' in error:
+                    raise EWaptCertificateExpired('Certificate %s error: %s'%(self.public_cert_filename,error))
+                elif check_errors and 'unable to get local issuer certificate' in error:
+                    raise EWaptCertificateUnknowIssuer('Certificate %s error: %s'%(self.public_cert_filename,error))
+                else:
+                    raise EWaptBadCertificate('Certificate %s error: %s'%(self.public_cert_filename,error))
+                errors.append(errors)
             if output=='OK':
                 result = True
         logger.debug(check_output)
         if not result:
-            raise EWaptBadCertificate('Certificate errors for %s: %s' % (self.public_cert_filename,', '.join(errors)))
+            raise EWaptCertificateUnknowIssuer('Unknown issuer for %s' % (self.public_cert_filename))
         return result
 
     def verify_claim(self,claim,max_age_secs=None):

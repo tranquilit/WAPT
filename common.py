@@ -661,7 +661,7 @@ PackageKey = namedtuple('package',('packagename','version'))
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
 
-    curr_db_version = '20161109'
+    curr_db_version = '20170610'
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
@@ -689,9 +689,13 @@ class WaptDB(WaptBaseDB):
           signer_fingerprint varchar(255),
           signature varchar(255),
           signature_date varchar(255),
+          signed_attributes varchar(800),
           min_wapt_version varchar(255),
           maturity varchar(255),
-          locale varchar(255)
+          locale varchar(255),
+          installed_size integer,
+          max_os_version varchar(255),
+          min_os_version varchar(255)
         )"""
                         )
         self.db.execute("""
@@ -807,7 +811,11 @@ class WaptDB(WaptBaseDB):
                     locale='',
                     signature='',
                     signature_date='',
-                    min_wapt_version=''
+                    signed_attributes='',
+                    min_wapt_version='',
+                    installed_size=None,
+                    max_os_version='',
+                    min_os_version='',
                     ):
 
         with self:
@@ -834,8 +842,12 @@ class WaptDB(WaptBaseDB):
                     locale,
                     signature,
                     signature_date,
-                    min_wapt_version
-                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    signed_attributes,
+                    min_wapt_version,
+                    installed_size,
+                    max_os_version,
+                    min_os_version
+                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,(
                      package,
                      version,
@@ -858,7 +870,11 @@ class WaptDB(WaptBaseDB):
                      locale,
                      signature,
                      signature_date,
+                     signed_attributes,
                      min_wapt_version,
+                     installed_size,
+                     max_os_version,
+                     min_os_version
                      )
                    )
             return cur.lastrowid
@@ -889,7 +905,11 @@ class WaptDB(WaptBaseDB):
                              locale=package_entry.locale,
                              signature=package_entry.signature,
                              signature_date=package_entry.signature_date,
+                             signed_attributes=package_entry.signed_attributes,
                              min_wapt_version=package_entry.min_wapt_version,
+                             installed_size=package_entry.installed_size,
+                             max_os_version=package_entry.max_os_version,
+                             min_os_version=package_entry.min_os_version,
                              )
 
     def add_start_install(self,package,version,architecture,params_dict={},explicit_by=None,maturity='',locale=''):
@@ -2218,6 +2238,8 @@ class Wapt(object):
         self._private_key = ''
         self._private_key_cache = None
 
+        self.check_certificates_validity = False
+
         # host key cache
         self._host_key = None
 
@@ -2374,10 +2396,6 @@ class Wapt(object):
             self.public_certs_dir = self.config.get('global','public_certs_dir')
         else:
             self.public_certs_dir = os.path.join(self.wapt_base_dir,'ssl')
-        # get the global list of certificates to use for default package checking :
-        self.public_certs = glob.glob(os.path.join(self.public_certs_dir,'*.crt')) + glob.glob(os.path.join(self.public_certs_dir,'*.cer'))
-        if not self.public_certs:
-            logger.warning('No certificates found in %s for package validation, packages install will certainly fail' % self.public_certs_dir)
 
         if self.config.has_option('global','upload_cmd'):
             self.upload_cmd = self.config.get('global','upload_cmd')
@@ -2413,6 +2431,10 @@ class Wapt(object):
         else:
             self.forced_uuid = None
 
+
+        if self.config.has_option('global','check_certificates_validity'):
+            self.check_certificates_validity = self.config.getboolean('global','check_certificates_validity')
+
         if self.config.has_option('global','use_fqdn_as_uuid'):
             self.use_fqdn_as_uuid = self.config.getboolean('global','use_fqdn_as_uuid')
 
@@ -2425,6 +2447,8 @@ class Wapt(object):
             for name in names:
                 if name:
                     w = WaptRepo(name=name).load_config(self.config,section=name)
+                    if not w.authorized_certs:
+                        w.authorized_certs = self.authorized_certificates()
                     self.repositories.append(w)
                     logger.debug(u'    %s:%s' % (w.name,w._repo_url))
 
@@ -2432,6 +2456,8 @@ class Wapt(object):
         if self.config.has_option('global','repo_url'):
             w = WaptRepo(name='global').load_config(self.config)
             self.repositories.append(w)
+            if not w.authorized_certs:
+                w.authorized_certs = self.authorized_certificates()
 
         # True if we want to use automatic host package based on host fqdn
         #   privacy problem as there is a request to wapt repo to get
@@ -2460,6 +2486,13 @@ class Wapt(object):
         self.config.write(open(self.config_filename,'wb'))
         self.config_filedate = os.stat(self.config_filename).st_mtime
 
+    def _set_fake_hostname(self,fqdn):
+        setuphelpers._fake_hostname = fqdn
+        logger.warning('Using test fake hostname and uuid: %s'%fqdn)
+        self.use_fqdn_as_uuid = fqdn
+        logger.debug('Host uuid is now: %s'%self.host_uuid)
+        logger.debug('Host computer_name is now: %s'%setuphelpers.get_computername())
+
     def add_hosts_repo(self):
         """Add an automatic host repository, remove existing WaptHostRepo last one before"""
         while self.repositories and isinstance(self.repositories[-1],WaptHostRepo):
@@ -2475,6 +2508,8 @@ class Wapt(object):
             section = None
         host_repo = WaptHostRepo(name='wapt-host').load_config(self.config,section)
         self.repositories.append(host_repo)
+        if not host_repo.authorized_certs:
+            host_repo.authorized_certs = self.authorized_certificates()
 
         # in case host repo is guessed from main repo (no specific section) ans main repor_url is set
         if section is None and main:
@@ -2938,7 +2973,7 @@ class Wapt(object):
         logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
 
         status = 'INIT'
-        if not self.public_certs:
+        if not self.authorized_certificates():
             raise EWaptMissingCertificate(u'install_wapt %s: No public Key provided for package signature checking.'%(fname,))
         previous_uninstall = self.registry_uninstall_snapshot()
         entry = PackageEntry()
@@ -4060,11 +4095,10 @@ class Wapt(object):
         """return a list of autorized package signers for this host
         """
         result = []
-        logger.debug('Getting authorized certificates from %s' % self.public_certs)
-        for fn in self.public_certs:
-            crt = SSLCertificate(fn)
-            result.append(crt)
-        return result
+        logger.debug('Getting authorized certificates from %s' % self.public_certs_dir)
+        bundle = SSLCAChain()
+        bundle.add_pems(self.public_certs_dir)
+        return bundle.certificates(valid_only = self.check_certificates_validity)
 
     def register_computer(self,description=None):
         """Send computer informations to WAPT Server

@@ -318,6 +318,8 @@ my_documents= winshell.my_documents
 recent = winshell.recent
 sendto = winshell.sendto
 
+_fake_hostname = None
+
 def ensure_dir(filename):
     """Be sure the directory of filename exists on disk. Create it if not
 
@@ -1159,11 +1161,14 @@ def iswin64():
 
 def get_computername():
     """Return host name (without domain part)"""
+    if _fake_hostname is not None:
+        return _fake_hostname.split('.',1)[0]
     return socket.gethostname()
-
 
 def get_hostname():
     """Return host fully qualified domain name in lower case"""
+    if _fake_hostname is not None:
+        return _fake_hostname
     return socket.getfqdn().lower()
 
 
@@ -1176,6 +1181,11 @@ def get_domain_fromregistry():
     >>> get_domain_fromregistry()
     u'tranquilit.local'
     """
+    if _fake_hostname is not None:
+        host_domain = _fake_hostname.split('.',1)
+        if len(host_domain)>1:
+            return host_domain[1]
+
     key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,"SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters")
     try:
         (domain,atype) = _winreg.QueryValueEx(key,'Domain')
@@ -2521,8 +2531,12 @@ def wmi_info_basic():
 
 def set_computer_description(description):
     """Change the computer descrption"""
-    for win32_os in wmi.WMI().Win32_OperatingSystem():
-        win32_os.Description = description
+    global _fake_hostname
+    if _fake_hostname is not None:
+        logger.warning('Skippig set_computer_description for fake host')
+    else:
+        for win32_os in wmi.WMI().Win32_OperatingSystem():
+            win32_os.Description = description
 
 def critical_system_pending_updates():
     """Return list of not installed critical updates
@@ -2588,8 +2602,13 @@ def host_info():
     info['system_manufacturer'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\BIOS','SystemManufacturer')
     info['system_productname'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\BIOS','SystemProductName')
 
-    info['computer_name'] =  ensure_unicode(wincomputername())
+    global _fake_hostname
+    if _fake_hostname is not None:
+        info['computer_name'] = get_computername()
+    else:
+        info['computer_name'] =  ensure_unicode(wincomputername())
     info['computer_fqdn'] =  ensure_unicode(get_hostname())
+
     info['dnsdomain'] = ensure_unicode(get_domain_fromregistry())
     info['workgroup_name'] = ensure_unicode(windomainname())
 
