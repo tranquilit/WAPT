@@ -266,6 +266,11 @@ def test_paquet_host():
     old_pe = pe.save_control_to_wapt()
     signature = pe.sign_package(key,gest)
     pe.unzip_package()
+    print('Les deux certificats sont OK car pas de setup.py')
+    pe.check_package_signature(gest)
+    pe.check_package_signature(codeur)
+
+    # Ajout d'un setup.py
     codecs.open(os.path.join(pe.sourcespath,'setup.py'),'w',encoding='utf8').write(u"""\
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
@@ -275,9 +280,19 @@ def install():
     pass
 
 """)
-    pe.check_package_signature(gest)
-    pe.check_package_signature(codeur)
+    package_filename = pe.build_package()
+    assert(os.path.isfile(package_filename))
+    try:
+        signature = pe.sign_package(key,gest)
+        raise Exception('Doit failer, pas un certificat codeur et setup.py')
+    except EWaptBadCertificate as e:
+        print(u'OK: %s'%e)
+
+    signature = pe.sign_package(key,codeur)
+    print(u'OK: certificat codeur')
     pe.delete_localsources()
+    assert('tis-7zip' in ensure_list(pe.depends))
+    os.remove(pe.localpath)
 
 def test_wapt_engine():
     w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
