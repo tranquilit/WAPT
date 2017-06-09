@@ -4259,8 +4259,10 @@ class Wapt(object):
                         logger.warning('New registration successfull')
                     else:
                         logger.critical('Unable to register: %s' % result and result['msg'])
+            elif not result:
+                logger.info('update_server_status failed, no result. Check server version.')
             else:
-                logger.warning('update_server_status: server returned bad status %s, check server version'%(result,))
+                logger.debug('update_server_status successful %s' % (result,))
         else:
             logger.info('WAPT Server is not available to store current host status')
         return result
