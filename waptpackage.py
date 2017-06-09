@@ -1133,12 +1133,12 @@ class PackageEntry(object):
                 # now check the integrity of files
                 errors = self.list_corrupted_files()
                 if errors:
-                    raise EWaptCorruptedFiles(u'Error in package dir %s, files corrupted, SHA not matching for %s' % (self.sourcespath,errors,))
+                    raise EWaptCorruptedFiles(u'Error in package %s in %s, files corrupted, SHA not matching for %s' % (self.asrequirement(),self.sourcespath,errors,))
                 return verified_by
             else:
-                raise EWaptNotSigned(u'The package dir in %s does not contain a signature' % self.sourcespath)
+                raise EWaptNotSigned(u'The package %s in %s does not contain a signature' % (self.asrequirement(),self.sourcespath))
         else:
-            raise EWaptNotSigned(u'The package dir in %s does not contain the manifest.sha256 file with content fingerprints' % self.sourcespath)
+            raise EWaptNotSigned(u'The package %s in %s does not contain the manifest.sha256 file with content fingerprints' % (self.asrequirement(),self.sourcespath))
 
 
     def unzip_package(self,target_dir=None,check_with_certs=None):

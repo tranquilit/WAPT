@@ -297,10 +297,7 @@ def install():
 def test_wapt_engine():
     w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
     w.dbpath=':memory:'
-
     print w.update()
-
-
     print w.list_upgrade()
     print w.repositories
     print w.waptserver
