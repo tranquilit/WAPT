@@ -374,7 +374,7 @@ def update_host():
                 signature_b64 = request.headers.get('X-Signature',None)
                 signer = request.headers.get('X-Signer',None)
 
-                # with nginx kerberos module, auth user name is stored as Basic auth in the 
+                # with nginx kerberos module, auth user name is stored as Basic auth in the
                 # 'Authorisation' header with password 'bogus_auth_gss_passwd'
                 authenticated_user = request.headers.get('Authorization', None)
 
@@ -387,11 +387,11 @@ def update_host():
                     authenticated_user = authenticated_user.lower().replace('$','')
                     if authenticated_user.endswith(':bogus_auth_gss_passwd'):
                         authenticated_user = authenticated_user.replace(':bogus_auth_gss_passwd','')
-                        
-                dns_domain = '.'.join(socket.getfqdn().split('.')[1:])
-                authenticated_user = "%s.%s" % (authenticated_user,dns_domain)
-                logger.debug(request.headers)
-                logger.debug('authenticated computer : %s ' % authenticated_user)
+
+                    dns_domain = '.'.join(socket.getfqdn().split('.')[1:])
+                    authenticated_user = "%s.%s" % (authenticated_user,dns_domain)
+                    logger.debug(request.headers)
+                    logger.debug('authenticated computer : %s ' % (authenticated_user,))
 
                 if signature_b64:
                     signature = signature_b64.decode('base64')
