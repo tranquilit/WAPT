@@ -1613,7 +1613,7 @@ class WaptLocalRepo(WaptBaseRepo):
             self.localpath = config.get(section,'localpath')
 
         if config.has_option('global','public_certs_dir'):
-            bundle = SSLCAChain()
+            bundle = SSLCABundle()
             bundle.add_pems(config.get('global','public_certs_dir'))
             self.authorized_certs = bundle.certificates()
 
@@ -1709,7 +1709,7 @@ class WaptRemoteRepo(WaptBaseRepo):
             self.timeout = config.getfloat(section,'timeout')
 
         if config.has_option('global','public_certs_dir'):
-            bundle = SSLCAChain()
+            bundle = SSLCABundle()
             bundle.add_pems(config.get('global','public_certs_dir'))
             self.authorized_certs = bundle.certificates()
 

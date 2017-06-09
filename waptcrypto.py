@@ -131,7 +131,7 @@ def default_pwd_callback(*args):
     raise EWaptEmptyPassword('A non empty password is required')
 
 
-class SSLCAChain(object):
+class SSLCABundle(object):
     BEGIN_KEY = '-----BEGIN ENCRYPTED PRIVATE KEY-----'
     END_KEY = '-----END ENCRYPTED PRIVATE KEY-----'
     BEGIN_CERTIFICATE = '-----BEGIN CERTIFICATE-----'
@@ -200,7 +200,7 @@ class SSLCAChain(object):
     def keys(self):
         return self._keys.values()
 
-    def certificates(self,valid_only=True):
+    def certificates(self,valid_only=False):
         return [crt for crt in self._certificates.values() if not valid_only or crt.is_valid()]
 
     def matching_certs(self,key,ca=None,code_signing=None,valid=True):

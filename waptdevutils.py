@@ -248,7 +248,7 @@ def duplicate_from_external_repo(waptconfigfile,package_filename,target_director
 
     # authorized_certs is a directoyr instead a list of certificates.
     if authorized_certs is not None and not isinstance(authorized_certs,list):
-        bundle = SSLCAChain()
+        bundle = SSLCABundle()
         bundle.add_pems(makepath(authorized_certs,'*.crt'))
         bundle.add_pems(makepath(authorized_certs,'*.cer'))
         bundle.add_pems(makepath(authorized_certs,'*.pem'))

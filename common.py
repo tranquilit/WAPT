@@ -1915,8 +1915,8 @@ class WaptRepo(WaptRemoteRepo):
                     logger.debug(u'Read remote Packages index file %s' % self.packages_url)
                     last_modified = self.packages_date
 
-                    self._packages = None
-                    self._packages_date = None
+                    #self._packages = None
+                    #self._packages_date = None
 
                     waptdb.purge_repo(self.name)
                     for package in self.packages:
@@ -1938,8 +1938,9 @@ class WaptRepo(WaptRemoteRepo):
                                 continue
 
                         try:
-                            if self.authorized_certs is not None:
-                                package.check_control_signature(self.authorized_certs)
+                            ## Already checked when loading from remote URL into self.packages list
+                            #if self.authorized_certs is not None:
+                            #    package.check_control_signature(self.authorized_certs)
                             waptdb.add_package_entry(package)
                         except:
                             logger.critical('Invalid signature for package control entry %s on repo %s : discarding' % (package.asrequirement(),self.name) )
@@ -4096,7 +4097,7 @@ class Wapt(object):
         """
         result = []
         logger.debug('Getting authorized certificates from %s' % self.public_certs_dir)
-        bundle = SSLCAChain()
+        bundle = SSLCABundle()
         bundle.add_pems(self.public_certs_dir)
         return bundle.certificates(valid_only = self.check_certificates_validity)
 
@@ -4520,7 +4521,7 @@ class Wapt(object):
             # get matching certificate
             try:
                 logger.debug(u'Trying to get matching certificate from pem CA file : %s' % key.private_key_filename)
-                ca = SSLCAChain(callback=callback)
+                ca = SSLCABundle(callback=callback)
                 ca.add_pem(key.private_key_filename)
                 certs = ca.matching_certs(key)
                 if certs:
