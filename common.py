@@ -2007,10 +2007,7 @@ class WaptHostRepo(WaptRepo):
         for host in self.hosts_list:
             (entry,result) = self.update_host(host,waptdb,force=force)
             if not entry in self.packages:
-                if self.authorized_certs is None or entry.check_control_signature(self.authorized_certs):
-                    self.packages.append(entry)
-                else:
-                    logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (entry.asrequirement(),self.name,self.authorized_certs))
+                self.packages.append(entry)
         return result
 
     def update_host(self,host,waptdb,force=False):
@@ -2178,7 +2175,7 @@ class WaptLogger(object):
 
 class Wapt(object):
     """Global WAPT engine"""
-    global_attributes = ['wapt_base_dir','waptserver','config_filename','proxies','repositories','private_key','public_certs','package_cache_dir','dbpath']
+    global_attributes = ['wapt_base_dir','waptserver','config_filename','proxies','repositories','private_key','public_certs_dir','package_cache_dir','dbpath']
 
     def __init__(self,config=None,config_filename=None,defaults=None,disable_update_server_status=True):
         """Initialize engine with a configParser instance (inifile) and other defaults in a dictionary
