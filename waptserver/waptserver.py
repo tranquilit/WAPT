@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.5"
+__version__ = "1.5.0.6"
 
 import os
 import sys
@@ -1681,7 +1681,7 @@ def on_waptclient_connect():
         uuid = request.args.get('uuid',None)
         logger.info('Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
         # stores sid in database
-        Hosts.update(
+        hostcount = Hosts.update(
             server_uuid = get_server_uuid(),
             listening_timestamp=datetime2isodate(),
             listening_protocol='websockets',
@@ -1689,6 +1689,10 @@ def on_waptclient_connect():
             reachable='OK',
             ).where(Hosts.uuid == uuid).execute()
         wapt_db.commit()
+        # if not known, reject the connection
+        if hostcount == 0:
+            socketio.disconnect()
+            return False
     except:
         wapt_db.rollback()
 
@@ -1700,7 +1704,7 @@ def on_wapt_pong():
         uuid = request.args.get('uuid',None)
         logger.info('Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
         # stores sid in database
-        Hosts.update(
+        hostcount = Hosts.update(
             server_uuid = get_server_uuid(),
             listening_timestamp=datetime2isodate(),
             listening_protocol='websockets',
@@ -1709,6 +1713,10 @@ def on_wapt_pong():
             ).where(Hosts.uuid == uuid).execute()
         print('sio pong: commit')
         wapt_db.commit()
+        # if not known, reject the connection
+        if hostcount == 0:
+            socketio.disconnect()
+            return False
     except:
         wapt_db.rollback()
 
