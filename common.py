@@ -1362,8 +1362,8 @@ class WaptServer(object):
 
         self.proxies=proxies
         self.timeout = timeout
-        self.use_kerberos = False
-        self.verify_cert = False
+        self.use_kerberos = True
+        self.verify_cert = True
 
         if dnsdomain:
             self.dnsdomain = dnsdomain
@@ -1530,8 +1530,6 @@ class WaptServer(object):
 
             if  config.has_option(section,'use_kerberos'):
                 self.use_kerberos =  config.getboolean(section,'use_kerberos')
-            else:
-                self.use_kerberos = True
 
             if config.has_option(section,'use_http_proxy_for_server') and config.getboolean(section,'use_http_proxy_for_server'):
                 if config.has_option(section,'http_proxy'):
@@ -1554,9 +1552,6 @@ class WaptServer(object):
                     self.verify_cert = config.get(section,'verify_cert')
                     if not os.path.isfile(self.verify_cert):
                         logger.warning(u'waptserver certificate %s declared in configuration file can not be found. Waptserver communication will fail' % self.verify_cert)
-            else:
-                self.verify_cert = True
-
 
         return self
 
