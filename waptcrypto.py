@@ -491,12 +491,15 @@ class SSLCertificate(object):
 
         Args:
             directories (list): list of directories to look for pem encoded private key files
+                                if None, look in the same directory as certificate file.
 
         Returns:
             SSLPrivateKey : or None if nothing found.
 
         >>> crt = SSL
         """
+        if directories is None:
+            directories = os.path.abspath(os.path.dirname(self.public_cert_filename))
         directories = ensure_list(directories)
         if password_callback is None:
             password_callback = default_pwd_callback

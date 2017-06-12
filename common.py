@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.5"
+__version__ = "1.5.0.6"
 
 import os
 import re
@@ -1653,7 +1653,7 @@ class WaptRepo(WaptRemoteRepo):
     >>> len(packages)
     """
 
-    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2,dnsdomain=None,authorized_certs=None):
+    def __init__(self,url=None,name='',verify_cert=None,proxies=None,timeout = 2,dnsdomain=None,authorized_certs=None,config=None):
         """Initialize a repo at url "url".
 
         Args:
@@ -1669,8 +1669,18 @@ class WaptRepo(WaptRemoteRepo):
                                  if None, no check is performed. All antries are accepted.
         """
 
-        WaptRemoteRepo.__init__(self,url=url,name=name,proxies=proxies,timeout=timeout,authorized_certs=authorized_certs)
+        # additional properties
+        self._default_config.update({
+            'dnsdomain':'',
+        })
+
+        # create additional properties
+        self._dnsdomain = None
         self._cached_dns_repo_url = None
+
+        WaptRemoteRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,proxies=proxies,timeout=timeout,authorized_certs=authorized_certs,config=config)
+
+        # force with supplied parameters
         self._dnsdomain = dnsdomain
 
     def reset_network(self):
@@ -1960,8 +1970,15 @@ class WaptRepo(WaptRemoteRepo):
         """
         if not section:
              section = self.name
+
+        # creates a default parser with a default section if None provided to get defaults
+        if config is None:
+            config = RawConfigParser(self._default_config)
+            config.add_section(section)
+
         if not config.has_section(section):
             section = 'global'
+
         WaptRemoteRepo.load_config(self,config,section)
         if config.has_section(section) and config.has_option(section,'dnsdomain'):
             self.dnsdomain = config.get(section,'dnsdomain')
@@ -1986,103 +2003,51 @@ class WaptRepo(WaptRemoteRepo):
 class WaptHostRepo(WaptRepo):
     """Dummy http repository for host packages"""
 
-    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2,dnsdomain=None,hosts=[],authorized_certs=None):
-        WaptRepo.__init__(self,url=url,name=name,proxies=proxies,timeout = timeout,dnsdomain=dnsdomain,authorized_certs=authorized_certs)
-        self.hosts_list = hosts
+    def __init__(self,url=None,name=None,verify_cert=None,proxies=None,timeout = None,dnsdomain=None,hostname=None,authorized_certs=None,config=None):
+        self._hostname = None
+        WaptRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,proxies =proxies,timeout = timeout,dnsdomain=dnsdomain,authorized_certs=authorized_certs,config=config)
+
+        if hostname is None:
+            self.hostname = setuphelpers.get_hostname()
+        else:
+            self.hostname = hostname
+
+    @property
+    def hostname(self):
+        return self._hostname
+
+    @hostname.setter
+    def hostname(self,value):
+        if value != self._hostname:
+            self._packages = None
+            self._packages_date = None
+            self._index = {}
+        self._hostname = value
 
     def _load_packages_index(self):
         self._packages = []
-
-    def update_db(self,force=False,waptdb=None,filter_on_host_cap=True):
-        """get a list of host packages from remote repo"""
-        current_host = setuphelpers.get_hostname()
-        if not current_host in self.hosts_list:
-            self.hosts_list.append(current_host)
-        result = ''
-        for host in self.hosts_list:
-            (entry,result) = self.update_host(host,waptdb,force=force)
-            if not entry in self.packages:
-                self.packages.append(entry)
-        return result
-
-    def update_host(self,host,waptdb,force=False):
-        """Update host package from repo.
-           Stores last-http-date in database/
-
-        Args:
-            host (str): fqdn of host for which to retrieve host package
-            waptdb (WaptDB) : to check/store last modified date of host package
-            force (bool) : force wget even if http date of remote file has not changed
-
-        Returns;
-            list of (host package entry,entry date on server)
-
-
-        >>> repo = WaptHostRepo(name='wapt-host',timeout=4)
-        >>> print repo.dnsdomain
-        tranquilit.local
-        >>> print repo.repo_url
-        http://wapt.tranquilit.local/wapt-host
-        >>> waptdb = WaptDB(':memory:')
-        >>> repo.update_host('test-dummy',waptdb)
-        (None, None)
-        """
+        self._index = {}
         try:
-            host_package_url = "%s/%s.wapt" % (self.repo_url,host)
-            host_cachedate = 'date-%s' % (host,)
-            host_request = requests.head(host_package_url,proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,headers=default_http_headers())
-            try:
-                host_request.raise_for_status()
-                host_package_date = httpdatetime2isodate(host_request.headers.get('last-modified',None))
-                package = None
-                if host_package_date:
-                    if force or host_package_date != waptdb.get_param(host_cachedate) or not waptdb.packages_matching(host):
-                        host_package = requests.get(host_package_url,proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,headers=default_http_headers())
-                        host_package.raise_for_status()
+            host_package_url = "%s/%s.wapt" % (self.repo_url,self.hostname)
+            logger.debug(u'Trying to get  host package for %s at %s' % (self.hostname,host_package_url))
+            host_package = requests.get(host_package_url,proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,headers=default_http_headers())
+            host_package.raise_for_status()
+            host_package_date = httpdatetime2isodate(host_package.headers.get('last-modified',None))
 
-                        # Packages file is a zipfile with one Packages file inside
-                        control = codecs.decode(ZipFile(
-                              StringIO.StringIO(host_package.content)
-                            ).read(name='WAPT/control'),'UTF-8').splitlines()
+            # Packages file is a zipfile with one Packages file inside
+            control_data = \
+                    codecs.decode(ZipFile(
+                      StringIO.StringIO(host_package.content)
+                    ).read(name='WAPT/control'),'UTF-8').splitlines()
+            control = PackageEntry().load_control_from_wapt(control_data)
+            control.repo = self.name
+            control.repo_url = self.repo_url
+            control.filename = control.make_package_filename()
 
-                        with waptdb:
-                            logger.debug(u'Purge packages table')
-                            waptdb.db.execute('delete from wapt_package where package=?',(host,))
-
-                            package = PackageEntry()
-                            package.load_control_from_wapt(control)
-                            logger.debug(u"%s (%s)" % (package.package,package.version))
-                            package.repo_url = self.repo_url
-                            package.repo = self.name
-                            try:
-                                if self.authorized_certs is not None:
-                                    package.check_control_signature(self.authorized_certs)
-                                waptdb.add_package_entry(package)
-                            except:
-                                logger.critical("Control data of host package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.authorized_certs))
-
-                            logger.debug(u'Commit wapt_package updates')
-                            waptdb.set_param(host_cachedate,host_package_date)
-                    else:
-                        logger.debug(u'No change on host package at %s (%s)' % (host_package_url,host_package_date))
-                        packages = waptdb.packages_matching(host)
-                        if packages:
-                            package=packages[-1]
-                        else:
-                            package=None
-
-            except requests.HTTPError as e:
-                # no host package
-                with waptdb:
-                    package,host_package_date=(None,None)
-                    logger.info(u'No host package available at %s' % host_package_url)
-                    waptdb.db.execute('delete from wapt_package where package=?',(host,))
-                    waptdb.delete_param(host_cachedate)
-
-            return (package,host_package_date)
-        except:
-            self._cached_dns_repo_url = None
-            raise
+            self._packages.append(control)
+            self._index[control.package] = control
+        except requests.HTTPError as e:
+            logger.info(u'No host package available at %s' % host_package_url)
 
     @property
     def repo_url(self):
@@ -2411,6 +2376,7 @@ class Wapt(object):
         if self.config.has_option('global','wapt_server'):
             self.waptserver = WaptServer().load_config(self.config)
         else:
+            # force reset to None if config file is changed at runtime
             self.waptserver = None
 
         if self.config.has_option('global','language'):
@@ -2422,8 +2388,8 @@ class Wapt(object):
                 logger.debug('Storing new uuid in DB %s' % self.forced_uuid)
                 self.host_uuid = self.forced_uuid
         else:
+            # force reset to None if config file is changed at runtime
             self.forced_uuid = None
-
 
         if self.config.has_option('global','check_certificates_validity'):
             self.check_certificates_validity = self.config.getboolean('global','check_certificates_validity')
@@ -4930,12 +4896,12 @@ class Wapt(object):
         self.add_pyscripter_project(directoryname)
         return directoryname
 
-    def make_host_template(self,packagename='',depends=None,directoryname=None,description=None):
+    def make_host_template(self,packagename='',depends=None,conflicts=None,directoryname=None,description=None):
         if not packagename:
             packagename = setuphelpers.get_hostname().lower()
-        return self.make_group_template(packagename=packagename,depends=depends,directoryname=directoryname,section='host',description=description)
+        return self.make_group_template(packagename=packagename,depends=depends,conflicts=conflicts,directoryname=directoryname,section='host',description=description)
 
-    def make_group_template(self,packagename='',depends=None,directoryname=None,section='group',description=None):
+    def make_group_template(self,packagename='',depends=None,conflicts=None,directoryname=None,section='group',description=None):
         r"""Build a skeleton of WAPT group package
             depends : list of package dependencies.
            Return the path of the skeleton
@@ -4966,17 +4932,19 @@ class Wapt(object):
 
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
             os.makedirs(os.path.join(directoryname,'WAPT'))
+
         template_fn = os.path.join(self.wapt_base_dir,'templates','setup_%s_template.py' % section)
         if not os.path.isfile(template_fn):
-            raise Exception("setup.py template %s doesn't exist" % template_fn)
-        # replacing %(var)s by local values in template
-        # so setup template must use other string formating system than % like '{}'.format()
-        template = codecs.open(template_fn,encoding='utf8').read() % locals()
-        setuppy_filename = os.path.join(directoryname,'setup.py')
-        if not os.path.isfile(setuppy_filename):
-            codecs.open(setuppy_filename,'w',encoding='utf8').write(template)
+            # replacing %(var)s by local values in template
+            # so setup template must use other string formating system than % like '{}'.format()
+            template = codecs.open(template_fn,encoding='utf8').read() % locals()
+            setuppy_filename = os.path.join(directoryname,'setup.py')
+            if not os.path.isfile(setuppy_filename):
+                codecs.open(setuppy_filename,'w',encoding='utf8').write(template)
+            else:
+                logger.info(u'setup.py file already exists, skip create')
         else:
-            logger.info(u'setup.py file already exists, skip create')
+            logger.info(u'No %s template. Package wil lhave no setup.py' % template_fn)
 
         control_filename = os.path.join(directoryname,'WAPT','control')
         entry = PackageEntry()
@@ -5026,8 +4994,25 @@ class Wapt(object):
             # use supplied list of packages
             entry.depends = ','.join([u'%s' % p for p in depends if p and p != packagename ])
 
-        codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
 
+        # check if conflicts should be appended to existing conflicts
+        if (isinstance(conflicts,str) or isinstance(conflicts,unicode)) and conflicts.startswith('+'):
+            append_conflicts = True
+            conflicts = ensure_list(conflicts[1:])
+            current = ensure_list(entry.conflicts)
+            for d in conflicts:
+                if not d in current:
+                    current.append(d)
+            conflicts = current
+        else:
+            append_conflicts = False
+
+        conflicts = ensure_list(conflicts)
+        if conflicts:
+            # use supplied list of packages
+            entry.conflicts = ','.join([u'%s' % p for p in conflicts if p and p != packagename ])
+
+        entry.save_control_to_wapt(directoryname)
         self.add_pyscripter_project(directoryname)
 
         result = {}
@@ -5256,7 +5241,7 @@ class Wapt(object):
 
     def edit_host(self,
             hostname,
-            target_directory='',
+            target_directory=None,
             use_local_sources=True,
             append_depends=None,
             remove_depends=None,
@@ -5288,8 +5273,13 @@ class Wapt(object):
         True
         >>> shutil.rmtree(tmpdir)
         """
-        if not target_directory:
+        if target_directory is None:
+            target_directory = tempfile.mkdtemp('wapt')
+        elif not target_directory:
             target_directory = self.get_default_development_dir(hostname,section='host')
+
+        if os.path.isdir(target_directory) and os.listdir(target_directory):
+            raise Exception('directory %s is not empty, aborting.' % target_directory)
 
         self.use_hostpackages = True
 
@@ -5309,71 +5299,47 @@ class Wapt(object):
             if not d in remove_depends:
                 remove_depends.append(d)
 
-        # check if host package exists on repos
-        if self.repositories and isinstance(self.repositories[-1],WaptHostRepo):
-            (entry,entry_date) = self.repositories[-1].update_host(hostname,self.waptdb,force=True)
-            if entry:
-                # target is already an "in-progress" package developement
-                local_dev_entry = self.is_wapt_package_development_dir(target_directory)
-                if local_dev_entry:
-                    # use the current local development
-                    if use_local_sources:
-                        if entry>local_dev_entry:
-                            raise Exception('A newer package version %s is already in repository "%s", local sources %s is %s, aborting' % (entry.asrequirement(),entry.repo,target_directory, local_dev_entry.asrequirement()))
-                        if local_dev_entry.match(hostname):
-                            # update depends list
-                            prev_depends = ensure_list(local_dev_entry.depends)
-                            for d in append_depends:
-                                if not d in prev_depends:
-                                    prev_depends.append(d)
-                            for d in remove_depends:
-                                if d in prev_depends:
-                                    prev_depends.remove(d)
-                            local_dev_entry.depends = ','.join(prev_depends)
+        main_host_repo = self.repositories[-1]
+        if not isinstance(main_host_repo,WaptRepo):
+            raise EWaptException('No Host configuration repository defined')
 
-                            # update conflicts list
-                            prev_conflicts = ensure_list(local_dev_entry.conflicts)
-                            for d in append_conflicts:
-                                if not d in prev_conflicts:
-                                    prev_conflicts.append(d)
-                            if remove_conflicts:
-                                for d in remove_conflicts:
-                                    if d in prev_conflicts:
-                                        prev_conflicts.remove(d)
-                            local_dev_entry.conflicts = ','.join(prev_conflicts)
-                            if description is not None:
-                                local_dev_entry.description = description
+        # create a temporary repo for this host
+        host_repo = WaptHostRepo(url=main_host_repo.repo_url,hostname=hostname,config = self.config)
+        entry = host_repo.get(hostname)
+        if entry:
+            host_repo.download_packages(entry)
+            entry.unzip_package(target_dir=target_directory)
+            entry.invalidate_signature()
 
-                            local_dev_entry.save_control_to_wapt(target_directory)
-                            self.add_pyscripter_project(target_directory)
-                            return {'target':target_directory,'source_dir':target_directory,'package':local_dev_entry}
-                        else:
-                            raise Exception('Local target %s directory is the sources of a different package %s than expected %s' % (target_directory,local_dev_entry.package,hostname))
-                    else:
-                        raise Exception('directory %s is already a package development directory, aborting.' % target_directory)
-                elif os.path.isdir(target_directory) and os.listdir(target_directory):
-                    raise Exception('directory %s is not empty, aborting.' % target_directory)
-                # create a new version of the existing package in repository
-                return self.duplicate_package(
-                        packagename=hostname,
-                        newname=hostname,
-                        target_directory=target_directory,
-                        build=False,
-                        append_depends = append_depends,
-                        remove_depends = remove_depends,
-                        append_conflicts = append_conflicts,
-                        remove_conflicts = remove_conflicts,
-                        usecache = False,
-                        printhook = printhook,
-                        authorized_certs = authorized_certs,
-                        )
-            elif os.path.isdir(target_directory) and os.listdir(target_directory):
-                raise Exception('directory %s is not empty, aborting.' % target_directory)
-            else:
-                # create new host package from template
-                return self.make_host_template(packagename=hostname,directoryname=target_directory,depends=append_depends,description=description)
+            # update depends list
+            prev_depends = ensure_list(entry.depends)
+            for d in append_depends:
+                if not d in prev_depends:
+                    prev_depends.append(d)
+            for d in remove_depends:
+                if d in prev_depends:
+                    prev_depends.remove(d)
+            entry.depends = ','.join(prev_depends)
+
+            # update conflicts list
+            prev_conflicts = ensure_list(entry.conflicts)
+            for d in append_conflicts:
+                if not d in prev_conflicts:
+                    prev_conflicts.append(d)
+            if remove_conflicts:
+                for d in remove_conflicts:
+                    if d in prev_conflicts:
+                        prev_conflicts.remove(d)
+            entry.conflicts = ','.join(prev_conflicts)
+            if description is not None:
+                entry.description = description
+
+            entry.save_control_to_wapt(target_directory)
+            self.add_pyscripter_project(target_directory)
+            return {'target':target_directory,'source_dir':target_directory,'package':entry}
         else:
-            raise Exception('No Wapthost repository defined')
+            # create a new version of the existing package in repository
+            return self.make_host_template(packagename=hostname,directoryname=target_directory,depends=append_depends,description=description)
 
     def forget_packages(self,packages_list):
         """Remove install status for packages from local database
