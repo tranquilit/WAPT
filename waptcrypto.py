@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.5"
+__version__ = "1.5.0.6"
 
 import os,sys
 import codecs
@@ -137,12 +137,14 @@ class SSLCABundle(object):
     BEGIN_CERTIFICATE = '-----BEGIN CERTIFICATE-----'
     END_CERTIFICATE = '-----END CERTIFICATE-----'
 
-    def __init__(self,callback=None):
+    def __init__(self,cert_pattern_or_dir=None,callback=None):
         self._keys = {}
         self._certificates = {}
         if callback is None:
             callback = default_pwd_callback
         self.callback = callback
+        if cert_pattern_or_dir is not None:
+            self.add_pems(cert_pattern_or_dir,load_keys=True)
 
     def add_pems(self,cert_pattern_or_dir='*.crt',load_keys=False):
         if os.path.isdir(cert_pattern_or_dir):

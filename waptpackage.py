@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.5"
+__version__ = "1.5.0.6"
 
 __all__ = [
     'control_to_dict',
@@ -74,6 +74,7 @@ import shutil
 from waptcrypto import *
 from waptutils import *
 import base64
+from iniparse import RawConfigParser
 
 logger = logging.getLogger()
 
@@ -1253,40 +1254,81 @@ def extract_iconpng_from_wapt(fname):
 class WaptBaseRepo(object):
     """Base abstract class for a Wapt Packages repository
     """
-    def __init__(self,name='abstract',authorized_certs=None):
+
+    _default_config = {
+        'public_certs_dir': None,
+    }
+
+    def __init__(self,name='abstract',authorized_certs=None,config=None):
+        """Init properties, get default values from _default_config, and override them
+                with constructor paramaters
+
+        Args:
+            name (str): internal name of the repository
+            authorized_certs (list) : list of SSLCertificates for signature checking.
+
+        Returns:
+            self
+        """
+
         self.name = name
         self._packages = None
         self._index = {}
         self._packages_date = None
 
         # if not None, control's signature will be check against this certificates list
+        self.load_config(config=config)
+
         self.authorized_certs = authorized_certs
+
+    def load_config(self,config=None,section=None):
+        """Load configuration from inifile section.
+                Use name of repo as section name if section is not provided.
+                Use 'global' if no section named section in ini file
+                Value not defined in ini file are taken from class _default_config
+
+                load_config is called at __init__, eventually with config = None.
+                In this case, all parameters are initialized from defaults
+
+        Args:
+            config (RawConfigParser): ini configuration
+            section (str)           : section where to loads parameters
+                                      defaults to name of repository
+
+        Returns:
+            self: return itself to chain calls.
+        """
+
 
     def _load_packages_index(self):
         self._packages = []
         self._packages_date = None
 
     def update(self):
+        """Update local index of packages from source index"""
         return self._load_packages_index()
 
     @property
     def packages(self):
+        """Local list of packages"""
         if self._packages is None:
             self._load_packages_index()
         return self._packages
 
     @property
     def packages_date(self):
+        """Date of last known packages index"""
         if self._packages is None:
             self._load_packages_index()
         return self._packages_date
 
     def is_available(self):
-        # return isodate of last updates of the repo is available else None
+        """Return isodate of last updates of the repo is available else None
+        """
         return self.packages_date
 
     def need_update(self,last_modified=None):
-        """Check if packges index has changed on repo and local db needs an update
+        """Check if packages index has changed on repo and local index needs an update
 
         Compare date on local package index DB with the Packages file on remote
           repository with a HEAD http request.
@@ -1361,6 +1403,13 @@ class WaptBaseRepo(object):
         """Return an ordered list of available packages entries which match
             the condition "packagename[([=<>]version)]?"
             version ascending
+
+        Args;
+            package_cond (str): package name with optional version sepcifier.
+
+        Returns:
+            list of PackageEntry
+
         >>> from waptpackage import *
         >>> r = WaptRemoteRepo('http://wapt.tranquil.it/wapt')
         >>> r.packages_matching('tis-firefox (>=20)')
@@ -1378,6 +1427,7 @@ class WaptBaseRepo(object):
             return []
 
     def __iter__(self):
+        """Return an iterator for package names (higer version)"""
         # ensure packages is loaded
         if self._packages is None:
             self._load_packages_index()
@@ -1385,6 +1435,8 @@ class WaptBaseRepo(object):
 
 
     def __getitem__(self,packagename):
+        """Return the highest version PackageEntry for supplied packagename
+        """
         # ensure packages is loaded
         if self._packages is None:
             self._load_packages_index()
@@ -1407,10 +1459,21 @@ class WaptLocalRepo(WaptBaseRepo):
     >>> localrepo = WaptLocalRepo('c:/wapt/cache')
     >>> localrepo.update()
     """
-    def __init__(self,localpath='/var/www/wapt',name='waptlocal',authorized_certs=None):
-        WaptBaseRepo.__init__(self,name=name,authorized_certs=authorized_certs)
-        self.localpath = localpath.rstrip(os.path.sep)
-        self.packages_path = os.path.join(self.localpath,'Packages')
+
+    def __init__(self,localpath='/var/www/wapt',name='waptlocal',authorized_certs=None,config=None):
+        # store defaults at startup
+        self._default_config.update({
+            'localpath':localpath,
+        })
+        WaptBaseRepo.__init__(self,name=name,authorized_certs=authorized_certs,config=None)
+
+        # override defaults and config with supplied parameters
+        if self.localpath is not None:
+            self.localpath = localpath.rstrip(os.path.sep)
+
+    @property
+    def packages_path(self):
+        return os.path.join(self.localpath,'Packages')
 
     def _load_packages_index(self):
         """Parse Packages index from local repo Packages file
@@ -1583,15 +1646,7 @@ class WaptLocalRepo(WaptBaseRepo):
             raise
         return {'processed':processed,'kept':kept,'errors':errors,'packages_filename':packages_fname}
 
-    def is_available(self):
-        """Check if repo is reachable an return last update date.
-        """
-        if os.path.isfile(self.packages_path):
-            return self._packages_date
-        else:
-            return None
-
-    def load_config(self,config,section=None):
+    def load_config(self,config=None,section=None):
         """Load waptrepo configuration from inifile section.
 
                 Use name of repo as section name if section is not provided.
@@ -1606,15 +1661,21 @@ class WaptLocalRepo(WaptBaseRepo):
         """
         if not section:
              section = self.name
+
+        # creates a default parser with a default section if None provided to get defaults
+        if config is None:
+            config = RawConfigParser(self._default_config)
+            config.add_section(section)
+
         if not config.has_section(section):
             section = 'global'
 
         if config.has_option(section,'localpath'):
             self.localpath = config.get(section,'localpath')
 
-        if config.has_option('global','public_certs_dir'):
+        if config.has_option(section,'public_certs_dir'):
             bundle = SSLCABundle()
-            bundle.add_pems(config.get('global','public_certs_dir'))
+            bundle.add_pems(config.get(section,'public_certs_dir'))
             self.authorized_certs = bundle.certificates()
 
         return self
@@ -1629,7 +1690,7 @@ class WaptRemoteRepo(WaptBaseRepo):
     True
     """
 
-    def __init__(self,url=None,name='',proxies={'http':None,'https':None},timeout = 2,authorized_certs=None):
+    def __init__(self,url=None,name='',verify_cert=None,proxies=None,timeout = 2,authorized_certs=None,config=None):
         """Initialize a repo at url "url".
 
         Args:
@@ -1638,22 +1699,48 @@ class WaptRemoteRepo(WaptBaseRepo):
                  If url is None, the url is requested from DNS by a SRV query
             proxies (dict): configuration of http proxies as defined for requests
             timeout (float): timeout in seconds for the connection to the rmeote repository
+            config (RawConfigParser) : loads conf from this Parser
         """
-        WaptBaseRepo.__init__(self,name=name,authorized_certs=authorized_certs)
-        if url and url[-1]=='/':
-            url = url.rstrip('/')
-        self._repo_url = url
 
+        # additional properties
+        self._default_config.update({
+            'repo_url':'',
+            'timeout':2,
+            'verify_cert':'1', # default is to check repo https certificates
+            'http_proxy':'',
+        })
+
+        # create additional properties
+        self._repo_url = None
         self._packages_date = None
         self._packages = None
+        self.http_proxy = None
+        self.verify_cert = None
 
-        self.proxies = proxies
-        self.verify_cert = False
-        self.timeout = timeout
+        # this load and empty config
+        WaptBaseRepo.__init__(self,name=name,authorized_certs=authorized_certs,config=config)
+
+        # forced URL
+        if url is not None:
+            if url and url[-1]=='/':
+                url = url.rstrip('/')
+            self._repo_url = url
+
+        if verify_cert is not None:
+            self.verify_cert = verify_cert
+        if timeout is not None:
+            self.timeout = timeout
 
     @property
     def repo_url(self):
         return self._repo_url
+
+    @property
+    def proxies(self):
+        if self.http_proxy:
+            return {'http':self.http_proxy,'https':self.http_proxy}
+        else:
+            return {'http':None,'https':None}
 
     @repo_url.setter
     def repo_url(self,value):
@@ -1665,7 +1752,7 @@ class WaptRemoteRepo(WaptBaseRepo):
             self._packages = None
             self._packages_date = None
 
-    def load_config(self,config,section=None):
+    def load_config(self,config=None,section=None):
         """Load waptrepo configuration from inifile section.
 
                 Use name of repo as section name if section is not provided.
@@ -1680,6 +1767,11 @@ class WaptRemoteRepo(WaptBaseRepo):
         """
         if not section:
              section = self.name
+
+        if config is None:
+            config  = RawConfigParser(defaults = self._default_config)
+            config.add_section(section)
+
         if not config.has_section(section):
             section = 'global'
 
@@ -1691,26 +1783,18 @@ class WaptRemoteRepo(WaptBaseRepo):
                 self.verify_cert = config.getboolean(section,'verify_cert')
             except:
                 self.verify_cert = config.get(section,'verify_cert')
-        else:
-            self.verify_cert = False
+        #else:
+        #    self.verify_cert = self._default_config['verify_cert']
 
-        if config.has_option(section,'use_http_proxy_for_repo') and config.getboolean(section,'use_http_proxy_for_repo'):
-            if config.has_option(section,'http_proxy'):
-                # force a specific proxy from wapt conf
-                self.proxies = {'http':config.get(section,'http_proxy'),'https':config.get(section,'http_proxy')}
-            else:
-                # use default windows proxy ?
-                self.proxies = None
-        else:
-            # force to not use proxy, even if one is defined in windows
-            self.proxies = {'http':None,'https':None}
+        if config.has_option(section,'http_proxy'):
+            self.http_proxy = config.get(section,'http_proxy')
 
         if config.has_option(section,'timeout'):
             self.timeout = config.getfloat(section,'timeout')
 
-        if config.has_option('global','public_certs_dir'):
+        if config.has_option(section,'public_certs_dir'):
             bundle = SSLCABundle()
-            bundle.add_pems(config.get('global','public_certs_dir'))
+            bundle.add_pems(config.get(section,'public_certs_dir'))
             self.authorized_certs = bundle.certificates()
 
         return self
