@@ -167,9 +167,9 @@ except Exception:
     print(sys.stderr, 'Is git(1) installed?', file=sys.stderr)
     raise
 
-deb_version = wapt_version
+deb_version = '1.1.0'
 if deb_revision:
-    deb_version += '-' + str(deb_revision)
+    deb_version += '-1~%s%s' % ('tis',deb_revision)
 
 print('replacing the revision in the control file', file=sys.stderr)
 replaceAll(control_file, '0.0.7', deb_version)
@@ -180,11 +180,13 @@ os.chmod('./builddir/DEBIAN/preinst', stat.S_IRWXU |
          stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
 
 print('creating the Debian package', file=sys.stderr)
-output_file = 'tis-wapt-spnego-http-auth-nginx-module-%s.deb' % (deb_version)
+output_file = 'libnginx-mod-http-auth-spnego-%s.deb' % (deb_version)
 dpkg_command = 'dpkg-deb --build builddir %s' % output_file
 status = os.system(dpkg_command)
 if status == 0:
-    os.symlink(output_file, 'tis-wapt-spnego-http-auth-nginx-module.deb')
+    if os.path.exists('libnginx-mod-http-auth-spnego.deb'):
+        os.unlink('libnginx-mod-http-auth-spnego.deb')
+    os.symlink(output_file, 'libnginx-mod-http-auth-spnego.deb')
     #shutil.rmtree("builddir")
 else:
     print('error while building package')
