@@ -1,0 +1,9 @@
+Package: tis-wapt-spnego-http-auth-nginx-module
+Version: 1.5.0.5
+Section: base
+Priority: optional
+Architecture: amd64
+Depends: nginx
+Recommends: tis-waptsetup
+Maintainer: TIS <technique@tranquil-it-systems.fr>
+Description: SPNego module for Nginx for WAPT Server on Debian
