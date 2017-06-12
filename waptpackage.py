@@ -1021,6 +1021,10 @@ class PackageEntry(object):
             if os.path.isfile(manifest_filename):
                 os.remove(manifest_filename)
 
+            manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha1')
+            if os.path.isfile(manifest_filename):
+                os.remove(manifest_filename)
+
             signature_filename = os.path.join(self.sourcespath,'WAPT','signature')
             if os.path.isfile(signature_filename):
                 os.remove(signature_filename)
@@ -1879,6 +1883,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                 logger.debug(u"%s (%s)" % (package.package,package.version))
                 package.repo_url = self.repo_url
                 package.repo = self.name
+
                 try:
                     if self.authorized_certs is not None:
                         package.check_control_signature(self.authorized_certs)
@@ -1923,6 +1928,14 @@ class WaptRemoteRepo(WaptBaseRepo):
         r"""Download a list of packages (requests are of the form packagename (>version) )
            returns a dict of {"downloaded,"skipped","errors"}
 
+        If package_requests is a list of PackageEntry, update localpath of entry to match downloaded file.
+
+        Args:
+            package_requests (list) : list of PackageEntry to download or list of package with optional version
+
+        Returns:
+            dict: 'downloadede', 'skipped', 'errors'
+
         >>> repo = WaptRemoteRepo(url='http://wapt.tranquil.it/wapt')
         >>> wapt.download_packages(['tis-firefox','tis-waptdev'],printhook=nullhook)
         {'downloaded': [u'c:/wapt\\cache\\tis-firefox_37.0.2-9_all.wapt', u'c:/wapt\\cache\\tis-waptdev.wapt'], 'skipped': [], 'errors': []}
@@ -1960,6 +1973,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                     cached.load_control_from_wapt(fullpackagepath,calc_md5=True)
                     if entry == cached:
                         if entry.md5sum == cached.md5sum:
+                            entry.localpath = cached.localpath
                             skipped.append(fullpackagepath)
                             logger.info(u"  Use cached package file from " + fullpackagepath)
                             skip = True
@@ -1986,13 +2000,14 @@ class WaptRemoteRepo(WaptBaseRepo):
                         printhook = report
 
                     wget(download_url,target_dir,proxies=self.proxies,printhook = printhook,connect_timeout=self.timeout,verify_cert = self.verify_cert)
+                    entry.localpath = fullpackagepath
                     downloaded.append(fullpackagepath)
                 except Exception as e:
                     if os.path.isfile(fullpackagepath):
                         os.remove(fullpackagepath)
                     logger.critical(u"Error downloading package from http repository, please update... error : %s" % e)
                     errors.append((download_url,"%s" % e))
-        return {"downloaded":downloaded,"skipped":skipped,"errors":errors}
+        return {"downloaded":downloaded,"skipped":skipped,"errors":errors,"packages":packages}
 
 def update_packages(adir,force=False):
     """Helper function to update a local packages index
