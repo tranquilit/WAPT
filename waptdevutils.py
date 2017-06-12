@@ -33,7 +33,7 @@
     exported functions instead of local Wapt functions (except crypto signatures)
 
 """
-__version__ = "1.5.0.5"
+__version__ = "1.5.0.6"
 
 import sys,os
 import shutil
@@ -323,7 +323,7 @@ def build_waptupgrade_package(waptconfigfile,target_directory,wapt_server_user,w
         cert = certs[0]
     else:
         raise Exception(u'No code signing certificate found for key %s' % wapt.private_key)
-    entry.sign_package(key,cert)
+    entry.sign_package(private_key=key,certificate = cert,password_callback=pwd_callback)
 
     wapt.http_upload_package(entry.localpath,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
     return entry.as_dict()
@@ -398,7 +398,6 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
 
             target_dir = tempfile.mkdtemp('wapt')
             edit_res = wapt.edit_host(host,
-                use_local_sources = False,
                 target_directory = target_dir,
                 append_depends = append_depends,
                 remove_depends = remove_depends,

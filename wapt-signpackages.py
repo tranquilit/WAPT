@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.5"
+__version__ = "1.5.0.6"
 
 import os
 import sys
@@ -99,7 +99,7 @@ def main():
         pe = PackageEntry(waptfile = waptpackage)
         # force md
         pe._md = options.md
-        pe.sign_package(key,cert)
+        pe.sign_package(private_key=key,certificate = cert)
         print('Done')
 
 if __name__ == "__main__":

@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.5"
+__version__ = "1.5.0.6"
 
 import codecs
 import getpass
@@ -757,15 +757,12 @@ def main():
             elif action == 'edit-host':
                 if len(args) == 1:
                     print(u"Using current host fqdn %s" % setuphelpers.get_hostname())
-                    result = mywapt.edit_host(hostname=setuphelpers.get_hostname(),
-                                              use_local_sources=True)
+                    result = mywapt.edit_host(hostname=setuphelpers.get_hostname(),target_directory='')
                 elif len(args) >= 3:
                     result = mywapt.edit_host(hostname=args[1],
-                                              append_depends=args[2],
-                                              use_local_sources=True)
+                                              append_depends=args[2],target_directory='')
                 else:
-                    result = mywapt.edit_host(hostname=args[1],
-                                              use_local_sources=True)
+                    result = mywapt.edit_host(hostname=args[1],target_directory='')
                 if options.json_output:
                     jsonresult['result'] = result
                 else:

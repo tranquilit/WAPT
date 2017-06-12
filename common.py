@@ -4502,7 +4502,7 @@ class Wapt(object):
 
         logger.info(u'Using identity : %s' % cert.cn)
         pe =  PackageEntry().load_control_from_wapt(zip_or_directoryname)
-        return pe.sign_package(key,cert)
+        return pe.sign_package(private_key=key,certificate = cert,password_callback=callback)
 
     def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','setup.pyc'],
                 target_directory=None):
@@ -5242,7 +5242,6 @@ class Wapt(object):
     def edit_host(self,
             hostname,
             target_directory=None,
-            use_local_sources=True,
             append_depends=None,
             remove_depends=None,
             append_conflicts=None,
@@ -5257,7 +5256,6 @@ class Wapt(object):
         Args:
            hostname          : fqdn of the host to edit
            target_directory  : where to place the developments files. if empty, use default one from wapt-get.ini configuration
-           use_local_sources : don't raise an exception if local sources are newer or same than repo version
            append_depends    : list or comma separated list of package requirements
            remove_depends    : list or comma separated list of package requirements to remove
            authorized_certs  : list of authorized certificate filenames. If None, use default from current wapt.

@@ -57,7 +57,7 @@ def pwd_callback(*args):
 
 def setup_test():
     global certificates
-    certificates = SSLCAChain()
+    certificates = SSLCABundle()
     certificates.add_pems('c:/wapt/ssl/*.crt')
     print certificates.certificates()
 
@@ -298,6 +298,7 @@ def test_wapt_engine():
     w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
     w.dbpath=':memory:'
     print w.update()
+    print w.search()
     print w.list_upgrade()
     for r in w.repositories:
         print r.authorized_certs
