@@ -310,7 +310,10 @@ def test_waptrepo():
         raise('certificate autosigné, doit failer')
     except requests.exceptions.SSLError as e:
         print('OK: %s' % e)
+
+    # get cert from server
     cert_pem = get_pem_server_certificate('https://wapt142.tranquilit.local')
+    assert(SSLCertificate(crt_string=cert_pem).cn == 'wapt142.tranquilit.local')
     with tempfile.NamedTemporaryFile(delete=False) as crtfile:
         crtfile.file.write(cert_pem)
         crtfile.file.close()
@@ -321,6 +324,8 @@ def test_waptrepo():
 def test_wapt_engine():
     w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
     w.dbpath=':memory:'
+    w.use_hostpackages = True
+    w._set_fake_hostname('testwaptcomputer.tranquilit.local')
     print w.update()
     print w.search()
     print w.list_upgrade()
@@ -331,11 +336,57 @@ def test_wapt_engine():
     print('OK: %s'%res)
 
 
+def test_edithost():
+    w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
+    w.dbpath=':memory:'
+    w.use_hostpackages = False
+    w._set_fake_hostname('testwaptcomputer.tranquilit.local')
+    pe = w.edit_host('testwaptcomputer.tranquilit.local')
+    print pe
+    print w.is_available(setuphelpers.get_hostname())
+
+def test_dnsrepos():
+    w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
+    w.dbpath=':memory:'
+    w.use_hostpackages = False
+    w._set_fake_hostname('testwaptcomputer.tranquilit.local')
+    w.repositories[0].repo_url = ''
+    w.repositories[0].dnsdomain = 'tranquilit.local'
+    w.repositories[1].repo_url = ''
+    w.repositories[1].dnsdomain = 'tranquilit.local'
+    w.update()
+
+def test_reload_config():
+    cfn = r"C:\tranquilit\wapt\wapt-get.ini"
+    ini = open(cfn,'r').read()
+    open(cfn,'wb').write(ini.replace('dnsdomain=tranquilit.local',';dnsdomain=tranquilit.local'))
+    w = Wapt(config_filename=cfn )
+    w.dbpath=':memory:'
+    print w.repositories[1].dnsdomain
+    ini = open(cfn,'r').read()
+    open(cfn,'wb').write(ini.replace(';dnsdomain=tranquilit.local','dnsdomain=tranquilit.local'))
+    print w.reload_config_if_updated()
+    print w.repositories[1].dnsdomain
+
+
+def test_editpackage():
+    w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
+    w.dbpath=':memory:'
+    w.use_hostpackages = False
+    w._set_fake_hostname('testwaptcomputer.tranquilit.local')
+    w.update()
+    pe = w.edit_package('tis-wapttest(=24)',r'c:\tranquilit\tis-wapttest-wapt.24',)
+    assert(os.path.isdir(pe.sourcespath))
+    wapt_sources_edit(pe.sourcespath)
 
 
 if __name__ == '__main__':
     setup_test()
     test_wapt_engine()
+    test_editpackage()
+    test_reload_config()
+    test_edithost()
+
     test_waptrepo()
     test_oldsignature()
     test_build_sign_verify_package()

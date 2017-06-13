@@ -1335,6 +1335,9 @@ begin
         if DirectoryExistsUTF8(DevPath) then
           DevPath:=DevPath+'.'+GridPackages.GetCellStrValue(GridPackages.FocusedNode, 'version');
         res := DMPython.RunJSON(format('mywapt.edit_package(r"%s",target_directory=r"%s",auto_inc_version=False)', [SelPackage,DevPath]));
+        if not DirectoryExists(res.S['sourcespath']) then
+          raise Exception.Create('Unable to edit package. Developement directory '+res.S['sourcespath']+' does not exist');
+        DMPython.RunJSON(format('waptdevutils.wapt_sources_edit(r"%s")', [res.S['sourcespath']]));
       except
         on E:Exception do
         begin
@@ -1342,9 +1345,6 @@ begin
           exit;
         end;
       end;
-      DMPython.RunJSON(format('waptdevutils.wapt_sources_edit(r"%s")', [res.S['target']]));
-      //if EditPackage(Selpackage, ActAdvancedMode.Checked) <> nil then
-      //  ActPackagesUpdate.Execute;
     end
     else
       ShowMessage(rsDefineWaptdevPath);
@@ -2354,16 +2354,12 @@ begin
         signed_actions_json := VarPythonAsString(waptdevutils.sign_actions(waptconfigfile:=conffile,actions:=actions_json,key_password:=keypassword));
         SOActions := SO(signed_actions_json);
 
-        res := WAPTServerJsonPost('/api/v3/trigger_host_action?timeout=%D',[1],SOActions);
+        res := WAPTServerJsonPost('/api/v3/trigger_host_action?timeout=%D',[waptservice_timeout],SOActions);
         if (res<>Nil) and res.AsObject.Exists('success') then
         begin
           MemoLog.Append(res.AsString);
           if res.AsObject.Exists('msg') then
             ShowMessage(res.S['msg']);
-          {if res.B['success'] then
-            host.S['status'] := 'OK'
-          else
-            host.S['status'] := 'ERROR';}
         end
         else
           if not res.B['success'] or (res['result'].A['errors'].Length>0) then

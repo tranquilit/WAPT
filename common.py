@@ -1465,7 +1465,7 @@ class WaptServer(object):
 
         try:
             if self.dnsdomain and self.dnsdomain != '.':
-                # find by dns SRV _wapt._tcp
+                # find by dns SRV _waptserver._tcp
                 try:
                     logger.debug(u'Trying _waptserver._tcp.%s SRV records' % self.dnsdomain)
                     answers = windnsquery.dnsquery_srv('_waptserver._tcp.%s' % self.dnsdomain)
@@ -1652,7 +1652,7 @@ class WaptRepo(WaptRemoteRepo):
     >>> len(packages)
     """
 
-    def __init__(self,url=None,name='',verify_cert=None,proxies=None,timeout = 2,dnsdomain=None,authorized_certs=None,config=None):
+    def __init__(self,url=None,name='wapt',verify_cert=None,proxies=None,timeout = 2,dnsdomain=None,authorized_certs=None,config=None):
         """Initialize a repo at url "url".
 
         Args:
@@ -1679,8 +1679,9 @@ class WaptRepo(WaptRemoteRepo):
 
         WaptRemoteRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,proxies=proxies,timeout=timeout,authorized_certs=authorized_certs,config=config)
 
-        # force with supplied parameters
-        self._dnsdomain = dnsdomain
+        # force with supplied not None parameters
+        if dnsdomain is not None:
+            self.dnsdomain = dnsdomain
 
     def reset_network(self):
         """called by wapt when network configuration has changed"""
@@ -1710,10 +1711,10 @@ class WaptRepo(WaptRemoteRepo):
         Returns:
             str: url to the repository
 
-        >>> repo = WaptRepo(name='main',timeout=4)
+        >>> repo = WaptRepo(name='wapt',timeout=4)
         >>> print repo.dnsdomain
         tranquilit.local
-        >>> repo = WaptRepo(name='main',timeout=4)
+        >>> repo = WaptRepo(name='wapt',timeout=4)
         >>> print repo.dnsdomain
         tranquilit.local
         >>> print repo.repo_url
@@ -1751,10 +1752,10 @@ class WaptRepo(WaptRemoteRepo):
            same subnet -> priority asc -> weight desc
 
 
-        >>> repo = WaptRepo(name='main',dnsdomain='tranquil.it',timeout=4,url=None)
+        >>> repo = WaptRepo(name='wapt',dnsdomain='tranquil.it',timeout=4,url=None)
         >>> repo.repo_url
         'http://wapt.tranquil.it./wapt'
-        >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=4)
+        >>> repo = WaptRepo(name='wapt',url='http://wapt/wapt',timeout=4)
         >>> repo.repo_url
         'http://wapt/wapt'
         """
@@ -1780,10 +1781,10 @@ class WaptRepo(WaptRemoteRepo):
             if self.dnsdomain and self.dnsdomain != '.':
                 # find by dns SRV _wapt._tcp
                 try:
-                    logger.debug(u'Trying _wapt._tcp.%s SRV records' % self.dnsdomain)
-                    answers = windnsquery.dnsquery_srv('_wapt._tcp.%s' % self.dnsdomain)
+                    logger.debug(u'Trying _%s._tcp.%s SRV records' % (self.name,self.dnsdomain))
+                    answers = windnsquery.dnsquery_srv('_%s._tcp.%s' % (self.name,self.dnsdomain))
                     if not answers:
-                        logger.debug(u'  No _wapt._tcp.%s SRV record found' % self.dnsdomain)
+                        logger.debug(u'  No _%s._tcp.%s SRV record found' % (self.name,self.dnsdomain))
                     else:
                         # list of (outside,priority,weight,url)
                         servers = []
@@ -1825,10 +1826,10 @@ class WaptRepo(WaptRemoteRepo):
 
                 # find by dns CNAME
                 try:
-                    logger.debug(u'Trying wapt.%s CNAME records' % self.dnsdomain)
-                    answers = windnsquery.dnsquery_cname('wapt.%s' % self.dnsdomain)
+                    logger.debug(u'Trying %s.%s CNAME records' % (self.name,self.dnsdomain))
+                    answers = windnsquery.dnsquery_cname('%s.%s' % (self.name,self.dnsdomain))
                     if not answers:
-                        logger.debug(u'  No working wapt.%s CNAME record found' % self.dnsdomain)
+                        logger.debug(u'  No working %s.%s CNAME record found' % (self.name,self.dnsdomain))
                     else:
                         # list of (outside,priority,weight,url)
                         servers = []
@@ -1874,7 +1875,7 @@ class WaptRepo(WaptRemoteRepo):
                     raise
 
             else:
-                logger.warning(u'Local DNS domain not found, skipping SRV _wapt._tcp and CNAME search ')
+                logger.warning(u'Local DNS domain not found, skipping SRV _%s._tcp and CNAME search ' % (self.name))
 
             return None
         except Exception as e:
@@ -1897,7 +1898,7 @@ class WaptRepo(WaptRemoteRepo):
             isodatetime: date of Packages index
 
         >>> import common
-        >>> repo = common.WaptRepo('main','http://wapt/wapt')
+        >>> repo = common.WaptRepo('wapt','http://wapt/wapt')
         >>> localdb = common.WaptDB('c:/wapt/db/waptdb.sqlite')
         >>> last_update = repo.is_available()
         >>> repo.update_db(waptdb=localdb) == last_update
@@ -2002,7 +2003,7 @@ class WaptRepo(WaptRemoteRepo):
 class WaptHostRepo(WaptRepo):
     """Dummy http repository for host packages"""
 
-    def __init__(self,url=None,name=None,verify_cert=None,proxies=None,timeout = None,dnsdomain=None,hostname=None,authorized_certs=None,config=None):
+    def __init__(self,url=None,name='wapt-host',verify_cert=None,proxies=None,timeout = None,dnsdomain=None,hostname=None,authorized_certs=None,config=None):
         self._hostname = None
         WaptRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,proxies =proxies,timeout = timeout,dnsdomain=dnsdomain,authorized_certs=authorized_certs,config=config)
 
@@ -2026,6 +2027,9 @@ class WaptHostRepo(WaptRepo):
     def _load_packages_index(self):
         self._packages = []
         self._index = {}
+        self.discarded = []
+        if not self.repo_url:
+            raise EWaptException('URL for WaptHostRepo repository %s is empty. Either add a wapt-host section in ini, or add a _%s._tcp.%s SRV record' % (self.name,self.name,self.dnsdomain))
         try:
             host_package_url = "%s/%s.wapt" % (self.repo_url,self.hostname)
             logger.debug(u'Trying to get  host package for %s at %s' % (self.hostname,host_package_url))
@@ -2050,7 +2054,7 @@ class WaptHostRepo(WaptRepo):
                     self._index[package.package] = package
             except (SSLVerifyException,EWaptNotSigned) as e:
                 logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.authorized_certs))
-
+                self.discarded.append(package)
 
         except requests.HTTPError as e:
             logger.info(u'No host package available at %s' % host_package_url)
@@ -2078,17 +2082,6 @@ class WaptHostRepo(WaptRepo):
             self._packages = None
             self._packages_date = None
             self._cached_dns_repo_url = None
-
-    def load_config(self,config,section=None):
-        """Load waptrepo configuration from inifile section.
-                Use name of repo as section name if section is not provided.
-                Use 'global' if no section named section in ini file
-        """
-        WaptRepo.load_config(self,config,section)
-        # well known url guessed from main repo : url+"-host"
-        if section is None or section == 'global':
-            self._repo_url = None
-        return self
 
     def __repr__(self):
         try:
@@ -2407,19 +2400,21 @@ class Wapt(object):
         self.repositories = []
         # secondary
         if self.config.has_option('global','repositories'):
-            names = ensure_list(self.config.get('global','repositories'))
-            logger.info(u'Other repositories : %s' % (names,))
-            for name in names:
+            repository_names = ensure_list(self.config.get('global','repositories'))
+            logger.info(u'Other repositories : %s' % (repository_names,))
+            for name in repository_names:
                 if name:
                     w = WaptRepo(name=name).load_config(self.config,section=name)
                     if not w.authorized_certs:
                         w.authorized_certs = self.authorized_certificates()
                     self.repositories.append(w)
                     logger.debug(u'    %s:%s' % (w.name,w._repo_url))
+        else:
+            repository_names = []
 
         # last is main repository so it overrides the secondary repositories
-        if self.config.has_option('global','repo_url'):
-            w = WaptRepo(name='global').load_config(self.config)
+        if self.config.has_option('global','repo_url') and not 'wapt' in repository_names:
+            w = WaptRepo(name='wapt').load_config(self.config)
             self.repositories.append(w)
             if not w.authorized_certs:
                 w.authorized_certs = self.authorized_certificates()
@@ -2437,6 +2432,8 @@ class Wapt(object):
 
         # clear host key cache
         self._host_key = None
+
+        return self
 
     def write_config(self,config_filename=None):
         """Update configuration parameters to supplied inifilename
@@ -2471,15 +2468,14 @@ class Wapt(object):
             section = 'wapt-host'
         else:
             section = None
-        host_repo = WaptHostRepo(name='wapt-host').load_config(self.config,section)
+        host_repo = WaptHostRepo(name='wapt-host',config=self.config)
         self.repositories.append(host_repo)
         if not host_repo.authorized_certs:
             host_repo.authorized_certs = self.authorized_certificates()
 
         # in case host repo is guessed from main repo (no specific section) ans main repor_url is set
-        if section is None and main:
-            if main._repo_url and not host_repo._repo_url:
-                host_repo.repo_url = main._repo_url+'-host'
+        if section is None and main and main._repo_url:
+            host_repo.repo_url = main._repo_url+'-host'
 
 
     def reload_config_if_updated(self):
@@ -3683,7 +3679,7 @@ class Wapt(object):
             printhook (func) : callback with signature report(received,total,speed,url) to display progress
 
         Returns:
-            dict: with keys {"downloaded,"skipped","errors"} and list of cached file paths.
+            dict: with keys {"downloaded,"skipped","errors","packages"} and list of cached file paths.
 
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> def nullhook(*args):
@@ -3714,7 +3710,7 @@ class Wapt(object):
         for entry in packages:
             self.check_cancelled()
 
-            packagefilename = entry.filename.strip('./')
+            packagefilename = entry.filename
             download_url = entry.repo_url+'/'+packagefilename
             fullpackagepath = os.path.join(self.package_cache_dir,packagefilename)
             skip = False
@@ -3728,6 +3724,8 @@ class Wapt(object):
                             skipped.append(fullpackagepath)
                             logger.info(u"  Use cached package file from " + fullpackagepath)
                             skip = True
+                            entry.localpath = cached.localpath
+                            result_packages.append(entry)
                         else:
                             logger.critical(u"Cached file MD5 doesn't match MD5 found in packages index. Discarding cached file")
                             os.remove(fullpackagepath)
@@ -3767,7 +3765,7 @@ class Wapt(object):
                         os.remove(fullpackagepath)
                     logger.critical(u"Error downloading package from http repository, please update... error : %s" % ensure_unicode(e))
                     errors.append((download_url,"%s" % ensure_unicode(e)))
-        return {"downloaded":downloaded,"skipped":skipped,"errors":errors}
+        return {"downloaded":downloaded,"skipped":skipped,"errors":errors,"packages":packages}
 
     def remove(self,packages_list,force=False):
         """Removes a package giving its package name, unregister from local status DB
@@ -5020,12 +5018,7 @@ class Wapt(object):
 
         entry.save_control_to_wapt(directoryname)
         self.add_pyscripter_project(directoryname)
-
-        result = {}
-        result['package'] = entry
-        result['source_dir'] = directoryname
-        result['target'] = directoryname
-        return result
+        return entry
 
     def is_installed(self,packagename,include_errors=False):
         """Checks if a package is installed.
@@ -5149,86 +5142,68 @@ class Wapt(object):
         entries = self.is_available(packagerequest)
         if entries:
             entry = entries[-1]
-            # the package can be downloaded
-            if not target_directory:
-                target_directory = self.get_default_development_dir(entry.package,section=entry.section)
-            packagename = entry.package
-        else:
-            # argument is a wapt package filename, replace packagerequest wit entry
+            self.download_packages(entry)
+        elif os.path.isfile(packagerequest):
+            # argument is a wapt package filename, replace packagerequest with entry
             entry = PackageEntry(waptfile=packagerequest)
-            if not target_directory:
-                target_directory = tempfile.mkdtemp(prefix="wapt")
-            entry.unzip_package(target_dir=target_directory, check_with_certs =authorized_certs)
-            packagerequest = entry.asrequirement()
-
-        append_depends = ensure_list(append_depends)
-        remove_depends = ensure_list(remove_depends)
-        append_conflicts = ensure_list(append_conflicts)
-        remove_conflicts = ensure_list(remove_conflicts)
-
-        local_dev_entry = self.is_wapt_package_development_dir(target_directory)
-        if local_dev_entry:
-            if use_local_sources:
-                if entry > local_dev_entry:
-                    raise Exception('A newer package version %s is already in repository "%s", local source %s is %s aborting' % (entry.asrequirement(),entry.repo,target_directory,local_dev_entry.asrequirement()))
-                if local_dev_entry.match(packagerequest):
-                    if append_depends or remove_depends or append_conflicts or remove_conflicts:
-                        prev_depends = ensure_list(local_dev_entry.depends)
-                        for d in append_depends:
-                            if not d in prev_depends:
-                                prev_depends.append(d)
-
-                        for d in remove_depends:
-                            if d in prev_depends:
-                                prev_depends.remove(d)
-
-                        prev_conflicts = ensure_list(local_dev_entry.conflicts)
-                        for d in append_conflicts:
-                            if not d in prev_conflicts:
-                                prev_conflicts.append(d)
-
-                        if remove_conflicts:
-                            for d in remove_conflicts:
-                                if d in prev_conflicts:
-                                    prev_conflicts.remove(d)
-
-
-                        local_dev_entry.depends = ','.join(prev_depends)
-                        local_dev_entry.conflicts = ','.join(prev_conflicts)
-                        local_dev_entry.save_control_to_wapt(target_directory)
-
-                    self.add_pyscripter_project(target_directory)
-                    return {'target':target_directory,'source_dir':target_directory,'package':local_dev_entry}
-                else:
-                    raise Exception('Local target %s directory is the sources of a different package %s than expected %s' % (target_directory,local_dev_entry.asrequirement(),packagerequest))
-            else:
-                raise Exception('%s wapt developement directory exists' % target_directory)
-        if entry:
-            # edit an existing package by using
-            return self.duplicate_package(packagename=entry.asrequirement(),
-                newname=entry.package,
-                target_directory=target_directory,
-                build=False,
-                append_depends = append_depends,
-                remove_depends = remove_depends,
-                append_conflicts = append_conflicts,
-                remove_conflicts = remove_conflicts,
-                auto_inc_version = auto_inc_version,
-                authorized_certs = authorized_certs,
-                )
         else:
-            # create a new one
-            packagename = PackageRequest(packagerequest).package
-            return self.duplicate_package(packagename=packagename,
-                newname=packagename,
-                target_directory=target_directory,
-                build=False,
-                append_depends = append_depends,
-                remove_depends = remove_depends,
-                append_conflicts = append_conflicts,
-                remove_conflicts = remove_conflicts,
-                authorized_certs = False,
-                )
+            raise EWaptException(u'Package %s does not exist. Either update local status or check filepath.' % (packagerequest))
+
+        packagerequest = entry.asrequirement()
+
+        if target_directory is None:
+            target_directory = tempfile.mkdtemp(prefix="wapt")
+        elif not target_directory:
+            target_directory = self.get_default_development_dir(entry.package,section=entry.section)
+
+        if entry.localpath:
+            local_dev_entry = self.is_wapt_package_development_dir(target_directory)
+            if local_dev_entry:
+                if use_local_sources and not local_dev_entry.match(packagerequest):
+                    raise Exception('Target directory %s contains a different package version %s' % (target_directory,entry.asrequirement()))
+                elif not use_local_sources:
+                    raise Exception('Target directory %s contains already a developement package %s' % (target_directory,entry.asrequirement()))
+                else:
+                    logger.info('Using existing development sources %s' % target_directory)
+            elif not local_dev_entry:
+                entry.unzip_package(target_dir=target_directory, check_with_certs = authorized_certs)
+                entry.invalidate_signature()
+                local_dev_entry = entry
+
+            append_depends = ensure_list(append_depends)
+            remove_depends = ensure_list(remove_depends)
+            append_conflicts = ensure_list(append_conflicts)
+            remove_conflicts = ensure_list(remove_conflicts)
+
+            if append_depends or remove_depends or append_conflicts or remove_conflicts:
+                prev_depends = ensure_list(local_dev_entry.depends)
+                for d in append_depends:
+                    if not d in prev_depends:
+                        prev_depends.append(d)
+
+                for d in remove_depends:
+                    if d in prev_depends:
+                        prev_depends.remove(d)
+
+                prev_conflicts = ensure_list(local_dev_entry.conflicts)
+                for d in append_conflicts:
+                    if not d in prev_conflicts:
+                        prev_conflicts.append(d)
+
+                if remove_conflicts:
+                    for d in remove_conflicts:
+                        if d in prev_conflicts:
+                            prev_conflicts.remove(d)
+
+
+                local_dev_entry.depends = ','.join(prev_depends)
+                local_dev_entry.conflicts = ','.join(prev_conflicts)
+                local_dev_entry.save_control_to_wapt(target_directory)
+
+            self.add_pyscripter_project(target_directory)
+            return local_dev_entry
+        else:
+            raise Exception(u'Unable to unzip package in %s' % target_directory)
 
     def is_wapt_package_development_dir(self,directory):
         """Return PackageEntry if directory is a wapt developement directory (a WAPT/control file exists) or False"""
@@ -5285,7 +5260,7 @@ class Wapt(object):
         if os.path.isdir(target_directory) and os.listdir(target_directory):
             raise Exception('directory %s is not empty, aborting.' % target_directory)
 
-        self.use_hostpackages = True
+        #self.use_hostpackages = True
 
         if authorized_certs is None:
             authorized_certs = self.authorized_certificates()
@@ -5303,12 +5278,14 @@ class Wapt(object):
             if not d in remove_depends:
                 remove_depends.append(d)
 
-        main_host_repo = self.repositories[-1]
-        if not isinstance(main_host_repo,WaptRepo):
-            raise EWaptException('No Host configuration repository defined')
-
         # create a temporary repo for this host
-        host_repo = WaptHostRepo(url=main_host_repo.repo_url,hostname=hostname,config = self.config)
+        host_repo = WaptHostRepo(name='wapt-host',hostname=hostname,config = self.config)
+        if host_repo.repo_url is None:
+            main_host_repo = self.repositories[0]
+            if not isinstance(main_host_repo,WaptRepo):
+                raise EWaptException('No Host configuration repository defined and no main repository to derive URL from')
+            host_repo.repo_url = main_host_repo.repo_url+'-host'
+
         entry = host_repo.get(hostname)
         if entry:
             host_repo.download_packages(entry)
@@ -5340,7 +5317,7 @@ class Wapt(object):
 
             entry.save_control_to_wapt(target_directory)
             self.add_pyscripter_project(target_directory)
-            return {'target':target_directory,'source_dir':target_directory,'package':entry}
+            entry
         else:
             # create a new version of the existing package in repository
             return self.make_host_template(packagename=hostname,directoryname=target_directory,depends=append_depends,description=description)
@@ -5379,10 +5356,6 @@ class Wapt(object):
             newname=None,
             newversion=None,
             target_directory=None,
-            build=True,
-            excludes=['.svn','.git','.gitignore','*.pyc','src'],
-            private_key=None,
-            callback=default_pwd_callback,
             append_depends=None,
             remove_depends=None,
             append_conflicts=None,
@@ -5402,8 +5375,6 @@ class Wapt(object):
             newname (str):           name of target package
             newversion (str):        version of target package. if None, use source package version
             target_directory (str):  path where to put development files. If None, use temporary. If empty, use default development dir
-            build (bool):            If True, build and sign the package. The filename of build package will be in 'target' key of result
-            callback (func):         function to get rawbytes password of private key
             append_depends (list):   comma str or list of depends to append.
             remove_depends (list):   comma str or list of depends to remove.
             auto_inc_version (bool): if version is less than existing package in repo, set version to repo version+1
@@ -5413,7 +5384,7 @@ class Wapt(object):
 
 
         Returns:
-            dict: {'target':new package if build, or 'source_dir':new source directory if not build ,'package':new PackageEntry}
+            PackageEntry} : new packageEntry with sourcespath = target_directory
 
         >>> wapt = Wapt(config_filename='c:/tranquilit/wapt/tests/wapt-get.ini')
         >>> wapt.dbpath = ':memory:'
@@ -5428,10 +5399,7 @@ class Wapt(object):
         ...     newname='testdup',
         ...     newversion='20.0-0',
         ...     target_directory=tmpdir,
-        ...     build=False,
         ...     excludes=['.svn','.git','.gitignore','*.pyc','src'],
-        ...     private_key=None,
-        ...     callback=pwd_callback,
         ...     append_depends=None,
         ...     auto_inc_version=True,
         ...     usecache=False,
@@ -5443,7 +5411,6 @@ class Wapt(object):
         ...     shutil.rmtree(tmpdir)
         >>> p = wapt.duplicate_package('tis-wapttest',
         ...    target_directory=tempfile.mkdtemp('wapt'),
-        ...    build=True,
         ...    auto_inc_version=True,
         ...    append_depends=['tis-firefox','tis-irfanview'],
         ...    remove_depends=['tis-wapttestsub'],
@@ -5459,13 +5426,6 @@ class Wapt(object):
                 dot_wapt = newname.rfind('.wapt')
                 newname = newname[0:dot_wapt]
                 logger.warning("Target ends with '.wapt', stripping.  New name: %s", newname)
-
-        if not private_key:
-            private_key = self.private_key
-
-        if build:
-            if not private_key or not os.path.isfile(private_key) :
-                raise EWaptMissingPrivateKey('Would be unable to build %s after duplication, private key %s not provided or not present'%(packagename,private_key))
 
         # default empty result
         result = {}
@@ -5571,36 +5531,8 @@ class Wapt(object):
         dest_control.save_control_to_wapt(target_directory)
 
         self.add_pyscripter_project(target_directory)
-
-        # remove manifest and signature
-        manifest_filename = os.path.join( target_directory,'WAPT','manifest.sha256')
-        if os.path.isfile(manifest_filename):
-            os.unlink(manifest_filename)
-
-        # remove signature of manifest
-        signature_filename = os.path.join( target_directory,'WAPT','signature')
-        if os.path.isfile(signature_filename):
-            os.unlink(signature_filename)
-
-        # build package
-        if build:
-            build_res = self.build_package(target_directory,inc_package_release=False,excludes=excludes)
-            result['target'] = build_res['filename']
-            result['package'] = build_res['package']
-            # sign package
-            if private_key:
-                self.sign_package(build_res['filename'],excludes=excludes,private_key=private_key,callback=callback)
-                logger.debug(u'Package signed')
-            else:
-                logger.warning(u'No private key provided, package is not signed !')
-            # cleanup
-            if os.path.isdir(target_directory):
-                shutil.rmtree(target_directory)
-        else:
-            result['source_dir'] = target_directory
-            result['target'] = target_directory
-            result['package'] = dest_control
-        return result
+        dest_control.invalidate_signature()
+        return dest_control
 
     def check_waptupgrades(self):
         """Check if a new version of the Wapt client is available

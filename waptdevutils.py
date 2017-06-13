@@ -254,7 +254,7 @@ def duplicate_from_external_repo(waptconfigfile,package_filename,target_director
         bundle.add_pems(makepath(authorized_certs,'*.pem'))
         authorized_certs = bundle.certificates()
 
-    res = wapt.duplicate_package(package_filename,newname,target_directory=target_directory, build=False,auto_inc_version=True,authorized_certs = authorized_certs)
+    res = wapt.duplicate_package(package_filename,newname,target_directory=target_directory,auto_inc_version=True,authorized_certs = authorized_certs)
     result = res['source_dir']
 
     # renames dependencies
@@ -478,7 +478,7 @@ def add_ads_groups(waptconfigfile,hosts_list,wapt_server_user,wapt_server_passwd
                 # now update the host package : download and append missing packages
                 tmpdir = mkdtemp()
                 try:
-                    package = wapt.edit_host(hostname,target_directory = tmpdir, use_local_sources=False)
+                    package = wapt.edit_host(hostname,target_directory = tmpdir)
                     control = package['package']
                     depends =  ensure_list(control.depends)
 
@@ -518,15 +518,14 @@ def create_waptwua_package(waptconfigfile,wuagroup='default',wapt_server_user=No
     else:
         res = wapt.edit_package(packagename,target_directory = mkdtemp('wapt'),use_local_sources = False)
     """
-    res = wapt.make_group_template(packagename,directoryname = mkdtemp('wapt'),section='waptwua')
-    build_res = wapt.build_upload(res['target'],
+    group_entry = wapt.make_group_template(packagename,directoryname = mkdtemp('wapt'),section='waptwua')
+    build_res = wapt.build_upload(group_entry.sourcespath,
         private_key_passwd = key_password,
         wapt_server_user=wapt_server_user,
         wapt_server_passwd=wapt_server_passwd,
         inc_package_release=True)
-    if isdir(res['target']):
-        remove_tree(res['target'])
-    packagefilename = build_res[0]
+    group_entry.delete_localsources()
+    packagefilename = group_entry.localpath
     if isfile(packagefilename):
         remove_file(packagefilename)
     return build_res

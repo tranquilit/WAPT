@@ -728,7 +728,10 @@ class PackageEntry(object):
 
     @property
     def download_url(self):
-        return self.repo_url+'/'+self.filename.strip('./')
+        if self.repo_url:
+            return self.repo_url+'/'+self.filename.strip('./')
+        else:
+            return None
 
     def inc_build(self):
         """Increment last number part of version in memory"""
@@ -1283,6 +1286,7 @@ class WaptBaseRepo(object):
         self._packages = None
         self._index = {}
         self._packages_date = None
+        self.discarded = []
 
         # if not None, control's signature will be check against this certificates list
         self.load_config(config=config)
@@ -1306,11 +1310,12 @@ class WaptBaseRepo(object):
         Returns:
             self: return itself to chain calls.
         """
-
+        return self
 
     def _load_packages_index(self):
         self._packages = []
         self._packages_date = None
+        self.discarded = []
 
     def update(self):
         """Update local index of packages from source index"""
@@ -1497,6 +1502,9 @@ class WaptLocalRepo(WaptBaseRepo):
         True
         """
         # Packages file is a zipfile with one Packages file inside
+        if not os.path.isdir(os.path.dirname(self.packages_path)):
+            raise EWaptException('Directory for wapt local repo %s does not exist' % self.packages_path)
+
         if os.path.isfile(self.packages_path):
             self._packages_date = datetime2isodate(datetime.datetime.utcfromtimestamp(os.stat(self.packages_path).st_mtime))
             with zipfile.ZipFile(self.packages_path) as packages_file:
@@ -1507,6 +1515,8 @@ class WaptLocalRepo(WaptBaseRepo):
             else:
                 self._packages = []
             self._index.clear()
+
+            self.discarded = []
 
             startline = 0
             endline = 0
@@ -1520,10 +1530,16 @@ class WaptLocalRepo(WaptBaseRepo):
                     package.repo = self.name
                     package.filename = package.make_package_filename()
                     package.localpath = os.path.join(self.localpath,package.filename)
-                    self._packages.append(package)
-                    # index last version
-                    if package.package not in self._index or self._index[package.package] < package:
-                        self._index[package.package] = package
+                    try:
+                        if self.authorized_certs is not None:
+                            package.check_control_signature(self.authorized_certs)
+                        self._packages.append(package)
+                        # index last version
+                        if package.package not in self._index or self._index[package.package] < package:
+                            self._index[package.package] = package
+                    except (EWaptNotSigned,SSLVerifyException) as e:
+                        logger.critical(u'Package %s discarded because: %s'% (package.localpath,e))
+                        self.discarded.append(package)
 
             for line in packages_lines:
                 if line.strip()=='':
@@ -1539,6 +1555,7 @@ class WaptLocalRepo(WaptBaseRepo):
             self._packages = []
             self._index.clear()
             self._packages_date = None
+            logger.info('Index file %s does not yet exist' % self.packages_path)
 
     def update_packages_index(self,force_all=False):
         """Scan self.localpath directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash
@@ -1866,9 +1883,10 @@ class WaptRemoteRepo(WaptBaseRepo):
         if self._packages is None:
             self._packages = []
         if not self.repo_url:
-            raise Exception('Repository URL for %s is not defined' % self.name)
+            raise EWaptException('Repository URL for %s is empty. Either add a %s section in ini, or add a _%s._tcp.%s SRV record' % (self.name,self.name,self.name,self.dnsdomain))
 
         self._index.clear()
+        self.discarded = []
 
         new_packages = []
         logger.debug(u'Read remote Packages zip file %s' % self.packages_url)
@@ -1899,6 +1917,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                         self._index[package.package] = package
                 except (SSLVerifyException,EWaptNotSigned) as e:
                     logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.authorized_certs))
+                    self.discarded.append(package)
 
         for line in packages_lines:
             if line.strip()=='':
@@ -1914,7 +1933,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         removed = [ p for p in self._packages if p not in new_packages]
         self._packages = new_packages
         self._packages_date = httpdatetime2isodate(packages_answer.headers['last-modified'])
-        return {'added':added,'removed':removed,'last-modified': self.packages_date }
+        return {'added':added,'removed':removed,'last-modified': self.packages_date, 'discarded':self.discarded }
 
     @property
     def packages(self):

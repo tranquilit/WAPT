@@ -712,17 +712,16 @@ def main():
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
-                    print(u"Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result['source_dir']))
+                    print(u"Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result.sourcespath))
                     if mywapt.upload_cmd or mywapt.waptserver:
-                        print(u"You can build and upload the WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result['source_dir']))
-                    wapt_sources_edit(result['source_dir'])
+                        print(u"You can build and upload the WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result.sourcespath))
+                    wapt_sources_edit(result.sourcespath)
 
             elif action == 'duplicate':
                 if len(args) < 3:
                     print(u"You must provide the source package and the new name")
                     sys.exit(1)
-                result = mywapt.duplicate_package(*args[1:4],target_directory='',
-                    build=False)
+                result = mywapt.duplicate_package(*args[1:4],target_directory='')
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
@@ -747,12 +746,12 @@ def main():
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
-                    if os.path.isdir(result['target']):
-                        wapt_sources_edit(result['target'])
+                    if os.path.isdir(result.sourcespath):
+                        wapt_sources_edit(result.sourcespath)
                         if mywapt.upload_cmd or mywapt.waptserver:
-                            print(u"Package edited. You can build and upload the new WAPT package by launching\n  %s -i build-upload %s" % (sys.argv[0],result['target']))
+                            print(u"Package edited. You can build and upload the new WAPT package by launching\n  %s -i build-upload %s" % (sys.argv[0],result.sourcespath))
                         else:
-                            print(u"Package edited. You can build the new WAPT package by launching\n  %s -i build-package %s" % (sys.argv[0],result['target']))
+                            print(u"Package edited. You can build the new WAPT package by launching\n  %s -i build-package %s" % (sys.argv[0],result.sourcespath))
 
             elif action == 'edit-host':
                 if len(args) == 1:
@@ -1070,6 +1069,7 @@ def main():
                         callback=cb))
 
             elif action == 'get-server-certificate':
+                mywapt.waptserver.verify_cert = False
                 if mywapt.waptserver and mywapt.waptserver_available():
                     result = mywapt.waptserver.save_server_certificate(os.path.join(mywapt.wapt_base_dir,'ssl','server'))
                     if options.json_output:
@@ -1080,6 +1080,7 @@ def main():
                     print('Server not available')
 
             elif action == 'enable-check-certificate':
+                mywapt.waptserver.verify_cert = False
                 if mywapt.waptserver and mywapt.waptserver_available():
                     result = mywapt.waptserver.save_server_certificate(os.path.join(mywapt.wapt_base_dir,'ssl','server'),overwrite = options.force)
                     if result:

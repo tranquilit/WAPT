@@ -522,8 +522,8 @@ begin
     begin
       res := DMPython.RunJSON(
         format('mywapt.make_group_template(packagename="%s",depends="%s",description=r"%s".decode(''utf8''),section="%s")', [Trim(EdPackage.Text), Depends, Eddescription.Text,EdSection.Text]));
-      FSourcePath := res.S['source_dir'];
-      PackageEdited := res['package'];
+      FSourcePath := res.S['sourcespath'];
+      PackageEdited := res;
     end
     else
     begin
@@ -797,8 +797,8 @@ begin
           end;
 
       end;
-      FSourcePath := res.S['source_dir'];
-      PackageEdited := res['package'];
+      FSourcePath := res.S['sourcespath'];
+      PackageEdited := res;
     end;
   finally
     Screen.Cursor := crDefault;
