@@ -94,13 +94,26 @@ def main():
     for arg in args:
         waptpackages.extend(glob.glob(arg))
 
+    errors = []
     for waptpackage in waptpackages:
         print('Processing %s'%waptpackage)
-        pe = PackageEntry(waptfile = waptpackage)
-        # force md
-        pe._md = options.md
-        pe.sign_package(private_key=key,certificate = cert)
-        print('Done')
+        try:
+            pe = PackageEntry(waptfile = waptpackage)
+            # force md
+            pe._md = options.md
+            pe.sign_package(private_key=key,certificate = cert)
+            print('Done')
+        except Exception as e:
+            errors.append([waptpackage,repr(e)])
+
+    if errors:
+        print('Package not processes properly: ')
+        for fn,error in errors:
+            print(u'%s : %s' % (fn,error))
+        sys.exit(1)
+    else:
+        sys.exit(0)
+
 
 if __name__ == "__main__":
     main()
