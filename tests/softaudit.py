@@ -28,7 +28,7 @@ if __name__ == '__main__':
     wapt.dbpath=':memory:'
 
     # get the collection of *all* hosts from waptserver inventory
-    hosts =  wapt.waptserver.get('api/v1/hosts?columns=uuid,computer_fqdn,connected_ips,description',auth=('admin',server_password))
+    hosts =  wapt.waptserver.get('api/v1/hosts?limit=10000&columns=uuid,computer_fqdn,connected_ips,description',auth=('admin',server_password))
 
     print(u'Logiciels installés depuis %s jours sur les %s machines de wapt:\n'%(options.days,len(hosts['result'])))
     for h in hosts['result']:
@@ -39,7 +39,8 @@ if __name__ == '__main__':
             ip = ','.join(h['connected_ips'])
             description = h['description']
 
-            softs = wapt.waptserver.get('api/v1/host_data?uuid=%s&field=softwares'%(uuid,),auth=('admin',server_password)).get('result',[])
+            softs = wapt.waptserver.get('api/v1/host_data?uuid=%s&field=installed_softwares'%(uuid,),auth=('admin',server_password)).get('result',[])
+            softs = wapt.waptserver.get('api/v1/host_data?uuid=%s&field=installed_packages'%(uuid,),auth=('admin',server_password)).get('result',[])
             datemin = compact_date(datetime.datetime.now()-datetime.timedelta(days=options.days)) # forme YYYYMMDD 20161007
             recent_installs = [s['name'] for s in softs if s['install_date'] >= datemin]
             if recent_installs:
