@@ -252,9 +252,10 @@ def duplicate_from_external_repo(waptconfigfile,package_filename,target_director
         bundle.add_pems(makepath(authorized_certs,'*.crt'))
         bundle.add_pems(makepath(authorized_certs,'*.cer'))
         bundle.add_pems(makepath(authorized_certs,'*.pem'))
-        authorized_certs = bundle.certificates()
+    else:
+        bundle = authorized_certs
 
-    res = wapt.duplicate_package(package_filename,newname,target_directory=target_directory,auto_inc_version=True,authorized_certs = authorized_certs)
+    res = wapt.duplicate_package(package_filename,newname,target_directory=target_directory,auto_inc_version=True,cabundle = bundle)
     result = res['source_dir']
 
     # renames dependencies
@@ -359,7 +360,7 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
         remove_conflicts=[],
         key_password=None,
         wapt_server_user=None,wapt_server_passwd=None,
-        authorized_certs = None
+        cabundle = None
         ):
     """Add or remove packages from host packages
     >>> edit_hosts_depends('c:/wapt/wapt-get.ini','htlaptop.tranquilit.local','toto','tis-7zip','admin','password')
@@ -403,7 +404,7 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
                 remove_depends = remove_depends,
                 append_conflicts = append_conflicts,
                 remove_conflicts = remove_conflicts,
-                authorized_certs = authorized_certs,
+                cabundle = cabundle,
                 )
             sources.append(edit_res)
             # build and sign

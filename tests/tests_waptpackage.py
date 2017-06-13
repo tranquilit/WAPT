@@ -48,7 +48,7 @@ import urllib3
 
 # global parameters
 key = None
-certificates = None
+cabundle = None
 gest = None
 codeur = None
 
@@ -57,10 +57,10 @@ def pwd_callback(*args):
     return str('test')
 
 def setup_test():
-    global certificates
-    certificates = SSLCABundle()
-    certificates.add_pems('c:/wapt/ssl/*.crt')
-    print certificates.certificates()
+    global cabundle
+    cabundle = SSLCABundle()
+    cabundle.add_pems('c:/wapt/ssl/*.crt')
+    print cabundle.certificates()
 
     global key
     key = SSLPrivateKey('c:/private/150.pem',callback = pwd_callback)
@@ -96,8 +96,8 @@ def test_build_sign_verify_package():
     p2= PackageEntry(waptfile = p.localpath)
     print u"Paquet testé:\n%s" % ensure_unicode(p2)
 
-    print p2.check_control_signature(certificates.certificates())
-    destdir = p2.unzip_package(check_with_certs = certificates.certificates())
+    print p2.check_control_signature(cabundle)
+    destdir = p2.unzip_package(cabundle = cabundle)
     print destdir
 
     logger.debug('Test avec certificat simple gestionnaire')
@@ -112,7 +112,7 @@ def test_build_sign_verify_package():
     logger.debug('OK : %s' % cert)
 
     print('Test avec un ensemble de certificats, le codeur le plus recent doit venir')
-    cert = p2.check_package_signature(certificates.certificates())
+    cert = p2.check_package_signature(cabundle)
     assert(cert.is_code_signing)
     print('OK : %s' % cert)
 
@@ -120,7 +120,7 @@ def test_build_sign_verify_package():
     try:
         with open(os.path.join(destdir,'setup.py'),'a') as setup_py:
             setup_py.write('\n')
-        cert = p2.check_package_signature(certificates.certificates())
+        cert = p2.check_package_signature(cabundle)
         raise Exception('Should fail corrupted file')
     except EWaptCorruptedFiles as e:
         print('OK : %s' % e)
@@ -132,7 +132,7 @@ def test_build_sign_verify_package():
     try:
         with open(os.path.join(destdir,'virus'),'w') as afile:
             afile.write('Un virus\n')
-        cert = p2.check_package_signature(certificates.certificates())
+        cert = p2.check_package_signature(cabundle)
         raise Exception('Should fail corrupted file')
     except EWaptCorruptedFiles as e:
         print('OK : %s' % e)
@@ -143,7 +143,7 @@ def test_build_sign_verify_package():
     try:
         destdir = p2.unzip_package()
         os.remove(os.path.join(destdir,'setup.py'))
-        cert = p2.check_package_signature(certificates.certificates())
+        cert = p2.check_package_signature(cabundle)
         raise Exception('Should fail corrupted file')
     except (EWaptCorruptedFiles,IOError) as e:
         print('OK : %s' % e)
@@ -152,8 +152,8 @@ def test_build_sign_verify_package():
 
     p2.build_package()
     p2.sign_package(codeur,key)
-    p2.unzip_package(check_with_certs = certificates.certificates())
-    cert = p2.check_package_signature(certificates.certificates())
+    p2.unzip_package(cabundle = cabundle)
+    cert = p2.check_package_signature(cabundle)
     p2.delete_localsources()
 
     logger.debug('Corruption control')
@@ -161,7 +161,7 @@ def test_build_sign_verify_package():
         destdir = p2.unzip_package()
         with open(os.path.join(destdir,'WAPT/control'),'a') as control:
             control.write('\n')
-        cert = p2.check_package_signature(certificates.certificates())
+        cert = p2.check_package_signature(cabundle)
         raise Exception('Should fail corrupted file')
     except EWaptCorruptedFiles as e:
         assert('WAPT/control' in str(e))
@@ -170,7 +170,7 @@ def test_build_sign_verify_package():
     p2.build_package()
     p2.sign_package(codeur,key)
     p2.unzip_package()
-    cert = p2.check_package_signature(certificates.certificates())
+    cert = p2.check_package_signature(cabundle)
     p2.delete_localsources()
 
     logger.debug('Corruption attribut control')
@@ -178,7 +178,7 @@ def test_build_sign_verify_package():
         destdir = p2.unzip_package()
         p2.inc_build()
         p2.build_package()
-        cert = p2.check_control_signature(certificates.certificates())
+        cert = p2.check_control_signature(cabundle)
         raise Exception('Should fail corrupted file')
     except SSLVerifyException as e:
         logger.debug('OK : %s' % e)
@@ -299,12 +299,12 @@ def test_oldsignature():
     w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
     w.dbpath=':memory:'
     pe = PackageEntry(waptfile=r'C:\tranquilit\wapt\cache\tis-ms-pstools_1-5_all.wapt')
-    pe.check_control_signature(certificates.certificates(valid_only=False))
+    pe.check_control_signature(cabundle)
 
 def test_waptrepo():
-    r = WaptRemoteRepo('https://wapt142.tranquilit.local/wapt',authorized_certs=certificates.certificates(),verify_cert=False)
+    r = WaptRemoteRepo('https://wapt142.tranquilit.local/wapt',cabundle=cabundle,verify_cert=False)
     print r.packages_matching('tis-longtask')
-    r = WaptRemoteRepo('https://wapt142.tranquilit.local/wapt',authorized_certs=certificates.certificates(),verify_cert=True)
+    r = WaptRemoteRepo('https://wapt142.tranquilit.local/wapt',cabundle=cabundle,verify_cert=True)
     try:
         print r.packages
         raise('certificate autosigné, doit failer')
@@ -317,7 +317,7 @@ def test_waptrepo():
     with tempfile.NamedTemporaryFile(delete=False) as crtfile:
         crtfile.file.write(cert_pem)
         crtfile.file.close()
-        r = WaptRemoteRepo('https://wapt142.tranquilit.local/wapt',authorized_certs=certificates.certificates(),verify_cert=crtfile.name)
+        r = WaptRemoteRepo('https://wapt142.tranquilit.local/wapt',cabundle=cabundle,verify_cert=crtfile.name)
         print(r.packages)
         print('OK: certtificate pinning ok')
 
@@ -331,7 +331,7 @@ def test_wapt_engine():
     print w.search()
     print w.list_upgrade()
     for r in w.repositories:
-        print r.authorized_certs
+        print r.cabundle
     print w.waptserver
     res = w.update()
     print('OK: %s'%res)
@@ -376,9 +376,19 @@ def test_editpackage():
     w.use_hostpackages = False
     w._set_fake_hostname('testwaptcomputer.tranquilit.local')
     w.update()
-    pe = w.edit_package('tis-wapttest(=24)',r'c:\tranquilit\tis-wapttest-wapt.24',)
+    pe = w.edit_package('tis-wapttest(=25)',r'c:\tranquilit\tis-wapttest-wapt.24',)
     assert(os.path.isdir(pe.sourcespath))
     wapt_sources_edit(pe.sourcespath)
+
+def test_keypassword():
+    c = SSLCertificate('c:/private/150-codeur.crt')
+    try:
+        k = c.matching_key_in_dirs()
+    except RSAError as e:
+        print e
+        raise
+
+
 
 
 
@@ -386,9 +396,10 @@ def test_editpackage():
 if __name__ == '__main__':
     setup_test()
     test_wapt_engine()
-    test_editpackage()
-    test_reload_config()
-    test_edithost()
+    #test_editpackage()
+    #test_reload_config()
+    #test_edithost()
+    test_keypassword()
 
     test_waptrepo()
     test_oldsignature()

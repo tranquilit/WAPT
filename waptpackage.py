@@ -837,14 +837,14 @@ class PackageEntry(object):
             private_key.sign_content(self._signed_content(),self._md or self._default_md))
         return self.get_default_signed_attributes()
 
-    def check_control_signature(self,authorized_certs):
+    def check_control_signature(self,cabundle):
         """Check in memory control signature against a list of public certificates
 
         Args:
-            authorized_certs (list of crt paths or SSLCertificate instances)
+            cabundle (SSLCABundle):
 
         Returns:
-            matchine SSLCertificate
+            matching SSLCertificate
 
         >>> from waptpackage import *
         >>> from common import SSLPrivateKey,SSLCertificate
@@ -855,37 +855,76 @@ class PackageEntry(object):
         >>> p.depends = 'test'
         >>> p._sign_control(k,c)
         >>> p.check_control_signature(c)
+
+        >>> p.check_control_signature(SSLCABundle('c:/wapt/ssl'))
+
         """
         if not self.signature:
             raise EWaptNotSigned('Package control %s on repo %s is not signed' % (self.asrequirement(),self.repo))
+
+        assert(isinstance(cabundle,SSLCABundle))
+
         signed_content = self._signed_content()
         signature_raw = self.signature.decode('base64')
-        if not isinstance(authorized_certs,list):
-            authorized_certs = [authorized_certs]
-        for public_cert in authorized_certs:
+        cert = self.package_certificate()
+        if cert is not None:
             try:
-                if isinstance(public_cert,SSLCertificate):
-                    crt = public_cert
-                elif os.path.isfile(public_cert):
-                    crt = SSLCertificate(public_cert)
-                else:
-                    raise EWaptMissingCertificate('The public cert %s is neither a cert file nor a SSL Certificate object' % public_cert)
+                if cert.verify_content(signed_content,signature_raw,md=self._default_md):
+                    self._md = self._default_md
+                    return cert
+
+                issued_by = cabundle.is_known_issuer(cert)
+                if not issued_by:
+                    raise EWaptCertificateUnknowIssuer('Package certificate is unknown and not allowed on this host')
+            except SSLVerifyException as e:
+                raise SSLVerifyException('SSL signature verification failed for control %s against embedded certiicate %s : %s' % (self.asrequirement(),cert,repr(e)))
+        else:
+            logger.warning('Old style signature without embedded certificate, please resign %s' %(self.asrequirement()))
+            for public_cert in cabundle.certificates():
                 try:
-                    if crt.verify_content(signed_content,signature_raw,md=self._default_md):
-                        self._md = self._default_md
-                        return crt
-                except:
-                    if crt.verify_content(signed_content,signature_raw,md='sha1'):
-                        logger.debug('Fallback to sha1 digest for package''s control signature')
-                        self._md = 'sha1'
-                        return crt
-            except SSLVerifyException:
-                pass
-        raise SSLVerifyException('SSL signature verification failed for control %s, either none public certificates match signature or signed content has been changed' % self.asrequirement())
+                    if isinstance(public_cert,SSLCertificate):
+                        crt = public_cert
+                    elif os.path.isfile(public_cert):
+                        crt = SSLCertificate(public_cert)
+                    else:
+                        raise EWaptMissingCertificate('The public cert %s is neither a cert file nor a SSL Certificate object' % public_cert)
+                    try:
+                        if crt.verify_content(signed_content,signature_raw,md=self._default_md):
+                            self._md = self._default_md
+                            return crt
+                    except:
+                        if crt.verify_content(signed_content,signature_raw,md='sha1'):
+                            logger.debug('Fallback to sha1 digest for package''s control signature')
+                            self._md = 'sha1'
+                            return crt
+                except SSLVerifyException:
+                    pass
+            raise SSLVerifyException('SSL signature verification failed for control %s, either none public certificates match signature or signed content has been changed' % self.asrequirement())
+
+    def package_certificate(self):
+        """Return certificate from package. If package is built, take it from Zip
+        else take the certificate from unzipped directory
+
+        Returns:
+            SSLCertificate: embedded certificate when package was signed or None if not provided or signed.
+        """
+        if self.localpath and os.path.isfile(self.localpath):
+            try:
+                with ZipFile(self.localpath,allowZip64=True) as zip:
+                    cert_pem = zip.read('WAPT/certificate.crt')
+                return SSLCertificate(crt_string = cert_pem)
+            except Exception as e:
+                logger.warning('No certificate found in %s : %s'% (self.localpath,repr(e)))
+                return None
+        elif self.sourcespath and os.path.isdir(self.sourcespath) and os.path.isfile(os.path.join(self.sourcespath,'WAPT','certificate.crt')):
+            # unzipped sources
+            return SSLCertificate(crt_filename=os.path.join(self.sourcespath,'WAPT','certificate.crt'))
+        else:
+            # package is not yet built/signed.
+            return None
 
     def build_manifest(self,exclude_filenames = None,block_size=2**20,forbidden_files=[]):
-        """Calc the manifest of an already built wapt package/
-
+        """Calc the manifest of an already built (zipped) wapt package
 
         Returns:
             dict: {filepath:shasum,}
@@ -1101,21 +1140,26 @@ class PackageEntry(object):
         errors.extend([ fn for fn in files if fn not in expected])
         return errors
 
-    def check_package_signature(self,authorized_certs):
+    def check_package_signature(self,cabundle):
         """Check the hash of files in unzipped package_dir and the manifest signature
            against the authorized keys
         Args:
-            authorized_certs (list) ; list of authorized certificate filepaths
+            cabundle (SSLCABundle) : list of authorized certificate / ca filepaths
 
         Returns:
-            SSLcertificate : matching certificate
+            SSLCertificate : matching certificate
 
         Raise Exception if no certificate match is found.
         """
-        if not authorized_certs:
-            raise EWaptBadCertificate(u'No supplied certificate to check package signature')
-        if not isinstance(authorized_certs,list):
-            authorized_certs = [authorized_certs]
+        if not cabundle:
+            raise EWaptBadCertificate(u'No supplied CABundle to check package signature')
+
+        if isinstance(cabundle,SSLCertificate):
+            cert = cabundle
+            cabundle = SSLCABundle()
+            cabundle.add_pem(cert.public_cert_filename)
+
+        assert(isinstance(cabundle,SSLCABundle))
 
         if not self.sourcespath:
             raise EWaptNotSourcesDirPackage(u'Package entry is not an unzipped sources package directory.')
@@ -1150,26 +1194,37 @@ class PackageEntry(object):
                 with open(signature_filename,'r') as signature_file:
                     signature = signature_file.read().decode('base64')
                 try:
-                    for cert in reversed(sorted(authorized_certs)):
-                        logger.debug('Checking with %s' % cert)
-                        try:
-                            cert.verify_content(manifest_data,signature,md = self._md)
-                            if not has_setup_py or cert.is_code_signing:
-                                logger.debug('OK with %s' % cert)
-                                verified_by = cert
-                                break
-                            else:
-                                logger.debug(u'Signature OK but not a code signing certificate, skipping: %s' % cert)
-                        except SSLVerifyException as e:
-                            logger.debug(u'Check failed with certificate %s'%cert)
+                    cert = self.package_certificate()
+                    if cert is not None:
+                        issued_by = cabundle.is_known_issuer(cert)
+                        if not issued_by:
+                            raise EWaptCertificateUnknowIssuer('Package certificate is unknown and not allowed on this host')
+                        certs = [cert]
+                    else:
+                        # old style, test all against signature
+                        certs = reversed(sorted(cabundle.authorized_certs()))
+
+                    if certs:
+                        for cert in certs:
+                            logger.debug('Checking signature with %s' % cert)
+                            try:
+                                cert.verify_content(manifest_data,signature,md = self._md)
+                                if not has_setup_py or cert.is_code_signing:
+                                    logger.debug('OK with %s' % cert)
+                                    verified_by = cert
+                                    break
+                                else:
+                                    logger.debug(u'Signature OK but not a code signing certificate, skipping: %s' % cert)
+                            except SSLVerifyException as e:
+                                logger.debug(u'Check failed with certificate %s'%cert)
 
                     if verified_by:
                         logger.info(u'Package issued by %s' % (verified_by.subject,))
                     else:
                         raise EWaptBadSignature(u'No matching certificate found or bad signature')
                 except:
-                    raise EWaptBadSignature(u'Package file %s signature is invalid.\n\nThe signer "%s" is not accepted by any of the following public keys:\n%s' % \
-                        (self.asrequirement(),self.signer,u'\n'.join([u'%s' % cert for cert in authorized_certs])))
+                    raise EWaptBadSignature(u'Package file %s signature is invalid.\n\nThe signer "%s" is not accepted by any of the following CA or public keys:\n%s' % \
+                        (self.asrequirement(),self.signer,u'\n'.join([u'%s' % cert for cert in cabundle.certificates()])))
 
                 # now check the integrity of files
                 errors = self.list_corrupted_files()
@@ -1182,12 +1237,12 @@ class PackageEntry(object):
             raise EWaptNotSigned(u'The package %s in %s does not contain the manifest.sha256 file with content fingerprints' % (self.asrequirement(),self.sourcespath))
 
 
-    def unzip_package(self,target_dir=None,check_with_certs=None):
+    def unzip_package(self,target_dir=None,cabundle=None):
         """Unzip package and optionnally check content
 
         Args:
             target_dir (str): where to unzip package content. If Noe, a temp dir is created
-            check_with_certs (list) : list of Certificates to check content. If None, no check is done
+            cabundle (list) : list of Certificates to check content. If None, no check is done
 
         Returns:
             str : path to unzipped packages files
@@ -1207,16 +1262,13 @@ class PackageEntry(object):
         else:
             target_dir = os.path.abspath(target_dir)
 
-        if check_with_certs is not None and not isinstance(check_with_certs,list):
-            check_with_certs = [check_with_certs]
-
         logger.info(u'Unzipping package %s to directory %s' % (self.localpath,ensure_unicode(target_dir)))
         with ZipFile(self.localpath,allowZip64=True) as zip:
             try:
                 zip.extractall(path=target_dir)
                 self.sourcespath = target_dir
-                if check_with_certs is not None:
-                    verified_by = self.check_package_signature(check_with_certs)
+                if cabundle is not None:
+                    verified_by = self.check_package_signature(cabundle)
                     logger.info(u'Unzipped files verified by certificate %s' % verified_by)
             except Exception as e:
                 if os.path.isdir(target_dir):
@@ -1290,13 +1342,13 @@ class WaptBaseRepo(object):
         'check_certificates_validity':'1',
     }
 
-    def __init__(self,name='abstract',authorized_certs=None,config=None):
+    def __init__(self,name='abstract',cabundle=None,config=None):
         """Init properties, get default values from _default_config, and override them
                 with constructor paramaters
 
         Args:
             name (str): internal name of the repository
-            authorized_certs (list) : list of SSLCertificates for signature checking.
+            cabundle (CASSLBundle) : ca signature checking.
 
         Returns:
             self
@@ -1311,7 +1363,7 @@ class WaptBaseRepo(object):
         # if not None, control's signature will be check against this certificates list
         self.load_config(config=config)
 
-        self.authorized_certs = authorized_certs
+        self.cabundle = cabundle
 
     def load_config(self,config=None,section=None):
         """Load configuration from inifile section.
@@ -1493,12 +1545,12 @@ class WaptLocalRepo(WaptBaseRepo):
     >>> localrepo.update()
     """
 
-    def __init__(self,localpath='/var/www/wapt',name='waptlocal',authorized_certs=None,config=None):
+    def __init__(self,localpath='/var/www/wapt',name='waptlocal',cabundle=None,config=None):
         # store defaults at startup
         self._default_config.update({
             'localpath':localpath,
         })
-        WaptBaseRepo.__init__(self,name=name,authorized_certs=authorized_certs,config=None)
+        WaptBaseRepo.__init__(self,name=name,cabundle=cabundle,config=None)
 
         # override defaults and config with supplied parameters
         if self.localpath is not None:
@@ -1551,8 +1603,8 @@ class WaptLocalRepo(WaptBaseRepo):
                     package.filename = package.make_package_filename()
                     package.localpath = os.path.join(self.localpath,package.filename)
                     try:
-                        if self.authorized_certs is not None:
-                            package.check_control_signature(self.authorized_certs)
+                        if self.cabundle is not None:
+                            package.check_control_signature(self.cabundle)
                         self._packages.append(package)
                         # index last version
                         if package.package not in self._index or self._index[package.package] < package:
@@ -1624,9 +1676,9 @@ class WaptLocalRepo(WaptBaseRepo):
                 if package_filename in old_entries:
                     entry.load_control_from_wapt(fname,calc_md5=False)
 
-                    if self.authorized_certs is not None:
+                    if self.cabundle is not None:
                         try:
-                            entry.check_control_signature(self.authorized_certs)
+                            entry.check_control_signature(self.cabundle)
                         except (EWaptNotSigned,SSLVerifyException) as e:
                             logger.critical(u'Package %s discarded because: %s'% (package_filename,e))
                             continue
@@ -1719,9 +1771,9 @@ class WaptLocalRepo(WaptBaseRepo):
             self.localpath = config.get(section,'localpath')
 
         if config.has_option(section,'public_certs_dir'):
-            bundle = SSLCABundle()
-            bundle.add_pems(config.get(section,'public_certs_dir'))
-            self.authorized_certs = bundle.certificates(valid_only = config.getboolean(section,'check_certificates_validity'))
+            self.cabundle = SSLCABundle()
+            self.cabundle.add_pems(config.get(section,'public_certs_dir'))
+            self.check_certificates_validity = config.getboolean(section,'check_certificates_validity')
 
         return self
 
@@ -1735,7 +1787,7 @@ class WaptRemoteRepo(WaptBaseRepo):
     True
     """
 
-    def __init__(self,url=None,name='',verify_cert=None,proxies=None,timeout = 2,authorized_certs=None,config=None):
+    def __init__(self,url=None,name='',verify_cert=None,proxies=None,timeout = 2,cabundle=None,config=None):
         """Initialize a repo at url "url".
 
         Args:
@@ -1763,7 +1815,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         self.verify_cert = None
 
         # this load and empty config
-        WaptBaseRepo.__init__(self,name=name,authorized_certs=authorized_certs,config=config)
+        WaptBaseRepo.__init__(self,name=name,cabundle=cabundle,config=config)
 
         # forced URL
         if url is not None:
@@ -1838,9 +1890,9 @@ class WaptRemoteRepo(WaptBaseRepo):
             self.timeout = config.getfloat(section,'timeout')
 
         if config.has_option(section,'public_certs_dir'):
-            bundle = SSLCABundle()
-            bundle.add_pems(config.get(section,'public_certs_dir'))
-            self.authorized_certs = bundle.certificates(valid_only = config.getboolean(section,'check_certificates_validity'))
+            self.cabundle = SSLCABundle()
+            self.cabundle.add_pems(config.get(section,'public_certs_dir'))
+            self.check_certificates_validity = config.getboolean(section,'check_certificates_validity')
 
         return self
 
@@ -1884,7 +1936,7 @@ class WaptRemoteRepo(WaptBaseRepo):
             packages_last_modified = req.headers['last-modified']
             return httpdatetime2isodate(packages_last_modified)
         except requests.exceptions.SSLError as e:
-            print(u'Certificate check failed for % and verify_cert %s'%(self.packages_url,self.verify_cert))
+            print(u'Certificate check failed for %s and verify_cert %s'%(self.packages_url,self.verify_cert))
             raise
         except requests.RequestException as e:
             logger.info(u'Repo packages index %s is not available : %s'%(self.packages_url,e))
@@ -1903,7 +1955,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         if self._packages is None:
             self._packages = []
         if not self.repo_url:
-            raise EWaptException('Repository URL for %s is empty. Either add a %s section in ini, or add a _%s._tcp.%s SRV record' % (self.name,self.name,self.name,self.dnsdomain))
+            raise EWaptException('Repository URL for %s is empty. Add a %s section in ini' % (self.name,self.name))
 
         self._index.clear()
         self.discarded = []
@@ -1930,13 +1982,13 @@ class WaptRemoteRepo(WaptBaseRepo):
                 package.repo = self.name
 
                 try:
-                    if self.authorized_certs is not None:
-                        package.check_control_signature(self.authorized_certs)
+                    if self.cabundle is not None:
+                        package.check_control_signature(self.cabundle)
                     new_packages.append(package)
                     if package.package not in self._index or self._index[package.package] < package:
                         self._index[package.package] = package
                 except (SSLVerifyException,EWaptNotSigned) as e:
-                    logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.authorized_certs))
+                    logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.cabundle))
                     self.discarded.append(package)
 
         for line in packages_lines:

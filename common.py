@@ -1652,7 +1652,7 @@ class WaptRepo(WaptRemoteRepo):
     >>> len(packages)
     """
 
-    def __init__(self,url=None,name='wapt',verify_cert=None,proxies=None,timeout = 2,dnsdomain=None,authorized_certs=None,config=None):
+    def __init__(self,url=None,name='wapt',verify_cert=None,proxies=None,timeout = 2,dnsdomain=None,cabundle=None,config=None):
         """Initialize a repo at url "url".
 
         Args:
@@ -1666,6 +1666,10 @@ class WaptRepo(WaptRemoteRepo):
         .. versionchanged:: 1.4.0
            authorized_certs (list):  list of trusted SSL certificates to filter out untrusted entries.
                                  if None, no check is performed. All antries are accepted.
+        .. versionchanged:: 1.5.0
+           cabundle (SSLCABundle):  list of trusted SSL ca certificates to filter out untrusted entries.
+                                     if None, no check is performed. All antries are accepted.
+
         """
 
         # additional properties
@@ -1677,7 +1681,7 @@ class WaptRepo(WaptRemoteRepo):
         self._dnsdomain = None
         self._cached_dns_repo_url = None
 
-        WaptRemoteRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,proxies=proxies,timeout=timeout,authorized_certs=authorized_certs,config=config)
+        WaptRemoteRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,proxies=proxies,timeout=timeout,cabundle=cabundle,config=config)
 
         # force with supplied not None parameters
         if dnsdomain is not None:
@@ -1943,9 +1947,6 @@ class WaptRepo(WaptRemoteRepo):
                                 continue
 
                         try:
-                            ## Already checked when loading from remote URL into self.packages list
-                            #if self.authorized_certs is not None:
-                            #    package.check_control_signature(self.authorized_certs)
                             waptdb.add_package_entry(package)
                         except:
                             logger.critical('Invalid signature for package control entry %s on repo %s : discarding' % (package.asrequirement(),self.name) )
@@ -2003,9 +2004,9 @@ class WaptRepo(WaptRemoteRepo):
 class WaptHostRepo(WaptRepo):
     """Dummy http repository for host packages"""
 
-    def __init__(self,url=None,name='wapt-host',verify_cert=None,proxies=None,timeout = None,dnsdomain=None,hostname=None,authorized_certs=None,config=None):
+    def __init__(self,url=None,name='wapt-host',verify_cert=None,proxies=None,timeout = None,dnsdomain=None,hostname=None,cabundle=None,config=None):
         self._hostname = None
-        WaptRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,proxies =proxies,timeout = timeout,dnsdomain=dnsdomain,authorized_certs=authorized_certs,config=config)
+        WaptRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,proxies =proxies,timeout = timeout,dnsdomain=dnsdomain,cabundle=cabundle,config=config)
 
         if hostname is None:
             self.hostname = setuphelpers.get_hostname()
@@ -2047,13 +2048,13 @@ class WaptHostRepo(WaptRepo):
             package.repo_url = self.repo_url
             package.filename = package.make_package_filename()
             try:
-                if self.authorized_certs is not None:
-                    package.check_control_signature(self.authorized_certs)
+                if self.cabundle is not None:
+                    package.check_control_signature(self.cabundle)
                 self._packages.append(package)
                 if package.package not in self._index or self._index[package.package] < package:
                     self._index[package.package] = package
             except (SSLVerifyException,EWaptNotSigned) as e:
-                logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.authorized_certs))
+                logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.cabundle))
                 self.discarded.append(package)
 
         except requests.HTTPError as e:
@@ -2134,7 +2135,7 @@ class WaptLogger(object):
 
 class Wapt(object):
     """Global WAPT engine"""
-    global_attributes = ['wapt_base_dir','waptserver','config_filename','proxies','repositories','private_key','public_certs_dir','package_cache_dir','dbpath']
+    global_attributes = ['wapt_base_dir','waptserver','config_filename','proxies','repositories','personal_certiticate_path','public_certs_dir','package_cache_dir','dbpath']
 
     def __init__(self,config=None,config_filename=None,defaults=None,disable_update_server_status=True):
         """Initialize engine with a configParser instance (inifile) and other defaults in a dictionary
@@ -2191,31 +2192,11 @@ class Wapt(object):
         self.user = setuphelpers.get_current_user()
         self.usergroups = None
 
-        # keep private key in cache
-        self._private_key = ''
-        self._private_key_cache = None
-
-        self.check_certificates_validity = False
-
         # host key cache
         self._host_key = None
 
-        self.waptserver = None
-        self.config_filedate = None
-        self.load_config(config_filename = self.config_filename)
-
-        self.options = OptionParser()
-        self.options.force = False
-
-        # list of process pids launched by run command
-        self.pidlist = []
-
-        # events handler
-        self.events = None
-
 
         self._key_passwd_cache = None
-
         def _cache_passwd_callback(*args):
             """Default password callback for opening private keys.
             """
@@ -2233,6 +2214,26 @@ class Wapt(object):
 
         self.key_passwd_callback = _cache_passwd_callback
 
+        # keep private key in cache
+        self._private_key_cache = None
+
+        self.cabundle = SSLCABundle(callback = self.key_passwd_callback)
+        self.check_certificates_validity = False
+
+        self.waptserver = None
+        self.config_filedate = None
+        self.load_config(config_filename = self.config_filename)
+
+        self.options = OptionParser()
+        self.options.force = False
+
+        # list of process pids launched by run command
+        self.pidlist = []
+
+        # events handler
+        self.events = None
+
+
         import pythoncom
         pythoncom.CoInitialize()
 
@@ -2242,15 +2243,6 @@ class Wapt(object):
     def __exit__(self, type, value, tb):
         pass
 
-    @property
-    def private_key(self):
-        return self._private_key
-
-    @private_key.setter
-    def private_key(self,value):
-        if value != self._private_key:
-            self._private_key_cache = None
-            self._private_key = value
 
     def as_dict(self):
         result = {}
@@ -2319,13 +2311,14 @@ class Wapt(object):
             'wapt_server_timeout':10.0,
             # optional...
             'templates_repo_url':'',
-            'private_key':'',
             'default_sources_url':'',
             'upload_cmd':'',
             'upload_cmd_host':'',
             'after_upload':'',
             'http_proxy':'',
             'waptwua_enabled':'0',
+            'public_certs_dir':'',
+            'personal_certificate_path':'',
             'check_certificates_validity':'True',
             }
 
@@ -2347,13 +2340,29 @@ class Wapt(object):
         else:
             self.dbpath = os.path.join(self.wapt_base_dir,'db','waptdb.sqlite')
 
-        if self.config.has_option('global','private_key'):
-            self.private_key = self.config.get('global','private_key')
+        # must have a matching key eithe rin same file or in same directory
+        # see self.private_key
+        if self.config.has_option('global','personal_certificate_path'):
+            self.personal_certificate_path = self.config.get('global','personal_certificate_path')
+
+        # be smart with old config
+        if not self.personal_certificate_path and self.config.has_option('global','private_key'):
+            pk = self.config.get('global','private_key')
+            if pk and os.path.isfile(pk):
+                (root,ext) = os.path.splitext(pk)
+                if os.path.isfile(root+'.crt'):
+                    self.personal_certificate_path = root+'.crt'
 
         if self.config.has_option('global','public_certs_dir'):
             self.public_certs_dir = self.config.get('global','public_certs_dir')
         else:
             self.public_certs_dir = os.path.join(self.wapt_base_dir,'ssl')
+
+        self.cabundle.clear()
+        self.cabundle.add_pems(self.public_certs_dir)
+
+        if self.config.has_option('global','check_certificates_validity'):
+            self.check_certificates_validity = self.config.getboolean('global','check_certificates_validity')
 
         if self.config.has_option('global','upload_cmd'):
             self.upload_cmd = self.config.get('global','upload_cmd')
@@ -2391,9 +2400,6 @@ class Wapt(object):
             # force reset to None if config file is changed at runtime
             self.forced_uuid = None
 
-        if self.config.has_option('global','check_certificates_validity'):
-            self.check_certificates_validity = self.config.getboolean('global','check_certificates_validity')
-
         if self.config.has_option('global','use_fqdn_as_uuid'):
             self.use_fqdn_as_uuid = self.config.getboolean('global','use_fqdn_as_uuid')
 
@@ -2406,8 +2412,8 @@ class Wapt(object):
             for name in repository_names:
                 if name:
                     w = WaptRepo(name=name).load_config(self.config,section=name)
-                    if w.authorized_certs is None:
-                        w.authorized_certs = self.authorized_certificates()
+                    if w.cabundle is None:
+                        w.cabundle = self.cabundle
                     self.repositories.append(w)
                     logger.debug(u'    %s:%s' % (w.name,w._repo_url))
         else:
@@ -2417,8 +2423,8 @@ class Wapt(object):
         if self.config.has_option('global','repo_url') and not 'wapt' in repository_names:
             w = WaptRepo(name='wapt').load_config(self.config)
             self.repositories.append(w)
-            if w.authorized_certs is None:
-                w.authorized_certs = self.authorized_certificates()
+            if w.cabundle is None:
+                w.cabundle = self.cabundle
 
         # True if we want to use automatic host package based on host fqdn
         #   privacy problem as there is a request to wapt repo to get
@@ -2471,8 +2477,8 @@ class Wapt(object):
             section = None
         host_repo = WaptHostRepo(name='wapt-host',config=self.config)
         self.repositories.append(host_repo)
-        if host_repo.authorized_certs is None:
-            host_repo.authorized_certs = self.authorized_certificates()
+        if host_repo.cabundle is None:
+            host_repo.cabundle = self.cabundle
 
         # in case host repo is guessed from main repo (no specific section) ans main repor_url is set
         if section is None and main and main._repo_url:
@@ -2935,7 +2941,7 @@ class Wapt(object):
         logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
 
         status = 'INIT'
-        if not self.authorized_certificates():
+        if not self.cabundle:
             raise EWaptMissingCertificate(u'install_wapt %s: No public Key provided for package signature checking.'%(fname,))
         previous_uninstall = self.registry_uninstall_snapshot()
         entry = PackageEntry()
@@ -2959,7 +2965,7 @@ class Wapt(object):
 
         # don't check in developper mode
         if os.path.isfile(fname):
-            cert = entry.check_control_signature(self.authorized_certificates())
+            cert = entry.check_control_signature(self.cabundle)
             logger.info(u'Control data for package %s verified by certificate %s' % (setuphelpers.ensure_unicode(fname),cert))
         else:
             logger.info(u'Developper mode, don''t check control signature for %s' % setuphelpers.ensure_unicode(fname))
@@ -3012,7 +3018,7 @@ class Wapt(object):
 
                 # check signature and files sha if not developper mode
                 if istemporary:
-                    entry.check_package_signature(self.authorized_certificates())
+                    entry.check_package_signature(self.cabundle)
 
                 self.check_cancelled()
 
@@ -3628,7 +3634,7 @@ class Wapt(object):
         # check downloaded packages signatures and merge control data in local database
         for fname in downloaded['downloaded'] + downloaded['skipped']:
             pe = PackageEntry(waptfile = fname)
-            pe.check_control_signature(self.authorized_certificates())
+            pe.check_control_signature(self.cabundle)
 
         actions['downloads'] = downloaded
         logger.debug(u'Downloaded : %s' % (downloaded,))
@@ -3726,7 +3732,6 @@ class Wapt(object):
                             logger.info(u"  Use cached package file from " + fullpackagepath)
                             skip = True
                             entry.localpath = cached.localpath
-                            result_packages.append(entry)
                         else:
                             logger.critical(u"Cached file MD5 doesn't match MD5 found in packages index. Discarding cached file")
                             os.remove(fullpackagepath)
@@ -4058,11 +4063,7 @@ class Wapt(object):
     def authorized_certificates(self):
         """return a list of autorized package signers for this host
         """
-        result = []
-        logger.debug('Getting authorized certificates from %s' % self.public_certs_dir)
-        bundle = SSLCABundle()
-        bundle.add_pems(self.public_certs_dir)
-        return bundle.certificates(valid_only = self.check_certificates_validity)
+        return self.cabundle.certificates(valid_only = self.check_certificates_validity)
 
     def register_computer(self,description=None):
         """Send computer informations to WAPT Server
@@ -4434,15 +4435,27 @@ class Wapt(object):
                 return r
         return None
 
-    @property
-    def private_key_cache(self):
+
+    def personal_certificate(self):
+        return SSLCertificate(self.personal_certificate_path)
+
+    def private_key(self,passwd_callback=None):
+        """SSLProvateKey matching the personal_certificate"""
         # lazzy loading of privatekey
         # TODO : check that private key file has not been updated since last loading...
-        if not self._private_key_cache:
-            self._private_key_cache = SSLPrivateKey(self.private_key,callback=self.key_passwd_callback)
+        if passwd_callback is None:
+            passwd_callback = self.key_passwd_callback
+        cert = self.personal_certificate()
+        if not self._private_key_cache or not cert.match_key(self._private_key_cache):
+            try:
+                self._private_key_cache = cert.matching_key_in_dirs(password_callback=passwd_callback)
+            except Exception as e:
+                self._key_passwd_cache = None
+                self._private_key_cache = None
+                raise
         return self._private_key_cache
 
-    def sign_package(self,zip_or_directoryname,excludes=['.svn','.git','.gitignore','*.pyc','src'],private_key=None,certificate=None,callback=None):
+    def sign_package(self,zip_or_directoryname,certificate=None,callback=None):
         """Calc the signature of the WAPT/manifest.sha256 file and put/replace it in ZIP or directory.
             if directory, creates WAPT/manifest.sha256 and add it to the content of package
             create a WAPT/signature file and it to directory or zip file.
@@ -4452,8 +4465,7 @@ class Wapt(object):
 
         Args:
             zip_or_directoryname: filename or path for the wapt package's content
-            excludes: list of patterns to exclude from
-            private_key: path to the private key to use for SSL signing.
+            certificate: path to the certificate of signer.
             callback: ref to the function to call if a password is required for opening the private key.
 
         Returns:
@@ -4463,51 +4475,15 @@ class Wapt(object):
             zip_or_directoryname = unicode(zip_or_directoryname)
         if not callback:
             callback = self.key_passwd_callback
-        if not private_key:
-            # get the default one, perhaps already cached
-            private_key = self.private_key
-            if not private_key:
-                raise EWaptMissingPrivateKey('Private key filename not set in private_key')
-            key = self.private_key_cache
-            if callback:
-                key.pwd_callback = callback
-
+        if certificate is None:
+            certificate = self.personal_certificate()
+            key = self.private_key()
         else:
-            # specific
-            if not os.path.isfile(private_key):
-                raise EWaptMissingPrivateKey('Private key file %s not found' % private_key)
-            logger.info('Loading private key %s'%private_key)
-            key = SSLPrivateKey(private_key,callback=callback)
+            key = certificate.matching_key_in_dirs(password_callback=callback)
 
-        cert = certificate
-        if not cert:
-            # get matching certificate
-            try:
-                logger.debug(u'Trying to get matching certificate from pem CA file : %s' % key.private_key_filename)
-                ca = SSLCABundle(callback=callback)
-                ca.add_pem(key.private_key_filename)
-                certs = ca.matching_certs(key)
-                if certs:
-                    cert = certs[-1]
-                    logger.debug(u'Using certificate %s in pem file %s' % (cert,key.private_key_filename))
-                else:
-                    cert = None
-                    raise EWaptMissingCertificate(u'No matching certificate in PEM file %s'%key.private_key_filename)
-            except:
-                logger.debug(u'Trying to find matching certificate in directory %s' % os.path.dirname(key.private_key_filename))
-                certs = sorted(c for c in key.matching_certs(os.path.dirname(key.private_key_filename)))
-                if not certs:
-                    raise EWaptMissingCertificate(u'Can not find a valid certificate matching the key %s in same PEM file or in directory %s' % (private_key,os.path.dirname(key.private_key_filename)))
-                else:
-                    # use most recent
-                    cert = certs[-1]
-                    logger.debug(u'Using certificate %s' % cert)
-        elif not cert.match_key(key):
-            raise EWaptBadCertificate('Certificate %s doesn''t match the private key %s' % (cert,key))
-
-        logger.info(u'Using identity : %s' % cert.cn)
+        logger.info(u'Using identity : %s' % certificate.cn)
         pe =  PackageEntry().load_control_from_wapt(zip_or_directoryname)
-        return pe.sign_package(private_key=key,certificate = cert,password_callback=callback)
+        return pe.sign_package(private_key=key,certificate = certificate,password_callback=callback)
 
     def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','setup.pyc'],
                 target_directory=None):
@@ -5106,7 +5082,7 @@ class Wapt(object):
             append_conflicts=None,
             remove_conflicts=None,
             auto_inc_version=True,
-            authorized_certs=None,
+            cabundle=None,
             ):
         r"""Download an existing package from repositories into target_directory for modification
             if use_local_sources is True and no newer package exists on repos, updates current local edited data
@@ -5119,7 +5095,7 @@ class Wapt(object):
             append_depends    : list or comma separated list of package requirements
             remove_depends    : list or comma separated list of package requirements to remove
             auto_inc_version (bool) :
-            authorized_certs  : list of authorized certificate filenames. If None, use default from current wapt.
+            cabundle  : list of authorized certificate filenames. If None, use default from current wapt.
 
         Returns:
             dict : {'target':target_directory,'source_dir':target_directory,'package':package_entry}
@@ -5136,8 +5112,8 @@ class Wapt(object):
         >>> shutil.rmtree(tmpdir)
 
         """
-        if authorized_certs is None:
-            authorized_certs = self.authorized_certificates()
+        if cabundle is None:
+            cabundle = self.cabundle
 
         # check if available in repos
         entries = self.is_available(packagerequest)
@@ -5167,7 +5143,7 @@ class Wapt(object):
                 else:
                     logger.info('Using existing development sources %s' % target_directory)
             elif not local_dev_entry:
-                entry.unzip_package(target_dir=target_directory, check_with_certs = authorized_certs)
+                entry.unzip_package(target_dir=target_directory, cabundle = cabundle)
                 entry.invalidate_signature()
                 local_dev_entry = entry
 
@@ -5230,7 +5206,7 @@ class Wapt(object):
             remove_conflicts=None,
             printhook=None,
             description=None,
-            authorized_certs=None,
+            cabundle=None,
             ):
         """Download and extract a host package from host repositories into target_directory for modification
                 Return dict {'target': 'c:\\\\tmp\\\\dummy', 'source_dir': 'c:\\\\tmp\\\\dummy', 'package': "dummy.tranquilit.local (=0)"}
@@ -5240,7 +5216,7 @@ class Wapt(object):
            target_directory  : where to place the developments files. if empty, use default one from wapt-get.ini configuration
            append_depends    : list or comma separated list of package requirements
            remove_depends    : list or comma separated list of package requirements to remove
-           authorized_certs  : list of authorized certificate filenames. If None, use default from current wapt.
+           cabundle          : list of authorized ca. If None, use default from current wapt.
 
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> tmpdir = 'c:/tmp/dummy'
@@ -5263,8 +5239,8 @@ class Wapt(object):
 
         #self.use_hostpackages = True
 
-        if authorized_certs is None:
-            authorized_certs = self.authorized_certificates()
+        if cabundle is None:
+            cabundle = self.cabundle
 
         append_depends = ensure_list(append_depends)
         remove_depends = ensure_list(remove_depends)
@@ -5364,7 +5340,7 @@ class Wapt(object):
             auto_inc_version=True,
             usecache=True,
             printhook=None,
-            authorized_certs = None,
+            cabundle = None,
             ):
         """Duplicate an existing package.
 
@@ -5381,7 +5357,7 @@ class Wapt(object):
             auto_inc_version (bool): if version is less than existing package in repo, set version to repo version+1
             usecache (bool):         If True, allow to use cached package in local repo instead of downloading it.
             printhook (func):        hook for download progress
-            authorized_certs (list): list of authorized certificate (SSLPublicCertificate) to check authenticity of source packages. If None, no check is performed.
+            cabundle (SSLCABundle):         list of authorized ca certificate (SSLPublicCertificate) to check authenticity of source packages. If None, no check is performed.
 
 
         Returns:
@@ -5467,7 +5443,7 @@ class Wapt(object):
                 target_directory = tempfile.mkdtemp('wapt')
             # check if we will not overwrite newer package or different package
             check_target_directory(target_directory,source_control)
-            source_control.unzip_package(target_dir=target_directory,check_with_certs=authorized_certs)
+            source_control.unzip_package(target_dir=target_directory,cabundle=cabundle)
 
         else:
             source_package = self.is_available(packagename)
@@ -5488,7 +5464,7 @@ class Wapt(object):
                 target_directory = tempfile.mkdtemp('wapt')
             # check if we will not overwrite newer package or different package
             check_target_directory(target_directory,source_control)
-            source_control.unzip_package(target_dir=target_directory,check_with_certs=authorized_certs)
+            source_control.unzip_package(target_dir=target_directory,cabundle=cabundle)
 
         # duplicate package informations
         dest_control = PackageEntry()

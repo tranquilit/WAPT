@@ -30,9 +30,10 @@ import glob
 import subprocess
 import logging
 
-from M2Crypto import EVP, X509, SSL, BIO
+from M2Crypto import EVP, X509, SSL, BIO, ASN1
 from M2Crypto.EVP import EVPError
 from M2Crypto import BIO,RSA
+from M2Crypto.RSA import RSAError
 
 from waptutils import *
 
@@ -148,6 +149,10 @@ class SSLCABundle(object):
         if cert_pattern_or_dir is not None:
             self.add_pems(cert_pattern_or_dir,load_keys=True)
 
+    def clear(self):
+        self._keys.clear()
+        self._certificates.clear()
+
     def add_pems(self,cert_pattern_or_dir='*.crt',load_keys=False):
         if os.path.isdir(cert_pattern_or_dir):
             # load pems from provided directory
@@ -232,24 +237,49 @@ class SSLCABundle(object):
                 issuer = new_issuer
         return result
 
+    def is_issued_by(self,cacertificate):
+        # to be done
+        if cacertificate == self:
+            return True
+        else:
+            return False
+
+    def is_known_issuer(self,certificate):
+        """Check if certificate is issued by one of this certificate bundle CA
+
+        Return:
+            SSLCertificate: issuer certificate or None
+        """
+        if certificate in self.certificates():
+            return certificate
+        else:
+            for ca in self.certificates():
+                if self.is_issued_by(ca):
+                    return ca
+
+
 class SSLPrivateKey(object):
-    def __init__(self,private_key=None,key=None,callback=None):
+    def __init__(self,filename=None,key=None,callback=None):
         """Args:
             private_key (str) : Filename Path to PEM encoded Private Key
             key (PKey) : Public/[private]  PKey structure
             callback (func) : Called to provide password for the key if needed
         """
-        self.private_key_filename = private_key
+        self.private_key_filename = filename
         if key:
             self.key = key
-        else:
-            if not os.path.isfile(private_key):
-                raise EWaptMissingPrivateKey('Private key %s not found' % private_key)
         if callback is None:
             callback = default_pwd_callback
         self.pwd_callback = callback
         self._rsa = None
         self._key = None
+
+    def create(self,bits=2048):
+        """Create RSA"""
+        self._rsa = RSA.gen_key(bits, 65537, lambda: None)
+
+    def as_pem(self):
+        return self.key.as_pem()
 
     @property
     def rsa(self):
@@ -519,13 +549,17 @@ class SSLCertificate(object):
 
         for adir in directories:
             for akeyfile in glob.glob(os.path.join(adir,'*.pem')):
-                try:
-                    key = SSLPrivateKey(os.path.abspath(akeyfile),callback = password_callback)
-                    if key.match_cert(self):
-                        return key
-                except Exception as e:
-                    print(akeyfile,e)
-                    pass
+                pwd_try_count = 3
+                while pwd_try_count:
+                    try:
+                        key = SSLPrivateKey(os.path.abspath(akeyfile),callback = password_callback)
+                        if key.match_cert(self):
+                            return key
+                    except RSAError as e:
+                        if e.message == 'padding check failed' or 'decrypt' in e.message:
+                            pwd_try_count -= 1
+                        else:
+                            break
         return None
 
     @property
