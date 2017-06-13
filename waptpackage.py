@@ -943,6 +943,7 @@ class PackageEntry(object):
         # sign the control
         self._sign_control(certificate=certificate,private_key=private_key)
 
+        # control file is appended to manifest file separately.
         control = self.ascontrol().encode('utf8')
         excludes = self.manifest_filename_excludes
         excludes.append('WAPT/control')
@@ -958,6 +959,14 @@ class PackageEntry(object):
             raise EWaptBadCertificate('Certificate %s doesn''t allow to sign packages with setup.py file.' % certificate.public_cert_filename)
 
         manifest_data['WAPT/control'] = hexdigest_for_data(control,md = self._md or self._default_md)
+
+        new_cert_hash = hexdigest_for_data(certificate.as_pem(),md = self._md or self._default_md)
+        if manifest_data.get('WAPT/certificate.crt',None) != new_cert_hash:
+            # need to replace certificate in Wapt package
+            manifest_data['WAPT/certificate.crt'] = new_cert_hash
+        else:
+            new_cert_hash = None
+
         # convert to list of list...
         wapt_manifest = json.dumps( manifest_data.items())
         # sign with default md
@@ -965,6 +974,12 @@ class PackageEntry(object):
         waptzip = zipfile.ZipFile(self.localpath,'a',allowZip64=True)
         with waptzip:
             filenames = waptzip.namelist()
+
+            # replace or append signer certificate
+            if new_cert_hash:
+                if 'WAPT/certificate.crt' in filenames:
+                    waptzip.remove('WAPT/certificate.crt')
+                waptzip.writestr('WAPT/certificate.crt',certificate.as_pem())
 
             if 'WAPT/control' in filenames:
                 waptzip.remove('WAPT/control')
@@ -1035,6 +1050,10 @@ class PackageEntry(object):
             signature_filename = os.path.join(self.sourcespath,'WAPT','signature')
             if os.path.isfile(signature_filename):
                 os.remove(signature_filename)
+
+            certificate_filename = os.path.join(self.sourcespath,'WAPT','certificate')
+            if os.path.isfile(certificate_filename):
+                os.remove(certificate_filename)
 
     def list_corrupted_files(self):
         """check hexdigest sha for the files in manifest
@@ -1268,6 +1287,7 @@ class WaptBaseRepo(object):
 
     _default_config = {
         'public_certs_dir': None,
+        'check_certificates_validity':'1',
     }
 
     def __init__(self,name='abstract',authorized_certs=None,config=None):
@@ -1604,7 +1624,7 @@ class WaptLocalRepo(WaptBaseRepo):
                 if package_filename in old_entries:
                     entry.load_control_from_wapt(fname,calc_md5=False)
 
-                    if self.authorized_certs:
+                    if self.authorized_certs is not None:
                         try:
                             entry.check_control_signature(self.authorized_certs)
                         except (EWaptNotSigned,SSLVerifyException) as e:
@@ -1701,7 +1721,7 @@ class WaptLocalRepo(WaptBaseRepo):
         if config.has_option(section,'public_certs_dir'):
             bundle = SSLCABundle()
             bundle.add_pems(config.get(section,'public_certs_dir'))
-            self.authorized_certs = bundle.certificates()
+            self.authorized_certs = bundle.certificates(valid_only = config.getboolean(section,'check_certificates_validity'))
 
         return self
 
@@ -1820,7 +1840,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         if config.has_option(section,'public_certs_dir'):
             bundle = SSLCABundle()
             bundle.add_pems(config.get(section,'public_certs_dir'))
-            self.authorized_certs = bundle.certificates()
+            self.authorized_certs = bundle.certificates(valid_only = config.getboolean(section,'check_certificates_validity'))
 
         return self
 
