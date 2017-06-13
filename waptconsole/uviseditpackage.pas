@@ -415,7 +415,10 @@ begin
   // get a list of package entries given a
   Depends := PackageEdited.S['depends'];
   Conflicts := PackageEdited.S['conflicts'];
-  EdSetupPy.Lines.LoadFromFile(AppendPathDelim(FSourcePath) + 'setup.py');
+  if FileExists(AppendPathDelim(FSourcePath) + 'setup.py') then
+    EdSetupPy.Lines.LoadFromFile(AppendPathDelim(FSourcePath) + 'setup.py')
+  else
+    EdSetupPy.Lines.Clear;
   butBUApply.Visible:=IsHost;
 end;
 
@@ -538,7 +541,8 @@ begin
         format('p.load_control_from_dict(json.loads(r"""%s"""))', [utf8Encode(PackageEdited.AsJson)]));
       DMPython.PythonEng.ExecString(
         format('p.save_control_to_wapt(r''%s''.decode(''utf8''))', [EdSourceDir.Text]));
-      EdSetupPy.Lines.SaveToFile(AppendPathDelim(FSourcePath) + 'setup.py');
+      if EdSetupPy.Lines.Count>0 then
+        EdSetupPy.Lines.SaveToFile(AppendPathDelim(FSourcePath) + 'setup.py');
     end;
     IsUpdated := False;
   finally
