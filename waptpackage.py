@@ -938,7 +938,7 @@ class PackageEntry(object):
         package_fn = self.localpath
         logger.debug('Signing %s with key %s, and certificate CN "%s"' % (package_fn,private_key,certificate.cn))
         # sign the control
-        self._sign_control(private_key,certificate)
+        self._sign_control(certificate=certificate,private_key=private_key)
 
         control = self.ascontrol().encode('utf8')
         excludes = self.manifest_filename_excludes
@@ -1846,8 +1846,11 @@ class WaptRemoteRepo(WaptBaseRepo):
             req.raise_for_status()
             packages_last_modified = req.headers['last-modified']
             return httpdatetime2isodate(packages_last_modified)
+        except requests.exceptions.SSLError as e:
+            print(u'Certificate check failed for % and verify_cert %s'%(self.packages_url,self.verify_cert))
+            raise
         except requests.RequestException as e:
-            logger.debug(u'Repo packages index %s is not available : %s'%(self.packages_url,e))
+            logger.info(u'Repo packages index %s is not available : %s'%(self.packages_url,e))
             return None
 
     def _load_packages_index(self):

@@ -1385,7 +1385,6 @@ class WaptServer(object):
         else:
             return None
 
-
     def save_server_certificate(self,server_ssl_dir=None,overwrite=False):
         """Retrieve certificate of https server for further checks
         Args:
@@ -1397,22 +1396,22 @@ class WaptServer(object):
         """
         pem = get_pem_server_certificate(self.server_url)
         if pem:
-            new_cert = SSLCertificate(crt = X509.load_cert_string(pem))
-
+            new_cert = SSLCertificate(crt_string=pem)
             url = urlparse(self.server_url)
-            if isinstance(self.verify_cert,str) or isinstance(self.verify_cert,unicode):
-                pem_fn = self.verify_cert
-            else:
-                pem_fn = os.path.join(server_ssl_dir,url.hostname+'.crt')
+            pem_fn = os.path.join(server_ssl_dir,url.hostname+'.crt')
+
+            if new_cert.cn != url.hostname:
+                logger.warning('Warning, certificate CN %s sent by server does not match URL host %s' % (new_cert.cn != url.hostname))
+
             if not os.path.isdir(server_ssl_dir):
                 os.makedirs(server_ssl_dir)
             if os.path.isfile(pem_fn):
                 try:
                     # compare current and new cert
                     old_cert = SSLCertificate(pem_fn)
-                    if (old_cert.fingerprint != new_cert.fingerprint):
+                    if old_cert.modulus != new_cert.modulus:
                         if not overwrite:
-                            raise Exception('Can not save server certificate, a file with same name already exists in %s' % pem_fn)
+                            raise Exception('Can not save server certificate, a file with same name but from diffrent key already exists in %s' % pem_fn)
                         else:
                             logger.info('Overwriting old server certificate %s with new one %s'%(old_cert.fingerprint,new_cert.fingerprint))
                     return pem_fn
@@ -1420,7 +1419,7 @@ class WaptServer(object):
                     logger.critical('save_server_certificate : %s'% repr(e))
                     raise
             open(pem_fn,'wb').write(pem)
-            logger.info('New certificate %s with fingerprint %s saved to %s'%(new_cert.cn,new_cert.fingerprint,pem_fn))
+            logger.info('New certificate %s with fingerprint %s saved to %s'%(new_cert,new_cert.fingerprint,pem_fn))
             return pem_fn
         else:
             return None
@@ -1920,8 +1919,8 @@ class WaptRepo(WaptRemoteRepo):
                     logger.debug(u'Read remote Packages index file %s' % self.packages_url)
                     last_modified = self.packages_date
 
-                    #self._packages = None
-                    #self._packages_date = None
+                    self._packages = None
+                    self._packages_date = None
 
                     waptdb.purge_repo(self.name)
                     for package in self.packages:
@@ -2039,13 +2038,20 @@ class WaptHostRepo(WaptRepo):
                     codecs.decode(ZipFile(
                       StringIO.StringIO(host_package.content)
                     ).read(name='WAPT/control'),'UTF-8').splitlines()
-            control = PackageEntry().load_control_from_wapt(control_data)
-            control.repo = self.name
-            control.repo_url = self.repo_url
-            control.filename = control.make_package_filename()
+            package = PackageEntry().load_control_from_wapt(control_data)
+            package.repo = self.name
+            package.repo_url = self.repo_url
+            package.filename = package.make_package_filename()
+            try:
+                if self.authorized_certs is not None:
+                    package.check_control_signature(self.authorized_certs)
+                self._packages.append(package)
+                if package.package not in self._index or self._index[package.package] < package:
+                    self._index[package.package] = package
+            except (SSLVerifyException,EWaptNotSigned) as e:
+                logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.authorized_certs))
 
-            self._packages.append(control)
-            self._index[control.package] = control
+
         except requests.HTTPError as e:
             logger.info(u'No host package available at %s' % host_package_url)
 

@@ -11,7 +11,7 @@ URL:		http://dev.tranquil.it
 Source0:	./waptrepo/
 Prefix:		/opt
 
-Requires:  nginx dialog pytz m2crypto python-passlib python-requests
+Requires:  nginx dialog pytz m2crypto python-passlib python-requests python-iniparse
 
 # Turn off the brp-python-bytecompile script
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')

@@ -44,6 +44,7 @@ from waptutils import *
 from waptcrypto import *
 from waptpackage import *
 from common import *
+import urllib3
 
 # global parameters
 key = None
@@ -83,13 +84,13 @@ def test_build_sign_verify_package():
 
     try:
         print(u'Signature paquet test avec clé gestionnaire')
-        print p.sign_package(key,gest)
+        print p.sign_package(gest,key)
         raise Exception('Should fail, package has a setup.py')
     except EWaptBadCertificate as e:
         print(u"%s" % e)
 
     print(u'Signature paquet test avec clé codeur')
-    print p.sign_package(key,codeur)
+    print p.sign_package(codeur,key)
     print('OK, codeur')
 
     p2= PackageEntry(waptfile = p.localpath)
@@ -150,7 +151,7 @@ def test_build_sign_verify_package():
 
 
     p2.build_package()
-    p2.sign_package(key,codeur)
+    p2.sign_package(codeur,key)
     p2.unzip_package(check_with_certs = certificates.certificates())
     cert = p2.check_package_signature(certificates.certificates())
     p2.delete_localsources()
@@ -167,7 +168,7 @@ def test_build_sign_verify_package():
         logger.debug('OK : %s' % e)
 
     p2.build_package()
-    p2.sign_package(key,codeur)
+    p2.sign_package(codeur,key)
     p2.unzip_package()
     cert = p2.check_package_signature(certificates.certificates())
     p2.delete_localsources()
@@ -258,13 +259,13 @@ def test_paquet_host():
     assert(old_pe is None)
     package_filename = pe.build_package()
     assert(os.path.isfile(package_filename))
-    signature = pe.sign_package(key,gest)
+    signature = pe.sign_package(gest,key)
     assert(isinstance(signature,str))
 
     pe = PackageEntry(waptfile = package_filename)
     pe.inc_build()
     old_pe = pe.save_control_to_wapt()
-    signature = pe.sign_package(key,gest)
+    signature = pe.sign_package(gest,key)
     pe.unzip_package()
     print('Les deux certificats sont OK car pas de setup.py')
     pe.check_package_signature(gest)
@@ -283,16 +284,39 @@ def install():
     package_filename = pe.build_package()
     assert(os.path.isfile(package_filename))
     try:
-        signature = pe.sign_package(key,gest)
+        signature = pe.sign_package(gest,key)
         raise Exception('Doit failer, pas un certificat codeur et setup.py')
     except EWaptBadCertificate as e:
         print(u'OK: %s'%e)
 
-    signature = pe.sign_package(key,codeur)
+    signature = pe.sign_package(codeur,key)
     print(u'OK: certificat codeur')
     pe.delete_localsources()
     assert('tis-7zip' in ensure_list(pe.depends))
     os.remove(pe.localpath)
+
+def test_oldsignature():
+    w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
+    w.dbpath=':memory:'
+    pe = PackageEntry(waptfile=r'C:\tranquilit\wapt\cache\tis-ms-pstools_1-5_all.wapt')
+    pe.check_control_signature(certificates.certificates(valid_only=False))
+
+def test_waptrepo():
+    r = WaptRemoteRepo('https://wapt142.tranquilit.local/wapt',authorized_certs=certificates.certificates(),verify_cert=False)
+    print r.packages_matching('tis-longtask')
+    r = WaptRemoteRepo('https://wapt142.tranquilit.local/wapt',authorized_certs=certificates.certificates(),verify_cert=True)
+    try:
+        print r.packages
+        raise('certificate autosigné, doit failer')
+    except requests.exceptions.SSLError as e:
+        print('OK: %s' % e)
+    cert_pem = get_pem_server_certificate('https://wapt142.tranquilit.local')
+    with tempfile.NamedTemporaryFile(delete=False) as crtfile:
+        crtfile.file.write(cert_pem)
+        crtfile.file.close()
+        r = WaptRemoteRepo('https://wapt142.tranquilit.local/wapt',authorized_certs=certificates.certificates(),verify_cert=crtfile.name)
+        print(r.packages)
+        print('OK: certtificate pinning ok')
 
 def test_wapt_engine():
     w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
@@ -303,18 +327,10 @@ def test_wapt_engine():
     for r in w.repositories:
         print r.authorized_certs
     print w.waptserver
+    res = w.update()
+    print('OK: %s'%res)
 
-def test_oldsignature():
-    w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
-    w.dbpath=':memory:'
-    pe = PackageEntry(waptfile=r'C:\tranquilit\wapt\cache\tis-ms-pstools_1-5_all.wapt')
-    pe.check_control_signature(certificates.certificates(valid_only=False))
 
-def test_waptrepo():
-    r = WaptRemoteRepo('https://srvwapt.tranquilit.local/wapt',authorized_certs=certificates.certificates())
-    print r.packages_matching('tis-longtask')
-    #pe = PackageEntry(waptfile=r.download_packages('tis-longtask')['downloaded'][0])
-    #print pe
 
 
 if __name__ == '__main__':

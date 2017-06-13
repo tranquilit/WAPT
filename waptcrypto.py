@@ -28,6 +28,7 @@ import base64
 import hashlib
 import glob
 import subprocess
+import logging
 
 from M2Crypto import EVP, X509, SSL, BIO
 from M2Crypto.EVP import EVPError
@@ -36,6 +37,8 @@ from M2Crypto import BIO,RSA
 from waptutils import *
 
 import datetime
+
+logger = logging.getLogger()
 
 class EWaptCryptoException(Exception):
     pass
@@ -406,6 +409,10 @@ class SSLCertificate(object):
         return self._key
 
     @property
+    def modulus(self):
+        return self.crt.get_pubkey().get_modulus()
+
+    @property
     def organisation(self):
         return self.crt.get_subject().O
 
@@ -551,7 +558,7 @@ class SSLCertificate(object):
         return u'SSLCertificate cn=%s'%self.cn
 
     def __repr__(self):
-        return '<SSLCertificate cn=%s / issuer=%s / validity=%s - %s / Code-Signing=%s / CA=%s>'%\
+        return '<SSLCertificate cn=%s issuer=%s validity=%s - %s Code-Signing=%s CA=%s>'%\
             (repr(self.cn),repr(self.issuer.get('CN','?')),
             self.not_before.strftime('%Y-%m-%d'),
             self.not_after.strftime('%Y-%m-%d'),
