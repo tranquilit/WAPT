@@ -127,7 +127,6 @@ def default_pwd_callback(*args):
     i = 3
     while i>0:
         i -= 1
-        print(args)
         pwd = getpass.getpass().encode('ascii')
         if pwd:
             return pwd
@@ -172,7 +171,10 @@ class SSLCABundle(object):
             elif line == self.END_CERTIFICATE:
                 tmplines.append(line)
                 crt =  X509.load_cert_string(str('\n'.join(tmplines)))
-                self._certificates[crt.get_fingerprint(md='sha1')] = SSLCertificate(filename,crt=crt)
+                cert = SSLCertificate(filename,crt=crt)
+                if not cert.is_valid():
+                    logger.warning('Certificate %s is not valid' % cert.cn)
+                self._certificates[crt.get_fingerprint(md='sha1')] =cert
                 incert = False
                 tmplines = []
             elif line == self.BEGIN_KEY:
@@ -259,6 +261,7 @@ class SSLPrivateKey(object):
     @property
     def key(self):
         if not self._key:
+            print(u'Key %s'%self.private_key_filename)
             self._key = EVP.PKey()
             self._key.assign_rsa(self.rsa)
         return self._key
@@ -371,6 +374,9 @@ class SSLCertificate(object):
         elif crt_string:
             self._crt = X509.load_cert_string(str(crt_string))
         self.ignore_validity_checks = ignore_validity_checks
+
+    def as_pem(self):
+        return self.crt.as_pem()
 
     @property
     def public_cert_filename(self):

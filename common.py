@@ -2326,6 +2326,7 @@ class Wapt(object):
             'after_upload':'',
             'http_proxy':'',
             'waptwua_enabled':'0',
+            'check_certificates_validity':'True',
             }
 
         if not self.config:
@@ -2405,7 +2406,7 @@ class Wapt(object):
             for name in repository_names:
                 if name:
                     w = WaptRepo(name=name).load_config(self.config,section=name)
-                    if not w.authorized_certs:
+                    if w.authorized_certs is None:
                         w.authorized_certs = self.authorized_certificates()
                     self.repositories.append(w)
                     logger.debug(u'    %s:%s' % (w.name,w._repo_url))
@@ -2416,7 +2417,7 @@ class Wapt(object):
         if self.config.has_option('global','repo_url') and not 'wapt' in repository_names:
             w = WaptRepo(name='wapt').load_config(self.config)
             self.repositories.append(w)
-            if not w.authorized_certs:
+            if w.authorized_certs is None:
                 w.authorized_certs = self.authorized_certificates()
 
         # True if we want to use automatic host package based on host fqdn
@@ -2470,7 +2471,7 @@ class Wapt(object):
             section = None
         host_repo = WaptHostRepo(name='wapt-host',config=self.config)
         self.repositories.append(host_repo)
-        if not host_repo.authorized_certs:
+        if host_repo.authorized_certs is None:
             host_repo.authorized_certs = self.authorized_certificates()
 
         # in case host repo is guessed from main repo (no specific section) ans main repor_url is set

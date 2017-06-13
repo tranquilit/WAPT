@@ -66,12 +66,12 @@ def setup_test():
     key = SSLPrivateKey('c:/private/150.pem',callback = pwd_callback)
 
     global codeur
-    codeur = SSLCertificate(r'c:\wapt\ssl\150.crt')
+    codeur = SSLCertificate(r'c:/private/150-codeur.crt')
     print("codeur : %s" %codeur)
     assert(codeur.is_code_signing)
 
     global gest
-    gest = SSLCertificate(r'c:\wapt\ssl\150-20170529-000000.crt')
+    gest = SSLCertificate(r'c:/private/150-gest.crt')
     print("gestionnaire : %s" %gest)
     assert(not gest.is_code_signing)
 
@@ -322,7 +322,8 @@ def test_waptrepo():
         print('OK: certtificate pinning ok')
 
 def test_wapt_engine():
-    w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
+    #w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
+    w = Wapt(config_filename= r"C:\tranquilit\wapt\wapt-get.ini")
     w.dbpath=':memory:'
     w.use_hostpackages = True
     w._set_fake_hostname('testwaptcomputer.tranquilit.local')
@@ -378,6 +379,8 @@ def test_editpackage():
     pe = w.edit_package('tis-wapttest(=24)',r'c:\tranquilit\tis-wapttest-wapt.24',)
     assert(os.path.isdir(pe.sourcespath))
     wapt_sources_edit(pe.sourcespath)
+
+
 
 
 if __name__ == '__main__':
