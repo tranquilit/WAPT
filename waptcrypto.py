@@ -35,6 +35,12 @@ from M2Crypto.EVP import EVPError
 from M2Crypto import BIO,RSA
 from M2Crypto.RSA import RSAError
 
+from cryptography import x509
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
+
+
 from waptutils import *
 
 import datetime
@@ -128,13 +134,12 @@ def default_pwd_callback(*args):
     """Default password callback for opening private keys.
     """
     import getpass
-    i = 3
-    while i>0:
-        i -= 1
-        pwd = getpass.getpass().encode('ascii')
-        if pwd:
-            return pwd
-    raise EWaptEmptyPassword('A non empty password is required')
+    print(args)
+    pwd = getpass.getpass().encode('ascii')
+    if pwd:
+        return pwd
+    else:
+        return None
 
 def NOPASSWORD_CALLBACK(*args):
     pass
@@ -290,7 +295,7 @@ class SSLCABundle(object):
 _tmp_passwd = None
 
 class SSLPrivateKey(object):
-    def __init__(self,filename=None,key=None,callback=None,password=None):
+    def __init__(self,filename=None,pem_data=None,callback=None,password = None):
         """Args:
             private_key (str) : Filename Path to PEM encoded Private Key
             key (PKey) : Public/[private]  PKey structure
@@ -302,72 +307,73 @@ class SSLPrivateKey(object):
 
         """
         self.private_key_filename = filename
-        if key:
-            self.key = key
         if password == '':
             callback = NOPASSWORD_CALLBACK
         else:
             if password is None and callback is None:
                 callback = default_pwd_callback
-        self.pwd_callback = callback
+        self.password_callback = callback
+        self.password = password
         self.password = password
         self._rsa = None
-        self._key = None
 
     def create(self,bits=2048):
         """Create RSA"""
-        self._rsa = RSA.gen_key(bits, 65537, lambda: None)
+        self._rsa = rsa.generate_private_key(
+            public_exponent=65537,
+            key_size=bits,
+            backend=default_backend())
 
-    def as_pem(self):
-        return self.key.as_pem()
+
+    def as_pem(self,password=None):
+        password = str(password)
+        if password is not None:
+            enc = serialization.BestAvailableEncryption(password)
+        else:
+            enc = None
+        pem = self._rsa.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=enc,
+        )
+        return pem
+
+    def save_as_pem(self,filename=None,password=None):
+        if filename is None:
+            filename = self.private_key_filename
+        self.password = password
+        self.private_key_filename = filename
+        with open(self.private_key_filename,'wb') as f:
+            f.write(self.as_pem(password=password))
+
 
     @property
     def rsa(self):
         """access to RSA keys"""
         if not self._rsa:
-            global _tmp_passwd
-            _tmp_passwd = self.password
-            try:
-                def local_password_callback(*args):
-                    global _tmp_passwd
-                    if isinstance(_tmp_passwd,unicode):
-                        _tmp_passwd = _tmp_passwd.encode('utf8')
-                    if _tmp_passwd is not None:
-                        return str(_tmp_passwd)
+            retry_cnt=3
+            password = self.password
+            while retry_cnt>0:
+                try:
+                    with open(self.private_key_filename,'rb') as pem_file:
+                        self._rsa = serialization.load_pem_private_key(
+                            pem_file.read(),
+                            password = password,
+                            backend = default_backend())
+                    self.password = password
+                    break
+                except (TypeError,ValueError) as e:
+                    if "Password was not given but private key is encrypted" in e.message or\
+                            "Bad decrypt. Incorrect password?" in e.message:
+                        retry_cnt -= 1
+                        password = self.password_callback(self.private_key_filename)
+                        if password == '':
+                            password = None
                     else:
-                        return None
-                # direct feed of password
-                if self.password is not None:
-                    self._rsa = RSA.load_key(self.private_key_filename,callback=local_password_callback)
-                # password fed using callback
-                elif self.pwd_callback != NOPASSWORD_CALLBACK:
-                    retry_count = 3
-                    while retry_count>0:
-                        try:
-                            self._rsa = RSA.load_key(self.private_key_filename,callback=self.pwd_callback)
-                            break
-                        except Exception as e:
-                            if 'bad decrypt' in e:
-                                if retry_count>0:
-                                    retry_count -=1
-                                else:
-                                    raise EWaptBadKeyPassword(u'Unable to decrypt %s with supplied password'%self.private_key_filename)
-                            else:
-                                raise
-                # no password
-                else:
-                    self._rsa = RSA.load_key(self.private_key_filename,callback=NOPASSWORD_CALLBACK)
-            finally:
-                _tmp_passwd = None
+                        raise
+        if not self._rsa:
+            raise EWaptEmptyPassword('Unable to load key %s'%self.private_key_filename)
         return self._rsa
-
-    @property
-    def key(self):
-        if not self._key:
-            print(u'Key %s'%self.private_key_filename)
-            self._key = EVP.PKey()
-            self._key.assign_rsa(self.rsa)
-        return self._key
 
     def sign_content(self,content,md='sha256',block_size=2**20):
         """ Sign content with the private_key, return the signature"""
@@ -424,7 +430,7 @@ class SSLPrivateKey(object):
 
     @property
     def modulus(self):
-        return self.key.get_modulus()
+        return format(self.rsa.private_numbers().public_numbers.n, "x")
 
     def __cmp__(self,key):
         return cmp(self.modulus,key.modulus)
