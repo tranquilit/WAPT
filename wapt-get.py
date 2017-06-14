@@ -318,7 +318,7 @@ def main():
                 return None
 
         if options.private_key_passwd:
-            mywapt._key_passwd_cache = get_pwd()
+            mywapt._key_passwd_cache = get_private_key_passwd()
 
         if options.language:
             mywapt.language = options.language
@@ -727,13 +727,13 @@ def main():
                     jsonresult['result'] = result
                 else:
                     if os.path.isdir(result['target']):
-                        print(u"Package duplicated. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result['source_dir']))
+                        print(u"Package duplicated. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result.sourcespath))
                         if mywapt.upload_cmd or mywapt.waptserver:
-                            print(u"You can build and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result['source_dir']))
-                        wapt_sources_edit(result['source_dir'])
+                            print(u"You can build and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result.sourcespath))
+                        wapt_sources_edit(result.sourcespath)
                     else:
                         print(u"Package duplicated. You can upload the new WAPT package to repository by launching\n  %s upload-package %s" % (sys.argv[0],result['target']))
-                        print(u"You can rebuild and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result['source_dir']))
+                        print(u"You can rebuild and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result.sourcespath))
 
             elif action == 'edit':
                 if len(args) < 2:

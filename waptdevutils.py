@@ -445,8 +445,8 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
         logger.debug('Cleanup')
         try:
             for s in sources:
-                if os.path.isdir(s['source_dir']):
-                    shutil.rmtree(s['source_dir'])
+                if os.path.isdir(s['sourcespath']):
+                    shutil.rmtree(s['sourcespath'])
             for s in build_res:
                 if os.path.isfile(s):
                     os.unlink(s)
@@ -509,8 +509,8 @@ def add_ads_groups(waptconfigfile,hosts_list,wapt_server_user,wapt_server_passwd
                     depends =  ensure_list(control.depends)
 
                     control.depends = ','.join(depends+additional)
-                    control.save_control_to_wapt(package['source_dir'])
-                    buid_res = wapt.build_upload(package['source_dir'], private_key_passwd = key_password, wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd,
+                    control.save_control_to_wapt(package.sourcespath)
+                    buid_res = wapt.build_upload(package.sourcespath, private_key_passwd = key_password, wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd,
                         inc_package_release=True)[0]
                     print("  done, new packages: %s" % (','.join(additional)))
                     if os.path.isfile(buid_res):

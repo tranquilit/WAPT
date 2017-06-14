@@ -4882,7 +4882,6 @@ class Wapt(object):
         ...    shutil.rmtree(tmpdir)
         >>> p = wapt.make_group_template(packagename='testgroupe',directoryname=tmpdir,depends='tis-firefox',description=u'Test de groupe')
         >>> print p
-        {'target': 'c:\\tmp\\dummy', 'source_dir': 'c:\\tmp\\dummy', 'package': PackageEntry('testgroupe','0')}
         >>> print p['package'].depends
         tis-firefox
         >>> import shutil
@@ -5076,7 +5075,7 @@ class Wapt(object):
         r"""Download an existing package from repositories into target_directory for modification
             if use_local_sources is True and no newer package exists on repos, updates current local edited data
               else if target_directory exists and is not empty, raise an exception
-            Return {'target':target_directory,'source_dir':target_directory,'package':package_entry}
+            Return package_entry
 
         Args:
             packagerequest (str)        : path to existing wapt file, or package request
@@ -5087,7 +5086,7 @@ class Wapt(object):
             cabundle  : list of authorized certificate filenames. If None, use default from current wapt.
 
         Returns:
-            dict : {'target':target_directory,'source_dir':target_directory,'package':package_entry}
+            PackageEntry : edit local package with sourcespath attribute
 
 
         >>> wapt = Wapt(config_filename='c:/tranquilit/wapt/tests/wapt-get.ini')
@@ -5198,7 +5197,7 @@ class Wapt(object):
             cabundle=None,
             ):
         """Download and extract a host package from host repositories into target_directory for modification
-                Return dict {'target': 'c:\\\\tmp\\\\dummy', 'source_dir': 'c:\\\\tmp\\\\dummy', 'package': "dummy.tranquilit.local (=0)"}
+                Return PackageEntry
 
         Args:
            hostname          : fqdn of the host to edit
@@ -5210,7 +5209,6 @@ class Wapt(object):
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> tmpdir = 'c:/tmp/dummy'
         >>> wapt.edit_host('dummy.tranquilit.local',target_directory=tmpdir,append_depends='tis-firefox')
-        {'target': 'c:\\\\tmp\\\\dummy', 'source_dir': 'c:\\\\tmp\\\\dummy', 'package': PackageEntry('dummy.tranquilit.local','0')}
         >>> import shutil
         >>> shutil.rmtree(tmpdir)
         >>> host = wapt.edit_host('htlaptop.tranquilit.local',target_directory=tmpdir,append_depends='tis-firefox')
