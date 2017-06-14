@@ -57,9 +57,28 @@ from tempfile import mkdtemp
 from shutil import rmtree
 
 create_self_signed_key = common.create_self_signed_key
-is_encrypt_private_key = common.private_key_has_password
 is_match_password = common.check_key_password
 import tempfile
+
+
+def get_private_key_encrypted(certificate_path,password=None):
+    """Load certificate and finc matching Key in same dir.
+        Return path to private_key if key is encrypted
+    Args:
+        certificate_path (str): path to personal certificate
+
+    Returns
+        str: path to matching private key
+    """
+    cert = SSLCertificate(certificate_path)
+    try:
+        if password is None or password == '':
+            key = cert.matching_key_in_dirs(password_callback=NOPASSWORD_CALLBACK)
+        else:
+            key = cert.matching_key_in_dirs(password = password)
+        return key.private_key_filename
+    except:
+        return ''
 
 def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wapt_server='',destination='',company=''):
     r"""Build a customized waptsetup with provided certificate included.

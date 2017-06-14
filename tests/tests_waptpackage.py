@@ -384,6 +384,8 @@ def test_editpackage():
     wapt_sources_edit(pe.sourcespath)
 
 def test_keypassword():
+    print get_private_key_encrypted('c:/private/150-codeur.crt','test')
+    print SSLPrivateKey('c:/private/150.pem').modulus
     c = SSLCertificate('c:/private/150-codeur.crt')
     try:
         k = c.matching_key_in_dirs()
@@ -402,8 +404,11 @@ def test_waptdevutils():
     print res
 
 
+
 if __name__ == '__main__':
     setup_test()
+    test_keypassword()
+
     test_wapt_engine()
     test_waptdevutils()
 
@@ -411,7 +416,6 @@ if __name__ == '__main__':
     test_editpackage()
     test_reload_config()
     test_edithost()
-    test_keypassword()
 
     test_waptrepo()
     test_oldsignature()

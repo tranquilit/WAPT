@@ -133,6 +133,8 @@ def default_pwd_callback(*args):
             return pwd
     raise EWaptEmptyPassword('A non empty password is required')
 
+def NOPASSWORD_CALLBACK(*args):
+    pass
 
 class SSLCABundle(object):
     BEGIN_KEY = '-----BEGIN ENCRYPTED PRIVATE KEY-----'
@@ -266,9 +268,10 @@ class SSLCABundle(object):
                 if self.is_issued_by(ca):
                     return ca
 
+_tmp_passwd = None
 
 class SSLPrivateKey(object):
-    def __init__(self,filename=None,key=None,callback=None):
+    def __init__(self,filename=None,key=None,callback=None,password=None):
         """Args:
             private_key (str) : Filename Path to PEM encoded Private Key
             key (PKey) : Public/[private]  PKey structure
@@ -280,6 +283,7 @@ class SSLPrivateKey(object):
         if callback is None:
             callback = default_pwd_callback
         self.pwd_callback = callback
+        self.password = password
         self._rsa = None
         self._key = None
 
@@ -294,7 +298,40 @@ class SSLPrivateKey(object):
     def rsa(self):
         """access to RSA keys"""
         if not self._rsa:
-            self._rsa = RSA.load_key(self.private_key_filename,callback=self.pwd_callback)
+            global _tmp_passwd
+            _tmp_passwd = self.password
+            try:
+                def local_password_callback(*args):
+                    global _tmp_passwd
+                    if isinstance(_tmp_passwd,unicode):
+                        _tmp_passwd = _tmp_passwd.encode('utf8')
+                    if _tmp_passwd is not None:
+                        return str(_tmp_passwd)
+                    else:
+                        return None
+                # direct feed of password
+                if self.password is not None:
+                    self._rsa = RSA.load_key(self.private_key_filename,callback=local_password_callback)
+                # password fed using callback
+                elif self.pwd_callback != NOPASSWORD_CALLBACK:
+                    retry_count = 3
+                    while retry_count>0:
+                        try:
+                            self._rsa = RSA.load_key(self.private_key_filename,callback=self.pwd_callback)
+                            break
+                        except Exception as e:
+                            if 'bad decrypt' in e:
+                                if retry_count>0:
+                                    retry_count -=1
+                                else:
+                                    raise
+                            else:
+                                raise
+                # no password
+                else:
+                    self._rsa = RSA.load_key(self.private_key_filename)
+            finally:
+                _tmp_passwd = None
         return self._rsa
 
     @property
@@ -538,7 +575,7 @@ class SSLCertificate(object):
             key = SSLPrivateKey(key)
         return self.crt.get_pubkey().get_modulus() == key.key.get_modulus()
 
-    def matching_key_in_dirs(self,directories=None,password_callback=None):
+    def matching_key_in_dirs(self,directories=None,password_callback=None,password=None):
         """Return the first SSLPrivateKey matching this certificate
 
         Args:
@@ -553,22 +590,23 @@ class SSLCertificate(object):
         if directories is None:
             directories = os.path.abspath(os.path.dirname(self.public_cert_filename))
         directories = ensure_list(directories)
-        if password_callback is None:
-            password_callback = default_pwd_callback
 
         for adir in directories:
             for akeyfile in glob.glob(os.path.join(adir,'*.pem')):
-                pwd_try_count = 3
-                while pwd_try_count:
-                    try:
-                        key = SSLPrivateKey(os.path.abspath(akeyfile),callback = password_callback)
-                        if key.match_cert(self):
-                            return key
-                    except RSAError as e:
-                        if e.message == 'padding check failed' or 'decrypt' in e.message:
-                            pwd_try_count -= 1
-                        else:
-                            break
+                try:
+                    key = SSLPrivateKey(os.path.abspath(akeyfile),callback = password_callback,password = password)
+                    if key.match_cert(self):
+                        return key
+                    else:
+                        break
+                except RSAError as e:
+                    if (e.message == 'padding check failed') or ('decrypt' in e.message):
+                        pwd_try_count -= 1
+                    else:
+                        break
+                except Exception as e:
+                    print('Error for %s: %s'%(akeyfile,e))
+                    break
         return None
 
     @property
