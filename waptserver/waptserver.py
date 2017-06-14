@@ -407,7 +407,7 @@ def update_host():
                             if not authenticated_user:
                                 raise EWaptAuthenticationFailure('add_host : Missing authentication header')
                             if authenticated_user.lower().replace('@','.') != host_cert.cn.lower():
-                                raise EWaptAuthenticationFailure('add_host : Mismatch between authendtication header %s and Certificate commonName' % (authenticated_user,host_cert.cn))
+                                raise EWaptAuthenticationFailure('add_host : Mismatch between authendtication header %s and Certificate commonName %s' % (authenticated_user,host_cert.cn))
                     else:
                         # get certificate from DB to check/authenticate submitted data.
                         existing_host = Hosts.select(Hosts.host_certificate,Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
@@ -1691,7 +1691,7 @@ def on_waptclient_connect():
         wapt_db.commit()
         # if not known, reject the connection
         if hostcount == 0:
-            socketio.disconnect()
+            #socketio.disconnect()
             return False
     except:
         wapt_db.rollback()
@@ -1715,7 +1715,7 @@ def on_wapt_pong():
         wapt_db.commit()
         # if not known, reject the connection
         if hostcount == 0:
-            socketio.disconnect()
+            #socketio.disconnect()
             return False
     except:
         wapt_db.rollback()
