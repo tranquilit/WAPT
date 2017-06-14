@@ -1196,7 +1196,7 @@ class PackageEntry(object):
                         certs = [cert]
                     else:
                         # old style, test all against signature
-                        certs = reversed(sorted(cabundle.authorized_certs()))
+                        certs = sorted(cabundle.certificates(),reverse=True)
 
                     if certs:
                         for cert in certs:

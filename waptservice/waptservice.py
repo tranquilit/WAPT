@@ -222,7 +222,7 @@ class WaptServiceConfig(object):
         self.authorized_callers_ip = []
 
         self.waptservice_poll_timeout = 10
-        self.waptupdate_task_period = None
+        self.waptupdate_task_period = 120
         self.waptupgrade_task_period = None
 
         self.config_filedate = None
@@ -295,7 +295,7 @@ class WaptServiceConfig(object):
             if config.has_option('global','waptupdate_task_period'):
                 self.waptupdate_task_period = int(config.get('global','waptupdate_task_period'))
             else:
-                self.waptupdate_task_period = None
+                self.waptupdate_task_period = 120
 
             if config.has_option('global','dbpath'):
                 self.dbpath =  config.get('global','dbpath')

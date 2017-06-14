@@ -2039,19 +2039,25 @@ class WaptHostRepo(WaptRepo):
             host_package_date = httpdatetime2isodate(host_package.headers.get('last-modified',None))
 
             # Packages file is a zipfile with one Packages file inside
-            control_data = \
-                    codecs.decode(ZipFile(
-                      StringIO.StringIO(host_package.content)
-                    ).read(name='WAPT/control'),'UTF-8').splitlines()
-            package = PackageEntry().load_control_from_wapt(control_data)
-            package.repo = self.name
-            package.repo_url = self.repo_url
-            package.filename = package.make_package_filename()
-            signer_cert = package.package_certificate()
+            with ZipFile(StringIO.StringIO(host_package.content)) as zip:
+                control_data = \
+                        codecs.decode(zip.read(name='WAPT/control'),'UTF-8').splitlines()
+                package = PackageEntry().load_control_from_wapt(control_data)
+                package.repo = self.name
+                package.repo_url = self.repo_url
+                package.filename = package.make_package_filename()
+                try:
+                    cert_data = zip.read(name='WAPT/certificate.crt')
+                    signer_cert = SSLCertificate(crt_string=cert_data)
+                    signers_bundle = SSLCABundle(certificates=[signer_cert])
+                except Exception as e:
+                    logger.warning('Error reading host package certificate: %s'%repr(e))
+                    signer_cert = None
+                    signers_bundle = None
 
             try:
                 if self.cabundle is not None:
-                    package.check_control_signature(self.cabundle,signers_bundle=SSLCABundle(certificates=[signer_cert]))
+                    package.check_control_signature(self.cabundle,signers_bundle = signers_bundle)
                 self._packages.append(package)
                 if package.package not in self._index or self._index[package.package] < package:
                     self._index[package.package] = package
