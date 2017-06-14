@@ -73,9 +73,9 @@ def get_private_key_encrypted(certificate_path,password=None):
     cert = SSLCertificate(certificate_path)
     try:
         if password is None or password == '':
-            key = cert.matching_key_in_dirs(password_callback=NOPASSWORD_CALLBACK)
+            key = cert.matching_key_in_dirs(password_callback=NOPASSWORD_CALLBACK,private_key_password = None)
         else:
-            key = cert.matching_key_in_dirs(password = password)
+            key = cert.matching_key_in_dirs(private_key_password = password)
         return key.private_key_filename
     except:
         return ''

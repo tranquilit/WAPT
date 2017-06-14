@@ -4454,7 +4454,7 @@ class Wapt(object):
                 raise
         return self._private_key_cache
 
-    def sign_package(self,zip_or_directoryname,certificate=None,callback=None):
+    def sign_package(self,zip_or_directoryname,certificate=None,callback=None,private_key_password=None):
         """Calc the signature of the WAPT/manifest.sha256 file and put/replace it in ZIP or directory.
             if directory, creates WAPT/manifest.sha256 and add it to the content of package
             create a WAPT/signature file and it to directory or zip file.
@@ -4482,7 +4482,7 @@ class Wapt(object):
 
         logger.info(u'Using identity : %s' % certificate.cn)
         pe =  PackageEntry().load_control_from_wapt(zip_or_directoryname)
-        return pe.sign_package(private_key=key,certificate = certificate,password_callback=callback)
+        return pe.sign_package(private_key=key,certificate = certificate,password_callback=callback,private_key_password=private_key_password)
 
     def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','setup.pyc'],
                 target_directory=None):
@@ -4536,17 +4536,6 @@ class Wapt(object):
         if not self.personal_certificate_path or not os.path.isfile(self.personal_certificate_path):
             raise EWaptMissingPrivateKey('Unable to build %s, personal certificate path %s not provided or not present'%(sources_directories,self.personal_certificate_path))
 
-        def pwd_callback(*args):
-            """Default password callback for opening private keys"""
-            if not isinstance(private_key_passwd,str):
-                return private_key_passwd.encode('ascii')
-            else:
-                return private_key_passwd
-
-        callback = None
-        if private_key_passwd is not None:
-            callback = pwd_callback
-
         for source_dir in [os.path.abspath(p) for p in sources_directories]:
             if os.path.isdir(source_dir):
                 logger.info(u'Building  %s' % source_dir)
@@ -4554,7 +4543,7 @@ class Wapt(object):
                 if package_fn:
                     logger.info(u'...done. Package filename %s' % (package_fn,))
                     logger.info('Signing %s with certificate %s' % (package_fn,self.personal_certificate() ))
-                    signature = self.sign_package(package_fn,callback=callback)
+                    signature = self.sign_package(package_fn,private_key_password = private_key_passwd)
                     logger.debug(u"Package %s signed : signature :\n%s" % (package_fn,signature))
                     buildresults.append(package_fn)
                 else:

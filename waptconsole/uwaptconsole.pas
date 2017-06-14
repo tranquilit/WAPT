@@ -1465,9 +1465,9 @@ begin
     exit;
   end;
 
-  if not FileExists(GetWaptPrivateKeyPath) then
+  if not FileExists(GetWaptPersonalCertificatePath) then
   begin
-    ShowMessageFmt(rsPrivateKeyDoesntExist, [GetWaptPrivateKeyPath]);
+    ShowMessageFmt(rsPrivateKeyDoesntExist, [GetWaptPersonalCertificatePath]);
     exit;
   end;
 
@@ -2413,9 +2413,9 @@ var
   uploadResult, Sources: ISuperObject;
 
 begin
-  if not FileExists(GetWaptPrivateKeyPath) then
+  if not FileExists(GetWaptPersonalCertificatePath) then
   begin
-    ShowMessageFmt(rsPrivateKeyDoesntExist, [GetWaptPrivateKeyPath]);
+    ShowMessageFmt(rsPrivateKeyDoesntExist, [GetWaptPersonalCertificatePath]);
     exit;
   end;
 

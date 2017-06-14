@@ -199,9 +199,9 @@ var
 begin
   http_proxy:=IniReadString(WaptIniFilename,EdRepoName.Text,'http_proxy');
 
-  if not FileExists(GetWaptPrivateKeyPath) then
+  if not FileExists(GetWaptPersonalCertificatePath) then
   begin
-    ShowMessageFmt(rsPrivateKeyDoesntExist, [GetWaptPrivateKeyPath]);
+    ShowMessageFmt(rsPrivateKeyDoesntExist, [GetWaptPersonalCertificatePath]);
     exit;
   end;
 

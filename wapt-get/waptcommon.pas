@@ -38,7 +38,7 @@ interface
         constructor Create(const msg: string;AHTTPStatus:Integer);
       end;
 
-  function GetWaptPrivateKeyPath: Utf8String;
+  function GetWaptPersonalCertificatePath: Utf8String;
 
   Function GetWaptLocalURL:String;
 
@@ -860,9 +860,9 @@ begin
 end;
 
 
-function GetWaptPrivateKeyPath: Utf8String;
+function GetWaptPersonalCertificatePath: Utf8String;
 begin
-  result := utf8Decode(IniReadString(WaptIniFilename,'Global','private_key'));
+  result := utf8Decode(IniReadString(WaptIniFilename,'Global','personal_certificate_path'));
 end;
 
 function GetWaptLocalURL: String;
@@ -1441,7 +1441,7 @@ begin
     Run(format('"%s"  "%s"',[inno_fn,custom_iss]),'',3600000,'','','',OnProgress);
     Result := AppendPathDelim(destination) + outputname + '.exe';
     signtool :=  AppendPathDelim(wapt_base_dir) + 'utils\signtool.exe';
-    p12keyPath := ChangeFileExt(GetWaptPrivateKeyPath,'.p12');
+    p12keyPath := ChangeFileExt(GetWaptPersonalCertificatePath,'.p12');
     if FileExists(signtool) and FileExists(p12keypath) then
       Run(format('"%s" sign /f "%s" "%s"',[signtool,p12keypath,Result]),'',3600000,'','','',OnProgress);
 

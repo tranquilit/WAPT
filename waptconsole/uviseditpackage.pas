@@ -544,7 +544,6 @@ begin
       if EdSetupPy.Lines.Count>0 then
         EdSetupPy.Lines.SaveToFile(AppendPathDelim(FSourcePath) + 'setup.py');
     end;
-    IsUpdated := False;
   finally
     Screen.Cursor := crDefault;
   end;
@@ -582,9 +581,9 @@ begin
 
   ActEditSavePackage.Execute;
 
-  if not FileExists(GetWaptPrivateKeyPath) then
+  if not FileExists(GetWaptPersonalCertificatePath) then
   begin
-    ShowMessageFmt(rsPrivateKeyDoesntExist, [GetWaptPrivateKeyPath]);
+    ShowMessageFmt(rsPrivateKeyDoesntExist, [GetWaptPersonalCertificatePath]);
     exit;
   end;
 
@@ -602,6 +601,7 @@ begin
         if (Result.AsArray <> nil) and (FileExistsUTF8(Result.AsArray[0].S['filename'])) then
           FileUtil.DeleteFileUTF8(Result.AsArray[0].S['filename']);
       end;
+      IsUpdated := False;
     except
       on E:Exception do
       begin
@@ -614,7 +614,6 @@ begin
   finally
     Free;
   end;
-
   if (Result<>Nil) and (Result.AsArray<>Nil) and (Result.AsArray.Length>0) then
     ModalResult := mrOk
 end;
@@ -754,7 +753,7 @@ begin
         target_directory := UniqueTempDir();
         FisTempSourcesDir := True;
         res := DMPython.RunJSON(
-            format('mywapt.edit_host("%s",target_directory=r"%s".decode(''utf8''),use_local_sources=False)',
+            format('mywapt.edit_host("%s",target_directory=r"%s".decode(''utf8''))',
             [FPackageRequest, target_directory]));
         EdPackage.EditLabel.Caption := 'Machine';
         Caption := rsHostConfigEditCaption;

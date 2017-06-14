@@ -384,8 +384,9 @@ def test_editpackage():
     wapt_sources_edit(pe.sourcespath)
 
 def test_keypassword():
+    print get_private_key_encrypted('c:/private/150-codeur.crt','')
     print get_private_key_encrypted('c:/private/150-codeur.crt','test')
-    print SSLPrivateKey('c:/private/150.pem').modulus
+    print SSLPrivateKey('c:/private/150.pem',password='test').modulus
     c = SSLCertificate('c:/private/150-codeur.crt')
     try:
         k = c.matching_key_in_dirs()

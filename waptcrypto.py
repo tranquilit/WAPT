@@ -65,6 +65,9 @@ class EWaptCertificateUnknowIssuer(EWaptBadCertificate):
 class EWaptCertificateExpired(EWaptBadCertificate):
     pass
 
+class EWaptBadKeyPassword(EWaptCryptoException):
+    pass
+
 def check_key_password(key_filename,password=""):
     """Check if provided password is valid to read the PEM private key
     >>> if not os.path.isfile('c:/private/test.pem'):
@@ -324,12 +327,12 @@ class SSLPrivateKey(object):
                                 if retry_count>0:
                                     retry_count -=1
                                 else:
-                                    raise
+                                    raise EWaptBadKeyPassword(u'Unable to decrypt %s with supplied password'%self.private_key_filename)
                             else:
                                 raise
                 # no password
                 else:
-                    self._rsa = RSA.load_key(self.private_key_filename)
+                    self._rsa = RSA.load_key(self.private_key_filename,callback=NOPASSWORD_CALLBACK)
             finally:
                 _tmp_passwd = None
         return self._rsa
@@ -575,7 +578,7 @@ class SSLCertificate(object):
             key = SSLPrivateKey(key)
         return self.crt.get_pubkey().get_modulus() == key.key.get_modulus()
 
-    def matching_key_in_dirs(self,directories=None,password_callback=None,password=None):
+    def matching_key_in_dirs(self,directories=None,password_callback=None,private_key_password=None):
         """Return the first SSLPrivateKey matching this certificate
 
         Args:
@@ -594,7 +597,7 @@ class SSLCertificate(object):
         for adir in directories:
             for akeyfile in glob.glob(os.path.join(adir,'*.pem')):
                 try:
-                    key = SSLPrivateKey(os.path.abspath(akeyfile),callback = password_callback,password = password)
+                    key = SSLPrivateKey(os.path.abspath(akeyfile),callback = password_callback,password = private_key_password)
                     if key.match_cert(self):
                         return key
                     else:

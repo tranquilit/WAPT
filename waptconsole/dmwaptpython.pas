@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil,LazFileUtils, PythonEngine, PythonGUIInputOutput, VarPyth,
-  vte_json, superobject, fpjson, jsonparser, DefaultTranslator;
+  vte_json, superobject, fpjson, jsonparser, DefaultTranslator,WrapDelphi;
 
 type
 
@@ -14,9 +14,12 @@ type
 
   TDMPython = class(TDataModule)
     PythonEng: TPythonEngine;
+    PythonModuleDMWaptPython: TPythonModule;
     PythonOutput: TPythonGUIInputOutput;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
+    procedure PythonModule1Events0Execute(Sender: TObject; PSelf,
+      Args: PPyObject; var Result: PPyObject);
   private
     FLanguage: String;
     FCachedPrivateKeyPassword: Ansistring;
@@ -33,6 +36,7 @@ type
   public
     { public declarations }
     WAPT:Variant;
+    PyWaptWrapper : TPyDelphiWrapper;
 
     property privateKeyPassword: Ansistring read getprivateKeyPassword write setprivateKeyPassword;
 
@@ -47,7 +51,7 @@ var
   DMPython: TDMPython;
 
 implementation
-uses waptcommon, uvisprivatekeyauth,inifiles,forms,controls;
+uses waptcommon, uvisprivatekeyauth,inifiles,forms,controls,Dialogs;
 {$R *.lfm}
 
 procedure TDMPython.SetWaptConfigFileName(AValue: Utf8String);
@@ -84,6 +88,8 @@ begin
       st.Append(format('mywapt = common.Wapt(config_filename=r"%s".decode(''utf8''),disable_update_server_status=True)',[AValue]));
       st.Append('mywapt.dbpath=r":memory:"');
       st.Append('mywapt.use_hostpackages = False');
+      st.Append('import dmwaptpython');
+
       //st.Append('mywapt.update(register=False)');
       PythonEng.ExecStrings(St);
       WAPT:=MainModule.mywapt;
@@ -141,6 +147,11 @@ begin
     Py_SetProgramName(PAnsiChar(ParamStr(0)));
   end;
 
+  PyWaptWrapper := TPyDelphiWrapper.Create(Self);  // no need to destroy
+  PyWaptWrapper.Engine := PythonEng;
+  PyWaptWrapper.Module := PythonModuleDMWaptPython;
+  PyWaptWrapper.Initialize;  // Should only be called if PyDelphiWrapper is created at run time
+
 end;
 
 procedure TDMPython.DataModuleDestroy(Sender: TObject);
@@ -148,6 +159,13 @@ begin
   if Assigned(jsondata) then
     FreeAndNil(jsondata);
 
+end;
+
+procedure TDMPython.PythonModule1Events0Execute(Sender: TObject; PSelf,
+  Args: PPyObject; var Result: PPyObject);
+begin
+  ShowMessage(VarPythonCreate(Args).GetItem(0));
+  Result :=  PythonEng.ReturnNone;
 end;
 
 function TDMPython.RunJSON(expr: UTF8String; jsonView: TVirtualJSONInspector=Nil): ISuperObject;
@@ -184,35 +202,58 @@ end;
 
 function TDMPython.getprivateKeyPassword: Ansistring;
 var
-  KeyIsProtected:Boolean;
+  PrivateKeyPath:String;
+  Password:Variant;
+  RetryCount:integer;
 begin
-  if not FileExists(GetWaptPrivateKeyPath) then
+  if not FileExists(GetWaptPersonalCertificatePath) then
     FCachedPrivateKeyPassword := ''
   else
   begin
-    KeyIsProtected := StrToBool(DMPython.RunJSON(
-      format('common.private_key_has_password(r"%s")',
-      [GetWaptPrivateKeyPath])).AsString);
-    if KeyIsProtected then
-      while not StrToBool(DMPython.RunJSON(format('common.check_key_password(r"%s","%s")',[GetWaptPrivateKeyPath, FCachedPrivateKeyPassword])).AsString) do
+    RetryCount:=3;
+    Password:= '';
+    // try without password
+    PrivateKeyPath := MainModule.waptdevutils.get_private_key_encrypted(certificate_path:=GetWaptPersonalCertificatePath(),password:=Password);
+    if (PrivateKeyPath ='') and (FCachedPrivateKeyPassword<>'') then
+    begin
+      Password := FCachedPrivateKeyPassword;
+      PrivateKeyPath := MainModule.waptdevutils.get_private_key_encrypted(certificate_path:=GetWaptPersonalCertificatePath(),password:=Password);
+      // not found any keys, reset pwd cache to empty.
+      if PrivateKeyPath='' then
+        FCachedPrivateKeyPassword := '';
+    end;
+
+    if PrivateKeyPath ='' then
+      while RetryCount>0 do
       begin
         with TvisPrivateKeyAuth.Create(Application.MainForm) do
         try
-          laKeyPath.Caption := GetWaptPrivateKeyPath;
+          laKeyPath.Caption := GetWaptPersonalCertificatePath;
           if ShowModal = mrOk then
-            FCachedPrivateKeyPassword := edPasswordKey.Text
+          begin
+            Password := edPasswordKey.Text;
+            PrivateKeyPath := MainModule.waptdevutils.get_private_key_encrypted(certificate_path:=GetWaptPersonalCertificatePath(),password:=Password);
+            if PrivateKeyPath<>'' then
+            begin
+              FCachedPrivateKeyPassword:=edPasswordKey.Text;
+              break;
+            end;
+          end
           else
           begin
             FCachedPrivateKeyPassword := '';
-            Result := FCachedPrivateKeyPassword;
-            Exit;
+            break;
           end;
         finally
           Free;
         end;
+        dec(RetryCount);
       end
     else
       FCachedPrivateKeyPassword :='';
+
+    if PrivateKeyPath='' then
+      Raise Exception.Create('Unable to find and/or decrypt private key for personal certitificate '+GetWaptPersonalCertificatePath);
   end;
   Result := FCachedPrivateKeyPassword;
 end;

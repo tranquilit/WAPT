@@ -961,7 +961,7 @@ class PackageEntry(object):
                 manifest[fn.filename] = shasum.hexdigest()
         return manifest
 
-    def sign_package(self,certificate,private_key=None,password_callback=None):
+    def sign_package(self,certificate,private_key=None,password_callback=None,private_key_password=None):
         """Sign an already built package.
             Should follow immediately the build_package step.
 
@@ -974,7 +974,7 @@ class PackageEntry(object):
             raise Exception(u"%s is not a Wapt package" % self.localpath)
 
         if private_key is None:
-            private_key = certificate.matching_key_in_dirs(password_callback = password_callback)
+            private_key = certificate.matching_key_in_dirs(password_callback = password_callback,password=private_key_password)
 
         start_time = time.time()
         package_fn = self.localpath

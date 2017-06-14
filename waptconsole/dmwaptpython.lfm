@@ -5,7 +5,7 @@ object DMPython: TDMPython
   Height = 189
   HorizontalOffset = 347
   VerticalOffset = 423
-  Width = 178
+  Width = 233
   object PythonEng: TPythonEngine
     AutoLoad = False
     DllName = 'python27.dll'
@@ -21,5 +21,17 @@ object DMPython: TDMPython
     RawOutput = False
     left = 64
     top = 88
+  end
+  object PythonModuleDMWaptPython: TPythonModule
+    Engine = PythonEng
+    Events = <    
+      item
+        Name = 'GetPrivateKeyPassword'
+        OnExecute = PythonModule1Events0Execute
+      end>
+    ModuleName = 'dmwaptpython'
+    Errors = <>
+    left = 144
+    top = 32
   end
 end
