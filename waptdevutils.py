@@ -161,7 +161,7 @@ def update_external_repo(repourl,search_string,proxy=None,mywapt=None,newer_only
     True
     """
     proxies =  {'http':proxy,'https':proxy}
-    repo = WaptRepo(url=repourl,proxies=proxies)
+    repo = WaptRemoteRepo(url=repourl,proxies=proxies)
     repo.verify_cert = verify_cert
     packages = repo.search(search_string,newest_only=newest_only)
     if mywapt and newer_only:
@@ -180,33 +180,53 @@ def update_external_repo(repourl,search_string,proxy=None,mywapt=None,newer_only
     else:
         return packages
 
-def get_packages_filenames(waptconfigfile,packages_names,with_depends=True):
+def get_packages_filenames(waptconfigfile,packages_names,with_depends=True,verify_cert=None,repo_name='global'):
     """Returns list of package filenames (latest version) and md5 matching comma separated list of packages names and their dependencies
         helps to batch download a list of selected packages using tools like curl or wget
 
     Args:
         waptconfigfile (str): path to wapt ini file
         packages_names (list or csv str): list of package names
+        verify_cert (0/1,path to certificate or ca) : check https connection
+        with_depends (bool): get recursively the all depends filenames
+        repo_name : section name in wapt ini file for repo parameters (repo_url, http_proxy, timeout, verify_cert)
+
+    Returns:
+        list: list of (wapt file basename,md5)
 
     >>> get_packages_filenames(r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini","tis-firefox-esr,tis-flash,tis-wapttest")
     [u'tis-firefox-esr_24.4.0-0_all.wapt', u'tis-flash_12.0.0.77-3_all.wapt', u'tis-wapttest.wapt', u'tis-wapttestsub_0.1.0-1_all.wapt', u'tis-7zip_9.2.0-15_all.wapt']
     """
     result = []
-    wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
-    wapt.dbpath = r':memory:'
-    wapt.use_hostpackages = False
-    # force to use alternate templates repo
-    repo = wapt.config.get('global','templates_repo_url')
-    wapt.repositories[0].repo_url = repo if repo else 'https://store.wapt.fr/wapt'
-    if wapt.use_http_proxy_for_templates:
-        wapt.repositories[0].proxies =  {'http':wapt.config.get('global','http_proxy'),'https':wapt.config.get('global','http_proxy')}
+    defaults = {
+        'templates_repo_url':'https://store.wapt.fr/wapt',
+        'http_proxy':'',
+        'verify_cert':'0',
+        'use_http_proxy_for_templates':'0',
+        }
+
+    config = RawConfigParser(defaults=defaults)
+    config.read(waptconfigfile)
+
+    # old config style
+    if repo_name == 'global':
+        url = config.get(repo_name,'templates_repo_url')
+        proxy = config.get('global','http_proxy')
+        use_proxy = config.getboolean('global','use_http_proxy_for_templates')
+        if use_proxy:
+            proxies =  {'http':proxy,'https':proxy}
+        else:
+            proxies = {'http':None,'https':None}
     else:
-        wapt.repositories[0].proxies = {'http':None,'https':None}
-    # be sure to be up to date
-    wapt.update(register=False, filter_on_host_cap=False)
+        proxies = None
+        url=None
+
+    templates = WaptRemoteRepo(url=url,name=repo_name,proxies=proxies,verify_cert=verify_cert,config=config)
+    templates.update()
+
     packages_names = ensure_list(packages_names)
     for name in packages_names:
-        entries = wapt.is_available(name)
+        entries = templates.packages_matching(name)
         if entries:
             pe = entries[-1]
             result.append((pe.filename,pe.md5sum,))
@@ -216,8 +236,7 @@ def get_packages_filenames(waptconfigfile,packages_names,with_depends=True):
                         result.append((fn,md5,))
     return result
 
-
-def duplicate_from_external_repo(waptconfigfile,package_filename,target_directory=None,authorized_certs=None):
+def duplicate_from_external_repo(waptconfigfile,package_filename,target_directory=None,authorized_certs=None,verify_cert=None,repo_name='global'):
     r"""Duplicate a downloaded package to match prefix defined in waptconfigfile
        renames all dependencies
       returns source directory

@@ -44,7 +44,7 @@ import custom_zip as zipfile
 from custom_zip import ZipFile
 import tempfile
 import fnmatch
-
+import urlparse
 
 if platform.system() == 'Windows':
     try:
@@ -485,8 +485,15 @@ def get_disk_free_space(filepath):
         total, used, free = disk_usage(filepath)
         return free
 
-def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False,referer=None,user_agent=None):
+def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False,referer=None,user_agent=None):
     r"""Copy the contents of a file from a given URL to a local file.
+    Args:
+        url (str)
+        target (str) : full file path of downloaded file. If None, put in a temporary dir with supplied url filename (final part of url)
+
+    Returns:
+        str : path to downloaded file
+
     >>> respath = wget('http://wapt.tranquil.it/wapt/tis-firefox_28.0.0-1_all.wapt','c:\\tmp\\test.wapt',proxies={'http':'http://proxy:3128'})
     ???
     >>> os.stat(respath).st_size>10000
@@ -520,12 +527,16 @@ def wget(url,target,printhook=None,proxies=None,connect_timeout=10,download_time
             else:
                 return False
 
+    if target is None:
+        target = tempfile.gettempdir()
+
     if os.path.isdir(target):
         target = os.path.join(target,'')
 
     (dir,filename) = os.path.split(target)
     if not filename:
-        filename = url.split('/')[-1]
+        url_parts = urlparse.urlparse(url)
+        filename = url_parts.path.split('/')[-1]
     if not dir:
         dir = os.getcwd()
 

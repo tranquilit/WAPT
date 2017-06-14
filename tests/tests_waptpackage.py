@@ -44,6 +44,8 @@ from waptutils import *
 from waptcrypto import *
 from waptpackage import *
 from common import *
+from waptdevutils import *
+
 import urllib3
 
 # global parameters
@@ -389,6 +391,18 @@ def test_keypassword():
         print e
         raise
 
+def test_waptdevutils():
+    cfn = r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini"
+    results = get_packages_filenames(cfn,'tis-7zip',repo_name='wapt-templates')
+    (fn,md5) = results[0]
+    w = Wapt(config_filename=cfn)
+    templates = WaptRemoteRepo(url='https://store.wapt.fr/wapt',name='wapt-templates',config = w.config)
+    localfn = wget('%s/%s'% (templates.repo_url,fn))
+    res = duplicate_from_external_repo(cfn,localfn,repo_name='wapt-templates')
+    print res
+
+
+
 
 
 
@@ -397,13 +411,15 @@ def test_keypassword():
 if __name__ == '__main__':
     setup_test()
     test_wapt_engine()
-    test_paquet_host()
-    #test_editpackage()
-    #test_reload_config()
-    #test_edithost()
-    #test_keypassword()
+    test_waptdevutils()
 
-    #test_waptrepo()
-    #test_oldsignature()
+    test_paquet_host()
+    test_editpackage()
+    test_reload_config()
+    test_edithost()
+    test_keypassword()
+
+    test_waptrepo()
+    test_oldsignature()
     test_build_sign_verify_package()
     test_sign_action()
