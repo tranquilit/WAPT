@@ -56,7 +56,7 @@ from socketIO_client import SocketIO, LoggingSocketIONamespace,SocketIONamespace
 #from eventlet import wsgi
 #import eventlet
 
-from urlparse import urlparse
+import urlparse
 from functools import wraps
 
 import logging
@@ -321,7 +321,7 @@ class WaptServiceConfig(object):
 
             if config.has_option('global','wapt_server'):
                 self.waptserver = common.WaptServer().load_config(config)
-                waptserver_url = urlparse(self.waptserver.server_url)
+                waptserver_url = urlparse.urlunparse(self.waptserver.server_url)
                 if waptserver_url.port is None:
                     if waptserver_url.scheme == 'https':
                         self.websockets_port = 443
