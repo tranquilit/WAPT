@@ -248,9 +248,7 @@ begin
           Free;
         end;
         dec(RetryCount);
-      end
-    else
-      FCachedPrivateKeyPassword :='';
+      end;
 
     if PrivateKeyPath='' then
       Raise Exception.Create('Unable to find and/or decrypt private key for personal certitificate '+GetWaptPersonalCertificatePath);

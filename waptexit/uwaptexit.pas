@@ -47,6 +47,7 @@ type
   public
     { public declarations }
     upgrades,tasks,running,pending : ISuperObject;
+    // wait for waptservice answer in seconds
     waptservice_timeout: Integer;
     property CountDown:Integer read FCountDown write SetCountDown;
   end;
@@ -135,13 +136,13 @@ var
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
   ScaleImageList(ImageList1,96);
-  waptservice_timeout := 2000;
+  waptservice_timeout := 2;
 
   //Load config
   ini := TIniFile.Create(WaptIniFilename);
   try
     Fallow_cancel_upgrade := ini.ReadBool('global','allow_cancel_upgrade',allow_cancel_upgrade);
-    waptservice_timeout := ini.ReadInteger('global','waptservice_timeout',2)*1000;
+    waptservice_timeout := ini.ReadInteger('global','waptservice_timeout',2);
   finally
     ini.Free;
   end;
@@ -178,14 +179,14 @@ begin
 
   //Check if pending upgrades
   try
-    aso := WAPTLocalJsonGet('checkupgrades.json','','',waptservice_timeout);
+    aso := WAPTLocalJsonGet('checkupgrades.json','','',waptservice_timeout*1000);
     if aso<>Nil then
       upgrades := aso['upgrades']
     else
       upgrades := Nil;
 
     //check if running or pending tasks.
-    aso := WAPTLocalJsonGet('tasks.json','','',waptservice_timeout);
+    aso := WAPTLocalJsonGet('tasks.json','','',waptservice_timeout*1000);
     if aso<>Nil then
     begin
       running := aso['running'];
@@ -219,7 +220,7 @@ begin
   timer1.Enabled:=False;
   try
     // get current tasks manager status
-    aso := WAPTLocalJsonGet('tasks.json','','',waptservice_timeout);
+    aso := WAPTLocalJsonGet('tasks.json','','',waptservice_timeout*1000);
     if aso <> Nil then
     begin
       running := aso['running'];
