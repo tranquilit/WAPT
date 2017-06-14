@@ -2341,7 +2341,7 @@ class Wapt(object):
             self.dbpath = os.path.join(self.wapt_base_dir,'db','waptdb.sqlite')
 
         # must have a matching key eithe rin same file or in same directory
-        # see self.private_key
+        # see self.private_key()
         if self.config.has_option('global','personal_certificate_path'):
             self.personal_certificate_path = self.config.get('global','personal_certificate_path')
 
@@ -4435,7 +4435,6 @@ class Wapt(object):
                 return r
         return None
 
-
     def personal_certificate(self):
         return SSLCertificate(self.personal_certificate_path)
 
@@ -4534,8 +4533,8 @@ class Wapt(object):
         sources_directories = ensure_list(sources_directories)
         buildresults = []
 
-        if not self.private_key or not os.path.isfile(self.private_key):
-            raise EWaptMissingPrivateKey('Unable to build %s, private key %s not provided or not present'%(sources_directories,self.private_key))
+        if not self.personal_certificate_path or not os.path.isfile(self.personal_certificate_path):
+            raise EWaptMissingPrivateKey('Unable to build %s, personal certificate path %s not provided or not present'%(sources_directories,self.personal_certificate_path))
 
         def pwd_callback(*args):
             """Default password callback for opening private keys"""
@@ -4554,7 +4553,7 @@ class Wapt(object):
                 package_fn = self.build_package(source_dir,inc_package_release=inc_package_release,target_directory=target_directory)
                 if package_fn:
                     logger.info(u'...done. Package filename %s' % (package_fn,))
-                    logger.info('Signing %s with key %s' % (package_fn,self.private_key))
+                    logger.info('Signing %s with certificate %s' % (package_fn,self.personal_certificate() ))
                     signature = self.sign_package(package_fn,callback=callback)
                     logger.debug(u"Package %s signed : signature :\n%s" % (package_fn,signature))
                     buildresults.append(package_fn)

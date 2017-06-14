@@ -316,6 +316,9 @@ def build_waptupgrade_package(waptconfigfile,target_directory,wapt_server_user,w
     wapt.dbpath = r':memory:'
     wapt.use_hostpackages = False
 
+    if not wapt.personal_certificate_path or not os.path.isfile(wapt.personal_certificate_path):
+        raise Exception(u'No personal certificate provided or not found (%s) for signing waptupgrade package' % wapt.personal_certificate_path)
+
     def pwd_callback(*args):
         """Default password callback for opening private keys"""
         if not isinstance(key_password,str):
@@ -337,12 +340,10 @@ def build_waptupgrade_package(waptconfigfile,target_directory,wapt_server_user,w
     entry.inc_build()
     entry.save_control_to_wapt()
     entry.build_package(target_directory=target_directory)
-    key = wapt.private_key_cache
-    certs = wapt.private_key_cache.matching_certs(wapt.public_certs_dir,code_signing = True)
-    if certs:
-        cert = certs[0]
-    else:
-        raise Exception(u'No code signing certificate found for key %s' % wapt.private_key)
+    cert = wapt.personal_certificate()
+    key = wapt.private_key()
+    if not cert.is_code_signing:
+        raise Exception(u'%s is not code signing certificate' % wapt.personal_certificate_path)
     entry.sign_package(private_key=key,certificate = cert,password_callback=pwd_callback)
 
     wapt.http_upload_package(entry.localpath,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
@@ -590,8 +591,8 @@ def sign_actions(waptconfigfile,actions,key_password=None):
             return key_password
 
     wapt.key_passwd_callback = pwd_callback
-    key = wapt.private_key_cache
-    cert = sorted(wapt.private_key_cache.matching_certs(valid=True))[-1]
+    key = wapt.private_key()
+    cert = wapt.personal_certificate()
 
     if isinstance(actions,(str,unicode)):
         actions = json.loads(actions)

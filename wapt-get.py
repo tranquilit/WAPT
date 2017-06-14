@@ -308,8 +308,8 @@ def main():
 
 
 
-        if options.private_key:
-            mywapt.private_key = options.private_key
+        if options.certificate:
+            mywapt.personal_certificate_path = options.certificate
 
         # key password management
         def pwd_callback(*args):
@@ -776,8 +776,8 @@ def main():
                 if len(args) < 2:
                     print(u"You must provide at least one source directory for package building")
                     sys.exit(1)
-                if not mywapt.private_key or not os.path.isfile(mywapt.private_key):
-                    print(u"You must provide the filepath to a private key in the [global]->private_key key of configuration %s" %config_file)
+                if not mywapt.personal_certificate_path or not os.path.isfile(mywapt.personal_certificate_path):
+                    print(u"You must provide the filepath to a your personal certificate the [global]->personal_certificate_path key of configuration %s" %config_file)
                     sys.exit(1)
 
                 packages = []
@@ -799,18 +799,13 @@ def main():
                                 excludes=ensure_list(options.excludes))
                             if package_fn:
                                 print('...done building. Package filename %s' % (package_fn,))
-                                if mywapt.private_key:
-                                    print('Private key is %s'%mywapt.private_key)
-                                    certificates = mywapt.private_key_cache.matching_certs(valid=True,code_signing=True)
-                                    if not certificates:
-                                        raise EWaptException('No certificate found for signing with key %s' %  mywapt.private_key)
-                                    print('Signing %s with key %s and certificate %s (%s)' % (package_fn,mywapt.private_key,certificates[-1].cn,certificates[-1].public_cert_filename))
-                                    signature = mywapt.sign_package(
-                                        package_fn,
-                                        private_key = mywapt.private_key,
-                                        excludes=common.ensure_list(options.excludes),
-                                        certificate = certificates[-1],
-                                        )
+                                if mywapt.personal_certificate():
+                                    print('Private key is %s'%mywapt.private_key())
+                                    certificate = mywapt.personal_certificate()
+                                    if not certificate.is_code_signing:
+                                        raise EWaptException('Certificate %s does not allow code signing.' %  mywapt.personal_certificate_path)
+                                    print('Signing %s with key %s and certificate %s (%s)' % (package_fn,mywapt.private_key(),certificate.cn,certificate.public_cert_filename))
+                                    signature = mywapt.sign_package(package_fn)
                                     print(u"Package %s signed : signature :\n%s" % (package_fn,signature))
                                     packages.append(package_fn)
                                 else:
@@ -863,8 +858,8 @@ def main():
                 if len(args) < 2:
                     print(u"You must provide at least one source directory or package to sign")
                     sys.exit(1)
-                if not mywapt.private_key or not os.path.isfile(mywapt.private_key):
-                    print(u"You must provide the filepath to a private key in the [global]->private_key key of configuration %s" %config_file)
+                if not mywapt.personal_certificate_path or not os.path.isfile(mywapt.personal_certificate_path):
+                    print(u"You must provide the filepath to your personal X509 PEM encoded certificate in the [global]->personal_certificate_path key of configuration %s" %config_file)
                     sys.exit(1)
 
                 all_args = expand_args(args[1:])
@@ -873,13 +868,9 @@ def main():
                     try:
                         waptfile = guess_package_root_dir(waptfile)
                         if os.path.isdir(waptfile) or os.path.isfile(waptfile):
-                            print('Signing %s with key %s' % (waptfile,mywapt.private_key))
-                            signature = mywapt.sign_package(
-                                waptfile,
-                                excludes=common.ensure_list(options.excludes)
-                                )
-                            print(u"   OK: Package %s signed : signature :\n%s" % (
-                                waptfile, signature))
+                            print('Signing %s with certificate %s' % (waptfile,mywapt.personal_certificate_path))
+                            signature = mywapt.sign_package(waptfile)
+                            print(u"   OK: Package %s signed : signature :\n%s" % (waptfile, signature))
                         else:
                             logger.critical(u'Package %s not found' % waptfile)
                     except Exception as e:
