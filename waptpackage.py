@@ -837,7 +837,7 @@ class PackageEntry(object):
             private_key.sign_content(self._signed_content(),self._md or self._default_md))
         return self.get_default_signed_attributes()
 
-    def check_control_signature(self,cabundle):
+    def check_control_signature(self,cabundle,signers_bundle=None):
         """Check in memory control signature against a list of public certificates
 
         Args:
@@ -867,7 +867,10 @@ class PackageEntry(object):
         signed_content = self._signed_content()
         signature_raw = self.signature.decode('base64')
         cert = self.package_certificate()
+        if cert is None and signers_bundle is not None:
+            cert = signers_bundle.certificate(sha1_fingerprint = self.signer_fingerprint)
         if cert is not None:
+            # we have the
             try:
                 if cert.verify_content(signed_content,signature_raw,md=self._default_md):
                     self._md = self._default_md
@@ -879,7 +882,7 @@ class PackageEntry(object):
             except SSLVerifyException as e:
                 raise SSLVerifyException('SSL signature verification failed for control %s against embedded certiicate %s : %s' % (self.asrequirement(),cert,repr(e)))
         else:
-            logger.warning('Old style signature without embedded certificate, please resign %s' %(self.asrequirement()))
+            # old style . checking directly with self signed certificates.
             for public_cert in cabundle.certificates():
                 try:
                     if public_cert.verify_content(signed_content,signature_raw,md=self._default_md):
@@ -2014,7 +2017,7 @@ class WaptRemoteRepo(WaptBaseRepo):
 
                 try:
                     if self.cabundle is not None:
-                        package.check_control_signature(signer_certificates)
+                        package.check_control_signature(cabundle=self.cabundle,signers_bundle =  signer_certificates)
                     new_packages.append(package)
                     if package.package not in self._index or self._index[package.package] < package:
                         self._index[package.package] = package

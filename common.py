@@ -2047,9 +2047,11 @@ class WaptHostRepo(WaptRepo):
             package.repo = self.name
             package.repo_url = self.repo_url
             package.filename = package.make_package_filename()
+            signer_cert = package.package_certificate()
+
             try:
                 if self.cabundle is not None:
-                    package.check_control_signature(self.cabundle)
+                    package.check_control_signature(self.cabundle,signers_bundle=SSLCABundle(certificates=[signer_cert]))
                 self._packages.append(package)
                 if package.package not in self._index or self._index[package.package] < package:
                     self._index[package.package] = package
