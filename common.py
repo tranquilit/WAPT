@@ -4904,7 +4904,7 @@ class Wapt(object):
             os.makedirs(os.path.join(directoryname,'WAPT'))
 
         template_fn = os.path.join(self.wapt_base_dir,'templates','setup_%s_template.py' % section)
-        if not os.path.isfile(template_fn):
+        if os.path.isfile(template_fn):
             # replacing %(var)s by local values in template
             # so setup template must use other string formating system than % like '{}'.format()
             template = codecs.open(template_fn,encoding='utf8').read() % locals()
