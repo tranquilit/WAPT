@@ -2317,7 +2317,6 @@ class Wapt(object):
             'after_upload':'',
             'http_proxy':'',
             'waptwua_enabled':'0',
-            'public_certs_dir':'',
             'personal_certificate_path':'',
             'check_certificates_validity':'True',
             }
@@ -5282,7 +5281,7 @@ class Wapt(object):
 
             entry.save_control_to_wapt(target_directory)
             self.add_pyscripter_project(target_directory)
-            entry
+            return entry
         else:
             # create a new version of the existing package in repository
             return self.make_host_template(packagename=hostname,directoryname=target_directory,depends=append_depends,description=description)
@@ -5498,22 +5497,6 @@ class Wapt(object):
         self.add_pyscripter_project(target_directory)
         dest_control.invalidate_signature()
         return dest_control
-
-    def check_waptupgrades(self):
-        """Check if a new version of the Wapt client is available
-            return url and version if newer
-            return None if no update
-        """
-        if self.config.has_option('global','waptupgrade_url'):
-            upgradeurl = self.config.get('global','waptupgrade_url')
-        raise NotImplementedError()
-
-    def packages_add_depends(self,packages,append_depends):
-        """ Add a list of dependencies to existing packages, inc version and build-upload
-            packages : list of package names
-            append_depends : list of dependencies packages
-        """
-        raise NotImplementedError()
 
     def setup_tasks(self):
         """Setup cron job on windows for update and download-upgrade"""
@@ -5781,19 +5764,6 @@ def check_user_membership(user_name,password,domain_name,group_name):
 Version = setuphelpers.Version  # obsolete
 
 if __name__ == '__main__':
-    #w = Wapt(config_filename='c:/tranquilit/wapt/wapt-get.ini')
-    #w.update()
-    #w.update_server_status()
-    #w.update_server_status()
-
-    #w.update(force=True)
-    #inv = w.inventory()
-    #s = w.sign_host_content(inv)
-
-    #inv = w.inventory()
-    #print w.check_signed_host_content(inv,s['signed_attributes'],s['signature'])
-
-    #sys.exit(1)
     import doctest
     import sys
     reload(sys)

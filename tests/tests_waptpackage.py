@@ -434,8 +434,20 @@ def test_editzip():
         os.startfile(pe.unzip_package(r.cabundle))
     print('Done')
 
+
+def test_editcommon():
+    w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
+    w.dbpath=':memory:'
+    w.use_hostpackages = False
+    w.update()
+    pe = w.edit_package('150-7zip')
+    wapt_sources_edit(pe.sourcespath)
+
+
+
 if __name__ == '__main__':
     setup_test()
+    test_editcommon()
     test_editzip()
     test_localrepo_cert()
     test_keypassword()
