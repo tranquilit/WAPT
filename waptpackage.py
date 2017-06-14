@@ -1359,6 +1359,8 @@ class WaptBaseRepo(object):
         self._index = {}
         self._packages_date = None
         self.discarded = []
+        self.check_certificates_validity = None
+        self.public_certs_dir = None
 
         # if not None, control's signature will be check against this certificates list
         self.load_config(config=config)
@@ -1382,6 +1384,24 @@ class WaptBaseRepo(object):
         Returns:
             self: return itself to chain calls.
         """
+        if not section:
+             section = self.name
+
+        # creates a default parser with a default section if None provided to get defaults
+        if config is None:
+            config = RawConfigParser(self._default_config)
+            config.add_section(section)
+
+        if not config.has_section(section):
+            section = 'global'
+
+        if config.has_option(section,'public_certs_dir'):
+            self.cabundle = SSLCABundle()
+            self.cabundle.add_pems(config.get(section,'public_certs_dir'))
+
+        if config.has_option(section,'check_certificates_validity'):
+            self.check_certificates_validity = config.getboolean(section,'check_certificates_validity')
+
         return self
 
     def _load_packages_index(self):
@@ -1550,6 +1570,7 @@ class WaptLocalRepo(WaptBaseRepo):
         self._default_config.update({
             'localpath':localpath,
         })
+
         WaptBaseRepo.__init__(self,name=name,cabundle=cabundle,config=None)
 
         # override defaults and config with supplied parameters
@@ -1756,6 +1777,7 @@ class WaptLocalRepo(WaptBaseRepo):
         Returns:
             WaptRemoteRepo: return itself to chain calls.
         """
+
         if not section:
              section = self.name
 
@@ -1767,13 +1789,10 @@ class WaptLocalRepo(WaptBaseRepo):
         if not config.has_section(section):
             section = 'global'
 
+        WaptBaseRepo.load_config(self,config,section)
+
         if config.has_option(section,'localpath'):
             self.localpath = config.get(section,'localpath')
-
-        if config.has_option(section,'public_certs_dir'):
-            self.cabundle = SSLCABundle()
-            self.cabundle.add_pems(config.get(section,'public_certs_dir'))
-            self.check_certificates_validity = config.getboolean(section,'check_certificates_validity')
 
         return self
 
@@ -1865,12 +1884,15 @@ class WaptRemoteRepo(WaptBaseRepo):
         if not section:
              section = self.name
 
+        # creates a default parser with a default section if None provided to get defaults
         if config is None:
-            config  = RawConfigParser(defaults = self._default_config)
+            config = RawConfigParser(self._default_config)
             config.add_section(section)
 
         if not config.has_section(section):
             section = 'global'
+
+        WaptBaseRepo.load_config(self,config,section)
 
         if config.has_option(section,'repo_url'):
             self.repo_url = config.get(section,'repo_url')
@@ -1888,11 +1910,6 @@ class WaptRemoteRepo(WaptBaseRepo):
 
         if config.has_option(section,'timeout'):
             self.timeout = config.getfloat(section,'timeout')
-
-        if config.has_option(section,'public_certs_dir'):
-            self.cabundle = SSLCABundle()
-            self.cabundle.add_pems(config.get(section,'public_certs_dir'))
-            self.check_certificates_validity = config.getboolean(section,'check_certificates_validity')
 
         return self
 
