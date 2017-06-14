@@ -3761,7 +3761,7 @@ class Wapt(object):
                         curr_proxies = self.proxies
                     else:
                         curr_proxies = {'http':None,'https':None}
-                    setuphelpers.wget( download_url, self.package_cache_dir,proxies=curr_proxies,printhook = printhook)
+                    entry.localpath = setuphelpers.wget( download_url, self.package_cache_dir,proxies=curr_proxies,printhook = printhook)
                     downloaded.append(fullpackagepath)
                     self.runstatus=''
                 except Exception as e:

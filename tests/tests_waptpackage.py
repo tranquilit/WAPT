@@ -440,7 +440,7 @@ def test_editcommon():
     w.dbpath=':memory:'
     w.use_hostpackages = False
     w.update()
-    pe = w.edit_package('150-7zip')
+    pe = w.edit_package('150-firefox-esr')
     wapt_sources_edit(pe.sourcespath)
 
 
