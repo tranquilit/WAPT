@@ -66,13 +66,13 @@ object VisWAPTConfig: TVisWAPTConfig
         TabOrder = 5
         OnExit = eddefault_package_prefixExit
       end
-      object edprivate_key: TFileNameEdit
+      object edPersonalCertificatePath: TFileNameEdit
         Left = 166
         Height = 21
-        Hint = 'E.g. : c:\private\tranquilit.pem'#13#10'Path to private key for signing new packages.'#13#10'Only suitable for development hosts.'
+        Hint = 'E.g. : c:\private\tranquilit.crt'#13#10'Path to certificate for signing new packages.'#13#10'Only suitable for development hosts.'
         Top = 146
         Width = 220
-        Filter = 'Fichiers PEM|*.pem|Tous les fichiers|*.*'
+        Filter = 'Fichiers certificats PEM|*.crt|Tous les fichiers|*.*'
         FilterIndex = 0
         HideDirectories = False
         ButtonWidth = 23
@@ -84,11 +84,11 @@ object VisWAPTConfig: TVisWAPTConfig
       object Label2: TLabel
         Left = -110
         Height = 13
-        Top = 146
+        Top = 147
         Width = 273
         Alignment = taRightJustify
         AutoSize = False
-        Caption = 'Path to private key'
+        Caption = 'Path to personal certificate'
         ParentColor = False
       end
       object edtemplates_repo_url: TLabeledEdit
@@ -112,48 +112,25 @@ object VisWAPTConfig: TVisWAPTConfig
         TabOrder = 7
         Text = 'https://store.wapt.fr/wapt'
       end
-      object edhttp_proxy: TLabeledEdit
+      object edhttp_proxy_templates: TLabeledEdit
         Left = 164
         Height = 21
-        Hint = 'E.g. : http://proxy.tranquilit.local:3128'#13#10'Only required if a proxy is needed.'
-        Top = 277
+        Hint = 'E.g. : http://proxy.tranquilit.local:3128'#13#10'Only required if a proxy is needed for templates access'
+        Top = 250
         Width = 222
-        EditLabel.AnchorSideTop.Control = edhttp_proxy
+        EditLabel.AnchorSideTop.Control = edhttp_proxy_templates
         EditLabel.AnchorSideTop.Side = asrCenter
-        EditLabel.AnchorSideRight.Control = edhttp_proxy
-        EditLabel.AnchorSideBottom.Control = edhttp_proxy
+        EditLabel.AnchorSideRight.Control = edhttp_proxy_templates
+        EditLabel.AnchorSideBottom.Control = edhttp_proxy_templates
         EditLabel.AnchorSideBottom.Side = asrBottom
         EditLabel.Left = 21
         EditLabel.Height = 13
-        EditLabel.Top = 281
+        EditLabel.Top = 254
         EditLabel.Width = 140
         EditLabel.Caption = 'http proxy to use (if needed)'
         EditLabel.ParentColor = False
         LabelPosition = lpLeft
-        TabOrder = 9
-      end
-      object cbUseProxyForTemplate: TCheckBox
-        Left = 164
-        Height = 17
-        Hint = 'Activate proxy when accessing the model repository'
-        Top = 258
-        Width = 20
-        Checked = True
-        OnClick = cbUseProxyForTemplateClick
-        State = cbChecked
         TabOrder = 8
-      end
-      object Label6: TLabel
-        AnchorSideRight.Control = cbUseProxyForTemplate
-        Left = -106
-        Height = 13
-        Top = 259
-        Width = 267
-        Alignment = taRightJustify
-        Anchors = [akTop, akLeft, akRight]
-        BorderSpacing.Right = 3
-        Caption = 'Proxy for external repository'
-        ParentColor = False
       end
       object edServerAddress: TLabeledEdit
         Left = 166
@@ -278,7 +255,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Caption = 'Authorized external keys dir'
         ParentColor = False
       end
-      object EdAuthorizedCertsDir: TDirectoryEdit
+      object EdTemplatesAuthorizedCertsDir: TDirectoryEdit
         Left = 164
         Height = 21
         Hint = 'When importing packages, check signature against certificates in this list'
@@ -290,7 +267,7 @@ object VisWAPTConfig: TVisWAPTConfig
         NumGlyphs = 1
         Flat = True
         MaxLength = 0
-        TabOrder = 10
+        TabOrder = 9
       end
       object Button3: TButton
         Left = 460
@@ -298,7 +275,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Top = 201
         Width = 112
         Action = ActDownloadCertificate
-        TabOrder = 11
+        TabOrder = 10
       end
       object Button4: TButton
         Left = 460
@@ -306,7 +283,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Top = 228
         Width = 112
         Action = ActOpenCertDir
-        TabOrder = 12
+        TabOrder = 11
       end
     end
     object pgAdvanced: TTabSheet
@@ -363,7 +340,7 @@ object VisWAPTConfig: TVisWAPTConfig
       object Label4: TLabel
         Left = -12
         Height = 13
-        Top = 78
+        Top = 98
         Width = 317
         Alignment = taRightJustify
         AutoSize = False
@@ -374,7 +351,7 @@ object VisWAPTConfig: TVisWAPTConfig
       object Label5: TLabel
         Left = -12
         Height = 13
-        Top = 100
+        Top = 120
         Width = 317
         Alignment = taRightJustify
         AutoSize = False
@@ -386,7 +363,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Left = 313
         Height = 17
         Hint = 'Activates proxy when accessing the main repository'
-        Top = 78
+        Top = 98
         Width = 20
         TabOrder = 2
       end
@@ -394,14 +371,14 @@ object VisWAPTConfig: TVisWAPTConfig
         Left = 313
         Height = 17
         Hint = 'Activate proxy when accessing the WAPT server'
-        Top = 100
+        Top = 120
         Width = 20
         TabOrder = 3
       end
       object Label8: TLabel
         Left = 11
         Height = 13
-        Top = 122
+        Top = 142
         Width = 294
         Alignment = taRightJustify
         AutoSize = False
@@ -411,7 +388,7 @@ object VisWAPTConfig: TVisWAPTConfig
       object cbSendStats: TCheckBox
         Left = 313
         Height = 17
-        Top = 122
+        Top = 142
         Width = 20
         Checked = True
         State = cbChecked
@@ -420,7 +397,7 @@ object VisWAPTConfig: TVisWAPTConfig
       object Button1: TButton
         Left = 341
         Height = 25
-        Top = 118
+        Top = 138
         Width = 143
         Caption = 'Show statistics'
         OnClick = Button1Click
@@ -429,7 +406,7 @@ object VisWAPTConfig: TVisWAPTConfig
       object Label7: TLabel
         Left = 4
         Height = 13
-        Top = 144
+        Top = 164
         Width = 301
         Alignment = taRightJustify
         AutoSize = False
@@ -441,9 +418,29 @@ object VisWAPTConfig: TVisWAPTConfig
         Left = 313
         Height = 17
         Hint = 'Activates proxy when accessing the main repository'
-        Top = 144
+        Top = 164
         Width = 20
         TabOrder = 6
+      end
+      object edhttp_proxy: TLabeledEdit
+        Left = 313
+        Height = 21
+        Hint = 'E.g. : http://proxy.tranquilit.local:3128'#13#10'Only required if a proxy is needed for waptserver and main waptrepo'
+        Top = 74
+        Width = 222
+        EditLabel.AnchorSideTop.Control = edhttp_proxy
+        EditLabel.AnchorSideTop.Side = asrCenter
+        EditLabel.AnchorSideRight.Control = edhttp_proxy
+        EditLabel.AnchorSideBottom.Control = edhttp_proxy
+        EditLabel.AnchorSideBottom.Side = asrBottom
+        EditLabel.Left = 170
+        EditLabel.Height = 13
+        EditLabel.Top = 78
+        EditLabel.Width = 140
+        EditLabel.Caption = 'http proxy to use (if needed)'
+        EditLabel.ParentColor = False
+        LabelPosition = lpLeft
+        TabOrder = 7
       end
     end
   end

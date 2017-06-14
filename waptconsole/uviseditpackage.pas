@@ -785,6 +785,7 @@ begin
                 // la gestion du cache implique de lire la version di paquet WAPT dans le fichier control.
                 // (paquets de groupe et paquets host)
                 //if not FileExists(filePath) then
+
                 IdWget(GetWaptRepoURL + '/' + filename, filePath,
                   ProgressForm, @updateprogress, UseProxyForRepo);
               except

@@ -1,4 +1,4 @@
-msgid "Local directory for saving package development projectsLocal directory for saving package development projects"
+msgid "Local directory for saving package development projectsLocal directory for saving package development projectsOnly required if a proxy is needed for waptserver and main waptrepo"
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tform1.buttonpanel1.helpbutton.caption
@@ -455,6 +455,10 @@ msgstr "Update auf Hosts starten"
 msgid "Import..."
 msgstr "Einführen..."
 
+#: tvisimportpackage.actpackageedit.caption
+msgid "Download and Edit"
+msgstr ""
+
 #: tvisimportpackage.actrefresh.caption
 msgctxt "TVISIMPORTPACKAGE.ACTREFRESH.CAPTION"
 msgid "Refresh"
@@ -482,6 +486,14 @@ msgstr "verändern"
 msgid "Import packages"
 msgstr "Pakete einführen"
 
+#: tvisimportpackage.cbcheckhttpscertificate.caption
+msgid "Check https certificate"
+msgstr ""
+
+#: tvisimportpackage.cbchecksignature.caption
+msgid "Check package signature"
+msgstr ""
+
 #: tvisimportpackage.cbnewerthanmine.caption
 msgid "Newer packages than mine only"
 msgstr ""
@@ -489,6 +501,10 @@ msgstr ""
 #: tvisimportpackage.cbnewestonly.caption
 msgctxt "tvisimportpackage.cbnewestonly.caption"
 msgid "Last version only"
+msgstr ""
+
+#: tvisimportpackage.edreponame.text
+msgid "wapt-templates"
 msgstr ""
 
 #: tvisimportpackage.urlexternalrepo.caption
@@ -557,13 +573,26 @@ msgstr "laKeyPath"
 msgid "Private key password :"
 msgstr "Privates-Key Passwort:"
 
+#: tviswaptconfig.actcheckandsetwaptserver.caption
+msgctxt "tviswaptconfig.actcheckandsetwaptserver.caption"
+msgid "Check and set"
+msgstr "Prü­fen und einstellen"
+
+#: tviswaptconfig.actcheckandsetwaptserver.hint
+msgid "Try to connect to waptserver and wapt_repo"
+msgstr ""
+
+#: tviswaptconfig.actdownloadcertificate.caption
+msgid "Browse certificates"
+msgstr ""
+
+#: tviswaptconfig.actopencertdir.caption
+msgid "Explore dir"
+msgstr ""
+
 #: tviswaptconfig.button1.caption
 msgid "Show statistics"
 msgstr "Zeige Statistiken"
-
-#: tviswaptconfig.button2.caption
-msgid "Check and set"
-msgstr "Prü­fen und einstellen"
 
 #: tviswaptconfig.buttonpanel1.helpbutton.caption
 msgctxt "tviswaptconfig.buttonpanel1.helpbutton.caption"
@@ -571,7 +600,9 @@ msgid "&Show config file"
 msgstr "&Show config file"
 
 #: tviswaptconfig.caption
-msgid "Locale WAPT configuration"
+#, fuzzy
+#| msgid "Locale WAPT configuration"
+msgid "WAPTConsole configuration"
 msgstr "Lokale WAPT Konfiguration"
 
 #: tviswaptconfig.cbdebugwindow.hint
@@ -598,11 +629,6 @@ msgctxt "TVISWAPTCONFIG.CBUSEPROXYFORSERVER.HINT"
 msgid "Activate proxy when accessing the WAPT server"
 msgstr "Aktviert Proxy beim Zugriff auf dem WAPT Server"
 
-#: tviswaptconfig.cbuseproxyfortemplate.hint
-msgctxt "TVISWAPTCONFIG.CBUSEPROXYFORTEMPLATE.HINT"
-msgid "Activate proxy when accessing the model repository"
-msgstr "Aktviert Proxy beim Zugriff auf das Modell-Repository"
-
 #: tviswaptconfig.eddefault_package_prefix.editlabel.caption
 #, fuzzy
 #| msgid "Prefix for naming created WAPT packages"
@@ -618,16 +644,28 @@ msgid "E.g. : c:\\waptdev"
 msgstr "z. B. :c:\\waptdev"
 
 #: tviswaptconfig.edhttp_proxy.editlabel.caption
+msgctxt "tviswaptconfig.edhttp_proxy.editlabel.caption"
 msgid "http proxy to use (if needed)"
 msgstr "http Proxy verwenden (falls erforderlich)"
 
 #: tviswaptconfig.edhttp_proxy.hint
+msgctxt "tviswaptconfig.edhttp_proxy.hint"
 msgid "E.g. : http://proxy.tranquilit.local:3128"
 msgstr "z. B. :http://proxy.tranquilit.local:3128"
 
-#: tviswaptconfig.edprivate_key.hint
-msgid "E.g. : c:\\private\\tranquilit.pem"
-msgstr "z. B. : c:\\private\\tranquilit.pe"
+#: tviswaptconfig.edhttp_proxy_templates.editlabel.caption
+msgctxt "tviswaptconfig.edhttp_proxy_templates.editlabel.caption"
+msgid "http proxy to use (if needed)"
+msgstr "http Proxy verwenden (falls erforderlich)"
+
+#: tviswaptconfig.edhttp_proxy_templates.hint
+msgctxt "tviswaptconfig.edhttp_proxy_templates.hint"
+msgid "E.g. : http://proxy.tranquilit.local:3128"
+msgstr "z. B. :http://proxy.tranquilit.local:3128"
+
+#: tviswaptconfig.edpersonalcertificatepath.hint
+msgid "E.g. : c:\\private\\tranquilit.crt"
+msgstr ""
 
 #: tviswaptconfig.edrepo_url.editlabel.caption
 msgid "URL to the main repository"
@@ -644,6 +682,10 @@ msgstr "WAPT Server-Adresse oder Name"
 #: tviswaptconfig.edserveraddress.hint
 msgid "E.g. : wapt.tranquilit.local"
 msgstr "z. B. :wapt.tranquilit.local"
+
+#: tviswaptconfig.edtemplatesauthorizedcertsdir.hint
+msgid "When importing packages, check signature against certificates in this list"
+msgstr ""
 
 #: tviswaptconfig.edtemplates_repo_url.editlabel.caption
 #, fuzzy
@@ -677,8 +719,8 @@ msgstr "Basisverzeichnis für die Paketherstellung"
 
 #: tviswaptconfig.label2.caption
 #, fuzzy
-#| msgid "Path to private key for signing packages"
-msgid "Path to private key"
+#| msgid "Path to private key"
+msgid "Path to personal certificate"
 msgstr "Pfad zum Privaten-Key zum Signieren von Paketen"
 
 #: tviswaptconfig.label3.caption
@@ -697,13 +739,6 @@ msgctxt "tviswaptconfig.label5.caption"
 msgid "Activate proxy when accessing the WAPT server"
 msgstr "Aktviert Proxy beim Zugriff auf den WAPT-Sever"
 
-#: tviswaptconfig.label6.caption
-#, fuzzy
-#| msgid "Activate proxy when accessing the model repository"
-msgctxt "tviswaptconfig.label6.caption"
-msgid "Proxy for external repository"
-msgstr "Aktviert Proxy beim Zugriff auf das Modell-Repository"
-
 #: tviswaptconfig.label7.caption
 #, fuzzy
 #| msgid "Show debug window"
@@ -713,6 +748,10 @@ msgstr "HTTP Proxy-Einstellungen"
 #: tviswaptconfig.label8.caption
 msgid "Send anonymous usage statistics to Tranquil IT"
 msgstr "Sende anonyme Nutzungsstatistiken an Tranquil IT"
+
+#: tviswaptconfig.label9.caption
+msgid "Authorized external keys dir"
+msgstr ""
 
 #: tviswaptconfig.labstatusrepo.caption
 msgctxt "tviswaptconfig.labstatusrepo.caption"
@@ -2417,6 +2456,16 @@ msgstr "wupanright"
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -2483,6 +2532,12 @@ msgstr "Sind Sie sich sicher, dass Sie %s die Pakete vom Host %s vergessen wolle
 #: uwaptconsoleres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
@@ -3007,6 +3062,12 @@ msgstr "Fehler beim erstellen des Pakets"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -3271,6 +3332,10 @@ msgstr "Anwendung: %s -h "
 #| "Wapt-get version: %s\n"
 #| "Waptconsole version : %s\n"
 #| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
 msgctxt "uwaptconsoleres.rsversion"
 msgid ""
 "Waptconsole version : %s\n"
@@ -3329,6 +3394,10 @@ msgstr ""
 #: uwaptconsoleres.rswaptservererror
 #, fuzzy
 #| msgid ""
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
 #| "Error on WAPT server:\n"
@@ -3469,6 +3538,12 @@ msgstr ""
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
 #| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
 "Current server version: %s\n"
@@ -3491,6 +3566,10 @@ msgstr "Fehler beim erstellen des agent : %s"
 #| "WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"

@@ -792,12 +792,13 @@ begin
   try
     if ini.ReadBool('Global','send_usage_report',True) then
     begin
+      httpProxy:=Ini.ReadString('wapt-templates','http_proxy','');
       last_usage_report:=ini.ReadDateTime('Global','last_usage_report',0);
       if now - last_usage_report >= 0.5 then
       try
         stats_report_url:=ini.ReadString('Global','usage_report_url',rsDefaultUsageStatsURL);
         stats := WAPTServerJsonGet('api/v1/usage_statistics',[])['result'];
-        IdHttpPostData(stats_report_url,stats.AsJSon,waptcommon.UseProxyForTemplates,4000,60000,60000,'','','Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko');
+        IdHttpPostData(stats_report_url,stats.AsJSon,(httpProxy<>''),4000,60000,60000,'','','Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko');
         ini.WriteDateTime('Global','last_usage_report',Now);
         CBS := VarArrayOf([cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares]);
         for CB in CBS do
@@ -3145,7 +3146,12 @@ begin
     with TVisWAPTConfig.Create(self) do
       try
         edrepo_url.Text := inifile.ReadString('global', 'repo_url', '');
+
         edhttp_proxy.Text := inifile.ReadString('global', 'http_proxy', '');
+        cbUseProxyForServer.Checked :=
+          inifile.ReadBool('global', 'use_http_proxy_for_server', edhttp_proxy.Text <> '');
+        cbUseProxyForRepo.Checked :=
+          inifile.ReadBool('global', 'use_http_proxy_for_repo', edhttp_proxy.Text <> '');
 
         //edrepo_url.text := VarPythonAsString(conf.get('global','repo_url'));
         eddefault_package_prefix.Text :=
@@ -3154,19 +3160,15 @@ begin
 
         eddefault_sources_root.Text :=
           inifile.ReadString('global', 'default_sources_root', 'c:\waptdev');
-        edprivate_key.Text := inifile.ReadString('global', 'private_key', '');
-        edPersonalCertificatePath.Text := inifile.ReadString('global', 'personal_certificate_path', '');
-        edtemplates_repo_url.Text :=
-          inifile.readString('global', 'templates_repo_url', '');
-        EdAuthorizedCertsDir.Text :=
-          inifile.readString('global', 'authorized_certs_dir', AppendPathDelim(GetAppdataFolder)+'waptconsole\ssl');
 
-        cbUseProxyForTemplate.Checked :=
-          inifile.ReadBool('global', 'use_http_proxy_for_templates', edhttp_proxy.Text <> '');
-        cbUseProxyForServer.Checked :=
-          inifile.ReadBool('global', 'use_http_proxy_for_server', edhttp_proxy.Text <> '');
-        cbUseProxyForRepo.Checked :=
-          inifile.ReadBool('global', 'use_http_proxy_for_repo', edhttp_proxy.Text <> '');
+        edPersonalCertificatePath.Text := inifile.ReadString('global', 'personal_certificate_path', '');
+
+        edtemplates_repo_url.Text :=
+          inifile.readString('wapt-templates', 'repo_url', '');
+        EdTemplatesAuthorizedCertsDir.Text :=
+          inifile.readString('wapt-templates', 'public_certs_dir', AppendPathDelim(GetAppdataFolder)+'waptconsole\ssl');
+        edhttp_proxy_templates.Text := inifile.ReadString('wapt-templates', 'http_proxy','');
+
         cbSendStats.Checked :=
           inifile.ReadBool('global', 'send_usage_report', True);
         //eddefault_sources_root.Directory := inifile.ReadString('global','default_sources_root','');
@@ -3193,15 +3195,15 @@ begin
           inifile.WriteString('global', 'wapt_server', edwapt_server.Text);
           inifile.WriteString('global', 'default_sources_root',
             eddefault_sources_root.Text);
-          inifile.WriteString('global', 'private_key', edprivate_key.Text);
+          inifile.WriteString('global', 'personal_certificate_path', edPersonalCertificatePath.Text);
           if edtemplates_repo_url.Text = '' then
             edtemplates_repo_url.Text := 'https://store.wapt.fr/wapt';
-          inifile.WriteString('global', 'templates_repo_url', edtemplates_repo_url.Text);
 
-          inifile.WriteString('global', 'authorized_certs_dir',EdAuthorizedCertsDir.Text);
+          inifile.WriteString('wapt-templates', 'http_proxy', edhttp_proxy.Text);
+          inifile.WriteString('wapt-templates', 'repo_url', edtemplates_repo_url.Text);
 
-          inifile.WriteBool('global', 'use_http_proxy_for_templates',
-            cbUseProxyForTemplate.Checked);
+          inifile.WriteString('wapt-templates', 'public_certs_dir',EdTemplatesAuthorizedCertsDir.Text);
+
           inifile.WriteBool('global', 'use_http_proxy_for_server',
             cbUseProxyForServer.Checked);
           inifile.WriteBool('global', 'use_http_proxy_for_repo',

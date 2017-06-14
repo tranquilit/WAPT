@@ -379,7 +379,7 @@ def test_editpackage():
     w.use_hostpackages = False
     w._set_fake_hostname('testwaptcomputer.tranquilit.local')
     w.update()
-    pe = w.edit_package('tis-wapttest')
+    pe = w.edit_package(w.repositories[-1].packages[-1])
     assert(os.path.isdir(pe.sourcespath))
     wapt_sources_edit(pe.sourcespath)
 
@@ -400,12 +400,6 @@ def test_waptdevutils():
     localfn = wget('%s/%s'% (templates.repo_url,fn))
     res = duplicate_from_file(cfn,localfn)
     print res
-
-
-
-
-
-
 
 
 if __name__ == '__main__':

@@ -68,7 +68,7 @@ interface
   function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject;ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
   function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=1000;OnAuthorization:TIdOnAuthorization=Nil;RetryCount:Integer=3):ISuperObject;
 
-  Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy:Boolean=False;userAgent:String='';VerifyCertificateFilename:String=''): boolean;
+  Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy: Boolean=False;userAgent:String='';VerifyCertificateFilename:String=''): boolean;
   Function IdWget_Try(const fileURL: Utf8String;enableProxy:Boolean=False;userAgent:String='';VerifyCertificateFilename:String=''): boolean;
   function IdHttpGetString(const url: ansistring; enableProxy:Boolean= False;
       ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET';userAGent:String='';VerifyCertificateFilename:String='';AcceptType:String='application/json'):RawByteString;
@@ -120,7 +120,6 @@ const
   HttpProxy:AnsiString = '';
   UseProxyForRepo: Boolean = False;
   UseProxyForServer: Boolean = False;
-  UseProxyForTemplates: Boolean = False;
 
   Language:String = '';
   FallBackLanguage:String = '';
@@ -248,7 +247,7 @@ begin
 end;
 
 function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver: TObject;
-  progressCallback: TProgressCallback; enableProxy: Boolean;userAgent:String='';VerifyCertificateFilename:String=''): boolean;
+  progressCallback: TProgressCallback; enableProxy: Boolean=False;userAgent:String='';VerifyCertificateFilename:String=''): boolean;
 var
   http:TIdHTTP;
   OutputFile:TFileStream;
@@ -297,7 +296,7 @@ begin
 
     try
       //http.ConnectTimeout := ConnectTimeout;
-      if enableProxy then
+      if HttpProxy<>'' then
         IdConfigureProxy(http,HttpProxy);
       if Assigned(progressCallback) then
       begin
@@ -989,7 +988,6 @@ begin
     HttpProxy := ReadString('global','http_proxy','');
     UseProxyForRepo := ReadBool('global','use_http_proxy_for_repo',False);
     UseProxyForServer := ReadBool('global','use_http_proxy_for_server',False);
-    UseProxyForTemplates := ReadBool('global','use_http_proxy_for_templates',False);
 
     TemplatesRepoUrl := ReadString('Global','templates_repo_url','https://store.wapt.fr/wapt/');
 

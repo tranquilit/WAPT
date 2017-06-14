@@ -28,14 +28,13 @@ type
     cbUseProxyForRepo: TCheckBox;
     cbDebugWindow: TCheckBox;
     cbUseProxyForServer: TCheckBox;
-    cbUseProxyForTemplate: TCheckBox;
     cbLanguage: TComboBox;
-    EdAuthorizedCertsDir: TDirectoryEdit;
+    EdTemplatesAuthorizedCertsDir: TDirectoryEdit;
     eddefault_package_prefix: TLabeledEdit;
     eddefault_sources_root: TDirectoryEdit;
-    edhttp_proxy: TLabeledEdit;
     edhttp_proxy_templates: TLabeledEdit;
-    edprivate_key: TFileNameEdit;
+    edhttp_proxy: TLabeledEdit;
+    edPersonalCertificatePath: TFileNameEdit;
     edrepo_url: TLabeledEdit;
     edServerAddress: TLabeledEdit;
     edtemplates_repo_url: TLabeledEdit;
@@ -48,7 +47,6 @@ type
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
-    Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
@@ -64,7 +62,6 @@ type
     procedure ActOpenCertDirExecute(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure cbManualClick(Sender: TObject);
-    procedure cbUseProxyForTemplateClick(Sender: TObject);
     procedure eddefault_package_prefixExit(Sender: TObject);
     procedure edrepo_urlExit(Sender: TObject);
     procedure edServerAddressChange(Sender: TObject);
@@ -121,9 +118,9 @@ end;
 
 procedure TVisWAPTConfig.ActOpenCertDirExecute(Sender: TObject);
 begin
-  if not DirectoryExists(EdAuthorizedCertsDir.Directory) then
-    mkdir(EdAuthorizedCertsDir.Directory);
-  OpenDocument(EdAuthorizedCertsDir.Directory);
+  if not DirectoryExists(EdTemplatesAuthorizedCertsDir.Directory) then
+    mkdir(EdTemplatesAuthorizedCertsDir.Directory);
+  OpenDocument(EdTemplatesAuthorizedCertsDir.Directory);
 end;
 
 procedure TVisWAPTConfig.cbManualClick(Sender: TObject);
@@ -154,11 +151,6 @@ begin
   for i := 1 to length(st) do
     if CharIsValidIdentifierLetter(st[i]) then
       result := Result+st[i];
-end;
-
-procedure TVisWAPTConfig.cbUseProxyForTemplateClick(Sender: TObject);
-begin
-  edhttp_proxy.Enabled:=cbUseProxyForTemplate.Checked;
 end;
 
 procedure TVisWAPTConfig.eddefault_package_prefixExit(Sender: TObject);
@@ -291,7 +283,7 @@ procedure TVisWAPTConfig.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
   ScaleImageList(ImageList1,96);
-  EdAuthorizedCertsDir.Directory:=AuthorizedCertsDir;
+  EdTemplatesAuthorizedCertsDir.Directory:=AuthorizedCertsDir;
 end;
 
 procedure TVisWAPTConfig.FormShow(Sender: TObject);

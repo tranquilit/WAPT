@@ -2,10 +2,10 @@ object VisImportPackage: TVisImportPackage
   Left = 492
   Height = 571
   Top = 261
-  Width = 1024
+  Width = 1040
   Caption = 'Import packages'
   ClientHeight = 571
-  ClientWidth = 1024
+  ClientWidth = 1040
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
@@ -15,14 +15,14 @@ object VisImportPackage: TVisImportPackage
     Left = 0
     Height = 31
     Top = 540
-    Width = 1024
+    Width = 1040
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 31
-    ClientWidth = 1024
+    ClientWidth = 1040
     TabOrder = 2
     object BitBtn2: TBitBtn
-      Left = 943
+      Left = 959
       Height = 27
       Top = 3
       Width = 75
@@ -34,7 +34,7 @@ object VisImportPackage: TVisImportPackage
       TabOrder = 0
     end
     object ButPackageDuplicate: TBitBtn
-      Left = 832
+      Left = 848
       Height = 26
       Top = 3
       Width = 103
@@ -79,7 +79,7 @@ object VisImportPackage: TVisImportPackage
       TabOrder = 1
     end
     object ButPackageDuplicate1: TBitBtn
-      Left = 648
+      Left = 664
       Height = 26
       Top = 3
       Width = 159
@@ -128,7 +128,7 @@ object VisImportPackage: TVisImportPackage
     Left = 0
     Height = 500
     Top = 40
-    Width = 1024
+    Width = 1040
     OnGetText = GridExternalPackagesGetText
     Align = alClient
     Color = clWhite
@@ -267,11 +267,11 @@ object VisImportPackage: TVisImportPackage
     Left = 0
     Height = 40
     Top = 0
-    Width = 1024
+    Width = 1040
     Align = alTop
     BevelOuter = bvNone
     ClientHeight = 40
-    ClientWidth = 1024
+    ClientWidth = 1040
     TabOrder = 0
     object EdSearch1: TSearchEdit
       Left = 4
@@ -335,7 +335,7 @@ object VisImportPackage: TVisImportPackage
       AnchorSideLeft.Side = asrBottom
       AnchorSideRight.Control = Panel8
       AnchorSideRight.Side = asrBottom
-      Left = 949
+      Left = 965
       Height = 25
       Top = 2
       Width = 75
@@ -346,7 +346,7 @@ object VisImportPackage: TVisImportPackage
     end
     object urlExternalRepo: TLabel
       AnchorSideRight.Control = ButExtRepoChange
-      Left = 924
+      Left = 940
       Height = 13
       Top = 9
       Width = 20
@@ -383,6 +383,14 @@ object VisImportPackage: TVisImportPackage
       Caption = 'Check package signature'
       OnClick = CBCheckSignatureClick
       TabOrder = 5
+    end
+    object EdRepoName: TEdit
+      Left = 711
+      Height = 21
+      Top = 6
+      Width = 96
+      TabOrder = 6
+      Text = 'wapt-templates'
     end
   end
   object CBCheckhttpsCertificate: TCheckBox

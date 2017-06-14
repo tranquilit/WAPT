@@ -30,6 +30,7 @@ type
     cbNewerThanMine: TCheckBox;
     cbNewestOnly: TCheckBox;
     CBCheckSignature: TCheckBox;
+    EdRepoName: TEdit;
     EdSearch1: TSearchEdit;
     GridExternalPackages: TSOGrid;
     MenuItem1: TMenuItem;
@@ -169,17 +170,17 @@ procedure TVisImportPackage.ActSearchExternalPackageExecute(Sender: TObject);
 var
   expr: UTF8String;
   packages: ISuperObject;
-  proxy:String;
+  repo_url,http_proxy,verify_cert:String;
 begin
   EdSearch1.Modified:=False;
-  if waptcommon.UseProxyForTemplates then
-    proxy := '"'+waptcommon.HttpProxy+'"'
-  else
-    proxy := 'None';
+  http_proxy := IniReadString(WaptIniFilename,EdRepoName.Text,'http_proxy');
+  repo_url:= IniReadString(WaptIniFilename,EdRepoName.Text,'repo_url','https://store.wapt.fr/wapt');
+  if http_proxy = '' then
+    http_proxy := 'None';
   try
     expr := format('waptdevutils.update_external_repo("%s","%s",proxy=%s,mywapt=mywapt,newer_only=%s,newest_only=%s,verify_cert=%s)',
-      [waptcommon.TemplatesRepoUrl,
-        EdSearch1.Text, proxy,
+      [ repo_url,
+        EdSearch1.Text, http_proxy,
         BoolToStr(cbNewerThanMine.Checked,'True','False'),
         BoolToStr(cbNewestOnly.Checked,'True','False'),
         BoolToStr(CBCheckhttpsCertificate.Checked,'True','False')]);
@@ -192,10 +193,12 @@ end;
 
 procedure TVisImportPackage.ActPackageDuplicateExecute(Sender: TObject);
 var
-  target,sourceDir: string;
+  target,sourceDir,http_proxy: string;
   package,uploadResult, FileName, FileNames, listPackages,Sources,aDir: ISuperObject;
 
 begin
+  http_proxy:=IniReadString(WaptIniFilename,EdRepoName.Text,'http_proxy');
+
   if not FileExists(GetWaptPrivateKeyPath) then
   begin
     ShowMessageFmt(rsPrivateKeyDoesntExist, [GetWaptPrivateKeyPath]);
@@ -238,7 +241,7 @@ begin
           if not FileExists(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
           begin
             IdWget(TemplatesRepoUrl + '/' + Filename.AsArray[0].AsString,
-              target, ProgressForm, @updateprogress, UseProxyForTemplates);
+              target, ProgressForm, @updateprogress, (http_proxy<>''));
             if (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
               raise Exception.CreateFmt(rsDownloadCurrupted,[Filename.AsArray[0].AsString]);
           end;
@@ -334,7 +337,7 @@ begin
           if not FileExists(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
           begin
             IdWget(TemplatesRepoUrl + '/' + Filename.AsArray[0].AsString,
-              target, ProgressForm, @updateprogress, UseProxyForTemplates);
+              target, ProgressForm, @updateprogress, HttpProxy<>'');
             if (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
               raise Exception.CreateFmt(rsDownloadCurrupted,[Filename.AsArray[0].AsString]);
           end;

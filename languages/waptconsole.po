@@ -1,4 +1,4 @@
-msgid "Local directory for saving package development projectsLocal directory for saving package development projects"
+msgid "Local directory for saving package development projectsLocal directory for saving package development projectsOnly required if a proxy is needed for waptserver and main waptrepo"
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tform1.buttonpanel1.helpbutton.caption
@@ -441,6 +441,10 @@ msgstr ""
 msgid "Import..."
 msgstr ""
 
+#: tvisimportpackage.actpackageedit.caption
+msgid "Download and Edit"
+msgstr ""
+
 #: tvisimportpackage.actrefresh.caption
 msgctxt "TVISIMPORTPACKAGE.ACTREFRESH.CAPTION"
 msgid "Refresh"
@@ -468,6 +472,14 @@ msgstr ""
 msgid "Import packages"
 msgstr ""
 
+#: tvisimportpackage.cbcheckhttpscertificate.caption
+msgid "Check https certificate"
+msgstr ""
+
+#: tvisimportpackage.cbchecksignature.caption
+msgid "Check package signature"
+msgstr ""
+
 #: tvisimportpackage.cbnewerthanmine.caption
 msgid "Newer packages than mine only"
 msgstr ""
@@ -475,6 +487,10 @@ msgstr ""
 #: tvisimportpackage.cbnewestonly.caption
 msgctxt "tvisimportpackage.cbnewestonly.caption"
 msgid "Last version only"
+msgstr ""
+
+#: tvisimportpackage.edreponame.text
+msgid "wapt-templates"
 msgstr ""
 
 #: tvisimportpackage.urlexternalrepo.caption
@@ -539,12 +555,25 @@ msgstr ""
 msgid "Private key password :"
 msgstr ""
 
-#: tviswaptconfig.button1.caption
-msgid "Show statistics"
+#: tviswaptconfig.actcheckandsetwaptserver.caption
+msgctxt "TVISWAPTCONFIG.ACTCHECKANDSETWAPTSERVER.CAPTION"
+msgid "Check and set"
 msgstr ""
 
-#: tviswaptconfig.button2.caption
-msgid "Check and set"
+#: tviswaptconfig.actcheckandsetwaptserver.hint
+msgid "Try to connect to waptserver and wapt_repo"
+msgstr ""
+
+#: tviswaptconfig.actdownloadcertificate.caption
+msgid "Browse certificates"
+msgstr ""
+
+#: tviswaptconfig.actopencertdir.caption
+msgid "Explore dir"
+msgstr ""
+
+#: tviswaptconfig.button1.caption
+msgid "Show statistics"
 msgstr ""
 
 #: tviswaptconfig.buttonpanel1.helpbutton.caption
@@ -553,7 +582,7 @@ msgid "&Show config file"
 msgstr ""
 
 #: tviswaptconfig.caption
-msgid "Locale WAPT configuration"
+msgid "WAPTConsole configuration"
 msgstr ""
 
 #: tviswaptconfig.cbdebugwindow.hint
@@ -580,11 +609,6 @@ msgctxt "TVISWAPTCONFIG.CBUSEPROXYFORSERVER.HINT"
 msgid "Activate proxy when accessing the WAPT server"
 msgstr ""
 
-#: tviswaptconfig.cbuseproxyfortemplate.hint
-msgctxt "TVISWAPTCONFIG.CBUSEPROXYFORTEMPLATE.HINT"
-msgid "Activate proxy when accessing the model repository"
-msgstr ""
-
 #: tviswaptconfig.eddefault_package_prefix.editlabel.caption
 msgid "WAPT packages prefix"
 msgstr ""
@@ -598,15 +622,27 @@ msgid "E.g. : c:\\waptdev"
 msgstr ""
 
 #: tviswaptconfig.edhttp_proxy.editlabel.caption
+msgctxt "tviswaptconfig.edhttp_proxy.editlabel.caption"
 msgid "http proxy to use (if needed)"
 msgstr ""
 
 #: tviswaptconfig.edhttp_proxy.hint
+msgctxt "tviswaptconfig.edhttp_proxy.hint"
 msgid "E.g. : http://proxy.tranquilit.local:3128"
 msgstr ""
 
-#: tviswaptconfig.edprivate_key.hint
-msgid "E.g. : c:\\private\\tranquilit.pem"
+#: tviswaptconfig.edhttp_proxy_templates.editlabel.caption
+msgctxt "TVISWAPTCONFIG.EDHTTP_PROXY_TEMPLATES.EDITLABEL.CAPTION"
+msgid "http proxy to use (if needed)"
+msgstr ""
+
+#: tviswaptconfig.edhttp_proxy_templates.hint
+msgctxt "TVISWAPTCONFIG.EDHTTP_PROXY_TEMPLATES.HINT"
+msgid "E.g. : http://proxy.tranquilit.local:3128"
+msgstr ""
+
+#: tviswaptconfig.edpersonalcertificatepath.hint
+msgid "E.g. : c:\\private\\tranquilit.crt"
 msgstr ""
 
 #: tviswaptconfig.edrepo_url.editlabel.caption
@@ -623,6 +659,10 @@ msgstr ""
 
 #: tviswaptconfig.edserveraddress.hint
 msgid "E.g. : wapt.tranquilit.local"
+msgstr ""
+
+#: tviswaptconfig.edtemplatesauthorizedcertsdir.hint
+msgid "When importing packages, check signature against certificates in this list"
 msgstr ""
 
 #: tviswaptconfig.edtemplates_repo_url.editlabel.caption
@@ -650,7 +690,7 @@ msgid "Base directory for package development"
 msgstr ""
 
 #: tviswaptconfig.label2.caption
-msgid "Path to private key"
+msgid "Path to personal certificate"
 msgstr ""
 
 #: tviswaptconfig.label3.caption
@@ -667,17 +707,16 @@ msgctxt "tviswaptconfig.label5.caption"
 msgid "Activate proxy when accessing the WAPT server"
 msgstr ""
 
-#: tviswaptconfig.label6.caption
-msgctxt "tviswaptconfig.label6.caption"
-msgid "Proxy for external repository"
-msgstr ""
-
 #: tviswaptconfig.label7.caption
 msgid "Show advanced informations"
 msgstr ""
 
 #: tviswaptconfig.label8.caption
 msgid "Send anonymous usage statistics to Tranquil IT"
+msgstr ""
+
+#: tviswaptconfig.label9.caption
+msgid "Authorized external keys dir"
 msgstr ""
 
 #: tviswaptconfig.labstatusrepo.caption
