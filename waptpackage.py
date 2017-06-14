@@ -882,23 +882,14 @@ class PackageEntry(object):
             logger.warning('Old style signature without embedded certificate, please resign %s' %(self.asrequirement()))
             for public_cert in cabundle.certificates():
                 try:
-                    if isinstance(public_cert,SSLCertificate):
-                        crt = public_cert
-                    elif os.path.isfile(public_cert):
-                        crt = SSLCertificate(public_cert)
-                    else:
-                        raise EWaptMissingCertificate('The public cert %s is neither a cert file nor a SSL Certificate object' % public_cert)
-                    try:
-                        if crt.verify_content(signed_content,signature_raw,md=self._default_md):
-                            self._md = self._default_md
-                            return crt
-                    except:
-                        if crt.verify_content(signed_content,signature_raw,md='sha1'):
-                            logger.debug('Fallback to sha1 digest for package''s control signature')
-                            self._md = 'sha1'
-                            return crt
+                    if public_cert.verify_content(signed_content,signature_raw,md=self._default_md):
+                        self._md = self._default_md
+                        return public_cert
                 except SSLVerifyException:
-                    pass
+                    if public_cert.verify_content(signed_content,signature_raw,md='sha1'):
+                        logger.debug('Fallback to sha1 digest for package''s control signature')
+                        self._md = 'sha1'
+                        return public_cert
             raise SSLVerifyException('SSL signature verification failed for control %s, either none public certificates match signature or signed content has been changed' % self.asrequirement())
 
     def package_certificate(self):
@@ -1579,7 +1570,7 @@ class WaptLocalRepo(WaptBaseRepo):
 
     @property
     def packages_path(self):
-        return os.path.join(self.localpath,'Packages')
+        return os.path.abspath(os.path.join(self.localpath,'Packages'))
 
     def _load_packages_index(self):
         """Parse Packages index from local repo Packages file
@@ -1654,6 +1645,7 @@ class WaptLocalRepo(WaptBaseRepo):
         """Scan self.localpath directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash
 
         Extract icons from packages (WAPT/icon.png) and stores them in <repo path>/icons/<package name>.png
+        Extract certificate and add it to Packages zip file in ssl/<fingerprint.crt>
 
         """
         packages_fname = os.path.abspath(os.path.join(self.localpath,'Packages'))
@@ -1663,6 +1655,8 @@ class WaptLocalRepo(WaptBaseRepo):
 
         if force_all:
             self._packages = []
+
+        signer_certificates = SSLCABundle()
 
         old_entries = {}
         for package in self.packages:
@@ -1732,6 +1726,12 @@ class WaptLocalRepo(WaptBaseRepo):
                 if entry.package not in self._index or self._index[entry.package] < entry:
                     self._index[entry.package] = entry
 
+                # looks for the signer certificate and add it to Packages if not already
+                if not entry.signer_fingerprint in signer_certificates._certificates:
+                    crt = entry.package_certificate()
+                    if crt:
+                        signer_certificates.add_certificates([crt])
+
                 # looks for an icon in wapt package
                 icon_fn = os.path.join(icons_path,"%s.png"%entry.package)
                 if entry.section not in ['group','host'] and (force_all or not os.path.isfile(icon_fn)):
@@ -1753,6 +1753,13 @@ class WaptLocalRepo(WaptBaseRepo):
                 zi = zipfile.ZipInfo(u"Packages",date_time = time.localtime())
                 zi.compress_type = zipfile.ZIP_DEFLATED
                 myzipfile.writestr(zi,u'\n'.join(packages_lines).encode('utf8'))
+
+                # Add list of signers certificates
+                for crt in signer_certificates.certificates():
+                    zi = zipfile.ZipInfo(u"ssl/%s.crt" % crt.fingerprint,date_time = time.localtime())
+                    zi.compress_type = zipfile.ZIP_DEFLATED
+                    myzipfile.writestr(zi,crt.as_pem())
+
             if os.path.isfile(packages_fname):
                 os.unlink(packages_fname)
             os.rename(tmp_packages_fname,packages_fname)
@@ -1982,10 +1989,17 @@ class WaptRemoteRepo(WaptBaseRepo):
         packages_answer = requests.get(self.packages_url,proxies=self.proxies,timeout=self.timeout, verify=self.verify_cert,headers=default_http_headers())
         packages_answer.raise_for_status()
 
-        # Packages file is a zipfile with one Packages file inside
-        packages_lines = codecs.decode(zipfile.ZipFile(
-              StringIO.StringIO(packages_answer.content)
-            ).read(name='Packages'),'UTF-8').splitlines()
+        signer_certificates = SSLCABundle()
+        # Packages file is a zipfile with one Packages file inside and a list of SSLCertificates
+        with zipfile.ZipFile(StringIO.StringIO(packages_answer.content)) as zip:
+            filenames = zip.namelist()
+            packages_lines = codecs.decode(zip.read(name='Packages'),'UTF-8').splitlines()
+            for fn in filenames:
+                if fn.startswith('ssl/'):
+                    cert = SSLCertificate(crt_string=zip.read(name=fn))
+                    signer_certificates.add_certificates(cert)
+
+        logger.debug('Packages embedded certificates : %s' % signer_certificates.certificates())
 
         startline = 0
         endline = 0
@@ -2000,12 +2014,12 @@ class WaptRemoteRepo(WaptBaseRepo):
 
                 try:
                     if self.cabundle is not None:
-                        package.check_control_signature(self.cabundle)
+                        package.check_control_signature(signer_certificates)
                     new_packages.append(package)
                     if package.package not in self._index or self._index[package.package] < package:
                         self._index[package.package] = package
                 except (SSLVerifyException,EWaptNotSigned) as e:
-                    logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.cabundle))
+                    logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,signer_certificates.certificates()))
                     self.discarded.append(package)
 
         for line in packages_lines:

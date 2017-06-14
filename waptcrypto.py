@@ -172,8 +172,10 @@ class SSLCABundle(object):
         return self
 
     def add_certificates(self,certificates):
+        if not isinstance(certificates,list):
+            certificates = [certificates]
         for cert in certificates:
-            self._certificates[cert.modulus] = cert
+            self._certificates[cert.fingerprint] = cert
         return self
 
     def add_pem(self,filename,load_keys=False):
@@ -239,6 +241,7 @@ class SSLCABundle(object):
                 ]
 
     def certificate_chain(self,crt):
+        # bad implementation
         result = [crt]
         issuer = self.certificate(subject_hash=crt.crt.get_issuer().as_hash())
         while issuer and issuer != result[-1] and issuer.is_ca:

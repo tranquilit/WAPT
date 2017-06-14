@@ -404,10 +404,32 @@ def test_waptdevutils():
     res = duplicate_from_file(cfn,localfn)
     print res
 
+def test_localrepo_cert():
+    r = WaptLocalRepo('c:/wapt/cache')
+    r.update_packages_index()
 
+    #list files
+    import custom_zip as zipfile
+    import StringIO
+
+    with zipfile.ZipFile(open(r.packages_path,'rb'),allowZip64=True) as zip:
+        packages_lines = codecs.decode(zip.read(name='Packages'),'UTF-8').splitlines()
+        names = zip.namelist()
+        #print packages_lines
+        for fn in names:
+            if fn.startswith('ssl/'):
+                cert = SSLCertificate(crt_string=zip.read(name=fn))
+                print cert.cn
+
+
+    print('Done')
+
+def test_editzip():
+    pass
 
 if __name__ == '__main__':
     setup_test()
+    test_localrepo_cert()
     test_keypassword()
 
     test_wapt_engine()
