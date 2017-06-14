@@ -141,7 +141,7 @@ parser.add_option("-s","--sections",    dest="section_filter",    default=None, 
 parser.add_option("-j","--json",    dest="json_output",    default=False, action='store_true', help="Switch to json output for scripts purpose (default: %default)")
 parser.add_option("-e","--encoding",    dest="encoding",    default=None, help="Chararacter encoding for the output (default: no change)")
 parser.add_option("-x","--excludes",    dest="excludes",    default='.svn,.git*,*.pyc,*.dbg,src', help="Comma separated list of files or directories to exclude for build-package (default: %default)")
-parser.add_option("-k","--private-key", dest="private_key",    default='', help="Path to the PEM RSA private key to sign packages. Package are unsigned if not provided (default: %default)")
+parser.add_option("-k","--certificate", dest="personal_certificate_path",    default='', help="Path to the PEM X509 personal certificate to sign packages. Package are unsigned if not provided (default: %default)")
 parser.add_option("-w","--private-key-passwd", dest="private_key_passwd", default='', help="Path to the password of the private key. (default: %default)")
 parser.add_option("-U","--user", dest="user", default=None, help="Interactive user (default: no change)")
 parser.add_option("-g","--usergroups", dest="usergroups", default='[]', help="Groups of the final user as a JSon array for checking install permission (default: %default)")
@@ -306,10 +306,8 @@ def main():
             except Exception as e:
                 print('Unable to initialize windows log Event handler: %s' % e)
 
-
-
-        if options.certificate:
-            mywapt.personal_certificate_path = options.certificate
+        if options.personal_certificate_path:
+            mywapt.personal_certificate_path = options.personal_certificate_path
 
         # key password management
         def pwd_callback(*args):

@@ -2441,7 +2441,7 @@ begin
           ProgressStep(i, OpenDialogWapt.Files.Count - 1);
           Application.ProcessMessages;
           sourceDir := DMPython.RunJSON(
-            Format('waptdevutils.duplicate_from_external_repo(r"%s",(r"%s").decode("utf8"))', [AppIniFilename, OpenDialogWapt.Files[i]])).AsString;
+            Format('waptdevutils.duplicate_from_file(r"%s",(r"%s").decode("utf8"))', [AppIniFilename, OpenDialogWapt.Files[i]])).AsString;
           sources.AsArray.Add('r"' + sourceDir + '"');
         end;
 
@@ -3155,6 +3155,7 @@ begin
         eddefault_sources_root.Text :=
           inifile.ReadString('global', 'default_sources_root', 'c:\waptdev');
         edprivate_key.Text := inifile.ReadString('global', 'private_key', '');
+        edPersonalCertificatePath.Text := inifile.ReadString('global', 'personal_certificate_path', '');
         edtemplates_repo_url.Text :=
           inifile.readString('global', 'templates_repo_url', '');
         EdAuthorizedCertsDir.Text :=

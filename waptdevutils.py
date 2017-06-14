@@ -236,7 +236,7 @@ def get_packages_filenames(waptconfigfile,packages_names,with_depends=True,verif
                         result.append((fn,md5,))
     return result
 
-def duplicate_from_external_repo(waptconfigfile,package_filename,target_directory=None,authorized_certs=None,verify_cert=None,repo_name='global'):
+def duplicate_from_file(waptconfigfile,package_filename,target_directory=None,authorized_certs=None,verify_cert=None):
     r"""Duplicate a downloaded package to match prefix defined in waptconfigfile
        renames all dependencies
       returns source directory
@@ -275,10 +275,10 @@ def duplicate_from_external_repo(waptconfigfile,package_filename,target_director
         bundle = authorized_certs
 
     res = wapt.duplicate_package(package_filename,newname,target_directory=target_directory,auto_inc_version=True,cabundle = bundle)
-    result = res['source_dir']
+    result = res['sourcespath']
 
     # renames dependencies
-    package =  res['package']
+    package =  res
     if package.depends:
         newdepends = []
         depends = ensure_list(package.depends)
