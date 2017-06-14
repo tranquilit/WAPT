@@ -140,7 +140,7 @@ class SSLCABundle(object):
     BEGIN_CERTIFICATE = '-----BEGIN CERTIFICATE-----'
     END_CERTIFICATE = '-----END CERTIFICATE-----'
 
-    def __init__(self,cert_pattern_or_dir=None,callback=None):
+    def __init__(self,cert_pattern_or_dir=None,callback=None,certificates=None):
         self._keys = {}
         self._certificates = {}
         if callback is None:
@@ -148,6 +148,8 @@ class SSLCABundle(object):
         self.callback = callback
         if cert_pattern_or_dir is not None:
             self.add_pems(cert_pattern_or_dir,load_keys=True)
+        if certificates is not None:
+            self.add_certificates(certificates)
 
     def clear(self):
         self._keys.clear()
@@ -162,6 +164,12 @@ class SSLCABundle(object):
             # load pems based on file wildcards
             for fn in glob.glob(cert_pattern_or_dir):
                 self.add_pem(fn,load_keys=load_keys)
+        return self
+
+    def add_certificates(self,certificates):
+        for cert in certificates:
+            self._certificates[cert.modulus] = cert
+        return self
 
     def add_pem(self,filename,load_keys=False):
         # parse a bundle PEM with multiple key / certificates
@@ -195,6 +203,7 @@ class SSLCABundle(object):
             else:
                 if inkey or incert:
                     tmplines.append(line)
+        return self
 
     def key(self,modulus):
         return self._keys.get(modulus,None)

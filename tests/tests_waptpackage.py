@@ -268,8 +268,9 @@ def test_paquet_host():
     signature = pe.sign_package(gest,key)
     pe.unzip_package()
     print('Les deux certificats sont OK car pas de setup.py')
-    pe.check_package_signature(gest)
-    pe.check_package_signature(codeur)
+    print pe.sourcespath
+    print pe.check_package_signature(gest)
+    print pe.check_package_signature(SSLCABundle(certificates=[codeur,gest]))
 
     # Ajout d'un setup.py
     codecs.open(os.path.join(pe.sourcespath,'setup.py'),'w',encoding='utf8').write(u"""\
@@ -396,13 +397,13 @@ def test_keypassword():
 if __name__ == '__main__':
     setup_test()
     test_wapt_engine()
+    test_paquet_host()
     #test_editpackage()
     #test_reload_config()
     #test_edithost()
-    test_keypassword()
+    #test_keypassword()
 
-    test_waptrepo()
-    test_oldsignature()
+    #test_waptrepo()
+    #test_oldsignature()
     test_build_sign_verify_package()
     test_sign_action()
-    test_paquet_host()
