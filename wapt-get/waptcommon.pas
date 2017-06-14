@@ -127,8 +127,9 @@ const
   DefaultPackagePrefix:String = '';
   DefaultSourcesRoot:String = '';
 
-  TemplatesRepoUrl: String = '';
   AuthorizedCertsDir:Utf8String = '';
+
+  TemplatesRepoUrl:String = 'https://store.wapt.fr/wapt';
 
   AdvancedMode:Boolean = False;
 
@@ -989,7 +990,7 @@ begin
     UseProxyForRepo := ReadBool('global','use_http_proxy_for_repo',False);
     UseProxyForServer := ReadBool('global','use_http_proxy_for_server',False);
 
-    TemplatesRepoUrl := ReadString('Global','templates_repo_url','https://store.wapt.fr/wapt/');
+    TemplatesRepoUrl := ReadString('wapt-templates','repo_url','https://store.wapt.fr/wapt/');
 
     AuthorizedCertsDir := ReadString('global', 'authorized_certs_dir', AppendPathDelim(GetAppdataFolder)+'waptconsole\ssl');
     if (AuthorizedCertsDir<>'') and not DirectoryExists(AuthorizedCertsDir) then

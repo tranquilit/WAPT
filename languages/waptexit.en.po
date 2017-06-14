@@ -1,4 +1,4 @@
-msgid "Don't shutdown your computer !Don't shutdown your computer !"
+msgid "Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !"
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 msgid "Don't shutdown your computer !"

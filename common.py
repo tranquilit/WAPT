@@ -4438,8 +4438,8 @@ class Wapt(object):
     def personal_certificate(self):
         return SSLCertificate(self.personal_certificate_path)
 
-    def private_key(self,passwd_callback=None):
-        """SSLProvateKey matching the personal_certificate"""
+    def private_key(self,passwd_callback=None,private_key_password = None):
+        """SSLPrivateKey matching the personal_certificate"""
         # lazzy loading of privatekey
         # TODO : check that private key file has not been updated since last loading...
         if passwd_callback is None:
@@ -4447,7 +4447,7 @@ class Wapt(object):
         cert = self.personal_certificate()
         if not self._private_key_cache or not cert.match_key(self._private_key_cache):
             try:
-                self._private_key_cache = cert.matching_key_in_dirs(password_callback=passwd_callback)
+                self._private_key_cache = cert.matching_key_in_dirs(password_callback=passwd_callback,private_key_password=private_key_password)
             except Exception as e:
                 self._key_passwd_cache = None
                 self._private_key_cache = None
@@ -4478,7 +4478,7 @@ class Wapt(object):
             certificate = self.personal_certificate()
             key = self.private_key()
         else:
-            key = certificate.matching_key_in_dirs(password_callback=callback)
+            key = certificate.matching_key_in_dirs(password_callback=callback,private_key_password=private_key_password)
 
         logger.info(u'Using identity : %s' % certificate.cn)
         pe =  PackageEntry().load_control_from_wapt(zip_or_directoryname)

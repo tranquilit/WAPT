@@ -310,12 +310,15 @@ def main():
             mywapt.personal_certificate_path = options.personal_certificate_path
 
         # key password management
-        def pwd_callback(*args):
+        def get_private_key_passwd():
             """Password callback for opening private keysin suppli password file"""
-            return open(options.private_key_passwd,'r').read().splitlines()[0].strip()
+            if options.private_key_passwd and os.path.isfile(options.private_key_passwd):
+                return open(options.private_key_passwd,'r').read().splitlines()[0].strip()
+            else:
+                return None
 
         if options.private_key_passwd:
-            mywapt.key_passwd_callback = pwd_callback
+            mywapt._key_passwd_cache = get_pwd()
 
         if options.language:
             mywapt.language = options.language

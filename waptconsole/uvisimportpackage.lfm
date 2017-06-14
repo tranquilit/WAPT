@@ -385,10 +385,10 @@ object VisImportPackage: TVisImportPackage
       TabOrder = 5
     end
     object EdRepoName: TEdit
-      Left = 711
+      Left = 704
       Height = 21
       Top = 6
-      Width = 96
+      Width = 80
       TabOrder = 6
       Text = 'wapt-templates'
     end

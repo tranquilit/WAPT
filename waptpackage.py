@@ -974,7 +974,7 @@ class PackageEntry(object):
             raise Exception(u"%s is not a Wapt package" % self.localpath)
 
         if private_key is None:
-            private_key = certificate.matching_key_in_dirs(password_callback = password_callback,password=private_key_password)
+            private_key = certificate.matching_key_in_dirs(password_callback = password_callback,private_key_password=private_key_password)
 
         start_time = time.time()
         package_fn = self.localpath

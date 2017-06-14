@@ -199,7 +199,7 @@ def update_external_repo(repourl,search_string,proxy=None,mywapt=None,newer_only
     else:
         return packages
 
-def get_packages_filenames(waptconfigfile,packages_names,with_depends=True,verify_cert=None,repo_name='global'):
+def get_packages_filenames(waptconfigfile,packages_names,with_depends=True,verify_cert=None,repo_name='wapt-templates'):
     """Returns list of package filenames (latest version) and md5 matching comma separated list of packages names and their dependencies
         helps to batch download a list of selected packages using tools like curl or wget
 
@@ -218,29 +218,15 @@ def get_packages_filenames(waptconfigfile,packages_names,with_depends=True,verif
     """
     result = []
     defaults = {
-        'templates_repo_url':'https://store.wapt.fr/wapt',
+        'repo_url':'https://store.wapt.fr/wapt',
         'http_proxy':'',
         'verify_cert':'0',
-        'use_http_proxy_for_templates':'0',
         }
 
     config = RawConfigParser(defaults=defaults)
     config.read(waptconfigfile)
 
-    # old config style
-    if repo_name == 'global':
-        url = config.get(repo_name,'templates_repo_url')
-        proxy = config.get('global','http_proxy')
-        use_proxy = config.getboolean('global','use_http_proxy_for_templates')
-        if use_proxy:
-            proxies =  {'http':proxy,'https':proxy}
-        else:
-            proxies = {'http':None,'https':None}
-    else:
-        proxies = None
-        url=None
-
-    templates = WaptRemoteRepo(url=url,name=repo_name,proxies=proxies,verify_cert=verify_cert,config=config)
+    templates = WaptRemoteRepo(name=repo_name,verify_cert=verify_cert,config=config)
     templates.update()
 
     packages_names = ensure_list(packages_names)

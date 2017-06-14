@@ -80,7 +80,7 @@ uses uwaptconsole,tiscommon,soutils,waptcommon,VarPyth,
 procedure TVisImportPackage.ButExtRepoChangeClick(Sender: TObject);
 begin
   ActWAPTLocalConfigExecute(self);
-  urlExternalRepo.Caption := format(rsUrl, [TemplatesRepoUrl]);
+  urlExternalRepo.Caption := format(rsUrl, [IniReadString(WaptIniFilename,EdRepoName.Text,'repo_url','https://store.wapt.fr/wapt')]);
 end;
 
 procedure TVisImportPackage.CBCheckSignatureClick(Sender: TObject);
@@ -216,10 +216,14 @@ begin
   for package in GridExternalPackages.SelectedRows do
     listPackages.AsArray.Add(package.S['package']+'(='+package.S['version']+')');
   //calcule liste de tous les fichiers wapt + md5  nécessaires y compris les dépendances
-  FileNames := DMPython.RunJSON(format('waptdevutils.get_packages_filenames(r"%s".decode(''utf8''),"%s")',
-        [AppIniFilename,Join(',',listPackages)]));
+  FileNames := DMPython.RunJSON(format('waptdevutils.get_packages_filenames(r"%s".decode(''utf8''),"%s",verify_cert=%s)',
+        [ AppIniFilename,
+          Join(',',listPackages),
+          BoolToStr(CBCheckhttpsCertificate.Checked,'True','False')
+        ]
+        ));
 
-  if MessageDlg(rsPackageDuplicateConfirmCaption, format(rsPackageDuplicateConfirm, [Join(',', listPackages)]),
+  if MessageDlg(rsPackageDuplicateConfirmCaption, format(rsPackageDuplicateConfirm, [Join(',', listPackages)+' '+intToStr(Filenames.AsArray.Length)+' packages']),
         mtConfirmation, mbYesNoCancel, 0) <> mrYes then
     Exit;
 
