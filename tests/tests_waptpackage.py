@@ -425,10 +425,18 @@ def test_localrepo_cert():
     print('Done')
 
 def test_editzip():
-    pass
+    r = WaptRemoteRepo('https://wapt142.tranquilit.local/wapt',cabundle=SSLCABundle('c:/tranquilit/wapt/ssl'),verify_cert=False)
+    r.update()
+    res = r.download_packages('150-7zip')
+    if res:
+        pe = res['packages'][0]
+        print pe
+        os.startfile(pe.unzip_package(r.cabundle))
+    print('Done')
 
 if __name__ == '__main__':
     setup_test()
+    test_editzip()
     test_localrepo_cert()
     test_keypassword()
 
