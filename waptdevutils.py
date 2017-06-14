@@ -433,7 +433,7 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
                 )
             sources.append(edit_res)
             # build and sign
-            res = wapt.build_package(edit_res['source_dir'],inc_package_release = True)
+            res = wapt.build_package(edit_res['sourcespath'],inc_package_release = True)
             signature = wapt.sign_package(res,callback=pwd_callback)
             build_res.append(res)
             package_files.append(res)
