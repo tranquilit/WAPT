@@ -157,10 +157,10 @@ object VisWAPTConfig: TVisWAPTConfig
         OnKeyPress = edServerAddressKeyPress
       end
       object Button2: TButton
-        Left = 396
+        Left = 412
         Height = 25
         Top = 6
-        Width = 128
+        Width = 168
         Action = ActCheckAndSetwaptserver
         TabOrder = 1
       end
@@ -309,6 +309,14 @@ object VisWAPTConfig: TVisWAPTConfig
         Flat = True
         MaxLength = 0
         TabOrder = 12
+      end
+      object Button5: TButton
+        Left = 412
+        Height = 25
+        Top = 34
+        Width = 168
+        Action = ActGetServerCertitificate
+        TabOrder = 13
       end
     end
     object pgAdvanced: TTabSheet
@@ -594,6 +602,10 @@ object VisWAPTConfig: TVisWAPTConfig
     object ActOpenCertDir: TAction
       Caption = 'Explore dir'
       OnExecute = ActOpenCertDirExecute
+    end
+    object ActGetServerCertitificate: TAction
+      Caption = 'Get Server https Certitificate'
+      OnExecute = ActGetServerCertitificateExecute
     end
   end
 end

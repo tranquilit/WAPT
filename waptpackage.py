@@ -1135,10 +1135,12 @@ class PackageEntry(object):
         return errors
 
     def check_package_signature(self,cabundle):
-        """Check the hash of files in unzipped package_dir and the manifest signature
-           against the authorized keys
+        """Check
+           - hash of files in unzipped package_dir with list in package's manifest file
+           - try to decrypt manifest signature with package's certificate
+           - check that the package certificate is issued by a know CA or the same as one the authorized certitificates.
         Args:
-            cabundle (SSLCABundle) : list of authorized certificate / ca filepaths
+            cabundle (SSLCABundle) : list of authorized certificates / ca filepaths
 
         Returns:
             SSLCertificate : matching certificate
@@ -1151,7 +1153,7 @@ class PackageEntry(object):
         if isinstance(cabundle,SSLCertificate):
             cert = cabundle
             cabundle = SSLCABundle()
-            cabundle.add_pem(cert.public_cert_filename)
+            cabundle.add_pem(cert.as_pem())
 
         assert(isinstance(cabundle,SSLCABundle))
 

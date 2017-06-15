@@ -16,12 +16,14 @@ type
   TVisWAPTConfig = class(TForm)
     ActCheckAndSetwaptserver: TAction;
     ActDownloadCertificate: TAction;
+    ActGetServerCertitificate: TAction;
     ActOpenCertDir: TAction;
     ActionList1: TActionList;
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    Button5: TButton;
     ButtonPanel1: TButtonPanel;
     cbManual: TCheckBox;
     cbSendStats: TCheckBox;
@@ -61,6 +63,7 @@ type
     procedure ActCheckAndSetwaptserverExecute(Sender: TObject);
     procedure ActDownloadCertificateExecute(Sender: TObject);
     procedure ActDownloadCertificateUpdate(Sender: TObject);
+    procedure ActGetServerCertitificateExecute(Sender: TObject);
     procedure ActOpenCertDirExecute(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure cbManualClick(Sender: TObject);
@@ -85,7 +88,7 @@ var
   VisWAPTConfig: TVisWAPTConfig;
 
 implementation
-uses waptcommon,LCLIntf,IDURI,superobject,uWaptConsoleRes,uScaleDPI,tisstrings;
+uses waptcommon,LCLIntf,IDURI,superobject,uWaptConsoleRes,uScaleDPI,tisstrings,dmwaptpython,variants,VarPyth;
 {$R *.lfm}
 
 { TVisWAPTConfig }
@@ -116,6 +119,49 @@ end;
 procedure TVisWAPTConfig.ActDownloadCertificateUpdate(Sender: TObject);
 begin
   ActDownloadCertificate.Enabled:=edtemplates_repo_url.text <> '';;
+end;
+
+procedure TVisWAPTConfig.ActGetServerCertitificateExecute(Sender: TObject);
+var
+  i:integer;
+  url,certfn: String;
+  pem_data,certbundle,certs,cert:Variant;
+begin
+  url := 'https://'+edServerAddress.Text;
+  certfn:= waptbasedir+'ssl\server\'+edServerAddress.Text+'.crt';
+  try
+    {
+    certbundle := MainModule.common.get_server_ssl_certificates(url := url);
+    if VarIsPythonIterator(certbundle) then
+    begin
+      While True do
+      try
+        certs := certbundle.certificates(valid_only := False);
+        i:= 0;
+        while True do
+        begin
+          cert := certs.__getitem__(i);
+          ShowMessage(cert.cn);
+          inc(i);
+        end;
+      except on E:Exception do
+        begin
+          ShowMessage(e.Message);
+          break;
+        end;
+      end;
+    end;
+    }
+    pem_data := MainModule.common.get_pem_server_certificate(url := url,save_to_file := certfn);
+    if not VarIsNull(pem_data) then
+    begin
+      EdServerCertificate.Text := certfn
+    end
+    else
+      raise Exception.Create('No certificate returned from  get_pem_server_certificate');
+  except
+    on E:Exception do ShowMessage('Unable to get https server certificate for url '+ 'https://'+edServerAddress.Text+' '+E.Message);
+  end;
 end;
 
 procedure TVisWAPTConfig.ActOpenCertDirExecute(Sender: TObject);

@@ -1409,12 +1409,14 @@ begin
                 PChar(waptpath + '\ssl\' + ExtractFileName(certFile)), True) then
                 ShowMessage(rsPublicKeyGenFailure);
 
-              with TINIFile.Create(AppIniFilename) do
-                try
-                  WriteString('global', 'private_key', pemfn);
-                finally
-                  Free;
-                end;
+              // first use...
+              if GetWaptPersonalCertificatePath = '' then
+                with TINIFile.Create(AppIniFilename) do
+                  try
+                    WriteString('global', 'personal_certitificate_path', pemfn);
+                  finally
+                    Free;
+                  end;
 
               CurrentVisLoading := TVisLoading.Create(Self);
               with CurrentVisLoading do

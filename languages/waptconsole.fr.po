@@ -1,4 +1,4 @@
-msgid "Local directory for saving package development projectsOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepo"
+
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
@@ -599,6 +599,10 @@ msgstr "Tente de se connecter au serveur Wapt et au dépôt"
 #: tviswaptconfig.actdownloadcertificate.caption
 msgid "Browse certificates"
 msgstr "Parcourir les certificats"
+
+#: tviswaptconfig.actgetservercertitificate.caption
+msgid "Get Server https Certitificate"
+msgstr ""
 
 #: tviswaptconfig.actopencertdir.caption
 msgid "Explore dir"
@@ -2420,17 +2424,6 @@ msgid "Are you sure you want to forget %s packages from host %s ?"
 msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 
 #: uwaptconsoleres.rsconfirmimport
-#, fuzzy
-#| msgid ""
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
 #| " to your repository ?\n"
 msgctxt "uwaptconsoleres.rsconfirmimport"
 msgid ""
@@ -3019,17 +3012,6 @@ msgid "Warning, waptsetup-tis.exe or waptagent.exe not present on server, please
 msgstr "Attention, waptsetup-tis.exe ou waptagent.exe ne sont pas présents sur le serveur."
 
 #: uwaptconsoleres.rswaptagentoldversion
-#, fuzzy
-#| msgid ""
-#| "waptsetup-tis.exe version: %s\n"
-#| "Warning, the version of the waptagent.exe installer is too old.\n"
-#| "Current waptagent.exe version: %s\n"
-#| "waptsetup-tis.exe version: %s\n"
-#| "Warning, the version of the waptagent.exe installer is too old.\n"
-#| "Current waptagent.exe version: %s\n"
-#| "waptsetup-tis.exe version: %s\n"
-#| "Warning, the version of the waptagent.exe installer is too old.\n"
-#| "Current waptagent.exe version: %s\n"
 #| "waptsetup-tis.exe version: %s\n"
 msgid ""
 "Warning, the version of the waptagent.exe installer is too old.\n"

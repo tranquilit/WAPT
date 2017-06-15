@@ -164,11 +164,13 @@ class SSLCABundle(object):
         if os.path.isdir(cert_pattern_or_dir):
             # load pems from provided directory
             for fn in glob.glob(os.path.join(cert_pattern_or_dir,'*.crt'))+glob.glob(os.path.join(cert_pattern_or_dir,'*.pem')):
-                self.add_pem(fn,load_keys=load_keys)
+                with open(fn,'r') as pem_data:
+                    self.add_pem(pem_data.read(),load_keys=load_keys)
         else:
             # load pems based on file wildcards
             for fn in glob.glob(cert_pattern_or_dir):
-                self.add_pem(fn,load_keys=load_keys)
+                with open(fn,'r') as pem_data:
+                    self.add_pem(pem_data.read(),load_keys=load_keys)
         return self
 
     def add_certificates(self,certificates):
@@ -178,9 +180,9 @@ class SSLCABundle(object):
             self._certificates[cert.fingerprint] = cert
         return self
 
-    def add_pem(self,filename,load_keys=False):
+    def add_pem(self,pem_data,load_keys=False):
         # parse a bundle PEM with multiple key / certificates
-        lines = open(filename,'r').read().splitlines()
+        lines = pem_data.splitlines()
         inkey = False
         incert = False
         tmplines = []
@@ -191,7 +193,7 @@ class SSLCABundle(object):
             elif line == self.END_CERTIFICATE:
                 tmplines.append(line)
                 crt =  X509.load_cert_string(str('\n'.join(tmplines)))
-                cert = SSLCertificate(filename,crt=crt)
+                cert = SSLCertificate(crt=crt)
                 if not cert.is_valid():
                     logger.warning('Certificate %s is not valid' % cert.cn)
                 self._certificates[crt.get_fingerprint(md='sha1')] =cert
@@ -224,6 +226,13 @@ class SSLCABundle(object):
                 return None
         else:
             return self._certificates.get(sha1_fingerprint,None)
+
+    def certificate_for_cn(self,cn):
+        certs = [crt for crt in self.certificates() if crt.cn == cn or glob.fnmatch.fnmatch(cn,crt.cn)]
+        if certs:
+            return certs[0]
+        else:
+            return None
 
     def keys(self):
         return self._keys.values()

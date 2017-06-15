@@ -1,4 +1,4 @@
-msgid "Local directory for saving package development projectsLocal directory for saving package development projectsOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepo"
+msgid "Local directory for saving package development projectsLocal directory for saving package development projectsOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepo"
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 msgid "Only required if a proxy is needed for waptserver and main waptrepo"
@@ -569,6 +569,10 @@ msgstr ""
 
 #: tviswaptconfig.actdownloadcertificate.caption
 msgid "Browse certificates"
+msgstr ""
+
+#: tviswaptconfig.actgetservercertitificate.caption
+msgid "Get Server https Certitificate"
 msgstr ""
 
 #: tviswaptconfig.actopencertdir.caption

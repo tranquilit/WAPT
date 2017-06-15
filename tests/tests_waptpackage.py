@@ -431,7 +431,7 @@ def test_editzip():
     if res:
         pe = res['packages'][0]
         print pe
-        os.startfile(pe.unzip_package(r.cabundle))
+        os.startfile(pe.unzip_package( cabundle = r.cabundle))
     print('Done')
 
 
@@ -465,7 +465,7 @@ def test_installemove_host():
 
 if __name__ == '__main__':
     setup_test()
-    test_installemove_host()
+    #test_installemove_host()
     test_findsnsrepourl()
     test_edit_host()
     test_editcommon()
@@ -477,9 +477,8 @@ if __name__ == '__main__':
     test_waptdevutils()
 
     test_paquet_host()
-    test_editpackage()
+    #test_editpackage()
     test_reload_config()
-    test_edithost()
 
     test_waptrepo()
     test_oldsignature()

@@ -1331,8 +1331,10 @@ class WaptDB(WaptBaseDB):
             if rows:
                 return json.loads(rows[0][0])
 
-def get_pem_server_certificate(url):
-    """Retrieve certificate for further checks"""
+def get_pem_server_certificate(url,save_to_file=None):
+    """Retrieve certificate for further checks
+        Return pem encoded data
+    """
     url = urlparse.urlparse(url)
     if url.scheme == 'https':
         context = SSL.Context();
@@ -1342,15 +1344,24 @@ def get_pem_server_certificate(url):
         # try a connection to get server certificate
         conn.connect((url.hostname, url.port or 443))
         cert_chain = conn.get_peer_cert_chain()
-        return "\n".join(
+        pem_data = "\n".join(
             ["""\
 # Issuer: %s
 # Subject: %s
 %s
 """ % (c.get_issuer().as_text(),c.get_subject().as_text(),c.as_pem() )for c in cert_chain])
+        if save_to_file:
+            open(save_to_file,'wb').write(pem_data)
+        return pem_data
     else:
         return None
 
+def get_server_ssl_certificates(url):
+    pem_data = get_pem_server_certificate(url)
+    if pem_data is not None:
+        return SSLCABundle().add_pem(pem_data)
+    else:
+        return None
 
 class WaptServer(object):
     """Manage connection to waptserver"""
@@ -1372,7 +1383,11 @@ class WaptServer(object):
             self.dnsdomain = setuphelpers.get_domain_fromregistry()
 
     def get_computer_principal(self):
-        return '%s@%s' % (setuphelpers.get_computername().upper(),self.dnsdomain.upper())
+        try:
+            return '%s@%s' % (setuphelpers.get_computername().upper(),setuphelpers.get_domain_fromregistry().upper())
+        except Exception as e:
+            logger.critical('Unable to build computer_principal %s' % repr(e))
+            raise
 
 
     def auth(self):
