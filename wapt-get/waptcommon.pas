@@ -929,7 +929,7 @@ begin
   if (Result <> '') and not FileExists(Result) then
   begin
     if StrIsOneOf(Result,['0','false','no',''],False) then
-      Result := ''
+      Result := '0'
     else
       if StrIsOneOf(Result,['1','true','yes'],False) then
         Result := '1';
