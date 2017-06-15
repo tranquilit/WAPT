@@ -85,7 +85,7 @@ var
 begin
   Timer1.Enabled := False;
   try
-    aso := WAPTLocalJsonGet('upgrade.json','','',waptservice_timeout);
+    aso := WAPTLocalJsonGet('upgrade.json','','',waptservice_timeout*1000);
     Memo1.Text:=aso.AsJSon();
     tasks := aso['content'];
     pending := tasks;
@@ -125,7 +125,7 @@ begin
       ((pending<>Nil) and (pending.AsArray.Length>0))  then
 
     if allow_cancel_upgrade then
-      WAPTLocalJsonGet('cancel_all_tasks.json','','',waptservice_timeout)
+      WAPTLocalJsonGet('cancel_all_tasks.json','','',waptservice_timeout*1000)
     else
       Canclose := False
 end;
