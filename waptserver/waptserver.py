@@ -594,82 +594,6 @@ def upload_waptsetup():
                          mimetype="application/json")
 
 
-def install_wapt(computer_name, authentication_file):
-    cmd = '/usr/bin/smbclient -G -E -A %s  //%s/IPC$ -c listconnect ' % (
-        authentication_file, computer_name)
-    try:
-        subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
-    except subprocess.CalledProcessError as e:
-        if "NT_STATUS_LOGON_FAILURE" in e.output:
-            raise Exception(_("Incorrect credentials."))
-        if "NT_STATUS_CONNECTION_REFUSED" in e.output:
-            raise Exception(_("Couldn't access IPC$ share."))
-
-        raise Exception(u"%s" % e.output)
-
-    cmd = '/usr/bin/smbclient -A "%s" //%s/c\\$ -c "put waptagent.exe" ' % (
-        authentication_file, computer_name)
-    print(subprocess.check_output(cmd, shell=True))
-
-    cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\waptagent.exe  /MERGETASKS=""useWaptServer"" /VERYSILENT"  ' % (
-        authentication_file, computer_name)
-    print(subprocess.check_output(cmd, shell=True))
-
-    cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\wapt\\wapt-get.exe register"' % (
-        authentication_file, computer_name)
-    print(subprocess.check_output(cmd, shell=True))
-
-    cmd = '/usr/bin/winexe -A "%s"  //%s  "c:\\wapt\\wapt-get.exe --version"' % (
-        authentication_file, computer_name)
-    return subprocess.check_output(cmd, shell=True)
-
-
-@app.route('/deploy_wapt', methods=['POST'])
-@requires_auth
-def deploy_wapt():
-    try:
-        result = {}
-        if platform.system() != 'Linux':
-            raise Exception(_('WAPT server must be run on Linux.'))
-        if subprocess.call('which smbclient', shell=True) != 0:
-            raise Exception(_("smbclient installed on WAPT server."))
-        if subprocess.call('which winexe', shell=True) != 0:
-            raise Exception(_("winexe is not installed on WAPT server."))
-
-        if request.method == 'POST':
-            d = json.loads(request.data)
-            if 'auth' not in d:
-                raise Exception(_("Credentials are missing."))
-            if 'computer_fqdn' not in d:
-                raise Exception(_("There are no registered computers."))
-
-            auth_file = tempfile.mkstemp("wapt")[1]
-            try:
-                with open(auth_file, 'w') as f:
-                    f.write('username = %s\npassword = %s\ndomain = %s\n' % (
-                        d['auth']['username'],
-                        d['auth']['password'],
-                        d['auth']['domain']))
-
-                os.chdir(conf['wapt_folder'])
-
-                message = install_wapt(d['computer_fqdn'], auth_file)
-
-                result = {'status': 'OK', 'message': message}
-            finally:
-                os.unlink(auth_file)
-
-        else:
-            raise Exception(_("Unsupported HTTP method."))
-
-    except Exception as e:
-        result = {'status': 'ERROR', 'message': u"%s" % e}
-
-    return Response(response=json.dumps(result),
-                    status=200,
-                    mimetype="application/json")
-
-
 def rewrite_config_item(cfg_file, *args):
     config = ConfigParser.RawConfigParser()
     config.read(cfg_file)
@@ -695,7 +619,7 @@ def login():
             if "username" in d and "password" in d:
                 if check_auth(d["username"], d["password"]):
                     if "newPass" in d:
-                        new_hash = hashlib.sha1(d["newPass"].encode('utf8')).hexdigest()
+                        new_hash = hashlib.sha512(d["newPass"].encode('utf8')).hexdigest()
                         rewrite_config_item(config_file, 'options', 'wapt_password', new_hash)
                         conf['wapt_password'] = new_hash
                         reload_config()
@@ -1679,6 +1603,16 @@ def on_trigger_remove_packages_result(result):
 def on_waptclient_connect():
     try:
         uuid = request.args.get('uuid',None)
+        host_cert = Hosts.select(Hosts.host_certificate).where(Hosts.uuid == uuid).first()
+
+        if host_cert and host_cert.host_certificate:
+            #host_certificate = SSLCertificate(crt_string = host_cert.host_certificate)
+            #print host_certificate.verify_claim(json.loads(request.args['login']),max_age_secs=60)
+            pass
+        else:
+            # not registered.
+            return False
+
         logger.info('Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
         # stores sid in database
         hostcount = Hosts.update(
@@ -1695,6 +1629,7 @@ def on_waptclient_connect():
             return False
     except:
         wapt_db.rollback()
+        return False
 
 
 @socketio.on('wapt_pong')
@@ -1741,13 +1676,13 @@ def on_waptclient_disconnect():
 def on_join(data):
     room = request.args.get('uuid',None)
     if room:
-        join_room(room)
+        socketio.join_room(room)
 
 @socketio.on('leave')
 def on_leave(data):
     room = request.args.get('uuid',None)
     if room:
-        leave_room(room)
+        socketio.leave_room(room)
 
 @socketio.on_error()
 def on_wapt_socketio_error(e):
