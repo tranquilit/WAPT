@@ -297,7 +297,6 @@ import email.utils
 
 from waptutils import *
 from waptpackage import PackageEntry
-from waptpackage import Version as Version
 from types import ModuleType
 import inspect
 
