@@ -2063,7 +2063,7 @@ class WaptHostRepo(WaptRepo):
             logger.debug(u'Trying to get  host package for %s at %s' % (self.hostname,host_package_url))
             host_package = requests.get(host_package_url,proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,headers=default_http_headers())
             host_package.raise_for_status()
-            host_package_date = httpdatetime2isodate(host_package.headers.get('last-modified',None))
+            self._packages_date = httpdatetime2isodate(host_package.headers.get('last-modified',None))
 
             # Packages file is a zipfile with one Packages file inside
             with ZipFile(StringIO.StringIO(host_package.content)) as zip:
@@ -4735,42 +4735,45 @@ class Wapt(object):
             else:
                 logger.debug(u'Sourcing setup from DB')
                 entry = self.is_installed(packagename)
-                setup = import_code(entry['setuppy'])
+                if entry['setuppy'] is not None:
+                    setup = import_code(entry['setuppy'])
+                    required_params = []
+                     # be sure some minimal functions are available in setup module at install step
+                    logger.debug(u'Source import OK')
+                    if hasattr(setup,'uninstall'):
+                        logger.info('Launch uninstall')
+                        setattr(setup,'run',self.run)
+                        setattr(setup,'run_notfatal',self.run_notfatal)
+                        setattr(setup,'user',self.user)
+                        setattr(setup,'usergroups',self.usergroups)
+                        setattr(setup,'control',entry)
+                        setattr(setup,'WAPT',self)
+                        setattr(setup,'language',self.language or setuphelpers.get_language() )
 
-            required_params = []
-             # be sure some minimal functions are available in setup module at install step
-            logger.debug(u'Source import OK')
-            if hasattr(setup,'uninstall'):
-                logger.info('Launch uninstall')
-                setattr(setup,'run',self.run)
-                setattr(setup,'run_notfatal',self.run_notfatal)
-                setattr(setup,'user',self.user)
-                setattr(setup,'usergroups',self.usergroups)
-                setattr(setup,'control',entry)
-                setattr(setup,'WAPT',self)
-                setattr(setup,'language',self.language or setuphelpers.get_language() )
+                        # get value of required parameters if not already supplied
+                        for p in required_params:
+                            if not p in params_dict:
+                                if not is_system_user():
+                                    params_dict[p] = raw_input("%s: " % p)
+                                else:
+                                    raise Exception(u'Required parameters %s is not supplied' % p)
 
-                # get value of required parameters if not already supplied
-                for p in required_params:
-                    if not p in params_dict:
-                        if not is_system_user():
-                            params_dict[p] = raw_input("%s: " % p)
+                        # set params dictionary
+                        if not hasattr(setup,'params'):
+                            # create a params variable for the setup module
+                            setattr(setup,'params',params_dict)
                         else:
-                            raise Exception(u'Required parameters %s is not supplied' % p)
+                            # update the already created params with additional params from command line
+                            setup.params.update(params_dict)
 
-                # set params dictionary
-                if not hasattr(setup,'params'):
-                    # create a params variable for the setup module
-                    setattr(setup,'params',params_dict)
+                        result = setup.uninstall()
+                        return result
+                    else:
+                        logger.debug(u'No uninstall() function in setup.py for package %s' % packagename)
+                        #raise Exception(u'No uninstall() function in setup.py for package %s' % packagename)
                 else:
-                    # update the already created params with additional params from command line
-                    setup.params.update(params_dict)
+                    logger.info('Uninstall: no setup.py source in database.')
 
-                result = setup.uninstall()
-                return result
-            else:
-                logger.debug(u'No uninstall() function in setup.py for package %s' % packagename)
-                #raise Exception(u'No uninstall() function in setup.py for package %s' % packagename)
         finally:
             if 'setup' in dir():
                 setup_name = setup.__name__

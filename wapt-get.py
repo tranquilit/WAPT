@@ -590,7 +590,7 @@ def main():
                     print(u"Total packages : %i" % result['count'])
                     print(u"Added packages : \n%s" % "\n".join(["  %s (%s)" % p for p in result['added']]))
                     print(u"Removed packages : \n%s" % "\n".join(["  %s (%s)" % p for p in result['removed']]))
-                    print(u"Upgradable packages : \n%s" % "\n".join(["  %s" % p for p in result['upgrades']]))
+                    print(u"Pending operations : \n%s" %  "\n".join( ["  %s: %s" % (k,' '.join(result['upgrades'][k])) for k in result['upgrades']]) )
                     print(u"Repositories URL : \n%s" % "\n".join(["  %s" % p for p in result['repos']]))
 
             elif action == 'upgradedb':

@@ -454,8 +454,18 @@ def test_findsnsrepourl():
     r = WaptRepo(dnsdomain='tranquilit.local')
     print r.repo_url
 
+def test_installemove_host():
+    w = Wapt()
+    w.update()
+    w.install('htlaptop.tranquilit.local')
+    w.remove('htlaptop.tranquilit.local')
+    res = w.list_upgrade()
+    print res
+
+
 if __name__ == '__main__':
     setup_test()
+    test_installemove_host()
     test_findsnsrepourl()
     test_edit_host()
     test_editcommon()
