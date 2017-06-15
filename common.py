@@ -2014,6 +2014,32 @@ class WaptHostRepo(WaptRepo):
         else:
             self.hostname = hostname
 
+    def load_config(self,config,section=None):
+        """Load waptrepo configuration from inifile section.
+                Use name of repo as section name if section is not provided.
+                Use 'global' if no section named section in ini file
+        """
+        if not section:
+             section = self.name
+
+        # creates a default parser with a default section if None provided to get defaults
+        if config is None:
+            config = RawConfigParser(self._default_config)
+            config.add_section(section)
+
+        if not config.has_section(section):
+            if config.has_section('wapt-main'):
+                section = 'wapt-main'
+            else:
+                section = 'global'
+
+        WaptRepo.load_config(self,config,section)
+        # hack to get implicit repo_url from main repo_url
+        if self.repo_url and section in ['wapt-main','global'] and not self.repo_url.endswith('-host'):
+            self.repo_url = self.repo_url + '-host'
+
+        return self
+
     @property
     def hostname(self):
         return self._hostname
@@ -5251,12 +5277,6 @@ class Wapt(object):
 
         # create a temporary repo for this host
         host_repo = WaptHostRepo(name='wapt-host',hostname=hostname,config = self.config)
-        if host_repo.repo_url is None:
-            main_host_repo = self.repositories[0]
-            if not isinstance(main_host_repo,WaptRepo):
-                raise EWaptException('No Host configuration repository defined and no main repository to derive URL from')
-            host_repo.repo_url = main_host_repo.repo_url+'-host'
-
         entry = host_repo.get(hostname)
         if entry:
             host_repo.download_packages(entry)

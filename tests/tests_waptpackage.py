@@ -443,10 +443,21 @@ def test_editcommon():
     pe = w.edit_package('150-firefox-esr')
     wapt_sources_edit(pe.sourcespath)
 
+def test_edit_host():
+    w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
+    w.dbpath=':memory:'
+    w.use_hostpackages = False
+    pe = w.edit_host('htlaptop.tranquilit.local')
+    assert(pe.version>Version('0'))
 
+def test_findsnsrepourl():
+    r = WaptRepo(dnsdomain='tranquilit.local')
+    print r.repo_url
 
 if __name__ == '__main__':
     setup_test()
+    test_findsnsrepourl()
+    test_edit_host()
     test_editcommon()
     test_editzip()
     test_localrepo_cert()
