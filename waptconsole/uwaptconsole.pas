@@ -3194,6 +3194,8 @@ begin
         if ShowModal = mrOk then
         begin
           inifile.WriteString('global', 'repo_url', edrepo_url.Text);
+          inifile.WriteString('global','verify_cert',EdServerCertificate.Text);
+
           inifile.WriteString('global', 'http_proxy', edhttp_proxy.Text);
           inifile.WriteString('global', 'default_package_prefix',
             LowerCase(eddefault_package_prefix.Text));
