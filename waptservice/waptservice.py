@@ -351,7 +351,7 @@ class WaptServiceConfig(object):
                     if not os.path.isfile(self.websockets_verify_cert):
                         logger.warning(u'websockets_verify_cert certificate %s declared in configuration file can not be found. Waptserver websockets communication will fail' % self.websockets_verify_cert)
             else:
-                self.websockets_verify_cert = self.waptserver.verify_cert
+                self.websockets_verify_cert = False
 
             if config.has_option('global','websockets_ping'):
                 self.websockets_ping = config.getint('global','websockets_ping')
