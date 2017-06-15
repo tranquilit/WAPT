@@ -46,19 +46,19 @@ object VisWAPTConfig: TVisWAPTConfig
       ClientHeight = 329
       ClientWidth = 583
       object eddefault_package_prefix: TLabeledEdit
-        Left = 166
+        Left = 167
         Height = 21
         Hint = 'E.g. : tis'#13#10'Which prefix to use when naming created or duplicated packages'
-        Top = 122
+        Top = 153
         Width = 80
         EditLabel.AnchorSideTop.Control = eddefault_package_prefix
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = eddefault_package_prefix
         EditLabel.AnchorSideBottom.Control = eddefault_package_prefix
         EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 55
+        EditLabel.Left = 56
         EditLabel.Height = 13
-        EditLabel.Top = 126
+        EditLabel.Top = 157
         EditLabel.Width = 108
         EditLabel.Caption = 'WAPT packages prefix'
         EditLabel.ParentColor = False
@@ -67,10 +67,10 @@ object VisWAPTConfig: TVisWAPTConfig
         OnExit = eddefault_package_prefixExit
       end
       object edPersonalCertificatePath: TFileNameEdit
-        Left = 166
+        Left = 167
         Height = 21
         Hint = 'E.g. : c:\private\tranquilit.crt'#13#10'Path to certificate for signing new packages.'#13#10'Only suitable for development hosts.'
-        Top = 146
+        Top = 177
         Width = 220
         Filter = 'Fichiers certificats PEM|*.crt|Tous les fichiers|*.*'
         FilterIndex = 0
@@ -82,9 +82,9 @@ object VisWAPTConfig: TVisWAPTConfig
         TabOrder = 6
       end
       object Label2: TLabel
-        Left = -110
+        Left = -109
         Height = 13
-        Top = 147
+        Top = 178
         Width = 273
         Alignment = taRightJustify
         AutoSize = False
@@ -92,19 +92,19 @@ object VisWAPTConfig: TVisWAPTConfig
         ParentColor = False
       end
       object edtemplates_repo_url: TLabeledEdit
-        Left = 164
+        Left = 165
         Height = 21
         Hint = 'E.g. : https://store.wapt.fr/wapt'#13#10'Used by WAPT console for duplicating packages.'
-        Top = 202
+        Top = 233
         Width = 270
         EditLabel.AnchorSideTop.Control = edtemplates_repo_url
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = edtemplates_repo_url
         EditLabel.AnchorSideBottom.Control = edtemplates_repo_url
         EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 18
+        EditLabel.Left = 19
         EditLabel.Height = 13
-        EditLabel.Top = 206
+        EditLabel.Top = 237
         EditLabel.Width = 143
         EditLabel.Caption = 'External packages repository '
         EditLabel.ParentColor = False
@@ -113,19 +113,19 @@ object VisWAPTConfig: TVisWAPTConfig
         Text = 'https://store.wapt.fr/wapt'
       end
       object edhttp_proxy_templates: TLabeledEdit
-        Left = 164
+        Left = 165
         Height = 21
         Hint = 'E.g. : http://proxy.tranquilit.local:3128'#13#10'Only required if a proxy is needed for templates access'
-        Top = 250
+        Top = 281
         Width = 222
         EditLabel.AnchorSideTop.Control = edhttp_proxy_templates
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = edhttp_proxy_templates
         EditLabel.AnchorSideBottom.Control = edhttp_proxy_templates
         EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 21
+        EditLabel.Left = 22
         EditLabel.Height = 13
-        EditLabel.Top = 254
+        EditLabel.Top = 285
         EditLabel.Width = 140
         EditLabel.Caption = 'http proxy to use (if needed)'
         EditLabel.ParentColor = False
@@ -159,41 +159,41 @@ object VisWAPTConfig: TVisWAPTConfig
       object Button2: TButton
         Left = 396
         Height = 25
-        Top = 4
+        Top = 6
         Width = 128
         Action = ActCheckAndSetwaptserver
         TabOrder = 1
       end
       object labStatusRepo: TLabel
-        Left = 420
+        Left = 421
         Height = 13
-        Top = 57
+        Top = 88
         Width = 31
         Caption = 'Status'
         ParentColor = False
       end
       object labStatusServer: TLabel
-        Left = 420
+        Left = 421
         Height = 13
-        Top = 81
+        Top = 112
         Width = 31
         Caption = 'Status'
         ParentColor = False
       end
       object edrepo_url: TLabeledEdit
-        Left = 166
+        Left = 167
         Height = 21
         Hint = 'E.g. : http://wapt.tranquilit.local/wapt'#13#10'Leave empty for auto DNS discovery'
-        Top = 54
+        Top = 85
         Width = 220
         EditLabel.AnchorSideTop.Control = edrepo_url
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = edrepo_url
         EditLabel.AnchorSideBottom.Control = edrepo_url
         EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 35
+        EditLabel.Left = 36
         EditLabel.Height = 13
-        EditLabel.Top = 58
+        EditLabel.Top = 89
         EditLabel.Width = 128
         EditLabel.Caption = 'URL to the main repository'
         EditLabel.ParentColor = False
@@ -203,19 +203,19 @@ object VisWAPTConfig: TVisWAPTConfig
         OnExit = edrepo_urlExit
       end
       object edwapt_server: TLabeledEdit
-        Left = 166
+        Left = 167
         Height = 21
         Hint = 'E.g. : https://srvwapt.tranquilit.local'#13#10'Leave empty if you don''t want a central management server.'
-        Top = 78
+        Top = 109
         Width = 220
         EditLabel.AnchorSideTop.Control = edwapt_server
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = edwapt_server
         EditLabel.AnchorSideBottom.Control = edwapt_server
         EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 57
+        EditLabel.Left = 58
         EditLabel.Height = 13
-        EditLabel.Top = 82
+        EditLabel.Top = 113
         EditLabel.Width = 106
         EditLabel.Caption = 'URL du serveur WAPT'
         EditLabel.ParentColor = False
@@ -225,30 +225,30 @@ object VisWAPTConfig: TVisWAPTConfig
         OnExit = edrepo_urlExit
       end
       object cbManual: TCheckBox
-        Left = 17
+        Left = 18
         Height = 17
-        Top = 35
+        Top = 66
         Width = 101
         Caption = 'Manual overrride'
         OnClick = cbManualClick
         TabOrder = 2
       end
       object ImgStatusRepo: TImage
-        Left = 396
+        Left = 397
         Height = 21
-        Top = 54
+        Top = 85
         Width = 20
       end
       object ImgStatusServer: TImage
-        Left = 396
+        Left = 397
         Height = 21
-        Top = 78
+        Top = 109
         Width = 20
       end
       object Label9: TLabel
-        Left = -117
+        Left = -116
         Height = 13
-        Top = 228
+        Top = 259
         Width = 273
         Alignment = taRightJustify
         AutoSize = False
@@ -256,10 +256,10 @@ object VisWAPTConfig: TVisWAPTConfig
         ParentColor = False
       end
       object EdTemplatesAuthorizedCertsDir: TDirectoryEdit
-        Left = 164
+        Left = 165
         Height = 21
         Hint = 'When importing packages, check signature against certificates in this list'
-        Top = 226
+        Top = 257
         Width = 270
         DialogTitle = 'Select the directory where to lookup authorized certificates'
         ShowHidden = False
@@ -270,20 +270,45 @@ object VisWAPTConfig: TVisWAPTConfig
         TabOrder = 9
       end
       object Button3: TButton
-        Left = 460
+        Left = 461
         Height = 25
-        Top = 201
+        Top = 232
         Width = 112
         Action = ActDownloadCertificate
         TabOrder = 10
       end
       object Button4: TButton
-        Left = 460
+        Left = 461
         Height = 21
-        Top = 228
+        Top = 259
         Width = 112
         Action = ActOpenCertDir
         TabOrder = 11
+      end
+      object Label6: TLabel
+        Left = -113
+        Height = 13
+        Top = 37
+        Width = 273
+        Alignment = taRightJustify
+        AutoSize = False
+        Caption = 'Path to server https certificate'
+        ParentColor = False
+      end
+      object EdServerCertificate: TFileNameEdit
+        Left = 166
+        Height = 21
+        Hint = 'E.g. : c:\private\tranquilit.crt'#13#10'Path to certificate for signing new packages.'#13#10'Only suitable for development hosts.'
+        Top = 34
+        Width = 220
+        Filter = 'Fichiers certificats PEM|*.crt|Tous les fichiers|*.*'
+        FilterIndex = 0
+        HideDirectories = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        Flat = True
+        MaxLength = 0
+        TabOrder = 12
       end
     end
     object pgAdvanced: TTabSheet
@@ -447,12 +472,12 @@ object VisWAPTConfig: TVisWAPTConfig
   object Timer1: TTimer
     Enabled = False
     OnTimer = Timer1Timer
-    left = 24
-    top = 104
+    left = 25
+    top = 135
   end
   object ImageList1: TImageList
-    left = 24
-    top = 160
+    left = 25
+    top = 191
     Bitmap = {
       4C69030000001000000010000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
@@ -554,8 +579,8 @@ object VisWAPTConfig: TVisWAPTConfig
     }
   end
   object ActionList1: TActionList
-    left = 488
-    top = 152
+    left = 489
+    top = 183
     object ActCheckAndSetwaptserver: TAction
       Caption = 'Check and set'
       Hint = 'Try to connect to waptserver and wapt_repo'

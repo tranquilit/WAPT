@@ -248,7 +248,7 @@ begin
 end;
 
 function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver: TObject;
-  progressCallback: TProgressCallback; enableProxy: Boolean=False;userAgent:String='';VerifyCertificateFilename:String=''): boolean;
+  progressCallback: TProgressCallback; enableProxy: Boolean=False;userAgent:String='';  VerifyCertificateFilename:String=''): boolean;
 var
   http:TIdHTTP;
   OutputFile:TFileStream;
@@ -934,6 +934,8 @@ begin
       if StrIsOneOf(Result,['1','true','yes'],False) then
         Result := '1';
   end;
+  If Result = '' then
+    Result := '1';
 end;
 
 // Read Wapt config from inifile, set global const wapt_config_filename

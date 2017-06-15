@@ -1476,7 +1476,7 @@ begin
   with TVisCreateWaptSetup.Create(self) do
     try
       ini := TIniFile.Create(AppIniFilename);
-      fnPublicCert.Text := ChangeFileExt(ini.ReadString('global', 'private_key', ''), '.crt');
+      fnPublicCert.Text := ini.ReadString('global', 'personal_certificate_path', '');
       if not FileExists(fnPublicCert.Text) then
         fnPublicCert.Clear;
       edWaptServerUrl.Text := ini.ReadString('global', 'wapt_server', '');
@@ -3149,6 +3149,8 @@ begin
     with TVisWAPTConfig.Create(self) do
       try
         edrepo_url.Text := inifile.ReadString('global', 'repo_url', '');
+
+        EdServerCertificate.FileName:=inifile.ReadString('global','verify_cert','');
 
         edhttp_proxy.Text := inifile.ReadString('global', 'http_proxy', '');
         cbUseProxyForServer.Checked :=

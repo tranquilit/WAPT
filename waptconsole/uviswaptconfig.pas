@@ -29,6 +29,7 @@ type
     cbDebugWindow: TCheckBox;
     cbUseProxyForServer: TCheckBox;
     cbLanguage: TComboBox;
+    EdServerCertificate: TFileNameEdit;
     EdTemplatesAuthorizedCertsDir: TDirectoryEdit;
     eddefault_package_prefix: TLabeledEdit;
     eddefault_sources_root: TDirectoryEdit;
@@ -47,6 +48,7 @@ type
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
+    Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
@@ -212,7 +214,7 @@ begin
           edwapt_server.Text := GetWaptServerURL;
         end;
 
-        serverRes := SO(IdhttpGetString(edwapt_server.Text+'/ping',cbUseProxyForServer.Checked,200,60000,60000));
+        serverRes := SO(IdhttpGetString(edwapt_server.Text+'/ping',cbUseProxyForServer.Checked,200,60000,60000,'','','GET','',EdServerCertificate.Text));
         if serverRes = Nil then
           raise Exception.CreateFmt(rsWaptServerError,['Bad answer']);
         if not serverRes.B['success'] then
@@ -229,7 +231,7 @@ begin
       end;
 
       try
-        packages := IdHttpGetString(edrepo_url.Text+'/Packages',cbUseProxyForRepo.Checked,200,60000,60000);
+        packages := IdHttpGetString(edrepo_url.Text+'/Packages',cbUseProxyForRepo.Checked,200,60000,60000,'','','GET','',EdServerCertificate.Text);
         if length(packages)<=0 then
           Raise Exception.Create('Packages file empty or not found');
         labStatusRepo.Caption:=Format('Repository access OK', []);

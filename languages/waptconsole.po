@@ -1,5 +1,8 @@
-msgid "Local directory for saving package development projectsLocal directory for saving package development projectsOnly required if a proxy is needed for waptserver and main waptrepo"
+msgid "Local directory for saving package development projectsLocal directory for saving package development projectsOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepo"
 msgstr "Content-Type: text/plain; charset=UTF-8"
+
+msgid "Only required if a proxy is needed for waptserver and main waptrepo"
+msgstr ""
 
 #: tform1.buttonpanel1.helpbutton.caption
 msgctxt "TFORM1.BUTTONPANEL1.HELPBUTTON.CAPTION"
@@ -642,6 +645,7 @@ msgid "E.g. : http://proxy.tranquilit.local:3128"
 msgstr ""
 
 #: tviswaptconfig.edpersonalcertificatepath.hint
+msgctxt "tviswaptconfig.edpersonalcertificatepath.hint"
 msgid "E.g. : c:\\private\\tranquilit.crt"
 msgstr ""
 
@@ -659,6 +663,11 @@ msgstr ""
 
 #: tviswaptconfig.edserveraddress.hint
 msgid "E.g. : wapt.tranquilit.local"
+msgstr ""
+
+#: tviswaptconfig.edservercertificate.hint
+msgctxt "TVISWAPTCONFIG.EDSERVERCERTIFICATE.HINT"
+msgid "E.g. : c:\\private\\tranquilit.crt"
 msgstr ""
 
 #: tviswaptconfig.edtemplatesauthorizedcertsdir.hint
@@ -705,6 +714,10 @@ msgstr ""
 #: tviswaptconfig.label5.caption
 msgctxt "tviswaptconfig.label5.caption"
 msgid "Activate proxy when accessing the WAPT server"
+msgstr ""
+
+#: tviswaptconfig.label6.caption
+msgid "Path to server https certificate"
 msgstr ""
 
 #: tviswaptconfig.label7.caption
