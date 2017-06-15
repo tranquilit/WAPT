@@ -2315,7 +2315,11 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                 if uuid != self.wapt.host_uuid:
                     raise Exception('Task is not targeted to this host. task''s uuid does not match host''uuid')
                 name = action['action']
-                if name in ['trigger_host_update','trigger_host_register']:
+                if name in ['trigger_cancel_all_tasks']:
+                    data = self.task_manager.cancel_all_tasks().as_dict()
+                    result.append(data)
+
+                elif name in ['trigger_host_update','trigger_host_register']:
                     if name == 'trigger_host_update':
                         task = WaptUpdate()
                     elif name == 'trigger_host_register':

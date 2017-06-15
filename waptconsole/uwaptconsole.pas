@@ -1721,21 +1721,15 @@ end;
 
 procedure TVisWaptGUI.ActCancelRunningTaskExecute(Sender: TObject);
 var
-  sores,taskresult: ISuperObject;
+  sores,taskresult,uuids: ISuperObject;
   currhost: ansistring;
 begin
   if GridHosts.FocusedRow<>Nil then
   begin
+    uuids := TSuperObject.Create(stArray);;
     currhost := GridHosts.FocusedRow.S['uuid'];
-
-    sores := WAPTServerJsonGet('api/v3/trigger_cancel_task?uuid=%S', [currhost]);
-    if sores.B['success'] then
-    begin
-      taskresult := sores['result'];
-      ShowMessage(rsTaskCanceled)
-    end
-    else
-      ShowMessageFmt(rsFailedToCancel, [sores.S['msg']]);
+    uuids.AsArray.Add(currhost);
+    taskresult := TriggerActionOnHosts(uuids,'trigger_cancel_all_tasks',Nil,'Cancel all tasks','Error cancelling tasks');
   end;
 end;
 

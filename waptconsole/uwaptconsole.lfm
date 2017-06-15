@@ -506,9 +506,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 461
         Top = 104
         Width = 572
-        ActivePage = pgPackages
+        ActivePage = pgTasks
         Align = alRight
-        TabIndex = 0
+        TabIndex = 4
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -1279,7 +1279,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgTasks: TTabSheet
           Caption = 'Tasks'
-          ClientHeight = 692
+          ClientHeight = 435
           ClientWidth = 564
           object HostTaskRunningProgress: TProgressBar
             Left = 4
@@ -1353,14 +1353,14 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 637
+            Top = 380
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
           end
           object PageControl1: TPageControl
             Left = 0
-            Height = 535
+            Height = 278
             Top = 102
             Width = 564
             ActivePage = TabSheet1
@@ -1370,11 +1370,11 @@ object VisWaptGUI: TVisWaptGUI
             TabOrder = 3
             object TabSheet1: TTabSheet
               Caption = 'Pending'
-              ClientHeight = 509
+              ClientHeight = 252
               ClientWidth = 556
               object GridHostTasksPending: TSOGrid
                 Left = 0
-                Height = 507
+                Height = 250
                 Top = 2
                 Width = 556
                 Align = alClient
@@ -1780,7 +1780,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel6: TPanel
             Left = 0
             Height = 50
-            Top = 642
+            Top = 385
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
