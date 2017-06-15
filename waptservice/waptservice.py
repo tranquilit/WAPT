@@ -2369,9 +2369,9 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
 
     def on_trigger_longtask(self,args,result_callback=None):
         task = WaptLongTask()
-        task.force = int(args.get('force','0')) != 0
-        task.notify_user = int(args.get('notify_user','1')) != 0
-        task.notify_server_on_finish = int(args.get('notify_server','0')) != 0
+        task.force = action.get('force',False)
+        task.notify_user = action.get('notify_user',False)
+        task.notify_server_on_finish = action.get('notify_server',False)
         data = self.task_manager.add_task(task).as_dict()
         if result_callback:
             result_callback(make_response(data))

@@ -638,7 +638,7 @@ def main():
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
-                    for l in ('install','additional','upgrade'):
+                    for l in ('install','additional','upgrade','remove'):
                         if result[l]:
                             print(u"\n=== %s packages ===\n%s" % (l,'\n'.join( ["  %-30s " % (p) for p in  result[l]]),))
 

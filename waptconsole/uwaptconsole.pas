@@ -1020,6 +1020,8 @@ begin
           RowSO['installed_packages'] := sores['result'];
           // add missing packages
           additional := RowSO['last_update_status.pending.additional'];
+          for package in RowSO['last_update_status.pending.install'] do
+            additional.AsArray.Add(package);
           if (additional<>Nil) and (additional.AsArray.Length>0) then
           begin
             for packagereq in additional do
@@ -2343,6 +2345,7 @@ begin
           SOAction := SO();
           SOAction.S['action'] := AAction;
           SOAction.S['uuid'] := host.S['uuid'];
+          SOAction.B['notify_server'] := True;
           SOAction['packages'] := packages;
           SOActions.AsArray.Add(SOAction);
         end;
