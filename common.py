@@ -1333,7 +1333,7 @@ class WaptDB(WaptBaseDB):
 
 def get_pem_server_certificate(url):
     """Retrieve certificate for further checks"""
-    url = urlparse(url)
+    url = urlparse.urlparse(url)
     if url.scheme == 'https':
         context = SSL.Context();
         context.set_allow_unknown_ca(True)
@@ -1377,7 +1377,7 @@ class WaptServer(object):
 
     def auth(self):
         if self._server_url:
-            scheme = urlparse(self._server_url).scheme
+            scheme = urlparse.urlparse(self._server_url).scheme
             if scheme == 'https' and has_kerberos and self.use_kerberos:
                 return HTTPKerberosAuth(mutual_authentication=DISABLED,principal=self.get_computer_principal())
                 # TODO : simple auth if kerberos is not available...
