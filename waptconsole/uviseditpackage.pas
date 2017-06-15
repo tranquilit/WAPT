@@ -154,7 +154,7 @@ type
 function EditPackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreatePackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreateGroup(packagename: string; advancedMode: boolean): ISuperObject;
-function EditHost(hostname: ansistring; advancedMode: boolean;uuid:ansiString='';description:ansiString=''): ISuperObject;
+function EditHost(hostname: ansistring; advancedMode: boolean; var ApplyUpdates:Boolean; description:ansiString=''): ISuperObject;
 function EditHostDepends(hostname: string; newDependsStr: string): ISuperObject;
 function EditGroup(group: string; advancedMode: boolean): ISuperObject;
 
@@ -227,7 +227,7 @@ begin
     end;
 end;
 
-function EditHost(hostname: ansistring; advancedMode: boolean;uuid:ansiString='';description:ansiString=''): ISuperObject;
+function EditHost(hostname: ansistring; advancedMode: boolean;var ApplyUpdates:Boolean;description:ansiString=''): ISuperObject;
 var
   res:ISuperObject;
 begin
@@ -246,18 +246,10 @@ begin
         Eddescription.Text := description;
       end;
 
-      ActBUApply.Enabled:=uuid<>'';
       if ShowModal = mrOk then
       try
         Result := PackageEdited;
-        if (result<>Nil) and ApplyUpdatesImmediately and (uuid<>'')  then
-        begin
-          res := WAPTServerJsonGet('api/v3/trigger_upgrade?uuid=%s',[uuid]);
-          if res.B['success']  then
-            ShowMessage(rsUpgradingHost)
-          else
-            ShowMessageFmt(rsUpgradeHostError, [res.S['msg']]);
-        end;
+        ApplyUpdates:=ApplyUpdatesImmediately;
       except
         on E:Exception do
           ShowMessageFmt('Error editing host %s',[e.Message]);

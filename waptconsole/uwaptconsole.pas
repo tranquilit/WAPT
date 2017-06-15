@@ -562,7 +562,6 @@ type
     procedure MakePackageTemplate(AInstallerFileName: String);
     procedure PythonOutputSendData(Sender: TObject; const Data: ansistring);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: ISuperObject);
-    procedure TriggerActionOnHostPackages(AAction, title, errortitle: String);
     procedure UpdateHostPages(Sender: TObject);
   public
     { public declarations }
@@ -581,6 +580,9 @@ type
     function Login: boolean;
     function EditIniFile: boolean;
     function updateprogress(receiver: TObject; current, total: integer): boolean;
+    function TriggerActionOnHosts(uuids: ISuperObject;AAction:String;Args:ISuperObject;title,errortitle:String):ISuperObject;
+    procedure TriggerActionOnHostPackages(AAction, title, errortitle: String);
+
   end;
 
 var
@@ -2295,14 +2297,20 @@ end;
 procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
 var
   hostname,uuid,desc: ansistring;
+  uuids,result: ISuperObject;
+  ApplyUpdatesImmediately:Boolean;
 begin
   if GridHosts.FocusedRow<>Nil then
   try
     hostname := GridHosts.FocusedRow.S['computer_fqdn'];
     uuid := GridHosts.FocusedRow.S['uuid'];
     desc := GridHosts.FocusedRow.S['description'];
+    uuids := TSuperobject.create(stArray);
+    uuids.AsArray.Add(uuid);
 
-    EditHost(hostname, AdvancedMode, uuid,UTF8Encode(desc))
+    result := EditHost(hostname, AdvancedMode, ApplyUpdatesImmediately, UTF8Encode(desc));
+    if (result<>Nil) and ApplyUpdatesImmediately and (uuid<>'')  then
+      result := TriggerActionOnHosts(uuids,'trigger_host_upgrade',Nil,rsUpgradingHost,rsErrorLaunchingUpgrade);
 
   except
     on E:Exception do
@@ -2319,6 +2327,56 @@ procedure TVisWaptGUI.ActEnglishUpdate(Sender: TObject);
 begin
   ActEnglish.Checked := DMPython.Language='en';
 end;
+
+function TVisWaptGUI.TriggerActionOnHosts(uuids: ISuperObject;AAction:String;Args:ISuperObject;title,errortitle:String):ISuperObject;
+var
+  host_uuid,package, packages,ArgKey,ArgValue : ISuperObject;
+  SOAction, SOActions,host:ISuperObject;
+  actions_json,
+  conffile,keypassword:Variant;
+  signed_actions_json:String;
+  waptdevutils: Variant;
+begin
+  try
+    SOActions := TSuperObject.Create(stArray);
+
+    for host_uuid in uuids do
+    begin
+      SOAction := SO();
+      SOAction.S['action'] := AAction;
+      SOAction.S['uuid'] := host_uuid.AsString;
+      SOAction.B['notify_server'] := True;
+      if Args<>Nil then
+        for ArgKey in Args.AsObject.GetNames() do
+          SOAction[ArgKey.AsString] := Args[ArgKey.AsString];
+      SOActions.AsArray.Add(SOAction);
+    end;
+
+    //transfer actions as json string to python
+    actions_json := SOActions.AsString;
+    conffile := AppIniFilename();
+    keypassword := dmpython.privateKeyPassword;
+    waptdevutils := Import('waptdevutils');
+    signed_actions_json := VarPythonAsString(waptdevutils.sign_actions(waptconfigfile:=conffile,actions:=actions_json,key_password:=keypassword));
+    SOActions := SO(signed_actions_json);
+
+    result := WAPTServerJsonPost('/api/v3/trigger_host_action?timeout=%D',[waptservice_timeout],SOActions);
+    if (result<>Nil) and result.AsObject.Exists('success') then
+    begin
+      MemoLog.Append(result.AsString);
+      if result.AsObject.Exists('msg') then
+        ShowMessage(result.S['msg']);
+    end
+    else
+      if not result.B['success'] or (result['result'].A['errors'].Length>0) then
+        Raise Exception.Create(result.S['msg']);
+  except
+    on E:Exception do
+      ShowMessage(Format(errortitle,
+          [ Join(',',packages),e.Message]));
+  end;
+end;
+
 
 procedure TVisWaptGUI.TriggerActionOnHostPackages(AAction,title,errortitle:String);
 var
