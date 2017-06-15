@@ -90,7 +90,7 @@ from common import Wapt
 import setuphelpers
 from setuphelpers import Version
 from waptpackage import PackageEntry,WaptLocalRepo,WaptPackage
-from waptcrypto import SSLVerifyException
+from waptcrypto import SSLVerifyException,SSLCABundle,SSLCertificate,SSLPrivateKey
 
 import windnsquery
 
@@ -106,6 +106,7 @@ _ = gettext
 
 import babel
 
+import gc
 
 v = (sys.version_info.major, sys.version_info.minor)
 if v != (2, 7):
@@ -2415,16 +2416,26 @@ class WaptSocketIOClient(threading.Thread):
                         if self.config.waptserver.proxies and self.config.waptserver.proxies.get(self.config.websockets_proto,None) is not None:
                             kwargs['proxies'] = self.config.waptserver.proxies
 
+                        host_key = tmp_wapt.get_host_key()
+                        host_cert = tmp_wapt.get_host_certificate()
+
+                        connect_params = dict(
+                            uuid = tmp_wapt.host_uuid,
+                        )
+                        signed_connect_params = host_key.sign_claim(connect_params,certificate = host_cert)
+
                         self.socketio_client = SocketIO(
                                 host="%s://%s" % (self.config.websockets_proto,self.config.websockets_host),
                                 port=self.config.websockets_port,
                                 verify=self.config.websockets_verify_cert,
-                                wait_for_connection = False,
+                                wait_for_connection = True,
                                 transport = ['websocket'],
                                 ping_interval = self.config.websockets_ping,
                                 hurry_interval_in_seconds = self.config.websockets_hurry_interval,
-                                params = {'uuid':tmp_wapt.host_uuid},
+                                params = {'uuid': tmp_wapt.host_uuid, 'login':jsondump(signed_connect_params)},
                                 **kwargs)
+
+
                         #logger.debug(self.socketio_client._engineIO_session.ping_interval)
                         self.wapt_remote_calls = self.socketio_client.define(WaptSocketIORemoteCalls)
                         self.wapt_remote_calls.wapt = tmp_wapt
@@ -2436,6 +2447,7 @@ class WaptSocketIOClient(threading.Thread):
                             logger.info('Socket IO listening for %ss' % self.config.websockets_check_config_interval )
                             self.socketio_client.wait(self.config.websockets_check_config_interval)
                     self.config.reload_if_updated()
+
                 except Exception as e:
                     logger.debug('Error in socket io connection %s' % repr(e))
                     if self.socketio_client and self.config.websockets_host:
@@ -2445,6 +2457,7 @@ class WaptSocketIOClient(threading.Thread):
                             self.socketio_client.connect('/')
                         except:
                             pass
+
                     logger.info('Socket IO Stopped, waiting %ss before retrying' % self.config.websockets_retry_delay)
                     time.sleep(self.config.websockets_retry_delay)
 
