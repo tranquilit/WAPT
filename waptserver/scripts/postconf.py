@@ -305,7 +305,7 @@ def main():
 
     if waptserver_ini.has_section('uwsgi'):
         print ('Remove uwsgi options, not used anymore')
-        waptserver_ini.remove_section('uwsgi') 
+        waptserver_ini.remove_section('uwsgi')
 
     # add secret key initialisation string (for session token)
     if not waptserver_ini.has_option('options','secret_key'):
@@ -384,7 +384,7 @@ def main():
         subprocess.check_output("/bin/chown wapt /opt/wapt/conf/waptserver.ini",shell=True)
         waptserver_ini.write(inifile)
 
-    # TODO : remove mongodb lines that are commented out     
+    # TODO : remove mongodb lines that are commented out
 
     final_msg = [
         'Postconfiguration completed.',
@@ -410,7 +410,13 @@ def main():
             dh_filename = '/etc/ssl/certs/dhparam.pem'
             if not os.path.exists(dh_filename):
                 print (subprocess.check_output('openssl dhparam -out %s  2048' % dh_filename , shell=True))
-            os.chown(dh_filename,pwd.getpwnam('root').pw_uid,grp.getgrnam('nginx').gr_gid)
+
+            try:
+                os.chown(dh_filename,pwd.getpwnam('root').pw_uid,grp.getgrnam('nginx').gr_gid)
+            except KeyError as e:
+                # for debian
+                os.chown(dh_filename,pwd.getpwnam('root').pw_uid,grp.getgrnam('www-data').gr_gid)
+
             os.chmod(dh_filename,0o644)
 
             if options.use_kerberos:
