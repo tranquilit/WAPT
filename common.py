@@ -82,7 +82,8 @@ from ntsecuritycon import DOMAIN_GROUP_RID_ADMINS,DOMAIN_GROUP_RID_USERS
 import ctypes
 from ctypes import wintypes
 
-from urlparse import urlparse
+import urlparse
+
 try:
     from requests_kerberos import HTTPKerberosAuth,DISABLED
     has_kerberos = True
@@ -1397,7 +1398,7 @@ class WaptServer(object):
         pem = get_pem_server_certificate(self.server_url)
         if pem:
             new_cert = SSLCertificate(crt_string=pem)
-            url = urlparse(self.server_url)
+            url = urlparse.urlparse(self.server_url)
             pem_fn = os.path.join(server_ssl_dir,url.hostname+'.crt')
 
             if new_cert.cn != url.hostname:
@@ -4397,7 +4398,7 @@ class Wapt(object):
         """
         try:
             if self.waptserver and self.waptserver.server_url:
-                host = urlparse(self.waptserver.server_url).hostname
+                host = urlparse.urlparse(self.waptserver.server_url).hostname
                 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 s.settimeout(1)
                 s.connect((host, 0))
