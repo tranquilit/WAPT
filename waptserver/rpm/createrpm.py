@@ -104,7 +104,11 @@ def check_if_package_is_installed(package_name):
     else:
         return False
 
-if not check_if_package_is_installed('python-virtualenv') or not check_if_package_is_installed('gcc'):
+if (not check_if_package_is_installed('python-virtualenv') 
+          or not check_if_package_is_installed('gcc')
+          or not check_if_package_is_installed('openssl-devel')
+          or not check_if_package_is_installed('libffi-devel')
+          ):
     print ("""
 ##############################################
      Please install build time packages first:
