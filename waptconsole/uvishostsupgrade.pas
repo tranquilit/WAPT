@@ -74,6 +74,7 @@ var
   waptdevutils: Variant;
 begin
   Stopped := False;
+
   for host in ProgressGrid.Data do
   begin
     if uppercase(host.S['status'])<>'OK' then
@@ -84,25 +85,9 @@ begin
   end;
   ProgressGrid.Refresh;
 
-  SOActions := TSuperObject.Create(stArray);
-  for host in ProgressGrid.Data do
-  begin
-    SOAction := SO();
-    SOAction.S['action'] := action;
-    SOAction.S['uuid'] := host.S['uuid'];
-    if Fnotifyserver then
-      SOAction.I['notify_server'] := 1;
-    SOActions.AsArray.Add(SOAction);
-  end;
-
-  //transfer actions as json string to python
-  actions_json := SOActions.AsString;
   conffile := AppIniFilename();
   keypassword := dmpython.privateKeyPassword;
   waptdevutils := Import('waptdevutils');
-  signed_actions_json := VarPythonAsString(waptdevutils.sign_actions(waptconfigfile:=conffile,actions:=actions_json,key_password:=keypassword));
-
-  SOActions := SO(signed_actions_json);
 
   for host in ProgressGrid.Data do
   begin
@@ -114,6 +99,20 @@ begin
     ProgressGrid.InvalidateFordata(host);
     Application.ProcessMessages;
     try
+      SOAction := SO();
+      SOAction.S['action'] := action;
+      SOAction.S['uuid'] := host.S['uuid'];
+      if Fnotifyserver then
+        SOAction.I['notify_server'] := 1;
+      SOActions := TSuperObject.Create(stArray);
+      SOActions.AsArray.Add(SOAction);
+
+      //transfer actions as json string to python
+      actions_json := SOActions.AsString;
+
+      signed_actions_json := VarPythonAsString(waptdevutils.sign_actions(waptconfigfile:=conffile,actions:=actions_json,key_password:=keypassword));
+      SOActions := SO(signed_actions_json);
+
       res := WAPTServerJsonPost('/api/v3/trigger_host_action?uuid=%S&timeout=%D',[host.S['uuid'],1],SOActions);
       // new behaviour
       if (res<>Nil) and res.AsObject.Exists('success') then
