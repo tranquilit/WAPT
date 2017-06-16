@@ -48,6 +48,7 @@ import time
 import json
 import hashlib
 from passlib.hash import sha512_crypt, bcrypt
+from passlib.hash import pbkdf2_sha256
 
 from peewee import *
 from playhouse.postgres_ext import *
@@ -231,7 +232,7 @@ def check_auth(username, password):
         return ret
 
     user_ok = False
-    pass_sha1_ok = pass_sha512_ok = pass_sha512_crypt_ok = pass_bcrypt_crypt_ok = False
+    pass_sha1_ok = pbkdf2_sha256_ok = pass_sha512_ok = pass_sha512_crypt_ok = pass_bcrypt_crypt_ok = False
 
     user_ok = conf['wapt_user'] == username
 
@@ -240,7 +241,9 @@ def check_auth(username, password):
     pass_sha512_ok = conf['wapt_password'] == hashlib.sha512(
         password.encode('utf8')).hexdigest()
 
-    if sha512_crypt.identify(conf['wapt_password']):
+    if '$pbkdf2-sha256$' in conf['wapt_password']:
+        pbkdf2_sha256_ok = pbkdf2_sha256.verify(password, conf['wapt_password'])
+    elif sha512_crypt.identify(conf['wapt_password']):
         pass_sha512_crypt_ok = sha512_crypt.verify(
             password,
             conf['wapt_password'])
@@ -253,7 +256,7 @@ def check_auth(username, password):
         except Exception:
             pass
 
-    return any_([pass_sha1_ok, pass_sha512_ok,
+    return any_([pbkdf2_sha256_ok,pass_sha1_ok, pass_sha512_ok,
                  pass_sha512_crypt_ok, pass_bcrypt_crypt_ok]) and user_ok
 
 
@@ -619,7 +622,7 @@ def login():
             if "username" in d and "password" in d:
                 if check_auth(d["username"], d["password"]):
                     if "newPass" in d:
-                        new_hash = hashlib.sha512(d["newPass"].encode('utf8')).hexdigest()
+                        new_hash = pbkdf2_sha256.hash(d["newPass"].encode('utf8'))
                         rewrite_config_item(config_file, 'options', 'wapt_password', new_hash)
                         conf['wapt_password'] = new_hash
                         reload_config()

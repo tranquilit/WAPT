@@ -8,6 +8,7 @@ Rocket==1.2.4
 Werkzeug==0.12.2
 argparse==1.2.1
 click==6.7
+cffi==1.10.0
 huey==1.2.2
 iniparse==0.4
 itsdangerous==0.24
