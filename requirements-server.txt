@@ -25,3 +25,4 @@ python-engineio==1.5.4
 python-socketio==1.7.5
 Flask-SocketIO==2.8.6
 eventlet==0.21.0
+passlib==1.7.1
