@@ -2448,9 +2448,7 @@ class WaptSocketIOClient(threading.Thread):
                             logger.info('Socket IO listening for %ss' % self.config.websockets_check_config_interval )
                             self.socketio_client.wait(self.config.websockets_check_config_interval)
                     self.config.reload_if_updated()
-                    if not self.config.websockets_host or\
-                            not self.socketio_client or\
-                            self.config.websockets_host != urlparse.urlparse(self.socketio_client._url).host:
+                    if not self.config.websockets_host:
                         raise Exception('Forced disconnect websockets from config. No websockets_host.')
 
                 except Exception as e:

@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.5"
+__version__ = "1.5.0.6"
 
 import os
 import sys
@@ -476,7 +476,7 @@ def wapthosts_json(model_class, instance, created):
 
         for field,attribute in extractmap:
             setattr(instance,field,dictgetpath(instance.host_info,attribute))
-        
+
         instance.os_architecture = 'x64' and instance.host_info.get('win64','?') or 'x86'
 
     if (created or Hosts.dmi in instance.dirty_fields) and instance.dmi:
@@ -489,7 +489,7 @@ def wapthosts_json(model_class, instance, created):
 
     if not instance.connected_ips:
         instance.connected_ips = dictgetpath(instance.host_info,'networking.*.addr')
-    
+
     # update host update status based on update_status json data or packages collection
     if not instance.host_status or created or Hosts.last_update_status in instance.dirty_fields:
         instance.host_status = None
