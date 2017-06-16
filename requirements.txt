@@ -43,7 +43,7 @@ psycopg2==2.6.2
 pyad==0.5.16
 pycparser==2.17
 pylint==1.6.5
-
+pefile==2016.3.28
 pyparsing==2.2.0
 python-engineio==1.5.4
 python-socketio==1.7.5
