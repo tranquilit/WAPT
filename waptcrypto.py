@@ -290,13 +290,21 @@ class SSLPrivateKey(object):
         """Args:
             private_key (str) : Filename Path to PEM encoded Private Key
             key (PKey) : Public/[private]  PKey structure
-            callback (func) : Called to provide password for the key if needed
+            callback (func) : Called to provide password for the key if needed.
+                              If password is set (not None), this parameter is ignored
+                              else if None, default is default_pwd_callback.
+            password (str) : passpharse to decrypt private key.
+                             If '', no decryption and no password is asked. RSA key loadind will fail.
+
         """
         self.private_key_filename = filename
         if key:
             self.key = key
-        if callback is None:
-            callback = default_pwd_callback
+        if password == '':
+            callback = NOPASSWORD_CALLBACK
+        else:
+            if password is None and callback is None:
+                callback = default_pwd_callback
         self.pwd_callback = callback
         self.password = password
         self._rsa = None

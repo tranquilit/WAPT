@@ -4521,11 +4521,11 @@ class Wapt(object):
         """
         if not isinstance(zip_or_directoryname,unicode):
             zip_or_directoryname = unicode(zip_or_directoryname)
-        if not callback:
+        if private_key_password is None and not callback:
             callback = self.key_passwd_callback
         if certificate is None:
             certificate = self.personal_certificate()
-            key = self.private_key()
+            key = self.private_key(passwd_callback=callback,private_key_password=private_key_password)
         else:
             key = certificate.matching_key_in_dirs(password_callback=callback,private_key_password=private_key_password)
 

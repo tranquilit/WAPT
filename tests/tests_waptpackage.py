@@ -463,8 +463,17 @@ def test_installemove_host():
     print res
 
 
+def test_buildupload():
+    w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
+    w.dbpath=':memory:'
+    w.use_hostpackages = False
+    w.personal_certificate_path='c:/private/150-codeur.crt'
+    w.build_upload('c:/tranquilit/tis-7zip2-wapt',private_key_passwd='test')
+
+
 if __name__ == '__main__':
     setup_test()
+    test_buildupload()
     #test_installemove_host()
     test_findsnsrepourl()
     test_edit_host()
