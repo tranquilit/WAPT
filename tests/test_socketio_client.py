@@ -39,7 +39,7 @@ from werkzeug.utils import html
 
 from socketIO_client import SocketIO, LoggingSocketIONamespace,SocketIONamespace
 
-from urlparse import urlparse
+import urlparse
 from functools import wraps
 
 import logging
@@ -212,7 +212,7 @@ class WaptServiceConfig(object):
 
             if config.has_option('global','wapt_server'):
                 self.waptserver = common.WaptServer().load_config(config)
-                waptserver_url = urlparse(self.waptserver.server_url)
+                waptserver_url = urlparse.urlparse(self.waptserver.server_url)
                 if waptserver_url.port is None:
                     if waptserver_url.scheme == 'https':
                         self.websockets_port = 443
@@ -431,7 +431,7 @@ class WaptTestHost(object):
                                 port=self.config.websockets_port,
                                 verify=self.config.websockets_verify_cert,
                                 #cert=self.config.websockets_verify_cert,
-                                wait_for_connection = False,
+                                wait_for_connection = True,
                                 transport = ['websocket'],
                                 ping_interval = self.config.websockets_ping,
                                 hurry_interval_in_seconds = self.config.websockets_hurry_interval,
@@ -447,8 +447,6 @@ class WaptTestHost(object):
                             logger.info('Socket IO listening for %ss' % self.config.websockets_check_config_interval )
                             self.socketio_client.wait(self.config.websockets_check_config_interval)
                     self.config.reload_if_updated()
-                except AssertionError:
-                    pass
 
                 except Exception as e:
                     logger.debug('Error in socket io connection %s' % repr(e))

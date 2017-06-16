@@ -2442,21 +2442,29 @@ class WaptSocketIOClient(threading.Thread):
 
                     if self.socketio_client and self.config.websockets_host:
                         if not self.socketio_client.connected:
+                            self.socketio_client.disconnect('/')
                             self.socketio_client.connect('/')
                         if self.socketio_client.connected:
                             logger.info('Socket IO listening for %ss' % self.config.websockets_check_config_interval )
                             self.socketio_client.wait(self.config.websockets_check_config_interval)
                     self.config.reload_if_updated()
+                    if not self.config.websockets_host or\
+                            not self.socketio_client or\
+                            self.config.websockets_host != urlparse.urlparse(self.socketio_client._url).host:
+                        raise Exception('Forced disconnect websockets from config. No websockets_host.')
 
                 except Exception as e:
                     logger.debug('Error in socket io connection %s' % repr(e))
-                    if self.socketio_client and self.config.websockets_host:
+                    if self.socketio_client:
                         try:
-                            logger.debug('Creating socketio client')
-                            self.socketio_client.disconnect()
-                            self.socketio_client.connect('/')
+                            logger.debug('Disconnecting socketio client')
+                            self.socketio_client.disconnect('/')
+
                         except:
                             pass
+
+                    self.socketio_client = None
+
 
                     logger.info('Socket IO Stopped, waiting %ss before retrying' % self.config.websockets_retry_delay)
                     time.sleep(self.config.websockets_retry_delay)
