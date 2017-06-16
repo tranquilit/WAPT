@@ -280,6 +280,7 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 11
           Text = '1000'
           OnExit = EdHostsLimitExit
+          OnKeyPress = EdHostsLimitKeyPress
         end
         object cbReachable: TCheckBox
           Left = 444
@@ -506,9 +507,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 461
         Top = 104
         Width = 572
-        ActivePage = pgTasks
+        ActivePage = pgPackages
         Align = alRight
-        TabIndex = 4
+        TabIndex = 0
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet

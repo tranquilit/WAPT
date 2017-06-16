@@ -131,9 +131,7 @@ def make_response_from_exception(exception,error_code='',status=200):
             error_code = error_code
             )
     if utils_devel_mode:
-        data['msg'] = traceback.format_exc()
-        etype, value, tb = sys.exc_info()
-        raise value
+        raise exception
     else:
         data['msg'] = u"Error on server: %s" % (exception,)
     return flask.Response(

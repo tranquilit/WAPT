@@ -460,6 +460,7 @@ type
     procedure CheckBox_errorChange(Sender: TObject);
     procedure EdHardwareFilterChange(Sender: TObject);
     procedure EdHostsLimitExit(Sender: TObject);
+    procedure EdHostsLimitKeyPress(Sender: TObject; var Key: char);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchPackageExecute(Sender: TObject);
     procedure EdSearchGroupsExecute(Sender: TObject);
@@ -557,6 +558,7 @@ type
     function GetSelectedUUID: ISuperObject;
     { private declarations }
     procedure GridLoadData(grid: TSOGrid; jsondata: string);
+    procedure HandleServerResult(ServerResult: ISuperObject);
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
     function InventoryData(uuid: String): ISuperObject;
     procedure MakePackageTemplate(AInstallerFileName: String);
@@ -710,7 +712,14 @@ end;
 
 procedure TVisWaptGUI.EdHostsLimitExit(Sender: TObject);
 begin
+  if EdHostsLimit.Text='' then EdHostsLimit.Text:='1000';
   EdHostsLimit.Text := IntToStr(StrToInt(EdHostsLimit.Text));
+end;
+
+procedure TVisWaptGUI.EdHostsLimitKeyPress(Sender: TObject; var Key: char);
+begin
+  if key = #13 then
+    ActSearchHost.Execute;
 end;
 
 procedure TVisWaptGUI.EdRunKeyPress(Sender: TObject; var Key: char);
@@ -782,7 +791,7 @@ begin
   // %APPDATA%\waptconsole\waptconsole.ini
   ini := TIniFile.Create(Appuserinipath);
   try
-    for CB in VarArrayOf([cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares]) do
+    for CB in VarArrayOf([cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares,cbReachable]) do
       ini.WriteBool(self.name,CB.Name,TCheckBox(CB).Checked);
     ini.WriteInteger(self.name,EdHostsLimit.Name,StrToInt(EdHostsLimit.Text));
   finally
@@ -2009,18 +2018,12 @@ begin
 end;
 
 procedure TVisWaptGUI.ActTriggerWakeOnLanExecute(Sender: TObject);
+var
+  sores,data: ISuperObject;
 begin
-  with TVisHostsUpgrade.Create(Self) do
-    try
-      Caption:= rsTriggerWakeonlan;
-      action := 'api/v2/trigger_wakeonlan';
-      hosts := Gridhosts.SelectedRows;
-
-      if ShowModal = mrOk then
-        actRefresh.Execute;
-    finally
-      Free;
-    end;
+  data := SO();
+  data['uuids'] := GetSelectedUUID;
+  HandleServerResult(WAPTServerJsonPost('api/v3/trigger_wakeonlan',[],data));
 end;
 
 procedure TVisWaptGUI.ActTriggerWakeOnLanUpdate(Sender: TObject);
@@ -2315,6 +2318,19 @@ end;
 procedure TVisWaptGUI.ActEnglishExecute(Sender: TObject);
 begin
   DMPython.Language:='en';
+end;
+
+procedure TVisWaptGUI.HandleServerResult(ServerResult:ISuperObject);
+begin
+  if (ServerResult<>Nil) and ServerResult.AsObject.Exists('success') then
+  begin
+    MemoLog.Append(ServerResult.AsString);
+    if ServerResult.AsObject.Exists('msg') then
+      ShowMessage(ServerResult.S['msg']);
+  end
+  else
+    if not ServerResult.B['success'] or (ServerResult['result'].A['errors'].Length>0) then
+      Raise Exception.Create(ServerResult.S['msg']);
 end;
 
 procedure TVisWaptGUI.ActEnglishUpdate(Sender: TObject);
@@ -3529,7 +3545,7 @@ begin
 
     ini := TIniFile.Create(Appuserinipath);
     try
-      for CB in VarArrayOf([cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares]) do
+      for CB in VarArrayOf([cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares,cbReachable]) do
         TCheckBox(CB).Checked := ini.ReadBool(self.Name,CB.Name,TCheckBox(CB).Checked);
 
       EdHostsLimit.Text := ini.ReadString(self.name,EdHostsLimit.Name,EdHostsLimit.Text);

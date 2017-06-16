@@ -615,10 +615,9 @@ def reload_config():
 @app.route('/login',methods=['POST'])
 def login():
     config_file = app.config['CONFIG_FILE']
-
     try:
         if request.method == 'POST':
-            d= json.loads(request.data)
+            d = request.get_json()
             if "username" in d and "password" in d:
                 if check_auth(d["username"], d["password"]):
                     if "newPass" in d:
@@ -922,43 +921,37 @@ def proxy_host_request(request, action):
         return make_response_from_exception(e)
 
 
-@app.route('/api/v2/trigger_wakeonlan')
+@app.route('/api/v3/trigger_wakeonlan',methods=['POST'])
 @requires_auth
 def trigger_wakeonlan():
     try:
-        uuid = request.args['uuid']
-        host_data = Hosts\
+        uuids = request.get_json()['uuids']
+        hosts_data = Hosts\
                         .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.mac_addresses,Hosts.wapt_status,Hosts.host_info)\
-                        .where(Hosts.uuid==uuid)\
-                        .dicts()\
-                        .first(1)
-        macs = host_data['mac_addresses']
-        msg = u''
-        if macs:
-            logger.info(
-                _("Sending magic wakeonlan packets to {} for machine {}").format(
-                    macs,
-                    host_data['computer_fqdn']
-                    ))
-            wakeonlan.wol.send_magic_packet(*macs)
-            for line in host_data['host_info']['networking']:
-                if 'broadcast' in line:
-                    broadcast = line['broadcast']
-                    wakeonlan.wol.send_magic_packet(
-                        *
+                        .where(Hosts.uuid.in_(uuids))\
+                        .dicts()
+        result = []
+        for host in hosts_data:
+            macs = host['mac_addresses']
+            msg = u''
+            if macs:
+                logger.debug(
+                    _("Sending magic wakeonlan packets to {} for machine {}").format(
                         macs,
-                        ip_address='%s' %
+                        host['computer_fqdn']
+                        ))
+                wakeonlan.wol.send_magic_packet(*macs)
+                for line in host['host_info']['networking']:
+                    if 'broadcast' in line:
+                        broadcast = line['broadcast']
+                        wakeonlan.wol.send_magic_packet(
+                            *
+                            macs,
+                            ip_address='%s' %
                         broadcast)
-            msg = _(u"Wakeonlan packets sent to {} for machine {}").format(
-                macs,
-                host_data['computer_fqdn'])
-            result = dict(
-                macs=macs,
-                host=host_data['computer_fqdn'],
-                uuid=uuid)
-        else:
-            raise EWaptMissingHostData(
-                _("No MAC address found for this host in database"))
+                result.append(dict(uuid=host['uuid'],computer_fqdn=host['computer_fqdn'],mac_addresses=host['mac_addresses']))
+        msg = _(u"Wakeonlan packets sent to {} machines.").format(len(result))
+        result = result
         return make_response(result,
                              msg=msg,
                              success=True)
