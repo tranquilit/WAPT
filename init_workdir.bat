@@ -29,7 +29,6 @@ copy /Y c:\windows\SysWOW64\pywintypes27.dll .
 copy /Y .\lib\site-packages\M2Crypto\libeay32.dll . 
 copy /Y .\lib\site-packages\M2Crypto\ssleay32.dll . 
 
-copy /Y lib\site-packages\M2Crypto\*.dll .
 copy /Y utils\openssl.exe lib\site-packages\M2Crypto\
 copy /Y Scripts\python.exe waptpython.exe
 copy /Y Scripts\pythonw.exe waptpythonw.exe
