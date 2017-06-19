@@ -45,49 +45,24 @@ Pour une installation propre de zéro sur Windows:
 
 * Installer python2.7.12 depuis https://www.python.org/ftp/python/2.7.12/python-2.7.12.msi
 * Upgrader python-setuptools : c:\python27\python -m pip install -U pip setuptools
-* Télécharger pywin32 depuis : https://downloads.sourceforge.net/project/pywin32/pywin32/Build%20220/pywin32-220.win32-py2.7.exe?r=&ts=1486553375&use_mirror=kent
-* installer virtualenv : pip install virtualenv
 * Créer virtualenv
 ```
- c:
  mkdir c:\tranquilit
  git clone git@github.com:tranquilit/WAPT.git
  (ou git clean -fxd ...)
-
  cd c:\tranquilit\wapt
-
- virtualenv .
- xcopy /I /E /F /Y c:\python27\libs libs
- xcopy /I /E /F /Y c:\python27\DLLs DLLs
- xcopy /I /E /F /Y /EXCLUDE:libexcludes.txt c:\python27\lib lib
- 
- virtualenv --relocatable .
- Scripts\activate.bat
- pip install --upgrade pip setuptools wheel virtualenv
- rem wget "https://downloads.sourceforge.net/project/pywin32/pywin32/Build%20220/pywin32-220.win32-py2.7.exe?r=&ts=1486553375&use_mirror=kent" --no-check-certificate
- Scripts\easy_install.exe c:\binaries\pywin32-220.win32-py2.7.exe
- pip install -r requirements.txt
- 
- copy /Y lib\site-packages\pywin32-220-py2.7-win32.egg\py*.dll .
- copy /Y c:\windows\SysWOW64\python27.dll .
- 
- copy /Y lib\site-packages\M2Crypto\*.dll .
- copy /Y utils\openssl.exe lib\site-packages\M2Crypto\
- copy /Y Scripts\python.exe waptpython.exe
- copy /Y Scripts\pythonw.exe waptpythonw.exe
- 
+ init_workdir.bat 
 ```
 Environnement de build sur Linux Debian
 ---------------------------------------
 ```
-
-mkdir /opt/wapt/waptserver
-cd /opt/wapt/waptserver
-
-apt-get install python-virtualenv
-virtualenv .
-bin/pip install -r requirements-server.txt
-
+ mkdir ~/tranquilit/
+ cd ~/tranquilit/
+ git clone git@github.com:tranquilit/WAPT.git
+ cd ~/tranquilit/wapt/waptserver/deb
+ python createdeb.py
+ cd ~/tranquilit/wapt/waptrepo/deb
+ python createdeb.py
 ```
 
 Environnement CodeTyphon / Lazarus
