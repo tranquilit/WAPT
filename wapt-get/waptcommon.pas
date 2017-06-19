@@ -137,7 +137,7 @@ const
 
 implementation
 
-uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
+uses StrUtils,LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2,
   IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,IdURI,
   gettext,IdStack,IdCompressorZLib,sha1,IdAuthentication,shfolder,IniFiles;
@@ -241,10 +241,14 @@ end;
 function TSSLVerifyCert.VerifypeerCertificate(Certificate: TIdX509; AOk: Boolean; ADepth, AError: Integer): Boolean;
 var
   s:String;
+  CNPart:String;
+  cnpos:Integer;
 begin
   s := Certificate.Subject.OneLine;
+  cnpos  := pos('/cn=',LowerCase(S))+Length('/cn=');
+  CNPart := Copy(LowerCase(s),cnpos,255);
   //check subject is hostname
-  Result := AOk and (RightStr(LowerCase(s),length('cn='+hostname))=LowerCase('cn='+hostname));
+  Result := AOk and IsWild(hostname,CNPart,True);
 end;
 
 function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver: TObject;
