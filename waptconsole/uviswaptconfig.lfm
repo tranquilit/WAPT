@@ -72,7 +72,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Hint = 'E.g. : c:\private\tranquilit.crt'#13#10'Path to certificate for signing new packages.'#13#10'Only suitable for development hosts.'
         Top = 199
         Width = 220
-        Filter = 'Fichiers certificats PEM|*.crt|Tous les fichiers|*.*'
+        Filter = 'Fichiers certificats crt|*.crt|Tous les fichiers|*.*'
         FilterIndex = 0
         HideDirectories = False
         ButtonWidth = 23
