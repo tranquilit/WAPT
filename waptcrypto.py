@@ -622,19 +622,12 @@ class SSLCertificate(object):
         for adir in directories:
             for akeyfile in glob.glob(os.path.join(adir,'*.pem')):
                 try:
+                    logger.debug('Testing if key %s match certificate...'% akeyfile)
                     key = SSLPrivateKey(os.path.abspath(akeyfile),callback = password_callback,password = private_key_password)
                     if key.match_cert(self):
                         return key
-                    else:
-                        break
-                except RSAError as e:
-                    if (e.message == 'padding check failed') or ('decrypt' in e.message):
-                        pwd_try_count -= 1
-                    else:
-                        break
                 except Exception as e:
-                    print('Error for %s: %s'%(akeyfile,e))
-                    break
+                    logger.debug('Error for %s: %s'%(akeyfile,e))
         return None
 
     @property
