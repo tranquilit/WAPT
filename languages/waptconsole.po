@@ -1,4 +1,4 @@
-msgid "Local directory for saving package development projectsLocal directory for saving package development projectsOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepo"
+msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 msgid "Only required if a proxy is needed for waptserver and main waptrepo"
@@ -571,7 +571,13 @@ msgstr ""
 msgid "Browse certificates"
 msgstr ""
 
-#: tviswaptconfig.actgetservercertitificate.caption
+#: tviswaptconfig.actenableverifycerts.caption
+msgctxt "tviswaptconfig.actenableverifycerts.caption"
+msgid "Verify https server certificate"
+msgstr ""
+
+#: tviswaptconfig.actgetservercertificate.caption
+msgctxt "TVISWAPTCONFIG.ACTGETSERVERCERTIFICATE.CAPTION"
 msgid "Get Server https Certitificate"
 msgstr ""
 
@@ -614,6 +620,11 @@ msgstr ""
 #: tviswaptconfig.cbuseproxyforserver.hint
 msgctxt "TVISWAPTCONFIG.CBUSEPROXYFORSERVER.HINT"
 msgid "Activate proxy when accessing the WAPT server"
+msgstr ""
+
+#: tviswaptconfig.cbverifycert.caption
+msgctxt "TVISWAPTCONFIG.CBVERIFYCERT.CAPTION"
+msgid "Verify https server certificate"
 msgstr ""
 
 #: tviswaptconfig.eddefault_package_prefix.editlabel.caption
@@ -721,7 +732,7 @@ msgid "Activate proxy when accessing the WAPT server"
 msgstr ""
 
 #: tviswaptconfig.label6.caption
-msgid "Path to server https certificate"
+msgid "Path to CA certificates bundle"
 msgstr ""
 
 #: tviswaptconfig.label7.caption
