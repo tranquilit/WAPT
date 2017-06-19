@@ -186,7 +186,8 @@ class WaptServiceConfig(object):
     global_attributes = ['config_filename','waptservice_user','waptservice_password',
          'MAX_HISTORY','waptservice_port',
          'dbpath','loglevel','log_directory','waptserver','authorized_callers_ip',
-         'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout','log_to_windows_events']
+         'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout','log_to_windows_events'
+         'allow_user_service_restart']
 
     def __init__(self,config_filename=None):
         if not config_filename:
@@ -198,6 +199,9 @@ class WaptServiceConfig(object):
 
         # maximum nb of tasks to keep in history wapt task manager
         self.MAX_HISTORY = 30
+
+        # add logged on user right to stop / start the service
+        self.allow_user_service_restart = False
 
         # http localserver
         self.waptservice_port = 8088
@@ -319,6 +323,9 @@ class WaptServiceConfig(object):
 
             if config.has_option('global','log_to_windows_events'):
                 self.log_to_windows_events = config.getboolean('global','log_to_windows_events')
+
+            if config.has_option('global','allow_user_service_restart'):
+                self.allow_user_service_restart = config.getboolean('global','allow_user_service_restart')
 
             if config.has_option('global','wapt_server'):
                 self.waptserver = common.WaptServer().load_config(config)
@@ -2248,7 +2255,10 @@ def install_service():
         registry_set(root,path,keyname,value,type = datatypes[valuetype])
 
     logger.info(u'Allow authenticated users to start/stop waptservice')
-    setuphelpers.run('sc sdset waptservice D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)(A;;CCLCSWRPWPDTLOCRRC;;;S-1-5-11)S:(AU;FA;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;WD)');
+    if waptconfig.allow_user_service_restart:
+        setuphelpers.run('sc sdset waptservice D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)(A;;CCLCSWRPWPDTLOCRRC;;;S-1-5-11)S:(AU;FA;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;WD)');
+    else:
+        setuphelpers.run('sc sdset waptservice D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;SU)S:(AU;FA;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;WD)');
 
 
 # Websocket stuff
