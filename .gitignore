@@ -74,3 +74,5 @@ waptupgrade/patchs/
 /DLLs
 /libs
 /*.dll
+/waptpython.exe
+/waptpythonw.exe
