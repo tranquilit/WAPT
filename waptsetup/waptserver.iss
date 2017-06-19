@@ -2,7 +2,6 @@
 #define AppName "WAPT Server"
 #define default_repo_url "http://localhost:8080/wapt/"
 #define default_wapt_server "http://localhost:8080"
-#define default_update_period "120"
 #define output_dir "."
 #define Company "Tranquil IT Systems"
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
@@ -22,7 +21,6 @@ Source: "..\wapt.ico"; DestDir: "{app}";
 ; sources to regenerate waptupgrade package
 Source: "..\waptupgrade\setup.py"; DestDir: "{app}\waptupgrade"; Flags: ignoreversion;
 Source: "..\waptupgrade\WAPT\*"; DestDir: "{app}\waptupgrade\WAPT"; Flags: createallsubdirs recursesubdirs ignoreversion;
-
 
 ; global management console
 Source: "..\waptconsole.exe.manifest"; DestDir: "{app}";
@@ -67,18 +65,14 @@ DefaultDirName=c:\wapt
 WizardImageFile=..\tranquilit.bmp
 
 [INI]
-;Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL};
-;Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL};
 Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1";
 
 [RUN]
-;Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: {cm:UpdatePkg}; Description: "{cm:UpdatePkg}"
 Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhidden; StatusMsg: {cm:UpdatePkg}; Description: "{cm:UpdatePkg}"
 Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptserver\waptserver.py"" install {code:GetWaptServerInstallFlags}"; StatusMsg: {cm:RegisteringService}; Description: "{cm:SetupService}"
 Filename: "{app}\waptserverpostconf.exe"; Parameters: "-l {code:CurrentLanguage}"; Flags: nowait postinstall runascurrentuser skipifsilent; StatusMsg: {cm:LaunchingPostconf}; Description: "{cm:LaunchingPostconf}"
 
 [Icons]
-;Name: "{commonstartup}\WAPT session setup"; Tasks: autorunSessionSetup; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
 Name: "{commonstartup}\WAPT session setup"; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
 Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\wapttray.exe"; Flags: excludefromshowinnewinstall;
 Name: "{group}\Console WAPT"; Filename: "{app}\waptconsole.exe"; WorkingDir: "{app}"

@@ -1,11 +1,11 @@
 ﻿#define waptsetup 
 #define default_repo_url ""
 #define default_wapt_server ""
-#define default_update_period "120"
 #define AppName "WAPT"
 #define output_dir "."
 #define Company "Tranquil IT Systems"
 #define install_certs 0
+#define send_usage_report 0
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
 #include "wapt.iss"
@@ -28,7 +28,6 @@ Source: "..\waptconsole.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\waptdevutils.py"; DestDir: "{app}";
 
 ; authorized public keys
-;Source: "..\ssl\*"; DestDir: "{app}\ssl"; Tasks: install_certificates; Flags: createallsubdirs recursesubdirs
 Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs; Check: InstallCertCheck();
 
 [Setup]
@@ -43,31 +42,19 @@ Name:"fr";MessagesFile: "compiler:Languages\French.isl"
 Name:"de";MessagesFile: "compiler:Languages\German.isl"
 
 [Tasks]
-;Name: install_certificates; Description: "{cm:InstallSSLCertificates}";  Flags: {#install_certs};
-;Name: use_waptserver; Description: "{cm:UseWaptServer}"; hidden;
-;Name: autorunSessionSetup; Description: "{cm:StartAfterSetup}";
-;Name: verify_server_certificate; Description: "{cm:EnableCheckCertificate}"; Flags: unchecked;
-
 
 [INI]
-;Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL}; Tasks: not use_waptserver; AfterInstall: RemoveWaptServer;
-;Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL}; Tasks: use_waptserver;
 Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL}; 
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL};
 Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; 
-;Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; Tasks: use_waptserver;
-;Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "0"; Tasks: not use_waptserver;
+Filename: {app}\wapt-get.ini; Section: global; Key: send_usage_report; String:  {#send_usage_report}; 
 
 [Run]
-;Filename: "{app}\wapt-get.exe"; Parameters: "--direct enable-check-certificate"; Tasks: verify_server_certificate;  Flags: runhidden postinstall; StatusMsg: StatusMsg: {cm:EnableCheckCertificate}; Description: "{cm:EnableCheckCertificate}"
-;Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Tasks: use_waptserver; Flags: runhidden postinstall; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Flags: runasoriginaluser runhidden postinstall; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runasoriginaluser runhidden postinstall; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
-;Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: {cm:UpdatePkgUponShutdown}; Description: "{cm:UpdatePkgUponShutdown}"
 Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhidden; StatusMsg: {cm:UpdatePkgUponShutdown}; Description: "{cm:UpdatePkgUponShutdown}"
 
 [Icons]
-;Name: "{commonstartup}\WAPT session setup"; Tasks: autorunSessionSetup; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
 Name: "{commonstartup}\WAPT session setup"; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
 
 [CustomMessages]
