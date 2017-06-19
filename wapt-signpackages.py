@@ -44,7 +44,7 @@ import logging
 logger = logging.getLogger()
 
 __doc__ = """\
-%prog -k keyfile -c crtfile package1 package2
+wapt-signpackages -c crtfile package1 package2
 
 Resign a list of packages
 """
@@ -60,7 +60,7 @@ def setloglevel(loglevel):
 
 
 def main():
-    parser=OptionParser(usage=__doc__)
+    parser=OptionParser(usage=__doc__,prog = 'wapt-signpackage')
     parser.add_option("-c","--certificate", dest="public_key", default='', help="Path to the PEM RSA certificate to embed identitiy in control. (default: %default)")
     parser.add_option("-k","--private-key", dest="private_key", default='', help="Path to the PEM RSA private key to sign packages.  (default: %default)")
     #parser.add_option("-w","--private-key-passwd", dest="private_key_passwd", default='', help="Path to the password of the private key. (default: %default)")
@@ -82,13 +82,25 @@ def main():
         setloglevel('warning')
 
     if len(args) < 1:
-        parser.usage
+        print(parser.usage)
         sys.exit(1)
 
-    key = SSLPrivateKey(options.private_key)
+    if not options.public_key and not options.private_key:
+        print('ERROR: No certificate found or specified')
+        sys.exit(1)
+
     cert = SSLCertificate(options.public_key or options.private_key)
+    if options.private_key and os.path.isfile(options.private_key):
+        key = SSLPrivateKey(options.private_key)
+    else:
+        key = cert.matching_key_in_dirs()
+
+    if not key:
+        print('ERROR: No private key found or specified')
+        sys.exit(1)
 
     args = ensure_list(args)
+
 
     waptpackages = []
     for arg in args:
