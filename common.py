@@ -1833,10 +1833,10 @@ class WaptRepo(WaptRemoteRepo):
                         for (outside,priority,weight,url) in servers:
                             probe_delay = tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies)
                             if probe_delay is not None:
-                                available_servers.append([probe_delay,url])
+                                available_servers.append([outside,probe_delay,url])
                         if available_servers:
                             available_servers.sort()
-                            return available_servers[0][1]  # [delay,url]
+                            return available_servers[0][2]  # [delay,url]
                         else:
                             logger.debug(u'  No wapt repo reachable with SRV request within specified timeout %s' % (self.timeout))
 

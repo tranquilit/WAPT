@@ -471,10 +471,27 @@ def test_buildupload():
     w.build_upload('c:/tranquilit/tis-7zip2-wapt',private_key_passwd='test')
 
 
+def test_matching_certs():
+    c = SSLPrivateKey('c:/private/150.pem',password='test')
+    certs = c.matching_certs()
+    print(certs)
+    assert(isinstance(certs,list))
+    assert(len(certs)>0)
+
+def test_conflicts():
+    w = Wapt(config_filename= r"C:\tranquilit\wapt\wapt-get.ini")
+    w.dbpath=':memory:'
+    w.use_hostpackages = False
+    w.update()
+    r = w.check_depends('htlaptop.tranquilit.local')
+    print r
+
 if __name__ == '__main__':
     setup_test()
-    test_buildupload()
+    test_conflicts()
+    #test_buildupload()
     #test_installemove_host()
+    test_matching_certs()
     test_findsnsrepourl()
     test_edit_host()
     test_editcommon()
