@@ -25,18 +25,9 @@ Composants de WAPT
 Environnement Python
 --------------------
 
-* Python 2.7.12
-* Python 2.7 M2Crypto-0.21.1 : https://github.com/dsoprea/M2CryptoWindows
-* Python 2.7 psutil-3.4.2 (<=3.4.2 pour compatibilité XP): https://pypi.python.org/pypi/psutil
-* Python 2.7 pyzmq-2.2.0 : https://github.com/downloads/zeromq/pyzmq/pyzmq-2.2.0.win32-py2.7.msi
-* pywin32 : http://sourceforge.net/projects/pywin32/
-* flask 0.12 + dependences : http://flask.pocoo.org/
-* kerberos_sspi 0.2 : https://github.com/may-day/kerberos-sspi
-* flask_kerberos_sspi : https://flask-kerberos.readthedocs.org/en/latest/
-* pefile 1.2.10-123 : https://code.google.com/p/pefile/
-* active_directory : http://timgolden.me.uk/python/active_directory.html
-* wmi : http://timgolden.me.uk/python/wmi/index.html
-* winshell : https://github.com/tjguk/winshell
+* Python 2.7.13
+* client python libraries in requirements.txt
+* server python libraries in requirements-server.txt
 
 Création d'un environnement de développement avec virtualenv:
 ---------------------------------------------
@@ -53,6 +44,7 @@ Pour une installation propre de zéro sur Windows:
  cd c:\tranquilit\wapt
  init_workdir.bat 
 ```
+
 Environnement de build sur Linux Debian
 ---------------------------------------
 ```
