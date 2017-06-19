@@ -1,68 +1,69 @@
-appdirs==1.4.3
-args==0.1.0
-asn1crypto==0.22.0
-astroid==1.4.9
-Babel==2.3.4
-backports.functools-lru-cache==1.3
-BeautifulSoup==3.2.1
-blinker==1.4
-cffi==1.10.0
-click==6.7
-clint==0.5.1
-colorama==0.3.7
-configparser==3.5.0
-cryptography==1.9
-enum-compat==0.0.2
-enum34==1.1.6
-eventlet==0.21.0
-Flask==0.12.2
-Flask-Babel==0.11.1
-flask-hmacauth==0.3.9
-Flask-Login==0.4.0
-flask-paginate==0.4.5
-Flask-SocketIO==2.8.6
-greenlet==0.4.12
-huey==1.2.2
-idna==2.5
-iniparse==0.4
-ipaddress==1.0.18
-isort==4.2.5
-itsdangerous==0.24
-Jinja2==2.9.6
-kerberos-sspi==0.2
-lazy-object-proxy==1.2.2
-M2CryptoWin32==0.21.1.post3
-MarkupSafe==1.0
-mccabe==0.6.1
-netifaces==0.10.4
-packaging==16.8
-passlib==1.7.1
-peewee==2.8.5
-psutil==3.4.2
-psycopg2==2.6.2
-pyad==0.5.16
-pycparser==2.17
-pylint==1.6.5
-pefile==2016.3.28
-pyparsing==2.2.0
-python-engineio==1.5.4
-python-socketio==1.7.5
-pytz==2016.10
-pywin32==220
-pyzmq==16.0.2
-requests==2.18.1
-requests-kerberos==0.11.0
-Rocket==1.2.4
-six==1.10.0
-
-socketIO-client-2==0.7.4
-
-virtualenv
-wakeonlan
-websocket-client==0.40.0
-Werkzeug==0.12.2
-winkerberos==0.6.0
-winshell==0.6
-WMI==1.4.9
-wrapt==1.10.8
-WTForms==2.1
+args==0.1.0 --hash=sha256:a785b8d837625e9b61c39108532d95b85274acd679693b71ebb5156848fcf814
+appdirs==1.4.3 --hash=sha256:d8b24664561d0d34ddfaec54636d502d7cea6e29c3eaf68f3df6180863e2166e
+asn1crypto==0.22.0 --hash=sha256:d232509fefcfcdb9a331f37e9c9dc20441019ad927c7d2176cf18ed5da0ba097
+astroid==1.4.9 --hash=sha256:944400d94e45865af150fb98700b27b788ddee5ad17c77d0725f67ac271f7a10
+Babel==2.3.4 --hash=sha256:3318ed2960240d61cbc6558858ee00c10eed77a6508c4d1ed8e6f7f48399c975
+backports.functools-lru-cache==1.3 --hash=sha256:ac661058b4b9c770c0f045a71cf3cafedd1be11071d6116201ee5d7245c61034
+BeautifulSoup==3.2.1 --hash=sha256:6a8cb4401111e011b579c8c52a51cdab970041cc543814bbd9577a4529fe1cdb
+blinker==1.4 --hash=sha256:471aee25f3992bd325afa3772f1063dbdbbca947a041b8b89466dc00d606f8b6
+cffi==1.10.0 --hash=sha256:80796ea68e11624a0279d3b802f88a7fe7214122b97a15a6c97189934a2cc776
+click==6.7 --hash=sha256:29f99fc6125fbc931b758dc053b3114e55c77a6e4c6c3a2674a2dc986016381d
+clint==0.5.1 --hash=sha256:05224c32b1075563d0b16d0015faaf9da43aa214e4a2140e51f08789e7a4c5aa
+colorama==0.3.7 --hash=sha256:a4c0f5bc358a62849653471e309dcc991223cf86abafbec17cd8f41327279e89
+configparser==3.5.0 --hash=sha256:5308b47021bc2340965c371f0f058cc6971a04502638d4244225c49d80db273a
+cryptography==1.9 --hash=sha256:2eb8297b877cb6b56216750fa7017c9f5786bec8afd6a0f1aaace02cbfb6195f
+enum-compat==0.0.2 --hash=sha256:939ceff18186a5762ae4db9fa7bfe017edbd03b66526b798dd8245394c8a4192
+enum34==1.1.6 --hash=sha256:6bd0f6ad48ec2aa117d3d141940d484deccda84d4fcd884f5c3d93c23ecd8c79
+eventlet==0.21.0 --hash=sha256:0a7d1e1d2f4dd2e0b2cb627dadf7a0f23de0eca88ba2d6af4229abe32a24dec9
+Flask==0.12.2 --hash=sha256:0749df235e3ff61ac108f69ac178c9770caeaccad2509cb762ce1f65570a8856
+Flask-Babel==0.11.1 --hash=sha256:d29b36c399e42e98bc9401c8c1c159f2befcb8c12a2a2a87ec49ad7623036899
+flask-hmacauth==0.3.9 --hash=sha256:793309b3ba3424508742baacd08a8cb77edcf5859ec75d53014e450947f668de
+Flask-Login==0.4.0 --hash=sha256:f9149b63ec6b32aec44acb061ad851eb4eb065e742341147d116d69f8e35ae2b
+flask-paginate==0.4.5 --hash=sha256:eb58636b98dc5349d4fe150614037a89bca46f24de924fe31a7ef70a7f25f368
+Flask-SocketIO==2.8.6 --hash=sha256:a7054b23629a2426ca9d6c3ba74134a5c9a8bc96e81facb69ae29b21ee381e53
+greenlet==0.4.12 --hash=sha256:6803d8c6b235c861c50afddf00c7467ffbcd5ab960d137ff0f9c36f2cb11ee4b
+huey==1.2.2 --hash=sha256:c09050d8e9a2a4b4599e5305f54b8ef9fab56f63c9a1395898465e921d6769f7
+idna==2.5 --hash=sha256:cc19709fd6d0cbfed39ea875d29ba6d4e22c0cebc510a76d6302a28385e8bb70
+iniparse==0.4 --hash=sha256:abc1ee12d2cfb2506109072d6c21e40b6c75a3fe90a9c924327d80bc0d99c054
+ipaddress==1.0.18 --hash=sha256:d34cf15d95ce9a734560f7400a8bd2ac2606f378e2a1d0eadbf1c98707e7c74a
+isort==4.2.5 --hash=sha256:a0c38c1c5e4c70ea1141daa80c740372ad94351e92e9e07da1cd86ce65653dc4
+itsdangerous==0.24 --hash=sha256:cbb3fcf8d3e33df861709ecaf89d9e6629cff0a217bc2848f1b41cd30d360519
+Jinja2==2.9.6 --hash=sha256:2231bace0dfd8d2bf1e5d7e41239c06c9e0ded46e70cc1094a0aa64b0afeb054
+kerberos-sspi==0.2 --hash=sha256:dba8abff7b06efa2500f085f6b3b98be28409ee5545e23fe3df1016d0270eb88
+lazy-object-proxy==1.2.2 --hash=sha256:23553a677fcf9f36518fbec101dc43a3236cb54443dfc89163b152bf500b7a70
+M2CryptoWin32==0.21.1.post3 --hash=sha256:5497e113980a5f7a925512168ed5e6fc5d9c858632c2953f010f0818a459e19d
+MarkupSafe==1.0 --hash=sha256:a6be69091dac236ea9c6bc7d012beab42010fa914c459791d627dad4910eb665
+mccabe==0.6.1 --hash=sha256:ab8a6258860da4b6677da4bd2fe5dc2c659cff31b3ee4f7f5d64e79735b80d42
+netifaces==0.10.4 --hash=sha256:6e860b69abc9dd71353daddadc142b7628517737c092f7b3dd9ff26f446e8048
+packaging==16.8 --hash=sha256:99276dc6e3a7851f32027a68f1095cd3f77c148091b092ea867a351811cfe388
+passlib==1.7.1 --hash=sha256:43526aea08fa32c6b6dbbbe9963c4c767285b78147b7437597f992812f69d280
+peewee==2.8.5 --hash=sha256:198f4b0c1e71b0ee7f3f87cb96104796a5a4cc0a52a9cd832611394f5cfdee37
+psutil==3.4.2 --hash=sha256:b5f4bfdaa6389552501253b13b6022b7e3d715e4dca4b5cc1808f58cca181359
+psycopg2==2.6.2 --hash=sha256:6b6f745fb3a94a8d48b2e225e14808768ed33c52993ad6319b8f9cb972fec4dd
+pyad==0.5.16 --hash=sha256:e5ae803d71fd1ed158786e3a47babaa12fe627aeffbdf8367b0bceeef3a2231a
+pycparser==2.17 --hash=sha256:0aac31e917c24cb3357f5a4d5566f2cc91a19ca41862f6c3c22dc60a629673b6
+pylint==1.6.5 --hash=sha256:c15405aa2a8b982c059ad7e76effe7c7531490af08890a2fcb0c64c9e25b70f9
+pefile==2016.3.28 --hash=sha256:f24021085b5c3ef7b0898bb1f1d93eecd3839e03512769e22b0c5a10d9095f7b
+pyparsing==2.2.0 --hash=sha256:fee43f17a9c4087e7ed1605bd6df994c6173c1e977d7ade7b651292fab2bd010
+python-engineio==1.5.4 --hash=sha256:545d2f808d7c23e2db3cc5e4db89bf053417d431c1917ae4179bf15c8c5bc812
+python-socketio==1.7.5 --hash=sha256:705e5a383283bd84948a12321780c0cca60173aa67fd0162410f6e5f52b96f53
+pytz==2016.10 --hash=sha256:a1ea35e87a63c7825846d5b5c81d23d668e8a102d3b1b465ce95afe1b3a2e065
+pyzmq==16.0.2 --hash=sha256:9e514b6b5347e71b626b92fb0bcd58d81e1448b6fd1b4f39287636018db3aa44
+requests==2.18.1 --hash=sha256:6afd3371c1f4c1970497cdcace5c5ecbbe58267bf05ca1abd93d99d170803ab7
+requests-kerberos==0.11.0 --hash=sha256:6c1dc3c7c0774ac104487112fc564525a838aa507982b7c4785e41e5cb6893c9
+Rocket==1.2.4 --hash=sha256:7b7a3df4d9257e369d85bcc2013351704ffe364ff45d4710e6a30b2efc63a731
+six==1.10.0 --hash=sha256:0ff78c403d9bccf5a425a6d31a12aa6b47f1c21ca4dc2573a7e2f32a97335eb1
+socketIO-client-2==0.7.4 --hash=sha256:d6be0f1101c2d655006f5b5d54ff4ba9611145325f55307ef42f21703eb4a790
+websocket-client==0.40.0 --hash=sha256:40ac14a0c54e14d22809a5c8d553de5a2ae45de3c60105fae53bcb281b3fe6fb
+Werkzeug==0.12.2 --hash=sha256:e8549c143af3ce6559699a01e26fa4174f4c591dbee0a499f3cd4c3781cdec3d
+winkerberos==0.6.0 --hash=sha256:fb1858e1c1ead9eaef80e49f1e8a6a3fc46f6524412c9317456a56a8cdccf3ab
+winshell==0.6 --hash=sha256:16812fcd6a43391d6c0b707b4d67e809e52286a739683a91623baa0804ea0d41
+WMI==1.4.9 --hash=sha256:192ccfad3d7bb3ef43116d753f4d5cf85c0a6b738f832cc131e928fd93cdd400
+wrapt==1.10.8 --hash=sha256:4ea17e814e39883c6cf1bb9b0835d316b2f69f0f0882ffe7dad1ede66ba82c73
+WTForms==2.1 --hash=sha256:ffdf10bd1fa565b8233380cb77a304cd36fd55c73023e91d4b803c96bc11d46f
+future==0.16.0 --hash=sha256:e39ced1ab767b5936646cedba8bcce582398233d6a627067d4c6a454c90cfedb
+chardet==3.0.4 --hash=sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691
+certifi==2017.4.17 --hash=sha256:f4318671072f030a33c7ca6acaef720ddd50ff124d1388e50c1bda4cbd6d7010
+urllib3==1.21.1 --hash=sha256:8ed6d5c1ff9d6ba84677310060d6a3a78ca3072ce0684cb3c645023009c114b1
+distribute==0.7.3 --hash=sha256:3dc7a8d059dcf72f0ead2fa2144a24ee0ef07dce816e8c3545d7345767138c5e
+backports.ssl_match_hostname==3.5.0.1 --hash=sha256:502ad98707319f4a51fa2ca1c677bd659008d27ded9f6380c79e8932e38dcdf2
