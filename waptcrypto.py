@@ -400,7 +400,7 @@ class SSLPrivateKey(object):
         if cert_dir is None and self.private_key_filename:
             cert_dir = os.path.dirname(self.private_key_filename)
         result = []
-        for fn in glob.glob(os.path.join(cert_dir,'*.crt')):
+        for fn in glob.glob(os.path.join(cert_dir,'*.crt'))+glob.glob(os.path.join(cert_dir,'*.cer'))+glob.glob(os.path.join(cert_dir,'*.pem')):
             try:
                 crt = SSLCertificate(fn)
                 if (valid is None or crt.is_valid() == valid) and\
@@ -408,8 +408,8 @@ class SSLPrivateKey(object):
                    (ca is None or crt.is_ca == ca) and\
                    crt.match_key(self):
                         result.append(crt)
-            except ValueError as e:
-                logger.critical('Certificate %s can not be read. Skipping. Error was:%s' % (fn,repr(e)))
+            except (X509.X509Error,ValueError) as e:
+                logger.debug('Certificate %s can not be read. Skipping. Error was:%s' % (fn,repr(e)))
         return result
 
     def encrypt(self,content):
