@@ -1410,6 +1410,7 @@ def host_data():
 
 
 @app.route('/api/v1/usage_statistics')
+@requires_auth
 def usage_statistics():
     """returns some anonymous usage statistics to give an idea of depth of use"""
     try:
