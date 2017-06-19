@@ -66,6 +66,7 @@ def main():
     #parser.add_option("-w","--private-key-passwd", dest="private_key_passwd", default='', help="Path to the password of the private key. (default: %default)")
     parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
     parser.add_option("-m","--message-digest", dest="md", default='sha256', type='choice',  choices=['sha1','sha256'], help="Message digest type for signatures.  (default: %default)")
+    parser.add_option("-s","--scan-packages", dest="doscan", default=False, action='store_true', help="Rescan packages and update local Packages index after signing.  (default: %default)")
     (options,args) = parser.parse_args()
 
     loglevel = options.loglevel
@@ -107,7 +108,12 @@ def main():
         waptpackages.extend(glob.glob(arg))
 
     errors = []
+    package_dirs = []
     for waptpackage in waptpackages:
+        package_dir = os.path.dirname(waptpackage)
+        if not package_dir in package_dirs:
+            package_dirs.append(package_dir)
+
         print('Processing %s'%waptpackage)
         try:
             pe = PackageEntry(waptfile = waptpackage)
@@ -116,12 +122,24 @@ def main():
             pe.sign_package(private_key=key,certificate = cert)
             print('Done')
         except Exception as e:
+            print(u'Error: %s'%ensure_unicode(e.message))
             errors.append([waptpackage,repr(e)])
 
+    if options.doscan:
+        for package_dir in package_dirs:
+            if os.path.isfile(os.path.join(package_dir,'Packages')):
+                print(u'Launching the update of Packages index in %s ...'% ensure_unicode(package_dir))
+                repo = WaptLocalRepo(package_dir)
+                repo.update_packages_index()
+                print('Done')
+    else:
+        print("Don't forget to rescan your repository with wapt-scanpackages %s" % os.path.dirname(waptpackages[0]))
+
     if errors:
-        print('Package not processes properly: ')
+        print('Package not processed properly: ')
         for fn,error in errors:
             print(u'%s : %s' % (fn,error))
+
         sys.exit(1)
     else:
         sys.exit(0)
