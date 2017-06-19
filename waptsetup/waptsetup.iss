@@ -6,7 +6,7 @@
 #define Company "Tranquil IT Systems"
 #define install_certs 0
 #define send_usage_report 0
-#define is_waptagent 0 
+#define is_waptagent 0
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
 #include "wapt.iss"
@@ -57,7 +57,7 @@ Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhi
 
 [Icons]
 Name: "{commonstartup}\WAPT session setup"; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
-Name: "{group}\Console WAPT"; Filename: "{app}\waptconsole.exe"; WorkingDir: "{app}" ; Check: not {#is_waptagent}
+Name: "{group}\Console WAPT"; Filename: "{app}\waptconsole.exe"; WorkingDir: "{app}" ; Check: IsWaptAgent();
 
 [CustomMessages]
 ;English translations here
@@ -222,5 +222,10 @@ end;
 function InstallCertCheck:Boolean;
 begin
 	Result := {#install_certs} <> 0;
+end;
+
+function IsWaptAgent:Boolean;
+begin
+	Result := {#is_waptagent} <> 0;
 end;
 
