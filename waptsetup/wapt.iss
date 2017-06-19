@@ -78,7 +78,10 @@ Source: "..\wapt-get.ini.tmpl"; DestDir: "{app}";
 
 [Dirs]
 Name: "{app}\ssl"
+Name: "{app}\ssl\server"
 Name: "{app}"; Permissions: everyone-readexec authusers-readexec admins-full   
+Name: "{app}\private"
+
 
 [Setup]
 AppName={#AppName}
@@ -116,9 +119,6 @@ Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\wapt-ge
 
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_period; String: {#default_update_period}; Flags:  createkeyifdoesntexist 
-
-[Dirs]
-Name: "{app}\private"
 
 [Run]
 Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "Mise à jour des librairies MS VC++ pour openssl"; Description: "Mise à jour des librairies MS VC++"; Tasks: installredist2008
