@@ -2901,7 +2901,7 @@ end;
 
 procedure TVisWaptGUI.ActHostsDeleteExecute(Sender: TObject);
 var
-  sel, res: ISuperObject;
+  sel, res, postdata: ISuperObject;
   msg,uuids : String;
 begin
   if GridHosts.Focused then
@@ -2920,15 +2920,24 @@ begin
       mbYesNoCancel,
       0) = mrYes then
     begin
-      uuids := Join(',',ExtractField(sel,'uuid'));
-      // delete host packages too...
+      postdata := SO();
+      postdata['uuids'] := ExtractField(sel,'uuid');
       if Sender = ActHostsDeleteHostAndConfig then
-        res := WAPTServerJsonGet('api/v1/hosts_delete?uuid=%s&delete_packages=1&delete_inventory=1',[uuids])
+      begin
+        postdata.B['delete_packages'] := True;
+        postdata.B['delete_inventory'] := True;
+      end
       else if Sender = ActHostsDelete then
-        res := WAPTServerJsonGet('api/v1/hosts_delete?uuid=%s&delete_inventory=1',[uuids])
+      begin
+        postdata.B['delete_packages'] := False;
+        postdata.B['delete_inventory'] := True;
+      end
       else if Sender = ActHostsDeletePackage then
-        res := WAPTServerJsonGet('api/v1/hosts_delete?uuid=%s&delete_packages=1',[uuids]);
-
+      begin
+        postdata.B['delete_packages'] := True;
+        postdata.B['delete_inventory'] := False;
+      end;
+      res := WAPTServerJsonPost('api/v3/hosts_delete',[],PostData);
       if res.B['success'] then
         ShowMessageFmt('%s',[res.S['msg']])
       else

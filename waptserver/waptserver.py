@@ -1104,27 +1104,29 @@ def build_hosts_filter(model,filter_expr):
         raise Exception('Invalid filter provided in query. Should be f1,f2,f3:regexp ')
 
 
-@app.route('/api/v1/hosts', methods=['DELETE'])
-@app.route('/api/v1/hosts_delete', methods=['GET', 'POST'])
+@app.route('/api/v3/hosts_delete', methods=['POST'])
 @requires_auth
 def hosts_delete():
     """Remove one or several hosts from Server DB and optionnally the host packages
 
     Args:
-        delete_packages: [0,1]: delete host's packages too
-        uuid (csvlist of uuid): <uuid1[,uuid2,...]>): filter based on uuid
+        uuids (list) : list of uuids to delete
         filter (csvlist of field:regular expression): filter based on attributes
+        delete_packages (bool) : delete host's packages
+        delete_inventory (bool) : delete host's inventory
 
     Returns:
-        result (dict): {'records':[],'files':[]}
+        result (dict):
 
     """
     try:
         # build filter
-        if 'uuid' in request.args:
-            query = Hosts.uuid.in_(ensure_list(request.args['uuid']))
-        elif 'filter' in request.args:
-            query = build_hosts_filter(Hosts,request.args['filter'])
+        post_data = request.get_json();
+
+        if 'uuids' in post_data:
+            query = Hosts.uuid.in_(ensure_list(post_data['uuids']))
+        elif 'filter' in post_data:
+            query = build_hosts_filter(Hosts,post_data['filter'])
         else:
             raise Exception('Neither uuid nor filter provided in query')
 
@@ -1134,7 +1136,7 @@ def hosts_delete():
         hosts_packages_repo = WaptLocalRepo(conf['wapt_folder'] + '-host')
         packages_repo = WaptLocalRepo(conf['wapt_folder'])
 
-        if 'delete_packages' in request.args and request.args['delete_packages'] == '1':
+        if 'delete_packages' in post_data and post_data['delete_packages']:
             selected = Hosts.select(Hosts.uuid,Hosts.computer_fqdn).where(query)
             for host in selected:
                 result['records'].append(
@@ -1151,15 +1153,16 @@ def hosts_delete():
             msg.append(
                 '{} files removed from host repository'.format(len(result['files'])))
 
-        if 'delete_inventory' in request.args and request.args['delete_inventory'] == '1':
+        if 'delete_inventory' in post_data and post_data['delete_inventory']:
             remove_result = Hosts.delete().where(query).execute()
             msg.append('{} hosts removed from DB'.format(remove_result))
+
+        return make_response(result=result, msg='\n'.join(msg), status=200)
 
     except Exception as e:
         wapt_db.rollback()
         return make_response_from_exception(e)
 
-    return make_response(result=result, msg='\n'.join(msg), status=200)
 
 
 def build_fields_list(model,mongoproj):
