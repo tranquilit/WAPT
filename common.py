@@ -2037,7 +2037,7 @@ class WaptHostRepo(WaptRepo):
         try:
             host_package_url = self.host_package_url()
             logger.debug(u'Trying to get  host package for %s at %s' % (self.hostname,host_package_url))
-            host_package = requests.get(host_package_url,proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,headers=default_http_headers())
+            host_package = requests.head(host_package_url,proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,headers=default_http_headers())
             host_package.raise_for_status()
             return httpdatetime2isodate(host_package.headers.get('last-modified',None))
         except requests.HTTPError as e:

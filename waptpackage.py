@@ -1952,8 +1952,8 @@ class WaptRemoteRepo(WaptBaseRepo):
         >>> repo.is_available() is None
         True
         """
-        logger.debug(u'Checking availability of %s' % (self.packages_url,))
         try:
+            logger.debug(u'Checking availability of %s' % (self.packages_url,))
             req = requests.head(
                 self.packages_url,
                 timeout=self.timeout,
