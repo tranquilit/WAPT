@@ -7,7 +7,7 @@ Le déploiement de logiciels (Firefox, MS Office,...) à partir d'une console de
 gestion centrale est maintenant possible. WAPT s'inspire fortement du
 gestionnaire de paquets du système GNU/Linux Debian apt, d'où son nom.
 
-Plus d'informations sur: https://www.wapt.fr/
+Plus d'informations sur: https://wapt.fr/fr/
 
 Licensing
 =========
@@ -37,13 +37,13 @@ Pour une installation propre de zéro sur Windows:
 * Installer python2.7.13 depuis https://www.python.org/ftp/python/2.7.13/python-2.7.13.msi
 * Upgrader python-setuptools : c:\python27\python -m pip install -U pip setuptools
 * Créer virtualenv
-```
+<pre>
  mkdir c:\tranquilit
  git clone git@github.com:tranquilit/WAPT.git
  (ou git clean -fxd ...)
  cd c:\tranquilit\wapt
- init_workdir.bat 
-```
+ init_workdir.bat
+ </pre>
 
 Environnement de build sur Linux Debian
 ---------------------------------------
@@ -102,6 +102,7 @@ Checkout du projet et de ses composants :
 <pre>
 cmd.exe
 mkdir c:\tranquilit
+cd c:\tranquilit
 git clone https://github.com/tranquilit/WAPT.git
 git clone https://github.com/tranquilit/pltis_utils.git
 git clone https://github.com/tranquilit/pltis_superobject.git
@@ -126,7 +127,7 @@ Ouvrir successivement les paquets suivants, et les compiler.
 * pltis_sogrid.lpk (installation dans l'IDE nécessaire)
 * pltis_python4delphi.lpk (installation dans l'IDE)
 * pltis_delphizmq.lpk
-* thtmlport\package\htmlcomp.lpk
+* thtmlport\package\htmlcomp.lpk (installation l'IDE nécessaire)
 * WAPT\apt-get\pltis_wapt.plk
 
 Compilation exécutables 
