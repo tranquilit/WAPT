@@ -336,17 +336,16 @@ begin
     sslCheck := TSSLVerifyCert.Create(GetHostFromURL(fileurl));
 
 
-    // init check of https server certificate
     if (VerifyCertificateFilename<>'') and (VerifyCertificateFilename <>'0') then
     begin
-      ssl_handler.SSLOptions.CertFile:='';
+      ssl_handler.SSLOptions.VerifyDepth:=20;
       ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
       ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
       //Self signed
       if VerifyCertificateFilename<>'1' then
       begin
         ssl_handler.SSLOptions.RootCertFile :=VerifyCertificateFilename;
-        //ssl_handler.SSLOptions.CertFile:=VerifyCertificateFilename;
+        //ssl_handler.SSLOptions.CertFile := VerifyCertificateFilename;
       end
       else
       begin
@@ -355,7 +354,6 @@ begin
         else
           ssl_handler.SSLOptions.RootCertFile := CARoot;
         //ssl_handler.SSLOptions.CertFile := '';
-        ssl_handler.SSLOptions.VerifyDepth:=20;
       end
     end;
 
@@ -425,16 +423,16 @@ begin
   	HTTP.IOHandler := ssl_handler;
     sslCheck := TSSLVerifyCert.Create(GetHostFromURL(fileurl));
 
-    // init check of https server certificate
     if (VerifyCertificateFilename<>'') and (VerifyCertificateFilename <>'0') then
     begin
+      ssl_handler.SSLOptions.VerifyDepth:=20;
       ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
       ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
       //Self signed
       if VerifyCertificateFilename<>'1' then
       begin
         ssl_handler.SSLOptions.RootCertFile :=VerifyCertificateFilename;
-        //ssl_handler.SSLOptions.CertFile:=VerifyCertificateFilename;
+        //ssl_handler.SSLOptions.CertFile := VerifyCertificateFilename;
       end
       else
       begin
@@ -443,7 +441,6 @@ begin
         else
           ssl_handler.SSLOptions.RootCertFile := CARoot;
         //ssl_handler.SSLOptions.CertFile := '';
-        ssl_handler.SSLOptions.VerifyDepth:=20;
       end
     end;
 
@@ -499,7 +496,6 @@ begin
 
     http.Request.Accept := AcceptType;
 
-    // init check of https server certificate
     if (VerifyCertificateFilename<>'') and (VerifyCertificateFilename <>'0') then
     begin
       ssl_handler.SSLOptions.VerifyDepth:=20;
@@ -519,7 +515,7 @@ begin
           ssl_handler.SSLOptions.RootCertFile := CARoot;
         //ssl_handler.SSLOptions.CertFile := '';
       end
-     end;
+    end;
 
     try
       http.ConnectTimeout:=ConnectTimeout;
@@ -603,18 +599,25 @@ begin
     HTTP.IOHandler := ssl_handler;
     sslCheck := TSSLVerifyCert.Create(GetHostFromURL(url));
 
-    // init check of https server certificate
     if (VerifyCertificateFilename<>'') and (VerifyCertificateFilename <>'0') then
     begin
-      ssl_handler.SSLOptions.CertFile:='';
+      ssl_handler.SSLOptions.VerifyDepth:=20;
       ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
       ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
       //Self signed
       if VerifyCertificateFilename<>'1' then
       begin
         ssl_handler.SSLOptions.RootCertFile :=VerifyCertificateFilename;
-        //ssl_handler.SSLOptions.CertFile:=VerifyCertificateFilename;
-      end;
+        //ssl_handler.SSLOptions.CertFile := VerifyCertificateFilename;
+      end
+      else
+      begin
+        if DirectoryExists(CARoot) then
+          ssl_handler.SSLOptions.VerifyDirs := CARoot
+        else
+          ssl_handler.SSLOptions.RootCertFile := CARoot;
+        //ssl_handler.SSLOptions.CertFile := '';
+      end
     end;
 
     try

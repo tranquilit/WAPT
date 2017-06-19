@@ -197,7 +197,7 @@ end;
 procedure TVisWAPTConfig.CBVerifyCertClick(Sender: TObject);
 begin
   If not CBVerifyCert.Checked then
-    EdServerCertificate.Text:=''
+    EdServerCertificate.Text:='0'
   else
     if (EdServerCertificate.Text='') or (EdServerCertificate.Text='0') then
       EdServerCertificate.Text:=CARoot();
@@ -355,6 +355,7 @@ begin
   cbManualClick(cbManual);
   edrepo_urlExit(Sender);
   CBVerifyCert.Checked:=(EdServerCertificate.Text<>'') and (EdServerCertificate.Text<>'0');
+  CBVerifyCertClick(Sender);
 end;
 
 procedure TVisWAPTConfig.HelpButtonClick(Sender: TObject);
