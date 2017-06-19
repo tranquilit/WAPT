@@ -868,7 +868,7 @@ class PackageEntry(object):
         signature_raw = self.signature.decode('base64')
         cert = self.package_certificate()
         if cert is None and signers_bundle is not None:
-            cert = signers_bundle.certificate(sha1_fingerprint = self.signer_fingerprint)
+            cert = signers_bundle.certificate(fingerprint = self.signer_fingerprint)
         if cert is not None:
             # we have the
             try:
