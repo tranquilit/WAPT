@@ -138,14 +138,14 @@ Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait r
 Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\wapttray.exe"; Flags: excludefromshowinnewinstall;
 
 [Tasks]
-Name: installService; Description: "{cm:InstallWAPTservice}";
-Name: autorunTray; Description: "{cm:LaunchIcon}"; Flags: unchecked;
-Name: installredist2008; Description: "{cm:InstallVCpp}";  Check: VCRedistNeedsInstall();
+Name: installService; Description: "{cm:InstallWAPTservice}";  GroupDescription: "Base";
+Name: autorunTray; Description: "{cm:LaunchIcon}"; Flags: unchecked;  GroupDescription: "Base";
+Name: installredist2008; Description: "{cm:InstallVCpp}";  Check: VCRedistNeedsInstall();  GroupDescription: "Base";
 ; Duplication helas necessaire.
 ; On souhaite seulement changer les actions a realiser par defaut, pas a empecher
 ; l'utilisateur de forcer la reinstallation de VC++, et il n'existe pas de moyen
 ; de modifier dynamiquement le flag "unchecked" 
-Name: installredist2008unchecked; Description: "{cm:ForceVCppReinstall}"; Check: not VCRedistNeedsInstall(); Flags: unchecked
+Name: installredist2008unchecked; Description: "{cm:ForceVCppReinstall}"; Check: not VCRedistNeedsInstall(); Flags: unchecked;  GroupDescription: "Base";
 
 [InstallDelete]
 Type: filesandordirs; Name: {app}\lib\site-packages

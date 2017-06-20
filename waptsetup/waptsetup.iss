@@ -30,6 +30,7 @@ Source: "..\waptdevutils.py"; DestDir: "{app}";
 
 ; authorized public keys
 Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs; Check: InstallCertCheck();
+;Source: "..\ssl\*"; DestDir: "{app}\ssl"; Tasks: installCertificates; Flags: createallsubdirs recursesubdirs
 
 [Setup]
 OutputBaseFilename=waptsetup
@@ -43,6 +44,7 @@ Name:"fr";MessagesFile: "compiler:Languages\French.isl"
 Name:"de";MessagesFile: "compiler:Languages\German.isl"
 
 [Tasks]
+;Name: installCertificates; Description: "{cm:InstallSSLCertificates}";  GroupDescription: "Base";
 
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL}; 
@@ -196,11 +198,16 @@ var
     installdir: String;
 begin
     installdir := ExpandConstant('{app}');
-    if DirExists(installdir) and 
-      not runningSilently() and  (MsgBox('Des fichiers restent présents dans votre répertoire ' + installdir + ', souhaitez-vous le supprimer ainsi que tous les fichiers qu''il contient ?',
-               mbConfirmation, MB_YESNO) = IDYES) then
+    if DirExists(installdir) then
+    begin
+      if (not runningSilently() and  (MsgBox('Des fichiers restent présents dans votre répertoire ' + installdir + ', souhaitez-vous le supprimer ainsi que tous les fichiers qu''il contient ?',
+               mbConfirmation, MB_YESNO) = IDYES))
+               
+         or (ExpandConstant('{param:purge_wapt_dir|0}')='1') then
         Deltree(installdir, True, True, True);
+    End;
 end;
+
 
 procedure CurPageChanged(CurPageID: Integer);
 var

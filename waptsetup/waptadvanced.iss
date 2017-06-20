@@ -43,15 +43,15 @@ Name:"fr";MessagesFile: "compiler:Languages\French.isl"
 Name:"de";MessagesFile: "compiler:Languages\German.isl"
 
 [Tasks]
-Name: forceUrl; Description: "{cm:ForceUrl}";
-Name: installCertificates; Description: "{cm:InstallSSLCertificates}";  Flags: {#install_certs};
-Name: useHostPackages; Description: "{cm:UseHostPackages}";
-Name: useWaptserver; Description: "{cm:UseWaptServer}";
-Name: autorunSessionSetup; Description: "{cm:StartAfterSetup}";
-Name: autoUpgradePolicy; Description: "{cm:UpdatePkgUponShutdown}";
-Name: useKerberos; Description: "{cm:UseKerberos}";
-Name: verifyCert; Description: "{cm:VerifyCert}";
-Name: checkCertificateValidity; Description: "{cm:checkCertificateValidity}";
+Name: forceUrl; Description: "{cm:ForceUrl}"; GroupDescription: "Base";
+Name: installCertificates; Description: "{cm:InstallSSLCertificates}";  GroupDescription: "Base";
+Name: autorunSessionSetup; Description: "{cm:StartAfterSetup}"; 
+Name: autoUpgradePolicy; Description: "{cm:UpdatePkgUponShutdown}"; Flags: unchecked;
+Name: useWaptserver; Description: "{cm:UseWaptServer}"; Flags: unchecked; GroupDescription: "Central management";
+Name: useHostPackages; Description: "{cm:UseHostPackages}"; Flags: unchecked; GroupDescription: "Central management"; 
+Name: useKerberos; Description: "{cm:UseKerberos}"; Flags: unchecked; GroupDescription: "Security";
+Name: verifyCert; Description: "{cm:VerifyCert}"; Flags: unchecked; GroupDescription: "Security";
+Name: checkCertificateValidity; Description: "{cm:checkCertificateValidity}"; Flags: unchecked; GroupDescription: "Security";
 
 
 [INI]
@@ -75,6 +75,8 @@ Filename: "{app}\wapt-get.exe"; Parameters: "remove-upgrade-shutdown"; Flags: ru
 ;Filename: "{app}\wapt-get.exe"; Parameters: "--direct enable-check-certificate"; Tasks: verifyCert useWaptserver;  Flags: runhidden; StatusMsg: StatusMsg: {cm:EnableCheckCertificate}; Description: "{cm:EnableCheckCertificate}"
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Tasks: useWaptserver; Flags: runasoriginaluser runhidden; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runasoriginaluser runhidden; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
+
+Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser skipifsilent postinstall; StatusMsg: "Lancement de l'icône de notification"; Description: "Lancement de l'icône de notification"
 
 [Icons]
 Name: "{commonstartup}\WAPT session setup"; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall; Tasks: autorunSessionSetup;
@@ -228,10 +230,14 @@ var
     installdir: String;
 begin
     installdir := ExpandConstant('{app}');
-    if DirExists(installdir) and 
-      not runningSilently() and  (MsgBox('Des fichiers restent présents dans votre répertoire ' + installdir + ', souhaitez-vous le supprimer ainsi que tous les fichiers qu''il contient ?',
-               mbConfirmation, MB_YESNO) = IDYES) then
+    if DirExists(installdir) then
+    begin
+      if (not runningSilently() and  (MsgBox('Des fichiers restent présents dans votre répertoire ' + installdir + ', souhaitez-vous le supprimer ainsi que tous les fichiers qu''il contient ?',
+               mbConfirmation, MB_YESNO) = IDYES))
+               
+         or (ExpandConstant('{param:purge_wapt_dir|0}')='1') then
         Deltree(installdir, True, True, True);
+    End;
 end;
 
 procedure CurPageChanged(CurPageID: Integer);
@@ -244,16 +250,13 @@ begin
     teWaptRepoUrl.Text := GetRepoURL('');
 
     teWaptServerUrl.Text := GetWaptServerURL('');  
-    teWaptServerUrl.Visible := IsTaskSelected('use_waptserver');
-	labHintServer.Visible := IsTaskSelected('use_waptserver');
-	labServer.Visible := IsTaskSelected('use_waptserver');
+    teWaptServerUrl.Visible := IsTaskSelected('useWaptserver');
+	  labHintServer.Visible := IsTaskSelected('useWaptserver');
+	  labServer.Visible := IsTaskSelected('useWaptserver');
 
     rbDnsServer.Checked := (teWaptRepoUrl.Text='');
     rbStaticUrl.Checked := (teWaptRepoUrl.Text<>'') and (teWaptRepoUrl.Text<>'unknown');
     
-
-	//teWaptServerUrl.Visible := IsTaskSelected('use_waptserver');
-    //TLabelServer.Visible := teWaptServerUrl.Visible;
   end
 end;
 
