@@ -63,10 +63,10 @@ def rsync(src,dst):
     os.system(rsync_command)
 
 def add_symlink(link_dest,link_name):
-    relative_dest_link_path = os.path.join('builddir',link_name)
+    relative_dest_link_path = os.path.join('./builddir',link_name)
     print("adding symlink %s -> %s" % (link_name,link_dest))
     mkdir_p(os.path.dirname(relative_dest_link_path))
-    
+
     if not os.path.exists(relative_dest_link_path):
         os.symlink(link_dest, relative_dest_link_path)
 
@@ -130,8 +130,8 @@ copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
 copyfile(makepath(wapt_source_dir,'wapt-signpackages.py'),
          './builddir/opt/wapt/wapt-signpackages.py')
 
-add_symlink('/usr/bin/wapt-scanpackages','/opt/wapt/wapt-scanpackages.py')
-add_symlink('/usr/bin/wapt-signpackages','/opt/wapt/wapt-signpackages.py')
+add_symlink('/usr/bin/wapt-scanpackages','./opt/wapt/wapt-scanpackages.py')
+add_symlink('/usr/bin/wapt-signpackages','./opt/wapt/wapt-signpackages.py')
 
 os.chmod('builddir/opt/wapt/wapt-scanpackages.py',0o755)
 os.chmod('builddir/opt/wapt/wapt-signpackages.py',0o755)
