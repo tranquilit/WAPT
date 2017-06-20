@@ -2435,19 +2435,18 @@ class WaptSocketIOClient(threading.Thread):
                         )
                         signed_connect_params = host_key.sign_claim(connect_params,certificate = host_cert)
 
-                        if not self.socketio_client:
-                            self.socketio_client = SocketIO(
-                                    host="%s://%s" % (self.config.websockets_proto,self.config.websockets_host),
-                                    port=self.config.websockets_port,
-                                    Namespace = WaptSocketIORemoteCalls,
-                                    verify=self.config.websockets_verify_cert,
-                                    wait_for_connection = False,
-                                    transport = ['websocket'],
-                                    ping_interval = self.config.websockets_ping,
-                                    hurry_interval_in_seconds = self.config.websockets_hurry_interval,
-                                    params = {'uuid': tmp_wapt.host_uuid, 'login':jsondump(signed_connect_params)},
-                                    **kwargs)
-                            self.socketio_client.get_namespace().wapt = tmp_wapt
+                        self.socketio_client = SocketIO(
+                                host="%s://%s" % (self.config.websockets_proto,self.config.websockets_host),
+                                port=self.config.websockets_port,
+                                Namespace = WaptSocketIORemoteCalls,
+                                verify=self.config.websockets_verify_cert,
+                                wait_for_connection = False,
+                                transport = ['websocket'],
+                                ping_interval = self.config.websockets_ping,
+                                hurry_interval_in_seconds = self.config.websockets_hurry_interval,
+                                params = {'uuid': tmp_wapt.host_uuid, 'login':jsondump(signed_connect_params)},
+                                **kwargs)
+                        self.socketio_client.get_namespace().wapt = tmp_wapt
 
                     if self.socketio_client and self.config.websockets_host:
                         if not self.socketio_client.connected:
