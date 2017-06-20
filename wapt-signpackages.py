@@ -110,7 +110,7 @@ def main():
     errors = []
     package_dirs = []
     for waptpackage in waptpackages:
-        package_dir = os.path.dirname(waptpackage)
+        package_dir = os.path.abspath(os.path.dirname(waptpackage))
         if not package_dir in package_dirs:
             package_dirs.append(package_dir)
 
