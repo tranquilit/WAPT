@@ -28,13 +28,23 @@ import shutil
 import stat
 import subprocess
 import sys
-
+import errno
 
 def replaceAll(file,searchExp,replaceExp):
     for line in fileinput.input(file, inplace=1):
         if searchExp in line:
             line = line.replace(searchExp,replaceExp)
         sys.stdout.write(line)
+
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
+
 
 
 def rsync(src,dst):
@@ -51,6 +61,16 @@ def rsync(src,dst):
     rsync_command = '/usr/bin/rsync %s "%s" "%s"' % (
         rsync_option,rsync_source,rsync_destination)
     os.system(rsync_command)
+
+def add_symlink(link_dest,link_name):
+    relative_dest_link_path = os.path.join('builddir',link_name)
+    print("adding symlink %s -> %s" % (link_name,link_dest))
+    mkdir_p(os.path.dirname(relative_dest_link_path))
+    
+    if not os.path.exists(relative_dest_link_path):
+        os.symlink(link_dest, relative_dest_link_path)
+
+
 
 makepath = os.path.join
 from shutil import copyfile
@@ -110,8 +130,11 @@ copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
 copyfile(makepath(wapt_source_dir,'wapt-signpackages.py'),
          './builddir/opt/wapt/wapt-signpackages.py')
 
-subprocess.check_output(r'chmod +x ./builddir/opt/wapt/wapt-scanpackages.py',shell=True)
-subprocess.check_output(r'chmod +x ./builddir/opt/wapt/wapt-signpackages.py',shell=True)
+add_symlink('/usr/bin/wapt-scanpackages','/opt/wapt/wapt-scanpackages.py')
+add_symlink('/usr/bin/wapt-signpackages','/opt/wapt/wapt-signpackages.py')
+
+os.chmod('builddir/opt/wapt/wapt-scanpackages.py',0o755)
+os.chmod('builddir/opt/wapt/wapt-signpackages.py',0o755)
 
 print 'copie des fichiers control et postinst'
 copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
