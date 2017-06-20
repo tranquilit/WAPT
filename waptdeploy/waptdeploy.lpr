@@ -243,7 +243,7 @@ var
 
 const
   defaultwapt: ansistring = 'wapt';
-  minversion: ansistring = '1.5.0.5';
+  minversion: ansistring = '1.5.0.7';
   _mainrepo: ansistring = '';
   wait_minutes: integer = 0;
   isTemporary: Boolean = False;
