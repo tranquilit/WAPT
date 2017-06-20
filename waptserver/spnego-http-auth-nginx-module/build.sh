@@ -11,8 +11,8 @@ rm -Rf builddir
 rm -Rf nginx-1.10.2
 rm -Rf spnego-http-auth-nginx-module-master
 
-rpmbuild -bb --define "_version $VERSION" --buildroot $PWD/builddir -v --clean wapt-spnego-http-auth-nginx-module.spec
-rm -f tis-wapt-spnego-http-auth-nginx-module*.rpm
-cp RPMS/*/tis-wapt-spnego-http-auth-nginx-module*.rpm .
+rpmbuild -bb --define "_version $VERSION" --buildroot $PWD/builddir -v --clean nginx-mod-http-auth-spnego.spec
+rm -f nginx-mod-http-auth-spnego*.rpm
+cp RPMS/*/nginx-mod-http-auth-spnego*.rpm .
 # temporary addition for builbot
-ln -s tis-wapt-spnego-http-auth-nginx-module*.rpm tis-wapt-spnego-http-auth-nginx-module.rpm
+ln -s nginx-mod-http-auth-spnego*.rpm  nginx-mod-http-auth-spnego.rpm
