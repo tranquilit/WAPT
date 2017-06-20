@@ -1606,8 +1606,8 @@ def on_waptclient_connect():
         host_cert = Hosts.select(Hosts.host_certificate).where(Hosts.uuid == uuid).first()
 
         if host_cert and host_cert.host_certificate:
-            #host_certificate = SSLCertificate(crt_string = host_cert.host_certificate)
-            #print host_certificate.verify_claim(json.loads(request.args['login']),max_age_secs=60)
+            host_certificate = SSLCertificate(crt_string = host_cert.host_certificate)
+            print host_certificate.verify_claim(json.loads(request.args['login']),max_age_secs=60)
             pass
         else:
             # not registered.

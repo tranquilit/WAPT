@@ -2434,46 +2434,37 @@ class WaptSocketIOClient(threading.Thread):
                         )
                         signed_connect_params = host_key.sign_claim(connect_params,certificate = host_cert)
 
-                        self.socketio_client = SocketIO(
-                                host="%s://%s" % (self.config.websockets_proto,self.config.websockets_host),
-                                port=self.config.websockets_port,
-                                verify=self.config.websockets_verify_cert,
-                                wait_for_connection = True,
-                                transport = ['websocket'],
-                                ping_interval = self.config.websockets_ping,
-                                hurry_interval_in_seconds = self.config.websockets_hurry_interval,
-                                params = {'uuid': tmp_wapt.host_uuid, 'login':jsondump(signed_connect_params)},
-                                **kwargs)
-
-
-                        #logger.debug(self.socketio_client._engineIO_session.ping_interval)
-                        self.wapt_remote_calls = self.socketio_client.define(WaptSocketIORemoteCalls)
-                        self.wapt_remote_calls.wapt = tmp_wapt
+                        if not self.socketio_client:
+                            self.socketio_client = SocketIO(
+                                    host="%s://%s" % (self.config.websockets_proto,self.config.websockets_host),
+                                    port=self.config.websockets_port,
+                                    Namespace = WaptSocketIORemoteCalls,
+                                    verify=self.config.websockets_verify_cert,
+                                    wait_for_connection = False,
+                                    transport = ['websocket'],
+                                    ping_interval = self.config.websockets_ping,
+                                    hurry_interval_in_seconds = self.config.websockets_hurry_interval,
+                                    params = {'uuid': tmp_wapt.host_uuid, 'login':jsondump(signed_connect_params)},
+                                    **kwargs)
+                            self.socketio_client.get_namespace().wapt = tmp_wapt
 
                     if self.socketio_client and self.config.websockets_host:
                         if not self.socketio_client.connected:
-                            self.socketio_client.disconnect('/')
-                            self.socketio_client.connect('/')
+                            self.socketio_client._http_session.params.update({'uuid': tmp_wapt.host_uuid,'login':self.config.websockets_auth})
+                            self.socketio_client.define(WaptSocketIORemoteCalls)
+                            self.socketio_client.get_namespace().wapt = tmp_wapt
+                            self.socketio_client.connect('')
                         if self.socketio_client.connected:
                             logger.info('Socket IO listening for %ss' % self.config.websockets_check_config_interval )
                             self.socketio_client.wait(self.config.websockets_check_config_interval)
                     self.config.reload_if_updated()
-                    if not self.config.websockets_host:
-                        raise Exception('Forced disconnect websockets from config. No websockets_host.')
 
                 except Exception as e:
-                    logger.debug('Error in socket io connection %s' % repr(e))
+                    print('Error in socket io connection %s' % repr(e))
+                    self.config.reload_if_updated()
                     if self.socketio_client:
-                        try:
-                            logger.debug('Disconnecting socketio client')
-                            self.socketio_client.disconnect('/')
-
-                        except:
-                            pass
-
-                    self.socketio_client = None
-
-
+                        print('stop sio client')
+                        self.socketio_client = None
                     logger.info('Socket IO Stopped, waiting %ss before retrying' % self.config.websockets_retry_delay)
                     time.sleep(self.config.websockets_retry_delay)
 
