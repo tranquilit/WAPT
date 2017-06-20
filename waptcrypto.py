@@ -145,6 +145,8 @@ class SSLCABundle(object):
     BEGIN_CERTIFICATE = '-----BEGIN CERTIFICATE-----'
     END_CERTIFICATE = '-----END CERTIFICATE-----'
 
+    md = 'sha256'
+
     def __init__(self,cert_pattern_or_dir=None,callback=None,certificates=None):
         self._keys = {}
         self._certificates = {}
@@ -177,7 +179,7 @@ class SSLCABundle(object):
         if not isinstance(certificates,list):
             certificates = [certificates]
         for cert in certificates:
-            self._certificates[cert.fingerprint] = cert
+            self._certificates[cert.get_fingerprint(md=self.md)] = cert
         return self
 
     def add_pem(self,pem_data,load_keys=False):
@@ -196,7 +198,7 @@ class SSLCABundle(object):
                 cert = SSLCertificate(crt=crt)
                 if not cert.is_valid():
                     logger.warning('Certificate %s is not valid' % cert.cn)
-                self._certificates[crt.get_fingerprint(md='sha1')] =cert
+                self._certificates[crt.get_fingerprint(md=self.md)] =cert
                 incert = False
                 tmplines = []
             elif line == self.BEGIN_KEY:
@@ -217,7 +219,7 @@ class SSLCABundle(object):
     def key(self,modulus):
         return self._keys.get(modulus,None)
 
-    def certificate(self,sha1_fingerprint=None,subject_hash=None):
+    def certificate(self,fingerprint=None,subject_hash=None):
         if subject_hash:
             certs = [crt for crt in self.certificates() if crt.subject_hash == subject_hash]
             if certs:
@@ -225,7 +227,7 @@ class SSLCABundle(object):
             else:
                 return None
         else:
-            return self._certificates.get(sha1_fingerprint,None)
+            return self._certificates.get(fingerprint,None)
 
     def certificate_for_cn(self,cn):
         certs = [crt for crt in self.certificates() if crt.cn == cn or glob.fnmatch.fnmatch(cn,crt.cn)]
@@ -398,7 +400,7 @@ class SSLPrivateKey(object):
         if cert_dir is None and self.private_key_filename:
             cert_dir = os.path.dirname(self.private_key_filename)
         result = []
-        for fn in glob.glob(os.path.join(cert_dir,'*.crt')):
+        for fn in glob.glob(os.path.join(cert_dir,'*.crt'))+glob.glob(os.path.join(cert_dir,'*.cer'))+glob.glob(os.path.join(cert_dir,'*.pem')):
             try:
                 crt = SSLCertificate(fn)
                 if (valid is None or crt.is_valid() == valid) and\
@@ -406,8 +408,8 @@ class SSLPrivateKey(object):
                    (ca is None or crt.is_ca == ca) and\
                    crt.match_key(self):
                         result.append(crt)
-            except ValueError as e:
-                logger.critical('Certificate %s can not be read. Skipping. Error was:%s' % (fn,repr(e)))
+            except (X509.X509Error,ValueError) as e:
+                logger.debug('Certificate %s can not be read. Skipping. Error was:%s' % (fn,repr(e)))
         return result
 
     def encrypt(self,content):
@@ -541,9 +543,12 @@ class SSLCertificate(object):
     def subject_dn(self):
         return self.crt.get_subject().as_text()
 
-    @property
-    def fingerprint(self,md='sha1'):
+    def get_fingerprint(self,md='sha256'):
         return self.crt.get_fingerprint(md=md)
+
+    @property
+    def fingerprint(self):
+        return self.crt.get_fingerprint(md='sha256')
 
     @property
     def issuer(self):
@@ -617,19 +622,12 @@ class SSLCertificate(object):
         for adir in directories:
             for akeyfile in glob.glob(os.path.join(adir,'*.pem')):
                 try:
+                    logger.debug('Testing if key %s match certificate...'% akeyfile)
                     key = SSLPrivateKey(os.path.abspath(akeyfile),callback = password_callback,password = private_key_password)
                     if key.match_cert(self):
                         return key
-                    else:
-                        break
-                except RSAError as e:
-                    if (e.message == 'padding check failed') or ('decrypt' in e.message):
-                        pwd_try_count -= 1
-                    else:
-                        break
                 except Exception as e:
-                    print('Error for %s: %s'%(akeyfile,e))
-                    break
+                    logger.debug('Error for %s: %s'%(akeyfile,e))
         return None
 
     @property

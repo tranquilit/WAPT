@@ -49,7 +49,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Left = 167
         Height = 21
         Hint = 'E.g. : tis'#13#10'Which prefix to use when naming created or duplicated packages'
-        Top = 153
+        Top = 175
         Width = 80
         EditLabel.AnchorSideTop.Control = eddefault_package_prefix
         EditLabel.AnchorSideTop.Side = asrCenter
@@ -58,33 +58,33 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.AnchorSideBottom.Side = asrBottom
         EditLabel.Left = 56
         EditLabel.Height = 13
-        EditLabel.Top = 157
+        EditLabel.Top = 179
         EditLabel.Width = 108
         EditLabel.Caption = 'WAPT packages prefix'
         EditLabel.ParentColor = False
         LabelPosition = lpLeft
-        TabOrder = 5
+        TabOrder = 8
         OnExit = eddefault_package_prefixExit
       end
       object edPersonalCertificatePath: TFileNameEdit
         Left = 167
         Height = 21
         Hint = 'E.g. : c:\private\tranquilit.crt'#13#10'Path to certificate for signing new packages.'#13#10'Only suitable for development hosts.'
-        Top = 177
+        Top = 199
         Width = 220
-        Filter = 'Fichiers certificats PEM|*.crt|Tous les fichiers|*.*'
+        Filter = 'Fichiers certificats crt|*.crt|Tous les fichiers|*.*'
         FilterIndex = 0
         HideDirectories = False
         ButtonWidth = 23
         NumGlyphs = 1
         Flat = True
         MaxLength = 0
-        TabOrder = 6
+        TabOrder = 9
       end
       object Label2: TLabel
         Left = -109
         Height = 13
-        Top = 178
+        Top = 200
         Width = 273
         Alignment = taRightJustify
         AutoSize = False
@@ -95,7 +95,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Left = 165
         Height = 21
         Hint = 'E.g. : https://store.wapt.fr/wapt'#13#10'Used by WAPT console for duplicating packages.'
-        Top = 233
+        Top = 255
         Width = 270
         EditLabel.AnchorSideTop.Control = edtemplates_repo_url
         EditLabel.AnchorSideTop.Side = asrCenter
@@ -104,19 +104,19 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.AnchorSideBottom.Side = asrBottom
         EditLabel.Left = 19
         EditLabel.Height = 13
-        EditLabel.Top = 237
+        EditLabel.Top = 259
         EditLabel.Width = 143
         EditLabel.Caption = 'External packages repository '
         EditLabel.ParentColor = False
         LabelPosition = lpLeft
-        TabOrder = 7
+        TabOrder = 10
         Text = 'https://store.wapt.fr/wapt'
       end
       object edhttp_proxy_templates: TLabeledEdit
         Left = 165
         Height = 21
         Hint = 'E.g. : http://proxy.tranquilit.local:3128'#13#10'Only required if a proxy is needed for templates access'
-        Top = 281
+        Top = 303
         Width = 222
         EditLabel.AnchorSideTop.Control = edhttp_proxy_templates
         EditLabel.AnchorSideTop.Side = asrCenter
@@ -125,15 +125,15 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.AnchorSideBottom.Side = asrBottom
         EditLabel.Left = 22
         EditLabel.Height = 13
-        EditLabel.Top = 285
+        EditLabel.Top = 307
         EditLabel.Width = 140
         EditLabel.Caption = 'http proxy to use (if needed)'
         EditLabel.ParentColor = False
         LabelPosition = lpLeft
-        TabOrder = 8
+        TabOrder = 14
       end
       object edServerAddress: TLabeledEdit
-        Left = 166
+        Left = 167
         Height = 21
         Hint = 'E.g. : wapt.tranquilit.local'#13#10'Leave empty for auto discovery with DNS queries'
         Top = 6
@@ -143,7 +143,7 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.AnchorSideRight.Control = edServerAddress
         EditLabel.AnchorSideBottom.Control = edServerAddress
         EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 16
+        EditLabel.Left = 17
         EditLabel.Height = 13
         EditLabel.Top = 10
         EditLabel.Width = 147
@@ -167,7 +167,7 @@ object VisWAPTConfig: TVisWAPTConfig
       object labStatusRepo: TLabel
         Left = 421
         Height = 13
-        Top = 88
+        Top = 110
         Width = 31
         Caption = 'Status'
         ParentColor = False
@@ -175,7 +175,7 @@ object VisWAPTConfig: TVisWAPTConfig
       object labStatusServer: TLabel
         Left = 421
         Height = 13
-        Top = 112
+        Top = 134
         Width = 31
         Caption = 'Status'
         ParentColor = False
@@ -184,7 +184,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Left = 167
         Height = 21
         Hint = 'E.g. : http://wapt.tranquilit.local/wapt'#13#10'Leave empty for auto DNS discovery'
-        Top = 85
+        Top = 107
         Width = 220
         EditLabel.AnchorSideTop.Control = edrepo_url
         EditLabel.AnchorSideTop.Side = asrCenter
@@ -193,20 +193,20 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.AnchorSideBottom.Side = asrBottom
         EditLabel.Left = 36
         EditLabel.Height = 13
-        EditLabel.Top = 89
+        EditLabel.Top = 111
         EditLabel.Width = 128
         EditLabel.Caption = 'URL to the main repository'
         EditLabel.ParentColor = False
         Enabled = False
         LabelPosition = lpLeft
-        TabOrder = 3
+        TabOrder = 6
         OnExit = edrepo_urlExit
       end
       object edwapt_server: TLabeledEdit
         Left = 167
         Height = 21
         Hint = 'E.g. : https://srvwapt.tranquilit.local'#13#10'Leave empty if you don''t want a central management server.'
-        Top = 109
+        Top = 131
         Width = 220
         EditLabel.AnchorSideTop.Control = edwapt_server
         EditLabel.AnchorSideTop.Side = asrCenter
@@ -215,40 +215,40 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.AnchorSideBottom.Side = asrBottom
         EditLabel.Left = 58
         EditLabel.Height = 13
-        EditLabel.Top = 113
+        EditLabel.Top = 135
         EditLabel.Width = 106
         EditLabel.Caption = 'URL du serveur WAPT'
         EditLabel.ParentColor = False
         Enabled = False
         LabelPosition = lpLeft
-        TabOrder = 4
+        TabOrder = 7
         OnExit = edrepo_urlExit
       end
       object cbManual: TCheckBox
         Left = 18
         Height = 17
-        Top = 66
+        Top = 88
         Width = 101
         Caption = 'Manual overrride'
         OnClick = cbManualClick
-        TabOrder = 2
+        TabOrder = 5
       end
       object ImgStatusRepo: TImage
         Left = 397
         Height = 21
-        Top = 85
+        Top = 107
         Width = 20
       end
       object ImgStatusServer: TImage
         Left = 397
         Height = 21
-        Top = 109
+        Top = 131
         Width = 20
       end
       object Label9: TLabel
         Left = -116
         Height = 13
-        Top = 259
+        Top = 281
         Width = 273
         Alignment = taRightJustify
         AutoSize = False
@@ -259,7 +259,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Left = 165
         Height = 21
         Hint = 'When importing packages, check signature against certificates in this list'
-        Top = 257
+        Top = 279
         Width = 270
         DialogTitle = 'Select the directory where to lookup authorized certificates'
         ShowHidden = False
@@ -267,56 +267,65 @@ object VisWAPTConfig: TVisWAPTConfig
         NumGlyphs = 1
         Flat = True
         MaxLength = 0
-        TabOrder = 9
+        TabOrder = 12
       end
       object Button3: TButton
         Left = 461
         Height = 25
-        Top = 232
+        Top = 254
         Width = 112
         Action = ActDownloadCertificate
-        TabOrder = 10
+        TabOrder = 11
       end
       object Button4: TButton
         Left = 461
         Height = 21
-        Top = 259
+        Top = 281
         Width = 112
         Action = ActOpenCertDir
-        TabOrder = 11
+        TabOrder = 13
       end
       object Label6: TLabel
-        Left = -113
+        Left = 2
         Height = 13
-        Top = 37
-        Width = 273
+        Top = 58
+        Width = 162
         Alignment = taRightJustify
         AutoSize = False
-        Caption = 'Path to server https certificate'
+        Caption = 'Path to CA certificates bundle'
         ParentColor = False
       end
       object EdServerCertificate: TFileNameEdit
-        Left = 166
+        Left = 167
         Height = 21
         Hint = 'E.g. : c:\private\tranquilit.crt'#13#10'Path to certificate for signing new packages.'#13#10'Only suitable for development hosts.'
-        Top = 34
+        Top = 56
         Width = 220
-        Filter = 'Fichiers certificats PEM|*.crt|Tous les fichiers|*.*'
+        Filter = 'CA Certificates bundles PEM|*.crt|Tous les fichiers|*.*'
         FilterIndex = 0
         HideDirectories = False
         ButtonWidth = 23
         NumGlyphs = 1
         Flat = True
         MaxLength = 0
-        TabOrder = 12
+        TabOrder = 3
       end
       object Button5: TButton
         Left = 412
         Height = 25
-        Top = 34
+        Top = 56
         Width = 168
-        Action = ActGetServerCertitificate
-        TabOrder = 13
+        Action = ActGetServerCertificate
+        TabOrder = 4
+      end
+      object CBVerifyCert: TCheckBox
+        Left = 167
+        Height = 17
+        Top = 26
+        Width = 161
+        Caption = 'Verify https server certificate'
+        OnClick = CBVerifyCertClick
+        TabOrder = 2
       end
     end
     object pgAdvanced: TTabSheet
@@ -398,7 +407,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Hint = 'Activates proxy when accessing the main repository'
         Top = 98
         Width = 20
-        TabOrder = 2
+        TabOrder = 3
       end
       object cbUseProxyForServer: TCheckBox
         Left = 313
@@ -406,7 +415,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Hint = 'Activate proxy when accessing the WAPT server'
         Top = 120
         Width = 20
-        TabOrder = 3
+        TabOrder = 4
       end
       object Label8: TLabel
         Left = 11
@@ -425,7 +434,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Width = 20
         Checked = True
         State = cbChecked
-        TabOrder = 4
+        TabOrder = 5
       end
       object Button1: TButton
         Left = 341
@@ -434,7 +443,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Width = 143
         Caption = 'Show statistics'
         OnClick = Button1Click
-        TabOrder = 5
+        TabOrder = 6
       end
       object Label7: TLabel
         Left = 4
@@ -453,7 +462,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Hint = 'Activates proxy when accessing the main repository'
         Top = 164
         Width = 20
-        TabOrder = 6
+        TabOrder = 7
       end
       object edhttp_proxy: TLabeledEdit
         Left = 313
@@ -473,7 +482,7 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.Caption = 'http proxy to use (if needed)'
         EditLabel.ParentColor = False
         LabelPosition = lpLeft
-        TabOrder = 7
+        TabOrder = 2
       end
     end
   end
@@ -481,11 +490,11 @@ object VisWAPTConfig: TVisWAPTConfig
     Enabled = False
     OnTimer = Timer1Timer
     left = 25
-    top = 135
+    top = 157
   end
   object ImageList1: TImageList
     left = 25
-    top = 191
+    top = 213
     Bitmap = {
       4C69030000001000000010000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
@@ -588,7 +597,7 @@ object VisWAPTConfig: TVisWAPTConfig
   end
   object ActionList1: TActionList
     left = 489
-    top = 183
+    top = 205
     object ActCheckAndSetwaptserver: TAction
       Caption = 'Check and set'
       Hint = 'Try to connect to waptserver and wapt_repo'
@@ -603,9 +612,12 @@ object VisWAPTConfig: TVisWAPTConfig
       Caption = 'Explore dir'
       OnExecute = ActOpenCertDirExecute
     end
-    object ActGetServerCertitificate: TAction
+    object ActGetServerCertificate: TAction
       Caption = 'Get Server https Certitificate'
-      OnExecute = ActGetServerCertitificateExecute
+      OnExecute = ActGetServerCertificateExecute
+    end
+    object ActEnableVerifyCerts: TAction
+      Caption = 'Verify https server certificate'
     end
   end
 end

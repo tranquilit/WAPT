@@ -8,10 +8,6 @@ Source: "..\waptpython.exe"; DestDir: "{app}";
 Source: "..\waptpythonw.exe"; DestDir: "{app}";
 Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
 Source: "..\libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdirs  ; Excludes: "*.pyc,*.pyo,test,*.~*,pydoc_data,tests,demos,testsuite,doc,samples,pil" 
-;Source: "..\Microsoft.VC90.CRT.manifest"; DestDir: "{app}";
-;Source: "..\msvcm90.dll"; DestDir: "{app}";
-;Source: "..\msvcp90.dll"; DestDir: "{app}";
-;Source: "..\msvcr90.dll"; DestDir: "{app}";
 Source: "..\python27.dll"; DestDir: "{app}";
 Source: "..\pythoncom27.dll"; DestDir: "{app}";
 Source: "..\pythoncomloader27.dll"; DestDir: "{app}";
@@ -78,7 +74,10 @@ Source: "..\wapt-get.ini.tmpl"; DestDir: "{app}";
 
 [Dirs]
 Name: "{app}\ssl"
+Name: "{app}\ssl\server"
 Name: "{app}"; Permissions: everyone-readexec authusers-readexec admins-full   
+Name: "{app}\private"
+
 
 [Setup]
 AppName={#AppName}
@@ -114,17 +113,10 @@ SignTool={#signtool}
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Check: NeedsAddPath('{app}')
 Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\wapt-get.exe"; ValueType: string; ValueName: ""; ValueData: "{app}\wapt-get.exe"; Flags: uninsdeletekey
 
-[INI]
-Filename: {app}\wapt-get.ini; Section: global; Key: waptupdate_task_period; String: {#default_update_period}; Flags:  createkeyifdoesntexist 
-
-[Dirs]
-Name: "{app}\private"
-
 [Run]
 Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "Mise à jour des librairies MS VC++ pour openssl"; Description: "Mise à jour des librairies MS VC++"; Tasks: installredist2008
 ; Duplication necessaire, cf. [Tasks]
 Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "Mise à jour des librairies MS VC++ pour openssl"; Description: "Mise à jour des librairies MS VC++"; Tasks: installredist2008unchecked
-;Filename: "{app}\wapt-get.exe"; Parameters: "upgradedb"; Flags: runhidden; StatusMsg: "Upgrading local sqlite database structure"; Description: "Upgrade packages list"
 ; rights rw for Admins and System, ro for users and authenticated users on wapt directory
 Filename: "cmd"; Parameters: "/C echo O| cacls {app} /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)(A;OICI;0x1200a9;;;BU)(A;OICI;0x1201a9;;;AU)"""; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt..."; Description: "Mise en place des droits sur le répertoire wapt"
 Filename: "cmd"; Parameters: "/C icacls.exe {app} /inheritance:r"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt..."; Description: "Suppression héritage des droits sur wapt"
@@ -134,8 +126,6 @@ Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe {app} /inheritance:r
 Filename: "cmd"; Parameters: "/C echo O| cacls {app}\private /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)"""; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt private..."; Description: "Mise en place des droits sur le répertoire wapt private"
 Filename: "cmd"; Parameters: "/C icacls.exe {app}\private /inheritance:r"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt private..."; Description: "Suppression héritage des droits sur wapt private"
 Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe {app}\private /inheritance:r"; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt private..."; Description: "Suppression héritage des droits sur wapt private"
-
-
 
 ; if waptservice
 Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptservice\waptservice.py"" install"; Tasks:installService ; Flags: runhidden; StatusMsg: "Installation du service WAPT"; Description: "Installation du service WAPT"
@@ -148,15 +138,14 @@ Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait r
 Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\wapttray.exe"; Flags: excludefromshowinnewinstall;
 
 [Tasks]
-Name: installService; Description: "{cm:InstallWAPTservice}";
-Name: autorunTray; Description: "{cm:LaunchIcon}"; Flags: unchecked;
-Name: installredist2008; Description: "{cm:InstallVCpp}";  Check: VCRedistNeedsInstall();
+Name: installService; Description: "{cm:InstallWAPTservice}";  GroupDescription: "Base";
+Name: autorunTray; Description: "{cm:LaunchIcon}"; Flags: unchecked;  GroupDescription: "Base";
+Name: installredist2008; Description: "{cm:InstallVCpp}";  Check: VCRedistNeedsInstall();  GroupDescription: "Base";
 ; Duplication helas necessaire.
 ; On souhaite seulement changer les actions a realiser par defaut, pas a empecher
 ; l'utilisateur de forcer la reinstallation de VC++, et il n'existe pas de moyen
 ; de modifier dynamiquement le flag "unchecked" 
-Name: installredist2008unchecked; Description: "{cm:ForceVCppReinstall}"; Check: not VCRedistNeedsInstall(); Flags: unchecked
-;Name: autoUpgradePolicy; Description: "{cm:UpdatePkgUponShutdown}";
+Name: installredist2008unchecked; Description: "{cm:ForceVCppReinstall}"; Check: not VCRedistNeedsInstall(); Flags: unchecked;  GroupDescription: "Base";
 
 [InstallDelete]
 Type: filesandordirs; Name: {app}\lib\site-packages

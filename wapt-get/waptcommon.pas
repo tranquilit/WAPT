@@ -104,6 +104,7 @@ interface
   function pyformat(template:String;params:ISuperobject):String;
   function pyformat(template:Utf8String;params:ISuperobject):Utf8String; overload;
 
+  function CARoot:String;
 
 const
   waptwua_enabled : boolean = False;
@@ -234,21 +235,67 @@ type
   end;
 
 constructor TSSLVerifyCert.Create(ahostname:AnsiString);
+var
+  sslCheck:TSSLVerifyCert;
 begin
   hostname:=ahostname;
 end;
 
 function TSSLVerifyCert.VerifypeerCertificate(Certificate: TIdX509; AOk: Boolean; ADepth, AError: Integer): Boolean;
 var
-  s:String;
+  Subject,SubjectAlternativeName:String;
   CNPart:String;
   cnpos:Integer;
 begin
-  s := Certificate.Subject.OneLine;
-  cnpos  := pos('/cn=',LowerCase(S))+Length('/cn=');
-  CNPart := Copy(LowerCase(s),cnpos,255);
-  //check subject is hostname
-  Result := AOk and IsWild(hostname,CNPart,True);
+  Subject := Certificate.Subject.OneLine;
+  if ADepth = 0 then
+  begin
+    cnpos  := pos('/cn=',LowerCase(Subject))+Length('/cn=');
+    CNPart := Copy(LowerCase(Subject),cnpos,255);
+
+    {SubjectAlternativeName := Certificate.SubjectAlternativeName ;
+    cnpos  := pos('/cn=',LowerCase(SubjectAlternativeName))+Length('/cn=');
+    CNPart := Copy(LowerCase(s),cnpos,255);}
+
+    //check subject is hostname
+    Result := AOk and IsWild(hostname,CNPart,True);
+
+  end
+  else
+    Result := AOk;
+end;
+
+function GetSSLIOHandler(ForUrl:String;CAPath:String = 'C:\tranquilit\wapt\lib\site-packages\certifi\cacert.pem';ServerCert:String=''):TIdSSLIOHandlerSocketOpenSSL;
+var
+  sslCheck:TSSLVerifyCert;
+begin
+  Result := TIdSSLIOHandlerSocketOpenSSL.Create;
+  Result.SSLOptions.Method:=sslvSSLv23;
+  Result.SSLOptions.VerifyDirs:=CAPath;
+
+  sslCheck := TSSLVerifyCert.Create(GetHostFromURL(ForUrl));
+
+  // init check of https server certificate
+  if (ServerCert<>'') and (ServerCert <>'0') then
+  begin
+    Result.SSLOptions.VerifyMode:=[sslvrfPeer];
+    Result.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
+    //Self signed
+    if (CAPath='') or (ServerCert<>'1') then
+    begin
+      Result.SSLOptions.RootCertFile := ServerCert;
+      //Result.SSLOptions.CertFile := ServerCert;
+    end
+    else
+    begin
+      if DirectoryExists(CAPath) then
+        Result.SSLOptions.VerifyDirs := CAPath
+      else
+        Result.SSLOptions.RootCertFile := CAPath;
+      //Result.SSLOptions.CertFile := ServerCert;
+      Result.SSLOptions.VerifyDepth := 20;
+    end
+  end;
 end;
 
 function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver: TObject;
@@ -281,22 +328,33 @@ begin
   progress.CBReceiver:=CBReceiver;
   try
     // init ssl stack
+    ;
     ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
     ssl_handler.SSLOptions.Method:=sslvSSLv23;
+
   	HTTP.IOHandler := ssl_handler;
     sslCheck := TSSLVerifyCert.Create(GetHostFromURL(fileurl));
 
-    // init check of https server certificate
+
     if (VerifyCertificateFilename<>'') and (VerifyCertificateFilename <>'0') then
     begin
+      ssl_handler.SSLOptions.VerifyDepth:=20;
       ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
       ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
       //Self signed
       if VerifyCertificateFilename<>'1' then
       begin
         ssl_handler.SSLOptions.RootCertFile :=VerifyCertificateFilename;
-        ssl_handler.SSLOptions.CertFile:=VerifyCertificateFilename;
-      end;
+        //ssl_handler.SSLOptions.CertFile := VerifyCertificateFilename;
+      end
+      else
+      begin
+        if DirectoryExists(CARoot) then
+          ssl_handler.SSLOptions.VerifyDirs := CARoot
+        else
+          ssl_handler.SSLOptions.RootCertFile := CARoot;
+        //ssl_handler.SSLOptions.CertFile := '';
+      end
     end;
 
     try
@@ -365,17 +423,25 @@ begin
   	HTTP.IOHandler := ssl_handler;
     sslCheck := TSSLVerifyCert.Create(GetHostFromURL(fileurl));
 
-    // init check of https server certificate
     if (VerifyCertificateFilename<>'') and (VerifyCertificateFilename <>'0') then
     begin
+      ssl_handler.SSLOptions.VerifyDepth:=20;
       ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
       ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
       //Self signed
       if VerifyCertificateFilename<>'1' then
       begin
         ssl_handler.SSLOptions.RootCertFile :=VerifyCertificateFilename;
-        ssl_handler.SSLOptions.CertFile:=VerifyCertificateFilename;
-      end;
+        //ssl_handler.SSLOptions.CertFile := VerifyCertificateFilename;
+      end
+      else
+      begin
+        if DirectoryExists(CARoot) then
+          ssl_handler.SSLOptions.VerifyDirs := CARoot
+        else
+          ssl_handler.SSLOptions.RootCertFile := CARoot;
+        //ssl_handler.SSLOptions.CertFile := '';
+      end
     end;
 
     try
@@ -425,22 +491,30 @@ begin
     ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
     ssl_handler.SSLOptions.Method:=sslvSSLv23;
 
-    HTTP.IOHandler := ssl_handler;
+    http.IOHandler := ssl_handler;
     sslCheck := TSSLVerifyCert.Create(GetHostFromURL(url));
 
     http.Request.Accept := AcceptType;
 
-    // init check of https server certificate
     if (VerifyCertificateFilename<>'') and (VerifyCertificateFilename <>'0') then
     begin
+      ssl_handler.SSLOptions.VerifyDepth:=20;
       ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
       ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
       //Self signed
       if VerifyCertificateFilename<>'1' then
       begin
         ssl_handler.SSLOptions.RootCertFile :=VerifyCertificateFilename;
-        ssl_handler.SSLOptions.CertFile:=VerifyCertificateFilename;
-      end;
+        //ssl_handler.SSLOptions.CertFile := VerifyCertificateFilename;
+      end
+      else
+      begin
+        if DirectoryExists(CARoot) then
+          ssl_handler.SSLOptions.VerifyDirs := CARoot
+        else
+          ssl_handler.SSLOptions.RootCertFile := CARoot;
+        //ssl_handler.SSLOptions.CertFile := '';
+      end
     end;
 
     try
@@ -525,17 +599,25 @@ begin
     HTTP.IOHandler := ssl_handler;
     sslCheck := TSSLVerifyCert.Create(GetHostFromURL(url));
 
-    // init check of https server certificate
     if (VerifyCertificateFilename<>'') and (VerifyCertificateFilename <>'0') then
     begin
+      ssl_handler.SSLOptions.VerifyDepth:=20;
       ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
       ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
       //Self signed
       if VerifyCertificateFilename<>'1' then
       begin
         ssl_handler.SSLOptions.RootCertFile :=VerifyCertificateFilename;
-        ssl_handler.SSLOptions.CertFile:=VerifyCertificateFilename;
-      end;
+        //ssl_handler.SSLOptions.CertFile := VerifyCertificateFilename;
+      end
+      else
+      begin
+        if DirectoryExists(CARoot) then
+          ssl_handler.SSLOptions.VerifyDirs := CARoot
+        else
+          ssl_handler.SSLOptions.RootCertFile := CARoot;
+        //ssl_handler.SSLOptions.CertFile := '';
+      end
     end;
 
     try
@@ -1260,6 +1342,13 @@ begin
     Result := UTF8StringReplace(Result,'%('+key.AsString+')s',params.S[key.AsString],[rfReplaceAll]);
 end;
 
+function CARoot: String;
+begin
+  if DirectoryExists(IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl\ca') then
+    Result := IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl\ca'
+  else
+    Result := IncludeTrailingPathDelimiter(WaptBaseDir)+'lib\site-packages\certifi\cacert.pem';
+end;
 
 function WAPTServerJsonMultipartFilePost(waptserver, action: String;
   args: array of const; FileArg, FileName: String;
@@ -1419,6 +1508,8 @@ begin
             new_iss.AsArray.Add(format('#define Company "%s"' ,[company]))
         else if startswith(line,'#define install_certs') then
             new_iss.AsArray.Add(format('#define install_certs 1' ,[]))
+        else if startswith(line,'#define is_waptagent') then
+            new_iss.AsArray.Add(format('#define is_waptagent 1' ,[]))
         else if startswith(line,'WizardImageFile=') then
 
         else if startswith(line,'OutputBaseFilename') then

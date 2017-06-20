@@ -44,7 +44,7 @@ import logging
 logger = logging.getLogger()
 
 __doc__ = """\
-%prog -k keyfile -c crtfile package1 package2
+wapt-signpackages -c crtfile package1 package2
 
 Resign a list of packages
 """
@@ -60,12 +60,13 @@ def setloglevel(loglevel):
 
 
 def main():
-    parser=OptionParser(usage=__doc__)
+    parser=OptionParser(usage=__doc__,prog = 'wapt-signpackage')
     parser.add_option("-c","--certificate", dest="public_key", default='', help="Path to the PEM RSA certificate to embed identitiy in control. (default: %default)")
     parser.add_option("-k","--private-key", dest="private_key", default='', help="Path to the PEM RSA private key to sign packages.  (default: %default)")
     #parser.add_option("-w","--private-key-passwd", dest="private_key_passwd", default='', help="Path to the password of the private key. (default: %default)")
     parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
     parser.add_option("-m","--message-digest", dest="md", default='sha256', type='choice',  choices=['sha1','sha256'], help="Message digest type for signatures.  (default: %default)")
+    parser.add_option("-s","--scan-packages", dest="doscan", default=False, action='store_true', help="Rescan packages and update local Packages index after signing.  (default: %default)")
     (options,args) = parser.parse_args()
 
     loglevel = options.loglevel
@@ -82,20 +83,37 @@ def main():
         setloglevel('warning')
 
     if len(args) < 1:
-        parser.usage
+        print(parser.usage)
         sys.exit(1)
 
-    key = SSLPrivateKey(options.private_key)
+    if not options.public_key and not options.private_key:
+        print('ERROR: No certificate found or specified')
+        sys.exit(1)
+
     cert = SSLCertificate(options.public_key or options.private_key)
+    if options.private_key and os.path.isfile(options.private_key):
+        key = SSLPrivateKey(options.private_key)
+    else:
+        key = cert.matching_key_in_dirs()
+
+    if not key:
+        print('ERROR: No private key found or specified')
+        sys.exit(1)
 
     args = ensure_list(args)
+
 
     waptpackages = []
     for arg in args:
         waptpackages.extend(glob.glob(arg))
 
     errors = []
+    package_dirs = []
     for waptpackage in waptpackages:
+        package_dir = os.path.dirname(waptpackage)
+        if not package_dir in package_dirs:
+            package_dirs.append(package_dir)
+
         print('Processing %s'%waptpackage)
         try:
             pe = PackageEntry(waptfile = waptpackage)
@@ -104,12 +122,24 @@ def main():
             pe.sign_package(private_key=key,certificate = cert)
             print('Done')
         except Exception as e:
+            print(u'Error: %s'%ensure_unicode(e.message))
             errors.append([waptpackage,repr(e)])
 
+    if options.doscan:
+        for package_dir in package_dirs:
+            if os.path.isfile(os.path.join(package_dir,'Packages')):
+                print(u'Launching the update of Packages index in %s ...'% ensure_unicode(package_dir))
+                repo = WaptLocalRepo(package_dir)
+                repo.update_packages_index()
+                print('Done')
+    else:
+        print("Don't forget to rescan your repository with wapt-scanpackages %s" % os.path.dirname(waptpackages[0]))
+
     if errors:
-        print('Package not processes properly: ')
+        print('Package not processed properly: ')
         for fn,error in errors:
             print(u'%s : %s' % (fn,error))
+
         sys.exit(1)
     else:
         sys.exit(0)

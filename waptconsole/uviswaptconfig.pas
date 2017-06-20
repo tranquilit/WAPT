@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, LSControls, Forms,
   Controls, Graphics, Dialogs, ButtonPanel,
-  StdCtrls, ExtCtrls,EditBtn, DefaultTranslator, ComCtrls, ActnList;
+  StdCtrls, ExtCtrls,EditBtn, DefaultTranslator, ComCtrls, ActnList, types;
 
 type
 
@@ -16,7 +16,8 @@ type
   TVisWAPTConfig = class(TForm)
     ActCheckAndSetwaptserver: TAction;
     ActDownloadCertificate: TAction;
-    ActGetServerCertitificate: TAction;
+    ActGetServerCertificate: TAction;
+    ActEnableVerifyCerts: TAction;
     ActOpenCertDir: TAction;
     ActionList1: TActionList;
     Button1: TButton;
@@ -31,6 +32,7 @@ type
     cbDebugWindow: TCheckBox;
     cbUseProxyForServer: TCheckBox;
     cbLanguage: TComboBox;
+    CBVerifyCert: TCheckBox;
     EdServerCertificate: TFileNameEdit;
     EdTemplatesAuthorizedCertsDir: TDirectoryEdit;
     eddefault_package_prefix: TLabeledEdit;
@@ -63,10 +65,11 @@ type
     procedure ActCheckAndSetwaptserverExecute(Sender: TObject);
     procedure ActDownloadCertificateExecute(Sender: TObject);
     procedure ActDownloadCertificateUpdate(Sender: TObject);
-    procedure ActGetServerCertitificateExecute(Sender: TObject);
+    procedure ActGetServerCertificateExecute(Sender: TObject);
     procedure ActOpenCertDirExecute(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure cbManualClick(Sender: TObject);
+    procedure CBVerifyCertClick(Sender: TObject);
     procedure eddefault_package_prefixExit(Sender: TObject);
     procedure edrepo_urlExit(Sender: TObject);
     procedure edServerAddressChange(Sender: TObject);
@@ -121,7 +124,7 @@ begin
   ActDownloadCertificate.Enabled:=edtemplates_repo_url.text <> '';;
 end;
 
-procedure TVisWAPTConfig.ActGetServerCertitificateExecute(Sender: TObject);
+procedure TVisWAPTConfig.ActGetServerCertificateExecute(Sender: TObject);
 var
   i:integer;
   url,certfn: String;
@@ -189,6 +192,19 @@ begin
       edwapt_server.Text := GetWaptServerURL;
     end;
   end;
+end;
+
+procedure TVisWAPTConfig.CBVerifyCertClick(Sender: TObject);
+begin
+  If not CBVerifyCert.Checked then
+    EdServerCertificate.Text:='0'
+  else
+    if (EdServerCertificate.Text='') or (EdServerCertificate.Text='0') then
+      EdServerCertificate.Text:=CARoot();
+
+  EdServerCertificate.Enabled:=CBVerifyCert.Checked;
+  ActGetServerCertificate.Enabled:=CBVerifyCert.Checked;
+
 end;
 
 function MakeIdent(st:String):String;
@@ -338,6 +354,8 @@ procedure TVisWAPTConfig.FormShow(Sender: TObject);
 begin
   cbManualClick(cbManual);
   edrepo_urlExit(Sender);
+  CBVerifyCert.Checked:=(EdServerCertificate.Text<>'') and (EdServerCertificate.Text<>'0');
+  CBVerifyCertClick(Sender);
 end;
 
 procedure TVisWAPTConfig.HelpButtonClick(Sender: TObject);

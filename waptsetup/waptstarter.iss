@@ -1,7 +1,6 @@
 ﻿#define waptsetup 
 #define default_repo_url "http://wapt.tranquil.it/wapt"
 #define default_wapt_server ""
-#define default_update_period "120"
 #define AppName "WaptStarter"
 #define output_dir "."
 #define Company "Tranquil IT Systems"
@@ -30,8 +29,6 @@ WizardImageFile=..\tranquilit.bmp
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {#default_repo_url};
 Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "0"
 Filename: {app}\wapt-get.ini; Section: global; Key: waptservice_password; String: "NOPASSWORD"
-;Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; Tasks: use_hostpackages;
-;Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "0"; Tasks: not use_hostpackages;
 
 [Icons]
 Name: "{commonprograms}\WaptStarter"; IconFilename: "{app}\wapt.ico"; Filename: "http://localhost:8088";
@@ -39,7 +36,6 @@ Name: "{commondesktop}\WaptStarter"; IconFilename: "{app}\wapt.ico"; Filename: "
 
 [Run]
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
-;Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Tasks: autoUpgradePolicy; Flags: runhidden; StatusMsg: {cm:UpdateOnShutdown}; Description: "{cm:UpdateOnShutdown}"
 Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhidden; StatusMsg: {cm:UpdateOnShutdown}; Description: "{cm:UpdateOnShutdown}"
 
 [Languages]

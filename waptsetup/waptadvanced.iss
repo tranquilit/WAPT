@@ -4,9 +4,9 @@
 #define AppName "WAPT"
 #define output_dir "."
 #define Company "Tranquil IT Systems"
-#define install_certs 0
-#define send_usage_report 0
-#define is_waptagent 0
+#define install_certs 
+#define send_usage_report 
+#define is_waptagent 0 
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
 #include "wapt.iss"
@@ -29,11 +29,10 @@ Source: "..\waptconsole.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\waptdevutils.py"; DestDir: "{app}";
 
 ; authorized public keys
-Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs; Check: InstallCertCheck();
-;Source: "..\ssl\*"; DestDir: "{app}\ssl"; Tasks: installCertificates; Flags: createallsubdirs recursesubdirs
+Source: "..\ssl\*"; DestDir: "{app}\ssl"; Tasks: installCertificates; Flags: createallsubdirs recursesubdirs
 
 [Setup]
-OutputBaseFilename=waptsetup
+OutputBaseFilename=waptsetupadvanced
 DefaultDirName={pf32}\wapt
 WizardImageFile=..\tranquilit.bmp
 DisableProgramGroupPage=yes
@@ -44,22 +43,44 @@ Name:"fr";MessagesFile: "compiler:Languages\French.isl"
 Name:"de";MessagesFile: "compiler:Languages\German.isl"
 
 [Tasks]
-;Name: installCertificates; Description: "{cm:InstallSSLCertificates}";  GroupDescription: "Base";
+Name: forceUrl; Description: "{cm:ForceUrl}"; GroupDescription: "Base";
+Name: installCertificates; Description: "{cm:InstallSSLCertificates}";  GroupDescription: "Base";
+Name: autorunSessionSetup; Description: "{cm:StartAfterSetup}"; 
+Name: autoUpgradePolicy; Description: "{cm:UpdatePkgUponShutdown}"; Flags: unchecked;
+Name: useWaptserver; Description: "{cm:UseWaptServer}"; Flags: unchecked; GroupDescription: "Central management";
+Name: useHostPackages; Description: "{cm:UseHostPackages}"; Flags: unchecked; GroupDescription: "Central management"; 
+Name: useKerberos; Description: "{cm:UseKerberos}"; Flags: unchecked; GroupDescription: "Security";
+Name: verifyCert; Description: "{cm:VerifyCert}"; Flags: unchecked; GroupDescription: "Security";
+Name: checkCertificateValidity; Description: "{cm:checkCertificateValidity}"; Flags: unchecked; GroupDescription: "Security";
+
 
 [INI]
-Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL}; 
+Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL}; Tasks: not useWaptserver; AfterInstall: RemoveWaptServer;
+Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL}; Tasks: useWaptserver;
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL};
-Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; 
+Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; Tasks: useHostPackages; 
+Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "0"; Tasks: not useHostPackages;
 Filename: {app}\wapt-get.ini; Section: global; Key: send_usage_report; String:  {#send_usage_report}; 
+Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String: "0"; Tasks: not useKerberos;
+Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String: "1"; Tasks: useKerberos;
+Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: "0"; Tasks: not verifyCert;
+Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: "1"; Tasks: verifyCert;
+Filename: {app}\wapt-get.ini; Section: global; Key: check_certificate_validity; String: "0"; Tasks: not checkCertificateValidity;
+Filename: {app}\wapt-get.ini; Section: global; Key: check_certificate_validity; String: "1"; Tasks: checkCertificateValidity;
+
 
 [Run]
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Flags: runasoriginaluser runhidden postinstall; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runasoriginaluser runhidden postinstall; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
-Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhidden; StatusMsg: {cm:UpdatePkgUponShutdown}; Description: "{cm:UpdatePkgUponShutdown}"
+Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhidden; Tasks: autoUpgradePolicy; StatusMsg: {cm:UpdatePkgUponShutdown}; Description: "{cm:UpdatePkgUponShutdown}"
+Filename: "{app}\wapt-get.exe"; Parameters: "remove-upgrade-shutdown"; Flags: runhidden; Tasks: not autoUpgradePolicy; StatusMsg: {cm:UpdatePkgUponShutdown}; Description: "{cm:UpdatePkgUponShutdown}"
+;Filename: "{app}\wapt-get.exe"; Parameters: "--direct enable-check-certificate"; Tasks: verifyCert useWaptserver;  Flags: runhidden; StatusMsg: StatusMsg: {cm:EnableCheckCertificate}; Description: "{cm:EnableCheckCertificate}"
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Tasks: useWaptserver; Flags: runasoriginaluser runhidden; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runasoriginaluser runhidden; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
+
+Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser skipifsilent postinstall; StatusMsg: "Lancement de l'icône de notification"; Description: "Lancement de l'icône de notification"
 
 [Icons]
-Name: "{commonstartup}\WAPT session setup"; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
-Name: "{group}\Console WAPT"; Filename: "{app}\waptconsole.exe"; WorkingDir: "{app}" ; Check: IsWaptAgent();
+Name: "{commonstartup}\WAPT session setup"; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall; Tasks: autorunSessionSetup;
+Name: "{group}\Console WAPT"; Filename: "{app}\waptconsole.exe"; WorkingDir: "{app}" ; Check: IsWaptAgentCheck;
 
 [CustomMessages]
 ;English translations here
@@ -70,6 +91,11 @@ en.UpdatePkgUponShutdown=Update packages upon shutdown
 en.EnableCheckCertificate=Get and enable the check of WaptServer https certificate
 en.UseWaptServer=Report computer status to a waptserver and enable remote management
 en.InstallSSLCertificates=Install the certificates provided by this installer
+en.UseKerberos=Use kerberos to authenticate the register
+en.VerifyCert=Verify https certificates
+en.ForceUrl=Update Main Repository and WaptServer URL even if already set.
+en.checkCertificateValidity=Check package certificate validity
+en.UseHostPackages=Use host packages
 
 ;French translations here
 fr.StartAfterSetup=Lancer WAPT session setup à l'ouverture de session
@@ -79,6 +105,12 @@ fr.UpdatePkgUponShutdown=Mise à jour des paquets à l'extinction du poste
 fr.EnableCheckCertificate=Activer la vérification du certificat https du serveur Wapt
 fr.UseWaptServer=Activer l'utilisation d'un serveur Wapt et la gestion centralisée de cet ordinateur
 fr.InstallSSLCertificates=Installer les certificats fournis par cet installeur.
+fr.UseKerberos=Utiliser le compte Kerberos pour authentifier le register.
+fr.VerifyCert=Vérifier les certificats https
+fr.ForceUrl=Met à jour les URL du dépot principal et du serveur.
+fr.checkCertificateValidity=Vérifier la validité des certificat des paquets
+fr.UseHostPackages=Utiliser les paquets machine
+
 
 ;German translation here
 de.StartAfterSetup=WAPT Setup-Sitzung bei Sitzungseröffnung starten
@@ -91,7 +123,7 @@ var
   rbStaticUrl,rbDnsServer: TNewRadioButton;
   CustomPage: TWizardPage;
   teWaptServerUrl:TEdit;
-  TLabelRepo,TLabelServer: TLabel;
+  TLabelRepo,labServer,labHintServer: TLabel;
 
 procedure OnServerClicked(Sender:TObject);
 begin
@@ -156,12 +188,6 @@ begin
   TLabelRepo.Caption := 'Repos URL:';
   TLabelRepo.Top := TLabelRepo.Top + rbDnsServer.Height + 5 * ScaleY(15);
   
-  TLabelServer := TLabel.Create(WizardForm);
-  TLabelServer.Parent := CustomPage.Surface; 
-  TLabelServer.Left := rbStaticUrl.Left + 14; 
-  TLabelServer.Caption := 'Server URL:';
-  TLabelServer.Top := TLabelServer.Top + rbDnsServer.Height + 9 * ScaleY(15);
-
   teWaptRepoUrl := TEdit.Create(WizardForm);
   teWaptRepoUrl.Parent := CustomPage.Surface; 
   teWaptRepoUrl.Left :=TLabelRepo.Left + TLabelRepo.Width + 5;
@@ -176,18 +202,24 @@ begin
   TLabelRepo.Top := teWaptRepoUrl.Top + teWaptRepoUrl.Height + ScaleY(2);
 
 
+  labServer := TLabel.Create(WizardForm);
+  labServer.Parent := CustomPage.Surface; 
+  labServer.Left := rbStaticUrl.Left + 14; 
+  labServer.Caption := 'Server URL:';
+  labServer.Top := rbDnsServer.Height + 9 * ScaleY(15);
+
   teWaptServerUrl := TEdit.Create(WizardForm);;
   teWaptServerUrl.Parent := CustomPage.Surface; 
-  teWaptServerUrl.Left :=TLabelServer.Left + TLabelServer.Width+5;
+  teWaptServerUrl.Left :=labServer.Left + labServer.Width+5;
   teWaptServerUrl.Width :=CustomPage.SurfaceWidth - rbStaticUrl.Width;
   teWaptServerUrl.Top := teWaptServerUrl.Top + teWaptRepoUrl.Height + 9 * ScaleY(15); 
   teWaptServerUrl.Text := 'unknown';  
 
-  TLabelServer := TLabel.Create(WizardForm);
-  TLabelServer.Parent := CustomPage.Surface; 
-  TLabelServer.Left := teWaptServerUrl.Left + 5; 
-  TLabelServer.Caption := 'example: https://srvwapt.domain.lan';
-  TLabelServer.Top := teWaptServerUrl.Top + teWaptServerUrl.Height + ScaleY(2);
+  labHintServer := TLabel.Create(WizardForm);
+  labHintServer.Parent := CustomPage.Surface; 
+  labHintServer.Left := teWaptServerUrl.Left + 5; 
+  labHintServer.Caption := 'example: https://srvwapt.domain.lan';
+  labHintServer.Top := teWaptServerUrl.Top + teWaptServerUrl.Height + ScaleY(2);
 
 
 end;
@@ -208,7 +240,6 @@ begin
     End;
 end;
 
-
 procedure CurPageChanged(CurPageID: Integer);
 var
   WaptRepo: String;
@@ -217,21 +248,19 @@ begin
   if curPageId=customPage.Id then
   begin
     teWaptRepoUrl.Text := GetRepoURL('');
+
     teWaptServerUrl.Text := GetWaptServerURL('');  
+    teWaptServerUrl.Visible := IsTaskSelected('useWaptserver');
+	  labHintServer.Visible := IsTaskSelected('useWaptserver');
+	  labServer.Visible := IsTaskSelected('useWaptserver');
+
     rbDnsServer.Checked := (teWaptRepoUrl.Text='');
     rbStaticUrl.Checked := (teWaptRepoUrl.Text<>'') and (teWaptRepoUrl.Text<>'unknown');
-
-	//teWaptServerUrl.Visible := IsTaskSelected('use_waptserver');
-    //TLabelServer.Visible := teWaptServerUrl.Visible;
+    
   end
 end;
 
-function InstallCertCheck:Boolean;
-begin
-	Result := {#install_certs} <> 0;
-end;
-
-function IsWaptAgent:Boolean;
+function IsWaptAgentCheck:Boolean;
 begin
 	Result := {#is_waptagent} <> 0;
 end;

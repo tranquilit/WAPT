@@ -1424,7 +1424,7 @@ begin
               if GetWaptPersonalCertificatePath = '' then
                 with TINIFile.Create(AppIniFilename) do
                   try
-                    WriteString('global', 'personal_certitificate_path', pemfn);
+                    WriteString('global', 'personal_certificate_path', pemfn);
                   finally
                     Free;
                   end;

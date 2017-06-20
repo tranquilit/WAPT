@@ -1833,10 +1833,10 @@ class WaptRepo(WaptRemoteRepo):
                         for (outside,priority,weight,url) in servers:
                             probe_delay = tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies)
                             if probe_delay is not None:
-                                available_servers.append([probe_delay,url])
+                                available_servers.append([outside,probe_delay,url])
                         if available_servers:
                             available_servers.sort()
-                            return available_servers[0][1]  # [delay,url]
+                            return available_servers[0][2]  # [delay,url]
                         else:
                             logger.debug(u'  No wapt repo reachable with SRV request within specified timeout %s' % (self.timeout))
 
@@ -2029,6 +2029,21 @@ class WaptHostRepo(WaptRepo):
         else:
             self.hostname = hostname
 
+    def host_package_url(self):
+        return  "%s/%s.wapt" % (self.repo_url,self.hostname)
+
+    def is_available(self):
+        logger.debug(u'Checking availability of %s' % (self.name))
+        try:
+            host_package_url = self.host_package_url()
+            logger.debug(u'Trying to get  host package for %s at %s' % (self.hostname,host_package_url))
+            host_package = requests.head(host_package_url,proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,headers=default_http_headers())
+            host_package.raise_for_status()
+            return httpdatetime2isodate(host_package.headers.get('last-modified',None))
+        except requests.HTTPError as e:
+            logger.info(u'No host package available at this time for %s on ' % (self.hostname,self.name))
+            return None
+
     def load_config(self,config,section=None):
         """Load waptrepo configuration from inifile section.
                 Use name of repo as section name if section is not provided.
@@ -2074,7 +2089,7 @@ class WaptHostRepo(WaptRepo):
         if not self.repo_url:
             raise EWaptException('URL for WaptHostRepo repository %s is empty. Either add a wapt-host section in ini, or add a _%s._tcp.%s SRV record' % (self.name,self.name,self.dnsdomain))
         try:
-            host_package_url = "%s/%s.wapt" % (self.repo_url,self.hostname)
+            host_package_url = self.host_package_url()
             logger.debug(u'Trying to get  host package for %s at %s' % (self.hostname,host_package_url))
             host_package = requests.get(host_package_url,proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,headers=default_http_headers())
             host_package.raise_for_status()
