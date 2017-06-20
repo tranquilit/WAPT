@@ -1011,7 +1011,7 @@ end;
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
   currhost,packagename : ansistring;
-  RowSO, package,packagereq, packages, softwares, waptwua,dmi,tasksresult, running,sores,additional,upgrades,errors: ISuperObject;
+  RowSO, package,packagereq, packages, softwares, waptwua,dmi,tasksresult, running,sores,all_missing,pending_install,additional,upgrades,errors: ISuperObject;
 begin
   TimerTasks.Enabled := False;
   RowSO := Gridhosts.FocusedRow;
@@ -1030,19 +1030,25 @@ begin
         begin
           RowSO['installed_packages'] := sores['result'];
           // add missing packages
-          additional := RowSO['last_update_status.pending.additional'];
-          for package in RowSO['last_update_status.pending.install'] do
-            additional.AsArray.Add(package);
+          all_missing := TSuperObject.Create(stArray);
+          additional :=   RowSO['last_update_status.pending.additional'];
+          pending_install := RowSO['last_update_status.pending.install'];
+          if pending_install <> Nil then
+            for package in pending_install do
+              all_missing.AsArray.Add(package);
           if (additional<>Nil) and (additional.AsArray.Length>0) then
+            for package in additional do
+              all_missing.AsArray.Add(package);
+
+
+          for packagereq in all_missing do
           begin
-            for packagereq in additional do
-            begin
-              package := TSuperObject.Create();
-              package['package'] := packagereq;
-              package.S['install_status'] := 'MISSING';
-              RowSO.A['installed_packages'].Add(package);
-            end;
+            package := TSuperObject.Create();
+            package['package'] := packagereq;
+            package.S['install_status'] := 'MISSING';
+            RowSO.A['installed_packages'].Add(package);
           end;
+
           upgrades := RowSO['last_update_status.pending.upgrade'];
           if (upgrades<>Nil) and (upgrades.AsArray.Length>0) then
           begin
@@ -1056,6 +1062,7 @@ begin
               end;
             end;
           end;
+
           errors := RowSO['last_update_status.errors'];
           if (errors<>Nil) and (errors.AsArray.Length>0) then
           begin
