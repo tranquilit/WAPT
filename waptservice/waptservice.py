@@ -2342,10 +2342,11 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     result.append(data)
 
                 elif name == 'trigger_host_upgrade':
-                    upgrades = self.wapt.list_upgrade()
                     notify_user = action.get('notify_user',False)
                     notify_server_on_finish = action.get('notify_server',False)
                     force = action.get('force',False)
+                    self.wapt.update(force=force)
+                    upgrades = self.wapt.list_upgrade()
                     to_install = upgrades['upgrade']+upgrades['additional']+upgrades['install']
                     for req in to_install:
                         result.append(self.task_manager.add_task(WaptPackageInstall(req,force=force),notify_user=notify_user).as_dict())
