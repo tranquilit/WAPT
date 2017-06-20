@@ -2457,7 +2457,13 @@ class WaptSocketIOClient(threading.Thread):
                             self.socketio_client.connect('')
                         if self.socketio_client.connected:
                             logger.info('Socket IO listening for %ss' % self.config.websockets_check_config_interval )
+                            startwait = time.time()
                             self.socketio_client.wait(self.config.websockets_check_config_interval)
+                            # QAD workaround for cases where server disconnect but client is between 2 states.
+                            # In this case; wait() immediately returns, leading to an indefinite loop eating 1 core.
+                            if time.time() - startwait < self.config.websockets_check_config_interval-2:
+                                raise Exception('Websocket client seems disconnected. Force Websocket connection to be recreated')
+
                     self.config.reload_if_updated()
 
                 except Exception as e:
