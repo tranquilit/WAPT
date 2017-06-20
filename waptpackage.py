@@ -879,8 +879,12 @@ class PackageEntry(object):
                 issued_by = cabundle.is_known_issuer(cert)
                 if not issued_by:
                     raise EWaptCertificateUnknowIssuer('Package certificate is unknown and not allowed on this host')
-            except SSLVerifyException as e:
-                raise SSLVerifyException('SSL signature verification failed for control %s against embedded certiicate %s : %s' % (self.asrequirement(),cert,repr(e)))
+            except SSLVerifyException:
+                if cert.verify_content(signed_content,signature_raw,md='sha1'):
+                    logger.debug('Fallback to sha1 digest for package''s control signature')
+                    self._md = 'sha1'
+                    return cert
+            raise SSLVerifyException('SSL signature verification failed for control %s against embedded certiicate %s : %s' % (self.asrequirement(),cert,repr(e)))
         else:
             # old style . checking directly with self signed certificates.
             for public_cert in cabundle.certificates():

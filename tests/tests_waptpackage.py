@@ -299,10 +299,11 @@ def install():
     os.remove(pe.localpath)
 
 def test_oldsignature():
-    r = WaptRemoteRepo('https://srvwapt.tranquilit.local/wapt',cabundle=None,verify_cert=False)
-    f = r.download_packages('tis-ms-pstools')
-    pe = f['packages'][0]
-    pe.check_control_signature(cabundle)
+    bu = SSLCABundle('c:/wapt/ssl')
+    pe = PackageEntry(waptfile=r'C:\Users\htouvet\Downloads\150-putty_0.68-3_all.wapt')
+    pe.check_control_signature(bu)
+
+
 
 def test_waptrepo():
     r = WaptRemoteRepo('https://wapt142.tranquilit.local/wapt',cabundle=cabundle,verify_cert=False)
