@@ -65,6 +65,7 @@ websocket-client==0.40.0 --hash=sha256:40ac14a0c54e14d22809a5c8d553de5a2ae45de3c
 Werkzeug==0.12.2 --hash=sha256:e8549c143af3ce6559699a01e26fa4174f4c591dbee0a499f3cd4c3781cdec3d
 winkerberos==0.6.0 --hash=sha256:fb1858e1c1ead9eaef80e49f1e8a6a3fc46f6524412c9317456a56a8cdccf3ab
 winshell==0.6 --hash=sha256:16812fcd6a43391d6c0b707b4d67e809e52286a739683a91623baa0804ea0d41
+winsys-3.x==0.5.2 --hash=sha256:cef3df1dce2a5a71efa46446e6007ad9f7dbae31e83ffcc2ea3485c00c914cc3
 WMI==1.4.9 --hash=sha256:192ccfad3d7bb3ef43116d753f4d5cf85c0a6b738f832cc131e928fd93cdd400
 wrapt==1.10.8 --hash=sha256:4ea17e814e39883c6cf1bb9b0835d316b2f69f0f0882ffe7dad1ede66ba82c73
 WTForms==2.1 --hash=sha256:ffdf10bd1fa565b8233380cb77a304cd36fd55c73023e91d4b803c96bc11d46f
