@@ -193,7 +193,7 @@ def add_symlink(link_dest,link_name):
     if not os.path.exists(relative_dest_link_path):
         os.symlink(link_dest, relative_dest_link_path)
 
-add_symlink('/opt/wapt/waptserver/scripts/postconf.py','/usr/bin/wapt-serverpostconf')
+add_symlink('./opt/wapt/waptserver/scripts/postconf.py','./usr/bin/wapt-serverpostconf')
 os.chmod('builddir/opt/wapt/waptserver/scripts/postconf.py',0o755)
 
 print("copying apache-related goo", file=sys.stderr)
