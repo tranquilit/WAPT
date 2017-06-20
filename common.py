@@ -1938,10 +1938,10 @@ class WaptRepo(WaptRemoteRepo):
             with waptdb:
                 try:
                     logger.debug(u'Read remote Packages index file %s' % self.packages_url)
-                    last_modified = self.packages_date
-
                     self._packages = None
                     self._packages_date = None
+
+                    last_modified = self.packages_date
 
                     waptdb.purge_repo(self.name)
                     for package in self.packages:
