@@ -239,8 +239,9 @@ def check_mongo2pgsql_upgrade_needed(waptserver_ini):
 
 # main program
 def main():
-    # TODO : check debian / ubuntu / centos / redhat version
+    global wapt_folder,MONGO_SVC,APACHE_SVC
 
+    
     parser = OptionParser(usage=usage, version='waptserver.py ' + __version__)
     parser.add_option(
         "-k",
@@ -365,8 +366,14 @@ def main():
  
     
     # In this new version Apache is replaced with Nginx? Proceed to disable Apache. After migration one can remove Apache install altogether
-    print(subprocess.check_output('systemctl stop %s' % APACHE_SVC, shell=True))
-    print(subprocess.check_output('systemctl disable %s' % APACHE_SVC, shell=True))
+    try:
+        print(subprocess.check_output('systemctl stop %s' % APACHE_SVC, shell=True))
+    except:
+        pass
+    try:
+        print(subprocess.check_output('systemctl disable %s' % APACHE_SVC, shell=True))
+    except:
+        pass
  
 
     reply = postconf.yesno("Do you want to configure nginx?")

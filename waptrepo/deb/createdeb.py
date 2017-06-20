@@ -62,15 +62,17 @@ def rsync(src,dst):
         rsync_option,rsync_source,rsync_destination)
     os.system(rsync_command)
 
-def add_symlink(link_dest,link_name):
-    relative_dest_link_path = os.path.join('./builddir',link_name)
-    print("adding symlink %s -> %s" % (link_name,link_dest))
-    mkdir_p(os.path.dirname(relative_dest_link_path))
+def add_symlink(link_target,link_name):
+    if link_target.startswith('/'):
+        link_target = link_target[1:]
+    relative_link_target_path = os.path.join('builddir',link_target)
+    print("adding symlink %s -> %s" % (link_name, relative_link_target_path ))
+    mkdir_p(os.path.dirname(relative_link_target_path))
 
-    if not os.path.exists(relative_dest_link_path):
-        os.symlink(link_dest, relative_dest_link_path)
-
-
+    if not os.path.exists(relative_link_target_path):
+        cmd = 'ln -s %s %s ' % (relative_link_target_path,link_name)
+        print( cmd)
+        print(subprocess.check_output(cmd))
 
 makepath = os.path.join
 from shutil import copyfile

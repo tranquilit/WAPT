@@ -185,18 +185,22 @@ except Exception as e:
     print('error: \n%s' % e, file=sys.stderr)
     exit(1)
 
-def add_symlink(link_dest,link_name):
-    relative_dest_link_path = os.path.join('builddir',link_dest)
-    print("adding symlink %s -> %s" % (link_name, relative_dest_link_path ))
-    mkdir_p(os.path.dirname(relative_dest_link_path))
+def add_symlink(link_target,link_name):
+    if link_target.startswith('/'):
+        link_target = link_target[1:]
+    relative_link_target_path = os.path.join('builddir',link_target)
+    print("adding symlink %s -> %s" % (link_name, relative_link_target_path ))
+    mkdir_p(os.path.dirname(relative_link_target_path))
 
-    if not os.path.exists(relative_dest_link_path):
-        os.symlink(link_dest, relative_dest_link_path)
+    if not os.path.exists(relative_link_target_path):
+        cmd = 'ln -s %s %s ' % (relative_link_target_path,link_name)
+        print( cmd)
+        print(subprocess.check_output(cmd))
 
-add_symlink('./opt/wapt/waptserver/scripts/postconf.py','./usr/bin/wapt-serverpostconf')
+add_symlink('opt/wapt/waptserver/scripts/postconf.py','/usr/bin/wapt-serverpostconf')
 os.chmod('builddir/opt/wapt/waptserver/scripts/postconf.py',0o755)
 
-print("copying apache-related goo", file=sys.stderr)
+print("copying nginx-related goo", file=sys.stderr)
 try:
     apache_dir = './builddir/opt/wapt/waptserver/apache/'
     mkdir_p(apache_dir + '/ssl')
@@ -237,7 +241,6 @@ dpkg_command = 'dpkg-deb --build builddir %s' % output_file
 status = os.system(dpkg_command)
 if status == 0:
     os.link(output_file, 'tis-waptserver.deb')
-    shutil.rmtree("builddir")
 else:
     print('error while building package')
 sys.exit(status)
