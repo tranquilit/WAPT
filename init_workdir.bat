@@ -32,3 +32,6 @@ copy /Y .\lib\site-packages\M2Crypto\ssleay32.dll .
 copy /Y utils\openssl.exe lib\site-packages\M2Crypto\
 copy /Y Scripts\python.exe waptpython.exe
 copy /Y Scripts\pythonw.exe waptpythonw.exe
+
+REM Patch memory leak
+copy /Y utils\patch-socketio-client-2\__init__.py  lib\site-packages\socketIO_client\
