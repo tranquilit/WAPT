@@ -31,7 +31,7 @@ import fileinput
 import subprocess
 import platform
 import errno
-
+import sys
 
 def mkdir_p(path):
     try:
@@ -126,7 +126,7 @@ mkdir_p("builddir/opt/wapt/waptserver")
 # for some reason the virtualenv does not build itself right if we don't
 # have pip systemwide...
 subprocess.check_output(
-    r'sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev', shell=True)
+    r'sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev', shell=True)
 
 print(
     'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
@@ -185,11 +185,16 @@ except Exception as e:
     print('error: \n%s' % e, file=sys.stderr)
     exit(1)
 
+def add_symlink(link_dest,link_name):
+    relative_dest_link_path = os.path.join('builddir',link_dest)
+    print("adding symlink %s -> %s" % (link_name, relative_dest_link_path ))
+    mkdir_p(os.path.dirname(relative_dest_link_path))
 
-print("adding symlink for wapt-serverpostconf", file=sys.stderr)
-mkdir_p('builddir/usr/bin')
-os.symlink('/opt/wapt/waptserver/scripts/postconf.py',
-           'builddir/usr/bin/wapt-serverpostconf')
+    if not os.path.exists(relative_dest_link_path):
+        os.symlink(link_dest, relative_dest_link_path)
+
+add_symlink('/usr/bin/wapt-serverpostconf','/opt/wapt/waptserver/scripts/postconf.py')
+os.chmod('builddir/opt/wapt/waptserver/scripts/postconf.py',0o755)
 
 print("copying apache-related goo", file=sys.stderr)
 try:
