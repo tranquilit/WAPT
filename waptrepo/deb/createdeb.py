@@ -130,11 +130,11 @@ copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
 copyfile(makepath(wapt_source_dir,'wapt-signpackages.py'),
          './builddir/opt/wapt/wapt-signpackages.py')
 
-add_symlink('/usr/bin/wapt-scanpackages','./opt/wapt/wapt-scanpackages.py')
-add_symlink('/usr/bin/wapt-signpackages','./opt/wapt/wapt-signpackages.py')
+#add_symlink('./usr/bin/wapt-signpackages','./opt/wapt/wapt-signpackages.py')
+#add_symlink('./usr/bin/wapt-scanpackages','./opt/wapt/wapt-scanpackages.py')
 
-os.chmod('builddir/opt/wapt/wapt-scanpackages.py',0o755)
-os.chmod('builddir/opt/wapt/wapt-signpackages.py',0o755)
+os.chmod('./builddir/opt/wapt/wapt-scanpackages.py',0o755)
+os.chmod('./builddir/opt/wapt/wapt-signpackages.py',0o755)
 
 print 'copie des fichiers control et postinst'
 copyfile('./DEBIAN/control','./builddir/DEBIAN/control')

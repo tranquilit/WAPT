@@ -31,6 +31,7 @@ chmod 755 /var/www/waptwua/
 chmod 644 /opt/wapt/waptpackage.py
 chmod 755 /opt/wapt/wapt-scanpackages.py
 ln -sf /opt/wapt/wapt-scanpackages.py /usr/bin/wapt-scanpackages
+ln -sf /opt/wapt/wapt-signpackages.py /usr/bin/wapt-signpackages
 wapt-scanpackages /var/www/wapt/
 
 exit 0
