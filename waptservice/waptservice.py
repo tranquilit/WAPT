@@ -186,7 +186,7 @@ class WaptServiceConfig(object):
     global_attributes = ['config_filename','waptservice_user','waptservice_password',
          'MAX_HISTORY','waptservice_port',
          'dbpath','loglevel','log_directory','waptserver','authorized_callers_ip',
-         'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout','log_to_windows_events'
+         'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout','log_to_windows_events',
          'allow_user_service_restart']
 
     def __init__(self,config_filename=None):
