@@ -889,10 +889,13 @@ class PackageEntry(object):
                         self._md = self._default_md
                         return public_cert
                 except SSLVerifyException:
-                    if public_cert.verify_content(signed_content,signature_raw,md='sha1'):
-                        logger.debug('Fallback to sha1 digest for package''s control signature')
-                        self._md = 'sha1'
-                        return public_cert
+                    try:
+                        if public_cert.verify_content(signed_content,signature_raw,md='sha1'):
+                            logger.debug('Fallback to sha1 digest for package''s control signature')
+                            self._md = 'sha1'
+                            return public_cert
+                    except SSLVerifyException:
+                        pass
             raise SSLVerifyException('SSL signature verification failed for control %s, either none public certificates match signature or signed content has been changed' % self.asrequirement())
 
     def package_certificate(self):

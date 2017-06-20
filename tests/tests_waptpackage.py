@@ -299,9 +299,9 @@ def install():
     os.remove(pe.localpath)
 
 def test_oldsignature():
-    w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
-    w.dbpath=':memory:'
-    pe = PackageEntry(waptfile=r'C:\tranquilit\wapt\cache\tis-ms-pstools_1-5_all.wapt')
+    r = WaptRemoteRepo('https://srvwapt.tranquilit.local/wapt',cabundle=None,verify_cert=False)
+    f = r.download_packages('tis-ms-pstools')
+    pe = f['packages'][0]
     pe.check_control_signature(cabundle)
 
 def test_waptrepo():
@@ -481,7 +481,8 @@ def test_matching_certs():
 def test_conflicts():
     w = Wapt(config_filename= r"C:\tranquilit\wapt\wapt-get.ini")
     w.dbpath=':memory:'
-    w.use_hostpackages = False
+    w.install('zip')
+    w.use_hostpackages = True
     w.update()
     r = w.check_depends('htlaptop.tranquilit.local')
     print r
@@ -494,6 +495,7 @@ def test_certifi_cacert():
 
 if __name__ == '__main__':
     setup_test()
+    test_oldsignature()
     test_certifi_cacert()
     test_conflicts()
     #test_buildupload()
@@ -514,6 +516,5 @@ if __name__ == '__main__':
     test_reload_config()
 
     test_waptrepo()
-    test_oldsignature()
     test_build_sign_verify_package()
     test_sign_action()
