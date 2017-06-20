@@ -66,6 +66,19 @@ def type_debian():
 def type_redhat():
     return platform.dist()[0].lower() in ('redhat','centos','fedora')
 
+if type_debian():
+    MONGO_SVC='mongodb'
+    APACHE_SVC='apache2'
+    wapt_folder = '/var/www/wapt'
+
+elif type_redhat():
+    MONGO_SVC='mongod'
+    APACHE_SVC='httpd'
+    wapt_folder = '/var/www/html/wapt'
+else:
+    print "distrib type unknown"
+    sys.exit(1)
+
 postconf = dialog.Dialog(dialog="dialog")
 
 def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force_https):
@@ -181,39 +194,6 @@ def ensure_postgresql_db(db_name='wapt',db_owner='wapt',db_password=''):
     else:
         subprocess.check_output("""  sudo -u postgres psql wapt -c "CREATE EXTENSION hstore;" """, shell=True,cwd='/opt/wapt/')
 
-def get_mongodb_service_name():
-    if type_redhat():
-        return 'mongod'
-    elif type_debian():
-        return 'mongodb'
-    else:
-        raise Exception()
-
-def disable_mongod():
-    print(subprocess.check_output('systemctl disable %s ' % get_mongodb_service_name(),shell=True))
-
-def enable_mongod():
-    print(subprocess.check_output('systemctl enable %s ' % get_mongodb_service_name(),shell=True))
-
-def start_mongod():
-    print(subprocess.check_output('systemctl start %s ' % get_mongodb_service_name(),shell=True))
-
-def stop_mongod():
-    print(subprocess.check_output('systemctl stop %s ' % get_mongodb_service_name(),shell=True))
-
-def get_apache_service_name():
-    if type_redhat():
-        return 'httpd'
-    elif type_debian():
-        return 'apache2'
-    else:
-        raise Exception()
-
-def enable_apache():
-    print(subprocess.check_output('systemctl enable %s' % get_apache_service_name(), shell=True))
-
-def start_apache():
-    print(subprocess.check_output('systemctl restart %s ' % get_apache_service_name(),shell=True))
 
 def enable_nginx():
     print(subprocess.check_output('systemctl enable nginx', shell=True))
@@ -290,7 +270,7 @@ def main():
         if re.match('^SELinux status:.*enabled', subprocess.check_output('sestatus')):
             postconf.msgbox('SELinux detected, tweaking httpd permissions.')
             subprocess.check_call(['setsebool', '-P', 'httpd_can_network_connect', '1'])
-            postconf.msgbox('SELinux correctly configured for Apache reverse proxy')
+            postconf.msgbox('SELinux correctly configured for Nginx reverse proxy')
 
     if not os.path.isfile('/opt/wapt/conf/waptserver.ini'):
         shutil.copyfile('/opt/wapt/waptserver/waptserver.ini.template','/opt/wapt/conf/waptserver.ini')
@@ -312,7 +292,6 @@ def main():
         waptserver_ini.set('options','secret_key',''.join(random.SystemRandom().choice(string.letters + string.digits) for _ in range(64)))
 
     # add user db and password in ini file
-
     ensure_postgresql_db()
     print ("create database schema")
     subprocess.check_output(""" sudo -u wapt python /opt/wapt/waptserver/waptserver_model.py init_db """, shell=True)
@@ -326,15 +305,6 @@ def main():
         sys.exit(1)
     elif mongo_update_status==2:
         print ("something not normal please check your installation first")
-        sys.exit(1)
-
-    # no trailing slash
-    if type_debian():
-        wapt_folder = '/var/www/wapt'
-    elif type_redhat():
-        wapt_folder = '/var/www/html/wapt'
-    else:
-        print ('distrib not supported')
         sys.exit(1)
 
     if os.path.isdir(wapt_folder):
@@ -392,6 +362,12 @@ def main():
     postconf.msgbox("Press ok to start waptserver")
     enable_waptserver()
     start_waptserver()
+ 
+    
+    # In this new version Apache is replaced with Nginx? Proceed to disable Apache. After migration one can remove Apache install altogether
+    print(subprocess.check_output('systemctl stop %s' % APACHE_SVC, shell=True))
+    print(subprocess.check_output('systemctl disable %s' % APACHE_SVC, shell=True))
+ 
 
     reply = postconf.yesno("Do you want to configure nginx?")
     if reply == postconf.DIALOG_OK:
@@ -420,35 +396,29 @@ def main():
             os.chmod(dh_filename,0o644)
 
             if options.use_kerberos:
-                shutil.copyfile('/opt/wapt/waptserver/scripts/ngx_http_auth_spnego_module.so' ,'/usr/lib64/nginx/modules/ngx_http_auth_spnego_module.so')
-                shutil.copyfile('/opt/wapt/waptserver/scripts/mod-http_auth_spnego.conf','/usr/share/nginx/modules/mod-http_auth_spnego.conf')
+                import apt
+                cache = apt.Cache()
+                if not cache.has_key('libnginx-mod-http-auth-spnego') or cache['libnginx-mod-http-auth-spnego'].is_installed:
+                    print('missing dependency libnginx-mod-http-auth-spnego, please install first before configuring kerberos')
 
             make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn, options.use_kerberos, options.force_https)
 
-
-
-
             final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
-            if type_debian():
-                enable_debian_vhost()
 
-            reply = postconf.yesno("The Nginx config is done. Do you want to force-restart ?")
-            if reply == postconf.DIALOG_OK:
-                restart_nginx()
-
-            enable_nginx()
-            restart_nginx()
+            postconf.msgbox("The Nginx config is done. We need to restart Nginx?")
+            print(subprocess.check_output('systemctl enable nginx', shell=True))
+            print(subprocess.check_output('systemctl restart nginx', shell=True))
             setup_firewall()
 
         except subprocess.CalledProcessError as cpe:
             final_msg += [
-                'Error while trying to configure Apache!',
+                'Error while trying to configure Nginx!',
                 'errno = ' + str(cpe.returncode) + ', output: ' + cpe.output
                 ]
         except Exception as e:
             import traceback
             final_msg += [
-            'Error while trying to configure Apache!',
+            'Error while trying to configure Nginx!',
             traceback.format_exc()
             ]
 

@@ -3,7 +3,7 @@ Version: 0.0.7
 Section: base
 Priority: optional
 Architecture: amd64
-Depends: nginx, libnginx-mod-http-auth-spnego, python, dialog, tis-waptrepo, python-m2crypto, python-tz, cabextract, postgresql (>=9.4), postgresql-contrib, sudo , python-psutil, krb5-user,msktutil
-Recommends: tis-waptsetup
+Depends: nginx, dialog, tis-waptrepo, python-m2crypto, python-tz, cabextract, postgresql (>=9.4), postgresql-contrib, sudo , python-psutil, krb5-user,msktutil
+Recommends: tis-waptsetup, libnginx-mod-http-auth-spnego
 Maintainer: TIS <technique@tranquil-it-systems.fr>
 Description: WAPT Server for linux
