@@ -486,8 +486,15 @@ def test_conflicts():
     r = w.check_depends('htlaptop.tranquilit.local')
     print r
 
+def test_certifi_cacert():
+    import certifi
+    cabundle = SSLCABundle()
+    cabundle.add_pems(certifi.where())
+    print len(cabundle.certificates())
+
 if __name__ == '__main__':
     setup_test()
+    test_certifi_cacert()
     test_conflicts()
     #test_buildupload()
     #test_installemove_host()

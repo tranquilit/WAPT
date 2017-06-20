@@ -196,8 +196,8 @@ class SSLCABundle(object):
                 tmplines.append(line)
                 crt =  X509.load_cert_string(str('\n'.join(tmplines)))
                 cert = SSLCertificate(crt=crt)
-                if not cert.is_valid():
-                    logger.warning('Certificate %s is not valid' % cert.cn)
+                #if not cert.is_valid():
+                #    logger.warning('Certificate %s is not valid' % cert.cn)
                 self._certificates[crt.get_fingerprint(md=self.md)] =cert
                 incert = False
                 tmplines = []
@@ -230,7 +230,7 @@ class SSLCABundle(object):
             return self._certificates.get(fingerprint,None)
 
     def certificate_for_cn(self,cn):
-        certs = [crt for crt in self.certificates() if crt.cn == cn or glob.fnmatch.fnmatch(cn,crt.cn)]
+        certs = [crt for crt in self.certificates() if (crt.cn == cn) or (cn and crt.cn and glob.fnmatch.fnmatch(cn,crt.cn))]
         if certs:
             return certs[0]
         else:
@@ -254,15 +254,17 @@ class SSLCABundle(object):
     def certificate_chain(self,crt):
         # bad implementation
         result = [crt]
-        issuer = self.certificate(subject_hash=crt.crt.get_issuer().as_hash())
-        while issuer and issuer != result[-1] and issuer.is_ca:
-            result.append(issuer)
-            issuer_subject_hash = issuer.crt.get_issuer().as_hash()
+        issuer_cert = self.certificate(subject_hash=crt.crt.get_issuer().as_hash())
+        while issuer_cert and issuer_cert != result[-1] and issuer_cert.is_ca:
+            result.append(issuer_cert)
+            issuer_subject_hash = issuer_cert.crt.get_issuer().as_hash()
             new_issuer = self.certificate(subject_hash=issuer_subject_hash)
-            if new_issuer == issuer:
+            if not new_issuer or new_issuer == issuer_cert:
+                if not new_issuer:
+                    logger.warning(u'Issuer of %s not found' % issuer_cert.subject)
                 break
             else:
-                issuer = new_issuer
+                issuer_cert = new_issuer
         return result
 
     def is_issued_by(self,cacertificate):

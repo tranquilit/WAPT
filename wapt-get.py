@@ -37,7 +37,7 @@ from waptutils import *
 from waptpackage import PackageEntry
 from waptpackage import update_packages
 
-from waptcrypto import EWaptCryptoException
+from waptcrypto import EWaptCryptoException,SSLCertificate,SSLCABundle
 from waptpackage import EWaptException
 
 import common
@@ -1072,20 +1072,34 @@ def main():
                     print('Server not available')
 
             elif action == 'enable-check-certificate':
-                mywapt.waptserver.verify_cert = False
-                if mywapt.waptserver and mywapt.waptserver_available():
-                    result = mywapt.waptserver.save_server_certificate(os.path.join(mywapt.wapt_base_dir,'ssl','server'),overwrite = options.force)
-                    if result:
-                        setuphelpers.inifile_writestring(mywapt.config_filename,'global','verify_cert',result)
-                        if options.json_output:
-                            jsonresult['result'] = result
+                if mywapt.waptserver:
+                    mywapt.waptserver.verify_cert = False
+                    if mywapt.waptserver and mywapt.waptserver_available():
+                        result = mywapt.waptserver.save_server_certificate(os.path.join(mywapt.wapt_base_dir,'ssl','server'),overwrite = options.force)
+                        certchain = SSLCABundle().add_pems(result)
+                        import certifi
+                        certchain.add_pems(certifi.where())
+                        cn = urlparse.urlparse(mywapt.waptserver.server_url).netloc
+                        server_cert = certchain.certificate_for_cn(cn)
+                        print('Server certificate : %s' % server_cert)
+                        certs = certchain.certificate_chain(server_cert)
+                        if certs:
+                            cacert = certs[-1]
+                            print('Pining certificate %s'%cacert)
+                            cacert_fn = os.path.join(mywapt.wapt_base_dir,'ssl','server',cacert.fingerprint+'.crt')
+                            open(cacert_fn,'wb').write(cacert.as_pem())
+                            setuphelpers.inifile_writestring(mywapt.config_filename,'global','verify_cert',cacert_fn)
+                            if options.json_output:
+                                jsonresult['result'] = result
+                            else:
+                                print('Server certificate written to %s' % result)
+                                print('wapt config file updated')
                         else:
-                            print('Server certificate written to %s' % result)
-                            print('wapt config file updated')
+                            print('No server certificate retrieved')
                     else:
-                        print('No server certificate retrieved')
+                        print('Server not available')
                 else:
-                    print('Server not available')
+                    print('No Wapt Server defined')
 
 
             elif action == 'add-icon':
