@@ -53,8 +53,12 @@ server {
 
         location  ~ ^/(upload_package|upload_waptsetup)  {
             proxy_pass http://127.0.0.1:8080;
-            client_max_body_size 1024m;
-            client_body_timeout 300;
+            client_max_body_size 4096m;
+            client_body_timeout 1800;
+        }
+
+        location /wapt-host/Packages {
+                return 403
         }
 
         location / {
