@@ -66,4 +66,6 @@ if [ -e "$old_ini" ] && ! [ -L "$old_ini" ]; then
 	ln -s "$new_ini" "$old_ini"
     fi
 fi
+# Allow nginx to set higher limit for number of file handles
+[ -f $(which setsebool) ] && setsebool -P httpd_setrlimit on
 systemctl daemon-reload
