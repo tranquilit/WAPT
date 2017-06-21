@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.5"
+__version__ = "1.5.0.7"
 import logging
 import sys
 import tempfile
@@ -494,11 +494,35 @@ def test_certifi_cacert():
     cabundle.add_pems(certifi.where())
     print len(cabundle.certificates())
 
+def test_newcrypto():
+    #
+    assert(check_key_password('c:/private/150.pem','test'))
+    assert(not check_key_password('c:/private/150.pem','badpassword'))
+    assert(not check_key_password('c:/private/150.pem'))
+
+    crt = SSLCertificate('c:/private/150-codeur.crt')
+    print crt.fingerprint
+
+    key = SSLPrivateKey('c:/private/150.pem',password='test')
+    sign = key.sign_content('test')
+
+
+    print crt.verify_content('test',sign)
+
+
+
+
+
 if __name__ == '__main__':
     setup_test()
-    test_oldsignature()
+    test_newcrypto()
+    #test_oldsignature()
     test_certifi_cacert()
     test_conflicts()
+    test_build_sign_verify_package()
+    test_sign_action()
+    test_keypassword()
+    test_paquet_host()
     #test_buildupload()
     #test_installemove_host()
     test_matching_certs()
@@ -507,15 +531,11 @@ if __name__ == '__main__':
     test_editcommon()
     test_editzip()
     test_localrepo_cert()
-    test_keypassword()
 
     test_wapt_engine()
     test_waptdevutils()
 
-    test_paquet_host()
     #test_editpackage()
     test_reload_config()
 
     test_waptrepo()
-    test_build_sign_verify_package()
-    test_sign_action()

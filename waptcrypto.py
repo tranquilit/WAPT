@@ -30,16 +30,11 @@ import glob
 import subprocess
 import logging
 
-from M2Crypto import EVP, X509, SSL, BIO, ASN1
-from M2Crypto.EVP import EVPError
-from M2Crypto import BIO,RSA
-from M2Crypto.RSA import RSAError
-
 from cryptography import x509
+from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
-
+from cryptography.hazmat.primitives import serialization,hashes
+from cryptography.hazmat.primitives.asymmetric import padding,utils,rsa,AsymmetricVerificationContext,AsymmetricVerificationContext
 
 from waptutils import *
 
@@ -74,8 +69,12 @@ class EWaptCertificateExpired(EWaptBadCertificate):
 class EWaptBadKeyPassword(EWaptCryptoException):
     pass
 
-def check_key_password(key_filename,password=""):
+def check_key_password(key_filename,password=None):
     """Check if provided password is valid to read the PEM private key
+
+    Args:
+        password (str): or None if key is not encrypted.
+
     >>> if not os.path.isfile('c:/private/test.pem'):
     ...     create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sebastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
     >>> check_key_password('c:/private/test.pem','')
@@ -83,11 +82,10 @@ def check_key_password(key_filename,password=""):
     >>> check_key_password('c:/private/ko.pem','')
     False
     """
-    def callback(*args):
-        return password
     try:
-        EVP.load_key(key_filename, callback)
-    except EVPError:
+        with open(key_filename,'rb') as key_pem:
+            serialization.load_pem_private_key(key_pem.read(),password or None,default_backend())
+    except (TypeError,ValueError) as e:
         return False
     return True
 
@@ -103,6 +101,16 @@ def read_in_chunks(f, chunk_size=1024*128):
 
 
 def hexdigest_for_file(fname, block_size=2**20,md='sha256'):
+    digest = hashlib.new(md)
+    with open(fname,'rb') as f:
+        while True:
+            data = f.read(block_size)
+            if not data:
+                break
+            digest.update(data)
+        return digest.hexdigest()
+
+def hash_for_file(fname, block_size=2**20,md='sha256'):
     digest = hashlib.new(md)
     with open(fname,'rb') as f:
         while True:
@@ -143,6 +151,12 @@ def default_pwd_callback(*args):
 
 def NOPASSWORD_CALLBACK(*args):
     pass
+
+
+def get_hash_algo(md='sha256'):
+    return  {'sha1':hashes.SHA1(),
+             'sha256':hashes.SHA256(),
+            }.get(md,hashes.SHA256())
 
 class SSLCABundle(object):
     BEGIN_KEY = '-----BEGIN ENCRYPTED PRIVATE KEY-----'
@@ -199,11 +213,10 @@ class SSLCABundle(object):
                 incert = True
             elif line == self.END_CERTIFICATE:
                 tmplines.append(line)
-                crt =  X509.load_cert_string(str('\n'.join(tmplines)))
-                cert = SSLCertificate(crt=crt)
+                cert = SSLCertificate(crt_string =str('\n'.join(tmplines)))
                 #if not cert.is_valid():
                 #    logger.warning('Certificate %s is not valid' % cert.cn)
-                self._certificates[crt.get_fingerprint(md=self.md)] =cert
+                self._certificates[cert.fingerprint] = cert
                 incert = False
                 tmplines = []
             elif line == self.BEGIN_KEY:
@@ -212,8 +225,9 @@ class SSLCABundle(object):
             elif line == self.END_KEY:
                 tmplines.append(line)
                 if load_keys:
-                    key = EVP.load_key_string(str('\n'.join(tmplines)),callback=self.callback)
-                    self._keys[key.get_modulus()] = SSLPrivateKey(filename,key=key,callback=self.callback)
+                    pem_data = str('\n'.join(tmplines))
+                    key = SSLPrivateKey(pem_data = pem_data,callback=self.callback)
+                    self._keys[key.modulus] = key
                 inkey = False
                 tmplines = []
             else:
@@ -224,15 +238,8 @@ class SSLCABundle(object):
     def key(self,modulus):
         return self._keys.get(modulus,None)
 
-    def certificate(self,fingerprint=None,subject_hash=None):
-        if subject_hash:
-            certs = [crt for crt in self.certificates() if crt.subject_hash == subject_hash]
-            if certs:
-                return certs[0]
-            else:
-                return None
-        else:
-            return self._certificates.get(fingerprint,None)
+    def certificate(self,fingerprint):
+        return self._certificates.get(fingerprint,None)
 
     def certificate_for_cn(self,cn):
         certs = [crt for crt in self.certificates() if (crt.cn == cn) or (cn and crt.cn and glob.fnmatch.fnmatch(cn,crt.cn))]
@@ -259,11 +266,11 @@ class SSLCABundle(object):
     def certificate_chain(self,crt):
         # bad implementation
         result = [crt]
-        issuer_cert = self.certificate(subject_hash=crt.crt.get_issuer().as_hash())
+        issuer_cert = self.certificate(crt.issuer)
         while issuer_cert and issuer_cert != result[-1] and issuer_cert.is_ca:
             result.append(issuer_cert)
-            issuer_subject_hash = issuer_cert.crt.get_issuer().as_hash()
-            new_issuer = self.certificate(subject_hash=issuer_subject_hash)
+            issuer_fingerprint = issuer_cert.fingerprint
+            new_issuer = self.certificate(issuer_fingerprint)
             if not new_issuer or new_issuer == issuer_cert:
                 if not new_issuer:
                     logger.warning(u'Issuer of %s not found' % issuer_cert.subject)
@@ -314,8 +321,9 @@ class SSLPrivateKey(object):
                 callback = default_pwd_callback
         self.password_callback = callback
         self.password = password
-        self.password = password
         self._rsa = None
+        if pem_data:
+            self.load_key_data(pem_data)
 
     def create(self,bits=2048):
         """Create RSA"""
@@ -346,62 +354,68 @@ class SSLPrivateKey(object):
         with open(self.private_key_filename,'wb') as f:
             f.write(self.as_pem(password=password))
 
+    def load_key_data(self,pem_data):
+        retry_cnt=3
+        password = self.password
+        while retry_cnt>0:
+            try:
+                self._rsa = serialization.load_pem_private_key(
+                    pem_data,
+                    password = password,
+                    backend = default_backend())
+                self.password = password
+                break
+            except (TypeError,ValueError) as e:
+                if "Password was not given but private key is encrypted" in e.message or\
+                        "Bad decrypt. Incorrect password?" in e.message:
+                    retry_cnt -= 1
+                    password = self.password_callback(self.private_key_filename)
+                    if password == '':
+                        password = None
+                else:
+                    raise
 
     @property
     def rsa(self):
         """access to RSA keys"""
         if not self._rsa:
-            retry_cnt=3
-            password = self.password
-            while retry_cnt>0:
-                try:
-                    with open(self.private_key_filename,'rb') as pem_file:
-                        self._rsa = serialization.load_pem_private_key(
-                            pem_file.read(),
-                            password = password,
-                            backend = default_backend())
-                    self.password = password
-                    break
-                except (TypeError,ValueError) as e:
-                    if "Password was not given but private key is encrypted" in e.message or\
-                            "Bad decrypt. Incorrect password?" in e.message:
-                        retry_cnt -= 1
-                        password = self.password_callback(self.private_key_filename)
-                        if password == '':
-                            password = None
-                    else:
-                        raise
+            with open(self.private_key_filename,'rb') as pem_file:
+                self.load_key_data(pem_file.read())
         if not self._rsa:
             raise EWaptEmptyPassword('Unable to load key %s'%self.private_key_filename)
         return self._rsa
 
     def sign_content(self,content,md='sha256',block_size=2**20):
         """ Sign content with the private_key, return the signature"""
-        self.key.reset_context(md=md)
-        self.key.sign_init()
+        apadding = padding.PSS(
+                        mgf=padding.MGF1(hashes.SHA256()),
+                        salt_length=padding.PSS.MAX_LENGTH)
+        algo = get_hash_algo(md)
+
+        signer = self.rsa.signer(apadding,algo)
         if isinstance(content,unicode):
             content = content.encode('utf8')
         elif isinstance(content,(list,dict)):
             content = jsondump(content)
         if isinstance(content,str):
-            self.key.sign_update(content)
+            signer.update(content)
         elif hasattr(content,'read'):
             # file like objetc
             while True:
                 data = content.read(block_size)
                 if not data:
                     break
-                self.key.sign_update(data)
+                signer.update(data)
         else:
             raise Exception('Bad content type for sign_content, should be either str or file like')
-        signature = self.key.sign_final()
+        signature = signer.finalize()
         return signature
 
     def match_cert(self,crt):
         """Check if provided public certificate matches the current private key"""
         if not isinstance(crt,SSLCertificate):
             crt = SSLCertificate(crt)
-        return crt.crt.get_pubkey().get_modulus() == self.key.get_modulus()
+        return crt.modulus == self.modulus
 
 
     def matching_certs(self,cert_dir=None,ca=None,code_signing=None,valid=None):
@@ -416,17 +430,17 @@ class SSLPrivateKey(object):
                    (ca is None or crt.is_ca == ca) and\
                    crt.match_key(self):
                         result.append(crt)
-            except (X509.X509Error,ValueError) as e:
+            except (TypeError,ValueError) as e:
                 logger.debug('Certificate %s can not be read. Skipping. Error was:%s' % (fn,repr(e)))
         return result
 
-    def encrypt(self,content):
-        """Encrypt a message will can be decrypted with the public key"""
-        return self.rsa.private_encrypt(content,RSA.pkcs1_padding)
-
     def decrypt(self,content):
         """Decrypt a message encrypted with the public key"""
-        return self.rsa.private_decrypt(content,RSA.pkcs1_oaep_padding)
+        apadding = padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None)
+        return self.rsa.decrypt(content,apadding)
 
     @property
     def modulus(self):
@@ -470,22 +484,28 @@ class SSLCertificate(object):
         """
         Args:
             public_cert (str): File Path to X509 encoded certificate
-            crt (: X509 SSL Object
+            crt : cryptography.x509.Certificate
             crt_string (str): X09 PEM encoded string
         """
-        self._public_cert_filename = None
+        self._public_cert_filename = crt_filename
         self._crt = None
         self._rsa = None
         self._key = None
-        self.public_cert_filename = crt_filename
         if crt:
             self._crt = crt
         elif crt_string:
-            self._crt = X509.load_cert_string(str(crt_string))
+            self._load_cert_data(crt_string)
         self.ignore_validity_checks = ignore_validity_checks
 
+    def _load_cert_data(self,pem_data):
+        self._crt = x509.load_pem_x509_certificate(pem_data,default_backend())
+
+    def _load_cert_file(self,filename):
+        with open(filename,'rb') as crt_file:
+            self._load_cert_data(crt_file.read())
+
     def as_pem(self):
-        return self.crt.as_pem()
+        return self.crt.public_bytes(serialization.Encoding.PEM)
 
     @property
     def public_cert_filename(self):
@@ -499,76 +519,74 @@ class SSLCertificate(object):
             self._rsa = None
             self._key = None
             self._crt = None
-            if not os.path.isfile(value):
-                raise EWaptMissingCertificate('Public certificate %s not found' % value)
 
     @property
     def crt(self):
         if self._crt is None:
-            self._crt = X509.load_cert(self._public_cert_filename)
+            if not os.path.isfile(self._public_cert_filename):
+                raise EWaptMissingCertificate('Public certificate %s not found' % self._public_cert_filename)
+            self._load_cert_file(self._public_cert_filename)
         return self._crt
 
     @property
     def rsa(self):
         """Return public RSA keys"""
         if not self._rsa:
-            self._rsa = self.crt.get_pubkey().get_rsa()
+            self._rsa = self.crt.public_key()
         return self._rsa
 
     @property
-    def key(self):
-        """Return public key"""
-        if not self._key:
-            self._key = EVP.PKey()
-            self._key.assign_rsa(self.rsa)
-        return self._key
-
-    @property
     def modulus(self):
-        return self.crt.get_pubkey().get_modulus()
+        return format(self.rsa.public_numbers().n, "x")
 
-    @property
-    def organisation(self):
-        return self.crt.get_subject().O
-
-    @property
-    def cn(self):
-        return self.crt.get_subject().CN
-
-    @property
-    def subject(self):
-        subject = self.crt.get_subject()
-        result = {}
-        for key in subject.nid.keys():
-            result[key] = getattr(subject,key)
-        return result
-
-    @property
-    def subject_hash(self):
-        return self.crt.get_subject().as_hash()
+    def _subject_attribute(self,oid):
+        att = self.crt.subject.get_attributes_for_oid(oid)
+        if att:
+            return att[0].value
+        else:
+            return None
 
     @property
     def subject_dn(self):
-        return self.crt.get_subject().as_text()
+        return self._subject_attribute(x509.NameOID.DN_QUALIFIER)
+
+    @property
+    def organisation(self):
+        return self._subject_attribute(x509.NameOID.ORGANIZATION_NAME)
+
+    @property
+    def cn(self):
+        return self._subject_attribute(x509.NameOID.COMMON_NAME)
+
+    @property
+    def subject(self):
+        """Returns subject of the certificate as a Dict"""
+        subject = self.crt.subject
+        result = {}
+        for attribute in subject:
+            result[attribute.oid._name]= attribute.value
+        return result
 
     def get_fingerprint(self,md='sha256'):
-        return self.crt.get_fingerprint(md=md)
+        """Get raw bytes fingerprint"""
+        return self.crt.fingerprint(get_hash_algo(md))
 
     @property
     def fingerprint(self):
-        return self.crt.get_fingerprint(md='sha256')
+        """Get base64 endoded sha256 fingerprint"""
+        return base64.b64encode(self.get_fingerprint(md='sha256'))
 
     @property
     def issuer(self):
-        data = self.crt.get_issuer()
+        data = self.crt.issuer
         result = {}
-        for key in data.nid.keys():
-            result[key] = getattr(data,key)
+        for attribute in data:
+            result[attribute.oid._name] = attribute.value
         return result
 
     @property
     def issuer_dn(self):
-        return self.crt.get_issuer().as_text()
+        return u','.join([u"%s=%s"%(attribute.oid._name,attribute.value) for attribute in self.crt.issuer])
 
     def verify_content(self,content,signature,md='sha256',block_size=2**20):
         u"""Check that the signature matches the content
@@ -582,34 +600,37 @@ class SSLCertificate(object):
 
         Raise SSLVerifyException
         """
-        self.key.reset_context(md=md)
-        self.key.verify_init()
         if isinstance(content,unicode):
             content = content.encode('utf8')
         elif isinstance(content,(list,dict)):
             content = jsondump(content)
 
-        if isinstance(content,str):
-            self.key.verify_update(content)
-        elif hasattr(content,'read'):
-            # file like objetc
-            while True:
-                data = content.read(block_size)
-                if not data:
-                    break
-                self.key.verify_update(data)
-        else:
+        if hasattr(content,'read'):
+            # file like object
+            # TODO : use prehash
+            sha1_for_data
+            #while True:
+            #    data = content.read(block_size)
+            #    if not data:
+            #        break
+            #    self.key.verify_update(data)
+        elif not isinstance(content,str):
             raise Exception('Bad content type for verify_content, should be either str or file like')
+        apadding = padding.PSS(
+            mgf=padding.MGF1(hashes.SHA256()),
+            salt_length=padding.PSS.MAX_LENGTH)
 
-        if self.key.verify_final(signature):
-            return self.subject_dn
-        raise SSLVerifyException('SSL signature verification failed for certificate %s'%self.subject_dn)
+        try:
+            logger.debug(self.rsa.verify(signature,content,apadding,get_hash_algo(md)))
+            return self.cn
+        except InvalidSignature as e:
+            raise SSLVerifyException('SSL signature verification failed for certificate %s'%self.subject_dn)
 
     def match_key(self,key):
         """Check if certificate matches the given private key"""
         if not isinstance(key,SSLPrivateKey):
             key = SSLPrivateKey(key)
-        return self.crt.get_pubkey().get_modulus() == key.key.get_modulus()
+        return self.modulus == key.modulus
 
     def matching_key_in_dirs(self,directories=None,password_callback=None,private_key_password=None):
         """Return the first SSLPrivateKey matching this certificate
@@ -640,12 +661,12 @@ class SSLCertificate(object):
 
     @property
     def not_before(self):
-        result = self.crt.get_not_before().get_datetime()
+        result = self.crt.not_valid_before
         return result
 
     @property
     def not_after(self):
-        result = self.crt.get_not_after().get_datetime()
+        result = self.crt.not_valid_after
         return result
 
     def is_revoked(self):
@@ -690,36 +711,30 @@ class SSLCertificate(object):
             raise ValueError('Can not compare SSLCertificate with %s'%(type(crt)))
 
     def encrypt(self,content):
-        """Encrypt a message will can be decrypted with the private key"""
-        rsa = self.crt.get_pubkey().get_rsa()
-        return rsa.public_encrypt(content, RSA.pkcs1_oaep_padding)
+        """Encrypt a message will can be decrypted with the public key"""
+        apadding = padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None)
+        return self.rsa.encrypt(content,apadding)
 
-    def decrypt(self,content):
-        """Decrypt a message encrypted with the private key"""
-        rsa = self.crt.get_pubkey().get_rsa()
-        return rsa.public_decrypt(content, RSA.pkcs1_padding)
-
+    @property
     def extensions(self):
-        result = {}
-        for i in range(0,self.crt.get_ext_count()):
-            e =  self.crt.get_ext_at(i)
-            prop = e.get_name()
-            if prop in result:
-                # convert to list as several items in the property
-                result[prop] = [result[prop]].append(e.get_value())
-            else:
-                result[prop] = e.get_value()
-        return result
+        return dict([(e.oid._name,e.value) for e in self.crt.extensions])
 
     @property
     def is_ca(self):
         """Return Tue if certificate has CA:TRUE baisc contraints"""
-        return 'CA:TRUE' in ensure_list(self.extensions().get('basicConstraints',''))
+        return 'basicConstraints' in self.extensions and self.extensions['basicConstraints'].ca
 
     @property
     def is_code_signing(self):
         """Return True id certificate has 'Code Signing' in its extenedKeyUsage"""
-        return 'Code Signing' in ensure_list(self.extensions().get('extendedKeyUsage',''))
+        ext_key_usages = 'extendedKeyUsage' in self.extensions and self.extensions['extendedKeyUsage']
+        if ext_key_usages:
+            return len([usage for usage in ext_key_usages if usage._name == 'codeSigning'])>0
+        else:
+            return False
 
     def verify(self,CAfile,check_errors=True):
         """Check validity of certificate against list of CA and validity
@@ -790,28 +805,6 @@ class SSLCertificate(object):
             verified_by=self.cn,
             )
 
-
-def private_key_has_password(key):
-    r"""Return True if key can not be loaded without password
-
-    Args;
-
-    >>> private_key_has_password(r'c:/tranquilit/wapt/tests/ssl/test.pem')
-    False
-    >>> private_key_has_password(r'c:/tmp/ko.pem')
-    True
-    """
-    def callback(*args):
-        return ""
-    try:
-        EVP.load_key(key, callback)
-    except Exception as e:
-        if "bad password" in str(e):
-            return True
-        else:
-            print(str(e))
-            return True
-    return False
 
 
 if __name__ == '__main__':
