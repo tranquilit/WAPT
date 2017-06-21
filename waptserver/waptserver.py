@@ -151,7 +151,7 @@ def load_user(userid):
 """
 
 # chain SocketIO server
-socketio = SocketIO(app,logger=logger)
+socketio = SocketIO(app,logger=logger,max_size=conf['max_clients'])
 
 try:
     import wsus

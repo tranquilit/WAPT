@@ -55,6 +55,7 @@ _defaults = {
     'db_max_connections':100,
     'db_stale_timeout':300,
     'use_kerberos':False,
+    'max_clients':4096,
 }
 
 _default_config_file = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
@@ -119,7 +120,7 @@ def load_config(cfgfile=_default_config_file):
         if _config.has_option('options', param):
             conf[param] = _config.get('options', param)
 
-    for param in ('db_max_connections','db_stale_timeout'):
+    for param in ('db_max_connections','db_stale_timeout','max_clients'):
         if _config.has_option('options', param):
             conf[param] = _config.getint('options', param)
 
