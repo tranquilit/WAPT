@@ -1155,7 +1155,7 @@ def iswin64():
 
     # could be
     # return platform.machine()=='AMD64'
-    return 'PROGRAMW6432' in os.environ
+    return 'PROGRAMW6432' in os.environ and 'ProgramFiles(x86)' in os.environ and os.environ['PROGRAMW6432'] != os.environ['ProgramFiles(x86)']
 
 
 def get_computername():
