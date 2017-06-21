@@ -1868,30 +1868,11 @@ def add_shutdown_script(cmd,parameters):
             update_gpt = True
         else:
             ext = gptini.get('General','gPCMachineExtensionNames').strip().replace('][','],[').split(',')
-            # fix malformed array : should be a list of pairs [{i1}{i2}][{j1}{j2}][{k1}{k2}]
-            if ext:
-                # calc a new list of pairs
-                newext = []
-                bad = False
-                for e in ext:
-                    e = e.strip('[]')
-                    guids = e.replace('}{','},{').split(',')
-                    if len(guids)>2:
-                        bad = True
-                        i = 0
-                        while i < len(guids):
-                            newext.append('[%s%s]'%(guids[i],guids[i+1]))
-                            i+=2
-                    else:
-                        newext.append(e)
-                if bad:
-                    ext = newext
-                    update_gpt = True
-
             if not '[{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}]' in ext:
                 ext.append('[{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}]')
                 update_gpt = True
-            gptini.set('General','gPCMachineExtensionNames',''.join(ext))
+
+            gptini.set('General','gPCMachineExtensionNames',''.join(sorted(ext)))
         # increment version
         if gptini.has_option('General','Version'):
             version = gptini.getint('General','Version')

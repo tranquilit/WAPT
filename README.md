@@ -7,7 +7,7 @@ Le déploiement de logiciels (Firefox, MS Office,...) à partir d'une console de
 gestion centrale est maintenant possible. WAPT s'inspire fortement du
 gestionnaire de paquets du système GNU/Linux Debian apt, d'où son nom.
 
-Plus d'informations sur: http://dev.tranquil.it/index.php/WAPT
+Plus d'informations sur: https://www.wapt.fr/
 
 Licensing
 =========
