@@ -132,8 +132,8 @@ copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
 copyfile(makepath(wapt_source_dir,'wapt-signpackages.py'),
          './builddir/opt/wapt/wapt-signpackages.py')
 
-add_symlink('./usr/bin/wapt-signpackages','./opt/wapt/wapt-signpackages.py')
-add_symlink('./usr/bin/wapt-scanpackages','./opt/wapt/wapt-scanpackages.py')
+add_symlink('./opt/wapt/wapt-signpackages.py','./usr/bin/wapt-signpackages')
+add_symlink('./opt/wapt/wapt-scanpackages.py','./usr/bin/wapt-scanpackages')
 
 os.chmod('./builddir/opt/wapt/wapt-scanpackages.py',0o755)
 os.chmod('./builddir/opt/wapt/wapt-signpackages.py',0o755)
