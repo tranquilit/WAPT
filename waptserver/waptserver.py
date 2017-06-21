@@ -1667,7 +1667,7 @@ def on_waptclient_disconnect():
             listening_protocol=None,
             listening_address=None,
             reachable = 'UNREACHABLE',
-            ).where(Hosts.uuid == uuid).execute()
+            ).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
         wapt_db.commit()
     except:
         wapt_db.rollback()
