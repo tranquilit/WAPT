@@ -123,6 +123,7 @@ class EngineIO(LoggingMixin):
         else:
             # Use timeout to unblock recv for websocket transport
             hurry_interval_in_seconds = ping_interval
+        self._heartbeat_thread.join()
         self._heartbeat_thread = HeartbeatThread(
             send_heartbeat=self._ping,
             relax_interval_in_seconds=ping_interval,
