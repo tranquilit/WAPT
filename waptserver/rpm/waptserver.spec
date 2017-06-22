@@ -45,10 +45,15 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 /opt/wapt/lib/*
 /etc/logrotate.d/waptserver
 /etc/rsyslog.d/waptserver.conf
+/etc/systemd/system/nginx.service.d/nginx_worker_files_limit.conf
+/opt/wapt/lib/site-packages/cryptography/x509/
+/opt/wapt/wapt*.py
+/opt/wapt/custom_zip.py
 /usr/bin/wapt-serverpostconf
 
 %attr(755,root,root)/opt/wapt/waptserver/scripts/postconf.py
-
+%attr(755,root,root)/opt/wapt/wapt-scanpackages.py
+%attr(755,root,root)/opt/wapt/wapt-signpackages.py
 %attr(755,wapt,root)/opt/wapt/conf
 %attr(755,wapt,root)/opt/wapt/log
 

@@ -148,10 +148,26 @@ rsync(source_dir, './builddir/opt/wapt/',
       excludes=['postconf', 'mongod.exe', 'bin', 'include'])
 
 print('cryptography patches')
+mkdir_p('./builddir/opt/wapt/lib/site-packages/cryptography/x509/')
 copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','__init__.py'),
-         'BUILDROOT/opt/wapt/lib/site-packages/cryptography/x509/__init__.py')
+         'builddir/opt/wapt/lib/site-packages/cryptography/x509/__init__.py')
 copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','verification.py'),
-         'BUILDROOT/opt/wapt/lib/site-packages/cryptography/x509/verification.py')
+         'builddir/opt/wapt/lib/site-packages/cryptography/x509/verification.py')
+
+
+print( 'copying files formerly from waptrepo')
+copyfile(makepath(wapt_source_dir,'waptcrypto.py'),
+                 'builddir/opt/wapt/waptcrypto.py')
+copyfile(makepath(wapt_source_dir,'waptutils.py'),
+                 'builddir/opt/wapt/waptutils.py')
+copyfile(makepath(wapt_source_dir,'waptpackage.py'),
+                 'builddir/opt/wapt/waptpackage.py')
+copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
+                 'builddir/opt/wapt/wapt-scanpackages.py')
+copyfile(makepath(wapt_source_dir,'wapt-signpackages.py'),
+                 'builddir/opt/wapt/wapt-signpackages.py')
+copyfile(makepath(wapt_source_dir,'custom_zip.py'),
+                 'builddir/opt/wapt/custom_zip.py')
 
 
 print("copying systemd startup script", file=sys.stderr)

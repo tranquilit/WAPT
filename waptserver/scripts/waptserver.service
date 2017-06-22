@@ -9,6 +9,7 @@ PIDFile=/var/run/waptserver.pid
 User=wapt
 ExecStart=/usr/bin/python2 /opt/wapt/waptserver/waptserver.py
 Restart=on-abort
+LimitNOFILE=32768
 
 [Install]
 WantedBy=multi-user.target

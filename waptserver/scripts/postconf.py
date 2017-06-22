@@ -408,7 +408,7 @@ def main():
             if not os.path.exists(dh_filename):
                 print (subprocess.check_output('openssl dhparam -out %s  2048' % dh_filename , shell=True))
 
-            os.chown(dh_filename, 0, grp.getgrnam(NGINX_GID).gr_gid)
+            os.chown(dh_filename, 0, NGINX_GID)
             os.chmod(dh_filename, 0o640)
 
             if options.use_kerberos:
