@@ -167,9 +167,6 @@ print('Add symlink for wapt-scanpackages and wapt-signpackages')
 add_symlink('./opt/wapt/wapt-signpackages.py','./usr/bin/wapt-signpackages')
 add_symlink('./opt/wapt/wapt-scanpackages.py','./usr/bin/wapt-scanpackages')
 
-os.chmod('./builddir/opt/wapt/wapt-scanpackages.py',0o755)
-os.chmod('./builddir/opt/wapt/wapt-signpackages.py',0o755)
-
 
 print('copying the waptserver files', file=sys.stderr)
 rsync(source_dir, './builddir/opt/wapt/',
@@ -182,10 +179,14 @@ print('copying control and postinst package metadata', file=sys.stderr)
 copyfile('./DEBIAN/control', './builddir/DEBIAN/control')
 copyfile('./DEBIAN/postinst', './builddir/DEBIAN/postinst')
 copyfile('./DEBIAN/preinst', './builddir/DEBIAN/preinst')
+
 subprocess.check_output(
     r'find ./builddir/opt/wapt/ -type f -exec chmod 644 {} \;', shell=True)
 subprocess.check_output(
     r'find ./builddir/opt/wapt/ -type d -exec chmod 755 {} \;', shell=True)
+
+os.chmod('./builddir/opt/wapt/wapt-scanpackages.py',0o755)
+os.chmod('./builddir/opt/wapt/wapt-signpackages.py',0o755)
 
 print("copying systemd startup script", file=sys.stderr)
 systemd_build_dest_dir = './builddir/usr/lib/systemd/system/'
@@ -220,7 +221,7 @@ except Exception as e:
     exit(1)
 
 add_symlink('opt/wapt/waptserver/scripts/postconf.py','/usr/bin/wapt-serverpostconf')
-os.chmod('builddir/opt/wapt/waptserver/scripts/postconf.py',0o755)
+os.chmod('./builddir/opt/wapt/waptserver/scripts/postconf.py',0o755)
 
 print("copying nginx-related goo", file=sys.stderr)
 try:
