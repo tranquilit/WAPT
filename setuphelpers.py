@@ -2196,12 +2196,12 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
                             (uninstallkey is not None and (subkey == uninstallkey)) or\
                             (name_re is not None and name_re.match(display_name)):
                         result.append({'key':subkey,
-                            'name':display_name,
+                            'name':display_name.replace('\x00',''),
                             'version':display_version,
                             'install_date':install_date,
                             'install_location':install_location,
                             'uninstall_string':uninstallstring,
-                            'publisher':publisher,
+                            'publisher':publisher.replace('\x00',''),
                             'system_component':system_component,})
                     i += 1
                 except WindowsError as e:

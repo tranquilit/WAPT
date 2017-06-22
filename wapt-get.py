@@ -1002,10 +1002,11 @@ def main():
                     sys.exit(3)
 
             elif action == 'inventory':
+                result = mywapt.inventory()
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
-                    print(jsondump(mywapt.inventory(),indent=True))
+                    print(jsondump(result,indent=True))
 
             elif action == 'setup-tasks':
                 result = mywapt.setup_tasks()
