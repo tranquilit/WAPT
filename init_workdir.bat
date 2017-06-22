@@ -27,10 +27,6 @@ copy /Y c:\windows\SysWOW64\pythoncom27.dll .
 copy /Y c:\windows\SysWOW64\pythoncomloader27.dll .
 copy /Y c:\windows\SysWOW64\pywintypes27.dll .
 
-copy /Y utils\openssl.exe .
-copy /Y utils\libeay32.dll . 
-copy /Y utils\ssleay32.dll . 
-
 copy /Y Scripts\python.exe waptpython.exe
 copy /Y Scripts\pythonw.exe waptpythonw.exe
 
