@@ -1987,12 +1987,6 @@ if __name__ == "__main__":
         except:
             raise Exception(
                 _("Folder missing : {}-host.").format(conf['wapt_folder']))
-    if os.path.exists(conf['wapt_folder'] + '-group') == False:
-        try:
-            os.makedirs(conf['wapt_folder'] + '-group')
-        except:
-            raise Exception(
-                _("Folder missing : {}-group.").format(conf['wapt_folder']))
 
     if args and args[0] == 'doctest':
         import doctest
