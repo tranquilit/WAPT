@@ -57,6 +57,7 @@ import pwd
 import grp
 import ConfigParser
 from optparse import OptionParser
+import nginxparser
 
 
 
@@ -248,6 +249,25 @@ def check_mongo2pgsql_upgrade_needed(waptserver_ini):
                 print ("Post configuration aborted")
                 sys.exit(1)
 
+def nginx_set_worker_limit(nginx_conf):
+    already_set=False
+    for entries in nginx_conf:
+        if entries[0]=='worker_rlimit_nofile':
+            print( "worker_rlimit_nofile already set")
+            already_set=True
+    if already_set==False:
+        nginx_conf.insert(3,['worker_rlimit_nofile', '32768'])
+    return nginx_conf
+
+def nginx_clean_default_vhost(nginx_conf):
+    for entry in nginx_conf:
+        if entry[0]==['http']:
+            for subentry in entry[1]:
+                if subentry[0]==['server']:
+                    print('removing default vhost')
+                    entry[1].remove(subentry)
+    return nginx_conf
+
 
 # main program
 def main():
@@ -410,6 +430,16 @@ def main():
 
             os.chown(dh_filename, 0, NGINX_GID)
             os.chmod(dh_filename, 0o640)
+
+            # cleanup of nginx.conf file
+            with open('/etc/nginx/nginx.conf','r') as read_conf:
+                nginx_conf = nginxparser.load(read_conf)
+            nginx_conf = nginx_set_worker_limit(nginx_conf)
+            nginx_conf = nginx_clean_default_vhost(nginx_conf)
+            with open("/etc/nginx/nginx.conf", "w") as nginx_conf_file:
+                nginx_conf_file.write(nginxparser.dumps(nginx_conf))
+
+
 
             if options.use_kerberos:
                 import apt
