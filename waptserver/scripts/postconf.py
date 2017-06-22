@@ -112,8 +112,10 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force
     config_string = template.render(template_vars)
     if type_debian():
         dst_file = file('/etc/nginx/sites-available/wapt.conf', 'wt')
-        print(subprocess.check_output('ln -s /etc/nginx/sites-available/wapt.conf /etc/nginx/sites-enabled/wapt.conf',shell=True))
-        os.unlink('/etc/nginx/sites-enabled/default')
+        if not os.path.exists('/etc/nginx/sites-enabled/wapt.conf'):
+            print(subprocess.check_output('ln -s /etc/nginx/sites-available/wapt.conf /etc/nginx/sites-enabled/wapt.conf',shell=True))
+        if os.path.exists('/etc/nginx/sites-enabled/default'):
+            os.unlink('/etc/nginx/sites-enabled/default')
 
     elif type_redhat():
         dst_file = file('/etc/nginx/conf.d/wapt.conf', 'wt')
