@@ -1434,10 +1434,6 @@ begin
                 ShowMessageFmt(rsPublicKeyGenSuccess,
                   [UTF8Encode(certFile)]);
 
-              if not CopyFile(PChar(certFile),
-                PChar(waptpath + '\ssl\' + ExtractFileName(certFile)), True) then
-                ShowMessage(rsPublicKeyGenFailure);
-
               // first use...
               if GetWaptPersonalCertificatePath = '' then
                 with TINIFile.Create(AppIniFilename) do
@@ -1447,25 +1443,35 @@ begin
                     Free;
                   end;
 
-              CurrentVisLoading := TVisLoading.Create(Self);
-              with CurrentVisLoading do
-              try
-                ProgressTitle(rsReloadWaptserviceConfig);
-                Start(3);
-                ActReloadConfigExecute(self);
-                ProgressStep(1,3);
-                ProgressTitle(rsReloadWaptserviceConfig);
-                try
-                  Run('cmd /C net stop waptservice');
-                  ProgressStep(2,3);
-                  Run('cmd /C net start waptservice');
-                  ProgressStep(3,3);
-                except
-                end;
+              if MessageDlg(Format(rsWriteCertOnLocalMachine,[AppendPathDelim(WaptBaseDir)+'ssl']), mtConfirmation, [mbYes, mbNo],0) = mrYes
+              then
+              begin
+                if CopyFile(PChar(certFile),
+                  PChar(waptpath + '\ssl\' + ExtractFileName(certFile)), True) then
+                begin
+                  CurrentVisLoading := TVisLoading.Create(Self);
+                  with CurrentVisLoading do
+                  try
+                    ProgressTitle(rsReloadWaptserviceConfig);
+                    Start(3);
+                    ActReloadConfigExecute(self);
+                    ProgressStep(1,3);
+                    ProgressTitle(rsReloadWaptserviceConfig);
+                    try
+                      Run('cmd /C net stop waptservice');
+                      ProgressStep(2,3);
+                      Run('cmd /C net start waptservice');
+                      ProgressStep(3,3);
+                    except
+                    end;
 
-              finally
-                Finish;
-                FreeAndNil(CurrentVisLoading);
+                  finally
+                    Finish;
+                    FreeAndNil(CurrentVisLoading);
+                  end;
+                end
+                else
+                  ShowMessage(rsPublicKeyGenFailure);
               end;
             end;
           except
@@ -1512,6 +1518,9 @@ begin
         fnPublicCert.Clear;
       edWaptServerUrl.Text := ini.ReadString('global', 'wapt_server', '');
       edRepoUrl.Text := ini.ReadString('global', 'repo_url', '');
+      EdServerCertificate.Text := ini.ReadString('global', 'verify_cert', ''); ;
+      CBUseKerberos.Checked:=ini.ReadBool('global', 'use_kerberos', False );
+      CBCheckCertificatesValidity.Checked:=ini.ReadBool('global', 'check_certificates_validity',True );
       if FatUpgrade then
         // include waptagent.exe in waptupgrade package...
         fnWaptDirectory.Directory := waptpath+'\waptupgrade'
@@ -1530,7 +1539,10 @@ begin
             try
               ProgressTitle(rsCreationInProgress);
               waptsetupPath := CreateWaptSetup(fnPublicCert.FileName,
-                edRepoUrl.Text, GetWaptServerURL, fnWaptDirectory.Directory, edOrgName.Text, @DoProgress, 'waptagent');
+                edRepoUrl.Text, edWaptServerUrl.Text, fnWaptDirectory.Directory, edOrgName.Text, @DoProgress, 'waptagent',
+                EdServerCertificate.Text,
+                CBUseKerberos.Checked,
+                CBCheckCertificatesValidity.Checked);
 
             except
               on E:Exception do

@@ -1,11 +1,11 @@
 object VisCreateWaptSetup: TVisCreateWaptSetup
   Left = 475
-  Height = 184
+  Height = 279
   Top = 340
-  Width = 535
+  Width = 460
   Caption = 'Create WAPT agent'
-  ClientHeight = 184
-  ClientWidth = 535
+  ClientHeight = 279
+  ClientWidth = 460
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
@@ -61,15 +61,15 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Left = 200
     Height = 21
     Hint = 'E.g. : Tranquil IT Systems.'
-    Top = 127
+    Top = 216
     Width = 216
-    TabOrder = 4
+    TabOrder = 7
   end
   object Label3: TLabel
-    Left = 8
+    Left = 120
     Height = 13
     Hint = 'Your company name.'
-    Top = 127
+    Top = 216
     Width = 68
     Caption = 'Organisation :'
     ParentColor = False
@@ -77,17 +77,17 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object Panel1: TPanel
     Left = 0
     Height = 27
-    Top = 157
-    Width = 535
+    Top = 252
+    Width = 460
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 27
-    ClientWidth = 535
-    TabOrder = 5
+    ClientWidth = 460
+    TabOrder = 8
     object BitBtn1: TBitBtn
-      Left = 374
+      Left = 299
       Height = 23
-      Top = 3
+      Top = -1
       Width = 75
       Anchors = [akTop, akRight]
       Default = True
@@ -97,9 +97,9 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TabOrder = 0
     end
     object BitBtn2: TBitBtn
-      Left = 454
+      Left = 379
       Height = 23
-      Top = 3
+      Top = -1
       Width = 75
       Anchors = [akTop, akRight]
       Cancel = True
@@ -152,6 +152,57 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False
+  end
+  object Label6: TLabel
+    Left = 32
+    Height = 13
+    Top = 148
+    Width = 162
+    Alignment = taRightJustify
+    AutoSize = False
+    Caption = 'Path to CA certificates bundle'
+    ParentColor = False
+  end
+  object EdServerCertificate: TFileNameEdit
+    Left = 200
+    Height = 21
+    Hint = 'E.g. : c:\private\tranquilit.crt'#13#10'Path to certificate for signing new packages.'#13#10'Only suitable for development hosts.'
+    Top = 144
+    Width = 216
+    Filter = 'CA Certificates bundles PEM|*.crt|Tous les fichiers|*.*'
+    FilterIndex = 0
+    HideDirectories = False
+    ButtonWidth = 23
+    NumGlyphs = 1
+    Flat = True
+    MaxLength = 0
+    TabOrder = 5
+  end
+  object CBVerifyCert: TCheckBox
+    Left = 200
+    Height = 17
+    Top = 125
+    Width = 161
+    Caption = 'Verify https server certificate'
+    OnClick = CBVerifyCertClick
+    TabOrder = 4
+  end
+  object CBUseKerberos: TCheckBox
+    Left = 200
+    Height = 17
+    Top = 172
+    Width = 186
+    Caption = 'Use Kerberos for initial registration'
+    TabOrder = 6
+  end
+  object CBCheckCertificatesValidity: TCheckBox
+    Left = 200
+    Height = 17
+    Hint = 'Check that certificate dates are valid and  issuer is a know one.'
+    Top = 192
+    Width = 190
+    Caption = 'Check packages certificates validity'
+    TabOrder = 9
   end
   object ActionList1: TActionList
     left = 488

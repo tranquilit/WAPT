@@ -24,6 +24,8 @@ resourcestring
   rsPublicKeyGenFailure = 'The generation of the public certificate has failed.';
   rsPublicKeyGenError = 'Error during key generation : %s';
 
+  rsWriteCertOnLocalMachine = 'Do you want to copy this certificate to ssl Authorized certificate store (%s) ?';
+
   rsCreationInProgress = 'Build in progress.';
   rsProgressTitle = 'Started uploading to WAPT server...';  // TODO more meaningful var name
   rsWaptSetupUploadSuccess = 'WAPT agent and upgrade package successfully created and uploaded to the main repository'#13#10'Don''t forget to change the hash of waptagent.exe in your GPO';

@@ -1,12 +1,18 @@
 ﻿#define waptsetup 
 #define default_repo_url ""
 #define default_wapt_server ""
+#define repo_url ""
+#define wapt_server ""
 #define AppName "WAPT"
 #define output_dir "."
 #define Company "Tranquil IT Systems"
-#define install_certs 0
+#define install_certs 1
 #define send_usage_report 0
 #define is_waptagent 0
+#define use_kerberos 0
+#define check_certificates_validity 1
+#define verify_cert 0
+
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
 #include "wapt.iss"
@@ -51,6 +57,10 @@ Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:G
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL};
 Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; 
 Filename: {app}\wapt-get.ini; Section: global; Key: send_usage_report; String:  {#send_usage_report}; 
+Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String:  {#use_kerberos}; 
+Filename: {app}\wapt-get.ini; Section: global; Key: check_certificates_validity; String:  {#check_certificates_validity}; 
+Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String:  {#verify_cert}; 
+
 
 [Run]
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Flags: runasoriginaluser runhidden postinstall; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"

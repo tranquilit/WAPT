@@ -321,7 +321,7 @@ object VisWAPTConfig: TVisWAPTConfig
       object CBVerifyCert: TCheckBox
         Left = 167
         Height = 17
-        Top = 26
+        Top = 28
         Width = 161
         Caption = 'Verify https server certificate'
         OnClick = CBVerifyCertClick

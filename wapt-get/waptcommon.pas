@@ -99,7 +99,8 @@ interface
       user:AnsiString='';password:AnsiString='';OnHTTPWork:TWorkEvent=Nil):ISuperObject;
 
   function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8String='';
-            default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;OverrideBaseName:Utf8String=''):Utf8String;
+            default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;OverrideBaseName:Utf8String='';
+            VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True):Utf8String;
 
   function pyformat(template:String;params:ISuperobject):String;
   function pyformat(template:Utf8String;params:ISuperobject):Utf8String; overload;
@@ -1479,7 +1480,8 @@ begin
 end;
 
 function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8String='';
-          default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;OverrideBaseName:Utf8String=''):Utf8String;
+          default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;OverrideBaseName:Utf8String='';
+          VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True):Utf8String;
 var
   iss_template,custom_iss,source,target,outputname,junk : utf8String;
   iss,new_iss,line : ISuperObject;
@@ -1510,6 +1512,22 @@ begin
             new_iss.AsArray.Add(format('#define install_certs 1' ,[]))
         else if startswith(line,'#define is_waptagent') then
             new_iss.AsArray.Add(format('#define is_waptagent 1' ,[]))
+        else if startswith(line,'#define use_kerberos') then
+        begin
+            if UseKerberos then
+              new_iss.AsArray.Add(format('#define use_kerberos 1' ,[]))
+            else
+              new_iss.AsArray.Add(format('#define use_kerberos 0' ,[]))
+        end
+        else if startswith(line,'#define check_certificates_validity') then
+        begin
+            if CheckCertificatesValidity then
+              new_iss.AsArray.Add(format('#define check_certificates_validity 1' ,[]))
+            else
+              new_iss.AsArray.Add(format('#define check_certificates_validity 0' ,[]))
+        end
+        else if startswith(line,'#define verify_cert') then
+          new_iss.AsArray.Add(format('#define verify_cert "%s"',[VerifyCert]))
         else if startswith(line,'WizardImageFile=') then
 
         else if startswith(line,'OutputBaseFilename') then

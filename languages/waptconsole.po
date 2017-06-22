@@ -1,5 +1,8 @@
-msgid "Only required if a proxy is needed for waptserver and main waptrepo"
+msgid "Only required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly suitable for development hosts."
 msgstr "Content-Type: text/plain; charset=UTF-8"
+
+msgid "Only suitable for development hosts."
+msgstr ""
 
 #: tform1.buttonpanel1.helpbutton.caption
 msgctxt "TFORM1.BUTTONPANEL1.HELPBUTTON.CAPTION"
@@ -162,12 +165,34 @@ msgctxt "tviscreatewaptsetup.caption"
 msgid "Create WAPT agent"
 msgstr ""
 
+#: tviscreatewaptsetup.cbcheckcertificatesvalidity.caption
+msgid "Check packages certificates validity"
+msgstr ""
+
+#: tviscreatewaptsetup.cbcheckcertificatesvalidity.hint
+msgid "Check that certificate dates are valid and  issuer is a know one."
+msgstr ""
+
+#: tviscreatewaptsetup.cbusekerberos.caption
+msgid "Use Kerberos for initial registration"
+msgstr ""
+
+#: tviscreatewaptsetup.cbverifycert.caption
+msgctxt "TVISCREATEWAPTSETUP.CBVERIFYCERT.CAPTION"
+msgid "Verify https server certificate"
+msgstr ""
+
 #: tviscreatewaptsetup.edorgname.hint
 msgid "E.g. : Tranquil IT Systems."
 msgstr ""
 
 #: tviscreatewaptsetup.edrepourl.hint
 msgid "E.g. : http://wapt.tranquilit.local/wapt."
+msgstr ""
+
+#: tviscreatewaptsetup.edservercertificate.hint
+msgctxt "TVISCREATEWAPTSETUP.EDSERVERCERTIFICATE.HINT"
+msgid "E.g. : c:\\private\\tranquilit.crt"
 msgstr ""
 
 #: tviscreatewaptsetup.edwaptserverurl.hint
@@ -212,6 +237,11 @@ msgstr ""
 
 #: tviscreatewaptsetup.label5.hint
 msgid "Your WAPT server address (http://wapt:8080)."
+msgstr ""
+
+#: tviscreatewaptsetup.label6.caption
+msgctxt "TVISCREATEWAPTSETUP.LABEL6.CAPTION"
+msgid "Path to CA certificates bundle"
 msgstr ""
 
 #: tviseditgroup.button5.caption
@@ -729,6 +759,7 @@ msgid "Activate proxy when accessing the WAPT server"
 msgstr ""
 
 #: tviswaptconfig.label6.caption
+msgctxt "tviswaptconfig.label6.caption"
 msgid "Path to CA certificates bundle"
 msgstr ""
 
@@ -3039,6 +3070,10 @@ msgstr ""
 #: uwaptconsoleres.rswinterruptreceived
 msgctxt "uwaptconsoleres.rswinterruptreceived"
 msgid "W: interrupt received, killing serverâ¦"
+msgstr ""
+
+#: uwaptconsoleres.rswritecertonlocalmachine
+msgid "Do you want to copy this certificate to ssl Authorized certificate store (%s) ?"
 msgstr ""
 
 #: uwaptres.rsbundleconfigeditcaption
