@@ -85,8 +85,8 @@ else:
 postconf = dialog.Dialog(dialog="dialog")
 
 def run(cmd):
-    print (cmd)
-    print(subprocess.check_output(cmd,shell=True))
+    print ("running %s " % cmd)
+    return(subprocess.check_output(cmd,shell=True))
 
 
 def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force_https):
@@ -223,13 +223,17 @@ def start_waptserver():
 
 def setup_firewall():
     if type_redhat():
+        output = run('firewall-cmd --list-ports')
+        if '443/tcp' in output and '80/tcp' in output:
+            print("firewall already configured, skipping firewalld configuration")
+            return 
         if subprocess.call(['firewall-cmd', '--state'], stdout=open(os.devnull, 'w')) == 0:
-            subprocess.check_output(['firewall-cmd', '--permanent', '--add-port=443/tcp'])
-            subprocess.check_output(['firewall-cmd', '--permanent', '--add-port=80/tcp'])
-            subprocess.check_output(['firewall-cmd', '--reload'])
+            run('firewall-cmd --permanent --add-port=443/tcp')
+            run('firewall-cmd --permanent --add-port=80/tcp')
+            run('firewall-cmd --reload')
         else:
-            subprocess.check_output(['firewall-offline-cmd', '--add-port=443/tcp'])
-            subprocess.check_output(['firewall-offline-cmd', '--add-port=80/tcp'])
+            run('firewall-offline-cmd --add-port=443/tcp')
+            run('firewall-offline-cmd --add-port=80/tcp')
 
 
 def check_mongo2pgsql_upgrade_needed(waptserver_ini):
@@ -242,9 +246,9 @@ def check_mongo2pgsql_upgrade_needed(waptserver_ini):
         if proc.name() == 'mongod':
             if postconf.yesno("It is necessary to migrate current database backend from mongodb to postgres. Press yes to start migration",no_label='cancel')== postconf.DIALOG_OK:
                 print ("mongodb process running, need to migrate")
-                print (subprocess.check_output("sudo -u wapt /usr/bin/python /opt/wapt/waptserver/waptserver_upgrade.py upgrade2postgres",shell=True))
-                print (subprocess.check_output("systemctl stop mongodb",shell=True))
-                print (subprocess.check_output("systemctl disable mongodb",shell=True))
+                print (run("sudo -u wapt /usr/bin/python /opt/wapt/waptserver/waptserver_upgrade.py upgrade2postgres"))
+                print (run("systemctl stop mongodb"))
+                print (run("systemctl disable mongodb"))
             else:
                 print ("Post configuration aborted")
                 sys.exit(1)
@@ -328,12 +332,12 @@ def main():
     # add user db and password in ini file
     ensure_postgresql_db()
     print ("create database schema")
-    subprocess.check_output(""" sudo -u wapt python /opt/wapt/waptserver/waptserver_model.py init_db """, shell=True)
+    run(" sudo -u wapt python /opt/wapt/waptserver/waptserver_model.py init_db ")
 
     mongo_update_status = check_mongo2pgsql_upgrade_needed(waptserver_ini)
     if mongo_update_status==0:
         print ("already running postgresql, trying to upgrade structure")
-        subprocess.check_output(""" sudo -u wapt python /opt/wapt/waptserver/waptserver_upgrade.py upgrade_structure""", shell=True)
+        run("sudo -u wapt python /opt/wapt/waptserver/waptserver_upgrade.py upgrade_structure")
     elif mongo_update_status==1:
         print ("need to upgrade from mongodb to postgres, please launch python /opt/wapt/waptserver/waptserver_upgrade.py upgrade2postgres")
         sys.exit(1)
@@ -384,8 +388,8 @@ def main():
         waptserver_ini.set('options','use_kerberos','True')
 
     with open('/opt/wapt/conf/waptserver.ini','w') as inifile:
-        subprocess.check_output("/bin/chmod 640 /opt/wapt/conf/waptserver.ini",shell=True)
-        subprocess.check_output("/bin/chown wapt /opt/wapt/conf/waptserver.ini",shell=True)
+        run("/bin/chmod 640 /opt/wapt/conf/waptserver.ini")
+        run("/bin/chown wapt /opt/wapt/conf/waptserver.ini")
         waptserver_ini.write(inifile)
 
     # TODO : remove mongodb lines that are commented out
