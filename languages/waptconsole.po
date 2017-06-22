@@ -1,8 +1,5 @@
-msgid ""
-msgstr "Content-Type: text/plain; charset=UTF-8"
-
 msgid "Only required if a proxy is needed for waptserver and main waptrepo"
-msgstr ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tform1.buttonpanel1.helpbutton.caption
 msgctxt "TFORM1.BUTTONPANEL1.HELPBUTTON.CAPTION"
@@ -547,7 +544,7 @@ msgid "Private key authentication"
 msgstr ""
 
 #: tvisprivatekeyauth.label1.caption
-msgid "Key : "
+msgid "For certificate: "
 msgstr ""
 
 #: tvisprivatekeyauth.lakeypath.caption

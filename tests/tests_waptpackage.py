@@ -20,11 +20,12 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.7"
+__version__ = "1.5.0.8"
 import logging
 import sys
 import tempfile
 import codecs
+import certifi
 
 logger = logging.getLogger()
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
@@ -508,11 +509,14 @@ def test_newcrypto():
 
 
     print crt.verify_content('test',sign)
-
+    cabundle = SSLCABundle(certifi.where())
     lecert_pem = get_pem_server_certificate('https://waptrpm-dca.ad.tranquil.it')
     cecert = SSLCertificate(crt_string=lecert_pem)
     print cecert.issuer
+
+    cecert.verify_cert(cabundle)
     pass
+
 
 
 

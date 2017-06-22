@@ -585,7 +585,7 @@ begin
     Application.ProcessMessages;
     try
       Result := DMPython.RunJSON(format(
-        'mywapt.build_upload(r"%s".decode(''utf8''),r"%s",r"%s",r"%s",True)',
+        'mywapt.build_upload(r"%s".decode(''utf8''),private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=True)',
         [FSourcePath, dmpython.privateKeyPassword, waptServerUser, waptServerPassword]), jsonlog);
       if FisTempSourcesDir then
       begin

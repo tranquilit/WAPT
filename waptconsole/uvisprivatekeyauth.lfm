@@ -70,12 +70,12 @@ object visPrivateKeyAuth: TvisPrivateKeyAuth
     Left = 16
     Height = 13
     Top = 16
-    Width = 28
-    Caption = 'Key : '
+    Width = 74
+    Caption = 'For certificate: '
     ParentColor = False
   end
   object laKeyPath: TLabel
-    Left = 40
+    Left = 96
     Height = 13
     Top = 16
     Width = 48

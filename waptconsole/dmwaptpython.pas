@@ -203,7 +203,7 @@ end;
 function TDMPython.getprivateKeyPassword: Ansistring;
 var
   PrivateKeyPath:String;
-  Password:Variant;
+  Password:String;
   RetryCount:integer;
 begin
   if not FileExists(GetWaptPersonalCertificatePath) then

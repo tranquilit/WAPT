@@ -85,6 +85,8 @@ def check_key_password(key_filename,password=None):
     False
     """
     try:
+        if isinstance(password,unicode):
+            password = password.encode('utf8')
         with open(key_filename,'rb') as key_pem:
             serialization.load_pem_private_key(key_pem.read(),password or None,default_backend())
     except (TypeError,ValueError) as e:
@@ -322,6 +324,8 @@ class SSLPrivateKey(object):
             if password is None and callback is None:
                 callback = default_pwd_callback
         self.password_callback = callback
+        if isinstance(password,unicode):
+            password = password.encode('utf8')
         self.password = password
         self._rsa = None
         if pem_data:
@@ -336,7 +340,9 @@ class SSLPrivateKey(object):
 
 
     def as_pem(self,password=None):
-        password = str(password)
+        if isinstance(password,unicode):
+            password = password.encode('utf8')
+
         if password is not None:
             enc = serialization.BestAvailableEncryption(password)
         else:
@@ -351,6 +357,9 @@ class SSLPrivateKey(object):
     def save_as_pem(self,filename=None,password=None):
         if filename is None:
             filename = self.private_key_filename
+        if isinstance(password,unicode):
+            password = password.encode('utf8')
+
         self.password = password
         self.private_key_filename = filename
         with open(self.private_key_filename,'wb') as f:
@@ -374,6 +383,8 @@ class SSLPrivateKey(object):
                     password = self.password_callback(self.private_key_filename)
                     if password == '':
                         password = None
+                    if isinstance(password,unicode):
+                        password = password.encode('utf8')
                 else:
                     raise
 
@@ -807,9 +818,14 @@ class SSLCertificate(object):
         """
         certs = cabundle.certificates()
         for cert in certs:
-            verifier = CertificateVerificationContext(cert)
-            verifier.update(self.crt)
-            verifier.verify()
+            try:
+                verifier = CertificateVerificationContext(cert.crt)
+                verifier.update(self.crt)
+                verifier.verify()
+                return cert
+            except Exception as e:
+                print("%s : %s" % (cert.cn,e))
+        return None
 
 
     def verify_claim(self,claim,max_age_secs=None):

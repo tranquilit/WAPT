@@ -1,12 +1,11 @@
-msgid "Only required if a proxy is needed for waptserver and main waptrepo"
+msgid "Only required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepo"
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-msgid "Only required if a proxy is needed for waptserver and main waptrepo"
-msgstr ""
-
 #: tform1.buttonpanel1.helpbutton.caption
+#, fuzzy
+#| msgid "8&Show config file"
 msgctxt "tform1.buttonpanel1.helpbutton.caption"
-msgid "8&Show config file"
+msgid "&Show config file"
 msgstr "&Voir le fichier de configuration"
 
 #: tform1.caption
@@ -563,7 +562,8 @@ msgid "Private key authentication"
 msgstr "Authentification de la clé privée"
 
 #: tvisprivatekeyauth.label1.caption
-msgid "Key : "
+
+msgid "For certificate: "
 msgstr "Clé :"
 
 #: tvisprivatekeyauth.lakeypath.caption

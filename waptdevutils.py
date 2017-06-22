@@ -404,13 +404,6 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
     append_conflicts = ensure_list(append_conflicts)
     remove_conflicts = ensure_list(remove_conflicts)
 
-    def pwd_callback(*args):
-        """Default password callback for opening private keys"""
-        if not isinstance(key_password,str):
-            return key_password.encode('ascii')
-        else:
-            return key_password
-
     result = []
     package_files = []
     build_res = []
@@ -434,7 +427,7 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
             sources.append(edit_res)
             # build and sign
             res = wapt.build_package(edit_res['sourcespath'],inc_package_release = True)
-            signature = wapt.sign_package(res,callback=pwd_callback)
+            signature = wapt.sign_package(res,private_key_password=key_password)
             build_res.append(res)
             package_files.append(res)
 

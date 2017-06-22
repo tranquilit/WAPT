@@ -2250,29 +2250,12 @@ class Wapt(object):
         # host key cache
         self._host_key = None
 
-
-        self._key_passwd_cache = None
-        def _cache_passwd_callback(*args):
-            """Default password callback for opening private keys.
-            """
-            if not self._key_passwd_cache:
-                import getpass
-                i = 3
-                while i>0:
-                    i -=1
-                    self._key_passwd_cache = getpass.getpass()
-                    if self._key_passwd_cache:
-                        break
-            if not self._key_passwd_cache:
-                raise EWaptEmptyPassword('A non empty password is required')
-            return self._key_passwd_cache.encode('ascii')
-
-        self.key_passwd_callback = _cache_passwd_callback
+        #self.key_passwd_callback = None
 
         # keep private key in cache
         self._private_key_cache = None
 
-        self.cabundle = SSLCABundle(callback = self.key_passwd_callback)
+        self.cabundle = SSLCABundle()
         self.check_certificates_validity = False
 
         self.waptserver = None
@@ -4496,8 +4479,6 @@ class Wapt(object):
         """SSLPrivateKey matching the personal_certificate"""
         # lazzy loading of privatekey
         # TODO : check that private key file has not been updated since last loading...
-        if passwd_callback is None:
-            passwd_callback = self.key_passwd_callback
         cert = self.personal_certificate()
         if not self._private_key_cache or not cert.match_key(self._private_key_cache):
             try:
@@ -4526,8 +4507,6 @@ class Wapt(object):
         """
         if not isinstance(zip_or_directoryname,unicode):
             zip_or_directoryname = unicode(zip_or_directoryname)
-        if private_key_password is None and not callback:
-            callback = self.key_passwd_callback
         if certificate is None:
             certificate = self.personal_certificate()
             key = self.private_key(passwd_callback=callback,private_key_password=private_key_password)
