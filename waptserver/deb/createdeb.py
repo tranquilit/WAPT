@@ -239,6 +239,7 @@ try:
     copyfile('../apache-win32/conf/httpd.conf.j2',
              apache_dir + 'httpd.conf.j2')
 
+    mkdir_p('./builddir/etc/systemd/system/nginx.service.d')
     copyfile('../scripts/nginx_worker_files_limit.conf','./builddir/etc/systemd/system/nginx.service.d/nginx_worker_files_limit.conf')
 except Exception as e:
     print('error: \n%s' % e, file=sys.stderr)
