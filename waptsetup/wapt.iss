@@ -33,8 +33,9 @@ Source: "..\revision.txt"; DestDir: "{app}";
 Source: "..\templates\*"; DestDir: "{app}\templates"; Flags: createallsubdirs recursesubdirs
 
 ; for openssl get dll in path
-Source: "..\lib\site-packages\M2Crypto\libeay32.dll" ; DestDir: "{app}"; 
-Source: "..\lib\site-packages\M2Crypto\ssleay32.dll" ; DestDir: "{app}";
+Source: "..\utils\libeay32.dll" ; DestDir: "{app}"; 
+Source: "..\utils\ssleay32.dll" ; DestDir: "{app}";
+Source: "..\utils\openssl.exe" ; DestDir: "{app}";
 
 ; for local waptservice
 Source: "..\libzmq.dll"; DestDir: "{app}";
