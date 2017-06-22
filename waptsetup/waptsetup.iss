@@ -120,7 +120,11 @@ begin
   begin
     result := ExpandConstant('{param:repo_url|unknown}');
     if result='unknown' then
-      result := GetIniString('Global', 'repo_url','{#default_repo_url}', ExpandConstant('{app}\wapt-get.ini'))
+	begin
+	  result := '{#repo_url}';
+	  if result = '' then
+		result := GetIniString('Global', 'repo_url','{#default_repo_url}', ExpandConstant('{app}\wapt-get.ini'))
+    end;
   end;
 end;
 
@@ -135,7 +139,11 @@ begin
   begin
     result := ExpandConstant('{param:wapt_server|unknown}');
     if result='unknown' then
-      result := GetIniString('Global', 'wapt_server','{#default_wapt_server}', ExpandConstant('{app}\wapt-get.ini'));
+	begin
+	  result := '{#wapt_server}';
+	  if result = '' then
+          result := GetIniString('Global', 'wapt_server','{#default_wapt_server}', ExpandConstant('{app}\wapt-get.ini'));
+	end;
   end;
 end;
 

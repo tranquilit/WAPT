@@ -1504,6 +1504,10 @@ begin
             new_iss.AsArray.Add(format('#define default_repo_url "%s"',[default_repo_url]))
         else if startswith(line,'#define default_wapt_server') then
             new_iss.AsArray.Add(format('#define default_wapt_server "%s"',[default_wapt_server]))
+        else if startswith(line,'#define repo_url') then
+            new_iss.AsArray.Add(format('#define repo_url "%s"',[default_repo_url]))
+        else if startswith(line,'#define wapt_server') then
+            new_iss.AsArray.Add(format('#define wapt_server "%s"',[default_wapt_server]))
         else if startswith(line,'#define output_dir') then
             new_iss.AsArray.Add(format('#define output_dir "%s"' ,[destination]))
         else if startswith(line,'#define Company') then
