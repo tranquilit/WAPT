@@ -10,7 +10,7 @@ Group:	    Development/Tools
 License:	GPL
 URL:		https://wapt.fr
 Source0:    ./waptsetup/	
-Requires:	nginx tis-waptrepo
+Requires:	nginx
 
 %description
 Convenience package that ships with waptdeploy.exe and waptsetup.exe
