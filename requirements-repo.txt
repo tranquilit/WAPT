@@ -1,0 +1,9 @@
+cryptography==1.9
+argparse==1.2.1
+click==6.7
+cffi==1.10.0
+iniparse==0.4
+itsdangerous==0.24
+requests==2.18.1
+six==1.10.0
+urllib3==1.20
