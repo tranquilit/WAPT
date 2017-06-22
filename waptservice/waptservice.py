@@ -2327,7 +2327,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     raise Exception('Task is not targeted to this host. task''s uuid does not match host''uuid')
                 name = action['action']
                 if name in ['trigger_cancel_all_tasks']:
-                    data = self.task_manager.cancel_all_tasks().as_dict()
+                    data = [t.as_dict() for t in self.task_manager.cancel_all_tasks()]
                     result.append(data)
 
                 elif name in ['trigger_host_update','trigger_host_register']:
@@ -2385,9 +2385,9 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
 
     def on_trigger_longtask(self,args,result_callback=None):
         task = WaptLongTask()
-        task.force = action.get('force',False)
-        task.notify_user = action.get('notify_user',False)
-        task.notify_server_on_finish = action.get('notify_server',False)
+        task.force = args.get('force',False)
+        task.notify_user = args.get('notify_user',False)
+        task.notify_server_on_finish = args.get('notify_server',False)
         data = self.task_manager.add_task(task).as_dict()
         if result_callback:
             result_callback(make_response(data))
@@ -2450,7 +2450,7 @@ class WaptSocketIOClient(threading.Thread):
 
                     if self.socketio_client and self.config.websockets_host:
                         if not self.socketio_client.connected:
-                            self.socketio_client._http_session.params.update({'uuid': tmp_wapt.host_uuid,'login':self.config.websockets_auth})
+                            self.socketio_client._http_session.params.update({'uuid': tmp_wapt.host_uuid,'login':jsondump(signed_connect_params)})
                             self.socketio_client.define(WaptSocketIORemoteCalls)
                             self.socketio_client.get_namespace().wapt = tmp_wapt
                             self.socketio_client.connect('')

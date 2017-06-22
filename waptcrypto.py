@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.7"
+__version__ = "1.5.0.8"
 
 import os,sys
 import codecs
@@ -745,7 +745,7 @@ class SSLCertificate(object):
         Raise error if not OK
         """
         wapt_basedir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-        openssl_bin = os.path.join(wapt_basedir,'lib','site-packages','M2Crypto','openssl.exe')
+        openssl_bin = os.path.join(wapt_basedir,'openssl.exe')
         certfile = self.public_cert_filename
         print '"%(openssl_bin)s" verify -CAfile "%(CAfile)s" "%(certfile)s"' % locals()
         p = subprocess.Popen('"%(openssl_bin)s" verify -CAfile "%(CAfile)s" "%(certfile)s"' % locals(),stdout=subprocess.PIPE,stderr=subprocess.PIPE)

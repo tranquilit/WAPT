@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.7"
+__version__ = "1.5.0.8"
 usage = """\
 %prog [-c configfile] [-l loglevel] action
 

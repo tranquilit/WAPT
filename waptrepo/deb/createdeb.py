@@ -112,6 +112,22 @@ os.makedirs("builddir/DEBIAN")
 os.makedirs("builddir/opt")
 os.makedirs("builddir/opt/wapt")
 os.makedirs("builddir/opt/wapt/waptrepo/")
+os.makedirs("builddir/opt/wapt/lib")
+os.makedirs("builddir/opt/wapt/lib/site-packages")
+
+# for some reason the virtualenv does not build itself right if we don't
+# have pip systemwide...
+subprocess.check_output(
+    r'sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev', shell=True)
+
+print(
+    'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
+subprocess.check_output(
+    r'virtualenv ./builddir/opt/wapt --system-site-packages', shell=True)
+
+print('Install additional libraries in build environment virtualenv')
+subprocess.check_output(
+    r'./builddir/opt/wapt/bin/pip install -r ../../requirements-repo.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True)
 
 version_file = open(os.path.join('./builddir/opt/wapt/waptrepo','VERSION'),'w')
 version_file.write(wapt_version)

@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.7"
+__version__ = "1.5.0.8"
 
 import os
 import re
@@ -49,6 +49,7 @@ import fnmatch
 import platform
 import imp
 import socket
+import ssl
 import windnsquery
 import copy
 import getpass
@@ -141,7 +142,7 @@ def create_self_signed_key(orgname,
         u'email':email,
         u'req_extensions':'v3_ca',
     }
-    opensslbin = os.path.join(wapt_base_dir,'lib','site-packages','M2Crypto','openssl.exe')
+    opensslbin = os.path.join(wapt_base_dir,'openssl.exe')
     opensslcfg = codecs.open(os.path.join(wapt_base_dir,'templates','openssl_template.cfg'),'r',encoding='utf8').read() % params
     opensslcfg_fn = os.path.join(destdir,'openssl.cfg')
     codecs.open(opensslcfg_fn,'w',encoding='utf8').write(opensslcfg)
@@ -1337,19 +1338,8 @@ def get_pem_server_certificate(url,save_to_file=None):
     """
     url = urlparse.urlparse(url)
     if url.scheme == 'https':
-        context = SSL.Context();
-        context.set_allow_unknown_ca(True)
-        context.set_verify(SSL.verify_none, True)
-        conn = SSL.Connection(context)
         # try a connection to get server certificate
-        conn.connect((url.hostname, url.port or 443))
-        cert_chain = conn.get_peer_cert_chain()
-        pem_data = "\n".join(
-            ["""\
-# Issuer: %s
-# Subject: %s
-%s
-""" % (c.get_issuer().as_text(),c.get_subject().as_text(),c.as_pem() )for c in cert_chain])
+        pem_data = ssl.get_server_certificate((url.hostname, url.port or 443))
         if save_to_file:
             open(save_to_file,'wb').write(pem_data)
         return pem_data
@@ -2041,7 +2031,7 @@ class WaptHostRepo(WaptRepo):
             host_package.raise_for_status()
             return httpdatetime2isodate(host_package.headers.get('last-modified',None))
         except requests.HTTPError as e:
-            logger.info(u'No host package available at this time for %s on ' % (self.hostname,self.name))
+            logger.info(u'No host package available at this time for %s on %s' % (self.hostname,self.name))
             return None
 
     def load_config(self,config,section=None):

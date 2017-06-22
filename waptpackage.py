@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.7"
+__version__ = "1.5.0.8"
 
 __all__ = [
     'control_to_dict',

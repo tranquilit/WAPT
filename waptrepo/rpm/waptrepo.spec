@@ -11,7 +11,7 @@ URL:		http://dev.tranquil.it
 Source0:	./waptrepo/
 Prefix:		/opt
 
-Requires:  nginx dialog pytz m2crypto python-passlib python-requests python-iniparse
+Requires:  nginx dialog pytz python-passlib 
 
 # Turn off the brp-python-bytecompile script
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
@@ -41,6 +41,7 @@ cd .. && python createrpm.py
 %attr(755,wapt,nginx)/var/www/html/wapt-host/
 %attr(755,wapt,nginx)/var/www/html/waptwua/
 %attr(755,root,root)/opt/wapt/wapt-scanpackages.py
+%attr(755,root,root)/opt/wapt/wapt-signpackages.py
 
 %pre
 getent passwd wapt >/dev/null || \
@@ -50,6 +51,7 @@ exit 0
 
 %post
 ln -sf /opt/wapt/wapt-scanpackages.py /usr/bin/wapt-scanpackages
+ln -sf /opt/wapt/wapt-signpackages.py /usr/bin/wapt-signpackages
 python /opt/wapt/wapt-scanpackages.py /var/www/html/wapt
 chown -R wapt:nginx /var/www/html/*
 

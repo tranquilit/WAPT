@@ -1446,7 +1446,7 @@ begin
   else
     params.S['req_extensions'] := 'v3_ca';
 
-  opensslbin :=  AppendPathDelim(wapt_base_dir)+'lib\site-packages\M2Crypto\openssl.exe';
+  opensslbin :=  AppendPathDelim(wapt_base_dir)+'openssl.exe';
   opensslcfg :=  pyformat(FileToString(AppendPathDelim(wapt_base_dir) + 'templates\openssl_template.cfg'),params);
   opensslcfg_fn := AppendPathDelim(destdir)+'openssl.cfg';
   StringToFile(opensslcfg_fn,opensslcfg);
