@@ -238,6 +238,8 @@ try:
     subprocess.check_output(['chmod', '0700', apache_dir + '/ssl'])
     copyfile('../apache-win32/conf/httpd.conf.j2',
              apache_dir + 'httpd.conf.j2')
+
+    copyfile('../scripts/nginx_worker_files_limit.conf','./builddir/etc/systemd/system/nginx.service.d/nginx_worker_files_limit.conf')
 except Exception as e:
     print('error: \n%s' % e, file=sys.stderr)
     exit(1)

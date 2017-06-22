@@ -70,16 +70,23 @@ if type_debian():
     MONGO_SVC='mongodb'
     APACHE_SVC='apache2'
     wapt_folder = '/var/www/wapt'
+    NGINX_GID= grp.getgrnam('www-data').gr_gid
 
 elif type_redhat():
     MONGO_SVC='mongod'
     APACHE_SVC='httpd'
     wapt_folder = '/var/www/html/wapt'
+    NGINX_GID= grp.getgrnam('nginx').gr_gid
 else:
     print "distrib type unknown"
     sys.exit(1)
 
 postconf = dialog.Dialog(dialog="dialog")
+
+def run(cmd):
+    print (cmd)
+    print(subprocess.check_output(cmd,shell=True))
+
 
 def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force_https):
     if wapt_folder.endswith('\\') or wapt_folder.endswith('/'):
@@ -244,7 +251,7 @@ def check_mongo2pgsql_upgrade_needed(waptserver_ini):
 
 # main program
 def main():
-    global wapt_folder,MONGO_SVC,APACHE_SVC
+    global wapt_folder,MONGO_SVC,APACHE_SVC, NGINX_GID
 
     
     parser = OptionParser(usage=usage, version='waptserver.py ' + __version__)
@@ -275,7 +282,8 @@ def main():
     if type_redhat():
         if re.match('^SELinux status:.*enabled', subprocess.check_output('sestatus')):
             postconf.msgbox('SELinux detected, tweaking httpd permissions.')
-            subprocess.check_call(['setsebool', '-P', 'httpd_can_network_connect', '1'])
+            run('setsebool -P httpd_can_network_connect 1')
+            run('setsebool -P httpd_setrlimit on')
             postconf.msgbox('SELinux correctly configured for Nginx reverse proxy')
 
     if not os.path.isfile('/opt/wapt/conf/waptserver.ini'):
@@ -395,17 +403,13 @@ def main():
                 exit(1)
             else:
                 fqdn = reply
+            
             dh_filename = '/etc/ssl/certs/dhparam.pem'
             if not os.path.exists(dh_filename):
                 print (subprocess.check_output('openssl dhparam -out %s  2048' % dh_filename , shell=True))
 
-            try:
-                os.chown(dh_filename,pwd.getpwnam('root').pw_uid,grp.getgrnam('nginx').gr_gid)
-            except KeyError as e:
-                # for debian
-                os.chown(dh_filename,pwd.getpwnam('root').pw_uid,grp.getgrnam('www-data').gr_gid)
-
-            os.chmod(dh_filename,0o644)
+            os.chown(dh_filename, 0, grp.getgrnam(NGINX_GID).gr_gid)
+            os.chmod(dh_filename, 0o640)
 
             if options.use_kerberos:
                 import apt
