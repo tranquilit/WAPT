@@ -3,7 +3,7 @@ Name:		tis-waptrepo
 Version:	%{_version}
 Release:	1%{?dist}
 Summary:	WAPT Repo
-BuildArch:	noarch
+BuildArch:	x86_64
 
 Group:	        Development/Tools
 License:	GPL
