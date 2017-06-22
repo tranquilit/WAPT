@@ -104,11 +104,12 @@ version_file = open(os.path.join('BUILDROOT/opt/wapt/waptrepo','VERSION'),'w')
 version_file.write(wapt_version)
 version_file.close()
 
-os.makedirs(("BUILDROOT/opt/wapt/lib/site-packages")
+os.makedirs("BUILDROOT/opt/wapt/lib/site-packages")
 
 # we use pip and virtualenv to get the wapt dependencies. virtualenv usage here is a bit awkward, it can probably be improved. For instance, it install a outdated version of pip that cannot install Rocket dependencies...
 # for some reason the virtualenv does not build itself right if we don't
 # have pip systemwide...
+
 if os.path.exists("pylibs"):
     shutil.rmtree("pylibs")
 print(
