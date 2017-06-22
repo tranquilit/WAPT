@@ -23,9 +23,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 591
     Top = 0
     Width = 1028
-    ActivePage = pgInventory
+    ActivePage = pgGroups
     Align = alClient
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -2067,7 +2067,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 535
         Top = 30
-        Width = 1020
+        Width = 730
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
@@ -2143,6 +2143,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
         TreeOptions.SelectionOptions = [toDisableDrawSelection, toMultiSelect, toRightClickSelect, toSimpleDrawSelection]
         WantTabs = True
+        OnChange = GridGroupsChange
         OnColumnDblClick = GridGroupsColumnDblClick
         OnPaintText = GridPackagesPaintText
         OnInitNode = GridGroupsInitNode
@@ -2304,6 +2305,126 @@ object VisWaptGUI: TVisWaptGUI
             5700499B5100FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
           }
           TabOrder = 3
+        end
+      end
+      object PanRightBundles: TPanel
+        Left = 730
+        Height = 535
+        Top = 30
+        Width = 290
+        Align = alRight
+        Alignment = taRightJustify
+        BevelOuter = bvNone
+        ClientHeight = 535
+        ClientWidth = 290
+        TabOrder = 2
+        object MemoGroupeDescription1: TMemo
+          Left = 0
+          Height = 291
+          Top = 244
+          Width = 290
+          Align = alClient
+          ReadOnly = True
+          TabOrder = 0
+        end
+        object Panel16: TPanel
+          Left = 0
+          Height = 244
+          Top = 0
+          Width = 290
+          Align = alTop
+          BevelOuter = bvNone
+          ClientHeight = 244
+          ClientWidth = 290
+          TabOrder = 1
+          object EdPackage1: TLabeledEdit
+            Left = 81
+            Height = 21
+            Top = 4
+            Width = 200
+            CharCase = ecLowerCase
+            EditLabel.AnchorSideTop.Control = EdPackage1
+            EditLabel.AnchorSideTop.Side = asrCenter
+            EditLabel.AnchorSideRight.Control = EdPackage1
+            EditLabel.AnchorSideBottom.Control = EdPackage1
+            EditLabel.AnchorSideBottom.Side = asrBottom
+            EditLabel.Left = 38
+            EditLabel.Height = 13
+            EditLabel.Top = 8
+            EditLabel.Width = 40
+            EditLabel.Caption = 'Package'
+            EditLabel.ParentColor = False
+            LabelPosition = lpLeft
+            ReadOnly = True
+            TabOrder = 0
+          end
+          object EdVersion1: TLabeledEdit
+            Left = 81
+            Height = 21
+            Top = 28
+            Width = 76
+            EditLabel.AnchorSideTop.Control = EdVersion1
+            EditLabel.AnchorSideTop.Side = asrCenter
+            EditLabel.AnchorSideRight.Control = EdVersion1
+            EditLabel.AnchorSideBottom.Control = EdVersion1
+            EditLabel.AnchorSideBottom.Side = asrBottom
+            EditLabel.Left = 43
+            EditLabel.Height = 13
+            EditLabel.Top = 32
+            EditLabel.Width = 35
+            EditLabel.Caption = 'Version'
+            EditLabel.ParentColor = False
+            LabelPosition = lpLeft
+            ReadOnly = True
+            TabOrder = 1
+            Text = ' '
+          end
+          object Label24: TLabel
+            Left = 8
+            Height = 13
+            Top = 228
+            Width = 53
+            Anchors = [akLeft, akBottom]
+            Caption = 'Description'
+            ParentColor = False
+          end
+          object EdDepends1: TMemo
+            Left = 81
+            Height = 80
+            Top = 52
+            Width = 192
+            ReadOnly = True
+            ScrollBars = ssAutoVertical
+            TabOrder = 2
+          end
+          object EdConflicts1: TMemo
+            Left = 81
+            Height = 80
+            Top = 140
+            Width = 192
+            ReadOnly = True
+            ScrollBars = ssAutoVertical
+            TabOrder = 3
+          end
+          object Label25: TLabel
+            Left = 9
+            Height = 13
+            Top = 56
+            Width = 67
+            Alignment = taRightJustify
+            Caption = 'Dependencies'
+            ParentColor = False
+          end
+          object Label26: TLabel
+            Left = 9
+            Height = 13
+            Top = 148
+            Width = 67
+            Alignment = taRightJustify
+            AutoSize = False
+            Caption = 'Conflicts'
+            ParentColor = False
+          end
         end
       end
     end

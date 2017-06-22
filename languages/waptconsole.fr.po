@@ -562,7 +562,6 @@ msgid "Private key authentication"
 msgstr "Authentification de la clé privée"
 
 #: tvisprivatekeyauth.label1.caption
-
 msgid "For certificate: "
 msgstr "Clé :"
 
@@ -1440,6 +1439,11 @@ msgctxt "tviswaptgui.edpackage.editlabel.caption"
 msgid "Package"
 msgstr "Paquet"
 
+#: tviswaptgui.edpackage1.editlabel.caption
+msgctxt "tviswaptgui.edpackage1.editlabel.caption"
+msgid "Package"
+msgstr "Paquet"
+
 #: tviswaptgui.edrun.text
 msgid "mywapt.update()"
 msgstr ""
@@ -1455,6 +1459,16 @@ msgstr "Version"
 
 #: tviswaptgui.edversion.text
 msgctxt "tviswaptgui.edversion.text"
+msgid " "
+msgstr ""
+
+#: tviswaptgui.edversion1.editlabel.caption
+msgctxt "tviswaptgui.edversion1.editlabel.caption"
+msgid "Version"
+msgstr "Version"
+
+#: tviswaptgui.edversion1.text
+msgctxt "tviswaptgui.edversion1.text"
 msgid " "
 msgstr ""
 
@@ -1519,10 +1533,12 @@ msgid "Description"
 msgstr "Description"
 
 #: tviswaptgui.label21.caption
+msgctxt "tviswaptgui.label21.caption"
 msgid "Dependencies"
 msgstr ""
 
 #: tviswaptgui.label22.caption
+msgctxt "tviswaptgui.label22.caption"
 msgid "Conflicts"
 msgstr ""
 
@@ -1530,6 +1546,21 @@ msgstr ""
 msgctxt "tviswaptgui.label23.caption"
 msgid "Filter : "
 msgstr "Filtre :"
+
+#: tviswaptgui.label24.caption
+msgctxt "tviswaptgui.label24.caption"
+msgid "Description"
+msgstr "Description"
+
+#: tviswaptgui.label25.caption
+msgctxt "tviswaptgui.label25.caption"
+msgid "Dependencies"
+msgstr ""
+
+#: tviswaptgui.label26.caption
+msgctxt "tviswaptgui.label26.caption"
+msgid "Conflicts"
+msgstr ""
 
 #: tviswaptgui.label3.caption
 msgid "Model"

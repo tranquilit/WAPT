@@ -1244,7 +1244,7 @@ class PackageEntry(object):
         """Unzip package and optionnally check content
 
         Args:
-            target_dir (str): where to unzip package content. If Noe, a temp dir is created
+            target_dir (str): where to unzip package content. If None, a temp dir is created
             cabundle (list) : list of Certificates to check content. If None, no check is done
 
         Returns:

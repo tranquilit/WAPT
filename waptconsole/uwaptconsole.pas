@@ -59,9 +59,13 @@ type
     cbReachable: TCheckBox;
     cbNewestOnly: TCheckBox;
     CBInverseSelect: TCheckBox;
+    EdConflicts1: TMemo;
+    EdDepends1: TMemo;
     EdPackage: TLabeledEdit;
     EdHardwareFilter: TEdit;
+    EdPackage1: TLabeledEdit;
     EdVersion: TLabeledEdit;
+    EdVersion1: TLabeledEdit;
     GridWSUSAllowedWindowsUpdates: TSOGrid;
     GridWSUSScan: TSOGrid;
     GridWSUSAllowedClassifications: TSOGrid;
@@ -79,7 +83,11 @@ type
     Label22: TLabel;
     Label23: TLabel;
     EdHostsLimit: TLabeledEdit;
+    Label24: TLabel;
+    Label25: TLabel;
+    Label26: TLabel;
     LabErrorRegHardware: TLabel;
+    MemoGroupeDescription1: TMemo;
     MenuItem1: TMenuItem;
     MenuItem17: TMenuItem;
     MenuItem2: TMenuItem;
@@ -95,6 +103,8 @@ type
     odSelectInstaller: TOpenDialog;
     Panel13: TPanel;
     Panel14: TPanel;
+    PanRightBundles: TPanel;
+    Panel16: TPanel;
     Panel8: TPanel;
     PopupGridWSUSScan: TPopupMenu;
     MenuItem70: TMenuItem;
@@ -474,6 +484,7 @@ type
       State: TDragState; var Accept: Boolean);
     procedure FormDropFiles(Sender: TObject; const FileNames: array of String);
     procedure FormShow(Sender: TObject);
+    procedure GridGroupsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
     procedure GridGroupsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
@@ -2350,7 +2361,6 @@ var
   host_uuid,package, packages,ArgKey,ArgValue : ISuperObject;
   SOAction, SOActions,host:ISuperObject;
   actions_json,
-  conffile,keypassword:Variant;
   signed_actions_json:String;
   waptdevutils: Variant;
 begin
@@ -2371,10 +2381,8 @@ begin
 
     //transfer actions as json string to python
     actions_json := SOActions.AsString;
-    conffile := AppIniFilename();
-    keypassword := dmpython.privateKeyPassword;
     waptdevutils := Import('waptdevutils');
-    signed_actions_json := VarPythonAsString(waptdevutils.sign_actions(waptconfigfile:=conffile,actions:=actions_json,key_password:=keypassword));
+    signed_actions_json := VarPythonAsString(waptdevutils.sign_actions(actions:=actions_json, certfilename:=GetWaptPersonalCertificatePath(),key_password:= dmpython.privateKeyPassword));
     SOActions := SO(signed_actions_json);
 
     result := WAPTServerJsonPost('/api/v3/trigger_host_action?timeout=%D',[waptservice_timeout],SOActions);
@@ -2400,7 +2408,7 @@ var
   uuid,uuids,sel, package, packages : ISuperObject;
   SOAction, SOActions,res,host:ISuperObject;
   actions_json,
-  conffile,keypassword:Variant;
+  keypassword:String;
   signed_actions_json:String;
   waptdevutils: Variant;
 begin
@@ -2429,10 +2437,9 @@ begin
 
         //transfer actions as json string to python
         actions_json := SOActions.AsString;
-        conffile := AppIniFilename();
         keypassword := dmpython.privateKeyPassword;
         waptdevutils := Import('waptdevutils');
-        signed_actions_json := VarPythonAsString(waptdevutils.sign_actions(waptconfigfile:=conffile,actions:=actions_json,key_password:=keypassword));
+        signed_actions_json := VarPythonAsString(waptdevutils.sign_actions(actions:=actions_json, certfilename:=GetWaptPersonalCertificatePath(),key_password:=keypassword));
         SOActions := SO(signed_actions_json);
 
         res := WAPTServerJsonPost('/api/v3/trigger_host_action?timeout=%D',[waptservice_timeout],SOActions);
@@ -2522,7 +2529,7 @@ begin
           ProgressStep(i, OpenDialogWapt.Files.Count - 1);
           Application.ProcessMessages;
           sourceDir := DMPython.RunJSON(
-            Format('waptdevutils.duplicate_from_file(r"%s",(r"%s").decode("utf8"))', [AppIniFilename, OpenDialogWapt.Files[i]])).AsString;
+            Format('waptdevutils.duplicate_from_file((r"%s").decode("utf8"),new_prefix=%s)', [OpenDialogWapt.Files[i],DefaultPackagePrefix])).AsString;
           sources.AsArray.Add('r"' + sourceDir + '"');
         end;
 
@@ -3607,6 +3614,28 @@ begin
   finally
     Free;
   end;
+end;
+
+procedure TVisWaptGUI.GridGroupsChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+  if GridGroups.FocusedRow <> Nil then
+  begin
+    MemoGroupeDescription.Lines.Text := UTF8Encode(GridGroups.FocusedRow.S['description']);
+    EdPackage1.Text:=GridGroups.FocusedRow.S['package'];
+    EdVersion1.Text:=GridGroups.FocusedRow.S['version'];
+    EdDepends1.Lines.Text := StringReplace(GridGroups.FocusedRow.S['depends'],',',#13#10,[rfReplaceAll]);
+    EdConflicts1.Lines.Text := StringReplace(GridGroups.FocusedRow.S['conflicts'],',',#13#10,[rfReplaceAll]);
+  end
+  else
+  begin
+    MemoGroupeDescription.Lines.Text := '';
+    EdPackage1.Text := '';
+    EdVersion1.Text := '';
+    EdDepends1.Lines.Text := '';
+    EdConflicts1.Lines.Text := '';
+  end
+
 end;
 
 procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;

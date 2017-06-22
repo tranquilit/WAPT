@@ -1382,6 +1382,11 @@ msgctxt "tviswaptgui.edpackage.editlabel.caption"
 msgid "Package"
 msgstr ""
 
+#: tviswaptgui.edpackage1.editlabel.caption
+msgctxt "tviswaptgui.edpackage1.editlabel.caption"
+msgid "Package"
+msgstr ""
+
 #: tviswaptgui.edrun.text
 msgid "mywapt.update()"
 msgstr ""
@@ -1397,6 +1402,16 @@ msgstr ""
 
 #: tviswaptgui.edversion.text
 msgctxt "tviswaptgui.edversion.text"
+msgid " "
+msgstr ""
+
+#: tviswaptgui.edversion1.editlabel.caption
+msgctxt "tviswaptgui.edversion1.editlabel.caption"
+msgid "Version"
+msgstr ""
+
+#: tviswaptgui.edversion1.text
+msgctxt "tviswaptgui.edversion1.text"
 msgid " "
 msgstr ""
 
@@ -1461,16 +1476,33 @@ msgid "Description"
 msgstr ""
 
 #: tviswaptgui.label21.caption
+msgctxt "tviswaptgui.label21.caption"
 msgid "Dependencies"
 msgstr ""
 
 #: tviswaptgui.label22.caption
+msgctxt "tviswaptgui.label22.caption"
 msgid "Conflicts"
 msgstr ""
 
 #: tviswaptgui.label23.caption
 msgctxt "tviswaptgui.label23.caption"
 msgid "Filter : "
+msgstr ""
+
+#: tviswaptgui.label24.caption
+msgctxt "tviswaptgui.label24.caption"
+msgid "Description"
+msgstr ""
+
+#: tviswaptgui.label25.caption
+msgctxt "tviswaptgui.label25.caption"
+msgid "Dependencies"
+msgstr ""
+
+#: tviswaptgui.label26.caption
+msgctxt "tviswaptgui.label26.caption"
+msgid "Conflicts"
 msgstr ""
 
 #: tviswaptgui.label3.caption

@@ -69,7 +69,7 @@ procedure TVisHostsUpgrade.ActUpgradeExecute(Sender: TObject);
 var
   SOAction, SOActions,res,host:ISuperObject;
   actions_json,
-  conffile,keypassword:Variant;
+  keypassword:Variant;
   signed_actions_json:String;
   waptdevutils: Variant;
 begin
@@ -85,7 +85,6 @@ begin
   end;
   ProgressGrid.Refresh;
 
-  conffile := AppIniFilename();
   keypassword := dmpython.privateKeyPassword;
   waptdevutils := Import('waptdevutils');
 
@@ -110,7 +109,7 @@ begin
       //transfer actions as json string to python
       actions_json := SOActions.AsString;
 
-      signed_actions_json := VarPythonAsString(waptdevutils.sign_actions(waptconfigfile:=conffile,actions:=actions_json,key_password:=keypassword));
+      signed_actions_json := VarPythonAsString(waptdevutils.sign_actions(actions:=actions_json, certfilename:=GetWaptPersonalCertificatePath(),key_password:=keypassword));
       SOActions := SO(signed_actions_json);
 
       res := WAPTServerJsonPost('/api/v3/trigger_host_action?uuid=%S&timeout=%D',[host.S['uuid'],1],SOActions);

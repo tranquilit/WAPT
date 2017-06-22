@@ -241,7 +241,7 @@ def get_packages_filenames(waptconfigfile,packages_names,with_depends=True,verif
                         result.append((fn,md5,))
     return result
 
-def duplicate_from_file(waptconfigfile,package_filename,target_directory=None,authorized_certs=None,verify_cert=None):
+def duplicate_from_file(package_filename,new_prefix='test',target_directory=None,authorized_certs=None):
     r"""Duplicate a downloaded package to match prefix defined in waptconfigfile
        renames all dependencies
       returns source directory
@@ -252,14 +252,6 @@ def duplicate_from_file(waptconfigfile,package_filename,target_directory=None,au
     >>> res[0]['package'].depends
     u'test-wapttestsub,test-7zip'
     """
-    wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
-    wapt.dbpath = r':memory:'
-    wapt.use_hostpackages = False
-
-    prefix = wapt.config.get('global','default_package_prefix','test')
-    if not prefix:
-        error('You must specify a default package prefix in WAPT Console preferences')
-
     def rename_package(oldname,prefix):
         sp = oldname.split('-',1)
         if len(sp) == 2:
@@ -267,9 +259,7 @@ def duplicate_from_file(waptconfigfile,package_filename,target_directory=None,au
         else:
             return oldname
 
-    oldname = PackageEntry().load_control_from_wapt(package_filename).package
-    newname = rename_package(oldname,prefix)
-
+    source_package = PackageEntry(waptfile = package_filename)
     # authorized_certs is a directoyr instead a list of certificates.
     if authorized_certs is not None and not isinstance(authorized_certs,list):
         bundle = SSLCABundle()
@@ -279,32 +269,36 @@ def duplicate_from_file(waptconfigfile,package_filename,target_directory=None,au
     else:
         bundle = authorized_certs
 
-    res = wapt.duplicate_package(package_filename,newname,target_directory=target_directory,auto_inc_version=True,cabundle = bundle)
-    result = res['sourcespath']
+    source_package.unzip_package(target_dir=target_directory,cabundle=bundle)
+
+    package = PackageEntry(waptfile = source_package.sourcespath)
+    oldname = source_package.package
+    package.package = rename_package(oldname,new_prefix)
+    package.inc_build()
+
+    result = package['sourcespath']
 
     # renames dependencies
-    package =  res
     if package.depends:
         newdepends = []
         depends = ensure_list(package.depends)
         for dependname in depends:
-            newname = rename_package(dependname,prefix)
+            newname = rename_package(dependname,new_prefix)
             newdepends.append(newname)
 
         package.depends = ','.join(newdepends)
-        package.save_control_to_wapt(result)
 
     # renames conflicts
     if package.conflicts:
         newconflicts = []
         conflicts = ensure_list(package.conflicts)
         for dependname in conflicts:
-            newname = rename_package(dependname,prefix)
+            newname = rename_package(dependname,new_prefix)
             newconflicts.append(newname)
 
         package.conflicts = ','.join(newconflicts)
-        package.save_control_to_wapt(result)
 
+    package.save_control_to_wapt()
     return result
 
 
@@ -390,11 +384,6 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
     """Add or remove packages from host packages
     >>> edit_hosts_depends('c:/wapt/wapt-get.ini','htlaptop.tranquilit.local','toto','tis-7zip','admin','password')
     """
-    if not wapt_server_user:
-        wapt_server_user = raw_input('WAPT Server user :')
-    if not wapt_server_passwd:
-        wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
-
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
     wapt.dbpath = r':memory:'
     wapt.use_hostpackages = True
@@ -549,7 +538,7 @@ def create_waptwua_package(waptconfigfile,wuagroup='default',wapt_server_user=No
         remove_file(packagefilename)
     return build_res
 
-def sign_actions(waptconfigfile,actions,key_password=None):
+def sign_actions(actions,certfilename,key_password=None):
     """Sign a list of claims with private key defined in waptconfigfile
 
     Args:
@@ -577,21 +566,8 @@ def sign_actions(waptconfigfile,actions,key_password=None):
           'signer_fingerprint': '195DEFCC322C945018E917BF217CD1323FC4C79F'}]
     >>>
     """
-    wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
-    wapt.dbpath = r':memory:'
-    wapt.use_hostpackages = False
-
-    def pwd_callback(*args):
-        """Default password callback for opening private keys"""
-        if not isinstance(key_password,str):
-            return key_password.encode('ascii')
-        else:
-            return key_password
-
-    wapt.key_passwd_callback = pwd_callback
-    key = wapt.private_key()
-    cert = wapt.personal_certificate()
-
+    cert = SSLCertificate(certfilename)
+    key = cert.matching_key_in_dirs(private_key_password=key_password)
     if isinstance(actions,(str,unicode)):
         actions = json.loads(actions)
     assert(isinstance(actions,list))
