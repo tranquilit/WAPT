@@ -516,7 +516,7 @@ def test_newcrypto():
 if __name__ == '__main__':
     setup_test()
     test_newcrypto()
-    #test_oldsignature()
+    test_oldsignature()
     test_certifi_cacert()
     test_conflicts()
     test_build_sign_verify_package()

@@ -387,9 +387,10 @@ class SSLPrivateKey(object):
 
     def sign_content(self,content,md='sha256',block_size=2**20):
         """ Sign content with the private_key, return the signature"""
-        apadding = padding.PSS(
-                        mgf=padding.MGF1(hashes.SHA256()),
-                        salt_length=padding.PSS.MAX_LENGTH)
+        #apadding = padding.PSS(
+        #                mgf=padding.MGF1(hashes.SHA256()),
+        #                salt_length=padding.PSS.MAX_LENGTH)
+        apadding = padding.PKCS1v15()
         algo = get_hash_algo(md)
 
         signer = self.rsa.signer(apadding,algo)
@@ -616,9 +617,12 @@ class SSLCertificate(object):
             #    self.key.verify_update(data)
         elif not isinstance(content,str):
             raise Exception('Bad content type for verify_content, should be either str or file like')
-        apadding = padding.PSS(
-            mgf=padding.MGF1(hashes.SHA256()),
-            salt_length=padding.PSS.MAX_LENGTH)
+
+        #apadding = padding.PSS(
+        #    mgf=padding.MGF1(get_hash_algo(md)),
+        #    salt_length=padding.PSS.MAX_LENGTH)
+
+        apadding = padding.PKCS1v15()
 
         try:
             logger.debug(self.rsa.verify(signature,content,apadding,get_hash_algo(md)))
