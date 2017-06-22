@@ -1,0 +1,1 @@
+"C:\MinGW\msys\1.0\bin\patch.exe" -p 1 -u -i utils/patch-cryptography/2460.patch
