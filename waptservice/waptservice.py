@@ -2465,11 +2465,6 @@ class WaptSocketIOClient(threading.Thread):
 
                     self.config.reload_if_updated()
 
-                except AssertionError as e:
-                    # When verify_cert= self signed certitificate, raise a Assert error with n'ok'
-                    # we should catch it to avoid recreating the socketio
-                    pass
-
                 except Exception as e:
                     print('Error in socket io connection %s' % repr(e))
                     self.config.reload_if_updated()
