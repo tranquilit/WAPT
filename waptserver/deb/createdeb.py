@@ -137,6 +137,28 @@ print('Install additional libraries in build environment virtualenv')
 subprocess.check_output(
     r'./builddir/opt/wapt/bin/pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True)
 
+print('copying the waptrepo files', file=sys.stderr)
+copyfile(makepath(wapt_source_dir,'waptcrypto.py'),
+         './builddir/opt/wapt/waptcrypto.py')
+copyfile(makepath(wapt_source_dir,'waptutils.py'),
+         './builddir/opt/wapt/waptutils.py')
+copyfile(makepath(wapt_source_dir,'custom_zip.py'),
+         './builddir/opt/wapt/custom_zip.py')
+copyfile(makepath(wapt_source_dir,'waptpackage.py'),
+         './builddir/opt/wapt/waptpackage.py')
+copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
+         './builddir/opt/wapt/wapt-scanpackages.py')
+copyfile(makepath(wapt_source_dir,'wapt-signpackages.py'),
+         './builddir/opt/wapt/wapt-signpackages.py')
+
+print('Add symlink for wapt-scanpackages and wapt-signpackages')		 
+add_symlink('./opt/wapt/wapt-signpackages.py','./usr/bin/wapt-signpackages')
+add_symlink('./opt/wapt/wapt-scanpackages.py','./usr/bin/wapt-scanpackages')
+
+os.chmod('./builddir/opt/wapt/wapt-scanpackages.py',0o755)
+os.chmod('./builddir/opt/wapt/wapt-signpackages.py',0o755)
+		 
+		
 print('copying the waptserver files', file=sys.stderr)
 rsync(source_dir, './builddir/opt/wapt/',
       excludes=['apache-win32', 'mongodb', 'postconf', 'repository', 'rpm', 'uninstall-services.bat', 'deb'])

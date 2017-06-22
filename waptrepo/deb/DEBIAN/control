@@ -4,6 +4,7 @@ Section: base
 Priority: optional
 Architecture: all
 Depends: python, nginx
+Conflicts: tis-waptserver
 Maintainer: Tranquil-IT-Systems <admin@tranquil-it-systems.fr>
-Description: serveur depot wapt local
+Description: WAPT Packages repository server based on nginx and additional scan packages / sign packages tools.
 Homepage: http://www.tranquil-it-systems.fr
