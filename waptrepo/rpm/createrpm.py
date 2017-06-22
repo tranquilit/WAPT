@@ -104,6 +104,25 @@ version_file = open(os.path.join('BUILDROOT/opt/wapt/waptrepo','VERSION'),'w')
 version_file.write(wapt_version)
 version_file.close()
 
+os.makedirs(("BUILDROOT/opt/wapt/lib/site-packages")
+
+# we use pip and virtualenv to get the wapt dependencies. virtualenv usage here is a bit awkward, it can probably be improved. For instance, it install a outdated version of pip that cannot install Rocket dependencies...
+# for some reason the virtualenv does not build itself right if we don't
+# have pip systemwide...
+if os.path.exists("pylibs"):
+    shutil.rmtree("pylibs")
+print(
+    'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
+subprocess.check_output(
+    r'virtualenv ./pylibs --system-site-packages', shell=True)
+print('Install additional libraries in build environment virtualenv')
+print(subprocess.check_output(
+    r'source ./pylibs/bin/activate ; pip install --upgrade pip ', shell=True))
+print(subprocess.check_output(
+    r'source ./pylibs/bin/activate ; pip install -r ../../requirements-repo.txt -t ./BUILDROOT/opt/wapt/lib/site-packages', shell=True))
+rsync('./pylibs/lib/', './BUILDROOT/opt/wapt/lib/')
+
+
 print 'copie des fichiers waptrepo'
 rsync(source_dir,'BUILDROOT/opt/wapt/')
 copyfile(makepath(wapt_source_dir,'waptcrypto.py'),
@@ -114,6 +133,8 @@ copyfile(makepath(wapt_source_dir,'waptpackage.py'),
          'BUILDROOT/opt/wapt/waptpackage.py')
 copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
          'BUILDROOT/opt/wapt/wapt-scanpackages.py')
+copyfile(makepath(wapt_source_dir,'wapt-signpackages.py'),
+         'BUILDROOT/opt/wapt/wapt-signpackages.py')
 copyfile(makepath(wapt_source_dir,'custom_zip.py'),
          'BUILDROOT/opt/wapt/custom_zip.py')
 if platform.dist()[0] in ('debian','ubuntu'):
