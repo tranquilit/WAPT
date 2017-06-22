@@ -509,7 +509,10 @@ def test_newcrypto():
 
     print crt.verify_content('test',sign)
 
-
+    lecert_pem = get_pem_server_certificate('https://waptrpm-dca.ad.tranquil.it')
+    cecert = SSLCertificate(crt_string=lecert_pem)
+    print cecert.issuer
+    pass
 
 
 

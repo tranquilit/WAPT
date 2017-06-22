@@ -1339,7 +1339,7 @@ def get_pem_server_certificate(url,save_to_file=None):
     url = urlparse.urlparse(url)
     if url.scheme == 'https':
         # try a connection to get server certificate
-        pem_data = ssl.get_server_certificate((url.hostname, url.port or 443))
+        pem_data = str(ssl.get_server_certificate((url.hostname, url.port or 443)))
         if save_to_file:
             open(save_to_file,'wb').write(pem_data)
         return pem_data
