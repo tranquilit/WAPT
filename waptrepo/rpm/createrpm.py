@@ -138,6 +138,13 @@ copyfile(makepath(wapt_source_dir,'wapt-signpackages.py'),
          'BUILDROOT/opt/wapt/wapt-signpackages.py')
 copyfile(makepath(wapt_source_dir,'custom_zip.py'),
          'BUILDROOT/opt/wapt/custom_zip.py')
+
+print('cryptography patches')
+copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','__init__.py'),
+         'BUILDROOT/opt/wapt/lib/site-packages/cryptography/x509/__init__.py')
+copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','verification.py'),
+         'BUILDROOT/opt/wapt/lib/site-packages/cryptography/x509/verification.py')
+
 if platform.dist()[0] in ('debian','ubuntu'):
     os.makedirs('BUILDROOT/var/www/wapt')
     os.makedirs('BUILDROOT/var/www/waptwua')

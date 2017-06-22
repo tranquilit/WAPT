@@ -36,3 +36,8 @@ copy /Y Scripts\pythonw.exe waptpythonw.exe
 
 REM Patch memory leak
 copy /Y utils\patch-socketio-client-2\__init__.py  lib\site-packages\socketIO_client\
+
+REM Patch x509 certificate signature checking
+copy /Y utils\patch-cryptography\__init__.py  lib\site-packages\cryptography\x509\
+copy /Y utils\patch-cryptography\verification.py  lib\site-packages\cryptography\x509\
+

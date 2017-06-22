@@ -104,7 +104,7 @@ def check_if_package_is_installed(package_name):
     else:
         return False
 
-if (not check_if_package_is_installed('python-virtualenv') 
+if (not check_if_package_is_installed('python-virtualenv')
           or not check_if_package_is_installed('gcc')
           or not check_if_package_is_installed('openssl-devel')
           or not check_if_package_is_installed('libffi-devel')
@@ -147,8 +147,15 @@ print('copying the waptserver files', file=sys.stderr)
 rsync(source_dir, './builddir/opt/wapt/',
       excludes=['postconf', 'mongod.exe', 'bin', 'include'])
 
+print('cryptography patches')
+copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','__init__.py'),
+         'BUILDROOT/opt/wapt/lib/site-packages/cryptography/x509/__init__.py')
+copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','verification.py'),
+         'BUILDROOT/opt/wapt/lib/site-packages/cryptography/x509/verification.py')
+
+
 print("copying systemd startup script", file=sys.stderr)
-build_dest_dir = './builddir/usr/lib/systemd/system/' 
+build_dest_dir = './builddir/usr/lib/systemd/system/'
 try:
     mkdir_p(build_dest_dir)
     copyfile('../scripts/waptserver.service', os.path.join(build_dest_dir,'waptserver.service'))

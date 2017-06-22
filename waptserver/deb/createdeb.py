@@ -163,6 +163,14 @@ copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
 copyfile(makepath(wapt_source_dir,'wapt-signpackages.py'),
          './builddir/opt/wapt/wapt-signpackages.py')
 
+print('cryptography patches')
+copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','__init__.py'),
+         './builddir/opt/wapt/lib/site-packages/cryptography/x509/__init__.py')
+copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','verification.py'),
+         './builddir/opt/wapt/lib/site-packages/cryptography/x509/verification.py')
+		 
+		 
+		 
 print('Add symlink for wapt-scanpackages and wapt-signpackages')
 add_symlink('./opt/wapt/wapt-signpackages.py','./usr/bin/wapt-signpackages')
 add_symlink('./opt/wapt/wapt-scanpackages.py','./usr/bin/wapt-scanpackages')

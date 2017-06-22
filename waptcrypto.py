@@ -362,7 +362,7 @@ class SSLPrivateKey(object):
         while retry_cnt>0:
             try:
                 self._rsa = serialization.load_pem_private_key(
-                    pem_data,
+                    str(pem_data),
                     password = password,
                     backend = default_backend())
                 self.password = password
@@ -501,7 +501,7 @@ class SSLCertificate(object):
         self.ignore_validity_checks = ignore_validity_checks
 
     def _load_cert_data(self,pem_data):
-        self._crt = x509.load_pem_x509_certificate(pem_data,default_backend())
+        self._crt = x509.load_pem_x509_certificate(str(pem_data),default_backend())
 
     def _load_cert_file(self,filename):
         with open(filename,'rb') as crt_file:
@@ -566,7 +566,7 @@ class SSLCertificate(object):
             builder = builder.add_extension(
                 ext.get('extension'), ext.get('critical')
             )
-        self.crt = builder.sign(signing_key.key, hash_alg=hashes.SHA256(), backend=default_backend())
+        self.crt = builder.sign(signing_key.key,algorithm=hashes.SHA256(), backend=default_backend())
 
     @property
     def modulus(self):
@@ -802,13 +802,14 @@ class SSLCertificate(object):
             raise EWaptCertificateUnknowIssuer('Unknown issuer for %s' % (self.public_cert_filename))
         return result
 
-    def verify_cert(self,cabundle,check_errors=True):
-        """Check validity of certificate against list of CA and validity
-        Raise error if not OK
+    def verify_cert(self,cabundle):
+        """Check validity of certificate signature.
         """
         certs = cabundle.certificates()
-        verifier = CertificateVerificationContext( )
-        return result
+        for cert in certs:
+            verifier = CertificateVerificationContext(cert)
+            verifier.update(self.crt)
+            verifier.verify()
 
 
     def verify_claim(self,claim,max_age_secs=None):
