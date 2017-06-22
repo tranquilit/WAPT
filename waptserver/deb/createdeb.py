@@ -50,6 +50,18 @@ def replaceAll(file, searchExp, replaceExp):
         sys.stdout.write(line)
 
 
+def add_symlink(link_target,link_name):
+    if link_target.startswith('/'):
+        link_target = link_target[1:]
+    relative_link_target_path = os.path.join('builddir',link_target)
+    print("adding symlink %s -> %s" % (link_name, relative_link_target_path ))
+    mkdir_p(os.path.dirname(relative_link_target_path))
+
+    if not os.path.exists(relative_link_target_path):
+        cmd = 'ln -s %s %s ' % (relative_link_target_path,link_name)
+        print( cmd)
+        print(subprocess.check_output(cmd))
+
 def rsync(src, dst, excludes=[]):
     rsync_option = " --exclude '*.pyc' --exclude '*~' --exclude '.svn' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -a --stats"
     if excludes:
@@ -151,14 +163,14 @@ copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
 copyfile(makepath(wapt_source_dir,'wapt-signpackages.py'),
          './builddir/opt/wapt/wapt-signpackages.py')
 
-print('Add symlink for wapt-scanpackages and wapt-signpackages')		 
+print('Add symlink for wapt-scanpackages and wapt-signpackages')
 add_symlink('./opt/wapt/wapt-signpackages.py','./usr/bin/wapt-signpackages')
 add_symlink('./opt/wapt/wapt-scanpackages.py','./usr/bin/wapt-scanpackages')
 
 os.chmod('./builddir/opt/wapt/wapt-scanpackages.py',0o755)
 os.chmod('./builddir/opt/wapt/wapt-signpackages.py',0o755)
-		 
-		
+
+
 print('copying the waptserver files', file=sys.stderr)
 rsync(source_dir, './builddir/opt/wapt/',
       excludes=['apache-win32', 'mongodb', 'postconf', 'repository', 'rpm', 'uninstall-services.bat', 'deb'])
@@ -206,18 +218,6 @@ try:
 except Exception as e:
     print('error: \n%s' % e, file=sys.stderr)
     exit(1)
-
-def add_symlink(link_target,link_name):
-    if link_target.startswith('/'):
-        link_target = link_target[1:]
-    relative_link_target_path = os.path.join('builddir',link_target)
-    print("adding symlink %s -> %s" % (link_name, relative_link_target_path ))
-    mkdir_p(os.path.dirname(relative_link_target_path))
-
-    if not os.path.exists(relative_link_target_path):
-        cmd = 'ln -s %s %s ' % (relative_link_target_path,link_name)
-        print( cmd)
-        print(subprocess.check_output(cmd))
 
 add_symlink('opt/wapt/waptserver/scripts/postconf.py','/usr/bin/wapt-serverpostconf')
 os.chmod('builddir/opt/wapt/waptserver/scripts/postconf.py',0o755)
