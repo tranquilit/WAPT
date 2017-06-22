@@ -443,13 +443,26 @@ def main():
             with open("/etc/nginx/nginx.conf", "w") as nginx_conf_file:
                 nginx_conf_file.write(nginxparser.dumps(nginx_conf))
 
-
-
             if options.use_kerberos:
-                import apt
-                cache = apt.Cache()
-                if not cache.has_key('libnginx-mod-http-auth-spnego') or cache['libnginx-mod-http-auth-spnego'].is_installed:
-                    print('missing dependency libnginx-mod-http-auth-spnego, please install first before configuring kerberos')
+                if type_debian():
+                    import apt
+                    cache = apt.Cache()
+                    if not cache.has_key('libnginx-mod-http-auth-spnego') or cache['libnginx-mod-http-auth-spnego'].is_installed:
+                        print('missing dependency libnginx-mod-http-auth-spnego, please install first before configuring kerberos')
+                        sys.exit(1)
+                elif type_redhat():
+                    import yum
+                    yb = yum.YumBase()
+                    yb.conf.cache = os.geteuid() != 1
+                    pkgs = yb.rpmdb.returnPackages()
+                    found = False
+                    for pkg in  pkgs:
+                        if pkg.name=='nginx-mod-http-auth-spnego':
+                            found = True
+                    if found==False:
+                        print('missing dependency nginx-mod-http-auth-spnego, please install first before configuring kerberos')
+                        sys.exit(1)
+
 
             make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn, options.use_kerberos, options.force_https)
 
