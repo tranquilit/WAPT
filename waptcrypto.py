@@ -35,6 +35,8 @@ from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization,hashes
 from cryptography.hazmat.primitives.asymmetric import padding,utils,rsa,AsymmetricVerificationContext,AsymmetricVerificationContext
+from cryptography.x509.extensions import ExtensionNotFound
+from cryptography.x509.verification import CertificateVerificationContext, InvalidCertificate, InvalidSigningCertificate
 
 from waptutils import *
 
@@ -529,12 +531,42 @@ class SSLCertificate(object):
             self._load_cert_file(self._public_cert_filename)
         return self._crt
 
+    @crt.setter
+    def crt(self,value):
+        if value != self._crt:
+            self._public_cert_filename = None
+            self._crt = value
+            self._rsa = None
+            self._key = None
+
     @property
     def rsa(self):
         """Return public RSA keys"""
         if not self._rsa:
             self._rsa = self.crt.public_key()
         return self._rsa
+
+    def _build_certificate(self,subject, issuer, not_valid_before, not_valid_after,
+                          signing_key, public_key, extensions):
+        builder = x509.CertificateBuilder().serial_number(
+            x509.random_serial_number()
+        ).issuer_name(
+            issuer
+        ).subject_name(
+            subject
+        ).public_key(
+            public_key
+        ).not_valid_before(
+            not_valid_before
+        ).not_valid_after(
+            not_valid_after
+        )
+
+        for ext in extensions:
+            builder = builder.add_extension(
+                ext.get('extension'), ext.get('critical')
+            )
+        self.crt = builder.sign(signing_key.key, hash_alg=hashes.SHA256(), backend=default_backend())
 
     @property
     def modulus(self):
@@ -740,7 +772,7 @@ class SSLCertificate(object):
         else:
             return False
 
-    def verify(self,CAfile,check_errors=True):
+    def verify_old(self,CAfile,check_errors=True):
         """Check validity of certificate against list of CA and validity
         Raise error if not OK
         """
@@ -769,6 +801,15 @@ class SSLCertificate(object):
         if not result:
             raise EWaptCertificateUnknowIssuer('Unknown issuer for %s' % (self.public_cert_filename))
         return result
+
+    def verify_cert(self,cabundle,check_errors=True):
+        """Check validity of certificate against list of CA and validity
+        Raise error if not OK
+        """
+        certs = cabundle.certificates()
+        verifier = CertificateVerificationContext( )
+        return result
+
 
     def verify_claim(self,claim,max_age_secs=None):
         """Verify a simple dict signed with SSLPrivateKey.sign_claim

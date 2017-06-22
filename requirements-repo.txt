@@ -7,3 +7,4 @@ itsdangerous==0.24
 requests==2.18.1
 six==1.10.0
 urllib3==1.20
+passlib==1.7.1
