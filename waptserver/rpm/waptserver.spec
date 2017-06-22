@@ -13,7 +13,7 @@ URL:		https://wapt.fr
 Source0:	./waptserver/
 Prefix:		/opt
 
-Requires:  nginx dialog pytz cabextract python-psutil python2-dialog msktutil krb5-workstation
+Requires:  nginx dialog pytz cabextract python-psutil python2-dialog msktutil krb5-workstation pyparsing
 
 # Turn off the brp-python-bytecompile script
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
