@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.8"
+__version__ = "1.5.0.9"
 
 import os
 import re
@@ -4092,6 +4092,7 @@ class Wapt(object):
 
     def authorized_certificates(self):
         """return a list of autorized package signers for this host
+            check_certificates_validity enable date checking.
         """
         return self.cabundle.certificates(valid_only = self.check_certificates_validity)
 

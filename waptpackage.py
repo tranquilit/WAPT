@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.8"
+__version__ = "1.5.0.9"
 
 __all__ = [
     'control_to_dict',
@@ -841,10 +841,14 @@ class PackageEntry(object):
         """Check in memory control signature against a list of public certificates
 
         Args:
-            cabundle (SSLCABundle):
+            cabundle (SSLCABundle): Trusted certificates. : packages certificates must be signed by a one of this bundle.
+            signers_bundle : Optional. List of potential packages signers. When checking Packages index, actual
+                             package are not available, only certificates embedded in Packages index.
+                             Package signature are checked againt these certitificate
+                             and matching certificate is checked against cabundle.
 
         Returns:
-            matching SSLCertificate
+            SSLCertificate : matching trusted package's signers SSLCertificate
 
         >>> from waptpackage import *
         >>> from common import SSLPrivateKey,SSLCertificate
@@ -868,17 +872,20 @@ class PackageEntry(object):
         signature_raw = self.signature.decode('base64')
         cert = self.package_certificate()
         if cert is None and signers_bundle is not None:
-            cert = signers_bundle.certificate(fingerprint = self.signer_fingerprint)
+            cert = signers_bundle.certificate (fingerprint = self.signer_fingerprint)
         if cert is not None:
             # we have the
             try:
+                issued_by = cabundle.is_known_issuer(cert)
+                if not issued_by:
+                    raise EWaptCertificateUnknowIssuer('Package certificate is unknown and not allowed on this host')
+                else:
+                    logger.debug('Certificate %s is trusted by root CA %s' % (cert.subject,issued_by.subject))
+
                 if cert.verify_content(signed_content,signature_raw,md=self._default_md):
                     self._md = self._default_md
                     return cert
 
-                issued_by = cabundle.is_known_issuer(cert)
-                if not issued_by:
-                    raise EWaptCertificateUnknowIssuer('Package certificate is unknown and not allowed on this host')
             except SSLVerifyException:
                 if cert.verify_content(signed_content,signature_raw,md='sha1'):
                     logger.debug('Fallback to sha1 digest for package''s control signature')
@@ -1202,6 +1209,9 @@ class PackageEntry(object):
                         issued_by = cabundle.is_known_issuer(cert)
                         if not issued_by:
                             raise EWaptCertificateUnknowIssuer('Package certificate is unknown and not allowed on this host')
+                        else:
+                            logger.debug('Certificate %s is trusted by root CA %s' % (cert.subject,issued_by.subject))
+
                         certs = [cert]
                     else:
                         # old style, test all against signature

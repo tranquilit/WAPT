@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.8"
+__version__ = "1.5.0.9"
 
 import os,sys
 import codecs
@@ -40,6 +40,8 @@ from cryptography.x509.verification import CertificateVerificationContext, Inval
 
 from OpenSSL import crypto
 from OpenSSL import SSL
+
+import certifi
 
 from waptutils import *
 
@@ -174,8 +176,10 @@ class SSLCABundle(object):
     md = 'sha256'
 
     def __init__(self,cert_pattern_or_dir=None,callback=None,certificates=None):
-        self._keys = {}
-        self._certificates = {}
+        self._keys = []
+        self._certificates = []
+        self._certs_subject_hash_idx = {}
+        self._certs_fingerprint_idx = {}
         if callback is None:
             callback = default_pwd_callback
         self.callback = callback
@@ -185,8 +189,10 @@ class SSLCABundle(object):
             self.add_certificates(certificates)
 
     def clear(self):
-        self._keys.clear()
-        self._certificates.clear()
+        del self._keys[:]
+        del self._certificates[:]
+        self._certs_subject_hash_idx.clear()
+        self._certs_fingerprint_idx.clear()
 
     def add_pems(self,cert_pattern_or_dir='*.crt',load_keys=False):
         if os.path.isdir(cert_pattern_or_dir):
@@ -202,14 +208,29 @@ class SSLCABundle(object):
         return self
 
     def add_certificates(self,certificates):
+        """Add a list of certificates to the bundle and index them.
+
+        Returns:
+            list of SSLCertificates actually added
+        """
         if not isinstance(certificates,list):
             certificates = [certificates]
+        result = []
         for cert in certificates:
-            self._certificates[cert.get_fingerprint(md=self.md)] = cert
-        return self
+            try:
+                if not cert.fingerprint in self._certs_fingerprint_idx:
+                    self._certs_subject_hash_idx[cert.subject_hash] = cert
+                    self._certs_fingerprint_idx[cert.fingerprint] = cert
+                    self._certificates.append(cert)
+                    result.append(cert)
+                else:
+                    logger.debug('Skipping %s, already in bundle' % cert.subject)
+            except Exception as e:
+                logger.warning('Error adding certitificate %s: %s' % (cert.subject,e))
+        return result
 
     def add_pem(self,pem_data,load_keys=False):
-        """ parse a bundle PEM with multiple key / certificates
+        """ parse a bundle PEM with multiple certificates
         Returns:
             list : of loaded certificates
         """
@@ -225,9 +246,6 @@ class SSLCABundle(object):
             elif line == self.END_CERTIFICATE:
                 tmplines.append(line)
                 cert = SSLCertificate(crt_string =str('\n'.join(tmplines)))
-                #if not cert.is_valid():
-                #    logger.warning('Certificate %s is not valid' % cert.cn)
-                self._certificates[cert.fingerprint] = cert
                 result.append(cert)
                 incert = False
                 tmplines = []
@@ -239,46 +257,42 @@ class SSLCABundle(object):
                 if load_keys:
                     pem_data = str('\n'.join(tmplines))
                     key = SSLPrivateKey(pem_data = pem_data,callback=self.callback)
-                    self._keys[key.modulus] = key
+                    self._keys.append(key)
                 inkey = False
                 tmplines = []
             else:
                 if inkey or incert:
                     tmplines.append(line)
-        return result
+        return self.add_certificates(result)
 
     def key(self,modulus):
-        return self._keys.get(modulus,None)
+        for k in self._keys:
+            if k.modulus == modulus:
+                return k
+        return None
 
     def certificate(self,fingerprint):
-        return self._certificates.get(fingerprint,None)
+        return self._certs_fingerprint_idx.get(fingerprint,None)
 
     def certificate_for_cn(self,cn):
         """Handles wildcards cn..."""
-        certs = [crt for crt in self.certificates() if (crt.cn == cn) or (cn and crt.cn and glob.fnmatch.fnmatch(cn,crt.cn))]
-        if certs:
-            return certs[0]
-        else:
-            return None
-
-    def certificate_for_subject_hash(self,subject_hash):
-        for cert in self._certificates.values():
-            try:
-                if (cert.subject_hash == subject_hash):
-                    return cert
-            except Exception as e:
-                print('Error for CA certificate : %s' % cert.subject)
+        for cert in self._certificates:
+            if (cert.cn == cn) or (cn and cert.cn and glob.fnmatch.fnmatch(cn,cert.cn)):
+                return cert
         return None
 
+    def certificate_for_subject_hash(self,subject_hash):
+        return self._certs_subject_hash_idx.get(subject_hash,None)
+
     def keys(self):
-        return self._keys.values()
+        return self._keys
 
     def certificates(self,valid_only=False):
-        return [crt for crt in self._certificates.values() if not valid_only or crt.is_valid()]
+        return [crt for crt in self._certificates if not valid_only or crt.is_valid()]
 
     def matching_certs(self,key,ca=None,code_signing=None,valid=True):
         return [
-            crt for crt in self.certificates() if
+            crt for crt in self._certificates if
                 (valid is None or crt.is_valid() == valid) and
                 (code_signing is None or crt.is_code_signing == code_signing) and
                 (ca is None or crt.is_ca == ca) and
@@ -286,58 +300,65 @@ class SSLCABundle(object):
                 ]
 
     def certificate_chain(self,certificate):
-        # bad implementation
-        result = [certificate]
-        issuer_subject_hash = certificate.issuer_subject_hash
-        issuer_cert = self.certificate_for_subject_hash(issuer_subject_hash)
-        while issuer_subject_hash and certificate.subject_hash != issuer_subject_hash:
-            issuer_subject_hash = certificate.issuer_subject_hash
-            issuer_cert = self.certificate_for_subject_hash(issuer_subject_hash)
+        # return certificate chain from certificate, without checking certificate signatures and validity
+        result = []
+        issuer_cert = self.certificate_for_subject_hash(certificate.issuer_subject_hash)
+        if issuer_cert:
+            result.append(certificate)
+        while issuer_cert:
             # TODO : verify  certificate.signature with issuercert public key
             if issuer_cert and not issuer_cert.is_ca:
                 logger.debug('Certificate %s issued by non CA certificate %s' % (certificate,issuer_cert))
                 break
-            if issuer_cert and issuer_cert != certificate:
-                result.append(issuer_cert)
-            else:
+            result.append(issuer_cert)
+            issuer_subject_hash = issuer_cert.issuer_subject_hash
+            # halt on top self signed certificate
+            if issuer_subject_hash == issuer_cert.subject_hash:
                 break
-            certificate = issuer_cert
+            issuer_cert = self.certificate_for_subject_hash(issuer_subject_hash)
         return result
 
     def is_known_issuer(self,certificate):
         """Check if certificate is issued by one of this certificate bundle CA
+            and check certificate signature. Return top most CA.
+
+            Top most CA should be trusted somewhere...
+
         Return:
             SSLCertificate: issuer certificate or None
         """
-        issuer_subject_hash = certificate.issuer_subject_hash
-        issuer_cert = self.certificate_for_subject_hash(issuer_subject_hash)
-        while issuer_cert and issuer_subject_hash and certificate.subject_hash != issuer_subject_hash:
-            issuer_subject_hash = certificate.issuer_subject_hash
-            issuer_cert = self.certificate_for_subject_hash(issuer_subject_hash)
-            # TODO : verify  certificate.signature with issuercert public key
-            if issuer_cert and not issuer_cert.is_ca:
-                logger.debug('Certificate %s issued by non CA certificate %s' % (certificate,issuer_cert))
-                return None
-            if certificate == issuer_cert:
-                break
-            certificate = issuer_cert
-        return issuer_cert
+        # todo check cert signature
+        cert_chain  = certificate.verify_cert_signature(self)
+        if cert_chain:
+            return cert_chain[-1]
+        else:
+            return None
 
 
     def as_pem(self):
-        return " \n".join(["# CN: %s\n# Issuer CN: %s\n%s" % (crt.cn,crt.issuer_cn,crt.as_pem()) for crt in self._certificates.values()])
+        return " \n".join(["# CN: %s\n# Issuer CN: %s\n%s" % (crt.cn,crt.issuer_cn,crt.as_pem()) for crt in self._certificates])
 
     def __repr__(self):
-        return "<SSLCABundle %s >" % repr(self._certificates.values())
+        return "<SSLCABundle %s >" % repr(self._certificates)
 
     def check_chain(self,certificate,trusted_ca):
         """verify certificate trust chain in current chain against trusted certificates in trusted_ca
         Returns:
             SSLCertificate : root trusted cert
         """
-        issuer = self.is_known_issuer(certificate)
-        return trusted_ca.is_known_issuer(issuer)
+        chain = self.certificate_chain(certificate)
+        trusted_chain = trusted_ca.certificate_chain(chain[-1])
+        return chain+trusted_chain
 
+    def __add__(self,otherbundle):
+        return SSLCABundle(certificates = self._certificates+otherbundle._certificates)
+
+    def __substract__(self,otherbundle):
+        certificates = self._certificates
+        for cert in otherbundle._certificates:
+            if not cert.fingerprint in self._certs_fingerprint_idx:
+                certificates.append(cert)
+        return SSLCABundle(certificates=certificates)
 
 def get_peer_cert_chain_from_server(url):
     """Returns list of SSLCertificates from initial handshake of https server
@@ -468,6 +489,7 @@ class SSLPrivateKey(object):
             content = jsondump(content)
         if isinstance(content,str):
             signer.update(content)
+            """
         elif hasattr(content,'read'):
             # file like objetc
             while True:
@@ -475,6 +497,7 @@ class SSLPrivateKey(object):
                 if not data:
                     break
                 signer.update(data)
+            """
         else:
             raise Exception('Bad content type for sign_content, should be either str or file like')
         signature = signer.finalize()
@@ -575,6 +598,13 @@ class SSLCertificate(object):
 
     def as_pem(self):
         return self.crt.public_bytes(serialization.Encoding.PEM)
+
+    def as_X509(self):
+        return crypto.load_certificate(crypto.FILETYPE_PEM,self.as_pem())
+
+    def from_X509(self,x509_cert):
+        assert(isinstance(x509_cert,SSL.X509))
+        self._load_cert_data(crypto.dump_certificate(crypto.FILETYPE_PEM,x509_cert))
 
     @property
     def public_cert_filename(self):
@@ -724,29 +754,22 @@ class SSLCertificate(object):
         elif isinstance(content,(list,dict)):
             content = jsondump(content)
 
-        if hasattr(content,'read'):
-            # file like object
-            # TODO : use prehash
-            sha1_for_data
-            #while True:
-            #    data = content.read(block_size)
-            #    if not data:
-            #        break
-            #    self.key.verify_update(data)
-        elif not isinstance(content,str):
+        if not isinstance(content,str):
             raise Exception('Bad content type for verify_content, should be either str or file like')
 
+        # todo : recommended for new projects...
         #apadding = padding.PSS(
         #    mgf=padding.MGF1(get_hash_algo(md)),
         #    salt_length=padding.PSS.MAX_LENGTH)
 
+        # compatible with openssl sign
         apadding = padding.PKCS1v15()
 
         try:
             logger.debug(self.rsa.verify(signature,content,apadding,get_hash_algo(md)))
             return self.cn
         except InvalidSignature as e:
-            raise SSLVerifyException('SSL signature verification failed for certificate %s'%self.subject_dn)
+            raise SSLVerifyException('SSL signature verification failed for certificate %s'%self.subject)
 
     def match_key(self,key):
         """Check if certificate matches the given private key"""
@@ -791,23 +814,19 @@ class SSLCertificate(object):
         result = self.crt.not_valid_after
         return result
 
-    def is_revoked(self):
-        ca_info = self.extensions
-        return False
-
-    def is_valid(self,ca_bundle=None):
+    def is_valid(self):
         """Check validity of certificate
                 not before / not after
-            if ca_bundle is provided, check that the certificate is issued by a known ca
-            if issuer_cert is provided, check that the certificate is issued by this issuer
         """
         if self.ignore_validity_checks:
             return True
         nb,na = self.not_before,self.not_after
         now = datetime.datetime.now(nb.tzinfo)
         return \
-            now >= nb and now <= na and \
-            (ca_bundle is None or ca_bundle.check_is_known_issuer(self))
+            now >= nb and now <= na
+
+    def crl_urls(self):
+        return [d.full_name[0].value for d in self.extensions.get('cRLDistributionPoints',[])]
 
     def __iter__(self):
         for k in ['issuer_dn','fingerprint','subject_dn','cn','is_code_signing','is_ca']:
@@ -842,6 +861,11 @@ class SSLCertificate(object):
 
     @property
     def extensions(self):
+        """certificates extensions
+
+        Returns:
+            dict
+        """
         return dict([(e.oid._name,e.value) for e in self.crt.extensions])
 
     @property
@@ -888,25 +912,48 @@ class SSLCertificate(object):
             raise EWaptCertificateUnknowIssuer('Unknown issuer for %s' % (self.public_cert_filename))
         return result
 
-    def verify_cert(self,cabundle):
-        """Check validity of certificate signature.
+    def verify_cert_signature(self,cabundle=None):
+        """Check validity of certificates signature along the whole certificates chain
+
+        Args;
+            cabundle: bundle of CA certificates
+
+        Returns:
+            list : certificate chain
         """
-        store = SSL.X509Store()
+        chain = []
+        certificate = self
+        if cabundle is None:
+            cabundle = SSLCABundle(certifi.where())
 
-        certs = cabundle.certificates()
-        for cert in certs:
+        if isinstance(cabundle,SSLCABundle):
+            issuer = cabundle.certificate_for_subject_hash(certificate.issuer_subject_hash)
+        else:
+            issuer = cabundle
+            assert(isinstance(issuer,SSLCertificate))
+
+        if not issuer:
+            raise SSLVerifyException('Issuer CA certificate %s can not be found in supplied bundle'%self.issuer_dn)
+
+        while issuer:
             try:
-                verifier = CertificateVerificationContext(cert.crt)
-                verifier.update(self.crt)
+                verifier = CertificateVerificationContext(issuer.crt)
+                verifier.update(certificate.crt)
                 verifier.verify()
-                return cert
+                chain.append(issuer)
+                if issuer.subject_hash == issuer.issuer_subject_hash:
+                    break
+                certificate = issuer
+                issuer = cabundle.certificate_for_subject_hash(certificate.issuer_subject_hash)
             except Exception as e:
-                print("%s : %s" % (cert.cn,e))
-        return None
+                logger.critical("Certificate validation error on certificate %s : %s" % (issuer.subject,e))
+                raise
 
+        return chain
 
     def verify_claim(self,claim,max_age_secs=None):
         """Verify a simple dict signed with SSLPrivateKey.sign_claim
+
         Args:
             claim (dict) : with keys signature,signed_attributes,signer,signature_date
         Returns:
@@ -943,6 +990,7 @@ class SSLCertificate(object):
             signer=claim['signer'],
             verified_by=self.cn,
             )
+
 
 
 if __name__ == '__main__':
