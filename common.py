@@ -1346,13 +1346,6 @@ def get_pem_server_certificate(url,save_to_file=None):
     else:
         return None
 
-def get_server_ssl_certificates(url):
-    pem_data = get_pem_server_certificate(url)
-    if pem_data is not None:
-        return SSLCABundle().add_pem(pem_data)
-    else:
-        return None
-
 class WaptServer(object):
     """Manage connection to waptserver"""
 

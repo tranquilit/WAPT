@@ -517,11 +517,34 @@ def test_newcrypto():
     cecert.verify_cert(cabundle)
     pass
 
+def test_saveservercert():
+    w = Wapt()
+    w.waptserver.save_server_certificate()
 
+def test_get_peer_chain():
+    bundle = SSLCABundle()
+    print SSLCABundle(certificates = get_peer_cert_chain_from_server('https://waptrpm-dca.ad.tranquil.it')).as_pem()
+
+    certs = get_peer_cert_chain_from_server('https://waptrpm-dca.ad.tranquil.it')
+    bundle.add_pems('c:/wapt/ssl/server/waptrpm-dca.ad.tranquil.it.crt')
+    certs = bundle._certificates.values()
+    print bundle
+    ca = SSLCABundle(certifi.where())
+    for cert in certs:
+        print ca.is_known_issuer(cert)
+
+
+def test_subject_hash():
+    crt = SSLCertificate('c:/private/150-codeur.crt')
+    print crt.subject_hash
+    print crt.issuer_subject_hash
 
 
 if __name__ == '__main__':
     setup_test()
+    test_subject_hash()
+    test_get_peer_chain()
+    test_saveservercert()
     test_newcrypto()
     test_oldsignature()
     test_certifi_cacert()
