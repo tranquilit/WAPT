@@ -75,5 +75,7 @@ fi
 # Allow nginx to set higher limit for number of file handles
 [ -f $(which setsebool) ] && setsebool -P httpd_setrlimit on
 systemctl daemon-reload
+mkdir -p /var/www/html/wapt
+mkdir -p /var/www/html/wapt-host
 chown -R wapt:nginx /var/www/html/*
 
