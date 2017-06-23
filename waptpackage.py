@@ -1749,7 +1749,7 @@ class WaptLocalRepo(WaptBaseRepo):
                     self._index[entry.package] = entry
 
                 # looks for the signer certificate and add it to Packages if not already
-                if not entry.signer_fingerprint in signer_certificates._certificates:
+                if not entry.signer_fingerprint in signer_certificates._certs_fingerprint_idx:
                     crt = entry.package_certificate()
                     if crt:
                         signer_certificates.add_certificates([crt])
