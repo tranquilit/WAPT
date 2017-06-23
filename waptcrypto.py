@@ -303,7 +303,6 @@ class SSLCABundle(object):
                 if self.is_issued_by(ca):
                     return ca
 
-_tmp_passwd = None
 
 class SSLPrivateKey(object):
     def __init__(self,filename=None,pem_data=None,callback=None,password = None):
@@ -617,8 +616,12 @@ class SSLCertificate(object):
 
     @property
     def fingerprint(self):
-        """Get base64 endoded sha256 fingerprint"""
-        return base64.b64encode(self.get_fingerprint(md='sha256'))
+        """Get hex endoded sha256 fingerprint"""
+        return self.get_fingerprint(md='sha256').encode('hex')
+
+    def digest(self,md='sha256'):
+        hexdigest = self.get_fingerprint(md).encode('hex')
+        return ':'.join(hexdigest[i:i+2] for i in range(0, len(hexdigest), 2))
 
     @property
     def issuer(self):
@@ -750,8 +753,8 @@ class SSLCertificate(object):
 
     def __cmp__(self,crt):
         if isinstance(crt,SSLCertificate):
-            return cmp((self.is_valid(),self.is_code_signing,self.not_before,self.not_after,self.fingerprint),
-                            (crt.is_valid(),crt.is_code_signing,crt.not_before,crt.not_after,crt.fingerprint))
+            return cmp((self.is_valid(),self.is_code_signing,self.not_before,self.not_after,self.get_fingerprint()),
+                            (crt.is_valid(),crt.is_code_signing,crt.not_before,crt.not_after,crt.get_fingerprint()))
         elif isinstance(crt,dict):
             return cmp(self.subject,crt)
         else:
