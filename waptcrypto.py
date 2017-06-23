@@ -318,16 +318,20 @@ class SSLCABundle(object):
             issuer_cert = self.certificate_for_subject_hash(issuer_subject_hash)
         return result
 
-    def is_known_issuer(self,certificate):
+    def is_known_issuer(self,certificate,include_self=True):
         """Check if certificate is issued by one of this certificate bundle CA
             and check certificate signature. Return top most CA.
 
             Top most CA should be trusted somewhere...
+        Args:
+            certificate: certificate to check
+            include_self: if certificate is in bunclde, accept it (pining)
 
         Return:
             SSLCertificate: issuer certificate or None
         """
-        # todo check cert signature
+        if include_self and certificate.fingerprint in self._certs_fingerprint_idx:
+            return certificate
         cert_chain  = certificate.verify_cert_signature(self)
         if cert_chain:
             return cert_chain[-1]
