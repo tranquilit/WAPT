@@ -203,6 +203,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Width = 190
     Caption = 'Check packages certificates validity'
     TabOrder = 9
+    Visible = False
   end
   object ActionList1: TActionList
     left = 488

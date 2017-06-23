@@ -1,8 +1,5 @@
-msgid "Only required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly suitable for development hosts."
+msgid "Only required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts."
 msgstr "Content-Type: text/plain; charset=UTF-8"
-
-msgid "Only suitable for development hosts."
-msgstr ""
 
 #: tform1.buttonpanel1.helpbutton.caption
 msgctxt "TFORM1.BUTTONPANEL1.HELPBUTTON.CAPTION"

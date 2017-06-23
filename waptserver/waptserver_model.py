@@ -20,16 +20,10 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.8"
+__version__ = "1.5.0.9"
 
 import os
 import sys
-import psutil
-import datetime
-import subprocess
-import getpass
-import traceback
-import platform
 
 try:
     wapt_root_dir = os.path.abspath( os.path.join(  os.path.dirname(__file__),'..'))
@@ -39,6 +33,13 @@ except:
 sys.path.insert(0, os.path.join(wapt_root_dir))
 sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
 sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
+
+import psutil
+import datetime
+import subprocess
+import getpass
+import traceback
+import platform
 
 from peewee import *
 from playhouse.postgres_ext import *

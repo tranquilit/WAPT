@@ -51,7 +51,7 @@ implementation
 {$R *.lfm}
 
 uses
-  uWaptConsoleRes,uWaptRes,UScaleDPI, dmwaptpython,waptcommon;
+  uWaptConsoleRes,uWaptRes,UScaleDPI, dmwaptpython,waptcommon,VarPyth;
 
 { TVisCreateWaptSetup }
 procedure TVisCreateWaptSetup.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -75,7 +75,8 @@ end;
 procedure TVisCreateWaptSetup.fnPublicCertEditingDone(Sender: TObject);
 begin
   if FileExists(fnPublicCert.FileName) then
-    edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[fnPublicCert.FileName]));
+    edOrgName.text := VarPythonAsString(MainModule.waptcrypto.SSLCertificate(crt_filename := fnPublicCert.FileName).cn);
+    //edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[fnPublicCert.FileName]));
 
 end;
 
@@ -99,10 +100,14 @@ procedure TVisCreateWaptSetup.FormShow(Sender: TObject);
 begin
   if edOrgName.Text='' then
     if FileExists(fnPublicCert.FileName) then
-      edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[fnPublicCert.FileName]));
+      edOrgName.text := VarPythonAsString(MainModule.waptcrypto.SSLCertificate(crt_filename := fnPublicCert.FileName).cn);
+      //edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[fnPublicCert.FileName]));
 
   CBVerifyCert.Checked:=(EdServerCertificate.Text<>'') and (EdServerCertificate.Text<>'0');
   CBVerifyCertClick(Sender);
+
+  if not CBCheckCertificatesValidity.Checked then
+    CBCheckCertificatesValidity.Visible := True;
 
 end;
 

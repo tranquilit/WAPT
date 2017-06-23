@@ -27,6 +27,9 @@ import tempfile
 import codecs
 import certifi
 
+from OpenSSL import crypto
+from OpenSSL import SSL
+
 logger = logging.getLogger()
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
 
@@ -539,9 +542,47 @@ def test_subject_hash():
     print crt.subject_hash
     print crt.issuer_subject_hash
 
+def test_openssl():
+    codeur_bundle = SSLCABundle('c:/private/tranquilit-codeur.crt')
+    codeur = codeur_bundle.certificates()[0]
+    trusted_ca = SSLCABundle(certifi.where())
+    print codeur_bundle.certificate_chain(codeur)
+
+    codeur.verify_cert_signature(codeur_bundle)
+
+    print trusted_ca.certificate_chain(codeur)
+
+    for ca in codeur_bundle.certificate_chain(codeur):
+        print ca.crl_urls()
+
+    for ca in trusted_ca.certificates():
+        print ca.crl_urls()
+
+    store = crypto.X509Store()
+    store.set_flags( (
+            crypto.X509StoreFlags.CHECK_SS_SIGNATURE |
+            crypto.X509StoreFlags.CRL_CHECK |
+            crypto.X509StoreFlags.EXPLICIT_POLICY))
+    for cert in trusted_ca.certificates():
+        store.add_cert(cert.as_X509())
+
+    # load all the crl...
+    issuer = trusted_ca.is_known_issuer(codeur)
+    crl = requests.get('http://crl.usertrust.com/UTN-USERFirst-Object.crl').content
+    crlcert = crypto.load_crl(crypto.FILETYPE_ASN1,crl)
+    store.add_crl(crlcert)
+
+    store_ctx = crypto.X509StoreContext(store,cert.as_X509())
+    try:
+        print store_ctx.verify_certificate()
+    except Exception as e:
+        print e
+
+
 
 if __name__ == '__main__':
     setup_test()
+    test_openssl()
     test_subject_hash()
     test_get_peer_chain()
     test_saveservercert()
