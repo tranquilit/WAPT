@@ -393,6 +393,7 @@ def main():
         waptserver_ini.write(inifile)
 
     # TODO : remove mongodb lines that are commented out
+    run('/opt/wapt/wapt-scanpackages.py  /var/www/html/wapt/')
 
     final_msg = [
         'Postconfiguration completed.',
