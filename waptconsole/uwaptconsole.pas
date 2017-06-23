@@ -1438,7 +1438,7 @@ begin
               if GetWaptPersonalCertificatePath = '' then
                 with TINIFile.Create(AppIniFilename) do
                   try
-                    WriteString('global', 'personal_certificate_path', pemfn);
+                    WriteString('global', 'personal_certificate_path', certFile);
                   finally
                     Free;
                   end;
@@ -1518,8 +1518,8 @@ begin
         fnPublicCert.Clear;
       edWaptServerUrl.Text := ini.ReadString('global', 'wapt_server', '');
       edRepoUrl.Text := ini.ReadString('global', 'repo_url', '');
-      EdServerCertificate.Text := ini.ReadString('global', 'verify_cert', ''); ;
-      CBUseKerberos.Checked:=ini.ReadBool('global', 'use_kerberos', False );
+      EdServerCertificate.Text := ini.ReadString('global', 'verify_cert', '1'); ;
+      CBUseKerberos.Checked:=ini.ReadBool('global', 'use_kerberos', True );
       CBCheckCertificatesValidity.Checked:=ini.ReadBool('global', 'check_certificates_validity',True );
       if FatUpgrade then
         // include waptagent.exe in waptupgrade package...
