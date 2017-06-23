@@ -34,7 +34,7 @@ Création d'un environnement de développement avec virtualenv:
 
 Pour une installation propre de zéro sur Windows:
 
-* Installer python2.7.12 depuis https://www.python.org/ftp/python/2.7.12/python-2.7.12.msi
+* Installer python2.7.13 depuis https://www.python.org/ftp/python/2.7.13/python-2.7.13.msi
 * Upgrader python-setuptools : c:\python27\python -m pip install -U pip setuptools
 * Créer virtualenv
 ```
