@@ -1077,23 +1077,13 @@ def main():
                     mywapt.waptserver.verify_cert = False
                     if mywapt.waptserver and mywapt.waptserver_available():
                         result = mywapt.waptserver.save_server_certificate(os.path.join(mywapt.wapt_base_dir,'ssl','server'),overwrite = options.force)
-                        certchain = SSLCABundle().add_pems(result)
-                        import certifi
-                        certchain.add_pems(certifi.where())
-                        cn = urlparse.urlparse(mywapt.waptserver.server_url).netloc
-                        server_cert = certchain.certificate_for_cn(cn)
-                        print('Server certificate : %s' % server_cert)
-                        certs = certchain.certificate_chain(server_cert)
-                        if certs:
-                            cacert = certs[-1]
-                            print('Pining certificate %s'%cacert)
-                            cacert_fn = os.path.join(mywapt.wapt_base_dir,'ssl','server',cacert.fingerprint+'.crt')
-                            open(cacert_fn,'wb').write(cacert.as_pem())
-                            setuphelpers.inifile_writestring(mywapt.config_filename,'global','verify_cert',cacert_fn)
+                        print('Server certificate : %s' % result)
+                        if result:
+                            print('Pining certificate %s'%result)
+                            setuphelpers.inifile_writestring(mywapt.config_filename,'global','verify_cert',result)
                             if options.json_output:
                                 jsonresult['result'] = result
                             else:
-                                print('Server certificate written to %s' % result)
                                 print('wapt config file updated')
                         else:
                             print('No server certificate retrieved')

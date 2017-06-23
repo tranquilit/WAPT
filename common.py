@@ -1393,9 +1393,9 @@ class WaptServer(object):
             str : full path to x509 certificate file.
 
         """
-        pem = get_pem_server_certificate(self.server_url)
-        if pem:
-            new_cert = SSLCertificate(crt_string=pem)
+        certs = get_peer_cert_chain_from_server(self.server_url)
+        if certs:
+            new_cert = certs[0]
             url = urlparse.urlparse(self.server_url)
             pem_fn = os.path.join(server_ssl_dir,url.hostname+'.crt')
 
@@ -1417,7 +1417,7 @@ class WaptServer(object):
                 except Exception as e:
                     logger.critical('save_server_certificate : %s'% repr(e))
                     raise
-            open(pem_fn,'wb').write(pem)
+            open(pem_fn,'wb').write(new_cert.as_pem())
             logger.info('New certificate %s with fingerprint %s saved to %s'%(new_cert,new_cert.fingerprint,pem_fn))
             return pem_fn
         else:
