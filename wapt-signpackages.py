@@ -24,9 +24,6 @@ __version__ = "1.5.0.8"
 
 import os
 import sys
-from waptutils import *
-from waptcrypto import *
-from waptpackage import *
 import glob
 
 try:
@@ -37,6 +34,10 @@ except:
 sys.path.insert(0,os.path.join(wapt_root_dir))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib'))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
+
+from waptutils import *
+from waptcrypto import *
+from waptpackage import *
 
 from optparse import OptionParser
 import logging

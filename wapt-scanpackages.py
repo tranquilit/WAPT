@@ -24,7 +24,6 @@ __version__ = "1.5.0.8"
 
 import os
 import sys
-from waptpackage import update_packages
 
 try:
     wapt_root_dir = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
@@ -34,6 +33,8 @@ except:
 sys.path.insert(0,os.path.join(wapt_root_dir))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib'))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
+
+from waptpackage import update_packages
 
 from optparse import OptionParser
 import logging
