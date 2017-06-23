@@ -21,7 +21,7 @@ requests==2.18.1
 six==1.10.0
 wakeonlan==0.2.2
 wsgiref==0.1.2
-urllib3==1.20
+urllib3==1.21
 netifaces==0.10.4
 python-engineio==1.5.4
 python-socketio==1.7.5
