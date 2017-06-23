@@ -6,12 +6,12 @@
 #define AppName "WAPT"
 #define output_dir "."
 #define Company "Tranquil IT Systems"
-#define install_certs 1
+#define install_certs 0
 #define send_usage_report 0
 #define is_waptagent 0
-#define use_kerberos 0
+#define use_kerberos 1
 #define check_certificates_validity 1
-#define verify_cert 0
+#define verify_cert 1
 
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
