@@ -46,8 +46,9 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 /etc/logrotate.d/waptserver
 /etc/rsyslog.d/waptserver.conf
 /etc/systemd/system/nginx.service.d/nginx_worker_files_limit.conf
-/opt/wapt/lib/site-packages/cryptography/x509/
-/opt/wapt/wapt*.py
+/opt/wapt/waptpackage.py
+/opt/wapt/waptcrypto.py
+/opt/wapt/waptutils.py
 /opt/wapt/custom_zip.py
 /usr/bin/wapt-serverpostconf
 
@@ -59,7 +60,7 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 
 %pre
 getent passwd wapt >/dev/null || \
-    useradd -r -g apache -d /opt/wapt -s /sbin/nologin \
+    useradd -r -g nginx -d /opt/wapt -s /sbin/nologin \
     -c "Non privileged account for waptserver" wapt
 exit 0
 
@@ -74,3 +75,5 @@ fi
 # Allow nginx to set higher limit for number of file handles
 [ -f $(which setsebool) ] && setsebool -P httpd_setrlimit on
 systemctl daemon-reload
+chown -R wapt:nginx /var/www/html/*
+
