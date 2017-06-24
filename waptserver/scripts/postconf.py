@@ -308,6 +308,10 @@ def main():
             postconf.msgbox('SELinux detected, tweaking httpd permissions.')
             run('setsebool -P httpd_can_network_connect 1')
             run('setsebool -P httpd_setrlimit on')
+            run('semanage fcontext -a -t httpd_sys_content_t "/wapt(/.*)?"')
+            run('semanage fcontext -a -t httpd_sys_content_t "/wapt-host(/.*)?"')
+            run('restorecon -R -v /var/www/html/wapt')
+            run('restorecon -R -v /var/www/html/wapt-host')
             postconf.msgbox('SELinux correctly configured for Nginx reverse proxy')
 
     if not os.path.isfile('/opt/wapt/conf/waptserver.ini'):
