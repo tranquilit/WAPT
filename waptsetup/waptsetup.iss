@@ -190,7 +190,7 @@ begin
   TLabelRepo := TLabel.Create(WizardForm);
   TLabelRepo.Parent := CustomPage.Surface; 
   TLabelRepo.Left := teWaptRepoUrl.Left + 5;
-  TLabelRepo.Caption := 'example: http://srvwapt.domain.lan/wapt';
+  TLabelRepo.Caption := 'example: https://srvwapt.domain.lan/wapt';
   TLabelRepo.Top := teWaptRepoUrl.Top + teWaptRepoUrl.Height + ScaleY(2);
 
 
