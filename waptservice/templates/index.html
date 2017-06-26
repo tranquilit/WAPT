@@ -18,20 +18,35 @@
         <li>{{ _("Errors: {0}").format(', '.join(update_status['errors']) or 'None') }}</li>
     </ul>
 </li>
-<li>{{ _("Authorized certificates:") }}
-    <table border=1>
-    <thead><th>File</th><th>CN</th><th>Issued by</th><th>Code signing</th></thead>
+</ul>
+
+<h3>{{ _("Authorized Packages's Signer certificates:") }}</h3>
+    <table border=1 class="table table-striped">
+    <thead><th>CN</th><th>Issued by</th><th>Code signing</th><th>Is CA</th></thead>
+
 {% for certificate in wapt.authorized_certificates() %}
         <tr>
-            <td>{{ certificate.public_cert_filename }}</td>
             <td>{{ certificate.cn }}</td>
-            <td>{{ certificate.issuer_dn }}</td>
+            <td>{{ certificate.issuer_cn }}</td>
             <td>{{ certificate.is_code_signing }}</td>
+            <td>{{ certificate.is_ca }}</td>
         </tr>
 {% endfor %}
     </table>
-</li>
-</ul>
+
+<h3>{{ _("Repositories:")}}</h3>
+    <table border=1 class="table table-striped">
+    <thead><th>Name</th><th>URL</th><th>https certs</th><th>packages certs</th></thead>
+{% for repo in wapt.repositories %}
+        <tr>
+            <td>{{ repo.name }}</td>
+            <td>{{ repo.repo_url }}</td>
+            <td>{{ repo.verify_cert }}</td>
+            <td><ul>{% for cert in repo.cabundle.certificates() %} <li>{{ cert.cn}}</li> {% endfor %}</ul></td>
+        </tr>
+{% endfor %}
+    </table>
+
 
 <h2>{{ _("Computer information") }}</h2>
 <ul>
