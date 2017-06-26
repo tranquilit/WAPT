@@ -98,7 +98,7 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn):
                 '-out', wapt_ssl_cert_file,
                 '-keyout', wapt_ssl_key_file,
                 # fill in the minimum amount of information needed; to be revisited
-                '-subj', '/C=/ST=/L=/O=/CN=' + fqdn + '/'
+                '-subj', '/C=FR/ST=Wapt/L=Wapt/O=Wapt/CN=' + fqdn + '/'
                 ], stderr=subprocess.STDOUT)
 
 
