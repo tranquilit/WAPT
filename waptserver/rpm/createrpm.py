@@ -108,6 +108,7 @@ if (not check_if_package_is_installed('python-virtualenv')
           or not check_if_package_is_installed('gcc')
           or not check_if_package_is_installed('openssl-devel')
           or not check_if_package_is_installed('libffi-devel')
+          or not check_if_package_is_installed('openldap-devel')
           ):
     print ("""
 ##############################################

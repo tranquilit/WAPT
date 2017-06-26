@@ -16,6 +16,7 @@ itsdangerous==0.24
 peewee==2.8.5
 pefile==2016.3.28
 psycopg2==2.7.1
+python-ldap==2.4.39
 pytz==2016.10
 requests==2.18.1
 six==1.10.0
