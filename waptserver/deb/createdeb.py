@@ -138,7 +138,7 @@ mkdir_p("builddir/opt/wapt/waptserver")
 # for some reason the virtualenv does not build itself right if we don't
 # have pip systemwide...
 subprocess.check_output(
-    r'sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev', shell=True)
+    r'sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev', shell=True)
 
 print(
     'Create a build environment virtualenv. May need to download a few libraries, it may take some time')

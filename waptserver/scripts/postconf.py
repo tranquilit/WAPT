@@ -272,8 +272,14 @@ def nginx_clean_default_vhost(nginx_conf):
                     entry[1].remove(subentry)
     return nginx_conf
 
+def check_if_deb_installed(package_name):
+   child = subprocess.Popen('/usr/bin/dpkg -l "%s"' % package_name, stdout=subprocess.PIPE,shell=True)
+   streamdata = child.communicate()[0]
+   rc = child.returncode
+   if rc==0:
+       return True
+   return False
 
-# main program
 def main():
     global wapt_folder,MONGO_SVC,APACHE_SVC, NGINX_GID
 
@@ -397,7 +403,7 @@ def main():
         waptserver_ini.write(inifile)
 
     # TODO : remove mongodb lines that are commented out
-    run('/opt/wapt/wapt-scanpackages.py  /var/www/html/wapt/')
+    run('python /opt/wapt/wapt-scanpackages.py %s ' % wapt_folder)
 
     final_msg = [
         'Postconfiguration completed.',
@@ -450,9 +456,7 @@ def main():
 
             if options.use_kerberos:
                 if type_debian():
-                    import apt
-                    cache = apt.Cache()
-                    if not cache.has_key('libnginx-mod-http-auth-spnego') or cache['libnginx-mod-http-auth-spnego'].is_installed:
+                    if not check_if_deb_installed('libnginx-mod-http-auth-spnego'):
                         print('missing dependency libnginx-mod-http-auth-spnego, please install first before configuring kerberos')
                         sys.exit(1)
                 elif type_redhat():
