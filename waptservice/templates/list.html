@@ -75,7 +75,8 @@ location.reload(true);
 			  {%elif c=='package'%}
 				  <img class=package-icon src="/package_icon?package={{p.package}}">
 				  <p>{{link("/package_details?package="+package_version,p[c])}}
-				  <span class="package-version">{{p.version}}</span></p>
+				  <span class="package-version">{{p.version}}</span>
+                  <span class="package-singner"> (by: {{p.signer}})</span></p>
 				  <p class="package-description">{{p.description}}</p>
 			  {%else%}
 				  <span class={{'package-'+c}}>{{p[c] or ""}}</span>
