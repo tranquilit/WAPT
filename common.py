@@ -5276,7 +5276,7 @@ class Wapt(object):
         entry = host_repo.get(hostname)
         if entry:
             host_repo.download_packages(entry)
-            entry.unzip_package(target_dir=target_directory)
+            entry.unzip_package(target_dir=target_directory,cabundle=cabundle)
             entry.invalidate_signature()
 
             # update depends list
