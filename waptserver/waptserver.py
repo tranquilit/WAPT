@@ -1611,6 +1611,7 @@ def on_waptclient_connect():
             pass
         else:
             # not registered.
+            wapt_db.commit()
             return False
 
         logger.info('Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
