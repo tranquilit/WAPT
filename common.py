@@ -301,13 +301,19 @@ def host_ipv4():
     return res
 
 
-def tryurl(url,proxies=None,timeout=2,auth=None,verify_cert=False):
+def tryurl(url,proxies=None,timeout=2,auth=None,verify_cert=False,cert=None):
     # try to get header for the supplied URL, returns None if no answer within the specified timeout
     # else return time to get he answer.
     try:
         logger.debug(u'  trying %s' % url)
         starttime = time.time()
-        headers = requests.head(url,proxies=proxies,timeout=timeout,auth=auth,verify=verify_cert,headers=default_http_headers())
+        headers = requests.head(url=url,
+            proxies=proxies,
+            timeout=timeout,
+            auth=auth,
+            verify=verify_cert,
+            headers=default_http_headers(),
+            cert=cert)
         if headers.ok:
             logger.debug(u'  OK')
             return time.time() - starttime
@@ -316,7 +322,6 @@ def tryurl(url,proxies=None,timeout=2,auth=None,verify_cert=False):
     except Exception as e:
         logger.debug(u'  Not available : %s' % ensure_unicode(e))
         return None
-
 
 class EWaptCancelled(Exception):
     pass
@@ -1372,15 +1377,18 @@ class WaptServer(object):
             logger.critical('Unable to build computer_principal %s' % repr(e))
             raise
 
-
-    def auth(self):
+    def auth(self,action=None):
         if self._server_url:
-            scheme = urlparse.urlparse(self._server_url).scheme
-            if scheme == 'https' and has_kerberos and self.use_kerberos:
-                return HTTPKerberosAuth(mutual_authentication=DISABLED,principal=self.get_computer_principal())
-                # TODO : simple auth if kerberos is not available...
+            if action in ('register','add_host'):
+                scheme = urlparse.urlparse(self._server_url).scheme
+                if scheme == 'https' and has_kerberos and self.use_kerberos:
+                    return HTTPKerberosAuth(mutual_authentication=DISABLED,principal=self.get_computer_principal())
+                    # TODO : simple auth if kerberos is not available...
+                else:
+                    return None
             else:
-                return None
+                if self.client_certificate:
+                    return (self.client_certificate,self.client_private_key)
         else:
             return None
 
@@ -2180,7 +2188,6 @@ class WaptLogger(object):
             self.install_output = None
             self.wapt = None
 
-
 class Wapt(object):
     """Global WAPT engine"""
     global_attributes = ['wapt_base_dir','waptserver','config_filename','proxies','repositories','personal_certificate_path','public_certs_dir','package_cache_dir','dbpath']
@@ -2273,7 +2280,6 @@ class Wapt(object):
 
     def __exit__(self, type, value, tb):
         pass
-
 
     def as_dict(self):
         result = {}
@@ -3392,6 +3398,8 @@ class Wapt(object):
             }
 
         self.store_upgrade_status(result['upgrades'])
+
+
         if self.waptserver and not self.disable_update_server_status and register:
             try:
                 self.update_server_status()
@@ -3401,6 +3409,40 @@ class Wapt(object):
                 if logger.level == logging.DEBUG:
                     raise
         return result
+
+    def update_crls(self,force=False):
+        # retrieve CRL
+        # TODO : to be moved to an abstracted wapt https client
+        crl_dir = setuphelpers.makepath(self.wapt_base_dir,'ssl','crl')
+        result = []
+        for cert in self.cabundle.certificates():
+            crl_urls = cert.crl_urls()
+            for url in crl_urls:
+                crl_filename = setuphelpers.makepath(crl_dir,sha256_for_data(str(url))+'.crl')
+                if os.path.isfile(crl_filename):
+                    ssl_crl = SSLCRL(crl_filename)
+                else:
+                    ssl_crl = None
+
+                if force or not ssl_crl or ssl_crl.next_update > datetime.datetime.now():
+                    try:
+                        # need update
+                        if not os.path.isdir(crl_dir):
+                            os.makedirs(crl_dir)
+                        logger.debug('Download CRL %s' % (url,))
+                        wget(url,target=crl_filename)
+                        ssl_crl = SSLCRL(crl_filename)
+                        result.append(ssl_crl)
+                    except Exception as e:
+                        logger.warning('Unable to download CRL from %s: %s' % (url,repr(e)))
+                        if ssl_crl:
+                            result.append(ssl_crl)
+                        pass
+                elif ssl_crl:
+                    # not changed
+                    result.append(ssl_crl)
+        return result
+
 
     def check_depends(self,apackages,forceupgrade=False,force=False,assume_removed=[]):
         """Given a list of packagename or requirement "name (=version)",

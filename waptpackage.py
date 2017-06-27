@@ -1862,6 +1862,9 @@ class WaptRemoteRepo(WaptBaseRepo):
         self.http_proxy = None
         self.verify_cert = None
 
+        self.client_certificate = None
+        self.client_private_key = None
+
         # this load and empty config
         WaptBaseRepo.__init__(self,name=name,cabundle=cabundle,config=config)
 
@@ -1940,6 +1943,12 @@ class WaptRemoteRepo(WaptBaseRepo):
         if config.has_option(section,'timeout'):
             self.timeout = config.getfloat(section,'timeout')
 
+        if config.has_option(section,'client_certificate'):
+            self.client_certificate = config.get(section,'client_certificate')
+
+        if config.has_option(section,'client_private_key'):
+            self.client_private_key = config.get(section,'client_private_key')
+
         return self
 
     @property
@@ -1953,6 +1962,14 @@ class WaptRemoteRepo(WaptBaseRepo):
         hardcoded path to the Packages index.
         """
         return self.repo_url + '/Packages'
+
+    def client_auth(self):
+        """Return SSL pair (cert,key) filenames for client side SSL auth
+        """
+        if self.client_certificate and os.path.isfile(self.client_certificate) and os.path.isfile(self.client_private_key):
+            return (self.client_certificate,self.client_private_key)
+        else:
+            return None
 
     def is_available(self):
         """Check if repo is reachable an return createion date of Packages.
@@ -1976,7 +1993,8 @@ class WaptRemoteRepo(WaptBaseRepo):
                 timeout=self.timeout,
                 proxies=self.proxies,
                 verify=self.verify_cert,
-                headers=default_http_headers()
+                headers=default_http_headers(),
+                cert = self.client_auth(),
                 )
             req.raise_for_status()
             packages_last_modified = req.headers['last-modified']
@@ -2008,7 +2026,14 @@ class WaptRemoteRepo(WaptBaseRepo):
 
         new_packages = []
         logger.debug(u'Read remote Packages zip file %s' % self.packages_url)
-        packages_answer = requests.get(self.packages_url,proxies=self.proxies,timeout=self.timeout, verify=self.verify_cert,headers=default_http_headers())
+        packages_answer = requests.get(
+            self.packages_url,
+            proxies=self.proxies,
+            timeout=self.timeout,
+            verify=self.verify_cert,
+            headers=default_http_headers(),
+            cert = self.client_auth(),
+            )
         packages_answer.raise_for_status()
 
         signer_certificates = SSLCABundle()
@@ -2150,7 +2175,14 @@ class WaptRemoteRepo(WaptBaseRepo):
                     if not printhook:
                         printhook = report
 
-                    wget(download_url,target_dir,proxies=self.proxies,printhook = printhook,connect_timeout=self.timeout,verify_cert = self.verify_cert)
+                    wget(download_url,
+                        target_dir,
+                        proxies=self.proxies,
+                        printhook = printhook,
+                        connect_timeout=self.timeout,
+                        verify_cert = self.verify_cert,
+                        cert = self.client_auth(),
+                        )
                     entry.localpath = fullpackagepath
                     downloaded.append(fullpackagepath)
                 except Exception as e:

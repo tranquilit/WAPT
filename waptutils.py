@@ -409,6 +409,25 @@ def httpdatetime2isodate(httpdate):
     return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
 
 
+def httpdatetime2datetime(httpdate):
+    """convert a date string as returned in http headers or mail headers to isodate
+    >>> import requests
+    >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
+    >>> len(httpdatetime2isodate(last_modified)) == 19
+    True
+    """
+    return datetime.datetime(*email.utils.parsedate(httpdate)[:6])
+
+def httpdatetime2time(httpdate):
+    """convert a date string as returned in http headers or mail headers to isodate
+    >>> import requests
+    >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
+    >>> len(httpdatetime2isodate(last_modified)) == 19
+    True
+    """
+    return time.mktime(email.utils.parsedate(httpdate)[:9])
+
+
 def isodate2datetime(isodatestr):
     # we remove the microseconds part as it is not working for python2.5 strptime
     return datetime.datetime.strptime(isodatestr.split('.')[0] , "%Y-%m-%dT%H:%M:%S")
@@ -466,6 +485,29 @@ def default_http_headers():
         'user-agent':'wapt/{}'.format(__version__),
         }
 
+
+def http_resource_datetime(url,proxies=None,timeout=2,auth=None,verify_cert=False,cert=None):
+    # try to get header for the supplied URL, returns None if no answer within the specified timeout
+    try:
+        headers = requests.head(url,proxies=proxies,timeout=timeout,auth=auth,verify=verify_cert,headers=default_http_headers(),cert=cert)
+        if headers.ok:
+            return httpdatetime2datetime(headers.headers.get('last-modified',None))
+        else:
+            headers.raise_for_status()
+    except Exception as e:
+        return None
+
+def http_resource_isodatetime(url,proxies=None,timeout=2,auth=None,verify_cert=False,cert=None):
+    # try to get header for the supplied URL, returns None if no answer within the specified timeout or UTC iso datetime of resource from server
+    try:
+        headers = requests.head(url,proxies=proxies,timeout=timeout,auth=auth,verify=verify_cert,headers=default_http_headers(),cert=cert)
+        if headers.ok:
+            return httpdatetime2isodate(headers.headers.get('last-modified',None))
+        else:
+            headers.raise_for_status()
+    except Exception as e:
+        return None
+
 def get_disk_free_space(filepath):
     """
     Returns the number of free bytes on the drive that filepath is on
@@ -485,12 +527,12 @@ def get_disk_free_space(filepath):
         total, used, free = disk_usage(filepath)
         return free
 
-def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False,referer=None,user_agent=None):
+def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False,referer=None,user_agent=None,cert=None):
     r"""Copy the contents of a file from a given URL to a local file.
     Args:
         url (str)
         target (str) : full file path of downloaded file. If None, put in a temporary dir with supplied url filename (final part of url)
-
+        cert (str or list): client side cert/key for SSL client authentication
     Returns:
         str : path to downloaded file
 
@@ -551,7 +593,12 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
     if user_agent != None:
         header.update({'user-agent': '%s' % user_agent})
 
-    httpreq = requests.get(url,stream=True, proxies=proxies, timeout=connect_timeout,verify=verify_cert,headers=header)
+    httpreq = requests.get(url,stream=True,
+        proxies=proxies,
+        timeout=connect_timeout,
+        verify=verify_cert,
+        headers=header,
+        cert = cert)
 
     httpreq.raise_for_status()
 
@@ -566,7 +613,8 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
     cnt = 0
     reporthook(last_downloaded,total_bytes)
 
-    with open(os.path.join(dir,filename),'wb') as output_file:
+    target_fn = os.path.join(dir,filename)
+    with open(target_fn,'wb') as output_file:
         last_time_display = time.time()
         last_downloaded = 0
         if httpreq.ok:
@@ -581,8 +629,11 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
             if reporthook(last_downloaded,total_bytes):
                 last_time_display = time.time()
 
-
-    return os.path.join(dir,filename)
+    file_date = httpreq.headers.get('last-modified',None)
+    if file_date:
+        file_datetime = httpdatetime2time(file_date)
+        os.utime(target_fn,(file_datetime,file_datetime))
+    return target_fn
 
 class Version(object):
     """Version object of form 0.0.0
@@ -732,6 +783,14 @@ def find_all_files(rootdir,include_patterns=None,exclude_patterns=None):
         else:
             if match(fn):
                 yield full_fn
+
+def touch(filename):
+    if not os.path.isdir(os.path.dirname(filename)):
+        os.makedirs(os.path.dirname(filename))
+    if not os.path.isfile(filename):
+        open(filename,'w').write()
+    else:
+        os.utime(filename,None)
 
 
 if __name__ == '__main__':
