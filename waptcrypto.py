@@ -426,8 +426,8 @@ class SSLPrivateKey(object):
         if password is not None:
             enc = serialization.BestAvailableEncryption(password)
         else:
-            enc = None
-        pem = self._rsa.private_bytes(
+            enc = serialization.NoEncryption()
+        pem = self.rsa.private_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.TraditionalOpenSSL,
             encryption_algorithm=enc,
@@ -594,7 +594,10 @@ class SSLCertificate(object):
         self.ignore_validity_checks = ignore_validity_checks
 
     def _load_cert_data(self,pem_data):
-        self._crt = x509.load_pem_x509_certificate(str(pem_data),default_backend())
+        try:
+            self._crt = x509.load_pem_x509_certificate(str(pem_data),default_backend())
+        except ValueError:
+            self._crt = x509.load_der_x509_certificate(str(pem_data),default_backend())
 
     def _load_cert_file(self,filename):
         with open(filename,'rb') as crt_file:
@@ -603,15 +606,25 @@ class SSLCertificate(object):
     def as_pem(self):
         return self.crt.public_bytes(serialization.Encoding.PEM)
 
+    def save_as_pem(self,filename=None,password=None):
+        if filename is None:
+            filename = self.public_cert_filename
+        with open(filename,'wb') as f:
+            f.write(self.as_pem())
+        self._public_cert_filename = filename
+
     def as_X509(self):
+        """Return pycrypto style X509 object"""
         return crypto.load_certificate(crypto.FILETYPE_PEM,self.as_pem())
 
     def from_X509(self,x509_cert):
+        """Initialize certificate from pycrypto style X509 object"""
         assert(isinstance(x509_cert,SSL.X509))
         self._load_cert_data(crypto.dump_certificate(crypto.FILETYPE_PEM,x509_cert))
 
     @property
     def public_cert_filename(self):
+        """Return filename if certificate was/will be loaded from a file"""
         return self._public_cert_filename
 
     @public_cert_filename.setter
@@ -625,6 +638,7 @@ class SSLCertificate(object):
 
     @property
     def crt(self):
+        """Return cryptopgraphy.Certificate instance"""
         if self._crt is None:
             if not os.path.isfile(self._public_cert_filename):
                 raise EWaptMissingCertificate('Public certificate %s not found' % self._public_cert_filename)
@@ -646,8 +660,86 @@ class SSLCertificate(object):
             self._rsa = self.crt.public_key()
         return self._rsa
 
+
+    def build_sign(self,
+            ca_signing_key,
+            ca_signing_cert,
+            public_key,
+            cn,
+            dnsname=None,organisation=None,locality=None,country=None,
+            is_ca=True,is_code_signing=True,
+            key_usages=['digital_signature','content_commitment','key_cert_sign','data_encipherment'], ):
+        """Build and sign a self-signed certificate for testing
+        Args:
+            ca_signing_key (SSLPrivateKey):
+            ca_signing_cert (SSLCertificate):
+            public_key (rsa._RSAPublicKey or SSLPrivateKey or SSLCertificate
+
+        """
+
+        map = [
+            [x509.NameOID.COUNTRY_NAME,country],
+            [x509.NameOID.LOCALITY_NAME,locality],
+            [x509.NameOID.ORGANIZATION_NAME,organisation],
+            [x509.NameOID.COMMON_NAME,cn],
+            ]
+        att = []
+        for (oid,value) in map:
+            if value is not None:
+                att.append(x509.NameAttribute(oid,ensure_unicode(value)))
+
+        subject = x509.Name(att)
+
+        extensions = []
+        extensions.append(dict(
+            extension=x509.BasicConstraints(ca=is_ca,path_length=1),
+            critical=True))
+
+        if is_code_signing:
+            extensions.append(dict(
+                extension=x509.ExtendedKeyUsage([x509.OID_CODE_SIGNING]),
+                critical=True))
+
+        if dnsname is not None:
+            extensions.append(dict(
+                    extension=x509.SubjectAlternativeName([x509.DNSName(cn)]),
+                    critical=False))
+
+        for key_usage in key_usages:
+            kwargs = {}
+            for key in [ 'content_commitment','crl_sign','data_encipherment','decipher_only',
+                        'digital_signature', 'encipher_only', 'key_agreement', 'key_cert_sign',
+                        'key_encipherment']:
+                kwargs[key] = key in key_usages
+
+        extensions.append(dict(
+                extension=x509.KeyUsage(**kwargs),
+                critical=True))
+
+        if isinstance(public_key,SSLPrivateKey):
+            public_key = public_key.rsa.public_key()
+        elif isinstance(public_key,SSLCertificate):
+            public_key = public_key.rsa
+
+        if not isinstance(public_key,rsa.RSAPublicKey):
+            raise TypeError('public_key must be an instance of rsa.RSAPublicKey')
+
+        if ca_signing_cert is None:
+            # self signed or root certificate
+            issuer = subject
+        else:
+            issuer = ca_signing_cert.crt.subject
+
+        self._build_certificate(subject=subject,issuer=issuer,
+                not_valid_before=datetime.datetime.today(),
+                not_valid_after=datetime.datetime.utcnow()+datetime.timedelta(days=3650),
+                signing_key = ca_signing_key.rsa, public_key = public_key,
+                extensions = extensions)
+
+
     def _build_certificate(self,subject, issuer, not_valid_before, not_valid_after,
                           signing_key, public_key, extensions):
+
         builder = x509.CertificateBuilder().serial_number(
             x509.random_serial_number()
         ).issuer_name(
@@ -666,7 +758,7 @@ class SSLCertificate(object):
             builder = builder.add_extension(
                 ext.get('extension'), ext.get('critical')
             )
-        self.crt = builder.sign(signing_key.key,algorithm=hashes.SHA256(), backend=default_backend())
+        self.crt = builder.sign(signing_key,algorithm=hashes.SHA256(), backend=default_backend())
 
     @property
     def modulus(self):
@@ -741,8 +833,55 @@ class SSLCertificate(object):
     def subject_hash(self):
         return sha1_for_data(self.crt.subject.public_bytes(default_backend()))
 
+    @property
+    def authority_key_identifier(self):
+        """Identify the authrority which has signed the certificate"""
+        keyid = self.extensions.get('authorityKeyIdentifier',None)
+        if keyid:
+            return keyid.key_identifier
+        else:
+            return None
+
+    @property
+    def subject_key_identifier(self):
+        """Identify the certificate"""
+        keyid = self.extensions.get('subjectKeyIdentifier',None)
+        if keyid:
+            return keyid.digest
+        else:
+            return None
+
+    @property
+    def key_usage(self):
+        keyusage = self.extensions.get('keyUsage',None)
+        if keyusage:
+            result = []
+            for att in ('digital_signature','content_commitment','key_encipherment',
+                'data_encipherment','key_agreement','key_cert_sign','crl_sign','encipher_only','decipher_only'):
+                if hasattr(keyusage,att) and getattr(keyusage,att):
+                    result.append(att)
+            return result
+        else:
+            return None
+
+
+    @property
+    def subject_alt_names(self):
+        """Other names of the subject (in addition to cn)"""
+        names = self.extensions.get('subjectAltName',None)
+        if names:
+            return [n.value for n in names]
+        else:
+            return None
+
+
+    @property
+    def serial_number(self):
+        """Serial number of the certificate, which is used by revocation process"""
+        return self.crt.serial_number
+
     def verify_content(self,content,signature,md='sha256',block_size=2**20):
-        u"""Check that the signature matches the content
+        """Check that the signature matches the content
 
         Args:
             content (str) : content to check. if not str, the structure will be converted to json first
@@ -830,7 +969,9 @@ class SSLCertificate(object):
             now >= nb and now <= na
 
     def crl_urls(self):
+        """retruns list of URL where to get CRL for the Authority which has signed this certificate"""
         return [d.full_name[0].value for d in self.extensions.get('cRLDistributionPoints',[])]
+
 
     def __iter__(self):
         for k in ['issuer_dn','fingerprint','subject_dn','cn','is_code_signing','is_ca']:
@@ -918,7 +1059,6 @@ class SSLCertificate(object):
 
     def verify_cert_signature(self,cabundle=None):
         """Check validity of certificates signature along the whole certificates chain
-
         Args;
             cabundle: bundle of CA certificates
 
@@ -995,6 +1135,45 @@ class SSLCertificate(object):
             verified_by=self.cn,
             )
 
+class SSLCRL(object):
+    def __init__(self,filename=None,pem_data=None,der_data=None):
+        self._crl = None
+        self.filename = filename
+        if pem_data is not None:
+            self._load_pem_data(pem_data)
+        elif der_data is not None:
+            self._load_der_data(pem_data)
+
+    def _load_pem_data(self,data):
+        self._crl = x509.load_pem_x509_crl(data,default_backend())
+
+    def _load_der_data(self,data):
+        self._crl = x509.load_der_x509_crl(data,default_backend())
+
+    @property
+    def crl(self):
+        if self._crl is None:
+            if os.path.isfile(self.filename):
+                try:
+                    with open(self.filename,'rb') as der:
+                        self._load_der_data(der.read())
+                except Exception as e:
+                    with open(self.filename,'rb') as pem:
+                        self._load_pem_data(pem.read())
+            else:
+                self.crl = x509.CertificateRevocationListBuilder()
+
+        return self._crl
+
+    def revoked_certs(self):
+        result = [dict(serial_number=cert.serial_number,revocation_date=cert.revocation_date) for cert in self.crl]
+        return result
+
+    def last_update(self):
+        return self.crl.last_update
+
+    def next_update(self):
+        return self.crl.next_update
 
 
 if __name__ == '__main__':
