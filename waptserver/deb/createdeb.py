@@ -193,9 +193,6 @@ subprocess.check_output(
 subprocess.check_output(
     r'find ./builddir/opt/wapt/ -type d -exec chmod 755 {} \;', shell=True)
 
-os.chmod('./builddir/opt/wapt/wapt-scanpackages.py',0o755)
-os.chmod('./builddir/opt/wapt/wapt-signpackages.py',0o755)
-
 print("copying systemd startup script", file=sys.stderr)
 systemd_build_dest_dir = './builddir/usr/lib/systemd/system/'
 try:

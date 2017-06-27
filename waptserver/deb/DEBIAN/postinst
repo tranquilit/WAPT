@@ -75,6 +75,11 @@ subprocess.check_output('mkdir -p /var/www/wapt-host',shell=True)
 subprocess.check_output('chown -R wapt:root /var/www/wapt',shell=True)
 subprocess.check_output('chown -R wapt:root /var/www/wapt-host',shell=True)
 
+os.chmod('/opt/wapt/wapt-scanpackages.py',0o755)
+os.chmod('/opt/wapt/wapt-signpackages.py',0o755)
+
+
+
 print("Restarting rsyslog")
 subprocess.check_output('systemctl restart rsyslog',shell=True)
 
