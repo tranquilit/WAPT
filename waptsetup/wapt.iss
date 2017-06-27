@@ -124,9 +124,9 @@ Filename: "cmd"; Parameters: "/C icacls.exe ""{app}"" /inheritance:r"; MinVersio
 Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe ""{app}"" /inheritance:r"; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt..."; Description: "Suppression héritage des droits sur wapt"
 
 ; protect waptagent private directory
-Filename: "cmd"; Parameters: "/C echo O| cacls {app}\private /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)"""; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt private..."; Description: "Mise en place des droits sur le répertoire wapt private"
-Filename: "cmd"; Parameters: "/C icacls.exe {app}\private /inheritance:r"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt private..."; Description: "Suppression héritage des droits sur wapt private"
-Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe {app}\private /inheritance:r"; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt private..."; Description: "Suppression héritage des droits sur wapt private"
+Filename: "cmd"; Parameters: "/C echo O| cacls ""{app}\private"" /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)"""; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt private..."; Description: "Mise en place des droits sur le répertoire wapt private"
+Filename: "cmd"; Parameters: "/C icacls.exe ""{app}\private"" /inheritance:r"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt private..."; Description: "Suppression héritage des droits sur wapt private"
+Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe ""{app}\private"" /inheritance:r"; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt private..."; Description: "Suppression héritage des droits sur wapt private"
 
 ; if waptservice
 Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptservice\waptservice.py"" install"; Tasks:installService ; Flags: runhidden; StatusMsg: "Installation du service WAPT"; Description: "Installation du service WAPT"
