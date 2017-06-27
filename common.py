@@ -1408,7 +1408,7 @@ class WaptServer(object):
             pem_fn = os.path.join(server_ssl_dir,url.hostname+'.crt')
 
             if new_cert.cn != url.hostname:
-                logger.warning('Warning, certificate CN %s sent by server does not match URL host %s' % (new_cert.cn != url.hostname))
+                logger.warning('Warning, certificate CN %s sent by server does not match URL host %s' % (new_cert.cn,url.hostname))
 
             if not os.path.isdir(server_ssl_dir):
                 os.makedirs(server_ssl_dir)
