@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.9"
+__version__ = "1.5.0.10"
 
 import os
 import re
@@ -1364,6 +1364,8 @@ class WaptServer(object):
         self.timeout = timeout
         self.use_kerberos = True
         self.verify_cert = True
+
+        self.client_certificate = None
 
         if dnsdomain:
             self.dnsdomain = dnsdomain

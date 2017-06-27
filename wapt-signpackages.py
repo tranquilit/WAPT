@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.9"
+__version__ = "1.5.0.10"
 
 import os
 import sys
@@ -66,7 +66,7 @@ def main():
     parser.add_option("-k","--private-key", dest="private_key", default='', help="Path to the PEM RSA private key to sign packages.  (default: %default)")
     #parser.add_option("-w","--private-key-passwd", dest="private_key_passwd", default='', help="Path to the password of the private key. (default: %default)")
     parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
-    parser.add_option("-m","--message-digest", dest="md", default='sha256', type='choice',  choices=['sha1','sha256'], help="Message digest type for signatures.  (default: %default)")
+    parser.add_option("-m","--message-digest", dest="md", default='sha256', help="Message digest type for signatures.  (default: %default)")
     parser.add_option("-s","--scan-packages", dest="doscan", default=False, action='store_true', help="Rescan packages and update local Packages index after signing.  (default: %default)")
     (options,args) = parser.parse_args()
 
@@ -118,9 +118,8 @@ def main():
         print('Processing %s'%waptpackage)
         try:
             pe = PackageEntry(waptfile = waptpackage)
-            # force md
-            pe._md = options.md
-            pe.sign_package(private_key=key,certificate = cert)
+
+            pe.sign_package(private_key=key,certificate = cert,mds = ensure_list(options.md))
             print('Done')
         except Exception as e:
             print(u'Error: %s'%ensure_unicode(e.message))

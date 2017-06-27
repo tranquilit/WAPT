@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.9"
+__version__ = "1.5.0.10"
 
 __all__ = [
     'control_to_dict',
@@ -283,7 +283,7 @@ class PackageEntry(object):
     not_duplicated_attributes =  signature_attributes
 
     # there files are not included in manifest file
-    manifest_filename_excludes = ['WAPT/signature','WAPT/manifest.sha256','WAPT/manifest.sha1']
+    manifest_filename_excludes = ['WAPT/signature','WAPT/signature.sha256','WAPT/manifest.sha256','WAPT/manifest.sha1']
 
     _calculated_attributes = []
 
@@ -874,23 +874,16 @@ class PackageEntry(object):
         if cert is None and signers_bundle is not None:
             cert = signers_bundle.certificate (fingerprint = self.signer_fingerprint)
         if cert is not None:
-            # we have the
-            try:
-                issued_by = cabundle.is_known_issuer(cert)
-                if not issued_by:
-                    raise EWaptCertificateUnknowIssuer('Package certificate is unknown and not allowed on this host')
-                else:
-                    logger.debug('Certificate %s is trusted by root CA %s' % (cert.subject,issued_by.subject))
+            issued_by = cabundle.is_known_issuer(cert)
+            if not issued_by:
+                raise EWaptCertificateUnknowIssuer('Package certificate is unknown and not allowed on this host')
+            else:
+                logger.debug('Certificate %s is trusted by root CA %s' % (cert.subject,issued_by.subject))
 
-                if cert.verify_content(signed_content,signature_raw,md=self._default_md):
-                    self._md = self._default_md
-                    return cert
+            if cert.verify_content(signed_content,signature_raw,md=self._default_md):
+                self._md = self._default_md
+                return cert
 
-            except SSLVerifyException:
-                if cert.verify_content(signed_content,signature_raw,md='sha1'):
-                    logger.debug('Fallback to sha1 digest for package''s control signature')
-                    self._md = 'sha1'
-                    return cert
             raise SSLVerifyException('SSL signature verification failed for control %s against embedded certiicate %s : %s' % (self.asrequirement(),cert,repr(e)))
         else:
             # old style . checking directly with self signed certificates.
@@ -900,13 +893,7 @@ class PackageEntry(object):
                         self._md = self._default_md
                         return public_cert
                 except SSLVerifyException:
-                    try:
-                        if public_cert.verify_content(signed_content,signature_raw,md='sha1'):
-                            logger.debug('Fallback to sha1 digest for package''s control signature')
-                            self._md = 'sha1'
-                            return public_cert
-                    except SSLVerifyException:
-                        pass
+                    pass
             raise SSLVerifyException('SSL signature verification failed for control %s, either none public certificates match signature or signed content has been changed' % self.asrequirement())
 
     def package_certificate(self):
@@ -931,7 +918,7 @@ class PackageEntry(object):
             # package is not yet built/signed.
             return None
 
-    def build_manifest(self,exclude_filenames = None,block_size=2**20,forbidden_files=[]):
+    def build_manifest(self,exclude_filenames = None,block_size=2**20,forbidden_files=[],md='sha256'):
         """Calc the manifest of an already built (zipped) wapt package
 
         Returns:
@@ -951,13 +938,8 @@ class PackageEntry(object):
             if not fn.filename in exclude_filenames:
                 if fn.filename in forbidden_files:
                     raise EWaptPackageSignError('File %s is not allowed.'% fn.filename)
-                md = self._md or self._default_md
-                if md =='sha1':
-                    shasum = hashlib.sha1()
-                elif md =='sha256':
-                    shasum = hashlib.sha256()
-                else:
-                    raise Exception('md %s is not supported' % md)
+
+                shasum = hashlib.new(md)
 
                 file_data = waptzip.open(fn)
                 while True:
@@ -969,7 +951,7 @@ class PackageEntry(object):
                 manifest[fn.filename] = shasum.hexdigest()
         return manifest
 
-    def sign_package(self,certificate,private_key=None,password_callback=None,private_key_password=None):
+    def sign_package(self,certificate,private_key=None,password_callback=None,private_key_password=None,mds=['sha256']):
         """Sign an already built package.
             Should follow immediately the build_package step.
 
@@ -977,6 +959,12 @@ class PackageEntry(object):
             If these files are already in the package, they are first removed.
 
             Use the self.localpath attribute to get location of waptfile build file.
+        Args:
+            certificate (SSLCertificate): signer certificate
+            private_key (SSLPrivateKey): signer private key
+            password_callback (func) : function to call to get key password if encrypted.
+            private_key_password (str): password to use if key is encrypted. Use eithe this or password_callback
+            mds (list): list of message digest manifest and signature methods to include. For backward compatibility.
         """
         if not os.path.isfile(self.localpath) and not os.path.isdir(self.localpath):
             raise Exception(u"%s is not a Wapt package" % self.localpath)
@@ -987,7 +975,7 @@ class PackageEntry(object):
         start_time = time.time()
         package_fn = self.localpath
         logger.debug('Signing %s with key %s, and certificate CN "%s"' % (package_fn,private_key,certificate.cn))
-        # sign the control
+        # sign the control (only with sha256)
         self._sign_control(certificate=certificate,private_key=private_key)
 
         # control file is appended to manifest file separately.
@@ -1000,56 +988,71 @@ class PackageEntry(object):
         # if file is in forbidden_files, raise an exception.
         if not certificate.is_code_signing:
             forbidden_files.append('setup.py')
-        try:
-            manifest_data = self.build_manifest(exclude_filenames = excludes,forbidden_files = forbidden_files)
-        except EWaptPackageSignError as e:
-            raise EWaptBadCertificate('Certificate %s doesn''t allow to sign packages with setup.py file.' % certificate.public_cert_filename)
 
-        manifest_data['WAPT/control'] = hexdigest_for_data(control,md = self._md or self._default_md)
-
-        new_cert_hash = hexdigest_for_data(certificate.as_pem(),md = self._md or self._default_md)
-        if manifest_data.get('WAPT/certificate.crt',None) != new_cert_hash:
-            # need to replace certificate in Wapt package
-            manifest_data['WAPT/certificate.crt'] = new_cert_hash
-        else:
-            new_cert_hash = None
-
-        # convert to list of list...
-        wapt_manifest = json.dumps( manifest_data.items())
-        # sign with default md
-        signature = private_key.sign_content(wapt_manifest,md=self._md or self._default_md)
+        # clear existing signatures
         waptzip = zipfile.ZipFile(self.localpath,'a',allowZip64=True)
         with waptzip:
             filenames = waptzip.namelist()
-
-            # replace or append signer certificate
-            if new_cert_hash:
-                if 'WAPT/certificate.crt' in filenames:
-                    waptzip.remove('WAPT/certificate.crt')
-                waptzip.writestr('WAPT/certificate.crt',certificate.as_pem())
+            for md in hashlib.algorithms:
+                if self.get_signature_filename(md) in filenames:
+                    waptzip.remove(self.get_signature_filename(md))
+                if self.get_manifest_filename(md) in filenames:
+                    waptzip.remove(self.get_manifest_filename(md))
 
             if 'WAPT/control' in filenames:
                 waptzip.remove('WAPT/control')
             waptzip.writestr('WAPT/control',control)
 
-            for md in ('sha1','sha256'):
-                if self.get_manifest_filename(md=md) in filenames:
-                    waptzip.remove(self.get_manifest_filename(md=md))
-            waptzip.writestr(self.get_manifest_filename(),wapt_manifest)
+            # replace or append signer certificate
+            if 'WAPT/certificate.crt' in filenames:
+                waptzip.remove('WAPT/certificate.crt')
+            waptzip.writestr('WAPT/certificate.crt',certificate.as_pem())
 
-            if 'WAPT/signature' in filenames:
-                waptzip.remove('WAPT/signature')
-            waptzip.writestr('WAPT/signature',signature.encode('base64'))
+        # add manifest and signature for each digest
+        for md in mds:
+            try:
+                # need read access to ZIP file.
+                manifest_data = self.build_manifest(exclude_filenames = excludes,forbidden_files = forbidden_files,md=md)
+            except EWaptPackageSignError as e:
+                raise EWaptBadCertificate('Certificate %s doesn''t allow to sign packages with setup.py file.' % certificate.public_cert_filename)
+
+            manifest_data['WAPT/control'] = hexdigest_for_data(control,md = md)
+
+            new_cert_hash = hexdigest_for_data(certificate.as_pem(),md = md)
+            if manifest_data.get('WAPT/certificate.crt',None) != new_cert_hash:
+                # need to replace certificate in Wapt package
+                manifest_data['WAPT/certificate.crt'] = new_cert_hash
+            else:
+                new_cert_hash = None
+
+            # convert to list of list...
+            wapt_manifest = json.dumps( manifest_data.items())
+
+            # sign with default md
+            signature = private_key.sign_content(wapt_manifest,md = md)
+
+            # add in Zip
+            waptzip = zipfile.ZipFile(self.localpath,'a',allowZip64=True)
+            with waptzip:
+                waptzip.writestr(self.get_manifest_filename(md=md),wapt_manifest)
+                waptzip.writestr(self.get_signature_filename(md),signature.encode('base64'))
 
         self._md = self._default_md
+
         return signature.encode('base64')
 
     def get_manifest_filename(self,md = None):
         if md is None:
-            md = self._md
-        if md is None:
-            md = self._default_md
+            md = self._md or self._default_md
         return 'WAPT/manifest.%s' % md
+
+    def get_signature_filename(self,md = None):
+        if md is None:
+            md = self._md or self._default_md
+        if md == 'sha1':
+            return 'WAPT/signature'
+        else:
+            return 'WAPT/signature.%s' % md
 
     def _get_package_zip_entry(self,filename):
         """Open wapt zipfile and return one package zipfile entry
@@ -1086,17 +1089,14 @@ class PackageEntry(object):
 
         # remove package / files signature if sources entry.
         if self.sourcespath and os.path.isdir(self.sourcespath):
-            manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha256')
-            if os.path.isfile(manifest_filename):
-                os.remove(manifest_filename)
+            for md in ['sha1','sha256']:
+                manifest_filename = os.path.abspath(os.path.join(self.sourcespath,self.get_manifest_filename(md=md)))
+                if os.path.isfile(manifest_filename):
+                    os.remove(manifest_filename)
 
-            manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha1')
-            if os.path.isfile(manifest_filename):
-                os.remove(manifest_filename)
-
-            signature_filename = os.path.join(self.sourcespath,'WAPT','signature')
-            if os.path.isfile(signature_filename):
-                os.remove(signature_filename)
+                signature_filename = os.path.abspath(os.path.join(self.sourcespath,self.get_signature_filename(md=md)))
+                if os.path.isfile(signature_filename):
+                    os.remove(signature_filename)
 
             certificate_filename = os.path.join(self.sourcespath,'WAPT','certificate')
             if os.path.isfile(certificate_filename):
@@ -1105,21 +1105,13 @@ class PackageEntry(object):
     def list_corrupted_files(self):
         """check hexdigest sha for the files in manifest
            returns a list of non matching files (corrupted files)
-
         """
         if not os.path.isdir(self.sourcespath):
             raise EWaptNotSourcesDirPackage(u'%s is not a valid package directory.'%self.sourcespath)
 
-        manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha256')
-        if os.path.isfile(manifest_filename):
-            self._md = 'sha256'
-        else:
-            manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha1')
-            if os.path.isfile(manifest_filename):
-                logger.debug('Fallback to sha1 digest for package files digest')
-                self._md = 'sha1'
-            else:
-                raise EWaptBadSignature(u'no manifest file in %s directory.'%self.sourcespath)
+        manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.%s' % self._md )
+        if not os.path.isfile(manifest_filename):
+            raise EWaptBadSignature(u'no manifest file in %s directory.'%self.sourcespath)
 
         with open(manifest_filename,'r') as manifest_file:
             manifest = json.loads(manifest_file.read())
@@ -1177,77 +1169,68 @@ class PackageEntry(object):
         if not os.path.isdir(self.sourcespath):
             raise EWaptNotAPackage(u'%s is not a valid package directory.'% self.sourcespath)
 
+        manifest_filename = os.path.join(self.sourcespath,self.get_manifest_filename(self._default_md))
+        if not os.path.isfile(manifest_filename):
+            raise EWaptNotSigned(u'The package %s in %s does not contain the %s file with content fingerprints' % (self.asrequirement(),self.sourcespath,self.get_manifest_filename()))
+
         verified_by = None
+        self._md =  self._default_md
 
-        # fallback to sha1 if sha256 not present
-        manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha256')
-        if os.path.isfile(manifest_filename):
-            self._md = 'sha256'
-        else:
-            manifest_filename = os.path.join(self.sourcespath,'WAPT','manifest.sha1')
-            if os.path.isfile(manifest_filename):
-                logger.debug('Fallback to sha1 digest for package files manifest')
-                self._md = 'sha1'
+        manifest_data = open(manifest_filename,'r').read()
+        manifest_filelist = json.loads(manifest_data)
 
-        if os.path.isfile(manifest_filename):
-            manifest_data = open(manifest_filename,'r').read()
-            manifest_filelist = json.loads(manifest_data)
+        has_setup_py = os.path.isfile(os.path.join(self.sourcespath,'setup.py'))
+        if has_setup_py:
+            logger.info(u'Package has a setup.py, code signing certificate is required.')
 
-            has_setup_py = os.path.isfile(os.path.join(self.sourcespath,'setup.py'))
-            if has_setup_py:
-                logger.info(u'Package has a setup.py, code signing certificate is required.')
+        signature_filename = os.path.abspath(os.path.join(self.sourcespath,self.get_signature_filename(self._md)))
+        if not os.path.isfile(signature_filename):
+            raise EWaptNotSigned(u'The package %s in %s does not contain a signature' % (self.asrequirement(),self.sourcespath))
 
-            signature_filename = os.path.join(self.sourcespath,'WAPT','signature')
-            # if public key provided, and signature in wapt file, check it
-            if os.path.isfile(signature_filename):
-                # first check if signature can be decrypted by any of the public keys
-                with open(signature_filename,'r') as signature_file:
-                    signature = signature_file.read().decode('base64')
-                try:
-                    cert = self.package_certificate()
-                    if cert is not None:
-                        issued_by = cabundle.is_known_issuer(cert)
-                        if not issued_by:
-                            raise EWaptCertificateUnknowIssuer('Package certificate is unknown and not allowed on this host')
-                        else:
-                            logger.debug('Certificate %s is trusted by root CA %s' % (cert.subject,issued_by.subject))
+        # first check if signature can be decrypted by any of the public keys
+        with open(signature_filename,'r') as signature_file:
+            signature = signature_file.read().decode('base64')
+        try:
+            cert = self.package_certificate()
+            if cert is not None:
+                issued_by = cabundle.is_known_issuer(cert)
+                if not issued_by:
+                    raise EWaptCertificateUnknowIssuer('Package certificate is unknown and not allowed on this host')
+                else:
+                    logger.debug('Certificate %s is trusted by root CA %s' % (cert.subject,issued_by.subject))
 
-                        certs = [cert]
-                    else:
-                        # old style, test all against signature
-                        certs = sorted(cabundle.certificates(),reverse=True)
-
-                    if certs:
-                        for cert in certs:
-                            logger.debug('Checking signature with %s' % cert)
-                            try:
-                                cert.verify_content(manifest_data,signature,md = self._md)
-                                if not has_setup_py or cert.is_code_signing:
-                                    logger.debug('OK with %s' % cert)
-                                    verified_by = cert
-                                    break
-                                else:
-                                    logger.debug(u'Signature OK but not a code signing certificate, skipping: %s' % cert)
-                            except SSLVerifyException as e:
-                                logger.debug(u'Check failed with certificate %s'%cert)
-
-                    if verified_by:
-                        logger.info(u'Package issued by %s' % (verified_by.subject,))
-                    else:
-                        raise EWaptBadSignature(u'No matching certificate found or bad signature')
-                except:
-                    raise EWaptBadSignature(u'Package file %s signature is invalid.\n\nThe signer "%s" is not accepted by any of the following CA or public keys:\n%s' % \
-                        (self.asrequirement(),self.signer,u'\n'.join([u'%s' % cert for cert in cabundle.certificates()])))
-
-                # now check the integrity of files
-                errors = self.list_corrupted_files()
-                if errors:
-                    raise EWaptCorruptedFiles(u'Error in package %s in %s, files corrupted, SHA not matching for %s' % (self.asrequirement(),self.sourcespath,errors,))
-                return verified_by
+                certs = [cert]
             else:
-                raise EWaptNotSigned(u'The package %s in %s does not contain a signature' % (self.asrequirement(),self.sourcespath))
-        else:
-            raise EWaptNotSigned(u'The package %s in %s does not contain the manifest.sha256 file with content fingerprints' % (self.asrequirement(),self.sourcespath))
+                # old style, test all against signature
+                certs = sorted(cabundle.certificates(),reverse=True)
+
+            if certs:
+                for cert in certs:
+                    logger.debug('Checking signature with %s' % cert)
+                    try:
+                        cert.verify_content(manifest_data,signature,md = self._md)
+                        if not has_setup_py or cert.is_code_signing:
+                            logger.debug('OK with %s' % cert)
+                            verified_by = cert
+                            break
+                        else:
+                            logger.debug(u'Signature OK but not a code signing certificate, skipping: %s' % cert)
+                    except SSLVerifyException as e:
+                        logger.debug(u'Check failed with certificate %s'%cert)
+
+            if verified_by:
+                logger.info(u'Package issued by %s' % (verified_by.subject,))
+            else:
+                raise EWaptBadSignature(u'No matching certificate found or bad signature')
+        except:
+            raise EWaptBadSignature(u'Package file %s signature is invalid.\n\nThe signer "%s" is not accepted by any of the following CA or public keys:\n%s' % \
+                (self.asrequirement(),self.signer,u'\n'.join([u'%s' % cert for cert in cabundle.certificates()])))
+
+        # now check the integrity of files
+        errors = self.list_corrupted_files()
+        if errors:
+            raise EWaptCorruptedFiles(u'Error in package %s in %s, files corrupted, SHA not matching for %s' % (self.asrequirement(),self.sourcespath,errors,))
+        return verified_by
 
 
     def unzip_package(self,target_dir=None,cabundle=None):

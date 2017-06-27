@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.8"
+__version__ = "1.5.0.10"
 import logging
 import sys
 import tempfile
@@ -330,12 +330,17 @@ def test_waptrepo():
         print('OK: certtificate pinning ok')
 
 def test_wapt_engine():
-    #w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
-    w = Wapt(config_filename= r"C:\tranquilit\wapt\wapt-get.ini")
+    w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
+    #w = Wapt(config_filename= r"C:\tranquilit\wapt\wapt-get.ini")
     w.dbpath=':memory:'
-    w.use_hostpackages = True
     w._set_fake_hostname('testwaptcomputer.tranquilit.local')
+
+    w.update()
+    print w.search()
+
+    w.use_hostpackages = True
     print w.update()
+
     print w.search()
     print w.list_upgrade()
     for r in w.repositories:
@@ -560,9 +565,9 @@ def test_openssl():
 
     store = crypto.X509Store()
     store.set_flags( (
-            crypto.X509StoreFlags.CHECK_SS_SIGNATURE |
-            crypto.X509StoreFlags.CRL_CHECK |
-            crypto.X509StoreFlags.EXPLICIT_POLICY))
+        crypto.X509StoreFlags.CRL_CHECK |
+        crypto.X509StoreFlags.CB_ISSUER_CHECK
+        ))
     for cert in trusted_ca.certificates():
         store.add_cert(cert.as_X509())
 
@@ -578,10 +583,43 @@ def test_openssl():
     except Exception as e:
         print e
 
+def test_crl():
+    w = Wapt(config_filename='c:/wapt/wapt-get.ini')
+    for crl in w.update_crls(force=True):
+        print crl.crl
+        print crl.revoked_certs()
+
+
+def test_self_signed():
+    cakey = SSLPrivateKey('c:/tmp/catest.pem')
+    cakey.create()
+    cakey.save_as_pem()
+
+    cacert = SSLCertificate()
+    cacert.build_sign(cakey,None,cakey,'Tranquil IT Systems ROOT CA',is_code_signing = False)
+    cacert.save_as_pem('c:/tmp/catest.crt')
+
+    k = SSLPrivateKey('c:/tmp/test.pem')
+    k.create()
+    k.save_as_pem()
+
+    c = SSLCertificate()
+    c.build_sign(cakey,cacert,k,cn='HT Codeur',organisation='Tranquil IT',country='FR')
+    c.save_as_pem('c:/tmp/test.crt')
+
+    assert(c.subject_key_identifier == c.authority_key_identifier)
+    print c.subject
+    print c.key_usage
+
+    print c.verify_cert_signature(cacert)
 
 
 if __name__ == '__main__':
     setup_test()
+    test_wapt_engine()
+    test_build_sign_verify_package()
+    test_self_signed()
+    test_crl()
     test_openssl()
     test_subject_hash()
     test_get_peer_chain()
@@ -590,7 +628,6 @@ if __name__ == '__main__':
     test_oldsignature()
     test_certifi_cacert()
     test_conflicts()
-    test_build_sign_verify_package()
     test_sign_action()
     test_keypassword()
     test_paquet_host()

@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.9"
+__version__ = "1.5.0.10"
 
 import os,sys
 import codecs
@@ -1168,6 +1168,24 @@ class SSLCRL(object):
     def revoked_certs(self):
         result = [dict(serial_number=cert.serial_number,revocation_date=cert.revocation_date) for cert in self.crl]
         return result
+
+    @property
+    def extensions(self):
+        """certificates extensions
+
+        Returns:
+            dict
+        """
+        return dict([(e.oid._name,e.value) for e in self.crt.extensions])
+
+    @property
+    def authority_key_identifier(self):
+        """Identify the authrority which has signed the certificate"""
+        keyid = self.extensions.get('authorityKeyIdentifier',None)
+        if keyid:
+            return keyid.key_identifier
+        else:
+            return None
 
     def last_update(self):
         return self.crl.last_update
