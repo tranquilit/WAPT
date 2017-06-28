@@ -4319,7 +4319,7 @@ class Wapt(object):
                     logger.warning('Host on the server is not known or not known under this FQDN name (known as %s). Trying to register the computer...'%(db_data and db_data.get('computer_fqdn',None) or None))
                     result = self.register_computer()
                     if result and result['success']:
-                        logger.warning('New registration successfull')
+                        logger.warning('New registration successful')
                     else:
                         logger.critical('Unable to register: %s' % result and result['msg'])
             elif not result:
