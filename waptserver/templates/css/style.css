@@ -143,3 +143,9 @@ footer {
         text-align: center;
     }
 }
+.ico-nav{
+  float : left
+}
+.text-nav{
+  text-align : right;
+}

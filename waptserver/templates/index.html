@@ -45,11 +45,9 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="menu">
                 <ul class="nav navbar-nav">
-                    <li> <a href="#">{{ _("Home") }}</a> </li>
                     <li class="dropdown"> <a class="dropdown-toggle" data-toggle="dropdown" href="#">Repository<span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a target="_blank" href="http://wapt.tranquil.it/">{{ _("TIS repository") }}</a></li>
-                            <li><a target="_blank" href="/wapt/">{{ _("Private repository") }}</a></li>
                         </ul>
                     </li>
                     <li> <a class="dropdown-toggle" data-toggle="dropdown" href="#">WAPTServer<span class="caret"></span></a>
@@ -103,31 +101,35 @@
                         <li><strong>{{ _("WAPT Deploy version:") }} {{ data.wapt.deploy.status }}</strong></li>
                         <li><strong>{{ _("DB status:") }} {{ data.wapt.db.status }}</strong></li>
                         <li><strong {{ data.wapt.disk_space.style|safe }}>{{ _("Disk space:") }} {{ data.wapt.disk_space.status }}</strong></li>
-                    </ul>
+                        <br/>
+                        <a href="/wapt/waptsetup-tis.exe" {{ data.wapt.setup.style|safe }}>
+                          <img src="img/waptsetup.png" height="25px" style = "float :left">
+                          <p>&nbsp;WAPTSetup</p  class ="text-nav" >
+                          <p class="text-muted">{{ _("For creation of the Wapt agent") }}</p><!---->
+                        </a>
+                        <a href="/wapt/waptdeploy.exe" {{ data.wapt.deploy.style|safe }}>
+                          <img src="img/waptdeploy.png" height="25px" class = "ico-nav">
+                          <p>&nbsp;WAPTDeploy</p class ="text-nav">
+                          <p class="text-muted">{{ _("For setting up deployment GPO") }}</p>
+                        </a>
+                        </ul>
+                    </div>
                 </div>
             </div>
+            <div class="row text-center">
+              <div class="row">
+                  <div class="col-md-9">
+                  <a href="/wapt/waptagent.exe" {{ data.wapt.agent.style|safe }}>
+                  <img src="img/waptagent.png" height="100px">
+                      <h4>Agent WAPT</h4>
+                      <p class="text-muted">{{ _("For deploying onto user desktop") }}</p>
+                </a>
+                </div>
+              </div>
+              </div>
+            </div>
         </div>
-        <div class="row text-center">
-            <a href="/wapt/waptagent.exe" {{ data.wapt.agent.style|safe }}>
-                <div class="col-md-4"><img src="img/waptagent.png" height="100px">
-                    <h4>{{ _("WAPT Agent") }}</h4>
-                    <p class="text-muted">{{ _("For deploying onto user desktop") }}</p>
-                </div>
-            </a>
-            <a href="/wapt/waptsetup-tis.exe" {{ data.wapt.setup.style|safe }}>
-                <div class="col-md-4"><img src="img/waptsetup.png" height="100px">
-                    <h4>WAPTSetup</h4>
-                    <p class="text-muted">{{ _("For installing on management machine") }}</p>
-                </div>
-            </a>
-            <a href="/wapt/waptdeploy.exe" {{ data.wapt.deploy.style|safe }}>
-                <div class="col-md-4"><img src="img/waptdeploy.png" height="100px">
-                    <h4>WAPTDeploy</h4>
-                    <p class="text-muted">{{ _("For setting up deployment GPO") }}</p>
-                </div>
-            </a>
-        </div>
-    </div>
+
     <footer>
         <div class="container">
             <div class="contact">
