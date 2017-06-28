@@ -24,6 +24,41 @@ msgstr "Über WAPTConsole"
 msgid "LabInfos"
 msgstr "LabINfos"
 
+#: tvischangekeypassword.caption
+msgid "Change private key password"
+msgstr ""
+
+#: tvischangekeypassword.edkeypassword.hint
+msgctxt "tvischangekeypassword.edkeypassword.hint"
+msgid "Used to decrypt or encrypt private jkey"
+msgstr ""
+
+#: tvischangekeypassword.labconfirmpwd.caption
+msgctxt "tvischangekeypassword.labconfirmpwd.caption"
+msgid "Confirm password"
+msgstr ""
+
+#: tvischangekeypassword.label17.caption
+msgid "New password"
+msgstr ""
+
+#: tvischangekeypassword.label9.caption
+#, fuzzy
+#| msgid "Key name :"
+msgctxt "tvischangekeypassword.label9.caption"
+msgid "Key filename :"
+msgstr "Keyname:"
+
+#: tvischangekeypassword.label9.hint
+msgctxt "tvischangekeypassword.label9.hint"
+msgid "E.g. 'tranquilit'. Please don't use any special characters."
+msgstr "z. B. \"tranquilit\". Bitte verwenden Sie keine Sonderzeichen."
+
+#: tvischangekeypassword.lapassword.caption
+msgctxt "tvischangekeypassword.lapassword.caption"
+msgid "Private key password :"
+msgstr "Privates-Key Passwort:"
+
 #: tvischangepassword.caption
 msgid "WAPT server password"
 msgstr "WAPT Server Passwort"
@@ -77,6 +112,7 @@ msgid "E.g. : technique@tranquil-it-systems.fr"
 msgstr "z. B. :technique@tranquil-it-systems.fr"
 
 #: tviscreatekey.edkeypassword.hint
+msgctxt "tviscreatekey.edkeypassword.hint"
 msgid "Used to decrypt or encrypt private jkey"
 msgstr ""
 
@@ -172,10 +208,12 @@ msgstr ""
 #: tviscreatekey.label9.caption
 #, fuzzy
 #| msgid "Key name :"
+msgctxt "tviscreatekey.label9.caption"
 msgid "Key filename :"
 msgstr "Keyname:"
 
 #: tviscreatekey.label9.hint
+msgctxt "tviscreatekey.label9.hint"
 msgid "E.g. 'tranquilit'. Please don't use any special characters."
 msgstr "z. B. \"tranquilit\". Bitte verwenden Sie keine Sonderzeichen."
 
@@ -611,6 +649,7 @@ msgid "laKeyPath"
 msgstr "laKeyPath"
 
 #: tvisprivatekeyauth.lapassword.caption
+msgctxt "tvisprivatekeyauth.lapassword.caption"
 msgid "Private key password :"
 msgstr "Privates-Key Passwort:"
 
@@ -918,6 +957,10 @@ msgctxt "tviswaptgui.actchangepassword.caption"
 msgid "Update password"
 msgstr "Passwort aktualisieren"
 
+#: tviswaptgui.actchangeprivatekeypassword.caption
+msgid "Change password of private key..."
+msgstr ""
+
 #: tviswaptgui.actcleancache.caption
 msgctxt "tviswaptgui.actcleancache.caption"
 msgid "Clean local cache"
@@ -1155,6 +1198,10 @@ msgstr "vorgegebene Standard GRID-lAYOUT wieder herstellen"
 msgctxt "tviswaptgui.actrestoredefaultlayout.hint"
 msgid "Restore default columns settings for all grids"
 msgstr "Standardeinstelugen für alle Spalten Netze herstellen"
+
+#: tviswaptgui.actrevokecert.caption
+msgid "Revoke a Certificate"
+msgstr ""
 
 #: tviswaptgui.actsearchgroups.caption
 msgctxt "TVISWAPTGUI.ACTSEARCHGROUPS.CAPTION"
@@ -1768,6 +1815,11 @@ msgstr "-"
 msgctxt "tviswaptgui.menuitem76.caption"
 msgid "Remove"
 msgstr "Entfernen"
+
+#: tviswaptgui.menuitem79.caption
+msgctxt "tviswaptgui.menuitem79.caption"
+msgid "-"
+msgstr "-"
 
 #: tviswaptgui.menuitem8.caption
 msgid "Open..."
@@ -2735,6 +2787,11 @@ msgstr "wupanright"
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -2801,6 +2858,9 @@ msgstr "Sind Sie sich sicher, dass Sie %s die Pakete vom Host %s vergessen wolle
 #: uwaptconsoleres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
@@ -3541,6 +3601,9 @@ msgstr "Fehler beim erstellen des Pakets"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -3877,6 +3940,8 @@ msgstr "Anwendung: %s -h "
 #| "Wapt-get version: %s\n"
 #| "Waptconsole version : %s\n"
 #| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
 msgctxt "uwaptconsoleres.rsversion"
 msgid ""
 "Waptconsole version : %s\n"
@@ -3935,6 +4000,8 @@ msgstr ""
 #: uwaptconsoleres.rswaptservererror
 #, fuzzy
 #| msgid ""
+#| "Error on WAPT server:\n"
+#| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
 #| "Error on WAPT server:\n"
@@ -4255,6 +4322,9 @@ msgstr ""
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
 #| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
 "Current server version: %s\n"
@@ -4277,6 +4347,8 @@ msgstr "Fehler beim erstellen des agent : %s"
 #| "WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"

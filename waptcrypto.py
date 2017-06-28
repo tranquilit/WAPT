@@ -440,8 +440,11 @@ class SSLPrivateKey(object):
             filename = self.private_key_filename
         if isinstance(password,unicode):
             password = password.encode('utf8')
+        # get before opening file to be sure to not overwrite a file if pem data can not decrypted...
+        print password
+        pem_data = self.as_pem(password=password)
         with open(self.private_key_filename,'wb') as f:
-            f.write(self.as_pem(password=password))
+            f.write(pem_data)
         self.password = password
         self.private_key_filename = filename
 
@@ -458,7 +461,7 @@ class SSLPrivateKey(object):
                 break
             except (TypeError,ValueError) as e:
                 if "Password was not given but private key is encrypted" in e.message or\
-                        "Bad decrypt. Incorrect password?" in e.message:
+                        "Bad decrypt. Incorrect password?" in e.message and self.password_callback is not None:
                     retry_cnt -= 1
                     password = self.password_callback(self.private_key_filename)
                     if password == '':
@@ -734,8 +737,9 @@ class SSLCertificate(object):
     def save_as_pem(self,filename=None):
         if filename is None:
             filename = self.public_cert_filename
+        pem_data = self.as_pem()
         with open(filename,'wb') as f:
-            f.write(self.as_pem())
+            f.write(pem_data)
         self._public_cert_filename = filename
 
     def as_X509(self):

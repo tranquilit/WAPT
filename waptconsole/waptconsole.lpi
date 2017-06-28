@@ -100,7 +100,7 @@
         <PackageName Value="LCL"/>
       </Item19>
     </RequiredPackages>
-    <Units Count="28">
+    <Units Count="29">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -304,6 +304,13 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="UScaleDPI"/>
       </Unit27>
+      <Unit28>
+        <Filename Value="uvischangekeypassword.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisChangeKeyPassword"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisChangeKeyPassword"/>
+      </Unit28>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

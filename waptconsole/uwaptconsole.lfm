@@ -4487,6 +4487,15 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActHostsDeleteExecute
       OnUpdate = ActHostsActionsUpdate
     end
+    object ActRevokeCert: TAction
+      Category = 'Tools'
+      Caption = 'Revoke a Certificate'
+    end
+    object ActChangePrivateKeypassword: TAction
+      Category = 'Tools'
+      Caption = 'Change password of private key...'
+      OnExecute = ActChangePrivateKeypasswordExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 144
@@ -4674,9 +4683,14 @@ object VisWaptGUI: TVisWaptGUI
           0000000000000000000000000000000000000000000000000000
         }
       end
+      object MenuItem79: TMenuItem
+        Caption = '-'
+      end
       object MenuItem28: TMenuItem
-        Action = ActDeployWapt
-        Visible = False
+        Action = ActChangePrivateKeypassword
+      end
+      object MenuItem78: TMenuItem
+        Action = ActRevokeCert
       end
       object MenuItem32: TMenuItem
         Caption = '-'

@@ -22,6 +22,39 @@ msgstr ""
 msgid "LabInfos"
 msgstr ""
 
+#: tvischangekeypassword.caption
+msgid "Change private key password"
+msgstr ""
+
+#: tvischangekeypassword.edkeypassword.hint
+msgctxt "TVISCHANGEKEYPASSWORD.EDKEYPASSWORD.HINT"
+msgid "Used to decrypt or encrypt private jkey"
+msgstr ""
+
+#: tvischangekeypassword.labconfirmpwd.caption
+msgctxt "TVISCHANGEKEYPASSWORD.LABCONFIRMPWD.CAPTION"
+msgid "Confirm password"
+msgstr ""
+
+#: tvischangekeypassword.label17.caption
+msgid "New password"
+msgstr ""
+
+#: tvischangekeypassword.label9.caption
+msgctxt "TVISCHANGEKEYPASSWORD.LABEL9.CAPTION"
+msgid "Key filename :"
+msgstr ""
+
+#: tvischangekeypassword.label9.hint
+msgctxt "TVISCHANGEKEYPASSWORD.LABEL9.HINT"
+msgid "E.g. 'tranquilit'. Please don't use any special characters."
+msgstr ""
+
+#: tvischangekeypassword.lapassword.caption
+msgctxt "TVISCHANGEKEYPASSWORD.LAPASSWORD.CAPTION"
+msgid "Private key password :"
+msgstr ""
+
 #: tvischangepassword.caption
 msgid "WAPT server password"
 msgstr ""
@@ -69,6 +102,7 @@ msgid "E.g. : technique@tranquil-it-systems.fr"
 msgstr ""
 
 #: tviscreatekey.edkeypassword.hint
+msgctxt "tviscreatekey.edkeypassword.hint"
 msgid "Used to decrypt or encrypt private jkey"
 msgstr ""
 
@@ -158,10 +192,12 @@ msgid "If you don't provide a CA Certificate and key, your certificate will be s
 msgstr ""
 
 #: tviscreatekey.label9.caption
+msgctxt "tviscreatekey.label9.caption"
 msgid "Key filename :"
 msgstr ""
 
 #: tviscreatekey.label9.hint
+msgctxt "tviscreatekey.label9.hint"
 msgid "E.g. 'tranquilit'. Please don't use any special characters."
 msgstr ""
 
@@ -587,6 +623,7 @@ msgid "laKeyPath"
 msgstr ""
 
 #: tvisprivatekeyauth.lapassword.caption
+msgctxt "tvisprivatekeyauth.lapassword.caption"
 msgid "Private key password :"
 msgstr ""
 
@@ -878,6 +915,10 @@ msgctxt "tviswaptgui.actchangepassword.caption"
 msgid "Update password"
 msgstr ""
 
+#: tviswaptgui.actchangeprivatekeypassword.caption
+msgid "Change password of private key..."
+msgstr ""
+
 #: tviswaptgui.actcleancache.caption
 msgctxt "tviswaptgui.actcleancache.caption"
 msgid "Clean local cache"
@@ -1104,6 +1145,10 @@ msgstr ""
 #: tviswaptgui.actrestoredefaultlayout.hint
 msgctxt "tviswaptgui.actrestoredefaultlayout.hint"
 msgid "Restore default columns settings for all grids"
+msgstr ""
+
+#: tviswaptgui.actrevokecert.caption
+msgid "Revoke a Certificate"
 msgstr ""
 
 #: tviswaptgui.actsearchgroups.caption
@@ -1698,6 +1743,11 @@ msgstr ""
 #: tviswaptgui.menuitem76.caption
 msgctxt "TVISWAPTGUI.MENUITEM76.CAPTION"
 msgid "Remove"
+msgstr ""
+
+#: tviswaptgui.menuitem79.caption
+msgctxt "TVISWAPTGUI.MENUITEM79.CAPTION"
+msgid "-"
 msgstr ""
 
 #: tviswaptgui.menuitem8.caption

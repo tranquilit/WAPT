@@ -35,6 +35,8 @@ type
     ActComputerUsers: TAction;
     ActComputerServices: TAction;
     ActHostsDeletePackage: TAction;
+    ActChangePrivateKeypassword: TAction;
+    ActRevokeCert: TAction;
     ActmakePackageTemplate: TAction;
     ActRemoteAssist: TAction;
     ActTriggerWakeOnLan: TAction;
@@ -99,6 +101,8 @@ type
     MenuItem75: TMenuItem;
     MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
+    MenuItem78: TMenuItem;
+    MenuItem79: TMenuItem;
     MenuItem82: TMenuItem;
     odSelectInstaller: TOpenDialog;
     Panel13: TPanel;
@@ -370,6 +374,7 @@ type
     procedure ActAddPackageGroupExecute(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
+    procedure ActChangePrivateKeypasswordExecute(Sender: TObject);
     procedure ActCleanCacheExecute(Sender: TObject);
     procedure ActComputerMgmtExecute(Sender: TObject);
     procedure ActComputerMgmtUpdate(Sender: TObject);
@@ -609,7 +614,7 @@ uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings, soutils,
   uvisgroupchoice, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
   uVisImportPackage, uVisWUAGroup, uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect, PythonEngine, Clipbrd, RegExpr, tisinifiles,
-  IdURI,uScaleDPI, uVisPackageWizard;
+  IdURI,uScaleDPI, uVisPackageWizard, uVisChangeKeyPassword;
 
 {$R *.lfm}
 
@@ -1809,6 +1814,16 @@ begin
           ShowMessageFmt(rsPasswordChangeError, [UTF8Encode(E.Message)]);
       end;
     end;
+  finally
+    Free;
+  end;
+end;
+
+procedure TVisWaptGUI.ActChangePrivateKeypasswordExecute(Sender: TObject);
+begin
+  with TVisChangeKeyPassword.Create(self) do
+  try
+    ShowModal;
   finally
     Free;
   end;
