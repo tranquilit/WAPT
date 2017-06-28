@@ -1,4 +1,4 @@
-msgid "Local directory for saving package development projectsLocal directory for saving package development projectsOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts."
+msgid "Local directory for saving package development projectsLocal directory for saving package development projectsOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts."
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tform1.buttonpanel1.helpbutton.caption
@@ -47,7 +47,11 @@ msgid "Generate private key and self signed certificate"
 msgstr "Den privaten Key und das selbstsignierte Zertifikat generieren"
 
 #: tviscreatekey.cbcodesigning.caption
-msgid "Is code signing certificate (package development)"
+msgid "Tag as code signing certificate (package development)"
+msgstr ""
+
+#: tviscreatekey.cbisca.caption
+msgid "Tag as CA Certificate"
 msgstr ""
 
 #: tviscreatekey.edcertbasename.hint
@@ -76,13 +80,6 @@ msgstr "z. B. :technique@tranquil-it-systems.fr"
 msgid "Used to decrypt or encrypt private jkey"
 msgstr ""
 
-#: tviscreatekey.edkeypassword2.hint
-#, fuzzy
-#| msgid "E.g. : srvwapt.tranquilit.local"
-msgctxt "tviscreatekey.edkeypassword2.hint"
-msgid "This information will be used as Signer identification in packages"
-msgstr "z. B. :srvwapt.tranquilit.local"
-
 #: tviscreatekey.edlocality.hint
 msgid "E.g. : Nantes"
 msgstr "z. B. : Nantes"
@@ -94,6 +91,11 @@ msgstr "z. B. : Tranquil It Systems"
 #: tviscreatekey.edunit.hint
 msgid "E.g. : IT"
 msgstr "z. B. : IT"
+
+#: tviscreatekey.labconfirmpwd.caption
+msgctxt "tviscreatekey.labconfirmpwd.caption"
+msgid "Confirm password"
+msgstr ""
 
 #: tviscreatekey.label1.caption
 #, fuzzy
@@ -112,6 +114,10 @@ msgstr "Land (2 chars. z.B. : FR):"
 #: tviscreatekey.label10.hint
 msgid "Main site country code"
 msgstr "Hauptseite Landesvorwahl"
+
+#: tviscreatekey.label11.caption
+msgid "Authority Signing Certificate"
+msgstr ""
 
 #: tviscreatekey.label12.caption
 msgid "City :"
@@ -156,7 +162,11 @@ msgid "Certificate name"
 msgstr ""
 
 #: tviscreatekey.label19.caption
-msgid "Confirm password"
+msgid "Authority Signing Key"
+msgstr ""
+
+#: tviscreatekey.label2.caption
+msgid "If you don't provide a CA Certificate and key, your certificate will be self-signed."
 msgstr ""
 
 #: tviscreatekey.label9.caption
@@ -213,12 +223,10 @@ msgid "E.g. : http://wapt:8080."
 msgstr "z. B. : http://wapt:8080."
 
 #: tviscreatewaptsetup.label1.caption
-msgid "Public key : "
+#, fuzzy
+#| msgid "Public key : "
+msgid "Authorized Packages Certificate / CA bundle"
 msgstr "Öffentlicher Key:"
-
-#: tviscreatewaptsetup.label1.hint
-msgid "The certificate you just created (.crt key)."
-msgstr "Das soeben erstellte Zertifikat (.crt key)."
 
 #: tviscreatewaptsetup.label2.caption
 msgid "Main WAPT repository address :"
@@ -229,7 +237,9 @@ msgid "Your WAPT repository address (http://wapt/wapt)."
 msgstr "Ihre WAPT Repository Adresse (http://wapt/wapt)."
 
 #: tviscreatewaptsetup.label3.caption
-msgid "Organisation :"
+#, fuzzy
+#| msgid "Organisation :"
+msgid "Organization :"
 msgstr "Organisation:"
 
 #: tviscreatewaptsetup.label3.hint
@@ -254,7 +264,7 @@ msgstr "Ihre WAPT Server Adresse (http://wapt:8080)."
 
 #: tviscreatewaptsetup.label6.caption
 msgctxt "tviscreatewaptsetup.label6.caption"
-msgid "Path to CA certificates bundle"
+msgid "Path to Servers CA certificates bundle"
 msgstr ""
 
 #: tviseditgroup.button5.caption
@@ -2700,6 +2710,31 @@ msgstr "wupanright"
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -2766,6 +2801,21 @@ msgstr "Sind Sie sich sicher, dass Sie %s die Pakete vom Host %s vergessen wolle
 #: uwaptconsoleres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
@@ -3476,6 +3526,21 @@ msgstr "Fehler beim erstellen des Pakets"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -3802,6 +3867,16 @@ msgstr "Anwendung: %s -h "
 #| "Wapt-get version: %s\n"
 #| "Waptconsole version : %s\n"
 #| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
 msgctxt "uwaptconsoleres.rsversion"
 msgid ""
 "Waptconsole version : %s\n"
@@ -3860,6 +3935,16 @@ msgstr ""
 #: uwaptconsoleres.rswaptservererror
 #, fuzzy
 #| msgid ""
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
 #| "Error on WAPT server:\n"
@@ -4155,6 +4240,21 @@ msgstr ""
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
 #| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
 "Current server version: %s\n"
@@ -4177,6 +4277,16 @@ msgstr "Fehler beim erstellen des agent : %s"
 #| "WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
@@ -4297,7 +4407,7 @@ msgid "W: interrupt received, killing serverâ¦"
 msgstr "W: Unterbrechung empfangen, tötet Serverâ¦"
 
 #: uwaptconsoleres.rswritecertonlocalmachine
-msgid "Do you want to copy this certificate to ssl Authorized certificate store (%s) ?"
+msgid "Do you want to copy this certificate to ssl Authorized Package Certificate store (%s) ?"
 msgstr ""
 
 #: uwaptres.rsbundleconfigeditcaption

@@ -1396,12 +1396,6 @@ begin
   with TVisCreateKey.Create(Self) do
     try
       repeat
-        with TINIFile.Create(AppIniFilename) do
-        try
-          EdKeyFileName.FileName := ReadString('global', 'private_key','');
-        finally
-          Free;
-        end;
         if ShowModal = mrOk then
           try
             CreatePrivateKey := not FileExists(EdKeyFileName.FileName);
@@ -1410,7 +1404,8 @@ begin
             else
               pemfn:=AppendPathDelim(utf8Decode(DirectoryCert.Text))+ExtractFileNameOnly(utf8Decode(EdKeyFileName.Text))+'.pem';
             crtBaseName:=edCertBaseName.Text;
-            certFile := CreateSelfSignedCert(
+
+            certFile := CreateSignedCert(
               pemfn,
               crtBaseName,
               waptpath,
@@ -1422,7 +1417,10 @@ begin
               edCommonName.Text,
               edEmail.Text,
               EdKeyPassword.Text,
-              CBCodeSigning.Checked);
+              CBCodeSigning.Checked,
+              CBIsCA.Checked,
+              EdCACertificate.Text,
+              EdCAKeyFilename.Text);
 
             done := FileExists(certFile);
             if done then
@@ -1434,17 +1432,22 @@ begin
                 ShowMessageFmt(rsPublicKeyGenSuccess,
                   [UTF8Encode(certFile)]);
 
-              // first use...
-              if GetWaptPersonalCertificatePath = '' then
                 with TINIFile.Create(AppIniFilename) do
-                  try
+                try
+                  if GetWaptPersonalCertificatePath = '' then
+                  // first use...
                     WriteString('global', 'personal_certificate_path', certFile);
-                  finally
-                    Free;
-                  end;
 
-              if MessageDlg(Format(rsWriteCertOnLocalMachine,[AppendPathDelim(WaptBaseDir)+'ssl']), mtConfirmation, [mbYes, mbNo],0) = mrYes
-              then
+                  if EdCAKeyFilename.Text <> '' then
+                    WriteString('global', 'default_ca_key_path', EdCAKeyFilename.Text);
+                  if EdCACertificate.Text <> '' then
+                    WriteString('global', 'default_ca_cert_path', EdCACertificate.Text);
+                finally
+                  Free;
+                end;
+
+              // If this a CA cert, we should perhaps take it in account right now...
+              if CBIsCA.Checked and (MessageDlg(Format(rsWriteCertOnLocalMachine,[AppendPathDelim(WaptBaseDir)+'ssl']), mtConfirmation, [mbYes, mbNo],0) = mrYes) then
               begin
                 if CopyFile(PChar(certFile),
                   PChar(waptpath + '\ssl\' + ExtractFileName(certFile)), True) then
@@ -1513,7 +1516,11 @@ begin
   with TVisCreateWaptSetup.Create(self) do
     try
       ini := TIniFile.Create(AppIniFilename);
-      fnPublicCert.Text := ini.ReadString('global', 'personal_certificate_path', '');
+      if ini.ReadString('global', 'default_ca_cert_path', '') <> '' then
+        fnPublicCert.Text := ini.ReadString('global', 'default_ca_cert_path', '')
+      else
+        fnPublicCert.Text := ini.ReadString('global', 'personal_certificate_path', '');
+
       if not FileExists(fnPublicCert.Text) then
         fnPublicCert.Clear;
       edWaptServerUrl.Text := ini.ReadString('global', 'wapt_server', '');

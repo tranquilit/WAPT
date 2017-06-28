@@ -48,7 +48,7 @@ type
   end;
 
 
-  function CreateSelfSignedCert(keyfilename,
+  function CreateSignedCert(keyfilename,
           crtbasename,
           wapt_base_dir,
           destdir,
@@ -59,14 +59,17 @@ type
           commonname,
           email,
           keypassword:String;
-          codesigning:Boolean
+          codesigning:Boolean;
+          IsCACert:Boolean;
+          CACertificateFilename:String='';
+          CAKeyFilename:String=''
       ):String;
 
 var
   DMPython: TDMPython;
 
 implementation
-uses waptcommon, uvisprivatekeyauth,inifiles,forms,controls,Dialogs;
+uses variants, waptcommon, uvisprivatekeyauth,inifiles,forms,controls,Dialogs;
 {$R *.lfm}
 
 procedure TDMPython.SetWaptConfigFileName(AValue: Utf8String);
@@ -280,7 +283,7 @@ begin
 end;
 
 
-function CreateSelfSignedCert(keyfilename,
+function CreateSignedCert(keyfilename,
         crtbasename,
         wapt_base_dir,
         destdir,
@@ -291,16 +294,44 @@ function CreateSelfSignedCert(keyfilename,
         commonname,
         email,
         keypassword:String;
-        codesigning:Boolean
+        codesigning:Boolean;
+        IsCACert:Boolean;
+        CACertificateFilename:String='';
+        CAKeyFilename:String=''
     ):String;
 var
   destpem,destcrt : Variant;
   params : ISuperObject;
   returnCode:integer;
-  key,cert:Variant;
+  rsa,key,cert,cakey,cacert:Variant;
+  cakey_pwd: String;
 
 begin
   result := '';
+  cacert := Nil;
+  cakey := Nil;
+  cakey_pwd := '';
+
+  if (CACertificateFilename<>'') then
+    if not FileExists(CACertificateFilename) then
+      raise Exception.CreateFmt('CA Certificate %s does not exist',[CACertificateFilename])
+    else
+      cacert:= MainModule.waptcrypto.SSLCertificate(crt_filename := CACertificateFilename);
+
+  if (CAKeyFilename<>'') then
+    if not FileExists(CAKeyFilename) then
+      raise Exception.CreateFmt('CA private key %s does not exist',[CAKeyFilename])
+    else
+    begin
+      if InputQuery('CA Private key password','Password',True,cakey_pwd) then
+      begin
+        cakey:= MainModule.waptcrypto.SSLPrivateKey(filename := CAKeyFilename, password := cakey_pwd);
+        rsa := cakey.as_pem;
+      end
+      else
+        raise Exception.CreateFmt('No password for decryption of %s',[CAKeyFilename]);
+    end;
+
   if FileExists(keyfilename) then
     destpem := keyfilename
   else
@@ -318,7 +349,7 @@ begin
   if not DirectoryExists(destdir) then
        CreateDir(destdir);
 
-  key := MainModule.waptcrypto.SSLPrivateKey(filename := destpem,password := keypassword)
+  key := MainModule.waptcrypto.SSLPrivateKey(filename := destpem,password := keypassword);
 
   // Create private key  if not already exist
   if not FileExists(destpem) then
@@ -330,15 +361,29 @@ begin
   // None can not be passed... not accepted : invalid Variant type
   // using default None on the python side to workaround this...
   // python call
-  cert := key.build_sign_certificate(
-    cn := commonname,
-    organization := organization,
-    locality := locality,
-    country := country,
-    organizational_unit := orgunit,
-    email := email,
-    is_ca := True,
-    is_code_signing := codesigning);
+  if  VarIsNull(cacert) or VarIsNull(cakey) then
+    // self signed
+    cert := key.build_sign_certificate(
+      cn := commonname,
+      organization := organization,
+      locality := locality,
+      country := country,
+      organizational_unit := orgunit,
+      email := email,
+      is_ca := IsCACert,
+      is_code_signing := codesigning)
+  else
+    cert := key.build_sign_certificate(
+      ca_signing_key := cakey,
+      ca_signing_cert := cacert,
+      cn := commonname,
+      organization := organization,
+      locality := locality,
+      country := country,
+      organizational_unit := orgunit,
+      email := email,
+      is_ca := IsCACert,
+      is_code_signing := codesigning);
 
   cert.save_as_pem(filename := destcrt);
   result := destcrt;

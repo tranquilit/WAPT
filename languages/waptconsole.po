@@ -1,4 +1,4 @@
-msgid "Only required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts."
+msgid "Only required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts."
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tform1.buttonpanel1.helpbutton.caption
@@ -43,7 +43,11 @@ msgid "Generate private key and self signed certificate"
 msgstr ""
 
 #: tviscreatekey.cbcodesigning.caption
-msgid "Is code signing certificate (package development)"
+msgid "Tag as code signing certificate (package development)"
+msgstr ""
+
+#: tviscreatekey.cbisca.caption
+msgid "Tag as CA Certificate"
 msgstr ""
 
 #: tviscreatekey.edcertbasename.hint
@@ -68,11 +72,6 @@ msgstr ""
 msgid "Used to decrypt or encrypt private jkey"
 msgstr ""
 
-#: tviscreatekey.edkeypassword2.hint
-msgctxt "TVISCREATEKEY.EDKEYPASSWORD2.HINT"
-msgid "This information will be used as Signer identification in packages"
-msgstr ""
-
 #: tviscreatekey.edlocality.hint
 msgid "E.g. : Nantes"
 msgstr ""
@@ -83,6 +82,11 @@ msgstr ""
 
 #: tviscreatekey.edunit.hint
 msgid "E.g. : IT"
+msgstr ""
+
+#: tviscreatekey.labconfirmpwd.caption
+msgctxt "TVISCREATEKEY.LABCONFIRMPWD.CAPTION"
+msgid "Confirm password"
 msgstr ""
 
 #: tviscreatekey.label1.caption
@@ -99,6 +103,10 @@ msgstr ""
 
 #: tviscreatekey.label10.hint
 msgid "Main site country code"
+msgstr ""
+
+#: tviscreatekey.label11.caption
+msgid "Authority Signing Certificate"
 msgstr ""
 
 #: tviscreatekey.label12.caption
@@ -142,7 +150,11 @@ msgid "Certificate name"
 msgstr ""
 
 #: tviscreatekey.label19.caption
-msgid "Confirm password"
+msgid "Authority Signing Key"
+msgstr ""
+
+#: tviscreatekey.label2.caption
+msgid "If you don't provide a CA Certificate and key, your certificate will be self-signed."
 msgstr ""
 
 #: tviscreatekey.label9.caption
@@ -197,11 +209,7 @@ msgid "E.g. : http://wapt:8080."
 msgstr ""
 
 #: tviscreatewaptsetup.label1.caption
-msgid "Public key : "
-msgstr ""
-
-#: tviscreatewaptsetup.label1.hint
-msgid "The certificate you just created (.crt key)."
+msgid "Authorized Packages Certificate / CA bundle"
 msgstr ""
 
 #: tviscreatewaptsetup.label2.caption
@@ -213,7 +221,7 @@ msgid "Your WAPT repository address (http://wapt/wapt)."
 msgstr ""
 
 #: tviscreatewaptsetup.label3.caption
-msgid "Organisation :"
+msgid "Organization :"
 msgstr ""
 
 #: tviscreatewaptsetup.label3.hint
@@ -238,7 +246,7 @@ msgstr ""
 
 #: tviscreatewaptsetup.label6.caption
 msgctxt "TVISCREATEWAPTSETUP.LABEL6.CAPTION"
-msgid "Path to CA certificates bundle"
+msgid "Path to Servers CA certificates bundle"
 msgstr ""
 
 #: tviseditgroup.button5.caption
@@ -3070,7 +3078,7 @@ msgid "W: interrupt received, killing serverâ¦"
 msgstr ""
 
 #: uwaptconsoleres.rswritecertonlocalmachine
-msgid "Do you want to copy this certificate to ssl Authorized certificate store (%s) ?"
+msgid "Do you want to copy this certificate to ssl Authorized Package Certificate store (%s) ?"
 msgstr ""
 
 #: uwaptres.rsbundleconfigeditcaption

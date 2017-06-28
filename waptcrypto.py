@@ -623,7 +623,7 @@ class SSLPrivateKey(object):
         extensions = []
 
         extensions.append(dict(
-            extension=x509.BasicConstraints(ca=is_ca,path_length=1),
+            extension=x509.BasicConstraints(ca=is_ca,path_length=None),
             critical=True))
 
         if is_code_signing:

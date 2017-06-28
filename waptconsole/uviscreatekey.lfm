@@ -1,11 +1,11 @@
 object VisCreateKey: TVisCreateKey
   Left = 501
-  Height = 366
+  Height = 466
   Top = 326
   Width = 439
   BorderStyle = bsDialog
   Caption = 'Generate private key and self signed certificate'
-  ClientHeight = 366
+  ClientHeight = 466
   ClientWidth = 439
   Font.CharSet = ANSI_CHARSET
   Font.Color = clBlack
@@ -21,7 +21,7 @@ object VisCreateKey: TVisCreateKey
   object Panel1: TPanel
     Left = 0
     Height = 27
-    Top = 339
+    Top = 439
     Width = 439
     Align = alBottom
     BevelOuter = bvNone
@@ -55,12 +55,12 @@ object VisCreateKey: TVisCreateKey
   end
   object Panel2: TPanel
     Left = 0
-    Height = 339
+    Height = 439
     Top = 0
     Width = 439
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 339
+    ClientHeight = 439
     ClientWidth = 439
     TabOrder = 0
     object Label9: TLabel
@@ -81,10 +81,10 @@ object VisCreateKey: TVisCreateKey
       ParentFont = False
     end
     object Label10: TLabel
-      Left = 10
+      Left = 26
       Height = 13
       Hint = 'Main site country code'
-      Top = 221
+      Top = 317
       Width = 139
       Caption = 'Country (2 chars. E.g. : FR):'
       ParentColor = False
@@ -92,36 +92,36 @@ object VisCreateKey: TVisCreateKey
       ShowHint = True
     end
     object Label12: TLabel
-      Left = 10
+      Left = 26
       Height = 13
-      Top = 241
+      Top = 337
       Width = 26
       Caption = 'City :'
       ParentColor = False
     end
     object Label13: TLabel
-      Left = 10
+      Left = 26
       Height = 13
       Hint = 'Your company name'
-      Top = 264
+      Top = 360
       Width = 65
       Caption = 'Organisation:'
       ParentColor = False
     end
     object Label14: TLabel
-      Left = 10
+      Left = 26
       Height = 13
       Hint = 'E.g. : IT department.'
-      Top = 288
+      Top = 384
       Width = 42
       Caption = 'Service :'
       ParentColor = False
     end
     object Label16: TLabel
-      Left = 10
+      Left = 26
       Height = 13
       Hint = 'Technical department e-mail address.'
-      Top = 312
+      Top = 408
       Width = 76
       Caption = 'E-mail address :'
       ParentColor = False
@@ -144,68 +144,68 @@ object VisCreateKey: TVisCreateKey
       ParentFont = False
     end
     object edCountry: TEdit
-      Left = 174
+      Left = 173
       Height = 21
-      Top = 216
+      Top = 312
       Width = 32
       MaxLength = 2
-      TabOrder = 8
+      TabOrder = 11
       Text = 'FR'
     end
     object edLocality: TEdit
-      Left = 174
+      Left = 173
       Height = 21
       Hint = 'E.g. : Nantes'
-      Top = 240
-      Width = 176
-      TabOrder = 9
-    end
-    object edOrganization: TEdit
-      Left = 174
-      Height = 21
-      Hint = 'E.g. : Tranquil It Systems'
-      Top = 264
-      Width = 176
-      TabOrder = 10
-    end
-    object edUnit: TEdit
-      Left = 174
-      Height = 21
-      Hint = 'E.g. : IT'
-      Top = 288
-      Width = 176
-      TabOrder = 11
-    end
-    object edEmail: TEdit
-      Left = 174
-      Height = 21
-      Hint = 'E.g. : technique@tranquil-it-systems.fr'
-      Top = 312
+      Top = 336
       Width = 176
       TabOrder = 12
+    end
+    object edOrganization: TEdit
+      Left = 173
+      Height = 21
+      Hint = 'E.g. : Tranquil It Systems'
+      Top = 360
+      Width = 176
+      TabOrder = 13
+    end
+    object edUnit: TEdit
+      Left = 173
+      Height = 21
+      Hint = 'E.g. : IT'
+      Top = 384
+      Width = 176
+      TabOrder = 14
+    end
+    object edEmail: TEdit
+      Left = 173
+      Height = 21
+      Hint = 'E.g. : technique@tranquil-it-systems.fr'
+      Top = 408
+      Width = 176
+      TabOrder = 15
     end
     object Shape1: TShape
       AnchorSideRight.Side = asrBottom
       Left = 9
       Height = 2
-      Top = 110
+      Top = 192
       Width = 413
       Anchors = [akTop]
       BorderSpacing.Left = 5
     end
     object StaticText1: TStaticText
-      Left = 8
+      Left = 7
       Height = 14
-      Top = 200
+      Top = 296
       Width = 97
       AutoSize = True
       Caption = 'Optional information'
-      TabOrder = 7
+      TabOrder = 10
     end
     object Label15: TLabel
       Left = 8
       Height = 13
-      Top = 123
+      Top = 205
       Width = 115
       Caption = 'Common Name(CN) :'
       Font.CharSet = ANSI_CHARSET
@@ -222,10 +222,10 @@ object VisCreateKey: TVisCreateKey
       Left = 174
       Height = 21
       Hint = 'This information will be used as Signer identification in packages'
-      Top = 120
+      Top = 202
       Width = 174
       OnExit = edCommonNameExit
-      TabOrder = 4
+      TabOrder = 6
     end
     object EdKeyFilename: TFileNameEdit
       Left = 173
@@ -249,6 +249,7 @@ object VisCreateKey: TVisCreateKey
       Height = 21
       Top = 8
       Width = 208
+      OnAcceptDirectory = DirectoryCertAcceptDirectory
       DialogTitle = 'Select traget directory for keys and certificates'
       ShowHidden = False
       ButtonWidth = 23
@@ -283,7 +284,7 @@ object VisCreateKey: TVisCreateKey
       ParentColor = False
       ParentFont = False
     end
-    object Label19: TLabel
+    object LabConfirmPwd: TLabel
       Left = 9
       Height = 13
       Top = 80
@@ -297,31 +298,32 @@ object VisCreateKey: TVisCreateKey
       Font.Quality = fqDraft
       ParentColor = False
       ParentFont = False
+      Visible = False
     end
     object EdKeypassword2: TEdit
       Left = 173
       Height = 21
-      Hint = 'This information will be used as Signer identification in packages'
       Top = 80
       Width = 176
       EchoMode = emPassword
       PasswordChar = '*'
       TabOrder = 3
+      Visible = False
     end
     object CBCodeSigning: TCheckBox
-      Left = 161
+      Left = 160
       Height = 17
-      Top = 147
-      Width = 258
-      Caption = 'Is code signing certificate (package development)'
+      Top = 227
+      Width = 281
+      Caption = 'Tag as code signing certificate (package development)'
       Checked = True
       State = cbChecked
-      TabOrder = 5
+      TabOrder = 7
     end
     object Label18: TLabel
-      Left = 9
+      Left = 8
       Height = 13
-      Top = 170
+      Top = 266
       Width = 94
       Caption = 'Certificate name'
       Font.CharSet = ANSI_CHARSET
@@ -335,12 +337,76 @@ object VisCreateKey: TVisCreateKey
       ParentFont = False
     end
     object edCertBaseName: TEdit
-      Left = 175
+      Left = 174
       Height = 21
       Hint = 'This information will be used as Signer identification in packages'
-      Top = 168
+      Top = 264
       Width = 174
-      TabOrder = 6
+      TabOrder = 9
+    end
+    object EdCACertificate: TFileNameEdit
+      Left = 173
+      Height = 21
+      Top = 134
+      Width = 208
+      DialogOptions = [ofNoTestFileCreate, ofEnableSizing, ofViewDetail]
+      Filter = 'X509 certificate files (*.crt)|*.crt|All files (*.*)|*.*'
+      FilterIndex = 0
+      HideDirectories = False
+      ButtonWidth = 23
+      NumGlyphs = 1
+      Flat = True
+      MaxLength = 0
+      TabOrder = 4
+    end
+    object Label11: TLabel
+      Left = 11
+      Height = 13
+      Top = 136
+      Width = 135
+      Caption = 'Authority Signing Certificate'
+      ParentColor = False
+    end
+    object Label19: TLabel
+      Left = 11
+      Height = 13
+      Top = 160
+      Width = 103
+      Caption = 'Authority Signing Key'
+      ParentColor = False
+    end
+    object EdCAKeyFilename: TFileNameEdit
+      Left = 173
+      Height = 21
+      Top = 160
+      Width = 208
+      DialogOptions = [ofNoTestFileCreate, ofEnableSizing, ofViewDetail]
+      Filter = 'X509 private key files (*.pem)|*.pem|All files (*.*)|*.*'
+      FilterIndex = 0
+      HideDirectories = False
+      ButtonWidth = 23
+      NumGlyphs = 1
+      Flat = True
+      MaxLength = 0
+      TabOrder = 5
+    end
+    object Label2: TLabel
+      Left = 9
+      Height = 13
+      Top = 114
+      Width = 386
+      Caption = 'If you don''t provide a CA Certificate and key, your certificate will be self-signed.'
+      ParentColor = False
+    end
+    object CBIsCA: TCheckBox
+      Left = 160
+      Height = 17
+      Top = 246
+      Width = 122
+      Caption = 'Tag as CA Certificate'
+      Checked = True
+      State = cbChecked
+      TabOrder = 8
     end
   end
 end

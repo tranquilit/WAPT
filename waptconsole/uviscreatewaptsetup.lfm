@@ -1,11 +1,11 @@
 object VisCreateWaptSetup: TVisCreateWaptSetup
-  Left = 475
+  Left = 411
   Height = 279
-  Top = 340
-  Width = 460
+  Top = 217
+  Width = 510
   Caption = 'Create WAPT agent'
   ClientHeight = 279
-  ClientWidth = 460
+  ClientWidth = 510
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
@@ -13,9 +13,9 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   ShowHint = True
   LCLVersion = '1.3'
   object fnPublicCert: TFileNameEdit
-    Left = 200
+    Left = 262
     Height = 21
-    Top = 18
+    Top = 16
     Width = 216
     Filter = '*.crt|*.crt'
     FilterIndex = 0
@@ -30,19 +30,19 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object Label1: TLabel
     Left = 8
     Height = 13
-    Hint = 'The certificate you just created (.crt key).'
-    Top = 20
-    Width = 66
-    Caption = 'Public key : '
+    Top = 21
+    Width = 249
+    Alignment = taRightJustify
+    Caption = 'Authorized Packages Certificate / CA bundle'
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False
   end
   object edRepoUrl: TEdit
-    Left = 200
+    Left = 262
     Height = 21
     Hint = 'E.g. : http://wapt.tranquilit.local/wapt.'
-    Top = 73
+    Top = 71
     Width = 216
     TabOrder = 2
   end
@@ -50,42 +50,46 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Left = 8
     Height = 13
     Hint = 'Your WAPT repository address (http://wapt/wapt).'
-    Top = 76
-    Width = 179
+    Top = 77
+    Width = 250
+    Alignment = taRightJustify
+    AutoSize = False
     Caption = 'Main WAPT repository address :'
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False
   end
   object edOrgName: TEdit
-    Left = 200
+    Left = 262
     Height = 21
     Hint = 'E.g. : Tranquil IT Systems.'
-    Top = 216
+    Top = 214
     Width = 216
     TabOrder = 7
   end
   object Label3: TLabel
-    Left = 120
+    Left = 8
     Height = 13
     Hint = 'Your company name.'
-    Top = 216
-    Width = 68
-    Caption = 'Organisation :'
+    Top = 217
+    Width = 250
+    Alignment = taRightJustify
+    AutoSize = False
+    Caption = 'Organization :'
     ParentColor = False
   end
   object Panel1: TPanel
     Left = 0
     Height = 27
     Top = 252
-    Width = 460
+    Width = 510
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 27
-    ClientWidth = 460
+    ClientWidth = 510
     TabOrder = 8
     object BitBtn1: TBitBtn
-      Left = 299
+      Left = 349
       Height = 23
       Top = -1
       Width = 75
@@ -97,7 +101,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TabOrder = 0
     end
     object BitBtn2: TBitBtn
-      Left = 379
+      Left = 429
       Height = 23
       Top = -1
       Width = 75
@@ -114,7 +118,9 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Height = 13
     Hint = 'Where waptagent.exe will be saved.'
     Top = 48
-    Width = 147
+    Width = 248
+    Alignment = taRightJustify
+    AutoSize = False
     Caption = 'Save waptagent.exe as...  '
     Font.Style = [fsBold]
     ParentColor = False
@@ -122,9 +128,9 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Visible = False
   end
   object fnWaptDirectory: TDirectoryEdit
-    Left = 200
+    Left = 262
     Height = 21
-    Top = 45
+    Top = 43
     Width = 216
     ShowHidden = False
     ButtonWidth = 23
@@ -135,10 +141,10 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Visible = False
   end
   object edWaptServerUrl: TEdit
-    Left = 200
+    Left = 262
     Height = 21
     Hint = 'E.g. : http://wapt:8080.'
-    Top = 101
+    Top = 99
     Width = 216
     TabOrder = 3
   end
@@ -147,27 +153,29 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Height = 13
     Hint = 'Your WAPT server address (http://wapt:8080).'
     Top = 104
-    Width = 127
+    Width = 247
+    Alignment = taRightJustify
+    AutoSize = False
     Caption = 'WAPT server address :'
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False
   end
   object Label6: TLabel
-    Left = 32
+    Left = 8
     Height = 13
-    Top = 148
-    Width = 162
+    Top = 149
+    Width = 250
     Alignment = taRightJustify
     AutoSize = False
-    Caption = 'Path to CA certificates bundle'
+    Caption = 'Path to Servers CA certificates bundle'
     ParentColor = False
   end
   object EdServerCertificate: TFileNameEdit
-    Left = 200
+    Left = 262
     Height = 21
     Hint = 'E.g. : c:\private\tranquilit.crt'#13#10'Path to certificate for signing new packages.'#13#10'Only suitable for development hosts.'
-    Top = 144
+    Top = 142
     Width = 216
     Filter = 'CA Certificates bundles PEM|*.crt|Tous les fichiers|*.*'
     FilterIndex = 0
@@ -179,34 +187,34 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     TabOrder = 5
   end
   object CBVerifyCert: TCheckBox
-    Left = 200
+    Left = 262
     Height = 17
-    Top = 125
+    Top = 123
     Width = 161
     Caption = 'Verify https server certificate'
     OnClick = CBVerifyCertClick
     TabOrder = 4
   end
   object CBUseKerberos: TCheckBox
-    Left = 200
+    Left = 262
     Height = 17
-    Top = 172
+    Top = 170
     Width = 186
     Caption = 'Use Kerberos for initial registration'
     TabOrder = 6
   end
   object CBCheckCertificatesValidity: TCheckBox
-    Left = 200
+    Left = 262
     Height = 17
     Hint = 'Check that certificate dates are valid and  issuer is a know one.'
-    Top = 192
+    Top = 190
     Width = 190
     Caption = 'Check packages certificates validity'
     TabOrder = 9
     Visible = False
   end
   object ActionList1: TActionList
-    left = 488
-    top = 104
+    left = 16
+    top = 208
   end
 end

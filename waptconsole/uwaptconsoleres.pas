@@ -24,7 +24,7 @@ resourcestring
   rsPublicKeyGenFailure = 'The generation of the public certificate has failed.';
   rsPublicKeyGenError = 'Error during key generation : %s';
 
-  rsWriteCertOnLocalMachine = 'Do you want to copy this certificate to ssl Authorized certificate store (%s) ?';
+  rsWriteCertOnLocalMachine = 'Do you want to copy this certificate to ssl Authorized Package Certificate store (%s) ?';
 
   rsCreationInProgress = 'Build in progress.';
   rsProgressTitle = 'Started uploading to WAPT server...';  // TODO more meaningful var name
