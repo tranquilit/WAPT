@@ -33,7 +33,7 @@
     exported functions instead of local Wapt functions (except crypto signatures)
 
 """
-__version__ = "1.5.0.9"
+__version__ = "1.5.0.10"
 
 import sys,os
 import shutil
@@ -568,16 +568,22 @@ def sign_actions(actions,certfilename,key_password=None):
         result.append(key.sign_claim(action,certificate=cert))
     return json.dumps(result)
 
-def change_key_password(private_key_path,old_password,new_password):
+def change_key_password(private_key_path,old_password=None,new_password=None):
     if not os.path.isfile(private_key_path):
         raise Exception(u'The private key %s does not exists' % private_key_path)
     key = SSLPrivateKey(filename = private_key_path,password=old_password)
     if os.path.isfile(private_key_path+'.backup'):
         raise Exception(u'Backup file %s already exists, previous password change has failed.' % private_key_path+'.backup')
     shutil.copyfile(private_key_path,private_key_path+'.backup')
-    key.save_as_pem(filename = private_key_path,password = new_password)
-    os.unlink(private_key_path,private_key_path+'.backup')
-    return private_key_path
+    try:
+        key.save_as_pem(filename = private_key_path,password = new_password)
+        os.unlink(private_key_path+'.backup')
+        return private_key_path
+    except Exception as e:
+        logger.critical(u'Unable to change key password: %s' % e)
+        shutil.copyfile(private_key_path+'.backup',private_key_path)
+        os.unlink(private_key_path+'.backup')
+        raise
 
 if __name__ == '__main__':
     import doctest
