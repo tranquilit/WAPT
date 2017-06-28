@@ -439,11 +439,10 @@ class SSLPrivateKey(object):
             filename = self.private_key_filename
         if isinstance(password,unicode):
             password = password.encode('utf8')
-
-        self.password = password
-        self.private_key_filename = filename
         with open(self.private_key_filename,'wb') as f:
             f.write(self.as_pem(password=password))
+        self.password = password
+        self.private_key_filename = filename
 
     def load_key_data(self,pem_data):
         retry_cnt=3
@@ -574,6 +573,124 @@ class SSLPrivateKey(object):
         return reclaim
 
 
+    def build_sign_certificate(self,
+            ca_signing_key,
+            ca_signing_cert,
+            cn,
+            dnsname=None,organization=None,locality=None,country=None,
+            unit=None,email=None,
+            is_ca=True,is_code_signing=True,
+            key_usages=['digital_signature','content_commitment','key_cert_sign','data_encipherment'], ):
+        """Build a certificate with self public key and supplied attributes,
+           and sign it with supplied ca_signing_key.
+
+            To self sign the certificate, put None for ca_signing_key and ca_signing_cert
+        Args:
+            ca_signing_key (SSLPrivateKey):
+            ca_signing_cert (SSLCertificate):
+
+            is_ca (bool) : certificate is a CA root or intermediate or self-signed
+            is_code_signing (bool): subject can sign code
+            dnsname (str): Witll be added as an DNS SubjectAlternativeName.
+            key_usages (list of str) : list of certificate / key usage targets.
+
+        Returns:
+            self
+        """
+
+        map = [
+            [x509.NameOID.COUNTRY_NAME,country or None],
+            [x509.NameOID.LOCALITY_NAME,locality or None],
+            [x509.NameOID.ORGANIZATION_NAME,organization or None],
+            [x509.NameOID.COMMON_NAME,cn or None],
+            [x509.NameOID.EMAIL_ADDRESS,email or None],
+            [x509.NameOID.ORGANIZATIONAL_UNIT_NAME,unit or None],
+            ]
+        att = []
+        for (oid,value) in map:
+            if value is not None:
+                att.append(x509.NameAttribute(oid,ensure_unicode(value)))
+
+        subject = x509.Name(att)
+
+        extensions = []
+
+        extensions.append(dict(
+            extension=x509.BasicConstraints(ca=is_ca,path_length=1),
+            critical=True))
+
+        if is_code_signing:
+            extensions.append(dict(
+                extension=x509.ExtendedKeyUsage([x509.OID_CODE_SIGNING]),
+                critical=True))
+
+        extensions.append(dict(
+                    extension=x509.SubjectKeyIdentifier.from_public_key(self.public_key()),
+                    critical = False))
+
+
+        if dnsname is not None:
+            extensions.append(dict(
+                    extension=x509.SubjectAlternativeName([x509.DNSName(ensure_unicode(dnsname))]),
+                    critical=False))
+
+        for key_usage in key_usages:
+            kwargs = {}
+            for key in [ 'content_commitment','crl_sign','data_encipherment','decipher_only',
+                        'digital_signature', 'encipher_only', 'key_agreement', 'key_cert_sign',
+                        'key_encipherment']:
+                kwargs[key] = key in key_usages
+
+        extensions.append(dict(
+                extension=x509.KeyUsage(**kwargs),
+                critical=True))
+
+        public_key = self.public_key()
+
+        if not isinstance(public_key,rsa.RSAPublicKey):
+            raise TypeError('public_key must be an instance of rsa.RSAPublicKey')
+
+        serial_number = x509.random_serial_number()
+
+        if ca_signing_key is None:
+            ca_signing_key = self
+            ca_signing_cert = None
+
+        if ca_signing_cert is None:
+            # self signed or root certificate
+            issuer = subject
+        else:
+            issuer = ca_signing_cert.crt.subject
+            extensions.append(
+                dict(extension=x509.AuthorityKeyIdentifier.from_issuer_subject_key_identifier(
+                    ca_signing_cert.crt.extensions.get_extension_for_oid(x509.OID_SUBJECT_KEY_IDENTIFIER)),
+                critical=False))
+
+        builder = x509.CertificateBuilder().serial_number(
+            serial_number
+        ).issuer_name(
+            issuer
+        ).subject_name(
+            subject
+        ).public_key(
+            public_key
+        ).not_valid_before(
+            datetime.datetime.utcnow(),
+        ).not_valid_after(
+            datetime.datetime.utcnow()+datetime.timedelta(days=3650)
+        )
+
+        for ext in extensions:
+            builder = builder.add_extension(
+                ext.get('extension'), ext.get('critical')
+            )
+
+        crypto_crt = builder.sign(ca_signing_key.rsa,algorithm=hashes.SHA256(), backend=default_backend())
+        return SSLCertificate(crt = crypto_crt)
+
+    def public_key(self):
+        return self.rsa.public_key()
+
 class SSLCertificate(object):
     """Hold a X509 public certificate"""
     def __init__(self,crt_filename=None,crt=None,crt_string=None,ignore_validity_checks=False):
@@ -606,7 +723,7 @@ class SSLCertificate(object):
     def as_pem(self):
         return self.crt.public_bytes(serialization.Encoding.PEM)
 
-    def save_as_pem(self,filename=None,password=None):
+    def save_as_pem(self,filename=None):
         if filename is None:
             filename = self.public_cert_filename
         with open(filename,'wb') as f:
@@ -648,7 +765,6 @@ class SSLCertificate(object):
     @crt.setter
     def crt(self,value):
         if value != self._crt:
-            self._public_cert_filename = None
             self._crt = value
             self._rsa = None
             self._key = None
@@ -659,106 +775,6 @@ class SSLCertificate(object):
         if not self._rsa:
             self._rsa = self.crt.public_key()
         return self._rsa
-
-
-    def build_sign(self,
-            ca_signing_key,
-            ca_signing_cert,
-            public_key,
-            cn,
-            dnsname=None,organisation=None,locality=None,country=None,
-            is_ca=True,is_code_signing=True,
-            key_usages=['digital_signature','content_commitment','key_cert_sign','data_encipherment'], ):
-        """Build and sign a self-signed certificate for testing
-        Args:
-            ca_signing_key (SSLPrivateKey):
-            ca_signing_cert (SSLCertificate):
-            public_key (rsa._RSAPublicKey or SSLPrivateKey or SSLCertificate
-
-        """
-
-        map = [
-            [x509.NameOID.COUNTRY_NAME,country],
-            [x509.NameOID.LOCALITY_NAME,locality],
-            [x509.NameOID.ORGANIZATION_NAME,organisation],
-            [x509.NameOID.COMMON_NAME,cn],
-            ]
-        att = []
-        for (oid,value) in map:
-            if value is not None:
-                att.append(x509.NameAttribute(oid,ensure_unicode(value)))
-
-        subject = x509.Name(att)
-
-        extensions = []
-        extensions.append(dict(
-            extension=x509.BasicConstraints(ca=is_ca,path_length=1),
-            critical=True))
-
-        if is_code_signing:
-            extensions.append(dict(
-                extension=x509.ExtendedKeyUsage([x509.OID_CODE_SIGNING]),
-                critical=True))
-
-        if dnsname is not None:
-            extensions.append(dict(
-                    extension=x509.SubjectAlternativeName([x509.DNSName(cn)]),
-                    critical=False))
-
-        for key_usage in key_usages:
-            kwargs = {}
-            for key in [ 'content_commitment','crl_sign','data_encipherment','decipher_only',
-                        'digital_signature', 'encipher_only', 'key_agreement', 'key_cert_sign',
-                        'key_encipherment']:
-                kwargs[key] = key in key_usages
-
-        extensions.append(dict(
-                extension=x509.KeyUsage(**kwargs),
-                critical=True))
-
-        if isinstance(public_key,SSLPrivateKey):
-            public_key = public_key.rsa.public_key()
-        elif isinstance(public_key,SSLCertificate):
-            public_key = public_key.rsa
-
-        if not isinstance(public_key,rsa.RSAPublicKey):
-            raise TypeError('public_key must be an instance of rsa.RSAPublicKey')
-
-        if ca_signing_cert is None:
-            # self signed or root certificate
-            issuer = subject
-        else:
-            issuer = ca_signing_cert.crt.subject
-
-        self._build_certificate(subject=subject,issuer=issuer,
-                not_valid_before=datetime.datetime.today(),
-                not_valid_after=datetime.datetime.utcnow()+datetime.timedelta(days=3650),
-                signing_key = ca_signing_key.rsa, public_key = public_key,
-                extensions = extensions)
-
-
-    def _build_certificate(self,subject, issuer, not_valid_before, not_valid_after,
-                          signing_key, public_key, extensions):
-
-        builder = x509.CertificateBuilder().serial_number(
-            x509.random_serial_number()
-        ).issuer_name(
-            issuer
-        ).subject_name(
-            subject
-        ).public_key(
-            public_key
-        ).not_valid_before(
-            not_valid_before
-        ).not_valid_after(
-            not_valid_after
-        )
-
-        for ext in extensions:
-            builder = builder.add_extension(
-                ext.get('extension'), ext.get('critical')
-            )
-        self.crt = builder.sign(signing_key,algorithm=hashes.SHA256(), backend=default_backend())
 
     @property
     def modulus(self):

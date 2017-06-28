@@ -2650,35 +2650,6 @@ class Wapt(object):
             ini.write(open(self.config_filename,'w'))
         return self.host_uuid
 
-    def host_keys(self,force=False):
-        """Creates a set of private/public keys to identify the host on the waptserver
-            keys are created in the same directory as DB
-        """
-        destdir = self.dbdir
-        if not os.path.isdir(destdir):
-            raise Exception(u'host_keys: directory %s does not exist'%destdir)
-
-        hostname = setuphelpers.get_hostname()
-        destpem = os.path.join(destdir,'%s.pem' % hostname)
-        destcrt = os.path.join(destdir,'%s.crt' % hostname)
-        if os.path.isfile(destcrt):
-            cn = SSLCertificate(destcrt).cn
-        else:
-            cn = None
-        # check if host
-        if not cn or cn != self.host_uuid or force:
-            if os.path.isfile(destpem):
-                os.unlink(destpem)
-            if os.path.isfile(destcrt):
-                os.unlink(destcrt)
-            create_self_signed_key(
-                hostname,
-                destdir = destdir,
-                organization = setuphelpers.registered_organization,
-                commonname = self.host_uuid,
-                )
-        return {'pem_filename':destpem,'crt_filename':destcrt}
-
 
     def http_upload_package(self,packages,wapt_server_user=None,wapt_server_passwd=None):
         r"""Upload a package or host package to the waptserver.
@@ -4230,13 +4201,18 @@ class Wapt(object):
 
         if force_recreate or not os.path.isfile(key_filename) or not os.path.isfile(crt_filename):
             logger.info('Creates host keys pair and x509 certificate %s' % crt_filename)
-            key_crt = create_self_signed_key(orgname = setuphelpers.get_hostname(),
-                    destdir=private_dir,
-                    organization=setuphelpers.registered_organization(),
-                    commonname = setuphelpers.get_hostname(),
-                    )
-            key_filename = key_crt['pem_filename']
-            crt_filename = key_crt['crt_filename']
+
+            key = SSLPrivateKey(key_filename)
+            key.create()
+            key.save_as_pem()
+
+            crt = key.build_sign_certificate(None,None,
+                cn = setuphelpers.get_hostname(),
+                dnsname = setuphelpers.get_hostname(),
+                organization = setuphelpers.registered_organization() or None,
+                is_ca=True,
+                is_code_signing=False)
+            crt.save_as_pem(crt_filename)
 
         # check validity
         return open(crt_filename,'rb').read()

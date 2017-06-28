@@ -72,12 +72,12 @@ def setup_test():
     key = SSLPrivateKey('c:/private/150.pem',callback = pwd_callback)
 
     global codeur
-    codeur = SSLCertificate(r'c:/private/150-codeur.crt')
+    codeur = SSLCertificate(r'c:/private/150-codeur2.crt')
     print("codeur : %s" %codeur)
     assert(codeur.is_code_signing)
 
     global gest
-    gest = SSLCertificate(r'c:/private/150-gest.crt')
+    gest = SSLCertificate(r'c:/private/150-gest2.crt')
     print("gestionnaire : %s" %gest)
     assert(not gest.is_code_signing)
 
@@ -595,30 +595,35 @@ def test_self_signed():
     cakey.create()
     cakey.save_as_pem()
 
-    cacert = SSLCertificate()
-    cacert.build_sign(cakey,None,cakey,'Tranquil IT Systems ROOT CA',is_code_signing = False)
+    cacert = cakey.build_sign_certificate(None,None,'Tranquil IT Systems ROOT CA',is_code_signing = False)
     cacert.save_as_pem('c:/tmp/catest.crt')
 
     k = SSLPrivateKey('c:/tmp/test.pem')
     k.create()
     k.save_as_pem()
 
-    c = SSLCertificate()
-    c.build_sign(cakey,cacert,k,cn='HT Codeur',organisation='Tranquil IT',country='FR')
+    c = k.build_sign_certificate(cakey,cacert,cn='HT Codeur',organization='Tranquil IT',country='FR')
     c.save_as_pem('c:/tmp/test.crt')
 
-    assert(c.subject_key_identifier == c.authority_key_identifier)
+    assert(c.authority_key_identifier == cacert.subject_key_identifier)
     print c.subject
     print c.key_usage
 
     print c.verify_cert_signature(cacert)
 
+def test_hostcert():
+    w = Wapt()
+    w.dbpath=':memory:'
+    w._set_fake_hostname('testwaptcomputer.tranquilit.local')
+    w.create_or_update_host_certificate(force_recreate=True)
+
 
 if __name__ == '__main__':
     setup_test()
+    test_hostcert()
+    test_self_signed()
     test_wapt_engine()
     test_build_sign_verify_package()
-    test_self_signed()
     test_crl()
     test_openssl()
     test_subject_hash()
