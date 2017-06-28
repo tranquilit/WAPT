@@ -47,6 +47,21 @@ type
     property Language:String read FLanguage write SetLanguage;
   end;
 
+
+  function CreateSelfSignedCert(keyfilename,
+          crtbasename,
+          wapt_base_dir,
+          destdir,
+          country,
+          locality,
+          organization,
+          orgunit,
+          commonname,
+          email,
+          keypassword:String;
+          codesigning:Boolean
+      ):String;
+
 var
   DMPython: TDMPython;
 
@@ -265,6 +280,69 @@ begin
 end;
 
 
+function CreateSelfSignedCert(keyfilename,
+        crtbasename,
+        wapt_base_dir,
+        destdir,
+        country,
+        locality,
+        organization,
+        orgunit,
+        commonname,
+        email,
+        keypassword:String;
+        codesigning:Boolean
+    ):String;
+var
+  destpem,destcrt : Variant;
+  params : ISuperObject;
+  returnCode:integer;
+  key,cert:Variant;
+
+begin
+  result := '';
+  if FileExists(keyfilename) then
+    destpem := keyfilename
+  else
+  begin
+    if ExtractFileNameOnly(keyfilename) = keyfilename then
+      destpem := AppendPathDelim(destdir)+ExtractFileNameOnly(keyfilename)+'.pem'
+    else
+      destpem := keyfilename;
+  end;
+
+  if crtbasename = '' then
+    crtbasename := ExtractFileNameOnly(keyfilename);
+
+  destcrt := AppendPathDelim(destdir)+crtbasename+'.crt';
+  if not DirectoryExists(destdir) then
+       CreateDir(destdir);
+
+  key := MainModule.waptcrypto.SSLPrivateKey(filename := destpem,password := keypassword)
+
+  // Create private key  if not already exist
+  if not FileExists(destpem) then
+  begin
+    key.create(bits := 2048);
+    key.save_as_pem(password := keypassword)
+  end;
+
+  // None can not be passed... not accepted : invalid Variant type
+  // using default None on the python side to workaround this...
+  // python call
+  cert := key.build_sign_certificate(
+    cn := commonname,
+    organization := organization,
+    locality := locality,
+    country := country,
+    organizational_unit := orgunit,
+    email := email,
+    is_ca := True,
+    is_code_signing := codesigning);
+
+  cert.save_as_pem(filename := destcrt);
+  result := destcrt;
+end;
 
 end.
 

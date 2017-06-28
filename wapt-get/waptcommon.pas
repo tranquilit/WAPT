@@ -80,20 +80,6 @@ interface
   //return ip for waptservice
   function WaptServiceReachableIP(UUID:String;hostdata:ISuperObject=Nil):String;
 
-  function CreateSelfSignedCert(keyfilename,
-          crtbasename,
-          wapt_base_dir,
-          destdir,
-          country,
-          locality,
-          organization,
-          orgunit,
-          commonname,
-          email,
-          keypassword:Utf8String;
-          codesigning:Boolean
-      ):Utf8String;
-
   function WAPTServerJsonMultipartFilePost(waptserver,action: String;args:Array of const;
       FileArg,FileName:String;
       user:AnsiString='';password:AnsiString='';OnHTTPWork:TWorkEvent=Nil):ISuperObject;
@@ -1399,85 +1385,6 @@ begin
   end;
 end;
 
-function CreateSelfSignedCert(keyfilename,
-        crtbasename,
-        wapt_base_dir,
-        destdir,
-        country,
-        locality,
-        organization,
-        orgunit,
-        commonname,
-        email,
-        keypassword:Utf8String;
-        codesigning:Boolean
-    ):Utf8String;
-var
-  opensslbin,opensslcfg,opensslcfg_fn,destpem,destcrt,destp12 : Utf8String;
-  params : ISuperObject;
-  returnCode:integer;
-begin
-  result := '';
-  if FileExists(keyfilename) then
-    destpem := keyfilename
-  else
-  begin
-    if ExtractFileNameOnly(keyfilename) = keyfilename then
-      destpem := AppendPathDelim(destdir)+ExtractFileNameOnly(keyfilename)+'.pem'
-    else
-      destpem := keyfilename;
-  end;
-  if crtbasename = '' then
-    crtbasename := ExtractFileNameOnly(keyfilename);
-
-  destcrt := AppendPathDelim(destdir)+crtbasename+'.crt';
-  destp12 := AppendPathDelim(destdir)+crtbasename+'.p12';
-  if not DirectoryExists(destdir) then
-       CreateDir(destdir);
-
-  params := TSuperObject.Create;
-  params.S['country'] := UTF8Decode(country);
-  params.S['locality'] :=UTF8Decode(locality);
-  params.S['organization'] := UTF8Decode(organization);
-  params.S['unit'] := UTF8Decode(orgunit);
-  params.S['commonname'] := UTF8Decode(commonname);
-  params.S['email'] := UTF8Decode(email);
-  if codesigning then
-    params.S['req_extensions'] := 'v3_ca_codesign_reqext'
-  else
-    params.S['req_extensions'] := 'v3_ca';
-
-  opensslbin :=  AppendPathDelim(wapt_base_dir)+'openssl.exe';
-  opensslcfg :=  pyformat(FileToString(AppendPathDelim(wapt_base_dir) + 'templates\openssl_template.cfg'),params);
-  opensslcfg_fn := AppendPathDelim(destdir)+'openssl.cfg';
-  StringToFile(opensslcfg_fn,opensslcfg);
-  try
-    SetEnvironmentVariable('OPENSSL_CONF', PChar(opensslcfg_fn));
-
-    // Create private key  if not already exist
-    if not FileExists(destpem) then
-    begin
-      if keypassword<>'' then
-        returnCode := ExecuteProcess(opensslbin,'genrsa -aes128 -passout pass:"'+keypassword+'" -out "'+destpem+'" 2048',[])
-      else
-        returnCode := ExecuteProcess(opensslbin,'genrsa -nodes -out "'+destpem+'" 2048',[]);
-        //returnCode := ExecuteProcess(opensslbin,'req -utf8 -x509 -nodes -days 3650 -newkey rsa:2048 -sha256 -keyout "'+destpem+'" -out "'+destcrt+'"',[]);
-    end;
-
-    returnCode := ExecuteProcess(opensslbin,'req -utf8 -passin pass:"'+keypassword+'" -key "'+destpem+'" -new -x509 -days 3650 -sha256 -out "'+destcrt+'"',[]);
-
-    if returnCode= 0 then
-      result := destcrt;
-
-    // create a .pfx .p12 for ms signtool
-    if FileExists(destpem) and FileExists(destcrt) then
-      if ExecuteProcess(opensslbin,'pkcs12 -export -inkey "'+destpem+'" -in "'+destcrt+'" -out "'+destp12+'" -name "'+ commonname+'" -passin pass:"'+keypassword+'" -passout pass:'+keypassword,[]) <> 0 then
-        raise Exception.Create('Unable to create p12 file for signtool');
-
-  finally
-    //SysUtils.DeleteFile(opensslcfg_fn);
-  end;
-end;
 
 function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8String='';
           default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;OverrideBaseName:Utf8String='';

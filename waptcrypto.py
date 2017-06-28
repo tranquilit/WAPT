@@ -340,7 +340,8 @@ class SSLCABundle(object):
 
 
     def as_pem(self):
-        return " \n".join(["# CN: %s\n# Issuer CN: %s\n%s" % (crt.cn,crt.issuer_cn,crt.as_pem()) for crt in self._certificates])
+        return " \n".join([key.as_pem() for KEY in self._keys]) + \
+                " \n".join(["# CN: %s\n# Issuer CN: %s\n%s" % (crt.cn,crt.issuer_cn,crt.as_pem()) for crt in self._certificates])
 
     def __repr__(self):
         return "<SSLCABundle %s >" % repr(self._certificates)
@@ -574,12 +575,17 @@ class SSLPrivateKey(object):
 
 
     def build_sign_certificate(self,
-            ca_signing_key,
-            ca_signing_cert,
-            cn,
-            dnsname=None,organization=None,locality=None,country=None,
-            unit=None,email=None,
-            is_ca=True,is_code_signing=True,
+            ca_signing_key=None,
+            ca_signing_cert=None,
+            cn=None,
+            organizational_unit=None,
+            organization=None,
+            locality=None,
+            country=None,
+            dnsname=None,
+            email=None,
+            is_ca=True,
+            is_code_signing=True,
             key_usages=['digital_signature','content_commitment','key_cert_sign','data_encipherment'], ):
         """Build a certificate with self public key and supplied attributes,
            and sign it with supplied ca_signing_key.
@@ -597,6 +603,7 @@ class SSLPrivateKey(object):
         Returns:
             self
         """
+        print locals()
 
         map = [
             [x509.NameOID.COUNTRY_NAME,country or None],
@@ -604,7 +611,7 @@ class SSLPrivateKey(object):
             [x509.NameOID.ORGANIZATION_NAME,organization or None],
             [x509.NameOID.COMMON_NAME,cn or None],
             [x509.NameOID.EMAIL_ADDRESS,email or None],
-            [x509.NameOID.ORGANIZATIONAL_UNIT_NAME,unit or None],
+            [x509.NameOID.ORGANIZATIONAL_UNIT_NAME,organizational_unit or None],
             ]
         att = []
         for (oid,value) in map:
@@ -686,6 +693,7 @@ class SSLPrivateKey(object):
             )
 
         crypto_crt = builder.sign(ca_signing_key.rsa,algorithm=hashes.SHA256(), backend=default_backend())
+        print locals()
         return SSLCertificate(crt = crypto_crt)
 
     def public_key(self):
