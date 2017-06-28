@@ -58,8 +58,9 @@ Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetR
 Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; 
 Filename: {app}\wapt-get.ini; Section: global; Key: send_usage_report; String:  {#send_usage_report}; 
 Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String:  {#use_kerberos}; 
-Filename: {app}\wapt-get.ini; Section: global; Key: check_certificates_validity; String:  {#check_certificates_validity}; 
-Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String:  {#verify_cert}; 
+Filename: {app}\wapt-get.ini; Section: global; Key: check_certificates_validity; String:  {#check_certificates_validity};
+; needs to be relocated if waptagent is compiled on another base directory than target computers 
+Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: {code:RelocateCertDirWaptBase}; 
 
 
 [Run]
@@ -252,5 +253,22 @@ end;
 function IsWaptAgent:Boolean;
 begin
 	Result := {#is_waptagent} <> 0;
+end;
+
+function RelocateCertDirWaptBase(Param: String):String;
+var
+  certdir: String;
+begin
+  certdir := '{#verify_cert}';
+  if (pos('c:\tranquilit\wapt',lowercase(certdir))=1) then
+    result := ExpandConstant('{app}')+'\'+copy(certdir,length('c:\tranquilit\wapt')+1,255)
+  else if (pos('c:\program files (x86)\wapt',lowercase(certdir))=1) then
+    result := ExpandConstant('{app}')+'\'+copy(certdir,length('c:\program files (x86)\wapt')+1,255)
+  else if (pos('c:\program files\wapt\',lowercase(certdir))=1) then
+    result := ExpandConstant('{app}')+'\'+copy(certdir,length('c:\program files\wapt\')+1,255)
+  else if (pos('c:\wapt\',lowercase(certdir))=1) then
+    result := ExpandConstant('{app}')+'\'+copy(certdir,length('c:\wapt\')+1,255)
+  else
+    result := certdir;
 end;
 
