@@ -1954,10 +1954,10 @@ class WaptRemoteRepo(WaptBaseRepo):
         Returns:
             str: Iso creation date of remote Package file as returned in http headers
 
-        >>> repo = WaptRemoteRepo(name='main',url='http://wapt/wapt',timeout=1)
+        >>> repo = WaptRemoteRepo(name='main',url='https://wapt/wapt',timeout=1)
         >>> repo.is_available() <= datetime2isodate()
         True
-        >>> repo = WaptRemoteRepo(name='main',url='http://badwapt/wapt',timeout=1)
+        >>> repo = WaptRemoteRepo(name='main',url='https://badwapt/wapt',timeout=1)
         >>> repo.is_available() is None
         True
         """

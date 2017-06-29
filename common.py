@@ -3466,7 +3466,7 @@ class Wapt(object):
                 else:
                     ssl_crl = None
 
-                if force or not ssl_crl or ssl_crl.next_update > datetime.datetime.now():
+                if force or not ssl_crl or ssl_crl.next_update > datetime.datetime.utcnow():
                     try:
                         # need update
                         if not os.path.isdir(crl_dir):

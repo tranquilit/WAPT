@@ -570,7 +570,7 @@ class SSLPrivateKey(object):
         reclaim = {att:claim.get(att,None) for att in attributes}
         reclaim['signed_attributes'] = attributes+signature_attributes
         reclaim['signer'] = certificate.cn
-        reclaim['signature_date'] = datetime.datetime.now().isoformat()
+        reclaim['signature_date'] = datetime.datetime.utcnow().isoformat()
         reclaim['signer_fingerprint'] = certificate.fingerprint
         signature = base64.b64encode(self.sign_content(reclaim))
         reclaim['signature'] = signature
@@ -1153,7 +1153,7 @@ class SSLCertificate(object):
 
         if max_age_secs is not None:
             signature_date = isodate2datetime(claim['signature_date'])
-            delta = abs(datetime.datetime.now() - signature_date)
+            delta = abs(datetime.datetime.utcnow() - signature_date)
             if delta > datetime.timedelta(seconds=max_age_secs):
                 raise SSLVerifyException('Data too old or in the futur age : %ss...' % delta.seconds)
         self.verify_content(reclaim,signature)
