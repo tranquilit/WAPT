@@ -10,9 +10,9 @@ uses
 
 type
 
-  { TvisPrivateKeyAuth }
+  { TVisPrivateKeyAuth }
 
-  TvisPrivateKeyAuth = class(TForm)
+  TVisPrivateKeyAuth = class(TForm)
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     edPasswordKey: TEdit;
@@ -29,7 +29,7 @@ type
   end;
 
 var
-  visPrivateKeyAuth: TvisPrivateKeyAuth;
+  VisPrivateKeyAuth: TVisPrivateKeyAuth;
 
 implementation
 
@@ -37,9 +37,9 @@ uses uSCaleDPI;
 
 {$R *.lfm}
 
-{ TvisPrivateKeyAuth }
+{ TVisPrivateKeyAuth }
 
-procedure TvisPrivateKeyAuth.edPasswordKeyKeyPress(Sender: TObject;
+procedure TVisPrivateKeyAuth.edPasswordKeyKeyPress(Sender: TObject;
   var Key: char);
 begin
   if Key=#13 then
@@ -48,7 +48,7 @@ begin
   end;
 end;
 
-procedure TvisPrivateKeyAuth.FormCreate(Sender: TObject);
+procedure TVisPrivateKeyAuth.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
 end;

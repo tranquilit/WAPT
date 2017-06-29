@@ -1,5 +1,8 @@
-msgid "Local directory for saving package development projectsLocal directory for saving package development projectsOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts."
+msgid "Local directory for saving package development projectsLocal directory for saving package development projectsOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only required if a proxy is needed for waptserver and main waptrepo"
 msgstr "Content-Type: text/plain; charset=UTF-8"
+
+msgid "Only required if a proxy is needed for waptserver and main waptrepo"
+msgstr ""
 
 #: tform1.buttonpanel1.helpbutton.caption
 msgctxt "tform1.buttonpanel1.helpbutton.caption"
@@ -615,7 +618,7 @@ msgid "Private key authentication"
 msgstr ""
 
 #: tvisprivatekeyauth.label1.caption
-msgid "For certificate: "
+msgid "For key matching the certificate: "
 msgstr ""
 
 #: tvisprivatekeyauth.lakeypath.caption
@@ -634,6 +637,10 @@ msgstr ""
 
 #: tviswaptconfig.actcheckandsetwaptserver.hint
 msgid "Try to connect to waptserver and wapt_repo"
+msgstr ""
+
+#: tviswaptconfig.actcheckpersonalkey.caption
+msgid "Check matching private key"
 msgstr ""
 
 #: tviswaptconfig.actdownloadcertificate.caption
@@ -656,6 +663,14 @@ msgstr ""
 
 #: tviswaptconfig.button1.caption
 msgid "Show statistics"
+msgstr ""
+
+#: tviswaptconfig.button5.hint
+msgid "Click to retrieve the https certificate chain from server."
+msgstr ""
+
+#: tviswaptconfig.button6.hint
+msgid "Try to find a private key (pem encoded RSA key) in same directory as certificate."
 msgstr ""
 
 #: tviswaptconfig.buttonpanel1.helpbutton.caption
@@ -694,6 +709,10 @@ msgstr ""
 #: tviswaptconfig.cbverifycert.caption
 msgctxt "tviswaptconfig.cbverifycert.caption"
 msgid "Verify https server certificate"
+msgstr ""
+
+#: tviswaptconfig.cbverifycert.hint
+msgid "Check to enable the check of https server certificates"
 msgstr ""
 
 #: tviswaptconfig.eddefault_package_prefix.editlabel.caption
@@ -738,7 +757,7 @@ msgid "URL to the main repository"
 msgstr ""
 
 #: tviswaptconfig.edrepo_url.hint
-msgid "E.g. : http://wapt.tranquilit.local/wapt"
+msgid "E.g. : https://wapt.tranquilit.local/wapt"
 msgstr ""
 
 #: tviswaptconfig.edserveraddress.editlabel.caption
@@ -751,7 +770,7 @@ msgstr ""
 
 #: tviswaptconfig.edservercertificate.hint
 msgctxt "tviswaptconfig.edservercertificate.hint"
-msgid "E.g. : c:\\private\\tranquilit.crt"
+msgid "E.g. : c:\\wapt\\ssl\\server\\cacert.pem"
 msgstr ""
 
 #: tviswaptconfig.edtemplatesauthorizedcertsdir.hint
@@ -775,7 +794,7 @@ msgid "URL du serveur WAPT"
 msgstr ""
 
 #: tviswaptconfig.edwapt_server.hint
-msgid "E.g. : https://srvwapt.tranquilit.local"
+msgid "E.g. : https://wapt.tranquilit.local"
 msgstr ""
 
 #: tviswaptconfig.label1.caption

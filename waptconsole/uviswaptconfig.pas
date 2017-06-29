@@ -18,6 +18,7 @@ type
     ActDownloadCertificate: TAction;
     ActGetServerCertificate: TAction;
     ActEnableVerifyCerts: TAction;
+    ActCheckPersonalKey: TAction;
     ActOpenCertDir: TAction;
     ActionList1: TActionList;
     Button1: TButton;
@@ -25,6 +26,7 @@ type
     Button3: TButton;
     Button4: TButton;
     Button5: TButton;
+    Button6: TButton;
     ButtonPanel1: TButtonPanel;
     cbManual: TCheckBox;
     cbSendStats: TCheckBox;
@@ -63,6 +65,7 @@ type
     pgAdvanced: TTabSheet;
     Timer1: TTimer;
     procedure ActCheckAndSetwaptserverExecute(Sender: TObject);
+    procedure ActCheckPersonalKeyExecute(Sender: TObject);
     procedure ActDownloadCertificateExecute(Sender: TObject);
     procedure ActDownloadCertificateUpdate(Sender: TObject);
     procedure ActGetServerCertificateExecute(Sender: TObject);
@@ -91,7 +94,7 @@ var
   VisWAPTConfig: TVisWAPTConfig;
 
 implementation
-uses waptcommon,LCLIntf,IDURI,superobject,uWaptConsoleRes,uScaleDPI,tisstrings,dmwaptpython,variants,VarPyth;
+uses waptcommon,LCLIntf,IDURI,superobject,uWaptConsoleRes,uScaleDPI,tisstrings,dmwaptpython,variants,VarPyth,uvisprivatekeyauth;
 {$R *.lfm}
 
 { TVisWAPTConfig }
@@ -112,6 +115,30 @@ begin
   ImageList1.GetBitmap(2, ImgStatusRepo.Picture.Bitmap);
   ImageList1.GetBitmap(2, ImgStatusServer.Picture.Bitmap);
   Timer1Timer(Timer1);
+end;
+
+procedure TVisWAPTConfig.ActCheckPersonalKeyExecute(Sender: TObject);
+var
+  keypath,password: String;
+begin
+  with TVisPrivateKeyAuth.Create(Application.MainForm) do
+  try
+    laKeyPath.Caption := edPersonalCertificatePath.text;
+    if ShowModal = mrOk then
+    begin
+      Password := edPasswordKey.Text;
+      keyPath := VarPythonAsString(MainModule.waptdevutils.get_private_key_encrypted(certificate_path:=edPersonalCertificatePath.Text,password:=password));
+      if keyPath = '' then
+        ShowMessageFmt('Error : No private key in directory %s could be decrypted with supplied password, or none matches the certificate.',[ExtractFileDir(edPersonalCertificatePath.Text)])
+      else
+        if password='' then
+          ShowMessageFmt('Success: Matching private key %s found. Warning, key is not encrypted',[keyPath])
+        else
+          ShowMessageFmt('Success: Matching private key %s decrypted properly and matching the certificate.',[keyPath]);
+    end;
+  finally
+    free;
+  end;
 end;
 
 procedure TVisWAPTConfig.ActDownloadCertificateExecute(Sender: TObject);

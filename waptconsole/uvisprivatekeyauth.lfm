@@ -1,12 +1,12 @@
-object visPrivateKeyAuth: TvisPrivateKeyAuth
+object VisPrivateKeyAuth: TVisPrivateKeyAuth
   Left = 291
   Height = 100
   Top = 264
-  Width = 311
+  Width = 388
   BorderStyle = bsDialog
   Caption = 'Private key authentication'
   ClientHeight = 100
-  ClientWidth = 311
+  ClientWidth = 388
   Font.CharSet = ANSI_CHARSET
   Font.Height = -11
   Font.Name = 'Tahoma'
@@ -29,14 +29,14 @@ object visPrivateKeyAuth: TvisPrivateKeyAuth
     Left = 0
     Height = 30
     Top = 70
-    Width = 311
+    Width = 388
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 30
-    ClientWidth = 311
+    ClientWidth = 388
     TabOrder = 1
     object BitBtn1: TBitBtn
-      Left = 151
+      Left = 228
       Height = 23
       Top = 4
       Width = 75
@@ -47,7 +47,7 @@ object visPrivateKeyAuth: TvisPrivateKeyAuth
       TabOrder = 0
     end
     object BitBtn2: TBitBtn
-      Left = 231
+      Left = 308
       Height = 23
       Top = 4
       Width = 75
@@ -59,23 +59,27 @@ object visPrivateKeyAuth: TvisPrivateKeyAuth
     end
   end
   object laPassword: TLabel
-    Left = 18
+    Left = 8
     Height = 13
     Top = 41
-    Width = 110
+    Width = 166
+    Alignment = taRightJustify
+    AutoSize = False
     Caption = 'Private key password :'
     ParentColor = False
   end
   object Label1: TLabel
-    Left = 16
+    Left = 8
     Height = 13
     Top = 16
-    Width = 74
-    Caption = 'For certificate: '
+    Width = 168
+    Alignment = taRightJustify
+    AutoSize = False
+    Caption = 'For key matching the certificate: '
     ParentColor = False
   end
   object laKeyPath: TLabel
-    Left = 96
+    Left = 184
     Height = 13
     Top = 16
     Width = 48

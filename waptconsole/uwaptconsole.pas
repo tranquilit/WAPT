@@ -3294,6 +3294,10 @@ begin
           inifile.ReadString('global', 'default_sources_root', 'c:\waptdev');
 
         edPersonalCertificatePath.Text := inifile.ReadString('global', 'personal_certificate_path', '');
+        if edPersonalCertificatePath.text = '' then
+          edPersonalCertificatePath.InitialDir:=GetUserDir
+        else
+          edPersonalCertificatePath.InitialDir:=ExtractFileDir(edPersonalCertificatePath.text);
 
         edtemplates_repo_url.Text :=
           inifile.readString('wapt-templates', 'repo_url', '');

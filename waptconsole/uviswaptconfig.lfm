@@ -183,7 +183,7 @@ object VisWAPTConfig: TVisWAPTConfig
       object edrepo_url: TLabeledEdit
         Left = 167
         Height = 21
-        Hint = 'E.g. : http://wapt.tranquilit.local/wapt'#13#10'Leave empty for auto DNS discovery'
+        Hint = 'E.g. : https://wapt.tranquilit.local/wapt'#13#10'Leave empty for auto DNS discovery'#13#10#13#10'Don''t forget the path to packages (/wapt) in the URL !'
         Top = 107
         Width = 220
         EditLabel.AnchorSideTop.Control = edrepo_url
@@ -205,7 +205,7 @@ object VisWAPTConfig: TVisWAPTConfig
       object edwapt_server: TLabeledEdit
         Left = 167
         Height = 21
-        Hint = 'E.g. : https://srvwapt.tranquilit.local'#13#10'Leave empty if you don''t want a central management server.'
+        Hint = 'E.g. : https://wapt.tranquilit.local'#13#10'Leave empty if you don''t want a central management server.'
         Top = 131
         Width = 220
         EditLabel.AnchorSideTop.Control = edwapt_server
@@ -298,7 +298,7 @@ object VisWAPTConfig: TVisWAPTConfig
       object EdServerCertificate: TFileNameEdit
         Left = 167
         Height = 21
-        Hint = 'E.g. : c:\private\tranquilit.crt'#13#10'Path to certificate for signing new packages.'#13#10'Only suitable for development hosts.'
+        Hint = 'E.g. : c:\wapt\ssl\server\cacert.pem'#13#10'Path to certificate bundle with https servers CA certificates'#13#10'The bundle must contain intermediate and root certificates'#13#10#13#10'If 0: no check on https server certificates issuers'#13#10'If 1 : use default wapt cacert.pem bundle'
         Top = 56
         Width = 220
         Filter = 'CA Certificates bundles PEM|*.crt|Tous les fichiers|*.*'
@@ -313,6 +313,7 @@ object VisWAPTConfig: TVisWAPTConfig
       object Button5: TButton
         Left = 412
         Height = 25
+        Hint = 'Click to retrieve the https certificate chain from server.'#13#10'This works only if chain contain full certificate validation chain.'#13#10'If not, you must add the missing root and intermediate certificates.'
         Top = 56
         Width = 168
         Action = ActGetServerCertificate
@@ -321,11 +322,21 @@ object VisWAPTConfig: TVisWAPTConfig
       object CBVerifyCert: TCheckBox
         Left = 167
         Height = 17
+        Hint = 'Check to enable the check of https server certificates'#13#10'(Main repository access and wapt server)'
         Top = 28
         Width = 161
         Caption = 'Verify https server certificate'
         OnClick = CBVerifyCertClick
         TabOrder = 2
+      end
+      object Button6: TButton
+        Left = 412
+        Height = 25
+        Hint = 'Try to find a private key (pem encoded RSA key) in same directory as certificate.'#13#10'This will ask for the password for decrypting the key.'
+        Top = 198
+        Width = 168
+        Action = ActCheckPersonalKey
+        TabOrder = 15
       end
     end
     object pgAdvanced: TTabSheet
@@ -618,6 +629,10 @@ object VisWAPTConfig: TVisWAPTConfig
     end
     object ActEnableVerifyCerts: TAction
       Caption = 'Verify https server certificate'
+    end
+    object ActCheckPersonalKey: TAction
+      Caption = 'Check matching private key'
+      OnExecute = ActCheckPersonalKeyExecute
     end
   end
 end

@@ -270,7 +270,7 @@ begin
       end;
 
     if PrivateKeyPath='' then
-      Raise Exception.Create('Unable to find and/or decrypt private key for personal certitificate '+GetWaptPersonalCertificatePath);
+      Raise Exception.CreateFmt('Unable to find and/or decrypt private key for personal certificate %s',[GetWaptPersonalCertificatePath]);
   end;
   Result := FCachedPrivateKeyPassword;
 end;
