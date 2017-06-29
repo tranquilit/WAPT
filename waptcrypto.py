@@ -441,9 +441,9 @@ class SSLPrivateKey(object):
         if isinstance(password,unicode):
             password = password.encode('utf8')
         # get before opening file to be sure to not overwrite a file if pem data can not decrypted...
-        print password
+
         pem_data = self.as_pem(password=password)
-        with open(self.private_key_filename,'wb') as f:
+        with open(filename,'wb') as f:
             f.write(pem_data)
         self.password = password
         self.private_key_filename = filename
