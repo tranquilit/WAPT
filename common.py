@@ -1366,6 +1366,7 @@ class WaptServer(object):
         self.verify_cert = True
 
         self.client_certificate = None
+        self.client_private_key = None
 
         if dnsdomain:
             self.dnsdomain = dnsdomain
@@ -2249,6 +2250,8 @@ class Wapt(object):
         self.user = setuphelpers.get_current_user()
         self.usergroups = None
 
+        self.sign_digests = ['sha256']
+
         # host key cache
         self._host_key = None
 
@@ -2262,6 +2265,7 @@ class Wapt(object):
 
         self.waptserver = None
         self.config_filedate = None
+
         self.load_config(config_filename = self.config_filename)
 
         self.options = OptionParser()
@@ -2358,6 +2362,7 @@ class Wapt(object):
             'waptwua_enabled':'0',
             'personal_certificate_path':'',
             'check_certificates_validity':'True',
+            'sign_digests':'sha256',
             }
 
         if not self.config:
@@ -2440,6 +2445,9 @@ class Wapt(object):
 
         if self.config.has_option('global','use_fqdn_as_uuid'):
             self.use_fqdn_as_uuid = self.config.getboolean('global','use_fqdn_as_uuid')
+
+        if self.config.has_option('global','sign_digests'):
+            self.sign_digests = ensure_list(self.config.get('global','sign_digests'))
 
         # Get the configuration of all repositories (url, ...)
         self.repositories = []
@@ -3180,6 +3188,67 @@ class Wapt(object):
 
             self.store_upgrade_status()
             self.runstatus=''
+
+
+    def call_setup_hook(self,wapt_package_dir,hook_name='update_package',*args,**kwargs):
+        """Install a single wapt package given its WAPT filename.
+        return install status"""
+        install_id = None
+        old_hdlr = None
+        old_stdout = None
+        old_stderr = None
+
+        if not self.is_wapt_package_development_dir(wapt_package_dir):
+            raise EWaptNotAPackage(u'%s is not a package development directory, aborting.' % ensure_unicode(wapt_package_dir))
+
+        entry = PackageEntry(waptfile=wapt_package_dir)
+
+        # we  record old sys.path as we will include current setup.py
+        oldpath = sys.path
+
+        try:
+            previous_cwd = os.getcwd()
+            setup_filename = os.path.join( wapt_package_dir,'setup.py')
+
+            # take in account the case we have no setup.py
+            if os.path.isfile(setup_filename):
+                os.chdir(os.path.dirname(setup_filename))
+                if not os.getcwd() in sys.path:
+                    sys.path.append(os.getcwd())
+
+                # import the setup module from package file
+                logger.info(u"  sourcing install file %s " % ensure_unicode(setup_filename) )
+                setup = import_setup(setup_filename)
+
+                # be sure some minimal functions are available in setup module at install step
+                setattr(setup,'basedir',os.path.dirname(setup_filename))
+                # redefine run to add reference to wapt.pidlist
+                setattr(setup,'run',self.run)
+                setattr(setup,'run_notfatal',self.run_notfatal)
+                setattr(setup,'WAPT',self)
+                setattr(setup,'control',entry)
+                setattr(setup,'language',self.language or setuphelpers.get_language() )
+                setattr(setup,'user',self.user)
+                setattr(setup,'usergroups',self.usergroups)
+
+                try:
+                    logger.info(u"  executing setup.%s(%s,%s) " % (hook_name,repr(args),repr(kwargs)))
+                    exitstatus = setup.install()
+                except Exception as e:
+                    logger.critical(u'Fatal error in %s function: %s:\n%s' % (hook_name,ensure_unicode(e),ensure_unicode(traceback.format_exc())))
+                    raise
+
+        finally:
+            os.chdir(previous_cwd)
+            gc.collect()
+            if 'setup' in dir():
+                setup_name = setup.__name__[:]
+                logger.debug('Removing module: %s, refcnt: %s'%(setup_name,sys.getrefcount(setup)))
+                del setup
+                if setup_name in sys.modules:
+                    del sys.modules[setup_name]
+
+            sys.path = oldpath
 
     def running_tasks(self):
         """return current install tasks"""
@@ -4529,7 +4598,7 @@ class Wapt(object):
 
         logger.info(u'Using identity : %s' % certificate.cn)
         pe =  PackageEntry().load_control_from_wapt(zip_or_directoryname)
-        return pe.sign_package(private_key=key,certificate = certificate,password_callback=callback,private_key_password=private_key_password)
+        return pe.sign_package(private_key=key,certificate = certificate,password_callback=callback,private_key_password=private_key_password,mds = self.sign_digests)
 
     def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','setup.pyc'],
                 target_directory=None):

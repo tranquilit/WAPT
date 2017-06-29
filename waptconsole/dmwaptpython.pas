@@ -308,8 +308,8 @@ var
 
 begin
   result := '';
-  cacert := Nil;
-  cakey := Nil;
+  cacert := Null;
+  cakey := Null;
   cakey_pwd := '';
 
   if (CACertificateFilename<>'') then
@@ -361,7 +361,7 @@ begin
   // None can not be passed... not accepted : invalid Variant type
   // using default None on the python side to workaround this...
   // python call
-  if  VarIsNull(cacert) or VarIsNull(cakey) then
+  if  VarIsNull(cacert) or VarIsNull(cakey) or VarIsEmpty(cacert) or VarIsEmpty(cakey) then
     // self signed
     cert := key.build_sign_certificate(
       cn := commonname,

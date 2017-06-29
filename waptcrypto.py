@@ -340,7 +340,7 @@ class SSLCABundle(object):
 
 
     def as_pem(self):
-        return " \n".join([key.as_pem() for KEY in self._keys]) + \
+        return " \n".join([key.as_pem() for key in self._keys]) + \
                 " \n".join(["# CN: %s\n# Issuer CN: %s\n%s" % (crt.cn,crt.issuer_cn,crt.as_pem()) for crt in self._certificates])
 
     def __repr__(self):
@@ -948,7 +948,7 @@ class SSLCertificate(object):
             key = SSLPrivateKey(key)
         return self.modulus == key.modulus
 
-    def matching_key_in_dirs(self,directories=None,password_callback=None,private_key_password=None):
+    def matching_key_in_dirs(self,directories=None,password_callback=None,private_key_password=None,fpcall=False):
         """Return the first SSLPrivateKey matching this certificate
 
         Args:
@@ -1204,7 +1204,7 @@ class SSLCRL(object):
         Returns:
             dict
         """
-        return dict([(e.oid._name,e.value) for e in self.crt.extensions])
+        return dict([(e.oid._name,e.value) for e in self.crl.extensions])
 
     @property
     def authority_key_identifier(self):
