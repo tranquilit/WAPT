@@ -38,6 +38,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <CommandLineParams Value="--hash=13f9d0b1843514a50eebaf357a2fd719a66c939eccddf823bf407c6c363e4ea2 --waptsetupurl=https://wapt142.tranquilit.local/wapt/waptagent.exe"/>
       </local>
     </RunParams>
     <RequiredPackages Count="5">

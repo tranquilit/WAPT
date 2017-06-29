@@ -50,6 +50,7 @@ type
     StaticText1: TStaticText;
     procedure DirectoryCertAcceptDirectory(Sender: TObject; var Value: String);
     procedure DirectoryCertAcceptFileName(Sender: TObject; var Value: String);
+    procedure EdCACertificateExit(Sender: TObject);
     procedure edCommonNameExit(Sender: TObject);
     procedure EdKeyFilenameAcceptFileName(Sender: TObject; var Value: String);
     procedure EdKeyFilenameExit(Sender: TObject);
@@ -171,6 +172,11 @@ procedure TVisCreateKey.DirectoryCertAcceptFileName(Sender: TObject;
   var Value: String);
 begin
   Value := ExtractFileDir(Value);
+end;
+
+procedure TVisCreateKey.EdCACertificateExit(Sender: TObject);
+begin
+  CBIsCA.Checked := not ((EdCACertificate.Text<>'') or (EdCAKeyFilename.Text<>''));
 end;
 
 procedure TVisCreateKey.DirectoryCertAcceptDirectory(Sender: TObject;

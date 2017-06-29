@@ -358,6 +358,7 @@ object VisCreateKey: TVisCreateKey
       Flat = True
       MaxLength = 0
       TabOrder = 4
+      OnExit = EdCACertificateExit
     end
     object Label11: TLabel
       Left = 11
