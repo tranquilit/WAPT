@@ -50,16 +50,9 @@ var
    key: Variant;
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
-  CertPath := GetWaptPersonalCertificatePath;
-  if ( CertPath <> '') and FileExists(CertPath) then
-  begin
-    key := MainModule.waptcrypto.SSLCertificate(crt_filename := CertPath).matching_key_in_dirs(private_key_password := DMPython.privateKeyPassword);
-    if not VarIsNull(key) then
-    begin
-      EdKeyFilename.text := VarPythonAsString(key.private_key_filename);
-      edOldKeyPassword.Text:= DMPython.privateKeyPassword;
-    end;
-  end;
+  EdKeyFilename.text := VarPythonAsString(MainModule.waptdevutils.get_private_key_encrypted(certificate_path:=GetWaptPersonalCertificatePath(),password:=DMPython.privateKeyPassword));
+  if EdKeyFilename.Text <>'' then
+    edOldKeyPassword.Text:= DMPython.privateKeyPassword;
 end;
 
 procedure TVisChangeKeyPassword.FormShow(Sender: TObject);
@@ -99,7 +92,11 @@ begin
       raise Exception.create('Unable to save new encrypted key');
     CanClose:=FileExists(filename);
     if CanClose then
+    begin
+      if EdKeyFilename.text = GetWaptPersonalCertificatePath then
+        DMPython.privateKeyPassword := EdKeyPassword.Text;
       ShowMessage('Password changed successfully');
+    end;
   end;
 end;
 

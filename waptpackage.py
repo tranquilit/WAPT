@@ -873,28 +873,20 @@ class PackageEntry(object):
         cert = self.package_certificate()
         if cert is None and signers_bundle is not None:
             cert = signers_bundle.certificate (fingerprint = self.signer_fingerprint)
-        if cert is not None:
-            issued_by = cabundle.is_known_issuer(cert)
-            if not issued_by:
-                raise EWaptCertificateUnknowIssuer('Package certificate is unknown and not allowed on this host')
-            else:
-                logger.debug('Certificate %s is trusted by root CA %s' % (cert.subject,issued_by.subject))
+        if cert is None:
+            raise EWaptMissingCertificate('Control %s data has no matching certificate in Packages index or Package, please rescan your Packages index.' % self.asrequirement())
 
-            if cert.verify_content(signed_content,signature_raw,md=self._default_md):
-                self._md = self._default_md
-                return cert
-
-            raise SSLVerifyException('SSL signature verification failed for control %s against embedded certiicate %s : %s' % (self.asrequirement(),cert,repr(e)))
+        issued_by = cabundle.is_known_issuer(cert)
+        if not issued_by:
+            raise EWaptCertificateUnknowIssuer('Package certificate "%s" is unknown and not allowed on this host' % cert.subject)
         else:
-            # old style . checking directly with self signed certificates.
-            for public_cert in cabundle.certificates():
-                try:
-                    if public_cert.verify_content(signed_content,signature_raw,md=self._default_md):
-                        self._md = self._default_md
-                        return public_cert
-                except SSLVerifyException:
-                    pass
-            raise SSLVerifyException('SSL signature verification failed for control %s, either none public certificates match signature or signed content has been changed' % self.asrequirement())
+            logger.debug('Certificate %s is trusted by root CA %s' % (cert.subject,issued_by.subject))
+
+        if cert.verify_content(signed_content,signature_raw,md=self._default_md):
+            self._md = self._default_md
+            return cert
+
+        raise SSLVerifyException('SSL signature verification failed for control %s against embedded certificate %s : %s' % (self.asrequirement(),cert,repr(e)))
 
     def package_certificate(self):
         """Return certificate from package. If package is built, take it from Zip
@@ -2048,8 +2040,8 @@ class WaptRemoteRepo(WaptBaseRepo):
                     new_packages.append(package)
                     if package.package not in self._index or self._index[package.package] < package:
                         self._index[package.package] = package
-                except (SSLVerifyException,EWaptNotSigned) as e:
-                    logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,signer_certificates.certificates()))
+                except (SSLVerifyException,EWaptNotSigned,EWaptCertificateUnknowIssuer) as e:
+                    logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,cabundle.certificates()))
                     self.discarded.append(package)
 
         for line in packages_lines:

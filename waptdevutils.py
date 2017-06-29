@@ -76,7 +76,10 @@ def get_private_key_encrypted(certificate_path,password=None):
             key = cert.matching_key_in_dirs(password_callback=NOPASSWORD_CALLBACK,private_key_password = None)
         else:
             key = cert.matching_key_in_dirs(private_key_password = password)
-        return key.private_key_filename
+        if key:
+            return key.private_key_filename
+        else:
+            return ''
     except:
         return ''
 
