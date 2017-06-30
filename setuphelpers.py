@@ -175,6 +175,7 @@ __all__ = \
  'run_task',
  'run_powershell',
  'running_on_ac',
+ 'running_as_admin',
  'remove_metroapp',
  'sendto',
  'service_installed',
@@ -3963,6 +3964,8 @@ def remove_metroapp(package):
             where DisplayName -EQ %s |
             Remove-AppxProvisionedPackage -Online""" % package)
 
+def running_as_admin():
+    return ctypes.windll.shell32.IsUserAnAdmin() != 0
 
 class SYSTEM_POWER_STATUS(ctypes.Structure):
     _fields_ = [
