@@ -1221,6 +1221,19 @@ class SSLCRL(object):
     def next_update(self):
         return self.crl.next_update
 
+    def as_pem(self):
+        self.crl.public_bytes(serialization.Encoding.PEM)
+
+    def as_der(self):
+        self.crl.public_bytes(serialization.Encoding.DER)
+
+    def save_as_pem(self,filename=None):
+        if filename is None:
+            filename = self.filename
+        pem_data = self.as_pem()
+        with open(filename,'wb') as f:
+            f.write(pem_data)
+        self.filename = filename
 
 if __name__ == '__main__':
     import doctest
