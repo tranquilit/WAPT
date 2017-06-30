@@ -33,6 +33,7 @@ import platform
 import errno
 import sys
 
+
 def mkdir_p(path):
     try:
         os.makedirs(path)
@@ -50,17 +51,18 @@ def replaceAll(file, searchExp, replaceExp):
         sys.stdout.write(line)
 
 
-def add_symlink(link_target,link_name):
+def add_symlink(link_target, link_name):
     if link_target.startswith('/'):
         link_target = link_target[1:]
-    relative_link_target_path = os.path.join('builddir',link_target)
-    print("adding symlink %s -> %s" % (link_name, relative_link_target_path ))
+    relative_link_target_path = os.path.join('builddir', link_target)
+    print("adding symlink %s -> %s" % (link_name, relative_link_target_path))
     mkdir_p(os.path.dirname(relative_link_target_path))
 
     if not os.path.exists(relative_link_target_path):
-        cmd = 'ln -s %s %s ' % (relative_link_target_path,link_name)
-        print( cmd)
+        cmd = 'ln -s %s %s ' % (relative_link_target_path, link_name)
+        print(cmd)
         print(subprocess.check_output(cmd))
+
 
 def rsync(src, dst, excludes=[]):
     rsync_option = " --exclude '*.pyc' --exclude '*~' --exclude '.svn' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -a --stats"
@@ -73,6 +75,7 @@ def rsync(src, dst, excludes=[]):
         rsync_option, rsync_source, rsync_destination)
     print(rsync_command, file=sys.stderr)
     os.system(rsync_command)
+
 
 makepath = os.path.join
 from shutil import copyfile
@@ -150,30 +153,29 @@ subprocess.check_output(
     r'./builddir/opt/wapt/bin/pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True)
 
 print('copying the waptrepo files', file=sys.stderr)
-copyfile(makepath(wapt_source_dir,'waptcrypto.py'),
+copyfile(makepath(wapt_source_dir, 'waptcrypto.py'),
          './builddir/opt/wapt/waptcrypto.py')
-copyfile(makepath(wapt_source_dir,'waptutils.py'),
+copyfile(makepath(wapt_source_dir, 'waptutils.py'),
          './builddir/opt/wapt/waptutils.py')
-copyfile(makepath(wapt_source_dir,'custom_zip.py'),
+copyfile(makepath(wapt_source_dir, 'custom_zip.py'),
          './builddir/opt/wapt/custom_zip.py')
-copyfile(makepath(wapt_source_dir,'waptpackage.py'),
+copyfile(makepath(wapt_source_dir, 'waptpackage.py'),
          './builddir/opt/wapt/waptpackage.py')
-copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
+copyfile(makepath(wapt_source_dir, 'wapt-scanpackages.py'),
          './builddir/opt/wapt/wapt-scanpackages.py')
-copyfile(makepath(wapt_source_dir,'wapt-signpackages.py'),
+copyfile(makepath(wapt_source_dir, 'wapt-signpackages.py'),
          './builddir/opt/wapt/wapt-signpackages.py')
 
 print('cryptography patches')
-copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','__init__.py'),
+copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', '__init__.py'),
          './builddir/opt/wapt/lib/site-packages/cryptography/x509/__init__.py')
-copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','verification.py'),
+copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.py'),
          './builddir/opt/wapt/lib/site-packages/cryptography/x509/verification.py')
-		 
-		 
-		 
+
+
 print('Add symlink for wapt-scanpackages and wapt-signpackages')
-add_symlink('./opt/wapt/wapt-signpackages.py','./usr/bin/wapt-signpackages')
-add_symlink('./opt/wapt/wapt-scanpackages.py','./usr/bin/wapt-scanpackages')
+add_symlink('./opt/wapt/wapt-signpackages.py', './usr/bin/wapt-signpackages')
+add_symlink('./opt/wapt/wapt-scanpackages.py', './usr/bin/wapt-scanpackages')
 
 
 print('copying the waptserver files', file=sys.stderr)
@@ -197,7 +199,7 @@ print("copying systemd startup script", file=sys.stderr)
 systemd_build_dest_dir = './builddir/usr/lib/systemd/system/'
 try:
     mkdir_p(systemd_build_dest_dir)
-    copyfile('../scripts/waptserver.service', os.path.join(systemd_build_dest_dir,'waptserver.service'))
+    copyfile('../scripts/waptserver.service', os.path.join(systemd_build_dest_dir, 'waptserver.service'))
 except Exception as e:
     print (sys.stderr, 'error: \n%s' % e, file=sys.stderr)
     exit(1)
@@ -225,8 +227,8 @@ except Exception as e:
     print('error: \n%s' % e, file=sys.stderr)
     exit(1)
 
-add_symlink('opt/wapt/waptserver/scripts/postconf.py','/usr/bin/wapt-serverpostconf')
-os.chmod('./builddir/opt/wapt/waptserver/scripts/postconf.py',0o755)
+add_symlink('opt/wapt/waptserver/scripts/postconf.py', '/usr/bin/wapt-serverpostconf')
+os.chmod('./builddir/opt/wapt/waptserver/scripts/postconf.py', 0o755)
 
 print("copying nginx-related goo", file=sys.stderr)
 try:
@@ -237,7 +239,7 @@ try:
              apache_dir + 'httpd.conf.j2')
 
     mkdir_p('./builddir/etc/systemd/system/nginx.service.d')
-    copyfile('../scripts/nginx_worker_files_limit.conf','./builddir/etc/systemd/system/nginx.service.d/nginx_worker_files_limit.conf')
+    copyfile('../scripts/nginx_worker_files_limit.conf', './builddir/etc/systemd/system/nginx.service.d/nginx_worker_files_limit.conf')
 except Exception as e:
     print('error: \n%s' % e, file=sys.stderr)
     exit(1)

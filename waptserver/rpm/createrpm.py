@@ -31,6 +31,7 @@ import subprocess
 import platform
 import errno
 
+
 def mkdir_p(path):
     try:
         os.makedirs(path)
@@ -59,6 +60,7 @@ def rsync(src, dst, excludes=[]):
         rsync_option, rsync_source, rsync_destination)
     print(rsync_command, file=sys.stderr)
     os.system(rsync_command)
+
 
 makepath = os.path.join
 from shutil import copyfile
@@ -93,10 +95,11 @@ if not wapt_version:
           os.path.abspath('..'), file=sys.stderr)
     sys.exit(1)
 
+
 def check_if_package_is_installed(package_name):
     # issue with yum module in buildbot, using dirty subprocess way...
     try:
-        data = subprocess.check_output("rpm -q %s" % package_name,shell=True)
+        data = subprocess.check_output("rpm -q %s" % package_name, shell=True)
     except:
         return False
     if data.strip().startswith('%s-' % package_name):
@@ -104,12 +107,13 @@ def check_if_package_is_installed(package_name):
     else:
         return False
 
+
 if (not check_if_package_is_installed('python-virtualenv')
-          or not check_if_package_is_installed('gcc')
-          or not check_if_package_is_installed('openssl-devel')
-          or not check_if_package_is_installed('libffi-devel')
-          or not check_if_package_is_installed('openldap-devel')
-          ):
+    or not check_if_package_is_installed('gcc')
+    or not check_if_package_is_installed('openssl-devel')
+    or not check_if_package_is_installed('libffi-devel')
+    or not check_if_package_is_installed('openldap-devel')
+    ):
     print ("""
 ##############################################
      Please install build time packages first:
@@ -150,32 +154,32 @@ rsync(source_dir, './builddir/opt/wapt/',
 
 print('cryptography patches')
 mkdir_p('./builddir/opt/wapt/lib/site-packages/cryptography/x509/')
-copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','__init__.py'),
+copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', '__init__.py'),
          'builddir/opt/wapt/lib/site-packages/cryptography/x509/__init__.py')
-copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','verification.py'),
+copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.py'),
          'builddir/opt/wapt/lib/site-packages/cryptography/x509/verification.py')
 
 
-print( 'copying files formerly from waptrepo')
-copyfile(makepath(wapt_source_dir,'waptcrypto.py'),
-                 'builddir/opt/wapt/waptcrypto.py')
-copyfile(makepath(wapt_source_dir,'waptutils.py'),
-                 'builddir/opt/wapt/waptutils.py')
-copyfile(makepath(wapt_source_dir,'waptpackage.py'),
-                 'builddir/opt/wapt/waptpackage.py')
-copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
-                 'builddir/opt/wapt/wapt-scanpackages.py')
-copyfile(makepath(wapt_source_dir,'wapt-signpackages.py'),
-                 'builddir/opt/wapt/wapt-signpackages.py')
-copyfile(makepath(wapt_source_dir,'custom_zip.py'),
-                 'builddir/opt/wapt/custom_zip.py')
+print('copying files formerly from waptrepo')
+copyfile(makepath(wapt_source_dir, 'waptcrypto.py'),
+         'builddir/opt/wapt/waptcrypto.py')
+copyfile(makepath(wapt_source_dir, 'waptutils.py'),
+         'builddir/opt/wapt/waptutils.py')
+copyfile(makepath(wapt_source_dir, 'waptpackage.py'),
+         'builddir/opt/wapt/waptpackage.py')
+copyfile(makepath(wapt_source_dir, 'wapt-scanpackages.py'),
+         'builddir/opt/wapt/wapt-scanpackages.py')
+copyfile(makepath(wapt_source_dir, 'wapt-signpackages.py'),
+         'builddir/opt/wapt/wapt-signpackages.py')
+copyfile(makepath(wapt_source_dir, 'custom_zip.py'),
+         'builddir/opt/wapt/custom_zip.py')
 
 
 print("copying systemd startup script", file=sys.stderr)
 build_dest_dir = './builddir/usr/lib/systemd/system/'
 try:
     mkdir_p(build_dest_dir)
-    copyfile('../scripts/waptserver.service', os.path.join(build_dest_dir,'waptserver.service'))
+    copyfile('../scripts/waptserver.service', os.path.join(build_dest_dir, 'waptserver.service'))
 except Exception as e:
     print (sys.stderr, 'error: \n%s' % e, file=sys.stderr)
     exit(1)
@@ -217,8 +221,7 @@ try:
              apache_dir + 'httpd.conf.j2')
 
     mkdir_p('./builddir/etc/systemd/system/nginx.service.d')
-    copyfile('../scripts/nginx_worker_files_limit.conf','./builddir/etc/systemd/system/nginx.service.d/nginx_worker_files_limit.conf')
+    copyfile('../scripts/nginx_worker_files_limit.conf', './builddir/etc/systemd/system/nginx.service.d/nginx_worker_files_limit.conf')
 except Exception as e:
     print('error: \n%s' % e, file=sys.stderr)
     exit(1)
-
