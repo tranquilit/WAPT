@@ -3219,6 +3219,9 @@ class Wapt(object):
                 # import the setup module from package file
                 logger.info(u"  sourcing install file %s " % ensure_unicode(setup_filename) )
                 setup = import_setup(setup_filename)
+                hook_func = getattr(setup,hook_name,None)
+                if hook_func is None:
+                    raise Exception('Function %s can not be found in setup module')
 
                 # be sure some minimal functions are available in setup module at install step
                 setattr(setup,'basedir',os.path.dirname(setup_filename))
@@ -3233,7 +3236,7 @@ class Wapt(object):
 
                 try:
                     logger.info(u"  executing setup.%s(%s,%s) " % (hook_name,repr(args),repr(kwargs)))
-                    exitstatus = setup.install()
+                    exitstatus = hook_func(*args,**kwargs)
                 except Exception as e:
                     logger.critical(u'Fatal error in %s function: %s:\n%s' % (hook_name,ensure_unicode(e),ensure_unicode(traceback.format_exc())))
                     raise

@@ -116,6 +116,8 @@ action is either :
   edit <package> [p1,p2,..]: download and unzip a package. Open in Explorer the target directory. Appends dependencies p1, p2 ...
   edit-host <host fqdn> [p1,p2,..]: download an unzip a host package. Open in Explorer the target directory. Appends dependencies p1, p2 ...
 
+  update-package-sources <directory> : source <directory>/setup.py module and launch the update_package() hook to update binaries and other informations automatically.
+
  For repository management
   upload-package  <filenames> : upload package to repository (using winscp for example.)
   update-packages <directory> : rebuild a "Packages" file for http package repository
@@ -270,7 +272,7 @@ def main():
         development_actions = ['sources','make-template',
             'make-host-template','make-group-template','build-package',
             'sign-package','build-upload','duplicate','edit','edit-host',
-            'upload-package','update-packages']
+            'upload-package','update-packages','update-package-sources']
         if not options.config:
             if action in development_actions and os.path.isfile(default_waptconsole_ini):
                 config_file = default_waptconsole_ini
@@ -692,6 +694,12 @@ def main():
                 os.startfile(result)
                 wapt_sources_edit(result)
 
+            elif action == 'update-package-sources':
+                if len(args) < 2:
+                    print(u"You must provide the package directory")
+                    sys.exit(1)
+                print mywapt.call_setup_hook(args[1],'update_package')
+
             elif action == 'make-template':
                 if len(args) < 2:
                     print(u"You must provide the installer path")
@@ -923,6 +931,9 @@ def main():
 
             elif action == 'register':
                 if mywapt.waptserver:
+                    if mywapt.waptserver.use_kerberos and not running_as_system_account():
+                        raise Exception('Kerberos is enabled, "register" must be launched under system account. Use --service switch')
+
                     result = mywapt.register_computer(
                         description=(" ".join(args[1:])).decode(sys.getfilesystemencoding()),
                         )

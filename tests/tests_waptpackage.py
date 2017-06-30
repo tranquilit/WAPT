@@ -617,9 +617,20 @@ def test_hostcert():
     w._set_fake_hostname('testwaptcomputer.tranquilit.local')
     w.create_or_update_host_certificate(force_recreate=True)
 
+def test_hook_action():
+    w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
+    w.dbpath=':memory:'
+    w.use_hostpackages = False
+    w.update()
+    d = w.download_packages('tis-seafile')
+    pe = d['packages'][0]
+    src = pe.unzip_package()
+    w.call_setup_hook(src,'update_package')
+    print('Done')
 
 if __name__ == '__main__':
     setup_test()
+    test_hook_action()
     test_hostcert()
     test_self_signed()
     test_wapt_engine()
