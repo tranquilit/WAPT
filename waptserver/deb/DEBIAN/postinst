@@ -31,7 +31,6 @@ for cleanup_dir in ('rpm','mongodb','spool','uninstall_service.bat'):
 
 def cleanup_ini_file():
     if not os.path.exists(OLD_CFG_PATH):
-        print("No config file found at " + OLD_CFG_PATH)
         return
 
     try:
