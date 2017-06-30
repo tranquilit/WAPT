@@ -8,3 +8,16 @@
         - -i
         - --ignore=E501
         - --max-line-length=160
+    -   id: check-docstring-first
+    -   id: check-json
+    -   id: check-added-large-files
+    -   id: check-yaml
+    -   id: debug-statements
+    -   id: fix-encoding-pragma
+    -   id: pretty-format-json
+        args:
+        - --autofix
+    -   id: requirements-txt-fixer
+    -   id: double-quote-string-fixer
+    -   id: check-merge-conflict
+    -   id: check-ast
