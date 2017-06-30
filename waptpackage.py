@@ -2041,7 +2041,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                     if package.package not in self._index or self._index[package.package] < package:
                         self._index[package.package] = package
                 except (SSLVerifyException,EWaptNotSigned,EWaptCertificateUnknowIssuer) as e:
-                    logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,cabundle.certificates()))
+                    logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.cabundle.certificates()))
                     self.discarded.append(package)
 
         for line in packages_lines:
