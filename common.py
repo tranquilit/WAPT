@@ -3240,7 +3240,7 @@ class Wapt(object):
                 except Exception as e:
                     logger.critical(u'Fatal error in %s function: %s:\n%s' % (hook_name,ensure_unicode(e),ensure_unicode(traceback.format_exc())))
                     raise
-
+                return exitstatus
         finally:
             os.chdir(previous_cwd)
             gc.collect()
