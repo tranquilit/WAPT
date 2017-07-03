@@ -1628,7 +1628,7 @@ class WaptRegisterComputer(WaptTask):
                 raise
         else:
             self.result = {}
-            self.summary = __(u'WAPT Server is not avalable')
+            self.summary = __(u'WAPT Server is not available')
             raise Exception(self.summary)
 
     def __unicode__(self):

@@ -1653,6 +1653,7 @@ class WaptLocalRepo(WaptBaseRepo):
         if force_all:
             self._packages = []
 
+        # A bundle for package signers certificates
         signer_certificates = SSLCABundle()
 
         old_entries = {}
