@@ -71,6 +71,8 @@ def get_private_key_encrypted(certificate_path,password=None):
         str: path to matching private key
     """
     cert = SSLCertificate(certificate_path)
+    if isinstance(password,unicode):
+        password = password.encode('utf8')
     try:
         if password is None or password == '':
             key = cert.matching_key_in_dirs(password_callback=NOPASSWORD_CALLBACK,private_key_password = None)
@@ -80,7 +82,8 @@ def get_private_key_encrypted(certificate_path,password=None):
             return key.private_key_filename
         else:
             return ''
-    except:
+    except Exception as e:
+        print e
         return ''
 
 def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wapt_server='',destination='',company=''):
