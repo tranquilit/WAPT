@@ -151,7 +151,7 @@ def default_pwd_callback(*args):
     """Default password callback for opening private keys.
     """
     import getpass
-    print(args)
+    print('Please type the password to decrypt the private key')
     pwd = getpass.getpass().encode('ascii')
     if pwd:
         return pwd
@@ -783,7 +783,7 @@ class SSLCertificate(object):
 
     @property
     def rsa(self):
-        """Return public RSA keys"""
+        """Return public RSA key"""
         if not self._rsa:
             self._rsa = self.crt.public_key()
         return self._rsa
