@@ -37,7 +37,7 @@ from waptutils import *
 from waptpackage import PackageEntry
 from waptpackage import update_packages
 
-from waptcrypto import EWaptCryptoException,SSLCertificate,SSLCABundle
+from waptcrypto import EWaptCryptoException,SSLCertificate,SSLCABundle,default_pwd_callback
 from waptpackage import EWaptException
 
 import common
@@ -188,8 +188,7 @@ else:
 logger.debug(u'Default encoding : %s ' % sys.getdefaultencoding())
 logger.debug(u'Setting encoding for stdout and stderr to %s ' % encoding)
 
-key_passwd = None
-
+private_key_password_cache = None
 
 class JsonOutput(object):
     """file like to print output to json"""
@@ -312,15 +311,16 @@ def main():
             mywapt.personal_certificate_path = options.personal_certificate_path
 
         # key password management
-        def get_private_key_passwd():
+        def get_private_key_passwd(*args):
             """Password callback for opening private keysin suppli password file"""
+            global private_key_password_cache
             if options.private_key_passwd and os.path.isfile(options.private_key_passwd):
                 return open(options.private_key_passwd,'r').read().splitlines()[0].strip()
             else:
-                return None
-
-        if options.private_key_passwd:
-            mywapt._key_passwd_cache = get_private_key_passwd()
+                if private_key_password_cache is None:
+                    private_key_password_cache = default_pwd_callback(*args)
+                else:
+                    return private_key_password_cache
 
         if options.language:
             mywapt.language = options.language
@@ -809,7 +809,8 @@ def main():
                             if package_fn:
                                 print('...done building. Package filename %s' % (package_fn,))
                                 if mywapt.personal_certificate():
-                                    print('Private key is %s'%mywapt.private_key())
+                                    key = mywapt.private_key(passwd_callback=get_private_key_passwd)
+                                    print('Private key is %s' % key)
                                     certificate = mywapt.personal_certificate()
                                     if not certificate.is_code_signing:
                                         raise EWaptException('Certificate %s does not allow code signing.' %  mywapt.personal_certificate_path)
@@ -841,12 +842,13 @@ def main():
                 # continue with upload
                 if action == 'build-upload':
                     waptfiles = packages
-
+                    print('Buildind and uploading packages to %s' % mywapt.waptserver.server_url)
                     res = mywapt.upload_package(waptfiles,
                             wapt_server_user = options.wapt_server_user,
-                            wapt_server_passwd=options.wapt_server_passwd)
+                            wapt_server_passwd = options.wapt_server_passwd)
                     if res['status'] != 'OK':
                         print(u'Error when uploading package : %s' % res['message'])
+                        sys.exit(1)
                     else:
                         print(u'Package uploaded successfully: %s' % res['message'])
 
@@ -893,10 +895,16 @@ def main():
                 waptfiles = []
                 for a in args[1:]:
                     waptfiles += glob.glob(a)
-
-                print(mywapt.upload_package(waptfiles,
+                print('Uploading packages to %s' % mywapt.waptserver.server_url)
+                result = mywapt.upload_package(waptfiles,
                         wapt_server_user = options.wapt_server_user,
-                        wapt_server_passwd=options.wapt_server_passwd))
+                        wapt_server_passwd=options.wapt_server_passwd)
+
+                if not result['status'] == 'OK':
+                    raise Exception('Error uploading packages : %s' % result['message'])
+                else:
+                    print('OK : %s' % result['message'])
+
                 if mywapt.after_upload:
                     print('Run "after upload" script...')
                     # can include %(filenames)s
@@ -931,8 +939,8 @@ def main():
 
             elif action == 'register':
                 if mywapt.waptserver:
-                    if mywapt.waptserver.use_kerberos and not running_as_system_account():
-                        raise Exception('Kerberos is enabled, "register" must be launched under system account. Use --service switch')
+                    #if mywapt.waptserver.use_kerberos and not running_as_system_account():
+                    #    raise Exception('Kerberos is enabled, "register" must be launched under system account. Use --service switch')
 
                     result = mywapt.register_computer(
                         description=(" ".join(args[1:])).decode(sys.getfilesystemencoding()),
