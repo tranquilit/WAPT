@@ -4562,17 +4562,27 @@ class Wapt(object):
         return SSLCertificate(self.personal_certificate_path)
 
     def private_key(self,passwd_callback=None,private_key_password = None):
-        """SSLPrivateKey matching the personal_certificate"""
-        # lazzy loading of privatekey
-        # TODO : check that private key file has not been updated since last loading...
+        """SSLPrivateKey matching the personal_certificate
+        When key has been found, it is kept in memory for later use.
+
+        Args:
+            passwd_callback : func to call to get a password from user (must return str when called)
+            private_key_password : password to use to decrypt key. If None, passwd_callback is called.
+
+        Returns:
+            SSLPrivateKey
+
+        Raises:
+            EWaptMissingPrivateKey if ket can not be decrypted or found.
+        """
+        if passwd_callback is None and private_key_password is None:
+            passwd_callback = default_pwd_callback
+
         cert = self.personal_certificate()
         if not self._private_key_cache or not cert.match_key(self._private_key_cache):
-            try:
-                self._private_key_cache = cert.matching_key_in_dirs(password_callback=passwd_callback,private_key_password=private_key_password)
-            except Exception as e:
-                self._key_passwd_cache = None
-                self._private_key_cache = None
-                raise
+            self._private_key_cache = cert.matching_key_in_dirs(password_callback=passwd_callback,private_key_password=private_key_password)
+        if self._private_key_cache is None:
+            raise EWaptMissingPrivateKey(u'The key matching ther certificate %s can not be found or decrypted' % (cert.public_cert_filename or cert.subject))
         return self._private_key_cache
 
     def sign_package(self,zip_or_directoryname,certificate=None,callback=None,private_key_password=None):
