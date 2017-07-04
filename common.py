@@ -474,7 +474,14 @@ class WaptBaseDB(object):
 
 
     def upgradedb(self,force=False):
-        """Update local database structure to current version if rules are described in db_upgrades"""
+        """Update local database structure to current version if rules are described in db_upgrades
+        Args:
+            force (bool): force upgrade even if structure version is greater than requested.
+
+        Returns:
+            tuple: (old_structure_version,new_structure_version)
+
+        """
         with self:
             try:
                 backupfn = ''

@@ -425,7 +425,9 @@ def main():
                 if options.update_packages:
                     print(u"Update package list")
                     mywapt.update()
-                packages = args[1:]
+                packages = []
+                for a in args[1:]:
+                    packages.extend(ensure_list(a))
                 depends = mywapt.check_downloads(packages)
                 print(u"Downloading packages %s" % (','.join([p.asrequirement() for p in depends]),))
                 result = mywapt.download_packages(depends, usecache=not options.force)
@@ -1101,7 +1103,9 @@ def main():
                         result = mywapt.waptserver.save_server_certificate(os.path.join(mywapt.wapt_base_dir,'ssl','server'),overwrite = options.force)
                         print('Server certificate : %s' % result)
                         if result:
-                            print('Pining certificate %s'%result)
+                            cert = SSLCertificate(result)
+                            print('Please check sha1 fingerprint of server certificate : %s' % cert.digest('sha1'))
+                            print('Pining certificate %s' % result)
                             setuphelpers.inifile_writestring(mywapt.config_filename,'global','verify_cert',result)
                             if options.json_output:
                                 jsonresult['result'] = result
