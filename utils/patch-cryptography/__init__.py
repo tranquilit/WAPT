@@ -42,7 +42,8 @@ from cryptography.x509.oid import (
 )
 from cryptography.x509.verification import (
     CertificateVerificationContext, InvalidCertificate,
-    InvalidSigningCertificate
+    InvalidSigningCertificate,InvalidCertificateRevocationList,
+    CertificateRevocationListVerificationContext
 )
 
 

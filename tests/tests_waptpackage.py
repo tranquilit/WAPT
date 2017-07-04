@@ -628,8 +628,30 @@ def test_hook_action():
     w.call_setup_hook(src,'update_package')
     print('Done')
 
+def test_update_crl():
+    cabundle = SSLCABundle('c:/private')
+    cabundle.update_crl(force=True)
+    print cabundle.crls
+    crl = cabundle.crls.values()[0]
+    print crl.verify_signature(cabundle)
+    cabundle.is_known_issuer(crl)
+
+def test_github():
+    gh_server_bundle = get_peer_cert_chain_from_server('https://github.com/')
+    cabundle = SSLCABundle()
+    cabundle.add_pems(certifi.where())
+    print cabundle.check_server_chain(gh_server_bundle)
+    print cabundle.check_server_chain(SSLCABundle('c:/private/tranquilit-codeur.crt').certificates())
+    google = get_peer_cert_chain_from_server('https://google.com/')
+    print cabundle.check_server_chain(google)
+
+
+
+
 if __name__ == '__main__':
     setup_test()
+    test_github()
+    test_update_crl()
     test_hook_action()
     test_hostcert()
     test_self_signed()
