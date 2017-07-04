@@ -90,7 +90,6 @@ def get_disk_space(directory):
 
 ##### Logging #####
 logger = logging.getLogger()
-logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
 
 def setloglevel(logger,loglevel):
     """set loglevel as string"""

@@ -62,8 +62,7 @@ import waptserver_config
 server_config = waptserver_config.load_config()
 
 import logging
-logger = logging.getLogger('peewee')
-setloglevel(logger,server_config['loglevel'])
+logger = logging.getLogger()
 
 logger.debug('DB connection pool : %s'%server_config['db_max_connections'])
 wapt_db = PooledPostgresqlExtDatabase(
@@ -623,6 +622,9 @@ if __name__ == '__main__':
                  actions : init_db
                            upgrade2postgres"""
         sys.exit(1)
+
+    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+    setloglevel(logger,server_config['loglevel'])
 
     if len(sys.argv)>1:
         print sys.argv[1]

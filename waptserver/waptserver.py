@@ -120,7 +120,7 @@ DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
 config_file = DEFAULT_CONFIG_FILE
 
 # setup logging
-logger = logging.getLogger("waptserver")
+logger = logging.getLogger()
 
 #
 app = Flask(__name__, static_folder='./templates/static')
@@ -1624,6 +1624,8 @@ def on_waptclient_connect():
             reachable='OK',
             ).where(Hosts.uuid == uuid).execute()
         wapt_db.commit()
+
+        wapt_db.close()
         # if not known, reject the connection
         if hostcount == 0:
             #socketio.disconnect()
@@ -1955,6 +1957,9 @@ if __name__ == "__main__":
     app.config['CONFIG_FILE'] = options.configfile
 
     utils_set_devel_mode(options.devel)
+
+    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+    setloglevel(logger,conf['loglevel'])
 
     if options.loglevel is not None:
         setloglevel(logger, options.loglevel)

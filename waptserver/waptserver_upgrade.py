@@ -60,7 +60,6 @@ config_file = DEFAULT_CONFIG_FILE
 # setup logging
 logger = logging.getLogger()
 logging.basicConfig()
-logger = logging.getLogger('waptserver')
 
 # TODO : move to waptserver_upgrade with plain mongo connection.
 def create_import_data(ip='127.0.0.1',fn=None):
