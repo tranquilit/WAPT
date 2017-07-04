@@ -388,7 +388,10 @@ class SSLCABundle(object):
             self.crls[crl.authority_key_identifier] = crl
 
     def update_crl(self,force=False):
-        """Download and update all crls fro certificates in this bundle
+        """Download and update all crls for certificates in this bundle
+
+        Returns:
+            list: list of updated CRL
         """
         # TODO : to be moved to an abstracted wapt https client
         result = []
@@ -406,6 +409,7 @@ class SSLCABundle(object):
                             logger.debug('trying PEM format...')
                             ssl_crl = SSLCRL(pem_data = crl_data)
                         self.add_crl(ssl_crl)
+                        result.append(ssl_crl)
                     except Exception as e:
                         logger.warning('Unable to download CRL from %s: %s' % (url,repr(e)))
                         pass
@@ -905,11 +909,23 @@ class SSLCertificate(object):
         return self.get_fingerprint(md='sha256').encode('hex')
 
     def digest(self,md='sha256'):
+        """Return a fingerprint in human redeable hexadecimal
+        Args:
+            md: hash algorithm for fingerprint
+
+        Returns:
+            str : hex encoded digest of fingerprint of certificate
+        """
         hexdigest = self.get_fingerprint(md).encode('hex')
         return ':'.join(hexdigest[i:i+2] for i in range(0, len(hexdigest), 2))
 
     @property
     def issuer(self):
+        """Return issuer as a dict of x509 name attributes
+
+        Returns:
+            dict
+        """
         data = self.crt.issuer
         result = {}
         for attribute in data:
@@ -1341,20 +1357,23 @@ class SSLCRL(object):
             raise SSLVerifyException('CRL Issuer CA certificate %s can not be found in supplied bundle'%self.issuer)
 
         try:
+            # check CRL signature
             verifier = CertificateRevocationListVerificationContext(issuer.crt)
             verifier.update(crl.crl)
             verifier.verify()
-            return cabundle.is_known_issuer(issuer)
+            # append CRL issuer chain
+            chain.extend(issuer.verify_signature_with(cabundle))
+            return
         except Exception as e:
             logger.critical("CRL validation error on certificate %s : %s" % (issuer.subject,e))
             raise
 
 
     def as_pem(self):
-        self.crl.public_bytes(serialization.Encoding.PEM)
+        return self.crl.public_bytes(serialization.Encoding.PEM)
 
     def as_der(self):
-        self.crl.public_bytes(serialization.Encoding.DER)
+        return self.crl.public_bytes(serialization.Encoding.DER)
 
     def save_as_pem(self,filename=None):
         if filename is None:
@@ -1363,6 +1382,7 @@ class SSLCRL(object):
         with open(filename,'wb') as f:
             f.write(pem_data)
         self.filename = filename
+        return filename
 
     def __cmp__(self,crl):
         return cmp((self.authority_key_identifier,self.last_update),crl.authority_key_identifier,crl.last_update)

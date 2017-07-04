@@ -1397,6 +1397,42 @@ class WaptBaseRepo(object):
         self._packages_date = None
         self.discarded = []
 
+    def _get_packages_index_file(self,mode='rb'):
+        """Abstract"""
+        return StringIO.StringIO('')
+
+    def get_certificates(self,packages_zipfile=None):
+        """Download signers certificates and crl from Package index on remote repository.
+
+            These certificates and CRL are appended to Packages index when scanning
+            packages.
+
+        Args:
+            packages_zipfile (zipfile): if None, donwload it from repo
+
+        Returns :
+            SSLCABundle
+        """
+        signer_certificates = SSLCABundle()
+        if packages_zipfile is None:
+            packages_zipfile = zipfile.ZipFile(self._get_packages_index_file())
+
+        filenames = packages_zipfile.namelist()
+        for fn in filenames:
+            if fn.startswith('ssl/'):
+                cert = SSLCertificate(crt_string=packages_zipfile.read(name=fn))
+                signer_certificates.add_certificates(cert)
+            if fn.startswith('crl/'):
+                try:
+                    data = packages_zipfile.read(name=fn)
+                    crl = SSLCRL(der_data=data)
+                except:
+                    crl = SSLCRL(pem_data=data)
+                signer_certificates.add_crl(crl)
+
+        logger.debug('Packages embedded certificates : %s' % signer_certificates.certificates())
+        return signer_certificates
+
     def update(self):
         """Update local index of packages from source index"""
         return self._load_packages_index()
@@ -1569,6 +1605,14 @@ class WaptLocalRepo(WaptBaseRepo):
     def packages_path(self):
         return os.path.abspath(os.path.join(self.localpath,'Packages'))
 
+    def _get_packages_index_file(self,mode='rb'):
+        """Download or load local Packages index raw zipped data
+
+        Returns:
+            file: File like object for Packages Zipped data (local or remote)
+        """
+        return open(self.packages_path,mode=mode)
+
     def _load_packages_index(self):
         """Parse Packages index from local repo Packages file
 
@@ -1588,7 +1632,7 @@ class WaptLocalRepo(WaptBaseRepo):
 
         if os.path.isfile(self.packages_path):
             self._packages_date = datetime2isodate(datetime.datetime.utcfromtimestamp(os.stat(self.packages_path).st_mtime))
-            with zipfile.ZipFile(self.packages_path) as packages_file:
+            with zipfile.ZipFile(self._get_packages_index_file()) as packages_file:
                 packages_lines = packages_file.read(name='Packages').decode('utf8').splitlines()
 
             if self._packages is not None:
@@ -1643,6 +1687,7 @@ class WaptLocalRepo(WaptBaseRepo):
 
         Extract icons from packages (WAPT/icon.png) and stores them in <repo path>/icons/<package name>.png
         Extract certificate and add it to Packages zip file in ssl/<fingerprint.crt>
+        Append CRL for certificates.
 
         """
         packages_fname = os.path.abspath(os.path.join(self.localpath,'Packages'))
@@ -1744,6 +1789,12 @@ class WaptLocalRepo(WaptBaseRepo):
                 logger.critical("package %s: %s" % (fname,e))
                 errors.append(fname)
 
+        logger.info(u"Update CRL for embedded certificates")
+        try:
+            signer_certificates.update_crl(force = force_all)
+        except Exception as e:
+            logger.critical(u'Error when updating CRL for signers cerificates : %s' % e)
+
         logger.info(u"Writing new %s" % packages_fname)
         tmp_packages_fname = packages_fname+'.%s'%datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         try:
@@ -1757,6 +1808,11 @@ class WaptLocalRepo(WaptBaseRepo):
                     zi = zipfile.ZipInfo(u"ssl/%s.crt" % crt.fingerprint,date_time = time.localtime())
                     zi.compress_type = zipfile.ZIP_DEFLATED
                     myzipfile.writestr(zi,crt.as_pem())
+
+                for (aki,crl) in signer_certificates.crls.iteritems():
+                    zi = zipfile.ZipInfo(u"crl/%s.crl" % aki.encode('hex'),date_time = time.localtime())
+                    zi.compress_type = zipfile.ZIP_DEFLATED
+                    myzipfile.writestr(zi,crl.as_der())
 
             if os.path.isfile(packages_fname):
                 os.unlink(packages_fname)
@@ -2012,15 +2068,14 @@ class WaptRemoteRepo(WaptBaseRepo):
             )
         packages_answer.raise_for_status()
 
-        signer_certificates = SSLCABundle()
+
         # Packages file is a zipfile with one Packages file inside and a list of SSLCertificates
         with zipfile.ZipFile(StringIO.StringIO(packages_answer.content)) as zip:
             filenames = zip.namelist()
             packages_lines = codecs.decode(zip.read(name='Packages'),'UTF-8').splitlines()
-            for fn in filenames:
-                if fn.startswith('ssl/'):
-                    cert = SSLCertificate(crt_string=zip.read(name=fn))
-                    signer_certificates.add_certificates(cert)
+
+            # load certificates and CRLs
+            signer_certificates = self.get_certificates(packages_zipfile = zip)
 
         logger.debug('Packages embedded certificates : %s' % signer_certificates.certificates())
 
@@ -2060,6 +2115,23 @@ class WaptRemoteRepo(WaptBaseRepo):
         self._packages = new_packages
         self._packages_date = httpdatetime2isodate(packages_answer.headers['last-modified'])
         return {'added':added,'removed':removed,'last-modified': self.packages_date, 'discarded':self.discarded }
+
+    def _get_packages_index_data(self):
+        """Download or load local Packages index raw zipped data
+
+        Returns:
+            str: Packages data (local or remote)
+        """
+        packages_answer = requests.get(
+            self.packages_url,
+            proxies=self.proxies,
+            timeout=self.timeout,
+            verify=self.verify_cert,
+            headers=default_http_headers(),
+            cert = self.client_auth(),
+            )
+        packages_answer.raise_for_status()
+        return str(packages_answer.content)
 
     @property
     def packages(self):

@@ -509,7 +509,7 @@ def test_newcrypto():
     assert(not check_key_password('c:/private/150.pem','badpassword'))
     assert(not check_key_password('c:/private/150.pem'))
 
-    crt = SSLCertificate('c:/private/150-codeur.crt')
+    crt = SSLCertificate('c:/private/150-codeur2.crt')
     print crt.fingerprint
 
     key = SSLPrivateKey('c:/private/150.pem',password='test')
@@ -518,32 +518,32 @@ def test_newcrypto():
 
     print crt.verify_content('test',sign)
     cabundle = SSLCABundle(certifi.where())
-    lecert_pem = get_pem_server_certificate('https://waptrpm-dca.ad.tranquil.it')
-    cecert = SSLCertificate(crt_string=lecert_pem)
+    chain = get_peer_cert_chain_from_server('https://www.google.fr')
+    cecert = chain[0]
     print cecert.issuer
 
-    cecert.verify_cert(cabundle)
+    cabundle.check_server_chain(chain)
     pass
 
 def test_saveservercert():
     w = Wapt()
-    w.waptserver.save_server_certificate()
+    w.waptserver.save_server_certificate(server_ssl_dir='c:/tranquilit/wapt/ssl/server')
 
 def test_get_peer_chain():
-    bundle = SSLCABundle()
-    print SSLCABundle(certificates = get_peer_cert_chain_from_server('https://waptrpm-dca.ad.tranquil.it')).as_pem()
+    print SSLCABundle(certificates = get_peer_cert_chain_from_server('https://www.google.fr')).as_pem()
 
-    certs = get_peer_cert_chain_from_server('https://waptrpm-dca.ad.tranquil.it')
+    certs = get_peer_cert_chain_from_server('https://www.google.fr')
+
+    bundle = SSLCABundle()
     bundle.add_pems('c:/wapt/ssl/server/waptrpm-dca.ad.tranquil.it.crt')
-    certs = bundle._certificates.values()
-    print bundle
+    certs = bundle._certificates
     ca = SSLCABundle(certifi.where())
-    for cert in certs:
-        print ca.is_known_issuer(cert)
+
+    ca.check_server_chain(bundle)
 
 
 def test_subject_hash():
-    crt = SSLCertificate('c:/private/150-codeur.crt')
+    crt = SSLCertificate('c:/private/150-codeur2.crt')
     print crt.subject_hash
     print crt.issuer_subject_hash
 
@@ -553,7 +553,7 @@ def test_openssl():
     trusted_ca = SSLCABundle(certifi.where())
     print codeur_bundle.certificate_chain(codeur)
 
-    codeur.verify_cert_signature(codeur_bundle)
+    codeur.verify_signature_with(codeur_bundle)
 
     print trusted_ca.certificate_chain(codeur)
 
@@ -609,7 +609,7 @@ def test_self_signed():
     print c.subject
     print c.key_usage
 
-    print c.verify_cert_signature(cacert)
+    print c.verify_signature_with(cacert)
 
 def test_hostcert():
     w = Wapt()
@@ -633,7 +633,7 @@ def test_update_crl():
     cabundle.update_crl(force=True)
     print cabundle.crls
     crl = cabundle.crls.values()[0]
-    print crl.verify_signature(cabundle)
+    print crl.verify_signature_with(cabundle)
     cabundle.is_known_issuer(crl)
 
 def test_github():
@@ -645,20 +645,25 @@ def test_github():
     google = get_peer_cert_chain_from_server('https://google.com/')
     print cabundle.check_server_chain(google)
 
-
-
+def test_update_packages():
+    r = WaptLocalRepo('c:/tranquilit/wapt/cache')
+    r.update_packages_index()
+    cabundle = r.get_certificates()
+    print cabundle._certificates
+    print cabundle.crls
 
 if __name__ == '__main__':
     setup_test()
+    test_update_packages()
     test_github()
     test_update_crl()
-    test_hook_action()
+    #test_hook_action()
     test_hostcert()
     test_self_signed()
     test_wapt_engine()
     test_build_sign_verify_package()
     test_crl()
-    test_openssl()
+    #test_openssl()
     test_subject_hash()
     test_get_peer_chain()
     test_saveservercert()
@@ -685,3 +690,4 @@ if __name__ == '__main__':
     test_reload_config()
 
     test_waptrepo()
+
