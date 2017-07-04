@@ -942,8 +942,8 @@ def main():
 
             elif action == 'register':
                 if mywapt.waptserver:
-                    #if mywapt.waptserver.use_kerberos and not running_as_system_account():
-                    #    raise Exception('Kerberos is enabled, "register" must be launched under system account. Use --service switch')
+                    if mywapt.waptserver.use_kerberos and not setuphelpers.running_as_system():
+                        raise Exception('Kerberos is enabled, "register" must be launched under system account. Use --service switch or "psexec -s wapt-get register"')
 
                     result = mywapt.register_computer(
                         description=(" ".join(args[1:])).decode(sys.getfilesystemencoding()),

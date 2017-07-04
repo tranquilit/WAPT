@@ -176,6 +176,7 @@ __all__ = \
  'run_powershell',
  'running_on_ac',
  'running_as_admin',
+ 'running_as_system',
  'remove_metroapp',
  'sendto',
  'service_installed',
@@ -302,6 +303,8 @@ from types import ModuleType
 import inspect
 
 import json
+
+import getpass
 
 from iniparse import RawConfigParser
 import keyfinder
@@ -3936,6 +3939,12 @@ def remove_metroapp(package):
 
 def running_as_admin():
     return ctypes.windll.shell32.IsUserAnAdmin() != 0
+
+def running_as_system():
+    """Dirty way to check if current process is running as system user
+    """
+    user = getpass.getuser()
+    return user.endswith('$') and user[:-1].upper() == get_computername().upper()
 
 class SYSTEM_POWER_STATUS(ctypes.Structure):
     _fields_ = [
