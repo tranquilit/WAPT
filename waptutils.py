@@ -635,6 +635,38 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         os.utime(target_fn,(file_datetime,file_datetime))
     return target_fn
 
+
+def wgets(url,proxies=None,verify_cert=False,referer=None,user_agent=None):
+    """Return the content of a remote resource as a String with a http get request.
+
+    Raise an exception if remote data can't be retrieved.
+
+    Args:
+        url (str): http(s) url
+        proxies (dict): proxy configuration as requests requires it {'http': url, 'https':url}
+    Returns:
+        str : content of remote resource
+
+    >>> data = wgets('https://wapt/ping')
+    >>> "msg" in data
+    True
+    """
+    if verify_cert == False:
+        requests.packages.urllib3.disable_warnings()
+    header=default_http_headers()
+    if referer != None:
+        header.update({'referer': '%s' % referer})
+    if user_agent != None:
+        header.update({'user-agent': '%s' % user_agent})
+
+    r = requests.get(url,proxies=proxies,verify=verify_cert,headers=header)
+    if r.ok:
+        return r.content
+    else:
+        r.raise_for_status()
+
+
+
 class Version(object):
     """Version object of form 0.0.0
         can compare with respect to natural numbering and not alphabetical
