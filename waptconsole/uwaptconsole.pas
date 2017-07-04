@@ -3447,8 +3447,10 @@ end;
 procedure TVisWaptGUI.MakePackageTemplate(AInstallerFileName: String);
 var
   installInfos,packageSources,uploadResult:ISUperObject;
+  Silentflags:String;
   res: Integer;
 begin
+  SilentFlags := 'None';
   With TVisPackageWizard.Create(self) do
   try
     InstallerFilename:=AInstallerFileName;
@@ -3457,19 +3459,23 @@ begin
     if (res = mrOk) or (res = mrYes) then
     begin
       Screen.cursor := crHourGlass;
+      if EdSilentFlags.Text <>'' then
+        Silentflags:='r"'+EdSilentFlags.Text+'"'
+      else
+        SilentFlags := 'None';
       if FileExists(EdInstallerPath.FileName) then
       try
         if res = mrOK then
         begin
-          packageSources := DMPython.RunJSON(format('common.wapt_sources_edit(mywapt.make_package_template(r"%s".decode("utf8"),r"%s",version="%s",description=r"""%s""".decode("utf8"),uninstallkey=r"%s"))',
-              [EdInstallerPath.FileName,EdPackageName.text,EdVersion.Text,EdDescription.Text,EdUninstallKey.Text]));
+          packageSources := DMPython.RunJSON(format('common.wapt_sources_edit(mywapt.make_package_template(r"%s".decode("utf8"),r"%s",version="%s",description=r"""%s""".decode("utf8"),uninstallkey=r"%s",silentflags=%s))',
+              [EdInstallerPath.FileName,EdPackageName.text,EdVersion.Text,EdDescription.Text,EdUninstallKey.Text,SilentFlags]));
           ShowMessageFmt(rsPackageSourcesAvailable,[packageSources.AsString]);
         end
         else
         begin
           // returns the dev sources path
-          packageSources := DMPython.RunJSON(format('mywapt.make_package_template(r"%s".decode("utf8"),r"%s",version="%s",description=r"""%s""".decode("utf8"),uninstallkey=r"%s")',
-              [EdInstallerPath.FileName,EdPackageName.text,EdVersion.Text,EdDescription.Text,EdUninstallKey.Text]));
+          packageSources := DMPython.RunJSON(format('mywapt.make_package_template(r"%s".decode("utf8"),r"%s",version="%s",description=r"""%s""".decode("utf8"),uninstallkey=r"%s",silentflags=%s)',
+              [EdInstallerPath.FileName,EdPackageName.text,EdVersion.Text,EdDescription.Text,EdUninstallKey.Text,SilentFlags]));
 
           uploadResult := DMPython.RunJSON(
             format(
