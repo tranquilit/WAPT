@@ -469,17 +469,20 @@ def main():
                         except (EWaptCryptoException,EWaptException) as e:
                             print('%s ERROR control signature can not be validated with certificates %s' % (p.filename,mywapt.authorized_certificates()))
                 else:
-                    print(u"Display package control data for %s\n" % (','.join(all_args),))
-                    for p in result:
-                        print(p.ascontrol(with_non_control_attributes=True))
-                        print('')
-                        try:
-                            logger.info(u'Verifying package control signature against certificates %s' % ', '.join(['"%s"'%crt.cn for crt in  mywapt.authorized_certificates()]))
-                            crt = p.check_control_signature(mywapt.cabundle)
-                            print('OK Package control signature checked properly by certificate %s (fingerprint: %s )' % (crt.cn,crt.fingerprint))
-                        except (EWaptCryptoException,EWaptException) as e:
-                            print('WARNING: control data signature can not be validated with certificates %s' %mywapt.authorized_certificates())
-                        print('')
+                    if not result:
+                        print(u'No package found for %s\nPerhaps you can update with "wapt-get --force update"' % (','.join(args[1:]),))
+                    else:
+                        print(u"Display package control data for %s\n" % (','.join(all_args),))
+                        for p in result:
+                            print(p.ascontrol(with_non_control_attributes=True))
+                            print('')
+                            try:
+                                logger.info(u'Verifying package control signature against certificates %s' % ', '.join(['"%s"'%crt.cn for crt in  mywapt.authorized_certificates()]))
+                                crt = p.check_control_signature(mywapt.cabundle)
+                                print('OK Package control signature checked properly by certificate %s (fingerprint: %s )' % (crt.cn,crt.fingerprint))
+                            except (EWaptCryptoException,EWaptException) as e:
+                                print('WARNING: control data signature can not be validated with certificates %s' %mywapt.authorized_certificates())
+                            print('')
 
             elif action == 'show-params':
                 if len(args) < 2:
