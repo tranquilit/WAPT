@@ -653,7 +653,6 @@ def change_passsword():
 
 
 @app.route('/api/v3/login',methods=['POST'])
-@requires_auth
 def login():
     try:
         # TODO use session...
