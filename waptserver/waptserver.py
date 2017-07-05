@@ -509,6 +509,7 @@ def upload_host():
     try:
         starttime = time.time()
         done = []
+        errors = []
         files = request.files.keys()
         logger.info('Upload of %s host packages'%len(files))
         for fkey in files:
@@ -516,31 +517,34 @@ def upload_host():
             logger.debug('uploading host file : %s' % fkey)
             if hostpackagefile and allowed_file(hostpackagefile.filename):
                 filename = secure_filename(hostpackagefile.filename)
-                wapt_host_folder = os.path.join(conf['wapt_folder']+'-host')
-                tmp_target = os.path.join(wapt_host_folder, filename+'.tmp')
+                wapt_host_folder = os.path.join(conf['wapt_folder']+'-hostref')
+                ref_target = os.path.join(wapt_host_folder, filename)
                 target = os.path.join(wapt_host_folder, filename)
-                hostpackagefile.save(tmp_target)
-                if os.path.isfile(tmp_target):
-                    try:
-                        # try to read attributes...
-                        entry = PackageEntry(waptfile = tmp_target)
-                        # TODO : save depends to DB
+                hostpackagefile.save(ref_target)
+                try:
+                    # try to read attributes...
+                    entry = PackageEntry(waptfile = ref_target)
+                    host_id = entry.package
+                    host = Hosts.select(Hosts.host_certificate).where((Hosts.uuid == host_id) | (Hosts.computer_fqdn == host_id) ).dicts().first()
+                    if host and host['host_certificate'] is not None:
+                        host_cert = SSLCertificate(crt_string = host['host_certificate'])
                         if os.path.isfile(target):
                             os.unlink(target)
-                        os.rename(tmp_target,target)
-                        done.append(filename)
-                    except:
-                        if os.path.isfile(tmp_target):
-                            os.unlink(tmp_target)
-                        raise
+                        package_data = open(ref_target,'rb').read()
+                        with open(target,'wb') as encrypted_package:
+                            encrypted_package.write(host_cert.encrypt(package_data))
+                    else:
+                        package_data = open(ref_target,'rb').read()
+                        with open(target,'wb') as unencrypted_package:
+                            unencrypted_package.write(host_cert.encrypt(package_data))
+                    done.append(filename)
+                except Exception as e:
+                    logger.critical('Error uploading package %s: %s' % (filename,e))
+                    errors.append(filename)
         spenttime = time.time() - starttime
-        print spenttime
-        return make_response(result=done,msg=_('%s Host packages uploaded').format(len(done)),request_time = spenttime)
+        return make_response(result=dict(done=done,errors=errors),msg=_('%s Host packages uploaded, %s errors').format(len(done),len(errors)),request_time = spenttime)
 
     except Exception as e:
-        # remove temporary
-        if os.path.isfile(tmp_target):
-            os.unlink(tmp_target)
         return make_response_from_exception(e,status='201')
 
 
@@ -624,7 +628,7 @@ def change_passsword():
                     rewrite_config_item(config_file, 'options', 'wapt_password', new_hash)
                     conf['wapt_password'] = new_hash
                     reload_config()
-                    msg = 'Password for %s updated successfully' % post_data["username"]
+                    msg = 'Password for %s updated successfully' % post_data['username']
                 else:
                     raise EWaptMissingParameter('Missing parameter')
             else:
@@ -1995,6 +1999,13 @@ if __name__ == "__main__":
         except:
             raise Exception(
                 _("Folder missing : {}-host.").format(conf['wapt_folder']))
+
+    if os.path.exists(conf['wapt_folder'] + '-hostref') == False:
+        try:
+            os.makedirs(conf['wapt_folder'] + '-hostref')
+        except:
+            raise Exception(
+                _("Folder missing : {}-hostref.").format(conf['wapt_folder']))
 
     if args and args[0] == 'doctest':
         import doctest
