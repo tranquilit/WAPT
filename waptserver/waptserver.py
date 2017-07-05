@@ -287,6 +287,17 @@ def get_timezone():
         return user.timezone
 
 
+def get_server_uuid():
+    """Create and/or returns this server UUID"""
+    server_uuid = conf.get('server_uuid',None)
+    if not server_uuid:
+        server_uuid = str(uuid_.uuid1())
+        rewrite_config_item(app.config['CONFIG_FILE'], 'options', 'server_uuid', server_uuid)
+        conf['server_uuid'] = server_uuid
+        reload_config()
+    return server_uuid
+
+
 @app.route('/')
 def index():
     waptagent = os.path.join(conf['wapt_folder'], 'waptagent.exe')
@@ -621,18 +632,39 @@ def change_passsword():
     try:
         config_file = app.config['CONFIG_FILE']
         post_data = request.get_json();
-        if "username" in post_data and "password" in post_data:
-            if check_auth(post_data["username"], post_data["password"]):
-                if "new_password" in post_data:
-                    new_hash = pbkdf2_sha256.hash(post_data["new_password"].encode('utf8'))
+        if 'user' in post_data and 'password' in post_data:
+            if check_auth(post_data['user'], post_data['password']):
+                # change master password
+                if 'new_password' in post_data and post_data['user'] == 'admin' :
+                    new_hash = pbkdf2_sha256.hash(post_data['new_password'].encode('utf8'))
                     rewrite_config_item(config_file, 'options', 'wapt_password', new_hash)
                     conf['wapt_password'] = new_hash
                     reload_config()
-                    msg = 'Password for %s updated successfully' % post_data['username']
+                    msg = 'Password for %s updated successfully' % post_data['user']
                 else:
-                    raise EWaptMissingParameter('Missing parameter')
+                    raise EWaptMissingParameter('Bad or missing parameter')
             else:
                 raise EWaptAuthenticationFailure('Bad user or password')
+        else:
+            raise EWaptMissingParameter('Missing parameter')
+        return make_response(result=msg, msg=msg, status=200)
+    except Exception as e:
+        return make_response_from_exception(e)
+
+
+@app.route('/api/v3/login',methods=['POST'])
+@requires_auth
+def login():
+    try:
+        # TODO use session...
+        post_data = request.get_json();
+        if 'user' in post_data and 'password' in post_data:
+            if check_auth(post_data['user'], post_data['password']):
+                result = dict(
+                        token = '',
+                        server_uuid = get_server_uuid(),
+                        version = __version__,
+                    )
         else:
             raise EWaptMissingParameter('Missing parameter')
         return make_response(result=msg, msg=msg, status=200)
@@ -747,32 +779,14 @@ def get_group_package(input_package_name):
     return r
 
 
-def get_server_uuid():
-    """Create and/or returns this server UUID"""
-    server_uuid = conf.get('server_uuid',None)
-    if not server_uuid:
-        server_uuid = str(uuid_.uuid1())
-        rewrite_config_item(app.config['CONFIG_FILE'], 'options', 'server_uuid', server_uuid)
-        conf['server_uuid'] = server_uuid
-        reload_config()
-    return server_uuid
-
-
 @app.route('/ping')
 def ping():
-    config_file = app.config['CONFIG_FILE']
-
-    if conf['server_uuid'] == '':
-        server_uuid = str(uuid_.uuid1())
-        rewrite_config_item(config_file, 'options', 'server_uuid', server_uuid)
-        conf['server_uuid'] = server_uuid
-        reload_config()
     return make_response(
         msg=_('WAPT Server running'), result=dict(
             version=__version__,
             api_root='/api/',
             api_version='v3',
-            uuid=conf['server_uuid'],
+            uuid=get_server_uuid(),
             date=datetime2isodate(),
         )
     )
