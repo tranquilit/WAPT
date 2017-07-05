@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>{{ _("WAPT - Apt-get for Windows") }}</title>
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" type='text/css'>
+    <link href="css/style.css" rel="stylesheet" type='text/css'>
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+    <div class="banner">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-2 col-sx-12" id="logo">
+                    <a href="https://www.tranquil.it/" title="Tranquil IT Systems" rel="home"><img class="thumbnail" src="img/tis_new.png"></a>
+                </div>
+                <div class="col-md-8 col-sx-12">
+                    <h1>{{ _("WAPT Server") }}</h1> </div>
+                <div class="col-md-2 col-sx-12" id="btn-contact">
+                    <a target="_blank" href="https://www.tranquil.it/page/contactus" title="Contactez-nous !">
+                        <p class="btn btn-primary btn-block">{{ _("Contact Us") }}</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Navigation -->
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#menu"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button> <img class="navbar-brand" src="img/Logo-wapt.png" /> </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="menu">
+                <ul class="nav navbar-nav">
+                    <li class="dropdown"> <a class="dropdown-toggle" data-toggle="dropdown" href="#">Repository<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a target="_blank" href="http://wapt.tranquil.it/">{{ _("TIS repository") }}</a></li>
+                        </ul>
+                    </li>
+                    <li> <a class="dropdown-toggle" data-toggle="dropdown" href="#">WAPTServer<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/wapt/waptagent.exe">{{ _("WAPT Agent (for deploying onto user desktop)") }}</a></li>
+                            <li><a href="/wapt/waptsetup-tis.exe">{{ _("WAPTSetup (for installing on management machine)") }}</a></li>
+                            <li><a href="http://wapt.tranquil.it/wapt/releases/latest/waptdeploy.exe">{{ _("WAPTDeploy (for setting up deployment GPO)") }}</a></li>
+                        </ul>
+                    </li>
+                    <li> <a class="dropdown-toggle" data-toggle="dropdown" href="#">Mailing List<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="http://lists.tranquil.it/pipermail/wapt/">Archives</a></li>
+                            <li><a href="http://lists.tranquil.it/listinfo/wapt">{{ _("Subscribe") }}</a></li>
+                        </ul>
+                    </li>
+                    <li> <a href="https://roundup.tranquil.it/wapt/">Gestion de Bugs (roundup)</a> </li>
+                    <li> <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ _("Help") }}<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a target="_blank" href="https://www.wapt.fr/">Homepage WAPT</a></li>
+							<li><a target="_blank" href="https://www.wapt.fr/fr/doc/">Documentation</a></li>
+							<li><a target="_blank" href="https://forum.tranquil.it/">Forum</a></li>
+						</ul>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+    <div class="container homepage">
+        <div class="row">
+            <div class="col-md-9 col-sx-12">
+      <h1>Please login</h1>
+      <br>
+      <form action="" method="post">
+        <input type="text" placeholder="Username" name="user" value="{{request.form.user}}">
+         <input type="password" placeholder="Password" name="password" value="{{
+          request.form.password }}">
+        <input class="btn btn-default" type="submit" value="Login">
+      </form>
+      {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}
+      {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="contact">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Contact</h4>
+                        <p><a target="_blank" href="https://www.tranquil.it/page/contactus">{{ _("Contact Us") }}</a></p>
+                        <p>{{ _("References") }}</p>
+                        <p>{{ _("Actuality") }}</p>
+                        <p>{{ _("Team") }}</p>
+                    </div>
+                    <div>
+                        <h4>{{ _("Tranquil IT Systems") }}</h4>
+                        <p>{{ _("Nous sommes une équipe de personnes passionnées dont le but est d'améliorer la vie de chacun. Nous élaborons des produits très performants pour résoudre vos problèmes. Nos produits sont créés pour optimiser les performances des PME.") }}</p>
+                    </div>
+                </div>
+                <div class="row text-muted copyright">
+                    <p>Copyright {{ _("Tranquil IT Systems") }} | © 2012-2017</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- jQuery Version 1.11.1 -->
+    <script src="js/jquery.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+</body>
+
+</html>
