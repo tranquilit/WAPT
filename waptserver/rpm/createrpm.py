@@ -72,11 +72,11 @@ wapt_source_dir = os.path.abspath('../..')
 source_dir = os.path.abspath('..')
 
 if platform.system() != 'Linux':
-    print("this script should be used on debian linux", file=sys.stderr)
+    print('this script should be used on debian linux', file=sys.stderr)
     sys.exit(1)
 
 if len(sys.argv) > 2:
-    print("wrong number of parameters (0 or 1)", file=sys.stderr)
+    print('wrong number of parameters (0 or 1)', file=sys.stderr)
     sys.exit(1)
 
 new_umask = 022
@@ -88,7 +88,7 @@ if new_umask != old_umask:
 for line in open('%s/waptserver.py' % source_dir):
     if line.strip().startswith('__version__'):
         wapt_version = line.split('=')[
-            1].strip().replace('"', '').replace("'", "")
+            1].strip().replace('"', '').replace("'", '')
 
 if not wapt_version:
     print(u'version not found in %s/waptserver.py' %
@@ -99,7 +99,7 @@ if not wapt_version:
 def check_if_package_is_installed(package_name):
     # issue with yum module in buildbot, using dirty subprocess way...
     try:
-        data = subprocess.check_output("rpm -q %s" % package_name, shell=True)
+        data = subprocess.check_output('rpm -q %s' % package_name, shell=True)
     except:
         return False
     if data.strip().startswith('%s-' % package_name):
@@ -128,16 +128,16 @@ if os.path.exists('builddir'):
     print('cleaning up builddir directory')
     shutil.rmtree('builddir')
 
-mkdir_p("builddir/opt/wapt/lib")
-mkdir_p("builddir/opt/wapt/conf")
-mkdir_p("builddir/opt/wapt/log")
-mkdir_p("builddir/opt/wapt/lib/site-packages")
+mkdir_p('builddir/opt/wapt/lib')
+mkdir_p('builddir/opt/wapt/conf')
+mkdir_p('builddir/opt/wapt/log')
+mkdir_p('builddir/opt/wapt/lib/site-packages')
 
 # we use pip and virtualenv to get the wapt dependencies. virtualenv usage here is a bit awkward, it can probably be improved. For instance, it install a outdated version of pip that cannot install Rocket dependencies...
 # for some reason the virtualenv does not build itself right if we don't
 # have pip systemwide...
-if os.path.exists("pylibs"):
-    shutil.rmtree("pylibs")
+if os.path.exists('pylibs'):
+    shutil.rmtree('pylibs')
 print(
     'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
 subprocess.check_output(
@@ -175,7 +175,7 @@ copyfile(makepath(wapt_source_dir, 'custom_zip.py'),
          'builddir/opt/wapt/custom_zip.py')
 
 
-print("copying systemd startup script", file=sys.stderr)
+print('copying systemd startup script', file=sys.stderr)
 build_dest_dir = './builddir/usr/lib/systemd/system/'
 try:
     mkdir_p(build_dest_dir)
@@ -184,7 +184,7 @@ except Exception as e:
     print (sys.stderr, 'error: \n%s' % e, file=sys.stderr)
     exit(1)
 
-print ("copying logrotate script /etc/logrotate.d/waptserver", file=sys.stderr)
+print ('copying logrotate script /etc/logrotate.d/waptserver', file=sys.stderr)
 try:
     mkdir_p('./builddir/etc/logrotate.d/')
     shutil.copyfile('../scripts/waptserver-logrotate',
@@ -195,7 +195,7 @@ except Exception as e:
     print ('error: \n%s' % e, file=sys.stderr)
     exit(1)
 
-print ("copying logrotate script /etc/rsyslog.d/waptserver.conf",
+print ('copying logrotate script /etc/rsyslog.d/waptserver.conf',
        file=sys.stderr)
 try:
     mkdir_p('./builddir/etc/rsyslog.d/')
@@ -207,12 +207,12 @@ except Exception as e:
     print('error: \n%s' % e, file=sys.stderr)
     exit(1)
 
-print("adding symlink for wapt-serverpostconf", file=sys.stderr)
+print('adding symlink for wapt-serverpostconf', file=sys.stderr)
 mkdir_p('builddir/usr/bin')
 os.symlink('/opt/wapt/waptserver/scripts/postconf.py',
            'builddir/usr/bin/wapt-serverpostconf')
 
-print("copying nginx-related goo", file=sys.stderr)
+print('copying nginx-related goo', file=sys.stderr)
 try:
     apache_dir = './builddir/opt/wapt/waptserver/apache/'
     mkdir_p(apache_dir + '/ssl')
