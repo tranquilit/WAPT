@@ -2743,11 +2743,15 @@ class Wapt(object):
             if is_hosts:
                 logger.info('Uploading %s host packages' % len(files))
                 res = self.waptserver.post('upload_host',files=files,auth=auth,timeout=300)
+                if not res['success']:
+                    raise Exception('Error when uploading host packages: %s'% (res['msg']))
             else:
                 res = []
                 for (fn,f) in files.iteritems():
                     logger.info('Uploading %s' % fn)
                     res.append(self.waptserver.post('upload_package/%s'%os.path.basename(fn),data=f,auth=auth,timeout=300))
+                    if not res['success']:
+                        raise Exception('Error when uploading package %s : %s'% (fn,res['msg']))
         finally:
             for f in files.values():
                 f.close()

@@ -587,6 +587,8 @@ begin
       Result := DMPython.RunJSON(format(
         'mywapt.build_upload(r"%s".decode(''utf8''),private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=True)',
         [FSourcePath, dmpython.privateKeyPassword, waptServerUser, waptServerPassword]), jsonlog);
+      if Result.AsArray.Length=0  then
+        raise Exception.Create('Error when building / uploading package, no result');
       if FisTempSourcesDir then
       begin
         FileUtil.DeleteDirectory(FSourcePath, False);

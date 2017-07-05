@@ -533,8 +533,10 @@ def upload_host():
                         old_groups = [h['group_name'] for h in HostGroups.select(HostGroups.group_name).where(HostGroups.host == host_id).dicts()]
                         to_delete = [g for g in old_groups if not g in depends]
                         to_add = [g for g in depends if not g in old_groups]
-                        HostGroups.delete().where((HostGroups.host == host_id) & (HostGroups.group_name.in_(to_delete)))
-                        HostGroups.insert_many([dict(uuid=host_id, group_name=group) for group in to_add])
+                        if to_delete:
+                            HostGroups.delete().where( (HostGroups.host == host_id) & (HostGroups.group_name.in_(to_delete))).execute()
+                        if to_add:
+                            HostGroups.insert_many([dict(host=host_id,group_name=group) for group in to_add]).execute()
 
                         # get host cert to encrypt package with public key
                         if conf['encrypt_host_packages']:
@@ -562,8 +564,12 @@ def upload_host():
                         wapt_db.rollback()
                         logger.critical('Error uploading package %s: %s' % (filename, e))
                         errors.append(filename)
+
         spenttime = time.time() - starttime
-        return make_response(result=dict(done=done, errors=errors), msg=_('%s Host packages uploaded, %s errors').format(len(done), len(errors)), request_time=spenttime)
+        return make_response(success = len(errors) == 0,
+            result=dict(done=done, errors=errors),
+            msg=_('{} Host packages uploaded, {} errors').format(len(done), len(errors)),
+            request_time=spenttime)
 
     except Exception as e:
         return make_response_from_exception(e, status='201')
