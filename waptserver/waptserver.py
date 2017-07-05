@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.10"
+__version__ = '1.5.0.10'
 
 import os
 import sys
@@ -53,8 +53,8 @@ from passlib.hash import pbkdf2_sha256
 from peewee import *
 from playhouse.postgres_ext import *
 
-from waptserver_model import Hosts,HostSoftwares,HostPackagesStatus,ServerAttribs
-from waptserver_model import get_db_version,init_db,wapt_db,model_to_dict,dict_to_model,update_host_data
+from waptserver_model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs
+from waptserver_model import get_db_version, init_db, wapt_db, model_to_dict, dict_to_model, update_host_data
 from waptserver_model import upgrade_db_structure
 
 from werkzeug.utils import secure_filename
@@ -129,29 +129,10 @@ app.config['CONFIG_FILE'] = config_file
 babel = Babel(app)
 
 conf = waptserver_config.load_config(config_file)
-app.config['SECRET_KEY'] = conf.get('secret_key','secretkey!!')
-
-"""
-class WaptComputerUser(UserMixin):
-    pass
-
-class WaptConsoleUser(UserMixin):
-    pass
-
-# auth handling
-login_manager = LoginManager()
-login_manager.init_app(app)
-
-@login_manager.user_loader
-def load_user(userid):
-    try:
-        return User.query.get(int(userid))
-    except (TypeError, ValueError):
-        pass
-"""
+app.config['SECRET_KEY'] = conf.get('secret_key')
 
 # chain SocketIO server
-socketio = SocketIO(app,logger=logger,max_size=conf['max_clients'])
+socketio = SocketIO(app, logger=logger, max_size=conf['max_clients'])
 
 try:
     import wsus
@@ -191,6 +172,7 @@ def close_db(error):
     if not wapt_db.is_closed():
         wapt_db.close()
 
+
 def sio_authenticated_only(f):
     @functools.wraps(f)
     def wrapped(*args, **kwargs):
@@ -199,6 +181,7 @@ def sio_authenticated_only(f):
         else:
             return f(*args, **kwargs)
     return wrapped
+
 
 def requires_auth(f):
     @wraps(f)
@@ -209,10 +192,10 @@ def requires_auth(f):
             logger.info('no credential given')
             return authenticate()
 
-        logging.debug("authenticating : %s" % auth.username)
+        logging.debug('authenticating : %s' % auth.username)
         if not check_auth(auth.username, auth.password):
             return authenticate()
-        logger.info("user %s authenticated" % auth.username)
+        logger.info('user %s authenticated' % auth.username)
         return f(*args, **kwargs)
     return decorated
 
@@ -256,7 +239,7 @@ def check_auth(username, password):
         except Exception:
             pass
 
-    return any_([pbkdf2_sha256_ok,pass_sha1_ok, pass_sha512_ok,
+    return any_([pbkdf2_sha256_ok, pass_sha1_ok, pass_sha512_ok,
                  pass_sha512_crypt_ok, pass_bcrypt_crypt_ok]) and user_ok
 
 
@@ -289,12 +272,7 @@ def get_timezone():
 
 def get_server_uuid():
     """Create and/or returns this server UUID"""
-    server_uuid = conf.get('server_uuid',None)
-    if not server_uuid:
-        server_uuid = str(uuid_.uuid1())
-        rewrite_config_item(app.config['CONFIG_FILE'], 'options', 'server_uuid', server_uuid)
-        conf['server_uuid'] = server_uuid
-        reload_config()
+    server_uuid = conf.get('server_uuid', None)
     return server_uuid
 
 
@@ -361,7 +339,7 @@ def index():
         }
     }
 
-    return render_template("index.html", data=data)
+    return render_template('index.html', data=data)
 
 
 @app.route('/add_host', methods=['POST'])
@@ -381,12 +359,12 @@ def update_host():
         data = json.loads(raw_data)
 
         if data:
-            uuid = data["uuid"]
+            uuid = data['uuid']
             if uuid:
                 logger.info('Update host %s status' % (uuid,))
                 data['last_seen_on'] = datetime2isodate()
-                signature_b64 = request.headers.get('X-Signature',None)
-                signer = request.headers.get('X-Signer',None)
+                signature_b64 = request.headers.get('X-Signature', None)
+                signer = request.headers.get('X-Signer', None)
 
                 # with nginx kerberos module, auth user name is stored as Basic auth in the
                 # 'Authorisation' header with password 'bogus_auth_gss_passwd'
@@ -394,16 +372,16 @@ def update_host():
 
                 if authenticated_user:
                     if authenticated_user.startswith('Basic'):
-                        logger.debug( '#####################################')
+                        logger.debug('#####################################')
                         logger.debug(authenticated_user)
-                        authenticated_user = base64.b64decode(authenticated_user.replace('Basic','').strip())
+                        authenticated_user = base64.b64decode(authenticated_user.replace('Basic', '').strip())
                         logger.debug(authenticated_user)
-                    authenticated_user = authenticated_user.lower().replace('$','')
+                    authenticated_user = authenticated_user.lower().replace('$', '')
                     if authenticated_user.endswith(':bogus_auth_gss_passwd'):
-                        authenticated_user = authenticated_user.replace(':bogus_auth_gss_passwd','')
+                        authenticated_user = authenticated_user.replace(':bogus_auth_gss_passwd', '')
 
                     dns_domain = '.'.join(socket.getfqdn().split('.')[1:])
-                    authenticated_user = "%s.%s" % (authenticated_user,dns_domain)
+                    authenticated_user = '%s.%s' % (authenticated_user, dns_domain)
                     logger.debug(request.headers)
                     logger.debug('authenticated computer : %s ' % (authenticated_user,))
 
@@ -415,37 +393,37 @@ def update_host():
                 if signature:
                     # when registering, mutual authentication is assumed by kerberos
                     # on nginx reverse proxy level
-                    if request.path in  ['/add_host']:
-                        host_cert = SSLCertificate(crt_string = data['host_certificate'])
+                    if request.path in ['/add_host']:
+                        host_cert = SSLCertificate(crt_string=data['host_certificate'])
                         if conf['use_kerberos']:
                             if not authenticated_user:
                                 raise EWaptAuthenticationFailure('add_host : Missing authentication header')
-                            if authenticated_user.lower().replace('@','.') != host_cert.cn.lower():
-                                raise EWaptAuthenticationFailure('add_host : Mismatch between authendtication header %s and Certificate commonName %s' % (authenticated_user,host_cert.cn))
+                            if authenticated_user.lower().replace('@', '.') != host_cert.cn.lower():
+                                raise EWaptAuthenticationFailure('add_host : Mismatch between authendtication header %s and Certificate commonName %s' % (authenticated_user, host_cert.cn))
                     else:
                         # get certificate from DB to check/authenticate submitted data.
-                        existing_host = Hosts.select(Hosts.host_certificate,Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
+                        existing_host = Hosts.select(Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
                         if existing_host:
                             if existing_host.host_certificate:
-                                host_cert = SSLCertificate(crt_string = existing_host.host_certificate)
+                                host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
                             else:
-                                raise EWaptMissingCertificate('Host certificate of %s (%s) is not in database, please register first.' % (uuid,existing_host.computer_fqdn))
+                                raise EWaptMissingCertificate('Host certificate of %s (%s) is not in database, please register first.' % (uuid, existing_host.computer_fqdn))
                         else:
-                            raise EWaptMissingCertificate('You try to update status of an unknown host %s (%s). Please register first.' % (uuid,data.get('computer_fqdn','unknown')))
+                            raise EWaptMissingCertificate('You try to update status of an unknown host %s (%s). Please register first.' % (uuid, data.get('computer_fqdn', 'unknown')))
 
                     if host_cert:
                         logger.debug('About to check supplied data signature with certificate %s' % host_cert.cn)
                         try:
-                            host_dn = host_cert.verify_content(sha256_for_data(raw_data),signature)
+                            host_dn = host_cert.verify_content(sha256_for_data(raw_data), signature)
                         except Exception as e:
                             # for pre 1.5 wapt clients
-                            logger.debug("Error %s , trying sha1"%e)
+                            logger.debug('Error %s , trying sha1' % e)
                             if request.headers.get('User-Agent') != 'wapt/1.4.3':
-                                host_dn = host_cert.verify_content(sha1_for_data(raw_data),signature,md='sha1')
+                                host_dn = host_cert.verify_content(sha1_for_data(raw_data), signature, md='sha1')
                             else:
                                 host_dn = 'failed'
 
-                        logger.info('Data successfully checked with certificate CN %s for %s'% (host_dn,uuid))
+                        logger.info('Data successfully checked with certificate CN %s for %s' % (host_dn, uuid))
                     else:
                         raise EWaptMissingCertificate('There is no public certificate for checking signed data from %s' % (uuid))
                 else:
@@ -454,27 +432,28 @@ def update_host():
                 db_data = update_host_data(data)
 
                 result = db_data
-                message="update_host"
+                message = 'update_host'
 
             else:
-                raise Exception("update_host: No uuid supplied")
+                raise Exception('update_host: No uuid supplied')
         else:
-            raise Exception("update_host: No data supplied")
+            raise Exception('update_host: No data supplied')
 
-        return make_response(result=result,msg=message,request_time = time.time() - starttime)
+        return make_response(result=result, msg=message, request_time=time.time() - starttime)
 
     except Exception as e:
-        logger.critical('update_host failed for %s: %s' % (uuid,repr(e)))
+        logger.critical('update_host failed for %s: %s' % (uuid, repr(e)))
         return make_response_from_exception(e)
 
-@app.route('/upload_package/<string:filename>',methods=['POST'])
+
+@app.route('/upload_package/<string:filename>', methods=['POST'])
 @requires_auth
-def upload_package(filename=""):
+def upload_package(filename=''):
     try:
         tmp_target = ''
         if request.method == 'POST':
             if filename and allowed_file(filename):
-                tmp_target = os.path.join(conf['wapt_folder'], secure_filename(filename+'.tmp'))
+                tmp_target = os.path.join(conf['wapt_folder'], secure_filename(filename + '.tmp'))
                 with open(tmp_target, 'wb') as f:
                     data = request.stream.read(65535)
                     try:
@@ -486,35 +465,35 @@ def upload_package(filename=""):
                         raise
 
                 if not os.path.isfile(tmp_target):
-                    result = dict(status='ERROR',message=_('Problem during upload'))
+                    result = dict(status='ERROR', message=_('Problem during upload'))
                 else:
                     if PackageEntry().load_control_from_wapt(tmp_target):
                         target = os.path.join(conf['wapt_folder'], secure_filename(filename))
                         if os.path.isfile(target):
                             os.unlink(target)
-                        os.rename(tmp_target,target)
+                        os.rename(tmp_target, target)
                         data = update_packages(conf['wapt_folder'])
-                        result = dict(status='OK',message='%s uploaded, %i packages analysed'%(filename,len(data['processed'])),result=data)
+                        result = dict(status='OK', message='%s uploaded, %i packages analysed' % (filename, len(data['processed'])), result=data)
                     else:
-                        result = dict(status='ERROR',message=_('Not a valid wapt package'))
+                        result = dict(status='ERROR', message=_('Not a valid wapt package'))
                         os.unlink(tmp_target)
             else:
-                result = dict(status='ERROR',message=_('Wrong file type'))
+                result = dict(status='ERROR', message=_('Wrong file type'))
         else:
-            result = dict(status='ERROR',message=_('Unsupported method'))
+            result = dict(status='ERROR', message=_('Unsupported method'))
     except:
         # remove temporary
         if os.path.isfile(tmp_target):
             os.unlink(tmp_target)
         e = sys.exc_info()
         logger.critical(repr(traceback.format_exc()))
-        result = dict(status='ERROR',message=_('unexpected: {}').format((e,)))
-    return  Response(response=json.dumps(result),
-                         status=200,
-                         mimetype="application/json")
+        result = dict(status='ERROR', message=_('unexpected: {}').format((e,)))
+    return Response(response=json.dumps(result),
+                    status=200,
+                    mimetype='application/json')
 
 
-@app.route('/upload_host',methods=['POST'])
+@app.route('/upload_host', methods=['POST'])
 @requires_auth
 def upload_host():
     try:
@@ -522,41 +501,41 @@ def upload_host():
         done = []
         errors = []
         files = request.files.keys()
-        logger.info('Upload of %s host packages'%len(files))
+        logger.info('Upload of %s host packages' % len(files))
         for fkey in files:
             hostpackagefile = request.files[fkey]
             logger.debug('uploading host file : %s' % fkey)
             if hostpackagefile and allowed_file(hostpackagefile.filename):
                 filename = secure_filename(hostpackagefile.filename)
-                wapt_host_folder = os.path.join(conf['wapt_folder']+'-hostref')
+                wapt_host_folder = os.path.join(conf['wapt_folder'] + '-hostref')
                 ref_target = os.path.join(wapt_host_folder, filename)
                 target = os.path.join(wapt_host_folder, filename)
                 hostpackagefile.save(ref_target)
                 try:
                     # try to read attributes...
-                    entry = PackageEntry(waptfile = ref_target)
+                    entry = PackageEntry(waptfile=ref_target)
                     host_id = entry.package
-                    host = Hosts.select(Hosts.host_certificate).where((Hosts.uuid == host_id) | (Hosts.computer_fqdn == host_id) ).dicts().first()
+                    host = Hosts.select(Hosts.host_certificate).where((Hosts.uuid == host_id) | (Hosts.computer_fqdn == host_id)).dicts().first()
                     if host and host['host_certificate'] is not None:
-                        host_cert = SSLCertificate(crt_string = host['host_certificate'])
+                        host_cert = SSLCertificate(crt_string=host['host_certificate'])
                         if os.path.isfile(target):
                             os.unlink(target)
-                        package_data = open(ref_target,'rb').read()
-                        with open(target,'wb') as encrypted_package:
+                        package_data = open(ref_target, 'rb').read()
+                        with open(target, 'wb') as encrypted_package:
                             encrypted_package.write(host_cert.encrypt(package_data))
                     else:
-                        package_data = open(ref_target,'rb').read()
-                        with open(target,'wb') as unencrypted_package:
+                        package_data = open(ref_target, 'rb').read()
+                        with open(target, 'wb') as unencrypted_package:
                             unencrypted_package.write(host_cert.encrypt(package_data))
                     done.append(filename)
                 except Exception as e:
-                    logger.critical('Error uploading package %s: %s' % (filename,e))
+                    logger.critical('Error uploading package %s: %s' % (filename, e))
                     errors.append(filename)
         spenttime = time.time() - starttime
-        return make_response(result=dict(done=done,errors=errors),msg=_('%s Host packages uploaded, %s errors').format(len(done),len(errors)),request_time = spenttime)
+        return make_response(result=dict(done=done, errors=errors), msg=_('%s Host packages uploaded, %s errors').format(len(done), len(errors)), request_time=spenttime)
 
     except Exception as e:
-        return make_response_from_exception(e,status='201')
+        return make_response_from_exception(e, status='201')
 
 
 @app.route('/upload_waptsetup', methods=['POST'])
@@ -565,21 +544,21 @@ def upload_waptsetup():
     waptagent = os.path.join(conf['wapt_folder'], 'waptagent.exe')
     waptsetup = os.path.join(conf['wapt_folder'], 'waptsetup-tis.exe')
 
-    logger.debug("Entering upload_waptsetup")
+    logger.debug('Entering upload_waptsetup')
     tmp_target = None
     try:
         if request.method == 'POST':
             file = request.files['file']
-            if file and "waptagent.exe" in file.filename:
+            if file and 'waptagent.exe' in file.filename:
                 filename = secure_filename(file.filename)
-                tmp_target = os.path.join(conf['wapt_folder'], secure_filename('.'+filename))
+                tmp_target = os.path.join(conf['wapt_folder'], secure_filename('.' + filename))
                 target = os.path.join(conf['wapt_folder'], secure_filename(filename))
                 file.save(tmp_target)
                 if not os.path.isfile(tmp_target):
-                    result = dict(status='ERROR',message=_('Problem during upload'))
+                    result = dict(status='ERROR', message=_('Problem during upload'))
                 else:
-                    os.rename(tmp_target,target)
-                    result = dict(status='OK',message=_('{} uploaded').format((filename,)))
+                    os.rename(tmp_target, target)
+                    result = dict(status='OK', message=_('{} uploaded').format((filename,)))
 
                 # Compat with older clients: provide a waptsetup.exe -> waptagent.exe alias
                 if os.path.exists(waptsetup):
@@ -598,17 +577,17 @@ def upload_waptsetup():
                     shutil.copyfile(waptagent, waptsetup)
 
             else:
-                result = dict(status='ERROR',message=_('Wrong file name (version conflict?)'))
+                result = dict(status='ERROR', message=_('Wrong file name (version conflict?)'))
         else:
-            result = dict(status='ERROR',message=_('Unsupported method'))
+            result = dict(status='ERROR', message=_('Unsupported method'))
     except:
         e = sys.exc_info()
         if tmp_target and os.path.isfile(tmp_target):
             os.unlink(tmp_target)
-        result = dict(status='ERROR',message=_('unexpected: {}').format((e,)))
-    return  Response(response=json.dumps(result),
-                         status=200,
-                         mimetype="application/json")
+        result = dict(status='ERROR', message=_('unexpected: {}').format((e,)))
+    return Response(response=json.dumps(result),
+                    status=200,
+                    mimetype='application/json')
 
 
 def rewrite_config_item(cfg_file, *args):
@@ -619,6 +598,8 @@ def rewrite_config_item(cfg_file, *args):
         config.write(cfg)
 
 # Reload config file.
+
+
 def reload_config():
     try:
         global conf
@@ -626,16 +607,17 @@ def reload_config():
     except Exception as e:
         logger.critical('Unable to reload server config : %s' % repr(e))
 
-@app.route('/api/v3/change_password',methods=['POST'])
+
+@app.route('/api/v3/change_password', methods=['POST'])
 @requires_auth
 def change_passsword():
     try:
         config_file = app.config['CONFIG_FILE']
-        post_data = request.get_json();
+        post_data = request.get_json()
         if 'user' in post_data and 'password' in post_data:
             if check_auth(post_data['user'], post_data['password']):
                 # change master password
-                if 'new_password' in post_data and post_data['user'] == 'admin' :
+                if 'new_password' in post_data and post_data['user'] == 'admin':
                     new_hash = pbkdf2_sha256.hash(post_data['new_password'].encode('utf8'))
                     rewrite_config_item(config_file, 'options', 'wapt_password', new_hash)
                     conf['wapt_password'] = new_hash
@@ -652,23 +634,23 @@ def change_passsword():
         return make_response_from_exception(e)
 
 
-@app.route('/api/v3/login',methods=['POST'])
+@app.route('/api/v3/login', methods=['POST'])
 def login():
     try:
         # TODO use session...
-        post_data = request.get_json();
+        post_data = request.get_json()
         auth_token = 'TODO'
         if 'user' in post_data and 'password' in post_data:
             if check_auth(post_data['user'], post_data['password']):
                 result = dict(
-                        auth_token = auth_token,
-                        server_uuid = get_server_uuid(),
-                        version = __version__,
-                    )
+                    auth_token=auth_token,
+                    server_uuid=get_server_uuid(),
+                    version=__version__,
+                )
         else:
             raise EWaptMissingParameter('Missing parameter')
         session['auth_token'] = auth_token
-        msg='Authentication OK'
+        msg = 'Authentication OK'
         return make_response(result=result, msg=msg, status=200)
     except Exception as e:
         if 'auth_token' in session:
@@ -681,26 +663,27 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
+
 @app.route('/delete_package/<string:filename>')
 @requires_auth
-def delete_package(filename=""):
-    fullpath = os.path.join(conf['wapt_folder'],filename)
+def delete_package(filename=''):
+    fullpath = os.path.join(conf['wapt_folder'], filename)
     try:
         if os.path.isfile(fullpath):
             os.unlink(fullpath)
             data = update_packages(conf['wapt_folder'])
-            if os.path.isfile("%s.zsync"%(fullpath,)):
-                os.unlink("%s.zsync"%(fullpath,))
-            result = dict(status='OK',message="Package deleted %s" % (fullpath,),result=data)
+            if os.path.isfile('%s.zsync' % (fullpath,)):
+                os.unlink('%s.zsync' % (fullpath,))
+            result = dict(status='OK', message='Package deleted %s' % (fullpath,), result=data)
         else:
-            result = dict(status='ERROR',message="The file %s doesn't exist in wapt folder (%s)" % (filename, conf['wapt_folder']))
+            result = dict(status='ERROR', message="The file %s doesn't exist in wapt folder (%s)" % (filename, conf['wapt_folder']))
 
     except Exception as e:
-        result = { 'status' : 'ERROR', 'message': u"%s" % e  }
+        result = {'status': 'ERROR', 'message': u'%s' % e}
 
-    return  Response(response=json.dumps(result),
-                         status=200,
-                         mimetype="application/json")
+    return Response(response=json.dumps(result),
+                    status=200,
+                    mimetype='application/json')
 
 
 @app.route('/wapt/')
@@ -736,13 +719,14 @@ def serve_icons(iconfilename):
             'content-length', int(os.path.getsize(os.path.join(icons_folder, iconfilename))))
     return r
 
+
 @app.route('/css/<string:fn>')
 @app.route('/fonts/<string:fn>')
 @app.route('/img/<string:fn>')
 @app.route('/js/<string:fn>')
 def serve_static(fn):
     """Serve"""
-    rootdir = os.path.join(app.template_folder,request.path.split('/')[1])
+    rootdir = os.path.join(app.template_folder, request.path.split('/')[1])
     if fn is not None:
         fn = secure_filename(fn)
         r = send_from_directory(rootdir, fn)
@@ -797,14 +781,14 @@ def ping():
     )
 
 
-@app.route('/api/v3/reset_hosts_sid',methods=['GET','POST'])
+@app.route('/api/v3/reset_hosts_sid', methods=['GET', 'POST'])
 @requires_auth
 def reset_hosts_sid():
     """Launch a separate thread to check all reachable IP and update database with results.
     """
     try:
         # in case a POST is issued with a selection of uuids to scan.
-        uuids = request.json.get('uuids',None) or None
+        uuids = request.json.get('uuids', None) or None
         if uuids is not None:
             message = _(u'Hosts connection reset launched for %s host(s)' % len(uuids))
         else:
@@ -816,10 +800,10 @@ def reset_hosts_sid():
                 where_clause = Hosts.uuid.in_(uuids)
             else:
                 where_clause = None
-            Hosts.update(listening_timestamp=None,listening_protocol=None).where(where_clause).execute()
+            Hosts.update(listening_timestamp=None, listening_protocol=None).where(where_clause).execute()
             socketio.emit('wapt_ping')
 
-        socketio.start_background_task(target=target,uuids=uuids)
+        socketio.start_background_task(target=target, uuids=uuids)
 
     except Exception as e:
         return make_response_from_exception(e)
@@ -844,48 +828,49 @@ def proxy_host_request(request, action):
 
         uuids = ensure_list(all_args['uuid'])
         del(all_args['uuid'])
-        timeout = float(request.args.get('timeout',conf.get('clients_read_timeout',5)))
+        timeout = float(request.args.get('timeout', conf.get('clients_read_timeout', 5)))
 
         result = dict(success=[], errors=[])
         tasks = []
         for uuid in uuids:
             try:
                 host_data = Hosts\
-                        .select(Hosts.uuid,Hosts.computer_fqdn,
-                                Hosts.server_uuid,
-                                Hosts.listening_address,
-                                Hosts.listening_port,
-                                Hosts.listening_protocol,
-                                Hosts.listening_timestamp,
-                                 )\
-                        .where((Hosts.server_uuid == get_server_uuid()) & (Hosts.uuid==uuid) & (~Hosts.listening_address.is_null()) & (Hosts.listening_protocol=='websockets'))\
-                        .dicts()\
-                        .first(1)
+                    .select(Hosts.uuid, Hosts.computer_fqdn,
+                            Hosts.server_uuid,
+                            Hosts.listening_address,
+                            Hosts.listening_port,
+                            Hosts.listening_protocol,
+                            Hosts.listening_timestamp,
+                            )\
+                    .where((Hosts.server_uuid == get_server_uuid()) & (Hosts.uuid == uuid) & (~Hosts.listening_address.is_null()) & (Hosts.listening_protocol == 'websockets'))\
+                    .dicts()\
+                    .first(1)
 
-                if host_data and host_data.get('listening_address',None):
+                if host_data and host_data.get('listening_address', None):
                     msg = u''
                     logger.info(
-                        "Launching %s with args %s for %s at address %s..." %
-                        (action, all_args, uuid,host_data['listening_address']))
+                        'Launching %s with args %s for %s at address %s...' %
+                        (action, all_args, uuid, host_data['listening_address']))
 
                     args = dict(all_args)
                     sid = host_data['listening_address']
                     computer_fqdn = host_data['computer_fqdn']
 
-                    def emit_action(sid,uuid,action,action_args,computer_fqdn,timeout=5):
+                    def emit_action(sid, uuid, action, action_args, computer_fqdn, timeout=5):
                         try:
                             got_result = []
+
                             def result_callback(data):
                                 got_result.append(data)
 
-                            logger.debug('Emit %s to %s (%s)' % (action,uuid,computer_fqdn))
-                            socketio.emit(action,action_args,room=sid,callback=result_callback)
+                            logger.debug('Emit %s to %s (%s)' % (action, uuid, computer_fqdn))
+                            socketio.emit(action, action_args, room=sid, callback=result_callback)
                             # with for asynchronous answer...
                             wait_loop = timeout * 20
                             while not got_result:
-                                wait_loop -=1
+                                wait_loop -= 1
                                 if wait_loop < 0:
-                                    raise EWaptTimeoutWaitingForResult('Timeout, client did not send result within %s s'%timeout)
+                                    raise EWaptTimeoutWaitingForResult('Timeout, client did not send result within %s s' % timeout)
                                 socketio.sleep(0.05)
 
                             # action succedded
@@ -895,16 +880,16 @@ def proxy_host_request(request, action):
                                     msg=msg,
                                     computer_fqdn=computer_fqdn,
                                     result=got_result[0],
-                                    ))
+                                ))
                         except Exception as e:
                             result['errors'].append(
                                 dict(
                                     uuid=uuid,
                                     msg='%s' % repr(e),
                                     computer_fqdn='',
-                                    ))
+                                ))
                     if sid:
-                        tasks.append(socketio.start_background_task(emit_action,sid=sid,uuid=uuid,action=action,action_args=args,computer_fqdn=computer_fqdn))
+                        tasks.append(socketio.start_background_task(emit_action, sid=sid, uuid=uuid, action=action, action_args=args, computer_fqdn=computer_fqdn))
 
                 else:
                     result['errors'].append(
@@ -912,59 +897,59 @@ def proxy_host_request(request, action):
                             uuid=uuid,
                             msg='Host %s is not registered or not connected wia websockets' % uuid,
                             computer_fqdn='',
-                            ))
+                        ))
             except Exception as e:
                 result['errors'].append(
                     dict(
                         uuid=uuid,
-                        msg='Host %s error %s' % (uuid,repr(e)),
+                        msg='Host %s error %s' % (uuid, repr(e)),
                         computer_fqdn='',
-                        ))
+                    ))
 
         # wait for all background tasks to terminate or timeout...
         # assume the timeout should be longer if more hosts to perform
         wait_loop = timeout * len(tasks)
         while True:
-            running = [ t for t in tasks if t.is_alive() ]
+            running = [t for t in tasks if t.is_alive()]
             if not running:
                 break
-            wait_loop -=1
+            wait_loop -= 1
             if wait_loop < 0:
                 break
             socketio.sleep(0.05)
 
-        msg = [ 'Success : %s, Errors: %s' % (len(result['success']), len(result['errors']))]
+        msg = ['Success : %s, Errors: %s' % (len(result['success']), len(result['errors']))]
         if result['errors']:
             msg.extend(['%s: %s' % (e['computer_fqdn'], e['msg'])
                         for e in result['errors']])
 
         return make_response(result,
                              msg='\n- '.join(msg),
-                             success=len(result['success'])>0,
-                             request_time = time.time() - start_time)
+                             success=len(result['success']) > 0,
+                             request_time=time.time() - start_time)
     except Exception as e:
         return make_response_from_exception(e)
 
 
-@app.route('/api/v3/trigger_wakeonlan',methods=['POST'])
+@app.route('/api/v3/trigger_wakeonlan', methods=['POST'])
 @requires_auth
 def trigger_wakeonlan():
     try:
         uuids = request.get_json()['uuids']
         hosts_data = Hosts\
-                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.mac_addresses,Hosts.wapt_status,Hosts.host_info)\
-                        .where(Hosts.uuid.in_(uuids))\
-                        .dicts()
+            .select(Hosts.uuid, Hosts.computer_fqdn, Hosts.mac_addresses, Hosts.wapt_status, Hosts.host_info)\
+            .where(Hosts.uuid.in_(uuids))\
+            .dicts()
         result = []
         for host in hosts_data:
             macs = host['mac_addresses']
             msg = u''
             if macs:
                 logger.debug(
-                    _("Sending magic wakeonlan packets to {} for machine {}").format(
+                    _('Sending magic wakeonlan packets to {} for machine {}').format(
                         macs,
                         host['computer_fqdn']
-                        ))
+                    ))
                 wakeonlan.wol.send_magic_packet(*macs)
                 for line in host['host_info']['networking']:
                     if 'broadcast' in line:
@@ -973,9 +958,9 @@ def trigger_wakeonlan():
                             *
                             macs,
                             ip_address='%s' %
-                        broadcast)
-                result.append(dict(uuid=host['uuid'],computer_fqdn=host['computer_fqdn'],mac_addresses=host['mac_addresses']))
-        msg = _(u"Wakeonlan packets sent to {} machines.").format(len(result))
+                            broadcast)
+                result.append(dict(uuid=host['uuid'], computer_fqdn=host['computer_fqdn'], mac_addresses=host['mac_addresses']))
+        msg = _(u'Wakeonlan packets sent to {} machines.').format(len(result))
         result = result
         return make_response(result,
                              msg=msg,
@@ -1059,6 +1044,7 @@ def waptagent_version():
 def host_cancel_task():
     return proxy_host_request(request, 'trigger_cancel_task')
 
+
 @app.route('/api/v1/groups')
 @requires_auth
 def get_groups():
@@ -1075,7 +1061,8 @@ def get_groups():
 
     return make_response(result=groups, msg=msg, status=200)
 
-def build_hosts_filter(model,filter_expr):
+
+def build_hosts_filter(model, filter_expr):
     """Legacy helper function to translate waptconsole <=1.3.11 hosts filter
         into peewee model where clause.
     Args:
@@ -1102,15 +1089,15 @@ def build_hosts_filter(model,filter_expr):
             elif rootfield == 'installed_packages':
                 clause = Hosts.uuid.in_(HostPackagesStatus.select(HostPackagesStatus.host).where(HostPackagesStatus.package.regexp(ur'(?i)%s' % search_expr)))
             elif rootfield in model._meta.fields:
-                if isinstance(model._meta.fields[rootfield],(JSONField,BinaryJSONField)):
-                    if len(members)==1:
-                        clause =  SQL("%s::text ~* '%s'" % (fn,search_expr))
+                if isinstance(model._meta.fields[rootfield], (JSONField, BinaryJSONField)):
+                    if len(members) == 1:
+                        clause = SQL("%s::text ~* '%s'" % (fn, search_expr))
                     else:
                         # (wapt->'waptserver'->'dnsdomain')::text ~* 'asfrance.lan'
-                        clause = SQL("(%s->%s)::text ~* '%s'" % (rootfield,'->'.join(["'%s'" % f for f in members[1:]]),search_expr))
+                        clause = SQL("(%s->%s)::text ~* '%s'" % (rootfield, '->'.join(["'%s'" % f for f in members[1:]]), search_expr))
                         # model._meta.fields[members[0]].path(members[1:]).regexp(ur'(?i)%s' % search_expr)
-                elif isinstance(model._meta.fields[rootfield],ArrayField):
-                    clause = SQL("%s::text ~* '%s'" % (fn,search_expr))
+                elif isinstance(model._meta.fields[rootfield], ArrayField):
+                    clause = SQL("%s::text ~* '%s'" % (fn, search_expr))
                 else:
                     clause = model._meta.fields[fn].regexp(ur'(?i)%s' % search_expr)
             # else ignored...
@@ -1146,12 +1133,12 @@ def hosts_delete():
     """
     try:
         # build filter
-        post_data = request.get_json();
+        post_data = request.get_json()
 
         if 'uuids' in post_data:
             query = Hosts.uuid.in_(ensure_list(post_data['uuids']))
         elif 'filter' in post_data:
-            query = build_hosts_filter(Hosts,post_data['filter'])
+            query = build_hosts_filter(Hosts, post_data['filter'])
         else:
             raise Exception('Neither uuid nor filter provided in query')
 
@@ -1162,7 +1149,7 @@ def hosts_delete():
         packages_repo = WaptLocalRepo(conf['wapt_folder'])
 
         if 'delete_packages' in post_data and post_data['delete_packages']:
-            selected = Hosts.select(Hosts.uuid,Hosts.computer_fqdn).where(query)
+            selected = Hosts.select(Hosts.uuid, Hosts.computer_fqdn).where(query)
             for host in selected:
                 result['records'].append(
                     dict(
@@ -1189,12 +1176,11 @@ def hosts_delete():
         return make_response_from_exception(e)
 
 
-
-def build_fields_list(model,mongoproj):
+def build_fields_list(model, mongoproj):
     """Returns a list of peewee fields based on a mongo style projection
             For compatibility with waptconsole <= 1.3.11
     """
-    result =[]
+    result = []
     for fn in mongoproj.keys():
         if fn in model._meta.fields:
             result.append(model._meta.fields[fn])
@@ -1204,7 +1190,7 @@ def build_fields_list(model,mongoproj):
             root = parts[0]
             if root in model._meta.fields:
                 path = ','.join(parts[1:])
-                result.append(SQL("%s #>>'{%s}' as \"%s\" "%(root,path,fn)))
+                result.append(SQL("%s #>>'{%s}' as \"%s\" " % (root, path, fn)))
     return result
 
 
@@ -1263,25 +1249,25 @@ def get_hosts():
                            'depends',
                            'computer_type',
                            'os_name',
-                           'os_version',]
+                           'os_version', ]
 
         # keep only top tree nodes (mongo doesn't want fields like {'wapt':1,'wapt.listening_address':1} !
         # minimum columns
         columns = ['uuid',
-                       'host_status',
-                       'last_seen_on',
-                       'last_update_status',
-                       'computer_fqdn',
-                       'computer_name',
-                       'description',
-                       'wapt_status',
-                       'dnsdomain',
-                       'server_uuid',
-                       'listening_protocol',
-                       'listening_address',
-                       'listening_port',
-                       'listening_timestamp',
-                       'connected_users']
+                   'host_status',
+                   'last_seen_on',
+                   'last_update_status',
+                   'computer_fqdn',
+                   'computer_name',
+                   'description',
+                   'wapt_status',
+                   'dnsdomain',
+                   'server_uuid',
+                   'listening_protocol',
+                   'listening_address',
+                   'listening_port',
+                   'listening_timestamp',
+                   'connected_users']
         other_columns = ensure_list(
             request.args.get(
                 'columns',
@@ -1300,37 +1286,37 @@ def get_hosts():
         if 'uuid' in request.args:
             query = Hosts.uuid.in_(ensure_list(request.args['uuid']))
         elif 'filter' in request.args:
-            query = build_hosts_filter(Hosts,request.args['filter'])
+            query = build_hosts_filter(Hosts, request.args['filter'])
         else:
             query = ~(Hosts.uuid.is_null())
 
         if 'has_errors' in request.args and request.args['has_errors']:
             query = query & (Hosts.host_status == 'ERROR')
-        if "need_upgrade" in request.args and request.args['need_upgrade']:
-            query = query & (Hosts.host_status.in_(['ERROR','TO-UPGRADE']))
+        if 'need_upgrade' in request.args and request.args['need_upgrade']:
+            query = query & (Hosts.host_status.in_(['ERROR', 'TO-UPGRADE']))
         if 'reachable' in request.args and (request.args['reachable'] == '1'):
             query = query & (Hosts.reachable == 'OK')
 
         if not_filter:
             query = ~ query
 
-        limit = int(request.args.get('limit',1000))
+        limit = int(request.args.get('limit', 1000))
 
         groups = ensure_list(request.args.get('groups', ''))
 
         result = []
-        req = Hosts.select(*build_fields_list(Hosts,{col: 1 for col in columns})).limit(limit).order_by(SQL('last_seen_on desc NULLS LAST')).dicts().dicts()
+        req = Hosts.select(*build_fields_list(Hosts, {col: 1 for col in columns})).limit(limit).order_by(SQL('last_seen_on desc NULLS LAST')).dicts().dicts()
         if query:
             req = req.where(query)
 
-        if ('depends' in columns) or len(groups)>0:
+        if ('depends' in columns) or len(groups) > 0:
             hosts_packages_repo = WaptLocalRepo(conf['wapt_folder'] + '-host')
             packages_repo = WaptLocalRepo(conf['wapt_folder'])
 
             for host in req:
-                if host.get('computer_fqdn',None):
+                if host.get('computer_fqdn', None):
                     host_package = hosts_packages_repo.get(
-                        host.get('computer_fqdn',None),
+                        host.get('computer_fqdn', None),
                         None)
                     if host_package:
                         depends = ensure_list(host_package.depends.split(','))
@@ -1395,8 +1381,8 @@ def host_data():
 
         if 'field' in request.args:
             field = request.args['field']
-            if not field in Hosts._meta.fields.keys() + ['installed_softwares','installed_packages','waptwua']:
-                raise EWaptMissingParameter('Parameter field %s is unknown'%field)
+            if not field in Hosts._meta.fields.keys() + ['installed_softwares', 'installed_packages', 'waptwua']:
+                raise EWaptMissingParameter('Parameter field %s is unknown' % field)
         else:
             raise EWaptMissingParameter('Parameter field is missing')
 
@@ -1406,15 +1392,15 @@ def host_data():
             result = list(HostPackagesStatus.select().where(HostPackagesStatus.host == uuid).dicts())
         else:
             data = Hosts\
-                        .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.fieldbyname(field))\
-                        .where(Hosts.uuid==uuid)\
-                        .dicts()\
-                        .first(1)
+                .select(Hosts.uuid, Hosts.computer_fqdn, Hosts.fieldbyname(field))\
+                .where(Hosts.uuid == uuid)\
+                .dicts()\
+                .first(1)
 
             if data is None:
                 raise EWaptUnknownHost(
                     'Host {} not found in database'.format(uuid))
-            result = data.get(field,None)
+            result = data.get(field, None)
         msg = '{} data for host {}'.format(field, uuid)
 
     except Exception as e:
@@ -1443,26 +1429,25 @@ def usage_statistics():
             fn.count(Hosts.uuid).alias('hosts_count'),
             fn.min(Hosts.last_seen_on).alias('oldest_query'),
             fn.max(Hosts.last_seen_on).alias('newest_query'),
-            ).dicts().first()
+        ).dicts().first()
 
         installed_packages = HostPackagesStatus.select(
             HostPackagesStatus.install_status,
             fn.count(HostPackagesStatus.id),
-            )\
+        )\
             .group_by(HostPackagesStatus.install_status)\
             .dicts()
 
-
         stats = {
-                    'hosts_count': host_data['hosts_count'],
-                    'oldest_query': host_data['oldest_query'],
-                    'newest_query': host_data['newest_query'],
-                    'packages_count_max': None,
-                    'packages_count_avg': None,
-                    'packages_count_ok': None,
-                    'hosts_count_has_error': None,
-                    'hosts_count_need_upgrade': None,
-                 }
+            'hosts_count': host_data['hosts_count'],
+            'oldest_query': host_data['oldest_query'],
+            'newest_query': host_data['newest_query'],
+            'packages_count_max': None,
+            'packages_count_avg': None,
+            'packages_count_ok': None,
+            'hosts_count_has_error': None,
+            'hosts_count_need_upgrade': None,
+        }
 
     except:
         pass
@@ -1484,39 +1469,39 @@ def host_tasks_status():
     """Proxy the get tasks status action to the client"""
     try:
         uuid = request.args['uuid']
-        timeout = float( request.args.get('timeout',conf['client_tasks_timeout']))
+        timeout = float(request.args.get('timeout', conf['client_tasks_timeout']))
         start_time = time.time()
         host_data = Hosts\
-                    .select(Hosts.uuid,Hosts.computer_fqdn,Hosts.wapt_status,
-                            Hosts.listening_address,
-                            Hosts.listening_port,
-                            Hosts.listening_protocol,
-                            Hosts.listening_timestamp,
-                             )\
-                    .where(Hosts.uuid==uuid)\
-                    .dicts()\
-                    .first(1)
-        if host_data and host_data.get('listening_address',None):
+            .select(Hosts.uuid, Hosts.computer_fqdn, Hosts.wapt_status,
+                    Hosts.listening_address,
+                    Hosts.listening_port,
+                    Hosts.listening_protocol,
+                    Hosts.listening_timestamp,
+                    )\
+            .where(Hosts.uuid == uuid)\
+            .dicts()\
+            .first(1)
+        if host_data and host_data.get('listening_address', None):
             result = []
 
             def result_callback(data):
                 result.append(data)
 
-            socketio.emit('get_tasks_status',request.args, room = host_data['listening_address'],callback=result_callback)
+            socketio.emit('get_tasks_status', request.args, room=host_data['listening_address'], callback=result_callback)
 
             print('waiting...')
             wait_loop = timeout * 20
             while not result:
-                wait_loop -=1
+                wait_loop -= 1
                 if wait_loop < 0:
-                    raise EWaptTimeoutWaitingForResult('Timeout, client did not send result within %s s'%timeout)
+                    raise EWaptTimeoutWaitingForResult('Timeout, client did not send result within %s s' % timeout)
                 socketio.sleep(0.05)
 
             msg = 'Tasks status for %s' % host_data['computer_fqdn']
             return make_response(result[0]['result'],
                                  msg=msg,
                                  success=True,
-                                 request_time = time.time() - start_time,
+                                 request_time=time.time() - start_time,
                                  )
         else:
             raise EWaptHostUnreachable('Host not connected, Websocket sid not in database')
@@ -1525,20 +1510,20 @@ def host_tasks_status():
         return make_response_from_exception(e)
 
 
-@app.route('/api/v3/trigger_host_action',methods=['POST'])
+@app.route('/api/v3/trigger_host_action', methods=['POST'])
 @requires_auth
 def trigger_host_action():
     """Proxy some single shot actions to the client using websockets"""
     try:
-        timeout = float(request.args.get('timeout',conf['client_tasks_timeout']))
+        timeout = float(request.args.get('timeout', conf['client_tasks_timeout']))
         action_data = request.get_json()
         if action_data:
-            if isinstance(action_data,list):
+            if isinstance(action_data, list):
                 for action in action_data:
-                    if not action.get('signature',None):
+                    if not action.get('signature', None):
                         raise EWaptBadSignature('One or some actions not signed, not relayed')
             else:
-                if not action_data.get('signature',None):
+                if not action_data.get('signature', None):
                     raise EWaptBadSignature('Action is not signed, not relayed')
         else:
             raise EWaptForbiddden('Invalid action')
@@ -1546,19 +1531,18 @@ def trigger_host_action():
         last_uuid = None
         host = None
 
-
-        if not isinstance(action_data,list):
+        if not isinstance(action_data, list):
             action_data = [action_data]
 
         result = []
         errors = []
         expected_result_count = len(action_data)
-        print "expected %s" % expected_result_count
+        print 'expected %s' % expected_result_count
 
         def result_callback(data):
             print data
             result.append(data)
-            print "now expected %s" % expected_result_count
+            print 'now expected %s' % expected_result_count
 
         last_uuid = None
         hostnames = []
@@ -1566,11 +1550,11 @@ def trigger_host_action():
         for action in action_data:
             uuid = action['uuid']
             if last_uuid != uuid:
-                host = Hosts.select(Hosts.computer_fqdn,Hosts.listening_address).where((Hosts.uuid==uuid) & (Hosts.listening_protocol == 'websockets')).first()
+                host = Hosts.select(Hosts.computer_fqdn, Hosts.listening_address).where((Hosts.uuid == uuid) & (Hosts.listening_protocol == 'websockets')).first()
             if host:
                 if not host.computer_fqdn in hostnames:
                     hostnames.append(host.computer_fqdn)
-                socketio.emit('trigger_host_action',action, room = host.listening_address,callback=result_callback)
+                socketio.emit('trigger_host_action', action, room=host.listening_address, callback=result_callback)
             else:
                 expected_result_count -= 1
                 errors.append('Host %s not connected, Websocket sid not in database' % uuid)
@@ -1587,11 +1571,11 @@ def trigger_host_action():
         if errors and not result:
             raise EWaptHostUnreachable('Targeted host(s) is/are not connected')
 
-        msg = '%s actions launched on %s' % (len(result),','.join(hostnames),)
+        msg = '%s actions launched on %s' % (len(result), ','.join(hostnames),)
         if errors:
-            msg = msg+' Errors for %s hosts' % len(errors)
+            msg = msg + ' Errors for %s hosts' % len(errors)
         print result
-        return make_response([r.get('result',None) for r in result],
+        return make_response([r.get('result', None) for r in result],
                              msg=msg,
                              success=True)
     except Exception as e:
@@ -1603,57 +1587,61 @@ def trigger_host_action():
 @socketio.on('trigger_update_result')
 def on_trigger_update_result(result):
     """Return from update on client"""
-    logger.debug('Trigger Update result : %s (uuid:%s)' %(result,request.args['uuid']))
+    logger.debug('Trigger Update result : %s (uuid:%s)' % (result, request.args['uuid']))
     # send to all waptconsole warching this host.
-    socketio.emit('trigger_update_result',result,room = request.args['uuid'], include_self=False)
+    socketio.emit('trigger_update_result', result, room=request.args['uuid'], include_self=False)
+
 
 @socketio.on('trigger_upgrade_result')
 def on_trigger_upgrade_result(result):
     """Return from the launch of upgrade on a client"""
-    logger.debug('Trigger Upgrade result : %s (uuid:%s)' %(result,request.args['uuid']))
-    socketio.emit('trigger_upgrade_result',result,room = request.args['uuid'], include_self=False)
+    logger.debug('Trigger Upgrade result : %s (uuid:%s)' % (result, request.args['uuid']))
+    socketio.emit('trigger_upgrade_result', result, room=request.args['uuid'], include_self=False)
+
 
 @socketio.on('trigger_install_packages_result')
 def on_trigger_install_packages_result(result):
-    logger.debug('Trigger install result : %s (uuid:%s)' %(result,request.args['uuid']))
-    socketio.emit('trigger_install_packages_result',result,room = request.args['uuid'], include_self=False)
+    logger.debug('Trigger install result : %s (uuid:%s)' % (result, request.args['uuid']))
+    socketio.emit('trigger_install_packages_result', result, room=request.args['uuid'], include_self=False)
+
 
 @socketio.on('trigger_remove_packages_result')
 def on_trigger_remove_packages_result(result):
-    logger.debug('Trigger remove result : %s (uuid:%s)' %(result,request.args['uuid']))
-    socketio.emit('trigger_remove_packages_result',result,room = request.args['uuid'], include_self=False)
+    logger.debug('Trigger remove result : %s (uuid:%s)' % (result, request.args['uuid']))
+    socketio.emit('trigger_remove_packages_result', result, room=request.args['uuid'], include_self=False)
+
 
 @socketio.on('reconnect')
 @socketio.on('connect')
 def on_waptclient_connect():
     try:
-        uuid = request.args.get('uuid',None)
+        uuid = request.args.get('uuid', None)
         host_cert = Hosts.select(Hosts.host_certificate).where(Hosts.uuid == uuid).first()
 
         if host_cert and host_cert.host_certificate:
-            host_certificate = SSLCertificate(crt_string = host_cert.host_certificate)
-            print host_certificate.verify_claim(json.loads(request.args['login']),max_age_secs=60)
+            host_certificate = SSLCertificate(crt_string=host_cert.host_certificate)
+            print host_certificate.verify_claim(json.loads(request.args['login']), max_age_secs=60)
             pass
         else:
             # not registered.
             wapt_db.commit()
             return False
 
-        logger.info('Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
+        logger.info('Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
         # stores sid in database
         hostcount = Hosts.update(
-            server_uuid = get_server_uuid(),
+            server_uuid=get_server_uuid(),
             listening_timestamp=datetime2isodate(),
             listening_protocol='websockets',
             listening_address=request.sid,
             reachable='OK',
-            ).where(Hosts.uuid == uuid).execute()
+        ).where(Hosts.uuid == uuid).execute()
         wapt_db.commit()
 
         wapt_db.close()
         # if not known, reject the connection
         if hostcount == 0:
-            #socketio.disconnect()
+            # socketio.disconnect()
             return False
     except:
         wapt_db.rollback()
@@ -1664,60 +1652,64 @@ def on_waptclient_connect():
 def on_wapt_pong():
     try:
         print('wapt_pong')
-        uuid = request.args.get('uuid',None)
-        logger.info('Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
+        uuid = request.args.get('uuid', None)
+        logger.info('Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
         # stores sid in database
         hostcount = Hosts.update(
-            server_uuid = get_server_uuid(),
+            server_uuid=get_server_uuid(),
             listening_timestamp=datetime2isodate(),
             listening_protocol='websockets',
             listening_address=request.sid,
             reachable='OK',
-            ).where(Hosts.uuid == uuid).execute()
+        ).where(Hosts.uuid == uuid).execute()
         print('sio pong: commit')
         wapt_db.commit()
         # if not known, reject the connection
         if hostcount == 0:
-            #socketio.disconnect()
+            # socketio.disconnect()
             return False
     except:
         wapt_db.rollback()
 
+
 @socketio.on('disconnect')
 def on_waptclient_disconnect():
     try:
-        uuid = request.args.get('uuid',None)
-        logger.info('Socket.IO disconnection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
+        uuid = request.args.get('uuid', None)
+        logger.info('Socket.IO disconnection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
         # clear sid in database
         Hosts.update(
-            server_uuid = None,
+            server_uuid=None,
             listening_timestamp=datetime2isodate(),
             listening_protocol=None,
             listening_address=None,
-            reachable = 'UNREACHABLE',
-            ).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
+            reachable='UNREACHABLE',
+        ).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
         wapt_db.commit()
     except:
         wapt_db.rollback()
 
+
 @socketio.on('join')
 def on_join(data):
-    room = request.args.get('uuid',None)
+    room = request.args.get('uuid', None)
     if room:
         socketio.join_room(room)
 
+
 @socketio.on('leave')
 def on_leave(data):
-    room = request.args.get('uuid',None)
+    room = request.args.get('uuid', None)
     if room:
         socketio.leave_room(room)
 
+
 @socketio.on_error()
 def on_wapt_socketio_error(e):
-    logger.critical('Socket IO : An error has occurred for sid %s, uuid:%s : %s' % (request.sid,request.args.get('uuid',None),repr(e)))
+    logger.critical('Socket IO : An error has occurred for sid %s, uuid:%s : %s' % (request.sid, request.args.get('uuid', None), repr(e)))
 
 
-######### end websockets
+# end websockets
 
 
 #################################################
@@ -1765,19 +1757,19 @@ def install_windows_nssm_service(
         service_binary=service_binary,
         service_parameters=service_parameters
     )
-    logger.info("running command : %s" % cmd)
+    logger.info('running command : %s' % cmd)
     setuphelpers.run(cmd)
 
     # fix some parameters (quotes for path with spaces...
     params = {
-        "Description": "sz:%s" % service_name,
-        "DelayedAutostart": 1,
-        "DisplayName": "sz:%s" % service_name,
-        "AppStdout": r"expand_sz:{}".format(service_logfile),
-        "Parameters\\AppStderr": r"expand_sz:{}".format(service_logfile),
-        "Parameters\\AppParameters": r'expand_sz:{}'.format(service_parameters),
-        "Parameters\\AppNoConsole":1,
-        }
+        'Description': 'sz:%s' % service_name,
+        'DelayedAutostart': 1,
+        'DisplayName': 'sz:%s' % service_name,
+        'AppStdout': r'expand_sz:{}'.format(service_logfile),
+        'Parameters\\AppStderr': r'expand_sz:{}'.format(service_logfile),
+        'Parameters\\AppParameters': r'expand_sz:{}'.format(service_parameters),
+        'Parameters\\AppNoConsole': 1,
+    }
 
     root = setuphelpers.HKEY_LOCAL_MACHINE
     base = r'SYSTEM\CurrentControlSet\services\%s' % service_name
@@ -1805,7 +1797,7 @@ def install_windows_nssm_service(
             service_name=service_name,
             service_dependencies=service_dependencies
         )
-        logger.info("running command : %s" % cmd)
+        logger.info('running command : %s' % cmd)
         setuphelpers.run(cmd)
 
         #fullpath = base+'\\' + 'DependOnService'
@@ -1902,10 +1894,10 @@ def install_windows_service():
                 'apache-win32',
                 'bin',
                 'httpd.exe'))
-        service_parameters = ""
+        service_parameters = ''
         service_logfile = os.path.join(log_directory, 'nssm_apache.log')
         install_windows_nssm_service(
-            "WAPTApache",
+            'WAPTApache',
             service_binary,
             service_parameters,
             service_logfile)
@@ -1922,7 +1914,7 @@ def install_windows_service():
     else:
         service_dependencies = ''
     install_windows_nssm_service(
-        "WAPTServer",
+        'WAPTServer',
         service_binary,
         service_parameters,
         service_logfile,
@@ -1930,7 +1922,7 @@ def install_windows_service():
 
 
 ##############
-if __name__ == "__main__":
+if __name__ == '__main__':
     usage = """\
     %prog [-c configfile] [--devel] [action]
 
@@ -1944,15 +1936,15 @@ if __name__ == "__main__":
 
     parser = OptionParser(usage=usage, version='waptserver.py ' + __version__)
     parser.add_option(
-        "-c",
-        "--config",
-        dest="configfile",
+        '-c',
+        '--config',
+        dest='configfile',
         default=DEFAULT_CONFIG_FILE,
-        help="Config file full path (default: %default)")
+        help='Config file full path (default: %default)')
     parser.add_option(
-        "-l",
-        "--loglevel",
-        dest="loglevel",
+        '-l',
+        '--loglevel',
+        dest='loglevel',
         default=None,
         type='choice',
         choices=[
@@ -1962,18 +1954,18 @@ if __name__ == "__main__":
             'error',
             'critical'],
         metavar='LOGLEVEL',
-        help="Loglevel (default: warning)")
+        help='Loglevel (default: warning)')
     parser.add_option(
-        "-d",
-        "--devel",
-        dest="devel",
+        '-d',
+        '--devel',
+        dest='devel',
         default=False,
         action='store_true',
-        help="Enable debug mode (for development only)")
+        help='Enable debug mode (for development only)')
     parser.add_option(
-        "-w",
-        "--without-apache",
-        dest="without_apache",
+        '-w',
+        '--without-apache',
+        dest='without_apache',
         default=False,
         action='store_true',
         help="Don't install Apache http server for wapt (service WAPTApache)")
@@ -1984,7 +1976,7 @@ if __name__ == "__main__":
     utils_set_devel_mode(options.devel)
 
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
-    setloglevel(logger,conf['loglevel'])
+    setloglevel(logger, conf['loglevel'])
 
     if options.loglevel is not None:
         setloglevel(logger, options.loglevel)
@@ -1995,7 +1987,7 @@ if __name__ == "__main__":
     if not os.path.exists(log_directory):
         os.mkdir(log_directory)
 
-    if platform.system()=='Linux':
+    if platform.system() == 'Linux':
         hdlr = logging.handlers.SysLogHandler('/dev/log')
     else:
         hdlr = logging.FileHandler(os.path.join(log_directory, 'waptserver.log'))
@@ -2004,27 +1996,13 @@ if __name__ == "__main__":
         logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
     logger.addHandler(hdlr)
 
-    # Setup initial directories
+    # check wapt directories
     if os.path.exists(conf['wapt_folder']) == False:
-        try:
-            os.makedirs(conf['wapt_folder'])
-        except:
-            raise Exception(
-                _("Folder missing : {}.").format(
-                    conf['wapt_folder']))
+        raise Exception('Folder missing : %s.' % conf['wapt_folder'])
     if os.path.exists(conf['wapt_folder'] + '-host') == False:
-        try:
-            os.makedirs(conf['wapt_folder'] + '-host')
-        except:
-            raise Exception(
-                _("Folder missing : {}-host.").format(conf['wapt_folder']))
-
-    if os.path.exists(conf['wapt_folder'] + '-hostref') == False:
-        try:
-            os.makedirs(conf['wapt_folder'] + '-hostref')
-        except:
-            raise Exception(
-                _("Folder missing : {}-hostref.").format(conf['wapt_folder']))
+        raise Exception('Folder missing : %s-host.' % conf['wapt_folder'])
+    if os.path.exists('%s-hostref' % conf['wapt_folder']) == False:
+        raise Exception('Folder missing : %s-hostref.' % conf['wapt_folder'])
 
     if args and args[0] == 'doctest':
         import doctest
@@ -2046,13 +2024,13 @@ if __name__ == "__main__":
         try:
             logger.info('Reset connections SID for former hosts on this server')
             hosts_count = Hosts.update(
-                    reachable = 'UNKNOWN',
-                    server_uuid=None,
-                    listening_protocol=None,
-                    listening_address=None,
-                ).where(
-                    (Hosts.listening_protocol=='websockets') & (Hosts.server_uuid == get_server_uuid())
-                ).execute()
+                reachable='UNKNOWN',
+                server_uuid=None,
+                listening_protocol=None,
+                listening_address=None,
+            ).where(
+                (Hosts.listening_protocol == 'websockets') & (Hosts.server_uuid == get_server_uuid())
+            ).execute()
             wapt_db.commit()
             break
         except Exception as e:
@@ -2063,8 +2041,8 @@ if __name__ == "__main__":
     if not wapt_db.is_closed():
         wapt_db.close()
 
-    if options.devel==True:
-        socketio.run(app,host='0.0.0.0', port=port, debug=options.devel,use_reloader=options.devel)
+    if options.devel == True:
+        socketio.run(app, host='0.0.0.0', port=port, debug=options.devel, use_reloader=options.devel)
     else:
-        socketio.run(app,host='127.0.0.1', port=port, debug=options.devel,use_reloader=options.devel)
+        socketio.run(app, host='127.0.0.1', port=port, debug=options.devel, use_reloader=options.devel)
     logger.info('Waptserver stopped')

@@ -20,20 +20,25 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.10"
+__version__ = '1.5.0.10'
 
-import os,sys
+import os
+import sys
 try:
-    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
-sys.path.insert(0,os.path.join(wapt_root_dir))
-sys.path.insert(0,os.path.join(wapt_root_dir,'lib'))
-sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
+sys.path.insert(0, os.path.join(wapt_root_dir))
+sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
+sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 
 import ConfigParser
 import tempfile
+import logging
+
+logger = logging.getLogger('waptserver')
+
 
 _defaults = {
     'client_tasks_timeout': 5,
@@ -41,24 +46,25 @@ _defaults = {
     'loglevel': 'warning',
     'secret_key': 'NOT DEFINED',
     'server_uuid': '',
-    'wapt_folder': os.path.join(wapt_root_dir, 'waptserver','repository','wapt'),
-    'wapt_huey_db': os.path.join(tempfile.gettempdir(),'wapthuey.db'),
+    'wapt_folder': os.path.join(wapt_root_dir, 'waptserver', 'repository', 'wapt'),
+    'wapt_huey_db': os.path.join(tempfile.gettempdir(), 'wapthuey.db'),
     'wapt_password': '',
     'wapt_user': 'admin',
     'waptserver_port': 8080,
     'waptservice_port': 8088,
-    'waptwua_folder': '', # default: wapt_folder + 'wua'
-    'db_name':'wapt',
-    'db_host':None,
-    'db_user':None,
-    'db_password':None,
-    'db_max_connections':100,
-    'db_stale_timeout':300,
-    'use_kerberos':False,
-    'max_clients':4096,
+    'waptwua_folder': '',  # default: wapt_folder + 'wua'
+    'db_name': 'wapt',
+    'db_host': None,
+    'db_user': None,
+    'db_password': None,
+    'db_max_connections': 100,
+    'db_stale_timeout': 300,
+    'use_kerberos': False,
+    'max_clients': 4096,
 }
 
 _default_config_file = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
+
 
 def load_config(cfgfile=_default_config_file):
 
@@ -75,7 +81,7 @@ def load_config(cfgfile=_default_config_file):
         raise Exception("FATAL : couldn't open configuration file : {}.".format(cfgfile))
 
     if not _config.has_section('options'):
-        raise Exception("FATAL, configuration file {} has no section [options]. Please check the waptserver documentation.".format(cfgfile))
+        raise Exception('FATAL, configuration file {} has no section [options]. Please check the waptserver documentation.'.format(cfgfile))
 
     if _config.has_option('options', 'client_tasks_timeout'):
         conf['client_tasks_timeout'] = int(_config.get('options', 'client_tasks_timeout'))
@@ -87,10 +93,20 @@ def load_config(cfgfile=_default_config_file):
         conf['loglevel'] = _config.get('options', 'loglevel')
 
     if _config.has_option('options', 'secret_key'):
-        conf['secret_key'] = _config.get('options','secret_key')
+        secret_key = _config.get('options', 'secret_key')
+        if secret_key is None or len(secret_key) < 32:
+            msg = 'incorrect secret_key value %s in waptserver.ini, please run postconf.py again (missing or too short)' % secret_key
+            logger.error(msg)
+            raise Exception(msg)
+        conf['secret_key'] = secret_key
 
     if _config.has_option('options', 'server_uuid'):
-        conf['server_uuid'] = _config.get('options', 'server_uuid')
+        server_uuid = _config.get('options', 'server_uuid')
+        if server_uuid is None or len(server_uuid) != 36:
+            msg = 'incorrect server_uuid value %s in waptserver.ini, please run postconf.py again (missing or len!=36)' % server_uuid
+            logger.error(msg)
+            raise Exception(msg)
+        conf['server_uuid'] = server_uuid
 
     if _config.has_option('options', 'wapt_folder'):
         conf['wapt_folder'] = _config.get('options', 'wapt_folder').rstrip('/')
@@ -116,16 +132,15 @@ def load_config(cfgfile=_default_config_file):
     if not conf['waptwua_folder']:
         conf['waptwua_folder'] = conf['wapt_folder'] + 'wua'
 
-    for param in ('db_name','db_host','db_user','db_password'):
+    for param in ('db_name', 'db_host', 'db_user', 'db_password'):
         if _config.has_option('options', param):
             conf[param] = _config.get('options', param)
 
-    for param in ('db_max_connections','db_stale_timeout','max_clients'):
+    for param in ('db_max_connections', 'db_stale_timeout', 'max_clients'):
         if _config.has_option('options', param):
             conf[param] = _config.getint('options', param)
 
     if _config.has_option('options', 'use_kerberos'):
         conf['use_kerberos'] = _config.getboolean('options', 'use_kerberos')
-
 
     return conf

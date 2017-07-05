@@ -77,5 +77,6 @@ fi
 systemctl daemon-reload
 mkdir -p /var/www/html/wapt
 mkdir -p /var/www/html/wapt-host
+mkdir -p /var/www/html/wapt-hostref
 chown -R wapt:nginx /var/www/html/*
 
