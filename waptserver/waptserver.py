@@ -1999,11 +1999,11 @@ if __name__ == '__main__':
     logger.addHandler(hdlr)
 
     # check wapt directories
-    if os.path.exists(conf['wapt_folder']) == False:
+    if not os.path.exists(conf['wapt_folder']):
         raise Exception('Folder missing : %s.' % conf['wapt_folder'])
-    if os.path.exists(conf['wapt_folder'] + '-host') == False:
+    if not os.path.exists(conf['wapt_folder'] + '-host'):
         raise Exception('Folder missing : %s-host.' % conf['wapt_folder'])
-    if os.path.exists('%s-hostref' % conf['wapt_folder']) == False:
+    if not os.path.exists('%s-hostref' % conf['wapt_folder']):
         raise Exception('Folder missing : %s-hostref.' % conf['wapt_folder'])
 
     if args and args[0] == 'doctest':
@@ -2043,7 +2043,7 @@ if __name__ == '__main__':
     if not wapt_db.is_closed():
         wapt_db.close()
 
-    if options.devel == True:
+    if options.devel:
         socketio.run(app, host='0.0.0.0', port=port, debug=options.devel, use_reloader=options.devel)
     else:
         socketio.run(app, host='127.0.0.1', port=port, debug=options.devel, use_reloader=options.devel)
