@@ -226,7 +226,7 @@ def setup_firewall():
         output = run('firewall-cmd --list-ports')
         if '443/tcp' in output and '80/tcp' in output:
             print("firewall already configured, skipping firewalld configuration")
-            return 
+            return
         if subprocess.call(['firewall-cmd', '--state'], stdout=open(os.devnull, 'w')) == 0:
             run('firewall-cmd --permanent --add-port=443/tcp')
             run('firewall-cmd --permanent --add-port=80/tcp')
@@ -283,7 +283,7 @@ def check_if_deb_installed(package_name):
 def main():
     global wapt_folder,MONGO_SVC,APACHE_SVC, NGINX_GID
 
-    
+
     parser = OptionParser(usage=usage, version='waptserver.py ' + __version__)
     parser.add_option(
         "-k",
@@ -316,8 +316,10 @@ def main():
             run('setsebool -P httpd_setrlimit on')
             run('semanage fcontext -a -t httpd_sys_content_t "/wapt(/.*)?"')
             run('semanage fcontext -a -t httpd_sys_content_t "/wapt-host(/.*)?"')
+            run('semanage fcontext -a -t httpd_sys_content_t "/wapt-hostref(/.*)?"')
             run('restorecon -R -v /var/www/html/wapt')
             run('restorecon -R -v /var/www/html/wapt-host')
+            run('restorecon -R -v /var/www/html/wapt-hostref')
             postconf.msgbox('SELinux correctly configured for Nginx reverse proxy')
 
     if not os.path.isfile('/opt/wapt/conf/waptserver.ini'):
@@ -411,8 +413,8 @@ def main():
     postconf.msgbox("Press ok to start waptserver")
     enable_waptserver()
     start_waptserver()
- 
-    
+
+
     # In this new version Apache is replaced with Nginx? Proceed to disable Apache. After migration one can remove Apache install altogether
     try:
         print(subprocess.check_output('systemctl stop %s' % APACHE_SVC, shell=True))
@@ -422,7 +424,7 @@ def main():
         print(subprocess.check_output('systemctl disable %s' % APACHE_SVC, shell=True))
     except:
         pass
- 
+
 
     reply = postconf.yesno("Do you want to configure nginx?")
     if reply == postconf.DIALOG_OK:
@@ -438,7 +440,7 @@ def main():
                 exit(1)
             else:
                 fqdn = reply
-            
+
             dh_filename = '/etc/ssl/certs/dhparam.pem'
             if not os.path.exists(dh_filename):
                 print (subprocess.check_output('openssl dhparam -out %s  2048' % dh_filename , shell=True))
