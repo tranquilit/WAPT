@@ -2024,6 +2024,7 @@ class WaptHostRepo(WaptRepo):
     def __init__(self,url=None,name='wapt-host',verify_cert=None,proxies=None,timeout = None,dnsdomain=None,host_id=None,cabundle=None,config=None,host_key=None):
         self._host_id = None
         self.host_key = None
+        self._host_package_content = None
         WaptRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,proxies =proxies,timeout = timeout,dnsdomain=dnsdomain,cabundle=cabundle,config=config)
         self.host_id = host_id
 
@@ -2080,6 +2081,7 @@ class WaptHostRepo(WaptRepo):
         if value != self._host_id:
             self._packages = None
             self._packages_date = None
+            self._host_package_content = None
             self._index = {}
         self._host_id = value
 
@@ -2100,12 +2102,14 @@ class WaptHostRepo(WaptRepo):
             if not content.startswith(zipfile.stringFileHeader):
                 # try to decrypt package data
                 if self.host_key:
-                    content = self.host_key.decrypt_fernet(content)
+                    self._host_package_content = self.host_key.decrypt_fernet(content)
                 else:
                     raise EWaptNotAPackage('Package for %s does not look like a Zip file and no key is available to try to decrypt it'%self.host_id)
+            else:
+                self._host_package_content = content
 
             # Packages file is a zipfile with one Packages file inside
-            with ZipFile(StringIO.StringIO(content)) as zip:
+            with ZipFile(StringIO.StringIO(self._host_package_content)) as zip:
                 control_data = \
                         codecs.decode(zip.read(name='WAPT/control'),'UTF-8').splitlines()
                 package = PackageEntry().load_control_from_wapt(control_data)
@@ -2133,6 +2137,24 @@ class WaptHostRepo(WaptRepo):
 
         except requests.HTTPError as e:
             logger.info(u'No host package available at %s' % host_package_url)
+
+    def download_packages(self,package_requests,target_dir=None,usecache=True,printhook=None):
+        """
+        """
+        if not isinstance(package_requests,(list,tuple)):
+            package_requests = [ package_requests ]
+        if not target_dir:
+            target_dir = tempfile.mkdtemp()
+        downloaded = []
+        errors = []
+        for pe in self.packages:
+            if pe == package_requests[0]:
+                pfn = os.path.join(target_dir,self.host_id+'.wapt')
+                with open(pfn,'wb') as package_zip:
+                    package_zip.write(self._host_package_content)
+                pe.localpath = pfn
+                downloaded.append(pfn)
+        return {"downloaded":[pfn],"skipped":[],"errors":[],"packages":self._packages}
 
     @property
     def repo_url(self):
@@ -3832,6 +3854,7 @@ class Wapt(object):
         skipped = []
         errors = []
         packages = []
+
         for p in package_requests:
             if isinstance(p,str) or isinstance(p,unicode):
                 mp = self.waptdb.packages_matching(p)
@@ -3849,61 +3872,33 @@ class Wapt(object):
         for entry in packages:
             self.check_cancelled()
 
-            packagefilename = entry.filename
-            download_url = entry.repo_url+'/'+packagefilename
-            fullpackagepath = os.path.join(self.package_cache_dir,packagefilename)
-            skip = False
-            if os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath)>0 and usecache:
-                # check version
+            def report(received,total,speed,url):
+                self.check_cancelled()
                 try:
-                    cached = PackageEntry()
-                    cached.load_control_from_wapt(fullpackagepath,calc_md5=True)
-                    if entry == cached:
-                        if entry.md5sum == cached.md5sum:
-                            skipped.append(fullpackagepath)
-                            logger.info(u"  Use cached package file from " + fullpackagepath)
-                            skip = True
-                            entry.localpath = cached.localpath
-                        else:
-                            logger.critical(u"Cached file MD5 doesn't match MD5 found in packages index. Discarding cached file")
-                            os.remove(fullpackagepath)
-                except Exception as e:
-                    # error : reload
-                    logger.debug(u'Cache file %s is corrupted, reloading it. Error : %s' % (fullpackagepath,e) )
-
-            if not skip:
-                logger.info(u"  Downloading package from %s" % download_url)
-                try:
-                    def report(received,total,speed,url):
-                        self.check_cancelled()
-                        try:
-                            if total>1:
-                                stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
-                                print(stat)
-                            else:
-                                stat = ''
-                            self.runstatus='Downloading %s : %s' % (entry.package,stat)
-                        except:
-                            self.runstatus='Downloading %s' % (entry.package,)
-
-                    if not printhook:
-                        printhook = report
-
-                    self.runstatus='Downloading %s' % download_url
-                    if self.use_http_proxy_for_repo:
-                        curr_proxies = self.proxies
+                    if total>1:
+                        stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
+                        print(stat)
                     else:
-                        curr_proxies = {'http':None,'https':None}
-                    entry.localpath = setuphelpers.wget( download_url, self.package_cache_dir,proxies=curr_proxies,printhook = printhook)
-                    downloaded.append(fullpackagepath)
-                    self.runstatus=''
-                except Exception as e:
-                    self.runstatus=''
-                    if os.path.isfile(fullpackagepath):
-                        os.remove(fullpackagepath)
-                    logger.critical(u"Error downloading package from http repository, please update... error : %s" % ensure_unicode(e))
-                    errors.append((download_url,"%s" % ensure_unicode(e)))
+                        stat = ''
+                    self.runstatus='Downloading %s : %s' % (entry.package,stat)
+                except:
+                    self.runstatus='Downloading %s' % (entry.package,)
+
+            if not printhook:
+                printhook = report
+
+            self.get_repo(entry.repo).download_packages(entry,
+                target_dir=self.package_cache_dir,
+                usecache=usecache,
+                printhook=printhook)
+
         return {"downloaded":downloaded,"skipped":skipped,"errors":errors,"packages":packages}
+
+    def get_repo(self,repo_name):
+        for r in self.repositories:
+            if r.name == repo_name:
+                return r
+        return None
 
     def remove(self,packages_list,force=False):
         """Removes a package giving its package name, unregister from local status DB
@@ -4020,7 +4015,7 @@ class Wapt(object):
     def host_packagename(self):
         """Return package name for current computer"""
         #return "%s" % (setuphelpers.get_hostname().lower())
-        return "%s" % (self.host_uuid(),)
+        return "%s" % (self.host_uuid,)
 
     def check_host_package_outdated(self):
         """Check and return the host package if available and not installed"""
@@ -5015,7 +5010,7 @@ class Wapt(object):
 
     def make_host_template(self,packagename='',depends=None,conflicts=None,directoryname=None,description=None):
         if not packagename:
-            packagename = setuphelpers.get_hostname().lower()
+            packagename = self.host_packagename()
         return self.make_group_template(packagename=packagename,depends=depends,conflicts=conflicts,directoryname=directoryname,section='host',description=description)
 
     def make_group_template(self,packagename='',depends=None,conflicts=None,directoryname=None,section='group',description=None):
@@ -5038,7 +5033,7 @@ class Wapt(object):
              directoryname = os.path.abspath(directoryname)
 
         if not packagename:
-            packagename = setuphelpers.get_hostname().lower()
+            packagename = self.host_packagename()
 
         if not directoryname:
             directoryname = self.get_default_development_dir(packagename,section=section)
