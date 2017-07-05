@@ -512,18 +512,19 @@ def upload_host():
         files = request.files.keys()
         logger.info('Upload of %s host packages'%len(files))
         for fkey in files:
-            file = request.files[fkey]
+            hostpackagefile = request.files[fkey]
             logger.debug('uploading host file : %s' % fkey)
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
+            if hostpackagefile and allowed_file(hostpackagefile.filename):
+                filename = secure_filename(hostpackagefile.filename)
                 wapt_host_folder = os.path.join(conf['wapt_folder']+'-host')
                 tmp_target = os.path.join(wapt_host_folder, filename+'.tmp')
                 target = os.path.join(wapt_host_folder, filename)
-                file.save(tmp_target)
+                hostpackagefile.save(tmp_target)
                 if os.path.isfile(tmp_target):
                     try:
                         # try to read attributes...
-                        entry = PackageEntry().load_control_from_wapt(tmp_target)
+                        entry = PackageEntry(waptfile = tmp_target)
+                        # TODO : save depends to DB
                         if os.path.isfile(target):
                             os.unlink(target)
                         os.rename(tmp_target,target)
@@ -533,8 +534,6 @@ def upload_host():
                             os.unlink(tmp_target)
                         raise
         spenttime = time.time() - starttime
-        if done:
-            data = update_packages(wapt_host_folder)
         print spenttime
         return make_response(result=done,msg=_('%s Host packages uploaded').format(len(done)),request_time = spenttime)
 
@@ -612,26 +611,29 @@ def reload_config():
     except Exception as e:
         logger.critical('Unable to reload server config : %s' % repr(e))
 
-@app.route('/login',methods=['POST'])
-def login():
-    config_file = app.config['CONFIG_FILE']
+@app.route('/api/v3/change_password',methods=['POST'])
+@requires_auth
+def change_passsword():
     try:
-        if request.method == 'POST':
-            d = request.get_json()
-            if "username" in d and "password" in d:
-                if check_auth(d["username"], d["password"]):
-                    if "newPass" in d:
-                        new_hash = pbkdf2_sha256.hash(d["newPass"].encode('utf8'))
-                        rewrite_config_item(config_file, 'options', 'wapt_password', new_hash)
-                        conf['wapt_password'] = new_hash
-                        reload_config()
-                    return "True"
-            return "False"
+        config_file = app.config['CONFIG_FILE']
+        post_data = request.get_json();
+        if "username" in post_data and "password" in post_data:
+            if check_auth(post_data["username"], post_data["password"]):
+                if "new_password" in post_data:
+                    new_hash = pbkdf2_sha256.hash(d["post_data"].encode('utf8'))
+                    rewrite_config_item(config_file, 'options', 'wapt_password', new_hash)
+                    conf['wapt_password'] = new_hash
+                    reload_config()
+                    msg = 'Password for %s updated successfully' % post_data["username"]
+                else:
+                    raise EWaptMissingParameter('Missing parameter')
+            else:
+                raise EWaptAuthenticationFailure('Bad user or password')
         else:
-            return "Unsupported method"
-    except:
-        e = sys.exc_info()
-        return str(e)
+            raise EWaptMissingParameter('Missing parameter')
+        return make_response(result=result, msg=msg, status=200)
+    except Exception as e:
+        return make_response_from_exception(e)
 
 
 def allowed_file(filename):
