@@ -657,17 +657,23 @@ def login():
     try:
         # TODO use session...
         post_data = request.get_json();
+        auth_token = 'TODO'
         if 'user' in post_data and 'password' in post_data:
             if check_auth(post_data['user'], post_data['password']):
                 result = dict(
-                        token = '',
+                        auth_token = auth_token,
                         server_uuid = get_server_uuid(),
                         version = __version__,
                     )
         else:
             raise EWaptMissingParameter('Missing parameter')
-        return make_response(result=msg, msg=msg, status=200)
+        session['auth_token'] = auth_token
+        msg='Authentication OK'
+        return make_response(result=result, msg=msg, status=200)
     except Exception as e:
+        if 'auth_token' in session:
+            session['auth_token']
+        msg = 'Authentication failed'
         return make_response_from_exception(e)
 
 

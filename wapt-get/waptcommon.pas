@@ -119,7 +119,7 @@ const
 
   WaptServerUser: AnsiString ='admin';
   WaptServerPassword: Ansistring ='';
-  WaptServerToken: AnsiString ='';
+  WaptServerAuthToken: AnsiString ='';
   WaptServerUUID: AnsiString ='';
 
   HttpProxy:AnsiString = '';

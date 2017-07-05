@@ -1786,29 +1786,25 @@ end;
 
 procedure TVisWaptGUI.ActChangePasswordExecute(Sender: TObject);
 var
-  cred,resp:ISuperObject;
+  cred,sores:ISuperObject;
 begin
   with TvisChangePassword.Create(self) do
   try
     if ShowModal = mrOk then
     begin
       cred := SO();
-      cred.S['username'] := waptServerUser;
+      cred.S['user'] := waptServerUser;
       cred.S['password'] := UTF8Decode(WaptServerPassword);
-      cred.S['newPass'] := UTF8Decode(EdNewPassword1.Text);
+      cred.S['new_password'] := UTF8Decode(EdNewPassword1.Text);
       try
-        resp := WAPTServerJsonPost('login', [], cred);
-        try
-          if not StrToBool(resp.AsString) then
-            ShowMessage(rsIncorrectPassword)
-          else
-          begin
-            waptServerPassword := EdNewPassword1.Text;
-            ShowMessage(rsPasswordChangeSuccess);
-          end;
-        except
-          ShowMessage(UTF8Encode(resp.AsString));
-        end;
+        sores := WAPTServerJsonPost('api/v3/change_password', [], cred);
+        if sores.B['success'] then
+        begin
+          waptServerPassword := EdNewPassword1.Text;
+          ShowMessage(rsPasswordChangeSuccess);
+        end
+        else
+          ShowMessageFmt(rsPasswordChangeError, [UTF8Encode(sores.S['msg'])]);
       except
         on E: Exception do
           ShowMessageFmt(rsPasswordChangeError, [UTF8Encode(E.Message)]);
@@ -3529,32 +3525,32 @@ begin
       edUser.Text:= WaptServerUser;
       if ShowModal = mrOk then
       begin
+        waptServerUser := edUser.Text;
+        waptServerPassword := edPassword.Text;
         cred := SO();
-        cred.S['user'] := edUser.Text;
-        cred.S['password'] := UTF8Decode(edPassword.Text);
+        cred.S['user'] := waptServerUser;
+        cred.S['password'] := UTF8Decode(waptServerPassword);
         sores := WAPTServerJsonPost('api/v3/login', [],cred);
         if sores.B['success'] then
         begin
-          waptServerUser := edUser.Text;
-          waptServerPassword := edPassword.Text;
-          waptServerToken := sores['result'].S['token'];
+          waptServerAuthToken := sores['result'].S['auth_token'];
           waptServerUUID := sores['result'].S['server_uuid'];
           Result := True;
           if (CompareVersion(sores['result'].S['version'],WAPTServerMinVersion)<0) then
             ShowMessageFmt(rsWaptServerOldVersion,[sores['result'].S['version'],WAPTServerMinVersion]);
-
+          break;
         end
         else
         begin
           waptServerPassword := '';
-          waptServerToken := '';
+          waptServerAuthToken := '';
           Result := False;
         end
       end
       else
       begin
         waptServerPassword := '';
-        waptServerToken := '';
+        waptServerAuthToken := '';
         Result := False;
         break;
       end
