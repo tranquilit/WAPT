@@ -1363,42 +1363,23 @@ def get_hosts():
         if 'reachable' in request.args and (request.args['reachable'] == '1'):
             query = query & (Hosts.reachable == 'OK')
 
+        if 'groups' in request.args:
+            groups = ensure_list(request.args.get('groups', ''))
+            in_group = HostGroups.select(HostGroups.host).where(HostGroups.group_name == groups)
+            query = query & (Hosts.uuid << in_group )
+
         if not_filter:
             query = ~ query
 
         limit = int(request.args.get('limit', 1000))
 
-        groups = ensure_list(request.args.get('groups', ''))
 
         result = []
         req = Hosts.select(*build_fields_list(Hosts, {col: 1 for col in columns})).limit(limit).order_by(SQL('last_seen_on desc NULLS LAST')).dicts().dicts()
         if query:
             req = req.where(query)
 
-        if ('depends' in columns) or len(groups) > 0:
-            hosts_packages_repo = WaptLocalRepo(conf['wapt_folder'] + '-host')
-            packages_repo = WaptLocalRepo(conf['wapt_folder'])
-
-            for host in req:
-                if host.get('computer_fqdn', None):
-                    host_package = hosts_packages_repo.get(
-                        host.get('computer_fqdn', None),
-                        None)
-                    if host_package:
-                        depends = ensure_list(host_package.depends.split(','))
-                        host['depends'] = [d for d in depends
-                                           if (d in packages_repo and packages_repo[d].section == 'group')]
-                    else:
-                        depends = []
-                else:
-                    depends = []
-
-                if not groups or list(set(groups) & set(depends)):
-                    result.append(host)
-                else:
-                    continue
-        else:
-            result = list(req)
+        result = list(req)
 
         if 'uuid' in request.args:
             if len(result) == 0:
