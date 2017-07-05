@@ -115,10 +115,10 @@ if (not check_if_package_is_installed('python-virtualenv')
     or not check_if_package_is_installed('openldap-devel')
     ):
     print ("""
-##############################################
+######################################################################################
      Please install build time packages first:
-        yum install -y python-virtualenv gcc
-##############################################
+        yum install -y python-virtualenv gcc libffi-devel openssl-devel openldap-devel
+######################################################################################
 """)
     sys.exit(1)
 
