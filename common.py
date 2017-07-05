@@ -2021,28 +2021,30 @@ class WaptRepo(WaptRemoteRepo):
 class WaptHostRepo(WaptRepo):
     """Dummy http repository for host packages"""
 
-    def __init__(self,url=None,name='wapt-host',verify_cert=None,proxies=None,timeout = None,dnsdomain=None,hostname=None,cabundle=None,config=None):
-        self._hostname = None
+    def __init__(self,url=None,name='wapt-host',verify_cert=None,proxies=None,timeout = None,dnsdomain=None,host_id=None,cabundle=None,config=None,host_key=None):
+        self._host_id = None
+        self.host_key = None
         WaptRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,proxies =proxies,timeout = timeout,dnsdomain=dnsdomain,cabundle=cabundle,config=config)
-
-        if hostname is None:
-            self.hostname = setuphelpers.get_hostname()
+        if host_id is None:
+            self.host_id = setuphelpers.get_hostname()
         else:
-            self.hostname = hostname
+            self.host_id = host_id
+        if host_key:
+            self.host_key = host_key
 
     def host_package_url(self):
-        return  "%s/%s.wapt" % (self.repo_url,self.hostname)
+        return  "%s/%s.wapt" % (self.repo_url,self.host_id)
 
     def is_available(self):
         logger.debug(u'Checking availability of %s' % (self.name))
         try:
             host_package_url = self.host_package_url()
-            logger.debug(u'Trying to get  host package for %s at %s' % (self.hostname,host_package_url))
+            logger.debug(u'Trying to get  host package for %s at %s' % (self.host_id,host_package_url))
             host_package = requests.head(host_package_url,proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,headers=default_http_headers())
             host_package.raise_for_status()
             return httpdatetime2isodate(host_package.headers.get('last-modified',None))
         except requests.HTTPError as e:
-            logger.info(u'No host package available at this time for %s on %s' % (self.hostname,self.name))
+            logger.info(u'No host package available at this time for %s on %s' % (self.host_id,self.name))
             return None
 
     def load_config(self,config,section=None):
@@ -2072,16 +2074,16 @@ class WaptHostRepo(WaptRepo):
         return self
 
     @property
-    def hostname(self):
-        return self._hostname
+    def host_id(self):
+        return self._host_id
 
-    @hostname.setter
-    def hostname(self,value):
-        if value != self._hostname:
+    @host_id.setter
+    def host_id(self,value):
+        if value != self._host_id:
             self._packages = None
             self._packages_date = None
             self._index = {}
-        self._hostname = value
+        self._host_id = value
 
     def _load_packages_index(self):
         self._packages = []
@@ -2091,13 +2093,21 @@ class WaptHostRepo(WaptRepo):
             raise EWaptException('URL for WaptHostRepo repository %s is empty. Either add a wapt-host section in ini, or add a _%s._tcp.%s SRV record' % (self.name,self.name,self.dnsdomain))
         try:
             host_package_url = self.host_package_url()
-            logger.debug(u'Trying to get  host package for %s at %s' % (self.hostname,host_package_url))
+            logger.debug(u'Trying to get  host package for %s at %s' % (self.host_id,host_package_url))
             host_package = requests.get(host_package_url,proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,headers=default_http_headers())
             host_package.raise_for_status()
             self._packages_date = httpdatetime2isodate(host_package.headers.get('last-modified',None))
+            content = host_package.content
+
+            if not content.startswith(zipfile.stringFileHeader):
+                # try to decrypt package data
+                if self.host_key:
+                    content = self.host_key.decrypt(content)
+                else:
+                    raise EWaptNotAPackage('Package for %s does not look like a Zip file and no key is avalable to try to decrypt it')
 
             # Packages file is a zipfile with one Packages file inside
-            with ZipFile(StringIO.StringIO(host_package.content)) as zip:
+            with ZipFile(StringIO.StringIO(content)) as zip:
                 control_data = \
                         codecs.decode(zip.read(name='WAPT/control'),'UTF-8').splitlines()
                 package = PackageEntry().load_control_from_wapt(control_data)
@@ -2152,9 +2162,9 @@ class WaptHostRepo(WaptRepo):
 
     def __repr__(self):
         try:
-            return '<WaptHostRepo %s for domain %s>' % (self.repo_url,self.dnsdomain)
+            return '<WaptHostRepo %s for domain %s and host_id %s >' % (self.repo_url,self.dnsdomain,self.host_id)
         except:
-            return '<WaptHostRepo %s for domain %s>' % ('unknown',self.dnsdomain)
+            return '<WaptHostRepo %s for domain %s and host id %s >' % ('unknown',self.dnsdomain,self.host_id)
 
 
 ######################"""
@@ -2528,7 +2538,7 @@ class Wapt(object):
             section = 'wapt-host'
         else:
             section = None
-        host_repo = WaptHostRepo(name='wapt-host',config=self.config)
+        host_repo = WaptHostRepo(name='wapt-host',config=self.config,host_id=self.host_packagename(),host_key=self.get_host_key())
         self.repositories.append(host_repo)
         if host_repo.cabundle is None:
             host_repo.cabundle = self.cabundle
@@ -5381,7 +5391,7 @@ class Wapt(object):
                 remove_depends.append(d)
 
         # create a temporary repo for this host
-        host_repo = WaptHostRepo(name='wapt-host',hostname=hostname,config = self.config)
+        host_repo = WaptHostRepo(name='wapt-host',host_id=hostname,config = self.config)
         entry = host_repo.get(hostname)
         if entry:
             host_repo.download_packages(entry)
