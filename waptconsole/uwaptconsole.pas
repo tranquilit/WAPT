@@ -2353,7 +2353,7 @@ begin
     uuids := TSuperobject.create(stArray);
     uuids.AsArray.Add(uuid);
 
-    result := EditHost(hostname, AdvancedMode, ApplyUpdatesImmediately, UTF8Encode(desc));
+    result := EditHost(uuid, AdvancedMode, ApplyUpdatesImmediately, UTF8Encode(desc));
     if (result<>Nil) and ApplyUpdatesImmediately and (uuid<>'')  then
       result := TriggerActionOnHosts(uuids,'trigger_host_upgrade',Nil,rsUpgradingHost,rsErrorLaunchingUpgrade);
 

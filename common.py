@@ -2025,10 +2025,8 @@ class WaptHostRepo(WaptRepo):
         self._host_id = None
         self.host_key = None
         WaptRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,proxies =proxies,timeout = timeout,dnsdomain=dnsdomain,cabundle=cabundle,config=config)
-        if host_id is None:
-            self.host_id = setuphelpers.get_hostname()
-        else:
-            self.host_id = host_id
+        self.host_id = host_id
+
         if host_key:
             self.host_key = host_key
 
@@ -2102,9 +2100,9 @@ class WaptHostRepo(WaptRepo):
             if not content.startswith(zipfile.stringFileHeader):
                 # try to decrypt package data
                 if self.host_key:
-                    content = self.host_key.decrypt(content)
+                    content = self.host_key.decrypt_fernet(content)
                 else:
-                    raise EWaptNotAPackage('Package for %s does not look like a Zip file and no key is avalable to try to decrypt it')
+                    raise EWaptNotAPackage('Package for %s does not look like a Zip file and no key is available to try to decrypt it'%self.host_id)
 
             # Packages file is a zipfile with one Packages file inside
             with ZipFile(StringIO.StringIO(content)) as zip:
@@ -4021,7 +4019,8 @@ class Wapt(object):
 
     def host_packagename(self):
         """Return package name for current computer"""
-        return "%s" % (setuphelpers.get_hostname().lower())
+        #return "%s" % (setuphelpers.get_hostname().lower())
+        return "%s" % (self.host_uuid(),)
 
     def check_host_package_outdated(self):
         """Check and return the host package if available and not installed"""
@@ -5391,7 +5390,7 @@ class Wapt(object):
                 remove_depends.append(d)
 
         # create a temporary repo for this host
-        host_repo = WaptHostRepo(name='wapt-hostref',host_id=hostname,config = self.config)
+        host_repo = WaptHostRepo(name='wapt-host',host_id=hostname,config = self.config,host_key = self.get_host_key())
         entry = host_repo.get(hostname)
         if entry:
             host_repo.download_packages(entry)

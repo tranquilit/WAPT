@@ -1153,6 +1153,7 @@ class SSLCertificate(object):
         """Encrypt content with fernet symetric algo
             create a fernet key, encrypt it using RSA
             encrypt data using fernet key
+            return bytes with header, encrypted fernet key, and encrypted fernet data
 
         fernet :  128-bit AES in CBC mode and PKCS7 padding, with HMAC using SHA256 for authentication
 
