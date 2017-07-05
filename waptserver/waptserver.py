@@ -624,7 +624,7 @@ def change_passsword():
         if "username" in post_data and "password" in post_data:
             if check_auth(post_data["username"], post_data["password"]):
                 if "new_password" in post_data:
-                    new_hash = pbkdf2_sha256.hash(d["post_data"].encode('utf8'))
+                    new_hash = pbkdf2_sha256.hash(post_data["new_password"].encode('utf8'))
                     rewrite_config_item(config_file, 'options', 'wapt_password', new_hash)
                     conf['wapt_password'] = new_hash
                     reload_config()
@@ -635,7 +635,7 @@ def change_passsword():
                 raise EWaptAuthenticationFailure('Bad user or password')
         else:
             raise EWaptMissingParameter('Missing parameter')
-        return make_response(result=result, msg=msg, status=200)
+        return make_response(result=msg, msg=msg, status=200)
     except Exception as e:
         return make_response_from_exception(e)
 
