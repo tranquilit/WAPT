@@ -53,7 +53,7 @@ from passlib.hash import pbkdf2_sha256
 from peewee import *
 from playhouse.postgres_ext import *
 
-from waptserver_model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs
+from waptserver_model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups
 from waptserver_model import get_db_version, init_db, wapt_db, model_to_dict, dict_to_model, update_host_data
 from waptserver_model import upgrade_db_structure
 
@@ -511,31 +511,57 @@ def upload_host():
             if hostpackagefile and allowed_file(hostpackagefile.filename):
                 filename = secure_filename(hostpackagefile.filename)
                 wapt_host_folder = os.path.join(conf['wapt_folder'] + '-host')
-                ref_target = os.path.join(conf['wapt_folder'] + '-hostref', filename)
                 target = os.path.join(wapt_host_folder, filename)
                 tmp_target = tempfile.mktemp(prefix='wapt')
-                hostpackagefile.save(ref_target)
-                try:
-                    # try to read attributes...
-                    entry = PackageEntry(waptfile=ref_target)
-                    host_id = entry.package
-                    host = Hosts.select(Hosts.host_certificate).where((Hosts.uuid == host_id) | (Hosts.computer_fqdn == host_id)).dicts().first()
-                    if host and host['host_certificate'] is not None:
-                        host_cert = SSLCertificate(crt_string=host['host_certificate'])
-                        package_data = open(ref_target, 'rb').read()
-                        with open(tmp_target, 'wb') as encrypted_package:
-                            encrypted_package.write(host_cert.encrypt_fernet(package_data))
-                    else:
-                        package_data = open(ref_target, 'rb').read()
-                        with open(tmp_target, 'wb') as unencrypted_package:
-                            unencrypted_package.write(package_data)
-                    if os.path.isfile(target):
-                        os.unlink(target)
-                    os.rename(tmp_target, target)
-                    done.append(filename)
-                except Exception as e:
-                    logger.critical('Error uploading package %s: %s' % (filename, e))
-                    errors.append(filename)
+                with wapt_db.atomic():
+                    try:
+
+                        # if encrypted host packages, store the clear copy in a protected area for further edit...
+                        if conf['encrypt_host_packages']:
+                            ref_target = os.path.join(conf['wapt_folder'] + '-hostref', filename)
+                            hostpackagefile.save(ref_target)
+                            entry = PackageEntry(waptfile=ref_target)
+                        else:
+                            # write directly clear zip to tmp_targert
+                            hostpackagefile.save(tmp_target)
+                            entry = PackageEntry(waptfile=tmp_target)
+
+                        host_id = entry.package
+
+                        # insert /delete depends as groups
+                        depends = [ s.strip() for s in entry.depends.split(',')]
+                        old_groups = [h['group_name']  for h in HostGroups.select(HostGroups.group_name).where(HostGroups.host == host_id).dicts()]
+                        to_delete = [g for g in old_groups if not g in depends]
+                        to_add = [g for g in depends if not g in old_groups]
+                        HostGroups.delete().where( (HostGroups.host == host_id) & (HostGroups.group_name.in_(to_delete)))
+                        HostGroups.insert_many([dict(uuid=host_id,group_name=group) for group in to_add])
+
+                        # get host cert to encrypt package with public key
+                        if conf['encrypt_host_packages']:
+                            host = Hosts.select(Hosts.uuid,Hosts.computer_fqdn,Hosts.host_certificate) \
+                                .where((Hosts.uuid == host_id) | (Hosts.computer_fqdn == host_id)) \
+                                .dicts().first()
+
+                            # write encrypted package content
+                            with open(tmp_target, 'wb') as encrypted_package:
+                                package_data = open(ref_target, 'rb').read()
+                                if host and host['host_certificate'] is not None:
+                                    host_cert = SSLCertificate(crt_string=host['host_certificate'])
+                                    encrypted_package.write(host_cert.encrypt_fernet(package_data))
+                                else:
+                                    encrypted_package.write(package_data)
+
+                        if os.path.isfile(target):
+                            os.unlink(target)
+                        os.rename(tmp_target, target)
+
+                        done.append(filename)
+                        wapt_db.commit()
+
+                    except Exception as e:
+                        wapt_db.rollback()
+                        logger.critical('Error uploading package %s: %s' % (filename, e))
+                        errors.append(filename)
         spenttime = time.time() - starttime
         return make_response(result=dict(done=done, errors=errors), msg=_('%s Host packages uploaded, %s errors').format(len(done), len(errors)), request_time=spenttime)
 

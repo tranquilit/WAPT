@@ -61,6 +61,7 @@ _defaults = {
     'db_stale_timeout': 300,
     'use_kerberos': False,
     'max_clients': 4096,
+    'encrypt_host_packages':False,
 }
 
 _default_config_file = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')

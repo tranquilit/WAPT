@@ -770,7 +770,7 @@ def main():
             elif action == 'edit-host':
                 if len(args) == 1:
                     print(u"Using current host fqdn %s" % setuphelpers.get_hostname())
-                    result = mywapt.edit_host(hostname=setuphelpers.get_hostname(),target_directory='')
+                    result = mywapt.edit_host(hostname=mywapt.host_packagename(),target_directory='')
                 elif len(args) >= 3:
                     result = mywapt.edit_host(hostname=args[1],
                                               append_depends=args[2],target_directory='')
