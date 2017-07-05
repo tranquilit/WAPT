@@ -55,7 +55,7 @@ def add_symlink(link_target, link_name):
     if link_target.startswith('/'):
         link_target = link_target[1:]
     relative_link_target_path = os.path.join('builddir', link_target)
-    print("adding symlink %s -> %s" % (link_name, relative_link_target_path))
+    print('adding symlink %s -> %s' % (link_name, relative_link_target_path))
     mkdir_p(os.path.dirname(relative_link_target_path))
 
     if not os.path.exists(relative_link_target_path):
@@ -87,11 +87,11 @@ wapt_source_dir = os.path.abspath('../..')
 source_dir = os.path.abspath('..')
 
 if platform.system() != 'Linux':
-    print("this script should be used on debian linux", file=sys.stderr)
+    print('this script should be used on debian linux', file=sys.stderr)
     sys.exit(1)
 
 if len(sys.argv) > 2:
-    print("wrong number of parameters (0 or 1)", file=sys.stderr)
+    print('wrong number of parameters (0 or 1)', file=sys.stderr)
     sys.exit(1)
 
 deb_revision = None
@@ -114,7 +114,7 @@ if new_umask != old_umask:
 for line in open('%s/waptserver.py' % source_dir):
     if line.strip().startswith('__version__'):
         wapt_version = line.split('=')[
-            1].strip().replace('"', '').replace("'", "")
+            1].strip().replace('"', '').replace("'", '')
 
 if not wapt_version:
     print(u'version not found in %s/waptserver.py' %
@@ -123,20 +123,20 @@ if not wapt_version:
 
 control_file = './builddir/DEBIAN/control'
 
-for filename in glob.glob("tis-waptserver*.deb"):
-    print("Removing %s" % filename, file=sys.stderr)
+for filename in glob.glob('tis-waptserver*.deb'):
+    print('Removing %s' % filename, file=sys.stderr)
     os.remove(filename)
 
-if os.path.exists("builddir"):
-    shutil.rmtree("builddir")
+if os.path.exists('builddir'):
+    shutil.rmtree('builddir')
 
 print('creating the package tree', file=sys.stderr)
-mkdir_p("builddir/DEBIAN")
-mkdir_p("builddir/opt/wapt/conf")
-mkdir_p("builddir/opt/wapt/lib")
-mkdir_p("builddir/opt/wapt/log")
-mkdir_p("builddir/opt/wapt/lib/site-packages")
-mkdir_p("builddir/opt/wapt/waptserver")
+mkdir_p('builddir/DEBIAN')
+mkdir_p('builddir/opt/wapt/conf')
+mkdir_p('builddir/opt/wapt/lib')
+mkdir_p('builddir/opt/wapt/log')
+mkdir_p('builddir/opt/wapt/lib/site-packages')
+mkdir_p('builddir/opt/wapt/waptserver')
 
 # for some reason the virtualenv does not build itself right if we don't
 # have pip systemwide...
@@ -180,7 +180,7 @@ add_symlink('./opt/wapt/wapt-scanpackages.py', './usr/bin/wapt-scanpackages')
 
 print('copying the waptserver files', file=sys.stderr)
 rsync(source_dir, './builddir/opt/wapt/',
-      excludes=['apache-win32', 'mongodb', 'postconf', 'repository', 'rpm', 'uninstall-services.bat', 'deb'])
+      excludes=['apache-win32', 'mongodb', 'postconf', 'repository', 'rpm', 'uninstall-services.bat', 'deb', 'spnego-http-auth-nginx-module'])
 for lib in ('dialog.py', 'pefile.py'):
     rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),
           './builddir/opt/wapt/lib/site-packages/')
@@ -195,7 +195,7 @@ subprocess.check_output(
 subprocess.check_output(
     r'find ./builddir/opt/wapt/ -type d -exec chmod 755 {} \;', shell=True)
 
-print("copying systemd startup script", file=sys.stderr)
+print('copying systemd startup script', file=sys.stderr)
 systemd_build_dest_dir = './builddir/usr/lib/systemd/system/'
 try:
     mkdir_p(systemd_build_dest_dir)
@@ -204,7 +204,7 @@ except Exception as e:
     print (sys.stderr, 'error: \n%s' % e, file=sys.stderr)
     exit(1)
 
-print("copying logrotate script /etc/logrotate.d/waptserver", file=sys.stderr)
+print('copying logrotate script /etc/logrotate.d/waptserver', file=sys.stderr)
 try:
     mkdir_p('./builddir/etc/logrotate.d/')
     shutil.copyfile('../scripts/waptserver-logrotate',
@@ -215,7 +215,7 @@ except Exception as e:
     print('error: \n%s' % e, file=sys.stderr)
     exit(1)
 
-print("copying logrotate script /etc/rsyslog.d/waptserver.conf",
+print('copying logrotate script /etc/rsyslog.d/waptserver.conf',
       file=sys.stderr)
 try:
     mkdir_p('./builddir/etc/rsyslog.d/')
@@ -230,7 +230,7 @@ except Exception as e:
 add_symlink('opt/wapt/waptserver/scripts/postconf.py', '/usr/bin/wapt-serverpostconf')
 os.chmod('./builddir/opt/wapt/waptserver/scripts/postconf.py', 0o755)
 
-print("copying nginx-related goo", file=sys.stderr)
+print('copying nginx-related goo', file=sys.stderr)
 try:
     apache_dir = './builddir/opt/wapt/waptserver/apache/'
     mkdir_p(apache_dir + '/ssl')
