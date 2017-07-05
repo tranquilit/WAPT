@@ -188,6 +188,10 @@ def requires_auth(f):
     def decorated(*args, **kwargs):
         auth = request.authorization
 
+        if session.get('user') != '':
+            logger.debug('connection from user %s ' % session.get('user'))
+            return f(*args, **kwargs)
+
         if not auth:
             logger.info('no credential given')
             return authenticate()
@@ -534,9 +538,9 @@ def upload_host():
                         to_delete = [g for g in old_groups if not g in depends]
                         to_add = [g for g in depends if not g in old_groups]
                         if to_delete:
-                            HostGroups.delete().where( (HostGroups.host == host_id) & (HostGroups.group_name.in_(to_delete))).execute()
+                            HostGroups.delete().where((HostGroups.host == host_id) & (HostGroups.group_name.in_(to_delete))).execute()
                         if to_add:
-                            HostGroups.insert_many([dict(host=host_id,group_name=group) for group in to_add]).execute()
+                            HostGroups.insert_many([dict(host=host_id, group_name=group) for group in to_add]).execute()
 
                         # get host cert to encrypt package with public key
                         if conf['encrypt_host_packages']:
@@ -566,10 +570,10 @@ def upload_host():
                         errors.append(filename)
 
         spenttime = time.time() - starttime
-        return make_response(success = len(errors) == 0,
-            result=dict(done=done, errors=errors),
-            msg=_('{} Host packages uploaded, {} errors').format(len(done), len(errors)),
-            request_time=spenttime)
+        return make_response(success=len(errors) == 0,
+                             result=dict(done=done, errors=errors),
+                             msg=_('{} Host packages uploaded, {} errors').format(len(done), len(errors)),
+                             request_time=spenttime)
 
     except Exception as e:
         return make_response_from_exception(e, status='201')
@@ -671,29 +675,52 @@ def change_passsword():
         return make_response_from_exception(e)
 
 
+@app.route('/login', methods=['POST', 'GET'])
 @app.route('/api/v3/login', methods=['POST'])
 def login():
-    try:
-        # TODO use session...
-        post_data = request.get_json()
-        auth_token = 'TODO'
-        if 'user' in post_data and 'password' in post_data:
-            if check_auth(post_data['user'], post_data['password']):
-                result = dict(
-                    auth_token=auth_token,
-                    server_uuid=get_server_uuid(),
-                    version=__version__,
-                )
-        else:
-            raise EWaptMissingParameter('Missing parameter')
-        session['auth_token'] = auth_token
-        msg = 'Authentication OK'
-        return make_response(result=result, msg=msg, status=200)
-    except Exception as e:
-        if 'auth_token' in session:
-            session['auth_token']
-        msg = 'Authentication failed'
-        return make_response_from_exception(e)
+    error = ''
+    if request.method == 'POST':
+        try:
+            # TODO use session...
+            post_data = request.get_json()
+            if post_data is not None:
+                # json auth from waptconsole
+                user = post_data['user']
+                password = post_data['password']
+            else:
+                # html form auth
+                user = request.form['user']
+                password = request.form['password']
+
+            auth_token = 'TODO'
+            # TODO : sanity check on username
+            if not bool(re.match('[a-z0-9]+[a-z0-9-]+[a-z0-9]+$', login, re.IGNORECASE)):
+                msg = 'login must be alphanumeric with a dash'
+                raise Exception(msg)
+
+            if user is not None and password is not None:
+                if check_auth(user, password):
+                    result = dict(
+                        auth_token=auth_token,
+                        server_uuid=get_server_uuid(),
+                        version=__version__,
+                    )
+                    session['user'] = user
+
+            else:
+                raise EWaptMissingParameter('Missing parameter')
+            #session['auth_token'] = auth_token
+            msg = 'Authentication OK'
+            return make_response(result=result, msg=msg, status=200)
+        except Exception as e:
+            if 'auth_token' in session:
+                session['auth_token']
+            msg = 'Authentication failed'
+            logger.debug(traceback.print_exc())
+            return make_response_from_exception(e)
+    else:
+
+        return render_template('login.html', error=error)
 
 
 def allowed_file(filename):
