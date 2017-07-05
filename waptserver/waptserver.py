@@ -507,9 +507,10 @@ def upload_host():
             logger.debug('uploading host file : %s' % fkey)
             if hostpackagefile and allowed_file(hostpackagefile.filename):
                 filename = secure_filename(hostpackagefile.filename)
-                wapt_host_folder = os.path.join(conf['wapt_folder'] + '-hostref')
-                ref_target = os.path.join(wapt_host_folder, filename)
+                wapt_host_folder = os.path.join(conf['wapt_folder']+'-host')
+                ref_target = os.path.join(conf['wapt_folder']+'-hostref',filename)
                 target = os.path.join(wapt_host_folder, filename)
+                tmp_target = tempfile.mktemp(prefix='wapt')
                 hostpackagefile.save(ref_target)
                 try:
                     # try to read attributes...
@@ -518,15 +519,16 @@ def upload_host():
                     host = Hosts.select(Hosts.host_certificate).where((Hosts.uuid == host_id) | (Hosts.computer_fqdn == host_id)).dicts().first()
                     if host and host['host_certificate'] is not None:
                         host_cert = SSLCertificate(crt_string=host['host_certificate'])
-                        if os.path.isfile(target):
-                            os.unlink(target)
-                        package_data = open(ref_target, 'rb').read()
-                        with open(target, 'wb') as encrypted_package:
-                            encrypted_package.write(host_cert.encrypt(package_data))
+                        package_data = open(ref_target,'rb').read()
+                        with open(tmp_target,'wb') as encrypted_package:
+                            encrypted_package.write(host_cert.encrypt_fernet(package_data))
                     else:
-                        package_data = open(ref_target, 'rb').read()
-                        with open(target, 'wb') as unencrypted_package:
-                            unencrypted_package.write(host_cert.encrypt(package_data))
+                        package_data = open(ref_target,'rb').read()
+                        with open(tmp_target,'wb') as unencrypted_package:
+                            unencrypted_package.write(package_data)
+                    if os.path.isfile(target):
+                        os.unlink(target)
+                    os.rename(tmp_target,target)
                     done.append(filename)
                 except Exception as e:
                     logger.critical('Error uploading package %s: %s' % (filename, e))

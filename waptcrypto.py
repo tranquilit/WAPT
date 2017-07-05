@@ -38,6 +38,7 @@ from cryptography.hazmat.primitives.asymmetric import padding,utils,rsa,Asymmetr
 from cryptography.x509.extensions import ExtensionNotFound
 from cryptography.x509.verification import CertificateVerificationContext, InvalidCertificate, InvalidSigningCertificate
 from cryptography.x509.verification import CertificateRevocationListVerificationContext, InvalidCertificateRevocationList
+from cryptography.fernet import Fernet
 
 from OpenSSL import crypto
 from OpenSSL import SSL
@@ -620,6 +621,31 @@ class SSLPrivateKey(object):
             label=None)
         return self.rsa.decrypt(content,apadding)
 
+    def decrypt_fernet(self,crypted_data):
+        """Decrypt bytes which has been crypted by SSLCertificate.encrypt_fernet
+            the fernet symetric key is decrypted using RSA
+            payload is decrypted using fernet key
+
+        Args:
+            crypted_data (bytes) : starts with 'RSAFERNET', then rsa key length (base10) on 3 chars
+                                   then rsa encrypted fernet key, then fernet encrypted data
+        Returns:
+            bytes : decrypted data
+        """
+        pos = 0
+        head_signature = 'RSAFERNET'
+        pos += len(head_signature)
+        head = crypted_data[0:pos]
+        if head != head_signature:
+            raise EWaptCryptoException('Bad encrypted data, header not found')
+        key_length = int(crypted_data[pos:pos+3])
+        pos += 3
+        rsa_symkey = crypted_data[pos:pos+key_length]
+        fernet_key = self.decrypt(rsa_symkey)
+        pos += key_length
+        f = Fernet(fernet_key,default_backend())
+        return f.decrypt(crypted_data[pos:])
+
     @property
     def modulus(self):
         return format(self.rsa.private_numbers().public_numbers.n, "x")
@@ -1116,12 +1142,31 @@ class SSLCertificate(object):
             raise ValueError('Can not compare SSLCertificate with %s'%(type(crt)))
 
     def encrypt(self,content):
-        """Encrypt a message will can be decrypted with the public key"""
+        """Encrypt a (small) message will can be decrypted with the public key"""
         apadding = padding.OAEP(
             mgf=padding.MGF1(algorithm=hashes.SHA1()),
             algorithm=hashes.SHA1(),
             label=None)
         return self.rsa.encrypt(content,apadding)
+
+    def encrypt_fernet(self,content):
+        """Encrypt content with fernet symetric algo
+            create a fernet key, encrypt it using RSA
+            encrypt data using fernet key
+
+        fernet :  128-bit AES in CBC mode and PKCS7 padding, with HMAC using SHA256 for authentication
+
+        Args:
+            content (bytes) : data to encrypt
+
+        Returns:
+            crypted_data (bytes) : starts with 'RSAFERNET', then rsa key length (base10) on 3 chars
+                                   then rsa encrypted fernet key, then fernet encrypted data
+        """
+        symkey = Fernet.generate_key()
+        rsa_symkey = self.encrypt(symkey)
+        f = Fernet(symkey)
+        return 'RSAFERNET%03d%s%s' % (len(rsa_symkey),rsa_symkey,f.encrypt(str(content)))
 
     @property
     def extensions(self):

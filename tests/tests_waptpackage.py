@@ -652,8 +652,20 @@ def test_update_packages():
     print cabundle._certificates
     print cabundle.crls
 
+def test_fernet_encrypt():
+    data = open(__file__,'rb').read()
+    cert = SSLCertificate('c:/private/htouvet.crt')
+    enc_data = cert.encrypt_fernet(data)
+    print(len(data),len(enc_data))
+
+    key = SSLPrivateKey('c:/private/htouvet.pem')
+    data2 = key.decrypt_fernet(enc_data)
+    print(len(data2))
+    assert(data == data2)
+
 if __name__ == '__main__':
     setup_test()
+    test_fernet_encrypt()
     test_update_packages()
     test_github()
     test_update_crl()
