@@ -5391,7 +5391,7 @@ class Wapt(object):
                 remove_depends.append(d)
 
         # create a temporary repo for this host
-        host_repo = WaptHostRepo(name='wapt-host',host_id=hostname,config = self.config)
+        host_repo = WaptHostRepo(name='wapt-hostref',host_id=hostname,config = self.config)
         entry = host_repo.get(hostname)
         if entry:
             host_repo.download_packages(entry)

@@ -3522,65 +3522,46 @@ begin
       Halt;
   end;
 
-  while not Result do
-  begin
-    with TVisLogin.Create(Self) do
-      try
-        edWaptServerName.Text := GetWaptServerURL;
-        if ShowModal = mrOk then
+  with TVisLogin.Create(Self) do
+    while not result do
+    try
+      edWaptServerName.Text := GetWaptServerURL;
+      edUser.Text:= WaptServerUser;
+      if ShowModal = mrOk then
+      begin
+        cred := SO();
+        cred.S['user'] := edUser.Text;
+        cred.S['password'] := UTF8Decode(edPassword.Text);
+        sores := WAPTServerJsonPost('api/v3/login', [],cred);
+        if sores.B['success'] then
         begin
-          try
-              sores := WAPTServerJsonGet('ping', []);
-              try
-                if sores.B['success'] and (CompareVersion(sores['result'].S['version'],WAPTServerMinVersion)<0) then
-                  ShowMessageFmt(rsWaptServerOldVersion,[sores['result'].S['version'],WAPTServerMinVersion]);
-              except
-                  on E:Exception do
-                    ShowMessageFmt(rsWaptServerOldVersion,[rsUnknownVersion,WAPTServerMinVersion]);
-              end;
-
-          except
-            on E:Exception do
-              ShowMessageFmt(rsWaptServerError,[e.Message]);
-          end;
-          waptServerPassword := edPassword.Text;
           waptServerUser := edUser.Text;
-          cred := SO();
-          cred.S['username'] := waptServerUser;
-          cred.S['password'] := UTF8Decode(WaptServerPassword);
+          waptServerPassword := edPassword.Text;
+          waptServerToken := sores['result'].S['token'];
+          waptServerUUID := sores['result'].S['server_uuid'];
+          Result := True;
+          if (CompareVersion(sores['result'].S['version'],WAPTServerMinVersion)<0) then
+            ShowMessageFmt(rsWaptServerOldVersion,[sores['result'].S['version'],WAPTServerMinVersion]);
 
-          try
-            resp := WAPTServerJsonPost('login', [], cred);
-            try
-              Result := StrToBool(resp.AsString);
-              if not Result then
-                ShowMessage(rsIncorrectPassword);
-            except
-              ShowMessage(UTF8Encode(resp.AsString));
-              Result := False;
-            end;
-          except
-            on E: Exception do
-            begin
-              ShowMessageFmt(rsPasswordChangeError, [UTF8Encode(E.Message)]);
-              Result := False;
-            end;
-          end;
         end
         else
         begin
-          Result := False;
-          Exit;
-        end;
-      finally
-        if not Result then
-        begin
-          waptServerUser := '';
           waptServerPassword := '';
-        end;
-        Free;
-      end;
-  end;
+          waptServerToken := '';
+          Result := False;
+        end
+      end
+      else
+      begin
+        waptServerPassword := '';
+        waptServerToken := '';
+        Result := False;
+        break;
+      end
+    except
+      on E:Exception do
+        ShowMessageFmt(rsWaptServerError,[e.Message]);
+    end;
 end;
 
 procedure TVisWaptGUI.FormShow(Sender: TObject);

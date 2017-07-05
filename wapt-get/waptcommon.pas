@@ -119,6 +119,9 @@ const
 
   WaptServerUser: AnsiString ='admin';
   WaptServerPassword: Ansistring ='';
+  WaptServerToken: AnsiString ='';
+  WaptServerUUID: AnsiString ='';
+
   HttpProxy:AnsiString = '';
   UseProxyForRepo: Boolean = False;
   UseProxyForServer: Boolean = False;
