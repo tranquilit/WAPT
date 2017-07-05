@@ -736,8 +736,6 @@ def delete_package(filename=''):
         if os.path.isfile(fullpath):
             os.unlink(fullpath)
             data = update_packages(conf['wapt_folder'])
-            if os.path.isfile('%s.zsync' % (fullpath,)):
-                os.unlink('%s.zsync' % (fullpath,))
             result = dict(status='OK', message='Package deleted %s' % (fullpath,), result=data)
         else:
             result = dict(status='ERROR', message="The file %s doesn't exist in wapt folder (%s)" % (filename, conf['wapt_folder']))
@@ -1211,9 +1209,6 @@ def hosts_delete():
         msg = []
         result = dict(files=[], records=[])
 
-        hosts_packages_repo = WaptLocalRepo(conf['wapt_folder'] + '-host')
-        packages_repo = WaptLocalRepo(conf['wapt_folder'])
-
         if 'delete_packages' in post_data and post_data['delete_packages']:
             selected = Hosts.select(Hosts.uuid, Hosts.computer_fqdn).where(query)
             for host in selected:
@@ -1221,13 +1216,21 @@ def hosts_delete():
                     dict(
                         uuid=host.uuid,
                         computer_fqdn=host.computer_fqdn))
-                if host.computer_fqdn in hosts_packages_repo:
-                    fn = hosts_packages_repo[host.computer_fqdn].localpath
-                    logger.debug('Trying to remove %s' % fn)
-                    if os.path.isfile(fn):
-                        result['files'].append(fn)
-                        os.remove(fn)
-            update_packages(hosts_packages_repo.localpath)
+                uuid_hostpackage = os.path.join(conf['wapt_folder'] + '-host',host.uuid+'.wapt')
+                fqdn_hostpackage = os.path.join(conf['wapt_folder'] + '-host',host.computer_fqdn+'.wapt')
+
+                if os.path.isfile(uuid_hostpackage):
+                    logger.debug('Trying to remove %s' % uuid_hostpackage)
+                    if os.path.isfile(uuid_hostpackage):
+                        os.remove(uuid_hostpackage)
+                        result['files'].append(uuid_hostpackage)
+
+                if os.path.isfile(fqdn_hostpackage):
+                    logger.debug('Trying to remove %s' % fqdn_hostpackage)
+                    if os.path.isfile(fqdn_hostpackage):
+                        os.remove(fqdn_hostpackage)
+                        result['files'].append(fqdn_hostpackage)
+
             msg.append(
                 '{} files removed from host repository'.format(len(result['files'])))
 
