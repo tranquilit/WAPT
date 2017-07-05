@@ -20,13 +20,13 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.10"
+__version__ = '1.5.0.10'
 
 import os
 import sys
 
 try:
-    wapt_root_dir = os.path.abspath( os.path.join(  os.path.dirname(__file__),'..'))
+    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
@@ -45,10 +45,10 @@ from peewee import *
 from playhouse.postgres_ext import *
 from playhouse.pool import PooledPostgresqlExtDatabase
 
-from playhouse.shortcuts import dict_to_model,model_to_dict
+from playhouse.shortcuts import dict_to_model, model_to_dict
 from playhouse.signals import Model as SignaledModel, pre_save, post_save
 
-from waptutils import ensure_unicode,Version
+from waptutils import ensure_unicode, Version
 from waptserver_utils import setloglevel
 
 import json
@@ -64,33 +64,36 @@ server_config = waptserver_config.load_config()
 import logging
 logger = logging.getLogger()
 
-logger.debug('DB connection pool : %s'%server_config['db_max_connections'])
+logger.debug('DB connection pool : %s' % server_config['db_max_connections'])
 wapt_db = PooledPostgresqlExtDatabase(
-    database = server_config['db_name'],
-    host = server_config['db_host'],
-    user = server_config['db_user'],
-    password = server_config['db_password'],
-    max_connections = server_config['db_max_connections'],
-    stale_timeout =  server_config['db_stale_timeout'])
+    database=server_config['db_name'],
+    host=server_config['db_host'],
+    user=server_config['db_user'],
+    password=server_config['db_password'],
+    max_connections=server_config['db_max_connections'],
+    stale_timeout=server_config['db_stale_timeout'])
 
 
 class BaseModel(SignaledModel):
+
     """A base model that will use our Postgresql database"""
     class Meta:
         database = wapt_db
 
+
 class ServerAttribs(BaseModel):
+
     """key/value registry"""
-    key = CharField(primary_key=True,null=False,index=True)
+    key = CharField(primary_key=True, null=False, index=True)
     value = BinaryJSONField(null=True)
 
     @classmethod
     def dump(cls):
-        for key,value in cls.select(cls.key,cls.value).tuples():
-            print(u"%s: %s" % (key,repr(value)))
+        for key, value in cls.select(cls.key, cls.value).tuples():
+            print(u'%s: %s' % (key, repr(value)))
 
     @classmethod
-    def get_value(cls,key):
+    def get_value(cls, key):
         v = cls.select(cls.value).where(cls.key == key).dicts().first()
         if v:
             return v['value']
@@ -98,23 +101,25 @@ class ServerAttribs(BaseModel):
             return None
 
     @classmethod
-    def set_value(cls,key,value):
+    def set_value(cls, key, value):
         with cls._meta.database.atomic():
             try:
-                cls.create(key=key,value=value)
+                cls.create(key=key, value=value)
             except IntegrityError:
                 cls.update(value=value).where(cls.key == key).execute()
 
+
 class Hosts(BaseModel):
+
     """
     Inventory informations of a host
     """
     # from bios
-    uuid = CharField(primary_key=True,index=True)
+    uuid = CharField(primary_key=True, index=True)
 
     # inventory type data (updated on register)
-    computer_fqdn = CharField(null=True,index=True)
-    description = CharField(null=True,index=True)
+    computer_fqdn = CharField(null=True, index=True)
+    description = CharField(null=True, index=True)
     computer_name = CharField(null=True)
     computer_type = CharField(null=True)  # tower, laptop,etc..
     computer_architecture = CharField(null=True)  # tower, laptop,etc..
@@ -122,26 +127,26 @@ class Hosts(BaseModel):
     productname = CharField(null=True)
     serialnr = CharField(null=True)
 
-    host_certificate = TextField(null=True,help_text='Host public X509 certificate')
+    host_certificate = TextField(null=True, help_text='Host public X509 certificate')
 
     os_name = CharField(null=True)
     os_version = CharField(null=True)
     os_architecture = CharField(null=True)
 
     # frequently updated data from host update_status
-    connected_users = ArrayField(CharField,null=True)
-    connected_ips = ArrayField(CharField,null=True)
-    mac_addresses = ArrayField(CharField,null=True)
-    gateways = ArrayField(CharField,null=True)
-    networks = ArrayField(CharField,null=True)
+    connected_users = ArrayField(CharField, null=True)
+    connected_ips = ArrayField(CharField, null=True)
+    mac_addresses = ArrayField(CharField, null=True)
+    gateways = ArrayField(CharField, null=True)
+    networks = ArrayField(CharField, null=True)
     dnsdomain = CharField(null=True)
 
     # calculated by server when update_status
-    reachable = CharField(20,null=True)
+    reachable = CharField(20, null=True)
 
     # for websockets
     server_uuid = CharField(null=True)
-    listening_protocol = CharField(10,null=True)
+    listening_protocol = CharField(10, null=True)
     # in case of websockets, this stores the sid
     listening_address = CharField(null=True)
     listening_port = IntegerField(null=True)
@@ -162,126 +167,128 @@ class Hosts(BaseModel):
     wmi = BinaryJSONField(null=True)
 
     # audit data
-    created_on = DateTimeField(null=True,default=datetime.datetime.now)
+    created_on = DateTimeField(null=True, default=datetime.datetime.now)
     created_by = DateTimeField(null=True)
-    updated_on = DateTimeField(null=True,default=datetime.datetime.now)
+    updated_on = DateTimeField(null=True, default=datetime.datetime.now)
     updated_by = DateTimeField(null=True)
 
     def __repr__(self):
-        return "<Host fqdn=%s / uuid=%s>"% (self.computer_fqdn,self.uuid)
+        return '<Host fqdn=%s / uuid=%s>' % (self.computer_fqdn, self.uuid)
 
     @classmethod
-    def fieldbyname(cls,fieldname):
+    def fieldbyname(cls, fieldname):
         return cls._meta.fields[fieldname]
 
 
 class HostPackagesStatus(BaseModel):
+
     """
     Stores the status of packages installed on a host
     """
-    host = ForeignKeyField(Hosts,on_delete='CASCADE',on_update='CASCADE')
-    package = CharField(null=True,index=True)
+    host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
+    package = CharField(null=True, index=True)
     version = CharField(null=True)
     architecture = CharField(null=True)
-    locale= CharField(null=True)
+    locale = CharField(null=True)
     maturity = CharField(null=True)
-    section= CharField(null=True)
+    section = CharField(null=True)
     priority = CharField(null=True)
     signer = CharField(null=True)
     signer_fingerprint = CharField(null=True)
     description = TextField(null=True)
-    install_status=CharField(null=True)
-    install_date=CharField(null=True)
+    install_status = CharField(null=True)
+    install_date = CharField(null=True)
     install_output = TextField(null=True)
-    install_params=CharField(null=True)
-    explicit_by=CharField(null=True)
-    repo_url=CharField(max_length=600,null=True)
+    install_params = CharField(null=True)
+    explicit_by = CharField(null=True)
+    repo_url = CharField(max_length=600, null=True)
 
     # audit data
-    created_on = DateTimeField(null=True,default=datetime.datetime.now)
+    created_on = DateTimeField(null=True, default=datetime.datetime.now)
     created_by = DateTimeField(null=True)
-    updated_on = DateTimeField(null=True,default=datetime.datetime.now)
+    updated_on = DateTimeField(null=True, default=datetime.datetime.now)
     updated_by = DateTimeField(null=True)
 
     def __repr__(self):
-        return "<HostPackageStatus uuid=%s packages=%s (%s) install_status=%s>"% (self.id,self.package,self.version,self.install_status)
+        return '<HostPackageStatus uuid=%s packages=%s (%s) install_status=%s>' % (self.id, self.package, self.version, self.install_status)
+
 
 class HostSoftwares(BaseModel):
-    host = ForeignKeyField(Hosts,on_delete='CASCADE',on_update='CASCADE')
-    name = CharField(max_length=2000,null=True,index=True)
-    version = CharField(max_length=1000,null=True)
-    publisher = CharField(max_length=2000,null=True)
-    key = CharField(max_length=600,null=True)
+    host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
+    name = CharField(max_length=2000, null=True, index=True)
+    version = CharField(max_length=1000, null=True)
+    publisher = CharField(max_length=2000, null=True)
+    key = CharField(max_length=600, null=True)
     system_component = CharField(null=True)
-    uninstall_string = CharField(max_length=2000,null=True)
+    uninstall_string = CharField(max_length=2000, null=True)
     install_date = CharField(null=True)
-    install_location = CharField(max_length=2000,null=True)
+    install_location = CharField(max_length=2000, null=True)
 
     # audit data
-    created_on = DateTimeField(null=True,default=datetime.datetime.now)
+    created_on = DateTimeField(null=True, default=datetime.datetime.now)
     created_by = DateTimeField(null=True)
-    updated_on = DateTimeField(null=True,default=datetime.datetime.now)
+    updated_on = DateTimeField(null=True, default=datetime.datetime.now)
     updated_by = DateTimeField(null=True)
 
     def __repr__(self):
-        return "<HostSoftwares uuid=%s name=%s (%s) key=%s>"% (self.uuid,self.name,self.version,self.key)
+        return '<HostSoftwares uuid=%s name=%s (%s) key=%s>' % (self.uuid, self.name, self.version, self.key)
 
 
 class HostGroups(BaseModel):
-    host = ForeignKeyField(Hosts,on_delete='CASCADE',on_update='CASCADE')
-    group_name = CharField(null=False,index=True)
+    host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
+    group_name = CharField(null=False, index=True)
 
     # audit data
-    created_on = DateTimeField(null=True,default=datetime.datetime.now)
+    created_on = DateTimeField(null=True, default=datetime.datetime.now)
     created_by = DateTimeField(null=True)
-    updated_on = DateTimeField(null=True,default=datetime.datetime.now)
+    updated_on = DateTimeField(null=True, default=datetime.datetime.now)
     updated_by = DateTimeField(null=True)
 
     def __repr__(self):
-        return "<HostGroups uuid=%s group_name=%s>"% (self.uuid,self.group_name)
+        return '<HostGroups uuid=%s group_name=%s>' % (self.uuid, self.group_name)
 
 
 class HostJsonRaw(BaseModel):
-    host = ForeignKeyField(Hosts,on_delete='CASCADE',on_update='CASCADE')
+    host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
 
     # audit data
-    created_on = DateTimeField(null=True,default=datetime.datetime.now)
+    created_on = DateTimeField(null=True, default=datetime.datetime.now)
     created_by = DateTimeField(null=True)
-    updated_on = DateTimeField(null=True,default=datetime.datetime.now)
+    updated_on = DateTimeField(null=True, default=datetime.datetime.now)
     updated_by = DateTimeField(null=True)
 
 
 class HostWsus(BaseModel):
-    host = ForeignKeyField(Hosts,on_delete='CASCADE',on_update='CASCADE')
+    host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
     # windows updates
     wsus = BinaryJSONField(null=True)
 
     # audit data
-    created_on = DateTimeField(null=True,default=datetime.datetime.now)
+    created_on = DateTimeField(null=True, default=datetime.datetime.now)
     created_by = DateTimeField(null=True)
-    updated_on = DateTimeField(null=True,default=datetime.datetime.now)
+    updated_on = DateTimeField(null=True, default=datetime.datetime.now)
     updated_by = DateTimeField(null=True)
 
 
-def dictgetpath(adict,pathstr):
+def dictgetpath(adict, pathstr):
     """Iterates a list of path pathstr of the form 'key.subkey.sskey' and returns
         the first occurence in adict which returns not None
     """
-    if not isinstance(pathstr,(list,tuple)):
-        pathstr =[pathstr]
+    if not isinstance(pathstr, (list, tuple)):
+        pathstr = [pathstr]
     for path in pathstr:
         result = adict
         for k in path.split('.'):
-            if isinstance(k,(str,unicode)) and isinstance(result,dict):
+            if isinstance(k, (str, unicode)) and isinstance(result, dict):
                 # assume this level is an object and returns the specified key
                 result = result.get(k)
-            elif isinstance(k,int) and isinstance(result,list) and k<len(result):
+            elif isinstance(k, int) and isinstance(result, list) and k < len(result):
                 # assume this levele is a list and return the n'th item
                 result = result[k]
-            elif k == '*' and isinstance(result,list):
+            elif k == '*' and isinstance(result, list):
                 # assume this level is an array, and iterates all items
                 continue
-            elif isinstance(k,(str,unicode)) and isinstance(result,list):
+            elif isinstance(k, (str, unicode)) and isinstance(result, list):
                 # iterate through a list returning only a key
                 result = [item.get(k) for item in result if item.get(k)]
             else:
@@ -292,32 +299,33 @@ def dictgetpath(adict,pathstr):
             break
     return result
 
-def set_host_field(host,fieldname,data):
+
+def set_host_field(host, fieldname, data):
     # these attributes can be transfered as dict
-    if fieldname in ['installed_softwares','installed_packages']:
+    if fieldname in ['installed_softwares', 'installed_packages']:
         # in case data is transfered as list of tuples instead of list of dict (more compact)
-        if data and isinstance(data[0],list):
+        if data and isinstance(data[0], list):
             rec_data = []
             fieldnames = data[0]
             for rec in data[1:]:
-                r = zip(fieldnames,rec)
+                r = zip(fieldnames, rec)
                 rec_data.append(r)
-            setattr(host,fieldname,rec_data)
+            setattr(host, fieldname, rec_data)
         else:
-            setattr(host,fieldname,data)
+            setattr(host, fieldname, data)
     else:
         # awfull hack for data containing null char, not accepted by postgresql.
-        if fieldname in ('host_info','wmi','dmi'):
+        if fieldname in ('host_info', 'wmi', 'dmi'):
             jsonrepr = json.dumps(data)
             if '\u0000' in jsonrepr:
-                logger.warning('Workaround \\u0000 not handled by postgresql json for host %s field %s' % (getattr(host,'uuid','???'),fieldname))
-                data = json.loads(jsonrepr.replace('\u0000',' '))
+                logger.warning('Workaround \\u0000 not handled by postgresql json for host %s field %s' % (getattr(host, 'uuid', '???'), fieldname))
+                data = json.loads(jsonrepr.replace('\u0000', ' '))
 
-        setattr(host,fieldname,data)
+        setattr(host, fieldname, data)
     return host
 
 
-def update_installed_packages(uuid,installed_packages):
+def update_installed_packages(uuid, installed_packages):
     """Stores packages json data into separate HostPackagesStatus
 
     Args:
@@ -333,14 +341,14 @@ def update_installed_packages(uuid,installed_packages):
     for package in installed_packages:
         package['host'] = uuid
         # filter out all unknown fields from json data for the SQL insert
-        packages.append(dict( [(k,v) for k,v in package.iteritems() if k in HostPackagesStatus._meta.fields] ))
+        packages.append(dict([(k, v) for k, v in package.iteritems() if k in HostPackagesStatus._meta.fields]))
     if packages:
         return HostPackagesStatus.insert_many(packages).execute()
     else:
         return True
 
 
-def update_installed_softwares(uuid,installed_softwares):
+def update_installed_softwares(uuid, installed_softwares):
     """Stores softwares json data into separate HostSoftwares table
 
     Args:
@@ -355,7 +363,7 @@ def update_installed_softwares(uuid,installed_softwares):
     for software in installed_softwares:
         software['host'] = uuid
         # filter out all unknown fields from json data for the SQL insert
-        softwares.append(dict( [(k,v) for k,v in software.iteritems() if k in HostSoftwares._meta.fields] ))
+        softwares.append(dict([(k, v) for k, v in software.iteritems() if k in HostSoftwares._meta.fields]))
     if softwares:
         return HostSoftwares.insert_many(softwares).execute()
     else:
@@ -375,59 +383,59 @@ def update_host_data(data):
         dict : with uuid,computer_fqdn,host_info from db after update
     """
     migrate_map_13_14 = {
-        'packages':None,
-        'installed_packages':None,
-        'softwares':None,
-        'installed_softwares':None,
+        'packages': None,
+        'installed_packages': None,
+        'softwares': None,
+        'installed_softwares': None,
 
-        'update_status':'last_update_status',
-        'host':'host_info',
-        'wapt':'wapt_status',
-        'update_status':'last_update_status',
-        }
+        'update_status': 'last_update_status',
+        'host': 'host_info',
+        'wapt': 'wapt_status',
+        'update_status': 'last_update_status',
+    }
 
     uuid = data['uuid']
     try:
-        existing = Hosts.select(Hosts.uuid,Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
+        existing = Hosts.select(Hosts.uuid, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
         if not existing:
-            logger.debug('Inserting new host %s with fields %s'%(uuid,data.keys()))
+            logger.debug('Inserting new host %s with fields %s' % (uuid, data.keys()))
             # wapt update_status packages softwares host
             newhost = Hosts()
             for k in data.keys():
                 # manage field renaming between 1.3 and >= 1.4
-                target_key = migrate_map_13_14.get(k,k)
-                if target_key and hasattr(newhost,target_key):
-                    set_host_field(newhost,target_key,data[k])
+                target_key = migrate_map_13_14.get(k, k)
+                if target_key and hasattr(newhost, target_key):
+                    set_host_field(newhost, target_key, data[k])
 
             newhost.save(force_insert=True)
         else:
-            logger.debug('Updating %s for fields %s'%(uuid,data.keys()))
+            logger.debug('Updating %s for fields %s' % (uuid, data.keys()))
 
             updhost = Hosts.get(uuid=uuid)
             for k in data.keys():
                 # manage field renaming between 1.3 and >= 1.4
-                target_key = migrate_map_13_14.get(k,k)
-                if target_key and hasattr(updhost,target_key):
-                    set_host_field(updhost,target_key,data[k])
+                target_key = migrate_map_13_14.get(k, k)
+                if target_key and hasattr(updhost, target_key):
+                    set_host_field(updhost, target_key, data[k])
             updhost.save()
 
         # separate tables
         if ('installed_softwares' in data) or ('softwares' in data):
-            installed_softwares = data.get('installed_softwares',data.get('softwares',None))
-            if not update_installed_softwares(uuid,installed_softwares):
+            installed_softwares = data.get('installed_softwares', data.get('softwares', None))
+            if not update_installed_softwares(uuid, installed_softwares):
                 logger.critical('Unable to update installed_softwares for %s' % uuid)
 
         if ('installed_packages' in data) or ('packages' in data):
-            installed_packages = data.get('installed_packages',data.get('packages',None))
-            if not update_installed_packages(uuid,installed_packages):
+            installed_packages = data.get('installed_packages', data.get('packages', None))
+            if not update_installed_packages(uuid, installed_packages):
                 logger.critical('Unable to update installed_packages for %s' % uuid)
 
-        result_query = Hosts.select(Hosts.uuid,Hosts.computer_fqdn)
+        result_query = Hosts.select(Hosts.uuid, Hosts.computer_fqdn)
         return result_query.where(Hosts.uuid == uuid).dicts().dicts().first(1)
 
     except Exception as e:
         logger.warning(traceback.format_exc())
-        logger.critical(u'Error updating data for %s : %s'%(uuid,ensure_unicode(e)))
+        logger.critical(u'Error updating data for %s : %s' % (uuid, ensure_unicode(e)))
         wapt_db.rollback()
         raise e
 
@@ -459,36 +467,36 @@ def wapthosts_json(model_class, instance, created):
     # extract data from json into plain table fields
     if (created or Hosts.host_info in instance.dirty_fields) and instance.host_info:
         extractmap = [
-            ['computer_fqdn','computer_fqdn'],
-            ['computer_name','computer_name'],
-            ['description','description'],
-            ['manufacturer','system_manufacturer'],
-            ['productname','system_productname'],
-            ['os_name','windows_product_infos.version'],
-            ['os_version',('windows_version','windows_product_infos.windows_version')],
-            ['connected_ips','connected_ips'],
-            ['connected_users',('connected_users','current_user')],
-            ['last_loggged_on_user','last_loggged_on_user'],
-            ['mac_addresses','mac'],
-            ['dnsdomain',('dnsdomain','dns_domain')],
-            ['gateways','gateways'],
-            ]
+            ['computer_fqdn', 'computer_fqdn'],
+            ['computer_name', 'computer_name'],
+            ['description', 'description'],
+            ['manufacturer', 'system_manufacturer'],
+            ['productname', 'system_productname'],
+            ['os_name', 'windows_product_infos.version'],
+            ['os_version', ('windows_version', 'windows_product_infos.windows_version')],
+            ['connected_ips', 'connected_ips'],
+            ['connected_users', ('connected_users', 'current_user')],
+            ['last_loggged_on_user', 'last_loggged_on_user'],
+            ['mac_addresses', 'mac'],
+            ['dnsdomain', ('dnsdomain', 'dns_domain')],
+            ['gateways', 'gateways'],
+        ]
 
-        for field,attribute in extractmap:
-            setattr(instance,field,dictgetpath(instance.host_info,attribute))
+        for field, attribute in extractmap:
+            setattr(instance, field, dictgetpath(instance.host_info, attribute))
 
-        instance.os_architecture = 'x64' and instance.host_info.get('win64','?') or 'x86'
+        instance.os_architecture = 'x64' and instance.host_info.get('win64', '?') or 'x86'
 
     if (created or Hosts.dmi in instance.dirty_fields) and instance.dmi:
         extractmap = [
-            ['serialnr','Chassis_Information.Serial_Number'],
-            ['computer_type','Chassis_Information.Type'],
-            ]
-        for field,attribute in extractmap:
-            setattr(instance,field,dictgetpath(instance.dmi,attribute))
+            ['serialnr', 'Chassis_Information.Serial_Number'],
+            ['computer_type', 'Chassis_Information.Type'],
+        ]
+        for field, attribute in extractmap:
+            setattr(instance, field, dictgetpath(instance.dmi, attribute))
 
     if not instance.connected_ips:
-        instance.connected_ips = dictgetpath(instance.host_info,'networking.*.addr')
+        instance.connected_ips = dictgetpath(instance.host_info, 'networking.*.addr')
 
     # update host update status based on update_status json data or packages collection
     if not instance.host_status or created or Hosts.last_update_status in instance.dirty_fields:
@@ -501,11 +509,13 @@ def wapthosts_json(model_class, instance, created):
         if not instance.host_status:
             instance.host_status = 'OK'
 
+
 def get_db_version():
     try:
-        return Version(ServerAttribs.get(key='db_version').value,4)
+        return Version(ServerAttribs.get(key='db_version').value, 4)
     except:
         return None
+
 
 def init_db(drop=False):
     wapt_db.get_conn()
@@ -514,109 +524,110 @@ def init_db(drop=False):
     except:
         wapt_db.rollback()
     if drop:
-        for table in reversed([ServerAttribs,Hosts,HostPackagesStatus,HostSoftwares,HostJsonRaw,HostWsus]):
+        for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostJsonRaw, HostWsus]):
             table.drop_table(fail_silently=True)
-    wapt_db.create_tables([ServerAttribs,Hosts,HostPackagesStatus,HostSoftwares,HostJsonRaw,HostWsus],safe=True)
+    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostJsonRaw, HostWsus], safe=True)
 
-    if get_db_version()==None:
+    if get_db_version() == None:
         # new database install, we setup the db_version key
-        (v,created) = ServerAttribs.get_or_create(key='db_version')
+        (v, created) = ServerAttribs.get_or_create(key='db_version')
         v.value = __version__
         v.save()
 
     if get_db_version() != __version__:
         with wapt_db.atomic():
             upgrade_db_structure()
-            (v,created) = ServerAttribs.get_or_create(key='db_version')
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = __version__
             v.save()
     return get_db_version()
 
+
 def upgrade_db_structure():
     """Upgrade the tables version by version"""
-    from playhouse.migrate import PostgresqlMigrator,migrate
+    from playhouse.migrate import PostgresqlMigrator, migrate
     migrator = PostgresqlMigrator(wapt_db)
-    logger.info('Current DB: %s version: %s' % (wapt_db.connect_kwargs,get_db_version()))
+    logger.info('Current DB: %s version: %s' % (wapt_db.connect_kwargs, get_db_version()))
 
     # from 1.4.1 to 1.4.2
     if get_db_version() < '1.4.2':
         with wapt_db.atomic():
-            logger.info('Migrating from %s to %s' % (get_db_version(),'1.4.2'))
+            logger.info('Migrating from %s to %s' % (get_db_version(), '1.4.2'))
             migrate(
-                migrator.rename_column(Hosts._meta.name,'host','host_info'),
-                migrator.rename_column(Hosts._meta.name,'wapt','wapt_status'),
-                migrator.rename_column(Hosts._meta.name,'update_status','last_update_status'),
+                migrator.rename_column(Hosts._meta.name, 'host', 'host_info'),
+                migrator.rename_column(Hosts._meta.name, 'wapt', 'wapt_status'),
+                migrator.rename_column(Hosts._meta.name, 'update_status', 'last_update_status'),
 
-                migrator.rename_column(Hosts._meta.name,'softwares','installed_softwares'),
-                migrator.rename_column(Hosts._meta.name,'packages','installed_packages'),
+                migrator.rename_column(Hosts._meta.name, 'softwares', 'installed_softwares'),
+                migrator.rename_column(Hosts._meta.name, 'packages', 'installed_packages'),
             )
             HostGroups.create_table(fail_silently=True)
             HostJsonRaw.create_table(fail_silently=True)
             HostWsus.create_table(fail_silently=True)
 
-            (v,created) = ServerAttribs.get_or_create(key='db_version')
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = '1.4.2'
             v.save()
 
     next_version = '1.4.3'
     if get_db_version() < next_version:
         with wapt_db.atomic():
-            logger.info('Migrating from %s to %s' % (get_db_version(),next_version))
+            logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
             if not [c.name for c in wapt_db.get_columns('hosts') if c.name == 'host_certificate']:
                 migrate(
-                    migrator.add_column(Hosts._meta.name,'host_certificate',Hosts.host_certificate),
-                    )
+                    migrator.add_column(Hosts._meta.name, 'host_certificate', Hosts.host_certificate),
+                )
 
-            (v,created) = ServerAttribs.get_or_create(key='db_version')
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
             v.save()
 
     next_version = '1.4.3.1'
     if get_db_version() < next_version:
         with wapt_db.atomic():
-            logger.info('Migrating from %s to %s' % (get_db_version(),next_version))
+            logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
             columns = [c.name for c in wapt_db.get_columns('hosts')]
             opes = []
             if not 'last_logged_on_user' in columns:
-                opes.append(migrator.add_column(Hosts._meta.name,'last_logged_on_user',Hosts.last_logged_on_user))
+                opes.append(migrator.add_column(Hosts._meta.name, 'last_logged_on_user', Hosts.last_logged_on_user))
             if 'installed_sofwares' in columns:
-                opes.append(migrator.drop_column(Hosts._meta.name,'installed_sofwares'))
+                opes.append(migrator.drop_column(Hosts._meta.name, 'installed_sofwares'))
             if 'installed_sofwares' in columns:
-                opes.append(migrator.drop_column(Hosts._meta.name,'installed_packages'))
+                opes.append(migrator.drop_column(Hosts._meta.name, 'installed_packages'))
             migrate(*opes)
 
-            (v,created) = ServerAttribs.get_or_create(key='db_version')
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
             v.save()
 
     next_version = '1.4.3.2'
     if get_db_version() < next_version:
         with wapt_db.atomic():
-            logger.info('Migrating from %s to %s' % (get_db_version(),next_version))
+            logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
             wapt_db.execute_sql('''\
                 ALTER TABLE hostsoftwares
                     ALTER COLUMN publisher TYPE character varying(2000),
                     ALTER COLUMN version TYPE character varying(1000);''')
-            (v,created) = ServerAttribs.get_or_create(key='db_version')
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
             v.save()
 
     next_version = '1.5.0.4'
     if get_db_version() < next_version:
         with wapt_db.atomic():
-            logger.info('Migrating from %s to %s' % (get_db_version(),next_version))
+            logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
             columns = [c.name for c in wapt_db.get_columns('hosts')]
             opes = []
             if not 'server_uuid' in columns:
-                opes.append(migrator.add_column(Hosts._meta.name,'server_uuid',Hosts.server_uuid))
+                opes.append(migrator.add_column(Hosts._meta.name, 'server_uuid', Hosts.server_uuid))
             migrate(*opes)
-            (v,created) = ServerAttribs.get_or_create(key='db_version')
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
             v.save()
 
 
 if __name__ == '__main__':
-    if platform.system != 'Windows' and getpass.getuser()!='wapt':
+    if platform.system != 'Windows' and getpass.getuser() != 'wapt':
         print """you should run this program as wapt:
                      sudo -u wapt python /opt/wapt/waptserver/waptserver_model.py  <action>
                  actions : init_db
@@ -624,16 +635,16 @@ if __name__ == '__main__':
         sys.exit(1)
 
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
-    setloglevel(logger,server_config['loglevel'])
+    setloglevel(logger, server_config['loglevel'])
 
-    if len(sys.argv)>1:
+    if len(sys.argv) > 1:
         print sys.argv[1]
-        if sys.argv[1]=='init_db':
-            print ("initializing missing wapt tables without dropping data.")
+        if sys.argv[1] == 'init_db':
+            print ('initializing missing wapt tables without dropping data.')
             init_db(False)
             sys.exit(0)
-        if sys.argv[1]=='reset_db':
-            print ("Drop existing tables and recreate wapt tables.")
+        if sys.argv[1] == 'reset_db':
+            print ('Drop existing tables and recreate wapt tables.')
             init_db(True)
             sys.exit(0)
     else:

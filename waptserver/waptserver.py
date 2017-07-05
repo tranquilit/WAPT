@@ -42,7 +42,7 @@ monkey_patch()
 
 from flask import request, Flask, Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
 from flask_socketio import SocketIO, disconnect, send, emit
-#from flask_login import LoginManager,login_required,current_user,UserMixin
+# from flask_login import LoginManager,login_required,current_user,UserMixin
 
 import time
 import json
@@ -399,7 +399,8 @@ def update_host():
                             if not authenticated_user:
                                 raise EWaptAuthenticationFailure('add_host : Missing authentication header')
                             if authenticated_user.lower().replace('@', '.') != host_cert.cn.lower():
-                                raise EWaptAuthenticationFailure('add_host : Mismatch between authendtication header %s and Certificate commonName %s' % (authenticated_user, host_cert.cn))
+                                raise EWaptAuthenticationFailure(
+                                    'add_host : Mismatch between authendtication header %s and Certificate commonName %s' % (authenticated_user, host_cert.cn))
                     else:
                         # get certificate from DB to check/authenticate submitted data.
                         existing_host = Hosts.select(Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
@@ -407,9 +408,11 @@ def update_host():
                             if existing_host.host_certificate:
                                 host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
                             else:
-                                raise EWaptMissingCertificate('Host certificate of %s (%s) is not in database, please register first.' % (uuid, existing_host.computer_fqdn))
+                                raise EWaptMissingCertificate(
+                                    'Host certificate of %s (%s) is not in database, please register first.' % (uuid, existing_host.computer_fqdn))
                         else:
-                            raise EWaptMissingCertificate('You try to update status of an unknown host %s (%s). Please register first.' % (uuid, data.get('computer_fqdn', 'unknown')))
+                            raise EWaptMissingCertificate(
+                                'You try to update status of an unknown host %s (%s). Please register first.' % (uuid, data.get('computer_fqdn', 'unknown')))
 
                     if host_cert:
                         logger.debug('About to check supplied data signature with certificate %s' % host_cert.cn)
@@ -507,8 +510,8 @@ def upload_host():
             logger.debug('uploading host file : %s' % fkey)
             if hostpackagefile and allowed_file(hostpackagefile.filename):
                 filename = secure_filename(hostpackagefile.filename)
-                wapt_host_folder = os.path.join(conf['wapt_folder']+'-host')
-                ref_target = os.path.join(conf['wapt_folder']+'-hostref',filename)
+                wapt_host_folder = os.path.join(conf['wapt_folder'] + '-host')
+                ref_target = os.path.join(conf['wapt_folder'] + '-hostref', filename)
                 target = os.path.join(wapt_host_folder, filename)
                 tmp_target = tempfile.mktemp(prefix='wapt')
                 hostpackagefile.save(ref_target)
@@ -519,16 +522,16 @@ def upload_host():
                     host = Hosts.select(Hosts.host_certificate).where((Hosts.uuid == host_id) | (Hosts.computer_fqdn == host_id)).dicts().first()
                     if host and host['host_certificate'] is not None:
                         host_cert = SSLCertificate(crt_string=host['host_certificate'])
-                        package_data = open(ref_target,'rb').read()
-                        with open(tmp_target,'wb') as encrypted_package:
+                        package_data = open(ref_target, 'rb').read()
+                        with open(tmp_target, 'wb') as encrypted_package:
                             encrypted_package.write(host_cert.encrypt_fernet(package_data))
                     else:
-                        package_data = open(ref_target,'rb').read()
-                        with open(tmp_target,'wb') as unencrypted_package:
+                        package_data = open(ref_target, 'rb').read()
+                        with open(tmp_target, 'wb') as unencrypted_package:
                             unencrypted_package.write(package_data)
                     if os.path.isfile(target):
                         os.unlink(target)
-                    os.rename(tmp_target,target)
+                    os.rename(tmp_target, target)
                     done.append(filename)
                 except Exception as e:
                     logger.critical('Error uploading package %s: %s' % (filename, e))
@@ -891,7 +894,8 @@ def proxy_host_request(request, action):
                                     computer_fqdn='',
                                 ))
                     if sid:
-                        tasks.append(socketio.start_background_task(emit_action, sid=sid, uuid=uuid, action=action, action_args=args, computer_fqdn=computer_fqdn))
+                        tasks.append(socketio.start_background_task(
+                            emit_action, sid=sid, uuid=uuid, action=action, action_args=args, computer_fqdn=computer_fqdn))
 
                 else:
                     result['errors'].append(
@@ -1087,7 +1091,8 @@ def build_hosts_filter(model, filter_expr):
             rootfield = members[0]
             # external collections...
             if rootfield == 'installed_softwares':
-                clause = Hosts.uuid.in_(HostSoftwares.select(HostSoftwares.host).where(HostSoftwares.key.regexp(ur'(?i)%s' % search_expr) | HostSoftwares.name.regexp(ur'(?i)%s' % search_expr)))
+                clause = Hosts.uuid.in_(HostSoftwares.select(HostSoftwares.host).where(
+                    HostSoftwares.key.regexp(ur'(?i)%s' % search_expr) | HostSoftwares.name.regexp(ur'(?i)%s' % search_expr)))
             elif rootfield == 'installed_packages':
                 clause = Hosts.uuid.in_(HostPackagesStatus.select(HostPackagesStatus.host).where(HostPackagesStatus.package.regexp(ur'(?i)%s' % search_expr)))
             elif rootfield in model._meta.fields:
@@ -1552,7 +1557,8 @@ def trigger_host_action():
         for action in action_data:
             uuid = action['uuid']
             if last_uuid != uuid:
-                host = Hosts.select(Hosts.computer_fqdn, Hosts.listening_address).where((Hosts.uuid == uuid) & (Hosts.listening_protocol == 'websockets')).first()
+                host = Hosts.select(Hosts.computer_fqdn, Hosts.listening_address).where(
+                    (Hosts.uuid == uuid) & (Hosts.listening_protocol == 'websockets')).first()
             if host:
                 if not host.computer_fqdn in hostnames:
                     hostnames.append(host.computer_fqdn)
@@ -1714,9 +1720,9 @@ def on_wapt_socketio_error(e):
 # end websockets
 
 
-#################################################
+#
 # Helpers for installer
-##
+#
 
 def install_windows_nssm_service(
         service_name, service_binary, service_parameters, service_logfile, service_dependencies=None):
@@ -1802,7 +1808,7 @@ def install_windows_nssm_service(
         logger.info('running command : %s' % cmd)
         setuphelpers.run(cmd)
 
-        #fullpath = base+'\\' + 'DependOnService'
+        # fullpath = base+'\\' + 'DependOnService'
         #(path,keyname) = fullpath.rsplit('\\',1)
         # registry_set(root,path,keyname,service_dependencies,REG_MULTI_SZ)
 
@@ -1923,7 +1929,7 @@ def install_windows_service():
         service_dependencies)
 
 
-##############
+#
 if __name__ == '__main__':
     usage = """\
     %prog [-c configfile] [--devel] [action]

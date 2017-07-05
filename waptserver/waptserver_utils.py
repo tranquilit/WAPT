@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.10"
+__version__ = '1.5.0.10'
 
 import sys
 import errno
@@ -53,9 +53,12 @@ __all__ = [
 ]
 
 utils_devel_mode = False
+
+
 def utils_set_devel_mode(devel):
     global utils_devel_mode
     utils_devel_mode = devel
+
 
 def mkdir_p(path):
     import errno
@@ -66,6 +69,7 @@ def mkdir_p(path):
             pass
         else:
             raise
+
 
 def get_disk_space(directory):
 
@@ -88,35 +92,37 @@ def get_disk_space(directory):
     return ret
 
 
-##### Logging #####
+# Logging #####
 logger = logging.getLogger()
 
-def setloglevel(logger,loglevel):
+
+def setloglevel(logger, loglevel):
     """set loglevel as string"""
-    if loglevel in ('debug','warning','info','error','critical'):
+    if loglevel in ('debug', 'warning', 'info', 'error', 'critical'):
         numeric_level = getattr(logging, loglevel.upper(), None)
         if not isinstance(numeric_level, int):
             raise ValueError('Invalid log level: {}'.format(loglevel))
         logger.setLevel(numeric_level)
 
 
-##### API V2 #####
-def make_response(result = {},success=True,error_code='',msg='',status=200,request_time=None):
+# API V2 #####
+def make_response(result={}, success=True, error_code='', msg='', status=200, request_time=None):
     data = dict(
-            success = success,
-            msg = msg,
-            )
+        success=success,
+        msg=msg,
+    )
     if not success:
         data['error_code'] = error_code
     else:
         data['result'] = result
     data['request_time'] = request_time
     return flask.Response(
-            response=jsondump(data),
-            status=status,
-            mimetype="application/json")
+        response=jsondump(data),
+        status=status,
+        mimetype='application/json')
 
-def make_response_from_exception(exception,error_code='',status=200):
+
+def make_response_from_exception(exception, error_code='', status=200):
     """Return a error flask http response from an exception object
         success : False
         msg : message from exception
@@ -126,43 +132,51 @@ def make_response_from_exception(exception,error_code='',status=200):
     if not error_code:
         error_code = type(exception).__name__.lower()
     data = dict(
-            success = False,
-            error_code = error_code
-            )
+        success=False,
+        error_code=error_code
+    )
     if utils_devel_mode:
         raise exception
     else:
-        data['msg'] = u"Error on server: %s" % (exception,)
+        data['msg'] = u'Error on server: %s' % (exception,)
     return flask.Response(
-            response=jsondump(data),
-            status=status,
-            mimetype="application/json")
+        response=jsondump(data),
+        status=status,
+        mimetype='application/json')
 
 
-##### Custom exceptions #####
+# Custom exceptions #####
 class EWaptMissingHostData(Exception):
     pass
+
 
 class EWaptUnknownHost(Exception):
     pass
 
+
 class EWaptHostUnreachable(Exception):
     pass
+
 
 class EWaptForbiddden(Exception):
     pass
 
+
 class EWaptMissingParameter(Exception):
     pass
+
 
 class EWaptSignalReceived(Exception):
     pass
 
+
 class EWaptDatabaseError(Exception):
     pass
 
+
 class EWaptAuthenticationFailure(Exception):
     pass
+
 
 class EWaptTimeoutWaitingForResult(Exception):
     pass

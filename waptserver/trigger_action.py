@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0"
+__version__ = '1.5.0'
 usage = """
 This script if aimed at triggering package upgrade through direct http call
 for client waptagent <=1.4. It is usefull for triggering upgrades from earlier
@@ -70,21 +70,21 @@ logging.basicConfig()
 if __name__ == '__main__':
     parser = OptionParser(usage=usage, version='waptserver.py ' + __version__)
     parser.add_option(
-        "-c",
-        "--config",
-        dest="configfile",
+        '-c',
+        '--config',
+        dest='configfile',
         default=DEFAULT_CONFIG_FILE,
-        help="Config file full path (default: %default)")
+        help='Config file full path (default: %default)')
     parser.add_option(
-        "-a",
-        "--action",
-        dest="action",
-        default="update",
-        help="Initial action  (default: %default)")
+        '-a',
+        '--action',
+        dest='action',
+        default='update',
+        help='Initial action  (default: %default)')
     parser.add_option(
-        "-l",
-        "--loglevel",
-        dest="loglevel",
+        '-l',
+        '--loglevel',
+        dest='loglevel',
         default='info',
         type='choice',
         choices=[
@@ -94,14 +94,14 @@ if __name__ == '__main__':
             'error',
             'critical'],
         metavar='LOGLEVEL',
-        help="Loglevel (default: warning)")
+        help='Loglevel (default: warning)')
     parser.add_option(
-        "-t",
-        "--timeout",
-        dest="timeout",
+        '-t',
+        '--timeout',
+        dest='timeout',
         default=0.5,
         type='float',
-        help="Timeout (default: %default)")
+        help='Timeout (default: %default)')
 
     (options, args) = parser.parse_args()
 
@@ -109,48 +109,48 @@ if __name__ == '__main__':
     packages = args[0:]
     result_ok = []
 
-    hosts = Hosts.select(Hosts.uuid,Hosts.computer_fqdn,
-        Hosts.listening_address,Hosts.listening_port,Hosts.connected_ips,Hosts.wapt_status).where(~Hosts.listening_protocol.is_null() and ~Hosts.connected_ips.is_null())
+    hosts = Hosts.select(Hosts.uuid, Hosts.computer_fqdn,
+                         Hosts.listening_address, Hosts.listening_port, Hosts.connected_ips, Hosts.wapt_status).where(~Hosts.listening_protocol.is_null() and ~Hosts.connected_ips.is_null())
     try:
-            for host in hosts:
-                if Version(host.wapt_status['wapt-exe-version']) < Version('1.5.0'):
-                    print('processing %s %s' %( host.computer_fqdn,host.connected_ips))
-                    params= {}
-                    params['uuid'] = host.uuid
-                    params['protocol'] = host.listening_protocol
-                    params['port'] = host.listening_port
-                    params['package'] = ','.join(packages)
-                    params['action'] = options.action
-                    for address in ensure_list(host.connected_ips):
+        for host in hosts:
+            if Version(host.wapt_status['wapt-exe-version']) < Version('1.5.0'):
+                print('processing %s %s' % (host.computer_fqdn, host.connected_ips))
+                params = {}
+                params['uuid'] = host.uuid
+                params['protocol'] = host.listening_protocol
+                params['port'] = host.listening_port
+                params['package'] = ','.join(packages)
+                params['action'] = options.action
+                for address in ensure_list(host.connected_ips):
+                    try:
+                        params['address'] = address
+                        client_result = requests.get('http://%(address)s:8088/%(action)s.json?uuid=%(uuid)s&force=1&notify_server=1' % params,
+                                                     proxies={'http': None, 'https': None}, verify=False, timeout=options.timeout).text
                         try:
-                            params['address'] = address
-                            client_result = requests.get("http://%(address)s:8088/%(action)s.json?uuid=%(uuid)s&force=1&notify_server=1" % params,
-                                proxies={'http':None,'https':None},verify=False, timeout=options.timeout).text
+                            client_result = json.loads(client_result)
+                            result_ok.append(host.computer_fqdn)
+                        except ValueError:
+                            if 'Restricted access' in client_result:
+                                print('Forbidden %s' % host.computer_fqdn)
+                            else:
+                                print('Error %s : %s' % repr(e))
+
+                        if packages:
+                            print ('sending install command')
+                            client_result = requests.get('http://%(address)s:8088/install.json?uuid=%(uuid)s&package=%(package)s&force=1' % params,
+                                                         proxies={'http': None, 'https': None}, verify=False, timeout=options.timeout).text
                             try:
                                 client_result = json.loads(client_result)
-                                result_ok.append(host.computer_fqdn)
+                                print json.dumps(client_result, indent=True)
+                                print 'OK'
+                                break
                             except ValueError:
                                 if 'Restricted access' in client_result:
                                     print('Forbidden %s' % host.computer_fqdn)
                                 else:
                                     print('Error %s : %s' % repr(e))
-
-                            if packages:
-                                    print ("sending install command")
-                                    client_result = requests.get("http://%(address)s:8088/install.json?uuid=%(uuid)s&package=%(package)s&force=1" % params,
-                                        proxies={'http':None,'https':None},verify=False, timeout=options.timeout).text
-                                    try:
-                                        client_result = json.loads(client_result)
-                                        print json.dumps(client_result,indent=True)
-                                        print 'OK'
-                                        break
-                                    except ValueError:
-                                        if 'Restricted access' in client_result:
-                                            print('Forbidden %s' % host.computer_fqdn)
-                                        else:
-                                            print('Error %s : %s' % repr(e))
-                        except (requests.ConnectTimeout,requests.ConnectionError,requests.ReadTimeout):
-                            print('No answer %s' % address)
+                    except (requests.ConnectTimeout, requests.ConnectionError, requests.ReadTimeout):
+                        print('No answer %s' % address)
 
     finally:
-        print('\nresult: \n\n%s'%'\n'.join(result_ok))
+        print('\nresult: \n\n%s' % '\n'.join(result_ok))

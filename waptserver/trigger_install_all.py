@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0"
+__version__ = '1.5.0'
 usage = """
 This script if aimed at triggering package upgrade through direct http call
 for client waptagent <=1.4. It is usefull for triggering upgrades from earlier
@@ -28,7 +28,7 @@ waptagent version to wapt 1.5 which uses websockets.
 
 Note :
 client version<=1.4 are polled from the server using http requests.
-client version >=1.5 use websockets from clients. 
+client version >=1.5 use websockets from clients.
 
 trigger_install_all.py [-c configfile] [-l loglevel] [-t timeout] package
 """
@@ -70,15 +70,15 @@ logging.basicConfig()
 if __name__ == '__main__':
     parser = OptionParser(usage=usage, version='waptserver.py ' + __version__)
     parser.add_option(
-        "-c",
-        "--config",
-        dest="configfile",
+        '-c',
+        '--config',
+        dest='configfile',
         default=DEFAULT_CONFIG_FILE,
-        help="Config file full path (default: %default)")
+        help='Config file full path (default: %default)')
     parser.add_option(
-        "-l",
-        "--loglevel",
-        dest="loglevel",
+        '-l',
+        '--loglevel',
+        dest='loglevel',
         default='info',
         type='choice',
         choices=[
@@ -88,14 +88,14 @@ if __name__ == '__main__':
             'error',
             'critical'],
         metavar='LOGLEVEL',
-        help="Loglevel (default: warning)")
+        help='Loglevel (default: warning)')
     parser.add_option(
-        "-t",
-        "--timeout",
-        dest="timeout",
+        '-t',
+        '--timeout',
+        dest='timeout',
         default=0.5,
         type='float',
-        help="Timeout (default: %default)")
+        help='Timeout (default: %default)')
 
     (options, packages) = parser.parse_args()
     if not packages:
@@ -104,8 +104,8 @@ if __name__ == '__main__':
 
     timeout = 0.5
 
-    hosts = Hosts.select(Hosts.uuid,Hosts.computer_fqdn,
-        Hosts.listening_address,Hosts.listening_port,Hosts.connected_ips,Hosts.wapt_status).where(~Hosts.listening_protocol.is_null() and ~Hosts.connected_ips.is_null())
+    hosts = Hosts.select(Hosts.uuid, Hosts.computer_fqdn,
+                         Hosts.listening_address, Hosts.listening_port, Hosts.connected_ips, Hosts.wapt_status).where(~Hosts.listening_protocol.is_null() and ~Hosts.connected_ips.is_null())
     for host in hosts:
         if Version(host.wapt_status['wapt-exe-version']) < Version('1.5.0'):
             print('processing %s' % host.computer_fqdn)
@@ -118,9 +118,9 @@ if __name__ == '__main__':
             for address in ensure_list(host.connected_ips):
                 try:
                     args['address'] = address
-                    print ("sending update command")
-                    client_result = requests.get("http://%(address)s:8088/register.json?uuid=%(uuid)s&force=1&notify_server=1" % args,
-                        proxies={'http':None,'https':None},verify=False, timeout=options.timeout).text
+                    print ('sending update command')
+                    client_result = requests.get('http://%(address)s:8088/register.json?uuid=%(uuid)s&force=1&notify_server=1' % args,
+                                                 proxies={'http': None, 'https': None}, verify=False, timeout=options.timeout).text
                     try:
                         client_result = json.loads(client_result)
                         print client_result
@@ -130,12 +130,12 @@ if __name__ == '__main__':
                         else:
                             print('Error %s : %s' % repr(e))
 
-                    print ("sending install command")
-                    client_result = requests.get("http://%(address)s:8088/install.json?uuid=%(uuid)s&package=%(package)s&force=1" % args,
-                        proxies={'http':None,'https':None},verify=False, timeout=options.timeout).text
+                    print ('sending install command')
+                    client_result = requests.get('http://%(address)s:8088/install.json?uuid=%(uuid)s&package=%(package)s&force=1' % args,
+                                                 proxies={'http': None, 'https': None}, verify=False, timeout=options.timeout).text
                     try:
                         client_result = json.loads(client_result)
-                        print json.dumps(client_result,indent=True)
+                        print json.dumps(client_result, indent=True)
                         print 'OK'
                         break
                     except ValueError:
@@ -143,5 +143,5 @@ if __name__ == '__main__':
                             print('Forbidden %s' % host.computer_fqdn)
                         else:
                             print('Error %s : %s' % repr(e))
-                except (requests.ConnectTimeout,requests.ConnectionError,requests.ReadTimeout):
+                except (requests.ConnectTimeout, requests.ConnectionError, requests.ReadTimeout):
                     print('No answer %s' % address)
