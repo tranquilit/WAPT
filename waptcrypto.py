@@ -615,8 +615,8 @@ class SSLPrivateKey(object):
     def decrypt(self,content):
         """Decrypt a message encrypted with the public key"""
         apadding = padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()),
-            algorithm=hashes.SHA256(),
+            mgf=padding.MGF1(algorithm=hashes.SHA1()),
+            algorithm=hashes.SHA1(),
             label=None)
         return self.rsa.decrypt(content,apadding)
 
@@ -1118,8 +1118,8 @@ class SSLCertificate(object):
     def encrypt(self,content):
         """Encrypt a message will can be decrypted with the public key"""
         apadding = padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()),
-            algorithm=hashes.SHA256(),
+            mgf=padding.MGF1(algorithm=hashes.SHA1()),
+            algorithm=hashes.SHA1(),
             label=None)
         return self.rsa.encrypt(content,apadding)
 
