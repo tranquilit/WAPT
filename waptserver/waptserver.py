@@ -693,7 +693,7 @@ def login():
                 password = request.form['password']
 
             # TODO : sanity check on username
-            if not re.match('[a-z0-9]+[a-z0-9-_]+[a-z0-9]+$', login, re.IGNORECASE):
+            if not re.match('[a-z0-9]+[a-z0-9-_]+[a-z0-9]+$', user, re.IGNORECASE):
                 msg = 'login must be alphanumeric with a dash'
                 raise Exception(msg)
 
