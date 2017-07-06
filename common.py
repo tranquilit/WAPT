@@ -2749,9 +2749,10 @@ class Wapt(object):
                 res = []
                 for (fn,f) in files.iteritems():
                     logger.info('Uploading %s' % fn)
-                    res.append(self.waptserver.post('upload_package/%s'%os.path.basename(fn),data=f,auth=auth,timeout=300))
+                    upload_res = self.waptserver.post('upload_package/%s'%os.path.basename(fn),data=f,auth=auth,timeout=300)
                     if not res['success']:
                         raise Exception('Error when uploading package %s : %s'% (fn,res['msg']))
+                    res.append(upload_res)
         finally:
             for f in files.values():
                 f.close()
