@@ -692,16 +692,14 @@ def login():
                 user = request.form['user']
                 password = request.form['password']
 
-            auth_token = 'TODO'
             # TODO : sanity check on username
-            if not bool(re.match('[a-z0-9]+[a-z0-9-]+[a-z0-9]+$', login, re.IGNORECASE)):
+            if not re.match('[a-z0-9]+[a-z0-9-_]+[a-z0-9]+$', login, re.IGNORECASE):
                 msg = 'login must be alphanumeric with a dash'
                 raise Exception(msg)
 
             if user is not None and password is not None:
                 if check_auth(user, password):
                     result = dict(
-                        auth_token=auth_token,
                         server_uuid=get_server_uuid(),
                         version=__version__,
                     )
