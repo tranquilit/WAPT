@@ -2751,7 +2751,7 @@ class Wapt(object):
                     logger.info('Uploading %s' % fn)
                     upload_res = self.waptserver.post('upload_package/%s'%os.path.basename(fn),data=f,auth=auth,timeout=300)
                     if not res['success']:
-                        raise Exception('Error when uploading package %s : %s'% (fn,res['msg']))
+                        raise Exception('Error when uploading package %s : %s'% (fn,upload_res['msg']))
                     res.append(upload_res)
         finally:
             for f in files.values():
