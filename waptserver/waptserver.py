@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = '1.5.0.10'
+__version__ = '1.5.0.11'
 
 import os
 import sys
@@ -500,6 +500,57 @@ def upload_package(filename=''):
                     mimetype='application/json')
 
 
+@app.route('/api/v3/upload_packages, methods=['POST'])
+@requires_auth
+def upload_packages():
+    try:
+        starttime = time.time()
+        done = []
+        errors = []
+        files = request.files.keys()
+        logger.info('Upload of %s packages' % len(files))
+        for fkey in files:
+            packagefile = request.files[fkey]
+            logger.debug('uploading file : %s' % fkey)
+            if packagefile and allowed_file(packagefile.filename):
+                filename = secure_filename(hostpackagefile.filename)
+                wapt_folder = conf['wapt_folder']
+                target = os.path.join(wapt_folder, filename)
+                tmp_target = tempfile.mktemp(dir=wapt_folder,prefix='wapt')
+                try:
+                    packagefile.save(tmp_target)
+                    # test if package is OK.
+                    entry = PackageEntry(waptfile=tmp_target)
+                    logger.debug('Saved package %s into %s' % (entry.asrequirement(),tmp_target))
+                    # TODO check if certificate is allowed on thi server ?
+
+                    if os.path.isfile(target):
+                        os.unlink(target)
+                    logger.debug('Renaming package %s into %s' % (tmp_target,target))
+                    os.rename(tmp_target, target)
+                    # fix context on target file (otherwith tmp context is carried over)
+                    #logger.debug(subprocess.check_output('chcon -R -t httpd_sys_content_t %s' % target,shell=True))
+
+                    done.append(filename)
+
+                except Exception as e:
+                    logger.debug('traceback')
+                    logger.debug(traceback.print_exc())
+                    logger.critical('Error uploading package %s: %s' % (filename, e))
+                    errors.append(filename)
+                    if os.path.isfile(tmp_target):
+                        os.unlink(tmp_target)
+
+        spenttime = time.time() - starttime
+        return make_response(success=len(errors) == 0,
+                             result=dict(done=done, errors=errors),
+                             msg=_('{} Packages uploaded, {} errors').format(len(done), len(errors)),
+                             request_time=spenttime)
+
+    except Exception as e:
+        return make_response_from_exception(e, status='201')
+
+
 @app.route('/upload_host', methods=['POST'])
 @requires_auth
 def upload_host():
@@ -516,7 +567,7 @@ def upload_host():
                 filename = secure_filename(hostpackagefile.filename)
                 wapt_host_folder = os.path.join(conf['wapt_folder'] + '-host')
                 target = os.path.join(wapt_host_folder, filename)
-                tmp_target = tempfile.mktemp(prefix='wapt')
+                tmp_target = tempfile.mktemp(dir=wapt_host_folder,prefix='wapt')
                 with wapt_db.atomic():
                     try:
 
@@ -572,6 +623,8 @@ def upload_host():
                         logger.debug(traceback.print_exc())
                         logger.critical('Error uploading package %s: %s' % (filename, e))
                         errors.append(filename)
+                        if os.path.isfile(tmp_target):
+                            os.unlink(tmp_target)
 
         spenttime = time.time() - starttime
         return make_response(success=len(errors) == 0,
