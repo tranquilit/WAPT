@@ -560,12 +560,16 @@ def upload_host():
                         if os.path.isfile(target):
                             os.unlink(target)
                         os.rename(tmp_target, target)
+                        # fix context on target file (otherwith tmp context is carried over)
+                        logger.debug(subprocess.check_output('chcon -R -t httpd_sys_content_t %s' % target,shell=True))
 
                         done.append(filename)
                         wapt_db.commit()
 
                     except Exception as e:
                         wapt_db.rollback()
+                        logger.debug('traceback')
+                        logger.debug(traceback.print_exc())
                         logger.critical('Error uploading package %s: %s' % (filename, e))
                         errors.append(filename)
 
