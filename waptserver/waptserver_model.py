@@ -524,9 +524,9 @@ def init_db(drop=False):
     except:
         wapt_db.rollback()
     if drop:
-        for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostJsonRaw, HostWsus]):
+        for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostJsonRaw, HostWsus,HostGroups]):
             table.drop_table(fail_silently=True)
-    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostJsonRaw, HostWsus], safe=True)
+    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostJsonRaw, HostWsus,HostGroups], safe=True)
 
     if get_db_version() == None:
         # new database install, we setup the db_version key
