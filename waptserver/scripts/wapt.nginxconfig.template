@@ -51,7 +51,7 @@ server {
 
 
 
-        location  ~ ^(api/v3/upload_packages|api/v3/upload_hosts/|upload_waptsetup)  {
+        location  ~ ^/(api/v3/upload_packages|api/v3/upload_hosts/|upload_waptsetup)  {
             proxy_pass http://127.0.0.1:8080;
             client_max_body_size 4096m;
             client_body_timeout 1800;
