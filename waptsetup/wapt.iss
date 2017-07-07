@@ -124,8 +124,9 @@ Filename: "cmd"; Parameters: "/C icacls.exe ""{app}"" /inheritance:r"; MinVersio
 Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe ""{app}"" /inheritance:r"; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt..."; Description: "Suppression héritage des droits sur wapt"
 
 ; protect waptagent private directory
-Filename: "cmd"; Parameters: "/C echo O| cacls ""{app}\private"" /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)"""; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt private..."; Description: "Mise en place des droits sur le répertoire wapt private"
-Filename: "cmd"; Parameters: "/C icacls.exe ""{app}\private"" /inheritance:r"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt private..."; Description: "Suppression héritage des droits sur wapt private"
+Filename: "cmd"; Parameters: "/C echo O| cacls ""{app}\private"" /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)"""; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt private..."; Description: "Mise en place des droits sur le répertoire wapt private"
+Filename: "cmd"; Parameters: "/C icacls.exe ""{app}\private"" /inheritance:r /grant:*S-1-5-32-544:F /grant *S-1-5-18:F"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt private..."; Description: "Suppression héritage des droits sur wapt private"
+
 Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe ""{app}\private"" /inheritance:r"; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt private..."; Description: "Suppression héritage des droits sur wapt private"
 
 ; if waptservice
