@@ -451,7 +451,8 @@ def update_host():
         return make_response(result=result, msg=message, request_time=time.time() - starttime)
 
     except Exception as e:
-        logger.critical('update_host failed for %s: %s' % (uuid, repr(e)))
+        logger.debug(traceback.format_exc())
+        logger.critical('update_host failed %s' % (repr(e)))
         return make_response_from_exception(e)
 
 
