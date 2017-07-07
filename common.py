@@ -1610,7 +1610,7 @@ class WaptServer(object):
                     proxies=self.proxies,
                     verify=self.verify_cert,
                     timeout=timeout or self.timeout,
-                    auth=auth or self.auth(),
+                    auth=auth or self.auth(action=action),
                     headers=headers)
             req.raise_for_status()
             return json.loads(req.content)
@@ -1620,7 +1620,7 @@ class WaptServer(object):
     def available(self):
         try:
             if self.server_url:
-                req = requests.head("%s" % (self.server_url),proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,auth=self.auth(),headers=default_http_headers())
+                req = requests.head("%s/ping" % (self.server_url),proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,auth=self.auth(action='ping'),headers=default_http_headers())
                 req.raise_for_status()
                 return True
             else:
