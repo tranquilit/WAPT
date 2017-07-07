@@ -1637,22 +1637,31 @@ class WaptServer(object):
             result[att] = getattr(self,att)
         return result
 
-    def upload_package(self,package,auth=None,timeout=None):
+    def upload_packages(self,packages,auth=None,timeout=None):
         """ """
-        if not (isinstance(package,(str,unicode)) and os.path.isfile(package)) and not isinstance(package,PackageEntry):
-            raise Exception('Package %s is not found.')
+        packages = ensure_list(packages)
+        files = {}
 
-        if not isinstance(package,PackageEntry):
-            pe = PackageEntry().load_control_from_wapt(package)
-            package_filename = package
-        else:
-            pe = package
-            package_filename = pe.localpath
+        for package in packages:
+            if not isinstance(package,PackageEntry):
+                pe = PackageEntry().load_control_from_wapt(package)
+                package_filename = package
+            else:
+                pe = package
+                package_filename = pe.localpath
 
-        with open(package_filename,'rb') as afile:
-            res = json.loads(self.post('api/v1/upload_package?filename=%s' % os.path.basename(package_filename),data=afile,auth=auth,timeout=timeout))
-        if not res['success']:
-            raise Exception(u'Unable to upload package: %s'%ensure_unicode(res['msg']))
+            # TODO : issue if more hosts to upload than allowed open file handles.
+            files[os.path.basename(package_filename)] = open(package_filename,'rb')
+        try:
+            logger.debug('Uploading %s to server %s'% (','.join(files.keys(),self.server_url)))
+            res = self.waptserver.post('api/v3/upload_packages',files=files,auth=auth,timeout=300)
+            if not res['success']:
+                raise Exception('Error when uploading packages: %s'% (res['msg']))
+        finally:
+            for f in files.values():
+                f.close()
+        return res
+
 
     def __repr__(self):
         try:
