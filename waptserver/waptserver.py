@@ -38,7 +38,9 @@ sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 
 # monkeypatching for eventlet greenthreads
 from eventlet import monkey_patch
-monkey_patch()
+
+# os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
+monkey_patch(os=False)
 
 from flask import request, Flask, Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
 from flask_socketio import SocketIO, disconnect, send, emit
@@ -188,7 +190,7 @@ def requires_auth(f):
     def decorated(*args, **kwargs):
         auth = request.authorization
 
-        if session.get('user') != '':
+        if session.get('user',None):
             logger.debug('connection from user %s ' % session.get('user'))
             return f(*args, **kwargs)
 
@@ -507,7 +509,7 @@ def upload_packages():
         starttime = time.time()
         done = []
         errors = []
-        files = request.files.keys()
+        files = request.files
         logger.info('Upload of %s packages' % len(files))
         for fkey in files:
             packagefile = request.files[fkey]
@@ -540,6 +542,7 @@ def upload_packages():
                     errors.append(filename)
                     if os.path.isfile(tmp_target):
                         os.unlink(tmp_target)
+                    raise
 
         logger.debug('Update package index')
         packages_index_result = update_packages(conf['wapt_folder'])
@@ -551,6 +554,7 @@ def upload_packages():
                              request_time=spenttime)
 
     except Exception as e:
+        raise
         return make_response_from_exception(e, status='201')
 
 
