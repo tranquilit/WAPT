@@ -2558,8 +2558,7 @@ begin
           ProgressTitle(format(rsImportingFile, [OpenDialogWapt.Files[i]]));
           ProgressStep(i, OpenDialogWapt.Files.Count - 1);
           Application.ProcessMessages;
-          sourceDir := DMPython.RunJSON(
-            Format('waptdevutils.duplicate_from_file((r"%s").decode("utf8"),new_prefix=%s)', [OpenDialogWapt.Files[i],DefaultPackagePrefix])).AsString;
+          sourceDir := VarPythonAsString(MainModule.waptdevutils.duplicate_from_file(package_filename := OpenDialogWapt.Files[i],new_prefix:=DefaultPackagePrefix));
           sources.AsArray.Add('r"' + sourceDir + '"');
         end;
 

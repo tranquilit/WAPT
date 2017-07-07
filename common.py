@@ -1653,8 +1653,8 @@ class WaptServer(object):
             # TODO : issue if more hosts to upload than allowed open file handles.
             files[os.path.basename(package_filename)] = open(package_filename,'rb')
         try:
-            logger.debug('Uploading %s to server %s'% (','.join(files.keys(),self.server_url)))
-            res = self.waptserver.post('api/v3/upload_packages',files=files,auth=auth,timeout=300)
+            logger.debug('Uploading %s to server %s'% (','.join(files.keys()),self.server_url))
+            res = self.post('api/v3/upload_packages',files=files,auth=auth,timeout=300)
             if not res['success']:
                 raise Exception('Error when uploading packages: %s'% (res['msg']))
         finally:
