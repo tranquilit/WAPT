@@ -2163,7 +2163,7 @@ class WaptHostRepo(WaptRepo):
                     package_zip.write(self._host_package_content)
                 pe.localpath = pfn
                 downloaded.append(pfn)
-        return {"downloaded":[pfn],"skipped":[],"errors":[],"packages":self._packages}
+        return {"downloaded":downloaded,"skipped":[],"errors":[],"packages":self._packages}
 
     @property
     def repo_url(self):
