@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.10"
+__version__ = "1.5.0.11"
 
 import os,sys
 import codecs
@@ -667,7 +667,7 @@ class SSLPrivateKey(object):
             else:
                 raise EWaptBadCertificate('Missing certificate for %s' % self.private_key_filename)
 
-        signature_attributes = ['signed_attributes','signer','signature_date','signer_fingerprint']
+        signature_attributes = ['signed_attributes','signer','signature_date','signer_certificate']
         for att in signature_attributes:
             if att in attributes:
                 attributes.remove(att)
@@ -676,7 +676,7 @@ class SSLPrivateKey(object):
         reclaim['signed_attributes'] = attributes+signature_attributes
         reclaim['signer'] = certificate.cn
         reclaim['signature_date'] = datetime.datetime.utcnow().isoformat()
-        reclaim['signer_fingerprint'] = certificate.fingerprint
+        reclaim['signer_certificate'] = certificate.as_pem()
         signature = base64.b64encode(self.sign_content(reclaim))
         reclaim['signature'] = signature
         return reclaim

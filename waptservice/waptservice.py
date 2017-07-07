@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.10"
+__version__ = "1.5.0.11"
 import time
 import sys
 import os
@@ -2301,7 +2301,6 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
         self.task_manager = task_manager
         self.wapt = None
 
-
     def on_trigger_host_action(self,args,result_callback=None):
         print('Host action triggered by SocketIO')
         try:
@@ -2313,11 +2312,9 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                 raise Exception('Wapt not available')
             for action in actions:
                 verified_by = None
-                for cert in self.wapt.authorized_certificates():
-                    try:
-                        verified_by = cert.verify_claim(action,max_age_secs=60)
-                    except SSLVerifyException as e:
-                        pass
+                cert = SSLCertificate(crt_string = action['signer_certificate'])
+                if self.wapt.cabundle.isknown_issuer(cert):
+                    verified_by = cert.verify_claim(action,max_age_secs=60)
                 if not verified_by:
                     raise SSLVerifyException('Bad signature for action %s, aborting' % action)
             result = []

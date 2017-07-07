@@ -500,7 +500,7 @@ def upload_package(filename=''):
                     mimetype='application/json')
 
 
-@app.route('/api/v3/upload_packages, methods=['POST'])
+@app.route('/api/v3/upload_packages', methods=['POST'])
 @requires_auth
 def upload_packages():
     try:
@@ -541,9 +541,12 @@ def upload_packages():
                     if os.path.isfile(tmp_target):
                         os.unlink(tmp_target)
 
+        logger.debug('Update package index')
+        packages_index_result = update_packages(conf['wapt_folder'])
+
         spenttime = time.time() - starttime
         return make_response(success=len(errors) == 0,
-                             result=dict(done=done, errors=errors),
+                             result=dict(done=done, errors=errors, packages_index_result = packages_index_result),
                              msg=_('{} Packages uploaded, {} errors').format(len(done), len(errors)),
                              request_time=spenttime)
 
@@ -552,6 +555,7 @@ def upload_packages():
 
 
 @app.route('/upload_host', methods=['POST'])
+@app.route('/api/v3/upload_hosts', methods=['POST'])
 @requires_auth
 def upload_host():
     try:

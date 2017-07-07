@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.10"
+__version__ = "1.5.0.11"
 
 __all__ = [
     'control_to_dict',
@@ -1789,8 +1789,8 @@ class WaptLocalRepo(WaptBaseRepo):
                 logger.critical("package %s: %s" % (fname,e))
                 errors.append(fname)
 
-        logger.info(u"Update CRL for embedded certificates")
         try:
+            logger.info(u"Check / update CRL for embedded certificates")
             signer_certificates.update_crl(force = force_all)
         except Exception as e:
             logger.critical(u'Error when updating CRL for signers cerificates : %s' % e)
