@@ -2156,13 +2156,21 @@ class WaptHostRepo(WaptRepo):
             target_dir = tempfile.mkdtemp()
         downloaded = []
         errors = []
-        for pe in self.packages:
-            if pe == package_requests[0]:
-                pfn = os.path.join(target_dir,self.host_id+'.wapt')
-                with open(pfn,'wb') as package_zip:
-                    package_zip.write(self._host_package_content)
-                pe.localpath = pfn
-                downloaded.append(pfn)
+        pfn = os.path.join(target_dir,self.host_id+'.wapt')
+
+        # if multithread... we don't have host package in memory cache from last self._load_packages_index
+        for pr in package_requests:
+            self._load_packages_index()
+            for pe in self.packages:
+                if pe == pr:
+                    with open(pfn,'wb') as package_zip:
+                        package_zip.write(self._host_package_content)
+                    pe.localpath = pfn
+                    downloaded.append(pfn)
+                    break
+        if not os.path.isfile(pfn):
+            logger.warning('Unable to write host package %s into %s' % (pr.asrequirement(),pfn))
+
         return {"downloaded":downloaded,"skipped":[],"errors":[],"packages":self._packages}
 
     @property
@@ -3880,6 +3888,7 @@ class Wapt(object):
                 packages.append(self.waptdb.package_entry_from_db(p[0],version_min=p[1],version_max=p[1]))
             else:
                 raise Exception('Invalid package request %s' % p)
+
         for entry in packages:
             self.check_cancelled()
 
@@ -3898,10 +3907,14 @@ class Wapt(object):
             if not printhook:
                 printhook = report
 
-            self.get_repo(entry.repo).download_packages(entry,
+            res = self.get_repo(entry.repo).download_packages(entry,
                 target_dir=self.package_cache_dir,
                 usecache=usecache,
                 printhook=printhook)
+
+            downloaded.extend(res['downloaded'])
+            skipped.extend(res['skipped'])
+            errors.extend(res['errors'])
 
         return {"downloaded":downloaded,"skipped":skipped,"errors":errors,"packages":packages}
 

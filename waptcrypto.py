@@ -349,6 +349,43 @@ class SSLCABundle(object):
         else:
             return None
 
+
+    def is_valid_certificate(self,certificate,check_revoke=True):
+        """Check if certificate valid
+
+        Args:
+            certificate: certificate to check
+            include_self: if certificate is in bunclde, accept it (pining)
+
+        Return:
+            SSLCertificate: issuer certificate or None
+        """
+        flags = (crypto.X509StoreFlags.CB_ISSUER_CHECK |
+            crypto.X509StoreFlags.CHECK_SS_SIGNATURE
+            )
+
+        if check_revoke and certificate.crl_urls():
+            flags = flags | crypto.X509StoreFlags.CRL_CHECK
+
+        store = crypto.X509Store()
+        store.set_flags(flags)
+        for cert in self._certificates:
+            if cert.is_valid():
+                store.add_cert(cert.as_X509())
+
+        for crl in self.crls.values():
+            crlcert = crypto.load_crl(crypto.FILETYPE_ASN1,crl.as_der())
+            store.add_crl(crlcert)
+
+        store_ctx = crypto.X509StoreContext(store,cert.as_X509())
+        try:
+            verify =  store_ctx.verify_certificate()
+            return True
+        except crypto.X509StoreContextError as e:
+            logger.critical('Error for certificate %s. Faulty certificate is %s: %s' % (certificate,e.certificate.get_subject(),e))
+            raise
+
+
     def as_pem(self):
         return " \n".join([key.as_pem() for key in self._keys]) + \
                 " \n".join(["# CN: %s\n# Issuer CN: %s\n%s" % (crt.cn,crt.issuer_cn,crt.as_pem()) for crt in self._certificates])
@@ -388,15 +425,55 @@ class SSLCABundle(object):
         if (oldcrl and crl>oldcrl) or not oldcrl:
             self.crls[crl.authority_key_identifier] = crl
 
-    def update_crl(self,force=False):
-        """Download and update all crls for certificates in this bundle
+    def download_issuer_certs(self,force=False,for_certificates=None):
+        """Download and add CA certs using authorityInfoAccess access_location
+        No check is attempted on cert signatures.
 
         Returns:
-            list: list of updated CRL
+            list: of missing downloaded SSLCertificates
+
+        """
+        result = []
+        if for_certificates is None:
+            for_certificates = self._certificates
+        if isinstance(for_certificates,SSLCertificate):
+            for_certificates = [for_certificates]
+
+        for cert in for_certificates:
+            issuer_cert = self.certificate_for_subject_hash(cert.issuer_subject_hash)
+            if not issuer_cert:
+                issuer_urls = cert.issuer_cert_urls()
+                for url in issuer_urls:
+                    try:
+                        logger.debug('Download certificate %s' % (url,))
+                        cert_data = wgets(url)
+                        issuer_cert = SSLCertificate(crt_string = cert_data)
+                        self.add_certificates(issuer_cert)
+                        result.append(issuer_cert)
+                        if self.certificate_for_subject_hash(issuer_cert.issuer_subject_hash) is None:
+                            result.extend(self.download_issuer_certs(force=False,for_certificates=issuer_cert))
+                        break
+                    except Exception as e:
+                        logger.warning('Unable to download certificate from %s: %s' % (url,repr(e)))
+                        pass
+        return result
+
+
+    def update_crl(self,force=False,for_certificates=None):
+        """Download and update all crls for certificates in this bundle or
+            for certificates in for_certificates list
+
+        Returns:
+            list: list of downloaded / updated CRL
         """
         # TODO : to be moved to an abstracted wapt https client
         result = []
-        for cert in self.certificates():
+        if for_certificates is None:
+            for_certificates = self._certificates
+        if isinstance(for_certificates,SSLCertificate):
+            for_certificates = [ for_certificates ]
+
+        for cert in for_certificates:
             crl_urls = cert.crl_urls()
             for url in crl_urls:
                 ssl_crl = self.crls.get(cert.authority_key_identifier,None)
@@ -431,7 +508,11 @@ class SSLCABundle(object):
             return False
 
     def __repr__(self):
-        return "<SSLCABundle %s >" % repr(self._certificates)
+        if len(self._certificates)<20:
+            return "<SSLCABundle %s crls:%s>" % (repr(self._certificates),self.crls.values())
+        else:
+            return "<SSLCABundle %s certificates, %s crls>" % (len(self._certificates),len(self.crls))
+
 
     def __add__(self,otherbundle):
         return SSLCABundle(certificates = self._certificates+otherbundle._certificates)
@@ -1117,6 +1198,9 @@ class SSLCertificate(object):
         """retruns list of URL where to get CRL for the Authority which has signed this certificate"""
         return [d.full_name[0].value for d in self.extensions.get('cRLDistributionPoints',[])]
 
+    def issuer_cert_urls(self):
+        """returns URL where to get Issuer cert directly"""
+        return [d.access_location.value for d in self.extensions.get('authorityInfoAccess',[]) if d.access_method._name == 'caIssuers']
 
     def __iter__(self):
         for k in ['issuer_dn','fingerprint','subject_dn','cn','is_code_signing','is_ca']:
