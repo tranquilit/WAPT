@@ -57,6 +57,7 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 %attr(755,root,root)/opt/wapt/wapt-signpackages.py
 %attr(755,wapt,root)/opt/wapt/conf
 %attr(755,wapt,root)/opt/wapt/log
+%attr(750,root,nginx)/opt/wapt/waptserver/apache/
 
 %pre
 getent passwd wapt >/dev/null || \

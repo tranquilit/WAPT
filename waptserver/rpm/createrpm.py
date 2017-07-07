@@ -150,7 +150,7 @@ print(subprocess.check_output(
 rsync('./pylibs/lib/', './builddir/opt/wapt/lib/')
 print('copying the waptserver files', file=sys.stderr)
 rsync(source_dir, './builddir/opt/wapt/',
-      excludes=['postconf', 'mongod.exe', 'bin', 'include'])
+      excludes=['postconf', 'mongod.exe', 'bin', 'include','spnego-http-auth-nginx-module'])
 
 print('cryptography patches')
 mkdir_p('./builddir/opt/wapt/lib/site-packages/cryptography/x509/')
