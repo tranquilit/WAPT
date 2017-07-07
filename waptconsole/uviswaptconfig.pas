@@ -182,10 +182,11 @@ begin
       end;
     end;
     }
-    pem_data := MainModule.common.get_pem_server_certificate(url := url,save_to_file := certfn);
+    pem_data := MainModule.waptcrypto.SSLCABundle(certificates := MainModule.waptcrypto.get_peer_cert_chain_from_server(url := url)).as_pem('--noarg--');
     if not VarIsNull(pem_data) then
     begin
-      EdServerCertificate.Text := certfn
+      StringToFile(certfn,pem_data);
+      EdServerCertificate.Text := certfn;
     end
     else
       raise Exception.Create('No certificate returned from  get_pem_server_certificate');
