@@ -2166,12 +2166,13 @@ class WaptHostRepo(WaptRepo):
                     with open(pfn,'wb') as package_zip:
                         package_zip.write(self._host_package_content)
                     pe.localpath = pfn
+                    pr.localpath = pfn
                     downloaded.append(pfn)
                     break
         if not os.path.isfile(pfn):
             logger.warning('Unable to write host package %s into %s' % (pr.asrequirement(),pfn))
 
-        return {"downloaded":downloaded,"skipped":[],"errors":[],"packages":self._packages}
+        return {"downloaded":downloaded,"skipped":[],"errors":[],"packages":self.packages}
 
     @property
     def repo_url(self):
