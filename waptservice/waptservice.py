@@ -2411,7 +2411,7 @@ class WaptSocketIOClient(threading.Thread):
 
     def run(self):
         self.config.reload_if_updated()
-        with ²config_filename = self.config.config_filename) as tmp_wapt:
+        with Wapt(config_filename = self.config.config_filename) as tmp_wapt:
             logger.info('Starting socketio on "%s://%s:%s" ...' % (self.config.websockets_proto,self.config.websockets_host,self.config.websockets_port))
             logger.debug('Certificate checking : %s' %  self.config.websockets_verify_cert)
             while True:
