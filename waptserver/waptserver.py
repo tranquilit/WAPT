@@ -616,7 +616,7 @@ def upload_host():
                             os.unlink(target)
                         os.rename(tmp_target, target)
                         # fix context on target file (otherwith tmp context is carried over)
-                        logger.debug(subprocess.check_output('chcon -R -t httpd_sys_content_t %s' % target,shell=True))
+                        #logger.debug(subprocess.check_output('chcon -R -t httpd_sys_content_t %s' % target,shell=True))
 
                         done.append(filename)
                         wapt_db.commit()
@@ -1598,7 +1598,7 @@ def host_tasks_status():
 
             socketio.emit('get_tasks_status', request.args, room=host_data['listening_address'], callback=result_callback)
 
-            print('waiting...')
+            #print('waiting...')
             wait_loop = timeout * 20
             while not result:
                 wait_loop -= 1

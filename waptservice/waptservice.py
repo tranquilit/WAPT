@@ -2313,7 +2313,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
             for action in actions:
                 verified_by = None
                 cert = SSLCertificate(crt_string = action['signer_certificate'])
-                if self.wapt.cabundle.isknown_issuer(cert):
+                if self.wapt.cabundle.is_known_issuer(cert):
                     verified_by = cert.verify_claim(action,max_age_secs=60)
                 if not verified_by:
                     raise SSLVerifyException('Bad signature for action %s, aborting' % action)
@@ -2411,7 +2411,7 @@ class WaptSocketIOClient(threading.Thread):
 
     def run(self):
         self.config.reload_if_updated()
-        with Wapt(config_filename = self.config.config_filename) as tmp_wapt:
+        with ²config_filename = self.config.config_filename) as tmp_wapt:
             logger.info('Starting socketio on "%s://%s:%s" ...' % (self.config.websockets_proto,self.config.websockets_host,self.config.websockets_port))
             logger.debug('Certificate checking : %s' %  self.config.websockets_verify_cert)
             while True:
