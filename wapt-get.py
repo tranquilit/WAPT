@@ -739,13 +739,13 @@ def main():
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
-                    if os.path.isdir(result['target']):
+                    if os.path.isdir(result.sourcespath):
                         print(u"Package duplicated. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result.sourcespath))
                         if mywapt.upload_cmd or mywapt.waptserver:
                             print(u"You can build and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result.sourcespath))
                         wapt_sources_edit(result.sourcespath)
                     else:
-                        print(u"Package duplicated. You can upload the new WAPT package to repository by launching\n  %s upload-package %s" % (sys.argv[0],result['target']))
+                        print(u"Package duplicated. You can upload the new WAPT package to repository by launching\n  %s upload-package %s" % (sys.argv[0],result.sourcespath))
                         print(u"You can rebuild and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result.sourcespath))
 
             elif action == 'edit':
@@ -779,12 +779,12 @@ def main():
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
-                    if os.path.isdir(result['target']):
-                        wapt_sources_edit(result['target'])
+                    if os.path.isdir(result.sourcespath):
+                        wapt_sources_edit(result.sourcespath)
                         if mywapt.upload_cmd or mywapt.waptserver:
-                            print(u"Package edited. You can build and upload the new WAPT package by launching\n  %s -i build-upload %s" % (sys.argv[0],result['target']))
+                            print(u"Package edited. You can build and upload the new WAPT package by launching\n  %s -i build-upload %s" % (sys.argv[0],result.sourcespath))
                         else:
-                            print(u"Package edited. You can build the new WAPT package by launching\n  %s -i build-package %s" % (sys.argv[0],result['target']))
+                            print(u"Package edited. You can build the new WAPT package by launching\n  %s -i build-package %s" % (sys.argv[0],result.sourcespath))
 
             elif action in ('build-package','build-upload'):
                 if len(args) < 2:
