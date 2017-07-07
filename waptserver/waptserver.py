@@ -513,7 +513,7 @@ def upload_packages():
             packagefile = request.files[fkey]
             logger.debug('uploading file : %s' % fkey)
             if packagefile and allowed_file(packagefile.filename):
-                filename = secure_filename(hostpackagefile.filename)
+                filename = secure_filename(packagefile.filename)
                 wapt_folder = conf['wapt_folder']
                 target = os.path.join(wapt_folder, filename)
                 tmp_target = tempfile.mktemp(dir=wapt_folder,prefix='wapt')
@@ -1636,7 +1636,7 @@ def trigger_host_action():
                     raise EWaptBadSignature('Action is not signed, not relayed')
         else:
             raise EWaptForbiddden('Invalid action')
-        # TODO : check signer
+        # TODO : check signer before proxying ?
         last_uuid = None
         host = None
 
@@ -1646,12 +1646,14 @@ def trigger_host_action():
         result = []
         errors = []
         expected_result_count = len(action_data)
-        print 'expected %s' % expected_result_count
+        #print 'expected %s' % expected_result_count
 
         def result_callback(data):
-            print data
+            #print data
             result.append(data)
-            print 'now expected %s' % expected_result_count
+            if not data.get('success',False):
+                errors.append(data['msg'])
+            #print 'now expected %s' % expected_result_count
 
         last_uuid = None
         hostnames = []
@@ -1672,7 +1674,7 @@ def trigger_host_action():
 
         wait_loop = timeout * expected_result_count * 20
         while len(result) < expected_result_count:
-            print len(result)
+            #print len(result)
             wait_loop -= 1
             if wait_loop < 0:
                 raise EWaptTimeoutWaitingForResult('Timeout, client did not send result within %s s' % timeout)
@@ -1681,13 +1683,15 @@ def trigger_host_action():
         if errors and not result:
             raise EWaptHostUnreachable('Targeted host(s) is/are not connected')
 
-        msg = '%s actions launched on %s' % (len(result), ','.join(hostnames),)
+        msg = []
         if errors:
-            msg = msg + ' Errors for %s hosts' % len(errors)
-        print result
+            msg.extend(errors)
+        msg.append('%s actions launched on %s' % (len(result), ','.join(hostnames),))
+
+        #print result
         return make_response([r.get('result', None) for r in result],
-                             msg=msg,
-                             success=True)
+                             msg=' '.join(msg),
+                             success=len(errors) == 0)
     except Exception as e:
         return make_response_from_exception(e)
 
@@ -1726,16 +1730,17 @@ def on_trigger_remove_packages_result(result):
 def on_waptclient_connect():
     try:
         uuid = request.args.get('uuid', None)
+        if not uuid:
+            raise EWaptForbiddden('Missing source host uuid')
         host_cert = Hosts.select(Hosts.host_certificate).where(Hosts.uuid == uuid).first()
 
         if host_cert and host_cert.host_certificate:
             host_certificate = SSLCertificate(crt_string=host_cert.host_certificate)
-            print host_certificate.verify_claim(json.loads(request.args['login']), max_age_secs=60)
+            host_cert_issuer = host_certificate.verify_claim(json.loads(request.args['login']), max_age_secs=60)
+            logger.debug(u'Socket IO %s connect checked. issuer : %s' % ( request.sid,host_cert_issuer))
             pass
         else:
-            # not registered.
-            wapt_db.commit()
-            return False
+            raise EWaptForbiddden('Host is not registered or no host certificate found in database.')
 
         logger.info('Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
         # stores sid in database
@@ -1747,14 +1752,16 @@ def on_waptclient_connect():
             reachable='OK',
         ).where(Hosts.uuid == uuid).execute()
         wapt_db.commit()
-
         wapt_db.close()
+
         # if not known, reject the connection
         if hostcount == 0:
-            # socketio.disconnect()
-            return False
-    except:
+            raise EWaptForbiddden('Host is not registered')
+
+    except Exception as e:
+        logger.debug(u'Connect refused: %s' % e)
         wapt_db.rollback()
+        wapt_db.close()
         return False
 
 

@@ -2376,9 +2376,23 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                 result_callback(make_response_from_exception(e))
 
     def on_get_tasks_status(self,args,result_callback=None):
-        data = self.task_manager.tasks_status()
-        if result_callback:
-            result_callback(make_response(data))
+        # check signatures
+        try:
+            if not self.wapt:
+                raise Exception('Wapt not available')
+
+            uuid = args.get('uuid','')
+            if uuid != self.wapt.host_uuid:
+                raise Exception('Task is not targeted to this host. task''s uuid does not match host''uuid')
+
+            data = self.task_manager.tasks_status()
+            if result_callback:
+                result_callback(make_response(data))
+
+        except BaseException as e:
+            logger.info('Exception for actions %s: %s' % (repr(args),repr(e)))
+            if result_callback:
+                result_callback(make_response_from_exception(e))
 
     def on_trigger_longtask(self,args,result_callback=None):
         task = WaptLongTask()
