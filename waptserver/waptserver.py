@@ -144,6 +144,15 @@ except Exception as e:
     wsus = False
 
 
+try:
+    import auth_module_ad
+    app.config['HAS_AD_MODULE_AUTH'] = True
+except Exception as e:
+    logger.debug(traceback.print_exc())
+    logger.info(str(e))
+    app.config['HAS_AD_MODULE_AUTH'] = False
+  
+
 def get_wapt_exe_version(exe):
     present = False
     version = None
@@ -219,6 +228,20 @@ def check_auth(username, password):
             if e:
                 ret = True
         return ret
+
+    try:
+        logger.debug(app.config['HAS_AD_MODULE_AUTH'])
+        if app.config['HAS_AD_MODULE_AUTH']:
+
+            if auth_module_ad.check_credentials_ad(username,password):
+                return True
+    except:
+        print "error while checking ad auth"
+        logger.warning('error while checking ad auth')
+        logger.debug(traceback.print_exc())
+
+
+
 
     user_ok = False
     pass_sha1_ok = pbkdf2_sha256_ok = pass_sha512_ok = pass_sha512_crypt_ok = pass_bcrypt_crypt_ok = False
