@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.10"
+__version__ = "1.5.0.11"
 
 import os
 import re
@@ -2737,22 +2737,19 @@ class Wapt(object):
             if pe.section != 'host':
                 is_hosts = False
 
+            # TODO : issue if more hosts to upload than allowed open file handles.
             files[os.path.basename(package_filename)] = open(package_filename,'rb')
 
         try:
             if is_hosts:
                 logger.info('Uploading %s host packages' % len(files))
-                res = self.waptserver.post('upload_host',files=files,auth=auth,timeout=300)
+                res = self.waptserver.post('api/v3/upload_hosts',files=files,auth=auth,timeout=300)
                 if not res['success']:
                     raise Exception('Error when uploading host packages: %s'% (res['msg']))
             else:
-                res = []
-                for (fn,f) in files.iteritems():
-                    logger.info('Uploading %s' % fn)
-                    upload_res = self.waptserver.post('upload_package/%s'%os.path.basename(fn),data=f,auth=auth,timeout=300)
-                    if not res['success']:
-                        raise Exception('Error when uploading package %s : %s'% (fn,upload_res['msg']))
-                    res.append(upload_res)
+                res = self.waptserver.post('api/v3/upload_packages',files=files,auth=auth,timeout=300)
+                if not res['success']:
+                    raise Exception('Error when uploading packages: %s'% (res['msg']))
         finally:
             for f in files.values():
                 f.close()
