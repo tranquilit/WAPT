@@ -3524,6 +3524,8 @@ begin
       edUser.Text:= WaptServerUser;
       if ShowModal = mrOk then
       begin
+        // recreate new session
+        if Assigned(WaptServerSession) then FreeAndNil(WaptServerSession);
         waptServerUser := edUser.Text;
         waptServerPassword := edPassword.Text;
         cred := SO();
@@ -3532,7 +3534,6 @@ begin
         sores := WAPTServerJsonPost('api/v3/login', [],cred);
         if sores.B['success'] then
         begin
-          waptServerAuthToken := sores['result'].S['auth_token'];
           waptServerUUID := sores['result'].S['server_uuid'];
           Result := True;
           if (CompareVersion(sores['result'].S['version'],WAPTServerMinVersion)<0) then
@@ -3541,15 +3542,15 @@ begin
         end
         else
         begin
+          if Assigned(WaptServerSession) then FreeAndNil(WaptServerSession);
           waptServerPassword := '';
-          waptServerAuthToken := '';
           Result := False;
         end
       end
       else
       begin
+        if Assigned(WaptServerSession) then FreeAndNil(WaptServerSession);
         waptServerPassword := '';
-        waptServerAuthToken := '';
         Result := False;
         break;
       end

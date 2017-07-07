@@ -25,7 +25,7 @@ unit waptcommon;
 interface
   uses
      Classes, SysUtils, Windows,
-     SuperObject,IdComponent,IdHttp,tiscommon,tisstrings, DefaultTranslator;
+     SuperObject,IdComponent,IdHttp,IdCookieManager,DefaultTranslator;
 
   type
       TProgressCallback=function(Receiver:TObject;current,total:Integer):Boolean of object;
@@ -68,12 +68,24 @@ interface
   function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject;ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
   function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=1000;OnAuthorization:TIdOnAuthorization=Nil;RetryCount:Integer=3):ISuperObject;
 
-  Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy: Boolean=False;userAgent:String='';VerifyCertificateFilename:String=''): boolean;
-  Function IdWget_Try(const fileURL: Utf8String;enableProxy:Boolean=False;userAgent:String='';VerifyCertificateFilename:String=''): boolean;
+  Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;enableProxy: Boolean=False;userAgent:String='';VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil): boolean;
+  Function IdWget_Try(const fileURL: Utf8String;enableProxy:Boolean=False;userAgent:String='';VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil): boolean;
   function IdHttpGetString(const url: ansistring; enableProxy:Boolean= False;
-      ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET';userAGent:String='';VerifyCertificateFilename:String='';AcceptType:String='application/json'):RawByteString;
+      ConnectTimeout:integer=4000;
+      SendTimeOut:integer=60000;
+      ReceiveTimeOut:integer=60000;
+      user:AnsiString='';password:AnsiString='';
+      method:AnsiString='GET';userAGent:String='';
+      VerifyCertificateFilename:String='';AcceptType:String='application/json';
+      CookieManager:TIdCookieManager=Nil):RawByteString;
+
   function IdHttpPostData(const url: Ansistring; const Data: RawByteString; enableProxy:Boolean= False;
-     ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';userAgent:String='';ContentType:String='application/json';VerifyCertificateFilename:String='';AcceptType:String='application/json'):RawByteString;
+      ConnectTimeout:integer=4000;SendTimeOut:integer=60000;
+      ReceiveTimeOut:integer=60000;
+      user:AnsiString='';password:AnsiString='';userAgent:String='';
+      ContentType:String='application/json';
+      VerifyCertificateFilename:String='';AcceptType:String='application/json';
+      CookieManager:TIdCookieManager=Nil):RawByteString;
 
   function GetReachableIP(IPS:ISuperObject;port:word):String;
 
@@ -107,6 +119,9 @@ interface
           codesigning:Boolean
       ):Utf8String;
 
+// get
+function GetWaptServerSession(server_url:String = ''; user:String = '';password:String = ''):TIdCookieManager;
+
 const
   waptwua_enabled : boolean = False;
 
@@ -119,8 +134,10 @@ const
 
   WaptServerUser: AnsiString ='admin';
   WaptServerPassword: Ansistring ='';
-  WaptServerAuthToken: AnsiString ='';
   WaptServerUUID: AnsiString ='';
+
+  // active session until user or password is changed
+  WaptServerSession: TIdCookieManager = Nil;
 
   HttpProxy:AnsiString = '';
   UseProxyForRepo: Boolean = False;
@@ -142,10 +159,10 @@ const
 
 implementation
 
-uses StrUtils,LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
+uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2,
   IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,IdURI,
-  gettext,IdStack,IdCompressorZLib,sha1,IdAuthentication,shfolder,IniFiles;
+  gettext,IdStack,IdCompressorZLib,sha1,IdAuthentication,shfolder,IniFiles,tiscommon,tisstrings, RxStrUtils;
 
 const
   CacheWaptServerUrl: AnsiString = 'None';
@@ -303,7 +320,7 @@ begin
 end;
 
 function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver: TObject;
-  progressCallback: TProgressCallback; enableProxy: Boolean=False;userAgent:String='';  VerifyCertificateFilename:String=''): boolean;
+  progressCallback: TProgressCallback; enableProxy: Boolean=False;userAgent:String='';  VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil): boolean;
 var
   http:TIdHTTP;
   OutputFile:TFileStream;
@@ -402,7 +419,7 @@ begin
   end;
 end;
 
-function IdWget_Try(const fileURL: Utf8String; enableProxy: Boolean;userAgent:String='';VerifyCertificateFilename:String=''): boolean;
+function IdWget_Try(const fileURL: Utf8String; enableProxy: Boolean;userAgent:String='';VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil): boolean;
 var
   http:TIdHTTP;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
@@ -471,7 +488,7 @@ end;
 
 function IdHttpGetString(const url: ansistring; enableProxy:Boolean= False;
     ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET';userAGent:String='';VerifyCertificateFilename:String='';
-    AcceptType:String='application/json' ):RawByteString;
+    AcceptType:String='application/json';CookieManager:TIdCookieManager=Nil):RawByteString;
 var
   http:TIdHTTP;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
@@ -489,6 +506,9 @@ begin
     http.Request.UserAgent:=userAgent;
 
   http.compressor :=  TIdCompressorZLib.Create(Nil);
+
+  if CookieManager<>Nil then
+    http.CookieManager := CookieManager;
 
   try
     // init ssl stack
@@ -523,6 +543,7 @@ begin
 
     try
       http.ConnectTimeout:=ConnectTimeout;
+
       if user <>'' then
       begin
         http.Request.BasicAuthentication:=True;
@@ -558,7 +579,7 @@ end;
 
 function IdHttpPostData(const url: Ansistring; const Data: RawByteString; enableProxy:Boolean= False;
    ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';userAgent:String='';ContentType:String='application/json';VerifyCertificateFilename:String='';
-   AcceptType:String='application/json'):RawByteString;
+   AcceptType:String='application/json';CookieManager:TIdCookieManager=Nil):RawByteString;
 var
   http:TIdHTTP;
   DataStream:TStringStream;
@@ -573,6 +594,10 @@ begin
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
   http.Compressor := TIdCompressorZLib.Create;
+
+  if CookieManager<>Nil then
+    http.CookieManager := CookieManager;
+
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
   if userAgent='' then
     http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent
@@ -657,7 +682,8 @@ begin
 end;
 
 
-function WAPTServerJsonGet(action: String; args: array of const;method:AnsiString='GET';ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject;
+function WAPTServerJsonGet(action: String; args: array of const;method:AnsiString='GET';
+    ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject;
 var
   strresult : String;
 begin
@@ -668,7 +694,7 @@ begin
   if length(args)>0 then
     action := format(action,args);
   strresult:=IdhttpGetString(GetWaptServerURL+action,UseProxyForServer,ConnectTimeout,SendTimeout ,ReceiveTimeout,
-    waptServerUser,waptServerPassword,method,'',GetWaptServerCertificateFilename);
+    waptServerUser,waptServerPassword,method,'',GetWaptServerCertificateFilename,'application/json',GetWaptServerSession());
   Result := SO(strresult);
 end;
 
@@ -683,7 +709,7 @@ begin
   if length(args)>0 then
     action := format(action,args);
   strresult:=IdhttpGetString(GetWaptServerURL+action,UseProxyForServer,4000,60000,60000,waptServerUser, waptServerPassword,
-    'DELETE','',GetWaptServerCertificateFilename);
+    'DELETE','',GetWaptServerCertificateFilename,'application/json',GetWaptServerSession());
   Result := SO(strresult);
 end;
 
@@ -699,7 +725,7 @@ begin
   if length(args)>0 then
     action := format(action,args);
   res := IdhttpPostData(GetWaptServerURL+action, data.AsJson, UseProxyForServer,ConnectTimeout,SendTimeout,ReceiveTimeout,
-    WaptServerUser,WaptServerPassword,'','application/json',GetWaptServerCertificateFilename);
+    WaptServerUser,WaptServerPassword,'','application/json',GetWaptServerCertificateFilename,'application/json',GetWaptServerSession());
   result := SO(res);
 end;
 
@@ -1621,6 +1647,19 @@ begin
   finally
     SysUtils.DeleteFile(opensslcfg_fn);
   end;
+end;
+
+function GetWaptServerSession(server_url:String = '';user: String=''; password: String=''): TIdCookieManager;
+begin
+  if  (server_url='') and (user<>'') and (password<>'') and
+      ((server_url <> GetWaptServerURL) or (user <> WaptServerUser)  or (password<> WaptServerPassword)) and
+      Assigned(WaptServerSession) then
+    FreeAndNil(WaptServerSession);
+  if WaptServerSession = Nil then
+    WaptServerSession := TIdCookieManager.Create();
+  Result := WaptServerSession;
+  //WaptServerUser := user;
+  //WaptServerPassword := password;
 end;
 
 
