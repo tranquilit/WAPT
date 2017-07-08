@@ -4,8 +4,6 @@ db_name=wapt
 #db_user=
 #db_password=
 
-#secret_key=HJLKhlkhqdsqsdqfdazf
-
 wapt_user=admin
 wapt_password=
 #loglevel=warning
