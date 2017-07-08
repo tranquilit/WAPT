@@ -75,6 +75,7 @@ from waptcrypto import *
 from waptutils import *
 import base64
 from iniparse import RawConfigParser
+import traceback
 
 logger = logging.getLogger()
 
@@ -876,11 +877,14 @@ class PackageEntry(object):
         if cert is None:
             raise EWaptMissingCertificate('Control %s data has no matching certificate in Packages index or Package, please rescan your Packages index.' % self.asrequirement())
 
-        issued_by = cabundle.is_known_issuer(cert)
-        if not issued_by:
-            raise EWaptCertificateUnknowIssuer('Package certificate "%s" is unknown and not allowed on this host' % cert.subject)
-        else:
-            logger.debug('Certificate %s is trusted by root CA %s' % (cert.subject,issued_by.subject))
+        # be sure to get CRLs for this cert.
+        try:
+            cabundle.update_crl(for_certificates = signers_bundle)
+        except Exception as e:
+            logger.warning('Unable to update CRL : %s' % repr(e))
+
+        issued_by = cabundle.check_certificates_chain(cert)[-1]
+        logger.debug('Certificate %s is trusted by root CA %s' % (cert.subject,issued_by.subject))
 
         if cert.verify_content(signed_content,signature_raw,md=self._default_md):
             self._md = self._default_md
@@ -1185,12 +1189,8 @@ class PackageEntry(object):
         try:
             cert = self.package_certificate()
             if cert is not None:
-                issued_by = cabundle.is_known_issuer(cert)
-                if not issued_by:
-                    raise EWaptCertificateUnknowIssuer('Package certificate is unknown and not allowed on this host')
-                else:
-                    logger.debug('Certificate %s is trusted by root CA %s' % (cert.subject,issued_by.subject))
-
+                issued_by = ', '.join('%s' % ca.cn for ca in cabundle.check_certificates_chain(cert))
+                logger.debug('Certificate %s is trusted by root CA %s' % (cert.subject,issued_by))
                 certs = [cert]
             else:
                 # old style, test all against signature
@@ -1214,9 +1214,12 @@ class PackageEntry(object):
                 logger.info(u'Package issued by %s' % (verified_by.subject,))
             else:
                 raise EWaptBadSignature(u'No matching certificate found or bad signature')
-        except:
-            raise EWaptBadSignature(u'Package file %s signature is invalid.\n\nThe signer "%s" is not accepted by any of the following CA or public keys:\n%s' % \
-                (self.asrequirement(),self.signer,u'\n'.join([u'%s' % cert for cert in cabundle.certificates()])))
+        except Exception as e:
+            logger.debug('Check_package_signature failed for %s. Signer:%s, cabundle: %s :  %s' % (
+                    self.asrequirement(),
+                    self.signer,u'\n'.join([u'%s' % cert for cert in cabundle.certificates()]),
+                    traceback.format_exc()))
+            raise
 
         # now check the integrity of files
         errors = self.list_corrupted_files()
@@ -2096,8 +2099,9 @@ class WaptRemoteRepo(WaptBaseRepo):
                     new_packages.append(package)
                     if package.package not in self._index or self._index[package.package] < package:
                         self._index[package.package] = package
-                except (SSLVerifyException,EWaptNotSigned,EWaptCertificateUnknowIssuer) as e:
-                    logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.cabundle.certificates()))
+                except (SSLVerifyException,EWaptNotSigned,EWaptBadCertificate) as e:
+                    logger.critical('Discarding %s on repo "%s": %s' % (package.asrequirement(),self.name,e))
+                    logger.debug('Certificate bundle : %s' % self.cabundle)
                     self.discarded.append(package)
 
         for line in packages_lines:
