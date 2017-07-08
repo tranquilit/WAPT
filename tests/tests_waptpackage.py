@@ -771,7 +771,7 @@ if __name__ == '__main__':
     test_localrepo_cert()
 
     test_wapt_engine()
-    test_waptdevutils()
+    #test_waptdevutils()
 
     #test_editpackage()
     test_reload_config()
