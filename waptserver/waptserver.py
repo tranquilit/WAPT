@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = '1.5.0.11'
+__version__ = '1.5.0.12'
 
 import os
 import sys
@@ -142,6 +142,7 @@ try:
 except Exception as e:
     logger.info(str(e))
     wsus = False
+
 
 
 def get_wapt_exe_version(exe):
