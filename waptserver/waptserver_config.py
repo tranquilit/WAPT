@@ -62,6 +62,7 @@ _defaults = {
     'use_kerberos': False,
     'max_clients': 4096,
     'encrypt_host_packages':False,
+    'dc_enable_ssl':True,
 }
 
 _default_config_file = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
@@ -143,5 +144,8 @@ def load_config(cfgfile=_default_config_file):
 
     if _config.has_option('options', 'use_kerberos'):
         conf['use_kerberos'] = _config.getboolean('options', 'use_kerberos')
+
+    if _config.has_option('options', 'dc_enable_ssl'):
+        conf['dc_enable_ssl'] = _config.getboolean('options', 'dc_enable_ssl')
 
     return conf
