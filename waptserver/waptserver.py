@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = '1.5.0.11'
+__version__ = '1.5.0.12'
 
 import os
 import sys
@@ -151,7 +151,7 @@ except Exception as e:
     logger.debug(traceback.print_exc())
     logger.info(str(e))
     app.config['HAS_AD_MODULE_AUTH'] = False
-  
+
 
 def get_wapt_exe_version(exe):
     present = False
