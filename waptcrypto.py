@@ -291,7 +291,7 @@ class SSLCABundle(object):
                 inkey = False
                 tmplines = []
             else:
-                if inkey or incert:
+                if inkey or incert or incrl:
                     tmplines.append(line)
 
         self.add_certificates(result)
@@ -1609,7 +1609,7 @@ class SSLCRL(object):
         return filename
 
     def __cmp__(self,crl):
-        return cmp((self.authority_key_identifier,self.last_update),crl.authority_key_identifier,crl.last_update)
+        return cmp((self.authority_key_identifier,self.last_update),(crl.authority_key_identifier,crl.last_update))
 
     def __repr__(self):
         return '<SSLCRL %s>' % self.issuer

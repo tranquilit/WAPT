@@ -733,11 +733,23 @@ def test_check_certificates_chain():
     print ca.check_certificates_chain([crt2])
     print('OK')
 
+def test_whole_ca():
+    ca = SSLCABundle()
+    ca.add_pems('c;/private/crts/ca.crt')
+    ca.add_pems('c;/private/crts/crl.pem')
 
+    certs = SSLCABundle('c:/private/crts/')
+    for cert in certs.certificates():
+        print cert.subject
+        print cert.public_cert_filename
+        print ca.check_if_revoked(cert)
+
+    print('ok')
 
 
 if __name__ == '__main__':
     setup_test()
+    test_whole_ca()
     test_self_signed()
     test_check_certificates_chain()
     test_is_valid_certificate()
