@@ -193,7 +193,7 @@ class SSLCABundle(object):
         self._certificates = []
         self._certs_subject_hash_idx = {}
         self._certs_fingerprint_idx = {}
-        self.crls = {}
+        self.crls = []
         if callback is None:
             callback = default_pwd_callback
         self.callback = callback
@@ -207,7 +207,7 @@ class SSLCABundle(object):
         del self._certificates[:]
         self._certs_subject_hash_idx.clear()
         self._certs_fingerprint_idx.clear()
-        self.crls.clear()
+        del self.crls[:]
 
     def add_pems(self,cert_pattern_or_dir='*.crt',load_keys=False):
         if os.path.isdir(cert_pattern_or_dir):
@@ -298,6 +298,7 @@ class SSLCABundle(object):
 
         for crl in crls:
             self.add_crl(crl)
+
         self._keys.extend(keys)
 
         return self
@@ -406,7 +407,7 @@ class SSLCABundle(object):
             if cert.is_valid():
                 store.add_cert(cert.as_X509())
 
-        for crl in self.crls.values():
+        for crl in self.crls:
             crlcert = crypto.load_crl(crypto.FILETYPE_ASN1,crl.as_der())
             store.add_crl(crlcert)
 
@@ -476,9 +477,26 @@ class SSLCABundle(object):
 
     def add_crl(self,crl):
         """Replace or Add pem encoded CRL"""
-        oldcrl = self.crls.get(crl.authority_key_identifier,None)
+        oldcrl = self.crl_for_authority_key_identifier(crl.authority_key_identifier)
+        if oldcrl is None:
+            oldcrl = self.crl_for_issuer_subject_hash(crl.issuer_subject_hash)
+
         if (oldcrl and crl > oldcrl) or not oldcrl:
-            self.crls[crl.authority_key_identifier] = crl
+            if oldcrl:
+                self.crls.remove(oldcrl)
+            self.crls.append(crl)
+
+    def crl_for_authority_key_identifier(self,authority_key_identifier):
+        for crl in self.crls:
+            if crl.authority_key_identifier == authority_key_identifier:
+                return crl
+        return None
+
+    def crl_for_issuer_subject_hash(self,issuer_subject_hash):
+        for crl in self.crls:
+            if crl.issuer_subject_hash == issuer_subject_hash:
+                return crl
+        return None
 
     def download_issuer_certs(self,force=False,for_certificates=None):
         """Download and add CA certs using authorityInfoAccess access_location
@@ -531,7 +549,10 @@ class SSLCABundle(object):
         for cert in for_certificates:
             crl_urls = cert.crl_urls()
             for url in crl_urls:
-                ssl_crl = self.crls.get(cert.authority_key_identifier,None)
+                ssl_crl = self.crl_for_authority_key_identifier(cert.authority_key_identifier)
+                if ssl_crl is None:
+                    ssl_crl = self.crl_for_issuer_subject_hash(cert.issuer_subject_hash)
+
                 if force or not ssl_crl or ssl_crl.next_update > datetime.datetime.utcnow():
                     try:
                         logger.debug('Download CRL %s' % (url,))
@@ -552,7 +573,9 @@ class SSLCABundle(object):
 
     def check_if_revoked(self,cert):
         """Raise exception if certificate has been revoked before now"""
-        crl = self.crls.get(cert.authority_key_identifier)
+        crl = self.crl_for_authority_key_identifier(cert.authority_key_identifier)
+        if crl is None:
+            crl = self.crl_for_issuer_subject_hash(cert.issuer_subject_hash)
         if crl:
             if crl.next_update < datetime.datetime.utcnow():
                 raise Exception('CRL is too old, revoke test failed for %s'% cert)
@@ -565,12 +588,12 @@ class SSLCABundle(object):
     def as_pem(self):
         return " \n".join([key.as_pem() for key in self._keys]) + \
                 " \n".join(["# CN: %s\n# Issuer CN: %s\n%s" % (crt.cn,crt.issuer_cn,crt.as_pem()) for crt in self._certificates]) + \
-                " \n".join(["# CRL Issuer CN: %s\n%s" % (crl.issuer_cn,crl.as_pem()) for crl in self.crls.values()])
+                " \n".join(["# CRL Issuer CN: %s\n%s" % (crl.issuer_cn,crl.as_pem()) for crl in self.crls])
 
 
     def __repr__(self):
         if len(self._certificates)<20:
-            return "<SSLCABundle %s crls:%s>" % (repr(self._certificates),self.crls.values())
+            return "<SSLCABundle %s crls:%s>" % (repr(self._certificates),self.crls)
         else:
             return "<SSLCABundle %s certificates, %s crls>" % (len(self._certificates),len(self.crls))
 
@@ -1377,7 +1400,7 @@ class SSLCertificate(object):
                 if check_errors and 'certificate has expired' in error:
                     raise EWaptCertificateExpired('Certificate %s error: %s'%(self.public_cert_filename,error))
                 elif check_errors and 'unable to get local issuer certificate' in error:
-                    raise EWaptCertificateUnknowIssuer('Certificate %s error: %s'%(self.public_cert_filename,error))
+                    raise EWaptCertificateUnknownIssuer('Certificate %s error: %s'%(self.public_cert_filename,error))
                 else:
                     raise EWaptBadCertificate('Certificate %s error: %s'%(self.public_cert_filename,error))
                 errors.append(errors)
@@ -1385,7 +1408,7 @@ class SSLCertificate(object):
                 result = True
         logger.debug(check_output)
         if not result:
-            raise EWaptCertificateUnknowIssuer('Unknown issuer for %s' % (self.public_cert_filename))
+            raise EWaptCertificateUnknownIssuer('Unknown issuer for %s' % (self.public_cert_filename))
         return result
 
     def verify_signature_with(self,cabundle=None):

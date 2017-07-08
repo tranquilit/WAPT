@@ -4588,12 +4588,6 @@ class Wapt(object):
         """
         return inv
 
-    def get_repo(self,name):
-        for r in self.repositories:
-            if r.name == name:
-                return r
-        return None
-
     def personal_certificate(self):
         return SSLCertificate(self.personal_certificate_path)
 

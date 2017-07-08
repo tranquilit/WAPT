@@ -735,13 +735,12 @@ def test_check_certificates_chain():
 
 def test_whole_ca():
     ca = SSLCABundle()
-    ca.add_pems('c;/private/crts/ca.crt')
-    ca.add_pems('c;/private/crts/crl.pem')
+    ca.add_pems('c:/private/crts/ca.crt')
+    ca.add_pems('c:/private/crts/crl.pem')
 
     certs = SSLCABundle('c:/private/crts/')
     for cert in certs.certificates():
-        print cert.subject
-        print cert.public_cert_filename
+        print cert.subject,cert.serial_number
         print ca.check_if_revoked(cert)
 
     print('ok')
