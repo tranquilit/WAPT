@@ -644,7 +644,7 @@ def test_update_crl():
     cabundle = SSLCABundle('c:/private')
     cabundle.update_crl(force=True)
     print cabundle.crls
-    crl = cabundle.crls.values()[0]
+    crl = cabundle.crls[0]
     print crl.verify_signature_with(cabundle)
     cabundle.is_known_issuer(crl)
 
@@ -736,12 +736,18 @@ def test_check_certificates_chain():
 def test_whole_ca():
     ca = SSLCABundle()
     ca.add_pems('c:/private/crts/ca.crt')
+    ca.add_pems('c:/private/crts/crl2.pem')
     ca.add_pems('c:/private/crts/crl.pem')
 
     certs = SSLCABundle('c:/private/crts/')
     for cert in certs.certificates():
         print cert.subject,cert.serial_number
-        print ca.check_if_revoked(cert)
+        try:
+            ca.check_if_revoked(cert)
+        except (EWaptCertificateRevoked,EWaptCertificateRevoked) as e:
+            print e
+
+
 
     print('ok')
 

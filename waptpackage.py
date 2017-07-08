@@ -1010,6 +1010,8 @@ class PackageEntry(object):
                 # need read access to ZIP file.
                 manifest_data = self.build_manifest(exclude_filenames = excludes,forbidden_files = forbidden_files,md=md)
             except EWaptPackageSignError as e:
+
+
                 raise EWaptBadCertificate('Certificate %s doesn''t allow to sign packages with setup.py file.' % certificate.public_cert_filename)
 
             manifest_data['WAPT/control'] = hexdigest_for_data(control,md = md)
@@ -1812,7 +1814,8 @@ class WaptLocalRepo(WaptBaseRepo):
                     zi.compress_type = zipfile.ZIP_DEFLATED
                     myzipfile.writestr(zi,crt.as_pem())
 
-                for (aki,crl) in signer_certificates.crls.iteritems():
+                for crl in signer_certificates.crls:
+                    aki = crl.authority_key_identifier
                     zi = zipfile.ZipInfo(u"crl/%s.crl" % aki.encode('hex'),date_time = time.localtime())
                     zi.compress_type = zipfile.ZIP_DEFLATED
                     myzipfile.writestr(zi,crl.as_der())

@@ -581,7 +581,7 @@ class SSLCABundle(object):
                 raise Exception('CRL is too old, revoke test failed for %s'% cert)
             revoked_on = crl.is_revoked(cert)
             if revoked_on and revoked_on < datetime.datetime.utcnow():
-                raise EWaptCertificateRevoked('Certificate %s has been revoked on %s' % revoked_on)
+                raise EWaptCertificateRevoked('Certificate %s has been revoked on %s' % (cert.cn,revoked_on))
         else:
             return False
 
@@ -1528,11 +1528,14 @@ class SSLCRL(object):
         return result
 
     def is_revoked(self,cert):
-        if cert.authority_key_identifier != self.authority_key_identifier:
-            raise Exception('No "authority key identifier extension to identify CA of certificate %s' % cert)
-        for rev_cert in self.crl:
-            if rev_cert.serial_number == cert.serial_number:
-                return rev_cert.revoked_on
+        if cert.authority_key_identifier is None and cert.issuer_subject_hash is None :
+            raise Exception('Neither Authority key identifier extension nor Issuer Subject to identify CA of certificate %s' % cert)
+
+        if (cert.authority_key_identifier is not None and cert.authority_key_identifier == self.authority_key_identifier) or \
+            (cert.issuer_subject_hash is not None and cert.issuer_subject_hash == self.issuer_subject_hash):
+            for rev_cert in self.crl:
+                if rev_cert.serial_number == cert.serial_number:
+                    return rev_cert.revocation_date
         return False
 
     @property
