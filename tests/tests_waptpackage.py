@@ -54,6 +54,7 @@ import urllib3
 
 # global parameters
 key = None
+cacert = None
 cabundle = None
 gest = None
 codeur = None
@@ -65,8 +66,12 @@ def pwd_callback(*args):
 def setup_test():
     global cabundle
     cabundle = SSLCABundle()
-    cabundle.add_pems('c:/wapt/ssl/*.crt')
+    #cabundle.add_pems('c:/wapt/ssl/*.crt')
     print cabundle.certificates()
+
+    global cacert
+    cacert = SSLCertificate(r'c:/private/tranquilit-ca-test.crt')
+    cabundle.add_certificates(cacert)
 
     global key
     key = SSLPrivateKey('c:/private/150.pem',callback = pwd_callback)
@@ -80,6 +85,7 @@ def setup_test():
     gest = SSLCertificate(r'c:/private/150-gest2.crt')
     print("gestionnaire : %s" %gest)
     assert(not gest.is_code_signing)
+
 
 def test_build_sign_verify_package():
     print('creation paquet test')
@@ -108,13 +114,13 @@ def test_build_sign_verify_package():
 
     logger.debug('Test avec certificat simple gestionnaire')
     try:
-        p2.check_package_signature(gest)
+        p2.check_package_signature(SSLCABundle(certificates = [gest]))
         raise Exception('Should fail')
-    except EWaptBadSignature as e:
+    except EWaptCertificateUnknownIssuer as e:
         logger.debug('OK : %s' % e)
 
     logger.debug('Test avec certificat codeur')
-    cert = p2.check_package_signature(codeur)
+    cert = p2.check_package_signature(SSLCABundle(certificates = [cacert,gest,codeur]))
     logger.debug('OK : %s' % cert)
 
     print('Test avec un ensemble de certificats, le codeur le plus recent doit venir')
@@ -437,7 +443,7 @@ def test_localrepo_cert():
 def test_editzip():
     r = WaptRemoteRepo('https://wapt142.tranquilit.local/wapt',cabundle=SSLCABundle('c:/tranquilit/wapt/ssl'),verify_cert=False)
     r.update()
-    res = r.download_packages('150-7zip')
+    res = r.download_packages('tistest-7zip')
     if res:
         pe = res['packages'][0]
         print pe
@@ -450,7 +456,7 @@ def test_editcommon():
     w.dbpath=':memory:'
     w.use_hostpackages = False
     w.update()
-    pe = w.edit_package('150-firefox-esr')
+    pe = w.edit_package('tistest-firefox-esr')
     wapt_sources_edit(pe.sourcespath)
 
 def test_edit_host():
@@ -522,7 +528,7 @@ def test_newcrypto():
     cecert = chain[0]
     print cecert.issuer
 
-    cabundle.check_server_chain(chain)
+    cabundle.check_certificates_chain(chain)
     pass
 
 def test_saveservercert():
@@ -539,7 +545,7 @@ def test_get_peer_chain():
     certs = bundle._certificates
     ca = SSLCABundle(certifi.where())
 
-    ca.check_server_chain(bundle)
+    ca.check_certificates_chain(bundle)
 
 
 def test_subject_hash():
@@ -595,14 +601,20 @@ def test_self_signed():
     cakey.create()
     cakey.save_as_pem()
 
-    cacert = cakey.build_sign_certificate(None,None,'Tranquil IT Systems ROOT CA',is_code_signing = False)
-    cacert.save_as_pem('c:/tmp/catest.crt')
+    cacert = cakey.build_sign_certificate(None,None,
+        'Tranquil IT Systems ROOT CA',
+        is_code_signing = False,
+        )
+    cacert.save_as_pem('c:/tranquilit/wapt/cache/catest.crt')
 
     k = SSLPrivateKey('c:/tmp/test.pem')
     k.create()
     k.save_as_pem()
 
-    c = k.build_sign_certificate(cakey,cacert,cn='HT Codeur',organization='Tranquil IT',country='FR')
+    c = k.build_sign_certificate(cakey,cacert,cn='HT Codeur',
+        organization='Tranquil IT',country='FR',
+        crl_url = 'http://127.0.0.1:8088/wapt/test.crl',
+        issuer_cert_url = 'http://127.0.0.1:8088/wapt/catest.crt')
     c.save_as_pem('c:/tmp/test.crt')
 
     assert(c.authority_key_identifier == cacert.subject_key_identifier)
@@ -640,10 +652,15 @@ def test_github():
     gh_server_bundle = get_peer_cert_chain_from_server('https://github.com/')
     cabundle = SSLCABundle()
     cabundle.add_pems(certifi.where())
-    print cabundle.check_server_chain(gh_server_bundle)
-    print cabundle.check_server_chain(SSLCABundle('c:/private/tranquilit-codeur.crt').certificates())
+    print cabundle.check_certificates_chain(gh_server_bundle)
+    try:
+        print cabundle.check_certificates_chain(SSLCABundle('c:/private/tranquilit-codeur.crt').certificates())
+        raise Exception('should fail, expired...')
+    except EWaptCertificateExpired:
+        print('ok')
+
     google = get_peer_cert_chain_from_server('https://google.com/')
-    print cabundle.check_server_chain(google)
+    print cabundle.check_certificates_chain(google)
 
 def test_update_packages():
     r = WaptLocalRepo('c:/tranquilit/wapt/cache')
@@ -658,20 +675,78 @@ def test_fernet_encrypt():
     enc_data = cert.encrypt_fernet(data)
     print(len(data),len(enc_data))
 
-    key = SSLPrivateKey('c:/private/htouvet.pem')
+    key = SSLPrivateKey('c:/private/htouvet.pem',password='test')
     data2 = key.decrypt_fernet(enc_data)
     print(len(data2))
     assert(data == data2)
 
+
+def test_is_valid_certificate():
+    ca = SSLCABundle()
+    ca.add_pems('c:/private/tranquilit-ca-test.crt')
+    cert = SSLCertificate('c:/private/htouvet.crt')
+    ca.is_valid_certificate(cert)
+
+    ca.clear()
+    ca.add_pems(certifi.where())
+    #ca.add_pems('c:/private/comodo-ca.crt')
+    #caev = SSLCertificate('c:/private/COMODORSAExtendedValidationCodeSigningCA.crt')
+    #ca.add_certificates(caev)
+    cert = SSLCertificate('c:/private/tranquilit-comodo-ev.crt')
+    print cert.issuer_cert_urls()
+    print ca.download_issuer_certs(for_certificates = cert)
+
+    ca.update_crl(for_certificates = ca.certificate_chain(cert))
+    ca.is_valid_certificate(cert)
+
+    try:
+        crt2 = SSLCertificate('c:/private/tranquilit-gest.crt')
+        ca.is_valid_certificate(crt2)
+        raise Exception('Not trusted..')
+    except Exception as e:
+        print('OK: %s' % e)
+
+
+def test_check_certificates_chain():
+    ca = SSLCABundle()
+    ca.add_pems('c:/private/tranquilit-ca-test.crt')
+    cert = SSLCertificate('c:/private/htouvet.crt')
+    print ca.check_certificates_chain([cert])
+
+    cert = SSLCertificate('c:/private/tranquilit-comodo-ev.crt')
+    print cert.issuer_cert_urls()
+    print ca.download_issuer_certs(for_certificates = cert)
+
+    ca.update_crl(for_certificates = ca.certificate_chain(cert))
+    print ca.check_certificates_chain([cert])
+
+    open('c:/tmp/myca.pem','wb').write(ca.as_pem())
+
+    crt2 = SSLCertificate('c:/private/tranquilit-gest.crt')
+    try:
+        print ca.check_certificates_chain([crt2])
+        raise Exception('not trusted Self signed')
+    except EWaptBadCertificate:
+        print('OK : self signed')
+
+    ca.add_certificates(crt2)
+    print ca.check_certificates_chain([crt2])
+    print('OK')
+
+
+
+
 if __name__ == '__main__':
     setup_test()
+    test_self_signed()
+    test_check_certificates_chain()
+    test_is_valid_certificate()
     test_fernet_encrypt()
     test_update_packages()
     test_github()
     test_update_crl()
     #test_hook_action()
     test_hostcert()
-    test_self_signed()
     test_wapt_engine()
     test_build_sign_verify_package()
     test_crl()
@@ -680,7 +755,7 @@ if __name__ == '__main__':
     test_get_peer_chain()
     test_saveservercert()
     test_newcrypto()
-    test_oldsignature()
+    #test_oldsignature()
     test_certifi_cacert()
     test_conflicts()
     test_sign_action()
@@ -690,7 +765,7 @@ if __name__ == '__main__':
     #test_installemove_host()
     test_matching_certs()
     test_findsnsrepourl()
-    test_edit_host()
+    #test_edit_host()
     test_editcommon()
     test_editzip()
     test_localrepo_cert()
@@ -700,6 +775,5 @@ if __name__ == '__main__':
 
     #test_editpackage()
     test_reload_config()
-
     test_waptrepo()
 

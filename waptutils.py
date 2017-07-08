@@ -636,7 +636,7 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
     return target_fn
 
 
-def wgets(url,proxies=None,verify_cert=False,referer=None,user_agent=None):
+def wgets(url,proxies=None,verify_cert=False,referer=None,user_agent=None,timeout=None):
     """Return the content of a remote resource as a String with a http get request.
 
     Raise an exception if remote data can't be retrieved.
@@ -659,7 +659,7 @@ def wgets(url,proxies=None,verify_cert=False,referer=None,user_agent=None):
     if user_agent != None:
         header.update({'user-agent': '%s' % user_agent})
 
-    r = requests.get(url,proxies=proxies,verify=verify_cert,headers=header)
+    r = requests.get(url,proxies=proxies,verify=verify_cert,headers=header,timeout=timeout)
     if r.ok:
         return r.content
     else:
