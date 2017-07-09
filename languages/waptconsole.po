@@ -1,3 +1,6 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
 #: tform1.buttonpanel1.helpbutton.caption
 msgctxt "TFORM1.BUTTONPANEL1.HELPBUTTON.CAPTION"
 msgid "&Show config file"
@@ -3043,7 +3046,7 @@ msgid ""
 msgstr ""
 
 #: uwaptconsoleres.rswaptagentnotpresent
-msgid "Warning, waptsetup-tis.exe or waptagent.exe not present on server, please install or build them."
+msgid "Warning, waptagent.exe installer is not present on server, please build waptagent.exe installer for the deployment of Wapt on client hosts."
 msgstr ""
 
 #: uwaptconsoleres.rswaptagentoldversion
