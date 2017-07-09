@@ -769,7 +769,7 @@ def change_passsword():
 @app.route('/api/v3/login', methods=['POST'])
 def login():
     error = ''
-    result = False
+    #result = False
     try:
         # TODO use session...
         post_data = request.get_json()
