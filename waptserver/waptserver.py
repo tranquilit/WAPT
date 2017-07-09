@@ -144,14 +144,16 @@ except Exception as e:
     wsus = False
 
 
-try:
-    import auth_module_ad
-    app.config['HAS_AD_MODULE_AUTH'] = True
-except Exception as e:
-    logger.debug(traceback.print_exc())
-    logger.info(str(e))
-    app.config['HAS_AD_MODULE_AUTH'] = False
-
+app.config['HAS_AD_MODULE_AUTH'] = False
+if conf.get('dc_auth_enabled'):
+    try:
+        import auth_module_ad
+        app.config['HAS_AD_MODULE_AUTH'] = True
+    except Exception as e:
+        logger.debug(traceback.print_exc())
+        logger.info(str(e))
+        logger.fatal("Couldn't configure AD authentification, missing module")
+        sys.exit(1)
 
 def get_wapt_exe_version(exe):
     present = False
@@ -230,9 +232,8 @@ def check_auth(username, password):
         return ret
 
     try:
-        logger.debug(app.config['HAS_AD_MODULE_AUTH'])
+        logger.debug('has ad module: %s ' % app.config['HAS_AD_MODULE_AUTH'])
         if app.config['HAS_AD_MODULE_AUTH']:
-
             if auth_module_ad.check_credentials_ad(username,password):
                 return True
     except:
@@ -764,10 +765,11 @@ def change_passsword():
         return make_response_from_exception(e)
 
 
-@app.route('/login', methods=['POST')
+@app.route('/login', methods=['POST'])
 @app.route('/api/v3/login', methods=['POST'])
 def login():
     error = ''
+    result = False
     try:
         # TODO use session...
         post_data = request.get_json()
@@ -775,13 +777,9 @@ def login():
             # json auth from waptconsole
             user = post_data['user']
             password = post_data['password']
-        else:
-            # html form auth
-            user = request.form['user']
-            password = request.form['password']
 
         # TODO : sanity check on username
-        if not re.match('[a-z0-9]+[a-z0-9-_]+[a-z0-9]+$', user, re.IGNORECASE):
+        if not re.match('[a-z0-9]+[a-z0-9-_\.]+[a-z0-9]+$', user, re.IGNORECASE):
             msg = 'login must be alphanumeric with a dash'
             raise Exception(msg)
 
@@ -792,10 +790,9 @@ def login():
                     version=__version__,
                 )
                 session['user'] = user
-
         else:
             raise EWaptMissingParameter('Missing parameter')
-        #session['auth_token'] = auth_token
+
         msg = 'Authentication OK'
         return make_response(result=result, msg=msg, status=200)
     except Exception as e:
