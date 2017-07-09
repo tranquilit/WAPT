@@ -1104,13 +1104,16 @@ def main():
                         print('Server certificate : %s' % result)
                         if result:
                             cert = SSLCertificate(result)
-                            print('Please check sha1 fingerprint of server certificate : %s' % cert.digest('sha1'))
                             print('Pining certificate %s' % result)
                             setuphelpers.inifile_writestring(mywapt.config_filename,'global','verify_cert',result)
                             if options.json_output:
                                 jsonresult['result'] = result
                             else:
                                 print('wapt config file updated')
+                            print('')
+                            print('Please check sha1 fingerprint of server certificate : %s' % cert.digest('sha1'))
+                            print('')
+                            print('Don''t forget to restart waptservice to take the new settings in account !')
                         else:
                             print('No server certificate retrieved')
                     else:
