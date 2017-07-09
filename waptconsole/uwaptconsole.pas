@@ -3621,14 +3621,19 @@ begin
     // check waptagent version
     sores := WAPTServerJsonGet('api/v2/waptagent_version', []);
     try
-      if sores.B['success'] and (CompareVersion(sores['result'].S['waptagent_version'],sores['result'].S['waptsetup_version'])<0) then
-          MessageDlg('waptgent.exe / waptsetup mismatch',
-            Format(rsWaptAgentOldVersion,[sores['result'].S['waptagent_version'],sores['result'].S['waptsetup_version']]),
-            mtWarning,
-            [mbOK],'');
+      if sores.B['success'] then
+        if sores['result'].S['waptagent_version'] = '' then
+          ShowMessageFmt(rsWaptAgentNotPresent,[])
+        else if (CompareVersion(sores['result'].S['waptagent_version'],sores['result'].S['waptsetup_version'])<0) then
+        begin
+            MessageDlg('waptgent.exe / waptsetup mismatch',
+              Format(rsWaptAgentOldVersion,[sores['result'].S['waptagent_version'],sores['result'].S['waptsetup_version']]),
+              mtWarning,
+              [mbOK],'');
+        end;
     except
-        //on E:Exception do
-        //  ShowMessageFmt(rsWaptAgentNotPresent,[rsUnknownVersion,WAPTServerMinVersion]);
+        on E:Exception do
+          ShowMessageFmt(rsWaptAgentNotPresent,[]);
     end;
 
 

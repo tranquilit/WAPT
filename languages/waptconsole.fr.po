@@ -2490,7 +2490,7 @@ msgid "wupanright"
 msgstr ""
 
 #: uwaptconsoleres.rsaddadsgroups
-#| "Are you sure to continue ?\n"
+
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -2555,6 +2555,7 @@ msgid "Are you sure you want to forget %s packages from host %s ?"
 msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 
 #: uwaptconsoleres.rsconfirmimport
+#| " to your repository ?\n"
 msgctxt "uwaptconsoleres.rsconfirmimport"
 msgid ""
 "Are you sure you want to import\n"
@@ -3139,10 +3140,12 @@ msgid ""
 msgstr ""
 
 #: uwaptconsoleres.rswaptagentnotpresent
-msgid "Warning, waptsetup-tis.exe or waptagent.exe not present on server, please install or build them."
-msgstr "Attention, waptsetup-tis.exe ou waptagent.exe ne sont pas présents sur le serveur."
+
+msgid "Warning, waptagent.exe installer is not present on server, please build waptagent.exe installer for the deployment of Wapt on client hosts."
+msgstr "Attention, l'installeur waptagent.exe n'est pas présent sur le serveur. Veuillez le générer pour le déploiement de Wapt sur les clients"
 
 #: uwaptconsoleres.rswaptagentoldversion
+
 msgid ""
 "Warning, the version of the waptagent.exe installer is too old.\n"
 "Current waptagent.exe version: %s\n"
@@ -3187,6 +3190,7 @@ msgid "You must first define the Package prefix in preferences"
 msgstr "Vous devez d'abord définir le préfixe des paquets dans les préférences"
 
 #: uwaptconsoleres.rswaptservererror
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -3195,6 +3199,7 @@ msgstr ""
 "%s\n"
 
 #: uwaptconsoleres.rswaptserveroldversion
+#| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
 "Current server version: %s\n"
@@ -3210,6 +3215,7 @@ msgid "Error while creating agent : %s"
 msgstr "Erreur lors de la création de l'agent : %s"
 
 #: uwaptconsoleres.rswaptsetupuploadsuccess
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"
 msgid ""
 "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
