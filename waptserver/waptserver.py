@@ -742,7 +742,7 @@ def change_passsword():
         return make_response_from_exception(e)
 
 
-@app.route('/login', methods=['POST')
+
 @app.route('/api/v3/login', methods=['POST'])
 def login():
     error = ''
@@ -773,7 +773,6 @@ def login():
 
         else:
             raise EWaptMissingParameter('Missing parameter')
-        #session['auth_token'] = auth_token
         msg = 'Authentication OK'
         return make_response(result=result, msg=msg, status=200)
     except Exception as e:
