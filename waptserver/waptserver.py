@@ -742,50 +742,46 @@ def change_passsword():
         return make_response_from_exception(e)
 
 
-@app.route('/login', methods=['POST', 'GET'])
+@app.route('/login', methods=['POST')
 @app.route('/api/v3/login', methods=['POST'])
 def login():
     error = ''
-    if request.method == 'POST':
-        try:
-            # TODO use session...
-            post_data = request.get_json()
-            if post_data is not None:
-                # json auth from waptconsole
-                user = post_data['user']
-                password = post_data['password']
-            else:
-                # html form auth
-                user = request.form['user']
-                password = request.form['password']
+    try:
+        # TODO use session...
+        post_data = request.get_json()
+        if post_data is not None:
+            # json auth from waptconsole
+            user = post_data['user']
+            password = post_data['password']
+        else:
+            # html form auth
+            user = request.form['user']
+            password = request.form['password']
 
-            # TODO : sanity check on username
-            if not re.match('[a-z0-9]+[a-z0-9-_]+[a-z0-9]+$', user, re.IGNORECASE):
-                msg = 'login must be alphanumeric with a dash'
-                raise Exception(msg)
+        # TODO : sanity check on username
+        if not re.match('[a-z0-9]+[a-z0-9-_]+[a-z0-9]+$', user, re.IGNORECASE):
+            msg = 'login must be alphanumeric with a dash'
+            raise Exception(msg)
 
-            if user is not None and password is not None:
-                if check_auth(user, password):
-                    result = dict(
-                        server_uuid=get_server_uuid(),
-                        version=__version__,
-                    )
-                    session['user'] = user
+        if user is not None and password is not None:
+            if check_auth(user, password):
+                result = dict(
+                    server_uuid=get_server_uuid(),
+                    version=__version__,
+                )
+                session['user'] = user
 
-            else:
-                raise EWaptMissingParameter('Missing parameter')
-            #session['auth_token'] = auth_token
-            msg = 'Authentication OK'
-            return make_response(result=result, msg=msg, status=200)
-        except Exception as e:
-            if 'auth_token' in session:
-                session['auth_token']
-            msg = 'Authentication failed'
-            logger.debug(traceback.print_exc())
-            return make_response_from_exception(e)
-    else:
-
-        return render_template('login.html', error=error)
+        else:
+            raise EWaptMissingParameter('Missing parameter')
+        #session['auth_token'] = auth_token
+        msg = 'Authentication OK'
+        return make_response(result=result, msg=msg, status=200)
+    except Exception as e:
+        if 'auth_token' in session:
+            session['auth_token']
+        msg = 'Authentication failed'
+        logger.debug(traceback.print_exc())
+        return make_response_from_exception(e)
 
 
 def allowed_file(filename):
