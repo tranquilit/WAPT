@@ -1667,7 +1667,7 @@ class WaptLocalRepo(WaptBaseRepo):
                         # index last version
                         if package.package not in self._index or self._index[package.package] < package:
                             self._index[package.package] = package
-                    except (EWaptNotSigned,SSLVerifyException) as e:
+                    except Exception as e:
                         logger.critical(u'Package %s discarded because: %s'% (package.localpath,e))
                         self.discarded.append(package)
 
@@ -2102,7 +2102,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                     new_packages.append(package)
                     if package.package not in self._index or self._index[package.package] < package:
                         self._index[package.package] = package
-                except (SSLVerifyException,EWaptNotSigned,EWaptBadCertificate) as e:
+                except Exception as e:
                     logger.critical('Discarding %s on repo "%s": %s' % (package.asrequirement(),self.name,e))
                     logger.debug('Certificate bundle : %s' % self.cabundle)
                     self.discarded.append(package)
