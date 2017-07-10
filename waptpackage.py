@@ -879,7 +879,8 @@ class PackageEntry(object):
 
         # be sure to get CRLs for this cert.
         try:
-            cabundle.update_crl(for_certificates = signers_bundle.certificates())
+            if signers_bundle:
+                cabundle.update_crl(for_certificates = signers_bundle.certificates())
         except Exception as e:
             logger.warning('Unable to update CRL : %s' % repr(e))
 
