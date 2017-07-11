@@ -149,6 +149,7 @@ parser.add_option("-U","--user", dest="user", default=None, help="Interactive us
 parser.add_option("-g","--usergroups", dest="usergroups", default='[]', help="Groups of the final user as a JSon array for checking install permission (default: %default)")
 parser.add_option("-t","--maxttl", type='int',  dest="max_ttl", default=60, help="Max run time in minutes of wapt-get process before being killed by subsequent wapt-get (default: %default minutes)")
 parser.add_option("-L","--language",    dest="language",    default=setuphelpers.get_language(), help="Override language for install (example : fr) (default: %default)")
+parser.add_option("-m","--message-digest", dest="md", default='sha256', help="Message digest type for signatures.  (default: %default)")
 parser.add_option("--wapt-server-user", dest="wapt_server_user", default=None, help="User to upload packages to waptserver. (default: %default)")
 parser.add_option("--wapt-server-passwd", dest="wapt_server_passwd", default=None, help="Password to upload packages to waptserver. (default: %default)")
 parser.add_option("--log-to-windows-events",dest="log_to_windows_events",    default=False, action='store_true', help="Log steps to the Windows event log (default: %default)")
@@ -261,6 +262,8 @@ def main():
         sys.stderr = sys.stdout = JsonOutput(
             jsonresult['output'],logger)
 
+    sign_digests = ensure_list(options.md)
+
     try:
         if len(args) == 0:
             print(u"ERROR : You must provide one action to perform")
@@ -291,6 +294,8 @@ def main():
         mywapt = Wapt(config_filename=config_file)
         if options.wapt_url:
             mywapt.config.set('global','repo_url',options.wapt_url)
+
+        mywapt.sign_digests = sign_digests
 
         global loglevel
         if not loglevel and mywapt.config.has_option('global','loglevel'):
