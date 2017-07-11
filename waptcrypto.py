@@ -194,6 +194,7 @@ class SSLCABundle(object):
         self._certs_subject_hash_idx = {}
         self._certs_fingerprint_idx = {}
         self.crls = []
+        self._crls_negative_cache = {}
         if callback is None:
             callback = default_pwd_callback
         self.callback = callback
@@ -208,6 +209,7 @@ class SSLCABundle(object):
         self._certs_subject_hash_idx.clear()
         self._certs_fingerprint_idx.clear()
         del self.crls[:]
+        self._crls_negative_cache.clear()
 
     def add_pems(self,cert_pattern_or_dir='*.crt',load_keys=False):
         if os.path.isdir(cert_pattern_or_dir):
@@ -553,8 +555,9 @@ class SSLCABundle(object):
                 if ssl_crl is None:
                     ssl_crl = self.crl_for_issuer_subject_hash(cert.issuer_subject_hash)
 
-                if force or not ssl_crl or ssl_crl.next_update > datetime.datetime.utcnow():
+                if force or not ssl_crl or ssl_crl.next_update < datetime.datetime.utcnow():
                     try:
+                        self._check_url_in_negative_cache(url)
                         logger.debug('Download CRL %s' % (url,))
                         crl_data = wgets(url,timeout=(0.3,2.0))
                         try:
@@ -565,11 +568,20 @@ class SSLCABundle(object):
                         self.add_crl(ssl_crl)
                         result.append(ssl_crl)
                     except Exception as e:
+                        self._crls_negative_cache[url] = datetime.datetime.now()
                         logger.warning('Unable to download CRL from %s: %s' % (url,repr(e)))
                         pass
                 elif ssl_crl:
                     logger.debug('CRL %s does not yet need to be refreshed from location %s' % (ssl_crl,url))
         return result
+
+    def _check_url_in_negative_cache(self,url):
+        last = self._crls_negative_cache.get(url,None)
+        if last:
+            if datetime.datetime.now() - last < datetime.timedelta(hours = 1):
+                raise Exception('Url in negative cache')
+            else:
+                del self._crls_negative_cache[url]
 
     def check_if_revoked(self,cert):
         """Raise exception if certificate has been revoked before now"""
