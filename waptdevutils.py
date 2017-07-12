@@ -33,7 +33,7 @@
     exported functions instead of local Wapt functions (except crypto signatures)
 
 """
-__version__ = "1.5.0.12"
+__version__ = "1.5.0.13"
 
 import sys,os
 import shutil
