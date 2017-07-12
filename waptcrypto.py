@@ -422,7 +422,7 @@ class SSLCABundle(object):
             raise
 
 
-    def check_certificates_chain(self,cert_chain,verify_expiry=True,verify_revoke=True):
+    def check_certificates_chain(self,cert_chain,verify_expiry=True,verify_revoke=True,allow_pinned=True):
         """Check that first certificate in cert_chain is approved
             by one of the CA certificate from this bundle.
 
@@ -434,6 +434,8 @@ class SSLCABundle(object):
             verify_expiry (bool) : Check if certificates expiry dates are okay relative to today.
             verify_revoke (bool) : Check if certificate is not in the CRLs (if certificate contains crl location URL)
                                      CRL must have been already retrieved using update_crl.
+            allow_pinned (bool) : If True, accept certificate if it is in trusted certificates, even if we don't know the issuer.
+
         Returns:
             list : of SSLCertificate : chain of trusted cert
         """
@@ -448,18 +450,23 @@ class SSLCABundle(object):
             cert_chain = cert_chain._certificates
         if isinstance(cert_chain,SSLCertificate):
             cert_chain = [cert_chain]
+        if not cert_chain:
+            raise Exception('No certificates to check')
 
-        # build an index of certificates in chain
+        # build an index of certificates in chain for intermediates CA
         idx = dict([crt.subject_hash,crt] for crt in cert_chain)
         cert = cert_chain[0]
         check_cert(cert)
         result= [cert]
         while cert:
             try:
+                # trust the cert if it is the bundle, even if issuer is unknown at this stage.
+                if allow_pinned and cert in self._certificates:
+                    return result
                 # append chain of trusted upstream CA certificates
                 result.extend([check_cert(issuer) for issuer in cert.verify_signature_with(self) if issuer != cert])
                 return result
-            except SSLVerifyException:
+            except SSLVerifyException as e:
                 # try to use intermediate from supplied list
                 issuer = idx.get(cert.issuer_subject_hash,None)
                 if not issuer:
