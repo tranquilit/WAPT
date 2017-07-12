@@ -2,6 +2,10 @@
 #define FileVerStr GetFileVersion(SrcApp)
 #define AppVerStr FileVerStr
 
+; offer the install of vcredist.exe
+;#define vcredist
+
+#ifndef FastDebug
 [Files]
 ; local python interpreter
 Source: "..\waptpython.exe"; DestDir: "{app}";
@@ -66,12 +70,18 @@ Source: "..\languages\*"; DestDir: "{app}\languages\"; Flags: createallsubdirs r
 ; local package cache
 Source: "..\cache\icons\unknown.png"; DestDir: "{app}\cache\icons";
 
-; for openssl : Visual C++ 2008 redistributable
+; for python : Visual C++ 2008 redistributable
+#ifdef vcredist
 Source: "..\vc_redist\*"; DestDir: "{app}\vc_redist";
+#endif
+Source: "..\vc_redist\msvc*90.dll"; DestDir: "{app}";
+Source: "..\vc_redist\Microsoft.VC90.CRT.manifest"; DestDir: "{app}";
+
 
 ; config file sample
 Source: "..\wapt-get.ini.tmpl"; DestDir: "{app}"; 
 
+#endif
 
 [Dirs]
 Name: "{app}\ssl"
@@ -115,9 +125,12 @@ Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environmen
 Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\wapt-get.exe"; ValueType: string; ValueName: ""; ValueData: "{app}\wapt-get.exe"; Flags: uninsdeletekey
 
 [Run]
+#ifdef vcredist
 Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "Mise à jour des librairies MS VC++ pour openssl"; Description: "Mise à jour des librairies MS VC++"; Tasks: installredist2008
 ; Duplication necessaire, cf. [Tasks]
 Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "Mise à jour des librairies MS VC++ pour openssl"; Description: "Mise à jour des librairies MS VC++"; Tasks: installredist2008unchecked
+#endif
+
 ; rights rw for Admins and System, ro for users and authenticated users on wapt directory
 Filename: "cmd"; Parameters: "/C echo O| cacls ""{app}"" /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)(A;OICI;0x1200a9;;;BU)(A;OICI;0x1201a9;;;AU)"""; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt..."; Description: "Mise en place des droits sur le répertoire wapt"
 Filename: "cmd"; Parameters: "/C icacls.exe ""{app}"" /inheritance:r"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt..."; Description: "Suppression héritage des droits sur wapt"
@@ -142,12 +155,15 @@ Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\w
 [Tasks]
 Name: installService; Description: "{cm:InstallWAPTservice}";  GroupDescription: "Base";
 Name: autorunTray; Description: "{cm:LaunchIcon}"; Flags: unchecked;  GroupDescription: "Base";
+
+#ifdef vcredist
 Name: installredist2008; Description: "{cm:InstallVCpp}";  Check: VCRedistNeedsInstall();  GroupDescription: "Base";
 ; Duplication helas necessaire.
 ; On souhaite seulement changer les actions a realiser par defaut, pas a empecher
 ; l'utilisateur de forcer la reinstallation de VC++, et il n'existe pas de moyen
 ; de modifier dynamiquement le flag "unchecked" 
 Name: installredist2008unchecked; Description: "{cm:ForceVCppReinstall}"; Check: not VCRedistNeedsInstall(); Flags: unchecked;  GroupDescription: "Base";
+#endif
 
 [InstallDelete]
 Type: filesandordirs; Name: {app}\lib\site-packages
@@ -189,7 +205,7 @@ de.LaunchSession=WAPT setup Sitzung bei eröffnung der Sitzung starten
 [Code]
 #include "services.iss"
 var
-  teWaptRepoUrl:TEdit;
+  edWaptRepoUrl:TEdit;
 
  
 function RunCmd(cmd:AnsiString;RaiseOnError:Boolean):AnsiString;
@@ -311,6 +327,7 @@ begin
 end;
 
 
+#ifdef vcredist 
 // FROM: http://stackoverflow.com/questions/11137424/how-to-make-vcredist-x86-reinstall-only-if-not-yet-installed
 #IFDEF UNICODE
 #DEFINE AW "W"
@@ -376,6 +393,7 @@ begin
   // Note : on ne tient pas compte des versions plus anciennes de VC++ 2008
   Result := not VCVersionInstalled(VC_2008_SP1_MFC_SEC_UPD_REDIST_X86);
 end;
+#endif
 
 // Usable even in the Uninstall section, contrary to WizardSilent
 function runningSilently(): Boolean;
