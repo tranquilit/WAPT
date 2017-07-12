@@ -1427,7 +1427,8 @@ class WaptBaseRepo(object):
         for fn in filenames:
             if fn.startswith('ssl/'):
                 cert = SSLCertificate(crt_string=packages_zipfile.read(name=fn))
-                signer_certificates.add_certificates(cert)
+                if not self.check_certificates_validity or cert.is_valid():
+                    signer_certificates.add_certificates(cert)
             if fn.startswith('crl/'):
                 try:
                     data = packages_zipfile.read(name=fn)

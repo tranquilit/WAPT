@@ -4214,7 +4214,7 @@ class Wapt(object):
             self.runstatus=''
 
     def authorized_certificates(self):
-        """return a list of autorized package signers for this host
+        """return a list of autorized package certificate issuers for this host
             check_certificates_validity enable date checking.
         """
         return self.cabundle.certificates(valid_only = self.check_certificates_validity)

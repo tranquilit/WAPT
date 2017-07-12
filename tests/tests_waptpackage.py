@@ -746,14 +746,22 @@ def test_whole_ca():
             ca.check_if_revoked(cert)
         except (EWaptCertificateRevoked,EWaptCertificateRevoked) as e:
             print e
-
-
-
     print('ok')
 
+def test_partial_chain():
+    # test when we don't have root issuer
+    ca = SSLCABundle()
+    ca.add_pems('c:/private/htouvet.crt')
+    #ca.add_pems('c:/private/crts/crl2.pem')
+    #ca.add_pems('c:/private/crts/crl.pem')
+    certs = SSLCABundle('c:/private/htouvet.crt')
+    res = ca.check_certificates_chain(certs)
+    print res
 
 if __name__ == '__main__':
     setup_test()
+    test_partial_chain()
+
     test_whole_ca()
     test_self_signed()
     test_check_certificates_chain()
