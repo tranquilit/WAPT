@@ -12,8 +12,12 @@
 #define use_kerberos 1
 #define check_certificates_validity 1
 #define verify_cert 1
+#define default_dnsdomain ""
 
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
+
+; for fast compile in developent mode
+;#define FastDebug
 
 #include "wapt.iss"
 
@@ -61,6 +65,7 @@ Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String:  {#use
 Filename: {app}\wapt-get.ini; Section: global; Key: check_certificates_validity; String:  {#check_certificates_validity};
 ; needs to be relocated if waptagent is compiled on another base directory than target computers 
 Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: {code:RelocateCertDirWaptBase}; 
+Filename: {app}\wapt-get.ini; Section: global; Key: dnsdomain; String: {code:GetDNSDomain}; 
 
 
 [Run]
@@ -99,24 +104,25 @@ de.UpdatePkgUponShutdown=Packete aktualisieren beim herunterfahren
 
 [Code]
 var
-  rbStaticUrl,rbDnsServer: TNewRadioButton;
+  cbStaticUrl,cbDnsServer: TNewRadioButton;
   CustomPage: TWizardPage;
-  teWaptServerUrl:TEdit;
-  TLabelRepo,TLabelServer: TLabel;
+  edWaptServerUrl,edDNSDomain:TEdit;
+  labRepo,labServer,labDNSDomain: TLabel;
 
 procedure OnServerClicked(Sender:TObject);
 begin
-   teWaptServerUrl.Enabled:= not rbDnsServer.Checked;
-   teWaptRepoUrl.Enabled:= not rbDnsServer.Checked;
+   edWaptServerUrl.Enabled:= not cbDnsServer.Checked;
+   edWaptRepoUrl.Enabled:= not cbDnsServer.Checked;
+   edDNSDomain.Enabled := cbDnsServer.Checked;
 end;
 
 function GetRepoURL(Param:String):String;
 begin
-  if rbDnsServer.Checked and not rbStaticUrl.Checked then
+  if cbDnsServer.Checked and not cbStaticUrl.Checked then
     result := ''
   else
-  if teWaptRepoUrl.Text <> 'unknown' then
-    result := teWaptRepoUrl.Text
+  if edWaptRepoUrl.Text <> 'unknown' then
+    result := edWaptRepoUrl.Text
   else
   begin
     result := ExpandConstant('{param:repo_url|unknown}');
@@ -131,11 +137,11 @@ end;
 
 function GetWaptServerURL(Param: String):String;
 begin
-  if rbDnsServer.Checked and not rbStaticUrl.Checked then
+  if cbDnsServer.Checked and not cbStaticUrl.Checked then
     result := ''
   else
-  if teWaptServerURL.Text <> 'unknown' then
-    result := teWaptServerURL.Text
+  if edWaptServerUrl.Text <> 'unknown' then
+    result := edWaptServerUrl.Text
   else
   begin
     result := ExpandConstant('{param:wapt_server|unknown}');
@@ -148,6 +154,26 @@ begin
   end;
 end;
 
+function GetDNSDomain(Param: String):String;
+begin
+  if not cbDnsServer.Checked and not cbStaticUrl.Checked then
+    result := ''
+  else
+  if edDNSDomain.Text <> 'unknown' then
+    result := edDNSDomain.Text
+  else
+  begin
+    result := ExpandConstant('{param:dnsdomain|unknown}');
+    if result='unknown' then
+	begin
+	  result := '{#default_dnsdomain}';
+	  if result = '' then
+		result := GetIniString('Global', 'dnsdomain','{#default_dnsdomain}', ExpandConstant('{app}\wapt-get.ini'))
+    end;
+  end;
+end;
+
+
 procedure RemoveWaptServer();
 begin
   DeleteIniEntry('Global','wapt_server',ExpandConstant('{app}\wapt-get.ini'));
@@ -157,57 +183,69 @@ procedure InitializeWizard;
 begin
   CustomPage := CreateCustomPage(wpSelectTasks, 'Installation options', '');
   
-  rbDnsServer := TNewRadioButton.Create(WizardForm);
-  rbDnsServer.Parent := CustomPage.Surface;
-  rbDnsServer.Width := CustomPage.SurfaceWidth;
-  rbDnsServer.Caption := 'Detect WAPT Info with DNS records';
-  rbDnsServer.Onclick := @OnServerClicked;
+  cbDnsServer := TNewRadioButton.Create(WizardForm);
+  cbDnsServer.Parent := CustomPage.Surface;
+  cbDnsServer.Width := CustomPage.SurfaceWidth;
+  cbDnsServer.Caption := 'Detect WAPT Info with DNS records';
+  cbDnsServer.Onclick := @OnServerClicked;
 
-  rbStaticUrl := TNewRadioButton.Create(WizardForm);
-  rbStaticUrl.Parent := CustomPage.Surface; 
-  rbStaticUrl.Caption := 'Static WAPT Info';
-  rbStaticUrl.Top := rbStaticUrl.Top + rbDnsServer.Height + 3 * ScaleY(15);
-  rbStaticUrl.Onclick := @OnServerClicked;
+  labDNSDomain := TLabel.Create(WizardForm);
+  labDNSDomain.Parent := CustomPage.Surface; 
+  labDNSDomain.Left := cbDnsServer.Left + 14;
+  labDNSDomain.Caption := 'DNS Domain to lookup:';
+  labDNSDomain.Top := cbDnsServer.Top + cbDnsServer.Height + 5;
 
-  TLabelRepo := TLabel.Create(WizardForm);
-  TLabelRepo.Parent := CustomPage.Surface; 
-  TLabelRepo.Left := rbStaticUrl.Left + 14;
-  TLabelRepo.Caption := 'Repos URL:';
-  TLabelRepo.Top := TLabelRepo.Top + rbDnsServer.Height + 5 * ScaleY(15);
+  edDNSDomain := TEdit.Create(WizardForm);
+  edDNSDomain.Parent := CustomPage.Surface; 
+  edDNSDomain.Left := labDNSDomain.Left + labDNSDomain.Width + 5;
+  edDNSDomain.Width := CustomPage.SurfaceWidth - labDNSDomain.Width;
+  edDNSDomain.Top := labDNSDomain.Top;
+  edDNSDomain.text := 'unknown';
   
-  TLabelServer := TLabel.Create(WizardForm);
-  TLabelServer.Parent := CustomPage.Surface; 
-  TLabelServer.Left := rbStaticUrl.Left + 14; 
-  TLabelServer.Caption := 'Server URL:';
-  TLabelServer.Top := TLabelServer.Top + rbDnsServer.Height + 9 * ScaleY(15);
+  cbStaticUrl := TNewRadioButton.Create(WizardForm);
+  cbStaticUrl.Parent := CustomPage.Surface; 
+  cbStaticUrl.Caption := 'Static WAPT Info';
+  cbStaticUrl.Top := cbStaticUrl.Top + cbDnsServer.Height + 3 * ScaleY(15);
+  cbStaticUrl.Onclick := @OnServerClicked;
 
-  teWaptRepoUrl := TEdit.Create(WizardForm);
-  teWaptRepoUrl.Parent := CustomPage.Surface; 
-  teWaptRepoUrl.Left :=TLabelRepo.Left + TLabelRepo.Width + 5;
-  teWaptRepoUrl.Width :=CustomPage.SurfaceWidth - rbStaticUrl.Width;
-  teWaptRepoUrl.Top := teWaptRepoUrl.Top + rbDnsServer.Height + 5 * ScaleY(15);
-  teWaptRepoUrl.text := 'unknown';
+  labRepo := TLabel.Create(WizardForm);
+  labRepo.Parent := CustomPage.Surface; 
+  labRepo.Left := cbStaticUrl.Left + 14;
+  labRepo.Caption := 'Repos URL:';
+  labRepo.Top := labRepo.Top + cbDnsServer.Height + 5 * ScaleY(15);
+  
+  labServer := TLabel.Create(WizardForm);
+  labServer.Parent := CustomPage.Surface; 
+  labServer.Left := cbStaticUrl.Left + 14; 
+  labServer.Caption := 'Server URL:';
+  labServer.Top := labServer.Top + cbDnsServer.Height + 9 * ScaleY(15);
 
-  TLabelRepo := TLabel.Create(WizardForm);
-  TLabelRepo.Parent := CustomPage.Surface; 
-  TLabelRepo.Left := teWaptRepoUrl.Left + 5;
-  TLabelRepo.Caption := 'example: https://srvwapt.domain.lan/wapt';
-  TLabelRepo.Top := teWaptRepoUrl.Top + teWaptRepoUrl.Height + ScaleY(2);
+  edWaptRepoUrl := TEdit.Create(WizardForm);
+  edWaptRepoUrl.Parent := CustomPage.Surface; 
+  edWaptRepoUrl.Left :=labRepo.Left + labRepo.Width + 5;
+  edWaptRepoUrl.Width :=CustomPage.SurfaceWidth - cbStaticUrl.Width;
+  edWaptRepoUrl.Top := edWaptRepoUrl.Top + cbDnsServer.Height + 5 * ScaleY(15);
+  edWaptRepoUrl.text := 'unknown';
+
+  labRepo := TLabel.Create(WizardForm);
+  labRepo.Parent := CustomPage.Surface; 
+  labRepo.Left := edWaptRepoUrl.Left + 5;
+  labRepo.Caption := 'example: https://srvwapt.domain.lan/wapt';
+  labRepo.Top := edWaptRepoUrl.Top + edWaptRepoUrl.Height + ScaleY(2);
 
 
-  teWaptServerUrl := TEdit.Create(WizardForm);;
-  teWaptServerUrl.Parent := CustomPage.Surface; 
-  teWaptServerUrl.Left :=TLabelServer.Left + TLabelServer.Width+5;
-  teWaptServerUrl.Width :=CustomPage.SurfaceWidth - rbStaticUrl.Width;
-  teWaptServerUrl.Top := teWaptServerUrl.Top + teWaptRepoUrl.Height + 9 * ScaleY(15); 
-  teWaptServerUrl.Text := 'unknown';  
+  edWaptServerUrl := TEdit.Create(WizardForm);;
+  edWaptServerUrl.Parent := CustomPage.Surface; 
+  edWaptServerUrl.Left :=labServer.Left + labServer.Width+5;
+  edWaptServerUrl.Width :=CustomPage.SurfaceWidth - cbStaticUrl.Width;
+  edWaptServerUrl.Top := edWaptServerUrl.Top + edWaptRepoUrl.Height + 9 * ScaleY(15); 
+  edWaptServerUrl.Text := 'unknown';  
 
-  TLabelServer := TLabel.Create(WizardForm);
-  TLabelServer.Parent := CustomPage.Surface; 
-  TLabelServer.Left := teWaptServerUrl.Left + 5; 
-  TLabelServer.Caption := 'example: https://srvwapt.domain.lan';
-  TLabelServer.Top := teWaptServerUrl.Top + teWaptServerUrl.Height + ScaleY(2);
-
+  labServer := TLabel.Create(WizardForm);
+  labServer.Parent := CustomPage.Surface; 
+  labServer.Left := edWaptServerUrl.Left + 5; 
+  labServer.Caption := 'example: https://srvwapt.domain.lan';
+  labServer.Top := edWaptServerUrl.Top + edWaptServerUrl.Height + ScaleY(2);
 
 end;
 
@@ -235,13 +273,14 @@ var
 begin
   if curPageId=customPage.Id then
   begin
-    teWaptRepoUrl.Text := GetRepoURL('');
-    teWaptServerUrl.Text := GetWaptServerURL('');  
-    rbDnsServer.Checked := (teWaptRepoUrl.Text='');
-    rbStaticUrl.Checked := (teWaptRepoUrl.Text<>'') and (teWaptRepoUrl.Text<>'unknown');
+    edWaptRepoUrl.Text := GetRepoURL('');
+    edWaptServerUrl.Text := GetWaptServerURL('');  
+    cbDnsServer.Checked := (edWaptRepoUrl.Text='');
+    cbStaticUrl.Checked := (edWaptRepoUrl.Text<>'') and (edWaptRepoUrl.Text<>'unknown');
+    edDNSDomain.Text := GetDNSDomain('');  
 
-	//teWaptServerUrl.Visible := IsTaskSelected('use_waptserver');
-    //TLabelServer.Visible := teWaptServerUrl.Visible;
+	  //edWaptServerUrl.Visible := IsTaskSelected('use_waptserver');
+    //labServer.Visible := edWaptServerUrl.Visible;
   end
 end;
 
