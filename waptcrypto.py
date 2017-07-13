@@ -194,7 +194,12 @@ class SSLCABundle(object):
         self._certs_subject_hash_idx = {}
         self._certs_fingerprint_idx = {}
         self.crls = []
+        # store url : last failed http get datetime
         self._crls_negative_cache = {}
+        # store check certificate chain check result with expiration
+        self._cert_chains_cache = {}
+        self.check_cache_ttl = 10 # minutes
+
         if callback is None:
             callback = default_pwd_callback
         self.callback = callback
@@ -203,6 +208,7 @@ class SSLCABundle(object):
         if certificates is not None:
             self.add_certificates(certificates)
 
+
     def clear(self):
         del self._keys[:]
         del self._certificates[:]
@@ -210,6 +216,7 @@ class SSLCABundle(object):
         self._certs_fingerprint_idx.clear()
         del self.crls[:]
         self._crls_negative_cache.clear()
+        self._cert_chains_cache.clear()
 
     def add_pems(self,cert_pattern_or_dir='*.crt',load_keys=False):
         if os.path.isdir(cert_pattern_or_dir):
@@ -230,6 +237,7 @@ class SSLCABundle(object):
         Returns:
             list of SSLCertificates actually added
         """
+        self._cert_chains_cache.clear()
         if not isinstance(certificates,list):
             certificates = [certificates]
         result = []
@@ -421,7 +429,6 @@ class SSLCABundle(object):
             logger.critical('Error for certificate %s. Faulty certificate is %s: %s' % (certificate,e.certificate.get_subject(),e))
             raise
 
-
     def check_certificates_chain(self,cert_chain,verify_expiry=True,verify_revoke=True,allow_pinned=True):
         """Check that first certificate in cert_chain is approved
             by one of the CA certificate from this bundle.
@@ -446,6 +453,10 @@ class SSLCABundle(object):
                 self.check_if_revoked(cert)
             return cert
 
+        def add_chain_cache(cache_key,chain):
+            logger.debug('Stores cert chain check in cache')
+            self._cert_chains_cache[cache_key] = (time.time() + self.check_cache_ttl * 60,chain)
+
         if isinstance(cert_chain,SSLCABundle):
             cert_chain = cert_chain._certificates
         if isinstance(cert_chain,SSLCertificate):
@@ -453,39 +464,54 @@ class SSLCABundle(object):
         if not cert_chain:
             raise Exception('No certificates to check')
 
-        # build an index of certificates in chain for intermediates CA
-        idx = dict([crt.subject_hash,crt] for crt in cert_chain)
         cert = cert_chain[0]
-        check_cert(cert)
-        result= [cert]
-        while cert:
-            try:
-                # trust the cert if it is the bundle, even if issuer is unknown at this stage.
-                if allow_pinned and cert in self._certificates:
+
+        # try to get a cached result
+        cache_key = (cert.fingerprint,verify_expiry,verify_revoke,allow_pinned)
+        (cache_expiration_date,cached_chain) = self._cert_chains_cache.get(cache_key,(None,None))
+        if not cache_expiration_date or cache_expiration_date < time.time():
+            # build an index of certificates in chain for intermediates CA
+            idx = dict([crt.subject_hash,crt] for crt in cert_chain)
+            check_cert(cert)
+            result= [cert]
+            while cert:
+                try:
+                    # trust the cert if it is the bundle, even if issuer is unknown at this stage.
+                    if allow_pinned and cert in self._certificates:
+                        add_chain_cache(cache_key,result)
+                        return result
+                    # append chain of trusted upstream CA certificates
+                    result.extend([check_cert(issuer) for issuer in cert.verify_signature_with(self) if issuer != cert])
+                    add_chain_cache(cache_key,result)
                     return result
-                # append chain of trusted upstream CA certificates
-                result.extend([check_cert(issuer) for issuer in cert.verify_signature_with(self) if issuer != cert])
-                return result
-            except SSLVerifyException as e:
-                # try to use intermediate from supplied list
-                issuer = idx.get(cert.issuer_subject_hash,None)
-                if not issuer:
-                    raise EWaptCertificateUnknownIssuer('Unknown issuer %s for certificate %s'%(result[-1].issuer_cn,result[-1].cn))
+                except SSLVerifyException as e:
+                    # try to use intermediate from supplied list
+                    issuer = idx.get(cert.issuer_subject_hash,None)
+                    if not issuer:
+                        raise EWaptCertificateUnknownIssuer('Unknown issuer %s for certificate %s'%(result[-1].issuer_cn,result[-1].cn))
 
-                if issuer == cert:
-                    # self signed untrusted
-                    raise EWaptCertificateUnknownIssuer('Self signed certificate %s is not trusted'%(result[-1].cn))
+                    if issuer == cert:
+                        # self signed untrusted
+                        raise EWaptCertificateUnknownIssuer('Self signed certificate %s is not trusted'%(result[-1].cn))
 
-                if cert.verify_signature_with(issuer):
-                    check_cert(issuer)
-                    if cert != issuer:
-                        result.append(issuer)
-                        cert = issuer
+                    if cert.verify_signature_with(issuer):
+                        check_cert(issuer)
+                        if cert != issuer:
+                            result.append(issuer)
+                            cert = issuer
+        # return cached checked chain
+        elif cached_chain:
+            logger.debug('Got cert chain check from cache')
+            return cached_chain
 
+        # store negative caching
+        if cached_chain is None:
+            add_chain_cache(cache_key,[])
         return EWaptCertificateUntrustedIssuer('Issuer %s for certificate %s is not trusted'%(result[-1].issuer_cn,result[-1].cn))
 
     def add_crl(self,crl):
         """Replace or Add pem encoded CRL"""
+        self._cert_chains_cache.clear()
         oldcrl = self.crl_for_authority_key_identifier(crl.authority_key_identifier)
         if oldcrl is None:
             oldcrl = self.crl_for_issuer_subject_hash(crl.issuer_subject_hash)
@@ -541,7 +567,7 @@ class SSLCABundle(object):
         return result
 
 
-    def update_crl(self,force=False,for_certificates=None):
+    def update_crl(self,force=False,for_certificates=None,cache_dir=None,timeout=2.0):
         """Download and update all crls for certificates in this bundle or
             for certificates in for_certificates list
 
@@ -566,7 +592,24 @@ class SSLCABundle(object):
                     try:
                         self._check_url_in_negative_cache(url)
                         logger.debug('Download CRL %s' % (url,))
-                        crl_data = wgets(url,timeout=(0.3,2.0))
+                        if cache_dir:
+                            crl_filename =  os.path.join(cache_dir,urlparse.urlparse(url).path.split('/')[-1])
+                        else:
+                            crl_filename = None
+
+                        # try to find CRL in cache dir
+                        crl_data = None
+                        if cache_dir and os.path.isfile(crl_filename):
+                            try:
+                                crl_data = open(crl_filename,'rb').read()
+                                ssl_crl = SSLCRL(der_data = crl_data)
+                            except Exception as e:
+                                crl_data = None
+                                ssl_crl = None
+
+                        # get it from remote location
+                        if not crl_data:
+                            crl_data = wgets(url,timeout=timeout)
                         try:
                             ssl_crl = SSLCRL(der_data = crl_data)
                         except Exception as e:
@@ -1259,7 +1302,7 @@ class SSLCertificate(object):
         apadding = padding.PKCS1v15()
 
         try:
-            logger.debug(self.rsa.verify(signature,content,apadding,get_hash_algo(md)))
+            self.rsa.verify(signature,content,apadding,get_hash_algo(md))
             return self.cn
         except InvalidSignature as e:
             raise SSLVerifyException('SSL signature verification failed for certificate %s'%self.subject)
