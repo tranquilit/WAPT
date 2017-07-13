@@ -1196,11 +1196,15 @@ class WaptDB(WaptBaseDB):
             self.db.execute('delete from wapt_params where name like "last-http%%" and name not in (%s)' % (','.join('"last-%s"'% r.repo_url for r in repos_list)))
             self.db.execute('delete from wapt_params where name like "last-url-%%" and name not in (%s)' % (','.join('"last-url-%s"'% r.name for r in repos_list)))
             for repo in repos_list:
-                logger.info(u'Getting packages from %s' % repo.repo_url)
-                try:
-                    result[repo.name] = repo.update_db(waptdb=self,force=force,filter_on_host_cap=filter_on_host_cap)
-                except Exception as e:
-                    logger.critical(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
+                # if auto discover, repo_url can be None if no network.
+                if repo.repo_url:
+                    try:
+                        logger.info(u'Getting packages from %s' % repo.repo_url)
+                        result[repo.name] = repo.update_db(waptdb=self,force=force,filter_on_host_cap=filter_on_host_cap)
+                    except Exception as e:
+                        logger.critical(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
+                else:
+                    logger.info('No location found for repository %s, skipping' % (repo.name))
         return result
 
     def build_depends(self,packages):

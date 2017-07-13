@@ -766,10 +766,21 @@ def test_update():
     w.update(force=True)
     print('update: %ss' % (time.time() - t1,))
 
+def test_download_packages():
+    w = Wapt()
+    w.dbpath = ':memory:'
+    w.use_hostpackages = False
+    t1 = time.time()
+    w.update()
+    res = w.download_packages('tis-firefox-esr')
+    print res
+    print('download: %ss' % (time.time() - t1,))
+
 if __name__ == '__main__':
     setup_test()
-    test_update()
+    test_download_packages()
     sys.exit(0)
+    test_update()
     test_build_sign_verify_package()
     test_partial_chain()
 
