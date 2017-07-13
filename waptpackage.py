@@ -877,15 +877,8 @@ class PackageEntry(object):
         if cert is None:
             raise EWaptMissingCertificate('Control %s data has no matching certificate in Packages index or Package, please rescan your Packages index.' % self.asrequirement())
 
-        # be sure to get CRLs for this cert.
-        try:
-            if signers_bundle:
-                cabundle.update_crl(for_certificates = signers_bundle.certificates())
-        except Exception as e:
-            logger.warning('Unable to update CRL : %s' % repr(e))
-
         issued_by = cabundle.check_certificates_chain(cert)[-1]
-        logger.debug('Certificate %s is trusted by root CA %s' % (cert.subject,issued_by.subject))
+        #logger.debug('Certificate %s is trusted by root CA %s' % (cert.subject,issued_by.subject))
 
         if cert.verify_content(signed_content,signature_raw,md=self._default_md):
             self._md = self._default_md
@@ -1437,7 +1430,7 @@ class WaptBaseRepo(object):
                     crl = SSLCRL(pem_data=data)
                 signer_certificates.add_crl(crl)
 
-        logger.debug('Packages embedded certificates : %s' % signer_certificates.certificates())
+        #logger.debug('Packages embedded certificates : %s' % signer_certificates.certificates())
         return signer_certificates
 
     def update(self):
@@ -2085,7 +2078,7 @@ class WaptRemoteRepo(WaptBaseRepo):
             # load certificates and CRLs
             signer_certificates = self.get_certificates(packages_zipfile = zip)
 
-        logger.debug('Packages embedded certificates : %s' % signer_certificates.certificates())
+        logger.debug('Packages index from repo %s has %s embedded certificates' % (self.name,len(signer_certificates._certificates)))
 
         startline = 0
         endline = 0

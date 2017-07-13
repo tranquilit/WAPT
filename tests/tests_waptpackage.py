@@ -758,8 +758,19 @@ def test_partial_chain():
     res = ca.check_certificates_chain(certs)
     print res
 
+def test_update():
+    w = Wapt()
+    w.dbpath = ':memory:'
+    w.use_hostpackages = False
+    t1 = time.time()
+    w.update(force=True)
+    print('update: %ss' % (time.time() - t1,))
+
 if __name__ == '__main__':
     setup_test()
+    test_update()
+    sys.exit(0)
+    test_build_sign_verify_package()
     test_partial_chain()
 
     test_whole_ca()
@@ -773,7 +784,6 @@ if __name__ == '__main__':
     #test_hook_action()
     test_hostcert()
     test_wapt_engine()
-    test_build_sign_verify_package()
     test_crl()
     #test_openssl()
     test_subject_hash()
