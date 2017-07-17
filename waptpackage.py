@@ -77,7 +77,7 @@ import base64
 from iniparse import RawConfigParser
 import traceback
 
-logger = logging.getLogger()
+logger = logging.getLogger('wapt')
 
 
 def md5_for_file(fname, block_size=2**20):

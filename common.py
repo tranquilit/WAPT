@@ -107,8 +107,6 @@ from waptpackage import *
 
 import setuphelpers
 
-logger = logging.getLogger()
-
 def create_self_signed_key(orgname,
         wapt_base_dir=None,
         destdir='c:\\private',

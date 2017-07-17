@@ -37,8 +37,6 @@ import ConfigParser
 import tempfile
 import logging
 
-logger = logging.getLogger('waptserver')
-
 
 _defaults = {
     'client_tasks_timeout': 5,

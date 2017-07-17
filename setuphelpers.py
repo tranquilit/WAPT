@@ -308,7 +308,8 @@ import getpass
 
 from iniparse import RawConfigParser
 import keyfinder
-logger = logging.getLogger()
+
+logger = logging.getLogger('wapt')
 
 # common windows diectories
 desktop = winshell.desktop
