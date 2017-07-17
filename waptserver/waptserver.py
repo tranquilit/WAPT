@@ -121,9 +121,6 @@ ALLOWED_EXTENSIONS = set(['wapt'])
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
 config_file = DEFAULT_CONFIG_FILE
 
-# setup logging
-logger = logging.getLogger()
-
 #
 app = Flask(__name__, static_folder='./templates/static')
 app.config['CONFIG_FILE'] = config_file
@@ -134,7 +131,7 @@ conf = waptserver_config.load_config(config_file)
 app.config['SECRET_KEY'] = conf.get('secret_key')
 
 # chain SocketIO server
-socketio = SocketIO(app, logger=logger, max_size=conf['max_clients'])
+socketio = SocketIO(app, logger = logger, max_size=conf['max_clients'])
 
 try:
     import wsus
@@ -1899,9 +1896,13 @@ if __name__ == '__main__':
     else:
         hdlr = logging.FileHandler(os.path.join(log_directory, 'waptserver.log'))
 
-    hdlr.setFormatter(
-        logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
-    logger.addHandler(hdlr)
+    # setup logging
+    for log in (app.logger_name,'wapt','waptcrypto','peewee'):
+        logger = logging.getLogger(log)
+        setloglevel(logger,options.loglevel)
+        hdlr.setFormatter(
+            logging.Formatter('%(name)s %(asctime)s %(levelname)s %(message)s'))
+        logger.addHandler(hdlr)
 
     # check wapt directories
     if not os.path.exists(conf['wapt_folder']):

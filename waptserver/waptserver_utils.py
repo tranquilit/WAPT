@@ -54,6 +54,7 @@ __all__ = [
 
 utils_devel_mode = False
 
+logger = logging.getLogger('waptserver')
 
 def utils_set_devel_mode(devel):
     global utils_devel_mode
@@ -91,9 +92,6 @@ def get_disk_space(directory):
 
     return ret
 
-
-# Logging #####
-logger = logging.getLogger()
 
 
 def setloglevel(logger, loglevel):

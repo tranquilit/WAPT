@@ -84,7 +84,7 @@ if platform.system() == 'Windows':
         else:
             return os.environ['PROGRAMFILES']
 
-logger = logging.getLogger()
+logger = logging.getLogger('wapt')
 
 #####################################
 # http://code.activestate.com/recipes/498181-add-thousands-separator-commas-to-formatted-number/
