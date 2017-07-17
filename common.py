@@ -2793,34 +2793,7 @@ class Wapt(object):
             args = dict(filenames = " ".join('"%s"' % fn for fn in filenames),)
             return dict(status='OK',message=ensure_unicode(self.run(self.upload_cmd % args )))
         else:
-            is_hosts = None
-            files = {}
-            for fn in filenames:
-                files[os.path.basename(fn)] = open(fn,'rb')
-                # check if same kind of Packages
-                if is_hosts is None:
-                    pe = PackageEntry()
-                    pe.load_control_from_wapt(fn)
-                    is_hosts = pe.section == 'host'
-                #else:
-                #    if (pe.section == 'host') != is_hosts:
-                #        raise Exception("You can't upload host packages and non host packages in the same time batch'
-            try:
-                if not files:
-                    res = dict(status='ERROR',message='No package to upload')
-                else:
-                    if is_hosts:
-                        res = self.waptserver.post('upload_host',files=files,auth=auth,timeout=300)
-                    else:
-                        for (fn,f) in files.iteritems():
-                            print('Uploading %s' % fn)
-                            res = self.waptserver.post('upload_package/%s'%os.path.basename(fn),data=f,auth=auth,timeout=300)
-            finally:
-                for f in files.values():
-                    f.close()
-
-            return res
-
+            return self.http_upload_package(filenames,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
 
     def check_install_running(self,max_ttl=60):
         """ Check if an install is in progress, return list of pids of install in progress
