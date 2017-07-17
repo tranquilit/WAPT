@@ -74,8 +74,8 @@ Source: "..\cache\icons\unknown.png"; DestDir: "{app}\cache\icons";
 #ifdef vcredist
 Source: "..\vc_redist\*"; DestDir: "{app}\vc_redist";
 #endif
-Source: "..\vc_redist\msvc*90.dll"; DestDir: "{app}";
-Source: "..\vc_redist\Microsoft.VC90.CRT.manifest"; DestDir: "{app}";
+Source: "..\msvc*90.dll"; DestDir: "{app}";
+Source: "..\Microsoft.VC90.CRT.manifest"; DestDir: "{app}";
 
 
 ; config file sample
