@@ -131,7 +131,7 @@ conf = waptserver_config.load_config(config_file)
 app.config['SECRET_KEY'] = conf.get('secret_key')
 
 # chain SocketIO server
-socketio = SocketIO(app, logger = logger, max_size=conf['max_clients'])
+socketio = SocketIO(app, logger = logger)
 
 try:
     import wsus
@@ -1971,7 +1971,7 @@ if __name__ == '__main__':
         wapt_db.close()
 
     if options.devel:
-        socketio.run(app, host='0.0.0.0', port=port, debug=options.devel, use_reloader=options.devel)
+        socketio.run(app, host='0.0.0.0', port=port, debug=options.devel, use_reloader=options.devel, max_size=conf['max_clients'])
     else:
-        socketio.run(app, host='127.0.0.1', port=port, debug=options.devel, use_reloader=options.devel)
+        socketio.run(app, host='127.0.0.1', port=port, debug=options.devel, use_reloader=options.devel, max_size=conf['max_clients'])
     logger.info('Waptserver stopped')
