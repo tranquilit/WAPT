@@ -162,7 +162,7 @@ def get_wapt_exe_version(exe):
     return (present, version)
 
 
-@app.teardown_apprequest
+@app.teardown_request
 def close_db(error):
     """Closes the database again at the end of the request."""
     try:
