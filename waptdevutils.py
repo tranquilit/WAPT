@@ -200,10 +200,10 @@ def update_external_repo(repourl,search_string,proxy=None,mywapt=None,newer_only
                 my_package_name = package.package
             my_packages = mywapt.is_available(my_package_name)
             if my_packages and Version(my_packages[-1].version)<Version(package.version):
-                result.append(package)
+                result.append(package.as_dict())
         return result
     else:
-        return packages
+        return [p.as_dict() for p in packages]
 
 def get_packages_filenames(waptconfigfile,packages_names,with_depends=True,verify_cert=None,repo_name='wapt-templates'):
     """Returns list of package filenames (latest version) and md5 matching comma separated list of packages names and their dependencies
