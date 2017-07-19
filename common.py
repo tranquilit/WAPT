@@ -2578,7 +2578,14 @@ class Wapt(object):
             section = 'wapt-host'
         else:
             section = None
-        host_repo = WaptHostRepo(name='wapt-host',config=self.config,host_id=self.host_packagename(),host_key=self.get_host_key())
+
+        try:
+            host_key = self.get_host_key()
+        except Exception as e:
+            # unable to access or create host key
+            host_key = None
+
+        host_repo = WaptHostRepo(name='wapt-host',config=self.config,host_id=self.host_packagename(),host_key=host_key)
         self.repositories.append(host_repo)
         if host_repo.cabundle is None:
             host_repo.cabundle = self.cabundle
