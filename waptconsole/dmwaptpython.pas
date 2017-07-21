@@ -65,12 +65,106 @@ type
           CAKeyFilename:String=''
       ):String;
 
+
+  function pyObjectToSuperObject(pvalue:PPyObject):ISuperObject;
+  function PyVarToSuperObject(PyVar:Variant):ISuperObject;
+
+
+  function SuperObjectToPyObject(aso:ISuperObject):PPyObject;
+  function SuperObjectToPyVar(aso:ISuperObject):Variant;
+
 var
   DMPython: TDMPython;
 
 implementation
 uses variants, waptcommon, uvisprivatekeyauth,inifiles,forms,controls,Dialogs;
 {$R *.lfm}
+
+function pyObjectToSuperObject(pvalue:PPyObject):ISuperObject;
+var
+  i,j,k: Integer;
+  pyKeys,pyKey,pyValue: PPyObject;
+begin
+  if GetPythonEngine.PyUnicode_Check(pvalue) or GetPythonEngine.PyString_Check(pvalue) then
+    Result := TSuperObject.Create(GetPythonEngine.PyString_AsDelphiString(pvalue))
+  else if GetPythonEngine.PyInt_Check(pvalue) then
+    Result := TSuperObject.Create(GetPythonEngine.PyInt_AsLong(pvalue))
+  else if GetPythonEngine.PyFloat_Check(pvalue) then
+    Result := TSuperObject.Create(GetPythonEngine.PyFloat_AsDouble(pvalue))
+  else if GetPythonEngine.PyList_Check(pvalue) then
+  begin
+    Result := TSuperObject.Create(stArray);
+    for k := 0 to GetPythonEngine.PyList_Size(pvalue) - 1 do
+        Result.AsArray.Add(pyObjectToSuperObject(GetPythonEngine.PyList_GetItem(pvalue,k)));
+  end
+  else if GetPythonEngine.PyDict_Check(pvalue) then
+  begin
+    Result := TSuperObject.Create(stObject);
+    pyKeys := GetPythonEngine.PyDict_Keys(pvalue);
+    j := 0;
+    pyKey := Nil;
+    pyValue := Nil;
+    while GetPythonEngine.PyDict_Next(pvalue,@j,@pyKey,@pyValue) <> 0 do
+      Result[GetPythonEngine.PyObjectAsString(pyKey)] := pyObjectToSuperObject(pyvalue);
+  end
+  else if pvalue = GetPythonEngine.Py_None then
+    Result := TSuperObject.Create(stNull)
+  else
+    Result := TSuperObject.Create(GetPythonEngine.PyObjectAsString(pvalue));
+end;
+
+function PyVarToSuperObject(PyVar:Variant):ISuperObject;
+begin
+  Result := pyObjectToSuperObject(ExtractPythonObjectFrom(PyVar));
+end;
+
+function SuperObjectToPyObject(aso: ISuperObject): PPyObject;
+var
+  i:integer;
+  _list : PPyObject;
+  item: ISuperObject;
+  key: ISuperObject;
+
+begin
+  case aso.DataType of
+    stBoolean: begin
+        if aso.AsBoolean then
+          Result := PPyObject(GetPythonEngine.Py_True)
+        else
+          Result := PPyObject(GetPythonEngine.Py_False);
+        GetPythonEngine.Py_INCREF(result);
+    end;
+    stNull: begin
+        Result := GetPythonEngine.ReturnNone;
+      end;
+    stInt: begin
+        Result := GetPythonEngine.PyInt_FromLong(aso.AsInteger);
+      end;
+    stDouble: begin
+      Result := GetPythonEngine.PyFloat_FromDouble(aso.AsDouble);
+      end;
+    stString: begin
+      Result := GetPythonEngine.PyUnicode_FromWideString(aso.AsString);
+      end;
+    stArray: begin
+      Result := GetPythonEngine.PyList_New(aso.AsArray.Length);
+      for item in aso do
+          GetPythonEngine.PyList_Append(Result,SuperObjectToPyObject(item));
+      end;
+    stObject: begin
+      Result := GetPythonEngine.PyDict_New();
+      for key in Aso.AsObject.GetNames do
+        GetPythonEngine.PyDict_SetItem(Result, SuperObjectToPyObject(key),SuperObjectToPyObject(Aso[key.AsString]));
+    end
+    else
+      Result := GetPythonEngine.VariantAsPyObject(aso);
+  end;
+end;
+
+function SuperObjectToPyVar(aso: ISuperObject): Variant;
+begin
+  result := VarPyth.VarPythonCreate(SuperObjectToPyObject(aso));
+end;
 
 procedure TDMPython.SetWaptConfigFileName(AValue: Utf8String);
 var

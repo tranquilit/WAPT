@@ -193,48 +193,7 @@ begin
       newest_only := cbNewestOnly.Checked,
       verify_cert := CBCheckhttpsCertificate.Checked);
     // todo : pass directly from python dict to TSuperObject
-    if VarIsPythonList(packages_python) then
-    begin
-      packages := TSuperObject.create(stArray);
-      ppackages := ExtractPythonObjectFrom(packages_python);
-      for i := 0 to GetPythonEngine.PyList_Size(ppackages) -1 do
-      begin
-        ppackage := GetPythonEngine.PyList_GetItem(ppackages,i);
-        if GetPythonEngine.PyDict_Check(ppackage) then
-        begin
-          package := SO();
-          pkeys := GetPythonEngine.PyDict_Keys(ppackage);
-          j := 0;
-          pkey := Nil;
-          pvalue := Nil;
-          while GetPythonEngine.PyDict_Next(ppackage,@j,@pkey,@pvalue) <> 0 do
-          begin
-            if GetPythonEngine.PyUnicode_Check(pvalue) then
-              package.S[GetPythonEngine.PyObjectAsString(pkey)] := GetPythonEngine.PyString_AsDelphiString(pvalue)
-            else if GetPythonEngine.PyString_Check(pvalue) then
-                package.S[GetPythonEngine.PyObjectAsString(pkey)] := GetPythonEngine.PyString_AsDelphiString(pvalue)
-            else if GetPythonEngine.PyInt_Check(pvalue) then
-              package.I[GetPythonEngine.PyObjectAsString(pkey)] := GetPythonEngine.PyInt_AsLong(pvalue)
-            else if GetPythonEngine.PyFloat_Check(pvalue) then
-              package.D[GetPythonEngine.PyObjectAsString(pkey)] := GetPythonEngine.PyFloat_AsDouble(pvalue)
-            else if GetPythonEngine.PyList_Check(pvalue) then
-            begin
-              item := TSuperObject.Create(stArray);
-              for k := 0 to GetPythonEngine.PyList_Size(pvalue) - 1 do
-                  item.AsArray.Add(GetPythonEngine.PyObjectAsString(GetPythonEngine.PyList_GetItem(pvalue,k)));
-              package[GetPythonEngine.PyObjectAsString(pkey)] := item;
-            end
-            else if pvalue = GetPythonEngine.Py_None then
-              package.N[GetPythonEngine.PyObjectAsString(pkey)] := Nil
-            else
-              package.S[GetPythonEngine.PyObjectAsString(pkey)] := GetPythonEngine.PyObjectAsString(pvalue);
-          end;
-          packages.AsArray.Add(package);
-        end;
-      end;
-      GridExternalPackages.Data := packages;
-    end;
-    packages_python := Nil;
+    GridExternalPackages.Data := PyVarToSuperObject(packages_python);
   except
     on E:Exception do ShowMessageFmt(rsFailedExternalRepoUpdate+#13#10#13#10+E.Message,[waptcommon.TemplatesRepoUrl]);
   end;

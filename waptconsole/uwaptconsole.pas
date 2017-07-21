@@ -1379,7 +1379,7 @@ begin
           auto_inc_version:=False);
         res := SO(VarPythonAsString(MainModule.jsondump(res_var)));
         if not DirectoryExists(res.S['sourcespath']) then
-          raise Exception.Create('Unable to edit package. Developement directory '+res.S['sourcespath']+' does not exist');
+          raise Exception.Create('Unable to edit package. Development directory '+res.S['sourcespath']+' does not exist');
         MainModule.common.wapt_sources_edit( wapt_sources_dir := DevPath);
       except
         on E:Exception do
