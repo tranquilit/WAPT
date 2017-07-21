@@ -2014,7 +2014,11 @@ def shutdown_scripts_ui_visible(state=True):
     with reg_openkey_noredir(HKEY_LOCAL_MACHINE,\
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',sam=KEY_ALL_ACCESS) as key:
         if state is None:
-            _winreg.DeleteValue(key,'HideShutdownScripts')
+            try:
+                _winreg.DeleteValue(key,'HideShutdownScripts')
+            except WindowsError as e:
+                if not e.errno in (259,2):
+                    raise
         elif state:
             reg_setvalue(key,'HideShutdownScripts',0,REG_DWORD)
         elif not state:
