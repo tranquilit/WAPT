@@ -1109,6 +1109,11 @@ def main():
                         print('Server certificate : %s' % result)
                         if result:
                             cert = SSLCertificate(result)
+                            server_host_name = urlparse.urlparse(mywapt.waptserver.server_url).netloc
+                            if cert.cn != server_host_name:
+                                raise Exception(u'Common name of certificate (%s) does not match server hostname (%s), aborting' % (cert.cn,server_host_name) )
+                            else:
+                                print('Certificate CN: %s' % cert.cn)
                             print('Pining certificate %s' % result)
                             setuphelpers.inifile_writestring(mywapt.config_filename,'global','verify_cert',result)
                             if options.json_output:
