@@ -1357,7 +1357,9 @@ end;
 
 procedure TVisWaptGUI.ActEditPackageExecute(Sender: TObject);
 var
-  Selpackage,DevPath: string;
+  res_var : Variant;
+  Selpackage: string;
+  Devpath : UnicodeString;
   res: ISuperObject;
 begin
   if GridPackages.FocusedNode <> nil then
@@ -1368,13 +1370,17 @@ begin
         GridPackages.FocusedNode, 'package'), GridPackages.GetCellStrValue(
         GridPackages.FocusedNode, 'version')]);
       try
-        DevPath:=DMPython.RunJSON(format('mywapt.get_default_development_dir("%s")', [SelPackage])).AsString;
+        DevPath := VarPythonAsString(MainModule.mywapt.get_default_development_dir(SelPackage));
         if DirectoryExistsUTF8(DevPath) then
           DevPath:=DevPath+'.'+GridPackages.GetCellStrValue(GridPackages.FocusedNode, 'version');
-        res := DMPython.RunJSON(format('mywapt.edit_package(r"%s",target_directory=r"%s",auto_inc_version=False)', [SelPackage,DevPath]));
+        res_var := MainModule.mywapt.edit_package(
+          packagerequest := Selpackage,
+          target_directory:=DevPath,
+          auto_inc_version:=False);
+        res := SO(VarPythonAsString(MainModule.jsondump(res_var)));
         if not DirectoryExists(res.S['sourcespath']) then
           raise Exception.Create('Unable to edit package. Developement directory '+res.S['sourcespath']+' does not exist');
-        DMPython.RunJSON(format('waptdevutils.wapt_sources_edit(r"%s")', [res.S['sourcespath']]));
+        MainModule.common.wapt_sources_edit( wapt_sources_dir := DevPath);
       except
         on E:Exception do
         begin
