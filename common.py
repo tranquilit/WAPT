@@ -2338,6 +2338,7 @@ class Wapt(object):
         # events handler
         self.events = None
 
+        self.progress_hook = None
 
         import pythoncom
         pythoncom.CoInitialize()
@@ -5776,6 +5777,13 @@ class Wapt(object):
         if not os.path.isfile(waptexit_path):
             raise Exception('Can not find %s'%waptexit_path)
         return setuphelpers.remove_shutdown_script(waptexit_path,'')
+
+
+    def show_progress(self,show_box=False,msg='Loading...',progress = None,progress_max = None):
+        if self.progress_hook:
+            self.progress_hook(show_box,msg,progress,progress_max)
+        else:
+            logger.debug('%s : %s / %s' % (msg,progress,progress_max))
 
 def wapt_sources_edit(wapt_sources_dir):
     """Utility to open Pyscripter with package source if it is installed

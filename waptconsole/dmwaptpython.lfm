@@ -28,6 +28,16 @@ object DMPython: TDMPython
       item
         Name = 'GetPrivateKeyPassword'
         OnExecute = PythonModule1Events0Execute
+      end    
+      item
+        Name = 'UpdateProgress'
+        OnExecute = PythonModuleDMWaptPythonEvents1Execute
+        DocString.Strings = (
+          'Args:'
+          '  show: bool'
+          '   progress: int'
+          '   msg: unicode'
+        )
       end>
     ModuleName = 'dmwaptpython'
     Errors = <>
