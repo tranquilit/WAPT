@@ -5180,7 +5180,7 @@ class Wapt(object):
             packagecond (PackageEntry or str): either PackageEntry or a "name(=version)" string
 
         Returns:
-            str: path to local proposed development directory
+            unicode: path to local proposed development directory
         """
         if not isinstance(packagecond,PackageEntry):
             # assume something like "package(=version)"
@@ -5189,9 +5189,9 @@ class Wapt(object):
         else:
             pe = packagecond
 
-        root = self.config.get('global','default_sources_root')
+        root = ensure_unicode(self.config.get('global','default_sources_root'))
         if not root:
-            root = tempfile.gettempdir()
+            root = ensure_unicode(tempfile.gettempdir())
         return os.path.join(root, pe.make_package_edit_directory())
 
     def add_pyscripter_project(self,target_directory):
