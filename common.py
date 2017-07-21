@@ -1384,7 +1384,11 @@ class WaptServer(object):
 
     def get_computer_principal(self):
         try:
-            return '%s@%s' % (setuphelpers.get_computername().upper(),setuphelpers.get_domain_fromregistry().upper())
+            dnsdomain = setuphelpers.get_domain_fromregistry()
+            if not dnsdomain:
+                dnsdomain = self.dnsdomain
+
+            return '%s@%s' % (setuphelpers.get_computername().upper(),dnsdomain.upper())
         except Exception as e:
             logger.critical('Unable to build computer_principal %s' % repr(e))
             raise
