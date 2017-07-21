@@ -35,11 +35,40 @@ type
     procedure DoProgress(Sender:TObject);
   end;
 
+  procedure ShowLoadWait(Msg:String;Progress:Integer=0;MaxProgress:Integer = 100);
+  procedure ShowProgress(Msg:String;Progress:Integer=0);
+  procedure HideLoadWait;
+
 var
   VisLoading: TVisLoading;
 
 implementation
 uses uWaptConsoleRes,uScaleDPI;
+
+procedure ShowLoadWait(Msg: String; Progress: Integer; MaxProgress: Integer);
+begin
+  if VisLoading = Nil then
+      VisLoading := TVisLoading.Create(Application);
+  VisLoading.Show;
+  VisLoading.ProgressStep(Progress,MaxProgress);
+  VisLoading.ProgressTitle(Msg);
+end;
+
+procedure ShowProgress(Msg: String; Progress: Integer);
+begin
+  VisLoading.ProgressTitle(Msg);
+  VisLoading.ProgressStep(Progress,VisLoading.AProgressBar.Max);;
+end;
+
+procedure HideLoadWait;
+begin
+  if VisLoading<> Nil then
+  begin
+    VisLoading.Finish;
+    VisLoading.Close;
+  end;
+end;
+
 {$R *.lfm}
 
 { TVisLoading }
@@ -49,7 +78,6 @@ begin
   StopRequired:=True;
   if Assigned(OnStop) then
     OnStop(Self);
-
 end;
 
 procedure TVisLoading.FormCreate(Sender: TObject);
@@ -86,7 +114,6 @@ begin
   AProgressBar.Max:=Max;
   ShowOnTop;
   Application.ProcessMessages;
-
 end;
 
 procedure TVisLoading.Finish;

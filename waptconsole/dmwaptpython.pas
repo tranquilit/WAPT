@@ -20,6 +20,8 @@ type
     procedure DataModuleDestroy(Sender: TObject);
     procedure PythonModule1Events0Execute(Sender: TObject; PSelf,
       Args: PPyObject; var Result: PPyObject);
+    procedure PythonModuleDMWaptPythonEvents1Execute(Sender: TObject; PSelf,
+      Args: PPyObject; var Result: PPyObject);
   private
     FLanguage: String;
     FCachedPrivateKeyPassword: Ansistring;
@@ -77,7 +79,7 @@ var
   DMPython: TDMPython;
 
 implementation
-uses variants, waptcommon, uvisprivatekeyauth,inifiles,forms,controls,Dialogs;
+uses variants, waptcommon, uvisprivatekeyauth,inifiles,forms,controls,Dialogs,uvisloading;
 {$R *.lfm}
 
 function pyObjectToSuperObject(pvalue:PPyObject):ISuperObject;
@@ -140,7 +142,7 @@ begin
     stInt: begin
         Result := GetPythonEngine.PyInt_FromLong(aso.AsInteger);
       end;
-    stDouble: begin
+    stDouble,stCurrency: begin
       Result := GetPythonEngine.PyFloat_FromDouble(aso.AsDouble);
       end;
     stString: begin
@@ -202,6 +204,8 @@ begin
       st.Append('mywapt.dbpath=r":memory:"');
       st.Append('mywapt.use_hostpackages = False');
       st.Append('import dmwaptpython');
+      st.Append('mywapt.progress_hook = dmwaptpython.UpdateProgress');
+
 
       //st.Append('mywapt.update(register=False)');
       PythonEng.ExecStrings(St);
@@ -277,8 +281,31 @@ end;
 procedure TDMPython.PythonModule1Events0Execute(Sender: TObject; PSelf,
   Args: PPyObject; var Result: PPyObject);
 begin
-  ShowMessage(VarPythonCreate(Args).GetItem(0));
+  //ShowMessage(VarPythonCreate(Args).GetItem(0));
   Result :=  PythonEng.ReturnNone;
+end;
+
+procedure TDMPython.PythonModuleDMWaptPythonEvents1Execute(Sender: TObject;
+  PSelf, Args: PPyObject; var Result: PPyObject);
+var
+  DoShow,Progress,ProgressMax,Msg: Variant;
+  ArgsVar:Variant;
+begin
+  ArgsVar := VarPythonCreate(Args);
+  DoShow := ArgsVar.GetItem(0);
+  Progress := ArgsVar.GetItem(1);
+  ProgressMax := ArgsVar.GetItem(2);
+  Msg :=ArgsVar.GetItem(3);
+
+  If DoShow then
+    ShowLoadWait(Msg,Progress,ProgressMax)
+  else
+    HideLoadWait();
+  if (VisLoading<>Nil)  and (VisLoading.StopRequired) then
+    Result := PythonEng.PyBool_FromLong(1)
+  else
+    Result:=PythonEng.ReturnNone;
+
 end;
 
 function TDMPython.RunJSON(expr: UTF8String; jsonView: TVirtualJSONInspector=Nil): ISuperObject;
