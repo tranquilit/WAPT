@@ -743,6 +743,7 @@ def change_passsword():
 @app.route('/api/v3/login', methods=['POST'])
 def login():
     error = ''
+    result = None
     try:
         # TODO use session...
         post_data = request.get_json()
@@ -758,7 +759,7 @@ def login():
         # TODO : sanity check on username
         if not re.match('[a-z0-9]+[a-z0-9-_]+[a-z0-9]+$', user, re.IGNORECASE):
             msg = 'login must be alphanumeric with a dash'
-            raise Exception(msg)
+            raise EWaptAuthenticationFailure(msg)
 
         if user is not None and password is not None:
             if check_auth(user, password):
@@ -767,15 +768,15 @@ def login():
                     version=__version__,
                 )
                 session['user'] = user
-
+            else:
+                raise EWaptAuthenticationFailure('Authentication failed.')
         else:
-            raise EWaptMissingParameter('Missing parameter')
+            raise EWaptMissingParameter('Missing parameter for authentication')
         msg = 'Authentication OK'
         return make_response(result=result, msg=msg, status=200)
     except Exception as e:
         if 'auth_token' in session:
-            session['auth_token']
-        msg = 'Authentication failed'
+            del session['auth_token']
         logger.debug(traceback.print_exc())
         return make_response_from_exception(e)
 
