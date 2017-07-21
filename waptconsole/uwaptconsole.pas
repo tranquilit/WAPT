@@ -3332,7 +3332,7 @@ begin
           if edtemplates_repo_url.Text = '' then
             edtemplates_repo_url.Text := 'https://store.wapt.fr/wapt';
 
-          inifile.WriteString('wapt-templates', 'http_proxy', edhttp_proxy.Text);
+          inifile.WriteString('wapt-templates', 'http_proxy', edhttp_proxy_templates.Text);
           inifile.WriteString('wapt-templates', 'repo_url', edtemplates_repo_url.Text);
 
           inifile.WriteString('wapt-templates', 'public_certs_dir',EdTemplatesAuthorizedCertsDir.Text);
