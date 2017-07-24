@@ -66,6 +66,7 @@ def main():
     parser.add_option("-k","--private-key", dest="private_key", default='', help="Path to the PEM RSA private key to sign packages.  (default: %default)")
     #parser.add_option("-w","--private-key-passwd", dest="private_key_passwd", default='', help="Path to the password of the private key. (default: %default)")
     parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
+    parser.add_option("-i","--if-needed", dest="if_needed", default=False, action='store_true',help="Re-sign package only if needed (default: warning)")
     parser.add_option("-m","--message-digest", dest="md", default='sha256', help="Message digest type for signatures.  (default: %default)")
     parser.add_option("-s","--scan-packages", dest="doscan", default=False, action='store_true', help="Rescan packages and update local Packages index after signing.  (default: %default)")
     (options,args) = parser.parse_args()
@@ -103,6 +104,10 @@ def main():
 
     args = ensure_list(args)
 
+    ca_bundle = SSLCABundle()
+    signers_bundle = SSLCABundle()
+    signers_bundle.add_certificates([cert])
+
 
     waptpackages = []
     for arg in args:
@@ -118,6 +123,17 @@ def main():
         print('Processing %s'%waptpackage)
         try:
             pe = PackageEntry(waptfile = waptpackage)
+            if options.if_needed:
+                try:
+                    pe.check_control_signature(cabundle=signers_bundle,signers_bundle=signers_bundle)
+                    for md in ensure_list(options.md):
+                        if not pe.has_file(pe.get_signature_filename(md)):
+                            raise Exception('Missing signature for md %s' % md)
+                    logger.info('Skipping %s, already signed properly' % pe.asrequirement())
+                    continue
+                except Exception as e:
+                    logger.info('Sign is needed for %s because %s' % (pe.asrequirement(),e))
+                    pass
 
             pe.sign_package(private_key=key,certificate = cert,mds = ensure_list(options.md))
             print('Done')

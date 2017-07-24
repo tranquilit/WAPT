@@ -886,6 +886,30 @@ class PackageEntry(object):
 
         raise SSLVerifyException('SSL signature verification failed for control %s against embedded certificate %s : %s' % (self.asrequirement(),cert,repr(e)))
 
+    def has_file(self,fname):
+        """Return None if fname is not in package, else return file datetime
+
+        Args:
+            fname (unicode): file path like WAPT/signature
+
+        Returns:
+            datetime : last modification datetime of file in Wapt archive if zipped or local sources if unzipped
+        """
+        if self.localpath and os.path.isfile(self.localpath):
+            try:
+                with ZipFile(self.localpath,allowZip64=True) as zip:
+                    return datetime.datetime(*zip.getinfo(fname).date_time)
+            except KeyError as e:
+                return None
+        elif self.sourcespath and os.path.isdir(self.sourcespath) and os.path.isfile(os.path.join(self.sourcespath,fname)):
+            # unzipped sources
+            fpath = os.path.abspath(os.path.join(self.sourcespath,fname))
+            return datetime.datetime.fromtimestamp(os.stat(fpath).st_mtime)
+        else:
+            # package is not yet built/signed.
+            return None
+
+
     def package_certificate(self):
         """Return certificate from package. If package is built, take it from Zip
         else take the certificate from unzipped directory
