@@ -55,11 +55,13 @@ class TestNamespace(BaseNamespace):
 clients = []
 
 print('Starting socketio...')
-socketIO = SocketIO('192.168.149.139',8080,transports=['websocket'])
+socketIO = SocketIO('192.168.149.209',8080,transports=['websocket'],verify=False)
 test_namespace = socketIO.define(TestNamespace)
 
 #socketIO.wait(seconds=1)
 test_namespace.emit('new connection %s' % socketIO._engineIO_session.id)
+
+test_namespace.join('4ba87d1cf351428e970ee7f1c9ce0f6e')
 
 socketIO.wait()
 

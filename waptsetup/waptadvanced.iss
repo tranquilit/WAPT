@@ -120,15 +120,16 @@ de.UpdatePkgUponShutdown=Packete aktualisieren beim herunterfahren
 
 [Code]
 var
-  rbStaticUrl,rbDnsServer: TNewRadioButton;
+  cbStaticUrl,cbDnsServer: TNewRadioButton;
   CustomPage: TWizardPage;
-  teWaptServerUrl:TEdit;
-  TLabelRepo,labServer,labHintServer: TLabel;
+  edWaptServerUrl,edDNSDomain:TEdit;
+  labRepo,labServer,labDNSDomain: TLabel;
 
 procedure OnServerClicked(Sender:TObject);
 begin
-   teWaptServerUrl.Enabled:= not rbDnsServer.Checked;
-   teWaptRepoUrl.Enabled:= not rbDnsServer.Checked;
+   edWaptServerUrl.Enabled:= not cbDnsServer.Checked;
+   edWaptRepoUrl.Enabled:= not cbDnsServer.Checked;
+   edDNSDomain.Enabled := cbDnsServer.Checked;
 end;
 
 function GetRepoURL(Param:String):String;

@@ -12,7 +12,7 @@
 import os
 import time
 
-for client in range(0,50):
+for client in range(0,2000):
     p = os.spawnl(os.P_NOWAIT,r'c:\windows\system32\cmd.exe','/C',r'c:\tranquilit\wapt\waptpython.exe',r'c:\tranquilit\wapt\tests\sio_client.py')
     print client,p
 

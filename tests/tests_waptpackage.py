@@ -776,10 +776,17 @@ def test_download_packages():
     print res
     print('download: %ss' % (time.time() - t1,))
 
+def test_hostkey():
+    w = Wapt()
+    w.dbpath=':memory:'
+    w.use_hostpackages = False
+    w.update()
+
 if __name__ == '__main__':
     setup_test()
+    test_hostkey()
     test_download_packages()
-    sys.exit(0)
+
     test_update()
     test_build_sign_verify_package()
     test_partial_chain()
