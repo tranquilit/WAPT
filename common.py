@@ -704,7 +704,7 @@ def create_recursive_zip_signed(zipfn, source_root, target_root = u"",excludes =
             continue
         source_item_fn = os.path.join(source_root, item)
         zip_item_fn = os.path.join(target_root,item)
-        if zip_item_fn in ('WAPT\\manifest.sha1','WAPT\\signature'):
+        if zip_item_fn in ('WAPT\\manifest.sha1','WAPT\\signature','WAPT\\manifest.sha256','WAPT\\signature.sha256'):
             continue
         if os.path.isfile(source_item_fn):
             if logger: logger.debug(u' adding file %s' % source_item_fn)
@@ -717,7 +717,7 @@ def create_recursive_zip_signed(zipfn, source_root, target_root = u"",excludes =
         if logger:
             logger.debug(u'  adding sha1 hash for all %i files' % len(result))
         # Write a file with all sha1 hashes of all files
-        manifest = [ r for r in result if r[0] not in ('WAPT\\manifest.sha1','WAPT\\signature') ]
+        manifest = [ r for r in result if r[0] not in ('WAPT\\manifest.sha1','WAPT\\signature','WAPT\\manifest.sha256','WAPT\\signature.sha256',) ]
         manifest_data = json.dumps(manifest,indent=True)
         zipf.writestr(os.path.join(target_root,'WAPT/manifest.sha1'), manifest_data)
         zipf.close()
@@ -735,7 +735,7 @@ def get_manifest_data(source_root, target_root=u'', excludes = [u'.svn',u'.git',
             excluded = fnmatch.fnmatch(item,x)
             if excluded:
                 break
-        if target_root == 'WAPT' and item in ('manifest.sha1','signature'):
+        if target_root == 'WAPT' and item in ('manifest.sha1','signature','manifest.sha256','signature.sha256'):
             excluded = True
         if excluded:
             continue
@@ -3340,7 +3340,7 @@ class Wapt(object):
                 errors.append(filename)
         files = setuphelpers.all_files(ensure_unicode(rootdir))
         # removes files which are not in manifest by design
-        for fn in ('WAPT/signature','WAPT/manifest.sha1'):
+        for fn in ('WAPT/signature','WAPT/manifest.sha1','WAPT/manifest.sha256','WAPT/signature.sha256'):
             full_fn = os.path.abspath(os.path.join(rootdir,fn))
             if full_fn in files:
                 files.remove(full_fn)
