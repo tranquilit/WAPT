@@ -134,6 +134,7 @@ __all__ = \
  'need_install',
  'os',
  'params',
+ 'pending_reboot_reasons',
  'programfiles',
  'programfiles32',
  'programfiles64',
@@ -1980,30 +1981,11 @@ def add_shutdown_script(cmd,parameters):
             update_gpt = True
         else:
             ext = gptini.get('General','gPCMachineExtensionNames').strip().replace('][','],[').split(',')
-            # fix malformed array : should be a list of pairs [{i1}{i2}][{j1}{j2}][{k1}{k2}]
-            if ext:
-                # calc a new list of pairs
-                newext = []
-                bad = False
-                for e in ext:
-                    e = e.strip('[]')
-                    guids = e.replace('}{','},{').split(',')
-                    if len(guids)>2:
-                        bad = True
-                        i = 0
-                        while i < len(guids):
-                            newext.append('[%s%s]'%(guids[i],guids[i+1]))
-                            i+=2
-                    else:
-                        newext.append(e)
-                if bad:
-                    ext = newext
-                    update_gpt = True
-
             if not '[{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}]' in ext:
                 ext.append('[{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}]')
                 update_gpt = True
-            gptini.set('General','gPCMachineExtensionNames',''.join(ext))
+
+            gptini.set('General','gPCMachineExtensionNames',''.join(sorted(ext)))
         # increment version
         if gptini.has_option('General','Version'):
             version = gptini.getint('General','Version')
@@ -2170,7 +2152,11 @@ def shutdown_scripts_ui_visible(state=True):
     with reg_openkey_noredir(HKEY_LOCAL_MACHINE,\
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',sam=KEY_ALL_ACCESS) as key:
         if state is None:
-            _winreg.DeleteValue(key,'HideShutdownScripts')
+            try:
+                _winreg.DeleteValue(key,'HideShutdownScripts')
+            except WindowsError as e:
+                if not e.errno in (259,2):
+                    raise
         elif state:
             reg_setvalue(key,'HideShutdownScripts',0,REG_DWORD)
         elif not state:
@@ -2660,6 +2646,25 @@ def critical_system_pending_updates():
     searchResult = updateSearcher.Search("IsInstalled=0 and Type='Software'")
     return [ update.Title for update in searchResult.Updates if update.MsrcSeverity == 'Critical']
 
+def pending_reboot_reasons():
+    """Return the list of reasons requiring a pending reboot the computer
+        If list is empty, no reboot is needed.
+
+    Returns:
+        list : list of Windows Update, CBS Updates or File Renames
+    """
+    result = []
+    reboot_required = registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update','RebootRequired',0)
+    if reboot_required:
+        result.append('Windows Update: %s' % reboot_required)
+    reboot_pending = registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing','RebootPending',0)
+    if reboot_pending:
+        result.append('CBS Updates: %s' % reboot_pending)
+    renames_pending = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager','PendingFileRenameOperations',None)
+    if renames_pending:
+        result.append('File renames: %s' % renames_pending)
+    return result
+
 
 def get_default_gateways():
     import wmi
@@ -3145,6 +3150,15 @@ def service_installed(service_name):
             return False
         else:
             raise
+
+def service_delete(service_name):
+    hscm = win32service.OpenSCManager(None,None,win32service.SC_MANAGER_ALL_ACCESS)
+    try:
+        hs = win32serviceutil.SmartOpenService(hscm, service_name, win32service.SERVICE_ALL_ACCESS)
+        win32service.DeleteService(hs)
+        win32service.CloseServiceHandle(hs)
+    finally:
+        win32service.CloseServiceHandle(hscm)
 
 
 def service_start(service_name):
