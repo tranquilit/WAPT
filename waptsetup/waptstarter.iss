@@ -36,7 +36,7 @@ Name: "{commonprograms}\WaptStarter"; IconFilename: "{app}\wapt.ico"; Filename: 
 Name: "{commondesktop}\WaptStarter"; IconFilename: "{app}\wapt.ico"; Filename: "http://localhost:8088";
 
 [Run]
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct --force update"; Flags: runhidden; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
 Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhidden; StatusMsg: {cm:UpdateOnShutdown}; Description: "{cm:UpdateOnShutdown}"
 
 [Languages]
