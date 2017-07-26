@@ -1420,9 +1420,9 @@ class WaptBaseRepo(object):
         self._packages_date = None
         self.discarded = []
 
-    def _get_packages_index_file(self,mode='rb'):
+    def _get_packages_index_data(self):
         """Abstract"""
-        return StringIO.StringIO('')
+        return ''
 
     def get_certificates(self,packages_zipfile=None):
         """Download signers certificates and crl from Package index on remote repository.
@@ -1438,7 +1438,7 @@ class WaptBaseRepo(object):
         """
         signer_certificates = SSLCABundle()
         if packages_zipfile is None:
-            packages_zipfile = zipfile.ZipFile(self._get_packages_index_file())
+            packages_zipfile = zipfile.ZipFile(StringIO.StringIO(self._get_packages_index_data()))
 
         filenames = packages_zipfile.namelist()
         for fn in filenames:
@@ -1629,13 +1629,13 @@ class WaptLocalRepo(WaptBaseRepo):
     def packages_path(self):
         return os.path.abspath(os.path.join(self.localpath,'Packages'))
 
-    def _get_packages_index_file(self,mode='rb'):
+    def _get_packages_index_data(self):
         """Download or load local Packages index raw zipped data
 
         Returns:
             file: File like object for Packages Zipped data (local or remote)
         """
-        return open(self.packages_path,mode=mode)
+        return open(self.packages_path,mode='rb').read()
 
     def _load_packages_index(self):
         """Parse Packages index from local repo Packages file
@@ -1656,7 +1656,7 @@ class WaptLocalRepo(WaptBaseRepo):
 
         if os.path.isfile(self.packages_path):
             self._packages_date = datetime2isodate(datetime.datetime.utcfromtimestamp(os.stat(self.packages_path).st_mtime))
-            with zipfile.ZipFile(self._get_packages_index_file()) as packages_file:
+            with zipfile.ZipFile(StringIO.StringIO(self._get_packages_index_data())) as packages_file:
                 packages_lines = packages_file.read(name='Packages').decode('utf8').splitlines()
 
             if self._packages is not None:
@@ -2061,6 +2061,7 @@ class WaptRemoteRepo(WaptBaseRepo):
             raise
         except requests.RequestException as e:
             logger.info(u'Repo packages index %s is not available : %s'%(self.packages_url,e))
+
             return None
 
     def _load_packages_index(self):
@@ -2083,19 +2084,7 @@ class WaptRemoteRepo(WaptBaseRepo):
 
         new_packages = []
         logger.debug(u'Read remote Packages zip file %s' % self.packages_url)
-        packages_answer = requests.get(
-            self.packages_url,
-            proxies=self.proxies,
-            timeout=self.timeout,
-            verify=self.verify_cert,
-            headers=default_http_headers(),
-            cert = self.client_auth(),
-            )
-        packages_answer.raise_for_status()
-
-
-        # Packages file is a zipfile with one Packages file inside and a list of SSLCertificates
-        with zipfile.ZipFile(StringIO.StringIO(packages_answer.content)) as zip:
+        with zipfile.ZipFile(StringIO.StringIO(self._get_packages_index_data())) as zip:
             filenames = zip.namelist()
             packages_lines = codecs.decode(zip.read(name='Packages'),'UTF-8').splitlines()
 

@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.13"
+__version__ = "1.5.0.14"
 import logging
 import sys
 import tempfile
@@ -541,7 +541,7 @@ def test_get_peer_chain():
     certs = get_peer_cert_chain_from_server('https://www.google.fr')
 
     bundle = SSLCABundle()
-    bundle.add_pems('c:/wapt/ssl/server/waptrpm-dca.ad.tranquil.it.crt')
+    bundle.add_pems('c:/tranquilit/wapt/tests/ssl/waptrpm-dca.ad.tranquil.it.crt')
     certs = bundle._certificates
     ca = SSLCABundle(certifi.where())
 
@@ -782,8 +782,18 @@ def test_hostkey():
     w.use_hostpackages = False
     w.update()
 
+def test_encryption_algo():
+    k = SSLPrivateKey()
+    k.create()
+    print k.as_pem('mypassword')
+
+
+
+
 if __name__ == '__main__':
     setup_test()
+    test_encryption_algo()
+
     test_hostkey()
     test_download_packages()
 
