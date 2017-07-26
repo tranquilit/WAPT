@@ -856,11 +856,11 @@ def main():
                     res = mywapt.upload_package(waptfiles,
                             wapt_server_user = options.wapt_server_user,
                             wapt_server_passwd = options.wapt_server_passwd)
-                    if res['status'] != 'OK':
-                        print(u'Error when uploading package : %s' % res['message'])
+                    if not res['success']:
+                        print(u'Error when uploading package : %s' % res['msg'])
                         sys.exit(1)
                     else:
-                        print(u'Package uploaded successfully: %s' % res['message'])
+                        print(u'Package uploaded successfully: %s' % res['msg'])
 
                     if mywapt.after_upload:
                         print('Run "after upload" script...')
@@ -910,10 +910,10 @@ def main():
                         wapt_server_user = options.wapt_server_user,
                         wapt_server_passwd=options.wapt_server_passwd)
 
-                if not result['status'] == 'OK':
-                    raise Exception('Error uploading packages : %s' % result['message'])
+                if not result['success']:
+                    raise Exception('Error uploading packages : %s' % result['msg'])
                 else:
-                    print('OK : %s' % result['message'])
+                    print('OK : %s' % result['msg'])
 
                 if mywapt.after_upload:
                     print('Run "after upload" script...')
