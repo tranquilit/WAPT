@@ -1109,8 +1109,7 @@ begin
     UseProxyForServer := ReadBool('global','use_http_proxy_for_server',False);
 
     TemplatesRepoUrl := ReadString('wapt-templates','repo_url','https://store.wapt.fr/wapt/');
-
-    AuthorizedCertsDir := ReadString('global', 'authorized_certs_dir', AppendPathDelim(GetAppdataFolder)+'waptconsole\ssl');
+    AuthorizedCertsDir := ReadString('wapt-templates', 'public_certs_dir', AppendPathDelim(GetAppdataFolder)+'waptconsole\ssl');
     if (AuthorizedCertsDir<>'') and not DirectoryExists(AuthorizedCertsDir) then
     try
       CreateDirUTF8(AuthorizedCertsDir);
