@@ -471,7 +471,7 @@ def main():
                     jsonresult['result'] = result
                     for p in result:
                         try:
-                            crt = p.check_control_signature(mywapt.cabundle)
+                            crt = p.check_control_signature(mywapt.cabundle,mywapt.cabundle)
                             print('%s OK control signature checked properly by certificate %s (fingerprint: %s )' % (p.filename,crt.cn,crt.fingerprint))
                         except (EWaptCryptoException,EWaptException) as e:
                             print('%s ERROR control signature can not be validated with certificates %s' % (p.filename,mywapt.authorized_certificates()))
@@ -485,7 +485,7 @@ def main():
                             print('')
                             try:
                                 logger.info(u'Verifying package control signature against certificates %s' % ', '.join(['"%s"'%crt.cn for crt in  mywapt.authorized_certificates()]))
-                                crt = p.check_control_signature(mywapt.cabundle)
+                                crt = p.check_control_signature(mywapt.cabundle,mywapt.cabundle)
                                 print('OK Package control signature checked properly by certificate %s (fingerprint: %s )' % (crt.cn,crt.fingerprint))
                             except (EWaptCryptoException,EWaptException) as e:
                                 print('WARNING: control data signature can not be validated with certificates %s' %mywapt.authorized_certificates())
