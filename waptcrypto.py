@@ -1515,7 +1515,7 @@ class SSLCertificate(object):
 
         return chain
 
-    def verify_claim(self,claim,max_age_secs=None):
+    def verify_claim(self,claim,max_age_secs=None,required_attributes=[]):
         """Verify a simple dict signed with SSLPrivateKey.sign_claim
 
         Args:
@@ -1540,6 +1540,15 @@ class SSLCertificate(object):
         """
         assert(isinstance(claim,dict))
         attributes = claim['signed_attributes']
+
+        for att in ['signed_attributes','signer','signature_date','signer_certificate']:
+            if not att in required_attributes:
+                required_attributes.append(att)
+
+        for att in required_attributes:
+            if not att in attributes:
+                raise SSLVerifyException('Missing required attribute "%s" in signed claim' % att)
+
         reclaim = {att:claim.get(att,None) for att in attributes}
         signature = claim['signature'].decode('base64')
 

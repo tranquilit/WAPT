@@ -240,6 +240,52 @@ def test_sign_action():
         print(u'OK: erreur %s'%e)
 
 
+
+def test_sign_action2():
+    action = dict(action='install',package='tis-7zip')
+    action_signed = key.sign_claim(action,certificate=gest)
+    t1 = time.time()
+    for i in range(0,100):
+        action_signed = key.sign_claim(action,certificate=gest,attributes=['action'])
+    print('Signature 100 fois...: %s' % (time.time()-t1,))
+
+    print('test verification attribut requis')
+    try:
+        print gest.verify_claim(action_signed,required_attributes=['package'])
+        raise Exception('erreur... devrait fail')
+    except SSLVerifyException as e:
+        print(u'OK: erreur %s'%e)
+
+    print('test verification partielle')
+    print gest.verify_claim(action_signed,required_attributes=['action'])
+
+    print('test corruption')
+    action_signed = key.sign_claim(action,certificate=gest)
+    action_signed['package']='garb'
+    try:
+        print gest.verify_claim(action_signed,required_attributes=['action'])
+        raise Exception('erreur... devrait fail')
+    except SSLVerifyException as e:
+        print(u'OK: erreur %s'%e)
+
+    print('test replay')
+    action_signed = key.sign_claim(action,certificate=gest,attributes=[])
+    try:
+        time.sleep(2)
+        print gest.verify_claim(action_signed,max_age_secs=1,required_attributes=[])
+        raise Exception('erreur... devrait fail')
+    except SSLVerifyException as e:
+        print(u'OK: erreur %s'%e)
+
+    print gest.verify_claim(action_signed)
+    print('test fake replay')
+    action_signed['signature_date']=(datetime.datetime.now()+datetime.timedelta(seconds=10)).isoformat()
+    try:
+        print gest.verify_claim(action_signed,max_age_secs=50)
+        raise Exception('erreur... devrait fail')
+    except SSLVerifyException as e:
+        print(u'OK: erreur %s'%e)
+
 def test_sign_verify_file():
     print('Tests sign / verify / vitesse sha256')
     t1 = time.time()
@@ -792,6 +838,8 @@ def test_encryption_algo():
 
 if __name__ == '__main__':
     setup_test()
+    test_sign_action2()
+    test_sign_action()
     test_encryption_algo()
 
     test_hostkey()
@@ -821,7 +869,6 @@ if __name__ == '__main__':
     #test_oldsignature()
     test_certifi_cacert()
     test_conflicts()
-    test_sign_action()
     test_keypassword()
     test_paquet_host()
     #test_buildupload()

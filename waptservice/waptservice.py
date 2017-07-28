@@ -2314,7 +2314,11 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                 verified_by = None
                 cert = SSLCertificate(crt_string = action['signer_certificate'])
                 if self.wapt.cabundle.is_known_issuer(cert):
-                    verified_by = cert.verify_claim(action,max_age_secs=60*10)
+                    required_attributes = ['uuid','action']
+                    if action['action'] in ['trigger_install_packages','trigger_remove_packages','trigger_forget_packages']:
+                        required_attributes.append('packages')
+                    verified_by = cert.verify_claim(action,max_age_secs=60*10,
+                        required_attributes=required_attributes)
                 if not verified_by:
                     raise SSLVerifyException('Bad signature for action %s, aborting' % action)
             result = []

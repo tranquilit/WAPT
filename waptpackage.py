@@ -1028,8 +1028,6 @@ class PackageEntry(object):
                 # need read access to ZIP file.
                 manifest_data = self.build_manifest(exclude_filenames = excludes,forbidden_files = forbidden_files,md=md)
             except EWaptPackageSignError as e:
-
-
                 raise EWaptBadCertificate('Certificate %s doesn''t allow to sign packages with setup.py file.' % certificate.public_cert_filename)
 
             manifest_data['WAPT/control'] = hexdigest_for_data(control,md = md)
