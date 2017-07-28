@@ -447,8 +447,11 @@ def hours_minutes(hours):
 def fileisodate(filename):
     return datetime.datetime.fromtimestamp(os.stat(filename).st_mtime).isoformat()
 
+def fileutcdate(filename):
+    return datetime.datetime.utcfromtimestamp(os.stat(filename).st_mtime)
+
 def fileisoutcdate(filename):
-    return datetime2isodate(datetime.datetime.utcfromtimestamp(os.stat(filename).st_mtime))
+    return datetime2isodate(fileutcdate(filename))
 
 def dateof(adatetime):
     return adatetime.replace(hour=0,minute=0,second=0,microsecond=0)
