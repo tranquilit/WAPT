@@ -463,7 +463,7 @@ def test_waptdevutils():
     w = Wapt(config_filename=cfn)
     templates = WaptRemoteRepo(url='https://store.wapt.fr/wapt',name='wapt-templates',config = w.config)
     localfn = wget('%s/%s'% (templates.repo_url,fn))
-    res = duplicate_from_file(cfn,localfn)
+    res = duplicate_from_file(localfn,'test')
     print res
 
 def test_localrepo_cert():
@@ -838,6 +838,8 @@ def test_encryption_algo():
 
 if __name__ == '__main__':
     setup_test()
+    test_waptdevutils()
+    test_download_packages()
     test_sign_action2()
     test_sign_action()
     test_encryption_algo()
