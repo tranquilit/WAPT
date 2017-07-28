@@ -1755,7 +1755,7 @@ def on_waptclient_connect():
 
         if host_cert and host_cert.host_certificate:
             host_certificate = SSLCertificate(crt_string=host_cert.host_certificate)
-            host_cert_issuer = host_certificate.verify_claim(json.loads(request.args['login']), max_age_secs=60)
+            host_cert_issuer = host_certificate.verify_claim(json.loads(request.args['login']), max_age_secs=60,required_attributes=['uuid'])
             logger.debug(u'Socket IO %s connect checked. issuer : %s' % ( request.sid,host_cert_issuer))
             pass
         else:
