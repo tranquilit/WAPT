@@ -265,15 +265,23 @@ end;
 function TSSLVerifyCert.VerifypeerCertificate(Certificate: TIdX509; AOk: Boolean; ADepth, AError: Integer): Boolean;
 var
   Subject,SubjectAlternativeName:String;
-  CNPart:String;
+  CNPart,token,att,value:String;
   cnpos:Integer;
 begin
   Subject := Certificate.Subject.OneLine;
   if ADepth = 0 then
   begin
-    cnpos  := pos('/cn=',LowerCase(Subject))+Length('/cn=');
-    CNPart := Copy(LowerCase(Subject),cnpos,255);
-
+    while Subject<>'' do
+    begin
+      token := StrToken(Subject,'/');
+      att := Copy(token,1,pos('=',token)-1);
+      value := Copy(token,pos('=',token)+1,255);
+      if LowerCase(att) = 'cn' then
+      begin
+        CNPart := value;
+        break;
+      end;
+    end;
     {SubjectAlternativeName := Certificate.SubjectAlternativeName ;
     cnpos  := pos('/cn=',LowerCase(SubjectAlternativeName))+Length('/cn=');
     CNPart := Copy(LowerCase(s),cnpos,255);}
