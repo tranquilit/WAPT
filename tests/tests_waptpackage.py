@@ -461,8 +461,8 @@ def test_waptdevutils():
     results = get_packages_filenames(cfn,'tis-7zip',repo_name='wapt-templates')
     (fn,md5) = results[0]
     w = Wapt(config_filename=cfn)
-    templates = WaptRemoteRepo(url='https://store.wapt.fr/wapt',name='wapt-templates',config = w.config)
-    localfn = wget('%s/%s'% (templates.repo_url,fn))
+    templates = WaptRemoteRepo(url='https://store.wapt.fr/wapt',name='wapt-templates',config = w.config,verify_cert=True)
+    localfn = wget('%s/%s'% (templates.repo_url,fn),verify_cert=True)
     res = duplicate_from_file(localfn,'test')
     print res
 
