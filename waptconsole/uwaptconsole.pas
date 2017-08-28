@@ -399,6 +399,7 @@ type
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
     procedure ActTISHelpExecute(Sender: TObject);
+    procedure ActTISHelpUpdate(Sender: TObject);
     procedure ActTriggerWakeOnLanExecute(Sender: TObject);
     procedure ActTriggerWakeOnLanUpdate(Sender: TObject);
     procedure ActTriggerWaptwua_downloadExecute(Sender: TObject);
@@ -2081,6 +2082,11 @@ begin
     result := SysUtils.GetEnvironmentVariable('PROGRAMFILES')
 end;
 
+function GetTisSupportPath:String;
+begin
+  result := AppendPathDelim(ProgramFilesX86)+'tishelp\tissupport.exe';
+end;
+
 procedure TVisWaptGUI.ActTISHelpExecute(Sender: TObject);
 var
   sores,taskresult,uuids: ISuperObject;
@@ -2096,12 +2102,17 @@ begin
     taskresult := TriggerActionOnHosts(uuids,'trigger_start_tishelp',Nil,'','Error starting TISHelp');
     if taskresult.B['success'] then
 
-      ShellExecute(0, '', PAnsiChar(AppendPathDelim(ProgramFilesX86)+'tishelp\tissupport.exe'),
+      ShellExecute(0, '', PAnsiChar(GetTisSupportPath),
         PAnsichar('-open '+computer_name), nil, SW_SHOW);
 
   finally
     Screen.Cursor := crDefault;
   end;
+end;
+
+procedure TVisWaptGUI.ActTISHelpUpdate(Sender: TObject);
+begin
+  ActTISHelp.Enabled:=FileExists(GetTisSupportPath);
 end;
 
 procedure TVisWaptGUI.ActTriggerWakeOnLanExecute(Sender: TObject);
