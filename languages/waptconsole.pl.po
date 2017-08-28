@@ -1187,6 +1187,10 @@ msgctxt "tviswaptgui.actsearchsoftwares.caption"
 msgid "ActSearchSoftware"
 msgstr ""
 
+#: tviswaptgui.acttishelp.caption
+msgid "Launch TISHelp"
+msgstr ""
+
 #: tviswaptgui.acttriggerhostslistening.caption
 msgctxt "tviswaptgui.acttriggerhostslistening.caption"
 msgid "Trigger hosts scan"
