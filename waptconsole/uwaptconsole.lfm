@@ -4501,6 +4501,7 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Launch TISHelp'
       ImageIndex = 40
       OnExecute = ActTISHelpExecute
+      OnUpdate = ActTISHelpUpdate
     end
   end
   object PopupMenuPackages: TPopupMenu
