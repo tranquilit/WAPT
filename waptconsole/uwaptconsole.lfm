@@ -4496,6 +4496,11 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Change password of private key...'
       OnExecute = ActChangePrivateKeypasswordExecute
     end
+    object ActTISHelp: TAction
+      Category = 'Host'
+      Caption = 'Launch TISHelp'
+      OnExecute = ActTISHelpExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 144
@@ -5203,6 +5208,9 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem25: TMenuItem
       Caption = '-'
+    end
+    object MenuItem80: TMenuItem
+      Action = ActTISHelp
     end
     object MenuItem37: TMenuItem
       Action = ActVNC

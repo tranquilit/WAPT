@@ -36,6 +36,7 @@ type
     ActComputerServices: TAction;
     ActHostsDeletePackage: TAction;
     ActChangePrivateKeypassword: TAction;
+    ActTISHelp: TAction;
     ActRevokeCert: TAction;
     ActmakePackageTemplate: TAction;
     ActRemoteAssist: TAction;
@@ -103,6 +104,7 @@ type
     MenuItem77: TMenuItem;
     MenuItem78: TMenuItem;
     MenuItem79: TMenuItem;
+    MenuItem80: TMenuItem;
     MenuItem82: TMenuItem;
     odSelectInstaller: TOpenDialog;
     Panel13: TPanel;
@@ -396,6 +398,7 @@ type
     procedure ActmakePackageTemplateExecute(Sender: TObject);
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
+    procedure ActTISHelpExecute(Sender: TObject);
     procedure ActTriggerWakeOnLanExecute(Sender: TObject);
     procedure ActTriggerWakeOnLanUpdate(Sender: TObject);
     procedure ActTriggerWaptwua_downloadExecute(Sender: TObject);
@@ -2069,6 +2072,20 @@ begin
     ActRemoteAssist.Enabled := False;
   end;
 
+end;
+
+procedure TVisWaptGUI.ActTISHelpExecute(Sender: TObject);
+var
+  sores,taskresult,uuids: ISuperObject;
+  currhost: ansistring;
+begin
+  if GridHosts.FocusedRow<>Nil then
+  begin
+    uuids := TSuperObject.Create(stArray);;
+    currhost := GridHosts.FocusedRow.S['uuid'];
+    uuids.AsArray.Add(currhost);
+    taskresult := TriggerActionOnHosts(uuids,'trigger_start_tishelp',Nil,'Start TISHelp','Error starting ');
+  end;
 end;
 
 procedure TVisWaptGUI.ActTriggerWakeOnLanExecute(Sender: TObject);

@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.14"
+__version__ = "1.5.0.15"
 import time
 import sys
 import os
@@ -1272,6 +1272,20 @@ def get_wapt_package(input_package_name):
     else:
         return Response(status=404)
 
+def start_tishelp():
+    setuphelpers.killalltasks('tishelp.exe')
+    setuphelpers.killalltasks('tvnserver.exe')
+    DETACHED_PROCESS = 0x00000008
+    pid = subprocess.Popen([r'%s\tishelp\tishelp.exe' % setuphelpers.programfiles32, '-c', '-s'], creationflags=DETACHED_PROCESS).pid
+    return pid
+
+@app.route('/tishelp')
+@allow_local
+def tishelp():
+    pid = start_tishelp()
+    data = {'msg':'TISHelp service launched',pid:pid}
+    return Response(common.jsondump(data), mimetype='application/json')
+
 class EventsPrinter:
     '''EventsPrinter class which serves to emulates a file object and logs
        whatever it gets sent to a broadcast object at the INFO level.'''
@@ -2329,6 +2343,11 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                 name = action['action']
                 if name in ['trigger_cancel_all_tasks']:
                     data = [t.as_dict() for t in self.task_manager.cancel_all_tasks()]
+                    result.append(data)
+
+                elif name in ['trigger_start_tishelp']:
+                    pid = start_tishelp()
+                    data = {'msg':'TISHelp service launched',pid:pid}
                     result.append(data)
 
                 elif name in ['trigger_host_update','trigger_host_register']:
