@@ -617,7 +617,7 @@ uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings, soutils,
   uvisgroupchoice, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
   uVisImportPackage, uVisWUAGroup, uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect, PythonEngine, Clipbrd, RegExpr, tisinifiles,
-  IdURI,uScaleDPI, uVisPackageWizard, uVisChangeKeyPassword;
+  IdURI,uScaleDPI, uVisPackageWizard, uVisChangeKeyPassword,windirs;
 
 {$R *.lfm}
 
@@ -2074,17 +2074,33 @@ begin
 
 end;
 
+function ProgramFilesX86:String;
+begin
+  result := SysUtils.GetEnvironmentVariable('PROGRAMFILES(X86)');
+  if result = '' then
+    result := SysUtils.GetEnvironmentVariable('PROGRAMFILES')
+end;
+
 procedure TVisWaptGUI.ActTISHelpExecute(Sender: TObject);
 var
   sores,taskresult,uuids: ISuperObject;
-  currhost: ansistring;
+  currhost,computer_name: ansistring;
 begin
   if GridHosts.FocusedRow<>Nil then
-  begin
+  try
+    Screen.Cursor:=crHourGlass;
     uuids := TSuperObject.Create(stArray);;
     currhost := GridHosts.FocusedRow.S['uuid'];
+    computer_name := lowercase(GridHosts.FocusedRow.S['computer_name']);
     uuids.AsArray.Add(currhost);
-    taskresult := TriggerActionOnHosts(uuids,'trigger_start_tishelp',Nil,'Start TISHelp','Error starting ');
+    taskresult := TriggerActionOnHosts(uuids,'trigger_start_tishelp',Nil,'','Error starting TISHelp');
+    if taskresult.B['success'] then
+
+      ShellExecute(0, '', PAnsiChar(AppendPathDelim(ProgramFilesX86)+'tishelp\tissupport.exe'),
+        PAnsichar('-open '+computer_name), nil, SW_SHOW);
+
+  finally
+    Screen.Cursor := crDefault;
   end;
 end;
 
@@ -2442,7 +2458,7 @@ begin
     if (result<>Nil) and result.AsObject.Exists('success') then
     begin
       MemoLog.Append(result.AsString);
-      if result.AsObject.Exists('msg') then
+      if result.AsObject.Exists('msg') and (title<>'') then
         ShowMessage(result.S['msg']);
     end
     else
