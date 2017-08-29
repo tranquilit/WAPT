@@ -329,20 +329,27 @@ class WaptServiceConfig(object):
 
             if config.has_option('global','wapt_server'):
                 self.waptserver = common.WaptServer().load_config(config)
-                waptserver_url = urlparse.urlparse(self.waptserver.server_url)
-                if waptserver_url.port is None:
-                    if waptserver_url.scheme == 'https':
-                        self.websockets_port = 443
-                        self.websockets_host = waptserver_url.hostname
-                        self.websockets_proto = 'https'
+                if self.waptserver.server_url:
+                    waptserver_url = urlparse.urlparse(self.waptserver.server_url)
+                    if waptserver_url.port is None:
+                        if waptserver_url.scheme == 'https':
+                            self.websockets_port = 443
+                            self.websockets_host = waptserver_url.hostname
+                            self.websockets_proto = 'https'
+                        else:
+                            self.websockets_port = 80
+                            self.websockets_host = waptserver_url.hostname
+                            self.websockets_proto = 'http'
                     else:
-                        self.websockets_port = 80
+                        self.websockets_port = waptserver_url.port
                         self.websockets_host = waptserver_url.hostname
                         self.websockets_proto = 'http'
                 else:
-                    self.websockets_port = waptserver_url.port
-                    self.websockets_host = waptserver_url.hostname
-                    self.websockets_proto = 'http'
+                    self.waptserver = None
+                    self.websockets_host = None
+                    self.websockets_proto = None
+                    self.websockets_port = None
+                    self.websockets_verify_cert = False
             else:
                 self.waptserver = None
                 self.websockets_host = None
