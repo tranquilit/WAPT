@@ -76,6 +76,7 @@ Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhi
 [Icons]
 Name: "{commonstartup}\WAPT session setup"; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
 Name: "{group}\Console WAPT"; Filename: "{app}\waptconsole.exe"; WorkingDir: "{app}" ; Check: Not IsWaptAgent();
+Name: "{group}\Logiciels installés avec WAPT"; Filename: "http://localhost:8088/status"; Check: Not IsWaptAgent();
 
 [CustomMessages]
 ;English translations here
