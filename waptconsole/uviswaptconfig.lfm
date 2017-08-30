@@ -626,6 +626,7 @@ object VisWAPTConfig: TVisWAPTConfig
     object ActGetServerCertificate: TAction
       Caption = 'Get Server https Certitificate'
       OnExecute = ActGetServerCertificateExecute
+      OnUpdate = ActGetServerCertificateUpdate
     end
     object ActEnableVerifyCerts: TAction
       Caption = 'Verify https server certificate'
