@@ -69,6 +69,7 @@ type
     procedure ActDownloadCertificateExecute(Sender: TObject);
     procedure ActDownloadCertificateUpdate(Sender: TObject);
     procedure ActGetServerCertificateExecute(Sender: TObject);
+    procedure ActGetServerCertificateUpdate(Sender: TObject);
     procedure ActOpenCertDirExecute(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure cbManualClick(Sender: TObject);
@@ -193,6 +194,11 @@ begin
   except
     on E:Exception do ShowMessage('Unable to get https server certificate for url '+ 'https://'+edServerAddress.Text+' '+E.Message);
   end;
+end;
+
+procedure TVisWAPTConfig.ActGetServerCertificateUpdate(Sender: TObject);
+begin
+  ActGetServerCertificate.Enabled := edServerAddress.Text <> '';
 end;
 
 procedure TVisWAPTConfig.ActOpenCertDirExecute(Sender: TObject);
