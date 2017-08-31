@@ -15,7 +15,7 @@ Jinja2==2.9.6
 MarkupSafe==1.0
 netifaces==0.10.4
 passlib==1.7.1
-peewee==2.8.5
+peewee==2.10.1
 pefile==2016.3.28
 psycopg2==2.7.1
 pyOpenSSL==17.0.0
