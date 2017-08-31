@@ -122,6 +122,8 @@ interface
 // get
 function GetWaptServerSession(server_url:String = ''; user:String = '';password:String = ''):TIdCookieManager;
 
+function DefaultUserAgent:String;
+
 const
   waptwua_enabled : boolean = False;
 
@@ -167,6 +169,13 @@ uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,tisinifiles,
 const
   CacheWaptServerUrl: AnsiString = 'None';
   wapt_config_filename : Utf8String = '';
+
+function DefaultUserAgent:String;
+begin
+  Result := ApplicationName+'/'+GetApplicationVersion;
+end;
+
+
 
 procedure IdConfigureProxy(http:TIdHTTP;ProxyUrl:String);
 var
@@ -345,9 +354,9 @@ begin
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
 
   if userAgent='' then
-    http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent
+    http.Request.UserAgent := DefaultUserAgent
   else
-    http.Request.UserAgent:=userAgent;
+    http.Request.UserAgent := userAgent;
 
   http.Request.BasicAuthentication:=True;
 
@@ -440,9 +449,9 @@ begin
   http.HandleRedirects:=True;
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
   if userAgent='' then
-    http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent
+    http.Request.UserAgent := DefaultUserAgent
   else
-    http.Request.UserAgent:=userAgent;
+    http.Request.UserAgent := userAgent;
 
   try
     // init ssl stack
@@ -509,9 +518,9 @@ begin
   http.HandleRedirects:=True;
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
   if userAgent='' then
-    http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent
+    http.Request.UserAgent := DefaultUserAgent
   else
-    http.Request.UserAgent:=userAgent;
+    http.Request.UserAgent := userAgent;
 
   http.compressor :=  TIdCompressorZLib.Create(Nil);
 
@@ -608,9 +617,9 @@ begin
 
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
   if userAgent='' then
-    http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent
+    http.Request.UserAgent := DefaultUserAgent
   else
-    http.Request.UserAgent:=userAgent;
+    http.Request.UserAgent := userAgent;
 
   http.Request.ContentType:=ContentType;
   http.Request.ContentEncoding:='UTF-8';
@@ -749,8 +758,8 @@ begin
   try
     try
       http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
-      http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent;
-      http.ConnectTimeout:=timeout;
+      http.Request.UserAgent := DefaultUserAgent;
+      http.ConnectTimeout := timeout;
       http.ReadTimeout:=timeout;
 
       if (user<>'') or (OnAuthorization <> Nil) then
@@ -848,8 +857,9 @@ begin
 
     for rec in recs do
     begin
-      Logger('trying '+rec.S['url'],INFO);
-      if IdWget_try(rec.S['url'],UseProxyForRepo) then
+      Result := rec.S['url'];
+      Logger('trying '+Result,INFO);
+      if IdWget_try(Result,UseProxyForRepo,'','0') then
         Exit;
     end;
 
@@ -859,14 +869,14 @@ begin
     begin
       Result := 'http://'+rec.AsString+'/wapt';
       Logger('trying '+result,INFO);
-      if IdWget_try(result,UseProxyForRepo) then
+      if IdWget_try(result,UseProxyForRepo,'','0') then
         Exit;
     end;
 
     //A wapt
     Result := 'http://wapt.'+dnsdomain+'/wapt';
       Logger('trying '+result,INFO);
-      if IdWget_try(result,UseProxyForRepo) then
+      if IdWget_try(result,UseProxyForRepo,'','0') then
         Exit;
   end;
   result :='';
@@ -1402,7 +1412,7 @@ begin
     action := format(action,args);
   http := TIdHTTP.Create;
   http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
-  http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent;
+  http.Request.UserAgent := DefaultUserAgent;
   http.HandleRedirects:=True;
 
   if UseProxyForServer then

@@ -22,7 +22,8 @@ resourcestring
   rsDNSserver = 'DNS Server : %s';
   rsDNSdomain = 'DNS Domain : %s';
   rsMainRepoURL = 'Main repo url: %s';
-  rsSRV = 'SRV: %s';
+  rsSRVwapt = 'wapt SRV: %s';
+  rsSRVwaptserver = 'waptserver SRV: %s';
   rsCNAME = 'CNAME: %s';
   rsLongtaskError = 'Error launching longtask: %s';
   rsTaskListError = 'Error getting task list: %s';
