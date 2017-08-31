@@ -306,7 +306,8 @@ begin
     WriteLn(format(rsDNSserver, [Join(',',GetDNSServers)]));
     WriteLn(format(rsDNSdomain, [GetDNSDomain]));
     Writeln(utf8decode(format(rsMainRepoURL, [RepoURL])));
-    Writeln(format(rsSRV, [DNSSRVQuery('_wapt._tcp.'+GetDNSDomain).AsJSon(True)]));
+    Writeln(format(rsSRVwapt, [DNSSRVQuery('_wapt._tcp.'+GetDNSDomain).AsJSon(True)]));
+    Writeln(format(rsSRVwaptserver, [DNSSRVQuery('_waptserver._tcp.'+GetDNSDomain).AsJSon(True)]));
     Writeln(format(rsCNAME, [DNSCNAMEQuery('wapt.'+GetDNSDomain).AsJSon(True)]));
     Terminate;
     Exit;
