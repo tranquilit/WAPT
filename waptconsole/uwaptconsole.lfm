@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 326
+  Left = 580
   Height = 753
-  Top = 141
+  Top = 80
   Width = 1028
   AllowDropFiles = True
   Caption = 'WAPT console'
