@@ -94,7 +94,7 @@ interface
 
   function WAPTServerJsonMultipartFilePost(waptserver,action: String;args:Array of const;
       FileArg,FileName:String;
-      user:AnsiString='';password:AnsiString='';OnHTTPWork:TWorkEvent=Nil):ISuperObject;
+      user:AnsiString='';password:AnsiString='';OnHTTPWork:TWorkEvent=Nil;VerifyCertificateFilename:String=''):ISuperObject;
 
   function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8String='';
             default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;OverrideBaseName:Utf8String='';
@@ -1390,12 +1390,15 @@ end;
 
 function WAPTServerJsonMultipartFilePost(waptserver, action: String;
   args: array of const; FileArg, FileName: String;
-  user: AnsiString; password: AnsiString; OnHTTPWork: TWorkEvent): ISuperObject;
+  user: AnsiString; password: AnsiString; OnHTTPWork: TWorkEvent;VerifyCertificateFilename:String=''): ISuperObject;
 var
   res:String;
   http:TIdHTTP;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
   St:TIdMultiPartFormDataStream;
+  sslCheck:TSSLVerifyCert;
+  compressor: TIdCompressorZLib;
+
 begin
   if StrLeft(action,1)<>'/' then
     action := '/'+action;
@@ -1406,6 +1409,8 @@ begin
   http.Request.UserAgent:=ApplicationName+'/'+GetApplicationVersion+' '+http.Request.UserAgent;
   http.HandleRedirects:=True;
 
+  http.Compressor := TIdCompressorZLib.Create;
+
   if UseProxyForServer then
     IdConfigureProxy(http,HttpProxy);
 
@@ -1413,6 +1418,29 @@ begin
   ssl_handler.SSLOptions.Method:=sslvSSLv23;
 
   http.IOHandler := ssl_handler;
+
+  sslCheck := TSSLVerifyCert.Create(GetHostFromURL(waptserver));
+
+  if (VerifyCertificateFilename<>'') and (VerifyCertificateFilename <>'0') then
+  begin
+    ssl_handler.SSLOptions.VerifyDepth:=20;
+    ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
+    ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
+    //Self signed
+    if VerifyCertificateFilename<>'1' then
+    begin
+      ssl_handler.SSLOptions.RootCertFile :=VerifyCertificateFilename;
+      //ssl_handler.SSLOptions.CertFile := VerifyCertificateFilename;
+    end
+    else
+    begin
+      if DirectoryExists(CARoot) then
+        ssl_handler.SSLOptions.VerifyDirs := CARoot
+      else
+        ssl_handler.SSLOptions.RootCertFile := CARoot;
+      //ssl_handler.SSLOptions.CertFile := '';
+    end
+  end;
 
   St := TIdMultiPartFormDataStream.Create;
   try
@@ -1430,7 +1458,13 @@ begin
     result := SO(res);
   finally
     st.Free;
-    HTTP.Free;
+    if Assigned(http.Compressor) then
+    begin
+      http.Compressor.Free;
+      http.Compressor := Nil;
+    end;
+
+    http.Free;
     if assigned(ssl_handler) then
 	    ssl_handler.Free;
   end;

@@ -1590,7 +1590,7 @@ begin
                 ProgressTitle(rsProgressTitle);
                 SORes := WAPTServerJsonMultipartFilePost(
                   GetWaptServerURL, 'upload_waptsetup', [], 'file', waptsetupPath,
-                  WaptServerUser, WaptServerPassword, @IdHTTPWork);
+                  WaptServerUser, WaptServerPassword, @IdHTTPWork,GetWaptServerCertificateFilename);
                 Finish;
                 if SORes.S['status'] = 'OK' then
                 begin
