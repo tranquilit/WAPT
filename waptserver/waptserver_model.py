@@ -420,15 +420,23 @@ def update_host_data(data):
             updhost.save()
 
         # separate tables
-        if ('installed_softwares' in data) or ('softwares' in data):
-            installed_softwares = data.get('installed_softwares', data.get('softwares', None))
-            if not update_installed_softwares(uuid, installed_softwares):
-                logger.critical('Unable to update installed_softwares for %s' % uuid)
+        # we are tolerant on errors here a we don't know exactly if client send good encoded data
+        # but we still want to get host in table
+        try:
+            if ('installed_softwares' in data) or ('softwares' in data):
+                installed_softwares = data.get('installed_softwares', data.get('softwares', None))
+                if not update_installed_softwares(uuid, installed_softwares):
+                    logger.critical('Unable to update installed_softwares for %s' % uuid)
+        except Exception as e:
+            logger.critical(u'Unable to update installed_softwares for %s: %s' % (uuid,traceback.format_exc()))
 
-        if ('installed_packages' in data) or ('packages' in data):
-            installed_packages = data.get('installed_packages', data.get('packages', None))
-            if not update_installed_packages(uuid, installed_packages):
-                logger.critical('Unable to update installed_packages for %s' % uuid)
+        try:
+            if ('installed_packages' in data) or ('packages' in data):
+                installed_packages = data.get('installed_packages', data.get('packages', None))
+                if not update_installed_packages(uuid, installed_packages):
+                    logger.critical('Unable to update installed_packages for %s' % uuid)
+        except Exception as e:
+            logger.critical(u'Unable to update installed_packages for %s: %s' % (uuid,traceback.format_exc()))
 
         result_query = Hosts.select(Hosts.uuid, Hosts.computer_fqdn)
         return result_query.where(Hosts.uuid == uuid).dicts().dicts().first(1)
