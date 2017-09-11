@@ -58,7 +58,7 @@ import grp
 import ConfigParser
 from optparse import OptionParser
 import nginxparser
-
+from passlib.hash import pbkdf2_sha256
 
 
 def type_debian():
@@ -387,7 +387,7 @@ def main():
             else:
                 wapt_password_ok = True
 
-        password = hashlib.sha1(wapt_password).hexdigest()
+        password = pbkdf2_sha256.hash(wapt_password.encode('utf8'))
         waptserver_ini.set('options','wapt_password',password)
 
     if not waptserver_ini.has_option('options', 'server_uuid'):
