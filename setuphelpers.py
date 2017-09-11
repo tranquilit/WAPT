@@ -1130,7 +1130,9 @@ def iswin64():
 
     # could be
     # return platform.machine()=='AMD64'
-    return 'PROGRAMW6432' in os.environ and 'ProgramFiles(x86)' in os.environ and os.environ['PROGRAMW6432'] != os.environ['ProgramFiles(x86)']
+    # wapt runs as win32 process. If windows system is win64, IsWow64Process is True
+    return win32process.IsWow64Process()
+    #return 'PROGRAMW6432' in os.environ and 'ProgramFiles(x86)' in os.environ and os.environ['PROGRAMW6432'] != os.environ['ProgramFiles(x86)']
 
 
 def get_computername():
