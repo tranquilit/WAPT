@@ -2176,9 +2176,9 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
                             (name_re is not None and name_re.match(display_name)):
                         result.append({'key':subkey,
                             'name':display_name.replace('\x00',''),
-                            'version':display_version.strip('\x00'),
-                            'install_date':install_date.strip('\x00'),
-                            'install_location':install_location.strip('\x00'),
+                            'version':("%s"%display_version).replace('\x00',''),
+                            'install_date':("%s"%install_date).replace('\x00',''),
+                            'install_location':install_location.replace('\x00',''),
                             'uninstall_string':uninstallstring.strip('\x00'),
                             'publisher':publisher.replace('\x00',''),
                             'system_component':system_component,})
