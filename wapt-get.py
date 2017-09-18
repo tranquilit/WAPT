@@ -885,6 +885,12 @@ def main():
 
                 all_args = expand_args(args[1:])
                 print("Signing packages %s" % ", ".join(all_args))
+                key = mywapt.private_key(passwd_callback=get_private_key_passwd)
+                print('Private key is %s' % key)
+                certificate = mywapt.personal_certificate()
+                if not certificate.is_code_signing:
+                    raise EWaptException('Certificate %s does not allow code signing.' %  mywapt.personal_certificate_path)
+
                 for waptfile in all_args:
                     try:
                         waptfile = guess_package_root_dir(waptfile)
