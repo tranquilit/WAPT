@@ -22,12 +22,12 @@
 # -----------------------------------------------------------------------
 __version__ = "1.5.0.16"
 
+import os
 import codecs
 import getpass
 import glob
 import json
 import logging
-import os
 import shutil
 import sys
 
@@ -149,7 +149,7 @@ parser.add_option("-U","--user", dest="user", default=None, help="Interactive us
 parser.add_option("-g","--usergroups", dest="usergroups", default='[]', help="Groups of the final user as a JSon array for checking install permission (default: %default)")
 parser.add_option("-t","--maxttl", type='int',  dest="max_ttl", default=60, help="Max run time in minutes of wapt-get process before being killed by subsequent wapt-get (default: %default minutes)")
 parser.add_option("-L","--language",    dest="language",    default=setuphelpers.get_language(), help="Override language for install (example : fr) (default: %default)")
-parser.add_option("-m","--message-digest", dest="md", default='sha256', help="Message digest type for signatures.  (default: %default)")
+parser.add_option("-m","--message-digest", dest="md", default=None, help="Message digest type for signatures.  (default: sha256)")
 parser.add_option("--wapt-server-user", dest="wapt_server_user", default=None, help="User to upload packages to waptserver. (default: %default)")
 parser.add_option("--wapt-server-passwd", dest="wapt_server_passwd", default=None, help="Password to upload packages to waptserver. (default: %default)")
 parser.add_option("--log-to-windows-events",dest="log_to_windows_events",    default=False, action='store_true', help="Log steps to the Windows event log (default: %default)")
@@ -262,7 +262,6 @@ def main():
         sys.stderr = sys.stdout = JsonOutput(
             jsonresult['output'],logger)
 
-    sign_digests = ensure_list(options.md)
 
     try:
         if len(args) == 0:
@@ -295,7 +294,8 @@ def main():
         if options.wapt_url:
             mywapt.config.set('global','repo_url',options.wapt_url)
 
-        mywapt.sign_digests = sign_digests
+        if options.md is not None:
+            mywapt.sign_digests = ensure_list(options.md)
 
         global loglevel
         if not loglevel and mywapt.config.has_option('global','loglevel'):
@@ -805,6 +805,11 @@ def main():
                 all_args = expand_args(args[1:])
                 print("Building packages %s packages" % len(all_args))
 
+                certificate = mywapt.personal_certificate()
+                print('Personal certificate is %s' % certificate.public_cert_filename)
+                key = mywapt.private_key(passwd_callback=get_private_key_passwd)
+                print('Private key is %s' % key)
+
                 for source_dir in all_args:
                     try:
                         source_dir = guess_package_root_dir(source_dir)
@@ -819,14 +824,9 @@ def main():
                             if package_fn:
                                 print('...done building. Package filename %s' % (package_fn,))
                                 if mywapt.personal_certificate():
-                                    key = mywapt.private_key(passwd_callback=get_private_key_passwd)
-                                    print('Private key is %s' % key)
-                                    certificate = mywapt.personal_certificate()
-                                    if not certificate.is_code_signing:
-                                        raise EWaptException('Certificate %s does not allow code signing.' %  mywapt.personal_certificate_path)
                                     print('Signing %s with key %s and certificate %s (%s)' % (package_fn,mywapt.private_key(),certificate.cn,certificate.public_cert_filename))
                                     signature = mywapt.sign_package(package_fn)
-                                    print(u"Package %s signed : signature :\n%s" % (package_fn,signature))
+                                    print(u"Package %s signed : signature : %s...%s" % (package_fn, signature[0:10],signature[-10:-1]))
                                     packages.append(package_fn)
                                 else:
                                     logger.warning(u'No private key provided, package %s is unsigned !' % package_fn)
@@ -885,19 +885,19 @@ def main():
 
                 all_args = expand_args(args[1:])
                 print("Signing packages %s" % ", ".join(all_args))
+
+                certificate = mywapt.personal_certificate()
+                print('Personal certificate is %s' % certificate.public_cert_filename)
                 key = mywapt.private_key(passwd_callback=get_private_key_passwd)
                 print('Private key is %s' % key)
-                certificate = mywapt.personal_certificate()
-                if not certificate.is_code_signing:
-                    raise EWaptException('Certificate %s does not allow code signing.' %  mywapt.personal_certificate_path)
 
                 for waptfile in all_args:
                     try:
                         waptfile = guess_package_root_dir(waptfile)
                         if os.path.isdir(waptfile) or os.path.isfile(waptfile):
-                            print('Signing %s with certificate %s' % (waptfile,mywapt.personal_certificate_path))
+                            print('Signing %s' % (waptfile,))
                             signature = mywapt.sign_package(waptfile)
-                            print(u"   OK: Package %s signed : signature :\n%s" % (waptfile, signature))
+                            print(u"   OK: Package %s signed : signature : %s...%s" % (waptfile, signature[0:10],signature[-10:-1]))
                         else:
                             logger.critical(u'Package %s not found' % waptfile)
                     except Exception as e:
