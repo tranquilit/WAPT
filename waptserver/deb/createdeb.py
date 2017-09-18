@@ -146,7 +146,7 @@ subprocess.check_output(
 print(
     'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
 subprocess.check_output(
-    r'virtualenv ./builddir/opt/wapt --system-site-packages', shell=True)
+    r'virtualenv ./builddir/opt/wapt --distribute', shell=True)
 
 print('Install additional libraries in build environment virtualenv')
 subprocess.check_output(
@@ -181,7 +181,7 @@ add_symlink('./opt/wapt/wapt-scanpackages.py', './usr/bin/wapt-scanpackages')
 print('copying the waptserver files', file=sys.stderr)
 rsync(source_dir, './builddir/opt/wapt/',
       excludes=['apache-win32', 'mongodb', 'postconf', 'repository', 'rpm', 'uninstall-services.bat', 'deb', 'spnego-http-auth-nginx-module'])
-for lib in ('dialog.py', 'pefile.py'):
+for lib in ('dialog.py', ):
     rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),
           './builddir/opt/wapt/lib/site-packages/')
 
