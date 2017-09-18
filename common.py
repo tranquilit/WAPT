@@ -1371,7 +1371,7 @@ class WaptServer(object):
 
         self.proxies=proxies
         self.timeout = timeout
-        self.use_kerberos = True
+        self.use_kerberos = False
         self.verify_cert = True
 
         self.client_certificate = None
