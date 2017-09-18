@@ -501,7 +501,6 @@ class SSLCABundle(object):
                             cert = issuer
         # return cached checked chain
         elif cached_chain:
-            logger.debug('Got cert chain check from cache')
             return cached_chain
 
         # store negative caching
