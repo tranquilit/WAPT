@@ -1,14 +1,14 @@
 object VisWaptExit: TVisWaptExit
-  Left = 493
-  Height = 266
-  Top = 444
-  Width = 402
+  Left = 416
+  Height = 363
+  Top = 195
+  Width = 394
   Anchors = [akTop, akRight]
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Launching updates...'
-  ClientHeight = 266
-  ClientWidth = 402
+  ClientHeight = 363
+  ClientWidth = 394
   DefaultMonitor = dmDesktop
   FormStyle = fsSystemStayOnTop
   OnCloseQuery = FormCloseQuery
@@ -18,123 +18,191 @@ object VisWaptExit: TVisWaptExit
   LCLVersion = '1.3'
   object panHaut: TPanel
     Left = 0
-    Height = 135
+    Height = 186
     Top = 0
-    Width = 402
+    Width = 395
     Align = alTop
+    AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 135
-    ClientWidth = 402
+    ClientHeight = 186
+    ClientWidth = 395
     Constraints.MinWidth = 395
     TabOrder = 0
+    object PanProgress: TPanel
+      Left = 0
+      Height = 79
+      Top = 107
+      Width = 395
+      Align = alTop
+      BevelOuter = bvNone
+      ClientHeight = 79
+      ClientWidth = 395
+      TabOrder = 0
+      object ProgressBar: TProgressBar
+        Left = 8
+        Height = 20
+        Top = 8
+        Width = 324
+        TabOrder = 0
+      end
+      object CheckBox1: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 57
+        Width = 80
+        Action = ActShowDetails
+        TabOrder = 1
+      end
+      object EdRunning: TEdit
+        Left = 8
+        Height = 21
+        Top = 33
+        Width = 383
+        Anchors = [akTop, akLeft, akRight]
+        ReadOnly = True
+        TabOrder = 2
+      end
+    end
+    object LabDontShutdown: TLabel
+      Left = 3
+      Height = 38
+      Top = 3
+      Width = 389
+      Align = alTop
+      BorderSpacing.Around = 3
+      Caption = 'Upgrades in progress...'#13#10'Don''t shutdown your computer !'
+      Font.CharSet = ANSI_CHARSET
+      Font.Color = clRed
+      Font.Height = -16
+      Font.Name = 'Arial'
+      Font.Pitch = fpVariable
+      Font.Quality = fqDraft
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      Visible = False
+    end
+    object PanButtons: TPanel
+      Left = 3
+      Height = 27
+      Top = 77
+      Width = 389
+      Align = alTop
+      AutoSize = True
+      BorderSpacing.Around = 3
+      ChildSizing.HorizontalSpacing = 10
+      ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+      ChildSizing.ShrinkHorizontal = crsHomogenousChildResize
+      ChildSizing.Layout = cclLeftToRightThenTopToBottom
+      ChildSizing.ControlsPerLine = 2
+      ClientHeight = 27
+      ClientWidth = 389
+      TabOrder = 1
+      object ButUpgradeNow: TBitBtn
+        Left = 0
+        Height = 26
+        Top = 0
+        Width = 227
+        Action = ActUpgrade
+        Glyph.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          000004733AFF21824FFF638272FF000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000004733AFF7ACFA4FF2C8C5AFF3D7659FFAEAEAEFF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000004733AFF82D8ACFF76D6A6FF3C9D6AFF27744CFFACAEADFF000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000009773FFF83DBAEFF1FC671FF72DEA7FF4BB27FFF177445FFA8ADAAFF0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000004733AFF83DCAFFF11C369FF1ACC73FF69DFA3FF5AC28DFF137643FF9EA7
+          A3FF000000000000000000000000000000000000000000000000000000000000
+          000004733AFFA9DCC1FF10BD65FF11C167FF13C269FF59D395FF67C998FF167C
+          47FF889C92FF0000000000000000000000000000000000000000000000000000
+          000004733AFFA9DCC1FF0DB35EFF0EB660FF0EB660FF0DB45FFF47C484FF70CA
+          9CFF1D824DFF678C79FF00000000000000000000000000000000000000000000
+          000004733AFFA9DCC1FF0CAA58FF12AE5EFF15AF60FF16AD61FF13AA5DFF3AB6
+          77FF75C79DFF288957FF4E8367FF000000000000000000000000000000000000
+          000004733AFFA9DCC1FF2EAD6BFF2BAD6AFF27AB68FF22A964FF1CA55FFF41B2
+          78FF78C69FFF298858FF678C79FF000000000000000000000000000000000000
+          000004733AFFA9DCC1FF36AD70FF32AC6DFF2DAA6AFF28A866FF58BC89FF78C5
+          9DFF1F804EFF839A8EFF00000000000000000000000000000000000000000000
+          000004733AFFA9DCC1FF3EB176FF3AAF73FF36AE70FF6FC598FF71BF97FF187B
+          49FFA6B0ABFF0000000000000000000000000000000000000000000000000000
+          000004733AFFA9DCC1FF45B47BFF47B47CFF82CCA6FF67B68CFF177745FFC1C5
+          C3FF000000000000000000000000000000000000000000000000000000000000
+          000004733AFFA5DABFFF57BB87FF90D2B0FF5BAB82FF23774CFFD4D5D4FF0000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000004733AFFA9DCC1FF9BD5B7FF4C9F73FF3D7D5CFF00000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000004733AFFA4D9BEFF3D9366FF5F8873FF0000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000004733AFF2D8859FF859C90FF000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000
+        }
+        TabOrder = 0
+      end
+      object BitBtn1: TBitBtn
+        Left = 237
+        Height = 26
+        Top = 0
+        Width = 152
+        Action = actSkip
+        Glyph.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00666666FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
+          FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00666666FF666666FF666666FF666666FF666666FF666666FF666666FF6666
+          66FF666666FF666666FF666666FF666666FFFFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+        }
+        TabOrder = 1
+      end
+    end
     object LabIntro: TLabel
-      Left = 12
+      Left = 3
       Height = 26
-      Top = 8
-      Width = 182
+      Top = 46
+      Width = 389
+      Align = alTop
+      BorderSpacing.Top = 2
+      BorderSpacing.Bottom = 2
+      BorderSpacing.Around = 3
       Caption = 'There are installs or updates pending.'#13#10'Do you wish to apply them now ?'
       ParentColor = False
     end
-    object BitBtn1: TBitBtn
-      Left = 12
-      Height = 30
-      Top = 76
-      Width = 328
-      Action = actSkip
-      Glyph.Data = {
-        36040000424D3604000000000000360000002800000010000000100000000100
-        2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
-        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00666666FF000000FF000000FF000000FF000000FF000000FF000000FF0000
-        00FF000000FF000000FF000000FF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
-        FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
-        FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
-        FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
-        FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
-        FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
-        FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
-        FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
-        FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
-        FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00666666FF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000
-        FFFF0000FFFF0000FFFF0000FFFF000000FFFFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00666666FF666666FF666666FF666666FF666666FF666666FF666666FF6666
-        66FF666666FF666666FF666666FF666666FFFFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
-      }
-      TabOrder = 0
-    end
-    object ButUpgradeNow: TBitBtn
-      Left = 12
-      Height = 30
-      Top = 40
-      Width = 328
-      Action = ActUpgrade
-      Glyph.Data = {
-        36040000424D3604000000000000360000002800000010000000100000000100
-        2000000000000004000064000000640000000000000000000000000000000000
-        000004733AFF21824FFF638272FF000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        000004733AFF7ACFA4FF2C8C5AFF3D7659FFAEAEAEFF00000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        000004733AFF82D8ACFF76D6A6FF3C9D6AFF27744CFFACAEADFF000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        000009773FFF83DBAEFF1FC671FF72DEA7FF4BB27FFF177445FFA8ADAAFF0000
-        0000000000000000000000000000000000000000000000000000000000000000
-        000004733AFF83DCAFFF11C369FF1ACC73FF69DFA3FF5AC28DFF137643FF9EA7
-        A3FF000000000000000000000000000000000000000000000000000000000000
-        000004733AFFA9DCC1FF10BD65FF11C167FF13C269FF59D395FF67C998FF167C
-        47FF889C92FF0000000000000000000000000000000000000000000000000000
-        000004733AFFA9DCC1FF0DB35EFF0EB660FF0EB660FF0DB45FFF47C484FF70CA
-        9CFF1D824DFF678C79FF00000000000000000000000000000000000000000000
-        000004733AFFA9DCC1FF0CAA58FF12AE5EFF15AF60FF16AD61FF13AA5DFF3AB6
-        77FF75C79DFF288957FF4E8367FF000000000000000000000000000000000000
-        000004733AFFA9DCC1FF2EAD6BFF2BAD6AFF27AB68FF22A964FF1CA55FFF41B2
-        78FF78C69FFF298858FF678C79FF000000000000000000000000000000000000
-        000004733AFFA9DCC1FF36AD70FF32AC6DFF2DAA6AFF28A866FF58BC89FF78C5
-        9DFF1F804EFF839A8EFF00000000000000000000000000000000000000000000
-        000004733AFFA9DCC1FF3EB176FF3AAF73FF36AE70FF6FC598FF71BF97FF187B
-        49FFA6B0ABFF0000000000000000000000000000000000000000000000000000
-        000004733AFFA9DCC1FF45B47BFF47B47CFF82CCA6FF67B68CFF177745FFC1C5
-        C3FF000000000000000000000000000000000000000000000000000000000000
-        000004733AFFA5DABFFF57BB87FF90D2B0FF5BAB82FF23774CFFD4D5D4FF0000
-        0000000000000000000000000000000000000000000000000000000000000000
-        000004733AFFA9DCC1FF9BD5B7FF4C9F73FF3D7D5CFF00000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        000004733AFFA4D9BEFF3D9366FF5F8873FF0000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        000004733AFF2D8859FF859C90FF000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000
-      }
-      TabOrder = 1
-    end
-    object CheckBox1: TCheckBox
-      Left = 8
-      Height = 17
-      Top = 112
-      Width = 80
-      Action = ActShowDetails
-      TabOrder = 2
-    end
     object Image1: TImage
-      Left = 360
-      Height = 44
-      Top = 4
+      Left = 356
+      Height = 32
+      Top = 3
       Width = 36
       Anchors = [akTop, akRight]
       Picture.Data = {
@@ -198,53 +266,157 @@ object VisWaptExit: TVisWaptExit
         454E44AE426082
       }
     end
-    object ProgressBar: TProgressBar
-      Left = 160
-      Height = 20
-      Top = 109
-      Width = 180
-      TabOrder = 3
-    end
-    object LabDontShutdown: TLabel
-      Left = 12
-      Height = 38
-      Top = 24
-      Width = 246
-      Caption = 'Upgrades in progress...'#13#10'Don''t shutdown your computer !'
-      Font.CharSet = ANSI_CHARSET
-      Font.Color = clRed
-      Font.Height = -16
-      Font.Name = 'Arial'
-      Font.Pitch = fpVariable
-      Font.Quality = fqDraft
-      Font.Style = [fsBold]
-      ParentColor = False
-      ParentFont = False
-      Visible = False
-    end
   end
   object panBas: TPanel
     Left = 0
     Height = 218
-    Top = 135
-    Width = 402
+    Top = 186
+    Width = 394
     Align = alClient
     BevelOuter = bvNone
     ClientHeight = 218
-    ClientWidth = 402
+    ClientWidth = 394
     Constraints.MinHeight = 218
     TabOrder = 1
     Visible = False
-    object Memo1: TMemo
-      Left = 0
-      Height = 129
+    object MemoLog: TMemo
+      Left = 224
+      Height = 218
       Top = 0
-      Width = 402
-      Align = alTop
-      Lines.Strings = (
-        'Memo1'
-      )
+      Width = 170
+      Align = alClient
       TabOrder = 0
+    end
+    object GridPending: TSOGrid
+      Left = 0
+      Height = 216
+      Top = 2
+      Width = 224
+      Align = alLeft
+      BorderSpacing.Top = 2
+      Color = clWhite
+      Header.AutoSizeIndex = -1
+      Header.Columns = <      
+        item
+          Alignment = taRightJustify
+          Position = 0
+          Text = 'id'
+          Width = 39
+          PropertyName = 'id'
+        end      
+        item
+          Alignment = taRightJustify
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+          Position = 1
+          Tag = 1
+          Text = 'priority'
+          Width = 41
+          PropertyName = 'priority'
+        end      
+        item
+          Alignment = taRightJustify
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+          Position = 2
+          Tag = 2
+          Text = 'order'
+          Width = 32
+          PropertyName = 'order'
+        end      
+        item
+          Position = 3
+          Tag = 3
+          Text = 'description'
+          Width = 132
+          PropertyName = 'description'
+        end      
+        item
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+          Position = 4
+          Tag = 4
+          Text = 'start_date'
+          Width = 100
+          PropertyName = 'start_date'
+        end      
+        item
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+          Position = 5
+          Tag = 5
+          Text = 'summary'
+          Width = 235
+          PropertyName = 'summary'
+        end      
+        item
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+          Position = 6
+          Tag = 6
+          Text = 'create_date'
+          Width = 75
+          PropertyName = 'create_date'
+        end      
+        item
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+          Position = 7
+          Tag = 7
+          Text = 'result'
+          Width = 100
+          PropertyName = 'result'
+        end      
+        item
+          Alignment = taRightJustify
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+          Position = 8
+          Tag = 8
+          Text = 'progress'
+          Width = 40
+          PropertyName = 'progress'
+        end      
+        item
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+          Position = 9
+          Tag = 9
+          Text = 'finish_date'
+          Width = 100
+          PropertyName = 'finish_date'
+        end      
+        item
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+          Position = 10
+          Tag = 10
+          Text = 'classname'
+          Width = 100
+          PropertyName = 'classname'
+        end      
+        item
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+          Position = 11
+          Tag = 11
+          Text = 'logs'
+          Width = 100
+          PropertyName = 'logs'
+        end      
+        item
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+          Position = 12
+          Tag = 12
+          Text = 'pidlist'
+          Width = 21
+          PropertyName = 'pidlist'
+        end>
+      Header.DefaultHeight = 19
+      Header.Height = 19
+      Header.MinHeight = 19
+      Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+      Header.SortColumn = 0
+      Header.SortDirection = sdDescending
+      Header.Style = hsFlatButtons
+      Images = ImageList1
+      TabOrder = 1
+      TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+      TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+      TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+      TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+      WantTabs = True
+      ZebraPaint = True
     end
   end
   object Timer1: TTimer
