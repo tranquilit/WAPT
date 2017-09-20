@@ -1540,8 +1540,8 @@ begin
         fnPublicCert.Clear;
       edWaptServerUrl.Text := ini.ReadString('global', 'wapt_server', '');
       edRepoUrl.Text := ini.ReadString('global', 'repo_url', '');
-      EdServerCertificate.Text := ini.ReadString('global', 'verify_cert', '1'); ;
-      CBUseKerberos.Checked:=ini.ReadBool('global', 'use_kerberos', True );
+      EdServerCertificate.Text := ini.ReadString('global', 'verify_cert', '0'); ;
+      CBUseKerberos.Checked:=ini.ReadBool('global', 'use_kerberos', False );
       CBCheckCertificatesValidity.Checked:=ini.ReadBool('global', 'check_certificates_validity',True );
       if FatUpgrade then
         // include waptagent.exe in waptupgrade package...
@@ -1974,7 +1974,7 @@ end;
 procedure TVisWaptGUI.ActDeletePackageExecute(Sender: TObject);
 var
   message: string = rsConfirmRmOnePackage;
-  res: ISuperObject;
+  packages,res: ISuperObject;
   package: string;
   i: integer;
   N: PVirtualNode;
@@ -1985,28 +1985,20 @@ begin
   if MessageDlg(rsConfirmDeletion, message, mtConfirmation,
     mbYesNoCancel, 0) = mrYes then
 
-    with TVisLoading.Create(Self) do
-      try
-        ProgressTitle(rsDeletionInProgress);
-        N := GridPackages.GetFirstSelected;
-        i := 0;
-        while (N <> nil) and not StopRequired do
-        begin
-          Inc(i);
-          package := GridPackages.GetCellStrValue(N, 'filename');
-          ProgressTitle(format(rsDeletingElement, [package]));
-          res := WAPTServerJsonGet('delete_package/%S',[package]);
-          if not ObjectIsNull(res['error']) then
-            raise Exception.Create(res.S['error']);
-          N := GridPackages.GetNextSelected(N);
-          ProgressStep(i, GridPackages.SelectedCount);
-        end;
-        ProgressTitle(rsUpdatingPackageList);
-        ActPackagesUpdate.Execute;
-        ProgressTitle(rsDisplaying);
-      finally
-        Free;
-      end;
+  with TVisLoading.Create(Self) do
+    try
+      ProgressTitle(rsDeletionInProgress);
+      packages := soutils.ExtractField(GridPackages.SelectedRows,'filename');
+      ProgressTitle(format(rsDeletingElement, [Join(',',packages) ]));
+      res := WAPTServerJsonPost('/api/v3/packages_delete',[],packages);
+      if not res.B['success'] then
+         ShowMessageFmt('Error deleting packages: %S',[UTF8Encode(res.S['msg'])]);
+      ProgressTitle(rsUpdatingPackageList);
+      ActPackagesUpdate.Execute;
+      ProgressTitle(rsDisplaying);
+    finally
+      Free;
+    end;
 end;
 
 procedure TVisWaptGUI.ActDeletePackageUpdate(Sender: TObject);

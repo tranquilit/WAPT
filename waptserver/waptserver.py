@@ -805,6 +805,30 @@ def delete_package(filename=''):
                     status=200,
                     mimetype='application/json')
 
+@app.route('/api/v3/packages_delete', methods=['POST'])
+@requires_auth
+def packages_delete():
+    filenames = request.get_json()
+
+    errors = []
+    deleted = []
+
+    for filename in filenames:
+        try:
+            package_path = os.path.join(conf['wapt_folder'], secure_filename(filename))
+            if os.path.isfile(fullpath):
+                os.unlink(fullpath)
+                deleted.append(filename)
+            else:
+                errors.append(filename)
+        except Exception as e:
+            errors.append(filename)
+
+    result = update_packages(conf['wapt_folder'])
+    msg = ['%s packages deleted' % len(deleted)]
+    if errors:
+        msg.append('ERROR : %s packages could not be deleted' % len(errors))
+    return make_response(result=result, msg='\n'.join(msg), status=200)
 
 @app.route('/wapt/')
 def wapt_listing():
