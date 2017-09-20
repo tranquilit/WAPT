@@ -1,7 +1,7 @@
-msgid ""
+msgid "Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Do you wish to apply them now ?Do you wish to apply them now ?Do you wish to apply them now ?"
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-msgid "Don't shutdown your computer !"
+msgid "Do you wish to apply them now ?"
 msgstr ""
 
 #: tviswaptexit.actshowdetails.caption

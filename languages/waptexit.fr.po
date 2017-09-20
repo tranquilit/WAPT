@@ -7,11 +7,10 @@ msgid ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
-"Don't shutdown your computer !\n"
-msgstr "N'arrêtez pas votre ordinateur !"
 
-msgid "Don't shutdown your computer !"
-msgstr ""
+msgid "Do you wish to apply them now ?"
+msgstr "Voulez-vous les appliquer maintenant ?"
+
 
 #: tviswaptexit.actshowdetails.caption
 msgid "Show details"
@@ -31,7 +30,9 @@ msgstr "Lancement des mises à jour..."
 
 #: tviswaptexit.labdontshutdown.caption
 msgid "Upgrades in progress..."
-msgstr "Mises à jour en cours"
+msgstr ""
+"Mises à jour en cours\n"
+"Ne pas arrêter votre ordinateur\n"
 
 #: tviswaptexit.labintro.caption
 msgctxt "tviswaptexit.labintro.caption"

@@ -5,9 +5,9 @@ unit uwaptexit;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, ActnList, Buttons, superobject, DefaultTranslator, ComCtrls,
-  uWaptExitRes;
+  Classes, SysUtils, FileUtil, IDEWindowIntf, fpspreadsheetgrid, Forms,
+  Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, ActnList, Buttons,
+  superobject, DefaultTranslator, ComCtrls, Grids, uWaptExitRes, sogrid;
 
 type
 
@@ -21,11 +21,15 @@ type
     BitBtn1: TBitBtn;
     ButUpgradeNow: TBitBtn;
     CheckBox1: TCheckBox;
+    EdRunning: TEdit;
+    GridPending: TSOGrid;
+    LabIntro: TLabel;
+    PanButtons: TPanel;
     Image1: TImage;
     ImageList1: TImageList;
-    LabIntro: TLabel;
     LabDontShutdown: TLabel;
-    Memo1: TMemo;
+    MemoLog: TMemo;
+    PanProgress: TPanel;
     panHaut: TPanel;
     panBas: TPanel;
     ProgressBar: TProgressBar;
@@ -41,14 +45,17 @@ type
     procedure Timer1Timer(Sender: TObject);
   private
     FCountDown: Integer;
+    FInitialCountDown: Integer;
     procedure SetCountDown(AValue: Integer);
     { private declarations }
     function  allow_cancel_upgrade:Boolean;
+    procedure SetInitialCountDown(AValue: Integer);
   public
     { public declarations }
     upgrades,tasks,running,pending : ISuperObject;
     // wait for waptservice answer in seconds
     waptservice_timeout: Integer;
+    property InitialCountDown:Integer read FInitialCountDown write SetInitialCountDown;
     property CountDown:Integer read FCountDown write SetCountDown;
   end;
 
@@ -69,6 +76,12 @@ begin
   Result := FAllow_cancel_upgrade and ((running=Nil) or (Running.datatype=stNull));
 end;
 
+procedure TVisWaptExit.SetInitialCountDown(AValue: Integer);
+begin
+  if FInitialCountDown=AValue then Exit;
+  FInitialCountDown:=AValue;
+end;
+
 function GetWaptLocalURL: String;
 begin
   result := format('http://127.0.0.1:%d',[waptservice_port]);
@@ -86,7 +99,7 @@ begin
   Timer1.Enabled := False;
   try
     aso := WAPTLocalJsonGet('upgrade.json','','',waptservice_timeout*1000);
-    Memo1.Text:=aso.AsJSon();
+    MemoLog.Text:=aso.AsJSon();
     tasks := aso['content'];
     pending := tasks;
     ProgressBar.Max:=tasks.AsArray.Length;
@@ -143,6 +156,7 @@ begin
   try
     Fallow_cancel_upgrade := ini.ReadBool('global','allow_cancel_upgrade',allow_cancel_upgrade);
     waptservice_timeout := ini.ReadInteger('global','waptservice_timeout',2);
+    InitialCountDown := ini.ReadInteger('global','waptexit_countdown',10);
   finally
     ini.Free;
   end;
@@ -189,8 +203,9 @@ begin
     aso := WAPTLocalJsonGet('tasks.json','','',waptservice_timeout*1000);
     if aso<>Nil then
     begin
-      running := aso['running'];
+      running := aso['running'];;
       pending := aso['pending'];
+      GridPending.data := pending;
     end;
 
     //check if upgrades
@@ -200,12 +215,12 @@ begin
     else
     begin
       ActUpgrade.Enabled:=True;
-      Memo1.Text:= Join(#13#10, upgrades);
+      MemoLog.Text:= Join(#13#10, upgrades);
     end;
     if allow_cancel_upgrade then
-      CountDown:=10
+      CountDown:=InitialCountDown
     else
-      CountDown:=1;
+      CountDown:=0;
     Timer1.Enabled := True;
 
   except
@@ -239,13 +254,17 @@ begin
     //tasks are remaining
     if (upgrades = Nil) and (
       ((running<>Nil) and (running.dataType<>stNull)) or
-      ((pending<>Nil) and (pending.AsArray.Length>0)))  then
+      ((pending<>Nil) and (pending.AsArray.Length>0)))
+    then
     begin
+      GridPending.Data := pending;
       if (running<>Nil) and (running.DataType<>stNull) then
       begin
         //ProgressBar.Position:=running.I['progress'];
-        Memo1.Lines.Text:=running.S['description']+#13#10+running.S['runstatus'];
+        EdRunning.Text := running.S['description'];
+        MemoLog.Lines.Text := running.S['runstatus'];
       end;
+
       //GridTasks.Data:=pending;
     end;
 
@@ -255,7 +274,6 @@ begin
 
     if (pending<>Nil) then
       ProgressBar.Position:=ProgressBar.Max - pending.AsArray.Length;
-
 
     //upgrades are pending, launch upgrades after timeout expired or manual action
     if (upgrades<>Nil) then
