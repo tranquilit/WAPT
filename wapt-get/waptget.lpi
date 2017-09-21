@@ -23,7 +23,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="5"/>
-      <BuildNr Value="16"/>
+      <BuildNr Value="17"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion="1.5.0"/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -68,10 +68,9 @@
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="619"/>
+        <TopLine Value="555"/>
         <CursorPos X="34" Y="632"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
@@ -80,13 +79,14 @@
       <Unit1>
         <Filename Value="waptcommon.pas"/>
         <UnitName Value="waptcommon"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="848"/>
-        <CursorPos X="46" Y="863"/>
+        <TopLine Value="979"/>
+        <CursorPos X="5" Y="1007"/>
         <UsageCount Value="205"/>
         <Bookmarks Count="1">
-          <Item0 X="43" Y="879" ID="2"/>
+          <Item0 X="43" Y="878" ID="2"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -263,12 +263,10 @@
       <Unit23>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
         <UnitName Value="superobject"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1659"/>
         <CursorPos X="1" Y="1676"/>
         <UsageCount Value="19"/>
-        <Loaded Value="True"/>
       </Unit23>
       <Unit24>
         <Filename Value="..\..\internettools\internet\simpleinternet.pas"/>
@@ -555,127 +553,47 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit58>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="10" HistoryIndex="9">
       <Position1>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="3608" Column="1" TopLine="3595"/>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="863" Column="46" TopLine="848"/>
       </Position1>
       <Position2>
         <Filename Value="waptcommon.pas"/>
-        <Caret Line="444" Column="1" TopLine="430"/>
+        <Caret Line="131" Column="22" TopLine="109"/>
       </Position2>
       <Position3>
         <Filename Value="waptcommon.pas"/>
-        <Caret Line="445" Column="1" TopLine="430"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position3>
       <Position4>
         <Filename Value="waptcommon.pas"/>
-        <Caret Line="446" Column="1" TopLine="430"/>
+        <Caret Line="131" Column="22" TopLine="103"/>
       </Position4>
       <Position5>
         <Filename Value="waptcommon.pas"/>
-        <Caret Line="448" Column="1" TopLine="430"/>
+        <Caret Line="1008" Column="25" TopLine="980"/>
       </Position5>
       <Position6>
         <Filename Value="waptcommon.pas"/>
-        <Caret Line="449" Column="1" TopLine="430"/>
+        <Caret Line="1009" Column="67" TopLine="981"/>
       </Position6>
       <Position7>
         <Filename Value="waptcommon.pas"/>
-        <Caret Line="450" Column="1" TopLine="430"/>
+        <Caret Line="1097" Column="69" TopLine="1069"/>
       </Position7>
       <Position8>
         <Filename Value="waptcommon.pas"/>
-        <Caret Line="451" Column="1" TopLine="430"/>
+        <Caret Line="1098" Column="54" TopLine="1070"/>
       </Position8>
       <Position9>
         <Filename Value="waptcommon.pas"/>
-        <Caret Line="452" Column="1" TopLine="430"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position9>
       <Position10>
         <Filename Value="waptcommon.pas"/>
-        <Caret Line="456" Column="1" TopLine="433"/>
+        <Caret Line="131" Column="2" TopLine="103"/>
       </Position10>
-      <Position11>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="458" Column="1" TopLine="435"/>
-      </Position11>
-      <Position12>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="459" Column="1" TopLine="436"/>
-      </Position12>
-      <Position13>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="461" Column="1" TopLine="438"/>
-      </Position13>
-      <Position14>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="462" Column="1" TopLine="439"/>
-      </Position14>
-      <Position15>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="464" Column="1" TopLine="442"/>
-      </Position15>
-      <Position16>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="485" Column="1" TopLine="472"/>
-      </Position16>
-      <Position17>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="486" Column="1" TopLine="472"/>
-      </Position17>
-      <Position18>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="487" Column="1" TopLine="472"/>
-      </Position18>
-      <Position19>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="489" Column="1" TopLine="472"/>
-      </Position19>
-      <Position20>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="490" Column="1" TopLine="472"/>
-      </Position20>
-      <Position21>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="498" Column="1" TopLine="476"/>
-      </Position21>
-      <Position22>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="499" Column="1" TopLine="477"/>
-      </Position22>
-      <Position23>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="500" Column="1" TopLine="478"/>
-      </Position23>
-      <Position24>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="501" Column="1" TopLine="479"/>
-      </Position24>
-      <Position25>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="502" Column="1" TopLine="480"/>
-      </Position25>
-      <Position26>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="504" Column="1" TopLine="482"/>
-      </Position26>
-      <Position27>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="1673" Column="1" TopLine="1659"/>
-      </Position27>
-      <Position28>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="1674" Column="1" TopLine="1659"/>
-      </Position28>
-      <Position29>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="1676" Column="1" TopLine="1659"/>
-      </Position29>
-      <Position30>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="215" Column="22" TopLine="201"/>
-      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -820,7 +738,7 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="waptcommon.pas"/>
-        <Line Value="445"/>
+        <Line Value="444"/>
       </Item15>
     </BreakPoints>
     <Exceptions Count="3">

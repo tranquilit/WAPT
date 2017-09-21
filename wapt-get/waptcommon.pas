@@ -128,7 +128,6 @@ const
   waptwua_enabled : boolean = False;
 
   waptservice_port:integer = 8088;
-  waptservice_sslport:integer = -1;
   waptserver_port:integer = 80;
   waptserver_sslport:integer = 443;
   zmq_port:integer = 5000;
@@ -157,7 +156,7 @@ const
 
   AdvancedMode:Boolean = False;
 
-  WAPTServerMinVersion='1.5.0.11';
+  WAPTServerMinVersion='1.5.0.17';
 
 implementation
 
@@ -1003,10 +1002,9 @@ end;
 function GetWaptLocalURL: String;
 begin
   if waptservice_port >0 then
-      result := format('http://127.0.0.1:%d',[waptservice_port])
+    result := format('http://127.0.0.1:%d',[waptservice_port])
   else
-  if waptservice_sslport >0 then
-      result := format('https://127.0.0.1:%d',[waptservice_sslport]);
+    result :='';
 end;
 
 function WaptBaseDir: Utf8String;
@@ -1094,8 +1092,7 @@ begin
   with TIniFile.Create(inifilename) do
   try
     waptservice_port := ReadInteger('global','waptservice_port',-1);
-    waptservice_sslport := ReadInteger('global','waptservice_sslport',-1);
-    if (waptservice_port<=0) and (waptservice_sslport<=0) then
+    if (waptservice_port<=0) then
       waptservice_port := 8088;
 
     waptservice_timeout := ReadInteger('global','waptservice_timeout',2);
