@@ -153,7 +153,7 @@ copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','__init__.py'),
 copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','verification.py'),
          './builddir/opt/wapt/lib/site-packages/cryptography/x509/verification.py')
 
-		 
+
 add_symlink('./opt/wapt/wapt-signpackages.py','./usr/bin/wapt-signpackages')
 add_symlink('./opt/wapt/wapt-scanpackages.py','./usr/bin/wapt-scanpackages')
 
@@ -163,6 +163,20 @@ os.chmod('./builddir/opt/wapt/wapt-signpackages.py',0o755)
 print 'copie des fichiers control et postinst'
 copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
 copyfile('./DEBIAN/postinst','./builddir/DEBIAN/postinst')
+
+def git_hash():
+    from git import Repo
+    r = Repo('.',search_parent_directories = True)
+    return r.active_branch.object.name_rev[:8]
+
+deb_revision = None
+if len(sys.argv) >= 2:
+    deb_revision = sys.argv[1]
+else:
+    deb_revision = 'git-'+git_hash()
+
+if deb_revision:
+    wapt_version += '-'+deb_revision
 
 print u'inscription de la version dans le fichier de control. new version: ' + wapt_version
 replaceAll(control_file,'0.0.7',wapt_version)
