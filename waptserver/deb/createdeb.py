@@ -103,7 +103,7 @@ deb_revision = None
 if len(sys.argv) >= 2:
     deb_revision = sys.argv[1]
 else:
-    deb_revision = git_hash()
+    deb_revision = 'git-'+git_hash()
 
 new_umask = 022
 old_umask = os.umask(new_umask)

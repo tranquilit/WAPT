@@ -146,6 +146,7 @@ parser = argparse.ArgumentParser(u'Crée un paquet .deb contenant le dernier wap
 parser.add_argument('-d', '--download', action='store_true', help='Download latest exe from an server')
 parser.add_argument('-l', '--loglevel', help='Change log level (error, warning, info, debug...)')
 parser.add_argument('-s', '--server', help='http server from which the exe will be retrieved (only meaningful with -d)')
+parser.add_argument('-r', '--revision', help='revision to append to package version')
 options = parser.parse_args()
 
 logger = logging.getLogger()
@@ -163,17 +164,27 @@ if options.server is not None:
         sys.exit(1)
     SRV = options.server
 
-revision = 0
+revision = None
 if options.download:
     revision = fetch_from_server()
+else:
+    revision = options.revision
+
+def git_hash():
+    from git import Repo
+    r = Repo('.',search_parent_directories = True)
+    return r.active_branch.object.name_rev[:8]
+
+if not revision:
+    revision = 'git-'+git_hash()
 
 logger.debug('Getting version from executable')
 pe = pefile.PE(WAPTSETUP)
 version = pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
 logger.debug('%s version: %s', WAPTSETUP, version)
 
-if revision != 0:
-    full_version = version + '-rev' + revision
+if revision:
+    full_version = version + '-' + revision
 else:
     full_version = version
 
