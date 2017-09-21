@@ -102,13 +102,7 @@ def git_hash():
 deb_revision = None
 if len(sys.argv) >= 2:
     try:
-        deb_revision = int(sys.argv[1])
-        if deb_revision <= 0:
-            raise Exception()
-    except:
-        print("wrong parameter `%s' (should be a positive integer)" %
-              (sys.argv[1],), file=sys.stderr)
-        sys.exit(1)
+        deb_revision = sys.argv[1]
 else:
     deb_revision = git_hash()
 
