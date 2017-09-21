@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.16"
+__version__ = "1.5.0.17"
 
 import os
 import re
@@ -1581,7 +1581,11 @@ class WaptServer(object):
         """ """
         surl = self.server_url
         if surl:
-            req = requests.get("%s/%s" % (surl,action),proxies=self.proxies,verify=self.verify_cert,timeout=timeout or self.timeout,auth=auth or self.auth(),headers=default_http_headers())
+            req = requests.get("%s/%s" % (surl,action),
+                proxies=self.proxies,verify=self.verify_cert,
+                timeout=timeout or self.timeout,auth=auth or self.auth(),
+                headers=default_http_headers(),
+                allow_redirects=True)
             req.raise_for_status()
             return json.loads(req.content)
         else:
@@ -1617,7 +1621,8 @@ class WaptServer(object):
                     verify=self.verify_cert,
                     timeout=timeout or self.timeout,
                     auth=auth or self.auth(action=action),
-                    headers=headers)
+                    headers=headers,
+                    allow_redirects=True)
             req.raise_for_status()
             return json.loads(req.content)
         else:
@@ -1626,7 +1631,10 @@ class WaptServer(object):
     def available(self):
         try:
             if self.server_url:
-                req = requests.head("%s/ping" % (self.server_url),proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,auth=self.auth(action='ping'),headers=default_http_headers())
+                req = requests.head("%s/ping" % (self.server_url),proxies=self.proxies,
+                    verify=self.verify_cert,timeout=self.timeout,auth=self.auth(action='ping'),
+                    headers=default_http_headers(),
+                    allow_redirects=True)
                 req.raise_for_status()
                 return True
             else:
@@ -2054,7 +2062,9 @@ class WaptHostRepo(WaptRepo):
         try:
             host_package_url = self.host_package_url()
             logger.debug(u'Trying to get  host package for %s at %s' % (self.host_id,host_package_url))
-            host_package = requests.head(host_package_url,proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,headers=default_http_headers())
+            host_package = requests.head(host_package_url,proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,
+                headers=default_http_headers(),
+                allow_redirects=True)
             host_package.raise_for_status()
             return httpdatetime2isodate(host_package.headers.get('last-modified',None))
         except requests.HTTPError as e:
@@ -2109,7 +2119,11 @@ class WaptHostRepo(WaptRepo):
         try:
             host_package_url = self.host_package_url()
             logger.debug(u'Trying to get  host package for %s at %s' % (self.host_id,host_package_url))
-            host_package = requests.get(host_package_url,proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,headers=default_http_headers())
+            host_package = requests.get(host_package_url,
+                proxies=self.proxies,verify=self.verify_cert,
+                timeout=self.timeout,
+                headers=default_http_headers(),
+                allow_redirects=True)
             host_package.raise_for_status()
             self._packages_date = httpdatetime2isodate(host_package.headers.get('last-modified',None))
             content = host_package.content
