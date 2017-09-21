@@ -126,7 +126,7 @@ ScriptName=C:\tranquilit\wapt\wapt-get.py
 Description=wapt-get update
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug -f -D update
+Parameters=-ldebug -D update
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -688,7 +688,7 @@ Name=sign-package wapttest
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=sign-package C:\tranquilit\tis-wapttest-wapt
+Parameters=-m sha256,sha1 sign-package "C:\tranquilit\tis-wapttest_22_all.wapt"
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1531,8 +1531,31 @@ WorkingDirectory=$[ActiveScript-Dir]
 ShortCut=0
 MessagesFormat=$[FileName] $[LineNumber]
 
+[Project\ChildNodes\Node1\ChildNodes\Node61]
+ClassName=TProjectRunConfiguationNode
+Name=build-package dual sha
+
+[Project\ChildNodes\Node1\ChildNodes\Node61\RunConfig]
+ScriptName=C:\tranquilit\wapt\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=-m sha256,sha1 build-package C:\tranquilit\tis-wapttest-wapt
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node61\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
+
 [Project\ChildNodes\Node1\ChildNodes]
-Count=61
+Count=62
 
 [Project\ChildNodes]
 Count=2

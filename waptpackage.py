@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.16"
+__version__ = "1.5.0.17"
 
 __all__ = [
     'control_to_dict',
@@ -2052,6 +2052,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                 verify=self.verify_cert,
                 headers=default_http_headers(),
                 cert = self.client_auth(),
+                allow_redirects=True,
                 )
             req.raise_for_status()
             packages_last_modified = req.headers['last-modified']
@@ -2146,6 +2147,7 @@ class WaptRemoteRepo(WaptBaseRepo):
             verify=self.verify_cert,
             headers=default_http_headers(),
             cert = self.client_auth(),
+            allow_redirects=True,
             )
         packages_answer.raise_for_status()
         _packages_index_date = datetime.datetime(*email.utils.parsedate(packages_answer.headers['last-modified'])[:6])

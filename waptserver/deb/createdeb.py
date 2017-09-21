@@ -94,6 +94,11 @@ if len(sys.argv) > 2:
     print('wrong number of parameters (0 or 1)', file=sys.stderr)
     sys.exit(1)
 
+def git_hash():
+    from git import Repo
+    r = Repo('.',search_parent_directories = True)
+    return r.active_branch.object.name_rev[:8]
+
 deb_revision = None
 if len(sys.argv) >= 2:
     try:
@@ -104,6 +109,8 @@ if len(sys.argv) >= 2:
         print("wrong parameter `%s' (should be a positive integer)" %
               (sys.argv[1],), file=sys.stderr)
         sys.exit(1)
+else:
+    deb_revision = git_hash()
 
 new_umask = 022
 old_umask = os.umask(new_umask)

@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.16"
+__version__ = "1.5.0.17"
 
 import os
 import sys
@@ -492,7 +492,13 @@ def default_http_headers():
 def http_resource_datetime(url,proxies=None,timeout=2,auth=None,verify_cert=False,cert=None):
     # try to get header for the supplied URL, returns None if no answer within the specified timeout
     try:
-        headers = requests.head(url,proxies=proxies,timeout=timeout,auth=auth,verify=verify_cert,headers=default_http_headers(),cert=cert)
+        headers = requests.head(url,
+            proxies=proxies,timeout=timeout,
+            auth=auth,
+            verify=verify_cert,
+            headers=default_http_headers(),
+            cert=cert,
+            allow_redirects=True)
         if headers.ok:
             return httpdatetime2datetime(headers.headers.get('last-modified',None))
         else:
@@ -503,7 +509,11 @@ def http_resource_datetime(url,proxies=None,timeout=2,auth=None,verify_cert=Fals
 def http_resource_isodatetime(url,proxies=None,timeout=2,auth=None,verify_cert=False,cert=None):
     # try to get header for the supplied URL, returns None if no answer within the specified timeout or UTC iso datetime of resource from server
     try:
-        headers = requests.head(url,proxies=proxies,timeout=timeout,auth=auth,verify=verify_cert,headers=default_http_headers(),cert=cert)
+        headers = requests.head(url,proxies=proxies,timeout=timeout,auth=auth,
+            verify=verify_cert,
+            headers=default_http_headers(),
+            cert=cert,
+            allow_redirects=True)
         if headers.ok:
             return httpdatetime2isodate(headers.headers.get('last-modified',None))
         else:
@@ -601,7 +611,8 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         timeout=connect_timeout,
         verify=verify_cert,
         headers=header,
-        cert = cert)
+        cert = cert,
+        allow_redirects=True)
 
     httpreq.raise_for_status()
 
@@ -662,7 +673,7 @@ def wgets(url,proxies=None,verify_cert=False,referer=None,user_agent=None,timeou
     if user_agent != None:
         header.update({'user-agent': '%s' % user_agent})
 
-    r = requests.get(url,proxies=proxies,verify=verify_cert,headers=header,timeout=timeout)
+    r = requests.get(url,proxies=proxies,verify=verify_cert,headers=header,timeout=timeout,allow_redirects=True)
     if r.ok:
         return r.content
     else:
