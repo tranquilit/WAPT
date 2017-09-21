@@ -4854,6 +4854,7 @@ class Wapt(object):
         logger.info(u"setup.uninstall for package %s with params %s" % (packagename,params_dict))
         oldpath = sys.path
         try:
+            setup = None
             previous_cwd = os.getcwd()
             if os.path.isdir(packagename):
                 entry = PackageEntry().load_control_from_wapt(packagename)
