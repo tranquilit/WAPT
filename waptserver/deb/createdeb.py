@@ -101,8 +101,7 @@ def git_hash():
 
 deb_revision = None
 if len(sys.argv) >= 2:
-    try:
-        deb_revision = sys.argv[1]
+    deb_revision = sys.argv[1]
 else:
     deb_revision = git_hash()
 
