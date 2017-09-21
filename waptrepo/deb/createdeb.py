@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-
+from __future__ import print_function
 import fileinput
 import glob
 import os
@@ -29,6 +29,10 @@ import stat
 import subprocess
 import sys
 import errno
+
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 def replaceAll(file,searchExp,replaceExp):
     for line in fileinput.input(file, inplace=1):
@@ -66,13 +70,13 @@ def add_symlink(link_target,link_name):
     if link_target.startswith('/'):
         link_target = link_target[1:]
     relative_link_target_path = os.path.join('builddir',link_target)
-    print("adding symlink %s -> %s" % (link_name, relative_link_target_path ))
+    eprint("adding symlink %s -> %s" % (link_name, relative_link_target_path ))
     mkdir_p(os.path.dirname(relative_link_target_path))
 
     if not os.path.exists(relative_link_target_path):
         cmd = 'ln -s %s %s ' % (relative_link_target_path,link_name)
-        print( cmd)
-        print(subprocess.check_output(cmd))
+        eprint( cmd)
+        eprint(subprocess.check_output(cmd))
 
 makepath = os.path.join
 from shutil import copyfile
@@ -89,7 +93,7 @@ for line in file('../../waptpackage.py', 'r').readlines():
         wapt_version = line.split('=')[1].strip().replace('"','').replace("'","")
 
 if wapt_version is None:
-    print 'version "%s" incorrecte/non trouvee dans waptpackage.py' % str(wapt_version)
+    eprint('version "%s" incorrecte/non trouvee dans waptpackage.py' % str(wapt_version))
     sys.exit(1)
 
 control_file = './builddir/DEBIAN/control'
@@ -97,16 +101,16 @@ control_file = './builddir/DEBIAN/control'
 new_umask = 022
 old_umask = os.umask(new_umask)
 if new_umask != old_umask:
-    print >> sys.stderr, 'umask fixed (previous %03o, current %03o)' % (old_umask, new_umask)
+    eprint('umask fixed (previous %03o, current %03o)' % (old_umask, new_umask))
 
 # remove old debs
 for filename in glob.glob("tis-waptrepo*.deb"):
-    print "destruction de %s" % filename
+    eprint("destruction de %s" % filename)
     os.remove(filename)
 if os.path.exists("builddir"):
     shutil.rmtree("builddir")
 
-print u'creation de l\'arborescence'
+eprint(u'creation de l\'arborescence')
 os.makedirs("builddir")
 os.makedirs("builddir/DEBIAN")
 os.makedirs("builddir/opt")
@@ -117,23 +121,20 @@ os.makedirs("builddir/opt/wapt/lib/site-packages")
 
 # for some reason the virtualenv does not build itself right if we don't
 # have pip systemwide...
-subprocess.check_output(
-    r'sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev', shell=True)
+eprint(subprocess.check_output(
+    r'sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev', shell=True))
 
-print(
-    'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-subprocess.check_output(
-    r'virtualenv ./builddir/opt/wapt --system-site-packages', shell=True)
+eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
+subprocess.check_output(r'virtualenv ./builddir/opt/wapt --system-site-packages', shell=True)
 
-print('Install additional libraries in build environment virtualenv')
-subprocess.check_output(
-    r'./builddir/opt/wapt/bin/pip install -r ../../requirements-repo.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True)
+eprint('Install additional libraries in build environment virtualenv')
+subprocess.check_output(r'./builddir/opt/wapt/bin/pip install -r ../../requirements-repo.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True)
 
 version_file = open(os.path.join('./builddir/opt/wapt/waptrepo','VERSION'),'w')
 version_file.write(wapt_version)
 version_file.close()
 
-print 'copie des fichiers waptrepo'
+eprint('copie des fichiers waptrepo')
 copyfile(makepath(wapt_source_dir,'waptcrypto.py'),
          './builddir/opt/wapt/waptcrypto.py')
 copyfile(makepath(wapt_source_dir,'waptutils.py'),
@@ -147,7 +148,7 @@ copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
 copyfile(makepath(wapt_source_dir,'wapt-signpackages.py'),
          './builddir/opt/wapt/wapt-signpackages.py')
 
-print('cryptography patches')
+eprint('cryptography patches')
 copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','__init__.py'),
          './builddir/opt/wapt/lib/site-packages/cryptography/x509/__init__.py')
 copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','verification.py'),
@@ -160,7 +161,7 @@ add_symlink('./opt/wapt/wapt-scanpackages.py','./usr/bin/wapt-scanpackages')
 os.chmod('./builddir/opt/wapt/wapt-scanpackages.py',0o755)
 os.chmod('./builddir/opt/wapt/wapt-signpackages.py',0o755)
 
-print 'copie des fichiers control et postinst'
+eprint('copie des fichiers control et postinst')
 copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
 copyfile('./DEBIAN/postinst','./builddir/DEBIAN/postinst')
 
@@ -178,10 +179,10 @@ else:
 if deb_revision:
     wapt_version += '-'+deb_revision
 
-print u'inscription de la version dans le fichier de control. new version: ' + wapt_version
+eprint(u'inscription de la version dans le fichier de control. new version: ' + wapt_version)
 replaceAll(control_file,'0.0.7',wapt_version)
 
-print u'creation du paquet Deb'
+eprint(u'creation du paquet Deb')
 os.chmod('./builddir/DEBIAN/postinst',
          stat.S_IRWXU
          | stat.S_IXGRP | stat.S_IRGRP
@@ -189,5 +190,7 @@ os.chmod('./builddir/DEBIAN/postinst',
          )
 dpkg_command = 'dpkg-deb --build builddir tis-waptrepo.deb'
 os.system(dpkg_command)
-os.link('tis-waptrepo.deb', 'tis-waptrepo-{}.deb'.format(wapt_version))
+final_deb = 'tis-waptrepo-{}.deb'.format(wapt_version)
+os.link('tis-waptrepo.deb', final_deb)
 shutil.rmtree("builddir")
+print(final_deb)
