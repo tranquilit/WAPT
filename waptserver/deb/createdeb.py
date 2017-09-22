@@ -33,6 +33,9 @@ import platform
 import errno
 import sys
 
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
 
 def mkdir_p(path):
     try:
@@ -55,13 +58,13 @@ def add_symlink(link_target, link_name):
     if link_target.startswith('/'):
         link_target = link_target[1:]
     relative_link_target_path = os.path.join('builddir', link_target)
-    print('adding symlink %s -> %s' % (link_name, relative_link_target_path))
+    eprint('adding symlink %s -> %s' % (link_name, relative_link_target_path))
     mkdir_p(os.path.dirname(relative_link_target_path))
 
     if not os.path.exists(relative_link_target_path):
         cmd = 'ln -s %s %s ' % (relative_link_target_path, link_name)
-        print(cmd)
-        print(subprocess.check_output(cmd))
+        eprint(cmd)
+        eprint(subprocess.check_output(cmd))
 
 
 def rsync(src, dst, excludes=[]):
@@ -73,7 +76,7 @@ def rsync(src, dst, excludes=[]):
     rsync_destination = dst
     rsync_command = '/usr/bin/rsync %s "%s" "%s"' % (
         rsync_option, rsync_source, rsync_destination)
-    print(rsync_command, file=sys.stderr)
+    eprint(rsync_command)
     os.system(rsync_command)
 
 
@@ -87,11 +90,11 @@ wapt_source_dir = os.path.abspath('../..')
 source_dir = os.path.abspath('..')
 
 if platform.system() != 'Linux':
-    print('this script should be used on debian linux', file=sys.stderr)
+    eprint('this script should be used on debian linux')
     sys.exit(1)
 
 if len(sys.argv) > 2:
-    print('wrong number of parameters (0 or 1)', file=sys.stderr)
+    eprint('wrong number of parameters (0 or 1)')
     sys.exit(1)
 
 def git_hash():
@@ -108,8 +111,7 @@ else:
 new_umask = 022
 old_umask = os.umask(new_umask)
 if new_umask != old_umask:
-    print('umask fixed (previous %03o, current %03o)' %
-          (old_umask, new_umask), file=sys.stderr)
+    eprint('umask fixed (previous %03o, current %03o)' % (old_umask, new_umask))
 
 for line in open('%s/waptserver.py' % source_dir):
     if line.strip().startswith('__version__'):
@@ -117,20 +119,19 @@ for line in open('%s/waptserver.py' % source_dir):
             1].strip().replace('"', '').replace("'", '')
 
 if not wapt_version:
-    print(u'version not found in %s/waptserver.py' %
-          os.path.abspath('..'), file=sys.stderr)
+    eprint(u'version not found in %s/waptserver.py' % os.path.abspath('..'))
     sys.exit(1)
 
 control_file = './builddir/DEBIAN/control'
 
 for filename in glob.glob('tis-waptserver*.deb'):
-    print('Removing %s' % filename, file=sys.stderr)
+    eprint('Removing %s' % filename)
     os.remove(filename)
 
 if os.path.exists('builddir'):
     shutil.rmtree('builddir')
 
-print('creating the package tree', file=sys.stderr)
+eprint('creating the package tree')
 mkdir_p('builddir/DEBIAN')
 mkdir_p('builddir/opt/wapt/conf')
 mkdir_p('builddir/opt/wapt/lib')
@@ -140,19 +141,19 @@ mkdir_p('builddir/opt/wapt/waptserver')
 
 # for some reason the virtualenv does not build itself right if we don't
 # have pip systemwide...
-subprocess.check_output(
-    r'sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev', shell=True)
+eprint(subprocess.check_output(
+    r'sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev', shell=True))
 
-print(
+eprint(
     'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
 subprocess.check_output(
     r'virtualenv ./builddir/opt/wapt --distribute', shell=True)
 
-print('Install additional libraries in build environment virtualenv')
+eprint('Install additional libraries in build environment virtualenv')
 subprocess.check_output(
     r'./builddir/opt/wapt/bin/pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True)
 
-print('copying the waptrepo files', file=sys.stderr)
+eprint('copying the waptrepo files')
 copyfile(makepath(wapt_source_dir, 'waptcrypto.py'),
          './builddir/opt/wapt/waptcrypto.py')
 copyfile(makepath(wapt_source_dir, 'waptutils.py'),
@@ -166,71 +167,70 @@ copyfile(makepath(wapt_source_dir, 'wapt-scanpackages.py'),
 copyfile(makepath(wapt_source_dir, 'wapt-signpackages.py'),
          './builddir/opt/wapt/wapt-signpackages.py')
 
-print('cryptography patches')
+eprint('cryptography patches')
 copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', '__init__.py'),
          './builddir/opt/wapt/lib/site-packages/cryptography/x509/__init__.py')
 copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.py'),
          './builddir/opt/wapt/lib/site-packages/cryptography/x509/verification.py')
 
 
-print('Add symlink for wapt-scanpackages and wapt-signpackages')
+eprint('Add symlink for wapt-scanpackages and wapt-signpackages')
 add_symlink('./opt/wapt/wapt-signpackages.py', './usr/bin/wapt-signpackages')
 add_symlink('./opt/wapt/wapt-scanpackages.py', './usr/bin/wapt-scanpackages')
 
 
-print('copying the waptserver files', file=sys.stderr)
+eprint('copying the waptserver files')
 rsync(source_dir, './builddir/opt/wapt/',
       excludes=['apache-win32', 'mongodb', 'postconf', 'repository', 'rpm', 'uninstall-services.bat', 'deb', 'spnego-http-auth-nginx-module'])
 for lib in ('dialog.py', ):
     rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),
           './builddir/opt/wapt/lib/site-packages/')
 
-print('copying control and postinst package metadata', file=sys.stderr)
+eprint('copying control and postinst package metadata')
 copyfile('./DEBIAN/control', './builddir/DEBIAN/control')
 copyfile('./DEBIAN/postinst', './builddir/DEBIAN/postinst')
 copyfile('./DEBIAN/preinst', './builddir/DEBIAN/preinst')
 
-subprocess.check_output(
-    r'find ./builddir/opt/wapt/ -type f -exec chmod 644 {} \;', shell=True)
-subprocess.check_output(
-    r'find ./builddir/opt/wapt/ -type d -exec chmod 755 {} \;', shell=True)
+eprint(subprocess.check_output(
+    r'find ./builddir/opt/wapt/ -type f -exec chmod 644 {} \;', shell=True))
+eprint(subprocess.check_output(
+    r'find ./builddir/opt/wapt/ -type d -exec chmod 755 {} \;', shell=True))
 
-print('copying systemd startup script', file=sys.stderr)
+eprint('copying systemd startup script')
 systemd_build_dest_dir = './builddir/usr/lib/systemd/system/'
 try:
     mkdir_p(systemd_build_dest_dir)
     copyfile('../scripts/waptserver.service', os.path.join(systemd_build_dest_dir, 'waptserver.service'))
 except Exception as e:
-    print (sys.stderr, 'error: \n%s' % e, file=sys.stderr)
+    eprint('error: \n%s' % e)
     exit(1)
 
-print('copying logrotate script /etc/logrotate.d/waptserver', file=sys.stderr)
+eprint('copying logrotate script /etc/logrotate.d/waptserver')
 try:
     mkdir_p('./builddir/etc/logrotate.d/')
     shutil.copyfile('../scripts/waptserver-logrotate',
                     './builddir/etc/logrotate.d/waptserver')
-    subprocess.check_output(
-        'chown root:root ./builddir/etc/logrotate.d/waptserver', shell=True)
+    eprint(subprocess.check_output(
+        'chown root:root ./builddir/etc/logrotate.d/waptserver', shell=True))
 except Exception as e:
-    print('error: \n%s' % e, file=sys.stderr)
+    eprint('error: \n%s' % e)
     exit(1)
 
-print('copying logrotate script /etc/rsyslog.d/waptserver.conf',
-      file=sys.stderr)
+eprint('copying logrotate script /etc/rsyslog.d/waptserver.conf')
 try:
     mkdir_p('./builddir/etc/rsyslog.d/')
     shutil.copyfile('../scripts/waptserver-rsyslog',
                     './builddir/etc/rsyslog.d/waptserver.conf')
-    subprocess.check_output(
-        'chown root:root ./builddir/etc/rsyslog.d/waptserver.conf', shell=True)
+    eprint(subprocess.check_output(
+        'chown root:root ./builddir/etc/rsyslog.d/waptserver.conf', shell=True))
 except Exception as e:
-    print('error: \n%s' % e, file=sys.stderr)
+    eprint('error: \n%s' % e)
     exit(1)
 
 add_symlink('opt/wapt/waptserver/scripts/postconf.py', '/usr/bin/wapt-serverpostconf')
 os.chmod('./builddir/opt/wapt/waptserver/scripts/postconf.py', 0o755)
 
-print('copying nginx-related goo', file=sys.stderr)
+eprint('copying nginx-related goo')
 try:
     apache_dir = './builddir/opt/wapt/waptserver/apache/'
     mkdir_p(apache_dir + '/ssl')
@@ -241,18 +241,17 @@ try:
     mkdir_p('./builddir/etc/systemd/system/nginx.service.d')
     copyfile('../scripts/nginx_worker_files_limit.conf', './builddir/etc/systemd/system/nginx.service.d/nginx_worker_files_limit.conf')
 except Exception as e:
-    print('error: \n%s' % e, file=sys.stderr)
+    eprint('error: \n%s' % e)
     exit(1)
 
-print(sys.stderr, 'Overriding VCS revision.', file=sys.stderr)
+eprint('Overriding VCS revision.')
 rev_file = file('builddir/opt/wapt/revision.txt', 'w')
 try:
     git_hash = subprocess.check_call(
         ['git', 'rev-parse', '--short', 'HEAD'], stdout=rev_file)
 except Exception:
-    print('Could not retrieve the hash of the current git commit.',
-          file=sys.stderr)
-    print(sys.stderr, 'Is git(1) installed?', file=sys.stderr)
+    eprint('Could not retrieve the hash of the current git commit.')
+    eprint('Is git(1) installed?')
     raise
 rev_file.close()
 
@@ -260,7 +259,7 @@ deb_version = wapt_version
 if deb_revision:
     deb_version += '-' + str(deb_revision)
 
-print('replacing the revision in the control file', file=sys.stderr)
+eprint('replacing the revision in the control file')
 replaceAll(control_file, '0.0.7', deb_version)
 
 os.chmod('./builddir/DEBIAN/postinst', stat.S_IRWXU |
@@ -268,12 +267,12 @@ os.chmod('./builddir/DEBIAN/postinst', stat.S_IRWXU |
 os.chmod('./builddir/DEBIAN/preinst', stat.S_IRWXU |
          stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
 
-print('creating the Debian package', file=sys.stderr)
+eprint('creating the Debian package')
 output_file = 'tis-waptserver-%s.deb' % (deb_version)
 dpkg_command = 'dpkg-deb --build builddir %s' % output_file
 status = os.system(dpkg_command)
 if status == 0:
-    os.link(output_file, 'tis-waptserver.deb')
+    print(output_file)
 else:
-    print('error while building package')
+    eprint('error while building package')
 sys.exit(status)
