@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-
+from __future__ import print_function
 import HTMLParser
 import argparse
 import errno
@@ -36,6 +36,11 @@ import shutil
 import stat
 import subprocess
 import sys
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
+
 
 def mkdir_p(path):
     try:
@@ -203,5 +208,5 @@ output = 'tis-waptsetup-%s.deb' % (full_version)
 dpkg_command = ['dpkg-deb', '--build', BDIR, output]
 run(dpkg_command)
 os.link(output, 'tis-waptsetup.deb')
-
 logger.info('All done')
+print(output)
