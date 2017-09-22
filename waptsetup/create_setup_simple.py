@@ -12,7 +12,6 @@ def programfiles32():
         return os.environ['PROGRAMFILES']
 
 if __name__ == '__main__':
-
     installer = sys.argv[1]
     if installer.endswith(".exe"):
         installer = installer[0:installer.rfind(".exe")]
@@ -30,6 +29,4 @@ if __name__ == '__main__':
         'issfile':iss_file
     }
 
-    print subprocess.check_output(cmd)
-
-
+    subprocess.check_call(cmd)
