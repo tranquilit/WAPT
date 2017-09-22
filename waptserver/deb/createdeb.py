@@ -74,7 +74,7 @@ def rsync(src, dst, excludes=[]):
             ' '.join(" --exclude '%s'" % x for x in excludes)
     rsync_source = src
     rsync_destination = dst
-    rsync_command = '/usr/bin/rsync %s "%s" "%s"' % (
+    rsync_command = '/usr/bin/rsync %s "%s" "%s" 1>&2' % (
         rsync_option, rsync_source, rsync_destination)
     eprint(rsync_command)
     os.system(rsync_command)
@@ -269,7 +269,7 @@ os.chmod('./builddir/DEBIAN/preinst', stat.S_IRWXU |
 
 eprint('creating the Debian package')
 output_file = 'tis-waptserver-%s.deb' % (deb_version)
-dpkg_command = 'dpkg-deb --build builddir %s' % output_file
+dpkg_command = 'dpkg-deb --build builddir %s 1>&2' % output_file
 status = os.system(dpkg_command)
 if status == 0:
     print(output_file)

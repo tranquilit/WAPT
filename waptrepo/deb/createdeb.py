@@ -30,7 +30,6 @@ import subprocess
 import sys
 import errno
 
-
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
@@ -58,11 +57,11 @@ def rsync(src,dst):
         "--exclude '.git'",
         "--exclude '.gitignore'",
         "--exclude 'rpm'",
-        "-aP",
+        "-aP"
     ])
     rsync_source = src
     rsync_destination = dst
-    rsync_command = '/usr/bin/rsync %s "%s" "%s"' % (
+    rsync_command = '/usr/bin/rsync %s "%s" "%s" 1>&2' % (
         rsync_option,rsync_source,rsync_destination)
     os.system(rsync_command)
 
@@ -75,7 +74,7 @@ def add_symlink(link_target,link_name):
 
     if not os.path.exists(relative_link_target_path):
         cmd = 'ln -s %s %s ' % (relative_link_target_path,link_name)
-        eprint( cmd)
+        eprint(cmd)
         eprint(subprocess.check_output(cmd))
 
 makepath = os.path.join
@@ -188,9 +187,9 @@ os.chmod('./builddir/DEBIAN/postinst',
          | stat.S_IXGRP | stat.S_IRGRP
          | stat.S_IROTH | stat.S_IXOTH
          )
-dpkg_command = 'dpkg-deb --build builddir tis-waptrepo.deb'
-os.system(dpkg_command)
+
 final_deb = 'tis-waptrepo-{}.deb'.format(wapt_version)
-os.link('tis-waptrepo.deb', final_deb)
+dpkg_command = 'dpkg-deb --build builddir %s 1>&2' % final_deb
+os.system(dpkg_command)
 shutil.rmtree("builddir")
 print(final_deb)
