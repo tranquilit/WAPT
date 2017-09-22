@@ -20,6 +20,7 @@ msgid ""
 "Do you wish to apply them now ?\n"
 "Do you wish to apply them now ?\n"
 "Do you wish to apply them now ?\n"
+"Do you wish to apply them now ?\n"
 msgstr "Fahren Sie den Computer nicht herunter !"
 
 msgid "Do you wish to apply them now ?"
@@ -34,7 +35,9 @@ msgid "Not now"
 msgstr "Nicht jetzt"
 
 #: tviswaptexit.actupgrade.caption
-msgid "Install/update packages"
+#, fuzzy
+#| msgid "Install/update packages"
+msgid "Install / Upgrade packages"
 msgstr "Pakete installieren/updaten"
 
 #: tviswaptexit.caption
