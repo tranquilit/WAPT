@@ -255,8 +255,8 @@ class SSLCABundle(object):
         return result
 
     def add_pem(self,pem_data,load_keys=False):
-        """Parse a bundle PEM with multiple certificates, CRL and keys
-            If key needs to be decrypted, callback must be assigned.
+        """Parse a bundle PEM with multiple certificates, CRL and keys.
+        If key needs to be decrypted, password callback property must be assigned.
 
         Returns:
             SSLCABundle : self
@@ -374,9 +374,10 @@ class SSLCABundle(object):
 
     def is_known_issuer(self,certificate,include_self=True):
         """Check if certificate is issued by one of this certificate bundle CA
-            and check certificate signature. Return top most CA.
+        and check certificate signature. Return top most CA.
 
-            Top most CA should be trusted somewhere...
+        Top most CA should be trusted somewhere...
+
         Args:
             certificate: certificate to check
             include_self: if certificate is in bunclde, accept it (pining)
@@ -431,10 +432,10 @@ class SSLCABundle(object):
 
     def check_certificates_chain(self,cert_chain,verify_expiry=True,verify_revoke=True,allow_pinned=True):
         """Check that first certificate in cert_chain is approved
-            by one of the CA certificate from this bundle.
+        by one of the CA certificate from this bundle.
 
-            If intermdiate issuers can not be found in this ca bundle, try to get them from
-                supplied cert_chain.
+        If intermdiate issuers can not be found in this ca bundle, try to get them from
+        supplied cert_chain.
 
         Args:
             cert_chain (list) : list of certificates. first one is starting point. The other ones are used if None can be found in cabundle
@@ -444,7 +445,7 @@ class SSLCABundle(object):
             allow_pinned (bool) : If True, accept certificate if it is in trusted certificates, even if we don't know the issuer.
 
         Returns:
-            list : of SSLCertificate : chain of trusted cert
+            (list) : SSLCertificate chain of trusted cert
         """
         def check_cert(cert):
             if verify_expiry and not cert.is_valid():
@@ -719,7 +720,7 @@ class SSLPrivateKey(object):
             self.load_key_data(pem_data)
 
     def create(self,bits=2048):
-        """Create RSA"""
+        """Create a RSA key pair"""
         self._rsa = rsa.generate_private_key(
             public_exponent=65537,
             key_size=bits,
@@ -727,6 +728,14 @@ class SSLPrivateKey(object):
 
 
     def as_pem(self,password=None):
+        """Return private key as a PEM str
+
+        Args;
+            password (str): password to use to encrypt the key.
+
+        Returns:
+            str: pem encoded RSA Private key.
+        """
         if isinstance(password,unicode):
             password = password.encode('utf8')
 
@@ -742,6 +751,17 @@ class SSLPrivateKey(object):
         return pem
 
     def save_as_pem(self,filename=None,password=None):
+        """Save the RSA  private key as a PEM encoded file
+
+        Optionnaly, encypt the key with a password.
+
+        Args:
+            filename (str) : filename of pem file to create. If not provided
+                             use the filename from self.
+            password (str) : password. If None, don't encrypt the key.
+                             if password is unicode, it is encoded in utf8 first.
+
+        """
         if filename is None:
             filename = self.private_key_filename
         if isinstance(password,unicode):
@@ -755,6 +775,15 @@ class SSLPrivateKey(object):
         self.private_key_filename = filename
 
     def load_key_data(self,pem_data):
+        """Load RSA structure with the provided pem_dat
+
+        Args;
+            pem_data (str) : base64 PEM style encoded RSA private key
+
+        Returns:
+            None
+
+        """
         retry_cnt=3
         password = self.password
         while retry_cnt>0:
@@ -779,7 +808,18 @@ class SSLPrivateKey(object):
 
     @property
     def rsa(self):
-        """access to RSA keys"""
+        """access to RSA keys
+
+        >>> key = SSLPrivateKey('c:/private/tranquilit2.pem')
+        >>> key.rsa
+        Please type the password to decrypt the private key
+        <cryptography.hazmat.backends.openssl.rsa._RSAPrivateKey object at 0x040ECE70>
+        >>> key.rsa.public_key()
+        <bound method _RSAPrivateKey.public_key of <cryptography.hazmat.backends.openssl.rsa._RSAPrivateKey object at 0x040ECE70>>
+        >>> key.rsa.private_bytes()
+        <bound method _RSAPrivateKey.private_bytes of <cryptography.hazmat.backends.openssl.rsa._RSAPrivateKey object at 0x040ECE70>>
+
+        """
         if not self._rsa:
             with open(self.private_key_filename,'rb') as pem_file:
                 self.load_key_data(pem_file.read())
@@ -788,7 +828,18 @@ class SSLPrivateKey(object):
         return self._rsa
 
     def sign_content(self,content,md='sha256',block_size=2**20):
-        """ Sign content with the private_key, return the signature"""
+        """ Sign content with the private_key, return the signature
+
+        If content is not a raw string, it is first encoded in json or utf8
+
+        Args:
+            content (str, list or dict): content to sign
+            md (str): lessage digest type to use
+            clock_size (int) : unused
+
+        Returns:
+            bytes: signature
+        """
         #apadding = padding.PSS(
         #                mgf=padding.MGF1(hashes.SHA256()),
         #                salt_length=padding.PSS.MAX_LENGTH)
@@ -824,6 +875,20 @@ class SSLPrivateKey(object):
 
 
     def matching_certs(self,cert_dir=None,ca=None,code_signing=None,valid=None):
+        """Returns list of certificates in cert_dir with public key matching this
+        private_key.
+
+        Args:
+            cert_dir (str): directory path where to search for .crt, .der or .pem X509 certificates files
+            ca (bool): if not None, returns only certificates which ahev the CA constraint set or not
+            code_signing (bool) : if not None, return only certificates which have the code_signing attribute or not
+            valid (bool) : if True, return only certificates which are calid (not before / not after attibutes check)
+
+        Returns:
+            list: list of SSLCertificate matching the key
+
+        """
+
         if cert_dir is None and self.private_key_filename:
             cert_dir = os.path.dirname(self.private_key_filename)
         result = []
@@ -840,7 +905,9 @@ class SSLPrivateKey(object):
         return result
 
     def decrypt(self,content):
-        """Decrypt a message encrypted with the public key"""
+        """Decrypt a message encrypted with the public key.
+        For small messages only.
+        """
         apadding = padding.OAEP(
             mgf=padding.MGF1(algorithm=hashes.SHA1()),
             algorithm=hashes.SHA1(),
@@ -849,8 +916,8 @@ class SSLPrivateKey(object):
 
     def decrypt_fernet(self,crypted_data):
         """Decrypt bytes which has been crypted by SSLCertificate.encrypt_fernet
-            the fernet symetric key is decrypted using RSA
-            payload is decrypted using fernet key
+        the fernet symetric key is decrypted using RSA
+        payload is decrypted using fernet key
 
         Args:
             crypted_data (bytes) : starts with 'RSAFERNET', then rsa key length (base10) on 3 chars
@@ -924,9 +991,10 @@ class SSLPrivateKey(object):
             crl_url = None,
             issuer_cert_url = None ):
         """Build a certificate with self public key and supplied attributes,
-           and sign it with supplied ca_signing_key.
+        and sign it with supplied ca_signing_key.
 
-            To self sign the certificate, put None for ca_signing_key and ca_signing_cert
+        To self sign the certificate, put None for ca_signing_key and ca_signing_cert
+
         Args:
             ca_signing_key (SSLPrivateKey):
             ca_signing_cert (SSLCertificate):
@@ -1050,7 +1118,30 @@ class SSLPrivateKey(object):
         return SSLCertificate(crt = crypto_crt)
 
     def public_key(self):
+        """Return the RSA public key object
+
+        Returns:
+            RSAPublicKey
+        """
         return self.rsa.public_key()
+
+    def public_key_as_pem(self):
+        """Return public key as a PEM str
+
+        Returns:
+            str: pem encoded RSA public key.
+        """
+        pem = self.public_key().public_bytes(encoding=serialization.Encoding.PEM,format=serialization.PublicFormat.PKCS1)
+        return pem
+
+    def public_key_as_openssh(self):
+        """Return public key as a PEM str
+
+        Returns:
+            str: pem encoded RSA public key.
+        """
+        pem = self.public_key().public_bytes(encoding=serialization.Encoding.OpenSSH,format=serialization.PublicFormat.OpenSSH)
+        return pem
 
 class SSLCertificate(object):
     """Hold a X509 public certificate"""
@@ -1473,9 +1564,11 @@ class SSLCertificate(object):
         return result
 
     def verify_signature_with(self,cabundle=None):
-        """Check validity of certificates signature along the whole certificates chain
-            Issuer certificates must have the CA constraint.
-            Issuer is found using hash of issuer_subject and subject bytes.
+        """
+        Check validity of certificates signature along the whole certificates chain
+
+        Issuer certificates must have the CA constraint.
+        Issuer is found using hash of issuer_subject and subject bytes.
 
         Args;
             cabundle: bundle of CA certificates, or SSLCertificate od list of certificates
@@ -1656,6 +1749,7 @@ class SSLCRL(object):
 
     def verify_signature_with(self,cabundle=None):
         """Check validity of CRL signature
+
         Args;
             cabundle: bundle of CA certificates
 
