@@ -31,6 +31,9 @@ import subprocess
 import platform
 import errno
 
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
 
 def mkdir_p(path):
     try:
