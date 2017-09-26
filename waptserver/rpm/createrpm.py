@@ -56,9 +56,9 @@ def rsync(src, dst, excludes=[]):
             ' '.join(" --exclude '%s'" % x for x in excludes)
     rsync_source = src
     rsync_destination = dst
-    rsync_command = '/usr/bin/rsync %s "%s" "%s"' % (
+    rsync_command = '/usr/bin/rsync %s "%s" "%s" 1>&2' % (
         rsync_option, rsync_source, rsync_destination)
-    print(rsync_command, file=sys.stderr)
+    eprint(rsync_command)
     os.system(rsync_command)
 
 
@@ -72,18 +72,18 @@ wapt_source_dir = os.path.abspath('../..')
 source_dir = os.path.abspath('..')
 
 if platform.system() != 'Linux':
-    print('this script should be used on debian linux', file=sys.stderr)
+    eprint('this script should be used on debian linux')
     sys.exit(1)
 
 if len(sys.argv) > 2:
-    print('wrong number of parameters (0 or 1)', file=sys.stderr)
+    eprint('wrong number of parameters (0 or 1)')
     sys.exit(1)
 
 new_umask = 022
 old_umask = os.umask(new_umask)
 if new_umask != old_umask:
-    print('umask fixed (previous %03o, current %03o)' %
-          (old_umask, new_umask), file=sys.stderr)
+    eprint('umask fixed (previous %03o, current %03o)' %
+          (old_umask, new_umask))
 
 for line in open('%s/waptserver.py' % source_dir):
     if line.strip().startswith('__version__'):
@@ -91,8 +91,8 @@ for line in open('%s/waptserver.py' % source_dir):
             1].strip().replace('"', '').replace("'", '')
 
 if not wapt_version:
-    print(u'version not found in %s/waptserver.py' %
-          os.path.abspath('..'), file=sys.stderr)
+    eprint(u'version not found in %s/waptserver.py' %
+          os.path.abspath('..'))
     sys.exit(1)
 
 
@@ -114,7 +114,7 @@ if (not check_if_package_is_installed('python-virtualenv')
     or not check_if_package_is_installed('libffi-devel')
     or not check_if_package_is_installed('openldap-devel')
     ):
-    print ("""
+    eprint("""
 ######################################################################################
      Please install build time packages first:
         yum install -y python-virtualenv gcc libffi-devel openssl-devel openldap-devel
@@ -122,10 +122,10 @@ if (not check_if_package_is_installed('python-virtualenv')
 """)
     sys.exit(1)
 
-print('creating the package tree', file=sys.stderr)
+eprint('creating the package tree')
 
 if os.path.exists('builddir'):
-    print('cleaning up builddir directory')
+    eprint('cleaning up builddir directory')
     shutil.rmtree('builddir')
 
 mkdir_p('builddir/opt/wapt/lib')
@@ -138,21 +138,21 @@ mkdir_p('builddir/opt/wapt/lib/site-packages')
 # have pip systemwide...
 if os.path.exists('pylibs'):
     shutil.rmtree('pylibs')
-print(
+eprint(
     'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
 subprocess.check_output(
     r'virtualenv ./pylibs --system-site-packages', shell=True)
-print('Install additional libraries in build environment virtualenv')
-print(subprocess.check_output(
+eprint('Install additional libraries in build environment virtualenv')
+eprint(subprocess.check_output(
     r'source ./pylibs/bin/activate ; pip install --upgrade pip ', shell=True))
-print(subprocess.check_output(
+eprint(subprocess.check_output(
     r'source ./pylibs/bin/activate ; pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True))
 rsync('./pylibs/lib/', './builddir/opt/wapt/lib/')
-print('copying the waptserver files', file=sys.stderr)
+eprint('copying the waptserver files', file=sys.stderr)
 rsync(source_dir, './builddir/opt/wapt/',
       excludes=['postconf', 'mongod.exe', 'bin', 'include','spnego-http-auth-nginx-module'])
 
-print('cryptography patches')
+eprint('cryptography patches')
 mkdir_p('./builddir/opt/wapt/lib/site-packages/cryptography/x509/')
 copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', '__init__.py'),
          'builddir/opt/wapt/lib/site-packages/cryptography/x509/__init__.py')
@@ -160,7 +160,7 @@ copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.
          'builddir/opt/wapt/lib/site-packages/cryptography/x509/verification.py')
 
 
-print('copying files formerly from waptrepo')
+eprint('copying files formerly from waptrepo')
 copyfile(makepath(wapt_source_dir, 'waptcrypto.py'),
          'builddir/opt/wapt/waptcrypto.py')
 copyfile(makepath(wapt_source_dir, 'waptutils.py'),
@@ -175,16 +175,16 @@ copyfile(makepath(wapt_source_dir, 'custom_zip.py'),
          'builddir/opt/wapt/custom_zip.py')
 
 
-print('copying systemd startup script', file=sys.stderr)
+eprint('copying systemd startup script')
 build_dest_dir = './builddir/usr/lib/systemd/system/'
 try:
     mkdir_p(build_dest_dir)
     copyfile('../scripts/waptserver.service', os.path.join(build_dest_dir, 'waptserver.service'))
 except Exception as e:
-    print (sys.stderr, 'error: \n%s' % e, file=sys.stderr)
+    eprint (sys.stderr, 'error: \n%s' % e)
     exit(1)
 
-print ('copying logrotate script /etc/logrotate.d/waptserver', file=sys.stderr)
+eprint ('copying logrotate script /etc/logrotate.d/waptserver')
 try:
     mkdir_p('./builddir/etc/logrotate.d/')
     shutil.copyfile('../scripts/waptserver-logrotate',
@@ -192,11 +192,10 @@ try:
     subprocess.check_output(
         'chown root:root ./builddir/etc/logrotate.d/waptserver', shell=True)
 except Exception as e:
-    print ('error: \n%s' % e, file=sys.stderr)
+    eprint ('error: \n%s' % e)
     exit(1)
 
-print ('copying logrotate script /etc/rsyslog.d/waptserver.conf',
-       file=sys.stderr)
+eprint('copying logrotate script /etc/rsyslog.d/waptserver.conf')
 try:
     mkdir_p('./builddir/etc/rsyslog.d/')
     shutil.copyfile('../scripts/waptserver-rsyslog',
@@ -204,15 +203,15 @@ try:
     subprocess.check_output(
         'chown root:root ./builddir/etc/rsyslog.d/waptserver.conf', shell=True)
 except Exception as e:
-    print('error: \n%s' % e, file=sys.stderr)
+    eprint('error: \n%s' % e)
     exit(1)
 
-print('adding symlink for wapt-serverpostconf', file=sys.stderr)
+eprint('adding symlink for wapt-serverpostconf')
 mkdir_p('builddir/usr/bin')
 os.symlink('/opt/wapt/waptserver/scripts/postconf.py',
            'builddir/usr/bin/wapt-serverpostconf')
 
-print('copying nginx-related goo', file=sys.stderr)
+eprint('copying nginx-related goo')
 try:
     apache_dir = './builddir/opt/wapt/waptserver/apache/'
     mkdir_p(apache_dir + '/ssl')
@@ -223,5 +222,5 @@ try:
     mkdir_p('./builddir/etc/systemd/system/nginx.service.d')
     copyfile('../scripts/nginx_worker_files_limit.conf', './builddir/etc/systemd/system/nginx.service.d/nginx_worker_files_limit.conf')
 except Exception as e:
-    print('error: \n%s' % e, file=sys.stderr)
+    eprint('error: \n%s' % e)
     exit(1)

@@ -48,8 +48,6 @@ def mkdir_p(path):
         else:
             raise
 
-
-
 def rsync(src,dst):
     rsync_option = ' '.join([
         "--exclude '.svn'",
