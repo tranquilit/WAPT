@@ -401,6 +401,7 @@ def datetime2isodate(adatetime = None):
 
 def httpdatetime2isodate(httpdate):
     """convert a date string as returned in http headers or mail headers to isodate
+
     >>> import requests
     >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
     >>> len(httpdatetime2isodate(last_modified)) == 19
@@ -411,6 +412,7 @@ def httpdatetime2isodate(httpdate):
 
 def httpdatetime2datetime(httpdate):
     """convert a date string as returned in http headers or mail headers to isodate
+
     >>> import requests
     >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
     >>> len(httpdatetime2isodate(last_modified)) == 19
@@ -420,6 +422,7 @@ def httpdatetime2datetime(httpdate):
 
 def httpdatetime2time(httpdate):
     """convert a date string as returned in http headers or mail headers to isodate
+
     >>> import requests
     >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
     >>> len(httpdatetime2isodate(last_modified)) == 19
@@ -458,7 +461,7 @@ def dateof(adatetime):
 
 def force_utf8_no_bom(filename):
     """Check if the file is encoded in utf8 readable encoding without BOM
-         rewrite the file in place if not compliant.
+    rewrite the file in place if not compliant.
     """
     BUFSIZE = 4096
     BOMLEN = len(codecs.BOM_UTF8)
@@ -490,7 +493,20 @@ def default_http_headers():
 
 
 def http_resource_datetime(url,proxies=None,timeout=2,auth=None,verify_cert=False,cert=None):
-    # try to get header for the supplied URL, returns None if no answer within the specified timeout
+    """Try to get header for the supplied URL, returns None if no answer within the specified timeout
+
+    Args:
+        url (str)      : URL to document
+        proxies (dict) : proxies to use. eg {'http':'http://wpad:3128','https':'http://wpad:3128'}
+        timeout (int)  : seconds to wait for answer before giving up
+        auth (list)    : (user,password) to authenticate wirh basic auth
+        verify_cert (bool or str) : either False, True (verify with embedded CA list), or path to a directory or PEM encoded CA bundle file
+                                    to check https certificate signature against.
+        cert (list)    : pair of (x509certfilename,pemkeyfilename) for authenticating the client
+
+    Returns:
+        datetime : last-modified date of document on server
+    """
     try:
         headers = requests.head(url,
             proxies=proxies,timeout=timeout,
@@ -532,6 +548,8 @@ def get_disk_free_space(filepath):
     else:
         # like shutil
         def disk_usage(path):
+            # pylint: disable=no-member
+            # no error
             st = os.statvfs(path)
             free = st.f_bavail * st.f_frsize
             total = st.f_blocks * st.f_frsize
@@ -542,10 +560,17 @@ def get_disk_free_space(filepath):
 
 def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False,referer=None,user_agent=None,cert=None):
     r"""Copy the contents of a file from a given URL to a local file.
+
     Args:
-        url (str)
+        url (str): URL to document
         target (str) : full file path of downloaded file. If None, put in a temporary dir with supplied url filename (final part of url)
-        cert (str or list): client side cert/key for SSL client authentication
+        proxies (dict) : proxies to use. eg {'http':'http://wpad:3128','https':'http://wpad:3128'}
+        timeout (int)  : seconds to wait for answer before giving up
+        auth (list)    : (user,password) to authenticate wirh basic auth
+        verify_cert (bool or str) : either False, True (verify with embedded CA list), or path to a directory or PEM encoded CA bundle file
+                                    to check https certificate signature against.
+        cert (list) : pair of (x509certfilename,pemkeyfilename) for authenticating the client
+
     Returns:
         str : path to downloaded file
 
@@ -683,7 +708,7 @@ def wgets(url,proxies=None,verify_cert=False,referer=None,user_agent=None,timeou
 
 class Version(object):
     """Version object of form 0.0.0
-        can compare with respect to natural numbering and not alphabetical
+    can compare with respect to natural numbering and not alphabetical
 
     >>> Version('0.10.2') > Version('0.2.5')
     True
@@ -752,7 +777,17 @@ class Version(object):
 def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.svn',u'.git',u'.gitignore',u'*.pyc',u'*.dbg',u'src'],
         excludes_full=[os.path.join('WAPT','manifest.sha256'),os.path.join('WAPT','manifest.sha1'),os.path.join('WAPT','signature')]):
     """Create a zip file with filename zipf from source_root directory with target_root as new root.
-       Don't include file which match excludes file pattern
+    Don't include file which match excludes file pattern
+
+    Args;
+        zipfn (str) : filename for zip file to create
+        source_root (str) : root directory of filetree to zip
+        target_root (str) ! root directory for all in zip file
+        excludes (list)  : list of glob pattern of files to excludes
+        excludes_full (list) : full relative filepath of files to exclude
+
+    Returns:
+        list : list of zipped filepath
     """
     result = []
     if not isinstance(source_root,unicode):
@@ -794,7 +829,18 @@ def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.sv
 
 def find_all_files(rootdir,include_patterns=None,exclude_patterns=None):
     """Generator which recursively find all files from rootdir and sub directories
-        matching the (dos style) patterns (example: *.exe)
+    matching the (dos style) patterns (example: *.exe)
+
+    Args;
+        rootdir (str): root dir where to start looking for files
+        include_patterns (str or list) : list of glob pattern of files to return
+        exclude_patterns (str or list) : list of glob pattern of files to exclude
+                                         (if a file is both in include and exclude, it is excluded)
+
+
+    >>> for fn in find_all_files('c:\\tmp','*.txt'):
+            print(fn)
+    >>>
     """
     rootdir = os.path.abspath(rootdir)
 
