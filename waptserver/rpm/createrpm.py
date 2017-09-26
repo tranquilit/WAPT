@@ -151,7 +151,7 @@ eprint(subprocess.check_output(
 eprint(subprocess.check_output(
     r'source ./pylibs/bin/activate ; pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True))
 rsync('./pylibs/lib/', './builddir/opt/wapt/lib/')
-eprint('copying the waptserver files', file=sys.stderr)
+eprint('copying the waptserver files')
 rsync(source_dir, './builddir/opt/wapt/',
       excludes=['postconf', 'mongod.exe', 'bin', 'include','spnego-http-auth-nginx-module'])
 

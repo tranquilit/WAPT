@@ -24,7 +24,7 @@ Requires:  nginx dialog pytz cabextract python-psutil python2-dialog msktutil kr
 %description
 
 %install
-set -ex
+set -e
 
 mkdir -p %{buildroot}/opt/wapt
 mkdir -p %{buildroot}/opt/wapt/log
