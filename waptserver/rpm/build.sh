@@ -8,5 +8,4 @@ echo $VERSION
 rpmbuild -bb --define "_version $VERSION" --buildroot $PWD/builddir -v --clean waptserver.spec
 rm -f tis-waptserver*.rpm
 cp RPMS/*/tis-waptserver*.rpm .
-# temporary addition for builbot
-ln -s tis-waptserver*.rpm tis-waptserver.rpm
+echo tis-waptserver*.rpm
