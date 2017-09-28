@@ -60,7 +60,7 @@ from waptserver_model import get_db_version, init_db, wapt_db, model_to_dict, di
 from waptserver_model import upgrade_db_structure
 
 from werkzeug.utils import secure_filename
-from functools import wraps
+import functools
 
 import logging
 import logging.handlers
@@ -184,7 +184,7 @@ def sio_authenticated_only(f):
 
 
 def requires_auth(f):
-    @wraps(f)
+    @functools.wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
 
@@ -677,7 +677,7 @@ def upload_waptsetup():
                     except:
                         pass
                 try:
-                    os.symlink(waptagent, waptsetup)
+                    os.symlink(waptagent, waptsetup) # pylint: disable=no-member
                 except:
                     shutil.copyfile(waptagent, waptsetup)
 

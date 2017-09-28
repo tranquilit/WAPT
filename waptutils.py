@@ -624,7 +624,7 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         os.makedirs(dir)
 
     if verify_cert == False:
-        requests.packages.urllib3.disable_warnings()
+        requests.packages.urllib3.disable_warnings() # pylint: disable=no-member
     header=default_http_headers()
     if referer != None:
         header.update({'referer': '%s' % referer})
@@ -691,7 +691,7 @@ def wgets(url,proxies=None,verify_cert=False,referer=None,user_agent=None,timeou
     True
     """
     if verify_cert == False:
-        requests.packages.urllib3.disable_warnings()
+        requests.packages.urllib3.disable_warnings() # pylint: disable=no-member
     header=default_http_headers()
     if referer != None:
         header.update({'referer': '%s' % referer})

@@ -1138,21 +1138,6 @@ def main():
                     print('No Wapt Server defined')
 
 
-            elif action == 'add-icon':
-                if len(args) < 2:
-                    print(u"You must provide the package to edit")
-                    sys.exit(1)
-                if len(args) >= 3:
-                    result = mywapt.add_iconpng_wapt(
-                        package=args[1],
-                        iconpath=args[2])
-                else:
-                    result = mywapt.add_iconpng_wapt(package=args[1])
-                mywapt.upload_package(result['filename'],
-                    wapt_server_user = options.wapt_server_user,
-                    wapt_server_passwd=options.wapt_server_passwd)
-                if options.json_output:
-                    jsonresult['result'] = result
             else:
                 print(u'Unknown action %s' % action)
                 sys.exit(1)

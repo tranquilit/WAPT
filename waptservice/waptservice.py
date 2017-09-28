@@ -471,12 +471,12 @@ app.config['SECRET_KEY'] = waptconfig.secret_key
 #socketio_server = flask_socketio.SocketIO(app,logger=logger)
 
 try:
-    from waptwua import WaptWUA
-    app.register_blueprint(waptwua.waptwua)
+    from waptwua import WaptWUA # pylint: disable=import-error
+    app.register_blueprint(WaptWUA.waptwua)
 except Exception as e:
     pass
 
-app.jinja_env.filters['beautify'] = beautify
+app.jinja_env.filters['beautify'] = beautify # pylint: disable=no-member
 app.waptconfig = waptconfig
 
 app_babel = Babel(app)
@@ -1897,7 +1897,7 @@ class WaptTaskManager(threading.Thread):
             # init zeromq events broadcast
             try:
                 zmq_context = zmq.Context()
-                event_queue = zmq_context.socket(zmq.PUB)
+                event_queue = zmq_context.socket(zmq.PUB) # pylint: disable=no-member
                 event_queue.hwm = 10000;
 
                 logger.debug('Starting ZMQ on port %i' % waptconfig.zmq_port)

@@ -356,19 +356,6 @@ def check_uac():
         """)
         shell_launch('UserAccountControlSettings.exe')
 
-def wapt_sources_edit(wapt_sources_dir):
-    """Launch pyscripter if installed, else explorer on supplied wapt sources dir"""
-    psproj_filename = os.path.join(wapt_sources_dir,'WAPT','wapt.psproj')
-    control_filename = os.path.join(wapt_sources_dir,'WAPT','control')
-    setup_filename = os.path.join(wapt_sources_dir,'setup.py')
-    if os.path.isfile(setup_filename):
-        pyscripter_filename = os.path.join(programfiles32,'PyScripter','PyScripter.exe')
-        if os.path.isfile(pyscripter_filename) and os.path.isfile(psproj_filename):
-            p = psutil.Popen('"%s" --newinstance --project "%s" "%s" "%s"' % (pyscripter_filename,psproj_filename,setup_filename,control_filename),
-                cwd = os.path.join(programfiles32,'PyScripter'))
-    else:
-        os.startfile(wapt_sources_dir)
-
 def edit_hosts_depends(waptconfigfile,hosts_list,
         append_depends=[],
         remove_depends=[],
