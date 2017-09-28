@@ -3644,7 +3644,7 @@ def remove_previous_version(key,max_version=None):
     for uninstall in installed_softwares(key):
         if uninstall['key'] == key:
             if max_version :
-                if Version(uninstall['version']) < Version(version) :
+                if Version(uninstall['version']) < Version(max_version) :
                     run(uninstall_cmd(uninstall['key']))
             else:
                     run(uninstall_cmd(uninstall['key']))
@@ -3694,12 +3694,12 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
     WAPT = caller_globals.get('WAPT',None)
     force = WAPT and WAPT.options.force
 
-    if remove_old_version :
-        killalltasks(killbefore)
-        remove_previous_version(key,version)
-
     if min_version is None:
         min_version = getproductprops(msi)['version']
+
+    if remove_old_version :
+        killalltasks(killbefore)
+        remove_previous_version(key,min_version)
 
     if need_install(key,min_version=min_version or None,force=force,get_version=get_version):
         if killbefore:
@@ -3770,7 +3770,7 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
 
     if remove_old_version :
         killalltasks(killbefore)
-        remove_previous_version(key,version)
+        remove_previous_version(key,min_version)
 
     if need_install(key,min_version=min_version or None,force=force,get_version=get_version):
         if killbefore:
