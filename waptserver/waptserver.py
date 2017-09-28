@@ -829,7 +829,7 @@ def wapt_listing():
 @app.route('/waptwua/')
 def waptwua():
     return render_template(
-        'listingwua.html', dir_listing=os.listdir(waptwua_folder))
+        'listingwua.html', dir_listing=os.listdir(waptwua_folder)) # pylint: disable=undefined-variable
 
 
 @app.route('/wapt/<string:input_package_name>')
