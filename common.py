@@ -160,7 +160,7 @@ def create_self_signed_key(orgname,
 
 
 def import_code(code,name='',add_to_sys_modules=0):
-    """
+    """\
     Import dynamically generated code as a module. code is the
     object containing the code (a string, a file handle or an
     actual compiled code object, same types as accepted by an
@@ -475,6 +475,7 @@ class WaptBaseDB(object):
 
     def upgradedb(self,force=False):
         """Update local database structure to current version if rules are described in db_upgrades
+
         Args:
             force (bool): force upgrade even if structure version is greater than requested.
 
@@ -647,6 +648,7 @@ class WaptSessionDB(WaptBaseDB):
 
     def remove_install_status(self,package):
         """Remove status of package installation from localdb
+
         >>> wapt = Wapt()
         >>> wapt.forget_packages('tis-7zip')
         ???
@@ -928,13 +930,14 @@ class WaptDB(WaptBaseDB):
 
     def add_start_install(self,package,version,architecture,params_dict={},explicit_by=None,maturity='',locale=''):
         """Register the start of installation in local db
-            params_dict is the dictionary pf parameters provided on command line with --params
-              or by the server
-            explicit_by : username of initiator of the install.
+
+        Args:
+            params_dict (dict) : dictionary of parameters provided on command line with --param or by the server
+            explicit_by (str) : username of initiator of the install.
                           if not None, install is not a dependencie but an explicit manual install
-            setuppy is the python source code used for install, uninstall or session_setup
-              code used for uninstall or session_setup must use only wapt self library as
-              package content is not longer available at this step.
+            setuppy (str) : python source code used for install, uninstall or session_setup
+                            code used for uninstall or session_setup must use only wapt self library as
+                            package content is no longer available at this step.
         """
         with self:
             cur = self.db.execute("""delete from wapt_localstatus where package=?""" ,(package,))
@@ -1004,8 +1007,8 @@ class WaptDB(WaptBaseDB):
 
     def switch_to_explicit_mode(self,package,user_id):
         """Set package install mode to manual
-            so that package is not removed
-            when meta packages don't require it anymore
+        so that package is not removed
+        when meta packages don't require it anymore
         """
         with self:
             cur = self.db.execute("""\
@@ -1047,8 +1050,8 @@ class WaptDB(WaptBaseDB):
 
     def packages_matching(self,package_cond):
         """Return an ordered list of available packages entries which match
-            the condition "packagename[([=<>]version)]?"
-            version ascending
+        the condition "packagename[([=<>]version)]?"
+        version ascending
         """
         pcv_match = REGEX_PACKAGE_CONDITION.match(package_cond)
         if pcv_match:
@@ -1083,7 +1086,15 @@ class WaptDB(WaptBaseDB):
         return result
 
     def installed(self,include_errors=False):
-        """Return a dictionary of installed packages : keys=package, values = PackageEntry """
+        """Return a dict of installed packages on this host
+
+        Args:
+            include_errors (bool) : if False, only packages with status 'OK' and 'UNKNOWN' are returned
+                                    if True, all packages are installed.
+
+        Returns:
+            dict: installed packages keys=package, values = PackageEntry
+        """
         sql = ["""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,
                 r.section,r.priority,r.maintainer,r.description,r.depends,r.conflicts,r.sources,r.filename,r.size,
@@ -1104,7 +1115,11 @@ class WaptDB(WaptBaseDB):
         return result
 
     def install_status(self,id):
-        """Return a PackageEntry of the local install status for id"""
+        """Return a PackageEntry of the local install status for id
+
+        Args:
+            id: sql rowid
+        """
         sql = ["""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,l.setuppy,
                 r.section,r.priority,r.maintainer,r.description,r.depends,r.conflicts,r.sources,r.filename,r.size,
@@ -4687,7 +4702,7 @@ class Wapt(object):
 
     def build_upload(self,sources_directories,private_key_passwd=None,wapt_server_user=None,wapt_server_passwd=None,inc_package_release=False,target_directory=None):
         """Build a list of packages and upload the resulting packages to the main repository.
-           if section of package is group or host, user specific wapt-host or wapt-group
+        if section of package is group or host, user specific wapt-host or wapt-group
 
         Returns
             list of build result dict: {'filename':waptfilename,'files':[list of files],'package':PackageEntry}
@@ -4851,7 +4866,7 @@ class Wapt(object):
 
     def uninstall(self,packagename,params_dict={}):
         """Launch the uninstall script of an installed package"
-           Source setup.py from database or filename
+        Source setup.py from database or filename
         """
         logger.info(u"setup.uninstall for package %s with params %s" % (packagename,params_dict))
         oldpath = sys.path
@@ -5039,9 +5054,22 @@ class Wapt(object):
         return self.make_group_template(packagename=packagename,depends=depends,conflicts=conflicts,directoryname=directoryname,section='host',description=description)
 
     def make_group_template(self,packagename='',depends=None,conflicts=None,directoryname=None,section='group',description=None):
-        r"""Build a skeleton of WAPT group package
-            depends : list of package dependencies.
-           Return the path of the skeleton
+        r"""Creates or updates on disk a skeleton of a WAPT group package.
+        If the a package skeleton already exists in directoryname, it is updated.
+
+        sourcespath attribute of returned PackageEntry is populated with the developement directory of group package.
+
+        Args:
+            packagename (str): group name
+            depends :
+            conflicts
+            directoryname
+            section
+            description
+
+        Returns:
+            PackageEntry
+
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> tmpdir = 'c:/tmp/dummy'
         >>> if os.path.isdir(tmpdir):
@@ -5181,8 +5209,14 @@ class Wapt(object):
 
     def is_available(self,packagename):
         r"""Check if a package (with optional version condition) is available
-            in repositories.
-            Return list of matching package entries or empty list
+        in repositories.
+
+        Args:
+            packagename (str) : package name to lookup or package requirement ( packagename(=version) )
+
+        Returns:
+            list : of PackageEntry sorted by package version ascending
+
         >>> wapt = Wapt(config_filename='c:/tranquilit/wapt/tests/wapt-get.ini')
         >>> l = wapt.is_available('tis-wapttest')
         >>> l and isinstance(l[0],PackageEntry)
@@ -5192,7 +5226,7 @@ class Wapt(object):
 
     def get_default_development_dir(self,packagecond,section='base'):
         """Returns the default development directory for package named <packagecond>
-           based on default_sources_root ini parameter if provided
+        based on default_sources_root ini parameter if provided
 
         Args:
             packagecond (PackageEntry or str): either PackageEntry or a "name(=version)" string
@@ -5240,21 +5274,19 @@ class Wapt(object):
             cabundle=None,
             ):
         r"""Download an existing package from repositories into target_directory for modification
-            if use_local_sources is True and no newer package exists on repos, updates current local edited data
-              else if target_directory exists and is not empty, raise an exception
-            Return package_entry
+        if use_local_sources is True and no newer package exists on repos, updates current local edited data
+        else if target_directory exists and is not empty, raise an exception
 
         Args:
-            packagerequest (str)        : path to existing wapt file, or package request
+            packagerequest (str) : path to existing wapt file, or package request
             use_local_sources (boolean) : don't raise an exception if target exist and match package version
-            append_depends    : list or comma separated list of package requirements
-            remove_depends    : list or comma separated list of package requirements to remove
+            append_depends (list of str) : package requirements to add to depends
+            remove_depends (list or str) : package requirements to remove from depends
             auto_inc_version (bool) :
-            cabundle  : list of authorized certificate filenames. If None, use default from current wapt.
+            cabundle  (SSLCABundle) : list of authorized certificate filenames. If None, use default from current wapt.
 
         Returns:
-            PackageEntry : edit local package with sourcespath attribute
-
+            PackageEntry : edit local package with sourcespath attribute populated
 
         >>> wapt = Wapt(config_filename='c:/tranquilit/wapt/tests/wapt-get.ini')
         >>> wapt.dbpath = ':memory:'
@@ -5364,14 +5396,16 @@ class Wapt(object):
             cabundle=None,
             ):
         """Download and extract a host package from host repositories into target_directory for modification
-                Return PackageEntry
 
         Args:
-           hostname          : fqdn of the host to edit
-           target_directory  : where to place the developments files. if empty, use default one from wapt-get.ini configuration
-           append_depends    : list or comma separated list of package requirements
-           remove_depends    : list or comma separated list of package requirements to remove
-           cabundle          : list of authorized ca. If None, use default from current wapt.
+            hostname       (str)   : fqdn of the host to edit
+            target_directory (str)  : where to place the developments files. if empty, use default one from wapt-get.ini configuration
+            append_depends (str or list) : list or comma separated list of package requirements
+            remove_depends (str or list) : list or comma separated list of package requirements to remove
+            cabundle (SSLCA Bundle) : authorized ca certificates. If None, use default from current wapt.
+
+        Returns:
+            PackageEntry
 
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> tmpdir = 'c:/tmp/dummy'
@@ -5449,7 +5483,8 @@ class Wapt(object):
 
     def forget_packages(self,packages_list):
         """Remove install status for packages from local database
-             without actually uninstalling the packages
+        without actually uninstalling the packages
+
         Args:
             packages_list (list): list of installed package names to forget
 
@@ -5491,7 +5526,6 @@ class Wapt(object):
             cabundle = None,
             ):
         """Duplicate an existing package.
-
         Duplicate an existing package from declared repostory or file into targetdirectory with
           optional newname and version.
 
@@ -5507,9 +5541,8 @@ class Wapt(object):
             printhook (func):        hook for download progress
             cabundle (SSLCABundle):         list of authorized ca certificate (SSLPublicCertificate) to check authenticity of source packages. If None, no check is performed.
 
-
         Returns:
-            PackageEntry} : new packageEntry with sourcespath = target_directory
+            PackageEntry : new packageEntry with sourcespath = target_directory
 
         >>> wapt = Wapt(config_filename='c:/tranquilit/wapt/tests/wapt-get.ini')
         >>> wapt.dbpath = ':memory:'
