@@ -183,16 +183,6 @@ def close_db(error):
         wapt_db.close()
 
 
-def sio_authenticated_only(f):
-    @functools.wraps(f)
-    def wrapped(*args, **kwargs):
-        if not current_user.is_authenticated:
-            disconnect()
-        else:
-            return f(*args, **kwargs)
-    return wrapped
-
-
 def requires_auth(f):
     @functools.wraps(f)
     def decorated(*args, **kwargs):
@@ -836,8 +826,8 @@ def packages_delete():
     for filename in filenames:
         try:
             package_path = os.path.join(conf['wapt_folder'], secure_filename(filename))
-            if os.path.isfile(fullpath):
-                os.unlink(fullpath)
+            if os.path.isfile(package_path):
+                os.unlink(package_path)
                 deleted.append(filename)
             else:
                 errors.append(filename)
@@ -1254,7 +1244,7 @@ def build_hosts_filter(model, filter_expr):
                     HostSoftwares.key.regexp(ur'(?i)%s' % search_expr) | HostSoftwares.name.regexp(ur'(?i)%s' % search_expr)))
             elif rootfield == 'installed_packages':
                 clause = Hosts.uuid.in_(HostPackagesStatus.select(HostPackagesStatus.host).where(HostPackagesStatus.package.regexp(ur'(?i)%s' % search_expr)))
-            elif rootfield in model._meta.fields:
+            elif rootfield in model._meta.fields: #
                 if isinstance(model._meta.fields[rootfield], (JSONField, BinaryJSONField)):
                     if len(members) == 1:
                         clause = SQL("%s::text ~* '%s'" % (fn, search_expr))
@@ -1533,7 +1523,7 @@ def host_data():
 
         if 'field' in request.args:
             field = request.args['field']
-            if not field in Hosts._meta.fields.keys() + ['installed_softwares', 'installed_packages', 'waptwua']:
+            if not field in Hosts._meta.fields.keys() + ['installed_softwares', 'installed_packages', 'waptwua']: # pylint: disable=no-member
                 raise EWaptMissingParameter('Parameter field %s is unknown' % field)
         else:
             raise EWaptMissingParameter('Parameter field is missing')
@@ -1585,7 +1575,7 @@ def usage_statistics():
 
         installed_packages = HostPackagesStatus.select(
             HostPackagesStatus.install_status,
-            fn.count(HostPackagesStatus.id),
+            fn.count(HostPackagesStatus.id),  # pylint: disable=no-member
         )\
             .group_by(HostPackagesStatus.install_status)\
             .dicts()
@@ -1849,7 +1839,7 @@ def on_waptclient_disconnect():
     except:
         wapt_db.rollback()
 
-
+"""
 @socketio.on('join')
 def on_join(data):
     room = request.args.get('uuid', None)
@@ -1861,8 +1851,8 @@ def on_join(data):
 def on_leave(data):
     room = request.args.get('uuid', None)
     if room:
-        socketio.leave_room(room)
-
+        socketio.leave_room(room) # pylint: disable=no-member
+"""
 
 @socketio.on_error()
 def on_wapt_socketio_error(e):
@@ -1966,11 +1956,6 @@ if __name__ == '__main__':
         raise Exception('Wapt 1.5 serie does not currently support install on Windows')
         # install_windows_service()
         # sys.exit(0)
-
-    if args and args[0] == 'test':
-        # pass optional parameters along with the command
-        test()
-        sys.exit(0)
 
     logger.info('Waptserver starting...')
     port = conf['waptserver_port']
