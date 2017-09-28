@@ -77,7 +77,7 @@ def get_disk_space(directory):
     ret = None
 
     if os.name == 'posix':
-        stats = os.statvfs(directory)
+        stats = os.statvfs(directory) # pylint: disable=no-member
         ret = (stats.f_bavail * stats.f_bsize, stats.f_blocks * stats.f_bsize)
     else:
         import pythoncom

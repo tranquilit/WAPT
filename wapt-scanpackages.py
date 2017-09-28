@@ -95,7 +95,7 @@ def main():
         import pwd
         pwd_entry = pwd.getpwnam('wapt')
         uid, gid = pwd_entry.pw_uid, pwd_entry.pw_gid
-        os.chown(res['packages_filename'], uid, gid)
+        os.chown(res['packages_filename'], uid, gid) # pylint: disable=no-member
 
 if __name__ == "__main__":
     main()

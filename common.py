@@ -40,6 +40,8 @@ import StringIO
 import requests
 import cPickle
 try:
+    # pylint: disable=no-member
+    # no error
     import requests.packages.urllib3
     requests.packages.urllib3.disable_warnings()
 except:
@@ -5796,7 +5798,7 @@ class Wapt(object):
 
     def show_progress(self,show_box=False,msg='Loading...',progress = None,progress_max = None):
         if self.progress_hook:
-            self.progress_hook(show_box,msg,progress,progress_max)
+            self.progress_hook(show_box,msg,progress,progress_max)  # pylint: disable=not-callable
         else:
             logger.debug('%s : %s / %s' % (msg,progress,progress_max))
 
@@ -5827,6 +5829,7 @@ def wapt_sources_edit(wapt_sources_dir):
     else:
         os.startfile(wapt_sources_dir)
     return wapt_sources_dir
+
 
 def sid_from_rid(domain_controller, rid):
     """Return SID structure based on supplied domain controller's domain and supplied rid
