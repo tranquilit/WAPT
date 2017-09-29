@@ -21,137 +21,83 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import print_function
-import HTMLParser
-import argparse
-import errno
-import fileinput
-import glob
-import httplib
-import logging
-import os
-import pefile
-import platform
-import re
-import shutil
-import stat
-import subprocess
 import sys
+import os
+import platform
+import logging
+import re
+
+import pefile
+import shutil
+import subprocess
+import argparse
+import stat
+import glob
+
+from git import Repo
+
+makepath = os.path.join
+from shutil import copyfile
+
+def run(*args, **kwargs):
+    return subprocess.check_output(*args, shell=True, **kwargs)
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-
-
 def mkdir_p(path):
-    try:
+    if not os.path.isdir(path):
         os.makedirs(path)
-    except OSError as exc:  # Python >2.5
-        if exc.errno == errno.EEXIST and os.path.isdir(path):
-            pass
-        else: raise
 
-def replaceAll(file,searchExp,replaceExp):
-    for line in fileinput.input(file, inplace=1):
-        if searchExp in line:
-            line = line.replace(searchExp,replaceExp)
-        sys.stdout.write(line)
+def debian_major():
+    return platform.linux_distribution()[1].split('.')[0]
 
+def git_hash():
+    from git import Repo
+    r = Repo('.',search_parent_directories = True)
+    return r.active_branch.object.name_rev[:8]
 
-makepath = os.path.join
-run = subprocess.check_output
+def dev_revision():
+    return 'tisdeb%s-%s' % (debian_major(), git_hash())
 
-BDIR = './builddir/'
-WAPTSETUP = 'waptsetup-tis.exe'
-WAPTDEPLOY = 'waptdeploy.exe'
-SRV = 'srvinstallation.tranquil.it'
-BASEPATH = '/wapt/nightly/'
-
-class MyHTMLParser(HTMLParser.HTMLParser):
-
-    def __init__(self, *args, **kwargs):
-        HTMLParser.HTMLParser.__init__(self, *args, **kwargs)
-        self.wapt_waptsetup_exes = []
-
-    def handle_starttag(self, tag, attrs):
-        if tag != 'a':
-            return
-        for (attr, value) in attrs:
-            if attr == 'href' and value.startswith('waptsetup_'):
-                self.wapt_waptsetup_exes.append(value)
-
-def fetch_from_server():
-
-    try:
-        os.unlink(WAPTSETUP)
-    except Exception as e:
-        logger.info('Error while unlinking %s: %s', WAPTSETUP, e)
-        pass
-
-    logger.info('Fetching executable')
-
-    logger.debug('Connecting to server %s', SRV)
-    conn = httplib.HTTPConnection(SRV, '80')
-    conn.request('GET', BASEPATH)
-    response = conn.getresponse()
-    if response.status != 200:
-        logger.error('Unexpected response from server (%s)', response.status)
-        sys.exit(1)
-
-    logger.debug('Parsing response from server')
-    parser = MyHTMLParser()
-    parser.feed(response.read())
-    parser.close()
-
-    logger.debug('Filtering results')
-    regexp = re.compile('waptsetup_rev([0-9]+)\.exe')
-    revision = 0
-    latest_exe = None
-
-    for cur_exe in parser.wapt_waptsetup_exes:
-        match = regexp.search(cur_exe)
-        if match:
-            cur_rev = match.group(1)
-            if cur_rev > revision:
-                revision = cur_rev
-                latest_exe = cur_exe
-
-    if latest_exe is None:
-        logger.error('No matching files on server')
-        sys.exit(1)
-
-    logger.debug('Starting download of %s', BASEPATH + latest_exe)
-    conn.request('GET', BASEPATH + latest_exe)
-    response = conn.getresponse()
-    if response.status != 200:
-        logger.error('Unexpected response from server (%s)', response.status)
-        sys.exit(1)
-
-    out = file(WAPTSETUP, 'wb')
-    while True:
-        buffer = response.read(2**15)
-        if len(buffer) == 0:
-            break
-        out.write(buffer)
-    out.close()
-
-    logger.info('Correctly fetched %s', WAPTSETUP)
-    return revision
-
-
-def setloglevel(logger,loglevel):
+def setloglevel(alogger,loglevel):
     """set loglevel as string"""
     if loglevel in ('debug','warning','info','error','critical'):
         numeric_level = getattr(logging, loglevel.upper(), None)
         if not isinstance(numeric_level, int):
             raise ValueError('Invalid log level: %s' % loglevel)
-        logger.setLevel(numeric_level)
+        alogger.setLevel(numeric_level)
 
+def rsync(src,dst):
+    rsync_option = ' '.join([
+        "--exclude '.svn'",
+        "--exclude 'deb'",
+        "--exclude '.git'",
+        "--exclude '.gitignore'",
+        "--exclude 'rpm'",
+        "-aP"
+    ])
+    rsync_source = src
+    rsync_destination = dst
+    rsync_command = '/usr/bin/rsync %s "%s" "%s" 1>&2' % (
+        rsync_option,rsync_source,rsync_destination)
+    os.system(rsync_command)
 
-parser = argparse.ArgumentParser(u'Crée un paquet .deb contenant le dernier waptsetup.exe publié')
-parser.add_argument('-d', '--download', action='store_true', help='Download latest exe from an server')
+def add_symlink(link_target,link_name):
+    if link_target.startswith('/'):
+        link_target = link_target[1:]
+    relative_link_target_path = os.path.join('builddir',link_target)
+    eprint("adding symlink %s -> %s" % (link_name, relative_link_target_path ))
+    mkdir_p(os.path.dirname(relative_link_target_path))
+
+    if not os.path.exists(relative_link_target_path):
+        cmd = 'ln -s %s %s ' % (relative_link_target_path,link_name)
+        eprint(cmd)
+        eprint(subprocess.check_output(cmd))
+
+parser = argparse.ArgumentParser(u'Build a Debian package with already compiled executables in root directory.')
 parser.add_argument('-l', '--loglevel', help='Change log level (error, warning, info, debug...)')
-parser.add_argument('-s', '--server', help='http server from which the exe will be retrieved (only meaningful with -d)')
-parser.add_argument('-r', '--revision', help='revision to append to package version')
+parser.add_argument('-r', '--revision',default=dev_revision(), help='revision to append to package version')
 options = parser.parse_args()
 
 logger = logging.getLogger()
@@ -163,50 +109,41 @@ if platform.system() != 'Linux':
     logger.error("this script should be used on debian linux")
     sys.exit(1)
 
-if options.server is not None:
-    if not options.download:
-        logger.error('-s is only meaningful with -d')
-        sys.exit(1)
-    SRV = options.server
+#########################################
+BDIR = './builddir/'
+WAPTSETUP = 'waptsetup-tis.exe'
+WAPTDEPLOY = 'waptdeploy.exe'
 
-revision = None
-if options.download:
-    revision = fetch_from_server()
-else:
-    revision = options.revision
-
-def git_hash():
-    from git import Repo
-    r = Repo('.',search_parent_directories = True)
-    return r.active_branch.object.name_rev[:8]
-
-if not revision:
-    revision = 'git-'+git_hash()
-
+#########################################
 logger.debug('Getting version from executable')
 pe = pefile.PE(WAPTSETUP)
 version = pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
 logger.debug('%s version: %s', WAPTSETUP, version)
 
-if revision:
-    full_version = version + '-' + revision
+if options.revision:
+    full_version = version + '-' + options.revision
 else:
     full_version = version
 
+#########################################
 logger.info('Creating .deb')
 shutil.copytree('./debian/', BDIR + 'DEBIAN/')
 os.chmod(BDIR + 'DEBIAN/', 0755)
 os.chmod(BDIR + 'DEBIAN/postinst', 0755)
-replaceAll(BDIR + 'DEBIAN/control', '0.0.7', full_version)
+
+#########################################
+# update Control version
+control = open(BDIR + 'DEBIAN/control','r').read()
+open(BDIR + 'DEBIAN/control','r').write(re.sub('Version: .*','Version: %s' % full_version,control))
+
+# creates package file structure
 mkdir_p(BDIR + 'var/www/wapt/')
 shutil.copy(WAPTSETUP, BDIR + 'var/www/wapt/')
 os.chmod(BDIR + 'var/www/wapt/' + WAPTSETUP, 0644)
 shutil.copy(WAPTDEPLOY, BDIR + 'var/www/wapt/')
 os.chmod(BDIR + 'var/www/wapt/' + WAPTDEPLOY, 0644)
 
-output = 'tis-waptsetup-%s.deb' % (full_version)
-dpkg_command = ['dpkg-deb', '--build', BDIR, output]
-run(dpkg_command)
-os.link(output, 'tis-waptsetup.deb')
-logger.info('All done')
-print(output)
+# build
+package_filename = 'tis-waptsetup-%s.deb' % (full_version)
+eprint(run(['dpkg-deb', '--build', BDIR, package_filename]))
+print(package_filename)
