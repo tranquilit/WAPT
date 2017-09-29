@@ -134,7 +134,7 @@ os.chmod(BDIR + 'DEBIAN/postinst', 0755)
 #########################################
 # update Control version
 control = open(BDIR + 'DEBIAN/control','r').read()
-open(BDIR + 'DEBIAN/control','r').write(re.sub('Version: .*','Version: %s' % full_version,control))
+open(BDIR + 'DEBIAN/control','w').write(re.sub('Version: .*','Version: %s' % full_version,control))
 
 # creates package file structure
 mkdir_p(BDIR + 'var/www/wapt/')
