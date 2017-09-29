@@ -241,7 +241,6 @@ __all__ = \
  ]
 
 import os
-import sys
 
 # be sure to be able to load win32apu.pyd dll
 dlls = [os.path.join(os.path.dirname(__file__),dllloc) for dllloc in ['DLLs',r'lib\site-packages\win32','']]
@@ -249,13 +248,12 @@ dlls.append(os.environ['PATH'])
 os.environ['PATH'] = os.pathsep.join(dlls)
 
 import logging
-import tempfile
 import shutil
 import shlex
 
 import _subprocess
 import subprocess
-from subprocess import Popen, PIPE
+from subprocess import PIPE
 import psutil
 
 import win32api
@@ -263,11 +261,8 @@ import win32net
 import win32gui
 import win32netcon
 import win32security
-import win32file
-import ntsecuritycon
 
 import win32con
-import win32pdhutil
 import msilib
 import win32service
 import win32serviceutil
@@ -278,7 +273,6 @@ import wmi
 
 import glob
 
-import requests
 import time
 import datetime
 import socket
@@ -288,26 +282,28 @@ import netifaces
 import platform
 import winshell
 import pythoncom
-from win32com.shell import shell, shellcon
+from win32com.shell import shellcon
 from win32com.taskscheduler import taskscheduler
 import locale
-import types
 import re
 import threading
 import codecs
-import email.utils
 
-from waptutils import *
+from waptutils import (ensure_unicode,ensure_list,Version,get_disk_free_space,
+                      wget,wgets,datetime2isodate,httpdatetime2isodate,isodate2datetime,
+                      time2display,hours_minutes,fileisodate,dateof)
+
 from waptpackage import PackageEntry
 from types import ModuleType
 import inspect
 
 import json
-
 import getpass
 
 from iniparse import RawConfigParser
 import keyfinder
+
+from custom_zip import ZipFile
 
 logger = logging.getLogger('wapt')
 
@@ -596,7 +592,7 @@ def filecopyto(filename,target):
 
 
 def register_ext(appname,fileext,shellopen,icon=None,otherverbs=[]):
-    """Associates a file extension with an application, and command to open it
+    r"""Associates a file extension with an application, and command to open it
 
     Args:
         appname (str): descriptive name of the type of file / appication
@@ -3649,7 +3645,7 @@ def remove_previous_version(key,max_version=None):
             else:
                     run(uninstall_cmd(uninstall['key']))
 
-def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=[0,3010],timeout=300,properties={},get_version=None,remove_old_version=False):
+def install_msi_if_needed(msi,min_version=None,killbefore=None,accept_returncodes=[0,3010],timeout=300,properties=None,get_version=None,remove_old_version=False):
     """Install silently the supplied msi file, and add the uninstall key to
     global uninstall key list
 
@@ -3704,7 +3700,13 @@ def install_msi_if_needed(msi,min_version=None,killbefore=[],accept_returncodes=
     if need_install(key,min_version=min_version or None,force=force,get_version=get_version):
         if killbefore:
             killalltasks(killbefore)
-        props = ' '.join(["%s=%s" % (k,v) for (k,v) in properties.iteritems()])
+        if isinstance(properties,dict):
+            props = ' '.join(["%s=%s" % (k,v) for (k,v) in properties.iteritems()])
+        elif isinstance(properties,str):
+            props = properties
+        else:
+            props = ''
+
         run(r'msiexec /norestart /q /i "%s" %s' % (msi,props),accept_returncodes=accept_returncodes,timeout=timeout)
         if key and not installed_softwares(uninstallkey=key):
             error('MSI %s has been installed but the uninstall key %s can not be found' % (msi,key))
@@ -3788,13 +3790,19 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
             caller_globals['uninstallkey'].append(key)
 
 
-def installed_windows_updates(**filter):
-    """return list of installed updates, indepently from WUA agent
+def installed_windows_updates(**queryfilter):
+    """Return list of installed updates, indepently from WUA agent
+
+    Args:
+        queryfilter (dict)
+
+    Returns:
+        list
 
     .. versionadded:: 1.3.3
 
     """
-    return wmi_as_struct(wmi.WMI().Win32_QuickFixEngineering.query(**filter))
+    return wmi_as_struct(wmi.WMI().Win32_QuickFixEngineering.query(**queryfilter))
 
 def local_desktops():
     """Return a list of all local user's desktops paths
@@ -3820,9 +3828,7 @@ def local_desktops():
     profiles_path = r'SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList'
     key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,profiles_path)
 
-    import _winreg
-    import locale
-    os_encoding=locale.getpreferredencoding()
+    os_encoding = locale.getpreferredencoding()
     i = 0
     while True:
         try:
@@ -3868,9 +3874,7 @@ def local_users_profiles():
     profiles_path = r'SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList'
     key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,profiles_path)
 
-    import _winreg
-    import locale
-    os_encoding=locale.getpreferredencoding()
+    os_encoding = locale.getpreferredencoding()
     i = 0
     while True:
         try:
@@ -4050,8 +4054,6 @@ def unzip(zipfn,target=None,filenames=None):
     ... versionadded:: 1.3.11
 
     """
-    from custom_zip import ZipFile
-    from glob import fnmatch
     zipf = ZipFile(zipfn,allowZip64=True)
     if target is None:
         target=makepath(os.path.dirname(os.path.abspath(zipfn)),os.path.splitext(os.path.basename(zipfn))[0])
@@ -4064,17 +4066,17 @@ def unzip(zipfn,target=None,filenames=None):
             return True
         else:
             for pattern in filenames:
-                if fnmatch.fnmatch(fn,pattern):
+                if glob.fnmatch.fnmatch(fn,pattern):
                     return True
             return False
     if filenames is not None:
-        all_files = [fn for fn in zipf.namelist() if match(fn,filenames)]
+        files = [fn for fn in zipf.namelist() if match(fn,filenames)]
         zipf.extractall(target,members=all_files)
     else:
-        all_files = zipf.namelist()
+        files = zipf.namelist()
         zipf.extractall(target)
 
-    return [makepath(target,fn.replace('/',os.sep)) for fn in all_files]
+    return [makepath(target,fn.replace('/',os.sep)) for fn in files]
 
 CalledProcessError = subprocess.CalledProcessError
 
@@ -4085,17 +4087,9 @@ def error(reason):
     """Raise a WAPT fatal error"""
     raise EWaptSetupException(u'Fatal error : %s' % reason)
 
-"""Specific parameters for install scripts"""
+# Specific parameters for install scripts
 params = {}
 control = PackageEntry()
 
 if __name__=='__main__':
-    import doctest
-    import sys
-    reload(sys)
-    sys.setdefaultencoding("UTF-8")
-    import doctest
-    doctest.ELLIPSIS_MARKER = '???'
-    doctest.testmod(optionflags=doctest.ELLIPSIS)
-    sys.exit(0)
-
+    pass

@@ -21,32 +21,51 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import print_function
-import fileinput
-import glob
-import os
-import shutil
-import stat
-import subprocess
 import sys
-import errno
+import os
+import platform
+import logging
+import re
+
+import pefile
+import shutil
+import subprocess
+import argparse
+import stat
+import glob
+
+from git import Repo
+
+makepath = os.path.join
+from shutil import copyfile
+
+def run(*args, **kwargs):
+    return subprocess.check_output(*args, shell=True, **kwargs)
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-def replaceAll(file,searchExp,replaceExp):
-    for line in fileinput.input(file, inplace=1):
-        if searchExp in line:
-            line = line.replace(searchExp,replaceExp)
-        sys.stdout.write(line)
-
 def mkdir_p(path):
-    try:
+    if not os.path.isdir(path):
         os.makedirs(path)
-    except OSError as exc:  # Python >2.5
-        if exc.errno == errno.EEXIST and os.path.isdir(path):
-            pass
-        else:
-            raise
+
+def debian_major():
+    return platform.linux_distribution()[1].split('.')[0]
+
+def git_hash():
+    r = Repo('.',search_parent_directories = True)
+    return r.active_branch.object.name_rev[:8]
+
+def dev_revision():
+    return 'tisdeb%s-%s' % (debian_major(), git_hash())
+
+def setloglevel(alogger,loglevel):
+    """set loglevel as string"""
+    if loglevel in ('debug','warning','info','error','critical'):
+        numeric_level = getattr(logging, loglevel.upper(), None)
+        if not isinstance(numeric_level, int):
+            raise ValueError('Invalid log level: %s' % loglevel)
+        alogger.setLevel(numeric_level)
 
 def rsync(src,dst):
     rsync_option = ' '.join([
@@ -75,9 +94,23 @@ def add_symlink(link_target,link_name):
         eprint(cmd)
         eprint(subprocess.check_output(cmd))
 
-makepath = os.path.join
-from shutil import copyfile
+parser = argparse.ArgumentParser(u'Build a waptrepo Debian package.')
+parser.add_argument('-l', '--loglevel', help='Change log level (error, warning, info, debug...)')
+parser.add_argument('-r', '--revision',default=dev_revision(), help='revision to append to package version')
+options = parser.parse_args()
 
+logger = logging.getLogger()
+logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+if options.loglevel is not None:
+    setloglevel(logger,options.loglevel)
+
+if platform.system() != 'Linux':
+    logger.error("this script should be used on debian linux")
+    sys.exit(1)
+
+revision = options.revision
+
+###################################
 # wapt
 wapt_source_dir = os.path.abspath('../..')
 
@@ -93,7 +126,12 @@ if wapt_version is None:
     eprint('version "%s" incorrecte/non trouvee dans waptpackage.py' % str(wapt_version))
     sys.exit(1)
 
-control_file = './builddir/DEBIAN/control'
+if options.revision:
+    full_version = wapt_version + '-' + options.revision
+else:
+    full_version = wapt_version
+
+######################"
 
 new_umask = 022
 old_umask = os.umask(new_umask)
@@ -118,18 +156,15 @@ os.makedirs("builddir/opt/wapt/lib/site-packages")
 
 # for some reason the virtualenv does not build itself right if we don't
 # have pip systemwide...
-eprint(subprocess.check_output(
-    r'sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev', shell=True))
+eprint(run('sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev'))
 
 eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-subprocess.check_output(r'virtualenv ./builddir/opt/wapt --system-site-packages', shell=True)
+eprint(run(r'virtualenv ./builddir/opt/wapt --system-site-packages'))
 
 eprint('Install additional libraries in build environment virtualenv')
-subprocess.check_output(r'./builddir/opt/wapt/bin/pip install -r ../../requirements-repo.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True)
+eprint(run(r'./builddir/opt/wapt/bin/pip install -r ../../requirements-repo.txt -t ./builddir/opt/wapt/lib/site-packages'))
 
-version_file = open(os.path.join('./builddir/opt/wapt/waptrepo','VERSION'),'w')
-version_file.write(wapt_version)
-version_file.close()
+open(os.path.join('./builddir/opt/wapt/waptrepo','VERSION'),'w').write(full_version)
 
 eprint('copie des fichiers waptrepo')
 copyfile(makepath(wapt_source_dir,'waptcrypto.py'),
@@ -151,7 +186,6 @@ copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','__init__.py'),
 copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','verification.py'),
          './builddir/opt/wapt/lib/site-packages/cryptography/x509/verification.py')
 
-
 add_symlink('./opt/wapt/wapt-signpackages.py','./usr/bin/wapt-signpackages')
 add_symlink('./opt/wapt/wapt-scanpackages.py','./usr/bin/wapt-scanpackages')
 
@@ -162,22 +196,12 @@ eprint('copie des fichiers control et postinst')
 copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
 copyfile('./DEBIAN/postinst','./builddir/DEBIAN/postinst')
 
-def git_hash():
-    from git import Repo
-    r = Repo('.',search_parent_directories = True)
-    return r.active_branch.object.name_rev[:8]
+control_file = './builddir/DEBIAN/control'
+eprint(u'inscription de la version dans le fichier de control. new version: ' + full_version)
 
-deb_revision = None
-if len(sys.argv) >= 2:
-    deb_revision = sys.argv[1]
-else:
-    deb_revision = 'git-'+git_hash()
-
-if deb_revision:
-    wapt_version += '-'+deb_revision
-
-eprint(u'inscription de la version dans le fichier de control. new version: ' + wapt_version)
-replaceAll(control_file,'0.0.7',wapt_version)
+# update Control version
+control = open(control_file,'r').read()
+open(control_file,'r').write(re.sub('Version: .*','Version: %s' % full_version,control))
 
 eprint(u'creation du paquet Deb')
 os.chmod('./builddir/DEBIAN/postinst',
@@ -188,6 +212,6 @@ os.chmod('./builddir/DEBIAN/postinst',
 
 final_deb = 'tis-waptrepo-{}.deb'.format(wapt_version)
 dpkg_command = 'dpkg-deb --build builddir %s 1>&2' % final_deb
-os.system(dpkg_command)
+eprint(run(dpkg_command))
 shutil.rmtree("builddir")
 print(final_deb)
