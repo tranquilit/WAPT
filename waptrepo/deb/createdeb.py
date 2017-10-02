@@ -108,7 +108,6 @@ if platform.system() != 'Linux':
     logger.error("this script should be used on debian linux")
     sys.exit(1)
 
-revision = options.revision
 
 ###################################
 # wapt
@@ -211,7 +210,7 @@ os.chmod('./builddir/DEBIAN/postinst',
          )
 
 # build
-package_filename = 'tis-waptrepo-{}.deb'.format(wapt_version)
+package_filename = 'tis-waptrepo-{}.deb'.format(full_version)
 eprint(subprocess.check_output(['dpkg-deb','--build','builddir',package_filename]))
 shutil.rmtree("builddir")
 print(package_filename)
