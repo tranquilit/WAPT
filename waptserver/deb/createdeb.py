@@ -69,14 +69,16 @@ def setloglevel(alogger,loglevel):
         alogger.setLevel(numeric_level)
 
 def rsync(src, dst, excludes=[]):
-    rsync_option = " --exclude '*.pyc' --exclude '*~' --exclude '.svn' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -a --stats"
-    if excludes:
-        rsync_option = rsync_option + \
-            ' '.join(" --exclude '%s'" % x for x in excludes)
+    excludes_list = ['*.pyc','*~','.svn','deb','.git','.gitignore']
+    excludes_list.extend(excludes)
+
     rsync_source = src
     rsync_destination = dst
-    rsync_command = '/usr/bin/rsync %s "%s" "%s"' % (
-        rsync_option, rsync_source, rsync_destination)
+    rsync_options = ['-a','--stats']
+    for x in excludes_list:
+        rsync_options.extend(['--exclude',x])
+
+    rsync_command = ['/usr/bin/rsync'] + rsync_options + [rsync_source,rsync_destination]
     eprint(rsync_command)
     return subprocess.check_output(rsync_command)
 
@@ -194,6 +196,7 @@ add_symlink('./opt/wapt/wapt-scanpackages.py', './usr/bin/wapt-scanpackages')
 eprint('copying the waptserver files')
 rsync(source_dir, './builddir/opt/wapt/',
       excludes=['apache-win32', 'mongodb', 'postconf', 'repository', 'rpm', 'uninstall-services.bat', 'deb', 'spnego-http-auth-nginx-module'])
+
 for lib in ('dialog.py', ):
     rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),
           './builddir/opt/wapt/lib/site-packages/')
