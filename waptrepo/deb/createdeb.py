@@ -67,20 +67,18 @@ def setloglevel(alogger,loglevel):
             raise ValueError('Invalid log level: %s' % loglevel)
         alogger.setLevel(numeric_level)
 
-def rsync(src,dst):
-    rsync_option = ' '.join([
-        "--exclude '.svn'",
-        "--exclude 'deb'",
-        "--exclude '.git'",
-        "--exclude '.gitignore'",
-        "--exclude 'rpm'",
-        "-aP"
-    ])
+def rsync(src, dst, excludes=[]):
+    rsync_option = " --exclude '*.pyc' --exclude '*~' --exclude '.svn' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -a --stats"
+    if excludes:
+        rsync_option = rsync_option + \
+            ' '.join(" --exclude '%s'" % x for x in excludes)
     rsync_source = src
     rsync_destination = dst
-    rsync_command = '/usr/bin/rsync %s "%s" "%s" 1>&2' % (
-        rsync_option,rsync_source,rsync_destination)
-    os.system(rsync_command)
+    rsync_command = '/usr/bin/rsync %s "%s" "%s"' % (
+        rsync_option, rsync_source, rsync_destination)
+    eprint(rsync_command)
+    return subprocess.check_output(rsync_command)
+
 
 def add_symlink(link_target,link_name):
     if link_target.startswith('/'):
@@ -210,8 +208,8 @@ os.chmod('./builddir/DEBIAN/postinst',
          | stat.S_IROTH | stat.S_IXOTH
          )
 
-final_deb = 'tis-waptrepo-{}.deb'.format(wapt_version)
-dpkg_command = 'dpkg-deb --build builddir %s 1>&2' % final_deb
-eprint(run(dpkg_command))
+# build
+package_filename = 'tis-waptrepo-{}.deb'.format(wapt_version)
+eprint(subprocess.check_output(['dpkg-deb','--build','builddir',package_filename]))
 shutil.rmtree("builddir")
-print(final_deb)
+print(package_filename)

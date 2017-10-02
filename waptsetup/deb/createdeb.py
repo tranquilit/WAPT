@@ -68,20 +68,18 @@ def setloglevel(alogger,loglevel):
             raise ValueError('Invalid log level: %s' % loglevel)
         alogger.setLevel(numeric_level)
 
-def rsync(src,dst):
-    rsync_option = ' '.join([
-        "--exclude '.svn'",
-        "--exclude 'deb'",
-        "--exclude '.git'",
-        "--exclude '.gitignore'",
-        "--exclude 'rpm'",
-        "-aP"
-    ])
+def rsync(src, dst, excludes=[]):
+    rsync_option = " --exclude '*.pyc' --exclude '*~' --exclude '.svn' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -a --stats"
+    if excludes:
+        rsync_option = rsync_option + \
+            ' '.join(" --exclude '%s'" % x for x in excludes)
     rsync_source = src
     rsync_destination = dst
-    rsync_command = '/usr/bin/rsync %s "%s" "%s" 1>&2' % (
-        rsync_option,rsync_source,rsync_destination)
-    os.system(rsync_command)
+    rsync_command = '/usr/bin/rsync %s "%s" "%s"' % (
+        rsync_option, rsync_source, rsync_destination)
+    eprint(rsync_command)
+    return subprocess.check_output(rsync_command)
+
 
 def add_symlink(link_target,link_name):
     if link_target.startswith('/'):
@@ -145,5 +143,5 @@ os.chmod(BDIR + 'var/www/wapt/' + WAPTDEPLOY, 0644)
 
 # build
 package_filename = 'tis-waptsetup-%s.deb' % (full_version)
-eprint(run(['dpkg-deb', '--build', BDIR, package_filename]))
+eprint(subprocess.check_output(['dpkg-deb', '--build', BDIR, package_filename]))
 print(package_filename)
