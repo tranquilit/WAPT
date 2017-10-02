@@ -20,52 +20,53 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-
 from __future__ import print_function
+import sys
 import os
-import glob
-import sys
-import stat
-import shutil
-import fileinput
-import subprocess
 import platform
-import errno
-import sys
+import logging
+import re
+
+import pefile
+import shutil
+import subprocess
+import argparse
+import stat
+import glob
+
+from git import Repo
+
+makepath = os.path.join
+from shutil import copyfile
+
+def run(*args, **kwargs):
+    return subprocess.check_output(*args, shell=True, **kwargs)
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-
 def mkdir_p(path):
-    try:
+    if not os.path.isdir(path):
         os.makedirs(path)
-    except OSError as exc:  # Python >2.5
-        if exc.errno == errno.EEXIST and os.path.isdir(path):
-            pass
-        else:
-            raise
 
+def debian_major():
+    return platform.linux_distribution()[1].split('.')[0]
 
-def replaceAll(file, searchExp, replaceExp):
-    for line in fileinput.input(file, inplace=1):
-        if searchExp in line:
-            line = line.replace(searchExp, replaceExp)
-        sys.stdout.write(line)
+def git_hash():
+    from git import Repo
+    r = Repo('.',search_parent_directories = True)
+    return r.active_branch.object.name_rev[:8]
 
+def dev_revision():
+    return 'tisdeb%s-%s' % (debian_major(), git_hash())
 
-def add_symlink(link_target, link_name):
-    if link_target.startswith('/'):
-        link_target = link_target[1:]
-    relative_link_target_path = os.path.join('builddir', link_target)
-    eprint('adding symlink %s -> %s' % (link_name, relative_link_target_path))
-    mkdir_p(os.path.dirname(relative_link_target_path))
-
-    if not os.path.exists(relative_link_target_path):
-        cmd = 'ln -s %s %s ' % (relative_link_target_path, link_name)
-        eprint(cmd)
-        eprint(subprocess.check_output(cmd))
-
+def setloglevel(alogger,loglevel):
+    """set loglevel as string"""
+    if loglevel in ('debug','warning','info','error','critical'):
+        numeric_level = getattr(logging, loglevel.upper(), None)
+        if not isinstance(numeric_level, int):
+            raise ValueError('Invalid log level: %s' % loglevel)
+        alogger.setLevel(numeric_level)
 
 def rsync(src, dst, excludes=[]):
     rsync_option = " --exclude '*.pyc' --exclude '*~' --exclude '.svn' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -a --stats"
@@ -74,46 +75,53 @@ def rsync(src, dst, excludes=[]):
             ' '.join(" --exclude '%s'" % x for x in excludes)
     rsync_source = src
     rsync_destination = dst
-    rsync_command = '/usr/bin/rsync %s "%s" "%s" 1>&2' % (
+    rsync_command = '/usr/bin/rsync %s "%s" "%s"' % (
         rsync_option, rsync_source, rsync_destination)
     eprint(rsync_command)
-    os.system(rsync_command)
+    return subprocess.check_output(rsync_command)
 
 
-makepath = os.path.join
-from shutil import copyfile
+def add_symlink(link_target,link_name):
+    if link_target.startswith('/'):
+        link_target = link_target[1:]
+    relative_link_target_path = os.path.join('builddir',link_target)
+    eprint("adding symlink %s -> %s" % (link_name, relative_link_target_path ))
+    mkdir_p(os.path.dirname(relative_link_target_path))
 
+    if not os.path.exists(relative_link_target_path):
+        cmd = 'ln -s %s %s ' % (relative_link_target_path,link_name)
+        eprint(cmd)
+        eprint(subprocess.check_output(cmd))
+
+parser = argparse.ArgumentParser(u'Build a WaptServer Debian package.')
+parser.add_argument('-l', '--loglevel', help='Change log level (error, warning, info, debug...)')
+parser.add_argument('-r', '--revision',default=dev_revision(), help='revision to append to package version')
+options = parser.parse_args()
+
+logger = logging.getLogger()
+logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+if options.loglevel is not None:
+    setloglevel(logger,options.loglevel)
+
+if platform.system() != 'Linux':
+    logger.error("this script should be used on debian linux")
+    sys.exit(1)
+
+revision = options.revision
+
+####################""
 # wapt
 wapt_source_dir = os.path.abspath('../..')
 
 # waptrepo
 source_dir = os.path.abspath('..')
 
-if platform.system() != 'Linux':
-    eprint('this script should be used on debian linux')
-    sys.exit(1)
-
-if len(sys.argv) > 2:
-    eprint('wrong number of parameters (0 or 1)')
-    sys.exit(1)
-
-def git_hash():
-    from git import Repo
-    r = Repo('.',search_parent_directories = True)
-    return r.active_branch.object.name_rev[:8]
-
-deb_revision = None
-if len(sys.argv) >= 2:
-    deb_revision = sys.argv[1]
-else:
-    deb_revision = 'git-'+git_hash()
-
 new_umask = 022
 old_umask = os.umask(new_umask)
 if new_umask != old_umask:
     eprint('umask fixed (previous %03o, current %03o)' % (old_umask, new_umask))
 
-for line in open('%s/waptserver.py' % source_dir):
+for line in open('%s/waptserver.py' % wapt_source_dir):
     if line.strip().startswith('__version__'):
         wapt_version = line.split('=')[
             1].strip().replace('"', '').replace("'", '')
@@ -122,7 +130,11 @@ if not wapt_version:
     eprint(u'version not found in %s/waptserver.py' % os.path.abspath('..'))
     sys.exit(1)
 
-control_file = './builddir/DEBIAN/control'
+if options.revision:
+    full_version = wapt_version + '-' + options.revision
+else:
+    full_version = wapt_version
+
 
 for filename in glob.glob('tis-waptserver*.deb'):
     eprint('Removing %s' % filename)
@@ -244,35 +256,21 @@ except Exception as e:
     eprint('error: \n%s' % e)
     exit(1)
 
-eprint('Overriding VCS revision.')
-rev_file = file('builddir/opt/wapt/revision.txt', 'w')
-try:
-    git_hash = subprocess.check_call(
-        ['git', 'rev-parse', '--short', 'HEAD'], stdout=rev_file)
-except Exception:
-    eprint('Could not retrieve the hash of the current git commit.')
-    eprint('Is git(1) installed?')
-    raise
-rev_file.close()
+control_file = './builddir/DEBIAN/control'
+eprint(u'inscription de la version dans le fichier de control. new version: ' + full_version)
 
-deb_version = wapt_version
-if deb_revision:
-    deb_version += '-' + str(deb_revision)
+# update Control version
+control = open(control_file,'r').read()
+open(control_file,'w').write(re.sub('Version: .*','Version: %s' % full_version,control))
 
-eprint('replacing the revision in the control file')
-replaceAll(control_file, '0.0.7', deb_version)
 
 os.chmod('./builddir/DEBIAN/postinst', stat.S_IRWXU |
          stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
 os.chmod('./builddir/DEBIAN/preinst', stat.S_IRWXU |
          stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
 
-eprint('creating the Debian package')
-output_file = 'tis-waptserver-%s.deb' % (deb_version)
-dpkg_command = 'dpkg-deb --build builddir %s 1>&2' % output_file
-status = os.system(dpkg_command)
-if status == 0:
-    print(output_file)
-else:
-    eprint('error while building package')
-sys.exit(status)
+# build
+package_filename = 'tis-waptserver-%s.deb' % full_version
+eprint(subprocess.check_output(['dpkg-deb','--build','builddir',package_filename]))
+shutil.rmtree("builddir")
+print(package_filename)
