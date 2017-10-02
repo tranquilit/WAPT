@@ -1,25 +1,79 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>{{ _("Tasks manager") }}</h1>
-{%if data['running']%}
-<h3>{{ _("Running: {0}").format(data['running'].description) }}</h3>
-<ul>
-{% for attrib in data['running'] %}
-<li><b>{{attrib}}:</b> {{data['running'][attrib]|beautify}}
-</li>
-{% endfor %}
-</ul>
-{%endif%}
-{% for group in ['pending','done','errors'] %}
-<h3>{{_(group) | capitalize}}:</h3>
-	<ul>
-	{% for task in data.get(group) | reverse %}
-	{% if group=='pending' %}
-	<li><b>{{task.id}} - {{task.create_date}} - <a href={{url_for('task',id=task['id'])}}>{{task.description}}:</b></a> <input value={{ _("Cancel") }} type=button onclick="location.href='cancel_task?id={{task.id}}'"/>
-	{% else %}
-	<li><b>{{task.id}} - {{task.create_date}} - <a href={{url_for('task',id=task['id'])}}>{{task.description}}:</b></a> {{task.logs | beautify}}</li>
-	{% endif %}
-	{% endfor %}
-	</ul>
-{% endfor %}
-{% endblock %}
+</div></div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar" id="menuDesTaches">
+          <!--<ul class="nav nav-sidebar">
+            <li><a href="#">Pending</a></li>
+            <li><a href="#">Done</a></li>
+            <li><a href="#">Errors</a></li>
+          </ul>-->
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h1 class="page-header">Running status</h1>
+                <!--ajouter un diag avec % reussite et %echec-->
+          <h2 class="sub-header">Tasks queue</h2>
+
+          <div class="table-responsive">
+          <table id="TableOfTask" class="table table-striped">
+           <thead>
+        	<tr>
+                <th>Task ID</th>
+           	    <th>Status</th>
+                <th>Description </th>
+                <th>Log</th>
+                <th>Date</th>
+            </tr>
+             </thead>
+             <tbody>
+                {%if data['running']%}
+                <tr>
+            	   <td>{{ _("Running: {0}").format(data['running'].id)}}</td>
+                   <td>Running</td>
+                   <td>{{ _("Running: {0}").format(data['running'].description) }}</td>
+                   <td>{{ _("Running: {0}").format(data['running'].logs)}}</td>
+                   <td>{{ _("Running: {0}").format(data['running'].start_date)}}</td>
+                </tr>
+                {%endif%}
+                {% for group in ['pending','done','errors'] %}
+            	{% for task in data.get(group) | reverse %}
+            	{% if group=='pending' %}
+                <tr>
+            	   <td>{{task.id}}</td>
+                   <td>Pending</td>
+                   <td> <a href={{url_for('task',id=task['id'])}}>{{task.description}}</a></td>
+                   <td> nothing to show </td>
+                   <td>{{task.create_date}}</td>
+                </tr>
+                {% else %}
+                {% if group=='done' %}
+                <tr>
+            	   <td>{{task.id}}</td>
+                   <td>Done</td>
+                   <td> <a href={{url_for('task',id=task['id'])}}>{{task.description}}</a></td>
+                   <td>{{task.logs}}</td>
+                   <td>{{task.create_date}}</td>
+                </tr>
+            	{% else %}
+                <tr>
+            	   <td>{{task.id}}</td>
+                   <td>Error</td>
+                   <td> <a href={{url_for('task',id=task['id'])}}>{{task.description}}</a></td>
+                   <td>{{task.logs}}</td>
+                   <td>{{task.create_date}}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+            	{% endfor %}
+			</tr>
+            {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  <div class="container">
+      <div class="row">
+{% endblock %}-
