@@ -33,40 +33,43 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="11">
+    <RequiredPackages Count="12">
       <Item1>
-        <PackageName Value="pl_virtualtreesextra"/>
+        <PackageName Value="pl_DCP"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="pltis_wapt"/>
       </Item4>
       <Item5>
-        <PackageName Value="HtmlComp"/>
+        <PackageName Value="pl_indy"/>
       </Item5>
       <Item6>
-        <PackageName Value="pl_richview"/>
+        <PackageName Value="HtmlComp"/>
       </Item6>
       <Item7>
-        <PackageName Value="pl_rx"/>
+        <PackageName Value="pl_richview"/>
       </Item7>
       <Item8>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pl_rx"/>
       </Item8>
       <Item9>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_utils"/>
       </Item9>
       <Item10>
-        <PackageName Value="pl_luicontrols"/>
+        <PackageName Value="pltis_superobject"/>
       </Item10>
       <Item11>
-        <PackageName Value="LCL"/>
+        <PackageName Value="pl_luicontrols"/>
       </Item11>
+      <Item12>
+        <PackageName Value="LCL"/>
+      </Item12>
     </RequiredPackages>
     <Units Count="5">
       <Unit0>

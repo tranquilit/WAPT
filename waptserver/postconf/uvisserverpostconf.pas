@@ -128,7 +128,8 @@ var
 
 implementation
 uses LCLIntf, Windows, waptcommon, waptwinutils, UScaleDPI, tisinifiles,
-  superobject, tiscommon, tisstrings, IniFiles, sha1;
+  superobject, tiscommon, tisstrings, IniFiles, dcpcrypt2, DCPsha256, Math,base64;
+
 {$R *.lfm}
 
 { TVisWAPTServerPostConf }
@@ -372,19 +373,110 @@ begin
   result := Run(cmd);
 end;
 
-//function GetSHA512Crypt(password:String):String;
-//var cmd:String;
-//begin
-//  cmd := '{app}\waptpython.exe {app}\waptserver\waptgenpass.py'; 
-//  StrReplace(cmd,'{app}',WaptBaseDir,[rfReplaceAll]);
-//  Result := Sto_RedirectedExecute(cmd, password);
-//end;
+
+{
+function RPad(x: string; c: Char; s: Integer): string;
+var
+  i: Integer;
+begin
+  Result := x;
+  if Length(x) < s then
+    for i := 1 to s-Length(x) do
+      Result := Result + c;
+end;
+
+function XorBlock(s, x: ansistring): ansistring; inline;
+var
+  i: Integer;
+begin
+  SetLength(Result, Length(s));
+  for i := 1 to Length(s) do
+    Result[i] := Char(Byte(s[i]) xor Byte(x[i]));
+end;
+
+function CalcDigest(text: string; dig: TDCP_hashclass): string;
+var
+  x: TDCP_hash;
+begin
+  x := dig.Create(nil);
+  try
+    x.Init;
+    x.UpdateStr(text);
+    SetLength(Result, x.GetHashSize div 8);
+    x.Final(Result[1]);
+  finally
+    x.Free;
+  end;
+end;
+
+function CalcHMAC(message, key: string; hash: TDCP_hashclass): string;
+const
+  blocksize = 64;
+begin
+  // Definition RFC 2104
+  if Length(key) > blocksize then
+    key := CalcDigest(key, hash);
+  key := RPad(key, #0, blocksize);
+
+  Result := CalcDigest(XorBlock(key, RPad('', #$36, blocksize)) + message, hash);
+  Result := CalcDigest(XorBlock(key, RPad('', #$5c, blocksize)) + result, hash);
+end;
+
+function PBKDF1(pass, salt: ansistring; count: Integer; hash: TDCP_hashclass): ansistring;
+var
+  i: Integer;
+begin
+  Result := pass+salt;
+  for i := 0 to count-1 do
+    Result := CalcDigest(Result, hash);
+end;
+
+
+function PBKDF2(pass, salt: ansistring; count, kLen: Integer; hash: TDCP_hashclass): ansistring;
+
+  function IntX(i: Integer): ansistring; inline;
+  begin
+    Result := Char(i shr 24) + Char(i shr 16) + Char(i shr 8) + Char(i);
+  end;
+
+var
+  D, I, J: Integer;
+  T, F, U: ansistring;
+begin
+  T := '';
+  D := Ceil(kLen / (hash.GetHashSize div 8));
+  for i := 1 to D do
+  begin
+    F := CalcHMAC(salt + IntX(i), pass, hash);
+    U := F;
+    for j := 2 to count do
+    begin
+      U := CalcHMAC(U, pass, hash);
+      F := XorBlock(F, U);
+    end;
+    T := T + F;
+  end;
+  Result := Copy(T, 1, kLen);
+end;
+}
+
+function MakeRandomString(const ALength: Integer;
+                          const ACharSequence: String = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'): String;
+var
+  C1, sequence_length: Integer;
+begin
+  sequence_length := Length(ACharSequence);
+  SetLength(result, ALength);
+
+  for C1 := 1 to ALength do
+    result[C1] := ACharSequence[Random(sequence_length) + 1];
+end;
 
 procedure TVisWAPTServerPostConf.actWriteConfStartServeExecute(Sender: TObject);
 var
   ini:TMemIniFile;
   retry:integer;
-  res:String;
+  salt,res:String;
   GUID: TGuid;
   sores: ISuperobject;
   taskid:integer;
@@ -425,7 +517,13 @@ begin
       ProgressTitle(rsSettingServerPassword);
       ProgressStep(3,8);
 
-      IniWriteString(WaptBaseDir+'\conf\waptserver.ini' ,'Options','wapt_password',sha1.SHA1Print(sha1.SHA1String(EdPwd1.Text)));
+      // salt := MakeRandomString(16);
+      // IniWriteString(WaptBaseDir+'\conf\waptserver.ini' ,'Options','wapt_password',
+      //  '$pbkdf2-sha256$29000$'+salt+'$'+EncodeStringBase64(PBKDF2(EdPwd1.Text,salt,29000,32,TDCP_sha256)));
+
+      IniWriteString(WaptBaseDir+'\conf\waptserver.ini' ,'Options','wapt_password',
+        Run(AppendPathDelim(WaptBaseDir)+'waptpython.exe -c "from passlib.hash import pbkdf2_sha256; print(pbkdf2_sha256.hash('''+EdPwd1.Text+'''))"')
+        );
 
       if CBOpenFirewall.Checked then
       begin

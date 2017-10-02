@@ -9,7 +9,7 @@ uses
   Translations, LCLProc,
 
   Interfaces, // this includes the LCL widgetset
-  Forms, pl_indy, uVisServerPostconf, uwaptserverres,
+  Forms, pl_indy, pl_dcp, uVisServerPostconf, uwaptserverres,
   waptcommon, uvisloading, UScaleDPI,
   { you can add units after this }
   DefaultTranslator;
