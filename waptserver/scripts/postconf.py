@@ -395,6 +395,8 @@ def main():
 
     if options.use_kerberos:
         waptserver_ini.set('options','use_kerberos','True')
+    else:
+        waptserver_ini.set('options','use_kerberos','False')
 
     with open('/opt/wapt/conf/waptserver.ini','w') as inifile:
         run("/bin/chmod 640 /opt/wapt/conf/waptserver.ini")
