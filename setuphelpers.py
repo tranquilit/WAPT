@@ -4058,7 +4058,8 @@ def unzip(zipfn,target=None,filenames=None):
     if target is None:
         target=makepath(os.path.dirname(os.path.abspath(zipfn)),os.path.splitext(os.path.basename(zipfn))[0])
 
-    filenames = [ pattern.replace('\\','/') for pattern in ensure_list(filenames)]
+    if filenames is not None:
+        filenames = [ pattern.replace('\\','/') for pattern in ensure_list(filenames)]
 
     def match(fn,filenames):
         # return True if fn matches one of the pattern in filenames
@@ -4071,7 +4072,7 @@ def unzip(zipfn,target=None,filenames=None):
             return False
     if filenames is not None:
         files = [fn for fn in zipf.namelist() if match(fn,filenames)]
-        zipf.extractall(target,members=all_files)
+        zipf.extractall(target,members=files)
     else:
         files = zipf.namelist()
         zipf.extractall(target)
