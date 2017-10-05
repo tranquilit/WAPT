@@ -149,30 +149,6 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force
                 ], stderr=subprocess.STDOUT)
 
 
-def enable_debian_vhost():
-    # the two following calls may fail on Debian Jessie
-    try:
-        void = subprocess.check_output(['a2dissite', 'default'], stderr=subprocess.STDOUT)
-    except Exception:
-        pass
-    try:
-        void = subprocess.check_output(['a2dissite', '000-default'], stderr=subprocess.STDOUT)
-    except Exception:
-        pass
-    try:
-        void = subprocess.check_output(['a2dissite', 'default-ssl'], stderr=subprocess.STDOUT)
-    except Exception:
-        pass
-    void = subprocess.check_output(['a2enmod', 'ssl'], stderr=subprocess.STDOUT)
-    void = subprocess.check_output(['a2enmod', 'proxy'], stderr=subprocess.STDOUT)
-    void = subprocess.check_output(['a2enmod', 'proxy_http'], stderr=subprocess.STDOUT)
-    void = subprocess.check_output(['a2enmod', 'rewrite'], stderr=subprocess.STDOUT)
-    void = subprocess.check_output(['a2enmod', 'proxy_wstunnel'], stderr=subprocess.STDOUT)
-    void = subprocess.check_output(['a2enmod', 'auth_kerb'], stderr=subprocess.STDOUT)
-    void = subprocess.check_output(['a2enmod', 'headers'], stderr=subprocess.STDOUT)
-    void = subprocess.check_output(['a2ensite', 'wapt.conf'], stderr=subprocess.STDOUT)
-    void = subprocess.check_output('systemctl restart apache2',shell=True, stderr=subprocess.STDOUT)
-
 def ensure_postgresql_db(db_name='wapt',db_owner='wapt',db_password=''):
     """ create postgresql wapt db and user if it does not exists """
     if type_redhat():
