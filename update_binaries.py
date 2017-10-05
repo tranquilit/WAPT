@@ -14,8 +14,9 @@ import os
 import shutil
 
 try:
-    wapt_base_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__),'..','..','..')))
-except:
+    wapt_base_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','..','..'))
+except Exception as e:
+    print('Error getting wapt basedir : %s' % e)
     wapt_base_dir = r'c:\tranquilit\wapt'
 
 old_os_path = os.environ.get('PATH', '')
