@@ -13,8 +13,10 @@ import sys
 import os
 import shutil
 
+print __file__
 try:
-    wapt_base_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','..','..'))
+    wapt_base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
+    print(wapt_base_dir)
 except Exception as e:
     print('Error getting wapt basedir : %s' % e)
     wapt_base_dir = r'c:\tranquilit\wapt'
