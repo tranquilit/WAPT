@@ -558,7 +558,7 @@ def get_disk_free_space(filepath):
         total, used, free = disk_usage(filepath)
         return free
 
-def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False,referer=None,user_agent=None,cert=None):
+def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False,referer=None,user_agent=None,cert=None,resume=False):
     r"""Copy the contents of a file from a given URL to a local file.
 
     Args:
@@ -631,44 +631,78 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
     if user_agent != None:
         header.update({'user-agent': '%s' % user_agent})
 
-    httpreq = requests.get(url,stream=True,
-        proxies=proxies,
-        timeout=connect_timeout,
-        verify=verify_cert,
-        headers=header,
-        cert = cert,
-        allow_redirects=True)
-
-    httpreq.raise_for_status()
-
-    total_bytes = int(httpreq.headers['content-length'])
-    target_free_bytes = get_disk_free_space(os.path.dirname(os.path.abspath(target)))
-    if total_bytes > target_free_bytes:
-        raise Exception('wget : not enough free space on target drive to get %s MB. Total size: %s MB. Free space: %s MB' % (url,total_bytes // (1024*1024),target_free_bytes // (1024*1024)))
-
-    # 1Mb max, 1kb min
-    chunk_size = min([1024*1024,max([total_bytes/100,2048])])
-
-    cnt = 0
-    reporthook(last_downloaded,total_bytes)
-
     target_fn = os.path.join(dir,filename)
-    with open(target_fn,'wb') as output_file:
-        last_time_display = time.time()
-        last_downloaded = 0
-        if httpreq.ok:
-            for chunk in httpreq.iter_content(chunk_size=chunk_size):
-                output_file.write(chunk)
-                if download_timeout is not None and (time.time()-start_time>download_timeout):
-                    raise requests.Timeout(r'Download of %s takes more than the requested %ss'%(url,download_timeout))
-                if reporthook(cnt*len(chunk),total_bytes):
-                    last_time_display = time.time()
-                last_downloaded += len(chunk)
-                cnt +=1
-            if reporthook(last_downloaded,total_bytes):
-                last_time_display = time.time()
 
-    file_date = httpreq.headers.get('last-modified',None)
+    if os.path.isfile(target_fn) and resume:
+        try:
+            actual_size = os.stat(target_fn).st_size
+            size_req = requests.head(url,
+                proxies=proxies,
+                timeout=connect_timeout,
+                verify=verify_cert,
+                headers=header,
+                cert = cert,
+                allow_redirects=True)
+
+            target_size = int(size_req.headers['content-length'])
+            file_date = size_req.headers.get('last-modified',None)
+
+            print (target_size, actual_size)
+            if target_size > actual_size:
+                header.update({'Range':'bytes=%s-' % (actual_size,)})
+                write_mode = 'ab'
+            elif target_size < actual_size:
+                target_size = None
+                write_mode = 'wb'
+        except Exception as e:
+            target_size = None
+            write_mode = 'wb'
+
+    else:
+        file_date = None
+        actual_size = 0
+        target_size = None
+        write_mode = 'wb'
+
+    if not resume or target_size is None or (target_size - actual_size) > 0:
+        httpreq = requests.get(url,stream=True,
+            proxies=proxies,
+            timeout=connect_timeout,
+            verify=verify_cert,
+            headers=header,
+            cert = cert,
+            allow_redirects=True)
+
+        httpreq.raise_for_status()
+
+        total_bytes = int(httpreq.headers['content-length'])
+        target_free_bytes = get_disk_free_space(os.path.dirname(os.path.abspath(target)))
+        if total_bytes > target_free_bytes:
+            raise Exception('wget : not enough free space on target drive to get %s MB. Total size: %s MB. Free space: %s MB' % (url,total_bytes // (1024*1024),target_free_bytes // (1024*1024)))
+
+        # 1Mb max, 1kb min
+        chunk_size = min([1024*1024,max([total_bytes/100,2048])])
+
+        cnt = 0
+        reporthook(last_downloaded,total_bytes)
+
+        with open(target_fn,write_mode) as output_file:
+            last_time_display = time.time()
+            last_downloaded = 0
+            if httpreq.ok:
+                for chunk in httpreq.iter_content(chunk_size=chunk_size):
+                    output_file.write(chunk)
+                    if download_timeout is not None and (time.time()-start_time>download_timeout):
+                        raise requests.Timeout(r'Download of %s takes more than the requested %ss'%(url,download_timeout))
+                    if reporthook(cnt*len(chunk),total_bytes):
+                        last_time_display = time.time()
+                    last_downloaded += len(chunk)
+                    cnt +=1
+                if reporthook(last_downloaded,total_bytes):
+                    last_time_display = time.time()
+
+        file_date = httpreq.headers.get('last-modified',None)
+
     if file_date:
         file_datetime = httpdatetime2time(file_date)
         os.utime(target_fn,(file_datetime,file_datetime))
