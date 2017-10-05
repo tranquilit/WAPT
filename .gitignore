@@ -79,3 +79,5 @@ waptupgrade/patchs/
 /waptpython.exe
 /waptpythonw.exe
 *.bak
+/waptserver/nginx/*
+/waptserver/pgsql/*
