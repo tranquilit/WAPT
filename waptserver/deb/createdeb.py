@@ -195,7 +195,7 @@ add_symlink('./opt/wapt/wapt-scanpackages.py', './usr/bin/wapt-scanpackages')
 
 eprint('copying the waptserver files')
 rsync(source_dir, './builddir/opt/wapt/',
-      excludes=['apache-win32', 'mongodb', 'postconf', 'repository', 'rpm', 'uninstall-services.bat', 'deb', 'spnego-http-auth-nginx-module'])
+      excludes=['postconf', 'repository', 'rpm', 'uninstall-services.bat', 'deb', 'spnego-http-auth-nginx-module'])
 
 for lib in ('dialog.py', ):
     rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),
@@ -247,12 +247,6 @@ os.chmod('./builddir/opt/wapt/waptserver/scripts/postconf.py', 0o755)
 
 eprint('copying nginx-related goo')
 try:
-    apache_dir = './builddir/opt/wapt/waptserver/apache/'
-    mkdir_p(apache_dir + '/ssl')
-    subprocess.check_output(['chmod', '0700', apache_dir + '/ssl'])
-    copyfile('../apache-win32/conf/httpd.conf.j2',
-             apache_dir + 'httpd.conf.j2')
-
     mkdir_p('./builddir/etc/systemd/system/nginx.service.d')
     copyfile('../scripts/nginx_worker_files_limit.conf', './builddir/etc/systemd/system/nginx.service.d/nginx_worker_files_limit.conf')
 except Exception as e:
@@ -265,7 +259,6 @@ eprint(u'inscription de la version dans le fichier de control. new version: ' + 
 # update Control version
 control = open(control_file,'r').read()
 open(control_file,'w').write(re.sub('Version: .*','Version: %s' % full_version,control))
-
 
 os.chmod('./builddir/DEBIAN/postinst', stat.S_IRWXU |
          stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)

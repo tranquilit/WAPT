@@ -93,10 +93,11 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force
     if wapt_folder.endswith('\\') or wapt_folder.endswith('/'):
         wapt_folder = wapt_folder[:-1]
 
-    apache_dir = os.path.join(waptserver_root_dir, 'apache')
+    ssl_dir = os.path.join(waptserver_root_dir, 'ssl')
     scripts_dir = os.path.join(waptserver_root_dir, 'scripts')
-    wapt_ssl_key_file = os.path.join(apache_dir,'ssl','key.pem')
-    wapt_ssl_cert_file = os.path.join(apache_dir,'ssl','cert.pem')
+    wapt_ssl_key_file = os.path.join(ssl_dir,'key.pem')
+    wapt_ssl_cert_file = os.path.join(ssl_dir,'cert.pem')
+    os.makedirs(ssl_dir)
 
     # write the apache configuration fragment
     jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(scripts_dir))
