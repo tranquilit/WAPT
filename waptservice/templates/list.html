@@ -43,13 +43,13 @@ location.reload(true);
 
 {% set cols = ['package','install_version','install_status','install_date'] %}
 {% set cols_header = [_('package'),_('install_version'),_('install_status'),_('install_date')] %}
-<table class="table table-striped" cellspacing=0 cellpadding=4 class=sample>
-	<tr>
+<table id="main_table" class="table table-striped" cellspacing=0 cellpadding=4 class=sample>
+	<thead>
     	{% for c in cols_header %}
     		<th>{{c or "###"}}</th>
     	{% endfor %}
     	<th>{{ _("Action") }}</th>
-    </tr>
+    </thead>
 	{% for p in packages %}
         {%set package_version = p.asrequirement() %}
         {%set package_section = p.section %}

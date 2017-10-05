@@ -792,10 +792,11 @@ def all_packages(page=1):
 
         _min = per_page * (page - 1)
         _max = _min + per_page
-        pagination = Pagination(css_framework='foundation', page=page, total=total, search=search, per_page=per_page)
+        #pagination = Pagination(css_framework='bootstrap', page=page, total=total, search=search, per_page=per_page)
+        pagination = None
         return render_template(
             'list.html',
-            packages=rows[_min:_max],
+            packages=rows, #[_min:_max],
             format_isodate=format_isodate,
             Version=setuphelpers.Version,
             pagination=pagination,
