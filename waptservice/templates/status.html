@@ -4,14 +4,14 @@
 {% macro link(href,desc='') -%}{% if desc == '' %}<a href={{href}}>{{href}}</a>{%else%}<a href={{href}}>{{desc}}</a>{%endif%}{%- endmacro%}
 
 <h1>{{ _("Installed packages") }}</h1>'
-<table class="table table-striped" cellspacing=0 cellpadding=4 class=sample>
+<table id="main_table" class="table table-striped" cellspacing=0 cellpadding=4 class=sample>
 {% set cols = [('install_status',_('Status')),('package',_('Package')),('install_par',_('Installed by')),('install_date',_('Installed on')),('repo_version',_('Version repo')),('install_output',_('Traces'))] %}
-	<tr>
+	<thead>
 		{% for c in cols %}
 			<th>{{c[1]}}</th>
 		{% endfor %}
 		<th>{{ _("Action") }}</th>
-	</tr>
+	</thead>
 	{% for p in packages %}
         {%set package_version= p.asrequirement() %}
         {%if p.get('install_status')=='OK'%}
