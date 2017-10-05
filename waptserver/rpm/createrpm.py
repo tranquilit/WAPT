@@ -216,12 +216,9 @@ os.symlink('/opt/wapt/waptserver/scripts/postconf.py',
 
 eprint('copying nginx-related goo')
 try:
-    apache_dir = './builddir/opt/wapt/waptserver/apache/'
-    mkdir_p(apache_dir + '/ssl')
-    subprocess.check_output(['chmod', '0700', apache_dir + '/ssl'])
-    copyfile('../apache-win32/conf/httpd.conf.j2',
-             apache_dir + 'httpd.conf.j2')
-
+    ssl_dir = './builddir/opt/wapt/waptserver/ssl/'
+    mkdir_p(ssl_dir)
+    subprocess.check_output(['chmod', '0700', ssl_dir])
     mkdir_p('./builddir/etc/systemd/system/nginx.service.d')
     copyfile('../scripts/nginx_worker_files_limit.conf', './builddir/etc/systemd/system/nginx.service.d/nginx_worker_files_limit.conf')
 except Exception as e:
