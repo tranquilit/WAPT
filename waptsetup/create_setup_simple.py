@@ -22,7 +22,7 @@ if __name__ == '__main__':
     rev_file.close()
 
     iss_file = installer + ".iss"
-    issc_binary = os.path.join(programfiles32(),'Inno Setup 5','ISCC.exe')
+    issc_binary = os.path.join(os.path.dirname(__file__),'innosetup','ISCC.exe')
 
     cmd = '"%(issc_binary)s" %(issfile)s' % {
         'issc_binary':issc_binary,
