@@ -41,23 +41,23 @@ from setuphelpers import *
 import tempfile
 
 print('Get Postgresql zip')
-pgsql_zip = wget('https://get.enterprisedb.com/postgresql/postgresql-9.4.14-1-windows-x64-binaries.zip',resume=True)
+pgsql_zip = wget('https://get.enterprisedb.com/postgresql/postgresql-9.4.14-1-windows-x64-binaries.zip',resume=True,md5='b69d2e6135a0061dc5ecd968f3d0a31e')
 if os.path.isdir(makepath(wapt_base_dir,'waptserver','pgsql')):
     shutil.rmtree(makepath(wapt_base_dir,'waptserver','pgsql'))
 pg_files = unzip(pgsql_zip,target=makepath(wapt_base_dir,'waptserver'),filenames=['pgsql/bin/*','pgsql/lib/*','pgsql/share/*'])
 
 print('Get NGINX zip')
-nginx_zip = wget('https://nginx.org/download/nginx-1.13.5.zip',resume=True)
+nginx_zip = wget('https://nginx.org/download/nginx-1.13.5.zip',resume=True,md5='999bf2444d95771a72eb7fd3637c4f13')
 if os.path.isdir(makepath(wapt_base_dir,'waptserver','nginx')):
     shutil.rmtree(makepath(wapt_base_dir,'waptserver','nginx'))
 nginx_files = unzip(nginx_zip,target=makepath(wapt_base_dir,'waptserver'))
 os.rename(makepath(wapt_base_dir,'waptserver','nginx-1.13.5'),makepath(wapt_base_dir,'waptserver','nginx'))
 
 print('Get innosetup compiler setup and extract files to waptsetup')
-innosetup_install = wget('http://www.jrsoftware.org/download.php/is.exe',resume=True)
+innosetup_install = wget('http://www.jrsoftware.org/download.php/is.exe',resume=True,md5='d04edff902d0d1e4295a136c30842127')
 #run([innosetup_install,'/VERYSILENT'],timeout=60)
 
-innoextract_zip = wget('http://constexpr.org/innoextract/files/innoextract-1.6-windows.zip',resume=True)
+innoextract_zip = wget('http://constexpr.org/innoextract/files/innoextract-1.6-windows.zip',resume=True,md5='e3abf26e436c8f1858e2e06a67a37b60')
 innoextract_files = unzip(innoextract_zip,filenames=['innoextract.exe'])
 run([innoextract_files[0],'-e',innosetup_install,'-d',makepath(tempfile.gettempdir,'iscc')])
 
@@ -67,5 +67,5 @@ for fn in ['Default.isl', 'isbunzip.dll', 'isbzip.dll', 'ISCC.exe', 'ISCmplr.dll
     filecopyto(makepath(iscfiles_path,fn),makepath(wapt_base_dir,'waptsetup','innosetup'))
 
 print('Get OpenSSL binaries from Fulgan')
-ssl_zip = wget('https://indy.fulgan.com/SSL/openssl-1.0.2l-i386-win32.zip',resume=True)
+ssl_zip = wget('https://indy.fulgan.com/SSL/openssl-1.0.2l-i386-win32.zip',resume=True,md5='f1901d936f73d57a9efcef9b028e1621')
 ssl_file = unzip(ssl_zip,target=makepath(wapt_base_dir),filenames=['ssleay32.dll','openssl.exe','libeay32.dll'])

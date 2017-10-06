@@ -45,6 +45,7 @@ from custom_zip import ZipFile
 import tempfile
 import fnmatch
 import urlparse
+import hashlib
 
 if platform.system() == 'Windows':
     try:
@@ -558,7 +559,17 @@ def get_disk_free_space(filepath):
         total, used, free = disk_usage(filepath)
         return free
 
-def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False,referer=None,user_agent=None,cert=None,resume=False):
+def _md5_for_file(fname, block_size=2**20):
+    f = open(fname,'rb')
+    md5 = hashlib.md5()
+    while True:
+        data = f.read(block_size)
+        if not data:
+            break
+        md5.update(data)
+    return md5.hexdigest()
+
+def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False,referer=None,user_agent=None,cert=None,resume=False,md5=None):
     r"""Copy the contents of a file from a given URL to a local file.
 
     Args:
@@ -647,7 +658,6 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
             target_size = int(size_req.headers['content-length'])
             file_date = size_req.headers.get('last-modified',None)
 
-            print (target_size, actual_size)
             if target_size > actual_size:
                 header.update({'Range':'bytes=%s-' % (actual_size,)})
                 write_mode = 'ab'
@@ -663,6 +673,14 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         actual_size = 0
         target_size = None
         write_mode = 'wb'
+
+    # check md5 if size equal
+    if resume and md5 is not None and target_size is not None and (target_size == actual_size):
+        actual_md5 = _md5_for_file(target_fn)
+        if actual_md5 != md5:
+            # restart download...
+            target_size = None
+            write_mode = 'wb'
 
     if not resume or target_size is None or (target_size - actual_size) > 0:
         httpreq = requests.get(url,stream=True,
@@ -700,6 +718,12 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
                     cnt +=1
                 if reporthook(last_downloaded,total_bytes):
                     last_time_display = time.time()
+
+        # check md5
+        if md5 is not None:
+            actual_md5 = _md5_for_file(target_fn)
+            if actual_md5 != md5:
+                raise Exception(u'Downloaded file %s md5 %s does not match expected %s' % (url,actual_md5,md5))
 
         file_date = httpreq.headers.get('last-modified',None)
 
