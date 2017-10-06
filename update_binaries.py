@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 # Name:
-# Purpose:     get pgsql and nginx binaries
+# Purpose:     get ISCC, pgsql and nginx binaries
 #
 # Author:      htouvet
 #
@@ -13,13 +13,8 @@ import sys
 import os
 import shutil
 
-print __file__
-try:
-    wapt_base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
-    print(wapt_base_dir)
-except Exception as e:
-    print('Error getting wapt basedir : %s' % e)
-    wapt_base_dir = r'c:\tranquilit\wapt'
+wapt_base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
+print('WAPT base directory: %s' %wapt_base_dir)
 
 old_os_path = os.environ.get('PATH', '')
 os.environ['PATH'] = wapt_base_dir + os.pathsep + old_os_path
@@ -40,20 +35,31 @@ for item in list(sys.path):
         sys.path.remove(item)
 sys.path[:0] = new_sys_path
 
+print('Python PATH: %s' % sys.path)
+
 from setuphelpers import *
 
+print('Get Postgresql zip')
 pgsql_zip = wget('https://get.enterprisedb.com/postgresql/postgresql-9.4.14-1-windows-x64-binaries.zip',resume=True)
 if os.path.isdir(makepath(wapt_base_dir,'waptserver','pgsql')):
     shutil.rmtree(makepath(wapt_base_dir,'waptserver','pgsql'))
 pg_files = unzip(pgsql_zip,target=makepath(wapt_base_dir,'waptserver'),filenames=['pgsql/bin/*','pgsql/lib/*','pgsql/share/*'])
 
+print('Get NGINX zip')
 nginx_zip = wget('https://nginx.org/download/nginx-1.13.5.zip',resume=True)
 if os.path.isdir(makepath(wapt_base_dir,'waptserver','nginx')):
     shutil.rmtree(makepath(wapt_base_dir,'waptserver','nginx'))
 nginx_files = unzip(nginx_zip,target=makepath(wapt_base_dir,'waptserver'))
 os.rename(makepath(wapt_base_dir,'waptserver','nginx-1.13.5'),makepath(wapt_base_dir,'waptserver','nginx'))
 
-innosetup_install = wget('http://www.jrsoftware.org/download.php/is.exe',resume=True)
-run([innosetup_install,'/VERYSILENT'])
+if need_install('Inno Setup 5_is1',min_version='5.5.9'):
+    print('Install innosetup compiler')
+    innosetup_install = wget('http://www.jrsoftware.org/download.php/is.exe',resume=True)
+    run([innosetup_install,'/VERYSILENT'],timeout=60)
+
 for fn in ['Default.isl', 'isbunzip.dll', 'isbzip.dll', 'ISCC.exe', 'ISCmplr.dll', 'islzma.dll', 'islzma32.exe', 'islzma64.exe', 'ISPP.dll', 'ISPPBuiltins.iss', 'isscint.dll', 'isunzlib.dll', 'iszlib.dll', 'license.txt', 'Setup.e32', 'SetupLdr.e32', 'WizModernImage-IS.bmp', 'WizModernImage.bmp', 'WizModernSmallImage-IS.bmp', 'WizModernSmallImage.bmp']:
     filecopyto(makepath(programfiles32,'Inno Setup 5',fn),makepath(wapt_base_dir,'waptsetup','innosetup'))
+
+print('Get OpenSSL binaries from Fulgan')
+ssl_zip = wget('https://indy.fulgan.com/SSL/openssl-1.0.2l-i386-win32.zip',resume=True)
+ssl_file = unzip(ssl_zip,target=makepath(wapt_base_dir),filenames=['ssleay32.dll','openssl.exe','libeay32.dll'])
