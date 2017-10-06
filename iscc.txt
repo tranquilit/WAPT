@@ -1,0 +1,633 @@
+2017-10-06 10:49:39.465   Log opened. (Time zone: UTC+02:00)
+2017-10-06 10:49:39.465   Setup version: Inno Setup version 5.5.9 (a)
+2017-10-06 10:49:39.465   Original Setup EXE: C:\Users\htouvet\Downloads\innosetup-5.5.9.exe
+2017-10-06 10:49:39.465   Setup command line: /SL5="$5150E58,1608164,57856,C:\Users\htouvet\Downloads\innosetup-5.5.9.exe" /VERYSILENT /ASSOC /LOG=iscc.txt
+2017-10-06 10:49:39.465   Windows version: 6.1.7601 SP1  (NT platform: Yes)
+2017-10-06 10:49:39.465   64-bit Windows: Yes
+2017-10-06 10:49:39.465   Processor architecture: x64
+2017-10-06 10:49:39.465   User privileges: Administrative
+2017-10-06 10:49:39.468   64-bit install mode: No
+2017-10-06 10:49:39.470   Created temporary directory: C:\Users\htouvet\AppData\Local\Temp\is-9P4GH.tmp
+2017-10-06 10:49:39.512   Extracting temporary file: C:\Users\htouvet\AppData\Local\Temp\is-9P4GH.tmp\ISPP.ico
+2017-10-06 10:49:39.534   Starting the installation process.
+2017-10-06 10:49:39.536   Directory for uninstall files: C:\Program Files (x86)\Inno Setup 5
+2017-10-06 10:49:39.536   Will append to existing uninstall log: C:\Program Files (x86)\Inno Setup 5\unins000.dat
+2017-10-06 10:49:39.538   -- File entry --
+2017-10-06 10:49:39.538   Dest filename: C:\Program Files (x86)\Inno Setup 5\unins000.exe
+2017-10-06 10:49:39.539   Time stamp of our file: 2017-10-06 10:49:38.963
+2017-10-06 10:49:39.539   Dest file exists.
+2017-10-06 10:49:39.539   Time stamp of existing file: 2017-01-02 15:47:38.426
+2017-10-06 10:49:39.539   Version of our file: 51.52.0.0
+2017-10-06 10:49:39.539   Version of existing file: 51.1052.0.0
+2017-10-06 10:49:39.539   Existing file is a newer version. Skipping.
+2017-10-06 10:49:39.540   -- File entry --
+2017-10-06 10:49:39.540   Dest filename: C:\Program Files (x86)\Inno Setup 5\license.txt
+2017-10-06 10:49:39.540   Time stamp of our file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.540   Dest file exists.
+2017-10-06 10:49:39.540   Time stamp of existing file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.540   Installing the file.
+2017-10-06 10:49:39.541   Successfully installed the file.
+2017-10-06 10:49:39.541   -- File entry --
+2017-10-06 10:49:39.542   Dest filename: C:\Program Files (x86)\Inno Setup 5\ISetup.chm
+2017-10-06 10:49:39.542   Time stamp of our file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.542   Dest file exists.
+2017-10-06 10:49:39.542   Time stamp of existing file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.542   Installing the file.
+2017-10-06 10:49:39.557   Successfully installed the file.
+2017-10-06 10:49:39.557   -- File entry --
+2017-10-06 10:49:39.557   Dest filename: C:\Program Files (x86)\Inno Setup 5\Compil32.exe
+2017-10-06 10:49:39.557   Time stamp of our file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.557   Dest file exists.
+2017-10-06 10:49:39.557   Time stamp of existing file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.558   Installing the file.
+2017-10-06 10:49:39.596   Successfully installed the file.
+2017-10-06 10:49:39.596   -- File entry --
+2017-10-06 10:49:39.596   Dest filename: C:\Program Files (x86)\Inno Setup 5\isscint.dll
+2017-10-06 10:49:39.596   Time stamp of our file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.596   Dest file exists.
+2017-10-06 10:49:39.596   Time stamp of existing file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.596   Installing the file.
+2017-10-06 10:49:39.611   Successfully installed the file.
+2017-10-06 10:49:39.611   -- File entry --
+2017-10-06 10:49:39.612   Dest filename: C:\Program Files (x86)\Inno Setup 5\ISCC.exe
+2017-10-06 10:49:39.612   Time stamp of our file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.612   Dest file exists.
+2017-10-06 10:49:39.612   Time stamp of existing file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.612   Installing the file.
+2017-10-06 10:49:39.618   Successfully installed the file.
+2017-10-06 10:49:39.618   -- File entry --
+2017-10-06 10:49:39.618   Dest filename: C:\Program Files (x86)\Inno Setup 5\ISCmplr.dll
+2017-10-06 10:49:39.619   Time stamp of our file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.619   Dest file exists.
+2017-10-06 10:49:39.619   Time stamp of existing file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.619   Installing the file.
+2017-10-06 10:49:39.636   Successfully installed the file.
+2017-10-06 10:49:39.636   -- File entry --
+2017-10-06 10:49:39.636   Dest filename: C:\Program Files (x86)\Inno Setup 5\Setup.e32
+2017-10-06 10:49:39.636   Time stamp of our file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.636   Dest file exists.
+2017-10-06 10:49:39.636   Time stamp of existing file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.636   Installing the file.
+2017-10-06 10:49:39.669   Successfully installed the file.
+2017-10-06 10:49:39.669   -- File entry --
+2017-10-06 10:49:39.669   Dest filename: C:\Program Files (x86)\Inno Setup 5\SetupLdr.e32
+2017-10-06 10:49:39.669   Time stamp of our file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.669   Dest file exists.
+2017-10-06 10:49:39.669   Time stamp of existing file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.669   Installing the file.
+2017-10-06 10:49:39.672   Successfully installed the file.
+2017-10-06 10:49:39.672   -- File entry --
+2017-10-06 10:49:39.672   Dest filename: C:\Program Files (x86)\Inno Setup 5\Default.isl
+2017-10-06 10:49:39.673   Time stamp of our file: 2016-02-03 02:00:00.000
+2017-10-06 10:49:39.673   Dest file exists.
+2017-10-06 10:49:39.673   Time stamp of existing file: 2016-02-03 02:00:00.000
+2017-10-06 10:49:39.673   Installing the file.
+2017-10-06 10:49:39.674   Successfully installed the file.
+2017-10-06 10:49:39.674   -- File entry --
+2017-10-06 10:49:39.674   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\BrazilianPortuguese.isl
+2017-10-06 10:49:39.674   Time stamp of our file: 2015-06-02 02:00:00.000
+2017-10-06 10:49:39.674   Dest file exists.
+2017-10-06 10:49:39.674   Time stamp of existing file: 2015-06-02 02:00:00.000
+2017-10-06 10:49:39.674   Installing the file.
+2017-10-06 10:49:39.675   Successfully installed the file.
+2017-10-06 10:49:39.675   -- File entry --
+2017-10-06 10:49:39.675   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\Catalan.isl
+2017-10-06 10:49:39.676   Time stamp of our file: 2012-12-14 02:00:00.000
+2017-10-06 10:49:39.676   Dest file exists.
+2017-10-06 10:49:39.676   Time stamp of existing file: 2012-12-14 02:00:00.000
+2017-10-06 10:49:39.676   Installing the file.
+2017-10-06 10:49:39.677   Successfully installed the file.
+2017-10-06 10:49:39.677   -- File entry --
+2017-10-06 10:49:39.677   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\Corsican.isl
+2017-10-06 10:49:39.677   Time stamp of our file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.677   Dest file exists.
+2017-10-06 10:49:39.677   Time stamp of existing file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.677   Installing the file.
+2017-10-06 10:49:39.678   Successfully installed the file.
+2017-10-06 10:49:39.678   -- File entry --
+2017-10-06 10:49:39.678   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\Czech.isl
+2017-10-06 10:49:39.678   Time stamp of our file: 2012-12-19 02:00:00.000
+2017-10-06 10:49:39.678   Dest file exists.
+2017-10-06 10:49:39.678   Time stamp of existing file: 2012-12-19 02:00:00.000
+2017-10-06 10:49:39.678   Installing the file.
+2017-10-06 10:49:39.680   Successfully installed the file.
+2017-10-06 10:49:39.680   -- File entry --
+2017-10-06 10:49:39.680   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\Danish.isl
+2017-10-06 10:49:39.680   Time stamp of our file: 2015-07-21 02:00:00.000
+2017-10-06 10:49:39.680   Dest file exists.
+2017-10-06 10:49:39.680   Time stamp of existing file: 2015-07-21 02:00:00.000
+2017-10-06 10:49:39.680   Installing the file.
+2017-10-06 10:49:39.681   Successfully installed the file.
+2017-10-06 10:49:39.681   -- File entry --
+2017-10-06 10:49:39.681   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\Dutch.isl
+2017-10-06 10:49:39.681   Time stamp of our file: 2015-07-20 02:00:00.000
+2017-10-06 10:49:39.681   Dest file exists.
+2017-10-06 10:49:39.681   Time stamp of existing file: 2015-07-20 02:00:00.000
+2017-10-06 10:49:39.681   Installing the file.
+2017-10-06 10:49:39.682   Successfully installed the file.
+2017-10-06 10:49:39.682   -- File entry --
+2017-10-06 10:49:39.682   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\Finnish.isl
+2017-10-06 10:49:39.682   Time stamp of our file: 2012-12-16 02:00:00.000
+2017-10-06 10:49:39.682   Dest file exists.
+2017-10-06 10:49:39.683   Time stamp of existing file: 2012-12-16 02:00:00.000
+2017-10-06 10:49:39.683   Installing the file.
+2017-10-06 10:49:39.686   Successfully installed the file.
+2017-10-06 10:49:39.686   -- File entry --
+2017-10-06 10:49:39.686   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\French.isl
+2017-10-06 10:49:39.686   Time stamp of our file: 2012-12-16 02:00:00.000
+2017-10-06 10:49:39.686   Dest file exists.
+2017-10-06 10:49:39.686   Time stamp of existing file: 2012-12-16 02:00:00.000
+2017-10-06 10:49:39.686   Installing the file.
+2017-10-06 10:49:39.688   Successfully installed the file.
+2017-10-06 10:49:39.688   -- File entry --
+2017-10-06 10:49:39.688   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\German.isl
+2017-10-06 10:49:39.688   Time stamp of our file: 2015-07-20 02:00:00.000
+2017-10-06 10:49:39.688   Dest file exists.
+2017-10-06 10:49:39.688   Time stamp of existing file: 2015-07-20 02:00:00.000
+2017-10-06 10:49:39.688   Installing the file.
+2017-10-06 10:49:39.689   Successfully installed the file.
+2017-10-06 10:49:39.689   -- File entry --
+2017-10-06 10:49:39.689   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\Greek.isl
+2017-10-06 10:49:39.690   Time stamp of our file: 2012-12-14 02:00:00.000
+2017-10-06 10:49:39.690   Dest file exists.
+2017-10-06 10:49:39.690   Time stamp of existing file: 2012-12-14 02:00:00.000
+2017-10-06 10:49:39.690   Installing the file.
+2017-10-06 10:49:39.691   Successfully installed the file.
+2017-10-06 10:49:39.691   -- File entry --
+2017-10-06 10:49:39.691   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\Hebrew.isl
+2017-10-06 10:49:39.691   Time stamp of our file: 2012-12-16 02:00:00.000
+2017-10-06 10:49:39.691   Dest file exists.
+2017-10-06 10:49:39.691   Time stamp of existing file: 2012-12-16 02:00:00.000
+2017-10-06 10:49:39.692   Installing the file.
+2017-10-06 10:49:39.693   Successfully installed the file.
+2017-10-06 10:49:39.693   -- File entry --
+2017-10-06 10:49:39.693   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\Hungarian.isl
+2017-10-06 10:49:39.693   Time stamp of our file: 2013-01-02 02:00:00.000
+2017-10-06 10:49:39.693   Dest file exists.
+2017-10-06 10:49:39.693   Time stamp of existing file: 2013-01-02 02:00:00.000
+2017-10-06 10:49:39.694   Installing the file.
+2017-10-06 10:49:39.695   Successfully installed the file.
+2017-10-06 10:49:39.695   -- File entry --
+2017-10-06 10:49:39.695   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\Italian.isl
+2017-10-06 10:49:39.695   Time stamp of our file: 2012-12-16 02:00:00.000
+2017-10-06 10:49:39.695   Dest file exists.
+2017-10-06 10:49:39.696   Time stamp of existing file: 2012-12-16 02:00:00.000
+2017-10-06 10:49:39.696   Installing the file.
+2017-10-06 10:49:39.697   Successfully installed the file.
+2017-10-06 10:49:39.697   -- File entry --
+2017-10-06 10:49:39.697   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\Japanese.isl
+2017-10-06 10:49:39.697   Time stamp of our file: 2012-12-14 02:00:00.000
+2017-10-06 10:49:39.697   Dest file exists.
+2017-10-06 10:49:39.697   Time stamp of existing file: 2012-12-14 02:00:00.000
+2017-10-06 10:49:39.697   Installing the file.
+2017-10-06 10:49:39.699   Successfully installed the file.
+2017-10-06 10:49:39.699   -- File entry --
+2017-10-06 10:49:39.699   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\Norwegian.isl
+2017-10-06 10:49:39.699   Time stamp of our file: 2013-01-02 02:00:00.000
+2017-10-06 10:49:39.699   Dest file exists.
+2017-10-06 10:49:39.699   Time stamp of existing file: 2013-01-02 02:00:00.000
+2017-10-06 10:49:39.699   Installing the file.
+2017-10-06 10:49:39.700   Successfully installed the file.
+2017-10-06 10:49:39.700   -- File entry --
+2017-10-06 10:49:39.700   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\Polish.isl
+2017-10-06 10:49:39.700   Time stamp of our file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.700   Dest file exists.
+2017-10-06 10:49:39.700   Time stamp of existing file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.700   Installing the file.
+2017-10-06 10:49:39.702   Successfully installed the file.
+2017-10-06 10:49:39.702   -- File entry --
+2017-10-06 10:49:39.702   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\Portuguese.isl
+2017-10-06 10:49:39.702   Time stamp of our file: 2015-06-02 02:00:00.000
+2017-10-06 10:49:39.702   Dest file exists.
+2017-10-06 10:49:39.702   Time stamp of existing file: 2015-06-02 02:00:00.000
+2017-10-06 10:49:39.702   Installing the file.
+2017-10-06 10:49:39.703   Successfully installed the file.
+2017-10-06 10:49:39.703   -- File entry --
+2017-10-06 10:49:39.703   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\Russian.isl
+2017-10-06 10:49:39.703   Time stamp of our file: 2015-07-20 02:00:00.000
+2017-10-06 10:49:39.703   Dest file exists.
+2017-10-06 10:49:39.703   Time stamp of existing file: 2015-07-20 02:00:00.000
+2017-10-06 10:49:39.703   Installing the file.
+2017-10-06 10:49:39.704   Successfully installed the file.
+2017-10-06 10:49:39.704   -- File entry --
+2017-10-06 10:49:39.704   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\ScottishGaelic.isl
+2017-10-06 10:49:39.704   Time stamp of our file: 2015-07-20 02:00:00.000
+2017-10-06 10:49:39.704   Dest file exists.
+2017-10-06 10:49:39.704   Time stamp of existing file: 2015-07-20 02:00:00.000
+2017-10-06 10:49:39.704   Installing the file.
+2017-10-06 10:49:39.706   Successfully installed the file.
+2017-10-06 10:49:39.706   -- File entry --
+2017-10-06 10:49:39.706   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\SerbianCyrillic.isl
+2017-10-06 10:49:39.706   Time stamp of our file: 2013-01-02 02:00:00.000
+2017-10-06 10:49:39.706   Dest file exists.
+2017-10-06 10:49:39.706   Time stamp of existing file: 2013-01-02 02:00:00.000
+2017-10-06 10:49:39.706   Installing the file.
+2017-10-06 10:49:39.707   Successfully installed the file.
+2017-10-06 10:49:39.707   -- File entry --
+2017-10-06 10:49:39.707   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\SerbianLatin.isl
+2017-10-06 10:49:39.708   Time stamp of our file: 2013-01-02 02:00:00.000
+2017-10-06 10:49:39.708   Dest file exists.
+2017-10-06 10:49:39.708   Time stamp of existing file: 2013-01-02 02:00:00.000
+2017-10-06 10:49:39.708   Installing the file.
+2017-10-06 10:49:39.709   Successfully installed the file.
+2017-10-06 10:49:39.709   -- File entry --
+2017-10-06 10:49:39.709   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\Slovenian.isl
+2017-10-06 10:49:39.709   Time stamp of our file: 2012-12-21 02:00:00.000
+2017-10-06 10:49:39.709   Dest file exists.
+2017-10-06 10:49:39.710   Time stamp of existing file: 2012-12-21 02:00:00.000
+2017-10-06 10:49:39.710   Installing the file.
+2017-10-06 10:49:39.711   Successfully installed the file.
+2017-10-06 10:49:39.711   -- File entry --
+2017-10-06 10:49:39.711   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\Spanish.isl
+2017-10-06 10:49:39.711   Time stamp of our file: 2013-02-08 02:00:00.000
+2017-10-06 10:49:39.711   Dest file exists.
+2017-10-06 10:49:39.711   Time stamp of existing file: 2013-02-08 02:00:00.000
+2017-10-06 10:49:39.711   Installing the file.
+2017-10-06 10:49:39.712   Successfully installed the file.
+2017-10-06 10:49:39.712   -- File entry --
+2017-10-06 10:49:39.712   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\Turkish.isl
+2017-10-06 10:49:39.712   Time stamp of our file: 2015-07-20 02:00:00.000
+2017-10-06 10:49:39.712   Dest file exists.
+2017-10-06 10:49:39.712   Time stamp of existing file: 2015-07-20 02:00:00.000
+2017-10-06 10:49:39.712   Installing the file.
+2017-10-06 10:49:39.713   Successfully installed the file.
+2017-10-06 10:49:39.713   -- File entry --
+2017-10-06 10:49:39.713   Dest filename: C:\Program Files (x86)\Inno Setup 5\Languages\Ukrainian.isl
+2017-10-06 10:49:39.714   Time stamp of our file: 2012-12-16 02:00:00.000
+2017-10-06 10:49:39.714   Dest file exists.
+2017-10-06 10:49:39.714   Time stamp of existing file: 2012-12-16 02:00:00.000
+2017-10-06 10:49:39.714   Installing the file.
+2017-10-06 10:49:39.715   Successfully installed the file.
+2017-10-06 10:49:39.715   -- File entry --
+2017-10-06 10:49:39.715   Dest filename: C:\Program Files (x86)\Inno Setup 5\WizModernImage.bmp
+2017-10-06 10:49:39.715   Time stamp of our file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.715   Dest file exists.
+2017-10-06 10:49:39.715   Time stamp of existing file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.715   Installing the file.
+2017-10-06 10:49:39.716   Successfully installed the file.
+2017-10-06 10:49:39.716   -- File entry --
+2017-10-06 10:49:39.716   Dest filename: C:\Program Files (x86)\Inno Setup 5\WizModernImage-IS.bmp
+2017-10-06 10:49:39.716   Time stamp of our file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.716   Dest file exists.
+2017-10-06 10:49:39.716   Time stamp of existing file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.716   Installing the file.
+2017-10-06 10:49:39.719   Successfully installed the file.
+2017-10-06 10:49:39.719   -- File entry --
+2017-10-06 10:49:39.719   Dest filename: C:\Program Files (x86)\Inno Setup 5\WizModernSmallImage.bmp
+2017-10-06 10:49:39.719   Time stamp of our file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.719   Dest file exists.
+2017-10-06 10:49:39.719   Time stamp of existing file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.720   Installing the file.
+2017-10-06 10:49:39.720   Successfully installed the file.
+2017-10-06 10:49:39.720   -- File entry --
+2017-10-06 10:49:39.720   Dest filename: C:\Program Files (x86)\Inno Setup 5\WizModernSmallImage-IS.bmp
+2017-10-06 10:49:39.720   Time stamp of our file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.720   Dest file exists.
+2017-10-06 10:49:39.720   Time stamp of existing file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.720   Installing the file.
+2017-10-06 10:49:39.721   Successfully installed the file.
+2017-10-06 10:49:39.721   -- File entry --
+2017-10-06 10:49:39.721   Dest filename: C:\Program Files (x86)\Inno Setup 5\iszlib.dll
+2017-10-06 10:49:39.722   Time stamp of our file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.722   Dest file exists.
+2017-10-06 10:49:39.722   Time stamp of existing file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.722   Installing the file.
+2017-10-06 10:49:39.723   Successfully installed the file.
+2017-10-06 10:49:39.723   -- File entry --
+2017-10-06 10:49:39.723   Dest filename: C:\Program Files (x86)\Inno Setup 5\isunzlib.dll
+2017-10-06 10:49:39.723   Time stamp of our file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.724   Dest file exists.
+2017-10-06 10:49:39.724   Time stamp of existing file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.724   Installing the file.
+2017-10-06 10:49:39.725   Successfully installed the file.
+2017-10-06 10:49:39.725   -- File entry --
+2017-10-06 10:49:39.725   Dest filename: C:\Program Files (x86)\Inno Setup 5\isbzip.dll
+2017-10-06 10:49:39.725   Time stamp of our file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.725   Dest file exists.
+2017-10-06 10:49:39.725   Time stamp of existing file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.725   Installing the file.
+2017-10-06 10:49:39.727   Successfully installed the file.
+2017-10-06 10:49:39.727   -- File entry --
+2017-10-06 10:49:39.727   Dest filename: C:\Program Files (x86)\Inno Setup 5\isbunzip.dll
+2017-10-06 10:49:39.727   Time stamp of our file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.727   Dest file exists.
+2017-10-06 10:49:39.727   Time stamp of existing file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.727   Installing the file.
+2017-10-06 10:49:39.729   Successfully installed the file.
+2017-10-06 10:49:39.729   -- File entry --
+2017-10-06 10:49:39.729   Dest filename: C:\Program Files (x86)\Inno Setup 5\islzma.dll
+2017-10-06 10:49:39.729   Time stamp of our file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.729   Dest file exists.
+2017-10-06 10:49:39.729   Time stamp of existing file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.729   Installing the file.
+2017-10-06 10:49:39.733   Successfully installed the file.
+2017-10-06 10:49:39.733   -- File entry --
+2017-10-06 10:49:39.733   Dest filename: C:\Program Files (x86)\Inno Setup 5\islzma32.exe
+2017-10-06 10:49:39.734   Time stamp of our file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.734   Dest file exists.
+2017-10-06 10:49:39.734   Time stamp of existing file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.734   Installing the file.
+2017-10-06 10:49:39.737   Successfully installed the file.
+2017-10-06 10:49:39.737   -- File entry --
+2017-10-06 10:49:39.737   Dest filename: C:\Program Files (x86)\Inno Setup 5\islzma64.exe
+2017-10-06 10:49:39.737   Time stamp of our file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.737   Dest file exists.
+2017-10-06 10:49:39.737   Time stamp of existing file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.737   Installing the file.
+2017-10-06 10:49:39.743   Successfully installed the file.
+2017-10-06 10:49:39.743   -- File entry --
+2017-10-06 10:49:39.743   Dest filename: C:\Program Files (x86)\Inno Setup 5\whatsnew.htm
+2017-10-06 10:49:39.743   Time stamp of our file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.743   Dest file exists.
+2017-10-06 10:49:39.743   Time stamp of existing file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.743   Installing the file.
+2017-10-06 10:49:39.748   Successfully installed the file.
+2017-10-06 10:49:39.748   -- File entry --
+2017-10-06 10:49:39.748   Dest filename: C:\Program Files (x86)\Inno Setup 5\isfaq.htm
+2017-10-06 10:49:39.748   Time stamp of our file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.748   Dest file exists.
+2017-10-06 10:49:39.748   Time stamp of existing file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.748   Installing the file.
+2017-10-06 10:49:39.750   Successfully installed the file.
+2017-10-06 10:49:39.750   -- File entry --
+2017-10-06 10:49:39.750   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\Example1.iss
+2017-10-06 10:49:39.751   Time stamp of our file: 2016-02-14 02:00:00.000
+2017-10-06 10:49:39.751   Dest file exists.
+2017-10-06 10:49:39.751   Time stamp of existing file: 2016-02-14 02:00:00.000
+2017-10-06 10:49:39.751   Installing the file.
+2017-10-06 10:49:39.751   Successfully installed the file.
+2017-10-06 10:49:39.752   -- File entry --
+2017-10-06 10:49:39.752   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\Example2.iss
+2017-10-06 10:49:39.752   Time stamp of our file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.752   Dest file exists.
+2017-10-06 10:49:39.752   Time stamp of existing file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.752   Installing the file.
+2017-10-06 10:49:39.753   Successfully installed the file.
+2017-10-06 10:49:39.753   -- File entry --
+2017-10-06 10:49:39.753   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\Example3.iss
+2017-10-06 10:49:39.753   Time stamp of our file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.753   Dest file exists.
+2017-10-06 10:49:39.753   Time stamp of existing file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.753   Installing the file.
+2017-10-06 10:49:39.754   Successfully installed the file.
+2017-10-06 10:49:39.754   -- File entry --
+2017-10-06 10:49:39.754   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\64Bit.iss
+2017-10-06 10:49:39.754   Time stamp of our file: 2016-02-17 02:00:00.000
+2017-10-06 10:49:39.754   Dest file exists.
+2017-10-06 10:49:39.754   Time stamp of existing file: 2016-02-17 02:00:00.000
+2017-10-06 10:49:39.754   Installing the file.
+2017-10-06 10:49:39.755   Successfully installed the file.
+2017-10-06 10:49:39.755   -- File entry --
+2017-10-06 10:49:39.755   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\64BitTwoArch.iss
+2017-10-06 10:49:39.756   Time stamp of our file: 2016-02-17 02:00:00.000
+2017-10-06 10:49:39.756   Dest file exists.
+2017-10-06 10:49:39.756   Time stamp of existing file: 2016-02-17 02:00:00.000
+2017-10-06 10:49:39.756   Installing the file.
+2017-10-06 10:49:39.757   Successfully installed the file.
+2017-10-06 10:49:39.757   -- File entry --
+2017-10-06 10:49:39.757   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\Components.iss
+2017-10-06 10:49:39.757   Time stamp of our file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.757   Dest file exists.
+2017-10-06 10:49:39.757   Time stamp of existing file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.757   Installing the file.
+2017-10-06 10:49:39.758   Successfully installed the file.
+2017-10-06 10:49:39.758   -- File entry --
+2017-10-06 10:49:39.758   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\Languages.iss
+2017-10-06 10:49:39.758   Time stamp of our file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.758   Dest file exists.
+2017-10-06 10:49:39.758   Time stamp of existing file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.758   Installing the file.
+2017-10-06 10:49:39.759   Successfully installed the file.
+2017-10-06 10:49:39.759   -- File entry --
+2017-10-06 10:49:39.759   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\MyProg.exe
+2017-10-06 10:49:39.760   Time stamp of our file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.760   Dest file exists.
+2017-10-06 10:49:39.760   Time stamp of existing file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.760   Installing the file.
+2017-10-06 10:49:39.761   Successfully installed the file.
+2017-10-06 10:49:39.761   -- File entry --
+2017-10-06 10:49:39.761   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\MyProg-x64.exe
+2017-10-06 10:49:39.761   Time stamp of our file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.761   Dest file exists.
+2017-10-06 10:49:39.761   Time stamp of existing file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.761   Installing the file.
+2017-10-06 10:49:39.763   Successfully installed the file.
+2017-10-06 10:49:39.763   -- File entry --
+2017-10-06 10:49:39.763   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\MyProg.chm
+2017-10-06 10:49:39.763   Time stamp of our file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.763   Dest file exists.
+2017-10-06 10:49:39.763   Time stamp of existing file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.763   Installing the file.
+2017-10-06 10:49:39.764   Successfully installed the file.
+2017-10-06 10:49:39.765   -- File entry --
+2017-10-06 10:49:39.765   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\Readme.txt
+2017-10-06 10:49:39.765   Time stamp of our file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.765   Dest file exists.
+2017-10-06 10:49:39.765   Time stamp of existing file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.765   Installing the file.
+2017-10-06 10:49:39.766   Successfully installed the file.
+2017-10-06 10:49:39.766   -- File entry --
+2017-10-06 10:49:39.766   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\Readme-Dutch.txt
+2017-10-06 10:49:39.766   Time stamp of our file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.766   Dest file exists.
+2017-10-06 10:49:39.766   Time stamp of existing file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.766   Installing the file.
+2017-10-06 10:49:39.767   Successfully installed the file.
+2017-10-06 10:49:39.767   -- File entry --
+2017-10-06 10:49:39.767   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\Readme-German.txt
+2017-10-06 10:49:39.767   Time stamp of our file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.767   Dest file exists.
+2017-10-06 10:49:39.767   Time stamp of existing file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.767   Installing the file.
+2017-10-06 10:49:39.768   Successfully installed the file.
+2017-10-06 10:49:39.768   -- File entry --
+2017-10-06 10:49:39.768   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\CodeExample1.iss
+2017-10-06 10:49:39.768   Time stamp of our file: 2013-04-09 02:00:00.000
+2017-10-06 10:49:39.768   Dest file exists.
+2017-10-06 10:49:39.768   Time stamp of existing file: 2013-04-09 02:00:00.000
+2017-10-06 10:49:39.768   Installing the file.
+2017-10-06 10:49:39.769   Successfully installed the file.
+2017-10-06 10:49:39.769   -- File entry --
+2017-10-06 10:49:39.769   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\CodeDlg.iss
+2017-10-06 10:49:39.769   Time stamp of our file: 2012-11-03 02:00:00.000
+2017-10-06 10:49:39.769   Dest file exists.
+2017-10-06 10:49:39.769   Time stamp of existing file: 2012-11-03 02:00:00.000
+2017-10-06 10:49:39.769   Installing the file.
+2017-10-06 10:49:39.770   Successfully installed the file.
+2017-10-06 10:49:39.770   -- File entry --
+2017-10-06 10:49:39.770   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\CodeClasses.iss
+2017-10-06 10:49:39.770   Time stamp of our file: 2015-07-20 02:00:00.000
+2017-10-06 10:49:39.770   Dest file exists.
+2017-10-06 10:49:39.771   Time stamp of existing file: 2015-07-20 02:00:00.000
+2017-10-06 10:49:39.771   Installing the file.
+2017-10-06 10:49:39.771   Successfully installed the file.
+2017-10-06 10:49:39.772   -- File entry --
+2017-10-06 10:49:39.772   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\CodeDll.iss
+2017-10-06 10:49:39.772   Time stamp of our file: 2016-02-11 02:00:00.000
+2017-10-06 10:49:39.772   Dest file exists.
+2017-10-06 10:49:39.772   Time stamp of existing file: 2016-02-11 02:00:00.000
+2017-10-06 10:49:39.772   Installing the file.
+2017-10-06 10:49:39.772   Successfully installed the file.
+2017-10-06 10:49:39.772   -- File entry --
+2017-10-06 10:49:39.772   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\CodeAutomation.iss
+2017-10-06 10:49:39.773   Time stamp of our file: 2013-10-13 02:00:00.000
+2017-10-06 10:49:39.773   Dest file exists.
+2017-10-06 10:49:39.773   Time stamp of existing file: 2013-10-13 02:00:00.000
+2017-10-06 10:49:39.773   Installing the file.
+2017-10-06 10:49:39.774   Successfully installed the file.
+2017-10-06 10:49:39.774   -- File entry --
+2017-10-06 10:49:39.774   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\CodeAutomation2.iss
+2017-10-06 10:49:39.774   Time stamp of our file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.774   Dest file exists.
+2017-10-06 10:49:39.774   Time stamp of existing file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.774   Installing the file.
+2017-10-06 10:49:39.775   Successfully installed the file.
+2017-10-06 10:49:39.775   -- File entry --
+2017-10-06 10:49:39.775   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\CodePrepareToInstall.iss
+2017-10-06 10:49:39.775   Time stamp of our file: 2012-11-03 02:00:00.000
+2017-10-06 10:49:39.775   Dest file exists.
+2017-10-06 10:49:39.775   Time stamp of existing file: 2012-11-03 02:00:00.000
+2017-10-06 10:49:39.775   Installing the file.
+2017-10-06 10:49:39.776   Successfully installed the file.
+2017-10-06 10:49:39.776   -- File entry --
+2017-10-06 10:49:39.776   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\UninstallCodeExample1.iss
+2017-10-06 10:49:39.776   Time stamp of our file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.776   Dest file exists.
+2017-10-06 10:49:39.776   Time stamp of existing file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.776   Installing the file.
+2017-10-06 10:49:39.776   Successfully installed the file.
+2017-10-06 10:49:39.776   -- File entry --
+2017-10-06 10:49:39.777   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\MyDll.dll
+2017-10-06 10:49:39.777   Time stamp of our file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.777   Dest file exists.
+2017-10-06 10:49:39.777   Time stamp of existing file: 2016-02-15 02:00:00.000
+2017-10-06 10:49:39.777   Installing the file.
+2017-10-06 10:49:39.778   Successfully installed the file.
+2017-10-06 10:49:39.778   -- File entry --
+2017-10-06 10:49:39.778   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\MyDll\C\MyDll.c
+2017-10-06 10:49:39.778   Time stamp of our file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.778   Dest file exists.
+2017-10-06 10:49:39.778   Time stamp of existing file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.778   Installing the file.
+2017-10-06 10:49:39.779   Successfully installed the file.
+2017-10-06 10:49:39.779   -- File entry --
+2017-10-06 10:49:39.779   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\MyDll\C\MyDll.def
+2017-10-06 10:49:39.779   Time stamp of our file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.779   Dest file exists.
+2017-10-06 10:49:39.779   Time stamp of existing file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.779   Installing the file.
+2017-10-06 10:49:39.779   Successfully installed the file.
+2017-10-06 10:49:39.779   -- File entry --
+2017-10-06 10:49:39.779   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\MyDll\C\MyDll.dsp
+2017-10-06 10:49:39.780   Time stamp of our file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.780   Dest file exists.
+2017-10-06 10:49:39.780   Time stamp of existing file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.780   Installing the file.
+2017-10-06 10:49:39.780   Successfully installed the file.
+2017-10-06 10:49:39.780   -- File entry --
+2017-10-06 10:49:39.780   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\MyDll\C#\MyDll.cs
+2017-10-06 10:49:39.781   Time stamp of our file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.781   Dest file exists.
+2017-10-06 10:49:39.781   Time stamp of existing file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.781   Installing the file.
+2017-10-06 10:49:39.781   Successfully installed the file.
+2017-10-06 10:49:39.781   -- File entry --
+2017-10-06 10:49:39.781   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\MyDll\C#\MyDll.csproj
+2017-10-06 10:49:39.781   Time stamp of our file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.781   Dest file exists.
+2017-10-06 10:49:39.781   Time stamp of existing file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.782   Installing the file.
+2017-10-06 10:49:39.782   Successfully installed the file.
+2017-10-06 10:49:39.782   -- File entry --
+2017-10-06 10:49:39.782   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\MyDll\C#\MyDll.sln
+2017-10-06 10:49:39.782   Time stamp of our file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.782   Dest file exists.
+2017-10-06 10:49:39.782   Time stamp of existing file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.782   Installing the file.
+2017-10-06 10:49:39.783   Successfully installed the file.
+2017-10-06 10:49:39.783   -- File entry --
+2017-10-06 10:49:39.783   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\MyDll\C#\packages.config
+2017-10-06 10:49:39.783   Time stamp of our file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.783   Dest file exists.
+2017-10-06 10:49:39.783   Time stamp of existing file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.783   Installing the file.
+2017-10-06 10:49:39.784   Successfully installed the file.
+2017-10-06 10:49:39.784   -- File entry --
+2017-10-06 10:49:39.784   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\MyDll\C#\Properties\AssemblyInfo.cs
+2017-10-06 10:49:39.784   Time stamp of our file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.784   Dest file exists.
+2017-10-06 10:49:39.784   Time stamp of existing file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.784   Installing the file.
+2017-10-06 10:49:39.785   Successfully installed the file.
+2017-10-06 10:49:39.785   -- File entry --
+2017-10-06 10:49:39.785   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\MyDll\Delphi\MyDll.dpr
+2017-10-06 10:49:39.785   Time stamp of our file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.785   Dest file exists.
+2017-10-06 10:49:39.785   Time stamp of existing file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.785   Installing the file.
+2017-10-06 10:49:39.786   Successfully installed the file.
+2017-10-06 10:49:39.786   -- File entry --
+2017-10-06 10:49:39.786   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\ISPPExample1.iss
+2017-10-06 10:49:39.786   Time stamp of our file: 2015-07-20 02:00:00.000
+2017-10-06 10:49:39.786   Dest file exists.
+2017-10-06 10:49:39.786   Time stamp of existing file: 2015-07-20 02:00:00.000
+2017-10-06 10:49:39.786   Installing the file.
+2017-10-06 10:49:39.787   Successfully installed the file.
+2017-10-06 10:49:39.787   -- File entry --
+2017-10-06 10:49:39.787   Dest filename: C:\Program Files (x86)\Inno Setup 5\Examples\ISPPExample1License.txt
+2017-10-06 10:49:39.787   Time stamp of our file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.787   Dest file exists.
+2017-10-06 10:49:39.787   Time stamp of existing file: 2012-10-29 02:00:00.000
+2017-10-06 10:49:39.787   Installing the file.
+2017-10-06 10:49:39.788   Successfully installed the file.
+2017-10-06 10:49:39.788   -- File entry --
+2017-10-06 10:49:39.788   Dest filename: C:\Program Files (x86)\Inno Setup 5\ISPP.chm
+2017-10-06 10:49:39.788   Time stamp of our file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.788   Dest file exists.
+2017-10-06 10:49:39.788   Time stamp of existing file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.788   Installing the file.
+2017-10-06 10:49:39.794   Successfully installed the file.
+2017-10-06 10:49:39.794   -- File entry --
+2017-10-06 10:49:39.794   Dest filename: C:\Program Files (x86)\Inno Setup 5\ISPP.dll
+2017-10-06 10:49:39.794   Time stamp of our file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.794   Dest file exists.
+2017-10-06 10:49:39.794   Time stamp of existing file: 2016-04-06 02:00:00.000
+2017-10-06 10:49:39.794   Installing the file.
+2017-10-06 10:49:39.803   Successfully installed the file.
+2017-10-06 10:49:39.803   -- File entry --
+2017-10-06 10:49:39.803   Dest filename: C:\Program Files (x86)\Inno Setup 5\ISPPBuiltins.iss
+2017-10-06 10:49:39.803   Time stamp of our file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.803   Dest file exists.
+2017-10-06 10:49:39.803   Time stamp of existing file: 2016-02-07 02:00:00.000
+2017-10-06 10:49:39.803   Installing the file.
+2017-10-06 10:49:39.805   Successfully installed the file.
+2017-10-06 10:49:39.805   -- Icon entry --
+2017-10-06 10:49:39.805   Dest filename: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Inno Setup 5\Inno Setup Compiler.lnk
+2017-10-06 10:49:39.805   Creating the icon.
+2017-10-06 10:49:39.816   Successfully created the icon.
+2017-10-06 10:49:39.816   -- Icon entry --
+2017-10-06 10:49:39.816   Dest filename: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Inno Setup 5\Inno Setup Documentation.lnk
+2017-10-06 10:49:39.817   Creating the icon.
+2017-10-06 10:49:39.819   Successfully created the icon.
+2017-10-06 10:49:39.819   -- Icon entry --
+2017-10-06 10:49:39.819   Dest filename: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Inno Setup 5\Inno Setup Example Scripts.lnk
+2017-10-06 10:49:39.820   Creating the icon.
+2017-10-06 10:49:39.821   Successfully created the icon.
+2017-10-06 10:49:39.822   -- Icon entry --
+2017-10-06 10:49:39.822   Dest filename: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Inno Setup 5\Inno Setup FAQ.lnk
+2017-10-06 10:49:39.822   Creating the icon.
+2017-10-06 10:49:39.824   Successfully created the icon.
+2017-10-06 10:49:39.824   -- Icon entry --
+2017-10-06 10:49:39.824   Dest filename: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Inno Setup 5\Inno Setup Revision History.lnk
+2017-10-06 10:49:39.825   Creating the icon.
+2017-10-06 10:49:39.826   Successfully created the icon.
+2017-10-06 10:49:39.851   Installation process succeeded.
+2017-10-06 10:49:39.854   -- Run entry --
+2017-10-06 10:49:39.854   Run as: Current user
+2017-10-06 10:49:39.854   Type: Exec
+2017-10-06 10:49:39.854   Filename: C:\Program Files (x86)\Inno Setup 5\Compil32.exe
+2017-10-06 10:49:39.854   Parameters: /ASSOC
+2017-10-06 10:49:40.308   Process exit code: 0
+2017-10-06 10:49:40.309   Need to restart Windows? No
+2017-10-06 10:49:40.312   Deinitializing Setup.
+2017-10-06 10:49:40.318   Log closed.
