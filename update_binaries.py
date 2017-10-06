@@ -53,5 +53,7 @@ if os.path.isdir(makepath(wapt_base_dir,'waptserver','nginx')):
 nginx_files = unzip(nginx_zip,target=makepath(wapt_base_dir,'waptserver'))
 os.rename(makepath(wapt_base_dir,'waptserver','nginx-1.13.5'),makepath(wapt_base_dir,'waptserver','nginx'))
 
-
-
+innosetup_install = wget('http://www.jrsoftware.org/download.php/is.exe',resume=True)
+run([innosetup_install,'/VERYSILENT'])
+for fn in ['Default.isl', 'isbunzip.dll', 'isbzip.dll', 'ISCC.exe', 'ISCmplr.dll', 'islzma.dll', 'islzma32.exe', 'islzma64.exe', 'ISPP.dll', 'ISPPBuiltins.iss', 'isscint.dll', 'isunzlib.dll', 'iszlib.dll', 'license.txt', 'Setup.e32', 'SetupLdr.e32', 'WizModernImage-IS.bmp', 'WizModernImage.bmp', 'WizModernSmallImage-IS.bmp', 'WizModernSmallImage.bmp']:
+    filecopyto(makepath(programfiles32,'Inno Setup 5',fn),makepath(wapt_base_dir,'waptsetup','innosetup'))

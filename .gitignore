@@ -81,3 +81,4 @@ waptupgrade/patchs/
 *.bak
 /waptserver/nginx/*
 /waptserver/pgsql/*
+/waptsetup/innosetup/*
