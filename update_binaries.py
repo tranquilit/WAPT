@@ -55,7 +55,6 @@ os.rename(makepath(wapt_base_dir,'waptserver','nginx-1.13.5'),makepath(wapt_base
 
 print('Get innosetup compiler setup and extract files to waptsetup')
 innosetup_install = wget('http://www.jrsoftware.org/download.php/is-unicode.exe',resume=True,md5='42b9c2fcfdd96b79aeef49029ce776d4')
-run([innosetup_install,'/VERYSILENT'],timeout=60)
 
 innoextract_zip = wget('http://constexpr.org/innoextract/files/innoextract-1.6-windows.zip',resume=True,md5='e3abf26e436c8f1858e2e06a67a37b60')
 innoextract_files = unzip(innoextract_zip,filenames=['innoextract.exe'])
