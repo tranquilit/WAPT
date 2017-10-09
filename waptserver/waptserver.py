@@ -423,8 +423,10 @@ def update_host():
                         logger.info('Data successfully checked with certificate CN %s for %s' % (host_dn, uuid))
                     else:
                         raise EWaptMissingCertificate('There is no public certificate for checking signed data from %s' % (uuid))
+                elif conf['allow_unsigned_status_data']:
+                    logger.warning('No signature for supplied data for %s, upgrade the wapt client.' % (uuid))
                 else:
-                    logger.warning('No signature for supplied data for %s' % (uuid))
+                    raise Exception('update_host: Invalid request')
 
                 db_data = update_host_data(data)
 

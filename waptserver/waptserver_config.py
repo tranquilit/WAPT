@@ -60,6 +60,7 @@ _defaults = {
     'use_kerberos': False,
     'max_clients': 4096,
     'encrypt_host_packages':False,
+    'allow_unsigned_status_data':False,
 }
 
 _default_config_file = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
@@ -142,4 +143,12 @@ def load_config(cfgfile=_default_config_file):
     if _config.has_option('options', 'use_kerberos'):
         conf['use_kerberos'] = _config.getboolean('options', 'use_kerberos')
 
+    if _config.has_option('options', 'dc_ssl_enabled'):
+        conf['dc_ssl_enabled'] = _config.getboolean('options', 'dc_ssl_enabled')
+
+    if _config.has_option('options', 'dc_auth_enabled'):
+        conf['dc_auth_enabled'] = _config.getboolean('options', 'dc_auth_enabled')
+
+    if _config.has_option('options', 'allow_unsigned_status_data'):
+        conf['allow_unsigned_status_data'] = _config.getboolean('options', 'allow_unsigned_status_data')
     return conf
