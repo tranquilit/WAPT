@@ -19,7 +19,7 @@ Scripts\pip.exe install --upgrade pip distribute wheel virtualenv six
 REM  pywin32 is not available as binary wheel from standard pip download, it is 
 REM  currently integrated into the git tree and installed directly from that file
 Scripts\easy_install.exe utils\pywin32-220.win32-py2.7.exe
-Scripts\pip.exe install --require-hashes  -r requirements.txt
+Scripts\pip.exe install --require-hashes  -r requirements.txt -r requirements-windows.txt   
 
 copy /Y lib\site-packages\pywin32-220-py2.7-win32.egg\py*.dll .
 copy /Y c:\windows\SysWOW64\python27.dll .
