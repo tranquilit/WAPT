@@ -191,8 +191,6 @@ end;
 procedure TVisWUAGroup.ActWUAForbidSelectedUpdatesExecute(Sender: TObject);
 var
   wupdate,wselection:ISuperObject;
-  idx:Integer;
-  update_id:String;
 begin
   for wupdate in GridWinUpdates.SelectedRows do
   begin
@@ -246,8 +244,6 @@ end;
 procedure TVisWUAGroup.ActWUAAllowSelectedUpdatesExecute(Sender: TObject);
 var
   wupdate,wselection:ISuperObject;
-  idx:Integer;
-  update_id:String;
 begin
   for wupdate in GridWinUpdates.SelectedRows do
   begin
@@ -272,8 +268,6 @@ end;
 procedure TVisWUAGroup.ActWUAProductAllowExecute(Sender: TObject);
 var
   wupdate,wselection:ISuperObject;
-  idx:Integer;
-  update_id:String;
 begin
   for wupdate in GridWinproducts.SelectedRows do
   begin
@@ -294,8 +288,6 @@ procedure TVisWUAGroup.ActWUAProductAllowSeverityExecute(Sender: TObject);
 var
   severities:String;
   wupdate,wselection:ISuperObject;
-  idx:Integer;
-  update_id:String;
 begin
   severities:=Join(',',SelectedSeverities);
   for wupdate in GridWinproducts.SelectedRows do
@@ -334,8 +326,6 @@ end;
 procedure TVisWUAGroup.ActWUAProductForbidExecute(Sender: TObject);
 var
   wupdate,wselection:ISuperObject;
-  idx:Integer;
-  update_id:String;
 begin
   for wupdate in GridWinproducts.SelectedRows do
   begin
@@ -355,8 +345,6 @@ procedure TVisWUAGroup.ActWUAProductForbidSeverityExecute(Sender: TObject);
 var
   severities:String;
   wupdate,wselection:ISuperObject;
-  idx:Integer;
-  update_id:String;
 begin
   severities:=Join(',',SelectedSeverities);
   for wupdate in GridWinproducts.SelectedRows do

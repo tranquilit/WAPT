@@ -68,7 +68,7 @@ end;
 
 procedure TVisPackageWizard.SetInstallerFilename(AValue: String);
 var
-  installInfos,sores:ISUperObject;
+  installInfos:ISUperObject;
 begin
   if FInstallerFilename=AValue then Exit;
   FInstallerFilename:=AValue;

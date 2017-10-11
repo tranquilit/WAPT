@@ -89,7 +89,6 @@ procedure TVisWUAProducts.GridDataChecked(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 var
   row:ISuperObject;
-  nodes:TNodeArray;
 begin
   Modified:=True;
   if Node^.CheckState = csCheckedNormal then
@@ -146,7 +145,6 @@ function TVisWUAProducts.FilterData(FullData: ISuperObject): ISuperObject;
 var
   row: ISuperObject;
   accept: boolean;
-  nodes : TNodeArray;
 begin
   Result := TSuperObject.Create(stArray);
   if (FullData = nil) or (FullData.AsArray = Nil) then
@@ -163,7 +161,7 @@ end;
 
 procedure TVisWUAProducts.UpdateCheckbox;
 var
-  row,res,selection:ISuperObject;
+  row:ISuperObject;
   Nodes:TNodeArray;
 begin
   for row in GridData.Data do
@@ -181,7 +179,6 @@ end;
 procedure TVisWUAProducts.LoadSelection;
 var
   row,res,selection:ISuperObject;
-  Nodes:TNodeArray;
 begin
   res := WAPTServerJsonGet('api/v2/windows_updates_options?key=products_selection',[]);
   if res.B['success'] and (res.A['result'].Length>0) then
@@ -197,8 +194,6 @@ begin
 end;
 
 procedure TVisWUAProducts.LoadData;
-var
-  row,res,selection:ISuperObject;
 begin
   Data.Clear;
   Data.Merge(WAPTServerJsonGet('api/v2/windows_products',[])['result']);

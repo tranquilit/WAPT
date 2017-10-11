@@ -45,9 +45,6 @@ uses uSCaleDPI,dmwaptpython,VarPyth,waptcommon,variants;
 { TVisChangeKeyPassword }
 
 procedure TVisChangeKeyPassword.FormCreate(Sender: TObject);
-var
-   CertPath:String;
-   key: Variant;
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
   EdKeyFilename.text := VarPythonAsString(MainModule.waptdevutils.get_private_key_encrypted(certificate_path:=GetWaptPersonalCertificatePath(),password:=DMPython.privateKeyPassword));

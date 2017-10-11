@@ -170,10 +170,7 @@ procedure TVisImportPackage.ActSearchExternalPackageExecute(Sender: TObject);
 var
   expr: String;
   packages_python: Variant;
-  pkeys,pkey,pvalues,pvalue,ppackages,ppackage: PPyObject;
-  packages,package,item: ISuperObject;
   repo_url,http_proxy,verify_cert:String;
-  i,j,k: integer;
 
 begin
   EdSearch1.Modified:=False;
@@ -312,8 +309,8 @@ end;
 
 procedure TVisImportPackage.ActPackageEditExecute(Sender: TObject);
 var
-  target,sourceDir: string;
-  package,uploadResult, FileName, FileNames, listPackages,Sources,aDir: ISuperObject;
+  SourceDir,target: string;
+  Sources,package,FileName, FileNames, listPackages: ISuperObject;
 
 begin
   if DefaultPackagePrefix='' then
