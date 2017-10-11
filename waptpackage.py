@@ -81,6 +81,11 @@ logger = logging.getLogger('wapt')
 
 
 def md5_for_file(fname, block_size=2**20):
+    """Calculate the md5 hash of file.
+
+    Returns:
+        str: md5 hash as hexadecimal string.
+    """
     f = open(fname,'rb')
     md5 = hashlib.md5()
     while True:
@@ -175,9 +180,9 @@ class EWaptPackageSignError(EWaptException):
 
 class EWaptInstallError(EWaptException):
     """Exception raised during installation of package
-        msg is logged in local install database
-        if retry_count is None, install will be retried indefinitely until success
-        else install is retried at most retry_count times/
+    msg is logged in local install database
+    if retry_count is None, install will be retried indefinitely until success
+    else install is retried at most retry_count times.
     """
     def __init__(self,msg,install_status='ERROR',retry_count=None):
         Exception.__init__(self,msg)
@@ -225,13 +230,15 @@ class PackageRequest(object):
 
 def control_to_dict(control,int_params=('size','installed_size')):
     """Convert a control file like object
-          key1: value1
-          key2: value2
-          ...
-        list of lines into a dict
-        multilines strings begins with a space
+    key1: value1
+    key2: value2
+    ...
+    list of lines into a dict
 
-        breaks when an empty line is reached (limit between 2 package in Packages indexes)
+    Multilines strings begins with a space
+
+    Breaks when an empty line is reached (limit between 2 package in Packages indexes)
+
     Args:
         control (file): file like object to read control from (until an empty line is reached)
         int_params (list): attributes which must be converted to int
@@ -266,8 +273,38 @@ def control_to_dict(control,int_params=('size','installed_size')):
     return result
 
 class PackageEntry(object):
-    """Package attributes coming from either control files in WAPT package or local DB
+    """Manage package attributes coming from either control files in WAPT package, local DB, or developement dir.
 
+    Methods to build, unzip, sign or check a package.
+    Methods to sign the control attributes and check them.
+
+    >>> pe = PackageEntry('testgroup','0')
+    >>> pe.depends = 'tis-7zip'
+    >>> pe.section = 'group'
+    >>> pe.description = 'A test package'
+    >>> print(pe.ascontrol())
+    package           : testgroup
+    version           : 0
+    architecture      : all
+    section           : group
+    priority          : optional
+    maintainer        :
+    description       : A test package
+    depends           : tis-7zip
+    conflicts         :
+    maturity          :
+    locale            :
+    min_os_version    :
+    max_os_version    :
+    min_wapt_version  :
+    sources           :
+    installed_size    :
+    signer            :
+    signer_fingerprint:
+    signature_date    :
+    signed_attributes :
+
+    >>>
     """
     # minim attributes for a valid control file
     required_attributes = ['package','version','architecture','section','priority']
@@ -297,8 +334,17 @@ class PackageEntry(object):
          all.remove('signature')
          return all
 
-    def __init__(self,package='',version='0',repo='',waptfile=None, section = 'base',_default_md = 'sha256'):
-        """
+    def __init__(self,package='',version='0',repo='',waptfile=None, section = 'base',_default_md = 'sha256',**kwargs):
+        """Initialize a Package entry with either aiitbutes or an existing package file or directory.
+
+        Args:
+            waptfile (str): path to wapt zipped file or wapt development directory.
+            package (str) : package name
+            version (str) : package version
+            any control attribute (str): initialize matching attribute
+
+        Returns:
+            None
         """
         # temporary attributes added by join queries from local Wapt database
         self._calculated_attributes=[]
@@ -350,6 +396,13 @@ class PackageEntry(object):
 
         self._default_md = _default_md
         self._md = None
+
+        if kwargs:
+            for key,value in kwargs.iteritems():
+                if key in self.required_attributes + self.optional_attributes:
+                    setattr(self,key,value)
+                else:
+                    raise Exception('"%s" is not a control attribute of PackageEntry an can not be set' % key)
 
     def parse_version(self):
         """Parse version to major, minor, patch, pre-release, build parts.
@@ -511,7 +564,14 @@ class PackageEntry(object):
         return cmp_res in possibilities
 
     def match_search(self,search):
-        """Return True if entry contains the words in search in correct order and at word boundaries"""
+        """Check if entry match search words
+
+        Args:
+            search (str): words to search for separated by spaces
+
+        Returns:
+            boolean: True if entry contains the words in search in correct order and at word boundaries
+        """
         if not search:
             return True
         else:
@@ -520,6 +580,17 @@ class PackageEntry(object):
 
 
     def load_control_from_dict(self,adict):
+        """Fill in members of entry with keys from supplied dict
+
+        adict members which are not a registered control attribute are set too
+        and attribute name is put in list of "calculated" attributes.
+
+        Args:
+            adict (dict): key,value to put in this entry
+
+        Returns:
+            PackageEntry: self
+        """
         for k in adict:
             setattr(self,k,adict[k])
             if not k in self.all_attributes:
@@ -533,6 +604,18 @@ class PackageEntry(object):
            - the path to WAPT file itelsef (zip file)
            - a list with the lines from control file
            - a path to the directory of wapt file unzipped content (debugging)
+
+        Args:
+            fname (str or list): If None, try to load entry attributes from self.sourcespath or self.localpath
+                                 If fname is a list, consider fname is the lines of control file
+                                 If fname is file, it must be Wapt zipped file, and try to load control data from it
+                                 If fname is a directory, it must be root dir of unzipped package file and load control from <fname>/WAPT/control
+
+            calc_md5 (boolean): if True and fname is a zipped file, initialize md5sum attribute with md5 sum of Zipped file/
+
+        Returns:
+            PackageEntry: self
+
         """
         if fname is None:
             if self.sourcespath and os.path.isdir(self.sourcespath):
@@ -591,8 +674,9 @@ class PackageEntry(object):
         Returns:
             PackageEntry : None if nothing written, or previous PackageEntry if new data written
 
-        Raise Exception if fname is None and no sourcespath and no localpath
-        Raise Exception if control exists and force is False
+        Exceptions:
+            Exception: if fname is None and no sourcespath and no localpath
+            Exception: if control exists and force is False
 
         """
         if fname is None:
@@ -657,7 +741,7 @@ class PackageEntry(object):
             with_empty_attributes (bool) : weither to include attribute with empty value too or only
                                            non empty and/or signed attributes
         Returns:
-            str:
+            str: lines of attr: value
         """
         val = []
 
@@ -729,6 +813,9 @@ class PackageEntry(object):
 
     @property
     def download_url(self):
+        """Calculate the download URL for this entry
+
+        """
         if self.repo_url:
             return self.repo_url+'/'+self.filename.strip('./')
         else:
@@ -745,6 +832,65 @@ class PackageEntry(object):
                 return
         raise EWaptBadControl(u'no build/packaging part in version number %s' % self.version)
 
+
+    def build_management_package(self,target_directory=None):
+        """Build the WAPT package from attributes only, without setup.py
+        stores the result in target_directory.
+        self.sourcespath must be None.
+        Package will contain only a control file.
+
+        Args:
+            target_directory (str): where to create Zip wapt file.
+                                    if None, temp dir will be used.
+
+        Returns;
+            str: path to zipped Wapt file. It is unsigned.
+
+        >>> pe = PackageEntry('testgroup','0',description='Test package',maintainer='Hubert',sources='https://dev/svn/testgroup',architecture='x86')
+        >>> waptfn = pe.build_management_package()
+        >>> key = SSLPrivateKey('c:/private/htouvet.pem',password='monmotdepasse')
+        >>> crt = SSLCertificate('c:/private/htouvet.crt')
+        >>> pe.sign_package(crt,key)
+        'qrUUQeNJ3RSSeXQERrP9vD7H/Hfvw8kmBXZvczq0b2PVRKPdjMCElYKzryAbQ+2nYVDWAGSGrXxs\ny2WzhOhrdMfGfcy6YLaY5muApoArBn3CjKP5G6HypOGD5agznLEKkcUg5/Y3aIR8bL55Ylmp3RaS\nWKnezUcuA2yuNuKwHsXr9CdihK5pRyYrm5KhCNy8S7+kAJvayrUj5q8ur6z0nNMQCHEnWGN+V3MI\n84PymR1eXsuauKeYNqIESWCyyD/lFZv0JEYfrfml8rirC6yd6iTJW0OqH7gKwCEl03JpRaF91vWB\nOXN65S1j2oV8Jgjq43oa7lyywKC01a/ehQF5Jw==\n'
+        >>> pe.unzip_package()
+        'c:\\users\\htouvet\\appdata\\local\\temp\\waptob4gcd'
+        >>> ca = SSLCABundle('c:/wapt/ssl')
+        >>> pe.check_control_signature(ca)
+        <SSLCertificate cn=u'htouvet' issuer=u'tranquilit-ca-test' validity=2017-06-28 - 2027-06-26 Code-Signing=True CA=True>
+        """
+
+        result_filename = u''
+        # some checks
+        if self.sourcespath:
+            raise Exception('Package must not have local sources')
+
+        # check version syntax
+        parse_major_minor_patch_build(self.version)
+
+        # check architecture
+        if not self.architecture in ArchitecturesList:
+            raise EWaptBadControl(u'Architecture should one of %s' % (ArchitecturesList,))
+
+        self.filename = self.make_package_filename()
+
+        control_data = self.ascontrol()
+
+        if target_directory is None:
+            target_directory = tempfile.gettempdir()
+
+        if not os.path.isdir(target_directory):
+            raise Exception('Bad target directory %s for package build' % target_directory)
+
+        result_filename = os.path.abspath(os.path.join(target_directory,self.filename))
+
+        if os.path.isfile(result_filename):
+            logger.warning('Target package already exists, removing %s' % result_filename)
+            os.unlink(result_filename)
+
+        self.localpath = result_filename
+        with ZipFile(result_filename,'w',allowZip64=True,compression=zipfile.ZIP_DEFLATED) as wapt_zip:
+            wapt_zip.writestr('WAPT/control',control_data)
+        return result_filename
 
     def build_package(self,excludes=['.svn','.git','.gitignore','setup.pyc'],target_directory=None):
         """Build the WAPT package, stores the result in target_directory
@@ -821,7 +967,7 @@ class PackageEntry(object):
 
     def _sign_control(self,private_key,certificate):
         """Sign the contractual attributes of the control file using
-            the provided key, add certificate Fingerprint and CN too
+        the provided key, add certificate Fingerprint and CN too
 
         Args:
             private_key (SSLPrivateKey)
@@ -967,18 +1113,23 @@ class PackageEntry(object):
 
     def sign_package(self,certificate,private_key=None,password_callback=None,private_key_password=None,mds=['sha256']):
         """Sign an already built package.
-            Should follow immediately the build_package step.
+        Should follow immediately the build_package step.
 
-            Append signed control, manifest.sha256 and signature to zip wapt package
-            If these files are already in the package, they are first removed.
+        Append signed control, manifest.sha256 and signature to zip wapt package
+        If these files are already in the package, they are first removed.
 
-            Use the self.localpath attribute to get location of waptfile build file.
+        Use the self.localpath attribute to get location of waptfile build file.
+
         Args:
             certificate (SSLCertificate): signer certificate
             private_key (SSLPrivateKey): signer private key
             password_callback (func) : function to call to get key password if encrypted.
             private_key_password (str): password to use if key is encrypted. Use eithe this or password_callback
             mds (list): list of message digest manifest and signature methods to include. For backward compatibility.
+
+        Returns:
+            str: signature
+
         """
         if not os.path.isfile(self.localpath) and not os.path.isdir(self.localpath):
             raise Exception(u"%s is not a Wapt package" % self.localpath)
@@ -1070,7 +1221,8 @@ class PackageEntry(object):
 
     def _get_package_zip_entry(self,filename):
         """Open wapt zipfile and return one package zipfile entry
-            could fail if zip file is already opened elsewhere...
+        could fail if zip file is already opened elsewhere...
+
         Returns
             zip
         """
@@ -1082,7 +1234,7 @@ class PackageEntry(object):
 
     def change_prefix(self,new_prefix):
         """Change prefix of package name to new_prefix and return True if
-            it was really changed.
+        it was really changed.
         """
         if '-' in self.package:
             (old_prefix,name) = self.package.split('-',1)
@@ -1095,7 +1247,9 @@ class PackageEntry(object):
             return False
 
     def invalidate_signature(self):
-        """Remove all signature informations from control and unzipped package directory"""
+        """Remove all signature informations from control and unzipped package directory
+        Package must be in unzipped state.
+        """
         # remove control signature
         for att in self.signature_attributes:
             if hasattr(self,att):
@@ -1117,8 +1271,11 @@ class PackageEntry(object):
                 os.remove(certificate_filename)
 
     def list_corrupted_files(self):
-        """check hexdigest sha for the files in manifest
-           returns a list of non matching files (corrupted files)
+        """Check hexdigest sha for the files in manifest.
+        Package must be already unzipped.
+
+        Returns:
+            list: non matching files (corrupted files)
         """
         if not os.path.isdir(self.sourcespath):
             raise EWaptNotSourcesDirPackage(u'%s is not a valid package directory.'%self.sourcespath)
@@ -1159,13 +1316,15 @@ class PackageEntry(object):
            - hash of files in unzipped package_dir with list in package's manifest file
            - try to decrypt manifest signature with package's certificate
            - check that the package certificate is issued by a know CA or the same as one the authorized certitificates.
+
         Args:
             cabundle (SSLCABundle) : list of authorized certificates / ca filepaths
 
         Returns:
             SSLCertificate : matching certificate
 
-        Raise Exception if no certificate match is found.
+        Exceptions:
+            Exception if no certificate match is found.
         """
         if not cabundle:
             raise EWaptBadCertificate(u'No supplied CABundle to check package signature')
