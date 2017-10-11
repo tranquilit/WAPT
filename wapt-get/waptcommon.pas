@@ -163,7 +163,7 @@ implementation
 uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2,
   IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,IdURI,
-  gettext,IdStack,IdCompressorZLib,sha1,IdAuthentication,shfolder,IniFiles,tiscommon,tisstrings, RxStrUtils;
+  gettext,IdStack,IdCompressorZLib,IdAuthentication,shfolder,IniFiles,tiscommon,tisstrings, StrUtils;
 
 const
   CacheWaptServerUrl: AnsiString = 'None';
@@ -264,8 +264,6 @@ type
   end;
 
 constructor TSSLVerifyCert.Create(ahostname:AnsiString);
-var
-  sslCheck:TSSLVerifyCert;
 begin
   hostname:=ahostname;
 end;
@@ -274,7 +272,6 @@ function TSSLVerifyCert.VerifypeerCertificate(Certificate: TIdX509; AOk: Boolean
 var
   Subject,SubjectAlternativeName:String;
   CNPart,token,att,value:String;
-  cnpos:Integer;
 begin
   Subject := Certificate.Subject.OneLine;
   CNPart := '';
@@ -602,8 +599,6 @@ var
   DataStream:TStringStream;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
   sslCheck:TSSLVerifyCert;
-  compressor: TIdCompressorZLib;
-
 begin
   sslCheck:=Nil;
   ssl_handler:=Nil;
@@ -1076,7 +1071,6 @@ end;
 function ReadWaptConfig(inifilename:String = ''): Boolean;
 var
   i: Integer;
-  inifile: TIniFile;
 begin
   // reset cache
   CacheWaptServerUrl := 'None';
@@ -1404,7 +1398,6 @@ var
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
   St:TIdMultiPartFormDataStream;
   sslCheck:TSSLVerifyCert;
-  compressor: TIdCompressorZLib;
 
 begin
   if StrLeft(action,1)<>'/' then
@@ -1482,7 +1475,7 @@ function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8
           default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;OverrideBaseName:Utf8String='';
           VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True):Utf8String;
 var
-  iss_template,custom_iss,source,target,outputname,junk : utf8String;
+  iss_template,custom_iss,source,target,outputname : utf8String;
   iss,new_iss,line : ISuperObject;
   wapt_base_dir,inno_fn,p12keypath,signtool: Utf8String;
 

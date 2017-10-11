@@ -41,7 +41,7 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="19">
+    <RequiredPackages Count="18">
       <Item1>
         <PackageName Value="pl_fzcontrols"/>
       </Item1>
@@ -49,56 +49,53 @@
         <PackageName Value="pl_exdesign"/>
       </Item2>
       <Item3>
-        <PackageName Value="pl_rx"/>
+        <PackageName Value="pl_luicontrols"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_luicontrols"/>
+        <PackageName Value="pl_lclextensions"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_lclextensions"/>
+        <PackageName Value="pl_lazsolutions"/>
       </Item5>
       <Item6>
-        <PackageName Value="pl_lazsolutions"/>
+        <PackageName Value="pl_indy"/>
       </Item6>
       <Item7>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="MultiThreadProcsLaz"/>
       </Item7>
       <Item8>
-        <PackageName Value="MultiThreadProcsLaz"/>
+        <PackageName Value="pltis_wapt"/>
       </Item8>
       <Item9>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="pl_excontrols"/>
       </Item9>
       <Item10>
-        <PackageName Value="pl_excontrols"/>
+        <PackageName Value="pltis_utils"/>
       </Item10>
       <Item11>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item11>
       <Item12>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="pl_virtualtrees"/>
       </Item12>
       <Item13>
-        <PackageName Value="pl_virtualtrees"/>
+        <PackageName Value="pltis_superobject"/>
       </Item13>
       <Item14>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item14>
       <Item15>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item15>
       <Item16>
-        <PackageName Value="pl_virtualtreesextra"/>
+        <PackageName Value="FCL"/>
       </Item16>
       <Item17>
-        <PackageName Value="FCL"/>
+        <PackageName Value="SynEdit"/>
       </Item17>
       <Item18>
-        <PackageName Value="SynEdit"/>
-      </Item18>
-      <Item19>
         <PackageName Value="LCL"/>
-      </Item19>
+      </Item18>
     </RequiredPackages>
     <Units Count="29">
       <Unit0>
