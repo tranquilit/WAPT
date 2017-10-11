@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = '1.5.0.17'
+__version__ = '1.5.1.0'
 
 import os
 import sys
@@ -336,8 +336,106 @@ def index():
     return render_template('index.html', data=data)
 
 
-@app.route('/add_host', methods=['POST'])
-@app.route('/add_host', methods=['GET'])
+@app.route('/add_host', methods=['GET','POST'])
+def register_host():
+    """Add a new host into database, and return registration info
+    """
+    try:
+        starttime = time.time()
+
+        # unzip if post data is gzipped
+        if request.headers.get('Content-Encoding') == 'gzip':
+            raw_data = zlib.decompress(request.data)
+        else:
+            raw_data = request.data
+
+        data = json.loads(raw_data)
+        if not data:
+            raise Exception('register_host: No data supplied')
+
+        uuid = data['uuid']
+        if not uuid:
+            raise Exception('register_host: No uuid supplied')
+        logger.info('Registering new host %s' % (uuid,))
+
+        print data.keys()
+
+        # get request signature
+        signature_b64 = request.headers.get('X-Signature', None)
+        if signature_b64:
+            signature = signature_b64.decode('base64')
+        else:
+            signature = None
+        if not signature and not conf['allow_unsigned_status_data']:
+            raise Exception('register_host: Missing signature')
+        signer = request.headers.get('X-Signer', None)
+
+        # Registering a host requires authentication; Either Kerberos or basic
+        authenticated_user = None
+
+        # 'host' is for pre wapt pre 1.4
+        computer_fqdn =  (data.get('host_info',None) or data.get('host',{})).get('computer_fqdn',None)
+
+        # with nginx kerberos module, auth user name is stored as Basic auth in the
+        # 'Authorisation' header with password 'bogus_auth_gss_passwd'
+        if conf['use_kerberos']:
+            authenticated_user = request.headers.get('Authorization', None)
+            if authenticated_user:
+                if authenticated_user.startswith('Basic'):
+                    logger.debug('#####################################')
+                    logger.debug(authenticated_user)
+                    authenticated_user = base64.b64decode(authenticated_user.replace('Basic', '').strip())
+                    logger.debug(authenticated_user)
+                authenticated_user = authenticated_user.lower().replace('$', '')
+                if authenticated_user.endswith(':bogus_auth_gss_passwd'):
+                    authenticated_user = authenticated_user.replace(':bogus_auth_gss_passwd', '')
+                dns_domain = '.'.join(socket.getfqdn().split('.')[1:])
+                authenticated_user = '%s.%s' % (authenticated_user, dns_domain)
+        else:
+            # get authentication from basic auth. Check against waptserver admins
+            auth = request.authorization
+            if not auth or not check_auth(auth.username, auth.password):
+                return authenticate()
+            # assume authenticated user is the fqdn provided in the data
+            authenticated_user = computer_fqdn
+
+        if not authenticated_user:
+            raise EWaptAuthenticationFailure('register_host : Missing authentication header')
+
+        logger.debug('Authenticated computer : %s ' % (authenticated_user,))
+
+        # check that authenticated user matches the CN of the certificate supplied in post data
+        supplied_host_cert = SSLCertificate(crt_string=data['host_certificate'])
+        if authenticated_user.lower().replace('@', '.') != supplied_host_cert.cn.lower():
+            raise EWaptAuthenticationFailure(
+                'register_host : Mismatch between authentication header %s and Certificate commonName %s' % (authenticated_user, supplied_host_cert.cn))
+
+        if supplied_host_cert.cn.lower() != computer_fqdn:
+            raise EWaptAuthenticationFailure('register_host : Mismatch between certificate Certificate commonName %s and supplied fqdn' % (supplied_host_cert.cn,computer_fqdn))
+
+        # check if there is an existing host in DB
+        existing_host = Hosts.select(Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
+        if existing_host:
+            logger.warning('New registration for UUID %s override computer %s with %s' % (uuid,existing_host.computer_fqdn,computer_fqdn))
+
+        # check data signature
+        logger.debug('About to check supplied data signature with certificate %s' % supplied_host_cert.cn)
+        host_dn = supplied_host_cert.verify_content(sha256_for_data(raw_data), signature)
+        logger.info('Data successfully checked with certificate CN %s for %s' % (host_dn, uuid))
+
+        data['last_seen_on'] = datetime2isodate()
+        db_data = update_host_data(data)
+
+        result = db_data
+        message = 'register_host'
+        return make_response(result=result, msg=message, request_time=time.time() - starttime)
+
+    except Exception as e:
+        logger.debug(traceback.format_exc())
+        logger.critical('add_host failed %s' % (repr(e)))
+        return make_response_from_exception(e)
+
+
 @app.route('/update_host', methods=['POST'])
 def update_host():
     """Update localstatus of computer, and return known registration info
@@ -345,98 +443,76 @@ def update_host():
     try:
         starttime = time.time()
 
+        # unzip if post data is gzipped
         if request.headers.get('Content-Encoding') == 'gzip':
             raw_data = zlib.decompress(request.data)
         else:
             raw_data = request.data
 
         data = json.loads(raw_data)
+        if not data:
+            raise Exception('register_host: No data supplied')
 
-        if data:
-            uuid = data['uuid']
-            if uuid:
-                logger.info('Update host %s status' % (uuid,))
-                data['last_seen_on'] = datetime2isodate()
-                signature_b64 = request.headers.get('X-Signature', None)
-                signer = request.headers.get('X-Signer', None)
+        uuid = data['uuid']
+        if not uuid:
+            raise Exception('register_host: No uuid supplied')
+        logger.info('Registering new host %s' % (uuid,))
 
-                # with nginx kerberos module, auth user name is stored as Basic auth in the
-                # 'Authorisation' header with password 'bogus_auth_gss_passwd'
-                authenticated_user = request.headers.get('Authorization', None)
+        # 'host' is for pre wapt pre 1.4
+        computer_fqdn =  (data.get('host_info',None) or data.get('host',{})).get('computer_fqdn',None)
 
-                if authenticated_user:
-                    if authenticated_user.startswith('Basic'):
-                        logger.debug('#####################################')
-                        logger.debug(authenticated_user)
-                        authenticated_user = base64.b64decode(authenticated_user.replace('Basic', '').strip())
-                        logger.debug(authenticated_user)
-                    authenticated_user = authenticated_user.lower().replace('$', '')
-                    if authenticated_user.endswith(':bogus_auth_gss_passwd'):
-                        authenticated_user = authenticated_user.replace(':bogus_auth_gss_passwd', '')
+        print computer_fqdn,data.keys()
 
-                    dns_domain = '.'.join(socket.getfqdn().split('.')[1:])
-                    authenticated_user = '%s.%s' % (authenticated_user, dns_domain)
-                    logger.debug(request.headers)
-                    logger.debug('authenticated computer : %s ' % (authenticated_user,))
-
-                if signature_b64:
-                    signature = signature_b64.decode('base64')
-                else:
-                    signature = None
-
-                if signature:
-                    # when registering, mutual authentication is assumed by kerberos
-                    # on nginx reverse proxy level
-                    if request.path in ['/add_host']:
-                        host_cert = SSLCertificate(crt_string=data['host_certificate'])
-                        if conf['use_kerberos']:
-                            if not authenticated_user:
-                                raise EWaptAuthenticationFailure('add_host : Missing authentication header')
-                            if authenticated_user.lower().replace('@', '.') != host_cert.cn.lower():
-                                raise EWaptAuthenticationFailure(
-                                    'add_host : Mismatch between authendtication header %s and Certificate commonName %s' % (authenticated_user, host_cert.cn))
-                    else:
-                        # get certificate from DB to check/authenticate submitted data.
-                        existing_host = Hosts.select(Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
-                        if existing_host:
-                            if existing_host.host_certificate:
-                                host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
-                            else:
-                                raise EWaptMissingCertificate(
-                                    'Host certificate of %s (%s) is not in database, please register first.' % (uuid, existing_host.computer_fqdn))
-                        else:
-                            raise EWaptMissingCertificate(
-                                'You try to update status of an unknown host %s (%s). Please register first.' % (uuid, data.get('computer_fqdn', 'unknown')))
-
-                    if host_cert:
-                        logger.debug('About to check supplied data signature with certificate %s' % host_cert.cn)
-                        try:
-                            host_dn = host_cert.verify_content(sha256_for_data(raw_data), signature)
-                        except Exception as e:
-                            # for pre 1.5 wapt clients
-                            logger.debug('Error %s , trying sha1' % e)
-                            if request.headers.get('User-Agent') != 'wapt/1.4.3':
-                                host_dn = host_cert.verify_content(sha1_for_data(raw_data), signature, md='sha1')
-                            else:
-                                host_dn = 'failed'
-
-                        logger.info('Data successfully checked with certificate CN %s for %s' % (host_dn, uuid))
-                    else:
-                        raise EWaptMissingCertificate('There is no public certificate for checking signed data from %s' % (uuid))
-                elif conf['allow_unsigned_status_data']:
-                    logger.warning('No signature for supplied data for %s, upgrade the wapt client.' % (uuid))
-                else:
-                    raise Exception('update_host: Invalid request')
-
-                db_data = update_host_data(data)
-
-                result = db_data
-                message = 'update_host'
-
-            else:
-                raise Exception('update_host: No uuid supplied')
+        # get request signature
+        signature_b64 = request.headers.get('X-Signature', None)
+        if signature_b64:
+            signature = signature_b64.decode('base64')
         else:
-            raise Exception('update_host: No data supplied')
+            signature = None
+
+        if not signature and not conf['allow_unsigned_status_data']:
+            raise Exception('register_host: Missing signature')
+        signer = request.headers.get('X-Signer', None)
+
+        # check if data is for the registered host
+        existing_host = Hosts.select(Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
+
+        if not existing_host or not existing_host.host_certificate:
+            raise EWaptMissingCertificate(
+                'You try to update status of an unknown host %s (%s). Please register first.' % (uuid, computer_fqdn))
+
+        host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
+        if 'computer_fqdn' in data and host_cert.cn != computer_fqdn:
+            raise EWaptUnknownHost('Supplied hostname does not match known certificate CN, aborting')
+
+        if signature:
+            logger.debug('About to check supplied data signature with certificate %s' % host_cert.cn)
+            try:
+                host_dn = host_cert.verify_content(sha256_for_data(raw_data), signature)
+            except Exception as e:
+                # for pre 1.5 wapt clients
+                if conf['allow_unsigned_status_data']:
+                    logger.debug('Error %s , trying sha1' % e)
+                    host_dn = host_cert.verify_content(sha1_for_data(raw_data), signature, md='sha1')
+                else:
+                    raise
+            logger.info('Data successfully checked with certificate CN %s for %s' % (host_dn, uuid))
+            if existing_host and host_dn != existing_host.computer_fqdn:
+                raise Exception('update_host: mismatch between host certificate DN %s and existing host hostname %s' % (host_dn,existing_host.computer_fqdn))
+        elif conf['allow_unsigned_status_data']:
+            logger.warning('No signature for supplied data for %s,%s upgrade the wapt client.' % (uuid,computer_fqdn))
+        else:
+            raise Exception('update_host: Invalid request')
+
+        # be sure to not update host certificate
+        if 'host_certificate' in data:
+            del data['host_certificate']
+
+        data['last_seen_on'] = datetime2isodate()
+        db_data = update_host_data(data)
+
+        result = db_data
+        message = 'update_host'
 
         return make_response(result=result, msg=message, request_time=time.time() - starttime)
 
@@ -924,7 +1000,11 @@ def reset_hosts_sid():
     """
     try:
         # in case a POST is issued with a selection of uuids to scan.
-        uuids = request.json.get('uuids', None) or None
+        if request.json is not None:
+            uuids = request.json.get('uuids', None) or None
+        else:
+            uuids = None
+
         if uuids is not None:
             message = _(u'Hosts connection reset launched for %s host(s)' % len(uuids))
         else:
