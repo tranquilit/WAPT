@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.17"
+__version__ = "1.5.1.0"
 import time
 import sys
 import os
@@ -277,7 +277,10 @@ class WaptServiceConfig(object):
                 self.waptservice_port=8088
 
             if config.has_option('global','zmq_port'):
-                self.zmq_port = int(config.get('global','zmq_port'))
+                if config.get('global','zmq_port'):
+                    self.zmq_port = int(config.get('global','zmq_port'))
+                else:
+                    self.zmq_port = None
             else:
                 self.zmq_port=5000
 
@@ -1490,8 +1493,7 @@ class WaptServiceRestart(WaptTask):
 
     def _run(self):
         """Launch an external 'wapt-get waptupgrade' process to upgrade local copy of wapt client"""
-        setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice')
-        output = __(u'WaptService restart planned')
+        output = __(u'WaptService restart planned: %s' % setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice'))
         self.result = {'result':'OK','message':output}
 
     def __unicode__(self):
@@ -1852,13 +1854,6 @@ class WaptPackageForget(WaptTask):
         return (self.__class__ == other.__class__) and (self.packagenames == other.packagenames)
 
 
-def is_firewall_running():
-    if setuphelpers.service_installed('MpsSvc'):
-        return setuphelpers.service_is_running('MpsSvc')
-    else:
-        return setuphelpers.service_installed('sharedaccess') and setuphelpers.isrunning('sharedaccess')
-
-
 def babel_translations(lang = ''):
     dirname = os.path.join(app.root_path, 'translations')
     return babel.support.Translations.load(dirname, [lang])
@@ -1890,8 +1885,6 @@ class WaptTaskManager(threading.Thread):
 
         self.last_upgrade = None
         self.last_update = None
-
-        self.firewall_running = None
 
     def setup_event_queue(self):
         if waptconfig.zmq_port:
@@ -2032,7 +2025,6 @@ class WaptTaskManager(threading.Thread):
         self.start_time = datetime.datetime.now()
         self.wapt = Wapt(config_filename=self.config_filename)
         self.events = self.setup_event_queue()
-        self.firewall_running = is_firewall_running()
         logger.info(u'Wapt tasks management initialized with {} configuration, thread ID {}'.format(self.config_filename,threading.current_thread().ident))
 
         self.start_network_monitoring()
