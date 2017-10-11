@@ -27,12 +27,12 @@ import platform
 import logging
 import re
 
-import pefile
 import shutil
 import subprocess
 import argparse
 import stat
 import glob
+import pefile
 
 from git import Repo
 
@@ -45,7 +45,7 @@ def run(*args, **kwargs):
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-def mkdir_p(path):
+def mkdir(path):
     if not os.path.isdir(path):
         os.makedirs(path)
 
@@ -87,7 +87,7 @@ def add_symlink(link_target,link_name):
         link_target = link_target[1:]
     relative_link_target_path = os.path.join('builddir',link_target)
     eprint("adding symlink %s -> %s" % (link_name, relative_link_target_path ))
-    mkdir_p(os.path.dirname(relative_link_target_path))
+    mkdir(os.path.dirname(relative_link_target_path))
 
     if not os.path.exists(relative_link_target_path):
         cmd = 'ln -s %s %s ' % (relative_link_target_path,link_name)
@@ -136,7 +136,7 @@ control = open(BDIR + 'DEBIAN/control','r').read()
 open(BDIR + 'DEBIAN/control','w').write(re.sub('Version: .*','Version: %s' % full_version,control))
 
 # creates package file structure
-mkdir_p(BDIR + 'var/www/wapt/')
+mkdir(BDIR + 'var/www/wapt/')
 shutil.copy(WAPTSETUP, BDIR + 'var/www/wapt/')
 os.chmod(BDIR + 'var/www/wapt/' + WAPTSETUP, 0644)
 shutil.copy(WAPTDEPLOY, BDIR + 'var/www/wapt/')

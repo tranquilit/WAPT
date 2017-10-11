@@ -88,6 +88,9 @@ def run(cmd):
     print ("running %s " % cmd)
     return(subprocess.check_output(cmd,shell=True))
 
+def mkdir(path):
+    if not os.path.isdir(path):
+        os.makedirs(path)
 
 def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force_https):
     if wapt_folder.endswith('\\') or wapt_folder.endswith('/'):
@@ -97,7 +100,7 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force
     scripts_dir = os.path.join(waptserver_root_dir, 'scripts')
     wapt_ssl_key_file = os.path.join(ssl_dir,'key.pem')
     wapt_ssl_cert_file = os.path.join(ssl_dir,'cert.pem')
-    os.makedirs(ssl_dir)
+    mkdir(ssl_dir)
 
     # write the apache configuration fragment
     jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(scripts_dir))

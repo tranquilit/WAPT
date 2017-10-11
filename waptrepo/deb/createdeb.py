@@ -27,7 +27,6 @@ import platform
 import logging
 import re
 
-import pefile
 import shutil
 import subprocess
 import argparse
