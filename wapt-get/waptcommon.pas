@@ -291,12 +291,12 @@ begin
         break;
       end;
     end;
-    {SubjectAlternativeName := Certificate.SubjectAlternativeName ;
-    cnpos  := pos('/cn=',LowerCase(SubjectAlternativeName))+Length('/cn=');
-    CNPart := Copy(LowerCase(s),cnpos,255);}
+    {TODO: get SubjectAlternativeName parse and check them
+    SubjectAlternativeName := Certificate.SubjectAlternativeName ;
+    }
 
     //check subject is hostname
-    Result := AOk and IsWild(hostname,CNPart,True);
+    Result := AOk and (CNPart<>'') and IsWild(hostname,CNPart,True);
 
   end
   else
