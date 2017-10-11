@@ -629,7 +629,6 @@ type TComponentsArray=Array of TComponent;
 function VarArrayOf(items: Array of const):TComponentsArray;
 var
   i:integer;
-  c:TComponent;
 begin
   SetLength(result,Length(items));
   for i:=0 to length(items)-1 do
@@ -937,12 +936,14 @@ begin
 end;
 
 function TVisWaptGUI.FilterHostWinUpdates(wua: ISuperObject): ISuperObject;
+{$ifdef wsus}
 var
   wupdate: ISuperObject;
   accept: boolean;
-  reg: string;
+  {$endif wsus}
 begin
   Result := TSuperObject.Create(stArray);
+  {$ifdef wsus}
   if (wua = nil) or (wua.AsArray = Nil) then
     Exit;
   for wupdate in wua do
@@ -962,16 +963,19 @@ begin
     if accept then
       Result.AsArray.Add(wupdate);
   end;
+  {$endif wsus}
 end;
 
 function TVisWaptGUI.FilterWindowsUpdate(wua: ISuperObject
   ): ISuperObject;
+{$ifdef wsus}
 var
   wupdate: ISuperObject;
   accept: boolean;
-  reg: string;
+  {$endif wsus}
 begin
   Result := TSuperObject.Create(stArray);
+  {$ifdef wsus}
   if (wua = nil) or (wua.AsArray = Nil) then
     Exit;
   for wupdate in wua do
@@ -991,14 +995,18 @@ begin
     if accept then
       Result.AsArray.Add(wupdate);
   end;
+  {$endif wsus}
 end;
 
 function TVisWaptGUI.FilterWinProducts(products: ISuperObject): ISuperObject;
+{$ifdef wsus}
 var
   wproduct: ISuperObject;
   accept: boolean;
+  {$endif wsus}
 begin
-  {Result := TSuperObject.Create(stArray);
+  {$ifdef wsus}
+  Result := TSuperObject.Create(stArray);
   if (products = nil) or (products.AsArray = Nil) then
     Exit;
   for wproduct in products do
@@ -1006,7 +1014,10 @@ begin
     Accept := CBWUProductsShowAll.Checked or wproduct.B['favourite'];
     if accept then
       Result.AsArray.Add(wproduct);
-  end;}
+  end;
+  {$else}
+  result := Nil;
+  {$endif wsus}
 end;
 
 
@@ -1031,7 +1042,7 @@ end;
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
   currhost,packagename : ansistring;
-  RowSO, package,packagereq, packages, softwares, waptwua,dmi,tasksresult, running,sores,all_missing,pending_install,additional,upgrades,errors: ISuperObject;
+  RowSO, package,packagereq, packages, softwares, waptwua,tasksresult, running,sores,all_missing,pending_install,additional,upgrades,errors: ISuperObject;
 begin
   TimerTasks.Enabled := False;
   RowSO := Gridhosts.FocusedRow;
@@ -1259,7 +1270,6 @@ var
   i: integer = 0;
   selects: integer;
   N: PVirtualNode;
-  res: ISuperObject;
 begin
   N := Grid.GetFirstSelected;
   selects := Grid.SelectedCount;
@@ -1275,8 +1285,7 @@ begin
           rsInstalling, [Grid.GetCellStrValue(N, 'package')]));
         ProgressStep(trunc((i / selects) * 100), 100);
         i := i + 1;
-        //DMPython.RunJSON(format('mywapt.install("%s")', [package]), jsonlog);
-        res := WAPTLocalJsonGet(format('install?package=%s', [package]));
+        WAPTLocalJsonGet(format('install?package=%s', [package]));
         N := Grid.GetNextSelected(N);
       end;
     finally
@@ -1405,7 +1414,7 @@ end;
 
 procedure TVisWaptGUI.ActCreateCertificateExecute(Sender: TObject);
 var
-  pemfn, params, certFile,crtBaseName: utf8string;
+  pemfn, certFile,crtBaseName: utf8string;
   CreatePrivateKey,done: boolean;
 begin
   with TVisCreateKey.Create(Self) do
@@ -1782,7 +1791,7 @@ end;
 
 procedure TVisWaptGUI.ActCancelRunningTaskExecute(Sender: TObject);
 var
-  sores,taskresult,uuids: ISuperObject;
+  uuids: ISuperObject;
   currhost: ansistring;
 begin
   if GridHosts.FocusedRow<>Nil then
@@ -1790,7 +1799,7 @@ begin
     uuids := TSuperObject.Create(stArray);;
     currhost := GridHosts.FocusedRow.S['uuid'];
     uuids.AsArray.Add(currhost);
-    taskresult := TriggerActionOnHosts(uuids,'trigger_cancel_all_tasks',Nil,'Cancel all tasks','Error cancelling tasks');
+    TriggerActionOnHosts(uuids,'trigger_cancel_all_tasks',Nil,'Cancel all tasks','Error cancelling tasks');
   end;
 end;
 
@@ -1975,9 +1984,6 @@ procedure TVisWaptGUI.ActDeletePackageExecute(Sender: TObject);
 var
   message: string = rsConfirmRmOnePackage;
   packages,res: ISuperObject;
-  package: string;
-  i: integer;
-  N: PVirtualNode;
 begin
   if GridPackages.SelectedCount > 1 then
     message := Format(rsConfirmRmMultiplePackages,[GridPackages.SelectedCount]);
@@ -2081,7 +2087,7 @@ end;
 
 procedure TVisWaptGUI.ActTISHelpExecute(Sender: TObject);
 var
-  sores,taskresult,uuids: ISuperObject;
+  taskresult,uuids: ISuperObject;
   currhost,computer_name: ansistring;
 begin
   if GridHosts.FocusedRow<>Nil then
@@ -2109,7 +2115,7 @@ end;
 
 procedure TVisWaptGUI.ActTriggerWakeOnLanExecute(Sender: TObject);
 var
-  sores,data: ISuperObject;
+  data: ISuperObject;
 begin
   data := SO();
   data['uuids'] := GetSelectedUUID;
@@ -2170,12 +2176,15 @@ begin
 end;
 
 procedure TVisWaptGUI.ActWSUSDowloadWSUSScanExecute(Sender: TObject);
+{$ifdef wsus}
 var
   res:ISuperObject;
   skipped:Boolean;
   cabsize,forced:Integer;
   cabdate:String;
+{$endif wsus}
 begin
+  {$ifdef wsus}
   forced := 0;
   if cbForcedWSUSscanDownload.Checked then
     forced:=1
@@ -2190,7 +2199,7 @@ begin
   end;
   res := WAPTServerJsonGet('api/v2/download_wsusscan?force=%D',[forced]);
   ActWSUSRefreshCabHistory.Execute;
-  {skipped := res.B['result.skipped'];
+  skipped := res.B['result.skipped'];
   if skipped then
     wsusResult.Text := 'Download skipped'
   else
@@ -2198,13 +2207,17 @@ begin
     cabsize := res.I['result.file_size'];
     cabdate := DateTimeToStr(FileDateToDateTime(res.I['result.file_timestamp']));
     wsusResult.Text := res.S['result.status']+' started on '+res.S['result.run_date']+' file size:'+IntToStr(cabsize)+' wsusscan date:'+cabdate;
-  end;}
+  end;
+  {$endif wsus}
 end;
 
 procedure TVisWaptGUI.ActWSUSRefreshCabHistoryExecute(Sender: TObject);
+{$ifdef wsus}
 var
   res,wuares:ISuperObject;
+  {$endif wsus}
 begin
+  {$ifdef wsus}
   res := WAPTServerJsonGet('api/v2/wsusscan2_history?limit=30',[]);
   if res.B['success'] then
   begin
@@ -2234,13 +2247,17 @@ begin
   end
   else
     ShowMessage('Warning : Windows updates rules not saved');
+  {$endif wsus}
 end;
 
 procedure TVisWaptGUI.ActWSUSSaveBuildRulesExecute(Sender: TObject);
+{$ifdef wsus}
 var
   wsus_rules,WUAGroupRules,res,sores :ISuperObject;
   args:AnsiString;
+  {$endif wsus}
 begin
+  {$ifdef wsus}
   wsus_rules := TSuperObject.Create();
   WUAGroupRules := TSuperObject.Create();
   WUAGroupRules['allowed_classifications'] := ExtractField(GridWSUSAllowedClassifications.Data,'id');
@@ -2277,6 +2294,7 @@ begin
     ShowMessageFmt('Unable to save Windows Updates Rules : %s'#13#10'data:%s',[res.B['error'],wsus_rules.AsJSon(True)]);
     Clipboard.AsText:=wsus_rules.AsJSon(True);
   end;
+  {$endif wsus}
 
 end;
 
@@ -2430,8 +2448,8 @@ end;
 
 function TVisWaptGUI.TriggerActionOnHosts(uuids: ISuperObject;AAction:String;Args:ISuperObject;title,errortitle:String):ISuperObject;
 var
-  host_uuid,package, packages,ArgKey,ArgValue : ISuperObject;
-  SOAction, SOActions,host:ISuperObject;
+  host_uuid,ArgKey : ISuperObject;
+  SOAction, SOActions:ISuperObject;
   actions_json,
   signed_actions_json:String;
   waptdevutils: Variant;
@@ -2470,14 +2488,14 @@ begin
   except
     on E:Exception do
       ShowMessage(Format(errortitle,
-          [ Join(',',packages),e.Message]));
+          [ e.Message]));
   end;
 end;
 
 
 procedure TVisWaptGUI.TriggerActionOnHostPackages(AAction,title,errortitle:String);
 var
-  uuid,uuids,sel, package, packages : ISuperObject;
+  sel, packages : ISuperObject;
   SOAction, SOActions,res,host:ISuperObject;
   actions_json,
   keypassword:String;
@@ -2640,11 +2658,14 @@ begin
 end;
 
 procedure TVisWaptGUI.ActWUALoadUpdatesExecute(Sender: TObject);
+{$ifdef wsus}
 var
   soresult,winupdates,winupdate,urlParams,product,products,idx,severities: ISuperObject;
   update_id:String;
+{$endif wsus}
 begin
-  {Screen.Cursor:=crHourGlass;
+  {$ifdef wsus}
+  Screen.Cursor:=crHourGlass;
   if GridWinproducts.SelectedCount>0 then
   try
     urlParams := TSuperObject.Create(stArray);
@@ -2679,12 +2700,15 @@ begin
 
   finally
     Screen.Cursor:=crDefault;
-  end;}
+  end;
+  {$endif wsus}
 end;
 
 procedure TVisWaptGUI.ActWUALoadUpdatesUpdate(Sender: TObject);
 begin
-  //ActWUALoadUpdates.Enabled:=GridWinproducts.SelectedCount>0;
+  {$ifdef wsus}
+  ActWUALoadUpdates.Enabled:=GridWinproducts.SelectedCount>0;
+  {$endif wsus}
 end;
 
 procedure TVisWaptGUI.ActPackageInstallExecute(Sender: TObject);
@@ -2867,21 +2891,29 @@ begin
 end;
 
 procedure TVisWaptGUI.ActWUAProductHideExecute(Sender: TObject);
+{$ifdef wsus}
 var
   wproduct:ISuperobject;
+{$endif wsus}
 begin
-  {for wproduct in GridWinproducts.SelectedRows do
+  {$ifdef wsus}
+  for wproduct in GridWinproducts.SelectedRows do
     wproduct.B['favourite'] := False;
-  GridWinproducts.Data := FilterWinProducts(WUAProducts);}
+  GridWinproducts.Data := FilterWinProducts(WUAProducts);
+  {$endif wsus}
 end;
 
 procedure TVisWaptGUI.ActWUAProductShowExecute(Sender: TObject);
+{$ifdef wsus}
 var
   wproduct:ISuperobject;
+{$endif wsus}
 begin
-  {for wproduct in GridWinproducts.SelectedRows do
+  {$ifdef wsus}
+  for wproduct in GridWinproducts.SelectedRows do
     wproduct.B['favourite'] := True;
-  GridWinproducts.Data := FilterWinProducts(WUAProducts);}
+  GridWinproducts.Data := FilterWinProducts(WUAProducts);
+  {$endif wsus}
 end;
 
 procedure TVisWaptGUI.ActWUAProductsSelectionExecute(Sender: TObject);
@@ -2987,7 +3019,7 @@ end;
 procedure TVisWaptGUI.ActHostsDeleteExecute(Sender: TObject);
 var
   sel, res, postdata: ISuperObject;
-  msg,uuids : String;
+  msg : String;
 begin
   if GridHosts.Focused then
   begin
@@ -3185,11 +3217,9 @@ begin
 end;
 
 procedure TVisWaptGUI.ActPackagesUpdateExecute(Sender: TObject);
-var
-  res: variant;
 begin
   //test avec un variant ;)
-  res := MainModule.mywapt.update(register := False,filter_on_host_cap := False);
+  MainModule.mywapt.update(register := False,filter_on_host_cap := False);
 
   ActSearchPackage.Execute;
   ActSearchGroups.Execute;
@@ -3211,7 +3241,7 @@ end;
 
 procedure TVisWaptGUI.ActTriggerHostsListeningExecute(Sender: TObject);
 var
-  params,res,sel,uuids:ISuperObject;
+  params,res,uuids:ISuperObject;
 begin
   try
     params := SO();
@@ -3483,7 +3513,7 @@ end;
 
 procedure TVisWaptGUI.MakePackageTemplate(AInstallerFileName: String);
 var
-  installInfos,packageSources,uploadResult:ISUperObject;
+  packageSources,uploadResult:ISUperObject;
   Silentflags:String;
   res: Integer;
 begin
@@ -3519,7 +3549,8 @@ begin
             'mywapt.build_upload(r"%s".decode("utf8"),private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=True)',
             [packageSources.AsString, dmpython.privateKeyPassword, waptServerUser,
             waptServerPassword]), VisWaptGUI.jsonlog);
-
+          if not uploadResult.B['success'] then
+            raise Exception.Create('Error building or uploading package: '+uploadResult.S['msg']);
           ActPackagesUpdate.Execute;
           ShowMessageFmt(rsPackageBuiltSourcesAvailable,[packageSources.AsString]);
         end;
@@ -3536,7 +3567,7 @@ end;
 
 function TVisWaptGUI.Login: boolean;
 var
-  cred, resp, sores: ISuperObject;
+  cred, sores: ISuperObject;
   localfn: utf8string;
 begin
   Result := False;
@@ -4037,7 +4068,7 @@ begin
     if MessageDlg(rsConfirmCaption,'Do you really want to change description to '+NewText+' ?',mtConfirmation, mbYesNoCancel,0) = mrYes then
     begin
       args := SO();
-      args.S['computer_description'] := NewText;
+      args.S['computer_description'] := NewText{%H-};
       res := WAPTServerJsonPost('api/v3/trigger_register?uuid=%s',[GridHosts.FocusedRow.S['uuid']],args);
       if not res.B['success'] then
       begin
@@ -4113,9 +4144,9 @@ begin
   begin
     MemoGroupeDescription.Lines.Text := UTF8Encode(GridPackages.FocusedRow.S['description']);
     EdPackage.Text:=GridPackages.FocusedRow.S['package'];
-    EdVersion.Text:=GridPackages.FocusedRow.S['version'];
+    EdVersion.Text:=GridPackages.FocusedRow.S['version']{%H-};
     EdDepends.Lines.Text := StringReplace(GridPackages.FocusedRow.S['depends'],',',#13#10,[rfReplaceAll]);
-    EdConflicts.Lines.Text := StringReplace(GridPackages.FocusedRow.S['conflicts'],',',#13#10,[rfReplaceAll]);
+    EdConflicts.Lines.Text := StringReplace(GridPackages.FocusedRow.S['conflicts']{%H-},',',#13#10,[rfReplaceAll]);
   end
   else
   begin
@@ -4242,7 +4273,7 @@ begin
     begin
       SortByFields(Groups,['package']);
       for Group in Groups do
-        cbGroups.Items.Add(group.S['package']);
+        cbGroups.Items.Add(group.S['package']{%H-});
     end;
     cbGroups.Text := oldSelect;
 
@@ -4252,19 +4283,17 @@ begin
 end;
 
 procedure TVisWaptGUI.MainPagesChange(Sender: TObject);
+{$ifdef wsus}
 var
   wsus_restrictions,wsus_rules,WUAClassifications:ISuperObject;
+{$endif}
 begin
   if MainPages.ActivePage = pgInventory then
   try
     Screen.Cursor:=crHourGlass;
     CopyMenu(PopupMenuHosts, MenuItem24);
     if GridHosts.Data = nil then
-    begin
       ActSearchHost.Execute;
-      //EdSearchHost.Modified := True;
-      //THackSearchEdit(EdSearchHost).Change;
-    end;
     EdSearchHost.SetFocus;
   finally
     Screen.Cursor:=crDefault;
@@ -4273,42 +4302,35 @@ begin
   begin
     CopyMenu(PopupMenuPackages, MenuItem24);
     if GridPackages.Data = nil then
-    begin
       ActSearchPackage.Execute;
-      //EdSearchPackage.Modified := True;
-      //THackSearchEdit(EdSearchPackage).Change;
-    end;
     EdSearchPackage.SetFocus;
   end
   else if MainPages.ActivePage = pgGroups then
   begin
     CopyMenu(PopupMenuGroups, MenuItem24);
     if GridGroups.Data = nil then
-    begin
       ActSearchGroups.Execute;
-      //EdSearchGroups.Modified := True;
-      //THackSearchEdit(EdSearchGroups).Change;
-    end;
     EdSearchGroups.SetFocus;
   end
+  {$ifdef wsus}
   else if MainPages.ActivePage = pgWindowsUpdates then
   begin
     WUAClassifications := WAPTServerJsonGet('api/v2/windows_updates_classifications',[])['result'];
     ActWSUSRefreshCabHistory.Execute;
   end
 
-
-  {else if MainPages.ActivePage = pgWUAProducts then
+  else if MainPages.ActivePage = pgWUAProducts then
   begin
     WUAProducts := WAPTServerJsonGet('api/v2/windows_products',[])['result'];
     GridWinproducts.Data := FilterWinproducts(WUAProducts);
     ActWUALoadUpdates.Execute;
-  end}
-{  else if MainPages.ActivePage = pgWUABundles then
+  end
+  else if MainPages.ActivePage = pgWUABundles then
   begin
       wsus_rules := WAPTServerJsonGet('api/v2/windows_updates_rules',[])['result'];
       GridWUAGroups.data := wsus_rules;
   end}
+  {$endif wsus}
 
 end;
 

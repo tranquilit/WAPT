@@ -277,6 +277,7 @@ var
   cnpos:Integer;
 begin
   Subject := Certificate.Subject.OneLine;
+  CNPart := '';
   if ADepth = 0 then
   begin
     while Subject<>'' do
