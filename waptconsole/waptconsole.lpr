@@ -13,10 +13,14 @@ uses
   uVisCreateKey, waptcommon, waptwinutils, dmwaptpython, uVisEditPackage,
   uviscreatewaptsetup, uvislogin, uvisprivatekeyauth, uvisloading,
   uviswaptconfig, uvischangepassword, uviswaptdeploy, uvishostsupgrade,
-  uVisAPropos, uVisImportPackage, uwaptconsoleres, uVisWUAGroup,
+  uVisAPropos, uVisImportPackage, uwaptconsoleres, uVisPackageWizard, uscaledpi,
+  uVisChangeKeyPassword
+  {$ifdef wsus}
+  uVisWUAGroup,
   uVisWAPTWUAProducts, uviswuarules, uviswuapackageselect,
-  uVisWUAClassificationsSelect, uVisPackageWizard, uscaledpi, 
-uVisChangeKeyPassword;
+  uVisWUAClassificationsSelect
+  {$endif}
+  ;
 
 {$R *.res}
 

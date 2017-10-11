@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Windows, ActiveX, Types, Forms, Controls, Graphics,
   Dialogs, Buttons, FileUtil,LazFileUtils, LazUTF8, SynEdit, SynHighlighterPython,
   TplStatusBarUnit,
-  ELDsgxPropStore, OMultiPanel, RxIniPropStorage, vte_json, ExtCtrls, StdCtrls, ComCtrls,
+  vte_json, ExtCtrls, StdCtrls, ComCtrls,
   ActnList, Menus, jsonparser, superobject, VirtualTrees, VarPyth, ImgList,
   SOGrid, uvisloading, IdComponent, DefaultTranslator, GetText, uWaptConsoleRes,
   SearchEdit;
@@ -616,9 +616,12 @@ uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings, soutils,
   waptcommon, waptwinutils, tiscommon, uVisCreateKey, uVisCreateWaptSetup,
   dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
   uvisgroupchoice, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
-  uVisImportPackage, uVisWUAGroup, uVisWAPTWUAProducts, uviswuapackageselect,
-  uVisWUAClassificationsSelect, PythonEngine, Clipbrd, RegExpr, tisinifiles,
-  IdURI,uScaleDPI, uVisPackageWizard, uVisChangeKeyPassword,windirs;
+  uVisImportPackage, PythonEngine, Clipbrd, RegExpr, tisinifiles,
+  IdURI,uScaleDPI, uVisPackageWizard, uVisChangeKeyPassword,windirs
+  {$ifdef wsus}
+  ,uVisWUAGroup, uVisWAPTWUAProducts, uviswuapackageselect,
+  uVisWUAClassificationsSelect
+  {$endif};
 
 {$R *.lfm}
 
@@ -2304,9 +2307,12 @@ begin
 end;
 
 procedure TVisWaptGUI.ActWUAAddAllowedClassificationExecute(Sender: TObject);
+{$ifdef wsus}
 var
   r:ISuperObject;
+  {$endif wsus}
 begin
+  {$ifdef wsus}
   With TVisWUAClassificationsSelect.Create(Self) do
   try
     if ShowModal = mrOk then
@@ -2326,13 +2332,17 @@ begin
     GridWSUSAllowedClassifications.LoadData;
     Free;
   end;
+  {$endif wsus}
 end;
 
 
 procedure TVisWaptGUI.ActWUAAddAllowedUpdateExecute(Sender: TObject);
+{$ifdef wsus}
 var
   r:ISuperObject;
+  {$endif wsus}
 begin
+  {$ifdef wsus}
   With TVisWUAPackageSelect.Create(Self) do
   try
     if ShowModal = mrOk then
@@ -2352,12 +2362,16 @@ begin
     GridWSUSAllowedWindowsUpdates.LoadData;
     Free;
   end;
+  {$endif wsus}
 end;
 
 procedure TVisWaptGUI.ActWUAAddForbiddenUpdateExecute(Sender: TObject);
+{$ifdef wsus}
 var
   r:ISuperObject;
+  {$endif wsus}
 begin
+  {$ifdef wsus}
   With TVisWUAPackageSelect.Create(Self) do
   try
     if ShowModal = mrOk then
@@ -2377,12 +2391,15 @@ begin
     GridWSUSForbiddenWindowsUpdates.LoadData;
     Free;
   end;
+  {$endif wsus}
 end;
 
 
 procedure TVisWaptGUI.ActWUADownloadSelectedUpdateUpdate(Sender: TObject);
 begin
-  //(Sender as TAction).Enabled:=GridWSUSAllowedWindowsUpdates.SelectedCount>0;
+  {$ifdef wsus}
+  (Sender as TAction).Enabled:=GridWSUSAllowedWindowsUpdates.SelectedCount>0;
+  {$endif wsus}
 end;
 
 procedure TVisWaptGUI.ActEditGroupExecute(Sender: TObject);
@@ -2880,6 +2897,7 @@ end;
 
 procedure TVisWaptGUI.ActWUANewGroupExecute(Sender: TObject);
 begin
+  {$ifdef wsus}
   With TVisWUAGroup.Create(Self) do
   try
     WUAGroup:='';
@@ -2888,6 +2906,7 @@ begin
   finally
     Free;
   end;
+  {$endif wsus}
 end;
 
 procedure TVisWaptGUI.ActWUAProductHideExecute(Sender: TObject);
@@ -2918,6 +2937,7 @@ end;
 
 procedure TVisWaptGUI.ActWUAProductsSelectionExecute(Sender: TObject);
 begin
+  {$ifdef wsus}
   With TVisWUAProducts.Create(self) do
   try
     if ShowModal = mrOk then
@@ -2925,6 +2945,7 @@ begin
   finally
     Free;
   end;
+  {$endif wsus}
 end;
 
 procedure TVisWaptGUI.ActRestoreDefaultLayoutExecute(Sender: TObject);
