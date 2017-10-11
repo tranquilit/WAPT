@@ -41,22 +41,19 @@
       </Item5>
     </Files>
     <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="5">
+    <RequiredPkgs Count="4">
       <Item1>
-        <PackageName Value="pl_rx"/>
+        <PackageName Value="pl_indy"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="pl_dcp"/>
       </Item2>
       <Item3>
-        <PackageName Value="pl_dcp"/>
+        <PackageName Value="pltis_superobject"/>
       </Item3>
       <Item4>
-        <PackageName Value="pltis_superobject"/>
-      </Item4>
-      <Item5>
         <PackageName Value="pltis_utils"/>
-      </Item5>
+      </Item4>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
