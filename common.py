@@ -2803,16 +2803,8 @@ class Wapt(object):
         packages = ensure_list(packages)
 
         auth = None
-        if not wapt_server_user:
-            if self.waptserver.auth():
-                auth = self.waptserver.auth()
-
-        if not auth:
-            if not wapt_server_user:
-                wapt_server_user = raw_input('WAPT Server user :')
-            if not wapt_server_passwd:
-                wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
-            auth =  (wapt_server_user, wapt_server_passwd)
+        if wapt_server_user:
+            auth = (wapt_server_user, wapt_server_passwd)
 
         files = {}
         is_hosts = True
@@ -2858,7 +2850,6 @@ class Wapt(object):
         if not self.upload_cmd and not wapt_server_user:
             wapt_server_user = raw_input('WAPT Server user :')
             wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
-        auth =  (wapt_server_user, wapt_server_passwd)
 
         if self.upload_cmd:
             args = dict(filenames = " ".join('"%s"' % fn for fn in filenames),)
