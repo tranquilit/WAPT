@@ -411,7 +411,7 @@ def register_host():
                 'register_host : Mismatch between authentication header %s and Certificate commonName %s' % (authenticated_user, supplied_host_cert.cn))
 
         if supplied_host_cert.cn.lower() != computer_fqdn:
-            raise EWaptAuthenticationFailure('register_host : Mismatch between certificate Certificate commonName %s and supplied fqdn' % (supplied_host_cert.cn,computer_fqdn))
+            raise EWaptAuthenticationFailure('register_host : Mismatch between certificate Certificate commonName %s and supplied fqdn %s' % (supplied_host_cert.cn,computer_fqdn))
 
         # check if there is an existing host in DB
         existing_host = Hosts.select(Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
