@@ -68,3 +68,10 @@ for fn in ['Default.isl', 'isbunzip.dll', 'isbzip.dll', 'ISCC.exe', 'ISCmplr.dll
 print('Get OpenSSL binaries from Fulgan')
 ssl_zip = wget('https://indy.fulgan.com/SSL/openssl-1.0.2l-i386-win32.zip',resume=True,md5='f1901d936f73d57a9efcef9b028e1621')
 ssl_file = unzip(ssl_zip,target=makepath(wapt_base_dir),filenames=['ssleay32.dll','openssl.exe','libeay32.dll'])
+
+
+print('Python ldap wheel windows')
+python_ldap = wget('https://pypi.python.org/packages/55/8b/7e9b4f4f5c3b4c98416b10ba02f682e8e23d34c20fe8e56b9d09f4667e02/python_ldap-2.4.44-cp27-cp27m-win32.whl',resume=True,md5='21db70f804fe06d941a2e36f907358cf')
+print('Install ldap wheel')
+print(run(['pip','install',python_ldap,'--target',site_packages,'--upgrade']))
+
