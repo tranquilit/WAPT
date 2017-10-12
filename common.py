@@ -1418,7 +1418,7 @@ class WaptServer(object):
                     return HTTPKerberosAuth(mutual_authentication=DISABLED,principal=self.get_computer_principal())
                     # TODO : simple auth if kerberos is not available...
                 else:
-                    return None
+                    return self.ask_user_password(action)
             else:
                 if self.client_certificate:
                     return (self.client_certificate,self.client_private_key)
@@ -1600,9 +1600,16 @@ class WaptServer(object):
         if surl:
             req = requests.get("%s/%s" % (surl,action),
                 proxies=self.proxies,verify=self.verify_cert,
-                timeout=timeout or self.timeout,auth=auth or self.auth(),
+                timeout=timeout or self.timeout,auth=auth,
                 headers=default_http_headers(),
                 allow_redirects=True)
+            if req.status_code == 401:
+                req = requests.get("%s/%s" % (surl,action),
+                    proxies=self.proxies,verify=self.verify_cert,
+                    timeout=timeout or self.timeout,auth=self.auth(action=action),
+                    headers=default_http_headers(),
+                    allow_redirects=True)
+
             req.raise_for_status()
             return json.loads(req.content)
         else:
@@ -1637,9 +1644,20 @@ class WaptServer(object):
                     proxies=self.proxies,
                     verify=self.verify_cert,
                     timeout=timeout or self.timeout,
-                    auth=auth or self.auth(action=action),
+                    auth=auth,
                     headers=headers,
                     allow_redirects=True)
+            if req.status_code == 401:
+                req = requests.post("%s/%s" % (surl,action),
+                        data=data,
+                        files=files,
+                        proxies=self.proxies,
+                        verify=self.verify_cert,
+                        timeout=timeout or self.timeout,
+                        auth=self.auth(action=action),
+                        headers=headers,
+                        allow_redirects=True)
+
             req.raise_for_status()
             return json.loads(req.content)
         else:
@@ -1693,6 +1711,16 @@ class WaptServer(object):
                 f.close()
         return res
 
+
+    def ask_user_password(self,action=None):
+        """Ask for basic auth if server requires it"""
+        user = raw_input('Please get login for action "%s" on server %s: ' % (action,self.server_url))
+        if user:
+            password = getpass.getpass('Password: ')
+            if user and password:
+                return (user,password)
+            else:
+                return None
 
     def __repr__(self):
         try:
