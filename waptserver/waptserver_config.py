@@ -60,6 +60,8 @@ _defaults = {
     'use_kerberos': False,
     'max_clients': 4096,
     'encrypt_host_packages':False,
+    'dc_ssl_enabled':True,
+    'dc_auth_enabled':False,
     'allow_unsigned_status_data':False,
 }
 
