@@ -89,3 +89,5 @@ openssl.exe
 /waptserver/nginx/placeholder
 /waptserver/pgsql/placeholder
 /iscc.txt
+/waptservice/win32/*.exe
+/waptservice/win64/*.exe
