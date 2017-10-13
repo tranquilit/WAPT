@@ -456,12 +456,11 @@ def update_host():
         uuid = data['uuid']
         if not uuid:
             raise Exception('register_host: No uuid supplied')
-        logger.info('Registering new host %s' % (uuid,))
 
         # 'host' is for pre wapt pre 1.4
         computer_fqdn =  (data.get('host_info',None) or data.get('host',{})).get('computer_fqdn',None)
 
-        print computer_fqdn,data.keys()
+        logger.info('updating host status %s (%s), data:%s' % (uuid,computer_fqdn,data.keys()))
 
         # get request signature
         signature_b64 = request.headers.get('X-Signature', None)
