@@ -112,7 +112,7 @@ begin
       signed_actions_json := VarPythonAsString(waptdevutils.sign_actions(actions:=actions_json, certfilename:=GetWaptPersonalCertificatePath(),key_password:=keypassword));
       SOActions := SO(signed_actions_json);
 
-      res := WAPTServerJsonPost('/api/v3/trigger_host_action?uuid=%S&timeout=%D',[host.S['uuid'],1],SOActions);
+      res := WAPTServerJsonPost('/api/v3/trigger_host_action?uuid=%S&timeout=%D',[host.S['uuid'],waptservice_timeout],SOActions);
       // new behaviour
       if (res<>Nil) and res.AsObject.Exists('success') then
       begin
