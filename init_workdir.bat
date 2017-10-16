@@ -1,25 +1,25 @@
 REM  ##########################################"
 REM  WAPT dev enviroment initialisation helper script
-REM  this script does the provisioning of the wapt 
+REM  this script does the provisioning of the wapt
 REM  dev tree with dependencies and dll
 REM  ##########################################"
 
 set PYTHON_PATH=c:\python27
 
 git clean -xfd
-%PYTHON_PATH%\Scripts\pip.exe install -U pip distribute 
+%PYTHON_PATH%\Scripts\pip.exe install -U pip distribute
 %PYTHON_PATH%\Scripts\pip.exe install virtualenv
-%PYTHON_PATH%\Scripts\virtualenv.exe . 
+%PYTHON_PATH%\Scripts\virtualenv.exe .
 xcopy /I /E /F /Y c:\python27\libs libs
 xcopy /I /E /F /Y c:\python27\DLLs DLLs
 xcopy /I /E /F /Y /EXCLUDE:libexcludes.txt c:\python27\lib lib
 
-Scripts\virtualenv.exe --relocatable .
 Scripts\pip.exe install --upgrade pip distribute wheel virtualenv six
-REM  pywin32 is not available as binary wheel from standard pip download, it is 
-REM  currently integrated into the git tree and installed directly from that file
+
+REM get  pywin32-220.win32-py2.7.exe from internet
+waptpython -c "from waptutils import wget; from subprocess import check_output; pywin32=wget('https://sourceforge.net/projects/pywin32/files/pywin32/Build%20221/pywin32-221.win32-py2.7.exe/download',resume=True,md5='90a3853325c2c9322c5cc2d09682cfe4'); print check_output('Scripts\easy_install.exe ""%s""' % pywin32,shell=True)"
 Scripts\easy_install.exe utils\pywin32-220.win32-py2.7.exe
-Scripts\pip.exe install --require-hashes  -r requirements.txt -r requirements-windows.txt   
+Scripts\pip.exe install --require-hashes  -r requirements.txt -r requirements-windows.txt
 
 copy /Y lib\site-packages\pywin32-220-py2.7-win32.egg\py*.dll .
 copy /Y c:\windows\SysWOW64\python27.dll .
