@@ -2570,15 +2570,16 @@ def host_info():
     info['workgroup_name'] = ensure_unicode(windomainname())
 
     try:
-        import win32security
         domain_data = win32security.DsGetDcName()
         info['domain_name'] = domain_data.get('DomainName',None)
         info['domain_controller'] = domain_data.get('DomainControllerName',None)
         info['domain_controller_address'] = domain_data.get('DomainControllerAddress',None)
+        info['domain_info_source'] = 'online'
     except:
         info['domain_name'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\History','NetworkName',None)
         info['domain_controller'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\History','DCName',None)
         info['domain_controller_address'] = None
+        info['domain_info_source'] = 'history'
 
     info['networking'] = networking()
     info['connected_ips'] = socket.gethostbyname_ex(socket.gethostname())[2]
@@ -2607,6 +2608,10 @@ def host_info():
 
     info['local_drives'] = local_drives()
     info['wua_agent_version'] = wua_agent_version()
+
+    # empty if computer is not in a AD domain... statu sfrom last gpupdate
+    info['computer_ad_dn'] =  registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Distinguished-Name')
+    info['computer_ad_site'] =  registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Site-Name')
 
     return info
 
