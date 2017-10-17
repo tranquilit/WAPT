@@ -985,8 +985,8 @@ class SSLPrivateKey(object):
             country=None,
             dnsname=None,
             email=None,
-            is_ca=True,
-            is_code_signing=True,
+            is_ca=None,
+            is_code_signing=None,
             key_usages=['digital_signature','content_commitment','key_cert_sign','data_encipherment'],
             crl_url = None,
             issuer_cert_url = None ):
@@ -1000,14 +1000,21 @@ class SSLPrivateKey(object):
             ca_signing_cert (SSLCertificate):
 
             is_ca (bool) : certificate is a CA root or intermediate or self-signed
+                           if None, default to True is ca_signing_cert is None
             is_code_signing (bool): subject can sign code
+                           if None, default to (not is_ca)
             dnsname (str): Witll be added as an DNS SubjectAlternativeName.
             key_usages (list of str) : list of certificate / key usage targets.
 
         Returns:
             self
         """
-        print locals()
+
+        if is_ca is None:
+            is_ca = ca_signing_cert is None
+
+        if is_code_signing is None:
+            is_code_signing = not is_ca
 
         map = [
             [x509.NameOID.COUNTRY_NAME,country or None],
@@ -1029,6 +1036,9 @@ class SSLPrivateKey(object):
         extensions.append(dict(
             extension=x509.BasicConstraints(ca=is_ca,path_length=None),
             critical=True))
+
+        if is_ca and not 'crl_sign' in key_usages:
+            key_usages.append('crl_sign')
 
         if is_code_signing:
             extensions.append(dict(
