@@ -74,9 +74,10 @@ Source: "..\cache\icons\unknown.png"; DestDir: "{app}\cache\icons";
 #ifdef vcredist
 Source: "..\vc_redist\*"; DestDir: "{app}\vc_redist";
 #endif
+#ifdef msvcrt90
 Source: "..\msvc*90.dll"; DestDir: "{app}";
 Source: "..\Microsoft.VC90.CRT.manifest"; DestDir: "{app}";
-
+#endif
 
 ; config file sample
 Source: "..\wapt-get.ini.tmpl"; DestDir: "{app}"; 
