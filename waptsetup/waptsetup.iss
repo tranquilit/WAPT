@@ -6,13 +6,27 @@
 #define AppName "WAPT"
 #define output_dir "."
 #define Company "Tranquil IT Systems"
-#define install_certs 0
 #define send_usage_report 0
 #define is_waptagent 0
-#define use_kerberos 1
+
+; if not empty, set value 0 or 1 will be defined in wapt-get.ini
+#define default_use_kerberos ""
+
+; if empty, a task is added
+; copy authorized package certificates (CA or signers) in <wapt>\ssl
+#define default_install_certs ""
+
+; if 1, expiry and CRL of package certificates will be checked
 #define check_certificates_validity 1
-#define verify_cert 1
+
+; if not empty, the 0, 1 or path to a CA bundle will be defined in wapt-get.ini for checking of https certificates
+#define default_verify_cert ""
+
+; default value for detection server and repo URL using dns 
 #define default_dnsdomain ""
+
+; if not empty, a task will propose to install this package or list of packages (comma separated)
+#define default_start_packages "socle"
 
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
@@ -23,7 +37,9 @@
 
 [Files]
 ; sources of installer to rebuild a custom installer (ignoreversion because issc has no version)
+#ifndef FastDebug
 Source: "innosetup\*"; DestDir: "{app}\waptsetup\innosetup"; Flags: createallsubdirs recursesubdirs ignoreversion;
+#endif
 Source: "wapt.iss"; DestDir: "{app}\waptsetup";
 Source: "waptsetup.iss"; DestDir: "{app}\waptsetup";
 Source: "services.iss"; DestDir: "{app}\waptsetup";
@@ -39,8 +55,11 @@ Source: "..\waptconsole.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\waptdevutils.py"; DestDir: "{app}";
 
 ; authorized public keys
+#if default_install_certs == ""
+Source: "..\ssl\*"; DestDir: "{app}\ssl"; Tasks: installCertificates; Flags: createallsubdirs recursesubdirs
+#else
 Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs; Check: InstallCertCheck();
-;Source: "..\ssl\*"; DestDir: "{app}\ssl"; Tasks: installCertificates; Flags: createallsubdirs recursesubdirs
+#endif
 
 [Setup]
 OutputBaseFilename=waptsetup
@@ -54,24 +73,55 @@ Name:"fr";MessagesFile: "compiler:Languages\French.isl"
 Name:"de";MessagesFile: "compiler:Languages\German.isl"
 
 [Tasks]
-;Name: installCertificates; Description: "{cm:InstallSSLCertificates}";  GroupDescription: "Base";
+#if default_install_certs == ""
+Name: InstallCertificates; Description: "{cm:InstallSSLCertificates}";  GroupDescription: "Advanced";
+#endif
+
+#if default_start_packages != ""
+Name: InstallStartPackages; Description: "{cm:InstallStartPackages}";  GroupDescription: "Advanced";
+#endif
+
+#if default_verify_cert == ""
+Name: VerifyServerCertificates; Description: "{cm:VerifyServerCertificates}";  GroupDescription: "Advanced";
+#endif
+
+#if default_use_kerberos == ""
+Name: UseKerberos; Description: "{cm:UseKerberosForRegister}";  GroupDescription: "Advanced";
+#endif
 
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL}; 
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL};
 Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; 
 Filename: {app}\wapt-get.ini; Section: global; Key: send_usage_report; String:  {#send_usage_report}; 
-Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String:  {#use_kerberos}; 
+
+#if default_use_kerberos == ''
+Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String: {code:UseKerberosCheck};
+#else
+Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String: {#default_use_kerberos}; 
+#endif
+
 Filename: {app}\wapt-get.ini; Section: global; Key: check_certificates_validity; String:  {#check_certificates_validity};
-; needs to be relocated if waptagent is compiled on another base directory than target computers 
+
+; needs to be relocated if waptagent is compiled on another base directory than target computers
+#if default_verify_cert != ""
 Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: {code:RelocateCertDirWaptBase}; 
+#else
+Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: {code:VerifyCertCheck}; 
+#endif
+
 Filename: {app}\wapt-get.ini; Section: global; Key: dnsdomain; String: {code:GetDNSDomain}; 
 
 
 [Run]
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Flags: runasoriginaluser runhidden postinstall; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct --force update"; Flags: runasoriginaluser runhidden postinstall; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
 Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhidden; StatusMsg: {cm:UpdatePkgUponShutdown}; Description: "{cm:UpdatePkgUponShutdown}"
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Flags: runasoriginaluser; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
+
+#if default_start_packages != "" 
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct --update install {code:GetStartPackages}"; Flags: runasoriginaluser runhidden; Tasks: installStartPackages; StatusMsg: {cm:InstallStartPackages}; Description: "{cm:InstallStartPackages}"
+#else
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runasoriginaluser runhidden; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
+#endif
 
 [Icons]
 Name: "{commonstartup}\WAPT session setup"; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
@@ -87,6 +137,9 @@ en.UpdatePkgUponShutdown=Update packages upon shutdown
 en.EnableCheckCertificate=Get and enable the check of WaptServer https certificate
 en.UseWaptServer=Report computer status to a waptserver and enable remote management
 en.InstallSSLCertificates=Install the certificates provided by this installer
+en.InstallStartPackages=Install right now the packages {#default_start_packages}
+en.UseKerberosForRegister=Use machine kerberos account for registration on WaptServer
+en.VerifyServerCertificates=Verify https server certificates
 
 ;French translations here
 fr.StartAfterSetup=Lancer WAPT session setup à l'ouverture de session
@@ -96,6 +149,9 @@ fr.UpdatePkgUponShutdown=Mise à jour des paquets à l'extinction du poste
 fr.EnableCheckCertificate=Activer la vérification du certificat https du serveur Wapt
 fr.UseWaptServer=Activer l'utilisation d'un serveur Wapt et la gestion centralisée de cet ordinateur
 fr.InstallSSLCertificates=Installer les certificats fournis par cet installeur.
+fr.InstallStartPackages=Installer maintenant les paquets {#default_start_packages}
+fr.UseKerberosForRegister=Utiliser le compte Kerberos de la machine pour l'enregistrement sur le WaptServer
+fr.VerifyServerCertificates=Vérifier les certificats https
 
 ;German translation here
 de.StartAfterSetup=WAPT Setup-Sitzung bei Sitzungseröffnung starten
@@ -286,9 +342,34 @@ begin
 end;
 
 function InstallCertCheck:Boolean;
+var
+  value:String;
 begin
-	Result := {#install_certs} <> 0;
+  value := ExpandConstant('{param:InstallCerts|{#default_install_certs}}');
+  Result := value <> '0';     
 end;
+
+function UseKerberosCheck(param:String):String;
+begin
+  if IsTaskSelected('UseKerberos') then
+     Result := '1'
+  else
+     Result := '0';
+end;
+
+function VerifyCertCheck(param:String):String;
+begin
+  if IsTaskSelected('VerifyServerCertificates') then
+     Result := '1'
+  else
+     Result := '0'
+end;
+
+function GetStartPackages(Param: String):String;
+begin
+    result := ExpandConstant('{param:StartPackages|{#default_start_packages}}');
+end;
+
 
 function IsWaptAgent:Boolean;
 begin
@@ -299,7 +380,7 @@ function RelocateCertDirWaptBase(Param: String):String;
 var
   certdir: String;
 begin
-  certdir := '{#verify_cert}';
+  certdir := ExpandConstant('{param:verify_cert|#verify_cert}');
   if (pos('c:\tranquilit\wapt',lowercase(certdir))=1) then
     result := ExpandConstant('{app}')+'\'+copy(certdir,length('c:\tranquilit\wapt')+1,255)
   else if (pos('c:\program files (x86)\wapt',lowercase(certdir))=1) then
