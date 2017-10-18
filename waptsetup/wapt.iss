@@ -4,6 +4,7 @@
 
 ; offer the install of vcredist.exe
 ;#define vcredist
+#define msvcrt90
 
 #ifndef FastDebug
 [Files]
