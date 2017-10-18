@@ -160,7 +160,7 @@ eprint('Create a build environment virtualenv. May need to download a few librar
 eprint(run(r'virtualenv ./builddir/opt/wapt --system-site-packages'))
 
 eprint('Install additional libraries in build environment virtualenv')
-eprint(run(r'./builddir/opt/wapt/bin/pip install setuptools --upgrade', shell=True))
+eprint(run(r'./builddir/opt/wapt/bin/pip install setuptools --upgrade'))
 
 run(r'./builddir/opt/wapt/bin/pip install -r ../../requirements-repo.txt -t ./builddir/opt/wapt/lib/site-packages')
 
