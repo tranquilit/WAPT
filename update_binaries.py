@@ -40,6 +40,16 @@ print('Python PATH: %s' % sys.path)
 from setuphelpers import *
 import tempfile
 
+p7zip = makepath(programfiles,'7-Zip','7z.exe')
+
+print('Get MS VC++ 2008 SP1 redist')
+msvc = wget('https://download.microsoft.com/download/d/d/9/dd9a82d0-52ef-40db-8dab-795376989c03/vcredist_x86.exe',resume=True,md5='5689d43c3b201dd3810fa3bba4a6476a')
+run([p7zip,'e',msvc,'-o'+makepath(tempfile.gettempdir,'vcredist'),'-y'])
+run([p7zip,'e',makepath(tempfile.gettempdir,'vcredist','vc_red.cab'),'-o'+makepath(tempfile.gettempdir,'vcredist','dll'),'-y'])
+for dll in ('msvcm90.dll.30729.01.Microsoft_VC90_CRT_x86.SP','msvcp90.dll.30729.01.Microsoft_VC90_CRT_x86.SP','msvcr90.dll.30729.01.Microsoft_VC90_CRT_x86.SP'):
+    os.rename(makepath(tempfile.gettempdir,'vcredist','dll',dll),makepath(wapt_base_dir,dll.replace('.30729.01.Microsoft_VC90_CRT_x86.SP','')))
+
+
 print('Get and unzip nssm')
 nssm_zip = wget('https://nssm.cc/ci/nssm-2.24-101-g897c7ad.zip',resume=True,md5='63175d3830b8a5cfd254353c4f561e5c')
 nssm_files = unzip(nssm_zip,filenames=['*/win*/nssm.exe'])
@@ -80,13 +90,16 @@ for fn in ['Default.isl', 'isbunzip.dll', 'isbzip.dll', 'ISCC.exe', 'ISCmplr.dll
 
 
 print('Get and unzip libzmq.dll')
-p7zip = makepath(programfiles,'7-Zip','7z.exe')
 zmq_exe = wget('http://miru.hk/archive/ZeroMQ-4.0.4~miru1.0-x86.exe',resume=True,md5='699b63085408cd7bfcde5d3d62077f4e')
-run([p7zip,'e',zmq_exe,'*/libzmq-v90-mt-4_0_4.dll','-o'+wapt_base_dir])
+run([p7zip,'e',zmq_exe,'*/libzmq-v90-mt-4_0_4.dll','-o'+wapt_base_dir,'-y'])
+if os.path.isfile(makepath(wapt_base_dir,'libzmq.dll')):
+    os.remove(makepath(wapt_base_dir,'libzmq.dll'))
 os.renames(makepath(wapt_base_dir,'libzmq-v90-mt-4_0_4.dll'),makepath(wapt_base_dir,'libzmq.dll'))
 
 print('Get DMIDecode')
 dmidecode = wget('https://github.com/tabad/fusioninventory-agent-windows-installer/blob/master/Tools/dmidecode/x86/dmidecode.exe?raw=true',resume=True,md5='3945000726804e836cfff999e3b330ec')
+if os.path.exists(makepath(wapt_base_dir,'dmidecode.exe')):
+    os.remove(makepath(wapt_base_dir,'dmidecode.exe'))
 os.renames(dmidecode,makepath(wapt_base_dir,'dmidecode.exe'))
 
 print('Get OpenSSL binaries from Fulgan')

@@ -91,3 +91,4 @@ openssl.exe
 /iscc.txt
 /waptservice/win32/*.exe
 /waptservice/win64/*.exe
+/dmidecode.exe
