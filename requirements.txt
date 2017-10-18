@@ -41,7 +41,7 @@ packaging==16.8
 passlib==1.7.1
 peewee==2.10.2
 pefile==2016.3.28
-psutil==5.4.0
+psutil==3.4.2
 psycopg2==2.7.3.1
 pycparser==2.18
 pylint==1.7.4
