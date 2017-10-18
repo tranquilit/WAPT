@@ -152,39 +152,33 @@ mkdir_p('builddir/opt/wapt/log')
 mkdir_p('builddir/opt/wapt/lib/site-packages')
 mkdir_p('builddir/opt/wapt/waptserver')
 
+open(os.path.join('./builddir/opt/wapt/waptserver','VERSION'),'w').write(full_version)
+
 # for some reason the virtualenv does not build itself right if we don't
 # have pip systemwide...
 eprint(subprocess.check_output(
     r'sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev', shell=True))
 
-eprint(
-    'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-subprocess.check_output(
-    r'virtualenv ./builddir/opt/wapt --distribute', shell=True)
+eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
+subprocess.check_output(r'virtualenv ./builddir/opt/wapt --distribute', shell=True)
 
 eprint('Install additional libraries in build environment virtualenv')
-subprocess.check_output(
-    r'./builddir/opt/wapt/bin/pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True)
+
+eprint(subprocess.check_output(r'./builddir/opt/wapt/bin/pip install setuptools --upgrade -t ./builddir/opt/wapt/lib/site-packages', shell=True))
+
+subprocess.check_output(r'./builddir/opt/wapt/bin/pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True)
 
 eprint('copying the waptrepo files')
-copyfile(makepath(wapt_source_dir, 'waptcrypto.py'),
-         './builddir/opt/wapt/waptcrypto.py')
-copyfile(makepath(wapt_source_dir, 'waptutils.py'),
-         './builddir/opt/wapt/waptutils.py')
-copyfile(makepath(wapt_source_dir, 'custom_zip.py'),
-         './builddir/opt/wapt/custom_zip.py')
-copyfile(makepath(wapt_source_dir, 'waptpackage.py'),
-         './builddir/opt/wapt/waptpackage.py')
-copyfile(makepath(wapt_source_dir, 'wapt-scanpackages.py'),
-         './builddir/opt/wapt/wapt-scanpackages.py')
-copyfile(makepath(wapt_source_dir, 'wapt-signpackages.py'),
-         './builddir/opt/wapt/wapt-signpackages.py')
+copyfile(makepath(wapt_source_dir, 'waptcrypto.py'),'./builddir/opt/wapt/waptcrypto.py')
+copyfile(makepath(wapt_source_dir, 'waptutils.py'),'./builddir/opt/wapt/waptutils.py')
+copyfile(makepath(wapt_source_dir, 'custom_zip.py'),'./builddir/opt/wapt/custom_zip.py')
+copyfile(makepath(wapt_source_dir, 'waptpackage.py'),'./builddir/opt/wapt/waptpackage.py')
+copyfile(makepath(wapt_source_dir, 'wapt-scanpackages.py'),'./builddir/opt/wapt/wapt-scanpackages.py')
+copyfile(makepath(wapt_source_dir, 'wapt-signpackages.py'),'./builddir/opt/wapt/wapt-signpackages.py')
 
 eprint('cryptography patches')
-copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', '__init__.py'),
-         './builddir/opt/wapt/lib/site-packages/cryptography/x509/__init__.py')
-copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.py'),
-         './builddir/opt/wapt/lib/site-packages/cryptography/x509/verification.py')
+copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', '__init__.py'),'./builddir/opt/wapt/lib/site-packages/cryptography/x509/__init__.py')
+copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.py'),'./builddir/opt/wapt/lib/site-packages/cryptography/x509/verification.py')
 
 
 eprint('Add symlink for wapt-scanpackages and wapt-signpackages')

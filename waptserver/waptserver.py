@@ -1326,7 +1326,7 @@ def build_hosts_filter(model, filter_expr):
             else:
                 if clause is not None:
                     result = result | clause
-        if not_filter:
+        if result is not None and not_filter:
             result = ~result
         return result
     else:
@@ -1524,7 +1524,7 @@ def get_hosts():
             in_group = HostGroups.select(HostGroups.host).where(HostGroups.group_name == groups)
             query = query & (Hosts.uuid << in_group )
 
-        if not_filter and query is not None:
+        if query is not None and not_filter:
             query = ~ query
 
         limit = int(request.args.get('limit', 1000))
