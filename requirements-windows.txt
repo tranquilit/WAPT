@@ -1,8 +1,8 @@
-pyad==0.5.16 --hash=sha256:e5ae803d71fd1ed158786e3a47babaa12fe627aeffbdf8367b0bceeef3a2231a
+pyad==0.5.16
 pyzmq==16.0.2
 requests-kerberos==0.11.0
-kerberos-sspi==0.2 --hash=sha256:dba8abff7b06efa2500f085f6b3b98be28409ee5545e23fe3df1016d0270eb88
+kerberos-sspi==0.2 
 winkerberos==0.7.0 
-winshell==0.6 --hash=sha256:16812fcd6a43391d6c0b707b4d67e809e52286a739683a91623baa0804ea0d41
-winsys-3.x==0.5.2 --hash=sha256:cef3df1dce2a5a71efa46446e6007ad9f7dbae31e83ffcc2ea3485c00c914cc3
-WMI==1.4.9 --hash=sha256:192ccfad3d7bb3ef43116d753f4d5cf85c0a6b738f832cc131e928fd93cdd400
+winshell==0.6 
+winsys-3.x==0.5.2
+WMI==1.4.9
