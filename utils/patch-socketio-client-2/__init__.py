@@ -63,6 +63,7 @@ class EngineIO(LoggingMixin):
     def _transport(self):
         if self._opened:
             return self._transport_instance
+        self._engineIO_session = None
         self._engineIO_session = self._get_engineIO_session()
         self._negotiate_transport()
         self._connect_namespaces()
@@ -73,42 +74,56 @@ class EngineIO(LoggingMixin):
     def _get_engineIO_session(self):
         warning_screen = self._yield_warning_screen()
         for elapsed_time in warning_screen:
-            transport = XHR_PollingTransport(
-                self._http_session, self._is_secure, self._url)
             try:
+                transport_name = self._client_transports[0]
+                self._transport_instance = self._get_transport(transport_name)
+                self.transport_name = transport_name
+
                 engineIO_packet_type, engineIO_packet_data = next(
-                    transport.recv_packet())
+                    self._transport_instance.recv_packet())
                 break
             except (TimeoutError, ConnectionError) as e:
                 if not self._wait_for_connection:
-                    # close at __init__ after _transport is called.
-                    # If not, memory leak of the heartbeat thread
-                    self._close()
                     raise
-                warning = Exception('[waiting for connection] %s' % e)
+                warning = Exception(
+                    '[engine.io waiting for connection] %s' % e)
                 warning_screen.throw(warning)
+
         assert engineIO_packet_type == 0  # engineIO_packet_type == open
-        return parse_engineIO_session(engineIO_packet_data)
+        session = parse_engineIO_session(engineIO_packet_data)
+        # Set the timeout on the WebSocket transport if needed, since we didn't
+        # have it earlier.
+        self._transport_instance.set_timeout(session.ping_timeout)
+        return session
 
     def _negotiate_transport(self):
-        self._transport_instance = self._get_transport('xhr-polling')
-        self.transport_name = 'xhr-polling'
-        is_ws_client = 'websocket' in self._client_transports
-        is_ws_server = 'websocket' in self._engineIO_session.transport_upgrades
-        if is_ws_client and is_ws_server:
-            try:
-                transport = self._get_transport('websocket')
-                transport.send_packet(2, 'probe')
-                for packet_type, packet_data in transport.recv_packet():
-                    if packet_type == 3 and packet_data == b'probe':
-                        transport.send_packet(5, '')
-                        self._transport_instance = transport
-                        self.transport_name = 'websocket'
-                    else:
-                        self._warn('unexpected engine.io packet')
-            except Exception:
-                pass
-        self._debug('[transport selected] %s', self.transport_name)
+        if self.transport_name != 'websocket':
+            # If not using websocket transport, recreate initial transport with
+            # session information. This is essentially free and ensures correct
+            # initialization.
+            self.transport_name = self._client_transports[0]
+            self._transport_instance = self._get_transport(self.transport_name)
+
+            # Attempt to upgrade to websocket transport if possible.
+            is_ws_client = \
+                'websocket' in self._client_transports
+            is_ws_server = \
+                'websocket' in self._engineIO_session.transport_upgrades
+            if is_ws_client and is_ws_server:
+                try:
+                    transport = self._get_transport('websocket')
+                    transport.send_packet(2, 'probe')
+                    for packet_type, packet_data in transport.recv_packet():
+                        if packet_type == 3 and packet_data == b'probe':
+                            transport.send_packet(5, '')
+                            self._transport_instance = transport
+                            self.transport_name = 'websocket'
+                        else:
+                            self._warn('unexpected engine.io packet')
+                except Exception:
+                    pass
+
+        self._debug('[engine.io transport selected] %s', self.transport_name)
 
     def _reset_heartbeat(self):
         try:
