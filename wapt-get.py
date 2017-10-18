@@ -370,37 +370,34 @@ def main():
                 running_install = []
 
             if action == 'install':
-                if len(args) < 2:
-                    print(u"You must provide at least one package name")
-                    sys.exit(1)
+                result = {u'install':[]}
+                if len(args)>=2:
+                    if os.path.isdir(args[1]) or os.path.isfile(args[1]) or '*' in args[1]:
+                        all_args = expand_args(args[1:])
+                        print(u"Installing WAPT files %s" % ", ".join(all_args))
+                        # abort if there is already a running install in progress
+                        if running_install:
+                            raise Exception(u'Running wapt progresses (%s), please wait...' % (running_install,))
+                        for fn in all_args:
+                            fn = guess_package_root_dir(fn)
+                            res = mywapt.install_wapt(fn,params_dict = params_dict)
+                            result['install'].append((fn,res))
+                    else:
+                        print(u"%sing WAPT packages %s" % (action,','.join(args[1:])))
+                        if options.update_packages:
+                            print(u"Update package list")
+                            mywapt.update()
 
-                if os.path.isdir(args[1]) or os.path.isfile(args[1]) or '*' in args[1]:
-                    all_args = expand_args(args[1:])
-                    print(u"Installing WAPT files %s" % ", ".join(all_args))
-                    # abort if there is already a running install in progress
-                    if running_install:
-                        raise Exception(u'Running wapt progresses (%s), please wait...' % (running_install,))
-                    result = {u'install':[]}
-                    for fn in all_args:
-                        fn = guess_package_root_dir(fn)
-                        res = mywapt.install_wapt(fn,params_dict = params_dict)
-                        result['install'].append((fn,res))
-                else:
-                    print(u"%sing WAPT packages %s" % (action,','.join(args[1:])))
-                    if options.update_packages:
-                        print(u"Update package list")
-                        mywapt.update()
+                        if running_install and action == 'install':
+                            raise Exception(u'Running wapt processes (%s) in progress, please wait...' % (running_install,))
 
-                    if running_install and action == 'install':
-                        raise Exception(u'Running wapt processes (%s) in progress, please wait...' % (running_install,))
-
-                    result = mywapt.install(
-                        args[1:],
-                        force=options.force,
-                        params_dict=params_dict,
-                        download_only=(action == 'download'),
-                        usecache = not (action == 'download' and options.force)
-                    )
+                        result = mywapt.install(
+                            args[1:],
+                            force=options.force,
+                            params_dict=params_dict,
+                            download_only=(action == 'download'),
+                            usecache = not (action == 'download' and options.force)
+                        )
 
                 if options.json_output:
                     jsonresult['result'] = result
