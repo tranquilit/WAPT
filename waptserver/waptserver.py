@@ -1524,7 +1524,7 @@ def get_hosts():
             in_group = HostGroups.select(HostGroups.host).where(HostGroups.group_name == groups)
             query = query & (Hosts.uuid << in_group )
 
-        if not_filter:
+        if not_filter and query is not None:
             query = ~ query
 
         limit = int(request.args.get('limit', 1000))
