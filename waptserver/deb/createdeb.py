@@ -156,17 +156,15 @@ open(os.path.join('./builddir/opt/wapt/waptserver','VERSION'),'w').write(full_ve
 
 # for some reason the virtualenv does not build itself right if we don't
 # have pip systemwide...
-eprint(subprocess.check_output(
-    r'sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev', shell=True))
+eprint(run('sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev'))
 
 eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-subprocess.check_output(r'virtualenv ./builddir/opt/wapt --distribute', shell=True)
+run(r'virtualenv ./builddir/opt/wapt --distribute')
 
 eprint('Install additional libraries in build environment virtualenv')
 
-eprint(subprocess.check_output(r'./builddir/opt/wapt/bin/pip install setuptools --upgrade -t ./builddir/opt/wapt/lib/site-packages', shell=True))
-
-subprocess.check_output(r'./builddir/opt/wapt/bin/pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True)
+eprint(run('./builddir/opt/wapt/bin/pip install setuptools --upgrade'))
+run('./builddir/opt/wapt/bin/pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages')
 
 eprint('copying the waptrepo files')
 copyfile(makepath(wapt_source_dir, 'waptcrypto.py'),'./builddir/opt/wapt/waptcrypto.py')
@@ -199,10 +197,8 @@ copyfile('./DEBIAN/control', './builddir/DEBIAN/control')
 copyfile('./DEBIAN/postinst', './builddir/DEBIAN/postinst')
 copyfile('./DEBIAN/preinst', './builddir/DEBIAN/preinst')
 
-eprint(subprocess.check_output(
-    r'find ./builddir/opt/wapt/ -type f -exec chmod 644 {} \;', shell=True))
-eprint(subprocess.check_output(
-    r'find ./builddir/opt/wapt/ -type d -exec chmod 755 {} \;', shell=True))
+eprint(run(r'find ./builddir/opt/wapt/ -type f -exec chmod 644 {} \;'))
+eprint(run(r'find ./builddir/opt/wapt/ -type d -exec chmod 755 {} \;'))
 
 eprint('copying systemd startup script')
 systemd_build_dest_dir = './builddir/usr/lib/systemd/system/'
@@ -218,8 +214,7 @@ try:
     mkdir_p('./builddir/etc/logrotate.d/')
     shutil.copyfile('../scripts/waptserver-logrotate',
                     './builddir/etc/logrotate.d/waptserver')
-    eprint(subprocess.check_output(
-        'chown root:root ./builddir/etc/logrotate.d/waptserver', shell=True))
+    eprint(run('chown root:root ./builddir/etc/logrotate.d/waptserver'))
 except Exception as e:
     eprint('error: \n%s' % e)
     exit(1)
@@ -229,8 +224,7 @@ try:
     mkdir_p('./builddir/etc/rsyslog.d/')
     shutil.copyfile('../scripts/waptserver-rsyslog',
                     './builddir/etc/rsyslog.d/waptserver.conf')
-    eprint(subprocess.check_output(
-        'chown root:root ./builddir/etc/rsyslog.d/waptserver.conf', shell=True))
+    eprint(run('chown root:root ./builddir/etc/rsyslog.d/waptserver.conf'))
 except Exception as e:
     eprint('error: \n%s' % e)
     exit(1)
