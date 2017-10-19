@@ -254,13 +254,14 @@ def guess_package_root_dir(fn):
         return fn
 
 def ask_user_password(title='Password:'):
-    import Tkinter, tkSimpleDialog
-    root = Tkinter.Tk()
-    root.withdraw()
-    user = raw_input('Please get login for %s:' % title)
+    user = options.wapt_server_user
+    password = options.wapt_server_passwd
+    if not user:
+        user = raw_input('Please get login for %s:' % title)
     if user == '':
         user = 'admin'
-    password = tkSimpleDialog.askstring(title, "Enter password for %s:" % user, show='*', parent=root)
+    if password is None or password == '':
+        password = getpass.getpass('Password:')
     return (user,password)
 
 def main():
@@ -864,9 +865,7 @@ def main():
                 if action == 'build-upload':
                     waptfiles = packages
                     print('Buildind and uploading packages to %s' % mywapt.waptserver.server_url)
-                    res = mywapt.upload_package(waptfiles,
-                            wapt_server_user = options.wapt_server_user,
-                            wapt_server_passwd = options.wapt_server_passwd)
+                    res = mywapt.upload_package(waptfiles)
                     if not res['success']:
                         print(u'Error when uploading package : %s' % res['msg'])
                         sys.exit(1)
@@ -923,9 +922,7 @@ def main():
                 for a in args[1:]:
                     waptfiles += glob.glob(a)
                 print('Uploading packages to %s' % mywapt.waptserver.server_url)
-                result = mywapt.upload_package(waptfiles,
-                        wapt_server_user = options.wapt_server_user,
-                        wapt_server_passwd=options.wapt_server_passwd)
+                result = mywapt.upload_package(waptfiles)
 
                 if not result['success']:
                     raise Exception('Error uploading packages : %s' % result['msg'])

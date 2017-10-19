@@ -1629,7 +1629,18 @@ class WaptServer(object):
             raise Exception(u'Wapt server url not defined or not found in DNS')
 
     def post(self,action,data=None,files=None,auth=None,timeout=None,signature=None,signer=None):
-        """ """
+        """Post data to waptserver using http POST method
+
+        Add a signature to the posted data using host certificate.
+
+        Posted Body is gzipped
+
+        Args:
+            action (str): doc part of the url
+            data (str) : posted data body
+            files (dict) : {'filename': opened-file-descriptor}
+
+        """
         surl = self.server_url
         if surl:
             headers = default_http_headers()
@@ -1661,6 +1672,12 @@ class WaptServer(object):
                     headers=headers,
                     allow_redirects=True)
             if req.status_code == 401:
+                # rewind files...
+                if files:
+                    for fn,fd in files.iteritems():
+                        if isinstance(fd,file):
+                            fd.seek(0,0)
+
                 req = requests.post("%s/%s" % (surl,action),
                         data=data,
                         files=files,
@@ -2877,10 +2894,6 @@ class Wapt(object):
             You can define a "after_upload" shell command. Typical use is to update the Packages index
                 after_upload="c:\Program Files"\putty\plink -v -l waptserver srvwapt.tranquilit.local "python /opt/wapt/wapt-scanpackages.py /var/www/%(waptdir)s/"
         """
-        if not self.upload_cmd and not wapt_server_user:
-            wapt_server_user = raw_input('WAPT Server user :')
-            wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
-
         if self.upload_cmd:
             args = dict(filenames = " ".join('"%s"' % fn for fn in filenames),)
             return dict(status='OK',message=ensure_unicode(self.run(self.upload_cmd % args )))
