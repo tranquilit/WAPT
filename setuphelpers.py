@@ -694,10 +694,10 @@ def all_files(rootdir,pattern=None):
 
 def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy,enable_replace_at_reboot=True):
     r"""Copy src directory to dst directory. dst is created if it doesn't exists
-        src can be relative to installation temporary dir
+    src can be relative to installation temporary dir
 
-        oncopy is called for each file copy. if False is returned, copy is skipped
-        onreplace is called when a file will be overwritten.
+    oncopy is called for each file copy. if False is returned, copy is skipped
+    onreplace is called when a file will be overwritten.
 
     Args:
         src (str): path to source directory (absolute path or relative to package extraction tempdir)
@@ -709,9 +709,10 @@ def copytree2(src, dst, ignore=None,onreplace=default_skip,oncopy=default_oncopy
         oncopy (func) : callback func(msg,src,dst) called when a file is copied.
                         default is to log in debug level the operation
         enable_replace_at_reboot (boolean): if True, files which are locked will be scheduled for replace at next reboot
+
     Returns:
 
-    Exceptions:
+    Raises:
 
     >>> copytree2(r'c:\tranquilit\wapt\tests',r'c:\tranquilit\wapt\tests2')
     >>> isdir(r'c:\tranquilit\wapt\tests2')
@@ -866,7 +867,7 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,3010],on_write=None,pid
         RunOutput : bytes like output of stdout and optionnaly stderr streams.
                     returncode attribute
 
-    Exceptions:
+    Raises:
         CalledProcessError: if return code of cmd is not in accept_returncodes list
         TimeoutExpired:  if process is running for more than timeout time.
 
@@ -1239,7 +1240,7 @@ def reg_openkey_noredir(rootkey, subkeypath, sam=_winreg.KEY_READ,create_if_miss
     """Open the registry key\subkey with access rights sam
 
     The Wow6432Node redirector is disabled. So one can access 32 and 64 part or the registry
-     even if python is running in 32 bits mode.
+    even if python is running in 32 bits mode.
 
     Args:
        rootkey    : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
@@ -1275,7 +1276,7 @@ def reg_key_exists(rootkey, subkeypath):
     """Check if a key exists in registry
 
     The Wow6432Node redirector is disabled. So one can access 32 and 64 part or the registry
-     even if python is running in 32 bits mode.
+    even if python is running in 32 bits mode.
 
     Args:
        rootkey     : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
@@ -1495,7 +1496,7 @@ def registry_set(root,path,keyname,value,type=None):
 def registry_delete(root,path,valuename):
     """Delete the valuename inside specified registry path
 
-    the path can be either with backslash or slash
+    The path can be either with backslash or slash
 
     Args:
         root    : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
@@ -2107,7 +2108,7 @@ def uninstall_key_exists(uninstallkey):
 
 
 def installed_softwares(keywords='',uninstallkey=None,name=None):
-    """return list of installed software from registry (both 32bit and 64bit
+    """Return list of installed software from registry (both 32bit and 64bit
 
     Args:
         keywords (str or list): string to lookup in key, display_name or publisher fields
@@ -3098,7 +3099,7 @@ def mkdirs(path):
         os.makedirs(path)
 
 def user_desktop():
-    r"""return path to current logged in user desktop
+    r"""Return path to current logged in user desktop
 
     >>> user_desktop()
     u'C:\\Users\\htouvet\\Desktop'
@@ -3107,7 +3108,7 @@ def user_desktop():
 
 
 def common_desktop():
-    r"""return path to public desktop (visible by all users)
+    r"""Return path to public desktop (visible by all users)
 
     >>> common_desktop()
     u'C:\\Users\\Public\\Desktop'
@@ -4049,7 +4050,7 @@ def unzip(zipfn,target=None,filenames=None):
     >>> unzip(r'C:\tranquilit\wapt\tests\packages\tis-7zip_9.2.0-15_all.wapt',filenames='WAPT/control')
     [u'C:\\tranquilit\\wapt\\tests\\packages\\tis-7zip_9.2.0-15_all\\WAPT\\control']
 
-    ... versionadded:: 1.3.11
+    .. versionadded:: 1.3.11
 
     """
     zipf = ZipFile(zipfn,allowZip64=True)

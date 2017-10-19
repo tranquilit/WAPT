@@ -600,11 +600,6 @@ class PackageEntry(object):
     def load_control_from_wapt(self,fname=None,calc_md5=True):
         """Load package attributes from the control file (utf8 encoded) included in WAPT zipfile fname
 
-          fname can be
-           - the path to WAPT file itelsef (zip file)
-           - a list with the lines from control file
-           - a path to the directory of wapt file unzipped content (debugging)
-
         Args:
             fname (str or list): If None, try to load entry attributes from self.sourcespath or self.localpath
                                  If fname is a list, consider fname is the lines of control file
@@ -657,12 +652,6 @@ class PackageEntry(object):
 
     def save_control_to_wapt(self,fname=None,force=True):
         """Save package attributes to the control file (utf8 encoded)
-          fname can be
-           - the path to WAPT file itelsef (zip file)
-           - a path to the directory of wapt file unzipped content (debugging)
-
-        if no fname, save to <self.sourcespath>/WAPT/control if sourcespath exists
-        or <self.localpath> zip file if exists.
 
         Update self.locapath or self.sourcespath if not already set.
 
@@ -674,7 +663,7 @@ class PackageEntry(object):
         Returns:
             PackageEntry : None if nothing written, or previous PackageEntry if new data written
 
-        Exceptions:
+        Raises:
             Exception: if fname is None and no sourcespath and no localpath
             Exception: if control exists and force is False
 
@@ -771,7 +760,8 @@ class PackageEntry(object):
 
     def make_package_filename(self):
         """Return the standard package filename based on current attributes
-            parts of control which are either 'all' or empty are not included in filename
+        parts of control which are either 'all' or empty are not included in filename
+
         Returns:
             str:  standard package filename
                   - packagename.wapt for host
@@ -1414,7 +1404,7 @@ class PackageEntry(object):
         Returns:
             str : path to unzipped packages files
 
-        Exceptions:
+        Raises:
             EWaptNotAPackage, EWaptBadSignature,EWaptCorruptedFiles
             if check is not successful, unzipped files are deleted.
         """
