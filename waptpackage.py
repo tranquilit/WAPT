@@ -843,7 +843,7 @@ class PackageEntry(object):
             target_directory (str): where to create Zip wapt file.
                                     if None, temp dir will be used.
 
-        Returns;
+        Returns:
             str: path to zipped Wapt file. It is unsigned.
 
         >>> pe = PackageEntry('testgroup','0',description='Test package',maintainer='Hubert',sources='https://dev/svn/testgroup',architecture='x86')
@@ -894,9 +894,8 @@ class PackageEntry(object):
 
     def build_package(self,excludes=['.svn','.git','.gitignore','setup.pyc'],target_directory=None):
         """Build the WAPT package, stores the result in target_directory
-
         Zip the content of self.sourcespath directory into a zipfile
-            named with default package filename based on control attributes.
+        named with default package filename based on control attributes.
 
         Update filename attribute.
         Update localpath attribute with result filepath.
@@ -1313,9 +1312,9 @@ class PackageEntry(object):
 
     def check_package_signature(self,cabundle):
         """Check
-           - hash of files in unzipped package_dir with list in package's manifest file
-           - try to decrypt manifest signature with package's certificate
-           - check that the package certificate is issued by a know CA or the same as one the authorized certitificates.
+        - hash of files in unzipped package_dir with list in package's manifest file
+        - try to decrypt manifest signature with package's certificate
+        - check that the package certificate is issued by a know CA or the same as one the authorized certitificates.
 
         Args:
             cabundle (SSLCABundle) : list of authorized certificates / ca filepaths
@@ -1323,7 +1322,7 @@ class PackageEntry(object):
         Returns:
             SSLCertificate : matching certificate
 
-        Exceptions:
+        Raises:
             Exception if no certificate match is found.
         """
         if not cabundle:
