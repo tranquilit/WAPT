@@ -1728,7 +1728,7 @@ class WaptServer(object):
     def ask_user_password(self,action=None):
         """Ask for basic auth if server requires it"""
         if self.ask_user_password_hook is not None:
-            return self.ask_user_password_hook(action)
+            return self.ask_user_password_hook(action) # pylint: disable=not-callable
         elif self.interactive_session:
             user = raw_input('Please get login for action "%s" on server %s: ' % (action,self.server_url))
             if user:
