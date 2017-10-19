@@ -253,6 +253,16 @@ def guess_package_root_dir(fn):
     else:
         return fn
 
+def ask_user_password(title='Password:'):
+    import Tkinter, tkSimpleDialog
+    root = Tkinter.Tk()
+    root.withdraw()
+    user = raw_input('Please get login for %s:' % title)
+    if user == '':
+        user = 'admin'
+    password = tkSimpleDialog.askstring(title, "Enter password for %s:" % user, show='*', parent=root)
+    return (user,password)
+
 def main():
     jsonresult = {'output':[]}
     if options.json_output:
@@ -314,6 +324,10 @@ def main():
 
         if options.personal_certificate_path:
             mywapt.personal_certificate_path = options.personal_certificate_path
+
+        # interactive user password with tk
+        if mywapt.waptserver:
+            mywapt.waptserver.ask_user_password_hook = ask_user_password
 
         # key password management
         def get_private_key_passwd(*args):

@@ -1224,8 +1224,10 @@ class WaptDB(WaptBaseDB):
 
     def build_depends(self,packages):
         """Given a list of packages conditions (packagename (optionalcondition))
-            return a list of dependencies (packages conditions) to install
-              TODO : choose available dependencies in order to reduce the number of new packages to install
+        return a list of dependencies (packages conditions) to install
+
+        TODO : choose available dependencies in order to reduce the number of new packages to install
+
         >>> waptdb = WaptDB(':memory:')
         >>> office = PackageEntry('office','0')
         >>> firefox22 = PackageEntry('firefox','22')
@@ -1318,11 +1320,12 @@ class WaptDB(WaptBaseDB):
         return result
 
     def query_package_entry(self,query, args=(), one=False):
-        """
-        execute la requete query sur la db et renvoie un tableau de PackageEntry
+        """Execute la requete query sur la db et renvoie un tableau de PackageEntry
+
         Le matching est fait sur le nom de champs.
-            Les champs qui ne matchent pas un attribut de PackageEntry
-                sont également mis en attributs !
+        Les champs qui ne matchent pas un attribut de PackageEntry
+        sont également mis en attributs !
+
         >>> waptdb = WaptDB(':memory:')
         >>> waptdb.add_package_entry(PackageEntry('toto','0',repo='main'))
         >>> waptdb.add_package_entry(PackageEntry('dummy','2',repo='main'))
@@ -1349,6 +1352,7 @@ class WaptDB(WaptBaseDB):
 
     def purge_repo(self,repo_name):
         """remove references to repo repo_name
+
         >>> waptdb = WaptDB('c:/wapt/db/waptdb.sqlite')
         >>> waptdb.purge_repo('main')
         """
@@ -1365,7 +1369,9 @@ class WaptDB(WaptBaseDB):
 
 def get_pem_server_certificate(url,save_to_file=None):
     """Retrieve certificate for further checks
-        Return pem encoded data
+
+    Returns:
+        str: pem encoded data
     """
     url = urlparse.urlparse(url)
     if url.scheme == 'https':
@@ -1394,6 +1400,9 @@ class WaptServer(object):
         self.client_certificate = None
         self.client_private_key = None
 
+        self.interactive_session = False
+        self.ask_user_password_hook = None
+
         if dnsdomain:
             self.dnsdomain = dnsdomain
         else:
@@ -1417,16 +1426,20 @@ class WaptServer(object):
                 if scheme == 'https' and has_kerberos and self.use_kerberos:
                     return HTTPKerberosAuth(mutual_authentication=DISABLED,principal=self.get_computer_principal())
                     # TODO : simple auth if kerberos is not available...
+                elif self.client_certificate:
+                    return (self.client_certificate,self.client_private_key)
                 else:
                     return self.ask_user_password(action)
+            elif self.client_certificate:
+                return (self.client_certificate,self.client_private_key)
             else:
-                if self.client_certificate:
-                    return (self.client_certificate,self.client_private_key)
+                return self.ask_user_password(action)
         else:
             return None
 
     def save_server_certificate(self,server_ssl_dir=None,overwrite=False):
         """Retrieve certificate of https server for further checks
+
         Args:
             server_ssl_dir (str): Directory where to save x509 certificate file
 
@@ -1714,13 +1727,18 @@ class WaptServer(object):
 
     def ask_user_password(self,action=None):
         """Ask for basic auth if server requires it"""
-        user = raw_input('Please get login for action "%s" on server %s: ' % (action,self.server_url))
-        if user:
-            password = getpass.getpass('Password: ')
-            if user and password:
-                return (user,password)
-            else:
-                return None
+        if self.ask_user_password_hook is not None:
+            return self.ask_user_password_hook(action)
+        elif self.interactive_session:
+            user = raw_input('Please get login for action "%s" on server %s: ' % (action,self.server_url))
+            if user:
+                password = getpass.getpass('Password: ')
+                if user and password:
+                    return (user,password)
+                else:
+                    return None
+        else:
+            return None
 
     def __repr__(self):
         try:
@@ -1793,7 +1811,7 @@ class WaptRepo(WaptRemoteRepo):
         """Repository URL
 
         Fixed url if any, else request DNS with a SRV _wapt._tcp.domain query
-         or a CNAME by the find_wapt_repo_url method.
+        or a CNAME by the find_wapt_repo_url method.
 
         The URL is queried once and then cached into a local property.
 
@@ -1832,14 +1850,16 @@ class WaptRepo(WaptRemoteRepo):
 
     def find_wapt_repo_url(self):
         """Search the nearest working main WAPT repository given the following priority
-           - URL defined in ini file
-           - first SRV record in the same network as one of the connected network interface
-           - first SRV record with the highest weight
-           - wapt CNAME in the local dns domain (https first then http)
+        - URL defined in ini file
+        - first SRV record in the same network as one of the connected network interface
+        - first SRV record with the highest weight
+        - wapt CNAME in the local dns domain (https first then http)
 
-        preference for SRV records is :
+        Preference for SRV records is :
            same subnet -> priority asc -> weight desc
 
+        Returns:
+            str: URL to the server.
 
         >>> repo = WaptRepo(name='wapt',dnsdomain='tranquil.it',timeout=4,url=None)
         >>> repo.repo_url
@@ -1973,10 +1993,10 @@ class WaptRepo(WaptRemoteRepo):
 
     def update_db(self,force=False,waptdb=None,filter_on_host_cap=True):
         """Get Packages from http repo and update local package database
-            return last-update header
+        return last-update header
 
         The local status DB is updated. Date of index is stored in params table
-          for further checks.
+        for further checks.
 
         Args:
             force (bool): get index from remote repo even if creation date is not newer
@@ -2051,8 +2071,9 @@ class WaptRepo(WaptRemoteRepo):
 
     def load_config(self,config,section=None):
         """Load waptrepo configuration from inifile section.
-                Use name of repo as section name if section is not provided.
-                Use 'global' if no section named section in ini file
+
+        Use name of repo as section name if section is not provided.
+        Use 'global' if no section named section in ini file
         """
         if not section:
              section = self.name
@@ -2118,8 +2139,9 @@ class WaptHostRepo(WaptRepo):
 
     def load_config(self,config,section=None):
         """Load waptrepo configuration from inifile section.
-                Use name of repo as section name if section is not provided.
-                Use 'global' if no section named section in ini file
+
+        Use name of repo as section name if section is not provided.
+        Use 'global' if no section named section in ini file
         """
         if not section:
              section = self.name
@@ -2662,6 +2684,7 @@ class Wapt(object):
     def reload_config_if_updated(self):
         """Check if config file has been updated,
         Return None if config has not changed or date of new config file if reloaded
+
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> wapt.reload_config_if_updated()
 
@@ -2756,16 +2779,17 @@ class Wapt(object):
     def generate_host_uuid(self,forced_uuid=None):
         """Regenerate a random UUID for this host or force with supplied one.
 
-        Args;
-            forced_uuid (str): uuid to force for this host. If None, generate a random one
-
         Normally, the UUID is taken from BIOS through wmi.
 
         In case bios returns some duplicates or garbage, it can be useful to
-          force a random uuid. This is stored as uuid key in wapt-get.ini.
+        force a random uuid. This is stored as uuid key in wapt-get.ini.
 
         In case we want to link th host with a an existing record on server, we
-            can force a old UUID.
+        can force a old UUID.
+
+        Args;
+            forced_uuid (str): uuid to force for this host. If None, generate a random one
+
         """
         auuid = forced_uuid or str(uuid.uuid4())
         self.host_uuid = auuid
@@ -2789,17 +2813,23 @@ class Wapt(object):
 
     def http_upload_package(self,packages,wapt_server_user=None,wapt_server_passwd=None):
         r"""Upload a package or host package to the waptserver.
-                packages : either the filename of a wapt package, or a PackageEntry, or a list
-                wapt_server_user   :
-                wapt_server_passwd :
-            >>> from common import *
-            >>> wapt = Wapt(config_filename = r'C:\tranquilit\wapt\tests\wapt-get.ini')
-            >>> r = wapt.update()
-            >>> d = wapt.duplicate_package('tis-wapttest','toto')
-            >>> print d
-            {'target': u'c:\\users\\htouvet\\appdata\\local\\temp\\toto.wapt', 'package': PackageEntry('toto','119')}
-            >>> wapt.http_upload_package(d['package'],wapt_server_user='admin',wapt_server_passwd='password')
-            """
+
+        Args:
+            packages (str or list): list of filepaths or PackageEntry to wapt packages to upload
+            wapt_server_user (str)   : user for basic auth on waptserver
+            wapt_server_passwd (str) : password for basic auth on waptserver
+
+        Returns:
+
+
+        >>> from common import *
+        >>> wapt = Wapt(config_filename = r'C:\tranquilit\wapt\tests\wapt-get.ini')
+        >>> r = wapt.update()
+        >>> d = wapt.duplicate_package('tis-wapttest','toto')
+        >>> print d
+        {'target': u'c:\\users\\htouvet\\appdata\\local\\temp\\toto.wapt', 'package': PackageEntry('toto','119')}
+        >>> wapt.http_upload_package(d['package'],wapt_server_user='admin',wapt_server_passwd='password')
+        """
         packages = ensure_list(packages)
 
         auth = None
@@ -4686,7 +4716,7 @@ class Wapt(object):
 
         Call update_control from setup.py if this function is defined.
         Then zip the content of directory. Add a manifest.sha256 file with sha256 hash of
-          the content of each file.
+        the content of each file.
 
         Args:
             directoryname (str): source root directory of package to build
