@@ -10,23 +10,23 @@
 #define is_waptagent 0
 
 ; if not empty, set value 0 or 1 will be defined in wapt-get.ini
-#define default_use_kerberos ""
+#define set_use_kerberos ""
 
 ; if empty, a task is added
 ; copy authorized package certificates (CA or signers) in <wapt>\ssl
-#define default_install_certs ""
+#define set_install_certs ""
 
 ; if 1, expiry and CRL of package certificates will be checked
 #define check_certificates_validity 1
 
 ; if not empty, the 0, 1 or path to a CA bundle will be defined in wapt-get.ini for checking of https certificates
-#define default_verify_cert ""
+#define set_verify_cert ""
 
 ; default value for detection server and repo URL using dns 
 #define default_dnsdomain ""
 
 ; if not empty, a task will propose to install this package or list of packages (comma separated)
-#define default_start_packages "socle"
+#define set_start_packages "socle"
 
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
@@ -55,7 +55,7 @@ Source: "..\waptconsole.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\waptdevutils.py"; DestDir: "{app}";
 
 ; authorized public keys
-#if default_install_certs == ""
+#if set_install_certs == ""
 Source: "..\ssl\*"; DestDir: "{app}\ssl"; Tasks: installCertificates; Flags: createallsubdirs recursesubdirs
 #else
 Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs; Check: InstallCertCheck();
@@ -73,19 +73,19 @@ Name:"fr";MessagesFile: "compiler:Languages\French.isl"
 Name:"de";MessagesFile: "compiler:Languages\German.isl"
 
 [Tasks]
-#if default_install_certs == ""
+#if set_install_certs == ""
 Name: InstallCertificates; Description: "{cm:InstallSSLCertificates}";  GroupDescription: "Advanced";
 #endif
 
-#if default_start_packages != ""
+#if set_start_packages != ""
 Name: InstallStartPackages; Description: "{cm:InstallStartPackages}";  GroupDescription: "Advanced";
 #endif
 
-#if default_verify_cert == ""
+#if set_verify_cert == ""
 Name: VerifyServerCertificates; Description: "{cm:VerifyServerCertificates}";  GroupDescription: "Advanced";
 #endif
 
-#if default_use_kerberos == ""
+#if set_use_kerberos == ""
 Name: UseKerberos; Description: "{cm:UseKerberosForRegister}";  GroupDescription: "Advanced";
 #endif
 
@@ -95,16 +95,16 @@ Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetR
 Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; 
 Filename: {app}\wapt-get.ini; Section: global; Key: send_usage_report; String:  {#send_usage_report}; 
 
-#if default_use_kerberos == ''
+#if set_use_kerberos == ''
 Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String: {code:UseKerberosCheck};
 #else
-Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String: {#default_use_kerberos}; 
+Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String: {#set_use_kerberos}; 
 #endif
 
 Filename: {app}\wapt-get.ini; Section: global; Key: check_certificates_validity; String:  {#check_certificates_validity};
 
 ; needs to be relocated if waptagent is compiled on another base directory than target computers
-#if default_verify_cert != ""
+#if set_verify_cert != ""
 Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: {code:RelocateCertDirWaptBase}; 
 #else
 Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: {code:VerifyCertCheck}; 
@@ -117,7 +117,7 @@ Filename: {app}\wapt-get.ini; Section: global; Key: dnsdomain; String: {code:Get
 Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhidden; StatusMsg: {cm:UpdatePkgUponShutdown}; Description: "{cm:UpdatePkgUponShutdown}"
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Flags: runasoriginaluser; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
 
-#if default_start_packages != "" 
+#if set_start_packages != "" 
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct --update install {code:GetStartPackages}"; Flags: runasoriginaluser runhidden; Tasks: installStartPackages; StatusMsg: {cm:InstallStartPackages}; Description: "{cm:InstallStartPackages}"
 #else
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runasoriginaluser runhidden; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
@@ -137,7 +137,7 @@ en.UpdatePkgUponShutdown=Update packages upon shutdown
 en.EnableCheckCertificate=Get and enable the check of WaptServer https certificate
 en.UseWaptServer=Report computer status to a waptserver and enable remote management
 en.InstallSSLCertificates=Install the certificates provided by this installer
-en.InstallStartPackages=Install right now the packages {#default_start_packages}
+en.InstallStartPackages=Install right now the packages {#set_start_packages}
 en.UseKerberosForRegister=Use machine kerberos account for registration on WaptServer
 en.VerifyServerCertificates=Verify https server certificates
 
@@ -149,7 +149,7 @@ fr.UpdatePkgUponShutdown=Mise à jour des paquets à l'extinction du poste
 fr.EnableCheckCertificate=Activer la vérification du certificat https du serveur Wapt
 fr.UseWaptServer=Activer l'utilisation d'un serveur Wapt et la gestion centralisée de cet ordinateur
 fr.InstallSSLCertificates=Installer les certificats fournis par cet installeur.
-fr.InstallStartPackages=Installer maintenant les paquets {#default_start_packages}
+fr.InstallStartPackages=Installer maintenant les paquets {#set_start_packages}
 fr.UseKerberosForRegister=Utiliser le compte Kerberos de la machine pour l'enregistrement sur le WaptServer
 fr.VerifyServerCertificates=Vérifier les certificats https
 
@@ -345,7 +345,7 @@ function InstallCertCheck:Boolean;
 var
   value:String;
 begin
-  value := ExpandConstant('{param:InstallCerts|{#default_install_certs}}');
+  value := ExpandConstant('{param:InstallCerts|{#set_install_certs}}');
   Result := value <> '0';     
 end;
 
@@ -367,7 +367,7 @@ end;
 
 function GetStartPackages(Param: String):String;
 begin
-    result := ExpandConstant('{param:StartPackages|{#default_start_packages}}');
+    result := ExpandConstant('{param:StartPackages|{#set_start_packages}}');
 end;
 
 
