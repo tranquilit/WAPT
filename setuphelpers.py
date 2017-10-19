@@ -850,8 +850,6 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,3010],on_write=None,pid
 
     Args:
         cmd : command and arguments, either as a string or as a list of arguments
-
-    Kwargs:
         shell (boolean) : True is assumed
         timeout (int) : maximum time to wait for cmd completion is second (default = 600)
                         a TimeoutExpired exception is raised if tiemout is reached.
@@ -1049,7 +1047,7 @@ def killtree(pid, including_parent=True):
 def find_processes(process_name):
     """Return list of Process names process_name
 
-    Args;
+    Args:
         process_name (str): process name to lookup
 
     Returns:
@@ -1742,7 +1740,6 @@ def set_file_visible(path):
 
 def set_file_hidden(path):
     """Set the hidden attribute of file located at path
-
     Utility function for shutdown gpo script
 
     Args:
@@ -1756,7 +1753,6 @@ def set_file_hidden(path):
 
 def replace_at_next_reboot(tmp_filename,target_filename):
     r"""Schedule a file rename at next reboot using standard Windows PendingFileRenameOperations
-
     Creates a key in HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager with content :
             PendingFileRenameOperations
                 Data type : REG_MULTI_SZ Value
@@ -1779,7 +1775,6 @@ def replace_at_next_reboot(tmp_filename,target_filename):
 
 def delete_at_next_reboot(target_filename):
     r"""delete at next reboot using standard Windows PendingFileRenameOperations
-
     Creates a key in HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager with content :
             PendingFileRenameOperations
                 Data type : REG_MULTI_SZ Value
@@ -1798,7 +1793,6 @@ def delete_at_next_reboot(target_filename):
 
 def ini2winstr(ini):
     """Returns a unicode string from an iniparse.RawConfigParser with windows crlf
-
     Utility function for local gpo
     """
     items = []
@@ -2115,14 +2109,14 @@ def uninstall_key_exists(uninstallkey):
 def installed_softwares(keywords='',uninstallkey=None,name=None):
     """return list of installed software from registry (both 32bit and 64bit
 
-    Args;
+    Args:
         keywords (str or list): string to lookup in key, display_name or publisher fields
         uninstallkey : filter on a specific uninstall key instead of fuzzy search
 
     .. versionchanged:: 1.3.11
         name (str regexp) : filter on a regular expression on software name
 
-    Returns
+    Returns:
         dict: {'key', 'name', 'version', 'install_date', 'install_location'
                      'uninstall_string', 'publisher','system_component'}
 
@@ -2195,7 +2189,8 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
 
 def install_location(uninstallkey):
     """Return the install location of the software given its uninstall key
-        or None if not found
+    or None if not found
+
     >>> install_location('winscp3_is1')
     u'C:\\Program Files\\WinSCP\\'
     """
@@ -2204,7 +2199,8 @@ def install_location(uninstallkey):
     return None
 
 def currentdate():
-    """
+    """date as string YYYYMMDD
+
     >>> currentdate()
     '20161102'
     """
@@ -2213,7 +2209,8 @@ def currentdate():
 
 
 def currentdatetime():
-    """
+    """date/time as YYYYMMDD-hhmmss
+
     >>> currentdatetime()
     '20161102-193600'
     """
@@ -2225,7 +2222,7 @@ def register_uninstall(uninstallkey,uninstallstring,win64app=False,
         quiet_uninstall_string='',
         install_location = None, display_name=None,display_version=None,publisher=''):
     """Register the uninstall method in Windows registry,
-        so that the application is displayed in Control Panel / Programs and features
+    so that the application is displayed in Control Panel / Programs and features
 
     """
     if not uninstallkey:
@@ -2341,8 +2338,7 @@ def memory_status():
 
 def dmi_info():
     """Hardware System information from BIOS estracted with dmidecode
-
-        Convert dmidecode -q output to python dict
+    Convert dmidecode -q output to python dict
 
     Returns:
         dict
@@ -2510,7 +2506,7 @@ def critical_system_pending_updates():
 
 def pending_reboot_reasons():
     """Return the list of reasons requiring a pending reboot the computer
-        If list is empty, no reboot is needed.
+    If list is empty, no reboot is needed.
 
     Returns:
         list : list of Windows Update, CBS Updates or File Renames
@@ -2639,7 +2635,7 @@ def get_user_from_profpath(sid):
 
 def get_user_from_sid(sid,controller=None):
     """Returns domain\\user for the given sid
-        sid is either a string or a PySID
+    sid is either a string or a PySID
     """
     try:
         if isinstance(sid,str) or isinstance(sid,unicode):
@@ -2932,7 +2928,6 @@ def adjust_current_privileges(priv, enable = 1):
 
 def reboot_machine(message="Machine Rebooting", timeout=30, force=0, reboot=1):
     r"""Reboot the current host within specified timeout, display a message to the user
-
     This can not be cancelled bu the user.
 
     Args:
@@ -2963,8 +2958,8 @@ isdir=os.path.isdir
 
 def remove_file(path):
     r"""Try to remove a single file
-        log a warning msg if file doesn't exist
-        log a critical msg if file can't be removed
+    log a warning msg if file doesn't exist
+    log a critical msg if file can't be removed
 
     Args:
         path (str): path to file
@@ -3096,7 +3091,7 @@ def user_local_appdata():
 
 def mkdirs(path):
     """Create directory path if it doesn't exists yet
-        Creates intermediate directories too.
+    Creates intermediate directories too.
 
     """
     if not os.path.isdir(path):
@@ -3604,7 +3599,7 @@ def getproductprops(installer_path):
 
 def need_install(key,min_version=None,force=False,get_version=None):
     """Return True if the software with key can be found in uninstall registry
-        and the registred version is equal or greater than min_version
+    and the registred version is equal or greater than min_version
 
     Args:
         key (str) : uninstall key
@@ -3858,9 +3853,6 @@ def local_desktops():
 def local_users_profiles():
     """Return a list of all local user's profile paths
 
-    Args:
-        None
-
     Returns:
         list : list of desktop path
 
@@ -3899,7 +3891,7 @@ def local_users_profiles():
 
 def run_powershell(cmd,output_format='json',**kwargs):
     """Run a command/script (possibly multiline) using powershell, return output in text format
-        If format is 'json', the result is piped to ConvertTo-Json and converted back to a python dict for convenient use
+    If format is 'json', the result is piped to ConvertTo-Json and converted back to a python dict for convenient use
 
     .. versionadded:: 1.3.9
     """
@@ -4030,6 +4022,7 @@ def unzip(zipfn,target=None,filenames=None):
         zipfn (str) : path to zipfile. (can be relative to temporary unzip location of package)
         target (str) : target location. Defaults to dirname(zipfile) + basename(zipfile)
         filenames (str or list of str): list of filenames / glob patterns (path sep is normally a slash)
+
     Returns:
         list : list of extracted files
 
