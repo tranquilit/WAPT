@@ -402,7 +402,7 @@ class SSLCABundle(object):
             certificate: certificate to check
             include_self: if certificate is in bunclde, accept it (pining)
 
-        Return:
+        Returns:
             SSLCertificate: issuer certificate or None
         """
         flags = (crypto.X509StoreFlags.CB_ISSUER_CHECK |
@@ -569,7 +569,7 @@ class SSLCABundle(object):
 
     def update_crl(self,force=False,for_certificates=None,cache_dir=None,timeout=2.0):
         """Download and update all crls for certificates in this bundle or
-            for certificates in for_certificates list
+        for certificates in for_certificates list
 
         Returns:
             list: list of downloaded / updated CRL
@@ -672,8 +672,8 @@ class SSLCABundle(object):
 
 def get_peer_cert_chain_from_server(url):
     """Returns list of SSLCertificates from initial handshake of https server
-        Add certificates to current SSLCAchain
-        First certificate is certificate for URL's FQDN, next are intermediate ones.
+    Add certificates to current SSLCAchain
+    First certificate is certificate for URL's FQDN, next are intermediate ones.
 
     """
     def verify_cb(conn, cert, errnum, depth, ok):
@@ -1156,7 +1156,7 @@ class SSLPrivateKey(object):
 class SSLCertificate(object):
     """Hold a X509 public certificate"""
     def __init__(self,crt_filename=None,crt=None,crt_string=None,ignore_validity_checks=False):
-        """
+        """\
         Args:
             public_cert (str): File Path to X509 encoded certificate
             crt : cryptography.x509.Certificate
@@ -1284,6 +1284,7 @@ class SSLCertificate(object):
 
     def digest(self,md='sha256'):
         """Return a fingerprint in human redeable hexadecimal
+
         Args:
             md: hash algorithm for fingerprint
 
@@ -1380,10 +1381,10 @@ class SSLCertificate(object):
             content (str) : content to check. if not str, the structure will be converted to json first
             signature (str) : ssl signature of the content
 
-        Return
+        Returns:
             str: subject (CN) of current certificate or raise an exception if no match
 
-        Raise SSLVerifyException
+        Raises SSLVerifyException
         """
         if isinstance(content,unicode):
             content = content.encode('utf8')
@@ -1452,7 +1453,7 @@ class SSLCertificate(object):
 
     def is_valid(self):
         """Check validity of certificate
-                not before / not after
+        not before / not after
         """
         if self.ignore_validity_checks:
             return True
@@ -1502,9 +1503,10 @@ class SSLCertificate(object):
 
     def encrypt_fernet(self,content):
         """Encrypt content with fernet symetric algo
-            create a fernet key, encrypt it using RSA
-            encrypt data using fernet key
-            return bytes with header, encrypted fernet key, and encrypted fernet data
+
+        create a fernet key, encrypt it using RSA
+        encrypt data using fernet key
+        return bytes with header, encrypted fernet key, and encrypted fernet data
 
         fernet :  128-bit AES in CBC mode and PKCS7 padding, with HMAC using SHA256 for authentication
 
@@ -1522,7 +1524,7 @@ class SSLCertificate(object):
 
     @property
     def extensions(self):
-        """certificates extensions
+        """Returns certificates extensions as a dict
 
         Returns:
             dict
@@ -1545,6 +1547,7 @@ class SSLCertificate(object):
 
     def verify_old(self,CAfile,check_errors=True):
         """Check validity of certificate against list of CA and validity
+
         Raise error if not OK
         """
         wapt_basedir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
@@ -1574,8 +1577,7 @@ class SSLCertificate(object):
         return result
 
     def verify_signature_with(self,cabundle=None):
-        """
-        Check validity of certificates signature along the whole certificates chain
+        """Check validity of certificates signature along the whole certificates chain
 
         Issuer certificates must have the CA constraint.
         Issuer is found using hash of issuer_subject and subject bytes.
@@ -1622,6 +1624,7 @@ class SSLCertificate(object):
 
         Args:
             claim (dict) : with keys signature,signed_attributes,signer,signature_date
+
         Returns:
             dict: signature_date,signer,verified_by(cn)
 
@@ -1713,7 +1716,7 @@ class SSLCRL(object):
 
     @property
     def extensions(self):
-        """certificates extensions
+        """CRL extensions
 
         Returns:
             dict
