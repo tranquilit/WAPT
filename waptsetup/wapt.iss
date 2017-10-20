@@ -410,3 +410,15 @@ begin
             result := True;
     end;
 end;
+
+function CurrentLanguage(Param: String):String;
+var
+  Current: String;
+begin
+  Result := 'en';
+  Current := ActiveLanguage;
+  // Whitelist
+  if Current = 'fr' then
+    Result := 'fr';
+end;
+
