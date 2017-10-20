@@ -174,7 +174,7 @@ def make_nginx_config(wapt_root_dir, wapt_folder):
     key.create()
     key.save_as_pem()
     crt = key.build_sign_certificate(cn=fqdn,is_ca=False)
-    crt.save_as_pem(os.path.join(ap_ssl_dir,'crt.pem'))
+    crt.save_as_pem(os.path.join(ap_ssl_dir,'cert.pem'))
 
 
     # write config file
