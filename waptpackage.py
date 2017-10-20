@@ -2358,7 +2358,7 @@ class WaptRemoteRepo(WaptBaseRepo):
             download_url = entry.repo_url+'/'+packagefilename
             fullpackagepath = os.path.join(target_dir,packagefilename)
             skip = False
-            if usecache and os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath)>0:
+            if usecache and os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath) == entry.size :
                 # check version
                 try:
                     cached = PackageEntry()
@@ -2388,9 +2388,10 @@ class WaptRemoteRepo(WaptBaseRepo):
                                 stat = ''
                         except:
                             pass
+                    """
                     if not printhook:
                         printhook = report
-
+                    """
                     wget(download_url,
                         target_dir,
                         proxies=self.proxies,
@@ -2398,6 +2399,8 @@ class WaptRemoteRepo(WaptBaseRepo):
                         connect_timeout=self.timeout,
                         verify_cert = self.verify_cert,
                         cert = self.client_auth(),
+                        resume= usecache,
+                        md5 = entry.md5sum,
                         )
                     entry.localpath = fullpackagepath
                     downloaded.append(fullpackagepath)

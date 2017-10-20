@@ -46,6 +46,7 @@ import tempfile
 import fnmatch
 import urlparse
 import hashlib
+from clint.textui.progress import Bar as ProgressBar
 
 if platform.system() == 'Windows':
     try:
@@ -686,6 +687,7 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
             target_size = None
             write_mode = 'wb'
 
+
     if not resume or target_size is None or (target_size - actual_size) > 0:
         httpreq = requests.get(url,stream=True,
             proxies=proxies,
@@ -706,7 +708,11 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         chunk_size = min([1024*1024,max([total_bytes/100,2048])])
 
         cnt = 0
-        reporthook(last_downloaded,total_bytes)
+        if printhook is None:
+            progress_bar = ProgressBar(label=filename,expected_size=target_size or total_bytes, filled_char='=')
+            progress_bar.show(actual_size)
+        else:
+            reporthook(last_downloaded,target_size)
 
         with open(target_fn,write_mode) as output_file:
             last_time_display = time.time()
@@ -714,13 +720,21 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
             if httpreq.ok:
                 for chunk in httpreq.iter_content(chunk_size=chunk_size):
                     output_file.write(chunk)
+                    output_file.flush()
                     if download_timeout is not None and (time.time()-start_time>download_timeout):
                         raise requests.Timeout(r'Download of %s takes more than the requested %ss'%(url,download_timeout))
-                    if reporthook(cnt*len(chunk),total_bytes):
+                    if printhook is None:
+                        progress_bar.show(actual_size + cnt*len(chunk))
                         last_time_display = time.time()
+                    else:
+                        if reporthook(cnt*len(chunk),total_bytes):
+                            last_time_display = time.time()
                     last_downloaded += len(chunk)
                     cnt +=1
-                if reporthook(last_downloaded,total_bytes):
+                if printhook is None:
+                    progress_bar.done()
+                    last_time_display = time.time()
+                elif reporthook(last_downloaded,total_bytes):
                     last_time_display = time.time()
 
         # check md5

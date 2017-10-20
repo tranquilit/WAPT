@@ -3814,16 +3814,17 @@ class Wapt(object):
             printhook=None):
         """Install a list of packages and its dependencies
         removes first packages which are in conflicts package attribute
+
         Returns a dictionary of (package requirement,package) with 'install','skipped','additional'
 
         Args:
-            apackages : list of packages requirements "packagename(=version)" or list of PackageEntry.
-            force : reinstalls the packages even if it is already installed
-            params_dict : dict of parameters passed to the install() procedure in the packages setup.py of all packages
+            apackages (list or str): list of packages requirements "packagename(=version)" or list of PackageEntry.
+            force (bool) : reinstalls the packages even if it is already installed
+            params_dict (dict) : parameters passed to the install() procedure in the packages setup.py of all packages
                           as params variables and as "setup module" attributes
-            download_only : don't install package, but only download them
-            usecache : use the already downloaded packages if available in cache directory
-            printhook: hook for progress print
+            download_only (bool) : don't install package, but only download them
+            usecache (bool) : use the already downloaded packages if available in cache directory
+            printhook (func) : hook for progress print
 
         Returns:
             dict: with keys ['skipped', 'additional', 'remove', 'upgrade', 'install', 'unavailable'] and list of
@@ -3973,6 +3974,7 @@ class Wapt(object):
         for entry in packages:
             self.check_cancelled()
 
+
             def report(received,total,speed,url):
                 self.check_cancelled()
                 try:
@@ -3984,10 +3986,10 @@ class Wapt(object):
                     self.runstatus='Downloading %s : %s' % (entry.package,stat)
                 except:
                     self.runstatus='Downloading %s' % (entry.package,)
-
+            """
             if not printhook:
                 printhook = report
-
+            """
             res = self.get_repo(entry.repo).download_packages(entry,
                 target_dir=self.package_cache_dir,
                 usecache=usecache,
@@ -4204,7 +4206,7 @@ class Wapt(object):
             section_filter (str or list): restrict search to the specified package sections/categories
 
         Returns:
-            list: list of packageEntry
+            list: list of PackageEntry
 
         """
         available = self.waptdb.packages_search(searchwords=searchwords,exclude_host_repo=exclude_host_repo,section_filter=section_filter)
@@ -4238,13 +4240,31 @@ class Wapt(object):
 
     def list(self,searchwords=[]):
         """Returns a list of installed packages which have the searchwords
-           in their description
+        in their description
+
+        Args:
+            searchwords (list): list of words to llokup in package name and description
+                                only entries which have words in the proper order are returned.
+
+        Returns:
+            list: list of PackageEntry matching the search words
+
+        >>> w = Wapt()
+        >>> w.list('zip')
+        [PackageEntry('tis-7zip','16.4-8') ]
         """
         return self.waptdb.installed_search(searchwords=searchwords,)
 
-    def check_downloads(self,apackages=None):
-        """Return list of available package entries not yet in cache
-            to match supplied packages requirements
+    def check_downloads(self,apackages=None,usecache=True):
+        """Return list of available package entries
+        to match supplied packages requirements
+
+        Args:
+            apackages (list or str): list of packages
+            usecache (bool) : returns only PackageEntry not yet in cache
+
+        Returns:
+            list: list of PackageEntry to download
         """
         result = []
         if apackages is None:
@@ -4268,7 +4288,7 @@ class Wapt(object):
                 # download most recent
                 entry = entries[-1]
                 fullpackagepath = os.path.join(self.package_cache_dir,entry.filename)
-                if os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath)>0:
+                if usecache and (os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath) == entry.size):
                     # check version
                     try:
                         cached = PackageEntry()

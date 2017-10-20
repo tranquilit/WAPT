@@ -445,7 +445,9 @@ def main():
                 packages = []
                 for a in args[1:]:
                     packages.extend(ensure_list(a))
-                depends = mywapt.check_downloads(packages)
+
+                depends = mywapt.check_downloads(packages,usecache = not options.force)
+
                 print(u"Downloading packages %s" % (','.join([p.asrequirement() for p in depends]),))
                 result = mywapt.download_packages(depends, usecache=not options.force)
                 if options.json_output:
