@@ -715,8 +715,6 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         if printhook is None and ProgressBar is not None:
             progress_bar = ProgressBar(label=filename,expected_size=target_size or total_bytes, filled_char='=')
             progress_bar.show(actual_size)
-        else:
-            reporthook(last_downloaded,target_size)
 
         with open(target_fn,write_mode) as output_file:
             last_time_display = time.time()
