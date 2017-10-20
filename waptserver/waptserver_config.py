@@ -80,10 +80,9 @@ def load_config(cfgfile=_default_config_file):
         # XXX this is a kludge
         if os.getenv('USERNAME') == 'buildbot':
             return conf
-        raise Exception("FATAL : couldn't open configuration file : {}.".format(cfgfile))
 
     if not _config.has_section('options'):
-        raise Exception('FATAL, configuration file {} has no section [options]. Please check the waptserver documentation.'.format(cfgfile))
+        _config.add_section('options')
 
     if _config.has_option('options', 'client_tasks_timeout'):
         conf['client_tasks_timeout'] = int(_config.get('options', 'client_tasks_timeout'))
