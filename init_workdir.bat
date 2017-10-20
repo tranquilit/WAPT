@@ -14,7 +14,7 @@ xcopy /I /E /F /Y c:\python27\libs libs
 xcopy /I /E /F /Y c:\python27\DLLs DLLs
 xcopy /I /E /F /Y /EXCLUDE:libexcludes.txt c:\python27\lib lib
 
-Scripts\pip.exe install --upgrade pip distribute wheel virtualenv six
+Scripts\pip.exe install --upgrade pip distribute wheel virtualenv six	
 
 REM get  pywin32-220.win32-py2.7.exe from internet
 waptpython -c "from waptutils import wget; from subprocess import check_output; pywin32=wget('https://downloads.sourceforge.net/project/pywin32/pywin32/Build%%20221/pywin32-221.win32-py2.7.exe?r=&ts=1508231209&use_mirror=freefr',resume=True,md5='90a3853325c2c9322c5cc2d09682cfe4'); print check_output('Scripts\easy_install.exe ""%%s""' %% pywin32,shell=True)"
