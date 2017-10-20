@@ -1,4 +1,5 @@
-﻿#define waptsetup 
+﻿#ifndef edition
+#define edition "waptsetup"
 #define default_repo_url ""
 #define default_wapt_server ""
 #define repo_url ""
@@ -8,30 +9,30 @@
 #define Company "Tranquil IT Systems"
 #define send_usage_report 0
 #define is_waptagent 0
-
 ; if not empty, set value 0 or 1 will be defined in wapt-get.ini
-#define set_use_kerberos ""
+#define set_use_kerberos "0"
 
 ; if empty, a task is added
 ; copy authorized package certificates (CA or signers) in <wapt>\ssl
-#define set_install_certs ""
+#define set_install_certs "0"
 
 ; if 1, expiry and CRL of package certificates will be checked
 #define check_certificates_validity 1
 
 ; if not empty, the 0, 1 or path to a CA bundle will be defined in wapt-get.ini for checking of https certificates
-#define set_verify_cert ""
+#define set_verify_cert "0"
 
 ; default value for detection server and repo URL using dns 
 #define default_dnsdomain ""
 
 ; if not empty, a task will propose to install this package or list of packages (comma separated)
-#define set_start_packages "socle"
+#define set_start_packages ""
 
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
 ; for fast compile in developent mode
-;#define FastDebug
+#define FastDebug
+#endif
 
 #include "wapt.iss"
 
@@ -62,7 +63,7 @@ Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs
 #endif
 
 [Setup]
-OutputBaseFilename=waptsetup
+OutputBaseFilename={#edition}
 DefaultDirName={pf32}\wapt
 WizardImageFile=..\tranquilit.bmp
 DisableProgramGroupPage=yes
@@ -90,15 +91,17 @@ Name: UseKerberos; Description: "{cm:UseKerberosForRegister}";  GroupDescription
 #endif
 
 [INI]
-Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL}; 
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL};
-Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1"; 
+Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1";
 Filename: {app}\wapt-get.ini; Section: global; Key: send_usage_report; String:  {#send_usage_report}; 
 
+#if edition != "waptstarter"
+Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL};
 #if set_use_kerberos == ''
 Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String: {code:UseKerberosCheck};
 #else
 Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String: {#set_use_kerberos}; 
+#endif
 #endif
 
 Filename: {app}\wapt-get.ini; Section: global; Key: check_certificates_validity; String:  {#check_certificates_validity};
@@ -111,7 +114,6 @@ Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: {code:V
 #endif
 
 Filename: {app}\wapt-get.ini; Section: global; Key: dnsdomain; String: {code:GetDNSDomain}; 
-
 
 [Run]
 Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhidden; StatusMsg: {cm:UpdatePkgUponShutdown}; Description: "{cm:UpdatePkgUponShutdown}"
@@ -168,7 +170,9 @@ var
 
 procedure OnServerClicked(Sender:TObject);
 begin
+   #if edition != "waptstarter"
    edWaptServerUrl.Enabled:= not cbDnsServer.Checked;
+   #endif
    edWaptRepoUrl.Enabled:= not cbDnsServer.Checked;
    edDNSDomain.Enabled := cbDnsServer.Checked;
 end;
@@ -271,11 +275,13 @@ begin
   labRepo.Caption := 'Repos URL:';
   labRepo.Top := labRepo.Top + cbDnsServer.Height + 5 * ScaleY(15);
   
+  #if edition != "waptstarter"
   labServer := TLabel.Create(WizardForm);
   labServer.Parent := CustomPage.Surface; 
   labServer.Left := cbStaticUrl.Left + 14; 
   labServer.Caption := 'Server URL:';
   labServer.Top := labServer.Top + cbDnsServer.Height + 9 * ScaleY(15);
+  #endif
 
   edWaptRepoUrl := TEdit.Create(WizardForm);
   edWaptRepoUrl.Parent := CustomPage.Surface; 
@@ -290,7 +296,7 @@ begin
   labRepo.Caption := 'example: https://srvwapt.domain.lan/wapt';
   labRepo.Top := edWaptRepoUrl.Top + edWaptRepoUrl.Height + ScaleY(2);
 
-
+  #if edition != "waptstarter"
   edWaptServerUrl := TEdit.Create(WizardForm);;
   edWaptServerUrl.Parent := CustomPage.Surface; 
   edWaptServerUrl.Left :=labServer.Left + labServer.Width+5;
@@ -303,7 +309,7 @@ begin
   labServer.Left := edWaptServerUrl.Left + 5; 
   labServer.Caption := 'example: https://srvwapt.domain.lan';
   labServer.Top := edWaptServerUrl.Top + edWaptServerUrl.Height + ScaleY(2);
-
+  #endif
 end;
 
 
@@ -331,7 +337,9 @@ begin
   if curPageId=customPage.Id then
   begin
     edWaptRepoUrl.Text := GetRepoURL('');
+    #if edition != "waptstarter"
     edWaptServerUrl.Text := GetWaptServerURL('');  
+    #endif
     cbDnsServer.Checked := (edWaptRepoUrl.Text='');
     cbStaticUrl.Checked := (edWaptRepoUrl.Text<>'') and (edWaptRepoUrl.Text<>'unknown');
     edDNSDomain.Text := GetDNSDomain('');  

@@ -1,69 +1,37 @@
-﻿#define waptsetup 
-#define default_repo_url "http://wapt.tranquil.it/wapt"
+﻿#ifndef edition
+#define edition "waptstarter"
+#define default_repo_url "https://store.wapt.fr/wapt"
 #define default_wapt_server ""
-#define AppName "WaptStarter"
+#define repo_url ""
+#define wapt_server ""
+#define AppName "WAPTStarter"
 #define output_dir "."
 #define Company "Tranquil IT Systems"
+#define send_usage_report 0
+#define is_waptagent 0
+; if not empty, set value 0 or 1 will be defined in wapt-get.ini
+#define set_use_kerberos "0"
+
+; if empty, a task is added
+; copy authorized package certificates (CA or signers) in <wapt>\ssl
+#define set_install_certs "1"
+
+; if 1, expiry and CRL of package certificates will be checked
+#define check_certificates_validity "1"
+
+; if not empty, the 0, 1 or path to a CA bundle will be defined in wapt-get.ini for checking of https certificates
+#define set_verify_cert "1"
+
+; default value for detection server and repo URL using dns 
+#define default_dnsdomain "tranquil.it"
+
+; if not empty, a task will propose to install this package or list of packages (comma separated)
+#define set_start_packages "waptstarter,socle"
+
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
-#define install_certs "checked"
 
-#include "wapt.iss"
+; for fast compile in developent mode
+#define FastDebug
+#endif
 
-[Files]
-; sources of installer to rebuild a custom installer
-Source: "innosetup\*"; DestDir: "{app}\waptsetup\innosetup";
-Source: "wapt.iss"; DestDir: "{app}\waptsetup";
-Source: "waptsetup.iss"; DestDir: "{app}\waptsetup";
-Source: "services.iss"; DestDir: "{app}\waptsetup";
-
-Source: "..\wapt.ico"; DestDir: "{app}";
-
-; authorized public keys
-Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs
-
-[Setup]
-OutputBaseFilename=waptstarter
-DefaultDirName={pf}\wapt
-WizardImageFile=..\tranquilit.bmp
-
-[INI]
-Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {#default_repo_url};
-Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "0"
-Filename: {app}\wapt-get.ini; Section: global; Key: waptservice_password; String: "NOPASSWORD"
-
-[Icons]
-Name: "{commonprograms}\WaptStarter"; IconFilename: "{app}\wapt.ico"; Filename: "http://localhost:8088";
-Name: "{commondesktop}\WaptStarter"; IconFilename: "{app}\wapt.ico"; Filename: "http://localhost:8088";
-
-[Run]
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct --force update"; Flags: runhidden; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
-Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhidden; StatusMsg: {cm:UpdateOnShutdown}; Description: "{cm:UpdateOnShutdown}"
-
-[Languages]
-Name:"en";MessagesFile: "compiler:Default.isl"
-Name:"fr";MessagesFile: "compiler:Languages\French.isl"
-Name:"de";MessagesFile: "compiler:Languages\German.isl"
-
-[CustomMessages]
-fr.UpdateAvailablePkg=Mise à jour des paquets disponibles sur le dépôt principal
-fr.UpdateOnShutdown=Mise à jour des paquets à l'extinction du poste
-
-;English translation here
-en.UpdateAvailablePkg=Update packages available on the main repository
-en.UpdateOnShutdown=Update packages upon shutdown
-
-;German translation here
-de.UpdateAvailablePkg=Verfügbare Pakete auf Main Repository aktualisieren
-de.UpdateOnShutdown=Pakete aktualisieren beim Herunterfahren
-
-[Code]
-procedure DeinitializeUninstall();
-var
-    installdir: String;
-begin
-    installdir := ExpandConstant('{app}');
-    if DirExists(installdir) and not runningSilently() and 
-       (MsgBox('Des fichiers restent présents dans votre répertoire ' + installdir + ', souhaitez-vous le supprimer ainsi que tous les fichiers qu''il contient ?',
-               mbConfirmation, MB_YESNO) = IDYES) then
-        Deltree(installdir, True, True, True);
-end;
+#include "waptsetup.iss"
