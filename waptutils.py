@@ -46,7 +46,11 @@ import tempfile
 import fnmatch
 import urlparse
 import hashlib
-from clint.textui.progress import Bar as ProgressBar
+try:
+    from clint.textui.progress import Bar as ProgressBar
+except ImportError:
+    # for build time
+    ProgressBar = None
 
 if platform.system() == 'Windows':
     try:
@@ -708,7 +712,7 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         chunk_size = min([1024*1024,max([total_bytes/100,2048])])
 
         cnt = 0
-        if printhook is None:
+        if printhook is None and ProgressBar is not None:
             progress_bar = ProgressBar(label=filename,expected_size=target_size or total_bytes, filled_char='=')
             progress_bar.show(actual_size)
         else:
@@ -723,7 +727,7 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
                     output_file.flush()
                     if download_timeout is not None and (time.time()-start_time>download_timeout):
                         raise requests.Timeout(r'Download of %s takes more than the requested %ss'%(url,download_timeout))
-                    if printhook is None:
+                    if printhook is None and ProgressBar is not None:
                         progress_bar.show(actual_size + cnt*len(chunk))
                         last_time_display = time.time()
                     else:
@@ -731,7 +735,7 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
                             last_time_display = time.time()
                     last_downloaded += len(chunk)
                     cnt +=1
-                if printhook is None:
+                if printhook is None and ProgressBar is not None:
                     progress_bar.done()
                     last_time_display = time.time()
                 elif reporthook(last_downloaded,total_bytes):
