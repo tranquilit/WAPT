@@ -1941,34 +1941,11 @@ if __name__ == '__main__':
         dest='configfile',
         default=DEFAULT_CONFIG_FILE,
         help='Config file full path (default: %default)')
-    parser.add_option(
-        '-l',
-        '--loglevel',
-        dest='loglevel',
-        default=None,
-        type='choice',
-        choices=[
-            'debug',
-            'warning',
-            'info',
-            'error',
-            'critical'],
-        metavar='LOGLEVEL',
-        help='Loglevel (default: warning)')
-    parser.add_option(
-        '-d',
-        '--devel',
-        dest='devel',
-        default=False,
-        action='store_true',
-        help='Enable debug mode (for development only)')
-    parser.add_option(
-        '-w',
-        '--without-apache',
-        dest='without_apache',
-        default=False,
-        action='store_true',
-        help="Don't install Apache http server for wapt (service WAPTApache)")
+    parser.add_option('-l','--loglevel',dest='loglevel',default=None,type='choice',
+            choices=['debug',   'warning','info','error','critical'],
+            metavar='LOGLEVEL',help='Loglevel (default: warning)')
+    parser.add_option('-d','--devel',dest='devel',default=False,action='store_true',
+            help='Enable debug mode (for development only)')
 
     (options, args) = parser.parse_args()
     app.config['CONFIG_FILE'] = options.configfile

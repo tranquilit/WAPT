@@ -28,10 +28,7 @@ import os
 import sys
 
 try:
-    wapt_root_dir = os.path.abspath(
-        os.path.join(
-            os.path.dirname(__file__),
-            '..'))
+    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
@@ -39,6 +36,17 @@ sys.path.insert(0, os.path.join(wapt_root_dir))
 sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
 sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 
+from waptserver_utils import *
+import waptserver_config
+from optparse import OptionParser
+import logging
+import subprocess
+import setuphelpers
+from waptcrypto import SSLPrivateKey,SSLCertificate
+
+DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
+config_file = DEFAULT_CONFIG_FILE
+conf = waptserver_config.load_config(config_file)
 
 def install_windows_nssm_service(
         service_name, service_binary, service_parameters, service_logfile, service_dependencies=None):
@@ -66,13 +74,15 @@ def install_windows_nssm_service(
             while not setuphelpers.service_is_stopped(service_name):
                 logger.debug('Waiting for "%s" to terminate' % service_name)
                 time.sleep(2)
+
         logger.info('Unregister existing "%s"' % service_name)
         setuphelpers.run('sc delete "%s"' % service_name)
 
-    if setuphelpers.iswin64():
-        nssm = os.path.join(wapt_root_dir, 'waptservice', 'win64', 'nssm.exe')
-    else:
-        nssm = os.path.join(wapt_root_dir, 'waptservice', 'win32', 'nssm.exe')
+    if not setuphelpers.iswin64():
+        raise Error('Windows 32bit install not supported')
+
+    nssm = os.path.join(wapt_root_dir, 'waptservice', 'win64', 'nssm.exe')
+
 
     logger.info('Register service "%s" with nssm' % service_name)
     cmd = '"{nssm}" install "{service_name}" "{service_binary}" {service_parameters}'.format(
@@ -129,7 +139,7 @@ def install_windows_nssm_service(
         # registry_set(root,path,keyname,service_dependencies,REG_MULTI_SZ)
 
 
-def make_httpd_config(wapt_root_dir, wapt_folder):
+def make_nginx_config(wapt_root_dir, wapt_folder):
     import jinja2
 
     if conf['wapt_folder'].endswith('\\') or conf['wapt_folder'].endswith('/'):
@@ -138,29 +148,15 @@ def make_httpd_config(wapt_root_dir, wapt_folder):
     ap_conf_dir = os.path.join(
         wapt_root_dir,
         'waptserver',
-        'apache-win32',
+        'nginx',
         'conf')
-    ap_file_name = 'httpd.conf'
+    ap_file_name = 'nginx.conf'
     ap_conf_file = os.path.join(ap_conf_dir, ap_file_name)
-    ap_ssl_dir = os.path.join(
-        wapt_root_dir,
-        'waptserver',
-        'apache-win32',
-        'ssl')
+    ap_ssl_dir = os.path.join(wapt_root_dir,'waptserver','nginx','ssl')
 
     # generate ssl keys
-    openssl = os.path.join(
-        wapt_root_dir,
-        'waptserver',
-        'apache-win32',
-        'bin',
-        'openssl.exe')
-    openssl_config = os.path.join(
-        wapt_root_dir,
-        'waptserver',
-        'apache-win32',
-        'conf',
-        'openssl.cnf')
+    openssl = os.path.join(wapt_root_dir,'openssl.exe')
+    openssl_config = os.path.join(wapt_root_dir,'template','openssl.cnf')
     fqdn = None
     try:
         import socket
@@ -171,23 +167,19 @@ def make_httpd_config(wapt_root_dir, wapt_folder):
         fqdn = 'wapt'
     if '.' not in fqdn:
         fqdn += '.local'
-    void = subprocess.check_output([
-        openssl,
-        'req',
-        '-new',
-        '-x509',
-        '-newkey', 'rsa:2048',
-        '-nodes',
-        '-days', '3650',
-        '-out', os.path.join(ap_ssl_dir, 'cert.pem'),
-        '-keyout', os.path.join(ap_ssl_dir, 'key.pem'),
-        '-config', openssl_config,
-        '-subj', '/C=/ST=/L=/O=/CN=' + fqdn + '/'
-    ], stderr=subprocess.STDOUT)
+
+    setuphelpers.mkdirs(ap_ssl_dir)
+
+    key = SSLPrivateKey(os.path.join(ap_ssl_dir,'key.pem'))
+    key.create()
+    key.save_as_pem()
+    crt = key.build_sign_certificate(cn=fqdn,is_ca=False)
+    crt.save_as_pem(os.path.join(ap_ssl_dir,'crt.pem'))
+
 
     # write config file
-    jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(ap_conf_dir))
-    template = jinja_env.get_template(ap_file_name + '.j2')
+    jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(wapt_root_dir,'waptserver','scripts')))
+    template = jinja_env.get_template('wapt.nginxconfig.template')
     template_variables = {
         'wapt_repository_path': os.path.dirname(conf['wapt_folder']),
         'apache_root_folder': os.path.dirname(ap_conf_dir),
@@ -202,44 +194,73 @@ def make_httpd_config(wapt_root_dir, wapt_folder):
     dst_file.close()
 
 
+def make_postgres_data_dir(wapt_root_dir):
+    pass
+
+
 def install_windows_service():
     """Setup waptserver, waptapache as a windows Service managed by nssm
     >>> install_windows_service([])
     """
-    install_apache_service = not options.without_apache  # '--without-apache' not in options
 
-    # register apache frontend
-    if install_apache_service:
-        make_httpd_config(wapt_root_dir, conf['wapt_folder'])
-        service_binary = os.path.abspath(
-            os.path.join(
-                wapt_root_dir,
-                'waptserver',
-                'apache-win32',
-                'bin',
-                'httpd.exe'))
-        service_parameters = ''
-        service_logfile = os.path.join(log_directory, 'nssm_apache.log')
-        install_windows_nssm_service(
-            'WAPTApache',
-            service_binary,
-            service_parameters,
-            service_logfile)
+    # register nginx frontend
+
+    make_nginx_config(wapt_root_dir, conf['wapt_folder'])
+    service_binary = os.path.abspath(
+        os.path.join(wapt_root_dir,'waptserver','nginx','nginx.exe'))
+
+    service_parameters = ''
+    service_logfile = os.path.join(log_directory, 'nssm_nginx.log')
+    install_windows_nssm_service('WAPTNginx',service_binary,service_parameters,service_logfile)
+
+    make_postgres_data_dir(wapt_root_dir)
+    service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptserver','nginx','nginx.exe'))
+    service_parameters = ''
+    service_logfile = os.path.join(log_directory, 'nssm_postgresql.log')
+    install_windows_nssm_service('WAPTPostgresql',service_binary,service_parameters,service_logfile)
 
     # register waptserver
-    service_binary = os.path.abspath(
-        os.path.join(
-            wapt_root_dir,
-            'waptpython.exe'))
+    service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe'))
     service_parameters = '"%s"' % os.path.abspath(__file__)
     service_logfile = os.path.join(log_directory, 'nssm_waptserver.log')
-    if install_apache_service:
-        service_dependencies = ''
-    else:
-        service_dependencies = ''
-    install_windows_nssm_service(
-        'WAPTServer',
-        service_binary,
-        service_parameters,
-        service_logfile,
-        service_dependencies)
+
+    service_dependencies = ''
+    install_windows_nssm_service('WAPTServer',service_binary,service_parameters,service_logfile,service_dependencies)
+
+if __name__ == '__main__':
+    usage = """\
+    %prog [-c configfile] [--devel] [action]
+
+    WAPT Server daemon.
+
+    action is either :
+      <nothing> : run service in foreground
+      install   : install as a Windows service managed by nssm
+
+    """
+
+    parser = OptionParser(usage=usage, version='waptserver_winsetup.py ' + __version__)
+    parser.add_option('-c','--config',dest='configfile',default=DEFAULT_CONFIG_FILE,
+           help='Config file full path (default: %default)')
+
+    parser.add_option('-l','--loglevel',dest='loglevel',default=None,type='choice',
+            choices=['debug',   'warning','info','error','critical'],
+            metavar='LOGLEVEL',help='Loglevel (default: warning)')
+    parser.add_option('-d','--devel',dest='devel',default=False,action='store_true',
+            help='Enable debug mode (for development only)')
+
+    (options, args) = parser.parse_args()
+
+    utils_set_devel_mode(options.devel)
+
+    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+
+
+    if options.loglevel is not None:
+        setloglevel(logger, options.loglevel)
+
+    log_directory = os.path.join(wapt_root_dir, 'log')
+    if not os.path.exists(log_directory):
+        os.mkdir(log_directory)
+
+    install_windows_service()
