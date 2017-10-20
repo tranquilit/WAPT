@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = '1.5.0.10'
+__version__ = '1.5.1.0'
 
 # old function to install waptserver on windows. need to be rewritten (switch to nginx, websocket, etc.)
 
@@ -47,6 +47,28 @@ from waptcrypto import SSLPrivateKey,SSLCertificate
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
 config_file = DEFAULT_CONFIG_FILE
 conf = waptserver_config.load_config(config_file)
+
+def fqdn():
+    result = None
+    try:
+        import socket
+        result = socket.getfqdn()
+    except:
+        pass
+    if not result:
+        result = 'wapt'
+    if '.' not in result:
+        result += '.local'
+
+    return result
+
+def create_dhparam(key_size=2048):
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.backends import default_backend
+    from cryptography.hazmat.primitives.asymmetric import dh
+    parameters = dh.generate_parameters(generator=2, key_size=key_size,backend=default_backend())
+    return parameters.parameter_bytes(serialization.Encoding.PEM,format=serialization.ParameterFormat.PKCS3)
+
 
 def install_windows_nssm_service(
         service_name, service_binary, service_parameters, service_logfile, service_dependencies=None):
@@ -154,65 +176,76 @@ def make_nginx_config(wapt_root_dir, wapt_folder):
     ap_conf_file = os.path.join(ap_conf_dir, ap_file_name)
     ap_ssl_dir = os.path.join(wapt_root_dir,'waptserver','nginx','ssl')
 
-    # generate ssl keys
-    openssl = os.path.join(wapt_root_dir,'openssl.exe')
-    openssl_config = os.path.join(wapt_root_dir,'template','openssl.cnf')
-    fqdn = None
-    try:
-        import socket
-        fqdn = socket.getfqdn()
-    except:
-        pass
-    if not fqdn:
-        fqdn = 'wapt'
-    if '.' not in fqdn:
-        fqdn += '.local'
-
     setuphelpers.mkdirs(ap_ssl_dir)
 
-    key = SSLPrivateKey(os.path.join(ap_ssl_dir,'key.pem'))
-    key.create()
-    key.save_as_pem()
-    crt = key.build_sign_certificate(cn=fqdn,is_ca=False)
-    crt.save_as_pem(os.path.join(ap_ssl_dir,'cert.pem'))
+    key_fn = os.path.join(ap_ssl_dir,'key.pem')
+    key = SSLPrivateKey(key_fn)
+    if not os.path.isfile(key_fn):
+        print('Create SSL RSA Key %s' % key_fn)
+        key.create()
+        key.save_as_pem()
 
+    cert_fn = os.path.join(ap_ssl_dir,'cert.pem')
+    if os.path.isfile(cert_fn):
+        crt = SSLCertificate(cert_fn)
+        if crt.cn != fqdn():
+            crt = key.build_sign_certificate(cn=fqdn(),is_code_signing=False)
+            print('Create X509 cert %s' % cert_fn)
+            crt.save_as_pem()
+    else:
+        crt = key.build_sign_certificate(cn=fqdn(),is_code_signing=False)
+        print('Create X509 cert %s' % cert_fn)
+        crt.save_as_pem(cert_fn)
+
+    dhparam_fn = os.path.join(ap_ssl_dir,'dhparam.pem')
+    if not os.path.isfile(dhparam_fn):
+        print('Create dhparam %s (this may take a while)' % dhparam_fn)
+        dhparam = create_dhparam()
+        open(dhparam_fn,'w').write(dhparam)
 
     # write config file
     jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(wapt_root_dir,'waptserver','scripts')))
-    template = jinja_env.get_template('wapt.nginxconfig.template')
+    template = jinja_env.get_template('waptwindows.nginxconfig.j2')
     template_variables = {
-        'wapt_repository_path': os.path.dirname(conf['wapt_folder']),
-        'apache_root_folder': os.path.dirname(ap_conf_dir),
+        'wapt_repository_path': os.path.dirname(conf['wapt_folder']).replace('\\','/'),
         'windows': True,
         'ssl': True,
-        'wapt_ssl_key_file': os.path.join(ap_ssl_dir, 'key.pem'),
-        'wapt_ssl_cert_file': os.path.join(ap_ssl_dir, 'cert.pem')
+        'wapt_ssl_key_file': key_fn.replace('\\','/'),
+        'wapt_ssl_cert_file': cert_fn.replace('\\','/'),
+        'dhparam_file': dhparam_fn.replace('\\','/'),
     }
+
     config_string = template.render(template_variables)
-    dst_file = file(ap_conf_file, 'wt')
-    dst_file.write(config_string)
-    dst_file.close()
+    print('Create nginx conf file %s' % ap_conf_file)
+    with open(ap_conf_file, 'wt') as dst_file:
+        dst_file.write(config_string)
 
 
 def make_postgres_data_dir(wapt_root_dir):
     pass
 
+def install_nginx_service():
+    """Setup nginx as a windows Service managed by nssm
+    - Creates SSL rsa Key and x509 self signed certificate with CN=my fqdn
+    - Creates dhparam.pem
+    - Initialize nginx config
 
-def install_windows_service():
-    """Setup waptserver, waptapache as a windows Service managed by nssm
-    >>> install_windows_service([])
+    >>> install_nginx_service()
     """
-
-    # register nginx frontend
-
     make_nginx_config(wapt_root_dir, conf['wapt_folder'])
     service_binary = os.path.abspath(
         os.path.join(wapt_root_dir,'waptserver','nginx','nginx.exe'))
 
     service_parameters = ''
     service_logfile = os.path.join(log_directory, 'nssm_nginx.log')
-    install_windows_nssm_service('WAPTNginx',service_binary,service_parameters,service_logfile)
+    service_name = 'WAPTNginx'
+    print('Register "%s" in registry' % service_name)
+    install_windows_nssm_service(service_name,service_binary,service_parameters,service_logfile)
 
+def install_postgresql_service():
+    """Setup waptserver, waptapache as a windows Service managed by nssm
+    >>> install_windows_service([])
+    """
     make_postgres_data_dir(wapt_root_dir)
     service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptserver','nginx','nginx.exe'))
     service_parameters = ''
@@ -229,13 +262,14 @@ def install_windows_service():
 
 if __name__ == '__main__':
     usage = """\
-    %prog [-c configfile] [--devel] [action]
+    %prog [-c configfile] [install_nginx install_postgresql install_waptserver]
 
-    WAPT Server daemon.
+    WAPT Server services setup.
 
-    action is either :
+    actions is either :
       <nothing> : run service in foreground
       install   : install as a Windows service managed by nssm
+      uninstall : uninstall Windows service managed by nssm
 
     """
 
@@ -250,9 +284,6 @@ if __name__ == '__main__':
             help='Enable debug mode (for development only)')
 
     (options, args) = parser.parse_args()
-
-    utils_set_devel_mode(options.devel)
-
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
 
 
@@ -263,4 +294,17 @@ if __name__ == '__main__':
     if not os.path.exists(log_directory):
         os.mkdir(log_directory)
 
-    install_windows_service()
+    if args == ['all']:
+        args = ['install_nginx','install_postgresql','install_waptserver']
+
+    for action in args:
+        if action == 'install_nginx':
+            print('Installing postgresql as a service managed by nssm')
+            install_nginx_service()
+        elif action == 'install_postgresql':
+            print('Installing NGINX as a service managed by nssm')
+            install_nginx_service()
+        elif action == 'install_waptserver':
+            print('Installing WAPT Server as a service managed by nssm')
+            install_nginx_service()
+
