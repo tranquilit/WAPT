@@ -643,7 +643,7 @@ def upgrade_db_structure():
             v.save()
 
 if __name__ == '__main__':
-    if platform.system != 'Windows' and getpass.getuser() != 'wapt':
+    if platform.system() != 'Windows' and getpass.getuser() != 'wapt':
         print """you should run this program as wapt:
                      sudo -u wapt python /opt/wapt/waptserver/waptserver_model.py  <action>
                  actions : init_db

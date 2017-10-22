@@ -21,6 +21,7 @@
 #
 # -----------------------------------------------------------------------
 __version__ = '1.5.1.0'
+__version__ = '1.5.0.10'
 
 # old function to install waptserver on windows. need to be rewritten (switch to nginx, websocket, etc.)
 
@@ -122,6 +123,7 @@ def install_windows_nssm_service(
         'DelayedAutostart': 1,
         'DisplayName': 'sz:%s' % service_name,
         'AppStdout': r'expand_sz:{}'.format(service_logfile),
+        'ObjectName': r'NT AUTHORITY\NetworkService',
         'Parameters\\AppStderr': r'expand_sz:{}'.format(service_logfile),
         'Parameters\\AppParameters': r'expand_sz:{}'.format(service_parameters),
         'Parameters\\AppNoConsole': 1,
@@ -205,14 +207,17 @@ def make_nginx_config(wapt_root_dir, wapt_folder):
 
     # write config file
     jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(wapt_root_dir,'waptserver','scripts')))
-    template = jinja_env.get_template('waptwindows.nginxconfig.j2')
+    template = jinja_env.get_template('wapt-nginxconfig-win32.j2')
     template_variables = {
         'wapt_repository_path': os.path.dirname(conf['wapt_folder']).replace('\\','/'),
         'windows': True,
         'ssl': True,
+        'force_https': False,
+        'use_kerberos': False,
         'wapt_ssl_key_file': key_fn.replace('\\','/'),
         'wapt_ssl_cert_file': cert_fn.replace('\\','/'),
         'dhparam_file': dhparam_fn.replace('\\','/'),
+        'log_dir': os.path.join(wapt_root_dir,'waptserver','nginx','logs').replace('\\','/'),
     }
 
     config_string = template.render(template_variables)
@@ -222,41 +227,66 @@ def make_nginx_config(wapt_root_dir, wapt_folder):
 
 
 def make_postgres_data_dir(wapt_root_dir):
-    pass
 
-def install_nginx_service():
-    """Setup nginx as a windows Service managed by nssm
-    - Creates SSL rsa Key and x509 self signed certificate with CN=my fqdn
-    - Creates dhparam.pem
-    - Initialize nginx config
+    print ("init pgsql data directory")
 
-    >>> install_nginx_service()
+    pg_data_dir = os.path.join(wapt_root_dir,'waptserver','pgsql','data')
+    setuphelpers.mkdirs(pg_data_dir)
+
+    setuphelpers.run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % pg_data_dir)
+
+    # should check if tasks already exist or not
+    # there is a bug in setuphelper.task_exists()
+    try:
+        setuphelpers.run("schtasks /delete /tn init_wapt_pgsql /f")
+    except:
+        pass
+
+    setuphelpers.run(r"schtasks /create /xml %s /tn init_wapt_pgsql"  % os.path.join(wapt_root_dir,
+        'waptserver','scripts','init_pgsql.xml'))
+
+    #should check if task is still running
+    import time
+    time.sleep(30)
+    try:
+        setuphelpers.run("schtasks /delete /tn init_wapt_pgsql /f")
+    except:
+        pass
+
+def install_windows_service():
+    """Setup waptserver, waptapache as a windows Service managed by nssm
+    >>> install_windows_service([])
     """
-    make_nginx_config(wapt_root_dir, conf['wapt_folder'])
-    service_binary = os.path.abspath(
-        os.path.join(wapt_root_dir,'waptserver','nginx','nginx.exe'))
 
+    # register nginx frontend
+    repository_path = os.path.join(wapt_root_dir,'waptserver','repository')
+    for repo_path in ('wapt','wapt-host','wapt-hostref'):
+        mkdir_p(os.path.join(repository_path,repo_path))
+        setuphelpers.run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(repository_path,repo_path))
+    setuphelpers.run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(
+                wapt_root_dir,'waptserver','nginx','logs'))
+
+    make_nginx_config(wapt_root_dir, conf['wapt_folder'])
+    service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptserver','nginx','nginx.exe'))
     service_parameters = ''
     service_logfile = os.path.join(log_directory, 'nssm_nginx.log')
+    
     service_name = 'WAPTNginx'
     print('Register "%s" in registry' % service_name)
     install_windows_nssm_service(service_name,service_binary,service_parameters,service_logfile)
 
-def install_postgresql_service():
-    """Setup waptserver, waptapache as a windows Service managed by nssm
-    >>> install_windows_service([])
-    """
-    make_postgres_data_dir(wapt_root_dir)
-    service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptserver','nginx','nginx.exe'))
-    service_parameters = ''
+    # register postgres database
+    if not os.path.exists(os.path.join(wapt_root_dir,'waptserver','pgsql','data')):
+        make_postgres_data_dir(wapt_root_dir)
+    service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptserver','pgsql','bin','postgres.exe'))
+    service_parameters = '-D %s' % os.path.join(wapt_root_dir,'waptserver','pgsql','data')
     service_logfile = os.path.join(log_directory, 'nssm_postgresql.log')
     install_windows_nssm_service('WAPTPostgresql',service_binary,service_parameters,service_logfile)
 
     # register waptserver
     service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe'))
-    service_parameters = '"%s"' % os.path.abspath(__file__)
+    service_parameters = '"%s"' % os.path.join(wapt_root_dir,'waptserver','waptserver.py')
     service_logfile = os.path.join(log_directory, 'nssm_waptserver.log')
-
     service_dependencies = ''
     install_windows_nssm_service('WAPTServer',service_binary,service_parameters,service_logfile,service_dependencies)
 
