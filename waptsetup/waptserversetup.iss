@@ -40,7 +40,7 @@
 #define FastDebug
 #endif
 
-#include "waptsetup.iss"
+#include "wapt.iss"
 
 [Files]
 
