@@ -62,7 +62,7 @@ Source: "..\waptserver\pgsql\*"; DestDir: "{app}\waptserver\pgsql"; Flags: creat
 Source: "..\waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: createallsubdirs recursesubdirs; Tasks: InstallNGINX
 
 ;#ifndef FastDebug
-#endif
+;#endif
 
 ; For UninstallRun
 Source: "..\waptserver\uninstall-services.bat"; Destdir: "{app}\waptserver\"
