@@ -1,6 +1,6 @@
 #ifndef edition
 
-#define edition "waptserver"
+#define edition "waptserversetup"
 #define AppName "WAPT Server"
 #define default_repo_url "http://localhost:8080/wapt/"
 #define default_wapt_server "http://localhost:8080"
@@ -66,6 +66,17 @@ Source: "..\waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: creat
 
 ; For UninstallRun
 Source: "..\waptserver\uninstall-services.bat"; Destdir: "{app}\waptserver\"
+
+[Setup]
+OutputBaseFilename={#edition}
+DefaultDirName=c:\wapt
+WizardImageFile=..\tranquilit.bmp
+DisableProgramGroupPage=yes
+
+[Languages]
+Name:"en"; MessagesFile: "compiler:Default.isl"
+Name:"fr";MessagesFile: "compiler:Languages\French.isl"
+Name:"de";MessagesFile: "compiler:Languages\German.isl"
 
 [Dirs]
 Name: "{app}\waptserver\repository"
