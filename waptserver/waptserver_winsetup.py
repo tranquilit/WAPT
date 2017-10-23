@@ -21,7 +21,6 @@
 #
 # -----------------------------------------------------------------------
 __version__ = '1.5.1.0'
-__version__ = '1.5.0.10'
 
 # old function to install waptserver on windows. need to be rewritten (switch to nginx, websocket, etc.)
 
@@ -69,7 +68,6 @@ def create_dhparam(key_size=2048):
     from cryptography.hazmat.primitives.asymmetric import dh
     parameters = dh.generate_parameters(generator=2, key_size=key_size,backend=default_backend())
     return parameters.parameter_bytes(serialization.Encoding.PEM,format=serialization.ParameterFormat.PKCS3)
-
 
 def install_windows_nssm_service(
         service_name, service_binary, service_parameters, service_logfile, service_dependencies=None):
@@ -229,10 +227,8 @@ def make_nginx_config(wapt_root_dir, wapt_folder):
 def make_postgres_data_dir(wapt_root_dir):
 
     print ("init pgsql data directory")
-
     pg_data_dir = os.path.join(wapt_root_dir,'waptserver','pgsql','data')
     setuphelpers.mkdirs(pg_data_dir)
-
     setuphelpers.run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % pg_data_dir)
 
     # should check if tasks already exist or not
@@ -257,8 +253,10 @@ def install_windows_service():
     """Setup waptserver, waptapache as a windows Service managed by nssm
     >>> install_windows_service([])
     """
+    pass
 
-    # register nginx frontend
+def install_nginx_service():
+    print("register nginx frontend")
     repository_path = os.path.join(wapt_root_dir,'waptserver','repository')
     for repo_path in ('wapt','wapt-host','wapt-hostref'):
         mkdir_p(os.path.join(repository_path,repo_path))
@@ -270,12 +268,14 @@ def install_windows_service():
     service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptserver','nginx','nginx.exe'))
     service_parameters = ''
     service_logfile = os.path.join(log_directory, 'nssm_nginx.log')
-    
+
     service_name = 'WAPTNginx'
-    print('Register "%s" in registry' % service_name)
+    #print('Register "%s" in registry' % service_name)
     install_windows_nssm_service(service_name,service_binary,service_parameters,service_logfile)
 
-    # register postgres database
+def install_postgresql_service():
+    print ("install postgres database")
+
     if not os.path.exists(os.path.join(wapt_root_dir,'waptserver','pgsql','data')):
         make_postgres_data_dir(wapt_root_dir)
     service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptserver','pgsql','bin','postgres.exe'))
@@ -283,7 +283,8 @@ def install_windows_service():
     service_logfile = os.path.join(log_directory, 'nssm_postgresql.log')
     install_windows_nssm_service('WAPTPostgresql',service_binary,service_parameters,service_logfile)
 
-    # register waptserver
+def install_waptserver_service():
+    print("install waptserver")
     service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe'))
     service_parameters = '"%s"' % os.path.join(wapt_root_dir,'waptserver','waptserver.py')
     service_logfile = os.path.join(log_directory, 'nssm_waptserver.log')
@@ -333,8 +334,8 @@ if __name__ == '__main__':
             install_nginx_service()
         elif action == 'install_postgresql':
             print('Installing NGINX as a service managed by nssm')
-            install_nginx_service()
+            install_postgresql_service()
         elif action == 'install_waptserver':
             print('Installing WAPT Server as a service managed by nssm')
-            install_nginx_service()
+            install_waptserver_service()
 
