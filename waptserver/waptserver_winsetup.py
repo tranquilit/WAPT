@@ -43,6 +43,7 @@ import logging
 import subprocess
 import setuphelpers
 from waptcrypto import SSLPrivateKey,SSLCertificate
+import jinja2
 
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
 config_file = DEFAULT_CONFIG_FILE
@@ -162,7 +163,6 @@ def install_windows_nssm_service(
 
 
 def make_nginx_config(wapt_root_dir, wapt_folder):
-    import jinja2
 
     if conf['wapt_folder'].endswith('\\') or conf['wapt_folder'].endswith('/'):
         conf['wapt_folder'] = conf['wapt_folder'][:-1]
@@ -205,7 +205,7 @@ def make_nginx_config(wapt_root_dir, wapt_folder):
 
     # write config file
     jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(wapt_root_dir,'waptserver','scripts')))
-    template = jinja_env.get_template('wapt-nginxconfig-win32.j2')
+    template = jinja_env.get_template('waptwindows.nginxconfig.j2')
     template_variables = {
         'wapt_repository_path': os.path.dirname(conf['wapt_folder']).replace('\\','/'),
         'windows': True,
@@ -238,8 +238,20 @@ def make_postgres_data_dir(wapt_root_dir):
     except:
         pass
 
-    setuphelpers.run(r"schtasks /create /xml %s /tn init_wapt_pgsql"  % os.path.join(wapt_root_dir,
-        'waptserver','scripts','init_pgsql.xml'))
+    # note: init.pgsql.xml.j2 is utf8 encoded even if the xml header says it is utf16.
+    # by default exported xml tasks are utf16-le encoded with BOM, but there are some issue during templating
+    # so it is converted to utf8 without bom
+    jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(wapt_root_dir,'waptserver','scripts')))
+    template = jinja_env.get_template('init_pgsql.xml.j2')
+    template_variables = {
+        'wapt_root_dir': wapt_root_dir,
+    }
+    task_conf_file= os.path.join(wapt_root_dir,'waptserver','scripts','init_pgsql.xml')
+    config_string = template.render(template_variables)
+    with open(task_conf_file, 'wt') as dst_file:
+        dst_file.write(config_string)
+
+    setuphelpers.run(r"schtasks /create /xml %s /tn init_wapt_pgsql"  % task_conf_file)
 
     #should check if task is still running
     import time
@@ -276,7 +288,7 @@ def install_nginx_service():
 def install_postgresql_service():
     print ("install postgres database")
 
-    if not os.path.exists(os.path.join(wapt_root_dir,'waptserver','pgsql','data')):
+    if not os.path.exists(os.path.join(wapt_root_dir,'waptserver','pgsql','data','postgresql.conf')):
         make_postgres_data_dir(wapt_root_dir)
     service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptserver','pgsql','bin','postgres.exe'))
     service_parameters = '-D %s' % os.path.join(wapt_root_dir,'waptserver','pgsql','data')
