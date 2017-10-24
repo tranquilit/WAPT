@@ -42,6 +42,7 @@ from optparse import OptionParser
 import logging
 import subprocess
 import setuphelpers
+import datetime
 from waptcrypto import SSLPrivateKey,SSLCertificate
 import jinja2
 
@@ -189,9 +190,10 @@ def make_nginx_config(wapt_root_dir, wapt_folder):
     if os.path.isfile(cert_fn):
         crt = SSLCertificate(cert_fn)
         if crt.cn != fqdn():
+            os.rename(cert_fn,"%s-%s.old" % (cert_fn,'{:%Y%m%d-%Hh%Mm%Ss}'.format(datetime.datetime.now())))
             crt = key.build_sign_certificate(cn=fqdn(),is_code_signing=False)
             print('Create X509 cert %s' % cert_fn)
-            crt.save_as_pem()
+            crt.save_as_pem(cert_fn)
     else:
         crt = key.build_sign_certificate(cn=fqdn(),is_code_signing=False)
         print('Create X509 cert %s' % cert_fn)
