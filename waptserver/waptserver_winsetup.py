@@ -276,6 +276,9 @@ def install_nginx_service():
     for repo_path in ('wapt','wapt-host','wapt-hostref'):
         mkdir_p(os.path.join(repository_path,repo_path))
         setuphelpers.run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(repository_path,repo_path))
+    mkdir_p(os.path.join(wapt_root_dir,'waptserver','nginx','temp'))
+    setuphelpers.run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % (os.path.join(wapt_root_dir,'waptserver','nginx','temp')))
+
     setuphelpers.run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(
                 wapt_root_dir,'waptserver','nginx','logs'))
 
