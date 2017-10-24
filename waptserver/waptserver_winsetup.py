@@ -218,6 +218,7 @@ def make_nginx_config(wapt_root_dir, wapt_folder):
         'wapt_ssl_cert_file': cert_fn.replace('\\','/'),
         'dhparam_file': dhparam_fn.replace('\\','/'),
         'log_dir': os.path.join(wapt_root_dir,'waptserver','nginx','logs').replace('\\','/'),
+        'wapt_root_dir' : wapt_root_dir.replace('\\','/'),
     }
 
     config_string = template.render(template_variables)
@@ -296,6 +297,7 @@ def install_postgresql_service():
     service_parameters = '-D %s' % os.path.join(wapt_root_dir,'waptserver','pgsql','data')
     service_logfile = os.path.join(log_directory, 'nssm_postgresql.log')
     install_windows_nssm_service('WAPTPostgresql',service_binary,service_parameters,service_logfile)
+    setuphelpers.run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % log_directory)
 
 def install_waptserver_service():
     print("install waptserver")

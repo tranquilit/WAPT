@@ -1,9 +1,7 @@
 #user  nobody;
 worker_processes  1;
 
-#error_log  logs/error.log;
-#error_log  logs/error.log  notice;
-#error_log  logs/error.log  info;
+error_log  "{{ wapt_root_dir}}/waptserver/nginx/logs/error.log";
 
 #pid        logs/nginx.pid;
 
@@ -19,7 +17,7 @@ http {
                       '$status $body_bytes_sent "$http_referer" '
                       '"$http_user_agent" "$http_x_forwarded_for"';
 
-    access_log  logs/access.log main;
+    access_log  "{{ wapt_root_dir}}/waptserver/nginx/logs/access.log";
 
     sendfile        on;
     #tcp_nopush     on;
