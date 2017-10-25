@@ -230,7 +230,7 @@ def make_nginx_config(wapt_root_dir, wapt_folder):
 def make_postgres_data_dir(wapt_root_dir):
 
     print ("init pgsql data directory")
-    pg_data_dir = os.path.join(wapt_root_dir,'waptserver','pgsql','data')
+    pg_data_dir = os.path.join(wapt_root_dir,'waptserver','pgsql_data')
     setuphelpers.mkdirs(pg_data_dir)
     setuphelpers.run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % pg_data_dir)
 
@@ -297,7 +297,7 @@ def install_postgresql_service():
     if not os.path.exists(os.path.join(wapt_root_dir,'waptserver','pgsql','data','postgresql.conf')):
         make_postgres_data_dir(wapt_root_dir)
     service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptserver','pgsql','bin','postgres.exe'))
-    service_parameters = '-D %s' % os.path.join(wapt_root_dir,'waptserver','pgsql','data')
+    service_parameters = '-D %s' % os.path.join(wapt_root_dir,'waptserver','pgsql_data')
     service_logfile = os.path.join(log_directory, 'nssm_postgresql.log')
     install_windows_nssm_service('WAPTPostgresql',service_binary,service_parameters,service_logfile)
     setuphelpers.run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % log_directory)

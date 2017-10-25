@@ -47,7 +47,10 @@ msvc = wget('https://download.microsoft.com/download/d/d/9/dd9a82d0-52ef-40db-8d
 run([p7zip,'e',msvc,'-o'+makepath(tempfile.gettempdir,'vcredist'),'-y'])
 run([p7zip,'e',makepath(tempfile.gettempdir,'vcredist','vc_red.cab'),'-o'+makepath(tempfile.gettempdir,'vcredist','dll'),'-y'])
 for dll in ('msvcm90.dll.30729.01.Microsoft_VC90_CRT_x86.SP','msvcp90.dll.30729.01.Microsoft_VC90_CRT_x86.SP','msvcr90.dll.30729.01.Microsoft_VC90_CRT_x86.SP'):
-    os.rename(makepath(tempfile.gettempdir,'vcredist','dll',dll),makepath(wapt_base_dir,dll.replace('.30729.01.Microsoft_VC90_CRT_x86.SP','')))
+    dest_path = makepath(wapt_base_dir,dll.replace('.30729.01.Microsoft_VC90_CRT_x86.SP',''))
+    if os.path.exists(dest_path):
+        os.unlink(dest_path)
+    os.rename(makepath(tempfile.gettempdir,'vcredist','dll',dll),dest_path)
 
 
 print('Get and unzip nssm')
@@ -60,11 +63,15 @@ for f in nssm_files:
     if os.path.isfile(new_name):
         os.unlink(new_name)
     os.renames(f,new_name)
+    # fix ACL extraction snafu in zipfile library. We reset acl after creation.
+    # It is only need for dev time. Innosetup reset things properly when installing
+    run('icacls %s /t /Q /C /RESET' % new_name)
 print nssm_files
 
 
 print('Get Postgresql zip')
 pgsql_zip = wget('https://get.enterprisedb.com/postgresql/postgresql-9.4.14-1-windows-x64-binaries.zip',resume=True,md5='b69d2e6135a0061dc5ecd968f3d0a31e')
+
 if os.path.isdir(makepath(wapt_base_dir,'waptserver','pgsql')):
     shutil.rmtree(makepath(wapt_base_dir,'waptserver','pgsql'))
 pg_files = unzip(pgsql_zip,target=makepath(wapt_base_dir,'waptserver'),filenames=['pgsql/bin/*','pgsql/lib/*','pgsql/share/*'])
