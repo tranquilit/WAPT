@@ -97,7 +97,7 @@ interface
       user:AnsiString='';password:AnsiString='';OnHTTPWork:TWorkEvent=Nil;VerifyCertificateFilename:String=''):ISuperObject;
 
   function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8String='';
-            default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;OverrideBaseName:Utf8String='';
+            default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;WaptEdition:Utf8String='waptagent';
             VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True):Utf8String;
 
   function pyformat(template:String;params:ISuperobject):String;
@@ -1472,10 +1472,10 @@ end;
 
 
 function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8String='';
-          default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;OverrideBaseName:Utf8String='';
+          default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;WaptEdition:Utf8String='waptagent';
           VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True):Utf8String;
 var
-  iss_template,custom_iss,source,target,outputname : utf8String;
+  iss_template,custom_iss,source,target : utf8String;
   iss,new_iss,line : ISuperObject;
   wapt_base_dir,inno_fn,p12keypath,signtool: Utf8String;
 
@@ -1486,8 +1486,8 @@ var
 
 begin
     wapt_base_dir:= WaptBaseDir;
-    iss_template := AppendPathDelim(wapt_base_dir) + 'waptsetup\waptsetup.iss';
-    custom_iss := AppendPathDelim(wapt_base_dir) + 'waptsetup\custom_waptsetup.iss';
+    iss_template := AppendPathDelim(wapt_base_dir) + 'waptsetup\waptagent.iss';
+    custom_iss := AppendPathDelim(wapt_base_dir) + 'waptsetup\custom_waptagent.iss';
     iss := SplitLines(FileToString(iss_template));
     new_iss := TSuperObject.Create(stArray);
     for line in iss do
@@ -1504,16 +1504,14 @@ begin
             new_iss.AsArray.Add(format('#define output_dir "%s"' ,[destination]))
         else if startswith(line,'#define Company') then
             new_iss.AsArray.Add(format('#define Company "%s"' ,[company]))
-        else if startswith(line,'#define install_certs') then
-            new_iss.AsArray.Add(format('#define install_certs 1' ,[]))
-        else if startswith(line,'#define is_waptagent') then
-            new_iss.AsArray.Add(format('#define is_waptagent 1' ,[]))
-        else if startswith(line,'#define use_kerberos') then
+        else if startswith(line,'#define set_install_certs') then
+            new_iss.AsArray.Add(format('#define set_install_certs "1"' ,[]))
+        else if startswith(line,'#define set_use_kerberos') then
         begin
             if UseKerberos then
-              new_iss.AsArray.Add(format('#define use_kerberos 1' ,[]))
+              new_iss.AsArray.Add(format('#define set_use_kerberos "1"' ,[]))
             else
-              new_iss.AsArray.Add(format('#define use_kerberos 0' ,[]))
+              new_iss.AsArray.Add(format('#define set_use_kerberos "0"' ,[]))
         end
         else if startswith(line,'#define check_certificates_validity') then
         begin
@@ -1522,20 +1520,12 @@ begin
             else
               new_iss.AsArray.Add(format('#define check_certificates_validity 0' ,[]))
         end
-        else if startswith(line,'#define verify_cert') then
-          new_iss.AsArray.Add(format('#define verify_cert "%s"',[VerifyCert]))
+        else if startswith(line,'#define set_verify_cert') then
+          new_iss.AsArray.Add(format('#define set_verify_cert "%s"',[VerifyCert]))
         else if startswith(line,'WizardImageFile=') then
 
-        else if startswith(line,'OutputBaseFilename') then
-            begin
-                if length(OverrideBaseName) <> 0 then
-                begin
-                    outputname := OverrideBaseName;
-                    new_iss.AsArray.Add(format('OutputBaseFilename=%s' ,[outputname]));
-                end
-                else
-                    new_iss.AsArray.Add(line);
-            end
+        else if startswith(line,'#define edition') and (waptedition <> '') then
+          new_iss.AsArray.Add(format('#define edition "%s"' ,[waptedition]))
         else if not startswith(line,'#define signtool') then
             new_iss.AsArray.Add(line);
     end;
@@ -1551,7 +1541,7 @@ begin
     if not FileExists(inno_fn) then
         raise Exception.CreateFmt(rsInnoSetupUnavailable, [inno_fn]);
     Run(format('"%s"  "%s"',[inno_fn,custom_iss]),'',3600000,'','','',OnProgress);
-    Result := AppendPathDelim(destination) + outputname + '.exe';
+    Result := AppendPathDelim(destination) + WaptEdition + '.exe';
     signtool :=  AppendPathDelim(wapt_base_dir) + 'utils\signtool.exe';
     p12keyPath := ChangeFileExt(GetWaptPersonalCertificatePath,'.p12');
     if FileExists(signtool) and FileExists(p12keypath) then

@@ -8,7 +8,7 @@
 #define output_dir "."
 #define Company "Tranquil IT Systems"
 #define send_usage_report 0
-#define is_waptagent 0
+
 ; if not empty, set value 0 or 1 will be defined in wapt-get.ini
 #define set_use_kerberos "0"
 
@@ -381,14 +381,14 @@ end;
 
 function IsWaptAgent:Boolean;
 begin
-	Result := {#is_waptagent} <> 0;
+	Result := '{#edition}' = 'waptagent';
 end;
 
 function RelocateCertDirWaptBase(Param: String):String;
 var
   certdir: String;
 begin
-  certdir := ExpandConstant('{param:verify_cert|#verify_cert}');
+  certdir := ExpandConstant('{param:verify_cert|{#set_verify_cert}}');
   if (pos('c:\tranquilit\wapt',lowercase(certdir))=1) then
     result := ExpandConstant('{app}')+'\'+copy(certdir,length('c:\tranquilit\wapt')+1,255)
   else if (pos('c:\program files (x86)\wapt',lowercase(certdir))=1) then

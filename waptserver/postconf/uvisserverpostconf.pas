@@ -521,7 +521,7 @@ begin
       // IniWriteString(WaptBaseDir+'\conf\waptserver.ini' ,'Options','wapt_password',
       //  '$pbkdf2-sha256$29000$'+salt+'$'+EncodeStringBase64(PBKDF2(EdPwd1.Text,salt,29000,32,TDCP_sha256)));
 
-      IniWriteString(WaptBaseDir+'\conf\waptserver.ini' ,'Options','wapt_password',
+      IniWriteString(WaptBaseDir+'\conf\waptserver.ini' ,'options','wapt_password',
         Run(AppendPathDelim(WaptBaseDir)+'waptpython.exe -c "from passlib.hash import pbkdf2_sha256; print(pbkdf2_sha256.hash('''+EdPwd1.Text+'''))"')
         );
 
@@ -541,10 +541,6 @@ begin
       ProgressStep(5,8);
       Run('cmd /C net start waptserver');
 
-      ProgressTitle(rsRestartingWaptService);
-      ProgressStep(6,8);
-      Run('cmd /C net start waptservice');
-
       retry := 3;
       repeat
         sores := WAPTServerJsonGet('ping',[],'GET',6000);
@@ -556,46 +552,55 @@ begin
       until (retry<=0) or((sores<>Nil) and sores.B['success']);
       Sleep(2000);
 
-      retry := 3;
-      repeat
-        sores := WAPTLocalJsonGet('runstatus','','',5000);
-        if sores<>Nil then
-          ProgressTitle(sores.S['0.value'])
-        else
-          sleep(2000);
-        dec(Retry);
-      until (retry<=0) or (sores<>Nil);
-
-      ProgressTitle(rsRegisteringHostOnServer);
-      retry := 3;
-      taskid:=-1;
-      repeat
-        sores := WAPTLocalJsonGet('update.json?notify_server=1','','',5000);
-        if sores<>Nil then
+      if GetServiceStatusByName('','WAPTService') <> ssUnknown then
+      begin
+        if GetServiceStatusByName('','WAPTService') in [ssStopped]  then
         begin
-          ProgressTitle(sores.S['description']);
-          taskid := sores.I['id'];
+		        ProgressTitle(rsRestartingWaptService);
+		        ProgressStep(6,8);
+		        Run('cmd /C net start waptservice');
         end;
-        if not taskid<0 then
-          Sleep(2000);
-        dec(Retry);
-      until (retry<=0) or (taskid>=0);
+		        retry := 3;
+		        repeat
+		          sores := WAPTLocalJsonGet('runstatus','','',5000);
+		          if sores<>Nil then
+		            ProgressTitle(sores.S['0.value'])
+		          else
+		            sleep(2000);
+		          dec(Retry);
+		        until (retry<=0) or (sores<>Nil);
 
-      ProgressTitle(rsUpdatingLocalPackages);
-      repeat
-        sores := WAPTLocalJsonGet('task.json?id='+inttostr(taskid),'','',5000);
-        if sores<>Nil then
-        begin
-          ProgressTitle(sores.S['summary']);
-          done := sores.S['finish_date'] <> '';
-        end;
-        if not done then
-          Sleep(2000);
-        dec(Retry);
-      until (retry<=0) or done;
-      ProgressStep(8,8);
-      //runwapt('{app}\wapt-get.exe -D update');
-      //ProgressTitle(WAPTLocalJsonGet('update.json?notify_server=1','','',5000).S['description']);
+		        ProgressTitle(rsRegisteringHostOnServer);
+		        retry := 3;
+		        taskid:=-1;
+		        repeat
+		          sores := WAPTLocalJsonGet('update.json?notify_server=1','','',5000);
+		          if sores<>Nil then
+		          begin
+		            ProgressTitle(sores.S['description']);
+		            taskid := sores.I['id'];
+		          end;
+		          if not taskid<0 then
+		            Sleep(2000);
+		          dec(Retry);
+		        until (retry<=0) or (taskid>=0);
+
+		        ProgressTitle(rsUpdatingLocalPackages);
+		        repeat
+		          sores := WAPTLocalJsonGet('task.json?id='+inttostr(taskid),'','',5000);
+		          if sores<>Nil then
+		          begin
+		            ProgressTitle(sores.S['summary']);
+		            done := sores.S['finish_date'] <> '';
+		          end;
+		          if not done then
+		            Sleep(2000);
+		          dec(Retry);
+		        until (retry<=0) or done;
+		        ProgressStep(8,8);
+		        //runwapt('{app}\wapt-get.exe -D update');
+		        //ProgressTitle(WAPTLocalJsonGet('update.json?notify_server=1','','',5000).S['description']);
+      end;
       ActNext.Execute;
 
 
@@ -621,9 +626,34 @@ begin
 end;
 
 procedure TVisWAPTServerPostConf.ActCreateKeyExecute(Sender: TObject);
+var
+  KeyFilename:String;
+  CrtFilename:String;
+  Password:String;
 begin
-  EdPrivateKeyFN.Text := CreateSelfSignedCert(EdKeyName.Text,'',WaptBaseDir,DirectoryCert.Text,
-    edCountry.Text,edLocality.Text,edOrganization.Text,edUnit.Text,edCommonName.Text,edEmail.Text,'',True);
+  KeyFilename:=AppendPathDelim(DirectoryCert.Text)+EdKeyName.Text+'.pem';
+  CrtFilename:=AppendPathDelim(DirectoryCert.Text)+EdKeyName.Text+'.crt';
+  Password := EdPwd1.Text;
+
+  Run(AppendPathDelim(WaptBaseDir)+'waptpython.exe -c '+
+    '"from waptcrypto import *;'+
+    'key = SSLPrivateKey();'+
+    'key.create();'+
+    'key.save_as_pem(r'''+KeyFilename+''',r'''+Password+''');'+
+    'crt = key.build_sign_certificate(is_code_signing=True,is_ca=True,'+
+      'cn=r'''+edCommonName.Text+''','+
+      'email=r'''+edEmail.Text+''','+
+      'country=r'''+edCountry.Text+''','+
+      'locality=r'''+edLocality.Text+''','+
+      'organizational_unit=r'''+edUnit.Text+''','+
+      'organization=r'''+edOrganization.Text+''','+
+      ');'+
+    'crt.save_as_pem(r'''+CrtFilename+''');'+
+    '"'
+    );
+
+  //EdPrivateKeyFN.Text := CreateSelfSignedCert(EdKeyName.Text,'',WaptBaseDir,DirectoryCert.Text,
+  //  edCountry.Text,edLocality.Text,edOrganization.Text,edUnit.Text,edCommonName.Text,edEmail.Text,'',True);
 end;
 
 procedure TVisWAPTServerPostConf.ActCheckDNSExecute(Sender: TObject);
@@ -673,6 +703,7 @@ begin
     Finish;
     if FileExists(waptsetupPath) then
     try
+      WaptBaseDir;
       Start;
       ProgressTitle(rsProgressTitle);
       SORes := WAPTServerJsonMultipartFilePost(edWAPTServerURL1.Text,'upload_waptsetup',[],'file',waptsetupPath,'admin',EdPwd1.Text,@IdHTTPWork);

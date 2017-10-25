@@ -8,7 +8,7 @@
 #define output_dir "."
 #define Company "Tranquil IT Systems"
 #define send_usage_report 0
-#define is_waptagent 0
+
 ; if not empty, set value 0 or 1 will be defined in wapt-get.ini
 #define set_use_kerberos "0"
 

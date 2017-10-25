@@ -1124,7 +1124,6 @@ class SSLPrivateKey(object):
             )
 
         crypto_crt = builder.sign(ca_signing_key.rsa,algorithm=hashes.SHA256(), backend=default_backend())
-        print locals()
         return SSLCertificate(crt = crypto_crt)
 
     def public_key(self):
