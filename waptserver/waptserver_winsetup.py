@@ -199,12 +199,6 @@ def make_nginx_config(wapt_root_dir, wapt_folder):
         print('Create X509 cert %s' % cert_fn)
         crt.save_as_pem(cert_fn)
 
-    dhparam_fn = os.path.join(ap_ssl_dir,'dhparam.pem')
-    if not os.path.isfile(dhparam_fn):
-        print('Create dhparam %s (this may take a while)' % dhparam_fn)
-        dhparam = create_dhparam()
-        open(dhparam_fn,'w').write(dhparam)
-
     # write config file
     jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(wapt_root_dir,'waptserver','scripts')))
     template = jinja_env.get_template('waptwindows.nginxconfig.j2')
@@ -216,7 +210,6 @@ def make_nginx_config(wapt_root_dir, wapt_folder):
         'use_kerberos': False,
         'wapt_ssl_key_file': key_fn.replace('\\','/'),
         'wapt_ssl_cert_file': cert_fn.replace('\\','/'),
-        'dhparam_file': dhparam_fn.replace('\\','/'),
         'log_dir': os.path.join(wapt_root_dir,'waptserver','nginx','logs').replace('\\','/'),
         'wapt_root_dir' : wapt_root_dir.replace('\\','/'),
     }
@@ -296,6 +289,9 @@ def install_postgresql_service():
 
     if not os.path.exists(os.path.join(wapt_root_dir,'waptserver','pgsql','data','postgresql.conf')):
         make_postgres_data_dir(wapt_root_dir)
+
+    setuphelpers.run('"%s" /passive /quiet' %os.path.join(wapt_root_dir,'waptserver','pgsql','vcredist_x64.exe'))
+
     service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptserver','pgsql','bin','postgres.exe'))
     service_parameters = '-D %s' % os.path.join(wapt_root_dir,'waptserver','pgsql_data')
     service_logfile = os.path.join(log_directory, 'nssm_postgresql.log')

@@ -52,7 +52,6 @@ for dll in ('msvcm90.dll.30729.01.Microsoft_VC90_CRT_x86.SP','msvcp90.dll.30729.
         os.unlink(dest_path)
     os.rename(makepath(tempfile.gettempdir,'vcredist','dll',dll),dest_path)
 
-
 print('Get and unzip nssm')
 nssm_zip = wget('https://nssm.cc/ci/nssm-2.24-101-g897c7ad.zip',resume=True,md5='63175d3830b8a5cfd254353c4f561e5c')
 nssm_files = unzip(nssm_zip,filenames=['*/win*/nssm.exe'])
@@ -75,6 +74,15 @@ pgsql_zip = wget('https://get.enterprisedb.com/postgresql/postgresql-9.4.14-1-wi
 if os.path.isdir(makepath(wapt_base_dir,'waptserver','pgsql')):
     shutil.rmtree(makepath(wapt_base_dir,'waptserver','pgsql'))
 pg_files = unzip(pgsql_zip,target=makepath(wapt_base_dir,'waptserver'),filenames=['pgsql/bin/*','pgsql/lib/*','pgsql/share/*'])
+
+
+# msvc++2013 is required for postgres.exe. It cannot be unzipped easily like msvc2008, so for now we install it
+print('Get MS VC++ 2013 redist')
+msvc2013 = wget('https://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe',resume=True,md5='96b61b8e069832e6b809f24ea74567ba')
+msvc2013_dst_path = os.path.join(wapt_base_dir,'waptserver','pgsql','vcredist_x64.exe')
+if os.path.exists(msvc2013_dst_path):
+    os.unlink(msvc2013_dst_path)
+os.rename(msvc2013, msvc2013_dst_path)
 
 print('Get NGINX zip')
 nginx_zip = wget('https://nginx.org/download/nginx-1.13.5.zip',resume=True,md5='999bf2444d95771a72eb7fd3637c4f13')
