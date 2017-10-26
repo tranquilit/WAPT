@@ -446,21 +446,12 @@ def update_host():
 
                     if host_cert:
                         logger.debug('About to check supplied data signature with certificate %s' % host_cert.cn)
-                        try:
-                            host_dn = host_cert.verify_content(sha256_for_data(raw_data), signature)
-                        except Exception as e:
-                            # for pre 1.5 wapt clients
-                            logger.debug('Error %s , trying sha1' % e)
-                            if request.headers.get('User-Agent') != 'wapt/1.4.3':
-                                host_dn = host_cert.verify_content(sha1_for_data(raw_data), signature, md='sha1')
-                            else:
-                                host_dn = 'failed'
-
+                        host_dn = host_cert.verify_content(sha256_for_data(raw_data), signature)
                         logger.info('Data successfully checked with certificate CN %s for %s' % (host_dn, uuid))
                     else:
                         raise EWaptMissingCertificate('There is no public certificate for checking signed data from %s' % (uuid))
                 else:
-                    logger.warning('No signature for supplied data for %s' % (uuid))
+                    raise EWaptBadSignature('No signature for supplied data for %s' % (uuid))
 
                 db_data = update_host_data(data)
 
