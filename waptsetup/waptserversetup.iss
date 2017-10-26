@@ -36,6 +36,9 @@
 
 ; for fast compile in developent mode
 ;#define FastDebug
+
+;#define choose_components
+
 #endif
 
 #include "waptsetup.iss"
@@ -43,13 +46,16 @@
 [Files]
 
 ; server postconf utility
+#ifdef choose_components
 Source: "..\waptserverpostconf.exe"; DestDir: "{app}"; Flags: ignoreversion; Tasks: InstallWaptserver
+#else
+Source: "..\waptserverpostconf.exe"; DestDir: "{app}"; Flags: ignoreversion;
+#endif
 
 ; deployment/upgrade tool
 Source: "..\waptdeploy.exe"; DestDir: "{app}\waptserver\repository\wapt\"; Flags: ignoreversion
 
-; Sources for server application
-;Source: "waptserver.iss"; DestDir: "{app}\waptsetup"; Tasks: InstallWaptserver
+#ifdef choose_components
 Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName: "waptserver.ini"; Tasks: InstallWaptserver
 Source: "..\waptserver\*.py"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver       
 Source: "..\waptserver\*.template"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver
@@ -58,9 +64,16 @@ Source: "..\waptserver\translations\*"; DestDir: "{app}\waptserver\translations"
 Source: "..\waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
 Source: "..\waptserver\pgsql\*"; DestDir: "{app}\waptserver\pgsql"; Flags: createallsubdirs recursesubdirs; Tasks: InstallPostgreSQL
 Source: "..\waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: createallsubdirs recursesubdirs; Tasks: InstallNGINX
-
-;#ifndef FastDebug
-;#endif
+#else
+Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName: "waptserver.ini"; 
+Source: "..\waptserver\*.py"; DestDir: "{app}\waptserver";   
+Source: "..\waptserver\*.template"; DestDir: "{app}\waptserver"; 
+Source: "..\waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs;
+Source: "..\waptserver\translations\*"; DestDir: "{app}\waptserver\translations"; Flags: createallsubdirs recursesubdirs; 
+Source: "..\waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs;
+Source: "..\waptserver\pgsql\*"; DestDir: "{app}\waptserver\pgsql"; Flags: createallsubdirs recursesubdirs;
+Source: "..\waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: createallsubdirs recursesubdirs;
+#endif
 
 ; For UninstallRun
 Source: "..\waptserver\uninstall-services.bat"; Destdir: "{app}\waptserver\"
@@ -74,15 +87,22 @@ Name: "{app}\waptserver\repository\wapt-group"
 Name: "{app}\waptserver\nginx\ssl"
 
 [RUN]
-Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptserver\waptserver_winsetup.py""  {code:GetWaptServerInstallFlags}"; StatusMsg: {cm:RegisteringService}; Description: "{cm:RegisteringService}"; Tasks: InstallWaptserver;
-Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptserver\waptserver_winsetup.py""  {code:GetWaptServerInstallFlags}"; StatusMsg: {cm:RegisteringService}; Description: "{cm:RegisteringService}"; Tasks: InstallPostgreSQL; 
-Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptserver\waptserver_winsetup.py""  {code:GetWaptServerInstallFlags}"; StatusMsg: {cm:RegisteringService}; Description: "{cm:RegisteringService}"; Tasks: InstallNGINX;
+#ifdef choose_components
+Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptserver\waptserver_winsetup.py"" install_postgresql"; StatusMsg: {cm:RegisteringService}; Description: "{cm:RegisteringService}"; Tasks: InstallPostgreSQL;
+Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptserver\waptserver_winsetup.py"" install_waptserver"; StatusMsg: {cm:RegisteringService}; Description: "{cm:RegisteringService}";  Tasks: InstallWaptServer;
+Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptserver\waptserver_winsetup.py"" install_nginx"; StatusMsg: {cm:RegisteringService}; Description: "{cm:RegisteringService}"; Tasks: InstallNGINX; 
+#else
+Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptserver\waptserver_winsetup.py"" all"; StatusMsg: {cm:RegisteringService}; Description: "{cm:RegisteringService}";  
+#endif
+
 Filename: "{app}\waptserverpostconf.exe"; Parameters: "-l {code:CurrentLanguage}"; Flags: nowait postinstall runascurrentuser skipifsilent; StatusMsg: {cm:LaunchingPostconf}; Description: "{cm:LaunchingPostconf}"
 
 [Tasks]
+#ifdef choose_components
 Name: InstallNGINX; Description: "{cm:InstallNGINX}"; GroupDescription: "WAPTServer"
 Name: InstallPostgreSQL; Description: "{cm:InstallPostgreSQL}"; GroupDescription: "WAPTServer"
 Name: InstallWaptserver; Description: "{cm:InstallWaptServer}"; GroupDescription: "WAPTServer"
+#endif
 
 [UninstallRun]
 Filename: "{app}\waptserver\uninstall-services.bat"; Flags: runhidden; StatusMsg: "Stopping and deregistering waptserver"
@@ -107,15 +127,6 @@ de.InstallPostgreSQL=PostgreSQL Server installieren
 en.InstallWaptServer=Wapt server installieren
 
 [Code]
-
-function GetWaptServerInstallFlags(Param: String):String;
-begin
-  Result := '';
-  if not IsTaskSelected('InstallNGINX') then
-    Result := Result +' --without-nginx';
-  if not IsTaskSelected('InstallPostgreSQL') then
-    Result := Result +' --without-postgresql';
-end;
 
 function NextButtonClick(CurPageID: Integer):Boolean;
 var
