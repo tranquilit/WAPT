@@ -93,3 +93,4 @@ openssl.exe
 /waptservice/win64/*.exe
 /dmidecode.exe
 /waptsetup/custom_waptagent.iss
+/conf/waptserver.ini
