@@ -2609,6 +2609,7 @@ def host_info():
     # empty if computer is not in a AD domain... statu sfrom last gpupdate
     info['computer_ad_dn'] =  registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Distinguished-Name')
     info['computer_ad_site'] =  registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Site-Name')
+    info['organizational_unit'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Distinguished-Name').split(',',1)[1]
 
     return info
 

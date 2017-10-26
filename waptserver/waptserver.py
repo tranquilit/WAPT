@@ -1524,6 +1524,13 @@ def get_hosts():
             in_group = HostGroups.select(HostGroups.host).where(HostGroups.group_name == groups)
             query = query & (Hosts.uuid << in_group )
 
+
+        if 'organizational_unit' in request.args:
+            if request.args.get('sub_ou_in_active_directory','1') == '1':
+                query = query & (Hosts.host_info['organizational_unit'].endswith(request.args.get('organizational_unit')))
+            else:
+                query = query & (Hosts.host_info['organizational_unit'] == request.args.get('organizational_unit'))
+
         if query is not None and not_filter:
             query = ~ query
 
