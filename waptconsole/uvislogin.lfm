@@ -34,14 +34,6 @@ object VisLogin: TVisLogin
     Caption = 'Password'
     ParentColor = False
   end
-  object edUser: TEdit
-    Left = 278
-    Height = 21
-    Top = 48
-    Width = 124
-    TabOrder = 2
-    Text = 'admin'
-  end
   object labUser: TLabel
     Left = 138
     Height = 18
@@ -97,7 +89,7 @@ object VisLogin: TVisLogin
     end
   end
   object BitBtn1: TBitBtn
-    Left = 408
+    Left = 400
     Height = 26
     Hint = 'Configure WAPT console'
     Top = 16
@@ -508,5 +500,18 @@ object VisLogin: TVisLogin
     }
     Proportional = True
     Stretch = True
+  end
+  object EdUser: TFileNameEdit
+    Left = 278
+    Height = 21
+    Top = 48
+    Width = 122
+    Filter = 'Personal certificates (*.crt)|*.crt|All files|*.*'
+    FilterIndex = 0
+    HideDirectories = False
+    ButtonWidth = 23
+    NumGlyphs = 1
+    MaxLength = 0
+    TabOrder = 2
   end
 end

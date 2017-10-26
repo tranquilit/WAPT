@@ -35,7 +35,7 @@ object VisWaptGUI: TVisWaptGUI
       object Panel10: TPanel
         Left = 0
         Height = 55
-        Top = 49
+        Top = 42
         Width = 1020
         Align = alTop
         BevelOuter = bvNone
@@ -294,9 +294,9 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridHosts: TSOGrid
         Left = 0
-        Height = 461
-        Top = 104
-        Width = 443
+        Height = 468
+        Top = 97
+        Width = 415
         OnGetText = GridHostsGetText
         Align = alClient
         ChangeDelay = 50
@@ -503,27 +503,27 @@ object VisWaptGUI: TVisWaptGUI
         ZebraPaint = True
       end
       object HostPages: TPageControl
-        Left = 448
-        Height = 461
-        Top = 104
-        Width = 572
-        ActivePage = pgPackages
+        Left = 420
+        Height = 468
+        Top = 97
+        Width = 600
+        ActivePage = pgTasks
         Align = alRight
-        TabIndex = 0
+        TabIndex = 4
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
           AnchorSideTop.Side = asrBottom
           Caption = 'Overview'
           ClientHeight = 435
-          ClientWidth = 564
+          ClientWidth = 592
           object GridHostPackages: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
             Height = 221
             Top = 119
-            Width = 564
+            Width = 592
             Align = alBottom
             Anchors = [akTop, akLeft, akRight, akBottom]
             BorderSpacing.Top = 2
@@ -721,11 +721,11 @@ object VisWaptGUI: TVisWaptGUI
             Left = 0
             Height = 117
             Top = 0
-            Width = 564
+            Width = 592
             Align = alTop
             BevelOuter = bvNone
             ClientHeight = 117
-            ClientWidth = 564
+            ClientWidth = 592
             TabOrder = 0
             object Label1: TLabel
               Left = 7
@@ -738,7 +738,7 @@ object VisWaptGUI: TVisWaptGUI
               ParentColor = False
             end
             object Label3: TLabel
-              Left = 335
+              Left = 363
               Height = 18
               Top = 36
               Width = 80
@@ -748,7 +748,7 @@ object VisWaptGUI: TVisWaptGUI
               ParentColor = False
             end
             object Label4: TLabel
-              Left = 335
+              Left = 363
               Height = 18
               Top = 80
               Width = 80
@@ -758,7 +758,7 @@ object VisWaptGUI: TVisWaptGUI
               ParentColor = False
             end
             object Label2: TLabel
-              Left = 335
+              Left = 363
               Height = 18
               Top = 14
               Width = 80
@@ -798,7 +798,7 @@ object VisWaptGUI: TVisWaptGUI
               ParentColor = False
             end
             object Label9: TLabel
-              Left = 335
+              Left = 363
               Height = 18
               Top = 60
               Width = 80
@@ -811,7 +811,7 @@ object VisWaptGUI: TVisWaptGUI
               Left = 108
               Height = 21
               Top = 10
-              Width = 216
+              Width = 244
               Anchors = [akLeft, akRight]
               Color = 15066597
               ReadOnly = True
@@ -821,7 +821,7 @@ object VisWaptGUI: TVisWaptGUI
               Left = 108
               Height = 21
               Top = 31
-              Width = 216
+              Width = 244
               Anchors = [akLeft, akRight]
               Color = 15066597
               ReadOnly = True
@@ -831,7 +831,7 @@ object VisWaptGUI: TVisWaptGUI
               Left = 108
               Height = 21
               Top = 52
-              Width = 216
+              Width = 244
               Anchors = [akLeft, akRight]
               Color = 15066597
               ReadOnly = True
@@ -841,14 +841,14 @@ object VisWaptGUI: TVisWaptGUI
               Left = 108
               Height = 21
               Top = 74
-              Width = 216
+              Width = 244
               Anchors = [akLeft, akRight]
               Color = 15066597
               ReadOnly = True
               TabOrder = 3
             end
             object EdManufacturer: TEdit
-              Left = 419
+              Left = 447
               Height = 21
               Top = 10
               Width = 132
@@ -858,7 +858,7 @@ object VisWaptGUI: TVisWaptGUI
               TabOrder = 4
             end
             object EdModelName: TEdit
-              Left = 419
+              Left = 447
               Height = 21
               Top = 31
               Width = 132
@@ -868,7 +868,7 @@ object VisWaptGUI: TVisWaptGUI
               TabOrder = 5
             end
             object EdUpdateDate: TEdit
-              Left = 419
+              Left = 447
               Height = 21
               Top = 52
               Width = 132
@@ -878,7 +878,7 @@ object VisWaptGUI: TVisWaptGUI
               TabOrder = 6
             end
             object EdUser: TEdit
-              Left = 419
+              Left = 447
               Height = 21
               Top = 74
               Width = 132
@@ -901,7 +901,7 @@ object VisWaptGUI: TVisWaptGUI
               Left = 108
               Height = 21
               Top = 95
-              Width = 216
+              Width = 244
               Anchors = [akLeft, akRight]
               Color = 15066597
               ReadOnly = True
@@ -912,17 +912,17 @@ object VisWaptGUI: TVisWaptGUI
             Left = 0
             Height = 90
             Top = 345
-            Width = 564
+            Width = 592
             Align = alBottom
             BevelOuter = bvNone
             ClientHeight = 90
-            ClientWidth = 564
+            ClientWidth = 592
             TabOrder = 2
             object MemoInstallOutput: TMemo
               Left = 0
               Height = 90
               Top = 0
-              Width = 564
+              Width = 592
               Align = alClient
               ScrollBars = ssAutoBoth
               TabOrder = 0
@@ -933,7 +933,7 @@ object VisWaptGUI: TVisWaptGUI
             Left = 0
             Height = 5
             Top = 340
-            Width = 564
+            Width = 592
             Align = alBottom
             ResizeAnchor = akBottom
           end
@@ -1280,8 +1280,8 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgTasks: TTabSheet
           Caption = 'Tasks'
-          ClientHeight = 435
-          ClientWidth = 564
+          ClientHeight = 442
+          ClientWidth = 592
           object HostTaskRunningProgress: TProgressBar
             Left = 4
             Height = 20
@@ -1354,30 +1354,30 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 380
-            Width = 564
+            Top = 387
+            Width = 592
             Align = alBottom
             ResizeAnchor = akBottom
           end
           object PageControl1: TPageControl
             Left = 0
-            Height = 278
+            Height = 285
             Top = 102
-            Width = 564
-            ActivePage = TabSheet1
+            Width = 592
+            ActivePage = TabSheet2
             Align = alBottom
             Anchors = [akTop, akLeft, akBottom]
-            TabIndex = 0
+            TabIndex = 1
             TabOrder = 3
             object TabSheet1: TTabSheet
               Caption = 'Pending'
               ClientHeight = 252
-              ClientWidth = 556
+              ClientWidth = 584
               object GridHostTasksPending: TSOGrid
                 Left = 0
                 Height = 250
                 Top = 2
-                Width = 556
+                Width = 584
                 Align = alClient
                 BorderSpacing.Top = 2
                 Color = clWhite
@@ -1508,13 +1508,13 @@ object VisWaptGUI: TVisWaptGUI
             end
             object TabSheet2: TTabSheet
               Caption = 'Done'
-              ClientHeight = 343
-              ClientWidth = 556
+              ClientHeight = 259
+              ClientWidth = 584
               object GridHostTasksDone: TSOGrid
                 Left = 0
-                Height = 341
+                Height = 257
                 Top = 2
-                Width = 556
+                Width = 584
                 Align = alClient
                 BorderSpacing.Top = 2
                 Color = clWhite
@@ -1781,19 +1781,19 @@ object VisWaptGUI: TVisWaptGUI
           object Panel6: TPanel
             Left = 0
             Height = 50
-            Top = 385
-            Width = 564
+            Top = 392
+            Width = 592
             Align = alBottom
             BevelOuter = bvNone
             Caption = 'Panel6'
             ClientHeight = 50
-            ClientWidth = 564
+            ClientWidth = 592
             TabOrder = 5
             object MemoTaskLog: TMemo
               Left = 0
               Height = 50
               Top = 0
-              Width = 564
+              Width = 592
               Align = alClient
               ScrollBars = ssAutoBoth
               TabOrder = 0
@@ -1803,7 +1803,7 @@ object VisWaptGUI: TVisWaptGUI
             Left = 272
             Height = 118
             Top = 2
-            Width = 288
+            Width = 316
             Anchors = [akTop, akLeft, akRight]
             ScrollBars = ssAutoBoth
             TabOrder = 4
@@ -1811,16 +1811,16 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object Splitter4: TSplitter
-        Left = 443
-        Height = 461
-        Top = 104
+        Left = 415
+        Height = 468
+        Top = 97
         Width = 5
         Align = alRight
         ResizeAnchor = akRight
       end
       object ToolBar1: TToolBar
         Left = 0
-        Height = 49
+        Height = 42
         Top = 0
         Width = 1020
         ButtonHeight = 37
@@ -1864,13 +1864,16 @@ object VisWaptGUI: TVisWaptGUI
         end
         object ToolButton7: TToolButton
           Left = 365
+          Hint = 'Trigger scan of listening IP of registered hosts.'
           Top = 2
-          Action = ActTriggerHostsListening
+          Caption = 'Trigger hosts scan'
+          ImageIndex = 36
+          Visible = False
         end
         object Image1: TImage
           Cursor = crHandPoint
           Left = 867
-          Height = 47
+          Height = 40
           Top = 2
           Width = 153
           AntialiasingMode = amOn
@@ -4154,11 +4157,6 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Evaluate'
       OnExecute = ActEvaluateExecute
     end
-    object ActBuildUpload: TAction
-      Category = 'packages'
-      Caption = 'Activate package'
-      ImageIndex = 35
-    end
     object ActCreateCertificate: TAction
       Category = 'Tools'
       Caption = 'Build certificate'
@@ -4194,7 +4192,7 @@ object VisWaptGUI: TVisWaptGUI
       Hint = 'Remove from inventory'
       ImageIndex = 9
       OnExecute = ActHostsDeleteExecute
-      OnUpdate = ActHostsActionsUpdate
+      OnUpdate = ActHostsDeleteUpdate
       ShortCut = 16430
     end
     object ActDeletePackage: TAction
@@ -4288,18 +4286,19 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 31
       OnExecute = ActCancelRunningTaskExecute
     end
-    object ActPackageRemove: TAction
+    object ActPackagesRemove: TAction
       Category = 'Host'
-      Caption = 'Uninstall package'
-      Hint = 'Forces remote uninstall of package'
+      Caption = 'Uninstall packages'
+      Hint = 'Forces remote uninstall of selected packages'
       ImageIndex = 31
-      OnExecute = ActPackageRemoveExecute
+      OnExecute = ActPackagesRemoveExecute
+      OnUpdate = ActPackagesRemoveUpdate
     end
-    object ActForgetPackages: TAction
+    object ActPackagesForget: TAction
       Category = 'Host'
       Caption = 'Forget packages'
       ImageIndex = 34
-      OnExecute = ActForgetPackagesExecute
+      OnExecute = ActPackagesForgetExecute
     end
     object ActSearchSoftwares: TAction
       Category = 'Host'
@@ -4348,11 +4347,12 @@ object VisWaptGUI: TVisWaptGUI
       Hint = 'Restore default columns settings for all grids'
       OnExecute = ActRestoreDefaultLayoutExecute
     end
-    object ActPackageInstall: TAction
+    object ActPackagesInstall: TAction
       Category = 'Host'
-      Caption = 'Install package'
-      Hint = 'Force remote install or upgrade of package'
-      OnExecute = ActPackageInstallExecute
+      Caption = 'Install packages'
+      Hint = 'Force remote install or upgrade of selected packages'
+      OnExecute = ActPackagesInstallExecute
+      OnUpdate = ActPackagesInstallUpdate
     end
     object ActCleanCache: TAction
       Category = 'Tools'
@@ -4365,13 +4365,7 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Remove host configuration and inventory '
       ImageIndex = 6
       OnExecute = ActHostsDeleteExecute
-      OnUpdate = ActHostsActionsUpdate
-    end
-    object ActHostWaptUpgrade: TAction
-      Category = 'hosts'
-      Caption = 'Update WAPT client'
-      Hint = 'Run agent.exe in silent mode from <url-depot>/waptagent.exe'
-      OnUpdate = ActHostsActionsUpdate
+      OnUpdate = ActHostsDeleteUpdate
     end
     object ActTriggerHostUpdate: TAction
       Category = 'hosts'
@@ -4389,19 +4383,12 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActTriggerHostUpgradeExecute
       OnUpdate = ActHostsActionsUpdate
     end
-    object ActTriggerHostsListening: TAction
-      Category = 'hosts'
-      Caption = 'Trigger hosts scan'
-      Hint = 'Trigger scan of listening IP of registered hosts.'
-      ImageIndex = 36
-      OnExecute = ActTriggerHostsListeningExecute
-    end
     object ActAddPackageGroup: TAction
       Category = 'hosts'
       Caption = 'Add package or bundle'
       ImageIndex = 11
       OnExecute = ActAddPackageGroupExecute
-      OnUpdate = ActHostsActionsUpdate
+      OnUpdate = ActAddPackageGroupUpdate
     end
     object ActRemoveDepends: TAction
       Category = 'hosts'
@@ -4448,7 +4435,6 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Power ON with WakeOnLan'
       ImageIndex = 38
       OnExecute = ActTriggerWakeOnLanExecute
-      OnUpdate = ActTriggerWakeOnLanUpdate
     end
     object ActRemoteAssist: TAction
       Category = 'Host'
@@ -4485,7 +4471,7 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Remove Host configuration only'
       ImageIndex = 6
       OnExecute = ActHostsDeleteExecute
-      OnUpdate = ActHostsActionsUpdate
+      OnUpdate = ActHostsDeletePackageUpdate
     end
     object ActRevokeCert: TAction
       Category = 'Tools'
@@ -5862,10 +5848,10 @@ object VisWaptGUI: TVisWaptGUI
     left = 144
     top = 416
     object MenuItem20: TMenuItem
-      Action = ActPackageInstall
+      Action = ActPackagesInstall
     end
     object MenuItem19: TMenuItem
-      Action = ActPackageRemove
+      Action = ActPackagesRemove
       Bitmap.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
@@ -5904,7 +5890,7 @@ object VisWaptGUI: TVisWaptGUI
       }
     end
     object MenuItem42: TMenuItem
-      Action = ActForgetPackages
+      Action = ActPackagesForget
       Bitmap.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000064000000640000000000000000000000000000000000

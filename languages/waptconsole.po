@@ -588,10 +588,6 @@ msgstr ""
 msgid "WAPT authentication"
 msgstr ""
 
-#: tvislogin.eduser.text
-msgid "admin"
-msgstr ""
-
 #: tvislogin.edwaptservername.text
 msgid "edWaptServerName"
 msgstr ""
@@ -604,6 +600,10 @@ msgstr ""
 #: tvislogin.labuser.caption
 msgctxt "TVISLOGIN.LABUSER.CAPTION"
 msgid "User"
+msgstr ""
+
+#: tvislogin.labversion.caption
+msgid "LabVersion"
 msgstr ""
 
 #: tvislogin.lapassword.caption
@@ -916,11 +916,6 @@ msgctxt "tviswaptgui.actaddpackagegroup.caption"
 msgid "Add package or bundle"
 msgstr ""
 
-#: tviswaptgui.actbuildupload.caption
-msgctxt "tviswaptgui.actbuildupload.caption"
-msgid "Activate package"
-msgstr ""
-
 #: tviswaptgui.actcancelrunningtask.caption
 msgctxt "tviswaptgui.actcancelrunningtask.caption"
 msgid "Cancel current task"
@@ -1022,11 +1017,6 @@ msgctxt "tviswaptgui.actexeccode.caption"
 msgid "Execute python source"
 msgstr ""
 
-#: tviswaptgui.actforgetpackages.caption
-msgctxt "tviswaptgui.actforgetpackages.caption"
-msgid "Forget packages"
-msgstr ""
-
 #: tviswaptgui.actfrench.caption
 msgctxt "tviswaptgui.actfrench.caption"
 msgid "French"
@@ -1065,16 +1055,6 @@ msgstr ""
 msgid "Remove Host configuration only"
 msgstr ""
 
-#: tviswaptgui.acthostwaptupgrade.caption
-msgctxt "tviswaptgui.acthostwaptupgrade.caption"
-msgid "Update WAPT client"
-msgstr ""
-
-#: tviswaptgui.acthostwaptupgrade.hint
-msgctxt "tviswaptgui.acthostwaptupgrade.hint"
-msgid "Run agent.exe in silent mode from <url-depot>/waptagent.exe"
-msgstr ""
-
 #: tviswaptgui.actimportfromfile.caption
 msgctxt "tviswaptgui.actimportfromfile.caption"
 msgid "Import from file"
@@ -1089,24 +1069,25 @@ msgstr ""
 msgid "Make package template from setup file"
 msgstr ""
 
-#: tviswaptgui.actpackageinstall.caption
-msgctxt "TVISWAPTGUI.ACTPACKAGEINSTALL.CAPTION"
-msgid "Install package"
+#: tviswaptgui.actpackagesforget.caption
+msgctxt "TVISWAPTGUI.ACTPACKAGESFORGET.CAPTION"
+msgid "Forget packages"
 msgstr ""
 
-#: tviswaptgui.actpackageinstall.hint
-msgctxt "tviswaptgui.actpackageinstall.hint"
-msgid "Force remote install or upgrade of package"
+#: tviswaptgui.actpackagesinstall.caption
+msgid "Install packages"
 msgstr ""
 
-#: tviswaptgui.actpackageremove.caption
-msgctxt "TVISWAPTGUI.ACTPACKAGEREMOVE.CAPTION"
-msgid "Uninstall package"
+#: tviswaptgui.actpackagesinstall.hint
+msgid "Force remote install or upgrade of selected packages"
 msgstr ""
 
-#: tviswaptgui.actpackageremove.hint
-msgctxt "tviswaptgui.actpackageremove.hint"
-msgid "Forces remote uninstall of package"
+#: tviswaptgui.actpackagesremove.caption
+msgid "Uninstall packages"
+msgstr ""
+
+#: tviswaptgui.actpackagesremove.hint
+msgid "Forces remote uninstall of selected packages"
 msgstr ""
 
 #: tviswaptgui.actpackagesupdate.caption
@@ -1189,16 +1170,6 @@ msgstr ""
 
 #: tviswaptgui.acttishelp.caption
 msgid "Launch TISHelp"
-msgstr ""
-
-#: tviswaptgui.acttriggerhostslistening.caption
-msgctxt "tviswaptgui.acttriggerhostslistening.caption"
-msgid "Trigger hosts scan"
-msgstr ""
-
-#: tviswaptgui.acttriggerhostslistening.hint
-msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTSLISTENING.HINT"
-msgid "Trigger scan of listening IP of registered hosts."
 msgstr ""
 
 #: tviswaptgui.acttriggerhostupdate.caption
@@ -1860,6 +1831,16 @@ msgstr ""
 
 #: tviswaptgui.toolbutton6.caption
 msgid "ToolButton6"
+msgstr ""
+
+#: tviswaptgui.toolbutton7.caption
+msgctxt "TVISWAPTGUI.TOOLBUTTON7.CAPTION"
+msgid "Trigger hosts scan"
+msgstr ""
+
+#: tviswaptgui.toolbutton7.hint
+msgctxt "TVISWAPTGUI.TOOLBUTTON7.HINT"
+msgid "Trigger scan of listening IP of registered hosts."
 msgstr ""
 
 #: tviswuaclassificationsselect.caption

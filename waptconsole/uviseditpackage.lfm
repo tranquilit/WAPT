@@ -19,7 +19,7 @@ object VisEditPackage: TVisEditPackage
     Left = 0
     Height = 417
     Top = 50
-    Width = 659
+    Width = 654
     ActivePage = pgDepends
     Align = alClient
     TabIndex = 0
@@ -28,7 +28,7 @@ object VisEditPackage: TVisEditPackage
     object pgDepends: TTabSheet
       Caption = 'Edit dependencies'
       ClientHeight = 391
-      ClientWidth = 651
+      ClientWidth = 646
       object GridDepends: TSOGrid
         Left = 0
         Height = 391
@@ -81,14 +81,6 @@ object VisEditPackage: TVisEditPackage
         OnDragOver = GridDependsDragOver
         OnDragDrop = GridDependsDragDrop
         ZebraPaint = True
-      end
-      object Splitter3: TSplitter
-        Left = 646
-        Height = 391
-        Top = 0
-        Width = 5
-        Align = alRight
-        ResizeAnchor = akRight
       end
     end
     object pgConflicts: TTabSheet
@@ -940,11 +932,11 @@ object VisEditPackage: TVisEditPackage
       TabOrder = 1
     end
     object butBUApply: TBitBtn
-      Left = 561
+      Left = 504
       Height = 25
       Hint = 'Build the package, upload to the server and trigger Upgrade on the target host.'
       Top = 4
-      Width = 184
+      Width = 241
       Action = ActBUApply
       Anchors = [akTop, akRight]
       Glyph.Data = {
@@ -1206,6 +1198,14 @@ object VisEditPackage: TVisEditPackage
         TabOrder = 0
       end
     end
+  end
+  object Splitter3: TSplitter
+    Left = 654
+    Height = 417
+    Top = 50
+    Width = 5
+    Align = alRight
+    ResizeAnchor = akRight
   end
   object SynPythonSyn1: TSynPythonSyn
     DefaultFilter = 'Fichiers Python (*.py)|*.py'

@@ -48,7 +48,6 @@ interface
 
   function WaptBaseDir: Utf8String; // c:\wapt
   function WaptgetPath: Utf8String; // c:\wapt\wapt-get.exe
-  function WaptservicePath: Utf8String; //c:\wapt\waptservice.exe # obsolete
   function WaptDBPath: Utf8String;
 
   function GetWaptRepoURL: Utf8String; // from wapt-get.ini, can be empty
@@ -124,6 +123,14 @@ function GetWaptServerSession(server_url:String = ''; user:String = '';password:
 
 function DefaultUserAgent:String;
 
+// Read/Write ini parameters from
+function WaptIniReadBool(const user,item: string;Default:Boolean=False): Boolean;
+function WaptIniReadInteger(const user,item: string;Default:Integer=0): Integer;
+function WaptIniReadString(const user,item: string;Default:String=''): string;
+procedure WaptIniWriteBool(const user,item: string; Value: Boolean);
+procedure WaptIniWriteInteger(const user,item: string; Value: Integer);
+procedure WaptIniWriteString(const user,item, Value: string);
+
 const
   waptwua_enabled : boolean = False;
 
@@ -163,7 +170,7 @@ implementation
 uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2,
   IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,IdURI,
-  gettext,IdStack,IdCompressorZLib,IdAuthentication,shfolder,IniFiles,tiscommon,tisstrings, StrUtils;
+  gettext,IdStack,IdCompressorZLib,IdAuthentication,shfolder,IniFiles,tiscommon,strutils,tisstrings;
 
 const
   CacheWaptServerUrl: AnsiString = 'None';
@@ -174,7 +181,69 @@ begin
   Result := ApplicationName+'/'+GetApplicationVersion;
 end;
 
+function WaptIniReadBool(const user, item: string; Default: Boolean): Boolean;
+begin
+  if user = '' then
+    Result := IniReadBool(WaptIniFilename,'global',item,default)
+  else
+  begin
+    if IniHasKey(AppIniFilename,user,item) then
+      Result := IniReadBool(AppIniFilename,user,item,default)
+    else
+      Result := IniReadBool(AppIniFilename,'global',item,default);
+	end;
+end;
 
+function WaptIniReadInteger(const user, item: string; Default: Integer
+			): Integer;
+begin
+  if user = '' then
+    Result := IniReadInteger(WaptIniFilename,'global',item,default)
+  else
+  begin
+    if IniHasKey(AppIniFilename,user,item) then
+      Result := IniReadInteger(AppIniFilename,user,item,default)
+    else
+      Result := IniReadInteger(AppIniFilename,'global',item,default);
+	end;
+end;
+
+function WaptIniReadString(const user, item: string; Default: String): string;
+begin
+  if user = '' then
+    Result := IniReadString(WaptIniFilename,'global',item,default)
+  else
+  begin
+    if IniHasKey(AppIniFilename,user,item) then
+      Result := IniReadString(AppIniFilename,user,item,default)
+    else
+      Result := IniReadString(AppIniFilename,'global',item,default);
+	end;
+end;
+
+procedure WaptIniWriteBool(const user, item: string; Value: Boolean);
+begin
+  if user = '' then
+    IniWriteBool(WaptIniFilename,'global',item,value)
+  else
+    IniWriteBool(AppIniFilename,user,item,value)
+end;
+
+procedure WaptIniWriteInteger(const user, item: string; Value: Integer);
+begin
+  if user = '' then
+    IniWriteInteger(WaptIniFilename,'global',item,value)
+  else
+    IniWriteInteger(AppIniFilename,user,item,value)
+end;
+
+procedure WaptIniWriteString(const user, item, Value: string);
+begin
+  if user = '' then
+    IniWriteString(WaptIniFilename,'global',item,value)
+  else
+    IniWriteString(AppIniFilename,user,item,value)
+end;
 
 procedure IdConfigureProxy(http:TIdHTTP;ProxyUrl:String);
 var

@@ -154,7 +154,7 @@ type
 function EditPackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreatePackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreateGroup(packagename: string; advancedMode: boolean): ISuperObject;
-function EditHost(hostname: ansistring; advancedMode: boolean; var ApplyUpdates:Boolean; description:ansiString=''): ISuperObject;
+function EditHost(hostname: ansistring; advancedMode: boolean; var ApplyUpdates:Boolean; description:ansiString='';HostReachable:Boolean=False): ISuperObject;
 function EditHostDepends(hostname: string; newDependsStr: string): ISuperObject;
 function EditGroup(group: string; advancedMode: boolean): ISuperObject;
 
@@ -227,7 +227,7 @@ begin
     end;
 end;
 
-function EditHost(hostname: ansistring; advancedMode: boolean;var ApplyUpdates:Boolean;description:ansiString=''): ISuperObject;
+function EditHost(hostname: ansistring; advancedMode: boolean;var ApplyUpdates:Boolean;description:ansiString='';HostReachable:Boolean=False): ISuperObject;
 var
   res:ISuperObject;
 begin
@@ -245,6 +245,8 @@ begin
         Eddescription.Modified:= Eddescription.Text<>description;
         Eddescription.Text := description;
       end;
+
+      ActBUApply.Visible := HostReachable;
 
       if ShowModal = mrOk then
       try
@@ -543,7 +545,7 @@ end;
 
 procedure TVisEditPackage.ActEditSavePackageUpdate(Sender: TObject);
 begin
-  (Sender as TAction).Enabled := (EdPackage.Text<>'') and  IsUpdated;
+  (Sender as TAction).Enabled := (EdPackage.Text<>'') and IsUpdated;
 end;
 
 function TVisEditPackage.GetIsUpdated: boolean;
