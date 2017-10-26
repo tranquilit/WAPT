@@ -65,17 +65,6 @@ Source: "..\waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: creat
 ; For UninstallRun
 Source: "..\waptserver\uninstall-services.bat"; Destdir: "{app}\waptserver\"
 
-[Setup]
-OutputBaseFilename={#edition}
-DefaultDirName=c:\wapt
-WizardImageFile=..\tranquilit.bmp
-DisableProgramGroupPage=yes
-
-[Languages]
-Name:"en"; MessagesFile: "compiler:Default.isl"
-Name:"fr";MessagesFile: "compiler:Languages\French.isl"
-Name:"de";MessagesFile: "compiler:Languages\German.isl"
-
 [Dirs]
 Name: "{app}\waptserver\repository"
 Name: "{app}\waptserver\log"

@@ -64,7 +64,12 @@ Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs
 
 [Setup]
 OutputBaseFilename={#edition}
+#if edition == 'waptserver' 
+DefaultDirName=c:\wapt
+#else
 DefaultDirName={pf32}\wapt
+#endif
+
 WizardImageFile=..\tranquilit.bmp
 DisableProgramGroupPage=yes
 
