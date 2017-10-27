@@ -127,7 +127,9 @@ class Hosts(BaseModel):
     productname = CharField(null=True)
     serialnr = CharField(null=True)
 
-    host_certificate = TextField(null=True, help_text='Host public X509 certificate')
+    host_certificate = TextField(null=True, help_text='Host public X509 certificate bundle')
+
+    #authorized_certificates = ArrayField(CharField, null=True, help_text='authorized packages signers certificates sha1 fingerprint')
 
     os_name = CharField(null=True)
     os_version = CharField(null=True)

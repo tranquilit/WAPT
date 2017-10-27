@@ -736,6 +736,12 @@ class WaptDB(WaptBaseDB):
           setuppy TEXT,
           process_id integer
           )"""
+
+        # TODO Audit :
+
+        # last_audit_on
+        # last_audit_status
+        # next_audit_on
                         )
         self.db.execute("""
         create index if not exists idx_localstatus_name on wapt_localstatus(package);""")
