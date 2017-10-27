@@ -372,6 +372,7 @@ type
     procedure ActAddPackageGroupUpdate(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
+    procedure ActChangePasswordUpdate(Sender: TObject);
     procedure ActChangePrivateKeypasswordExecute(Sender: TObject);
     procedure ActChangePrivateKeypasswordUpdate(Sender: TObject);
     procedure ActCleanCacheExecute(Sender: TObject);
@@ -382,7 +383,9 @@ type
     procedure ActComputerUsersExecute(Sender: TObject);
     procedure ActComputerUsersUpdate(Sender: TObject);
     procedure ActCreateCertificateExecute(Sender: TObject);
+    procedure ActCreateCertificateUpdate(Sender: TObject);
     procedure ActCreateWaptSetupExecute(Sender: TObject);
+    procedure ActCreateWaptSetupUpdate(Sender: TObject);
     procedure ActDeleteGroupExecute(Sender: TObject);
     procedure ActDeleteGroupUpdate(Sender: TObject);
     procedure ActDeletePackageExecute(Sender: TObject);
@@ -1540,6 +1543,11 @@ begin
     end;
 end;
 
+procedure TVisWaptGUI.ActCreateCertificateUpdate(Sender: TObject);
+begin
+  ActCreateCertificate.Visible := (WaptServerUser='admin') and EnableManagementFeatures;
+end;
+
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 var
   waptsetupPath, buildDir: string;
@@ -1660,6 +1668,11 @@ begin
       ini.Free;
       Free;
     end;
+end;
+
+procedure TVisWaptGUI.ActCreateWaptSetupUpdate(Sender: TObject);
+begin
+  ActCreateWaptSetup.Visible:= DMPython.CertificateIsCodeSigning(GetWaptPersonalCertificatePath) and EnableManagementFeatures;
 end;
 
 procedure TVisWaptGUI.ActAddConflictsExecute(Sender: TObject);
@@ -1861,6 +1874,11 @@ begin
   finally
     Free;
   end;
+end;
+
+procedure TVisWaptGUI.ActChangePasswordUpdate(Sender: TObject);
+begin
+  ActChangePassword.Visible :=  (WaptServerUser='admin') and EnableManagementFeatures;
 end;
 
 procedure TVisWaptGUI.ActChangePrivateKeypasswordExecute(Sender: TObject);
@@ -3459,10 +3477,13 @@ begin
         //eddefault_sources_root.Directory := inifile.ReadString('global','default_sources_root','');
         //eddefault_sources_url.text = inifile.ReadString('global','default_sources_url','https://srvdev/sources/%(packagename)s-wapt/trunk');
 
-        cbShowExternalTools.Checked :=
-          inifile.ReadBool('global', 'enable_external_tools', True);
+        cbEnableExternalTools.Checked :=
+          inifile.ReadBool('global', 'enable_external_tools', EnableExternalTools);
 
-        cbDebugWindow.Checked:= inifile.ReadBool('global','advanced_mode',False);
+        cbEnableManagementFeatures.Checked :=
+          inifile.ReadBool('global', 'enable_management_features', EnableManagementFeatures);
+
+        cbDebugWindow.Checked:= inifile.ReadBool('global','advanced_mode',AdvancedMode);
 
         lang := inifile.ReadString('Global','language','en');
         if lang='en' then
@@ -3503,8 +3524,10 @@ begin
           //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
 
           inifile.WriteBool('global', 'enable_external_tools',
-            cbShowExternalTools.Checked);
+            cbEnableExternalTools.Checked);
 
+          inifile.WriteBool('global', 'enable_management_features',
+            cbEnableManagementFeatures.Checked);
 
           if cbLanguage.ItemIndex=0 then
             inifile.WriteString('Global','language','en')

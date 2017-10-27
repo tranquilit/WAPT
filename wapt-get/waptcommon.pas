@@ -164,6 +164,7 @@ const
   AdvancedMode:Boolean = False;
 
   EnableExternalTools:Boolean = False;
+  EnableManagementFeatures:Boolean = False;
 
   WAPTServerMinVersion='1.5.0.17';
 
@@ -1197,8 +1198,9 @@ begin
     finally
     end;
 
-    AdvancedMode := ReadBool('global','advanced_mode',False);
-    EnableExternalTools := ReadBool('global','enable_external_tools',False);
+    AdvancedMode := ReadBool('global','advanced_mode',AdvancedMode);
+    EnableExternalTools := ReadBool('global','enable_external_tools',EnableExternalTools);
+    EnableManagementFeatures := ReadBool('global','enable_management_features',EnableManagementFeatures);
 
     DefaultPackagePrefix := ReadString('global','default_package_prefix','');
     DefaultSourcesRoot := ReadString('global','default_sources_root','');

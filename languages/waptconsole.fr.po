@@ -1,4 +1,4 @@
-msgid "&Show config file"
+msgid "&Show config fileOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepo"
 msgstr "&Voir le fichier de configuration"
 
 #: tform1.buttonpanel1.helpbutton.caption
@@ -519,11 +519,11 @@ msgstr "Arrêter"
 
 #: tvishostsupgrade.actupgrade.caption
 msgid "Launch update"
-msgstr "Lancer la mise à jour"
+msgstr "Lancer les mises à jour en attente"
 
 #: tvishostsupgrade.caption
 msgid "Launch update on hosts"
-msgstr "lancer la mise à jour sur les machines"
+msgstr "lancer les mises à jour en attente"
 
 #: tvisimportpackage.actpackageduplicate.caption
 msgid "Import..."
@@ -705,6 +705,15 @@ msgctxt "tviswaptconfig.cbdebugwindow.hint"
 msgid "Activates proxy when accessing the main repository"
 msgstr "Active le proxy pour les communications avec le dépôt de paquets"
 
+#: tviswaptconfig.cbenableexternaltools.hint
+msgctxt "tviswaptconfig.cbenableexternaltools.hint"
+msgid "Make rdp, vnc, remoteassist... features visible"
+msgstr "Faire apparaître les fonctions RDP, VNC et Remote Assist"
+
+#: tviswaptconfig.cbenablemanagementfeatures.hint
+msgid "Make change server password, create certificate, create waptagent features visible"
+msgstr "Faire apparaître les fonctions de changement de mot de passe, création de certificats et de waptagent."
+
 #: tviswaptconfig.cblanguage.text
 msgctxt "tviswaptconfig.cblanguage.text"
 msgid "English"
@@ -825,6 +834,14 @@ msgstr "Par exemple : https://wapt.tranquilit.local"
 msgid "Base directory for package development"
 msgstr "Répertoire de base pour le développement de paquets"
 
+#: tviswaptconfig.label10.caption
+msgid "Enable external tools in hosts popup menus"
+msgstr ""
+
+#: tviswaptconfig.label11.caption
+msgid "Enable management features"
+msgstr ""
+
 #: tviswaptconfig.label2.caption
 msgid "Path to personal certificate"
 msgstr "Chemin du certificat personnel"
@@ -852,8 +869,8 @@ msgstr "Chemin vers le bundle de CA"
 
 #: tviswaptconfig.label7.caption
 #, fuzzy
-#| msgid "Show debug window"
-msgid "Show advanced informations"
+#| msgid "Show advanced informations"
+msgid "Show debug informations"
 msgstr "Voir les informations avancées"
 
 #: tviswaptconfig.label8.caption
@@ -959,7 +976,7 @@ msgstr "Annuler la tâche en cours"
 #: tviswaptgui.actchangepassword.caption
 msgctxt "tviswaptgui.actchangepassword.caption"
 msgid "Update password"
-msgstr "Changer le mot de passe"
+msgstr "Changer le mot de passe du serveur"
 
 #: tviswaptgui.actchangeprivatekeypassword.caption
 msgid "Change password of private key..."
@@ -1116,24 +1133,26 @@ msgid "Forget packages"
 msgstr "Oublier des paquets"
 
 #: tviswaptgui.actpackagesinstall.caption
-msgid "Install packages"
+msgctxt "tviswaptgui.actpackagesinstall.caption"
+msgid "Install package"
 msgstr ""
 
 #: tviswaptgui.actpackagesinstall.hint
-msgid "Force remote install or upgrade of selected packages"
+msgctxt "tviswaptgui.actpackagesinstall.hint"
+msgid "Force remote install or upgrade of package"
 msgstr ""
 
 #: tviswaptgui.actpackagesremove.caption
-msgid "Uninstall packages"
+msgctxt "tviswaptgui.actpackagesremove.caption"
+msgid "Uninstall package"
 msgstr ""
 
 #: tviswaptgui.actpackagesremove.hint
-msgid "Forces remote uninstall of selected packages"
+msgctxt "tviswaptgui.actpackagesremove.hint"
+msgid "Forces remote uninstall of package"
 msgstr ""
 
 #: tviswaptgui.actpackagesupdate.caption
-#, fuzzy
-#| msgid "Update available packages"
 msgctxt "tviswaptgui.actpackagesupdate.caption"
 msgid "Refresh packages list"
 msgstr "Actualiser les paquets disponibles"
@@ -1220,11 +1239,9 @@ msgid "Launch TISHelp"
 msgstr ""
 
 #: tviswaptgui.acttriggerhostupdate.caption
-#, fuzzy
-#| msgid "Trigger hosts update"
 msgctxt "tviswaptgui.acttriggerhostupdate.caption"
 msgid "Update hosts status"
-msgstr "Lancer la mise à jour des paquets disponibles"
+msgstr "Lancer la vérification des mises à jour"
 
 #: tviswaptgui.acttriggerhostupdate.hint
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPDATE.HINT"
@@ -1675,6 +1692,11 @@ msgctxt "tviswaptgui.labselected.caption"
 msgid "0"
 msgstr ""
 
+#: tviswaptgui.menuexternaltools.caption
+msgctxt "tviswaptgui.menuexternaltools.caption"
+msgid "Gestion Windows de l'ordinateur"
+msgstr ""
+
 #: tviswaptgui.menuitem10.caption
 msgid "Save ..."
 msgstr "Enregistrer..."
@@ -1703,10 +1725,6 @@ msgstr "&Outils"
 msgctxt "tviswaptgui.menuitem17.caption"
 msgid "-"
 msgstr "-"
-
-#: tviswaptgui.menuitem2.caption
-msgid "Gestion Windows de l'ordinateur"
-msgstr ""
 
 #: tviswaptgui.menuitem24.caption
 msgid "&Edit"
@@ -1905,18 +1923,6 @@ msgstr ""
 #: tviswaptgui.toolbutton6.caption
 msgid "ToolButton6"
 msgstr ""
-
-#: tviswaptgui.toolbutton7.caption
-#, fuzzy
-#| msgid "Trigger scan listening IP"
-msgctxt "tviswaptgui.toolbutton7.caption"
-msgid "Trigger hosts scan"
-msgstr "Scanner les IP en écoute"
-
-#: tviswaptgui.toolbutton7.hint
-msgctxt "tviswaptgui.toolbutton7.hint"
-msgid "Trigger scan of listening IP of registered hosts."
-msgstr "Scanner les IP en écoute des machines enregistrées"
 
 #: tviswuaclassificationsselect.caption
 msgid "Windows Updates Classification selection"
@@ -2506,6 +2512,26 @@ msgstr ""
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -2572,6 +2598,18 @@ msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 #: uwaptconsoleres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
 #| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
@@ -2972,6 +3010,18 @@ msgstr "Erreur lors de la compilation du paquet : %s"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -3210,6 +3260,18 @@ msgstr "Attention, l'installeur waptagent.exe n'est pas présent sur le serveur.
 #| "Warning, the version of the waptagent.exe installer is too old.\n"
 #| "Current waptagent.exe version: %s\n"
 #| "waptsetup-tis.exe version: %s\n"
+#| "Warning, the version of the waptagent.exe installer is too old.\n"
+#| "Current waptagent.exe version: %s\n"
+#| "waptsetup-tis.exe version: %s\n"
+#| "Warning, the version of the waptagent.exe installer is too old.\n"
+#| "Current waptagent.exe version: %s\n"
+#| "waptsetup-tis.exe version: %s\n"
+#| "Warning, the version of the waptagent.exe installer is too old.\n"
+#| "Current waptagent.exe version: %s\n"
+#| "waptsetup-tis.exe version: %s\n"
+#| "Warning, the version of the waptagent.exe installer is too old.\n"
+#| "Current waptagent.exe version: %s\n"
+#| "waptsetup-tis.exe version: %s\n"
 msgid ""
 "Warning, the version of the waptagent.exe installer is too old.\n"
 "Current waptagent.exe version: %s\n"
@@ -3267,6 +3329,14 @@ msgstr "Vous devez d'abord définir le préfixe des paquets dans les préférenc
 #| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -3277,6 +3347,18 @@ msgstr ""
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
 #| msgid ""
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
 #| "Required server version: %s\n"
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
@@ -3310,6 +3392,14 @@ msgstr "Erreur lors de la création de l'agent : %s"
 #: uwaptconsoleres.rswaptsetupuploadsuccess
 #, fuzzy
 #| msgid ""
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"

@@ -1,4 +1,4 @@
-msgid "Local directory for saving package development projectsLocal directory for saving package development projectsOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepo"
+msgid "Local directory for saving package development projectsLocal directory for saving package development projectsOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepo"
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tform1.buttonpanel1.helpbutton.caption
@@ -684,6 +684,15 @@ msgctxt "tviswaptconfig.cbdebugwindow.hint"
 msgid "Activates proxy when accessing the main repository"
 msgstr ""
 
+#: tviswaptconfig.cbenableexternaltools.hint
+msgctxt "tviswaptconfig.cbenableexternaltools.hint"
+msgid "Make rdp, vnc, remoteassist... features visible"
+msgstr ""
+
+#: tviswaptconfig.cbenablemanagementfeatures.hint
+msgid "Make change server password, create certificate, create waptagent features visible"
+msgstr ""
+
 #: tviswaptconfig.cblanguage.text
 msgctxt "tviswaptconfig.cblanguage.text"
 msgid "English"
@@ -798,6 +807,14 @@ msgstr ""
 msgid "Base directory for package development"
 msgstr ""
 
+#: tviswaptconfig.label10.caption
+msgid "Enable external tools in hosts popup menus"
+msgstr ""
+
+#: tviswaptconfig.label11.caption
+msgid "Enable management features"
+msgstr ""
+
 #: tviswaptconfig.label2.caption
 msgid "Path to personal certificate"
 msgstr ""
@@ -822,7 +839,7 @@ msgid "Path to CA certificates bundle"
 msgstr ""
 
 #: tviswaptconfig.label7.caption
-msgid "Show advanced informations"
+msgid "Show debug informations"
 msgstr ""
 
 #: tviswaptconfig.label8.caption
@@ -1075,19 +1092,23 @@ msgid "Forget packages"
 msgstr ""
 
 #: tviswaptgui.actpackagesinstall.caption
-msgid "Install packages"
+msgctxt "tviswaptgui.actpackagesinstall.caption"
+msgid "Install package"
 msgstr ""
 
 #: tviswaptgui.actpackagesinstall.hint
-msgid "Force remote install or upgrade of selected packages"
+msgctxt "tviswaptgui.actpackagesinstall.hint"
+msgid "Force remote install or upgrade of package"
 msgstr ""
 
 #: tviswaptgui.actpackagesremove.caption
-msgid "Uninstall packages"
+msgctxt "tviswaptgui.actpackagesremove.caption"
+msgid "Uninstall package"
 msgstr ""
 
 #: tviswaptgui.actpackagesremove.hint
-msgid "Forces remote uninstall of selected packages"
+msgctxt "tviswaptgui.actpackagesremove.hint"
+msgid "Forces remote uninstall of package"
 msgstr ""
 
 #: tviswaptgui.actpackagesupdate.caption
@@ -1618,6 +1639,11 @@ msgctxt "tviswaptgui.labselected.caption"
 msgid "0"
 msgstr ""
 
+#: tviswaptgui.menuexternaltools.caption
+msgctxt "tviswaptgui.menuexternaltools.caption"
+msgid "Gestion Windows de l'ordinateur"
+msgstr ""
+
 #: tviswaptgui.menuitem10.caption
 msgid "Save ..."
 msgstr ""
@@ -1642,10 +1668,6 @@ msgstr ""
 #: tviswaptgui.menuitem17.caption
 msgctxt "tviswaptgui.menuitem17.caption"
 msgid "-"
-msgstr ""
-
-#: tviswaptgui.menuitem2.caption
-msgid "Gestion Windows de l'ordinateur"
 msgstr ""
 
 #: tviswaptgui.menuitem24.caption
@@ -1831,16 +1853,6 @@ msgstr ""
 
 #: tviswaptgui.toolbutton6.caption
 msgid "ToolButton6"
-msgstr ""
-
-#: tviswaptgui.toolbutton7.caption
-msgctxt "tviswaptgui.toolbutton7.caption"
-msgid "Trigger hosts scan"
-msgstr ""
-
-#: tviswaptgui.toolbutton7.hint
-msgctxt "tviswaptgui.toolbutton7.hint"
-msgid "Trigger scan of listening IP of registered hosts."
 msgstr ""
 
 #: tviswuaclassificationsselect.caption

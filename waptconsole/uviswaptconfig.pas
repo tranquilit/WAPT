@@ -28,7 +28,8 @@ type
     Button5: TButton;
     Button6: TButton;
     ButtonPanel1: TButtonPanel;
-    cbShowExternalTools: TCheckBox;
+    cbEnableExternalTools: TCheckBox;
+    cbEnableManagementFeatures: TCheckBox;
     cbManual: TCheckBox;
     cbSendStats: TCheckBox;
     cbUseProxyForRepo: TCheckBox;
@@ -52,6 +53,7 @@ type
     ImgStatusServer: TImage;
     Label1: TLabel;
     Label10: TLabel;
+    Label11: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;

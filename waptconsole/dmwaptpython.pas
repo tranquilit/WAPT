@@ -40,6 +40,9 @@ type
     WAPT:Variant;
     PyWaptWrapper : TPyDelphiWrapper;
 
+
+    function CertificateIsCodeSigning(crtfilename:String):Boolean;
+
     property privateKeyPassword: Ansistring read getprivateKeyPassword write setprivateKeyPassword;
 
     property WaptConfigFileName:Utf8String read FWaptConfigFileName write SetWaptConfigFileName;
@@ -250,6 +253,14 @@ begin
   else
     GetLocaleFormatSettings($409, DefaultFormatSettings);
 
+end;
+
+function TDMPython.CertificateIsCodeSigning(crtfilename: String): Boolean;
+var
+  crt: Variant;
+begin
+  crt := MainModule.waptcrypto.SSLCertificate(crt_filename:=crtfilename);
+  result := VarPythonAsString(crt.has_usage('code_signing')) <> '';
 end;
 
 procedure TDMPython.DataModuleCreate(Sender: TObject);

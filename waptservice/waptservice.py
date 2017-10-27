@@ -2273,10 +2273,10 @@ def make_response(result = {},success=True,error_code='',msg='',request_time=Non
     return data
 
 def make_response_from_exception(exception,error_code=''):
-    """Return a dict for websocket result callback from exception
-        success : False
-        msg : message from exception
-        error_code : classname of exception if not provided
+    """Create a standard answer for websocket callback exception
+
+    Returns:
+        dict: {success : False,msg : message from exceptionerror_code : classname of exception if not provided}
    """
     if not error_code:
         error_code = type(exception).__name__.lower()
