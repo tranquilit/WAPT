@@ -366,7 +366,6 @@ type
     ToolButton4: TToolButton;
     ToolButton5: TToolButton;
     ToolButton6: TToolButton;
-    ToolButton7: TToolButton;
     procedure ActAddADSGroupsExecute(Sender: TObject);
     procedure ActAddConflictsExecute(Sender: TObject);
     procedure ActAddPackageGroupExecute(Sender: TObject);
@@ -390,14 +389,14 @@ type
     procedure ActDeployWaptExecute(Sender: TObject);
     procedure ActEditGroupUpdate(Sender: TObject);
     procedure ActEditHostPackageUpdate(Sender: TObject);
-....procedure ActForgetPackagesUpdate(Sender: TObject);
+    procedure ActForgetPackagesUpdate(Sender: TObject);
     procedure ActGermanExecute(Sender: TObject);
     procedure ActGermanUpdate(Sender: TObject);
-....procedure ActHostsDeletePackageUpdate(Sender: TObject);
-....procedure ActHostsDeleteUpdate(Sender: TObject);
+    procedure ActHostsDeletePackageUpdate(Sender: TObject);
+    procedure ActHostsDeleteUpdate(Sender: TObject);
     procedure ActmakePackageTemplateExecute(Sender: TObject);
-....procedure ActPackagesInstallUpdate(Sender: TObject);
-....procedure ActPackagesRemoveUpdate(Sender: TObject);
+    procedure ActPackagesInstallUpdate(Sender: TObject);
+    procedure ActPackagesRemoveUpdate(Sender: TObject);
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
     procedure ActTISHelpExecute(Sender: TObject);
@@ -849,6 +848,7 @@ begin
   end;
 
   // %LOCALAPPDATA%\waptconsole\waptconsole.ini
+  // Global settings, not per cert
   ini := TIniFile.Create(AppIniFilename);
   try
     if ini.ReadBool('Global','send_usage_report',True) then
@@ -1350,7 +1350,7 @@ end;
 
 procedure TVisWaptGUI.ActAddGroupExecute(Sender: TObject);
 begin
-  if IniReadString(AppIniFilename,'Global','default_sources_root')<>'' then
+  if WaptIniReadString(AppIniFilename,'Global','default_sources_root')<>'' then
   begin
     CreateGroup('agroup', AdvancedMode);
     ActPackagesUpdate.Execute;
@@ -3187,14 +3187,24 @@ end;
 procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
 var
   soresult,columns,urlParams, Node, Hosts,fields: ISuperObject;
-  previous_uuid: string;
+  previous_uuid,prop: string;
   i: integer;
+
+const
+  DefaultColumns:Array[0..10] of String = ('uuid','os_name','connected_ips','computer_fqdn','computer_name','manufacturer','description','productname','serialnr','mac_addresses','connected_users');
+
 begin
   EdSearchHost.Modified:=False;
   columns := TSuperObject.Create(stArray);
   for i:=0 to GridHosts.Header.Columns.Count-1 do
     if coVisible in GridHosts.Header.Columns[i].Options then
       columns.AsArray.Add(TSOGridColumn(GridHosts.Header.Columns[i]).PropertyName);
+
+  for prop in DefaultColumns do
+  begin
+    if not StrIn(prop,Columns) then
+      columns.AsArray.Add(prop);
+	end;
 
   try
     Screen.cursor := crHourGlass;
@@ -4135,15 +4145,19 @@ procedure TVisWaptGUI.GridHostsNewText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; const NewText: String);
 var
   args,res: ISuperObject;
+  taskresult,uuids: ISuperObject;
+  currhost,computer_name: ansistring;
 begin
   if (GridHosts.Header.Columns[Column]  as TSOGridColumn).PropertyName = 'description' then
   begin
     if MessageDlg(rsConfirmCaption,'Do you really want to change description to '+NewText+' ?',mtConfirmation, mbYesNoCancel,0) = mrYes then
     begin
+      uuids := TSuperObject.Create(stArray);;
+      uuids.AsArray.Add(GridHosts.FocusedRow.S['uuid']);
       args := SO();
       args.S['computer_description'] := NewText{%H-};
-      res := WAPTServerJsonPost('api/v3/trigger_register?uuid=%s',[GridHosts.FocusedRow.S['uuid']],args);
-      if not res.B['success'] then
+      taskresult := TriggerActionOnHosts(uuids,'trigger_change_description',args,'Change host description and register','Error changing host description');
+      if not taskresult.B['success'] then
       begin
         GridHosts.CancelEditNode;
         Abort;

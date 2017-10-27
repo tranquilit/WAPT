@@ -236,6 +236,7 @@ __all__ = \
  'local_group_memberships',
  'local_group_members',
  'set_computer_description',
+ 'get_computer_description',
  'uac_enabled',
  'unzip',
  ]
@@ -2491,6 +2492,11 @@ def set_computer_description(description):
     else:
         for win32_os in wmi.WMI().Win32_OperatingSystem():
             win32_os.Description = description
+
+def get_computer_description():
+    """Get the computer descrption"""
+    for win32_os in wmi.WMI().Win32_OperatingSystem():
+        return win32_os.Description
 
 def critical_system_pending_updates():
     """Return list of not installed critical updates
