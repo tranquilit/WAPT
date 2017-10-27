@@ -23,7 +23,7 @@ type
     CheckBox1: TCheckBox;
     EdRunning: TEdit;
     GridPending: TSOGrid;
-    Image1: TImage
+    Image1: TImage;
     LabDontShutdown: TLabel;
     LabIntro: TLabel;
     PanButtons: TPanel;
