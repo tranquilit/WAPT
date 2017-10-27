@@ -373,6 +373,7 @@ type
     procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
     procedure ActChangePrivateKeypasswordExecute(Sender: TObject);
+    procedure ActChangePrivateKeypasswordUpdate(Sender: TObject);
     procedure ActCleanCacheExecute(Sender: TObject);
     procedure ActComputerMgmtExecute(Sender: TObject);
     procedure ActComputerMgmtUpdate(Sender: TObject);
@@ -442,7 +443,6 @@ type
     procedure ActSearchGroupsExecute(Sender: TObject);
     procedure ActTriggerHostUpdateExecute(Sender: TObject);
     procedure ActTriggerHostUpgradeExecute(Sender: TObject);
-    procedure ActTriggerHostUpgradeUpdate(Sender: TObject);
     procedure ActEditPackageExecute(Sender: TObject);
     procedure ActEditpackageUpdate(Sender: TObject);
     procedure ActEvaluateExecute(Sender: TObject);
@@ -1867,6 +1867,11 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.ActChangePrivateKeypasswordUpdate(Sender: TObject);
+begin
+  ActChangePrivateKeypassword.Enabled := FileExists(GetWaptPersonalCertificatePath);
+end;
+
 procedure TVisWaptGUI.ActCleanCacheExecute(Sender: TObject);
 var
   waptpackages:TStringList;
@@ -1891,7 +1896,7 @@ begin
   if (Gridhosts.FocusedRow <> nil) and
     (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
   begin
-    ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],3389);
+    ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],135);
     if ip <> '' then
       ShellExecute(0, '', PAnsiChar('compmgmt.msc'), PAnsichar(' -a /computer=' + ip), nil, SW_SHOW)
     else
@@ -1916,7 +1921,7 @@ begin
   if (Gridhosts.FocusedRow <> nil) and
     (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
   begin
-    ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],3389);
+    ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],135);
     if ip <> '' then
       ShellExecute(0, '', PAnsiChar('services.msc'), PAnsichar(' -a /computer=' + ip), nil, SW_SHOW)
     else
@@ -1941,7 +1946,7 @@ begin
   if (Gridhosts.FocusedRow <> nil) and
     (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
   begin
-    ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],3389);
+    ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],135);
     if ip <> '' then
       ShellExecute(0, '', PAnsiChar('Lusrmgr.msc'), PAnsichar(' -a /computer=' + ip), nil, SW_SHOW)
     else
@@ -2661,7 +2666,6 @@ end;
 procedure TVisWaptGUI.ActHostsActionsUpdate(Sender: TObject);
 begin
   (Sender as TAction).Enabled:=(GridHosts.SelectedCount>0);
-  (Sender as TAction).Visible:=OneHostIsConnected;
 end;
 
 procedure TVisWaptGUI.ActImportFromFileExecute(Sender: TObject);
@@ -3071,11 +3075,6 @@ begin
     finally
       Free;
     end;
-end;
-
-procedure TVisWaptGUI.ActTriggerHostUpgradeUpdate(Sender: TObject);
-begin
-  (Sender as TAction).Enabled := GridHosts.SelectedCount > 0;
 end;
 
 procedure TVisWaptGUI.ActEvaluateExecute(Sender: TObject);

@@ -86,7 +86,7 @@ interface
       VerifyCertificateFilename:String='';AcceptType:String='application/json';
       CookieManager:TIdCookieManager=Nil):RawByteString;
 
-  function GetReachableIP(IPS:ISuperObject;port:word):String;
+  function GetReachableIP(IPS:ISuperObject;port:word;Timeout:Integer=200):String;
 
   //return ip for waptservice
   function WaptServiceReachableIP(UUID:String;hostdata:ISuperObject=Nil):String;
@@ -1620,7 +1620,7 @@ begin
     StringToFile(AppendPathDelim(wapt_base_dir) + 'waptupgrade\waptagent.sha256',SHA256Hash(Result)+'  waptagent.exe');
 end;
 
-function GetReachableIP(IPS:ISuperObject;port:word):String;
+function GetReachableIP(IPS:ISuperObject;port:word;Timeout:Integer=1000):String;
 var
   IP:ISuperObject;
 begin
@@ -1630,7 +1630,7 @@ begin
   else
   if (IPS.DataType=stString) then
   begin
-    if CheckOpenPort(port,IPS.AsString,1000) then
+    if CheckOpenPort(port,IPS.AsString,timeout) then
       Result := IPS.AsString
     else
       Result := '';
@@ -1640,7 +1640,7 @@ begin
   begin
     for IP in IPS do
     begin
-      if CheckOpenPort(port,IP.AsString,1000) then
+      if CheckOpenPort(port,IP.AsString,timeout) then
       begin
         Result := IP.AsString;
         Break;

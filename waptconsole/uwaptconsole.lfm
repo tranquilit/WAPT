@@ -4360,12 +4360,6 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActHostsDeleteExecute
       OnUpdate = ActHostsActionsUpdate
     end
-    object ActHostWaptUpgrade: TAction
-      Category = 'hosts'
-      Caption = 'Update WAPT client'
-      Hint = 'Run agent.exe in silent mode from <url-depot>/waptagent.exe'
-      OnUpdate = ActHostsActionsUpdate
-    end
     object ActTriggerHostUpdate: TAction
       Category = 'hosts'
       Caption = 'Update hosts status'
@@ -4381,12 +4375,6 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 29
       OnExecute = ActTriggerHostUpgradeExecute
       OnUpdate = ActHostsActionsUpdate
-    end
-    object ActTriggerHostsListening: TAction
-      Category = 'hosts'
-      Caption = 'Trigger hosts scan'
-      Hint = 'Trigger scan of listening IP of registered hosts.'
-      ImageIndex = 36
     end
     object ActAddPackageGroup: TAction
       Category = 'hosts'
@@ -4427,7 +4415,7 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'hosts'
       Caption = 'Refresh host inventory'
       OnExecute = ActRefreshHostInventoryExecute
-      OnUpdate = ActTriggerHostUpgradeUpdate
+      OnUpdate = ActHostsActionsUpdate
     end
     object ActGerman: TAction
       Category = 'Tools'
@@ -4486,6 +4474,7 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'Tools'
       Caption = 'Change password of private key...'
       OnExecute = ActChangePrivateKeypasswordExecute
+      OnUpdate = ActChangePrivateKeypasswordUpdate
     end
     object ActTISHelp: TAction
       Category = 'Host'
