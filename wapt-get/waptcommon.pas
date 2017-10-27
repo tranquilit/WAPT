@@ -163,6 +163,8 @@ const
 
   AdvancedMode:Boolean = False;
 
+  EnableExternalTools:Boolean = False;
+
   WAPTServerMinVersion='1.5.0.17';
 
 implementation
@@ -1196,6 +1198,7 @@ begin
     end;
 
     AdvancedMode := ReadBool('global','advanced_mode',False);
+    EnableExternalTools := ReadBool('global','enable_external_tools',False);
 
     DefaultPackagePrefix := ReadString('global','default_package_prefix','');
     DefaultSourcesRoot := ReadString('global','default_sources_root','');
@@ -1620,7 +1623,7 @@ begin
     StringToFile(AppendPathDelim(wapt_base_dir) + 'waptupgrade\waptagent.sha256',SHA256Hash(Result)+'  waptagent.exe');
 end;
 
-function GetReachableIP(IPS:ISuperObject;port:word;Timeout:Integer=1000):String;
+function GetReachableIP(IPS:ISuperObject;port:word;Timeout:Integer=200):String;
 var
   IP:ISuperObject;
 begin

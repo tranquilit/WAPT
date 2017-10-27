@@ -92,7 +92,7 @@ type
     MemoGroupeDescription1: TMemo;
     MenuItem1: TMenuItem;
     MenuItem17: TMenuItem;
-    MenuItem2: TMenuItem;
+    MenuExternalTools: TMenuItem;
     MenuItem23: TMenuItem;
     MenuItem33: TMenuItem;
     MenuItem50: TMenuItem;
@@ -1298,14 +1298,20 @@ begin
   ActPackagesRemove.Visible := OneIsFocused  and OneIsConnected;
   ActPackagesForget.Visible := OneIsFocused  and OneIsConnected;
 
-  ActRDP.Visible := OneIsFocused  and OneHasConnectedIP;
-  ActVNC.Visible := OneIsFocused  and OneHasConnectedIP and FileExists(GetVNCViewerPath);
-  ActComputerServices.Visible := OneIsFocused  and OneHasConnectedIP;
-  ActComputerUsers.Visible := OneIsFocused  and OneHasConnectedIP;
-  ActComputerMgmt.Visible := OneIsFocused  and OneHasConnectedIP;
-  ActRemoteAssist.Visible := OneIsFocused  and OneHasConnectedIP;
+  ActRefreshHostInventory.Visible:=OneIsFocused  and OneIsConnected;
 
-  ActTISHelp.Visible := OneIsFocused and OneHasConnectedIP and FileExists(GetTisSupportPath);
+  ActRDP.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
+  ActVNC.Visible := OneIsFocused  and OneHasConnectedIP and FileExists(GetVNCViewerPath) and EnableExternalTools;
+  ActComputerServices.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
+  ActComputerUsers.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
+  ActComputerMgmt.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
+  ActRemoteAssist.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
+
+  ActTriggerWakeOnLan.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
+
+  ActTISHelp.Visible := OneIsFocused and OneHasConnectedIP and EnableExternalTools and FileExists(GetTisSupportPath);
+
+  MenuExternalTools.Visible:=EnableExternalTools;
 end;
 
 constructor TVisWaptGUI.Create(TheOwner: TComponent);
@@ -3453,6 +3459,9 @@ begin
         //eddefault_sources_root.Directory := inifile.ReadString('global','default_sources_root','');
         //eddefault_sources_url.text = inifile.ReadString('global','default_sources_url','https://srvdev/sources/%(packagename)s-wapt/trunk');
 
+        cbShowExternalTools.Checked :=
+          inifile.ReadBool('global', 'enable_external_tools', True);
+
         cbDebugWindow.Checked:= inifile.ReadBool('global','advanced_mode',False);
 
         lang := inifile.ReadString('Global','language','en');
@@ -3492,6 +3501,10 @@ begin
           inifile.WriteBool('global', 'send_usage_report',
             cbSendStats.Checked);
           //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
+
+          inifile.WriteBool('global', 'enable_external_tools',
+            cbShowExternalTools.Checked);
+
 
           if cbLanguage.ItemIndex=0 then
             inifile.WriteString('Global','language','en')

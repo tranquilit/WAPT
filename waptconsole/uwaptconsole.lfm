@@ -5311,7 +5311,7 @@ object VisWaptGUI: TVisWaptGUI
     object MenuItem1: TMenuItem
       Action = ActRemoteAssist
     end
-    object MenuItem2: TMenuItem
+    object MenuExternalTools: TMenuItem
       Caption = 'Gestion Windows de l''ordinateur'
       object MenuItem23: TMenuItem
         Action = ActComputerMgmt
