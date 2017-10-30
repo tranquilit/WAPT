@@ -68,6 +68,8 @@ resourcestring
   rsDisplaying = 'Displaying';
   rsConfirmDeletion = 'Confirm removal';  // Duplicate of rsConfirmRmPackageCaption
 
+  rsHostsSelectedTotal = 'Selected / Total : %d / %d';
+
   rsConfirmCaption = 'Confirm';
 
   rsConfirmHostForgetsPackages = 'Are you sure you want to forget %s packages from host %s ?';

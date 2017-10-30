@@ -68,6 +68,8 @@ type
     EdPackage1: TLabeledEdit;
     EdVersion: TLabeledEdit;
     EdVersion1: TLabeledEdit;
+    GridhostInventory: TVirtualJSONInspector;
+    GridHosts: TSOGrid;
     GridWSUSAllowedWindowsUpdates: TSOGrid;
     GridWSUSScan: TSOGrid;
     GridWSUSAllowedClassifications: TSOGrid;
@@ -88,6 +90,7 @@ type
     Label24: TLabel;
     Label25: TLabel;
     Label26: TLabel;
+    LabelComputersNumber: TLabel;
     LabErrorRegHardware: TLabel;
     MemoGroupeDescription1: TMemo;
     MenuItem1: TMenuItem;
@@ -108,6 +111,8 @@ type
     odSelectInstaller: TOpenDialog;
     Panel13: TPanel;
     Panel14: TPanel;
+    Panel15: TPanel;
+    PanLeft: TPanel;
     PanRightBundles: TPanel;
     Panel16: TPanel;
     Panel8: TPanel;
@@ -210,14 +215,10 @@ type
     GridHostTasksErrors: TSOGrid;
     HostRunningTaskLog: TMemo;
     ActionsImages: TImageList;
-    Label11: TLabel;
     Label12: TLabel;
     HostRunningTask: TLabeledEdit;
-    Label13: TLabel;
     Label14: TLabel;
     Label15: TLabel;
-    LabelComputersNumber: TLabel;
-    labSelected: TLabel;
     MemoTaskLog: TMemo;
     MemoInstallOutput: TMemo;
     MemoGroupeDescription: TMemo;
@@ -284,8 +285,6 @@ type
     EdSearchHost: TSearchEdit;
     EdRun: TEdit;
     EdSearchPackage: TSearchEdit;
-    GridHosts: TSOGrid;
-    GridhostInventory: TVirtualJSONInspector;
     ImageList1: TImageList;
     Label1: TLabel;
     pgGroups: TTabSheet;
@@ -3974,7 +3973,7 @@ procedure TVisWaptGUI.GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNo
 begin
   UpdateHostPages(Sender);
   UpdateSelectedHostsActions(Sender);
-  labSelected.Caption := IntToStr(GridHosts.SelectedCount);
+  LabelComputersNumber.Caption := Format(rsHostsSelectedTotal,[GridHosts.SelectedCount,GridHosts.Data.AsArray.Length]);
 end;
 
 procedure TVisWaptGUI.GridHostsColumnDblClick(Sender: TBaseVirtualTree;
