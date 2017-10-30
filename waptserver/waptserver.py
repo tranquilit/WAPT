@@ -605,7 +605,7 @@ def upload_packages():
                     # fix context on target file (otherwith tmp context is carried over)
                     #logger.debug(subprocess.check_output('chcon -R -t httpd_sys_content_t %s' % target,shell=True))
                     if entry.section == 'host':
-                        Hosts.update(Hosts.wapt_status='TO-UPGRADE').where(Hosts.uuid = entry.package).execute()
+                        Hosts.update(wapt_status='TO-UPGRADE').where(Hosts.uuid == entry.package).execute()
 
                     done.append(filename)
 
