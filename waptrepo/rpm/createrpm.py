@@ -120,9 +120,9 @@ subprocess.check_output(
     r'virtualenv ./pylibs --system-site-packages', shell=True)
 eprint('Install additional libraries in build environment virtualenv')
 eprint(subprocess.check_output(
-    r'source ./pylibs/bin/activate ; pip install --upgrade pip -i https://pypi.python.org/simple/', shell=True))
+    r'source ./pylibs/bin/activate ; pip install --upgrade pip', shell=True))
 eprint(subprocess.check_output(
-    r'source ./pylibs/bin/activate ; pip install -r ../../requirements-repo.txt -t ./BUILDROOT/opt/wapt/lib/site-packages -i https://pypi.python.org/simple/', shell=True))
+    r'source ./pylibs/bin/activate ; pip install -r ../../requirements-repo.txt -t ./BUILDROOT/opt/wapt/lib/site-packages', shell=True))
 rsync('./pylibs/lib/', './BUILDROOT/opt/wapt/lib/')
 
 eprint('copie des fichiers waptrepo')
