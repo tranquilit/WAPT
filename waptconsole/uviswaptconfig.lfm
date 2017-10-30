@@ -344,56 +344,31 @@ object VisWAPTConfig: TVisWAPTConfig
       ClientHeight = 329
       ClientWidth = 583
       object eddefault_sources_root: TDirectoryEdit
-        Left = 307
+        Left = 315
         Height = 21
         Hint = 'E.g. : c:\waptdev'#13#10'Local directory for saving package development projects'
-        Top = 42
-        Width = 180
+        Top = 10
+        Width = 172
         ShowHidden = False
         ButtonWidth = 23
         NumGlyphs = 1
         MaxLength = 0
-        TabOrder = 1
+        TabOrder = 0
       end
       object Label1: TLabel
         Left = 36
         Height = 13
-        Top = 44
+        Top = 12
         Width = 266
         Alignment = taRightJustify
         AutoSize = False
         Caption = 'Base directory for package development'
         ParentColor = False
       end
-      object cbLanguage: TComboBox
-        Left = 307
-        Height = 21
-        Top = 18
-        Width = 100
-        ItemHeight = 13
-        ItemIndex = 0
-        Items.Strings = (
-          'English'
-          'French'
-          'German'
-        )
-        Style = csDropDownList
-        TabOrder = 0
-        Text = 'English'
-      end
-      object Label3: TLabel
-        Left = 252
-        Height = 13
-        Top = 21
-        Width = 47
-        Alignment = taRightJustify
-        Caption = 'Language'
-        ParentColor = False
-      end
       object Label4: TLabel
         Left = -12
         Height = 13
-        Top = 98
+        Top = 66
         Width = 317
         Alignment = taRightJustify
         AutoSize = False
@@ -404,7 +379,7 @@ object VisWAPTConfig: TVisWAPTConfig
       object Label5: TLabel
         Left = -12
         Height = 13
-        Top = 120
+        Top = 88
         Width = 317
         Alignment = taRightJustify
         AutoSize = False
@@ -413,25 +388,25 @@ object VisWAPTConfig: TVisWAPTConfig
         ParentColor = False
       end
       object cbUseProxyForRepo: TCheckBox
-        Left = 313
+        Left = 315
         Height = 17
         Hint = 'Activates proxy when accessing the main repository'
-        Top = 98
+        Top = 66
         Width = 20
-        TabOrder = 3
+        TabOrder = 2
       end
       object cbUseProxyForServer: TCheckBox
-        Left = 313
+        Left = 315
         Height = 17
         Hint = 'Activate proxy when accessing the WAPT server'
-        Top = 120
+        Top = 88
         Width = 20
-        TabOrder = 4
+        TabOrder = 3
       end
       object Label8: TLabel
         Left = 11
         Height = 13
-        Top = 142
+        Top = 110
         Width = 294
         Alignment = taRightJustify
         AutoSize = False
@@ -439,99 +414,42 @@ object VisWAPTConfig: TVisWAPTConfig
         ParentColor = False
       end
       object cbSendStats: TCheckBox
-        Left = 313
+        Left = 315
         Height = 17
-        Top = 142
+        Top = 110
         Width = 20
         Checked = True
         State = cbChecked
-        TabOrder = 5
+        TabOrder = 4
       end
       object Button1: TButton
-        Left = 341
+        Left = 344
         Height = 25
-        Top = 138
+        Top = 106
         Width = 143
         Caption = 'Show statistics'
         OnClick = Button1Click
-        TabOrder = 6
-      end
-      object Label7: TLabel
-        Left = 4
-        Height = 13
-        Top = 164
-        Width = 301
-        Alignment = taRightJustify
-        AutoSize = False
-        BorderSpacing.Right = 3
-        Caption = 'Show debug informations'
-        ParentColor = False
-      end
-      object cbDebugWindow: TCheckBox
-        Left = 313
-        Height = 17
-        Hint = 'Activates proxy when accessing the main repository'
-        Top = 164
-        Width = 20
-        TabOrder = 7
+        TabOrder = 5
       end
       object edhttp_proxy: TLabeledEdit
-        Left = 313
+        Left = 315
         Height = 21
         Hint = 'E.g. : http://proxy.tranquilit.local:3128'#13#10'Only required if a proxy is needed for waptserver and main waptrepo'
-        Top = 74
-        Width = 222
+        Top = 42
+        Width = 220
         EditLabel.AnchorSideTop.Control = edhttp_proxy
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = edhttp_proxy
         EditLabel.AnchorSideBottom.Control = edhttp_proxy
         EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 170
+        EditLabel.Left = 172
         EditLabel.Height = 13
-        EditLabel.Top = 78
+        EditLabel.Top = 46
         EditLabel.Width = 140
         EditLabel.Caption = 'http proxy to use (if needed)'
         EditLabel.ParentColor = False
         LabelPosition = lpLeft
-        TabOrder = 2
-      end
-      object cbEnableExternalTools: TCheckBox
-        Left = 313
-        Height = 17
-        Hint = 'Make rdp, vnc, remoteassist... features visible'
-        Top = 186
-        Width = 20
-        TabOrder = 8
-      end
-      object Label10: TLabel
-        Left = 4
-        Height = 13
-        Top = 186
-        Width = 301
-        Alignment = taRightJustify
-        AutoSize = False
-        BorderSpacing.Right = 3
-        Caption = 'Enable external tools in hosts popup menus'
-        ParentColor = False
-      end
-      object cbEnableManagementFeatures: TCheckBox
-        Left = 313
-        Height = 17
-        Hint = 'Make change server password, create certificate, create waptagent features visible'
-        Top = 210
-        Width = 20
-        TabOrder = 9
-      end
-      object Label11: TLabel
-        Left = 4
-        Height = 13
-        Top = 210
-        Width = 301
-        Alignment = taRightJustify
-        AutoSize = False
-        BorderSpacing.Right = 3
-        Caption = 'Enable management features'
-        ParentColor = False
+        TabOrder = 1
       end
     end
   end
@@ -539,7 +457,7 @@ object VisWAPTConfig: TVisWAPTConfig
     Enabled = False
     OnTimer = Timer1Timer
     left = 25
-    top = 157
+    top = 125
   end
   object ImageList1: TImageList
     left = 25

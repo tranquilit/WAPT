@@ -32,224 +32,6 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Inventory'
       ClientHeight = 533
       ClientWidth = 1715
-      object Panel10: TPanel
-        Left = 0
-        Height = 55
-        Top = 39
-        Width = 1715
-        Align = alTop
-        BevelOuter = bvNone
-        ClientHeight = 55
-        ClientWidth = 1715
-        TabOrder = 1
-        object EdSearchHost: TSearchEdit
-          Left = 117
-          Height = 21
-          Hint = 'Regular expressions allowed'
-          Top = 4
-          Width = 128
-          EmptyText = 'Search keywords'
-          ExecuteDelay = 650
-          Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
-          Font.Color = clGray
-          OnKeyPress = EdSearchHostKeyPress
-          ParentFont = False
-          TabOrder = 0
-        end
-        object Label5: TLabel
-          Left = 6
-          Height = 13
-          Top = 7
-          Width = 33
-          Caption = 'Search'
-          ParentColor = False
-        end
-        object cbNeedUpgrade: TCheckBox
-          Left = 444
-          Height = 17
-          Top = 17
-          Width = 95
-          Caption = 'Needs updating'
-          OnClick = cbNeedUpgradeClick
-          TabOrder = 9
-        end
-        object cbHasErrors: TCheckBox
-          Left = 444
-          Height = 17
-          Top = 1
-          Width = 70
-          Caption = 'Has errors'
-          OnClick = cbNeedUpgradeClick
-          TabOrder = 2
-        end
-        object ButHostSearch: TBitBtn
-          Left = 253
-          Height = 25
-          Top = 2
-          Width = 180
-          Action = ActSearchHost
-          Glyph.Data = {
-            36040000424D3604000000000000360000002800000010000000100000000100
-            2000000000000004000064000000640000000000000000000000B06F4000AB66
-            3CB7A45D38FA9E543400FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00BA7C4AB7BF87
-            5CFFB97E56FFA7623AFA9F5735009B51320095492F008F432B007F7B79007979
-            79D2747474FF707070FF6B6B6BFF676767FF636363FF606060D7C4885AFAC692
-            68FFCDA280FFC59670FFB67B53FFAB6A46FFA35E3DFF9C5235FF955947FFC4C0
-            BFFFD9D4D3FFD4CFCEFFD3CECDFFD3CECDFFE8E5E5FF646464FFCD956A00C68C
-            60FAD1A683FFCC9F7BFFCB9E7BFFC79974FFC3926CFFBE8D65FFA86945FFAE88
-            7BFFBDB5B3FFB9B1B0FFB9B1AEFFB7AFAEFFD3CECDFF686868FFFFFFFF00CE98
-            7000D0A17CFFD7AE8FFFC9976FFFC38F66FFBD885CFFC08C64FFBC8861FF8453
-            3EFFBAB1B0FFBBB4B2FFBAB2B1FFB9B1AFFFD4CFCEFF6D6D6DFFFFFFFF00D7A5
-            7F00D7A682FFDCB699FFD0A17DFFCB9A73FFCFA482FFC79974FF896C58FF8787
-            87FF787675FFBDB6B4FFBBB4B3FFBBB3B1FFD4D0CFFF737373FFFFFFFF00E0AE
-            8C00DDAE8CFFE2BEA4FFD8AB89FFD9B394FFCF9F7AFFA47A5BFF939393FFA9A9
-            A9FF656464FFBDB7B5FF3BA142FF379437FFD6D1D0FF787878FFFFFFFF00E6B8
-            9800E3B493FFE8C6ADFFE3C0A6FFDBB08FFFB58F74FFD7C9BFFF989898FF7574
-            74FFC0BAB9FFC1BAB9FFA0C8A4FF50A956FFD7D3D1FF7E7E7EFFFFFFFF00ECC0
-            A100E7BB9CDAE8C0A3FFE5BFA3FFB59D8BFFAEAEAEFFA6A6A6FFD9D8D8FFC5BE
-            BDFFC4BEBCFFC3BCBBFFC1BBB9FFC0B9B8FFD7D3D3FF848484FFFFFFFF00FFFF
-            FF00EDC3A500EABE9FAFCEAF9AF8B7B7B7FFBCBCBCFFACACACFFDDDCDCFFC7C1
-            C0FF929191FF8F8F8FFF8D8D8DFF8A8A8AFFD9D5D4FF8B8B8BFFFFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00ECC0A100AEAEAEFFB9B9B9FFE1E1E1FFDDDDDDFFC8C3
-            C2FFC8C2C1FFC6C1BFFFC5BFBEFFC3BDBBFFDAD6D5FF919191FFFFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00CBCBCBFFE9E9E9FFE9E9E9FFE2E1E1FFCBC6
-            C4FF989797FF969595FF949393FF929191FFDBD7D6FF989898FFFFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00CFCFCF00CBCBCBE4DFDFDFFFEAEAEAFFCFCA
-            C9FFCBC6C5FFCAC4C3FFC8C3C1FFC7C1C1FFDCD9D8FF9E9E9EFFFFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00D0D0D000CCCCCCABDCDCDCFFE6E3
-            E3FFE1DEDCFFDFDCDCFFDFDCDBFFDEDBDBFFEEECECFFA5A5A5FFFFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00CDCDCD9FC9C9
-            C9FBC4C4C4FFC0C0C0FFBBBBBBFFB6B6B6FFB0B0B0FFABABABA7FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
-          }
-          TabOrder = 1
-        end
-        object cbSearchAll: TCheckBox
-          Left = 6
-          Height = 17
-          Top = 30
-          Width = 31
-          Caption = 'All'
-          Checked = True
-          OnClick = cbSearchAllClick
-          State = cbChecked
-          TabOrder = 4
-        end
-        object cbSearchHost: TCheckBox
-          Left = 68
-          Height = 17
-          Hint = 'Search in host_info field'
-          Top = 30
-          Width = 42
-          Caption = 'Host'
-          Checked = True
-          OnClick = cbNeedUpgradeClick
-          State = cbChecked
-          TabOrder = 5
-        end
-        object cbSearchDMI: TCheckBox
-          Left = 144
-          Height = 17
-          Hint = 'Search in DMI/WMI infos'
-          Top = 30
-          Width = 67
-          Caption = 'Hardware'
-          Checked = True
-          OnClick = cbNeedUpgradeClick
-          State = cbChecked
-          TabOrder = 6
-        end
-        object cbSearchSoftwares: TCheckBox
-          Left = 228
-          Height = 17
-          Hint = 'Search in installed softwares'
-          Top = 30
-          Width = 64
-          Caption = 'Software'
-          Checked = True
-          OnClick = cbNeedUpgradeClick
-          State = cbChecked
-          TabOrder = 7
-        end
-        object cbSearchPackages: TCheckBox
-          Left = 308
-          Height = 17
-          Hint = 'search in installed packages'
-          Top = 30
-          Width = 65
-          Caption = 'Packages'
-          Checked = True
-          OnClick = cbNeedUpgradeClick
-          State = cbChecked
-          TabOrder = 8
-        end
-        object cbGroups: TComboBox
-          Left = 644
-          Height = 21
-          Hint = 'Filter hosts which have this direct package dependency'
-          Top = 4
-          Width = 160
-          ItemHeight = 13
-          OnDropDown = cbGroupsDropDown
-          OnSelect = cbGroupsSelect
-          Style = csDropDownList
-          TabOrder = 3
-        end
-        object Label15: TLabel
-          Left = 604
-          Height = 13
-          Top = 7
-          Width = 34
-          Alignment = taRightJustify
-          Caption = 'Groups'
-          ParentColor = False
-        end
-        object CBInverseSelect: TCheckBox
-          Left = 67
-          Height = 17
-          Hint = 'Negative search : returns hosts Not matching'
-          Top = 6
-          Width = 37
-          Caption = 'Not'
-          OnClick = CBInverseSelectClick
-          TabOrder = 10
-        end
-        object EdHostsLimit: TLabeledEdit
-          Left = 724
-          Height = 21
-          Hint = 'Limt the count of hosts returned from server'
-          Top = 30
-          Width = 80
-          EditLabel.AnchorSideTop.Control = EdHostsLimit
-          EditLabel.AnchorSideTop.Side = asrCenter
-          EditLabel.AnchorSideRight.Control = EdHostsLimit
-          EditLabel.AnchorSideBottom.Control = EdHostsLimit
-          EditLabel.AnchorSideBottom.Side = asrBottom
-          EditLabel.Left = 640
-          EditLabel.Height = 13
-          EditLabel.Top = 34
-          EditLabel.Width = 79
-          EditLabel.Caption = 'Max hosts count'
-          EditLabel.ParentColor = False
-          LabelPosition = lpLeft
-          LabelSpacing = 5
-          TabOrder = 11
-          Text = '1000'
-          OnExit = EdHostsLimitExit
-          OnKeyPress = EdHostsLimitKeyPress
-        end
-        object cbReachable: TCheckBox
-          Left = 444
-          Height = 17
-          Top = 31
-          Width = 98
-          Caption = 'Reachables only'
-          OnClick = cbNeedUpgradeClick
-          TabOrder = 12
-        end
-      end
       object HostPages: TPageControl
         Left = 1143
         Height = 439
@@ -1579,7 +1361,7 @@ object VisWaptGUI: TVisWaptGUI
         Caption = 'ToolBar1'
         Images = ActionsImages
         ShowCaptions = True
-        TabOrder = 3
+        TabOrder = 2
         object ToolButton1: TToolButton
           Left = 196
           Top = 2
@@ -1812,7 +1594,7 @@ object VisWaptGUI: TVisWaptGUI
         Caption = 'PanLeft'
         ClientHeight = 439
         ClientWidth = 1138
-        TabOrder = 4
+        TabOrder = 3
         object Panel15: TPanel
           Left = 0
           Height = 19
@@ -2054,6 +1836,200 @@ object VisWaptGUI: TVisWaptGUI
           OnHeaderDblClick = GridHostsHeaderDblClick
           OnNewText = GridHostsNewText
           ZebraPaint = True
+        end
+      end
+      object Panel10: TPanel
+        Left = 0
+        Height = 55
+        Top = 39
+        Width = 1715
+        Align = alTop
+        BevelOuter = bvNone
+        ClientHeight = 55
+        ClientWidth = 1715
+        TabOrder = 4
+        object EdSearchHost: TSearchEdit
+          Left = 117
+          Height = 21
+          Hint = 'Regular expressions allowed'
+          Top = 4
+          Width = 128
+          EmptyText = 'Search keywords'
+          ExecuteDelay = 650
+          Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
+          Font.Color = clGray
+          OnKeyPress = EdSearchHostKeyPress
+          ParentFont = False
+          TabOrder = 0
+        end
+        object Label5: TLabel
+          Left = 6
+          Height = 13
+          Top = 7
+          Width = 33
+          Caption = 'Search'
+          ParentColor = False
+        end
+        object cbNeedUpgrade: TCheckBox
+          Left = 444
+          Height = 17
+          Top = 17
+          Width = 95
+          Caption = 'Needs updating'
+          OnClick = cbNeedUpgradeClick
+          TabOrder = 9
+        end
+        object cbHasErrors: TCheckBox
+          Left = 444
+          Height = 17
+          Top = 1
+          Width = 70
+          Caption = 'Has errors'
+          OnClick = cbNeedUpgradeClick
+          TabOrder = 2
+        end
+        object ButHostSearch: TBitBtn
+          Left = 253
+          Height = 25
+          Top = 2
+          Width = 180
+          Action = ActSearchHost
+          Glyph.Data = {
+            36040000424D3604000000000000360000002800000010000000100000000100
+            2000000000000004000064000000640000000000000000000000B06F4000AB66
+            3CB7A45D38FA9E543400FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00BA7C4AB7BF87
+            5CFFB97E56FFA7623AFA9F5735009B51320095492F008F432B007F7B79007979
+            79D2747474FF707070FF6B6B6BFF676767FF636363FF606060D7C4885AFAC692
+            68FFCDA280FFC59670FFB67B53FFAB6A46FFA35E3DFF9C5235FF955947FFC4C0
+            BFFFD9D4D3FFD4CFCEFFD3CECDFFD3CECDFFE8E5E5FF646464FFCD956A00C68C
+            60FAD1A683FFCC9F7BFFCB9E7BFFC79974FFC3926CFFBE8D65FFA86945FFAE88
+            7BFFBDB5B3FFB9B1B0FFB9B1AEFFB7AFAEFFD3CECDFF686868FFFFFFFF00CE98
+            7000D0A17CFFD7AE8FFFC9976FFFC38F66FFBD885CFFC08C64FFBC8861FF8453
+            3EFFBAB1B0FFBBB4B2FFBAB2B1FFB9B1AFFFD4CFCEFF6D6D6DFFFFFFFF00D7A5
+            7F00D7A682FFDCB699FFD0A17DFFCB9A73FFCFA482FFC79974FF896C58FF8787
+            87FF787675FFBDB6B4FFBBB4B3FFBBB3B1FFD4D0CFFF737373FFFFFFFF00E0AE
+            8C00DDAE8CFFE2BEA4FFD8AB89FFD9B394FFCF9F7AFFA47A5BFF939393FFA9A9
+            A9FF656464FFBDB7B5FF3BA142FF379437FFD6D1D0FF787878FFFFFFFF00E6B8
+            9800E3B493FFE8C6ADFFE3C0A6FFDBB08FFFB58F74FFD7C9BFFF989898FF7574
+            74FFC0BAB9FFC1BAB9FFA0C8A4FF50A956FFD7D3D1FF7E7E7EFFFFFFFF00ECC0
+            A100E7BB9CDAE8C0A3FFE5BFA3FFB59D8BFFAEAEAEFFA6A6A6FFD9D8D8FFC5BE
+            BDFFC4BEBCFFC3BCBBFFC1BBB9FFC0B9B8FFD7D3D3FF848484FFFFFFFF00FFFF
+            FF00EDC3A500EABE9FAFCEAF9AF8B7B7B7FFBCBCBCFFACACACFFDDDCDCFFC7C1
+            C0FF929191FF8F8F8FFF8D8D8DFF8A8A8AFFD9D5D4FF8B8B8BFFFFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00ECC0A100AEAEAEFFB9B9B9FFE1E1E1FFDDDDDDFFC8C3
+            C2FFC8C2C1FFC6C1BFFFC5BFBEFFC3BDBBFFDAD6D5FF919191FFFFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00CBCBCBFFE9E9E9FFE9E9E9FFE2E1E1FFCBC6
+            C4FF989797FF969595FF949393FF929191FFDBD7D6FF989898FFFFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00CFCFCF00CBCBCBE4DFDFDFFFEAEAEAFFCFCA
+            C9FFCBC6C5FFCAC4C3FFC8C3C1FFC7C1C1FFDCD9D8FF9E9E9EFFFFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00D0D0D000CCCCCCABDCDCDCFFE6E3
+            E3FFE1DEDCFFDFDCDCFFDFDCDBFFDEDBDBFFEEECECFFA5A5A5FFFFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00CDCDCD9FC9C9
+            C9FBC4C4C4FFC0C0C0FFBBBBBBFFB6B6B6FFB0B0B0FFABABABA7FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+          }
+          TabOrder = 1
+        end
+        object cbSearchAll: TCheckBox
+          Left = 6
+          Height = 17
+          Top = 32
+          Width = 31
+          Caption = 'All'
+          Checked = True
+          OnClick = cbSearchAllClick
+          State = cbChecked
+          TabOrder = 4
+        end
+        object cbSearchHost: TCheckBox
+          Left = 68
+          Height = 17
+          Hint = 'Search in host_info field'
+          Top = 32
+          Width = 42
+          Caption = 'Host'
+          Checked = True
+          OnClick = cbNeedUpgradeClick
+          State = cbChecked
+          TabOrder = 5
+        end
+        object cbSearchDMI: TCheckBox
+          Left = 144
+          Height = 17
+          Hint = 'Search in DMI/WMI infos'
+          Top = 32
+          Width = 67
+          Caption = 'Hardware'
+          Checked = True
+          OnClick = cbNeedUpgradeClick
+          State = cbChecked
+          TabOrder = 6
+        end
+        object cbSearchSoftwares: TCheckBox
+          Left = 228
+          Height = 17
+          Hint = 'Search in installed softwares'
+          Top = 32
+          Width = 64
+          Caption = 'Software'
+          Checked = True
+          OnClick = cbNeedUpgradeClick
+          State = cbChecked
+          TabOrder = 7
+        end
+        object cbSearchPackages: TCheckBox
+          Left = 308
+          Height = 17
+          Hint = 'search in installed packages'
+          Top = 32
+          Width = 65
+          Caption = 'Packages'
+          Checked = True
+          OnClick = cbNeedUpgradeClick
+          State = cbChecked
+          TabOrder = 8
+        end
+        object cbGroups: TComboBox
+          Left = 644
+          Height = 21
+          Hint = 'Filter hosts which have this direct package dependency'
+          Top = 4
+          Width = 160
+          ItemHeight = 13
+          OnDropDown = cbGroupsDropDown
+          OnSelect = cbGroupsSelect
+          Style = csDropDownList
+          TabOrder = 3
+        end
+        object Label15: TLabel
+          Left = 604
+          Height = 13
+          Top = 7
+          Width = 34
+          Alignment = taRightJustify
+          Caption = 'Groups'
+          ParentColor = False
+        end
+        object CBInverseSelect: TCheckBox
+          Left = 67
+          Height = 17
+          Hint = 'Negative search : returns hosts Not matching'
+          Top = 6
+          Width = 37
+          Caption = 'Not'
+          OnClick = CBInverseSelectClick
+          TabOrder = 10
+        end
+        object cbReachable: TCheckBox
+          Left = 444
+          Height = 17
+          Top = 32
+          Width = 98
+          Caption = 'Reachables only'
+          OnClick = cbNeedUpgradeClick
+          TabOrder = 11
         end
       end
     end
@@ -4221,6 +4197,7 @@ object VisWaptGUI: TVisWaptGUI
       ShortCut = 16465
     end
     object actRefresh: TAction
+      Category = 'Display'
       Caption = 'Refresh'
       ImageIndex = 25
       OnExecute = actRefreshExecute
@@ -4345,7 +4322,7 @@ object VisWaptGUI: TVisWaptGUI
       OnUpdate = ActEnglishUpdate
     end
     object ActRestoreDefaultLayout: TAction
-      Category = 'Tools'
+      Category = 'Display'
       Caption = 'Restore default grid layout'
       Hint = 'Restore default columns settings for all grids'
       OnExecute = ActRestoreDefaultLayoutExecute
@@ -4422,7 +4399,7 @@ object VisWaptGUI: TVisWaptGUI
       OnUpdate = ActHostsActionsUpdate
     end
     object ActRefreshHostInventory: TAction
-      Category = 'hosts'
+      Category = 'Display'
       Caption = 'Refresh host inventory'
       OnExecute = ActRefreshHostInventoryExecute
       OnUpdate = ActHostsActionsUpdate
@@ -4494,6 +4471,11 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActTISHelpExecute
       OnUpdate = ActTISHelpUpdate
     end
+    object ActDisplayPreferences: TAction
+      Category = 'Display'
+      Caption = 'Display preferences'
+      OnExecute = ActDisplayPreferencesExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 144
@@ -4523,6 +4505,9 @@ object VisWaptGUI: TVisWaptGUI
       object MenuItem6: TMenuItem
         Caption = 'New'
         Visible = False
+      end
+      object MenuItem53: TMenuItem
+        Action = ActWAPTLocalConfig
       end
       object MenuItem7: TMenuItem
         Caption = '-'
@@ -4593,7 +4578,16 @@ object VisWaptGUI: TVisWaptGUI
       end
     end
     object MenuItem24: TMenuItem
-      Caption = '&Edit'
+      Caption = '&Actions'
+    end
+    object MenuItem2: TMenuItem
+      Caption = '&View'
+      object MenuItem81: TMenuItem
+        Action = ActDisplayPreferences
+      end
+      object MenuItem83: TMenuItem
+        Action = ActRestoreDefaultLayout
+      end
     end
     object MenuItem15: TMenuItem
       Caption = '&Tools'
@@ -4693,10 +4687,6 @@ object VisWaptGUI: TVisWaptGUI
       object MenuItem32: TMenuItem
         Caption = '-'
       end
-      object MenuItem53: TMenuItem
-        Action = ActRestoreDefaultLayout
-        Caption = 'Restore default grids layout'
-      end
       object MenuItem54: TMenuItem
         Action = ActCleanCache
       end
@@ -4705,6 +4695,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object MenuItem51: TMenuItem
         Action = ActmakePackageTemplate
+        Caption = 'Package wizard'
         Bitmap.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
           2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
@@ -4741,12 +4732,6 @@ object VisWaptGUI: TVisWaptGUI
           FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF004DB4D8004BB2D8AF4AB0D7BC48AE
           D600FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
         }
-      end
-      object MenuItem75: TMenuItem
-        Caption = '-'
-      end
-      object MenuItem31: TMenuItem
-        Action = ActWAPTLocalConfig
       end
     end
     object MenuItem26: TMenuItem

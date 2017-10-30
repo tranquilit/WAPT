@@ -18,6 +18,7 @@ type
 
   TVisWaptGUI = class(TForm)
     ActCancelRunningTask: TAction;
+    ActDisplayPreferences: TAction;
     ActPackagesForget: TAction;
     ActAddConflicts: TAction;
     ActHelp: TAction;
@@ -55,17 +56,27 @@ type
     BitBtn13: TBitBtn;
     BitBtn15: TBitBtn;
     BitBtn9: TBitBtn;
+    ButHostSearch: TBitBtn;
     ButHostSearch1: TBitBtn;
     ButPackagesUpdate1: TBitBtn;
     cbForcedWSUSscanDownload: TCheckBox;
-    cbReachable: TCheckBox;
-    cbNewestOnly: TCheckBox;
+    cbGroups: TComboBox;
+    cbHasErrors: TCheckBox;
     CBInverseSelect: TCheckBox;
+    cbNeedUpgrade: TCheckBox;
+    cbNewestOnly: TCheckBox;
+    cbReachable: TCheckBox;
+    cbSearchAll: TCheckBox;
+    cbSearchDMI: TCheckBox;
+    cbSearchHost: TCheckBox;
+    cbSearchPackages: TCheckBox;
+    cbSearchSoftwares: TCheckBox;
     EdConflicts1: TMemo;
     EdDepends1: TMemo;
     EdPackage: TLabeledEdit;
     EdHardwareFilter: TEdit;
     EdPackage1: TLabeledEdit;
+    EdSearchHost: TSearchEdit;
     EdVersion: TLabeledEdit;
     EdVersion1: TLabeledEdit;
     GridhostInventory: TVirtualJSONInspector;
@@ -76,6 +87,7 @@ type
     GridWSUSForbiddenWindowsUpdates: TSOGrid;
     Image1: TImage;
     Label10: TLabel;
+    Label15: TLabel;
     Label16: TLabel;
     Label17: TLabel;
     Label18: TLabel;
@@ -86,29 +98,33 @@ type
     Label21: TLabel;
     Label22: TLabel;
     Label23: TLabel;
-    EdHostsLimit: TLabeledEdit;
     Label24: TLabel;
     Label25: TLabel;
     Label26: TLabel;
+    Label5: TLabel;
     LabelComputersNumber: TLabel;
     LabErrorRegHardware: TLabel;
     MemoGroupeDescription1: TMemo;
     MenuItem1: TMenuItem;
     MenuItem17: TMenuItem;
     MenuExternalTools: TMenuItem;
+    MenuItem2: TMenuItem;
     MenuItem23: TMenuItem;
     MenuItem33: TMenuItem;
     MenuItem50: TMenuItem;
     MenuItem51: TMenuItem;
+    MenuItem53: TMenuItem;
     MenuItem74: TMenuItem;
-    MenuItem75: TMenuItem;
     MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
     MenuItem78: TMenuItem;
     MenuItem79: TMenuItem;
     MenuItem80: TMenuItem;
+    MenuItem81: TMenuItem;
     MenuItem82: TMenuItem;
+    MenuItem83: TMenuItem;
     odSelectInstaller: TOpenDialog;
+    Panel10: TPanel;
     Panel13: TPanel;
     Panel14: TPanel;
     Panel15: TPanel;
@@ -187,20 +203,11 @@ type
     butSearchPackages: TBitBtn;
     butSearchGroups: TBitBtn;
     ButCancelHostTask: TBitBtn;
-    ButHostSearch: TBitBtn;
     ButPackagesUpdate: TBitBtn;
-    cbSearchDMI: TCheckBox;
-    cbSearchHost: TCheckBox;
-    cbSearchPackages: TCheckBox;
-    cbSearchSoftwares: TCheckBox;
-    cbSearchAll: TCheckBox;
     cbShowHostPackagesSoft: TCheckBox;
     cbShowHostPackagesGroup: TCheckBox;
     cbMaskSystemComponents: TCheckBox;
     cbShowLog: TCheckBox;
-    cbNeedUpgrade: TCheckBox;
-    cbHasErrors: TCheckBox;
-    cbGroups: TComboBox;
     cbWUACriticalOnly: TCheckBox;
     cbWUAInstalled: TCheckBox;
     cbWUAPending: TCheckBox;
@@ -218,7 +225,6 @@ type
     Label12: TLabel;
     HostRunningTask: TLabeledEdit;
     Label14: TLabel;
-    Label15: TLabel;
     MemoTaskLog: TMemo;
     MemoInstallOutput: TMemo;
     MemoGroupeDescription: TMemo;
@@ -243,7 +249,6 @@ type
     MenuItem48: TMenuItem;
     MenuItem49: TMenuItem;
     MenuItem52: TMenuItem;
-    MenuItem53: TMenuItem;
     MenuItem54: TMenuItem;
     MenuItem55: TMenuItem;
     MenuItem56: TMenuItem;
@@ -282,7 +287,6 @@ type
     EdModelName: TEdit;
     EdUpdateDate: TEdit;
     EdUser: TEdit;
-    EdSearchHost: TSearchEdit;
     EdRun: TEdit;
     EdSearchPackage: TSearchEdit;
     ImageList1: TImageList;
@@ -301,7 +305,6 @@ type
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
-    Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
@@ -324,7 +327,6 @@ type
     MenuItem29: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem30: TMenuItem;
-    MenuItem31: TMenuItem;
     MenuItem32: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
@@ -335,7 +337,6 @@ type
     MainPages: TPageControl;
     HostPages: TPageControl;
     Panel1: TPanel;
-    Panel10: TPanel;
     PanDebug: TPanel;
     Panel4: TPanel;
     Panel7: TPanel;
@@ -390,6 +391,7 @@ type
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActDeployWaptExecute(Sender: TObject);
+    procedure ActDisplayPreferencesExecute(Sender: TObject);
     procedure ActEditGroupUpdate(Sender: TObject);
     procedure ActEditHostPackageUpdate(Sender: TObject);
     procedure ActForgetPackagesUpdate(Sender: TObject);
@@ -478,8 +480,6 @@ type
     procedure cbNeedUpgradeClick(Sender: TObject);
     procedure CheckBox_errorChange(Sender: TObject);
     procedure EdHardwareFilterChange(Sender: TObject);
-    procedure EdHostsLimitExit(Sender: TObject);
-    procedure EdHostsLimitKeyPress(Sender: TObject; var Key: char);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchPackageExecute(Sender: TObject);
     procedure EdSearchGroupsExecute(Sender: TObject);
@@ -601,6 +601,7 @@ type
     WUAWinUpdates : ISuperObject;
 
     windows_updates_rulesUpdated: Boolean;
+    HostsLimit: Integer;
 
     constructor Create(TheOwner: TComponent); override;
 
@@ -621,8 +622,9 @@ uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings, soutils,
   waptcommon, waptwinutils, tiscommon, uVisCreateKey, uVisCreateWaptSetup,
   dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
   uvisgroupchoice, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
-  uVisImportPackage, PythonEngine, Clipbrd, RegExpr, tisinifiles,
-  IdURI,uScaleDPI, uVisPackageWizard, uVisChangeKeyPassword,windirs
+  uVisImportPackage, PythonEngine, Clipbrd, RegExpr, tisinifiles, IdURI,
+  uScaleDPI, uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
+  windirs
   {$ifdef wsus}
   ,uVisWUAGroup, uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect
@@ -764,18 +766,6 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.EdHostsLimitExit(Sender: TObject);
-begin
-  if EdHostsLimit.Text='' then EdHostsLimit.Text:='1000';
-  EdHostsLimit.Text := IntToStr(StrToInt(EdHostsLimit.Text));
-end;
-
-procedure TVisWaptGUI.EdHostsLimitKeyPress(Sender: TObject; var Key: char);
-begin
-  if key = #13 then
-    ActSearchHost.Execute;
-end;
-
 procedure TVisWaptGUI.EdRunKeyPress(Sender: TObject; var Key: char);
 begin
   if Key = #13 then
@@ -847,7 +837,7 @@ begin
   try
     for CB in VarArrayOf([cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares,cbReachable]) do
       ini.WriteBool(self.name,CB.Name,TCheckBox(CB).Checked);
-    ini.WriteInteger(self.name,EdHostsLimit.Name,StrToInt(EdHostsLimit.Text));
+    ini.WriteInteger(self.name,'HostsLimit',HostsLimit);
   finally
     ini.Free;
   end;
@@ -2077,6 +2067,80 @@ begin
     end;
 end;
 
+procedure TVisWaptGUI.ActDisplayPreferencesExecute(Sender: TObject);
+var
+  inifile: TIniFile;
+  lang:String;
+  oldlimit:Integer;
+begin
+  inifile := TIniFile.Create(AppIniFilename);
+  try
+    With TVisDisplayPreferences.Create(self) do
+    try
+      EdHostsLimit.Text := IntToStr(HostsLimit);
+      oldlimit:=HostsLimit;
+      cbEnableExternalTools.Checked :=
+        inifile.ReadBool('global', 'enable_external_tools', EnableExternalTools);
+
+      cbEnableManagementFeatures.Checked :=
+        inifile.ReadBool('global', 'enable_management_features', EnableManagementFeatures);
+
+      cbDebugWindow.Checked:= inifile.ReadBool('global','advanced_mode',AdvancedMode);
+
+      lang := inifile.ReadString('Global','language','en');
+      if lang='en' then
+        cbLanguage.ItemIndex:=0
+      else if lang='fr' then
+        cbLanguage.ItemIndex:=1
+      else if lang='de' then
+        cbLanguage.ItemIndex:=2
+      else
+        cbLanguage.ItemIndex:=0;
+
+      if ShowModal = mrOk then
+      begin
+        if EdHostsLimit.Text='' then EdHostsLimit.Text:='1000';
+        HostsLimit:=StrToInt(EdHostsLimit.Text);
+
+        inifile.WriteBool('global', 'enable_external_tools',
+          cbEnableExternalTools.Checked);
+
+        inifile.WriteBool('global', 'enable_management_features',
+          cbEnableManagementFeatures.Checked);
+
+        if cbLanguage.ItemIndex=0 then
+          DMPython.Language := 'en'
+        else if cbLanguage.ItemIndex=1 then
+          DMPython.Language := 'fr'
+        else if cbLanguage.ItemIndex=2 then
+          DMPython.Language := 'de'
+        else
+          DMPython.Language := '';
+
+        inifile.WriteString('Global','language',DMPython.Language);
+
+        inifile.WriteBool('global', 'advanced_mode',cbDebugWindow.Checked);
+
+        AdvancedMode := cbDebugWindow.Checked;
+        pgSources.TabVisible := AdvancedMode;
+        PanDebug.Visible := AdvancedMode;
+
+
+        EnableExternalTools := cbEnableExternalTools.Checked;
+        EnableManagementFeatures := cbEnableManagementFeatures.Checked;
+
+        if HostsLimit>oldlimit then
+          ActSearchHost.Execute;
+      end;
+    finally
+      Free;
+    end;
+
+  finally
+    inifile.Free;
+  end;
+end;
+
 procedure TVisWaptGUI.ActEditGroupUpdate(Sender: TObject);
 begin
   ActEditGroup.Enabled:=GridGroups.SelectedCount=1;
@@ -3286,7 +3350,7 @@ begin
       urlParams.AsArray.Add(Format('groups=%s',[cbGroups.Text]));
 
     urlParams.AsArray.Add('columns='+join(',',columns));
-    urlParams.AsArray.Add('limit='+EdHostsLimit.Text);
+    urlParams.AsArray.Add(Format('limit=%d',[HostsLimit]));
 
     if GridHosts.FocusedRow <> nil then
       previous_uuid := GridHosts.FocusedRow.S['uuid']
@@ -3479,24 +3543,6 @@ begin
         //eddefault_sources_root.Directory := inifile.ReadString('global','default_sources_root','');
         //eddefault_sources_url.text = inifile.ReadString('global','default_sources_url','https://srvdev/sources/%(packagename)s-wapt/trunk');
 
-        cbEnableExternalTools.Checked :=
-          inifile.ReadBool('global', 'enable_external_tools', EnableExternalTools);
-
-        cbEnableManagementFeatures.Checked :=
-          inifile.ReadBool('global', 'enable_management_features', EnableManagementFeatures);
-
-        cbDebugWindow.Checked:= inifile.ReadBool('global','advanced_mode',AdvancedMode);
-
-        lang := inifile.ReadString('Global','language','en');
-        if lang='en' then
-          cbLanguage.ItemIndex:=0
-        else if lang='fr' then
-          cbLanguage.ItemIndex:=1
-        else if lang='de' then
-          cbLanguage.ItemIndex:=2
-        else
-          cbLanguage.ItemIndex:=0;
-
         if ShowModal = mrOk then
         begin
           inifile.WriteString('global', 'repo_url', edrepo_url.Text);
@@ -3524,24 +3570,6 @@ begin
           inifile.WriteBool('global', 'send_usage_report',
             cbSendStats.Checked);
           //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
-
-          inifile.WriteBool('global', 'enable_external_tools',
-            cbEnableExternalTools.Checked);
-
-          inifile.WriteBool('global', 'enable_management_features',
-            cbEnableManagementFeatures.Checked);
-
-          if cbLanguage.ItemIndex=0 then
-            inifile.WriteString('Global','language','en')
-          else if cbLanguage.ItemIndex=1 then
-            inifile.WriteString('Global','language','fr')
-          else if cbLanguage.ItemIndex=2 then
-            inifile.WriteString('Global','language','de')
-          else
-            inifile.WriteString('Global','language','');
-
-          inifile.WriteBool('global', 'advanced_mode',
-            cbDebugWindow.Checked);
 
           Result := True;
         end;
@@ -3783,7 +3811,7 @@ begin
       for CB in VarArrayOf([cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares,cbReachable]) do
         TCheckBox(CB).Checked := ini.ReadBool(self.Name,CB.Name,TCheckBox(CB).Checked);
 
-      EdHostsLimit.Text := ini.ReadString(self.name,EdHostsLimit.Name,EdHostsLimit.Text);
+      HostsLimit := ini.ReadInteger(self.name,'HostsLimit',2000);
       //ShowMessage(Appuserinipath+'/'+self.Name+'/'+EdHostsLimit.Name+'/'+ini.ReadString(name,EdHostsLimit.Name,'not found'));
       HostPages.Width := ini.ReadInteger(self.name,HostPages.Name+'.width',HostPages.Width);
     finally
@@ -3973,7 +4001,10 @@ procedure TVisWaptGUI.GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNo
 begin
   UpdateHostPages(Sender);
   UpdateSelectedHostsActions(Sender);
-  LabelComputersNumber.Caption := Format(rsHostsSelectedTotal,[GridHosts.SelectedCount,GridHosts.Data.AsArray.Length]);
+  if GridHosts.Data<>Nil then
+    LabelComputersNumber.Caption := Format(rsHostsSelectedTotal,[GridHosts.SelectedCount,GridHosts.Data.AsArray.Length])
+  else
+    LabelComputersNumber.Caption := '';
 end;
 
 procedure TVisWaptGUI.GridHostsColumnDblClick(Sender: TBaseVirtualTree;
