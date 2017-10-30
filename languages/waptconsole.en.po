@@ -334,12 +334,12 @@ msgid "Advanced mode"
 msgstr ""
 
 #: tviseditpackage.actbuapply.caption
-msgid "Save and apply to host"
+msgid "Save and apply"
 msgstr ""
 
 #: tviseditpackage.actbuildupload.caption
 msgctxt "TVISEDITPACKAGE.ACTBUILDUPLOAD.CAPTION"
-msgid "Activate package"
+msgid "Save"
 msgstr ""
 
 #: tviseditpackage.acteditremoveconflicts.caption
@@ -372,15 +372,6 @@ msgstr ""
 
 #: tviseditpackage.butbuapply.hint
 msgid "Build the package, upload to the server and trigger Upgrade on the target host."
-msgstr ""
-
-#: tviseditpackage.butsave.caption
-msgctxt "TVISEDITPACKAGE.BUTSAVE.CAPTION"
-msgid "Save"
-msgstr ""
-
-#: tviseditpackage.butsave.hint
-msgid "Build and upload the package"
 msgstr ""
 
 #: tviseditpackage.caption
@@ -416,11 +407,6 @@ msgstr ""
 msgid "base"
 msgstr ""
 
-#: tviseditpackage.edsourcedir.text
-msgctxt "TVISEDITPACKAGE.EDSOURCEDIR.TEXT"
-msgid " "
-msgstr ""
-
 #: tviseditpackage.edversion.editlabel.caption
 msgctxt "tviseditpackage.edversion.editlabel.caption"
 msgid "Version"
@@ -434,10 +420,6 @@ msgstr ""
 #: tviseditpackage.label2.caption
 msgctxt "tviseditpackage.label2.caption"
 msgid "Available packages : "
-msgstr ""
-
-#: tviseditpackage.label4.caption
-msgid "Source directory"
 msgstr ""
 
 #: tviseditpackage.label5.caption
@@ -1001,7 +983,7 @@ msgstr ""
 
 #: tviswaptgui.actedithostpackage.caption
 msgctxt "TVISWAPTGUI.ACTEDITHOSTPACKAGE.CAPTION"
-msgid "Edit host configuration"
+msgid "Edit host"
 msgstr ""
 
 #: tviswaptgui.actedithostpackage.hint
@@ -1195,7 +1177,7 @@ msgstr ""
 
 #: tviswaptgui.acttriggerhostupdate.caption
 msgctxt "tviswaptgui.acttriggerhostupdate.caption"
-msgid "Update hosts status"
+msgid "Check updates"
 msgstr ""
 
 #: tviswaptgui.acttriggerhostupdate.hint
@@ -1374,7 +1356,7 @@ msgid "Has errors"
 msgstr ""
 
 #: tviswaptgui.cbinverseselect.caption
-msgid "NOT"
+msgid "Not"
 msgstr ""
 
 #: tviswaptgui.cbinverseselect.hint
@@ -1521,17 +1503,9 @@ msgstr ""
 msgid "Allowed Windows Updates Classifications"
 msgstr ""
 
-#: tviswaptgui.label11.caption
-msgid "Number of hosts : "
-msgstr ""
-
 #: tviswaptgui.label12.caption
 msgctxt "tviswaptgui.label12.caption"
 msgid "Current task"
-msgstr ""
-
-#: tviswaptgui.label13.caption
-msgid "Selected"
 msgstr ""
 
 #: tviswaptgui.label14.caption
@@ -1631,12 +1605,7 @@ msgstr ""
 
 #: tviswaptgui.labelcomputersnumber.caption
 msgctxt "TVISWAPTGUI.LABELCOMPUTERSNUMBER.CAPTION"
-msgid "0"
-msgstr ""
-
-#: tviswaptgui.labselected.caption
-msgctxt "tviswaptgui.labselected.caption"
-msgid "0"
+msgid "Selected / Total : %d / %d"
 msgstr ""
 
 #: tviswaptgui.menuexternaltools.caption
@@ -1786,6 +1755,10 @@ msgstr ""
 #: tviswaptgui.panel7.caption
 msgctxt "tviswaptgui.panel7.caption"
 msgid "Panel7"
+msgstr ""
+
+#: tviswaptgui.panleft.caption
+msgid "PanLeft"
 msgstr ""
 
 #: tviswaptgui.pggroups.caption
@@ -2699,6 +2672,11 @@ msgstr ""
 #: uwaptconsoleres.rshostconfigeditcaption
 msgctxt "uwaptconsoleres.rshostconfigeditcaption"
 msgid "Edit host configuration"
+msgstr ""
+
+#: uwaptconsoleres.rshostsselectedtotal
+msgctxt "uwaptconsoleres.rshostsselectedtotal"
+msgid "Selected / Total : %d / %d"
 msgstr ""
 
 #: uwaptconsoleres.rsignoredconfictingpackages

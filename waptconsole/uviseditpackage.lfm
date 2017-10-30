@@ -17,8 +17,8 @@ object VisEditPackage: TVisEditPackage
   LCLVersion = '1.3'
   object PageControl1: TPageControl
     Left = 0
-    Height = 417
-    Top = 50
+    Height = 439
+    Top = 29
     Width = 654
     ActivePage = pgDepends
     Align = alClient
@@ -27,11 +27,11 @@ object VisEditPackage: TVisEditPackage
     OnChange = PageControl1Change
     object pgDepends: TTabSheet
       Caption = 'Edit dependencies'
-      ClientHeight = 391
+      ClientHeight = 413
       ClientWidth = 646
       object GridDepends: TSOGrid
         Left = 0
-        Height = 391
+        Height = 413
         Top = 0
         Width = 646
         Align = alClient
@@ -45,7 +45,7 @@ object VisEditPackage: TVisEditPackage
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 0
             Text = 'Package'
-            Width = 300
+            Width = 151
             PropertyName = 'package'
           end        
           item
@@ -60,12 +60,14 @@ object VisEditPackage: TVisEditPackage
             MaxWidth = 400
             Position = 2
             Text = 'Description'
+            Width = 258
             PropertyName = 'description'
           end        
           item
             MaxWidth = 400
             Position = 3
             Text = 'Dependencies'
+            Width = 300
             PropertyName = 'depends'
           end>
         Header.DefaultHeight = 17
@@ -85,13 +87,13 @@ object VisEditPackage: TVisEditPackage
     end
     object pgConflicts: TTabSheet
       Caption = 'Blocked package'
-      ClientHeight = 391
-      ClientWidth = 651
+      ClientHeight = 392
+      ClientWidth = 646
       object GridConflicts: TSOGrid
         Left = 0
-        Height = 391
+        Height = 392
         Top = 0
-        Width = 651
+        Width = 646
         Align = alClient
         BorderStyle = bsNone
         Color = clWhite
@@ -143,14 +145,14 @@ object VisEditPackage: TVisEditPackage
     end
     object pgDevelop: TTabSheet
       Caption = 'setup.py'
-      ClientHeight = 391
-      ClientWidth = 651
+      ClientHeight = 392
+      ClientWidth = 646
       TabVisible = False
       inline EdSetupPy: TSynEdit
         Left = 0
-        Height = 357
+        Height = 358
         Top = 34
-        Width = 651
+        Width = 646
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -673,11 +675,11 @@ object VisEditPackage: TVisEditPackage
         Left = 0
         Height = 34
         Top = 0
-        Width = 651
+        Width = 646
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 651
+        ClientWidth = 646
         TabOrder = 1
         object butInitWapt: TBitBtn
           Left = 0
@@ -693,7 +695,7 @@ object VisEditPackage: TVisEditPackage
   object PanelDevlop: TPanel
     Left = 0
     Height = 118
-    Top = 472
+    Top = 473
     Width = 949
     Align = alBottom
     ClientHeight = 118
@@ -761,19 +763,19 @@ object VisEditPackage: TVisEditPackage
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 467
+    Top = 468
     Width = 949
     Align = alBottom
     ResizeAnchor = akBottom
   end
   object Panel2: TPanel
     Left = 0
-    Height = 50
+    Height = 29
     Top = 0
     Width = 949
     Align = alTop
     BevelOuter = bvNone
-    ClientHeight = 50
+    ClientHeight = 29
     ClientWidth = 949
     TabOrder = 0
     object EdPackage: TLabeledEdit
@@ -797,27 +799,6 @@ object VisEditPackage: TVisEditPackage
       OnExit = EdPackageExit
       OnKeyPress = EdPackageKeyPress
     end
-    object EdVersion: TLabeledEdit
-      Left = 80
-      Height = 21
-      Top = 24
-      Width = 76
-      EditLabel.AnchorSideTop.Control = EdVersion
-      EditLabel.AnchorSideTop.Side = asrCenter
-      EditLabel.AnchorSideRight.Control = EdVersion
-      EditLabel.AnchorSideBottom.Control = EdVersion
-      EditLabel.AnchorSideBottom.Side = asrBottom
-      EditLabel.Left = 42
-      EditLabel.Height = 13
-      EditLabel.Top = 28
-      EditLabel.Width = 35
-      EditLabel.Caption = 'Version'
-      EditLabel.ParentColor = False
-      LabelPosition = lpLeft
-      ReadOnly = True
-      TabOrder = 2
-      Text = ' '
-    end
     object Eddescription: TLabeledEdit
       Left = 440
       Height = 21
@@ -839,106 +820,41 @@ object VisEditPackage: TVisEditPackage
       TabOrder = 1
       Text = ' '
     end
-    object EdSourceDir: TEdit
-      Left = 440
-      Height = 21
-      Top = 24
-      Width = 361
-      Anchors = [akTop, akLeft, akRight]
-      TabOrder = 4
-      Text = ' '
-      Visible = False
-    end
-    object Label4: TLabel
-      Left = 360
-      Height = 13
-      Top = 29
-      Width = 79
-      Caption = 'Source directory'
-      ParentColor = False
-      Visible = False
-    end
-    object EdSection: TComboBox
-      Left = 208
-      Height = 21
-      Top = 24
-      Width = 132
-      ItemHeight = 13
-      ItemIndex = 0
-      Items.Strings = (
-        'base'
-        'libre'
-        'restricted'
-        'host'
-        'group'
-      )
-      OnChange = EdSectionChange
-      TabOrder = 3
-      Text = 'base'
-      Visible = False
-    end
-    object Label5: TLabel
-      Left = 168
-      Height = 13
-      Top = 29
-      Width = 35
-      Caption = 'Section'
-      ParentColor = False
-      Visible = False
-    end
-    object cbShowLog: TCheckBox
-      Left = 864
-      Height = 17
-      Top = 26
-      Width = 79
-      Anchors = [akRight, akBottom]
-      Caption = 'Show debug'
-      OnClick = cbShowLogClick
-      TabOrder = 5
-      Visible = False
-    end
   end
   object Panel4: TPanel
     Left = 0
-    Height = 33
-    Top = 590
+    Height = 32
+    Top = 591
     Width = 949
     Align = alBottom
     BevelOuter = bvNone
-    ClientHeight = 33
+    ChildSizing.LeftRightSpacing = 6
+    ChildSizing.TopBottomSpacing = 3
+    ChildSizing.HorizontalSpacing = 6
+    ClientHeight = 32
     ClientWidth = 949
     TabOrder = 5
     object ButCancel: TBitBtn
-      Left = 869
+      Left = 875
       Height = 26
-      Top = 4
-      Width = 74
-      Anchors = [akTop, akRight]
+      Top = 3
+      Width = 68
+      Align = alRight
       Cancel = True
       DefaultCaption = True
       Kind = bkCancel
       ModalResult = 2
       TabOrder = 0
     end
-    object ButSave: TBitBtn
-      Left = 752
-      Height = 25
-      Hint = 'Build and upload the package'
-      Top = 4
-      Width = 112
-      Action = ActBuildUpload
-      Anchors = [akTop, akRight]
-      Caption = 'Save'
-      TabOrder = 1
-    end
     object butBUApply: TBitBtn
-      Left = 504
-      Height = 25
+      Left = 673
+      Height = 26
       Hint = 'Build the package, upload to the server and trigger Upgrade on the target host.'
-      Top = 4
-      Width = 241
+      Top = 3
+      Width = 120
       Action = ActBUApply
-      Anchors = [akTop, akRight]
+      Align = alRight
+      AutoSize = True
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000064000000640000000000000000000000000000000000
@@ -975,17 +891,123 @@ object VisEditPackage: TVisEditPackage
         0000000000000000000000000000A6A6A600EBEBEBF7EAEAEAF7A7A7A7000000
         0000000000000000000000000000000000000000000000000000
       }
+      TabOrder = 1
+    end
+    object EdVersion: TLabeledEdit
+      Left = 48
+      Height = 21
+      Top = 4
+      Width = 76
+      EditLabel.AnchorSideTop.Control = EdVersion
+      EditLabel.AnchorSideTop.Side = asrCenter
+      EditLabel.AnchorSideRight.Control = EdVersion
+      EditLabel.AnchorSideBottom.Control = EdVersion
+      EditLabel.AnchorSideBottom.Side = asrBottom
+      EditLabel.Left = 7
+      EditLabel.Height = 13
+      EditLabel.Top = 8
+      EditLabel.Width = 35
+      EditLabel.Caption = 'Version'
+      EditLabel.ParentColor = False
+      LabelPosition = lpLeft
+      ReadOnly = True
       TabOrder = 2
+      Text = ' '
+    end
+    object butBUApply1: TBitBtn
+      Left = 799
+      Height = 26
+      Top = 3
+      Width = 70
+      Action = ActBuildUpload
+      Align = alRight
+      AutoSize = True
+      Glyph.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00398341000A71190005640C002A73
+        2E00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+        FF00B6B7B7DFB6B6B6E8B7B7B7E6B5B7B6E62B7232AD094A0DEB05460CEE2161
+        27B1B4B5B4E6B6B7B7E6B6B7B7E6B6B6B6E7B6B7B7E7B1B1B100FFFFFF00FFFF
+        FF00B7B8B8F3F4EFF4FFCED6CFFF417E46FF034206FF004A00FF006904FF0672
+        10FF3A7A40FFCFD2CFFFF5F0F4FFF0F0F0FFBEBEBEFFACACAC00FFFFFF00FFFF
+        FF00B9B9BAF1D8E9DAFF3B7A40FF0A4E0FFF087210FF03940EFF02A40FFF05AC
+        11FF099515FF3B8140FFD3DAD3FFFFFFFFFFC0C0C0FFABABAB00FFFFFF00FFFF
+        FF00739477BE306E35FF206424FF329538FF2DB339FF29BA37FF19BB28FF23C3
+        33FF24D133FF18B424FF28742DFFBECFBEFFC0C1C1FFB0AFB000FFFFFF002682
+        2E002D7534D95A925DFF6DB670FF56C25DFF58CB61FF56D160FF31D040FF38DE
+        48FF48E756FF55F863FF41D94EFF3E8A43FF96AE97FF9A9D9A00237A2C00FFFF
+        FF002C7735FF82DA86FF82DA86FF82DA86FF80DC85FF75E27DFF41E851FF5AF4
+        6AFF80E489FF82DA86FF82DA86FF82DA86FF16641FFF0C330F0017601B00FFFF
+        FF00162A17DF4D7D50FF4D7651FF7BAB7FFFACF2B0FF8AF091FF53FD63FF99F4
+        A3FF809F81FF629A66FF66A26BFF59AA5EFF597D5CFF102B1000FFFFFF00FFFF
+        FF00B2B2B3F1FFFFFFFFFEF7FDFF528452FFB9FABBFF9BFAA1FF73FF81FFB9F4
+        C2FF759A75FFFFFBFFFFFFFFFFFFFFFFFFFFC2C1C3FF4A604A00FFFFFF00FFFF
+        FF00B9B9BAF1FCFCFCFFEBECEBFF3C8A3EFFB8F6BBFFA3FCA8FF84FF90FFC2F4
+        C9FF6D966EFFF8F8F8FFFDFDFDFFFFFFFFFFBFC0C0FFB3B1B300A2ACA300B8B4
+        B700B7B8B8F1FCFCFCFFECEFEDFF2E9832FFB1F1B3FFA4F8A8FF76FF83FFB3F3
+        BBFF709671FFFAF9F9FFFEFEFEFFFFFFFFFFBFC0C0FFABABAB00B5B3B500AFAF
+        AF00B8B8B8F1FDFDFDFFF0F1F0FF35B53CFFA7ECA9FF98EF9EFF5CFC6CFF98F4
+        A2FF779877FFFDFBFBFFFFFFFFFFFFFFFFFFBFC0C0FFABABAB00B1B1B100AFAF
+        AF00B7B8B8F1FDFDFDFFF3F4F3FF41C147FF98E49CFF80E187FF49EE58FF8BF5
+        95FF81A081FFFCFCFCFFFDFDFDFFFFFFFFFFBFC0C0FFABABAB00B1B1B100AFAF
+        AF00B8B8B8F1FFFFFFFFFFFFFFFF6ED576FF8CD892FF5FD267FF36DC45FF81EC
+        8CFF9CB79CFFFFFFFFFFFFFFFFFFFFFFFFFFC0C1C1FFABABAB00B1B1B100B0B0
+        B000B7B7B7F1BFC0C0FFBFC0C0FFA8CEACFF9BCBA0FF7FC584FF71C879FF95D2
+        9CFFB0BFB0FFBEBFBFFFBEBFBFFFBFC0C0FFBBBCBCFFAEAEAE00B1B1B100B1B1
+        B100B0B0B000A9A9A900ADAAAC0094A79600418E4A007BA47F0073AE78003CB2
+        4B0096A79A00ABA7AB00A9A9A900A9A9A900ADADAD00B1B1B100
+      }
+      TabOrder = 3
+    end
+    object EdSection: TComboBox
+      Left = 188
+      Height = 21
+      Top = 4
+      Width = 140
+      ItemHeight = 13
+      ItemIndex = 0
+      Items.Strings = (
+        'base'
+        'libre'
+        'restricted'
+        'host'
+        'group'
+      )
+      OnChange = EdSectionChange
+      TabOrder = 4
+      Text = 'base'
+      Visible = False
+    end
+    object Label5: TLabel
+      Left = 148
+      Height = 13
+      Top = 8
+      Width = 35
+      Alignment = taRightJustify
+      Caption = 'Section'
+      ParentColor = False
+      Visible = False
+    end
+    object cbShowLog: TCheckBox
+      Left = 344
+      Height = 17
+      Top = 6
+      Width = 79
+      Caption = 'Show debug'
+      OnClick = cbShowLogClick
+      TabOrder = 5
+      Visible = False
     end
   end
   object Panel8: TPanel
     Left = 659
-    Height = 417
-    Top = 50
+    Height = 439
+    Top = 29
     Width = 290
     Align = alRight
     BevelOuter = bvNone
-    ClientHeight = 417
+    ClientHeight = 439
     ClientWidth = 290
     TabOrder = 2
     object Panel9: TPanel
@@ -999,7 +1021,7 @@ object VisEditPackage: TVisEditPackage
       ClientWidth = 290
       TabOrder = 0
       object EdSearch: TSearchEdit
-        Left = 4
+        Left = 2
         Height = 21
         Hint = 'Use keywords to narrow search.'
         Top = 17
@@ -1015,10 +1037,11 @@ object VisEditPackage: TVisEditPackage
       end
       object butSearchPackages1: TBitBtn
         Left = 149
-        Height = 25
+        Height = 26
         Top = 15
-        Width = 120
+        Width = 79
         Action = ActEditSearch
+        AutoSize = True
         Glyph.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
           2000000000000004000064000000640000000000000000000000000000000000
@@ -1068,7 +1091,7 @@ object VisEditPackage: TVisEditPackage
     end
     object GridPackages: TSOGrid
       Left = 0
-      Height = 344
+      Height = 366
       Top = 44
       Width = 290
       Align = alClient
@@ -1076,59 +1099,57 @@ object VisEditPackage: TVisEditPackage
       Color = clWhite
       DragMode = dmAutomatic
       DragType = dtVCL
-      Header.AutoSizeIndex = 0
+      Header.AutoSizeIndex = -1
       Header.Columns = <      
-        item
-          MaxWidth = 100
-          MinWidth = 50
-          Position = 0
-          Text = 'Section'
-          PropertyName = 'section'
-        end      
         item
           MaxWidth = 400
           MinWidth = 50
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-          Position = 1
+          Position = 0
           Text = 'package'
           Width = 200
           PropertyName = 'package'
         end      
         item
           MaxWidth = 200
-          MinWidth = 50
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-          Position = 2
-          Text = 'Status'
-          PropertyName = 'status'
-        end      
-        item
-          MaxWidth = 200
-          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-          Position = 3
+          Position = 1
+          Tag = 2
           Text = 'Version'
-          Width = 30
+          Width = 71
           PropertyName = 'version'
         end      
         item
           MaxWidth = 400
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-          Position = 4
+          Position = 2
+          Tag = 3
           Text = 'Description'
+          Width = 125
           PropertyName = 'description'
         end      
         item
           MaxWidth = 400
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-          Position = 5
+          Position = 3
+          Tag = 4
           Text = 'Dependencies'
           PropertyName = 'depends'
         end      
         item
           MaxWidth = 200
-          Position = 6
+          Position = 4
+          Tag = 5
           Text = 'Installed by'
           PropertyName = 'explicit_by'
+        end      
+        item
+          MaxWidth = 100
+          MinWidth = 50
+          Position = 5
+          Tag = 6
+          Text = 'Section'
+          PropertyName = 'section'
         end>
       Header.DefaultHeight = 17
       Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
@@ -1146,7 +1167,7 @@ object VisEditPackage: TVisEditPackage
     object Panel3: TPanel
       Left = 0
       Height = 29
-      Top = 388
+      Top = 410
       Width = 290
       Align = alBottom
       BevelOuter = bvNone
@@ -1155,10 +1176,11 @@ object VisEditPackage: TVisEditPackage
       TabOrder = 2
       object ButAddPackages: TBitBtn
         Left = 8
-        Height = 24
+        Height = 26
         Top = 3
-        Width = 220
+        Width = 190
         Action = ActAddDepends
+        AutoSize = True
         Glyph.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
           2000000000000004000064000000640000000000000000000000000000000000
@@ -1201,8 +1223,8 @@ object VisEditPackage: TVisEditPackage
   end
   object Splitter3: TSplitter
     Left = 654
-    Height = 417
-    Top = 50
+    Height = 439
+    Top = 29
     Width = 5
     Align = alRight
     ResizeAnchor = akRight
@@ -1241,7 +1263,8 @@ object VisEditPackage: TVisEditPackage
       OnExecute = ActExecCodeExecute
     end
     object ActBuildUpload: TAction
-      Caption = 'Activate package'
+      Caption = 'Save'
+      ImageIndex = 17
       OnExecute = ActBuildUploadExecute
       OnUpdate = ActEditSavePackageUpdate
     end
@@ -1274,7 +1297,7 @@ object VisEditPackage: TVisEditPackage
       OnUpdate = ActAddDependsUpdate
     end
     object ActBUApply: TAction
-      Caption = 'Save and apply to host'
+      Caption = 'Save and apply'
       ImageIndex = 34
       OnExecute = ActBUApplyExecute
       OnUpdate = ActEditSavePackageUpdate
