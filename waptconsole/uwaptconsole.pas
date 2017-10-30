@@ -86,6 +86,9 @@ type
     GridWSUSAllowedClassifications: TSOGrid;
     GridWSUSForbiddenWindowsUpdates: TSOGrid;
     Image1: TImage;
+    Image2: TImage;
+    Image3: TImage;
+    Image4: TImage;
     Label10: TLabel;
     Label15: TLabel;
     Label16: TLabel;

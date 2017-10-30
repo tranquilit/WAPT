@@ -1401,7 +1401,7 @@ msgid "Last version only"
 msgstr ""
 
 #: tviswaptgui.cbreachable.caption
-msgid "Reachables only"
+msgid "Connected only"
 msgstr ""
 
 #: tviswaptgui.cbsearchall.caption
