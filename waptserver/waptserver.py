@@ -589,6 +589,12 @@ def upload_packages():
                     packagefile.save(tmp_target)
                     # test if package is OK.
                     entry = PackageEntry(waptfile=tmp_target)
+                    if entry.has_file('setup.py'):
+                        # check if certificate has code_signing extended attribute
+                        signer_cert = entry.package_certificate
+                        if not signer_cert.is_code_signing:
+                            raise EWaptForbiddden(u'The package %s contains setup.py code but has not been signed with a proper code_signing certificate' % entry.package)
+
                     logger.debug('Saved package %s into %s' % (entry.asrequirement(),tmp_target))
                     # TODO check if certificate is allowed on thi server ?
 
@@ -598,6 +604,8 @@ def upload_packages():
                     os.rename(tmp_target, target)
                     # fix context on target file (otherwith tmp context is carried over)
                     #logger.debug(subprocess.check_output('chcon -R -t httpd_sys_content_t %s' % target,shell=True))
+                    if entry.section == 'host':
+                        Hosts.update(Hosts.wapt_status='TO-UPGRADE').where(Hosts.uuid = entry.package).execute()
 
                     done.append(filename)
 
@@ -1894,7 +1902,7 @@ def on_waptclient_disconnect():
             listening_timestamp=datetime2isodate(),
             listening_protocol=None,
             listening_address=None,
-            reachable='UNREACHABLE',
+            reachable='DISCONNECTED',
         ).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
         wapt_db.commit()
     except:
@@ -2001,7 +2009,7 @@ if __name__ == '__main__':
         try:
             logger.info('Reset connections SID for former hosts on this server')
             hosts_count = Hosts.update(
-                reachable='UNKNOWN',
+                reachable='DISCONNECTED',
                 server_uuid=None,
                 listening_protocol=None,
                 listening_address=None,
