@@ -1537,12 +1537,26 @@ class SSLCertificate(object):
 
     @property
     def is_code_signing(self):
-        """Return True id certificate has 'Code Signing' in its extenedKeyUsage"""
+        """Return True if certificate has 'Code Signing' in its extendedKeyUsage"""
         ext_key_usages = 'extendedKeyUsage' in self.extensions and self.extensions['extendedKeyUsage']
         if ext_key_usages:
             return len([usage for usage in ext_key_usages if usage._name == 'codeSigning'])>0
         else:
             return False
+
+    def has_usage(self,usage):
+        """Return usage if certificate has the requested usage
+
+        Args:
+            usage (str): ca or code_signing
+
+        """
+        if usage == 'ca' and self.is_ca:
+            return usage
+        elif  usage == 'code_signing' and self.is_code_signing:
+            return usage
+        else:
+            return ''
 
     def verify_old(self,CAfile,check_errors=True):
         """Check validity of certificate against list of CA and validity

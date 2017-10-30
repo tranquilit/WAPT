@@ -40,6 +40,7 @@ import shutil
 import psutil
 import common
 import json
+import jinja2
 
 from setuphelpers import *
 from waptutils import *
@@ -577,6 +578,16 @@ def change_key_password(private_key_path,old_password=None,new_password=None):
         shutil.copyfile(private_key_path+'.backup',private_key_path)
         os.unlink(private_key_path+'.backup')
         raise
+
+def render_jinja2_template(template_str,json_data):
+    try:
+        jinja_env = jinja2.Environment()
+        template = jinja_env.from_string(template_str)
+        template_data = json.loads(json_data)
+        open('c:/tmp/template_data.json','w').write(json.dumps(template_data))
+        return template.render(template_data)
+    except:
+        return json_data
 
 if __name__ == '__main__':
     import doctest

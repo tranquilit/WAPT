@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, Buttons, ButtonPanel, LCLType;
+  ExtCtrls, Buttons, ButtonPanel, LCLType, EditBtn;
 
 type
 
@@ -16,8 +16,8 @@ type
     BitBtn1: TBitBtn;
     ButtonPanel1: TButtonPanel;
     edPassword: TEdit;
-    edUser: TEdit;
     edWaptServerName: TEdit;
+    EdUser: TFileNameEdit;
     Image1: TImage;
     LabVersion: TLabel;
     labServer: TLabel;

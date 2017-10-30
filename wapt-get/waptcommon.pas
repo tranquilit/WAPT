@@ -48,7 +48,6 @@ interface
 
   function WaptBaseDir: Utf8String; // c:\wapt
   function WaptgetPath: Utf8String; // c:\wapt\wapt-get.exe
-  function WaptservicePath: Utf8String; //c:\wapt\waptservice.exe # obsolete
   function WaptDBPath: Utf8String;
 
   function GetWaptRepoURL: Utf8String; // from wapt-get.ini, can be empty
@@ -87,7 +86,7 @@ interface
       VerifyCertificateFilename:String='';AcceptType:String='application/json';
       CookieManager:TIdCookieManager=Nil):RawByteString;
 
-  function GetReachableIP(IPS:ISuperObject;port:word):String;
+  function GetReachableIP(IPS:ISuperObject;port:word;Timeout:Integer=200):String;
 
   //return ip for waptservice
   function WaptServiceReachableIP(UUID:String;hostdata:ISuperObject=Nil):String;
@@ -124,6 +123,14 @@ function GetWaptServerSession(server_url:String = ''; user:String = '';password:
 
 function DefaultUserAgent:String;
 
+// Read/Write ini parameters from
+function WaptIniReadBool(const user,item: string;Default:Boolean=False): Boolean;
+function WaptIniReadInteger(const user,item: string;Default:Integer=0): Integer;
+function WaptIniReadString(const user,item: string;Default:String=''): string;
+procedure WaptIniWriteBool(const user,item: string; Value: Boolean);
+procedure WaptIniWriteInteger(const user,item: string; Value: Integer);
+procedure WaptIniWriteString(const user,item, Value: string);
+
 const
   waptwua_enabled : boolean = False;
 
@@ -156,6 +163,9 @@ const
 
   AdvancedMode:Boolean = False;
 
+  EnableExternalTools:Boolean = False;
+  EnableManagementFeatures:Boolean = False;
+
   WAPTServerMinVersion='1.5.0.17';
 
 implementation
@@ -163,7 +173,7 @@ implementation
 uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2,
   IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,IdURI,
-  gettext,IdStack,IdCompressorZLib,IdAuthentication,shfolder,IniFiles,tiscommon,tisstrings, StrUtils;
+  gettext,IdStack,IdCompressorZLib,IdAuthentication,shfolder,IniFiles,tiscommon,strutils,tisstrings;
 
 const
   CacheWaptServerUrl: AnsiString = 'None';
@@ -174,7 +184,69 @@ begin
   Result := ApplicationName+'/'+GetApplicationVersion;
 end;
 
+function WaptIniReadBool(const user, item: string; Default: Boolean): Boolean;
+begin
+  if user = '' then
+    Result := IniReadBool(WaptIniFilename,'global',item,default)
+  else
+  begin
+    if IniHasKey(AppIniFilename,user,item) then
+      Result := IniReadBool(AppIniFilename,user,item,default)
+    else
+      Result := IniReadBool(AppIniFilename,'global',item,default);
+	end;
+end;
 
+function WaptIniReadInteger(const user, item: string; Default: Integer
+			): Integer;
+begin
+  if user = '' then
+    Result := IniReadInteger(WaptIniFilename,'global',item,default)
+  else
+  begin
+    if IniHasKey(AppIniFilename,user,item) then
+      Result := IniReadInteger(AppIniFilename,user,item,default)
+    else
+      Result := IniReadInteger(AppIniFilename,'global',item,default);
+	end;
+end;
+
+function WaptIniReadString(const user, item: string; Default: String): string;
+begin
+  if user = '' then
+    Result := IniReadString(WaptIniFilename,'global',item,default)
+  else
+  begin
+    if IniHasKey(AppIniFilename,user,item) then
+      Result := IniReadString(AppIniFilename,user,item,default)
+    else
+      Result := IniReadString(AppIniFilename,'global',item,default);
+	end;
+end;
+
+procedure WaptIniWriteBool(const user, item: string; Value: Boolean);
+begin
+  if user = '' then
+    IniWriteBool(WaptIniFilename,'global',item,value)
+  else
+    IniWriteBool(AppIniFilename,user,item,value)
+end;
+
+procedure WaptIniWriteInteger(const user, item: string; Value: Integer);
+begin
+  if user = '' then
+    IniWriteInteger(WaptIniFilename,'global',item,value)
+  else
+    IniWriteInteger(AppIniFilename,user,item,value)
+end;
+
+procedure WaptIniWriteString(const user, item, Value: string);
+begin
+  if user = '' then
+    IniWriteString(WaptIniFilename,'global',item,value)
+  else
+    IniWriteString(AppIniFilename,user,item,value)
+end;
 
 procedure IdConfigureProxy(http:TIdHTTP;ProxyUrl:String);
 var
@@ -1126,7 +1198,9 @@ begin
     finally
     end;
 
-    AdvancedMode := ReadBool('global','advanced_mode',False);
+    AdvancedMode := ReadBool('global','advanced_mode',AdvancedMode);
+    EnableExternalTools := ReadBool('global','enable_external_tools',EnableExternalTools);
+    EnableManagementFeatures := ReadBool('global','enable_management_features',EnableManagementFeatures);
 
     DefaultPackagePrefix := ReadString('global','default_package_prefix','');
     DefaultSourcesRoot := ReadString('global','default_sources_root','');
@@ -1551,7 +1625,7 @@ begin
     StringToFile(AppendPathDelim(wapt_base_dir) + 'waptupgrade\waptagent.sha256',SHA256Hash(Result)+'  waptagent.exe');
 end;
 
-function GetReachableIP(IPS:ISuperObject;port:word):String;
+function GetReachableIP(IPS:ISuperObject;port:word;Timeout:Integer=200):String;
 var
   IP:ISuperObject;
 begin
@@ -1561,7 +1635,7 @@ begin
   else
   if (IPS.DataType=stString) then
   begin
-    if CheckOpenPort(port,IPS.AsString,1000) then
+    if CheckOpenPort(port,IPS.AsString,timeout) then
       Result := IPS.AsString
     else
       Result := '';
@@ -1571,7 +1645,7 @@ begin
   begin
     for IP in IPS do
     begin
-      if CheckOpenPort(port,IP.AsString,1000) then
+      if CheckOpenPort(port,IP.AsString,timeout) then
       begin
         Result := IP.AsString;
         Break;

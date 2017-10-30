@@ -31,24 +31,22 @@ type
     ActSearchPackage: TAction;
     ActionList1: TActionList;
     ButAddPackages: TBitBtn;
+    butBUApply1: TBitBtn;
     ButCancel: TBitBtn;
     butInitWapt: TBitBtn;
     butSearchPackages1: TBitBtn;
-    ButSave: TBitBtn;
     butBUApply: TBitBtn;
     cbShowLog: TCheckBox;
     Eddescription: TLabeledEdit;
     EdPackage: TLabeledEdit;
     EdSearch: TSearchEdit;
     EdSection: TComboBox;
-    EdSourceDir: TEdit;
     EdVersion: TLabeledEdit;
     GridConflicts: TSOGrid;
     GridPackages: TSOGrid;
     Label2: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
     GridDepends: TSOGrid;
+    Label5: TLabel;
     MemoLog: TMemo;
     MenuItem1: TMenuItem;
     MenuAddPackages: TMenuItem;
@@ -154,7 +152,7 @@ type
 function EditPackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreatePackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreateGroup(packagename: string; advancedMode: boolean): ISuperObject;
-function EditHost(hostname: ansistring; advancedMode: boolean; var ApplyUpdates:Boolean; description:ansiString=''): ISuperObject;
+function EditHost(hostname: ansistring; advancedMode: boolean; var ApplyUpdates:Boolean; description:ansiString='';HostReachable:Boolean=False): ISuperObject;
 function EditHostDepends(hostname: string; newDependsStr: string): ISuperObject;
 function EditGroup(group: string; advancedMode: boolean): ISuperObject;
 
@@ -227,7 +225,7 @@ begin
     end;
 end;
 
-function EditHost(hostname: ansistring; advancedMode: boolean;var ApplyUpdates:Boolean;description:ansiString=''): ISuperObject;
+function EditHost(hostname: ansistring; advancedMode: boolean;var ApplyUpdates:Boolean;description:ansiString='';HostReachable:Boolean=False): ISuperObject;
 var
   res:ISuperObject;
 begin
@@ -245,6 +243,8 @@ begin
         Eddescription.Modified:= Eddescription.Text<>description;
         Eddescription.Text := description;
       end;
+
+      ActBUApply.Visible := HostReachable;
 
       if ShowModal = mrOk then
       try
@@ -388,8 +388,6 @@ begin
   PanelDevlop.Visible := isAdvancedMode;
   Label5.Visible := isAdvancedMode;
   EdSection.Visible := isAdvancedMode;
-  Label4.Visible := isAdvancedMode;
-  EdSourceDir.Visible := isAdvancedMode;
   cbShowLog.Visible := isAdvancedMode;
   pgDevelop.TabVisible := isAdvancedMode;
   Eddescription.Visible := not IsHost or isAdvancedMode;
@@ -398,7 +396,6 @@ end;
 
 procedure TVisEditPackage.EditPackage;
 begin
-  EdSourceDir.Text := FSourcePath;
   EdPackage.Text := PackageEdited.S['package'];
   EdVersion.Text := PackageEdited.S['version'];
   EdDescription.Text := UTF8Encode(PackageEdited.S['description']);
@@ -532,7 +529,7 @@ begin
       DMPython.PythonEng.ExecString(
         format('p.load_control_from_dict(json.loads(r"""%s"""))', [utf8Encode(PackageEdited.AsJson)]));
       DMPython.PythonEng.ExecString(
-        format('p.save_control_to_wapt(r''%s''.decode(''utf8''))', [EdSourceDir.Text]));
+        format('p.save_control_to_wapt(r''%s''.decode(''utf8''))', [SourcePath]));
       if EdSetupPy.Lines.Count>0 then
         EdSetupPy.Lines.SaveToFile(AppendPathDelim(FSourcePath) + 'setup.py');
     end;
@@ -543,13 +540,13 @@ end;
 
 procedure TVisEditPackage.ActEditSavePackageUpdate(Sender: TObject);
 begin
-  (Sender as TAction).Enabled := (EdPackage.Text<>'') and  IsUpdated;
+  (Sender as TAction).Enabled := (EdPackage.Text<>'') and IsUpdated;
 end;
 
 function TVisEditPackage.GetIsUpdated: boolean;
 begin
   Result := FIsUpdated or EdPackage.Modified or EdVersion.Modified or
-    EdSetupPy.Modified or EdSourceDir.Modified or Eddescription.Modified or
+    EdSetupPy.Modified or Eddescription.Modified or
     GridDependsUpdated or GridConflictsUpdated;
 end;
 
@@ -752,8 +749,6 @@ begin
         EdPackage.EditLabel.Caption := 'Machine';
         Caption := rsHostConfigEditCaption;
         pgDepends.Caption := rsPackagesNeededOnHostCaption;
-        EdVersion.Parent := Panel4;
-        EdVersion.Top := 5;
       end
       else
       begin
@@ -829,7 +824,6 @@ begin
     EdPackage.Modified := False;
     Eddescription.Modified := False;
     EdVersion.Modified := False;
-    EdSourceDir.Modified := False;
     EdSetupPy.Modified := False;
     GridDependsUpdated := False;
     GridConflictsUpdated := False;

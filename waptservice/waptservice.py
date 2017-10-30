@@ -2273,10 +2273,10 @@ def make_response(result = {},success=True,error_code='',msg='',request_time=Non
     return data
 
 def make_response_from_exception(exception,error_code=''):
-    """Return a dict for websocket result callback from exception
-        success : False
-        msg : message from exception
-        error_code : classname of exception if not provided
+    """Create a standard answer for websocket callback exception
+
+    Returns:
+        dict: {success : False,msg : message from exceptionerror_code : classname of exception if not provided}
    """
     if not error_code:
         error_code = type(exception).__name__.lower()
@@ -2314,6 +2314,8 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     required_attributes = ['uuid','action']
                     if action['action'] in ['trigger_install_packages','trigger_remove_packages','trigger_forget_packages']:
                         required_attributes.append('packages')
+                    if action['action'] in ['trigger_change_description']:
+                        required_attributes.append('computer_description')
                     verified_by = cert.verify_claim(action,max_age_secs=60*10,
                         required_attributes=required_attributes)
                 if not verified_by:
@@ -2332,12 +2334,29 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     if name == 'trigger_host_update':
                         task = WaptUpdate()
                     elif name == 'trigger_host_register':
-                        task = WaptRegisterComputer()
+                        task = WaptRegisterComputer(computer_description = action.get('computer_description',None))
                     task.force = action.get('force',False)
                     task.notify_user = action.get('notify_user',False)
                     task.notify_server_on_finish = action.get('notify_server',False)
                     data = self.task_manager.add_task(task).as_dict()
                     result.append(data)
+
+                elif name in ['trigger_change_description']:
+                    desc = action.get('computer_description',None)
+                    if desc is not None:
+                        setuphelpers.set_computer_description(desc)
+                        msg = u'Computer description of %s changed to %s' % (setuphelpers.get_hostname(),setuphelpers.get_computer_description())
+                        if not setuphelpers.get_computer_description() == desc:
+                            raise Exception(u'Computer description has not been changed')
+                        result.append(dict(success=True,
+                            msg = msg,
+                            result = msg,
+                            ))
+                        if action.get('notify_server',False):
+                            task = WaptUpdate()
+                            task.notify_server_on_finish = True
+                            self.task_manager.add_task(task)
+                            result.append(task.as_dict())
 
                 elif name == 'trigger_host_upgrade':
                     notify_user = action.get('notify_user',False)

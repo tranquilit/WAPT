@@ -1,4 +1,4 @@
-msgid "Local directory for saving package development projectsLocal directory for saving package development projectsOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepo"
+msgid "Local directory for saving package development projectsLocal directory for saving package development projectsOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepo"
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tform1.buttonpanel1.helpbutton.caption
@@ -285,6 +285,59 @@ msgctxt "tviscreatewaptsetup.label6.caption"
 msgid "Path to Servers CA certificates bundle"
 msgstr ""
 
+#: tvisdisplaypreferences.caption
+msgctxt "tvisdisplaypreferences.caption"
+msgid "Display preferences"
+msgstr ""
+
+#: tvisdisplaypreferences.cbdebugwindow.hint
+msgctxt "tvisdisplaypreferences.cbdebugwindow.hint"
+msgid "Activates proxy when accessing the main repository"
+msgstr ""
+
+#: tvisdisplaypreferences.cbenableexternaltools.hint
+msgctxt "tvisdisplaypreferences.cbenableexternaltools.hint"
+msgid "Make rdp, vnc, remoteassist... features visible"
+msgstr ""
+
+#: tvisdisplaypreferences.cbenablemanagementfeatures.hint
+msgctxt "tvisdisplaypreferences.cbenablemanagementfeatures.hint"
+msgid "Make change server password, create certificate, create waptagent features visible"
+msgstr ""
+
+#: tvisdisplaypreferences.cblanguage.text
+msgctxt "tvisdisplaypreferences.cblanguage.text"
+msgid "English"
+msgstr ""
+
+#: tvisdisplaypreferences.edhostslimit.text
+msgid "EdHostsLimit"
+msgstr ""
+
+#: tvisdisplaypreferences.label1.caption
+msgid "Maximum number of hosts to display"
+msgstr ""
+
+#: tvisdisplaypreferences.label10.caption
+msgctxt "tvisdisplaypreferences.label10.caption"
+msgid "Enable external tools in hosts popup menus"
+msgstr ""
+
+#: tvisdisplaypreferences.label11.caption
+msgctxt "tvisdisplaypreferences.label11.caption"
+msgid "Enable management features"
+msgstr ""
+
+#: tvisdisplaypreferences.label3.caption
+msgctxt "tvisdisplaypreferences.label3.caption"
+msgid "Language"
+msgstr ""
+
+#: tvisdisplaypreferences.label7.caption
+msgctxt "tvisdisplaypreferences.label7.caption"
+msgid "Show debug informations"
+msgstr ""
+
 #: tviseditgroup.button5.caption
 msgctxt "tviseditgroup.button5.caption"
 msgid "Save"
@@ -334,12 +387,12 @@ msgid "Advanced mode"
 msgstr ""
 
 #: tviseditpackage.actbuapply.caption
-msgid "Save and apply to host"
+msgid "Save and apply"
 msgstr ""
 
 #: tviseditpackage.actbuildupload.caption
 msgctxt "TVISEDITPACKAGE.ACTBUILDUPLOAD.CAPTION"
-msgid "Activate package"
+msgid "Save"
 msgstr ""
 
 #: tviseditpackage.acteditremoveconflicts.caption
@@ -372,15 +425,6 @@ msgstr ""
 
 #: tviseditpackage.butbuapply.hint
 msgid "Build the package, upload to the server and trigger Upgrade on the target host."
-msgstr ""
-
-#: tviseditpackage.butsave.caption
-msgctxt "TVISEDITPACKAGE.BUTSAVE.CAPTION"
-msgid "Save"
-msgstr ""
-
-#: tviseditpackage.butsave.hint
-msgid "Build and upload the package"
 msgstr ""
 
 #: tviseditpackage.caption
@@ -416,11 +460,6 @@ msgstr ""
 msgid "base"
 msgstr ""
 
-#: tviseditpackage.edsourcedir.text
-msgctxt "TVISEDITPACKAGE.EDSOURCEDIR.TEXT"
-msgid " "
-msgstr ""
-
 #: tviseditpackage.edversion.editlabel.caption
 msgctxt "tviseditpackage.edversion.editlabel.caption"
 msgid "Version"
@@ -434,10 +473,6 @@ msgstr ""
 #: tviseditpackage.label2.caption
 msgctxt "tviseditpackage.label2.caption"
 msgid "Available packages : "
-msgstr ""
-
-#: tviseditpackage.label4.caption
-msgid "Source directory"
 msgstr ""
 
 #: tviseditpackage.label5.caption
@@ -588,10 +623,6 @@ msgstr ""
 msgid "WAPT authentication"
 msgstr ""
 
-#: tvislogin.eduser.text
-msgid "admin"
-msgstr ""
-
 #: tvislogin.edwaptservername.text
 msgid "edWaptServerName"
 msgstr ""
@@ -604,6 +635,10 @@ msgstr ""
 #: tvislogin.labuser.caption
 msgctxt "tvislogin.labuser.caption"
 msgid "User"
+msgstr ""
+
+#: tvislogin.labversion.caption
+msgid "LabVersion"
 msgstr ""
 
 #: tvislogin.lapassword.caption
@@ -677,16 +712,6 @@ msgstr ""
 
 #: tviswaptconfig.caption
 msgid "WAPTConsole configuration"
-msgstr ""
-
-#: tviswaptconfig.cbdebugwindow.hint
-msgctxt "tviswaptconfig.cbdebugwindow.hint"
-msgid "Activates proxy when accessing the main repository"
-msgstr ""
-
-#: tviswaptconfig.cblanguage.text
-msgctxt "tviswaptconfig.cblanguage.text"
-msgid "English"
 msgstr ""
 
 #: tviswaptconfig.cbmanual.caption
@@ -802,10 +827,6 @@ msgstr ""
 msgid "Path to personal certificate"
 msgstr ""
 
-#: tviswaptconfig.label3.caption
-msgid "Language"
-msgstr ""
-
 #: tviswaptconfig.label4.caption
 msgctxt "tviswaptconfig.label4.caption"
 msgid "Activates proxy when accessing the main repository"
@@ -819,10 +840,6 @@ msgstr ""
 #: tviswaptconfig.label6.caption
 msgctxt "tviswaptconfig.label6.caption"
 msgid "Path to CA certificates bundle"
-msgstr ""
-
-#: tviswaptconfig.label7.caption
-msgid "Show advanced informations"
 msgstr ""
 
 #: tviswaptconfig.label8.caption
@@ -916,11 +933,6 @@ msgctxt "tviswaptgui.actaddpackagegroup.caption"
 msgid "Add package or bundle"
 msgstr ""
 
-#: tviswaptgui.actbuildupload.caption
-msgctxt "tviswaptgui.actbuildupload.caption"
-msgid "Activate package"
-msgstr ""
-
 #: tviswaptgui.actcancelrunningtask.caption
 msgctxt "tviswaptgui.actcancelrunningtask.caption"
 msgid "Cancel current task"
@@ -982,6 +994,11 @@ msgctxt "tviswaptgui.actdeploywapt.caption"
 msgid "Deploy WAPT onto hosts"
 msgstr ""
 
+#: tviswaptgui.actdisplaypreferences.caption
+msgctxt "tviswaptgui.actdisplaypreferences.caption"
+msgid "Display preferences"
+msgstr ""
+
 #: tviswaptgui.acteditgroup.caption
 msgctxt "tviswaptgui.acteditgroup.caption"
 msgid "Edit bundle"
@@ -989,7 +1006,7 @@ msgstr ""
 
 #: tviswaptgui.actedithostpackage.caption
 msgctxt "TVISWAPTGUI.ACTEDITHOSTPACKAGE.CAPTION"
-msgid "Edit host configuration"
+msgid "Edit host"
 msgstr ""
 
 #: tviswaptgui.actedithostpackage.hint
@@ -1020,11 +1037,6 @@ msgstr ""
 #: tviswaptgui.actexeccode.caption
 msgctxt "tviswaptgui.actexeccode.caption"
 msgid "Execute python source"
-msgstr ""
-
-#: tviswaptgui.actforgetpackages.caption
-msgctxt "tviswaptgui.actforgetpackages.caption"
-msgid "Forget packages"
 msgstr ""
 
 #: tviswaptgui.actfrench.caption
@@ -1065,16 +1077,6 @@ msgstr ""
 msgid "Remove Host configuration only"
 msgstr ""
 
-#: tviswaptgui.acthostwaptupgrade.caption
-msgctxt "tviswaptgui.acthostwaptupgrade.caption"
-msgid "Update WAPT client"
-msgstr ""
-
-#: tviswaptgui.acthostwaptupgrade.hint
-msgctxt "tviswaptgui.acthostwaptupgrade.hint"
-msgid "Run agent.exe in silent mode from <url-depot>/waptagent.exe"
-msgstr ""
-
 #: tviswaptgui.actimportfromfile.caption
 msgctxt "tviswaptgui.actimportfromfile.caption"
 msgid "Import from file"
@@ -1089,23 +1091,28 @@ msgstr ""
 msgid "Make package template from setup file"
 msgstr ""
 
-#: tviswaptgui.actpackageinstall.caption
-msgctxt "TVISWAPTGUI.ACTPACKAGEINSTALL.CAPTION"
+#: tviswaptgui.actpackagesforget.caption
+msgctxt "tviswaptgui.actpackagesforget.caption"
+msgid "Forget packages"
+msgstr ""
+
+#: tviswaptgui.actpackagesinstall.caption
+msgctxt "tviswaptgui.actpackagesinstall.caption"
 msgid "Install package"
 msgstr ""
 
-#: tviswaptgui.actpackageinstall.hint
-msgctxt "tviswaptgui.actpackageinstall.hint"
+#: tviswaptgui.actpackagesinstall.hint
+msgctxt "tviswaptgui.actpackagesinstall.hint"
 msgid "Force remote install or upgrade of package"
 msgstr ""
 
-#: tviswaptgui.actpackageremove.caption
-msgctxt "TVISWAPTGUI.ACTPACKAGEREMOVE.CAPTION"
+#: tviswaptgui.actpackagesremove.caption
+msgctxt "tviswaptgui.actpackagesremove.caption"
 msgid "Uninstall package"
 msgstr ""
 
-#: tviswaptgui.actpackageremove.hint
-msgctxt "tviswaptgui.actpackageremove.hint"
+#: tviswaptgui.actpackagesremove.hint
+msgctxt "tviswaptgui.actpackagesremove.hint"
 msgid "Forces remote uninstall of package"
 msgstr ""
 
@@ -1191,19 +1198,9 @@ msgstr ""
 msgid "Launch TISHelp"
 msgstr ""
 
-#: tviswaptgui.acttriggerhostslistening.caption
-msgctxt "tviswaptgui.acttriggerhostslistening.caption"
-msgid "Trigger hosts scan"
-msgstr ""
-
-#: tviswaptgui.acttriggerhostslistening.hint
-msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTSLISTENING.HINT"
-msgid "Trigger scan of listening IP of registered hosts."
-msgstr ""
-
 #: tviswaptgui.acttriggerhostupdate.caption
 msgctxt "tviswaptgui.acttriggerhostupdate.caption"
-msgid "Update hosts status"
+msgid "Check updates"
 msgstr ""
 
 #: tviswaptgui.acttriggerhostupdate.hint
@@ -1382,7 +1379,7 @@ msgid "Has errors"
 msgstr ""
 
 #: tviswaptgui.cbinverseselect.caption
-msgid "NOT"
+msgid "Not"
 msgstr ""
 
 #: tviswaptgui.cbinverseselect.hint
@@ -1466,18 +1463,6 @@ msgctxt "TVISWAPTGUI.CBWUAPENDING.CAPTION"
 msgid "Pending"
 msgstr ""
 
-#: tviswaptgui.edhostslimit.editlabel.caption
-msgid "Max hosts count"
-msgstr ""
-
-#: tviswaptgui.edhostslimit.hint
-msgid "Limt the count of hosts returned from server"
-msgstr ""
-
-#: tviswaptgui.edhostslimit.text
-msgid "1000"
-msgstr ""
-
 #: tviswaptgui.edpackage.editlabel.caption
 msgctxt "tviswaptgui.edpackage.editlabel.caption"
 msgid "Package"
@@ -1529,17 +1514,9 @@ msgstr ""
 msgid "Allowed Windows Updates Classifications"
 msgstr ""
 
-#: tviswaptgui.label11.caption
-msgid "Number of hosts : "
-msgstr ""
-
 #: tviswaptgui.label12.caption
 msgctxt "tviswaptgui.label12.caption"
 msgid "Current task"
-msgstr ""
-
-#: tviswaptgui.label13.caption
-msgid "Selected"
 msgstr ""
 
 #: tviswaptgui.label14.caption
@@ -1639,12 +1616,12 @@ msgstr ""
 
 #: tviswaptgui.labelcomputersnumber.caption
 msgctxt "TVISWAPTGUI.LABELCOMPUTERSNUMBER.CAPTION"
-msgid "0"
+msgid "Selected / Total : %d / %d"
 msgstr ""
 
-#: tviswaptgui.labselected.caption
-msgctxt "tviswaptgui.labselected.caption"
-msgid "0"
+#: tviswaptgui.menuexternaltools.caption
+msgctxt "tviswaptgui.menuexternaltools.caption"
+msgid "Gestion Windows de l'ordinateur"
 msgstr ""
 
 #: tviswaptgui.menuitem10.caption
@@ -1674,11 +1651,11 @@ msgid "-"
 msgstr ""
 
 #: tviswaptgui.menuitem2.caption
-msgid "Gestion Windows de l'ordinateur"
+msgid "&View"
 msgstr ""
 
 #: tviswaptgui.menuitem24.caption
-msgid "&Edit"
+msgid "&Actions"
 msgstr ""
 
 #: tviswaptgui.menuitem25.caption
@@ -1723,8 +1700,8 @@ msgstr ""
 msgid "&File"
 msgstr ""
 
-#: tviswaptgui.menuitem53.caption
-msgid "Restore default grids layout"
+#: tviswaptgui.menuitem51.caption
+msgid "Package wizard"
 msgstr ""
 
 #: tviswaptgui.menuitem55.caption
@@ -1753,11 +1730,6 @@ msgstr ""
 
 #: tviswaptgui.menuitem74.caption
 msgid "Delete task"
-msgstr ""
-
-#: tviswaptgui.menuitem75.caption
-msgctxt "tviswaptgui.menuitem75.caption"
-msgid "-"
 msgstr ""
 
 #: tviswaptgui.menuitem76.caption
@@ -1793,6 +1765,10 @@ msgstr ""
 #: tviswaptgui.panel7.caption
 msgctxt "tviswaptgui.panel7.caption"
 msgid "Panel7"
+msgstr ""
+
+#: tviswaptgui.panleft.caption
+msgid "PanLeft"
 msgstr ""
 
 #: tviswaptgui.pggroups.caption
@@ -2706,6 +2682,11 @@ msgstr ""
 #: uwaptconsoleres.rshostconfigeditcaption
 msgctxt "uwaptconsoleres.rshostconfigeditcaption"
 msgid "Edit host configuration"
+msgstr ""
+
+#: uwaptconsoleres.rshostsselectedtotal
+msgctxt "uwaptconsoleres.rshostsselectedtotal"
+msgid "Selected / Total : %d / %d"
 msgstr ""
 
 #: uwaptconsoleres.rsignoredconfictingpackages

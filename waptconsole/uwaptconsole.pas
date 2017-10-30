@@ -6,12 +6,11 @@ interface
 
 uses
   Classes, SysUtils, Windows, ActiveX, Types, Forms, Controls, Graphics,
-  Dialogs, Buttons, FileUtil,LazFileUtils, LazUTF8, SynEdit, SynHighlighterPython,
-  TplStatusBarUnit,
-  vte_json, ExtCtrls, StdCtrls, ComCtrls,
-  ActnList, Menus, jsonparser, superobject, VirtualTrees, VarPyth, ImgList,
-  SOGrid, uvisloading, IdComponent, DefaultTranslator, GetText, uWaptConsoleRes,
-  SearchEdit;
+  Dialogs, Buttons, FileUtil, LazFileUtils, LazUTF8, SynEdit,
+  SynHighlighterPython, LSControls, TplStatusBarUnit, vte_json, ExtCtrls,
+  StdCtrls, ComCtrls, ActnList, Menus, jsonparser, superobject, VirtualTrees,
+  VarPyth, ImgList, SOGrid, uvisloading, IdComponent, DefaultTranslator,
+  IniPropStorage, GetText, uWaptConsoleRes, SearchEdit;
 
 type
 
@@ -19,7 +18,8 @@ type
 
   TVisWaptGUI = class(TForm)
     ActCancelRunningTask: TAction;
-    ActForgetPackages: TAction;
+    ActDisplayPreferences: TAction;
+    ActPackagesForget: TAction;
     ActAddConflicts: TAction;
     ActHelp: TAction;
     ActImportFromRepo: TAction;
@@ -56,25 +56,38 @@ type
     BitBtn13: TBitBtn;
     BitBtn15: TBitBtn;
     BitBtn9: TBitBtn;
+    ButHostSearch: TBitBtn;
     ButHostSearch1: TBitBtn;
     ButPackagesUpdate1: TBitBtn;
     cbForcedWSUSscanDownload: TCheckBox;
-    cbReachable: TCheckBox;
-    cbNewestOnly: TCheckBox;
+    cbGroups: TComboBox;
+    cbHasErrors: TCheckBox;
     CBInverseSelect: TCheckBox;
+    cbNeedUpgrade: TCheckBox;
+    cbNewestOnly: TCheckBox;
+    cbReachable: TCheckBox;
+    cbSearchAll: TCheckBox;
+    cbSearchDMI: TCheckBox;
+    cbSearchHost: TCheckBox;
+    cbSearchPackages: TCheckBox;
+    cbSearchSoftwares: TCheckBox;
     EdConflicts1: TMemo;
     EdDepends1: TMemo;
     EdPackage: TLabeledEdit;
     EdHardwareFilter: TEdit;
     EdPackage1: TLabeledEdit;
+    EdSearchHost: TSearchEdit;
     EdVersion: TLabeledEdit;
     EdVersion1: TLabeledEdit;
+    GridhostInventory: TVirtualJSONInspector;
+    GridHosts: TSOGrid;
     GridWSUSAllowedWindowsUpdates: TSOGrid;
     GridWSUSScan: TSOGrid;
     GridWSUSAllowedClassifications: TSOGrid;
     GridWSUSForbiddenWindowsUpdates: TSOGrid;
     Image1: TImage;
     Label10: TLabel;
+    Label15: TLabel;
     Label16: TLabel;
     Label17: TLabel;
     Label18: TLabel;
@@ -85,30 +98,37 @@ type
     Label21: TLabel;
     Label22: TLabel;
     Label23: TLabel;
-    EdHostsLimit: TLabeledEdit;
     Label24: TLabel;
     Label25: TLabel;
     Label26: TLabel;
+    Label5: TLabel;
+    LabelComputersNumber: TLabel;
     LabErrorRegHardware: TLabel;
     MemoGroupeDescription1: TMemo;
     MenuItem1: TMenuItem;
     MenuItem17: TMenuItem;
+    MenuExternalTools: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem23: TMenuItem;
     MenuItem33: TMenuItem;
     MenuItem50: TMenuItem;
     MenuItem51: TMenuItem;
+    MenuItem53: TMenuItem;
     MenuItem74: TMenuItem;
-    MenuItem75: TMenuItem;
     MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
     MenuItem78: TMenuItem;
     MenuItem79: TMenuItem;
     MenuItem80: TMenuItem;
+    MenuItem81: TMenuItem;
     MenuItem82: TMenuItem;
+    MenuItem83: TMenuItem;
     odSelectInstaller: TOpenDialog;
+    Panel10: TPanel;
     Panel13: TPanel;
     Panel14: TPanel;
+    Panel15: TPanel;
+    PanLeft: TPanel;
     PanRightBundles: TPanel;
     Panel16: TPanel;
     Panel8: TPanel;
@@ -139,20 +159,18 @@ type
     ActWUAResetSelectedUpdates: TAction;
     ActWUASaveUpdatesGroup: TAction;
     ActWUALoadUpdates: TAction;
-    ActPackageInstall: TAction;
+    ActPackagesInstall: TAction;
     ActRestoreDefaultLayout: TAction;
     ActTriggerHostUpdate: TAction;
-    ActTriggerHostsListening: TAction;
     ActRemoveConflicts: TAction;
     ActSearchSoftwares: TAction;
     ActRemoveDepends: TAction;
     ActRDP: TAction;
     ActVNC: TAction;
-    ActPackageRemove: TAction;
+    ActPackagesRemove: TAction;
     ActEditpackage: TAction;
     ActExecCode: TAction;
     ActEvaluate: TAction;
-    ActBuildUpload: TAction;
     ActCreateCertificate: TAction;
     ActEvaluateVar: TAction;
     ActEditHostPackage: TAction;
@@ -162,7 +180,6 @@ type
     ActDeletePackage: TAction;
     ActChangePassword: TAction;
     ActGotoHost: TAction;
-    ActHostWaptUpgrade: TAction;
     ActTriggerHostUpgrade: TAction;
     ActAddPackageGroup: TAction;
     ActEditGroup: TAction;
@@ -186,20 +203,11 @@ type
     butSearchPackages: TBitBtn;
     butSearchGroups: TBitBtn;
     ButCancelHostTask: TBitBtn;
-    ButHostSearch: TBitBtn;
     ButPackagesUpdate: TBitBtn;
-    cbSearchDMI: TCheckBox;
-    cbSearchHost: TCheckBox;
-    cbSearchPackages: TCheckBox;
-    cbSearchSoftwares: TCheckBox;
-    cbSearchAll: TCheckBox;
     cbShowHostPackagesSoft: TCheckBox;
     cbShowHostPackagesGroup: TCheckBox;
     cbMaskSystemComponents: TCheckBox;
     cbShowLog: TCheckBox;
-    cbNeedUpgrade: TCheckBox;
-    cbHasErrors: TCheckBox;
-    cbGroups: TComboBox;
     cbWUACriticalOnly: TCheckBox;
     cbWUAInstalled: TCheckBox;
     cbWUAPending: TCheckBox;
@@ -214,14 +222,9 @@ type
     GridHostTasksErrors: TSOGrid;
     HostRunningTaskLog: TMemo;
     ActionsImages: TImageList;
-    Label11: TLabel;
     Label12: TLabel;
     HostRunningTask: TLabeledEdit;
-    Label13: TLabel;
     Label14: TLabel;
-    Label15: TLabel;
-    LabelComputersNumber: TLabel;
-    labSelected: TLabel;
     MemoTaskLog: TMemo;
     MemoInstallOutput: TMemo;
     MemoGroupeDescription: TMemo;
@@ -246,7 +249,6 @@ type
     MenuItem48: TMenuItem;
     MenuItem49: TMenuItem;
     MenuItem52: TMenuItem;
-    MenuItem53: TMenuItem;
     MenuItem54: TMenuItem;
     MenuItem55: TMenuItem;
     MenuItem56: TMenuItem;
@@ -285,11 +287,8 @@ type
     EdModelName: TEdit;
     EdUpdateDate: TEdit;
     EdUser: TEdit;
-    EdSearchHost: TSearchEdit;
     EdRun: TEdit;
     EdSearchPackage: TSearchEdit;
-    GridHosts: TSOGrid;
-    GridhostInventory: TVirtualJSONInspector;
     ImageList1: TImageList;
     Label1: TLabel;
     pgGroups: TTabSheet;
@@ -306,7 +305,6 @@ type
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
-    Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
@@ -329,7 +327,6 @@ type
     MenuItem29: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem30: TMenuItem;
-    MenuItem31: TMenuItem;
     MenuItem32: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
@@ -340,7 +337,6 @@ type
     MainPages: TPageControl;
     HostPages: TPageControl;
     Panel1: TPanel;
-    Panel10: TPanel;
     PanDebug: TPanel;
     Panel4: TPanel;
     Panel7: TPanel;
@@ -370,13 +366,15 @@ type
     ToolButton4: TToolButton;
     ToolButton5: TToolButton;
     ToolButton6: TToolButton;
-    ToolButton7: TToolButton;
     procedure ActAddADSGroupsExecute(Sender: TObject);
     procedure ActAddConflictsExecute(Sender: TObject);
     procedure ActAddPackageGroupExecute(Sender: TObject);
+    procedure ActAddPackageGroupUpdate(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
+    procedure ActChangePasswordUpdate(Sender: TObject);
     procedure ActChangePrivateKeypasswordExecute(Sender: TObject);
+    procedure ActChangePrivateKeypasswordUpdate(Sender: TObject);
     procedure ActCleanCacheExecute(Sender: TObject);
     procedure ActComputerMgmtExecute(Sender: TObject);
     procedure ActComputerMgmtUpdate(Sender: TObject);
@@ -385,23 +383,30 @@ type
     procedure ActComputerUsersExecute(Sender: TObject);
     procedure ActComputerUsersUpdate(Sender: TObject);
     procedure ActCreateCertificateExecute(Sender: TObject);
+    procedure ActCreateCertificateUpdate(Sender: TObject);
     procedure ActCreateWaptSetupExecute(Sender: TObject);
+    procedure ActCreateWaptSetupUpdate(Sender: TObject);
     procedure ActDeleteGroupExecute(Sender: TObject);
     procedure ActDeleteGroupUpdate(Sender: TObject);
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActDeployWaptExecute(Sender: TObject);
+    procedure ActDisplayPreferencesExecute(Sender: TObject);
     procedure ActEditGroupUpdate(Sender: TObject);
     procedure ActEditHostPackageUpdate(Sender: TObject);
+    procedure ActForgetPackagesUpdate(Sender: TObject);
     procedure ActGermanExecute(Sender: TObject);
     procedure ActGermanUpdate(Sender: TObject);
+    procedure ActHostsDeletePackageUpdate(Sender: TObject);
+    procedure ActHostsDeleteUpdate(Sender: TObject);
     procedure ActmakePackageTemplateExecute(Sender: TObject);
+    procedure ActPackagesInstallUpdate(Sender: TObject);
+    procedure ActPackagesRemoveUpdate(Sender: TObject);
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
     procedure ActTISHelpExecute(Sender: TObject);
     procedure ActTISHelpUpdate(Sender: TObject);
     procedure ActTriggerWakeOnLanExecute(Sender: TObject);
-    procedure ActTriggerWakeOnLanUpdate(Sender: TObject);
     procedure ActTriggerWaptwua_downloadExecute(Sender: TObject);
     procedure ActTriggerWaptwua_installExecute(Sender: TObject);
     procedure ActTriggerWaptwua_scanExecute(Sender: TObject);
@@ -417,7 +422,7 @@ type
     procedure ActEditHostPackageExecute(Sender: TObject);
     procedure ActEnglishExecute(Sender: TObject);
     procedure ActEnglishUpdate(Sender: TObject);
-    procedure ActForgetPackagesExecute(Sender: TObject);
+    procedure ActPackagesForgetExecute(Sender: TObject);
     procedure ActFrenchExecute(Sender: TObject);
     procedure ActFrenchUpdate(Sender: TObject);
     procedure ActGotoHostExecute(Sender: TObject);
@@ -427,8 +432,8 @@ type
     procedure ActImportFromRepoExecute(Sender: TObject);
     procedure ActWUALoadUpdatesExecute(Sender: TObject);
     procedure ActWUALoadUpdatesUpdate(Sender: TObject);
-    procedure ActPackageInstallExecute(Sender: TObject);
-    procedure ActPackageRemoveExecute(Sender: TObject);
+    procedure ActPackagesInstallExecute(Sender: TObject);
+    procedure ActPackagesRemoveExecute(Sender: TObject);
     procedure ActRDPExecute(Sender: TObject);
     procedure ActRDPUpdate(Sender: TObject);
     procedure ActRefreshHostInventoryExecute(Sender: TObject);
@@ -442,7 +447,6 @@ type
     procedure ActSearchGroupsExecute(Sender: TObject);
     procedure ActTriggerHostUpdateExecute(Sender: TObject);
     procedure ActTriggerHostUpgradeExecute(Sender: TObject);
-    procedure ActTriggerHostUpgradeUpdate(Sender: TObject);
     procedure ActEditPackageExecute(Sender: TObject);
     procedure ActEditpackageUpdate(Sender: TObject);
     procedure ActEvaluateExecute(Sender: TObject);
@@ -450,7 +454,6 @@ type
     procedure ActHostsCopyExecute(Sender: TObject);
     procedure ActHostsDeleteExecute(Sender: TObject);
     procedure actHostSelectAllExecute(Sender: TObject);
-    procedure ActLocalhostInstallExecute(Sender: TObject);
     procedure ActAddGroupExecute(Sender: TObject);
     procedure actQuitExecute(Sender: TObject);
     procedure actRefreshExecute(Sender: TObject);
@@ -459,7 +462,6 @@ type
     procedure ActSearchPackageExecute(Sender: TObject);
     procedure ActPackagesUpdateExecute(Sender: TObject);
     procedure ActReloadConfigExecute(Sender: TObject);
-    procedure ActTriggerHostsListeningExecute(Sender: TObject);
     procedure ActVNCExecute(Sender: TObject);
     procedure ActVNCUpdate(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
@@ -478,8 +480,6 @@ type
     procedure cbNeedUpgradeClick(Sender: TObject);
     procedure CheckBox_errorChange(Sender: TObject);
     procedure EdHardwareFilterChange(Sender: TObject);
-    procedure EdHostsLimitExit(Sender: TObject);
-    procedure EdHostsLimitKeyPress(Sender: TObject; var Key: char);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchPackageExecute(Sender: TObject);
     procedure EdSearchGroupsExecute(Sender: TObject);
@@ -508,6 +508,9 @@ type
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: boolean; var ImageIndex: integer;
       var ImageList: TCustomImageList);
+    procedure GridHostPackagesGetText(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; RowData, CellData: ISuperObject;
+      Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridHostsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
@@ -561,7 +564,6 @@ type
     procedure HostPagesChange(Sender: TObject);
     procedure Image1Click(Sender: TObject);
     procedure MainPagesChange(Sender: TObject);
-    procedure InstallPackage(Grid: TSOGrid);
     procedure MenuItem27Click(Sender: TObject);
     procedure MenuItem74Click(Sender: TObject);
     procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
@@ -582,9 +584,12 @@ type
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
     function InventoryData(uuid: String): ISuperObject;
     procedure MakePackageTemplate(AInstallerFileName: String);
+    function OneHostHasConnectedIP: Boolean;
+    function OneHostIsConnected: Boolean;
     procedure PythonOutputSendData(Sender: TObject; const Data: ansistring);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: ISuperObject);
     procedure UpdateHostPages(Sender: TObject);
+    procedure UpdateSelectedHostsActions(Sender: TObject);
   public
     { public declarations }
     PackageEdited: ISuperObject;
@@ -596,6 +601,7 @@ type
     WUAWinUpdates : ISuperObject;
 
     windows_updates_rulesUpdated: Boolean;
+    HostsLimit: Integer;
 
     constructor Create(TheOwner: TComponent); override;
 
@@ -616,8 +622,9 @@ uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings, soutils,
   waptcommon, waptwinutils, tiscommon, uVisCreateKey, uVisCreateWaptSetup,
   dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
   uvisgroupchoice, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
-  uVisImportPackage, PythonEngine, Clipbrd, RegExpr, tisinifiles,
-  IdURI,uScaleDPI, uVisPackageWizard, uVisChangeKeyPassword,windirs
+  uVisImportPackage, PythonEngine, Clipbrd, RegExpr, tisinifiles, IdURI,
+  uScaleDPI, uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
+  windirs
   {$ifdef wsus}
   ,uVisWUAGroup, uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect
@@ -637,6 +644,33 @@ begin
   for i:=0 to length(items)-1 do
     result[i] := TComponent(items[i].VObject);
 
+end;
+
+function ProgramFilesX86:String;
+begin
+  result := SysUtils.GetEnvironmentVariable('PROGRAMFILES(X86)');
+  if result = '' then
+    result := SysUtils.GetEnvironmentVariable('PROGRAMFILES')
+end;
+
+function GetTisSupportPath:String;
+begin
+  result := AppendPathDelim(ProgramFilesX86)+'tishelp\tissupport.exe';
+end;
+
+function GetVNCViewerPath:String;
+const
+  vncpathes: Array[0..2] of String = ('C:\Program Files\TightVNC\tvnviewer.exe','C:\Program Files\TightVNC\tvnviewer64.exe',
+    'C:\Program Files (x86)\TightVNC\tvnviewer.exe');
+var
+  p:String;
+begin
+  for p in vncpathes do
+    if FileExists(p) then
+    begin
+      Result := p;
+      Break;
+    end;
 end;
 
 
@@ -732,18 +766,6 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.EdHostsLimitExit(Sender: TObject);
-begin
-  if EdHostsLimit.Text='' then EdHostsLimit.Text:='1000';
-  EdHostsLimit.Text := IntToStr(StrToInt(EdHostsLimit.Text));
-end;
-
-procedure TVisWaptGUI.EdHostsLimitKeyPress(Sender: TObject; var Key: char);
-begin
-  if key = #13 then
-    ActSearchHost.Execute;
-end;
-
 procedure TVisWaptGUI.EdRunKeyPress(Sender: TObject; var Key: char);
 begin
   if Key = #13 then
@@ -815,12 +837,13 @@ begin
   try
     for CB in VarArrayOf([cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares,cbReachable]) do
       ini.WriteBool(self.name,CB.Name,TCheckBox(CB).Checked);
-    ini.WriteInteger(self.name,EdHostsLimit.Name,StrToInt(EdHostsLimit.Text));
+    ini.WriteInteger(self.name,'HostsLimit',HostsLimit);
   finally
     ini.Free;
   end;
 
   // %LOCALAPPDATA%\waptconsole\waptconsole.ini
+  // Global settings, not per cert
   ini := TIniFile.Create(AppIniFilename);
   try
     if ini.ReadBool('Global','send_usage_report',True) then
@@ -836,6 +859,8 @@ begin
         CBS := VarArrayOf([cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares]);
         for CB in CBS do
           ini.WriteBool('Global',CB.Name,TCheckBox(CB).Checked);
+
+        ini.WriteInteger(self.name,HostPages.Name+'.width',HostPages.Width);
 
       except
         ini.WriteDateTime('Global','last_usage_report',Now);
@@ -1197,8 +1222,7 @@ begin
                 GridHostTasksErrors.Data := tasksresult['errors'];
               if running <> nil then
               begin
-                if running['description'] <> Nil then
-                   ActCancelRunningTask.Enabled:=True;
+                ActCancelRunningTask.Enabled:= running['description'] <> Nil;
 
                 HostTaskRunningProgress.Position := running.I['progress'];
                 HostRunningTask.Text := UTF8Encode(running.S['description']);
@@ -1253,49 +1277,41 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.UpdateSelectedHostsActions(Sender: TObject);
+var
+  OneIsFocused,
+  OneIsConnected,
+  OneHasConnectedIP:Boolean;
+begin
+  OneIsConnected:=OneHostIsConnected;
+  OneHasConnectedIP:=OneHostHasConnectedIP;
+  OneIsFocused:=(Gridhosts.FocusedRow <> nil);
+
+  ActTriggerHostUpdate.Visible := OneIsFocused  and OneIsConnected;
+  ActTriggerHostUpgrade.Visible := OneIsFocused  and OneIsConnected;
+  ActPackagesInstall.Visible := OneIsFocused  and OneIsConnected;
+  ActPackagesRemove.Visible := OneIsFocused  and OneIsConnected;
+  ActPackagesForget.Visible := OneIsFocused  and OneIsConnected;
+
+  ActRefreshHostInventory.Visible:=OneIsFocused  and OneIsConnected;
+
+  ActRDP.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
+  ActVNC.Visible := OneIsFocused  and OneHasConnectedIP and FileExists(GetVNCViewerPath) and EnableExternalTools;
+  ActComputerServices.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
+  ActComputerUsers.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
+  ActComputerMgmt.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
+  ActRemoteAssist.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
+
+  ActTriggerWakeOnLan.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
+
+  ActTISHelp.Visible := OneIsFocused and OneHasConnectedIP and EnableExternalTools and FileExists(GetTisSupportPath);
+
+  MenuExternalTools.Visible:=EnableExternalTools;
+end;
+
 constructor TVisWaptGUI.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
-end;
-
-procedure TVisWaptGUI.ActLocalhostInstallExecute(Sender: TObject);
-begin
-  if GridPackages.Focused then
-  begin
-    InstallPackage(GridPackages);
-    ActSearchPackage.Execute;
-  end;
-end;
-
-procedure TVisWaptGUI.InstallPackage(Grid: TSOGrid);
-var
-  package: string;
-  i: integer = 0;
-  selects: integer;
-  N: PVirtualNode;
-begin
-  N := Grid.GetFirstSelected;
-  selects := Grid.SelectedCount;
-
-  with  TVisLoading.Create(Self) do
-    try
-      Self.Enabled := False;
-      while (N <> nil) and not StopRequired do
-      begin
-        package := Grid.GetCellStrValue(N, 'package') + ' (=' +
-          Grid.GetCellStrValue(N, 'version') + ')';
-        ProgressTitle(format(
-          rsInstalling, [Grid.GetCellStrValue(N, 'package')]));
-        ProgressStep(trunc((i / selects) * 100), 100);
-        i := i + 1;
-        WAPTLocalJsonGet(format('install?package=%s', [package]));
-        N := Grid.GetNextSelected(N);
-      end;
-    finally
-      Self.Enabled := True;
-      Free;
-    end;
-
 end;
 
 procedure TVisWaptGUI.MenuItem27Click(Sender: TObject);
@@ -1335,7 +1351,7 @@ end;
 
 procedure TVisWaptGUI.ActAddGroupExecute(Sender: TObject);
 begin
-  if IniReadString(AppIniFilename,'Global','default_sources_root')<>'' then
+  if WaptIniReadString(AppIniFilename,'Global','default_sources_root')<>'' then
   begin
     CreateGroup('agroup', AdvancedMode);
     ActPackagesUpdate.Execute;
@@ -1519,6 +1535,11 @@ begin
     end;
 end;
 
+procedure TVisWaptGUI.ActCreateCertificateUpdate(Sender: TObject);
+begin
+  ActCreateCertificate.Visible := (WaptServerUser='admin') and EnableManagementFeatures;
+end;
+
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 var
   waptsetupPath, buildDir: string;
@@ -1639,6 +1660,11 @@ begin
       ini.Free;
       Free;
     end;
+end;
+
+procedure TVisWaptGUI.ActCreateWaptSetupUpdate(Sender: TObject);
+begin
+  ActCreateWaptSetup.Visible:= DMPython.CertificateIsCodeSigning(GetWaptPersonalCertificatePath) and EnableManagementFeatures;
 end;
 
 procedure TVisWaptGUI.ActAddConflictsExecute(Sender: TObject);
@@ -1792,6 +1818,11 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.ActAddPackageGroupUpdate(Sender: TObject);
+begin
+  (Sender as TAction).Enabled:=(GridHosts.SelectedCount>0);
+end;
+
 procedure TVisWaptGUI.ActCancelRunningTaskExecute(Sender: TObject);
 var
   uuids: ISuperObject;
@@ -1837,6 +1868,11 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.ActChangePasswordUpdate(Sender: TObject);
+begin
+  ActChangePassword.Visible :=  (WaptServerUser='admin') and EnableManagementFeatures;
+end;
+
 procedure TVisWaptGUI.ActChangePrivateKeypasswordExecute(Sender: TObject);
 begin
   with TVisChangeKeyPassword.Create(self) do
@@ -1845,6 +1881,11 @@ begin
   finally
     Free;
   end;
+end;
+
+procedure TVisWaptGUI.ActChangePrivateKeypasswordUpdate(Sender: TObject);
+begin
+  ActChangePrivateKeypassword.Enabled := FileExists(GetWaptPersonalCertificatePath);
 end;
 
 procedure TVisWaptGUI.ActCleanCacheExecute(Sender: TObject);
@@ -1871,7 +1912,7 @@ begin
   if (Gridhosts.FocusedRow <> nil) and
     (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
   begin
-    ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],3389);
+    ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],135);
     if ip <> '' then
       ShellExecute(0, '', PAnsiChar('compmgmt.msc'), PAnsichar(' -a /computer=' + ip), nil, SW_SHOW)
     else
@@ -1896,7 +1937,7 @@ begin
   if (Gridhosts.FocusedRow <> nil) and
     (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
   begin
-    ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],3389);
+    ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],135);
     if ip <> '' then
       ShellExecute(0, '', PAnsiChar('services.msc'), PAnsichar(' -a /computer=' + ip), nil, SW_SHOW)
     else
@@ -1921,7 +1962,7 @@ begin
   if (Gridhosts.FocusedRow <> nil) and
     (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
   begin
-    ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],3389);
+    ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],135);
     if ip <> '' then
       ShellExecute(0, '', PAnsiChar('Lusrmgr.msc'), PAnsichar(' -a /computer=' + ip), nil, SW_SHOW)
     else
@@ -2026,6 +2067,80 @@ begin
     end;
 end;
 
+procedure TVisWaptGUI.ActDisplayPreferencesExecute(Sender: TObject);
+var
+  inifile: TIniFile;
+  lang:String;
+  oldlimit:Integer;
+begin
+  inifile := TIniFile.Create(AppIniFilename);
+  try
+    With TVisDisplayPreferences.Create(self) do
+    try
+      EdHostsLimit.Text := IntToStr(HostsLimit);
+      oldlimit:=HostsLimit;
+      cbEnableExternalTools.Checked :=
+        inifile.ReadBool('global', 'enable_external_tools', EnableExternalTools);
+
+      cbEnableManagementFeatures.Checked :=
+        inifile.ReadBool('global', 'enable_management_features', EnableManagementFeatures);
+
+      cbDebugWindow.Checked:= inifile.ReadBool('global','advanced_mode',AdvancedMode);
+
+      lang := inifile.ReadString('Global','language','en');
+      if lang='en' then
+        cbLanguage.ItemIndex:=0
+      else if lang='fr' then
+        cbLanguage.ItemIndex:=1
+      else if lang='de' then
+        cbLanguage.ItemIndex:=2
+      else
+        cbLanguage.ItemIndex:=0;
+
+      if ShowModal = mrOk then
+      begin
+        if EdHostsLimit.Text='' then EdHostsLimit.Text:='1000';
+        HostsLimit:=StrToInt(EdHostsLimit.Text);
+
+        inifile.WriteBool('global', 'enable_external_tools',
+          cbEnableExternalTools.Checked);
+
+        inifile.WriteBool('global', 'enable_management_features',
+          cbEnableManagementFeatures.Checked);
+
+        if cbLanguage.ItemIndex=0 then
+          DMPython.Language := 'en'
+        else if cbLanguage.ItemIndex=1 then
+          DMPython.Language := 'fr'
+        else if cbLanguage.ItemIndex=2 then
+          DMPython.Language := 'de'
+        else
+          DMPython.Language := '';
+
+        inifile.WriteString('Global','language',DMPython.Language);
+
+        inifile.WriteBool('global', 'advanced_mode',cbDebugWindow.Checked);
+
+        AdvancedMode := cbDebugWindow.Checked;
+        pgSources.TabVisible := AdvancedMode;
+        PanDebug.Visible := AdvancedMode;
+
+
+        EnableExternalTools := cbEnableExternalTools.Checked;
+        EnableManagementFeatures := cbEnableManagementFeatures.Checked;
+
+        if HostsLimit>oldlimit then
+          ActSearchHost.Execute;
+      end;
+    finally
+      Free;
+    end;
+
+  finally
+    inifile.Free;
+  end;
+end;
+
 procedure TVisWaptGUI.ActEditGroupUpdate(Sender: TObject);
 begin
   ActEditGroup.Enabled:=GridGroups.SelectedCount=1;
@@ -2034,6 +2149,11 @@ end;
 procedure TVisWaptGUI.ActEditHostPackageUpdate(Sender: TObject);
 begin
   ActEditHostPackage.Enabled:=(GridHosts.SelectedCount=1);
+end;
+
+procedure TVisWaptGUI.ActForgetPackagesUpdate(Sender: TObject);
+begin
+  (Sender as TAction).Enabled:=OneHostIsConnected;
 end;
 
 procedure TVisWaptGUI.ActGermanExecute(Sender: TObject);
@@ -2046,9 +2166,30 @@ begin
   ActGerman.Checked := DMPython.Language='de';
 end;
 
+procedure TVisWaptGUI.ActHostsDeletePackageUpdate(Sender: TObject);
+begin
+  (Sender as TAction).Enabled:=(GridHosts.SelectedCount>0);
+end;
+
+procedure TVisWaptGUI.ActHostsDeleteUpdate(Sender: TObject);
+begin
+  (Sender as TAction).Enabled:=(GridHosts.SelectedCount>0);
+
+end;
+
 procedure TVisWaptGUI.ActmakePackageTemplateExecute(Sender: TObject);
 begin
   MakePackageTemplate('');
+end;
+
+procedure TVisWaptGUI.ActPackagesInstallUpdate(Sender: TObject);
+begin
+  (Sender as TAction).Enabled:=OneHostIsConnected;
+end;
+
+procedure TVisWaptGUI.ActPackagesRemoveUpdate(Sender: TObject);
+begin
+  (Sender as TAction).Enabled:=OneHostIsConnected;
 end;
 
 procedure TVisWaptGUI.ActRemoteAssistExecute(Sender: TObject);
@@ -2076,18 +2217,6 @@ begin
 
 end;
 
-function ProgramFilesX86:String;
-begin
-  result := SysUtils.GetEnvironmentVariable('PROGRAMFILES(X86)');
-  if result = '' then
-    result := SysUtils.GetEnvironmentVariable('PROGRAMFILES')
-end;
-
-function GetTisSupportPath:String;
-begin
-  result := AppendPathDelim(ProgramFilesX86)+'tishelp\tissupport.exe';
-end;
-
 procedure TVisWaptGUI.ActTISHelpExecute(Sender: TObject);
 var
   taskresult,uuids: ISuperObject;
@@ -2111,9 +2240,24 @@ begin
   end;
 end;
 
+function TVisWaptGUI.OneHostHasConnectedIP:Boolean;
+var
+  host : ISuperObject;
+begin
+  Result:=False;
+  for host in GridHosts.SelectedRows do
+  begin
+    if Host.S['connected_ips'] <> '' then
+    begin
+      Result := True;
+      Break
+    end;
+  end;
+end;
+
 procedure TVisWaptGUI.ActTISHelpUpdate(Sender: TObject);
 begin
-  ActTISHelp.Enabled:=FileExists(GetTisSupportPath);
+  ActTISHelp.Enabled:=FileExists(GetTisSupportPath) and OneHostHasConnectedIP;
 end;
 
 procedure TVisWaptGUI.ActTriggerWakeOnLanExecute(Sender: TObject);
@@ -2123,11 +2267,6 @@ begin
   data := SO();
   data['uuids'] := GetSelectedUUID;
   HandleServerResult(WAPTServerJsonPost('api/v3/trigger_wakeonlan',[],data));
-end;
-
-procedure TVisWaptGUI.ActTriggerWakeOnLanUpdate(Sender: TObject);
-begin
-  ActTriggerHostsListening.Enabled := GridHosts.SelectedCount>0;
 end;
 
 procedure TVisWaptGUI.ActTriggerWaptwua_downloadExecute(Sender: TObject);
@@ -2421,16 +2560,18 @@ var
   hostname,uuid,desc: ansistring;
   uuids,result: ISuperObject;
   ApplyUpdatesImmediately:Boolean;
+  Host: ISuperObject;
 begin
   if GridHosts.FocusedRow<>Nil then
   try
-    hostname := GridHosts.FocusedRow.S['computer_fqdn'];
-    uuid := GridHosts.FocusedRow.S['uuid'];
-    desc := GridHosts.FocusedRow.S['description'];
+    host := GridHosts.FocusedRow;
+    hostname := host.S['computer_fqdn'];
+    uuid := host.S['uuid'];
+    desc := host.S['description'];
     uuids := TSuperobject.create(stArray);
     uuids.AsArray.Add(uuid);
 
-    result := EditHost(uuid, AdvancedMode, ApplyUpdatesImmediately, UTF8Encode(desc));
+    result := EditHost(uuid, AdvancedMode, ApplyUpdatesImmediately, UTF8Encode(desc),host.S['reachable'] = 'OK');
     if (result<>Nil) and ApplyUpdatesImmediately and (uuid<>'')  then
       result := TriggerActionOnHosts(uuids,'trigger_host_upgrade',Nil,rsUpgradingHost,rsErrorLaunchingUpgrade);
 
@@ -2569,7 +2710,7 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.ActForgetPackagesExecute(Sender: TObject);
+procedure TVisWaptGUI.ActPackagesForgetExecute(Sender: TObject);
 begin
   TriggerActionOnHostPackages('trigger_forget_packages',rsConfirmHostForgetsPackages,rsForgetPackageError);
 end;
@@ -2595,9 +2736,26 @@ begin
   OpenDocument('https://doc.wapt.fr');
 end;
 
+
+function TVisWaptGUI.OneHostIsConnected:Boolean;
+var
+  host : ISuperObject;
+begin
+  Result:=False;
+  for host in GridHosts.SelectedRows do
+  begin
+    if Host.S['reachable'] = 'OK' then
+    begin
+      Result := True;
+      Break;
+    end;
+  end;
+end;
+
+
 procedure TVisWaptGUI.ActHostsActionsUpdate(Sender: TObject);
 begin
-  (Sender as TAction).Enabled:=GridHosts.Focused and (GridHosts.SelectedCount>0);
+  (Sender as TAction).Enabled:=(GridHosts.SelectedCount>0);
 end;
 
 procedure TVisWaptGUI.ActImportFromFileExecute(Sender: TObject);
@@ -2728,12 +2886,12 @@ begin
   {$endif wsus}
 end;
 
-procedure TVisWaptGUI.ActPackageInstallExecute(Sender: TObject);
+procedure TVisWaptGUI.ActPackagesInstallExecute(Sender: TObject);
 begin
   TriggerActionOnHostPackages('trigger_install_packages',rsConfirmPackageInstall,rsPackageInstallError);
 end;
 
-procedure TVisWaptGUI.ActPackageRemoveExecute(Sender: TObject);
+procedure TVisWaptGUI.ActPackagesRemoveExecute(Sender: TObject);
 begin
   TriggerActionOnHostPackages('trigger_remove_packages',rsConfirmRmPackagesFromHost,rsPackageRemoveError);
 end;
@@ -3009,11 +3167,6 @@ begin
     end;
 end;
 
-procedure TVisWaptGUI.ActTriggerHostUpgradeUpdate(Sender: TObject);
-begin
-  (Sender as TAction).Enabled := GridHosts.SelectedCount > 0;
-end;
-
 procedure TVisWaptGUI.ActEvaluateExecute(Sender: TObject);
 begin
   MemoLog.Clear;
@@ -3123,14 +3276,24 @@ end;
 procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
 var
   soresult,columns,urlParams, Node, Hosts,fields: ISuperObject;
-  previous_uuid: string;
+  previous_uuid,prop: string;
   i: integer;
+
+const
+  DefaultColumns:Array[0..10] of String = ('uuid','os_name','connected_ips','computer_fqdn','computer_name','manufacturer','description','productname','serialnr','mac_addresses','connected_users');
+
 begin
   EdSearchHost.Modified:=False;
   columns := TSuperObject.Create(stArray);
   for i:=0 to GridHosts.Header.Columns.Count-1 do
     if coVisible in GridHosts.Header.Columns[i].Options then
       columns.AsArray.Add(TSOGridColumn(GridHosts.Header.Columns[i]).PropertyName);
+
+  for prop in DefaultColumns do
+  begin
+    if not StrIn(prop,Columns) then
+      columns.AsArray.Add(prop);
+	end;
 
   try
     Screen.cursor := crHourGlass;
@@ -3187,7 +3350,7 @@ begin
       urlParams.AsArray.Add(Format('groups=%s',[cbGroups.Text]));
 
     urlParams.AsArray.Add('columns='+join(',',columns));
-    urlParams.AsArray.Add('limit='+EdHostsLimit.Text);
+    urlParams.AsArray.Add(Format('limit=%d',[HostsLimit]));
 
     if GridHosts.FocusedRow <> nil then
       previous_uuid := GridHosts.FocusedRow.S['uuid']
@@ -3263,27 +3426,6 @@ begin
   GridHosts.Data := Nil;
 end;
 
-procedure TVisWaptGUI.ActTriggerHostsListeningExecute(Sender: TObject);
-var
-  params,res,uuids:ISuperObject;
-begin
-  try
-    params := SO();
-    uuids := GetSelectedUUID;
-    if (uuids<>Nil) and (uuids.AsArray.Length > 1) then
-      params['uuids'] := uuids;
-
-    res := WAPTServerJsonPost('api/v3/reset_hosts_sid?',[],params);
-    if res.B['success'] then
-      ShowMessageFmt('%s',[res.S['msg']])
-    else
-      ShowMessageFmt('Unable to trigger discovery of listening IP on wapt server: %S',[res.S['msg']]);
-  except
-    on E:Exception do
-      ShowMessageFmt('Unable to trigger discovery of listening IP on wapt server: %S',[UTF8Encode(E.Message)]);
-  end;
-end;
-
 procedure TVisWaptGUI.ActVNCExecute(Sender: TObject);
 var
   ip: ansistring;
@@ -3293,7 +3435,7 @@ begin
   begin
     ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],5900);
     if ip<>'' then
-      ShellExecute(0, '', PAnsiChar('C:\Program Files\TightVNC\tvnviewer.exe'),
+      ShellExecute(0, '', PAnsiChar(GetVNCViewerPath),
         PAnsichar(ip), nil, SW_SHOW)
     else
       ShowMessage(rsNoReachableIP);
@@ -3305,7 +3447,7 @@ begin
   try
     ActVNC.Enabled := (Gridhosts.FocusedRow <> nil) and
       (Gridhosts.FocusedRow.S['connected_ips'] <> '') and
-      FileExists('C:\Program Files\TightVNC\tvnviewer.exe');
+      FileExists(GetVNCViewerPath);
   except
     ActVNC.Enabled := False;
   end;
@@ -3401,18 +3543,6 @@ begin
         //eddefault_sources_root.Directory := inifile.ReadString('global','default_sources_root','');
         //eddefault_sources_url.text = inifile.ReadString('global','default_sources_url','https://srvdev/sources/%(packagename)s-wapt/trunk');
 
-        cbDebugWindow.Checked:= inifile.ReadBool('global','advanced_mode',False);
-
-        lang := inifile.ReadString('Global','language','en');
-        if lang='en' then
-          cbLanguage.ItemIndex:=0
-        else if lang='fr' then
-          cbLanguage.ItemIndex:=1
-        else if lang='de' then
-          cbLanguage.ItemIndex:=2
-        else
-          cbLanguage.ItemIndex:=0;
-
         if ShowModal = mrOk then
         begin
           inifile.WriteString('global', 'repo_url', edrepo_url.Text);
@@ -3440,18 +3570,6 @@ begin
           inifile.WriteBool('global', 'send_usage_report',
             cbSendStats.Checked);
           //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
-
-          if cbLanguage.ItemIndex=0 then
-            inifile.WriteString('Global','language','en')
-          else if cbLanguage.ItemIndex=1 then
-            inifile.WriteString('Global','language','fr')
-          else if cbLanguage.ItemIndex=2 then
-            inifile.WriteString('Global','language','de')
-          else
-            inifile.WriteString('Global','language','');
-
-          inifile.WriteBool('global', 'advanced_mode',
-            cbDebugWindow.Checked);
 
           Result := True;
         end;
@@ -3597,6 +3715,7 @@ begin
   Result := False;
   // Initialize user local config file with global wapt settings
   localfn := GetAppConfigDir(False) + ApplicationName + '.ini';
+
   if not FileExistsUTF8(localfn) then
   begin
     if not DirectoryExistsUTF8(GetAppConfigDir(False)) then
@@ -3625,23 +3744,26 @@ begin
         if Assigned(WaptServerSession) then FreeAndNil(WaptServerSession);
         waptServerUser := edUser.Text;
         waptServerPassword := edPassword.Text;
+
+        // Auth using certificates or basic auth
         cred := SO();
         cred.S['user'] := waptServerUser;
         cred.S['password'] := UTF8Decode(waptServerPassword);
+
         sores := WAPTServerJsonPost('api/v3/login', [],cred);
         if sores.B['success'] then
         begin
-          waptServerUUID := sores['result'].S['server_uuid'];
-          Result := True;
-          if (CompareVersion(sores['result'].S['version'],WAPTServerMinVersion)<0) then
-            ShowMessageFmt(rsWaptServerOldVersion,[sores['result'].S['version'],WAPTServerMinVersion]);
-          break;
+            waptServerUUID := sores['result'].S['server_uuid'];
+            Result := True;
+            if (CompareVersion(sores['result'].S['version'],WAPTServerMinVersion)<0) then
+              ShowMessageFmt(rsWaptServerOldVersion,[sores['result'].S['version'],WAPTServerMinVersion]);
+            break;
         end
         else
         begin
-          if Assigned(WaptServerSession) then FreeAndNil(WaptServerSession);
-          waptServerPassword := '';
-          Result := False;
+            if Assigned(WaptServerSession) then FreeAndNil(WaptServerSession);
+            waptServerPassword := '';
+            Result := False;
         end
       end
       else
@@ -3689,8 +3811,9 @@ begin
       for CB in VarArrayOf([cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares,cbReachable]) do
         TCheckBox(CB).Checked := ini.ReadBool(self.Name,CB.Name,TCheckBox(CB).Checked);
 
-      EdHostsLimit.Text := ini.ReadString(self.name,EdHostsLimit.Name,EdHostsLimit.Text);
+      HostsLimit := ini.ReadInteger(self.name,'HostsLimit',2000);
       //ShowMessage(Appuserinipath+'/'+self.Name+'/'+EdHostsLimit.Name+'/'+ini.ReadString(name,EdHostsLimit.Name,'not found'));
+      HostPages.Width := ini.ReadInteger(self.name,HostPages.Name+'.width',HostPages.Width);
     finally
       ini.Free;
     end;
@@ -3854,10 +3977,34 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.GridHostPackagesGetText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
+  TextType: TVSTTextType; var CellText: string);
+var
+  propName:String;
+begin
+  if (Node = nil) or (CellData=Nil) then
+    CellText := ''
+  else
+  begin
+    propName:=TSOGridColumn(GridHostPackages.Header.Columns[Column]).PropertyName;
+
+    if (CellData <> nil) and (CellData.DataType = stArray) then
+      CellText := soutils.Join(',', CellData);
+
+    if (propName='install_date') then
+        CellText := Copy(StrReplaceChar(CellText,'T',' '),1,16);
+  end;
+end;
+
 procedure TVisWaptGUI.GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 begin
   UpdateHostPages(Sender);
-  labSelected.Caption := IntToStr(GridHosts.SelectedCount);
+  UpdateSelectedHostsActions(Sender);
+  if GridHosts.Data<>Nil then
+    LabelComputersNumber.Caption := Format(rsHostsSelectedTotal,[GridHosts.SelectedCount,GridHosts.Data.AsArray.Length])
+  else
+    LabelComputersNumber.Caption := '';
 end;
 
 procedure TVisWaptGUI.GridHostsColumnDblClick(Sender: TBaseVirtualTree;
@@ -4072,7 +4219,7 @@ begin
       CellText := soutils.Join(',', CellData);
 
     if (propName='last_seen_on') or (propName='listening_timestamp') then
-        CellText := Copy(StrReplaceChar(CellText,'T',' '),1,19);
+        CellText := Copy(StrReplaceChar(CellText,'T',' '),1,16);
   end;
 end;
 
@@ -4086,15 +4233,19 @@ procedure TVisWaptGUI.GridHostsNewText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; const NewText: String);
 var
   args,res: ISuperObject;
+  taskresult,uuids: ISuperObject;
+  currhost,computer_name: ansistring;
 begin
   if (GridHosts.Header.Columns[Column]  as TSOGridColumn).PropertyName = 'description' then
   begin
     if MessageDlg(rsConfirmCaption,'Do you really want to change description to '+NewText+' ?',mtConfirmation, mbYesNoCancel,0) = mrYes then
     begin
+      uuids := TSuperObject.Create(stArray);;
+      uuids.AsArray.Add(GridHosts.FocusedRow.S['uuid']);
       args := SO();
       args.S['computer_description'] := NewText{%H-};
-      res := WAPTServerJsonPost('api/v3/trigger_register?uuid=%s',[GridHosts.FocusedRow.S['uuid']],args);
-      if not res.B['success'] then
+      taskresult := TriggerActionOnHosts(uuids,'trigger_change_description',args,'Change host description and register','Error changing host description');
+      if not taskresult.B['success'] then
       begin
         GridHosts.CancelEditNode;
         Abort;
