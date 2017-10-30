@@ -1893,8 +1893,8 @@ object VisWaptGUI: TVisWaptGUI
           Left = 253
           Height = 26
           Top = 2
-          Width = 79
-          Action = ActSearchPackage
+          Width = 103
+          Action = ActSearchHost
           AutoSize = True
           Glyph.Data = {
             36040000424D3604000000000000360000002800000010000000100000000100
