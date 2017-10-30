@@ -4181,10 +4181,8 @@ begin
     begin
       if (reachable.AsString = 'OK') then
         ImageIndex := 4
-      else if (reachable.AsString = 'UNREACHABLE') then
+      else if (reachable.AsString = 'UNREACHABLE') or (reachable.AsString = 'UNKNOWN') or (reachable.AsString = 'DISCONNECTED') then
         ImageIndex := 5
-      else if (reachable.AsString = 'UNKNOWN') then
-        ImageIndex := 6
       else
         ImageIndex := 6;
     end
