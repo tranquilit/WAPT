@@ -163,8 +163,8 @@ run(r'virtualenv ./builddir/opt/wapt --distribute')
 
 eprint('Install additional libraries in build environment virtualenv')
 
-eprint(run('./builddir/opt/wapt/bin/pip install setuptools --upgrade'))
-run('./builddir/opt/wapt/bin/pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages')
+eprint(run('./builddir/opt/wapt/bin/pip install setuptools --upgrade -i https://pypi.python.org/simple/'))
+run('./builddir/opt/wapt/bin/pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages -i https://pypi.python.org/simple/')
 
 eprint('copying the waptrepo files')
 copyfile(makepath(wapt_source_dir, 'waptcrypto.py'),'./builddir/opt/wapt/waptcrypto.py')

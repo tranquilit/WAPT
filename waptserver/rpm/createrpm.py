@@ -147,9 +147,9 @@ subprocess.check_output(
     r'virtualenv ./pylibs --system-site-packages', shell=True)
 eprint('Install additional libraries in build environment virtualenv')
 eprint(subprocess.check_output(
-    r'source ./pylibs/bin/activate ; pip install --upgrade pip ', shell=True))
+    r'source ./pylibs/bin/activate ; pip install --upgrade pip -i https://pypi.python.org/simple/', shell=True))
 eprint(subprocess.check_output(
-    r'source ./pylibs/bin/activate ; pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True))
+    r'source ./pylibs/bin/activate ; pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages -i https://pypi.python.org/simple/', shell=True))
 rsync('./pylibs/lib/', './builddir/opt/wapt/lib/')
 eprint('copying the waptserver files')
 rsync(source_dir, './builddir/opt/wapt/',
