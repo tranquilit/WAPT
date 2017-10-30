@@ -87,11 +87,11 @@ object VisEditPackage: TVisEditPackage
     end
     object pgConflicts: TTabSheet
       Caption = 'Blocked package'
-      ClientHeight = 392
+      ClientHeight = 413
       ClientWidth = 646
       object GridConflicts: TSOGrid
         Left = 0
-        Height = 392
+        Height = 413
         Top = 0
         Width = 646
         Align = alClient
@@ -105,7 +105,7 @@ object VisEditPackage: TVisEditPackage
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 0
             Text = 'Package'
-            Width = 300
+            Width = 245
             PropertyName = 'package'
           end        
           item
@@ -120,12 +120,14 @@ object VisEditPackage: TVisEditPackage
             MaxWidth = 400
             Position = 2
             Text = 'Description'
+            Width = 182
             PropertyName = 'description'
           end        
           item
             MaxWidth = 400
             Position = 3
             Text = 'Dependencies'
+            Width = 233
             PropertyName = 'depends'
           end>
         Header.DefaultHeight = 17

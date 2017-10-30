@@ -559,7 +559,7 @@ begin
   expr := format('mywapt.search(r"%s".decode(''utf8'').split(),newest_only=True)', [EdSearch.Text]);
   packages := DMPython.RunJSON(expr);
   GridPackages.Data := packages;
-  GridPackages.Header.AutoFitColumns(False);
+  //GridPackages.Header.AutoFitColumns(False);
 end;
 
 procedure TVisEditPackage.ActBuildUploadExecute(Sender: TObject);
@@ -666,7 +666,7 @@ begin
   expr := format('mywapt.search(r"%s".decode(''utf8'').split())', [EdSearch.Text]);
   packages := DMPython.RunJSON(expr);
   GridPackages.Data := packages;
-  GridPackages.Header.AutoFitColumns(False);
+  //GridPackages.Header.AutoFitColumns(False);
 end;
 
 procedure TVisEditPackage.FormCreate(Sender: TObject);
@@ -840,7 +840,7 @@ begin
     dependencies := DMPython.RunJSON(
       format('mywapt.get_package_entries("%s")', [FDepends]));
     GridDepends.Data := dependencies['packages'];
-    GridDepends.Header.AutoFitColumns(False);
+    //GridDepends.Header.AutoFitColumns(False);
     if dependencies['missing'].AsArray.Length > 0 then
     begin
       ShowMessageFmt(rsIgnoredPackages,
@@ -863,7 +863,7 @@ begin
     aconflicts := DMPython.RunJSON(
       format('mywapt.get_package_entries("%s")', [FConflicts]));
     GridConflicts.Data := aconflicts['packages'];
-    GridConflicts.Header.AutoFitColumns(False);
+    //GridConflicts.Header.AutoFitColumns(False);
     if aconflicts['missing'].AsArray.Length > 0 then
     begin
       ShowMessageFmt(rsIgnoredConfictingPackages,
