@@ -1626,7 +1626,6 @@ object VisWaptGUI: TVisWaptGUI
           Top = 0
           Width = 1087
           OnGetText = GridHostsGetText
-          Action = ActSearchHost
           Align = alClient
           ChangeDelay = 50
           Color = clWhite
