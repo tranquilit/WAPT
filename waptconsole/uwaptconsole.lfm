@@ -1,12 +1,12 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 580
-  Height = 753
-  Top = 80
-  Width = 1028
+  Left = 1
+  Height = 721
+  Top = 38
+  Width = 1723
   AllowDropFiles = True
   Caption = 'WAPT console'
-  ClientHeight = 734
-  ClientWidth = 1028
+  ClientHeight = 702
+  ClientWidth = 1723
   Constraints.MinHeight = 600
   Constraints.MinWidth = 800
   Menu = MainMenu1
@@ -20,9 +20,9 @@ object VisWaptGUI: TVisWaptGUI
   LCLVersion = '1.3'
   object MainPages: TPageControl
     Left = 0
-    Height = 591
+    Height = 559
     Top = 0
-    Width = 1028
+    Width = 1723
     ActivePage = pgInventory
     Align = alClient
     TabIndex = 0
@@ -30,17 +30,17 @@ object VisWaptGUI: TVisWaptGUI
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
       Caption = 'Inventory'
-      ClientHeight = 565
-      ClientWidth = 1020
+      ClientHeight = 533
+      ClientWidth = 1715
       object Panel10: TPanel
         Left = 0
         Height = 55
         Top = 49
-        Width = 1020
+        Width = 1715
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 55
-        ClientWidth = 1020
+        ClientWidth = 1715
         TabOrder = 1
         object EdSearchHost: TSearchEdit
           Left = 117
@@ -187,7 +187,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object Label13: TLabel
           AnchorSideRight.Side = asrBottom
-          Left = 826
+          Left = 1521
           Height = 13
           Top = 22
           Width = 122
@@ -198,7 +198,7 @@ object VisWaptGUI: TVisWaptGUI
           ParentColor = False
         end
         object labSelected: TLabel
-          Left = 976
+          Left = 1671
           Height = 13
           Top = 22
           Width = 6
@@ -208,7 +208,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object Label11: TLabel
           AnchorSideRight.Side = asrBottom
-          Left = 820
+          Left = 1515
           Height = 13
           Top = 7
           Width = 128
@@ -219,7 +219,7 @@ object VisWaptGUI: TVisWaptGUI
           ParentColor = False
         end
         object LabelComputersNumber: TLabel
-          Left = 976
+          Left = 1671
           Height = 13
           Top = 7
           Width = 6
@@ -294,9 +294,9 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridHosts: TSOGrid
         Left = 0
-        Height = 461
+        Height = 429
         Top = 104
-        Width = 443
+        Width = 1138
         OnGetText = GridHostsGetText
         Align = alClient
         ChangeDelay = 50
@@ -309,6 +309,7 @@ object VisWaptGUI: TVisWaptGUI
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
             Position = 0
             Text = 'Status'
+            Width = 28
             PropertyName = 'host_status'
           end        
           item
@@ -324,7 +325,7 @@ object VisWaptGUI: TVisWaptGUI
             Position = 2
             Tag = 2
             Text = 'Reachable'
-            Width = 60
+            Width = 25
             PropertyName = 'reachable'
           end        
           item
@@ -333,7 +334,7 @@ object VisWaptGUI: TVisWaptGUI
             Position = 3
             Tag = 3
             Text = 'Host'
-            Width = 112
+            Width = 284
             PropertyName = 'computer_fqdn'
           end        
           item
@@ -341,11 +342,12 @@ object VisWaptGUI: TVisWaptGUI
             Position = 4
             Tag = 4
             Text = 'Description'
-            Width = 124
+            Width = 157
             PropertyName = 'description'
           end        
           item
             MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 5
             Tag = 5
             Text = 'Manufacturer'
@@ -356,50 +358,53 @@ object VisWaptGUI: TVisWaptGUI
             MaxWidth = 400
             Position = 6
             Tag = 6
+            Text = 'IP addresses'
+            Width = 124
+            PropertyName = 'connected_ips'
+          end        
+          item
+            Position = 7
+            Tag = 7
+            Text = 'Windows version'
+            Width = 192
+            PropertyName = 'os_name'
+          end        
+          item
+            MaxWidth = 400
+            Position = 8
+            Tag = 8
             Text = 'Model'
-            Width = 100
+            Width = 187
             PropertyName = 'productname'
           end        
           item
             MaxWidth = 400
-            Position = 7
-            Tag = 7
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 9
+            Tag = 9
             Text = 'Serial number'
             Width = 100
             PropertyName = 'serialnr'
           end        
           item
-            Position = 8
-            Tag = 8
-            Text = 'Windows version'
-            Width = 111
-            PropertyName = 'os_name'
-          end        
-          item
             MaxWidth = 400
-            Position = 9
-            Tag = 9
+            Position = 10
+            Tag = 10
             Text = 'Last seen on'
-            Width = 100
+            Width = 105
             PropertyName = 'last_seen_on'
           end        
           item
             MaxWidth = 400
-            Position = 10
-            Tag = 10
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Position = 11
+            Tag = 11
             Text = 'MAC address'
             Width = 100
             PropertyName = 'mac_addresses'
           end        
           item
-            MaxWidth = 400
-            Position = 11
-            Tag = 11
-            Text = 'IP addresses'
-            Width = 100
-            PropertyName = 'connected_ips'
-          end        
-          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 12
             Tag = 12
             Text = 'WAPT version'
@@ -458,6 +463,7 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'depends'
           end        
           item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 19
             Tag = 19
             Text = 'Domaine'
@@ -465,6 +471,7 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'host_info/domain_name'
           end        
           item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 20
             Tag = 20
             Text = 'Listening address'
@@ -503,8 +510,8 @@ object VisWaptGUI: TVisWaptGUI
         ZebraPaint = True
       end
       object HostPages: TPageControl
-        Left = 448
-        Height = 461
+        Left = 1143
+        Height = 429
         Top = 104
         Width = 572
         ActivePage = pgPackages
@@ -515,15 +522,16 @@ object VisWaptGUI: TVisWaptGUI
         object pgPackages: TTabSheet
           AnchorSideTop.Side = asrBottom
           Caption = 'Overview'
-          ClientHeight = 435
+          ClientHeight = 403
           ClientWidth = 564
           object GridHostPackages: TSOGrid
             AnchorSideTop.Control = Panel9
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 221
+            Height = 189
             Top = 119
             Width = 564
+            OnGetText = GridHostPackagesGetText
             Align = alBottom
             Anchors = [akTop, akLeft, akRight, akBottom]
             BorderSpacing.Top = 2
@@ -534,79 +542,81 @@ object VisWaptGUI: TVisWaptGUI
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 0
                 Text = 'Status'
+                Width = 23
                 PropertyName = 'install_status'
               end            
               item
-                Position = 1
-                Tag = 2
-                Text = 'Section'
-                PropertyName = 'section'
-              end            
-              item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 2
-                Tag = 3
+                Position = 1
+                Tag = 1
                 Text = 'Package name'
-                Width = 171
+                Width = 192
                 PropertyName = 'package'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 3
-                Tag = 4
+                Position = 2
+                Tag = 2
                 Text = 'Version'
-                Width = 62
+                Width = 87
                 PropertyName = 'version'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
-                Position = 4
-                Tag = 5
+                Position = 3
+                Tag = 3
                 Text = 'Description'
                 Width = 129
                 PropertyName = 'description'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
-                Position = 5
-                Tag = 6
+                Position = 4
+                Tag = 4
                 Text = 'Dependencies'
                 PropertyName = 'depends'
               end            
               item
-                Position = 6
-                Tag = 7
+                Position = 5
+                Tag = 5
                 Text = 'Install date'
-                Width = 93
+                Width = 107
                 PropertyName = 'install_date'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 7
-                Tag = 8
+                Position = 6
+                Tag = 6
                 Text = 'priority'
                 Width = 100
                 PropertyName = 'priority'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 8
-                Tag = 9
+                Position = 7
+                Tag = 7
                 Text = 'sources'
                 Width = 100
                 PropertyName = 'sources'
               end            
               item
-                Position = 9
-                Tag = 10
+                Position = 8
+                Tag = 8
                 Text = 'Installed by'
                 Width = 100
                 PropertyName = 'explicit_by'
               end            
               item
+                Position = 9
+                Tag = 9
+                Text = 'Section'
+                Width = 51
+                PropertyName = 'section'
+              end            
+              item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 10
-                Tag = 11
+                Tag = 10
                 Text = 'md5sum'
                 Width = 100
                 PropertyName = 'md5sum'
@@ -614,7 +624,7 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 11
-                Tag = 12
+                Tag = 11
                 Text = 'File name'
                 Width = 100
                 PropertyName = 'filename'
@@ -622,7 +632,7 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 12
-                Tag = 13
+                Tag = 12
                 Text = 'Parameters'
                 Width = 100
                 PropertyName = 'install_params'
@@ -630,7 +640,7 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 13
-                Tag = 14
+                Tag = 13
                 Text = 'Log install'
                 Width = 100
                 PropertyName = 'install_output'
@@ -638,7 +648,7 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 14
-                Tag = 15
+                Tag = 14
                 Text = 'maintainer'
                 Width = 100
                 PropertyName = 'maintainer'
@@ -646,7 +656,7 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 15
-                Tag = 16
+                Tag = 15
                 Text = 'conflicts'
                 Width = 100
                 PropertyName = 'conflicts'
@@ -654,7 +664,7 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 16
-                Tag = 17
+                Tag = 16
                 Text = 'Size after install'
                 Width = 100
                 PropertyName = 'installed_size'
@@ -662,7 +672,7 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 17
-                Tag = 18
+                Tag = 17
                 Text = 'URL of repository'
                 Width = 100
                 PropertyName = 'repo_url'
@@ -671,7 +681,7 @@ object VisWaptGUI: TVisWaptGUI
                 Alignment = taRightJustify
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 18
-                Tag = 19
+                Tag = 18
                 Text = 'Size'
                 Width = 100
                 PropertyName = 'size'
@@ -679,7 +689,7 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 19
-                Tag = 20
+                Tag = 19
                 Text = 'Name of repository'
                 Width = 100
                 PropertyName = 'repo'
@@ -687,7 +697,7 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 20
-                Tag = 21
+                Tag = 20
                 Text = 'localpath'
                 Width = 100
                 PropertyName = 'localpath'
@@ -695,7 +705,7 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 21
-                Tag = 22
+                Tag = 21
                 Text = 'Arch'
                 Width = 23
                 PropertyName = 'architecture'
@@ -911,7 +921,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel5: TPanel
             Left = 0
             Height = 90
-            Top = 345
+            Top = 313
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -932,7 +942,7 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 340
+            Top = 308
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
@@ -1811,8 +1821,8 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object Splitter4: TSplitter
-        Left = 443
-        Height = 461
+        Left = 1138
+        Height = 429
         Top = 104
         Width = 5
         Align = alRight
@@ -1822,7 +1832,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 49
         Top = 0
-        Width = 1020
+        Width = 1715
         ButtonHeight = 37
         Caption = 'ToolBar1'
         Images = ActionsImages
@@ -1864,7 +1874,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object Image1: TImage
           Cursor = crHandPoint
-          Left = 867
+          Left = 1562
           Height = 47
           Top = 2
           Width = 153
@@ -3988,29 +3998,29 @@ object VisWaptGUI: TVisWaptGUI
   object PanDebug: TPanel
     Left = 0
     Height = 118
-    Top = 596
-    Width = 1028
+    Top = 564
+    Width = 1723
     Align = alBottom
     ClientHeight = 118
-    ClientWidth = 1028
+    ClientWidth = 1723
     TabOrder = 2
     Visible = False
     object Panel7: TPanel
       Left = 1
       Height = 116
       Top = 1
-      Width = 1026
+      Width = 1721
       Align = alClient
       BevelOuter = bvNone
       Caption = 'Panel7'
       ClientHeight = 116
-      ClientWidth = 1026
+      ClientWidth = 1721
       TabOrder = 0
       object MemoLog: TMemo
         Left = 0
         Height = 100
         Top = 0
-        Width = 415
+        Width = 1110
         Align = alClient
         Lines.Strings = (
           ''
@@ -4018,7 +4028,7 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 0
       end
       object jsonlog: TVirtualJSONInspector
-        Left = 420
+        Left = 1115
         Height = 100
         Top = 0
         Width = 606
@@ -4046,7 +4056,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.SelectionOptions = [toExtendedFocus]
       end
       object Splitter2: TSplitter
-        Left = 415
+        Left = 1110
         Height = 100
         Top = 0
         Width = 5
@@ -4057,14 +4067,14 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 16
         Top = 100
-        Width = 1026
+        Width = 1721
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 16
-        ClientWidth = 1026
+        ClientWidth = 1721
         TabOrder = 3
         object cbShowLog: TCheckBox
-          Left = 235
+          Left = 930
           Height = 17
           Top = -2
           Width = 79
@@ -4080,23 +4090,23 @@ object VisWaptGUI: TVisWaptGUI
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 591
-    Width = 1028
+    Top = 559
+    Width = 1723
     Align = alBottom
     ResizeAnchor = akBottom
   end
   object plStatusBar1: TplStatusBar
     Left = 0
     Height = 20
-    Top = 714
-    Width = 1028
+    Top = 682
+    Width = 1723
     Panels = <    
       item
         Width = 200
       end>
     SimplePanel = False
     object ProgressBar1: TProgressBar
-      Left = 740
+      Left = 1435
       Height = 16
       Top = 3
       Width = 264

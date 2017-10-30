@@ -509,6 +509,9 @@ type
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: boolean; var ImageIndex: integer;
       var ImageList: TCustomImageList);
+    procedure GridHostPackagesGetText(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; RowData, CellData: ISuperObject;
+      Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridHostsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
@@ -3947,6 +3950,26 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.GridHostPackagesGetText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
+  TextType: TVSTTextType; var CellText: string);
+var
+  propName:String;
+begin
+  if (Node = nil) or (CellData=Nil) then
+    CellText := ''
+  else
+  begin
+    propName:=TSOGridColumn(GridHostPackages.Header.Columns[Column]).PropertyName;
+
+    if (CellData <> nil) and (CellData.DataType = stArray) then
+      CellText := soutils.Join(',', CellData);
+
+    if (propName='install_date') then
+        CellText := Copy(StrReplaceChar(CellText,'T',' '),1,16);
+  end;
+end;
+
 procedure TVisWaptGUI.GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 begin
   UpdateHostPages(Sender);
@@ -4166,7 +4189,7 @@ begin
       CellText := soutils.Join(',', CellData);
 
     if (propName='last_seen_on') or (propName='listening_timestamp') then
-        CellText := Copy(StrReplaceChar(CellText,'T',' '),1,19);
+        CellText := Copy(StrReplaceChar(CellText,'T',' '),1,16);
   end;
 end;
 
