@@ -305,6 +305,11 @@ msgctxt "tvisdisplaypreferences.cbenablemanagementfeatures.hint"
 msgid "Make change server password, create certificate, create waptagent features visible"
 msgstr ""
 
+#: tvisdisplaypreferences.cbhideunavailableactions.hint
+msgctxt "tvisdisplaypreferences.cbhideunavailableactions.hint"
+msgid "Make change server password, create certificate, create waptagent features visible"
+msgstr ""
+
 #: tvisdisplaypreferences.cblanguage.text
 msgctxt "tvisdisplaypreferences.cblanguage.text"
 msgid "English"
@@ -326,6 +331,10 @@ msgstr ""
 #: tvisdisplaypreferences.label11.caption
 msgctxt "tvisdisplaypreferences.label11.caption"
 msgid "Enable management features"
+msgstr ""
+
+#: tvisdisplaypreferences.label12.caption
+msgid "Hide unavailable actions"
 msgstr ""
 
 #: tvisdisplaypreferences.label3.caption
@@ -1585,11 +1594,6 @@ msgstr ""
 #: tviswaptgui.label4.caption
 msgctxt "tviswaptgui.label4.caption"
 msgid "User"
-msgstr ""
-
-#: tviswaptgui.label5.caption
-msgctxt "tviswaptgui.label5.caption"
-msgid "Search"
 msgstr ""
 
 #: tviswaptgui.label6.caption

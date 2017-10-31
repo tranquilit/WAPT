@@ -104,7 +104,6 @@ type
     Label24: TLabel;
     Label25: TLabel;
     Label26: TLabel;
-    Label5: TLabel;
     LabelComputersNumber: TLabel;
     LabErrorRegHardware: TLabel;
     MemoGroupeDescription1: TMemo;
@@ -1290,13 +1289,16 @@ begin
   OneHasConnectedIP:=OneHostHasConnectedIP;
   OneIsFocused:=(Gridhosts.FocusedRow <> nil);
 
-  ActTriggerHostUpdate.Visible := OneIsFocused  and OneIsConnected;
-  ActTriggerHostUpgrade.Visible := OneIsFocused  and OneIsConnected;
-  ActPackagesInstall.Visible := OneIsFocused  and OneIsConnected;
-  ActPackagesRemove.Visible := OneIsFocused  and OneIsConnected;
-  ActPackagesForget.Visible := OneIsFocused  and OneIsConnected;
+  if HideUnavailableActions then
+  begin
+    ActTriggerHostUpdate.Visible := OneIsFocused  and OneIsConnected;
+    ActTriggerHostUpgrade.Visible := OneIsFocused  and OneIsConnected;
+    ActPackagesInstall.Visible := OneIsFocused  and OneIsConnected;
+    ActPackagesRemove.Visible := OneIsFocused  and OneIsConnected;
+    ActPackagesForget.Visible := OneIsFocused  and OneIsConnected;
 
-  ActRefreshHostInventory.Visible:=OneIsFocused  and OneIsConnected;
+    ActRefreshHostInventory.Visible:=OneIsFocused  and OneIsConnected;
+  end;
 
   ActRDP.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
   ActVNC.Visible := OneIsFocused  and OneHasConnectedIP and FileExists(GetVNCViewerPath) and EnableExternalTools;
@@ -1306,7 +1308,6 @@ begin
   ActRemoteAssist.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
 
   ActTriggerWakeOnLan.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
-
   ActTISHelp.Visible := OneIsFocused and OneHasConnectedIP and EnableExternalTools and FileExists(GetTisSupportPath);
 
   MenuExternalTools.Visible:=EnableExternalTools;
@@ -2088,6 +2089,9 @@ begin
       cbEnableManagementFeatures.Checked :=
         inifile.ReadBool('global', 'enable_management_features', EnableManagementFeatures);
 
+      cbHideUnavailableActions.Checked :=
+        inifile.ReadBool('global', 'hide_unavailable_actions', HideUnavailableActions);
+
       cbDebugWindow.Checked:= inifile.ReadBool('global','advanced_mode',AdvancedMode);
 
       lang := inifile.ReadString('Global','language','en');
@@ -2111,6 +2115,9 @@ begin
         inifile.WriteBool('global', 'enable_management_features',
           cbEnableManagementFeatures.Checked);
 
+        inifile.WriteBool('global', 'hide_unavailable_actions',
+          cbHideUnavailableActions.Checked);
+
         if cbLanguage.ItemIndex=0 then
           DMPython.Language := 'en'
         else if cbLanguage.ItemIndex=1 then
@@ -2131,6 +2138,7 @@ begin
 
         EnableExternalTools := cbEnableExternalTools.Checked;
         EnableManagementFeatures := cbEnableManagementFeatures.Checked;
+        HideUnavailableActions := cbHideUnavailableActions.Checked;
 
         if HostsLimit>oldlimit then
           ActSearchHost.Execute;
@@ -2758,7 +2766,7 @@ end;
 
 procedure TVisWaptGUI.ActHostsActionsUpdate(Sender: TObject);
 begin
-  (Sender as TAction).Enabled:=(GridHosts.SelectedCount>0);
+  (Sender as TAction).Enabled:= (GridHosts.SelectedCount>0) and OneHostIsConnected;
 end;
 
 procedure TVisWaptGUI.ActImportFromFileExecute(Sender: TObject);

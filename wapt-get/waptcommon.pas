@@ -166,7 +166,9 @@ const
   EnableExternalTools:Boolean = False;
   EnableManagementFeatures:Boolean = False;
 
-  WAPTServerMinVersion='1.5.0.17';
+  HideUnavailableActions:Boolean = False;
+
+  WAPTServerMinVersion='1.5.1.0';
 
 implementation
 

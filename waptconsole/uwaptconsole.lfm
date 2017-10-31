@@ -1896,11 +1896,11 @@ object VisWaptGUI: TVisWaptGUI
         ClientWidth = 1664
         TabOrder = 4
         object EdSearchHost: TSearchEdit
-          Left = 117
+          Left = 6
           Height = 21
           Hint = 'Regular expressions allowed'
-          Top = 4
-          Width = 128
+          Top = 5
+          Width = 230
           EmptyText = 'Search keywords'
           ExecuteDelay = 650
           Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
@@ -1908,14 +1908,6 @@ object VisWaptGUI: TVisWaptGUI
           OnKeyPress = EdSearchHostKeyPress
           ParentFont = False
           TabOrder = 0
-        end
-        object Label5: TLabel
-          Left = 6
-          Height = 13
-          Top = 7
-          Width = 33
-          Caption = 'Search'
-          ParentColor = False
         end
         object cbNeedUpgrade: TCheckBox
           Left = 460
@@ -1936,9 +1928,9 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 2
         end
         object ButHostSearch: TBitBtn
-          Left = 253
+          Left = 244
           Height = 26
-          Top = 2
+          Top = 3
           Width = 103
           Action = ActSearchHost
           AutoSize = True
@@ -2061,10 +2053,10 @@ object VisWaptGUI: TVisWaptGUI
           ParentColor = False
         end
         object CBInverseSelect: TCheckBox
-          Left = 67
+          Left = 364
           Height = 17
           Hint = 'Negative search : returns hosts Not matching'
-          Top = 6
+          Top = 4
           Width = 37
           Caption = 'Not'
           OnClick = CBInverseSelectClick
