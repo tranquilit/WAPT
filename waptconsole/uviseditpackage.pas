@@ -58,7 +58,7 @@ type
     Panel1: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
-    Panel8: TPanel;
+    PanRight: TPanel;
     Panel9: TPanel;
     PanelDevlop: TPanel;
     Panel4: TPanel;
@@ -98,6 +98,7 @@ type
     procedure EdSearchExecute(Sender: TObject);
     procedure EdSearchKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
     procedure EdSectionChange(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -165,7 +166,7 @@ var
 implementation
 
 uses uWaptConsoleRes,soutils, LCLType, waptcommon, dmwaptpython, jwawinuser, uvisloading,
-  uvisprivatekeyauth, uwaptconsole, tiscommon, uWaptRes,UScaleDPI;
+  uvisprivatekeyauth, uwaptconsole, tiscommon, uWaptRes,UScaleDPI,tisinifiles;
 
 {$R *.lfm}
 
@@ -372,6 +373,21 @@ end;
 procedure TVisEditPackage.EdSectionChange(Sender: TObject);
 begin
   FIsUpdated := True;
+end;
+
+procedure TVisEditPackage.FormClose(Sender: TObject;
+  var CloseAction: TCloseAction);
+begin
+  IniWriteInteger(Appuserinipath,Name,'Top',Top);
+  IniWriteInteger(Appuserinipath,Name,'Left',Left);
+  IniWriteInteger(Appuserinipath,Name,'Width',Width);
+  IniWriteInteger(Appuserinipath,Name,'Height',Height);
+  IniWriteInteger(Appuserinipath,Name,PanRight.Name+'.Width',PanRight.Width);
+
+  GridConflicts.SaveSettingsToIni(Appuserinipath);
+  GridDepends.SaveSettingsToIni(Appuserinipath);
+  GridPackages.SaveSettingsToIni(Appuserinipath);;
+
 end;
 
 procedure TVisEditPackage.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -707,10 +723,20 @@ begin
   GridDepends.Clear;
   GridConflicts.Clear;
 
+
 end;
 
 procedure TVisEditPackage.FormShow(Sender: TObject);
 begin
+  Top := IniReadInteger(Appuserinipath,Name,'Top',Top);
+  Left := IniReadInteger(Appuserinipath,Name,'Left',Left);
+  Width := IniReadInteger(Appuserinipath,Name,'Width',Width);
+  Height := IniReadInteger(Appuserinipath,Name,'Height',Height);
+  PanRight.Width:=IniReadInteger(Appuserinipath,Name,PanRight.Name+'.Width',PanRight.Width);
+  GridConflicts.LoadSettingsFromIni(Appuserinipath);
+  GridDepends.LoadSettingsFromIni(Appuserinipath);
+  GridPackages.LoadSettingsFromIni(Appuserinipath);;
+
   ActEditSearch.Execute;
   EdPackage.SetFocus;
 end;

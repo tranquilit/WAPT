@@ -4,24 +4,25 @@ object VisEditPackage: TVisEditPackage
   Top = 156
   Width = 800
   Align = alRight
-  BorderIcons = [biSystemMenu]
+  BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'Edit package'
   ClientHeight = 523
   ClientWidth = 800
   Constraints.MinHeight = 400
   Constraints.MinWidth = 800
+  OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
   PopupMenu = PopupMenu1
-  Position = poMainFormCenter
+  Position = poDefault
   ShowHint = True
   LCLVersion = '1.3'
   object PageControl1: TPageControl
     Left = 0
     Height = 341
     Top = 27
-    Width = 505
+    Width = 495
     ActivePage = pgDepends
     Align = alClient
     TabIndex = 0
@@ -30,12 +31,12 @@ object VisEditPackage: TVisEditPackage
     object pgDepends: TTabSheet
       Caption = 'Edit dependencies'
       ClientHeight = 315
-      ClientWidth = 497
+      ClientWidth = 487
       object GridDepends: TSOGrid
         Left = 0
         Height = 315
         Top = 0
-        Width = 497
+        Width = 487
         Align = alClient
         BorderStyle = bsNone
         Color = clWhite
@@ -1009,25 +1010,25 @@ object VisEditPackage: TVisEditPackage
       Visible = False
     end
   end
-  object Panel8: TPanel
-    Left = 510
+  object PanRight: TPanel
+    Left = 500
     Height = 341
     Top = 27
-    Width = 290
+    Width = 300
     Align = alRight
     BevelOuter = bvNone
     ClientHeight = 341
-    ClientWidth = 290
+    ClientWidth = 300
     TabOrder = 2
     object Panel9: TPanel
       Left = 0
       Height = 44
       Top = 0
-      Width = 290
+      Width = 300
       Align = alTop
       BevelOuter = bvNone
       ClientHeight = 44
-      ClientWidth = 290
+      ClientWidth = 300
       TabOrder = 0
       object EdSearch: TSearchEdit
         Left = 2
@@ -1102,7 +1103,7 @@ object VisEditPackage: TVisEditPackage
       Left = 0
       Height = 268
       Top = 44
-      Width = 290
+      Width = 300
       Align = alClient
       BorderStyle = bsNone
       Color = clWhite
@@ -1177,11 +1178,11 @@ object VisEditPackage: TVisEditPackage
       Left = 0
       Height = 29
       Top = 312
-      Width = 290
+      Width = 300
       Align = alBottom
       BevelOuter = bvNone
       ClientHeight = 29
-      ClientWidth = 290
+      ClientWidth = 300
       TabOrder = 2
       object ButAddPackages: TBitBtn
         Left = 8
@@ -1231,7 +1232,7 @@ object VisEditPackage: TVisEditPackage
     end
   end
   object Splitter3: TSplitter
-    Left = 505
+    Left = 495
     Height = 341
     Top = 27
     Width = 5

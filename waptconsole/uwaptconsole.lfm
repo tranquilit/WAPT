@@ -3080,7 +3080,7 @@ object VisWaptGUI: TVisWaptGUI
     object pgWindowsUpdates: TTabSheet
       Caption = 'Windows Updates'
       ClientHeight = 533
-      ClientWidth = 1715
+      ClientWidth = 1664
       object BitBtn9: TBitBtn
         Left = 316
         Height = 32
@@ -3103,7 +3103,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 4
         Height = 168
         Top = 50
-        Width = 1704
+        Width = 1653
         Align = alCustom
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 2
@@ -3448,7 +3448,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 868
         Height = 249
         Top = 242
-        Width = 835
+        Width = 784
         Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Top = 2
         Color = clWhite
@@ -3594,14 +3594,14 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgSources: TTabSheet
       Caption = 'Sources'
-      ClientHeight = 565
-      ClientWidth = 1020
+      ClientHeight = 533
+      ClientWidth = 1664
       TabVisible = False
       inline testedit: TSynEdit
         Left = 0
-        Height = 531
+        Height = 499
         Top = 34
-        Width = 1020
+        Width = 1664
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -4120,11 +4120,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 34
         Top = 0
-        Width = 1020
+        Width = 1664
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 1020
+        ClientWidth = 1664
         TabOrder = 1
         object butInitWapt: TBitBtn
           Left = 4
