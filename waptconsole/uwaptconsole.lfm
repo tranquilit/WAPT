@@ -1662,7 +1662,7 @@ object VisWaptGUI: TVisWaptGUI
               Position = 3
               Tag = 3
               Text = 'Host'
-              Width = 284
+              Width = 198
               PropertyName = 'computer_fqdn'
             end          
             item
@@ -1812,6 +1812,17 @@ object VisWaptGUI: TVisWaptGUI
               Tag = 21
               Text = 'Domain controller address'
               PropertyName = 'host_info/domain_controller_address'
+            end          
+            item
+              Position = 22
+              Text = 'AD DN'
+              Width = 69
+              PropertyName = 'host_info/computer_ad_dn'
+            end          
+            item
+              Position = 23
+              Text = 'AD Site'
+              PropertyName = 'host_info/computer_ad_site'
             end>
           Header.DefaultHeight = 17
           Header.Height = 19
@@ -2169,7 +2180,7 @@ object VisWaptGUI: TVisWaptGUI
     object pgGroups: TTabSheet
       Caption = 'Bundles'
       ClientHeight = 533
-      ClientWidth = 1715
+      ClientWidth = 1664
       object GridGroups: TSOGrid
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Side = asrBottom
@@ -2177,7 +2188,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 503
         Top = 30
-        Width = 1425
+        Width = 1374
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
@@ -2187,60 +2198,103 @@ object VisWaptGUI: TVisWaptGUI
             MaxWidth = 100
             Position = 0
             Text = 'Section'
-            Width = 79
+            Width = 70
             PropertyName = 'section'
           end        
           item
             MaxWidth = 400
             Position = 1
+            Tag = 1
             Text = 'Package'
-            Width = 182
+            Width = 124
             PropertyName = 'package'
           end        
           item
             MaxWidth = 200
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 2
-            Text = 'Status'
-            PropertyName = 'status'
-          end        
-          item
-            MaxWidth = 200
-            Position = 3
+            Tag = 2
             Text = 'Version'
-            Width = 126
+            Width = 82
             PropertyName = 'version'
           end        
           item
             MaxWidth = 400
-            Position = 4
+            Position = 3
+            Tag = 3
             Text = 'Description'
             Width = 310
             PropertyName = 'description'
           end        
           item
             MaxWidth = 400
-            Position = 5
+            Position = 4
+            Tag = 4
             Text = 'Dependencies'
-            Width = 249
+            Width = 226
             PropertyName = 'depends'
           end        
           item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 6
-            Text = 'Installed by'
-            PropertyName = 'explicit_by'
-          end        
-          item
-            Position = 7
+            Position = 5
+            Tag = 5
             Text = 'Conflicts'
-            Width = 186
+            Width = 183
             PropertyName = 'conflicts'
           end        
           item
-            Position = 8
+            Position = 6
+            Tag = 6
             Text = 'Signer'
+            Width = 115
             PropertyName = 'signer'
+          end        
+          item
+            Position = 7
+            Tag = 7
+            Text = 'Signed on'
+            Width = 99
+            PropertyName = 'signature_date'
+          end        
+          item
+            Position = 8
+            Tag = 8
+            Text = 'Arch'
+            Width = 64
+            PropertyName = 'architecture'
+          end        
+          item
+            Position = 9
+            Tag = 9
+            Text = 'Locale'
+            Width = 53
+            PropertyName = 'locale'
+          end        
+          item
+            Position = 10
+            Tag = 10
+            Text = 'Maturity'
+            Width = 59
+            PropertyName = 'maturity'
+          end        
+          item
+            Position = 11
+            Tag = 11
+            Text = 'Min OS version'
+            Width = 72
+            PropertyName = 'min_os_version'
+          end        
+          item
+            Position = 12
+            Tag = 12
+            Text = 'Max OS version'
+            Width = 63
+            PropertyName = 'max_os_version'
+          end        
+          item
+            Position = 13
+            Tag = 13
+            Text = 'Min Wapt version'
+            Width = 69
+            PropertyName = 'min_wapt_version'
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
@@ -2264,11 +2318,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 1715
+        Width = 1664
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 1715
+        ClientWidth = 1664
         TabOrder = 0
         object butSearchGroups: TBitBtn
           Left = 156
@@ -2418,7 +2472,7 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object PanRightBundles: TPanel
-        Left = 1425
+        Left = 1374
         Height = 503
         Top = 30
         Width = 290
@@ -2540,13 +2594,13 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgPrivateRepo: TTabSheet
       Caption = 'Softwares repository'
-      ClientHeight = 565
-      ClientWidth = 1020
+      ClientHeight = 533
+      ClientWidth = 1664
       object GridPackages: TSOGrid
         Left = 0
-        Height = 535
+        Height = 503
         Top = 30
-        Width = 724
+        Width = 1368
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
@@ -2619,7 +2673,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Position = 9
             Tag = 11
-            Text = 'Sign on'
+            Text = 'Signed on'
             Width = 109
             PropertyName = 'signature_date'
           end        
@@ -2684,8 +2738,8 @@ object VisWaptGUI: TVisWaptGUI
         ZebraPaint = True
       end
       object Splitter3: TSplitter
-        Left = 724
-        Height = 535
+        Left = 1368
+        Height = 503
         Top = 30
         Width = 6
         Align = alRight
@@ -2695,11 +2749,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 30
         Top = 0
-        Width = 1020
+        Width = 1664
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 30
-        ClientWidth = 1020
+        ClientWidth = 1664
         TabOrder = 0
         object EdSearchPackage: TSearchEdit
           Left = 4
@@ -2903,19 +2957,19 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object Panel2: TPanel
-        Left = 730
-        Height = 535
+        Left = 1374
+        Height = 503
         Top = 30
         Width = 290
         Align = alRight
         Alignment = taRightJustify
         BevelOuter = bvNone
-        ClientHeight = 535
+        ClientHeight = 503
         ClientWidth = 290
         TabOrder = 2
         object MemoGroupeDescription: TMemo
           Left = 0
-          Height = 291
+          Height = 259
           Top = 244
           Width = 290
           Align = alClient

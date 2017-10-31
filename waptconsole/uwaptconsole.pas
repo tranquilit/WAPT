@@ -2574,7 +2574,7 @@ begin
     uuids := TSuperobject.create(stArray);
     uuids.AsArray.Add(uuid);
 
-    result := EditHost(uuid, AdvancedMode, ApplyUpdatesImmediately, UTF8Encode(desc),host.S['reachable'] = 'OK');
+    result := EditHost(uuid, AdvancedMode, ApplyUpdatesImmediately, UTF8Encode(desc),host.S['reachable'] = 'OK',hostname);
     if (result<>Nil) and ApplyUpdatesImmediately and (uuid<>'')  then
       result := TriggerActionOnHosts(uuids,'trigger_host_upgrade',Nil,rsUpgradingHost,rsErrorLaunchingUpgrade);
 
@@ -3913,6 +3913,10 @@ begin
       CellText := CellText + #13#10;
     if (colname = 'description') then
       CellText := UTF8Encode(Celltext);
+
+    if (colname = 'signature_date') then
+      CellText := copy(Celltext,1,16);
+
   end;
 end;
 

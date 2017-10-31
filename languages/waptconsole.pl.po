@@ -437,21 +437,6 @@ msgctxt "tviseditpackage.cbshowlog.caption"
 msgid "Show debug"
 msgstr ""
 
-#: tviseditpackage.eddescription.editlabel.caption
-msgctxt "TVISEDITPACKAGE.EDDESCRIPTION.EDITLABEL.CAPTION"
-msgid "Description"
-msgstr ""
-
-#: tviseditpackage.eddescription.text
-msgctxt "TVISEDITPACKAGE.EDDESCRIPTION.TEXT"
-msgid " "
-msgstr ""
-
-#: tviseditpackage.edpackage.editlabel.caption
-msgctxt "tviseditpackage.edpackage.editlabel.caption"
-msgid "Package"
-msgstr ""
-
 #: tviseditpackage.edsearch.hint
 msgid "Use keywords to narrow search."
 msgstr ""
@@ -470,6 +455,11 @@ msgctxt "TVISEDITPACKAGE.EDVERSION.TEXT"
 msgid " "
 msgstr ""
 
+#: tviseditpackage.labdescription.caption
+msgctxt "tviseditpackage.labdescription.caption"
+msgid "Description"
+msgstr ""
+
 #: tviseditpackage.label2.caption
 msgctxt "tviseditpackage.label2.caption"
 msgid "Available packages : "
@@ -477,6 +467,11 @@ msgstr ""
 
 #: tviseditpackage.label5.caption
 msgid "Section"
+msgstr ""
+
+#: tviseditpackage.labpackage.caption
+msgctxt "tviseditpackage.labpackage.caption"
+msgid "Package"
 msgstr ""
 
 #: tviseditpackage.panel7.caption
@@ -2601,12 +2596,12 @@ msgstr ""
 
 #: uwaptconsoleres.rsedithostcaption
 msgctxt "uwaptconsoleres.rsedithostcaption"
-msgid "Edit host"
+msgid "Edit host profile %s"
 msgstr ""
 
 #: uwaptconsoleres.rsedithosterror
 msgid ""
-"Unable to edit the host package %s.\n"
+"Unable to edit the host profile %s.\n"
 "If package is signed with a foreign key, you may want to delete host package first to workaround the issue...\n"
 msgstr ""
 

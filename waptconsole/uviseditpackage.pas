@@ -37,13 +37,15 @@ type
     butSearchPackages1: TBitBtn;
     butBUApply: TBitBtn;
     cbShowLog: TCheckBox;
-    Eddescription: TLabeledEdit;
-    EdPackage: TLabeledEdit;
+    EdDescription: TEdit;
+    EdPackage: TEdit;
     EdSearch: TSearchEdit;
     EdSection: TComboBox;
     EdVersion: TLabeledEdit;
     GridConflicts: TSOGrid;
     GridPackages: TSOGrid;
+    LabDescription: TLabel;
+    labPackage: TLabel;
     Label2: TLabel;
     GridDepends: TSOGrid;
     Label5: TLabel;
@@ -152,7 +154,7 @@ type
 function EditPackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreatePackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreateGroup(packagename: string; advancedMode: boolean): ISuperObject;
-function EditHost(hostname: ansistring; advancedMode: boolean; var ApplyUpdates:Boolean; description:ansiString='';HostReachable:Boolean=False): ISuperObject;
+function EditHost(hostuuid: ansistring; advancedMode: boolean; var ApplyUpdates:Boolean; description:ansiString=''; HostReachable:Boolean=False;computer_fqdn_hint:ansiString=''): ISuperObject;
 function EditHostDepends(hostname: string; newDependsStr: string): ISuperObject;
 function EditGroup(group: string; advancedMode: boolean): ISuperObject;
 
@@ -206,7 +208,7 @@ begin
   with TVisEditPackage.Create(nil) do
     try
       Caption:= rsEditBundle;
-      EdPackage.EditLabel.Caption := rsEdPackage;
+      LabPackage.Caption := rsEdPackage;
       pgDepends.Caption := rsPackagesNeededCaption;
 
       isAdvancedMode := advancedMode;
@@ -225,24 +227,37 @@ begin
     end;
 end;
 
-function EditHost(hostname: ansistring; advancedMode: boolean;var ApplyUpdates:Boolean;description:ansiString='';HostReachable:Boolean=False): ISuperObject;
+function EditHost(hostuuid: ansistring; advancedMode: boolean;var ApplyUpdates:Boolean;description:ansiString='';HostReachable:Boolean=False;computer_fqdn_hint:AnsiString=''): ISuperObject;
 var
   res:ISuperObject;
+  olddesc:String;
 begin
   with TVisEditPackage.Create(nil) do
     try
       IsHost := True;
       Result := Nil;
       isAdvancedMode := advancedMode;
-      PackageRequest := hostname;
-      Caption:= rsEditHostCaption;
+      PackageRequest := hostuuid;
+
+      if computer_fqdn_hint<>'' then
+        Caption:= Format(rsEditHostCaption,[computer_fqdn_hint])
+      else
+        Caption:= Format(rsEditHostCaption,[hostuuid]);
+
       EdVersion.Enabled:=advancedMode;
       EdVersion.ReadOnly:=not advancedMode;
+
       if description<>'' then
       begin
-        Eddescription.Modified:= Eddescription.Text<>description;
         Eddescription.Text := description;
-      end;
+        if computer_fqdn_hint<>'' then
+          EdDescription.Text:=EdDescription.Text+' ('+computer_fqdn_hint+')';
+      end
+      else
+        EdDescription.Text:=computer_fqdn_hint;
+
+      EdPackage.ReadOnly:=True;
+      EdPackage.ParentColor:=True;
 
       ActBUApply.Visible := HostReachable;
 
@@ -270,9 +285,15 @@ begin
       PackageRequest := group;
       EdVersion.Enabled:=advancedMode;
       EdVersion.ReadOnly:=not advancedMode;
+      if EdVersion.ReadOnly then
+        EdVersion.ParentColor:=True;
+
+      EdPackage.ReadOnly:=not IsNewPackage and not advancedMode;
+      if EdPackage.ReadOnly then
+        EdPackage.ParentColor:=True;
 
       Caption:=rsEditBundle;
-      EdPackage.EditLabel.Caption := rsEdPackage;
+      LabPackage.Caption := rsEdPackage;
       pgDepends.Caption := rsPackagesNeededCaption;
 
       if ShowModal = mrOk then
@@ -463,8 +484,12 @@ begin
   begin
     package := row.S['package'];
     if not StrIn(package, olddepends) then
+    begin
       olddepends.AsArray.Add(package);
+      GridDependsUpdated:=True;
+    end;
     RemoveString(oldconflicts,package);
+    GridConflictsUpdated :=True;
   end;
   Depends := soutils.Join(',', olddepends);
   Conflicts := soutils.Join(',', oldconflicts);
@@ -531,7 +556,9 @@ begin
       DMPython.PythonEng.ExecString(
         format('p.save_control_to_wapt(r''%s''.decode(''utf8''))', [SourcePath]));
       if EdSetupPy.Lines.Count>0 then
-        EdSetupPy.Lines.SaveToFile(AppendPathDelim(FSourcePath) + 'setup.py');
+        EdSetupPy.Lines.SaveToFile(AppendPathDelim(FSourcePath) + 'setup.py')
+      else
+        DeleteFile(AppendPathDelim(FSourcePath) + 'setup.py');
     end;
   finally
     Screen.Cursor := crDefault;
@@ -706,8 +733,12 @@ begin
   begin
     package := row.S['package'];
     if not StrIn(package, oldconflicts) then
+    begin
       oldconflicts.AsArray.Add(package);
+      GridConflictsUpdated:=True;
+    end;
     RemoveString(olddepends,package);
+    GridDependsUpdated:=True;
   end;
   Depends := soutils.Join(',', olddepends);
   Conflicts := soutils.Join(',', oldconflicts);
@@ -746,7 +777,7 @@ begin
         res := DMPython.RunJSON(
             format('mywapt.edit_host("%s",target_directory=r"%s".decode(''utf8''))',
             [FPackageRequest, target_directory]));
-        EdPackage.EditLabel.Caption := 'Machine';
+        LabPackage.Caption := 'UUID';
         Caption := rsHostConfigEditCaption;
         pgDepends.Caption := rsPackagesNeededOnHostCaption;
       end
@@ -850,7 +881,6 @@ begin
   end
   else
     GridDepends.Data := Nil;
-  FIsUpdated := True;
 end;
 
 procedure TVisEditPackage.SetConflicts(AValue: string);
@@ -873,7 +903,6 @@ begin
   end
   else
     GridConflicts.Data := Nil;
-  FIsUpdated := True;
 end;
 
 function TVisEditPackage.GetDepends: string;
