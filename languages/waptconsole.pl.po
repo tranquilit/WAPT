@@ -1,4 +1,4 @@
-msgid "Local directory for saving package development projectsLocal directory for saving package development projectsOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepo"
+msgid "Local directory for saving package development projectsLocal directory for saving package development projectsOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only suitable for development hosts.Only required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleOnly required if a proxy is needed for waptserver and main waptrepoIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundle"
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tform1.buttonpanel1.helpbutton.caption
@@ -560,34 +560,25 @@ msgctxt "TVISIMPORTPACKAGE.ACTREFRESH.CAPTION"
 msgid "Refresh"
 msgstr ""
 
+#: tvisimportpackage.actrepositoriessettings.caption
+msgid "Repository settings"
+msgstr ""
+
 #: tvisimportpackage.actsearchexternalpackage.caption
 msgctxt "TVISIMPORTPACKAGE.ACTSEARCHEXTERNALPACKAGE.CAPTION"
 msgid "Search"
 msgstr ""
 
-#: tvisimportpackage.actwaptlocalconfig.caption
-msgctxt "TVISIMPORTPACKAGE.ACTWAPTLOCALCONFIG.CAPTION"
-msgid "Local WAPT configuration"
+#: tvisimportpackage.actwaptsettings.caption
+msgid "Waptconsole settings"
 msgstr ""
 
 #: tvisimportpackage.bitbtn2.caption
 msgid "Cancel"
 msgstr "Annuler"
 
-#: tvisimportpackage.butextrepochange.caption
-msgid "Modify"
-msgstr ""
-
 #: tvisimportpackage.caption
 msgid "Import packages"
-msgstr ""
-
-#: tvisimportpackage.cbcheckhttpscertificate.caption
-msgid "Check https certificate"
-msgstr ""
-
-#: tvisimportpackage.cbchecksignature.caption
-msgid "Check package signature"
 msgstr ""
 
 #: tvisimportpackage.cbnewerthanmine.caption
@@ -597,14 +588,6 @@ msgstr ""
 #: tvisimportpackage.cbnewestonly.caption
 msgctxt "tvisimportpackage.cbnewestonly.caption"
 msgid "Last version only"
-msgstr ""
-
-#: tvisimportpackage.edreponame.text
-msgid "wapt-templates"
-msgstr ""
-
-#: tvisimportpackage.urlexternalrepo.caption
-msgid "Url: "
 msgstr ""
 
 #: tvisloading.amessage.caption
@@ -666,26 +649,112 @@ msgctxt "tvisprivatekeyauth.lapassword.caption"
 msgid "Private key password :"
 msgstr ""
 
+#: tvisrepositories.actcertificacert.caption
+msgid "Use default Wapt bundle"
+msgstr ""
+
+#: tvisrepositories.actdownloadcertificate.caption
+msgctxt "tvisrepositories.actdownloadcertificate.caption"
+msgid "Browse certificates"
+msgstr ""
+
+#: tvisrepositories.actgetservercertificate.caption
+msgctxt "tvisrepositories.actgetservercertificate.caption"
+msgid "Get Server certificates chain"
+msgstr ""
+
+#: tvisrepositories.actopencertdir.caption
+msgctxt "tvisrepositories.actopencertdir.caption"
+msgid "Explore dir"
+msgstr ""
+
+#: tvisrepositories.actselectcertdir.caption
+msgid "Select bundle path"
+msgstr ""
+
+#: tvisrepositories.actselecthttpsbundle.caption
+msgctxt "tvisrepositories.actselecthttpsbundle.caption"
+msgid "Select CA Bundle"
+msgstr ""
+
+#: tvisrepositories.caption
+msgctxt "tvisrepositories.caption"
+msgid "Repositories settings"
+msgstr ""
+
+#: tvisrepositories.cbchecksignature.caption
+msgctxt "tvisrepositories.cbchecksignature.caption"
+msgid "Check package signature"
+msgstr ""
+
+#: tvisrepositories.cbenablecheckhttps.caption
+msgctxt "tvisrepositories.cbenablecheckhttps.caption"
+msgid "Check https certificate"
+msgstr ""
+
+#: tvisrepositories.dlgopencrt.title
+msgctxt "tvisrepositories.dlgopencrt.title"
+msgid "Select CA Bundle"
+msgstr ""
+
+#: tvisrepositories.edhttpproxy.hint
+msgctxt "tvisrepositories.edhttpproxy.hint"
+msgid "E.g. : http://proxy.tranquilit.local:3128"
+msgstr ""
+
+#: tvisrepositories.edrepourl.hint
+msgctxt "tvisrepositories.edrepourl.hint"
+msgid "E.g. : https://store.wapt.fr/wapt"
+msgstr ""
+
+#: tvisrepositories.edservercabundle.hint
+msgctxt "tvisrepositories.edservercabundle.hint"
+msgid "E.g. : c:\\wapt\\ssl\\server\\cacert.pem"
+msgstr ""
+
+#: tvisrepositories.edsignerscabundle.hint
+msgctxt "tvisrepositories.edsignerscabundle.hint"
+msgid "When importing packages, check signature against certificates in this list"
+msgstr ""
+
+#: tvisrepositories.labcertsdir.caption
+msgctxt "tvisrepositories.labcertsdir.caption"
+msgid "Authorized external keys dir"
+msgstr ""
+
+#: tvisrepositories.label6.caption
+msgctxt "tvisrepositories.label6.caption"
+msgid "Path to https CA certificates"
+msgstr ""
+
+#: tvisrepositories.labproxy.caption
+msgctxt "tvisrepositories.labproxy.caption"
+msgid "http proxy to use (if needed)"
+msgstr ""
+
+#: tvisrepositories.labrepourl.caption
+msgctxt "tvisrepositories.labrepourl.caption"
+msgid "External packages repository "
+msgstr ""
+
 #: tviswaptconfig.actcheckandsetwaptserver.caption
 msgctxt "tviswaptconfig.actcheckandsetwaptserver.caption"
 msgid "Check and set"
 msgstr ""
 
 #: tviswaptconfig.actcheckandsetwaptserver.hint
+msgctxt "tviswaptconfig.actcheckandsetwaptserver.hint"
 msgid "Try to connect to waptserver and wapt_repo"
 msgstr ""
 
 #: tviswaptconfig.actcheckpersonalkey.caption
+msgctxt "tviswaptconfig.actcheckpersonalkey.caption"
 msgid "Check matching private key"
 msgstr ""
 
 #: tviswaptconfig.actdownloadcertificate.caption
+msgctxt "tviswaptconfig.actdownloadcertificate.caption"
 msgid "Browse certificates"
-msgstr ""
-
-#: tviswaptconfig.actenableverifycerts.caption
-msgctxt "tviswaptconfig.actenableverifycerts.caption"
-msgid "Verify https server certificate"
 msgstr ""
 
 #: tviswaptconfig.actgetservercertificate.caption
@@ -694,6 +763,7 @@ msgid "Get Server https Certitificate"
 msgstr ""
 
 #: tviswaptconfig.actopencertdir.caption
+msgctxt "tviswaptconfig.actopencertdir.caption"
 msgid "Explore dir"
 msgstr ""
 
@@ -763,16 +833,6 @@ msgctxt "tviswaptconfig.edhttp_proxy.hint"
 msgid "E.g. : http://proxy.tranquilit.local:3128"
 msgstr ""
 
-#: tviswaptconfig.edhttp_proxy_templates.editlabel.caption
-msgctxt "tviswaptconfig.edhttp_proxy_templates.editlabel.caption"
-msgid "http proxy to use (if needed)"
-msgstr ""
-
-#: tviswaptconfig.edhttp_proxy_templates.hint
-msgctxt "tviswaptconfig.edhttp_proxy_templates.hint"
-msgid "E.g. : http://proxy.tranquilit.local:3128"
-msgstr ""
-
 #: tviswaptconfig.edpersonalcertificatepath.hint
 msgctxt "tviswaptconfig.edpersonalcertificatepath.hint"
 msgid "E.g. : c:\\private\\tranquilit.crt"
@@ -797,22 +857,6 @@ msgstr ""
 #: tviswaptconfig.edservercertificate.hint
 msgctxt "tviswaptconfig.edservercertificate.hint"
 msgid "E.g. : c:\\wapt\\ssl\\server\\cacert.pem"
-msgstr ""
-
-#: tviswaptconfig.edtemplatesauthorizedcertsdir.hint
-msgid "When importing packages, check signature against certificates in this list"
-msgstr ""
-
-#: tviswaptconfig.edtemplates_repo_url.editlabel.caption
-msgid "External packages repository "
-msgstr ""
-
-#: tviswaptconfig.edtemplates_repo_url.hint
-msgid "E.g. : https://store.wapt.fr/wapt"
-msgstr ""
-
-#: tviswaptconfig.edtemplates_repo_url.text
-msgid "https://store.wapt.fr/wapt"
 msgstr ""
 
 #: tviswaptconfig.edwapt_server.editlabel.caption
@@ -848,10 +892,6 @@ msgstr ""
 
 #: tviswaptconfig.label8.caption
 msgid "Send anonymous usage statistics to Tranquil IT"
-msgstr ""
-
-#: tviswaptconfig.label9.caption
-msgid "Authorized external keys dir"
 msgstr ""
 
 #: tviswaptconfig.labstatusrepo.caption
@@ -1164,6 +1204,11 @@ msgctxt "tviswaptgui.actremovedepends.caption"
 msgid "Remove dependencies from packages/bundles"
 msgstr ""
 
+#: tviswaptgui.actrepositoriessettings.caption
+msgctxt "tviswaptgui.actrepositoriessettings.caption"
+msgid "Repositories settings"
+msgstr ""
+
 #: tviswaptgui.actrestoredefaultlayout.caption
 msgctxt "tviswaptgui.actrestoredefaultlayout.caption"
 msgid "Restore default grid layout"
@@ -1467,42 +1512,12 @@ msgctxt "TVISWAPTGUI.CBWUAPENDING.CAPTION"
 msgid "Pending"
 msgstr ""
 
-#: tviswaptgui.edpackage.editlabel.caption
-msgctxt "tviswaptgui.edpackage.editlabel.caption"
-msgid "Package"
-msgstr ""
-
-#: tviswaptgui.edpackage1.editlabel.caption
-msgctxt "tviswaptgui.edpackage1.editlabel.caption"
-msgid "Package"
-msgstr ""
-
 #: tviswaptgui.edrun.text
 msgid "mywapt.update()"
 msgstr ""
 
 #: tviswaptgui.edsearchhost.hint
 msgid "Regular expressions allowed"
-msgstr ""
-
-#: tviswaptgui.edversion.editlabel.caption
-msgctxt "tviswaptgui.edversion.editlabel.caption"
-msgid "Version"
-msgstr ""
-
-#: tviswaptgui.edversion.text
-msgctxt "tviswaptgui.edversion.text"
-msgid " "
-msgstr ""
-
-#: tviswaptgui.edversion1.editlabel.caption
-msgctxt "tviswaptgui.edversion1.editlabel.caption"
-msgid "Version"
-msgstr ""
-
-#: tviswaptgui.edversion1.text
-msgctxt "tviswaptgui.edversion1.text"
-msgid " "
 msgstr ""
 
 #: tviswaptgui.hostrunningtask.editlabel.caption
@@ -1552,39 +1567,9 @@ msgstr ""
 msgid "Manufacturer"
 msgstr ""
 
-#: tviswaptgui.label20.caption
-msgctxt "tviswaptgui.label20.caption"
-msgid "Description"
-msgstr ""
-
-#: tviswaptgui.label21.caption
-msgctxt "tviswaptgui.label21.caption"
-msgid "Dependencies"
-msgstr ""
-
-#: tviswaptgui.label22.caption
-msgctxt "tviswaptgui.label22.caption"
-msgid "Conflicts"
-msgstr ""
-
 #: tviswaptgui.label23.caption
 msgctxt "tviswaptgui.label23.caption"
 msgid "Filter : "
-msgstr ""
-
-#: tviswaptgui.label24.caption
-msgctxt "tviswaptgui.label24.caption"
-msgid "Description"
-msgstr ""
-
-#: tviswaptgui.label25.caption
-msgctxt "tviswaptgui.label25.caption"
-msgid "Dependencies"
-msgstr ""
-
-#: tviswaptgui.label26.caption
-msgctxt "tviswaptgui.label26.caption"
-msgid "Conflicts"
 msgstr ""
 
 #: tviswaptgui.label3.caption
@@ -1827,10 +1812,6 @@ msgstr ""
 
 #: tviswaptgui.toolbar1.caption
 msgid "ToolBar1"
-msgstr ""
-
-#: tviswaptgui.toolbutton4.caption
-msgid "ToolButton4"
 msgstr ""
 
 #: tviswaptgui.toolbutton6.caption

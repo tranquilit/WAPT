@@ -131,6 +131,41 @@ procedure WaptIniWriteBool(const user,item: string; Value: Boolean);
 procedure WaptIniWriteInteger(const user,item: string; Value: Integer);
 procedure WaptIniWriteString(const user,item, Value: string);
 
+
+type
+
+  { TWaptRepo }
+  TWaptRepo = class(TPersistent)
+  private
+    FDNSDomain: String;
+    FHttpProxy: String;
+    FName: String;
+    FPackages: ISuperObject;
+    FRepoURL: String;
+    FServerCABundle: String;
+    FSignersCABundle: String;
+    function GetRepoURL: String;
+    procedure SetDNSDomain(AValue: String);
+    procedure SetHttpProxy(AValue: String);
+    procedure SetName(AValue: String);
+    procedure SetPackages(AValue: ISuperObject);
+    procedure SetRepoURL(AValue: String);
+    procedure SetServerCABundle(AValue: String);
+    procedure SetSignersCABundle(AValue: String);
+  public
+    constructor Create(AName:String;ARepoURL:String='');
+    procedure LoadFromInifile(IniFilename:String;Section:String;Reset:Boolean=True);
+    procedure SaveToInifile(IniFilename:String;Section:String);
+    property Packages:ISuperObject read FPackages write SetPackages;
+  published
+    property Name:String read FName write SetName;
+    property RepoURL:String read GetRepoURL write SetRepoURL;
+    property DNSDomain:String read FDNSDomain write SetDNSDomain;
+    property SignersCABundle:String read FSignersCABundle write SetSignersCABundle;
+    property ServerCABundle:String read FServerCABundle write SetServerCABundle;
+    property HttpProxy:String read FHttpProxy write SetHttpProxy;
+  end;
+
 const
   waptwua_enabled : boolean = False;
 
@@ -158,8 +193,6 @@ const
   DefaultSourcesRoot:String = '';
 
   AuthorizedCertsDir:Utf8String = '';
-
-  TemplatesRepoUrl:String = 'https://store.wapt.fr/wapt';
 
   AdvancedMode:Boolean = False;
 
@@ -285,6 +318,106 @@ type
     progressCallback:TProgressCallback;
     procedure OnWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
     procedure OnWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
+  end;
+
+  { TWaptRepo }
+
+  procedure TWaptRepo.SetHttpProxy(AValue: String);
+begin
+  if FHttpProxy=AValue then Exit;
+  FHttpProxy:=AValue;
+end;
+
+procedure TWaptRepo.SetDNSDomain(AValue: String);
+begin
+  if FDNSDomain=AValue then Exit;
+  FDNSDomain:=AValue;
+end;
+
+function TWaptRepo.GetRepoURL: String;
+begin
+  Result := FRepoURL;
+end;
+
+procedure TWaptRepo.SetName(AValue: String);
+begin
+  if FName=AValue then Exit;
+  FName:=AValue;
+end;
+
+procedure TWaptRepo.SetPackages(AValue: ISuperObject);
+begin
+  if FPackages=AValue then Exit;
+  FPackages:=AValue;
+end;
+
+  procedure TWaptRepo.SetRepoURL(AValue: String);
+begin
+  if FRepoURL=AValue then Exit;
+  FRepoURL:=AValue;
+end;
+
+  procedure TWaptRepo.SetServerCABundle(AValue: String);
+begin
+  if FServerCABundle=AValue then Exit;
+  FServerCABundle:=AValue;
+end;
+
+  procedure TWaptRepo.SetSignersCABundle(AValue: String);
+  begin
+    if FSignersCABundle=AValue then Exit;
+    FSignersCABundle:=AValue;
+  end;
+
+  constructor TWaptRepo.Create(AName: String;ARepoURL:String='');
+  begin
+    inherited Create;
+    Name := AName;
+    RepoURL:=ARepoURL;
+  end;
+
+  procedure TWaptRepo.LoadFromInifile(IniFilename: String; Section: String;Reset:Boolean=True);
+  var
+    ini:TIniFile;
+  begin
+    if Section ='' then
+      Section := Name;
+    with TIniFile.Create(IniFilename) do
+    try
+      if Reset then
+      begin
+        RepoURL:='';
+        DNSDomain := '';
+        HttpProxy:='';
+        ServerCABundle:='';
+        SignersCABundle:='';
+      end;
+      RepoURL := ReadString(Section,'repo_url',RepoURL);
+      DNSDomain := ReadString(Section,'dnsdomain',ReadString('global','dnsdomain',DNSDomain));
+      HttpProxy:= ReadString(Section,'http_proxy',ReadString('global','http_proxy',HttpProxy));
+      ServerCABundle:=ReadString(Section,'verify_cert',ReadString('global','verify_cert',ServerCABundle));
+      SignersCABundle:=ReadString(Section,'public_certs_dir',ReadString('global','public_certs_dir',SignersCABundle));
+    finally
+      Free;
+    end;
+  end;
+
+  procedure TWaptRepo.SaveToInifile(IniFilename: String; Section: String);
+  var
+    ini:TIniFile;
+  begin
+    if Section ='' then
+      Section := Name;
+    with TIniFile.Create(IniFilename) do
+    try
+      WriteString(Section,'repo_url',RepoURL);
+      WriteString(Section,'dnsdomain',DNSDomain);
+      WriteString(Section,'http_proxy',HttpProxy);
+      WriteString(Section,'verify_cert',ServerCABundle);
+      WriteString(Section,'public_certs_dir',SignersCABundle);
+    finally
+      Free;
+    end;
   end;
 
   { HTTPException }
@@ -1191,14 +1324,6 @@ begin
     HttpProxy := ReadString('global','http_proxy','');
     UseProxyForRepo := ReadBool('global','use_http_proxy_for_repo',False);
     UseProxyForServer := ReadBool('global','use_http_proxy_for_server',False);
-
-    TemplatesRepoUrl := ReadString('wapt-templates','repo_url','https://store.wapt.fr/wapt/');
-    AuthorizedCertsDir := ReadString('wapt-templates', 'public_certs_dir', AppendPathDelim(GetAppdataFolder)+'waptconsole\ssl');
-    if (AuthorizedCertsDir<>'') and not DirectoryExists(AuthorizedCertsDir) then
-    try
-      CreateDirUTF8(AuthorizedCertsDir);
-    finally
-    end;
 
     AdvancedMode := ReadBool('global','advanced_mode',AdvancedMode);
     EnableExternalTools := ReadBool('global','enable_external_tools',EnableExternalTools);

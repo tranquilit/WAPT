@@ -10,7 +10,7 @@ uses
   SynHighlighterPython, LSControls, TplStatusBarUnit, vte_json, ExtCtrls,
   StdCtrls, ComCtrls, ActnList, Menus, jsonparser, superobject, VirtualTrees,
   VarPyth, ImgList, SOGrid, uvisloading, IdComponent, DefaultTranslator,
-  IniPropStorage, GetText, uWaptConsoleRes, SearchEdit;
+  IniPropStorage, GetText, uWaptConsoleRes, SearchEdit, MenuButton;
 
 type
 
@@ -19,6 +19,7 @@ type
   TVisWaptGUI = class(TForm)
     ActCancelRunningTask: TAction;
     ActDisplayPreferences: TAction;
+    ActRepositoriesSettings: TAction;
     ActPackagesForget: TAction;
     ActAddConflicts: TAction;
     ActHelp: TAction;
@@ -71,14 +72,8 @@ type
     cbSearchHost: TCheckBox;
     cbSearchPackages: TCheckBox;
     cbSearchSoftwares: TCheckBox;
-    EdConflicts1: TMemo;
-    EdDepends1: TMemo;
-    EdPackage: TLabeledEdit;
     EdHardwareFilter: TEdit;
-    EdPackage1: TLabeledEdit;
     EdSearchHost: TSearchEdit;
-    EdVersion: TLabeledEdit;
-    EdVersion1: TLabeledEdit;
     GridhostInventory: TVirtualJSONInspector;
     GridHosts: TSOGrid;
     GridWSUSAllowedWindowsUpdates: TSOGrid;
@@ -95,23 +90,15 @@ type
     Label17: TLabel;
     Label18: TLabel;
     Label19: TLabel;
-    Label20: TLabel;
-    EdDepends: TMemo;
-    EdConflicts: TMemo;
-    Label21: TLabel;
-    Label22: TLabel;
     Label23: TLabel;
-    Label24: TLabel;
-    Label25: TLabel;
-    Label26: TLabel;
     LabelComputersNumber: TLabel;
     LabErrorRegHardware: TLabel;
-    MemoGroupeDescription1: TMemo;
     MenuItem1: TMenuItem;
     MenuItem17: TMenuItem;
     MenuExternalTools: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem23: TMenuItem;
+    MenuItem31: TMenuItem;
     MenuItem33: TMenuItem;
     MenuItem50: TMenuItem;
     MenuItem51: TMenuItem;
@@ -131,9 +118,6 @@ type
     Panel14: TPanel;
     Panel15: TPanel;
     PanLeft: TPanel;
-    PanRightBundles: TPanel;
-    Panel16: TPanel;
-    Panel8: TPanel;
     PopupGridWSUSScan: TPopupMenu;
     MenuItem70: TMenuItem;
     MenuItem71: TMenuItem;
@@ -229,7 +213,6 @@ type
     Label14: TLabel;
     MemoTaskLog: TMemo;
     MemoInstallOutput: TMemo;
-    MemoGroupeDescription: TMemo;
     MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
     MenuItem25: TMenuItem;
@@ -272,7 +255,6 @@ type
     Panel11: TPanel;
     Panel12: TPanel;
     PopupWUAProducts: TPopupMenu;
-    Panel2: TPanel;
     Panel3: TPanel;
     Panel5: TPanel;
     Panel6: TPanel;
@@ -364,8 +346,6 @@ type
     ToolBar1: TToolBar;
     ToolButton1: TToolButton;
     ToolButton2: TToolButton;
-    ToolButton3: TToolButton;
-    ToolButton4: TToolButton;
     ToolButton5: TToolButton;
     ToolButton6: TToolButton;
     procedure ActAddADSGroupsExecute(Sender: TObject);
@@ -406,6 +386,7 @@ type
     procedure ActPackagesRemoveUpdate(Sender: TObject);
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
+    procedure ActRepositoriesSettingsExecute(Sender: TObject);
     procedure ActTISHelpExecute(Sender: TObject);
     procedure ActTISHelpUpdate(Sender: TObject);
     procedure ActTriggerWakeOnLanExecute(Sender: TObject);
@@ -495,7 +476,6 @@ type
       State: TDragState; var Accept: Boolean);
     procedure FormDropFiles(Sender: TObject; const FileNames: array of String);
     procedure FormShow(Sender: TObject);
-    procedure GridGroupsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
     procedure GridGroupsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
@@ -545,7 +525,6 @@ type
     procedure GridHostWinUpdatesGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; RowData, CellData: ISuperObject;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
-    procedure GridPackagesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
     procedure GridPackagesPaintText(Sender: TBaseVirtualTree;
@@ -626,7 +605,7 @@ uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings, soutils,
   uvisgroupchoice, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
   uVisImportPackage, PythonEngine, Clipbrd, RegExpr, tisinifiles, IdURI,
   uScaleDPI, uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
-  windirs
+  uvisrepositories, windirs
   {$ifdef wsus}
   ,uVisWUAGroup, uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect
@@ -2228,6 +2207,16 @@ begin
 
 end;
 
+procedure TVisWaptGUI.ActRepositoriesSettingsExecute(Sender: TObject);
+begin
+  With TVisRepositories.Create(Self) do
+  try
+    ShowModal;
+  finally
+    Free;
+  end;
+end;
+
 procedure TVisWaptGUI.ActTISHelpExecute(Sender: TObject);
 var
   taskresult,uuids: ISuperObject;
@@ -3543,12 +3532,6 @@ begin
         else
           edPersonalCertificatePath.InitialDir:=ExtractFileDir(edPersonalCertificatePath.text);
 
-        edtemplates_repo_url.Text :=
-          inifile.readString('wapt-templates', 'repo_url', '');
-        EdTemplatesAuthorizedCertsDir.Text :=
-          inifile.readString('wapt-templates', 'public_certs_dir', AppendPathDelim(GetAppdataFolder)+'waptconsole\ssl');
-        edhttp_proxy_templates.Text := inifile.ReadString('wapt-templates', 'http_proxy','');
-
         cbSendStats.Checked :=
           inifile.ReadBool('global', 'send_usage_report', True);
         //eddefault_sources_root.Directory := inifile.ReadString('global','default_sources_root','');
@@ -3566,14 +3549,6 @@ begin
           inifile.WriteString('global', 'default_sources_root',
             eddefault_sources_root.Text);
           inifile.WriteString('global', 'personal_certificate_path', edPersonalCertificatePath.Text);
-          if edtemplates_repo_url.Text = '' then
-            edtemplates_repo_url.Text := 'https://store.wapt.fr/wapt';
-
-          inifile.WriteString('wapt-templates', 'http_proxy', edhttp_proxy_templates.Text);
-          inifile.WriteString('wapt-templates', 'repo_url', edtemplates_repo_url.Text);
-
-          inifile.WriteString('wapt-templates', 'public_certs_dir',EdTemplatesAuthorizedCertsDir.Text);
-
           inifile.WriteBool('global', 'use_http_proxy_for_server',
             cbUseProxyForServer.Checked);
           inifile.WriteBool('global', 'use_http_proxy_for_repo',
@@ -3871,28 +3846,6 @@ begin
   finally
     Free;
   end;
-end;
-
-procedure TVisWaptGUI.GridGroupsChange(Sender: TBaseVirtualTree;
-  Node: PVirtualNode);
-begin
-  if GridGroups.FocusedRow <> Nil then
-  begin
-    MemoGroupeDescription.Lines.Text := UTF8Encode(GridGroups.FocusedRow.S['description']);
-    EdPackage1.Text:=GridGroups.FocusedRow.S['package'];
-    EdVersion1.Text:=GridGroups.FocusedRow.S['version'];
-    EdDepends1.Lines.Text := StringReplace(GridGroups.FocusedRow.S['depends'],',',#13#10,[rfReplaceAll]);
-    EdConflicts1.Lines.Text := StringReplace(GridGroups.FocusedRow.S['conflicts'],',',#13#10,[rfReplaceAll]);
-  end
-  else
-  begin
-    MemoGroupeDescription.Lines.Text := '';
-    EdPackage1.Text := '';
-    EdVersion1.Text := '';
-    EdDepends1.Lines.Text := '';
-    EdConflicts1.Lines.Text := '';
-  end
-
 end;
 
 procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
@@ -4323,27 +4276,6 @@ begin
       CellText := soutils.Join(',', CellData);}
 
   end;
-
-end;
-
-procedure TVisWaptGUI.GridPackagesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
-begin
-  if GridPackages.FocusedRow <> Nil then
-  begin
-    MemoGroupeDescription.Lines.Text := UTF8Encode(GridPackages.FocusedRow.S['description']);
-    EdPackage.Text:=GridPackages.FocusedRow.S['package'];
-    EdVersion.Text:=GridPackages.FocusedRow.S['version']{%H-};
-    EdDepends.Lines.Text := StringReplace(GridPackages.FocusedRow.S['depends'],',',#13#10,[rfReplaceAll]);
-    EdConflicts.Lines.Text := StringReplace(GridPackages.FocusedRow.S['conflicts']{%H-},',',#13#10,[rfReplaceAll]);
-  end
-  else
-  begin
-    MemoGroupeDescription.Lines.Text := '';
-    EdPackage.Text := '';
-    EdVersion.Text := '';
-    EdDepends.Lines.Text := '';
-    EdConflicts.Lines.Text := '';
-  end
 
 end;
 

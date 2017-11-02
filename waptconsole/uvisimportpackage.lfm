@@ -1,11 +1,11 @@
 object VisImportPackage: TVisImportPackage
   Left = 492
-  Height = 571
+  Height = 521
   Top = 261
-  Width = 1040
+  Width = 964
   Caption = 'Import packages'
-  ClientHeight = 571
-  ClientWidth = 1040
+  ClientHeight = 521
+  ClientWidth = 964
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
@@ -14,15 +14,15 @@ object VisImportPackage: TVisImportPackage
   object Panel1: TPanel
     Left = 0
     Height = 31
-    Top = 540
-    Width = 1040
+    Top = 490
+    Width = 964
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 31
-    ClientWidth = 1040
-    TabOrder = 2
+    ClientWidth = 964
+    TabOrder = 1
     object BitBtn2: TBitBtn
-      Left = 959
+      Left = 883
       Height = 27
       Top = 3
       Width = 75
@@ -34,7 +34,7 @@ object VisImportPackage: TVisImportPackage
       TabOrder = 0
     end
     object ButPackageDuplicate: TBitBtn
-      Left = 848
+      Left = 772
       Height = 26
       Top = 3
       Width = 103
@@ -78,57 +78,12 @@ object VisImportPackage: TVisImportPackage
       }
       TabOrder = 1
     end
-    object ButPackageDuplicate1: TBitBtn
-      Left = 664
-      Height = 26
-      Top = 3
-      Width = 159
-      Action = ActPackageEdit
-      Anchors = [akTop, akRight]
-      Glyph.Data = {
-        36040000424D3604000000000000360000002800000010000000100000000100
-        2000000000000004000064000000640000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000FFFFFFFFDDDFE1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFDFCFAFFD3D0
-        CAFF656665BA0000000000000000000000000000000000000000000000000000
-        0000FFFFFFFF919496FF5A747DFFC5DCE5FFFAFBFBFFFEFEFEFFFBFBFBFFC2C2
-        C2FFF2F2F2FF6B6C6BD200000000000000000000000000000000000000000000
-        0000FFFFFFFFDDE2E5FF79B6CAFF49A2BDFF54A7C2FF9EBEC9FFD2D2D2FFAAAA
-        AAFFFEFEFEFFF3F3F3FF6B6C6BD2000000000000000000000000000000000000
-        0000FFFFFFFFF8F8F8FFB1CFDCFF628D9BFF205666FF1EB8E9FF83979DFF6969
-        69FFECECECFFFEFEFEFFF2F2F2FF656564BB0000000000000000000000000000
-        0000FFFFFFFFF7F7F7FFB0DAE8FF428FA6FF252626FF1C6176FF27B8E4FF838D
-        90FF747474FFB2B2B2FFC8C8C8FFD7D5D1FF0000000000000000000000000000
-        0000FFFFFFFFF6F6F6FFF2F6F7FF83D9F4FF4E8292FF252525FF18728EFF35B6
-        DDFFA1A4A5FFBFBFBFFFFAFAFAFFFEFEFDFF0000000000000000000000000000
-        0000FFFFFFFFF5F5F5FFF7F7F7FFEAF4F7FF7FD8F4FF446F7CFF252626FF1381
-        A3FF49B5D6FFACADADFFD0D0D0FFFEFEFEFF0000000000000000000000000000
-        0000FFFFFFFFF4F4F3FFF6F6F5FFF8F8F8FFDFF0F5FF6FD3F2FF3E5C66FF2328
-        2AFF0F8DB5FF60B5D0FFB5B5B5FFE1E1E1FF0000000000000000000000000000
-        0000FFFFFFFFF2F2F1FFF4F4F4FFF6F6F6FFF8F8F8FFCFEBF4FF60CCEDFF374F
-        56FF1F2B2FFF0B97C3FF79B8CBFFC1C1C1FF0000000000000000000000000000
-        0000FEFEFEFFF0F0F0FFF2F2F2FFF4F4F4FFF6F6F5FFF7F7F7FFB9E4F1FF44BA
-        E0FF2B393EFF192F36FF0EA1CFFF93BFCDFF0000000000000000000000000000
-        0000FEFEFEFFEEEEEEFFF0F0F0FFF2F2F1FFF3F3F3FFF5F5F4FFF6F6F6FF9CDA
-        EEFF33ACD1FF262E31FF10333EFF15A8D7FF0442550000000000000000000000
-        0000FEFEFEFFEDEDECFFEEEEEDFFF0F0EFFFF1F1F1FFF2F2F2FFF4F4F3FFF4F4
-        F4FF7AD1ECFF2094B8FF232626FF0B3E4EFF04A3D5E404485D00000000000000
-        0000FEFEFEFFEAEAE9FFECECEBFFEEEEEDFFEFEFEEFFF0F0F0FFF1F1F0FFF2F2
-        F1FFF0F2F1FF5AC9EBFF1D82A2FF1F1F1FFF033C71FB0216A3D5000000000000
-        0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-        FFFFFFFFFFFFF6FAFCFF47C7EFFF26649FFF2323C6FF0C0CBCC4000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000002334600484FD4DC3838D0BA4444D000
-      }
-      TabOrder = 2
-    end
   end
   object GridExternalPackages: TSOGrid
     Left = 0
-    Height = 500
-    Top = 40
-    Width = 1040
+    Height = 432
+    Top = 58
+    Width = 964
     OnGetText = GridExternalPackagesGetText
     Align = alClient
     Color = clWhite
@@ -254,7 +209,7 @@ object VisImportPackage: TVisImportPackage
     Header.SortColumn = 1
     Header.Style = hsFlatButtons
     PopupMenu = PopupMenuPackages
-    TabOrder = 1
+    TabOrder = 0
     TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
     TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
     TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
@@ -265,143 +220,187 @@ object VisImportPackage: TVisImportPackage
   end
   object Panel8: TPanel
     Left = 0
-    Height = 40
+    Height = 58
     Top = 0
-    Width = 1040
+    Width = 964
     Align = alTop
+    AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 40
-    ClientWidth = 1040
-    TabOrder = 0
-    object EdSearch1: TSearchEdit
-      Left = 4
-      Height = 21
-      Top = 2
-      Width = 136
-      EmptyText = 'Type name or description'
-      ExecuteDelay = 400
-      Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
-      Font.Color = clGray
-      OnKeyPress = EdSearch1KeyPress
-      ParentFont = False
+    ChildSizing.LeftRightSpacing = 6
+    ChildSizing.HorizontalSpacing = 6
+    ChildSizing.EnlargeHorizontal = crsHomogenousSpaceResize
+    ChildSizing.ShrinkHorizontal = crsHomogenousSpaceResize
+    ClientHeight = 58
+    ClientWidth = 964
+    TabOrder = 2
+    object Panel4: TPanel
+      Left = 6
+      Height = 58
+      Top = 0
+      Width = 376
+      Align = alLeft
+      AutoSize = True
+      BevelOuter = bvNone
+      ChildSizing.LeftRightSpacing = 6
+      ChildSizing.TopBottomSpacing = 6
+      ChildSizing.HorizontalSpacing = 6
+      ChildSizing.VerticalSpacing = 3
+      ChildSizing.Layout = cclLeftToRightThenTopToBottom
+      ChildSizing.ControlsPerLine = 2
+      ClientHeight = 58
+      ClientWidth = 376
       TabOrder = 0
+      object EdSearchPackage: TSearchEdit
+        Left = 6
+        Height = 21
+        Top = 6
+        Width = 279
+        EmptyText = 'Type name or description'
+        ExecuteDelay = 400
+        Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
+        Constraints.MaxHeight = 21
+        Constraints.MinWidth = 150
+        Font.Color = clGray
+        OnKeyPress = EdSearchPackageKeyPress
+        ParentFont = False
+        TabOrder = 0
+      end
+      object butSearchExternalPackages: TBitBtn
+        Left = 291
+        Height = 26
+        Top = 6
+        Width = 79
+        Action = ActSearchExternalPackage
+        AutoSize = True
+        Glyph.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000000000000000000000000000000000000000000000000000000000000000
+          000000000000000000003E3E3E007D7D7D007777770007070700000000000000
+          0000000000000000000044444400AAAAAA00CCCCCC00C9C9C9009F9F9F003A3A
+          3A0000000000303030007C7C7CADC2C2C2FDB4B4B4D458585800000000000000
+          000000000000000000005F5F5F00C9C9C900E5E5E500E3E3E300C0C0C0005353
+          53003E3E3E007F7F7FC2A0A0A0FFB1B1B1FFA4A4A4C454545400000000000000
+          00008D8D8D00262525007A7A7A00939495009596970079797A001A1A1A005A5A
+          5A00888888D0A2A2A2FF979797FF7A7A7AC258585800A7A7A700000000009595
+          950086868600B2B3B300CACACAD0D3CFCCF1D4D0CCF4CCCBCADFA9AAABA49A9A
+          9AD8A2A2A2FF939393FD757575AE505050006F6F6F0027272700909090008080
+          8000BCBCBD97D6CFC9FACFB49EE4C7A180BCC69F7EB4CCAE95D4D6CAC1FAD4D4
+          D4FF9D9D9DF771717197474747005F5F5F000000000000000000EAEAEA00B0B1
+          B200D4CDC6F7C6A07FCCC6926382CD9B6B00CE9C6D00C9956500C2956FACD8CA
+          BEFAAEAFAFCB555555006B6B6B0000000000000000000000000075767700C5C5
+          C4BACCB099ECCD9E739EDAB49180D9B38F00D2A47900CF9F7100CC996A00C6A1
+          81CDCCC8C5EF979899009D9D9D0000000000000000000000000094969800C8C4
+          C0DCC8A282D9E5CAB1B9EDDBCBB4EFDFD0A2EAD6C284D6AD8700D09F7100C495
+          6BB2CFC4BBFDADAFB000C6C7C70089898900000000000000000096989A00C7C1
+          BDDDCAA686DBECD8C6CEF2E4D7CEF3E7DBC6F2E5D9BEE8D0BBA6D2A4798EC595
+          6AB8D0C4BAFCB0B2B300CDCDCD008989890000000000000000007D7F8000C5C3
+          C1BECAAB91EAE9D3BFD6F5ECE2E3F5ECE3DEF3E7DCD5EEDDCDCCD9B18DAEC59A
+          75D1D1CBC6F5A6A7A800ACACAC008A8A8A000000000000000000FFFFFF00B7B8
+          B900D0C2B6F6D1AF92DDF2E5D9E4F8EFE8EAF4E8DDE1ECD8C6D4CEA47FC8D0BA
+          A7F4C6C6C7BD8484840092929200000000000000000000000000999999008B8C
+          8D00C4C4C3A2D0C0B3F8CEAF94E8D9BCA3DED8BA9FDACDA98ADDCFB9A7F6CECC
+          CADCA5A5A600C9CACA007B7B7B0000000000000000000000000000000000ACAD
+          AE0095969600BFBFC080CDC8C4D8CFC2B8F0CFC1B6F2D0C8C3E8C5C5C5AEA4A5
+          A600000000007171710000000000000000000000000000000000000000000000
+          000074757500646465009EA0A100B0B3B500B2B4B600A5A7A8007E7E7F00C5C6
+          C8001D1D1D000000000000000000000000000000000000000000
+        }
+        TabOrder = 1
+      end
+      object Panel2: TPanel
+        Left = 6
+        Height = 17
+        Top = 35
+        Width = 279
+        AutoSize = True
+        BevelOuter = bvNone
+        ChildSizing.HorizontalSpacing = 6
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 2
+        ClientHeight = 17
+        ClientWidth = 279
+        TabOrder = 2
+        object cbNewerThanMine: TCheckBox
+          Left = 0
+          Height = 17
+          Top = 0
+          Width = 172
+          Caption = 'Newer packages than mine only'
+          OnClick = cbNewerThanMineClick
+          TabOrder = 0
+        end
+        object cbNewestOnly: TCheckBox
+          Left = 178
+          Height = 17
+          Top = 0
+          Width = 101
+          Caption = 'Last version only'
+          Checked = True
+          OnClick = cbNewerThanMineClick
+          State = cbChecked
+          TabOrder = 1
+        end
+      end
     end
-    object butSearchExternalPackages: TBitBtn
-      Left = 148
-      Height = 25
-      Top = 2
-      Width = 88
-      Action = ActSearchExternalPackage
-      Glyph.Data = {
-        36040000424D3604000000000000360000002800000010000000100000000100
-        2000000000000004000064000000640000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        000000000000000000003E3E3E007D7D7D007777770007070700000000000000
-        0000000000000000000044444400AAAAAA00CCCCCC00C9C9C9009F9F9F003A3A
-        3A0000000000303030007C7C7CADC2C2C2FDB4B4B4D458585800000000000000
-        000000000000000000005F5F5F00C9C9C900E5E5E500E3E3E300C0C0C0005353
-        53003E3E3E007F7F7FC2A0A0A0FFB1B1B1FFA4A4A4C454545400000000000000
-        00008D8D8D00262525007A7A7A00939495009596970079797A001A1A1A005A5A
-        5A00888888D0A2A2A2FF979797FF7A7A7AC258585800A7A7A700000000009595
-        950086868600B2B3B300CACACAD0D3CFCCF1D4D0CCF4CCCBCADFA9AAABA49A9A
-        9AD8A2A2A2FF939393FD757575AE505050006F6F6F0027272700909090008080
-        8000BCBCBD97D6CFC9FACFB49EE4C7A180BCC69F7EB4CCAE95D4D6CAC1FAD4D4
-        D4FF9D9D9DF771717197474747005F5F5F000000000000000000EAEAEA00B0B1
-        B200D4CDC6F7C6A07FCCC6926382CD9B6B00CE9C6D00C9956500C2956FACD8CA
-        BEFAAEAFAFCB555555006B6B6B0000000000000000000000000075767700C5C5
-        C4BACCB099ECCD9E739EDAB49180D9B38F00D2A47900CF9F7100CC996A00C6A1
-        81CDCCC8C5EF979899009D9D9D0000000000000000000000000094969800C8C4
-        C0DCC8A282D9E5CAB1B9EDDBCBB4EFDFD0A2EAD6C284D6AD8700D09F7100C495
-        6BB2CFC4BBFDADAFB000C6C7C70089898900000000000000000096989A00C7C1
-        BDDDCAA686DBECD8C6CEF2E4D7CEF3E7DBC6F2E5D9BEE8D0BBA6D2A4798EC595
-        6AB8D0C4BAFCB0B2B300CDCDCD008989890000000000000000007D7F8000C5C3
-        C1BECAAB91EAE9D3BFD6F5ECE2E3F5ECE3DEF3E7DCD5EEDDCDCCD9B18DAEC59A
-        75D1D1CBC6F5A6A7A800ACACAC008A8A8A000000000000000000FFFFFF00B7B8
-        B900D0C2B6F6D1AF92DDF2E5D9E4F8EFE8EAF4E8DDE1ECD8C6D4CEA47FC8D0BA
-        A7F4C6C6C7BD8484840092929200000000000000000000000000999999008B8C
-        8D00C4C4C3A2D0C0B3F8CEAF94E8D9BCA3DED8BA9FDACDA98ADDCFB9A7F6CECC
-        CADCA5A5A600C9CACA007B7B7B0000000000000000000000000000000000ACAD
-        AE0095969600BFBFC080CDC8C4D8CFC2B8F0CFC1B6F2D0C8C3E8C5C5C5AEA4A5
-        A600000000007171710000000000000000000000000000000000000000000000
-        000074757500646465009EA0A100B0B3B500B2B4B600A5A7A8007E7E7F00C5C6
-        C8001D1D1D000000000000000000000000000000000000000000
-      }
+    object Panel5: TPanel
+      Left = 388
+      Height = 58
+      Top = 0
+      Width = 570
+      Align = alClient
+      AutoSize = True
+      BevelOuter = bvNone
+      ChildSizing.LeftRightSpacing = 6
+      ChildSizing.TopBottomSpacing = 6
+      ChildSizing.HorizontalSpacing = 6
+      ChildSizing.VerticalSpacing = 3
+      ChildSizing.Layout = cclLeftToRightThenTopToBottom
+      ChildSizing.ControlsPerLine = 2
+      ClientHeight = 58
+      ClientWidth = 570
       TabOrder = 1
+      object EdRepoName: TComboBox
+        Left = 6
+        Height = 21
+        Top = 6
+        Width = 150
+        AutoComplete = True
+        AutoCompleteText = [cbactEnabled, cbactEndOfLineComplete, cbactSearchAscending]
+        Constraints.MinWidth = 150
+        ItemHeight = 13
+        OnSelect = EdRepoNameSelect
+        Style = csDropDownList
+        TabOrder = 1
+      end
+      object ButExtRepoChange: TBitBtn
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideRight.Side = asrBottom
+        Left = 162
+        Height = 23
+        Top = 6
+        Width = 119
+        Action = ActRepositoriesSettings
+        TabOrder = 0
+      end
+      object LabRepoURL: TTILabel
+        Left = 6
+        Height = 13
+        Top = 32
+        Width = 150
+        Link.TIPropertyName = 'RepoURL'
+        OnClick = LabRepoURLClick
+      end
+      object LabServerCABundle: TTILabel
+        Left = 162
+        Height = 13
+        Top = 32
+        Width = 119
+        Link.TIPropertyName = 'ServerCABundle'
+      end
     end
-    object ButExtRepoChange: TBitBtn
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideRight.Control = Panel8
-      AnchorSideRight.Side = asrBottom
-      Left = 965
-      Height = 25
-      Top = 2
-      Width = 75
-      Anchors = [akTop, akRight]
-      Caption = 'Modify'
-      OnClick = ButExtRepoChangeClick
-      TabOrder = 2
-    end
-    object urlExternalRepo: TLabel
-      AnchorSideRight.Control = ButExtRepoChange
-      Left = 940
-      Height = 13
-      Top = 9
-      Width = 20
-      Anchors = [akTop, akRight]
-      BorderSpacing.Right = 5
-      Caption = 'Url: '
-      ParentColor = False
-    end
-    object cbNewerThanMine: TCheckBox
-      Left = 256
-      Height = 17
-      Top = 17
-      Width = 172
-      Caption = 'Newer packages than mine only'
-      OnClick = cbNewerThanMineClick
-      TabOrder = 3
-    end
-    object cbNewestOnly: TCheckBox
-      Left = 256
-      Height = 17
-      Top = 2
-      Width = 101
-      Caption = 'Last version only'
-      Checked = True
-      OnClick = cbNewerThanMineClick
-      State = cbChecked
-      TabOrder = 4
-    end
-    object CBCheckSignature: TCheckBox
-      Left = 528
-      Height = 17
-      Top = 2
-      Width = 140
-      Caption = 'Check package signature'
-      OnClick = CBCheckSignatureClick
-      TabOrder = 5
-    end
-    object EdRepoName: TEdit
-      Left = 704
-      Height = 21
-      Top = 6
-      Width = 80
-      TabOrder = 6
-      Text = 'wapt-templates'
-    end
-  end
-  object CBCheckhttpsCertificate: TCheckBox
-    Left = 528
-    Height = 17
-    Top = 17
-    Width = 128
-    Caption = 'Check https certificate'
-    Checked = True
-    OnClick = CBCheckSignatureClick
-    State = cbChecked
-    TabOrder = 3
   end
   object ActionList1: TActionList
     Images = ActionsImages
@@ -419,10 +418,6 @@ object VisImportPackage: TVisImportPackage
       ImageIndex = 25
       ShortCut = 116
     end
-    object ActWAPTLocalConfig: TAction
-      Caption = 'Local WAPT configuration'
-      OnExecute = ActWAPTLocalConfigExecute
-    end
     object ActSearchExternalPackage: TAction
       Caption = 'Search'
       ImageIndex = 28
@@ -435,10 +430,18 @@ object VisImportPackage: TVisImportPackage
       OnExecute = ActPackageEditExecute
       OnUpdate = ActPackageEditUpdate
     end
+    object ActRepositoriesSettings: TAction
+      Caption = 'Repository settings'
+      OnExecute = ActRepositoriesSettingsExecute
+    end
+    object ActWAPTSettings: TAction
+      Caption = 'Waptconsole settings'
+      OnExecute = ActWAPTLocalConfigExecute
+    end
   end
   object ActionsImages: TImageList
-    left = 140
-    top = 152
+    left = 136
+    top = 136
     Bitmap = {
       4C69240000001000000010000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1597,8 +1600,8 @@ object VisImportPackage: TVisImportPackage
   end
   object PopupMenuPackages: TPopupMenu
     Images = ActionsImages
-    left = 140
-    top = 228
+    left = 136
+    top = 200
     object MenuItem25: TMenuItem
       Action = ActPackageDuplicate
       Bitmap.Data = {

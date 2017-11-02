@@ -42,60 +42,63 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="17">
+    <RequiredPackages Count="18">
       <Item1>
-        <PackageName Value="pl_fzcontrols"/>
+        <PackageName Value="RunTimeTypeInfoControls"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_exdesign"/>
+        <PackageName Value="pl_fzcontrols"/>
       </Item2>
       <Item3>
-        <PackageName Value="pl_luicontrols"/>
+        <PackageName Value="pl_exdesign"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_lclextensions"/>
+        <PackageName Value="pl_luicontrols"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_lazsolutions"/>
+        <PackageName Value="pl_lclextensions"/>
       </Item5>
       <Item6>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="pl_lazsolutions"/>
       </Item6>
       <Item7>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="pl_indy"/>
       </Item7>
       <Item8>
-        <PackageName Value="pl_excontrols"/>
+        <PackageName Value="pltis_wapt"/>
       </Item8>
       <Item9>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pl_excontrols"/>
       </Item9>
       <Item10>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="pltis_utils"/>
       </Item10>
       <Item11>
-        <PackageName Value="pl_virtualtrees"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item11>
       <Item12>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pl_virtualtrees"/>
       </Item12>
       <Item13>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="pltis_superobject"/>
       </Item13>
       <Item14>
-        <PackageName Value="pl_virtualtreesextra"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item14>
       <Item15>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item15>
       <Item16>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="FCL"/>
       </Item16>
       <Item17>
-        <PackageName Value="LCL"/>
+        <PackageName Value="SynEdit"/>
       </Item17>
+      <Item18>
+        <PackageName Value="LCL"/>
+      </Item18>
     </RequiredPackages>
-    <Units Count="30">
+    <Units Count="31">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -308,13 +311,19 @@
         <UnitName Value="uVisChangeKeyPassword"/>
       </Unit28>
       <Unit29>
-        <Filename Value="uvisdisplaypreferences.pas"/>
+        <Filename Value="uvisrepositories.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="VisDisplayPreferences"/>
+        <ComponentName Value="VisRepositories"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uVisDisplayPreferences"/>
+        <UnitName Value="uvisrepositories"/>
       </Unit29>
+      <Unit30>
+        <Filename Value="uvisdisplaypreferences.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+        <UnitName Value="uvisdisplaypreferences"/>
+      </Unit30>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

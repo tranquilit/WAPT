@@ -17,14 +17,11 @@ type
     ActCheckAndSetwaptserver: TAction;
     ActDownloadCertificate: TAction;
     ActGetServerCertificate: TAction;
-    ActEnableVerifyCerts: TAction;
     ActCheckPersonalKey: TAction;
     ActOpenCertDir: TAction;
     ActionList1: TActionList;
     Button1: TButton;
     Button2: TButton;
-    Button3: TButton;
-    Button4: TButton;
     Button5: TButton;
     Button6: TButton;
     ButtonPanel1: TButtonPanel;
@@ -34,15 +31,12 @@ type
     cbUseProxyForServer: TCheckBox;
     CBVerifyCert: TCheckBox;
     EdServerCertificate: TFileNameEdit;
-    EdTemplatesAuthorizedCertsDir: TDirectoryEdit;
     eddefault_package_prefix: TLabeledEdit;
     eddefault_sources_root: TDirectoryEdit;
-    edhttp_proxy_templates: TLabeledEdit;
     edhttp_proxy: TLabeledEdit;
     edPersonalCertificatePath: TFileNameEdit;
     edrepo_url: TLabeledEdit;
     edServerAddress: TLabeledEdit;
-    edtemplates_repo_url: TLabeledEdit;
     edwapt_server: TLabeledEdit;
     ImageList1: TImageList;
     ImgStatusRepo: TImage;
@@ -53,7 +47,6 @@ type
     Label5: TLabel;
     Label6: TLabel;
     Label8: TLabel;
-    Label9: TLabel;
     labStatusRepo: TLabel;
     labStatusServer: TLabel;
     PageControl1: TPageControl;
@@ -62,11 +55,8 @@ type
     Timer1: TTimer;
     procedure ActCheckAndSetwaptserverExecute(Sender: TObject);
     procedure ActCheckPersonalKeyExecute(Sender: TObject);
-    procedure ActDownloadCertificateExecute(Sender: TObject);
-    procedure ActDownloadCertificateUpdate(Sender: TObject);
     procedure ActGetServerCertificateExecute(Sender: TObject);
     procedure ActGetServerCertificateUpdate(Sender: TObject);
-    procedure ActOpenCertDirExecute(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure cbManualClick(Sender: TObject);
     procedure CBVerifyCertClick(Sender: TObject);
@@ -138,16 +128,6 @@ begin
   end;
 end;
 
-procedure TVisWAPTConfig.ActDownloadCertificateExecute(Sender: TObject);
-begin
-  OpenDocument(edtemplates_repo_url.Text+'/ssl');
-end;
-
-procedure TVisWAPTConfig.ActDownloadCertificateUpdate(Sender: TObject);
-begin
-  ActDownloadCertificate.Enabled:=edtemplates_repo_url.text <> '';;
-end;
-
 procedure TVisWAPTConfig.ActGetServerCertificateExecute(Sender: TObject);
 var
   i:integer;
@@ -195,13 +175,6 @@ end;
 procedure TVisWAPTConfig.ActGetServerCertificateUpdate(Sender: TObject);
 begin
   ActGetServerCertificate.Enabled := edServerAddress.Text <> '';
-end;
-
-procedure TVisWAPTConfig.ActOpenCertDirExecute(Sender: TObject);
-begin
-  if not DirectoryExists(EdTemplatesAuthorizedCertsDir.Directory) then
-    mkdir(EdTemplatesAuthorizedCertsDir.Directory);
-  OpenDocument(EdTemplatesAuthorizedCertsDir.Directory);
 end;
 
 procedure TVisWAPTConfig.cbManualClick(Sender: TObject);

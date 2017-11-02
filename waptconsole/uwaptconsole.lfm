@@ -441,6 +441,15 @@ object VisWaptGUI: TVisWaptGUI
               TabOrder = 8
             end
           end
+          object Splitter6: TSplitter
+            Cursor = crVSplit
+            Left = 0
+            Height = 5
+            Top = 310
+            Width = 564
+            Align = alBottom
+            ResizeAnchor = akBottom
+          end
           object Panel5: TPanel
             Left = 0
             Height = 90
@@ -460,15 +469,6 @@ object VisWaptGUI: TVisWaptGUI
               ScrollBars = ssAutoBoth
               TabOrder = 0
             end
-          end
-          object Splitter6: TSplitter
-            Cursor = crVSplit
-            Left = 0
-            Height = 5
-            Top = 310
-            Width = 564
-            Align = alBottom
-            ResizeAnchor = akBottom
           end
         end
         object pgHostInventory: TTabSheet
@@ -1363,34 +1363,22 @@ object VisWaptGUI: TVisWaptGUI
         ShowCaptions = True
         TabOrder = 2
         object ToolButton1: TToolButton
-          Left = 196
+          Left = 140
           Top = 2
           Action = ActTriggerHostUpgrade
         end
         object ToolButton2: TToolButton
-          Left = 57
+          Left = 1
           Top = 2
           Action = ActEditHostPackage
         end
-        object ToolButton4: TToolButton
-          Left = 47
-          Top = 2
-          Width = 10
-          Caption = 'ToolButton4'
-          Style = tbsSeparator
-        end
-        object ToolButton3: TToolButton
-          Left = 1
-          Top = 2
-          Action = actRefresh
-        end
         object ToolButton5: TToolButton
-          Left = 117
+          Left = 61
           Top = 2
           Action = ActTriggerHostUpdate
         end
         object ToolButton6: TToolButton
-          Left = 107
+          Left = 51
           Top = 2
           Width = 10
           Caption = 'ToolButton6'
@@ -2216,7 +2204,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 503
         Top = 30
-        Width = 1374
+        Width = 1664
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
@@ -2335,7 +2323,6 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
         TreeOptions.SelectionOptions = [toDisableDrawSelection, toMultiSelect, toRightClickSelect, toSimpleDrawSelection]
         WantTabs = True
-        OnChange = GridGroupsChange
         OnColumnDblClick = GridGroupsColumnDblClick
         OnPaintText = GridPackagesPaintText
         OnInitNode = GridGroupsInitNode
@@ -2499,126 +2486,6 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 3
         end
       end
-      object PanRightBundles: TPanel
-        Left = 1374
-        Height = 503
-        Top = 30
-        Width = 290
-        Align = alRight
-        Alignment = taRightJustify
-        BevelOuter = bvNone
-        ClientHeight = 503
-        ClientWidth = 290
-        TabOrder = 2
-        object MemoGroupeDescription1: TMemo
-          Left = 0
-          Height = 259
-          Top = 244
-          Width = 290
-          Align = alClient
-          ReadOnly = True
-          TabOrder = 0
-        end
-        object Panel16: TPanel
-          Left = 0
-          Height = 244
-          Top = 0
-          Width = 290
-          Align = alTop
-          BevelOuter = bvNone
-          ClientHeight = 244
-          ClientWidth = 290
-          TabOrder = 1
-          object EdPackage1: TLabeledEdit
-            Left = 81
-            Height = 21
-            Top = 4
-            Width = 200
-            CharCase = ecLowerCase
-            EditLabel.AnchorSideTop.Control = EdPackage1
-            EditLabel.AnchorSideTop.Side = asrCenter
-            EditLabel.AnchorSideRight.Control = EdPackage1
-            EditLabel.AnchorSideBottom.Control = EdPackage1
-            EditLabel.AnchorSideBottom.Side = asrBottom
-            EditLabel.Left = 38
-            EditLabel.Height = 13
-            EditLabel.Top = 8
-            EditLabel.Width = 40
-            EditLabel.Caption = 'Package'
-            EditLabel.ParentColor = False
-            LabelPosition = lpLeft
-            ReadOnly = True
-            TabOrder = 0
-          end
-          object EdVersion1: TLabeledEdit
-            Left = 81
-            Height = 21
-            Top = 28
-            Width = 76
-            EditLabel.AnchorSideTop.Control = EdVersion1
-            EditLabel.AnchorSideTop.Side = asrCenter
-            EditLabel.AnchorSideRight.Control = EdVersion1
-            EditLabel.AnchorSideBottom.Control = EdVersion1
-            EditLabel.AnchorSideBottom.Side = asrBottom
-            EditLabel.Left = 43
-            EditLabel.Height = 13
-            EditLabel.Top = 32
-            EditLabel.Width = 35
-            EditLabel.Caption = 'Version'
-            EditLabel.ParentColor = False
-            LabelPosition = lpLeft
-            ReadOnly = True
-            TabOrder = 1
-            Text = ' '
-          end
-          object Label24: TLabel
-            Left = 8
-            Height = 13
-            Top = 228
-            Width = 53
-            Anchors = [akLeft, akBottom]
-            Caption = 'Description'
-            ParentColor = False
-          end
-          object EdDepends1: TMemo
-            Left = 81
-            Height = 80
-            Top = 52
-            Width = 192
-            ReadOnly = True
-            ScrollBars = ssAutoVertical
-            TabOrder = 2
-          end
-          object EdConflicts1: TMemo
-            Left = 81
-            Height = 80
-            Top = 140
-            Width = 192
-            ReadOnly = True
-            ScrollBars = ssAutoVertical
-            TabOrder = 3
-          end
-          object Label25: TLabel
-            Left = 9
-            Height = 13
-            Top = 56
-            Width = 67
-            Alignment = taRightJustify
-            Caption = 'Dependencies'
-            ParentColor = False
-          end
-          object Label26: TLabel
-            Left = 9
-            Height = 13
-            Top = 148
-            Width = 67
-            Alignment = taRightJustify
-            AutoSize = False
-            Caption = 'Conflicts'
-            ParentColor = False
-          end
-        end
-      end
     end
     object pgPrivateRepo: TTabSheet
       Caption = 'Softwares repository'
@@ -2628,7 +2495,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 503
         Top = 30
-        Width = 1368
+        Width = 1658
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
@@ -2758,7 +2625,6 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
         TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
         WantTabs = True
-        OnChange = GridPackagesChange
         OnColumnDblClick = GridPackagesColumnDblClick
         OnPaintText = GridPackagesPaintText
         OnInitNode = GridGroupsInitNode
@@ -2766,7 +2632,7 @@ object VisWaptGUI: TVisWaptGUI
         ZebraPaint = True
       end
       object Splitter3: TSplitter
-        Left = 1368
+        Left = 1658
         Height = 503
         Top = 30
         Width = 6
@@ -2982,126 +2848,6 @@ object VisWaptGUI: TVisWaptGUI
           OnClick = cbNewestOnlyClick
           State = cbChecked
           TabOrder = 5
-        end
-      end
-      object Panel2: TPanel
-        Left = 1374
-        Height = 503
-        Top = 30
-        Width = 290
-        Align = alRight
-        Alignment = taRightJustify
-        BevelOuter = bvNone
-        ClientHeight = 503
-        ClientWidth = 290
-        TabOrder = 2
-        object MemoGroupeDescription: TMemo
-          Left = 0
-          Height = 259
-          Top = 244
-          Width = 290
-          Align = alClient
-          ReadOnly = True
-          TabOrder = 0
-        end
-        object Panel8: TPanel
-          Left = 0
-          Height = 244
-          Top = 0
-          Width = 290
-          Align = alTop
-          BevelOuter = bvNone
-          ClientHeight = 244
-          ClientWidth = 290
-          TabOrder = 1
-          object EdPackage: TLabeledEdit
-            Left = 81
-            Height = 21
-            Top = 4
-            Width = 200
-            CharCase = ecLowerCase
-            EditLabel.AnchorSideTop.Control = EdPackage
-            EditLabel.AnchorSideTop.Side = asrCenter
-            EditLabel.AnchorSideRight.Control = EdPackage
-            EditLabel.AnchorSideBottom.Control = EdPackage
-            EditLabel.AnchorSideBottom.Side = asrBottom
-            EditLabel.Left = 38
-            EditLabel.Height = 13
-            EditLabel.Top = 8
-            EditLabel.Width = 40
-            EditLabel.Caption = 'Package'
-            EditLabel.ParentColor = False
-            LabelPosition = lpLeft
-            ReadOnly = True
-            TabOrder = 0
-          end
-          object EdVersion: TLabeledEdit
-            Left = 81
-            Height = 21
-            Top = 28
-            Width = 76
-            EditLabel.AnchorSideTop.Control = EdVersion
-            EditLabel.AnchorSideTop.Side = asrCenter
-            EditLabel.AnchorSideRight.Control = EdVersion
-            EditLabel.AnchorSideBottom.Control = EdVersion
-            EditLabel.AnchorSideBottom.Side = asrBottom
-            EditLabel.Left = 43
-            EditLabel.Height = 13
-            EditLabel.Top = 32
-            EditLabel.Width = 35
-            EditLabel.Caption = 'Version'
-            EditLabel.ParentColor = False
-            LabelPosition = lpLeft
-            ReadOnly = True
-            TabOrder = 1
-            Text = ' '
-          end
-          object Label20: TLabel
-            Left = 8
-            Height = 13
-            Top = 228
-            Width = 53
-            Anchors = [akLeft, akBottom]
-            Caption = 'Description'
-            ParentColor = False
-          end
-          object EdDepends: TMemo
-            Left = 81
-            Height = 80
-            Top = 52
-            Width = 192
-            ReadOnly = True
-            ScrollBars = ssAutoVertical
-            TabOrder = 2
-          end
-          object EdConflicts: TMemo
-            Left = 81
-            Height = 80
-            Top = 140
-            Width = 192
-            ReadOnly = True
-            ScrollBars = ssAutoVertical
-            TabOrder = 3
-          end
-          object Label21: TLabel
-            Left = 9
-            Height = 13
-            Top = 56
-            Width = 67
-            Alignment = taRightJustify
-            Caption = 'Dependencies'
-            ParentColor = False
-          end
-          object Label22: TLabel
-            Left = 9
-            Height = 13
-            Top = 148
-            Width = 67
-            Alignment = taRightJustify
-            AutoSize = False
-            Caption = 'Conflicts'
-            ParentColor = False
-          end
         end
       end
     end
@@ -4691,6 +4437,10 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Display preferences'
       OnExecute = ActDisplayPreferencesExecute
     end
+    object ActRepositoriesSettings: TAction
+      Caption = 'Repositories settings'
+      OnExecute = ActRepositoriesSettingsExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     left = 144
@@ -4723,6 +4473,9 @@ object VisWaptGUI: TVisWaptGUI
       end
       object MenuItem53: TMenuItem
         Action = ActWAPTLocalConfig
+      end
+      object MenuItem31: TMenuItem
+        Action = ActRepositoriesSettings
       end
       object MenuItem7: TMenuItem
         Caption = '-'

@@ -1371,8 +1371,8 @@ object VisEditPackage: TVisEditPackage
   end
   object PopupMenu1: TPopupMenu
     Images = ActionsImages
-    left = 406
-    top = 502
+    left = 476
+    top = 408
     object MenuItem1: TMenuItem
       Action = ActAdvancedMode
       AutoCheck = True

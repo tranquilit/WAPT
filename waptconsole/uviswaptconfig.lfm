@@ -91,47 +91,6 @@ object VisWAPTConfig: TVisWAPTConfig
         Caption = 'Path to personal certificate'
         ParentColor = False
       end
-      object edtemplates_repo_url: TLabeledEdit
-        Left = 165
-        Height = 21
-        Hint = 'E.g. : https://store.wapt.fr/wapt'#13#10'Used by WAPT console for duplicating packages.'
-        Top = 255
-        Width = 270
-        EditLabel.AnchorSideTop.Control = edtemplates_repo_url
-        EditLabel.AnchorSideTop.Side = asrCenter
-        EditLabel.AnchorSideRight.Control = edtemplates_repo_url
-        EditLabel.AnchorSideBottom.Control = edtemplates_repo_url
-        EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 19
-        EditLabel.Height = 13
-        EditLabel.Top = 259
-        EditLabel.Width = 143
-        EditLabel.Caption = 'External packages repository '
-        EditLabel.ParentColor = False
-        LabelPosition = lpLeft
-        TabOrder = 10
-        Text = 'https://store.wapt.fr/wapt'
-      end
-      object edhttp_proxy_templates: TLabeledEdit
-        Left = 165
-        Height = 21
-        Hint = 'E.g. : http://proxy.tranquilit.local:3128'#13#10'Only required if a proxy is needed for templates access'
-        Top = 303
-        Width = 222
-        EditLabel.AnchorSideTop.Control = edhttp_proxy_templates
-        EditLabel.AnchorSideTop.Side = asrCenter
-        EditLabel.AnchorSideRight.Control = edhttp_proxy_templates
-        EditLabel.AnchorSideBottom.Control = edhttp_proxy_templates
-        EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 22
-        EditLabel.Height = 13
-        EditLabel.Top = 307
-        EditLabel.Width = 140
-        EditLabel.Caption = 'http proxy to use (if needed)'
-        EditLabel.ParentColor = False
-        LabelPosition = lpLeft
-        TabOrder = 14
-      end
       object edServerAddress: TLabeledEdit
         Left = 167
         Height = 21
@@ -245,46 +204,6 @@ object VisWAPTConfig: TVisWAPTConfig
         Top = 131
         Width = 20
       end
-      object Label9: TLabel
-        Left = -116
-        Height = 13
-        Top = 281
-        Width = 273
-        Alignment = taRightJustify
-        AutoSize = False
-        Caption = 'Authorized external keys dir'
-        ParentColor = False
-      end
-      object EdTemplatesAuthorizedCertsDir: TDirectoryEdit
-        Left = 165
-        Height = 21
-        Hint = 'When importing packages, check signature against certificates in this list'
-        Top = 279
-        Width = 270
-        DialogTitle = 'Select the directory where to lookup authorized certificates'
-        ShowHidden = False
-        ButtonWidth = 23
-        NumGlyphs = 1
-        Flat = True
-        MaxLength = 0
-        TabOrder = 12
-      end
-      object Button3: TButton
-        Left = 461
-        Height = 25
-        Top = 254
-        Width = 112
-        Action = ActDownloadCertificate
-        TabOrder = 11
-      end
-      object Button4: TButton
-        Left = 461
-        Height = 21
-        Top = 281
-        Width = 112
-        Action = ActOpenCertDir
-        TabOrder = 13
-      end
       object Label6: TLabel
         Left = 2
         Height = 13
@@ -336,7 +255,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Top = 198
         Width = 168
         Action = ActCheckPersonalKey
-        TabOrder = 15
+        TabOrder = 10
       end
     end
     object pgAdvanced: TTabSheet
@@ -572,20 +491,14 @@ object VisWAPTConfig: TVisWAPTConfig
     end
     object ActDownloadCertificate: TAction
       Caption = 'Browse certificates'
-      OnExecute = ActDownloadCertificateExecute
-      OnUpdate = ActDownloadCertificateUpdate
     end
     object ActOpenCertDir: TAction
       Caption = 'Explore dir'
-      OnExecute = ActOpenCertDirExecute
     end
     object ActGetServerCertificate: TAction
       Caption = 'Get Server https Certitificate'
       OnExecute = ActGetServerCertificateExecute
       OnUpdate = ActGetServerCertificateUpdate
-    end
-    object ActEnableVerifyCerts: TAction
-      Caption = 'Verify https server certificate'
     end
     object ActCheckPersonalKey: TAction
       Caption = 'Check matching private key'

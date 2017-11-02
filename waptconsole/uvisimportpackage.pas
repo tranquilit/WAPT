@@ -5,64 +5,76 @@ unit uVisImportPackage;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  Buttons, ComCtrls, StdCtrls, ActnList, Menus, sogrid, DefaultTranslator,
-  VirtualTrees, superobject,SearchEdit;
+  Classes, SysUtils, FileUtil, RTTICtrls, RTTIGrids, vte_rttigrid, Forms,
+  Controls, Graphics, Dialogs, ExtCtrls, Buttons, ComCtrls, StdCtrls, ActnList,
+  Menus, sogrid, DefaultTranslator, VirtualTrees, superobject, SearchEdit,
+  waptcommon;
 
 type
 
   { TVisImportPackage }
 
   TVisImportPackage = class(TForm)
+    ActWAPTSettings: TAction;
+    ActRepositoriesSettings: TAction;
     ActPackageEdit: TAction;
     ActionList1: TActionList;
     ActionsImages: TImageList;
     ActPackageDuplicate: TAction;
     actRefresh: TAction;
     ActSearchExternalPackage: TAction;
-    ActWAPTLocalConfig: TAction;
     BitBtn2: TBitBtn;
     ButExtRepoChange: TBitBtn;
     ButPackageDuplicate: TBitBtn;
-    ButPackageDuplicate1: TBitBtn;
     butSearchExternalPackages: TBitBtn;
-    CBCheckhttpsCertificate: TCheckBox;
     cbNewerThanMine: TCheckBox;
     cbNewestOnly: TCheckBox;
-    CBCheckSignature: TCheckBox;
-    EdRepoName: TEdit;
-    EdSearch1: TSearchEdit;
+    EdRepoName: TComboBox;
+    EdSearchPackage: TSearchEdit;
     GridExternalPackages: TSOGrid;
+    LabServerCABundle: TTILabel;
     MenuItem1: TMenuItem;
     MenuItem25: TMenuItem;
     Panel1: TPanel;
+    Panel2: TPanel;
+    Panel4: TPanel;
+    Panel5: TPanel;
     Panel8: TPanel;
     PopupMenuPackages: TPopupMenu;
-    urlExternalRepo: TLabel;
+    LabRepoURL: TTILabel;
     procedure ActPackageDuplicateExecute(Sender: TObject);
     procedure ActPackageDuplicateUpdate(Sender: TObject);
     procedure ActPackageEditExecute(Sender: TObject);
     procedure ActPackageEditUpdate(Sender: TObject);
+    procedure ActRepositoriesSettingsExecute(Sender: TObject);
     procedure ActSearchExternalPackageExecute(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
-    procedure ButExtRepoChangeClick(Sender: TObject);
-    procedure CBCheckSignatureClick(Sender: TObject);
     procedure cbNewerThanMineClick(Sender: TObject);
+    procedure EdRepoNameSelect(Sender: TObject);
     procedure EdSearch1Execute(Sender: TObject);
-    procedure EdSearch1KeyPress(Sender: TObject; var Key: char);
+    procedure EdSearchPackageKeyPress(Sender: TObject; var Key: char);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure GridExternalPackagesGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; RowData, CellData: ISuperObject;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+    procedure LabRepoURLClick(Sender: TObject);
   private
+    FRepoName: String;
+    FWaptrepo: TWaptRepo;
+    procedure FillReposList;
+    function GetRepoName: String;
+    function GetWaptrepo: TWaptRepo;
+    procedure SetRepoName(AValue: String);
+    procedure SetWaptrepo(AValue: TWaptRepo);
     function updateprogress(receiver: TObject; current, total: integer
       ): boolean;
     { private declarations }
   public
     { public declarations }
-    AuthorizedExternalCertDir: String;
+    property RepoName:String read GetRepoName write SetRepoName;
+    property Waptrepo:TWaptRepo read GetWaptrepo write SetWaptrepo;
   end;
 
 var
@@ -70,45 +82,36 @@ var
 
 implementation
 
-uses uwaptconsole,tiscommon,soutils,waptcommon,VarPyth,PythonEngine,
-    dmwaptpython,uvisloading,uvisprivatekeyauth, uWaptRes,md5,uScaleDPI,uWaptConsoleRes,tisinifiles;
+uses uwaptconsole, tiscommon, soutils, VarPyth, PythonEngine,
+  dmwaptpython, uvisloading, uvisprivatekeyauth, uWaptRes, md5, uScaleDPI,
+  uWaptConsoleRes, uvisrepositories, inifiles, tisinifiles,LCLIntf;
 
 {$R *.lfm}
 
 { TVisImportPackage }
-
-procedure TVisImportPackage.ButExtRepoChangeClick(Sender: TObject);
-begin
-  ActWAPTLocalConfigExecute(self);
-  urlExternalRepo.Caption := format(rsUrl, [IniReadString(WaptIniFilename,EdRepoName.Text,'repo_url','https://store.wapt.fr/wapt')]);
-end;
-
-procedure TVisImportPackage.CBCheckSignatureClick(Sender: TObject);
-begin
-  if CBCheckSignature.Checked then
-    AuthorizedExternalCertDir := AuthorizedCertsDir
-  else
-    // disable check in duplicate_from_file
-    AuthorizedExternalCertDir := '';
-end;
 
 procedure TVisImportPackage.cbNewerThanMineClick(Sender: TObject);
 begin
   ActSearchExternalPackageExecute(Sender);
 end;
 
-procedure TVisImportPackage.EdSearch1Execute(Sender: TObject);
+procedure TVisImportPackage.EdRepoNameSelect(Sender: TObject);
 begin
-  if EdSearch1.Modified then
-    ActSearchExternalPackageExecute(Sender);
-  EdSearch1.Modified:=False;
+  RepoName:=EdRepoName.Items[EdRepoName.ItemIndex];
 end;
 
-procedure TVisImportPackage.EdSearch1KeyPress(Sender: TObject; var Key: char);
+procedure TVisImportPackage.EdSearch1Execute(Sender: TObject);
+begin
+  if EdSearchPackage.Modified then
+    ActSearchExternalPackageExecute(Sender);
+  EdSearchPackage.Modified:=False;
+end;
+
+procedure TVisImportPackage.EdSearchPackageKeyPress(Sender: TObject; var Key: char);
 begin
   if Key = #13 then
   begin
-    EdSearch1.SelectAll;
+    EdSearchPackage.SelectAll;
     ActSearchExternalPackage.Execute;
   end;
 end;
@@ -117,9 +120,6 @@ procedure TVisImportPackage.FormClose(Sender: TObject;
   var CloseAction: TCloseAction);
 begin
   GridExternalPackages.SaveSettingsToIni(Appuserinipath);
-  IniWriteBool(Appuserinipath,ClassName,CBCheckhttpsCertificate.Name,CBCheckhttpsCertificate.Checked);
-  IniWriteBool(Appuserinipath,ClassName,CBCheckSignature.Name,CBCheckSignature.Checked);
-
 end;
 
 procedure TVisImportPackage.FormCreate(Sender: TObject);
@@ -128,14 +128,71 @@ begin
   ScaleImageList(ActionsImages,96);
 end;
 
+procedure TVisImportPackage.FillReposList;
+var
+  inifile: TIniFile;
+begin
+  inifile := TIniFile.Create(AppIniFilename);
+  try
+    inifile.ReadSections(EdRepoName.Items);
+    EdRepoName.Items.Delete(EdRepoName.Items.IndexOf('global'));
+  finally
+    inifile.Free;
+  end;
+end;
+
+function TVisImportPackage.GetRepoName: String;
+begin
+  Result := WaptRepo.Name;
+
+end;
+
+function TVisImportPackage.GetWaptrepo: TWaptRepo;
+var
+  Repo: TWaptRepo;
+begin
+  if not Assigned(FWaptrepo) or (FWaptrepo.Name <> FRepoName) then
+  begin
+    if Assigned(FWaptrepo) then
+      FreeAndNil(FWaptRepo);
+
+    FWaptrepo :=  TWaptRepo.Create(FRepoName);
+    FWaptrepo.LoadFromInifile(WaptIniFilename,FRepoName);
+
+    LabRepoURL.Link.TIObject := Waptrepo;
+    LabServerCABundle.Link.TIObject := Waptrepo;
+  end;
+  Result := FWaptrepo;
+end;
+
+procedure TVisImportPackage.SetRepoName(AValue: String);
+begin
+  if FRepoName=AValue then Exit;
+  GridExternalPackages.Data := Nil;
+  FRepoName:=AValue;
+  WaptRepo.LoadFromInifile(WaptIniFilename,FRepoName);
+end;
+
+procedure TVisImportPackage.SetWaptrepo(AValue: TWaptRepo);
+begin
+  if FWaptrepo=AValue then Exit;
+  if Assigned(FWaptrepo) then
+    FWaptrepo.Free;
+
+  FWaptrepo:=AValue;
+  GridExternalPackages.Data := Nil;
+  if AValue<> Nil then
+  begin
+    EdRepoName.Text := AValue.Name;
+  end;
+end;
+
 procedure TVisImportPackage.FormShow(Sender: TObject);
 begin
-  CBCheckhttpsCertificate.Checked := IniReadBool(Appuserinipath,ClassName,CBCheckhttpsCertificate.Name,True);
-  CBCheckSignature.Checked := IniReadBool(Appuserinipath,ClassName,CBCheckSignature.Name,False);
-
+  FillReposList;
   GridExternalPackages.LoadSettingsFromIni(Appuserinipath);
-  urlExternalRepo.Caption:= TemplatesRepoUrl;
-  CBCheckSignature.OnClick(Self);
+  EdRepoName.ItemIndex:=0;
+  EdRepoName.OnSelect(Sender);
   ActSearchExternalPackage.Execute;
 end;
 
@@ -150,6 +207,11 @@ begin
   end;
 end;
 
+procedure TVisImportPackage.LabRepoURLClick(Sender: TObject);
+begin
+   OpenDocument(WaptRepo.RepoURL);
+end;
+
 procedure TVisImportPackage.ActWAPTLocalConfigExecute(Sender: TObject);
 begin
   if (VisWaptGUI<>Nil) and  VisWaptGUI.EditIniFile then
@@ -158,51 +220,52 @@ begin
     waptcommon.ReadWaptConfig(AppIniFilename);
     dmpython.WaptConfigFileName:=AppIniFilename;
     MainModule.mywapt.update(Register := False);
-
-
-    urlExternalRepo.Caption:=  TemplatesRepoUrl;
-    GridExternalPackages.Clear;
-    ActSearchExternalPackage.Execute;
   end;
 end;
 
 procedure TVisImportPackage.ActSearchExternalPackageExecute(Sender: TObject);
 var
   expr: String;
-  packages_python: Variant;
-  repo_url,http_proxy,verify_cert:String;
+  http_proxy,packages_python,verify_cert: Variant;
+
 
 begin
-  EdSearch1.Modified:=False;
-  http_proxy := IniReadString(WaptIniFilename,EdRepoName.Text,'http_proxy');
-  repo_url:= IniReadString(WaptIniFilename,EdRepoName.Text,'repo_url','https://store.wapt.fr/wapt');
+  EdSearchPackage.Modified:=False;
+  http_proxy := Waptrepo.HttpProxy;
+  if (Waptrepo.ServerCABundle='') or (Waptrepo.ServerCABundle='0') then
+    verify_cert:=False
+  else
+    verify_cert:=Waptrepo.ServerCABundle;
+
+
   if http_proxy = '' then
     http_proxy := None;
   try
-    expr := UTF8Decode(EdSearch1.Text);
+    expr := UTF8Decode(EdSearchPackage.Text);
     packages_python := Nil;
     packages_python := MainModule.waptdevutils.update_external_repo(
-      repourl := repo_url,
+      repourl := Waptrepo.RepoURL,
       search_string := expr,
       proxy := http_proxy,
       mywapt := dmwaptpython.DMPython.WAPT,
       newer_only := cbNewerThanMine.Checked,
       newest_only := cbNewestOnly.Checked,
-      verify_cert := CBCheckhttpsCertificate.Checked);
+      verify_cert := verify_cert);
+
     // todo : pass directly from python dict to TSuperObject
     GridExternalPackages.Data := PyVarToSuperObject(packages_python);
   except
-    on E:Exception do ShowMessageFmt(rsFailedExternalRepoUpdate+#13#10#13#10+E.Message,[waptcommon.TemplatesRepoUrl]);
+    on E:Exception do ShowMessageFmt(rsFailedExternalRepoUpdate+#13#10#13#10+E.Message,[Waptrepo.RepoURL]);
   end;
 end;
 
 procedure TVisImportPackage.ActPackageDuplicateExecute(Sender: TObject);
 var
-  target,sourceDir,http_proxy: string;
+  target,sourceDir,http_proxy,verify_cert: string;
   package,uploadResult, FileName, FileNames, listPackages,Sources,aDir: ISuperObject;
 
 begin
-  http_proxy:=IniReadString(WaptIniFilename,EdRepoName.Text,'http_proxy');
+  http_proxy:=Waptrepo.HttpProxy;
 
   if not FileExists(GetWaptPersonalCertificatePath) then
   begin
@@ -213,7 +276,7 @@ begin
   if DefaultPackagePrefix='' then
   begin
     ShowMessage(rsWaptPackagePrefixMissing);
-    ActWAPTLocalConfig.Execute;
+    ActWAPTSettings.Execute;
     Exit;
   end;
 
@@ -221,10 +284,14 @@ begin
   for package in GridExternalPackages.SelectedRows do
     listPackages.AsArray.Add(package.S['package']+'(='+package.S['version']+')');
   //calcule liste de tous les fichiers wapt + md5  nécessaires y compris les dépendances
+  if (Waptrepo.ServerCABundle='') or (Waptrepo.ServerCABundle='0') then
+    verify_cert:='False'
+  else
+    verify_cert:=QuotedStr(Waptrepo.ServerCABundle);
   FileNames := DMPython.RunJSON(format('waptdevutils.get_packages_filenames(r"%s".decode(''utf8''),"%s",verify_cert=%s)',
         [ AppIniFilename,
           Join(',',listPackages),
-          BoolToStr(CBCheckhttpsCertificate.Checked,'True','False')
+          verify_cert
         ]
         ));
 
@@ -249,7 +316,7 @@ begin
         try
           if not FileExists(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
           begin
-            IdWget(TemplatesRepoUrl + '/' + Filename.AsArray[0].AsString,
+            IdWget(Waptrepo.RepoURL + '/' + Filename.AsArray[0].AsString,
               target, ProgressForm, @updateprogress, (http_proxy<>''));
             if (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
               raise Exception.CreateFmt(rsDownloadCurrupted,[Filename.AsArray[0].AsString]);
@@ -271,7 +338,7 @@ begin
         Application.ProcessMessages;
         sourceDir := DMPython.RunJSON(
           Format('waptdevutils.duplicate_from_file(r"%s",new_prefix="%s",target_directory=None,authorized_certs=r"%s" or None)',
-          [AppLocalDir + 'cache\' + Filename.AsArray[0].AsString,DefaultPackagePrefix,AuthorizedExternalCertDir])).AsString;
+          [AppLocalDir + 'cache\' + Filename.AsArray[0].AsString,DefaultPackagePrefix,Waptrepo.SignersCABundle])).AsString;
         sources.AsArray.Add('r"'+sourceDir+'"');
       end;
 
@@ -316,7 +383,7 @@ begin
   if DefaultPackagePrefix='' then
   begin
     ShowMessage(rsWaptPackagePrefixMissing);
-    ActWAPTLocalConfig.Execute;
+    ActWAPTSettings.Execute;
     Exit;
   end;
 
@@ -345,7 +412,7 @@ begin
         try
           if not FileExists(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
           begin
-            IdWget(TemplatesRepoUrl + '/' + Filename.AsArray[0].AsString,
+            IdWget(Waptrepo.RepoURL + '/' + Filename.AsArray[0].AsString,
               target, ProgressForm, @updateprogress, HttpProxy<>'');
             if (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
               raise Exception.CreateFmt(rsDownloadCurrupted,[Filename.AsArray[0].AsString]);
@@ -367,7 +434,7 @@ begin
         Application.ProcessMessages;
         sourceDir := DMPython.RunJSON(
           Format('common.wapt_sources_edit(waptdevutils.duplicate_from_file(r"%s",new_prefix="%s",target_directory=r"%s",authorized_certs = r"%s" or None))',
-          [AppLocalDir + 'cache\' + Filename.AsArray[0].AsString, DefaultPackagePrefix, AppendPathDelim(DefaultSourcesRoot)+ExtractFileNameWithoutExt(Filename.AsArray[0].AsString)+'-wapt',AuthorizedExternalCertDir])).AsString;
+          [AppLocalDir + 'cache\' + Filename.AsArray[0].AsString, DefaultPackagePrefix, AppendPathDelim(DefaultSourcesRoot)+ExtractFileNameWithoutExt(Filename.AsArray[0].AsString)+'-wapt',Waptrepo.SignersCABundle])).AsString;
       end;
     finally
       Free;
@@ -382,6 +449,23 @@ end;
 procedure TVisImportPackage.ActPackageEditUpdate(Sender: TObject);
 begin
   ActPackageEdit.Enabled:=GridExternalPackages.SelectedCount = 1;
+end;
+
+procedure TVisImportPackage.ActRepositoriesSettingsExecute(Sender: TObject);
+begin
+  With TVisRepositories.Create(Self) do
+  try
+    WaptRepo := Self.Waptrepo;
+    if ShowModal = mrOk then
+    begin
+      //urlExternalRepo.Caption := format(rsUrl, [IniReadString(WaptIniFilename,EdRepoName.Text,'repo_url','https://store.wapt.fr/wapt')]);
+      GridExternalPackages.Clear;
+      ActSearchExternalPackage.Execute;
+    end;
+  finally
+    Free;
+  end;
+
 end;
 
 function TVisImportPackage.updateprogress(receiver: TObject;

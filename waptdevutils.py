@@ -188,6 +188,8 @@ def update_external_repo(repourl,search_string,proxy=None,mywapt=None,newer_only
     """
     proxies =  {'http':proxy,'https':proxy}
     repo = WaptRemoteRepo(url=repourl,proxies=proxies,name=repo_name)
+    if verify_cert == '' or verify_cert == '0':
+        verify_cert = False
     repo.verify_cert = verify_cert
     packages = repo.search(search_string,newest_only=newest_only)
     if mywapt and newer_only:
@@ -232,6 +234,9 @@ def get_packages_filenames(waptconfigfile,packages_names,with_depends=True,verif
 
     config = RawConfigParser(defaults=defaults)
     config.read(waptconfigfile)
+
+    if verify_cert == '' or verify_cert == '0':
+        verify_cert = False
 
     templates = WaptRemoteRepo(name=repo_name,verify_cert=verify_cert,config=config)
     templates.update()

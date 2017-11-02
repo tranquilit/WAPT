@@ -1608,7 +1608,9 @@ class WaptServer(object):
                     self.verify_cert = config.getboolean(section,'verify_cert')
                 except:
                     self.verify_cert = config.get(section,'verify_cert')
-                    if not os.path.isfile(self.verify_cert):
+                    if self.verify_cert == '':
+                        self.verify_cert = '0'
+                    elif not os.path.isfile(self.verify_cert):
                         logger.warning(u'waptserver certificate %s declared in configuration file can not be found. Waptserver communication will fail' % self.verify_cert)
 
         return self

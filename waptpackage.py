@@ -2081,6 +2081,8 @@ class WaptRemoteRepo(WaptBaseRepo):
 
         if verify_cert is not None:
             self.verify_cert = verify_cert
+        if self.verify_cert == '':
+            self.verify_cert = '0'
         if timeout is not None:
             self.timeout = timeout
 
@@ -2139,6 +2141,8 @@ class WaptRemoteRepo(WaptBaseRepo):
                 self.verify_cert = config.getboolean(section,'verify_cert')
             except:
                 self.verify_cert = config.get(section,'verify_cert')
+                if self.verify_cert == '':
+                    self.verify_cert = '0'
         #else:
         #    self.verify_cert = self._default_config['verify_cert']
 
