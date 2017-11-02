@@ -97,7 +97,9 @@ end;
 
 procedure TVisImportPackage.EdRepoNameSelect(Sender: TObject);
 begin
-  RepoName:=EdRepoName.Items[EdRepoName.ItemIndex];
+  if EdRepoName.ItemIndex >= 0 then
+    RepoName:=EdRepoName.Items[EdRepoName.ItemIndex]
+
 end;
 
 procedure TVisImportPackage.EdSearch1Execute(Sender: TObject);
@@ -119,7 +121,13 @@ end;
 procedure TVisImportPackage.FormClose(Sender: TObject;
   var CloseAction: TCloseAction);
 begin
+  IniWriteInteger(Appuserinipath,Name,'Top',Top);
+  IniWriteInteger(Appuserinipath,Name,'Left',Left);
+  IniWriteInteger(Appuserinipath,Name,'Width',Width);
+  IniWriteInteger(Appuserinipath,Name,'Height',Height);
+  IniWriteInteger(Appuserinipath,Name,'EdRepoName.ItemIndex',EdRepoName.ItemIndex);
   GridExternalPackages.SaveSettingsToIni(Appuserinipath);
+
 end;
 
 procedure TVisImportPackage.FormCreate(Sender: TObject);
@@ -135,7 +143,8 @@ begin
   inifile := TIniFile.Create(AppIniFilename);
   try
     inifile.ReadSections(EdRepoName.Items);
-    EdRepoName.Items.Delete(EdRepoName.Items.IndexOf('global'));
+    if EdRepoName.Items.IndexOf('global') >= 0 then
+      EdRepoName.Items.Delete(EdRepoName.Items.IndexOf('global'));
   finally
     inifile.Free;
   end;
@@ -168,6 +177,7 @@ end;
 procedure TVisImportPackage.SetRepoName(AValue: String);
 begin
   if FRepoName=AValue then Exit;
+  EdRepoName.ItemIndex := EdRepoName.Items.IndexOf(AValue);
   GridExternalPackages.Data := Nil;
   FRepoName:=AValue;
   WaptRepo.LoadFromInifile(WaptIniFilename,FRepoName);
@@ -182,16 +192,20 @@ begin
   FWaptrepo:=AValue;
   GridExternalPackages.Data := Nil;
   if AValue<> Nil then
-  begin
     EdRepoName.Text := AValue.Name;
-  end;
 end;
 
 procedure TVisImportPackage.FormShow(Sender: TObject);
 begin
   FillReposList;
+
   GridExternalPackages.LoadSettingsFromIni(Appuserinipath);
-  EdRepoName.ItemIndex:=0;
+  Top := IniReadInteger(Appuserinipath,Name,'Top',Top);
+  Left := IniReadInteger(Appuserinipath,Name,'Left',Left);
+  Width := IniReadInteger(Appuserinipath,Name,'Width',Width);
+  Height := IniReadInteger(Appuserinipath,Name,'Height',Height);
+
+  EdRepoName.ItemIndex:=IniReadInteger(Appuserinipath,Name,'EdRepoName.ItemIndex',0);
   EdRepoName.OnSelect(Sender);
   ActSearchExternalPackage.Execute;
 end;
@@ -240,6 +254,7 @@ begin
 
   if http_proxy = '' then
     http_proxy := None;
+  if Waptrepo.RepoURL <>'' then
   try
     expr := UTF8Decode(EdSearchPackage.Text);
     packages_python := Nil;
@@ -256,7 +271,9 @@ begin
     GridExternalPackages.Data := PyVarToSuperObject(packages_python);
   except
     on E:Exception do ShowMessageFmt(rsFailedExternalRepoUpdate+#13#10#13#10+E.Message,[Waptrepo.RepoURL]);
-  end;
+  end
+  else
+    ActRepositoriesSettings.Execute;
 end;
 
 procedure TVisImportPackage.ActPackageDuplicateExecute(Sender: TObject);
@@ -452,18 +469,22 @@ begin
 end;
 
 procedure TVisImportPackage.ActRepositoriesSettingsExecute(Sender: TObject);
+var
+  rs:TVisRepositories;
 begin
-  With TVisRepositories.Create(Self) do
+  rs := TVisRepositories.Create(Self);
   try
-    WaptRepo := Self.Waptrepo;
-    if ShowModal = mrOk then
+    rs.RepoName := Waptrepo.Name;
+    if rs.ShowModal = mrOk then
     begin
       //urlExternalRepo.Caption := format(rsUrl, [IniReadString(WaptIniFilename,EdRepoName.Text,'repo_url','https://store.wapt.fr/wapt')]);
-      GridExternalPackages.Clear;
+      FillReposList;
+      RepoName:='';
+      RepoName:=rs.RepoName;
       ActSearchExternalPackage.Execute;
     end;
   finally
-    Free;
+    rs.Free;
   end;
 
 end;

@@ -16,6 +16,9 @@ type
     ActDownloadCertificate: TAction;
     ActGetServerCertificate: TAction;
     ActCertifiCACert: TAction;
+    ActSaveSettings: TAction;
+    ActUnregisterRepo: TAction;
+    ActRegisterRepo: TAction;
     ActSelectHttpsBundle: TAction;
     ActSelectCertDir: TAction;
     ActionList1: TActionList;
@@ -28,9 +31,12 @@ type
     ButExploreDir: TButton;
     ButGetServerBundle: TButton;
     ButSelectCABundle: TButton;
+    ButSelectCABundle1: TButton;
+    ButSelectCABundle2: TButton;
     CBCheckSignature: TCheckBox;
     cbEnableCheckHttps: TCheckBox;
     EdHttpProxy: TTIEdit;
+    EdName: TTIComboBox;
     EdServerCABundle: TTIEdit;
     EdSignersCABundle: TTIEdit;
     ImageList1: TImageList;
@@ -40,12 +46,14 @@ type
     labProxy: TLabel;
     labCertDir: TLabel;
     DlgOpenCrt: TOpenDialog;
+    labName: TLabel;
     panCertActions: TPanel;
     Panel1: TPanel;
     Panel2: TPanel;
     panDir: TPanel;
     panHttps1: TPanel;
     panHttps2: TPanel;
+    panNameActions: TPanel;
     panPackageSign1: TPanel;
     panPackageSign2: TPanel;
     panProxyActions: TPanel;
@@ -57,23 +65,29 @@ type
     procedure ActDownloadCertificateUpdate(Sender: TObject);
     procedure ActGetServerCertificateExecute(Sender: TObject);
     procedure ActOpenCertDirExecute(Sender: TObject);
+    procedure ActRegisterRepoExecute(Sender: TObject);
+    procedure ActSaveSettingsExecute(Sender: TObject);
+    procedure ActSaveSettingsUpdate(Sender: TObject);
     procedure ActSelectHttpsBundleExecute(Sender: TObject);
+    procedure ActUnregisterRepoExecute(Sender: TObject);
+    procedure ActUnregisterRepoUpdate(Sender: TObject);
     procedure cbEnableCheckHttpsClick(Sender: TObject);
+    procedure EdNameSelect(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     FRepoName: String;
     FWaptRepo: TWaptRepo;
+    procedure FillReposList;
     function GetRepoName: String;
-    function GetWaptRepo: TWaptRepo;
     procedure SetRepoName(AValue: String);
-    procedure SetWaptRepo(AValue: TWaptRepo);
     { private declarations }
   public
     { public declarations }
     property RepoName:String read GetRepoName write SetRepoName;
-    property WaptRepo:TWaptRepo read GetWaptRepo write SetWaptRepo;
+    property WaptRepo:TWaptRepo read FWaptRepo;
   end;
 
 var
@@ -85,37 +99,60 @@ uses uSCaleDPI,LCLIntf,tisinifiles,IniFiles,tiscommon,URIParser,dmwaptpython,var
 
 { TVisRepositories }
 
+
+procedure TVisRepositories.FillReposList;
+var
+  inifile: TIniFile;
+begin
+  inifile := TIniFile.Create(AppIniFilename);
+  try
+    inifile.ReadSections(EdName.Items);
+    EdName.Items.Delete(EdName.Items.IndexOf('global'));
+  finally
+    inifile.Free;
+  end;
+end;
+
 procedure TVisRepositories.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
-  WaptRepo := TWaptRepo.Create('global');
+  ScaleImageList(ImageList1,96);
+
+  FWaptRepo := TWaptRepo.Create(FRepoName);
+
+  FillReposList;
+
+  EdName.Link.TIObject := FWaptRepo;
+  EdRepoURL.Link.TIObject := FWaptRepo;
+  EdHttpProxy.Link.TIObject := FWaptRepo;
+  EdServerCABundle.Link.TIObject := FWaptRepo;
+  EdSignersCABundle.Link.TIObject := FWaptRepo;
+
+
+
+end;
+
+procedure TVisRepositories.FormDestroy(Sender: TObject);
+begin
+  if Assigned(FWaptRepo) then
+    FreeAndNil(FWaptRepo);
 end;
 
 procedure TVisRepositories.FormShow(Sender: TObject);
 begin
-  WaptRepo.LoadFromInifile(WaptIniFilename,'');
-end;
-
-procedure TVisRepositories.SetWaptRepo(AValue: TWaptRepo);
-begin
-  if FWaptRepo=AValue then Exit;
-  FWaptRepo:=AValue;
-
-  EdRepoURL.Link.TIObject := WaptRepo;
-  EdHttpProxy.Link.TIObject := WaptRepo;
-  EdServerCABundle.Link.TIObject := WaptRepo;
-  EdSignersCABundle.Link.TIObject := WaptRepo;
-
-  cbEnableCheckHttps.Checked:=(WaptRepo.ServerCABundle <>'') and (WaptRepo.ServerCABundle<>'0');
+  WaptRepo.LoadFromInifile(WaptIniFilename,RepoName);
+  cbEnableCheckHttps.Checked:=(FWaptRepo.ServerCABundle <>'') and (FWaptRepo.ServerCABundle<>'0');
   cbEnableCheckHttpsClick(Nil);
-
+  BitBtn1.SetFocus;
 end;
 
 procedure TVisRepositories.SetRepoName(AValue: String);
 begin
-  if FRepoName=AValue then Exit;
-  FRepoName:=AValue;
-  WaptRepo.LoadFromInifile(WaptIniFilename,FRepoName);
+  if WaptRepo.Name=AValue then Exit;
+  FRepoName := AValue;
+  WaptRepo.Name:=AValue;
+  WaptRepo.LoadFromInifile(WaptIniFilename,AValue);
+  EdName.ReadOnly:=AValue<>'';
 end;
 
 function TVisRepositories.GetRepoName: String;
@@ -123,20 +160,9 @@ begin
   Result := WaptRepo.Name;
 end;
 
-function TVisRepositories.GetWaptRepo: TWaptRepo;
-begin
-  if not Assigned(FWaptRepo) then
-  begin
-    FWaptRepo := TWaptRepo.Create(FRepoName);
-    FWaptRepo.LoadFromInifile(WaptIniFilename,FRepoName);
-  end;
-  Result := FWaptRepo;
-end;
-
 procedure TVisRepositories.ActDownloadCertificateExecute(Sender: TObject);
 begin
   OpenDocument(WaptRepo.RepoURL+'/ssl');
-
 end;
 
 procedure TVisRepositories.ActCertifiCACertExecute(Sender: TObject);
@@ -152,9 +178,8 @@ end;
 
 procedure TVisRepositories.ActGetServerCertificateExecute(Sender: TObject);
 var
-  i:integer;
   certfn: String;
-  pem_data,certbundle,certs,cert:Variant;
+  pem_data:Variant;
   RepoURI:TURI;
 begin
   RepoURI := ParseURI(WaptRepo.RepoURL);
@@ -182,11 +207,56 @@ begin
   OpenDocument(WaptRepo.SignersCABundle);
 end;
 
+procedure TVisRepositories.ActRegisterRepoExecute(Sender: TObject);
+begin
+  RepoName:='';
+  EdName.ReadOnly:=False;
+  EdName.SetFocus;
+end;
+
+procedure TVisRepositories.ActSaveSettingsExecute(Sender: TObject);
+begin
+  WaptRepo.SaveToInifile(WaptIniFilename,'');
+  ModalResult:=mrOk;
+end;
+
+procedure TVisRepositories.ActSaveSettingsUpdate(Sender: TObject);
+begin
+  ActSaveSettings.Enabled := (WaptRepo.Name<>'') and WaptRepo.IsUpdated;
+end;
+
 procedure TVisRepositories.ActSelectHttpsBundleExecute(Sender: TObject);
 begin
   DlgOpenCrt.FileName:=WaptRepo.ServerCABundle;
   if DlgOpenCrt.Execute then
     WaptRepo.ServerCABundle:=DlgOpenCrt.FileName;
+end;
+
+procedure TVisRepositories.ActUnregisterRepoExecute(Sender: TObject);
+var
+  inifile: TIniFile;
+begin
+  inifile := TIniFile.Create(AppIniFilename);
+  try
+    if inifile.SectionExists(WaptRepo.Name) then
+    begin
+      inifile.EraseSection(WaptRepo.Name);
+      EdName.Items.Delete(EdName.Items.IndexOf(WaptRepo.Name));
+    end;
+    if EdName.Items.Count>0 then
+      EdName.ItemIndex:=0
+    else
+      EdName.ItemIndex:=-1;
+    EdNameSelect(Nil);
+
+  finally
+    inifile.Free;
+  end;
+end;
+
+procedure TVisRepositories.ActUnregisterRepoUpdate(Sender: TObject);
+begin
+  ActUnregisterRepo.Enabled := WaptRepo.Name<>'Global';
 end;
 
 procedure TVisRepositories.cbEnableCheckHttpsClick(Sender: TObject);
@@ -203,13 +273,17 @@ begin
   ActSelectHttpsBundle.Enabled := cbEnableCheckHttps.Checked;;
 end;
 
+procedure TVisRepositories.EdNameSelect(Sender: TObject);
+begin
+  RepoName:=EdName.Text;
+end;
+
 
 procedure TVisRepositories.FormCloseQuery(Sender: TObject; var CanClose: boolean
   );
 begin
   if ModalResult=mrOK then
   try
-    WaptRepo.SaveToInifile(WaptIniFilename,'');
     CanClose:=True;
   finally
   end

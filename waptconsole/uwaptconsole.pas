@@ -2824,11 +2824,13 @@ end;
 procedure TVisWaptGUI.ActImportFromRepoExecute(Sender: TObject);
 begin
   with TVisImportPackage.Create(Self) do
-  begin
+  try
     if ShowModal = mrOk then
     begin
       ActPackagesUpdate.Execute;
     end;
+  finally
+    Free;
   end;
 end;
 

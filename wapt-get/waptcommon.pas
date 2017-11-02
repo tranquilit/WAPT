@@ -139,31 +139,37 @@ type
   private
     FDNSDomain: String;
     FHttpProxy: String;
+    FIsUpdated: Boolean;
     FName: String;
     FPackages: ISuperObject;
     FRepoURL: String;
     FServerCABundle: String;
     FSignersCABundle: String;
+    FTimeOut: Integer;
     function GetRepoURL: String;
     procedure SetDNSDomain(AValue: String);
     procedure SetHttpProxy(AValue: String);
+    procedure SetIsUpdated(AValue: Boolean);
     procedure SetName(AValue: String);
     procedure SetPackages(AValue: ISuperObject);
     procedure SetRepoURL(AValue: String);
     procedure SetServerCABundle(AValue: String);
     procedure SetSignersCABundle(AValue: String);
+    procedure SetTimeOut(AValue: Integer);
   public
-    constructor Create(AName:String;ARepoURL:String='');
+    constructor Create(AName:String='';ARepoURL:String='');
     procedure LoadFromInifile(IniFilename:String;Section:String;Reset:Boolean=True);
     procedure SaveToInifile(IniFilename:String;Section:String);
     property Packages:ISuperObject read FPackages write SetPackages;
   published
+    property IsUpdated:Boolean read FIsUpdated write SetIsUpdated;
     property Name:String read FName write SetName;
     property RepoURL:String read GetRepoURL write SetRepoURL;
     property DNSDomain:String read FDNSDomain write SetDNSDomain;
     property SignersCABundle:String read FSignersCABundle write SetSignersCABundle;
     property ServerCABundle:String read FServerCABundle write SetServerCABundle;
     property HttpProxy:String read FHttpProxy write SetHttpProxy;
+    property TimeOut:Integer read FTimeOut write SetTimeOut;
   end;
 
 const
@@ -328,6 +334,12 @@ begin
   FHttpProxy:=AValue;
 end;
 
+procedure TWaptRepo.SetIsUpdated(AValue: Boolean);
+begin
+  if FIsUpdated=AValue then Exit;
+  FIsUpdated:=AValue;
+end;
+
 procedure TWaptRepo.SetDNSDomain(AValue: String);
 begin
   if FDNSDomain=AValue then Exit;
@@ -343,37 +355,51 @@ procedure TWaptRepo.SetName(AValue: String);
 begin
   if FName=AValue then Exit;
   FName:=AValue;
+  FIsUpdated:=True;
 end;
 
 procedure TWaptRepo.SetPackages(AValue: ISuperObject);
 begin
   if FPackages=AValue then Exit;
   FPackages:=AValue;
+  FIsUpdated:=True;
 end;
 
   procedure TWaptRepo.SetRepoURL(AValue: String);
 begin
   if FRepoURL=AValue then Exit;
   FRepoURL:=AValue;
+  FIsUpdated:=True;
 end;
 
   procedure TWaptRepo.SetServerCABundle(AValue: String);
 begin
   if FServerCABundle=AValue then Exit;
   FServerCABundle:=AValue;
+  FIsUpdated:=True;
 end;
 
   procedure TWaptRepo.SetSignersCABundle(AValue: String);
   begin
     if FSignersCABundle=AValue then Exit;
     FSignersCABundle:=AValue;
+    FIsUpdated:=True;
   end;
 
-  constructor TWaptRepo.Create(AName: String;ARepoURL:String='');
+procedure TWaptRepo.SetTimeOut(AValue: Integer);
+begin
+  if FTimeOut=AValue then Exit;
+  FTimeOut:=AValue;
+  FIsUpdated:=True;
+end;
+
+  constructor TWaptRepo.Create(AName: String='';ARepoURL:String='');
   begin
     inherited Create;
-    Name := AName;
     RepoURL:=ARepoURL;
+    Name := AName;
+    TimeOut := 2;
+    FIsUpdated := False;
   end;
 
   procedure TWaptRepo.LoadFromInifile(IniFilename: String; Section: String;Reset:Boolean=True);
@@ -382,24 +408,31 @@ end;
   begin
     if Section ='' then
       Section := Name;
-    with TIniFile.Create(IniFilename) do
-    try
-      if Reset then
-      begin
-        RepoURL:='';
-        DNSDomain := '';
-        HttpProxy:='';
-        ServerCABundle:='';
-        SignersCABundle:='';
-      end;
-      RepoURL := ReadString(Section,'repo_url',RepoURL);
-      DNSDomain := ReadString(Section,'dnsdomain',ReadString('global','dnsdomain',DNSDomain));
-      HttpProxy:= ReadString(Section,'http_proxy',ReadString('global','http_proxy',HttpProxy));
-      ServerCABundle:=ReadString(Section,'verify_cert',ReadString('global','verify_cert',ServerCABundle));
-      SignersCABundle:=ReadString(Section,'public_certs_dir',ReadString('global','public_certs_dir',SignersCABundle));
-    finally
-      Free;
+    if Reset then
+    begin
+      RepoURL:='';
+      DNSDomain := '';
+      HttpProxy:='';
+      ServerCABundle:='';
+      SignersCABundle:='';
+      TimeOut:=2;
+      FIsUpdated:=False;
     end;
+    if section <> '' then
+      with TIniFile.Create(IniFilename) do
+      try
+        begin
+          RepoURL := ReadString(Section,'repo_url',RepoURL);
+          DNSDomain := ReadString(Section,'dnsdomain',ReadString('global','dnsdomain',DNSDomain));
+          HttpProxy:= ReadString(Section,'http_proxy',ReadString('global','http_proxy',HttpProxy));
+          ServerCABundle:=ReadString(Section,'verify_cert',ReadString('global','verify_cert',ServerCABundle));
+          SignersCABundle:=ReadString(Section,'public_certs_dir',ReadString('global','public_certs_dir',SignersCABundle));
+          TimeOut:=ReadInteger(Section,'timeout',ReadInteger('global','timeout',TimeOut));
+          FIsUpdated:=False;
+        end;
+      finally
+        Free;
+      end;
   end;
 
   procedure TWaptRepo.SaveToInifile(IniFilename: String; Section: String);
@@ -408,6 +441,10 @@ end;
   begin
     if Section ='' then
       Section := Name;
+
+    if section = '' then
+      Raise Exception.Create('Unable to save Repo settings, Section parameter is empty');
+
     with TIniFile.Create(IniFilename) do
     try
       WriteString(Section,'repo_url',RepoURL);
@@ -415,6 +452,8 @@ end;
       WriteString(Section,'http_proxy',HttpProxy);
       WriteString(Section,'verify_cert',ServerCABundle);
       WriteString(Section,'public_certs_dir',SignersCABundle);
+      WriteInteger(Section,'timeout',TimeOut);
+      FIsUpdated:=False;
     finally
       Free;
     end;

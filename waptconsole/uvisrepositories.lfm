@@ -2,40 +2,42 @@ object VisRepositories: TVisRepositories
   Left = 578
   Height = 232
   Top = 291
-  Width = 765
+  Width = 815
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Repositories settings'
   ClientHeight = 232
-  ClientWidth = 765
+  ClientWidth = 815
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   LCLVersion = '1.3'
   object Panel1: TPanel
     Left = 0
     Height = 30
     Top = 202
-    Width = 765
+    Width = 815
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 30
-    ClientWidth = 765
+    ClientWidth = 815
     TabOrder = 1
     object BitBtn1: TBitBtn
-      Left = 605
-      Height = 23
+      Left = 670
+      Height = 26
       Top = 4
-      Width = 75
+      Width = 60
+      Action = ActSaveSettings
       Anchors = [akTop, akRight]
+      AutoSize = True
       Default = True
-      DefaultCaption = True
       Kind = bkOK
       ModalResult = 1
       TabOrder = 0
     end
     object BitBtn2: TBitBtn
-      Left = 685
+      Left = 735
       Height = 23
       Top = 4
       Width = 75
@@ -51,7 +53,7 @@ object VisRepositories: TVisRepositories
     Left = 0
     Height = 202
     Top = 0
-    Width = 765
+    Width = 815
     Align = alClient
     AutoSize = True
     BevelOuter = bvNone
@@ -65,39 +67,93 @@ object VisRepositories: TVisRepositories
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 3
     ClientHeight = 202
-    ClientWidth = 765
+    ClientWidth = 815
     TabOrder = 0
-    object labRepoURL: TLabel
+    object labName: TLabel
       Left = 6
       Height = 23
       Top = 3
-      Width = 121
+      Width = 153
+      Alignment = taRightJustify
+      Caption = 'Repository name'
+      Layout = tlCenter
+      ParentColor = False
+    end
+    object EdName: TTIComboBox
+      Left = 165
+      Height = 21
+      Hint = 'E.g. : https://store.wapt.fr/wapt'#13#10'Used by WAPT console for duplicating packages.'
+      Top = 3
+      Width = 210
+      HistoryCaseSensitive = False
+      Link.TIPropertyName = 'Name'
+      MaxHistoryCount = 0
+      OnSelect = EdNameSelect
+      TabOrder = 15
+    end
+    object panNameActions: TPanel
+      Left = 381
+      Height = 23
+      Top = 3
+      Width = 428
+      AutoSize = True
+      BevelOuter = bvNone
+      ChildSizing.HorizontalSpacing = 3
+      ClientHeight = 23
+      ClientWidth = 428
+      TabOrder = 0
+      object ButSelectCABundle1: TButton
+        Left = 0
+        Height = 23
+        Top = 0
+        Width = 141
+        Action = ActRegisterRepo
+        Align = alLeft
+        AutoSize = True
+        TabOrder = 0
+      end
+      object ButSelectCABundle2: TButton
+        Left = 144
+        Height = 23
+        Top = 0
+        Width = 128
+        Action = ActUnregisterRepo
+        Align = alLeft
+        AutoSize = True
+        TabOrder = 1
+      end
+    end
+    object labRepoURL: TLabel
+      Left = 6
+      Height = 23
+      Top = 32
+      Width = 153
       Alignment = taRightJustify
       Caption = 'External packages repository '
       Layout = tlCenter
       ParentColor = False
     end
     object EdRepoURL: TTIEdit
-      Left = 133
+      Left = 165
       Height = 23
       Hint = 'E.g. : https://store.wapt.fr/wapt'#13#10'Used by WAPT console for duplicating packages.'
-      Top = 3
-      Width = 200
+      Top = 32
+      Width = 210
       AutoSize = False
       Constraints.MinWidth = 200
       Link.TIPropertyName = 'RepoURL'
-      TabOrder = 0
+      TabOrder = 1
     end
     object panURLActions: TPanel
-      Left = 339
+      Left = 381
       Height = 23
-      Top = 3
-      Width = 420
+      Top = 32
+      Width = 428
       AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 23
-      ClientWidth = 420
-      TabOrder = 1
+      ClientWidth = 428
+      TabOrder = 2
       object butBrowseCerts: TButton
         Left = 0
         Height = 23
@@ -112,62 +168,62 @@ object VisRepositories: TVisRepositories
     object labProxy: TLabel
       Left = 6
       Height = 21
-      Top = 32
-      Width = 121
+      Top = 61
+      Width = 153
       Alignment = taRightJustify
       Caption = 'http proxy to use (if needed)'
       Layout = tlCenter
       ParentColor = False
     end
     object EdHttpProxy: TTIEdit
-      Left = 133
+      Left = 165
       Height = 21
       Hint = 'E.g. : http://proxy.tranquilit.local:3128'#13#10'Only required if a proxy is needed for templates access'
-      Top = 32
-      Width = 200
+      Top = 61
+      Width = 210
       Constraints.MinWidth = 200
       Link.TIPropertyName = 'HttpProxy'
-      TabOrder = 4
+      TabOrder = 3
     end
     object panProxyActions: TPanel
-      Left = 339
+      Left = 381
       Height = 21
-      Top = 32
-      Width = 420
+      Top = 61
+      Width = 428
       AutoSize = True
       BevelOuter = bvNone
-      TabOrder = 5
+      TabOrder = 4
     end
     object cbEnableCheckHttps: TCheckBox
       Left = 6
       Height = 17
-      Top = 59
-      Width = 121
+      Top = 88
+      Width = 153
       Caption = 'Check https certificate'
       OnClick = cbEnableCheckHttpsClick
-      TabOrder = 8
+      TabOrder = 5
     end
     object panHttps1: TPanel
-      Left = 133
+      Left = 165
       Height = 17
-      Top = 59
-      Width = 200
+      Top = 88
+      Width = 210
       BevelOuter = bvNone
-      TabOrder = 10
+      TabOrder = 6
     end
     object panHttps2: TPanel
-      Left = 339
+      Left = 381
       Height = 17
-      Top = 59
-      Width = 420
+      Top = 88
+      Width = 428
       BevelOuter = bvNone
-      TabOrder = 11
+      TabOrder = 7
     end
     object Label6: TLabel
       Left = 6
       Height = 23
-      Top = 82
-      Width = 121
+      Top = 111
+      Width = 153
       Alignment = taRightJustify
       AutoSize = False
       Caption = 'Path to https CA certificates'
@@ -175,25 +231,25 @@ object VisRepositories: TVisRepositories
       ParentColor = False
     end
     object EdServerCABundle: TTIEdit
-      Left = 133
+      Left = 165
       Height = 23
       Hint = 'E.g. : c:\wapt\ssl\server\cacert.pem'#13#10'Path to certificate bundle with https servers CA certificates'#13#10'The bundle must contain intermediate and root certificates'#13#10#13#10'If 0: no check on https server certificates issuers'#13#10'If 1 : use default wapt cacert.pem bundle'
-      Top = 82
-      Width = 200
+      Top = 111
+      Width = 210
       Link.TIPropertyName = 'ServerCABundle'
-      TabOrder = 6
+      TabOrder = 8
     end
     object panServerCAAction: TPanel
-      Left = 339
+      Left = 381
       Height = 23
-      Top = 82
-      Width = 420
+      Top = 111
+      Width = 428
       AutoSize = True
       BevelOuter = bvNone
       ChildSizing.HorizontalSpacing = 3
       ClientHeight = 23
-      ClientWidth = 420
-      TabOrder = 7
+      ClientWidth = 428
+      TabOrder = 9
       object ButDefaultWaptBundle: TButton
         Left = 275
         Height = 23
@@ -228,60 +284,60 @@ object VisRepositories: TVisRepositories
     object CBCheckSignature: TCheckBox
       Left = 6
       Height = 17
-      Top = 111
-      Width = 121
+      Top = 140
+      Width = 153
       Caption = 'Check package signature'
       Checked = True
       State = cbChecked
-      TabOrder = 9
+      TabOrder = 10
     end
     object panPackageSign1: TPanel
-      Left = 133
+      Left = 165
       Height = 17
-      Top = 111
-      Width = 200
+      Top = 140
+      Width = 210
       BevelOuter = bvNone
-      TabOrder = 12
+      TabOrder = 11
     end
     object panPackageSign2: TPanel
-      Left = 339
+      Left = 381
       Height = 17
-      Top = 111
-      Width = 420
+      Top = 140
+      Width = 428
       BevelOuter = bvNone
-      TabOrder = 13
+      TabOrder = 12
     end
     object labCertsDir: TLabel
       Left = 6
       Height = 26
-      Top = 134
-      Width = 121
+      Top = 163
+      Width = 153
       Alignment = taRightJustify
       Caption = 'Authorized external keys dir'
       Layout = tlCenter
       ParentColor = False
     end
     object EdSignersCABundle: TTIEdit
-      Left = 133
+      Left = 165
       Height = 26
       Hint = 'When importing packages, check signature against certificates in this list'
-      Top = 134
-      Width = 200
+      Top = 163
+      Width = 210
       AutoSize = False
       Link.TIPropertyName = 'SignersCABundle'
-      TabOrder = 2
+      TabOrder = 13
     end
     object panCertActions: TPanel
-      Left = 339
+      Left = 381
       Height = 26
-      Top = 134
-      Width = 420
+      Top = 163
+      Width = 428
       AutoSize = True
       BevelOuter = bvNone
       ChildSizing.HorizontalSpacing = 4
       ClientHeight = 26
-      ClientWidth = 420
-      TabOrder = 3
+      ClientWidth = 428
+      TabOrder = 14
       object ButExploreDir: TButton
         Left = 139
         Height = 26
@@ -342,8 +398,8 @@ object VisRepositories: TVisRepositories
   end
   object ActionList1: TActionList
     Images = ImageList1
-    left = 560
-    top = 8
+    left = 640
+    top = 56
     object ActDownloadCertificate: TAction
       Caption = 'Browse certificates'
       OnExecute = ActDownloadCertificateExecute
@@ -368,6 +424,19 @@ object VisRepositories: TVisRepositories
     object ActSelectHttpsBundle: TAction
       Caption = 'Select CA Bundle'
       OnExecute = ActSelectHttpsBundleExecute
+    end
+    object ActRegisterRepo: TAction
+      Caption = 'Register new repository'
+    end
+    object ActUnregisterRepo: TAction
+      Caption = 'Unregister repository'
+      OnExecute = ActUnregisterRepoExecute
+      OnUpdate = ActUnregisterRepoUpdate
+    end
+    object ActSaveSettings: TAction
+      Caption = 'OK'
+      OnExecute = ActSaveSettingsExecute
+      OnUpdate = ActSaveSettingsUpdate
     end
   end
   object ImageList1: TImageList
