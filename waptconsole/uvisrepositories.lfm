@@ -89,7 +89,7 @@ object VisRepositories: TVisRepositories
       Link.TIPropertyName = 'Name'
       MaxHistoryCount = 0
       OnSelect = EdNameSelect
-      TabOrder = 15
+      TabOrder = 0
     end
     object panNameActions: TPanel
       Left = 381
@@ -101,7 +101,7 @@ object VisRepositories: TVisRepositories
       ChildSizing.HorizontalSpacing = 3
       ClientHeight = 23
       ClientWidth = 428
-      TabOrder = 0
+      TabOrder = 1
       object ButSelectCABundle1: TButton
         Left = 0
         Height = 23
@@ -142,7 +142,7 @@ object VisRepositories: TVisRepositories
       AutoSize = False
       Constraints.MinWidth = 200
       Link.TIPropertyName = 'RepoURL'
-      TabOrder = 1
+      TabOrder = 2
     end
     object panURLActions: TPanel
       Left = 381
@@ -153,7 +153,7 @@ object VisRepositories: TVisRepositories
       BevelOuter = bvNone
       ClientHeight = 23
       ClientWidth = 428
-      TabOrder = 2
+      TabOrder = 3
       object butBrowseCerts: TButton
         Left = 0
         Height = 23
@@ -183,7 +183,7 @@ object VisRepositories: TVisRepositories
       Width = 210
       Constraints.MinWidth = 200
       Link.TIPropertyName = 'HttpProxy'
-      TabOrder = 3
+      TabOrder = 4
     end
     object panProxyActions: TPanel
       Left = 381
@@ -192,7 +192,7 @@ object VisRepositories: TVisRepositories
       Width = 428
       AutoSize = True
       BevelOuter = bvNone
-      TabOrder = 4
+      TabOrder = 5
     end
     object cbEnableCheckHttps: TCheckBox
       Left = 6
@@ -201,7 +201,7 @@ object VisRepositories: TVisRepositories
       Width = 153
       Caption = 'Check https certificate'
       OnClick = cbEnableCheckHttpsClick
-      TabOrder = 5
+      TabOrder = 6
     end
     object panHttps1: TPanel
       Left = 165
@@ -209,7 +209,7 @@ object VisRepositories: TVisRepositories
       Top = 88
       Width = 210
       BevelOuter = bvNone
-      TabOrder = 6
+      TabOrder = 7
     end
     object panHttps2: TPanel
       Left = 381
@@ -217,7 +217,7 @@ object VisRepositories: TVisRepositories
       Top = 88
       Width = 428
       BevelOuter = bvNone
-      TabOrder = 7
+      TabOrder = 8
     end
     object Label6: TLabel
       Left = 6
@@ -237,7 +237,7 @@ object VisRepositories: TVisRepositories
       Top = 111
       Width = 210
       Link.TIPropertyName = 'ServerCABundle'
-      TabOrder = 8
+      TabOrder = 9
     end
     object panServerCAAction: TPanel
       Left = 381
@@ -249,7 +249,7 @@ object VisRepositories: TVisRepositories
       ChildSizing.HorizontalSpacing = 3
       ClientHeight = 23
       ClientWidth = 428
-      TabOrder = 9
+      TabOrder = 10
       object ButDefaultWaptBundle: TButton
         Left = 275
         Height = 23
@@ -288,8 +288,9 @@ object VisRepositories: TVisRepositories
       Width = 153
       Caption = 'Check package signature'
       Checked = True
+      OnClick = CBCheckSignatureClick
       State = cbChecked
-      TabOrder = 10
+      TabOrder = 11
     end
     object panPackageSign1: TPanel
       Left = 165
@@ -297,7 +298,7 @@ object VisRepositories: TVisRepositories
       Top = 140
       Width = 210
       BevelOuter = bvNone
-      TabOrder = 11
+      TabOrder = 12
     end
     object panPackageSign2: TPanel
       Left = 381
@@ -305,7 +306,7 @@ object VisRepositories: TVisRepositories
       Top = 140
       Width = 428
       BevelOuter = bvNone
-      TabOrder = 12
+      TabOrder = 13
     end
     object labCertsDir: TLabel
       Left = 6
@@ -325,7 +326,7 @@ object VisRepositories: TVisRepositories
       Width = 210
       AutoSize = False
       Link.TIPropertyName = 'SignersCABundle'
-      TabOrder = 13
+      TabOrder = 14
     end
     object panCertActions: TPanel
       Left = 381
@@ -337,7 +338,7 @@ object VisRepositories: TVisRepositories
       ChildSizing.HorizontalSpacing = 4
       ClientHeight = 26
       ClientWidth = 428
-      TabOrder = 14
+      TabOrder = 15
       object ButExploreDir: TButton
         Left = 139
         Height = 26

@@ -71,6 +71,7 @@ type
     procedure ActSelectHttpsBundleExecute(Sender: TObject);
     procedure ActUnregisterRepoExecute(Sender: TObject);
     procedure ActUnregisterRepoUpdate(Sender: TObject);
+    procedure CBCheckSignatureClick(Sender: TObject);
     procedure cbEnableCheckHttpsClick(Sender: TObject);
     procedure EdNameSelect(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -143,6 +144,10 @@ begin
   WaptRepo.LoadFromInifile(WaptIniFilename,RepoName);
   cbEnableCheckHttps.Checked:=(FWaptRepo.ServerCABundle <>'') and (FWaptRepo.ServerCABundle<>'0');
   cbEnableCheckHttpsClick(Nil);
+
+  CBCheckSignature.Checked:=(FWaptRepo.SignersCABundle <>'');
+  CBCheckSignatureClick(Nil);
+
   BitBtn1.SetFocus;
 end;
 
@@ -257,6 +262,19 @@ end;
 procedure TVisRepositories.ActUnregisterRepoUpdate(Sender: TObject);
 begin
   ActUnregisterRepo.Enabled := WaptRepo.Name<>'Global';
+end;
+
+procedure TVisRepositories.CBCheckSignatureClick(Sender: TObject);
+begin
+  If not CBCheckSignature.Checked then
+    WaptRepo.SignersCABundle := ''
+  else
+    if (WaptRepo.SignersCABundle='') then
+      WaptRepo.SignersCABundle := AppendPathDelim(WaptBaseDir)+'ssl';
+
+  EdSignersCABundle.Enabled := CBCheckSignature.Checked;
+  ActSelectCertDir.Enabled := CBCheckSignature.Checked;
+  ActOpenCertDir.Enabled := CBCheckSignature.Checked;
 end;
 
 procedure TVisRepositories.cbEnableCheckHttpsClick(Sender: TObject);
