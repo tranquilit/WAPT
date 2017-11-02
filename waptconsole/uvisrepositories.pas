@@ -66,6 +66,7 @@ type
     procedure ActGetServerCertificateExecute(Sender: TObject);
     procedure ActOpenCertDirExecute(Sender: TObject);
     procedure ActRegisterRepoExecute(Sender: TObject);
+    procedure ActRegisterRepoUpdate(Sender: TObject);
     procedure ActSaveSettingsExecute(Sender: TObject);
     procedure ActSaveSettingsUpdate(Sender: TObject);
     procedure ActSelectHttpsBundleExecute(Sender: TObject);
@@ -217,6 +218,11 @@ begin
   RepoName:='';
   EdName.ReadOnly:=False;
   EdName.SetFocus;
+end;
+
+procedure TVisRepositories.ActRegisterRepoUpdate(Sender: TObject);
+begin
+  ActRegisterRepo.Enabled := not WaptRepo.IsUpdated;
 end;
 
 procedure TVisRepositories.ActSaveSettingsExecute(Sender: TObject);

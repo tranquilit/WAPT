@@ -428,6 +428,8 @@ object VisRepositories: TVisRepositories
     end
     object ActRegisterRepo: TAction
       Caption = 'Register new repository'
+      OnExecute = ActRegisterRepoExecute
+      OnUpdate = ActRegisterRepoUpdate
     end
     object ActUnregisterRepo: TAction
       Caption = 'Unregister repository'
@@ -438,6 +440,7 @@ object VisRepositories: TVisRepositories
       Caption = 'OK'
       OnExecute = ActSaveSettingsExecute
       OnUpdate = ActSaveSettingsUpdate
+      ShortCut = 16467
     end
   end
   object ImageList1: TImageList
