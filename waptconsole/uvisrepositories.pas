@@ -5,8 +5,9 @@ unit uvisrepositories;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, RTTICtrls, Forms, Controls, Graphics, Dialogs,
-  ExtCtrls, Buttons, DefaultTranslator, StdCtrls, EditBtn, ActnList, waptcommon;
+  Classes, SysUtils, FileUtil, RTTICtrls, Forms, Controls, Graphics,
+  Dialogs, ExtCtrls, Buttons, DefaultTranslator, StdCtrls, EditBtn, ActnList,
+  waptcommon;
 
 type
 
@@ -96,7 +97,7 @@ var
   VisRepositories: TVisRepositories;
 
 implementation
-uses uSCaleDPI,LCLIntf,tisinifiles,IniFiles,tiscommon,URIParser,dmwaptpython,variants,VarPyth,tisstrings;
+uses uSCaleDPI,LCLIntf,tisinifiles,IniFiles,tiscommon,URIParser,dmwaptpython,variants,VarPyth,tisstrings,uWaptConsoleRes;
 {$R *.lfm}
 
 { TVisRepositories }
@@ -247,21 +248,26 @@ procedure TVisRepositories.ActUnregisterRepoExecute(Sender: TObject);
 var
   inifile: TIniFile;
 begin
-  inifile := TIniFile.Create(AppIniFilename);
-  try
-    if inifile.SectionExists(WaptRepo.Name) then
-    begin
-      inifile.EraseSection(WaptRepo.Name);
-      EdName.Items.Delete(EdName.Items.IndexOf(WaptRepo.Name));
-    end;
-    if EdName.Items.Count>0 then
-      EdName.ItemIndex:=0
-    else
-      EdName.ItemIndex:=-1;
-    EdNameSelect(Nil);
+  if MessageDlg(format(rsRepositoryUnregisterConfirm, [WaptRepo.Name]),
+        mtConfirmation, mbYesNoCancel, 0) <> mrYes then
 
-  finally
-    inifile.Free;
+  begin
+    inifile := TIniFile.Create(AppIniFilename);
+    try
+      if inifile.SectionExists(WaptRepo.Name) then
+      begin
+        inifile.EraseSection(WaptRepo.Name);
+        EdName.Items.Delete(EdName.Items.IndexOf(WaptRepo.Name));
+      end;
+      if EdName.Items.Count>0 then
+        EdName.ItemIndex:=0
+      else
+        EdName.ItemIndex:=-1;
+      EdNameSelect(Nil);
+
+    finally
+      inifile.Free;
+    end;
   end;
 end;
 

@@ -189,6 +189,7 @@ resourcestring
   rsDuplicateFailure = 'Error while duplicating the package(s).';
   rsNoPackage = 'No package found. Check authorized certificates';
 
+  rsRepositoryUnregisterConfirm = 'Confirm the unregistration of repository %s';
 
 
   { --- MESSAGES DANS WAPTGET --- }

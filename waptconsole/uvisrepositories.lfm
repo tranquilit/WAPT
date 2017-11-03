@@ -439,7 +439,6 @@ object VisRepositories: TVisRepositories
     object ActSaveSettings: TAction
       Caption = 'OK'
       OnExecute = ActSaveSettingsExecute
-      OnUpdate = ActSaveSettingsUpdate
       ShortCut = 16467
     end
   end

@@ -99,7 +99,6 @@ procedure TVisImportPackage.EdRepoNameSelect(Sender: TObject);
 begin
   if EdRepoName.ItemIndex >= 0 then
     RepoName:=EdRepoName.Items[EdRepoName.ItemIndex]
-
 end;
 
 procedure TVisImportPackage.EdSearch1Execute(Sender: TObject);
@@ -205,7 +204,9 @@ begin
   Width := IniReadInteger(Appuserinipath,Name,'Width',Width);
   Height := IniReadInteger(Appuserinipath,Name,'Height',Height);
 
-  EdRepoName.ItemIndex:=IniReadInteger(Appuserinipath,Name,'EdRepoName.ItemIndex',0);
+  EdRepoName.ItemIndex := IniReadInteger(Appuserinipath,Name,'EdRepoName.ItemIndex',0);
+  if EdRepoName.ItemIndex<0 then
+    EdRepoName.ItemIndex := 0;
   EdRepoName.OnSelect(Sender);
   ActSearchExternalPackage.Execute;
 end;
@@ -250,7 +251,6 @@ begin
     verify_cert:=False
   else
     verify_cert:=Waptrepo.ServerCABundle;
-
 
   if http_proxy = '' then
     http_proxy := None;

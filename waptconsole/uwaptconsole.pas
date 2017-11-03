@@ -72,8 +72,17 @@ type
     cbSearchHost: TCheckBox;
     cbSearchPackages: TCheckBox;
     cbSearchSoftwares: TCheckBox;
+    EdDescription: TEdit;
     EdHardwareFilter: TEdit;
+    EdHostname: TEdit;
+    EdIPAddress: TEdit;
+    EdManufacturer: TEdit;
+    EdModelName: TEdit;
+    EdOS: TEdit;
+    EdRunningStatus: TEdit;
     EdSearchHost: TSearchEdit;
+    EdUpdateDate: TEdit;
+    EdUser: TEdit;
     GridhostInventory: TVirtualJSONInspector;
     GridHosts: TSOGrid;
     GridWSUSAllowedWindowsUpdates: TSOGrid;
@@ -84,13 +93,22 @@ type
     Image2: TImage;
     Image3: TImage;
     Image4: TImage;
+    Label1: TLabel;
     Label10: TLabel;
+    Label12: TLabel;
     Label15: TLabel;
     Label16: TLabel;
     Label17: TLabel;
     Label18: TLabel;
     Label19: TLabel;
+    Label2: TLabel;
     Label23: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
     LabelComputersNumber: TLabel;
     LabErrorRegHardware: TLabel;
     MenuItem1: TMenuItem;
@@ -117,6 +135,12 @@ type
     Panel13: TPanel;
     Panel14: TPanel;
     Panel15: TPanel;
+    Panel16: TPanel;
+    PanFilterHost: TPanel;
+    Panel2: TPanel;
+    Panel8: TPanel;
+    PanSearch: TPanel;
+    panFilterStatus: TPanel;
     PanLeft: TPanel;
     PopupGridWSUSScan: TPopupMenu;
     MenuItem70: TMenuItem;
@@ -199,7 +223,6 @@ type
     cbWUAPending: TCheckBox;
     cbWUADiscarded: TCheckBox;
     EdSoftwaresFilter: TEdit;
-    EdRunningStatus: TEdit;
     EdSearchGroups: TSearchEdit;
     GridGroups: TSOGrid;
     GridHostWinUpdates: TSOGrid;
@@ -208,7 +231,6 @@ type
     GridHostTasksErrors: TSOGrid;
     HostRunningTaskLog: TMemo;
     ActionsImages: TImageList;
-    Label12: TLabel;
     HostRunningTask: TLabeledEdit;
     Label14: TLabel;
     MemoTaskLog: TMemo;
@@ -263,18 +285,9 @@ type
     PopupWUAUpdates: TPopupMenu;
     PopupMenuGroups: TPopupMenu;
     ProgressBar: TProgressBar;
-    EdHostname: TEdit;
-    EdDescription: TEdit;
-    EdOS: TEdit;
-    EdIPAddress: TEdit;
-    EdManufacturer: TEdit;
-    EdModelName: TEdit;
-    EdUpdateDate: TEdit;
-    EdUser: TEdit;
     EdRun: TEdit;
     EdSearchPackage: TSearchEdit;
     ImageList1: TImageList;
-    Label1: TLabel;
     pgGroups: TTabSheet;
     HostTaskRunningProgress: TProgressBar;
     ProgressBar1: TProgressBar;
@@ -286,13 +299,6 @@ type
     TabSheet3: TTabSheet;
     pgHostWUA: TTabSheet;
     TimerTasks: TTimer;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
-    Label6: TLabel;
-    Label7: TLabel;
-    Label8: TLabel;
-    Label9: TLabel;
     MainMenu1: TMainMenu;
     MemoLog: TMemo;
     MenuItem10: TMenuItem;
@@ -324,7 +330,6 @@ type
     PanDebug: TPanel;
     Panel4: TPanel;
     Panel7: TPanel;
-    Panel9: TPanel;
     PopupMenuHosts: TPopupMenu;
     PopupMenuPackages: TPopupMenu;
     PopupMenuEditDepends: TPopupMenu;
@@ -3802,6 +3807,9 @@ begin
       HostsLimit := ini.ReadInteger(self.name,'HostsLimit',2000);
       //ShowMessage(Appuserinipath+'/'+self.Name+'/'+EdHostsLimit.Name+'/'+ini.ReadString(name,EdHostsLimit.Name,'not found'));
       HostPages.Width := ini.ReadInteger(self.name,HostPages.Name+'.width',HostPages.Width);
+
+
+
     finally
       ini.Free;
     end;
