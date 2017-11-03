@@ -1436,11 +1436,16 @@ msgstr ""
 msgid "WAPT console"
 msgstr ""
 
+#: tviswaptgui.cbadvancedsearch.caption
+msgid "Advanced search options"
+msgstr ""
+
 #: tviswaptgui.cbforcedwsusscandownload.caption
 msgid "Force download even if already up to date"
 msgstr ""
 
 #: tviswaptgui.cbgroups.hint
+msgctxt "tviswaptgui.cbgroups.hint"
 msgid "Filter hosts which have this direct package dependency"
 msgstr ""
 
@@ -1469,6 +1474,11 @@ msgstr ""
 #: tviswaptgui.cbnewestonly.caption
 msgctxt "TVISWAPTGUI.CBNEWESTONLY.CAPTION"
 msgid "Last version only"
+msgstr ""
+
+#: tviswaptgui.cbou.hint
+msgctxt "TVISWAPTGUI.CBOU.HINT"
+msgid "Filter hosts which have this direct package dependency"
 msgstr ""
 
 #: tviswaptgui.cbreachable.caption
@@ -1515,6 +1525,11 @@ msgstr ""
 #: tviswaptgui.cbshowlog.caption
 msgctxt "tviswaptgui.cbshowlog.caption"
 msgid "Show debug"
+msgstr ""
+
+#: tviswaptgui.cbsite.hint
+msgctxt "TVISWAPTGUI.CBSITE.HINT"
+msgid "Filter hosts which have this direct package dependency"
 msgstr ""
 
 #: tviswaptgui.cbwuacriticalonly.caption
@@ -1587,6 +1602,14 @@ msgstr ""
 
 #: tviswaptgui.label2.caption
 msgid "Manufacturer"
+msgstr ""
+
+#: tviswaptgui.label20.caption
+msgid "Site"
+msgstr ""
+
+#: tviswaptgui.label21.caption
+msgid "Organizational Unit"
 msgstr ""
 
 #: tviswaptgui.label23.caption

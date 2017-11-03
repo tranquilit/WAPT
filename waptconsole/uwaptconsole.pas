@@ -62,6 +62,8 @@ type
     ButPackagesUpdate1: TBitBtn;
     cbForcedWSUSscanDownload: TCheckBox;
     cbGroups: TComboBox;
+    cbSite: TComboBox;
+    cbOU: TComboBox;
     cbHasErrors: TCheckBox;
     CBInverseSelect: TCheckBox;
     cbNeedUpgrade: TCheckBox;
@@ -72,6 +74,7 @@ type
     cbSearchHost: TCheckBox;
     cbSearchPackages: TCheckBox;
     cbSearchSoftwares: TCheckBox;
+    cbAdvancedSearch: TCheckBox;
     EdDescription: TEdit;
     EdHardwareFilter: TEdit;
     EdHostname: TEdit;
@@ -102,6 +105,8 @@ type
     Label18: TLabel;
     Label19: TLabel;
     Label2: TLabel;
+    Label20: TLabel;
+    Label21: TLabel;
     Label23: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -136,8 +141,8 @@ type
     Panel14: TPanel;
     Panel15: TPanel;
     Panel16: TPanel;
-    PanFilterHost: TPanel;
-    Panel2: TPanel;
+    PanFilterGroups: TPanel;
+    PanSearchIn: TPanel;
     Panel8: TPanel;
     PanSearch: TPanel;
     panFilterStatus: TPanel;
@@ -454,6 +459,7 @@ type
     procedure ActVNCUpdate(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
     procedure ApplicationProperties1Exception(Sender: TObject; E: Exception);
+    procedure cbAdvancedSearchClick(Sender: TObject);
     procedure cbGroupsDropDown(Sender: TObject);
     procedure cbGroupsSelect(Sender: TObject);
     procedure CBInverseSelectClick(Sender: TObject);
@@ -821,7 +827,7 @@ begin
   // %APPDATA%\waptconsole\waptconsole.ini
   ini := TIniFile.Create(Appuserinipath);
   try
-    for CB in VarArrayOf([cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares,cbReachable]) do
+    for CB in VarArrayOf([cbAdvancedSearch,cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares,cbReachable]) do
       ini.WriteBool(self.name,CB.Name,TCheckBox(CB).Checked);
     ini.WriteInteger(self.name,'HostsLimit',HostsLimit);
   finally
@@ -3484,6 +3490,30 @@ begin
   MessageDlg('Error in application','An unhandled exception has occured'#13#10#13#10+E.Message,mtError,[mbOK],'');
 end;
 
+procedure TVisWaptGUI.cbAdvancedSearchClick(Sender: TObject);
+begin
+  PanSearchIn.Visible:=cbAdvancedSearch.Checked;
+  panFilterStatus.Visible:=cbAdvancedSearch.Checked;
+  PanFilterGroups.Visible:=cbAdvancedSearch.Checked;
+  CBInverseSelect.Visible:=cbAdvancedSearch.Checked;
+
+  if not cbAdvancedSearch.Checked then
+  begin
+    cbSearchAll.Checked:=False;
+    cbSearchHost.Checked:=True;
+    cbSearchDMI.Checked:=False;
+    cbSearchPackages.Checked:=False;
+    cbSearchSoftwares.Checked:=False;
+    cbHasErrors.Checked:=False;
+    cbNeedUpgrade.Checked:=False;
+    cbReachable.Checked:=False;
+
+    cbGroups.ItemIndex:=-1;
+    cbSite.ItemIndex:=-1;
+    cbOU.ItemIndex:=-1;
+  end;
+end;
+
 procedure TVisWaptGUI.cbGroupsDropDown(Sender: TObject);
 begin
   if cbGroups.ItemIndex<0 then
@@ -3801,18 +3831,17 @@ begin
 
     ini := TIniFile.Create(Appuserinipath);
     try
-      for CB in VarArrayOf([cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares,cbReachable]) do
+      for CB in VarArrayOf([cbAdvancedSearch,cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares,cbReachable]) do
         TCheckBox(CB).Checked := ini.ReadBool(self.Name,CB.Name,TCheckBox(CB).Checked);
 
       HostsLimit := ini.ReadInteger(self.name,'HostsLimit',2000);
       //ShowMessage(Appuserinipath+'/'+self.Name+'/'+EdHostsLimit.Name+'/'+ini.ReadString(name,EdHostsLimit.Name,'not found'));
       HostPages.Width := ini.ReadInteger(self.name,HostPages.Name+'.width',HostPages.Width);
-
-
-
     finally
       ini.Free;
     end;
+
+    cbAdvancedSearchClick(self);
 
     plStatusBar1.Panels[0].Text :=ApplicationName+' '+GetApplicationVersion;
 

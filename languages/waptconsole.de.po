@@ -1513,6 +1513,10 @@ msgstr "Updates auf der Auflistung von Microsoft herunterladen"
 msgid "WAPT console"
 msgstr "WAPT Gerät"
 
+#: tviswaptgui.cbadvancedsearch.caption
+msgid "Advanced search options"
+msgstr ""
+
 #: tviswaptgui.cbforcedwsusscandownload.caption
 #, fuzzy
 #| msgid "Force download even if aready up to date"
@@ -1520,6 +1524,7 @@ msgid "Force download even if already up to date"
 msgstr "Download erzwingen, wenn es aktuell ist"
 
 #: tviswaptgui.cbgroups.hint
+msgctxt "tviswaptgui.cbgroups.hint"
 msgid "Filter hosts which have this direct package dependency"
 msgstr ""
 
@@ -1548,6 +1553,11 @@ msgstr "Muss aktualisiert werden"
 #: tviswaptgui.cbnewestonly.caption
 msgctxt "tviswaptgui.cbnewestonly.caption"
 msgid "Last version only"
+msgstr ""
+
+#: tviswaptgui.cbou.hint
+msgctxt "tviswaptgui.cbou.hint"
+msgid "Filter hosts which have this direct package dependency"
 msgstr ""
 
 #: tviswaptgui.cbreachable.caption
@@ -1595,6 +1605,11 @@ msgstr ""
 msgctxt "tviswaptgui.cbshowlog.caption"
 msgid "Show debug"
 msgstr "Zeige Fehler"
+
+#: tviswaptgui.cbsite.hint
+msgctxt "tviswaptgui.cbsite.hint"
+msgid "Filter hosts which have this direct package dependency"
+msgstr ""
 
 #: tviswaptgui.cbwuacriticalonly.caption
 msgid "Critical only"
@@ -1668,6 +1683,14 @@ msgstr "Unzulässige Windows Updates"
 #: tviswaptgui.label2.caption
 msgid "Manufacturer"
 msgstr "Hersteller"
+
+#: tviswaptgui.label20.caption
+msgid "Site"
+msgstr ""
+
+#: tviswaptgui.label21.caption
+msgid "Organizational Unit"
+msgstr ""
 
 #: tviswaptgui.label23.caption
 msgctxt "tviswaptgui.label23.caption"
@@ -3300,6 +3323,11 @@ msgstr "wupanright"
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -3366,6 +3394,9 @@ msgstr "Sind Sie sich sicher, dass Sie %s die Pakete vom Host %s vergessen wolle
 #: uwaptconsoleres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
@@ -4713,6 +4744,9 @@ msgstr "Fehler beim erstellen des Pakets"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -5253,6 +5287,8 @@ msgstr "Anwendung: %s -h "
 #| "Wapt-get version: %s\n"
 #| "Waptconsole version : %s\n"
 #| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
 msgctxt "uwaptconsoleres.rsversion"
 msgid ""
 "Waptconsole version : %s\n"
@@ -5311,6 +5347,8 @@ msgstr ""
 #: uwaptconsoleres.rswaptservererror
 #, fuzzy
 #| msgid ""
+#| "Error on WAPT server:\n"
+#| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
 #| "Error on WAPT server:\n"
@@ -6131,6 +6169,9 @@ msgstr ""
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
 #| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
 "Current server version: %s\n"
@@ -6153,6 +6194,8 @@ msgstr "Fehler beim erstellen des agent : %s"
 #| "WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
