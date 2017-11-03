@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0"
+__version__ = "1.5.1"
 
 usage = """\
 %prog [--use-kerberos] [--force-https]"""
@@ -363,7 +363,9 @@ def main():
                     exit(0)
 
             if wapt_password != wapt_password_check:
-                postconf.msgbox('Password mismatch!')
+                postconf.msgbox('Password mismatch !')
+            elif len(wapt_password) < 10:
+                postconf.msgbox('Password must be at least 10 characters long !')
             else:
                 wapt_password_ok = True
 

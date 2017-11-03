@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = '1.5.1.0'
+__version__ = '1.5.1.1'
 
 import os
 import sys
@@ -142,6 +142,10 @@ class Hosts(BaseModel):
     gateways = ArrayField(CharField, null=True)
     networks = ArrayField(CharField, null=True)
     dnsdomain = CharField(null=True)
+
+    computer_ad_site = CharField(null=True,index=True)
+    computer_ad_ou = CharField(null=True,index=True)
+    computer_ad_groups = ArrayField(CharField, null=True)
 
     # calculated by server when update_status
     reachable = CharField(20, null=True)
@@ -274,18 +278,21 @@ class HostWsus(BaseModel):
 
 def dictgetpath(adict, pathstr):
     """Iterates a list of path pathstr of the form 'key.subkey.sskey' and returns
-        the first occurence in adict which returns not None
+    the first occurence in adict which returns not None.
+
+    A path component can contain a wildcard '*' to match an array.
+
     """
     if not isinstance(pathstr, (list, tuple)):
         pathstr = [pathstr]
     for path in pathstr:
         result = adict
         for k in path.split('.'):
-            if isinstance(k, (str, unicode)) and isinstance(result, dict):
+            if isinstance(result, dict):
                 # assume this level is an object and returns the specified key
                 result = result.get(k)
-            elif isinstance(k, int) and isinstance(result, list) and k < len(result):
-                # assume this levele is a list and return the n'th item
+            elif isinstance(result, list) and k.isdigit() and int(k) < len(result):
+                # assume this level is a list and return the n'th item
                 result = result[k]
             elif k == '*' and isinstance(result, list):
                 # assume this level is an array, and iterates all items
@@ -476,6 +483,17 @@ def wapthosts_json(model_class, instance, created):
     """Stores in plain table fields data from json"""
     # extract data from json into plain table fields
     if (created or Hosts.host_info in instance.dirty_fields) and instance.host_info:
+        def extract_ou(host_info):
+            dn =  host_info.get('computer_ad_dn',None)
+            if dn:
+                parts = dn.split(',',1)
+                if len(parts)>=2:
+                    return parts[1]
+                else:
+                    return ''
+            else:
+                return None
+
         extractmap = [
             ['computer_fqdn', 'computer_fqdn'],
             ['computer_name', 'computer_name'],
@@ -490,10 +508,16 @@ def wapthosts_json(model_class, instance, created):
             ['mac_addresses', 'mac'],
             ['dnsdomain', ('dnsdomain', 'dns_domain')],
             ['gateways', 'gateways'],
+            ['computer_ad_site', 'computer_ad_site'],
+            ['computer_ad_ou', extract_ou],
+            ['computer_ad_groups', 'computer_ad_groups'],
         ]
 
         for field, attribute in extractmap:
-            setattr(instance, field, dictgetpath(instance.host_info, attribute))
+            if callable(attribute):
+                setattr(instance, field, attribute(instance.host_info))
+            else:
+                setattr(instance, field, dictgetpath(instance.host_info, attribute))
 
         instance.os_architecture = 'x64' and instance.host_info.get('win64', '?') or 'x86'
 
@@ -503,7 +527,10 @@ def wapthosts_json(model_class, instance, created):
             ['computer_type', 'Chassis_Information.Type'],
         ]
         for field, attribute in extractmap:
-            setattr(instance, field, dictgetpath(instance.dmi, attribute))
+            if callable(attribute):
+                setattr(instance, field, attribute(instance.dmi))
+            else:
+                setattr(instance, field, dictgetpath(instance.dmi, attribute))
 
     if not instance.connected_ips:
         instance.connected_ips = dictgetpath(instance.host_info, 'networking.*.addr')
@@ -640,6 +667,24 @@ def upgrade_db_structure():
         with wapt_db.atomic():
             logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
             HostGroups.create_table(fail_silently=True)
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
+    next_version = '1.5.1.1'
+    if get_db_version() < next_version:
+        with wapt_db.atomic():
+            logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
+            columns = [c.name for c in wapt_db.get_columns('hosts')]
+            opes = []
+            if not 'computer_ad_site' in columns:
+                opes.append(migrator.add_column(Hosts._meta.name, 'computer_ad_site', Hosts.computer_ad_site))
+            if not 'computer_ad_ou' in columns:
+                opes.append(migrator.add_column(Hosts._meta.name, 'computer_ad_ou', Hosts.computer_ad_ou))
+            if not 'computer_ad_groups' in columns:
+                opes.append(migrator.add_column(Hosts._meta.name, 'computer_ad_groups', Hosts.computer_ad_groups))
+            migrate(*opes)
+
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
             v.save()

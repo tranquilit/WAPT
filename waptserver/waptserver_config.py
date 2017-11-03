@@ -63,6 +63,7 @@ _defaults = {
     'dc_ssl_enabled':True,
     'dc_auth_enabled':False,
     'allow_unsigned_status_data':False,
+    'min_password_length':10,
 }
 
 _default_config_file = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
@@ -152,4 +153,8 @@ def load_config(cfgfile=_default_config_file):
 
     if _config.has_option('options', 'allow_unsigned_status_data'):
         conf['allow_unsigned_status_data'] = _config.getboolean('options', 'allow_unsigned_status_data')
+
+    if _config.has_option('options', 'min_password_length'):
+            conf['min_password_length'] = _config.getint('options', 'min_password_length')
+
     return conf
