@@ -26,7 +26,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="5"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="1"/>
+      <BuildNr Value="2"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -98,7 +98,7 @@
         <PackageName Value="LCL"/>
       </Item18>
     </RequiredPackages>
-    <Units Count="31">
+    <Units Count="29">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -283,47 +283,37 @@
         <UnitName Value="uVisPackageWizard"/>
       </Unit23>
       <Unit24>
-        <Filename Value="virtualdataobject.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="VirtualDataObject"/>
-      </Unit24>
-      <Unit25>
-        <Filename Value="winoledataobject.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="WinOLEDataObject"/>
-      </Unit25>
-      <Unit26>
         <Filename Value="..\wapt-get\waptwinutils.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptwinutils"/>
-      </Unit26>
-      <Unit27>
+      </Unit24>
+      <Unit25>
         <Filename Value="uscaledpi.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UScaleDPI"/>
-      </Unit27>
-      <Unit28>
+      </Unit25>
+      <Unit26>
         <Filename Value="uvischangekeypassword.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisChangeKeyPassword"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisChangeKeyPassword"/>
-      </Unit28>
-      <Unit29>
+      </Unit26>
+      <Unit27>
         <Filename Value="uvisrepositories.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisRepositories"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisrepositories"/>
-      </Unit29>
-      <Unit30>
+      </Unit27>
+      <Unit28>
         <Filename Value="uvisdisplaypreferences.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
         <UnitName Value="uvisdisplaypreferences"/>
-      </Unit30>
+      </Unit28>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -12,7 +12,7 @@ uses
   Forms, runtimetypeinfocontrols, uwaptconsole,
   uVisCreateKey, waptcommon, waptwinutils, dmwaptpython, uVisEditPackage,
   uviscreatewaptsetup, uvislogin, uvisprivatekeyauth, uvisloading,
-  uviswaptconfig, uvischangepassword, uviswaptdeploy, uvishostsupgrade,
+  uviswaptconfig, uvischangepassword, uvishostsupgrade,
   uVisAPropos, uVisImportPackage, uwaptconsoleres, uVisPackageWizard, uscaledpi,
   uVisChangeKeyPassword, uvisrepositories, uvisdisplaypreferences
   {$ifdef wsus}

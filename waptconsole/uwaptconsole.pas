@@ -30,12 +30,12 @@ type
     ActEnglish: TAction;
     ActCleanCache: TAction;
     ActAddADSGroups: TAction;
-    ActHostsDeleteHostAndConfig: TAction;
+    ActDeleteHostsAndInventory: TAction;
     ActGerman: TAction;
     ActComputerMgmt: TAction;
     ActComputerUsers: TAction;
     ActComputerServices: TAction;
-    ActHostsDeletePackage: TAction;
+    ActDeleteHostsPackages: TAction;
     ActChangePrivateKeypassword: TAction;
     ActTISHelp: TAction;
     ActRevokeCert: TAction;
@@ -192,15 +192,14 @@ type
     ActEditHostPackage: TAction;
     ActHostSearchPackage: TAction;
     ActHostsAddPackages: TAction;
-    ActHostsDelete: TAction;
+    ActDeleteHostsPackageAndInventory: TAction;
     ActDeletePackage: TAction;
     ActChangePassword: TAction;
     ActGotoHost: TAction;
     ActTriggerHostUpgrade: TAction;
-    ActAddPackageGroup: TAction;
+    ActAddDepends: TAction;
     ActEditGroup: TAction;
     ActDeleteGroup: TAction;
-    ActDeployWapt: TAction;
     ActSearchGroups: TAction;
     ActWAPTLocalConfig: TAction;
     ActReloadConfig: TAction;
@@ -361,8 +360,8 @@ type
     ToolButton6: TToolButton;
     procedure ActAddADSGroupsExecute(Sender: TObject);
     procedure ActAddConflictsExecute(Sender: TObject);
-    procedure ActAddPackageGroupExecute(Sender: TObject);
-    procedure ActAddPackageGroupUpdate(Sender: TObject);
+    procedure ActAddDependsExecute(Sender: TObject);
+    procedure ActAddDependsUpdate(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
     procedure ActChangePasswordUpdate(Sender: TObject);
@@ -383,7 +382,6 @@ type
     procedure ActDeleteGroupUpdate(Sender: TObject);
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
-    procedure ActDeployWaptExecute(Sender: TObject);
     procedure ActDisplayPreferencesExecute(Sender: TObject);
     procedure ActEditGroupUpdate(Sender: TObject);
     procedure ActEditHostPackageUpdate(Sender: TObject);
@@ -446,7 +444,7 @@ type
     procedure ActEvaluateExecute(Sender: TObject);
     procedure ActExecCodeExecute(Sender: TObject);
     procedure ActHostsCopyExecute(Sender: TObject);
-    procedure ActHostsDeleteExecute(Sender: TObject);
+    procedure ActDeleteHostsPackageAndInventoryExecute(Sender: TObject);
     procedure actHostSelectAllExecute(Sender: TObject);
     procedure ActAddGroupExecute(Sender: TObject);
     procedure actQuitExecute(Sender: TObject);
@@ -614,7 +612,7 @@ implementation
 uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings, soutils,
   waptcommon, waptwinutils, tiscommon, uVisCreateKey, uVisCreateWaptSetup,
   dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
-  uvisgroupchoice, uviswaptdeploy, uvishostsupgrade, uVisAPropos,
+  uvisgroupchoice, uvishostsupgrade, uVisAPropos,
   uVisImportPackage, PythonEngine, Clipbrd, RegExpr, tisinifiles, IdURI,
   uScaleDPI, uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
   uvisrepositories, windirs
@@ -1665,61 +1663,39 @@ end;
 procedure TVisWaptGUI.ActAddConflictsExecute(Sender: TObject);
 var
   Res, packages, host, hosts: ISuperObject;
-  N: PVirtualNode;
   args: ansistring;
 begin
   if GridHosts.Focused then
   begin
     with TvisGroupChoice.Create(self) do
-      try
-        Caption := rsForcedUninstallPackages;
-        if ShowModal = mrOk then
-        begin
-          packages := TSuperObject.Create(stArray);
-          N := groupGrid.GetFirstChecked();
-          while N <> nil do
-          begin
-            packages.AsArray.Add(groupGrid.GetCellStrValue(N, 'package'));
-            N := groupGrid.GetNextChecked(N);
-          end;
-        end;
-      finally
-        Free;
-      end;
-    if (packages = nil) or (packages.AsArray.Length = 0) then
-      Exit;
-
-    CurrentVisLoading := TVisLoading.Create(Self);
-    with CurrentVisLoading do
     try
-      Hosts := TSuperObject.Create(stArray);
-      for host in GridHosts.SelectedRows do
-        hosts.AsArray.Add(host.S['uuid']);
-      Start(GridHosts.SelectedRows.AsArray.Length);
-      ProgressTitle(rsCreationInProgress);
+      Caption := rsRmBundleFromHosts;
+      if ShowModal = mrOk then
+      try
+        Screen.Cursor := crHourGlass;
+        packages := SelectedPackages;
+        Hosts := ExtractField(GridHosts.SelectedRows,'uuid');
 
-      //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
-      args := '';
-      args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
-      args := args + format('hosts_list = r"%s".decode(''utf8''),',
-        [soutils.Join(',', hosts)]);
-      args := args + format('append_depends = "",', []);
-      args := args + format('remove_depends = "",', []);
-      args := args + format('append_conflicts = r"%s".decode(''utf8''),',
-        [soutils.Join(',', packages)]);
-      args := args + format('remove_conflicts = "",', []);
-      if dmpython.privateKeyPassword <> '' then
-        args := args + format('key_password = "%s".decode(''utf8''),',
-          [dmpython.privateKeyPassword]);
-      args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
-      args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
-        [waptServerPassword]);
-      res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
+        args := '';
+        args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
+        args := args + format('hosts_list = r"%s".decode(''utf8''),', [soutils.Join(',', hosts)]);
+        args := args + format('append_conflicts = r"%s".decode(''utf8''),',[soutils.Join(',', packages)]);
+
+        if dmpython.privateKeyPassword <> '' then
+          args := args + format('key_password = "%s".decode(''utf8''),',
+            [dmpython.privateKeyPassword]);
+        args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
+        args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
+          [waptServerPassword]);
+        res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
+
+      finally
+        Screen.cursor := crDefault;
+        ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
+      end;
     finally
-      Finish;
       Free;
     end;
-    ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
   end;
 end;
 
@@ -1755,65 +1731,51 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.ActAddPackageGroupExecute(Sender: TObject);
+procedure TVisWaptGUI.ActAddDependsExecute(Sender: TObject);
 var
   Res, packages, host, hosts: ISuperObject;
-  N: PVirtualNode;
   args: ansistring;
+  resStr:String;
+  ResVar,VarHosts,VarPackages,p1,p2,p3,p4,p5,p6: Variant;
 begin
   if GridHosts.Focused then
   begin
     with TvisGroupChoice.Create(self) do
-      try
-        Caption := rsDependencies;
-        if ShowModal = mrOk then
-        begin
-          packages := TSuperObject.Create(stArray);
-          N := groupGrid.GetFirstChecked();
-          while N <> nil do
-          begin
-            packages.AsArray.Add(groupGrid.GetCellStrValue(N, 'package'));
-            N := groupGrid.GetNextChecked(N);
-          end;
-        end;
-      finally
-        Free;
-      end;
-    if (packages = nil) or (packages.AsArray.Length = 0) then
-      Exit;
-
     try
-      Screen.Cursor := crHourGlass;
-      Hosts := TSuperObject.Create(stArray);
-      for host in GridHosts.SelectedRows do
-        hosts.AsArray.Add(host.S['uuid']);
+      Caption := rsRmBundleFromHosts;
+      res := TSuperObject.Create(stArray);
 
-      //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
-      args := '';
-      args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
-      args := args + format('hosts_list = r"%s".decode(''utf8''),',
-        [soutils.Join(',', hosts)]);
-      args := args + format('append_depends = r"%s".decode(''utf8''),',
-        [soutils.Join(',', packages)]);
-      args := args + format('remove_depends = "",', []);
-      args := args + format('append_conflicts = "",', []);
-      args := args + format('remove_conflicts = "",', []);
-      if dmpython.privateKeyPassword <> '' then
-        args := args + format('key_password = "%s".decode(''utf8''),',
-          [dmpython.privateKeyPassword]);
-      args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
-      args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
-        [waptServerPassword]);
-      res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
+      if ShowModal = mrOk then
+      try
+        Screen.Cursor := crHourGlass;
+        packages := SelectedPackages;
+        Hosts := ExtractField(GridHosts.SelectedRows,'uuid');
+
+        VarHosts := SuperObjectToPyVar(Hosts);
+        VarPackages := SuperObjectToPyVar(packages);
+
+        resVar := MainModule.waptdevutils.edit_hosts_depends(
+           waptconfigfile := AppIniFilename(),
+           hosts_list := VarHosts,
+           append_depends := VarPackages,
+           key_password := dmpython.privateKeyPassword,
+           wapt_server_user := waptServerUser,
+           wapt_server_passwd := waptServerPassword
+           );
+
+        res := PyVarToSuperObject(ResVar);
+
+      finally
+        Screen.cursor := crDefault;
+        ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
+      end;
     finally
-      Screen.Cursor := crDefault;
+      Free;
     end;
-
-    ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
   end;
 end;
 
-procedure TVisWaptGUI.ActAddPackageGroupUpdate(Sender: TObject);
+procedure TVisWaptGUI.ActAddDependsUpdate(Sender: TObject);
 begin
   (Sender as TAction).Enabled:=(GridHosts.SelectedCount>0);
 end;
@@ -2049,17 +2011,6 @@ end;
 procedure TVisWaptGUI.ActDeletePackageUpdate(Sender: TObject);
 begin
   ActDeletePackage.Enabled := GridPackages.Focused and (GridPackages.SelectedCount > 0);
-end;
-
-procedure TVisWaptGUI.ActDeployWaptExecute(Sender: TObject);
-begin
-  with Tviswaptdeploy.Create(self) do
-    try
-      if ShowModal = mrOk then
-        actRefresh.Execute;
-    finally
-      Free;
-    end;
 end;
 
 procedure TVisWaptGUI.ActDisplayPreferencesExecute(Sender: TObject);
@@ -2953,55 +2904,38 @@ end;
 procedure TVisWaptGUI.ActRemoveConflictsExecute(Sender: TObject);
 var
   Res, packages, host, hosts: ISuperObject;
-  N: PVirtualNode;
   args: ansistring;
 begin
   if GridHosts.Focused then
   begin
     with TvisGroupChoice.Create(self) do
-      try
-        if ShowModal = mrOk then
-        begin
-          packages := TSuperObject.Create(stArray);
-          N := groupGrid.GetFirstChecked();
-          while N <> nil do
-          begin
-            packages.AsArray.Add(groupGrid.GetCellStrValue(N, 'package'));
-            N := groupGrid.GetNextChecked(N);
-          end;
-        end;
-      finally
-        Free;
-      end;
-    if (packages = nil) or (packages.AsArray.Length = 0) then
-      Exit;
-
     try
-      Screen.Cursor := crHourGlass;
-      Hosts := TSuperObject.Create(stArray);
-      for host in GridHosts.SelectedRows do
-        hosts.AsArray.Add(host.S['uuid']);
+      Caption := rsRmBundleFromHosts;
+      if ShowModal = mrOk then
+      try
+        Screen.Cursor := crHourGlass;
+        packages := SelectedPackages;
+        Hosts := ExtractField(GridHosts.SelectedRows,'uuid');
 
-      //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
-      args := '';
-      args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
-      args := args + format('hosts_list = r"%s".decode(''utf8''),',
-        [soutils.Join(',', hosts)]);
-      args := args + format('append_depends = "",', []);
-      args := args + format('remove_depends = "",', []);
-      args := args + format('append_conflicts = "",', []);
-      args := args + format('remove_conflicts = r"%s".decode(''utf8''),',
-        [soutils.Join(',', packages)]);
-      if dmpython.privateKeyPassword <> '' then
-        args := args + format('key_password = "%s".decode(''utf8''),',
-          [dmpython.privateKeyPassword]);
-      args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
-      args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
-        [waptServerPassword]);
-      res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
+        args := '';
+        args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
+        args := args + format('hosts_list = r"%s".decode(''utf8''),', [soutils.Join(',', hosts)]);
+        args := args + format('remove_conflicts = r"%s".decode(''utf8''),',[soutils.Join(',', packages)]);
+
+        if dmpython.privateKeyPassword <> '' then
+          args := args + format('key_password = "%s".decode(''utf8''),',
+            [dmpython.privateKeyPassword]);
+        args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
+        args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
+          [waptServerPassword]);
+        res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
+
+      finally
+        Screen.cursor := crDefault;
+        ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
+      end;
     finally
-      Screen.Cursor:=crDefault;
-      ShowMessage(IntToStr(res.AsArray.Length) + ' postes modifiés');
+      Free;
     end;
   end;
 end;
@@ -3009,60 +2943,35 @@ end;
 procedure TVisWaptGUI.ActRemoveDependsExecute(Sender: TObject);
 var
   Res, packages, host, hosts: ISuperObject;
-  N: PVirtualNode;
   args: ansistring;
 begin
   if GridHosts.Focused then
   begin
     with TvisGroupChoice.Create(self) do
-      try
-        Caption := rsRmBundleFromHosts;
-        ActSearchExecute(self);
-        if groupGrid.Data.AsArray.Length = 0 then
-        begin
-          ShowMessage(rsNoBundle);
-          Exit;
-        end;
-        if ShowModal = mrOk then
-        begin
-          packages := TSuperObject.Create(stArray);
-          N := groupGrid.GetFirstChecked();
-          while N <> nil do
-          begin
-            packages.AsArray.Add(groupGrid.GetCellStrValue(N, 'package'));
-            N := groupGrid.GetNextChecked(N);
-          end;
-        end;
-      finally
-        Free;
-      end;
-    if (packages = nil) or (packages.AsArray.Length = 0) then
-      Exit;
-
     try
-      Screen.Cursor := crHourGlass;
-      Hosts := TSuperObject.Create(stArray);
-      for host in GridHosts.SelectedRows do
-        hosts.AsArray.Add(host.S['uuid']);
+      Caption := rsRmBundleFromHosts;
+      if ShowModal = mrOk then
+      try
+        Screen.Cursor := crHourGlass;
+        packages := SelectedPackages;
+        Hosts := ExtractField(GridHosts.SelectedRows,'uuid');
 
-      //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
-      args := '';
-      args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
-      args := args + format('hosts_list = r"%s".decode(''utf8''),',
-        [soutils.Join(',', hosts)]);
-      args := args + format('append_depends = [],', []);
-      args := args + format('remove_depends = r"%s".decode(''utf8''),',
-        [soutils.Join(',', packages)]);
-      if dmpython.privateKeyPassword <> '' then
-        args := args + format('key_password = "%s".decode(''utf8''),',
-          [dmpython.privateKeyPassword]);
-      args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
-      args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
-        [waptServerPassword]);
-      res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
+        args := '';
+        args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
+        args := args + format('hosts_list = r"%s".decode(''utf8''),',[soutils.Join(',', hosts)]);
+        args := args + format('remove_depends = r"%s".decode(''utf8''),',[soutils.Join(',', packages)]);
+        if dmpython.privateKeyPassword <> '' then
+          args := args + format('key_password = "%s".decode(''utf8''),',[dmpython.privateKeyPassword]);
+        args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
+        args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',[waptServerPassword]);
+        res := DMPython.RunJSON(format('waptdevutils.edit_hosts_depends(%s)', [args]));
+
+      finally
+        Screen.cursor := crDefault;
+        ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
+      end;
     finally
-      Screen.cursor := crDefault;
-      ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
+      Free;
     end;
   end;
 end;
@@ -3204,7 +3113,7 @@ begin
   Clipboard.AsText := GridHosts.ContentToUTF8(tstSelected, ';');
 end;
 
-procedure TVisWaptGUI.ActHostsDeleteExecute(Sender: TObject);
+procedure TVisWaptGUI.ActDeleteHostsPackageAndInventoryExecute(Sender: TObject);
 var
   sel, res, postdata: ISuperObject;
   msg : String;
@@ -3213,7 +3122,7 @@ begin
   begin
     sel := GridHosts.SelectedRows;
 
-    if Sender = ActHostsDeleteHostAndConfig then
+    if Sender = ActDeleteHostsAndInventory then
       msg := format(rsConfirmRmHostsPackagesFromList, [IntToStr(sel.AsArray.Length)])
     else
       msg := format(rsConfirmRmHostsFromList, [IntToStr(sel.AsArray.Length)]);
@@ -3227,17 +3136,17 @@ begin
     begin
       postdata := SO();
       postdata['uuids'] := ExtractField(sel,'uuid');
-      if Sender = ActHostsDeleteHostAndConfig then
+      if Sender = ActDeleteHostsAndInventory then
       begin
         postdata.B['delete_packages'] := True;
         postdata.B['delete_inventory'] := True;
       end
-      else if Sender = ActHostsDelete then
+      else if Sender = ActDeleteHostsPackageAndInventory then
       begin
         postdata.B['delete_packages'] := False;
         postdata.B['delete_inventory'] := True;
       end
-      else if Sender = ActHostsDeletePackage then
+      else if Sender = ActDeleteHostsPackages then
       begin
         postdata.B['delete_packages'] := True;
         postdata.B['delete_inventory'] := False;

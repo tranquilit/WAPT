@@ -26,13 +26,12 @@ object VisRepositories: TVisRepositories
     ClientWidth = 829
     TabOrder = 1
     object BitBtn1: TBitBtn
-      Left = 672
+      Left = 680
       Height = 26
       Top = 0
-      Width = 68
+      Width = 60
       Action = ActSaveSettings
       Align = alRight
-      Anchors = [akTop, akLeft, akRight, akBottom]
       AutoSize = True
       Default = True
       Kind = bkOK

@@ -4295,14 +4295,72 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 25
       OnExecute = ActPackagesUpdateExecute
     end
-    object ActHostsDelete: TAction
+    object ActTriggerHostUpdate: TAction
+      Category = 'hosts'
+      Caption = 'Check updates'
+      Hint = 'Trigger update of available packages on hosts.'
+      ImageIndex = 37
+      OnExecute = ActTriggerHostUpdateExecute
+      OnUpdate = ActHostsActionsUpdate
+    end
+    object ActTriggerHostUpgrade: TAction
+      Category = 'hosts'
+      Caption = 'Apply updates'
+      Hint = 'Apply updates'
+      ImageIndex = 29
+      OnExecute = ActTriggerHostUpgradeExecute
+      OnUpdate = ActHostsActionsUpdate
+    end
+    object ActAddDepends: TAction
+      Category = 'hosts'
+      Caption = 'Add package or bundle'
+      ImageIndex = 11
+      OnExecute = ActAddDependsExecute
+      OnUpdate = ActAddDependsUpdate
+    end
+    object ActRemoveDepends: TAction
+      Category = 'hosts'
+      Caption = 'Remove dependencies from packages/bundles'
+      ImageIndex = 12
+      OnExecute = ActRemoveDependsExecute
+      OnUpdate = ActAddDependsUpdate
+    end
+    object ActAddConflicts: TAction
+      Category = 'hosts'
+      Caption = 'Block packages (causes forced uninstall)'
+      ImageIndex = 12
+      OnExecute = ActAddConflictsExecute
+      OnUpdate = ActAddDependsUpdate
+    end
+    object ActRemoveConflicts: TAction
+      Category = 'hosts'
+      Caption = 'Allow packages '
+      ImageIndex = 11
+      OnExecute = ActRemoveConflictsExecute
+      OnUpdate = ActAddDependsUpdate
+    end
+    object ActDeleteHostsPackageAndInventory: TAction
       Category = 'hosts'
       Caption = 'Remove from inventory'
       Hint = 'Remove from inventory'
       ImageIndex = 9
-      OnExecute = ActHostsDeleteExecute
-      OnUpdate = ActHostsActionsUpdate
+      OnExecute = ActDeleteHostsPackageAndInventoryExecute
+      OnUpdate = ActAddDependsUpdate
       ShortCut = 16430
+    end
+    object ActDeleteHostsPackages: TAction
+      Category = 'hosts'
+      Caption = 'Remove Host configuration only'
+      ImageIndex = 6
+      OnExecute = ActDeleteHostsPackageAndInventoryExecute
+      OnUpdate = ActAddDependsUpdate
+    end
+    object ActDeleteHostsAndInventory: TAction
+      Category = 'hosts'
+      Caption = 'Remove host configuration and inventory '
+      ImageIndex = 6
+      OnExecute = ActDeleteHostsPackageAndInventoryExecute
+      OnUpdate = ActAddDependsUpdate
     end
     object ActDeletePackage: TAction
       Category = 'packages'
@@ -4372,20 +4430,15 @@ object VisWaptGUI: TVisWaptGUI
       OnUpdate = ActDeleteGroupUpdate
       ShortCut = 16430
     end
-    object ActDeployWapt: TAction
-      Category = 'Tools'
-      Caption = 'Deploy WAPT onto hosts'
-      OnExecute = ActDeployWaptExecute
-    end
     object ActVNC: TAction
-      Category = 'Host'
+      Category = 'External Tools'
       Caption = 'Connect via VNC'
       ImageIndex = 32
       OnExecute = ActVNCExecute
       OnUpdate = ActVNCUpdate
     end
     object ActRDP: TAction
-      Category = 'Host'
+      Category = 'External Tools'
       Caption = 'Connect via RDP'
       ImageIndex = 33
       OnExecute = ActRDPExecute
@@ -4402,7 +4455,7 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'Host'
       Caption = 'Uninstall package'
       Hint = 'Forces remote uninstall of package'
-      ImageIndex = 31
+      ImageIndex = 12
       OnExecute = ActPackagesRemoveExecute
       OnUpdate = ActPackagesRemoveUpdate
     end
@@ -4444,13 +4497,13 @@ object VisWaptGUI: TVisWaptGUI
       OnUpdate = ActCreateWaptSetupUpdate
     end
     object ActFrench: TAction
-      Category = 'Tools'
+      Category = 'Display'
       Caption = 'French'
       OnExecute = ActFrenchExecute
       OnUpdate = ActFrenchUpdate
     end
     object ActEnglish: TAction
-      Category = 'Tools'
+      Category = 'Display'
       Caption = 'English'
       OnExecute = ActEnglishExecute
       OnUpdate = ActEnglishUpdate
@@ -4465,6 +4518,7 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'Host'
       Caption = 'Install package'
       Hint = 'Force remote install or upgrade of package'
+      ImageIndex = 11
       OnExecute = ActPackagesInstallExecute
       OnUpdate = ActPackagesRemoveUpdate
     end
@@ -4474,63 +4528,12 @@ object VisWaptGUI: TVisWaptGUI
       Hint = 'Remove all packages locall cached by WaptConsole'
       OnExecute = ActCleanCacheExecute
     end
-    object ActHostsDeleteHostAndConfig: TAction
-      Category = 'hosts'
-      Caption = 'Remove host configuration and inventory '
-      ImageIndex = 6
-      OnExecute = ActHostsDeleteExecute
-      OnUpdate = ActHostsActionsUpdate
-    end
-    object ActTriggerHostUpdate: TAction
-      Category = 'hosts'
-      Caption = 'Check updates'
-      Hint = 'Trigger update of available packages on hosts.'
-      ImageIndex = 37
-      OnExecute = ActTriggerHostUpdateExecute
-      OnUpdate = ActHostsActionsUpdate
-    end
-    object ActTriggerHostUpgrade: TAction
-      Category = 'hosts'
-      Caption = 'Apply updates'
-      Hint = 'Apply updates'
-      ImageIndex = 29
-      OnExecute = ActTriggerHostUpgradeExecute
-      OnUpdate = ActHostsActionsUpdate
-    end
-    object ActAddPackageGroup: TAction
-      Category = 'hosts'
-      Caption = 'Add package or bundle'
-      ImageIndex = 11
-      OnExecute = ActAddPackageGroupExecute
-      OnUpdate = ActHostsActionsUpdate
-    end
-    object ActRemoveDepends: TAction
-      Category = 'hosts'
-      Caption = 'Remove dependencies from packages/bundles'
-      ImageIndex = 12
-      OnExecute = ActRemoveDependsExecute
-      OnUpdate = ActHostsActionsUpdate
-    end
-    object ActAddConflicts: TAction
-      Category = 'hosts'
-      Caption = 'Block packages (causes forced uninstall)'
-      ImageIndex = 12
-      OnExecute = ActAddConflictsExecute
-      OnUpdate = ActHostsActionsUpdate
-    end
-    object ActRemoveConflicts: TAction
-      Category = 'hosts'
-      Caption = 'Allow packages '
-      ImageIndex = 11
-      OnExecute = ActRemoveConflictsExecute
-      OnUpdate = ActHostsActionsUpdate
-    end
     object ActAddADSGroups: TAction
-      Category = 'hosts'
+      Category = 'External Tools'
       Caption = 'Add ADS Groups as packages'
       Hint = 'Add the WAPT group packages matching the ADS groups of the machines'
       OnExecute = ActAddADSGroupsExecute
-      OnUpdate = ActHostsActionsUpdate
+      OnUpdate = ActAddDependsUpdate
     end
     object ActRefreshHostInventory: TAction
       Category = 'Display'
@@ -4539,37 +4542,38 @@ object VisWaptGUI: TVisWaptGUI
       OnUpdate = ActHostsActionsUpdate
     end
     object ActGerman: TAction
-      Category = 'Tools'
+      Category = 'Display'
       Caption = 'German'
       OnExecute = ActGermanExecute
       OnUpdate = ActGermanUpdate
     end
     object ActTriggerWakeOnLan: TAction
-      Category = 'hosts'
+      Category = 'External Tools'
       Caption = 'Power ON with WakeOnLan'
       ImageIndex = 38
       OnExecute = ActTriggerWakeOnLanExecute
+      OnUpdate = ActAddDependsUpdate
     end
     object ActRemoteAssist: TAction
-      Category = 'Host'
+      Category = 'External Tools'
       Caption = 'Assistance à distance'
       OnExecute = ActRemoteAssistExecute
       OnUpdate = ActRemoteAssistUpdate
     end
     object ActComputerMgmt: TAction
-      Category = 'Host'
+      Category = 'External Tools'
       Caption = 'Gérer l''ordinateur'
       OnExecute = ActComputerMgmtExecute
       OnUpdate = ActComputerMgmtUpdate
     end
     object ActComputerUsers: TAction
-      Category = 'Host'
+      Category = 'External Tools'
       Caption = 'Gérer les utilisateur et groupes'
       OnExecute = ActComputerUsersExecute
       OnUpdate = ActComputerUsersUpdate
     end
     object ActComputerServices: TAction
-      Category = 'Host'
+      Category = 'External Tools'
       Caption = 'Gérer les services'
       OnExecute = ActComputerServicesExecute
       OnUpdate = ActComputerServicesUpdate
@@ -4579,13 +4583,6 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Make package template from setup file'
       ImageIndex = 13
       OnExecute = ActmakePackageTemplateExecute
-    end
-    object ActHostsDeletePackage: TAction
-      Category = 'hosts'
-      Caption = 'Remove Host configuration only'
-      ImageIndex = 6
-      OnExecute = ActHostsDeleteExecute
-      OnUpdate = ActHostsActionsUpdate
     end
     object ActRevokeCert: TAction
       Category = 'Tools'
@@ -4599,7 +4596,7 @@ object VisWaptGUI: TVisWaptGUI
       OnUpdate = ActChangePrivateKeypasswordUpdate
     end
     object ActTISHelp: TAction
-      Category = 'Host'
+      Category = 'External Tools'
       Caption = 'Launch TISHelp'
       ImageIndex = 40
       OnExecute = ActTISHelpExecute
@@ -5047,7 +5044,7 @@ object VisWaptGUI: TVisWaptGUI
       Caption = '-'
     end
     object MenuItem35: TMenuItem
-      Action = ActAddPackageGroup
+      Action = ActAddDepends
       Bitmap.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000064000000640000000000000000000000000000000000
@@ -5209,7 +5206,7 @@ object VisWaptGUI: TVisWaptGUI
       Caption = '-'
     end
     object MenuItem21: TMenuItem
-      Action = ActHostsDelete
+      Action = ActDeleteHostsPackageAndInventory
       Bitmap.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
@@ -5248,7 +5245,7 @@ object VisWaptGUI: TVisWaptGUI
       }
     end
     object MenuItem57: TMenuItem
-      Action = ActHostsDeleteHostAndConfig
+      Action = ActDeleteHostsAndInventory
       Bitmap.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
@@ -5287,7 +5284,7 @@ object VisWaptGUI: TVisWaptGUI
       }
     end
     object MenuItem82: TMenuItem
-      Action = ActHostsDeletePackage
+      Action = ActDeleteHostsPackages
       Bitmap.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
@@ -5983,42 +5980,6 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem19: TMenuItem
       Action = ActPackagesRemove
-      Bitmap.Data = {
-        36040000424D3604000000000000360000002800000010000000100000000100
-        2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
-        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00FFFFFF00FFFFFF007B7BB1003C3C8AD500006BCD0D0D77F9101079F90101
-        6CCD3C3C8AD57B7BB100FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00FFFFFF0059599D930E0E78F807159EFF081BB8FF091BCCFF0A1CD2FF0A1C
-        C0FF0716A3FF0E0E78F859599D93FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-        FF005959A193020582FE081AAAFF0308BEFF0613BEFF0A15B1FF0F19BCFF0D1C
-        CEFF030AD0FF0819B6FF020582FE5959A193FFFFFF00FFFFFF00FFFFFF007B7B
-        BD000E0E82F808179FFF0000AAFF0715BFFF030880FF02028800080894000D0D
-        A200151FBBF1060EBFFF0817ABFF0E0E82F87B7BBD00FFFFFF00FFFFFF003C3C
-        97D5051197FF020596FF0A1BAEFF0000BCFF050EC8FF020687FD00009400FFFF
-        FF000B0BA000141BB9F00206ABFF05109CFF3C3C97D5FFFFFF00FFFFFF002323
-        92ED051191FF08129CFF1416B1F20814B5FF0000C7FF040DCBFF02068AFD0000
-        9900FFFFFF000B0BA3000C16AEFF05119AFF232392EDFFFFFF00FFFFFF000B0B
-        8EF909128CFF0B129AFF0B0BA0001214B1DE141FBEFF1515CBFF141DC6FF0709
-        8AFD00009D000000A6000D13A5FF040D90FF0B0B8EF9FFFFFF00FFFFFF000B0B
-        92F93A43AAFF171E9CFF0A0A9D000B0BA6001516B4DE4A52CEFF3737CCFF343A
-        C4FF07098BFD0000A00010159CFF161E93FF0B0B92F9FFFFFF00FFFFFF002323
-        9EED373EAFFF2B31A5FF04049400FFFFFF000B0BA600191AB7DE5961CCFF4646
-        C5FF3A3FB8FF050786FF22269CFF363BACFF23239EEDFFFFFF00FFFFFF003C3C
-        AAD5252BABFF5E60C2FF0A0C91EE0B0B9400FFFFFF000B0BAA001819B7DD4E53
-        C1FF5353BEFF4448B1FF4B4DB4FF262BAAFF3C3CAAD5FFFFFF00FFFFFF007B7B
-        C9000F0F9EF85A5DBFFF5457BFFF080A93ED04049A000909A6000E0EAD001314
-        B9F0464AB9FF6161C0FF5053B9FF0F0F9EF87B7BC900FFFFFF00FFFFFF00FFFF
-        FF005959BF930F11A6FE6D6FC9FF7779D0FF3737B0FF1C1CA5FF2325AEFF4649
-        BCFF6F70CBFF6163C2FF090AA3FE5959BF93FFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00FFFFFF005959BF930F0FA8F84748BBFF7373CCFF8A8AD8FF8B8BD9FF7676
-        CDFF4242B9FF0F0FA6F85959BF93FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00FFFFFF00FFFFFF007B7BCF003C3CB8D50202A6CD2424B2FA3131B5FB1111
-        ABD13D3DB8D57B7BCF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
-      }
     end
     object MenuItem42: TMenuItem
       Action = ActPackagesForget

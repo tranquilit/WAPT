@@ -1,8 +1,5 @@
-msgid "Only required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleOnly required if a proxy is needed for waptserver and main waptrepoIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundle"
+msgid "Only required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleOnly required if a proxy is needed for waptserver and main waptrepoIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundle"
 msgstr "Content-Type: text/plain; charset=UTF-8"
-
-msgid "If 1 : use default wapt cacert.pem bundle"
-msgstr ""
 
 #: tform1.buttonpanel1.helpbutton.caption
 msgctxt "TFORM1.BUTTONPANEL1.HELPBUTTON.CAPTION"
@@ -508,11 +505,6 @@ msgctxt "TVISGROUPCHOICE.ACTSEARCH.CAPTION"
 msgid "Search"
 msgstr ""
 
-#: tvisgroupchoice.buttonpanel1.okbutton.caption
-msgctxt "tvisgroupchoice.buttonpanel1.okbutton.caption"
-msgid "OK"
-msgstr ""
-
 #: tvisgroupchoice.caption
 msgid "Package selection"
 msgstr ""
@@ -532,11 +524,6 @@ msgstr ""
 
 #: tvisgroupchoice.edsearch.hint
 msgid "Use keywords to narrow your search."
-msgstr ""
-
-#: tvisgroupchoice.label2.caption
-msgctxt "TVISGROUPCHOICE.LABEL2.CAPTION"
-msgid "Available packages : "
 msgstr ""
 
 #: tvishostsupgrade.actstop.caption
@@ -992,14 +979,14 @@ msgctxt "tviswaptgui.actaddconflicts.caption"
 msgid "Block packages (causes forced uninstall)"
 msgstr ""
 
+#: tviswaptgui.actadddepends.caption
+msgctxt "TVISWAPTGUI.ACTADDDEPENDS.CAPTION"
+msgid "Add package or bundle"
+msgstr ""
+
 #: tviswaptgui.actaddgroup.caption
 msgctxt "tviswaptgui.actaddgroup.caption"
 msgid "New bundle"
-msgstr ""
-
-#: tviswaptgui.actaddpackagegroup.caption
-msgctxt "tviswaptgui.actaddpackagegroup.caption"
-msgid "Add package or bundle"
 msgstr ""
 
 #: tviswaptgui.actcancelrunningtask.caption
@@ -1053,14 +1040,29 @@ msgctxt "tviswaptgui.actdeletegroup.caption"
 msgid "Delete bundle"
 msgstr ""
 
+#: tviswaptgui.actdeletehostsandinventory.caption
+msgctxt "TVISWAPTGUI.ACTDELETEHOSTSANDINVENTORY.CAPTION"
+msgid "Remove host configuration and inventory "
+msgstr ""
+
+#: tviswaptgui.actdeletehostspackageandinventory.caption
+msgctxt "TVISWAPTGUI.ACTDELETEHOSTSPACKAGEANDINVENTORY.CAPTION"
+msgid "Remove from inventory"
+msgstr ""
+
+#: tviswaptgui.actdeletehostspackageandinventory.hint
+msgctxt "TVISWAPTGUI.ACTDELETEHOSTSPACKAGEANDINVENTORY.HINT"
+msgid "Remove from inventory"
+msgstr ""
+
+#: tviswaptgui.actdeletehostspackages.caption
+msgctxt "TVISWAPTGUI.ACTDELETEHOSTSPACKAGES.CAPTION"
+msgid "Remove Host configuration only"
+msgstr ""
+
 #: tviswaptgui.actdeletepackage.caption
 msgctxt "tviswaptgui.actdeletepackage.caption"
 msgid "Remove from repository"
-msgstr ""
-
-#: tviswaptgui.actdeploywapt.caption
-msgctxt "tviswaptgui.actdeploywapt.caption"
-msgid "Deploy WAPT onto hosts"
 msgstr ""
 
 #: tviswaptgui.actdisplaypreferences.caption
@@ -1125,25 +1127,6 @@ msgstr ""
 #: tviswaptgui.acthelp.caption
 msgctxt "tviswaptgui.acthelp.caption"
 msgid "Online help"
-msgstr ""
-
-#: tviswaptgui.acthostsdelete.caption
-msgctxt "tviswaptgui.acthostsdelete.caption"
-msgid "Remove from inventory"
-msgstr ""
-
-#: tviswaptgui.acthostsdelete.hint
-msgctxt "TVISWAPTGUI.ACTHOSTSDELETE.HINT"
-msgid "Remove from inventory"
-msgstr ""
-
-#: tviswaptgui.acthostsdeletehostandconfig.caption
-msgctxt "TVISWAPTGUI.ACTHOSTSDELETEHOSTANDCONFIG.CAPTION"
-msgid "Remove host configuration and inventory "
-msgstr ""
-
-#: tviswaptgui.acthostsdeletepackage.caption
-msgid "Remove Host configuration only"
 msgstr ""
 
 #: tviswaptgui.actimportfromfile.caption

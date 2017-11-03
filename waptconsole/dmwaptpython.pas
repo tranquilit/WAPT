@@ -152,10 +152,14 @@ begin
       Result := GetPythonEngine.PyUnicode_FromWideString(aso.AsString);
       end;
     stArray: begin
-      Result := GetPythonEngine.PyList_New(aso.AsArray.Length);
+      Result := GetPythonEngine.PyTuple_New(aso.AsArray.Length);
+      i:=0;
       for item in aso do
-          GetPythonEngine.PyList_Append(Result,SuperObjectToPyObject(item));
+      begin
+        GetPythonEngine.PyTuple_SetItem(Result,i,SuperObjectToPyObject(item));
+        inc(i);
       end;
+    end;
     stObject: begin
       Result := GetPythonEngine.PyDict_New();
       for key in Aso.AsObject.GetNames do
