@@ -52,6 +52,8 @@ except ImportError:
     # for build time
     ProgressBar = None
 
+logger = logging.getLogger('wapt')
+
 if platform.system() == 'Windows':
     try:
         import ctypes
@@ -90,7 +92,6 @@ if platform.system() == 'Windows':
         else:
             return os.environ['PROGRAMFILES']
 
-logger = logging.getLogger('wapt')
 
 #####################################
 # http://code.activestate.com/recipes/498181-add-thousands-separator-commas-to-formatted-number/

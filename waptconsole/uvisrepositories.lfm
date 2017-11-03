@@ -1,7 +1,7 @@
 object VisRepositories: TVisRepositories
-  Left = 578
+  Left = 507
   Height = 232
-  Top = 291
+  Top = 284
   Width = 829
   AutoSize = True
   BorderStyle = bsDialog

@@ -65,7 +65,7 @@ type
     cbGroups: TComboBox;
     CBInverseSelect: TCheckBox;
     cbSite: TComboBox;
-    cbOU: TComboBox;
+    cbADOU: TComboBox;
     cbHasErrors: TCheckBox;
     cbNeedUpgrade: TCheckBox;
     cbNewestOnly: TCheckBox;
@@ -96,6 +96,7 @@ type
     Image2: TImage;
     Image3: TImage;
     Image4: TImage;
+    ActionsImages24: TImageList;
     Label1: TLabel;
     Label10: TLabel;
     Label12: TLabel;
@@ -464,6 +465,7 @@ type
     procedure CBInverseSelectClick(Sender: TObject);
     procedure cbMaskSystemComponentsClick(Sender: TObject);
     procedure cbNewestOnlyClick(Sender: TObject);
+    procedure cbADOUDropDown(Sender: TObject);
     procedure cbSearchAllClick(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure cbWUAPendingChange(Sender: TObject);
@@ -562,6 +564,7 @@ type
   private
     CurrentVisLoading: TVisLoading;
     procedure DoProgress(ASender: TObject);
+    procedure FillcbADOU;
     procedure FillcbGroups;
     function FilterSoftwares(softs: ISuperObject): ISuperObject;
     function FilterHardware(data: ISuperObject): ISuperObject;
@@ -1069,6 +1072,10 @@ begin
   if (RowSO <> nil) then
   begin
     currhost := RowSO.S['uuid'];
+    pgTasks.TabVisible := RowSO.S['reachable'] = 'OK';
+    if not pgTasks.TabVisible and (HostPages.ActivePage = pgTasks) then
+      HostPages.ActivePage := pgPackages;
+
     if HostPages.ActivePage = pgPackages then
     begin
       GridHostPackages.Clear;
@@ -3272,6 +3279,9 @@ begin
     if cbGroups.ItemIndex>0 then
       urlParams.AsArray.Add(Format('groups=%s',[cbGroups.Text]));
 
+    if cbADOU.ItemIndex>0 then
+      urlParams.AsArray.Add(Format('organizational_unit=%s',[cbADOU.Text]));
+
     urlParams.AsArray.Add('columns='+join(',',columns));
     urlParams.AsArray.Add(Format('limit=%d',[HostsLimit]));
 
@@ -3416,7 +3426,7 @@ begin
 
     cbGroups.ItemIndex:=-1;
     cbSite.ItemIndex:=-1;
-    cbOU.ItemIndex:=-1;
+    cbADOU.ItemIndex:=-1;
   end;
 end;
 
@@ -3521,6 +3531,11 @@ end;
 procedure TVisWaptGUI.cbNewestOnlyClick(Sender: TObject);
 begin
   ActSearchPackage.Execute;
+end;
+
+procedure TVisWaptGUI.cbADOUDropDown(Sender: TObject);
+begin
+  FillcbADOU;
 end;
 
 procedure TVisWaptGUI.cbSearchAllClick(Sender: TObject);
@@ -4346,6 +4361,32 @@ begin
     Screen.Cursor:=crdefault;
   end;
 end;
+
+procedure TVisWaptGUI.FillcbADOU;
+var
+  OU,OUDN:ISuperObject;
+  oldSelect:String;
+begin
+  try
+    Screen.Cursor:=crHourGlass;
+
+    oldSelect:=cbADOU.Text;
+    cbADOU.Items.Clear;
+    cbADOU.Items.Add(rsFilterAll);
+
+    OUDN := WAPTServerJsonGet('api/v3/get_ad_ou',[])['result'];
+    if OUDN<>Nil then
+    begin
+      for OU in OUDN do
+        cbADOU.Items.Add(OU.AsString{%H-});
+    end;
+    cbADOU.Text:= oldSelect;
+
+  finally
+    Screen.Cursor:=crdefault;
+  end;
+end;
+
 
 procedure TVisWaptGUI.MainPagesChange(Sender: TObject);
 {$ifdef wsus}

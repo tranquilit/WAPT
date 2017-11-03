@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = '1.5.1.0'
+__version__ = '1.5.1.1'
 
 import os
 import sys
@@ -1291,6 +1291,22 @@ def get_groups():
     return make_response(result=groups, msg=msg, status=200)
 
 
+@app.route('/api/v3/get_ad_ou')
+@requires_auth
+def get_ad_ou():
+    """List all the OU registered by hosts
+    """
+    try:
+        starttime = time.time()
+        result = Hosts.select(fn.distinct(Hosts.computer_ad_ou)).where(~Hosts.computer_ad_ou.is_null()).scalar(as_tuple=True)
+
+        message = 'AD OU DN List'
+        return make_response(result=result, msg=message, request_time=time.time() - starttime)
+
+    except Exception as e:
+        return make_response_from_exception(e)
+
+
 def build_hosts_filter(model, filter_expr):
     """Legacy helper function to translate waptconsole <=1.3.11 hosts filter
         into peewee model where clause.
@@ -1540,9 +1556,9 @@ def get_hosts():
 
         if 'organizational_unit' in request.args:
             if request.args.get('sub_ou_in_active_directory','1') == '1':
-                query = query & (Hosts.host_info['organizational_unit'].endswith(request.args.get('organizational_unit')))
+                query = query & (Hosts.computer_ad_ou.endswith(request.args.get('organizational_unit')))
             else:
-                query = query & (Hosts.host_info['organizational_unit'] == request.args.get('organizational_unit'))
+                query = query & (Hosts.computer_ad_ou  == request.args.get('organizational_unit'))
 
         if query is not None and not_filter:
             query = ~ query

@@ -1,4 +1,4 @@
-msgid "Only required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleOnly required if a proxy is needed for waptserver and main waptrepoIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundle"
+msgid "Only required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleOnly required if a proxy is needed for waptserver and main waptrepoIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundle"
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tform1.buttonpanel1.helpbutton.caption
@@ -599,10 +599,6 @@ msgstr ""
 
 #: tvislogin.caption
 msgid "WAPT authentication"
-msgstr ""
-
-#: tvislogin.edwaptservername.text
-msgid "edWaptServerName"
 msgstr ""
 
 #: tvislogin.labserver.caption
@@ -1422,6 +1418,11 @@ msgstr ""
 msgid "WAPT console"
 msgstr ""
 
+#: tviswaptgui.cbadou.hint
+msgctxt "TVISWAPTGUI.CBADOU.HINT"
+msgid "Filter hosts which have this direct package dependency"
+msgstr ""
+
 #: tviswaptgui.cbadvancedsearch.caption
 msgid "More options"
 msgstr ""
@@ -1460,11 +1461,6 @@ msgstr ""
 #: tviswaptgui.cbnewestonly.caption
 msgctxt "TVISWAPTGUI.CBNEWESTONLY.CAPTION"
 msgid "Last version only"
-msgstr ""
-
-#: tviswaptgui.cbou.hint
-msgctxt "TVISWAPTGUI.CBOU.HINT"
-msgid "Filter hosts which have this direct package dependency"
 msgstr ""
 
 #: tviswaptgui.cbreachable.caption

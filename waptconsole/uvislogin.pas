@@ -14,15 +14,19 @@ type
 
   TVisLogin = class(TForm)
     BitBtn1: TBitBtn;
-    ButtonPanel1: TButtonPanel;
+    BitBtn2: TBitBtn;
+    BitBtn3: TBitBtn;
     edPassword: TEdit;
+    EdUser: TEdit;
     edWaptServerName: TEdit;
-    EdUser: TFileNameEdit;
     Image1: TImage;
     LabVersion: TLabel;
     labServer: TLabel;
     laPassword: TLabel;
     labUser: TLabel;
+    Panel1: TPanel;
+    Panel2: TPanel;
+    Panel3: TPanel;
     procedure BitBtn1Click(Sender: TObject);
     procedure edPasswordKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);

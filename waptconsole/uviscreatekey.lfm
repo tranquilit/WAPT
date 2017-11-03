@@ -1,7 +1,7 @@
 object VisCreateKey: TVisCreateKey
-  Left = 501
+  Left = 439
   Height = 466
-  Top = 326
+  Top = 318
   Width = 439
   BorderStyle = bsDialog
   Caption = 'Generate private key and self signed certificate'

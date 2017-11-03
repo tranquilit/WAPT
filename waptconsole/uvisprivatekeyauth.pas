@@ -20,6 +20,7 @@ type
     laKeyPath: TLabel;
     laPassword: TLabel;
     Panel1: TPanel;
+    Panel2: TPanel;
     procedure edPasswordKeyKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
   private
