@@ -75,6 +75,7 @@ subprocess.check_output('mkdir -p /var/www/wapt-hostref',shell=True)
 subprocess.check_output('chown -R wapt:root /var/www/wapt',shell=True)
 subprocess.check_output('chown -R wapt:root /var/www/wapt-host',shell=True)
 subprocess.check_output('chown -R wapt:root /var/www/wapt-hostref',shell=True)
+subprocess.check_output("""echo "User-agent:*\nDisallow: /\n" > /var/www/robots.txt""",shell=True)
 
 os.chmod('/opt/wapt/wapt-scanpackages.py',0o755)
 os.chmod('/opt/wapt/wapt-signpackages.py',0o755)
