@@ -485,7 +485,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostInventory: TTabSheet
           Caption = 'Hardware inventory'
-          ClientHeight = 413
+          ClientHeight = 499
           ClientWidth = 564
           object Panel13: TPanel
             Left = 0
@@ -534,7 +534,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object GridhostInventory: TVirtualJSONInspector
             Left = 0
-            Height = 373
+            Height = 459
             Top = 40
             Width = 564
             PropertyDefs = <>
@@ -568,11 +568,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgSoftwares: TTabSheet
           Caption = 'Software inventory'
-          ClientHeight = 526
+          ClientHeight = 499
           ClientWidth = 564
           object GridHostSoftwares: TSOGrid
             Left = 0
-            Height = 496
+            Height = 469
             Top = 30
             Width = 564
             Align = alClient
@@ -580,27 +580,30 @@ object VisWaptGUI: TVisWaptGUI
             Header.AutoSizeIndex = -1
             Header.Columns = <            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 0
+                Text = 'Software name'
+                Width = 310
+                PropertyName = 'name'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 1
+                Tag = 1
+                Text = 'Version'
+                Width = 82
+                PropertyName = 'version'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 2
+                Tag = 2
                 Text = 'Publisher'
                 Width = 108
                 PropertyName = 'publisher'
               end            
               item
-                Position = 1
-                Text = 'Software name'
-                Width = 128
-                PropertyName = 'name'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-                Position = 2
-                Text = 'Version'
-                Width = 88
-                PropertyName = 'version'
-              end            
-              item
                 Position = 3
+                Tag = 3
                 Text = 'Install date'
                 Width = 85
                 PropertyName = 'install_date'
@@ -608,24 +611,28 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
                 Position = 4
+                Tag = 4
                 Text = 'Serial number'
                 PropertyName = 'serial_nr'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
                 Position = 5
+                Tag = 5
                 Text = 'Install location'
                 Width = 200
                 PropertyName = 'install_location'
               end            
               item
                 Position = 6
+                Tag = 6
                 Text = 'Uninstall key'
                 Width = 100
                 PropertyName = 'key'
               end            
               item
                 Position = 7
+                Tag = 7
                 Text = 'Uninstall string'
                 Width = 100
                 PropertyName = 'uninstall_string'
@@ -634,6 +641,7 @@ object VisWaptGUI: TVisWaptGUI
                 Alignment = taRightJustify
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 8
+                Tag = 8
                 Text = 'System component'
                 Width = 19
                 PropertyName = 'system_component'
@@ -691,12 +699,12 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostWUA: TTabSheet
           Caption = 'Windows updates'
-          ClientHeight = 526
+          ClientHeight = 499
           ClientWidth = 564
           object GridHostWinUpdates: TSOGrid
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 500
+            Height = 473
             Top = 26
             Width = 564
             OnGetText = GridHostWinUpdatesGetText
@@ -824,7 +832,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgTasks: TTabSheet
           Caption = 'Tasks'
-          ClientHeight = 433
+          ClientHeight = 499
           ClientWidth = 564
           object HostTaskRunningProgress: TProgressBar
             Left = 4
@@ -898,14 +906,14 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 378
+            Top = 444
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
           end
           object PageControl1: TPageControl
             Left = 0
-            Height = 276
+            Height = 342
             Top = 102
             Width = 564
             ActivePage = TabSheet1
@@ -915,11 +923,11 @@ object VisWaptGUI: TVisWaptGUI
             TabOrder = 3
             object TabSheet1: TTabSheet
               Caption = 'Pending'
-              ClientHeight = 250
+              ClientHeight = 316
               ClientWidth = 556
               object GridHostTasksPending: TSOGrid
                 Left = 0
-                Height = 248
+                Height = 314
                 Top = 2
                 Width = 556
                 Align = alClient
@@ -1325,7 +1333,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel6: TPanel
             Left = 0
             Height = 50
-            Top = 383
+            Top = 449
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -1896,7 +1904,7 @@ object VisWaptGUI: TVisWaptGUI
         ClientWidth = 1248
         TabOrder = 4
         object panFilterStatus: TPanel
-          Left = 434
+          Left = 496
           Height = 75
           Top = 0
           Width = 141
@@ -2078,7 +2086,7 @@ object VisWaptGUI: TVisWaptGUI
           Left = 0
           Height = 75
           Top = 0
-          Width = 434
+          Width = 496
           Align = alLeft
           AutoSize = True
           BevelOuter = bvNone
@@ -2086,13 +2094,13 @@ object VisWaptGUI: TVisWaptGUI
           ChildSizing.TopBottomSpacing = 2
           ChildSizing.VerticalSpacing = 2
           ClientHeight = 75
-          ClientWidth = 434
+          ClientWidth = 496
           TabOrder = 1
           object PanSearch: TPanel
             Left = 6
             Height = 28
             Top = 2
-            Width = 422
+            Width = 484
             AutoSize = True
             BevelOuter = bvNone
             ChildSizing.LeftRightSpacing = 6
@@ -2101,7 +2109,7 @@ object VisWaptGUI: TVisWaptGUI
             ChildSizing.Layout = cclLeftToRightThenTopToBottom
             ChildSizing.ControlsPerLine = 3
             ClientHeight = 28
-            ClientWidth = 422
+            ClientWidth = 484
             TabOrder = 0
             object EdSearchHost: TSearchEdit
               Left = 6
@@ -2124,7 +2132,7 @@ object VisWaptGUI: TVisWaptGUI
               Left = 266
               Height = 26
               Top = 2
-              Width = 103
+              Width = 120
               Action = ActSearchHost
               AutoSize = True
               Glyph.Data = {
@@ -2165,14 +2173,13 @@ object VisWaptGUI: TVisWaptGUI
               }
               TabOrder = 1
             end
-            object CBInverseSelect: TCheckBox
-              Left = 379
+            object cbAdvancedSearch: TCheckBox
+              Left = 396
               Height = 26
-              Hint = 'Negative search : returns hosts Not matching'
               Top = 2
-              Width = 37
-              Caption = 'Not'
-              OnClick = CBInverseSelectClick
+              Width = 82
+              Caption = 'More options'
+              OnClick = cbAdvancedSearchClick
               TabOrder = 2
             end
           end
@@ -2180,7 +2187,7 @@ object VisWaptGUI: TVisWaptGUI
             Left = 12
             Height = 17
             Top = 49
-            Width = 293
+            Width = 343
             AutoSize = True
             BevelOuter = bvNone
             ChildSizing.HorizontalSpacing = 6
@@ -2189,10 +2196,19 @@ object VisWaptGUI: TVisWaptGUI
             ChildSizing.Layout = cclLeftToRightThenTopToBottom
             ChildSizing.ControlsPerLine = 6
             ClientHeight = 17
-            ClientWidth = 293
+            ClientWidth = 343
             TabOrder = 1
-            object cbSearchAll: TCheckBox
+            object Label5: TLabel
               Left = 0
+              Height = 17
+              Top = 0
+              Width = 44
+              Caption = 'Search in'
+              Layout = tlCenter
+              ParentColor = False
+            end
+            object cbSearchAll: TCheckBox
+              Left = 50
               Height = 17
               Top = 0
               Width = 31
@@ -2203,7 +2219,7 @@ object VisWaptGUI: TVisWaptGUI
               TabOrder = 0
             end
             object cbSearchHost: TCheckBox
-              Left = 37
+              Left = 87
               Height = 17
               Hint = 'Search in host_info field'
               Top = 0
@@ -2215,7 +2231,7 @@ object VisWaptGUI: TVisWaptGUI
               TabOrder = 1
             end
             object cbSearchDMI: TCheckBox
-              Left = 85
+              Left = 135
               Height = 17
               Hint = 'Search in DMI/WMI infos'
               Top = 0
@@ -2227,7 +2243,7 @@ object VisWaptGUI: TVisWaptGUI
               TabOrder = 2
             end
             object cbSearchSoftwares: TCheckBox
-              Left = 158
+              Left = 208
               Height = 17
               Hint = 'Search in installed softwares'
               Top = 0
@@ -2239,7 +2255,7 @@ object VisWaptGUI: TVisWaptGUI
               TabOrder = 3
             end
             object cbSearchPackages: TCheckBox
-              Left = 228
+              Left = 278
               Height = 17
               Hint = 'search in installed packages'
               Top = 0
@@ -2251,18 +2267,19 @@ object VisWaptGUI: TVisWaptGUI
               TabOrder = 4
             end
           end
-          object cbAdvancedSearch: TCheckBox
+          object CBInverseSelect: TCheckBox
             Left = 12
             Height = 17
-            Top = 29
-            Width = 141
-            Caption = 'Advanced search options'
-            OnClick = cbAdvancedSearchClick
+            Hint = 'Negative search : returns hosts Not matching'
+            Top = 27
+            Width = 37
+            Caption = 'Not'
+            OnClick = CBInverseSelectClick
             TabOrder = 2
           end
         end
         object PanFilterGroups: TPanel
-          Left = 575
+          Left = 637
           Height = 75
           Top = 0
           Width = 271
@@ -4260,7 +4277,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActSearchHost: TAction
       Category = 'hosts'
-      Caption = 'Search host'
+      Caption = 'Search Refresh'
       ImageIndex = 28
       OnExecute = ActSearchHostExecute
     end

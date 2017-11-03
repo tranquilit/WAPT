@@ -249,8 +249,7 @@ var
   inifile: TIniFile;
 begin
   if MessageDlg(format(rsRepositoryUnregisterConfirm, [WaptRepo.Name]),
-        mtConfirmation, mbYesNoCancel, 0) <> mrYes then
-
+        mtConfirmation, mbYesNoCancel, 0) = mrYes then
   begin
     inifile := TIniFile.Create(AppIniFilename);
     try

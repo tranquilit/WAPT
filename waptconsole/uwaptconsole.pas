@@ -60,12 +60,13 @@ type
     ButHostSearch: TBitBtn;
     ButHostSearch1: TBitBtn;
     ButPackagesUpdate1: TBitBtn;
+    cbAdvancedSearch: TCheckBox;
     cbForcedWSUSscanDownload: TCheckBox;
     cbGroups: TComboBox;
+    CBInverseSelect: TCheckBox;
     cbSite: TComboBox;
     cbOU: TComboBox;
     cbHasErrors: TCheckBox;
-    CBInverseSelect: TCheckBox;
     cbNeedUpgrade: TCheckBox;
     cbNewestOnly: TCheckBox;
     cbReachable: TCheckBox;
@@ -74,7 +75,6 @@ type
     cbSearchHost: TCheckBox;
     cbSearchPackages: TCheckBox;
     cbSearchSoftwares: TCheckBox;
-    cbAdvancedSearch: TCheckBox;
     EdDescription: TEdit;
     EdHardwareFilter: TEdit;
     EdHostname: TEdit;
@@ -110,6 +110,7 @@ type
     Label23: TLabel;
     Label3: TLabel;
     Label4: TLabel;
+    Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
@@ -3493,7 +3494,6 @@ end;
 procedure TVisWaptGUI.cbAdvancedSearchClick(Sender: TObject);
 begin
   PanSearchIn.Visible:=cbAdvancedSearch.Checked;
-  panFilterStatus.Visible:=cbAdvancedSearch.Checked;
   PanFilterGroups.Visible:=cbAdvancedSearch.Checked;
   CBInverseSelect.Visible:=cbAdvancedSearch.Checked;
 
@@ -3504,9 +3504,6 @@ begin
     cbSearchDMI.Checked:=False;
     cbSearchPackages.Checked:=False;
     cbSearchSoftwares.Checked:=False;
-    cbHasErrors.Checked:=False;
-    cbNeedUpgrade.Checked:=False;
-    cbReachable.Checked:=False;
 
     cbGroups.ItemIndex:=-1;
     cbSite.ItemIndex:=-1;

@@ -242,8 +242,6 @@ procedure TVisImportPackage.ActSearchExternalPackageExecute(Sender: TObject);
 var
   expr: String;
   http_proxy,packages_python,verify_cert: Variant;
-
-
 begin
   EdSearchPackage.Modified:=False;
   http_proxy := Waptrepo.HttpProxy;
@@ -254,21 +252,27 @@ begin
 
   if http_proxy = '' then
     http_proxy := None;
+
   if Waptrepo.RepoURL <>'' then
   try
-    expr := UTF8Decode(EdSearchPackage.Text);
-    packages_python := Nil;
-    packages_python := MainModule.waptdevutils.update_external_repo(
-      repourl := Waptrepo.RepoURL,
-      search_string := expr,
-      proxy := http_proxy,
-      mywapt := dmwaptpython.DMPython.WAPT,
-      newer_only := cbNewerThanMine.Checked,
-      newest_only := cbNewestOnly.Checked,
-      verify_cert := verify_cert);
+    try
+      Screen.Cursor:=crHourGlass;
+      expr := UTF8Decode(EdSearchPackage.Text);
+      packages_python := Nil;
+      packages_python := MainModule.waptdevutils.update_external_repo(
+        repourl := Waptrepo.RepoURL,
+        search_string := expr,
+        proxy := http_proxy,
+        mywapt := dmwaptpython.DMPython.WAPT,
+        newer_only := cbNewerThanMine.Checked,
+        newest_only := cbNewestOnly.Checked,
+        verify_cert := verify_cert);
 
-    // todo : pass directly from python dict to TSuperObject
-    GridExternalPackages.Data := PyVarToSuperObject(packages_python);
+      // todo : pass directly from python dict to TSuperObject
+      GridExternalPackages.Data := PyVarToSuperObject(packages_python);
+    finally
+      Screen.Cursor:=crDefault;
+    end;
   except
     on E:Exception do ShowMessageFmt(rsFailedExternalRepoUpdate+#13#10#13#10+E.Message,[Waptrepo.RepoURL]);
   end
