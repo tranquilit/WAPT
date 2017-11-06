@@ -1705,9 +1705,18 @@ class WaptServer(object):
         try:
             if self.server_url:
                 req = requests.head("%s/ping" % (self.server_url),proxies=self.proxies,
-                    verify=self.verify_cert,timeout=self.timeout,auth=self.auth(action='ping'),
+                    verify=self.verify_cert,
+                    timeout=self.timeout,
+                    auth=None,
                     headers=default_http_headers(),
                     allow_redirects=True)
+                if req.status_code == 401:
+                    req = requests.head("%s/ping" % (self.server_url),proxies=self.proxies,
+                        verify=self.verify_cert,
+                        timeout=self.timeout,
+                        auth=self.auth(action='ping'),
+                        headers=default_http_headers(),
+                        allow_redirects=True)
                 req.raise_for_status()
                 return True
             else:
