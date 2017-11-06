@@ -2,12 +2,12 @@ object VisLogin: TVisLogin
   Left = 687
   Height = 208
   Top = 360
-  Width = 383
+  Width = 420
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'WAPT authentication'
   ClientHeight = 208
-  ClientWidth = 383
+  ClientWidth = 420
   Color = clWhite
   OnCreate = FormCreate
   OnShow = FormShow
@@ -340,7 +340,7 @@ object VisLogin: TVisLogin
     Left = 163
     Height = 176
     Top = 0
-    Width = 220
+    Width = 257
     Align = alClient
     AutoSize = True
     ChildSizing.LeftRightSpacing = 6
@@ -351,11 +351,11 @@ object VisLogin: TVisLogin
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 2
     ClientHeight = 176
-    ClientWidth = 220
+    ClientWidth = 257
     TabOrder = 0
     object labServer: TLabel
-      Left = 8
-      Height = 23
+      Left = 12
+      Height = 22
       Top = 6
       Width = 46
       Alignment = taRightJustify
@@ -365,37 +365,37 @@ object VisLogin: TVisLogin
       ParentColor = False
     end
     object Panel3: TPanel
-      Left = 62
-      Height = 23
+      Left = 70
+      Height = 22
       Top = 6
-      Width = 152
+      Width = 175
       AutoSize = True
+      ChildSizing.HorizontalSpacing = 3
       ChildSizing.EnlargeHorizontal = crsScaleChilds
       ChildSizing.EnlargeVertical = crsHomogenousSpaceResize
       ChildSizing.ShrinkHorizontal = crsHomogenousSpaceResize
       ChildSizing.ShrinkVertical = crsHomogenousSpaceResize
+      ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 2
-      ClientHeight = 23
-      ClientWidth = 152
+      ClientHeight = 22
+      ClientWidth = 175
       TabOrder = 0
       object edWaptServerName: TEdit
-        Left = 1
+        Left = 0
         Height = 21
         Top = 1
-        Width = 150
-        Align = alLeft
+        Width = 151
         Constraints.MaxHeight = 21
         Constraints.MinWidth = 150
         Enabled = False
         TabOrder = 1
       end
       object BitBtn1: TBitBtn
-        Left = 130
+        Left = 154
         Height = 21
         Hint = 'Configure WAPT console'
         Top = 1
         Width = 21
-        Align = alRight
         Constraints.MaxHeight = 21
         Constraints.MaxWidth = 21
         DefaultCaption = True
@@ -486,9 +486,9 @@ object VisLogin: TVisLogin
       end
     end
     object labUser: TLabel
-      Left = 8
+      Left = 12
       Height = 21
-      Top = 35
+      Top = 34
       Width = 46
       Alignment = taRightJustify
       AutoSize = False
@@ -497,17 +497,17 @@ object VisLogin: TVisLogin
       ParentColor = False
     end
     object EdUser: TEdit
-      Left = 62
+      Left = 70
       Height = 21
-      Top = 35
-      Width = 152
+      Top = 34
+      Width = 175
       Constraints.MinWidth = 100
       TabOrder = 2
     end
     object laPassword: TLabel
-      Left = 8
+      Left = 12
       Height = 21
-      Top = 62
+      Top = 61
       Width = 46
       Alignment = taRightJustify
       AutoSize = False
@@ -516,10 +516,10 @@ object VisLogin: TVisLogin
       ParentColor = False
     end
     object edPassword: TEdit
-      Left = 62
+      Left = 70
       Height = 21
-      Top = 62
-      Width = 152
+      Top = 61
+      Width = 175
       Constraints.MinWidth = 100
       EchoMode = emPassword
       OnKeyDown = edPasswordKeyDown
@@ -531,7 +531,7 @@ object VisLogin: TVisLogin
     Left = 0
     Height = 32
     Top = 176
-    Width = 383
+    Width = 420
     Align = alBottom
     AutoSize = True
     BevelOuter = bvNone
@@ -539,10 +539,10 @@ object VisLogin: TVisLogin
     ChildSizing.TopBottomSpacing = 3
     ChildSizing.HorizontalSpacing = 6
     ClientHeight = 32
-    ClientWidth = 383
+    ClientWidth = 420
     TabOrder = 1
     object BitBtn2: TBitBtn
-      Left = 231
+      Left = 268
       Height = 26
       Top = 3
       Width = 60
@@ -555,7 +555,7 @@ object VisLogin: TVisLogin
       TabOrder = 0
     end
     object BitBtn3: TBitBtn
-      Left = 297
+      Left = 334
       Height = 26
       Top = 3
       Width = 83

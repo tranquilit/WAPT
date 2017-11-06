@@ -19,7 +19,7 @@ type
   TVisWaptGUI = class(TForm)
     ActCancelRunningTask: TAction;
     ActDisplayPreferences: TAction;
-    ActRepositoriesSettings: TAction;
+    ActExternalRepositoriesSettings: TAction;
     ActPackagesForget: TAction;
     ActAddConflicts: TAction;
     ActHelp: TAction;
@@ -123,12 +123,11 @@ type
     MenuExternalTools: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem23: TMenuItem;
-    MenuItem31: TMenuItem;
     MenuItem33: TMenuItem;
     MenuItem50: TMenuItem;
     MenuItem51: TMenuItem;
-    MenuItem53: TMenuItem;
     MenuItem74: TMenuItem;
+    MenuItem75: TMenuItem;
     MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
     MenuItem78: TMenuItem;
@@ -137,6 +136,7 @@ type
     MenuItem81: TMenuItem;
     MenuItem82: TMenuItem;
     MenuItem83: TMenuItem;
+    MenuItem84: TMenuItem;
     odSelectInstaller: TOpenDialog;
     Panel10: TPanel;
     Panel13: TPanel;
@@ -202,7 +202,7 @@ type
     ActEditGroup: TAction;
     ActDeleteGroup: TAction;
     ActSearchGroups: TAction;
-    ActWAPTLocalConfig: TAction;
+    ActWAPTConsoleConfig: TAction;
     ActReloadConfig: TAction;
     actRefresh: TAction;
     actQuit: TAction;
@@ -396,7 +396,7 @@ type
     procedure ActPackagesRemoveUpdate(Sender: TObject);
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
-    procedure ActRepositoriesSettingsExecute(Sender: TObject);
+    procedure ActExternalRepositoriesSettingsExecute(Sender: TObject);
     procedure ActTISHelpExecute(Sender: TObject);
     procedure ActTISHelpUpdate(Sender: TObject);
     procedure ActTriggerWakeOnLanExecute(Sender: TObject);
@@ -457,8 +457,9 @@ type
     procedure ActReloadConfigExecute(Sender: TObject);
     procedure ActVNCExecute(Sender: TObject);
     procedure ActVNCUpdate(Sender: TObject);
-    procedure ActWAPTLocalConfigExecute(Sender: TObject);
+    procedure ActWAPTConsoleConfigExecute(Sender: TObject);
     procedure ApplicationProperties1Exception(Sender: TObject; E: Exception);
+    procedure cbADOUSelect(Sender: TObject);
     procedure cbAdvancedSearchClick(Sender: TObject);
     procedure cbGroupsDropDown(Sender: TObject);
     procedure cbGroupsSelect(Sender: TObject);
@@ -518,6 +519,9 @@ type
       Mode: TDropMode; var Effect: DWORD; var Accept: boolean);
     procedure GridHostsEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var Allowed: boolean);
+    procedure GridHostsGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
+      var HintText: String);
     procedure GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: boolean; var ImageIndex: integer;
@@ -733,8 +737,9 @@ end;
 procedure TVisWaptGUI.cbNeedUpgradeClick(Sender: TObject);
 begin
   Gridhosts.Clear;
-  if (length(EdSearchHost.Text)>5)  and
-    (cbSearchDMI.Checked or cbSearchSoftwares.Checked or cbSearchPackages.Checked or cbSearchHost.Checked) then
+  if ((length(EdSearchHost.Text)>5)  and
+    (cbSearchDMI.Checked or cbSearchSoftwares.Checked or cbSearchPackages.Checked or cbSearchHost.Checked)) or
+    (cbHasErrors.Checked or cbNeedUpgrade.Checked or cbReachable.Checked) then
         ActSearchHostExecute(Sender);
 end;
 
@@ -831,7 +836,11 @@ begin
   try
     for CB in VarArrayOf([cbAdvancedSearch,cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares,cbReachable]) do
       ini.WriteBool(self.name,CB.Name,TCheckBox(CB).Checked);
+
     ini.WriteInteger(self.name,'HostsLimit',HostsLimit);
+    ini.WriteInteger(self.name,HostPages.Name+'.width',HostPages.Width);
+
+    ini.WriteInteger(self.name,'WindowState',Integer(WindowState));
   finally
     ini.Free;
   end;
@@ -850,11 +859,6 @@ begin
         stats := WAPTServerJsonGet('api/v1/usage_statistics',[])['result'];
         IdHttpPostData(stats_report_url,stats.AsJSon,(httpProxy<>''),4000,60000,60000,'','','Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko');
         ini.WriteDateTime('Global','last_usage_report',Now);
-        CBS := VarArrayOf([cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares]);
-        for CB in CBS do
-          ini.WriteBool('Global',CB.Name,TCheckBox(CB).Checked);
-
-        ini.WriteInteger(self.name,HostPages.Name+'.width',HostPages.Width);
 
       except
         ini.WriteDateTime('Global','last_usage_report',Now);
@@ -1551,7 +1555,7 @@ begin
   if (waptcommon.DefaultPackagePrefix = '') then
   begin
     ShowMessage(rsWaptPackagePrefixMissing);
-    ActWAPTLocalConfig.Execute;
+    ActWAPTConsoleConfig.Execute;
     exit;
   end;
 
@@ -2177,7 +2181,7 @@ begin
 
 end;
 
-procedure TVisWaptGUI.ActRepositoriesSettingsExecute(Sender: TObject);
+procedure TVisWaptGUI.ActExternalRepositoriesSettingsExecute(Sender: TObject);
 begin
   With TVisRepositories.Create(Self) do
   try
@@ -2744,7 +2748,7 @@ begin
   if DefaultPackagePrefix='' then
   begin
     ShowMessage(rsWaptPackagePrefixMissing);
-    ActWAPTLocalConfig.Execute;
+    ActWAPTConsoleConfig.Execute;
     Exit;
   end;
 
@@ -3386,7 +3390,7 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.ActWAPTLocalConfigExecute(Sender: TObject);
+procedure TVisWaptGUI.ActWAPTConsoleConfigExecute(Sender: TObject);
 begin
   if EditIniFile then
   begin
@@ -3410,6 +3414,11 @@ begin
   MessageDlg('Error in application','An unhandled exception has occured'#13#10#13#10+E.Message,mtError,[mbOK],'');
 end;
 
+procedure TVisWaptGUI.cbADOUSelect(Sender: TObject);
+begin
+  ActSearchHost.Execute;
+end;
+
 procedure TVisWaptGUI.cbAdvancedSearchClick(Sender: TObject);
 begin
   PanSearchIn.Visible:=cbAdvancedSearch.Checked;
@@ -3427,7 +3436,12 @@ begin
     cbGroups.ItemIndex:=-1;
     cbSite.ItemIndex:=-1;
     cbADOU.ItemIndex:=-1;
-  end;
+
+    panFilterStatus.ChildSizing.ControlsPerLine:=6;
+  end
+  else
+      panFilterStatus.ChildSizing.ControlsPerLine:=2;
+
 end;
 
 procedure TVisWaptGUI.cbGroupsDropDown(Sender: TObject);
@@ -3758,6 +3772,8 @@ begin
       HostsLimit := ini.ReadInteger(self.name,'HostsLimit',2000);
       //ShowMessage(Appuserinipath+'/'+self.Name+'/'+EdHostsLimit.Name+'/'+ini.ReadString(name,EdHostsLimit.Name,'not found'));
       HostPages.Width := ini.ReadInteger(self.name,HostPages.Name+'.width',HostPages.Width);
+
+      Self.WindowState := TWindowState(ini.ReadInteger(self.name,'WindowState',Integer(Self.WindowState)));
     finally
       ini.Free;
     end;
@@ -4040,6 +4056,17 @@ begin
   end
   else
     Allowed := False;
+
+end;
+
+procedure TVisWaptGUI.GridHostsGetHint(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex;
+  var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: String);
+begin
+  If Column = 0 then
+    HintText := GridHosts.GetCellStrValue(Node,'host_status')
+  else if Column = 1 then
+    HintText := GridHosts.GetCellStrValue(Node,'reachable');
 
 end;
 

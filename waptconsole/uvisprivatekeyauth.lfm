@@ -23,7 +23,7 @@ object VisPrivateKeyAuth: TVisPrivateKeyAuth
     BevelOuter = bvNone
     ClientHeight = 30
     ClientWidth = 315
-    TabOrder = 0
+    TabOrder = 1
     object BitBtn1: TBitBtn
       Left = 155
       Height = 23
@@ -63,7 +63,7 @@ object VisPrivateKeyAuth: TVisPrivateKeyAuth
     ChildSizing.ControlsPerLine = 2
     ClientHeight = 84
     ClientWidth = 315
-    TabOrder = 1
+    TabOrder = 0
     object Label1: TLabel
       Left = 6
       Height = 13

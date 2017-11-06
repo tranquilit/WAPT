@@ -1155,6 +1155,10 @@ msgctxt "tviswaptgui.actexeccode.caption"
 msgid "Execute python source"
 msgstr "Exécuter du code Python"
 
+#: tviswaptgui.actexternalrepositoriessettings.caption
+msgid "External repositories settings"
+msgstr ""
+
 #: tviswaptgui.actfrench.caption
 msgctxt "tviswaptgui.actfrench.caption"
 msgid "French"
@@ -1261,11 +1265,6 @@ msgctxt "tviswaptgui.actremovedepends.caption"
 msgid "Remove dependencies from packages/bundles"
 msgstr "Supprimer des dépendances de paquets ou groupes de paquets"
 
-#: tviswaptgui.actrepositoriessettings.caption
-msgctxt "tviswaptgui.actrepositoriessettings.caption"
-msgid "Repositories settings"
-msgstr ""
-
 #: tviswaptgui.actrestoredefaultlayout.caption
 msgctxt "tviswaptgui.actrestoredefaultlayout.caption"
 msgid "Restore default grid layout"
@@ -1352,10 +1351,10 @@ msgctxt "tviswaptgui.actvnc.caption"
 msgid "Connect via VNC"
 msgstr "Se connecter en VNC"
 
-#: tviswaptgui.actwaptlocalconfig.caption
+#: tviswaptgui.actwaptconsoleconfig.caption
 #, fuzzy
 #| msgid "Local WAPT configuration"
-msgctxt "tviswaptgui.actwaptlocalconfig.caption"
+msgctxt "tviswaptgui.actwaptconsoleconfig.caption"
 msgid "Preferences"
 msgstr "Préférences"
 
@@ -3038,6 +3037,11 @@ msgstr ""
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -3104,6 +3108,9 @@ msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 #: uwaptconsoleres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
 #| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
@@ -4129,6 +4136,9 @@ msgstr "Erreur lors de la compilation du paquet : %s"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -4356,6 +4366,9 @@ msgstr "Attention, l'installeur waptagent.exe n'est pas présent sur le serveur.
 #: uwaptconsoleres.rswaptagentoldversion
 #, fuzzy
 #| msgid ""
+#| "Warning, the version of the waptagent.exe installer is too old.\n"
+#| "Current waptagent.exe version: %s\n"
+#| "waptsetup-tis.exe version: %s\n"
 #| "Warning, the version of the waptagent.exe installer is too old.\n"
 #| "Current waptagent.exe version: %s\n"
 #| "waptsetup-tis.exe version: %s\n"
@@ -4943,6 +4956,8 @@ msgstr "Vous devez d'abord définir le préfixe des paquets dans les préférenc
 #| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -4953,6 +4968,9 @@ msgstr ""
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
 #| msgid ""
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
 #| "Required server version: %s\n"
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
@@ -5295,6 +5313,8 @@ msgstr "Erreur lors de la création de l'agent : %s"
 #: uwaptconsoleres.rswaptsetupuploadsuccess
 #, fuzzy
 #| msgid ""
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
