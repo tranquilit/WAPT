@@ -3256,7 +3256,8 @@ var
   previous_uuid,prop: string;
   i: integer;
 const
-  DefaultColumns:Array[0..10] of String = ('uuid','os_name','connected_ips','computer_fqdn','computer_name','manufacturer','description','productname','serialnr','mac_addresses','connected_users');
+  DefaultColumns:Array[0..13] of String = ('uuid','os_name','connected_ips','computer_fqdn',
+    'computer_name','manufacturer','description','productname','serialnr','mac_addresses','connected_users','last_logged_on_user','computer_ad_ou','computer_ad_site');
 begin
   if AppLoading then
     Exit;

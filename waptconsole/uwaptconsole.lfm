@@ -602,19 +602,19 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'version'
               end            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
                 Position = 2
                 Tag = 2
-                Text = 'Publisher'
-                Width = 108
-                PropertyName = 'publisher'
-              end            
-              item
-                Position = 3
-                Tag = 3
                 Text = 'Install date'
                 Width = 85
                 PropertyName = 'install_date'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+                Position = 3
+                Tag = 3
+                Text = 'Publisher'
+                Width = 108
+                PropertyName = 'publisher'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
@@ -635,10 +635,11 @@ object VisWaptGUI: TVisWaptGUI
                 Position = 6
                 Tag = 6
                 Text = 'Uninstall key'
-                Width = 100
+                Width = 166
                 PropertyName = 'key'
               end            
               item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 7
                 Tag = 7
                 Text = 'Uninstall string'
@@ -657,6 +658,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.DefaultHeight = 17
             Header.Height = 19
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+            Header.SortColumn = 2
             Header.Style = hsFlatButtons
             TabOrder = 0
             TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
@@ -1529,18 +1531,25 @@ object VisWaptGUI: TVisWaptGUI
               PropertyName = 'last_seen_on'
             end          
             item
-              MaxWidth = 400
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
               Position = 11
               Tag = 11
+              Text = 'Logged in users'
+              Width = 99
+              PropertyName = 'connected_users'
+            end          
+            item
+              MaxWidth = 400
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+              Position = 12
+              Tag = 12
               Text = 'MAC address'
               Width = 100
               PropertyName = 'mac_addresses'
             end          
             item
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 12
-              Tag = 12
+              Position = 13
+              Tag = 13
               Text = 'WAPT version'
               Width = 80
               PropertyName = 'wapt_status.wapt-exe-version'
@@ -1548,8 +1557,8 @@ object VisWaptGUI: TVisWaptGUI
             item
               MaxWidth = 400
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 13
-              Tag = 13
+              Position = 14
+              Tag = 14
               Text = 'uuid'
               Width = 100
               PropertyName = 'uuid'
@@ -1557,8 +1566,8 @@ object VisWaptGUI: TVisWaptGUI
             item
               MaxWidth = 400
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 14
-              Tag = 14
+              Position = 15
+              Tag = 15
               Text = 'purchase_order'
               Width = 100
               PropertyName = 'purchase_order'
@@ -1566,8 +1575,8 @@ object VisWaptGUI: TVisWaptGUI
             item
               MaxWidth = 400
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 15
-              Tag = 15
+              Position = 16
+              Tag = 16
               Text = 'purchase_date'
               Width = 100
               PropertyName = 'purchase_date'
@@ -1575,67 +1584,84 @@ object VisWaptGUI: TVisWaptGUI
             item
               MaxWidth = 400
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 16
-              Tag = 16
+              Position = 17
+              Tag = 17
               Text = 'attributes'
               Width = 100
               PropertyName = 'attributes'
             end          
             item
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 17
-              Tag = 17
+              Position = 18
+              Tag = 18
               Text = 'Domain controller'
               PropertyName = 'host_info/domain_controller'
             end          
             item
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 18
-              Tag = 18
+              Position = 19
+              Tag = 19
               Text = 'Groups'
               Width = 64
               PropertyName = 'depends'
             end          
             item
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 19
-              Tag = 19
+              Position = 20
+              Tag = 20
               Text = 'Domaine'
               Width = 80
               PropertyName = 'host_info/domain_name'
             end          
             item
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 20
-              Tag = 20
+              Position = 21
+              Tag = 21
               Text = 'Listening address'
               Width = 75
               PropertyName = 'listening_address'
             end          
             item
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 21
-              Tag = 21
+              Position = 22
+              Tag = 22
               Text = 'Domain controller address'
               PropertyName = 'host_info/domain_controller_address'
             end          
             item
-              Position = 22
-              Tag = 22
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+              Position = 23
+              Tag = 23
               Text = 'AD DN'
               Width = 69
               PropertyName = 'host_info/computer_ad_dn'
             end          
             item
-              Position = 23
-              Tag = 23
+              Position = 24
+              Tag = 24
+              Text = 'Last logged on user'
+              Width = 107
+              PropertyName = 'last_logged_on_user'
+            end          
+            item
+              Position = 25
+              Tag = 25
               Text = 'AD Site'
-              PropertyName = 'host_info/computer_ad_site'
+              Width = 114
+              PropertyName = 'computer_ad_site'
+            end          
+            item
+              Position = 26
+              Tag = 26
+              Text = 'AD Organizational Unit'
+              Width = 126
+              PropertyName = 'computer_ad_ou'
             end>
           Header.DefaultHeight = 18
           Header.Height = 18
           Header.MinHeight = 18
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+          Header.SortColumn = 3
           Header.Style = hsFlatButtons
           HintMode = hmHintAndDefault
           Images = ImageList1
@@ -4958,11 +4984,11 @@ object VisWaptGUI: TVisWaptGUI
           D600FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
         }
       end
-      object MenuItem75: TMenuItem
-        Action = ActWAPTConsoleConfig
-      end
       object MenuItem84: TMenuItem
         Action = ActExternalRepositoriesSettings
+      end
+      object MenuItem75: TMenuItem
+        Action = ActWAPTConsoleConfig
       end
     end
     object MenuItem26: TMenuItem
