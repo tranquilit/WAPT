@@ -20,6 +20,7 @@ type
     ActCancelRunningTask: TAction;
     ActDisplayPreferences: TAction;
     ActExternalRepositoriesSettings: TAction;
+    ActAddHWPropertyToGrid: TAction;
     ActPackagesForget: TAction;
     ActAddConflicts: TAction;
     ActHelp: TAction;
@@ -60,10 +61,12 @@ type
     ButHostSearch: TBitBtn;
     ButHostSearch1: TBitBtn;
     ButPackagesUpdate1: TBitBtn;
+    Button1: TButton;
     cbAdvancedSearch: TCheckBox;
     cbForcedWSUSscanDownload: TCheckBox;
     cbGroups: TComboBox;
     CBInverseSelect: TCheckBox;
+    cbMaskSystemComponents: TCheckBox;
     cbSite: TComboBox;
     cbADOU: TComboBox;
     cbHasErrors: TCheckBox;
@@ -84,6 +87,7 @@ type
     EdOS: TEdit;
     EdRunningStatus: TEdit;
     EdSearchHost: TSearchEdit;
+    EdSoftwaresFilter: TEdit;
     EdUpdateDate: TEdit;
     EdUser: TEdit;
     GridhostInventory: TVirtualJSONInspector;
@@ -110,7 +114,7 @@ type
     Label21: TLabel;
     Label23: TLabel;
     Label3: TLabel;
-    Label4: TLabel;
+    LabUser: TLabel;
     Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
@@ -139,7 +143,6 @@ type
     MenuItem84: TMenuItem;
     odSelectInstaller: TOpenDialog;
     Panel10: TPanel;
-    Panel13: TPanel;
     Panel14: TPanel;
     Panel15: TPanel;
     Panel16: TPanel;
@@ -222,13 +225,11 @@ type
     ButPackagesUpdate: TBitBtn;
     cbShowHostPackagesSoft: TCheckBox;
     cbShowHostPackagesGroup: TCheckBox;
-    cbMaskSystemComponents: TCheckBox;
     cbShowLog: TCheckBox;
     cbWUACriticalOnly: TCheckBox;
     cbWUAInstalled: TCheckBox;
     cbWUAPending: TCheckBox;
     cbWUADiscarded: TCheckBox;
-    EdSoftwaresFilter: TEdit;
     EdSearchGroups: TSearchEdit;
     GridGroups: TSOGrid;
     GridHostWinUpdates: TSOGrid;
@@ -363,6 +364,8 @@ type
     procedure ActAddConflictsExecute(Sender: TObject);
     procedure ActAddDependsExecute(Sender: TObject);
     procedure ActAddDependsUpdate(Sender: TObject);
+    procedure ActAddHWPropertyToGridExecute(Sender: TObject);
+    procedure ActAddHWPropertyToGridUpdate(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
     procedure ActChangePasswordUpdate(Sender: TObject);
@@ -1152,11 +1155,20 @@ begin
         EdIPAddress.Text := RowSO.S['connected_ips'];
       EdManufacturer.Text := UTF8Encode(RowSO.S['manufacturer']);
       EdModelName.Text := UTF8Encode(RowSO.S['productname']);
-      EdUpdateDate.Text := UTF8Encode(RowSO.S['last_seen_on']);
+      EdUpdateDate.Text :=  UTF8Encode(Copy(StrReplaceChar(RowSO.S['last_seen_on'],'T',' '),1,16));
       If RowSO['connected_users'].DataType=stArray then
         EdUser.Text := UTF8Encode(soutils.join(',',RowSO['connected_users']))
       else
         EdUser.Text := UTF8Encode(RowSO.S['connected_users']);
+      If EdUser.Text = '' then
+      begin
+        EdUser.Text:= UTF8Encode(RowSO.S['host_info.last_logged_on_user']);
+        LabUser.Caption := 'Last logged on user';
+      end
+      else
+      begin
+        LabUser.Caption := 'Logged in users';
+      end;
       EdRunningStatus.Text := UTF8Encode(RowSO.S['last_update_status.runstatus']);
       GridHostPackages.Data := RowSO['installed_packages'];
     end
@@ -1789,6 +1801,34 @@ end;
 procedure TVisWaptGUI.ActAddDependsUpdate(Sender: TObject);
 begin
   (Sender as TAction).Enabled:=(GridHosts.SelectedCount>0);
+end;
+
+procedure TVisWaptGUI.ActAddHWPropertyToGridExecute(Sender: TObject);
+var
+  propname: string;
+  col: TSOGridColumn;
+begin
+  // drop d'un nouvel attribut
+  propname := GridhostInventory.Path(GridhostInventory.FocusedNode, 0, ttNormal, '/');
+  propname := copy(propname, 1, length(propname) - 1);
+  col := Gridhosts.FindColumnByPropertyName(propname);
+  if col = nil then
+  begin
+    col := Gridhosts.Header.Columns.Add as TSOGridColumn;
+    col.Text := propname;
+    col.PropertyName := propname;
+    col.Width := 100;
+  end;
+end;
+
+procedure TVisWaptGUI.ActAddHWPropertyToGridUpdate(Sender: TObject);
+var
+  propname: string;
+begin
+  propname := GridhostInventory.Path(GridhostInventory.FocusedNode, 0, ttNormal, '/');
+  propname := copy(propname, 1, length(propname) - 1);
+
+  ActAddHWPropertyToGrid.Enabled := (propname <>'') and (GridHosts.FindColumnByPropertyName(propname) = nil);
 end;
 
 procedure TVisWaptGUI.ActCancelRunningTaskExecute(Sender: TObject);

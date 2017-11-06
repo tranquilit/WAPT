@@ -985,6 +985,10 @@ msgctxt "tviswaptgui.actaddgroup.caption"
 msgid "New bundle"
 msgstr ""
 
+#: tviswaptgui.actaddhwpropertytogrid.caption
+msgid "Add item as grid column"
+msgstr ""
+
 #: tviswaptgui.actcancelrunningtask.caption
 msgctxt "tviswaptgui.actcancelrunningtask.caption"
 msgid "Cancel current task"
@@ -1553,7 +1557,7 @@ msgstr ""
 
 #: tviswaptgui.label12.caption
 msgctxt "tviswaptgui.label12.caption"
-msgid "Current task"
+msgid "Last task"
 msgstr ""
 
 #: tviswaptgui.label14.caption
@@ -1602,11 +1606,6 @@ msgstr ""
 msgid "Model"
 msgstr ""
 
-#: tviswaptgui.label4.caption
-msgctxt "tviswaptgui.label4.caption"
-msgid "User"
-msgstr ""
-
 #: tviswaptgui.label5.caption
 msgid "Search in"
 msgstr ""
@@ -1625,12 +1624,17 @@ msgid "Description"
 msgstr ""
 
 #: tviswaptgui.label9.caption
-msgid "Updated"
+msgid "Last seen"
 msgstr ""
 
 #: tviswaptgui.labelcomputersnumber.caption
 msgctxt "TVISWAPTGUI.LABELCOMPUTERSNUMBER.CAPTION"
 msgid "Selected / Total : %d / %d"
+msgstr ""
+
+#: tviswaptgui.labuser.caption
+msgctxt "TVISWAPTGUI.LABUSER.CAPTION"
+msgid "User"
 msgstr ""
 
 #: tviswaptgui.menuexternaltools.caption

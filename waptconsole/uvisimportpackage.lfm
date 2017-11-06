@@ -210,7 +210,8 @@ object VisImportPackage: TVisImportPackage
         Width = 69
         PropertyName = 'min_wapt_version'
       end>
-    Header.DefaultHeight = 17
+    Header.DefaultHeight = 18
+    Header.Height = 18
     Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
     Header.SortColumn = 1
     Header.Style = hsFlatButtons

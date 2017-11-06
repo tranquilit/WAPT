@@ -73,7 +73,8 @@ object VisEditPackage: TVisEditPackage
             Width = 300
             PropertyName = 'depends'
           end>
-        Header.DefaultHeight = 17
+        Header.DefaultHeight = 18
+        Header.Height = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.Style = hsPlates
         PopupMenu = PopupMenuEditDepends
@@ -90,13 +91,13 @@ object VisEditPackage: TVisEditPackage
     end
     object pgConflicts: TTabSheet
       Caption = 'Blocked package'
-      ClientHeight = 413
-      ClientWidth = 646
+      ClientHeight = 315
+      ClientWidth = 487
       object GridConflicts: TSOGrid
         Left = 0
-        Height = 413
+        Height = 315
         Top = 0
-        Width = 646
+        Width = 487
         Align = alClient
         BorderStyle = bsNone
         Color = clWhite
@@ -133,7 +134,8 @@ object VisEditPackage: TVisEditPackage
             Width = 233
             PropertyName = 'depends'
           end>
-        Header.DefaultHeight = 17
+        Header.DefaultHeight = 18
+        Header.Height = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.Style = hsPlates
         PopupMenu = PopupMenuEditConflicts
@@ -150,14 +152,14 @@ object VisEditPackage: TVisEditPackage
     end
     object pgDevelop: TTabSheet
       Caption = 'setup.py'
-      ClientHeight = 392
-      ClientWidth = 646
+      ClientHeight = 315
+      ClientWidth = 487
       TabVisible = False
       inline EdSetupPy: TSynEdit
         Left = 0
-        Height = 358
+        Height = 281
         Top = 34
-        Width = 646
+        Width = 487
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -680,11 +682,11 @@ object VisEditPackage: TVisEditPackage
         Left = 0
         Height = 34
         Top = 0
-        Width = 646
+        Width = 487
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 646
+        ClientWidth = 487
         TabOrder = 1
         object butInitWapt: TBitBtn
           Left = 0
@@ -1161,7 +1163,8 @@ object VisEditPackage: TVisEditPackage
           Text = 'Section'
           PropertyName = 'section'
         end>
-      Header.DefaultHeight = 17
+      Header.DefaultHeight = 18
+      Header.Height = 18
       Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
       Header.SortColumn = 0
       Header.Style = hsPlates
