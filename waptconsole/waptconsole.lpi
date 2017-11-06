@@ -311,8 +311,10 @@
       <Unit28>
         <Filename Value="uvisdisplaypreferences.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisDisplayPreferences"/>
         <HasResources Value="True"/>
-        <UnitName Value="uvisdisplaypreferences"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisDisplayPreferences"/>
       </Unit28>
     </Units>
   </ProjectOptions>

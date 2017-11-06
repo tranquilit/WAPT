@@ -15,7 +15,7 @@ function DoScaleY(Size: Integer; FromDPI: Integer): integer;
 
 implementation
 
-uses Classes, Graphics, sogrid,vte_json;
+uses Classes, Graphics, ExtCtrls, sogrid,vte_json;
 
 procedure HighDPI(FromDPI: Integer);
 var
@@ -126,8 +126,15 @@ begin
   with Control do begin
     Left:=ScaleX(Left,FromDPI);
     Top:=ScaleY(Top,FromDPI);
+
+    Constraints.MaxHeight:=ScaleY(Constraints.MaxHeight,FromDPI);;
+    Constraints.MinHeight:=ScaleY(Constraints.MinHeight,FromDPI);;
+    Constraints.MaxWidth:=ScaleX(Constraints.MaxWidth,FromDPI);;
+    Constraints.MinWidth:=ScaleX(Constraints.MinWidth,FromDPI);;
+
     Width:=ScaleX(Width,FromDPI);
     Height:=ScaleY(Height,FromDPI);
+
     {$IFDEF LCL Qt}
       Font.Size := 0;
     {$ELSE}
@@ -148,15 +155,16 @@ begin
     With Control as TSOGrid do
     begin
       DefaultNodeHeight := ScaleY(DefaultNodeHeight,FromDPI);
-      Header.MinHeight:=ScaleY(Header.MinHeight,FromDPI);;
       Header.MaxHeight:=ScaleY(Header.MaxHeight,FromDPI);;
+      Header.DefaultHeight:=ScaleY(Header.DefaultHeight,FromDPI);;
       Header.Height:=ScaleY(Header.Height,FromDPI);;
+      Header.MinHeight:=ScaleY(Header.MinHeight,FromDPI);;
       Font.Height := 0;
       for i := 0 to header.Columns.Count-1 do
       begin
-        header.Columns[i].MinWidth:=ScaleX(header.Columns[i].MinWidth,FromDPI);
         header.Columns[i].MaxWidth:=ScaleX(header.Columns[i].MaxWidth,FromDPI);
         header.Columns[i].Width:=ScaleX(header.Columns[i].Width,FromDPI);
+        header.Columns[i].MinWidth:=ScaleX(header.Columns[i].MinWidth,FromDPI);
       end;
     end;
   end;
@@ -166,15 +174,16 @@ begin
     With Control as TVirtualJSONTreeView do
     begin
       DefaultNodeHeight := ScaleY(DefaultNodeHeight,FromDPI);
-      Header.MinHeight:=ScaleY(Header.MinHeight,FromDPI);;
       Header.MaxHeight:=ScaleY(Header.MaxHeight,FromDPI);;
+      Header.DefaultHeight:=ScaleY(Header.DefaultHeight,FromDPI);;
       Header.Height:=ScaleY(Header.Height,FromDPI);;
+      Header.MinHeight:=ScaleY(Header.MinHeight,FromDPI);;
       Font.Height := 0;
       for i := 0 to header.Columns.Count-1 do
       begin
-        header.Columns[i].MinWidth:=ScaleX(header.Columns[i].MinWidth,FromDPI);
         header.Columns[i].MaxWidth:=ScaleX(header.Columns[i].MaxWidth,FromDPI);
         header.Columns[i].Width:=ScaleX(header.Columns[i].Width,FromDPI);
+        header.Columns[i].MinWidth:=ScaleX(header.Columns[i].MinWidth,FromDPI);
       end;
     end;
   end;
@@ -184,15 +193,16 @@ begin
     With Control as TVirtualJSONInspector do
     begin
       DefaultNodeHeight := ScaleY(DefaultNodeHeight,FromDPI);
-      Header.MinHeight:=ScaleY(Header.MinHeight,FromDPI);;
       Header.MaxHeight:=ScaleY(Header.MaxHeight,FromDPI);;
+      Header.DefaultHeight:=ScaleY(Header.DefaultHeight,FromDPI);;
       Header.Height:=ScaleY(Header.Height,FromDPI);;
+      Header.MinHeight:=ScaleY(Header.MinHeight,FromDPI);;
       Font.Height := 0;
       for i := 0 to header.Columns.Count-1 do
       begin
-        header.Columns[i].MinWidth:=ScaleX(header.Columns[i].MinWidth,FromDPI);
         header.Columns[i].MaxWidth:=ScaleX(header.Columns[i].MaxWidth,FromDPI);
         header.Columns[i].Width:=ScaleX(header.Columns[i].Width,FromDPI);
+        header.Columns[i].MinWidth:=ScaleX(header.Columns[i].MinWidth,FromDPI);
       end;
     end;
   end;
@@ -202,19 +212,27 @@ begin
     With Control as TVirtualJSONListView do
     begin
       DefaultNodeHeight := ScaleY(DefaultNodeHeight,FromDPI);
-      Header.MinHeight:=ScaleY(Header.MinHeight,FromDPI);;
       Header.MaxHeight:=ScaleY(Header.MaxHeight,FromDPI);;
+      Header.DefaultHeight:=ScaleY(Header.DefaultHeight,FromDPI);;
       Header.Height:=ScaleY(Header.Height,FromDPI);;
+      Header.MinHeight:=ScaleY(Header.MinHeight,FromDPI);;
       Font.Height := 0;
       for i := 0 to header.Columns.Count-1 do
       begin
-        header.Columns[i].MinWidth:=ScaleX(header.Columns[i].MinWidth,FromDPI);
         header.Columns[i].MaxWidth:=ScaleX(header.Columns[i].MaxWidth,FromDPI);
         header.Columns[i].Width:=ScaleX(header.Columns[i].Width,FromDPI);
+        header.Columns[i].MinWidth:=ScaleX(header.Columns[i].MinWidth,FromDPI);
       end;
     end;
   end;
 
+  {if Control is TControl then
+    with Control as TControl do
+    begin
+      Height :=ScaleY(Height,FromDPI);
+      Width := ScaleX(Width,FromDPI);
+    end;
+  }
 
   if Control is TWinControl then begin
     WinControl:=TWinControl(Control);

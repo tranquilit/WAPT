@@ -2226,12 +2226,14 @@ end;
 
 procedure TVisWaptGUI.ActExternalRepositoriesSettingsExecute(Sender: TObject);
 begin
-  With TVisRepositories.Create(Self) do
+  OpenDocument(AppIniFilename);
+
+  {With TVisRepositories.Create(Self) do
   try
     ShowModal;
   finally
     Free;
-  end;
+  end;}
 end;
 
 procedure TVisWaptGUI.ActTISHelpExecute(Sender: TObject);
@@ -3669,6 +3671,7 @@ begin
   With TVisPackageWizard.Create(self) do
   try
     InstallerFilename:=AInstallerFileName;
+
     res := ShowModal;
     // mrYes : build-upload, mrOK : make-template only
     if (res = mrOk) or (res = mrYes) then

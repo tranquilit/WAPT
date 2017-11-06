@@ -9,6 +9,7 @@ object VisDisplayPreferences: TVisDisplayPreferences
   ClientHeight = 228
   ClientWidth = 359
   OnCreate = FormCreate
+  Position = poMainFormCenter
   LCLVersion = '1.3'
   object Panel1: TPanel
     Left = 0

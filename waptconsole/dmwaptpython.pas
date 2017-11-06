@@ -263,8 +263,13 @@ function TDMPython.CertificateIsCodeSigning(crtfilename: String): Boolean;
 var
   crt: Variant;
 begin
-  crt := MainModule.waptcrypto.SSLCertificate(crt_filename:=crtfilename);
-  result := VarPythonAsString(crt.has_usage('code_signing')) <> '';
+  if (crtfilename<>'') and FileExists(crtfilename) then
+  begin
+    crt := MainModule.waptcrypto.SSLCertificate(crt_filename:=crtfilename);
+    result := VarPythonAsString(crt.has_usage('code_signing')) <> '';
+  end
+  else
+    result := False;
 end;
 
 procedure TDMPython.DataModuleCreate(Sender: TObject);
