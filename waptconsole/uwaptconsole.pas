@@ -1315,6 +1315,8 @@ begin
     ActRefreshHostInventory.Visible:=OneIsFocused  and OneIsConnected;
   end;
 
+  ActAddADSGroups.Visible := OneIsFocused  and EnableExternalTools;
+
   ActRDP.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
   ActVNC.Visible := OneIsFocused  and OneHasConnectedIP and FileExists(GetVNCViewerPath) and EnableExternalTools;
   ActComputerServices.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;

@@ -1,4 +1,4 @@
-msgid "&Show config fileOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleOnly required if a proxy is needed for waptserver and main waptrepoIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepo"
+msgid "&Show config fileOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleOnly required if a proxy is needed for waptserver and main waptrepoIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoIf 1 : use default wapt cacert.pem bundle"
 msgstr "&Voir le fichier de configuration"
 
 #: tform1.buttonpanel1.helpbutton.caption
@@ -1014,13 +1014,17 @@ msgid "Add the WAPT group packages matching the ADS groups of the machines"
 msgstr "Ajoute les groupes WAPT qui correspondent avec les groupes Active Directory des machines"
 
 #: tviswaptgui.actaddconflicts.caption
+#, fuzzy
+#| msgid "Block packages (causes forced uninstall)"
 msgctxt "tviswaptgui.actaddconflicts.caption"
-msgid "Block packages (causes forced uninstall)"
+msgid "Add package to hosts conflicts"
 msgstr "Interdire des paquets (force la désinstallation)"
 
 #: tviswaptgui.actadddepends.caption
+#, fuzzy
+#| msgid "Add package or bundle"
 msgctxt "tviswaptgui.actadddepends.caption"
-msgid "Add package or bundle"
+msgid "Add package to host dependencies"
 msgstr "Ajouter un paquet ou groupe de paquets"
 
 #: tviswaptgui.actaddgroup.caption
@@ -1260,13 +1264,17 @@ msgid "Assistance à distance"
 msgstr ""
 
 #: tviswaptgui.actremoveconflicts.caption
+#, fuzzy
+#| msgid "Allow packages "
 msgctxt "tviswaptgui.actremoveconflicts.caption"
-msgid "Allow packages "
+msgid "Remove package from hosts conflicts"
 msgstr "Autoriser des paquets"
 
 #: tviswaptgui.actremovedepends.caption
+#, fuzzy
+#| msgid "Remove dependencies from packages/bundles"
 msgctxt "tviswaptgui.actremovedepends.caption"
-msgid "Remove dependencies from packages/bundles"
+msgid "Remove packages from host dependencies"
 msgstr "Supprimer des dépendances de paquets ou groupes de paquets"
 
 #: tviswaptgui.actrestoredefaultlayout.caption
@@ -3095,6 +3103,16 @@ msgstr ""
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -3161,6 +3179,12 @@ msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 #: uwaptconsoleres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
 #| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
@@ -4246,6 +4270,12 @@ msgstr "Erreur lors de la compilation du paquet : %s"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -4473,6 +4503,12 @@ msgstr "Attention, l'installeur waptagent.exe n'est pas présent sur le serveur.
 #: uwaptconsoleres.rswaptagentoldversion
 #, fuzzy
 #| msgid ""
+#| "Warning, the version of the waptagent.exe installer is too old.\n"
+#| "Current waptagent.exe version: %s\n"
+#| "waptsetup-tis.exe version: %s\n"
+#| "Warning, the version of the waptagent.exe installer is too old.\n"
+#| "Current waptagent.exe version: %s\n"
+#| "waptsetup-tis.exe version: %s\n"
 #| "Warning, the version of the waptagent.exe installer is too old.\n"
 #| "Current waptagent.exe version: %s\n"
 #| "waptsetup-tis.exe version: %s\n"
@@ -5110,6 +5146,10 @@ msgstr "Vous devez d'abord définir le préfixe des paquets dans les préférenc
 #| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -5120,6 +5160,12 @@ msgstr ""
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
 #| msgid ""
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
 #| "Required server version: %s\n"
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
@@ -5492,6 +5538,10 @@ msgstr "Erreur lors de la création de l'agent : %s"
 #: uwaptconsoleres.rswaptsetupuploadsuccess
 #, fuzzy
 #| msgid ""
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"

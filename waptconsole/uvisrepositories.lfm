@@ -12,6 +12,7 @@ object VisRepositories: TVisRepositories
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
+  Position = poScreenCenter
   LCLVersion = '1.3'
   object Panel1: TPanel
     Left = 0

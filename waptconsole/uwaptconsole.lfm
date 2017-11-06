@@ -4438,28 +4438,28 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActAddDepends: TAction
       Category = 'hosts'
-      Caption = 'Add package or bundle'
+      Caption = 'Add package to host dependencies'
       ImageIndex = 6
       OnExecute = ActAddDependsExecute
       OnUpdate = ActAddDependsUpdate
     end
     object ActRemoveDepends: TAction
       Category = 'hosts'
-      Caption = 'Remove dependencies from packages/bundles'
+      Caption = 'Remove packages from host dependencies'
       ImageIndex = 7
       OnExecute = ActRemoveDependsExecute
       OnUpdate = ActAddDependsUpdate
     end
     object ActAddConflicts: TAction
       Category = 'hosts'
-      Caption = 'Block packages (causes forced uninstall)'
+      Caption = 'Add package to hosts conflicts'
       ImageIndex = 6
       OnExecute = ActAddConflictsExecute
       OnUpdate = ActAddDependsUpdate
     end
     object ActRemoveConflicts: TAction
       Category = 'hosts'
-      Caption = 'Allow packages '
+      Caption = 'Remove package from hosts conflicts'
       ImageIndex = 7
       OnExecute = ActRemoveConflictsExecute
       OnUpdate = ActAddDependsUpdate
