@@ -53,31 +53,36 @@ type
     ActTriggerWaptwua_scan: TAction;
     ActWSUSRefreshCabHistory: TAction;
     ApplicationProperties1: TApplicationProperties;
+    BitBtn1: TBitBtn;
     BitBtn10: TBitBtn;
     BitBtn11: TBitBtn;
     BitBtn13: TBitBtn;
     BitBtn15: TBitBtn;
+    BitBtn2: TBitBtn;
     BitBtn9: TBitBtn;
+    btAddGroup: TBitBtn;
     ButHostSearch: TBitBtn;
     ButHostSearch1: TBitBtn;
+    ButPackagesUpdate: TBitBtn;
     ButPackagesUpdate1: TBitBtn;
+    butSearchGroups: TBitBtn;
     Button1: TButton;
     cbAdvancedSearch: TCheckBox;
     cbForcedWSUSscanDownload: TCheckBox;
     cbGroups: TComboBox;
+    cbHasErrors: TCheckBox;
     CBInverseSelect: TCheckBox;
     cbMaskSystemComponents: TCheckBox;
-    cbSite: TComboBox;
-    cbADOU: TComboBox;
-    cbHasErrors: TCheckBox;
     cbNeedUpgrade: TCheckBox;
-    cbNewestOnly: TCheckBox;
     cbReachable: TCheckBox;
     cbSearchAll: TCheckBox;
     cbSearchDMI: TCheckBox;
     cbSearchHost: TCheckBox;
     cbSearchPackages: TCheckBox;
     cbSearchSoftwares: TCheckBox;
+    cbSite: TComboBox;
+    cbADOU: TComboBox;
+    cbNewestOnly: TCheckBox;
     EdDescription: TEdit;
     EdHardwareFilter: TEdit;
     EdHostname: TEdit;
@@ -86,6 +91,7 @@ type
     EdModelName: TEdit;
     EdOS: TEdit;
     EdRunningStatus: TEdit;
+    EdSearchGroups: TSearchEdit;
     EdSearchHost: TSearchEdit;
     EdSoftwaresFilter: TEdit;
     EdUpdateDate: TEdit;
@@ -96,11 +102,11 @@ type
     GridWSUSScan: TSOGrid;
     GridWSUSAllowedClassifications: TSOGrid;
     GridWSUSForbiddenWindowsUpdates: TSOGrid;
+    ActionsImages24: TImageList;
     Image1: TImage;
     Image2: TImage;
     Image3: TImage;
     Image4: TImage;
-    ActionsImages24: TImageList;
     Label1: TLabel;
     Label10: TLabel;
     Label12: TLabel;
@@ -114,8 +120,8 @@ type
     Label21: TLabel;
     Label23: TLabel;
     Label3: TLabel;
-    LabUser: TLabel;
     Label5: TLabel;
+    LabUser: TLabel;
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
@@ -142,16 +148,17 @@ type
     MenuItem83: TMenuItem;
     MenuItem84: TMenuItem;
     odSelectInstaller: TOpenDialog;
-    Panel10: TPanel;
+    PanTopHosts: TPanel;
+    panFilterStatus: TPanel;
+    PanHostsFilters: TPanel;
     Panel14: TPanel;
     Panel15: TPanel;
     Panel16: TPanel;
     PanFilterGroups: TPanel;
-    PanSearchIn: TPanel;
-    Panel8: TPanel;
-    PanSearch: TPanel;
-    panFilterStatus: TPanel;
+    PanHostsSubFilters: TPanel;
     PanLeft: TPanel;
+    PanSearch: TPanel;
+    PanSearchIn: TPanel;
     PopupGridWSUSScan: TPopupMenu;
     MenuItem70: TMenuItem;
     MenuItem71: TMenuItem;
@@ -161,6 +168,11 @@ type
     PopupDelete: TPopupMenu;
     Splitter6: TSplitter;
     TimerWUALoadWinUpdates: TTimer;
+    ToolBar1: TToolBar;
+    ToolButton1: TToolButton;
+    ToolButton2: TToolButton;
+    ToolButton5: TToolButton;
+    ToolButton6: TToolButton;
     WSUSActions: TActionList;
     ActWUANewGroup: TAction;
     ActWUAProductsSelection: TAction;
@@ -214,15 +226,10 @@ type
     ActPackagesUpdate: TAction;
     ActSearchPackage: TAction;
     ActionList1: TActionList;
-    BitBtn1: TBitBtn;
-    BitBtn2: TBitBtn;
-    btAddGroup: TBitBtn;
     butInitWapt: TBitBtn;
     butRun: TBitBtn;
     butSearchPackages: TBitBtn;
-    butSearchGroups: TBitBtn;
     ButCancelHostTask: TBitBtn;
-    ButPackagesUpdate: TBitBtn;
     cbShowHostPackagesSoft: TCheckBox;
     cbShowHostPackagesGroup: TCheckBox;
     cbShowLog: TCheckBox;
@@ -230,7 +237,6 @@ type
     cbWUAInstalled: TCheckBox;
     cbWUAPending: TCheckBox;
     cbWUADiscarded: TCheckBox;
-    EdSearchGroups: TSearchEdit;
     GridGroups: TSOGrid;
     GridHostWinUpdates: TSOGrid;
     GridHostTasksPending: TSOGrid;
@@ -355,11 +361,6 @@ type
     GridPackages: TSOGrid;
     GridHostPackages: TSOGrid;
     GridHostSoftwares: TSOGrid;
-    ToolBar1: TToolBar;
-    ToolButton1: TToolButton;
-    ToolButton2: TToolButton;
-    ToolButton5: TToolButton;
-    ToolButton6: TToolButton;
     procedure ActAddADSGroupsExecute(Sender: TObject);
     procedure ActAddConflictsExecute(Sender: TObject);
     procedure ActAddDependsExecute(Sender: TObject);
@@ -3467,6 +3468,7 @@ begin
 
   if not cbAdvancedSearch.Checked then
   begin
+    //PanHostsFilters.Parent := panToolBar;
     cbSearchAll.Checked:=False;
     cbSearchHost.Checked:=True;
     cbSearchDMI.Checked:=False;
@@ -3480,8 +3482,10 @@ begin
     panFilterStatus.ChildSizing.ControlsPerLine:=6;
   end
   else
-      panFilterStatus.ChildSizing.ControlsPerLine:=2;
-
+  begin
+    //PanHostsFilters.Parent := pgInventory;
+    panFilterStatus.ChildSizing.ControlsPerLine:=2;
+  end;
 end;
 
 procedure TVisWaptGUI.cbGroupsDropDown(Sender: TObject);
