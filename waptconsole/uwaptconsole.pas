@@ -605,6 +605,8 @@ type
     windows_updates_rulesUpdated: Boolean;
     HostsLimit: Integer;
 
+    AppLoading:Boolean;
+
     constructor Create(TheOwner: TComponent); override;
 
     function Login: boolean;
@@ -1163,7 +1165,7 @@ begin
         EdUser.Text := UTF8Encode(RowSO.S['connected_users']);
       If EdUser.Text = '' then
       begin
-        EdUser.Text:= UTF8Encode(RowSO.S['host_info.last_logged_on_user']);
+        EdUser.Text:= UTF8Encode(RowSO.S['last_logged_on_user']);
         LabUser.Caption := 'Last logged on user';
       end
       else
@@ -3253,11 +3255,12 @@ var
   soresult,columns,urlParams, Node, Hosts,fields: ISuperObject;
   previous_uuid,prop: string;
   i: integer;
-
 const
   DefaultColumns:Array[0..10] of String = ('uuid','os_name','connected_ips','computer_fqdn','computer_name','manufacturer','description','productname','serialnr','mac_addresses','connected_users');
-
 begin
+  if AppLoading then
+    Exit;
+
   EdSearchHost.Modified:=False;
   columns := TSuperObject.Create(stArray);
   for i:=0 to GridHosts.Header.Columns.Count-1 do
@@ -3791,6 +3794,7 @@ begin
   CurrentVisLoading := TVisLoading.Create(Nil);
   with CurrentVisLoading do
   try
+    AppLoading:=True;
     MemoLog.Clear;
     ProgressTitle(rsLoadSettings);
     Start(3);
@@ -3822,8 +3826,6 @@ begin
       ini.Free;
     end;
 
-    cbAdvancedSearchClick(self);
-
     plStatusBar1.Panels[0].Text :=ApplicationName+' '+GetApplicationVersion;
 
     pgWindowsUpdates.TabVisible:=waptcommon.waptwua_enabled;
@@ -3837,12 +3839,16 @@ begin
     ProgressStep(2,3);
     ActPackagesUpdate.Execute;
 
-    ProgressTitle(rsLoadInventory);
-    ProgressStep(3,3);
+    cbAdvancedSearchClick(self);
+
     MainPages.ActivePage := pgInventory;
     MainPagesChange(Sender);
-
     HostPages.ActivePage := pgPackages;
+
+    AppLoading:=False;
+    ProgressTitle(rsLoadInventory);
+    ProgressStep(3,3);
+    ActSearchHost.Execute;
 
     // check waptagent version
     sores := WAPTServerJsonGet('api/v2/waptagent_version', []);
@@ -3861,9 +3867,8 @@ begin
         on E:Exception do
           ShowMessageFmt(rsWaptAgentNotPresent,[]);
     end;
-
-
   finally
+    AppLoading:=False;
     Free;
   end;
 end;
