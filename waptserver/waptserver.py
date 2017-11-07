@@ -848,12 +848,12 @@ def login():
                     version=__version__,
                 )
                 session['user'] = user
+                msg = 'Authentication OK'
+                return make_response(result=result, msg=msg, status=200)
             else:
                 raise EWaptAuthenticationFailure('Authentication failed.')
         else:
             raise EWaptMissingParameter('Missing parameter for authentication')
-        msg = 'Authentication OK'
-        return make_response(result=result, msg=msg, status=200)
     except Exception as e:
         if 'auth_token' in session:
             del session['auth_token']
