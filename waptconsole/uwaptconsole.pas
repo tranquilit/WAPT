@@ -80,7 +80,7 @@ type
     cbSearchHost: TCheckBox;
     cbSearchPackages: TCheckBox;
     cbSearchSoftwares: TCheckBox;
-    cbSite: TComboBox;
+    cbADSite: TComboBox;
     cbADOU: TComboBox;
     cbNewestOnly: TCheckBox;
     EdDescription: TEdit;
@@ -464,6 +464,7 @@ type
     procedure ActWAPTConsoleConfigExecute(Sender: TObject);
     procedure ApplicationProperties1Exception(Sender: TObject; E: Exception);
     procedure cbADOUSelect(Sender: TObject);
+    procedure cbADSiteSelect(Sender: TObject);
     procedure cbAdvancedSearchClick(Sender: TObject);
     procedure cbGroupsDropDown(Sender: TObject);
     procedure cbGroupsSelect(Sender: TObject);
@@ -473,6 +474,7 @@ type
     procedure cbADOUDropDown(Sender: TObject);
     procedure cbSearchAllClick(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
+    procedure cbADSiteDropDown(Sender: TObject);
     procedure cbWUAPendingChange(Sender: TObject);
     procedure cbWUCriticalClick(Sender: TObject);
     procedure CBWUProductsShowAllClick(Sender: TObject);
@@ -572,7 +574,8 @@ type
   private
     CurrentVisLoading: TVisLoading;
     procedure DoProgress(ASender: TObject);
-    procedure FillcbADOU;
+    procedure FillcbADOUDropDown;
+    procedure FillcbADSiteDropDown;
     procedure FillcbGroups;
     function FilterSoftwares(softs: ISuperObject): ISuperObject;
     function FilterHardware(data: ISuperObject): ISuperObject;
@@ -718,6 +721,15 @@ begin
 
 end;
 
+procedure TVisWaptGUI.cbADSiteDropDown(Sender: TObject);
+begin
+  try
+    FillcbADSiteDropDown;
+  except
+    ShowMessage('Please upgrade your server');
+  end;
+end;
+
 procedure TVisWaptGUI.cbWUAPendingChange(Sender: TObject);
 begin
   if (Gridhosts.FocusedRow <> nil) then
@@ -847,6 +859,11 @@ begin
     ini.WriteInteger(self.name,HostPages.Name+'.width',HostPages.Width);
 
     ini.WriteInteger(self.name,'WindowState',Integer(WindowState));
+
+    ini.WriteString(self.name,cbADSite.Text,'cbADSite.Text');
+    ini.WriteString(self.name,cbADOU.Text,'cbADOU.Text');
+    ini.WriteString(self.name,cbGroups.Text,'cbGroups.Text');
+
   finally
     ini.Free;
   end;
@@ -1685,7 +1702,7 @@ end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupUpdate(Sender: TObject);
 begin
-  ActCreateWaptSetup.Visible:= DMPython.CertificateIsCodeSigning(GetWaptPersonalCertificatePath) and EnableManagementFeatures;
+  ActCreateWaptSetup.Enabled:= DMPython.CertificateIsCodeSigning(GetWaptPersonalCertificatePath) and EnableManagementFeatures;
 end;
 
 procedure TVisWaptGUI.ActAddConflictsExecute(Sender: TObject);
@@ -3468,6 +3485,11 @@ begin
   ActSearchHost.Execute;
 end;
 
+procedure TVisWaptGUI.cbADSiteSelect(Sender: TObject);
+begin
+  ActSearchHost.Execute;
+end;
+
 procedure TVisWaptGUI.cbAdvancedSearchClick(Sender: TObject);
 begin
   PanSearchIn.Visible:=cbAdvancedSearch.Checked;
@@ -3484,7 +3506,7 @@ begin
     cbSearchSoftwares.Checked:=False;
 
     cbGroups.ItemIndex:=-1;
-    cbSite.ItemIndex:=-1;
+    cbADSite.ItemIndex:=-1;
     cbADOU.ItemIndex:=-1;
 
     panFilterStatus.ChildSizing.ControlsPerLine:=6;
@@ -3601,7 +3623,11 @@ end;
 
 procedure TVisWaptGUI.cbADOUDropDown(Sender: TObject);
 begin
-  FillcbADOU;
+  try
+    FillcbADOUDropDown;
+  except
+    ShowMessage('Please upgrade your server');
+  end;
 end;
 
 procedure TVisWaptGUI.cbSearchAllClick(Sender: TObject);
@@ -3828,6 +3854,11 @@ begin
       HostPages.Width := ini.ReadInteger(self.name,HostPages.Name+'.width',HostPages.Width);
 
       Self.WindowState := TWindowState(ini.ReadInteger(self.name,'WindowState',Integer(Self.WindowState)));
+
+      self.cbADSite.Text := ini.ReadString(self.name,'cbADSite.Text',self.cbADSite.Text);
+      self.cbADOU.Text := ini.ReadString(self.name,'cbADOU.Text',self.cbADOU.Text);
+      self.cbGroups.Text := ini.ReadString(self.name,'cbGroups.Text',self.cbGroups.Text);
+
     finally
       ini.Free;
     end;
@@ -4444,7 +4475,7 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.FillcbADOU;
+procedure TVisWaptGUI.FillcbADOUDropDown;
 var
   OU,OUDN:ISuperObject;
   oldSelect:String;
@@ -4463,6 +4494,32 @@ begin
         cbADOU.Items.Add(OU.AsString{%H-});
     end;
     cbADOU.Text:= oldSelect;
+
+  finally
+    Screen.Cursor:=crdefault;
+  end;
+end;
+
+
+procedure TVisWaptGUI.FillcbADSiteDropDown;
+var
+  Site,Sites:ISuperObject;
+  oldSelect:String;
+begin
+  try
+    Screen.Cursor:=crHourGlass;
+
+    oldSelect:=cbADSite.Text;
+    cbADSite.Items.Clear;
+    cbADSite.Items.Add(rsFilterAll);
+
+    Sites := WAPTServerJsonGet('api/v3/get_ad_sites',[])['result'];
+    if Sites <> Nil then
+    begin
+      for Site in Sites do
+        cbADSite.Items.Add(Site.AsString{%H-});
+    end;
+    cbADSite.Text:= oldSelect;
 
   finally
     Screen.Cursor:=crdefault;

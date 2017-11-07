@@ -143,6 +143,8 @@ object VisDisplayPreferences: TVisDisplayPreferences
       Hint = 'Make rdp, vnc, remoteassist... features visible'
       Top = 111
       Width = 100
+      Checked = True
+      State = cbChecked
       TabOrder = 3
     end
     object Label11: TLabel
@@ -162,6 +164,8 @@ object VisDisplayPreferences: TVisDisplayPreferences
       Hint = 'Make change server password, create certificate, create waptagent features visible'
       Top = 141
       Width = 100
+      Checked = True
+      State = cbChecked
       TabOrder = 4
     end
     object Label12: TLabel

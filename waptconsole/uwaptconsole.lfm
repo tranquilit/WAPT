@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
   Left = 424
   Height = 827
-  Top = 200
+  Top = 173
   Width = 1003
   AllowDropFiles = True
   Caption = 'WAPT console'
@@ -1748,7 +1748,7 @@ object VisWaptGUI: TVisWaptGUI
             Layout = tlCenter
             ParentColor = False
           end
-          object cbSite: TComboBox
+          object cbADSite: TComboBox
             Left = 109
             Height = 21
             Hint = 'Filter hosts which have this direct package dependency'
@@ -1756,6 +1756,8 @@ object VisWaptGUI: TVisWaptGUI
             Width = 150
             Constraints.MinWidth = 150
             ItemHeight = 13
+            OnDropDown = cbADSiteDropDown
+            OnSelect = cbADSiteSelect
             Style = csDropDownList
             TabOrder = 1
           end

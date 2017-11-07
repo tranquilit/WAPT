@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = '1.5.1.1'
+__version__ = '1.5.1.2'
 
 import os
 import sys
@@ -1306,6 +1306,20 @@ def get_ad_ou():
     except Exception as e:
         return make_response_from_exception(e)
 
+@app.route('/api/v3/get_ad_sites')
+@requires_auth
+def get_ad_sites():
+    """List all the AD Sites registered by hosts
+    """
+    try:
+        starttime = time.time()
+        result = Hosts.select(fn.distinct(Hosts.computer_ad_site)).where(~Hosts.computer_ad_site.is_null()).scalar(as_tuple=True)
+
+        message = 'AD Sites List'
+        return make_response(result=result, msg=message, request_time=time.time() - starttime)
+
+    except Exception as e:
+        return make_response_from_exception(e)
 
 def build_hosts_filter(model, filter_expr):
     """Legacy helper function to translate waptconsole <=1.3.11 hosts filter

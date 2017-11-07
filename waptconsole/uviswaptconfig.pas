@@ -55,6 +55,7 @@ type
     Timer1: TTimer;
     procedure ActCheckAndSetwaptserverExecute(Sender: TObject);
     procedure ActCheckPersonalKeyExecute(Sender: TObject);
+    procedure ActCheckPersonalKeyUpdate(Sender: TObject);
     procedure ActGetServerCertificateExecute(Sender: TObject);
     procedure ActGetServerCertificateUpdate(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -126,6 +127,11 @@ begin
   finally
     free;
   end;
+end;
+
+procedure TVisWAPTConfig.ActCheckPersonalKeyUpdate(Sender: TObject);
+begin
+  ActCheckPersonalKey.Enabled:= FileExists(edPersonalCertificatePath.FileName);
 end;
 
 procedure TVisWAPTConfig.ActGetServerCertificateExecute(Sender: TObject);

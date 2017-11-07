@@ -207,7 +207,7 @@ const
 
   HideUnavailableActions:Boolean = False;
 
-  WAPTServerMinVersion='1.5.1.1';
+  WAPTServerMinVersion='1.5.1.2';
 
 implementation
 
