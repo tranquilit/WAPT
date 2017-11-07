@@ -4130,12 +4130,12 @@ object VisWaptGUI: TVisWaptGUI
           'import time'
           ''
           'for i in range(0,10):'
-          '    if mywapt.progress_hook(True,i * 10,100,''Test %s''%i):
-                   break'
+          '    if mywapt.progress_hook(True,i * 10,100,''Test %s''%i):'
+          '        break'
           '    time.sleep(0.3)'
           ''
           'print mywapt.progress_hook(False,100,100,''Fin'')'
-          '                                                  '
+          '                                                 '
         )
         VisibleSpecialChars = [vscSpace, vscTabAtLast]
         SelectedColor.FrameEdges = sfeAround
