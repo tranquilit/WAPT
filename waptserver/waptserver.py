@@ -740,6 +740,8 @@ def change_passsword():
             if check_auth(post_data['user'], post_data['password']):
                 # change master password
                 if 'new_password' in post_data and post_data['user'] == 'admin':
+                    if len(post_data['new_password']) < conf.get('min_password_length',10):
+                        raise EWaptForbiddden('The password must be at least %s characters' % conf.get('min_password_length',10))
                     new_hash = pbkdf2_sha256.hash(post_data['new_password'].encode('utf8'))
                     rewrite_config_item(config_file, 'options', 'wapt_password', new_hash)
                     conf['wapt_password'] = new_hash

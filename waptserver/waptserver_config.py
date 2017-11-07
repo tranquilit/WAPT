@@ -64,6 +64,7 @@ _defaults = {
     'encrypt_host_packages':False,
     'dc_ssl_enabled':True,
     'dc_auth_enabled':False,
+    'min_password_length':10,
 }
 
 _default_config_file = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
@@ -152,5 +153,7 @@ def load_config(cfgfile=_default_config_file):
     if _config.has_option('options', 'dc_auth_enabled'):
         conf['dc_auth_enabled'] = _config.getboolean('options', 'dc_auth_enabled')
 
+    if _config.has_option('options', 'min_password_length'):
+            conf['min_password_length'] = _config.getint('options', 'min_password_length')
 
     return conf
