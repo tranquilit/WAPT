@@ -113,6 +113,11 @@ Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String: {#set_
 #endif
 #endif
 
+#if edition != "waptstarter"
+Filename: {app}\wapt-get.ini; Section: wapt-templates; Key: repo_url; String: https://store.wapt.fr/wapt;
+Filename: {app}\wapt-get.ini; Section: wapt-templates; Key: verify_cert; String: 1;
+#endif
+
 Filename: {app}\wapt-get.ini; Section: global; Key: check_certificates_validity; String:  {#check_certificates_validity};
 
 ; needs to be relocated if waptagent is compiled on another base directory than target computers
