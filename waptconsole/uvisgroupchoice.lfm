@@ -227,6 +227,8 @@ object visGroupChoice: TvisGroupChoice
         Top = 6
         Width = 150
         Constraints.MinWidth = 150
+        OnEnter = EdSearchEnter
+        OnExit = EdSearchExit
         OnKeyDown = EdSearchKeyDown
         TabOrder = 0
       end
@@ -302,7 +304,7 @@ object visGroupChoice: TvisGroupChoice
     ClientHeight = 26
     ClientWidth = 749
     TabOrder = 2
-    object BitBtn1: TBitBtn
+    object ButOK: TBitBtn
       Left = 600
       Height = 26
       Top = 0
@@ -315,7 +317,7 @@ object visGroupChoice: TvisGroupChoice
       ModalResult = 1
       TabOrder = 0
     end
-    object BitBtn2: TBitBtn
+    object ButCancel: TBitBtn
       Left = 666
       Height = 26
       Top = 0

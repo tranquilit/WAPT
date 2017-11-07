@@ -166,6 +166,7 @@ type
     MenuItem73: TMenuItem;
     pgWindowsUpdates: TTabSheet;
     PopupDelete: TPopupMenu;
+    ProgressBar1: TProgressBar;
     Splitter6: TSplitter;
     TimerWUALoadWinUpdates: TTimer;
     ToolBar1: TToolBar;
@@ -303,7 +304,6 @@ type
     ImageList1: TImageList;
     pgGroups: TTabSheet;
     HostTaskRunningProgress: TProgressBar;
-    ProgressBar1: TProgressBar;
     Splitter3: TSplitter;
     pgTasks: TTabSheet;
     Splitter5: TSplitter;
@@ -1714,6 +1714,7 @@ begin
   begin
     with TvisGroupChoice.Create(self) do
     try
+      res := TSuperObject.Create(stArray);
       Caption := rsRmBundleFromHosts;
       if ShowModal = mrOk then
       try
@@ -2985,6 +2986,7 @@ begin
   begin
     with TvisGroupChoice.Create(self) do
     try
+      res := TSuperObject.Create(stArray);
       Caption := rsRmBundleFromHosts;
       if ShowModal = mrOk then
       try
@@ -3024,6 +3026,7 @@ begin
   begin
     with TvisGroupChoice.Create(self) do
     try
+      res := TSuperObject.Create(stArray);
       Caption := rsRmBundleFromHosts;
       if ShowModal = mrOk then
       try

@@ -16,8 +16,8 @@ type
   TvisGroupChoice = class(TForm)
     ActSearch: TAction;
     ActionList1: TActionList;
-    BitBtn1: TBitBtn;
-    BitBtn2: TBitBtn;
+    ButOK: TBitBtn;
+    ButCancel: TBitBtn;
     butSearchGroups: TButton;
     cbBase: TCheckBox;
     cbGroup: TCheckBox;
@@ -30,6 +30,8 @@ type
     panFilter1: TPanel;
     procedure ActSearchExecute(Sender: TObject);
     procedure cbBaseClick(Sender: TObject);
+    procedure EdSearchEnter(Sender: TObject);
+    procedure EdSearchExit(Sender: TObject);
     procedure EdSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
       );
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -76,6 +78,16 @@ begin
   ActSearch.Execute;
 end;
 
+procedure TvisGroupChoice.EdSearchEnter(Sender: TObject);
+begin
+  ButOK.Default:=False;
+end;
+
+procedure TvisGroupChoice.EdSearchExit(Sender: TObject);
+begin
+  ButOK.Default:=True;
+end;
+
 procedure TvisGroupChoice.EdSearchKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
@@ -83,6 +95,11 @@ begin
   begin
     EdSearch.SelectAll;
     ActSearch.Execute;
+  end
+  else
+  if Key = VK_DOWN then
+  begin
+    GridPackages.SetFocus;
   end;
 end;
 

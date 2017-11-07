@@ -15,9 +15,10 @@ type
   { TVisLoading }
 
   TVisLoading = class(TForm)
-    BitBtn1: TBitBtn;
     AMessage: TLabel;
     AProgressBar: TProgressBar;
+    BitBtn1: TBitBtn;
+    Panel1: TPanel;
     procedure BitBtn1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
