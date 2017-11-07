@@ -28,6 +28,9 @@ object DMPython: TDMPython
       item
         Name = 'GetPrivateKeyPassword'
         OnExecute = PythonModule1Events0Execute
+        DocString.Strings = (
+          'Should return the provate key password'
+        )
       end    
       item
         Name = 'UpdateProgress'
@@ -39,7 +42,10 @@ object DMPython: TDMPython
           '   msg: unicode'
         )
       end>
-    ModuleName = 'dmwaptpython'
+    DocString.Strings = (
+      'WaptConsole Feedback'
+    )
+    ModuleName = 'waptconsole'
     Errors = <>
     left = 144
     top = 32

@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 424
+  Left = 349
   Height = 827
-  Top = 173
+  Top = 140
   Width = 1003
   AllowDropFiles = True
   Caption = 'WAPT console'
@@ -2471,7 +2471,7 @@ object VisWaptGUI: TVisWaptGUI
     object pgGroups: TTabSheet
       Caption = 'Bundles'
       ClientHeight = 638
-      ClientWidth = 1056
+      ClientWidth = 995
       object GridGroups: TSOGrid
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Side = asrBottom
@@ -2479,7 +2479,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 606
         Top = 32
-        Width = 1056
+        Width = 995
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
@@ -2609,7 +2609,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 32
         Top = 0
-        Width = 1056
+        Width = 995
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
@@ -2619,7 +2619,7 @@ object VisWaptGUI: TVisWaptGUI
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 5
         ClientHeight = 32
-        ClientWidth = 1056
+        ClientWidth = 995
         TabOrder = 0
         object EdSearchGroups: TSearchEdit
           Left = 6
@@ -2777,12 +2777,12 @@ object VisWaptGUI: TVisWaptGUI
     object pgPrivateRepo: TTabSheet
       Caption = 'Softwares repository'
       ClientHeight = 638
-      ClientWidth = 1056
+      ClientWidth = 995
       object GridPackages: TSOGrid
         Left = 0
         Height = 606
         Top = 32
-        Width = 1050
+        Width = 989
         OnGetText = GridGroupsGetText
         Align = alClient
         Color = clWhite
@@ -2920,7 +2920,7 @@ object VisWaptGUI: TVisWaptGUI
         ZebraPaint = True
       end
       object Splitter3: TSplitter
-        Left = 1050
+        Left = 989
         Height = 606
         Top = 32
         Width = 6
@@ -2931,7 +2931,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 32
         Top = 0
-        Width = 1056
+        Width = 995
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
@@ -2941,7 +2941,7 @@ object VisWaptGUI: TVisWaptGUI
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 10
         ClientHeight = 32
-        ClientWidth = 1056
+        ClientWidth = 995
         TabOrder = 0
         object EdSearchPackage: TSearchEdit
           Left = 6

@@ -91,7 +91,6 @@ type
     procedure ActEditSavePackageUpdate(Sender: TObject);
     procedure ActEditSearchExecute(Sender: TObject);
     procedure ActExecCodeExecute(Sender: TObject);
-    procedure ActSearchPackageExecute(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure EdPackageExit(Sender: TObject);
     procedure EdPackageKeyPress(Sender: TObject; var Key: char);
@@ -365,7 +364,7 @@ begin
   if Key = VK_RETURN then
   begin
     EdSearch.SelectAll;
-    ActSearchPackage.Execute;
+    ActEditSearch.Execute;
   end;
 
 end;
@@ -594,15 +593,9 @@ begin
 end;
 
 procedure TVisEditPackage.ActEditSearchExecute(Sender: TObject);
-var
-  expr: UTF8String;
-  packages: ISuperObject;
 begin
   EdSearch.Modified:=False;
-  expr := format('mywapt.search(r"%s".decode(''utf8'').split(),newest_only=True)', [EdSearch.Text]);
-  packages := DMPython.RunJSON(expr);
-  GridPackages.Data := packages;
-  //GridPackages.Header.AutoFitColumns(False);
+  GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearch.Text, newest_only := True));
 end;
 
 procedure TVisEditPackage.ActBuildUploadExecute(Sender: TObject);
@@ -699,17 +692,6 @@ procedure TVisEditPackage.ActExecCodeExecute(Sender: TObject);
 begin
   MemoLog.Clear;
   DMPython.PythonEng.ExecString(EdSetupPy.Lines.Text);
-end;
-
-procedure TVisEditPackage.ActSearchPackageExecute(Sender: TObject);
-var
-  expr : Utf8String;
-  packages: ISuperObject;
-begin
-  expr := format('mywapt.search(r"%s".decode(''utf8'').split())', [EdSearch.Text]);
-  packages := DMPython.RunJSON(expr);
-  GridPackages.Data := packages;
-  //GridPackages.Header.AutoFitColumns(False);
 end;
 
 procedure TVisEditPackage.FormCreate(Sender: TObject);
@@ -894,8 +876,7 @@ begin
   FDepends := AValue;
   if FDepends<>'' then
   begin
-    dependencies := DMPython.RunJSON(
-      format('mywapt.get_package_entries("%s")', [FDepends]));
+    dependencies := PyVarToSuperObject(DMPython.MainWaptRepo.get_package_entries(FDepends));
     GridDepends.Data := dependencies['packages'];
     //GridDepends.Header.AutoFitColumns(False);
     if dependencies['missing'].AsArray.Length > 0 then
@@ -916,8 +897,7 @@ begin
   FConflicts := AValue;
   if FConflicts<>'' then
   begin
-    aconflicts := DMPython.RunJSON(
-      format('mywapt.get_package_entries("%s")', [FConflicts]));
+    aconflicts := PyVarToSuperObject(DMPython.MainWaptRepo.get_package_entries(FConflicts));
     GridConflicts.Data := aconflicts['packages'];
     //GridConflicts.Header.AutoFitColumns(False);
     if aconflicts['missing'].AsArray.Length > 0 then

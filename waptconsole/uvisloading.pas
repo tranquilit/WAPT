@@ -28,6 +28,7 @@ type
     StopRequired : Boolean;
     OnStop :TNotifyEvent;
     ExceptionOnStop:Boolean;
+    ShowCount:Integer;
     function ProgressForm:TVisLoading;
     procedure ProgressTitle(Title:String);
     procedure ProgressStep(step,max:integer);
@@ -51,6 +52,7 @@ begin
   if VisLoading = Nil then
       VisLoading := TVisLoading.Create(Application);
   VisLoading.Show;
+  inc(VisLoading.ShowCount);
   VisLoading.ProgressStep(Progress,MaxProgress);
   VisLoading.ProgressTitle(Msg);
 end;
@@ -65,8 +67,12 @@ procedure HideLoadWait;
 begin
   if VisLoading<> Nil then
   begin
+    Dec(VisLoading.ShowCount);
     VisLoading.Finish;
-    VisLoading.Close;
+    if VisLoading.ShowCount<=0 then
+    begin
+      VisLoading.Close;
+    end;
   end;
 end;
 

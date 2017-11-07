@@ -25,11 +25,14 @@ type
   private
     FLanguage: String;
     FCachedPrivateKeyPassword: Ansistring;
+    FMainWaptRepo: Variant;
     jsondata:TJSONData;
 
     FWaptConfigFileName: Utf8String;
+    function GetMainWaptRepo: Variant;
     function getprivateKeyPassword: Ansistring;
     procedure LoadJson(data: UTF8String);
+    procedure SetMainWaptRepo(AValue: Variant);
     procedure setprivateKeyPassword(AValue: Ansistring);
     procedure SetWaptConfigFileName(AValue: Utf8String);
     procedure SetLanguage(AValue: String);
@@ -50,6 +53,7 @@ type
       nil): ISuperObject;
 
     property Language:String read FLanguage write SetLanguage;
+    property MainWaptRepo:Variant read GetMainWaptRepo write SetMainWaptRepo;
   end;
 
 
@@ -88,7 +92,7 @@ uses variants, waptcommon, uvisprivatekeyauth,inifiles,forms,controls,Dialogs,uv
 function pyObjectToSuperObject(pvalue:PPyObject):ISuperObject;
 var
   i,j,k: Integer;
-  pyKeys,pyKey,pyValue: PPyObject;
+  pyKeys,pyKey,pyDict,pyValue: PPyObject;
 begin
   if GetPythonEngine.PyUnicode_Check(pvalue) or GetPythonEngine.PyString_Check(pvalue) then
     Result := TSuperObject.Create(GetPythonEngine.PyString_AsDelphiString(pvalue))
@@ -110,6 +114,17 @@ begin
     pyKey := Nil;
     pyValue := Nil;
     while GetPythonEngine.PyDict_Next(pvalue,@j,@pyKey,@pyValue) <> 0 do
+      Result[GetPythonEngine.PyObjectAsString(pyKey)] := pyObjectToSuperObject(pyvalue);
+  end
+  else if GetPythonEngine.PyObject_HasAttrString(pvalue,'as_dict') <> 0  then
+  begin
+    Result := TSuperObject.Create(stObject);
+    pyDict := GetPythonEngine.PyObject_CallMethodStr(pvalue,'as_dict',Nil,Nil);
+    pyKeys := GetPythonEngine.PyDict_Keys(pyDict);
+    j := 0;
+    pyKey := Nil;
+    pyValue := Nil;
+    while GetPythonEngine.PyDict_Next(pyDict,@j,@pyKey,@pyValue) <> 0 do
       Result[GetPythonEngine.PyObjectAsString(pyKey)] := pyObjectToSuperObject(pyvalue);
   end
   else if pvalue = GetPythonEngine.Py_None then
@@ -210,13 +225,15 @@ begin
       st.Append(format('mywapt = common.Wapt(config_filename=r"%s".decode(''utf8''),disable_update_server_status=True)',[AValue]));
       st.Append('mywapt.dbpath=r":memory:"');
       st.Append('mywapt.use_hostpackages = False');
-      st.Append('import dmwaptpython');
-      st.Append('mywapt.progress_hook = dmwaptpython.UpdateProgress');
 
+      // declare WaptCOnsole feedback module
+      st.Append('import waptconsole');
+      st.Append('mywapt.progress_hook = waptconsole.UpdateProgress');
+      st.Append('common.default_pwd_callback = waptconsole.GetPrivateKeyPassword');
 
-      //st.Append('mywapt.update(register=False)');
       PythonEng.ExecStrings(St);
       WAPT:=MainModule.mywapt;
+      FMainWaptRepo := Unassigned;
     finally
       st.free;
     end;
@@ -302,7 +319,7 @@ procedure TDMPython.PythonModule1Events0Execute(Sender: TObject; PSelf,
   Args: PPyObject; var Result: PPyObject);
 begin
   //ShowMessage(VarPythonCreate(Args).GetItem(0));
-  Result :=  PythonEng.ReturnNone;
+  Result := PythonEng.VariantAsPyObject(privateKeyPassword);
 end;
 
 procedure TDMPython.PythonModuleDMWaptPythonEvents1Execute(Sender: TObject;
@@ -358,6 +375,12 @@ begin
   finally
       FreeAndNil(P);
   end;
+end;
+
+procedure TDMPython.SetMainWaptRepo(AValue: Variant);
+begin
+  if FMainWaptRepo=AValue then Exit;
+  FMainWaptRepo:=AValue;
 end;
 
 function TDMPython.getprivateKeyPassword: Ansistring;
@@ -416,7 +439,18 @@ begin
   Result := FCachedPrivateKeyPassword;
 end;
 
-
+function TDMPython.GetMainWaptRepo: Variant;
+begin
+  if VarIsEmpty(FMainWaptRepo) then
+  try
+    ShowLoadWait('Loading main Wapt repo settings',0,4);
+    FMainWaptRepo := MainModule.waptpackage.WaptRemoteRepo(name := 'global');
+    FMainWaptRepo.load_config_from_file(WaptConfigFileName);
+  finally
+    HideLoadWait;
+  end;
+  Result := FMainWaptRepo;
+end;
 
 procedure TDMPython.setprivateKeyPassword(AValue: Ansistring);
 begin

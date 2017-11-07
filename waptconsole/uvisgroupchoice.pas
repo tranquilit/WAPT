@@ -68,9 +68,7 @@ begin
   if cbrestricted.Checked then
     sections := sections+',restricted';
   sections := copy(sections,2,255);
-  expr := format('mywapt.search(r"%s".decode(''utf8'').split(),section_filter="%s")', [EdSearch.Text,sections]);
-  groups := DMPython.RunJSON(expr);
-  GridPackages.Data := groups;
+  GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearch.Text, sections := sections, newest_only := True));
 end;
 
 procedure TvisGroupChoice.cbBaseClick(Sender: TObject);

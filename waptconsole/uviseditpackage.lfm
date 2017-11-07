@@ -1269,7 +1269,6 @@ object VisEditPackage: TVisEditPackage
     object ActSearchPackage: TAction
       Caption = 'Search'
       ImageIndex = 28
-      OnExecute = ActSearchPackageExecute
     end
     object ActExecCode: TAction
       Caption = 'Execute Python source'

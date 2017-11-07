@@ -454,7 +454,6 @@ type
     procedure ActAddGroupExecute(Sender: TObject);
     procedure actQuitExecute(Sender: TObject);
     procedure actRefreshExecute(Sender: TObject);
-    procedure ActLocalhostRemoveExecute(Sender: TObject);
     procedure ActSearchHostExecute(Sender: TObject);
     procedure ActSearchPackageExecute(Sender: TObject);
     procedure ActPackagesUpdateExecute(Sender: TObject);
@@ -625,7 +624,7 @@ var
 
 implementation
 
-uses LCLIntf, LCLType, IniFiles, uvisprivatekeyauth, tisstrings, soutils,
+uses LCLIntf, LCLType, IniFiles, variants, uvisprivatekeyauth, tisstrings, soutils,
   waptcommon, waptwinutils, tiscommon, uVisCreateKey, uVisCreateWaptSetup,
   dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
   uvisgroupchoice, uvishostsupgrade, uVisAPropos,
@@ -863,6 +862,8 @@ begin
     ini.WriteString(self.name,cbADSite.Text,'cbADSite.Text');
     ini.WriteString(self.name,cbADOU.Text,'cbADOU.Text');
     ini.WriteString(self.name,cbGroups.Text,'cbGroups.Text');
+
+    ini.WriteString(self.name,'waptconsole.version',GetApplicationVersion);
 
   finally
     ini.Free;
@@ -3117,15 +3118,9 @@ begin
 end;
 
 procedure TVisWaptGUI.ActSearchGroupsExecute(Sender: TObject);
-var
-  expr: UTF8String;
-  groups: ISuperObject;
 begin
   EdSearchGroups.Modified := False;
-  expr := format('mywapt.search(r"%s".decode(''utf8'').split(),section_filter="group")',
-    [EdSearchGroups.Text]);
-  groups := DMPython.RunJSON(expr);
-  GridGroups.Data := groups;
+  GridGroups.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchGroups.Text, sections := 'group'));
 end;
 
 procedure TVisWaptGUI.ActTriggerHostUpdateExecute(Sender: TObject);
@@ -3242,36 +3237,6 @@ end;
 procedure TVisWaptGUI.actHostSelectAllExecute(Sender: TObject);
 begin
   TSOGrid(GridHosts).SelectAll(False);
-end;
-
-procedure TVisWaptGUI.ActLocalhostRemoveExecute(Sender: TObject);
-var
-  package: ansistring;
-  i: integer = 0;
-  selects: integer;
-  N: PVirtualNode;
-begin
-  if GridPackages.Focused then
-  begin
-    N := GridPackages.GetFirstSelected;
-    selects := GridPackages.SelectedCount;
-    with  TVisLoading.Create(Self) do
-      try
-        while (N <> nil) and not StopRequired do
-        begin
-          package := GridPackages.GetCellStrValue(N, 'package');
-          ProgressTitle(format(rsUninstallingPackage, [package]));
-          ProgressStep(trunc((i / selects) * 100), 100);
-          Application.ProcessMessages;
-          i := i + 1;
-          DMPython.RunJSON(format('mywapt.remove("%s")', [package]), jsonlog);
-          N := GridPackages.GetNextSelected(N);
-        end;
-      finally
-        Free;
-      end;
-    ActSearchPackage.Execute;
-  end;
 end;
 
 procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
@@ -3395,31 +3360,28 @@ begin
 end;
 
 procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
-var
-  expr: UTF8String;
-  packages: ISuperObject;
 begin
   EdSearchPackage.Modified:=False;
-  //packages := VarPythonEval(Format('"%s".split()',[EdSearchPackage.Text]));
-  //packages := MainModule.mywapt.search(VarPythonEval(Format('"%s".split()',[EdSearchPackage.Text])));
-  expr := format('mywapt.search(r"%s".decode(''utf8'').split(),section_filter="base,restricted",newest_only=%s)',
-    [EdSearchPackage.Text,  BoolToStr(cbNewestOnly.Checked,'True','False') ]);
-  packages := DMPython.RunJSON(expr);
-
-  GridPackages.Data := packages;
+  GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchPackage.Text, sections := 'base,restricted', newest_only := cbNewestOnly.Checked));
 end;
 
 procedure TVisWaptGUI.ActPackagesUpdateExecute(Sender: TObject);
 begin
-  //test avec un variant ;)
-  MainModule.mywapt.update(register := False,filter_on_host_cap := False);
-
-  ActSearchPackage.Execute;
-  ActSearchGroups.Execute;
+  try
+    ShowLoadWait('Loading packages',0,4);
+    //dmpython.MainWaptRepo.update();
+    dmpython.MainWaptRepo := Unassigned;
+    ShowProgress('Filter packages',2);
+    ActSearchPackage.Execute;
+    ShowProgress('Filter groups',3);
+    ActSearchGroups.Execute;
+  finally
+    HideLoadWait;
+  end;
 
   //update groups filter combobox
-  if cbGroups.ItemIndex>=0 then
-    FillcbGroups;
+  ////if cbGroups.ItemIndex>=0 then
+  ////FillcbGroups;
 end;
 
 procedure TVisWaptGUI.ActReloadConfigExecute(Sender: TObject);
@@ -3676,6 +3638,7 @@ begin
   ScaleImageList(ImageList1,96);
   ScaleImageList(ActionsImages,96);
   waptpath := ExtractFileDir(ParamStr(0));
+  HostsLimit := 2000;
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
 end;
 
@@ -3844,32 +3807,39 @@ begin
     GridHostPackages.SaveSettingsToIni(Appuserinipath+'.default');
     GridHostSoftwares.SaveSettingsToIni(Appuserinipath+'.default');
 
-    Gridhosts.LoadSettingsFromIni(Appuserinipath);
-    GridPackages.LoadSettingsFromIni(Appuserinipath);
-    GridGroups.LoadSettingsFromIni(Appuserinipath);
-    GridHostPackages.LoadSettingsFromIni(Appuserinipath);
-    GridHostSoftwares.LoadSettingsFromIni(Appuserinipath);
+    // don't load grid settings if old ini version
+    if IniReadString(Appuserinipath,self.name,'waptconsole-version','') <> '' then
+    begin
+      Gridhosts.LoadSettingsFromIni(Appuserinipath);
+      GridPackages.LoadSettingsFromIni(Appuserinipath);
+      GridGroups.LoadSettingsFromIni(Appuserinipath);
+      GridHostPackages.LoadSettingsFromIni(Appuserinipath);
+      GridHostSoftwares.LoadSettingsFromIni(Appuserinipath);
+      ini := TIniFile.Create(Appuserinipath);
+      try
+        for CB in VarArrayOf([cbAdvancedSearch,cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares,cbReachable]) do
+          TCheckBox(CB).Checked := ini.ReadBool(self.Name,CB.Name,TCheckBox(CB).Checked);
 
-    ini := TIniFile.Create(Appuserinipath);
-    try
-      for CB in VarArrayOf([cbAdvancedSearch,cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares,cbReachable]) do
-        TCheckBox(CB).Checked := ini.ReadBool(self.Name,CB.Name,TCheckBox(CB).Checked);
+        HostsLimit := ini.ReadInteger(self.name,'HostsLimit',2000);
+        //ShowMessage(Appuserinipath+'/'+self.Name+'/'+EdHostsLimit.Name+'/'+ini.ReadString(name,EdHostsLimit.Name,'not found'));
+        HostPages.Width := ini.ReadInteger(self.name,HostPages.Name+'.width',HostPages.Width);
 
-      HostsLimit := ini.ReadInteger(self.name,'HostsLimit',2000);
-      //ShowMessage(Appuserinipath+'/'+self.Name+'/'+EdHostsLimit.Name+'/'+ini.ReadString(name,EdHostsLimit.Name,'not found'));
-      HostPages.Width := ini.ReadInteger(self.name,HostPages.Name+'.width',HostPages.Width);
+        Self.WindowState := TWindowState(ini.ReadInteger(self.name,'WindowState',Integer(Self.WindowState)));
 
-      Self.WindowState := TWindowState(ini.ReadInteger(self.name,'WindowState',Integer(Self.WindowState)));
+        self.cbADSite.Text := ini.ReadString(self.name,'cbADSite.Text',self.cbADSite.Text);
+        self.cbADOU.Text := ini.ReadString(self.name,'cbADOU.Text',self.cbADOU.Text);
+        self.cbGroups.Text := ini.ReadString(self.name,'cbGroups.Text',self.cbGroups.Text);
 
-      self.cbADSite.Text := ini.ReadString(self.name,'cbADSite.Text',self.cbADSite.Text);
-      self.cbADOU.Text := ini.ReadString(self.name,'cbADOU.Text',self.cbADOU.Text);
-      self.cbGroups.Text := ini.ReadString(self.name,'cbGroups.Text',self.cbGroups.Text);
+      finally
+        ini.Free;
+      end;
+    end
+    else
+      // be sure other forms will not use it.
+      if FileExists(Appuserinipath) then
+        SysUtils.DeleteFile(Appuserinipath);
 
-    finally
-      ini.Free;
-    end;
-
-    plStatusBar1.Panels[0].Text :=ApplicationName+' '+GetApplicationVersion;
+    plStatusBar1.Panels[0].Text := ApplicationName+' '+GetApplicationVersion;
 
     pgWindowsUpdates.TabVisible:=waptcommon.waptwua_enabled;
     pgHostWUA.TabVisible:=waptcommon.waptwua_enabled;
@@ -3878,9 +3848,9 @@ begin
       (WSUSActions.Actions[i] as TAction).Visible:=waptcommon.waptwua_enabled;
     end;
 
-    ProgressTitle(rsLoadPackages);
+    //ProgressTitle(rsLoadPackages);
     ProgressStep(2,3);
-    ActPackagesUpdate.Execute;
+    //ActPackagesUpdate.Execute;
 
     cbAdvancedSearchClick(self);
 

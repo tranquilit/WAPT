@@ -1561,6 +1561,21 @@ class WaptBaseRepo(object):
 
         return self
 
+    def load_config_from_file(self,config_filename,section=None):
+        """Load repository configuration from an inifile located at config_filename
+
+        Args:
+            config_filename (str) : path to wapt inifile
+            section (str): ini section from which to get parameters. default to repo name
+
+        """
+        if section is None:
+            section = self.name
+
+        ini = RawConfigParser()
+        ini.read(config_filename)
+        self.load_config(ini,section)
+
     def _load_packages_index(self):
         self._packages = []
         self._packages_date = None
@@ -1698,6 +1713,29 @@ class WaptBaseRepo(object):
         else:
             return sorted(result)
 
+
+    def get_package_entries(self,packages_names):
+        r"""Return most up to date packages entries for packages_names
+        packages_names is either a list or a string
+        Returns:
+            dict: a dictionnary with {'packages':[],'missing':[]}
+
+        >>> r = WaptRemoteRepo()
+        >>> r.load_config_from_file('c:/wapt/wapt-get.ini')
+        >>> res = r.get_package_entries(['tis-firefox','tis-putty'])
+        >>> isinstance(res['missing'],list) and isinstance(res['packages'][0],PackageEntry)
+        True
+        """
+        result = {'packages':[],'missing':[]}
+        if isinstance(packages_names,str) or isinstance(packages_names,unicode):
+            packages_names=[ p.strip() for p in packages_names.split(",")]
+        for package_name in packages_names:
+            matches = self.packages_matching(package_name)
+            if matches:
+                result['packages'].append(matches[-1])
+            else:
+                result['missing'].append(package_name)
+        return result
 
     def packages_matching(self,package_cond):
         """Return an ordered list of available packages entries which match
@@ -2159,6 +2197,7 @@ class WaptRemoteRepo(WaptBaseRepo):
             self.client_private_key = config.get(section,'client_private_key')
 
         return self
+
 
     @property
     def packages_url(self):
