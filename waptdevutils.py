@@ -377,6 +377,8 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
     wapt.dbpath = r':memory:'
     wapt.use_hostpackages = True
+    import waptconsole
+    wapt.progress_hook = waptconsole.UpdateProgress
     hosts_list = ensure_list(hosts_list)
     append_depends = ensure_list(append_depends)
     remove_depends = ensure_list(remove_depends)
@@ -387,8 +389,14 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
     package_files = []
     build_res = []
     sources = []
+    wapt.progress_hook(True,0,len(hosts_list),'Editing %s hosts' % len(hosts_list))
+    i = 0
     try:
         for host in hosts_list:
+            i+=1
+            if wapt.progress_hook(True,i,len(hosts_list),'Editing %s' % host):
+                break
+
             logger.debug(u'Edit host %s : +%s -%s'%(
                 host,
                 append_depends,
@@ -411,19 +419,26 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
             package_files.append(res)
 
         # upload all in one step...
+        wapt.progress_hook(True,1,2,'Upload %s host packages' % len(package_files))
         wapt.http_upload_package(package_files,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
 
     finally:
+        wapt.progress_hook(True,100,101,'Cleanup')
         logger.debug('Cleanup')
         try:
+            i = 0
             for s in sources:
+                i+=1
+                wapt.progress_hook(True,i,len(sources),'Cleanup')
                 if os.path.isdir(s['sourcespath']):
                     shutil.rmtree(s['sourcespath'])
             for s in build_res:
                 if os.path.isfile(s):
                     os.unlink(s)
+            wapt.progress_hook(False)
         except WindowsError as e:
             logger.critical('Unable to remove temporary directory %s: %s'% (s,repr(e)))
+            wapt.progress_hook(False)
     return build_res
 
 
