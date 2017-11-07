@@ -7,8 +7,6 @@ object VisLoading: TVisLoading
   Caption = 'Loading'
   ClientHeight = 75
   ClientWidth = 412
-  Font.Height = -11
-  Font.Name = 'Tahoma'
   OnCreate = FormCreate
   Position = poMainFormCenter
   LCLVersion = '1.3'
