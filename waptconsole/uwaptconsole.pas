@@ -1444,6 +1444,7 @@ begin
         DevPath := VarPythonAsString(MainModule.mywapt.get_default_development_dir(SelPackage));
         if DirectoryExistsUTF8(DevPath) then
           DevPath:=DevPath+'.'+GridPackages.GetCellStrValue(GridPackages.FocusedNode, 'version');
+        MainModule.mywapt.update(force := True,register := False,filter_on_host_cap := False);
         res_var := MainModule.mywapt.edit_package(
           packagerequest := Selpackage,
           target_directory:=DevPath,
