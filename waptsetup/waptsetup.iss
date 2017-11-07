@@ -71,7 +71,10 @@ DefaultDirName=c:\wapt
 DefaultDirName={pf32}\wapt
 #endif
 
+#if edition != 'waptagent' 
 WizardImageFile=..\tranquilit.bmp
+#endif
+
 DisableProgramGroupPage=yes
 
 [Languages]

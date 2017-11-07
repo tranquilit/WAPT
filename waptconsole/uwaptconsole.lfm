@@ -1703,7 +1703,7 @@ object VisWaptGUI: TVisWaptGUI
           Left = 567
           Height = 75
           Top = 0
-          Width = 271
+          Width = 371
           Align = alLeft
           AutoSize = True
           BevelOuter = bvNone
@@ -1713,7 +1713,7 @@ object VisWaptGUI: TVisWaptGUI
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 2
           ClientHeight = 75
-          ClientWidth = 271
+          ClientWidth = 371
           TabOrder = 0
           object Label15: TLabel
             Left = 12
@@ -1730,7 +1730,7 @@ object VisWaptGUI: TVisWaptGUI
             Height = 21
             Hint = 'Filter hosts which have this direct package dependency'
             Top = 6
-            Width = 150
+            Width = 250
             Constraints.MinWidth = 150
             ItemHeight = 13
             OnDropDown = cbGroupsDropDown
@@ -1753,7 +1753,7 @@ object VisWaptGUI: TVisWaptGUI
             Height = 21
             Hint = 'Filter hosts which have this direct package dependency'
             Top = 27
-            Width = 150
+            Width = 250
             Constraints.MinWidth = 150
             ItemHeight = 13
             OnDropDown = cbADSiteDropDown
@@ -1776,8 +1776,8 @@ object VisWaptGUI: TVisWaptGUI
             Height = 21
             Hint = 'Filter hosts which have this direct package dependency'
             Top = 48
-            Width = 150
-            Constraints.MinWidth = 150
+            Width = 250
+            Constraints.MinWidth = 250
             ItemHeight = 13
             OnDropDown = cbADOUDropDown
             OnSelect = cbADOUSelect
