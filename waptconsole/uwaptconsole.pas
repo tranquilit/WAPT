@@ -3352,6 +3352,9 @@ begin
     if cbADOU.ItemIndex>0 then
       urlParams.AsArray.Add(Format('organizational_unit=%s',[cbADOU.Text]));
 
+    if cbADSite.ItemIndex>0 then
+      urlParams.AsArray.Add(Format('ad_site=%s',[cbADSite.Text]));
+
     urlParams.AsArray.Add('columns='+join(',',columns));
     urlParams.AsArray.Add(Format('limit=%d',[HostsLimit]));
 
