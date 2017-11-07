@@ -39,7 +39,7 @@ type
 
   procedure ShowLoadWait(Msg:String;Progress:Integer=0;MaxProgress:Integer = 100);
   procedure ShowProgress(Msg:String;Progress:Integer=0);
-  procedure HideLoadWait;
+  procedure HideLoadWait(Force:Boolean=True);
 
 var
   VisLoading: TVisLoading;
@@ -59,17 +59,22 @@ end;
 
 procedure ShowProgress(Msg: String; Progress: Integer);
 begin
-  VisLoading.ProgressTitle(Msg);
-  VisLoading.ProgressStep(Progress,VisLoading.AProgressBar.Max);;
+  if not VisLoading.Visible then
+    ShowLoadWait(Msg,Progress)
+  else
+  begin
+    VisLoading.ProgressTitle(Msg);
+    VisLoading.ProgressStep(Progress,VisLoading.AProgressBar.Max);
+  end;
 end;
 
-procedure HideLoadWait;
+procedure HideLoadWait(Force:Boolean=True);
 begin
   if VisLoading<> Nil then
   begin
     Dec(VisLoading.ShowCount);
     VisLoading.Finish;
-    if VisLoading.ShowCount<=0 then
+    if Force or (VisLoading.ShowCount<=0) then
     begin
       VisLoading.Close;
     end;

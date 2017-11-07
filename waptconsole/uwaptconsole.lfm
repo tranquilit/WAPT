@@ -3154,7 +3154,7 @@ object VisWaptGUI: TVisWaptGUI
     object pgWindowsUpdates: TTabSheet
       Caption = 'Windows Updates'
       ClientHeight = 638
-      ClientWidth = 897
+      ClientWidth = 995
       object BitBtn9: TBitBtn
         Left = 316
         Height = 32
@@ -3177,7 +3177,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 4
         Height = 168
         Top = 50
-        Width = 886
+        Width = 984
         Align = alCustom
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 2
@@ -3522,7 +3522,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 868
         Height = 354
         Top = 242
-        Width = 17
+        Width = 115
         Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Top = 2
         Color = clWhite
@@ -3669,13 +3669,13 @@ object VisWaptGUI: TVisWaptGUI
     object pgSources: TTabSheet
       Caption = 'Sources'
       ClientHeight = 638
-      ClientWidth = 897
+      ClientWidth = 995
       TabVisible = False
       inline testedit: TSynEdit
         Left = 0
         Height = 604
         Top = 34
-        Width = 897
+        Width = 995
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -4124,6 +4124,18 @@ object VisWaptGUI: TVisWaptGUI
           'logger = logging.getLogger()'
           'config_file =os.path.join(os.path.dirname(sys.argv[0]),''wapt-get.ini'')'
           'mywapt = Wapt(config_filename=config_file)'
+          '#mywapt.progress_hook(True,30,100,''Test'')'
+          ''
+          ''
+          'import time'
+          ''
+          'for i in range(0,10):'
+          '    if mywapt.progress_hook(True,i * 10,100,''Test %s''%i):
+                   break'
+          '    time.sleep(0.3)'
+          ''
+          'print mywapt.progress_hook(False,100,100,''Fin'')'
+          '                                                  '
         )
         VisibleSpecialChars = [vscSpace, vscTabAtLast]
         SelectedColor.FrameEdges = sfeAround
@@ -4194,11 +4206,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 34
         Top = 0
-        Width = 897
+        Width = 995
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 897
+        ClientWidth = 995
         TabOrder = 1
         object butInitWapt: TBitBtn
           Left = 4

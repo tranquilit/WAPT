@@ -325,17 +325,29 @@ end;
 procedure TDMPython.PythonModuleDMWaptPythonEvents1Execute(Sender: TObject;
   PSelf, Args: PPyObject; var Result: PPyObject);
 var
-  DoShow,Progress,ProgressMax,Msg: Variant;
-  ArgsVar:Variant;
+  DoShow:Boolean;
+  Progress,ProgressMax: Integer;
+  Msg: String;
+  NbArgs:Integer;
 begin
-  ArgsVar := VarPythonCreate(Args);
-  DoShow := ArgsVar.GetItem(0);
-  Progress := ArgsVar.GetItem(1);
-  ProgressMax := ArgsVar.GetItem(2);
-  Msg :=ArgsVar.GetItem(3);
+  NbArgs := PythonEng.PyTuple_Size(Args);
+  DoShow := PythonEng.PyObject_IsTrue(PythonEng.PyTuple_GetItem(Args,0)) <> 0;
+  if NbArgs>=2 then
+    Progress := PythonEng.PyLong_AsLong(PythonEng.PyTuple_GetItem(Args,1))
+  else
+    Progress:=0;
+  if NbArgs>=3 then
+    ProgressMax := PythonEng.PyLong_AsLong(PythonEng.PyTuple_GetItem(Args,2))
+  else
+    ProgressMax := 100;
+
+  if NbArgs>=4 then
+    Msg := PythonEng.PyString_AsDelphiString(PythonEng.PyTuple_GetItem(Args,3))
+  else
+    Msg := '';
 
   If DoShow then
-    ShowLoadWait(Msg,Progress,ProgressMax)
+    ShowLoadWait(Msg, Progress,ProgressMax)
   else
     HideLoadWait();
   if (VisLoading<>Nil)  and (VisLoading.StopRequired) then

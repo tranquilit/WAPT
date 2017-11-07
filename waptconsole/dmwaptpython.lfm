@@ -37,8 +37,9 @@ object DMPython: TDMPython
         OnExecute = PythonModuleDMWaptPythonEvents1Execute
         DocString.Strings = (
           'Args:'
-          '  show: bool'
+          '   show: bool'
           '   progress: int'
+          '   progressmax'
           '   msg: unicode'
         )
       end>
