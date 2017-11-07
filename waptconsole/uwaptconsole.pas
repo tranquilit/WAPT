@@ -1843,6 +1843,9 @@ begin
     col.Text := propname;
     col.PropertyName := propname;
     col.Width := 100;
+    GridHosts.FocusedColumn :=  col.Index;
+    ActSearchHost.Execute;
+    GridHosts.SetFocus;
   end;
 end;
 
