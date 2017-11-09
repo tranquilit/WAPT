@@ -2156,6 +2156,11 @@ begin
         pgSources.TabVisible := AdvancedMode;
         PanDebug.Visible := AdvancedMode;
 
+        Gridhosts.ShowAdvancedColumnsCustomize:= AdvancedMode;
+        GridGroups.ShowAdvancedColumnsCustomize:=AdvancedMode;
+        GridPackages.ShowAdvancedColumnsCustomize:=AdvancedMode;
+        GridHostPackages.ShowAdvancedColumnsCustomize:=AdvancedMode;
+
 
         EnableExternalTools := cbEnableExternalTools.Checked;
         EnableManagementFeatures := cbEnableManagementFeatures.Checked;
@@ -2777,7 +2782,7 @@ end;
 
 procedure TVisWaptGUI.ActHelpExecute(Sender: TObject);
 begin
-  OpenDocument('https://doc.wapt.fr');
+  OpenDocument('https://doc.wapt.fr/fr/doc-1.5/');
 end;
 
 
@@ -3395,6 +3400,11 @@ begin
   dmpython.WaptConfigFileName:=AppIniFilename;
   pgSources.TabVisible := AdvancedMode;
   PanDebug.Visible := AdvancedMode;
+  Gridhosts.ShowAdvancedColumnsCustomize:= AdvancedMode;
+  GridGroups.ShowAdvancedColumnsCustomize:=AdvancedMode;
+  GridPackages.ShowAdvancedColumnsCustomize:=AdvancedMode;
+  GridHostPackages.ShowAdvancedColumnsCustomize:=AdvancedMode;
+
   //ActPackagesUpdate.Execute;
   GridPackages.Data := Nil;
   GridGroups.Data := Nil;

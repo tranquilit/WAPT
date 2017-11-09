@@ -2450,7 +2450,7 @@ object VisWaptGUI: TVisWaptGUI
           ShowCaptions = True
           TabOrder = 0
           object ToolButton1: TToolButton
-            Left = 56
+            Left = 135
             Top = 0
             Action = ActTriggerHostUpgrade
           end
@@ -2460,12 +2460,12 @@ object VisWaptGUI: TVisWaptGUI
             Action = ActEditHostPackage
           end
           object ToolButton5: TToolButton
-            Left = 133
+            Left = 51
             Top = 0
             Action = ActTriggerHostUpdate
           end
           object ToolButton6: TToolButton
-            Left = 51
+            Left = 130
             Top = 0
             Width = 5
             Caption = 'ToolButton6'
