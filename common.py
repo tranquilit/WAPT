@@ -5147,7 +5147,6 @@ class Wapt(object):
         else:
             logger.info(u'control file already exists, skip create')
 
-        self.add_pyscripter_project(directoryname)
         return directoryname
 
     def make_host_template(self,packagename='',depends=None,conflicts=None,directoryname=None,description=None):
@@ -5279,7 +5278,8 @@ class Wapt(object):
             entry.conflicts = ','.join([u'%s' % p for p in conflicts if p and p != packagename ])
 
         entry.save_control_to_wapt(directoryname)
-        self.add_pyscripter_project(directoryname)
+        if entry.section != 'host':
+            self.add_pyscripter_project(directoryname)
         return entry
 
     def is_installed(self,packagename,include_errors=False):
@@ -5466,7 +5466,8 @@ class Wapt(object):
                 local_dev_entry.conflicts = ','.join(prev_conflicts)
                 local_dev_entry.save_control_to_wapt(target_directory)
 
-            self.add_pyscripter_project(target_directory)
+            if entry.section != 'host':
+                self.add_pyscripter_project(target_directory)
             return local_dev_entry
         else:
             raise Exception(u'Unable to unzip package in %s' % target_directory)
@@ -5577,7 +5578,6 @@ class Wapt(object):
                 entry.description = description
 
             entry.save_control_to_wapt(target_directory)
-            self.add_pyscripter_project(target_directory)
             return entry
         else:
             # create a new version of the existing package in repository
@@ -5790,7 +5790,8 @@ class Wapt(object):
         dest_control.filename = dest_control.make_package_filename()
         dest_control.save_control_to_wapt(target_directory)
 
-        self.add_pyscripter_project(target_directory)
+        if dest_control.section != 'host':
+            self.add_pyscripter_project(target_directory)
         dest_control.invalidate_signature()
         return dest_control
 

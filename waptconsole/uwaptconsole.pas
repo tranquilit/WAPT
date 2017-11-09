@@ -2782,7 +2782,7 @@ end;
 
 procedure TVisWaptGUI.ActHelpExecute(Sender: TObject);
 begin
-  OpenDocument('https://doc.wapt.fr/fr/doc-1.5/');
+  OpenDocument('https://wapt.fr/fr/doc-1.5/');
 end;
 
 
