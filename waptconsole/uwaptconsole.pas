@@ -4212,7 +4212,7 @@ begin
     ImageIndex:=-1;
     registration_auth_user := GridHostPackages.GetCellData(Node, 'registration_auth_user', Nil);
 
-    if (registration_auth_user = Nil) or  (copy(registration_auth_user.AsString,1,5) = 'None:') then
+    if (registration_auth_user = Nil) or (registration_auth_user.AsString='') or (copy(registration_auth_user.AsString,1,5) = 'None:') then
       ImageIndex := 9
     else
       ImageIndex := 10

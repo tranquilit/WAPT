@@ -2061,8 +2061,6 @@ if __name__ == '__main__':
         raise Exception('Folder missing : %s.' % conf['wapt_folder'])
     if not os.path.exists(conf['wapt_folder'] + '-host'):
         raise Exception('Folder missing : %s-host.' % conf['wapt_folder'])
-    if not os.path.exists('%s-hostref' % conf['wapt_folder']):
-        raise Exception('Folder missing : %s-hostref.' % conf['wapt_folder'])
 
     if args and args[0] == 'doctest':
         import doctest
