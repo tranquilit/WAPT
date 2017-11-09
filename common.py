@@ -2901,7 +2901,9 @@ class Wapt(object):
             finally:
                 for f in files.values():
                     f.close()
-        return res
+            return res
+        else:
+            raise Exception('No package to upload')
 
     def upload_package(self,filenames,wapt_server_user=None,wapt_server_passwd=None):
         """Method to upload a package using Shell command (like scp) instead of http upload

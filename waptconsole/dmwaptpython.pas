@@ -106,6 +106,12 @@ begin
     for k := 0 to GetPythonEngine.PyList_Size(pvalue) - 1 do
         Result.AsArray.Add(pyObjectToSuperObject(GetPythonEngine.PyList_GetItem(pvalue,k)));
   end
+  else if GetPythonEngine.PyTuple_Check(pvalue) then
+  begin
+    Result := TSuperObject.Create(stArray);
+    for k := 0 to GetPythonEngine.PyTuple_Size(pvalue) - 1 do
+        Result.AsArray.Add(pyObjectToSuperObject(GetPythonEngine.PyTuple_GetItem(pvalue,k)));
+  end
   else if GetPythonEngine.PyDict_Check(pvalue) then
   begin
     Result := TSuperObject.Create(stObject);
@@ -391,7 +397,7 @@ end;
 
 procedure TDMPython.SetMainWaptRepo(AValue: Variant);
 begin
-  if FMainWaptRepo=AValue then Exit;
+  if VarCompareValue(FMainWaptRepo,AValue) = vrEqual  then Exit;
   FMainWaptRepo:=AValue;
 end;
 

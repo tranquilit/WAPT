@@ -306,15 +306,15 @@ begin
     listPackages.AsArray.Add(package.S['package']+'(='+package.S['version']+')');
   //calcule liste de tous les fichiers wapt + md5  nécessaires y compris les dépendances
   if (Waptrepo.ServerCABundle='') or (Waptrepo.ServerCABundle='0') then
-    verify_cert:='False'
+    verify_cert := ''
   else
-    verify_cert:=QuotedStr(Waptrepo.ServerCABundle);
-  FileNames := DMPython.RunJSON(format('waptdevutils.get_packages_filenames(r"%s".decode(''utf8''),"%s",verify_cert=%s)',
-        [ AppIniFilename,
-          Join(',',listPackages),
-          verify_cert
-        ]
-        ));
+    verify_cert := Waptrepo.ServerCABundle;
+
+  FileNames := PyVarToSuperObject(MainModule.waptdevutils.get_packages_filenames(
+        packages_names := Join(',',listPackages),
+        verify_cert := verify_cert,
+        waptconfigfile := AppIniFilename,
+        repo_name := RepoName ));
 
   if MessageDlg(rsPackageDuplicateConfirmCaption, format(rsPackageDuplicateConfirm, [Join(',', listPackages)+' '+intToStr(Filenames.AsArray.Length)+' packages']),
         mtConfirmation, mbYesNoCancel, 0) <> mrYes then

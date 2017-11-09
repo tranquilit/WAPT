@@ -208,17 +208,18 @@ def update_external_repo(repourl,search_string,proxy=None,mywapt=None,newer_only
     else:
         return [p.as_dict() for p in packages]
 
-def get_packages_filenames(waptconfigfile,packages_names,with_depends=True,verify_cert=None,repo_name='wapt-templates'):
+def get_packages_filenames(packages_names,with_depends=True,verify_cert=None,waptconfigfile=None,repo_name='wapt-templates',remoterepo=None):
     """Returns list of package filenames (latest version) and md5 matching comma separated list of packages names and their dependencies
-        helps to batch download a list of selected packages using tools like curl or wget
+    helps to batch download a list of selected packages using tools like curl or wget
 
     Args:
-        waptconfigfile (str): path to wapt ini file
         packages_names (list or csv str): list of package names
         verify_cert (0/1,path to certificate or ca) : check https connection
         with_depends (bool): get recursively the all depends filenames
+        waptconfigfile (str): path to wapt ini file
         repo_name : section name in wapt ini file for repo parameters (repo_url, http_proxy, timeout, verify_cert)
-
+        remoterepo (WaptRemoteRepo) : remote repo to query.
+                                      Mutually exclusive with waptconfigfile and repo_name
     Returns:
         list: list of (wapt file basename,md5)
 
@@ -232,23 +233,24 @@ def get_packages_filenames(waptconfigfile,packages_names,with_depends=True,verif
         'verify_cert':'0',
         }
 
-    config = RawConfigParser(defaults=defaults)
-    config.read(waptconfigfile)
+    if remoterepo is None:
+        config = RawConfigParser(defaults=defaults)
+        config.read(waptconfigfile)
 
-    if verify_cert == '' or verify_cert == '0':
-        verify_cert = False
+        if verify_cert == '' or verify_cert == '0':
+            verify_cert = False
 
-    templates = WaptRemoteRepo(name=repo_name,verify_cert=verify_cert,config=config)
-    templates.update()
+        remoterepo = WaptRemoteRepo(name=repo_name,verify_cert=verify_cert,config=config)
+        remoterepo.update()
 
     packages_names = ensure_list(packages_names)
     for name in packages_names:
-        entries = templates.packages_matching(name)
+        entries = remoterepo.packages_matching(name)
         if entries:
             pe = entries[-1]
             result.append((pe.filename,pe.md5sum,))
             if with_depends and pe.depends:
-                for (fn,md5) in get_packages_filenames(waptconfigfile,pe.depends):
+                for (fn,md5) in get_packages_filenames(pe.depends,remoterepo = remoterepo):
                     if not fn in result:
                         result.append((fn,md5,))
     return result
