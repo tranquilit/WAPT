@@ -419,11 +419,10 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
             package_files.append(res)
 
         # upload all in one step...
-        wapt.progress_hook(True,1,2,'Upload %s host packages' % len(package_files))
+        wapt.progress_hook(True,3,3,'Upload %s host packages' % len(package_files))
         wapt.http_upload_package(package_files,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
 
     finally:
-        wapt.progress_hook(True,100,101,'Cleanup')
         logger.debug('Cleanup')
         try:
             i = 0
