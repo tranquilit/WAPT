@@ -4169,7 +4169,7 @@ procedure TVisWaptGUI.GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
   var Ghosted: boolean; var ImageIndex: integer; var ImageList: TCustomImageList);
 var
   RowSO, status,
-  reachable: ISuperObject;
+  registration_auth_user,reachable: ISuperObject;
 begin
   if TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'host_status' then
   begin
@@ -4206,7 +4206,18 @@ begin
     end
     else
       ImageIndex := 6
+  end
+  else if TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'registration_auth_user' then
+  begin
+    ImageIndex:=-1;
+    registration_auth_user := GridHostPackages.GetCellData(Node, 'registration_auth_user', Nil);
+
+    if (registration_auth_user = Nil) or  (copy(registration_auth_user.AsString,1,5) = 'None:') then
+      ImageIndex := 9
+    else
+      ImageIndex := 10
   end;
+
 end;
 
 procedure TVisWaptGUI.GridHostsGetText(Sender: TBaseVirtualTree;
