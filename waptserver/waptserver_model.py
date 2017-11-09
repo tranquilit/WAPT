@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = '1.5.1.2'
+__version__ = '1.5.1.3'
 
 import os
 import sys
@@ -48,7 +48,10 @@ from playhouse.pool import PooledPostgresqlExtDatabase
 from playhouse.shortcuts import dict_to_model, model_to_dict
 from playhouse.signals import Model as SignaledModel, pre_save, post_save
 
-from waptutils import ensure_unicode, Version
+from waptutils import Version
+from waptutils import ensure_unicode
+
+
 from waptserver_utils import setloglevel
 
 import json
@@ -128,6 +131,7 @@ class Hosts(BaseModel):
     serialnr = CharField(null=True)
 
     host_certificate = TextField(null=True, help_text='Host public X509 certificate bundle')
+    registration_auth_user = CharField(null=True)
 
     #authorized_certificates = ArrayField(CharField, null=True, help_text='authorized packages signers certificates sha1 fingerprint')
 
@@ -683,6 +687,20 @@ def upgrade_db_structure():
                 opes.append(migrator.add_column(Hosts._meta.name, 'computer_ad_ou', Hosts.computer_ad_ou))
             if not 'computer_ad_groups' in columns:
                 opes.append(migrator.add_column(Hosts._meta.name, 'computer_ad_groups', Hosts.computer_ad_groups))
+            migrate(*opes)
+
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
+    next_version = '1.5.1.3'
+    if get_db_version() < next_version:
+        with wapt_db.atomic():
+            logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
+            columns = [c.name for c in wapt_db.get_columns('hosts')]
+            opes = []
+            if not 'registration_auth_user' in columns:
+                opes.append(migrator.add_column(Hosts._meta.name, 'registration_auth_user', Hosts.registration_auth_user))
             migrate(*opes)
 
             (v, created) = ServerAttribs.get_or_create(key='db_version')

@@ -64,6 +64,7 @@ _defaults = {
     'dc_auth_enabled':False,
     'allow_unsigned_status_data':False,
     'min_password_length':10,
+    'allow_unauthenticated_registration':False,
 }
 
 _default_config_file = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
@@ -156,5 +157,8 @@ def load_config(cfgfile=_default_config_file):
 
     if _config.has_option('options', 'min_password_length'):
             conf['min_password_length'] = _config.getint('options', 'min_password_length')
+
+    if _config.has_option('options', 'allow_unauthenticated_registration'):
+        conf['allow_unauthenticated_registration'] = _config.getboolean('options', 'allow_unauthenticated_registration')
 
     return conf

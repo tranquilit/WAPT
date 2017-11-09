@@ -46,6 +46,7 @@ import tempfile
 import fnmatch
 import urlparse
 import hashlib
+
 try:
     from clint.textui.progress import Bar as ProgressBar
 except ImportError:

@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = '1.5.1.2'
+__version__ = '1.5.1.3'
 
 import os
 import sys
@@ -356,9 +356,7 @@ def register_host():
         uuid = data['uuid']
         if not uuid:
             raise Exception('register_host: No uuid supplied')
-        logger.info('Registering new host %s' % (uuid,))
-
-        print data.keys()
+        logger.info('Trying to register host %s' % (uuid,))
 
         # get request signature
         signature_b64 = request.headers.get('X-Signature', None)
@@ -370,8 +368,10 @@ def register_host():
             raise Exception('register_host: Missing signature')
         signer = request.headers.get('X-Signer', None)
 
-        # Registering a host requires authentication; Either Kerberos or basic
+        # Registering a host requires authentication; Either signatue is Ok or Kerberos or basic
         authenticated_user = None
+
+        registration_auth_user = None
 
         # 'host' is for pre wapt pre 1.4
         computer_fqdn =  (data.get('host_info',None) or data.get('host',{})).get('computer_fqdn',None)
@@ -382,27 +382,49 @@ def register_host():
             authenticated_user = request.headers.get('Authorization', None)
             if authenticated_user:
                 if authenticated_user.startswith('Basic'):
-                    logger.debug('#####################################')
-                    logger.debug(authenticated_user)
                     authenticated_user = base64.b64decode(authenticated_user.replace('Basic', '').strip())
-                    logger.debug(authenticated_user)
                 authenticated_user = authenticated_user.lower().replace('$', '')
                 if authenticated_user.endswith(':bogus_auth_gss_passwd'):
                     authenticated_user = authenticated_user.replace(':bogus_auth_gss_passwd', '')
                 dns_domain = '.'.join(socket.getfqdn().split('.')[1:])
                 authenticated_user = '%s.%s' % (authenticated_user, dns_domain)
-        else:
+                logger.debug('Kerberos authenticated user %s for %s' % (authenticated_user,computer_fqdn))
+                registration_auth_user = u'Kerb:%s' % authenticated_user
+
+        if not authenticated_user:
             # get authentication from basic auth. Check against waptserver admins
             auth = request.authorization
             if not auth or not check_auth(auth.username, auth.password):
-                return authenticate()
+                # check if existing record, and in this case, check signature with existing certificate
+                existing_host = Hosts.select(Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
+                if existing_host and existing_host.host_certificate:
+                    host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
+                    if host_cert.verify_content(sha256_for_data(raw_data), signature):
+                        authenticated_user = computer_fqdn
+                    elif conf['allow_unauthenticated_registration']:
+                        logger.warning('Unauthenticated registration for %s' % computer_fqdn)
+                        authenticated_user = computer_fqdn #request.headers.get('X-Forwarded-For',None)
+                        registration_auth_user = 'None:%s' % request.headers.get('X-Forwarded-For',None)
+                    else:
+                        # use basic auth
+                        return authenticate()
+                elif conf['allow_unauthenticated_registration']:
+                    logger.warning('Unauthenticated registration for %s' % computer_fqdn)
+                    authenticated_user = computer_fqdn #request.headers.get('X-Forwarded-For',None)
+                    registration_auth_user = 'None:%s' % request.headers.get('X-Forwarded-For',None)
+                else:
+                    # use basic auth
+                    return authenticate()
             # assume authenticated user is the fqdn provided in the data
-            authenticated_user = computer_fqdn
+            else:
+                logger.debug('Basic auth registration for %s with user %s' % (computer_fqdn,auth.uszername))
+                authenticated_user = computer_fqdn
+                registration_auth_user = u'Basic:%s' % auth.username
 
         if not authenticated_user:
             raise EWaptAuthenticationFailure('register_host : Missing authentication header')
 
-        logger.debug('Authenticated computer : %s ' % (authenticated_user,))
+        logger.debug('Authenticated computer %s with user %s ' % (computer_fqdn,authenticated_user,))
 
         # check that authenticated user matches the CN of the certificate supplied in post data
         supplied_host_cert = SSLCertificate(crt_string=data['host_certificate'])
@@ -424,6 +446,7 @@ def register_host():
         logger.info('Data successfully checked with certificate CN %s for %s' % (host_dn, uuid))
 
         data['last_seen_on'] = datetime2isodate()
+        data['registration_auth_user'] = registration_auth_user
         db_data = update_host_data(data)
 
         result = db_data
@@ -1514,7 +1537,9 @@ def get_hosts():
                            'depends',
                            'computer_type',
                            'os_name',
-                           'os_version', ]
+                           'os_version',
+                           'registration_auth_user',
+                           ]
 
         # keep only top tree nodes (mongo doesn't want fields like {'wapt':1,'wapt.listening_address':1} !
         # minimum columns
@@ -1532,7 +1557,9 @@ def get_hosts():
                    'listening_address',
                    'listening_port',
                    'listening_timestamp',
-                   'connected_users']
+                   'connected_users',
+                   'registration_auth_user',
+                   ]
         other_columns = ensure_list(
             request.args.get(
                 'columns',
