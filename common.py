@@ -2871,35 +2871,36 @@ class Wapt(object):
             auth = (wapt_server_user, wapt_server_passwd)
 
         files = {}
-        is_hosts = True
+        is_hosts = None
 
         for package in packages:
             if not isinstance(package,PackageEntry):
-                pe = PackageEntry().load_control_from_wapt(package)
+                pe = PackageEntry(waptfile = package)
                 package_filename = package
             else:
                 pe = package
                 package_filename = pe.localpath
 
-            if pe.section != 'host':
-                is_hosts = False
+            if is_hosts is None and pe.section == 'host':
+                is_hosts = True
 
             # TODO : issue if more hosts to upload than allowed open file handles.
             files[os.path.basename(package_filename)] = open(package_filename,'rb')
 
-        try:
-            if is_hosts:
-                logger.info('Uploading %s host packages' % len(files))
-                res = self.waptserver.post('api/v3/upload_hosts',files=files,auth=auth,timeout=300)
-                if not res['success']:
-                    raise Exception('Error when uploading host packages: %s'% (res['msg']))
-            else:
-                res = self.waptserver.post('api/v3/upload_packages',files=files,auth=auth,timeout=300)
-                if not res['success']:
-                    raise Exception('Error when uploading packages: %s'% (res['msg']))
-        finally:
-            for f in files.values():
-                f.close()
+        if files:
+            try:
+                if is_hosts:
+                    logger.info('Uploading %s host packages' % len(files))
+                    res = self.waptserver.post('api/v3/upload_hosts',files=files,auth=auth,timeout=300)
+                    if not res['success']:
+                        raise Exception('Error when uploading host packages: %s'% (res['msg']))
+                else:
+                    res = self.waptserver.post('api/v3/upload_packages',files=files,auth=auth,timeout=300)
+                    if not res['success']:
+                        raise Exception('Error when uploading packages: %s'% (res['msg']))
+            finally:
+                for f in files.values():
+                    f.close()
         return res
 
     def upload_package(self,filenames,wapt_server_user=None,wapt_server_passwd=None):

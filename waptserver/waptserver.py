@@ -417,7 +417,7 @@ def register_host():
                     return authenticate()
             # assume authenticated user is the fqdn provided in the data
             else:
-                logger.debug('Basic auth registration for %s with user %s' % (computer_fqdn,auth.uszername))
+                logger.debug('Basic auth registration for %s with user %s' % (computer_fqdn,auth.username))
                 authenticated_user = computer_fqdn
                 registration_auth_user = u'Basic:%s' % auth.username
 
