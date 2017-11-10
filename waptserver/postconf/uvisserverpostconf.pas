@@ -505,17 +505,22 @@ begin
       ini.UpdateFile;
 
       ProgressTitle(rsUpdatingPackageIndex);
-      ProgressStep(1,8);
+      ProgressStep(1,10);
       runwapt('{app}\wapt-get.exe update-packages "{app}\waptserver\repository\wapt"');
 
+      ProgressTitle(rsConfigurePostgreSQL);
+      ProgressStep(2,10);
+      runwapt('{app}\waptpython {app}\waptserver\waptserver_winsetup.py all');
+
+
       ProgressTitle(rsReplacingTIScertificate);
-      ProgressStep(2,8);
+      ProgressStep(3,10);
       if FileExists(WaptBaseDir+'\ssl\tranquilit.crt') then
         FileUtil.DeleteFileUTF8(WaptBaseDir+'\ssl\tranquilit.crt');
       Fileutil.CopyFile(ChangeFileExt(EdPrivateKeyFN.Text,'.crt'),WaptBaseDir+'\ssl\'+ChangeFileExt(ExtractFileNameOnly(EdPrivateKeyFN.Text),'.crt'),True);
 
       ProgressTitle(rsSettingServerPassword);
-      ProgressStep(3,8);
+      ProgressStep(4,10);
 
       // salt := MakeRandomString(16);
       // IniWriteString(WaptBaseDir+'\conf\waptserver.ini' ,'Options','wapt_password',
@@ -528,7 +533,7 @@ begin
       if CBOpenFirewall.Checked then
       begin
         ProgressTitle(rsOpeningFirewall);
-        ProgressStep(4,8);
+        ProgressStep(4,10);
         OpenFirewall;
       end;
 
@@ -537,9 +542,13 @@ begin
       // reread config fir waptcommon
       WaptCommon.ReadWaptConfig(WaptIniFilename);
 
-      ProgressTitle(rsRestartingWaptServer);
-      ProgressStep(5,8);
+      ProgressStep(5,10);
+      ProgressTitle(rsStartingPostgreSQL);
+      Run('cmd /C net start waptpostgresql');
+      ProgressTitle(rsStartingWaptServer);
       Run('cmd /C net start waptserver');
+      ProgressTitle(rsStartingNGINX);
+      Run('cmd /C net start waptnginx');
 
       retry := 3;
       repeat

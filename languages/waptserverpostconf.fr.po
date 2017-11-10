@@ -1,4 +1,4 @@
-msgid ""
+msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
@@ -426,6 +426,10 @@ msgstr "wrapper Win32 Exe : %s %s"
 msgid "W: interrupt received, killing serverâ¦"
 msgstr "W: interruption reçue, arrêt du serveur"
 
+#: uwaptserverres.rsconfigurepostgresql
+msgid "Configure NGINX server and PostgreSQL database"
+msgstr ""
+
 #: uwaptserverres.rsconfirm
 msgctxt "uwaptserverres.rsconfirm"
 msgid "Confirm"
@@ -471,10 +475,6 @@ msgctxt "uwaptserverres.rsreplacingtiscertificate"
 msgid "Deleting TIS certificate and copying new certificate"
 msgstr "Suppression du certificat TIS et copie du nouveau certificat"
 
-#: uwaptserverres.rsrestartingwaptserver
-msgid "Restarting waptserver"
-msgstr "Redémarrage du serveur WAPT"
-
 #: uwaptserverres.rsrestartingwaptservice
 msgid "Restarting waptservice"
 msgstr "Redémarrage du service WAPT"
@@ -487,6 +487,18 @@ msgstr "%D réessayer d'enregistrer la machine sur le serveur"
 msgctxt "uwaptserverres.rssettingserverpassword"
 msgid "Setting up server password"
 msgstr "Mise en place du mot de passe du serveur"
+
+#: uwaptserverres.rsstartingnginx
+msgid "Starting NGINX"
+msgstr ""
+
+#: uwaptserverres.rsstartingpostgresql
+msgid "Starting PostgreSQL"
+msgstr ""
+
+#: uwaptserverres.rsstartingwaptserver
+msgid "Starting WaptServer"
+msgstr ""
 
 #: uwaptserverres.rsupdatinglocalpackages
 msgctxt "uwaptserverres.rsupdatinglocalpackages"

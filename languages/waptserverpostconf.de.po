@@ -1,4 +1,4 @@
-msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
+msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
@@ -447,6 +447,10 @@ msgstr "Win32 Exe wrapper: %s %s"
 msgid "W: interrupt received, killing serverâ¦"
 msgstr "Unterbrechung empfangen, zerstört serverâ¦"
 
+#: uwaptserverres.rsconfigurepostgresql
+msgid "Configure NGINX server and PostgreSQL database"
+msgstr ""
+
 #: uwaptserverres.rsconfirm
 msgid "Confirm"
 msgstr "Bestätigen"
@@ -483,10 +487,6 @@ msgstr "Host auf dem Server registrieren"
 msgid "Deleting TIS certificate and copying new certificate"
 msgstr "TIS Zertifikat löschen und das neue Zertifikat kopieren"
 
-#: uwaptserverres.rsrestartingwaptserver
-msgid "Restarting waptserver"
-msgstr "waptserver neustarten"
-
 #: uwaptserverres.rsrestartingwaptservice
 msgid "Restarting waptservice"
 msgstr "waptservice neustarten"
@@ -498,6 +498,18 @@ msgstr "%D die Registrierung des Hosts auf dem Server wiederholen"
 #: uwaptserverres.rssettingserverpassword
 msgid "Setting up server password"
 msgstr "Einrichten des Server Passwortes"
+
+#: uwaptserverres.rsstartingnginx
+msgid "Starting NGINX"
+msgstr ""
+
+#: uwaptserverres.rsstartingpostgresql
+msgid "Starting PostgreSQL"
+msgstr ""
+
+#: uwaptserverres.rsstartingwaptserver
+msgid "Starting WaptServer"
+msgstr ""
 
 #: uwaptserverres.rsupdatinglocalpackages
 msgid "Updating local packages"

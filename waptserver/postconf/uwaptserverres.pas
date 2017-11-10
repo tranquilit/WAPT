@@ -15,7 +15,6 @@ resourcestring
   rsReplacingTIScertificate = 'Deleting TIS certificate and copying new certificate';
   rsSettingServerPassword = 'Setting up server password';
   rsOpeningFirewall = 'Opening firewall for WaptServer';
-  rsRestartingWaptServer = 'Restarting waptserver';
   rsRestartingWaptService = 'Restarting waptservice';
   rsRegisteringHostOnServer = 'Registering host on server';
   rsRetryRegisteringHostOnServer = '%D retry on registering host on server';
@@ -33,6 +32,10 @@ resourcestring
   rsWaptSetupDone = 'Done';
   rsWaptSetupNext = 'Next';
 
+  rsConfigurePostgreSQL = 'Configure NGINX server and PostgreSQL database';
+  rsStartingPostgreSQL = 'Starting PostgreSQL';
+  rsStartingNGINX = 'Starting NGINX';
+  rsStartingWaptServer = 'Starting WaptServer';
 
 implementation
 
