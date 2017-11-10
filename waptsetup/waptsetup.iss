@@ -83,6 +83,8 @@ Name:"fr";MessagesFile: "compiler:Languages\French.isl"
 Name:"de";MessagesFile: "compiler:Languages\German.isl"
 
 [Tasks]
+Name: DisableHiberboot; Description: "{cm:DisableHiberBoot}"; GroupDescription: "Advanced";
+
 #if set_install_certs == ""
 Name: InstallCertificates; Description: "{cm:InstallSSLCertificates}";  GroupDescription: "Advanced";
 #endif
@@ -129,6 +131,12 @@ Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: {code:V
 
 Filename: {app}\wapt-get.ini; Section: global; Key: dnsdomain; String: {code:GetDNSDomain}; 
 
+Filename: {app}\wapt-get.ini; Section: global; Key: max_gpo_script_wait; String: 180; Tasks: DisableHiberboot;
+Filename: {app}\wapt-get.ini; Section: global; Key: pre_shutdown_timeout; String: 180; Tasks: DisableHiberboot; 
+Filename: {app}\wapt-get.ini; Section: global; Key: hiberboot_enabled; String: 0; Tasks: DisableHiberboot;
+
+
+
 [Run]
 Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhidden; StatusMsg: {cm:UpdatePkgUponShutdown}; Description: "{cm:UpdatePkgUponShutdown}"
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Flags: runasoriginaluser; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
@@ -156,6 +164,7 @@ en.InstallSSLCertificates=Install the certificates provided by this installer
 en.InstallStartPackages=Install right now the packages {#set_start_packages}
 en.UseKerberosForRegister=Use machine kerberos account for registration on WaptServer
 en.VerifyServerCertificates=Verify https server certificates
+en.DisableHiberBoot=Disable hiberboot, and increase shudown GPO timeout (recommended)
 
 ;French translations here
 fr.StartAfterSetup=Lancer WAPT session setup à l'ouverture de session
@@ -168,6 +177,7 @@ fr.InstallSSLCertificates=Installer les certificats fournis par cet installeur.
 fr.InstallStartPackages=Installer maintenant les paquets {#set_start_packages}
 fr.UseKerberosForRegister=Utiliser le compte Kerberos de la machine pour l'enregistrement sur le WaptServer
 fr.VerifyServerCertificates=Vérifier les certificats https
+fr.DisableHiberBoot=Désactiver l'hiberboot, et augmenter le temps pour les GPO (recommandé)
 
 ;German translation here
 de.StartAfterSetup=WAPT Setup-Sitzung bei Sitzungseröffnung starten
