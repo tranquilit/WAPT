@@ -187,7 +187,7 @@ class WaptServiceConfig(object):
          'MAX_HISTORY','waptservice_port',
          'dbpath','loglevel','log_directory','waptserver','authorized_callers_ip',
          'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout','log_to_windows_events',
-         'allow_user_service_restart']
+         'allow_user_service_restart','signature_clockskew']
 
     def __init__(self,config_filename=None):
         if not config_filename:
@@ -244,6 +244,9 @@ class WaptServiceConfig(object):
         self.websockets_retry_delay = 60
         self.websockets_check_config_interval = 120
         self.websockets_hurry_interval = 1
+
+        # tolerance time replay limit for signed actions from server
+        self.signature_clockskew = 10*60
 
 
     def load(self):
@@ -383,6 +386,8 @@ class WaptServiceConfig(object):
             if config.has_option('global','websockets_hurry_interval'):
                 self.websockets_hurry_interval = config.getint('global','websockets_hurry_interval')
 
+            if config.has_option('global','signature_clockskew'):
+                self.signature_clockskew = config.getint('global','signature_clockskew')
 
             # settings for waptexit / shutdown policy
             #   recommended settings :
@@ -2316,7 +2321,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                         required_attributes.append('packages')
                     if action['action'] in ['trigger_change_description']:
                         required_attributes.append('computer_description')
-                    verified_by = cert.verify_claim(action,max_age_secs=60*10,
+                    verified_by = cert.verify_claim(action,max_age_secs=waptconfig.signature_clockskew,
                         required_attributes=required_attributes)
                 if not verified_by:
                     raise SSLVerifyException('Bad signature for action %s, aborting' % action)
