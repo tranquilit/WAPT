@@ -485,6 +485,27 @@ object VisWaptGUI: TVisWaptGUI
               ReadOnly = True
               TabOrder = 8
             end
+            object Label11: TLabel
+              Left = 297
+              Height = 21
+              Top = 98
+              Width = 77
+              Alignment = taRightJustify
+              Caption = 'UUID'
+              Layout = tlCenter
+              ParentBidiMode = False
+              ParentColor = False
+            end
+            object EdUUID: TEdit
+              Left = 380
+              Height = 21
+              Top = 98
+              Width = 178
+              Color = clForm
+              Constraints.MinWidth = 150
+              ReadOnly = True
+              TabOrder = 9
+            end
           end
         end
         object pgHostInventory: TTabSheet

@@ -1571,6 +1571,10 @@ msgstr ""
 msgid "Allowed Windows Updates Classifications"
 msgstr ""
 
+#: tviswaptgui.label11.caption
+msgid "UUID"
+msgstr ""
+
 #: tviswaptgui.label12.caption
 msgctxt "tviswaptgui.label12.caption"
 msgid "Last task"

@@ -86,6 +86,7 @@ type
     EdDescription: TEdit;
     EdHardwareFilter: TEdit;
     EdHostname: TEdit;
+    EdUUID: TEdit;
     EdIPAddress: TEdit;
     EdManufacturer: TEdit;
     EdModelName: TEdit;
@@ -109,6 +110,7 @@ type
     Image4: TImage;
     Label1: TLabel;
     Label10: TLabel;
+    Label11: TLabel;
     Label12: TLabel;
     Label15: TLabel;
     Label16: TLabel;
@@ -1165,6 +1167,7 @@ begin
       except
         RowSO['installed_packages'] := nil;
       end;
+      EdUUID.Text := UTF8Encode(RowSO.S['uuid']);
       EdHostname.Text := UTF8Encode(RowSO.S['computer_name']);
       EdDescription.Text := UTF8Encode(RowSO.S['description']);
       EdOS.Text := RowSO.S['os_name'];
