@@ -2846,7 +2846,8 @@ procedure TVisWaptGUI.ActImportFromFileExecute(Sender: TObject);
 var
   i: integer;
   sourceDir: string;
-  uploadResult, Sources: ISuperObject;
+  Sources, uploadResult: ISuperObject;
+  SourcesVar: Variant;
 
 begin
   if not FileExists(GetWaptPersonalCertificatePath) then
@@ -2879,17 +2880,22 @@ begin
           Application.ProcessMessages;
           sourceDir := VarPythonAsString(MainModule.waptdevutils.duplicate_from_file(
             package_filename := OpenDialogWapt.Files[i],new_prefix:=DefaultPackagePrefix));
-          sources.AsArray.Add('r"' + sourceDir + '"');
+          //sources.AsArray.Add('r"' + sourceDir + '"');
+          sources.AsArray.Add(sourceDir);
         end;
 
         ProgressTitle(format(rsUploadingPackagesToWaptSrv, [IntToStr(Sources.AsArray.Length)]));
         Application.ProcessMessages;
 
-        uploadResult := DMPython.RunJSON(
-          format(
-          'mywapt.build_upload([%s],private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=False)',
-          [soutils.Join(',', sources), dmpython.privateKeyPassword, waptServerUser,
-          waptServerPassword]), VisWaptGUI.jsonlog);
+        SourcesVar := SuperObjectToPyVar(sources);
+
+        uploadResult := PyVarToSuperObject(Mainmodule.mywapt.build_upload(
+          sources_directories := SourcesVar,
+          private_key_passwd := dmpython.privateKeyPassword,
+          wapt_server_user := waptServerUser,
+          wapt_server_passwd := waptServerPassword,
+          inc_package_release := False));
+
         if (uploadResult <> nil) and
           (uploadResult.AsArray.length = Sources.AsArray.Length) then
         begin

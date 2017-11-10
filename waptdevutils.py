@@ -208,13 +208,12 @@ def update_external_repo(repourl,search_string,proxy=None,mywapt=None,newer_only
     else:
         return [p.as_dict() for p in packages]
 
-def get_packages_filenames(packages_names,with_depends=True,verify_cert=None,waptconfigfile=None,repo_name='wapt-templates',remoterepo=None):
+def get_packages_filenames(packages_names,with_depends=True,waptconfigfile=None,repo_name='wapt-templates',remoterepo=None):
     """Returns list of package filenames (latest version) and md5 matching comma separated list of packages names and their dependencies
     helps to batch download a list of selected packages using tools like curl or wget
 
     Args:
         packages_names (list or csv str): list of package names
-        verify_cert (0/1,path to certificate or ca) : check https connection
         with_depends (bool): get recursively the all depends filenames
         waptconfigfile (str): path to wapt ini file
         repo_name : section name in wapt ini file for repo parameters (repo_url, http_proxy, timeout, verify_cert)
@@ -237,10 +236,7 @@ def get_packages_filenames(packages_names,with_depends=True,verify_cert=None,wap
         config = RawConfigParser(defaults=defaults)
         config.read(waptconfigfile)
 
-        if verify_cert == '' or verify_cert == '0':
-            verify_cert = False
-
-        remoterepo = WaptRemoteRepo(name=repo_name,verify_cert=verify_cert,config=config)
+        remoterepo = WaptRemoteRepo(name=repo_name,config=config)
         remoterepo.update()
 
     packages_names = ensure_list(packages_names)

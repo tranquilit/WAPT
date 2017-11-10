@@ -26,6 +26,7 @@ type
     BitBtn2: TBitBtn;
     ButExtRepoChange: TBitBtn;
     ButPackageDuplicate: TBitBtn;
+    ButPackageDuplicate1: TBitBtn;
     butSearchExternalPackages: TBitBtn;
     cbNewerThanMine: TCheckBox;
     cbNewestOnly: TCheckBox;
@@ -242,6 +243,7 @@ procedure TVisImportPackage.ActSearchExternalPackageExecute(Sender: TObject);
 var
   expr: String;
   http_proxy,packages_python,verify_cert: Variant;
+
 begin
   EdSearchPackage.Modified:=False;
   http_proxy := Waptrepo.HttpProxy;
@@ -283,8 +285,10 @@ end;
 procedure TVisImportPackage.ActPackageDuplicateExecute(Sender: TObject);
 var
   target,sourceDir,http_proxy,verify_cert: string;
-  package,uploadResult, FileName, FileNames, listPackages,Sources,aDir: ISuperObject;
+  package,uploadResult, FileName, FileNames, ListPackages,Sources,aDir: ISuperObject;
+  SourcesVar,SignersCABundle,ListPackagesVar: Variant;
 
+  PackageFilename:String;
 begin
   http_proxy:=Waptrepo.HttpProxy;
 
@@ -301,22 +305,18 @@ begin
     Exit;
   end;
 
-  listPackages := TSuperObject.create(stArray);
+  ListPackages := TSuperObject.create(stArray);
   for package in GridExternalPackages.SelectedRows do
-    listPackages.AsArray.Add(package.S['package']+'(='+package.S['version']+')');
-  //calcule liste de tous les fichiers wapt + md5  nécessaires y compris les dépendances
-  if (Waptrepo.ServerCABundle='') or (Waptrepo.ServerCABundle='0') then
-    verify_cert := ''
-  else
-    verify_cert := Waptrepo.ServerCABundle;
+    ListPackages.AsArray.Add(package.S['package']+'(='+package.S['version']+')');
+
+  ListPackagesVar := SuperObjectToPyVar(ListPackages);
 
   FileNames := PyVarToSuperObject(MainModule.waptdevutils.get_packages_filenames(
-        packages_names := Join(',',listPackages),
-        verify_cert := verify_cert,
+        packages_names := ListPackagesVar,
         waptconfigfile := AppIniFilename,
         repo_name := RepoName ));
 
-  if MessageDlg(rsPackageDuplicateConfirmCaption, format(rsPackageDuplicateConfirm, [Join(',', listPackages)+' '+intToStr(Filenames.AsArray.Length)+' packages']),
+  if MessageDlg(rsPackageDuplicateConfirmCaption, format(rsPackageDuplicateConfirm, [Join(',', ListPackages)+' '+intToStr(Filenames.AsArray.Length)+' packages']),
         mtConfirmation, mbYesNoCancel, 0) <> mrYes then
     Exit;
 
@@ -357,22 +357,38 @@ begin
       begin
         ProgressTitle(format(rsDuplicating, [Filename.AsArray[0].AsString]));
         Application.ProcessMessages;
-        sourceDir := DMPython.RunJSON(
-          Format('waptdevutils.duplicate_from_file(r"%s",new_prefix="%s",target_directory=None,authorized_certs=r"%s" or None)',
-          [AppLocalDir + 'cache\' + Filename.AsArray[0].AsString,DefaultPackagePrefix,Waptrepo.SignersCABundle])).AsString;
-        sources.AsArray.Add('r"'+sourceDir+'"');
+        if (Waptrepo.SignersCABundle ='') or (Waptrepo.SignersCABundle ='0') then
+          SignersCABundle := None()
+        else
+          SignersCABundle := Waptrepo.SignersCABundle;
+
+        PackageFilename := AppLocalDir + 'cache\' + Filename.AsArray[0].AsString;
+
+        sourceDir := VarPyth.VarPythonAsString(
+          Mainmodule.waptdevutils.duplicate_from_file(
+            package_filename := PackageFilename,
+            new_prefix := DefaultPackagePrefix,
+            authorized_certs := SignersCABundle
+            ));
+        sources.AsArray.Add(sourceDir);
       end;
 
       ProgressTitle(format(rsUploadingPackagesToWaptSrv, [IntToStr(Sources.AsArray.Length)]));
       Application.ProcessMessages;
 
-      uploadResult := DMPython.RunJSON(
-        format('mywapt.build_upload([%s],private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=False)',
-        [Join(',',sources) , dmpython.privateKeyPassword, waptServerUser, waptServerPassword]),
-        VisWaptGUI.jsonlog);
-        if (uploadResult <> Nil) and (uploadResult.AsArray.length=Sources.AsArray.Length) then
+      SourcesVar := SuperObjectToPyVar(sources);
+
+      uploadResult := PyVarToSuperObject(
+        Mainmodule.mywapt.build_upload(
+          sources_directories := SourcesVar,
+          private_key_passwd := dmpython.privateKeyPassword,
+          wapt_server_user := waptServerUser,
+          wapt_server_passwd := waptServerPassword,
+          inc_package_release := False));
+
+      if (uploadResult <> Nil) and (uploadResult.AsArray.length=Sources.AsArray.Length) then
       begin
-        ShowMessage(format(rsDuplicateSuccess, [ Join(',', listPackages)])) ;
+        ShowMessage(format(rsDuplicateSuccess, [ Join(',', ListPackages)])) ;
         ModalResult := mrOk;
       end
       else
@@ -400,6 +416,8 @@ var
   SourceDir,target: string;
   Sources,package,FileName, FileNames, listPackages: ISuperObject;
 
+  ListPackagesVar: Variant;
+
 begin
   if DefaultPackagePrefix='' then
   begin
@@ -412,9 +430,13 @@ begin
   for package in GridExternalPackages.SelectedRows do
     listPackages.AsArray.Add(package.S['package']+'(='+package.S['version']+')');
 
-  //calcule liste de tous les fichiers wapt + md5  nécessaires y compris les dépendances
-  FileNames := DMPython.RunJSON(format('waptdevutils.get_packages_filenames(r"%s".decode(''utf8''),"%s",with_depends=False)',
-        [AppIniFilename,Join(',',listPackages)]));
+
+  ListPackagesVar := SuperObjectToPyVar(ListPackages);
+
+  FileNames := PyVarToSuperObject(MainModule.waptdevutils.get_packages_filenames(
+        packages_names := ListPackagesVar,
+        waptconfigfile := AppIniFilename,
+        repo_name := RepoName ));
 
   if not DirectoryExists(AppLocalDir + 'cache') then
     mkdir(AppLocalDir + 'cache');
