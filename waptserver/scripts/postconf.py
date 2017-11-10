@@ -137,19 +137,28 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force
     # create keys for https:// access
     if not os.path.exists(wapt_ssl_key_file) or \
             not os.path.exists(wapt_ssl_cert_file):
-        void = subprocess.check_output([
-                'openssl',
-                'req',
-                '-new',                # create a request
-                '-x509',               # no, actually, create a self-signed certificate!
-                '-newkey', 'rsa:2048', # and the key that goes along, RSA, 2048 bits
-                '-nodes',              # don't put a passphrase on the key
-                '-days', '3650',       # the cert is valid for ten years
-                '-out', wapt_ssl_cert_file,
-                '-keyout', wapt_ssl_key_file,
-                # fill in the minimum amount of information needed; to be revisited
-                '-subj', '/C=FR/ST=Wapt/L=Wapt/O=Wapt/CN=' + fqdn + '/'
-                ], stderr=subprocess.STDOUT)
+
+        old_apache_key = '/opt/wapt/waptserver/apache/ssl/key.pem'
+        old_apache_cert = '/opt/wapt/waptserver/apache/ssl/cert.pem'
+
+        if os.path.isfile(old_apache_cert) and os.path.isfile(old_apache_key):
+            shutil.copyfile(old_apache_cert,wapt_ssl_cert_file)
+            shutil.copyfile(old_apache_key,wapt_ssl_key_file)
+
+        else:
+            void = subprocess.check_output([
+                    'openssl',
+                    'req',
+                    '-new',                # create a request
+                    '-x509',               # no, actually, create a self-signed certificate!
+                    '-newkey', 'rsa:2048', # and the key that goes along, RSA, 2048 bits
+                    '-nodes',              # don't put a passphrase on the key
+                    '-days', '3650',       # the cert is valid for ten years
+                    '-out', wapt_ssl_cert_file,
+                    '-keyout', wapt_ssl_key_file,
+                    # fill in the minimum amount of information needed; to be revisited
+                    '-subj', '/C=FR/ST=Wapt/L=Wapt/O=Wapt/CN=' + fqdn + '/'
+                    ], stderr=subprocess.STDOUT)
 
 
 def ensure_postgresql_db(db_name='wapt',db_owner='wapt',db_password=''):
