@@ -86,6 +86,10 @@ Name: "{app}\waptserver\repository\wapt-host"
 Name: "{app}\waptserver\repository\wapt-group"
 Name: "{app}\waptserver\nginx\ssl"
 
+[INI]
+Filename: {app}\conf\waptserver.ini; Section: global; Key: enable_unautenticated_registration; String: True;
+
+
 [RUN]
 #ifdef choose_components
 Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptserver\waptserver_winsetup.py"" install_postgresql"; StatusMsg: {cm:RegisteringService}; Description: "{cm:RegisteringService}"; Tasks: InstallPostgreSQL;

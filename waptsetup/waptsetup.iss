@@ -83,7 +83,9 @@ Name:"fr";MessagesFile: "compiler:Languages\French.isl"
 Name:"de";MessagesFile: "compiler:Languages\German.isl"
 
 [Tasks]
+#if edition != "waptserversetup"
 Name: DisableHiberboot; Description: "{cm:DisableHiberBoot}"; GroupDescription: "Advanced";
+#endif
 
 #if set_install_certs == ""
 Name: InstallCertificates; Description: "{cm:InstallSSLCertificates}";  GroupDescription: "Advanced";
@@ -102,12 +104,18 @@ Name: UseKerberos; Description: "{cm:UseKerberosForRegister}";  GroupDescription
 #endif
 
 [INI]
+#if edition != "waptserversetup"
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL};
+#endif
 Filename: {app}\wapt-get.ini; Section: global; Key: send_usage_report; String:  {#send_usage_report}; 
 
 #if edition != "waptstarter"
 Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: 1;
+
+#if edition != "waptserversetup"
 Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL};
+#endif
+
 #if set_use_kerberos == ''
 Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String: {code:UseKerberosCheck};
 #else
@@ -131,13 +139,15 @@ Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: {code:V
 
 Filename: {app}\wapt-get.ini; Section: global; Key: dnsdomain; String: {code:GetDNSDomain}; 
 
+#if edition != "waptserversetup"
 Filename: {app}\wapt-get.ini; Section: global; Key: max_gpo_script_wait; String: 180; Tasks: DisableHiberboot;
 Filename: {app}\wapt-get.ini; Section: global; Key: pre_shutdown_timeout; String: 180; Tasks: DisableHiberboot; 
 Filename: {app}\wapt-get.ini; Section: global; Key: hiberboot_enabled; String: 0; Tasks: DisableHiberboot;
-
+#endif
 
 
 [Run]
+#if edition != "waptserversetup"
 Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhidden; StatusMsg: {cm:UpdatePkgUponShutdown}; Description: "{cm:UpdatePkgUponShutdown}"
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Flags: runasoriginaluser; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
 
@@ -145,6 +155,8 @@ Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Flags: runasori
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct --update install {code:GetStartPackages}"; Flags: runasoriginaluser runhidden; Tasks: installStartPackages; StatusMsg: {cm:InstallStartPackages}; Description: "{cm:InstallStartPackages}"
 #else
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runasoriginaluser runhidden; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
+#endif
+
 #endif
 
 [Icons]
@@ -264,6 +276,7 @@ begin
   DeleteIniEntry('Global','wapt_server',ExpandConstant('{app}\wapt-get.ini'));
 end;
 
+#if edition != "waptserversetup"
 procedure InitializeWizard;
 begin
   CustomPage := CreateCustomPage(wpSelectTasks, 'Installation options', '');
@@ -335,6 +348,8 @@ begin
   labServer.Top := edWaptServerUrl.Top + edWaptServerUrl.Height + ScaleY(2);
   #endif
 end;
+#endif
+
 
 
 procedure DeinitializeUninstall();
@@ -353,6 +368,7 @@ begin
 end;
 
 
+#if edition != "waptserversetup"
 procedure CurPageChanged(CurPageID: Integer);
 var
   WaptRepo: String;
@@ -372,6 +388,8 @@ begin
     //labServer.Visible := edWaptServerUrl.Visible;
   end
 end;
+#endif
+
 
 function InstallCertCheck:Boolean;
 var
