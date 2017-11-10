@@ -103,10 +103,10 @@ Name: UseKerberos; Description: "{cm:UseKerberosForRegister}";  GroupDescription
 
 [INI]
 Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL};
-Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: "1";
 Filename: {app}\wapt-get.ini; Section: global; Key: send_usage_report; String:  {#send_usage_report}; 
 
 #if edition != "waptstarter"
+Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: 1;
 Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL};
 #if set_use_kerberos == ''
 Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String: {code:UseKerberosCheck};
@@ -120,7 +120,7 @@ Filename: {app}\wapt-get.ini; Section: wapt-templates; Key: repo_url; String: ht
 Filename: {app}\wapt-get.ini; Section: wapt-templates; Key: verify_cert; String: 1;
 #endif
 
-Filename: {app}\wapt-get.ini; Section: global; Key: check_certificates_validity; String:  {#check_certificates_validity};
+Filename: {app}\wapt-get.ini; Section: global; Key: check_certificates_validity; String: {#check_certificates_validity};
 
 ; needs to be relocated if waptagent is compiled on another base directory than target computers
 #if set_verify_cert != ""

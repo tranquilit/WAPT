@@ -69,19 +69,16 @@
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptget"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="619"/>
-        <CursorPos X="91" Y="643"/>
+        <TopLine Value="581"/>
+        <CursorPos X="10" Y="622"/>
         <UsageCount Value="222"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptcommon.pas"/>
         <UnitName Value="waptcommon"/>
-        <EditorIndex Value="1"/>
+        <IsVisibleTab Value="True"/>
         <WindowIndex Value="0"/>
         <TopLine Value="979"/>
         <CursorPos X="5" Y="1007"/>
@@ -89,7 +86,6 @@
         <Bookmarks Count="1">
           <Item0 X="43" Y="878" ID="2"/>
         </Bookmarks>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
@@ -554,52 +550,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit58>
     </Units>
-    <JumpHistory Count="11" HistoryIndex="10">
-      <Position1>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="863" Column="46" TopLine="848"/>
-      </Position1>
-      <Position2>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="131" Column="22" TopLine="109"/>
-      </Position2>
-      <Position3>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position3>
-      <Position4>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="131" Column="22" TopLine="103"/>
-      </Position4>
-      <Position5>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="1008" Column="25" TopLine="980"/>
-      </Position5>
-      <Position6>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="1009" Column="67" TopLine="981"/>
-      </Position6>
-      <Position7>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="1097" Column="69" TopLine="1069"/>
-      </Position7>
-      <Position8>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="1098" Column="54" TopLine="1070"/>
-      </Position8>
-      <Position9>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position9>
-      <Position10>
-        <Filename Value="waptcommon.pas"/>
-        <Caret Line="131" Column="2" TopLine="103"/>
-      </Position10>
-      <Position11>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="632" Column="34" TopLine="554"/>
-      </Position11>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
