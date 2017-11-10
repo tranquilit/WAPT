@@ -144,7 +144,6 @@ type
     MenuItem79: TMenuItem;
     MenuItem80: TMenuItem;
     MenuItem81: TMenuItem;
-    MenuItem82: TMenuItem;
     MenuItem83: TMenuItem;
     MenuItem84: TMenuItem;
     odSelectInstaller: TOpenDialog;
@@ -273,7 +272,6 @@ type
     MenuItem54: TMenuItem;
     MenuItem55: TMenuItem;
     MenuItem56: TMenuItem;
-    MenuItem57: TMenuItem;
     MenuItem58: TMenuItem;
     MenuItem59: TMenuItem;
     MenuItem60: TMenuItem;
@@ -630,7 +628,7 @@ uses LCLIntf, LCLType, IniFiles, variants, uvisprivatekeyauth, tisstrings, souti
   uvisgroupchoice, uvishostsupgrade, uVisAPropos,
   uVisImportPackage, PythonEngine, Clipbrd, RegExpr, tisinifiles, IdURI,
   uScaleDPI, uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
-  uvisrepositories, windirs
+  uvisrepositories, uVisHostDelete, windirs
   {$ifdef wsus}
   ,uVisWUAGroup, uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect
@@ -3203,42 +3201,24 @@ begin
   if GridHosts.Focused then
   begin
     sel := GridHosts.SelectedRows;
-
-    if Sender = ActDeleteHostsAndInventory then
-      msg := format(rsConfirmRmHostsPackagesFromList, [IntToStr(sel.AsArray.Length)])
-    else
-      msg := format(rsConfirmRmHostsFromList, [IntToStr(sel.AsArray.Length)]);
-
-
-    if Dialogs.MessageDlg(rsConfirmCaption,
-      msg,
-      mtConfirmation,
-      mbYesNoCancel,
-      0) = mrYes then
-    begin
-      postdata := SO();
-      postdata['uuids'] := ExtractField(sel,'uuid');
-      if Sender = ActDeleteHostsAndInventory then
+    with TVisHostDelete.Create(Self) do
+    try
+      LabMessage.Caption := format(rsConfirmRmHostsFromList, [IntToStr(sel.AsArray.Length)]);
+      if ShowModal=mrOk then
       begin
-        postdata.B['delete_packages'] := True;
-        postdata.B['delete_inventory'] := True;
-      end
-      else if Sender = ActDeleteHostsPackageAndInventory then
-      begin
-        postdata.B['delete_packages'] := False;
-        postdata.B['delete_inventory'] := True;
-      end
-      else if Sender = ActDeleteHostsPackages then
-      begin
-        postdata.B['delete_packages'] := True;
-        postdata.B['delete_inventory'] := False;
+        postdata := SO();
+        postdata['uuids'] := ExtractField(sel,'uuid');
+        postdata.B['delete_packages'] := CBDeleteHostConfiguration.Checked;
+        postdata.B['delete_inventory'] := CBDeleteHostInventory.Checked;
+        res := WAPTServerJsonPost('api/v3/hosts_delete',[],PostData);
+        if res.B['success'] then
+          ShowMessageFmt('%s',[res.S['msg']])
+        else
+          ShowMessageFmt('Unable to remove %s: %s',[(Sender as TAction).Caption, res.S['msg']]);
+        ActSearchHost.Execute;
       end;
-      res := WAPTServerJsonPost('api/v3/hosts_delete',[],PostData);
-      if res.B['success'] then
-        ShowMessageFmt('%s',[res.S['msg']])
-      else
-        ShowMessageFmt('Unable to remove %s: %s',[(Sender as TAction).Caption, res.S['msg']]);
-      ActSearchHost.Execute;
+    finally
+      Free;
     end;
   end;
 end;

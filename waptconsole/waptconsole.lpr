@@ -14,7 +14,8 @@ uses
   uviscreatewaptsetup, uvislogin, uvisprivatekeyauth, uvisloading,
   uviswaptconfig, uvischangepassword, uvishostsupgrade,
   uVisAPropos, uVisImportPackage, uwaptconsoleres, uVisPackageWizard, uscaledpi,
-  uVisChangeKeyPassword, uvisrepositories, uvisdisplaypreferences
+  uVisChangeKeyPassword, uvisrepositories, uvisdisplaypreferences, 
+uVisHostDelete
   {$ifdef wsus}
   uVisWUAGroup,
   uVisWAPTWUAProducts, uviswuarules, uviswuapackageselect,

@@ -526,6 +526,22 @@ msgstr ""
 msgid "Use keywords to narrow your search."
 msgstr ""
 
+#: tvishostdelete.caption
+msgid "Confirm host(s) delete"
+msgstr ""
+
+#: tvishostdelete.cbdeletehostconfiguration.caption
+msgid "Delete host configuration (Package)"
+msgstr ""
+
+#: tvishostdelete.cbdeletehostinventory.caption
+msgid "Delete host from inventory database"
+msgstr ""
+
+#: tvishostdelete.labmessage.caption
+msgid "Confirm deletion of hosts"
+msgstr ""
+
 #: tvishostsupgrade.actstop.caption
 msgid "Terminate"
 msgstr ""
@@ -1048,7 +1064,7 @@ msgstr ""
 
 #: tviswaptgui.actdeletehostspackageandinventory.caption
 msgctxt "tviswaptgui.actdeletehostspackageandinventory.caption"
-msgid "Remove from inventory"
+msgid "Remove host"
 msgstr ""
 
 #: tviswaptgui.actdeletehostspackageandinventory.hint

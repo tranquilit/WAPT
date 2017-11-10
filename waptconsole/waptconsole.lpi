@@ -193,128 +193,128 @@
         <UnitName Value="uvisgroupchoice"/>
       </Unit11>
       <Unit12>
-        <Filename Value="uviswaptdeploy.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="viswaptdeploy"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uviswaptdeploy"/>
-      </Unit12>
-      <Unit13>
         <Filename Value="uvishostsupgrade.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisHostsUpgrade"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvishostsupgrade"/>
-      </Unit13>
-      <Unit14>
+      </Unit12>
+      <Unit13>
         <Filename Value="uvisapropos.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisApropos"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisAPropos"/>
-      </Unit14>
-      <Unit15>
+      </Unit13>
+      <Unit14>
         <Filename Value="uvisimportpackage.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisImportPackage"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisImportPackage"/>
-      </Unit15>
-      <Unit16>
+      </Unit14>
+      <Unit15>
         <Filename Value="uwaptconsoleres.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uWaptConsoleRes"/>
-      </Unit16>
-      <Unit17>
+      </Unit15>
+      <Unit16>
         <Filename Value="uviswuagroup.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisWUAGroup"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisWUAGroup"/>
-      </Unit17>
-      <Unit18>
+      </Unit16>
+      <Unit17>
         <Filename Value="uviswaptwuaproducts.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisWUAProducts"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisWAPTWUAProducts"/>
-      </Unit18>
-      <Unit19>
+      </Unit17>
+      <Unit18>
         <Filename Value="uviswuarules.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisWUARules"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviswuarules"/>
-      </Unit19>
-      <Unit20>
+      </Unit18>
+      <Unit19>
         <Filename Value="uviswuaclassificationsselect.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisWUAClassificationsSelect"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisWUAClassificationsSelect"/>
-      </Unit20>
-      <Unit21>
+      </Unit19>
+      <Unit20>
         <Filename Value="uviswuapackageselect.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisWUAPackageSelect"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uviswuapackageselect"/>
-      </Unit21>
-      <Unit22>
+      </Unit20>
+      <Unit21>
         <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptcommon"/>
-      </Unit22>
-      <Unit23>
+      </Unit21>
+      <Unit22>
         <Filename Value="uvispackagewizard.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisPackageWizard"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisPackageWizard"/>
-      </Unit23>
-      <Unit24>
+      </Unit22>
+      <Unit23>
         <Filename Value="..\wapt-get\waptwinutils.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="waptwinutils"/>
-      </Unit24>
-      <Unit25>
+      </Unit23>
+      <Unit24>
         <Filename Value="uscaledpi.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UScaleDPI"/>
-      </Unit25>
-      <Unit26>
+      </Unit24>
+      <Unit25>
         <Filename Value="uvischangekeypassword.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisChangeKeyPassword"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisChangeKeyPassword"/>
-      </Unit26>
-      <Unit27>
+      </Unit25>
+      <Unit26>
         <Filename Value="uvisrepositories.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisRepositories"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uvisrepositories"/>
-      </Unit27>
-      <Unit28>
+      </Unit26>
+      <Unit27>
         <Filename Value="uvisdisplaypreferences.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisDisplayPreferences"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisDisplayPreferences"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="uvishostdelete.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisHostDelete"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisHostDelete"/>
       </Unit28>
     </Units>
   </ProjectOptions>
