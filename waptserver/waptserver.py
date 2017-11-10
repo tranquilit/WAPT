@@ -1321,7 +1321,7 @@ def get_ad_ou():
     """
     try:
         starttime = time.time()
-        result = Hosts.select(fn.distinct(Hosts.computer_ad_ou)).where(~Hosts.computer_ad_ou.is_null()).scalar(as_tuple=True)
+        result = [ r[0] for r in Hosts.select(fn.distinct(Hosts.computer_ad_ou)).where(~Hosts.computer_ad_ou.is_null()).tuples()]
 
         message = 'AD OU DN List'
         return make_response(result=result, msg=message, request_time=time.time() - starttime)
@@ -1336,7 +1336,7 @@ def get_ad_sites():
     """
     try:
         starttime = time.time()
-        result = Hosts.select(fn.distinct(Hosts.computer_ad_site)).where(~Hosts.computer_ad_site.is_null()).scalar(as_tuple=True)
+        result = [r[0] for r in Hosts.select(fn.distinct(Hosts.computer_ad_site)).where(~Hosts.computer_ad_site.is_null()).tuples()]
 
         message = 'AD Sites List'
         return make_response(result=result, msg=message, request_time=time.time() - starttime)
