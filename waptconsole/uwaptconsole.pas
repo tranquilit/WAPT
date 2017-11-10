@@ -3822,7 +3822,7 @@ begin
     GridHostSoftwares.SaveSettingsToIni(Appuserinipath+'.default');
 
     // don't load grid settings if old ini version
-    if IniReadString(Appuserinipath,self.name,'waptconsole-version','') <> '' then
+    if IniReadString(Appuserinipath,self.name,'waptconsole.version','') <> '' then
     begin
       Gridhosts.LoadSettingsFromIni(Appuserinipath);
       GridPackages.LoadSettingsFromIni(Appuserinipath);
