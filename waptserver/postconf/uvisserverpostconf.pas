@@ -474,7 +474,6 @@ end;
 
 procedure TVisWAPTServerPostConf.actWriteConfStartServeExecute(Sender: TObject);
 var
-  ini:TMemIniFile;
   retry:integer;
   salt,res:String;
   GUID: TGuid;
@@ -534,8 +533,6 @@ begin
         ProgressStep(4,10);
         OpenFirewall;
       end;
-
-      ini.UpdateFile;
 
       // reread config fir waptcommon
       WaptCommon.ReadWaptConfig(WaptIniFilename);
@@ -616,7 +613,6 @@ begin
         Dialogs.MessageDlg('Error','Error during post-config:'#13#10+E.Message,mtError,mbOKCancel,'');
     end;
   finally
-    ini.Free;
     FreeAndNil(CurrentVisLoading);
   end;
 end;

@@ -121,6 +121,7 @@ Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String: {code:
 #else
 Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String: {#set_use_kerberos}; 
 #endif
+
 #endif
 
 #if edition != "waptstarter"
@@ -137,9 +138,10 @@ Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: {code:R
 Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: {code:VerifyCertCheck}; 
 #endif
 
-Filename: {app}\wapt-get.ini; Section: global; Key: dnsdomain; String: {code:GetDNSDomain}; 
 
 #if edition != "waptserversetup"
+Filename: {app}\wapt-get.ini; Section: global; Key: dnsdomain; String: {code:GetDNSDomain}; 
+
 Filename: {app}\wapt-get.ini; Section: global; Key: max_gpo_script_wait; String: 180; Tasks: DisableHiberboot;
 Filename: {app}\wapt-get.ini; Section: global; Key: pre_shutdown_timeout; String: 180; Tasks: DisableHiberboot; 
 Filename: {app}\wapt-get.ini; Section: global; Key: hiberboot_enabled; String: 0; Tasks: DisableHiberboot;
@@ -213,6 +215,7 @@ begin
    edDNSDomain.Enabled := cbDnsServer.Checked;
 end;
 
+#if edition != "waptserversetup"
 function GetRepoURL(Param:String):String;
 begin
   if cbDnsServer.Checked and not cbStaticUrl.Checked then
@@ -269,7 +272,7 @@ begin
     end;
   end;
 end;
-
+#endif
 
 procedure RemoveWaptServer();
 begin

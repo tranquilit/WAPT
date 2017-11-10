@@ -87,7 +87,7 @@ Name: "{app}\waptserver\repository\wapt-group"
 Name: "{app}\waptserver\nginx\ssl"
 
 [INI]
-Filename: {app}\conf\waptserver.ini; Section: global; Key: enable_unautenticated_registration; String: True;
+Filename: {app}\conf\waptserver.ini; Section: options; Key: allow_unauthenticated_registration; String: True;
 
 
 [RUN]
