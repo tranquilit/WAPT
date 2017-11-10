@@ -480,6 +480,7 @@ type
     procedure CheckBoxMajChange(Sender: TObject);
     procedure cbNeedUpgradeClick(Sender: TObject);
     procedure CheckBox_errorChange(Sender: TObject);
+    procedure EdDescriptionExit(Sender: TObject);
     procedure EdDescriptionKeyPress(Sender: TObject; var Key: char);
     procedure EdHardwareFilterChange(Sender: TObject);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
@@ -767,18 +768,25 @@ begin
   ActHostSearchPackage.Execute;
 end;
 
+procedure TVisWaptGUI.EdDescriptionExit(Sender: TObject);
+begin
+  if GridHosts.FocusedRow<>Nil then
+    EdDescription.Text:=UTF8Encode(GridHosts.FocusedRow.S['description']);
+end;
+
 procedure TVisWaptGUI.EdDescriptionKeyPress(Sender: TObject; var Key: char);
 begin
   if (Key=#13) then
-  begin
-     if TriggerChangeHostDescription(GridHosts.FocusedRow.S['uuid'],UTF8Decode(EdDescription.Text)) then
-     begin
-        GridHosts.FocusedRow.S['description'] := UTF8Decode(EdDescription.Text);
-        GridHosts.InvalidateFordata(GridHosts.FocusedRow);
-     end
-     else
-        EdDescription.Text := UTF8Encode(GridHosts.FocusedRow.S['description']);
-  end;
+    if GridHosts.FocusedRow<>Nil then
+    begin
+       if TriggerChangeHostDescription(GridHosts.FocusedRow.S['uuid'],UTF8Decode(EdDescription.Text)) then
+       begin
+          GridHosts.FocusedRow.S['description'] := UTF8Decode(EdDescription.Text);
+          GridHosts.InvalidateFordata(GridHosts.FocusedRow);
+       end
+       else
+          EdDescription.Text := UTF8Encode(GridHosts.FocusedRow.S['description']);
+    end;
 end;
 
 procedure TVisWaptGUI.EdHardwareFilterChange(Sender: TObject);

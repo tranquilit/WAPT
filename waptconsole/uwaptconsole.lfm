@@ -358,6 +358,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 29
               Width = 178
               Constraints.MinWidth = 150
+              OnExit = EdDescriptionExit
               OnKeyPress = EdDescriptionKeyPress
               TabOrder = 1
             end
