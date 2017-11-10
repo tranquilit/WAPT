@@ -498,11 +498,9 @@ begin
         Run('cmd /C net stop waptserver');
       end;
 
-      ini := TMemIniFile.Create(WaptIniFilename);
-      ini.SetStrings(EdWaptInifile.Lines);
-      if (ini.ReadString('options', 'server_uuid', '') = '') and (CreateGUID(GUID) = 0) then
-        ini.WriteString('options', 'server_uuid', Lowercase(Copy(GUIDToString(GUID), 2, Length(GUIDToString(GUID)) - 2)));
-      ini.UpdateFile;
+
+      if IniReadString(WaptBaseDir+'\conf\waptserver.ini' ,'options','server_uuid')='' then
+        iniWriteString(WaptBaseDir+'\conf\waptserver.ini','options', 'server_uuid', Lowercase(Copy(GUIDToString(GUID), 2, Length(GUIDToString(GUID)) - 2)));
 
       ProgressTitle(rsUpdatingPackageIndex);
       ProgressStep(1,10);
