@@ -546,14 +546,21 @@ end;
 procedure TVisEditPackage.ActEditSavePackageExecute(Sender: TObject);
 var
   res: ISuperObject;
-  section:String;
+  description:String;
+  PE,ControlDict:Variant;
 begin
   Screen.Cursor := crHourGlass;
   try
     if IsNewPackage then
     begin
-      res := DMPython.RunJSON(
-        format('mywapt.make_group_template(packagename="%s",depends="%s",description=r"%s".decode(''utf8''),section="%s")', [Trim(EdPackage.Text), Depends, Eddescription.Text,EdSection.Text]));
+      description := UTF8Decode(Eddescription.Text);
+      res := PyVarToSuperObject(
+        Mainmodule.mywapt.make_group_template(
+          packagename := Trim(EdPackage.Text),
+          depends := Depends,
+          description := description,
+          section := EdSection.Text
+        ));
       FSourcePath := res.S['sourcespath'];
       PackageEdited := res;
     end
@@ -565,11 +572,12 @@ begin
       PackageEdited.S['section'] :=  trim(lowercase(EdSection.Text));
       PackageEdited.S['depends'] :=  trim(Depends);
       PackageEdited.S['conflicts'] :=  trim(Conflicts);
-      DMPython.PythonEng.ExecString('p = waptpackage.PackageEntry()');
-      DMPython.PythonEng.ExecString(
-        format('p.load_control_from_dict(json.loads(r"""%s"""))', [utf8Encode(PackageEdited.AsJson)]));
-      DMPython.PythonEng.ExecString(
-        format('p.save_control_to_wapt(r''%s''.decode(''utf8''))', [SourcePath]));
+      ControlDict:=SuperObjectToPyVar(PackageEdited);
+
+      PE := Mainmodule.waptpackage.PackageEntry(package := '');
+      PE.load_control_from_dict(ControlDict);
+      PE.save_control_to_wapt(SourcePath);
+
       if EdSetupPy.Lines.Count>0 then
         EdSetupPy.Lines.SaveToFile(AppendPathDelim(FSourcePath) + 'setup.py')
       else
@@ -617,9 +625,14 @@ begin
     ProgressTitle(rsUploading);
     Application.ProcessMessages;
     try
-      Result := DMPython.RunJSON(format(
-        'mywapt.build_upload(r"%s".decode(''utf8''),private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=True)',
-        [FSourcePath, dmpython.privateKeyPassword, waptServerUser, waptServerPassword]), jsonlog);
+      Result := PyVarToSuperObject(
+        Mainmodule.mywapt.build_upload(
+          sources_directories := FSourcePath,
+          private_key_passwd := dmpython.privateKeyPassword,
+          wapt_server_user := waptServerUser,
+          wapt_server_passwd := waptServerPassword,
+          inc_package_release := True));
+
       if Result.AsArray.Length=0  then
         raise Exception.Create('Error when building / uploading package, no result');
       if FisTempSourcesDir then
@@ -782,9 +795,11 @@ begin
       begin
         target_directory := UniqueTempDir();
         FisTempSourcesDir := True;
-        res := DMPython.RunJSON(
-            format('mywapt.edit_host("%s",target_directory=r"%s".decode(''utf8''))',
-            [FPackageRequest, target_directory]));
+        res := PyVarToSuperObject(
+          MainModule.mywapt.edit_host(
+            hostname := FPackageRequest,
+            target_directory := target_directory)
+            );
         LabPackage.Caption := 'UUID';
         Caption := rsHostConfigEditCaption;
         pgDepends.Caption := rsPackagesNeededOnHostCaption;
@@ -822,7 +837,8 @@ begin
                 exit;
               end;
 
-            res := DMPython.RunJSON(format('mywapt.edit_package(r"%s")', [filePath]));
+            res := PyVarToSuperObject(MainModule.mywapt.edit_package(packagerequest := filePath));
+
             FisTempSourcesDir := True;
           finally
             Free;
@@ -847,7 +863,7 @@ begin
     Exit;
   FSourcePath := AValue;
   try
-    res := DMPython.RunJSON(format('mywapt.edit_package("%s")', [FSourcePath]));
+    res := PyVarToSuperObject(Mainmodule.mywapt.edit_package(FSourcePath));
     PackageEdited := res['package'];
   finally
     Screen.Cursor := crDefault;

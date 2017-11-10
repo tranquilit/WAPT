@@ -41,7 +41,7 @@ var
 
 implementation
 
-uses dmwaptpython,superobject,uWaptRes,uWaptConsoleRes,waptcommon,UScaleDPI;
+uses dmwaptpython,superobject,uWaptRes,uWaptConsoleRes,waptcommon,UScaleDPI,VarPyth;
 
 {$R *.lfm}
 
@@ -75,7 +75,7 @@ begin
   EdInstallerPath.FileName:=FInstallerFilename;
   if (AValue <> '') and FileExists(AValue) then
   begin
-    installInfos := DMPython.RunJSON(Format('setuphelpers.get_installer_defaults(r"%s".decode("utf8"))',[AValue]));
+    installInfos := PyVarToSuperObject(Mainmodule.setuphelpers.get_installer_defaults(AValue));
     EdPackageName.text := DefaultPackagePrefix+'-'+installInfos.S['simplename'];
     EdDescription.Text := UTF8Encode(installInfos.S['description']);
     EdVersion.Text := installInfos.S['version'];
