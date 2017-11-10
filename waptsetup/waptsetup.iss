@@ -65,7 +65,7 @@ Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs
 
 [Setup]
 OutputBaseFilename={#edition}
-#if edition == 'waptserver' 
+#if edition == 'waptserversetup' 
 DefaultDirName=c:\wapt
 #else
 DefaultDirName={pf32}\wapt
