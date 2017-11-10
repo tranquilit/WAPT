@@ -3165,6 +3165,11 @@ msgstr ""
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -3231,6 +3236,9 @@ msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 #: uwaptconsoleres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
 #| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
@@ -4364,6 +4372,9 @@ msgstr "Erreur lors de la compilation du paquet : %s"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -4446,11 +4457,6 @@ msgctxt "uwaptconsoleres.rspublickeygensuccess"
 msgid "Public certificate %s has been successfully created."
 msgstr "La clé %s a bien été créée."
 
-#: uwaptconsoleres.rsreallowpackagesonhost
-msgctxt "uwaptconsoleres.rsreallowpackagesonhost"
-msgid "Selection of package(s) to remove from conflict list"
-msgstr "Choix du/des paquet(s) à supprimer de la liste de conflit"
-
 #: uwaptconsoleres.rsreloadwaptconsoleconfig
 msgid "Reloading WaptConsole configuration"
 msgstr ""
@@ -4463,11 +4469,6 @@ msgstr ""
 msgid "Confirm the unregistration of repository %s"
 msgstr ""
 
-#: uwaptconsoleres.rsrmbundlefromhosts
-msgctxt "uwaptconsoleres.rsrmbundlefromhosts"
-msgid "Selection of package bundles for removing from the selected hosts"
-msgstr "Choix des groupes de paquets à supprimer des machines sélectionnées"
-
 #: uwaptconsoleres.rsrunningtask
 msgctxt "uwaptconsoleres.rsrunningtask"
 msgid "Running task %d: %s, status:%s"
@@ -4477,6 +4478,22 @@ msgstr "Exécution de la tâche %d : %s, statut :%s"
 msgctxt "uwaptconsoleres.rssavemods"
 msgid "Save changes ?"
 msgstr "Enregistrer les modifications ?"
+
+#: uwaptconsoleres.rsselectaddconflicts
+msgid "Select packages to append to hosts conflicts"
+msgstr ""
+
+#: uwaptconsoleres.rsselectadddepends
+msgid "Select packages to append to hosts configuration"
+msgstr ""
+
+#: uwaptconsoleres.rsselectremoveconflicts
+msgid "Select packages to remove from hosts conflicts"
+msgstr ""
+
+#: uwaptconsoleres.rsselectremovedepends
+msgid "Select packages to remove from hosts configuration"
+msgstr ""
 
 #: uwaptconsoleres.rssrv
 msgctxt "uwaptconsoleres.rssrv"
@@ -4591,6 +4608,9 @@ msgstr "Attention, l'installeur waptagent.exe n'est pas présent sur le serveur.
 #: uwaptconsoleres.rswaptagentoldversion
 #, fuzzy
 #| msgid ""
+#| "Warning, the version of the waptagent.exe installer is too old.\n"
+#| "Current waptagent.exe version: %s\n"
+#| "waptsetup-tis.exe version: %s\n"
 #| "Warning, the version of the waptagent.exe installer is too old.\n"
 #| "Current waptagent.exe version: %s\n"
 #| "waptsetup-tis.exe version: %s\n"
@@ -5268,6 +5288,8 @@ msgstr "Vous devez d'abord définir le préfixe des paquets dans les préférenc
 #| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -5278,6 +5300,9 @@ msgstr ""
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
 #| msgid ""
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
 #| "Required server version: %s\n"
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
@@ -5674,6 +5699,8 @@ msgstr "Erreur lors de la création de l'agent : %s"
 #: uwaptconsoleres.rswaptsetupuploadsuccess
 #, fuzzy
 #| msgid ""
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"

@@ -316,7 +316,7 @@ def duplicate_from_file(package_filename,new_prefix='test',target_directory=None
     return result
 
 
-def build_waptupgrade_package(waptconfigfile,target_directory,wapt_server_user,wapt_server_passwd,key_password=None):
+def build_waptupgrade_package(waptconfigfile,target_directory=None,wapt_server_user=None,wapt_server_passwd=None,key_password=None):
     if target_directory is None:
         target_directory = tempfile.gettempdir()
 

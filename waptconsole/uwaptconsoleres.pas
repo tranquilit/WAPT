@@ -98,10 +98,12 @@ resourcestring
   rsConfirmPackageInstall = 'Are you sure you want to install/upgrade %s package(s) for the selected host(s) %s ?';
   rsPackageInstallError = 'Error while triggering package install/upgrade %s: %s';
 
+  rsSelectAddDepends = 'Select packages to append to hosts configuration';
+  rsSelectRemoveDepends = 'Select packages to remove from hosts configuration';
 
+  rsSelectAddConflicts = 'Select packages to append to hosts conflicts';
+  rsSelectRemoveConflicts = 'Select packages to remove from hosts conflicts';
 
-  rsReallowPackagesOnHost = 'Selection of package(s) to remove from conflict list';
-  rsRmBundleFromHosts = 'Selection of package bundles for removing from the selected hosts';
   rsNoBundle = 'There is no package bundle.'; // 'Il n''y a aucun groupe.'; TODO : pas assez explicite ?
 
   rsWaptClientUpdateOnHosts = 'Updating WAPT client on the hosts';

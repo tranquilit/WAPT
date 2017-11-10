@@ -1678,7 +1678,7 @@ object VisWaptGUI: TVisWaptGUI
               Position = 26
               Tag = 26
               Text = 'AD Organizational Unit'
-              Width = 126
+              Width = 132
               PropertyName = 'computer_ad_ou'
             end          
             item

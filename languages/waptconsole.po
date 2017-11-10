@@ -2930,11 +2930,6 @@ msgctxt "uwaptconsoleres.rspublickeygensuccess"
 msgid "Public certificate %s has been successfully created."
 msgstr ""
 
-#: uwaptconsoleres.rsreallowpackagesonhost
-msgctxt "uwaptconsoleres.rsreallowpackagesonhost"
-msgid "Selection of package(s) to remove from conflict list"
-msgstr ""
-
 #: uwaptconsoleres.rsreloadwaptconsoleconfig
 msgid "Reloading WaptConsole configuration"
 msgstr ""
@@ -2947,11 +2942,6 @@ msgstr ""
 msgid "Confirm the unregistration of repository %s"
 msgstr ""
 
-#: uwaptconsoleres.rsrmbundlefromhosts
-msgctxt "uwaptconsoleres.rsrmbundlefromhosts"
-msgid "Selection of package bundles for removing from the selected hosts"
-msgstr ""
-
 #: uwaptconsoleres.rsrunningtask
 msgctxt "uwaptconsoleres.rsrunningtask"
 msgid "Running task %d: %s, status:%s"
@@ -2960,6 +2950,22 @@ msgstr ""
 #: uwaptconsoleres.rssavemods
 msgctxt "uwaptconsoleres.rssavemods"
 msgid "Save changes ?"
+msgstr ""
+
+#: uwaptconsoleres.rsselectaddconflicts
+msgid "Select packages to append to hosts conflicts"
+msgstr ""
+
+#: uwaptconsoleres.rsselectadddepends
+msgid "Select packages to append to hosts configuration"
+msgstr ""
+
+#: uwaptconsoleres.rsselectremoveconflicts
+msgid "Select packages to remove from hosts conflicts"
+msgstr ""
+
+#: uwaptconsoleres.rsselectremovedepends
+msgid "Select packages to remove from hosts configuration"
 msgstr ""
 
 #: uwaptconsoleres.rssrv
