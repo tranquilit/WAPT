@@ -2612,7 +2612,8 @@ def host_info():
     info['local_drives'] = local_drives()
     info['wua_agent_version'] = wua_agent_version()
 
-    # empty if computer is not in a AD domain... statu sfrom last gpupdate
+    # empty if computer is not in a AD domain... status from last gpupdate
+    ## could be win32api.GetComputerObjectName(1) if computer is connected to network
     info['computer_ad_dn'] =  registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Distinguished-Name')
     info['computer_ad_site'] =  registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Site-Name')
 
