@@ -480,6 +480,7 @@ type
     procedure CheckBoxMajChange(Sender: TObject);
     procedure cbNeedUpgradeClick(Sender: TObject);
     procedure CheckBox_errorChange(Sender: TObject);
+    procedure EdDescriptionKeyPress(Sender: TObject; var Key: char);
     procedure EdHardwareFilterChange(Sender: TObject);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchPackageExecute(Sender: TObject);
@@ -592,6 +593,7 @@ type
     function OneHostIsConnected: Boolean;
     procedure PythonOutputSendData(Sender: TObject; const Data: ansistring);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: ISuperObject);
+    function TriggerChangeHostDescription(uuid, description: String): Boolean;
     procedure UpdateHostPages(Sender: TObject);
     procedure UpdateSelectedHostsActions(Sender: TObject);
   public
@@ -763,6 +765,20 @@ end;
 procedure TVisWaptGUI.CheckBox_errorChange(Sender: TObject);
 begin
   ActHostSearchPackage.Execute;
+end;
+
+procedure TVisWaptGUI.EdDescriptionKeyPress(Sender: TObject; var Key: char);
+begin
+  if (Key=#13) then
+  begin
+     if TriggerChangeHostDescription(GridHosts.FocusedRow.S['uuid'],UTF8Decode(EdDescription.Text)) then
+     begin
+        GridHosts.FocusedRow.S['description'] := UTF8Decode(EdDescription.Text);
+        GridHosts.InvalidateFordata(GridHosts.FocusedRow);
+     end
+     else
+        EdDescription.Text := UTF8Encode(GridHosts.FocusedRow.S['description']);
+  end;
 end;
 
 procedure TVisWaptGUI.EdHardwareFilterChange(Sender: TObject);
@@ -4252,33 +4268,37 @@ begin
   exit;
 end;
 
-procedure TVisWaptGUI.GridHostsNewText(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Column: TColumnIndex; const NewText: String);
+Function TVisWaptGUI.TriggerChangeHostDescription(uuid,description:String):Boolean;
 var
   args,res: ISuperObject;
   taskresult,uuids: ISuperObject;
   currhost,computer_name: ansistring;
 begin
+  if MessageDlg(rsConfirmCaption,'Do you really want to change description to '+description+' ?',mtConfirmation, mbYesNoCancel,0) = mrYes then
+  begin
+    uuids := TSuperObject.Create(stArray);;
+    uuids.AsArray.Add(uuid);
+    args := SO();
+    args.S['computer_description'] := description{%H-};
+    taskresult := TriggerActionOnHosts(uuids,'trigger_change_description',args,'Change host description and register','Error changing host description');
+    result := taskresult.B['success'];
+  end
+  else
+    result := False;
+end;
+
+procedure TVisWaptGUI.GridHostsNewText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; const NewText: String);
+begin
   if (GridHosts.Header.Columns[Column]  as TSOGridColumn).PropertyName = 'description' then
   begin
-    if MessageDlg(rsConfirmCaption,'Do you really want to change description to '+NewText+' ?',mtConfirmation, mbYesNoCancel,0) = mrYes then
-    begin
-      uuids := TSuperObject.Create(stArray);;
-      uuids.AsArray.Add(GridHosts.FocusedRow.S['uuid']);
-      args := SO();
-      args.S['computer_description'] := NewText{%H-};
-      taskresult := TriggerActionOnHosts(uuids,'trigger_change_description',args,'Change host description and register','Error changing host description');
-      if not taskresult.B['success'] then
-      begin
-        GridHosts.CancelEditNode;
-        Abort;
-      end;
-    end
-    else
+    if not TriggerChangeHostDescription(GridHosts.FocusedRow.S['uuid'],newtext) then
     begin
       GridHosts.CancelEditNode;
       Abort;
-    end;
+    end
+    else
+      UpdateHostPages(GridHosts);
   end;
 end;
 
