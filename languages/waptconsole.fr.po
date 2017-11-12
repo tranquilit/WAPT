@@ -24,12 +24,12 @@ msgstr "LabInfos"
 
 #: tvischangekeypassword.caption
 msgid "Change private key password"
-msgstr ""
+msgstr "Changer le mot de passe de la clef privée"
 
 #: tvischangekeypassword.edkeypassword.hint
 msgctxt "tvischangekeypassword.edkeypassword.hint"
 msgid "Used to decrypt or encrypt private jkey"
-msgstr ""
+msgstr "Utilisé pour déchiffrer ou chiffrer la clef privée"
 
 #: tvischangekeypassword.labconfirmpwd.caption
 msgctxt "tvischangekeypassword.labconfirmpwd.caption"
@@ -38,14 +38,12 @@ msgstr "Confirmer le mot de passe"
 
 #: tvischangekeypassword.label17.caption
 msgid "New password"
-msgstr ""
+msgstr "Nouveau mot de passe"
 
 #: tvischangekeypassword.label9.caption
-#, fuzzy
-#| msgid "Key name :"
 msgctxt "tvischangekeypassword.label9.caption"
 msgid "Key filename :"
-msgstr "Nom de la clé :"
+msgstr "Nom du fichier de la clé :"
 
 #: tvischangekeypassword.label9.hint
 msgctxt "tvischangekeypassword.label9.hint"
@@ -74,10 +72,8 @@ msgid "Old password :"
 msgstr "Ancien mot de passe :"
 
 #: tviscreatekey.caption
-#, fuzzy
-#| msgid "Generate private key and self-signed certificate"
 msgid "Generate private key and self signed certificate"
-msgstr "Créer une clé privée et un certificat auto-signé"
+msgstr "Générer Créer une clé privée et un certificat auto-signé"
 
 #: tviscreatekey.cbcodesigning.caption
 msgid "Tag as code signing certificate (package development)"
@@ -88,18 +84,14 @@ msgid "Tag as CA Certificate"
 msgstr "Certificat CA"
 
 #: tviscreatekey.edcertbasename.hint
-#, fuzzy
-#| msgid "E.g. : srvwapt.tranquilit.local"
 msgctxt "tviscreatekey.edcertbasename.hint"
 msgid "This information will be used as Signer identification in packages"
 msgstr "Cette information sera utilisée comme identification du signataire de paquets"
 
 #: tviscreatekey.edcommonname.hint
-#, fuzzy
-#| msgid "E.g. : srvwapt.tranquilit.local"
 msgctxt "tviscreatekey.edcommonname.hint"
 msgid "This information will be used as Signer identification in packages"
-msgstr "Cette information sera utilisée comme identification du signataire de paquets"
+msgstr "Cette information sera utilisée comme identification du signataire pour les paquets"
 
 #: tviscreatekey.edcountry.text
 msgid "FR"
@@ -112,7 +104,7 @@ msgstr "Exemple : technique@tranquil-it-systems.fr"
 #: tviscreatekey.edkeypassword.hint
 msgctxt "tviscreatekey.edkeypassword.hint"
 msgid "Used to decrypt or encrypt private jkey"
-msgstr ""
+msgstr "Utilisé pour déchiffer et chiffrer la clef privée"
 
 #: tviscreatekey.edlocality.hint
 msgid "E.g. : Nantes"
@@ -132,10 +124,8 @@ msgid "Confirm password"
 msgstr "Confirmer le mot de passe"
 
 #: tviscreatekey.label1.caption
-#, fuzzy
-#| msgid "Target directory:"
 msgid "Target keys directory:"
-msgstr "Répertoire de destination :"
+msgstr "Répertoire de destination des clefs :"
 
 #: tviscreatekey.label1.hint
 msgid "Where to save the private key. This directory must be secure."
@@ -187,11 +177,11 @@ msgstr "Adresse électronique du service technique."
 
 #: tviscreatekey.label17.caption
 msgid "Private key password"
-msgstr ""
+msgstr "Mot de passe de la clef privée"
 
 #: tviscreatekey.label18.caption
 msgid "Certificate name"
-msgstr ""
+msgstr "Nom du certificat"
 
 #: tviscreatekey.label19.caption
 msgid "Authority Signing Key"
@@ -202,11 +192,9 @@ msgid "If you don't provide a CA Certificate and key, your certificate will be s
 msgstr "Si vous ne spécifiez pas de certificat et clé de CA, votre certificat sera auto-signé"
 
 #: tviscreatekey.label9.caption
-#, fuzzy
-#| msgid "Key name :"
 msgctxt "tviscreatekey.label9.caption"
 msgid "Key filename :"
-msgstr "Nom de la clé :"
+msgstr "Nom du fichier de la clé :"
 
 #: tviscreatekey.label9.hint
 msgctxt "tviscreatekey.label9.hint"
@@ -224,15 +212,15 @@ msgstr "Créer un agent WAPT"
 
 #: tviscreatewaptsetup.cbcheckcertificatesvalidity.caption
 msgid "Check packages certificates validity"
-msgstr ""
+msgstr "Vérifier la validité des certificats des paquets"
 
 #: tviscreatewaptsetup.cbcheckcertificatesvalidity.hint
 msgid "Check that certificate dates are valid and  issuer is a know one."
-msgstr ""
+msgstr "Vérifier que les dates des certificats sont correctes et que l'émetteur est bien connu"
 
 #: tviscreatewaptsetup.cbusekerberos.caption
 msgid "Use Kerberos for initial registration"
-msgstr ""
+msgstr "Utiliser Kerberos pour l'enregistrement initial"
 
 #: tviscreatewaptsetup.cbverifycert.caption
 msgctxt "tviscreatewaptsetup.cbverifycert.caption"
@@ -250,7 +238,7 @@ msgstr "Par exemple : http://wapt.tranquilit.local/wapt."
 #: tviscreatewaptsetup.edservercertificate.hint
 msgctxt "tviscreatewaptsetup.edservercertificate.hint"
 msgid "E.g. : c:\\private\\tranquilit.crt"
-msgstr ""
+msgstr "Par ex. c:\\private\\tranquilit.crt"
 
 #: tviscreatewaptsetup.edwaptserverurl.hint
 msgid "E.g. : http://wapt:8080."
@@ -270,8 +258,6 @@ msgid "Your WAPT repository address (http://wapt/wapt)."
 msgstr "L'adresse de votre dépôt WAPT (par exemple http://wapt/wapt)"
 
 #: tviscreatewaptsetup.label3.caption
-#, fuzzy
-#| msgid "Organisation :"
 msgid "Organization :"
 msgstr "Organisation :"
 
@@ -305,7 +291,7 @@ msgstr "Chemin vers le bundle de CA serveurs"
 #: tvisdisplaypreferences.caption
 msgctxt "tvisdisplaypreferences.caption"
 msgid "Display preferences"
-msgstr ""
+msgstr "Préférences d'affichage"
 
 #: tvisdisplaypreferences.cbdebugwindow.hint
 msgctxt "tvisdisplaypreferences.cbdebugwindow.hint"
@@ -334,39 +320,35 @@ msgstr "Anglais"
 
 #: tvisdisplaypreferences.edhostslimit.text
 msgid "EdHostsLimit"
-msgstr ""
+msgstr "Nombre maximal d'hôtes"
 
 #: tvisdisplaypreferences.label1.caption
 msgid "Maximum number of hosts to display"
-msgstr ""
+msgstr "Nombre maximal d'hôtes affichés"
 
 #: tvisdisplaypreferences.label10.caption
 msgctxt "tvisdisplaypreferences.label10.caption"
 msgid "Enable external tools in hosts popup menus"
-msgstr ""
+msgstr "Autoriser les outils externe dans les menus contextuels des hôtes"
 
 #: tvisdisplaypreferences.label11.caption
 msgctxt "tvisdisplaypreferences.label11.caption"
 msgid "Enable management features"
-msgstr ""
+msgstr "Activer les fonctionalités d'administration"
 
 #: tvisdisplaypreferences.label12.caption
 msgid "Hide unavailable actions"
-msgstr ""
+msgstr "Cacher les actions non disponibles"
 
 #: tvisdisplaypreferences.label3.caption
-#, fuzzy
-#| msgid "For package development :"
 msgctxt "tvisdisplaypreferences.label3.caption"
 msgid "Language"
 msgstr "Langue"
 
 #: tvisdisplaypreferences.label7.caption
-#, fuzzy
-#| msgid "Show advanced informations"
 msgctxt "tvisdisplaypreferences.label7.caption"
 msgid "Show debug informations"
-msgstr "Voir les informations avancées"
+msgstr "Voir les informations de debug"
 
 #: tviseditgroup.button5.caption
 msgctxt "tviseditgroup.button5.caption"
@@ -417,17 +399,15 @@ msgid "Advanced mode"
 msgstr "Mode avancé"
 
 #: tviseditpackage.actbuapply.caption
-#, fuzzy
-#| msgid "Save and apply to host"
 msgid "Save and apply"
-msgstr "Enregistrer et appliquer à la machine"
+msgstr "Enregistrer et appliquer"
 
 #: tviseditpackage.actbuildupload.caption
 #, fuzzy
 #| msgid "Activate package"
 msgctxt "TVISEDITPACKAGE.ACTBUILDUPLOAD.CAPTION"
 msgid "Save"
-msgstr "Activer le paquet"
+msgstr "Enregister"
 
 #: tviseditpackage.acteditremoveconflicts.caption
 msgid "Unblock package"
@@ -523,7 +503,7 @@ msgstr "Editer les dépendances"
 
 #: tviseditpackage.pgdevelop.caption
 msgid "setup.py"
-msgstr ""
+msgstr "setup.py"
 
 #: tvisgroupchoice.actsearch.caption
 msgctxt "TVISGROUPCHOICE.ACTSEARCH.CAPTION"
@@ -553,19 +533,19 @@ msgstr "Affinez la recherche à l'aide de mots-clés."
 
 #: tvishostdelete.caption
 msgid "Confirm host(s) delete"
-msgstr ""
+msgstr "Confirmer la suppression"
 
 #: tvishostdelete.cbdeletehostconfiguration.caption
 msgid "Delete host configuration (Package)"
-msgstr ""
+msgstr "Supprimer la configuration (paquet machine)"
 
 #: tvishostdelete.cbdeletehostinventory.caption
 msgid "Delete host from inventory database"
-msgstr ""
+msgstr "Supprimer de l'inventaire"
 
 #: tvishostdelete.labmessage.caption
 msgid "Confirm deletion of hosts"
-msgstr ""
+msgstr "Confirmer la suppression"
 
 #: tvishostsupgrade.actstop.caption
 msgid "Terminate"
@@ -594,7 +574,7 @@ msgstr "Actualiser"
 
 #: tvisimportpackage.actrepositoriessettings.caption
 msgid "Repository settings"
-msgstr ""
+msgstr "Paramètres des dépôts"
 
 #: tvisimportpackage.actsearchexternalpackage.caption
 msgctxt "TVISIMPORTPACKAGE.ACTSEARCHEXTERNALPACKAGE.CAPTION"
@@ -603,7 +583,7 @@ msgstr "Rechercher"
 
 #: tvisimportpackage.actwaptsettings.caption
 msgid "Waptconsole settings"
-msgstr ""
+msgstr "Paramètre de la Waptconsole"
 
 #: tvisimportpackage.bitbtn2.caption
 msgid "Cancel"
@@ -643,8 +623,6 @@ msgid "WAPT authentication"
 msgstr "Authentification WAPT"
 
 #: tvislogin.labserver.caption
-#, fuzzy
-#| msgid "Connect to server :"
 msgctxt "tvislogin.labserver.caption"
 msgid "Server"
 msgstr "Serveur"
@@ -656,11 +634,9 @@ msgstr "Utilisateur"
 
 #: tvislogin.labversion.caption
 msgid "LabVersion"
-msgstr ""
+msgstr "LabVersion"
 
 #: tvislogin.lapassword.caption
-#, fuzzy
-#| msgid "Server password :"
 msgid "Password"
 msgstr "Mot de passe"
 
@@ -683,7 +659,7 @@ msgstr "Mot de passe de la clé privée :"
 
 #: tvisrepositories.actcertificacert.caption
 msgid "Use default Wapt bundle"
-msgstr ""
+msgstr "Utiliser la base de certificat intégrée à WAPT"
 
 #: tvisrepositories.actdownloadcertificate.caption
 msgctxt "tvisrepositories.actdownloadcertificate.caption"
@@ -691,8 +667,6 @@ msgid "Browse certificates"
 msgstr "Parcourir les certificats"
 
 #: tvisrepositories.actgetservercertificate.caption
-#, fuzzy
-#| msgid "Get Server https Certitificate"
 msgctxt "tvisrepositories.actgetservercertificate.caption"
 msgid "Get Server certificates chain"
 msgstr "Récupération certificat serveur"
@@ -704,30 +678,30 @@ msgstr "Explorer"
 
 #: tvisrepositories.actregisterrepo.caption
 msgid "Register new repository"
-msgstr ""
+msgstr "Rajouter un nouveau dépôt"
 
 #: tvisrepositories.actsavesettings.caption
 msgctxt "tvisrepositories.actsavesettings.caption"
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: tvisrepositories.actselectcertdir.caption
 msgid "Select bundle path"
-msgstr ""
+msgstr "Sélectionner le fichier de certificat"
 
 #: tvisrepositories.actselecthttpsbundle.caption
 msgctxt "tvisrepositories.actselecthttpsbundle.caption"
 msgid "Select CA Bundle"
-msgstr ""
+msgstr "Sélectionner le fichier de CA"
 
 #: tvisrepositories.actunregisterrepo.caption
 msgid "Unregister repository"
-msgstr ""
+msgstr "Supprimer ce dépôt"
 
 #: tvisrepositories.caption
 msgctxt "tvisrepositories.caption"
 msgid "Repositories settings"
-msgstr ""
+msgstr "Paramètre du dépôt"
 
 #: tvisrepositories.cbchecksignature.caption
 msgctxt "tvisrepositories.cbchecksignature.caption"
@@ -737,12 +711,12 @@ msgstr "Vérifier la signature de paquet"
 #: tvisrepositories.cbenablecheckhttps.caption
 msgctxt "tvisrepositories.cbenablecheckhttps.caption"
 msgid "Check https certificate"
-msgstr ""
+msgstr "Vérifier le certificat https"
 
 #: tvisrepositories.dlgopencrt.title
 msgctxt "tvisrepositories.dlgopencrt.title"
 msgid "Select CA Bundle"
-msgstr ""
+msgstr "Sélectionner le groupe de certificat CA"
 
 #: tvisrepositories.edhttpproxy.hint
 msgctxt "tvisrepositories.edhttpproxy.hint"
@@ -750,23 +724,19 @@ msgid "E.g. : http://proxy.tranquilit.local:3128"
 msgstr "Par exemple : http://proxy.tranquilit.local:3128"
 
 #: tvisrepositories.edname.hint
-#, fuzzy
-#| msgid "E.g. : http://wapt.tranquil.it/wapt"
 msgctxt "tvisrepositories.edname.hint"
 msgid "E.g. : https://store.wapt.fr/wapt"
-msgstr "Par exemple : http://wapt.tranquil.it/wapt"
+msgstr "Par exemple : https://store.tranquil.it/wapt"
 
 #: tvisrepositories.edrepourl.hint
-#, fuzzy
-#| msgid "E.g. : http://wapt.tranquil.it/wapt"
 msgctxt "tvisrepositories.edrepourl.hint"
 msgid "E.g. : https://store.wapt.fr/wapt"
-msgstr "Par exemple : http://wapt.tranquil.it/wapt"
+msgstr "Par exemple : http://store.tranquil.it/wapt"
 
 #: tvisrepositories.edservercabundle.hint
 msgctxt "tvisrepositories.edservercabundle.hint"
 msgid "E.g. : c:\\wapt\\ssl\\server\\cacert.pem"
-msgstr ""
+msgstr "Par ex. : c:\\wapt\\ssl\\server\\cacert.pem"
 
 #: tvisrepositories.edsignerscabundle.hint
 msgctxt "tvisrepositories.edsignerscabundle.hint"
@@ -779,15 +749,13 @@ msgid "Authorized external keys dir"
 msgstr "Certificats externes autorisés"
 
 #: tvisrepositories.label6.caption
-#, fuzzy
-#| msgid "Path to CA certificates bundle"
 msgctxt "tvisrepositories.label6.caption"
 msgid "Path to https CA certificates"
 msgstr "Chemin vers le bundle de CA"
 
 #: tvisrepositories.labname.caption
 msgid "Repository name"
-msgstr ""
+msgstr "Nom du dépôt"
 
 #: tvisrepositories.labproxy.caption
 msgctxt "tvisrepositories.labproxy.caption"
@@ -899,7 +867,7 @@ msgstr "Par exemple : http://proxy.tranquilit.local:3128"
 #: tviswaptconfig.edpersonalcertificatepath.hint
 msgctxt "tviswaptconfig.edpersonalcertificatepath.hint"
 msgid "E.g. : c:\\private\\tranquilit.crt"
-msgstr ""
+msgstr "Par ex. c:\\private\\tranquilit.crt"
 
 #: tviswaptconfig.edrepo_url.editlabel.caption
 msgid "URL to the main repository"
@@ -907,7 +875,7 @@ msgstr "URL du dépôt principal"
 
 #: tviswaptconfig.edrepo_url.hint
 msgid "E.g. : https://wapt.tranquilit.local/wapt"
-msgstr "Par exemple : https://wapt.tranquilit.local/wapt"
+msgstr "Par ex. https://wapt.tranquilit.local/wapt"
 
 #: tviswaptconfig.edserveraddress.editlabel.caption
 msgid "WAPT Server address or name"
@@ -920,7 +888,7 @@ msgstr "Exemple : srvwapt.tranquilit.local"
 #: tviswaptconfig.edservercertificate.hint
 msgctxt "tviswaptconfig.edservercertificate.hint"
 msgid "E.g. : c:\\wapt\\ssl\\server\\cacert.pem"
-msgstr ""
+msgstr "Par ex. c:\\wapt\\ssl\\server\\cacert.pem"
 
 #: tviswaptconfig.edwapt_server.editlabel.caption
 msgid "URL du serveur WAPT"
@@ -1030,18 +998,14 @@ msgid "Add the WAPT group packages matching the ADS groups of the machines"
 msgstr "Ajoute les groupes WAPT qui correspondent avec les groupes Active Directory des machines"
 
 #: tviswaptgui.actaddconflicts.caption
-#, fuzzy
-#| msgid "Block packages (causes forced uninstall)"
 msgctxt "tviswaptgui.actaddconflicts.caption"
 msgid "Add package to hosts conflicts"
 msgstr "Interdire des paquets (force la désinstallation)"
 
 #: tviswaptgui.actadddepends.caption
-#, fuzzy
-#| msgid "Add package or bundle"
 msgctxt "tviswaptgui.actadddepends.caption"
 msgid "Add package to host dependencies"
-msgstr "Ajouter un paquet ou groupe de paquets"
+msgstr "Ajouter une dépendance"
 
 #: tviswaptgui.actaddgroup.caption
 msgctxt "tviswaptgui.actaddgroup.caption"
@@ -1050,7 +1014,7 @@ msgstr "Nouveau groupe de paquets"
 
 #: tviswaptgui.actaddhwpropertytogrid.caption
 msgid "Add item as grid column"
-msgstr ""
+msgstr "Ajouter l'élément à la liste"
 
 #: tviswaptgui.actcancelrunningtask.caption
 msgctxt "tviswaptgui.actcancelrunningtask.caption"
@@ -1064,7 +1028,7 @@ msgstr "Changer le mot de passe du serveur"
 
 #: tviswaptgui.actchangeprivatekeypassword.caption
 msgid "Change password of private key..."
-msgstr ""
+msgstr "Changer le mot de passe de la clef privée..."
 
 #: tviswaptgui.actcleancache.caption
 msgctxt "tviswaptgui.actcleancache.caption"
@@ -1078,29 +1042,25 @@ msgstr "Effacer les paquets mis en cache localement par WaptConsole"
 
 #: tviswaptgui.actcomputermgmt.caption
 msgid "Gérer l'ordinateur"
-msgstr ""
+msgstr "Gérer l'ordinateur"
 
 #: tviswaptgui.actcomputerservices.caption
 msgid "Gérer les services"
-msgstr ""
+msgstr "Gérer les services"
 
 #: tviswaptgui.actcomputerusers.caption
 msgid "Gérer les utilisateur et groupes"
-msgstr ""
+msgstr "Gérer les utilisateurs et groupes"
 
 #: tviswaptgui.actcreatecertificate.caption
-#, fuzzy
-#| msgid "Generate self-signed certificate"
 msgctxt "tviswaptgui.actcreatecertificate.caption"
 msgid "Build certificate"
-msgstr "Créer un certificat"
+msgstr "Générer un certificat"
 
 #: tviswaptgui.actcreatewaptsetup.caption
-#, fuzzy
-#| msgid "Create custom WAPT installer"
 msgctxt "tviswaptgui.actcreatewaptsetup.caption"
 msgid "Build WAPT Agent"
-msgstr "Créer un agent WAPT"
+msgstr "Générer un agent WAPT"
 
 #: tviswaptgui.actdeletegroup.caption
 msgctxt "tviswaptgui.actdeletegroup.caption"
@@ -1113,11 +1073,9 @@ msgid "Remove host configuration and inventory "
 msgstr "Supprimer la machine et son paquet de configuration"
 
 #: tviswaptgui.actdeletehostspackageandinventory.caption
-#, fuzzy
-#| msgid "Remove from inventory"
 msgctxt "tviswaptgui.actdeletehostspackageandinventory.caption"
 msgid "Remove host"
-msgstr "Supprimer de l'inventaire"
+msgstr "Supprimer le poste"
 
 #: tviswaptgui.actdeletehostspackageandinventory.hint
 msgctxt "tviswaptgui.actdeletehostspackageandinventory.hint"
@@ -1145,16 +1103,14 @@ msgid "Edit bundle"
 msgstr "Editer un paquet"
 
 #: tviswaptgui.actedithostpackage.caption
-#, fuzzy
-#| msgid "Edit host configuration"
 msgctxt "TVISWAPTGUI.ACTEDITHOSTPACKAGE.CAPTION"
 msgid "Edit host"
-msgstr "Modifier la configuration de la machine"
+msgstr "Modifier la machine"
 
 #: tviswaptgui.actedithostpackage.hint
 msgctxt "TVISWAPTGUI.ACTEDITHOSTPACKAGE.HINT"
 msgid "Edit host configuration"
-msgstr "Modifier la configuration de la machine"
+msgstr "Modifier la configuration"
 
 #: tviswaptgui.acteditpackage.caption
 msgctxt "tviswaptgui.acteditpackage.caption"
@@ -1183,7 +1139,7 @@ msgstr "Exécuter du code Python"
 
 #: tviswaptgui.actexternalrepositoriessettings.caption
 msgid "External repositories settings"
-msgstr ""
+msgstr "Paramètre des dépôts externes"
 
 #: tviswaptgui.actfrench.caption
 msgctxt "tviswaptgui.actfrench.caption"
@@ -1210,15 +1166,13 @@ msgid "Import from file"
 msgstr "Importer depuis un fichier"
 
 #: tviswaptgui.actimportfromrepo.caption
-#, fuzzy
-#| msgid "Import from repository"
 msgctxt "tviswaptgui.actimportfromrepo.caption"
 msgid "Import from internet"
 msgstr "Importer depuis internet"
 
 #: tviswaptgui.actmakepackagetemplate.caption
 msgid "Make package template from setup file"
-msgstr ""
+msgstr "Générer un modèle de paquet"
 
 #: tviswaptgui.actpackagesforget.caption
 msgctxt "tviswaptgui.actpackagesforget.caption"
@@ -1228,22 +1182,22 @@ msgstr "Oublier des paquets"
 #: tviswaptgui.actpackagesinstall.caption
 msgctxt "tviswaptgui.actpackagesinstall.caption"
 msgid "Install package"
-msgstr ""
+msgstr "Installer un paquet"
 
 #: tviswaptgui.actpackagesinstall.hint
 msgctxt "tviswaptgui.actpackagesinstall.hint"
 msgid "Force remote install or upgrade of package"
-msgstr ""
+msgstr "Forcer l'installation ou mise à jour du paquet"
 
 #: tviswaptgui.actpackagesremove.caption
 msgctxt "tviswaptgui.actpackagesremove.caption"
 msgid "Uninstall package"
-msgstr ""
+msgstr "Supprimer la paquet"
 
 #: tviswaptgui.actpackagesremove.hint
 msgctxt "tviswaptgui.actpackagesremove.hint"
 msgid "Forces remote uninstall of package"
-msgstr ""
+msgstr "Forcer la désinstallation du paquet"
 
 #: tviswaptgui.actpackagesupdate.caption
 msgctxt "tviswaptgui.actpackagesupdate.caption"
@@ -1271,26 +1225,20 @@ msgid "Refresh host inventory"
 msgstr "Actualiser l'inventaire des postes"
 
 #: tviswaptgui.actreloadconfig.caption
-#, fuzzy
-#| msgid "Reload wapt-get.ini"
 msgctxt "tviswaptgui.actreloadconfig.caption"
 msgid "Reload preferences"
 msgstr "Recharger les préférences"
 
 #: tviswaptgui.actremoteassist.caption
 msgid "Assistance à distance"
-msgstr ""
+msgstr "Assistance à distance"
 
 #: tviswaptgui.actremoveconflicts.caption
-#, fuzzy
-#| msgid "Allow packages "
 msgctxt "tviswaptgui.actremoveconflicts.caption"
 msgid "Remove package from hosts conflicts"
 msgstr "Autoriser des paquets"
 
 #: tviswaptgui.actremovedepends.caption
-#, fuzzy
-#| msgid "Remove dependencies from packages/bundles"
 msgctxt "tviswaptgui.actremovedepends.caption"
 msgid "Remove packages from host dependencies"
 msgstr "Supprimer des dépendances de paquets ou groupes de paquets"
@@ -1307,7 +1255,7 @@ msgstr "Restaure la configuration par défaut des colonnes de toutes les grilles
 
 #: tviswaptgui.actrevokecert.caption
 msgid "Revoke a Certificate"
-msgstr ""
+msgstr "Révoquer un certificat"
 
 #: tviswaptgui.actsearchgroups.caption
 msgctxt "TVISWAPTGUI.ACTSEARCHGROUPS.CAPTION"
@@ -1315,8 +1263,6 @@ msgid "Search"
 msgstr "Rechercher"
 
 #: tviswaptgui.actsearchhost.caption
-#, fuzzy
-#| msgid "Search host"
 msgctxt "tviswaptgui.actsearchhost.caption"
 msgid "Search Refresh"
 msgstr "Rechercher une machine"
@@ -1333,29 +1279,27 @@ msgstr ""
 
 #: tviswaptgui.acttishelp.caption
 msgid "Launch TISHelp"
-msgstr ""
+msgstr "Lancer TISHelp"
 
 #: tviswaptgui.acttriggerhostupdate.caption
-#, fuzzy
-#| msgid "Update hosts status"
 msgctxt "tviswaptgui.acttriggerhostupdate.caption"
 msgid "Check updates"
-msgstr "Lancer la vérification des mises à jour"
+msgstr "Vérification les mises à jour"
 
 #: tviswaptgui.acttriggerhostupdate.hint
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPDATE.HINT"
 msgid "Trigger update of available packages on hosts."
-msgstr "Lancer la mise à jour de la liste des paquets disponibles sur les machines"
+msgstr "Vérifier les mises à jour"
 
 #: tviswaptgui.acttriggerhostupgrade.caption
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.CAPTION"
 msgid "Apply updates"
-msgstr "Lancer l'installation des paquets."
+msgstr "Lancer l'installation"
 
 #: tviswaptgui.acttriggerhostupgrade.hint
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.HINT"
 msgid "Apply updates"
-msgstr "Lancer l'installation des mises à jour de paquets"
+msgstr "Lancer l'installation"
 
 #: tviswaptgui.acttriggerwakeonlan.caption
 msgid "Power ON with WakeOnLan"
@@ -1382,8 +1326,6 @@ msgid "Connect via VNC"
 msgstr "Se connecter en VNC"
 
 #: tviswaptgui.actwaptconsoleconfig.caption
-#, fuzzy
-#| msgid "Local WAPT configuration"
 msgctxt "tviswaptgui.actwaptconsoleconfig.caption"
 msgid "Preferences"
 msgstr "Préférences"
@@ -1403,20 +1345,14 @@ msgid "Save and build rules package"
 msgstr "Ernegistrer et Créer le paquet de règles"
 
 #: tviswaptgui.actwuaaddallowedclassification.caption
-#, fuzzy
-#| msgid "Add an allowed classification"
 msgid "Add Allowed classifications"
 msgstr "Autoriser des Classifications supplémentaires"
 
 #: tviswaptgui.actwuaaddallowedupdate.caption
-#, fuzzy
-#| msgid "Add an Allowed Update"
 msgid "Add Allowed Updates"
 msgstr "Autoriser une mise à jour particulière"
 
 #: tviswaptgui.actwuaaddforbiddenupdate.caption
-#, fuzzy
-#| msgid "Add Forbidden Windows Update"
 msgid "Add Forbidden Windows Updates"
 msgstr "Interdire une mise à jour particulière"
 
@@ -1524,7 +1460,7 @@ msgstr "Sélectionne les machines qui ont cette dépendance directe"
 
 #: tviswaptgui.cbadvancedsearch.caption
 msgid "More options"
-msgstr ""
+msgstr "Plus d'options"
 
 #: tviswaptgui.cbforcedwsusscandownload.caption
 msgid "Force download even if already up to date"
@@ -1538,13 +1474,13 @@ msgstr "Sélectionne les machines qui ont cette dépendance directe"
 #: tviswaptgui.cbhaserrors.caption
 msgctxt "TVISWAPTGUI.CBHASERRORS.CAPTION"
 msgid "Has errors"
-msgstr "Ont des erreurs"
+msgstr "en erreurs"
 
 #: tviswaptgui.cbinverseselect.caption
 #, fuzzy
 #| msgid "NOT"
 msgid "Not"
-msgstr "NOT"
+msgstr "Ne contient pas"
 
 #: tviswaptgui.cbinverseselect.hint
 msgid "Negative search : returns hosts Not matching"
@@ -1557,7 +1493,7 @@ msgstr "Ne pas afficher les composants système"
 #: tviswaptgui.cbneedupgrade.caption
 msgctxt "TVISWAPTGUI.CBNEEDUPGRADE.CAPTION"
 msgid "Needs updating"
-msgstr "Nécessite une mise à jour"
+msgstr "A mettre à jour"
 
 #: tviswaptgui.cbnewestonly.caption
 msgctxt "tviswaptgui.cbnewestonly.caption"
@@ -1568,7 +1504,7 @@ msgstr "Dernière version seulement"
 #, fuzzy
 #| msgid "Reachables only"
 msgid "Connected only"
-msgstr "Connectés seulement"
+msgstr "Connectés"
 
 #: tviswaptgui.cbsearchall.caption
 msgid "All"
@@ -1655,11 +1591,9 @@ msgid "UUID"
 msgstr ""
 
 #: tviswaptgui.label12.caption
-#, fuzzy
-#| msgid "Current task"
 msgctxt "tviswaptgui.label12.caption"
 msgid "Last task"
-msgstr "Tâche en cours"
+msgstr "Dernière tâche"
 
 #: tviswaptgui.label14.caption
 msgctxt "tviswaptgui.label14.caption"
@@ -1692,11 +1626,11 @@ msgstr "Constructeur"
 
 #: tviswaptgui.label20.caption
 msgid "Site"
-msgstr ""
+msgstr "Site"
 
 #: tviswaptgui.label21.caption
 msgid "Organizational Unit"
-msgstr ""
+msgstr "Unité d'Organisation"
 
 #: tviswaptgui.label23.caption
 msgctxt "tviswaptgui.label23.caption"
@@ -1709,7 +1643,7 @@ msgstr "Modèle"
 
 #: tviswaptgui.label5.caption
 msgid "Search in"
-msgstr ""
+msgstr "Critère de recherche"
 
 #: tviswaptgui.label6.caption
 msgid "Name"
@@ -1725,15 +1659,13 @@ msgid "Description"
 msgstr "Description"
 
 #: tviswaptgui.label9.caption
-#, fuzzy
-#| msgid "Updated"
 msgid "Last seen"
-msgstr "Mis à jour"
+msgstr "Dernière connexion"
 
 #: tviswaptgui.labelcomputersnumber.caption
 msgctxt "TVISWAPTGUI.LABELCOMPUTERSNUMBER.CAPTION"
 msgid "Selected / Total : %d / %d"
-msgstr ""
+msgstr "Sélectionnés / Total : %d / %d"
 
 #: tviswaptgui.labuser.caption
 msgctxt "tviswaptgui.labuser.caption"
@@ -1776,7 +1708,7 @@ msgstr "-"
 
 #: tviswaptgui.menuitem2.caption
 msgid "&View"
-msgstr ""
+msgstr "&Affichage"
 
 #: tviswaptgui.menuitem24.caption
 #, fuzzy
@@ -1832,7 +1764,7 @@ msgstr "&Fichier"
 
 #: tviswaptgui.menuitem51.caption
 msgid "Package wizard"
-msgstr ""
+msgstr "Assistant de création de paquet"
 
 #: tviswaptgui.menuitem55.caption
 #, fuzzy
@@ -1886,7 +1818,7 @@ msgstr "Ré-ouvrir"
 
 #: tviswaptgui.odselectinstaller.title
 msgid "Select an installer executable or msi"
-msgstr ""
+msgstr "Sélectionner un fichier d'installation exe ou msi"
 
 #: tviswaptgui.opendialogwapt.title
 msgid "Select WAPT file"
@@ -1927,8 +1859,6 @@ msgid "Overview"
 msgstr "Général"
 
 #: tviswaptgui.pgprivaterepo.caption
-#, fuzzy
-#| msgid "Private repository"
 msgid "Softwares repository"
 msgstr "Dépôt privé"
 
@@ -1945,11 +1875,9 @@ msgid "Tasks"
 msgstr "Tâches"
 
 #: tviswaptgui.pgwindowsupdates.caption
-#, fuzzy
-#| msgid "Windows Updates Bundles"
 msgctxt "tviswaptgui.pgwindowsupdates.caption"
 msgid "Windows Updates"
-msgstr "Mises à jour Windows"
+msgstr "Windows Updates"
 
 #: tviswaptgui.tabsheet1.caption
 msgctxt "tviswaptgui.tabsheet1.caption"
@@ -3234,390 +3162,6 @@ msgid "Are you sure you want to forget %s packages from host %s ?"
 msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 
 #: uwaptconsoleres.rsconfirmimport
-#, fuzzy
-#| msgid ""
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
-#| "Are you sure you want to import\n"
-#| "%s\n"
-#| " to your repository ?\n"
 msgctxt "uwaptconsoleres.rsconfirmimport"
 msgid ""
 "Are you sure you want to import\n"
@@ -3626,7 +3170,7 @@ msgid ""
 msgstr ""
 "Êtes vous sûr de vouloir importer\n"
 "%s\n"
-" vers votre dépôt ?\n"
+" dans votre dépôt ?\n"
 
 #: uwaptconsoleres.rsconfirmimportcaption
 msgctxt "uwaptconsoleres.rsconfirmimportcaption"
@@ -3651,8 +3195,6 @@ msgid "Are you sure you want to remove %s hosts and matching configuration packa
 msgstr "Êtes vous sûr de vouloir enlever du serveur %s machines et leur paquet de configuration ?"
 
 #: uwaptconsoleres.rsconfirmrmmultiplepackages
-#, fuzzy
-#| msgid "Are you sure you want to remove the selected packages from the server ?"
 msgctxt "uwaptconsoleres.rsconfirmrmmultiplepackages"
 msgid "Are you sure you want to remove %d selected packages from the server ?"
 msgstr "Êtes-vous sûr(e) de vouloir supprimer %d paquets du serveur ?"
@@ -3673,8 +3215,6 @@ msgid "Are you sure you want to remove %s package(s) from the selected host(s) %
 msgstr "Êtes-vous sûr(e) de vouloir supprimer %s paquet(s) de la/des machine(s) sélectionnée(s) ?"
 
 #: uwaptconsoleres.rscreationinprogress
-#, fuzzy
-#| msgid "Building..."
 msgctxt "uwaptconsoleres.rscreationinprogress"
 msgid "Build in progress."
 msgstr "Compilation en cours."
@@ -3768,11 +3308,9 @@ msgid "Edit package bundle."
 msgstr "Editer un groupe de paquets."
 
 #: uwaptconsoleres.rsedithostcaption
-#, fuzzy
-#| msgid "Edit host %s"
 msgctxt "uwaptconsoleres.rsedithostcaption"
 msgid "Edit host profile %s"
-msgstr "Editer une machine"
+msgstr "Editer la machine %s"
 
 #: uwaptconsoleres.rsedithosterror
 msgid ""
@@ -3817,7 +3355,7 @@ msgstr "Erreur : %s"
 
 #: uwaptconsoleres.rsfailedexternalrepoupdate
 msgid "Unable to get Packages index from %"
-msgstr ""
+msgstr "Impossible de récupérer l'index des paquets depuis %s"
 
 #: uwaptconsoleres.rsfailedimport
 msgctxt "uwaptconsoleres.rsfailedimport"
@@ -3857,7 +3395,7 @@ msgstr "Editer la configuration de la machine"
 #: uwaptconsoleres.rshostsselectedtotal
 msgctxt "uwaptconsoleres.rshostsselectedtotal"
 msgid "Selected / Total : %d / %d"
-msgstr ""
+msgstr "Sélectionné / Total : %d / %d"
 
 #: uwaptconsoleres.rsignoredconfictingpackages
 msgctxt "uwaptconsoleres.rsignoredconfictingpackages"
@@ -3905,7 +3443,7 @@ msgstr "Veuillez spécifier l'emplacement de la clé publique"
 
 #: uwaptconsoleres.rsinstallerfilenotfound
 msgid "The installer filename %s does not exists !"
-msgstr ""
+msgstr "Le fichier d'installation %s n'existe pas"
 
 #: uwaptconsoleres.rsinstalling
 msgctxt "uwaptconsoleres.rsinstalling"
@@ -3965,7 +3503,7 @@ msgstr "Il n'y a pas de groupe de paquets."
 
 #: uwaptconsoleres.rsnopackage
 msgid "No package found. Check authorized certificates"
-msgstr ""
+msgstr "Aucun paquet trouvé. Vérifier les certificats autorisés"
 
 #: uwaptconsoleres.rsnoreachableip
 msgid "None IP reachable for this host. Check firewall, routes and remote service status"
@@ -3983,7 +3521,7 @@ msgstr " -r --repo : URL des librairies des dépendances"
 
 #: uwaptconsoleres.rspackagebuiltsourcesavailable
 msgid "The package is built and uploaded and sources are available in %s"
-msgstr ""
+msgstr "Le paquet est généré et envoyé. Les sources sont disponible dans %s"
 
 #: uwaptconsoleres.rspackagecreationerror
 msgctxt "uwaptconsoleres.rspackagecreationerror"
@@ -3991,390 +3529,6 @@ msgid "Error while building package : %s"
 msgstr "Erreur lors de la compilation du paquet : %s"
 
 #: uwaptconsoleres.rspackageduplicateconfirm
-#, fuzzy
-#| msgid ""
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-#| "Are you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
