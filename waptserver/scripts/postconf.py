@@ -61,6 +61,14 @@ import nginxparser
 from passlib.hash import pbkdf2_sha256
 
 
+def run(*args, **kwargs):
+    return subprocess.check_output(*args, shell=True, **kwargs)
+
+def run_verbose(*args, **kwargs):
+    output = subprocess.check_output(*args, shell=True, **kwargs)
+    print output
+    return output
+
 def type_debian():
     return platform.dist()[0].lower() in ('debian','ubuntu')
 
@@ -83,10 +91,6 @@ else:
     sys.exit(1)
 
 postconf = dialog.Dialog(dialog="dialog")
-
-def run(cmd):
-    print ("running %s " % cmd)
-    return(subprocess.check_output(cmd,shell=True))
 
 def mkdir(path):
     if not os.path.isdir(path):
@@ -167,48 +171,48 @@ def ensure_postgresql_db(db_name='wapt',db_owner='wapt',db_password=''):
         # we have to check what postgres we use between the upstream packages and the software collection ones
         pass
     elif type_debian():
-        subprocess.check_output('systemctl start postgresql',shell=True)
-        subprocess.check_output(['systemctl', 'enable', 'postgresql'])
+        run('systemctl start postgresql')
+        run('systemctl enable postgresql')
 
-    val = subprocess.check_output(""" sudo -u postgres psql template1 -c " select usename from pg_catalog.pg_user where usename='wapt';"  """, shell=True,cwd='/opt/wapt')
+    val = run(""" sudo -u postgres psql template1 -c " select usename from pg_catalog.pg_user where usename='wapt';"  """, cwd='/opt/wapt')
     if 'wapt' in val:
         print ("user wapt already exists, skipping creating user  ")
     else:
         print ("we suppose that the db does not exist either (or the installation has been screwed up")
         if db_password.strip()=='':
-            subprocess.check_output(""" sudo -u postgres psql template1 -c "create user %s ; " """ % (db_owner), shell=True,cwd='/opt/wapt/')
+            run(""" sudo -u postgres psql template1 -c "create user %s ; " """ % (db_owner), cwd='/opt/wapt/')
         else:
-            subprocess.check_output(""" sudo -u postgres psql template1 -c "create user %s with password '%s'; " """ % (db_owner,db_password), shell=True,cwd='/opt/wapt/')
+            run(""" sudo -u postgres psql template1 -c "create user %s with password '%s'; " """ % (db_owner,db_password), cwd='/opt/wapt/')
 
     val = ''
     #val = subprocess.check_output(""" sudo -u postgres psql template1 -c "select schema_name from information_schema.schemata where schema_name='wapt'; "  """, shell= True)
-    val = subprocess.check_output(""" sudo -u postgres psql template1 -c " SELECT datname FROM pg_database WHERE datname='wapt';   " """, shell=True,cwd='/opt/wapt/')
+    val = run(""" sudo -u postgres psql template1 -c " SELECT datname FROM pg_database WHERE datname='wapt';   " """, cwd='/opt/wapt/')
 
     if 'wapt' in val:
         print ("db already exists, skipping db creation")
     else:
         print ('creating db wapt')
-        subprocess.check_output(""" sudo -u postgres psql template1 -c "create database %s with owner=%s encoding='utf-8'; " """ % (db_name,db_owner), shell=True,cwd='/opt/wapt/')
-    val=''
-    val = subprocess.check_output(""" sudo -u postgres psql wapt -c "select * from pg_extension where extname='hstore';" """, shell=True,cwd='/opt/wapt/')
+        run(""" sudo -u postgres psql template1 -c "create database %s with owner=%s encoding='utf-8'; " """ % (db_name,db_owner), cwd='/opt/wapt/')
+
+    # check if hstore (for json) is installed
+    val = run(""" sudo -u postgres psql wapt -c "select * from pg_extension where extname='hstore';" """, cwd='/opt/wapt/')
     if 'hstore' in val:
         print ("hstore extension already loading into database, skipping create extension")
     else:
-        subprocess.check_output("""  sudo -u postgres psql wapt -c "CREATE EXTENSION hstore;" """, shell=True,cwd='/opt/wapt/')
+        run("""  sudo -u postgres psql wapt -c "CREATE EXTENSION hstore;" """, cwd='/opt/wapt/')
 
 
 def enable_nginx():
-    print(subprocess.check_output('systemctl enable nginx', shell=True))
+    run_verbose('systemctl enable nginx')
 
 def restart_nginx():
-    print(subprocess.check_output('systemctl restart nginx',shell=True))
+    run_verbose('systemctl restart nginx')
 
 def enable_waptserver():
-    print(subprocess.check_output('systemctl restart waptserver',shell=True))
+    run_verbose('systemctl restart waptserver')
 
 def start_waptserver():
-    print (subprocess.check_output("systemctl restart waptserver",shell=True))
-
+    run_verbose("systemctl restart waptserver")
 
 def setup_firewall():
     if type_redhat():
@@ -224,7 +228,6 @@ def setup_firewall():
             run('firewall-offline-cmd --add-port=443/tcp')
             run('firewall-offline-cmd --add-port=80/tcp')
 
-
 def check_mongo2pgsql_upgrade_needed(waptserver_ini):
     """ return  0 if nothing needed
                 1 if upgrade needed
@@ -235,9 +238,9 @@ def check_mongo2pgsql_upgrade_needed(waptserver_ini):
         if proc.name() == 'mongod':
             if postconf.yesno("It is necessary to migrate current database backend from mongodb to postgres. Press yes to start migration",no_label='cancel')== postconf.DIALOG_OK:
                 print ("mongodb process running, need to migrate")
-                print (run("sudo -u wapt /usr/bin/python /opt/wapt/waptserver/waptserver_upgrade.py upgrade2postgres"))
-                print (run("systemctl stop mongodb"))
-                print (run("systemctl disable mongodb"))
+                run_verbose("sudo -u wapt /usr/bin/python /opt/wapt/waptserver/waptserver_upgrade.py upgrade2postgres")
+                run_verbose("systemctl stop mongodb")
+                run_verbose("systemctl disable mongodb")
             else:
                 print ("Post configuration aborted")
                 sys.exit(1)
@@ -299,7 +302,7 @@ def main():
     # TODO : check if it a new install or an upgrade (upgrade from mongodb to postgresql)
 
     if type_redhat():
-        if re.match('^SELinux status:.*enabled', subprocess.check_output('sestatus')):
+        if re.match('^SELinux status:.*enabled', run('sestatus')):
             postconf.msgbox('SELinux detected, tweaking httpd permissions.')
             run('setsebool -P httpd_can_network_connect 1')
             run('setsebool -P httpd_setrlimit on')
@@ -350,9 +353,7 @@ def main():
         # keep in sync with waptserver.py
         wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
 
-#    if os.path.exists(os.path.join(wapt_root_dir, 'waptserver', 'wsus.py')):
-#        waptserver_ini.set('uwsgi', 'attach-daemon', '/usr/bin/python /opt/wapt/waptserver/wapthuey.py wsus.huey')
-
+    # Password setup/reset screen
     if not waptserver_ini.has_option('options', 'wapt_password') or \
             not waptserver_ini.get('options', 'wapt_password') or \
             postconf.yesno("Do you want to reset admin password ?",yes_label='skip',no_label='reset') != postconf.DIALOG_OK:
@@ -389,33 +390,40 @@ def main():
     else:
         waptserver_ini.set('options','use_kerberos','False')
 
-    with open('/opt/wapt/conf/waptserver.ini','w') as inifile:
-        run("/bin/chmod 640 /opt/wapt/conf/waptserver.ini")
-        run("/bin/chown wapt /opt/wapt/conf/waptserver.ini")
-        waptserver_ini.write(inifile)
+    # waptagent authentication method
+    choices = [
+            ("1","Allow unauthenticated registration, same behavior as wapt 1.3", True),
+            ("2","Require strong authentication, registration will ask for password if kerberos is not working",        False),
+            ]
 
-    # TODO : remove mongodb lines that are commented out
+    code, t = postconf.radiolist("WaptAgent Authentication type?", choices=choices,width=120)
+    if t=="1":
+        waptserver_ini.set('options','allow_unauthenticated_registration','True')
+
+    with open('/opt/wapt/conf/waptserver.ini','w') as inifile:
+       waptserver_ini.write(inifile)
+    run("/bin/chmod 640 /opt/wapt/conf/waptserver.ini")
+    run("/bin/chown wapt /opt/wapt/conf/waptserver.ini")
+ 
+    # Restart Apache screen
     run('python /opt/wapt/wapt-scanpackages.py %s ' % wapt_folder)
 
-    final_msg = [
-        'Postconfiguration completed.',
-        ]
+    final_msg = ['Postconfiguration completed.',]
     postconf.msgbox("Press ok to start waptserver")
     enable_waptserver()
     start_waptserver()
 
-
     # In this new version Apache is replaced with Nginx? Proceed to disable Apache. After migration one can remove Apache install altogether
     try:
-        print(subprocess.check_output('systemctl stop %s' % APACHE_SVC, shell=True))
+        run_verbose('systemctl stop %s' % APACHE_SVC)
     except:
         pass
     try:
-        print(subprocess.check_output('systemctl disable %s' % APACHE_SVC, shell=True))
+        run_verbose('systemctl disable %s' % APACHE_SVC)
     except:
         pass
 
-
+    # nginx configuration dialog
     reply = postconf.yesno("Do you want to configure nginx?")
     if reply == postconf.DIALOG_OK:
         try:
@@ -433,7 +441,7 @@ def main():
 
             dh_filename = '/etc/ssl/certs/dhparam.pem'
             if not os.path.exists(dh_filename):
-                print (subprocess.check_output('openssl dhparam -out %s  2048' % dh_filename , shell=True))
+                run_verbose('openssl dhparam -out %s  2048' % dh_filename)
 
             os.chown(dh_filename, 0, NGINX_GID)
             os.chmod(dh_filename, 0o640)
@@ -470,8 +478,8 @@ def main():
             final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
 
             postconf.msgbox("The Nginx config is done. We need to restart Nginx?")
-            print(subprocess.check_output('systemctl enable nginx', shell=True))
-            print(subprocess.check_output('systemctl restart nginx', shell=True))
+            run_verbose('systemctl enable nginx')
+            run_verbose('systemctl restart nginx')
             setup_firewall()
 
         except subprocess.CalledProcessError as cpe:
