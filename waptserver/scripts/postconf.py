@@ -363,12 +363,12 @@ def main():
             wapt_password_check = ''
 
             while wapt_password == '':
-                (code,wapt_password) = postconf.passwordbox("Please enter the wapt server password:  ", insecure=True)
+                (code,wapt_password) = postconf.passwordbox("Please enter the wapt server password (min. 10 characters):  ", insecure=True,width=100)
                 if code != postconf.DIALOG_OK:
                     exit(0)
 
             while wapt_password_check == '':
-                (code,wapt_password_check) = postconf.passwordbox("Please enter the wapt server password again:  ", insecure=True)
+                (code,wapt_password_check) = postconf.passwordbox("Please enter the wapt server password again:  ", insecure=True,width=100)
                 if code != postconf.DIALOG_OK:
                     exit(0)
 
@@ -397,6 +397,9 @@ def main():
             ]
 
     code, t = postconf.radiolist("WaptAgent Authentication type?", choices=choices,width=120)
+    if code=='cancel':
+        print("\n\npostconfiguration canceled\n\n")
+        sys.exit(1)
     if t=="1":
         waptserver_ini.set('options','allow_unauthenticated_registration','True')
 
