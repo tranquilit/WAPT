@@ -20,8 +20,9 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.1.3"
+from __future__ import print_function
 
+__version__ = "1.5.1.3"
 import os
 import sys
 import re
@@ -47,10 +48,14 @@ import fnmatch
 import urlparse
 import hashlib
 
-try:
-    from clint.textui.progress import Bar as ProgressBar
-except ImportError:
-    # for build time
+if hasattr(sys.stdout,'name') and sys.stdout.name == '<stdout>':
+    # not in pyscripter debugger
+    try:
+        from clint.textui.progress import Bar as ProgressBar
+    except ImportError:
+        # for build time
+        ProgressBar = None
+else:
     ProgressBar = None
 
 logger = logging.getLogger('wapt')
@@ -728,14 +733,16 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
                     if download_timeout is not None and (time.time()-start_time>download_timeout):
                         raise requests.Timeout(r'Download of %s takes more than the requested %ss'%(url,download_timeout))
                     if printhook is None and ProgressBar is not None:
-                        progress_bar.show(actual_size + cnt*len(chunk))
-                        last_time_display = time.time()
+                        if (time.time()-start_time>0.2) and (time.time()-last_time_display>=0.2):
+                            progress_bar.show(actual_size + cnt*len(chunk))
+                            last_time_display = time.time()
                     else:
                         if reporthook(cnt*len(chunk),total_bytes):
                             last_time_display = time.time()
                     last_downloaded += len(chunk)
                     cnt +=1
                 if printhook is None and ProgressBar is not None:
+                    progress_bar.show(total_bytes)
                     progress_bar.done()
                     last_time_display = time.time()
                 elif reporthook(last_downloaded,total_bytes):
@@ -784,6 +791,43 @@ def wgets(url,proxies=None,verify_cert=False,referer=None,user_agent=None,timeou
     else:
         r.raise_for_status()
 
+class FileChunks(object):
+    def __init__(self, filename, chunk_size=2*1024*1024,progress_hook=None):
+        self.chunk_size = chunk_size
+        self.amount_seen = 0
+        self.filename = filename
+        self.file_obj = open(filename,'rb')
+        self.file_size = os.fstat(self.file_obj.fileno()).st_size
+        self.progress_hook = progress_hook
+        if self.progress_hook is None and ProgressBar is not None:
+            self.progress_bar = ProgressBar(label=filename,expected_size=self.file_size, filled_char='=')
+            #self.progress_bar.show(self.amount_seen)
+        else:
+            self.progress_bar = None
+
+    def get(self):
+        try:
+            data = self.file_obj.read(self.chunk_size)
+            while len(data)>0:
+                self.amount_seen += len(data)
+                if self.progress_hook is not None:
+                    self.progress_hook(self.filename,self.amount_seen,self.file_size)
+                if self.progress_bar is not None:
+                    self.progress_bar.show(self.amount_seen)
+                if self.progress_bar is None and self.progress_hook is None:
+                    print('Uploading %s: %s / %s' % (self.filename,self.amount_seen,self.file_size),end='\r')
+                yield data
+                data = self.file_obj.read(self.chunk_size)
+        finally:
+            if self.progress_bar is not None:
+                self.progress_bar.done()
+            if self.progress_bar is None and self.progress_hook is None:
+                print('Done Uploading %s' % (self.filename,))
+            self.file_obj.close()
+
+    def close(self):
+        if not self.file_obj.closed:
+            self.file_obj.close()
 
 
 class Version(object):

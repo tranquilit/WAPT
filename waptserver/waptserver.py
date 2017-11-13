@@ -594,52 +594,85 @@ def upload_package(filename=''):
 @app.route('/api/v3/upload_packages', methods=['POST'])
 @requires_auth
 def upload_packages():
+    class PackageStream(object):
+        def __init__(self,stream,chunk_size=10*1024*1024):
+            self.stream = stream
+            self.chunk_size = chunk_size
+
+        def save(self,target):
+            print('Streaming to %s...' % target)
+            with open(target, "wb") as f:
+                chunk = self.stream.read(self.chunk_size)
+                while len(chunk) > 0:
+                    print('write chunk %s' % len(chunk))
+                    f.write(chunk)
+                    chunk = self.stream.read(self.chunk_size)
+
+    def read_package(packagefile):
+        wapt_folder = conf['wapt_folder']
+        tmp_target = tempfile.mktemp(dir=wapt_folder,prefix='wapt')
+        target = None
+        try:
+            packagefile.save(tmp_target)
+            # test if package is OK.
+            entry = PackageEntry(waptfile=tmp_target)
+            target = os.path.join(wapt_folder, entry.make_package_filename())
+            if entry.has_file('setup.py'):
+                # check if certificate has code_signing extended attribute
+                signer_cert = entry.package_certificate()
+                if not signer_cert.is_code_signing:
+                    raise EWaptForbiddden(u'The package %s contains setup.py code but has not been signed with a proper code_signing certificate' % entry.package)
+
+            logger.debug('Saved package %s into %s' % (entry.asrequirement(),tmp_target))
+            # TODO check if certificate is allowed on thi server ?
+
+            if os.path.isfile(target):
+                os.unlink(target)
+            logger.debug('Renaming package %s into %s' % (tmp_target,target))
+            os.rename(tmp_target, target)
+
+            # fix context on target file (otherwith tmp context is carried over)
+            #logger.debug(subprocess.check_output('chcon -R -t httpd_sys_content_t %s' % target,shell=True))
+            if entry.section == 'host':
+                Hosts.update(wapt_status='TO-UPGRADE').where(Hosts.uuid == entry.package).execute()
+
+            return target
+
+        except Exception as e:
+            print("%s" % e)
+            logger.debug('traceback')
+            logger.debug(traceback.print_exc())
+            logger.critical('Error uploading package %s: %s' % (target,e,))
+            errors.append(target)
+            if os.path.isfile(tmp_target):
+                print(tmp_target)
+                #os.unlink(tmp_target)
+            raise
+
     try:
         starttime = time.time()
         done = []
         errors = []
-        files = request.files
-        logger.info('Upload of %s packages' % len(files))
-        for fkey in files:
-            packagefile = request.files[fkey]
-            logger.debug('uploading file : %s' % fkey)
-            if packagefile and allowed_file(packagefile.filename):
-                filename = secure_filename(packagefile.filename)
-                wapt_folder = conf['wapt_folder']
-                target = os.path.join(wapt_folder, filename)
-                tmp_target = tempfile.mktemp(dir=wapt_folder,prefix='wapt')
+        if request.stream is not None:
+            # streamed upload
+
+            packagefile = PackageStream(request.stream)
+
+            done.append(read_package(packagefile))
+        else:
+            files = request.files
+            # multipart upload
+            logger.info('Upload of %s packages' % len(files))
+            for fkey in files:
                 try:
-                    packagefile.save(tmp_target)
-                    # test if package is OK.
-                    entry = PackageEntry(waptfile=tmp_target)
-                    if entry.has_file('setup.py'):
-                        # check if certificate has code_signing extended attribute
-                        signer_cert = entry.package_certificate()
-                        if not signer_cert.is_code_signing:
-                            raise EWaptForbiddden(u'The package %s contains setup.py code but has not been signed with a proper code_signing certificate' % entry.package)
-
-                    logger.debug('Saved package %s into %s' % (entry.asrequirement(),tmp_target))
-                    # TODO check if certificate is allowed on thi server ?
-
-                    if os.path.isfile(target):
-                        os.unlink(target)
-                    logger.debug('Renaming package %s into %s' % (tmp_target,target))
-                    os.rename(tmp_target, target)
-                    # fix context on target file (otherwith tmp context is carried over)
-                    #logger.debug(subprocess.check_output('chcon -R -t httpd_sys_content_t %s' % target,shell=True))
-                    if entry.section == 'host':
-                        Hosts.update(wapt_status='TO-UPGRADE').where(Hosts.uuid == entry.package).execute()
-
-                    done.append(filename)
-
+                    packagefile = request.files[fkey]
+                    logger.debug('uploading file : %s' % fkey)
+                    if packagefile and allowed_file(packagefile.filename):
+                        done.append(read_package(packagefile))
                 except Exception as e:
-                    logger.debug('traceback')
-                    logger.debug(traceback.print_exc())
-                    logger.critical('Error uploading package %s: %s' % (filename, e))
-                    errors.append(filename)
-                    if os.path.isfile(tmp_target):
-                        os.unlink(tmp_target)
-                    raise
+
+                    logger.critical(u'Error uploading %s : %s' % (fkey,e))
+                    errors.append(fkey)
 
         logger.debug('Update package index')
         packages_index_result = update_packages(conf['wapt_folder'])

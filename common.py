@@ -1636,7 +1636,7 @@ class WaptServer(object):
         else:
             raise Exception(u'Wapt server url not defined or not found in DNS')
 
-    def post(self,action,data=None,files=None,auth=None,timeout=None,signature=None,signer=None):
+    def post(self,action,data=None,files=None,auth=None,timeout=None,signature=None,signer=None,content_length=None):
         """Post data to waptserver using http POST method
 
         Add a signature to the posted data using host certificate.
@@ -1646,7 +1646,7 @@ class WaptServer(object):
         Args:
             action (str): doc part of the url
             data (str) : posted data body
-            files (dict) : {'filename': opened-file-descriptor}
+            files (list or dict) : list of filenames
 
         """
         surl = self.server_url
@@ -1670,6 +1670,19 @@ class WaptServer(object):
                     'X-Signer': signer,
                     })
 
+            if content_length is not None:
+                headers['Content-Length'] = "%s" % content_length
+
+            if isinstance(files,list):
+                files_dict = {}
+                for fn in files:
+                    with open(fn,'rb') as f:
+                        files_dict[os.path.basename(fn)] = f.read()
+            elif isinstance(files,dict):
+                files_dict = files
+            else:
+                files_dict = None
+
             req = requests.post("%s/%s" % (surl,action),
                     data=data,
                     files=files,
@@ -1679,6 +1692,7 @@ class WaptServer(object):
                     auth=auth,
                     headers=headers,
                     allow_redirects=True)
+
             if req.status_code == 401:
                 # rewind files...
                 if files:
@@ -1747,15 +1761,14 @@ class WaptServer(object):
                 package_filename = pe.localpath
 
             # TODO : issue if more hosts to upload than allowed open file handles.
-            files[os.path.basename(package_filename)] = open(package_filename,'rb')
+            files[os.path.basename(package_filename)] = pe.localpath
         try:
-            logger.debug('Uploading %s to server %s'% (','.join(files.keys()),self.server_url))
+            logger.debug('Uploading %s files to server %s'% (len(files),self.server_url))
             res = self.post('api/v3/upload_packages',files=files,auth=auth,timeout=300)
             if not res['success']:
                 raise Exception('Error when uploading packages: %s'% (res['msg']))
         finally:
-            for f in files.values():
-                f.close()
+            pass
         return res
 
 
@@ -2869,6 +2882,8 @@ class Wapt(object):
         auth = None
         if wapt_server_user:
             auth = (wapt_server_user, wapt_server_passwd)
+        else:
+            auth =  self.waptserver.ask_user_password_hook()
 
         files = {}
         is_hosts = None
@@ -2883,24 +2898,38 @@ class Wapt(object):
 
             if is_hosts is None and pe.section == 'host':
                 is_hosts = True
-
-            # TODO : issue if more hosts to upload than allowed open file handles.
-            files[os.path.basename(package_filename)] = open(package_filename,'rb')
+                # small files
+                with open(package_filename,'rb') as f:
+                    files[os.path.basename(package_filename)] = f.read()
+            else:
+                # stream
+                #files[os.path.basename(package_filename)] = open(package_filename,'rb')
+                files[os.path.basename(package_filename)] = FileChunks(package_filename)
 
         if files:
             try:
                 if is_hosts:
                     logger.info('Uploading %s host packages' % len(files))
+                    # single shot
                     res = self.waptserver.post('api/v3/upload_hosts',files=files,auth=auth,timeout=300)
                     if not res['success']:
                         raise Exception('Error when uploading host packages: %s'% (res['msg']))
                 else:
-                    res = self.waptserver.post('api/v3/upload_packages',files=files,auth=auth,timeout=300)
-                    if not res['success']:
-                        raise Exception('Error when uploading packages: %s'% (res['msg']))
+                    ok = []
+                    errors = []
+                    for (fn,f) in files.iteritems():
+                        # stream
+                        #res = self.waptserver.post('api/v3/upload_packages',data=f,auth=auth,timeout=300)
+                        res_partiel = self.waptserver.post('api/v3/upload_packages',data=f.get(),auth=auth,timeout=300)
+                        if not res_partiel['success']:
+                            errors.append(res_partiel)
+                        else:
+                            ok.append(res_partiel)
+                    res = {'success':len(errors)==0,'result':{'ok':ok,'errors':errors},'msg':'%s Packages uploaded, %s errors' % (len(ok),len(errors))}
             finally:
                 for f in files.values():
-                    f.close()
+                    if isinstance(f,file):
+                        f.close()
             return res
         else:
             raise Exception('No package to upload')

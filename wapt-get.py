@@ -253,11 +253,14 @@ def guess_package_root_dir(fn):
     else:
         return fn
 
-def ask_user_password(title='Password:'):
+def ask_user_password(title=''):
     user = options.wapt_server_user
     password = options.wapt_server_passwd
     if not user:
-        user = raw_input('Please get login for %s:' % title)
+        if title:
+            user = raw_input('Please get login for %s:' % title)
+        else:
+            user = raw_input('Please get login:')
     if user == '':
         user = 'admin'
     if password is None or password == '':

@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=2.6.0.0
+Version=3.0.2.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -1332,7 +1332,7 @@ Name=upload libre
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=upload-package "c:\tranquilit\tis-libreoffice_4.0.4-0_all.wapt"
+Parameters=upload-package c:\waptdev\tis-libreoffice-stable_5.3.7.2-3_all.wapt --wapt-server-user=admin --wapt-server-passwd=calimero
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
