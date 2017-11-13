@@ -620,7 +620,7 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
                 speed = received /(1024.0 * (time.time()-start_time))
                 if printhook:
                     printhook(received,total,speed,url)
-                else:
+                elif sys.stdout is not None:
                     try:
                         if received == 0:
                             print(u"Downloading %s (%.1f Mb)" % (url,int(total)/1024/1024))

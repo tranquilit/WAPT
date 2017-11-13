@@ -600,11 +600,9 @@ def upload_packages():
             self.chunk_size = chunk_size
 
         def save(self,target):
-            print('Streaming to %s...' % target)
             with open(target, "wb") as f:
                 chunk = self.stream.read(self.chunk_size)
                 while len(chunk) > 0:
-                    print('write chunk %s' % len(chunk))
                     f.write(chunk)
                     chunk = self.stream.read(self.chunk_size)
 
@@ -639,14 +637,12 @@ def upload_packages():
             return target
 
         except Exception as e:
-            print("%s" % e)
             logger.debug('traceback')
             logger.debug(traceback.print_exc())
             logger.critical('Error uploading package %s: %s' % (target,e,))
             errors.append(target)
             if os.path.isfile(tmp_target):
-                print(tmp_target)
-                #os.unlink(tmp_target)
+                os.unlink(tmp_target)
             raise
 
     try:
@@ -1804,7 +1800,6 @@ def host_tasks_status():
 
             socketio.emit('get_tasks_status', request.args, room=host_data['listening_address'], callback=result_callback)
 
-            #print('waiting...')
             wait_loop = timeout * 20
             while not result:
                 wait_loop -= 1
@@ -1974,7 +1969,6 @@ def on_waptclient_connect():
 @socketio.on('wapt_pong')
 def on_wapt_pong():
     try:
-        print('wapt_pong')
         uuid = request.args.get('uuid', None)
         logger.info('Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
         # stores sid in database
@@ -1985,7 +1979,6 @@ def on_wapt_pong():
             listening_address=request.sid,
             reachable='OK',
         ).where(Hosts.uuid == uuid).execute()
-        print('sio pong: commit')
         wapt_db.commit()
         # if not known, reject the connection
         if hostcount == 0:
