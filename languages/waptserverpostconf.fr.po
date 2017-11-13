@@ -1,7 +1,7 @@
-msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
+msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in Waptconsole"
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
+msgid "This can be changed later in Waptconsole"
 msgstr ""
 
 #: tvisloading.amessage.caption
@@ -47,7 +47,9 @@ msgid "Previous"
 msgstr "Précédent"
 
 #: tviswaptserverpostconf.actwriteconfstartserve.caption
-msgid "Start WAPT server with this configuration"
+#, fuzzy
+#| msgid "Start WAPT server with this configuration"
+msgid "Start WaptServer and WAPTService with this configuration"
 msgstr "Démarrer le serveur WAPT avec ces paramètres"
 
 #: tviswaptserverpostconf.bitbtn3.caption
@@ -175,6 +177,10 @@ msgstr "Pays (2 caractères, par ex. : FR)"
 msgid "Main site country code"
 msgstr "Code pays du site principal"
 
+#: tviswaptserverpostconf.label11.caption
+msgid "Note: Personal Key will be encrypted with same password as server."
+msgstr ""
+
 #: tviswaptserverpostconf.label12.caption
 msgid "City :"
 msgstr "Ville :"
@@ -222,7 +228,9 @@ msgid "Where to save the private key. This directory must be secure."
 msgstr "Emplacement de la clé privée. Ce répertoire doit être sécurisé."
 
 #: tviswaptserverpostconf.label4.caption
-msgid "Public key : "
+#, fuzzy
+#| msgid "Public key : "
+msgid "Public certificate : "
 msgstr "Clé publique :"
 
 #: tviswaptserverpostconf.label4.hint

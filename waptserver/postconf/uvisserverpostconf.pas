@@ -42,7 +42,7 @@ type
     EdSourcesRoot: TLabeledEdit;
     edEmail: TEdit;
     EdPwd1: TEdit;
-    EdPrivateKeyFN: TEdit;
+    EdPersonalCertificate: TEdit;
     edLocality: TEdit;
     edOrganization: TEdit;
     EdKeyName: TEdit;
@@ -54,6 +54,7 @@ type
     HTMLViewer1: THTMLViewer;
     Label1: TLabel;
     Label10: TLabel;
+    Label11: TLabel;
     Label12: TLabel;
     Label13: TLabel;
     Label14: TLabel;
@@ -117,10 +118,14 @@ type
     procedure PagesControlChange(Sender: TObject);
   private
     CurrentVisLoading:TVisLoading;
+    FCrtFilename: String;
     procedure OpenFirewall;
+    procedure SetCrtFilename(AValue: String);
     { private declarations }
   public
     { public declarations }
+    KeyFilename:String;
+    Property CrtFilename:String read FCrtFilename write SetCrtFilename;
   end;
 
 var
@@ -154,13 +159,10 @@ begin
     EdDefaultPrefix.Text:=IniReadString(WaptIniFilename,'global','default_package_prefix');
   if IniHasKey(WaptIniFilename,'global','default_sources_root') then
     EdSourcesRoot.Text:=IniReadString(WaptIniFilename,'global','default_sources_root');
-  if IniHasKey(WaptIniFilename,'global','templates_repo_url') then
-    EdTemplatesRepoURL.Text:=IniReadString(WaptIniFilename,'global','templates_repo_url');
-  if IniHasKey(WaptIniFilename,'global','private_key') then
-  begin
-    EdPrivateKeyFN.Text:=IniReadString(WaptIniFilename,'global','private_key');
-    EdKeyName.Text := ChangeFileExt(ExtractFileName(EdPrivateKeyFN.Text),'');
-  end;
+  if IniHasKey(WaptIniFilename,'wapt-templates','repo_url') then
+    EdTemplatesRepoURL.Text:=IniReadString(WaptIniFilename,'wapt-templates','repo_url');
+  if IniHasKey(WaptIniFilename,'global','personal_certificate_path') then
+    CrtFilename := IniReadString(WaptIniFilename,'global','personal_certificate_path');
   PagesControlChange(Self);
 end;
 
@@ -246,11 +248,12 @@ begin
     ini := TMemIniFile.Create(WaptIniFilename);
     ini.WriteString('global','repo_url',edWAPTRepoURL.Text);
     ini.WriteString('global','wapt_server',edWAPTServerURL.Text);
-    ini.WriteString('global','private_key',EdPrivateKeyFN.Text);
-    ini.WriteString('global','templates_repo_url',EdTemplatesRepoURL.Text);
     ini.WriteString('global','default_sources_root',EdSourcesRoot.Text);
     ini.WriteString('global','default_package_prefix',EdDefaultPrefix.Text);
-    ini.WriteString('global','loglevel','warning');
+    ini.WriteString('global','personal_certificate_path',CrtFilename);
+    ini.WriteString('global','verify_cert','0');
+    ini.WriteString('wapt-templates','repo_url',EdTemplatesRepoURL.Text);
+    ini.WriteString('wapt-templates','verify_cert','1');
     EdWaptInifile.Lines.Clear;
     TMemIniFile(ini).GetStrings(EdWaptInifile.Lines);
   finally
@@ -267,7 +270,7 @@ begin
   begin
     ini := TIniFile.Create(WaptIniFilename);
     try
-      fnPublicCert.Text:=ChangeFileExt(ini.ReadString('global', 'private_key', ''),'.crt');
+      fnPublicCert.Text:=ini.ReadString('global', 'personal_certificate_path', '');
       if not FileExists(fnPublicCert.Text) then
         fnPublicCert.Clear;
       edWaptServerUrl1.Text := ini.ReadString('global', 'wapt_server', '');
@@ -310,6 +313,13 @@ begin
   end;
 end;
 
+procedure TVisWAPTServerPostConf.SetCrtFilename(AValue: String);
+begin
+  if FCrtFilename=AValue then Exit;
+  FCrtFilename:=AValue;
+  EdPersonalCertificate.Text:=AValue;
+end;
+
 
 procedure TVisWAPTServerPostConf.ActManualUpdate(Sender: TObject);
 begin
@@ -346,7 +356,7 @@ begin
   else if PagesControl.ActivePage = pgPassword then
     ActNext.Enabled := (EdPwd1.Text<>'') and (EdPwd1.Text = EdPwd2.Text)
   else if PagesControl.ActivePage = pgPrivateKey then
-    ActNext.Enabled := (EdPrivateKeyFN.Text<>'') and FileExists(EdPrivateKeyFN.Text)
+    ActNext.Enabled := (CrtFilename<>'') and FileExists(CrtFilename)
   else if PagesControl.ActivePage = pgStartServices then
     ActNext.Enabled := GetServiceStatusByName('','waptserver') = ssRunning
   else
@@ -514,7 +524,7 @@ begin
       ProgressStep(3,10);
       if FileExists(WaptBaseDir+'\ssl\tranquilit.crt') then
         FileUtil.DeleteFileUTF8(WaptBaseDir+'\ssl\tranquilit.crt');
-      Fileutil.CopyFile(ChangeFileExt(EdPrivateKeyFN.Text,'.crt'),WaptBaseDir+'\ssl\'+ChangeFileExt(ExtractFileNameOnly(EdPrivateKeyFN.Text),'.crt'),True);
+      Fileutil.CopyFile(CrtFilename,WaptBaseDir+'\ssl\'+CrtFilename,True);
 
       ProgressTitle(rsSettingServerPassword);
       ProgressStep(4,10);
@@ -630,12 +640,13 @@ end;
 
 procedure TVisWAPTServerPostConf.ActCreateKeyExecute(Sender: TObject);
 var
-  KeyFilename:String;
-  CrtFilename:String;
   Password:String;
 begin
   KeyFilename:=AppendPathDelim(DirectoryCert.Text)+EdKeyName.Text+'.pem';
   CrtFilename:=AppendPathDelim(DirectoryCert.Text)+EdKeyName.Text+'.crt';
+  if not DirectoryExistsUTF8(DirectoryCert.Text) then
+    CreateDirUTF8(DirectoryCert.Text);
+
   Password := EdPwd1.Text;
 
   Run(AppendPathDelim(WaptBaseDir)+'waptpython.exe -c '+
@@ -655,8 +666,6 @@ begin
     '"'
     );
 
-  //EdPrivateKeyFN.Text := CreateSelfSignedCert(EdKeyName.Text,'',WaptBaseDir,DirectoryCert.Text,
-  //  edCountry.Text,edLocality.Text,edOrganization.Text,edUnit.Text,edCommonName.Text,edEmail.Text,'',True);
 end;
 
 procedure TVisWAPTServerPostConf.ActCheckDNSExecute(Sender: TObject);
@@ -735,8 +744,6 @@ var
 begin
   TargetKeyFN := AppendPathDelim(DirectoryCert.Text)+EdKeyName.Text+'.pem';
   ActCreateKey.Enabled := (DirectoryCert.Text<>'') and (EdKeyName.Text<>'') and not FileExists(TargetKeyFN);
-  if FileExists(TargetKeyFN) then
-    EdPrivateKeyFN.Text := TargetKeyFN;
 end;
 
 function MakeIdent(st:String):String;

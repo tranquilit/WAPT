@@ -1,10 +1,10 @@
 object VisWAPTServerPostConf: TVisWAPTServerPostConf
   Left = 414
-  Height = 345
+  Height = 382
   Top = 208
   Width = 680
   Caption = 'Configuration of WAPT server for Windows'
-  ClientHeight = 345
+  ClientHeight = 382
   ClientWidth = 680
   Constraints.MinHeight = 345
   Constraints.MinWidth = 680
@@ -15,19 +15,19 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
   LCLVersion = '1.3'
   object PagesControl: TPageControl
     Left = 0
-    Height = 315
+    Height = 352
     Top = 0
     Width = 434
-    ActivePage = pgStartServices
+    ActivePage = pgCreateWaptSetup
     Align = alClient
     MultiLine = True
-    TabIndex = 4
+    TabIndex = 5
     TabOrder = 0
     OnChange = PagesControlChange
     Options = [nboMultiLine]
     object pgParameters: TTabSheet
       Caption = 'Parameters'
-      ClientHeight = 271
+      ClientHeight = 308
       ClientWidth = 426
       object EdWAPTServerName: TLabeledEdit
         Left = 4
@@ -189,7 +189,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgPassword: TTabSheet
       Caption = 'Password'
-      ClientHeight = 271
+      ClientHeight = 308
       ClientWidth = 426
       object Label1: TLabel
         Left = 6
@@ -252,7 +252,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgPrivateKey: TTabSheet
       Caption = 'Private Key generation'
-      ClientHeight = 271
+      ClientHeight = 308
       ClientWidth = 426
       object Label9: TLabel
         Left = 12
@@ -262,6 +262,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Width = 62
         Caption = 'Key name :'
         Font.Style = [fsBold]
+        Layout = tlCenter
         ParentColor = False
         ParentFont = False
       end
@@ -275,49 +276,54 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         TabOrder = 1
       end
       object Label10: TLabel
-        Left = 12
+        Left = 9
         Height = 13
         Hint = 'Main site country code'
-        Top = 119
+        Top = 151
         Width = 139
         Caption = 'Country (2 chars. E.g. : FR):'
+        Layout = tlCenter
         ParentColor = False
         ParentShowHint = False
         ShowHint = True
       end
       object Label12: TLabel
-        Left = 12
+        Left = 9
         Height = 13
-        Top = 151
+        Top = 183
         Width = 26
         Caption = 'City :'
+        Layout = tlCenter
         ParentColor = False
       end
       object Label13: TLabel
-        Left = 12
+        Left = 9
         Height = 13
         Hint = 'Your company name'
-        Top = 175
+        Top = 207
         Width = 65
         Caption = 'Organisation:'
+        Layout = tlCenter
         ParentColor = False
       end
       object Label14: TLabel
-        Left = 12
+        Left = 9
         Height = 13
         Hint = 'E.g. : IT department.'
-        Top = 199
+        Top = 231
         Width = 39
         Caption = 'Service:'
+        Layout = tlCenter
         ParentColor = False
       end
       object Label16: TLabel
-        Left = 12
+        Left = 9
         Height = 13
         Hint = 'Technical department e-mail address.'
-        Top = 222
+        Top = 254
         Width = 76
         Caption = 'E-mail address :'
+        Layout = tlCenter
         ParentColor = False
       end
       object Label3: TLabel
@@ -328,47 +334,48 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Width = 96
         Caption = 'Target directory:'
         Font.Style = [fsBold]
+        Layout = tlCenter
         ParentColor = False
         ParentFont = False
       end
       object edCountry: TEdit
-        Left = 176
+        Left = 173
         Height = 21
-        Top = 119
+        Top = 151
         Width = 32
         MaxLength = 2
         TabOrder = 4
         Text = 'FR'
       end
       object edLocality: TEdit
-        Left = 176
+        Left = 173
         Height = 21
         Hint = 'E.g. : Nantes'
-        Top = 143
+        Top = 175
         Width = 176
         TabOrder = 5
       end
       object edOrganization: TEdit
-        Left = 176
+        Left = 173
         Height = 21
         Hint = 'E.g. : Tranquil It Systems'
-        Top = 167
+        Top = 199
         Width = 176
         TabOrder = 7
       end
       object edUnit: TEdit
-        Left = 176
+        Left = 173
         Height = 21
         Hint = 'E.g. : IT'
-        Top = 191
+        Top = 223
         Width = 176
         TabOrder = 8
       end
       object edEmail: TEdit
-        Left = 176
+        Left = 173
         Height = 21
         Hint = 'E.g. : technique@tranquil-it-systems.fr'
-        Top = 214
+        Top = 246
         Width = 176
         TabOrder = 9
       end
@@ -387,26 +394,26 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object Shape1: TShape
         AnchorSideRight.Side = asrBottom
-        Left = -33
+        Left = -36
         Height = 2
-        Top = 88
+        Top = 120
         Width = 413
         Anchors = [akTop]
         BorderSpacing.Left = 5
       end
       object StaticText1: TStaticText
-        Left = 114
+        Left = 9
         Height = 14
-        Top = 95
+        Top = 128
         Width = 97
         AutoSize = True
         Caption = 'Optional information'
         TabOrder = 3
       end
       object BitBtn5: TBitBtn
-        Left = 9
+        Left = 6
         Height = 25
-        Top = 246
+        Top = 278
         Width = 136
         Action = ActCreateKey
         Glyph.Data = {
@@ -447,17 +454,19 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         }
         TabOrder = 10
       end
-      object EdPrivateKeyFN: TEdit
-        Left = 160
+      object EdPersonalCertificate: TEdit
+        Left = 157
         Height = 21
-        Top = 246
-        Width = 248
+        Top = 278
+        Width = 264
+        Color = clForm
+        ReadOnly = True
         TabOrder = 11
       end
       object Memo3: TMemo
-        Left = 340
+        Left = 337
         Height = 40
-        Top = 112
+        Top = 144
         Width = 381
         Lines.Strings = (
           '<html>'
@@ -500,6 +509,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Font.Pitch = fpVariable
         Font.Quality = fqDraft
         Font.Style = [fsBold]
+        Layout = tlCenter
         ParentColor = False
         ParentFont = False
       end
@@ -511,10 +521,18 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Width = 176
         TabOrder = 2
       end
+      object Label11: TLabel
+        Left = 4
+        Height = 26
+        Top = 88
+        Width = 328
+        Caption = 'Note: Personal Key will be encrypted with same password as server.'#13#10'This can be changed later in Waptconsole'
+        ParentColor = False
+      end
     end
     object pgDevparam: TTabSheet
       Caption = 'Development'
-      ClientHeight = 271
+      ClientHeight = 308
       ClientWidth = 426
       object EdTemplatesRepoURL: TLabeledEdit
         Left = 8
@@ -617,7 +635,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgStartServices: TTabSheet
       Caption = 'Start'
-      ClientHeight = 271
+      ClientHeight = 308
       ClientWidth = 426
       object EdWaptInifile: TMemo
         Left = 4
@@ -627,12 +645,6 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Lines.Strings = (
           '[global]'
           'repo_url='
-          'wapt_server=http://srvwapt:8080'
-          'private_key=c:\private\test.pem'
-          'templates_repo_url=http://wapt/wapt'
-          'default_sources_root=c:\waptdev'
-          'default_package_prefix=test'
-          'loglevel=warning'
         )
         TabOrder = 0
         WordWrap = False
@@ -714,7 +726,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgCreateWaptSetup: TTabSheet
       Caption = 'Create installer for client hosts'
-      ClientHeight = 271
+      ClientHeight = 308
       ClientWidth = 426
       object BitBtn1: TBitBtn
         Left = 16
@@ -808,8 +820,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Height = 13
         Hint = 'The certificate you just created (.crt key).'
         Top = 20
-        Width = 66
-        Caption = 'Public key : '
+        Width = 103
+        Caption = 'Public certificate : '
         Font.Style = [fsBold]
         ParentColor = False
         ParentFont = False
@@ -1017,7 +1029,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
   object Panel1: TPanel
     Left = 0
     Height = 30
-    Top = 315
+    Top = 352
     Width = 680
     Align = alBottom
     BevelOuter = bvNone
@@ -1168,7 +1180,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
   end
   object HTMLViewer1: THTMLViewer
     Left = 434
-    Height = 315
+    Height = 352
     Top = 0
     Width = 246
     OnHotSpotClick = HTMLViewer1HotSpotClick
@@ -1189,8 +1201,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     PrintScale = 1
   end
   object ActionList1: TActionList
-    left = 336
-    top = 216
+    left = 333
+    top = 248
     object actPrevious: TAction
       Caption = 'Previous'
       OnExecute = actPreviousExecute
@@ -1219,7 +1231,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Caption = 'Cancel'
     end
     object actWriteConfStartServe: TAction
-      Caption = 'Start WAPT server with this configuration'
+      Caption = 'Start WaptServer and WAPTService with this configuration'
       OnExecute = actWriteConfStartServeExecute
     end
     object ActBuildWaptsetup: TAction
