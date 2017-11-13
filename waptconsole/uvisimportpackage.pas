@@ -245,8 +245,10 @@ var
 begin
   EdSearchPackage.Modified:=False;
   http_proxy := Waptrepo.HttpProxy;
-  if (Waptrepo.ServerCABundle='') or (Waptrepo.ServerCABundle='0') then
+  if (Waptrepo.ServerCABundle='') or (Waptrepo.ServerCABundle='0') or (LowerCase(Waptrepo.ServerCABundle)='false') then
     verify_cert:=False
+  else if (Waptrepo.ServerCABundle='1') or (LowerCase(Waptrepo.ServerCABundle)='true') then
+    verify_cert:=CARoot()
   else
     verify_cert:=Waptrepo.ServerCABundle;
 
