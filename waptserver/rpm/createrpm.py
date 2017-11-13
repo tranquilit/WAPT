@@ -34,6 +34,12 @@ import errno
 def run(*args, **kwargs):
     return subprocess.check_output(*args, shell=True, **kwargs)
 
+def run_verbose(*args, **kwargs):
+    output =  subprocess.check_output(*args, shell=True, **kwargs)
+    print (output)
+    return output
+
+
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
@@ -102,7 +108,7 @@ if not wapt_version:
 def check_if_package_is_installed(package_name):
     # issue with yum module in buildbot, using dirty subprocess way...
     try:
-        data = subprocess.check_output('rpm -q %s' % package_name, shell=True)
+        data = run('rpm -q %s' % package_name)
     except:
         return False
     if data.strip().startswith('%s-' % package_name):
@@ -143,14 +149,30 @@ if os.path.exists('pylibs'):
     shutil.rmtree('pylibs')
 eprint(
     'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-run(r'virtualenv ./pylibs --system-site-packages', shell=True)
+run_verbose(r'virtualenv ./pylibs --system-site-packages')
 eprint('Install additional libraries in build environment virtualenv')
-eprint(run(r'source ./pylibs/bin/activate ;pip install pip setuptools --upgrade', shell=True))
-eprint(run(r'source ./pylibs/bin/activate ; pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True))
+run_verbose(r'source ./pylibs/bin/activate ;pip install pip setuptools --upgrade')
+
+eprint('Temporay fix : download, patch and install Rocket outside of requirement-server.txt because of bug https://github.com/explorigin/Rocket/commit/fb8bd8f1b979faef8733853065536fc7db111612')
+# temporary fix for Rocket package : current pip package has a hardcoded http (non ssl) url to pipy. Pipy does not accept this kind of url anymore. Rocket package is patched upstream on Github, but not yet pushed to pipy
+run_verbose('rm -Rf ./Rocket-1.2.4/')
+run_verbose('wget https://pypi.python.org/packages/72/5a/efc43e5d8a7ef27205a4c7c4978ebaa812418e2151e7edb26ff3143b29eb/Rocket-1.2.4.zip#md5=fa611955154b486bb91e632a43e90f4b -O Rocket-1.2.4.zip')
+# should check md5 hash
+run_verbose("unzip Rocket-1.2.4.zip")
+run_verbose("sed -i 's#http://pypi.python.org/packages/source/d/distribute/#https://pypi.python.org/packages/source/d/distribute/#' Rocket-1.2.4/distribute_setup.py")
+run_verbose("pip install -t ./builddir/opt/wapt/lib/site-packages Rocket-1.2.4/")
+
+# fix for psycopg install because of ImportError: libpq-9c51d239.so.5.9: ELF load command address/offset not properly aligned
+run_verbose(r'yum install postgresql.x86_64')
+run_verbose(r'pip install -t ./builddir/opt/wapt/lib/site-packages psycopg2==2.7.3.2 --no-binary :all: ')
+
+run_verbose(r'source ./pylibs/bin/activate ; pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages')
+
 rsync('./pylibs/lib/', './builddir/opt/wapt/lib/')
+
 eprint('copying the waptserver files')
-rsync(source_dir, './builddir/opt/wapt/',
-      excludes=['postconf', 'mongod.exe', 'bin', 'include','spnego-http-auth-nginx-module'])
+
+rsync(source_dir, './builddir/opt/wapt/',excludes=['postconf', 'mongod.exe', 'bin', 'include','spnego-http-auth-nginx-module'])
 
 eprint('cryptography patches')
 mkdir_p('./builddir/opt/wapt/lib/site-packages/cryptography/x509/')
@@ -189,7 +211,7 @@ try:
     mkdir_p('./builddir/etc/logrotate.d/')
     shutil.copyfile('../scripts/waptserver-logrotate',
                     './builddir/etc/logrotate.d/waptserver')
-    run('chown root:root ./builddir/etc/logrotate.d/waptserver', shell=True)
+    run('chown root:root ./builddir/etc/logrotate.d/waptserver')
 except Exception as e:
     eprint ('error: \n%s' % e)
     exit(1)
@@ -199,7 +221,7 @@ try:
     mkdir_p('./builddir/etc/rsyslog.d/')
     shutil.copyfile('../scripts/waptserver-rsyslog',
                     './builddir/etc/rsyslog.d/waptserver.conf')
-    run('chown root:root ./builddir/etc/rsyslog.d/waptserver.conf', shell=True)
+    run('chown root:root ./builddir/etc/rsyslog.d/waptserver.conf')
 except Exception as e:
     eprint('error: \n%s' % e)
     exit(1)
@@ -213,7 +235,7 @@ eprint('copying nginx-related goo')
 try:
     ssl_dir = './builddir/opt/wapt/waptserver/ssl/'
     mkdir_p(ssl_dir)
-    run('chmod 0700 "ssl_dir"')
+    run('chmod 0700 "%s"' % ssl_dir)
     mkdir_p('./builddir/etc/systemd/system/nginx.service.d')
     copyfile('../scripts/nginx_worker_files_limit.conf', './builddir/etc/systemd/system/nginx.service.d/nginx_worker_files_limit.conf')
 except Exception as e:
