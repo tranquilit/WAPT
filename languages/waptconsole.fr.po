@@ -76,7 +76,9 @@ msgid "Generate private key and self signed certificate"
 msgstr "Générer Créer une clé privée et un certificat auto-signé"
 
 #: tviscreatekey.cbcodesigning.caption
-msgid "Tag as code signing certificate (package development)"
+#, fuzzy
+#| msgid "Tag as code signing certificate (package development)"
+msgid "Tag as code signing"
 msgstr "Pour la signature de  code (développement de paquets)"
 
 #: tviscreatekey.cbisca.caption
@@ -118,92 +120,113 @@ msgstr "Exemple : Tranquil IT Systems"
 msgid "E.g. : IT"
 msgstr "Exemple : numérique"
 
+#: tviscreatekey.labcacert.caption
+msgctxt "tviscreatekey.labcacert.caption"
+msgid "Authority Signing Certificate"
+msgstr "Certificat de la CA"
+
+#: tviscreatekey.labcakey.caption
+msgctxt "tviscreatekey.labcakey.caption"
+msgid "Authority Signing Key"
+msgstr "Clé de la CA"
+
+#: tviscreatekey.labcertname.caption
+msgctxt "tviscreatekey.labcertname.caption"
+msgid "Certificate name"
+msgstr "Nom du certificat"
+
+#: tviscreatekey.labcertname.hint
+msgid "Base filename of the certificate"
+msgstr ""
+
+#: tviscreatekey.labcn.caption
+msgctxt "tviscreatekey.labcn.caption"
+msgid "Common Name(CN) :"
+msgstr "Common Name (CN) :"
+
 #: tviscreatekey.labconfirmpwd.caption
 msgctxt "tviscreatekey.labconfirmpwd.caption"
 msgid "Confirm password"
 msgstr "Confirmer le mot de passe"
 
-#: tviscreatekey.label1.caption
-msgid "Target keys directory:"
-msgstr "Répertoire de destination des clefs :"
-
-#: tviscreatekey.label1.hint
-msgid "Where to save the private key. This directory must be secure."
-msgstr "Emplacement de la clé privée. Ce répertoire doit être sécurisé."
-
-#: tviscreatekey.label10.caption
+#: tviscreatekey.labcountry.caption
+msgctxt "tviscreatekey.labcountry.caption"
 msgid "Country (2 chars. E.g. : FR):"
 msgstr "Pays (2 caractères, par ex. : FR)"
 
-#: tviscreatekey.label10.hint
+#: tviscreatekey.labcountry.hint
+msgctxt "tviscreatekey.labcountry.hint"
 msgid "Main site country code"
 msgstr "Code pays du site principal"
-
-#: tviscreatekey.label11.caption
-msgid "Authority Signing Certificate"
-msgstr "Certificat de la CA"
-
-#: tviscreatekey.label12.caption
-msgid "City :"
-msgstr "Ville :"
-
-#: tviscreatekey.label13.caption
-msgid "Organisation:"
-msgstr "Organisation :"
-
-#: tviscreatekey.label13.hint
-msgid "Your company name"
-msgstr "Nom de votre entreprise :"
-
-#: tviscreatekey.label14.caption
-msgid "Service :"
-msgstr "Service :"
-
-#: tviscreatekey.label14.hint
-msgid "E.g. : IT department."
-msgstr "E.g. : DSI"
-
-#: tviscreatekey.label15.caption
-msgid "Common Name(CN) :"
-msgstr "Common Name (CN) :"
-
-#: tviscreatekey.label16.caption
-msgid "E-mail address :"
-msgstr "Adresse électronique :"
-
-#: tviscreatekey.label16.hint
-msgid "Technical department e-mail address."
-msgstr "Adresse électronique du service technique."
-
-#: tviscreatekey.label17.caption
-msgid "Private key password"
-msgstr "Mot de passe de la clef privée"
-
-#: tviscreatekey.label18.caption
-msgid "Certificate name"
-msgstr "Nom du certificat"
-
-#: tviscreatekey.label19.caption
-msgid "Authority Signing Key"
-msgstr "Clé de la CA"
 
 #: tviscreatekey.label2.caption
 msgid "If you don't provide a CA Certificate and key, your certificate will be self-signed."
 msgstr "Si vous ne spécifiez pas de certificat et clé de CA, votre certificat sera auto-signé"
 
-#: tviscreatekey.label9.caption
-msgctxt "tviscreatekey.label9.caption"
+#: tviscreatekey.labkeyfn.caption
+msgctxt "tviscreatekey.labkeyfn.caption"
 msgid "Key filename :"
 msgstr "Nom du fichier de la clé :"
 
-#: tviscreatekey.label9.hint
-msgctxt "tviscreatekey.label9.hint"
+#: tviscreatekey.labkeyfn.hint
+msgctxt "tviscreatekey.labkeyfn.hint"
 msgid "E.g. 'tranquilit'. Please don't use any special characters."
 msgstr "Par exemple : 'tranquilit' (sans caractères spéciaux !)"
 
-#: tviscreatekey.statictext1.caption
+#: tviscreatekey.labkeypassword.caption
+msgctxt "tviscreatekey.labkeypassword.caption"
+msgid "Private key password"
+msgstr "Mot de passe de la clef privée"
+
+#: tviscreatekey.lablocality.caption
+msgctxt "tviscreatekey.lablocality.caption"
+msgid "City :"
+msgstr "Ville :"
+
+#: tviscreatekey.labmail.caption
+msgctxt "tviscreatekey.labmail.caption"
+msgid "E-mail address :"
+msgstr "Adresse électronique :"
+
+#: tviscreatekey.labmail.hint
+msgctxt "tviscreatekey.labmail.hint"
+msgid "Technical department e-mail address."
+msgstr "Adresse électronique du service technique."
+
+#: tviscreatekey.laboptional.caption
+msgctxt "tviscreatekey.laboptional.caption"
 msgid "Optional information"
 msgstr "Informations facultatives"
+
+#: tviscreatekey.laborg.caption
+msgctxt "tviscreatekey.laborg.caption"
+msgid "Organisation:"
+msgstr "Organisation :"
+
+#: tviscreatekey.laborg.hint
+msgctxt "tviscreatekey.laborg.hint"
+msgid "Your company name"
+msgstr "Nom de votre entreprise :"
+
+#: tviscreatekey.labtargetdir.caption
+msgctxt "tviscreatekey.labtargetdir.caption"
+msgid "Target keys directory:"
+msgstr "Répertoire de destination des clefs :"
+
+#: tviscreatekey.labtargetdir.hint
+msgctxt "tviscreatekey.labtargetdir.hint"
+msgid "Where to save the private key. This directory must be secure."
+msgstr "Emplacement de la clé privée. Ce répertoire doit être sécurisé."
+
+#: tviscreatekey.labunit.caption
+msgctxt "tviscreatekey.labunit.caption"
+msgid "Service :"
+msgstr "Service :"
+
+#: tviscreatekey.labunit.hint
+msgctxt "tviscreatekey.labunit.hint"
+msgid "E.g. : IT department."
+msgstr "E.g. : DSI"
 
 #: tviscreatewaptsetup.caption
 msgctxt "tviscreatewaptsetup.caption"
@@ -1095,7 +1118,7 @@ msgstr "Supprimer du dépôt"
 #: tviswaptgui.actdisplaypreferences.caption
 msgctxt "tviswaptgui.actdisplaypreferences.caption"
 msgid "Display preferences"
-msgstr ""
+msgstr "Préférences d'affichage"
 
 #: tviswaptgui.acteditgroup.caption
 msgctxt "tviswaptgui.acteditgroup.caption"
@@ -3098,6 +3121,16 @@ msgstr ""
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -4143,6 +4176,12 @@ msgstr "Attention, l'installeur waptagent.exe n'est pas présent sur le serveur.
 #| "Warning, the version of the waptagent.exe installer is too old.\n"
 #| "Current waptagent.exe version: %s\n"
 #| "waptsetup-tis.exe version: %s\n"
+#| "Warning, the version of the waptagent.exe installer is too old.\n"
+#| "Current waptagent.exe version: %s\n"
+#| "waptsetup-tis.exe version: %s\n"
+#| "Warning, the version of the waptagent.exe installer is too old.\n"
+#| "Current waptagent.exe version: %s\n"
+#| "waptsetup-tis.exe version: %s\n"
 msgid ""
 "Warning, the version of the waptagent.exe installer is too old.\n"
 "Current waptagent.exe version: %s\n"
@@ -4189,6 +4228,10 @@ msgstr "Vous devez d'abord définir le préfixe des paquets dans les préférenc
 #: uwaptconsoleres.rswaptservererror
 #, fuzzy
 #| msgid ""
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
 #| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
@@ -4836,6 +4879,12 @@ msgstr ""
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
 #| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
 "Current server version: %s\n"
@@ -4853,6 +4902,10 @@ msgstr "Erreur lors de la création de l'agent : %s"
 #: uwaptconsoleres.rswaptsetupuploadsuccess
 #, fuzzy
 #| msgid ""
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"

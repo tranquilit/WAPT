@@ -600,7 +600,6 @@ type
   public
     { public declarations }
     PackageEdited: ISuperObject;
-    waptpath: string;
 
     MainRepoUrl, WAPTServer, TemplatesRepoUrl: string;
 
@@ -1497,107 +1496,57 @@ begin
 end;
 
 procedure TVisWaptGUI.ActCreateCertificateExecute(Sender: TObject);
-var
-  pemfn, certFile,crtBaseName: utf8string;
-  CreatePrivateKey,done: boolean;
 begin
   with TVisCreateKey.Create(Self) do
-    try
-      repeat
-        if ShowModal = mrOk then
+  try
+    if ShowModal = mrOk then
+    begin
+      with TINIFile.Create(AppIniFilename) do
+      try
+        if GetWaptPersonalCertificatePath = '' then
+        // first use...
+          WriteString('global', 'personal_certificate_path', CertificateFilename);
+
+        if EdCAKeyFilename.Text <> '' then
+          WriteString('global', 'default_ca_key_path', EdCAKeyFilename.Text);
+        if EdCACertificate.Text <> '' then
+          WriteString('global', 'default_ca_cert_path', EdCACertificate.Text);
+      finally
+        Free;
+      end;
+
+      // If this a CA cert, we should perhaps take it in account right now...
+      if CBIsCA.Checked and (MessageDlg(Format(rsWriteCertOnLocalMachine,[AppendPathDelim(WaptBaseDir)+'ssl']), mtConfirmation, [mbYes, mbNo],0) = mrYes) then
+      begin
+        if CopyFile(PChar(CertificateFilename),
+          PChar(WaptBaseDir() + '\ssl\' + ExtractFileName(CertificateFilename)), True) then
+        begin
+          CurrentVisLoading := TVisLoading.Create(Self);
+          with CurrentVisLoading do
           try
-            CreatePrivateKey := not FileExists(EdKeyFileName.FileName);
-            if not CreatePrivateKey then
-              pemfn:=EdKeyFilename.FileName
-            else
-              pemfn:=AppendPathDelim(utf8Decode(DirectoryCert.Text))+ExtractFileNameOnly(utf8Decode(EdKeyFileName.Text))+'.pem';
-            crtBaseName:=edCertBaseName.Text;
-
-            certFile := CreateSignedCert(
-              pemfn,
-              crtBaseName,
-              waptpath,
-              utf8Decode(DirectoryCert.Text),
-              edCountry.Text,
-              edLocality.Text,
-              edOrganization.Text,
-              edUnit.Text,
-              edCommonName.Text,
-              edEmail.Text,
-              EdKeyPassword.Text,
-              CBCodeSigning.Checked,
-              CBIsCA.Checked,
-              EdCACertificate.Text,
-              EdCAKeyFilename.Text);
-
-            done := FileExists(certFile);
-            if done then
-            begin
-              if CreatePrivateKey then
-                ShowMessageFmt(rsKeyPairGenSuccess,
-                  [UTF8Encode(pemfn),UTF8Encode(certFile)])
-              else
-                ShowMessageFmt(rsPublicKeyGenSuccess,
-                  [UTF8Encode(certFile)]);
-
-                with TINIFile.Create(AppIniFilename) do
-                try
-                  if GetWaptPersonalCertificatePath = '' then
-                  // first use...
-                    WriteString('global', 'personal_certificate_path', certFile);
-
-                  if EdCAKeyFilename.Text <> '' then
-                    WriteString('global', 'default_ca_key_path', EdCAKeyFilename.Text);
-                  if EdCACertificate.Text <> '' then
-                    WriteString('global', 'default_ca_cert_path', EdCACertificate.Text);
-                finally
-                  Free;
-                end;
-
-              // If this a CA cert, we should perhaps take it in account right now...
-              if CBIsCA.Checked and (MessageDlg(Format(rsWriteCertOnLocalMachine,[AppendPathDelim(WaptBaseDir)+'ssl']), mtConfirmation, [mbYes, mbNo],0) = mrYes) then
-              begin
-                if CopyFile(PChar(certFile),
-                  PChar(waptpath + '\ssl\' + ExtractFileName(certFile)), True) then
-                begin
-                  CurrentVisLoading := TVisLoading.Create(Self);
-                  with CurrentVisLoading do
-                  try
-                    ProgressTitle(rsReloadWaptserviceConfig);
-                    Start(3);
-                    ActReloadConfigExecute(self);
-                    ProgressStep(1,3);
-                    ProgressTitle(rsReloadWaptserviceConfig);
-                    try
-                      Run('cmd /C net stop waptservice');
-                      ProgressStep(2,3);
-                      Run('cmd /C net start waptservice');
-                      ProgressStep(3,3);
-                    except
-                    end;
-
-                  finally
-                    Finish;
-                    FreeAndNil(CurrentVisLoading);
-                  end;
-                end
-                else
-                  ShowMessage(rsPublicKeyGenFailure);
-              end;
+            ProgressTitle(rsReloadWaptserviceConfig);
+            Start(3);
+            ActReloadConfigExecute(self);
+            ProgressStep(1,3);
+            ProgressTitle(rsReloadWaptserviceConfig);
+            try
+              Run('cmd /C net stop waptservice');
+              ProgressStep(2,3);
+              Run('cmd /C net start waptservice');
+              ProgressStep(3,3);
+            except
             end;
-          except
-            on e: Exception do
-            begin
-              ShowMessage(format(rsPublicKeyGenError, [e.Message]));
-              done := False;
-            end;
-          end
-        else
-          done := True;
-      until done;
-    finally
-      Free;
-    end;
+
+          finally
+            Finish;
+            FreeAndNil(CurrentVisLoading);
+          end;
+        end
+      end
+    end
+  finally
+    Free;
+  end;
 end;
 
 procedure TVisWaptGUI.ActCreateCertificateUpdate(Sender: TObject);
@@ -1644,7 +1593,7 @@ begin
       CBCheckCertificatesValidity.Checked:=ini.ReadBool('global', 'check_certificates_validity',True );
       if FatUpgrade then
         // include waptagent.exe in waptupgrade package...
-        fnWaptDirectory.Directory := waptpath+'\waptupgrade'
+        fnWaptDirectory.Directory := WaptBaseDir()+'\waptupgrade'
       else
         fnWaptDirectory.Directory := GetTempDir(False);
       if ShowModal = mrOk then
@@ -3682,7 +3631,6 @@ begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
   ScaleImageList(ImageList1,96);
   ScaleImageList(ActionsImages,96);
-  waptpath := ExtractFileDir(ParamStr(0));
   HostsLimit := 2000;
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
 end;

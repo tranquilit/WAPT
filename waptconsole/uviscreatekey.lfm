@@ -1,12 +1,13 @@
 object VisCreateKey: TVisCreateKey
-  Left = 439
-  Height = 466
-  Top = 318
-  Width = 439
+  Left = 630
+  Height = 465
+  Top = 311
+  Width = 412
+  AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Generate private key and self signed certificate'
-  ClientHeight = 466
-  ClientWidth = 439
+  ClientHeight = 465
+  ClientWidth = 412
   Font.CharSet = ANSI_CHARSET
   Font.Color = clBlack
   Font.Height = -11
@@ -21,15 +22,15 @@ object VisCreateKey: TVisCreateKey
   object Panel1: TPanel
     Left = 0
     Height = 27
-    Top = 439
-    Width = 439
+    Top = 438
+    Width = 412
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 27
-    ClientWidth = 439
+    ClientWidth = 412
     TabOrder = 1
     object BitBtn1: TBitBtn
-      Left = 279
+      Left = 252
       Height = 23
       Top = 3
       Width = 75
@@ -41,7 +42,7 @@ object VisCreateKey: TVisCreateKey
       TabOrder = 0
     end
     object BitBtn2: TBitBtn
-      Left = 359
+      Left = 332
       Height = 23
       Top = 3
       Width = 75
@@ -55,359 +56,498 @@ object VisCreateKey: TVisCreateKey
   end
   object Panel2: TPanel
     Left = 0
-    Height = 439
+    Height = 438
     Top = 0
-    Width = 439
+    Width = 412
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 439
-    ClientWidth = 439
+    ClientHeight = 438
+    ClientWidth = 412
     TabOrder = 0
-    object Label9: TLabel
-      Left = 9
-      Height = 13
-      Hint = 'E.g. ''tranquilit''. Please don''t use any special characters.'
-      Top = 34
-      Width = 79
-      Caption = 'Key filename :'
-      Font.CharSet = ANSI_CHARSET
-      Font.Color = clBlack
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Pitch = fpVariable
-      Font.Quality = fqDraft
-      Font.Style = [fsBold]
-      ParentColor = False
-      ParentFont = False
-    end
-    object Label10: TLabel
-      Left = 26
-      Height = 13
-      Hint = 'Main site country code'
-      Top = 317
-      Width = 139
-      Caption = 'Country (2 chars. E.g. : FR):'
-      ParentColor = False
-      ParentShowHint = False
-      ShowHint = True
-    end
-    object Label12: TLabel
-      Left = 26
-      Height = 13
-      Top = 337
-      Width = 26
-      Caption = 'City :'
-      ParentColor = False
-    end
-    object Label13: TLabel
-      Left = 26
-      Height = 13
-      Hint = 'Your company name'
-      Top = 360
-      Width = 65
-      Caption = 'Organisation:'
-      ParentColor = False
-    end
-    object Label14: TLabel
-      Left = 26
-      Height = 13
-      Hint = 'E.g. : IT department.'
-      Top = 384
-      Width = 42
-      Caption = 'Service :'
-      ParentColor = False
-    end
-    object Label16: TLabel
-      Left = 26
-      Height = 13
-      Hint = 'Technical department e-mail address.'
-      Top = 408
-      Width = 76
-      Caption = 'E-mail address :'
-      ParentColor = False
-    end
-    object Label1: TLabel
-      Left = 9
-      Height = 13
-      Hint = 'Where to save the private key. This directory must be secure.'
-      Top = 13
-      Width = 126
-      Caption = 'Target keys directory:'
-      Font.CharSet = ANSI_CHARSET
-      Font.Color = clBlack
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Pitch = fpVariable
-      Font.Quality = fqDraft
-      Font.Style = [fsBold]
-      ParentColor = False
-      ParentFont = False
-    end
-    object edCountry: TEdit
-      Left = 173
-      Height = 21
-      Top = 312
-      Width = 32
-      MaxLength = 2
-      TabOrder = 11
-      Text = 'FR'
-    end
-    object edLocality: TEdit
-      Left = 173
-      Height = 21
-      Hint = 'E.g. : Nantes'
-      Top = 336
-      Width = 176
-      TabOrder = 12
-    end
-    object edOrganization: TEdit
-      Left = 173
-      Height = 21
-      Hint = 'E.g. : Tranquil It Systems'
-      Top = 360
-      Width = 176
-      TabOrder = 13
-    end
-    object edUnit: TEdit
-      Left = 173
-      Height = 21
-      Hint = 'E.g. : IT'
-      Top = 384
-      Width = 176
-      TabOrder = 14
-    end
-    object edEmail: TEdit
-      Left = 173
-      Height = 21
-      Hint = 'E.g. : technique@tranquil-it-systems.fr'
-      Top = 408
-      Width = 176
-      TabOrder = 15
-    end
-    object Shape1: TShape
-      AnchorSideRight.Side = asrBottom
-      Left = 9
-      Height = 2
-      Top = 192
-      Width = 413
-      Anchors = [akTop]
-      BorderSpacing.Left = 5
-    end
-    object StaticText1: TStaticText
-      Left = 7
-      Height = 14
-      Top = 296
-      Width = 97
+    object PanCA: TPanel
+      Left = 0
+      Height = 92
+      Top = 345
+      Width = 412
+      Align = alTop
       AutoSize = True
-      Caption = 'Optional information'
-      TabOrder = 10
-    end
-    object Label15: TLabel
-      Left = 8
-      Height = 13
-      Top = 205
-      Width = 115
-      Caption = 'Common Name(CN) :'
-      Font.CharSet = ANSI_CHARSET
-      Font.Color = clBlack
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Pitch = fpVariable
-      Font.Quality = fqDraft
-      Font.Style = [fsBold]
-      ParentColor = False
-      ParentFont = False
-    end
-    object edCommonName: TEdit
-      Left = 174
-      Height = 21
-      Hint = 'This information will be used as Signer identification in packages'
-      Top = 202
-      Width = 174
-      OnExit = edCommonNameExit
-      TabOrder = 6
-    end
-    object EdKeyFilename: TFileNameEdit
-      Left = 173
-      Height = 21
-      Top = 32
-      Width = 208
-      OnAcceptFileName = EdKeyFilenameAcceptFileName
-      DialogOptions = [ofNoTestFileCreate, ofEnableSizing, ofViewDetail]
-      Filter = 'X509 private key files (*.pem)|*.pem|All files (*.*)|*.*'
-      FilterIndex = 0
-      HideDirectories = False
-      ButtonWidth = 23
-      NumGlyphs = 1
-      Flat = True
-      MaxLength = 0
-      TabOrder = 1
-      OnExit = EdKeyFilenameExit
-    end
-    object DirectoryCert: TDirectoryEdit
-      Left = 173
-      Height = 21
-      Top = 8
-      Width = 208
-      OnAcceptDirectory = DirectoryCertAcceptDirectory
-      DialogTitle = 'Select traget directory for keys and certificates'
-      ShowHidden = False
-      ButtonWidth = 23
-      NumGlyphs = 1
-      Flat = True
-      MaxLength = 0
-      TabOrder = 0
-    end
-    object EdKeyPassword: TEdit
-      Left = 173
-      Height = 21
-      Hint = 'Used to decrypt or encrypt private jkey'
-      Top = 56
-      Width = 176
-      EchoMode = emPassword
-      PasswordChar = '*'
+      BevelOuter = bvNone
+      ChildSizing.Layout = cclLeftToRightThenTopToBottom
+      ChildSizing.ControlsPerLine = 2
+      ClientHeight = 92
+      ClientWidth = 412
       TabOrder = 2
-    end
-    object Label17: TLabel
-      Left = 9
-      Height = 13
-      Top = 56
-      Width = 122
-      Caption = 'Private key password'
-      Font.CharSet = ANSI_CHARSET
-      Font.Color = clBlack
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Pitch = fpVariable
-      Font.Quality = fqDraft
-      Font.Style = [fsBold]
-      ParentColor = False
-      ParentFont = False
-    end
-    object LabConfirmPwd: TLabel
-      Left = 9
-      Height = 13
-      Top = 80
-      Width = 86
-      Caption = 'Confirm password'
-      Font.CharSet = ANSI_CHARSET
-      Font.Color = clBlack
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Pitch = fpVariable
-      Font.Quality = fqDraft
-      ParentColor = False
-      ParentFont = False
       Visible = False
+      object PanCATop: TPanel
+        Left = 0
+        Height = 37
+        Top = 0
+        Width = 412
+        Align = alTop
+        BevelOuter = bvNone
+        ChildSizing.LeftRightSpacing = 6
+        ChildSizing.TopBottomSpacing = 3
+        ChildSizing.HorizontalSpacing = 6
+        ChildSizing.VerticalSpacing = 3
+        ClientHeight = 37
+        ClientWidth = 412
+        TabOrder = 0
+        object Shape1: TShape
+          Left = 6
+          Height = 2
+          Top = 3
+          Width = 400
+          Align = alTop
+          BorderSpacing.Left = 5
+        end
+        object Label2: TLabel
+          Left = 6
+          Height = 26
+          Top = 8
+          Width = 400
+          Align = alClient
+          Caption = 'If you don''t provide a CA Certificate and key, your certificate will be self-signed.'
+          ParentColor = False
+        end
+      end
+      object PanCA2: TPanel
+        Left = 0
+        Height = 55
+        Top = 37
+        Width = 412
+        Align = alClient
+        BevelOuter = bvNone
+        ChildSizing.LeftRightSpacing = 6
+        ChildSizing.TopBottomSpacing = 3
+        ChildSizing.HorizontalSpacing = 6
+        ChildSizing.VerticalSpacing = 3
+        ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 2
+        ClientHeight = 55
+        ClientWidth = 412
+        TabOrder = 1
+        object LabCAKey: TLabel
+          Left = 6
+          Height = 21
+          Top = 3
+          Width = 213
+          Caption = 'Authority Signing Key'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object EdCAKeyFilename: TFileNameEdit
+          Left = 225
+          Height = 21
+          Top = 3
+          Width = 157
+          DialogOptions = [ofNoTestFileCreate, ofEnableSizing, ofViewDetail]
+          Filter = 'X509 private key files (*.pem)|*.pem|All files (*.*)|*.*'
+          FilterIndex = 0
+          HideDirectories = False
+          ButtonWidth = 23
+          NumGlyphs = 1
+          Flat = True
+          MaxLength = 0
+          TabOrder = 0
+        end
+        object LabCACert: TLabel
+          Left = 6
+          Height = 21
+          Top = 27
+          Width = 213
+          Caption = 'Authority Signing Certificate'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object EdCACertificate: TFileNameEdit
+          Left = 225
+          Height = 21
+          Top = 27
+          Width = 157
+          DialogOptions = [ofNoTestFileCreate, ofEnableSizing, ofViewDetail]
+          Filter = 'X509 certificate files (*.crt)|*.crt|All files (*.*)|*.*'
+          FilterIndex = 0
+          HideDirectories = False
+          ButtonWidth = 23
+          NumGlyphs = 1
+          Flat = True
+          MaxLength = 0
+          TabOrder = 1
+          OnExit = EdCACertificateExit
+        end
+        object PanCASize1: TPanel
+          Left = 6
+          Height = 1
+          Top = 51
+          Width = 213
+          AutoSize = True
+          BevelOuter = bvNone
+          TabOrder = 2
+        end
+        object PanCASize2: TPanel
+          Left = 225
+          Height = 1
+          Top = 51
+          Width = 157
+          AutoSize = True
+          BorderSpacing.Right = 30
+          BevelOuter = bvNone
+          TabOrder = 3
+        end
+      end
     end
-    object EdKeypassword2: TEdit
-      Left = 173
-      Height = 21
-      Top = 80
-      Width = 176
-      EchoMode = emPassword
-      PasswordChar = '*'
-      TabOrder = 3
-      Visible = False
+    object PanKey: TPanel
+      Left = 0
+      Height = 103
+      Top = 0
+      Width = 412
+      Align = alTop
+      AutoSize = True
+      BevelOuter = bvNone
+      ChildSizing.LeftRightSpacing = 6
+      ChildSizing.TopBottomSpacing = 3
+      ChildSizing.HorizontalSpacing = 6
+      ChildSizing.VerticalSpacing = 3
+      ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+      ChildSizing.ShrinkHorizontal = crsScaleChilds
+      ChildSizing.Layout = cclLeftToRightThenTopToBottom
+      ChildSizing.ControlsPerLine = 2
+      ClientHeight = 103
+      ClientWidth = 412
+      TabOrder = 0
+      object PanSize1: TPanel
+        Left = 6
+        Height = 1
+        Top = 3
+        Width = 208
+        AutoSize = True
+        BevelOuter = bvNone
+        TabOrder = 0
+      end
+      object PanSize2: TPanel
+        Left = 220
+        Height = 1
+        Top = 3
+        Width = 162
+        AutoSize = True
+        BorderSpacing.Right = 30
+        BevelOuter = bvNone
+        TabOrder = 1
+      end
+      object LabTargetDir: TLabel
+        Left = 6
+        Height = 21
+        Hint = 'Where to save the private key. This directory must be secure.'
+        Top = 7
+        Width = 208
+        Caption = 'Target keys directory:'
+        Font.Style = [fsBold]
+        Layout = tlCenter
+        ParentColor = False
+        ParentFont = False
+      end
+      object DirectoryCert: TDirectoryEdit
+        Left = 220
+        Height = 21
+        Top = 7
+        Width = 162
+        OnAcceptDirectory = DirectoryCertAcceptDirectory
+        DialogTitle = 'Select traget directory for keys and certificates'
+        ShowHidden = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        Flat = True
+        MaxLength = 0
+        TabOrder = 2
+        OnExit = DirectoryCertExit
+      end
+      object LabKeyFN: TLabel
+        Left = 6
+        Height = 21
+        Hint = 'E.g. ''tranquilit''. Please don''t use any special characters.'
+        Top = 31
+        Width = 208
+        Caption = 'Key filename :'
+        Font.Style = [fsBold]
+        Layout = tlCenter
+        ParentColor = False
+        ParentFont = False
+      end
+      object EdKeyFilename: TFileNameEdit
+        Left = 220
+        Height = 21
+        Top = 31
+        Width = 162
+        OnAcceptFileName = EdKeyFilenameAcceptFileName
+        DialogOptions = [ofNoTestFileCreate, ofEnableSizing, ofViewDetail]
+        Filter = 'X509 private key files (*.pem)|*.pem|All files (*.*)|*.*'
+        FilterIndex = 0
+        HideDirectories = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        Flat = True
+        MaxLength = 0
+        TabOrder = 3
+        OnExit = EdKeyFilenameExit
+      end
+      object LabKeyPassword: TLabel
+        Left = 6
+        Height = 21
+        Top = 55
+        Width = 208
+        Caption = 'Private key password'
+        Font.Style = [fsBold]
+        Layout = tlCenter
+        ParentColor = False
+        ParentFont = False
+      end
+      object EdKeyPassword: TEdit
+        Left = 220
+        Height = 21
+        Hint = 'Used to decrypt or encrypt private jkey'
+        Top = 55
+        Width = 162
+        EchoMode = emPassword
+        PasswordChar = '*'
+        TabOrder = 4
+      end
+      object LabConfirmPwd: TLabel
+        Left = 6
+        Height = 21
+        Top = 79
+        Width = 208
+        Caption = 'Confirm password'
+        Layout = tlCenter
+        ParentColor = False
+        ParentFont = False
+        Visible = False
+      end
+      object EdKeypassword2: TEdit
+        Left = 220
+        Height = 21
+        Top = 79
+        Width = 162
+        EchoMode = emPassword
+        PasswordChar = '*'
+        TabOrder = 5
+        Visible = False
+      end
     end
-    object CBCodeSigning: TCheckBox
-      Left = 160
-      Height = 17
-      Top = 227
-      Width = 281
-      Caption = 'Tag as code signing certificate (package development)'
-      Checked = True
-      State = cbChecked
-      TabOrder = 7
-    end
-    object Label18: TLabel
-      Left = 8
-      Height = 13
-      Top = 266
-      Width = 94
-      Caption = 'Certificate name'
-      Font.CharSet = ANSI_CHARSET
-      Font.Color = clBlack
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Pitch = fpVariable
-      Font.Quality = fqDraft
-      Font.Style = [fsBold]
-      ParentColor = False
-      ParentFont = False
-    end
-    object edCertBaseName: TEdit
-      Left = 174
-      Height = 21
-      Hint = 'This information will be used as Signer identification in packages'
-      Top = 264
-      Width = 174
-      TabOrder = 9
-    end
-    object EdCACertificate: TFileNameEdit
-      Left = 173
-      Height = 21
-      Top = 134
-      Width = 208
-      DialogOptions = [ofNoTestFileCreate, ofEnableSizing, ofViewDetail]
-      Filter = 'X509 certificate files (*.crt)|*.crt|All files (*.*)|*.*'
-      FilterIndex = 0
-      HideDirectories = False
-      ButtonWidth = 23
-      NumGlyphs = 1
-      Flat = True
-      MaxLength = 0
-      TabOrder = 4
-      OnExit = EdCACertificateExit
-    end
-    object Label11: TLabel
-      Left = 11
-      Height = 13
-      Top = 136
-      Width = 135
-      Caption = 'Authority Signing Certificate'
-      ParentColor = False
-    end
-    object Label19: TLabel
-      Left = 11
-      Height = 13
-      Top = 160
-      Width = 103
-      Caption = 'Authority Signing Key'
-      ParentColor = False
-    end
-    object EdCAKeyFilename: TFileNameEdit
-      Left = 173
-      Height = 21
-      Top = 160
-      Width = 208
-      DialogOptions = [ofNoTestFileCreate, ofEnableSizing, ofViewDetail]
-      Filter = 'X509 private key files (*.pem)|*.pem|All files (*.*)|*.*'
-      FilterIndex = 0
-      HideDirectories = False
-      ButtonWidth = 23
-      NumGlyphs = 1
-      Flat = True
-      MaxLength = 0
-      TabOrder = 5
-    end
-    object Label2: TLabel
-      Left = 9
-      Height = 13
-      Top = 114
-      Width = 386
-      Caption = 'If you don''t provide a CA Certificate and key, your certificate will be self-signed.'
-      ParentColor = False
-    end
-    object CBIsCA: TCheckBox
-      Left = 160
-      Height = 17
-      Top = 246
-      Width = 122
-      Caption = 'Tag as CA Certificate'
-      Checked = True
-      State = cbChecked
-      TabOrder = 8
+    object PanCertificate: TPanel
+      Left = 0
+      Height = 242
+      Top = 103
+      Width = 412
+      Align = alTop
+      AutoSize = True
+      BevelOuter = bvNone
+      ChildSizing.LeftRightSpacing = 6
+      ChildSizing.TopBottomSpacing = 3
+      ChildSizing.HorizontalSpacing = 6
+      ChildSizing.VerticalSpacing = 3
+      ChildSizing.EnlargeHorizontal = crsScaleChilds
+      ChildSizing.Layout = cclLeftToRightThenTopToBottom
+      ChildSizing.ControlsPerLine = 2
+      ClientHeight = 242
+      ClientWidth = 412
+      TabOrder = 1
+      object Shape2: TShape
+        Left = 6
+        Height = 2
+        Top = 3
+        Width = 400
+        Align = alTop
+        BorderSpacing.Left = 5
+      end
+      object LabCertName: TLabel
+        Left = 6
+        Height = 21
+        Hint = 'Base filename of the certificate'
+        Top = 10
+        Width = 197
+        BorderSpacing.Top = 10
+        Caption = 'Certificate name'
+        Font.Style = [fsBold]
+        Layout = tlCenter
+        ParentColor = False
+        ParentFont = False
+      end
+      object edCertBaseName: TEdit
+        Left = 209
+        Height = 21
+        Hint = 'This information will be used as Signer identification in packages'
+        Top = 10
+        Width = 173
+        BorderSpacing.Right = 30
+        TabOrder = 0
+      end
+      object Filler2: TPanel
+        Left = 6
+        Height = 17
+        Top = 34
+        Width = 197
+        BevelOuter = bvNone
+        TabOrder = 1
+      end
+      object CBCodeSigning: TCheckBox
+        Left = 209
+        Height = 17
+        Top = 34
+        Width = 173
+        Caption = 'Tag as code signing'
+        Checked = True
+        State = cbChecked
+        TabOrder = 2
+      end
+      object Filler3: TPanel
+        Left = 6
+        Height = 17
+        Top = 54
+        Width = 197
+        BevelOuter = bvNone
+        TabOrder = 3
+      end
+      object CBIsCA: TCheckBox
+        Left = 209
+        Height = 17
+        Top = 54
+        Width = 173
+        Caption = 'Tag as CA Certificate'
+        Checked = True
+        State = cbChecked
+        TabOrder = 4
+      end
+      object LabCN: TLabel
+        Left = 6
+        Height = 21
+        Top = 74
+        Width = 197
+        Caption = 'Common Name(CN) :'
+        Font.Style = [fsBold]
+        Layout = tlCenter
+        ParentColor = False
+        ParentFont = False
+      end
+      object edCommonName: TEdit
+        Left = 209
+        Height = 21
+        Hint = 'This information will be used as Signer identification in packages'
+        Top = 74
+        Width = 173
+        OnExit = edCommonNameExit
+        TabOrder = 5
+      end
+      object LabOptional: TStaticText
+        Left = 6
+        Height = 14
+        Top = 105
+        Width = 197
+        AutoSize = True
+        BorderSpacing.Top = 10
+        Caption = 'Optional information'
+        TabOrder = 6
+      end
+      object Filler: TPanel
+        Left = 209
+        Height = 14
+        Top = 105
+        Width = 173
+        BevelOuter = bvNone
+        TabOrder = 7
+      end
+      object LabLocality: TLabel
+        Left = 6
+        Height = 21
+        Top = 122
+        Width = 197
+        Caption = 'City :'
+        Layout = tlCenter
+        ParentColor = False
+      end
+      object edLocality: TEdit
+        Left = 209
+        Height = 21
+        Hint = 'E.g. : Nantes'
+        Top = 122
+        Width = 173
+        TabOrder = 8
+      end
+      object LabCountry: TLabel
+        Left = 6
+        Height = 21
+        Hint = 'Main site country code'
+        Top = 146
+        Width = 197
+        Caption = 'Country (2 chars. E.g. : FR):'
+        Layout = tlCenter
+        ParentColor = False
+        ParentShowHint = False
+        ShowHint = True
+      end
+      object edCountry: TEdit
+        Left = 209
+        Height = 21
+        Top = 146
+        Width = 173
+        MaxLength = 2
+        TabOrder = 9
+        Text = 'FR'
+      end
+      object LabUnit: TLabel
+        Left = 6
+        Height = 21
+        Hint = 'E.g. : IT department.'
+        Top = 170
+        Width = 197
+        Caption = 'Service :'
+        Layout = tlCenter
+        ParentColor = False
+      end
+      object edUnit: TEdit
+        Left = 209
+        Height = 21
+        Hint = 'E.g. : IT'
+        Top = 170
+        Width = 173
+        TabOrder = 10
+      end
+      object LabOrg: TLabel
+        Left = 6
+        Height = 21
+        Hint = 'Your company name'
+        Top = 194
+        Width = 197
+        Caption = 'Organisation:'
+        Layout = tlCenter
+        ParentColor = False
+      end
+      object edOrganization: TEdit
+        Left = 209
+        Height = 21
+        Hint = 'E.g. : Tranquil It Systems'
+        Top = 194
+        Width = 173
+        TabOrder = 11
+      end
+      object LabMail: TLabel
+        Left = 6
+        Height = 21
+        Hint = 'Technical department e-mail address.'
+        Top = 218
+        Width = 197
+        Caption = 'E-mail address :'
+        Layout = tlCenter
+        ParentColor = False
+      end
+      object edEmail: TEdit
+        Left = 209
+        Height = 21
+        Hint = 'E.g. : technique@tranquil-it-systems.fr'
+        Top = 218
+        Width = 173
+        TabOrder = 12
+      end
     end
   end
 end

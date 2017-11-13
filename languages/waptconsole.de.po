@@ -82,7 +82,7 @@ msgid "Generate private key and self signed certificate"
 msgstr "Den privaten Key und das selbstsignierte Zertifikat generieren"
 
 #: tviscreatekey.cbcodesigning.caption
-msgid "Tag as code signing certificate (package development)"
+msgid "Tag as code signing"
 msgstr ""
 
 #: tviscreatekey.cbisca.caption
@@ -128,98 +128,119 @@ msgstr "z. B. : Tranquil It Systems"
 msgid "E.g. : IT"
 msgstr "z. B. : IT"
 
+#: tviscreatekey.labcacert.caption
+msgctxt "tviscreatekey.labcacert.caption"
+msgid "Authority Signing Certificate"
+msgstr ""
+
+#: tviscreatekey.labcakey.caption
+msgctxt "tviscreatekey.labcakey.caption"
+msgid "Authority Signing Key"
+msgstr ""
+
+#: tviscreatekey.labcertname.caption
+msgctxt "tviscreatekey.labcertname.caption"
+msgid "Certificate name"
+msgstr ""
+
+#: tviscreatekey.labcertname.hint
+msgid "Base filename of the certificate"
+msgstr ""
+
+#: tviscreatekey.labcn.caption
+#, fuzzy
+#| msgid "Server FQDN :"
+msgctxt "tviscreatekey.labcn.caption"
+msgid "Common Name(CN) :"
+msgstr "Server FQDN:"
+
 #: tviscreatekey.labconfirmpwd.caption
 msgctxt "tviscreatekey.labconfirmpwd.caption"
 msgid "Confirm password"
 msgstr ""
 
-#: tviscreatekey.label1.caption
-#, fuzzy
-#| msgid "Target directory:"
-msgid "Target keys directory:"
-msgstr "Zielverzeichnis:"
-
-#: tviscreatekey.label1.hint
-msgid "Where to save the private key. This directory must be secure."
-msgstr "Wo speichert man den Privaten Key. Dieses Verzeichnis muss sicher sein."
-
-#: tviscreatekey.label10.caption
+#: tviscreatekey.labcountry.caption
+msgctxt "tviscreatekey.labcountry.caption"
 msgid "Country (2 chars. E.g. : FR):"
 msgstr "Land (2 chars. z.B. : FR):"
 
-#: tviscreatekey.label10.hint
+#: tviscreatekey.labcountry.hint
+msgctxt "tviscreatekey.labcountry.hint"
 msgid "Main site country code"
 msgstr "Hauptseite Landesvorwahl"
-
-#: tviscreatekey.label11.caption
-msgid "Authority Signing Certificate"
-msgstr ""
-
-#: tviscreatekey.label12.caption
-msgid "City :"
-msgstr "Stadt:"
-
-#: tviscreatekey.label13.caption
-msgid "Organisation:"
-msgstr "Organisation:"
-
-#: tviscreatekey.label13.hint
-msgid "Your company name"
-msgstr "Ihr Firmenname"
-
-#: tviscreatekey.label14.caption
-msgid "Service :"
-msgstr "Service:"
-
-#: tviscreatekey.label14.hint
-msgid "E.g. : IT department."
-msgstr "z. B. : IT Abteilung."
-
-#: tviscreatekey.label15.caption
-#, fuzzy
-#| msgid "Server FQDN :"
-msgid "Common Name(CN) :"
-msgstr "Server FQDN:"
-
-#: tviscreatekey.label16.caption
-msgid "E-mail address :"
-msgstr "E-mail Adresse:"
-
-#: tviscreatekey.label16.hint
-msgid "Technical department e-mail address."
-msgstr "E-Mail Adresse der Technsichen Abteilung."
-
-#: tviscreatekey.label17.caption
-msgid "Private key password"
-msgstr ""
-
-#: tviscreatekey.label18.caption
-msgid "Certificate name"
-msgstr ""
-
-#: tviscreatekey.label19.caption
-msgid "Authority Signing Key"
-msgstr ""
 
 #: tviscreatekey.label2.caption
 msgid "If you don't provide a CA Certificate and key, your certificate will be self-signed."
 msgstr ""
 
-#: tviscreatekey.label9.caption
+#: tviscreatekey.labkeyfn.caption
 #, fuzzy
 #| msgid "Key name :"
-msgctxt "tviscreatekey.label9.caption"
+msgctxt "tviscreatekey.labkeyfn.caption"
 msgid "Key filename :"
 msgstr "Keyname:"
 
-#: tviscreatekey.label9.hint
-msgctxt "tviscreatekey.label9.hint"
+#: tviscreatekey.labkeyfn.hint
+msgctxt "tviscreatekey.labkeyfn.hint"
 msgid "E.g. 'tranquilit'. Please don't use any special characters."
 msgstr "z. B. \"tranquilit\". Bitte verwenden Sie keine Sonderzeichen."
 
-#: tviscreatekey.statictext1.caption
+#: tviscreatekey.labkeypassword.caption
+msgctxt "tviscreatekey.labkeypassword.caption"
+msgid "Private key password"
+msgstr ""
+
+#: tviscreatekey.lablocality.caption
+msgctxt "tviscreatekey.lablocality.caption"
+msgid "City :"
+msgstr "Stadt:"
+
+#: tviscreatekey.labmail.caption
+msgctxt "tviscreatekey.labmail.caption"
+msgid "E-mail address :"
+msgstr "E-mail Adresse:"
+
+#: tviscreatekey.labmail.hint
+msgctxt "tviscreatekey.labmail.hint"
+msgid "Technical department e-mail address."
+msgstr "E-Mail Adresse der Technsichen Abteilung."
+
+#: tviscreatekey.laboptional.caption
+msgctxt "tviscreatekey.laboptional.caption"
 msgid "Optional information"
 msgstr "Optionale Infromation"
+
+#: tviscreatekey.laborg.caption
+msgctxt "tviscreatekey.laborg.caption"
+msgid "Organisation:"
+msgstr "Organisation:"
+
+#: tviscreatekey.laborg.hint
+msgctxt "tviscreatekey.laborg.hint"
+msgid "Your company name"
+msgstr "Ihr Firmenname"
+
+#: tviscreatekey.labtargetdir.caption
+#, fuzzy
+#| msgid "Target directory:"
+msgctxt "tviscreatekey.labtargetdir.caption"
+msgid "Target keys directory:"
+msgstr "Zielverzeichnis:"
+
+#: tviscreatekey.labtargetdir.hint
+msgctxt "tviscreatekey.labtargetdir.hint"
+msgid "Where to save the private key. This directory must be secure."
+msgstr "Wo speichert man den Privaten Key. Dieses Verzeichnis muss sicher sein."
+
+#: tviscreatekey.labunit.caption
+msgctxt "tviscreatekey.labunit.caption"
+msgid "Service :"
+msgstr "Service:"
+
+#: tviscreatekey.labunit.hint
+msgctxt "tviscreatekey.labunit.hint"
+msgid "E.g. : IT department."
+msgstr "z. B. : IT Abteilung."
 
 #: tviscreatewaptsetup.caption
 msgctxt "tviscreatewaptsetup.caption"
@@ -3506,6 +3527,16 @@ msgstr "wupanright"
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -3572,6 +3603,12 @@ msgstr "Sind Sie sich sicher, dass Sie %s die Pakete vom Host %s vergessen wolle
 #: uwaptconsoleres.rsconfirmimport
 #, fuzzy
 #| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 #| "Are you sure you want to import\n"
 #| "%s\n"
 #| " to your repository ?\n"
@@ -5111,6 +5148,12 @@ msgstr "Fehler beim erstellen des Pakets"
 #| "Are you sure you want to duplicate the package(s)\n"
 #| "%s\n"
 #| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -5721,6 +5764,10 @@ msgstr "Anwendung: %s -h "
 #| "Wapt-get version: %s\n"
 #| "Waptconsole version : %s\n"
 #| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
+#| "Waptconsole version : %s\n"
+#| "Wapt-get version: %s\n"
 msgctxt "uwaptconsoleres.rsversion"
 msgid ""
 "Waptconsole version : %s\n"
@@ -5779,6 +5826,10 @@ msgstr ""
 #: uwaptconsoleres.rswaptservererror
 #, fuzzy
 #| msgid ""
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
 #| "Error on WAPT server:\n"
@@ -6759,6 +6810,12 @@ msgstr ""
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
 #| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
 "Current server version: %s\n"
@@ -6781,6 +6838,10 @@ msgstr "Fehler beim erstellen des agent : %s"
 #| "WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully built and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"

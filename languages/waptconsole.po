@@ -76,7 +76,7 @@ msgid "Generate private key and self signed certificate"
 msgstr ""
 
 #: tviscreatekey.cbcodesigning.caption
-msgid "Tag as code signing certificate (package development)"
+msgid "Tag as code signing"
 msgstr ""
 
 #: tviscreatekey.cbisca.caption
@@ -118,91 +118,112 @@ msgstr ""
 msgid "E.g. : IT"
 msgstr ""
 
+#: tviscreatekey.labcacert.caption
+msgctxt "TVISCREATEKEY.LABCACERT.CAPTION"
+msgid "Authority Signing Certificate"
+msgstr ""
+
+#: tviscreatekey.labcakey.caption
+msgctxt "TVISCREATEKEY.LABCAKEY.CAPTION"
+msgid "Authority Signing Key"
+msgstr ""
+
+#: tviscreatekey.labcertname.caption
+msgctxt "TVISCREATEKEY.LABCERTNAME.CAPTION"
+msgid "Certificate name"
+msgstr ""
+
+#: tviscreatekey.labcertname.hint
+msgid "Base filename of the certificate"
+msgstr ""
+
+#: tviscreatekey.labcn.caption
+msgctxt "TVISCREATEKEY.LABCN.CAPTION"
+msgid "Common Name(CN) :"
+msgstr ""
+
 #: tviscreatekey.labconfirmpwd.caption
 msgctxt "TVISCREATEKEY.LABCONFIRMPWD.CAPTION"
 msgid "Confirm password"
 msgstr ""
 
-#: tviscreatekey.label1.caption
-msgid "Target keys directory:"
-msgstr ""
-
-#: tviscreatekey.label1.hint
-msgid "Where to save the private key. This directory must be secure."
-msgstr ""
-
-#: tviscreatekey.label10.caption
+#: tviscreatekey.labcountry.caption
+msgctxt "TVISCREATEKEY.LABCOUNTRY.CAPTION"
 msgid "Country (2 chars. E.g. : FR):"
 msgstr ""
 
-#: tviscreatekey.label10.hint
+#: tviscreatekey.labcountry.hint
+msgctxt "TVISCREATEKEY.LABCOUNTRY.HINT"
 msgid "Main site country code"
-msgstr ""
-
-#: tviscreatekey.label11.caption
-msgid "Authority Signing Certificate"
-msgstr ""
-
-#: tviscreatekey.label12.caption
-msgid "City :"
-msgstr ""
-
-#: tviscreatekey.label13.caption
-msgid "Organisation:"
-msgstr ""
-
-#: tviscreatekey.label13.hint
-msgid "Your company name"
-msgstr ""
-
-#: tviscreatekey.label14.caption
-msgid "Service :"
-msgstr ""
-
-#: tviscreatekey.label14.hint
-msgid "E.g. : IT department."
-msgstr ""
-
-#: tviscreatekey.label15.caption
-msgid "Common Name(CN) :"
-msgstr ""
-
-#: tviscreatekey.label16.caption
-msgid "E-mail address :"
-msgstr ""
-
-#: tviscreatekey.label16.hint
-msgid "Technical department e-mail address."
-msgstr ""
-
-#: tviscreatekey.label17.caption
-msgid "Private key password"
-msgstr ""
-
-#: tviscreatekey.label18.caption
-msgid "Certificate name"
-msgstr ""
-
-#: tviscreatekey.label19.caption
-msgid "Authority Signing Key"
 msgstr ""
 
 #: tviscreatekey.label2.caption
 msgid "If you don't provide a CA Certificate and key, your certificate will be self-signed."
 msgstr ""
 
-#: tviscreatekey.label9.caption
-msgctxt "tviscreatekey.label9.caption"
+#: tviscreatekey.labkeyfn.caption
+msgctxt "TVISCREATEKEY.LABKEYFN.CAPTION"
 msgid "Key filename :"
 msgstr ""
 
-#: tviscreatekey.label9.hint
-msgctxt "tviscreatekey.label9.hint"
+#: tviscreatekey.labkeyfn.hint
+msgctxt "TVISCREATEKEY.LABKEYFN.HINT"
 msgid "E.g. 'tranquilit'. Please don't use any special characters."
 msgstr ""
 
-#: tviscreatekey.statictext1.caption
+#: tviscreatekey.labkeypassword.caption
+msgctxt "TVISCREATEKEY.LABKEYPASSWORD.CAPTION"
+msgid "Private key password"
+msgstr ""
+
+#: tviscreatekey.lablocality.caption
+msgctxt "TVISCREATEKEY.LABLOCALITY.CAPTION"
+msgid "City :"
+msgstr ""
+
+#: tviscreatekey.labmail.caption
+msgctxt "TVISCREATEKEY.LABMAIL.CAPTION"
+msgid "E-mail address :"
+msgstr ""
+
+#: tviscreatekey.labmail.hint
+msgctxt "TVISCREATEKEY.LABMAIL.HINT"
+msgid "Technical department e-mail address."
+msgstr ""
+
+#: tviscreatekey.laboptional.caption
+msgctxt "TVISCREATEKEY.LABOPTIONAL.CAPTION"
 msgid "Optional information"
+msgstr ""
+
+#: tviscreatekey.laborg.caption
+msgctxt "TVISCREATEKEY.LABORG.CAPTION"
+msgid "Organisation:"
+msgstr ""
+
+#: tviscreatekey.laborg.hint
+msgctxt "TVISCREATEKEY.LABORG.HINT"
+msgid "Your company name"
+msgstr ""
+
+#: tviscreatekey.labtargetdir.caption
+msgctxt "TVISCREATEKEY.LABTARGETDIR.CAPTION"
+msgid "Target keys directory:"
+msgstr ""
+
+#: tviscreatekey.labtargetdir.hint
+msgctxt "TVISCREATEKEY.LABTARGETDIR.HINT"
+msgid "Where to save the private key. This directory must be secure."
+msgstr ""
+
+#: tviscreatekey.labunit.caption
+msgctxt "TVISCREATEKEY.LABUNIT.CAPTION"
+msgid "Service :"
+msgstr ""
+
+#: tviscreatekey.labunit.hint
+msgctxt "TVISCREATEKEY.LABUNIT.HINT"
+msgid "E.g. : IT department."
 msgstr ""
 
 #: tviscreatewaptsetup.caption

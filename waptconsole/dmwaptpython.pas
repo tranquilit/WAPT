@@ -579,7 +579,7 @@ begin
       is_code_signing := codesigning);
 
   cert.save_as_pem(filename := destcrt);
-  result := destcrt;
+  result := utf8encode(destcrt);
 end;
 
 end.
