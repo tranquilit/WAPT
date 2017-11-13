@@ -135,6 +135,7 @@ type
     MenuExternalTools: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem23: TMenuItem;
+    MenuItem31: TMenuItem;
     MenuItem33: TMenuItem;
     MenuItem50: TMenuItem;
     MenuItem51: TMenuItem;
