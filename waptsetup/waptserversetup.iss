@@ -2,8 +2,8 @@
 
 #define edition "waptserversetup"
 #define AppName "WAPT Server"
-#define default_repo_url "http://localhost:8080/wapt/"
-#define default_wapt_server "http://localhost:8080"
+#define default_repo_url "http://127.0.0.1/wapt/"
+#define default_wapt_server "http://127.0.0.1"
 
 #define repo_url ""
 #define wapt_server ""
@@ -91,14 +91,7 @@ Filename: {app}\conf\waptserver.ini; Section: options; Key: allow_unauthenticate
 
 
 [RUN]
-#ifdef choose_components
-Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptserver\waptserver_winsetup.py"" install_postgresql"; StatusMsg: {cm:RegisteringService}; Description: "{cm:RegisteringService}"; Tasks: InstallPostgreSQL;
-Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptserver\waptserver_winsetup.py"" install_waptserver"; StatusMsg: {cm:RegisteringService}; Description: "{cm:RegisteringService}";  Tasks: InstallWaptServer;
-Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptserver\waptserver_winsetup.py"" install_nginx"; StatusMsg: {cm:RegisteringService}; Description: "{cm:RegisteringService}"; Tasks: InstallNGINX; 
-#else
-Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptserver\waptserver_winsetup.py"" all"; StatusMsg: {cm:RegisteringService}; Description: "{cm:RegisteringService}";  
-#endif
-
+Filename: "{app}\waptserver\pgsql\vcredist_x64.exe"; Parameters: "/passive /quiet"; StatusMsg: {cm:InstallMSVC2013}; Description: "{cm:InstallMSVC2013}";  
 Filename: "{app}\waptserverpostconf.exe"; Parameters: "-l {code:CurrentLanguage}"; Flags: nowait postinstall runascurrentuser skipifsilent; StatusMsg: {cm:LaunchingPostconf}; Description: "{cm:LaunchingPostconf}"
 
 [Tasks]
@@ -113,18 +106,21 @@ Filename: "{app}\waptserver\uninstall-services.bat"; Flags: runhidden; StatusMsg
 
 [CustomMessages]
 fr.RegisteringService=Mise en place du service WaptServer
+fr.InstallMSVC2013=Installation de MSVC++ 2013 Redistribuable
 fr.LaunchingPostconf=Lancement de la post-configuration du serveur
 fr.InstallNGINX=Installer le serveur http NGINX (utlise les ports 80 et 443)
 fr.InstallPostgreSQL=Installer le serveur PostgreSQL
 fr.InstallWaptServer=Installer le serveur Wapt
 
 en.RegisteringService=Setup WaptServer Service
+en.InstallMSVC2013=Installing MSVC++ 2013 Redistribuable
 en.LaunchingPostconf=Launch server post-configuration
 en.InstallNGINX=Install NGINX http server(will use ports 80 and 443)
 en.InstallPostgreSQL=Install PostgreSQL Server
 en.InstallWaptServer=Install Wapt server
 
 de.RegisteringService=Setup WaptServer Service
+de.InstallMSVC2013=MSVC++ 2013 Redistribuable installieren
 de.LaunchingPostconf=Server Post-Konfiguration starten
 de.InstallNGINX=NGINX installieren http Server
 de.InstallPostgreSQL=PostgreSQL Server installieren

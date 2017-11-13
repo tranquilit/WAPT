@@ -287,11 +287,7 @@ def install_nginx_service():
 
 def install_postgresql_service():
     print ("install postgres database")
-    print ("install dependency msvc2013 redist")
-    setuphelpers.run('"%s" /passive /quiet' %os.path.join(wapt_root_dir,'waptserver','pgsql','vcredist_x64.exe'))
-    # msi install seems to finish after run command exists...
-    time.sleep(5)
-
+        
     print ("build database directory")
     if not os.path.exists(os.path.join(wapt_root_dir,'waptserver','pgsql','data','postgresql.conf')):
         make_postgres_data_dir(wapt_root_dir)
