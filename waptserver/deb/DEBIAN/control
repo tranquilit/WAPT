@@ -4,7 +4,6 @@ Section: base
 Priority: optional
 Architecture: amd64
 Depends: python, nginx, dialog, python-tz, cabextract, postgresql (>=9.4), postgresql-contrib, sudo , python-psutil, krb5-user, msktutil, python-pyparsing
-Conflicts: tis-waptrepo
 Recommends: tis-waptsetup, libnginx-mod-http-auth-spnego
 Maintainer: TIS <technique@tranquil-it-systems.fr>
 Description: WAPT Server for Windows machines softwares management.

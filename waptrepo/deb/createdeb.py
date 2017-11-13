@@ -131,6 +131,8 @@ else:
 
 ######################"
 
+eprint('This is a dummy package for easy upgrade from wapt 1.3, it does nothing')
+
 new_umask = 022
 old_umask = os.umask(new_umask)
 if new_umask != old_umask:
@@ -143,55 +145,7 @@ for filename in glob.glob("tis-waptrepo*.deb"):
 if os.path.exists("builddir"):
     shutil.rmtree("builddir")
 
-eprint(u'creation de l\'arborescence')
-os.makedirs("builddir")
-os.makedirs("builddir/DEBIAN")
-os.makedirs("builddir/opt")
-os.makedirs("builddir/opt/wapt")
-os.makedirs("builddir/opt/wapt/waptrepo/")
-os.makedirs("builddir/opt/wapt/lib")
-os.makedirs("builddir/opt/wapt/lib/site-packages")
-
-# for some reason the virtualenv does not build itself right if we don't
-# have pip systemwide...
-eprint(run('sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev'))
-
-eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-eprint(run(r'virtualenv ./builddir/opt/wapt --system-site-packages'))
-
-eprint('Install additional libraries in build environment virtualenv')
-eprint(run(r'./builddir/opt/wapt/bin/pip install pip setuptools --upgrade'))
-
-run(r'./builddir/opt/wapt/bin/pip install -r ../../requirements-repo.txt -t ./builddir/opt/wapt/lib/site-packages')
-
-open(os.path.join('./builddir/opt/wapt/waptrepo','VERSION'),'w').write(full_version)
-
-eprint('copie des fichiers waptrepo')
-copyfile(makepath(wapt_source_dir,'waptcrypto.py'),
-         './builddir/opt/wapt/waptcrypto.py')
-copyfile(makepath(wapt_source_dir,'waptutils.py'),
-         './builddir/opt/wapt/waptutils.py')
-copyfile(makepath(wapt_source_dir,'custom_zip.py'),
-         './builddir/opt/wapt/custom_zip.py')
-copyfile(makepath(wapt_source_dir,'waptpackage.py'),
-         './builddir/opt/wapt/waptpackage.py')
-copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
-         './builddir/opt/wapt/wapt-scanpackages.py')
-copyfile(makepath(wapt_source_dir,'wapt-signpackages.py'),
-         './builddir/opt/wapt/wapt-signpackages.py')
-
-eprint('cryptography patches')
-copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','__init__.py'),
-         './builddir/opt/wapt/lib/site-packages/cryptography/x509/__init__.py')
-copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','verification.py'),
-         './builddir/opt/wapt/lib/site-packages/cryptography/x509/verification.py')
-
-add_symlink('./opt/wapt/wapt-signpackages.py','./usr/bin/wapt-signpackages')
-add_symlink('./opt/wapt/wapt-scanpackages.py','./usr/bin/wapt-scanpackages')
-
-os.chmod('./builddir/opt/wapt/wapt-scanpackages.py',0o755)
-os.chmod('./builddir/opt/wapt/wapt-signpackages.py',0o755)
-
+mkdir_p('./builddir/DEBIAN')
 eprint('copie des fichiers control et postinst')
 copyfile('./DEBIAN/control','./builddir/DEBIAN/control')
 copyfile('./DEBIAN/postinst','./builddir/DEBIAN/postinst')

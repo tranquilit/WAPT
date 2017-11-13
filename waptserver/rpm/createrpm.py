@@ -31,9 +31,11 @@ import subprocess
 import platform
 import errno
 
+def run(*args, **kwargs):
+    return subprocess.check_output(*args, shell=True, **kwargs)
+
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
-
 
 def mkdir_p(path):
     try:
@@ -44,13 +46,11 @@ def mkdir_p(path):
         else:
             raise
 
-
 def replaceAll(file, searchExp, replaceExp):
     for line in fileinput.input(file, inplace=1):
         if searchExp in line:
             line = line.replace(searchExp, replaceExp)
         sys.stdout.write(line)
-
 
 def rsync(src, dst, excludes=[]):
     rsync_option = " --exclude 'postconf' --exclude 'mongodb' --exclude 'rpm' --exclude '*.pyc' --exclude '*.pyo' --exclude '.svn' --exclude 'apache-win32' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -a --stats"
@@ -143,13 +143,10 @@ if os.path.exists('pylibs'):
     shutil.rmtree('pylibs')
 eprint(
     'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-subprocess.check_output(
-    r'virtualenv ./pylibs --system-site-packages', shell=True)
+run(r'virtualenv ./pylibs --system-site-packages', shell=True)
 eprint('Install additional libraries in build environment virtualenv')
-eprint(subprocess.check_output(
-    r'source ./pylibs/bin/activate ; pip install --upgrade pip -i https://pypi.python.org/simple/', shell=True))
-eprint(subprocess.check_output(
-    r'source ./pylibs/bin/activate ; pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages -i https://pypi.python.org/simple/', shell=True))
+eprint(run(r'source ./pylibs/bin/activate ;pip install pip setuptools --upgrade', shell=True))
+eprint(run(r'source ./pylibs/bin/activate ; pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages', shell=True))
 rsync('./pylibs/lib/', './builddir/opt/wapt/lib/')
 eprint('copying the waptserver files')
 rsync(source_dir, './builddir/opt/wapt/',
@@ -192,8 +189,7 @@ try:
     mkdir_p('./builddir/etc/logrotate.d/')
     shutil.copyfile('../scripts/waptserver-logrotate',
                     './builddir/etc/logrotate.d/waptserver')
-    subprocess.check_output(
-        'chown root:root ./builddir/etc/logrotate.d/waptserver', shell=True)
+    run('chown root:root ./builddir/etc/logrotate.d/waptserver', shell=True)
 except Exception as e:
     eprint ('error: \n%s' % e)
     exit(1)
@@ -203,8 +199,7 @@ try:
     mkdir_p('./builddir/etc/rsyslog.d/')
     shutil.copyfile('../scripts/waptserver-rsyslog',
                     './builddir/etc/rsyslog.d/waptserver.conf')
-    subprocess.check_output(
-        'chown root:root ./builddir/etc/rsyslog.d/waptserver.conf', shell=True)
+    run('chown root:root ./builddir/etc/rsyslog.d/waptserver.conf', shell=True)
 except Exception as e:
     eprint('error: \n%s' % e)
     exit(1)
@@ -218,7 +213,7 @@ eprint('copying nginx-related goo')
 try:
     ssl_dir = './builddir/opt/wapt/waptserver/ssl/'
     mkdir_p(ssl_dir)
-    subprocess.check_output(['chmod', '0700', ssl_dir])
+    run('chmod 0700 "ssl_dir"')
     mkdir_p('./builddir/etc/systemd/system/nginx.service.d')
     copyfile('../scripts/nginx_worker_files_limit.conf', './builddir/etc/systemd/system/nginx.service.d/nginx_worker_files_limit.conf')
 except Exception as e:
