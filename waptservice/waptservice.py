@@ -1161,10 +1161,6 @@ def forget():
     else:
         return render_template('install.html',data=data)
 
-@app.route('/favicon.ico', methods=['GET'])
-def wapticon():
-    return send_from_directory(app.static_folder+'/images','wapt.png',mimetype='image/png')
-
 @app.route('/', methods=['GET'])
 @allow_local
 def index():
