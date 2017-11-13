@@ -2,7 +2,7 @@ msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 msgid "This can be changed later in Waptconsole"
-msgstr ""
+msgstr "Cela peut être changé plus tard dans Waptconsole"
 
 #: tvisloading.amessage.caption
 msgid "Loading..."
@@ -182,6 +182,7 @@ msgstr "Code pays du site principal"
 #| msgid ""
 #| "Note: Personal Key will be encrypted with same password as server.\n"
 #| "This can be changed later in Waptconsole\n"
+#| "Note: Personal Key will be encrypted with same password as server.\n"
 msgid "Note: Personal Key will be encrypted with same password as server."
 msgstr ""
 "Note: La clé personnelle sera chiffrée avec le même mot de passe que le serveur\n"
