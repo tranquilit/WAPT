@@ -17,7 +17,7 @@ STRINGTABLE
           testing environment, you can fall back to the server IP address.\
           \
           For further information :\
-          <a href=""http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html"">Configuring a WAPT infrastructure</a>.\
+          <a href=""https://www.wapt.fr/fr/doc-1.5/Installation/waptserver/dns/introduction_dns.html"">Configuring a WAPT infrastructure</a>.\
           </body>\
           </html>"
 1, "    <html>\
@@ -39,8 +39,8 @@ STRINGTABLE
           environnement de test, vous pouvez renseigner directement d'adresse IP\
           du serveur.\
           \
-          For further information :\
-          <a href=""http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html"">Configuration d'une infrastructure WAPT</a>.\
+          Pour plus d'information :\
+          <a href=""https://www.wapt.fr/fr/doc-1.5/Installation/waptserver/dns/introduction_dns.html"">Configuration d'une infrastructure WAPT</a>.\
           \
           </body>\
           </html>"
@@ -61,7 +61,7 @@ STRINGTABLE
           können Sie auf die Server IP Adresse zurückgreifen.\
           \
           Für weitere Informationen :\
-            <a href=""http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html"">Configuring a WAPT infrastructure</a>.\
+            <a href=""https://www.wapt.fr/fr/doc-1.5/Installation/waptserver/dns/introduction_dns.html"">Configuring a WAPT infrastructure</a>.\
           </body>\
         </html>"
 100, "  <html>\
@@ -73,7 +73,7 @@ STRINGTABLE
           console.<br /> \
           For further information :<br /> \
           <a \
-          href=""http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"">Generating a WAPT certificate</a>. \
+          href=""https://www.wapt.fr/fr/doc-1.5/Theorique/index.html#fonctionnement-et-architecture-wapt"">General infirmation about WAPT architecture</a>. \
           </body>\
           </html>"
 	  
@@ -86,6 +86,9 @@ STRINGTABLE
           <body>\
           C'est le mot de passe utilisé pour vous connecter au serveur WAPT via la\
           console WAPT.<br /> \
+          <a \
+          href=""https://www.wapt.fr/fr/doc-1.5/Theorique/index.html#fonctionnement-et-architecture-wapt"">Fonctionnement et architecture WAPT</a>. \
+          </body>\
           </body>\
           </html>"
 
@@ -98,7 +101,7 @@ STRINGTABLE
           Konsole  mit dem WAPT Server zu verbinden.<br /> \
           Für weitere Informationen:<br /> \
           <a \
-           href=""http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"">Generating a WAPT certificate</a>. \
+          href=""https://www.wapt.fr/fr/doc-1.5/Theorique/index.html#fonctionnement-et-architecture-wapt"">Fonctionnement et architecture WAPT</a>. \
           </body>\
           </html>"
 200, "  <html>\
@@ -119,7 +122,7 @@ STRINGTABLE
           <br>\
           For further information :\
           <a \
-          href=""http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"">Generating a self-signed certificate</a>. \
+          href=""https://www.wapt.fr/fr/doc-1.5/Installation/wapt_certificate/index.html"">Generating a self-signed certificate</a>. \
           </body>\
           </html>"
 201, "   <html>\
@@ -140,7 +143,7 @@ STRINGTABLE
           <br>\
           Pour plus d'informations :\
           <a \
-          href=""http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"">générer un certificat auto-signé</a>. \
+          href=""https://www.wapt.fr/fr/doc-1.5/Installation/wapt_certificate/index.html"">générer un certificat auto-signé</a>. \
           </body>\
           </html>"
 

@@ -18,10 +18,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Height = 352
     Top = 0
     Width = 434
-    ActivePage = pgCreateWaptSetup
+    ActivePage = pgParameters
     Align = alClient
     MultiLine = True
-    TabIndex = 5
+    TabIndex = 0
     TabOrder = 0
     OnChange = PagesControlChange
     Options = [nboMultiLine]
@@ -50,10 +50,11 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object BitBtn4: TBitBtn
         Left = 164
-        Height = 25
+        Height = 26
         Top = 18
-        Width = 128
+        Width = 127
         Action = ActCheckDNS
+        AutoSize = True
         Glyph.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
           2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
@@ -487,8 +488,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           '<br>'
           'For further information :'
           '<a '
-          'href="http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_w'
-          'apt.html">Generating a self-signed certificate</a>. '
+          'href="https://www.wapt.fr/fr/doc/Installation/wapt_certificate/index.html">Generating a self-signed certificate</a>. '
           '</body>'
           '</html>'
         )
@@ -651,10 +651,11 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object BitBtn6: TBitBtn
         Left = 8
-        Height = 30
+        Height = 26
         Top = 198
-        Width = 332
+        Width = 328
         Action = actWriteConfStartServe
+        AutoSize = True
         Glyph.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
           2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
@@ -730,10 +731,11 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       ClientWidth = 426
       object BitBtn1: TBitBtn
         Left = 16
-        Height = 30
+        Height = 32
         Top = 176
-        Width = 231
+        Width = 162
         Action = ActBuildWaptsetup
+        AutoSize = True
         Glyph.Data = {
           C6070000424DC607000000000000360000002800000016000000160000000100
           2000000000009007000064000000640000000000000000000000000000000000
@@ -960,12 +962,12 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgFinish: TTabSheet
       Caption = 'Fin'
-      ClientHeight = 271
+      ClientHeight = 308
       ClientWidth = 426
       object Panel2: TPanel
         Left = 0
         Height = 23
-        Top = 248
+        Top = 285
         Width = 426
         Align = alBottom
         BevelOuter = bvNone
@@ -985,12 +987,12 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object panFinish: TPanel
         Left = 0
-        Height = 248
+        Height = 285
         Top = 0
         Width = 426
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 248
+        ClientHeight = 285
         ClientWidth = 426
         TabOrder = 1
         object Memo7: TMemo
