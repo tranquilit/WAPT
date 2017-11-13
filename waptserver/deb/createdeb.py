@@ -42,14 +42,13 @@ from shutil import copyfile
 def run(*args, **kwargs):
     return subprocess.check_output(*args, shell=True, **kwargs)
 
-def run_verbose(*args, **kwargs):
-    output =  subprocess.check_output(*args, shell=True, **kwargs)
-    print (output)
-    return output
-
-
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
+
+def run_verbose(*args, **kwargs):
+    output =  subprocess.check_output(*args, shell=True, **kwargs)
+    eprint(output)
+    return output
 
 def mkdir_p(path):
     if not os.path.isdir(path):
