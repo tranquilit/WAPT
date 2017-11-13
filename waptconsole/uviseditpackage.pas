@@ -228,9 +228,6 @@ begin
 end;
 
 function EditHost(hostuuid: ansistring; advancedMode: boolean;var ApplyUpdates:Boolean;description:ansiString='';HostReachable:Boolean=False;computer_fqdn_hint:AnsiString=''): ISuperObject;
-var
-  res:ISuperObject;
-  olddesc:String;
 begin
   with TVisEditPackage.Create(nil) do
     try
@@ -555,7 +552,7 @@ begin
     begin
       description := UTF8Decode(Eddescription.Text);
       res := PyVarToSuperObject(
-        Mainmodule.mywapt.make_group_template(
+        DMPython.WAPT.make_group_template(
           packagename := Trim(EdPackage.Text),
           depends := Depends,
           description := description,
@@ -626,7 +623,7 @@ begin
     Application.ProcessMessages;
     try
       Result := PyVarToSuperObject(
-        Mainmodule.mywapt.build_upload(
+        DMPython.WAPT.build_upload(
           sources_directories := FSourcePath,
           private_key_passwd := dmpython.privateKeyPassword,
           wapt_server_user := waptServerUser,
@@ -796,7 +793,7 @@ begin
         target_directory := UniqueTempDir();
         FisTempSourcesDir := True;
         res := PyVarToSuperObject(
-          MainModule.mywapt.edit_host(
+          DMPython.WAPT.edit_host(
             hostname := FPackageRequest,
             target_directory := target_directory)
             );
@@ -837,7 +834,7 @@ begin
                 exit;
               end;
 
-            res := PyVarToSuperObject(MainModule.mywapt.edit_package(packagerequest := filePath));
+            res := PyVarToSuperObject(DMPython.WAPT.edit_package(packagerequest := filePath));
 
             FisTempSourcesDir := True;
           finally
@@ -863,7 +860,7 @@ begin
     Exit;
   FSourcePath := AValue;
   try
-    res := PyVarToSuperObject(Mainmodule.mywapt.edit_package(FSourcePath));
+    res := PyVarToSuperObject(DMPython.WAPT.edit_package(FSourcePath));
     PackageEdited := res['package'];
   finally
     Screen.Cursor := crDefault;

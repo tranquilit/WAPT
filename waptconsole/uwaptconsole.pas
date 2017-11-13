@@ -863,7 +863,6 @@ var
   stats: ISuperObject;
   stats_report_url:String;
   CB: TComponent;
-  CBS: TComponentsArray;
 begin
   Gridhosts.SaveSettingsToIni(Appuserinipath);
   GridPackages.SaveSettingsToIni(Appuserinipath);
@@ -1465,11 +1464,11 @@ begin
         GridPackages.FocusedNode, 'package'), GridPackages.GetCellStrValue(
         GridPackages.FocusedNode, 'version')]);
       try
-        DevPath := VarPythonAsString(MainModule.mywapt.get_default_development_dir(SelPackage));
+        DevPath := VarPythonAsString(DMPython.WAPT.get_default_development_dir(SelPackage));
         if DirectoryExistsUTF8(DevPath) then
           DevPath:=DevPath+'.'+GridPackages.GetCellStrValue(GridPackages.FocusedNode, 'version');
-        MainModule.mywapt.update(force := True,register := False,filter_on_host_cap := False);
-        res_var := MainModule.mywapt.edit_package(
+        DMPython.WAPT.update(force := True,register := False,filter_on_host_cap := False);
+        res_var := DMPython.WAPT.edit_package(
           packagerequest := Selpackage,
           target_directory:=DevPath,
           auto_inc_version:=False);
@@ -2838,7 +2837,7 @@ begin
 
         SourcesVar := SuperObjectToPyVar(sources);
 
-        uploadResult := PyVarToSuperObject(Mainmodule.mywapt.build_upload(
+        uploadResult := PyVarToSuperObject(DMPython.WAPT.build_upload(
           sources_directories := SourcesVar,
           private_key_passwd := dmpython.privateKeyPassword,
           wapt_server_user := waptServerUser,
@@ -3196,7 +3195,6 @@ end;
 procedure TVisWaptGUI.ActDeleteHostsPackageAndInventoryExecute(Sender: TObject);
 var
   sel, res, postdata: ISuperObject;
-  msg : String;
 begin
   if GridHosts.Focused then
   begin
@@ -3504,7 +3502,6 @@ end;
 function TVisWaptGUI.EditIniFile: boolean;
 var
   inifile: TIniFile;
-  lang:String;
 begin
   Result := False;
   inifile := TIniFile.Create(AppIniFilename);
@@ -3832,7 +3829,7 @@ begin
       if FileExists(Appuserinipath) then
         SysUtils.DeleteFile(Appuserinipath);
 
-    plStatusBar1.Panels[0].Text := ApplicationName+' '+GetApplicationVersion;
+    plStatusBar1.Panels[0].Text := ApplicationName+' '+GetApplicationVersion+' WAPT Community Edition, (c) 2012-2017 Tranquil IT Systems.';
 
     pgWindowsUpdates.TabVisible:=waptcommon.waptwua_enabled;
     pgHostWUA.TabVisible:=waptcommon.waptwua_enabled;
@@ -4250,9 +4247,8 @@ end;
 
 Function TVisWaptGUI.TriggerChangeHostDescription(uuid,description:String):Boolean;
 var
-  args,res: ISuperObject;
+  args: ISuperObject;
   taskresult,uuids: ISuperObject;
-  currhost,computer_name: ansistring;
 begin
   if MessageDlg(rsConfirmCaption,'Do you really want to change description to '+description+' ?',mtConfirmation, mbYesNoCancel,0) = mrYes then
   begin

@@ -202,8 +202,8 @@ const
 
   AdvancedMode:Boolean = False;
 
-  EnableExternalTools:Boolean = False;
-  EnableManagementFeatures:Boolean = False;
+  EnableExternalTools:Boolean = True;
+  EnableManagementFeatures:Boolean = True;
 
   HideUnavailableActions:Boolean = False;
 
@@ -1861,6 +1861,7 @@ var
   returnCode:integer;
 begin
   result := '';
+
   if FileExists(keyfilename) then
     destpem := keyfilename
   else

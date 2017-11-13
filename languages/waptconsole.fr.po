@@ -6,10 +6,6 @@ msgctxt "tform1.buttonpanel1.helpbutton.caption"
 msgid "&Show config file"
 msgstr "&Voir le fichier de configuration"
 
-#: tform1.caption
-msgid "Form1"
-msgstr ""
-
 #: tvisapropos.button1.caption
 msgid "Close"
 msgstr "Fermer"
@@ -65,7 +61,7 @@ msgstr "Nouveau mot de passe :"
 
 #: tvischangepassword.ednewpassword2.editlabel.caption
 msgid "Retype password :"
-msgstr "Retaper le mot de passe :"
+msgstr "Confirmer le mot de passe :"
 
 #: tvischangepassword.edoldpassword.editlabel.caption
 msgid "Old password :"
@@ -73,13 +69,11 @@ msgstr "Ancien mot de passe :"
 
 #: tviscreatekey.caption
 msgid "Generate private key and self signed certificate"
-msgstr "Générer Créer une clé privée et un certificat auto-signé"
+msgstr "Générer une clé privée et un certificat auto-signé"
 
 #: tviscreatekey.cbcodesigning.caption
-#, fuzzy
-#| msgid "Tag as code signing certificate (package development)"
 msgid "Tag as code signing"
-msgstr "Pour la signature de  code (développement de paquets)"
+msgstr "Certificat de développeur"
 
 #: tviscreatekey.cbisca.caption
 msgid "Tag as CA Certificate"
@@ -137,7 +131,7 @@ msgstr "Nom du certificat"
 
 #: tviscreatekey.labcertname.hint
 msgid "Base filename of the certificate"
-msgstr ""
+msgstr "Base du nom de fichier du certificat"
 
 #: tviscreatekey.labcn.caption
 msgctxt "tviscreatekey.labcn.caption"
@@ -268,7 +262,6 @@ msgid "E.g. : http://wapt:8080."
 msgstr "Par exemple : http://wapt:8080."
 
 #: tviscreatewaptsetup.label1.caption
-#| msgid "Public key : "
 msgid "Authorized Packages Certificate / CA bundle"
 msgstr "Certificat / CA autorisés pour les paquets"
 
@@ -305,8 +298,6 @@ msgid "Your WAPT server address (http://wapt:8080)."
 msgstr "L'adresse de votre serveur WAPT (par exemple http://wapt:8080)."
 
 #: tviscreatewaptsetup.label6.caption
-#, fuzzy
-#| msgid "Path to CA certificates bundle"
 msgctxt "tviscreatewaptsetup.label6.caption"
 msgid "Path to Servers CA certificates bundle"
 msgstr "Chemin vers le bundle de CA serveurs"
@@ -1215,12 +1206,12 @@ msgstr "Forcer l'installation ou mise à jour du paquet"
 #: tviswaptgui.actpackagesremove.caption
 msgctxt "tviswaptgui.actpackagesremove.caption"
 msgid "Uninstall package"
-msgstr "Supprimer la paquet"
+msgstr "Désinstaller le paquet"
 
 #: tviswaptgui.actpackagesremove.hint
 msgctxt "tviswaptgui.actpackagesremove.hint"
 msgid "Forces remote uninstall of package"
-msgstr "Forcer la désinstallation du paquet"
+msgstr "Forcer la désinstallation immédiate du paquet"
 
 #: tviswaptgui.actpackagesupdate.caption
 msgctxt "tviswaptgui.actpackagesupdate.caption"

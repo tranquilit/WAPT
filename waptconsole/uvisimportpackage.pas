@@ -157,8 +157,6 @@ begin
 end;
 
 function TVisImportPackage.GetWaptrepo: TWaptRepo;
-var
-  Repo: TWaptRepo;
 begin
   if not Assigned(FWaptrepo) or (FWaptrepo.Name <> FRepoName) then
   begin
@@ -235,7 +233,7 @@ begin
     dmpython.WaptConfigFileName:='';
     waptcommon.ReadWaptConfig(AppIniFilename);
     dmpython.WaptConfigFileName:=AppIniFilename;
-    MainModule.mywapt.update(Register := False);
+    DMPython.WAPT.update(Register := False);
   end;
 end;
 
@@ -284,7 +282,7 @@ end;
 
 procedure TVisImportPackage.ActPackageDuplicateExecute(Sender: TObject);
 var
-  target,sourceDir,http_proxy,verify_cert: string;
+  target,sourceDir,http_proxy: string;
   package,uploadResult, FileName, FileNames, ListPackages,Sources,aDir: ISuperObject;
   SourcesVar,SignersCABundle,ListPackagesVar: Variant;
 
@@ -379,7 +377,7 @@ begin
       SourcesVar := SuperObjectToPyVar(sources);
 
       uploadResult := PyVarToSuperObject(
-        Mainmodule.mywapt.build_upload(
+        DMPython.WAPT.build_upload(
           sources_directories := SourcesVar,
           private_key_passwd := dmpython.privateKeyPassword,
           wapt_server_user := waptServerUser,
@@ -413,7 +411,7 @@ end;
 
 procedure TVisImportPackage.ActPackageEditExecute(Sender: TObject);
 var
-  SourceDir,target: string;
+  SourceDir,target,DevDirectory: string;
   Sources,package,FileName, FileNames, listPackages: ISuperObject;
 
   ListPackagesVar: Variant;
@@ -475,9 +473,17 @@ begin
       begin
         ProgressTitle(format(rsDuplicating, [Filename.AsArray[0].AsString]));
         Application.ProcessMessages;
-        sourceDir := DMPython.RunJSON(
-          Format('common.wapt_sources_edit(waptdevutils.duplicate_from_file(r"%s",new_prefix="%s",target_directory=r"%s",authorized_certs = r"%s" or None))',
-          [AppLocalDir + 'cache\' + Filename.AsArray[0].AsString, DefaultPackagePrefix, AppendPathDelim(DefaultSourcesRoot)+ExtractFileNameWithoutExt(Filename.AsArray[0].AsString)+'-wapt',Waptrepo.SignersCABundle])).AsString;
+        target := AppLocalDir + 'cache\' + Filename.AsArray[0].AsString;
+        DevDirectory :=  AppendPathDelim(DefaultSourcesRoot)+ExtractFileNameWithoutExt(Filename.AsArray[0].AsString)+'-wapt';
+        sourceDir := VarPythonAsString(Mainmodule.waptdevutils.duplicate_from_file(
+          package_filename := target,
+          new_prefix := DefaultPackagePrefix,
+          target_directory := DevDirectory,
+          authorized_certs := Waptrepo.SignersCABundle
+          ));
+
+        dmpython.WAPT.add_pyscripter_project(sourceDir);
+        Mainmodule.common.wapt_sources_edit(sourceDir);
       end;
     finally
       Free;

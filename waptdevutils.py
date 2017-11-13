@@ -33,7 +33,7 @@
     exported functions instead of local Wapt functions (except crypto signatures)
 
 """
-__version__ = "1.5.1.0"
+__version__ = "1.5.1.3"
 
 import sys,os
 import shutil
@@ -253,8 +253,11 @@ def get_packages_filenames(packages_names,with_depends=True,waptconfigfile=None,
 
 def duplicate_from_file(package_filename,new_prefix='test',target_directory=None,authorized_certs=None):
     r"""Duplicate a downloaded package to match prefix defined in waptconfigfile
-       renames all dependencies
-      returns source directory
+    renames all dependencies
+
+    Returns:
+        str: source directory
+
     >>> from common import Wapt
     >>> wapt = Wapt(config_filename = r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini')
     >>> sources = duplicate_from_external_repo(wapt.config_filename,r'C:\tranquilit\wapt\tests\packages\tis-wapttest.wapt')
@@ -280,6 +283,7 @@ def duplicate_from_file(package_filename,new_prefix='test',target_directory=None
         bundle = authorized_certs
 
     source_package.unzip_package(target_dir=target_directory,cabundle=bundle)
+    source_package.invalidate_signature()
 
     package = PackageEntry(waptfile = source_package.sourcespath)
     oldname = source_package.package
