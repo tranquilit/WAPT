@@ -83,7 +83,7 @@ end;
 
 procedure TVisPackageWizard.ActMakeUploadExecute(Sender: TObject);
 var
-  packageSources: String;
+  packageSources,PackageName,Version,Description,Section,UninstallKey: String;
   wapt,SilentFlags:Variant;
   UploadResult : ISuperObject;
 begin
@@ -96,12 +96,18 @@ begin
   if FileExists(EdInstallerPath.FileName) then
   try
     wapt := dmpython.WAPT;
+    Version := EdVersion.Text;
+    PackageName := EdPackageName.Text;
+    Description := EdDescription.Text;
+    UninstallKey := EdUninstallKey.Text;
+    Section:=EdSection.Text;
+
     packageSources := VarPythonAsString(wapt.make_package_template(
       installer_path := InstallerFilename,
-      packagename := EdPackageName.text,
-      description := EdDescription.Text,
-      version := EdVersion.Text,
-      uninstallkey := EdUninstallKey.Text,
+      packagename := PackageName,
+      description := Description,
+      version := Version,
+      uninstallkey := UninstallKey,
       silentflags := SilentFlags));
 
     if Sender = ActMakeAndEdit then
