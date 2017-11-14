@@ -5062,7 +5062,7 @@ class Wapt(object):
             logger.debug(u'  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
 
-    def make_package_template(self,installer_path,packagename='',directoryname='',section='',description=None,depends='',version=None,silentflags=None,uninstallkey=None):
+    def make_package_template(self,installer_path,packagename='',directoryname='',x²='',description=None,depends='',version=None,silentflags=None,uninstallkey=None):
         r"""Build a skeleton of WAPT package based on the properties of the supplied installer
            Return the path of the skeleton
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
@@ -5175,6 +5175,8 @@ class Wapt(object):
             codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
         else:
             logger.info(u'control file already exists, skip create')
+
+        self.add_pyscripter_project(directoryname)
 
         return directoryname
 
