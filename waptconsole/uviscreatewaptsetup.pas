@@ -75,7 +75,7 @@ end;
 procedure TVisCreateWaptSetup.fnPublicCertEditingDone(Sender: TObject);
 begin
   if FileExists(fnPublicCert.FileName) then
-    edOrgName.text := VarPythonAsString(MainModule.waptcrypto.SSLCertificate(crt_filename := fnPublicCert.FileName).cn);
+    edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := fnPublicCert.FileName).cn);
     //edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[fnPublicCert.FileName]));
 
 end;
@@ -100,7 +100,7 @@ procedure TVisCreateWaptSetup.FormShow(Sender: TObject);
 begin
   if edOrgName.Text='' then
     if FileExists(fnPublicCert.FileName) then
-      edOrgName.text := VarPythonAsString(MainModule.waptcrypto.SSLCertificate(crt_filename := fnPublicCert.FileName).cn);
+      edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := fnPublicCert.FileName).cn);
       //edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[fnPublicCert.FileName]));
 
   CBVerifyCert.Checked:=(EdServerCertificate.Text<>'') and (EdServerCertificate.Text<>'0');

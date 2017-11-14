@@ -192,7 +192,7 @@ def update_external_repo(repourl,search_string,proxy=None,mywapt=None,newer_only
         verify_cert = False
     repo.verify_cert = verify_cert
     packages = repo.search(search_string,newest_only=newest_only)
-    if mywapt and newer_only:
+    if newer_only and mywapt:
         my_prefix = mywapt.config.get('global','default_package_prefix')
         result = []
         for package in packages:

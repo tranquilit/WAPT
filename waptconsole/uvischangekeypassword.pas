@@ -47,7 +47,7 @@ uses uSCaleDPI,dmwaptpython,VarPyth,waptcommon,variants;
 procedure TVisChangeKeyPassword.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
-  EdKeyFilename.text := VarPythonAsString(MainModule.waptdevutils.get_private_key_encrypted(certificate_path:=GetWaptPersonalCertificatePath(),password:=DMPython.privateKeyPassword));
+  EdKeyFilename.text := VarPythonAsString(DMPython.waptdevutils.get_private_key_encrypted(certificate_path:=GetWaptPersonalCertificatePath(),password:=DMPython.privateKeyPassword));
   if EdKeyFilename.Text <>'' then
     edOldKeyPassword.Text:= DMPython.privateKeyPassword;
 end;
@@ -69,9 +69,9 @@ begin
       raise Exception.Create('New and confrmed password don''t match, please reenter them');
     oldpassword := edOldKeyPassword.Text;
     if edOldKeyPassword.Text = '' then
-      key := MainModule.waptcrypto.SSLPrivateKey(filename := EdKeyFilename.text)
+      key := dmpython.waptcrypto.SSLPrivateKey(filename := EdKeyFilename.text)
     else
-      key := MainModule.waptcrypto.SSLPrivateKey(filename := EdKeyFilename.text,  password := oldpassword);
+      key := dmpython.waptcrypto.SSLPrivateKey(filename := EdKeyFilename.text,  password := oldpassword);
 
     if VarIsNull(key) then
       raise Exception.Create('Unable to decrypt key with provided old password, please retry');

@@ -115,7 +115,7 @@ begin
     if ShowModal = mrOk then
     begin
       Password := edPasswordKey.Text;
-      keyPath := VarPythonAsString(MainModule.waptdevutils.get_private_key_encrypted(certificate_path:=edPersonalCertificatePath.Text,password:=password));
+      keyPath := VarPythonAsString(DMPython.waptdevutils.get_private_key_encrypted(certificate_path:=edPersonalCertificatePath.Text,password:=password));
       if keyPath = '' then
         ShowMessageFmt('Error : No private key in directory %s could be decrypted with supplied password, or none matches the certificate.',[ExtractFileDir(edPersonalCertificatePath.Text)])
       else
@@ -144,7 +144,7 @@ begin
   certfn:= waptbasedir+'ssl\server\'+edServerAddress.Text+'.crt';
   try
     {
-    certbundle := MainModule.common.get_server_ssl_certificates(url := url);
+    certbundle := DMPython.common.get_server_ssl_certificates(url := url);
     if VarIsPythonIterator(certbundle) then
     begin
       While True do
@@ -165,7 +165,7 @@ begin
       end;
     end;
     }
-    pem_data := MainModule.waptcrypto.SSLCABundle(certificates := MainModule.waptcrypto.get_peer_cert_chain_from_server(url := url)).as_pem('--noarg--');
+    pem_data := dmpython.waptcrypto.SSLCABundle(certificates := dmpython.waptcrypto.get_peer_cert_chain_from_server(url := url)).as_pem('--noarg--');
     if not VarIsNull(pem_data) then
     begin
       StringToFile(certfn,pem_data);

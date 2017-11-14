@@ -359,7 +359,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="8">
+    <Exceptions Count="9">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -384,6 +384,9 @@
       <Item8>
         <Name Value="EIdHTTPProtocolException"/>
       </Item8>
+      <Item9>
+        <Name Value="EVariantInvalidOpError"/>
+      </Item9>
     </Exceptions>
   </Debugging>
 </CONFIG>

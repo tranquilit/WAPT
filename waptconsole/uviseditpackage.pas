@@ -571,7 +571,7 @@ begin
       PackageEdited.S['conflicts'] :=  trim(Conflicts);
       ControlDict:=SuperObjectToPyVar(PackageEdited);
 
-      PE := Mainmodule.waptpackage.PackageEntry(package := '');
+      PE := dmpython.waptpackage.PackageEntry(package := '');
       PE.load_control_from_dict(ControlDict);
       PE.save_control_to_wapt(SourcePath);
 

@@ -1469,14 +1469,14 @@ begin
         if DirectoryExistsUTF8(DevPath) then
           DevPath:=DevPath+'.'+GridPackages.GetCellStrValue(GridPackages.FocusedNode, 'version');
         DMPython.WAPT.update(force := True,register := False,filter_on_host_cap := False);
-        res_var := DMPython.WAPT.edit_package(
+        res := PyVarToSuperObject(DMPython.WAPT.edit_package(
           packagerequest := Selpackage,
           target_directory:=DevPath,
-          auto_inc_version:=False);
-        res := SO(VarPythonAsString(MainModule.jsondump(res_var)));
+          auto_inc_version:=False));
+
         if not DirectoryExists(res.S['sourcespath']) then
           raise Exception.Create('Unable to edit package. Development directory '+res.S['sourcespath']+' does not exist');
-        MainModule.common.wapt_sources_edit( wapt_sources_dir := DevPath);
+        DMPython.common.wapt_sources_edit( wapt_sources_dir := DevPath);
       except
         on E:Exception do
         begin
@@ -1629,7 +1629,7 @@ begin
               buildDir := GetTempDir(False);
               if RightStr(buildDir,1) = '\' then
                 buildDir := copy(buildDir,1,length(buildDir)-1);
-              BuildRes := Mainmodule.waptdevutils.build_waptupgrade_package(
+              BuildRes := DMPython.waptdevutils.build_waptupgrade_package(
                   waptconfigfile := AppIniFilename(),
                   wapt_server_user := WaptServerUser,
                   wapt_server_passwd := WaptServerPassword,
@@ -1709,7 +1709,7 @@ begin
         VarHosts := SuperObjectToPyVar(Hosts);
         VarPackages := SuperObjectToPyVar(packages);
 
-        resVar := MainModule.waptdevutils.edit_hosts_depends(
+        resVar := DMPython.waptdevutils.edit_hosts_depends(
            waptconfigfile := AppIniFilename(),
            hosts_list := VarHosts,
            append_conflicts := VarPackages,
@@ -1784,7 +1784,7 @@ begin
         VarHosts := SuperObjectToPyVar(Hosts);
         VarPackages := SuperObjectToPyVar(packages);
 
-        resVar := MainModule.waptdevutils.edit_hosts_depends(
+        resVar := DMPython.waptdevutils.edit_hosts_depends(
            waptconfigfile := AppIniFilename(),
            hosts_list := VarHosts,
            append_depends := VarPackages,
@@ -2827,7 +2827,7 @@ begin
           ProgressTitle(format(rsImportingFile, [OpenDialogWapt.Files[i]]));
           ProgressStep(i, OpenDialogWapt.Files.Count - 1);
           Application.ProcessMessages;
-          sourceDir := VarPythonAsString(MainModule.waptdevutils.duplicate_from_file(
+          sourceDir := VarPythonAsString(DMPython.waptdevutils.duplicate_from_file(
             package_filename := OpenDialogWapt.Files[i],new_prefix:=DefaultPackagePrefix));
           //sources.AsArray.Add('r"' + sourceDir + '"');
           sources.AsArray.Add(sourceDir);
@@ -2999,7 +2999,7 @@ begin
         VarHosts := SuperObjectToPyVar(Hosts);
         VarPackages := SuperObjectToPyVar(packages);
 
-        resVar := MainModule.waptdevutils.edit_hosts_depends(
+        resVar := DMPython.waptdevutils.edit_hosts_depends(
            waptconfigfile := AppIniFilename(),
            hosts_list := VarHosts,
            remove_conflicts := VarPackages,
@@ -3041,7 +3041,7 @@ begin
         VarHosts := SuperObjectToPyVar(Hosts);
         VarPackages := SuperObjectToPyVar(packages);
 
-        resVar := MainModule.waptdevutils.edit_hosts_depends(
+        resVar := DMPython.waptdevutils.edit_hosts_depends(
            waptconfigfile := AppIniFilename(),
            hosts_list := VarHosts,
            remove_depends := VarPackages,
@@ -3650,55 +3650,12 @@ begin
 end;
 
 procedure TVisWaptGUI.MakePackageTemplate(AInstallerFileName: String);
-var
-  packageSources,uploadResult:ISUperObject;
-  Silentflags:String;
-  res: Integer;
 begin
-  SilentFlags := 'None';
   With TVisPackageWizard.Create(self) do
   try
     InstallerFilename:=AInstallerFileName;
-
-    res := ShowModal;
-    // mrYes : build-upload, mrOK : make-template only
-    if (res = mrOk) or (res = mrYes) then
-    begin
-      Screen.cursor := crHourGlass;
-      if EdSilentFlags.Text <>'' then
-        Silentflags:='r"'+EdSilentFlags.Text+'"'
-      else
-        SilentFlags := 'None';
-      if FileExists(EdInstallerPath.FileName) then
-      try
-        if res = mrOK then
-        begin
-          packageSources := DMPython.RunJSON(format('common.wapt_sources_edit(mywapt.make_package_template(r"%s".decode("utf8"),r"%s",version="%s",description=r"""%s""".decode("utf8"),uninstallkey=r"%s",silentflags=%s))',
-              [EdInstallerPath.FileName,EdPackageName.text,EdVersion.Text,EdDescription.Text,EdUninstallKey.Text,SilentFlags]));
-          ShowMessageFmt(rsPackageSourcesAvailable,[packageSources.AsString]);
-        end
-        else
-        begin
-          // returns the dev sources path
-          packageSources := DMPython.RunJSON(format('mywapt.make_package_template(r"%s".decode("utf8"),r"%s",version="%s",description=r"""%s""".decode("utf8"),uninstallkey=r"%s",silentflags=%s)',
-              [EdInstallerPath.FileName,EdPackageName.text,EdVersion.Text,EdDescription.Text,EdUninstallKey.Text,SilentFlags]));
-
-          uploadResult := DMPython.RunJSON(
-            format(
-            'mywapt.build_upload(r"%s".decode("utf8"),private_key_passwd=r"%s",wapt_server_user=r"%s",wapt_server_passwd=r"%s",inc_package_release=True)',
-            [packageSources.AsString, dmpython.privateKeyPassword, waptServerUser,
-            waptServerPassword]), VisWaptGUI.jsonlog);
-          if not uploadResult.B['success'] then
-            raise Exception.Create('Error building or uploading package: '+uploadResult.S['msg']);
-          ActPackagesUpdate.Execute;
-          ShowMessageFmt(rsPackageBuiltSourcesAvailable,[packageSources.AsString]);
-        end;
-      finally
-        Screen.cursor := crDefault;
-      end
-      else
-        ShowMessageFmt(rsInstallerFileNotFound,[EdInstallerPath.FileName]);
-    end;
+    if ShowModal <> mrCancel then
+      actRefresh.Execute;
   finally
     Free;
   end;

@@ -192,7 +192,7 @@ begin
   RepoURI := ParseURI(WaptRepo.RepoURL);
   certfn:= AppendPathDelim(Appuserinipath)+'ssl\server\'+RepoURI.Host+'.crt';
   try
-    pem_data := MainModule.waptcrypto.SSLCABundle(certificates := MainModule.waptcrypto.get_peer_cert_chain_from_server(url := WaptRepo.RepoURL)).as_pem('--noarg--');
+    pem_data := dmpython.waptcrypto.SSLCABundle(certificates := dmpython.waptcrypto.get_peer_cert_chain_from_server(url := WaptRepo.RepoURL)).as_pem('--noarg--');
     if not VarIsNull(pem_data) then
     begin
       if not DirectoryExists(ExtractFileDir(certfn)) then

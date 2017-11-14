@@ -23,24 +23,38 @@ type
     procedure PythonModuleDMWaptPythonEvents1Execute(Sender: TObject; PSelf,
       Args: PPyObject; var Result: PPyObject);
   private
+    Fcommon: Variant;
     FLanguage: String;
     FCachedPrivateKeyPassword: Ansistring;
     FMainWaptRepo: Variant;
+    FWAPT: Variant;
+    Fwaptcrypto: Variant;
+    Fsetuphelpers: Variant;
+    Fwaptpackage: Variant;
+    Fwaptdevutils: Variant;
     jsondata:TJSONData;
 
     FWaptConfigFileName: Utf8String;
+    function Getcommon: Variant;
     function GetMainWaptRepo: Variant;
     function getprivateKeyPassword: Ansistring;
+    function Getsetuphelpers: Variant;
+    function GetWAPT: Variant;
+    function Getwaptcrypto: Variant;
+    function Getwaptdevutils: Variant;
+    function Getwaptpackage: Variant;
     procedure LoadJson(data: UTF8String);
+    procedure Setcommon(AValue: Variant);
     procedure SetMainWaptRepo(AValue: Variant);
     procedure setprivateKeyPassword(AValue: Ansistring);
+    procedure SetWAPT(AValue: Variant);
     procedure SetWaptConfigFileName(AValue: Utf8String);
     procedure SetLanguage(AValue: String);
 
     { private declarations }
   public
     { public declarations }
-    WAPT:Variant;
+
     PyWaptWrapper : TPyDelphiWrapper;
 
 
@@ -54,6 +68,14 @@ type
 
     property Language:String read FLanguage write SetLanguage;
     property MainWaptRepo:Variant read GetMainWaptRepo write SetMainWaptRepo;
+
+    property WAPT:Variant read GetWAPT write SetWAPT;
+    property waptcrypto:Variant read Getwaptcrypto;
+    property common:Variant read Getcommon;
+    property setuphelpers:Variant read Getsetuphelpers;
+    property waptpackage:Variant read Getwaptpackage;
+    property waptdevutils:Variant read Getwaptdevutils;
+
   end;
 
 
@@ -205,7 +227,13 @@ begin
   if FWaptConfigFileName=AValue then
     Exit;
 
+
   FWaptConfigFileName:=AValue;
+
+  // reset Variant to force recreate Wapt instance
+  FMainWaptRepo := Unassigned;
+  FWapt := Unassigned;
+
   if AValue<>'' then
   try
     Screen.Cursor:=crHourGlass;
@@ -214,35 +242,8 @@ begin
     //Initialize waptconsole parameters with local workstation wapt-get parameters...
     if not FileExistsUTF8(AValue) then
       CopyFile(Utf8ToAnsi(WaptIniFilename),Utf8ToAnsi(AValue),True);
-    st := TStringList.Create;
-    try
-      st.Append('import logging');
-      st.Append('import requests');
-      st.Append('import json');
-      st.Append('import os');
-      st.Append('import common');
-      st.Append('import waptpackage');
-      st.Append('import waptdevutils');
-      st.Append('import waptcrypto');
-      st.Append('import setuphelpers');
-      st.Append('from waptutils import jsondump');
-      st.Append('logger = logging.getLogger()');
-      st.Append('logging.basicConfig(level=logging.WARNING)');
-      st.Append(format('mywapt = common.Wapt(config_filename=r"%s".decode(''utf8''),disable_update_server_status=True)',[AValue]));
-      st.Append('mywapt.dbpath=r":memory:"');
-      st.Append('mywapt.use_hostpackages = False');
 
-      // declare WaptCOnsole feedback module
-      st.Append('import waptconsole');
-      st.Append('mywapt.progress_hook = waptconsole.UpdateProgress');
-      st.Append('common.default_pwd_callback = waptconsole.GetPrivateKeyPassword');
 
-      PythonEng.ExecStrings(St);
-      WAPT:=MainModule.mywapt;
-      FMainWaptRepo := Unassigned;
-    finally
-      st.free;
-    end;
     // override lang setting
     for i := 1 to Paramcount - 1 do
       if (ParamStrUTF8(i) = '--LANG') or (ParamStrUTF8(i) = '-l') or
@@ -288,7 +289,7 @@ var
 begin
   if (crtfilename<>'') and FileExists(crtfilename) then
   begin
-    crt := MainModule.waptcrypto.SSLCertificate(crt_filename:=crtfilename);
+    crt := dmpython.waptcrypto.SSLCertificate(crt_filename:=crtfilename);
     result := VarPythonAsString(crt.has_usage('code_signing')) <> '';
   end
   else
@@ -395,6 +396,12 @@ begin
   end;
 end;
 
+procedure TDMPython.Setcommon(AValue: Variant);
+begin
+  if VarCompareValue(Fcommon,AValue) = vrEqual  then Exit;
+  Fcommon:=AValue;
+end;
+
 procedure TDMPython.SetMainWaptRepo(AValue: Variant);
 begin
   if VarCompareValue(FMainWaptRepo,AValue) = vrEqual  then Exit;
@@ -414,11 +421,11 @@ begin
     RetryCount:=3;
     Password:= '';
     // try without password
-    PrivateKeyPath := MainModule.waptdevutils.get_private_key_encrypted(certificate_path:=GetWaptPersonalCertificatePath(),password:=Password);
+    PrivateKeyPath := DMPython.waptdevutils.get_private_key_encrypted(certificate_path:=GetWaptPersonalCertificatePath(),password:=Password);
     if (PrivateKeyPath ='') and (FCachedPrivateKeyPassword<>'') then
     begin
       Password := FCachedPrivateKeyPassword;
-      PrivateKeyPath := MainModule.waptdevutils.get_private_key_encrypted(certificate_path:=GetWaptPersonalCertificatePath(),password:=Password);
+      PrivateKeyPath := DMPython.waptdevutils.get_private_key_encrypted(certificate_path:=GetWaptPersonalCertificatePath(),password:=Password);
       // not found any keys, reset pwd cache to empty.
       if PrivateKeyPath='' then
         FCachedPrivateKeyPassword := '';
@@ -433,7 +440,7 @@ begin
           if ShowModal = mrOk then
           begin
             Password := edPasswordKey.Text;
-            PrivateKeyPath := MainModule.waptdevutils.get_private_key_encrypted(certificate_path:=GetWaptPersonalCertificatePath(),password:=Password);
+            PrivateKeyPath := DMPython.waptdevutils.get_private_key_encrypted(certificate_path:=GetWaptPersonalCertificatePath(),password:=Password);
             if PrivateKeyPath<>'' then
             begin
               FCachedPrivateKeyPassword:=edPasswordKey.Text;
@@ -457,12 +464,80 @@ begin
   Result := FCachedPrivateKeyPassword;
 end;
 
+function TDMPython.Getsetuphelpers: Variant;
+begin
+  if VarIsEmpty(Fsetuphelpers) or VarIsNull(Fsetuphelpers) then
+    Fsetuphelpers:= VarPyth.Import('setuphelpers');
+  Result := Fsetuphelpers;
+end;
+
+function TDMPython.GetWAPT: Variant;
+var
+  st:TStringList;
+begin
+  if VarIsNull(FWapt) or VarIsEmpty(FWapt) then
+  begin
+    st := TStringList.Create;
+    try
+      st.Append('import logging');
+      st.Append('import requests');
+      st.Append('import json');
+      st.Append('import os');
+      st.Append('import common');
+      st.Append('import waptpackage');
+      st.Append('import waptdevutils');
+      st.Append('import waptcrypto');
+      st.Append('import setuphelpers');
+      st.Append('from waptutils import jsondump');
+      st.Append('logger = logging.getLogger()');
+      st.Append('logging.basicConfig(level=logging.WARNING)');
+      st.Append(format('WAPT = common.Wapt(config_filename=r"%s".decode(''utf8''),disable_update_server_status=True)',[WaptConfigFileName]));
+      st.Append('WAPT.dbpath=r":memory:"');
+      st.Append('WAPT.use_hostpackages = False');
+
+      // declare WaptCOnsole feedback module
+      st.Append('import waptconsole');
+      st.Append('WAPT.progress_hook = waptconsole.UpdateProgress');
+      st.Append('common.default_pwd_callback = waptconsole.GetPrivateKeyPassword');
+
+      PythonEng.ExecStrings(St);
+      FWAPT := MainModule.WAPT;
+    finally
+      st.free;
+    end;
+  end;
+  Result := FWAPT;
+end;
+
+function TDMPython.Getwaptcrypto: Variant;
+begin
+  if VarIsEmpty(Fwaptcrypto) or VarIsNull(Fwaptcrypto) then
+    Fwaptcrypto:= VarPyth.Import('waptcrypto');
+  Result := Fwaptcrypto;
+end;
+
+function TDMPython.Getwaptdevutils: Variant;
+begin
+  if VarIsEmpty(Fwaptdevutils) or VarIsNull(Fwaptdevutils) then
+    Fwaptdevutils:= VarPyth.Import('waptdevutils');
+  Result := Fwaptdevutils;
+
+end;
+
+function TDMPython.Getwaptpackage: Variant;
+begin
+  if VarIsEmpty(Fwaptpackage) or VarIsNull(Fwaptpackage) then
+    Fwaptpackage:= VarPyth.Import('waptpackage');
+  Result := Fwaptpackage;
+
+end;
+
 function TDMPython.GetMainWaptRepo: Variant;
 begin
   if VarIsEmpty(FMainWaptRepo) then
   try
     ShowLoadWait('Loading main Wapt repo settings',0,4);
-    FMainWaptRepo := MainModule.waptpackage.WaptRemoteRepo(name := 'global');
+    FMainWaptRepo := dmpython.waptpackage.WaptRemoteRepo(name := 'global');
     FMainWaptRepo.load_config_from_file(WaptConfigFileName);
   finally
     HideLoadWait;
@@ -470,9 +545,23 @@ begin
   Result := FMainWaptRepo;
 end;
 
+function TDMPython.Getcommon: Variant;
+begin
+  if VarIsEmpty(Fcommon) or VarIsNull(Fcommon) then
+    Fcommon:= VarPyth.Import('common');
+  Result := Fcommon;
+end;
+
 procedure TDMPython.setprivateKeyPassword(AValue: Ansistring);
 begin
   FCachedPrivateKeyPassword:=AValue;
+end;
+
+
+procedure TDMPython.SetWAPT(AValue: Variant);
+begin
+  if VarCompareValue(FWAPT,AValue) = vrEqual then Exit;
+  FWAPT:=AValue;
 end;
 
 
@@ -509,7 +598,7 @@ begin
     if not FileExists(CACertificateFilename) then
       raise Exception.CreateFmt('CA Certificate %s does not exist',[CACertificateFilename])
     else
-      cacert:= MainModule.waptcrypto.SSLCertificate(crt_filename := CACertificateFilename);
+      cacert:= dmpython.waptcrypto.SSLCertificate(crt_filename := CACertificateFilename);
 
   if (CAKeyFilename<>'') then
     if not FileExists(CAKeyFilename) then
@@ -518,7 +607,7 @@ begin
     begin
       if InputQuery('CA Private key password','Password',True,cakey_pwd) then
       begin
-        cakey:= MainModule.waptcrypto.SSLPrivateKey(filename := CAKeyFilename, password := cakey_pwd);
+        cakey:= dmpython.waptcrypto.SSLPrivateKey(filename := CAKeyFilename, password := cakey_pwd);
         rsa := cakey.as_pem;
       end
       else
@@ -542,7 +631,7 @@ begin
   if not DirectoryExists(destdir) then
        CreateDir(destdir);
 
-  key := MainModule.waptcrypto.SSLPrivateKey(filename := destpem,password := keypassword);
+  key := dmpython.waptcrypto.SSLPrivateKey(filename := destpem,password := keypassword);
 
   // Create private key  if not already exist
   if not FileExists(destpem) then

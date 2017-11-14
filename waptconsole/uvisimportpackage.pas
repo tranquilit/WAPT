@@ -240,7 +240,7 @@ end;
 procedure TVisImportPackage.ActSearchExternalPackageExecute(Sender: TObject);
 var
   expr: String;
-  http_proxy,packages_python,verify_cert: Variant;
+  http_proxy,packages_python,verify_cert,wapt: Variant;
 
 begin
   EdSearchPackage.Modified:=False;
@@ -261,11 +261,15 @@ begin
       Screen.Cursor:=crHourGlass;
       expr := UTF8Decode(EdSearchPackage.Text);
       packages_python := Nil;
-      packages_python := MainModule.waptdevutils.update_external_repo(
+      if cbNewerThanMine.Checked then
+        wapt := DMPython.WAPT
+      else
+        wapt := None();
+      packages_python := DMPython.waptdevutils.update_external_repo(
         repourl := Waptrepo.RepoURL,
         search_string := expr,
         proxy := http_proxy,
-        mywapt := dmwaptpython.DMPython.WAPT,
+        mywapt := wapt,
         newer_only := cbNewerThanMine.Checked,
         newest_only := cbNewestOnly.Checked,
         verify_cert := verify_cert);
@@ -311,7 +315,7 @@ begin
 
   ListPackagesVar := SuperObjectToPyVar(ListPackages);
 
-  FileNames := PyVarToSuperObject(MainModule.waptdevutils.get_packages_filenames(
+  FileNames := PyVarToSuperObject(DMPython.waptdevutils.get_packages_filenames(
         packages_names := ListPackagesVar,
         waptconfigfile := AppIniFilename,
         repo_name := RepoName ));
@@ -365,7 +369,7 @@ begin
         PackageFilename := AppLocalDir + 'cache\' + Filename.AsArray[0].AsString;
 
         sourceDir := VarPyth.VarPythonAsString(
-          Mainmodule.waptdevutils.duplicate_from_file(
+          DMPython.waptdevutils.duplicate_from_file(
             package_filename := PackageFilename,
             new_prefix := DefaultPackagePrefix,
             authorized_certs := SignersCABundle
@@ -433,7 +437,7 @@ begin
 
   ListPackagesVar := SuperObjectToPyVar(ListPackages);
 
-  FileNames := PyVarToSuperObject(MainModule.waptdevutils.get_packages_filenames(
+  FileNames := PyVarToSuperObject(DMPython.waptdevutils.get_packages_filenames(
         packages_names := ListPackagesVar,
         waptconfigfile := AppIniFilename,
         repo_name := RepoName ));
@@ -477,7 +481,7 @@ begin
         Application.ProcessMessages;
         target := AppLocalDir + 'cache\' + Filename.AsArray[0].AsString;
         DevDirectory :=  AppendPathDelim(DefaultSourcesRoot)+ExtractFileNameWithoutExt(Filename.AsArray[0].AsString)+'-wapt';
-        sourceDir := VarPythonAsString(Mainmodule.waptdevutils.duplicate_from_file(
+        sourceDir := VarPythonAsString(DMPython.waptdevutils.duplicate_from_file(
           package_filename := target,
           new_prefix := DefaultPackagePrefix,
           target_directory := DevDirectory,
@@ -485,7 +489,7 @@ begin
           ));
 
         dmpython.WAPT.add_pyscripter_project(sourceDir);
-        Mainmodule.common.wapt_sources_edit(sourceDir);
+        DMPython.common.wapt_sources_edit(sourceDir);
       end;
     finally
       Free;
