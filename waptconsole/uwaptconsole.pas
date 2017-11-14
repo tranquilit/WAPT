@@ -21,6 +21,7 @@ type
     ActDisplayPreferences: TAction;
     ActExternalRepositoriesSettings: TAction;
     ActAddHWPropertyToGrid: TAction;
+    ActProprietary: TAction;
     ActPackagesForget: TAction;
     ActAddConflicts: TAction;
     ActHelp: TAction;
@@ -399,6 +400,7 @@ type
     procedure ActmakePackageTemplateExecute(Sender: TObject);
     procedure ActPackagesInstallUpdate(Sender: TObject);
     procedure ActPackagesRemoveUpdate(Sender: TObject);
+    procedure ActProprietaryExecute(Sender: TObject);
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
     procedure ActExternalRepositoriesSettingsExecute(Sender: TObject);
@@ -2214,6 +2216,15 @@ end;
 procedure TVisWaptGUI.ActPackagesRemoveUpdate(Sender: TObject);
 begin
   (Sender as TAction).Enabled:=OneHostIsConnected;
+end;
+
+procedure TVisWaptGUI.ActProprietaryExecute(Sender: TObject);
+begin
+  ActProprietary.Checked:=not ActProprietary.Checked;
+  Label20.Visible:=ActProprietary.Checked;;
+  cbADOU.Visible:=ActProprietary.Checked;
+  Label21.Visible:=ActProprietary.Checked;;
+  cbADSite.Visible:=ActProprietary.Checked;
 end;
 
 procedure TVisWaptGUI.ActRemoteAssistExecute(Sender: TObject);

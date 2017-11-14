@@ -15,11 +15,11 @@ type
   { TVisImportPackage }
 
   TVisImportPackage = class(TForm)
+    ActionsImages24: TImageList;
     ActWAPTSettings: TAction;
     ActRepositoriesSettings: TAction;
     ActPackageEdit: TAction;
     ActionList1: TActionList;
-    ActionsImages: TImageList;
     ActPackageDuplicate: TAction;
     actRefresh: TAction;
     ActSearchExternalPackage: TAction;
@@ -135,7 +135,7 @@ end;
 procedure TVisImportPackage.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
-  ScaleImageList(ActionsImages,96);
+  ScaleImageList(ActionsImages24,96);
 end;
 
 procedure TVisImportPackage.FillReposList;

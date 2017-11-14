@@ -1,8 +1,5 @@
-msgid "Only required if a proxy is needed for waptserver and main waptrepoIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundle"
+msgid "Only required if a proxy is needed for waptserver and main waptrepoIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundle"
 msgstr "Content-Type: text/plain; charset=UTF-8"
-
-msgid "If 1 : use default wapt cacert.pem bundle"
-msgstr ""
 
 #: tform1.buttonpanel1.helpbutton.caption
 msgctxt "tform1.buttonpanel1.helpbutton.caption"
@@ -583,8 +580,14 @@ msgid "Launch update on hosts"
 msgstr "lancer les mises à jour en attente"
 
 #: tvisimportpackage.actpackageduplicate.caption
-msgid "Import..."
+#, fuzzy
+#| msgid "Import..."
+msgid "Import in repository..."
 msgstr "Importer..."
+
+#: tvisimportpackage.actpackageduplicate.hint
+msgid "Download, rename, sign and upload to private repository"
+msgstr ""
 
 #: tvisimportpackage.actpackageedit.caption
 msgid "Download and Edit"
@@ -1298,6 +1301,10 @@ msgstr "Forcer la désinstallation immédiate du paquet"
 msgctxt "tviswaptgui.actpackagesupdate.caption"
 msgid "Refresh packages list"
 msgstr "Actualiser les paquets disponibles"
+
+#: tviswaptgui.actproprietary.caption
+msgid "ActProprietary"
+msgstr ""
 
 #: tviswaptgui.actquit.caption
 msgctxt "tviswaptgui.actquit.caption"
@@ -3263,6 +3270,11 @@ msgstr ""
 #| "if the package exists.\n"
 #| "\n"
 #| "Are you sure to continue ?\n"
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -4350,6 +4362,9 @@ msgstr "Attention, l'installeur waptagent.exe n'est pas présent sur le serveur.
 #| "Warning, the version of the waptagent.exe installer is too old.\n"
 #| "Current waptagent.exe version: %s\n"
 #| "waptsetup-tis.exe version: %s\n"
+#| "Warning, the version of the waptagent.exe installer is too old.\n"
+#| "Current waptagent.exe version: %s\n"
+#| "waptsetup-tis.exe version: %s\n"
 msgid ""
 "Warning, the version of the waptagent.exe installer is too old.\n"
 "Current waptagent.exe version: %s\n"
@@ -4396,6 +4411,8 @@ msgstr "Vous devez d'abord définir le préfixe des paquets dans les préférenc
 #: uwaptconsoleres.rswaptservererror
 #, fuzzy
 #| msgid ""
+#| "%s\n"
+#| "Error on WAPT server:\n"
 #| "%s\n"
 #| "Error on WAPT server:\n"
 #| "%s\n"
@@ -5113,6 +5130,9 @@ msgstr ""
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
 #| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
 "Current server version: %s\n"
@@ -5130,6 +5150,8 @@ msgstr "Erreur lors de la création de l'agent : %s"
 #: uwaptconsoleres.rswaptsetupuploadsuccess
 #, fuzzy
 #| msgid ""
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
