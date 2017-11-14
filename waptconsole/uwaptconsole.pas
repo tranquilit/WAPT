@@ -3357,7 +3357,6 @@ procedure TVisWaptGUI.ActPackagesUpdateExecute(Sender: TObject);
 begin
   try
     ShowLoadWait('Loading packages',0,4);
-    //dmpython.MainWaptRepo.update();
     dmpython.MainWaptRepo := Unassigned;
     ShowProgress('Filter packages',2);
     ActSearchPackage.Execute;
@@ -3366,10 +3365,6 @@ begin
   finally
     HideLoadWait;
   end;
-
-  //update groups filter combobox
-  ////if cbGroups.ItemIndex>=0 then
-  ////FillcbGroups;
 end;
 
 procedure TVisWaptGUI.ActReloadConfigExecute(Sender: TObject);
@@ -3429,7 +3424,8 @@ begin
     GridhostInventory.Clear;
     GridHostPackages.Clear;
     GridHostSoftwares.Clear;
-    DMPython.WAPT.update(register:=False);
+    if not VarIsEmpty(DMPython.WAPT) then
+      DMPython.WAPT.update(register:=False);
     // put somewhere else
     MainPagesChange(MainPages);
   end;
