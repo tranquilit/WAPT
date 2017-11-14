@@ -39,8 +39,8 @@ msgstr ""
 
 #: tviswaptexit.labintro.caption
 msgctxt "tviswaptexit.labintro.caption"
-msgid "There are installs or updates pending."
-msgstr "Des installations ou mises à jour sont en attente."
+msgid "There are %d installs or updates pending."
+msgstr "%d installations ou mises à jour sont en attente."
 
 #: uwaptexitres.rserrorwininetflags
 msgid "Internal error in SetToIgnoreCerticateErrors when trying to get wininet flags. %s"
@@ -57,6 +57,14 @@ msgstr "Lancer la mise à jour des logiciels"
 #: uwaptexitres.rssoftwareupdatein
 msgid "Updating software in %s sec..."
 msgstr "Mise à jour des logiciels dans %s sec..."
+
+#: uwaptexitres.rsupdatesavailable
+msgid ""
+"There are %d installs or updates pending.\n"
+"Do you wish to apply them now ?\n"
+msgstr ""
+"Il y %d installations ou mises à jour en attente\n"
+"Souhaitez-vous les lancer maintenant ?\n"
 
 #: uwaptexitres.rsupdatingsoftware
 msgid "Updating software"

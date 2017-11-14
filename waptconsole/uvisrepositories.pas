@@ -190,7 +190,7 @@ var
   RepoURI:TURI;
 begin
   RepoURI := ParseURI(WaptRepo.RepoURL);
-  certfn:= waptbasedir+'ssl\server\'+RepoURI.Host+'.crt';
+  certfn:= AppendPathDelim(Appuserinipath)+'ssl\server\'+RepoURI.Host+'.crt';
   try
     pem_data := MainModule.waptcrypto.SSLCABundle(certificates := MainModule.waptcrypto.get_peer_cert_chain_from_server(url := WaptRepo.RepoURL)).as_pem('--noarg--');
     if not VarIsNull(pem_data) then
