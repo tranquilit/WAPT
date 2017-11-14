@@ -6,6 +6,7 @@ object VisPackageWizard: TVisPackageWizard
   Caption = 'Package Wizard'
   ClientHeight = 236
   ClientWidth = 559
+  DefaultMonitor = dmMainForm
   OnCreate = FormCreate
   LCLVersion = '1.3'
   object EdPackageName: TLabeledEdit
