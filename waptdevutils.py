@@ -274,13 +274,13 @@ def duplicate_from_file(package_filename,new_prefix='test',target_directory=None
 
     source_package = PackageEntry(waptfile = package_filename)
     # authorized_certs is a directoyr instead a list of certificates.
-    if authorized_certs is not None and not isinstance(authorized_certs,list):
+    if authorized_certs is not None and authorized_certs != '' and not isinstance(authorized_certs,list):
         bundle = SSLCABundle()
         bundle.add_pems(makepath(authorized_certs,'*.crt'))
         bundle.add_pems(makepath(authorized_certs,'*.cer'))
         bundle.add_pems(makepath(authorized_certs,'*.pem'))
     else:
-        bundle = authorized_certs
+        bundle = authorized_certs or None
 
     source_package.unzip_package(target_dir=target_directory,cabundle=bundle)
     source_package.invalidate_signature()

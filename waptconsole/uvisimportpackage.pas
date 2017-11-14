@@ -34,10 +34,12 @@ type
     EdSearchPackage: TSearchEdit;
     GridExternalPackages: TSOGrid;
     LabServerCABundle: TTILabel;
+    LabSignersCABundle: TTILabel;
     MenuItem1: TMenuItem;
     MenuItem25: TMenuItem;
     Panel1: TPanel;
     Panel2: TPanel;
+    PanRepoParams: TPanel;
     Panel4: TPanel;
     Panel5: TPanel;
     Panel8: TPanel;
@@ -168,6 +170,7 @@ begin
 
     LabRepoURL.Link.TIObject := Waptrepo;
     LabServerCABundle.Link.TIObject := Waptrepo;
+    LabSignersCABundle.Link.TIObject := Waptrepo;
   end;
   Result := FWaptrepo;
 end;
@@ -175,10 +178,15 @@ end;
 procedure TVisImportPackage.SetRepoName(AValue: String);
 begin
   if FRepoName=AValue then Exit;
-  EdRepoName.ItemIndex := EdRepoName.Items.IndexOf(AValue);
-  GridExternalPackages.Data := Nil;
+
   FRepoName:=AValue;
-  WaptRepo.LoadFromInifile(WaptIniFilename,FRepoName);
+  GridExternalPackages.Data := Nil;
+  if AValue<>'' then
+  begin
+    EdRepoName.ItemIndex := EdRepoName.Items.IndexOf(AValue);
+    WaptRepo.LoadFromInifile(WaptIniFilename,FRepoName);
+    ActSearchExternalPackageExecute(Nil);
+  ;end
 end;
 
 procedure TVisImportPackage.SetWaptrepo(AValue: TWaptRepo);
@@ -207,7 +215,6 @@ begin
   if EdRepoName.ItemIndex<0 then
     EdRepoName.ItemIndex := 0;
   EdRepoName.OnSelect(Sender);
-  ActSearchExternalPackage.Execute;
 end;
 
 procedure TVisImportPackage.GridExternalPackagesGetText(
@@ -519,7 +526,6 @@ begin
       FillReposList;
       RepoName:='';
       RepoName:=rs.RepoName;
-      ActSearchExternalPackage.Execute;
     end;
   finally
     rs.Free;

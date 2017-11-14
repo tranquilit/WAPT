@@ -34,8 +34,9 @@ type
     ButSelectCABundle: TButton;
     ButSelectCABundle1: TButton;
     ButSelectCABundle2: TButton;
+    cbCheckHTTPS: TCheckBox;
+    cbAdvanced2: TCheckBox;
     CBCheckSignature: TCheckBox;
-    cbEnableCheckHttps: TCheckBox;
     EdHttpProxy: TTIEdit;
     EdName: TTIComboBox;
     EdServerCABundle: TTIEdit;
@@ -48,8 +49,9 @@ type
     labCertDir: TLabel;
     DlgOpenCrt: TOpenDialog;
     labName: TLabel;
+    PanAdvanced: TPanel;
     panCertActions: TPanel;
-    Panel1: TPanel;
+    PanBottom: TPanel;
     Panel2: TPanel;
     panDir: TPanel;
     panHttps1: TPanel;
@@ -73,8 +75,9 @@ type
     procedure ActSelectHttpsBundleExecute(Sender: TObject);
     procedure ActUnregisterRepoExecute(Sender: TObject);
     procedure ActUnregisterRepoUpdate(Sender: TObject);
+    procedure cbAdvanced2Click(Sender: TObject);
+    procedure cbCheckHTTPSClick(Sender: TObject);
     procedure CBCheckSignatureClick(Sender: TObject);
-    procedure cbEnableCheckHttpsClick(Sender: TObject);
     procedure EdNameSelect(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
@@ -84,12 +87,11 @@ type
     FRepoName: String;
     FWaptRepo: TWaptRepo;
     procedure FillReposList;
-    function GetRepoName: String;
     procedure SetRepoName(AValue: String);
     { private declarations }
   public
     { public declarations }
-    property RepoName:String read GetRepoName write SetRepoName;
+    property RepoName:String read FRepoName write SetRepoName;
     property WaptRepo:TWaptRepo read FWaptRepo;
   end;
 
@@ -110,7 +112,10 @@ begin
   inifile := TIniFile.Create(AppIniFilename);
   try
     inifile.ReadSections(EdName.Items);
-    EdName.Items.Delete(EdName.Items.IndexOf('global'));
+    if EdName.Items.IndexOf('global')>=0 then
+      EdName.Items.Delete(EdName.Items.IndexOf('global'));
+    if EdName.Items.IndexOf('options')>=0 then
+      EdName.Items.Delete(EdName.Items.IndexOf('options'));
   finally
     inifile.Free;
   end;
@@ -131,8 +136,6 @@ begin
   EdServerCABundle.Link.TIObject := FWaptRepo;
   EdSignersCABundle.Link.TIObject := FWaptRepo;
 
-
-
 end;
 
 procedure TVisRepositories.FormDestroy(Sender: TObject);
@@ -144,8 +147,9 @@ end;
 procedure TVisRepositories.FormShow(Sender: TObject);
 begin
   WaptRepo.LoadFromInifile(WaptIniFilename,RepoName);
-  cbEnableCheckHttps.Checked:=(FWaptRepo.ServerCABundle <>'') and (FWaptRepo.ServerCABundle<>'0');
-  cbEnableCheckHttpsClick(Nil);
+  cbAdvanced2Click(Nil);
+  cbCheckHTTPS.Checked:=(FWaptRepo.ServerCABundle <>'') and (FWaptRepo.ServerCABundle<>'0');
+  cbCheckHTTPSClick(Nil);
 
   CBCheckSignature.Checked:=(FWaptRepo.SignersCABundle <>'');
   CBCheckSignatureClick(Nil);
@@ -162,11 +166,6 @@ begin
   EdName.ReadOnly:=AValue<>'';
 end;
 
-function TVisRepositories.GetRepoName: String;
-begin
-  Result := WaptRepo.Name;
-end;
-
 procedure TVisRepositories.ActDownloadCertificateExecute(Sender: TObject);
 begin
   OpenDocument(WaptRepo.RepoURL+'/ssl');
@@ -179,8 +178,7 @@ end;
 
 procedure TVisRepositories.ActDownloadCertificateUpdate(Sender: TObject);
 begin
-    ActDownloadCertificate.Enabled:=WaptRepo.RepoURL <> '';;
-
+  ActDownloadCertificate.Enabled:=WaptRepo.RepoURL <> '';;
 end;
 
 procedure TVisRepositories.ActGetServerCertificateExecute(Sender: TObject);
@@ -275,6 +273,25 @@ begin
   ActUnregisterRepo.Enabled := WaptRepo.Name<>'Global';
 end;
 
+procedure TVisRepositories.cbAdvanced2Click(Sender: TObject);
+begin
+  PanAdvanced.Visible:=cbAdvanced2.Checked;
+end;
+
+procedure TVisRepositories.cbCheckHTTPSClick(Sender: TObject);
+begin
+  If not cbCheckHTTPS.Checked then
+    WaptRepo.ServerCABundle := '0'
+  else
+    if (WaptRepo.ServerCABundle='') or (WaptRepo.ServerCABundle='0') then
+      WaptRepo.ServerCABundle := CARoot();
+
+  EdServerCABundle.Enabled := cbCheckHTTPS.Checked;
+  ActGetServerCertificate.Enabled := cbCheckHTTPS.Checked;
+  ActCertifiCACert.Enabled := cbCheckHTTPS.Checked;
+  ActSelectHttpsBundle.Enabled := cbCheckHTTPS.Checked;;
+end;
+
 procedure TVisRepositories.CBCheckSignatureClick(Sender: TObject);
 begin
   If not CBCheckSignature.Checked then
@@ -286,20 +303,6 @@ begin
   EdSignersCABundle.Enabled := CBCheckSignature.Checked;
   ActSelectCertDir.Enabled := CBCheckSignature.Checked;
   ActOpenCertDir.Enabled := CBCheckSignature.Checked;
-end;
-
-procedure TVisRepositories.cbEnableCheckHttpsClick(Sender: TObject);
-begin
-  If not cbEnableCheckHttps.Checked then
-    WaptRepo.ServerCABundle := '0'
-  else
-    if (WaptRepo.ServerCABundle='') or (WaptRepo.ServerCABundle='0') then
-      WaptRepo.ServerCABundle := CARoot();
-
-  EdServerCABundle.Enabled := cbEnableCheckHttps.Checked;
-  ActGetServerCertificate.Enabled := cbEnableCheckHttps.Checked;
-  ActCertifiCACert.Enabled := cbEnableCheckHttps.Checked;
-  ActSelectHttpsBundle.Enabled := cbEnableCheckHttps.Checked;;
 end;
 
 procedure TVisRepositories.EdNameSelect(Sender: TObject);

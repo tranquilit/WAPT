@@ -880,7 +880,12 @@ begin
     ini.WriteInteger(self.name,'HostsLimit',HostsLimit);
     ini.WriteInteger(self.name,HostPages.Name+'.width',HostPages.Width);
 
-    ini.WriteInteger(self.name,'WindowState',Integer(WindowState));
+    ini.WriteInteger(self.name,'WindowState',Integer(Self.WindowState));
+
+    ini.WriteInteger(self.name,'Left',Self.Left);
+    ini.WriteInteger(self.name,'Top',Self.Top);
+    ini.WriteInteger(self.name,'Width',Self.Width);
+    ini.WriteInteger(self.name,'Height',Self.Height);
 
     ini.WriteString(self.name,cbADSite.Text,'cbADSite.Text');
     ini.WriteString(self.name,cbADOU.Text,'cbADOU.Text');
@@ -2588,7 +2593,7 @@ end;
 
 procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
 var
-  hostname,uuid,desc: ansistring;
+  hostname,uuid,desc: String;
   uuids,result: ISuperObject;
   ApplyUpdatesImmediately:Boolean;
   Host: ISuperObject;
@@ -2641,7 +2646,6 @@ var
   SOAction, SOActions:ISuperObject;
   actions_json,
   signed_actions_json:String;
-  waptdevutils: Variant;
 begin
   try
     SOActions := TSuperObject.Create(stArray);
@@ -2660,8 +2664,7 @@ begin
 
     //transfer actions as json string to python
     actions_json := SOActions.AsString;
-    waptdevutils := Import('waptdevutils');
-    signed_actions_json := VarPythonAsString(waptdevutils.sign_actions(
+    signed_actions_json := VarPythonAsString(DMPython.waptdevutils.sign_actions(
       actions:=actions_json, certfilename:=GetWaptPersonalCertificatePath(),key_password:= dmpython.privateKeyPassword));
     SOActions := SO(signed_actions_json);
 
@@ -2690,7 +2693,6 @@ var
   actions_json,
   keypassword:String;
   signed_actions_json:String;
-  waptdevutils: Variant;
 begin
   if GridHostPackages.Focused and (GridHosts.FocusedRow <> Nil) then
   begin
@@ -2718,8 +2720,7 @@ begin
         //transfer actions as json string to python
         actions_json := SOActions.AsString;
         keypassword := dmpython.privateKeyPassword;
-        waptdevutils := Import('waptdevutils');
-        signed_actions_json := VarPythonAsString(waptdevutils.sign_actions(
+        signed_actions_json := VarPythonAsString(DMPython.waptdevutils.sign_actions(
           actions:=actions_json, certfilename:=GetWaptPersonalCertificatePath(),key_password:=keypassword));
         SOActions := SO(signed_actions_json);
 
@@ -3767,6 +3768,11 @@ begin
         HostsLimit := ini.ReadInteger(self.name,'HostsLimit',2000);
         //ShowMessage(Appuserinipath+'/'+self.Name+'/'+EdHostsLimit.Name+'/'+ini.ReadString(name,EdHostsLimit.Name,'not found'));
         HostPages.Width := ini.ReadInteger(self.name,HostPages.Name+'.width',HostPages.Width);
+
+        Self.Left := ini.ReadInteger(self.name,'Left',Integer(Self.Left));
+        Self.Top := ini.ReadInteger(self.name,'Top',Integer(Self.Top));
+        Self.Width := ini.ReadInteger(self.name,'Width',Integer(Self.Width));
+        Self.Height := ini.ReadInteger(self.name,'Height',Integer(Self.Height));
 
         Self.WindowState := TWindowState(ini.ReadInteger(self.name,'WindowState',Integer(Self.WindowState)));
 

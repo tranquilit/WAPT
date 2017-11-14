@@ -15,7 +15,7 @@ object VisWaptGUI: TVisWaptGUI
   OnDragOver = FormDragOver
   OnDropFiles = FormDropFiles
   OnShow = FormShow
-  Position = poDesktopCenter
+  Position = poScreenCenter
   ShowHint = True
   LCLVersion = '1.3'
   object MainPages: TPageControl

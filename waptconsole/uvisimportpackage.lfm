@@ -39,12 +39,12 @@ object VisImportPackage: TVisImportPackage
       TabOrder = 0
     end
     object ButPackageDuplicate: TBitBtn
-      Left = 6
+      Left = 580
       Height = 26
       Top = 2
       Width = 135
       Action = ActPackageEdit
-      Align = alLeft
+      Align = alRight
       AutoSize = True
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
@@ -85,10 +85,10 @@ object VisImportPackage: TVisImportPackage
       TabOrder = 1
     end
     object ButPackageDuplicate1: TBitBtn
-      Left = 784
+      Left = 721
       Height = 26
       Top = 2
-      Width = 90
+      Width = 153
       Action = ActPackageDuplicate
       Align = alRight
       AutoSize = True
@@ -411,7 +411,7 @@ object VisImportPackage: TVisImportPackage
       ChildSizing.HorizontalSpacing = 6
       ChildSizing.VerticalSpacing = 3
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
-      ChildSizing.ControlsPerLine = 2
+      ChildSizing.ControlsPerLine = 3
       ClientHeight = 58
       ClientWidth = 570
       TabOrder = 1
@@ -432,26 +432,49 @@ object VisImportPackage: TVisImportPackage
         AnchorSideLeft.Side = asrBottom
         AnchorSideRight.Side = asrBottom
         Left = 162
-        Height = 23
+        Height = 26
         Top = 6
         Width = 119
         Action = ActRepositoriesSettings
+        AutoSize = True
+        Constraints.MaxHeight = 26
         TabOrder = 0
       end
-      object LabRepoURL: TTILabel
-        Left = 6
-        Height = 13
-        Top = 32
-        Width = 150
-        Link.TIPropertyName = 'RepoURL'
-        OnClick = LabRepoURLClick
-      end
-      object LabServerCABundle: TTILabel
-        Left = 162
-        Height = 13
-        Top = 32
-        Width = 119
-        Link.TIPropertyName = 'ServerCABundle'
+      object PanRepoParams: TPanel
+        Left = 287
+        Height = 39
+        Top = 6
+        Width = 90
+        AutoSize = True
+        BevelOuter = bvNone
+        ChildSizing.LeftRightSpacing = 6
+        ChildSizing.HorizontalSpacing = 3
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ClientHeight = 39
+        ClientWidth = 90
+        TabOrder = 2
+        object LabRepoURL: TTILabel
+          Left = 6
+          Height = 13
+          Top = 0
+          Width = 78
+          Link.TIPropertyName = 'RepoURL'
+          OnClick = LabRepoURLClick
+        end
+        object LabServerCABundle: TTILabel
+          Left = 6
+          Height = 13
+          Top = 13
+          Width = 78
+          Link.TIPropertyName = 'ServerCABundle'
+        end
+        object LabSignersCABundle: TTILabel
+          Left = 6
+          Height = 13
+          Top = 26
+          Width = 78
+          Link.TIPropertyName = 'SignersCABundle'
+        end
       end
     end
   end
@@ -461,7 +484,8 @@ object VisImportPackage: TVisImportPackage
     top = 76
     object ActPackageDuplicate: TAction
       Category = 'packages'
-      Caption = 'Import...'
+      Caption = 'Import in repository...'
+      Hint = 'Download, rename, sign and upload to private repository'
       ImageIndex = 17
       OnExecute = ActPackageDuplicateExecute
       OnUpdate = ActPackageDuplicateUpdate
