@@ -1,8 +1,5 @@
-msgid "Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Do you wish to apply them now ?Do you wish to apply them now ?Do you wish to apply them now ?Do you wish to apply them now ?"
+msgid "Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Don't shutdown your computer !Do you wish to apply them now ?Do you wish to apply them now ?Do you wish to apply them now ?Do you wish to apply them now ?Do you wish to apply them now ?Do you wish to apply them now ?Do you wish to apply them now ?Do you wish to apply them now ?Do you wish to apply them now ?Do you wish to apply them now ?Do you wish to apply them now ?Do you wish to apply them now ?Do you wish to apply them now ?Do you wish to apply them now ?"
 msgstr "Content-Type: text/plain; charset=UTF-8"
-
-msgid "Do you wish to apply them now ?"
-msgstr ""
 
 #: tviswaptexit.actshowdetails.caption
 msgid "Show details"
@@ -26,7 +23,7 @@ msgstr ""
 
 #: tviswaptexit.labintro.caption
 msgctxt "tviswaptexit.labintro.caption"
-msgid "There are installs or updates pending."
+msgid "There are %d installs or updates pending."
 msgstr ""
 
 #: uwaptexitres.rserrorwininetflags
@@ -43,6 +40,12 @@ msgstr ""
 
 #: uwaptexitres.rssoftwareupdatein
 msgid "Updating software in %s sec..."
+msgstr ""
+
+#: uwaptexitres.rsupdatesavailable
+msgid ""
+"There are %d installs or updates pending.\n"
+"Do you wish to apply them now ?\n"
 msgstr ""
 
 #: uwaptexitres.rsupdatingsoftware

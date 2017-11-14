@@ -21,10 +21,17 @@ msgid ""
 "Do you wish to apply them now ?\n"
 "Do you wish to apply them now ?\n"
 "Do you wish to apply them now ?\n"
+"Do you wish to apply them now ?\n"
+"Do you wish to apply them now ?\n"
+"Do you wish to apply them now ?\n"
+"Do you wish to apply them now ?\n"
+"Do you wish to apply them now ?\n"
+"Do you wish to apply them now ?\n"
+"Do you wish to apply them now ?\n"
+"Do you wish to apply them now ?\n"
+"Do you wish to apply them now ?\n"
+"Do you wish to apply them now ?\n"
 msgstr "Fahren Sie den Computer nicht herunter !"
-
-msgid "Do you wish to apply them now ?"
-msgstr ""
 
 #: tviswaptexit.actshowdetails.caption
 msgid "Show details"
@@ -49,8 +56,10 @@ msgid "Upgrades in progress..."
 msgstr ""
 
 #: tviswaptexit.labintro.caption
+#, fuzzy
+#| msgid "There are installs or updates pending."
 msgctxt "tviswaptexit.labintro.caption"
-msgid "There are installs or updates pending."
+msgid "There are %d installs or updates pending."
 msgstr "Es gibt ausstehende Installationen oder Updates"
 
 #: uwaptexitres.rserrorwininetflags
@@ -68,6 +77,12 @@ msgstr "Software Update starten"
 #: uwaptexitres.rssoftwareupdatein
 msgid "Updating software in %s sec..."
 msgstr "Akutalisierung der Sofware in %s sec..."
+
+#: uwaptexitres.rsupdatesavailable
+msgid ""
+"There are %d installs or updates pending.\n"
+"Do you wish to apply them now ?\n"
+msgstr ""
 
 #: uwaptexitres.rsupdatingsoftware
 msgid "Updating software"

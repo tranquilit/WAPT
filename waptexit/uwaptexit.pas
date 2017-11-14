@@ -18,7 +18,7 @@ type
     ActionList1: TActionList;
     actSkip: TAction;
     ActUpgrade: TAction;
-    BitBtn1: TBitBtn;
+    ButNotNow: TBitBtn;
     ButUpgradeNow: TBitBtn;
     CheckBox1: TCheckBox;
     EdRunning: TEdit;
@@ -28,7 +28,7 @@ type
     LabIntro: TLabel;
     PanButtons: TPanel;
     ImageList1: TImageList;
-    MemoLog: TMemo;
+    MemoLog: TListBox;
     panTop: TPanel;
     PanProgress: TPanel;
     panHaut: TPanel;
@@ -100,7 +100,7 @@ begin
   Timer1.Enabled := False;
   try
     aso := WAPTLocalJsonGet('upgrade.json','','',waptservice_timeout*1000);
-    MemoLog.Text:=aso.AsJSon();
+    MemoLog.Items.Text:=aso.AsJSon();
     tasks := aso['content'];
     pending := tasks;
     ProgressBar.Max:=tasks.AsArray.Length;
@@ -216,7 +216,8 @@ begin
     else
     begin
       ActUpgrade.Enabled:=True;
-      MemoLog.Text:= Join(#13#10, upgrades);
+      MemoLog.Items.Text:= Join(#13#10, upgrades);
+      LabIntro.Caption:=Format(rsUpdatesAvailable,[upgrades.AsArray.Length]);
     end;
     if allow_cancel_upgrade then
       CountDown:=InitialCountDown
@@ -263,7 +264,7 @@ begin
       begin
         //ProgressBar.Position:=running.I['progress'];
         EdRunning.Text := running.S['description'];
-        MemoLog.Lines.Text := running.S['runstatus'];
+        MemoLog.Items.Text := running.S['runstatus'];
       end;
 
       //GridTasks.Data:=pending;
