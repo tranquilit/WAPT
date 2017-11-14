@@ -148,9 +148,11 @@ if os.path.exists('pylibs'):
     shutil.rmtree('pylibs')
 eprint(
     'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-run_verbose(r'virtualenv ./pylibs --system-site-packages')
+run_verbose(r'virtualenv ./pylibs')
 eprint('Install additional libraries in build environment virtualenv')
+run_verbose(r'source ./pylibs/bin/activate ;curl https://bootstrap.pypa.io/ez_setup.py | python')
 run_verbose(r'source ./pylibs/bin/activate ;pip install pip setuptools --upgrade')
+
 
 eprint('Temporay fix : download, patch and install Rocket outside of requirement-server.txt because of bug https://github.com/explorigin/Rocket/commit/fb8bd8f1b979faef8733853065536fc7db111612')
 # temporary fix for Rocket package : current pip package has a hardcoded http (non ssl) url to pipy. Pipy does not accept this kind of url anymore. Rocket package is patched upstream on Github, but not yet pushed to pipy
@@ -162,7 +164,7 @@ run_verbose("sed -i 's#http://pypi.python.org/packages/source/d/distribute/#http
 run_verbose("pip install -t ./builddir/opt/wapt/lib/site-packages Rocket-1.2.4/")
 
 # fix for psycopg install because of ImportError: libpq-9c51d239.so.5.9: ELF load command address/offset not properly aligned
-run_verbose(r'yum install postgresql.x86_64')
+run_verbose(r'sudo yum install postgresql.x86_64 postgresql-devel.x86_64 -y')
 run_verbose(r'pip install -t ./builddir/opt/wapt/lib/site-packages psycopg2==2.7.3.2 --no-binary :all: ')
 
 run_verbose(r'source ./pylibs/bin/activate ; pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages')
