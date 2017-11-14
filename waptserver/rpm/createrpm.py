@@ -164,7 +164,7 @@ run_verbose("sed -i 's#http://pypi.python.org/packages/source/d/distribute/#http
 run_verbose("pip install -t ./builddir/opt/wapt/lib/site-packages Rocket-1.2.4/")
 
 # fix for psycopg install because of ImportError: libpq-9c51d239.so.5.9: ELF load command address/offset not properly aligned
-run_verbose(r'sudo yum install postgresql.x86_64 postgresql-devel.x86_64 -y')
+#run_verbose(r'yum install postgresql.x86_64 postgresql-devel.x86_64 -y')
 run_verbose(r'pip install -t ./builddir/opt/wapt/lib/site-packages psycopg2==2.7.3.2 --no-binary :all: ')
 
 run_verbose(r'source ./pylibs/bin/activate ; pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages')
