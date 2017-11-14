@@ -1369,7 +1369,7 @@ msgstr "Lancer TISHelp"
 #: tviswaptgui.acttriggerhostupdate.caption
 msgctxt "tviswaptgui.acttriggerhostupdate.caption"
 msgid "Check updates"
-msgstr "Vérification les mises à jour"
+msgstr "Vérification des mises à jour"
 
 #: tviswaptgui.acttriggerhostupdate.hint
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPDATE.HINT"
@@ -1379,12 +1379,12 @@ msgstr "Vérifier les mises à jour"
 #: tviswaptgui.acttriggerhostupgrade.caption
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.CAPTION"
 msgid "Apply updates"
-msgstr "Lancer l'installation"
+msgstr "Lancer les installations"
 
 #: tviswaptgui.acttriggerhostupgrade.hint
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.HINT"
 msgid "Apply updates"
-msgstr "Lancer l'installation"
+msgstr "Lancer les installations"
 
 #: tviswaptgui.acttriggerwakeonlan.caption
 msgid "Power ON with WakeOnLan"
@@ -1559,7 +1559,7 @@ msgstr "Sélectionne les machines qui ont cette dépendance directe"
 #: tviswaptgui.cbhaserrors.caption
 msgctxt "TVISWAPTGUI.CBHASERRORS.CAPTION"
 msgid "Has errors"
-msgstr "en erreurs"
+msgstr "En erreurs"
 
 #: tviswaptgui.cbinverseselect.caption
 #, fuzzy
