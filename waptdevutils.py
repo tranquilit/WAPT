@@ -379,8 +379,14 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
     wapt.dbpath = r':memory:'
     wapt.use_hostpackages = True
-    import waptconsole
-    wapt.progress_hook = waptconsole.UpdateProgress
+    try:
+        import waptconsole
+        wapt.progress_hook = waptconsole.UpdateProgress
+    except ImportError as e:
+        def print_progress(show=False,n=0,max=100,msg=''):
+            print(msg)
+        wapt.progress_hook = print_progress
+
     hosts_list = ensure_list(hosts_list)
     append_depends = ensure_list(append_depends)
     remove_depends = ensure_list(remove_depends)

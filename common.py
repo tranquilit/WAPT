@@ -2898,6 +2898,8 @@ class Wapt(object):
 
             if is_hosts is None and pe.section == 'host':
                 is_hosts = True
+
+            if is_hosts:
                 # small files
                 with open(package_filename,'rb') as f:
                     files[os.path.basename(package_filename)] = f.read()
