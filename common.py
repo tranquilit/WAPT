@@ -2879,11 +2879,12 @@ class Wapt(object):
         """
         packages = ensure_list(packages)
 
+        # force auth before trying to upload to avoid uncessary upload buffering server side before it send a 401.
         auth = None
         if wapt_server_user:
             auth = (wapt_server_user, wapt_server_passwd)
         else:
-            auth =  self.waptserver.ask_user_password_hook()
+            auth = self.waptserver.ask_user_password()
 
         files = {}
         is_hosts = None

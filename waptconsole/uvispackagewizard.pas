@@ -39,7 +39,6 @@ type
     procedure ActMakeUploadUpdate(Sender: TObject);
     procedure EdInstallerPathAcceptFileName(Sender: TObject; var Value: String);
     procedure FormCreate(Sender: TObject);
-    procedure HelpButtonClick(Sender: TObject);
   private
     FInstallerFilename: String;
     procedure SetInstallerFilename(AValue: String);
@@ -114,19 +113,21 @@ begin
     begin
       DMPython.common.wapt_sources_edit(wapt_sources_dir := packageSources);
       ShowMessageFmt(rsPackageSourcesAvailable,[packageSources]);
+      ModalResult := mrOk;
     end
     else
     begin
-      uploadResult := PyVarToSuperObject(DMPython.WAPT.build_upload(
+      uploadResult := PyVarToSuperObject(wapt.build_upload(
         sources_directories := packageSources,
         private_key_passwd := dmpython.privateKeyPassword,
         wapt_server_user := waptServerUser,
         wapt_server_passwd := waptServerPassword,
         inc_package_release := True));
 
-      if not uploadResult.B['success'] then
-        raise Exception.Create('Error building or uploading package: '+uploadResult.S['msg']);
+      if (uploadResult.AsArray=nil) or (uploadResult.AsArray.Length <=0) then
+        raise Exception.Create('Error building or uploading package');
       ShowMessageFmt(rsPackageBuiltSourcesAvailable,[packageSources]);
+      ModalResult := mrOk;
     end;
   finally
     Screen.cursor := crDefault;
@@ -141,11 +142,6 @@ begin
   //ScaleImageList(ImageList1,96);
   //ScaleImageList(ActionsImages,96);
 
-end;
-
-procedure TVisPackageWizard.HelpButtonClick(Sender: TObject);
-begin
-  ModalResult:=mrYes;
 end;
 
 procedure TVisPackageWizard.SetInstallerFilename(AValue: String);
