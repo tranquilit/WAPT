@@ -98,8 +98,17 @@ begin
 end;
 
 procedure TVisWAPTConfig.ActCheckAndSetwaptserverExecute(Sender: TObject);
+var
+  url: TIdURI;
 begin
   ActCheckAndSetwaptserver.Enabled:=False;
+  with TIdURI.Create(edServerAddress.Text) do
+  try
+    edServerAddress.Text:=Host;
+  finally
+    Free;
+  end;
+
   ImageList1.GetBitmap(2, ImgStatusRepo.Picture.Bitmap);
   ImageList1.GetBitmap(2, ImgStatusServer.Picture.Bitmap);
   Timer1Timer(Timer1);
