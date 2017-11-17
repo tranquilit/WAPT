@@ -2488,14 +2488,14 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgGroups: TTabSheet
       Caption = 'Bundles'
-      ClientHeight = 638
+      ClientHeight = 441
       ClientWidth = 995
       object GridGroups: TSOGrid
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Side = asrBottom
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 598
+        Height = 401
         Top = 40
         Width = 995
         OnGetText = GridGroupsGetText
@@ -2914,11 +2914,11 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgPrivateRepo: TTabSheet
       Caption = 'Softwares repository'
-      ClientHeight = 638
+      ClientHeight = 441
       ClientWidth = 995
       object GridPackages: TSOGrid
         Left = 0
-        Height = 598
+        Height = 401
         Top = 40
         Width = 989
         OnGetText = GridGroupsGetText
@@ -3059,7 +3059,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object Splitter3: TSplitter
         Left = 989
-        Height = 598
+        Height = 401
         Top = 40
         Width = 6
         Align = alRight
@@ -5064,6 +5064,7 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object PopupMenuPackages: TPopupMenu
+    Images = ActionsImages24
     left = 144
     top = 168
     object MenuItem22: TMenuItem
@@ -7078,7 +7079,7 @@ object VisWaptGUI: TVisWaptGUI
     }
   end
   object PopupMenuGroups: TPopupMenu
-    Images = ActionsImages
+    Images = ActionsImages24
     left = 144
     top = 360
     object MenuItem36: TMenuItem

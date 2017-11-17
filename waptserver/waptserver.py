@@ -543,6 +543,35 @@ def update_host():
         logger.critical('update_host failed %s' % (repr(e)))
         return make_response_from_exception(e)
 
+def sync_host_groups(entry):
+    """Update HostGroups table from Host Package depends.
+    Add / Remove host <-> group link based on entry.depends csv attribute
+
+    Args:
+        entry (PackageEntry): Host package entry
+
+    Returs
+    """
+    try:
+        host_id = entry.package
+
+        # insert /delete depends as groups
+        if entry.depends:
+            depends = [s.strip() for s in entry.depends.split(',')]
+        else:
+            depends = []
+        old_groups = [h['group_name'] for h in HostGroups.select(HostGroups.group_name).where(HostGroups.host == host_id).dicts()]
+        to_delete = [g for g in old_groups if not g in depends]
+        to_add = [g for g in depends if not g in old_groups]
+        if to_delete:
+            HostGroups.delete().where((HostGroups.host == host_id) & (HostGroups.group_name.in_(to_delete))).execute()
+        if to_add:
+            HostGroups.insert_many([dict(host=host_id, group_name=group) for group in to_add]).execute()
+        return (to_add,to_delete)
+    except IntegrityError  as e:
+        wapt_db.rollback()
+        return (0,0)
+
 
 @app.route('/upload_package/<string:filename>', methods=['POST'])
 @requires_auth
@@ -607,14 +636,13 @@ def upload_packages():
                     chunk = self.stream.read(self.chunk_size)
 
     def read_package(packagefile):
-        wapt_folder = conf['wapt_folder']
-        tmp_target = tempfile.mktemp(dir=wapt_folder,prefix='wapt')
         target = None
         try:
+            wapt_folder = conf['wapt_folder']
+            tmp_target = tempfile.mktemp(dir=wapt_folder,prefix='wapt')
             packagefile.save(tmp_target)
             # test if package is OK.
             entry = PackageEntry(waptfile=tmp_target)
-            target = os.path.join(wapt_folder, entry.make_package_filename())
             if entry.has_file('setup.py'):
                 # check if certificate has code_signing extended attribute
                 signer_cert = entry.package_certificate()
@@ -624,6 +652,11 @@ def upload_packages():
             logger.debug('Saved package %s into %s' % (entry.asrequirement(),tmp_target))
             # TODO check if certificate is allowed on thi server ?
 
+            if entry.section == 'host':
+                target = os.path.join(wapt_folder+'-host', entry.make_package_filename())
+            else:
+                target = os.path.join(wapt_folder, entry.make_package_filename())
+
             if os.path.isfile(target):
                 os.unlink(target)
             logger.debug('Renaming package %s into %s' % (tmp_target,target))
@@ -632,7 +665,9 @@ def upload_packages():
             # fix context on target file (otherwith tmp context is carried over)
             #logger.debug(subprocess.check_output('chcon -R -t httpd_sys_content_t %s' % target,shell=True))
             if entry.section == 'host':
-                Hosts.update(wapt_status='TO-UPGRADE').where(Hosts.uuid == entry.package).execute()
+                (added,removed) = sync_host_groups(entry)
+                if added or removed:
+                    Hosts.update(wapt_status='TO-UPGRADE').where(Hosts.uuid == entry.package).execute()
 
             return target
 
@@ -649,13 +684,7 @@ def upload_packages():
         starttime = time.time()
         done = []
         errors = []
-        if request.stream is not None:
-            # streamed upload
-
-            packagefile = PackageStream(request.stream)
-
-            done.append(read_package(packagefile))
-        else:
+        if request.files is not None:
             files = request.files
             # multipart upload
             logger.info('Upload of %s packages' % len(files))
@@ -669,6 +698,10 @@ def upload_packages():
 
                     logger.critical(u'Error uploading %s : %s' % (fkey,e))
                     errors.append(fkey)
+        elif request.stream is not None:
+            # streamed upload
+            packagefile = PackageStream(request.stream)
+            done.append(read_package(packagefile))
 
         logger.debug('Update package index')
         packages_index_result = update_packages(conf['wapt_folder'])
@@ -715,20 +748,7 @@ def upload_host():
                             hostpackagefile.save(tmp_target)
                             entry = PackageEntry(waptfile=tmp_target)
 
-                        host_id = entry.package
-
-                        # insert /delete depends as groups
-                        if entry.depends:
-                            depends = [s.strip() for s in entry.depends.split(',')]
-                        else:
-                            depends = []
-                        old_groups = [h['group_name'] for h in HostGroups.select(HostGroups.group_name).where(HostGroups.host == host_id).dicts()]
-                        to_delete = [g for g in old_groups if not g in depends]
-                        to_add = [g for g in depends if not g in old_groups]
-                        if to_delete:
-                            HostGroups.delete().where((HostGroups.host == host_id) & (HostGroups.group_name.in_(to_delete))).execute()
-                        if to_add:
-                            HostGroups.insert_many([dict(host=host_id, group_name=group) for group in to_add]).execute()
+                        sync_host_groups(entry)
 
                         # get host cert to encrypt package with public key
                         if conf['encrypt_host_packages']:

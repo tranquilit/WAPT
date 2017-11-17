@@ -1615,6 +1615,22 @@ class WaptServer(object):
 
         return self
 
+    def load_config_from_file(self,config_filename,section='global'):
+        """Load waptserver configuration from an inifile located at config_filename
+
+        Args:
+            config_filename (str) : path to wapt inifile
+            section (str): ini section from which to get parameters. default to 'global'
+
+        Returns:
+            WaptServer: self
+
+        """
+        ini = RawConfigParser()
+        ini.read(config_filename)
+        self.load_config(ini,section)
+        return self
+
     def get(self,action,auth=None,timeout=None):
         """ """
         surl = self.server_url
@@ -1685,7 +1701,7 @@ class WaptServer(object):
 
             req = requests.post("%s/%s" % (surl,action),
                     data=data,
-                    files=files,
+                    files=files_dict,
                     proxies=self.proxies,
                     verify=self.verify_cert,
                     timeout=timeout or self.timeout,
@@ -1702,7 +1718,7 @@ class WaptServer(object):
 
                 req = requests.post("%s/%s" % (surl,action),
                         data=data,
-                        files=files,
+                        files=files_dict,
                         proxies=self.proxies,
                         verify=self.verify_cert,
                         timeout=timeout or self.timeout,
@@ -1747,10 +1763,16 @@ class WaptServer(object):
             result[att] = getattr(self,att)
         return result
 
-    def upload_packages(self,packages,auth=None,timeout=None):
-        """ """
+    def upload_packages(self,packages,auth=None,timeout=None,progress_hook=None):
+        """Upload a list of PackageEntry with local wapt build/signed files
+        Returns:
+            dict: {'ok','errors'} list of http post upload results
+        """
         packages = ensure_list(packages)
         files = {}
+
+        ok = []
+        errors = []
 
         for package in packages:
             if not isinstance(package,PackageEntry):
@@ -1761,15 +1783,37 @@ class WaptServer(object):
                 package_filename = pe.localpath
 
             # TODO : issue if more hosts to upload than allowed open file handles.
-            files[os.path.basename(package_filename)] = pe.localpath
-        try:
-            logger.debug('Uploading %s files to server %s'% (len(files),self.server_url))
-            res = self.post('api/v3/upload_packages',files=files,auth=auth,timeout=300)
-            if not res['success']:
-                raise Exception('Error when uploading packages: %s'% (res['msg']))
-        finally:
-            pass
-        return res
+            if pe.localpath and os.path.isfile(pe.localpath):
+                if pe.section in ['host','group']:
+                    # small local files, don't stream, we will upload many at once with form encoded files
+                    files[os.path.basename(package_filename)] = open(pe.localpath,'rb').read()
+                else:
+                    # stream it immediately
+                    logger.debug('Uploading %s to server %s' % (pe.localpath,self.server_url))
+                    res = self.post('api/v3/upload_packages',data = FileChunks(pe.localpath,progress_hook=progress_hook).get(),auth=auth,timeout=300)
+                    if not res['success']:
+                        errors.append(res)
+                        logger.critical('Error when uploading package %s: %s'% (pe.localpath, res['msg']))
+                    else:
+                        ok.append(res)
+            elif pe._package_content is not None:
+                # cached package content for hosts
+                files[os.path.basename(package_filename)] = pe._package_content
+            else:
+                raise EWaptMissingLocalWaptFile('No content to upload for %s' % pe.asrequirement())
+
+        if files:
+            try:
+                logger.debug('Uploading %s files to server %s'% (len(files),self.server_url))
+                res = self.post('api/v3/upload_packages',files=files,auth=auth,timeout=300)
+                if not res['success']:
+                    errors.append(res)
+                    logger.critical('Error when uploading packages: %s'% (res['msg']))
+                else:
+                    ok.append(res)
+            finally:
+                pass
+        return dict(ok=ok,errors=errors)
 
 
     def ask_user_password(self,action=None):
@@ -2155,20 +2199,31 @@ class WaptRepo(WaptRemoteRepo):
             return '<WaptRepo %s for domain %s>' % ('unknown',self.dnsdomain)
 
 class WaptHostRepo(WaptRepo):
-    """Dummy http repository for host packages"""
+    """Dummy http repository for host packages
+
+    >>> host_repo = WaptHostRepo(name='wapt-host',host_id=['0D2972AC-0993-0C61-9633-529FB1A177E3','4C4C4544-004E-3510-8051-C7C04F325131'])
+    >>> host_repo.load_config_from_file(r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini')
+    >>> host_repo.packages
+    [PackageEntry('0D2972AC-0993-0C61-9633-529FB1A177E3','10') ,
+     PackageEntry('4C4C4544-004E-3510-8051-C7C04F325131','30') ]
+    """
 
     def __init__(self,url=None,name='wapt-host',verify_cert=None,proxies=None,timeout = None,dnsdomain=None,host_id=None,cabundle=None,config=None,host_key=None):
         self._host_id = None
         self.host_key = None
-        self._host_package_content = None
         WaptRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,proxies =proxies,timeout = timeout,dnsdomain=dnsdomain,cabundle=cabundle,config=config)
         self.host_id = host_id
 
         if host_key:
             self.host_key = host_key
 
-    def host_package_url(self):
-        return  "%s/%s.wapt" % (self.repo_url,self.host_id)
+    def host_package_url(self,host_id=None):
+        if host_id is None:
+            if self.host_id and isinstance(self.host_id,list):
+                host_id = self.host_id[0]
+            else:
+                host_id = self.host_id
+        return  "%s/%s.wapt" % (self.repo_url,host_id)
 
     def is_available(self):
         logger.debug(u'Checking availability of %s' % (self.name))
@@ -2220,7 +2275,6 @@ class WaptHostRepo(WaptRepo):
         if value != self._host_id:
             self._packages = None
             self._packages_date = None
-            self._host_package_content = None
             self._index = {}
         self._host_id = value
 
@@ -2231,58 +2285,79 @@ class WaptHostRepo(WaptRepo):
         if not self.repo_url:
             raise EWaptException('URL for WaptHostRepo repository %s is empty. Either add a wapt-host section in ini, or add a _%s._tcp.%s SRV record' % (self.name,self.name,self.dnsdomain))
         try:
-            host_package_url = self.host_package_url()
-            logger.debug(u'Trying to get  host package for %s at %s' % (self.host_id,host_package_url))
-            host_package = requests.get(host_package_url,
-                proxies=self.proxies,verify=self.verify_cert,
-                timeout=self.timeout,
-                headers=default_http_headers(),
-                allow_redirects=True)
-            host_package.raise_for_status()
-            self._packages_date = httpdatetime2isodate(host_package.headers.get('last-modified',None))
-            content = host_package.content
-
-            if not content.startswith(zipfile.stringFileHeader):
-                # try to decrypt package data
-                if self.host_key:
-                    self._host_package_content = self.host_key.decrypt_fernet(content)
-                else:
-                    raise EWaptNotAPackage('Package for %s does not look like a Zip file and no key is available to try to decrypt it'%self.host_id)
+            if self.host_id is not None and not isinstance(self.host_id,list):
+                host_ids = [self.host_id]
             else:
-                self._host_package_content = content
+                host_ids = self.host_id
 
-            # Packages file is a zipfile with one Packages file inside
-            with ZipFile(StringIO.StringIO(self._host_package_content)) as zip:
-                control_data = \
-                        codecs.decode(zip.read(name='WAPT/control'),'UTF-8').splitlines()
-                package = PackageEntry().load_control_from_wapt(control_data)
-                package.repo = self.name
-                package.repo_url = self.repo_url
-                package.filename = package.make_package_filename()
+            for host_id in host_ids:
+                host_package_url = self.host_package_url(host_id)
+                logger.debug(u'Trying to get  host package for %s at %s' % (host_id,host_package_url))
+                host_package = requests.get(host_package_url,
+                    proxies=self.proxies,verify=self.verify_cert,
+                    timeout=self.timeout,
+                    headers=default_http_headers(),
+                    allow_redirects=True)
+                host_package.raise_for_status()
+                content = host_package.content
+
+                if not content.startswith(zipfile.stringFileHeader):
+                    # try to decrypt package data
+                    if self.host_key:
+                        _host_package_content = self.host_key.decrypt_fernet(content)
+                    else:
+                        raise EWaptNotAPackage('Package for %s does not look like a Zip file and no key is available to try to decrypt it'% host_id)
+                else:
+                    _host_package_content = content
+
+                # Packages file is a zipfile with one Packages file inside
+                with ZipFile(StringIO.StringIO(_host_package_content)) as zip:
+                    control_data = \
+                            codecs.decode(zip.read(name='WAPT/control'),'UTF-8').splitlines()
+                    package = PackageEntry().load_control_from_wapt(control_data)
+                    package.repo = self.name
+                    package.repo_url = self.repo_url
+                    package.filename = package.make_package_filename()
+                    try:
+                        cert_data = zip.read(name='WAPT/certificate.crt')
+                        signer_cert = SSLCertificate(crt_string=cert_data)
+                        signers_bundle = SSLCABundle(certificates=[signer_cert])
+                    except Exception as e:
+                        logger.warning('Error reading host package certificate: %s'%repr(e))
+                        signer_cert = None
+                        signers_bundle = None
+
+                # keep content with index as it should be small
+                package._package_content = _host_package_content
+                package._packages_date = httpdatetime2isodate(host_package.headers.get('last-modified',None))
+
+                # TODO better
+                self._packages_date = package._packages_date
+
                 try:
-                    cert_data = zip.read(name='WAPT/certificate.crt')
-                    signer_cert = SSLCertificate(crt_string=cert_data)
-                    signers_bundle = SSLCABundle(certificates=[signer_cert])
-                except Exception as e:
-                    logger.warning('Error reading host package certificate: %s'%repr(e))
-                    signer_cert = None
-                    signers_bundle = None
-
-            try:
-                if self.cabundle is not None:
-                    package.check_control_signature(self.cabundle,signers_bundle = signers_bundle)
-                self._packages.append(package)
-                if package.package not in self._index or self._index[package.package] < package:
-                    self._index[package.package] = package
-            except (SSLVerifyException,EWaptNotSigned) as e:
-                logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.cabundle))
-                self.discarded.append(package)
+                    if self.cabundle is not None:
+                        package.check_control_signature(self.cabundle,signers_bundle = signers_bundle)
+                    self._packages.append(package)
+                    if package.package not in self._index or self._index[package.package] < package:
+                        self._index[package.package] = package
+                except (SSLVerifyException,EWaptNotSigned) as e:
+                    logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.cabundle))
+                    self.discarded.append(package)
 
         except requests.HTTPError as e:
             logger.info(u'No host package available at %s' % host_package_url)
 
     def download_packages(self,package_requests,target_dir=None,usecache=True,printhook=None):
-        """
+        """Download a list of packages from repo
+
+        Args:
+            package_request (list,PackateEntry): a list of PackageEntry to download
+            target_dir (str): where to store downloaded Wapt Package files
+            usecache (bool): wether to try to use cached Wapt files if checksum is ok
+            printhook (callable): to show progress of download
+
+        Returns:
+            dict: {"downloaded":[local filenames],"skipped":[filenames in cache],"errors":[],"packages":self.packages}
         """
         if not isinstance(package_requests,(list,tuple)):
             package_requests = [ package_requests ]
@@ -2290,21 +2365,28 @@ class WaptHostRepo(WaptRepo):
             target_dir = tempfile.mkdtemp()
         downloaded = []
         errors = []
-        pfn = os.path.join(target_dir,self.host_id+'.wapt')
+
+        self._load_packages_index()
 
         # if multithread... we don't have host package in memory cache from last self._load_packages_index
         for pr in package_requests:
-            self._load_packages_index()
             for pe in self.packages:
-                if pe == pr:
-                    with open(pfn,'wb') as package_zip:
-                        package_zip.write(self._host_package_content)
-                    pe.localpath = pfn
-                    pr.localpath = pfn
-                    downloaded.append(pfn)
+                if ((isinstance(pr,PackageEntry) and (pe == pr)) or
+                   (isinstance(pr,(str,unicode)) and pe.match(pr))):
+                    pfn = pe.make_package_filename()
+                    if pe._package_content is not None:
+                        with open(pfn,'wb') as package_zip:
+                            package_zip.write(pe._package_content)
+                        pe.localpath = pfn
+                        # for further reference
+                        if isinstance(pr,PackageEntry):
+                            pr.localpath = pfn
+                        downloaded.append(pfn)
+                        if not os.path.isfile(pfn):
+                            logger.warning('Unable to write host package %s into %s' % (pr.asrequirement(),pfn))
+                    else:
+                        logger.warning('No host package content for %s' % (pr.asrequirement(),))
                     break
-        if not os.path.isfile(pfn):
-            logger.warning('Unable to write host package %s into %s' % (pr.asrequirement(),pfn))
 
         return {"downloaded":downloaded,"skipped":[],"errors":[],"packages":self.packages}
 
@@ -2921,8 +3003,6 @@ class Wapt(object):
                     ok = []
                     errors = []
                     for (fn,f) in files.iteritems():
-                        # stream
-                        #res = self.waptserver.post('api/v3/upload_packages',data=f,auth=auth,timeout=300)
                         res_partiel = self.waptserver.post('api/v3/upload_packages',data=f.get(),auth=auth,timeout=300)
                         if not res_partiel['success']:
                             errors.append(res_partiel)
@@ -4808,7 +4888,7 @@ class Wapt(object):
             inc_package_release (boolean): increment the version of package in control file.
 
         Returns:
-            dict: {'filename':waptfilename,'files':[list of files],'package':PackageEntry}
+            str: Filename of built WAPT package
         """
         if not isinstance(directoryname,unicode):
             directoryname = unicode(directoryname)
@@ -4839,7 +4919,7 @@ class Wapt(object):
         if section of package is group or host, user specific wapt-host or wapt-group
 
         Returns
-            list of build result dict: {'filename':waptfilename,'files':[list of files],'package':PackageEntry}
+            list: list of filenames of built WAPT package
         """
         sources_directories = ensure_list(sources_directories)
         buildresults = []
@@ -4863,7 +4943,10 @@ class Wapt(object):
                 logger.critical(u'Directory %s not found' % source_dir)
 
         logger.info(u'Uploading %s files...' % len(buildresults))
-        upload_res = self.http_upload_package(buildresults,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
+        auth = None
+        if wapt_server_user and wapt_server_passwd:
+            auth = (wapt_server_user,wapt_server_passwd)
+        upload_res = self.waptserver.upload_packages(buildresults,auth=auth)
         if buildresults and not upload_res:
             raise Exception('Packages built but no package were uploaded')
         return buildresults

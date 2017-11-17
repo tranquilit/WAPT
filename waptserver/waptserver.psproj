@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=2.6.0.0
+Version=3.0.2.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -15,7 +15,7 @@ Name=config
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node0]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver.ini
+FileName=C:\tranquilit\wapt\conf\waptserver.ini
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes]
 Count=1

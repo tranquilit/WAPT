@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.0.14"
+__version__ = "1.5.1.3"
 import logging
 import sys
 import tempfile
@@ -41,7 +41,7 @@ def setloglevel(logger,loglevel):
             raise ValueError(_('Invalid log level: {}').format(loglevel))
         logger.setLevel(numeric_level)
 
-setloglevel(logger,'debug')
+setloglevel(logger,'warning')
 
 
 from waptutils import *
@@ -89,7 +89,7 @@ def setup_test():
 
 def test_build_sign_verify_package():
     print('creation paquet test')
-    p = PackageEntry(waptfile= 'c:/tranquilit/tis-wapttest-wapt')
+    p = PackageEntry(waptfile= 'c:/tranquilit/tis-putty-wapt')
     print ensure_unicode(p)
     p.inc_build()
     print p.build_package()
@@ -529,7 +529,7 @@ def test_buildupload():
     w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
     w.dbpath=':memory:'
     w.use_hostpackages = False
-    w.personal_certificate_path='c:/private/150-codeur.crt'
+    w.personal_certificate_path='c:/private/150-codeur2.crt'
     w.build_upload('c:/tranquilit/tis-7zip2-wapt',private_key_passwd='test')
 
 
@@ -834,10 +834,40 @@ def test_encryption_algo():
     print k.as_pem('mypassword')
 
 
+def test_uploadpackages():
+    s = WaptServer('http://192.168.100.114:8080')
+    s.verify_cert = False
+    import uuid
+    hosts = []
+    for n in range(0,10):
+        host = PackageEntry(package=str(uuid.uuid4()),section='host')
+        host.depends='test3'
+        t = host.build_management_package()
+        host.sign_package(gest,key)
+        hosts.append(host)
+    prog = PackageEntry(waptfile='c:/waptdev/test-mercurial_4.2.1-0_all.wapt')
 
+    result = s.upload_packages(hosts,auth=('admin','password'))
+    print result
+    if not result['ok'] or result['errors']:
+        raise Exception('not uploaded properly')
+
+def test_edit_hosts_depends():
+    edit_hosts_depends(r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini',
+        ['C5921400-3476-11E2-9D6F-F806DF88E3E5','54313B54-F9E3-DC41-9EE5-EBBE7A9BB584'],
+        append_depends='socle',key_password='test',wapt_server_user='admin',wapt_server_passwd='password')
+    edit_hosts_depends(r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini',
+        ['C5921400-3476-11E2-9D6F-F806DF88E3E5','54313B54-F9E3-DC41-9EE5-EBBE7A9BB584'],
+        remove_depends='socle',key_password='test',wapt_server_user='admin',wapt_server_passwd='password')
 
 if __name__ == '__main__':
     setup_test()
+    test_buildupload()
+    sys.exit(0)
+    test_build_sign_verify_package()
+    test_edit_hosts_depends()
+    #test_uploadpackages()
+
     test_waptdevutils()
     test_download_packages()
     test_sign_action2()
@@ -848,7 +878,6 @@ if __name__ == '__main__':
     test_download_packages()
 
     test_update()
-    test_build_sign_verify_package()
     test_partial_chain()
 
     test_whole_ca()

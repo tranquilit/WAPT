@@ -164,7 +164,7 @@ var
 
 implementation
 
-uses uWaptConsoleRes,soutils, LCLType, waptcommon, dmwaptpython, jwawinuser, uvisloading,
+uses uWaptConsoleRes,soutils, LCLType, Variants, waptcommon, dmwaptpython, jwawinuser, uvisloading,
   uvisprivatekeyauth, uwaptconsole, tiscommon, uWaptRes,UScaleDPI,tisinifiles;
 
 {$R *.lfm}
@@ -635,8 +635,8 @@ begin
       if FisTempSourcesDir then
       begin
         FileUtil.DeleteDirectory(FSourcePath, False);
-        if (Result.AsArray <> nil) and (FileExistsUTF8(Result.AsArray[0].S['filename'])) then
-          FileUtil.DeleteFileUTF8(Result.AsArray[0].S['filename']);
+        if (Result.AsArray <> nil) and (FileExistsUTF8(Result.AsArray[0].AsString)) then
+          FileUtil.DeleteFileUTF8(Result.AsArray[0].AsString);
       end;
       IsUpdated := False;
     except
@@ -778,6 +778,7 @@ var
   n: PVirtualNode;
   filename, filePath, target_directory: string;
   grid: TSOGrid;
+  host_repo,host_package: Variant;
 begin
   if FPackageRequest = AValue then
     Exit;
@@ -790,13 +791,23 @@ begin
     begin
       if IsHost then
       begin
+
+        host_repo := DMPython.common.WaptHostRepo(name := 'wapt-host', host_id := FPackageRequest);
+        host_repo.load_config_from_file(WaptIniFilename);
+        host_package := host_repo.get(FPackageRequest);
+        if not VarIsEmpty(host_package) and not VarIsNull(host_package) then
+          res := PyVarToSuperObject(host_package)
+        else
+        // empty host package.
+        begin
+          host_package := DMPython.waptpackage.PackageEntry(package := FPackageRequest,version := String('0'));
+          res := PyVarToSuperObject(host_package)
+        end;
+
         target_directory := UniqueTempDir();
         FisTempSourcesDir := True;
-        res := PyVarToSuperObject(
-          DMPython.WAPT.edit_host(
-            hostname := FPackageRequest,
-            target_directory := target_directory)
-            );
+        mkdir(target_directory);
+        res.S['sourcespath'] := target_directory;
         LabPackage.Caption := 'UUID';
         Caption := rsHostConfigEditCaption;
         pgDepends.Caption := rsPackagesNeededOnHostCaption;
@@ -821,9 +832,6 @@ begin
                 filePath := AppLocalDir + 'cache\' + filename;
                 if not DirectoryExists(AppLocalDir + 'cache') then
                   mkdir(AppLocalDir + 'cache');
-                // la gestion du cache implique de lire la version di paquet WAPT dans le fichier control.
-                // (paquets de groupe et paquets host)
-                //if not FileExists(filePath) then
 
                 IdWget(GetWaptRepoURL + '/' + filename, filePath,
                   ProgressForm, @updateprogress, UseProxyForRepo);

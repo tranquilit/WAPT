@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.1.0"
+__version__ = "1.5.1.3"
 
 __all__ = [
     'control_to_dict',
@@ -51,7 +51,16 @@ __all__ = [
     'EWaptBadTargetOS',
     'EWaptNotAPackage',
     'EWaptDownloadError',
-]
+    'EWaptMissingLocalWaptFile',
+    'EWaptNeedsNewerAgent',
+    'EWaptConfigurationError',
+    'EWaptUnavailablePackage',
+    'EWaptNotSourcesDirPackage',
+    'EWaptPackageSignError',
+    'EWaptInstallPostponed',
+    'EWaptInstallError',
+    ]
+
 
 import os
 import custom_zip as zipfile
@@ -198,10 +207,13 @@ class EWaptInstallPostponed(EWaptInstallError):
 class EWaptUnavailablePackage(EWaptInstallError):
     pass
 
-class EWaptRemoveError(Exception):
+class EWaptRemoveError(EWaptException):
     pass
 
-class EWaptConfigurationError(Exception):
+class EWaptConfigurationError(EWaptException):
+    pass
+
+class EWaptMissingLocalWaptFile(EWaptException):
     pass
 
 class PackageRequest(object):
@@ -348,6 +360,7 @@ class PackageEntry(object):
         """
         # temporary attributes added by join queries from local Wapt database
         self._calculated_attributes=[]
+        self._package_content = None
 
         self.package=package
         self.version=version
@@ -621,8 +634,8 @@ class PackageEntry(object):
         if isinstance(fname,list):
             control =  StringIO.StringIO(u'\n'.join(fname))
         elif os.path.isfile(fname):
-            with zipfile.ZipFile(fname,'r',allowZip64=True) as myzip:
-                control = StringIO.StringIO(myzip.open(u'WAPT/control').read().decode('utf8'))
+            with zipfile.ZipFile(fname,'r',allowZip64=True) as waptzip:
+                control = StringIO.StringIO(waptzip.open(u'WAPT/control').read().decode('utf8'))
         elif os.path.isdir(fname):
             try:
                 control = codecs.open(os.path.join(fname,'WAPT','control'),'r',encoding='utf8')
@@ -700,20 +713,20 @@ class PackageEntry(object):
                     self.sourcespath = fname
                 return old_control
             else:
-                myzip = zipfile.ZipFile(fname,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
+                waptzip = zipfile.ZipFile(fname,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
                 try:
                     try:
-                        previous_zi = myzip.getinfo(u'WAPT/control')
-                        myzip.remove(u'WAPT/control')
+                        previous_zi = waptzip.getinfo(u'WAPT/control')
+                        waptzip.remove(u'WAPT/control')
                     except Exception as e:
                         logger.debug("OK %s" % repr(e))
-                    myzip.writestr(u'WAPT/control',self.ascontrol().encode('utf8'))
+                    waptzip.writestr(u'WAPT/control',self.ascontrol().encode('utf8'))
                     if not self.localpath:
                         self.localpath = fname
                     return old_control
                 finally:
-                    if myzip:
-                        myzip.close()
+                    if waptzip:
+                        waptzip.close()
         else:
             return None
 
@@ -942,7 +955,16 @@ class PackageEntry(object):
             source_root = self.sourcespath,
             target_root = '' ,
             excludes=excludes)
+
+        self._invalidate_package_content()
         return result_filename
+
+    def _invalidate_package_content(self):
+        """Remove the _package_content for host packages
+
+        """
+        if hasattr(self,'_package_content'):
+            self._package_content = None
 
     def _signed_content(self):
         """Return the signed control informations"""
@@ -1030,10 +1052,10 @@ class PackageEntry(object):
         Returns:
             datetime : last modification datetime of file in Wapt archive if zipped or local sources if unzipped
         """
-        if self.localpath and os.path.isfile(self.localpath):
+        if self.localpath or self._package_content is not None:
             try:
-                with ZipFile(self.localpath,allowZip64=True) as zip:
-                    return datetime.datetime(*zip.getinfo(fname).date_time)
+                with self.as_zipfile() as waptzip:
+                    return datetime.datetime(*waptzip.getinfo(fname).date_time)
             except KeyError as e:
                 return None
         elif self.sourcespath and os.path.isdir(self.sourcespath) and os.path.isfile(os.path.join(self.sourcespath,fname)):
@@ -1074,10 +1096,10 @@ class PackageEntry(object):
             dict: {filepath:shasum,}
         """
         if not self.localpath:
-            raise Exception(u'Wapt package "%s" is not yet built' % self.sourcespath)
+            raise EWaptMissingLocalWaptFile(u'Wapt package "%s" is not yet built' % self.sourcespath)
 
         if not os.path.isfile(self.localpath):
-            raise Exception(u'%s is not a Wapt package' % self.localpath)
+            raise EWaptMissingLocalWaptFile(u'%s is not a Wapt package' % self.localpath)
 
         if exclude_filenames is None:
             exclude_filenames = self.manifest_filename_excludes
@@ -1143,8 +1165,10 @@ class PackageEntry(object):
         if not certificate.is_code_signing:
             forbidden_files.append('setup.py')
 
+        self._invalidate_package_content()
+
         # clear existing signatures
-        waptzip = zipfile.ZipFile(self.localpath,'a',allowZip64=True)
+        waptzip = zipfile.ZipFile(self.localpath,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
         with waptzip:
             filenames = waptzip.namelist()
             for md in hashlib.algorithms:
@@ -1258,6 +1282,8 @@ class PackageEntry(object):
             certificate_filename = os.path.join(self.sourcespath,'WAPT','certificate')
             if os.path.isfile(certificate_filename):
                 os.remove(certificate_filename)
+
+        self._invalidate_package_content()
 
     def list_corrupted_files(self):
         """Check hexdigest sha for the files in manifest.
@@ -1446,6 +1472,16 @@ class PackageEntry(object):
             except Exception as e:
                 pass
 
+    def as_zipfile(self):
+        """Return a Zipfile for this package for read only operations"""
+        if self.localpath and os.path.isfile(self.localpath):
+            return ZipFile(self.localpath,allowZip64=True)
+        elif self._package_content is not None:
+            return ZipFile(StringIO.StringIO(self._package_content))
+        else:
+            raise EWaptMissingLocalWaptFile('This PackageEntry has no local content for zip operations %s' % self.asrequirement())
+
+
 class WaptPackageDev(PackageEntry):
     """Source package directory"""
 
@@ -1469,9 +1505,9 @@ def extract_iconpng_from_wapt(fname):
     """
     iconpng = None
     if os.path.isfile(fname):
-        with zipfile.ZipFile(fname,'r',allowZip64=True) as myzip:
+        with zipfile.ZipFile(fname,'r',allowZip64=True) as waptzip:
             try:
-                iconpng = myzip.open(u'WAPT/icon.png').read()
+                iconpng = waptzip.open(u'WAPT/icon.png').read()
             except:
                 pass
     elif os.path.isdir(fname):
@@ -1568,6 +1604,9 @@ class WaptBaseRepo(object):
             config_filename (str) : path to wapt inifile
             section (str): ini section from which to get parameters. default to repo name
 
+        Returns:
+            WaptBaseRepo: self
+
         """
         if section is None:
             section = self.name
@@ -1575,6 +1614,8 @@ class WaptBaseRepo(object):
         ini = RawConfigParser()
         ini.read(config_filename)
         self.load_config(ini,section)
+
+        return self
 
     def _load_packages_index(self):
         self._packages = []
@@ -2278,12 +2319,12 @@ class WaptRemoteRepo(WaptBaseRepo):
         logger.debug(u'Read remote Packages zip file %s' % self.packages_url)
 
         (_packages_index_str,_packages_index_date) = self._get_packages_index_data()
-        with zipfile.ZipFile(StringIO.StringIO(_packages_index_str)) as zip:
-            filenames = zip.namelist()
-            packages_lines = codecs.decode(zip.read(name='Packages'),'UTF-8').splitlines()
+        with zipfile.ZipFile(StringIO.StringIO(_packages_index_str)) as waptzip:
+            filenames = waptzip.namelist()
+            packages_lines = codecs.decode(waptzip.read(name='Packages'),'UTF-8').splitlines()
 
             # load certificates and CRLs
-            signer_certificates = self.get_certificates(packages_zipfile = zip)
+            signer_certificates = self.get_certificates(packages_zipfile = waptzip)
 
         logger.debug('Packages index from repo %s has %s embedded certificates' % (self.name,len(signer_certificates._certificates)))
 
@@ -2369,7 +2410,7 @@ class WaptRemoteRepo(WaptBaseRepo):
             package_requests (list) : list of PackageEntry to download or list of package with optional version
 
         Returns:
-            dict: 'downloadede', 'skipped', 'errors'
+            dict: 'downloaded', 'skipped', 'errors'
 
         >>> repo = WaptRemoteRepo(url='http://wapt.tranquil.it/wapt')
         >>> wapt.download_packages(['tis-firefox','tis-waptdev'],printhook=nullhook)
@@ -2385,7 +2426,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         errors = []
         packages = []
         for p in package_requests:
-            if isinstance(p,str) or isinstance(p,unicode):
+            if isinstance(p,(str,unicode)):
                 mp = self.packages_matching(p)
                 if mp:
                     packages.append(mp[-1])

@@ -33,6 +33,8 @@
     exported functions instead of local Wapt functions (except crypto signatures)
 
 """
+from __future__ import print_function
+
 __version__ = "1.5.1.3"
 
 import sys,os
@@ -84,7 +86,7 @@ def get_private_key_encrypted(certificate_path,password=None):
         else:
             return ''
     except Exception as e:
-        print e
+        print(e)
         return ''
 
 def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wapt_server='',destination='',company=''):
@@ -364,6 +366,22 @@ def check_uac():
         """)
         shell_launch('UserAccountControlSettings.exe')
 
+def add_to_csv_list(csv_list,new_items):
+    """Add items to csv_list"""
+    items = ensure_list(csv_list)
+    for item in new_items:
+        if not item in items:
+            items.append(item)
+    return ','.join(items)
+
+def remove_from_csv_list(csv_list,new_items):
+    """Remove items from csv_list"""
+    items = ensure_list(csv_list)
+    for item in new_items:
+        if item in items:
+            items.remove(item)
+    return ','.join(items)
+
 def edit_hosts_depends(waptconfigfile,hosts_list,
         append_depends=[],
         remove_depends=[],
@@ -371,21 +389,33 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
         remove_conflicts=[],
         key_password=None,
         wapt_server_user=None,wapt_server_passwd=None,
-        cabundle = None
+        cabundle = None,
         ):
     """Add or remove packages from host packages
+
+    Args:
+
+    Returns:
+        list: of uuid of machine actually updated
+
     >>> edit_hosts_depends('c:/wapt/wapt-get.ini','htlaptop.tranquilit.local','toto','tis-7zip','admin','password')
     """
-    wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
-    wapt.dbpath = r':memory:'
-    wapt.use_hostpackages = True
+    hosts_list = ensure_list(hosts_list)
+    host_repo = WaptHostRepo(name='wapt-host',host_id=hosts_list,cabundle = cabundle)
+    host_repo.load_config_from_file(waptconfigfile)
+
     try:
         import waptconsole
-        wapt.progress_hook = waptconsole.UpdateProgress
+        progress_hook = waptconsole.UpdateProgress
     except ImportError as e:
         def print_progress(show=False,n=0,max=100,msg=''):
-            print(msg)
-        wapt.progress_hook = print_progress
+            if show:
+                print('%s %s/%s\r' % (msg,n,max),end='')
+            else:
+                if not msg:
+                    msg='Done'
+                print("%s%s"%(msg,' '*(80-len(msg))))
+        progress_hook = print_progress
 
     hosts_list = ensure_list(hosts_list)
     append_depends = ensure_list(append_depends)
@@ -393,60 +423,64 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
     append_conflicts = ensure_list(append_conflicts)
     remove_conflicts = ensure_list(remove_conflicts)
 
-    result = []
-    package_files = []
-    build_res = []
-    sources = []
-    wapt.progress_hook(True,0,len(hosts_list),'Editing %s hosts' % len(hosts_list))
+    packages = []
+
+    sign_cert = SSLCertificate(crt_filename=inifile_readstring(waptconfigfile,'global','personal_certificate_path'))
+    sign_key = sign_cert.matching_key_in_dirs(private_key_password=key_password)
+
+    progress_hook(True,0,len(hosts_list),'Editing %s hosts' % len(hosts_list))
     i = 0
     try:
-        for host in hosts_list:
+        for host_id in hosts_list:
             i+=1
-            if wapt.progress_hook(True,i,len(hosts_list),'Editing %s' % host):
+            host = host_repo.get(host_id)
+            if host is None:
+                host = PackageEntry(package=host_id,section='host')
+
+            if progress_hook(True,i,len(hosts_list),'Editing %s' % host.package):
                 break
 
             logger.debug(u'Edit host %s : +%s -%s'%(
-                host,
+                host.package,
                 append_depends,
                 remove_depends))
 
-            target_dir = tempfile.mkdtemp('wapt')
-            edit_res = wapt.edit_host(host,
-                target_directory = target_dir,
-                append_depends = append_depends,
-                remove_depends = remove_depends,
-                append_conflicts = append_conflicts,
-                remove_conflicts = remove_conflicts,
-                cabundle = cabundle,
-                )
-            sources.append(edit_res)
-            # build and sign
-            res = wapt.build_package(edit_res['sourcespath'],inc_package_release = True)
-            signature = wapt.sign_package(res,private_key_password=key_password)
-            build_res.append(res)
-            package_files.append(res)
+
+            depends = host.depends
+            depends = add_to_csv_list(depends,append_depends)
+            depends = remove_from_csv_list(depends,remove_depends)
+
+            conflicts = host.conflicts
+            conflicts = add_to_csv_list(conflicts,append_conflicts)
+            conflicts = remove_from_csv_list(conflicts,remove_conflicts)
+
+            if depends != host.depends or conflicts != host.conflicts:
+                host.depends = depends
+                host.conflicts = conflicts
+                host.inc_build()
+                host_file = host.build_management_package()
+                host.sign_package(sign_cert,sign_key)
+                packages.append(host)
 
         # upload all in one step...
-        wapt.progress_hook(True,3,3,'Upload %s host packages' % len(package_files))
-        wapt.http_upload_package(package_files,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
+        progress_hook(True,3,3,'Upload %s host packages' % len(packages))
+        server = WaptServer().load_config_from_file(waptconfigfile)
+        server.upload_packages(packages,auth=(wapt_server_user,wapt_server_passwd),progress_hook=progress_hook)
+        return [p.package for p in packages]
 
     finally:
         logger.debug('Cleanup')
         try:
             i = 0
-            for s in sources:
+            for s in packages:
                 i+=1
-                wapt.progress_hook(True,i,len(sources),'Cleanup')
-                if os.path.isdir(s['sourcespath']):
-                    shutil.rmtree(s['sourcespath'])
-            for s in build_res:
-                if os.path.isfile(s):
-                    os.unlink(s)
-            wapt.progress_hook(False)
+                progress_hook(True,i,len(packages),'Cleanup')
+                if os.path.isfile(s.localpath):
+                    os.remove(s.localpath)
+            progress_hook(False)
         except WindowsError as e:
             logger.critical('Unable to remove temporary directory %s: %s'% (s,repr(e)))
-            wapt.progress_hook(False)
-    return build_res
+            progress_hook(False)
 
 
 def get_computer_groups(computername):
@@ -488,7 +522,7 @@ def add_ads_groups(waptconfigfile,hosts_list,wapt_server_user,wapt_server_passwd
     for h in hosts:
         try:
             hostname = h['computer_fqdn']
-            print 'Computer %s... ' % hostname,
+            print('Computer %s... \r' % hostname,end='')
 
             groups = get_computer_groups(h['computer_name'])
             wapt_groups = h['depends']
@@ -617,6 +651,9 @@ def render_jinja2_template(template_str,json_data):
         return json_data
 
 if __name__ == '__main__':
+    edit_hosts_depends(r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini',['C5921400-3476-11E2-9D6F-F806DF88E3E5','54313B54-F9E3-DC41-9EE5-EBBE7A9BB584'],
+        append_depends='socle',key_password='test',wapt_server_user='admin',wapt_server_passwd='calimero')
+
     import doctest
     import sys
     reload(sys)
