@@ -623,6 +623,8 @@ def upload_package(filename=''):
 @app.route('/api/v3/upload_packages', methods=['POST'])
 @requires_auth
 def upload_packages():
+    do_update_packages_index = False
+
     class PackageStream(object):
         def __init__(self,stream,chunk_size=10*1024*1024):
             self.stream = stream
@@ -656,6 +658,7 @@ def upload_packages():
                 target = os.path.join(wapt_folder+'-host', entry.make_package_filename())
             else:
                 target = os.path.join(wapt_folder, entry.make_package_filename())
+                do_update_packages_index = True
 
             if os.path.isfile(target):
                 os.unlink(target)
@@ -669,7 +672,7 @@ def upload_packages():
                 if added or removed:
                     Hosts.update(wapt_status='TO-UPGRADE').where(Hosts.uuid == entry.package).execute()
 
-            return target
+            return entry
 
         except Exception as e:
             logger.debug('traceback')
@@ -703,8 +706,11 @@ def upload_packages():
             packagefile = PackageStream(request.stream)
             done.append(read_package(packagefile))
 
-        logger.debug('Update package index')
-        packages_index_result = update_packages(conf['wapt_folder'])
+        if do_update_packages_index:
+            logger.debug('Update package index')
+            packages_index_result = update_packages(conf['wapt_folder'])
+        else:
+            packages_index_result = None
 
         spenttime = time.time() - starttime
         return make_response(success=len(errors) == 0,

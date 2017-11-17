@@ -82,7 +82,7 @@ var
   VisWAPTConfig: TVisWAPTConfig;
 
 implementation
-uses waptcommon,LCLIntf,IDURI,superobject,uWaptConsoleRes,uScaleDPI,tisstrings,dmwaptpython,variants,VarPyth,uvisprivatekeyauth;
+uses tiscommon,waptcommon,LCLIntf,IDURI,superobject,uWaptConsoleRes,uScaleDPI,tisstrings,dmwaptpython,variants,VarPyth,uvisprivatekeyauth;
 {$R *.lfm}
 
 { TVisWAPTConfig }
@@ -149,47 +149,52 @@ var
   url,certfn: String;
   pem_data,certbundle,certs,cert:Variant;
 begin
-  url := 'https://'+edServerAddress.Text;
-  certfn:= waptbasedir+'ssl\server\'+edServerAddress.Text+'.crt';
+  url := edwapt_server.Text;
+  With TIdURI.Create(url) do
   try
-    {
-    certbundle := DMPython.common.get_server_ssl_certificates(url := url);
-    if VarIsPythonIterator(certbundle) then
-    begin
-      While True do
-      try
-        certs := certbundle.certificates(valid_only := False);
-        i:= 0;
-        while True do
-        begin
-          cert := certs.__getitem__(i);
-          ShowMessage(cert.cn);
-          inc(i);
-        end;
-      except on E:Exception do
-        begin
-          ShowMessage(e.Message);
-          break;
+    try
+      {
+      certbundle := DMPython.common.get_server_ssl_certificates(url := url);
+      if VarIsPythonIterator(certbundle) then
+      begin
+        While True do
+        try
+          certs := certbundle.certificates(valid_only := False);
+          i:= 0;
+          while True do
+          begin
+            cert := certs.__getitem__(i);
+            ShowMessage(cert.cn);
+            inc(i);
+          end;
+        except on E:Exception do
+          begin
+            ShowMessage(e.Message);
+            break;
+          end;
         end;
       end;
+      }
+      certfn:=  AppendPathDelim(AppLocalDir)+'ssl\server\'+Host+'.crt';
+      pem_data := dmpython.waptcrypto.SSLCABundle(certificates := dmpython.waptcrypto.get_peer_cert_chain_from_server(url := url)).as_pem('--noarg--');
+      if not VarIsNull(pem_data) then
+      begin
+        StringToFile(certfn,pem_data);
+        EdServerCertificate.Text := certfn;
+      end
+      else
+        raise Exception.Create('No certificate returned from  get_pem_server_certificate');
+    except
+      on E:Exception do ShowMessage('Unable to get https server certificate for url '+url+' '+E.Message);
     end;
-    }
-    pem_data := dmpython.waptcrypto.SSLCABundle(certificates := dmpython.waptcrypto.get_peer_cert_chain_from_server(url := url)).as_pem('--noarg--');
-    if not VarIsNull(pem_data) then
-    begin
-      StringToFile(certfn,pem_data);
-      EdServerCertificate.Text := certfn;
-    end
-    else
-      raise Exception.Create('No certificate returned from  get_pem_server_certificate');
-  except
-    on E:Exception do ShowMessage('Unable to get https server certificate for url '+ 'https://'+edServerAddress.Text+' '+E.Message);
+  finally
+    Free;
   end;
 end;
 
 procedure TVisWAPTConfig.ActGetServerCertificateUpdate(Sender: TObject);
 begin
-  ActGetServerCertificate.Enabled := edServerAddress.Text <> '';
+  ActGetServerCertificate.Enabled := edwapt_server.Text <> '';
 end;
 
 procedure TVisWAPTConfig.cbManualClick(Sender: TObject);
