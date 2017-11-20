@@ -153,34 +153,16 @@ begin
   With TIdURI.Create(url) do
   try
     try
-      {
-      certbundle := DMPython.common.get_server_ssl_certificates(url := url);
-      if VarIsPythonIterator(certbundle) then
-      begin
-        While True do
-        try
-          certs := certbundle.certificates(valid_only := False);
-          i:= 0;
-          while True do
-          begin
-            cert := certs.__getitem__(i);
-            ShowMessage(cert.cn);
-            inc(i);
-          end;
-        except on E:Exception do
-          begin
-            ShowMessage(e.Message);
-            break;
-          end;
-        end;
-      end;
-      }
-      certfn:=  AppendPathDelim(AppLocalDir)+'ssl\server\'+Host+'.crt';
+      certfn:=  AppendPathDelim(GetAppUserFolder)+'ssl\server\'+Host+'.crt';
+
       pem_data := dmpython.waptcrypto.SSLCABundle(certificates := dmpython.waptcrypto.get_peer_cert_chain_from_server(url := url)).as_pem('--noarg--');
       if not VarIsNull(pem_data) then
       begin
+        if not DirectoryExists(ExtractFileDir(certfn)) then
+          ForceDirectory(ExtractFileDir(certfn));
         StringToFile(certfn,pem_data);
         EdServerCertificate.Text := certfn;
+        CBVerifyCert.Checked:=True;
       end
       else
         raise Exception.Create('No certificate returned from  get_pem_server_certificate');

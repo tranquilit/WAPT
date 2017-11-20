@@ -3681,7 +3681,7 @@ begin
   if not FileExistsUTF8(localfn) then
   begin
     if not DirectoryExistsUTF8(GetAppConfigDir(False)) then
-       CreateDirUTF8(GetAppConfigDir(False));
+       ForceDirectoriesUTF8(GetAppConfigDir(False));
     CopyFile(Utf8ToAnsi(WaptIniFilename), Utf8ToAnsi(localfn), True);
   end;
 

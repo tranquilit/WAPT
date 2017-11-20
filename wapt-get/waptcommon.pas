@@ -46,6 +46,8 @@ interface
   function AppIniFilename: Utf8String; // returns Users/<user>/local/appdata/<application_name>/<application_name>.ini
   function WaptIniFilename: Utf8String; // for local wapt install directory
 
+  function AppUserDir: Utf8String; // returns Users/<user>/Roaming/AppData/<application_name>
+
   function WaptBaseDir: Utf8String; // c:\wapt
   function WaptgetPath: Utf8String; // c:\wapt\wapt-get.exe
   function WaptDBPath: Utf8String;
@@ -207,7 +209,7 @@ const
 
   HideUnavailableActions:Boolean = False;
 
-  WAPTServerMinVersion='1.5.1.3';
+  WAPTServerMinVersion='1.5.1.5';
 
 implementation
 
@@ -1249,6 +1251,11 @@ begin
     result :='';
 end;
 
+function AppUserDir: Utf8String;
+begin
+
+end;
+
 function WaptBaseDir: Utf8String;
 begin
   result := ExtractFilePath(ParamStr(0));
@@ -1877,7 +1884,7 @@ begin
   destcrt := AppendPathDelim(destdir)+crtbasename+'.crt';
   destp12 := AppendPathDelim(destdir)+crtbasename+'.p12';
   if not DirectoryExists(destdir) then
-       CreateDir(destdir);
+       ForceDirectories(destdir);
 
   params := TSuperObject.Create;
   params.S['country'] := UTF8Decode(country);

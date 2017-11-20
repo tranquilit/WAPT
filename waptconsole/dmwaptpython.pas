@@ -629,7 +629,7 @@ begin
 
   destcrt := AppendPathDelim(destdir)+crtbasename+'.crt';
   if not DirectoryExists(destdir) then
-       CreateDir(destdir);
+    ForceDirectories(destdir);
 
   key := dmpython.waptcrypto.SSLPrivateKey(filename := destpem,password := keypassword);
 

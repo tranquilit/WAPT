@@ -242,7 +242,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Left = 167
         Height = 17
         Hint = 'Check to enable the check of https server certificates'#13#10'(Main repository access and wapt server)'
-        Top = 100
+        Top = 106
         Width = 161
         Caption = 'Verify https server certificate'
         OnClick = CBVerifyCertClick
