@@ -69,7 +69,7 @@ print nssm_files
 
 
 print('Get Postgresql zip')
-pgsql_zip = wget('https://get.enterprisedb.com/postgresql/postgresql-9.4.14-1-windows-x64-binaries.zip',resume=True,md5='b69d2e6135a0061dc5ecd968f3d0a31e')
+pgsql_zip = wget('https://get.enterprisedb.com/postgresql/postgresql-9.4.14-1-windows-x64-binaries.zip',resume=True,md5='6dc704a32dacd6e151540a72bf81b252')
 
 if os.path.isdir(makepath(wapt_base_dir,'waptserver','pgsql')):
     shutil.rmtree(makepath(wapt_base_dir,'waptserver','pgsql'))
