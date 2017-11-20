@@ -3966,12 +3966,12 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgSources: TTabSheet
       Caption = 'Sources'
-      ClientHeight = 638
+      ClientHeight = 441
       ClientWidth = 995
       TabVisible = False
       inline testedit: TSynEdit
         Left = 0
-        Height = 604
+        Height = 407
         Top = 34
         Width = 995
         Align = alClient
@@ -4422,6 +4422,9 @@ object VisWaptGUI: TVisWaptGUI
           'logger = logging.getLogger()'
           'config_file =os.path.join(os.path.dirname(sys.argv[0]),''wapt-get.ini'')'
           'mywapt = Wapt(config_filename=config_file)'
+          ''
+          'import waptconsole'
+          'mywapt.progress_hook = waptconsole.UpdateProgress'
           '#mywapt.progress_hook(True,30,100,''Test'')'
           ''
           ''
@@ -4813,7 +4816,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActChangePassword: TAction
       Category = 'Tools'
-      Caption = 'Update password'
+      Caption = 'Change admin password'
       OnExecute = ActChangePasswordExecute
       OnUpdate = ActChangePasswordUpdate
     end

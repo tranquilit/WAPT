@@ -1879,6 +1879,8 @@ begin
         if sores.B['success'] then
         begin
           waptServerPassword := EdNewPassword1.Text;
+          if Assigned(WaptServerSession) then
+            FreeAndNil(WaptServerSession);
           ShowMessage(rsPasswordChangeSuccess);
         end
         else
