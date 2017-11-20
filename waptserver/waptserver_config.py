@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = '1.5.1.2'
+__version__ = '1.5.1.5'
 
 import os
 import sys
@@ -65,6 +65,7 @@ _defaults = {
     'allow_unsigned_status_data':False,
     'min_password_length':10,
     'allow_unauthenticated_registration':False,
+    'signature_clockskew':5*60,
 }
 
 _default_config_file = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
@@ -160,5 +161,8 @@ def load_config(cfgfile=_default_config_file):
 
     if _config.has_option('options', 'allow_unauthenticated_registration'):
         conf['allow_unauthenticated_registration'] = _config.getboolean('options', 'allow_unauthenticated_registration')
+
+    if _config.has_option('options', 'signature_clockskew'):
+        conf[param] = _config.getint('options', 'signature_clockskew')
 
     return conf

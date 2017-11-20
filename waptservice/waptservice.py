@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.1.0"
+__version__ = "1.5.1.5"
 import time
 import sys
 import os
@@ -246,7 +246,7 @@ class WaptServiceConfig(object):
         self.websockets_hurry_interval = 1
 
         # tolerance time replay limit for signed actions from server
-        self.signature_clockskew = 10*60
+        self.signature_clockskew = 5*60
 
 
     def load(self):
