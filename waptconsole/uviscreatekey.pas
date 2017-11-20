@@ -6,13 +6,15 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Dialogs, ExtCtrls,
-  StdCtrls, Buttons, EditBtn, DefaultTranslator;
+  StdCtrls, Buttons, EditBtn, DefaultTranslator, ActnList;
 
 type
 
   { TVisCreateKey }
 
   TVisCreateKey = class(TForm)
+    ActAdvanced: TAction;
+    ActionList1: TActionList;
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     CBCodeSigning: TCheckBox;
@@ -61,6 +63,8 @@ type
     PanCASize2: TPanel;
     PanCATop: TPanel;
     PanCertificate: TPanel;
+    PanCertAttributes: TPanel;
+    PanCertAttributesFiller: TPanel;
     PanDirectoryCert: TPanel;
     Panel1: TPanel;
     Panel2: TPanel;
@@ -72,6 +76,7 @@ type
     PanSize2: TPanel;
     Shape1: TShape;
     Shape2: TShape;
+    procedure ActAdvancedExecute(Sender: TObject);
     procedure DirectoryCertAcceptDirectory(Sender: TObject; var Value: String);
     procedure DirectoryCertAcceptFileName(Sender: TObject; var Value: String);
     procedure DirectoryCertExit(Sender: TObject);
@@ -301,6 +306,14 @@ begin
   EdCACertificate.InitialDir:=Value;
   EdCAKeyFilename.InitialDir:=Value;
 
+end;
+
+procedure TVisCreateKey.ActAdvancedExecute(Sender: TObject);
+begin
+  ActAdvanced.Checked:=not ActAdvanced.Checked;
+  PanCA.Visible := ActAdvanced.Checked;
+  PanCertAttributes.Visible := ActAdvanced.Checked;;
+  PanCertAttributesFiller.Visible := ActAdvanced.Checked;;
 end;
 
 procedure TVisCreateKey.edCommonNameExit(Sender: TObject);

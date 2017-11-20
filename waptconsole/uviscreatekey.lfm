@@ -67,7 +67,7 @@ object VisCreateKey: TVisCreateKey
     object PanCA: TPanel
       Left = 0
       Height = 92
-      Top = 345
+      Top = 351
       Width = 412
       Align = alTop
       AutoSize = True
@@ -336,7 +336,7 @@ object VisCreateKey: TVisCreateKey
     end
     object PanCertificate: TPanel
       Left = 0
-      Height = 242
+      Height = 248
       Top = 103
       Width = 412
       Align = alTop
@@ -349,7 +349,7 @@ object VisCreateKey: TVisCreateKey
       ChildSizing.EnlargeHorizontal = crsScaleChilds
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 2
-      ClientHeight = 242
+      ClientHeight = 248
       ClientWidth = 412
       TabOrder = 1
       object Shape2: TShape
@@ -365,7 +365,7 @@ object VisCreateKey: TVisCreateKey
         Height = 21
         Hint = 'Base filename of the certificate'
         Top = 10
-        Width = 197
+        Width = 184
         BorderSpacing.Top = 10
         Caption = 'Certificate name'
         Font.Style = [fsBold]
@@ -374,55 +374,83 @@ object VisCreateKey: TVisCreateKey
         ParentFont = False
       end
       object edCertBaseName: TEdit
-        Left = 209
+        Left = 196
         Height = 21
         Hint = 'This information will be used as Signer identification in packages'
         Top = 10
-        Width = 173
+        Width = 186
         BorderSpacing.Right = 30
         TabOrder = 0
       end
-      object Filler2: TPanel
+      object PanCertAttributesFiller: TPanel
         Left = 6
-        Height = 17
+        Height = 43
         Top = 34
-        Width = 197
+        Width = 184
         BevelOuter = bvNone
         TabOrder = 1
+        Visible = False
       end
-      object CBCodeSigning: TCheckBox
-        Left = 209
-        Height = 17
+      object PanCertAttributes: TPanel
+        Left = 196
+        Height = 43
         Top = 34
-        Width = 173
-        Caption = 'Tag as code signing'
-        Checked = True
-        State = cbChecked
-        TabOrder = 2
-      end
-      object Filler3: TPanel
-        Left = 6
-        Height = 17
-        Top = 54
-        Width = 197
+        Width = 186
+        AutoSize = True
         BevelOuter = bvNone
-        TabOrder = 3
-      end
-      object CBIsCA: TCheckBox
-        Left = 209
-        Height = 17
-        Top = 54
-        Width = 173
-        Caption = 'Tag as CA Certificate'
-        Checked = True
-        State = cbChecked
-        TabOrder = 4
+        ChildSizing.LeftRightSpacing = 6
+        ChildSizing.TopBottomSpacing = 3
+        ChildSizing.HorizontalSpacing = 6
+        ChildSizing.VerticalSpacing = 3
+        ChildSizing.EnlargeHorizontal = crsScaleChilds
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 2
+        ClientHeight = 43
+        ClientWidth = 186
+        TabOrder = 2
+        Visible = False
+        object Filler2: TPanel
+          Left = 6
+          Height = 17
+          Top = 3
+          Width = 3
+          BevelOuter = bvNone
+          TabOrder = 0
+        end
+        object CBCodeSigning: TCheckBox
+          Left = 15
+          Height = 17
+          Top = 3
+          Width = 165
+          Caption = 'Tag as code signing'
+          Checked = True
+          State = cbChecked
+          TabOrder = 1
+        end
+        object Filler3: TPanel
+          Left = 6
+          Height = 17
+          Top = 23
+          Width = 3
+          BevelOuter = bvNone
+          TabOrder = 3
+        end
+        object CBIsCA: TCheckBox
+          Left = 15
+          Height = 17
+          Top = 23
+          Width = 165
+          Caption = 'Tag as CA Certificate'
+          Checked = True
+          State = cbChecked
+          TabOrder = 2
+        end
       end
       object LabCN: TLabel
         Left = 6
         Height = 21
-        Top = 74
-        Width = 197
+        Top = 80
+        Width = 184
         Caption = 'Common Name(CN) :'
         Font.Style = [fsBold]
         Layout = tlCenter
@@ -430,55 +458,55 @@ object VisCreateKey: TVisCreateKey
         ParentFont = False
       end
       object edCommonName: TEdit
-        Left = 209
+        Left = 196
         Height = 21
         Hint = 'This information will be used as Signer identification in packages'
-        Top = 74
-        Width = 173
+        Top = 80
+        Width = 186
         OnExit = edCommonNameExit
-        TabOrder = 5
+        TabOrder = 3
       end
       object LabOptional: TStaticText
         Left = 6
         Height = 14
-        Top = 105
-        Width = 197
+        Top = 111
+        Width = 184
         AutoSize = True
         BorderSpacing.Top = 10
         Caption = 'Optional information'
-        TabOrder = 6
+        TabOrder = 4
       end
       object Filler: TPanel
-        Left = 209
+        Left = 196
         Height = 14
-        Top = 105
-        Width = 173
+        Top = 111
+        Width = 186
         BevelOuter = bvNone
-        TabOrder = 7
+        TabOrder = 5
       end
       object LabLocality: TLabel
         Left = 6
         Height = 21
-        Top = 122
-        Width = 197
+        Top = 128
+        Width = 184
         Caption = 'City :'
         Layout = tlCenter
         ParentColor = False
       end
       object edLocality: TEdit
-        Left = 209
+        Left = 196
         Height = 21
         Hint = 'E.g. : Nantes'
-        Top = 122
-        Width = 173
-        TabOrder = 8
+        Top = 128
+        Width = 186
+        TabOrder = 6
       end
       object LabCountry: TLabel
         Left = 6
         Height = 21
         Hint = 'Main site country code'
-        Top = 146
-        Width = 197
+        Top = 152
+        Width = 184
         Caption = 'Country (2 chars. E.g. : FR):'
         Layout = tlCenter
         ParentColor = False
@@ -486,68 +514,77 @@ object VisCreateKey: TVisCreateKey
         ShowHint = True
       end
       object edCountry: TEdit
-        Left = 209
+        Left = 196
         Height = 21
-        Top = 146
-        Width = 173
+        Top = 152
+        Width = 186
         MaxLength = 2
-        TabOrder = 9
+        TabOrder = 8
         Text = 'FR'
       end
       object LabUnit: TLabel
         Left = 6
         Height = 21
         Hint = 'E.g. : IT department.'
-        Top = 170
-        Width = 197
+        Top = 176
+        Width = 184
         Caption = 'Service :'
         Layout = tlCenter
         ParentColor = False
       end
       object edUnit: TEdit
-        Left = 209
+        Left = 196
         Height = 21
         Hint = 'E.g. : IT'
-        Top = 170
-        Width = 173
+        Top = 176
+        Width = 186
         TabOrder = 10
       end
       object LabOrg: TLabel
         Left = 6
         Height = 21
         Hint = 'Your company name'
-        Top = 194
-        Width = 197
+        Top = 200
+        Width = 184
         Caption = 'Organisation:'
         Layout = tlCenter
         ParentColor = False
       end
       object edOrganization: TEdit
-        Left = 209
+        Left = 196
         Height = 21
         Hint = 'E.g. : Tranquil It Systems'
-        Top = 194
-        Width = 173
-        TabOrder = 11
+        Top = 200
+        Width = 186
+        TabOrder = 7
       end
       object LabMail: TLabel
         Left = 6
         Height = 21
         Hint = 'Technical department e-mail address.'
-        Top = 218
-        Width = 197
+        Top = 224
+        Width = 184
         Caption = 'E-mail address :'
         Layout = tlCenter
         ParentColor = False
       end
       object edEmail: TEdit
-        Left = 209
+        Left = 196
         Height = 21
         Hint = 'E.g. : technique@tranquil-it-systems.fr'
-        Top = 218
-        Width = 173
-        TabOrder = 12
+        Top = 224
+        Width = 186
+        TabOrder = 9
       end
+    end
+  end
+  object ActionList1: TActionList
+    left = 43
+    top = 162
+    object ActAdvanced: TAction
+      Caption = 'Advanced'
+      OnExecute = ActAdvancedExecute
+      ShortCut = 24656
     end
   end
 end
