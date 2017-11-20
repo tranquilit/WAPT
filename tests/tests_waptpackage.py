@@ -860,10 +860,30 @@ def test_edit_hosts_depends():
         ['C5921400-3476-11E2-9D6F-F806DF88E3E5','54313B54-F9E3-DC41-9EE5-EBBE7A9BB584'],
         remove_depends='socle',key_password='test',wapt_server_user='admin',wapt_server_passwd='password')
 
+def edit_host_raw():
+    w = Wapt(config_filename= r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini')
+    host_id = 'TEST-4C4C4544-004E-3510-8051-C7C04F325131'
+    r = WaptHostRepo(name ='wapt-host', host_id=[host_id])
+    r.load_config_from_file(w.config_filename)
+    host = r.get(host_id)
+    if host is None:
+        host = PackageEntry(package=host_id,description = 'test host',section='host')
+        d = host.build_management_package()
+    else:
+        host.inc_build()
+        host.build_package()
+    host.sign_package(gest,key)
+    s = WaptServer()
+    s.load_config_from_file(w.config_filename)
+    res = s.upload_packages([host],auth=('admin','...'))
+    print res
+
+
 if __name__ == '__main__':
     setup_test()
+    edit_host_raw()
     test_buildupload()
-    sys.exit(0)
+
     test_build_sign_verify_package()
     test_edit_hosts_depends()
     #test_uploadpackages()

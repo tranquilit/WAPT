@@ -121,8 +121,15 @@ ALLOWED_EXTENSIONS = set(['wapt'])
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
 config_file = DEFAULT_CONFIG_FILE
 
-#
-app = Flask(__name__, static_folder='./templates/static')
+# allow chunked uploads when no nginx reverse proxy server server (see https://github.com/pallets/flask/issues/367)
+class FlaskApp(Flask):
+    def request_context(self, environ):
+        # it's the only way I've found to handle chunked encoding request (otherwise flask.request.stream is empty)
+        environ['wsgi.input_terminated'] = 1
+        return super(FlaskApp, self).request_context(environ)
+
+
+app = FlaskApp(__name__, static_folder='./templates/static')
 app.config['CONFIG_FILE'] = config_file
 
 babel = Babel(app)
@@ -623,8 +630,6 @@ def upload_package(filename=''):
 @app.route('/api/v3/upload_packages', methods=['POST'])
 @requires_auth
 def upload_packages():
-    do_update_packages_index = False
-
     class PackageStream(object):
         def __init__(self,stream,chunk_size=10*1024*1024):
             self.stream = stream
@@ -658,12 +663,14 @@ def upload_packages():
                 target = os.path.join(wapt_folder+'-host', entry.make_package_filename())
             else:
                 target = os.path.join(wapt_folder, entry.make_package_filename())
-                do_update_packages_index = True
 
             if os.path.isfile(target):
                 os.unlink(target)
             logger.debug('Renaming package %s into %s' % (tmp_target,target))
-            os.rename(tmp_target, target)
+            try:
+                os.rename(tmp_target, target)
+            except OSError:
+                shutil.move(tmp_target, target)
 
             # fix context on target file (otherwith tmp context is carried over)
             #logger.debug(subprocess.check_output('chcon -R -t httpd_sys_content_t %s' % target,shell=True))
@@ -687,7 +694,8 @@ def upload_packages():
         starttime = time.time()
         done = []
         errors = []
-        if request.files is not None:
+        errors_msg = []
+        if request.files:
             files = request.files
             # multipart upload
             logger.info('Upload of %s packages' % len(files))
@@ -698,24 +706,27 @@ def upload_packages():
                     if packagefile and allowed_file(packagefile.filename):
                         done.append(read_package(packagefile))
                 except Exception as e:
-
                     logger.critical(u'Error uploading %s : %s' % (fkey,e))
                     errors.append(fkey)
-        elif request.stream is not None:
+                    errors_msg.append('%s : %s' % (fkey,e))
+        else:
             # streamed upload
             packagefile = PackageStream(request.stream)
             done.append(read_package(packagefile))
 
-        if do_update_packages_index:
+
+        if [e for e in done if e.section != 'host']:
             logger.debug('Update package index')
             packages_index_result = update_packages(conf['wapt_folder'])
+            if packages_index_result['errors']:
+                errors_msg.extend(packages_index_result['errors'])
         else:
             packages_index_result = None
 
         spenttime = time.time() - starttime
-        return make_response(success=len(errors) == 0,
+        return make_response(success=len(errors) == 0 and len(done)>0,
                              result=dict(done=done, errors=errors, packages_index_result = packages_index_result),
-                             msg=_('{} Packages uploaded, {} errors').format(len(done), len(errors)),
+                             msg=_('{} Packages uploaded, {} errors.{}').format(len(done), len(errors),'\n'.join(errors_msg)),
                              request_time=spenttime)
 
     except Exception as e:
