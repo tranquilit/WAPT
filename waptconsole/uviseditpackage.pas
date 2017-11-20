@@ -795,12 +795,12 @@ begin
         host_repo := DMPython.common.WaptHostRepo(name := 'wapt-host', host_id := FPackageRequest);
         host_repo.load_config_from_file(WaptIniFilename);
         host_package := host_repo.get(FPackageRequest);
-        if not VarIsEmpty(host_package) and not VarIsNull(host_package) then
+        if not VarIsEmpty(host_package) and not VarIsNone(host_package) then
           res := PyVarToSuperObject(host_package)
         else
         // empty host package.
         begin
-          host_package := DMPython.waptpackage.PackageEntry(package := FPackageRequest,version := String('0'));
+          host_package := DMPython.waptpackage.PackageEntry(package := FPackageRequest,version := String('0'),section := 'host');
           res := PyVarToSuperObject(host_package)
         end;
 
