@@ -508,7 +508,7 @@ def wapthosts_json(model_class, instance, created):
             ['os_version', ('windows_version', 'windows_product_infos.windows_version')],
             ['connected_ips', 'connected_ips'],
             ['connected_users', ('connected_users', 'current_user')],
-            ['last_loggged_on_user', 'last_loggged_on_user'],
+            ['last_logged_on_user', 'last_logged_on_user'],
             ['mac_addresses', 'mac'],
             ['dnsdomain', ('dnsdomain', 'dns_domain')],
             ['gateways', 'gateways'],
