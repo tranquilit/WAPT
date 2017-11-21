@@ -21,6 +21,7 @@ type
     ActDisplayPreferences: TAction;
     ActExternalRepositoriesSettings: TAction;
     ActAddHWPropertyToGrid: TAction;
+    ActPackagesForceInstall: TAction;
     ActProprietary: TAction;
     ActPackagesForget: TAction;
     ActAddConflicts: TAction;
@@ -140,6 +141,7 @@ type
     MenuItem33: TMenuItem;
     MenuItem50: TMenuItem;
     MenuItem51: TMenuItem;
+    MenuItem53: TMenuItem;
     MenuItem74: TMenuItem;
     MenuItem75: TMenuItem;
     MenuItem76: TMenuItem;
@@ -398,6 +400,7 @@ type
     procedure ActHostsDeletePackageUpdate(Sender: TObject);
     procedure ActHostsDeleteUpdate(Sender: TObject);
     procedure ActmakePackageTemplateExecute(Sender: TObject);
+    procedure ActPackagesForceInstallExecute(Sender: TObject);
     procedure ActPackagesInstallUpdate(Sender: TObject);
     procedure ActPackagesRemoveUpdate(Sender: TObject);
     procedure ActProprietaryExecute(Sender: TObject);
@@ -619,8 +622,8 @@ type
     function Login: boolean;
     function EditIniFile: boolean;
     function updateprogress(receiver: TObject; current, total: integer): boolean;
-    function TriggerActionOnHosts(uuids: ISuperObject;AAction:String;Args:ISuperObject;title,errortitle:String):ISuperObject;
-    procedure TriggerActionOnHostPackages(AAction, title, errortitle: String);
+    function TriggerActionOnHosts(uuids: ISuperObject;AAction:String;Args:ISuperObject;title,errortitle:String;Force:Boolean=False):ISuperObject;
+    procedure TriggerActionOnHostPackages(AAction, title, errortitle: String;Force:Boolean=False);
 
   end;
 
@@ -2210,6 +2213,11 @@ begin
   MakePackageTemplate('');
 end;
 
+procedure TVisWaptGUI.ActPackagesForceInstallExecute(Sender: TObject);
+begin
+  TriggerActionOnHostPackages('trigger_install_packages',rsConfirmPackageInstall,rsPackageInstallError,True);
+end;
+
 procedure TVisWaptGUI.ActPackagesInstallUpdate(Sender: TObject);
 begin
   (Sender as TAction).Enabled:=OneHostIsConnected;
@@ -2256,14 +2264,15 @@ end;
 
 procedure TVisWaptGUI.ActExternalRepositoriesSettingsExecute(Sender: TObject);
 begin
-  OpenDocument(AppIniFilename);
+  //OpenDocument(AppIniFilename);
 
-  {With TVisRepositories.Create(Self) do
+  With TVisRepositories.Create(Self) do
   try
-    ShowModal;
+    if ShowModal = mrOk then
+      actRefresh.Execute;
   finally
     Free;
-  end;}
+  end;
 end;
 
 procedure TVisWaptGUI.ActTISHelpExecute(Sender: TObject);
@@ -2653,7 +2662,7 @@ begin
   ActEnglish.Checked := DMPython.Language='en';
 end;
 
-function TVisWaptGUI.TriggerActionOnHosts(uuids: ISuperObject;AAction:String;Args:ISuperObject;title,errortitle:String):ISuperObject;
+function TVisWaptGUI.TriggerActionOnHosts(uuids: ISuperObject;AAction:String;Args:ISuperObject;title,errortitle:String;Force:Boolean=False):ISuperObject;
 var
   host_uuid,ArgKey : ISuperObject;
   SOAction, SOActions:ISuperObject;
@@ -2669,6 +2678,7 @@ begin
       SOAction.S['action'] := AAction;
       SOAction.S['uuid'] := host_uuid.AsString;
       SOAction.B['notify_server'] := True;
+      SOAction.B['force'] := Force;
       if Args<>Nil then
         for ArgKey in Args.AsObject.GetNames() do
           SOAction[ArgKey.AsString] := Args[ArgKey.AsString];
@@ -2699,7 +2709,7 @@ begin
 end;
 
 
-procedure TVisWaptGUI.TriggerActionOnHostPackages(AAction,title,errortitle:String);
+procedure TVisWaptGUI.TriggerActionOnHostPackages(AAction,title,errortitle:String;Force:Boolean=False);
 var
   sel, packages : ISuperObject;
   SOAction, SOActions,res,host:ISuperObject;
@@ -2726,6 +2736,7 @@ begin
           SOAction.S['action'] := AAction;
           SOAction.S['uuid'] := host.S['uuid'];
           SOAction.B['notify_server'] := True;
+          SOAction.B['force'] := Force;
           SOAction['packages'] := packages;
           SOActions.AsArray.Add(SOAction);
         end;

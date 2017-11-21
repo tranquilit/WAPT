@@ -5065,6 +5065,12 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActProprietaryExecute
       ShortCut = 24656
     end
+    object ActPackagesForceInstall: TAction
+      Category = 'Host'
+      Caption = 'Force install'
+      OnExecute = ActPackagesForceInstallExecute
+      OnUpdate = ActPackagesRemoveUpdate
+    end
   end
   object PopupMenuPackages: TPopupMenu
     Images = ActionsImages24
@@ -7437,6 +7443,9 @@ object VisWaptGUI: TVisWaptGUI
         8E6FF7FF8E9AF6FF8FB0F6FF8FB0F7FF919BF6FF8D70F3FF922A000000000000
         0000CCFF990F0000000000000000000000000000000000000000
       }
+    end
+    object MenuItem53: TMenuItem
+      Action = ActPackagesForceInstall
     end
     object MenuItem19: TMenuItem
       Action = ActPackagesRemove
