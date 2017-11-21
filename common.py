@@ -3230,14 +3230,17 @@ class Wapt(object):
         logger.info(u"Register start of install %s as user %s to local DB with params %s" % (ensure_unicode(fname), setuphelpers.get_current_user(), params_dict))
         logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
 
-        status = 'INIT'
-        if not self.cabundle:
-            raise EWaptMissingCertificate(u'install_wapt %s: No public Key provided for package signature checking.'%(fname,))
+
         previous_uninstall = self.registry_uninstall_snapshot()
 
         try:
-            entry = PackageEntry()
-            entry.load_control_from_wapt(fname)
+
+            status = 'INIT'
+            if not self.cabundle:
+                raise EWaptMissingCertificate(u'install_wapt %s: No public Key provided for package signature checking.'%(fname,))
+
+            entry = PackageEntry(waptfile=fname)
+            self.runstatus=u"Installing package %s version %s ..." % (entry.package,entry.version)
 
             # get old install params if the package has been already installed
             old_install = self.is_installed(entry.package)
@@ -3291,8 +3294,6 @@ class Wapt(object):
             else:
                 logger.info(u'Developper mode, don''t check control signature for %s' % setuphelpers.ensure_unicode(fname))
 
-
-            self.runstatus=u"Installing package %s version %s ..." % (entry.package,entry.version)
             # we setup a redirection of stdout to catch print output from install scripts
             sys.stderr = sys.stdout = install_output = LogInstallOutput(sys.stderr,self.waptdb,install_id)
 
@@ -3302,10 +3303,9 @@ class Wapt(object):
             istemporary = False
 
             if os.path.isfile(fname):
-                packagetempdir = entry.unzip_package()
+                # check signature and files when unzipping
+                packagetempdir = entry.unzip_package(cabundle=self.cabundle)
                 istemporary = True
-                # take infos from unzipped data
-                entry = PackageEntry().load_control_from_wapt(packagetempdir)
             elif os.path.isdir(fname):
                 packagetempdir = fname
             else:
@@ -3313,12 +3313,6 @@ class Wapt(object):
 
             try:
                 previous_cwd = os.getcwd()
-                self.check_cancelled()
-
-                # check signature and files sha if not developper mode
-                if istemporary:
-                    entry.check_package_signature(self.cabundle)
-
                 self.check_cancelled()
 
                 exitstatus = None
