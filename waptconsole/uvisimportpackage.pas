@@ -80,7 +80,7 @@ uses uwaptconsole,tiscommon,soutils,waptcommon,VarPyth,
 procedure TVisImportPackage.ButExtRepoChangeClick(Sender: TObject);
 begin
   ActWAPTLocalConfigExecute(self);
-  urlExternalRepo.Caption := format(rsUrl, [IniReadString(WaptIniFilename,EdRepoName.Text,'repo_url','https://store.wapt.fr/wapt')]);
+  urlExternalRepo.Caption := format(rsUrl, [IniReadString(WaptIniFilename,EdRepoName.Text,'repo_url','')]);
 end;
 
 procedure TVisImportPackage.CBCheckSignatureClick(Sender: TObject);
@@ -174,7 +174,7 @@ var
 begin
   EdSearch1.Modified:=False;
   http_proxy := IniReadString(WaptIniFilename,EdRepoName.Text,'http_proxy');
-  repo_url:= IniReadString(WaptIniFilename,EdRepoName.Text,'repo_url','https://store.wapt.fr/wapt');
+  repo_url:= IniReadString(WaptIniFilename,EdRepoName.Text,'repo_url','');
   if http_proxy = '' then
     http_proxy := 'None';
   try

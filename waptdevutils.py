@@ -224,7 +224,7 @@ def get_packages_filenames(waptconfigfile,packages_names,with_depends=True,verif
     """
     result = []
     defaults = {
-        'repo_url':'https://store.wapt.fr/wapt',
+        'repo_url':'',
         'http_proxy':'',
         'verify_cert':'0',
         }
