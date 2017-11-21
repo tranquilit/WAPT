@@ -102,12 +102,13 @@ var
   url: TIdURI;
 begin
   ActCheckAndSetwaptserver.Enabled:=False;
-  with TIdURI.Create(edServerAddress.Text) do
-  try
-    edServerAddress.Text:=Host;
-  finally
-    Free;
-  end;
+  if pos('http',lowercase(edServerAddress.Text))>0 then
+    with TIdURI.Create(edServerAddress.Text) do
+    try
+      edServerAddress.Text:=Host;
+    finally
+      Free;
+    end;
 
   ImageList1.GetBitmap(2, ImgStatusRepo.Picture.Bitmap);
   ImageList1.GetBitmap(2, ImgStatusServer.Picture.Bitmap);
