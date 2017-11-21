@@ -403,6 +403,7 @@ type
     procedure ActPackagesForceInstallExecute(Sender: TObject);
     procedure ActPackagesInstallUpdate(Sender: TObject);
     procedure ActPackagesRemoveUpdate(Sender: TObject);
+    procedure ActPackagesUpdateUpdate(Sender: TObject);
     procedure ActProprietaryExecute(Sender: TObject);
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
@@ -2225,7 +2226,12 @@ end;
 
 procedure TVisWaptGUI.ActPackagesRemoveUpdate(Sender: TObject);
 begin
-  (Sender as TAction).Enabled:=OneHostIsConnected;
+  (Sender as TAction).Enabled:=OneHostIsConnected and FileExists(GetWaptPersonalCertificatePath);
+end;
+
+procedure TVisWaptGUI.ActPackagesUpdateUpdate(Sender: TObject);
+begin
+  ActPackagesUpdate.Enabled:=FileExists(GetWaptPersonalCertificatePath);
 end;
 
 procedure TVisWaptGUI.ActProprietaryExecute(Sender: TObject);
@@ -2813,7 +2819,7 @@ end;
 
 procedure TVisWaptGUI.ActHostsActionsUpdate(Sender: TObject);
 begin
-  (Sender as TAction).Enabled:= (GridHosts.SelectedCount>0) and OneHostIsConnected;
+  (Sender as TAction).Enabled:= (GridHosts.SelectedCount>0) and OneHostIsConnected and FileExists(GetWaptPersonalCertificatePath);
 end;
 
 procedure TVisWaptGUI.ActImportFromFileExecute(Sender: TObject);
@@ -3157,18 +3163,21 @@ end;
 
 procedure TVisWaptGUI.ActTriggerHostUpdateExecute(Sender: TObject);
 begin
-  with TVisHostsUpgrade.Create(Self) do
-    try
-      Caption:= rsTriggerHostsUpdate;
-      action := 'trigger_host_update';
-      notifyServer := True;
-      hosts := Gridhosts.SelectedRows;
+  if (GridHosts.SelectedCount>=1) and (GridHosts.SelectedCount<=5) then
+    TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_host_update',Nil,rsTriggerHostsUpdate,'Error checking for updates',True)
+  else
+    with TVisHostsUpgrade.Create(Self) do
+      try
+        Caption:= rsTriggerHostsUpdate;
+        action := 'trigger_host_update';
+        notifyServer := True;
+        hosts := Gridhosts.SelectedRows;
 
-       if ShowModal = mrOk then;
-      //  actRefresh.Execute;
-    finally
-      Free;
-    end;
+         if ShowModal = mrOk then;
+        //  actRefresh.Execute;
+      finally
+        Free;
+      end;
 end;
 
 function TVisWaptGUI.GetSelectedUUID:ISuperObject;

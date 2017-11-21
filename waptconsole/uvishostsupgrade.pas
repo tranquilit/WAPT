@@ -89,10 +89,17 @@ begin
   waptdevutils := Import('waptdevutils');
 
   for host in ProgressGrid.Data do
-  begin
+  try
+    Screen.Cursor:=crHourGlass;
     if Stopped then Break;
     if uppercase(host.S['status']) = 'OK' then
       Continue;
+    if host.S['reachable'] <> 'OK' then
+    begin
+       host.S['status'] := 'SKIPPED';
+       host.S['message'] := 'Not connected';
+       Continue;
+    end;
 
     host.S['status'] := 'STARTED';
     ProgressGrid.InvalidateFordata(host);
@@ -136,6 +143,9 @@ begin
         Application.ProcessMessages;
       end;
     end;
+
+  finally
+    Screen.Cursor:=crdefault;
   end;
 end;
 

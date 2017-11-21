@@ -284,9 +284,7 @@ object VisRepositories: TVisRepositories
       Top = 32
       Width = 140
       Caption = 'Check package signature'
-      Checked = True
       OnClick = CBCheckSignatureClick
-      State = cbChecked
       TabOrder = 2
     end
     object panPackageSign1: TPanel
