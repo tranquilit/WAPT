@@ -2373,7 +2373,7 @@ class WaptHostRepo(WaptRepo):
             for pe in self.packages:
                 if ((isinstance(pr,PackageEntry) and (pe == pr)) or
                    (isinstance(pr,(str,unicode)) and pe.match(pr))):
-                    pfn = pe.make_package_filename()
+                    pfn = os.path.join(target_dir,pe.make_package_filename())
                     if pe._package_content is not None:
                         with open(pfn,'wb') as package_zip:
                             package_zip.write(pe._package_content)
@@ -2384,6 +2384,7 @@ class WaptHostRepo(WaptRepo):
                         downloaded.append(pfn)
                         if not os.path.isfile(pfn):
                             logger.warning('Unable to write host package %s into %s' % (pr.asrequirement(),pfn))
+                            errors.append(pfn)
                     else:
                         logger.warning('No host package content for %s' % (pr.asrequirement(),))
                     break
@@ -4073,7 +4074,7 @@ class Wapt(object):
             printhook (func) : callback with signature report(received,total,speed,url) to display progress
 
         Returns:
-            dict: with keys {"downloaded,"skipped","errors","packages"} and list of cached file paths.
+            dict: with keys {"downloaded,"skipped","errors","packages"} and list of PackageEntry.
 
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> def nullhook(*args):
