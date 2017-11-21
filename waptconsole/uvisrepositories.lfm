@@ -66,7 +66,7 @@ object VisRepositories: TVisRepositories
       ChildSizing.HorizontalSpacing = 3
       ClientHeight = 23
       ClientWidth = 303
-      TabOrder = 1
+      TabOrder = 4
       object ButSelectCABundle1: TButton
         Left = 0
         Height = 23
@@ -107,7 +107,7 @@ object VisRepositories: TVisRepositories
       AutoSize = False
       Constraints.MinWidth = 200
       Link.TIPropertyName = 'RepoURL'
-      TabOrder = 2
+      TabOrder = 1
     end
     object panURLActions: TPanel
       Left = 425
@@ -118,7 +118,7 @@ object VisRepositories: TVisRepositories
       BevelOuter = bvNone
       ClientHeight = 23
       ClientWidth = 303
-      TabOrder = 3
+      TabOrder = 5
       object butBrowseCerts: TButton
         Left = 0
         Height = 23
@@ -148,7 +148,7 @@ object VisRepositories: TVisRepositories
       Width = 232
       Constraints.MinWidth = 200
       Link.TIPropertyName = 'HttpProxy'
-      TabOrder = 4
+      TabOrder = 2
     end
     object panProxyActions: TPanel
       Left = 425
@@ -157,7 +157,7 @@ object VisRepositories: TVisRepositories
       Width = 303
       AutoSize = True
       BevelOuter = bvNone
-      TabOrder = 5
+      TabOrder = 6
     end
     object panHttps1: TPanel
       Left = 6
@@ -167,7 +167,7 @@ object VisRepositories: TVisRepositories
       BevelOuter = bvNone
       ClientHeight = 17
       ClientWidth = 175
-      TabOrder = 6
+      TabOrder = 7
       object cbAdvanced2: TCheckBox
         Left = 6
         Height = 17
@@ -186,7 +186,7 @@ object VisRepositories: TVisRepositories
       BevelOuter = bvNone
       ClientHeight = 17
       ClientWidth = 232
-      TabOrder = 7
+      TabOrder = 3
       object cbCheckHTTPS: TCheckBox
         Left = 0
         Height = 17
