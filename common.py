@@ -3445,7 +3445,7 @@ class Wapt(object):
             raise e
         finally:
             gc.collect()
-            if 'setup' in dir():
+            if 'setup' in dir() and setup is not None:
                 setup_name = setup.__name__[:]
                 logger.debug('Removing module: %s, refcnt: %s'%(setup_name,sys.getrefcount(setup)))
                 del setup
