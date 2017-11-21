@@ -57,6 +57,7 @@ __all__ = [
     'EWaptUnavailablePackage',
     'EWaptNotSourcesDirPackage',
     'EWaptPackageSignError',
+    'EWaptConflictingPackage',
     'EWaptInstallPostponed',
     'EWaptInstallError',
     ]
@@ -205,6 +206,9 @@ class EWaptInstallPostponed(EWaptInstallError):
         self.grace_delay = grace_delay
 
 class EWaptUnavailablePackage(EWaptInstallError):
+    pass
+
+class EWaptConflictingPackage(EWaptInstallError):
     pass
 
 class EWaptRemoveError(EWaptException):
