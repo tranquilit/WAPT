@@ -292,7 +292,7 @@ import codecs
 
 from waptutils import (ensure_unicode,ensure_list,Version,get_disk_free_space,
                       wget,wgets,datetime2isodate,httpdatetime2isodate,isodate2datetime,
-                      time2display,hours_minutes,fileisodate,dateof)
+                      time2display,hours_minutes,fileisodate,dateof,all_files,find_all_files)
 
 from waptpackage import PackageEntry
 from types import ModuleType
@@ -675,21 +675,6 @@ def file_is_locked(path,timeout=5):
             else:
                 raise
     return True
-
-def all_files(rootdir,pattern=None):
-    """Recursively return all files from rootdir and sub directories
-        matching the (dos style) pattern (example: *.exe)
-    """
-    rootdir = os.path.abspath(rootdir)
-    result = []
-    for fn in os.listdir(rootdir):
-        full_fn = os.path.join(rootdir,fn)
-        if os.path.isdir(full_fn):
-            result.extend(all_files(full_fn,pattern))
-        else:
-            if not pattern or glob.fnmatch.fnmatch(fn,pattern):
-                result.append(full_fn)
-    return result
 
 
 

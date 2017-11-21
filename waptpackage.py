@@ -1316,7 +1316,7 @@ class PackageEntry(object):
             elif hexdigest != hexdigest_for_file(fullpath,md = self._md):
                 errors.append(filename)
 
-        files = list(find_all_files(ensure_unicode(self.sourcespath)))
+        files = all_files(ensure_unicode(self.sourcespath))
         # removes files which are not in manifest by design
         for fn in self.manifest_filename_excludes:
             full_fn = os.path.abspath(os.path.join(self.sourcespath,fn))

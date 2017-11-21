@@ -991,14 +991,31 @@ def find_all_files(rootdir,include_patterns=None,exclude_patterns=None):
                     break
         return result
 
+    for fn in os.listdir(rootdir):
+        full_fn = os.path.join(rootdir,fn)
+        if os.path.isdir(full_fn):
+            for fn in find_all_files(full_fn,include_patterns,exclude_patterns):
+                yield fn
+        else:
+            if match(fn):
+                yield full_fn
+
+
+def all_files(rootdir,pattern=None):
+    """Recursively return all files from rootdir and sub directories
+    matching the (dos style) pattern (example: *.exe)
+    """
+    rootdir = os.path.abspath(rootdir)
     result = []
     for fn in os.listdir(rootdir):
         full_fn = os.path.join(rootdir,fn)
         if os.path.isdir(full_fn):
-            result.extend(find_all_files(full_fn,include_patterns,exclude_patterns))
+            result.extend(all_files(full_fn,pattern))
         else:
-            if match(fn):
-                yield full_fn
+            if not pattern or glob.fnmatch.fnmatch(fn,pattern):
+                result.append(full_fn)
+    return result
+
 
 def touch(filename):
     if not os.path.isdir(os.path.dirname(filename)):
