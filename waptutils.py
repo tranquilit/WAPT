@@ -811,7 +811,8 @@ def find_all_files(rootdir,include_patterns=None,exclude_patterns=None):
     for fn in os.listdir(rootdir):
         full_fn = os.path.join(rootdir,fn)
         if os.path.isdir(full_fn):
-            result.extend(find_all_files(full_fn,include_patterns,exclude_patterns))
+            for fn in find_all_files(full_fn,include_patterns,exclude_patterns):
+                yield fn
         else:
             if match(fn):
                 yield full_fn
