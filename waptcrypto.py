@@ -553,7 +553,7 @@ class SSLCABundle(object):
                 if ssl_crl is None:
                     ssl_crl = self.crl_for_issuer_subject_hash(cert.issuer_subject_hash)
 
-                if force or not ssl_crl or ssl_crl.next_update > datetime.datetime.utcnow():
+                if force or not ssl_crl or ssl_crl.next_update < datetime.datetime.utcnow():
                     try:
                         logger.debug('Download CRL %s' % (url,))
                         crl_data = wgets(url,timeout=(0.3,2.0))
