@@ -1472,12 +1472,12 @@ class PackageEntry(object):
             except Exception as e:
                 pass
 
-    def as_zipfile(self):
+    def as_zipfile(self,mode='r'):
         """Return a Zipfile for this package for read only operations"""
         if self.localpath and os.path.isfile(self.localpath):
-            return ZipFile(self.localpath,allowZip64=True)
+            return ZipFile(self.localpath,compression=zipfile.ZIP_DEFLATED,allowZip64=True,mode=mode)
         elif self._package_content is not None:
-            return ZipFile(StringIO.StringIO(self._package_content))
+            return ZipFile(StringIO.StringIO(self._package_content),mode=mode,compression=zipfile.ZIP_DEFLATED,allowZip64=True)
         else:
             raise EWaptMissingLocalWaptFile('This PackageEntry has no local content for zip operations %s' % self.asrequirement())
 

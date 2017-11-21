@@ -69,6 +69,7 @@ def main():
     parser.add_option("-i","--if-needed", dest="if_needed", default=False, action='store_true',help="Re-sign package only if needed (default: warning)")
     parser.add_option("-m","--message-digest", dest="md", default='sha256', help="Message digest type for signatures.  (default: %default)")
     parser.add_option("-s","--scan-packages", dest="doscan", default=False, action='store_true', help="Rescan packages and update local Packages index after signing.  (default: %default)")
+    parser.add_option("-r","--remove-setup", dest="removesetup", default=False, action='store_true', help="Remove setup.py.  (default: %default)")
     (options,args) = parser.parse_args()
 
     loglevel = options.loglevel
@@ -108,7 +109,6 @@ def main():
     signers_bundle = SSLCABundle()
     signers_bundle.add_certificates([cert])
 
-
     waptpackages = []
     for arg in args:
         waptpackages.extend(glob.glob(arg))
@@ -122,7 +122,14 @@ def main():
 
         print('Processing %s'%waptpackage)
         try:
+            sign_needed=False
             pe = PackageEntry(waptfile = waptpackage)
+            if options.removesetup:
+                if pe.has_file('setup.py'):
+                    with pe.as_zipfile(mode,'a') as waptfile:
+                        waptfile.remove('setup.py')
+                    sign_needed=True
+
             if options.if_needed:
                 try:
                     pe.check_control_signature(cabundle=signers_bundle,signers_bundle=signers_bundle)
@@ -130,12 +137,13 @@ def main():
                         if not pe.has_file(pe.get_signature_filename(md)):
                             raise Exception('Missing signature for md %s' % md)
                     logger.info('Skipping %s, already signed properly' % pe.asrequirement())
-                    continue
+                    sign_needed = False
                 except Exception as e:
                     logger.info('Sign is needed for %s because %s' % (pe.asrequirement(),e))
-                    pass
+                    sign_needed = True
 
-            pe.sign_package(private_key=key,certificate = cert,mds = ensure_list(options.md))
+            if not options.if_needed or sign_needed:
+                pe.sign_package(private_key=key,certificate = cert,mds = ensure_list(options.md))
             print('Done')
         except Exception as e:
             print(u'Error: %s'%ensure_unicode(e.message))
