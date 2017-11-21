@@ -2884,9 +2884,9 @@ class Wapt(object):
             new_uuid = previous_uuid
 
         if not previous_uuid or previous_uuid != new_uuid or registered_hostname != current_hostname:
-            if registered_hostname != current_hostname:
+            if previous_uuid != new_uuid:
                 # forget old host package if any as it is not relevant anymore
-                self.forget_packages(registered_hostname)
+                self.forget_packages(new_uuid)
             logger.info('Unknown UUID or hostname has changed: reading host UUID')
             if new_uuid is None:
                 logger.info('reading custom host UUID from WMI System Information.')
