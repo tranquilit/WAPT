@@ -94,6 +94,9 @@ Name: "{app}\private"
 
 [Setup]
 AppName={#AppName}
+#ifdef AppId
+AppId={#AppId}
+#endif
 AppVersion={#AppVerStr}
 AppVerName={#AppName} {#AppVerStr}
 UninstallDisplayName={#AppName} {#AppVerStr}

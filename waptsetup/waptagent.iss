@@ -5,6 +5,7 @@
 #define repo_url ""
 #define wapt_server ""
 #define AppName "WAPTAgent"
+#define AppId "WAPT"
 #define output_dir "."
 #define Company "Tranquil IT Systems"
 #define send_usage_report 1
