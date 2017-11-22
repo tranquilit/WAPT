@@ -53,7 +53,7 @@ if os.path.exists(os.path.join(pgsql_data_dir,'postgresql.conf')):
     sys.exit(0)
 
 print ("initialising database directory")
-cmd = r"%s\bin\initdb -E=UTF8 -D %s" % (pgsql_root_dir, pgsql_data_dir)
+cmd = r"%s\bin\initdb -U postgres -E=UTF8 -D %s" % (pgsql_root_dir, pgsql_data_dir)
 print cmd
 run(cmd,shell=True)
 
@@ -66,8 +66,9 @@ print(subprocess.Popen(cmd,shell=True))
 time.sleep(5)
 
 print("creating wapt database")
-run(r'%s\bin\psql.exe --command="create database wapt;" template1' % pgsql_root_dir, shell=True)
-run(r'%s\bin\psql.exe --command="create extension hstore;" wapt' % pgsql_root_dir, shell=True)
+run(r'%s\bin\psql.exe -U postgres --command="create user wapt;" template1' % pgsql_root_dir, shell=True)
+run(r'%s\bin\psql.exe -U postgres --command="create database wapt owner wapt;" template1' % pgsql_root_dir, shell=True)
+run(r'%s\bin\psql.exe -U postgres --command="create extension hstore;" wapt' % pgsql_root_dir, shell=True)
 run(r'%s\waptpython.exe %s\waptserver\waptserver_model.py init_db' % (wapt_root_dir, wapt_root_dir))
 
 time.sleep(2)

@@ -252,7 +252,7 @@ def make_postgres_data_dir(wapt_root_dir):
 
     #should check if task is still running
     import time
-    time.sleep(30)
+    time.sleep(15)
     try:
         setuphelpers.run("schtasks /delete /tn init_wapt_pgsql /f")
     except:
@@ -284,6 +284,7 @@ def install_nginx_service():
     service_name = 'WAPTNginx'
     #print('Register "%s" in registry' % service_name)
     install_windows_nssm_service(service_name,service_binary,service_parameters,service_logfile)
+    time.sleep(5)
 
 def install_postgresql_service():
     print ("install postgres database")
@@ -305,7 +306,7 @@ def install_waptserver_service():
     service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe'))
     service_parameters = '"%s"' % os.path.join(wapt_root_dir,'waptserver','waptserver.py')
     service_logfile = os.path.join(log_directory, 'nssm_waptserver.log')
-    service_dependencies = ''
+    service_dependencies = 'WAPTPostgresql'
     install_windows_nssm_service('WAPTServer',service_binary,service_parameters,service_logfile,service_dependencies)
 
 if __name__ == '__main__':
