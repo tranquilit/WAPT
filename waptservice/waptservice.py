@@ -244,6 +244,7 @@ class WaptServiceConfig(object):
         self.websockets_retry_delay = 60
         self.websockets_check_config_interval = 120
         self.websockets_hurry_interval = 1
+        self.websockets_root = 'socket.io'
 
         # tolerance time replay limit for signed actions from server
         self.signature_clockskew = 5*60
@@ -350,6 +351,11 @@ class WaptServiceConfig(object):
                         self.websockets_port = waptserver_url.port
                         self.websockets_host = waptserver_url.hostname
                         self.websockets_proto = 'http'
+
+                    if waptserver_url.path in ('','/'):
+                        self.websockets_root = 'socket.io'
+                    else:
+                        self.websockets_root = '%s/socket.io' % waptserver_url.path[1:]
                 else:
                     self.waptserver = None
                     self.websockets_host = None
@@ -2471,6 +2477,7 @@ class WaptSocketIOClient(threading.Thread):
                                 host="%s://%s" % (self.config.websockets_proto,self.config.websockets_host),
                                 port=self.config.websockets_port,
                                 Namespace = WaptSocketIORemoteCalls,
+                                resource=self.config.websockets_root,
                                 verify=self.config.websockets_verify_cert,
                                 wait_for_connection = False,
                                 transport = ['websocket'],
