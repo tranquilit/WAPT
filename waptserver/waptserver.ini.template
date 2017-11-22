@@ -1,7 +1,7 @@
 [options]
 db_name=wapt
 #db_host=
-#db_user=
+db_user=wapt
 #db_password=
 
 wapt_user=admin
