@@ -4,7 +4,8 @@
 #define default_wapt_server ""
 #define repo_url ""
 #define wapt_server ""
-#define AppName "WAPT"
+#define AppName "WAPTSetup"
+#define AppId "WAPT"
 #define output_dir "."
 #define Company "Tranquil IT Systems"
 #define send_usage_report 0
