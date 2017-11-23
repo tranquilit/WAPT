@@ -54,11 +54,11 @@ FileName=C:\tranquilit\wapt\waptdevutils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node7]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-get.ini
+FileName=C:\tranquilit\wapt\wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node8]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-get.py
+FileName=C:\tranquilit\wapt\wapt-get.ini
 
 [Project\ChildNodes\Node0\ChildNodes\Node9]
 ClassName=TProjectFileNode
@@ -1554,8 +1554,29 @@ WorkingDirectory=$[ActiveScript-Dir]
 ShortCut=0
 MessagesFormat=$[FileName] $[LineNumber]
 
+[Project\ChildNodes\Node1\ChildNodes\Node62]
+ClassName=TProjectRunConfiguationNode
+Name=Untitled
+
+[Project\ChildNodes\Node1\ChildNodes\Node62\RunConfig]
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node62\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
+
 [Project\ChildNodes\Node1\ChildNodes]
-Count=62
+Count=63
 
 [Project\ChildNodes]
 Count=2

@@ -3272,7 +3272,7 @@ class Wapt(object):
                 raise EWaptUnavailablePackage('Missing dependencies: %s' % (','.join(missing_depends,)))
 
             if installed_conflicts:
-                raise EWaptConflictingPackages('Conflicting packages installed: %s' % (','.join(installed_conflicts,)))
+                raise EWaptConflictingPackage('Conflicting packages installed: %s' % (','.join(installed_conflicts,)))
 
             # check if there is enough space for final install
             # TODO : space for the temporary unzip ?

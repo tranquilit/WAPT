@@ -126,7 +126,7 @@ def main():
             pe = PackageEntry(waptfile = waptpackage)
             if options.removesetup:
                 if pe.has_file('setup.py'):
-                    with pe.as_zipfile(mode,'a') as waptfile:
+                    with pe.as_zipfile(mode='a') as waptfile:
                         waptfile.remove('setup.py')
                     sign_needed=True
 

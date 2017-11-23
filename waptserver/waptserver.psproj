@@ -89,14 +89,18 @@ FileName=$[Project-Path]waptserver_winsetup.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node14]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptutils.py
+FileName=C:\tranquilit\wapt\wapt-signpackages.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node15]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptutils.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node16]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]wsus.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=16
+Count=17
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
