@@ -59,33 +59,46 @@ import codecs
 import datetime
 import os
 
+from optparse import OptionParser
+
 import waptserver_config
 
 # You must be sure your database is an instance of PostgresqlExtDatabase in order to use the JSONField.
-server_config = waptserver_config.load_config()
 
 import logging
 logger = logging.getLogger()
 
-logger.debug('DB connection pool : %s' % server_config['db_max_connections'])
-wapt_db = PooledPostgresqlExtDatabase(
-    database=server_config['db_name'],
-    host=server_config['db_host'],
-    user=server_config['db_user'],
-    password=server_config['db_password'],
-    max_connections=server_config['db_max_connections'],
-    stale_timeout=server_config['db_stale_timeout'])
+wapt_db = Proxy()
 
+def load_db_config(server_config):
+    """Initialise db proxy with parameters from inifile
+
+    Args:
+        serverconfig (dict): dict of server parameters as returned by waptserver_config.load_config(ainifilename)
+
+    Returns
+        configured db : db which has been put in wapt_db proxy
+    """
+    global wapt_db
+    logger.debug('Initilizing a DB connection pool for db host:%s db_name:%s. Size:%s' %
+        (server_config['db_host'],server_config['db_name'],server_config['db_max_connections']))
+    pgdb = PooledPostgresqlExtDatabase(
+        database=server_config['db_name'],
+        host=server_config['db_host'],
+        user=server_config['db_user'],
+        password=server_config['db_password'],
+        max_connections=server_config['db_max_connections'],
+        stale_timeout=server_config['db_stale_timeout'])
+    wapt_db.initialize(pgdb)
+    return pgdb
 
 class BaseModel(SignaledModel):
-
     """A base model that will use our Postgresql database"""
     class Meta:
         database = wapt_db
 
 
 class ServerAttribs(BaseModel):
-
     """key/value registry"""
     key = CharField(primary_key=True, null=False, index=True)
     value = BinaryJSONField(null=True)
@@ -111,9 +124,7 @@ class ServerAttribs(BaseModel):
             except IntegrityError:
                 cls.update(value=value).where(cls.key == key).execute()
 
-
 class Hosts(BaseModel):
-
     """
     Inventory informations of a host
     """
@@ -715,21 +726,49 @@ if __name__ == '__main__':
                            upgrade2postgres"""
         sys.exit(1)
 
-    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
-    setloglevel(logger, server_config['loglevel'])
+    usage = """\
+    %prog [-c configfile] [action]
 
-    if len(sys.argv) > 1:
-        print sys.argv[1]
-        if sys.argv[1] == 'init_db':
+    WAPT Server database reset / init / upgrade.
+
+    action is either :
+       init_db: initialize or upgrade an existing DB without dropping data
+       reset_db: initiliaze or recreate an empty database dropping the data.
+    """
+    parser = OptionParser(usage=usage, version='waptserver_model.py ' + __version__)
+    parser.add_option(
+        '-c',
+        '--config',
+        dest='configfile',
+        default=DEFAULT_CONFIG_FILE,
+        help='Config file full path (default: %default)')
+    parser.add_option('-l','--loglevel',dest='loglevel',default=None,type='choice',
+            choices=['debug',   'warning','info','error','critical'],
+            metavar='LOGLEVEL',help='Loglevel (default: warning)')
+    parser.add_option('-d','--devel',dest='devel',default=False,action='store_true',
+            help='Enable debug mode (for development only)')
+
+
+    (options, args) = parser.parse_args()
+    conf = waptserver_config.load_config(options.configfile)
+    load_db_config(conf)
+
+    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+
+    if options.loglevel is not None:
+        setloglevel(logger, options.loglevel)
+    else:
+        setloglevel(logger, conf['loglevel'])
+
+    if len(args) == 1:
+        action = args[0]
+        if action == 'init_db':
             print ('initializing missing wapt tables without dropping data.')
             init_db(False)
             sys.exit(0)
-        if sys.argv[1] == 'reset_db':
+        elif action == 'reset_db':
             print ('Drop existing tables and recreate wapt tables.')
             init_db(True)
             sys.exit(0)
     else:
-        print ("""usage :
-                python waptserver_model.py init_db
-                python waptserver_model.py reset_db
-                """)
+        parser.print_usage()

@@ -69,11 +69,9 @@ _defaults = {
     'application_root':'',
 }
 
-_default_config_file = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
+DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
 
-
-def load_config(cfgfile=_default_config_file):
-
+def load_config(cfgfile=DEFAULT_CONFIG_FILE):
     conf = _defaults.copy()
 
     # read configuration from waptserver.ini

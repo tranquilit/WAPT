@@ -58,6 +58,7 @@ from playhouse.postgres_ext import *
 from waptserver_model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups
 from waptserver_model import get_db_version, init_db, wapt_db, model_to_dict, dict_to_model, update_host_data
 from waptserver_model import upgrade_db_structure
+from waptserver_model import load_db_config
 
 from werkzeug.utils import secure_filename
 import functools
@@ -118,8 +119,6 @@ except Exception:
     pass
 
 ALLOWED_EXTENSIONS = set(['wapt'])
-DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
-config_file = DEFAULT_CONFIG_FILE
 
 # allow chunked uploads when no nginx reverse proxy server server (see https://github.com/pallets/flask/issues/367)
 class FlaskApp(Flask):
@@ -130,13 +129,8 @@ class FlaskApp(Flask):
 
 
 app = FlaskApp(__name__, static_folder='./templates/static')
-app.config['CONFIG_FILE'] = config_file
-
 babel = Babel(app)
 
-conf = waptserver_config.load_config(config_file)
-app.config['SECRET_KEY'] = conf.get('secret_key')
-app.config['APPLICATION_ROOT'] = conf.get('application_root','')
 
 # chain SocketIO server
 socketio = SocketIO(app, logger = logger)
@@ -147,8 +141,6 @@ try:
 except Exception as e:
     logger.info(str(e))
     wsus = False
-
-
 
 def get_wapt_exe_version(exe):
     present = False
@@ -219,25 +211,25 @@ def check_auth(username, password):
     user_ok = False
     pass_sha1_ok = pbkdf2_sha256_ok = pass_sha512_ok = pass_sha512_crypt_ok = pass_bcrypt_crypt_ok = False
 
-    user_ok = conf['wapt_user'] == username
+    user_ok = app.conf['wapt_user'] == username
 
-    pass_sha1_ok = conf['wapt_password'] == hashlib.sha1(
+    pass_sha1_ok = app.conf['wapt_password'] == hashlib.sha1(
         password.encode('utf8')).hexdigest()
-    pass_sha512_ok = conf['wapt_password'] == hashlib.sha512(
+    pass_sha512_ok = app.conf['wapt_password'] == hashlib.sha512(
         password.encode('utf8')).hexdigest()
 
-    if '$pbkdf2-sha256$' in conf['wapt_password']:
-        pbkdf2_sha256_ok = pbkdf2_sha256.verify(password, conf['wapt_password'])
-    elif sha512_crypt.identify(conf['wapt_password']):
+    if '$pbkdf2-sha256$' in app.conf['wapt_password']:
+        pbkdf2_sha256_ok = pbkdf2_sha256.verify(password, app.conf['wapt_password'])
+    elif sha512_crypt.identify(app.conf['wapt_password']):
         pass_sha512_crypt_ok = sha512_crypt.verify(
             password,
-            conf['wapt_password'])
+            app.conf['wapt_password'])
     else:
         try:
-            if bcrypt.identify(conf['wapt_password']):
+            if bcrypt.identify(app.conf['wapt_password']):
                 pass_bcrypt_crypt_ok = bcrypt.verify(
                     password,
-                    conf['wapt_password'])
+                    app.conf['wapt_password'])
         except Exception:
             pass
 
@@ -274,15 +266,15 @@ def get_timezone():
 
 def get_server_uuid():
     """Create and/or returns this server UUID"""
-    server_uuid = conf.get('server_uuid', None)
+    server_uuid = app.conf.get('server_uuid', None)
     return server_uuid
 
 
 @app.route('/')
 def index():
-    waptagent = os.path.join(conf['wapt_folder'], 'waptagent.exe')
-    waptsetup = os.path.join(conf['wapt_folder'], 'waptsetup-tis.exe')
-    waptdeploy = os.path.join(conf['wapt_folder'], 'waptdeploy.exe')
+    waptagent = os.path.join(app.conf['wapt_folder'], 'waptagent.exe')
+    waptsetup = os.path.join(app.conf['wapt_folder'], 'waptsetup-tis.exe')
+    waptdeploy = os.path.join(app.conf['wapt_folder'], 'waptdeploy.exe')
 
     agent_status = setup_status = deploy_status = db_status = 'N/A'
     agent_style = setup_style = deploy_style = disk_space_style = 'style="color: red;"'
@@ -320,7 +312,7 @@ def index():
         db_status = 'ERROR'
 
     try:
-        space = get_disk_space(conf['wapt_folder'])
+        space = get_disk_space(app.conf['wapt_folder'])
         if not space:
             raise Exception('Disk info not found')
         percent_free = (space[0] * 100) / space[1]
@@ -371,7 +363,7 @@ def register_host():
             signature = signature_b64.decode('base64')
         else:
             signature = None
-        if not signature and not conf['allow_unsigned_status_data']:
+        if not signature and not app.conf['allow_unsigned_status_data']:
             raise Exception('register_host: Missing signature')
         signer = request.headers.get('X-Signer', None)
 
@@ -385,7 +377,7 @@ def register_host():
 
         # with nginx kerberos module, auth user name is stored as Basic auth in the
         # 'Authorisation' header with password 'bogus_auth_gss_passwd'
-        if conf['use_kerberos']:
+        if app.conf['use_kerberos']:
             authenticated_user = request.headers.get('Authorization', None)
             if authenticated_user:
                 if authenticated_user.startswith('Basic'):
@@ -408,14 +400,14 @@ def register_host():
                     host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
                     if host_cert.verify_content(sha256_for_data(raw_data), signature):
                         authenticated_user = computer_fqdn
-                    elif conf['allow_unauthenticated_registration']:
+                    elif app.conf['allow_unauthenticated_registration']:
                         logger.warning('Unauthenticated registration for %s' % computer_fqdn)
                         authenticated_user = computer_fqdn #request.headers.get('X-Forwarded-For',None)
                         registration_auth_user = 'None:%s' % request.headers.get('X-Forwarded-For',None)
                     else:
                         # use basic auth
                         return authenticate()
-                elif conf['allow_unauthenticated_registration']:
+                elif app.conf['allow_unauthenticated_registration']:
                     logger.warning('Unauthenticated registration for %s' % computer_fqdn)
                     authenticated_user = computer_fqdn #request.headers.get('X-Forwarded-For',None)
                     registration_auth_user = 'None:%s' % request.headers.get('X-Forwarded-For',None)
@@ -499,7 +491,7 @@ def update_host():
         else:
             signature = None
 
-        if not signature and not conf['allow_unsigned_status_data']:
+        if not signature and not app.conf['allow_unsigned_status_data']:
             raise Exception('register_host: Missing signature')
         signer = request.headers.get('X-Signer', None)
 
@@ -520,7 +512,7 @@ def update_host():
                 host_dn = host_cert.verify_content(sha256_for_data(raw_data), signature)
             except Exception as e:
                 # for pre 1.5 wapt clients
-                if conf['allow_unsigned_status_data']:
+                if app.conf['allow_unsigned_status_data']:
                     logger.debug('Error %s , trying sha1' % e)
                     host_dn = host_cert.verify_content(sha1_for_data(raw_data), signature, md='sha1')
                 else:
@@ -528,7 +520,7 @@ def update_host():
             logger.info('Data successfully checked with certificate CN %s for %s' % (host_dn, uuid))
             if existing_host and host_dn != existing_host.computer_fqdn:
                 raise Exception('update_host: mismatch between host certificate DN %s and existing host hostname %s' % (host_dn,existing_host.computer_fqdn))
-        elif conf['allow_unsigned_status_data']:
+        elif app.conf['allow_unsigned_status_data']:
             logger.warning('No signature for supplied data for %s,%s upgrade the wapt client.' % (uuid,computer_fqdn))
         else:
             raise Exception('update_host: Invalid request')
@@ -587,7 +579,7 @@ def upload_package(filename=''):
         tmp_target = ''
         if request.method == 'POST':
             if filename and allowed_file(filename):
-                tmp_target = os.path.join(conf['wapt_folder'], secure_filename(filename + '.tmp'))
+                tmp_target = os.path.join(app.conf['wapt_folder'], secure_filename(filename + '.tmp'))
                 with open(tmp_target, 'wb') as f:
                     data = request.stream.read(65535)
                     try:
@@ -602,11 +594,11 @@ def upload_package(filename=''):
                     result = dict(status='ERROR', message=_('Problem during upload'))
                 else:
                     if PackageEntry().load_control_from_wapt(tmp_target):
-                        target = os.path.join(conf['wapt_folder'], secure_filename(filename))
+                        target = os.path.join(app.conf['wapt_folder'], secure_filename(filename))
                         if os.path.isfile(target):
                             os.unlink(target)
                         os.rename(tmp_target, target)
-                        data = update_packages(conf['wapt_folder'])
+                        data = update_packages(app.conf['wapt_folder'])
                         result = dict(status='OK', message='%s uploaded, %i packages analysed' % (filename, len(data['processed'])), result=data)
                     else:
                         result = dict(status='ERROR', message=_('Not a valid wapt package'))
@@ -645,7 +637,7 @@ def upload_packages():
     def read_package(packagefile):
         target = None
         try:
-            wapt_folder = conf['wapt_folder']
+            wapt_folder = app.conf['wapt_folder']
             tmp_target = tempfile.mktemp(dir=wapt_folder,prefix='wapt')
             packagefile.save(tmp_target)
             # test if package is OK.
@@ -717,7 +709,7 @@ def upload_packages():
 
         if [e for e in done if e.section != 'host']:
             logger.debug('Update package index')
-            packages_index_result = update_packages(conf['wapt_folder'])
+            packages_index_result = update_packages(app.conf['wapt_folder'])
             if packages_index_result['errors']:
                 errors_msg.extend(packages_index_result['errors'])
         else:
@@ -749,15 +741,15 @@ def upload_host():
             logger.debug('uploading host file : %s' % fkey)
             if hostpackagefile and allowed_file(hostpackagefile.filename):
                 filename = secure_filename(hostpackagefile.filename)
-                wapt_host_folder = os.path.join(conf['wapt_folder'] + '-host')
+                wapt_host_folder = os.path.join(app.conf['wapt_folder'] + '-host')
                 target = os.path.join(wapt_host_folder, filename)
                 tmp_target = tempfile.mktemp(dir=wapt_host_folder,prefix='wapt')
                 with wapt_db.atomic():
                     try:
 
                         # if encrypted host packages, store the clear copy in a protected area for further edit...
-                        if conf['encrypt_host_packages']:
-                            ref_target = os.path.join(conf['wapt_folder'] + '-hostref', filename)
+                        if app.conf['encrypt_host_packages']:
+                            ref_target = os.path.join(app.conf['wapt_folder'] + '-hostref', filename)
                             hostpackagefile.save(ref_target)
                             entry = PackageEntry(waptfile=ref_target)
                         else:
@@ -768,7 +760,7 @@ def upload_host():
                         sync_host_groups(entry)
 
                         # get host cert to encrypt package with public key
-                        if conf['encrypt_host_packages']:
+                        if app.conf['encrypt_host_packages']:
                             host = Hosts.select(Hosts.uuid, Hosts.computer_fqdn, Hosts.host_certificate) \
                                 .where((Hosts.uuid == host_id) | (Hosts.computer_fqdn == host_id)) \
                                 .dicts().first()
@@ -813,8 +805,8 @@ def upload_host():
 @app.route('/upload_waptsetup', methods=['POST'])
 @requires_auth
 def upload_waptsetup():
-    waptagent = os.path.join(conf['wapt_folder'], 'waptagent.exe')
-    waptsetup = os.path.join(conf['wapt_folder'], 'waptsetup-tis.exe')
+    waptagent = os.path.join(app.conf['wapt_folder'], 'waptagent.exe')
+    waptsetup = os.path.join(app.conf['wapt_folder'], 'waptsetup-tis.exe')
 
     logger.debug('Entering upload_waptsetup')
     tmp_target = None
@@ -823,8 +815,8 @@ def upload_waptsetup():
             file = request.files['file']
             if file and 'waptagent.exe' in file.filename:
                 filename = secure_filename(file.filename)
-                tmp_target = os.path.join(conf['wapt_folder'], secure_filename('.' + filename))
-                target = os.path.join(conf['wapt_folder'], secure_filename(filename))
+                tmp_target = os.path.join(app.conf['wapt_folder'], secure_filename('.' + filename))
+                target = os.path.join(app.conf['wapt_folder'], secure_filename(filename))
                 file.save(tmp_target)
                 if not os.path.isfile(tmp_target):
                     result = dict(status='ERROR', message=_('Problem during upload'))
@@ -890,11 +882,11 @@ def change_passsword():
             if check_auth(post_data['user'], post_data['password']):
                 # change master password
                 if 'new_password' in post_data and post_data['user'] == 'admin':
-                    if len(post_data['new_password']) < conf.get('min_password_length',10):
-                        raise EWaptForbiddden('The password must be at least %s characters' % conf.get('min_password_length',10))
+                    if len(post_data['new_password']) < app.conf.get('min_password_length',10):
+                        raise EWaptForbiddden('The password must be at least %s characters' % app.onf.get('min_password_length',10))
                     new_hash = pbkdf2_sha256.hash(post_data['new_password'].encode('utf8'))
                     rewrite_config_item(config_file, 'options', 'wapt_password', new_hash)
-                    conf['wapt_password'] = new_hash
+                    app.conf['wapt_password'] = new_hash
                     reload_config()
                     msg = 'Password for %s updated successfully' % post_data['user']
                 else:
@@ -958,14 +950,14 @@ def allowed_file(filename):
 @app.route('/delete_package/<string:filename>')
 @requires_auth
 def delete_package(filename=''):
-    fullpath = os.path.join(conf['wapt_folder'], filename)
+    fullpath = os.path.join(app.conf['wapt_folder'], filename)
     try:
         if os.path.isfile(fullpath):
             os.unlink(fullpath)
-            data = update_packages(conf['wapt_folder'])
+            data = update_packages(app.conf['wapt_folder'])
             result = dict(status='OK', message='Package deleted %s' % (fullpath,), result=data)
         else:
-            result = dict(status='ERROR', message="The file %s doesn't exist in wapt folder (%s)" % (filename, conf['wapt_folder']))
+            result = dict(status='ERROR', message="The file %s doesn't exist in wapt folder (%s)" % (filename, app.conf['wapt_folder']))
 
     except Exception as e:
         result = {'status': 'ERROR', 'message': u'%s' % e}
@@ -984,7 +976,7 @@ def packages_delete():
 
     for filename in filenames:
         try:
-            package_path = os.path.join(conf['wapt_folder'], secure_filename(filename))
+            package_path = os.path.join(app.conf['wapt_folder'], secure_filename(filename))
             if os.path.isfile(package_path):
                 os.unlink(package_path)
                 deleted.append(filename)
@@ -993,7 +985,7 @@ def packages_delete():
         except Exception as e:
             errors.append(filename)
 
-    result = update_packages(conf['wapt_folder'])
+    result = update_packages(app.conf['wapt_folder'])
     msg = ['%s packages deleted' % len(deleted)]
     if errors:
         msg.append('ERROR : %s packages could not be deleted' % len(errors))
@@ -1002,7 +994,7 @@ def packages_delete():
 @app.route('/wapt/')
 def wapt_listing():
     return render_template(
-        'listing.html', dir_listing=os.listdir(conf['wapt_folder']))
+        'listing.html', dir_listing=os.listdir(app.conf['wapt_folder']))
 
 
 @app.route('/waptwua/')
@@ -1014,10 +1006,10 @@ def waptwua():
 @app.route('/wapt/<string:input_package_name>')
 def get_wapt_package(input_package_name):
     package_name = secure_filename(input_package_name)
-    r = send_from_directory(conf['wapt_folder'], package_name)
+    r = send_from_directory(app.conf['wapt_folder'], package_name)
     if 'content-length' not in r.headers:
         r.headers.add_header(
-            'content-length', int(os.path.getsize(os.path.join(conf['wapt_folder'], package_name))))
+            'content-length', int(os.path.getsize(os.path.join(app.conf['wapt_folder'], package_name))))
     return r
 
 
@@ -1025,7 +1017,7 @@ def get_wapt_package(input_package_name):
 def serve_icons(iconfilename):
     """Serves a png icon file from /wapt/icons/ test waptserver"""
     iconfilename = secure_filename(iconfilename)
-    icons_folder = os.path.join(conf['wapt_folder'], 'icons')
+    icons_folder = os.path.join(app.conf['wapt_folder'], 'icons')
     r = send_from_directory(icons_folder, iconfilename)
     if 'content-length' not in r.headers:
         r.headers.add_header(
@@ -1053,7 +1045,7 @@ def serve_static(fn):
 def get_host_package(input_package_name):
     """Returns a host package (in case there is no apache static files server)"""
     # TODO straighten this -host stuff
-    host_folder = conf['wapt_folder'] + '-host'
+    host_folder = app.conf['wapt_folder'] + '-host'
     package_name = secure_filename(input_package_name)
     r = send_from_directory(host_folder, package_name)
     if 'Content-Length' not in r.headers:
@@ -1066,7 +1058,7 @@ def get_host_package(input_package_name):
 def get_group_package(input_package_name):
     """Returns a group package (in case there is no apache static files server)"""
     # TODO straighten this -group stuff
-    group_folder = conf['wapt_folder'] + '-group'
+    group_folder = app.conf['wapt_folder'] + '-group'
     package_name = secure_filename(input_package_name)
     r = send_from_directory(group_folder, package_name)
     # on line content-length is not added to the header.
@@ -1145,7 +1137,7 @@ def proxy_host_request(request, action):
 
         uuids = ensure_list(all_args['uuid'])
         del(all_args['uuid'])
-        timeout = float(request.args.get('timeout', conf.get('clients_read_timeout', 5)))
+        timeout = float(request.args.get('timeout', app.conf.get('clients_read_timeout', 5)))
 
         result = dict(success=[], errors=[])
         tasks = []
@@ -1313,7 +1305,7 @@ def trigger_waptwua_install():
 def waptagent_version():
     try:
         start = time.time()
-        waptagent = os.path.join(conf['wapt_folder'], 'waptagent.exe')
+        waptagent = os.path.join(app.conf['wapt_folder'], 'waptagent.exe')
         agent_present, agent_version = get_wapt_exe_version(waptagent)
         waptagent_timestamp = None
         agent_sha256 = None
@@ -1323,7 +1315,7 @@ def waptagent_version():
                 datetime.datetime.fromtimestamp(
                     os.path.getmtime(waptagent)))
 
-        waptsetup = os.path.join(conf['wapt_folder'], 'waptsetup-tis.exe')
+        waptsetup = os.path.join(app.conf['wapt_folder'], 'waptsetup-tis.exe')
         setup_present, setup_version = get_wapt_exe_version(waptsetup)
         waptsetup_timestamp = None
         if setup_present and setup_version is not None:
@@ -1369,7 +1361,7 @@ def get_groups():
     """List of packages having section == group
     """
     try:
-        packages = WaptLocalRepo(conf['wapt_folder'])
+        packages = WaptLocalRepo(app.conf['wapt_folder'])
         groups = [p.as_dict()
                   for p in packages.packages if p.section == 'group']
         msg = '{} Packages for section group'.format(len(groups))
@@ -1501,8 +1493,8 @@ def hosts_delete():
                     dict(
                         uuid=host.uuid,
                         computer_fqdn=host.computer_fqdn))
-                uuid_hostpackage = os.path.join(conf['wapt_folder'] + '-host',host.uuid+'.wapt')
-                fqdn_hostpackage = os.path.join(conf['wapt_folder'] + '-host',host.computer_fqdn+'.wapt')
+                uuid_hostpackage = os.path.join(app.conf['wapt_folder'] + '-host',host.uuid+'.wapt')
+                fqdn_hostpackage = os.path.join(app.conf['wapt_folder'] + '-host',host.computer_fqdn+'.wapt')
 
                 if os.path.isfile(uuid_hostpackage):
                     logger.debug('Trying to remove %s' % uuid_hostpackage)
@@ -1801,7 +1793,7 @@ def usage_statistics():
         pass
 
     result = dict(
-        uuid=conf['server_uuid'],
+        uuid=app.conf['server_uuid'],
         platform=platform.system(),
         architecture=platform.architecture(),
         version=__version__,
@@ -1817,7 +1809,7 @@ def host_tasks_status():
     """Proxy the get tasks status action to the client"""
     try:
         uuid = request.args['uuid']
-        timeout = float(request.args.get('timeout', conf['client_tasks_timeout']))
+        timeout = float(request.args.get('timeout', app.conf['client_tasks_timeout']))
         start_time = time.time()
         host_data = Hosts\
             .select(Hosts.uuid, Hosts.computer_fqdn, Hosts.wapt_status,
@@ -1862,7 +1854,7 @@ def host_tasks_status():
 def trigger_host_action():
     """Proxy some single shot actions to the client using websockets"""
     try:
-        timeout = float(request.args.get('timeout', conf['client_tasks_timeout']))
+        timeout = float(request.args.get('timeout', app.conf['client_tasks_timeout']))
         action_data = request.get_json()
         if action_data:
             if isinstance(action_data, list):
@@ -1974,7 +1966,7 @@ def on_waptclient_connect():
 
         if host_cert and host_cert.host_certificate:
             host_certificate = SSLCertificate(crt_string=host_cert.host_certificate)
-            host_cert_issuer = host_certificate.verify_claim(json.loads(request.args['login']), max_age_secs=conf['signature_clockskew'],required_attributes=['uuid'])
+            host_cert_issuer = host_certificate.verify_claim(json.loads(request.args['login']), max_age_secs=app.conf['signature_clockskew'],required_attributes=['uuid'])
             logger.debug(u'Socket IO %s connect checked. issuer : %s' % ( request.sid,host_cert_issuer))
             pass
         else:
@@ -2081,7 +2073,7 @@ if __name__ == '__main__':
         '-c',
         '--config',
         dest='configfile',
-        default=DEFAULT_CONFIG_FILE,
+        default=waptserver_config.DEFAULT_CONFIG_FILE,
         help='Config file full path (default: %default)')
     parser.add_option('-l','--loglevel',dest='loglevel',default=None,type='choice',
             choices=['debug',   'warning','info','error','critical'],
@@ -2091,16 +2083,21 @@ if __name__ == '__main__':
 
     (options, args) = parser.parse_args()
     app.config['CONFIG_FILE'] = options.configfile
+    app.conf = waptserver_config.load_config(options.configfile)
+    app.config['SECRET_KEY'] = app.conf.get('secret_key')
+    app.config['APPLICATION_ROOT'] = app.conf.get('application_root','')
+
+    load_db_config(app.conf)
 
     utils_set_devel_mode(options.devel)
 
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
-    setloglevel(logger, conf['loglevel'])
+    setloglevel(logger, app.conf['loglevel'])
 
     if options.loglevel is not None:
         setloglevel(logger, options.loglevel)
     else:
-        setloglevel(logger, conf['loglevel'])
+        setloglevel(logger, app.conf['loglevel'])
 
     log_directory = os.path.join(wapt_root_dir, 'log')
     if not os.path.exists(log_directory):
@@ -2120,10 +2117,10 @@ if __name__ == '__main__':
         logger.addHandler(hdlr)
 
     # check wapt directories
-    if not os.path.exists(conf['wapt_folder']):
-        raise Exception('Folder missing : %s.' % conf['wapt_folder'])
-    if not os.path.exists(conf['wapt_folder'] + '-host'):
-        raise Exception('Folder missing : %s-host.' % conf['wapt_folder'])
+    if not os.path.exists(app.conf['wapt_folder']):
+        raise Exception('Folder missing : %s.' % app.conf['wapt_folder'])
+    if not os.path.exists(app.conf['wapt_folder'] + '-host'):
+        raise Exception('Folder missing : %s-host.' % app.conf['wapt_folder'])
 
     if args and args[0] == 'doctest':
         import doctest
@@ -2136,7 +2133,7 @@ if __name__ == '__main__':
         # sys.exit(0)
 
     logger.info('Waptserver starting...')
-    port = conf['waptserver_port']
+    port = app.conf['waptserver_port']
     while True:
         try:
             logger.info('Reset connections SID for former hosts on this server')
@@ -2159,7 +2156,7 @@ if __name__ == '__main__':
         wapt_db.close()
 
     if options.devel:
-        socketio.run(app, host='0.0.0.0', port=port, debug=options.devel, use_reloader=options.devel, max_size=conf['max_clients'])
+        socketio.run(app, host='0.0.0.0', port=port, debug=options.devel, use_reloader=options.devel, max_size=app.conf['max_clients'])
     else:
-        socketio.run(app, host='127.0.0.1', port=port, debug=options.devel, use_reloader=options.devel, max_size=conf['max_clients'])
+        socketio.run(app, host='127.0.0.1', port=port, debug=options.devel, use_reloader=options.devel, max_size=app.conf['max_clients'])
     logger.info('Waptserver stopped')
