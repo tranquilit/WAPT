@@ -80,7 +80,7 @@ def load_db_config(server_config):
         configured db : db which has been put in wapt_db proxy
     """
     global wapt_db
-    logger.debug('Initilizing a DB connection pool for db host:%s db_name:%s. Size:%s' %
+    logger.info('Initializing a DB connection pool for db host:%s db_name:%s. Size:%s' %
         (server_config['db_host'],server_config['db_name'],server_config['db_max_connections']))
     pgdb = PooledPostgresqlExtDatabase(
         database=server_config['db_name'],

@@ -131,6 +131,7 @@ class FlaskApp(Flask):
 app = FlaskApp(__name__, static_folder='./templates/static')
 babel = Babel(app)
 
+logger = logging.getLogger()
 
 # chain SocketIO server
 socketio = SocketIO(app, logger = logger)
