@@ -524,7 +524,7 @@ begin
       ProgressStep(3,10);
       if FileExists(WaptBaseDir+'\ssl\tranquilit.crt') then
         FileUtil.DeleteFileUTF8(WaptBaseDir+'\ssl\tranquilit.crt');
-      Fileutil.CopyFile(CrtFilename,WaptBaseDir+'\ssl\'+ExtractFileNameOnly(CrtFilename),True);
+      Fileutil.CopyFile(CrtFilename,WaptBaseDir+'\ssl\'+ExtractFileNameOnly(CrtFilename)+'.crt',True);
 
       ProgressTitle(rsSettingServerPassword);
       ProgressStep(4,10);
