@@ -66,6 +66,7 @@ _defaults = {
     'min_password_length':10,
     'allow_unauthenticated_registration':False,
     'signature_clockskew':5*60,
+    'application_root':'',
 }
 
 _default_config_file = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
@@ -164,5 +165,8 @@ def load_config(cfgfile=_default_config_file):
 
     if _config.has_option('options', 'signature_clockskew'):
         conf[param] = _config.getint('options', 'signature_clockskew')
+
+    if _config.has_option('options', 'application_root'):
+        conf['application_root'] = _config.get('options', 'application_root')
 
     return conf

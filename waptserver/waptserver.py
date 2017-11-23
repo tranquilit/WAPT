@@ -136,6 +136,7 @@ babel = Babel(app)
 
 conf = waptserver_config.load_config(config_file)
 app.config['SECRET_KEY'] = conf.get('secret_key')
+app.config['APPLICATION_ROOT'] = conf.get('application_root','')
 
 # chain SocketIO server
 socketio = SocketIO(app, logger = logger)
@@ -339,7 +340,6 @@ def index():
             'disk_space': {'status': disk_space_str, 'style': disk_space_style},
         }
     }
-
     return render_template('index.html', data=data)
 
 
