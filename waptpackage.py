@@ -1155,7 +1155,9 @@ class PackageEntry(object):
         start_time = time.time()
         package_fn = self.localpath
         logger.debug('Signing %s with key %s, and certificate CN "%s"' % (package_fn,private_key,certificate.cn))
-        # sign the control (only with sha256)
+        # sign the control (one md only, so take default if many)
+        if len(mds) == 1:
+            self._default_md = mds[0]
         self._sign_control(certificate=certificate,private_key=private_key)
 
         # control file is appended to manifest file separately.
