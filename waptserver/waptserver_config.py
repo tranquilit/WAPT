@@ -35,7 +35,6 @@ sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 
 import ConfigParser
 import tempfile
-import logging
 
 
 _defaults = {
@@ -99,15 +98,13 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
         secret_key = _config.get('options', 'secret_key')
         if secret_key is None or len(secret_key) < 32:
             msg = 'incorrect secret_key value %s in waptserver.ini, please run postconf.py again (missing or too short)' % secret_key
-            logger.error(msg)
             raise Exception(msg)
         conf['secret_key'] = secret_key
 
     if _config.has_option('options', 'server_uuid'):
         server_uuid = _config.get('options', 'server_uuid')
-        if server_uuid is None or len(server_uuid) != 36:
-            msg = 'incorrect server_uuid value %s in waptserver.ini, please run postconf.py again (missing or len!=36)' % server_uuid
-            logger.error(msg)
+        if server_uuid is None or len(server_uuid) < 10:
+            msg = 'incorrect server_uuid value %s in waptserver.ini, please run postconf.py again (missing or too short)' % server_uuid
             raise Exception(msg)
         conf['server_uuid'] = server_uuid
 
