@@ -740,7 +740,7 @@ if __name__ == '__main__':
         '-c',
         '--config',
         dest='configfile',
-        default=DEFAULT_CONFIG_FILE,
+        default=waptserver_config.DEFAULT_CONFIG_FILE,
         help='Config file full path (default: %default)')
     parser.add_option('-l','--loglevel',dest='loglevel',default=None,type='choice',
             choices=['debug',   'warning','info','error','critical'],
