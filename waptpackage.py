@@ -51,7 +51,9 @@ __all__ = [
     'EWaptBadTargetOS',
     'EWaptNotAPackage',
     'EWaptDownloadError',
-]
+    'EWaptConflictingPackage',
+    'EWaptUnavailablePackage',
+    ]
 
 import os
 import custom_zip as zipfile
@@ -191,6 +193,9 @@ class EWaptInstallPostponed(EWaptInstallError):
         self.grace_delay = grace_delay
 
 class EWaptUnavailablePackage(EWaptInstallError):
+    pass
+
+class EWaptConflictingPackage(EWaptInstallError):
     pass
 
 class EWaptRemoveError(Exception):

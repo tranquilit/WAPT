@@ -3007,59 +3007,36 @@ class Wapt(object):
         return install status"""
         install_id = None
         old_hdlr = None
-        old_stdout = None
-        old_stderr = None
-
-        self.check_cancelled(u'Install of %s cancelled before starting up'%ensure_unicode(fname))
-        logger.info(u"Register start of install %s as user %s to local DB with params %s" % (ensure_unicode(fname), setuphelpers.get_current_user(), params_dict))
-        logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
-
-        status = 'INIT'
-        if not self.cabundle:
-            raise EWaptMissingCertificate(u'install_wapt %s: No public Key provided for package signature checking.'%(fname,))
-        previous_uninstall = self.registry_uninstall_snapshot()
-        entry = PackageEntry()
-        entry.load_control_from_wapt(fname)
-
-        if entry.min_wapt_version and Version(entry.min_wapt_version)>Version(setuphelpers.__version__):
-            raise EWaptNeedsNewerAgent('This package requires a newer Wapt agent. Minimum version: %s' % entry.min_wapt_version)
-
-        # check if there is enough space for final install
-        # TODO : space for the temporary unzip ?
-        free_disk_space = setuphelpers.get_disk_free_space(setuphelpers.programfiles)
-        if entry.installed_size and free_disk_space < entry.installed_size:
-            raise EWaptDiskSpace('This package requires at least %s free space. The "Program File"s drive has only %s free space' %
-                (format_bytes(entry.installed_size),format_bytes(free_disk_space)))
-
-        os_version = setuphelpers.windows_version()
-        if entry.min_os_version and os_version < Version(entry.min_os_version):
-            raise EWaptBadTargetOS('This package requires that OS be at least %s' % entry.min_os_version)
-        if entry.max_os_version and os_version > Version(entry.max_os_version):
-            raise EWaptBadTargetOS('This package requires that OS be at most %s' % entry.min_os_version)
-
-        # don't check in developper mode
-        if os.path.isfile(fname):
-            cert = entry.check_control_signature(self.cabundle)
-            logger.info(u'Control data for package %s verified by certificate %s' % (setuphelpers.ensure_unicode(fname),cert))
-        else:
-            logger.info(u'Developper mode, don''t check control signature for %s' % setuphelpers.ensure_unicode(fname))
-
-        self.runstatus=u"Installing package %s version %s ..." % (entry.package,entry.version)
         old_stdout = sys.stdout
         old_stderr = sys.stderr
 
         # we  record old sys.path as we will include current setup.py
         oldpath = sys.path
 
-        # get old install params if the package has been already installed
-        old_install = self.is_installed(entry.package)
-        if old_install:
-            old_install_params = json.loads(old_install['install_params'])
-            for name in old_install_params:
-                if not name in params_dict:
-                    params_dict[name] = old_install_params[name]
+        self.check_cancelled(u'Install of %s cancelled before starting up'%ensure_unicode(fname))
+        logger.info(u"Register start of install %s as user %s to local DB with params %s" % (ensure_unicode(fname), setuphelpers.get_current_user(), params_dict))
+        logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
+
+
+        previous_uninstall = self.registry_uninstall_snapshot()
 
         try:
+
+            status = 'INIT'
+            if not self.cabundle:
+                raise EWaptMissingCertificate(u'install_wapt %s: No public Key provided for package signature checking.'%(fname,))
+
+            entry = PackageEntry(waptfile=fname)
+            self.runstatus=u"Installing package %s version %s ..." % (entry.package,entry.version)
+
+            # get old install params if the package has been already installed
+            old_install = self.is_installed(entry.package)
+            if old_install:
+                old_install_params = json.loads(old_install['install_params'])
+                for name in old_install_params:
+                    if not name in params_dict:
+                        params_dict[name] = old_install_params[name]
+
             install_id = self.waptdb.add_start_install(
                 package=entry.package ,
                 version=entry.version,
@@ -3068,6 +3045,42 @@ class Wapt(object):
                 maturity=entry.maturity,
                 locale=entry.locale,
                 )
+
+            if entry.min_wapt_version and Version(entry.min_wapt_version)>Version(setuphelpers.__version__):
+                raise EWaptNeedsNewerAgent('This package requires a newer Wapt agent. Minimum version: %s' % entry.min_wapt_version)
+
+            depends = ensure_list(entry.depends)
+            conflicts = ensure_list(entry.conflicts)
+
+            missing_depends = [ p for p in depends if not self.is_installed(p)]
+            installed_conflicts = [ p for p in conflicts if self.is_installed(p)]
+
+            if missing_depends:
+                raise EWaptUnavailablePackage('Missing dependencies: %s' % (','.join(missing_depends,)))
+
+            if installed_conflicts:
+                raise EWaptConflictingPackage('Conflicting packages installed: %s' % (','.join(installed_conflicts,)))
+
+            # check if there is enough space for final install
+            # TODO : space for the temporary unzip ?
+            free_disk_space = setuphelpers.get_disk_free_space(setuphelpers.programfiles)
+            if entry.installed_size and free_disk_space < entry.installed_size:
+                raise EWaptDiskSpace('This package requires at least %s free space. The "Program File"s drive has only %s free space' %
+                    (format_bytes(entry.installed_size),format_bytes(free_disk_space)))
+
+            os_version = setuphelpers.windows_version()
+            if entry.min_os_version and os_version < Version(entry.min_os_version):
+                raise EWaptBadTargetOS('This package requires that OS be at least %s' % entry.min_os_version)
+            if entry.max_os_version and os_version > Version(entry.max_os_version):
+                raise EWaptBadTargetOS('This package requires that OS be at most %s' % entry.min_os_version)
+
+            # don't check in developper mode
+            if os.path.isfile(fname):
+                cert = entry.check_control_signature(self.cabundle)
+                logger.info(u'Control data for package %s verified by certificate %s' % (setuphelpers.ensure_unicode(fname),cert))
+            else:
+                logger.info(u'Developper mode, don''t check control signature for %s' % setuphelpers.ensure_unicode(fname))
+
             # we setup a redirection of stdout to catch print output from install scripts
             sys.stderr = sys.stdout = install_output = LogInstallOutput(sys.stderr,self.waptdb,install_id)
 
@@ -3077,10 +3090,9 @@ class Wapt(object):
             istemporary = False
 
             if os.path.isfile(fname):
-                packagetempdir = entry.unzip_package()
+                # check signature and files when unzipping
+                packagetempdir = entry.unzip_package(cabundle=self.cabundle)
                 istemporary = True
-                # take infos from unzipped data
-                entry = PackageEntry().load_control_from_wapt(packagetempdir)
             elif os.path.isdir(fname):
                 packagetempdir = fname
             else:
@@ -3088,12 +3100,6 @@ class Wapt(object):
 
             try:
                 previous_cwd = os.getcwd()
-                self.check_cancelled()
-
-                # check signature and files sha if not developper mode
-                if istemporary:
-                    entry.check_package_signature(self.cabundle)
-
                 self.check_cancelled()
 
                 exitstatus = None
@@ -3232,7 +3238,7 @@ class Wapt(object):
             raise e
         finally:
             gc.collect()
-            if 'setup' in dir():
+            if 'setup' in dir() and setup is not None:
                 setup_name = setup.__name__[:]
                 logger.debug('Removing module: %s, refcnt: %s'%(setup_name,sys.getrefcount(setup)))
                 del setup
