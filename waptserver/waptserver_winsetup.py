@@ -46,6 +46,7 @@ import datetime
 from waptcrypto import SSLPrivateKey,SSLCertificate
 import jinja2
 import time
+from setuphelpers import run
 
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
 config_file = DEFAULT_CONFIG_FILE
@@ -269,11 +270,11 @@ def install_nginx_service():
     repository_path = os.path.join(wapt_root_dir,'waptserver','repository')
     for repo_path in ('wapt','wapt-host','wapt-hostref'):
         mkdir_p(os.path.join(repository_path,repo_path))
-        setuphelpers.run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(repository_path,repo_path))
+        run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(repository_path,repo_path))
     mkdir_p(os.path.join(wapt_root_dir,'waptserver','nginx','temp'))
-    setuphelpers.run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % (os.path.join(wapt_root_dir,'waptserver','nginx','temp')))
+    run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % (os.path.join(wapt_root_dir,'waptserver','nginx','temp')))
 
-    setuphelpers.run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(
+    run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(
                 wapt_root_dir,'waptserver','nginx','logs'))
 
     make_nginx_config(wapt_root_dir, conf['wapt_folder'])
@@ -289,17 +290,68 @@ def install_nginx_service():
 def install_postgresql_service():
     print ("install postgres database")
 
+    pgsql_root_dir = r'%s\waptserver\pgsql' % wapt_root_dir
+    pgsql_data_dir = r'%s\waptserver\pgsql_data' % wapt_root_dir
+    pgsql_data_dir = pgsql_data_dir.replace('\\','/')
+
+
     print ("build database directory")
-    if not os.path.exists(os.path.join(wapt_root_dir,'waptserver','pgsql','data','postgresql.conf')):
-        make_postgres_data_dir(wapt_root_dir)
+    if os.path.exists(os.path.join(pgsql_data_dir,'postgresql.conf')):
+        print("database already instanciated, doing nothing")
+        # TODO: check that database is fully working and up to date
+        # TODO: add a force option
+        return
 
+    make_postgres_data_dir(wapt_root_dir)
 
+    print("start postgresql database")
 
-    service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptserver','pgsql','bin','postgres.exe'))
-    service_parameters = '-D %s' % os.path.join(wapt_root_dir,'waptserver','pgsql_data')
-    service_logfile = os.path.join(log_directory, 'nssm_postgresql.log')
-    install_windows_nssm_service('WAPTPostgresql',service_binary,service_parameters,service_logfile)
+    if setuphelpers.service_installed('WaptPostgresql'):
+        if setuphelpers.service_is_running('WaptPostgresql'):
+            setuphelpers.service_stop('waptPostgresql')
+        setuphelpers.service_delete('waptPostgresql')
+
+    cmd = r'"%s\bin\pg_ctl" register -N WAPTPostgresql -U "nt authority\networkservice" -S auto -D %s  ' % (pgsql_root_dir ,os.path.join(wapt_root_dir,'waptserver','pgsql_data'))
+    print cmd
+    run(cmd)
     setuphelpers.run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % log_directory)
+    setuphelpers.run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % pgsql_data_dir)
+
+    print('starting postgresql')
+    run('net start waptpostgresql')
+
+    #cmd = r"%s\bin\pg_ctl.exe -D %s start" % (pgsql_root_dir, pgsql_data_dir)
+    #devnull = open(os.devnull,'wb')
+    #print(subprocess.Popen(cmd,shell=True))
+
+    # waiting for postgres to be ready
+    time.sleep(1)
+
+    print("creating wapt database")
+    import psycopg2
+    from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+    conn = psycopg2.connect('dbname=template1 user=postgres')
+    conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+    cur = conn.cursor()
+    cur.execute("select 1 from pg_roles where rolname='wapt'")
+    val = cur.fetchone()
+    if val!=1:
+        print("wapt pgsql user does not exists, creating wapt user")
+        cur.execute("create user wapt")
+    val = cur.execute("select 1 from pg_database where datname='wapt'")
+    if val!=1:
+        print ("database wapt does not exists, creating wapt db")
+        cur.execute(r"create extension hstore")
+        cur.execute("create database wapt owner wapt")
+    cur.close()
+    conn.close()
+
+    run(r'%s\waptpython.exe %s\waptserver\waptserver_model.py init_db' % (wapt_root_dir, wapt_root_dir))
+    time.sleep(1)
+    setuphelpers.service_stop('waptpostgresql')
+
+
+
 
 def install_waptserver_service():
     print("install waptserver")
