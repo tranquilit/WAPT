@@ -19,7 +19,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.1.5"
+__version__ = "1.5.1.6"
 import time
 import sys
 import os
@@ -2457,6 +2457,12 @@ class WaptSocketIOClient(threading.Thread):
             logger.debug('Certificate checking : %s' %  self.config.websockets_verify_cert)
             while True:
                 try:
+                    connect_params = dict(
+                        uuid = tmp_wapt.host_uuid,
+                    )
+                    host_key = tmp_wapt.get_host_key()
+                    host_cert = tmp_wapt.get_host_certificate()
+
                     if not self.socketio_client and self.config.websockets_host:
                         logger.debug('Creating socketio client')
                         logger.debug('Proxies : %s'%self.config.waptserver.proxies)
@@ -2465,12 +2471,7 @@ class WaptSocketIOClient(threading.Thread):
                         if self.config.waptserver.proxies and self.config.waptserver.proxies.get(self.config.websockets_proto,None) is not None:
                             kwargs['proxies'] = self.config.waptserver.proxies
 
-                        host_key = tmp_wapt.get_host_key()
-                        host_cert = tmp_wapt.get_host_certificate()
 
-                        connect_params = dict(
-                            uuid = tmp_wapt.host_uuid,
-                        )
                         signed_connect_params = host_key.sign_claim(connect_params,certificate = host_cert)
 
                         self.socketio_client = SocketIO(
@@ -2489,6 +2490,8 @@ class WaptSocketIOClient(threading.Thread):
 
                     if self.socketio_client and self.config.websockets_host:
                         if not self.socketio_client.connected:
+                            signed_connect_params = host_key.sign_claim(connect_params,certificate = host_cert)
+
                             self.socketio_client._http_session.params.update({'uuid': tmp_wapt.host_uuid,'login':jsondump(signed_connect_params)})
                             self.socketio_client.define(WaptSocketIORemoteCalls)
                             self.socketio_client.get_namespace().wapt = tmp_wapt
