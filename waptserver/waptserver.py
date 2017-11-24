@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = '1.5.1.5'
+__version__ = '1.5.1.6'
 
 import os
 import sys
@@ -370,7 +370,6 @@ def register_host():
 
         # Registering a host requires authentication; Either signatue is Ok or Kerberos or basic
         authenticated_user = None
-
         registration_auth_user = None
 
         # 'host' is for pre wapt pre 1.4
@@ -391,59 +390,50 @@ def register_host():
                 logger.debug('Kerberos authenticated user %s for %s' % (authenticated_user,computer_fqdn))
                 registration_auth_user = u'Kerb:%s' % authenticated_user
 
+
         if not authenticated_user:
             # get authentication from basic auth. Check against waptserver admins
             auth = request.authorization
-            if not auth or not check_auth(auth.username, auth.password):
-                # check if existing record, and in this case, check signature with existing certificate
-                existing_host = Hosts.select(Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
-                if existing_host and existing_host.host_certificate:
-                    host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
-                    if host_cert.verify_content(sha256_for_data(raw_data), signature):
-                        authenticated_user = computer_fqdn
-                    elif app.conf['allow_unauthenticated_registration']:
-                        logger.warning('Unauthenticated registration for %s' % computer_fqdn)
-                        authenticated_user = computer_fqdn #request.headers.get('X-Forwarded-For',None)
-                        registration_auth_user = 'None:%s' % request.headers.get('X-Forwarded-For',None)
-                    else:
-                        # use basic auth
-                        return authenticate()
-                elif app.conf['allow_unauthenticated_registration']:
-                    logger.warning('Unauthenticated registration for %s' % computer_fqdn)
-                    authenticated_user = computer_fqdn #request.headers.get('X-Forwarded-For',None)
-                    registration_auth_user = 'None:%s' % request.headers.get('X-Forwarded-For',None)
-                else:
-                    # use basic auth
-                    return authenticate()
-            # assume authenticated user is the fqdn provided in the data
-            else:
+            if auth and check_auth(auth.username, auth.password):
+                # assume authenticated user is the fqdn provided in the data
                 logger.debug('Basic auth registration for %s with user %s' % (computer_fqdn,auth.username))
                 authenticated_user = computer_fqdn
                 registration_auth_user = u'Basic:%s' % auth.username
 
+            existing_host = Hosts.select(Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
+            if not authenticated_user and existing_host and existing_host.host_certificate:
+                # check if existing record, and in this case, check signature with existing certificate
+                host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
+                try:
+                    authenticated_user = host_cert.verify_content(sha256_for_data(raw_data), signature)
+                except (InvalidSignature,SSLVerifyException) as e:
+                    authenticated_user = None
+
+            if not authenticated_user and app.conf['allow_unauthenticated_registration']:
+                logger.warning('Unauthenticated registration for %s' % computer_fqdn)
+                # assume authenticated user is the fqdn provided in the data
+                authenticated_user = computer_fqdn #request.headers.get('X-Forwarded-For',None)
+                registration_auth_user = 'None:%s' % request.headers.get('X-Forwarded-For',None)
+
+            if not authenticated_user:
+                # use basic auth
+                return authenticate()
+
         if not authenticated_user:
             raise EWaptAuthenticationFailure('register_host : Missing authentication header')
 
-        logger.debug('Authenticated computer %s with user %s ' % (computer_fqdn,authenticated_user,))
+        if not app.conf['allow_unauthenticated_registration']:
+            logger.debug('Authenticated computer %s with user %s ' % (computer_fqdn,authenticated_user,))
+            # check that authenticated user matches the CN of the certificate supplied in post data
+            supplied_host_cert = SSLCertificate(crt_string=data['host_certificate'])
+            if authenticated_user.lower().replace('@', '.') != supplied_host_cert.cn.lower():
+                raise EWaptAuthenticationFailure(
+                    'register_host : Mismatch between authentication header %s and Certificate commonName %s' % (authenticated_user, supplied_host_cert.cn))
 
-        # check that authenticated user matches the CN of the certificate supplied in post data
-        supplied_host_cert = SSLCertificate(crt_string=data['host_certificate'])
-        if authenticated_user.lower().replace('@', '.') != supplied_host_cert.cn.lower():
-            raise EWaptAuthenticationFailure(
-                'register_host : Mismatch between authentication header %s and Certificate commonName %s' % (authenticated_user, supplied_host_cert.cn))
-
-        if supplied_host_cert.cn.lower() != computer_fqdn:
-            raise EWaptAuthenticationFailure('register_host : Mismatch between certificate Certificate commonName %s and supplied fqdn %s' % (supplied_host_cert.cn,computer_fqdn))
-
-        # check if there is an existing host in DB
-        existing_host = Hosts.select(Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
-        if existing_host:
-            logger.warning('New registration for UUID %s override computer %s with %s' % (uuid,existing_host.computer_fqdn,computer_fqdn))
-
-        # check data signature
-        logger.debug('About to check supplied data signature with certificate %s' % supplied_host_cert.cn)
-        host_dn = supplied_host_cert.verify_content(sha256_for_data(raw_data), signature)
-        logger.info('Data successfully checked with certificate CN %s for %s' % (host_dn, uuid))
+            if supplied_host_cert.cn.lower() != computer_fqdn:
+                raise EWaptAuthenticationFailure('register_host : Mismatch between certificate Certificate commonName %s and supplied fqdn %s' % (supplied_host_cert.cn,computer_fqdn))
+        else:
+            supplied_host_cert = None
 
         data['last_seen_on'] = datetime2isodate()
         data['registration_auth_user'] = registration_auth_user
@@ -513,10 +503,7 @@ def update_host():
                 host_dn = host_cert.verify_content(sha256_for_data(raw_data), signature)
             except Exception as e:
                 # for pre 1.5 wapt clients
-                if app.conf['allow_unsigned_status_data']:
-                    logger.debug('Error %s , trying sha1' % e)
-                    host_dn = host_cert.verify_content(sha1_for_data(raw_data), signature, md='sha1')
-                else:
+                if not app.conf['allow_unsigned_status_data']:
                     raise
             logger.info('Data successfully checked with certificate CN %s for %s' % (host_dn, uuid))
             if existing_host and host_dn != existing_host.computer_fqdn:
@@ -527,7 +514,7 @@ def update_host():
             raise Exception('update_host: Invalid request')
 
         # be sure to not update host certificate
-        if 'host_certificate' in data:
+        if 'host_certificate' in data and not app.conf['allow_unsigned_status_data']:
             del data['host_certificate']
 
         data['last_seen_on'] = datetime2isodate()
