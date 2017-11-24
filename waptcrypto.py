@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.1.5"
+__version__ = "1.5.1.6"
 
 import os,sys
 import codecs
@@ -1391,7 +1391,7 @@ class SSLCertificate(object):
             content = jsondump(content)
 
         if not isinstance(content,str):
-            raise Exception('Bad content type for verify_content, should be either str or file like')
+            raise InvalidSignature('Bad content type for verify_content, should be either str or file like')
 
         # todo : recommended for new projects...
         #apadding = padding.PSS(

@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = '1.5.1.3'
+__version__ = '1.5.1.6'
 
 # old function to install waptserver on windows. need to be rewritten (switch to nginx, websocket, etc.)
 
@@ -288,7 +288,7 @@ def install_nginx_service():
 
 def install_postgresql_service():
     print ("install postgres database")
-        
+
     print ("build database directory")
     if not os.path.exists(os.path.join(wapt_root_dir,'waptserver','pgsql','data','postgresql.conf')):
         make_postgres_data_dir(wapt_root_dir)

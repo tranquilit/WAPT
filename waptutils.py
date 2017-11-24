@@ -22,7 +22,7 @@
 # -----------------------------------------------------------------------
 from __future__ import print_function
 
-__version__ = "1.5.1.5"
+__version__ = "1.5.1.6"
 import os
 import sys
 import re
