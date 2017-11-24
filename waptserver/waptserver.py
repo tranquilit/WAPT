@@ -1070,6 +1070,7 @@ def ping():
             api_version='v3',
             uuid=get_server_uuid(),
             date=datetime2isodate(),
+            application_root=app.conf['application_root'],
         )
     )
 
