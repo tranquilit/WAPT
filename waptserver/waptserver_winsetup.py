@@ -222,42 +222,6 @@ def make_nginx_config(wapt_root_dir, wapt_folder):
         dst_file.write(config_string)
 
 
-def make_postgres_data_dir(wapt_root_dir):
-
-    print ("init pgsql data directory")
-    pg_data_dir = os.path.join(wapt_root_dir,'waptserver','pgsql_data')
-    setuphelpers.mkdirs(pg_data_dir)
-    setuphelpers.run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % pg_data_dir)
-
-    # should check if tasks already exist or not
-    # there is a bug in setuphelper.task_exists()
-    try:
-        setuphelpers.run("schtasks /delete /tn init_wapt_pgsql /f")
-    except:
-        pass
-
-    # note: init.pgsql.xml.j2 is utf8 encoded even if the xml header says it is utf16.
-    # by default exported xml tasks are utf16-le encoded with BOM, but there are some issue during templating
-    # so it is converted to utf8 without bom
-    jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(wapt_root_dir,'waptserver','scripts')))
-    template = jinja_env.get_template('init_pgsql.xml.j2')
-    template_variables = {
-        'wapt_root_dir': wapt_root_dir,
-    }
-    task_conf_file= os.path.join(wapt_root_dir,'waptserver','scripts','init_pgsql.xml')
-    config_string = template.render(template_variables)
-    with open(task_conf_file, 'wt') as dst_file:
-        dst_file.write(config_string)
-
-    setuphelpers.run(r"schtasks /create /xml %s /tn init_wapt_pgsql"  % task_conf_file)
-
-    #should check if task is still running
-    import time
-    time.sleep(15)
-    try:
-        setuphelpers.run("schtasks /delete /tn init_wapt_pgsql /f")
-    except:
-        pass
 
 def install_windows_service():
     """Setup waptserver, waptapache as a windows Service managed by nssm
@@ -302,7 +266,13 @@ def install_postgresql_service():
         # TODO: add a force option
         return
 
-    make_postgres_data_dir(wapt_root_dir)
+    print ("init pgsql data directory")
+    pg_data_dir = os.path.join(wapt_root_dir,'waptserver','pgsql_data')
+    setuphelpers.mkdirs(pg_data_dir)
+
+
+    setuphelpers.run(r'c:\wapt\waptserver\pgsql\bin\initdb -U postgres -E=UTF8 -D c:\wapt\waptserver\pgsql_data')
+    setuphelpers.run(r'icacls %s /t /grant  "*S-1-5-20":(OI)(CI)(M)' % pg_data_dir)
 
     print("start postgresql database")
 
