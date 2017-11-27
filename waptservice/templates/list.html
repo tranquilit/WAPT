@@ -73,7 +73,7 @@ location.reload(true);
 			  {%if c=='install_date' and p[c] %}
 				  {{format_isodate(p[c])}}
 			  {%elif c=='package'%}
-				  <img class=package-icon src="/package_icon?package={{p.package}}">
+				  <img class=package-icon src="/package_icon?package={{p.package}}" width="48px">
 				  <p>{{link("/package_details?package="+package_version,p[c])}}
 				  <span class="package-version">{{p.version}}</span>
                   <span class="package-singner"> (by: {{p.signer}})</span></p>

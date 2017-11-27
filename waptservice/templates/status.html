@@ -33,7 +33,7 @@
 		{% for c in cols %}
         {%if c[0] == 'package' %}
               <td width=20%>
-		      <img class=package-icon src="package_icon?package={{p.package}}">
+		      <img class=package-icon src="package_icon?package={{p.package}}" width="48px">
               <p><a href="package_details?package={{package_version}}">{{p[c[0]]}}</a> <span class="package-version">{{p.version}}</span></p>
               <p class="package-description">{{p.description or ""}}</p>
         {%elif c[0]=='install_date' %}

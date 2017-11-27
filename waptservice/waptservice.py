@@ -1013,7 +1013,7 @@ def update_status():
 
 @app.route('/longtask')
 @app.route('/longtask.json')
-@allow_local
+@allow_local_auth
 def longtask():
     notify_user = request.args.get('notify_user',None)
     if notify_user is not None:
