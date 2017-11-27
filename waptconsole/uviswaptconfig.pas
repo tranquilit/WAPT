@@ -177,7 +177,7 @@ end;
 
 procedure TVisWAPTConfig.ActGetServerCertificateUpdate(Sender: TObject);
 begin
-  ActGetServerCertificate.Enabled := edwapt_server.Text <> '';
+  ActGetServerCertificate.Enabled := CBVerifyCert.Checked and (edwapt_server.Text <> '');
 end;
 
 procedure TVisWAPTConfig.cbManualClick(Sender: TObject);

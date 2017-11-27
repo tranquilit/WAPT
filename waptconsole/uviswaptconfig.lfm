@@ -116,7 +116,7 @@ object VisWAPTConfig: TVisWAPTConfig
         OnKeyPress = edServerAddressKeyPress
       end
       object Button2: TButton
-        Left = 412
+        Left = 421
         Height = 25
         Top = 6
         Width = 168
@@ -230,7 +230,7 @@ object VisWAPTConfig: TVisWAPTConfig
         TabOrder = 6
       end
       object Button5: TButton
-        Left = 412
+        Left = 421
         Height = 25
         Hint = 'Click to retrieve the https certificate chain from server.'#13#10'This works only if chain contain full certificate validation chain.'#13#10'If not, you must add the missing root and intermediate certificates.'
         Top = 128
@@ -249,10 +249,10 @@ object VisWAPTConfig: TVisWAPTConfig
         TabOrder = 5
       end
       object Button6: TButton
-        Left = 412
+        Left = 421
         Height = 25
         Hint = 'Try to find a private key (pem encoded RSA key) in same directory as certificate.'#13#10'This will ask for the password for decrypting the key.'
-        Top = 187
+        Top = 186
         Width = 168
         Action = ActCheckPersonalKey
         TabOrder = 10
