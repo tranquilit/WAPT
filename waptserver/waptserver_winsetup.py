@@ -26,6 +26,7 @@ __version__ = '1.5.1.6'
 
 import os
 import sys
+from win32api import GetUserName
 
 try:
     wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
@@ -268,10 +269,13 @@ def install_postgresql_service():
 
     print ("init pgsql data directory")
     pg_data_dir = os.path.join(wapt_root_dir,'waptserver','pgsql_data')
+
     setuphelpers.mkdirs(pg_data_dir)
 
-
+    # need to have specific write acls for current user otherwise initdb fails...
+    setuphelpers.run(r'icacls %s /t /grant  "%s":(OI)(CI)(M)' % (pg_data_dir,GetUserName()))
     setuphelpers.run(r'c:\wapt\waptserver\pgsql\bin\initdb -U postgres -E=UTF8 -D c:\wapt\waptserver\pgsql_data')
+
     setuphelpers.run(r'icacls %s /t /grant  "*S-1-5-20":(OI)(CI)(M)' % pg_data_dir)
 
     print("start postgresql database")
