@@ -246,8 +246,8 @@ end;
 
 procedure TVisImportPackage.ActSearchExternalPackageExecute(Sender: TObject);
 var
-  expr: String;
-  http_proxy,packages_python,verify_cert,wapt: Variant;
+  prefix,expr: String;
+  http_proxy,packages_python,verify_cert,myrepo: Variant;
 
 begin
   EdSearchPackage.Modified:=False;
@@ -269,14 +269,22 @@ begin
       expr := UTF8Decode(EdSearchPackage.Text);
       packages_python := Nil;
       if cbNewerThanMine.Checked then
-        wapt := DMPython.WAPT
+      begin
+        myrepo := DMPython.MainWaptRepo;
+        prefix := DefaultPackagePrefix;
+      end
       else
-        wapt := None();
+      begin
+        myrepo := None();
+        prefix := '';
+      end;
+
       packages_python := DMPython.waptdevutils.update_external_repo(
         repourl := Waptrepo.RepoURL,
         search_string := expr,
         proxy := http_proxy,
-        mywapt := wapt,
+        myrepo := myrepo,
+        my_prefix := prefix,
         newer_only := cbNewerThanMine.Checked,
         newest_only := cbNewestOnly.Checked,
         verify_cert := verify_cert);

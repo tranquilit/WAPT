@@ -182,7 +182,7 @@ def diff_computer_wapt_ad(wapt,wapt_server_user='admin',wapt_server_passwd=None)
     return result
 
 
-def update_external_repo(repourl,search_string,proxy=None,mywapt=None,newer_only=False,newest_only=False,verify_cert=True,repo_name='wapt-templates'):
+def update_external_repo(repourl,search_string,proxy=None,myrepo=None,my_prefix='',newer_only=False,newest_only=False,verify_cert=True,repo_name='wapt-templates'):
     """Get a list of entries from external templates public repository matching search_string
     >>> firefox = update_tis_repo(r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini","tis-firefox-esr")
     >>> isinstance(firefox,list) and firefox[-1].package == 'tis-firefox-esr'
@@ -194,17 +194,19 @@ def update_external_repo(repourl,search_string,proxy=None,mywapt=None,newer_only
         verify_cert = False
     repo.verify_cert = verify_cert
     packages = repo.search(search_string,newest_only=newest_only)
-    if newer_only and mywapt:
-        my_prefix = mywapt.config.get('global','default_package_prefix')
+    if newer_only and myrepo:
         result = []
         for package in packages:
             if '-' in package.package:
                 (prefix,name) = package.package.split('-',1)
-                my_package_name = "%s-%s" % (my_prefix,name)
+                if my_prefix:
+                    my_package_name = "%s-%s" % (my_prefix,name)
+                else:
+                    my_package_name = name
             else:
                 my_package_name = package.package
-            my_packages = mywapt.is_available(my_package_name)
-            if my_packages and Version(my_packages[-1].version)<Version(package.version):
+            my_package = myrepo.get(my_package_name)
+            if my_package and Version(my_package.version)<Version(package.version):
                 result.append(package.as_dict())
         return result
     else:
