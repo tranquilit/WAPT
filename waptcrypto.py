@@ -618,7 +618,7 @@ class SSLCABundle(object):
                         self.add_crl(ssl_crl)
                         result.append(ssl_crl)
                     except Exception as e:
-                        self._crls_negative_cache[url] = datetime.datetime.now()
+                        self._crls_negative_cache[url] = datetime.datetime.utcnow()
                         logger.warning('Unable to download CRL from %s: %s' % (url,repr(e)))
                         pass
                 elif ssl_crl:
@@ -628,7 +628,7 @@ class SSLCABundle(object):
     def _check_url_in_negative_cache(self,url):
         last = self._crls_negative_cache.get(url,None)
         if last:
-            if datetime.datetime.now() - last < datetime.timedelta(hours = 1):
+            if datetime.datetime.utcnow() - last < datetime.timedelta(hours = 1):
                 raise Exception('Url in negative cache')
             else:
                 del self._crls_negative_cache[url]
@@ -1457,7 +1457,7 @@ class SSLCertificate(object):
         if self.ignore_validity_checks:
             return True
         nb,na = self.not_before,self.not_after
-        now = datetime.datetime.now(nb.tzinfo)
+        now = datetime.datetime.utcnow()
         return \
             now >= nb and now <= na
 

@@ -1630,7 +1630,7 @@ class WaptBaseRepo(object):
 
     def _get_packages_index_data(self):
         """Abstract"""
-        return (None,datetime.datetime.now())
+        return (None,datetime.datetime.utcnow())
 
     def get_certificates(self,packages_zipfile=None):
         """Download signers certificates and crl from Package index on remote repository.
