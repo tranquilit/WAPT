@@ -1,0 +1,75 @@
+{% if force_https %}
+server {
+    listen                      80;
+    listen                      [::]:80;
+    server_name                 _;
+    return 301                  https://$host$request_uri;
+}
+{% endif %} {# if force_https #}
+
+server {
+{% if not force_https %}
+    listen                      80;
+{% endif %} {# if not force_https #}
+    listen                      443 ssl;
+    server_name                 _;
+
+    ssl_certificate             "{{ wapt_ssl_cert_file }}";
+    ssl_certificate_key         "{{ wapt_ssl_key_file }}";
+    ssl_protocols               TLSv1.2;
+    ssl_dhparam                 /etc/ssl/certs/dhparam.pem; 
+    ssl_prefer_server_ciphers   on;
+    ssl_ciphers                 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH';
+    ssl_stapling                on;
+    ssl_stapling_verify         on;
+    ssl_session_cache           none;
+    ssl_session_tickets         off;
+    
+    index index.html;
+
+    location / {
+        proxy_set_header X-Real-IP  $remote_addr;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        include /opt/wapt/conf/wapt.d/*.conf;
+   
+        location ~ ^/(wapt|wapt-host)/(.*)$ {
+            proxy_set_header Cache-Control "store, no-cache, must-revalidate, post-check=0, pre-check=0";
+            proxy_set_header Pragma "no-cache";
+            proxy_set_header Expires "Sun, 19 Nov 1978 05:00:00 GMT";
+
+            rewrite ^/(wapt|wapt-host)/(.*)$ /$1/$2 break;
+            root /var/www;
+        }
+
+        location / {
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            proxy_pass http://127.0.0.1:{{waptserver_port}}/;
+            client_max_body_size 4096m;
+            client_body_timeout 1800;
+        }
+
+        {% if use_kerberos  %}
+            location /(add_host|/api/v3/register) {
+                auth_gss on;
+                auth_gss_keytab  /etc/nginx/http-krb5.keytab;
+                proxy_pass http://127.0.0.1:{{waptserver_port}}/;
+            }
+        {% endif %} {# if use_kerberos #}
+
+        location /socket.io {
+            proxy_http_version 1.1;
+            proxy_buffering off;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "Upgrade";
+            proxy_pass http://127.0.0.1:{{waptserver_port}}/socket.io;
+        }
+    }
+
+}

@@ -79,13 +79,9 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
 
-        location ~ ^/odaim_(.*)/wapt-host/Packages$ {
-            return 401;
-            break;
-        }
-
         include /opt/wapt/conf/wapt.d/*.conf;
     }
+
 }
 """
 
@@ -149,9 +145,7 @@ waptserver_port={{waptserver_port}}
 """
 
 if __name__ == '__main__':
-    lst = ['odaim_dreal_bfc', 'odaim_deal_guyane', 'odaim_dreal_normandie', 'odaim_recette',
-        'odaim_sg_cp2i_donc', 'odaim_commun', 'odaim_dreal_occitanie',
-        'odaim_ac_atl', 'odaim_dir_nord', 'odaim_dtam_975']
+    lst = []
 
     sport = 8080
     ports = []
