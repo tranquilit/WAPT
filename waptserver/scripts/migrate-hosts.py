@@ -4,16 +4,17 @@ import os
 
 __version__ = '1.5.1'
 
+import os,sys
 try:
-    wapt_root_dir = os.path.abspath(
-        os.path.join(
-            os.path.dirname(__file__) ))
+    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)),'../..'))
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
-sys.path.insert(0, os.path.join(wapt_root_dir))
-sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
-sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
+sys.path.insert(0,os.path.join(wapt_root_dir))
+sys.path.insert(0,os.path.join(wapt_root_dir,'waptserver'))
+sys.path.insert(0,os.path.join(wapt_root_dir,'lib'))
+sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
+
 
 import requests
 import json
