@@ -7,8 +7,8 @@ interface
 uses
   Classes, SysUtils, FileUtil,
   Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls,
-  Buttons, ActnList, EditBtn, htmlview, Readhtml, IdHTTP,
-  IdComponent,uvisLoading, DefaultTranslator, LCLProc, uWaptServerRes;
+  Buttons, ActnList, htmlview, Readhtml, IdHTTP,
+  IdComponent,uvisLoading, DefaultTranslator, LCLProc, uWaptServerRes, types;
 
 type
 
@@ -24,82 +24,39 @@ type
     ActNext: TAction;
     actPrevious: TAction;
     ActionList1: TActionList;
-    BitBtn1: TBitBtn;
+    BitBtn4: TBitBtn;
     ButPrevious: TBitBtn;
     ButNext: TBitBtn;
     BitBtn3: TBitBtn;
-    BitBtn4: TBitBtn;
-    BitBtn5: TBitBtn;
     BitBtn6: TBitBtn;
     cbLaunchWaptConsoleOnExit: TCheckBox;
     cbManualURL: TCheckBox;
     CBOpenFirewall: TCheckBox;
-    DirectoryCert: TDirectoryEdit;
-    edCommonName: TEdit;
-    edCountry: TEdit;
-    edOrgName: TEdit;
-    edRepoUrl: TEdit;
-    EdSourcesRoot: TLabeledEdit;
-    edEmail: TEdit;
     EdPwd1: TEdit;
-    EdPersonalCertificate: TEdit;
-    edLocality: TEdit;
-    edOrganization: TEdit;
-    EdKeyName: TEdit;
     EdPwd2: TEdit;
-    edUnit: TEdit;
-    edWaptServerUrl1: TEdit;
-    fnPublicCert: TFileNameEdit;
-    fnWaptDirectory: TDirectoryEdit;
+    EdWaptServerIP: TEdit;
+    EdWAPTServerName: TEdit;
     HTMLViewer1: THTMLViewer;
     Label1: TLabel;
-    Label10: TLabel;
-    Label11: TLabel;
-    Label12: TLabel;
-    Label13: TLabel;
-    Label14: TLabel;
-    Label15: TLabel;
-    Label16: TLabel;
     Label2: TLabel;
-    EdWAPTServerName: TLabeledEdit;
     edWAPTRepoURL: TLabeledEdit;
     edWAPTServerURL: TLabeledEdit;
-    Label3: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
-    Label7: TLabel;
-    Label8: TLabel;
-    Label9: TLabel;
-    EdWaptServerIP: TLabeledEdit;
     EdWaptInifile: TMemo;
-    EdTemplatesRepoURL: TLabeledEdit;
-    EdDefaultPrefix: TLabeledEdit;
-    Memo1: TMemo;
     Memo2: TMemo;
-    Memo3: TMemo;
-    Memo4: TMemo;
     Memo5: TMemo;
     Memo7: TMemo;
-    Memo6: TMemo;
     PagesControl: TPageControl;
     Panel1: TPanel;
     Panel2: TPanel;
+    Panel3: TPanel;
+    Panel4: TPanel;
     panFinish: TPanel;
     pgParameters: TTabSheet;
     pgPassword: TTabSheet;
     ProgressBar1: TProgressBar;
-    Shape1: TShape;
-    StaticText1: TStaticText;
     pgStartServices: TTabSheet;
-    pgDevparam: TTabSheet;
-    pgPrivateKey: TTabSheet;
     pgFinish: TTabSheet;
-    pgCreateWaptSetup: TTabSheet;
-    procedure ActBuildWaptsetupExecute(Sender: TObject);
     procedure ActCheckDNSExecute(Sender: TObject);
-    procedure ActCreateKeyExecute(Sender: TObject);
-    procedure ActCreateKeyUpdate(Sender: TObject);
     procedure ActManualExecute(Sender: TObject);
     procedure ActManualUpdate(Sender: TObject);
     procedure ActNextExecute(Sender: TObject);
@@ -108,7 +65,6 @@ type
     procedure actPreviousUpdate(Sender: TObject);
     procedure actWriteConfStartServeExecute(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
-    procedure EdKeyNameExit(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure HTMLViewer1HotSpotClick(Sender: TObject; const SRC: string;
@@ -116,16 +72,13 @@ type
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode;
       AWorkCount: Int64);
     procedure PagesControlChange(Sender: TObject);
+    procedure pgParametersContextPopup(Sender: TObject; MousePos: TPoint;
+      var Handled: Boolean);
   private
     CurrentVisLoading:TVisLoading;
-    FCrtFilename: String;
     procedure OpenFirewall;
-    procedure SetCrtFilename(AValue: String);
     { private declarations }
-  public
-    { public declarations }
-    KeyFilename:String;
-    Property CrtFilename:String read FCrtFilename write SetCrtFilename;
+
   end;
 
 var
@@ -133,7 +86,7 @@ var
 
 implementation
 uses LCLIntf, Windows, waptcommon, waptwinutils, UScaleDPI, tisinifiles,
-  superobject, tiscommon, tisstrings, IniFiles, dcpcrypt2, DCPsha256, Math,base64;
+  superobject, tiscommon, tisstrings, IniFiles;
 
 {$R *.lfm}
 
@@ -146,7 +99,6 @@ begin
   ReadWaptConfig(WaptBaseDir+'wapt-get.ini');
   PagesControl.ShowTabs:=False;
   PagesControl.ActivePageIndex:=0;
-  DirectoryCert.Directory:='c:\private';
 end;
 
 procedure TVisWAPTServerPostConf.FormShow(Sender: TObject);
@@ -155,14 +107,6 @@ begin
     Run('cmd /C net stop waptserver');
 
   EdWAPTServerName.Text:=LowerCase(GetComputerName)+'.'+GetDNSDomain;
-  if IniHasKey(WaptIniFilename,'global','default_package_prefix') then
-    EdDefaultPrefix.Text:=IniReadString(WaptIniFilename,'global','default_package_prefix');
-  if IniHasKey(WaptIniFilename,'global','default_sources_root') then
-    EdSourcesRoot.Text:=IniReadString(WaptIniFilename,'global','default_sources_root');
-  if IniHasKey(WaptIniFilename,'wapt-templates','repo_url') then
-    EdTemplatesRepoURL.Text:=IniReadString(WaptIniFilename,'wapt-templates','repo_url');
-  if IniHasKey(WaptIniFilename,'global','personal_certificate_path') then
-    CrtFilename := IniReadString(WaptIniFilename,'global','personal_certificate_path');
   PagesControlChange(Self);
 end;
 
@@ -248,11 +192,7 @@ begin
     ini := TMemIniFile.Create(WaptIniFilename);
     ini.WriteString('global','repo_url',edWAPTRepoURL.Text);
     ini.WriteString('global','wapt_server',edWAPTServerURL.Text);
-    ini.WriteString('global','default_sources_root',EdSourcesRoot.Text);
-    ini.WriteString('global','default_package_prefix',EdDefaultPrefix.Text);
-    ini.WriteString('global','personal_certificate_path',CrtFilename);
     ini.WriteString('global','verify_cert','0');
-    ini.WriteString('wapt-templates','repo_url',EdTemplatesRepoURL.Text);
     ini.WriteString('wapt-templates','verify_cert','1');
     EdWaptInifile.Lines.Clear;
     TMemIniFile(ini).GetStrings(EdWaptInifile.Lines);
@@ -266,21 +206,12 @@ begin
     HTMLViewer1.Align:=alClient;
   end
   else
-  if PagesControl.ActivePage = pgCreateWaptSetup then
-  begin
-    ini := TIniFile.Create(WaptIniFilename);
-    try
-      fnPublicCert.Text:=ini.ReadString('global', 'personal_certificate_path', '');
-      if not FileExists(fnPublicCert.Text) then
-        fnPublicCert.Clear;
-      edWaptServerUrl1.Text := ini.ReadString('global', 'wapt_server', '');
-      edRepoUrl.Text := ini.ReadString('global', 'repo_url', '');
-      edOrgName.Text := edOrganization.Text;
-      fnWaptDirectory.Directory := GetTempDir(False);
-    finally
-      ini.Free;
-    end;
-  end;
+end;
+
+procedure TVisWAPTServerPostConf.pgParametersContextPopup(Sender: TObject;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+
 end;
 
 procedure TVisWAPTServerPostConf.OpenFirewall;
@@ -312,14 +243,6 @@ begin
       output := Run(format('netsh advfirewall firewall add rule name="waptserver %d" dir=in localport=%d protocol=TCP action=allow',[waptserver_sslport,waptserver_sslport]));
   end;
 end;
-
-procedure TVisWAPTServerPostConf.SetCrtFilename(AValue: String);
-begin
-  if FCrtFilename=AValue then Exit;
-  FCrtFilename:=AValue;
-  EdPersonalCertificate.Text:=AValue;
-end;
-
 
 procedure TVisWAPTServerPostConf.ActManualUpdate(Sender: TObject);
 begin
@@ -355,8 +278,6 @@ begin
     ActNext.Enabled := EdWaptServerIP.Text<>''
   else if PagesControl.ActivePage = pgPassword then
     ActNext.Enabled := (EdPwd1.Text<>'') and (EdPwd1.Text = EdPwd2.Text)
-  else if PagesControl.ActivePage = pgPrivateKey then
-    ActNext.Enabled := (CrtFilename<>'') and FileExists(CrtFilename)
   else if PagesControl.ActivePage = pgStartServices then
     ActNext.Enabled := GetServiceStatusByName('','waptserver') = ssRunning
   else
@@ -485,7 +406,6 @@ end;
 procedure TVisWAPTServerPostConf.actWriteConfStartServeExecute(Sender: TObject);
 var
   retry:integer;
-  salt,res:String;
   GUID: TGuid;
   sores: ISuperobject;
   taskid:integer;
@@ -524,14 +444,9 @@ begin
       ProgressStep(3,10);
       if FileExists(WaptBaseDir+'\ssl\tranquilit.crt') then
         FileUtil.DeleteFileUTF8(WaptBaseDir+'\ssl\tranquilit.crt');
-      Fileutil.CopyFile(CrtFilename,WaptBaseDir+'\ssl\'+ExtractFileNameOnly(CrtFilename)+'.crt',True);
 
       ProgressTitle(rsSettingServerPassword);
       ProgressStep(4,10);
-
-      // salt := MakeRandomString(16);
-      // IniWriteString(WaptBaseDir+'\conf\waptserver.ini' ,'Options','wapt_password',
-      //  '$pbkdf2-sha256$29000$'+salt+'$'+EncodeStringBase64(PBKDF2(EdPwd1.Text,salt,29000,32,TDCP_sha256)));
 
       IniWriteString(WaptBaseDir+'\conf\waptserver.ini' ,'options','wapt_password',
         Run(AppendPathDelim(WaptBaseDir)+'waptpython.exe -c "from passlib.hash import pbkdf2_sha256; print(pbkdf2_sha256.hash('''+EdPwd1.Text+'''))"')
@@ -638,35 +553,6 @@ begin
   ActManual.Checked := not ActManual.Checked;
 end;
 
-procedure TVisWAPTServerPostConf.ActCreateKeyExecute(Sender: TObject);
-var
-  Password:String;
-begin
-  KeyFilename:=AppendPathDelim(DirectoryCert.Text)+EdKeyName.Text+'.pem';
-  CrtFilename:=AppendPathDelim(DirectoryCert.Text)+EdKeyName.Text+'.crt';
-  if not DirectoryExistsUTF8(DirectoryCert.Text) then
-    CreateDirUTF8(DirectoryCert.Text);
-
-  Password := EdPwd1.Text;
-
-  Run(AppendPathDelim(WaptBaseDir)+'waptpython.exe -c '+
-    '"from waptcrypto import *;'+
-    'key = SSLPrivateKey();'+
-    'key.create();'+
-    'key.save_as_pem(r'''+KeyFilename+''',r'''+Password+''');'+
-    'crt = key.build_sign_certificate(is_code_signing=True,is_ca=True,'+
-      'cn=r'''+edCommonName.Text+''','+
-      'email=r'''+edEmail.Text+''','+
-      'country=r'''+edCountry.Text+''','+
-      'locality=r'''+edLocality.Text+''','+
-      'organizational_unit=r'''+edUnit.Text+''','+
-      'organization=r'''+edOrganization.Text+''','+
-      ');'+
-    'crt.save_as_pem(r'''+CrtFilename+''');'+
-    '"'
-    );
-
-end;
 
 procedure TVisWAPTServerPostConf.ActCheckDNSExecute(Sender: TObject);
 var
@@ -697,55 +583,6 @@ begin
 
 end;
 
-
-procedure TVisWAPTServerPostConf.ActBuildWaptsetupExecute(Sender: TObject);
-var
-  waptsetupPath: string;
-  SORes:ISuperObject;
-begin
-  CurrentVisLoading := TVisLoading.Create(Self);
-  with CurrentVisLoading do
-  try
-    ExceptionOnStop:=True;
-    Screen.Cursor := crHourGlass;
-    ProgressTitle(rsCreationInProgress);
-    Start;
-    Application.ProcessMessages;
-    waptsetupPath := CreateWaptSetup(fnPublicCert.FileName, edRepoUrl.Text, edWaptServerUrl1.Text,fnWaptDirectory.Directory,edOrganization.Text,@DoProgress, 'waptagent');
-    Finish;
-    if FileExists(waptsetupPath) then
-    try
-      WaptBaseDir;
-      Start;
-      ProgressTitle(rsProgressTitle);
-      SORes := WAPTServerJsonMultipartFilePost(edWAPTServerURL1.Text,'upload_waptsetup',[],'file',waptsetupPath,'admin',EdPwd1.Text,@IdHTTPWork);
-      Finish;
-      if SORes.S['status'] = 'OK' then
-        ShowMessageFmt(rsWaptSetupUploadSuccess, [edWAPTServerURL1.Text])
-      else
-        ShowMessageFmt(rsWaptUploadError, [SORes.S['message']]);
-    except
-      on e: Exception do
-      begin
-        ShowMessageFmt(rsWaptSetupError, [e.Message]);
-        Finish;
-      end;
-    end;
-  finally
-    Finish;
-    Screen.Cursor := crDefault;
-    FreeAndNil(CurrentVisLoading);
-  end;
-end;
-
-procedure TVisWAPTServerPostConf.ActCreateKeyUpdate(Sender: TObject);
-var
-   TargetKeyFN:String;
-begin
-  TargetKeyFN := AppendPathDelim(DirectoryCert.Text)+EdKeyName.Text+'.pem';
-  ActCreateKey.Enabled := (DirectoryCert.Text<>'') and (EdKeyName.Text<>'') and not FileExists(TargetKeyFN);
-end;
-
 function MakeIdent(st:String):String;
 var
   i:integer;
@@ -756,14 +593,6 @@ begin
       result := Result+st[i];
 end;
 
-procedure TVisWAPTServerPostConf.EdKeyNameExit(Sender: TObject);
-begin
-  EdKeyName.Text:= MakeIdent(EdKeyName.Text);
-  if edCommonName.Text='' then
-    edCommonName.Text := EdKeyName.Text;
-  if edOrganization.Text='' then
-    edOrganization.Text:=edCommonName.Text;
-end;
 
 end.
 

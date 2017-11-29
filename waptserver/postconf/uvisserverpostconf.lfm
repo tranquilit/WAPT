@@ -1,11 +1,11 @@
 object VisWAPTServerPostConf: TVisWAPTServerPostConf
-  Left = 414
+  Left = 643
   Height = 382
-  Top = 208
-  Width = 680
+  Top = 295
+  Width = 739
   Caption = 'Configuration of WAPT server for Windows'
   ClientHeight = 382
-  ClientWidth = 680
+  ClientWidth = 739
   Constraints.MinHeight = 345
   Constraints.MinWidth = 680
   OnCreate = FormCreate
@@ -17,7 +17,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Left = 0
     Height = 352
     Top = 0
-    Width = 434
+    Width = 493
     ActivePage = pgParameters
     Align = alClient
     MultiLine = True
@@ -27,190 +27,171 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Options = [nboMultiLine]
     object pgParameters: TTabSheet
       Caption = 'Parameters'
-      ClientHeight = 308
-      ClientWidth = 426
-      object EdWAPTServerName: TLabeledEdit
-        Left = 4
-        Height = 21
-        Hint = 'WAPT clients make requests to the server. In order to connect to the WAPT server,'#13#10'it is advisable that a DNS name be used, as long as it has been correctly'#13#10'configured in your network''s DNS environment. We suggest naming your WAPT server'#13#10'''srvwapt.mydomain.local'' (A record type), then binding an alias'#13#10'(CNAME record type, e.g. ''wapt.mondomain.local'') to srvwapt.'#13#10'In case you don''t trust your DNS, or you are just setting up a testing environment,'#13#10'you can fall back to the server IP address. For further information :'#13#10'''http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'''
-        Top = 22
-        Width = 156
-        EditLabel.AnchorSideLeft.Control = EdWAPTServerName
-        EditLabel.AnchorSideRight.Control = EdWAPTServerName
-        EditLabel.AnchorSideRight.Side = asrBottom
-        EditLabel.AnchorSideBottom.Control = EdWAPTServerName
-        EditLabel.Left = 4
-        EditLabel.Height = 13
-        EditLabel.Top = 6
-        EditLabel.Width = 156
-        EditLabel.Caption = 'DNS name of the WAPT server'
-        EditLabel.ParentColor = False
-        TabOrder = 0
-        Text = 'srvwapt.mondomaine.local'
-      end
-      object BitBtn4: TBitBtn
-        Left = 164
-        Height = 26
-        Top = 18
-        Width = 127
-        Action = ActCheckDNS
+      ChildSizing.Layout = cclLeftToRightThenTopToBottom
+      ClientHeight = 324
+      ClientWidth = 485
+      OnContextPopup = pgParametersContextPopup
+      object Panel3: TPanel
+        Left = 0
+        Height = 32
+        Top = 0
+        Width = 485
+        Align = alTop
         AutoSize = True
-        Glyph.Data = {
-          36040000424D3604000000000000360000002800000010000000100000000100
-          2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
-          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00348DC985459FD5E93A8DCBE02567
-          A556FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00FFFFFF00FFFFFF007E7E7E46797979D251A2CBFF86E9F9FF4DD9F5FF3C90
-          C7FF4C6278FF606060D7FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF008F8F8F4B8A8A8ACCA3A3A3FFC6C5C4FF63B3DEFFA1E6F8FF38D2F2FF47D6
-          F6FF4297CEFF4B6178FF1A53B80D1D5EC00DFFFFFF00FFFFFF00FFFFFF009B9B
-          9BC9B3B3B3FFD4D4D4FFE1DFDFFFC5BFBDFF8AABC1FF52A2D4FF99E2F6FF53DC
-          F5FF46D9F6FF398EC8FF3583CFE83684D2E8205EA753FFFFFF00FFFFFF00A2A2
-          A2FFF0F0F0FFE0E0E0FFD4D2D2FFBEB6B5FFBCB5B4FF9EAEBAFF5EACD7FF5EB7
-          DEFF5ED9F2FF4EDBF6FF5BDDF7FF55D8F5FF2E80CDF72058A259FFFFFF00A8A8
-          A8FFEAEAEAFFDDDDDDFFD5D4D3FFC0B9B7FFBEB7B6FFBDB6B4FFBBB4B3FF74A5
-          C7FF89DDF4FF6AE0F6FF73E2F7FF5FDFF6FF55DAF6FF387FCDF3FFFFFF00AFAF
-          AFFFEBEBEBFFDDDDDDFFD7D5D5FFC1BBB9FFC0B9B8FFBEB8B6FF3BA142FF3A9D
-          A9FFA9EEF9FF7EE6F8FF9AE8F8FF7ED1F0FF80E2F6FF3F98D9F0FFFFFF00B5B5
-          B5FFECECECFFDEDEDEFFD9D8D8FFC3BDBBFFC2BBBAFFC1BAB9FFA0C8A4FF42A1
-          8AFF5EC1EAFFA3F0FBFF80D4F0FF7EC7ECFF50A3DDF5216EB659FFFFFF00BBBB
-          BBFFECECECFFDFDFDFFFDAD9D9FFC6BFBEFFC4BEBCFFC3BCBBFFC1BBB9FFC0B9
-          B8FF8BB6D5FF6FC9ECFFC9F3FBFF57BAE7ED2585CD48FFFFFF00FFFFFF00C0C0
-          C0FFECECECFFE0E0E0FFDDDCDCFFC7C1C0FF929191FF8F8F8FFF8D8D8DFF8A8A
-          8AFFD8D5D4FF5B93B5FF46ABE1CB2B96DA63FFFFFF00FFFFFF00FFFFFF00C6C6
-          C6FFEFEFEFFFE1E1E1FFDDDDDDFFC8C3C2FFC8C2C1FFC6C1BFFFC5BFBEFFC3BD
-          BBFFDAD6D5FF919191FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00CBCB
-          CBFFE9E9E9FFE9E9E9FFE2E1E1FFCBC6C4FF989797FF969595FF949393FF9291
-          91FFDBD7D6FF989898FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00CFCF
-          CF48CBCBCBE4DFDFDFFFEAEAEAFFCFCAC9FFCBC6C5FFCAC4C3FFC8C3C1FFC7C1
-          C1FFDCD9D8FF9E9E9EFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00D0D0D00FCCCCCCABDCDCDCFFE6E3E3FFE1DEDCFFDFDCDCFFDFDCDBFFDEDB
-          DBFFEEECECFFA5A5A5FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00FFFFFF00FFFFFF00CDCDCD9FC9C9C9FBC4C4C4FFC0C0C0FFBBBBBBFFB6B6
-          B6FFB0B0B0FFABABABA7FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
-        }
+        BevelOuter = bvNone
+        ChildSizing.LeftRightSpacing = 6
+        ChildSizing.TopBottomSpacing = 3
+        ChildSizing.HorizontalSpacing = 6
+        ChildSizing.VerticalSpacing = 3
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 3
+        ClientHeight = 32
+        ClientWidth = 485
+        TabOrder = 0
+        object EdWAPTServerName: TEdit
+          Left = 6
+          Height = 26
+          Hint = 'WAPT clients make requests to the server. In order to connect to the WAPT server,'#13#10'it is advisable that a DNS name be used, as long as it has been correctly'#13#10'configured in your network''s DNS environment. We suggest naming your WAPT server'#13#10'''srvwapt.mydomain.local'' (A record type), then binding an alias'#13#10'(CNAME record type, e.g. ''wapt.mondomain.local'') to srvwapt.'#13#10'In case you don''t trust your DNS, or you are just setting up a testing environment,'#13#10'you can fall back to the server IP address. For further information :'#13#10'''http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'''
+          Top = 3
+          Width = 200
+          Color = clForm
+          Constraints.MinWidth = 200
+          ReadOnly = True
+          TabOrder = 0
+          Text = 'srvwapt.mydomain.lan'
+        end
+        object BitBtn4: TBitBtn
+          Left = 212
+          Height = 26
+          Top = 3
+          Width = 138
+          Action = ActCheckDNS
+          AutoSize = True
+          Glyph.Data = {
+            36040000424D3604000000000000360000002800000010000000100000000100
+            2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00348DC985459FD5E93A8DCBE02567
+            A556FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF007E7E7E46797979D251A2CBFF86E9F9FF4DD9F5FF3C90
+            C7FF4C6278FF606060D7FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF008F8F8F4B8A8A8ACCA3A3A3FFC6C5C4FF63B3DEFFA1E6F8FF38D2F2FF47D6
+            F6FF4297CEFF4B6178FF1A53B80D1D5EC00DFFFFFF00FFFFFF00FFFFFF009B9B
+            9BC9B3B3B3FFD4D4D4FFE1DFDFFFC5BFBDFF8AABC1FF52A2D4FF99E2F6FF53DC
+            F5FF46D9F6FF398EC8FF3583CFE83684D2E8205EA753FFFFFF00FFFFFF00A2A2
+            A2FFF0F0F0FFE0E0E0FFD4D2D2FFBEB6B5FFBCB5B4FF9EAEBAFF5EACD7FF5EB7
+            DEFF5ED9F2FF4EDBF6FF5BDDF7FF55D8F5FF2E80CDF72058A259FFFFFF00A8A8
+            A8FFEAEAEAFFDDDDDDFFD5D4D3FFC0B9B7FFBEB7B6FFBDB6B4FFBBB4B3FF74A5
+            C7FF89DDF4FF6AE0F6FF73E2F7FF5FDFF6FF55DAF6FF387FCDF3FFFFFF00AFAF
+            AFFFEBEBEBFFDDDDDDFFD7D5D5FFC1BBB9FFC0B9B8FFBEB8B6FF3BA142FF3A9D
+            A9FFA9EEF9FF7EE6F8FF9AE8F8FF7ED1F0FF80E2F6FF3F98D9F0FFFFFF00B5B5
+            B5FFECECECFFDEDEDEFFD9D8D8FFC3BDBBFFC2BBBAFFC1BAB9FFA0C8A4FF42A1
+            8AFF5EC1EAFFA3F0FBFF80D4F0FF7EC7ECFF50A3DDF5216EB659FFFFFF00BBBB
+            BBFFECECECFFDFDFDFFFDAD9D9FFC6BFBEFFC4BEBCFFC3BCBBFFC1BBB9FFC0B9
+            B8FF8BB6D5FF6FC9ECFFC9F3FBFF57BAE7ED2585CD48FFFFFF00FFFFFF00C0C0
+            C0FFECECECFFE0E0E0FFDDDCDCFFC7C1C0FF929191FF8F8F8FFF8D8D8DFF8A8A
+            8AFFD8D5D4FF5B93B5FF46ABE1CB2B96DA63FFFFFF00FFFFFF00FFFFFF00C6C6
+            C6FFEFEFEFFFE1E1E1FFDDDDDDFFC8C3C2FFC8C2C1FFC6C1BFFFC5BFBEFFC3BD
+            BBFFDAD6D5FF919191FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00CBCB
+            CBFFE9E9E9FFE9E9E9FFE2E1E1FFCBC6C4FF989797FF969595FF949393FF9291
+            91FFDBD7D6FF989898FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00CFCF
+            CF48CBCBCBE4DFDFDFFFEAEAEAFFCFCAC9FFCBC6C5FFCAC4C3FFC8C3C1FFC7C1
+            C1FFDCD9D8FF9E9E9EFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00D0D0D00FCCCCCCABDCDCDCFFE6E3E3FFE1DEDCFFDFDCDCFFDFDCDBFFDEDB
+            DBFFEEECECFFA5A5A5FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00CDCDCD9FC9C9C9FBC4C4C4FFC0C0C0FFBBBBBBFFB6B6
+            B6FFB0B0B0FFABABABA7FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+          }
+          TabOrder = 1
+        end
+        object EdWaptServerIP: TEdit
+          Left = 356
+          Height = 26
+          Top = 3
+          Width = 120
+          Color = clForm
+          Constraints.MinWidth = 120
+          ReadOnly = True
+          TabOrder = 2
+        end
+      end
+      object Panel4: TPanel
+        Left = 0
+        Height = 292
+        Top = 32
+        Width = 485
+        Align = alClient
+        ClientHeight = 292
+        ClientWidth = 485
         TabOrder = 1
-      end
-      object cbManualURL: TCheckBox
-        Left = 4
-        Height = 17
-        Top = 54
-        Width = 113
-        Action = ActManual
-        TabOrder = 2
-      end
-      object edWAPTRepoURL: TLabeledEdit
-        Left = 33
-        Height = 21
-        Top = 90
-        Width = 314
-        EditLabel.AnchorSideLeft.Control = edWAPTRepoURL
-        EditLabel.AnchorSideRight.Control = edWAPTRepoURL
-        EditLabel.AnchorSideRight.Side = asrBottom
-        EditLabel.AnchorSideBottom.Control = edWAPTRepoURL
-        EditLabel.Left = 33
-        EditLabel.Height = 13
-        EditLabel.Top = 74
-        EditLabel.Width = 314
-        EditLabel.Caption = 'URL of the WAPT package repository'
-        EditLabel.ParentColor = False
-        TabOrder = 3
-      end
-      object edWAPTServerURL: TLabeledEdit
-        Left = 34
-        Height = 21
-        Top = 134
-        Width = 313
-        EditLabel.AnchorSideLeft.Control = edWAPTServerURL
-        EditLabel.AnchorSideRight.Control = edWAPTServerURL
-        EditLabel.AnchorSideRight.Side = asrBottom
-        EditLabel.AnchorSideBottom.Control = edWAPTServerURL
-        EditLabel.Left = 34
-        EditLabel.Height = 13
-        EditLabel.Top = 118
-        EditLabel.Width = 313
-        EditLabel.Caption = 'URL of the WAPT server'
-        EditLabel.ParentColor = False
-        TabOrder = 4
-      end
-      object EdWaptServerIP: TLabeledEdit
-        Left = 296
-        Height = 21
-        Top = 22
-        Width = 128
-        EditLabel.AnchorSideLeft.Control = EdWaptServerIP
-        EditLabel.AnchorSideRight.Control = EdWaptServerIP
-        EditLabel.AnchorSideRight.Side = asrBottom
-        EditLabel.AnchorSideBottom.Control = EdWaptServerIP
-        EditLabel.Left = 296
-        EditLabel.Height = 13
-        EditLabel.Top = 6
-        EditLabel.Width = 128
-        EditLabel.Caption = 'IP of the WAPT server'
-        EditLabel.ParentColor = False
-        ParentColor = True
-        ReadOnly = True
-        TabOrder = 5
-      end
-      object Memo1: TMemo
-        Left = 16
-        Height = 90
-        Top = 174
-        Width = 372
-        Lines.Strings = (
-          '<html>'
-          '<head>'
-          '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
-          '</head>'
-          '<body>'
-          '<a href="#page1"></a>'
-          '<b>WAPT</b> clients make requests to the server.<br>'
-          'In order to connect to the WAPT server,'
-          'it is advisable that a DNS name be used, as long as it has been correctly'
-          'configured in your network''s DNS environment.<br>'
-          'We suggest naming your WAPT server ''srvwapt.mydomain.local'''
-          '(A record type), then binding an alias (CNAME record type, e.g.'
-          '''wapt.mydomain.local'') to srvwapt.<br>'
-          'In case you don''t trust your DNS, or you are just setting up a'
-          'testing environment, you can fall back to the server IP address.'
-          ''
-          'For further information :'
-          '<a '
-          'href="https://doc.wapt.fr/Installation/waptserver/dns/introduction_dns.html">DNS records instructions</a>.'
-          ''
-          '</body>'
-          '</html>'
-        )
-        TabOrder = 6
-        Visible = False
-        WordWrap = False
+        object cbManualURL: TCheckBox
+          Left = 4
+          Height = 19
+          Top = 54
+          Width = 126
+          Action = ActManual
+          TabOrder = 0
+        end
+        object edWAPTRepoURL: TLabeledEdit
+          Left = 33
+          Height = 23
+          Top = 90
+          Width = 314
+          EditLabel.AnchorSideLeft.Control = edWAPTRepoURL
+          EditLabel.AnchorSideRight.Control = edWAPTRepoURL
+          EditLabel.AnchorSideRight.Side = asrBottom
+          EditLabel.AnchorSideBottom.Control = edWAPTRepoURL
+          EditLabel.Left = 33
+          EditLabel.Height = 15
+          EditLabel.Top = 72
+          EditLabel.Width = 314
+          EditLabel.Caption = 'URL of the WAPT package repository'
+          EditLabel.ParentColor = False
+          TabOrder = 1
+        end
+        object edWAPTServerURL: TLabeledEdit
+          Left = 34
+          Height = 23
+          Top = 134
+          Width = 313
+          EditLabel.AnchorSideLeft.Control = edWAPTServerURL
+          EditLabel.AnchorSideRight.Control = edWAPTServerURL
+          EditLabel.AnchorSideRight.Side = asrBottom
+          EditLabel.AnchorSideBottom.Control = edWAPTServerURL
+          EditLabel.Left = 34
+          EditLabel.Height = 15
+          EditLabel.Top = 116
+          EditLabel.Width = 313
+          EditLabel.Caption = 'URL of the WAPT server'
+          EditLabel.ParentColor = False
+          TabOrder = 2
+        end
       end
     end
     object pgPassword: TTabSheet
       Caption = 'Password'
-      ClientHeight = 308
+      ClientHeight = 304
       ClientWidth = 426
       object Label1: TLabel
         Left = 6
-        Height = 13
+        Height = 15
         Top = 25
-        Width = 112
+        Width = 120
         Caption = 'WAPT server password'
         ParentColor = False
       end
       object Label2: TLabel
         Left = 36
-        Height = 13
+        Height = 15
         Top = 58
-        Width = 86
+        Width = 97
         Caption = 'Confirm password'
         ParentColor = False
       end
       object EdPwd1: TEdit
         Left = 176
-        Height = 21
+        Height = 23
         Hint = 'This is the password used to connect to the WAPT server via the WAPT console.'#13#10'For further information :'#13#10'http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html'
         Top = 22
         Width = 104
@@ -220,7 +201,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object EdPwd2: TEdit
         Left = 176
-        Height = 21
+        Height = 23
         Top = 50
         Width = 104
         EchoMode = emPassword
@@ -251,391 +232,9 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         WordWrap = False
       end
     end
-    object pgPrivateKey: TTabSheet
-      Caption = 'Private Key generation'
-      ClientHeight = 308
-      ClientWidth = 426
-      object Label9: TLabel
-        Left = 12
-        Height = 13
-        Hint = 'Please don''t use any special characters (e.g.:tranquilit)'
-        Top = 40
-        Width = 62
-        Caption = 'Key name :'
-        Font.Style = [fsBold]
-        Layout = tlCenter
-        ParentColor = False
-        ParentFont = False
-      end
-      object EdKeyName: TEdit
-        Left = 176
-        Height = 21
-        Hint = 'E.g. : tranquilit'
-        Top = 40
-        Width = 176
-        OnExit = EdKeyNameExit
-        TabOrder = 1
-      end
-      object Label10: TLabel
-        Left = 9
-        Height = 13
-        Hint = 'Main site country code'
-        Top = 151
-        Width = 139
-        Caption = 'Country (2 chars. E.g. : FR):'
-        Layout = tlCenter
-        ParentColor = False
-        ParentShowHint = False
-        ShowHint = True
-      end
-      object Label12: TLabel
-        Left = 9
-        Height = 13
-        Top = 183
-        Width = 26
-        Caption = 'City :'
-        Layout = tlCenter
-        ParentColor = False
-      end
-      object Label13: TLabel
-        Left = 9
-        Height = 13
-        Hint = 'Your company name'
-        Top = 207
-        Width = 65
-        Caption = 'Organisation:'
-        Layout = tlCenter
-        ParentColor = False
-      end
-      object Label14: TLabel
-        Left = 9
-        Height = 13
-        Hint = 'E.g. : IT department.'
-        Top = 231
-        Width = 39
-        Caption = 'Service:'
-        Layout = tlCenter
-        ParentColor = False
-      end
-      object Label16: TLabel
-        Left = 9
-        Height = 13
-        Hint = 'Technical department e-mail address.'
-        Top = 254
-        Width = 76
-        Caption = 'E-mail address :'
-        Layout = tlCenter
-        ParentColor = False
-      end
-      object Label3: TLabel
-        Left = 12
-        Height = 13
-        Hint = 'Where to save the private key. This directory must be secure.'
-        Top = 16
-        Width = 96
-        Caption = 'Target directory:'
-        Font.Style = [fsBold]
-        Layout = tlCenter
-        ParentColor = False
-        ParentFont = False
-      end
-      object edCountry: TEdit
-        Left = 173
-        Height = 21
-        Top = 151
-        Width = 32
-        MaxLength = 2
-        TabOrder = 4
-        Text = 'FR'
-      end
-      object edLocality: TEdit
-        Left = 173
-        Height = 21
-        Hint = 'E.g. : Nantes'
-        Top = 175
-        Width = 176
-        TabOrder = 5
-      end
-      object edOrganization: TEdit
-        Left = 173
-        Height = 21
-        Hint = 'E.g. : Tranquil It Systems'
-        Top = 199
-        Width = 176
-        TabOrder = 7
-      end
-      object edUnit: TEdit
-        Left = 173
-        Height = 21
-        Hint = 'E.g. : IT'
-        Top = 223
-        Width = 176
-        TabOrder = 8
-      end
-      object edEmail: TEdit
-        Left = 173
-        Height = 21
-        Hint = 'E.g. : technique@tranquil-it-systems.fr'
-        Top = 246
-        Width = 176
-        TabOrder = 9
-      end
-      object DirectoryCert: TDirectoryEdit
-        Left = 176
-        Height = 21
-        Top = 16
-        Width = 208
-        Directory = 'C:\private'
-        ShowHidden = False
-        ButtonWidth = 23
-        NumGlyphs = 1
-        Flat = True
-        MaxLength = 0
-        TabOrder = 0
-      end
-      object Shape1: TShape
-        AnchorSideRight.Side = asrBottom
-        Left = -36
-        Height = 2
-        Top = 120
-        Width = 413
-        Anchors = [akTop]
-        BorderSpacing.Left = 5
-      end
-      object StaticText1: TStaticText
-        Left = 9
-        Height = 14
-        Top = 128
-        Width = 97
-        AutoSize = True
-        Caption = 'Optional information'
-        TabOrder = 3
-      end
-      object BitBtn5: TBitBtn
-        Left = 6
-        Height = 25
-        Top = 278
-        Width = 136
-        Action = ActCreateKey
-        Glyph.Data = {
-          36040000424D3604000000000000360000002800000010000000100000000100
-          2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
-          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00348DC985459FD5E93A8DCBE02567
-          A556FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00FFFFFF00FFFFFF007E7E7E46797979D251A2CBFF86E9F9FF4DD9F5FF3C90
-          C7FF4C6278FF606060D7FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF008F8F8F4B8A8A8ACCA3A3A3FFC6C5C4FF63B3DEFFA1E6F8FF38D2F2FF47D6
-          F6FF4297CEFF4B6178FF1A53B80D1D5EC00DFFFFFF00FFFFFF00FFFFFF009B9B
-          9BC9B3B3B3FFD4D4D4FFE1DFDFFFC5BFBDFF8AABC1FF52A2D4FF99E2F6FF53DC
-          F5FF46D9F6FF398EC8FF3583CFE83684D2E8205EA753FFFFFF00FFFFFF00A2A2
-          A2FFF0F0F0FFE0E0E0FFD4D2D2FFBEB6B5FFBCB5B4FF9EAEBAFF5EACD7FF5EB7
-          DEFF5ED9F2FF4EDBF6FF5BDDF7FF55D8F5FF2E80CDF72058A259FFFFFF00A8A8
-          A8FFEAEAEAFFDDDDDDFFD5D4D3FFC0B9B7FFBEB7B6FFBDB6B4FFBBB4B3FF74A5
-          C7FF89DDF4FF6AE0F6FF73E2F7FF5FDFF6FF55DAF6FF387FCDF3FFFFFF00AFAF
-          AFFFEBEBEBFFDDDDDDFFD7D5D5FFC1BBB9FFC0B9B8FFBEB8B6FF3BA142FF3A9D
-          A9FFA9EEF9FF7EE6F8FF9AE8F8FF7ED1F0FF80E2F6FF3F98D9F0FFFFFF00B5B5
-          B5FFECECECFFDEDEDEFFD9D8D8FFC3BDBBFFC2BBBAFFC1BAB9FFA0C8A4FF42A1
-          8AFF5EC1EAFFA3F0FBFF80D4F0FF7EC7ECFF50A3DDF5216EB659FFFFFF00BBBB
-          BBFFECECECFFDFDFDFFFDAD9D9FFC6BFBEFFC4BEBCFFC3BCBBFFC1BBB9FFC0B9
-          B8FF8BB6D5FF6FC9ECFFC9F3FBFF57BAE7ED2585CD48FFFFFF00FFFFFF00C0C0
-          C0FFECECECFFE0E0E0FFDDDCDCFFC7C1C0FF929191FF8F8F8FFF8D8D8DFF8A8A
-          8AFFD8D5D4FF5B93B5FF46ABE1CB2B96DA63FFFFFF00FFFFFF00FFFFFF00C6C6
-          C6FFEFEFEFFFE1E1E1FFDDDDDDFFC8C3C2FFC8C2C1FFC6C1BFFFC5BFBEFFC3BD
-          BBFFDAD6D5FF919191FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00CBCB
-          CBFFE9E9E9FFE9E9E9FFE2E1E1FFCBC6C4FF989797FF969595FF949393FF9291
-          91FFDBD7D6FF989898FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00CFCF
-          CF48CBCBCBE4DFDFDFFFEAEAEAFFCFCAC9FFCBC6C5FFCAC4C3FFC8C3C1FFC7C1
-          C1FFDCD9D8FF9E9E9EFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00D0D0D00FCCCCCCABDCDCDCFFE6E3E3FFE1DEDCFFDFDCDCFFDFDCDBFFDEDB
-          DBFFEEECECFFA5A5A5FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00FFFFFF00FFFFFF00CDCDCD9FC9C9C9FBC4C4C4FFC0C0C0FFBBBBBBFFB6B6
-          B6FFB0B0B0FFABABABA7FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
-        }
-        TabOrder = 10
-      end
-      object EdPersonalCertificate: TEdit
-        Left = 157
-        Height = 21
-        Top = 278
-        Width = 264
-        Color = clForm
-        ReadOnly = True
-        TabOrder = 11
-      end
-      object Memo3: TMemo
-        Left = 337
-        Height = 40
-        Top = 144
-        Width = 381
-        Lines.Strings = (
-          '<html>'
-          '<head>'
-          '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
-          '</head>'
-          '<body>'
-          'A private (.pem) - public (.crt) keypair will be generated '
-          'to allow for package authentication.<br>'
-          'Only packages signed with your private key may be installed onto '
-          'agents.<br>'
-          'The <b>private key (.pem)</b> must not be disclosed to a third party '
-          'under any circumstances.<br>'
-          'The <b>public certificate (.crt)</b> may however be disclosed. It will '
-          'be deployed onto client hosts via the custom installer.<br>'
-          '<br>'
-          '<i>NB. : the private key must be generated only once per organisation.</i>'
-          '<br>'
-          'For further information :'
-          '<a '
-          'href="https://www.wapt.fr/fr/doc/Installation/wapt_certificate/index.html">Generating a self-signed certificate</a>. '
-          '</body>'
-          '</html>'
-        )
-        TabOrder = 6
-        Visible = False
-        WordWrap = False
-      end
-      object Label15: TLabel
-        Left = 12
-        Height = 13
-        Top = 64
-        Width = 115
-        Caption = 'Common Name(CN) :'
-        Font.CharSet = ANSI_CHARSET
-        Font.Color = clBlack
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Pitch = fpVariable
-        Font.Quality = fqDraft
-        Font.Style = [fsBold]
-        Layout = tlCenter
-        ParentColor = False
-        ParentFont = False
-      end
-      object edCommonName: TEdit
-        Left = 176
-        Height = 21
-        Hint = 'This information will be used as Signer identification in packages'
-        Top = 64
-        Width = 176
-        TabOrder = 2
-      end
-      object Label11: TLabel
-        Left = 4
-        Height = 26
-        Top = 88
-        Width = 328
-        Caption = 'Note: Personal Key will be encrypted with same password as server.'#13#10'This can be changed later in Waptconsole'
-        ParentColor = False
-      end
-    end
-    object pgDevparam: TTabSheet
-      Caption = 'Development'
-      ClientHeight = 308
-      ClientWidth = 426
-      object EdTemplatesRepoURL: TLabeledEdit
-        Left = 8
-        Height = 21
-        Hint = 'URL to the the public repository whence base packages should be duplicated.'
-        Top = 22
-        Width = 300
-        EditLabel.AnchorSideLeft.Control = EdTemplatesRepoURL
-        EditLabel.AnchorSideRight.Control = EdTemplatesRepoURL
-        EditLabel.AnchorSideRight.Side = asrBottom
-        EditLabel.AnchorSideBottom.Control = EdTemplatesRepoURL
-        EditLabel.Left = 8
-        EditLabel.Height = 13
-        EditLabel.Top = 6
-        EditLabel.Width = 300
-        EditLabel.Caption = 'URL to the package model repository'
-        EditLabel.ParentColor = False
-        TabOrder = 0
-        Text = 'https://store.wapt.fr/wapt'
-        Visible = False
-      end
-      object EdDefaultPrefix: TLabeledEdit
-        Left = 8
-        Height = 21
-        Top = 66
-        Width = 300
-        EditLabel.AnchorSideLeft.Control = EdDefaultPrefix
-        EditLabel.AnchorSideRight.Control = EdDefaultPrefix
-        EditLabel.AnchorSideRight.Side = asrBottom
-        EditLabel.AnchorSideBottom.Control = EdDefaultPrefix
-        EditLabel.Left = 8
-        EditLabel.Height = 13
-        EditLabel.Top = 50
-        EditLabel.Width = 300
-        EditLabel.Caption = 'Default prefix to use on new packages'
-        EditLabel.ParentColor = False
-        TabOrder = 1
-        Text = 'test'
-      end
-      object EdSourcesRoot: TLabeledEdit
-        Left = 8
-        Height = 21
-        Top = 110
-        Width = 300
-        EditLabel.AnchorSideLeft.Control = EdSourcesRoot
-        EditLabel.AnchorSideRight.Control = EdSourcesRoot
-        EditLabel.AnchorSideRight.Side = asrBottom
-        EditLabel.AnchorSideBottom.Control = EdSourcesRoot
-        EditLabel.Left = 8
-        EditLabel.Height = 13
-        EditLabel.Top = 94
-        EditLabel.Width = 300
-        EditLabel.Caption = 'Base directory for package development'
-        EditLabel.ParentColor = False
-        TabOrder = 2
-        Text = 'c:\waptdev'
-        Visible = False
-      end
-      object Memo4: TMemo
-        Left = 16
-        Height = 90
-        Top = 174
-        Width = 372
-        Lines.Strings = (
-          '<html>'
-          '<head>'
-          '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
-          '</head>'
-          '<body>'
-          ''
-          '<b>Tranquil IT Systems</b> provides an array of WAPT packages '
-          'at <a href="https://store.wapt.fr">store.wapt.fr</a> <br>'
-          'For a quick start with your new WAPT installation, download ready-made'
-          'packages and deploy them onto your network .<br>'
-          ''
-          'When you pull or create a package, its name will be prefixed '
-          'with'
-          'your trigram/quadrigram to mark its '
-          'provenance.<br>'
-          'Replace "test" with a trigram meaningful to your organisation (ex: tis '
-          'standing for'
-          'Tranquil IT Systems).<br>'
-          ''
-          'The development directory is where '
-          'information'
-          'about your package in development will be stored. <br>'
-          ''
-          'For further information :'
-          '<a '
-          'href="http://dev.tranquil.it/scenari/guide_admin/co/configuration_waptco'
-          'nsole.html">Configuring the WAPT console</a>. '
-          ''
-          '</body>'
-          '</html>'
-        )
-        TabOrder = 3
-        Visible = False
-        WordWrap = False
-      end
-    end
     object pgStartServices: TTabSheet
       Caption = 'Start'
-      ClientHeight = 308
+      ClientHeight = 324
       ClientWidth = 426
       object EdWaptInifile: TMemo
         Left = 4
@@ -653,7 +252,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Left = 8
         Height = 26
         Top = 198
-        Width = 328
+        Width = 352
         Action = actWriteConfStartServe
         AutoSize = True
         Glyph.Data = {
@@ -716,258 +315,23 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object CBOpenFirewall: TCheckBox
         Left = 8
-        Height = 17
+        Height = 19
         Top = 234
-        Width = 378
+        Width = 409
         Caption = 'Open firewall ports 80 and 443 to allow access for packages and inventory'
         Checked = True
         State = cbChecked
         TabOrder = 3
       end
     end
-    object pgCreateWaptSetup: TTabSheet
-      Caption = 'Create installer for client hosts'
-      ClientHeight = 308
-      ClientWidth = 426
-      object BitBtn1: TBitBtn
-        Left = 16
-        Height = 32
-        Top = 176
-        Width = 162
-        Action = ActBuildWaptsetup
-        AutoSize = True
-        Glyph.Data = {
-          C6070000424DC607000000000000360000002800000016000000160000000100
-          2000000000009007000064000000640000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          000000000000000000000000000000000000000000006656345F6A5A346A0000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000E0201001A0C023C352916FF42371DFF1208014E000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          000000000000000000000000000000000000000000000000000031170700381E
-          01030F0400F9BD946FFECEA27DFE060000FF2511050E24110500000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          00000000000000000000000000000000000000000000291203BB7B5A3EFEE6B2
-          8EFFEBB794FF8A694AFE1A0A00CF000000000000000000000000000000000000
-          000000000000000000000000000000000000000000007171718BA3A3A3E3A3A3
-          A3E26C6C6D81000000003C1D08604C2D15FFC69068FFCF9A76FFD19D79FFCC95
-          6EFF4E321CFF3218067A00000000000000000000000000000000000000000000
-          00110000000E00000000000000009D9D9DCCD7D7D7FED7D7D7FE969797C14616
-          0011391B06FF8C5B37FEA9714CFFB67F58FFB8805AFFAE7651FF976441FF341A
-          08FF371A062A391B0A00000000000000000000000024A7A7A7EBA2A2A2E20000
-          004D747474ABC8C8C8FDD4D4D4FFD6D6D6FFC9CCCEFB2A0C00ED633E24FE8A60
-          41FF9D7253FFA87E5EFFAA7F61FFA2795AFF8C6143FF6E4A32FE2F1200EE0000
-          0000000000000000000CA4A4A4EBCDCDCDFECFCFCFFFDCDCDCFFD6D6D6FFD4D4
-          D4FED4D4D4FFD4D4D5FFAF9B8EFF8E6345FF8B6E54FF8B6E54FF916E51FF9974
-          55FF997456FF946F51FF8A694FFF87684DFFAC866BFF95654578000000000000
-          0005BBBBBBE1C2C2C2FEC4C4C4FFCACACAFFD2D2D1FFD8D8D8FFD5D5D5FFD8D8
-          D8FFCBB6A9FFA25D2EFF91420CFFA04F18FF9D836AFF9D8063FF9D8064FF9D84
-          6AFFA14F1AFE944B1AFFA7673EFFB17B563C00000000000000001A1A1A45C8C8
-          C8FFC4C4C4FFC1C7C5FFADBBB4FFBCBABAFFBDBCBCFFC3C2C3FFD4D5D5FFDDE3
-          E5FFEBF6FDFF6E2E03FFBCA78AFFB79E81FFB79E81FFBDA78BFF6F350EFF0000
-          0000000000000000000000000000000000007B7B7BABC8C8C8FFCDCDCDFFCBCA
-          CAFFCBC9C9FF6B7F7BFF297F63FF2A8063FF637D76FFD2D0D0FFD2D8DCFF883D
-          09FFD8C6A9FFD2BB9EFFD2BB9EFFD8C6AAFF8A4414FF00000000000000000000
-          00006666668B7F7F7FD1BCBCBCFECACACAFFD2D2D2FFC9C9C9FF8D9B98FF12AD
-          7CFF27B873FF29B66BFF19B57CFF768C86FFCDD3D9FFAC4F11FFF2E6C7FFEDDA
-          BAFFEDDABAFFF3E5C7FFAC561CFF000000000000000000000000989898D1C6C6
-          C6FECACACAFFCFCFCFFFD1D1D1FFD6D2D4FF499884FF1EC28AFF22C27CFF23C2
-          7AFF20C285FF3A977DFFC6CBD0FFD56F2CFFFFFFEBFFFFFBE1FFFFFBE1FFFFFF
-          EAFFD57C41FF000000000000000000000000A0A0A0D1CACACAFFCFCFCFFFD3D3
-          D3FFD1D1D1FFD7D4D5FF54A28EFF38CFA0FF5BDEB6FF5EDFB6FF3CD1A1FF49A8
-          8CFFC4C3C6FFECD0BDFFE36F23FFE26B1CFFE16B1DFFE57328FFFDDCC6DD0000
-          00000000000000000000ACACAC7FC6C6C6C5CECECEFCD8D8D8FFD3D3D3FFD3D3
-          D3FFB1BEBBFF68C4ABFF9BEDD6FFA0F0DAFF73D1B8FFABBDBAFFCDCCCDFFC1C5
-          C7FFCBD4DAFFCCD6DBFAC5D0D7C4A3B3BE7900000000F4CDB200000000000000
-          000000000000000000009E9E9EB1DDDDDDFFDBDBDBFFD1D1D1FFE0DFDFFFC3CC
-          CAFFA0C6BCFFA0C8BEFFBFCAC8FFDBDADAFFCDD0CFFFD0D2D1FFCECECDFF9696
-          96A3000000000000000005050500000000000000000000000000000000000000
-          00001C1C1C4EE6E6E6FFE2E2E2FFDEDEDEFFD9D9D9FFE0DFE0FFE3E1E1FFE2DF
-          E0FFDEDCDDFFD0D4D3FFD5DBD8FFDFDEDFFFD6D6D6FF05050541000000000000
-          000000000000000000000000000000000000000000000000000CB0B0B0EAE8E8
-          E8FEEAEAEAFFECECECFFE4E4E4FFD6D6D6FFD2D2D2FFCFD2D1FFD0D6D3FFDFE3
-          E1FFE8E8E8FFE6E6E6FFE2E2E2FEA6A6A6E50000000800000000000000000000
-          000000000000000000000000000000000005D1D1D1E6EFEFEFFEEFEFEFFEF6F6
-          F6FFF0F0F0FFF0F0F0FFF1F1F1FFF2F1F2FFF0F0F0FFF0F0F0FFF5F5F5FFECEC
-          ECFEEBEBEBFED3D3D3E400000001000000000000000000000000000000000000
-          0000000000000000000000000014D6D6D6E6D5D5D5DE42424239C6C6C6A0ECEC
-          ECFEF5F5F5FFF5F5F5FFEBEBEBFDC1C1C19B5656563BE1E1E1E6E2E2E2E51D1D
-          1D11FFFFFF000000000000000000000000000000000000000000000000000000
-          0000FFFFFF000000000400000002FFFFFF0000000000B6B6B6CEFBFBFBFFFBFB
-          FBFFACACACC300000000000000000000000400000002FFFFFF00000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000ADADAD81DBDBDBCCDBDBDBCCACACAC760000
-          0000000000000000000000000000000000000000000000000000000000000000
-          00000000000000000000
-        }
-        TabOrder = 0
-      end
-      object fnPublicCert: TFileNameEdit
-        Left = 200
-        Height = 21
-        Top = 18
-        Width = 192
-        Filter = '*.crt|*.crt'
-        FilterIndex = 0
-        HideDirectories = False
-        ButtonWidth = 23
-        NumGlyphs = 1
-        Flat = True
-        MaxLength = 0
-        TabOrder = 1
-      end
-      object Label4: TLabel
-        Left = 8
-        Height = 13
-        Hint = 'The certificate you just created (.crt key).'
-        Top = 20
-        Width = 103
-        Caption = 'Public certificate : '
-        Font.Style = [fsBold]
-        ParentColor = False
-        ParentFont = False
-      end
-      object edRepoUrl: TEdit
-        Left = 200
-        Height = 21
-        Hint = 'E.g. : http://wapt.tranquilit.local/wapt'
-        Top = 73
-        Width = 192
-        TabOrder = 2
-      end
-      object Label5: TLabel
-        Left = 8
-        Height = 13
-        Hint = 'Address of your WAPT repository (https://wapt/wapt)'
-        Top = 76
-        Width = 217
-        Caption = 'Address of the main WAPT repository :'
-        Font.Style = [fsBold]
-        ParentColor = False
-        ParentFont = False
-      end
-      object edOrgName: TEdit
-        Left = 200
-        Height = 21
-        Hint = 'E.g. : Tranquil IT Systems'
-        Top = 127
-        Width = 192
-        ParentColor = True
-        TabOrder = 3
-      end
-      object Label6: TLabel
-        Left = 8
-        Height = 13
-        Hint = 'Your company name'
-        Top = 127
-        Width = 65
-        Caption = 'Organisation:'
-        ParentColor = False
-      end
-      object Label7: TLabel
-        Left = 8
-        Height = 13
-        Hint = 'Where waptagent.exe will be saved.'
-        Top = 48
-        Width = 147
-        Caption = 'Save waptagent.exe as...  '
-        Font.Style = [fsBold]
-        ParentColor = False
-        ParentFont = False
-        Visible = False
-      end
-      object fnWaptDirectory: TDirectoryEdit
-        Left = 200
-        Height = 21
-        Top = 45
-        Width = 192
-        ShowHidden = False
-        ButtonWidth = 23
-        NumGlyphs = 1
-        Flat = True
-        MaxLength = 0
-        TabOrder = 4
-        Visible = False
-      end
-      object edWaptServerUrl1: TEdit
-        Left = 200
-        Height = 21
-        Hint = 'E.g. : https://wapt'
-        Top = 101
-        Width = 192
-        ParentColor = True
-        TabOrder = 5
-      end
-      object Label8: TLabel
-        Left = 8
-        Height = 13
-        Hint = 'Address of your WAPT server (https://wapt).'
-        Top = 104
-        Width = 154
-        Caption = 'Adressof the WAPT server :'
-        Font.Style = [fsBold]
-        ParentColor = False
-        ParentFont = False
-      end
-      object Memo6: TMemo
-        Left = 220
-        Height = 90
-        Top = 168
-        Width = 192
-        Lines.Strings = (
-          '<html>'
-          '<head>'
-          '<meta http-equiv="Content-Type" '
-          'content="text/html; charset=UTF-'
-          '8">'
-          '</head>'
-          '<body>'
-          'The custom installer '
-          '(waptagent.exe) is for integrating '
-          'your'
-          ' certificate into the WAPT agent.'
-          'The WAPT agent must be installed on '
-          'every host you wish to '
-          'manage.'
-          'To set it up, you can use one of '
-          'several methods &nbsp;:'
-          '<ul>'
-          '<li> from a USB stick </li>'
-          '<li> from https://nom-du-'
-          'serveur-wapt/wapt/waptagent.exe '
-          '</li>'
-          '<li> <a '
-          'href="http://dev.tranquil.it/index.ph'
-          'p/WAPT_-'
-          '_Déploiement_de_WAPT_par_GPO">'
-          'Deploying WAPT via GPO</a> '
-          '</li>'
-          '</ul>'
-          '<br>'
-          'Check the documentation '
-          'at <a'
-          'href="http://dev.tranquil.it/scenari/g'
-          'uide_admin/co/generation_waptse'
-          'tup_personnalise_waptconsole.html"'
-          '>Generating '
-          'from the WAPT console</a>'
-          '</body>'
-          '</html>'
-        )
-        TabOrder = 6
-        Visible = False
-        WordWrap = False
-      end
-    end
     object pgFinish: TTabSheet
       Caption = 'Fin'
-      ClientHeight = 308
+      ClientHeight = 324
       ClientWidth = 426
       object Panel2: TPanel
         Left = 0
         Height = 23
-        Top = 285
+        Top = 301
         Width = 426
         Align = alBottom
         BevelOuter = bvNone
@@ -976,9 +340,9 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         TabOrder = 0
         object cbLaunchWaptConsoleOnExit: TCheckBox
           Left = 4
-          Height = 17
+          Height = 19
           Top = 4
-          Width = 167
+          Width = 182
           Caption = 'Run WAPT console after setup'
           Checked = True
           State = cbChecked
@@ -987,12 +351,12 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object panFinish: TPanel
         Left = 0
-        Height = 285
+        Height = 301
         Top = 0
         Width = 426
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 285
+        ClientHeight = 301
         ClientWidth = 426
         TabOrder = 1
         object Memo7: TMemo
@@ -1032,11 +396,11 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Left = 0
     Height = 30
     Top = 352
-    Width = 680
+    Width = 739
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 30
-    ClientWidth = 680
+    ClientWidth = 739
     TabOrder = 1
     object ButPrevious: TBitBtn
       Left = 396
@@ -1181,7 +545,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
   end
   object HTMLViewer1: THTMLViewer
-    Left = 434
+    Left = 493
     Height = 352
     Top = 0
     Width = 246
@@ -1226,8 +590,6 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object ActCreateKey: TAction
       Caption = 'Generate keypair'
-      OnExecute = ActCreateKeyExecute
-      OnUpdate = ActCreateKeyUpdate
     end
     object ActCancel: TAction
       Caption = 'Cancel'
@@ -1238,7 +600,6 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object ActBuildWaptsetup: TAction
       Caption = 'Create custom installer'
-      OnExecute = ActBuildWaptsetupExecute
     end
   end
 end
