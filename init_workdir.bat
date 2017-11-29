@@ -37,6 +37,9 @@ REM Patch x509 certificate signature checking
 copy /Y utils\patch-cryptography\__init__.py  lib\site-packages\cryptography\x509\
 copy /Y utils\patch-cryptography\verification.py  lib\site-packages\cryptography\x509\
 
+REM Patch enginio disconnection exception handling (engineio version == '1.7.0')
+copy /Y utils\patch-engineio\socket.py  lib\site-packages\engineio\
+
 REM get iscc nginx and pgsql binaries
 waptpython.exe update_binaries.py
 
