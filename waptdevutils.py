@@ -350,7 +350,7 @@ def build_waptupgrade_package(waptconfigfile,target_directory=None,wapt_server_u
     key = wapt.private_key(private_key_password=key_password)
     if not cert.is_code_signing:
         raise Exception(u'%s is not code signing certificate' % wapt.personal_certificate_path)
-    entry.sign_package(private_key=key,certificate = cert,private_key_password=key_password)
+    entry.sign_package(private_key=key,certificate = cert,private_key_password=key_password,mds = wapt.sign_digests)
 
     wapt.http_upload_package(entry.localpath,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
     return entry.as_dict()
