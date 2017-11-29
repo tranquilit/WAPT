@@ -220,16 +220,16 @@ object VisCreateKey: TVisCreateKey
         Left = 6
         Height = 1
         Top = 3
-        Width = 208
+        Width = 148
         AutoSize = True
         BevelOuter = bvNone
         TabOrder = 0
       end
       object PanSize2: TPanel
-        Left = 220
+        Left = 160
         Height = 1
         Top = 3
-        Width = 162
+        Width = 222
         AutoSize = True
         BorderSpacing.Right = 30
         BevelOuter = bvNone
@@ -240,7 +240,7 @@ object VisCreateKey: TVisCreateKey
         Height = 21
         Hint = 'Where to save the private key. This directory must be secure.'
         Top = 7
-        Width = 208
+        Width = 148
         Caption = 'Target keys directory:'
         Font.Style = [fsBold]
         Layout = tlCenter
@@ -248,10 +248,10 @@ object VisCreateKey: TVisCreateKey
         ParentFont = False
       end
       object DirectoryCert: TDirectoryEdit
-        Left = 220
+        Left = 160
         Height = 21
         Top = 7
-        Width = 162
+        Width = 222
         OnAcceptDirectory = DirectoryCertAcceptDirectory
         DialogTitle = 'Select traget directory for keys and certificates'
         ShowHidden = False
@@ -267,7 +267,7 @@ object VisCreateKey: TVisCreateKey
         Height = 21
         Hint = 'E.g. ''tranquilit''. Please don''t use any special characters.'
         Top = 31
-        Width = 208
+        Width = 148
         Caption = 'Key filename :'
         Font.Style = [fsBold]
         Layout = tlCenter
@@ -275,10 +275,10 @@ object VisCreateKey: TVisCreateKey
         ParentFont = False
       end
       object EdKeyFilename: TFileNameEdit
-        Left = 220
+        Left = 160
         Height = 21
         Top = 31
-        Width = 162
+        Width = 222
         OnAcceptFileName = EdKeyFilenameAcceptFileName
         DialogOptions = [ofNoTestFileCreate, ofEnableSizing, ofViewDetail]
         Filter = 'X509 private key files (*.pem)|*.pem|All files (*.*)|*.*'
@@ -295,7 +295,7 @@ object VisCreateKey: TVisCreateKey
         Left = 6
         Height = 21
         Top = 55
-        Width = 208
+        Width = 148
         Caption = 'Private key password'
         Font.Style = [fsBold]
         Layout = tlCenter
@@ -303,11 +303,12 @@ object VisCreateKey: TVisCreateKey
         ParentFont = False
       end
       object EdKeyPassword: TEdit
-        Left = 220
+        Left = 160
         Height = 21
         Hint = 'Used to decrypt or encrypt private jkey'
         Top = 55
-        Width = 162
+        Width = 222
+        Constraints.MinWidth = 200
         EchoMode = emPassword
         PasswordChar = '*'
         TabOrder = 4
@@ -316,7 +317,7 @@ object VisCreateKey: TVisCreateKey
         Left = 6
         Height = 21
         Top = 79
-        Width = 208
+        Width = 148
         Caption = 'Confirm password'
         Layout = tlCenter
         ParentColor = False
@@ -324,10 +325,10 @@ object VisCreateKey: TVisCreateKey
         Visible = False
       end
       object EdKeypassword2: TEdit
-        Left = 220
+        Left = 160
         Height = 21
         Top = 79
-        Width = 162
+        Width = 222
         EchoMode = emPassword
         PasswordChar = '*'
         TabOrder = 5
@@ -365,7 +366,7 @@ object VisCreateKey: TVisCreateKey
         Height = 21
         Hint = 'Base filename of the certificate'
         Top = 10
-        Width = 184
+        Width = 152
         BorderSpacing.Top = 10
         Caption = 'Certificate name'
         Font.Style = [fsBold]
@@ -374,28 +375,29 @@ object VisCreateKey: TVisCreateKey
         ParentFont = False
       end
       object edCertBaseName: TEdit
-        Left = 196
+        Left = 164
         Height = 21
         Hint = 'This information will be used as Signer identification in packages'
         Top = 10
-        Width = 186
+        Width = 218
         BorderSpacing.Right = 30
+        Constraints.MinWidth = 200
         TabOrder = 0
       end
       object PanCertAttributesFiller: TPanel
         Left = 6
         Height = 43
         Top = 34
-        Width = 184
+        Width = 152
         BevelOuter = bvNone
         TabOrder = 1
         Visible = False
       end
       object PanCertAttributes: TPanel
-        Left = 196
+        Left = 164
         Height = 43
         Top = 34
-        Width = 186
+        Width = 218
         AutoSize = True
         BevelOuter = bvNone
         ChildSizing.LeftRightSpacing = 6
@@ -406,7 +408,7 @@ object VisCreateKey: TVisCreateKey
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 2
         ClientHeight = 43
-        ClientWidth = 186
+        ClientWidth = 218
         TabOrder = 2
         Visible = False
         object Filler2: TPanel
@@ -421,7 +423,7 @@ object VisCreateKey: TVisCreateKey
           Left = 15
           Height = 17
           Top = 3
-          Width = 165
+          Width = 197
           Caption = 'Tag as code signing'
           Checked = True
           State = cbChecked
@@ -439,7 +441,7 @@ object VisCreateKey: TVisCreateKey
           Left = 15
           Height = 17
           Top = 23
-          Width = 165
+          Width = 197
           Caption = 'Tag as CA Certificate'
           Checked = True
           State = cbChecked
@@ -450,7 +452,7 @@ object VisCreateKey: TVisCreateKey
         Left = 6
         Height = 21
         Top = 80
-        Width = 184
+        Width = 152
         Caption = 'Common Name(CN) :'
         Font.Style = [fsBold]
         Layout = tlCenter
@@ -458,11 +460,11 @@ object VisCreateKey: TVisCreateKey
         ParentFont = False
       end
       object edCommonName: TEdit
-        Left = 196
+        Left = 164
         Height = 21
         Hint = 'This information will be used as Signer identification in packages'
         Top = 80
-        Width = 186
+        Width = 218
         OnExit = edCommonNameExit
         TabOrder = 3
       end
@@ -470,17 +472,17 @@ object VisCreateKey: TVisCreateKey
         Left = 6
         Height = 14
         Top = 111
-        Width = 184
+        Width = 152
         AutoSize = True
         BorderSpacing.Top = 10
         Caption = 'Optional information'
         TabOrder = 4
       end
       object Filler: TPanel
-        Left = 196
+        Left = 164
         Height = 14
         Top = 111
-        Width = 186
+        Width = 218
         BevelOuter = bvNone
         TabOrder = 5
       end
@@ -488,17 +490,17 @@ object VisCreateKey: TVisCreateKey
         Left = 6
         Height = 21
         Top = 128
-        Width = 184
+        Width = 152
         Caption = 'City :'
         Layout = tlCenter
         ParentColor = False
       end
       object edLocality: TEdit
-        Left = 196
+        Left = 164
         Height = 21
         Hint = 'E.g. : Nantes'
         Top = 128
-        Width = 186
+        Width = 218
         TabOrder = 6
       end
       object LabCountry: TLabel
@@ -506,7 +508,7 @@ object VisCreateKey: TVisCreateKey
         Height = 21
         Hint = 'Main site country code'
         Top = 152
-        Width = 184
+        Width = 152
         Caption = 'Country (2 chars. E.g. : FR):'
         Layout = tlCenter
         ParentColor = False
@@ -514,10 +516,10 @@ object VisCreateKey: TVisCreateKey
         ShowHint = True
       end
       object edCountry: TEdit
-        Left = 196
+        Left = 164
         Height = 21
         Top = 152
-        Width = 186
+        Width = 218
         MaxLength = 2
         TabOrder = 8
         Text = 'FR'
@@ -527,17 +529,17 @@ object VisCreateKey: TVisCreateKey
         Height = 21
         Hint = 'E.g. : IT department.'
         Top = 176
-        Width = 184
+        Width = 152
         Caption = 'Service :'
         Layout = tlCenter
         ParentColor = False
       end
       object edUnit: TEdit
-        Left = 196
+        Left = 164
         Height = 21
         Hint = 'E.g. : IT'
         Top = 176
-        Width = 186
+        Width = 218
         TabOrder = 10
       end
       object LabOrg: TLabel
@@ -545,17 +547,17 @@ object VisCreateKey: TVisCreateKey
         Height = 21
         Hint = 'Your company name'
         Top = 200
-        Width = 184
+        Width = 152
         Caption = 'Organisation:'
         Layout = tlCenter
         ParentColor = False
       end
       object edOrganization: TEdit
-        Left = 196
+        Left = 164
         Height = 21
         Hint = 'E.g. : Tranquil It Systems'
         Top = 200
-        Width = 186
+        Width = 218
         TabOrder = 7
       end
       object LabMail: TLabel
@@ -563,17 +565,17 @@ object VisCreateKey: TVisCreateKey
         Height = 21
         Hint = 'Technical department e-mail address.'
         Top = 224
-        Width = 184
+        Width = 152
         Caption = 'E-mail address :'
         Layout = tlCenter
         ParentColor = False
       end
       object edEmail: TEdit
-        Left = 196
+        Left = 164
         Height = 21
         Hint = 'E.g. : technique@tranquil-it-systems.fr'
         Top = 224
-        Width = 186
+        Width = 218
         TabOrder = 9
       end
     end
