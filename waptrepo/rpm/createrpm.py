@@ -85,7 +85,7 @@ def get_wapt_version():
 wapt_version = get_wapt_version()
 
 if not wapt_version:
-    eprint('version "%s" incorrecte dans waptpackage.py' % (wapt_version,))
+    eprint('version "%s" incorrecte dans waptutils.py' % (wapt_version,))
     sys.exit(1)
 
 new_umask = 022
