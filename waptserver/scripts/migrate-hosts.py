@@ -60,7 +60,7 @@ if __name__ == '__main__':
 
     server_pwd = getpass.getpass('Admin wapt server password:')
 
-    hosts = json.loads(requests.get('http://127.0.0.1/%s/api/v1/hosts?columns=uuid,computer_fqdn' % instance,auth=('admin',server_pwd)).content)
+    hosts = json.loads(requests.get('http://127.0.0.1:%s/api/v1/hosts?columns=uuid,computer_fqdn' % conf['waptserver_port'],auth=('admin',server_pwd)).content)
 
     host_map = {}
 
