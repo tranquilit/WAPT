@@ -658,7 +658,7 @@ def upload_packages():
             if entry.section == 'host':
                 (added,removed) = sync_host_groups(entry)
                 if added or removed:
-                    Hosts.update(wapt_status='TO-UPGRADE').where(Hosts.uuid == entry.package).execute()
+                    Hosts.update(host_status='TO-UPGRADE').where(Hosts.uuid == entry.package).execute()
 
             return entry
 
