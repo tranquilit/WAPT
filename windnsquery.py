@@ -25,8 +25,6 @@
 #
 # -----------------------------------------------------------------------
 
-__version__ = "1.5.1.6"
-
 import ctypes
 from ctypes import wintypes
 from ctypes import *
@@ -637,18 +635,18 @@ def dnsquery_srv(name,opt=DNS_QUERY_BYPASS_CACHE | DNS_QUERY_NO_LOCAL_NAME | DNS
     res = dnsquery_raw(name, DNS_TYPE_SRV , opt=opt)
     while res:
         if res.contents.wType == DNS_TYPE_SRV:
-            result.append((res.contents.Data.SRV.wPriority,res.contents.Data.SRV.wWeight,res.contents.Data.SRV.pNameTarget,res.contents.Data.SRV.wPort))
+            result.append((sres.contents.Data.SRV.wPriority,res.contents.Data.SRV.wWeight,res.contents.Data.SRV.pNameTarget,res.contents.Data.SRV.wPort))
         res = res.contents.pNext
     return result
 
 
 if __name__ == "__main__":
-    print dnsquery_a('wapt.tranquilit.local')
+    print dnsquery_a('srvwapt.ad.tranquil.it')
 
     res =  dnsquery_raw("www.google.com", DNS_TYPE_A , opt=DNS_QUERY_BYPASS_CACHE | DNS_QUERY_NO_LOCAL_NAME | DNS_QUERY_NO_HOSTS_FILE)
     print  ipv4_to_str(res.contents.Data.A.IpAddress)
 
-    res =  dnsquery_raw("_wapt._tcp.tranquilit.local", DNS_TYPE_SRV , opt=DNS_QUERY_BYPASS_CACHE | DNS_QUERY_NO_LOCAL_NAME | DNS_QUERY_NO_HOSTS_FILE)
+    res =  dnsquery_raw("_wapt._tcp.ad.tranquil.it", DNS_TYPE_SRV , opt=DNS_QUERY_BYPASS_CACHE | DNS_QUERY_NO_LOCAL_NAME | DNS_QUERY_NO_HOSTS_FILE)
     r = res
     while r:
         if r.contents.wType == DNS_TYPE_SRV:
@@ -658,5 +656,5 @@ if __name__ == "__main__":
         else:
             print r.contents.pName,r.contents.wType
         r = r.contents.pNext
-    print dnsquery_a('wapt')
+    print dnsquery_a('srvwapt')
 

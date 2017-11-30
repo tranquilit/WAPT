@@ -20,7 +20,6 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from waptserver_config import __version__
 
 # old function to install waptserver on windows. need to be rewritten (switch to nginx, websocket, etc.)
 
@@ -36,6 +35,8 @@ except:
 sys.path.insert(0, os.path.join(wapt_root_dir))
 sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
 sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
+
+from waptserver_config import __version__
 
 from waptserver_utils import *
 import waptserver_config

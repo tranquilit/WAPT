@@ -2,8 +2,6 @@
 import sys
 import os
 
-__version__ = '1.5.1'
-
 import os,sys
 try:
     wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)),'../..'))
@@ -15,6 +13,7 @@ sys.path.insert(0,os.path.join(wapt_root_dir,'waptserver'))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib'))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
 
+from waptutils import __version__
 
 import requests
 import json

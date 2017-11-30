@@ -20,7 +20,6 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from waptserver_config import __version__
 
 usage = """\
 %prog [-c configfile] [-l loglevel] action
@@ -47,6 +46,8 @@ except:
 sys.path.insert(0, os.path.join(wapt_root_dir))
 sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
 sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
+
+from waptserver_config import __version__
 
 import logging
 import ConfigParser

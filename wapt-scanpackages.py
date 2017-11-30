@@ -20,7 +20,6 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from waptutils import __version__
 
 import os
 import sys
@@ -34,6 +33,7 @@ sys.path.insert(0,os.path.join(wapt_root_dir))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib'))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
 
+from waptutils import __version__
 from waptpackage import update_packages
 
 from optparse import OptionParser

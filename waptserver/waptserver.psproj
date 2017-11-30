@@ -45,62 +45,70 @@ FileName=C:\tranquilit\wapt\common.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\setuphelpers.py
+FileName=$[Project-Path]scripts\migrate-hosts.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node4]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptcrypto.py
+FileName=$[Project-Path]scripts\postconf.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node5]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]wapthuey.py
+FileName=C:\tranquilit\wapt\setuphelpers.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node6]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptpackage.py
+FileName=C:\tranquilit\wapt\waptcrypto.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node7]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-scanpackages.py
+FileName=$[Project-Path]wapthuey.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node8]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver.py
+FileName=C:\tranquilit\wapt\waptpackage.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node9]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver_config.py
+FileName=C:\tranquilit\wapt\wapt-scanpackages.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node10]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver_model.py
+FileName=$[Project-Path]waptserver.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node11]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver_upgrade.py
+FileName=$[Project-Path]waptserver_config.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node12]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver_utils.py
+FileName=$[Project-Path]waptserver_model.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node13]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver_winsetup.py
+FileName=$[Project-Path]waptserver_upgrade.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node14]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-signpackages.py
+FileName=$[Project-Path]waptserver_utils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node15]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptutils.py
+FileName=$[Project-Path]waptserver_winsetup.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node16]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\wapt-signpackages.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node17]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptutils.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node18]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]wsus.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=17
+Count=19
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
