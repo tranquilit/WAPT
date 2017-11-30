@@ -635,7 +635,7 @@ def dnsquery_srv(name,opt=DNS_QUERY_BYPASS_CACHE | DNS_QUERY_NO_LOCAL_NAME | DNS
     res = dnsquery_raw(name, DNS_TYPE_SRV , opt=opt)
     while res:
         if res.contents.wType == DNS_TYPE_SRV:
-            result.append((sres.contents.Data.SRV.wPriority,res.contents.Data.SRV.wWeight,res.contents.Data.SRV.pNameTarget,res.contents.Data.SRV.wPort))
+            result.append((res.contents.Data.SRV.wPriority,res.contents.Data.SRV.wWeight,res.contents.Data.SRV.pNameTarget,res.contents.Data.SRV.wPort))
         res = res.contents.pNext
     return result
 
