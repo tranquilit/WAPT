@@ -543,7 +543,7 @@ def dnsquery(name, type, server=0, opt=0):
         list : list of windows dns records. Use type property
                  data.A.* or data.CNAME.* etc... to access fields
 
-    >>> [ ipv4_to_str(r.Data.A.IpAddress) for r in dnsquery('srvwapt.tranquilit.local',DNS_TYPE_A) if r.wType == DNS_TYPE_A]
+    >>> [ ipv4_to_str(r.Data.A.IpAddress) for r in dnsquery('srvwapt.ad.tranquil.it',DNS_TYPE_A) if r.wType == DNS_TYPE_A]
     ['192.168.149.37']
 
     """
@@ -566,7 +566,7 @@ def dnsquery_a(name,opt=DNS_QUERY_BYPASS_CACHE | DNS_QUERY_NO_LOCAL_NAME | DNS_Q
     Returns:
         list : list of str, IP matching the <name>
 
-    >>> dnsquery_a('srvwapt.tranquilit.local')
+    >>> dnsquery_a('srvwapt.ad.tranquil.it')
     ['192.168.149.37']
 
     >>> dnsquery_a('www.google.com')
@@ -598,8 +598,8 @@ def dnsquery_cname(name,opt=DNS_QUERY_BYPASS_CACHE | DNS_QUERY_NO_LOCAL_NAME | D
     Returns:
         list : list of str, matching targets for the <name>
 
-    >>> dnsquery_cname('wapt.tranquilit.local')
-    ['srvwapt.tranquilit.local']
+    >>> dnsquery_cname('wapt.ad.tranquil.it')
+    ['srvwapt.ad.tranquil.it']
 
     """
 
@@ -621,14 +621,14 @@ def dnsquery_srv(name,opt=DNS_QUERY_BYPASS_CACHE | DNS_QUERY_NO_LOCAL_NAME | DNS
     Returns:
         list : list of (prio,weight,dnsname,port)
 
-    >>> dnsquery_srv('_wapt._tcp.tranquilit.local')
-    [(30, 0, 'waptwifi.tranquilit.local', 80),
+    >>> dnsquery_srv('_wapt._tcp.ad.tranquil.it')
+    [(30, 0, 'waptwifi.ad.tranquil.it', 80),
      (20, 0, 'nexiste2pas.tranquil.it', 80),
      (20, 0, 'srvinstallation.tranquil.it', 80),
-     (20, 0, 'nexistepas.tranquilit.local', 80),
-     (20, 0, 'wapt.tranquilit.local', 80)]
-    >>> dnsquery_srv('_ldap._tcp.tranquilit.local')
-    [(0, 100, 'srvads.tranquilit.local', 389)]
+     (20, 0, 'nexistepas.ad.tranquil.it', 80),
+     (20, 0, 'wapt.ad.tranquil.it', 80)]
+    >>> dnsquery_srv('_ldap._tcp.ad.tranquil.it')
+    [(0, 100, 'srvads.ad.tranquil.it', 389)]
 
     """
     result = []

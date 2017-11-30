@@ -53,9 +53,8 @@ def debian_major():
     return platform.linux_distribution()[1].split('.')[0]
 
 def git_hash():
-    from git import Repo
     r = Repo('.',search_parent_directories = True)
-    return r.active_branch.object.name_rev[:8]
+    return '%04d_%s' % (r.active_branch.commit.count(),r.active_branch.object.name_rev[:8])
 
 def dev_revision():
     return 'tisdeb%s-%s' % (debian_major(), git_hash())
