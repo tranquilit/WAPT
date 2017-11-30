@@ -123,10 +123,10 @@ if (not check_if_package_is_installed('python-virtualenv')
     or not check_if_package_is_installed('openldap-devel')
     ):
     eprint("""
-######################################################################################
+#########################################################################################################################
      Please install build time packages first:
-        yum install -y python-virtualenv gcc libffi-devel openssl-devel openldap-devel
-######################################################################################
+        yum install -y python-virtualenv gcc libffi-devel openssl-devel openldap-devel python-pip postgresql-devel.x86_64
+#########################################################################################################################
 """)
     sys.exit(1)
 
@@ -149,6 +149,7 @@ if os.path.exists('pylibs'):
 eprint(
     'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
 run_verbose(r'virtualenv ./pylibs')
+run_verbose('pip install --upgrade pip')
 eprint('Install additional libraries in build environment virtualenv')
 run_verbose(r'source ./pylibs/bin/activate ;curl https://bootstrap.pypa.io/ez_setup.py | python')
 run_verbose(r'source ./pylibs/bin/activate ;pip install pip setuptools --upgrade')
