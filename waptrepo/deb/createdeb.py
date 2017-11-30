@@ -116,7 +116,7 @@ wapt_source_dir = os.path.abspath('../..')
 source_dir = os.path.abspath('..')
 
 wapt_version = None
-for line in file('../../waptpackage.py', 'r').readlines():
+for line in file('../../waptutils.py', 'r').readlines():
     if line.strip().startswith('__version__'):
         wapt_version = line.split('=')[1].strip().replace('"','').replace("'","")
 

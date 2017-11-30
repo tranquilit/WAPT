@@ -74,7 +74,7 @@ def get_wapt_version():
        we get import error on build farm due to M2Crypto
        it would be better to reimplement this using an AST
        """
-    with open('%s/waptpackage.py' % wapt_source_dir,'r') as file_source :
+    with open('%s/waptutils.py' % wapt_source_dir,'r') as file_source :
         for line in file_source.readlines():
             if line.strip().startswith('__version__'):
                 version =  line.split('=')[1].strip()

@@ -93,7 +93,7 @@ if new_umask != old_umask:
     eprint('umask fixed (previous %03o, current %03o)' %
           (old_umask, new_umask))
 
-for line in open('%s/waptserver.py' % source_dir):
+for line in open('%s/waptserver_config.py' % source_dir):
     if line.strip().startswith('__version__'):
         wapt_version = line.split('=')[
             1].strip().replace('"', '').replace("'", '')
