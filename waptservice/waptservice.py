@@ -19,7 +19,6 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.1.6"
 import time
 import sys
 import os
@@ -33,6 +32,8 @@ except:
 sys.path.append(os.path.join(wapt_root_dir))
 sys.path.append(os.path.join(wapt_root_dir,'lib'))
 sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
+
+from waptutils import __version__
 
 import ConfigParser
 from optparse import OptionParser

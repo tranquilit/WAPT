@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = '1.5.1.6'
+from waptserver_config import __version__
 
 # old function to install waptserver on windows. need to be rewritten (switch to nginx, websocket, etc.)
 

@@ -34,8 +34,7 @@
 
 """
 from __future__ import print_function
-
-__version__ = "1.5.1.6"
+from waptutils import __version__
 
 import sys,os
 import shutil

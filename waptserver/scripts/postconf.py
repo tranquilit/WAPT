@@ -407,7 +407,7 @@ def main():
        waptserver_ini.write(inifile)
     run("/bin/chmod 640 /opt/wapt/conf/waptserver.ini")
     run("/bin/chown wapt /opt/wapt/conf/waptserver.ini")
- 
+
     # Restart Apache screen
     run('python /opt/wapt/wapt-scanpackages.py %s ' % wapt_folder)
 
