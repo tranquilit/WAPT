@@ -4786,20 +4786,6 @@ object VisWaptGUI: TVisWaptGUI
       OnUpdate = ActAddDependsUpdate
       ShortCut = 16430
     end
-    object ActDeleteHostsPackages: TAction
-      Category = 'hosts'
-      Caption = 'Remove Host configuration only'
-      ImageIndex = 3
-      OnExecute = ActDeleteHostsPackageAndInventoryExecute
-      OnUpdate = ActAddDependsUpdate
-    end
-    object ActDeleteHostsAndInventory: TAction
-      Category = 'hosts'
-      Caption = 'Remove host configuration and inventory '
-      ImageIndex = 3
-      OnExecute = ActDeleteHostsPackageAndInventoryExecute
-      OnUpdate = ActAddDependsUpdate
-    end
     object ActDeletePackage: TAction
       Category = 'packages'
       Caption = 'Remove from repository'

@@ -33,12 +33,10 @@ type
     ActEnglish: TAction;
     ActCleanCache: TAction;
     ActAddADSGroups: TAction;
-    ActDeleteHostsAndInventory: TAction;
     ActGerman: TAction;
     ActComputerMgmt: TAction;
     ActComputerUsers: TAction;
     ActComputerServices: TAction;
-    ActDeleteHostsPackages: TAction;
     ActChangePrivateKeypassword: TAction;
     ActTISHelp: TAction;
     ActRevokeCert: TAction;
