@@ -350,7 +350,7 @@ class SSLCABundle(object):
     def certificate_chain(self,certificate):
         # return certificate chain from certificate, without checking certificate signatures and validity
         result = []
-        issuer_cert = self.certificate_for_subject_hash(certificate.issuer_subject_hash)
+        issuer_cert = self.certificate_for_subject_key_identifier(certificate.authority_key_identifier)
         if issuer_cert:
             result.append(certificate)
         while issuer_cert:
@@ -359,11 +359,11 @@ class SSLCABundle(object):
                 logger.debug('Certificate %s issued by non CA certificate %s' % (certificate,issuer_cert))
                 break
             result.append(issuer_cert)
-            issuer_subject_hash = issuer_cert.issuer_subject_hash
+            authority_key_identifier = issuer_cert.authority_key_identifier
             # halt on top self signed certificate
-            if issuer_subject_hash == issuer_cert.subject_hash:
+            if authority_key_identifier == issuer_cert.subject_key_identifier:
                 break
-            issuer_cert = self.certificate_for_subject_hash(issuer_subject_hash)
+            issuer_cert = self.certificate_for_subject_key_identifier(authority_key_identifier)
         return result
 
     def is_known_issuer(self,certificate,include_self=True):
@@ -466,7 +466,7 @@ class SSLCABundle(object):
         (cache_expiration_date,cached_chain) = self._cert_chains_cache.get(cache_key,(None,None))
         if not cache_expiration_date or cache_expiration_date < time.time():
             # build an index of certificates in chain for intermediates CA
-            idx = dict([crt.subject_hash,crt] for crt in cert_chain)
+            idx = dict([crt.subject_key_identifier,crt] for crt in cert_chain)
             check_cert(cert)
             result= [cert]
             while cert:
@@ -481,7 +481,7 @@ class SSLCABundle(object):
                     return result
                 except SSLVerifyException as e:
                     # try to use intermediate from supplied list
-                    issuer = idx.get(cert.issuer_subject_hash,None)
+                    issuer = idx.get(cert.authority_key_identifier,None)
                     if not issuer:
                         raise EWaptCertificateUnknownIssuer('Unknown issuer %s for certificate %s'%(result[-1].issuer_cn,result[-1].cn))
 
@@ -508,6 +508,7 @@ class SSLCABundle(object):
         self._cert_chains_cache.clear()
         oldcrl = self.crl_for_authority_key_identifier(crl.authority_key_identifier)
         if oldcrl is None:
+            # check with alternative method
             oldcrl = self.crl_for_issuer_subject_hash(crl.issuer_subject_hash)
 
         if (oldcrl and crl > oldcrl) or not oldcrl:
@@ -542,7 +543,7 @@ class SSLCABundle(object):
             for_certificates = [for_certificates]
 
         for cert in for_certificates:
-            issuer_cert = self.certificate_for_subject_hash(cert.issuer_subject_hash)
+            issuer_cert = self.certificate_for_subject_key_identifier(cert.authority_key_identifier)
             if not issuer_cert:
                 issuer_urls = cert.issuer_cert_urls()
                 for url in issuer_urls:
@@ -552,7 +553,7 @@ class SSLCABundle(object):
                         issuer_cert = SSLCertificate(crt_string = cert_data)
                         self.add_certificates(issuer_cert)
                         result.append(issuer_cert)
-                        if self.certificate_for_subject_hash(issuer_cert.issuer_subject_hash) is None:
+                        if self.certificate_for_subject_key_identifier(issuer_cert.authority_key_identifier) is None:
                             result.extend(self.download_issuer_certs(force=False,for_certificates=issuer_cert))
                         break
                     except Exception as e:
@@ -580,6 +581,7 @@ class SSLCABundle(object):
             for url in crl_urls:
                 ssl_crl = self.crl_for_authority_key_identifier(cert.authority_key_identifier)
                 if ssl_crl is None:
+                    # check with alternative method
                     ssl_crl = self.crl_for_issuer_subject_hash(cert.issuer_subject_hash)
 
                 if force or not ssl_crl or ssl_crl.next_update < datetime.datetime.utcnow():
@@ -631,6 +633,7 @@ class SSLCABundle(object):
         """Raise exception if certificate has been revoked before now"""
         crl = self.crl_for_authority_key_identifier(cert.authority_key_identifier)
         if crl is None:
+            # check with alternative method
             crl = self.crl_for_issuer_subject_hash(cert.issuer_subject_hash)
         if crl:
             if crl.next_update < datetime.datetime.utcnow():
@@ -1605,7 +1608,7 @@ class SSLCertificate(object):
         elif isinstance(cabundle,list):
             cabundle = SSLCABundle(certificates = cabundle)
 
-        issuer = cabundle.certificate_for_subject_hash(certificate.issuer_subject_hash)
+        issuer = cabundle.certificate_for_subject_key_identifier(certificate.authority_key_identifier)
 
         if not issuer:
             raise SSLVerifyException('Issuer CA certificate %s can not be found in supplied bundle'%self.issuer_dn)
@@ -1616,10 +1619,10 @@ class SSLCertificate(object):
                 verifier.update(certificate.crt)
                 verifier.verify()
                 chain.append(issuer)
-                if issuer.subject_hash == issuer.issuer_subject_hash:
+                if issuer.subject_key_identifier == issuer.authority_key_identifier:
                     break
                 certificate = issuer
-                issuer = cabundle.certificate_for_subject_hash(certificate.issuer_subject_hash)
+                issuer = cabundle.certificate_for_subject_key_identifier(certificate.authority_key_identifier)
             except Exception as e:
                 logger.critical("Certificate validation error for certificate %s : %s" % (issuer.subject,e))
                 raise
