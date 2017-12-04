@@ -611,6 +611,9 @@ class SSLCABundle(object):
                         except Exception as e:
                             logger.debug('trying PEM format...')
                             ssl_crl = SSLCRL(pem_data = crl_data)
+
+                        ssl_crl.verify_signature_with(self)
+
                         self.add_crl(ssl_crl)
                         result.append(ssl_crl)
                     except Exception as e:
@@ -1800,7 +1803,7 @@ class SSLCRL(object):
             verifier.verify()
             # append CRL issuer chain
             chain.extend(issuer.verify_signature_with(cabundle))
-            return
+            return chain
         except Exception as e:
             logger.critical("CRL validation error on certificate %s : %s" % (issuer.subject,e))
             raise
