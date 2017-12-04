@@ -2128,14 +2128,14 @@ class WaptRemoteRepo(WaptBaseRepo):
     True
     """
 
-    def __init__(self,url=None,name='',verify_cert=None,proxies=None,timeout = 2,cabundle=None,config=None):
+    def __init__(self,url=None,name='',verify_cert=None,http_proxy=None,timeout = 2,cabundle=None,config=None):
         """Initialize a repo at url "url".
 
         Args:
             name (str): internal local name of this repository
             url  (str): http URL to the repository.
                  If url is None, the url is requested from DNS by a SRV query
-            proxies (dict): configuration of http proxies as defined for requests
+            http_proxy (str): url of proxy like  http://proxy:port
             timeout (float): timeout in seconds for the connection to the rmeote repository
             config (RawConfigParser) : loads conf from this Parser
         """

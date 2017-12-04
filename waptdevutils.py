@@ -58,7 +58,6 @@ from tempfile import mkdtemp
 
 from shutil import rmtree
 
-create_self_signed_key = common.create_self_signed_key
 is_match_password = common.check_key_password
 import tempfile
 
@@ -187,8 +186,7 @@ def update_external_repo(repourl,search_string,proxy=None,myrepo=None,my_prefix=
     >>> isinstance(firefox,list) and firefox[-1].package == 'tis-firefox-esr'
     True
     """
-    proxies =  {'http':proxy,'https':proxy}
-    repo = WaptRemoteRepo(url=repourl,proxies=proxies,name=repo_name)
+    repo = WaptRemoteRepo(url=repourl,http_proxy=proxy,name=repo_name)
     if verify_cert == '' or verify_cert == '0':
         verify_cert = False
     repo.verify_cert = verify_cert

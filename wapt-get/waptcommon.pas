@@ -211,6 +211,8 @@ const
 
   WAPTServerMinVersion='1.5.1.7';
 
+  FAppIniFilename:Utf8String = '';
+
 implementation
 
 uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
@@ -1291,8 +1293,17 @@ end;
 
 function AppIniFilename: Utf8String;
 begin
-  //Result :=  IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetSpecialFolderPath(CSIDL_LOCAL_APPDATA))+ApplicationName)+ApplicationName+'.ini';
-  result := AnsiToUtf8(GetAppConfigDir(False))+ApplicationName+'.ini';
+  if FAppIniFilename = '' then
+  begin
+    FAppIniFilename := GetCmdParams('ConfigFilename',ApplicationName+'.ini');
+    if ExtractFileDir(FAppIniFilename)='' then
+      FAppIniFilename := IncludeTrailingPathDelimiter(GetAppConfigDir(False))+FAppIniFilename;
+    if ExtractFileExt(FAppIniFilename)='' then
+      FAppIniFilename := FAppIniFilename+'.ini';
+    FAppIniFilename := AnsiToUtf8(FAppIniFilename);
+    //Result :=  IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetSpecialFolderPath(CSIDL_LOCAL_APPDATA))+ApplicationName)+ApplicationName+'.ini';
+  end;
+  Result := FAppIniFilename;
 end;
 
 function WaptIniFilename: Utf8String;

@@ -164,6 +164,13 @@ begin
   WaptRepo.Name:=AValue;
   WaptRepo.LoadFromInifile(WaptIniFilename,AValue);
   EdName.ReadOnly:=AValue<>'';
+
+  cbCheckHTTPS.Checked:=(FWaptRepo.ServerCABundle <>'') and (FWaptRepo.ServerCABundle<>'0');
+  cbCheckHTTPSClick(Nil);
+
+  CBCheckSignature.Checked:=(FWaptRepo.SignersCABundle <>'');
+  CBCheckSignatureClick(Nil);
+
 end;
 
 procedure TVisRepositories.ActDownloadCertificateExecute(Sender: TObject);

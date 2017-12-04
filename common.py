@@ -52,7 +52,6 @@ import platform
 import imp
 import socket
 import ssl
-import windnsquery
 import copy
 import getpass
 import psutil
@@ -74,6 +73,10 @@ from collections import OrderedDict
 from types import ModuleType
 
 import shutil
+import urlparse
+
+# Windows stuff
+import windnsquery
 import win32api
 import ntsecuritycon
 import win32security
@@ -84,8 +87,6 @@ from ntsecuritycon import DOMAIN_GROUP_RID_ADMINS,DOMAIN_GROUP_RID_USERS
 
 import ctypes
 from ctypes import wintypes
-
-import urlparse
 
 try:
     from requests_kerberos import HTTPKerberosAuth,DISABLED
@@ -98,65 +99,13 @@ from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,\
     QueryInfoKey,DeleteValue,DeleteKey,\
     KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY,KEY_ALL_ACCESS
 
-import re
-import struct
-import types
-import gc
+# end of windows stuff
 
 from waptutils import *
 from waptcrypto import *
 from waptpackage import *
 
 import setuphelpers
-
-def create_self_signed_key(orgname,
-        wapt_base_dir=None,
-        destdir='c:\\private',
-        country='FR',
-        locality=u'',
-        organization=u'',
-        unit='',
-        commonname='',
-        email='',
-    ):
-    ur"""Creates a self signed key/certificate without password
-    return a dict {'crt_filename': 'c:\\private\\test.crt', 'pem_filename': 'c:\\private\\test.pem'}
-    >>> if os.path.isfile('c:/private/test.pem'):
-    ...     os.unlink('c:/private/test.pem')
-    >>> create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sebastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
-    {'crt_filename': 'c:\\private\\test.crt', 'pem_filename': 'c:\\private\\test.pem'}
-    """
-    if not wapt_base_dir:
-        wapt_base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-
-    destpem = os.path.join(destdir,'%s.pem' % orgname)
-    destcrt = os.path.join(destdir,'%s.crt' % orgname)
-    if not os.path.isdir(destdir):
-        os.makedirs(destdir)
-    params = {
-        u'country':country,
-        u'locality':locality,
-        u'organization':organization,
-        u'unit':unit,
-        u'commonname':commonname,
-        u'email':email,
-        u'req_extensions':'v3_ca',
-    }
-    opensslbin = os.path.join(wapt_base_dir,'openssl.exe')
-    opensslcfg = codecs.open(os.path.join(wapt_base_dir,'templates','openssl_template.cfg'),'r',encoding='utf8').read() % params
-    opensslcfg_fn = os.path.join(destdir,'openssl.cfg')
-    codecs.open(opensslcfg_fn,'w',encoding='utf8').write(opensslcfg)
-    os.environ['OPENSSL_CONF'] =  opensslcfg_fn.encode('utf8')
-    if not os.path.isfile(destpem):
-        out = setuphelpers.run((u'"%(opensslbin)s" req -x509 -utf8  -nodes -days 3650 -sha256 -newkey rsa:2048 -keyout "%(destpem)s" -out "%(destcrt)s"' %
-            {u'opensslbin':opensslbin,u'orgname':orgname,u'destcrt':destcrt,u'destpem':destpem}))
-    else:
-        out = setuphelpers.run(u'"%(opensslbin)s" req -key "%(destpem)s" -utf8 -new -x509 -days 3650 -sha256 -out "%(destcrt)s"' %
-            {u'opensslbin':opensslbin,u'orgname':orgname,u'destcrt':destcrt,u'destpem':destpem})
-    os.unlink(opensslcfg_fn)
-    return {'pem_filename':destpem,'crt_filename':destcrt}
-
-
 
 
 def import_code(code,name='',add_to_sys_modules=0):
@@ -1197,7 +1146,7 @@ class WaptDB(WaptBaseDB):
                 result[p.package] = available
         return result
 
-    def update_repos_list(self,repos_list,proxies=None,force=False,filter_on_host_cap=True):
+    def update_repos_list(self,repos_list,force=False,filter_on_host_cap=True):
         """update the packages database with Packages files from the url repos_list
             removes obsolete records for repositories which are no more referenced
             repos_list : list of all the repositories objects referenced by the system
@@ -1846,14 +1795,14 @@ class WaptRepo(WaptRemoteRepo):
     >>> len(packages)
     """
 
-    def __init__(self,url=None,name='wapt',verify_cert=None,proxies=None,timeout = 2,dnsdomain=None,cabundle=None,config=None):
+    def __init__(self,url=None,name='wapt',verify_cert=None,http_proxy=None,timeout = 2,dnsdomain=None,cabundle=None,config=None):
         """Initialize a repo at url "url".
 
         Args:
             name (str): internal local name of this repository
             url  (str): http URL to the repository.
                  If url is None, the url is requested from DNS by a SRV query
-            proxies (dict): configuration of http proxies as defined for requests
+            http_proxy (str): URL to http proxy or None if no proxy.
             timeout (float): timeout in seconds for the connection to the rmeote repository
             dnsdomain (str): DNS domain to use for autodiscovery of URL if url is not supplied.
 
@@ -1875,7 +1824,7 @@ class WaptRepo(WaptRemoteRepo):
         self._dnsdomain = None
         self._cached_dns_repo_url = None
 
-        WaptRemoteRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,proxies=proxies,timeout=timeout,cabundle=cabundle,config=config)
+        WaptRemoteRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,http_proxy=http_proxy,timeout=timeout,cabundle=cabundle,config=config)
 
         # force with supplied not None parameters
         if dnsdomain is not None:
@@ -2208,10 +2157,10 @@ class WaptHostRepo(WaptRepo):
      PackageEntry('4C4C4544-004E-3510-8051-C7C04F325131','30') ]
     """
 
-    def __init__(self,url=None,name='wapt-host',verify_cert=None,proxies=None,timeout = None,dnsdomain=None,host_id=None,cabundle=None,config=None,host_key=None):
+    def __init__(self,url=None,name='wapt-host',verify_cert=None,http_proxy=None,timeout = None,dnsdomain=None,host_id=None,cabundle=None,config=None,host_key=None):
         self._host_id = None
         self.host_key = None
-        WaptRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,proxies =proxies,timeout = timeout,dnsdomain=dnsdomain,cabundle=cabundle,config=config)
+        WaptRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,http_proxy=http_proxy,timeout = timeout,dnsdomain=dnsdomain,cabundle=cabundle,config=config)
         self.host_id = host_id
 
         if host_key:
@@ -2465,7 +2414,7 @@ class WaptLogger(object):
 
 class Wapt(object):
     """Global WAPT engine"""
-    global_attributes = ['wapt_base_dir','waptserver','config_filename','proxies','repositories','personal_certificate_path','public_certs_dir','package_cache_dir','dbpath']
+    global_attributes = ['wapt_base_dir','waptserver','config_filename','http_proxy','repositories','personal_certificate_path','public_certs_dir','package_cache_dir','dbpath']
 
     def __init__(self,config=None,config_filename=None,defaults=None,disable_update_server_status=True):
         """Initialize engine with a configParser instance (inifile) and other defaults in a dictionary
@@ -3705,7 +3654,7 @@ class Wapt(object):
         """
         previous = self.waptdb.known_packages()
         # (main repo is at the end so that it will used in priority)
-        self.waptdb.update_repos_list(self.repositories,proxies=self.proxies,force=force,
+        self.waptdb.update_repos_list(self.repositories,force=force,
             filter_on_host_cap=filter_on_host_cap)
 
         current = self.waptdb.known_packages()

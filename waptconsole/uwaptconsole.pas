@@ -3698,12 +3698,12 @@ var
 begin
   Result := False;
   // Initialize user local config file with global wapt settings
-  localfn := GetAppConfigDir(False) + ApplicationName + '.ini';
+  localfn := AppIniFilename;
 
   if not FileExistsUTF8(localfn) then
   begin
-    if not DirectoryExistsUTF8(GetAppConfigDir(False)) then
-       ForceDirectoriesUTF8(GetAppConfigDir(False));
+    if not DirectoryExistsUTF8(ExtractFileDir(localFn)) then
+       ForceDirectoriesUTF8(ExtractFileDir(localFn));
     CopyFile(Utf8ToAnsi(WaptIniFilename), Utf8ToAnsi(localfn), True);
   end;
 
@@ -3822,7 +3822,7 @@ begin
       if FileExists(Appuserinipath) then
         SysUtils.DeleteFile(Appuserinipath);
 
-    plStatusBar1.Panels[0].Text := ApplicationName+' '+GetApplicationVersion+' WAPT Community Edition, (c) 2012-2017 Tranquil IT Systems.';
+    plStatusBar1.Panels[0].Text := ApplicationName+' '+GetApplicationVersion+' WAPT Community Edition, (c) 2012-2017 Tranquil IT Systems. (Configguration:'+AppIniFilename+')';
 
     pgWindowsUpdates.TabVisible:=waptcommon.waptwua_enabled;
     pgHostWUA.TabVisible:=waptcommon.waptwua_enabled;

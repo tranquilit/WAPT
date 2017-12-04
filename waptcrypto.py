@@ -93,12 +93,6 @@ def check_key_password(key_filename,password=None):
     Args:
         password (str): or None if key is not encrypted.
 
-    >>> if not os.path.isfile('c:/private/test.pem'):
-    ...     create_self_signed_key('test',organization='Tranquil IT',locality=u'St Sebastien sur Loire',commonname='wapt.tranquil.it',email='...@tranquil.it')
-    >>> check_key_password('c:/private/test.pem','')
-    True
-    >>> check_key_password('c:/private/ko.pem','')
-    False
     """
     try:
         if isinstance(password,unicode):
