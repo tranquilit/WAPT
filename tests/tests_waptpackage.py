@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.1.5"
+__version__ = "1.5.1.8"
 import logging
 import sys
 import tempfile
@@ -691,6 +691,7 @@ def test_update_crl():
     cabundle.update_crl(force=True)
     print cabundle.crls
     crl = cabundle.crls[0]
+    print cabundle.crl_for_authority_key_identifier(crl.authority_key_identifier)
     print crl.verify_signature_with(cabundle)
     cabundle.is_known_issuer(crl)
 
@@ -881,6 +882,9 @@ def edit_host_raw():
 
 if __name__ == '__main__':
     setup_test()
+    test_newcrypto()
+    test_update_crl()
+    test_crl()
     edit_host_raw()
     test_buildupload()
 
@@ -907,16 +911,13 @@ if __name__ == '__main__':
     test_fernet_encrypt()
     test_update_packages()
     test_github()
-    test_update_crl()
     #test_hook_action()
     test_hostcert()
     test_wapt_engine()
-    test_crl()
     #test_openssl()
     test_subject_hash()
     test_get_peer_chain()
     test_saveservercert()
-    test_newcrypto()
     #test_oldsignature()
     test_certifi_cacert()
     test_conflicts()
