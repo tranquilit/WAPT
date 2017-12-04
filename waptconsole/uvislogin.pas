@@ -6,16 +6,19 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, Buttons, ButtonPanel, LCLType, EditBtn;
+  ExtCtrls, Buttons, ButtonPanel, LCLType, EditBtn, ActnList;
 
 type
 
   { TVisLogin }
 
   TVisLogin = class(TForm)
+    ActSelectConf: TAction;
+    ActionList1: TActionList;
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
+    CBConfiguration: TComboBox;
     edPassword: TEdit;
     EdUser: TEdit;
     edWaptServerName: TEdit;
@@ -24,12 +27,17 @@ type
     labServer: TLabel;
     laPassword: TLabel;
     labUser: TLabel;
+    laConfiguration: TLabel;
     Panel1: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
+    procedure ActSelectConfExecute(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
+    procedure CBConfigurationDropDown(Sender: TObject);
+    procedure CBConfigurationSelect(Sender: TObject);
     procedure edPasswordKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure Image1Click(Sender: TObject);
@@ -43,7 +51,7 @@ var
   VisLogin: TVisLogin;
 
 implementation
-uses LCLIntf,  uwaptconsole,waptcommon, DefaultTranslator,UScaleDPI,tiscommon;
+uses LCLIntf,  uwaptconsole,waptcommon, DefaultTranslator,UScaleDPI,tiscommon,tisinifiles;
 {$R *.lfm}
 
 { TVisLogin }
@@ -57,6 +65,23 @@ begin
   end;
 end;
 
+procedure TVisLogin.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+begin
+  if (ModalResult=mrOK) then
+    CanClose := (edWaptServerName.Text<>'') and (EdUser.text<>'') and (edPassword.Text<>'')
+  else
+    CanClose := True;
+  if not CanClose then
+  begin
+    if (edWaptServerName.Text='') then
+      CBConfiguration.SetFocus
+    else if (EdUser.text='') then
+      EdUser.SetFocus
+    else if (edPassword.Text='') then
+      edPassword.SetFocus;
+  end;
+end;
+
 procedure TVisLogin.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
@@ -65,6 +90,8 @@ end;
 
 procedure TVisLogin.FormShow(Sender: TObject);
 begin
+  CBConfiguration.Text := AppIniFilename;
+
   if edUser.Text<>'' then
     edPassword.SetFocus;
 end;
@@ -81,6 +108,42 @@ begin
     VisWaptGUI.ActReloadConfig.Execute;
     edWaptServerName.Text:=waptcommon.GetWaptServerURL;
   end;
+end;
+
+procedure TVisLogin.ActSelectConfExecute(Sender: TObject);
+begin
+  ActSelectConf.Checked:=not ActSelectConf.Checked;
+  laConfiguration.Visible := ActSelectConf.Checked;
+  CBConfiguration.Visible := ActSelectConf.Checked;;
+end;
+
+procedure TVisLogin.CBConfigurationDropDown(Sender: TObject);
+var
+  ConfigList:TStringList;
+  i:integer;
+  conf:String;
+begin
+  try
+    CBConfiguration.Items.Clear;
+    ConfigList := FindAllFiles(GetAppConfigDir(False),'*.ini',False);
+    for conf in ConfigList do
+    begin
+      CBConfiguration.Items.Add(ExtractFileNameOnly(Conf));
+    end;
+  finally
+    ConfigList.Free;
+  end;
+end;
+
+procedure TVisLogin.CBConfigurationSelect(Sender: TObject);
+begin
+  if ExtractFileDir(CBConfiguration.Text) = '' then
+    FAppIniFilename := AppendPathDelim(GetAppConfigDir(False))+CBConfiguration.Text+'.ini'
+  else
+    FAppIniFilename := CBConfiguration.Text;
+  edWaptServerName.Text:=IniReadString(FAppIniFilename,'global','wapt_server');
+  if (edWaptServerName.Text <>'') and  (EdUser.Text <>'') then
+    edPassword.SetFocus;
 end;
 
 

@@ -3722,6 +3722,14 @@ begin
       edUser.Text:= WaptServerUser;
       if ShowModal = mrOk then
       begin
+        // reload config file if another is choosen in login dialog
+        if AppIniFilename<>dmpython.WaptConfigFileName  then
+        begin
+          dmpython.WaptConfigFileName:='';
+          waptcommon.ReadWaptConfig(AppIniFilename);
+          dmpython.WaptConfigFileName:=AppIniFilename;
+        end;
+
         // recreate new session
         if Assigned(WaptServerSession) then FreeAndNil(WaptServerSession);
         waptServerUser := edUser.Text;

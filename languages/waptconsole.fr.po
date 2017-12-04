@@ -641,6 +641,11 @@ msgstr "Interrompre"
 msgid "Loading"
 msgstr "Chargement en cours..."
 
+#: tvislogin.actselectconf.caption
+msgctxt "tvislogin.actselectconf.caption"
+msgid "OK"
+msgstr "OK"
+
 #: tvislogin.bitbtn1.hint
 msgid "Configure WAPT console"
 msgstr "Configurer la console WAPT"
@@ -648,6 +653,10 @@ msgstr "Configurer la console WAPT"
 #: tvislogin.caption
 msgid "WAPT authentication"
 msgstr "Authentification WAPT"
+
+#: tvislogin.cbconfiguration.text
+msgid "waptconsole"
+msgstr ""
 
 #: tvislogin.labserver.caption
 msgctxt "tvislogin.labserver.caption"
@@ -662,6 +671,10 @@ msgstr "Utilisateur"
 #: tvislogin.labversion.caption
 msgid "LabVersion"
 msgstr "LabVersion"
+
+#: tvislogin.laconfiguration.caption
+msgid "Configuration"
+msgstr ""
 
 #: tvislogin.lapassword.caption
 msgid "Password"
@@ -1120,6 +1133,8 @@ msgid "Cancel current task"
 msgstr "Annuler la tâche en cours"
 
 #: tviswaptgui.actchangepassword.caption
+#, fuzzy
+#| msgid "Update password"
 msgctxt "tviswaptgui.actchangepassword.caption"
 msgid "Change admin password"
 msgstr "Changer le mot de passe admin du serveur"
@@ -1165,11 +1180,6 @@ msgctxt "tviswaptgui.actdeletegroup.caption"
 msgid "Delete bundle"
 msgstr "Supprimer le groupe"
 
-#: tviswaptgui.actdeletehostsandinventory.caption
-msgctxt "tviswaptgui.actdeletehostsandinventory.caption"
-msgid "Remove host configuration and inventory "
-msgstr "Supprimer la machine et son paquet de configuration"
-
 #: tviswaptgui.actdeletehostspackageandinventory.caption
 msgctxt "tviswaptgui.actdeletehostspackageandinventory.caption"
 msgid "Remove host"
@@ -1179,11 +1189,6 @@ msgstr "Supprimer le poste"
 msgctxt "tviswaptgui.actdeletehostspackageandinventory.hint"
 msgid "Remove from inventory"
 msgstr "Supprimer de l'inventaire"
-
-#: tviswaptgui.actdeletehostspackages.caption
-msgctxt "tviswaptgui.actdeletehostspackages.caption"
-msgid "Remove Host configuration only"
-msgstr "Supprimer la configuration machine"
 
 #: tviswaptgui.actdeletepackage.caption
 msgctxt "tviswaptgui.actdeletepackage.caption"
@@ -1398,8 +1403,10 @@ msgid "Trigger update of available packages on hosts."
 msgstr "Vérifier les mises à jour"
 
 #: tviswaptgui.acttriggerhostupgrade.caption
+#, fuzzy
+#| msgid "Apply updates"
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.CAPTION"
-msgid "Apply updates"
+msgid "Apply upgrades"
 msgstr "Lancer les installations"
 
 #: tviswaptgui.acttriggerhostupgrade.hint

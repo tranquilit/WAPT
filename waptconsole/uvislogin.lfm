@@ -9,6 +9,7 @@ object VisLogin: TVisLogin
   ClientHeight = 208
   ClientWidth = 420
   Color = clWhite
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poScreenCenter
@@ -353,11 +354,39 @@ object VisLogin: TVisLogin
     ClientHeight = 176
     ClientWidth = 257
     TabOrder = 0
-    object labServer: TLabel
-      Left = 12
-      Height = 22
+    object laConfiguration: TLabel
+      Left = 6
+      Height = 21
       Top = 6
-      Width = 46
+      Width = 65
+      Alignment = taRightJustify
+      AutoSize = False
+      Caption = 'Configuration'
+      Layout = tlCenter
+      ParentColor = False
+      Visible = False
+    end
+    object CBConfiguration: TComboBox
+      Left = 77
+      Height = 21
+      Top = 6
+      Width = 175
+      AutoComplete = True
+      AutoCompleteText = [cbactEnabled, cbactEndOfLineComplete, cbactSearchAscending]
+      AutoDropDown = True
+      ItemHeight = 13
+      OnDropDown = CBConfigurationDropDown
+      OnExit = CBConfigurationSelect
+      OnSelect = CBConfigurationSelect
+      TabOrder = 3
+      Text = 'waptconsole'
+      Visible = False
+    end
+    object labServer: TLabel
+      Left = 6
+      Height = 22
+      Top = 33
+      Width = 65
       Alignment = taRightJustify
       AutoSize = False
       Caption = 'Server'
@@ -365,9 +394,9 @@ object VisLogin: TVisLogin
       ParentColor = False
     end
     object Panel3: TPanel
-      Left = 70
+      Left = 77
       Height = 22
-      Top = 6
+      Top = 33
       Width = 175
       AutoSize = True
       ChildSizing.HorizontalSpacing = 3
@@ -486,10 +515,10 @@ object VisLogin: TVisLogin
       end
     end
     object labUser: TLabel
-      Left = 12
+      Left = 6
       Height = 21
-      Top = 34
-      Width = 46
+      Top = 61
+      Width = 65
       Alignment = taRightJustify
       AutoSize = False
       Caption = 'User'
@@ -497,18 +526,18 @@ object VisLogin: TVisLogin
       ParentColor = False
     end
     object EdUser: TEdit
-      Left = 70
+      Left = 77
       Height = 21
-      Top = 34
+      Top = 61
       Width = 175
       Constraints.MinWidth = 100
       TabOrder = 2
     end
     object laPassword: TLabel
-      Left = 12
+      Left = 6
       Height = 21
-      Top = 61
-      Width = 46
+      Top = 88
+      Width = 65
       Alignment = taRightJustify
       AutoSize = False
       Caption = 'Password'
@@ -516,9 +545,9 @@ object VisLogin: TVisLogin
       ParentColor = False
     end
     object edPassword: TEdit
-      Left = 70
+      Left = 77
       Height = 21
-      Top = 61
+      Top = 88
       Width = 175
       Constraints.MinWidth = 100
       EchoMode = emPassword
@@ -573,6 +602,15 @@ object VisLogin: TVisLogin
       Width = 52
       Caption = 'LabVersion'
       ParentColor = False
+    end
+  end
+  object ActionList1: TActionList
+    left = 144
+    top = 136
+    object ActSelectConf: TAction
+      Caption = 'OK'
+      OnExecute = ActSelectConfExecute
+      ShortCut = 24656
     end
   end
 end
