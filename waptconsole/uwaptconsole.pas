@@ -3451,7 +3451,6 @@ begin
   if EditIniFile then
   begin
     ActReloadConfig.Execute;
-    ActPackagesUpdate.Execute;
     GridPackages.Clear;
     GridGroups.Clear;
     GridHosts.Clear;
