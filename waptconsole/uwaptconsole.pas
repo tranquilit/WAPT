@@ -175,8 +175,10 @@ type
     ToolBar1: TToolBar;
     ToolButton1: TToolButton;
     ToolButton2: TToolButton;
+    ToolButtonRefresh: TToolButton;
     ToolButton5: TToolButton;
     ToolButton6: TToolButton;
+    ToolButtonSep1: TToolButton;
     WSUSActions: TActionList;
     ActWUANewGroup: TAction;
     ActWUAProductsSelection: TAction;
@@ -1449,11 +1451,11 @@ begin
       ActSearchHost.Execute
     end
     else
-    if MainPages.ActivePage = pgPackages then
-      ActSearchPackage.Execute
+    if MainPages.ActivePage = pgPrivateRepo then
+      ActPackagesUpdate.Execute
     else
     if MainPages.ActivePage = pgGroups then
-      ActSearchGroups.Execute;
+      ActPackagesUpdate.Execute;
   finally
     Screen.Cursor := crDefault;
   end;
@@ -4254,7 +4256,7 @@ begin
     uuids := TSuperObject.Create(stArray);;
     uuids.AsArray.Add(uuid);
     args := SO();
-    args.S['computer_description'] := description{%H-};
+    args.S['computer_description'] := UTF8Decode(description){%H-};
     taskresult := TriggerActionOnHosts(uuids,'trigger_change_description',args,'Change host description and register','Error changing host description');
     result := taskresult.B['success'];
   end

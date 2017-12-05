@@ -2461,23 +2461,35 @@ object VisWaptGUI: TVisWaptGUI
           Images = ActionsImages24
           ShowCaptions = True
           TabOrder = 0
+          object ToolButtonRefresh: TToolButton
+            Left = 1
+            Top = 0
+            Action = actRefresh
+          end
+          object ToolButtonSep1: TToolButton
+            Left = 47
+            Top = 0
+            Width = 5
+            Caption = 'ToolButtonSep1'
+            Style = tbsDivider
+          end
           object ToolButton1: TToolButton
-            Left = 135
+            Left = 186
             Top = 0
             Action = ActTriggerHostUpgrade
           end
           object ToolButton2: TToolButton
-            Left = 1
+            Left = 52
             Top = 0
             Action = ActEditHostPackage
           end
           object ToolButton5: TToolButton
-            Left = 51
+            Left = 102
             Top = 0
             Action = ActTriggerHostUpdate
           end
           object ToolButton6: TToolButton
-            Left = 130
+            Left = 181
             Top = 0
             Width = 5
             Caption = 'ToolButton6'
