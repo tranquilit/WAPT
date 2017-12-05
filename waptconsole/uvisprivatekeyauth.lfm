@@ -8,8 +8,6 @@ object VisPrivateKeyAuth: TVisPrivateKeyAuth
   Caption = 'Private key authentication'
   ClientHeight = 114
   ClientWidth = 315
-  Font.Height = -11
-  Font.Name = 'Tahoma'
   OnCreate = FormCreate
   Position = poScreenCenter
   ShowHint = True
