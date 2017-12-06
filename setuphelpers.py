@@ -341,7 +341,10 @@ class CalledProcessErrorOutput(subprocess.CalledProcessError):
     """CalledProcessError with printed output"""
 
     def __str__(self):
-        return "Command %s returned non-zero exit status %d.\nOutput:%s" % (repr(self.cmd), self.returncode,repr(self.output))
+        try:
+            return "Command %s returned non-zero exit status %d.\nOutput:%s" % (repr(self.cmd), self.returncode,self.output.decode('utf16').encode('utf8'))
+        except UnicodeDecodeError:
+            return "Command %s returned non-zero exit status %d.\nOutput:%s" % (repr(self.cmd), self.returncode,repr(self.output))
 
 
 def create_shortcut(path, target='', arguments='', wDir='', icon=''):
