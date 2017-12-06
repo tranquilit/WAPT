@@ -1877,16 +1877,26 @@ def trigger_host_action():
 
         last_uuid = None
         hostnames = []
+        notified_uuids = []
 
         for action in action_data:
             uuid = action['uuid']
             if last_uuid != uuid:
-                host = Hosts.select(Hosts.computer_fqdn, Hosts.listening_address).where(
-                    (Hosts.uuid == uuid) & (Hosts.listening_protocol == 'websockets')).first()
+                host = Hosts.select(Hosts.computer_fqdn, Hosts.listening_address, Hosts.server_uuid).where(
+                    (Hosts.uuid == uuid) & (Hosts.listening_protocol == 'websockets')).dicts().first()
             if host:
-                if not host.computer_fqdn in hostnames:
-                    hostnames.append(host.computer_fqdn)
-                socketio.emit('trigger_host_action', action, room=host.listening_address, callback=result_callback)
+                if host['server_uuid'] != app.conf['server_uuid']:
+                    expected_result_count -= 1
+                    errors.append('Host %s not connected to this server' % uuid)
+                else:
+                    if not host['computer_fqdn'] in hostnames:
+                        hostnames.append(host['computer_fqdn'])
+                    socketio.emit('trigger_host_action', action, room=host['listening_address'], callback=result_callback)
+                    notify_server = action.get('notify_server',False)
+                    if notify_server and not uuid in notified_uuids:
+                        notified_uuids.append(uuid)
+                        Hosts.update(host_status='RUNNING').where(Hosts.uuid == uuid).execute()
+
             else:
                 expected_result_count -= 1
                 errors.append('Host %s not connected, Websocket sid not in database' % uuid)
