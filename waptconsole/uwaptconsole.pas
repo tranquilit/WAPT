@@ -904,22 +904,22 @@ begin
   end;
 
   // %LOCALAPPDATA%\waptconsole\waptconsole.ini
-  // Global settings, not per cert
+  // global settings, not per cert
   ini := TIniFile.Create(AppIniFilename);
   try
-    if ini.ReadBool('Global','send_usage_report',True) then
+    if ini.ReadBool('global','send_usage_report',True) then
     begin
       httpProxy:=Ini.ReadString('wapt-templates','http_proxy','');
-      last_usage_report:=ini.ReadDateTime('Global','last_usage_report',0);
+      last_usage_report:=ini.ReadDateTime('global','last_usage_report',0);
       if now - last_usage_report >= 0.5 then
       try
-        stats_report_url:=ini.ReadString('Global','usage_report_url',rsDefaultUsageStatsURL);
+        stats_report_url:=ini.ReadString('global','usage_report_url',rsDefaultUsageStatsURL);
         stats := WAPTServerJsonGet('api/v1/usage_statistics',[])['result'];
         IdHttpPostData(stats_report_url,stats.AsJSon,(httpProxy<>''),4000,60000,60000,'','','Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko');
-        ini.WriteDateTime('Global','last_usage_report',Now);
+        ini.WriteDateTime('global','last_usage_report',Now);
 
       except
-        ini.WriteDateTime('Global','last_usage_report',Now);
+        ini.WriteDateTime('global','last_usage_report',Now);
       end;
     end;
   finally
@@ -1425,7 +1425,7 @@ end;
 
 procedure TVisWaptGUI.ActAddGroupExecute(Sender: TObject);
 begin
-  if WaptIniReadString(AppIniFilename,'Global','default_sources_root')<>'' then
+  if WaptIniReadString(AppIniFilename,'global','default_sources_root')<>'' then
   begin
     CreateGroup('agroup', AdvancedMode);
     ActPackagesUpdate.Execute;
@@ -1470,7 +1470,7 @@ var
 begin
   if GridPackages.FocusedNode <> nil then
   begin
-    if IniReadString(AppIniFilename,'Global','default_sources_root')<>'' then
+    if IniReadString(AppIniFilename,'global','default_sources_root')<>'' then
     begin
       Selpackage := format('%s(=%s)', [GridPackages.GetCellStrValue(
         GridPackages.FocusedNode, 'package'), GridPackages.GetCellStrValue(
@@ -2110,7 +2110,7 @@ begin
 
       cbDebugWindow.Checked:= inifile.ReadBool('global','advanced_mode',AdvancedMode);
 
-      lang := inifile.ReadString('Global','language','en');
+      lang := inifile.ReadString('global','language','en');
       if lang='en' then
         cbLanguage.ItemIndex:=0
       else if lang='fr' then
@@ -2143,7 +2143,7 @@ begin
         else
           DMPython.Language := '';
 
-        inifile.WriteString('Global','language',DMPython.Language);
+        inifile.WriteString('global','language',DMPython.Language);
 
         inifile.WriteBool('global', 'advanced_mode',cbDebugWindow.Checked);
 

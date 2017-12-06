@@ -1068,7 +1068,7 @@ var
   url,dnsdomain:AnsiString;
 
 begin
-  result := IniReadString(WaptIniFilename,'Global','repo_url','');
+  result := IniReadString(WaptIniFilename,'global','repo_url','');
   if (Result <> '') then
     exit;
 
@@ -1171,9 +1171,9 @@ begin
     Exit;
   end;
 
-  if IniHasKey(WaptIniFilename,'Global','wapt_server') then
+  if IniHasKey(WaptIniFilename,'global','wapt_server') then
   begin
-    result := IniReadString(WaptIniFilename,'Global','wapt_server');
+    result := IniReadString(WaptIniFilename,'global','wapt_server');
     if (Result <> '') then
     begin
       CacheWaptServerUrl := Result;
@@ -1232,7 +1232,7 @@ end;
 
 function GetWaptRepoURL: Utf8String;
 begin
-  result := IniReadString(WaptIniFilename,'Global','repo_url');
+  result := IniReadString(WaptIniFilename,'global','repo_url');
   if Result = '' then
       Result:='http://wapt/wapt';
   if result[length(result)] = '/' then
@@ -1242,7 +1242,7 @@ end;
 
 function GetWaptPersonalCertificatePath: Utf8String;
 begin
-  result := utf8Decode(IniReadString(WaptIniFilename,'Global','personal_certificate_path'));
+  result := utf8Decode(IniReadString(WaptIniFilename,'global','personal_certificate_path'));
 end;
 
 function GetWaptLocalURL: String;
@@ -1398,7 +1398,7 @@ end;
 
 function WaptDBPath: Utf8String;
 begin
-  Result := IniReadString(WaptIniFilename,'Global','dbdir');
+  Result := IniReadString(WaptIniFilename,'global','dbdir');
   if Result<>'' then
     result :=  AppendPathDelim(result)+'waptdb.sqlite'
   else

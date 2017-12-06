@@ -277,7 +277,7 @@ end;
 
 procedure TVisRepositories.ActUnregisterRepoUpdate(Sender: TObject);
 begin
-  ActUnregisterRepo.Enabled := WaptRepo.Name<>'Global';
+  ActUnregisterRepo.Enabled := WaptRepo.Name<>'global';
 end;
 
 procedure TVisRepositories.cbAdvanced2Click(Sender: TObject);
