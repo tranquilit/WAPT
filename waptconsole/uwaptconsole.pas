@@ -21,6 +21,7 @@ type
     ActDisplayPreferences: TAction;
     ActExternalRepositoriesSettings: TAction;
     ActAddHWPropertyToGrid: TAction;
+    ActTriggerBurstUpdates: TAction;
     ActPackagesForceInstall: TAction;
     ActProprietary: TAction;
     ActPackagesForget: TAction;
@@ -140,6 +141,7 @@ type
     MenuItem50: TMenuItem;
     MenuItem51: TMenuItem;
     MenuItem53: TMenuItem;
+    MenuItem57: TMenuItem;
     MenuItem74: TMenuItem;
     MenuItem75: TMenuItem;
     MenuItem76: TMenuItem;
@@ -410,6 +412,7 @@ type
     procedure ActExternalRepositoriesSettingsExecute(Sender: TObject);
     procedure ActTISHelpExecute(Sender: TObject);
     procedure ActTISHelpUpdate(Sender: TObject);
+    procedure ActTriggerBurstUpdatesExecute(Sender: TObject);
     procedure ActTriggerWakeOnLanExecute(Sender: TObject);
     procedure ActTriggerWaptwua_downloadExecute(Sender: TObject);
     procedure ActTriggerWaptwua_installExecute(Sender: TObject);
@@ -2241,6 +2244,7 @@ begin
   cbADOU.Visible:=ActProprietary.Checked;
   Label21.Visible:=ActProprietary.Checked;;
   cbADSite.Visible:=ActProprietary.Checked;
+  ActTriggerBurstUpdates.Visible:=ActProprietary.Checked;
 end;
 
 procedure TVisWaptGUI.ActRemoteAssistExecute(Sender: TObject);
@@ -2322,6 +2326,13 @@ end;
 procedure TVisWaptGUI.ActTISHelpUpdate(Sender: TObject);
 begin
   ActTISHelp.Enabled:=FileExists(GetTisSupportPath) and OneHostHasConnectedIP;
+end;
+
+procedure TVisWaptGUI.ActTriggerBurstUpdatesExecute(Sender: TObject);
+begin
+  if (GridHosts.SelectedCount>=1) and
+    (MessageDlg(Format(rsConfirmBurstUpdate,[GridHosts.SelectedCount]),mtConfirmation,mbYesNoCancel, 0) = mrYes) then
+      TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_host_update',Nil,rsTriggerHostsUpdate,'Error checking for updates',True)
 end;
 
 procedure TVisWaptGUI.ActTriggerWakeOnLanExecute(Sender: TObject);
@@ -2676,41 +2687,48 @@ var
   signed_actions_json:String;
 begin
   try
-    SOActions := TSuperObject.Create(stArray);
+    try
+      SOActions := TSuperObject.Create(stArray);
 
-    for host_uuid in uuids do
-    begin
-      SOAction := SO();
-      SOAction.S['action'] := AAction;
-      SOAction.S['uuid'] := host_uuid.AsString;
-      SOAction.B['notify_server'] := True;
-      SOAction.B['force'] := Force;
-      if Args<>Nil then
-        for ArgKey in Args.AsObject.GetNames() do
-          SOAction[ArgKey.AsString] := Args[ArgKey.AsString];
-      SOActions.AsArray.Add(SOAction);
+      for host_uuid in uuids do
+      begin
+        SOAction := SO();
+        SOAction.S['action'] := AAction;
+        SOAction.S['uuid'] := host_uuid.AsString;
+        SOAction.B['notify_server'] := True;
+        SOAction.B['force'] := Force;
+        if Args<>Nil then
+          for ArgKey in Args.AsObject.GetNames() do
+            SOAction[ArgKey.AsString] := Args[ArgKey.AsString];
+        SOActions.AsArray.Add(SOAction);
+      end;
+
+      //transfer actions as json string to python
+      actions_json := SOActions.AsString;
+      signed_actions_json := VarPythonAsString(DMPython.waptdevutils.sign_actions(
+        actions:=actions_json, certfilename:=GetWaptPersonalCertificatePath(),key_password:= dmpython.privateKeyPassword));
+      SOActions := SO(signed_actions_json);
+
+      result := WAPTServerJsonPost('/api/v3/trigger_host_action?timeout=%D',[waptservice_timeout],SOActions);
+      if (result<>Nil) and result.AsObject.Exists('success') then
+      begin
+        MemoLog.Append(result.AsString);
+        if result.AsObject.Exists('msg') and (title<>'') then
+        begin
+          ShowMessage(copy(result.S['msg'],1,250));
+        end;
+      end
+      else
+        if not result.B['success'] or (result['result'].A['errors'].Length>0) then
+          Raise Exception.Create(result.S['msg']);
+    except
+      on E:Exception do
+        ShowMessage(Format(errortitle,
+            [ e.Message]));
     end;
 
-    //transfer actions as json string to python
-    actions_json := SOActions.AsString;
-    signed_actions_json := VarPythonAsString(DMPython.waptdevutils.sign_actions(
-      actions:=actions_json, certfilename:=GetWaptPersonalCertificatePath(),key_password:= dmpython.privateKeyPassword));
-    SOActions := SO(signed_actions_json);
-
-    result := WAPTServerJsonPost('/api/v3/trigger_host_action?timeout=%D',[waptservice_timeout],SOActions);
-    if (result<>Nil) and result.AsObject.Exists('success') then
-    begin
-      MemoLog.Append(result.AsString);
-      if result.AsObject.Exists('msg') and (title<>'') then
-        ShowMessage(result.S['msg']);
-    end
-    else
-      if not result.B['success'] or (result['result'].A['errors'].Length>0) then
-        Raise Exception.Create(result.S['msg']);
-  except
-    on E:Exception do
-      ShowMessage(Format(errortitle,
-          [ e.Message]));
+  finally
+    Screen.Cursor:=crDefault;
   end;
 end;
 

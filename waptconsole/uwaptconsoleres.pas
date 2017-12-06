@@ -76,6 +76,8 @@ resourcestring
   rsForgetPackageError = 'Error while forgetting package %s: %s';
   rsConfirmPackageEdit = 'Do you want to download and edit the package %s ?';
 
+  rsConfirmBurstUpdate = 'Are you sure you want to trigger Status Update on %d hosts ?';
+
   rsPrivateKeyDoesntExist = 'Private key doesn''t exist : %s';
 
   rsConfirmImportCaption = 'Confirm import';
