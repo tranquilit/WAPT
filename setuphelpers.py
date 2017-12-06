@@ -248,6 +248,7 @@ dlls = [os.path.join(os.path.dirname(__file__),dllloc) for dllloc in ['DLLs',r'l
 dlls.append(os.environ['PATH'])
 os.environ['PATH'] = os.pathsep.join(dlls)
 
+import sys
 import logging
 import shutil
 import shlex
@@ -867,6 +868,10 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,3010],on_write=None,pid
     .. versionchanged:: 1.4.1
           error code 1603 is no longer accepted by default.
 
+    .. versionchanged:: 1.5.1
+          If cmd is unicode, encode it to default filesystem encoding before
+            running it.
+
     >>> run(r'dir /B c:\windows\explorer.exe')
     'explorer.exe\r\n'
 
@@ -895,6 +900,10 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,3010],on_write=None,pid
 
     if pidlist is None:
         pidlist = []
+
+    # unicode cmd is not understood by shell system anyway...
+    if isinstance(cmd,unicode):
+        cmd = cmd.encode(sys.getfilesystemencoding())
 
     try:
         proc = psutil.Popen(cmd, shell = shell, bufsize=1, stdin=PIPE, stdout=PIPE, stderr=PIPE,**kwargs)
