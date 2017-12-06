@@ -145,7 +145,7 @@ Filename: {app}\wapt-get.ini; Section: global; Key: dnsdomain; String: {code:Get
 
 Filename: {app}\wapt-get.ini; Section: global; Key: max_gpo_script_wait; String: 180; Tasks: DisableHiberboot;
 Filename: {app}\wapt-get.ini; Section: global; Key: pre_shutdown_timeout; String: 180; Tasks: DisableHiberboot; 
-Filename: {app}\wapt-get.ini; Section: global; Key: hiberboot_enabled; String: 0; Tasks: DisableHiberboot;
+Filename: {app}\wapt-get.ini; Section: global; Key: hiberboot_enabled; String: {code:Gethiberboot_enabled};
 #endif
 
 
@@ -420,6 +420,14 @@ begin
      Result := '1'
   else
      Result := '0'
+end;
+
+function Gethiberboot_enabled(param:String):String;
+begin
+  if IsTaskSelected('DisableHiberBoot') then
+     Result := '0'
+  else
+     Result := '1'
 end;
 
 function GetStartPackages(Param: String):String;
