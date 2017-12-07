@@ -342,7 +342,7 @@ class CalledProcessErrorOutput(subprocess.CalledProcessError):
 
     def __str__(self):
         try:
-            return "Command %s returned non-zero exit status %d.\nOutput:%s" % (repr(self.cmd), self.returncode,self.output.decode('utf16').encode('utf8'))
+            return "Command %s returned non-zero exit status %d.\nOutput:%s" % (repr(self.cmd), self.returncode,ensure_unicode(self.output).encode('utf8'))
         except UnicodeDecodeError:
             return "Command %s returned non-zero exit status %d.\nOutput:%s" % (repr(self.cmd), self.returncode,repr(self.output))
 

@@ -79,6 +79,12 @@ resourcestring
   rsConfirmBurstUpdate = 'Are you sure you want to trigger Status Update on %d hosts ?';
   rsConfirmBurstUpgrades = 'Are you sure you want to Apply Upgrades on %d hosts ?';
 
+  rsConfirmGPUpdate = 'Are you sure you want to update Group Policies status on %d hosts ?';
+  rsRunningGPUpdate = 'Running GPUpdate';
+  rsConfirmWaptExit = 'Are you sure you want to propose Packages Upgrades on %d hosts ?';
+  rsShowMessageForUsers = 'Send message to users';
+  rsMessageToSend = 'Message to send';
+
   rsPrivateKeyDoesntExist = 'Private key doesn''t exist : %s';
 
   rsConfirmImportCaption = 'Confirm import';

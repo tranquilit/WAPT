@@ -1845,6 +1845,27 @@ class WaptPackageForget(WaptTask):
         return (self.__class__ == other.__class__) and (self.packagenames == other.packagenames)
 
 
+class WaptGPUpdate(WaptTask):
+    """Launch gpupdate /force on local host"""
+    def __init__(self,**args):
+        super(WaptGPUpdate,self).__init__()
+        self.notify_server_on_start = False
+        self.notify_server_on_finish = True
+        for k in args:
+            setattr(self,k,args[k])
+
+    def _run(self):
+        self.update_status(u"Start GPUpdate command")
+        self.progress = 0.0
+        self.result = self.run_external('gpupdate /force')
+        self.progress = 100.0
+
+    def same_action(self,other):
+        return False
+
+    def __unicode__(self):
+        return __(u" Update AD Group Policies status")
+
 def babel_translations(lang = ''):
     dirname = os.path.join(app.root_path, 'translations')
     return babel.support.Translations.load(dirname, [lang])
@@ -2324,6 +2345,8 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                         required_attributes.append('packages')
                     if action['action'] in ['trigger_change_description']:
                         required_attributes.append('computer_description')
+                    if action['action'] in ['show_message']:
+                        required_attributes.append('msg')
                     verified_by = cert.verify_claim(action,max_age_secs=waptconfig.signature_clockskew,
                         required_attributes=required_attributes)
                 if not verified_by:
@@ -2393,6 +2416,20 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                         task.notify_server_on_finish = action.get('notify_server',False)
 
                         result.append(self.task_manager.add_task(task).as_dict())
+                elif name in ['start_waptexit']:
+                    process_info = common.start_interactive_process(os.path.join(wapt_root_dir,'waptexit.exe'))
+                    result.append(dict(result=True,summary='waptexit launched on main interactive console'))
+                elif name in ['show_message']:
+                    amsg = action['msg']
+                    display_time = int(action.get('display_time',30))
+                    with setuphelpers.disable_file_system_redirection():
+                        setuphelpers.run(u'msg /TIME:%s * "%s"' % (display_time,amsg))
+                    result.append(dict(result=True,summary='Message displayed'))
+                elif name in ['trigger_gpupdate']:
+                    notify_user = action.get('notify_user',False)
+                    notify_server_on_finish = action.get('notify_server',False)
+                    force = action.get('force',False)
+                    result.append(self.task_manager.add_task(WaptGPUpdate(),notify_user=notify_user).as_dict())
 
             #self.emit('trigger_update_result',{'result':data})
 

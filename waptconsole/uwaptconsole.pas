@@ -21,6 +21,9 @@ type
     ActDisplayPreferences: TAction;
     ActExternalRepositoriesSettings: TAction;
     ActAddHWPropertyToGrid: TAction;
+    ActDisplayUserMessage: TAction;
+    ActLaunchGPUpdate: TAction;
+    ActLaunchWaptExit: TAction;
     ActTriggerBurstUpgrades: TAction;
     ActTriggerBurstUpdates: TAction;
     ActPackagesForceInstall: TAction;
@@ -154,6 +157,9 @@ type
     MenuItem82: TMenuItem;
     MenuItem83: TMenuItem;
     MenuItem84: TMenuItem;
+    MenuItem85: TMenuItem;
+    MenuItem86: TMenuItem;
+    MenuItem87: TMenuItem;
     odSelectInstaller: TOpenDialog;
     PanTopHosts: TPanel;
     panFilterStatus: TPanel;
@@ -396,6 +402,7 @@ type
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActDisplayPreferencesExecute(Sender: TObject);
+    procedure ActDisplayUserMessageExecute(Sender: TObject);
     procedure ActEditGroupUpdate(Sender: TObject);
     procedure ActEditHostPackageUpdate(Sender: TObject);
     procedure ActForgetPackagesUpdate(Sender: TObject);
@@ -403,6 +410,8 @@ type
     procedure ActGermanUpdate(Sender: TObject);
     procedure ActHostsDeletePackageUpdate(Sender: TObject);
     procedure ActHostsDeleteUpdate(Sender: TObject);
+    procedure ActLaunchGPUpdateExecute(Sender: TObject);
+    procedure ActLaunchWaptExitExecute(Sender: TObject);
     procedure ActmakePackageTemplateExecute(Sender: TObject);
     procedure ActPackagesForceInstallExecute(Sender: TObject);
     procedure ActPackagesInstallUpdate(Sender: TObject);
@@ -629,7 +638,7 @@ type
     function Login: boolean;
     function EditIniFile: boolean;
     function updateprogress(receiver: TObject; current, total: integer): boolean;
-    function TriggerActionOnHosts(uuids: ISuperObject;AAction:String;Args:ISuperObject;title,errortitle:String;Force:Boolean=False):ISuperObject;
+    function TriggerActionOnHosts(uuids: ISuperObject;AAction:String;Args:ISuperObject;title,errortitle:String;Force:Boolean=False;NotifyServer:Boolean=True):ISuperObject;
     procedure TriggerActionOnHostPackages(AAction, title, errortitle: String;Force:Boolean=False);
 
   end;
@@ -2179,6 +2188,26 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.ActDisplayUserMessageExecute(Sender: TObject);
+var
+  AMessage: String;
+  DisplayTime:Integer;
+  args:ISuperObject;
+begin
+  if (GridHosts.SelectedCount>=1) then
+  begin
+    AMessage := InputBox(rsShowMessageForUsers,rsMessageToSend,'');
+    if AMessage <> '' then
+    begin
+      Args := SO();
+      Args.S['msg'] := UTF8Decode(AMessage);
+      Args.I['display_time'] := 30;
+      TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'show_message',Args,rsShowMessageForUsers,'Error displaying message to users',True,False)
+    end;
+  end;
+
+end;
+
 procedure TVisWaptGUI.ActEditGroupUpdate(Sender: TObject);
 begin
   ActEditGroup.Enabled:=GridGroups.SelectedCount=1;
@@ -2212,6 +2241,21 @@ end;
 procedure TVisWaptGUI.ActHostsDeleteUpdate(Sender: TObject);
 begin
   (Sender as TAction).Enabled:=(GridHosts.SelectedCount>0);
+
+end;
+
+procedure TVisWaptGUI.ActLaunchGPUpdateExecute(Sender: TObject);
+begin
+  if (GridHosts.SelectedCount>=1) and
+    (MessageDlg(Format(rsConfirmGPUpdate,[GridHosts.SelectedCount]),mtConfirmation,mbYesNoCancel, 0) = mrYes) then
+      TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_gpupdate',Nil,rsRunningGPUpdate,'Error updating Group Policies',True,False)
+end;
+
+procedure TVisWaptGUI.ActLaunchWaptExitExecute(Sender: TObject);
+begin
+  if (GridHosts.SelectedCount>=1) and
+    (MessageDlg(Format(rsConfirmWaptExit,[GridHosts.SelectedCount]),mtConfirmation,mbYesNoCancel, 0) = mrYes) then
+      TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'start_waptexit',Nil,rsUpgradingHost,'Error starting waptexit.exe',True,False)
 
 end;
 
@@ -2249,6 +2293,9 @@ begin
   cbADSite.Visible:=ActProprietary.Checked;
   ActTriggerBurstUpdates.Visible:=ActProprietary.Checked;
   ActTriggerBurstUpgrades.Visible:=ActProprietary.Checked;
+  ActLaunchGPUpdate.Visible:=ActProprietary.Checked;
+  ActDisplayUserMessage.Visible:=ActProprietary.Checked;
+  ActLaunchWaptExit.Visible:=ActProprietary.Checked;
 end;
 
 procedure TVisWaptGUI.ActRemoteAssistExecute(Sender: TObject);
@@ -2301,7 +2348,7 @@ begin
     currhost := GridHosts.FocusedRow.S['uuid'];
     computer_name := lowercase(GridHosts.FocusedRow.S['computer_name']);
     uuids.AsArray.Add(currhost);
-    taskresult := TriggerActionOnHosts(uuids,'trigger_start_tishelp',Nil,'','Error starting TISHelp');
+    taskresult := TriggerActionOnHosts(uuids,'trigger_start_tishelp',Nil,'','Error starting TISHelp',False,False);
     if taskresult.B['success'] then
 
       ShellExecute(0, '', PAnsiChar(GetTisSupportPath),
@@ -2691,7 +2738,7 @@ begin
   ActEnglish.Checked := DMPython.Language='en';
 end;
 
-function TVisWaptGUI.TriggerActionOnHosts(uuids: ISuperObject;AAction:String;Args:ISuperObject;title,errortitle:String;Force:Boolean=False):ISuperObject;
+function TVisWaptGUI.TriggerActionOnHosts(uuids: ISuperObject;AAction:String;Args:ISuperObject;title,errortitle:String;Force:Boolean=False;NotifyServer:Boolean=True):ISuperObject;
 var
   host_uuid,ArgKey : ISuperObject;
   SOAction, SOActions:ISuperObject;
@@ -2699,6 +2746,7 @@ var
   signed_actions_json:String;
 begin
   try
+    Screen.Cursor:=crHourGlass;
     try
       SOActions := TSuperObject.Create(stArray);
 
@@ -2707,7 +2755,7 @@ begin
         SOAction := SO();
         SOAction.S['action'] := AAction;
         SOAction.S['uuid'] := host_uuid.AsString;
-        SOAction.B['notify_server'] := True;
+        SOAction.B['notify_server'] := NotifyServer;
         SOAction.B['force'] := Force;
         if Args<>Nil then
           for ArgKey in Args.AsObject.GetNames() do

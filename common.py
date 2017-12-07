@@ -83,6 +83,9 @@ import win32api
 import ntsecuritycon
 import win32security
 import win32net
+import win32ts
+import win32con
+import win32process
 import pywintypes
 from ntsecuritycon import SECURITY_NT_AUTHORITY,SECURITY_BUILTIN_DOMAIN_RID
 from ntsecuritycon import DOMAIN_GROUP_RID_ADMINS,DOMAIN_GROUP_RID_USERS
@@ -190,6 +193,27 @@ def adjust_privileges():
 
     return win32security.AdjustTokenPrivileges(htoken, 0, privileges)
 
+
+def start_interactive_process(app_filename,cmdline=None,session_id=None):
+    """Starts a process in the context of opened interactive session if any"""
+    if session_id is None:
+        session_id = win32ts.WTSGetActiveConsoleSessionId()
+    # not logged.
+    if session_id == 0xffffffff:
+        return None
+    token = win32ts.WTSQueryUserToken(session_id)
+    if token:
+        new_token = win32security.DuplicateTokenEx(token,win32security.SecurityDelegation,win32security.TOKEN_ALL_ACCESS,win32security.TokenPrimary)
+        startup = win32process.STARTUPINFO()
+        priority = win32con.NORMAL_PRIORITY_CLASS
+        process_info = win32process.CreateProcessAsUser(new_token, app_filename, cmdline, None, None, True, priority, None, None, startup)
+        if token:
+            win32api.CloseHandle(token)
+        if new_token:
+            win32api.CloseHandle(new_token)
+    else:
+        process_info = win32process.CreateProcess(app_filename,cmdline, None, None, True, priority, None, None, startup)
+    return process_info
 
 
 ###########################"
@@ -3471,7 +3495,7 @@ class Wapt(object):
         finally:
             os.chdir(previous_cwd)
             gc.collect()
-            if 'setup' in dir():
+            if 'setup' in dir() and setup is not None:
                 setup_name = setup.__name__[:]
                 logger.debug('Removing module: %s, refcnt: %s'%(setup_name,sys.getrefcount(setup)))
                 del setup
@@ -5096,7 +5120,7 @@ class Wapt(object):
                 logger.info('Uninstall: no setup.py source in database.')
 
         finally:
-            if 'setup' in dir():
+            if 'setup' in dir() and setup is not None:
                 setup_name = setup.__name__
                 del setup
                 if setup_name in sys.modules:
