@@ -201,11 +201,15 @@ def start_interactive_process(app_filename,cmdline=None,session_id=None):
     # not logged.
     if session_id == 0xffffffff:
         return None
+
+    priority = win32con.NORMAL_PRIORITY_CLASS | win32con.CREATE_NEW_CONSOLE
+    startup = win32process.STARTUPINFO()
+    startup.lpDesktop = r'winsta0\default'
+
     token = win32ts.WTSQueryUserToken(session_id)
     if token:
         new_token = win32security.DuplicateTokenEx(token,win32security.SecurityDelegation,win32security.TOKEN_ALL_ACCESS,win32security.TokenPrimary)
-        startup = win32process.STARTUPINFO()
-        priority = win32con.NORMAL_PRIORITY_CLASS
+
         process_info = win32process.CreateProcessAsUser(new_token, app_filename, cmdline, None, None, True, priority, None, None, startup)
         if token:
             win32api.CloseHandle(token)
