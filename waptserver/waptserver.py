@@ -1911,7 +1911,7 @@ def trigger_host_action():
             socketio.sleep(0.05)
 
         if errors and not result:
-            raise EWaptHostUnreachable('Targeted host(s) is/are not connected')
+            raise EWaptHostUnreachable('None of the targeted host(s) is/are connected')
 
         msg = []
         if errors:

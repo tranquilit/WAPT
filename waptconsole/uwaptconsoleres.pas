@@ -77,6 +77,7 @@ resourcestring
   rsConfirmPackageEdit = 'Do you want to download and edit the package %s ?';
 
   rsConfirmBurstUpdate = 'Are you sure you want to trigger Status Update on %d hosts ?';
+  rsConfirmBurstUpgrades = 'Are you sure you want to Apply Upgrades on %d hosts ?';
 
   rsPrivateKeyDoesntExist = 'Private key doesn''t exist : %s';
 

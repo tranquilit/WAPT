@@ -114,7 +114,9 @@ procedure TVisLogin.ActSelectConfExecute(Sender: TObject);
 begin
   ActSelectConf.Checked:=not ActSelectConf.Checked;
   laConfiguration.Visible := ActSelectConf.Checked;
-  CBConfiguration.Visible := ActSelectConf.Checked;;
+  CBConfiguration.Visible := ActSelectConf.Checked;
+  if ActSelectConf.Checked then
+    CBConfiguration.SetFocus;
 end;
 
 procedure TVisLogin.CBConfigurationDropDown(Sender: TObject);

@@ -5077,6 +5077,14 @@ object VisWaptGUI: TVisWaptGUI
       OnUpdate = ActHostsActionsUpdate
       Visible = False
     end
+    object ActTriggerBurstUpgrades: TAction
+      Category = 'hosts'
+      Caption = 'Apply Burst Upgrades'
+      ImageIndex = 2
+      OnExecute = ActTriggerBurstUpgradesExecute
+      OnUpdate = ActHostsActionsUpdate
+      Visible = False
+    end
   end
   object PopupMenuPackages: TPopupMenu
     Images = ActionsImages24
@@ -5944,6 +5952,9 @@ object VisWaptGUI: TVisWaptGUI
         FF7910CFFFBA0ECEFFDA0ECEFFDB10CFFFBB0CD0FF7D00D5FF18000000000000
         000000BFFF140000000000000000000000000000000000000000
       }
+    end
+    object MenuItem82: TMenuItem
+      Action = ActTriggerBurstUpgrades
     end
     object MenuItem43: TMenuItem
       Caption = '-'

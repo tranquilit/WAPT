@@ -21,6 +21,7 @@ type
     ActDisplayPreferences: TAction;
     ActExternalRepositoriesSettings: TAction;
     ActAddHWPropertyToGrid: TAction;
+    ActTriggerBurstUpgrades: TAction;
     ActTriggerBurstUpdates: TAction;
     ActPackagesForceInstall: TAction;
     ActProprietary: TAction;
@@ -150,6 +151,7 @@ type
     MenuItem79: TMenuItem;
     MenuItem80: TMenuItem;
     MenuItem81: TMenuItem;
+    MenuItem82: TMenuItem;
     MenuItem83: TMenuItem;
     MenuItem84: TMenuItem;
     odSelectInstaller: TOpenDialog;
@@ -413,6 +415,7 @@ type
     procedure ActTISHelpExecute(Sender: TObject);
     procedure ActTISHelpUpdate(Sender: TObject);
     procedure ActTriggerBurstUpdatesExecute(Sender: TObject);
+    procedure ActTriggerBurstUpgradesExecute(Sender: TObject);
     procedure ActTriggerWakeOnLanExecute(Sender: TObject);
     procedure ActTriggerWaptwua_downloadExecute(Sender: TObject);
     procedure ActTriggerWaptwua_installExecute(Sender: TObject);
@@ -2245,6 +2248,7 @@ begin
   Label21.Visible:=ActProprietary.Checked;;
   cbADSite.Visible:=ActProprietary.Checked;
   ActTriggerBurstUpdates.Visible:=ActProprietary.Checked;
+  ActTriggerBurstUpgrades.Visible:=ActProprietary.Checked;
 end;
 
 procedure TVisWaptGUI.ActRemoteAssistExecute(Sender: TObject);
@@ -2333,6 +2337,14 @@ begin
   if (GridHosts.SelectedCount>=1) and
     (MessageDlg(Format(rsConfirmBurstUpdate,[GridHosts.SelectedCount]),mtConfirmation,mbYesNoCancel, 0) = mrYes) then
       TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_host_update',Nil,rsTriggerHostsUpdate,'Error checking for updates',True)
+end;
+
+procedure TVisWaptGUI.ActTriggerBurstUpgradesExecute(Sender: TObject);
+begin
+  if (GridHosts.SelectedCount>=1) and
+    (MessageDlg(Format(rsConfirmBurstUpgrades,[GridHosts.SelectedCount]),mtConfirmation,mbYesNoCancel, 0) = mrYes) then
+      TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_host_upgrade',Nil,rsUpgradingHost,'Error applying upgrades',True)
+
 end;
 
 procedure TVisWaptGUI.ActTriggerWakeOnLanExecute(Sender: TObject);
