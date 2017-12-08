@@ -1863,20 +1863,19 @@ def trigger_host_action():
         if not isinstance(action_data, list):
             action_data = [action_data]
 
-        result = []
-        errors = []
-        expected_result_count = len(action_data)
-        #print 'expected %s' % expected_result_count
+        ok = []
+        client_errors = []
+        server_errors = []
+        other_server = []
+        expected_result_count = 0
 
         def result_callback(data):
-            #print data
-            result.append(data)
-            if not data.get('success',False):
-                errors.append(data['msg'])
-            #print 'now expected %s' % expected_result_count
+            if data.get('success',False):
+                ok.append(data)
+            else:
+                client_errors.append(data)
 
         last_uuid = None
-        hostnames = []
         notified_uuids = []
 
         for action in action_data:
@@ -1886,41 +1885,41 @@ def trigger_host_action():
                     (Hosts.uuid == uuid) & (Hosts.listening_protocol == 'websockets')).dicts().first()
             if host:
                 if host['server_uuid'] != app.conf['server_uuid']:
-                    expected_result_count -= 1
-                    errors.append('Host %s not connected to this server' % uuid)
+                    other_server.append(uuid)
                 else:
-                    if not host['computer_fqdn'] in hostnames:
-                        hostnames.append(host['computer_fqdn'])
-                    socketio.emit('trigger_host_action', action, room=host['listening_address'], callback=result_callback)
                     notify_server = action.get('notify_server',False)
-                    if notify_server and not uuid in notified_uuids:
-                        notified_uuids.append(uuid)
-                        Hosts.update(host_status='RUNNING').where(Hosts.uuid == uuid).execute()
-
+                    if notify_server:
+                        socket_callback = result_callback
+                    else:
+                        socket_callback = None
+                    try:
+                        socketio.emit('trigger_host_action', action, room=host['listening_address'], callback = socket_callback)
+                        if notify_server:
+                            expected_result_count += 1
+                        # notify console that action is in progress until client send it updated status.
+                        if notify_server and not uuid in notified_uuids:
+                            notified_uuids.append(uuid)
+                            Hosts.update(host_status='RUNNING').where(Hosts.uuid == uuid).execute()
+                    except Exception as e:
+                        server_errors.append('Error for %s: %s' % (uuid,e))
             else:
-                expected_result_count -= 1
-                errors.append('Host %s not connected, Websocket sid not in database' % uuid)
+                server_errors.append('Host %s not connected, Websocket sid not in database' % uuid)
             last_uuid = uuid
 
-        wait_loop = timeout * expected_result_count * 20
-        while len(result) < expected_result_count:
-            #print len(result)
-            wait_loop -= 1
-            if wait_loop < 0:
-                raise EWaptTimeoutWaitingForResult('Timeout, client did not send result within %s s' % timeout)
+        wait_until = time.time() + timeout + expected_result_count * timeout / 10
+        while len(ok) + len(client_errors) < expected_result_count:
+            if time.time() >= wait_until:
+                break
             socketio.sleep(0.05)
 
-        if errors and not result:
+        if len(ok) + len(client_errors) == 0:
             raise EWaptHostUnreachable('None of the targeted host(s) is/are connected')
 
-        msg = []
-        if errors:
-            msg.extend(errors)
-        msg.append('%s actions launched on %s' % (len(result), ','.join(hostnames),))
+        msg = '%s actions launched, %s errors, %s other servers' % (len(ok), len(client_errors), len(other_server))
 
         #print result
-        return make_response([r.get('result', None) for r in result],
-                             msg=' '.join(msg),
+        return make_response([r.get('result', None) for r in (ok + client_errors)],
+                             msg=msg,
                              success=len(errors) == 0)
     except Exception as e:
         return make_response_from_exception(e)

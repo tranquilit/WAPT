@@ -1712,11 +1712,13 @@ class WaptLongTask(WaptTask):
 
 
 class WaptDownloadPackage(WaptTask):
-    def __init__(self,packagename,usecache=True):
+    def __init__(self,packagename,usecache=True,**args):
         super(WaptDownloadPackage,self).__init__()
         self.packagename = packagename
         self.usecache = usecache
         self.size = 0
+        for k in args:
+            setattr(self,k,args[k])
 
     def printhook(self,received,total,speed,url):
         self.wapt.check_cancelled()
@@ -1759,11 +1761,13 @@ class WaptDownloadPackage(WaptTask):
 
 
 class WaptPackageInstall(WaptTask):
-    def __init__(self,packagename,force=False):
+    def __init__(self,packagename,force=False,**args):
         super(WaptPackageInstall,self).__init__()
         self.packagename = packagename
         self.force = force
         self.package = None
+        for k in args:
+            setattr(self,k,args[k])
 
     def _run(self):
         def cjoin(l):
@@ -1809,8 +1813,10 @@ class WaptPackageInstall(WaptTask):
 
 
 class WaptPackageRemove(WaptPackageInstall):
-    def __init__(self,packagename,force=False):
+    def __init__(self,packagename,force=False,**args):
         super(WaptPackageRemove,self).__init__(packagename=packagename,force=force)
+        for k in args:
+            setattr(self,k,args[k])
 
     def _run(self):
         def cjoin(l):
@@ -1829,9 +1835,11 @@ class WaptPackageRemove(WaptPackageInstall):
 
 
 class WaptPackageForget(WaptTask):
-    def __init__(self,packagenames):
+    def __init__(self,packagenames,**args):
         super(WaptPackageForget,self).__init__()
         self.packagenames = packagenames
+        for k in args:
+            setattr(self,k,args[k])
 
     def _run(self):
         self.result = self.wapt.forget_packages(self.packagenames)
@@ -2004,7 +2012,7 @@ class WaptTaskManager(threading.Thread):
 
         if datetime.datetime.now() - self.start_time >= datetime.timedelta(days=1):
             self.start_time = datetime.datetime.now()
-            self.add_task(WaptServiceRestart())
+            self.add_task(WaptServiceRestart(created_by='DAILY RESTART'))
 
         if waptconfig.waptupgrade_task_period is not None and setuphelpers.running_on_ac():
             if self.last_upgrade is None or (time.time()-self.last_upgrade)/60>waptconfig.waptupgrade_task_period:
@@ -2012,11 +2020,11 @@ class WaptTaskManager(threading.Thread):
                     actions = self.wapt.list_upgrade()
                     to_install = actions['upgrade']+actions['additional']+actions['install']
                     for req in to_install:
-                        self.add_task(WaptPackageInstall(req),notify_user=True)
-                    self.add_task(WaptUpgrade(notifyuser=False))
+                        self.add_task(WaptPackageInstall(req,notify_user=True,created_by='SCHEDULER'))
+                    self.add_task(WaptUpgrade(notifyuser=False,created_by='SCHEDULER'))
                 except Exception as e:
                     logger.debug(u'Error for upgrade in check_scheduled_tasks: %s'%e)
-                self.add_task(WaptCleanup(notifyuser=False))
+                self.add_task(WaptCleanup(notifyuser=False,created_by='SCHEDULER'))
 
         if waptconfig.waptupdate_task_period is not None:
             if self.last_update is None or (time.time()-self.last_update)/60>waptconfig.waptupdate_task_period:
@@ -2024,8 +2032,8 @@ class WaptTaskManager(threading.Thread):
                     self.wapt.update()
                     reqs = self.wapt.check_downloads()
                     for req in reqs:
-                        self.add_task(WaptDownloadPackage(req.asrequirement()),notify_user=True)
-                    self.add_task(WaptUpdate(notify_user=False))
+                        self.add_task(WaptDownloadPackage(req.asrequirement(),notify_user=True,created_by='SCHEDULER'))
+                    self.add_task(WaptUpdate(notify_user=False,created_by='SCHEDULER'))
                 except Exception as e:
                     logger.debug(u'Error for update in check_scheduled_tasks: %s'%e)
 
@@ -2292,7 +2300,7 @@ def install_service():
 
 # Websocket stuff
 ##### API V2 #####
-def make_response(result = {},success=True,error_code='',msg='',request_time=None):
+def make_response(result = {},success=True,error_code='',msg='',uuid=None,request_time=None):
     data = dict(
             uuid = uuid,
             success = success,
@@ -2357,6 +2365,10 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                         required_attributes=required_attributes)
                 if not verified_by:
                     raise SSLVerifyException('Bad signature for action %s, aborting' % action)
+
+            if verified_by:
+                verified_by = verified_by.get('verified_by',None)
+
             result = []
             start_time = time.time()
             for action in actions:
@@ -2376,6 +2388,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     task.force = action.get('force',False)
                     task.notify_user = action.get('notify_user',False)
                     task.notify_server_on_finish = action.get('notify_server',False)
+                    task.created_by = verified_by
                     data = self.task_manager.add_task(task).as_dict()
                     result.append(data)
 
@@ -2391,7 +2404,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                             result = msg,
                             ))
                         if action.get('notify_server',False):
-                            task = WaptUpdate()
+                            task = WaptUpdate(created_by=verified_by)
                             task.notify_server_on_finish = True
                             self.task_manager.add_task(task)
                             result.append(task.as_dict())
@@ -2404,10 +2417,10 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     upgrades = self.wapt.list_upgrade()
                     to_install = upgrades['upgrade']+upgrades['additional']+upgrades['install']
                     for req in to_install:
-                        result.append(self.task_manager.add_task(WaptPackageInstall(req,force=force),notify_user=notify_user).as_dict())
+                        result.append(self.task_manager.add_task(WaptPackageInstall(req,force=force,notify_user=notify_user,created_by=verified_by)).as_dict())
 
-                    result.append(self.task_manager.add_task(WaptUpgrade(),notify_user=notify_user).as_dict())
-                    result.append(self.task_manager.add_task(WaptCleanup(),notify_user=False).as_dict())
+                    result.append(self.task_manager.add_task(WaptUpgrade(notify_user=notify_user,created_by=verified_by)).as_dict())
+                    result.append(self.task_manager.add_task(WaptCleanup(notify_user=False,created_by=verified_by)).as_dict())
 
                 elif name in  ['trigger_install_packages','trigger_remove_packages','trigger_forget_packages']:
                     packagenames = ensure_list(action['packages'])
@@ -2421,13 +2434,14 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                         task.force = action.get('force',False)
                         task.notify_user = action.get('notify_user',False)
                         task.notify_server_on_finish = action.get('notify_server',False)
+                        task.created_by=verified_by
 
                         result.append(self.task_manager.add_task(task).as_dict())
                 elif name in ['start_waptexit']:
                     process_info = common.start_interactive_process(os.path.join(wapt_root_dir,'waptexit.exe'))
                     result.append(dict(result=True,summary='waptexit launched on main interactive console'))
                 elif name in ['show_message']:
-                    amsg = action['msg']
+                    amsg = '%s\n%s' % (action['msg'],verified_by)
                     display_time = int(action.get('display_time',30))
                     with setuphelpers.disable_file_system_redirection():
                         setuphelpers.run(u'msg /TIME:%s * "%s"' % (display_time,amsg))
@@ -2436,11 +2450,13 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     notify_user = action.get('notify_user',False)
                     notify_server_on_finish = action.get('notify_server',False)
                     force = action.get('force',False)
-                    result.append(self.task_manager.add_task(WaptGPUpdate(),notify_user=notify_user).as_dict())
+                    result.append(self.task_manager.add_task(WaptGPUpdate(),notify_user=notify_user).as_dict(),created_by=verified_by)
+                else:
+                    raise EWaptException('Unhandled remote action %s' % name)
 
             #self.emit('trigger_update_result',{'result':data})
             if result_callback:
-                result_callback(make_response(result,uuid=self.wapt.host_uuid),request_time=time.time()-start_time)
+                result_callback(make_response(result,uuid=self.wapt.host_uuid,request_time=time.time()-start_time))
         except BaseException as e:
             logger.info('Exception for actions %s: %s' % (repr(args),repr(e)))
             if result_callback:
