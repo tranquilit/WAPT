@@ -419,22 +419,27 @@ begin
         hashString:=StrSplit(FileToString(WaptGuessBaseDir+'\waptupgrade\waptagent.sha256'),' ')[0];
       end;
 
+      setuphash:=SHA256Hash(waptsetupPath);
       if (HashString <> '')then
       begin
-        setuphash:=SHA256Hash(waptsetupPath);
-        Writeln('SHA256 hash of downloaded setup file: '+setuphash);
-        if setuphash<>hashString then
-        begin
-          WriteLn(rsHashError);
-          ExitCode:=10;
-          Exit;
-        end
+        if HashString='DONT-CHECK-HASH' then
+          WriteLn('OK : Be careful, You require to NOT check sha256 hash of waptagent. Please check yourself that you expected: '+setuphash)
         else
-          WriteLn('OK : Hash of waptagent match expected hash.');
+        begin
+          Writeln('SHA256 hash of downloaded setup file: '+setuphash);
+          if setuphash<>hashString then
+          begin
+            WriteLn(rsHashError);
+            ExitCode:=10;
+            Exit;
+          end
+          else
+            WriteLn('OK : Hash of waptagent match expected hash.');
+        end
       end
       else
       begin
-        Writeln('ERROR: No hash provided to check waptagent.exe. either put the sha256 hash in command line or in c:\wapt\waptupgrade\waptagent.sha256');
+        Writeln('ERROR: No hash provided to check waptagent.exe. either put the sha256 hash '+hashString+' in command line or in c:\wapt\waptupgrade\waptagent.sha256');
         ExitCode:=10;
         Exit;
       end;
