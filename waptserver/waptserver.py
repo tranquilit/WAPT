@@ -1912,15 +1912,11 @@ def trigger_host_action():
                 break
             socketio.sleep(0.05)
 
-        if len(ok) + len(client_errors) == 0:
-            raise EWaptHostUnreachable('None of the targeted host(s) is/are connected')
-
         msg = '%s actions launched, %s errors, %s other servers' % (len(ok), len(client_errors), len(other_server))
 
-        #print result
         return make_response([r.get('result', None) for r in (ok + client_errors)],
                              msg=msg,
-                             success=len(errors) == 0)
+                             success=len(client_errors) == 0 and len(server_errors) == 0)
     except Exception as e:
         return make_response_from_exception(e)
 
