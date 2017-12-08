@@ -207,7 +207,7 @@ def create_onetime_task(name,cmd,parameters=None, delay_minutes=2,max_runtime=10
     run_time = time.localtime(time.time() + delay_minutes*60)
     # task
 
-    if windows_version() < '5.2':
+    if windows_version() <= Version('5.2',2):
         # for win XP
         system_account = r'"NT AUTHORITY\SYSTEM"'
         # windows xp doesn't support one time startup task /Z nor /F
