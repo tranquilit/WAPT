@@ -1906,13 +1906,13 @@ def trigger_host_action():
                 server_errors.append('Host %s not connected, Websocket sid not in database' % uuid)
             last_uuid = uuid
 
-        wait_until = time.time() + timeout + expected_result_count * timeout / 10
-        while len(ok) + len(client_errors) < expected_result_count:
+        wait_until = time.time() + timeout + expected_result_count * timeout / 100
+        while len(ok) + len(client_errors) + len(server_errors) < expected_result_count:
             if time.time() >= wait_until:
                 break
             socketio.sleep(0.05)
 
-        msg = '%s actions launched, %s errors, %s other servers' % (len(ok), len(client_errors), len(other_server))
+        msg = '%s actions launched, %s errors, %s skipped, %s server errors' % (len(ok), len(client_errors), len(other_server),len(server_errors))
 
         return make_response([r.get('result', None) for r in (ok + client_errors)],
                              msg=msg,
