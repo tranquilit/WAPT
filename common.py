@@ -3196,7 +3196,26 @@ class Wapt(object):
 
     def install_wapt(self,fname,params_dict={},explicit_by=None):
         """Install a single wapt package given its WAPT filename.
-        return install status"""
+        return install status
+
+        Args:
+            fname (str): Path to wapt Zip file or unzipped development directory
+            params (dict): custom parmaters for the install function
+            explicit_by (str): identify who has initiated the install
+
+        Returns:
+            str:  'OK','ERROR'
+
+        Raises:
+
+            EWaptMissingCertificate
+            EWaptNeedsNewerAgent
+            EWaptUnavailablePackage
+            EWaptConflictingPackage
+            EWaptBadTargetOS
+            EWaptException
+            various Exception depending on setup script
+        """
         install_id = None
         old_hdlr = None
         old_stdout = sys.stdout
@@ -3333,7 +3352,7 @@ class Wapt(object):
                             if not is_system_user():
                                 params_dict[p] = raw_input(u"%s: " % p)
                             else:
-                                raise Exception(u'Required parameters %s is not supplied' % p)
+                                raise EWaptException(u'Required parameters %s is not supplied' % p)
                     logger.info(u'Install parameters : %s' % (params_dict,))
 
                     # set params dictionary
@@ -3374,9 +3393,9 @@ class Wapt(object):
                                     key_errors.append(key)
                             if key_errors:
                                 if len(key_errors)>1:
-                                    raise Exception(u'The uninstall keys: \n%s\n have not been found in system registry after softwares installation.' % ('\n'.join(key_errors),))
+                                    raise EWaptException(u'The uninstall keys: \n%s\n have not been found in system registry after softwares installation.' % ('\n'.join(key_errors),))
                                 else:
-                                    raise Exception(u'The uninstall key: %s has not been found in system registry after software installation.' % (' '.join(key_errors),))
+                                    raise EWaptException(u'The uninstall key: %s has not been found in system registry after software installation.' % (' '.join(key_errors),))
 
                     else:
                         new_uninstall = self.registry_uninstall_snapshot()
@@ -3929,7 +3948,8 @@ class Wapt(object):
             params_dict = {},
             download_only=False,
             usecache=True,
-            printhook=None):
+            printhook=None,
+            installed_by=None):
         """Install a list of packages and its dependencies
         removes first packages which are in conflicts package attribute
 
@@ -4021,7 +4041,7 @@ class Wapt(object):
             for (request,p) in skipped:
                 if request in apackages and not p.explicit_by:
                     logger.info(u'switch to manual mode for %s' % (request,))
-                    self.waptdb.switch_to_explicit_mode(p.package,self.user)
+                    self.waptdb.switch_to_explicit_mode(p.package,installed_by or self.user)
 
             for (request,p) in to_install:
                 try:
@@ -4030,7 +4050,7 @@ class Wapt(object):
                     print(u"Installing %s" % (p.package,))
                     result = self.install_wapt(full_fname(p.filename),
                         params_dict = params_dict,
-                        explicit_by=self.user if request in apackages else None
+                        explicit_by=(installed_by or self.user) if request in apackages else None
                         )
                     if result:
                         for k in result.as_dict():
