@@ -510,7 +510,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostInventory: TTabSheet
           Caption = 'Hardware inventory'
-          ClientHeight = 492
+          ClientHeight = 295
           ClientWidth = 564
           object Panel14: TPanel
             Left = 0
@@ -566,7 +566,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object GridhostInventory: TVirtualJSONInspector
             Left = 0
-            Height = 463
+            Height = 266
             Top = 29
             Width = 564
             PropertyDefs = <>
@@ -600,11 +600,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgSoftwares: TTabSheet
           Caption = 'Software inventory'
-          ClientHeight = 492
+          ClientHeight = 295
           ClientWidth = 564
           object GridHostSoftwares: TSOGrid
             Left = 0
-            Height = 465
+            Height = 268
             Top = 27
             Width = 564
             Align = alClient
@@ -742,12 +742,12 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostWUA: TTabSheet
           Caption = 'Windows updates'
-          ClientHeight = 492
+          ClientHeight = 295
           ClientWidth = 564
           object GridHostWinUpdates: TSOGrid
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 466
+            Height = 269
             Top = 26
             Width = 564
             OnGetText = GridHostWinUpdatesGetText
@@ -875,7 +875,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgTasks: TTabSheet
           Caption = 'Tasks'
-          ClientHeight = 492
+          ClientHeight = 295
           ClientWidth = 564
           object HostTaskRunningProgress: TProgressBar
             Left = 4
@@ -950,28 +950,28 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 437
+            Top = 240
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
           end
           object PageControl1: TPageControl
             Left = 0
-            Height = 335
+            Height = 138
             Top = 102
             Width = 564
-            ActivePage = TabSheet1
+            ActivePage = TabSheet3
             Align = alBottom
             Anchors = [akTop, akLeft, akBottom]
-            TabIndex = 0
+            TabIndex = 2
             TabOrder = 3
             object TabSheet1: TTabSheet
               Caption = 'Pending'
-              ClientHeight = 309
+              ClientHeight = 112
               ClientWidth = 556
               object GridHostTasksPending: TSOGrid
                 Left = 0
-                Height = 307
+                Height = 110
                 Top = 2
                 Width = 556
                 Align = alClient
@@ -1030,7 +1030,7 @@ object VisWaptGUI: TVisWaptGUI
                   item
                     Position = 6
                     Tag = 6
-                    Text = 'create_date'
+                    Text = 'Created on'
                     Width = 100
                     PropertyName = 'create_date'
                   end                
@@ -1082,6 +1082,12 @@ object VisWaptGUI: TVisWaptGUI
                     Text = 'pidlist'
                     Width = 21
                     PropertyName = 'pidlist'
+                  end                
+                  item
+                    Position = 13
+                    Text = 'Created by'
+                    Width = 66
+                    PropertyName = 'created_by'
                   end>
                 Header.DefaultHeight = 19
                 Header.Height = 19
@@ -1104,11 +1110,11 @@ object VisWaptGUI: TVisWaptGUI
             end
             object TabSheet2: TTabSheet
               Caption = 'Done'
-              ClientHeight = 343
+              ClientHeight = 112
               ClientWidth = 556
               object GridHostTasksDone: TSOGrid
                 Left = 0
-                Height = 341
+                Height = 110
                 Top = 2
                 Width = 556
                 Align = alClient
@@ -1191,7 +1197,7 @@ object VisWaptGUI: TVisWaptGUI
                   item
                     Position = 9
                     Tag = 9
-                    Text = 'finish_date'
+                    Text = 'Finished on'
                     Width = 100
                     PropertyName = 'finish_date'
                   end                
@@ -1218,6 +1224,12 @@ object VisWaptGUI: TVisWaptGUI
                     Text = 'pidlist'
                     Width = 21
                     PropertyName = 'pidlist'
+                  end                
+                  item
+                    Position = 13
+                    Text = 'Created by'
+                    Width = 82
+                    PropertyName = 'created_by'
                   end>
                 Header.DefaultHeight = 17
                 Header.Height = 19
@@ -1240,11 +1252,11 @@ object VisWaptGUI: TVisWaptGUI
             end
             object TabSheet3: TTabSheet
               Caption = 'Errors'
-              ClientHeight = 343
+              ClientHeight = 112
               ClientWidth = 556
               object GridHostTasksErrors: TSOGrid
                 Left = 0
-                Height = 341
+                Height = 110
                 Top = 2
                 Width = 556
                 Align = alClient
@@ -1353,6 +1365,12 @@ object VisWaptGUI: TVisWaptGUI
                     Text = 'pidlist'
                     Width = 21
                     PropertyName = 'pidlist'
+                  end                
+                  item
+                    Position = 13
+                    Text = 'Created by'
+                    Width = 98
+                    PropertyName = 'created_by'
                   end>
                 Header.DefaultHeight = 17
                 Header.Height = 19
@@ -1377,7 +1395,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel6: TPanel
             Left = 0
             Height = 50
-            Top = 442
+            Top = 245
             Width = 564
             Align = alBottom
             BevelOuter = bvNone

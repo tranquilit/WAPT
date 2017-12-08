@@ -121,6 +121,7 @@ Name=debug
 ScriptName=C:\tranquilit\wapt\waptserver\waptserver.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
+Parameters=-c c:\wapt\conf\waptserver.ini
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
