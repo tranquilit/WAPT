@@ -1308,8 +1308,9 @@ def eventprintinfo(func):
     '''Wraps a method so that any calls made to print get logged instead'''
     def pwrapper(*arg, **kwargs):
         stdobak = sys.stdout
-        lpinstance = EventsPrinter(arg[0].wapt.events,arg[0].logs)
-        sys.stdout = lpinstance
+        if arg[0].wapt is not None:
+            lpinstance = EventsPrinter(arg[0].wapt.events,arg[0].logs)
+            sys.stdout = lpinstance
         try:
             return func(*arg, **kwargs)
         finally:
@@ -1338,6 +1339,7 @@ class WaptTask(object):
         self.notify_server_on_start = True
         self.notify_server_on_finish = True
         self.notify_user = True
+        self.created_by = None
         for k in args:
             setattr(self,k,args[k])
         self.lang = None
@@ -1415,6 +1417,7 @@ class WaptTask(object):
             notify_user = self.notify_user,
             notify_server_on_start = self.notify_server_on_start,
             notify_server_on_finish = self.notify_server_on_finish,
+            created_by = self.created_by,
             ))
 
     def as_json(self):
@@ -2291,17 +2294,16 @@ def install_service():
 ##### API V2 #####
 def make_response(result = {},success=True,error_code='',msg='',request_time=None):
     data = dict(
+            uuid = uuid,
             success = success,
             msg = msg,
+            error_code = error_code,
+            result = result,
+            request_time = request_time,
             )
-    if not success:
-        data['error_code'] = error_code
-    else:
-        data['result'] = result
-    data['request_time'] = request_time
     return data
 
-def make_response_from_exception(exception,error_code=''):
+def make_response_from_exception(exception,error_code='',uuid=None,request_time=None):
     """Create a standard answer for websocket callback exception
 
     Returns:
@@ -2309,11 +2311,14 @@ def make_response_from_exception(exception,error_code=''):
    """
     if not error_code:
         error_code = type(exception).__name__.lower()
+
     data = dict(
+            uuid = uuid,
             success = False,
-            error_code = error_code
+            msg = "Error on client: %s" % repr(exception),
+            error_code = error_code,
+            request_time = request_time,
             )
-    data['msg'] = "Error on client: %s" % repr(exception)
     return data
 
 
@@ -2336,6 +2341,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
             # check signatures
             if not self.wapt:
                 raise Exception('Wapt not available')
+            verified_by = None
             for action in actions:
                 verified_by = None
                 cert = SSLCertificate(crt_string = action['signer_certificate'])
@@ -2352,6 +2358,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                 if not verified_by:
                     raise SSLVerifyException('Bad signature for action %s, aborting' % action)
             result = []
+            start_time = time.time()
             for action in actions:
                 uuid = action['uuid']
                 if uuid != self.wapt.host_uuid:
@@ -2432,13 +2439,12 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     result.append(self.task_manager.add_task(WaptGPUpdate(),notify_user=notify_user).as_dict())
 
             #self.emit('trigger_update_result',{'result':data})
-
             if result_callback:
-                result_callback(make_response(result))
+                result_callback(make_response(result,uuid=self.wapt.host_uuid),request_time=time.time()-start_time)
         except BaseException as e:
             logger.info('Exception for actions %s: %s' % (repr(args),repr(e)))
             if result_callback:
-                result_callback(make_response_from_exception(e))
+                result_callback(make_response_from_exception(e,uuid=self.wapt.host_uuid,request_time=time.time()-start_time))
 
     def on_get_tasks_status(self,args,result_callback=None):
         # check signatures
@@ -2452,12 +2458,12 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
 
             data = self.task_manager.tasks_status()
             if result_callback:
-                result_callback(make_response(data))
+                result_callback(make_response(data,uuid=self.wapt.host_uuid,))
 
         except BaseException as e:
             logger.info('Exception for actions %s: %s' % (repr(args),repr(e)))
             if result_callback:
-                result_callback(make_response_from_exception(e))
+                result_callback(make_response_from_exception(e,uuid=self.wapt.host_uuid))
 
     def on_trigger_longtask(self,args,result_callback=None):
         task = WaptLongTask()
@@ -2466,7 +2472,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
         task.notify_server_on_finish = args.get('notify_server',False)
         data = self.task_manager.add_task(task).as_dict()
         if result_callback:
-            result_callback(make_response(data))
+            result_callback(make_response(data,uuid=self.wapt.host_uuid))
 
     def on_wapt_ping(self,args):
         print('wapt_ping... %s'% (args,))
