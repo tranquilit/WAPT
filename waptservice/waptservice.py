@@ -90,7 +90,7 @@ import common
 from common import Wapt
 import setuphelpers
 from setuphelpers import Version
-from waptpackage import PackageEntry,WaptLocalRepo,WaptPackage
+from waptpackage import PackageEntry,WaptLocalRepo,WaptPackage,EWaptException
 from waptcrypto import SSLVerifyException,SSLCABundle,SSLCertificate,SSLPrivateKey
 
 import windnsquery
