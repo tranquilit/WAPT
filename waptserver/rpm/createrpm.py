@@ -155,15 +155,6 @@ run_verbose(r'source ./pylibs/bin/activate ;curl https://bootstrap.pypa.io/ez_se
 run_verbose(r'source ./pylibs/bin/activate ;pip install pip setuptools --upgrade')
 
 
-eprint('Temporay fix : download, patch and install Rocket outside of requirement-server.txt because of bug https://github.com/explorigin/Rocket/commit/fb8bd8f1b979faef8733853065536fc7db111612')
-# temporary fix for Rocket package : current pip package has a hardcoded http (non ssl) url to pipy. Pipy does not accept this kind of url anymore. Rocket package is patched upstream on Github, but not yet pushed to pipy
-run_verbose('rm -Rf ./Rocket-1.2.4/')
-run_verbose('wget https://pypi.python.org/packages/72/5a/efc43e5d8a7ef27205a4c7c4978ebaa812418e2151e7edb26ff3143b29eb/Rocket-1.2.4.zip#md5=fa611955154b486bb91e632a43e90f4b -O Rocket-1.2.4.zip')
-# should check md5 hash
-run_verbose("unzip Rocket-1.2.4.zip")
-run_verbose("sed -i 's#http://pypi.python.org/packages/source/d/distribute/#https://pypi.python.org/packages/source/d/distribute/#' Rocket-1.2.4/distribute_setup.py")
-run_verbose("pip install -t ./builddir/opt/wapt/lib/site-packages Rocket-1.2.4/")
-
 # fix for psycopg install because of ImportError: libpq-9c51d239.so.5.9: ELF load command address/offset not properly aligned
 #run_verbose(r'yum install postgresql.x86_64 postgresql-devel.x86_64 -y')
 run_verbose(r'pip install -t ./builddir/opt/wapt/lib/site-packages psycopg2==2.7.3.2 --no-binary :all: ')
