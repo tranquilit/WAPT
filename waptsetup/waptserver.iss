@@ -41,7 +41,7 @@ Source: "..\waptserver\*.template"; DestDir: "{app}\waptserver";
 Source: "..\waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs
 Source: "..\waptserver\translations\*"; DestDir: "{app}\waptserver\translations"; Flags: createallsubdirs recursesubdirs
 Source: "..\waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs
-Source: "..\waptserver\apache-win32\*"; DestDir: "{app}\waptserver\apache-win32"; Flags: createallsubdirs recursesubdirs
+;Source: "..\waptserver\apache-win32\*"; DestDir: "{app}\waptserver\apache-win32"; Flags: createallsubdirs recursesubdirs
 
 ; For UninstallRun
 Source: "..\waptserver\uninstall-services.bat"; Destdir: "{app}\waptserver\"
@@ -57,7 +57,7 @@ Name: "{app}\waptserver\log"
 Name: "{app}\waptserver\repository\wapt"
 Name: "{app}\waptserver\repository\wapt-host"
 Name: "{app}\waptserver\repository\wapt-group"
-Name: "{app}\waptserver\apache-win32\ssl"
+;Name: "{app}\waptserver\apache-win32\ssl"
 
 [Setup]
 OutputBaseFilename=waptserversetup
@@ -80,7 +80,7 @@ Name: "{group}\Logiciels installés avec WAPT"; Filename: "http://localhost:8088/
 
 [Tasks]
 Name: autorunSessionSetup; Description: "{cm:LaunchSession}"
-Name: installApache; Description: "{cm:InstallApache}"
+;Name: installApache; Description: "{cm:InstallApache}"
 
 [UninstallRun]
 Filename: "{app}\waptserver\uninstall-services.bat"; Flags: runhidden; StatusMsg: "Stopping and deregistering waptserver"
