@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-
+from __future__ import print_function
 import fileinput
 import glob
 import os
@@ -30,12 +30,14 @@ import subprocess
 import sys
 import platform
 
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
 def replaceAll(file,searchExp,replaceExp):
     for line in fileinput.input(file, inplace=1):
         if searchExp in line:
             line = line.replace(searchExp,replaceExp)
         sys.stdout.write(line)
-
 
 def rsync(src,dst):
     rsync_option = ' '.join([
@@ -48,12 +50,12 @@ def rsync(src,dst):
     ])
     rsync_source = src
     rsync_destination = dst
-    rsync_command = '/usr/bin/rsync %s "%s" "%s"' % (
+    rsync_command = '/usr/bin/rsync %s "%s" "%s" 1>&2' % (
         rsync_option,rsync_source,rsync_destination)
     os.system(rsync_command)
 
 if os.name!='posix':
-    print "script has to be run on CentOS"
+    eprint("script has to be run on CentOS")
     sys.exit(1)
 
 makepath = os.path.join
@@ -64,7 +66,7 @@ wapt_source_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpa
 
 # waptrepo
 source_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-print wapt_source_dir
+eprint('Source dir: ',wapt_source_dir)
 sys.path.insert(0, wapt_source_dir)
 
 def get_wapt_version():
@@ -72,7 +74,7 @@ def get_wapt_version():
        we get import error on build farm due to M2Crypto
        it would be better to reimplement this using an AST
        """
-    with open('%s/waptpackage.py' % wapt_source_dir,'r') as file_source :
+    with open('%s/waptutils.py' % wapt_source_dir,'r') as file_source :
         for line in file_source.readlines():
             if line.strip().startswith('__version__'):
                 version =  line.split('=')[1].strip()
@@ -83,7 +85,7 @@ def get_wapt_version():
 wapt_version = get_wapt_version()
 
 if not wapt_version:
-    print 'version "%s" incorrecte dans waptpackage.py' % (wapt_version,)
+    eprint('version "%s" incorrecte dans waptutils.py' % (wapt_version,))
     sys.exit(1)
 
 new_umask = 022
@@ -94,7 +96,7 @@ if new_umask != old_umask:
 if os.path.exists('BUILDROOT'):
     shutil.rmtree('BUILDROOT')
 
-print u'creation de l\'arborescence'
+eprint(u'creation de l\'arborescence')
 os.makedirs("BUILDROOT")
 os.makedirs("BUILDROOT/opt")
 os.makedirs("BUILDROOT/opt/wapt")
@@ -112,19 +114,18 @@ os.makedirs("BUILDROOT/opt/wapt/lib/site-packages")
 
 if os.path.exists("pylibs"):
     shutil.rmtree("pylibs")
-print(
+eprint(
     'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
 subprocess.check_output(
     r'virtualenv ./pylibs --system-site-packages', shell=True)
-print('Install additional libraries in build environment virtualenv')
-print(subprocess.check_output(
-    r'source ./pylibs/bin/activate ; pip install --upgrade pip ', shell=True))
-print(subprocess.check_output(
+eprint('Install additional libraries in build environment virtualenv')
+eprint(subprocess.check_output(
+    r'source ./pylibs/bin/activate ; pip install --upgrade pip', shell=True))
+eprint(subprocess.check_output(
     r'source ./pylibs/bin/activate ; pip install -r ../../requirements-repo.txt -t ./BUILDROOT/opt/wapt/lib/site-packages', shell=True))
 rsync('./pylibs/lib/', './BUILDROOT/opt/wapt/lib/')
 
-
-print 'copie des fichiers waptrepo'
+eprint('copie des fichiers waptrepo')
 rsync(source_dir,'BUILDROOT/opt/wapt/')
 copyfile(makepath(wapt_source_dir,'waptcrypto.py'),
          'BUILDROOT/opt/wapt/waptcrypto.py')
@@ -158,5 +159,5 @@ elif platform.dist()[0] in ('centos','redhat','ubuntu'):
     os.makedirs('BUILDROOT/var/www/html/wapt-host')
     os.makedirs('BUILDROOT/var/www/html/wapt-group')
 else:
-    print "distrib not supported"
+    eprint("distrib not supported")
     sys.exit(1)
