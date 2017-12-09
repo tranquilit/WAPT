@@ -34,7 +34,7 @@ Source: "..\waptserverpostconf.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\waptdeploy.exe"; DestDir: "{app}\waptserver\repository\wapt\"; Flags: ignoreversion
 
 ; Sources for server application
-Source: "waptserver.iss"; DestDir: "{app}\waptsetup";
+Source: "waptserversetup.iss"; DestDir: "{app}\waptsetup";
 Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName: "waptserver.ini"
 Source: "..\waptserver\*.py"; DestDir: "{app}\waptserver";       
 Source: "..\waptserver\*.template"; DestDir: "{app}\waptserver";  
