@@ -18,7 +18,11 @@ Scripts\virtualenv.exe --relocatable .
 Scripts\pip.exe install --upgrade pip distribute wheel virtualenv six
 REM  pywin32 is not available as binary wheel from standard pip download, it is 
 REM  currently integrated into the git tree and installed directly from that file
-Scripts\easy_install.exe utils\pywin32-220.win32-py2.7.exe
+
+REM get  pywin32-220.win32-py2.7.exe from internet
+waptpython -c "from update_binaries import wget; from subprocess import check_output; pywin32=wget('https://downloads.sourceforge.net/project/pywin32/pywin32/Build%%20221/pywin32-221.win32-py2.7.exe?r=&ts=1508231209&use_mirror=freefr',resume=True,md5='90a3853325c2c9322c5cc2d09682cfe4'); print check_output('Scripts\easy_install.exe ""%%s""' %% pywin32,shell=True)"
+
+Scripts\pip.exe install Rocket==1.2.4
 Scripts\pip.exe install --require-hashes  -r requirements.txt
 
 copy /Y lib\site-packages\pywin32-220-py2.7-win32.egg\py*.dll .
