@@ -12,7 +12,6 @@ def programfiles32():
         return os.environ['PROGRAMFILES']
 
 if __name__ == '__main__':
-
     installer = sys.argv[1]
     if installer.endswith(".exe"):
         installer = installer[0:installer.rfind(".exe")]
@@ -23,13 +22,11 @@ if __name__ == '__main__':
     rev_file.close()
 
     iss_file = installer + ".iss"
-    issc_binary = os.path.join(programfiles32(),'Inno Setup 5','ISCC.exe')
+    issc_binary = os.path.join(os.path.dirname(__file__),'innosetup','ISCC.exe')
 
     cmd = '"%(issc_binary)s" %(issfile)s' % {
         'issc_binary':issc_binary,
         'issfile':iss_file
     }
 
-    print subprocess.check_output(cmd)
-
-
+    subprocess.check_call(cmd)
