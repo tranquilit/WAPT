@@ -2,7 +2,7 @@
 %define buildroot ./builddir
 
 Name:	    nginx-mod-http-auth-spnego
-Version:	1.10.2
+Version:	1.12.2
 Release:	tis1.1.0
 Summary:	WAPT Server
 BuildArch:	x86_64
