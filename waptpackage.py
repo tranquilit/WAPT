@@ -2036,10 +2036,9 @@ class WaptLocalRepo(WaptBaseRepo):
                     self._index[entry.package] = entry
 
                 # looks for the signer certificate and add it to Packages if not already
-                if not entry.signer_fingerprint in signer_certificates._certs_fingerprint_idx:
-                    certs = entry.package_certificate()
-                    if certs:
-                        signer_certificates.add_certificates(certs)
+                certs = entry.package_certificate()
+                if certs:
+                    signer_certificates.add_certificates(certs)
 
                 # looks for an icon in wapt package
                 icon_fn = os.path.join(icons_path,"%s.png"%entry.package)

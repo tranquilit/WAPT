@@ -498,7 +498,11 @@ class SSLCABundle(object):
                         add_chain_cache(cache_key,result)
                         return result
                     # append chain of trusted upstream CA certificates
-                    result.extend([check_cert(issuer) for issuer in cert.verify_signature_with(self) if issuer != cert])
+                    issuer_chain = cert.verify_signature_with(self)
+                    for issuer in issuer_chain:
+                        issuer.verify_signature_with(self)
+                        result.append(issuer)
+
                     add_chain_cache(cache_key,result)
                     return result
                 except SSLVerifyException as e:
