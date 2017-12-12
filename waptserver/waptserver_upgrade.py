@@ -48,6 +48,7 @@ sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
 sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 
 from waptserver_config import __version__
+from waptserver_model import load_db_config
 
 import logging
 import ConfigParser
@@ -196,6 +197,7 @@ if __name__ == '__main__':
         help='test prefix for fqdn and uuid for load testing (for development only)')
 
     (options, args) = parser.parse_args()
+    conf = waptserver_config.load_config(options.configfile)
 
     utils_set_devel_mode(options.devel)
     if options.loglevel is not None:
