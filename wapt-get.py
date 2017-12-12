@@ -827,6 +827,7 @@ def main():
                 key = mywapt.private_key(passwd_callback=get_private_key_passwd)
                 print('Private key is %s' % key)
 
+
                 for source_dir in all_args:
                     try:
                         source_dir = guess_package_root_dir(source_dir)
@@ -840,14 +841,10 @@ def main():
                                 excludes=ensure_list(options.excludes))
                             if package_fn:
                                 print('...done building. Package filename %s' % (package_fn,))
-                                if mywapt.personal_certificate():
-                                    print('Signing %s with key %s and certificate %s (%s)' % (package_fn,mywapt.private_key(),certificate.cn,certificate.public_cert_filename))
-                                    signature = mywapt.sign_package(package_fn)
-                                    print(u"Package %s signed : signature : %s...%s" % (package_fn, signature[0:10],signature[-10:-1]))
-                                    packages.append(package_fn)
-                                else:
-                                    logger.warning(u'No private key provided, package %s is unsigned !' % package_fn)
-
+                                print('Signing %s with key %s and certificate %s (%s)' % (package_fn,mywapt.private_key(),certificates[0].cn,certificates[0].public_cert_filename))
+                                signature = mywapt.sign_package(package_fn)
+                                print(u"Package %s signed : signature : %s...%s" % (package_fn, signature[0:10],signature[-10:-1]))
+                                packages.append(package_fn)
                             else:
                                 logger.critical(u'package %s not created' % package_fn)
 

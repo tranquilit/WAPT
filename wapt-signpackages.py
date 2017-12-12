@@ -93,10 +93,10 @@ def main():
         print('ERROR: No certificate found or specified')
         sys.exit(1)
 
-    cert = SSLCertificate(options.public_key or options.private_key)
     if options.private_key and os.path.isfile(options.private_key):
         key = SSLPrivateKey(options.private_key)
     else:
+        cert = SSLCertificate(options.public_key or options.private_key)
         key = cert.matching_key_in_dirs()
 
     if not key:
@@ -107,7 +107,7 @@ def main():
 
     ca_bundle = SSLCABundle()
     signers_bundle = SSLCABundle()
-    signers_bundle.add_certificates([cert])
+    signers_bundle.add_pem(pem_filename=options.public_key)
 
     waptpackages = []
     for arg in args:
@@ -143,7 +143,7 @@ def main():
                     sign_needed = True
 
             if not options.if_needed or sign_needed:
-                pe.sign_package(private_key=key,certificate = cert,mds = ensure_list(options.md))
+                pe.sign_package(private_key=key,certificate = signers_bundle.certificates(),mds = ensure_list(options.md))
             print('Done')
         except Exception as e:
             print(u'Error: %s'%ensure_unicode(e.message))
