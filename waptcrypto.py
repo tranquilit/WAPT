@@ -700,6 +700,8 @@ def get_peer_cert_chain_from_server(url):
     client_ctx.set_verify(SSL.VERIFY_NONE, verify_cb)
     client = SSL.Connection(client_ctx, SSL.socket.socket())
     client.set_connect_state()
+    # for SNI
+    client.set_tlsext_host_name(location.hostname)
     client.connect((location.hostname,location.port or 443))
     client.do_handshake()
     result = []

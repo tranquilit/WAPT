@@ -1456,7 +1456,8 @@ class WaptServer(object):
                 except Exception as e:
                     logger.critical('save_server_certificate : %s'% repr(e))
                     raise
-            open(pem_fn,'wb').write(new_cert.as_pem())
+            # write full chain
+            open(pem_fn,'wb').write('\n'.join(cert.as_pem() for cert in certs))
             logger.info('New certificate %s with fingerprint %s saved to %s'%(new_cert,new_cert.fingerprint,pem_fn))
             return pem_fn
         else:
