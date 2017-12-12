@@ -34,6 +34,7 @@ type
     procedure ActSelectConfExecute(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure CBConfigurationDropDown(Sender: TObject);
+    procedure CBConfigurationKeyPress(Sender: TObject; var Key: char);
     procedure CBConfigurationSelect(Sender: TObject);
     procedure edPasswordKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -137,6 +138,16 @@ begin
   end;
 end;
 
+procedure TVisLogin.CBConfigurationKeyPress(Sender: TObject; var Key: char);
+begin
+  if key = #13 then
+  begin
+    if (edWaptServerName.Text <>'') and  (EdUser.Text <>'') then
+      edPassword.SetFocus;
+    Key := #0;
+  end;
+end;
+
 procedure TVisLogin.CBConfigurationSelect(Sender: TObject);
 begin
   if ExtractFileDir(CBConfiguration.Text) = '' then
@@ -144,8 +155,6 @@ begin
   else
     FAppIniFilename := CBConfiguration.Text;
   edWaptServerName.Text:=IniReadString(FAppIniFilename,'global','wapt_server');
-  if (edWaptServerName.Text <>'') and  (EdUser.Text <>'') then
-    edPassword.SetFocus;
 end;
 
 

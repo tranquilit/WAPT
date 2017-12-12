@@ -377,6 +377,7 @@ object VisLogin: TVisLogin
       ItemHeight = 13
       OnDropDown = CBConfigurationDropDown
       OnExit = CBConfigurationSelect
+      OnKeyPress = CBConfigurationKeyPress
       OnSelect = CBConfigurationSelect
       TabOrder = 3
       Text = 'waptconsole'
