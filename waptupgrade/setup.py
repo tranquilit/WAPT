@@ -9,6 +9,7 @@ import time
 import pythoncom
 from win32com.taskscheduler import taskscheduler
 import platform
+import codecs
 
 # registry key(s) where WAPT will find how to remove the application(s)
 uninstallkey = []
@@ -283,23 +284,81 @@ def run_notfatal(*cmd,**args):
         print('Warning : %s' % repr(e))
         return ''
 
+
+TASK_TEMPLATE="""\
+<?xml version="1.0" encoding="UTF-16"?>
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Date>%(created_on)s</Date>
+    <Author>WAPT</Author>
+  </RegistrationInfo>
+  <Triggers>
+    <TimeTrigger>
+      <StartBoundary>%(run_on)s</StartBoundary>
+      <EndBoundary>%(expired_on)s</EndBoundary>
+      <ExecutionTimeLimit>PT1H</ExecutionTimeLimit>
+      <Enabled>true</Enabled>
+    </TimeTrigger>
+  </Triggers>
+  <Principals>
+    <Principal id="Author">
+      <UserId>S-1-5-18</UserId>
+      <RunLevel>HighestAvailable</RunLevel>
+    </Principal>
+  </Principals>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <AllowHardTerminate>true</AllowHardTerminate>
+    <StartWhenAvailable>true</StartWhenAvailable>
+    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
+    <IdleSettings>
+      <StopOnIdleEnd>true</StopOnIdleEnd>
+      <RestartOnIdle>false</RestartOnIdle>
+    </IdleSettings>
+    <AllowStartOnDemand>true</AllowStartOnDemand>
+    <Enabled>true</Enabled>
+    <Hidden>false</Hidden>
+    <RunOnlyIfIdle>false</RunOnlyIfIdle>
+    <WakeToRun>false</WakeToRun>
+    <ExecutionTimeLimit>PT1H</ExecutionTimeLimit>
+    <DeleteExpiredTaskAfter>PT0S</DeleteExpiredTaskAfter>
+    <Priority>7</Priority>
+  </Settings>
+  <Actions Context="Author">
+    <Exec>
+      <Command>%(cmd)s</Command>
+      <Arguments>%(parameters)s</Arguments>
+    </Exec>
+  </Actions>
+</Task>
+"""
+
 def create_onetime_task(name,cmd,parameters=None, delay_minutes=2,max_runtime=10, retry_count=3,retry_delay_minutes=1):
     """creates a one time Windows scheduled task and activate it.
     """
     run_time = time.localtime(time.time() + delay_minutes*60)
     # task
-    hour_min = time.strftime('%H:%M:%S', run_time)
-    if windows_version() < '5.2':
+
+    if windows_version() <= Version('5.2',2):
         # for win XP
         system_account = r'"NT AUTHORITY\SYSTEM"'
-    else:
-        system_account = 'SYSTEM'
-    try:
-        return run('schtasks /Create /SC ONCE /TN "%s" /TR "\'%s\' %s" /ST %s /RU %s /F /V1 /Z' % (name,cmd,parameters,hour_min,system_account))
-    except:
         # windows xp doesn't support one time startup task /Z nor /F
+        hour_min = time.strftime('%H:%M:%S', run_time)
         run_notfatal('schtasks /Delete /TN "%s" /F'%name)
         return run('schtasks /Create /SC ONCE /TN "%s" /TR  "%s %s" /ST %s /RU %s' % (name,cmd,parameters,hour_min,system_account))
+    else:
+        system_account = 'SYSTEM'
+        xmlfile = tempfile.mktemp('.xml')
+        created_on = time.strftime('%Y-%m-%dT%H:%M:%S',time.localtime(time.time()))
+        run_on = time.strftime('%Y-%m-%dT%H:%M:%S',run_time)
+        expired_on = time.strftime('%Y-%m-%dT%H:%M:%S',time.localtime(time.time() + 24*3600))
+        codecs.open(xmlfile,'wb',encoding='utf8').write(TASK_TEMPLATE % locals())
+        result = run('schtasks /Create /F /TN "%s" /XML "%s"' % (name,xmlfile))
+        if isfile(xmlfile):
+            remove_file(xmlfile)
+        return result
 
 
 def full_waptagent_install(min_version,at_startup=False):
