@@ -259,7 +259,6 @@ type
     GridHostTasksDone: TSOGrid;
     GridHostTasksErrors: TSOGrid;
     HostRunningTaskLog: TMemo;
-    ActionsImages: TImageList;
     HostRunningTask: TLabeledEdit;
     Label14: TLabel;
     MemoTaskLog: TMemo;
@@ -3735,7 +3734,7 @@ procedure TVisWaptGUI.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
   ScaleImageList(ImageList1,96);
-  ScaleImageList(ActionsImages,96);
+  ScaleImageList(ActionsImages24,96);
   HostsLimit := 2000;
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
 end;
