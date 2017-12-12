@@ -323,6 +323,8 @@ class SSLCABundle(object):
         return None
 
     def certificate(self,fingerprint):
+        if not isinstance(fingerprint,(str,unicode)):
+            raise EWaptCryptoException('A certificate fingerprint as bytes str is expected, %s supplied' % fingerprint)
         return self._certs_fingerprint_idx.get(fingerprint,None)
 
     def certificate_for_cn(self,cn):
@@ -357,17 +359,21 @@ class SSLCABundle(object):
                 ]
 
     def certificate_chain(self,certificate=None,fingerprint=None):
-        # return certificate chain from certificate, without checking certificate signatures and validity
+        """return certificates chain from certificate, without checking certificate signatures and validity
+
+        Returns:
+            list: list of certificates starting with leaf up to root CA.
+        """
         result = []
         if not certificate and fingerprint:
             certificate = self.certificate(fingerprint = fingerprint)
-        else:
-            raise EWaptCryptoException('certificate_chain: You must provide either a certificate or a certificate''s fingerprint')
+
         if not certificate:
             raise EWaptCryptoException('certificate_chain: certificate not found')
 
         issuer_cert = self.certificate_for_subject_key_identifier(certificate.authority_key_identifier)
-        if issuer_cert:
+        # we include the certificate in the chain if it is itself in the cabundle evane if we have not found the issuer
+        if issuer_cert or self.certificate(fingerprint = fingerprint):
             result.append(certificate)
         while issuer_cert:
             # TODO : verify  certificate.signature with issuercert public key
