@@ -29,7 +29,7 @@ var
   VisApropos: TVisApropos;
 
 implementation
-uses uWaptConsoleRes,tiscommon,waptcommon,LCLIntf,UScaleDPI;
+uses uWaptConsoleRes,tiscommon,waptcommon,LCLIntf,UScaleDPI,uwaptconsole;
 {$R *.lfm}
 
 { TVisApropos }
@@ -37,7 +37,12 @@ uses uWaptConsoleRes,tiscommon,waptcommon,LCLIntf,UScaleDPI;
 procedure TVisApropos.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
-  LabInfos.Caption := format(rsVersion, [GetApplicationVersion, GetApplicationVersion(WaptgetPath)]);
+  if VisWaptGUI.ActProprietary.Checked then
+    VisWaptGUI.plStatusBar1.Panels[0].Text := ApplicationName+' '+GetApplicationVersion+' WAPT Community Edition, (c) 2012-2017 Tranquil IT Systems. (Configuration:'+AppIniFilename+')'
+  else
+    VisWaptGUI.plStatusBar1.Panels[0].Text := ApplicationName+' '+GetApplicationVersion+' WAPT Enterprise Edition, (c) 2012-2017 Tranquil IT Systems. (Configuration:'+AppIniFilename+')';
+
+  LabInfos.Caption := VisWaptGUI.plStatusBar1.Panels[0].Text;
 end;
 
 procedure TVisApropos.Image1Click(Sender: TObject);

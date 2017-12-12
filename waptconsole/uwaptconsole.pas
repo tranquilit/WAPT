@@ -183,10 +183,10 @@ type
     Splitter6: TSplitter;
     TimerWUALoadWinUpdates: TTimer;
     ToolBar1: TToolBar;
-    ToolButton1: TToolButton;
+    ToolButtonUpgrade: TToolButton;
     ToolButton2: TToolButton;
     ToolButtonRefresh: TToolButton;
-    ToolButton5: TToolButton;
+    ToolButtonUpdate: TToolButton;
     ToolButton6: TToolButton;
     ToolButtonSep1: TToolButton;
     WSUSActions: TActionList;
@@ -2295,6 +2295,16 @@ begin
   ActLaunchGPUpdate.Visible:=ActProprietary.Checked;
   ActDisplayUserMessage.Visible:=ActProprietary.Checked;
   ActLaunchWaptExit.Visible:=ActProprietary.Checked;
+  if ActProprietary.Checked then
+  begin
+    ToolButtonUpdate.Action := ActTriggerBurstUpdates;
+    ToolButtonUpgrade.Action := ActLaunchWaptExit;
+  end
+  else
+  begin
+    ToolButtonUpdate.Action := ActTriggerHostUpdate;
+    ToolButtonUpgrade.Action := ActTriggerBurstUpgrades;
+  end;
 end;
 
 procedure TVisWaptGUI.ActRemoteAssistExecute(Sender: TObject);
@@ -3906,14 +3916,17 @@ begin
       if FileExists(Appuserinipath) then
         SysUtils.DeleteFile(Appuserinipath);
 
-    plStatusBar1.Panels[0].Text := ApplicationName+' '+GetApplicationVersion+' WAPT Community Edition, (c) 2012-2017 Tranquil IT Systems. (Configguration:'+AppIniFilename+')';
-
     pgWindowsUpdates.TabVisible:=waptcommon.waptwua_enabled;
     pgHostWUA.TabVisible:=waptcommon.waptwua_enabled;
     for i:=0 to WSUSActions.ActionCount-1 do
     begin
       (WSUSActions.Actions[i] as TAction).Visible:=waptcommon.waptwua_enabled;
     end;
+
+    if ActProprietary.Checked then
+      plStatusBar1.Panels[0].Text := ApplicationName+' '+GetApplicationVersion+' WAPT Community Edition, (c) 2012-2017 Tranquil IT Systems. (Configuration:'+AppIniFilename+')'
+    else
+      plStatusBar1.Panels[0].Text := ApplicationName+' '+GetApplicationVersion+' WAPT Enterprise Edition, (c) 2012-2017 Tranquil IT Systems. (Configuration:'+AppIniFilename+')';
 
     //ProgressTitle(rsLoadPackages);
     ProgressStep(2,3);
