@@ -633,8 +633,8 @@ def upload_packages():
             entry = PackageEntry(waptfile=tmp_target)
             if entry.has_file('setup.py'):
                 # check if certificate has code_signing extended attribute
-                signer_cert = entry.package_certificate()
-                if not signer_cert.is_code_signing:
+                signer_certs = entry.package_certificate()
+                if not signer_certs or signer_certs[0].is_code_signing:
                     raise EWaptForbiddden(u'The package %s contains setup.py code but has not been signed with a proper code_signing certificate' % entry.package)
 
             logger.debug('Saved package %s into %s' % (entry.asrequirement(),tmp_target))

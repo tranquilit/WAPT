@@ -1,4 +1,3 @@
-
 argparse==1.2.1
 Babel==2.3.4
 cffi==1.11.2
@@ -25,7 +24,6 @@ python-socketio==1.8.3
 python-ldap==2.4.44
 pytz==2017.2
 requests==2.18.4
-#Rocket==1.2.4
 six==1.11.0
 urllib3==1.22
 wakeonlan==0.2.2

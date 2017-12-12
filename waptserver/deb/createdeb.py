@@ -170,15 +170,6 @@ eprint('Install additional libraries in build environment virtualenv')
 
 run_verbose('./builddir/opt/wapt/bin/pip install pip setuptools --upgrade')
 
-# temporary fix for Rocket package : current pip package has a hardcoded http (non ssl) url to pipy. Pipy does not accept this kind of url anymore. Rocket package is patched upstream on Github, but not yet pushed to pipy
-run_verbose('rm -Rf ./Rocket-1.2.4/')
-run_verbose('wget https://pypi.python.org/packages/72/5a/efc43e5d8a7ef27205a4c7c4978ebaa812418e2151e7edb26ff3143b29eb/Rocket-1.2.4.zip#md5=fa611955154b486bb91e632a43e90f4b -O Rocket-1.2.4.zip')
-# should check md5 hash
-run_verbose("unzip Rocket-1.2.4.zip")
-run_verbose("sed -i 's#http://pypi.python.org/packages/source/d/distribute/#https://pypi.python.org/packages/source/d/distribute/#' Rocket-1.2.4/distribute_setup.py")
-run_verbose("./builddir/opt/wapt/bin/pip install -t ./builddir/opt/wapt/lib/site-packages Rocket-1.2.4/")
-
-
 run('./builddir/opt/wapt/bin/pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages')
 
 eprint('copying the waptrepo files')
