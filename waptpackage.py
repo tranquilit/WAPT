@@ -1400,21 +1400,17 @@ class PackageEntry(object):
             if certs:
                 signer_cert = certs[0]
                 logger.debug('Checking signature with %s' % signer_cert)
-                try:
-                    signer_cert.verify_content(manifest_data,signature,md = self._md)
-                    if not has_setup_py or signer_cert.is_code_signing:
-                        logger.debug('OK with %s' % signer_cert)
-                        verified_by = signer_cert
-                        break
-                    else:
-                        logger.debug(u'Signature OK but not a code signing certificate, skipping: %s' % signer_cert)
-                except SSLVerifyException as e:
-                    logger.debug(u'Check failed with certificate %s'%signer_cert)
+                signer_cert.verify_content(manifest_data,signature,md = self._md)
+                if not has_setup_py or signer_cert.is_code_signing:
+                    logger.debug('OK with %s' % signer_cert)
+                    verified_by = signer_cert
+                else:
+                    raise SSLVerifyException(u'Signature OK but not a code signing certificate: %s' % signer_cert)
 
-            if verified_by:
                 logger.info(u'Package issued by %s' % (verified_by.subject,))
             else:
-                raise EWaptBadSignature(u'No matching certificate found or bad signature')
+                raise SSLVerifyException(u'No certificate found in the package. Is the package signed with Wapt version prior to 1.5 ?' % signer_cert)
+
         except Exception as e:
             logger.debug('Check_package_signature failed for %s. Signer:%s, cabundle: %s :  %s' % (
                     self.asrequirement(),
