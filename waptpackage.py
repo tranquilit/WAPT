@@ -1035,16 +1035,16 @@ class PackageEntry(object):
 
         signed_content = self._signed_content()
         signature_raw = self.signature.decode('base64')
-        cert = self.package_certificate()
-        if cert is None and signers_bundle is not None:
-            cert = signers_bundle.certificate (fingerprint = self.signer_fingerprint)
-        if cert is None:
+        certs = self.package_certificate()
+        if certs is None and signers_bundle is not None:
+            certs = signers_bundle.certificate_chain(fingerprint = self.signer_fingerprint)
+        if not certs:
             raise EWaptMissingCertificate('Control %s data has no matching certificate in Packages index or Package, please rescan your Packages index.' % self.asrequirement())
 
-        issued_by = cabundle.check_certificates_chain(cert)[-1]
+        issued_by = cabundle.check_certificates_chain(certs)[-1]
         #logger.debug('Certificate %s is trusted by root CA %s' % (cert.subject,issued_by.subject))
 
-        if cert.verify_content(signed_content,signature_raw,md=self._default_md):
+        if certs[0].verify_content(signed_content,signature_raw,md=self._default_md):
             self._md = self._default_md
             return cert
 
@@ -1075,23 +1075,27 @@ class PackageEntry(object):
 
 
     def package_certificate(self):
-        """Return certificate from package. If package is built, take it from Zip
-        else take the certificate from unzipped directory
+        """Return certificates from package. If package is built, take it from Zip
+        else take the certificates from unzipped directory
 
         Returns:
-            SSLCertificate: embedded certificate when package was signed or None if not provided or signed.
+            list: list of embedded certificates when package was signed or None if not provided or signed.
+                    First one of the list is the signer, the others are optional intermediate CA
         """
         if self.localpath and os.path.isfile(self.localpath):
             try:
                 with ZipFile(self.localpath,allowZip64=True) as zip:
                     cert_pem = zip.read('WAPT/certificate.crt')
-                return SSLCertificate(crt_string = cert_pem)
+                certs = SSLCABundle()
+                certs.add_pem(cert_pem)
+                return certs.certificates()
             except Exception as e:
                 logger.warning('No certificate found in %s : %s'% (self.localpath,repr(e)))
                 return None
         elif self.sourcespath and os.path.isdir(self.sourcespath) and os.path.isfile(os.path.join(self.sourcespath,'WAPT','certificate.crt')):
             # unzipped sources
-            return SSLCertificate(crt_filename=os.path.join(self.sourcespath,'WAPT','certificate.crt'))
+            certs = SSLCABundle(os.path.join(self.sourcespath,'WAPT','certificate.crt'))
+            return certs.certificates()
         else:
             # package is not yet built/signed.
             return None
@@ -1388,28 +1392,24 @@ class PackageEntry(object):
         with open(signature_filename,'r') as signature_file:
             signature = signature_file.read().decode('base64')
         try:
-            cert = self.package_certificate()
-            if cert is not None:
-                issued_by = ', '.join('%s' % ca.cn for ca in cabundle.check_certificates_chain(cert))
-                logger.debug('Certificate %s is trusted by root CA %s' % (cert.subject,issued_by))
-                certs = [cert]
-            else:
-                # old style, test all against signature
-                certs = sorted(cabundle.certificates(),reverse=True)
+            certs = self.package_certificate()
+            if certs:
+                issued_by = ', '.join('%s' % ca.cn for ca in cabundle.check_certificates_chain(certs))
+                logger.debug('Certificate %s is trusted by root CA %s' % (certs[0].subject,issued_by))
 
             if certs:
-                for cert in certs:
-                    logger.debug('Checking signature with %s' % cert)
-                    try:
-                        cert.verify_content(manifest_data,signature,md = self._md)
-                        if not has_setup_py or cert.is_code_signing:
-                            logger.debug('OK with %s' % cert)
-                            verified_by = cert
-                            break
-                        else:
-                            logger.debug(u'Signature OK but not a code signing certificate, skipping: %s' % cert)
-                    except SSLVerifyException as e:
-                        logger.debug(u'Check failed with certificate %s'%cert)
+                signer_cert = certs[0]
+                logger.debug('Checking signature with %s' % signer_cert)
+                try:
+                    signer_cert.verify_content(manifest_data,signature,md = self._md)
+                    if not has_setup_py or signer_cert.is_code_signing:
+                        logger.debug('OK with %s' % signer_cert)
+                        verified_by = signer_cert
+                        break
+                    else:
+                        logger.debug(u'Signature OK but not a code signing certificate, skipping: %s' % signer_cert)
+                except SSLVerifyException as e:
+                    logger.debug(u'Check failed with certificate %s'%signer_cert)
 
             if verified_by:
                 logger.info(u'Package issued by %s' % (verified_by.subject,))
@@ -2031,9 +2031,9 @@ class WaptLocalRepo(WaptBaseRepo):
 
                 # looks for the signer certificate and add it to Packages if not already
                 if not entry.signer_fingerprint in signer_certificates._certs_fingerprint_idx:
-                    crt = entry.package_certificate()
-                    if crt:
-                        signer_certificates.add_certificates([crt])
+                    certs = entry.package_certificate()
+                    if certs:
+                        signer_certificates.add_certificates(certs)
 
                 # looks for an icon in wapt package
                 icon_fn = os.path.join(icons_path,"%s.png"%entry.package)

@@ -347,9 +347,16 @@ class SSLCABundle(object):
                 crt.match_key(key)
                 ]
 
-    def certificate_chain(self,certificate):
+    def certificate_chain(self,certificate=None,fingerprint=None):
         # return certificate chain from certificate, without checking certificate signatures and validity
         result = []
+        if not certificate and fingerprint:
+            certificate = self.certificate(fingerprint = fingerprint)
+        else:
+            raise EWaptCryptoException('certificate_chain: You must provide either a certificate or a certificate''s fingerprint')
+        if not certificate:
+            raise EWaptCryptoException('certificate_chain: certificate not found')
+
         issuer_cert = self.certificate_for_subject_key_identifier(certificate.authority_key_identifier)
         if issuer_cert:
             result.append(certificate)
@@ -501,7 +508,7 @@ class SSLCABundle(object):
         # store negative caching
         if cached_chain is None:
             add_chain_cache(cache_key,[])
-        return EWaptCertificateUntrustedIssuer('Issuer %s for certificate %s is not trusted'%(result[-1].issuer_cn,result[-1].cn))
+        raise EWaptCertificateUntrustedIssuer('Issuer %s for certificate %s is not trusted'%(result[-1].issuer_cn,result[-1].cn))
 
     def add_crl(self,crl):
         """Replace or Add pem encoded CRL"""
