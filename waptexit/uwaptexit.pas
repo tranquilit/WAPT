@@ -5,7 +5,7 @@ unit uwaptexit;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, IDEWindowIntf, fpspreadsheetgrid, Forms,
+  Classes, SysUtils, FileUtil, Forms,
   Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, ActnList, Buttons,
   superobject, DefaultTranslator, ComCtrls, Grids, uWaptExitRes, sogrid;
 

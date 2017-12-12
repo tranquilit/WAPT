@@ -21,7 +21,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="5"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="7"/>
+      <BuildNr Value="10"/>
       <Language Value="040C"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="check and launch packages upgrades at Windows Shutdown" InternalName="waptexit" LegalCopyright="Tranquil IT Systems" OriginalFilename="waptexit.exe" ProductName="WAPT" ProductVersion=""/>
     </VersionInfo>
@@ -38,31 +38,25 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="8">
+    <RequiredPackages Count="6">
       <Item1>
-        <PackageName Value="pl_fpspreadsheet"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item1>
       <Item2>
-        <PackageName Value="IDEIntf"/>
+        <PackageName Value="pltis_wapt"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="pl_indy"/>
       </Item3>
       <Item4>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="pltis_utils"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="pltis_superobject"/>
       </Item5>
       <Item6>
-        <PackageName Value="pltis_utils"/>
-      </Item6>
-      <Item7>
-        <PackageName Value="pltis_superobject"/>
-      </Item7>
-      <Item8>
         <PackageName Value="LCL"/>
-      </Item8>
+      </Item6>
     </RequiredPackages>
     <Units Count="4">
       <Unit0>

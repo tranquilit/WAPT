@@ -9,7 +9,7 @@ uses
   {$ENDIF}{$ENDIF}
   Translations, LCLProc,
   Interfaces, // this includes the LCL widgetset
-  Forms, uwaptexit, uwaptexitres,DefaultTranslator, pl_fpspreadsheet, uscaledpi;
+  Forms, uwaptexit, uwaptexitres,DefaultTranslator, uscaledpi;
 
 {$R *.res}
 
