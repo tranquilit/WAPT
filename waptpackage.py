@@ -1046,9 +1046,9 @@ class PackageEntry(object):
 
         if certs[0].verify_content(signed_content,signature_raw,md=self._default_md):
             self._md = self._default_md
-            return cert
+            return certs[0]
 
-        raise SSLVerifyException('SSL signature verification failed for control %s against embedded certificate %s : %s' % (self.asrequirement(),cert,repr(e)))
+        raise SSLVerifyException('SSL signature verification failed for control %s against embedded certificate %s : %s' % (self.asrequirement(),certs,repr(e)))
 
     def has_file(self,fname):
         """Return None if fname is not in package, else return file datetime
