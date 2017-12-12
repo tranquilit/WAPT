@@ -1143,7 +1143,7 @@ class PackageEntry(object):
         Use the self.localpath attribute to get location of waptfile build file.
 
         Args:
-            certificate (SSLCertificate): signer certificate
+            certificate (SSLCertificate or list): signer certificate chain
             private_key (SSLPrivateKey): signer private key
             password_callback (func) : function to call to get key password if encrypted.
             private_key_password (str): password to use if key is encrypted. Use eithe this or password_callback
@@ -1156,16 +1156,25 @@ class PackageEntry(object):
         if not os.path.isfile(self.localpath) and not os.path.isdir(self.localpath):
             raise Exception(u"%s is not a Wapt package" % self.localpath)
 
+        if isinstance(certificate,list):
+            signer_cert = certificate[0]
+            certificate_chain = certificate
+        else:
+            signer_cert = certificate
+            certificate_chain = [certificate]
+
+        cert_chain_str = None
+
         if private_key is None:
-            private_key = certificate.matching_key_in_dirs(password_callback = password_callback,private_key_password=private_key_password)
+            private_key = signer_cert.matching_key_in_dirs(password_callback = password_callback,private_key_password=private_key_password)
 
         start_time = time.time()
         package_fn = self.localpath
-        logger.debug('Signing %s with key %s, and certificate CN "%s"' % (package_fn,private_key,certificate.cn))
+        logger.debug('Signing %s with key %s, and certificate CN "%s"' % (package_fn,private_key,signer_cert.cn))
         # sign the control (one md only, so take default if many)
         if len(mds) == 1:
             self._default_md = mds[0]
-        self._sign_control(certificate=certificate,private_key=private_key)
+        self._sign_control(certificate=signer_cert,private_key=private_key)
 
         # control file is appended to manifest file separately.
         control = self.ascontrol().encode('utf8')
@@ -1175,7 +1184,7 @@ class PackageEntry(object):
         forbidden_files = []
         # removes setup.py
         # if file is in forbidden_files, raise an exception.
-        if not certificate.is_code_signing:
+        if not signer_cert.is_code_signing:
             forbidden_files.append('setup.py')
 
         self._invalidate_package_content()
@@ -1197,7 +1206,8 @@ class PackageEntry(object):
             # replace or append signer certificate
             if 'WAPT/certificate.crt' in filenames:
                 waptzip.remove('WAPT/certificate.crt')
-            waptzip.writestr('WAPT/certificate.crt',certificate.as_pem())
+            cert_chain_str = '\n'.join([cert.as_pem() for cert in certificate_chain])
+            waptzip.writestr('WAPT/certificate.crt',cert_chain_str)
 
         # add manifest and signature for each digest
         for md in mds:
@@ -1205,11 +1215,11 @@ class PackageEntry(object):
                 # need read access to ZIP file.
                 manifest_data = self.build_manifest(exclude_filenames = excludes,forbidden_files = forbidden_files,md=md)
             except EWaptPackageSignError as e:
-                raise EWaptBadCertificate('Certificate %s doesn''t allow to sign packages with setup.py file.' % certificate.public_cert_filename)
+                raise EWaptBadCertificate('Certificate %s doesn''t allow to sign packages with setup.py file.' % signer_cert.cn)
 
             manifest_data['WAPT/control'] = hexdigest_for_data(control,md = md)
 
-            new_cert_hash = hexdigest_for_data(certificate.as_pem(),md = md)
+            new_cert_hash = hexdigest_for_data(cert_chain_str,md = md)
             if manifest_data.get('WAPT/certificate.crt',None) != new_cert_hash:
                 # need to replace certificate in Wapt package
                 manifest_data['WAPT/certificate.crt'] = new_cert_hash

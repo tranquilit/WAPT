@@ -4827,7 +4827,9 @@ class Wapt(object):
         return inv
 
     def personal_certificate(self):
-        return SSLCertificate(self.personal_certificate_path)
+        cert_chain = SSLCABundle()
+        cert_chain.add_pem(pem_filename = self.personal_certificate_path)
+        return cert_chain.certificates()
 
     def private_key(self,passwd_callback=None,private_key_password = None):
         """SSLPrivateKey matching the personal_certificate
@@ -4846,7 +4848,8 @@ class Wapt(object):
         if passwd_callback is None and private_key_password is None:
             passwd_callback = default_pwd_callback
 
-        cert = self.personal_certificate()
+        certs = self.personal_certificate()
+        cert = certs[0]
         if not self._private_key_cache or not cert.match_key(self._private_key_cache):
             self._private_key_cache = cert.matching_key_in_dirs(password_callback=passwd_callback,private_key_password=private_key_password)
         if self._private_key_cache is None:
@@ -4873,11 +4876,14 @@ class Wapt(object):
             zip_or_directoryname = unicode(zip_or_directoryname)
         if certificate is None:
             certificate = self.personal_certificate()
-            key = self.private_key(passwd_callback=callback,private_key_password=private_key_password)
-        else:
-            key = certificate.matching_key_in_dirs(password_callback=callback,private_key_password=private_key_password)
 
-        logger.info(u'Using identity : %s' % certificate.cn)
+        if isinstance(certificate,list):
+            signer_cert = certificate[0]
+        else:
+            signer_cert = certificate
+        key = signer_cert.matching_key_in_dirs(password_callback=callback,private_key_password=private_key_password)
+
+        logger.info(u'Using identity : %s' % signer_cert.cn)
         pe =  PackageEntry().load_control_from_wapt(zip_or_directoryname)
         return pe.sign_package(private_key=key,certificate = certificate,password_callback=callback,private_key_password=private_key_password,mds = self.sign_digests)
 

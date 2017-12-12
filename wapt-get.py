@@ -822,8 +822,8 @@ def main():
                 all_args = expand_args(args[1:])
                 print("Building packages %s packages" % len(all_args))
 
-                certificate = mywapt.personal_certificate()
-                print('Personal certificate is %s' % certificate.public_cert_filename)
+                certificates = mywapt.personal_certificate()
+                print('Personal certificate is %s' % certificates[0].cn)
                 key = mywapt.private_key(passwd_callback=get_private_key_passwd)
                 print('Private key is %s' % key)
 
@@ -902,7 +902,7 @@ def main():
                 print("Signing packages %s" % ", ".join(all_args))
 
                 certificate = mywapt.personal_certificate()
-                print('Personal certificate is %s' % certificate.public_cert_filename)
+                print('Personal certificate is %s' % certificate[0])
                 key = mywapt.private_key(passwd_callback=get_private_key_passwd)
                 print('Private key is %s' % key)
 

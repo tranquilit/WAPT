@@ -880,8 +880,14 @@ def edit_host_raw():
     print res
 
 
+def test_personalchain():
+    w = Wapt(config_filename=r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini')
+    print w.personal_certificate()
+
+
 if __name__ == '__main__':
     setup_test()
+    test_personalchain()
     test_newcrypto()
     test_update_crl()
     test_crl()

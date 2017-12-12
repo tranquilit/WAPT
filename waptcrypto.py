@@ -248,13 +248,19 @@ class SSLCABundle(object):
                 logger.warning('Error adding certitificate %s: %s' % (cert.subject,e))
         return result
 
-    def add_pem(self,pem_data,load_keys=False):
+    def add_pem(self,pem_data=None,load_keys=False,pem_filename=None):
         """Parse a bundle PEM with multiple certificates, CRL and keys.
         If key needs to be decrypted, password callback property must be assigned.
 
         Returns:
             SSLCABundle : self
         """
+        if pem_data is None:
+            if os.path.isfile(pem_filename):
+                pem_data = open(pem_filename,'rb').read()
+            else:
+                raise EWaptCryptoException('PEM file %s does not exist'%pem_filename)
+
         lines = pem_data.splitlines()
         inkey = False
         incert = False
@@ -271,6 +277,7 @@ class SSLCABundle(object):
             elif line == self.END_CERTIFICATE:
                 tmplines.append(line)
                 cert = SSLCertificate(crt_string = str('\n'.join(tmplines)))
+                cert._public_cert_filename = pem_filename
                 result.append(cert)
                 incert = False
                 tmplines = []
@@ -280,6 +287,7 @@ class SSLCABundle(object):
             elif line == self.END_CRL:
                 tmplines.append(line)
                 crl = SSLCRL (pem_data = str('\n'.join(tmplines)))
+                crl.filename = pem_filename
                 crls.append(crl)
                 incrl = False
                 tmplines = []
@@ -289,8 +297,9 @@ class SSLCABundle(object):
             elif line == self.END_KEY:
                 tmplines.append(line)
                 if load_keys:
-                    pem_data = str('\n'.join(tmplines))
-                    key = SSLPrivateKey(pem_data = pem_data,callback=self.callback)
+                    key_pem_data = str('\n'.join(tmplines))
+                    key = SSLPrivateKey(pem_data = key_pem_data,callback=self.callback)
+                    key.private_key_filename = pem_filename
                     keys.append(key)
                 inkey = False
                 tmplines = []
