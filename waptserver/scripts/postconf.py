@@ -322,6 +322,9 @@ def main():
 
     waptserver_ini.readfp(file('/opt/wapt/conf/waptserver.ini', 'rU'))
 
+    if waptserver_ini.has_option('options', 'wapt_folder'):
+        wapt_folder = waptserver_ini.get('options', 'wapt_folder') 
+
     if waptserver_ini.has_section('uwsgi'):
         print ('Remove uwsgi options, not used anymore')
         waptserver_ini.remove_section('uwsgi')
@@ -402,6 +405,9 @@ def main():
         sys.exit(1)
     if t=="1":
         waptserver_ini.set('options','allow_unauthenticated_registration','True')
+    else:
+        waptserver_ini.set('options','allow_unauthenticated_registration','False')
+
 
     with open('/opt/wapt/conf/waptserver.ini','w') as inifile:
        waptserver_ini.write(inifile)
