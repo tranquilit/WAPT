@@ -396,7 +396,8 @@ def main():
     # waptagent authentication method
     choices = [
             ("1","Allow unauthenticated registration, same behavior as wapt 1.3", True),
-            ("2","Require strong authentication, registration will ask for password if kerberos is not working",        False),
+            ("2","Enable kerberos authentication required for machines registration. Registration will ask for password if kerberos not working",        False),
+            ("3","Disable Kerberos but registration require strong authentication",        False),
             ]
 
     code, t = postconf.radiolist("WaptAgent Authentication type?", choices=choices,width=120)
@@ -405,8 +406,13 @@ def main():
         sys.exit(1)
     if t=="1":
         waptserver_ini.set('options','allow_unauthenticated_registration','True')
-    else:
+    if t=="3":
         waptserver_ini.set('options','allow_unauthenticated_registration','False')
+        waptserver_ini.set('options','use_kerberos','False')
+    if t=="2":
+        waptserver_ini.set('options','allow_unauthenticated_registration','False')
+        waptserver_ini.set('options','use_kerberos','True')
+
 
 
     with open('/opt/wapt/conf/waptserver.ini','w') as inifile:
