@@ -1642,7 +1642,9 @@ class SSLCertificate(object):
         issuer = cabundle.certificate_for_subject_key_identifier(certificate.authority_key_identifier)
 
         if not issuer:
-            raise SSLVerifyException('Issuer CA certificate %s can not be found in supplied bundle'%self.issuer_dn)
+            issuer = cabundle.certificate_for_subject_hash(certificate.subject_hash)
+            if not issuer:
+                raise SSLVerifyException('Issuer CA certificate %s can not be found in supplied bundle'%self.issuer_dn)
 
         while issuer:
             try:
