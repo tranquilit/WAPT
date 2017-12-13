@@ -240,10 +240,8 @@ class SSLCABundle(object):
                     self._certs_fingerprint_idx[cert.fingerprint] = cert
                     self._certificates.append(cert)
                     result.append(cert)
-                else:
-                    logger.debug('Skipping %s, already in bundle' % cert.subject)
             except Exception as e:
-                logger.warning('Error adding certitificate %s: %s' % (cert.subject,e))
+                logger.warning('Error adding certificate %s: %s' % (cert.subject,e))
         return result
 
     def add_pem(self,pem_data=None,load_keys=False,pem_filename=None):

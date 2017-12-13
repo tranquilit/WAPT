@@ -1,7 +1,20 @@
 package           : tis-waptupgrade
-version           : 1.5.1.9-0
+version           : 1.5.1.10-2
 architecture      : all
 section           : base
 priority          : optional
 maintainer        : Hubert TOUVET
 description       : Install waptagent.exe
+depends           : 
+conflicts         : 
+maturity          : 
+locale            : 
+min_os_version    : 
+max_os_version    : 
+min_wapt_version  : 
+sources           : 
+installed_size    : 
+signer            : 
+signer_fingerprint: 
+signature_date    : 
+signed_attributes : 
