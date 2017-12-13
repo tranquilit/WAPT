@@ -371,7 +371,7 @@ class SSLCABundle(object):
         if not certificate:
             raise EWaptCryptoException('certificate_chain: certificate not found')
 
-        issuer_cert = self.certificate_for_subject_key_identifier(certificate.authority_key_identifier)
+        issuer_cert = self.certificate_for_subject_key_identifier(certificate.authority_key_identifier) or self.certificate_for_subject_hash(certificate.issuer_subject_hash)
         # we include the certificate in the chain if it is itself in the cabundle evane if we have not found the issuer
         if issuer_cert or self.certificate(fingerprint = fingerprint):
             result.append(certificate)
@@ -385,7 +385,7 @@ class SSLCABundle(object):
             # halt on top self signed certificate
             if authority_key_identifier == issuer_cert.subject_key_identifier:
                 break
-            issuer_cert = self.certificate_for_subject_key_identifier(authority_key_identifier)
+            issuer_cert = self.certificate_for_subject_key_identifier(authority_key_identifier) or self.certificate_for_subject_hash(certificate.issuer_subject_hash)
         return result
 
     def is_known_issuer(self,certificate,include_self=True):
@@ -569,7 +569,7 @@ class SSLCABundle(object):
             for_certificates = [for_certificates]
 
         for cert in for_certificates:
-            issuer_cert = self.certificate_for_subject_key_identifier(cert.authority_key_identifier)
+            issuer_cert = self.certificate_for_subject_key_identifier(cert.authority_key_identifier) or self.certificate_for_subject_hash(cert.issuer_subject_hash)
             if not issuer_cert:
                 issuer_urls = cert.issuer_cert_urls()
                 for url in issuer_urls:
@@ -579,7 +579,7 @@ class SSLCABundle(object):
                         issuer_cert = SSLCertificate(crt_string = cert_data)
                         self.add_certificates(issuer_cert)
                         result.append(issuer_cert)
-                        if self.certificate_for_subject_key_identifier(issuer_cert.authority_key_identifier) is None:
+                        if self.certificate_for_subject_key_identifier(issuer_cert.authority_key_identifier) is None and self.certificate_for_subject_hash(cert.issuer_subject_hash) is None:
                             result.extend(self.download_issuer_certs(force=False,for_certificates=issuer_cert))
                         break
                     except Exception as e:
@@ -1639,10 +1639,10 @@ class SSLCertificate(object):
         elif isinstance(cabundle,list):
             cabundle = SSLCABundle(certificates = cabundle)
 
-        issuer = cabundle.certificate_for_subject_key_identifier(certificate.authority_key_identifier)
+        issuer = cabundle.certificate_for_subject_key_identifier(certificate.authority_key_identifier) or cabundle.certificate_for_subject_hash(certificate.subject_hash)
 
         if not issuer:
-            issuer = cabundle.certificate_for_subject_hash(certificate.subject_hash)
+            issuer =
             if not issuer:
                 raise SSLVerifyException('Issuer CA certificate %s can not be found in supplied bundle'%self.issuer_dn)
 
@@ -1652,10 +1652,10 @@ class SSLCertificate(object):
                 verifier.update(certificate.crt)
                 verifier.verify()
                 chain.append(issuer)
-                if issuer.subject_key_identifier == issuer.authority_key_identifier:
+                if issuer.subject_hash == issuer.issuer_subject_hash:
                     break
                 certificate = issuer
-                issuer = cabundle.certificate_for_subject_key_identifier(certificate.authority_key_identifier)
+                issuer = cabundle.certificate_for_subject_key_identifier(certificate.authority_key_identifier) or cabundle.certificate_for_subject_hash(certificate.subject_hash)
             except Exception as e:
                 logger.critical("Certificate validation error for certificate %s : %s" % (issuer.subject,e))
                 raise
@@ -1818,7 +1818,7 @@ class SSLCRL(object):
             cabundle = SSLCABundle(certifi.where())
 
         if isinstance(cabundle,SSLCABundle):
-            issuer = cabundle.certificate_for_subject_key_identifier(crl.authority_key_identifier)
+            issuer = cabundle.certificate_for_subject_key_identifier(crl.authority_key_identifier) or cabundle.certificate_for_subject_hash(crl.issuer_subject_hash)
         else:
             issuer = cabundle
             assert(isinstance(issuer,SSLCertificate))
