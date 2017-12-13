@@ -345,11 +345,11 @@ def build_waptupgrade_package(waptconfigfile,target_directory=None,wapt_server_u
     entry.inc_build()
     entry.save_control_to_wapt()
     entry.build_package(target_directory=target_directory)
-    cert = wapt.personal_certificate()
+    certs = wapt.personal_certificate()
     key = wapt.private_key(private_key_password=key_password)
-    if not cert.is_code_signing:
+    if not certs[0].is_code_signing:
         raise Exception(u'%s is not code signing certificate' % wapt.personal_certificate_path)
-    entry.sign_package(private_key=key,certificate = cert,private_key_password=key_password,mds = wapt.sign_digests)
+    entry.sign_package(private_key=key,certificate = certs,private_key_password=key_password,mds = wapt.sign_digests)
 
     wapt.http_upload_package(entry.localpath,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
     return entry.as_dict()
@@ -424,8 +424,8 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
 
     packages = []
 
-    sign_cert = SSLCertificate(crt_filename=inifile_readstring(waptconfigfile,'global','personal_certificate_path'))
-    sign_key = sign_cert.matching_key_in_dirs(private_key_password=key_password)
+    sign_certs = SSLCABundle(inifile_readstring(waptconfigfile,'global','personal_certificate_path')).certificates()
+    sign_key = sign_certs[0].matching_key_in_dirs(private_key_password=key_password)
 
     progress_hook(True,0,len(hosts_list),'Editing %s hosts' % len(hosts_list))
     i = 0
@@ -458,7 +458,7 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
                 host.conflicts = conflicts
                 host.inc_build()
                 host_file = host.build_management_package()
-                host.sign_package(sign_cert,sign_key)
+                host.sign_package(sign_certs,sign_key)
                 packages.append(host)
 
         # upload all in one step...
@@ -611,15 +611,15 @@ def sign_actions(actions,certfilename,key_password=None):
           'signer_fingerprint': '195DEFCC322C945018E917BF217CD1323FC4C79F'}]
     >>>
     """
-    cert = SSLCertificate(certfilename)
-    key = cert.matching_key_in_dirs(private_key_password=key_password)
+    certs = SSLCABundle(certfilename).certificates()
+    key = certs[0].matching_key_in_dirs(private_key_password=key_password)
     if isinstance(actions,(str,unicode)):
         actions = json.loads(actions)
     assert(isinstance(actions,list))
 
     result = []
     for action in actions:
-        result.append(key.sign_claim(action,certificate=cert))
+        result.append(key.sign_claim(action,certificate=certs))
     return json.dumps(result)
 
 def change_key_password(private_key_path,old_password=None,new_password=None):

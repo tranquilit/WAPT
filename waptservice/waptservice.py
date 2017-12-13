@@ -2343,6 +2343,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
     def on_trigger_host_action(self,args,result_callback=None):
         print('Host action triggered by SocketIO')
         try:
+            start_time = time.time()
             actions = args
             if not isinstance(actions,list):
                 actions =[actions]
@@ -2352,8 +2353,9 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
             verified_by = None
             for action in actions:
                 verified_by = None
-                cert = SSLCertificate(crt_string = action['signer_certificate'])
-                if self.wapt.cabundle.is_known_issuer(cert):
+                signer_cert_chain = SSLCABundle().add_pem(action['signer_certificate']).certificates()
+                chain = self.wapt.cabundle.check_certificates_chain(signer_cert_chain)
+                if chain:
                     required_attributes = ['uuid','action']
                     if action['action'] in ['trigger_install_packages','trigger_remove_packages','trigger_forget_packages']:
                         required_attributes.append('packages')
@@ -2361,7 +2363,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                         required_attributes.append('computer_description')
                     if action['action'] in ['show_message']:
                         required_attributes.append('msg')
-                    verified_by = cert.verify_claim(action,max_age_secs=waptconfig.signature_clockskew,
+                    verified_by = chain[0].verify_claim(action,max_age_secs=waptconfig.signature_clockskew,
                         required_attributes=required_attributes)
                 if not verified_by:
                     raise SSLVerifyException('Bad signature for action %s, aborting' % action)
@@ -2370,7 +2372,6 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                 verified_by = verified_by.get('verified_by',None)
 
             result = []
-            start_time = time.time()
             for action in actions:
                 uuid = action['uuid']
                 if uuid != self.wapt.host_uuid:

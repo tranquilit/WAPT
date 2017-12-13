@@ -216,13 +216,11 @@ class SSLCABundle(object):
         if os.path.isdir(cert_pattern_or_dir):
             # load pems from provided directory
             for fn in glob.glob(os.path.join(cert_pattern_or_dir,'*.crt'))+glob.glob(os.path.join(cert_pattern_or_dir,'*.pem')):
-                with open(fn,'r') as pem_data:
-                    self.add_pem(pem_data.read(),load_keys=load_keys)
+                self.add_pem(pem_filename = fn,load_keys=load_keys)
         else:
             # load pems based on file wildcards
             for fn in glob.glob(cert_pattern_or_dir):
-                with open(fn,'r') as pem_data:
-                    self.add_pem(pem_data.read(),load_keys=load_keys)
+                self.add_pem(pem_filename = fn,load_keys=load_keys)
         return self
 
     def add_certificates(self,certificates):
@@ -981,15 +979,22 @@ class SSLPrivateKey(object):
         return '<SSLPrivateKey %s>' % repr(self.private_key_filename)
 
     def sign_claim(self,claim,attributes=None,certificate=None):
+        """Sign a set of attributes of a dict
+
+        Args:
+            claim (dict) : data structure to sign
+            attributes (list): list of attributes to include in signature
+            certificate (list) : certificate chain of signer
+
+        Returns:
+            dict: same as claim with additional signature attributes
+                    'signed_attributes','signer','signature_date','signer_certificate'
+
+        """
         assert(isinstance(claim,dict))
         if attributes is None:
             attributes = claim.keys()
-        if certificate is None:
-            certificates = sorted(self.matching_certs(valid=True))
-            if certificates:
-                certificate = certificates[-1]
-            else:
-                raise EWaptBadCertificate('Missing certificate for %s' % self.private_key_filename)
+        certificate = ensure_list(certificate)
 
         signature_attributes = ['signed_attributes','signer','signature_date','signer_certificate']
         for att in signature_attributes:
@@ -998,9 +1003,9 @@ class SSLPrivateKey(object):
 
         reclaim = {att:claim.get(att,None) for att in attributes}
         reclaim['signed_attributes'] = attributes+signature_attributes
-        reclaim['signer'] = certificate.cn
+        reclaim['signer'] = certificate[0].cn
         reclaim['signature_date'] = datetime.datetime.utcnow().isoformat()
-        reclaim['signer_certificate'] = certificate.as_pem()
+        reclaim['signer_certificate'] = '\n'.join(cert.as_pem() for cert in certificate)
         signature = base64.b64encode(self.sign_content(reclaim))
         reclaim['signature'] = signature
         return reclaim
