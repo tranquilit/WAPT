@@ -198,6 +198,7 @@ if __name__ == '__main__':
 
     (options, args) = parser.parse_args()
     conf = waptserver_config.load_config(options.configfile)
+    load_db_config(conf)
 
     utils_set_devel_mode(options.devel)
     if options.loglevel is not None:
