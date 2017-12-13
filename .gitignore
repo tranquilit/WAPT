@@ -96,3 +96,4 @@ openssl.exe
 /conf/waptserver.ini
 /waptserver/pgsql_data
 /waptserver/repository/wapt
+/ssl/*.crt
