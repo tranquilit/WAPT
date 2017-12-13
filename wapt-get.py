@@ -841,8 +841,8 @@ def main():
                                 excludes=ensure_list(options.excludes))
                             if package_fn:
                                 print('...done building. Package filename %s' % (package_fn,))
-                                print('Signing %s with key %s and certificate %s (%s)' % (package_fn,mywapt.private_key(),certificates[0].cn,certificates[0].public_cert_filename))
-                                signature = mywapt.sign_package(package_fn)
+                                print('Signing %s with key %s and certificate %s (%s)' % (package_fn,key,certificates[0].cn,certificates[0].public_cert_filename))
+                                signature = mywapt.sign_package(package_fn,certificate=certificates,callback=get_private_key_passwd)
                                 print(u"Package %s signed : signature : %s...%s" % (package_fn, signature[0:10],signature[-10:-1]))
                                 packages.append(package_fn)
                             else:
