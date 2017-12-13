@@ -994,7 +994,8 @@ class SSLPrivateKey(object):
         assert(isinstance(claim,dict))
         if attributes is None:
             attributes = claim.keys()
-        certificate = ensure_list(certificate)
+        if not isinstance(certificate,list):
+            certificate = [certificate]
 
         signature_attributes = ['signed_attributes','signer','signature_date','signer_certificate']
         for att in signature_attributes:
