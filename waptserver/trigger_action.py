@@ -59,6 +59,8 @@ from playhouse.migrate import *
 from waptserver_model import *
 from waptserver_utils import *
 from waptutils import *
+from waptserver_config import *
+
 
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
 config_file = DEFAULT_CONFIG_FILE
@@ -108,6 +110,10 @@ if __name__ == '__main__':
     timeout = 0.5
     packages = args[0:]
     result_ok = []
+
+    conf = waptserver_config.load_config(options.configfile)
+    load_db_config(conf)
+
 
     hosts = Hosts.select(Hosts.uuid, Hosts.computer_fqdn,
                          Hosts.listening_address, Hosts.listening_port, Hosts.connected_ips, Hosts.wapt_status).where(~Hosts.listening_protocol.is_null() and ~Hosts.connected_ips.is_null())

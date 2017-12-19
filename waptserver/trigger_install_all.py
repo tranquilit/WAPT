@@ -102,6 +102,9 @@ if __name__ == '__main__':
         print(parser.usage)
         sys.exit(1)
 
+    conf = waptserver_config.load_config(options.configfile)
+    load_db_config(conf)
+
     timeout = 0.5
 
     hosts = Hosts.select(Hosts.uuid, Hosts.computer_fqdn,
