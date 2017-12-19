@@ -37,7 +37,7 @@ resourcestring
 
   rsForcedUninstallPackages = 'Selection of packages to force-remove from the hosts';
   rsDependencies = 'Selection of packages to add to the hosts as dependencies';
-  rsNbModifiedHosts = '%s hosts affected.';
+  rsNbModifiedHosts = '%d hosts affected. %d hosts discarded (errors). %d hosts unchanged';
   rsTaskCanceled = 'Task canceled.';
   rsFailedToCancel = 'Could not cancel : %s.';
 

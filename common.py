@@ -2264,21 +2264,39 @@ class WaptHostRepo(WaptRepo):
         self.discarded = []
         if not self.repo_url:
             raise EWaptException('URL for WaptHostRepo repository %s is empty. Either add a wapt-host section in ini, or add a _%s._tcp.%s SRV record' % (self.name,self.name,self.dnsdomain))
-        try:
-            if self.host_id is not None and not isinstance(self.host_id,list):
-                host_ids = [self.host_id]
-            else:
-                host_ids = self.host_id
+        if self.host_id and not isinstance(self.host_id,list):
+            host_ids = [self.host_id]
+        else:
+            host_ids = self.host_id
 
-            for host_id in host_ids:
-                host_package_url = self.host_package_url(host_id)
-                logger.debug(u'Trying to get  host package for %s at %s' % (host_id,host_package_url))
-                host_package = requests.get(host_package_url,
-                    proxies=self.proxies,verify=self.verify_cert,
-                    timeout=self.timeout,
-                    headers=default_http_headers(),
-                    allow_redirects=True)
-                host_package.raise_for_status()
+        for host_id in host_ids:
+            host_package_url = self.host_package_url(host_id)
+            logger.debug(u'Trying to get  host package for %s at %s' % (host_id,host_package_url))
+            host_package = requests.get(host_package_url,
+                proxies=self.proxies,verify=self.verify_cert,
+                timeout=self.timeout,
+                headers=default_http_headers(),
+                allow_redirects=True)
+
+            # prepare a package entry for further check
+            package = PackageEntry()
+            package.package = host_id
+            package.repo = self.name
+            package.repo_url = self.repo_url
+
+            if host_package.status_code == 404:
+                # host package not found
+                logger.info('No host package found for %s' % host_id)
+            else:
+                # for other than not found error, add to the discarded list.
+                # this can be consulted for mass changes to not recreate host packages because of temporary failures
+                try:
+                    host_package.raise_for_status()
+                except requests.HTTPError as e:
+                    logger.info('Discarding package for %s: error %s' % (package.package,e))
+                    self.discarded.append(package)
+                    continue
+
                 content = host_package.content
 
                 if not content.startswith(zipfile.stringFileHeader):
@@ -2294,10 +2312,9 @@ class WaptHostRepo(WaptRepo):
                 with ZipFile(StringIO.StringIO(_host_package_content)) as zip:
                     control_data = \
                             codecs.decode(zip.read(name='WAPT/control'),'UTF-8').splitlines()
-                    package = PackageEntry().load_control_from_wapt(control_data)
-                    package.repo = self.name
-                    package.repo_url = self.repo_url
+                    package.load_control_from_wapt(control_data)
                     package.filename = package.make_package_filename()
+
                     try:
                         cert_data = zip.read(name='WAPT/certificate.crt')
                         signer_cert = SSLCertificate(crt_string=cert_data)
@@ -2324,8 +2341,6 @@ class WaptHostRepo(WaptRepo):
                     logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.cabundle))
                     self.discarded.append(package)
 
-        except requests.HTTPError as e:
-            logger.info(u'No host package available at %s' % host_package_url)
 
     def download_packages(self,package_requests,target_dir=None,usecache=True,printhook=None):
         """Download a list of packages from repo

@@ -641,11 +641,6 @@ msgstr "Interrompre"
 msgid "Loading"
 msgstr "Chargement en cours..."
 
-#: tvislogin.actselectconf.caption
-msgctxt "tvislogin.actselectconf.caption"
-msgid "OK"
-msgstr "OK"
-
 #: tvislogin.bitbtn1.hint
 msgid "Configure WAPT console"
 msgstr "Configurer la console WAPT"
@@ -653,10 +648,6 @@ msgstr "Configurer la console WAPT"
 #: tvislogin.caption
 msgid "WAPT authentication"
 msgstr "Authentification WAPT"
-
-#: tvislogin.cbconfiguration.text
-msgid "waptconsole"
-msgstr ""
 
 #: tvislogin.labserver.caption
 msgctxt "tvislogin.labserver.caption"
@@ -671,10 +662,6 @@ msgstr "Utilisateur"
 #: tvislogin.labversion.caption
 msgid "LabVersion"
 msgstr "LabVersion"
-
-#: tvislogin.laconfiguration.caption
-msgid "Configuration"
-msgstr ""
 
 #: tvislogin.lapassword.caption
 msgid "Password"
@@ -1200,6 +1187,10 @@ msgctxt "tviswaptgui.actdisplaypreferences.caption"
 msgid "Display preferences"
 msgstr "Préférences d'affichage"
 
+#: tviswaptgui.actdisplayusermessage.caption
+msgid "Send a message to users"
+msgstr "Envoyer un message aux utilisateurs"
+
 #: tviswaptgui.acteditgroup.caption
 msgctxt "tviswaptgui.acteditgroup.caption"
 msgid "Edit bundle"
@@ -1272,6 +1263,14 @@ msgstr "Importer depuis un fichier"
 msgctxt "tviswaptgui.actimportfromrepo.caption"
 msgid "Import from internet"
 msgstr "Importer depuis internet"
+
+#: tviswaptgui.actlaunchgpupdate.caption
+msgid "Update AD Group Policies on hosts"
+msgstr "Force la mise à jour des GPO sur les machines"
+
+#: tviswaptgui.actlaunchwaptexit.caption
+msgid "Propose Upgrades to logged on users"
+msgstr "Proposer la mise à jour aux utilisateurs"
 
 #: tviswaptgui.actmakepackagetemplate.caption
 msgid "Make package template from setup file"
@@ -1391,6 +1390,14 @@ msgstr ""
 #: tviswaptgui.acttishelp.caption
 msgid "Launch TISHelp"
 msgstr "Lancer TISHelp"
+
+#: tviswaptgui.acttriggerburstupdates.caption
+msgid "Trigger Burst Updates"
+msgstr "Vérification express des mises à jour"
+
+#: tviswaptgui.acttriggerburstupgrades.caption
+msgid "Apply Burst Upgrades"
+msgstr "Lancer en masse les installations"
 
 #: tviswaptgui.acttriggerhostupdate.caption
 msgctxt "tviswaptgui.acttriggerhostupdate.caption"
@@ -2013,6 +2020,10 @@ msgstr ""
 msgid "ToolButton6"
 msgstr ""
 
+#: tviswaptgui.toolbuttonsep1.caption
+msgid "ToolButtonSep1"
+msgstr ""
+
 #: tviswuaclassificationsselect.caption
 msgid "Windows Updates Classification selection"
 msgstr "Sélection des classifications de Mise à jour Windows"
@@ -2573,16 +2584,75 @@ msgctxt "tviswuarules.wupanright.caption"
 msgid "wupanright"
 msgstr ""
 
-#: uwaptconsoleres.rsaddadsgroups
-msgctxt "uwaptconsoleres.rsconfirmimport"
+
+#: uwaptconsoleres.rsbundleconfigeditcaption
+msgctxt "uwaptconsoleres.rsbundleconfigeditcaption"
+msgid "Edit package bundle configuration"
+msgstr "Editer la configuration d'un groupe de paquets"
+
+#: uwaptconsoleres.rscanceled
+msgctxt "uwaptconsoleres.rscanceled"
+msgid "canceled"
+msgstr "annulé"
+
+#: uwaptconsoleres.rscanceledbyuser
+msgctxt "uwaptconsoleres.rscanceledbyuser"
+msgid "Task %s has been canceled by the user"
+msgstr "La tâche %s a été interrompue par l'utilisateur"
+
+#: uwaptconsoleres.rscanceledtask
+msgctxt "uwaptconsoleres.rscanceledtask"
+msgid "Cancelled %s"
+msgstr "%s annulé"
+
+#: uwaptconsoleres.rscertificatecopyfailure
+msgctxt "uwaptconsoleres.rscertificatecopyfailure"
+msgid "Couldn't copy certificate %s to %s."
+msgstr "Echec de la copie du certificat %s vers %s."
+
+#: uwaptconsoleres.rscname
+msgctxt "uwaptconsoleres.rscname"
+msgid "CNAME: %s"
+msgstr "CNAME : %s"
+
+#: uwaptconsoleres.rscompletionprogress
+msgctxt "uwaptconsoleres.rscompletionprogress"
+msgid "%s : %.0f%% completed"
+msgstr "%s : %.0f%% terminé"
+
+#: uwaptconsoleres.rsconfirmburstupdate
+msgid "Are you sure you want to trigger Status Update on %d hosts ?"
+msgstr "Êtes vous sûr de vouloir déclencher la vérification des mises à jour sur %d hosts ?"
+
+#: uwaptconsoleres.rsconfirmburstupgrades
+msgid "Are you sure you want to Apply Upgrades on %d hosts ?"
+msgstr "Êtes vous sûr de vouloir déclencher l'installation des paquets sur %d hosts ?"
+
+#: uwaptconsoleres.rsconfirmcaption
+msgctxt "uwaptconsoleres.rsconfirmcaption"
+msgid "Confirm"
+msgstr "Confirmer"
+
+#: uwaptconsoleres.rsconfirmdeletion
+msgctxt "uwaptconsoleres.rsconfirmdeletion"
+msgid "Confirm removal"
+msgstr "Confirmer la suppression"
+
+#: uwaptconsoleres.rsconfirmgpupdate
+msgid "Are you sure you want to update Group Policies status on %d hosts ?"
+msgstr "Êtes vous sûr de vouloir mettre à jour les GPO sur %d hosts ?"
+
+#: uwaptconsoleres.rsconfirmhostforgetspackages
+msgctxt "uwaptconsoleres.rsconfirmhostforgetspackages"
+msgid "Are you sure you want to forget %s packages from host %s ?"
+msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
+
+#: uwaptconsoleres.rsconfirmimport
 msgid ""
 "Are you sure you want to import\n"
 "%s\n"
 " to your repository ?\n"
 msgstr ""
-"Êtes vous sûr de vouloir importer\n"
-"%s\n"
-" dans votre dépôt ?\n"
 
 #: uwaptconsoleres.rsconfirmimportcaption
 msgctxt "uwaptconsoleres.rsconfirmimportcaption"
@@ -2625,6 +2695,10 @@ msgstr "Confirmer la suppression"
 msgctxt "uwaptconsoleres.rsconfirmrmpackagesfromhost"
 msgid "Are you sure you want to remove %s package(s) from the selected host(s) %s ?"
 msgstr "Êtes-vous sûr(e) de vouloir supprimer %s paquet(s) de la/des machine(s) sélectionnée(s) ?"
+
+#: uwaptconsoleres.rsconfirmwaptexit
+msgid "Are you sure you want to propose Packages Upgrades on %d hosts ?"
+msgstr "Êtes vous sûr de vouloirproposer l'installation des paquets sur  %d hosts ?"
 
 #: uwaptconsoleres.rscreationinprogress
 msgctxt "uwaptconsoleres.rscreationinprogress"
@@ -2903,10 +2977,14 @@ msgctxt "uwaptconsoleres.rsmainrepourl"
 msgid "Main repo url: %s"
 msgstr "URL du dépôt principal : %s"
 
+#: uwaptconsoleres.rsmessagetosend
+msgid "Message to send"
+msgstr "Message à envoyer"
+
 #: uwaptconsoleres.rsnbmodifiedhosts
 msgctxt "uwaptconsoleres.rsnbmodifiedhosts"
-msgid "%s hosts affected."
-msgstr "%s machines modifiées."
+msgid "%d hosts affected. %d hosts discarded (errors). %d hosts unchanged"
+msgstr "%d machines modifiées, %d machines ignorées (erreur), %d machines inchangées"
 
 #: uwaptconsoleres.rsnobundle
 msgctxt "uwaptconsoleres.rsnobundle"
@@ -3035,6 +3113,10 @@ msgstr ""
 msgid "Confirm the unregistration of repository %s"
 msgstr ""
 
+#: uwaptconsoleres.rsrunninggpupdate
+msgid "Running GPUpdate"
+msgstr "GPUpdate en cours"
+
 #: uwaptconsoleres.rsrunningtask
 msgctxt "uwaptconsoleres.rsrunningtask"
 msgid "Running task %d: %s, status:%s"
@@ -3060,6 +3142,10 @@ msgstr ""
 #: uwaptconsoleres.rsselectremovedepends
 msgid "Select packages to remove from hosts configuration"
 msgstr ""
+
+#: uwaptconsoleres.rsshowmessageforusers
+msgid "Send message to users"
+msgstr "Envoyer un message aux utilisateurs"
 
 #: uwaptconsoleres.rssrv
 msgctxt "uwaptconsoleres.rssrv"
@@ -3216,6 +3302,10 @@ msgid "You must first define the Package prefix in preferences"
 msgstr "Vous devez d'abord définir le préfixe des paquets dans les préférences"
 
 #: uwaptconsoleres.rswaptservererror
+#, fuzzy
+#| msgid ""
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -3224,6 +3314,11 @@ msgstr ""
 "%s\n"
 
 #: uwaptconsoleres.rswaptserveroldversion
+#, fuzzy
+#| msgid ""
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
 "Current server version: %s\n"
@@ -3239,6 +3334,10 @@ msgid "Error while creating agent : %s"
 msgstr "Erreur lors de la création de l'agent : %s"
 
 #: uwaptconsoleres.rswaptsetupuploadsuccess
+#, fuzzy
+#| msgid ""
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"
 msgid ""
 "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"

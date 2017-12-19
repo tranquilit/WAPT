@@ -1747,7 +1747,7 @@ begin
 
       finally
         Screen.cursor := crDefault;
-        ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
+        ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
       end;
     finally
       Free;
@@ -1822,7 +1822,7 @@ begin
 
       finally
         Screen.cursor := crDefault;
-        ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
+        ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
       end;
     finally
       Free;
@@ -3130,7 +3130,7 @@ begin
 
       finally
         Screen.cursor := crDefault;
-        ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
+        ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
       end;
     finally
       Free;
@@ -3172,7 +3172,7 @@ begin
 
       finally
         Screen.cursor := crDefault;
-        ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
+        ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
       end;
     finally
       Free;

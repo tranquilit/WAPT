@@ -395,13 +395,25 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
     Args:
 
     Returns:
-        list: of uuid of machine actually updated
+        dict: { updated: of uuid of machines actually updated
+                unchanged : list of uuid skipped because of no change needed
+                discarded : list of uuid discarded due to errors}
 
     >>> edit_hosts_depends('c:/wapt/wapt-get.ini','htlaptop.tranquilit.local','toto','tis-7zip','admin','password')
     """
+    sign_bundle = SSLCABundle(inifile_readstring(waptconfigfile,'global','personal_certificate_path'))
+    sign_certs = sign_bundle.certificates()
+    sign_key = sign_certs[0].matching_key_in_dirs(private_key_password=key_password)
+
+    # we assume a unique signer.
+    if cabundle is None:
+        cabundle = sign_bundle
+
     hosts_list = ensure_list(hosts_list)
     host_repo = WaptHostRepo(name='wapt-host',host_id=hosts_list,cabundle = cabundle)
     host_repo.load_config_from_file(waptconfigfile)
+    total_hosts = len(host_repo.packages)
+    discarded_uuids = [p.package for p in host_repo.discarded]
 
     try:
         import waptconsole
@@ -423,49 +435,56 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
     remove_conflicts = ensure_list(remove_conflicts)
 
     packages = []
-
-    sign_certs = SSLCABundle(inifile_readstring(waptconfigfile,'global','personal_certificate_path')).certificates()
-    sign_key = sign_certs[0].matching_key_in_dirs(private_key_password=key_password)
+    discarded = []
+    unchanged = []
 
     progress_hook(True,0,len(hosts_list),'Editing %s hosts' % len(hosts_list))
     i = 0
     try:
         for host_id in hosts_list:
             i+=1
-            host = host_repo.get(host_id)
-            if host is None:
-                host = PackageEntry(package=host_id,section='host')
+            # don't change discarded packages.
+            if host_id in discarded_uuids:
+                discarded.append(host_id)
+            else:
+                host = host_repo.get(host_id)
+                if host is None:
+                    host = PackageEntry(package=host_id,section='host')
 
-            if progress_hook(True,i,len(hosts_list),'Editing %s' % host.package):
-                break
+                if progress_hook(True,i,len(hosts_list),'Editing %s' % host.package):
+                    break
 
-            logger.debug(u'Edit host %s : +%s -%s'%(
-                host.package,
-                append_depends,
-                remove_depends))
+                logger.debug(u'Edit host %s : +%s -%s'%(
+                    host.package,
+                    append_depends,
+                    remove_depends))
 
 
-            depends = host.depends
-            depends = add_to_csv_list(depends,append_depends)
-            depends = remove_from_csv_list(depends,remove_depends)
+                depends = host.depends
+                depends = add_to_csv_list(depends,append_depends)
+                depends = remove_from_csv_list(depends,remove_depends)
 
-            conflicts = host.conflicts
-            conflicts = add_to_csv_list(conflicts,append_conflicts)
-            conflicts = remove_from_csv_list(conflicts,remove_conflicts)
+                conflicts = host.conflicts
+                conflicts = add_to_csv_list(conflicts,append_conflicts)
+                conflicts = remove_from_csv_list(conflicts,remove_conflicts)
 
-            if depends != host.depends or conflicts != host.conflicts:
-                host.depends = depends
-                host.conflicts = conflicts
-                host.inc_build()
-                host_file = host.build_management_package()
-                host.sign_package(sign_certs,sign_key)
-                packages.append(host)
+                if depends != host.depends or conflicts != host.conflicts:
+                    host.depends = depends
+                    host.conflicts = conflicts
+                    host.inc_build()
+                    host_file = host.build_management_package()
+                    host.sign_package(sign_certs,sign_key)
+                    packages.append(host)
+                else:
+                    unchanged.append(host.package)
 
         # upload all in one step...
         progress_hook(True,3,3,'Upload %s host packages' % len(packages))
         server = WaptServer().load_config_from_file(waptconfigfile)
         server.upload_packages(packages,auth=(wapt_server_user,wapt_server_passwd),progress_hook=progress_hook)
-        return [p.package for p in packages]
+        return dict(updated = [p.package for p in packages],
+                    discarded = discarded,
+                    unchanged = unchanged)
 
     finally:
         logger.debug('Cleanup')
