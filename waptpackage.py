@@ -2175,6 +2175,8 @@ class WaptRemoteRepo(WaptBaseRepo):
             self.verify_cert = '0'
         if timeout is not None:
             self.timeout = timeout
+        if http_proxy is not None:
+            self.http_proxy = http_proxy
 
     @property
     def repo_url(self):
