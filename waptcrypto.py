@@ -172,7 +172,7 @@ def get_hash_algo(md='sha256'):
              'sha256':hashes.SHA256(),
             }.get(md,hashes.SHA256())
 
-class SSLCABundle(object):
+class SSLCABundle(BaseObjectClass):
     BEGIN_KEY = '-----BEGIN ENCRYPTED PRIVATE KEY-----'
     END_KEY = '-----END ENCRYPTED PRIVATE KEY-----'
     BEGIN_CERTIFICATE = '-----BEGIN CERTIFICATE-----'
@@ -720,7 +720,7 @@ def get_peer_cert_chain_from_server(url):
         result.append(SSLCertificate(crt_string=pem_data))
     return result
 
-class SSLPrivateKey(object):
+class SSLPrivateKey(BaseObjectClass):
     def __init__(self,filename=None,pem_data=None,callback=None,password = None):
         """Args:
             private_key (str) : Filename Path to PEM encoded Private Key
@@ -1187,7 +1187,7 @@ class SSLPrivateKey(object):
         pem = self.public_key().public_bytes(encoding=serialization.Encoding.OpenSSH,format=serialization.PublicFormat.OpenSSH)
         return pem
 
-class SSLCertificate(object):
+class SSLCertificate(BaseObjectClass):
     """Hold a X509 public certificate"""
     def __init__(self,crt_filename=None,crt=None,crt_string=None,ignore_validity_checks=False):
         """\
@@ -1717,7 +1717,7 @@ class SSLCertificate(object):
             verified_by=self.cn,
             )
 
-class SSLCRL(object):
+class SSLCRL(BaseObjectClass):
     def __init__(self,filename=None,pem_data=None,der_data=None):
         self._crl = None
         self.filename = filename

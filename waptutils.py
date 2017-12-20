@@ -1027,6 +1027,11 @@ def touch(filename):
         os.utime(filename,None)
 
 
+class BaseObjectClass(object):
+    def _pyobject(self):
+        """Return pure python reference for calls in FreePascal"""
+        return self
+
 if __name__ == '__main__':
     import doctest
     import sys

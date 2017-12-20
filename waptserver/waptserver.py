@@ -337,7 +337,7 @@ def index():
     return render_template('index.html', data=data)
 
 
-@app.route('/add_host', methods=['GET','POST'])
+@app.route('/add_host',methods=['HEAD','POST'])
 def register_host():
     """Add a new host into database, and return registration info
     """
@@ -450,7 +450,7 @@ def register_host():
         return make_response_from_exception(e)
 
 
-@app.route('/update_host', methods=['POST'])
+@app.route('/update_host',methods=['HEAD','POST'])
 def update_host():
     """Update localstatus of computer, and return known registration info
     """
@@ -561,7 +561,7 @@ def sync_host_groups(entry):
         return (0,0)
 
 
-@app.route('/upload_package/<string:filename>', methods=['POST'])
+@app.route('/upload_package/<string:filename>', methods=['HEAD','POST'])
 @requires_auth
 def upload_package(filename=''):
     try:
@@ -608,7 +608,7 @@ def upload_package(filename=''):
                     mimetype='application/json')
 
 
-@app.route('/api/v3/upload_packages', methods=['POST'])
+@app.route('/api/v3/upload_packages',methods=['HEAD','POST'])
 @requires_auth
 def upload_packages():
     class PackageStream(object):
@@ -676,33 +676,39 @@ def upload_packages():
         done = []
         errors = []
         errors_msg = []
-        if request.files:
-            files = request.files
-            # multipart upload
-            logger.info('Upload of %s packages' % len(files))
-            for fkey in files:
-                try:
-                    packagefile = request.files[fkey]
-                    logger.debug('uploading file : %s' % fkey)
-                    if packagefile and allowed_file(packagefile.filename):
-                        done.append(read_package(packagefile))
-                except Exception as e:
-                    logger.critical(u'Error uploading %s : %s' % (fkey,e))
-                    errors.append(fkey)
-                    errors_msg.append('%s : %s' % (fkey,e))
-        else:
-            # streamed upload
-            packagefile = PackageStream(request.stream)
-            done.append(read_package(packagefile))
+        packages_index_result = None
+
+        if request.method == 'POST':
+            if request.files:
+                files = request.files
+                # multipart upload
+                logger.info('Upload of %s packages' % len(files))
+                for fkey in files:
+                    try:
+                        packagefile = request.files[fkey]
+                        logger.debug('uploading file : %s' % fkey)
+                        if packagefile and allowed_file(packagefile.filename):
+                            done.append(read_package(packagefile))
+                    except Exception as e:
+                        logger.critical(u'Error uploading %s : %s' % (fkey,e))
+                        errors.append(fkey)
+                        errors_msg.append('%s : %s' % (fkey,e))
+            else:
+                # streamed upload
+                packagefile = PackageStream(request.stream)
+                done.append(read_package(packagefile))
 
 
-        if [e for e in done if e.section != 'host']:
-            logger.debug('Update package index')
-            packages_index_result = update_packages(app.conf['wapt_folder'])
-            if packages_index_result['errors']:
-                errors_msg.extend(packages_index_result['errors'])
+            if [e for e in done if e.section != 'host']:
+                logger.debug('Update package index')
+                packages_index_result = update_packages(app.conf['wapt_folder'])
+                if packages_index_result['errors']:
+                    errors_msg.extend(packages_index_result['errors'])
+            else:
+                packages_index_result = None
+
         else:
-            packages_index_result = None
+            pass
 
         spenttime = time.time() - starttime
         return make_response(success=len(errors) == 0 and len(done)>0,
@@ -715,71 +721,74 @@ def upload_packages():
         return make_response_from_exception(e, status='201')
 
 
-@app.route('/upload_host', methods=['POST'])
-@app.route('/api/v3/upload_hosts', methods=['POST'])
+@app.route('/upload_host',methods=['HEAD','POST'])
+@app.route('/api/v3/upload_hosts',methods=['HEAD','POST'])
 @requires_auth
 def upload_host():
     try:
         starttime = time.time()
         done = []
         errors = []
-        files = request.files.keys()
-        logger.info('Upload of %s host packages' % len(files))
-        for fkey in files:
-            hostpackagefile = request.files[fkey]
-            logger.debug('uploading host file : %s' % fkey)
-            if hostpackagefile and allowed_file(hostpackagefile.filename):
-                filename = secure_filename(hostpackagefile.filename)
-                wapt_host_folder = os.path.join(app.conf['wapt_folder'] + '-host')
-                target = os.path.join(wapt_host_folder, filename)
-                tmp_target = tempfile.mktemp(dir=wapt_host_folder,prefix='wapt')
-                with wapt_db.atomic():
-                    try:
+        if request.method == 'POST':
+            files = request.files.keys()
+            logger.info('Upload of %s host packages' % len(files))
+            for fkey in files:
+                hostpackagefile = request.files[fkey]
+                logger.debug('uploading host file : %s' % fkey)
+                if hostpackagefile and allowed_file(hostpackagefile.filename):
+                    filename = secure_filename(hostpackagefile.filename)
+                    wapt_host_folder = os.path.join(app.conf['wapt_folder'] + '-host')
+                    target = os.path.join(wapt_host_folder, filename)
+                    tmp_target = tempfile.mktemp(dir=wapt_host_folder,prefix='wapt')
+                    with wapt_db.atomic():
+                        try:
 
-                        # if encrypted host packages, store the clear copy in a protected area for further edit...
-                        if app.conf['encrypt_host_packages']:
-                            ref_target = os.path.join(app.conf['wapt_folder'] + '-hostref', filename)
-                            hostpackagefile.save(ref_target)
-                            entry = PackageEntry(waptfile=ref_target)
-                        else:
-                            # write directly clear zip to tmp_targert
-                            hostpackagefile.save(tmp_target)
-                            entry = PackageEntry(waptfile=tmp_target)
+                            # if encrypted host packages, store the clear copy in a protected area for further edit...
+                            if app.conf['encrypt_host_packages']:
+                                ref_target = os.path.join(app.conf['wapt_folder'] + '-hostref', filename)
+                                hostpackagefile.save(ref_target)
+                                entry = PackageEntry(waptfile=ref_target)
+                            else:
+                                # write directly clear zip to tmp_targert
+                                hostpackagefile.save(tmp_target)
+                                entry = PackageEntry(waptfile=tmp_target)
 
-                        sync_host_groups(entry)
+                            sync_host_groups(entry)
 
-                        # get host cert to encrypt package with public key
-                        if app.conf['encrypt_host_packages']:
-                            host = Hosts.select(Hosts.uuid, Hosts.computer_fqdn, Hosts.host_certificate) \
-                                .where((Hosts.uuid == host_id) | (Hosts.computer_fqdn == host_id)) \
-                                .dicts().first()
+                            # get host cert to encrypt package with public key
+                            if app.conf['encrypt_host_packages']:
+                                host = Hosts.select(Hosts.uuid, Hosts.computer_fqdn, Hosts.host_certificate) \
+                                    .where((Hosts.uuid == host_id) | (Hosts.computer_fqdn == host_id)) \
+                                    .dicts().first()
 
-                            # write encrypted package content
-                            with open(tmp_target, 'wb') as encrypted_package:
-                                package_data = open(ref_target, 'rb').read()
-                                if host and host['host_certificate'] is not None:
-                                    host_cert = SSLCertificate(crt_string=host['host_certificate'])
-                                    encrypted_package.write(host_cert.encrypt_fernet(package_data))
-                                else:
-                                    encrypted_package.write(package_data)
+                                # write encrypted package content
+                                with open(tmp_target, 'wb') as encrypted_package:
+                                    package_data = open(ref_target, 'rb').read()
+                                    if host and host['host_certificate'] is not None:
+                                        host_cert = SSLCertificate(crt_string=host['host_certificate'])
+                                        encrypted_package.write(host_cert.encrypt_fernet(package_data))
+                                    else:
+                                        encrypted_package.write(package_data)
 
-                        if os.path.isfile(target):
-                            os.unlink(target)
-                        os.rename(tmp_target, target)
-                        # fix context on target file (otherwith tmp context is carried over)
-                        #logger.debug(subprocess.check_output('chcon -R -t httpd_sys_content_t %s' % target,shell=True))
+                            if os.path.isfile(target):
+                                os.unlink(target)
+                            os.rename(tmp_target, target)
+                            # fix context on target file (otherwith tmp context is carried over)
+                            #logger.debug(subprocess.check_output('chcon -R -t httpd_sys_content_t %s' % target,shell=True))
 
-                        done.append(filename)
-                        wapt_db.commit()
+                            done.append(filename)
+                            wapt_db.commit()
 
-                    except Exception as e:
-                        wapt_db.rollback()
-                        logger.debug('traceback')
-                        logger.debug(traceback.print_exc())
-                        logger.critical('Error uploading package %s: %s' % (filename, e))
-                        errors.append(filename)
-                        if os.path.isfile(tmp_target):
-                            os.unlink(tmp_target)
+                        except Exception as e:
+                            wapt_db.rollback()
+                            logger.debug('traceback')
+                            logger.debug(traceback.print_exc())
+                            logger.critical('Error uploading package %s: %s' % (filename, e))
+                            errors.append(filename)
+                            if os.path.isfile(tmp_target):
+                                os.unlink(tmp_target)
+        else:
+            pass
 
         spenttime = time.time() - starttime
         return make_response(success=len(errors) == 0,
@@ -791,7 +800,7 @@ def upload_host():
         return make_response_from_exception(e, status='201')
 
 
-@app.route('/upload_waptsetup', methods=['POST'])
+@app.route('/upload_waptsetup',methods=['HEAD','POST'])
 @requires_auth
 def upload_waptsetup():
     waptagent = os.path.join(app.conf['wapt_folder'], 'waptagent.exe')
@@ -861,36 +870,37 @@ def reload_config():
         logger.critical('Unable to reload server config : %s' % repr(e))
 
 
-@app.route('/api/v3/change_password', methods=['POST'])
+@app.route('/api/v3/change_password',methods=['HEAD','POST'])
 @requires_auth
-def change_passsword():
-    try:
-        config_file = app.config['CONFIG_FILE']
-        post_data = request.get_json()
-        if 'user' in post_data and 'password' in post_data:
-            if check_auth(post_data['user'], post_data['password']):
-                # change master password
-                if 'new_password' in post_data and post_data['user'] == 'admin':
-                    if len(post_data['new_password']) < app.conf.get('min_password_length',10):
-                        raise EWaptForbiddden('The password must be at least %s characters' % app.onf.get('min_password_length',10))
-                    new_hash = pbkdf2_sha256.hash(post_data['new_password'].encode('utf8'))
-                    rewrite_config_item(config_file, 'options', 'wapt_password', new_hash)
-                    app.conf['wapt_password'] = new_hash
-                    reload_config()
-                    msg = 'Password for %s updated successfully' % post_data['user']
+def change_password():
+    if request.method == 'POST':
+        try:
+            config_file = app.config['CONFIG_FILE']
+            post_data = request.get_json()
+            if 'user' in post_data and 'password' in post_data:
+                if check_auth(post_data['user'], post_data['password']):
+                    # change master password
+                    if 'new_password' in post_data and post_data['user'] == 'admin':
+                        if len(post_data['new_password']) < app.conf.get('min_password_length',10):
+                            raise EWaptForbiddden('The password must be at least %s characters' % app.onf.get('min_password_length',10))
+                        new_hash = pbkdf2_sha256.hash(post_data['new_password'].encode('utf8'))
+                        rewrite_config_item(config_file, 'options', 'wapt_password', new_hash)
+                        app.conf['wapt_password'] = new_hash
+                        reload_config()
+                        msg = 'Password for %s updated successfully' % post_data['user']
+                    else:
+                        raise EWaptMissingParameter('Bad or missing parameter')
                 else:
-                    raise EWaptMissingParameter('Bad or missing parameter')
+                    raise EWaptAuthenticationFailure('Bad user or password')
             else:
-                raise EWaptAuthenticationFailure('Bad user or password')
-        else:
-            raise EWaptMissingParameter('Missing parameter')
-        return make_response(result=msg, msg=msg, status=200)
-    except Exception as e:
-        return make_response_from_exception(e)
+                raise EWaptMissingParameter('Missing parameter')
+            return make_response(result=msg, msg=msg, status=200)
+        except Exception as e:
+            return make_response_from_exception(e)
 
 
 
-@app.route('/api/v3/login', methods=['POST'])
+@app.route('/api/v3/login',methods=['HEAD','POST'])
 def login():
     error = ''
     result = None
@@ -955,26 +965,28 @@ def delete_package(filename=''):
                     status=200,
                     mimetype='application/json')
 
-@app.route('/api/v3/packages_delete', methods=['POST'])
+@app.route('/api/v3/packages_delete',methods=['HEAD','POST'])
 @requires_auth
 def packages_delete():
-    filenames = request.get_json()
-
     errors = []
     deleted = []
 
-    for filename in filenames:
-        try:
-            package_path = os.path.join(app.conf['wapt_folder'], secure_filename(filename))
-            if os.path.isfile(package_path):
-                os.unlink(package_path)
-                deleted.append(filename)
-            else:
+    if request.method == 'POST':
+        filenames = request.get_json()
+        for filename in filenames:
+            try:
+                package_path = os.path.join(app.conf['wapt_folder'], secure_filename(filename))
+                if os.path.isfile(package_path):
+                    os.unlink(package_path)
+                    deleted.append(filename)
+                else:
+                    errors.append(filename)
+            except Exception as e:
                 errors.append(filename)
-        except Exception as e:
-            errors.append(filename)
 
-    result = update_packages(app.conf['wapt_folder'])
+        result = update_packages(app.conf['wapt_folder'])
+    else:
+        pass
     msg = ['%s packages deleted' % len(deleted)]
     if errors:
         msg.append('ERROR : %s packages could not be deleted' % len(errors))
@@ -1076,7 +1088,7 @@ def ping():
     )
 
 
-@app.route('/api/v3/reset_hosts_sid', methods=['GET', 'POST'])
+@app.route('/api/v3/reset_hosts_sid', methods=['GET','HEAD','POST'])
 @requires_auth
 def reset_hosts_sid():
     """Launch a separate thread to check all reachable IP and update database with results.
@@ -1231,7 +1243,7 @@ def proxy_host_request(request, action):
         return make_response_from_exception(e)
 
 
-@app.route('/api/v3/trigger_wakeonlan', methods=['POST'])
+@app.route('/api/v3/trigger_wakeonlan', methods=['HEAD','POST'])
 @requires_auth
 def trigger_wakeonlan():
     try:
@@ -1269,21 +1281,21 @@ def trigger_wakeonlan():
         return make_response_from_exception(e)
 
 
-@app.route('/api/v3/trigger_waptwua_scan', methods=['GET', 'POST'])
+@app.route('/api/v3/trigger_waptwua_scan', methods=['HEAD','GET', 'POST'])
 @requires_auth
 def trigger_waptwua_scan():
     """Proxy the wapt update action to the client"""
     return proxy_host_request(request, 'trigger_waptwua_scan')
 
 
-@app.route('/api/v3/trigger_waptwua_download', methods=['GET', 'POST'])
+@app.route('/api/v3/trigger_waptwua_download', methods=['HEAD','GET', 'POST'])
 @requires_auth
 def trigger_waptwua_download():
     """Proxy the wapt download action to the client"""
     return proxy_host_request(request, 'trigger_waptwua_download')
 
 
-@app.route('/api/v3/trigger_waptwua_install', methods=['GET', 'POST'])
+@app.route('/api/v3/trigger_waptwua_install', methods=['HEAD','GET', 'POST'])
 @requires_auth
 def trigger_waptwua_install():
     """Proxy the wapt scan action to the client"""
@@ -1447,7 +1459,7 @@ def build_hosts_filter(model, filter_expr):
         raise Exception('Invalid filter provided in query. Should be f1,f2,f3:regexp ')
 
 
-@app.route('/api/v3/hosts_delete', methods=['POST'])
+@app.route('/api/v3/hosts_delete',methods=['HEAD','POST'])
 @requires_auth
 def hosts_delete():
     """Remove one or several hosts from Server DB and optionnally the host packages
@@ -1462,54 +1474,56 @@ def hosts_delete():
         result (dict):
 
     """
-    try:
-        # build filter
-        post_data = request.get_json()
+    msg = []
+    result = dict(files=[], records=[])
 
-        if 'uuids' in post_data:
-            query = Hosts.uuid.in_(ensure_list(post_data['uuids']))
-        elif 'filter' in post_data:
-            query = build_hosts_filter(Hosts, post_data['filter'])
-        else:
-            raise Exception('Neither uuid nor filter provided in query')
+    if request.method == 'POST':
+        try:
+            # build filter
+            post_data = request.get_json()
 
-        msg = []
-        result = dict(files=[], records=[])
+            if 'uuids' in post_data:
+                query = Hosts.uuid.in_(ensure_list(post_data['uuids']))
+            elif 'filter' in post_data:
+                query = build_hosts_filter(Hosts, post_data['filter'])
+            else:
+                raise Exception('Neither uuid nor filter provided in query')
 
-        if 'delete_packages' in post_data and post_data['delete_packages']:
-            selected = Hosts.select(Hosts.uuid, Hosts.computer_fqdn).where(query)
-            for host in selected:
-                result['records'].append(
-                    dict(
-                        uuid=host.uuid,
-                        computer_fqdn=host.computer_fqdn))
-                uuid_hostpackage = os.path.join(app.conf['wapt_folder'] + '-host',host.uuid+'.wapt')
-                fqdn_hostpackage = os.path.join(app.conf['wapt_folder'] + '-host',host.computer_fqdn+'.wapt')
 
-                if os.path.isfile(uuid_hostpackage):
-                    logger.debug('Trying to remove %s' % uuid_hostpackage)
+            if 'delete_packages' in post_data and post_data['delete_packages']:
+                selected = Hosts.select(Hosts.uuid, Hosts.computer_fqdn).where(query)
+                for host in selected:
+                    result['records'].append(
+                        dict(
+                            uuid=host.uuid,
+                            computer_fqdn=host.computer_fqdn))
+                    uuid_hostpackage = os.path.join(app.conf['wapt_folder'] + '-host',host.uuid+'.wapt')
+                    fqdn_hostpackage = os.path.join(app.conf['wapt_folder'] + '-host',host.computer_fqdn+'.wapt')
+
                     if os.path.isfile(uuid_hostpackage):
-                        os.remove(uuid_hostpackage)
-                        result['files'].append(uuid_hostpackage)
+                        logger.debug('Trying to remove %s' % uuid_hostpackage)
+                        if os.path.isfile(uuid_hostpackage):
+                            os.remove(uuid_hostpackage)
+                            result['files'].append(uuid_hostpackage)
 
-                if os.path.isfile(fqdn_hostpackage):
-                    logger.debug('Trying to remove %s' % fqdn_hostpackage)
                     if os.path.isfile(fqdn_hostpackage):
-                        os.remove(fqdn_hostpackage)
-                        result['files'].append(fqdn_hostpackage)
+                        logger.debug('Trying to remove %s' % fqdn_hostpackage)
+                        if os.path.isfile(fqdn_hostpackage):
+                            os.remove(fqdn_hostpackage)
+                            result['files'].append(fqdn_hostpackage)
 
-            msg.append(
-                '{} files removed from host repository'.format(len(result['files'])))
+                msg.append(
+                    '{} files removed from host repository'.format(len(result['files'])))
 
-        if 'delete_inventory' in post_data and post_data['delete_inventory']:
-            remove_result = Hosts.delete().where(query).execute()
-            msg.append('{} hosts removed from DB'.format(remove_result))
+            if 'delete_inventory' in post_data and post_data['delete_inventory']:
+                remove_result = Hosts.delete().where(query).execute()
+                msg.append('{} hosts removed from DB'.format(remove_result))
 
-        return make_response(result=result, msg='\n'.join(msg), status=200)
+        except Exception as e:
+            wapt_db.rollback()
+            return make_response_from_exception(e)
+    return make_response(result=result, msg='\n'.join(msg), status=200)
 
-    except Exception as e:
-        wapt_db.rollback()
-        return make_response_from_exception(e)
 
 
 def build_fields_list(model, mongoproj):
@@ -1530,7 +1544,7 @@ def build_fields_list(model, mongoproj):
     return result
 
 
-@app.route('/api/v1/hosts', methods=['GET'])
+@app.route('/api/v1/hosts', methods=['HEAD','GET'])
 @requires_auth
 def get_hosts():
     """Get registration data of one or several hosts
@@ -1554,142 +1568,143 @@ def get_hosts():
           filter=<csvlist of fields>:regular expression
     """
     try:
-        start_time = time.time()
-        default_columns = ['host_status',
-                           'last_update_status',
-                           'reachable',
-                           'computer_fqdn',
-                           'dnsdomain',
-                           'description',
-                           'connected_users',
-                           'listening_protocol',
-                           'listening_address',
-                           'listening_port',
-                           'listening_timestamp',
-                           'manufacturer',
-                           'productname',
-                           'serialnr',
-                           'last_seen_on',
-                           'mac_addresses',
-                           'connected_ips',
-                           'wapt_status',
-                           'uuid',
-                           'md5sum',
-                           'purchase_order',
-                           'purchase_date',
-                           'groups',
-                           'attributes',
-                           'host_info.domain_controller',
-                           'host_info.domain_name',
-                           'host_info.domain_controller_address',
-                           'depends',
-                           'computer_type',
-                           'os_name',
-                           'os_version',
-                           'registration_auth_user',
-                           ]
-
-        # keep only top tree nodes (mongo doesn't want fields like {'wapt':1,'wapt.listening_address':1} !
-        # minimum columns
-        columns = ['uuid',
-                   'host_status',
-                   'last_seen_on',
-                   'last_update_status',
-                   'computer_fqdn',
-                   'computer_name',
-                   'description',
-                   'wapt_status',
-                   'dnsdomain',
-                   'server_uuid',
-                   'listening_protocol',
-                   'listening_address',
-                   'listening_port',
-                   'listening_timestamp',
-                   'connected_users',
-                   'registration_auth_user',
-                   ]
-        other_columns = ensure_list(
-            request.args.get(
-                'columns',
-                default_columns))
-
-        # add request columns
-        for fn in other_columns:
-            if not fn in columns:
-                columns.append(fn)
-
-        not_filter = request.args.get('not_filter', 0)
-
-        query = None
-
-        # build filter
-        if 'uuid' in request.args:
-            query = Hosts.uuid.in_(ensure_list(request.args['uuid']))
-        elif 'filter' in request.args:
-            query = build_hosts_filter(Hosts, request.args['filter'])
-        else:
-            query = ~(Hosts.uuid.is_null())
-
-        if 'has_errors' in request.args and request.args['has_errors']:
-            query = query & (Hosts.host_status == 'ERROR')
-        if 'need_upgrade' in request.args and request.args['need_upgrade']:
-            query = query & (Hosts.host_status.in_(['ERROR', 'TO-UPGRADE']))
-        if 'reachable' in request.args and (request.args['reachable'] == '1'):
-            query = query & (Hosts.reachable == 'OK')
-
-        if 'groups' in request.args:
-            groups = ensure_list(request.args.get('groups', ''))
-            in_group = HostGroups.select(HostGroups.host).where(HostGroups.group_name == groups)
-            query = query & (Hosts.uuid << in_group )
-
-        if 'organizational_unit' in request.args:
-            if request.args.get('sub_ou_in_active_directory','1') == '1':
-                query = query & (Hosts.computer_ad_ou.endswith(request.args.get('organizational_unit')))
-            else:
-                query = query & (Hosts.computer_ad_ou  == request.args.get('organizational_unit'))
-
-        if 'ad_site' in request.args:
-            query = query & (Hosts.computer_ad_site  == request.args.get('ad_site'))
-
-        if query is not None and not_filter:
-            query = ~ query
-
-        limit = int(request.args.get('limit', 1000))
-
-
         result = []
-        req = Hosts.select(*build_fields_list(Hosts, {col: 1 for col in columns})).limit(limit).order_by(SQL('last_seen_on desc NULLS LAST')).dicts().dicts()
-        if query:
-            req = req.where(query)
+        msg = ''
+        start_time = time.time()
+        if request.method == 'POST':
+            default_columns = ['host_status',
+                               'last_update_status',
+                               'reachable',
+                               'computer_fqdn',
+                               'dnsdomain',
+                               'description',
+                               'connected_users',
+                               'listening_protocol',
+                               'listening_address',
+                               'listening_port',
+                               'listening_timestamp',
+                               'manufacturer',
+                               'productname',
+                               'serialnr',
+                               'last_seen_on',
+                               'mac_addresses',
+                               'connected_ips',
+                               'wapt_status',
+                               'uuid',
+                               'md5sum',
+                               'purchase_order',
+                               'purchase_date',
+                               'groups',
+                               'attributes',
+                               'host_info.domain_controller',
+                               'host_info.domain_name',
+                               'host_info.domain_controller_address',
+                               'depends',
+                               'computer_type',
+                               'os_name',
+                               'os_version',
+                               'registration_auth_user',
+                               ]
 
-        result = list(req)
+            # keep only top tree nodes (mongo doesn't want fields like {'wapt':1,'wapt.listening_address':1} !
+            # minimum columns
+            columns = ['uuid',
+                       'host_status',
+                       'last_seen_on',
+                       'last_update_status',
+                       'computer_fqdn',
+                       'computer_name',
+                       'description',
+                       'wapt_status',
+                       'dnsdomain',
+                       'server_uuid',
+                       'listening_protocol',
+                       'listening_address',
+                       'listening_port',
+                       'listening_timestamp',
+                       'connected_users',
+                       'registration_auth_user',
+                       ]
+            other_columns = ensure_list(
+                request.args.get(
+                    'columns',
+                    default_columns))
 
-        if 'uuid' in request.args:
-            if len(result) == 0:
-                msg = u'No data found for uuid {}'.format(request.args['uuid'])
-            else:
-                msg = u'host data fields {} returned for uuid {}'.format(
-                    u','.join(columns),
-                    request.args['uuid'])
-        elif 'filter' in request.args:
-            if len(result) == 0:
-                msg = u'No data found for filter {}'.format(
-                    request.args['filter'])
-            else:
-                msg = u'{} hosts returned for filter {}'.format(
-                    len(result),
-                    request.args['filter'])
-        else:
-            if len(result) == 0:
-                msg = u'No data found'
-            else:
-                msg = u'{} hosts returned'.format(len(result))
+            # add request columns
+            for fn in other_columns:
+                if not fn in columns:
+                    columns.append(fn)
 
+            not_filter = request.args.get('not_filter', 0)
+
+            query = None
+
+            # build filter
+            if 'uuid' in request.args:
+                query = Hosts.uuid.in_(ensure_list(request.args['uuid']))
+            elif 'filter' in request.args:
+                query = build_hosts_filter(Hosts, request.args['filter'])
+            else:
+                query = ~(Hosts.uuid.is_null())
+
+            if 'has_errors' in request.args and request.args['has_errors']:
+                query = query & (Hosts.host_status == 'ERROR')
+            if 'need_upgrade' in request.args and request.args['need_upgrade']:
+                query = query & (Hosts.host_status.in_(['ERROR', 'TO-UPGRADE']))
+            if 'reachable' in request.args and (request.args['reachable'] == '1'):
+                query = query & (Hosts.reachable == 'OK')
+
+            if 'groups' in request.args:
+                groups = ensure_list(request.args.get('groups', ''))
+                in_group = HostGroups.select(HostGroups.host).where(HostGroups.group_name == groups)
+                query = query & (Hosts.uuid << in_group )
+
+            if 'organizational_unit' in request.args:
+                if request.args.get('sub_ou_in_active_directory','1') == '1':
+                    query = query & (Hosts.computer_ad_ou.endswith(request.args.get('organizational_unit')))
+                else:
+                    query = query & (Hosts.computer_ad_ou  == request.args.get('organizational_unit'))
+
+            if 'ad_site' in request.args:
+                query = query & (Hosts.computer_ad_site  == request.args.get('ad_site'))
+
+            if query is not None and not_filter:
+                query = ~ query
+
+            limit = int(request.args.get('limit', 1000))
+
+
+            req = Hosts.select(*build_fields_list(Hosts, {col: 1 for col in columns})).limit(limit).order_by(SQL('last_seen_on desc NULLS LAST')).dicts().dicts()
+            if query:
+                req = req.where(query)
+
+            result = list(req)
+
+            if 'uuid' in request.args:
+                if len(result) == 0:
+                    msg = u'No data found for uuid {}'.format(request.args['uuid'])
+                else:
+                    msg = u'host data fields {} returned for uuid {}'.format(
+                        u','.join(columns),
+                        request.args['uuid'])
+            elif 'filter' in request.args:
+                if len(result) == 0:
+                    msg = u'No data found for filter {}'.format(
+                        request.args['filter'])
+                else:
+                    msg = u'{} hosts returned for filter {}'.format(
+                        len(result),
+                        request.args['filter'])
+            else:
+                if len(result) == 0:
+                    msg = u'No data found'
+                else:
+                    msg = u'{} hosts returned'.format(len(result))
+
+        return make_response(
+            result=result, msg=msg, status=200, request_time=time.time() - start_time)
     except Exception as e:
         return make_response_from_exception(e)
-
-    return make_response(
-        result=result, msg=msg, status=200, request_time=time.time() - start_time)
 
 
 @app.route('/api/v1/host_data')
@@ -1839,7 +1854,7 @@ def host_tasks_status():
         return make_response_from_exception(e)
 
 
-@app.route('/api/v3/trigger_host_action', methods=['POST'])
+@app.route('/api/v3/trigger_host_action', methods=['HEAD','POST'])
 @requires_auth
 def trigger_host_action():
     """Proxy some single shot actions to the client using websockets"""

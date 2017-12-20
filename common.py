@@ -112,6 +112,8 @@ from waptpackage import *
 
 import setuphelpers
 
+class EWaptBadServerAuthentication(EWaptException):
+    pass
 
 def import_code(code,name='',add_to_sys_modules=0):
     """\
@@ -221,7 +223,7 @@ def start_interactive_process(app_filename,cmdline=None,session_id=None):
 
 
 ###########################"
-class LogInstallOutput(object):
+class LogInstallOutput(BaseObjectClass):
     """file like to log print output to db installstatus"""
     def __init__(self,console,waptdb,rowid):
         self.output = []
@@ -306,7 +308,7 @@ class EWaptCancelled(Exception):
     pass
 
 
-class WaptBaseDB(object):
+class WaptBaseDB(BaseObjectClass):
     _dbpath = ''
     _db_version = None
     db = None
@@ -1368,7 +1370,7 @@ def get_pem_server_certificate(url,save_to_file=None):
     else:
         return None
 
-class WaptServer(object):
+class WaptServer(BaseObjectClass):
     """Manage connection to waptserver"""
 
     def __init__(self,url=None,proxies={'http':None,'https':None},timeout = 2,dnsdomain=None):
@@ -1679,6 +1681,24 @@ class WaptServer(object):
             else:
                 files_dict = None
 
+            # check if auth is required before sending data in chunk
+            retry_count=0
+            while True:
+                req = requests.head("%s/%s" % (surl,action),
+                        proxies=self.proxies,
+                        verify=self.verify_cert,
+                        timeout=timeout or self.timeout,
+                        headers=headers,
+                        auth=auth,
+                        allow_redirects=True)
+                if req.status_code == 401:
+                    retry_count += 1
+                    if retry_count >= 3:
+                        raise EWaptBadServerAuthentication('Authentication failed on server %s for action %s' % (self.server_url,action))
+                    auth = self.auth(action=action)
+                else:
+                    break
+
             req = requests.post("%s/%s" % (surl,action),
                     data=data,
                     files=files_dict,
@@ -1688,23 +1708,6 @@ class WaptServer(object):
                     auth=auth,
                     headers=headers,
                     allow_redirects=True)
-
-            if req.status_code == 401:
-                # rewind files...
-                if files:
-                    for fn,fd in files.iteritems():
-                        if isinstance(fd,file):
-                            fd.seek(0,0)
-
-                req = requests.post("%s/%s" % (surl,action),
-                        data=data,
-                        files=files_dict,
-                        proxies=self.proxies,
-                        verify=self.verify_cert,
-                        timeout=timeout or self.timeout,
-                        auth=self.auth(action=action),
-                        headers=headers,
-                        allow_redirects=True)
 
             req.raise_for_status()
             return json.loads(req.content)
@@ -2458,7 +2461,7 @@ class WaptLogger(object):
             self.install_output = None
             self.wapt = None
 
-class Wapt(object):
+class Wapt(BaseObjectClass):
     """Global WAPT engine"""
     global_attributes = ['wapt_base_dir','waptserver','config_filename','proxies','repositories','personal_certificate_path','public_certs_dir','package_cache_dir','dbpath']
 
@@ -2962,7 +2965,7 @@ class Wapt(object):
         if wapt_server_user:
             auth = (wapt_server_user, wapt_server_passwd)
         else:
-            auth = self.waptserver.ask_user_password()
+            auth = self.waptserver.ask_user_password('%s/%s' % (self.waptserver.server_url,'api/v3/upload_xxx'))
 
         files = {}
         is_hosts = None

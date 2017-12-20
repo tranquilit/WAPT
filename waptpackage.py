@@ -220,7 +220,7 @@ class EWaptConfigurationError(EWaptException):
 class EWaptMissingLocalWaptFile(EWaptException):
     pass
 
-class PackageRequest(object):
+class PackageRequest(BaseObjectClass):
     """Package and version request / condition
 
     >>> PackageRequest('7-zip( >= 7.2)')
@@ -288,7 +288,7 @@ def control_to_dict(control,int_params=('size','installed_size')):
             result[key] = value
     return result
 
-class PackageEntry(object):
+class PackageEntry(BaseObjectClass):
     """Manage package attributes coming from either control files in WAPT package, local DB, or developement dir.
 
     Methods to build, unzip, sign or check a package.
@@ -1538,7 +1538,7 @@ def extract_iconpng_from_wapt(fname):
     return iconpng
 
 
-class WaptBaseRepo(object):
+class WaptBaseRepo(BaseObjectClass):
     """Base abstract class for a Wapt Packages repository
     """
 
