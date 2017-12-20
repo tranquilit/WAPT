@@ -3240,13 +3240,17 @@ def delete_task(name):
     Args:
         name (str) : name of the tasks as created in create_daily_task
     """
+    return  ensure_unicode(run('schtasks /Delete /F /TN "%s"' % name))
+
+    # old task sheduler interface deprecated by microsoft.
+    """
     ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler,None,
                                     pythoncom.CLSCTX_INPROC_SERVER,
                                     taskscheduler.IID_ITaskScheduler)
     if '%s.job' % name not in ts.Enum():
         raise KeyError("%s doesn't exists" % name)
     ts.Delete(name)
-
+    """
 
 def disable_task(name):
     """Disable a Windows scheduled task"""
