@@ -1571,7 +1571,7 @@ def get_hosts():
         result = []
         msg = ''
         start_time = time.time()
-        if request.method == 'POST':
+        if request.method == 'GET':
             default_columns = ['host_status',
                                'last_update_status',
                                'reachable',
