@@ -361,12 +361,22 @@ def update_installed_packages(uuid, installed_packages):
     """
     # TODO : be smarter : insert / update / delete instead of delete all / insert all ?
     # is it faster ?
+    key = ['package','version','version','architecture','locale','maturity']
+    def get_key(rec):
+        return {k:rec[k] for k in rec}
+    #old_installed = HostPackagesStatus.select().where(HostPackagesStatus.host == uuid).dicts()
+
+    def encode_value(value):
+        if isinstance(value,unicode):
+            value = value.replace(u'\x00', ' ')
+        return value
+
     HostPackagesStatus.delete().where(HostPackagesStatus.host == uuid).execute()
     packages = []
     for package in installed_packages:
         package['host'] = uuid
         # filter out all unknown fields from json data for the SQL insert
-        packages.append(dict([(k, v) for k, v in package.iteritems() if k in HostPackagesStatus._meta.fields]))
+        packages.append(dict([(k, encode_value(v)) for k, v in package.iteritems() if k in HostPackagesStatus._meta.fields]))
     if packages:
         return HostPackagesStatus.insert_many(packages).execute()
     else:
@@ -385,10 +395,16 @@ def update_installed_softwares(uuid, installed_softwares):
     # TODO : be smarter : insert / update / delete instead of delete all / insert all ?
     HostSoftwares.delete().where(HostSoftwares.host == uuid).execute()
     softwares = []
+
+    def encode_value(value):
+        if isinstance(value,unicode):
+            value = value.replace(u'\x00', ' ')
+        return value
+
     for software in installed_softwares:
         software['host'] = uuid
         # filter out all unknown fields from json data for the SQL insert
-        softwares.append(dict([(k, v) for k, v in software.iteritems() if k in HostSoftwares._meta.fields]))
+        softwares.append(dict([(k,encode_value(v)) for k, v in software.iteritems() if k in HostSoftwares._meta.fields]))
     if softwares:
         return HostSoftwares.insert_many(softwares).execute()
     else:
