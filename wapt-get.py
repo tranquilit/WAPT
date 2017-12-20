@@ -47,6 +47,8 @@ from common import WaptDB
 
 import setuphelpers
 
+waptguihelper = None
+
 v = (sys.version_info.major, sys.version_info.minor)
 if v != (2, 7):
     raise Exception('wapt-get supports only Python 2.7, not %d.%d' % v)
@@ -256,16 +258,29 @@ def guess_package_root_dir(fn):
 def ask_user_password(title=''):
     user = options.wapt_server_user
     password = options.wapt_server_passwd
-    if not user:
-        if title:
-            user = raw_input('Please get login for %s:' % title)
-        else:
-            user = raw_input('Please get login:')
-    if user == '':
-        user = 'admin'
-    if password is None or password == '':
-        password = getpass.getpass('Password:')
+    if waptguihelper:
+        res = waptguihelper.login_password_dialog('Credentials for wapt server',title or '',user or 'admin',password or '')
+        if res:
+            user = res['user']
+            password = res['password']
+    else:
+        if not user:
+            if title:
+                user = raw_input('Please get login for %s:' % title)
+            else:
+                user = raw_input('Please get login:')
+        if user == '':
+            user = 'admin'
+        if password is None or password == '':
+            password = getpass.getpass('Password:')
     return (user,password)
+
+# import after parsing line command, as import when debugging seems to break command line
+# because if rpyc
+try:
+    import waptguihelper
+except ImportError:
+    waptguihelper = None
 
 def main():
     jsonresult = {'output':[]}
@@ -329,7 +344,7 @@ def main():
         if options.personal_certificate_path:
             mywapt.personal_certificate_path = options.personal_certificate_path
 
-        # interactive user password with tk
+        # interactive user password with waptguihelper
         if mywapt.waptserver:
             mywapt.waptserver.ask_user_password_hook = ask_user_password
 
@@ -341,7 +356,14 @@ def main():
                 return open(options.private_key_passwd,'r').read().splitlines()[0].strip()
             else:
                 if private_key_password_cache is None:
-                    private_key_password_cache = default_pwd_callback(*args)
+                    if waptguihelper:
+                        res = waptguihelper.key_password_dialog('Password for orivate key',mywapt.personal_certificate_path,private_key_password_cache or '')
+                        if res:
+                            private_key_password_cache = res['keypassword']
+                        else:
+                            private_key_password_cache = None
+                    else:
+                        private_key_password_cache = default_pwd_callback(*args)
                 else:
                     return private_key_password_cache
 
