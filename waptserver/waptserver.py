@@ -239,6 +239,27 @@ def check_auth(username, password):
                  pass_sha512_crypt_ok, pass_bcrypt_crypt_ok]) and user_ok
 
 
+def check_auth_is_provided(f):
+    """Check if there is at least basic-auth or kerberos or ssl signature if
+    allow_unautheticated_registration is False
+    """
+    @functools.wraps(f)
+    def decorated(*args, **kwargs):
+        auth = session.get('user',None)
+        if not auth:
+            auth = request.headers.get('Authorization', None)
+        if not auth:
+            auth = request.authorization
+        if not auth:
+            auth = request.authorization
+        if not auth:
+            auth = request.headers.get('X-Signature', None)
+        if not auth and not app.conf['allow_unauthenticated_registration']:
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
+
+
 def authenticate():
     """Sends a 401 response that enables basic auth"""
     return Response(
@@ -338,6 +359,7 @@ def index():
 
 
 @app.route('/add_host',methods=['HEAD','POST'])
+@check_auth_is_provided
 def register_host():
     """Add a new host into database, and return registration info
     """
