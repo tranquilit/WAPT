@@ -91,21 +91,23 @@ def load_json(filenames=r'c:\tmp\*.json', add_test_prefix=None):
         print('%s recs to load' % len(recs))
 
         for rec in recs:
-            # to duplicate data for testing
-            if add_test_prefix:
-                rec['host_info']['computer_fqdn'] = add_test_prefix + '-' + rec['host_info']['computer_fqdn']
-                rec['uuid'] = add_test_prefix + '-' + rec['uuid']
-
-            uuid = rec.get('uuid', rec['wmi']['Win32_ComputerSystemProduct']['UUID'])
-            if not 'uuid' in rec:
-                rec['uuid'] = uuid
-            computer_fqdn = rec.get('host_info', rec.get('host'))['computer_fqdn']
             try:
+                # to duplicate data for testing
+                if add_test_prefix:
+                    rec['host_info']['computer_fqdn'] = add_test_prefix + '-' + rec['host_info']['computer_fqdn']
+                    rec['uuid'] = add_test_prefix + '-' + rec['uuid']
+
+                uuid = rec.get('uuid')
+                if not uuid:
+                    uuid = rec['wmi']['Win32_ComputerSystemProduct']['UUID']
+                if not 'uuid' in rec:
+                    rec['uuid'] = uuid
+                computer_fqdn = rec.get('host_info', rec.get('host'))['computer_fqdn']
                 print update_host_data(rec)
+                wapt_db.commit()
             except Exception as e:
                 print(u'Error for %s : %s' % (ensure_unicode(computer_fqdn), ensure_unicode(e)))
                 wapt_db.rollback()
-                raise e
 
 
 def comment_mongodb_lines(conf_filename='/opt/wapt/conf/waptserver.ini'):
