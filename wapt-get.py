@@ -258,7 +258,7 @@ def guess_package_root_dir(fn):
 def ask_user_password(title=''):
     user = options.wapt_server_user
     password = options.wapt_server_passwd
-    if waptguihelper:
+    if sys.stdin is not sys.__stdin__ and waptguihelper:
         res = waptguihelper.login_password_dialog('Credentials for wapt server',title or '',user or 'admin',password or '')
         if res:
             user = res['user']
