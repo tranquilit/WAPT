@@ -1683,23 +1683,25 @@ class WaptServer(BaseObjectClass):
 
             # check if auth is required before sending data in chunk
             retry_count=0
-            while True:
-                req = requests.head("%s/%s" % (surl,action),
-                        proxies=self.proxies,
-                        verify=self.verify_cert,
-                        timeout=timeout or self.timeout,
-                        headers=headers,
-                        auth=auth,
-                        allow_redirects=True)
-                if req.status_code == 401:
-                    retry_count += 1
-                    if retry_count >= 3:
-                        raise EWaptBadServerAuthentication('Authentication failed on server %s for action %s' % (self.server_url,action))
-                    auth = self.auth(action=action)
-                else:
-                    break
+            if files_dict:
+                while True:
+                    req = requests.head("%s/%s" % (surl,action),
+                            proxies=self.proxies,
+                            verify=self.verify_cert,
+                            timeout=timeout or self.timeout,
+                            headers=headers,
+                            auth=auth,
+                            allow_redirects=True)
+                    if req.status_code == 401:
+                        retry_count += 1
+                        if retry_count >= 3:
+                            raise EWaptBadServerAuthentication('Authentication failed on server %s for action %s' % (self.server_url,action))
+                        auth = self.auth(action=action)
+                    else:
+                        break
 
-            req = requests.post("%s/%s" % (surl,action),
+            while True:
+                req = requests.post("%s/%s" % (surl,action),
                     data=data,
                     files=files_dict,
                     proxies=self.proxies,
@@ -1709,6 +1711,13 @@ class WaptServer(BaseObjectClass):
                     headers=headers,
                     allow_redirects=True)
 
+                if (req.status_code == 401) and (retry_count < 3):
+                    retry_count += 1
+                    if retry_count >= 3:
+                        raise EWaptBadServerAuthentication('Authentication failed on server %s for action %s' % (self.server_url,action))
+                    auth = self.auth(action=action)
+                else:
+                    break
             req.raise_for_status()
             return json.loads(req.content)
         else:
