@@ -74,7 +74,7 @@ begin
     CanClose := True;
   if not CanClose then
   begin
-    if (edWaptServerName.Text='') then
+    if (edWaptServerName.Text='') and CBConfiguration.Visible then
       CBConfiguration.SetFocus
     else if (EdUser.text='') then
       EdUser.SetFocus
@@ -86,12 +86,14 @@ end;
 procedure TVisLogin.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
-  LabVersion.Caption := ApplicationName+' '+GetApplicationVersion;
+  LabVersion.Caption := ApplicationName+' '+wapt_edition+' Edition '+GetApplicationVersion;
 end;
 
 procedure TVisLogin.FormShow(Sender: TObject);
 begin
+  {$ifdef ENTERPRISE }
   CBConfiguration.Text := AppIniFilename;
+  {$endif}
 
   if edUser.Text<>'' then
     edPassword.SetFocus;
@@ -113,11 +115,13 @@ end;
 
 procedure TVisLogin.ActSelectConfExecute(Sender: TObject);
 begin
+  {$ifdef ENTERPRISE }
   ActSelectConf.Checked:=not ActSelectConf.Checked;
   laConfiguration.Visible := ActSelectConf.Checked;
   CBConfiguration.Visible := ActSelectConf.Checked;
   if ActSelectConf.Checked then
     CBConfiguration.SetFocus;
+  {$endif}
 end;
 
 procedure TVisLogin.CBConfigurationDropDown(Sender: TObject);
@@ -126,6 +130,7 @@ var
   i:integer;
   conf:String;
 begin
+  {$ifdef ENTERPRISE }
   try
     CBConfiguration.Items.Clear;
     ConfigList := FindAllFiles(GetAppConfigDir(False),'*.ini',False);
@@ -136,25 +141,30 @@ begin
   finally
     ConfigList.Free;
   end;
+  {$endif}
 end;
 
 procedure TVisLogin.CBConfigurationKeyPress(Sender: TObject; var Key: char);
 begin
+  {$ifdef ENTERPRISE }
   if key = #13 then
   begin
     if (edWaptServerName.Text <>'') and  (EdUser.Text <>'') then
       edPassword.SetFocus;
     Key := #0;
   end;
+  {$endif}
 end;
 
 procedure TVisLogin.CBConfigurationSelect(Sender: TObject);
 begin
+  {$ifdef ENTERPRISE }
   if ExtractFileDir(CBConfiguration.Text) = '' then
     FAppIniFilename := AppendPathDelim(GetAppConfigDir(False))+CBConfiguration.Text+'.ini'
   else
     FAppIniFilename := CBConfiguration.Text;
   edWaptServerName.Text:=IniReadString(FAppIniFilename,'global','wapt_server');
+  {$endif}
 end;
 
 

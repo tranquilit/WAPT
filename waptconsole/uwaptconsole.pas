@@ -745,11 +745,13 @@ end;
 
 procedure TVisWaptGUI.cbADSiteDropDown(Sender: TObject);
 begin
+  {$ifdef ENTERPRISE}
   try
     FillcbADSiteDropDown;
   except
     ShowMessage('Please upgrade your server');
   end;
+  {$endif}
 end;
 
 procedure TVisWaptGUI.cbWUAPendingChange(Sender: TObject);
@@ -907,9 +909,12 @@ begin
     ini.WriteInteger(self.name,'Width',Self.Width);
     ini.WriteInteger(self.name,'Height',Self.Height);
 
+    ini.WriteString(self.name,cbGroups.Text,'cbGroups.Text');
+
+    {$ifdef ENTERPRISE}
     ini.WriteString(self.name,cbADSite.Text,'cbADSite.Text');
     ini.WriteString(self.name,cbADOU.Text,'cbADOU.Text');
-    ini.WriteString(self.name,cbGroups.Text,'cbGroups.Text');
+    {$endif}
 
     ini.WriteString(self.name,'waptconsole.version',GetApplicationVersion);
 
@@ -1800,7 +1805,7 @@ begin
     with TvisGroupChoice.Create(self) do
     try
       Caption := rsSelectAddDepends;
-      res := TSuperObject.Create(stArray);
+      res := Nil;
 
       if ShowModal = mrOk then
       try
@@ -1821,10 +1826,9 @@ begin
            );
 
         res := PyVarToSuperObject(ResVar);
-
+        ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
       finally
         Screen.cursor := crDefault;
-        ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
       end;
     finally
       Free;
@@ -2287,6 +2291,7 @@ end;
 
 procedure TVisWaptGUI.ActProprietaryExecute(Sender: TObject);
 begin
+  {$ifdef ENTERPRISE}
   ActProprietary.Checked:=not ActProprietary.Checked;
   Label20.Visible:=ActProprietary.Checked;;
   cbADOU.Visible:=ActProprietary.Checked;
@@ -2307,6 +2312,7 @@ begin
     ToolButtonUpdate.Action := ActTriggerHostUpdate;
     ToolButtonUpgrade.Action := ActTriggerBurstUpgrades;
   end;
+  {$endif}
 end;
 
 procedure TVisWaptGUI.ActRemoteAssistExecute(Sender: TObject);
@@ -3428,11 +3434,13 @@ begin
     if cbGroups.ItemIndex>0 then
       urlParams.AsArray.Add(Format('groups=%s',[cbGroups.Text]));
 
+    {$ifdef ENTERPRISE }
     if cbADOU.ItemIndex>0 then
       urlParams.AsArray.Add(Format('organizational_unit=%s',[cbADOU.Text]));
 
     if cbADSite.ItemIndex>0 then
       urlParams.AsArray.Add(Format('ad_site=%s',[cbADSite.Text]));
+    {$endif}
 
     urlParams.AsArray.Add('columns='+join(',',columns));
     urlParams.AsArray.Add(Format('limit=%d',[HostsLimit]));
@@ -3561,12 +3569,16 @@ end;
 
 procedure TVisWaptGUI.cbADOUSelect(Sender: TObject);
 begin
+  {$ifdef ENTERPRISE}
   ActSearchHost.Execute;
+  {$endif}
 end;
 
 procedure TVisWaptGUI.cbADSiteSelect(Sender: TObject);
 begin
+  {$ifdef ENTERPRISE}
   ActSearchHost.Execute;
+  {$endif}
 end;
 
 procedure TVisWaptGUI.cbAdvancedSearchClick(Sender: TObject);
@@ -3585,8 +3597,11 @@ begin
     cbSearchSoftwares.Checked:=False;
 
     cbGroups.ItemIndex:=-1;
+
+    {$ifdef ENTERPRISE}
     cbADSite.ItemIndex:=-1;
     cbADOU.ItemIndex:=-1;
+    {$endif}
 
     panFilterStatus.ChildSizing.ControlsPerLine:=6;
   end
@@ -3701,11 +3716,13 @@ end;
 
 procedure TVisWaptGUI.cbADOUDropDown(Sender: TObject);
 begin
+  {$ifdef ENTERPRISE}
   try
     FillcbADOUDropDown;
   except
     ShowMessage('Please upgrade your server');
   end;
+  {$endif}
 end;
 
 procedure TVisWaptGUI.cbSearchAllClick(Sender: TObject);
@@ -3749,6 +3766,16 @@ begin
   ScaleImageList(ActionsImages24,96);
   HostsLimit := 2000;
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
+
+  {$ifdef ENTERPRISE }
+  ActProprietary.Enabled := True;
+  ActProprietary.Checked := True;
+  ActLaunchGPUpdate.Visible := True;
+  ActDisplayUserMessage.Visible:=True;
+  ActLaunchWaptExit.Visible:=True;
+  ActProprietary.Enabled:=False;
+  {$endif}
+
 end;
 
 procedure TVisWaptGUI.FormDragOver(Sender, Source: TObject; X, Y: Integer;
@@ -3865,6 +3892,7 @@ var
   sores: ISuperObject;
   CB:TComponent;
   ini:TIniFile;
+
 begin
   CurrentVisLoading := TVisLoading.Create(Nil);
   with CurrentVisLoading do
@@ -3905,9 +3933,12 @@ begin
 
         Self.WindowState := TWindowState(ini.ReadInteger(self.name,'WindowState',Integer(Self.WindowState)));
 
+        self.cbGroups.Text := ini.ReadString(self.name,'cbGroups.Text',self.cbGroups.Text);
+
+        {$ifdef ENTERPRISE}
         self.cbADSite.Text := ini.ReadString(self.name,'cbADSite.Text',self.cbADSite.Text);
         self.cbADOU.Text := ini.ReadString(self.name,'cbADOU.Text',self.cbADOU.Text);
-        self.cbGroups.Text := ini.ReadString(self.name,'cbGroups.Text',self.cbGroups.Text);
+        {$endif}
 
       finally
         ini.Free;
@@ -3925,10 +3956,7 @@ begin
       (WSUSActions.Actions[i] as TAction).Visible:=waptcommon.waptwua_enabled;
     end;
 
-    if ActProprietary.Checked then
-      plStatusBar1.Panels[0].Text := ApplicationName+' '+GetApplicationVersion+' WAPT Community Edition, (c) 2012-2017 Tranquil IT Systems. (Configuration:'+AppIniFilename+')'
-    else
-      plStatusBar1.Panels[0].Text := ApplicationName+' '+GetApplicationVersion+' WAPT Enterprise Edition, (c) 2012-2017 Tranquil IT Systems. (Configuration:'+AppIniFilename+')';
+    plStatusBar1.Panels[0].Text := ApplicationName+' '+GetApplicationVersion+' WAPT '+wapt_edition+' Edition, (c) 2012-2017 Tranquil IT Systems. (Configuration:'+AppIniFilename+')';
 
     //ProgressTitle(rsLoadPackages);
     ProgressStep(2,3);
@@ -4450,9 +4478,11 @@ end;
 procedure TVisWaptGUI.GridWinproductsChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
-  {GridWSUSAllowedWindowsUpdates.Data := Nil;
+  {$ifdef wsus}
+  GridWSUSAllowedWindowsUpdates.Data := Nil;
   TimerWUALoadWinUpdates.Enabled:=False;
-  TimerWUALoadWinUpdates.Enabled:=True;}
+  TimerWUALoadWinUpdates.Enabled:=True;
+  {$endif}
 end;
 
 procedure TVisWaptGUI.GridWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;
@@ -4552,6 +4582,7 @@ var
   OU,OUDN:ISuperObject;
   oldSelect:String;
 begin
+  {$ifdef ENTERPRISE}
   try
     Screen.Cursor:=crHourGlass;
 
@@ -4570,6 +4601,7 @@ begin
   finally
     Screen.Cursor:=crdefault;
   end;
+  {$endif}
 end;
 
 
@@ -4578,6 +4610,7 @@ var
   Site,Sites:ISuperObject;
   oldSelect:String;
 begin
+  {$ifdef ENTERPRISE}
   try
     Screen.Cursor:=crHourGlass;
 
@@ -4596,6 +4629,7 @@ begin
   finally
     Screen.Cursor:=crdefault;
   end;
+  {$endif}
 end;
 
 
@@ -4648,7 +4682,6 @@ begin
       GridWUAGroups.data := wsus_rules;
   end}
   {$endif wsus}
-
 end;
 
 function TVisWaptGUI.updateprogress(receiver: TObject;

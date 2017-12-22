@@ -4758,6 +4758,7 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 8
       OnExecute = ActEditHostPackageExecute
       OnUpdate = ActEditHostPackageUpdate
+      ShortCut = 16463
     end
     object ActPackagesUpdate: TAction
       Category = 'Host'
@@ -4770,8 +4771,9 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Check updates'
       Hint = 'Trigger update of available packages on hosts.'
       ImageIndex = 0
-      OnExecute = ActTriggerHostUpdateExecute
+      OnExecute = ActTriggerBurstUpdatesExecute
       OnUpdate = ActHostsActionsUpdate
+      ShortCut = 16469
     end
     object ActTriggerHostUpgrade: TAction
       Category = 'hosts'
@@ -4780,6 +4782,7 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 2
       OnExecute = ActTriggerHostUpgradeExecute
       OnUpdate = ActHostsActionsUpdate
+      ShortCut = 16464
     end
     object ActAddDepends: TAction
       Category = 'hosts'
@@ -4787,6 +4790,7 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 6
       OnExecute = ActAddDependsExecute
       OnUpdate = ActAddDependsUpdate
+      ShortCut = 24655
     end
     object ActRemoveDepends: TAction
       Category = 'hosts'
@@ -4876,6 +4880,7 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 8
       OnExecute = ActEditGroupExecute
       OnUpdate = ActEditGroupUpdate
+      ShortCut = 16463
     end
     object ActDeleteGroup: TAction
       Category = 'Bundles'
@@ -5118,6 +5123,7 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Send a message to users'
       OnExecute = ActDisplayUserMessageExecute
       OnUpdate = ActHostsActionsUpdate
+      ShortCut = 24653
       Visible = False
     end
     object ActLaunchGPUpdate: TAction

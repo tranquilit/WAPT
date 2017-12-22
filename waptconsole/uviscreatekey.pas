@@ -291,7 +291,7 @@ procedure TVisCreateKey.DirectoryCertExit(Sender: TObject);
 begin
   EdKeyFilename.InitialDir:=DirectoryCert.Directory;
   EdCACertificate.InitialDir:=DirectoryCert.Directory;
-   EdCAKeyFilename.InitialDir:=DirectoryCert.Directory;
+  EdCAKeyFilename.InitialDir:=DirectoryCert.Directory;
 end;
 
 procedure TVisCreateKey.EdCACertificateExit(Sender: TObject);
@@ -310,10 +310,12 @@ end;
 
 procedure TVisCreateKey.ActAdvancedExecute(Sender: TObject);
 begin
+  {$ifdef ENTERPRISE}
   ActAdvanced.Checked:=not ActAdvanced.Checked;
   PanCA.Visible := ActAdvanced.Checked;
   PanCertAttributes.Visible := ActAdvanced.Checked;;
   PanCertAttributesFiller.Visible := ActAdvanced.Checked;;
+  {$endif}
 end;
 
 procedure TVisCreateKey.edCommonNameExit(Sender: TObject);
@@ -350,15 +352,17 @@ begin
     DirectoryCert.Text:='c:\private';
   SetDefaultCN;
 
-  if PanCA.Visible then
-    with TINIFile.Create(AppIniFilename) do
-    try
-      EdCAKeyFilename.Text := ReadString('global', 'default_ca_key_path', '');
-      EdCACertificate.Text := ReadString('global', 'default_ca_cert_path', '');
-    finally
-      Free;
-    end;
-
+  {$ifdef ENTERPRISE}
+  ActAdvanced.Checked := True;
+  PanCA.Visible := True;
+  with TINIFile.Create(AppIniFilename) do
+  try
+    EdCAKeyFilename.Text := ReadString('global', 'default_ca_key_path', '');
+    EdCACertificate.Text := ReadString('global', 'default_ca_cert_path', '');
+  finally
+    Free;
+  end;
+  {$endif}
 end;
 
 end.

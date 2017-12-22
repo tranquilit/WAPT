@@ -361,143 +361,140 @@ msgstr ""
 msgid "Downloaded"
 msgstr "{0} téléchargé"
 
-#~ msgid ""
-#~ msgstr ""
+msgid "Reconfiguring network access"
+msgstr "Reconfiguration de l'accès au réseau"
 
-#~ msgid "Reconfiguring network access"
-#~ msgstr "Reconfiguration de l'accès au réseau"
+msgid "Upgrading WAPT client"
+msgstr "Mise à jour du client WAPT"
 
-#~ msgid "Upgrading WAPT client"
-#~ msgstr "Mise à jour du client WAPT"
+msgid "WaptService restarted using batch file %s"
+msgstr "WaptService relancé avec le fichier batch %s"
 
-#~ msgid "WaptService restarted using batch file %s"
-#~ msgstr "WaptService relancé avec le fichier batch %s"
+msgid "Restarting local WAPT service"
+msgstr "Redémarrage du service WAPT local"
 
-#~ msgid "Restarting local WAPT service"
-#~ msgstr "Redémarrage du service WAPT local"
+msgid "{} new package(s)"
+msgstr "{} nouveau(x) paquet(s)"
 
-#~ msgid "{} new package(s)"
-#~ msgstr "{} nouveau(x) paquet(s)"
+msgid "{} removed package(s)"
+msgstr "{} paquet(s) retiré(s)"
 
-#~ msgid "{} removed package(s)"
-#~ msgstr "{} paquet(s) retiré(s)"
+msgid "{} package(s) in the repository"
+msgstr "{} paquet(s) dans le dépôt"
 
-#~ msgid "{} package(s) in the repository"
-#~ msgstr "{} paquet(s) dans le dépôt"
+msgid "Packages to be updated : {}"
+msgstr "Paquets à mettre à jour : {}"
 
-#~ msgid "Packages to be updated : {}"
-#~ msgstr "Paquets à mettre à jour : {}"
+msgid "Packages with errors : {}"
+msgstr "Paquets avec des erreurs : {}"
 
-#~ msgid "Packages with errors : {}"
-#~ msgstr "Paquets avec des erreurs : {}"
+msgid "System up-to-date"
+msgstr "Le système est à jour"
 
-#~ msgid "System up-to-date"
-#~ msgstr "Le système est à jour"
+msgid "Updating available packages"
+msgstr "Mise à jour de la liste des paquets disponibles"
 
-#~ msgid "Updating available packages"
-#~ msgstr "Mise à jour de la liste des paquets disponibles"
+msgid "Installed : {}"
+msgstr "Installé : {}"
 
-#~ msgid "Installed : {}"
-#~ msgstr "Installé : {}"
+msgid "Updated : {}"
+msgstr "Mis à jour : {}"
 
-#~ msgid "Updated : {}"
-#~ msgstr "Mis à jour : {}"
+msgid "Errors : {}"
+msgstr "Erreurs: {}"
 
-#~ msgid "Errors : {}"
-#~ msgstr "Erreurs: {}"
+msgid "Unavailable : {}"
+msgstr "Indisponible(s) : {}"
 
-#~ msgid "Unavailable : {}"
-#~ msgstr "Indisponible(s) : {}"
+msgid "Update packages installed on host"
+msgstr "Mettre à jour les paquets installés sur la machine"
 
-#~ msgid "Update packages installed on host"
-#~ msgstr "Mettre à jour les paquets installés sur la machine"
+msgid "WAPT Server has been notified"
+msgstr "Le serveur WAPT a été notifié"
 
-#~ msgid "WAPT Server has been notified"
-#~ msgstr "Le serveur WAPT a été notifié"
+msgid "Error while sending to the server : {}"
+msgstr "Erreur lors de l'envoi au serveur : {}"
 
-#~ msgid "Error while sending to the server : {}"
-#~ msgstr "Erreur lors de l'envoi au serveur : {}"
+msgid "WAPT Server is not available"
+msgstr "Le serveur WAPT n'est pas disponible"
 
-#~ msgid "WAPT Server is not available"
-#~ msgstr "Le serveur WAPT n'est pas disponible"
+msgid "Update server with this host's status"
+msgstr "Informer le serveur du statut de cette machine"
 
-#~ msgid "Update server with this host's status"
-#~ msgstr "Informer le serveur du statut de cette machine"
+msgid "Inventory has been sent to the WAPT server"
+msgstr "L'inventaire a été envoyé au serveur WAPT"
 
-#~ msgid "Inventory has been sent to the WAPT server"
-#~ msgstr "L'inventaire a été envoyé au serveur WAPT"
+msgid "Error while sending inventory to the server : {}"
+msgstr "Erreur lors de l'envoi de l'inventaire au serveur : {}"
 
-#~ msgid "Error while sending inventory to the server : {}"
-#~ msgstr "Erreur lors de l'envoi de l'inventaire au serveur : {}"
+msgid "WAPT Server is not avalable"
+msgstr "Le serveur WAPT n'est pas disponible"
 
-#~ msgid "WAPT Server is not avalable"
-#~ msgstr "Le serveur WAPT n'est pas disponible"
+msgid "Update server with this host's inventory"
+msgstr "Informer le serveur de l'inventaire de cette machine"
 
-#~ msgid "Update server with this host's inventory"
-#~ msgstr "Informer le serveur de l'inventaire de cette machine"
+msgid "Packages erased : {}"
+msgstr "Paquets effacés : {}"
 
-#~ msgid "Packages erased : {}"
-#~ msgstr "Paquets effacés : {}"
+msgid "Error while clearing local cache : {}"
+msgstr "Erreur lors du vidage du cache local : {}"
 
-#~ msgid "Error while clearing local cache : {}"
-#~ msgstr "Erreur lors du vidage du cache local : {}"
+msgid "Clear local package cache"
+msgstr "Vider le cache de paquets"
 
-#~ msgid "Clear local package cache"
-#~ msgstr "Vider le cache de paquets"
+msgid "raising an error for Test WaptLongTask"
+msgstr "remontée d'une erreur pour le test WaptLongTask"
 
-#~ msgid "raising an error for Test WaptLongTask"
-#~ msgstr "remontée d'une erreur pour le test WaptLongTask"
+msgid "Test long running task of {}s"
+msgstr ""
 
-#~ msgid "Test long running task of {}s"
-#~ msgstr ""
+msgid "Downloading %s : %s"
+msgstr "Téléchargement de %s : %s"
 
-#~ msgid "Downloading %s : %s"
-#~ msgstr "Téléchargement de %s : %s"
+msgid "Error while downloading {packagename}: {error}"
+msgstr "Erreur lors du téléchargement de {packagename}: {error}"
 
-#~ msgid "Error while downloading {packagename}: {error}"
-#~ msgstr "Erreur lors du téléchargement de {packagename}: {error}"
+msgid "Done downloading {packagename}. {speed} kB/s"
+msgstr "Téléchargement de {packagename} terminé. ({speed} kB/s)"
 
-#~ msgid "Done downloading {packagename}. {speed} kB/s"
-#~ msgstr "Téléchargement de {packagename} terminé. ({speed} kB/s)"
+msgid "Done downloading {packagename}."
+msgstr "Téléchargement de {packagename} terminé."
 
-#~ msgid "Done downloading {packagename}."
-#~ msgstr "Téléchargement de {packagename} terminé."
+msgid "Download of {packagename} (tâche #{id})"
+msgstr "Téléchargement de {packagename} (tâche #{id})"
 
-#~ msgid "Download of {packagename} (tâche #{id})"
-#~ msgstr "Téléchargement de {packagename} (tâche #{id})"
+msgid "Error during install of {}:{}"
+msgstr "Erreur lors de l'installation de {} : {}"
 
-#~ msgid "Error during install of {}:{}"
-#~ msgstr "Erreur lors de l'installation de {} : {}"
+msgid "Installation of {packagename} (task #{id})"
+msgstr "Installation de {packagename} (task #{id})"
 
-#~ msgid "Installation of {packagename} (task #{id})"
-#~ msgstr "Installation de {packagename} (task #{id})"
+msgid "Removed : {}"
+msgstr "Retiré(s) : {}"
 
-#~ msgid "Removed : {}"
-#~ msgstr "Retiré(s) : {}"
+msgid "Uninstall of {packagename} (task #{id})"
+msgstr "Désinstallation de {packagename} (task #{id})"
 
-#~ msgid "Uninstall of {packagename} (task #{id})"
-#~ msgstr "Désinstallation de {packagename} (task #{id})"
+msgid "Packages removed from database : %s"
+msgstr "Paquets retirés de la base : %s"
 
-#~ msgid "Packages removed from database : %s"
-#~ msgstr "Paquets retirés de la base : %s"
+msgid "No package removed from database."
+msgstr "Aucun paquet retiré de la base."
 
-#~ msgid "No package removed from database."
-#~ msgstr "Aucun paquet retiré de la base."
+msgid "Forget {packagenames} (task #{id})"
+msgstr "Oubli de {packagenames} (task #{id})"
 
-#~ msgid "Forget {packagenames} (task #{id})"
-#~ msgstr "Oubli de {packagenames} (task #{id})"
+msgid "Running: {description}"
+msgstr "En cours : {description}"
 
-#~ msgid "Running: {description}"
-#~ msgstr "En cours : {description}"
+msgid "Canceled"
+msgstr "Annulé"
 
-#~ msgid "Canceled"
-#~ msgstr "Annulé"
+msgid "WAPT Service"
+msgstr "Service WAPT"
 
-#~ msgid "WAPT Service"
-#~ msgstr "Service WAPT"
+msgid "design by TIS"
+msgstr ""
 
-#~ msgid "design by TIS"
-#~ msgstr ""
-
-#~ msgid "Latest version only?"
-#~ msgstr "N'afficher que la dernière version ?"
+msgid "Latest version only?"
+msgstr "N'afficher que la dernière version ?"

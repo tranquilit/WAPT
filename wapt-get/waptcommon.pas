@@ -213,6 +213,13 @@ const
 
   FAppIniFilename:Utf8String = '';
 
+  {$ifdef ENTERPRISE}
+  wapt_edition = 'Enterpise';
+  {$else}
+  wapt_edition = 'Community';
+  {$endif}
+
+
 implementation
 
 uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
