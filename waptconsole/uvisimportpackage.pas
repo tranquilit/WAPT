@@ -357,7 +357,7 @@ begin
           if not FileExists(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
           begin
             IdWget(Waptrepo.RepoURL + '/' + Filename.AsArray[0].AsString,
-              target, ProgressForm, @updateprogress, (http_proxy<>''));
+              target, ProgressForm, @updateprogress, http_proxy);
             if (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
               raise Exception.CreateFmt(rsDownloadCurrupted,[Filename.AsArray[0].AsString]);
           end;
@@ -475,7 +475,7 @@ begin
           if not FileExists(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
           begin
             IdWget(Waptrepo.RepoURL + '/' + Filename.AsArray[0].AsString,
-              target, ProgressForm, @updateprogress, HttpProxy<>'');
+              target, ProgressForm, @updateprogress, HttpProxy);
             if (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
               raise Exception.CreateFmt(rsDownloadCurrupted,[Filename.AsArray[0].AsString]);
           end;

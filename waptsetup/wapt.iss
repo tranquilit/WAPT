@@ -58,6 +58,7 @@ Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.e
 
 ; command line tools
 Source: "..\wapt-get.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\waptguihelper.pyd"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\wapt-get.exe.manifest"; DestDir: "{app}";
 Source: "..\dmidecode.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\waptexit.exe"; DestDir: "{app}"; Flags: ignoreversion

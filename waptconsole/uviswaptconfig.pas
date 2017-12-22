@@ -263,7 +263,7 @@ end;
 function TVisWAPTConfig.CheckServer(Address:String):Boolean;
 var
   serverRes:ISuperObject;
-  strRes,packages:String;
+  strRes,packages,proxy:String;
 begin
   ImageList1.GetBitmap(2, ImgStatusRepo.Picture.Bitmap);
   ImageList1.GetBitmap(2, ImgStatusServer.Picture.Bitmap);
@@ -286,7 +286,12 @@ begin
           edwapt_server.Text := GetWaptServerURL;
         end;
 
-        serverRes := SO(IdhttpGetString(edwapt_server.Text+'/ping',cbUseProxyForServer.Checked,200,60000,60000,'','','GET','',EdServerCertificate.Text));
+        if cbUseProxyForServer.Checked then
+          proxy := edhttp_proxy.Text
+        else
+          proxy :='';
+
+        serverRes := SO(IdhttpGetString(edwapt_server.Text+'/ping',proxy,200,60000,60000,'','','GET','',EdServerCertificate.Text));
         if serverRes = Nil then
           raise Exception.CreateFmt(rsWaptServerError,['Bad answer']);
         if not serverRes.B['success'] then
@@ -302,8 +307,13 @@ begin
         end;
       end;
 
+      if cbUseProxyForRepo.Checked then
+        proxy := edhttp_proxy.Text
+      else
+        proxy :='';
+
       try
-        packages := IdHttpGetString(edrepo_url.Text+'/Packages',cbUseProxyForRepo.Checked,200,60000,60000,'','','GET','',EdServerCertificate.Text);
+        packages := IdHttpGetString(edrepo_url.Text+'/Packages',Proxy,200,60000,60000,'','','GET','',EdServerCertificate.Text);
         if length(packages)<=0 then
           Raise Exception.Create('Packages file empty or not found');
         labStatusRepo.Caption:=Format('Repository access OK', []);

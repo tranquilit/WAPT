@@ -97,3 +97,4 @@ openssl.exe
 /waptserver/pgsql_data
 /waptserver/repository/wapt
 /ssl/*.crt
+/waptguihelper.pyd

@@ -776,7 +776,7 @@ procedure TVisEditPackage.SetPackageRequest(AValue: string);
 var
   res: ISuperObject;
   n: PVirtualNode;
-  filename, filePath, target_directory: string;
+  filename, filePath, target_directory,proxy: string;
   grid: TSOGrid;
   host_repo,host_package: Variant;
 begin
@@ -786,6 +786,11 @@ begin
     raise Exception.Create('Can not edit an Empty package name');
   Screen.Cursor := crHourGlass;
   try
+    if UseProxyForRepo then
+      Proxy := HttpProxy
+    else
+      Proxy := '';
+
     FPackageRequest := AValue;
     if not IsNewPackage then
     begin
@@ -834,7 +839,7 @@ begin
                   mkdir(AppLocalDir + 'cache');
 
                 IdWget(GetWaptRepoURL + '/' + filename, filePath,
-                  ProgressForm, @updateprogress, UseProxyForRepo);
+                  ProgressForm, @updateprogress, Proxy);
               except
                 ShowMessage(rsDlCanceled);
                 if FileExists(filePath) then

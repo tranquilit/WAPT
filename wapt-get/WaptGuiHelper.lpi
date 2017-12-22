@@ -10,9 +10,10 @@
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <Title Value="WaptGuiHelper"/>
+      <Title Value="waptguihelper"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
+      <Icon Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -55,9 +56,9 @@
     </RequiredPackages>
     <Units Count="3">
       <Unit0>
-        <Filename Value="WaptGuiHelper.lpr"/>
+        <Filename Value="waptguihelper.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="WaptGuiHelper"/>
+        <UnitName Value="waptguihelper"/>
       </Unit0>
       <Unit1>
         <Filename Value="uwaptbuildparams.pas"/>
@@ -93,7 +94,6 @@
         <OverflowChecks Value="True"/>
         <StackChecks Value="True"/>
       </Checks>
-      <VerifyObjMethodCallValidity Value="True"/>
       <SmallerCode Value="True"/>
     </CodeGeneration>
     <Linking>
