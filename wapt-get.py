@@ -277,10 +277,11 @@ def ask_user_password(title=''):
 
 # import after parsing line command, as import when debugging seems to break command line
 # because if rpyc
-try:
-    import waptguihelper
-except ImportError:
-    waptguihelper = None
+if sys.stdin is not sys.__stdin__:
+    try:
+        import waptguihelper
+    except ImportError:
+        waptguihelper = None
 
 def main():
     jsonresult = {'output':[]}
@@ -356,7 +357,7 @@ def main():
                 return open(options.private_key_passwd,'r').read().splitlines()[0].strip()
             else:
                 if private_key_password_cache is None:
-                    if waptguihelper:
+                    if sys.stdin is not sys.__stdin__ and waptguihelper:
                         res = waptguihelper.key_password_dialog('Password for orivate key',mywapt.personal_certificate_path,private_key_password_cache or '')
                         if res:
                             private_key_password_cache = res['keypassword']
@@ -747,13 +748,28 @@ def main():
                 if len(args) < 2:
                     print(u"You must provide the package directory")
                     sys.exit(1)
-                print mywapt.call_setup_hook(args[1],'update_package')
+                result= []
+                for package_dir in args[1:]:
+                    is_updated = mywapt.call_setup_hook(package_dir,'update_package')
+                    if is_updated:
+                        result.append(package_dir)
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print(u"Packages updated :\n%s" % ' '.join(result))
+
 
             elif action == 'make-template':
                 if len(args) < 2:
-                    print(u"You must provide the installer path")
+                    print(u"You must provide the installer path or the package name")
                     sys.exit(1)
-                result = mywapt.make_package_template(*args[1:])
+
+                if os.path.isfile(args[1]) or os.path.isdir(args[1]):
+                    result = mywapt.make_package_template(*args[1:])
+                else:
+                    # no installer provided, only package name.
+                    result = mywapt.make_package_template('',*args[1:])
+
                 if options.json_output:
                     jsonresult['result'] = result
                 else:

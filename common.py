@@ -5188,7 +5188,7 @@ class Wapt(BaseObjectClass):
             logger.debug(u'  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
 
-    def make_package_template(self,installer_path,packagename='',directoryname='',section='',description=None,depends='',version=None,silentflags=None,uninstallkey=None):
+    def make_package_template(self,installer_path='',packagename='',directoryname='',section='',description=None,depends='',version=None,silentflags=None,uninstallkey=None):
         r"""Build a skeleton of WAPT package based on the properties of the supplied installer
            Return the path of the skeleton
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
@@ -5211,13 +5211,16 @@ class Wapt(BaseObjectClass):
         if directoryname:
              directoryname = os.path.abspath(directoryname)
 
-        installer = os.path.basename(installer_path)
+        if not installer_path and not packagename:
+            raise EWaptException('You must provide at least installer_path or packagename to be able to prepare a package template')
+
+        if installer_path:
+            installer = os.path.basename(installer_path)
+        else:
+            installer = ''
+
         uninstallkey = uninstallkey or  ''
 
-        ## TODO : use get_installer_defaults
-
-        if not os.path.exists(installer_path):
-            raise Exception('The parameter "%s" is neither a file or a directory, it must be the path to a directory, or an .exe or .msi installer' % installer_path)
         if os.path.isfile(installer_path):
             # case of an installer
             props = setuphelpers.getproductprops(installer_path)
@@ -5225,7 +5228,7 @@ class Wapt(BaseObjectClass):
             # for MSI, uninstallkey is in properties
             if not uninstallkey and 'ProductCode' in props:
                 uninstallkey = '"%s"' % props['ProductCode']
-        else:
+        elif os.path.isdir(installer_path):
             # case of a directory
             props = {
                 'product':installer,
@@ -5234,12 +5237,21 @@ class Wapt(BaseObjectClass):
                 'publisher':ensure_unicode(setuphelpers.get_current_user())
                 }
             silentflags = silentflags or ''
+        else:
+            # case of a nothing
+            props = {
+                'product':packagename,
+                'description':packagename,
+                'version': '0',
+                'publisher':ensure_unicode(setuphelpers.get_current_user())
+                }
+            silentflags = ''
 
         if not packagename:
             simplename = re.sub(r'[\s\(\)]+','',props['product'].lower())
             packagename = '%s-%s' %  (self.config.get('global','default_package_prefix'),simplename)
 
-        description = description or 'Automatic package for %s ' % props['description']
+        description = description or 'Package for %s ' % props['description']
         version = version or props['version']
 
         if not directoryname:
@@ -5248,15 +5260,18 @@ class Wapt(BaseObjectClass):
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
             os.makedirs(os.path.join(directoryname,'WAPT'))
 
-        (installer_name,installer_ext) = os.path.splitext(installer)
-        if installer_ext == '.msi':
-            setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_msi.py')
-        elif installer_ext == '.msu':
-            setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_msu.py')
-        elif installer_ext == '.exe':
-            setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_exe.py')
+        if installer_path:
+            (installer_name,installer_ext) = os.path.splitext(installer)
+            if installer_ext == '.msi':
+                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_msi.py')
+            elif installer_ext == '.msu':
+                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_msu.py')
+            elif installer_ext == '.exe':
+                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_exe.py')
+            else:
+                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template.py')
         else:
-            setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template.py')
+            setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_skel.py')
 
         template = codecs.open(setup_template,encoding='utf8').read()%dict(
             packagename=packagename,
@@ -5275,7 +5290,7 @@ class Wapt(BaseObjectClass):
         logger.debug(u'Copy installer %s to target' % installer)
         if os.path.isfile(installer_path):
             shutil.copyfile(installer_path,os.path.join(directoryname,installer))
-        else:
+        elif os.path.isdir(installer_path):
             setuphelpers.copytree2(installer_path,os.path.join(directoryname,installer))
 
         control_filename = os.path.join(directoryname,'WAPT','control')
