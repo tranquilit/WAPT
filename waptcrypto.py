@@ -241,7 +241,7 @@ class SSLCABundle(BaseObjectClass):
                     self._certificates.append(cert)
                     result.append(cert)
             except Exception as e:
-                logger.warning('Error adding certificate %s: %s' % (cert.subject,e))
+                logger.warning(u'Error adding certificate %s: %s' % (cert.subject,e))
         return result
 
     def add_pem(self,pem_data=None,load_keys=False,pem_filename=None):
@@ -255,7 +255,7 @@ class SSLCABundle(BaseObjectClass):
             if os.path.isfile(pem_filename):
                 pem_data = open(pem_filename,'rb').read()
             else:
-                raise EWaptCryptoException('PEM file %s does not exist'%pem_filename)
+                raise EWaptCryptoException(u'PEM file %s does not exist'%pem_filename)
 
         lines = pem_data.splitlines()
         inkey = False
@@ -320,7 +320,7 @@ class SSLCABundle(BaseObjectClass):
 
     def certificate(self,fingerprint):
         if not isinstance(fingerprint,(str,unicode)):
-            raise EWaptCryptoException('A certificate fingerprint as bytes str is expected, %s supplied' % fingerprint)
+            raise EWaptCryptoException(u'A certificate fingerprint as bytes str is expected, %s supplied' % fingerprint)
         return self._certs_fingerprint_idx.get(fingerprint,None)
 
     def certificate_for_cn(self,cn):
@@ -374,7 +374,7 @@ class SSLCABundle(BaseObjectClass):
         while issuer_cert:
             # TODO : verify  certificate.signature with issuercert public key
             if issuer_cert and not issuer_cert.is_ca:
-                logger.debug('Certificate %s issued by non CA certificate %s' % (certificate,issuer_cert))
+                logger.debug(u'Certificate %s issued by non CA certificate %s' % (certificate,issuer_cert))
                 break
             result.append(issuer_cert)
 
@@ -439,7 +439,7 @@ class SSLCABundle(BaseObjectClass):
             verify =  store_ctx.verify_certificate()
             return True
         except crypto.X509StoreContextError as e:
-            logger.critical('Error for certificate %s. Faulty certificate is %s: %s' % (certificate,e.certificate.get_subject(),e))
+            logger.critical(u'Error for certificate %s. Faulty certificate is %s: %s' % (certificate,e.certificate.get_subject(),e))
             raise
 
     def check_certificates_chain(self,cert_chain,verify_expiry=True,verify_revoke=True,allow_pinned=True):
@@ -461,7 +461,7 @@ class SSLCABundle(BaseObjectClass):
         """
         def check_cert(cert):
             if verify_expiry and not cert.is_valid():
-                raise EWaptCertificateExpired('Certificate %s is expired' % cert)
+                raise EWaptCertificateExpired(u'Certificate %s is expired' % cert)
             if verify_revoke and cert.crl_urls():
                 self.check_if_revoked(cert)
             return cert
@@ -505,11 +505,11 @@ class SSLCABundle(BaseObjectClass):
                     # try to use intermediate from supplied list
                     issuer = idx.get(cert.authority_key_identifier,None)
                     if not issuer:
-                        raise EWaptCertificateUnknownIssuer('Unknown issuer %s for certificate %s'%(result[-1].issuer_cn,result[-1].cn))
+                        raise EWaptCertificateUnknownIssuer(u'Unknown issuer %s for certificate %s'%(result[-1].issuer_cn,result[-1].cn))
 
                     if issuer == cert:
                         # self signed untrusted
-                        raise EWaptCertificateUnknownIssuer('Self signed certificate %s is not trusted'%(result[-1].cn))
+                        raise EWaptCertificateUnknownIssuer(u'Self signed certificate %s is not trusted'%(result[-1].cn))
 
                     if cert.verify_signature_with(issuer):
                         check_cert(issuer)
@@ -523,7 +523,7 @@ class SSLCABundle(BaseObjectClass):
         # store negative caching
         if cached_chain is None:
             add_chain_cache(cache_key,[])
-        raise EWaptCertificateUntrustedIssuer('Issuer %s for certificate %s is not trusted'%(result[-1].issuer_cn,result[-1].cn))
+        raise EWaptCertificateUntrustedIssuer(u'Issuer %s for certificate %s is not trusted'%(result[-1].issuer_cn,result[-1].cn))
 
     def add_crl(self,crl):
         """Replace or Add pem encoded CRL"""
@@ -570,7 +570,7 @@ class SSLCABundle(BaseObjectClass):
                 issuer_urls = cert.issuer_cert_urls()
                 for url in issuer_urls:
                     try:
-                        logger.debug('Download certificate %s' % (url,))
+                        logger.debug(u'Download certificate %s' % (url,))
                         cert_data = wgets(url,timeout=(0.3,2.0))
                         issuer_cert = SSLCertificate(crt_string = cert_data)
                         self.add_certificates(issuer_cert)
@@ -579,7 +579,7 @@ class SSLCABundle(BaseObjectClass):
                             result.extend(self.download_issuer_certs(force=False,for_certificates=issuer_cert))
                         break
                     except Exception as e:
-                        logger.warning('Unable to download certificate from %s: %s' % (url,repr(e)))
+                        logger.warning(u'Unable to download certificate from %s: %s' % (url,repr(e)))
                         pass
         return result
 
@@ -612,7 +612,7 @@ class SSLCABundle(BaseObjectClass):
                 if force or not ssl_crl or ssl_crl.next_update < datetime.datetime.utcnow():
                     try:
                         self._check_url_in_negative_cache(url)
-                        logger.debug('Download CRL %s' % (url,))
+                        logger.debug(u'Download CRL %s' % (url,))
                         if cache_dir:
                             crl_filename =  os.path.join(cache_dir,urlparse.urlparse(url).path.split('/')[-1])
                         else:
@@ -643,10 +643,10 @@ class SSLCABundle(BaseObjectClass):
                         result.append(ssl_crl)
                     except Exception as e:
                         self._crls_negative_cache[url] = datetime.datetime.utcnow()
-                        logger.warning('Unable to download CRL from %s: %s' % (url,repr(e)))
+                        logger.warning(u'Unable to download CRL from %s: %s' % (url,repr(e)))
                         pass
                 elif ssl_crl:
-                    logger.debug('CRL %s does not yet need to be refreshed from location %s' % (ssl_crl,url))
+                    logger.debug(u'CRL %s does not yet need to be refreshed from location %s' % (ssl_crl,url))
         return result
 
     def _check_url_in_negative_cache(self,url):
@@ -665,10 +665,10 @@ class SSLCABundle(BaseObjectClass):
             crl = self.crl_for_issuer_subject_hash(cert.issuer_subject_hash)
         if crl:
             if crl.next_update < datetime.datetime.utcnow():
-                raise Exception('CRL is too old, revoke test failed for %s'% cert)
+                raise Exception(u'CRL is too old, revoke test failed for %s'% cert)
             revoked_on = crl.is_revoked(cert)
             if revoked_on and revoked_on < datetime.datetime.utcnow():
-                raise EWaptCertificateRevoked('Certificate %s has been revoked on %s' % (cert.cn,revoked_on))
+                raise EWaptCertificateRevoked(u'Certificate %s has been revoked on %s' % (cert.cn,revoked_on))
         else:
             return False
 
@@ -719,6 +719,22 @@ def get_peer_cert_chain_from_server(url):
         pem_data = crypto.dump_certificate(crypto.FILETYPE_PEM,cert)
         result.append(SSLCertificate(crt_string=pem_data))
     return result
+
+def get_pem_server_certificate(url,save_to_file=None):
+    """Retrieve single certificate from ssl server for further checks
+
+    Returns:
+        str: pem encoded data
+    """
+    url = urlparse.urlparse(url)
+    if url.scheme == 'https':
+        # try a connection to get server certificate
+        pem_data = str(ssl.get_server_certificate((url.hostname, url.port or 443)))
+        if save_to_file:
+            open(save_to_file,'wb').write(pem_data)
+        return pem_data
+    else:
+        return None
 
 class SSLPrivateKey(BaseObjectClass):
     def __init__(self,filename=None,pem_data=None,callback=None,password = None):
@@ -851,7 +867,7 @@ class SSLPrivateKey(BaseObjectClass):
             with open(self.private_key_filename,'rb') as pem_file:
                 self.load_key_data(pem_file.read())
         if not self._rsa:
-            raise EWaptEmptyPassword('Unable to load key %s'%self.private_key_filename)
+            raise EWaptEmptyPassword(u'Unable to load key %s'%self.private_key_filename)
         return self._rsa
 
     def sign_content(self,content,md='sha256',block_size=2**20):
@@ -890,7 +906,7 @@ class SSLPrivateKey(BaseObjectClass):
                 signer.update(data)
             """
         else:
-            raise Exception('Bad content type for sign_content, should be either str or file like')
+            raise Exception(u'Bad content type for sign_content, should be either str or file like')
         signature = signer.finalize()
         return signature
 
@@ -928,7 +944,7 @@ class SSLPrivateKey(BaseObjectClass):
                    crt.match_key(self):
                         result.append(crt)
             except (TypeError,ValueError) as e:
-                logger.debug('Certificate %s can not be read. Skipping. Error was:%s' % (fn,repr(e)))
+                logger.debug(u'Certificate %s can not be read. Skipping. Error was:%s' % (fn,repr(e)))
         return result
 
     def decrypt(self,content):
@@ -1257,7 +1273,7 @@ class SSLCertificate(BaseObjectClass):
             if not self._public_cert_filename:
                 raise EWaptMissingCertificate('Public certificate filename not provided')
             if not os.path.isfile(self._public_cert_filename):
-                raise EWaptMissingCertificate('Public certificate %s not found' % self._public_cert_filename)
+                raise EWaptMissingCertificate(u'Public certificate %s not found' % self._public_cert_filename)
             self._load_cert_file(self._public_cert_filename)
         return self._crt
 
@@ -1440,7 +1456,7 @@ class SSLCertificate(BaseObjectClass):
             self.rsa.verify(signature,content,apadding,get_hash_algo(md))
             return self.cn
         except InvalidSignature as e:
-            raise SSLVerifyException('SSL signature verification failed for certificate %s'%self.subject)
+            raise SSLVerifyException(u'SSL signature verification failed for certificate %s'%self.subject)
 
     def match_key(self,key):
         """Check if certificate matches the given private key"""
@@ -1465,14 +1481,14 @@ class SSLCertificate(BaseObjectClass):
         directories = ensure_list(directories)
 
         for adir in directories:
-            for akeyfile in glob.glob(os.path.join(adir,'*.pem')):
+            for akeyfile in glob.glob(os.path.join(adir,u'*.pem')):
                 try:
-                    logger.debug('Testing if key %s match certificate...'% akeyfile)
+                    logger.debug(u'Testing if key %s match certificate...'% akeyfile)
                     key = SSLPrivateKey(os.path.abspath(akeyfile),callback = password_callback,password = private_key_password)
                     if key.match_cert(self):
                         return key
                 except Exception as e:
-                    logger.debug('Error for %s: %s'%(akeyfile,e))
+                    logger.debug(u'Error for %s: %s'%(akeyfile,e))
         return None
 
     @property
@@ -1525,7 +1541,7 @@ class SSLCertificate(BaseObjectClass):
         elif isinstance(crt,dict):
             return cmp(self.subject,crt)
         else:
-            raise ValueError('Can not compare SSLCertificate with %s'%(type(crt)))
+            raise ValueError(u'Can not compare SSLCertificate with %s'%(type(crt)))
 
     def encrypt(self,content):
         """Encrypt a (small) message will can be decrypted with the public key"""
@@ -1611,17 +1627,17 @@ class SSLCertificate(BaseObjectClass):
             if output.startswith('error'):
                 error = output.rsplit(':',1)[1]
                 if check_errors and 'certificate has expired' in error:
-                    raise EWaptCertificateExpired('Certificate %s error: %s'%(self.public_cert_filename,error))
+                    raise EWaptCertificateExpired(u'Certificate %s error: %s'%(self.public_cert_filename,error))
                 elif check_errors and 'unable to get local issuer certificate' in error:
-                    raise EWaptCertificateUnknownIssuer('Certificate %s error: %s'%(self.public_cert_filename,error))
+                    raise EWaptCertificateUnknownIssuer(u'Certificate %s error: %s'%(self.public_cert_filename,error))
                 else:
-                    raise EWaptBadCertificate('Certificate %s error: %s'%(self.public_cert_filename,error))
+                    raise EWaptBadCertificate(u'Certificate %s error: %s'%(self.public_cert_filename,error))
                 errors.append(errors)
             if output=='OK':
                 result = True
         logger.debug(check_output)
         if not result:
-            raise EWaptCertificateUnknownIssuer('Unknown issuer for %s' % (self.public_cert_filename))
+            raise EWaptCertificateUnknownIssuer(u'Unknown issuer for %s' % (self.public_cert_filename))
         return result
 
     def verify_signature_with(self,cabundle=None):
@@ -1649,7 +1665,7 @@ class SSLCertificate(BaseObjectClass):
         issuer = cabundle.issuer_cert_for(certificate)
 
         if not issuer:
-            raise SSLVerifyException('Issuer CA certificate %s can not be found in supplied bundle'%self.issuer_dn)
+            raise SSLVerifyException(u'Issuer CA certificate %s can not be found in supplied bundle'%self.issuer_dn)
 
         while issuer:
             try:
@@ -1662,7 +1678,7 @@ class SSLCertificate(BaseObjectClass):
                 certificate = issuer
                 issuer = cabundle.issuer_cert_for(certificate)
             except Exception as e:
-                logger.critical("Certificate validation error for certificate %s : %s" % (issuer.subject,e))
+                logger.critical(u"Certificate validation error for certificate %s : %s" % (issuer.subject,e))
                 raise
 
         return chain
@@ -1700,7 +1716,7 @@ class SSLCertificate(BaseObjectClass):
 
         for att in required_attributes:
             if not att in attributes:
-                raise SSLVerifyException('Missing required attribute "%s" in signed claim' % att)
+                raise SSLVerifyException(u'Missing required attribute "%s" in signed claim' % att)
 
         reclaim = {att:claim.get(att,None) for att in attributes}
         signature = claim['signature'].decode('base64')
@@ -1709,7 +1725,7 @@ class SSLCertificate(BaseObjectClass):
             signature_date = isodate2datetime(claim['signature_date'])
             delta = abs(datetime.datetime.utcnow() - signature_date)
             if delta > datetime.timedelta(seconds=max_age_secs):
-                raise SSLVerifyException('Data too old or in the futur age : %ss...' % delta.seconds)
+                raise SSLVerifyException(u'Data too old or in the futur age : %ss...' % delta.seconds)
         self.verify_content(reclaim,signature)
         return dict(
             signature_date=claim['signature_date'],
@@ -1753,7 +1769,7 @@ class SSLCRL(BaseObjectClass):
 
     def is_revoked(self,cert):
         if cert.authority_key_identifier is None and cert.issuer_subject_hash is None :
-            raise Exception('Neither Authority key identifier extension nor Issuer Subject to identify CA of certificate %s' % cert)
+            raise Exception(u'Neither Authority key identifier extension nor Issuer Subject to identify CA of certificate %s' % cert)
 
         if (cert.authority_key_identifier is not None and cert.authority_key_identifier == self.authority_key_identifier) or \
             (cert.issuer_subject_hash is not None and cert.issuer_subject_hash == self.issuer_subject_hash):
@@ -1829,7 +1845,7 @@ class SSLCRL(BaseObjectClass):
             assert(isinstance(issuer,SSLCertificate))
 
         if not issuer:
-            raise SSLVerifyException('CRL Issuer CA certificate %s can not be found in supplied bundle'%self.issuer)
+            raise SSLVerifyException(u'CRL Issuer CA certificate %s can not be found in supplied bundle'%self.issuer)
 
         try:
             # check CRL signature
@@ -1840,7 +1856,7 @@ class SSLCRL(BaseObjectClass):
             chain.extend(issuer.verify_signature_with(cabundle))
             return chain
         except Exception as e:
-            logger.critical("CRL validation error on certificate %s : %s" % (issuer.subject,e))
+            logger.critical(u"CRL validation error on certificate %s : %s" % (issuer.subject,e))
             raise
 
 
