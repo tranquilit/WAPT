@@ -22,7 +22,7 @@
 # -----------------------------------------------------------------------
 from __future__ import print_function
 
-__version__ = "1.5.1.12"
+__version__ = "1.5.1.13"
 
 import os
 import sys
@@ -48,6 +48,7 @@ import tempfile
 import fnmatch
 import urlparse
 import hashlib
+import imp
 
 if hasattr(sys.stdout,'name') and sys.stdout.name == '<stdout>':
     # not in pyscripter debugger
@@ -1025,6 +1026,85 @@ def touch(filename):
         open(filename,'w').write()
     else:
         os.utime(filename,None)
+
+
+def import_code(code,name='',add_to_sys_modules=0):
+    """\
+    Import dynamically generated code as a module. code is the
+    object containing the code (a string, a file handle or an
+    actual compiled code object, same types as accepted by an
+    exec statement). The name is the name to give to the module,
+    and the final argument says wheter to add it to sys.modules
+    or not. If it is added, a subsequent import statement using
+    name will return this module. If it is not added to sys.modules
+    import will try to load it in the normal fashion.
+
+    import foo
+
+    is equivalent to
+
+    foofile = open("/path/to/foo.py")
+    foo = import_code(foofile,"foo",1)
+
+    Returns a newly generated module.
+    From : http://code.activestate.com/recipes/82234-importing-a-dynamically-generated-module/
+
+    Args:
+        code (str): python code to load as a module
+        name (str): import code as module name
+        add_to_sys_modules (bool): True if module must be globally available as a sys module
+
+    Returns:
+        module: module object
+    """
+    import sys,imp
+
+    if not name:
+        name = '__waptsetup_%s__'%generate_unique_string()
+        #name = '__waptsetup__'
+
+    logger.debug('Import source code as %s'%(name))
+    module = imp.new_module(name)
+
+    exec(code, module.__dict__)
+    if add_to_sys_modules:
+        sys.modules[name] = module
+
+    return module
+
+
+def import_setup(setupfilename,modulename=''):
+    """Import setupfilename as modulename, return the module object
+
+    Args:
+        setupfilename (str): path to module
+
+    Returns:
+        module: loaded module
+    """
+    try:
+        mod_name,file_ext = os.path.splitext(os.path.split(setupfilename)[-1])
+        if not modulename:
+            #modulename=mod_name
+            modulename = '__waptsetup_%s__'%generate_unique_string()
+        # can debug but keep module in memory
+        logger.debug('Import source %s as %s'%(setupfilename,modulename))
+        py_mod = imp.load_source(modulename, setupfilename)
+        # can not debug but memory is not cumbered with setup.py modules
+        #py_mod = import_code(codecs.open(setupfilename,'r').read(), modulename)
+        return py_mod
+    except Exception as e:
+        logger.critical(u'Error importing %s :\n%s'%(setupfilename,ensure_unicode(traceback.format_exc())))
+        raise
+
+def remove_encoding_declaration(source):
+    headers = source.split('\n',3)
+    result = []
+    for h in headers[0:3]:
+        result.append(h.replace('coding:','coding is').replace('coding=','coding is'))
+    result.extend(headers[3:])
+    return "\n".join(result)
+
 
 
 class BaseObjectClass(object):

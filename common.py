@@ -49,7 +49,6 @@ except:
 
 import fnmatch
 import platform
-import imp
 import socket
 import ssl
 import copy
@@ -114,69 +113,6 @@ import setuphelpers
 
 class EWaptBadServerAuthentication(EWaptException):
     pass
-
-def import_code(code,name='',add_to_sys_modules=0):
-    """\
-    Import dynamically generated code as a module. code is the
-    object containing the code (a string, a file handle or an
-    actual compiled code object, same types as accepted by an
-    exec statement). The name is the name to give to the module,
-    and the final argument says wheter to add it to sys.modules
-    or not. If it is added, a subsequent import statement using
-    name will return this module. If it is not added to sys.modules
-    import will try to load it in the normal fashion.
-
-    import foo
-
-    is equivalent to
-
-    foofile = open("/path/to/foo.py")
-    foo = import_code(foofile,"foo",1)
-
-    Returns a newly generated module.
-    From : http://code.activestate.com/recipes/82234-importing-a-dynamically-generated-module/
-    """
-    import sys,imp
-
-    if not name:
-        name = '__waptsetup_%s__'%generate_unique_string()
-        #name = '__waptsetup__'
-
-    logger.debug('Import source code as %s'%(name))
-    module = imp.new_module(name)
-
-    exec(code, module.__dict__)
-    if add_to_sys_modules:
-        sys.modules[name] = module
-
-    return module
-
-
-def import_setup(setupfilename,modulename=''):
-    """Import setupfilename as modulename, return the module object"""
-    try:
-        mod_name,file_ext = os.path.splitext(os.path.split(setupfilename)[-1])
-        if not modulename:
-            #modulename=mod_name
-            modulename = '__waptsetup_%s__'%generate_unique_string()
-        # can debug but keep module in memory
-        logger.debug('Import source %s as %s'%(setupfilename,modulename))
-        py_mod = imp.load_source(modulename, setupfilename)
-        # can not debug but memory is not cumbered with setup.py modules
-        #py_mod = import_code(codecs.open(setupfilename,'r').read(), modulename)
-        return py_mod
-    except Exception as e:
-        logger.critical(u'Error importing %s :\n%s'%(setupfilename,ensure_unicode(traceback.format_exc())))
-        raise
-
-def remove_encoding_declaration(source):
-    headers = source.split('\n',3)
-    result = []
-    for h in headers[0:3]:
-        result.append(h.replace('coding:','coding is').replace('coding=','coding is'))
-    result.extend(headers[3:])
-    return "\n".join(result)
-
 
 def is_system_user():
     return setuphelpers.get_current_user() == 'system'
@@ -1353,22 +1289,6 @@ class WaptDB(WaptBaseDB):
             rows = cur.fetchall()
             if rows:
                 return json.loads(rows[0][0])
-
-def get_pem_server_certificate(url,save_to_file=None):
-    """Retrieve certificate for further checks
-
-    Returns:
-        str: pem encoded data
-    """
-    url = urlparse.urlparse(url)
-    if url.scheme == 'https':
-        # try a connection to get server certificate
-        pem_data = str(ssl.get_server_certificate((url.hostname, url.port or 443)))
-        if save_to_file:
-            open(save_to_file,'wb').write(pem_data)
-        return pem_data
-    else:
-        return None
 
 class WaptServer(BaseObjectClass):
     """Manage connection to waptserver"""
