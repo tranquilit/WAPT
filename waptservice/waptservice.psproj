@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=2.6.0.0
+Version=3.1.0.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -73,66 +73,86 @@ Count=9
 
 [Project\ChildNodes\Node0\ChildNodes\Node2]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\common.py
+FileName=$[Project-Path]__init__.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\custom_zip.py
+FileName=C:\tranquilit\wapt\common.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node4]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\extract_icon.py
+FileName=C:\tranquilit\wapt\custom_zip.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node5]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\keyfinder.py
+FileName=C:\tranquilit\wapt\extract_icon.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node6]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\ms_installers_errors.py
+FileName=C:\tranquilit\wapt\keyfinder.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node7]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\setuphelpers.py
+FileName=C:\tranquilit\wapt\ms_installers_errors.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node8]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptcrypto.py
+FileName=$[Project-Path]network_manager.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node9]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptdevutils.py
+FileName=$[Project-Path]network_monitor.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node10]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-get.py
+FileName=C:\tranquilit\wapt\setuphelpers.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node11]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptpackage.py
+FileName=C:\tranquilit\wapt\waptcrypto.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node12]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-scanpackages.py
+FileName=C:\tranquilit\wapt\waptdevutils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node13]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptservice.py
+FileName=C:\tranquilit\wapt\wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node14]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-signpackages.py
+FileName=C:\tranquilit\wapt\waptpackage.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node15]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptutils.py
+FileName=C:\tranquilit\wapt\wapt-scanpackages.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node16]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]waptservice.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node17]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]waptservice.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node18]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]waptservice_common.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node19]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\wapt-signpackages.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node20]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptutils.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node21]
 ClassName=TProjectFileNode
 FileName=C:\tranquilit\wapt\windnsquery.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=17
+Count=22
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode

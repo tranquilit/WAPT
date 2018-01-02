@@ -53,8 +53,6 @@ logger = logging.getLogger()
 import babel
 import babel.support
 
-from gettext import gettext
-_ = gettext
 
 class WaptServiceRemoteAction(object):
     def __init__(self,name,action,required_attributes=[]):
@@ -954,5 +952,6 @@ def babel_translations(lang = ''):
 # init translations
 waptconfig = WaptServiceConfig()
 tr = babel_translations(waptconfig.language)
+gettext = tr.ugettext
 _ = tr.ugettext
 
