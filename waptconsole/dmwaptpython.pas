@@ -480,26 +480,17 @@ begin
     st := TStringList.Create;
     try
       st.Append('import logging');
-      st.Append('import requests');
-      st.Append('import json');
-      st.Append('import os');
-      st.Append('import common');
-      st.Append('import waptpackage');
-      st.Append('import waptdevutils');
-      st.Append('import waptcrypto');
-      st.Append('import setuphelpers');
-      st.Append('from waptutils import jsondump');
       st.Append('logger = logging.getLogger()');
       st.Append('logging.basicConfig(level=logging.WARNING)');
+      st.Append('import common');
       st.Append(format('WAPT = common.Wapt(config_filename=r"%s".decode(''utf8''),disable_update_server_status=True)',[WaptConfigFileName]));
       st.Append('WAPT.dbpath=r":memory:"');
       st.Append('WAPT.use_hostpackages = False');
 
-      // declare WaptCOnsole feedback module
+      // declare WaptConsole feedback module
       st.Append('import waptconsole');
       st.Append('WAPT.progress_hook = waptconsole.UpdateProgress');
       st.Append('common.default_pwd_callback = waptconsole.GetPrivateKeyPassword');
-
       PythonEng.ExecStrings(St);
       FWAPT := MainModule.WAPT;
     finally
