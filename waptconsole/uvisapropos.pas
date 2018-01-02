@@ -6,17 +6,20 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  StdCtrls, DefaultTranslator;
+  StdCtrls, DefaultTranslator, Buttons;
 
 type
 
   { TVisApropos }
 
   TVisApropos = class(TForm)
-    Button1: TButton;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
     Image1: TImage;
     LabInfos: TLabel;
-    procedure Button1Click(Sender: TObject);
+    Panel1: TPanel;
+    Panel2: TPanel;
+    Panel4: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure Image1Click(Sender: TObject);
   private
@@ -37,23 +40,15 @@ uses uWaptConsoleRes,tiscommon,waptcommon,LCLIntf,UScaleDPI,uwaptconsole;
 procedure TVisApropos.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
-  if VisWaptGUI.ActProprietary.Checked then
-    VisWaptGUI.plStatusBar1.Panels[0].Text := ApplicationName+' '+GetApplicationVersion+' WAPT Community Edition, (c) 2012-2017 Tranquil IT Systems. (Configuration:'+AppIniFilename+')'
+  if not VisWaptGUI.ActProprietary.Checked then
+    LabInfos.Caption := ApplicationName+' '+GetApplicationVersion+#13#10#13#10'WAPT Community Edition'#13#10'(c) 2012-2017 Tranquil IT Systems.'#13#10#13#10'Configuration:'+AppIniFilename
   else
-    VisWaptGUI.plStatusBar1.Panels[0].Text := ApplicationName+' '+GetApplicationVersion+' WAPT Enterprise Edition, (c) 2012-2017 Tranquil IT Systems. (Configuration:'+AppIniFilename+')';
-
-  LabInfos.Caption := VisWaptGUI.plStatusBar1.Panels[0].Text;
+    LabInfos.Caption := ApplicationName+' '+GetApplicationVersion+#13#10#13#10'WAPT Enterprise Edition'#13#10'(c) 2012-2017 Tranquil IT Systems.'#13#10#13#10'Configuration:'+AppIniFilename;
 end;
 
 procedure TVisApropos.Image1Click(Sender: TObject);
 begin
   OpenDocument('http://www.tranquil.it');
-end;
-
-procedure TVisApropos.Button1Click(Sender: TObject);
-begin
-  Close;
-
 end;
 
 end.

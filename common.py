@@ -2817,8 +2817,12 @@ class Wapt(BaseObjectClass):
             logger.info('Unknown UUID or hostname has changed: reading host UUID')
             if new_uuid is None:
                 logger.info('reading custom host UUID from WMI System Information.')
-                inv = setuphelpers.wmi_info_basic()
-                new_uuid = inv['System_Information']['UUID']
+                try:
+                    inv = setuphelpers.wmi_info_basic()
+                    new_uuid = inv['System_Information']['UUID']
+                except:
+                    # random uuid if wmi is not working
+                    new_uuid = str(uuid.uuid4())
             self.write_param('uuid',new_uuid)
             self.write_param('hostname',current_hostname)
         return new_uuid
@@ -4757,12 +4761,18 @@ class Wapt(BaseObjectClass):
         """
         inv = {}
         inv['host_info'] = setuphelpers.host_info()
-        inv['dmi'] = setuphelpers.dmi_info()
+        try:
+            inv['dmi'] = setuphelpers.dmi_info()
+        except:
+            inv['dmi'] = None
+            logger.warning('DMI not working')
+
         try:
             inv['wmi'] = setuphelpers.wmi_info()
         except:
             inv['wmi'] = None
             logger.warning('WMI unavailable')
+
         inv['wapt_status'] = self.wapt_status()
         inv['installed_softwares'] = setuphelpers.installed_softwares('')
         inv['installed_packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]

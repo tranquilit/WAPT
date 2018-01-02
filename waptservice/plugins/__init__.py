@@ -1,3 +1,5 @@
 # -*- coding: utf-8 -*-
-
-from . import enterprise
+try:
+    from . import enterprise
+except ImportError as e:
+    pass

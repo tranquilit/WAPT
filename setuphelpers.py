@@ -271,7 +271,10 @@ import win32serviceutil
 import win32process
 import ctypes
 from ctypes import wintypes
-import wmi
+try:
+    import wmi
+except ImportError:
+    wmi = None
 
 import glob
 
@@ -2418,30 +2421,31 @@ def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_B
 
     """
     result = {}
-    wm = wmi.WMI()
-    for key in keys:
-        wmiclass = getattr(wm,key)
-        if where:
-            cs = wmiclass.query(**where)
-        else:
-            cs = wmiclass()
-        if len(cs)>1:
-            na = result[key] = []
-            for cs2 in cs:
-                na.append({})
-                for k in cs2.properties.keys():
-                    if not k in exclude_subkeys:
-                        prop = cs2.wmi_property(k)
-                        if prop:
-                            na[-1][k] = prop.Value
-        elif len(cs)>0:
-            result[key] = {}
-            if cs:
-                for k in cs[0].properties.keys():
-                    if not k in exclude_subkeys:
-                        prop = cs[0].wmi_property(k)
-                        if prop:
-                            result[key][k] = prop.Value
+    if wmi:
+        wm = wmi.WMI()
+        for key in keys:
+            wmiclass = getattr(wm,key)
+            if where:
+                cs = wmiclass.query(**where)
+            else:
+                cs = wmiclass()
+            if len(cs)>1:
+                na = result[key] = []
+                for cs2 in cs:
+                    na.append({})
+                    for k in cs2.properties.keys():
+                        if not k in exclude_subkeys:
+                            prop = cs2.wmi_property(k)
+                            if prop:
+                                na[-1][k] = prop.Value
+            elif len(cs)>0:
+                result[key] = {}
+                if cs:
+                    for k in cs[0].properties.keys():
+                        if not k in exclude_subkeys:
+                            prop = cs[0].wmi_property(k)
+                            if prop:
+                                result[key][k] = prop.Value
     return result
 
 def wmi_as_struct(wmi_object,exclude_subkeys=['OEMLogoBitmap']):
@@ -2476,9 +2480,13 @@ def wmi_info_basic():
     >>> 'System_Information' in r
     True
     """
-    result = {u'System_Information':
-            wmi_as_struct(wmi.WMI().Win32_ComputerSystemProduct.query(fields=['UUID','IdentifyingNumber','Name','Vendor']))
-            }
+    if wmi:
+        result = {u'System_Information':
+                wmi_as_struct(wmi.WMI().Win32_ComputerSystemProduct.query(fields=['UUID','IdentifyingNumber','Name','Vendor']))
+                }
+    else:
+        result = {u'System_Information':
+            {'UUID':'','IdentifyingNumber':'','Name':'','Vendor':''}}
     return result
 
 def set_computer_description(description):
@@ -2486,14 +2494,19 @@ def set_computer_description(description):
     global _fake_hostname
     if _fake_hostname is not None:
         logger.warning('Skippig set_computer_description for fake host')
-    else:
+    elif wmi:
         for win32_os in wmi.WMI().Win32_OperatingSystem():
             win32_os.Description = description
+    else:
+        raise Exception('WMI not available')
 
 def get_computer_description():
     """Get the computer descrption"""
-    for win32_os in wmi.WMI().Win32_OperatingSystem():
-        return win32_os.Description
+    if wmi:
+        for win32_os in wmi.WMI().Win32_OperatingSystem():
+            return win32_os.Description
+    else:
+        return registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\LanmanServer\Parameters','srvcomment','')
 
 def critical_system_pending_updates():
     """Return list of not installed critical updates
@@ -2529,13 +2542,13 @@ def pending_reboot_reasons():
 
 
 def get_default_gateways():
-    import wmi
-    wmi_obj = wmi.WMI()
-    connections = wmi_obj.query("select IPAddress,DefaultIPGateway from Win32_NetworkAdapterConfiguration where IPEnabled=TRUE")
     result = []
-    for connection in connections:
-        if connection.DefaultIPGateway:
-            result.append(connection.DefaultIPGateway[0])
+    if wmi:
+        wmi_obj = wmi.WMI()
+        connections = wmi_obj.query("select IPAddress,DefaultIPGateway from Win32_NetworkAdapterConfiguration where IPEnabled=TRUE")
+        for connection in connections:
+            if connection.DefaultIPGateway:
+                result.append(connection.DefaultIPGateway[0])
     return result
 
 def host_info():
@@ -2668,24 +2681,25 @@ def get_last_logged_on_user():
     return last_logged_on_user
 
 def local_drives():
-    w = wmi.WMI()
-    keystr = ['Caption','DriveType','Description','FileSystem','Name','VolumeSerialNumber']
-    keyint = ['FreeSpace','Size']
     result = {}
-    for disk in w.Win32_LogicalDisk(fields=keystr+keyint):
-        details = {}
-        for key in keystr:
-            details[key] = getattr(disk,key)
-        for key in keyint:
-            val = getattr(disk,key)
-            if val is not None:
-                details[key] = int(getattr(disk,key))
-            else:
-                details[key] = None
-        if details.get('Size',0)>0:
-            details['FreePercent'] =int(details.get('FreeSpace',0) * 100 / details['Size'])
-        letter = disk.Caption
-        result[letter.replace(':','')] = details
+    if wmi:
+        w = wmi.WMI()
+        keystr = ['Caption','DriveType','Description','FileSystem','Name','VolumeSerialNumber']
+        keyint = ['FreeSpace','Size']
+        for disk in w.Win32_LogicalDisk(fields=keystr+keyint):
+            details = {}
+            for key in keystr:
+                details[key] = getattr(disk,key)
+            for key in keyint:
+                val = getattr(disk,key)
+                if val is not None:
+                    details[key] = int(getattr(disk,key))
+                else:
+                    details[key] = None
+            if details.get('Size',0)>0:
+                details['FreePercent'] =int(details.get('FreeSpace',0) * 100 / details['Size'])
+            letter = disk.Caption
+            result[letter.replace(':','')] = details
 
     return result
 
@@ -3811,7 +3825,10 @@ def installed_windows_updates(**queryfilter):
     .. versionadded:: 1.3.3
 
     """
-    return wmi_as_struct(wmi.WMI().Win32_QuickFixEngineering.query(**queryfilter))
+    if wmi:
+        return wmi_as_struct(wmi.WMI().Win32_QuickFixEngineering.query(**queryfilter))
+    else:
+        return None
 
 def local_desktops():
     """Return a list of all local user's desktops paths
