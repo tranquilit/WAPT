@@ -48,6 +48,7 @@ import tempfile
 import fnmatch
 import urlparse
 import hashlib
+import traceback
 import imp
 
 if hasattr(sys.stdout,'name') and sys.stdout.name == '<stdout>':

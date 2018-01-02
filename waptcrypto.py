@@ -44,6 +44,7 @@ from OpenSSL import crypto
 from OpenSSL import SSL
 
 import certifi
+import ssl
 
 from waptutils import *
 
