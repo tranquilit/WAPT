@@ -51,6 +51,7 @@ from setuphelpers import Version
 logger = logging.getLogger()
 
 import babel
+import babel.support
 
 from gettext import gettext
 _ = gettext
