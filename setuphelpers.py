@@ -273,7 +273,7 @@ import ctypes
 from ctypes import wintypes
 try:
     import wmi
-except ImportError:
+except:
     wmi = None
 
 import glob
