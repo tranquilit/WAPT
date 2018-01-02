@@ -551,6 +551,7 @@ begin
     if IsNewPackage then
     begin
       description := UTF8Decode(Eddescription.Text);
+      { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
       res := PyVarToSuperObject(
         DMPython.WAPT.make_group_template(
           packagename := Trim(EdPackage.Text),
@@ -622,6 +623,7 @@ begin
     ProgressTitle(rsUploading);
     Application.ProcessMessages;
     try
+      { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
       Result := PyVarToSuperObject(
         DMPython.WAPT.build_upload(
           sources_directories := FSourcePath,
@@ -846,7 +848,7 @@ begin
                   DeleteFile(filePath);
                 exit;
               end;
-
+            { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
             res := PyVarToSuperObject(DMPython.WAPT.edit_package(packagerequest := filePath));
 
             FisTempSourcesDir := True;
@@ -873,6 +875,7 @@ begin
     Exit;
   FSourcePath := AValue;
   try
+    { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
     res := PyVarToSuperObject(DMPython.WAPT.edit_package(FSourcePath));
     PackageEdited := res['package'];
   finally

@@ -96,6 +96,12 @@ from waptcrypto import SSLVerifyException,SSLCABundle,SSLCertificate,SSLPrivateK
 from waptservice_common import *
 from plugins import *
 
+from flask_babel import Babel
+try:
+    from flask_babel import gettext
+except ImportError:
+    gettext = (lambda s:s)
+
 # i18n
 _ = gettext
 
@@ -103,7 +109,6 @@ import gc
 
 logger = logging.getLogger('waptservice')
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
-
 
 def format_isodate(isodate):
     """Pretty format iso date like : 2014-01-21T17:36:15.652000

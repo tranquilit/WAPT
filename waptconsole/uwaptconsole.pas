@@ -1497,9 +1497,11 @@ begin
         GridPackages.FocusedNode, 'package'), GridPackages.GetCellStrValue(
         GridPackages.FocusedNode, 'version')]);
       try
+        { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
         DevPath := VarPythonAsString(DMPython.WAPT.get_default_development_dir(SelPackage));
         if DirectoryExistsUTF8(DevPath) then
           DevPath:=DevPath+'.'+GridPackages.GetCellStrValue(GridPackages.FocusedNode, 'version');
+        { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
         DMPython.WAPT.update(force := True,register := False,filter_on_host_cap := False);
         res := PyVarToSuperObject(DMPython.WAPT.edit_package(
           packagerequest := Selpackage,
@@ -2963,7 +2965,7 @@ begin
         Application.ProcessMessages;
 
         SourcesVar := SuperObjectToPyVar(sources);
-
+        { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
         uploadResult := PyVarToSuperObject(DMPython.WAPT.build_upload(
           sources_directories := SourcesVar,
           private_key_passwd := dmpython.privateKeyPassword,
@@ -3554,6 +3556,7 @@ begin
     GridhostInventory.Clear;
     GridHostPackages.Clear;
     GridHostSoftwares.Clear;
+    { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
     if not VarIsEmpty(DMPython.WAPT) then
       DMPython.WAPT.update(register:=False);
     // put somewhere else

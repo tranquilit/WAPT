@@ -38,17 +38,6 @@ import json
 import urlparse
 import copy
 
-from gettext import gettext
-from flask_babel import Babel
-try:
-    from flask_babel import gettext
-except ImportError:
-    gettext = (lambda s:s)
-
-_ = gettext
-
-import babel
-
 import ConfigParser
 from optparse import OptionParser
 
@@ -61,6 +50,10 @@ from setuphelpers import Version
 
 logger = logging.getLogger()
 
+import babel
+
+from gettext import gettext
+_ = gettext
 
 class WaptServiceRemoteAction(object):
     def __init__(self,name,action,required_attributes=[]):

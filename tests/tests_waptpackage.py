@@ -885,8 +885,27 @@ def test_personalchain():
     print w.personal_certificate()
 
 
+def test_host_repo():
+    host_uuids = """0D2972AC-0993-0C61-9633-529FB1A177E3
+0F778DDA-27C9-0CC7-15FC-EBD078C02B73
+4C4C4544-004E-3510-8051-C7C04F325131
+5143DE80-9149-11E4-A28F-F44D30612192
+8138F563-AA35-95C4-105C-0C18BAB5A582
+8CDEA880-9149-11E4-A9D5-B8AEEDE9EA51
+C36AF555-E13F-C4FE-C2BF-717BD56DDD82
+C7587600-34D4-11E1-A8F9-C03FD5609ED9""".splitlines()
+    repo = WaptHostRepo('https://srvwapt.ad.tranquil.it/wapt-host',host_id=host_uuids,verify_cert=False)
+    repo.update()
+    print repo.discarded
+    print '8CDEA880-9149-11E4-A9D5-B8AEEDE9EA51' in [p.package for p in repo.discarded]
+    print repo.packages
+
+
+
+
 if __name__ == '__main__':
     setup_test()
+    test_host_repo()
     test_personalchain()
     test_newcrypto()
     test_update_crl()

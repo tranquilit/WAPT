@@ -240,6 +240,7 @@ begin
     dmpython.WaptConfigFileName:='';
     waptcommon.ReadWaptConfig(AppIniFilename);
     dmpython.WaptConfigFileName:=AppIniFilename;
+    { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
     DMPython.WAPT.update(Register := False);
   end;
 end;
@@ -289,7 +290,6 @@ begin
         newest_only := cbNewestOnly.Checked,
         verify_cert := verify_cert);
 
-      // todo : pass directly from python dict to TSuperObject
       GridExternalPackages.Data := PyVarToSuperObject(packages_python);
     finally
       Screen.Cursor:=crDefault;
@@ -396,7 +396,7 @@ begin
       Application.ProcessMessages;
 
       SourcesVar := SuperObjectToPyVar(sources);
-
+      { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
       uploadResult := PyVarToSuperObject(
         DMPython.WAPT.build_upload(
           sources_directories := SourcesVar,
@@ -502,7 +502,7 @@ begin
           target_directory := DevDirectory,
           authorized_certs := Waptrepo.SignersCABundle
           ));
-
+        { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
         dmpython.WAPT.add_pyscripter_project(sourceDir);
         DMPython.common.wapt_sources_edit(sourceDir);
       end;
