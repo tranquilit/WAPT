@@ -449,12 +449,8 @@ def register_host():
             logger.debug('Authenticated computer %s with user %s ' % (computer_fqdn,authenticated_user,))
             # check that authenticated user matches the CN of the certificate supplied in post data
             supplied_host_cert = SSLCertificate(crt_string=data['host_certificate'])
-            if authenticated_user.lower().replace('@', '.') != supplied_host_cert.cn.lower():
-                raise EWaptAuthenticationFailure(
-                    'register_host : Mismatch between authentication header %s and Certificate commonName %s' % (authenticated_user, supplied_host_cert.cn))
-
-            if supplied_host_cert.cn.lower() != computer_fqdn:
-                raise EWaptAuthenticationFailure('register_host : Mismatch between certificate Certificate commonName %s and supplied fqdn %s' % (supplied_host_cert.cn,computer_fqdn))
+            if not (supplied_host_cert.cn.lower() == computer_fqdn.lower() or supplied_host_cert.cn.lower() == uuid.lower()):
+                raise EWaptAuthenticationFailure('register_host : Mismatch between certificate Certificate commonName %s and supplied fqdn or uuid %s / %s' % (supplied_host_cert.cn,computer_fqdn,uuid))
         else:
             supplied_host_cert = None
 
@@ -517,8 +513,8 @@ def update_host():
                 'You try to update status of an unknown host %s (%s). Please register first.' % (uuid, computer_fqdn))
 
         host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
-        if 'computer_fqdn' in data and host_cert.cn != computer_fqdn:
-            raise EWaptUnknownHost('Supplied hostname does not match known certificate CN, aborting')
+        if 'computer_fqdn' in data and not (host_cert.cn.lower() == computer_fqdn.lower() or  host_cert.cn.lower() == uuid.lower()):
+            raise EWaptUnknownHost('Supplied hostname or uuid does not match known certificate CN, aborting')
 
         if signature:
             logger.debug('About to check supplied data signature with certificate %s' % host_cert.cn)

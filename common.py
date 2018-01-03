@@ -2813,7 +2813,7 @@ class Wapt(BaseObjectClass):
         if not previous_uuid or previous_uuid != new_uuid or registered_hostname != current_hostname:
             if previous_uuid != new_uuid:
                 # forget old host package if any as it is not relevant anymore
-                self.forget_packages(new_uuid)
+                self.forget_packages(previous_uuid)
             logger.info('Unknown UUID or hostname has changed: reading host UUID')
             if new_uuid is None:
                 logger.info('reading custom host UUID from WMI System Information.')
@@ -4453,7 +4453,7 @@ class Wapt(BaseObjectClass):
         if not os.path.isdir(private_dir):
             os.makedirs(private_dir)
 
-        return os.path.join(private_dir,setuphelpers.get_hostname()+'.pem')
+        return os.path.join(private_dir,self.host_uuid+'.pem')
 
 
     def get_host_certificate_filename(self):
@@ -4461,7 +4461,7 @@ class Wapt(BaseObjectClass):
         private_dir = os.path.join(self.wapt_base_dir,'private')
         if not os.path.isdir(private_dir):
             os.makedirs(private_dir)
-        return os.path.join(private_dir,setuphelpers.get_hostname()+'.crt')
+        return os.path.join(private_dir,self.host_uuid+'.crt')
 
 
     def get_host_certificate(self):
@@ -4492,7 +4492,7 @@ class Wapt(BaseObjectClass):
         if not os.path.isdir(private_dir):
             os.makedirs(private_dir)
 
-        crt_filename = os.path.join(private_dir,setuphelpers.get_hostname()+'.crt')
+        crt_filename = self.get_host_certificate_filename()
 
         # clear cache
         self._host_key = None
@@ -4505,7 +4505,7 @@ class Wapt(BaseObjectClass):
             key.save_as_pem()
 
             crt = key.build_sign_certificate(None,None,
-                cn = setuphelpers.get_hostname(),
+                cn = self.host_uuid,
                 dnsname = setuphelpers.get_hostname(),
                 organization = setuphelpers.registered_organization() or None,
                 is_ca=True,
