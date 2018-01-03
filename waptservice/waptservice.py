@@ -1633,7 +1633,11 @@ class WaptSocketIOClient(threading.Thread):
                     elif not self.config.websockets_host:
                         self.socketio_client = None
 
-                    self.config.reload_if_updated()
+                    if self.config.reload_if_updated():
+                        if self.socketio_client:
+                            self.socketio_client.disconnect()
+                        raise EWaptException('Configuration changed, force Websocket connection to be recreated')
+
 
                 except Exception as e:
                     print('Error in socket io connection %s' % repr(e))

@@ -506,7 +506,7 @@ def update_host():
         signer = request.headers.get('X-Signer', None)
 
         # check if data is for the registered host
-        existing_host = Hosts.select(Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
+        existing_host = Hosts.select(Hosts.uuid, Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
 
         if not existing_host or not existing_host.host_certificate:
             raise EWaptMissingCertificate(
@@ -519,14 +519,14 @@ def update_host():
         if signature:
             logger.debug('About to check supplied data signature with certificate %s' % host_cert.cn)
             try:
-                host_dn = host_cert.verify_content(sha256_for_data(raw_data), signature)
+                host_cert_cn = host_cert.verify_content(sha256_for_data(raw_data), signature)
             except Exception as e:
                 # for pre 1.5 wapt clients
                 if not app.conf['allow_unsigned_status_data']:
                     raise
-            logger.info('Data successfully checked with certificate CN %s for %s' % (host_dn, uuid))
-            if existing_host and host_dn != existing_host.computer_fqdn:
-                raise Exception('update_host: mismatch between host certificate DN %s and existing host hostname %s' % (host_dn,existing_host.computer_fqdn))
+            logger.info('Data successfully checked with certificate CN %s for %s' % (host_cert_cn, uuid))
+            if existing_host and not (host_cert_cn.lower() == existing_host.computer_fqdn.lower() or host_cert_cn.lower() == existing_host.uuid.lower()):
+                raise Exception('update_host: mismatch between host certificate DN %s and existing host hostname %s' % (host_cert_cn,existing_host.computer_fqdn))
         elif app.conf['allow_unsigned_status_data']:
             logger.warning('No signature for supplied data for %s,%s upgrade the wapt client.' % (uuid,computer_fqdn))
         else:
