@@ -6524,14 +6524,14 @@ object VisApropos: TVisApropos
     Top = 0
     Width = 208
     Align = alClient
-    Caption = 'Panel2'
+    ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ClientHeight = 294
     ClientWidth = 208
     TabOrder = 1
     object LabInfos: TLabel
-      Left = 128
+      Left = 10
       Height = 13
-      Top = 8
+      Top = 10
       Width = 42
       BorderSpacing.Around = 10
       Caption = 'LabInfos'
