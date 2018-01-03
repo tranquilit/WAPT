@@ -704,7 +704,7 @@ def get_peer_cert_chain_from_server(url):
     """
     def verify_cb(conn, cert, errnum, depth, ok):
         return ok
-
+    url = str(url)
     location = urlparse.urlparse(url)
     client_ctx = SSL.Context(SSL.SSLv23_METHOD)
     client_ctx.set_verify(SSL.VERIFY_NONE, verify_cb)
@@ -727,6 +727,7 @@ def get_pem_server_certificate(url,save_to_file=None):
     Returns:
         str: pem encoded data
     """
+    url = str(url)
     url = urlparse.urlparse(url)
     if url.scheme == 'https':
         # try a connection to get server certificate

@@ -151,16 +151,16 @@ end;
 procedure TVisWAPTConfig.ActGetServerCertificateExecute(Sender: TObject);
 var
   i:integer;
-  url,certfn: String;
-  pem_data,certbundle,certs,cert:Variant;
+  certfn: String;
+  url,certchain,pem_data,certbundle,certs,cert:Variant;
 begin
   url := edwapt_server.Text;
   With TIdURI.Create(url) do
   try
     try
       certfn:=  AppendPathDelim(GetAppUserFolder)+'ssl\server\'+Host+'.crt';
-
-      pem_data := dmpython.waptcrypto.SSLCABundle(certificates := dmpython.waptcrypto.get_peer_cert_chain_from_server(url := url)).as_pem('--noarg--');
+      certchain := dmpython.waptcrypto.get_peer_cert_chain_from_server(url);
+      pem_data := dmpython.waptcrypto.SSLCABundle(certificates:=certchain).as_pem('--noarg--');
       if not VarIsNull(pem_data) then
       begin
         if not DirectoryExists(ExtractFileDir(certfn)) then
