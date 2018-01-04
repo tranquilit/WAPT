@@ -365,6 +365,7 @@ class PackageEntry(BaseObjectClass):
         # temporary attributes added by join queries from local Wapt database
         self._calculated_attributes=[]
         self._package_content = None
+        self._control_updated = None
 
         self.package=package
         self.version=version
@@ -402,6 +403,7 @@ class PackageEntry(BaseObjectClass):
 
         # full filename of package if built
         self.localpath=None
+        self._control_updated = False
 
         if waptfile:
             if os.path.isfile(waptfile):
@@ -486,6 +488,8 @@ class PackageEntry(BaseObjectClass):
             name = name.lower()
         if name not in self.all_attributes:
             self._calculated_attributes.append(name)
+        if name in self.required_attributes+self.optional_attributes and self._control_updated is not None and value != getattr(self,name):
+            self._control_updated = True
         super(PackageEntry,self).__setattr__(name,value)
 
     def __len__(self):
@@ -649,6 +653,7 @@ class PackageEntry(BaseObjectClass):
             raise EWaptBadControl(u'Bad or no control found for %s' % (fname,))
 
         self.load_control_from_dict(control_to_dict(control))
+        self._control_updated = False
 
         if isinstance(fname,list):
             self.filename = self.make_package_filename()
@@ -731,7 +736,9 @@ class PackageEntry(BaseObjectClass):
                 finally:
                     if waptzip:
                         waptzip.close()
+            self._control_updated = False
         else:
+            self._control_updated = False
             return None
 
     def ascontrol(self,with_non_control_attributes = False,with_empty_attributes=False):
@@ -1004,9 +1011,11 @@ class PackageEntry(BaseObjectClass):
 
         Args:
             cabundle (SSLCABundle): Trusted certificates. : packages certificates must be signed by a one of this bundle.
-            signers_bundle : Optional. List of potential packages signers. When checking Packages index, actual
-                             package are not available, only certificates embedded in Packages index.
-                             Package signature are checked againt these certitificate
+            signers_bundle : Optional. List of potential packages signers certificates chains.
+                             When checking Packages index, actual
+                             packages are not available, only certificates embedded in Packages index.
+                             Package signature are checked againt these certificates
+                             looking here for potential intermediate CA too.
                              and matching certificate is checked against cabundle.
 
         Returns:
