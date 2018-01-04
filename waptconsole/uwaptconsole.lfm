@@ -4780,7 +4780,7 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Apply upgrades'
       Hint = 'Apply updates'
       ImageIndex = 2
-      OnExecute = ActTriggerHostUpgradeExecute
+      OnExecute = ActTriggerBurstUpgradesExecute
       OnUpdate = ActHostsActionsUpdate
       ShortCut = 16464
     end
@@ -5094,14 +5094,6 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Force install'
       OnExecute = ActPackagesForceInstallExecute
       OnUpdate = ActPackagesRemoveUpdate
-    end
-    object ActTriggerBurstUpdates: TAction
-      Category = 'hosts'
-      Caption = 'Trigger Burst Updates'
-      ImageIndex = 19
-      OnExecute = ActTriggerBurstUpdatesExecute
-      OnUpdate = ActHostsActionsUpdate
-      Visible = False
     end
     object ActTriggerBurstUpgrades: TAction
       Category = 'Enterprise'
@@ -6151,7 +6143,7 @@ object VisWaptGUI: TVisWaptGUI
       }
     end
     object MenuItem57: TMenuItem
-      Action = ActTriggerBurstUpdates
+      Caption = 'Trigger Burst Updates'
       Bitmap.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000064000000640000000000000000000000000000000000
@@ -6228,6 +6220,8 @@ object VisWaptGUI: TVisWaptGUI
         FF7910CFFFBA0ECEFFDA0ECEFFDB10CFFFBB0CD0FF7D00D5FF18000000000000
         000000BFFF140000000000000000000000000000000000000000
       }
+      ImageIndex = 19
+      Visible = False
     end
     object MenuItem82: TMenuItem
       Action = ActTriggerBurstUpgrades

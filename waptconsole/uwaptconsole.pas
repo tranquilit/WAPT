@@ -25,7 +25,6 @@ type
     ActLaunchGPUpdate: TAction;
     ActLaunchWaptExit: TAction;
     ActTriggerBurstUpgrades: TAction;
-    ActTriggerBurstUpdates: TAction;
     ActPackagesForceInstall: TAction;
     ActProprietary: TAction;
     ActPackagesForget: TAction;
@@ -1280,16 +1279,12 @@ begin
   OneHasConnectedIP:=OneHostHasConnectedIP;
   OneIsFocused:=(Gridhosts.FocusedRow <> nil);
 
-  if HideUnavailableActions then
-  begin
-    ActTriggerHostUpdate.Visible := OneIsFocused  and OneIsConnected;
-    ActTriggerHostUpgrade.Visible := OneIsFocused  and OneIsConnected;
-    ActPackagesInstall.Visible := OneIsFocused  and OneIsConnected;
-    ActPackagesRemove.Visible := OneIsFocused  and OneIsConnected;
-    ActPackagesForget.Visible := OneIsFocused  and OneIsConnected;
-
-    ActRefreshHostInventory.Visible:=OneIsFocused  and OneIsConnected;
-  end;
+  ActTriggerHostUpdate.Visible := not HideUnavailableActions or (OneIsFocused  and OneIsConnected);
+  ActTriggerHostUpgrade.Visible := not HideUnavailableActions or (OneIsFocused  and OneIsConnected);
+  ActPackagesInstall.Visible := not HideUnavailableActions or (OneIsFocused  and OneIsConnected);
+  ActPackagesRemove.Visible := not HideUnavailableActions or (OneIsFocused  and OneIsConnected);
+  ActPackagesForget.Visible := not HideUnavailableActions or (OneIsFocused  and OneIsConnected);
+  ActRefreshHostInventory.Visible := not HideUnavailableActions or (OneIsFocused  and OneIsConnected);
 
   ActAddADSGroups.Visible := OneIsFocused  and EnableExternalTools;
 
@@ -1302,7 +1297,11 @@ begin
 
   ActTriggerWakeOnLan.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
 
-  MenuExternalTools.Visible:=EnableExternalTools;
+  ActCreateCertificate.Visible := not HideUnavailableActions or ActCreateCertificate.Enabled;
+  ActChangePassword.Visible := not HideUnavailableActions or ActChangePassword.Enabled;
+  ActCreateWaptSetup.Visible := not HideUnavailableActions or ActCreateWaptSetup.Enabled;
+
+  MenuExternalTools.Visible := EnableExternalTools;
 end;
 
 constructor TVisWaptGUI.Create(TheOwner: TComponent);
@@ -1486,7 +1485,7 @@ end;
 
 procedure TVisWaptGUI.ActCreateCertificateUpdate(Sender: TObject);
 begin
-  ActCreateCertificate.Visible := (WaptServerUser='admin') and EnableManagementFeatures;
+  ActCreateCertificate.Enabled := (WaptServerUser='admin') and EnableManagementFeatures;
 end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
@@ -1824,7 +1823,7 @@ end;
 
 procedure TVisWaptGUI.ActChangePasswordUpdate(Sender: TObject);
 begin
-  ActChangePassword.Visible :=  (WaptServerUser='admin') and EnableManagementFeatures;
+  ActChangePassword.Enabled :=  (WaptServerUser='admin') and EnableManagementFeatures;
 end;
 
 procedure TVisWaptGUI.ActChangePrivateKeypasswordExecute(Sender: TObject);
@@ -4348,23 +4347,11 @@ begin
   cbADOU.Visible:=IsEnterpriseEdition;
   Label21.Visible:=IsEnterpriseEdition;
   cbADSite.Visible:=IsEnterpriseEdition;
-  ActTriggerBurstUpdates.Visible:=IsEnterpriseEdition;
-  ActTriggerBurstUpgrades.Visible:=IsEnterpriseEdition;
   ActLaunchGPUpdate.Visible:=IsEnterpriseEdition;
   ActDisplayUserMessage.Visible:=IsEnterpriseEdition;
   ActLaunchWaptExit.Visible:=IsEnterpriseEdition;
   ActTISHelp.Visible:=IsEnterpriseEdition and FileExists(GetTisSupportPath);
 
-  if IsEnterpriseEdition then
-  begin
-    ToolButtonUpdate.Action := ActTriggerBurstUpdates;
-    ToolButtonUpgrade.Action := ActLaunchWaptExit;
-  end
-  else
-  begin
-    ToolButtonUpdate.Action := ActTriggerHostUpdate;
-    ToolButtonUpgrade.Action := ActTriggerBurstUpgrades;
-  end;
 end;
 
 procedure TVisWaptGUI.GridPackagesPaintText(Sender: TBaseVirtualTree;
