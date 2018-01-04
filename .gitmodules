@@ -2,3 +2,8 @@
 	path = waptwua
 	url = ssh://htouvet@srvdev.ad.tranquil.it:29418/wapt/waptwua.git
 	branch = master
+
+[submodule "waptenterprise"]
+	path = waptenterprise
+	url = ssh://htouvet@srvdev.ad.tranquil.it:29418/wapt/waptenterprise.git
+	branch = master
