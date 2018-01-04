@@ -2116,6 +2116,7 @@ if __name__ == '__main__':
     app.config['APPLICATION_ROOT'] = app.conf.get('application_root','')
 
     load_db_config(app.conf)
+    upgrade_db_structure()
 
     utils_set_devel_mode(options.devel)
 

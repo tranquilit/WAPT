@@ -20,7 +20,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="5"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="12"/>
+      <BuildNr Value="14"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">

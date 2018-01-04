@@ -224,6 +224,8 @@ class HostPackagesStatus(BaseModel):
     install_params = CharField(null=True)
     explicit_by = CharField(null=True)
     repo_url = CharField(max_length=600, null=True)
+    depends = CharField(max_length=800,null=True)
+    conflicts = CharField(max_length=800,null=True)
 
     # audit data
     created_on = DateTimeField(null=True, default=datetime.datetime.now)
@@ -729,6 +731,22 @@ def upgrade_db_structure():
             opes = []
             if not 'registration_auth_user' in columns:
                 opes.append(migrator.add_column(Hosts._meta.name, 'registration_auth_user', Hosts.registration_auth_user))
+            migrate(*opes)
+
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
+    next_version = '1.5.1.14'
+    if get_db_version() < next_version:
+        with wapt_db.atomic():
+            logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
+            columns = [c.name for c in wapt_db.get_columns('hostpackagesstatus')]
+            opes = []
+            if not 'depends' in columns:
+                opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'depends', HostPackagesStatus.depends))
+            if not 'conflicts' in columns:
+                opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'conflicts', HostPackagesStatus.conflicts))
             migrate(*opes)
 
             (v, created) = ServerAttribs.get_or_create(key='db_version')
