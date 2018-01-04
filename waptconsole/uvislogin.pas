@@ -123,9 +123,9 @@ procedure TVisLogin.SetIsEnterpriseEdition(AValue: Boolean);
 begin
   if dmpython.IsEnterpriseEdition<>AValue then
     dmpython.IsEnterpriseEdition:=AValue;
-  ActSelectConf.Checked:=DMPython.IsEnterpriseEdition;
-  laConfiguration.Visible := DMPython.IsEnterpriseEdition;
-  CBConfiguration.Visible := DMPython.IsEnterpriseEdition;
+  ActSelectConf.Checked:= IsEnterpriseEdition;
+  laConfiguration.Visible := IsEnterpriseEdition;
+  CBConfiguration.Visible := IsEnterpriseEdition;
 end;
 
 procedure TVisLogin.BitBtn1Click(Sender: TObject);

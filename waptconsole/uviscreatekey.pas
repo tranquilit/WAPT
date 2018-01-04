@@ -91,8 +91,10 @@ type
     FPrivateKeyFilename: String;
     function CreateKeyAndCertificate: String;
     function GetCertificateFilename: String;
+    function GetIsEnterpriseEdition: Boolean;
     function GetPrivateKeyFilename: String;
     procedure SetDefaultCN;
+    procedure SetIsEnterpriseEdition(AValue: Boolean);
     { private declarations }
   public
     { public declarations }
@@ -101,6 +103,7 @@ type
   published
     property PrivateKeyFilename:String read GetPrivateKeyFilename;
     property CertificateFilename:String read GetCertificateFilename;
+    property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
   end;
 
 var
@@ -212,6 +215,16 @@ begin
   Result := FCertificateFilename;
 end;
 
+function TVisCreateKey.GetIsEnterpriseEdition: Boolean;
+begin
+  {$ifdef ENTERPRISE}
+  Result := DMPython.IsEnterpriseEdition;
+  {$else}
+  Result := False;
+  {$endif}
+
+end;
+
 function TVisCreateKey.GetPrivateKeyFilename: String;
 begin
   result := FPrivateKeyFilename;
@@ -237,6 +250,17 @@ begin
     else if edCommonName.text='' then
       edCommonName.Text:=ExtractFileNameOnly(crtfn);
   end;
+end;
+
+procedure TVisCreateKey.SetIsEnterpriseEdition(AValue: Boolean);
+begin
+  if dmpython.IsEnterpriseEdition<>AValue then
+    dmpython.IsEnterpriseEdition:=AValue;
+  ActAdvanced.Checked:=DMPython.IsEnterpriseEdition;
+  PanCA.Visible := IsEnterpriseEdition;
+  PanCertAttributes.Visible := IsEnterpriseEdition;
+  PanCertAttributesFiller.Visible := IsEnterpriseEdition;
+
 end;
 
 procedure TVisCreateKey.MakeDefaultCertName;
@@ -312,9 +336,7 @@ procedure TVisCreateKey.ActAdvancedExecute(Sender: TObject);
 begin
   {$ifdef ENTERPRISE}
   ActAdvanced.Checked:=not ActAdvanced.Checked;
-  PanCA.Visible := ActAdvanced.Checked;
-  PanCertAttributes.Visible := ActAdvanced.Checked;;
-  PanCertAttributesFiller.Visible := ActAdvanced.Checked;;
+  IsEnterpriseEdition:=ActAdvanced.Checked;
   {$endif}
 end;
 
@@ -352,9 +374,8 @@ begin
     DirectoryCert.Text:='c:\private';
   SetDefaultCN;
 
+  IsEnterpriseEdition:=DMPython.IsEnterpriseEdition;
   {$ifdef ENTERPRISE}
-  ActAdvanced.Checked := True;
-  PanCA.Visible := True;
   with TINIFile.Create(AppIniFilename) do
   try
     EdCAKeyFilename.Text := ReadString('global', 'default_ca_key_path', '');
