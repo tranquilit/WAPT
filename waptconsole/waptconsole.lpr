@@ -15,8 +15,8 @@ uses
   uviswaptconfig, uvischangepassword, uvishostsupgrade,
   uVisAPropos, uVisImportPackage, uwaptconsoleres, uVisPackageWizard, uscaledpi,
   uVisChangeKeyPassword, uvisrepositories, uvisdisplaypreferences, 
-uVisHostDelete
-  {$ifdef wsus}
+  uVisHostDelete
+  {$ifdef wsus},
   uVisWUAGroup,
   uVisWAPTWUAProducts, uviswuarules, uviswuapackageselect,
   uVisWUAClassificationsSelect

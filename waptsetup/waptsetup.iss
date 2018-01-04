@@ -27,7 +27,9 @@
 #define default_dnsdomain ""
 
 ; if not empty, a task will propose to install this package or list of packages (comma separated)
+#ifndef set_start_packages
 #define set_start_packages ""
+#endif
 
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
@@ -158,7 +160,7 @@ Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Flags: runasori
 #endif
 
 #if set_start_packages != "" 
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct --update install {code:GetStartPackages}"; Flags: runasoriginaluser runhidden; Tasks: installStartPackages; StatusMsg: {cm:InstallStartPackages}; Description: "{cm:InstallStartPackages}"
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct --update install {code:GetStartPackages}"; Flags: runasoriginaluser; Tasks: installStartPackages; StatusMsg: {cm:InstallStartPackages}; Description: "{cm:InstallStartPackages}"
 #else
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runasoriginaluser runhidden; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
 #endif

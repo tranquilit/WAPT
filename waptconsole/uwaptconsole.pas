@@ -594,6 +594,7 @@ type
     procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
     procedure TimerTasksTimer(Sender: TObject);
   private
+    { private declarations }
     CurrentVisLoading: TVisLoading;
     procedure DoProgress(ASender: TObject);
     procedure FillcbADOUDropDown;
@@ -604,30 +605,33 @@ type
     function FilterHostWinUpdates(wua: ISuperObject): ISuperObject;
     function FilterWindowsUpdate(wua: ISuperObject): ISuperObject;
     function FilterWinProducts(products: ISuperObject): ISuperObject;
+    function OneHostHasConnectedIP: Boolean;
+    function OneHostIsConnected: Boolean;
+    procedure SetIsEnterpriseEdition(AValue: Boolean);
+    function GetIsEnterpriseEdition: Boolean;
     function GetSelectedUUID: ISuperObject;
-    { private declarations }
     procedure GridLoadData(grid: TSOGrid; jsondata: string);
     procedure HandleServerResult(ServerResult: ISuperObject);
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
     function InventoryData(uuid: String): ISuperObject;
     procedure MakePackageTemplate(AInstallerFileName: String);
-    function OneHostHasConnectedIP: Boolean;
-    function OneHostIsConnected: Boolean;
-    procedure PythonOutputSendData(Sender: TObject; const Data: ansistring);
-    procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: ISuperObject);
     function TriggerChangeHostDescription(uuid, description: String): Boolean;
     procedure UpdateHostPages(Sender: TObject);
     procedure UpdateSelectedHostsActions(Sender: TObject);
+    procedure PythonOutputSendData(Sender: TObject; const Data: ansistring);
+    procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: ISuperObject);
   public
     { public declarations }
     PackageEdited: ISuperObject;
 
     MainRepoUrl, WAPTServer, TemplatesRepoUrl: string;
 
+    {$ifdef wsus}
     WUAProducts : ISuperObject;
     WUAWinUpdates : ISuperObject;
-
     windows_updates_rulesUpdated: Boolean;
+    {$endif}
+
     HostsLimit: Integer;
 
     AppLoading:Boolean;
@@ -639,6 +643,8 @@ type
     function updateprogress(receiver: TObject; current, total: integer): boolean;
     function TriggerActionOnHosts(uuids: ISuperObject;AAction:String;Args:ISuperObject;title,errortitle:String;Force:Boolean=False;NotifyServer:Boolean=True):ISuperObject;
     procedure TriggerActionOnHostPackages(AAction, title, errortitle: String;Force:Boolean=False);
+
+    property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
 
   end;
 
@@ -741,34 +747,6 @@ begin
   else
     DMPython.PythonEng.ExecString('logger.setLevel(logging.WARNING)');
 
-end;
-
-procedure TVisWaptGUI.cbADSiteDropDown(Sender: TObject);
-begin
-  {$ifdef ENTERPRISE}
-  try
-    FillcbADSiteDropDown;
-  except
-    ShowMessage('Please upgrade your server');
-  end;
-  {$endif}
-end;
-
-procedure TVisWaptGUI.cbWUAPendingChange(Sender: TObject);
-begin
-  if (Gridhosts.FocusedRow <> nil) then
-    GridHostWinUpdates.Data := FilterHostWinUpdates(Gridhosts.FocusedRow['waptwua.updates']);
-end;
-
-procedure TVisWaptGUI.cbWUCriticalClick(Sender: TObject);
-begin
-  //ActWUALoadUpdates.Execute;
-  TimerWUALoadWinUpdatesTimer(sender);
-end;
-
-procedure TVisWaptGUI.CBWUProductsShowAllClick(Sender: TObject);
-begin
-  //GridWinproducts.Data := FilterWinProducts(WUAProducts);
 end;
 
 procedure TVisWaptGUI.CheckBoxMajChange(Sender: TObject);
@@ -1040,89 +1018,13 @@ begin
     Result := SelectedProps(Data);
 end;
 
-function TVisWaptGUI.FilterHostWinUpdates(wua: ISuperObject): ISuperObject;
-{$ifdef wsus}
-var
-  wupdate: ISuperObject;
-  accept: boolean;
-  {$endif wsus}
+function TVisWaptGUI.GetIsEnterpriseEdition: Boolean;
 begin
-  Result := TSuperObject.Create(stArray);
-  {$ifdef wsus}
-  if (wua = nil) or (wua.AsArray = Nil) then
-    Exit;
-  for wupdate in wua do
-  begin
-    Accept := False;
-
-    if cbWUADiscarded.Checked then
-      accept := accept or (wupdate.B['hidden'] and not wupdate.B['installed']);
-
-    if cbWUAInstalled.Checked then
-      accept := accept or ( wupdate.B['installed']);
-
-    if cbWUAPending.Checked then
-      accept := accept or ( not wupdate.B['installed'] and not wupdate.B['hidden']);
-
-    accept := accept and (not cbWUACriticalOnly.Checked or (wupdate.S['severity'] ='Critical'));
-    if accept then
-      Result.AsArray.Add(wupdate);
-  end;
-  {$endif wsus}
-end;
-
-function TVisWaptGUI.FilterWindowsUpdate(wua: ISuperObject
-  ): ISuperObject;
-{$ifdef wsus}
-var
-  wupdate: ISuperObject;
-  accept: boolean;
-  {$endif wsus}
-begin
-  Result := TSuperObject.Create(stArray);
-  {$ifdef wsus}
-  if (wua = nil) or (wua.AsArray = Nil) then
-    Exit;
-  for wupdate in wua do
-  begin
-    Accept := False;
-
-    if cbWUADiscarded.Checked then
-      accept := accept or (wupdate.B['hidden']);
-
-    if cbWUAInstalled.Checked then
-      accept := accept or ( wupdate.B['installed']);
-
-    if cbWUAPending.Checked then
-      accept := accept or ( not wupdate.B['installed'] and not wupdate.B['hidden']);
-
-    accept := accept and (not cbWUACriticalOnly.Checked or (wupdate.S['severity'] ='Critical'));
-    if accept then
-      Result.AsArray.Add(wupdate);
-  end;
-  {$endif wsus}
-end;
-
-function TVisWaptGUI.FilterWinProducts(products: ISuperObject): ISuperObject;
-{$ifdef wsus}
-var
-  wproduct: ISuperObject;
-  accept: boolean;
-  {$endif wsus}
-begin
-  {$ifdef wsus}
-  Result := TSuperObject.Create(stArray);
-  if (products = nil) or (products.AsArray = Nil) then
-    Exit;
-  for wproduct in products do
-  begin
-    Accept := CBWUProductsShowAll.Checked or wproduct.B['favourite'];
-    if accept then
-      Result.AsArray.Add(wproduct);
-  end;
+  {$ifdef ENTERPRISE}
+  Result := DMPython.IsEnterpriseEdition;
   {$else}
-  result := Nil;
-  {$endif wsus}
+  Result := False;
+  {$endif}
 end;
 
 
@@ -1399,7 +1301,6 @@ begin
   ActRemoteAssist.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
 
   ActTriggerWakeOnLan.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
-  ActTISHelp.Visible := OneIsFocused and OneHasConnectedIP and EnableExternalTools and FileExists(GetTisSupportPath);
 
   MenuExternalTools.Visible:=EnableExternalTools;
 end;
@@ -2294,26 +2195,8 @@ end;
 procedure TVisWaptGUI.ActProprietaryExecute(Sender: TObject);
 begin
   {$ifdef ENTERPRISE}
-  ActProprietary.Checked:=not ActProprietary.Checked;
-  Label20.Visible:=ActProprietary.Checked;;
-  cbADOU.Visible:=ActProprietary.Checked;
-  Label21.Visible:=ActProprietary.Checked;;
-  cbADSite.Visible:=ActProprietary.Checked;
-  ActTriggerBurstUpdates.Visible:=ActProprietary.Checked;
-  ActTriggerBurstUpgrades.Visible:=ActProprietary.Checked;
-  ActLaunchGPUpdate.Visible:=ActProprietary.Checked;
-  ActDisplayUserMessage.Visible:=ActProprietary.Checked;
-  ActLaunchWaptExit.Visible:=ActProprietary.Checked;
-  if ActProprietary.Checked then
-  begin
-    ToolButtonUpdate.Action := ActTriggerBurstUpdates;
-    ToolButtonUpgrade.Action := ActLaunchWaptExit;
-  end
-  else
-  begin
-    ToolButtonUpdate.Action := ActTriggerHostUpdate;
-    ToolButtonUpgrade.Action := ActTriggerBurstUpgrades;
-  end;
+  IsEnterpriseEdition := not IsEnterpriseEdition;
+  ActProprietary.Checked := IsEnterpriseEdition;
   {$endif}
 end;
 
@@ -2344,37 +2227,12 @@ end;
 
 procedure TVisWaptGUI.ActExternalRepositoriesSettingsExecute(Sender: TObject);
 begin
-  //OpenDocument(AppIniFilename);
-
   With TVisRepositories.Create(Self) do
   try
     if ShowModal = mrOk then
       actRefresh.Execute;
   finally
     Free;
-  end;
-end;
-
-procedure TVisWaptGUI.ActTISHelpExecute(Sender: TObject);
-var
-  taskresult,uuids: ISuperObject;
-  currhost,computer_name: ansistring;
-begin
-  if GridHosts.FocusedRow<>Nil then
-  try
-    Screen.Cursor:=crHourGlass;
-    uuids := TSuperObject.Create(stArray);;
-    currhost := GridHosts.FocusedRow.S['uuid'];
-    computer_name := lowercase(GridHosts.FocusedRow.S['computer_name']);
-    uuids.AsArray.Add(currhost);
-    taskresult := TriggerActionOnHosts(uuids,'trigger_start_tishelp',Nil,'','Error starting TISHelp',False,False);
-    if taskresult.B['success'] then
-
-      ShellExecute(0, '', PAnsiChar(GetTisSupportPath),
-        PAnsichar('-open '+computer_name), nil, SW_SHOW);
-
-  finally
-    Screen.Cursor := crDefault;
   end;
 end;
 
@@ -2590,12 +2448,13 @@ begin
     Clipboard.AsText:=wsus_rules.AsJSon(True);
   end;
   {$endif wsus}
-
 end;
 
 procedure TVisWaptGUI.ActWSUSSaveBuildRulesUpdate(Sender: TObject);
 begin
+  {$ifdef wsus}
   ActWSUSSaveBuildRules.Enabled := windows_updates_rulesUpdated;
+  {$endif wsus}
 end;
 
 procedure TVisWaptGUI.ActWUAAddAllowedClassificationExecute(Sender: TObject);
@@ -3771,14 +3630,12 @@ begin
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
 
   {$ifdef ENTERPRISE }
-  ActProprietary.Enabled := True;
-  ActProprietary.Checked := True;
-  ActLaunchGPUpdate.Visible := True;
-  ActDisplayUserMessage.Visible:=True;
-  ActLaunchWaptExit.Visible:=True;
-  ActProprietary.Enabled:=False;
+  IsEnterpriseEdition:=True;
+  {$else}
+  IsEnterpriseEdition:=False;
   {$endif}
-
+  ActProprietary.Enabled := IsEnterpriseEdition;
+  ActProprietary.Checked := IsEnterpriseEdition;
 end;
 
 procedure TVisWaptGUI.FormDragOver(Sender, Source: TObject; X, Y: Integer;
@@ -4368,7 +4225,8 @@ begin
   exit;
 end;
 
-Function TVisWaptGUI.TriggerChangeHostDescription(uuid,description:String):Boolean;
+function TVisWaptGUI.TriggerChangeHostDescription(uuid, description: String
+  ): Boolean;
 var
   args: ISuperObject;
   taskresult,uuids: ISuperObject;
@@ -4467,6 +4325,32 @@ begin
   MemoLog.Lines.Add(Data);
 end;
 
+procedure TVisWaptGUI.SetIsEnterpriseEdition(AValue: Boolean);
+begin
+  if dmpython.IsEnterpriseEdition<>AValue then
+    dmpython.IsEnterpriseEdition:=AValue;
+  Label20.Visible:=IsEnterpriseEdition;
+  cbADOU.Visible:=IsEnterpriseEdition;
+  Label21.Visible:=IsEnterpriseEdition;
+  cbADSite.Visible:=IsEnterpriseEdition;
+  ActTriggerBurstUpdates.Visible:=IsEnterpriseEdition;
+  ActTriggerBurstUpgrades.Visible:=IsEnterpriseEdition;
+  ActLaunchGPUpdate.Visible:=IsEnterpriseEdition;
+  ActDisplayUserMessage.Visible:=IsEnterpriseEdition;
+  ActLaunchWaptExit.Visible:=IsEnterpriseEdition;
+  ActTISHelp.Visible:=IsEnterpriseEdition and FileExists(GetTisSupportPath);
+
+  if IsEnterpriseEdition then
+  begin
+    ToolButtonUpdate.Action := ActTriggerBurstUpdates;
+    ToolButtonUpgrade.Action := ActLaunchWaptExit;
+  end
+  else
+  begin
+    ToolButtonUpdate.Action := ActTriggerHostUpdate;
+    ToolButtonUpgrade.Action := ActTriggerBurstUpgrades;
+  end;
+end;
 
 procedure TVisWaptGUI.GridPackagesPaintText(Sender: TBaseVirtualTree;
   const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
@@ -4476,55 +4360,6 @@ begin
     TargetCanvas.Font.style := TargetCanvas.Font.style + [fsBold]
   else
     TargetCanvas.Font.style := TargetCanvas.Font.style - [fsBold];
-end;
-
-procedure TVisWaptGUI.GridWinproductsChange(Sender: TBaseVirtualTree;
-  Node: PVirtualNode);
-begin
-  {$ifdef wsus}
-  GridWSUSAllowedWindowsUpdates.Data := Nil;
-  TimerWUALoadWinUpdates.Enabled:=False;
-  TimerWUALoadWinUpdates.Enabled:=True;
-  {$endif}
-end;
-
-procedure TVisWaptGUI.GridWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
-  var Ghosted: Boolean; var ImageIndex: Integer; var ImageList: TCustomImageList
-  );
-var
-  row: ISuperObject;
-begin
-  if Column = 0 then
-  begin
-    row := (Sender as TSOGrid).GetNodeSOData(Node);
-    case row.S['status'] of
-      'ALLOWED': ImageIndex := 0;
-      'FORBIDDEN': ImageIndex := 8;
-    else
-      ImageIndex := -1;
-    end;
-  end;
-end;
-
-procedure TVisWaptGUI.GridWSUSAllowedClassificationsFreeNode(
-  Sender: TBaseVirtualTree; Node: PVirtualNode);
-begin
-  windows_updates_rulesUpdated:=True;
-end;
-
-procedure TVisWaptGUI.GridWSUSAllowedWindowsUpdatesFreeNode(
-  Sender: TBaseVirtualTree; Node: PVirtualNode);
-begin
-    windows_updates_rulesUpdated:=True;
-
-end;
-
-procedure TVisWaptGUI.GridWSUSForbiddenWindowsUpdatesFreeNode(
-  Sender: TBaseVirtualTree; Node: PVirtualNode);
-begin
-    windows_updates_rulesUpdated:=True;
-
 end;
 
 procedure TVisWaptGUI.HostPagesChange(Sender: TObject);
@@ -4579,62 +4414,6 @@ begin
     Screen.Cursor:=crdefault;
   end;
 end;
-
-procedure TVisWaptGUI.FillcbADOUDropDown;
-var
-  OU,OUDN:ISuperObject;
-  oldSelect:String;
-begin
-  {$ifdef ENTERPRISE}
-  try
-    Screen.Cursor:=crHourGlass;
-
-    oldSelect:=cbADOU.Text;
-    cbADOU.Items.Clear;
-    cbADOU.Items.Add(rsFilterAll);
-
-    OUDN := WAPTServerJsonGet('api/v3/get_ad_ou',[])['result'];
-    if OUDN<>Nil then
-    begin
-      for OU in OUDN do
-        cbADOU.Items.Add(OU.AsString{%H-});
-    end;
-    cbADOU.Text:= oldSelect;
-
-  finally
-    Screen.Cursor:=crdefault;
-  end;
-  {$endif}
-end;
-
-
-procedure TVisWaptGUI.FillcbADSiteDropDown;
-var
-  Site,Sites:ISuperObject;
-  oldSelect:String;
-begin
-  {$ifdef ENTERPRISE}
-  try
-    Screen.Cursor:=crHourGlass;
-
-    oldSelect:=cbADSite.Text;
-    cbADSite.Items.Clear;
-    cbADSite.Items.Add(rsFilterAll);
-
-    Sites := WAPTServerJsonGet('api/v3/get_ad_sites',[])['result'];
-    if Sites <> Nil then
-    begin
-      for Site in Sites do
-        cbADSite.Items.Add(Site.AsString{%H-});
-    end;
-    cbADSite.Text:= oldSelect;
-
-  finally
-    Screen.Cursor:=crdefault;
-  end;
-  {$endif}
-end;
-
 
 procedure TVisWaptGUI.MainPagesChange(Sender: TObject);
 {$ifdef wsus}
@@ -4699,5 +4478,258 @@ begin
   else
     Result := True;
 end;
+
+procedure TVisWaptGUI.cbADSiteDropDown(Sender: TObject);
+begin
+  {$ifdef ENTERPRISE}
+  try
+    FillcbADSiteDropDown;
+  except
+    ShowMessage('Please upgrade your server');
+  end;
+  {$endif}
+end;
+
+procedure TVisWaptGUI.cbWUAPendingChange(Sender: TObject);
+begin
+  {$ifdef wsus}
+  if (Gridhosts.FocusedRow <> nil) then
+    GridHostWinUpdates.Data := FilterHostWinUpdates(Gridhosts.FocusedRow['waptwua.updates']);
+  {$endif wsus}
+end;
+
+procedure TVisWaptGUI.cbWUCriticalClick(Sender: TObject);
+begin
+  {$ifdef wsus}
+  TimerWUALoadWinUpdatesTimer(sender);
+  {$endif wsus}
+end;
+
+procedure TVisWaptGUI.CBWUProductsShowAllClick(Sender: TObject);
+begin
+  {$ifdef wsus}
+  GridWinproducts.Data := FilterWinProducts(WUAProducts);
+  {$endif wsus}
+end;
+
+
+procedure TVisWaptGUI.FillcbADOUDropDown;
+var
+  OU,OUDN:ISuperObject;
+  oldSelect:String;
+begin
+  {$ifdef ENTERPRISE}
+  try
+    Screen.Cursor:=crHourGlass;
+
+    oldSelect:=cbADOU.Text;
+    cbADOU.Items.Clear;
+    cbADOU.Items.Add(rsFilterAll);
+
+    OUDN := WAPTServerJsonGet('api/v3/get_ad_ou',[])['result'];
+    if OUDN<>Nil then
+    begin
+      for OU in OUDN do
+        cbADOU.Items.Add(OU.AsString{%H-});
+    end;
+    cbADOU.Text:= oldSelect;
+
+  finally
+    Screen.Cursor:=crdefault;
+  end;
+  {$endif}
+end;
+
+
+procedure TVisWaptGUI.FillcbADSiteDropDown;
+var
+  Site,Sites:ISuperObject;
+  oldSelect:String;
+begin
+  {$ifdef ENTERPRISE}
+  try
+    Screen.Cursor:=crHourGlass;
+
+    oldSelect:=cbADSite.Text;
+    cbADSite.Items.Clear;
+    cbADSite.Items.Add(rsFilterAll);
+
+    Sites := WAPTServerJsonGet('api/v3/get_ad_sites',[])['result'];
+    if Sites <> Nil then
+    begin
+      for Site in Sites do
+        cbADSite.Items.Add(Site.AsString{%H-});
+    end;
+    cbADSite.Text:= oldSelect;
+
+  finally
+    Screen.Cursor:=crdefault;
+  end;
+  {$endif}
+end;
+
+procedure TVisWaptGUI.GridWinproductsChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+  {$ifdef wsus}
+  GridWSUSAllowedWindowsUpdates.Data := Nil;
+  TimerWUALoadWinUpdates.Enabled:=False;
+  TimerWUALoadWinUpdates.Enabled:=True;
+  {$endif}
+end;
+
+procedure TVisWaptGUI.GridWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+  var Ghosted: Boolean; var ImageIndex: Integer; var ImageList: TCustomImageList
+  );
+var
+  row: ISuperObject;
+begin
+  {$ifdef wsus}
+  if Column = 0 then
+  begin
+    row := (Sender as TSOGrid).GetNodeSOData(Node);
+    case row.S['status'] of
+      'ALLOWED': ImageIndex := 0;
+      'FORBIDDEN': ImageIndex := 8;
+    else
+      ImageIndex := -1;
+    end;
+  end;
+  {$endif}
+end;
+
+procedure TVisWaptGUI.GridWSUSAllowedClassificationsFreeNode(
+  Sender: TBaseVirtualTree; Node: PVirtualNode);
+begin
+  {$ifdef wsus}
+  windows_updates_rulesUpdated:=True;
+  {$endif wsus}
+end;
+
+procedure TVisWaptGUI.GridWSUSAllowedWindowsUpdatesFreeNode(
+  Sender: TBaseVirtualTree; Node: PVirtualNode);
+begin
+   {$ifdef wsus}
+   windows_updates_rulesUpdated:=True;
+   {$endif wsus}
+end;
+
+procedure TVisWaptGUI.GridWSUSForbiddenWindowsUpdatesFreeNode(
+  Sender: TBaseVirtualTree; Node: PVirtualNode);
+begin
+  {$ifdef wsus}
+  windows_updates_rulesUpdated:=True;
+  {$endif wsus}
+end;
+
+function TVisWaptGUI.FilterHostWinUpdates(wua: ISuperObject): ISuperObject;
+{$ifdef wsus}
+var
+  wupdate: ISuperObject;
+  accept: boolean;
+  {$endif wsus}
+begin
+  Result := TSuperObject.Create(stArray);
+  {$ifdef wsus}
+  if (wua = nil) or (wua.AsArray = Nil) then
+    Exit;
+  for wupdate in wua do
+  begin
+    Accept := False;
+
+    if cbWUADiscarded.Checked then
+      accept := accept or (wupdate.B['hidden'] and not wupdate.B['installed']);
+
+    if cbWUAInstalled.Checked then
+      accept := accept or ( wupdate.B['installed']);
+
+    if cbWUAPending.Checked then
+      accept := accept or ( not wupdate.B['installed'] and not wupdate.B['hidden']);
+
+    accept := accept and (not cbWUACriticalOnly.Checked or (wupdate.S['severity'] ='Critical'));
+    if accept then
+      Result.AsArray.Add(wupdate);
+  end;
+  {$endif wsus}
+end;
+
+function TVisWaptGUI.FilterWindowsUpdate(wua: ISuperObject
+  ): ISuperObject;
+{$ifdef wsus}
+var
+  wupdate: ISuperObject;
+  accept: boolean;
+  {$endif wsus}
+begin
+  Result := TSuperObject.Create(stArray);
+  {$ifdef wsus}
+  if (wua = nil) or (wua.AsArray = Nil) then
+    Exit;
+  for wupdate in wua do
+  begin
+    Accept := False;
+
+    if cbWUADiscarded.Checked then
+      accept := accept or (wupdate.B['hidden']);
+
+    if cbWUAInstalled.Checked then
+      accept := accept or ( wupdate.B['installed']);
+
+    if cbWUAPending.Checked then
+      accept := accept or ( not wupdate.B['installed'] and not wupdate.B['hidden']);
+
+    accept := accept and (not cbWUACriticalOnly.Checked or (wupdate.S['severity'] ='Critical'));
+    if accept then
+      Result.AsArray.Add(wupdate);
+  end;
+  {$endif wsus}
+end;
+
+function TVisWaptGUI.FilterWinProducts(products: ISuperObject): ISuperObject;
+{$ifdef wsus}
+var
+  wproduct: ISuperObject;
+  accept: boolean;
+  {$endif wsus}
+begin
+  {$ifdef wsus}
+  Result := TSuperObject.Create(stArray);
+  if (products = nil) or (products.AsArray = Nil) then
+    Exit;
+  for wproduct in products do
+  begin
+    Accept := CBWUProductsShowAll.Checked or wproduct.B['favourite'];
+    if accept then
+      Result.AsArray.Add(wproduct);
+  end;
+  {$else}
+  result := Nil;
+  {$endif wsus}
+end;
+
+procedure TVisWaptGUI.ActTISHelpExecute(Sender: TObject);
+var
+  taskresult,uuids: ISuperObject;
+  currhost,computer_name: ansistring;
+begin
+  {$ifdef ENTERPRISE}
+  if GridHosts.FocusedRow<>Nil then
+  try
+    Screen.Cursor:=crHourGlass;
+    uuids := TSuperObject.Create(stArray);;
+    currhost := GridHosts.FocusedRow.S['uuid'];
+    computer_name := lowercase(GridHosts.FocusedRow.S['computer_name']);
+    uuids.AsArray.Add(currhost);
+    taskresult := TriggerActionOnHosts(uuids,'trigger_start_tishelp',Nil,'','Error starting TISHelp',False,False);
+    if taskresult.B['success'] then
+      ShellExecute(0, '', PAnsiChar(GetTisSupportPath),
+        PAnsichar('-open '+computer_name), nil, SW_SHOW);
+  finally
+    Screen.Cursor := crDefault;
+  end;
+  {$endif ENTERPRISE}
+end;
+
 
 end.

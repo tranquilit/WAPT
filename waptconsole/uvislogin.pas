@@ -43,16 +43,20 @@ type
     procedure FormShow(Sender: TObject);
     procedure Image1Click(Sender: TObject);
   private
+    function GetIsEnterpriseEdition: Boolean;
+    procedure SetIsEnterpriseEdition(AValue: Boolean);
     { private declarations }
   public
     { public declarations }
+    property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
+
   end;
 
 var
   VisLogin: TVisLogin;
 
 implementation
-uses LCLIntf,  uwaptconsole,waptcommon, DefaultTranslator,UScaleDPI,tiscommon,tisinifiles;
+uses LCLIntf,  uwaptconsole,waptcommon, DefaultTranslator,UScaleDPI,tiscommon,tisinifiles,dmwaptpython;
 {$R *.lfm}
 
 { TVisLogin }
@@ -87,6 +91,7 @@ procedure TVisLogin.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
   LabVersion.Caption := ApplicationName+' '+wapt_edition+' Edition '+GetApplicationVersion;
+  IsEnterpriseEdition:=DMPython.IsEnterpriseEdition;
 end;
 
 procedure TVisLogin.FormShow(Sender: TObject);
@@ -104,6 +109,25 @@ begin
   OpenDocument('https://www.tranquil.it');
 end;
 
+function TVisLogin.GetIsEnterpriseEdition: Boolean;
+begin
+  {$ifdef ENTERPRISE}
+  Result := DMPython.IsEnterpriseEdition;
+  {$else}
+  Result := False;
+  {$endif}
+
+end;
+
+procedure TVisLogin.SetIsEnterpriseEdition(AValue: Boolean);
+begin
+  if dmpython.IsEnterpriseEdition<>AValue then
+    dmpython.IsEnterpriseEdition:=AValue;
+  ActSelectConf.Checked:=DMPython.IsEnterpriseEdition;
+  laConfiguration.Visible := DMPython.IsEnterpriseEdition;
+  CBConfiguration.Visible := DMPython.IsEnterpriseEdition;
+end;
+
 procedure TVisLogin.BitBtn1Click(Sender: TObject);
 begin
   if VisWaptGUI.EditIniFile then
@@ -117,10 +141,7 @@ procedure TVisLogin.ActSelectConfExecute(Sender: TObject);
 begin
   {$ifdef ENTERPRISE }
   ActSelectConf.Checked:=not ActSelectConf.Checked;
-  laConfiguration.Visible := ActSelectConf.Checked;
-  CBConfiguration.Visible := ActSelectConf.Checked;
-  if ActSelectConf.Checked then
-    CBConfiguration.SetFocus;
+  IsEnterpriseEdition:=ActSelectConf.Checked;
   {$endif}
 end;
 

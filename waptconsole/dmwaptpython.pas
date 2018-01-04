@@ -23,6 +23,7 @@ type
     procedure PythonModuleDMWaptPythonEvents1Execute(Sender: TObject; PSelf,
       Args: PPyObject; var Result: PPyObject);
   private
+    FIsEnterpriseEdition: Boolean;
     Fcommon: Variant;
     FLanguage: String;
     FCachedPrivateKeyPassword: Ansistring;
@@ -36,6 +37,7 @@ type
 
     FWaptConfigFileName: Utf8String;
     function Getcommon: Variant;
+    function GetIsEnterpriseEdition: Boolean;
     function GetMainWaptRepo: Variant;
     function getprivateKeyPassword: Ansistring;
     function Getsetuphelpers: Variant;
@@ -45,6 +47,7 @@ type
     function Getwaptpackage: Variant;
     procedure LoadJson(data: UTF8String);
     procedure Setcommon(AValue: Variant);
+    procedure SetIsEnterpriseEdition(AValue: Boolean);
     procedure SetMainWaptRepo(AValue: Variant);
     procedure setprivateKeyPassword(AValue: Ansistring);
     procedure SetWAPT(AValue: Variant);
@@ -54,12 +57,9 @@ type
     { private declarations }
   public
     { public declarations }
-
     PyWaptWrapper : TPyDelphiWrapper;
 
-
     function CertificateIsCodeSigning(crtfilename:String):Boolean;
-
     property privateKeyPassword: Ansistring read getprivateKeyPassword write setprivateKeyPassword;
 
     property WaptConfigFileName:Utf8String read FWaptConfigFileName write SetWaptConfigFileName;
@@ -75,6 +75,7 @@ type
     property setuphelpers:Variant read Getsetuphelpers;
     property waptpackage:Variant read Getwaptpackage;
     property waptdevutils:Variant read Getwaptdevutils;
+    property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
 
   end;
 
@@ -402,6 +403,16 @@ begin
   Fcommon:=AValue;
 end;
 
+procedure TDMPython.SetIsEnterpriseEdition(AValue: Boolean);
+begin
+  {$ifdef ENTERPRISE}
+  if FIsEnterpriseEdition=AValue then Exit;
+  FIsEnterpriseEdition:=AValue;
+  {$else}
+  FIsEnterpriseEdition := False;
+  {$endif}
+end;
+
 procedure TDMPython.SetMainWaptRepo(AValue: Variant);
 begin
   if VarCompareValue(FMainWaptRepo,AValue) = vrEqual  then Exit;
@@ -541,6 +552,15 @@ begin
   if VarIsEmpty(Fcommon) or VarIsNull(Fcommon) then
     Fcommon:= VarPyth.Import('common');
   Result := Fcommon;
+end;
+
+function TDMPython.GetIsEnterpriseEdition: Boolean;
+begin
+  {$ifdef ENTERPRISE}
+  Result := FIsEnterpriseEdition;
+  {$else}
+  Result := False;
+  {$endif}
 end;
 
 procedure TDMPython.setprivateKeyPassword(AValue: Ansistring);

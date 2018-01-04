@@ -209,12 +209,12 @@ const
 
   HideUnavailableActions:Boolean = False;
 
-  WAPTServerMinVersion='1.5.1.7';
+  WAPTServerMinVersion='1.5.1.13';
 
   FAppIniFilename:Utf8String = '';
 
   {$ifdef ENTERPRISE}
-  wapt_edition = 'Enterpise';
+  wapt_edition = 'Enterprise';
   {$else}
   wapt_edition = 'Community';
   {$endif}

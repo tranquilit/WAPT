@@ -5084,6 +5084,7 @@ object VisWaptGUI: TVisWaptGUI
       OnUpdate = ActAddHWPropertyToGridUpdate
     end
     object ActProprietary: TAction
+      Category = 'Enterprise'
       Caption = 'ActProprietary'
       OnExecute = ActProprietaryExecute
       ShortCut = 24656
@@ -5103,7 +5104,7 @@ object VisWaptGUI: TVisWaptGUI
       Visible = False
     end
     object ActTriggerBurstUpgrades: TAction
-      Category = 'hosts'
+      Category = 'Enterprise'
       Caption = 'Apply Burst Upgrades'
       ImageIndex = 20
       OnExecute = ActTriggerBurstUpgradesExecute
@@ -5111,7 +5112,7 @@ object VisWaptGUI: TVisWaptGUI
       Visible = False
     end
     object ActLaunchWaptExit: TAction
-      Category = 'hosts'
+      Category = 'Enterprise'
       Caption = 'Propose Upgrades to logged on users'
       ImageIndex = 21
       OnExecute = ActLaunchWaptExitExecute
@@ -5119,7 +5120,7 @@ object VisWaptGUI: TVisWaptGUI
       Visible = False
     end
     object ActDisplayUserMessage: TAction
-      Category = 'hosts'
+      Category = 'Enterprise'
       Caption = 'Send a message to users'
       OnExecute = ActDisplayUserMessageExecute
       OnUpdate = ActHostsActionsUpdate
@@ -5127,7 +5128,7 @@ object VisWaptGUI: TVisWaptGUI
       Visible = False
     end
     object ActLaunchGPUpdate: TAction
-      Category = 'hosts'
+      Category = 'Enterprise'
       Caption = 'Update AD Group Policies on hosts'
       OnExecute = ActLaunchGPUpdateExecute
       OnUpdate = ActHostsActionsUpdate
