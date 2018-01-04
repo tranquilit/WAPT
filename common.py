@@ -110,6 +110,8 @@ from waptcrypto import *
 from waptpackage import *
 
 import setuphelpers
+import netifaces
+
 
 class EWaptBadServerAuthentication(EWaptException):
     pass
@@ -205,7 +207,6 @@ def same_net(ip1,ip2,netmask):
 
 def host_ipv4():
     """return a list of (iface,mac,{addr,broadcast,netmask})"""
-    import netifaces
     ifaces = netifaces.interfaces()
     res = []
     for i in ifaces:
@@ -502,7 +503,7 @@ class WaptSessionDB(WaptBaseDB):
         self.db_version = self.curr_db_version
         return self.curr_db_version
 
-    def add_start_install(self,package,version,architecture):
+    def add_start_install(self,package,version,architecture,depends='',conflicts=''):
         """Register the start of installation in local db
         """
         with self:
@@ -516,8 +517,10 @@ class WaptSessionDB(WaptBaseDB):
                     install_date,
                     install_status,
                     install_output,
-                    process_id
-                    ) values (?,?,?,?,?,?,?,?)
+                    process_id,
+                    depends,
+                    conflicts
+                    ) values (?,?,?,?,?,?,?,?,?,?)
                 """,(
                      self.username,
                      package,
@@ -526,7 +529,9 @@ class WaptSessionDB(WaptBaseDB):
                      datetime2isodate(),
                      'INIT',
                      '',
-                     os.getpid()
+                     os.getpid(),
+                     depends,
+                     conflicts
                    ))
             return cur.lastrowid
 
@@ -594,7 +599,7 @@ PackageKey = namedtuple('package',('packagename','version'))
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
 
-    curr_db_version = '20170610'
+    curr_db_version = '20180104'
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
@@ -651,7 +656,9 @@ class WaptDB(WaptBaseDB):
           uninstall_string varchar(255),
           uninstall_key varchar(255),
           setuppy TEXT,
-          process_id integer
+          process_id integer,
+          depends varchar(800),
+          conflicts varchar(800)
           )"""
 
         # TODO Audit :
@@ -1020,7 +1027,8 @@ class WaptDB(WaptBaseDB):
         """
         sql = ["""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,
-                r.section,r.priority,r.maintainer,r.description,r.depends,r.conflicts,r.sources,r.filename,r.size,
+                l.depends,l.conflicts,
+                r.section,r.priority,r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo,l.maturity,l.locale
                 from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and
@@ -1045,7 +1053,8 @@ class WaptDB(WaptBaseDB):
         """
         sql = ["""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,l.setuppy,
-                r.section,r.priority,r.maintainer,r.description,r.depends,r.conflicts,r.sources,r.filename,r.size,
+                l.depends,l.conflicts,
+                r.section,r.priority,r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo,l.maturity,l.locale
                 from wapt_localstatus l
                 left join wapt_package r on
@@ -1076,7 +1085,8 @@ class WaptDB(WaptBaseDB):
             search.append('l.install_status in ("OK","UNKNOWN")')
         q = self.query_package_entry("""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,
-                r.section,r.priority,r.maintainer,r.description,r.depends,r.conflicts,r.sources,r.filename,r.size,
+                l.depends,l.conflicts,
+                r.section,r.priority,r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo
                  from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
@@ -1094,7 +1104,8 @@ class WaptDB(WaptBaseDB):
 
         q = self.query_package_entry("""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,l.explicit_by,
-                r.section,r.priority,r.maintainer,r.description,r.depends,r.conflicts,r.sources,r.filename,r.size,
+                l.depends,l.conflicts,
+                r.section,r.priority,r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo
                 from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
@@ -4218,7 +4229,9 @@ class Wapt(BaseObjectClass):
         """Check and return the host package if available and not installed"""
         logger.debug(u'Check if host package "%s" is available' % (self.host_packagename(), ))
         host_packages = self.is_available(self.host_packagename())
-        if host_packages and not self.is_installed(host_packages[-1].asrequirement()):
+        installed_host_package = self.is_installed(self.host_packagename())
+
+        if host_packages and (not installed_host_package or installed_host_package < host_packages[-1]):
             return host_packages[-1]
         else:
             return None
