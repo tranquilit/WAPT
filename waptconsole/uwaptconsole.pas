@@ -2569,10 +2569,11 @@ end;
 
 procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
 var
-  hostname,uuid,desc: String;
+  hostname,uuid,desc,HostPackageVersion: String;
   uuids,result: ISuperObject;
   ApplyUpdatesImmediately:Boolean;
   Host: ISuperObject;
+  Package,HostPackages:ISuperObject;
 begin
   if GridHosts.FocusedRow<>Nil then
   try
@@ -2583,7 +2584,21 @@ begin
     uuids := TSuperobject.create(stArray);
     uuids.AsArray.Add(uuid);
 
-    result := EditHost(uuid, AdvancedMode, ApplyUpdatesImmediately, UTF8Encode(desc),host.S['reachable'] = 'OK',hostname);
+    HostPackageVersion :='';
+    HostPackages := host['installed_packages'];
+    if HostPackages <> Nil then
+    begin
+      for Package in HostPackages do
+      begin
+        if Package.S['package'] = uuid then
+        begin
+          HostPackageVersion := Package.S['version'];
+          break;
+        end;
+      end;
+    end;
+
+    result := EditHost(uuid, AdvancedMode, ApplyUpdatesImmediately, UTF8Encode(desc),host.S['reachable'] = 'OK',hostname,HostPackageVersion);
     if (result<>Nil) and ApplyUpdatesImmediately and (uuid<>'')  then
       result := TriggerActionOnHosts(uuids,'trigger_host_upgrade',Nil,rsUpgradingHost,rsErrorLaunchingUpgrade);
 

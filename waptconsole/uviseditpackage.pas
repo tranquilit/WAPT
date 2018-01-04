@@ -154,7 +154,7 @@ type
 function EditPackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreatePackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreateGroup(packagename: string; advancedMode: boolean): ISuperObject;
-function EditHost(hostuuid: ansistring; advancedMode: boolean; var ApplyUpdates:Boolean; description:ansiString=''; HostReachable:Boolean=False;computer_fqdn_hint:ansiString=''): ISuperObject;
+function EditHost(hostuuid: ansistring; advancedMode: boolean; var ApplyUpdates:Boolean; description:ansiString=''; HostReachable:Boolean=False;computer_fqdn_hint:ansiString='';ForceMinVersion:ansiString=''): ISuperObject;
 function EditHostDepends(hostname: string; newDependsStr: string): ISuperObject;
 function EditGroup(group: string; advancedMode: boolean): ISuperObject;
 
@@ -227,7 +227,7 @@ begin
     end;
 end;
 
-function EditHost(hostuuid: ansistring; advancedMode: boolean;var ApplyUpdates:Boolean;description:ansiString='';HostReachable:Boolean=False;computer_fqdn_hint:AnsiString=''): ISuperObject;
+function EditHost(hostuuid: ansistring; advancedMode: boolean;var ApplyUpdates:Boolean;description:ansiString='';HostReachable:Boolean=False;computer_fqdn_hint:AnsiString='';ForceMinVersion:ansiString=''): ISuperObject;
 begin
   with TVisEditPackage.Create(nil) do
     try
@@ -235,6 +235,11 @@ begin
       Result := Nil;
       isAdvancedMode := advancedMode;
       PackageRequest := hostuuid;
+      if (ForceMinVersion<>'') and (CompareVersion(EdVersion.Text,ForceMinVersion)<0) then
+      begin
+        EdVersion.Text:=ForceMinVersion;
+        IsUpdated:=True;
+      end;
 
       if computer_fqdn_hint<>'' then
         Caption:= Format(rsEditHostCaption,[computer_fqdn_hint])
