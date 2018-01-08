@@ -1555,7 +1555,7 @@ class WaptBaseRepo(BaseObjectClass):
     """
 
     _default_config = {
-        'public_certs_dir': None,
+        'public_certs_dir': '',
         'check_certificates_validity':'1',
     }
 
@@ -1578,11 +1578,17 @@ class WaptBaseRepo(BaseObjectClass):
         self.discarded = []
         self.check_certificates_validity = None
         self.public_certs_dir = None
+        self.cabundle = None
 
-        # if not None, control's signature will be check against this certificates list
         self.load_config(config=config)
 
-        self.cabundle = cabundle
+        if self.public_certs_dir:
+            self.cabundle = SSLCABundle()
+            self.cabundle.add_pems(self.public_certs_dir)
+
+        # if not None, control's signature will be check against this certificates list
+        if cabundle is not None:
+            self.cabundle = cabundle
 
     def load_config(self,config=None,section=None):
         """Load configuration from inifile section.
@@ -1613,8 +1619,7 @@ class WaptBaseRepo(BaseObjectClass):
             section = 'global'
 
         if config.has_option(section,'public_certs_dir'):
-            self.cabundle = SSLCABundle()
-            self.cabundle.add_pems(config.get(section,'public_certs_dir'))
+            self.public_certs_dir = config.get(section,'public_certs_dir')
 
         if config.has_option(section,'check_certificates_validity'):
             self.check_certificates_validity = config.getboolean(section,'check_certificates_validity')
