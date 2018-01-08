@@ -1006,17 +1006,17 @@ class PackageEntry(BaseObjectClass):
             private_key.sign_content(self._signed_content(),self._md or self._default_md))
         return self.get_default_signed_attributes()
 
-    def check_control_signature(self,cabundle,signers_bundle=None):
+    def check_control_signature(self,trusted_bundle,signers_bundle=None):
         """Check in memory control signature against a list of public certificates
 
         Args:
-            cabundle (SSLCABundle): Trusted certificates. : packages certificates must be signed by a one of this bundle.
+            trusted_bundle (SSLCABundle): Trusted certificates. : packages certificates must be signed by a one of this bundle.
             signers_bundle : Optional. List of potential packages signers certificates chains.
                              When checking Packages index, actual
                              packages are not available, only certificates embedded in Packages index.
                              Package signature are checked againt these certificates
                              looking here for potential intermediate CA too.
-                             and matching certificate is checked against cabundle.
+                             and matching certificate is checked against trusted_bundle.
 
         Returns:
             SSLCertificate : matching trusted package's signers SSLCertificate
@@ -1036,20 +1036,23 @@ class PackageEntry(BaseObjectClass):
         """
         if not self.signature:
             raise EWaptNotSigned('Package control %s on repo %s is not signed' % (self.asrequirement(),self.repo))
+        assert(isinstance(trusted_bundle,SSLCABundle))
 
-        assert(isinstance(cabundle,SSLCABundle))
-
-        signed_content = self._signed_content()
-        signature_raw = self.signature.decode('base64')
         certs = self.package_certificate()
         if certs is None and signers_bundle is not None:
             certs = signers_bundle.certificate_chain(fingerprint = self.signer_fingerprint)
+        if not certs and trusted_bundle:
+            certs = trusted_bundle.certificate_chain(fingerprint = self.signer_fingerprint)
         if not certs:
             raise EWaptMissingCertificate('Control %s data has no matching certificate in Packages index or Package, please rescan your Packages index.' % self.asrequirement())
 
-        issued_by = cabundle.check_certificates_chain(certs)[-1]
+        #append trusted to ca
+
+        issued_by = trusted_bundle.check_certificates_chain(certs)[-1]
         #logger.debug('Certificate %s is trusted by root CA %s' % (cert.subject,issued_by.subject))
 
+        signed_content = self._signed_content()
+        signature_raw = self.signature.decode('base64')
         if certs[0].verify_content(signed_content,signature_raw,md=self._default_md):
             self._md = self._default_md
             return certs[0]
@@ -1159,7 +1162,7 @@ class PackageEntry(BaseObjectClass):
             str: signature
 
         """
-        if not os.path.isfile(self.localpath) and not os.path.isdir(self.localpath):
+        if not self.localpath or (not os.path.isfile(self.localpath) and not os.path.isdir(self.localpath)):
             raise Exception(u"%s is not a Wapt package" % self.localpath)
 
         if isinstance(certificate,list):
@@ -2363,7 +2366,7 @@ class WaptRemoteRepo(WaptBaseRepo):
 
                 try:
                     if self.cabundle is not None:
-                        package.check_control_signature(cabundle=self.cabundle,signers_bundle =  signer_certificates)
+                        package.check_control_signature(cabundle=self.cabundle,signers_bundle = signer_certificates)
                     new_packages.append(package)
                     if package.package not in self._index or self._index[package.package] < package:
                         self._index[package.package] = package

@@ -3641,10 +3641,6 @@ class Wapt(BaseObjectClass):
     def update(self,force=False,register=True,filter_on_host_cap=True):
         """Update local database with packages definition from repositories
 
-        .. versionchanged:: 1.3.11
-           If self.strict_control_signature is False, control signatures are not checked else
-               package entries with no matching certificates are discarded.
-
         Args:
             force (boolean):    update even if Packages index on repository has not been
                                 updated since last update (based on http headers)

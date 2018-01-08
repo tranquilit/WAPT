@@ -132,7 +132,7 @@ def main():
 
             if options.if_needed:
                 try:
-                    pe.check_control_signature(cabundle=signers_bundle,signers_bundle=signers_bundle)
+                    pe.check_control_signature(trusted_bundle=signers_bundle,signers_bundle=signers_bundle)
                     for md in ensure_list(options.md):
                         if not pe.has_file(pe.get_signature_filename(md)):
                             raise Exception('Missing signature for md %s' % md)

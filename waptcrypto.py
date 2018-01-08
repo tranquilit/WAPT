@@ -497,6 +497,9 @@ class SSLCABundle(BaseObjectClass):
                     # append chain of trusted upstream CA certificates
                     issuer_chain = cert.verify_signature_with(self)
                     for issuer in issuer_chain:
+                        if allow_pinned and issuer in self._certificates:
+                            result.append(issuer)
+                            break
                         issuer.verify_signature_with(self)
                         result.append(issuer)
 
@@ -673,10 +676,33 @@ class SSLCABundle(BaseObjectClass):
         else:
             return False
 
-    def as_pem(self):
-        return " \n".join([key.as_pem() for key in self._keys]) + \
-                " \n".join(["# CN: %s\n# Issuer CN: %s\n%s" % (crt.cn,crt.issuer_cn,crt.as_pem()) for crt in self._certificates]) + \
+    def as_pem(self,with_keys=True,password=None):
+        if isinstance(password,unicode):
+            password = password.encode('utf8')
+        # reorder by longest path to have leaf first
+        roots = [crt for crt in self._certificates]
+        return " \n".join([key.as_pem(password=password) for key in self._keys]) + \
+                " \n".join(["# CN: %s\n# Issuer CN: %s\n%s" % (crt.cn,crt.issuer_cn,crt.as_pem()) for crt in reversed(self._certificates)]) + \
                 " \n".join(["# CRL Issuer CN: %s\n%s" % (crl.issuer_cn,crl.as_pem()) for crl in self.crls])
+
+
+    def save_as_pem(self,filename,with_keys=True,password=None):
+        """Save the RSA  private key as a PEM encoded file
+
+        Optionnaly, encypt the key with a password.
+
+        Args:
+            filename (str) : filename of pem file to create. If not provided
+                             use the filename from self.
+            password (str) : password. If None, don't encrypt the key.
+                             if password is unicode, it is encoded in utf8 first.
+
+        """
+        # get before opening file to be sure to not overwrite a file if pem data can not decrypted...
+
+        pem_data = self.as_pem(with_keys=with_keys,password=password)
+        with open(filename,'wb') as f:
+            f.write(pem_data)
 
 
     def __repr__(self):
@@ -1179,12 +1205,107 @@ class SSLPrivateKey(BaseObjectClass):
         crypto_crt = builder.sign(ca_signing_key.rsa,algorithm=hashes.SHA256(), backend=default_backend())
         return SSLCertificate(crt = crypto_crt)
 
+    def build_csr(self,
+            cn=None,
+            organizational_unit=None,
+            organization=None,
+            locality=None,
+            country=None,
+            dnsname=None,
+            email=None,
+            is_ca=False,
+            is_code_signing=None,
+            key_usages=['digital_signature','content_commitment','key_cert_sign','data_encipherment']
+            ):
+        """Build a certificate signing request with self public key and supplied attributes,
+
+        Args:
+            is_ca (bool) : certificate is a CA root or intermediate or self-signed
+                           if None, default to True is ca_signing_cert is None
+            is_code_signing (bool): subject can sign code
+                           if None, default to (not is_ca)
+            dnsname (str): Witll be added as an DNS SubjectAlternativeName.
+            key_usages (list of str) : list of certificate / key usage targets.
+
+        Returns:
+            SSLCertificateSigningRequest
+        """
+
+        if is_code_signing is None:
+            is_code_signing = not is_ca
+
+        map = [
+            [x509.NameOID.COUNTRY_NAME,country or None],
+            [x509.NameOID.LOCALITY_NAME,locality or None],
+            [x509.NameOID.ORGANIZATION_NAME,organization or None],
+            [x509.NameOID.COMMON_NAME,cn or None],
+            [x509.NameOID.EMAIL_ADDRESS,email or None],
+            [x509.NameOID.ORGANIZATIONAL_UNIT_NAME,organizational_unit or None],
+            ]
+        att = []
+        for (oid,value) in map:
+            if value is not None:
+                att.append(x509.NameAttribute(oid,ensure_unicode(value)))
+
+        subject = x509.Name(att)
+
+        extensions = []
+
+        extensions.append(dict(
+            extension=x509.BasicConstraints(ca=is_ca,path_length=None),
+            critical=True))
+
+        if is_ca and not 'crl_sign' in key_usages:
+            key_usages.append('crl_sign')
+
+        if is_code_signing:
+            extensions.append(dict(
+                extension=x509.ExtendedKeyUsage([x509.OID_CODE_SIGNING]),
+                critical=True))
+
+        extensions.append(dict(
+                    extension=x509.SubjectKeyIdentifier.from_public_key(self.public_key()),
+                    critical = False))
+
+
+        if dnsname is not None:
+            extensions.append(dict(
+                    extension=x509.SubjectAlternativeName([x509.DNSName(ensure_unicode(dnsname))]),
+                    critical=False))
+
+        for key_usage in key_usages:
+            kwargs = {}
+            for key in [ 'content_commitment','crl_sign','data_encipherment','decipher_only',
+                        'digital_signature', 'encipher_only', 'key_agreement', 'key_cert_sign',
+                        'key_encipherment']:
+                kwargs[key] = key in key_usages
+
+        extensions.append(dict(
+                extension=x509.KeyUsage(**kwargs),
+                critical=True))
+
+        public_key = self.public_key()
+
+        if not isinstance(public_key,rsa.RSAPublicKey):
+            raise TypeError('public_key must be an instance of rsa.RSAPublicKey')
+
+        builder = x509.CertificateSigningRequestBuilder(subject_name=subject)
+        for ext in extensions:
+            builder = builder.add_extension(
+                ext.get('extension'), ext.get('critical')
+            )
+
+        crypto_csr = builder.sign(self.rsa,algorithm=hashes.SHA256(), backend=default_backend())
+        return SSLCertificateSigningRequest(csr=crypto_csr)
+
+
     def public_key(self):
         """Return the RSA public key object
 
         Returns:
             RSAPublicKey
         """
+
         return self.rsa.public_key()
 
     def public_key_as_pem(self):
@@ -1204,6 +1325,25 @@ class SSLPrivateKey(BaseObjectClass):
         """
         pem = self.public_key().public_bytes(encoding=serialization.Encoding.OpenSSH,format=serialization.PublicFormat.OpenSSH)
         return pem
+
+
+class SSLCertificateSigningRequest(BaseObjectClass):
+    def __init__(self,csr=None,csr_filename=None,csr_pem_string=None):
+        self.csr_filename = csr_filename
+        if csr:
+            self.csr = csr
+        elif csr_pem_string:
+            self.csr = x509.load_pem_x509_csr(str(csr_pem_string),default_backend())
+        elif csr_filename:
+            with open(csr_filename, "rb") as f:
+                self.csr = x509.load_pem_x509_csr(f.read(),default_backend())
+
+    def as_pem(self):
+        return self.csr.public_bytes(serialization.Encoding.PEM)
+
+    def save_as_pem(self,filename):
+        with open(filename, "wb") as f:
+            f.write(self.as_pem())
 
 class SSLCertificate(BaseObjectClass):
     """Hold a X509 public certificate"""
@@ -1734,6 +1874,53 @@ class SSLCertificate(BaseObjectClass):
             signer=claim['signer'],
             verified_by=self.cn,
             )
+
+    def build_certificate_from_csr(self,csr,ca_signing_key,validity_duration=365):
+        """
+        Args:
+            csr (SSLCertificateSigningRequest):
+            ca_signing_key (SSLPrivateKey): sign the resulting certificate with this CA Key
+
+        Returns:
+            SSLCertificate
+        """
+        if not csr.csr.is_signature_valid:
+            raise EWaptCryptoException('CSR signature check failed')
+
+        extensions = []
+
+        issuer = self.crt.subject
+        extensions.append(
+            dict(extension=x509.AuthorityKeyIdentifier.from_issuer_subject_key_identifier(
+                self.crt.extensions.get_extension_for_oid(x509.OID_SUBJECT_KEY_IDENTIFIER)),
+            critical=False))
+
+        serial_number = x509.random_serial_number()
+
+        builder = x509.CertificateBuilder().serial_number(
+            serial_number
+        ).issuer_name(
+            issuer
+        ).subject_name(
+            csr.csr.subject
+        ).public_key(
+            csr.csr.public_key()
+        ).not_valid_before(
+            datetime.datetime.utcnow(),
+        ).not_valid_after(
+            datetime.datetime.utcnow()+datetime.timedelta(days=validity_duration)
+        )
+
+        for ext in csr.csr.extensions:
+            builder = builder.add_extension(ext.value, ext.critical)
+
+        for ext in extensions:
+            builder = builder.add_extension(
+                ext.get('extension'), ext.get('critical')
+            )
+
+        crypto_crt = builder.sign(ca_signing_key.rsa,algorithm=hashes.SHA256(), backend=default_backend())
+        return SSLCertificate(crt = crypto_crt)
 
 class SSLCRL(BaseObjectClass):
     def __init__(self,filename=None,pem_data=None,der_data=None):

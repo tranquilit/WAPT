@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.1.8"
+__version__ = "1.5.1.14"
 import logging
 import sys
 import tempfile
@@ -901,10 +901,60 @@ C7587600-34D4-11E1-A8F9-C03FD5609ED9""".splitlines()
     print repo.packages
 
 
+def test_inter():
+    # test when inter ca is deployed on host, and packages signed with gest
+    caroottest_key = SSLPrivateKey('c:/private/caroottest.pem')
+    caroottest_key.create()
+    caroottest_key.save_as_pem()
+
+    caroottest_cert = caroottest_key.build_sign_certificate(cn='caroottest',is_ca=True)
+    caroottest_cert.save_as_pem('c:/private/caroottest.crt')
+
+    # inter CA
+    inter1test_key = SSLPrivateKey('c:/private/inter1test.pem')
+    inter1test_key.create()
+    inter1test_key.save_as_pem()
+
+    inter1test_cert = inter1test_key.build_sign_certificate(caroottest_key,caroottest_cert,cn='inter1test',is_ca=True)
+    inter1test_cert.save_as_pem('c:/private/inter1test.crt')
+
+    # leaf dev cert
+    devtest_key = SSLPrivateKey('c:/private/devtest.pem')
+    devtest_key.create()
+    devtest_key.save_as_pem()
+
+    devtest_cert = devtest_key.build_sign_certificate(inter1test_key,inter1test_cert,cn='devtest',is_code_signing=True)
+    devtest_cert.save_as_pem('c:/private/devtest.crt')
+
+    catestbundle = SSLCABundle(certificates = [caroottest_cert,inter1test_cert,devtest_cert])
+    catestbundle.save_as_pem('c:/private/catest-full.crt')
+
+    trusted = SSLCABundle(certificates = [inter1test_cert])
+
+    pe = PackageEntry('test')
+    pe.build_management_package()
+    pe.sign_package(devtest_cert,devtest_key)
+    print pe.check_control_signature(trusted)
+    print trusted.check_certificates_chain(pe.package_certificate())
+
+    print('OK')
+
+    csr = devtest_key.build_csr(cn='test2')
+    print csr
+
+    test2_cert = inter1test_cert.build_certificate_from_csr(csr,inter1test_key)
+    print test2_cert
+    print catestbundle.check_certificates_chain(test2_cert)
+
+
+
+
 
 
 if __name__ == '__main__':
     setup_test()
+    test_inter()
+
     test_host_repo()
     test_personalchain()
     test_newcrypto()
