@@ -785,7 +785,7 @@ var
   n: PVirtualNode;
   filename, filePath, target_directory,proxy: string;
   grid: TSOGrid;
-  host_repo,host_package: Variant;
+  host_repo,host_package,cabundle: Variant;
 begin
   if FPackageRequest = AValue then
     Exit;
@@ -803,8 +803,8 @@ begin
     begin
       if IsHost then
       begin
-
-        host_repo := DMPython.common.WaptHostRepo(name := 'wapt-host', host_id := FPackageRequest);
+        cabundle := DMPython.WAPT.cabundle;
+        host_repo := DMPython.common.WaptHostRepo(name := 'wapt-host', host_id := FPackageRequest, cabundle :=  cabundle );
         host_repo.load_config_from_file(WaptIniFilename);
         host_package := host_repo.get(FPackageRequest);
         if not VarIsEmpty(host_package) and not VarIsNone(host_package) then
