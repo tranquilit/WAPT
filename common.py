@@ -2260,19 +2260,11 @@ class WaptHostRepo(WaptRepo):
 
                     try:
                         cert_data = zip.read(name='WAPT/certificate.crt')
-                        signer_cert = SSLCertificate(crt_string=cert_data)
-                        signers_bundle = SSLCABundle(certificates=[signer_cert])
+                        signers_bundle = SSLCABundle()
+                        signers_bundle.add_pem(cert_data)
                     except Exception as e:
                         logger.warning('Error reading host package certificate: %s'%repr(e))
-                        signer_cert = None
                         signers_bundle = None
-
-                # keep content with index as it should be small
-                package._package_content = _host_package_content
-                package._packages_date = httpdatetime2isodate(host_package.headers.get('last-modified',None))
-
-                # TODO better
-                self._packages_date = package._packages_date
 
                 try:
                     if self.cabundle is not None:
@@ -2280,6 +2272,14 @@ class WaptHostRepo(WaptRepo):
                     self._packages.append(package)
                     if package.package not in self._index or self._index[package.package] < package:
                         self._index[package.package] = package
+
+                    # keep content with index as it should be small
+                    package._package_content = _host_package_content
+                    package._packages_date = httpdatetime2isodate(host_package.headers.get('last-modified',None))
+
+                    # TODO better
+                    self._packages_date = package._packages_date
+
                 except (SSLVerifyException,EWaptNotSigned) as e:
                     logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.cabundle))
                     self.discarded.append(package)
