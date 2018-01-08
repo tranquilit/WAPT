@@ -1358,14 +1358,14 @@ class PackageEntry(BaseObjectClass):
         errors.extend([ fn for fn in files if fn not in expected])
         return errors
 
-    def check_package_signature(self,cabundle):
+    def check_package_signature(self,trusted_bundle):
         """Check
         - hash of files in unzipped package_dir with list in package's manifest file
         - try to decrypt manifest signature with package's certificate
         - check that the package certificate is issued by a know CA or the same as one the authorized certitificates.
 
         Args:
-            cabundle (SSLCABundle) : list of authorized certificates / ca filepaths
+            trusted_bundle (SSLCABundle) : list of authorized certificates / ca filepaths
 
         Returns:
             SSLCertificate : matching certificate
@@ -1373,15 +1373,15 @@ class PackageEntry(BaseObjectClass):
         Raises:
             Exception if no certificate match is found.
         """
-        if not cabundle:
-            raise EWaptBadCertificate(u'No supplied CABundle to check package signature')
+        if not trusted_bundle:
+            raise EWaptBadCertificate(u'No supplied trusted_bundle to check package signature')
 
-        if isinstance(cabundle,SSLCertificate):
-            cert = cabundle
-            cabundle = SSLCABundle()
-            cabundle.add_pem(cert.as_pem())
+        if isinstance(trusted_bundle,SSLCertificate):
+            cert = trusted_bundle
+            trusted_bundle = SSLCABundle()
+            trusted_bundle.add_pem(cert.as_pem())
 
-        assert(isinstance(cabundle,SSLCABundle))
+        assert(isinstance(trusted_bundle,SSLCABundle))
 
         if not self.sourcespath:
             raise EWaptNotSourcesDirPackage(u'Package entry is not an unzipped sources package directory.')
@@ -1413,7 +1413,7 @@ class PackageEntry(BaseObjectClass):
         try:
             certs = self.package_certificate()
             if certs:
-                issued_by = ', '.join('%s' % ca.cn for ca in cabundle.check_certificates_chain(certs))
+                issued_by = ', '.join('%s' % ca.cn for ca in trusted_bundle.check_certificates_chain(certs))
                 logger.debug('Certificate %s is trusted by root CA %s' % (certs[0].subject,issued_by))
 
             if certs:
@@ -1431,9 +1431,9 @@ class PackageEntry(BaseObjectClass):
                 raise SSLVerifyException(u'No certificate found in the package. Is the package signed with Wapt version prior to 1.5 ?' % signer_cert)
 
         except Exception as e:
-            logger.debug('Check_package_signature failed for %s. Signer:%s, cabundle: %s :  %s' % (
+            logger.debug('Check_package_signature failed for %s. Signer:%s, trusted_bundle: %s :  %s' % (
                     self.asrequirement(),
-                    self.signer,u'\n'.join([u'%s' % cert for cert in cabundle.certificates()]),
+                    self.signer,u'\n'.join([u'%s' % cert for cert in trusted_bundle.certificates()]),
                     traceback.format_exc()))
             raise
 
@@ -2366,7 +2366,7 @@ class WaptRemoteRepo(WaptBaseRepo):
 
                 try:
                     if self.cabundle is not None:
-                        package.check_control_signature(cabundle=self.cabundle,signers_bundle = signer_certificates)
+                        package.check_control_signature(trusted_bundle=self.cabundle,signers_bundle = signer_certificates)
                     new_packages.append(package)
                     if package.package not in self._index or self._index[package.package] < package:
                         self._index[package.package] = package
