@@ -17,6 +17,7 @@ type
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     CBCheckCertificatesValidity: TCheckBox;
+    CBDualSign: TCheckBox;
     CBVerifyCert: TCheckBox;
     CBUseKerberos: TCheckBox;
     EdServerCertificate: TFileNameEdit;

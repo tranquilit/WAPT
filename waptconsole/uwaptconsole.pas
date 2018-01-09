@@ -1490,7 +1490,7 @@ end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 var
-  waptsetupPath, buildDir: string;
+  waptsetupPath, buildDir, SignDigests: string;
   ini: TIniFile;
   SORes: ISuperObject;
   FatUpgrade:Boolean;
@@ -1525,6 +1525,7 @@ begin
       EdServerCertificate.Text := ini.ReadString('global', 'verify_cert', '0'); ;
       CBUseKerberos.Checked:=ini.ReadBool('global', 'use_kerberos', False );
       CBCheckCertificatesValidity.Checked:=ini.ReadBool('global', 'check_certificates_validity',True );
+      CBDualSign.Checked:= (ini.ReadString('global', 'sign_digests','') = 'sha256,sha1');
       if FatUpgrade then
         // include waptagent.exe in waptupgrade package...
         fnWaptDirectory.Directory := WaptBaseDir()+'\waptupgrade'
@@ -1540,13 +1541,20 @@ begin
             ProgressTitle(rsCreationInProgress);
             Start;
             waptsetupPath := '';
+
+            if CBDualSign.Checked then
+              SignDigests := 'sha256,sha1'
+            else
+              SignDigests := 'sha256';
+
             try
               ProgressTitle(rsCreationInProgress);
               waptsetupPath := CreateWaptSetup(fnPublicCert.FileName,
                 edRepoUrl.Text, edWaptServerUrl.Text, fnWaptDirectory.Directory, edOrgName.Text, @DoProgress, 'waptagent',
                 EdServerCertificate.Text,
                 CBUseKerberos.Checked,
-                CBCheckCertificatesValidity.Checked);
+                CBCheckCertificatesValidity.Checked
+                );
 
             except
               on E:Exception do
@@ -1567,7 +1575,8 @@ begin
                   waptconfigfile := AppIniFilename(),
                   wapt_server_user := WaptServerUser,
                   wapt_server_passwd := WaptServerPassword,
-                  key_password := dmpython.privateKeyPassword
+                  key_password := dmpython.privateKeyPassword,
+                  sign_digests := SignDigests
                   );
 
               if FileExists(VarToStr(BuildRes.get('localpath'))) then

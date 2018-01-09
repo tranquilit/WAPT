@@ -317,7 +317,7 @@ def duplicate_from_file(package_filename,new_prefix='test',target_directory=None
     return result
 
 
-def build_waptupgrade_package(waptconfigfile,target_directory=None,wapt_server_user=None,wapt_server_passwd=None,key_password=None):
+def build_waptupgrade_package(waptconfigfile,target_directory=None,wapt_server_user=None,wapt_server_passwd=None,key_password=None,sign_digests=None):
     if target_directory is None:
         target_directory = tempfile.gettempdir()
 
@@ -329,6 +329,9 @@ def build_waptupgrade_package(waptconfigfile,target_directory=None,wapt_server_u
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
     wapt.dbpath = r':memory:'
     wapt.use_hostpackages = False
+
+    if sign_digests is None:
+        sign_digests = wapt.sign_digests
 
     if not wapt.personal_certificate_path or not os.path.isfile(wapt.personal_certificate_path):
         raise Exception(u'No personal certificate provided or not found (%s) for signing waptupgrade package' % wapt.personal_certificate_path)
@@ -349,7 +352,7 @@ def build_waptupgrade_package(waptconfigfile,target_directory=None,wapt_server_u
     key = wapt.private_key(private_key_password=key_password)
     if not certs[0].is_code_signing:
         raise Exception(u'%s is not code signing certificate' % wapt.personal_certificate_path)
-    entry.sign_package(private_key=key,certificate = certs,private_key_password=key_password,mds = wapt.sign_digests)
+    entry.sign_package(private_key=key,certificate = certs,private_key_password=key_password,mds = ensure_list(sign_digests))
 
     wapt.http_upload_package(entry.localpath,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
     return entry.as_dict()

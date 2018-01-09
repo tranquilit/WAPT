@@ -1,10 +1,10 @@
 object VisCreateWaptSetup: TVisCreateWaptSetup
   Left = 411
-  Height = 279
+  Height = 305
   Top = 217
   Width = 510
   Caption = 'Create WAPT agent'
-  ClientHeight = 279
+  ClientHeight = 305
   ClientWidth = 510
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -15,6 +15,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object fnPublicCert: TFileNameEdit
     Left = 262
     Height = 21
+    Hint = 'X509 PEM encoded file with CA certificates which are trusted'
     Top = 16
     Width = 216
     Filter = '*.crt|*.crt'
@@ -28,12 +29,12 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     OnEditingDone = fnPublicCertEditingDone
   end
   object Label1: TLabel
-    Left = 8
+    Left = 24
     Height = 13
     Top = 21
-    Width = 249
+    Width = 228
     Alignment = taRightJustify
-    Caption = 'Authorized Packages Certificate / CA bundle'
+    Caption = 'Authorized Packages Certificates Bundle'
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False
@@ -41,7 +42,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object edRepoUrl: TEdit
     Left = 262
     Height = 21
-    Hint = 'E.g. : http://wapt.tranquilit.local/wapt.'
+    Hint = 'E.g. : https://wapt.mydomain.lan/wapt'
     Top = 71
     Width = 216
     TabOrder = 2
@@ -63,7 +64,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Left = 262
     Height = 21
     Hint = 'E.g. : Tranquil IT Systems.'
-    Top = 214
+    Top = 216
     Width = 216
     TabOrder = 7
   end
@@ -71,7 +72,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Left = 8
     Height = 13
     Hint = 'Your company name.'
-    Top = 217
+    Top = 219
     Width = 250
     Alignment = taRightJustify
     AutoSize = False
@@ -81,7 +82,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object Panel1: TPanel
     Left = 0
     Height = 27
-    Top = 252
+    Top = 278
     Width = 510
     Align = alBottom
     BevelOuter = bvNone
@@ -91,7 +92,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     object BitBtn1: TBitBtn
       Left = 349
       Height = 23
-      Top = -1
+      Top = 2
       Width = 75
       Anchors = [akTop, akRight]
       Default = True
@@ -103,7 +104,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     object BitBtn2: TBitBtn
       Left = 429
       Height = 23
-      Top = -1
+      Top = 2
       Width = 75
       Anchors = [akTop, akRight]
       Cancel = True
@@ -143,7 +144,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object edWaptServerUrl: TEdit
     Left = 262
     Height = 21
-    Hint = 'E.g. : http://wapt:8080.'
+    Hint = 'E.g. : https://wapt.mydomain.lan'
     Top = 99
     Width = 216
     TabOrder = 3
@@ -168,7 +169,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Width = 250
     Alignment = taRightJustify
     AutoSize = False
-    Caption = 'Path to Servers CA certificates bundle'
+    Caption = 'Path to https Servers CA certificates bundle'
     ParentColor = False
   end
   object EdServerCertificate: TFileNameEdit
@@ -198,6 +199,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object CBUseKerberos: TCheckBox
     Left = 262
     Height = 17
+    Hint = 'When first registering to waptserver, host will try to authenticate using their kerberos account'
     Top = 170
     Width = 186
     Caption = 'Use Kerberos for initial registration'
@@ -212,6 +214,15 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Caption = 'Check packages certificates validity'
     TabOrder = 9
     Visible = False
+  end
+  object CBDualSign: TCheckBox
+    Left = 262
+    Height = 17
+    Hint = 'Check that certificate dates are valid and  issuer is a know one.'
+    Top = 248
+    Width = 240
+    Caption = 'Sign waptupgrade with both sha256 and sha1'
+    TabOrder = 10
   end
   object ActionList1: TActionList
     left = 16
