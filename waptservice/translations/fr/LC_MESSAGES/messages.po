@@ -90,8 +90,8 @@ msgid ""
 "{classname} {id} created {create_date} started:{start_date} "
 "finished:{finish_date} "
 msgstr ""
-{classname} {id} created {create_date} started:{start_date} "
-"finished:{finish_date} 
+"{classname} {id} created {create_date} started:{start_date} "
+"finished:{finish_date} " 
 
 #: waptservice_common.py:545
 msgid "Reconfiguring network access"
