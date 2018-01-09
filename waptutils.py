@@ -50,6 +50,7 @@ import urlparse
 import hashlib
 import traceback
 import imp
+import shutil
 
 if hasattr(sys.stdout,'name') and sys.stdout.name == '<stdout>':
     # not in pyscripter debugger
@@ -588,7 +589,7 @@ def _md5_for_file(fname, block_size=2**20):
         md5.update(data)
     return md5.hexdigest()
 
-def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False,referer=None,user_agent=None,cert=None,resume=False,md5=None):
+def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False,referer=None,user_agent=None,cert=None,resume=False,md5=None,cache_dir=None):
     r"""Copy the contents of a file from a given URL to a local file.
 
     Args:
@@ -600,6 +601,11 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         verify_cert (bool or str) : either False, True (verify with embedded CA list), or path to a directory or PEM encoded CA bundle file
                                     to check https certificate signature against.
         cert (list) : pair of (x509certfilename,pemkeyfilename) for authenticating the client
+        referer (str):
+        user_agent:
+        resume (bool):
+        md5 (str) :
+        cache_dir (str) : if file exists here, and md5 matches, copy from here instead of downloading. If not, put a copy of the file here after downloading.
 
     Returns:
         str : path to downloaded file
@@ -662,6 +668,20 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         header.update({'user-agent': '%s' % user_agent})
 
     target_fn = os.path.join(dir,filename)
+
+    # return cached file if md5 matches.
+    if md5 is not None and cache_dir is not None and os.path.isdir(cache_dir):
+        cached_filename = os.path.join(cache_dir,filename)
+        if os.path.isfile(cached_filename):
+            cached_md5 = _md5_for_file(cached_filename)
+            if cached_md5 == md5:
+                resume = False
+                if cached_filename != target_fn:
+                    shutil.copy2(cached_filename,target_fn)
+                return target_fn
+    else:
+        cached_filename = None
+        cached_md5 = None
 
     if os.path.isfile(target_fn) and resume:
         try:
@@ -762,6 +782,15 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
     if file_date:
         file_datetime = httpdatetime2time(file_date)
         os.utime(target_fn,(file_datetime,file_datetime))
+
+    # cache result
+    if cache_dir:
+        if not os.path.isdir(cache_dir):
+            os.makedirs(cache_dir)
+        cached_filename = os.path.join(cache_dir,filename)
+        if target_fn != cached_filename:
+            shutil.copy2(target_fn,cached_filename)
+
     return target_fn
 
 
