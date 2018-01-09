@@ -36,11 +36,11 @@ msgstr "Mises à jour des logiciels installés"
 
 #: waptservice.py:704
 msgid "LongTask"
-msgstr ""
+msgstr "LongueTâche"
 
 #: waptservice.py:719
 msgid "Cleanup"
-msgstr ""
+msgstr "Nettoyage"
 
 #: waptservice.py:735
 msgid "Trace of the installation of {}"
@@ -89,6 +89,8 @@ msgid ""
 "{classname} {id} created {create_date} started:{start_date} "
 "finished:{finish_date} "
 msgstr ""
+{classname} {id} created {create_date} started:{start_date} "
+"finished:{finish_date} 
 
 #: waptservice_common.py:545
 msgid "Reconfiguring network access"
@@ -101,7 +103,7 @@ msgstr "Mise à jour du client WAPT"
 #: waptservice_common.py:580
 #, python-format
 msgid "WaptService restart planned: %s"
-msgstr ""
+msgstr "Redémarrage de Waptservice planifié: %s"
 
 #: waptservice_common.py:584
 msgid "Restarting local WAPT service"
@@ -154,7 +156,7 @@ msgstr "Indisponible(s) : {}"
 
 #: waptservice_common.py:687
 msgid "Upgrade packages installed on host"
-msgstr ""
+msgstr "Mettre à jour les paquets installés sur le poste"
 
 #: waptservice_common.py:704
 msgid "WAPT Server has been notified"
@@ -227,11 +229,11 @@ msgstr "Téléchargement de {packagename} (tâche #{id})"
 
 #: waptservice_common.py:885
 msgid "Error during install of {}: errors in packages {}"
-msgstr ""
+msgstr "Erreur lors de l'installation de {}: erreurs dans les paquets {}"
 
 #: waptservice_common.py:899
 msgid "Installation of {packagename} (task #{id})"
-msgstr "Installation de {packagename} (task #{id})"
+msgstr "Installation de {packagename} (tâche #{id})"
 
 #: waptservice_common.py:918
 msgid "Removed : {}"
@@ -328,11 +330,11 @@ msgstr "Erreurs: {0}"
 
 #: templates/index.html:23
 msgid "Authorized Packages's Signer certificates:"
-msgstr ""
+msgstr "Certificats autorisés pour l'installation de paquets"
 
 #: templates/index.html:37
 msgid "Repositories:"
-msgstr ""
+msgstr "Dépôts"
 
 #: templates/index.html:51
 msgid "Computer information"
@@ -368,7 +370,7 @@ msgstr "Nom de produit du système : {0}"
 
 #: templates/install.html:3
 msgid "Installing {0} <a href=\"task?id={1}\">task {1}"
-msgstr ""
+msgstr "Installation de {0} <a href=\"task?id={1}\">tâche {1}"
 
 #: templates/layout.html:12
 msgid "WAPT Service status"
@@ -376,7 +378,7 @@ msgstr "Statut du service WAPT"
 
 #: templates/layout.html:40
 msgid "WAPT"
-msgstr ""
+msgstr "WAPT"
 
 #: templates/layout.html:41 templates/status.html:6
 msgid "Installed packages"
@@ -448,15 +450,15 @@ msgstr "Installer"
 
 #: templates/package_details.html:5
 msgid "version"
-msgstr ""
+msgstr "version"
 
 #: templates/package_details.html:5
 msgid "description"
-msgstr ""
+msgstr "description"
 
 #: templates/package_details.html:5
 msgid "maintainer"
-msgstr ""
+msgstr "mainteneur"
 
 #: templates/package_details.html:16
 msgid "Download"
@@ -468,7 +470,7 @@ msgstr "Désinstaller"
 
 #: templates/remove.html:3
 msgid "Launched uninstall of {0} <a href=\"task?id={1}\"> task {1}</a>"
-msgstr ""
+msgstr "Désinstallation de {0} <a href=\"task?id={1}\"> tâche {1}</a>"
 
 #: templates/status.html:8
 msgid "Status"
