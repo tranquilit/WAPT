@@ -1,7 +1,7 @@
-msgid "Only required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessOnly required if a proxy is needed for templates accessIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleOnly required if a proxy is needed for waptserver and main waptrepoIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoIf 1 : use default wapt cacert.pem bundleOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoOnly required if a proxy is needed for waptserver and main waptrepoIf 1 : use default wapt cacert.pem bundleIf 1 : use default wapt cacert.pem bundleOnly required if a proxy is needed for waptserver and main waptrepo"
+msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-msgid "Only required if a proxy is needed for waptserver and main waptrepo"
+msgid "Only suitable for development hosts."
 msgstr ""
 
 #: tform1.buttonpanel1.helpbutton.caption
@@ -239,11 +239,25 @@ msgid "Check packages certificates validity"
 msgstr ""
 
 #: tviscreatewaptsetup.cbcheckcertificatesvalidity.hint
+msgctxt "tviscreatewaptsetup.cbcheckcertificatesvalidity.hint"
+msgid "Check that certificate dates are valid and  issuer is a know one."
+msgstr ""
+
+#: tviscreatewaptsetup.cbdualsign.caption
+msgid "Sign waptupgrade with both sha256 and sha1"
+msgstr ""
+
+#: tviscreatewaptsetup.cbdualsign.hint
+msgctxt "TVISCREATEWAPTSETUP.CBDUALSIGN.HINT"
 msgid "Check that certificate dates are valid and  issuer is a know one."
 msgstr ""
 
 #: tviscreatewaptsetup.cbusekerberos.caption
 msgid "Use Kerberos for initial registration"
+msgstr ""
+
+#: tviscreatewaptsetup.cbusekerberos.hint
+msgid "When first registering to waptserver, host will try to authenticate using their kerberos account"
 msgstr ""
 
 #: tviscreatewaptsetup.cbverifycert.caption
@@ -256,7 +270,7 @@ msgid "E.g. : Tranquil IT Systems."
 msgstr ""
 
 #: tviscreatewaptsetup.edrepourl.hint
-msgid "E.g. : http://wapt.tranquilit.local/wapt."
+msgid "E.g. : https://wapt.mydomain.lan/wapt"
 msgstr ""
 
 #: tviscreatewaptsetup.edservercertificate.hint
@@ -265,11 +279,15 @@ msgid "E.g. : c:\\private\\tranquilit.crt"
 msgstr ""
 
 #: tviscreatewaptsetup.edwaptserverurl.hint
-msgid "E.g. : http://wapt:8080."
+msgid "E.g. : https://wapt.mydomain.lan"
+msgstr ""
+
+#: tviscreatewaptsetup.fnpubliccert.hint
+msgid "X509 PEM encoded file with CA certificates which are trusted"
 msgstr ""
 
 #: tviscreatewaptsetup.label1.caption
-msgid "Authorized Packages Certificate / CA bundle"
+msgid "Authorized Packages Certificates Bundle"
 msgstr ""
 
 #: tviscreatewaptsetup.label2.caption
@@ -306,7 +324,7 @@ msgstr ""
 
 #: tviscreatewaptsetup.label6.caption
 msgctxt "TVISCREATEWAPTSETUP.LABEL6.CAPTION"
-msgid "Path to Servers CA certificates bundle"
+msgid "Path to https Servers CA certificates bundle"
 msgstr ""
 
 #: tvisdisplaypreferences.caption
@@ -1114,7 +1132,7 @@ msgstr ""
 
 #: tviswaptgui.actchangepassword.caption
 msgctxt "tviswaptgui.actchangepassword.caption"
-msgid "Update password"
+msgid "Change admin password"
 msgstr ""
 
 #: tviswaptgui.actchangeprivatekeypassword.caption
@@ -1158,11 +1176,6 @@ msgctxt "tviswaptgui.actdeletegroup.caption"
 msgid "Delete bundle"
 msgstr ""
 
-#: tviswaptgui.actdeletehostsandinventory.caption
-msgctxt "TVISWAPTGUI.ACTDELETEHOSTSANDINVENTORY.CAPTION"
-msgid "Remove host configuration and inventory "
-msgstr ""
-
 #: tviswaptgui.actdeletehostspackageandinventory.caption
 msgctxt "TVISWAPTGUI.ACTDELETEHOSTSPACKAGEANDINVENTORY.CAPTION"
 msgid "Remove host"
@@ -1173,11 +1186,6 @@ msgctxt "TVISWAPTGUI.ACTDELETEHOSTSPACKAGEANDINVENTORY.HINT"
 msgid "Remove from inventory"
 msgstr ""
 
-#: tviswaptgui.actdeletehostspackages.caption
-msgctxt "TVISWAPTGUI.ACTDELETEHOSTSPACKAGES.CAPTION"
-msgid "Remove Host configuration only"
-msgstr ""
-
 #: tviswaptgui.actdeletepackage.caption
 msgctxt "tviswaptgui.actdeletepackage.caption"
 msgid "Remove from repository"
@@ -1186,6 +1194,10 @@ msgstr ""
 #: tviswaptgui.actdisplaypreferences.caption
 msgctxt "TVISWAPTGUI.ACTDISPLAYPREFERENCES.CAPTION"
 msgid "Display preferences"
+msgstr ""
+
+#: tviswaptgui.actdisplayusermessage.caption
+msgid "Send a message to users"
 msgstr ""
 
 #: tviswaptgui.acteditgroup.caption
@@ -1261,8 +1273,20 @@ msgctxt "tviswaptgui.actimportfromrepo.caption"
 msgid "Import from internet"
 msgstr ""
 
+#: tviswaptgui.actlaunchgpupdate.caption
+msgid "Update AD Group Policies on hosts"
+msgstr ""
+
+#: tviswaptgui.actlaunchwaptexit.caption
+msgid "Propose Upgrades to logged on users"
+msgstr ""
+
 #: tviswaptgui.actmakepackagetemplate.caption
 msgid "Make package template from setup file"
+msgstr ""
+
+#: tviswaptgui.actpackagesforceinstall.caption
+msgid "Force install"
 msgstr ""
 
 #: tviswaptgui.actpackagesforget.caption
@@ -1376,6 +1400,10 @@ msgstr ""
 msgid "Launch TISHelp"
 msgstr ""
 
+#: tviswaptgui.acttriggerburstupgrades.caption
+msgid "Apply Burst Upgrades"
+msgstr ""
+
 #: tviswaptgui.acttriggerhostupdate.caption
 msgctxt "tviswaptgui.acttriggerhostupdate.caption"
 msgid "Check updates"
@@ -1388,7 +1416,7 @@ msgstr ""
 
 #: tviswaptgui.acttriggerhostupgrade.caption
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.CAPTION"
-msgid "Apply updates"
+msgid "Apply upgrades"
 msgstr ""
 
 #: tviswaptgui.acttriggerhostupgrade.hint
@@ -1853,6 +1881,10 @@ msgctxt "TVISWAPTGUI.MENUITEM55.CAPTION"
 msgid "-"
 msgstr ""
 
+#: tviswaptgui.menuitem57.caption
+msgid "Trigger Burst Updates"
+msgstr ""
+
 #: tviswaptgui.menuitem6.caption
 msgid "New"
 msgstr ""
@@ -1976,6 +2008,10 @@ msgstr ""
 
 #: tviswaptgui.toolbutton6.caption
 msgid "ToolButton6"
+msgstr ""
+
+#: tviswaptgui.toolbuttonsep1.caption
+msgid "ToolButtonSep1"
 msgstr ""
 
 #: tviswuaclassificationsselect.caption

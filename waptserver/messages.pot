@@ -1,243 +1,142 @@
 # Translations template for PROJECT.
-# Copyright (C) 2017 ORGANIZATION
+# Copyright (C) 2018 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-01-12 17:22+0100\n"
+"POT-Creation-Date: 2018-01-09 10:34+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.3.4\n"
+"Generated-By: Babel 2.5.1\n"
 
-#: waptserver.py:178
-msgid "Could not connect to mongodb database: {}."
-msgstr ""
-
-#: waptserver.py:194
-msgid "Could not get hosts collection from db: {}."
-msgstr ""
-
-#: waptserver.py:273
+#: waptserver.py:266
 msgid "You have to login with proper credentials"
-msgstr ""
+msgstr "Vous devez vous loguer avec des identifiants valables"
 
-#: waptserver.py:488 waptserver.py:601
+#: waptserver.py:601 waptserver.py:838
 msgid "Problem during upload"
-msgstr ""
+msgstr "Problème pendant l'upload"
 
-#: waptserver.py:505
+#: waptserver.py:611
 msgid "Not a valid wapt package"
 msgstr ""
 
-#: waptserver.py:508 waptserver.py:559
+#: waptserver.py:614
 msgid "Wrong file type"
-msgstr ""
+msgstr "Mauvais type de fichier"
 
-#: waptserver.py:510 waptserver.py:630
+#: waptserver.py:616 waptserver.py:862
 msgid "Unsupported method"
-msgstr ""
+msgstr "Méthode non supportée"
 
-#: waptserver.py:517 waptserver.py:635
+#: waptserver.py:623 waptserver.py:867
 msgid "unexpected: {}"
 msgstr ""
 
-#: waptserver.py:547
-msgid "File {} uploaded to {}"
-msgstr ""
+#: waptserver.py:734
+msgid "{} Packages uploaded, {} errors.{}"
+msgstr "{} paquets chargés, {} erreurs.{}"
 
-#: waptserver.py:557
-msgid "No data received"
-msgstr ""
+#: waptserver.py:814
+msgid "{} Host packages uploaded, {} errors"
+msgstr "{} Paquets machines chargés, {} erreurs"
 
-#: waptserver.py:563
-msgid "No package file provided in request"
-msgstr ""
-
-#: waptserver.py:605
+#: waptserver.py:841
 msgid "{} uploaded"
-msgstr ""
+msgstr "{} chargés"
 
-#: waptserver.py:628
+#: waptserver.py:860
 msgid "Wrong file name (version conflict?)"
-msgstr ""
+msgstr "Mauvais nom de fichier(Conflit de version ?)"
 
-#: waptserver.py:648
-msgid "Incorrect credentials."
-msgstr ""
-
-#: waptserver.py:650
-msgid "Couldn't access IPC$ share."
-msgstr ""
-
-#: waptserver.py:677
-msgid "WAPT server must be run on Linux."
-msgstr ""
-
-#: waptserver.py:679
-msgid "smbclient installed on WAPT server."
-msgstr ""
-
-#: waptserver.py:681
-msgid "winexe is not installed on WAPT server."
-msgstr ""
-
-#: waptserver.py:686
-msgid "Credentials are missing."
-msgstr ""
-
-#: waptserver.py:688
-msgid "There are no registered computers."
-msgstr ""
-
-#: waptserver.py:707
-msgid "Unsupported HTTP method."
-msgstr ""
-
-#: waptserver.py:872
-msgid "Unknown uuid"
-msgstr ""
-
-#: waptserver.py:894
-msgid "No reachable IP for {}"
-msgstr ""
-
-#: waptserver.py:908
+#: waptserver.py:1098
 msgid "WAPT Server running"
 msgstr ""
 
-#: waptserver.py:931
-msgid "Hosts scan launched"
-msgstr ""
+#: waptserver.py:1122
+#, python-format
+msgid "Hosts connection reset launched for %s host(s)"
+msgstr "Reset des connection machines lancé pour %s hôte(s)"
 
-#: waptserver.py:953
-msgid "Couldn't connect to web service : {}."
-msgstr ""
+#: waptserver.py:1124
+msgid "Hosts connection reset launched for all hosts"
+msgstr "Reset de connection lancé pour toutes les machines"
 
-#: waptserver.py:1011
-msgid "Triggered tasks: {}"
-msgstr ""
-
-#: waptserver.py:1084
-msgid "Nothing to upgrade."
-msgstr ""
-
-#: waptserver.py:1088
-msgid ""
-"Triggered {} task(s):\n"
-"{}"
-msgstr ""
-
-#: waptserver.py:1097 waptserver.py:1145
-msgid "The WAPT service is unreachable."
-msgstr ""
-
-#: waptserver.py:1137
-msgid "Triggered task: {}"
-msgstr ""
-
-#: waptserver.py:1165
+#: waptserver.py:1279
 msgid "Sending magic wakeonlan packets to {} for machine {}"
-msgstr ""
+msgstr "Lancement du datagram magique WakeOnLan vers {} pour la machine {}"
 
-#: waptserver.py:1177
-msgid "Wakeonlan packets sent to {} for machine {}"
-msgstr ""
+#: waptserver.py:1293
+msgid "Wakeonlan packets sent to {} machines."
+msgstr "datagram Wakeonlan lancé vers {} machines."
 
-#: waptserver.py:1186
-msgid "No MAC address found for this host in database"
-msgstr ""
-
-#: waptserver.py:1344 waptserver.py:1755
-msgid "The host reachability is not defined."
-msgstr ""
-
-#: waptserver.py:1807
+#: waptserver.py:1826
 msgid "Anomnymous usage statistics"
-msgstr ""
+msgstr "Statistiques d'usage anonymes"
 
-#: waptserver.py:2244
-msgid "Folder missing : {}."
-msgstr ""
-
-#: waptserver.py:2251
-msgid "Folder missing : {}-host."
-msgstr ""
-
-#: waptserver.py:2257
-msgid "Folder missing : {}-group."
-msgstr ""
-
-#: waptserver_utils.py:190
-msgid "Invalid log level: {}"
-msgstr ""
-
-#: templates/index.html:10 templates/index.html:31
+#: templates/index.html:10
 msgid "WAPT - Apt-get for Windows"
-msgstr ""
+msgstr "WAPT - Apt-get pour Windows"
 
-#: templates/index.html:34 templates/index.html:141
+#: templates/index.html:32
+msgid "WAPT Server"
+msgstr "Serveur WAPT"
+
+#: templates/index.html:35 templates/index.html:141
 msgid "Contact Us"
-msgstr ""
-
-#: templates/index.html:49
-msgid "Home"
-msgstr ""
+msgstr "Nous contacter"
 
 #: templates/index.html:52
 msgid "TIS repository"
-msgstr ""
+msgstr "Dépôt TIS"
 
-#: templates/index.html:53
-msgid "Private repository"
-msgstr ""
+#: templates/index.html:57
+msgid "WAPT Agent (for deploying onto user desktop)"
+msgstr "Agent WAPT (pour le déploiement sur les postes utilisateurs"
 
 #: templates/index.html:58
-msgid "WAPT Agent (for deploying onto user desktop)"
-msgstr ""
+msgid "WAPTSetup (for installing on management machine)"
+msgstr "WAPTSetup (pour installation initiale sur le poste de management)"
 
 #: templates/index.html:59
-msgid "WAPTSetup (for installing on management machine)"
-msgstr ""
-
-#: templates/index.html:60
 msgid "WAPTDeploy (for setting up deployment GPO)"
-msgstr ""
+msgstr "WAPTDeploy (pour déploiement avec une GPO)"
 
-#: templates/index.html:66
+#: templates/index.html:65
 msgid "Subscribe"
-msgstr ""
+msgstr "Souscrire"
 
-#: templates/index.html:70
+#: templates/index.html:69
 msgid "Help"
-msgstr ""
+msgstr "Aide"
+
+#: templates/index.html:85
+msgid "WAPT server"
+msgstr "WAPT server"
 
 #: templates/index.html:86
-msgid "WAPT server"
-msgstr ""
-
-#: templates/index.html:87
 msgid ""
 " WAPT server is managed through a WAPT console installed on a Windows "
 "system. When installing the WAPT server on Windows, the console is "
 "installed by default and can be found under the start menu. "
 msgstr ""
 
-#: templates/index.html:88
+#: templates/index.html:87
 msgid ""
 " When installing the server on Linux, the <a href=\"/wapt/waptsetup-"
 "tis.exe\">WAPT client</a> should be installed on an administration "
 "machine, then run from 'Start/All programs'. "
 msgstr ""
 
-#: templates/index.html:89
+#: templates/index.html:88
 msgid ""
 " To manually add a new host to the WAPT server, download the <a "
 "href=\"/wapt/waptagent.exe\">WAPT agent</a> from the menu to the right. "
@@ -246,67 +145,63 @@ msgid ""
 "find it in your console. "
 msgstr ""
 
-#: templates/index.html:90
+#: templates/index.html:95
 msgid ""
 " For further information, be sure to check the documentation at <a "
-"href=\"http://dev.tranquil.it/\">dev.tranquil.it</a> or on mailing-list. "
-msgstr ""
-
-#: templates/index.html:95
-msgid "WAPT Server version:"
-msgstr ""
-
-#: templates/index.html:96
-msgid "WAPT Agent version:"
-msgstr ""
-
-#: templates/index.html:97
-msgid "WAPT Setup version:"
-msgstr ""
-
-#: templates/index.html:98
-msgid "WAPT Deploy version:"
-msgstr ""
-
-#: templates/index.html:99
-msgid "MongoDB status:"
+"href=\"https://www.wapt.fr/\">wapt.fr</a> or on mailing-list. "
 msgstr ""
 
 #: templates/index.html:100
+msgid "WAPT Server version:"
+msgstr ""
+
+#: templates/index.html:101
+msgid "WAPT Agent version:"
+msgstr ""
+
+#: templates/index.html:102
+msgid "WAPT Setup version:"
+msgstr ""
+
+#: templates/index.html:103
+msgid "WAPT Deploy version:"
+msgstr ""
+
+#: templates/index.html:104
+msgid "DB status:"
+msgstr ""
+
+#: templates/index.html:105
 msgid "Disk space:"
 msgstr ""
 
-#: templates/index.html:111
-msgid "WAPT Agent"
+#: templates/index.html:110
+msgid "For creation of the Wapt agent"
 msgstr ""
 
-#: templates/index.html:112
-msgid "For deploying onto user desktop"
-msgstr ""
-
-#: templates/index.html:121
-msgid "For installing on management machine"
-msgstr ""
-
-#: templates/index.html:130
+#: templates/index.html:115
 msgid "For setting up deployment GPO"
+msgstr ""
+
+#: templates/index.html:127
+msgid "For deploying onto user desktop"
 msgstr ""
 
 #: templates/index.html:142
 msgid "References"
-msgstr ""
+msgstr "Références"
 
 #: templates/index.html:143
 msgid "Actuality"
-msgstr ""
+msgstr "Actualités"
 
 #: templates/index.html:144
 msgid "Team"
-msgstr ""
+msgstr "Equipe"
 
 #: templates/index.html:147 templates/index.html:152
 msgid "Tranquil IT Systems"
-msgstr ""
+msgstr "Tranquil IT Systems"
 
 #: templates/index.html:148
 msgid ""

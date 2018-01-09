@@ -7,23 +7,76 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-03-17 12:35+0100\n"
+"POT-Creation-Date: 2018-01-09 10:33+0100\n"
 "PO-Revision-Date: 2016-03-17 12:37+0200\n"
 "Last-Translator: mcadorel <mcadorel@tranquil.it>\n"
-"Language-Team: Technique TIS <technique@tranquil.it>\n"
 "Language: fr\n"
+"Language-Team: Technique TIS <technique@tranquil.it>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Virtaal 0.7.1\n"
-"Generated-By: Babel 2.2.0\n"
+"Generated-By: Babel 2.5.1\n"
 
-#: waptservice.py:254
+#: waptservice.py:581
+msgid "Update status"
+msgstr "Statut des mises à jour"
+
+#: waptservice.py:619
+msgid "Reload configuration"
+msgstr "Recharger la configuration"
+
+#: waptservice.py:659
+msgid "Download upgrades"
+msgstr "Télécharger les mises à jour"
+
+#: waptservice.py:674
+msgid "Installed software update"
+msgstr "Mises à jour des logiciels installés"
+
+#: waptservice.py:704
+msgid "LongTask"
+msgstr ""
+
+#: waptservice.py:719
+msgid "Cleanup"
+msgstr ""
+
+#: waptservice.py:735
+msgid "Trace of the installation of {}"
+msgstr "Traces de l'installation de {}"
+
+#: waptservice.py:765
+msgid "Saving host to the WAPT server"
+msgstr "Enregistrement de la machine sur le serveur WAPT."
+
+#: waptservice.py:778
+msgid "Inventory of the host"
+msgstr "Inventaire de la machine"
+
+#: waptservice.py:1144
+msgid "Running: {description}"
+msgstr "En cours : {description}"
+
+#: waptservice.py:1152
+msgid ""
+"Done: {description}\n"
+"{summary}"
+msgstr ""
+
+#: waptservice.py:1158
+msgid "Canceled"
+msgstr "Annulé"
+
+#: waptservice.py:1675
+msgid "Invalid log level: {}"
+msgstr ""
+
+#: waptservice_common.py:213
 msgid "FATAL. Couldn't open config file : {}"
 msgstr "Erreur fatale. Impossible d'ouvrir le fichier : {}"
 
-#: waptservice.py:338
+#: waptservice_common.py:359
 msgid ""
 "FATAL, configuration file {} has no section [global]. Please check "
 "Waptserver documentation"
@@ -31,45 +84,175 @@ msgstr ""
 "Erreur fatale. Le fichier de configuration {} n'a pas de section "
 "[global]. Veuillez vous référer à la documentation de WAPTserver."
 
-#: waptservice.py:917
-msgid "Update status"
-msgstr "Statut des mises à jour"
-
-#: waptservice.py:955
-msgid "Reload configuration"
-msgstr "Recharger la configuration"
-
-#: waptservice.py:995
-msgid "Download upgrades"
-msgstr "Télécharger les mises à jour"
-
-#: waptservice.py:1026
-msgid "Installed software update"
-msgstr "Mises à jour des logiciels installés"
-
-#: waptservice.py:1056
-msgid "LongTask"
+#: waptservice_common.py:490
+msgid ""
+"{classname} {id} created {create_date} started:{start_date} "
+"finished:{finish_date} "
 msgstr ""
 
-#: waptservice.py:1071
-msgid "Cleanup"
+#: waptservice_common.py:545
+msgid "Reconfiguring network access"
+msgstr "Reconfiguration de l'accès au réseau"
+
+#: waptservice_common.py:564
+msgid "Upgrading WAPT client"
+msgstr "Mise à jour du client WAPT"
+
+#: waptservice_common.py:580
+#, python-format
+msgid "WaptService restart planned: %s"
 msgstr ""
 
-#: waptservice.py:1087
-msgid "Trace of the installation of {}"
-msgstr "Traces de l'installation de {}"
+#: waptservice_common.py:584
+msgid "Restarting local WAPT service"
+msgstr "Redémarrage du service WAPT local"
 
-#: waptservice.py:1117
-msgid "Saving host to the WAPT server"
-msgstr "Enregistrement de la machine sur le serveur WAPT."
+#: waptservice_common.py:613
+msgid "{} new package(s)"
+msgstr "{} nouveau(x) paquet(s)"
 
-#: waptservice.py:1130
-msgid "Inventory of the host"
-msgstr "Inventaire de la machine"
+#: waptservice_common.py:615
+msgid "{} removed package(s)"
+msgstr "{} paquet(s) retiré(s)"
 
-#: waptservice.py:2324
-msgid "Invalid log level: {}"
+#: waptservice_common.py:616
+msgid "{} package(s) in the repository"
+msgstr "{} paquet(s) dans le dépôt"
+
+#: waptservice_common.py:623
+msgid "Packages to be updated : {}"
+msgstr "Paquets à mettre à jour : {}"
+
+#: waptservice_common.py:625
+msgid "Packages with errors : {}"
+msgstr "Paquets avec des erreurs : {}"
+
+#: waptservice_common.py:627 waptservice_common.py:682
+msgid "System up-to-date"
+msgstr "Le système est à jour"
+
+#: waptservice_common.py:631
+msgid "Updating available packages"
+msgstr "Mise à jour de la liste des paquets disponibles"
+
+#: waptservice_common.py:674 waptservice_common.py:876
+msgid "Installed : {}"
+msgstr "Installé : {}"
+
+#: waptservice_common.py:676 waptservice_common.py:878
+msgid "Updated : {}"
+msgstr "Mis à jour : {}"
+
+#: waptservice_common.py:678 waptservice_common.py:880
+#: waptservice_common.py:920
+msgid "Errors : {}"
+msgstr "Erreurs: {}"
+
+#: waptservice_common.py:680 waptservice_common.py:882
+msgid "Unavailable : {}"
+msgstr "Indisponible(s) : {}"
+
+#: waptservice_common.py:687
+msgid "Upgrade packages installed on host"
 msgstr ""
+
+#: waptservice_common.py:704
+msgid "WAPT Server has been notified"
+msgstr "Le serveur WAPT a été notifié"
+
+#: waptservice_common.py:707
+msgid "Error while sending to the server : {}"
+msgstr "Erreur lors de l'envoi au serveur : {}"
+
+#: waptservice_common.py:710 waptservice_common.py:739
+msgid "WAPT Server is not available"
+msgstr "Le serveur WAPT n'est pas disponible"
+
+#: waptservice_common.py:713
+msgid "Update server with this host's status"
+msgstr "Informer le serveur du statut de cette machine"
+
+#: waptservice_common.py:732
+msgid "Inventory has been sent to the WAPT server"
+msgstr "L'inventaire a été envoyé au serveur WAPT"
+
+#: waptservice_common.py:735
+msgid "Error while sending inventory to the server : {}"
+msgstr "Erreur lors de l'envoi de l'inventaire au serveur : {}"
+
+#: waptservice_common.py:743
+msgid "Update server with this host's inventory"
+msgstr "Informer le serveur de l'inventaire de cette machine"
+
+#: waptservice_common.py:763
+msgid "Packages erased : {}"
+msgstr "Paquets effacés : {}"
+
+#: waptservice_common.py:766
+msgid "Error while clearing local cache : {}"
+msgstr "Erreur lors du vidage du cache local : {}"
+
+#: waptservice_common.py:770
+msgid "Clear local package cache"
+msgstr "Vider le cache de paquets"
+
+#: waptservice_common.py:795
+msgid "raising an error for Test WaptLongTask"
+msgstr "remontée d'une erreur pour le test WaptLongTask"
+
+#: waptservice_common.py:801
+msgid "Test long running task of {}s"
+msgstr ""
+
+#: waptservice_common.py:822
+#, python-format
+msgid "Downloading %s : %s"
+msgstr "Téléchargement de %s : %s"
+
+#: waptservice_common.py:829
+msgid "Error while downloading {packagename}: {error}"
+msgstr "Erreur lors du téléchargement de {packagename}: {error}"
+
+#: waptservice_common.py:832
+msgid "Done downloading {packagename}. {speed} kB/s"
+msgstr "Téléchargement de {packagename} terminé. ({speed} kB/s)"
+
+#: waptservice_common.py:834
+msgid "Done downloading {packagename}."
+msgstr "Téléchargement de {packagename} terminé."
+
+#: waptservice_common.py:847
+msgid "Download of {packagename} (tâche #{id})"
+msgstr "Téléchargement de {packagename} (tâche #{id})"
+
+#: waptservice_common.py:885
+msgid "Error during install of {}: errors in packages {}"
+msgstr ""
+
+#: waptservice_common.py:899
+msgid "Installation of {packagename} (task #{id})"
+msgstr "Installation de {packagename} (task #{id})"
+
+#: waptservice_common.py:918
+msgid "Removed : {}"
+msgstr "Retiré(s) : {}"
+
+#: waptservice_common.py:924
+msgid "Uninstall of {packagename} (task #{id})"
+msgstr "Désinstallation de {packagename} (task #{id})"
+
+#: waptservice_common.py:937
+#, python-format
+msgid "Packages removed from database : %s"
+msgstr "Paquets retirés de la base : %s"
+
+#: waptservice_common.py:939
+msgid "No package removed from database."
+msgstr "Aucun paquet retiré de la base."
+
+#: waptservice_common.py:942
+msgid "Forget {packagenames} (task #{id})"
+msgstr "Oubli de {packagenames} (task #{id})"
 
 #: templates/download.html:4
 msgid "Downloads"
@@ -144,34 +327,42 @@ msgid "Errors: {0}"
 msgstr "Erreurs: {0}"
 
 #: templates/index.html:23
+msgid "Authorized Packages's Signer certificates:"
+msgstr ""
+
+#: templates/index.html:37
+msgid "Repositories:"
+msgstr ""
+
+#: templates/index.html:51
 msgid "Computer information"
 msgstr "Informations de l'ordinateur"
 
-#: templates/index.html:25
+#: templates/index.html:53
 msgid "Machine: {0}"
 msgstr "Machine : {0}"
 
-#: templates/index.html:26
+#: templates/index.html:54
 msgid "Current users: {0}"
 msgstr "Utilisateurs actuels : {0}"
 
-#: templates/index.html:27
+#: templates/index.html:55
 msgid "Workgroup: {0}"
 msgstr "Groupe de travail : {0}"
 
-#: templates/index.html:28
+#: templates/index.html:56
 msgid "DNS Domain: {0}"
 msgstr "Domaine DNS : {0}"
 
-#: templates/index.html:29
+#: templates/index.html:57
 msgid "IP Addresses: {0}"
 msgstr "Adresses IP : {0}"
 
-#: templates/index.html:30
+#: templates/index.html:58
 msgid "System manufacturer : {0}"
 msgstr "Constructeur du système : {0}"
 
-#: templates/index.html:31
+#: templates/index.html:59
 msgid "System product name : {0}"
 msgstr "Nom de produit du système : {0}"
 
@@ -183,19 +374,19 @@ msgstr ""
 msgid "WAPT Service status"
 msgstr "Statut du service WAPT"
 
-#: templates/layout.html:45
+#: templates/layout.html:40
 msgid "WAPT"
 msgstr ""
 
-#: templates/layout.html:46 templates/status.html:6
+#: templates/layout.html:41 templates/status.html:6
 msgid "Installed packages"
 msgstr "Paquets installés"
 
-#: templates/layout.html:47
+#: templates/layout.html:42
 msgid "List of packages"
 msgstr "Liste des paquets"
 
-#: templates/layout.html:48
+#: templates/layout.html:43
 msgid "Tasks"
 msgstr "Tâches"
 
@@ -239,19 +430,19 @@ msgstr "Date d'installation"
 msgid "Action"
 msgstr "Action"
 
-#: templates/list.html:84 templates/status.html:53
+#: templates/list.html:87 templates/status.html:53
 msgid "Remove"
 msgstr "Supprimer"
 
-#: templates/list.html:86
+#: templates/list.html:89
 msgid "Downgrade"
 msgstr "Downgrade"
 
-#: templates/list.html:88
+#: templates/list.html:91
 msgid "Upgrade"
 msgstr "Upgrade"
 
-#: templates/list.html:90 templates/package_details.html:17
+#: templates/list.html:93 templates/package_details.html:17
 msgid "Install"
 msgstr "Installer"
 
@@ -307,17 +498,10 @@ msgstr "Traces"
 msgid "Task n.{0} : {1}"
 msgstr "Tâche n°{0} : {1}"
 
-#: templates/tasks.html:3
-msgid "Tasks manager"
-msgstr "Gestionnaire de tâches"
-
-#: templates/tasks.html:5
+#: templates/tasks.html:31 templates/tasks.html:33 templates/tasks.html:34
+#: templates/tasks.html:35
 msgid "Running: {0}"
 msgstr "En cours : {0}"
-
-#: templates/tasks.html:18
-msgid "Cancel"
-msgstr "Annuler"
 
 #: templates/waptwua.html:19
 #, fuzzy
@@ -361,140 +545,30 @@ msgstr ""
 msgid "Downloaded"
 msgstr "{0} téléchargé"
 
-msgid "Reconfiguring network access"
-msgstr "Reconfiguration de l'accès au réseau"
+#~ msgid "Tasks manager"
+#~ msgstr "Gestionnaire de tâches"
 
-msgid "Upgrading WAPT client"
-msgstr "Mise à jour du client WAPT"
+#~ msgid "Cancel"
+#~ msgstr "Annuler"
 
-msgid "WaptService restarted using batch file %s"
-msgstr "WaptService relancé avec le fichier batch %s"
+#~ msgid "WaptService restarted using batch file %s"
+#~ msgstr "WaptService relancé avec le fichier batch %s"
 
-msgid "Restarting local WAPT service"
-msgstr "Redémarrage du service WAPT local"
+#~ msgid "Update packages installed on host"
+#~ msgstr "Mettre à jour les paquets installés sur la machine"
 
-msgid "{} new package(s)"
-msgstr "{} nouveau(x) paquet(s)"
+#~ msgid "WAPT Server is not avalable"
+#~ msgstr "Le serveur WAPT n'est pas disponible"
 
-msgid "{} removed package(s)"
-msgstr "{} paquet(s) retiré(s)"
+#~ msgid "Error during install of {}:{}"
+#~ msgstr "Erreur lors de l'installation de {} : {}"
 
-msgid "{} package(s) in the repository"
-msgstr "{} paquet(s) dans le dépôt"
+#~ msgid "WAPT Service"
+#~ msgstr "Service WAPT"
 
-msgid "Packages to be updated : {}"
-msgstr "Paquets à mettre à jour : {}"
+#~ msgid "design by TIS"
+#~ msgstr ""
 
-msgid "Packages with errors : {}"
-msgstr "Paquets avec des erreurs : {}"
+#~ msgid "Latest version only?"
+#~ msgstr "N'afficher que la dernière version ?"
 
-msgid "System up-to-date"
-msgstr "Le système est à jour"
-
-msgid "Updating available packages"
-msgstr "Mise à jour de la liste des paquets disponibles"
-
-msgid "Installed : {}"
-msgstr "Installé : {}"
-
-msgid "Updated : {}"
-msgstr "Mis à jour : {}"
-
-msgid "Errors : {}"
-msgstr "Erreurs: {}"
-
-msgid "Unavailable : {}"
-msgstr "Indisponible(s) : {}"
-
-msgid "Update packages installed on host"
-msgstr "Mettre à jour les paquets installés sur la machine"
-
-msgid "WAPT Server has been notified"
-msgstr "Le serveur WAPT a été notifié"
-
-msgid "Error while sending to the server : {}"
-msgstr "Erreur lors de l'envoi au serveur : {}"
-
-msgid "WAPT Server is not available"
-msgstr "Le serveur WAPT n'est pas disponible"
-
-msgid "Update server with this host's status"
-msgstr "Informer le serveur du statut de cette machine"
-
-msgid "Inventory has been sent to the WAPT server"
-msgstr "L'inventaire a été envoyé au serveur WAPT"
-
-msgid "Error while sending inventory to the server : {}"
-msgstr "Erreur lors de l'envoi de l'inventaire au serveur : {}"
-
-msgid "WAPT Server is not avalable"
-msgstr "Le serveur WAPT n'est pas disponible"
-
-msgid "Update server with this host's inventory"
-msgstr "Informer le serveur de l'inventaire de cette machine"
-
-msgid "Packages erased : {}"
-msgstr "Paquets effacés : {}"
-
-msgid "Error while clearing local cache : {}"
-msgstr "Erreur lors du vidage du cache local : {}"
-
-msgid "Clear local package cache"
-msgstr "Vider le cache de paquets"
-
-msgid "raising an error for Test WaptLongTask"
-msgstr "remontée d'une erreur pour le test WaptLongTask"
-
-msgid "Test long running task of {}s"
-msgstr ""
-
-msgid "Downloading %s : %s"
-msgstr "Téléchargement de %s : %s"
-
-msgid "Error while downloading {packagename}: {error}"
-msgstr "Erreur lors du téléchargement de {packagename}: {error}"
-
-msgid "Done downloading {packagename}. {speed} kB/s"
-msgstr "Téléchargement de {packagename} terminé. ({speed} kB/s)"
-
-msgid "Done downloading {packagename}."
-msgstr "Téléchargement de {packagename} terminé."
-
-msgid "Download of {packagename} (tâche #{id})"
-msgstr "Téléchargement de {packagename} (tâche #{id})"
-
-msgid "Error during install of {}:{}"
-msgstr "Erreur lors de l'installation de {} : {}"
-
-msgid "Installation of {packagename} (task #{id})"
-msgstr "Installation de {packagename} (task #{id})"
-
-msgid "Removed : {}"
-msgstr "Retiré(s) : {}"
-
-msgid "Uninstall of {packagename} (task #{id})"
-msgstr "Désinstallation de {packagename} (task #{id})"
-
-msgid "Packages removed from database : %s"
-msgstr "Paquets retirés de la base : %s"
-
-msgid "No package removed from database."
-msgstr "Aucun paquet retiré de la base."
-
-msgid "Forget {packagenames} (task #{id})"
-msgstr "Oubli de {packagenames} (task #{id})"
-
-msgid "Running: {description}"
-msgstr "En cours : {description}"
-
-msgid "Canceled"
-msgstr "Annulé"
-
-msgid "WAPT Service"
-msgstr "Service WAPT"
-
-msgid "design by TIS"
-msgstr ""
-
-msgid "Latest version only?"
-msgstr "N'afficher que la dernière version ?"

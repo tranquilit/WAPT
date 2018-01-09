@@ -1,6 +1,9 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+msgid "Only suitable for development hosts."
+msgstr "Seulement valable pour les postes de développement"
+
 #: tform1.buttonpanel1.helpbutton.caption
 msgctxt "tform1.buttonpanel1.helpbutton.caption"
 msgid "&Show config file"
@@ -236,12 +239,26 @@ msgid "Check packages certificates validity"
 msgstr "Vérifier la validité des certificats des paquets"
 
 #: tviscreatewaptsetup.cbcheckcertificatesvalidity.hint
+msgctxt "tviscreatewaptsetup.cbcheckcertificatesvalidity.hint"
+msgid "Check that certificate dates are valid and  issuer is a know one."
+msgstr "Vérifier que les dates des certificats sont correctes et que l'émetteur est bien connu"
+
+#: tviscreatewaptsetup.cbdualsign.caption
+msgid "Sign waptupgrade with both sha256 and sha1"
+msgstr "Signer waptupgrade avec sha256 ET sha1"
+
+#: tviscreatewaptsetup.cbdualsign.hint
+msgctxt "tviscreatewaptsetup.cbdualsign.hint"
 msgid "Check that certificate dates are valid and  issuer is a know one."
 msgstr "Vérifier que les dates des certificats sont correctes et que l'émetteur est bien connu"
 
 #: tviscreatewaptsetup.cbusekerberos.caption
 msgid "Use Kerberos for initial registration"
 msgstr "Utiliser Kerberos pour l'enregistrement initial"
+
+#: tviscreatewaptsetup.cbusekerberos.hint
+msgid "When first registering to waptserver, host will try to authenticate using their kerberos account"
+msgstr "Quand le poste s'enregistrera initialement sur le serveur, il essaiera de s'authentifier avce son compte Kerberos"
 
 #: tviscreatewaptsetup.cbverifycert.caption
 msgctxt "tviscreatewaptsetup.cbverifycert.caption"
@@ -253,8 +270,9 @@ msgid "E.g. : Tranquil IT Systems."
 msgstr "Par exemple : Tranquil IT Systems"
 
 #: tviscreatewaptsetup.edrepourl.hint
-msgid "E.g. : http://wapt.tranquilit.local/wapt."
-msgstr "Par exemple : http://wapt.tranquilit.local/wapt."
+#| msgid "E.g. : http://wapt.tranquilit.local/wapt."
+msgid "E.g. : https://wapt.mydomain.lan/wapt"
+msgstr "Par exemple : https://wapt.mondomaine.lan/wapt."
 
 #: tviscreatewaptsetup.edservercertificate.hint
 msgctxt "tviscreatewaptsetup.edservercertificate.hint"
@@ -262,12 +280,18 @@ msgid "E.g. : c:\\private\\tranquilit.crt"
 msgstr "Par ex. c:\\private\\tranquilit.crt"
 
 #: tviscreatewaptsetup.edwaptserverurl.hint
-msgid "E.g. : http://wapt:8080."
-msgstr "Par exemple : http://wapt:8080."
+#| msgid "E.g. : http://wapt:8080."
+msgid "E.g. : https://wapt.mydomain.lan"
+msgstr "Par exemple : https://wapt.mondomaine.lan"
+
+#: tviscreatewaptsetup.fnpubliccert.hint
+msgid "X509 PEM encoded file with CA certificates which are trusted"
+msgstr "Fichier X509 au format PEM avec les certificats auxquels on fait confiance "
 
 #: tviscreatewaptsetup.label1.caption
-msgid "Authorized Packages Certificate / CA bundle"
-msgstr "Certificat / CA autorisés pour les paquets"
+#| msgid "Authorized Packages Certificate / CA bundle"
+msgid "Authorized Packages Certificates Bundle"
+msgstr "Certificats / CA autorisés pour les paquets"
 
 #: tviscreatewaptsetup.label2.caption
 msgid "Main WAPT repository address :"
@@ -302,9 +326,10 @@ msgid "Your WAPT server address (http://wapt:8080)."
 msgstr "L'adresse de votre serveur WAPT (par exemple http://wapt:8080)."
 
 #: tviscreatewaptsetup.label6.caption
+#| msgid "Path to Servers CA certificates bundle"
 msgctxt "tviscreatewaptsetup.label6.caption"
-msgid "Path to Servers CA certificates bundle"
-msgstr "Chemin vers le bundle de CA serveurs"
+msgid "Path to https Servers CA certificates bundle"
+msgstr "Chemin vers le bundle de CA serveurs https"
 
 #: tvisdisplaypreferences.caption
 msgctxt "tvisdisplaypreferences.caption"
@@ -1391,10 +1416,6 @@ msgstr ""
 msgid "Launch TISHelp"
 msgstr "Lancer TISHelp"
 
-#: tviswaptgui.acttriggerburstupdates.caption
-msgid "Trigger Burst Updates"
-msgstr "Vérification express des mises à jour"
-
 #: tviswaptgui.acttriggerburstupgrades.caption
 msgid "Apply Burst Upgrades"
 msgstr "Lancer en masse les installations"
@@ -1891,6 +1912,11 @@ msgstr "Assistant de création de paquet"
 msgctxt "tviswaptgui.menuitem55.caption"
 msgid "-"
 msgstr "-"
+
+#: tviswaptgui.menuitem57.caption
+msgctxt "tviswaptgui.menuitem57.caption"
+msgid "Trigger Burst Updates"
+msgstr "Vérification express des mises à jour"
 
 #: tviswaptgui.menuitem6.caption
 msgid "New"
@@ -2584,6 +2610,14 @@ msgctxt "tviswuarules.wupanright.caption"
 msgid "wupanright"
 msgstr ""
 
+#: uwaptconsoleres.rsaddadsgroups
+msgid ""
+"This will get the Active Directory groups of each selected host and \n"
+"add the matching Wapt packages to dependencies of the host\n"
+"if the package exists.\n"
+"\n"
+"Are you sure to continue ?\n"
+msgstr ""
 
 #: uwaptconsoleres.rsbundleconfigeditcaption
 msgctxt "uwaptconsoleres.rsbundleconfigeditcaption"
@@ -2620,14 +2654,6 @@ msgctxt "uwaptconsoleres.rscompletionprogress"
 msgid "%s : %.0f%% completed"
 msgstr "%s : %.0f%% terminé"
 
-#: uwaptconsoleres.rsconfirmburstupdate
-msgid "Are you sure you want to trigger Status Update on %d hosts ?"
-msgstr "Êtes vous sûr de vouloir déclencher la vérification des mises à jour sur %d hosts ?"
-
-#: uwaptconsoleres.rsconfirmburstupgrades
-msgid "Are you sure you want to Apply Upgrades on %d hosts ?"
-msgstr "Êtes vous sûr de vouloir déclencher l'installation des paquets sur %d hosts ?"
-
 #: uwaptconsoleres.rsconfirmcaption
 msgctxt "uwaptconsoleres.rsconfirmcaption"
 msgid "Confirm"
@@ -2638,26 +2664,23 @@ msgctxt "uwaptconsoleres.rsconfirmdeletion"
 msgid "Confirm removal"
 msgstr "Confirmer la suppression"
 
-#: uwaptconsoleres.rsconfirmgpupdate
-msgid "Are you sure you want to update Group Policies status on %d hosts ?"
-msgstr "Êtes vous sûr de vouloir mettre à jour les GPO sur %d hosts ?"
-
 #: uwaptconsoleres.rsconfirmhostforgetspackages
 msgctxt "uwaptconsoleres.rsconfirmhostforgetspackages"
 msgid "Are you sure you want to forget %s packages from host %s ?"
 msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 
 #: uwaptconsoleres.rsconfirmimport
+msgctxt "uwaptconsoleres.rsconfirmimport"
 msgid ""
 "Are you sure you want to import\n"
 "%s\n"
 " to your repository ?\n"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir importer %s dans votre dépôt ?"
 
 #: uwaptconsoleres.rsconfirmimportcaption
 msgctxt "uwaptconsoleres.rsconfirmimportcaption"
 msgid "Confirm import"
-msgstr "Confirmer l'importation"
+msgstr "Confirmer l'import"
 
 #: uwaptconsoleres.rsconfirmpackageedit
 msgid "Do you want to download and edit the package %s ?"
@@ -2695,10 +2718,6 @@ msgstr "Confirmer la suppression"
 msgctxt "uwaptconsoleres.rsconfirmrmpackagesfromhost"
 msgid "Are you sure you want to remove %s package(s) from the selected host(s) %s ?"
 msgstr "Êtes-vous sûr(e) de vouloir supprimer %s paquet(s) de la/des machine(s) sélectionnée(s) ?"
-
-#: uwaptconsoleres.rsconfirmwaptexit
-msgid "Are you sure you want to propose Packages Upgrades on %d hosts ?"
-msgstr "Êtes vous sûr de vouloirproposer l'installation des paquets sur  %d hosts ?"
 
 #: uwaptconsoleres.rscreationinprogress
 msgctxt "uwaptconsoleres.rscreationinprogress"
@@ -2977,13 +2996,11 @@ msgctxt "uwaptconsoleres.rsmainrepourl"
 msgid "Main repo url: %s"
 msgstr "URL du dépôt principal : %s"
 
-#: uwaptconsoleres.rsmessagetosend
-msgid "Message to send"
-msgstr "Message à envoyer"
-
 #: uwaptconsoleres.rsnbmodifiedhosts
+#, fuzzy
+#| msgid "%d hosts affected. %d hosts discarded (errors). %d hosts unchanged"
 msgctxt "uwaptconsoleres.rsnbmodifiedhosts"
-msgid "%d hosts affected. %d hosts discarded (errors). %d hosts unchanged"
+msgid "%s hosts affected."
 msgstr "%d machines modifiées, %d machines ignorées (erreur), %d machines inchangées"
 
 #: uwaptconsoleres.rsnobundle
@@ -3113,10 +3130,6 @@ msgstr ""
 msgid "Confirm the unregistration of repository %s"
 msgstr ""
 
-#: uwaptconsoleres.rsrunninggpupdate
-msgid "Running GPUpdate"
-msgstr "GPUpdate en cours"
-
 #: uwaptconsoleres.rsrunningtask
 msgctxt "uwaptconsoleres.rsrunningtask"
 msgid "Running task %d: %s, status:%s"
@@ -3142,10 +3155,6 @@ msgstr ""
 #: uwaptconsoleres.rsselectremovedepends
 msgid "Select packages to remove from hosts configuration"
 msgstr ""
-
-#: uwaptconsoleres.rsshowmessageforusers
-msgid "Send message to users"
-msgstr "Envoyer un message aux utilisateurs"
 
 #: uwaptconsoleres.rssrv
 msgctxt "uwaptconsoleres.rssrv"
