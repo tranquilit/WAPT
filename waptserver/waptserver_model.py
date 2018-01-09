@@ -89,7 +89,8 @@ def load_db_config(server_config):
         user=server_config['db_user'],
         password=server_config['db_password'],
         max_connections=server_config['db_max_connections'],
-        stale_timeout=server_config['db_stale_timeout'])
+        stale_timeout=server_config['db_stale_timeout'],
+        timeout=server_config['db_connect_timeout'])
     wapt_db.initialize(pgdb)
     return pgdb
 

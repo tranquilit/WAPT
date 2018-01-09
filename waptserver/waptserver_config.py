@@ -56,6 +56,7 @@ _defaults = {
     'db_password': None,
     'db_max_connections': 100,
     'db_stale_timeout': 300,
+    'db_connect_timeout': 3.0,
     'use_kerberos': False,
     'max_clients': 4096,
     'encrypt_host_packages':False,
@@ -136,7 +137,7 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
         if _config.has_option('options', param):
             conf[param] = _config.get('options', param)
 
-    for param in ('db_max_connections', 'db_stale_timeout', 'max_clients'):
+    for param in ('db_max_connections', 'db_stale_timeout', 'db_connect_timeout', 'max_clients'):
         if _config.has_option('options', param):
             conf[param] = _config.getint('options', param)
 
