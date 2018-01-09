@@ -20,8 +20,6 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from __future__ import print_function
-
 __version__ = "1.5.1.14"
 
 import os
@@ -847,7 +845,7 @@ class FileChunks(object):
                 if self.progress_bar is not None:
                     self.progress_bar.show(self.amount_seen)
                 if self.progress_bar is None and self.progress_hook is None:
-                    print('Uploading %s: %s / %s' % (self.filename,self.amount_seen,self.file_size),end='\r')
+                    print('Uploading %s: %s / %s\r' % (self.filename,self.amount_seen,self.file_size))
                 yield data
                 data = self.file_obj.read(self.chunk_size)
         finally:

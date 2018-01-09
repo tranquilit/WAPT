@@ -503,7 +503,7 @@ class WaptSessionDB(WaptBaseDB):
         self.db_version = self.curr_db_version
         return self.curr_db_version
 
-    def add_start_install(self,package,version,architecture,depends='',conflicts=''):
+    def add_start_install(self,package,version,architecture):
         """Register the start of installation in local db
         """
         with self:
@@ -517,10 +517,8 @@ class WaptSessionDB(WaptBaseDB):
                     install_date,
                     install_status,
                     install_output,
-                    process_id,
-                    depends,
-                    conflicts
-                    ) values (?,?,?,?,?,?,?,?,?,?)
+                    process_id
+                    ) values (?,?,?,?,?,?,?,?)
                 """,(
                      self.username,
                      package,
@@ -529,9 +527,7 @@ class WaptSessionDB(WaptBaseDB):
                      datetime2isodate(),
                      'INIT',
                      '',
-                     os.getpid(),
-                     depends,
-                     conflicts
+                     os.getpid()
                    ))
             return cur.lastrowid
 
@@ -858,7 +854,7 @@ class WaptDB(WaptBaseDB):
                              min_os_version=package_entry.min_os_version,
                              )
 
-    def add_start_install(self,package,version,architecture,params_dict={},explicit_by=None,maturity='',locale=''):
+    def add_start_install(self,package,version,architecture,params_dict={},explicit_by=None,maturity='',locale='',depends='',conflicts=''):
         """Register the start of installation in local db
 
         Args:
@@ -883,8 +879,10 @@ class WaptDB(WaptBaseDB):
                     explicit_by,
                     process_id,
                     maturity,
-                    locale
-                    ) values (?,?,?,?,?,?,?,?,?,?,?)
+                    locale,
+                    depends,
+                    conflicts
+                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,(
                      package,
                      version,
@@ -896,7 +894,9 @@ class WaptDB(WaptBaseDB):
                      explicit_by,
                      os.getpid(),
                      maturity,
-                     locale
+                     locale,
+                     depends,
+                     conflicts
                    ))
             return cur.lastrowid
 
@@ -3218,6 +3218,8 @@ class Wapt(BaseObjectClass):
                 params_dict=params_dict,explicit_by=explicit_by,
                 maturity=entry.maturity,
                 locale=entry.locale,
+                depends=entry.depends,
+                conflicts=entry.conflicts
                 )
 
             if entry.min_wapt_version and Version(entry.min_wapt_version)>Version(setuphelpers.__version__):
@@ -4971,9 +4973,7 @@ class Wapt(BaseObjectClass):
                     else:
                         logger.debug(u'Sourcing setup from DB (only if session_setup found)')
                         setuppy = package_entry['setuppy']
-                        if not setuppy:
-                            raise Exception('Source setup.py of package %s not stored in local database' % packagename)
-                        if 'session_setup()' in setuppy:
+                        if setuppy and 'session_setup()' in setuppy:
                             setup = import_code(setuppy)
                             logger.debug(u'Source setup.py import OK from database')
                         else:
