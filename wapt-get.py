@@ -220,7 +220,7 @@ def wapt_sources_edit(wapt_sources_dir):
                                            'PyScripter', 'PyScripter.exe')
         if os.path.isfile(pyscripter_filename) and os.path.isfile(psproj_filename):
             import psutil
-            p = psutil.Popen('"%s" --newinstance --project "%s" "%s" "%s"' % (
+            p = psutil.Popen('"%s" --python27 --newinstance --project "%s" "%s" "%s"' % (
                              pyscripter_filename,
                              psproj_filename,
                              setup_filename,
