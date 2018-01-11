@@ -154,13 +154,13 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
         conf['allow_unsigned_status_data'] = _config.getboolean('options', 'allow_unsigned_status_data')
 
     if _config.has_option('options', 'min_password_length'):
-            conf['min_password_length'] = _config.getint('options', 'min_password_length')
+        conf['min_password_length'] = _config.getint('options', 'min_password_length')
 
     if _config.has_option('options', 'allow_unauthenticated_registration'):
         conf['allow_unauthenticated_registration'] = _config.getboolean('options', 'allow_unauthenticated_registration')
 
     if _config.has_option('options', 'signature_clockskew'):
-        conf[param] = _config.getint('options', 'signature_clockskew')
+        conf['signature_clockskew'] = _config.getint('options', 'signature_clockskew')
 
     if _config.has_option('options', 'application_root'):
         conf['application_root'] = _config.get('options', 'application_root')
