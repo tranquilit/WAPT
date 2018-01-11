@@ -2032,8 +2032,7 @@ def on_wapt_pong():
             emit('wapt_trigger_update_status')
             return False
         else:
-            print('Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid, session.get('uuid',None)))
-            logger.info('Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid, session.get('uuid',None)))
+            logger.debug('Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid, session.get('uuid',None)))
             # stores sid in database
             hostcount = Hosts.update(
                 server_uuid=get_server_uuid(),
