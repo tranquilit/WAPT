@@ -1996,7 +1996,6 @@ def on_waptclient_connect():
             host_certificate = SSLCertificate(crt_string=host_cert.host_certificate)
             host_cert_issuer = host_certificate.verify_claim(json.loads(request.args['login']), max_age_secs=app.conf['signature_clockskew'],required_attributes=['uuid'])
             logger.debug(u'Socket IO %s connect checked. issuer : %s' % ( request.sid,host_cert_issuer))
-            pass
         else:
             raise EWaptForbiddden('Host is not registered or no host certificate found in database.')
 
@@ -2018,7 +2017,7 @@ def on_waptclient_connect():
             raise EWaptForbiddden('Host is not registered')
 
     except Exception as e:
-        logger.debug(u'Connect refused: %s' % e)
+        logger.warning(u'SocketIO connection refused for uuid %s and sid %s : %s' % (uuid,request.sid,e))
         wapt_db.rollback()
         wapt_db.close()
         return False
@@ -2026,9 +2025,11 @@ def on_waptclient_connect():
 
 @socketio.on('wapt_pong')
 def on_wapt_pong():
+    uuid = None
     try:
         uuid = session.get('uuid')
         if not uuid:
+            logger.critical(u'SocketIO connected but no host uuid in session: asking connected host to update status' % (uuid,request.sid))
             emit('wapt_trigger_update_status')
             return False
         else:
@@ -2044,12 +2045,12 @@ def on_wapt_pong():
             wapt_db.commit()
             # if not known, reject the connection
             if hostcount == 0:
+                logger.warning(u'SocketIO sid %s connected but no match in database for uuid %s : asking to update status' % (request.sid,uuid))
                 emit('wapt_trigger_update_status')
                 return False
     except Exception as e:
-        print('Socket.IO error in wapt_pong %s' % traceback.format_exc())
         wapt_db.rollback()
-
+        logger.critical(u'SocketIO pong error for uuid %s and sid %s : %s' % (uuid,request.sid,traceback.format_exc()))
 
 @socketio.on('disconnect')
 def on_waptclient_disconnect():
