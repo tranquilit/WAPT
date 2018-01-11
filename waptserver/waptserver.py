@@ -135,7 +135,7 @@ babel = Babel(app)
 logger = logging.getLogger()
 
 # chain SocketIO server
-socketio = SocketIO(app, logger = logger)
+socketio = SocketIO(app, logger = logger, engineio_logger = logger)
 
 try:
     import wsus
@@ -2138,18 +2138,21 @@ if __name__ == '__main__':
     if not os.path.exists(log_directory):
         os.mkdir(log_directory)
 
-    if platform.system() == 'Linux':
-        hdlr = logging.handlers.SysLogHandler('/dev/log')
-    else:
-        hdlr = logging.FileHandler(os.path.join(log_directory, 'waptserver.log'))
 
     # setup logging
-    for log in (app.logger_name,'wapt','waptcrypto','peewee'):
+    for log in (app.logger_name,'wapt','peewee'):
         logger = logging.getLogger(log)
-        setloglevel(logger,options.loglevel)
-        hdlr.setFormatter(
-            logging.Formatter('%(name)s %(asctime)s %(levelname)s %(message)s'))
-        logger.addHandler(hdlr)
+        if logger:
+            setloglevel(logger,options.loglevel)
+
+            if platform.system() == 'Linux':
+                hdlr = logging.handlers.SysLogHandler('/dev/log')
+            else:
+                hdlr = logging.FileHandler(os.path.join(log_directory, 'waptserver.log'))
+
+            hdlr.setFormatter(
+                logging.Formatter('%(name)s %(asctime)s %(levelname)s %(message)s'))
+            logger.addHandler(hdlr)
 
     # check wapt directories
     if not os.path.exists(app.conf['wapt_folder']):
@@ -2191,7 +2194,7 @@ if __name__ == '__main__':
         wapt_db.close()
 
     if options.devel:
-        socketio.run(app, host='0.0.0.0', port=port, debug=options.devel, use_reloader=options.devel, max_size=app.conf['max_clients'])
+        socketio.run(app, host='0.0.0.0', log=logger, port=port, debug=options.devel,  log_output = True, use_reloader=options.devel, max_size=app.conf['max_clients'])
     else:
-        socketio.run(app, host='127.0.0.1', port=port, debug=options.devel, use_reloader=options.devel, max_size=app.conf['max_clients'])
+        socketio.run(app, host='127.0.0.1', log=logger,  port=port, debug=options.devel, log_output = True,  use_reloader=options.devel, max_size=app.conf['max_clients'])
     logger.info('Waptserver stopped')

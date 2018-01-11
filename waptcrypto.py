@@ -50,7 +50,7 @@ from waptutils import *
 
 import datetime
 
-logger = logging.getLogger('waptcrypto')
+logger = logging.getLogger()
 
 class EWaptCryptoException(Exception):
     pass

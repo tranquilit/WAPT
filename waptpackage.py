@@ -2337,10 +2337,12 @@ class WaptRemoteRepo(WaptBaseRepo):
         Returns
             dict: list of added or removed packages and create date {'added':list,'removed':list,'last-modified':isodatetime}
         """
-        if self._packages is None:
-            self._packages = []
         if not self.repo_url:
             raise EWaptException('Repository URL for %s is empty. Add a %s section in ini' % (self.name,self.name))
+
+        if self._packages is None:
+            self._packages = []
+            self._packages_date = None
 
         self._index.clear()
         self.discarded = []
