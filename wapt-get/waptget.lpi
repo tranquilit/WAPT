@@ -24,7 +24,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="5"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="14"/>
+      <BuildNr Value="15"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion="1.5.0"/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">

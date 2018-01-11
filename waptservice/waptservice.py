@@ -1563,6 +1563,15 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
     def on_message(self,message):
         logger.debug(u'socket.io message : %s' % message)
 
+    def on_wapt_trigger_update_status(self,message):
+        logger.info(u'trigger update status from server: %s' % message)
+        task = WaptUpdate()
+        task.force = False
+        task.notify_user = False
+        task.notify_server_on_finish = True
+        task.created_by = 'waptservice'
+        self.task_manager.add_task(task).as_dict()
+
     def on_event(self,event,*args):
         logger.debug(u'socket.io event : %s, args: %s' % (event,args))
 
@@ -1622,6 +1631,9 @@ class WaptSocketIOClient(threading.Thread):
                             self.socketio_client.define(WaptSocketIORemoteCalls)
                             self.socketio_client.get_namespace().wapt = tmp_wapt
                             self.socketio_client.connect('')
+                        else:
+                            self.socketio_client.emit('wapt_pong')
+
                         if self.socketio_client.connected:
                             logger.info('Socket IO listening for %ss' % self.config.websockets_check_config_interval )
                             startwait = time.time()
@@ -1645,7 +1657,8 @@ class WaptSocketIOClient(threading.Thread):
                     if self.socketio_client:
                         print('stop sio client')
                         self.socketio_client = None
-                    logger.info('Socket IO Stopped, waiting %ss before retrying' % self.config.websockets_retry_delay)
+                    logger.info('Socket IO Stopped, waiting %ss before retrying' %
+                        self.config.websockets_retry_delay)
                     time.sleep(self.config.websockets_retry_delay)
 
 if __name__ == "__main__":
@@ -1686,11 +1699,16 @@ if __name__ == "__main__":
     waptconfig.config_filename = options.config
     waptconfig.load()
 
+    sio_logger = logging.getLogger('socketIO-client-2')
+    sio_logger.addHandler(logging.StreamHandler())
+
     # force loglevel
     if options.loglevel:
         setloglevel(logger,options.loglevel)
+        setloglevel(sio_logger,options.loglevel)
     elif waptconfig.loglevel is not None:
         setloglevel(logger,waptconfig.loglevel)
+        setloglevel(sio_logger,options.loglevel)
 
     if waptconfig.log_to_windows_events:
         try:

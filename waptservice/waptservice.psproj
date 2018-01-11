@@ -133,26 +133,22 @@ FileName=$[Project-Path]waptservice.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node17]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptservice.py
+FileName=$[Project-Path]waptservice_common.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node18]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptservice_common.py
+FileName=C:\tranquilit\wapt\wapt-signpackages.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node19]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-signpackages.py
-
-[Project\ChildNodes\Node0\ChildNodes\Node20]
-ClassName=TProjectFileNode
 FileName=C:\tranquilit\wapt\waptutils.py
 
-[Project\ChildNodes\Node0\ChildNodes\Node21]
+[Project\ChildNodes\Node0\ChildNodes\Node20]
 ClassName=TProjectFileNode
 FileName=C:\tranquilit\wapt\windnsquery.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=22
+Count=21
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode

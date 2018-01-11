@@ -2011,6 +2011,7 @@ def on_waptclient_connect():
         ).where(Hosts.uuid == uuid).execute()
         wapt_db.commit()
         wapt_db.close()
+        session['uuid'] = uuid
 
         # if not known, reject the connection
         if hostcount == 0:
@@ -2026,22 +2027,28 @@ def on_waptclient_connect():
 @socketio.on('wapt_pong')
 def on_wapt_pong():
     try:
-        uuid = request.args.get('uuid', None)
-        logger.info('Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
-        # stores sid in database
-        hostcount = Hosts.update(
-            server_uuid=get_server_uuid(),
-            listening_timestamp=datetime2isodate(),
-            listening_protocol='websockets',
-            listening_address=request.sid,
-            reachable='OK',
-        ).where(Hosts.uuid == uuid).execute()
-        wapt_db.commit()
-        # if not known, reject the connection
-        if hostcount == 0:
-            # socketio.disconnect()
+        uuid = session.get('uuid')
+        if not uuid:
+            emit('wapt_trigger_update_status')
             return False
-    except:
+        else:
+            print('Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid, session.get('uuid',None)))
+            logger.info('Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid, session.get('uuid',None)))
+            # stores sid in database
+            hostcount = Hosts.update(
+                server_uuid=get_server_uuid(),
+                listening_timestamp=datetime2isodate(),
+                listening_protocol='websockets',
+                listening_address=request.sid,
+                reachable='OK',
+            ).where(Hosts.uuid == uuid).execute()
+            wapt_db.commit()
+            # if not known, reject the connection
+            if hostcount == 0:
+                emit('wapt_trigger_update_status')
+                return False
+    except Exception as e:
+        print('Socket.IO error in wapt_pong %s' % traceback.format_exc())
         wapt_db.rollback()
 
 
