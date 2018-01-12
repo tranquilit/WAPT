@@ -310,7 +310,7 @@ import keyfinder
 
 from custom_zip import ZipFile
 
-logger = logging.getLogger('wapt')
+logger = logging.getLogger()
 
 # common windows diectories
 desktop = winshell.desktop

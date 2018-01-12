@@ -168,7 +168,7 @@ type
     Panel16: TPanel;
     PanFilterGroups: TPanel;
     PanHostsSubFilters: TPanel;
-    PanLeft: TPanel;
+    PanHosts: TPanel;
     PanSearch: TPanel;
     PanSearchIn: TPanel;
     PopupGridWSUSScan: TPopupMenu;

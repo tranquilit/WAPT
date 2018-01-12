@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.1.15"
+__version__ = "1.5.1.16"
 
 import os
 import sys
@@ -60,7 +60,15 @@ if hasattr(sys.stdout,'name') and sys.stdout.name == '<stdout>':
 else:
     ProgressBar = None
 
-logger = logging.getLogger('wapt')
+def setloglevel(logger,loglevel):
+    """set loglevel as string"""
+    if loglevel in ('debug','warning','info','error','critical'):
+        numeric_level = getattr(logging, loglevel.upper(), None)
+        if not isinstance(numeric_level, int):
+            raise ValueError('Invalid log level: {}'.format(loglevel))
+        logger.setLevel(numeric_level)
+
+logger = logging.getLogger()
 
 if platform.system() == 'Windows':
     try:

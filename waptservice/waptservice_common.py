@@ -42,7 +42,7 @@ import ConfigParser
 from optparse import OptionParser
 
 # wapt specific stuff
-from waptutils import *
+from waptutils import ensure_unicode
 import common
 from common import Wapt
 import setuphelpers

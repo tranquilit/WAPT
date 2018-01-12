@@ -22,13 +22,17 @@
 # -----------------------------------------------------------------------
 from waptutils import __version__
 
-import os,sys
+import os
+import sys
 import codecs
 import base64
 import hashlib
 import glob
 import subprocess
 import logging
+import time
+import urlparse
+import datetime
 
 from cryptography import x509
 from cryptography.exceptions import InvalidSignature
@@ -46,9 +50,7 @@ from OpenSSL import SSL
 import certifi
 import ssl
 
-from waptutils import *
-
-import datetime
+from waptutils import BaseObjectClass,wgets,jsondump,ensure_unicode,ensure_list,isodate2datetime
 
 logger = logging.getLogger()
 

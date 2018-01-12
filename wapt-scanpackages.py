@@ -33,7 +33,7 @@ sys.path.insert(0,os.path.join(wapt_root_dir))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib'))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
 
-from waptutils import __version__
+from waptutils import __version__,setloglevel
 from waptpackage import update_packages
 
 from optparse import OptionParser
@@ -46,15 +46,6 @@ __doc__ = """\
 
 Build a "Packages" file from all wapt file in the specified directory
 """
-
-def setloglevel(loglevel):
-    """set loglevel as string"""
-    if loglevel in ('debug','warning','info','error','critical'):
-        numeric_level = getattr(logging, loglevel.upper(), None)
-        if not isinstance(numeric_level, int):
-            raise ValueError('Invalid log level: %s' % loglevel)
-        logger.setLevel(numeric_level)
-
 
 
 def main():
@@ -72,9 +63,9 @@ def main():
         logger.addHandler(hdlr)
 
     if loglevel:
-        setloglevel(loglevel)
+        setloglevel(logger,loglevel)
     else:
-        setloglevel('warning')
+        setloglevel(logger,'warning')
 
     if len(args) != 1:
         parser.usage

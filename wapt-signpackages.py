@@ -35,9 +35,9 @@ sys.path.insert(0,os.path.join(wapt_root_dir,'lib'))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
 from waptutils import __version__
 
-from waptutils import *
-from waptcrypto import *
-from waptpackage import *
+from waptutils import setloglevel,ensure_list,ensure_unicode
+from waptcrypto import SSLCABundle,SSLPrivateKey,SSLCertificate
+from waptpackage import PackageEntry,WaptLocalRepo
 
 from optparse import OptionParser
 import logging
@@ -49,16 +49,6 @@ wapt-signpackages -c crtfile package1 package2
 
 Resign a list of packages
 """
-
-def setloglevel(loglevel):
-    """set loglevel as string"""
-    if loglevel in ('debug','warning','info','error','critical'):
-        numeric_level = getattr(logging, loglevel.upper(), None)
-        if not isinstance(numeric_level, int):
-            raise ValueError('Invalid log level: %s' % loglevel)
-        logger.setLevel(numeric_level)
-
-
 
 def main():
     parser=OptionParser(usage=__doc__,prog = 'wapt-signpackage')
@@ -81,9 +71,9 @@ def main():
         logger.addHandler(hdlr)
 
     if loglevel:
-        setloglevel(loglevel)
+        setloglevel(logger,loglevel)
     else:
-        setloglevel('warning')
+        setloglevel(logger,'warning')
 
     if len(args) < 1:
         print(parser.usage)

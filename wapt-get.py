@@ -22,6 +22,7 @@
 # -----------------------------------------------------------------------
 from waptutils import __version__
 
+import sys
 import os
 import codecs
 import getpass
@@ -29,10 +30,12 @@ import glob
 import json
 import logging
 import shutil
-import sys
+import urlparse
 
 from optparse import OptionParser
-from waptutils import *
+
+from waptutils import setloglevel,ensure_unicode,ensure_list,expand_args,ppdicttable
+from waptutils import jsondump
 
 from waptpackage import PackageEntry
 from waptpackage import update_packages
@@ -175,18 +178,10 @@ if len(logger.handlers) < 1:
         u'%(asctime)s %(levelname)s %(message)s'))
     logger.addHandler(hdlr)
 
-def setloglevel(loglevel):
-    """set loglevel as string"""
-    if loglevel in ('debug','warning','info','error','critical'):
-        numeric_level = getattr(logging, loglevel.upper(), None)
-        if not isinstance(numeric_level, int):
-            raise ValueError('Invalid log level: %s' % loglevel)
-        logger.setLevel(numeric_level)
-
 if loglevel:
-    setloglevel(loglevel)
+    setloglevel(logger,loglevel)
 else:
-    setloglevel('warning')
+    setloglevel(logger,'warning')
 
 logger.debug(u'Default encoding : %s ' % sys.getdefaultencoding())
 logger.debug(u'Setting encoding for stdout and stderr to %s ' % encoding)
@@ -330,7 +325,7 @@ def main():
         global loglevel
         if not loglevel and mywapt.config.has_option('global','loglevel'):
             loglevel = mywapt.config.get('global','loglevel')
-            setloglevel(loglevel)
+            setloglevel(logger,loglevel)
 
         mywapt.options = options
 

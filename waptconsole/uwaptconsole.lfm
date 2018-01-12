@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 349
+  Left = 347
   Height = 630
-  Top = 140
+  Top = 169
   Width = 1003
   AllowDropFiles = True
   Caption = 'WAPT console'
@@ -1434,14 +1434,14 @@ object VisWaptGUI: TVisWaptGUI
         Align = alRight
         ResizeAnchor = akRight
       end
-      object PanLeft: TPanel
+      object PanHosts: TPanel
         Left = 0
         Height = 321
         Top = 120
         Width = 418
         Align = alClient
         BevelOuter = bvNone
-        Caption = 'PanLeft'
+        Caption = ''
         ClientHeight = 321
         ClientWidth = 418
         TabOrder = 2

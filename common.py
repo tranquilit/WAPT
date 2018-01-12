@@ -75,6 +75,7 @@ from types import ModuleType
 
 import shutil
 import urlparse
+import zipfile
 
 # Windows stuff
 import windnsquery
@@ -92,6 +93,8 @@ from ntsecuritycon import DOMAIN_GROUP_RID_ADMINS,DOMAIN_GROUP_RID_USERS
 import ctypes
 from ctypes import wintypes
 
+logger = logging.getLogger()
+
 try:
     from requests_kerberos import HTTPKerberosAuth,DISABLED
     has_kerberos = True
@@ -105,9 +108,20 @@ from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,\
 
 # end of windows stuff
 
-from waptutils import *
-from waptcrypto import *
-from waptpackage import *
+from waptutils import BaseObjectClass,ensure_list,ensure_unicode,default_http_headers
+from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,ZipFile
+from waptutils import import_code,import_setup,force_utf8_no_bom,format_bytes,wget,merge_dict,remove_encoding_declaration
+
+from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL,SSLVerifyException
+from waptcrypto import get_peer_cert_chain_from_server,default_pwd_callback,hexdigest_for_data
+from waptcrypto import sha256_for_data,EWaptMissingPrivateKey,EWaptMissingCertificate
+
+from waptpackage import EWaptException,EWaptMissingLocalWaptFile,EWaptNotAPackage,EWaptNotSigned
+from waptpackage import EWaptBadTargetOS,EWaptNeedsNewerAgent,EWaptDiskSpace
+from waptpackage import EWaptUnavailablePackage,EWaptConflictingPackage
+from waptpackage import EWaptDownloadError
+
+from waptpackage import REGEX_PACKAGE_CONDITION,WaptRemoteRepo,PackageEntry
 
 import setuphelpers
 import netifaces

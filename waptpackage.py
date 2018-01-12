@@ -27,14 +27,10 @@ __all__ = [
     'md5_for_file',
     'parse_major_minor_patch_build',
     'make_version',
-    'datetime2isodate',
-    'httpdatetime2isodate',
     'PackageRequest',
     'PackageEntry',
     'WaptBaseRepo',
     'WaptLocalRepo',
-    'default_http_headers',
-    'wget',
     'WaptRemoteRepo',
     'update_packages',
     'REGEX_PACKAGE_VERSION',
@@ -81,14 +77,20 @@ import datetime
 import tempfile
 import email.utils
 import shutil
-from waptcrypto import *
-from waptutils import *
 import base64
 from iniparse import RawConfigParser
 import traceback
 
-logger = logging.getLogger('wapt')
+from waptutils import BaseObjectClass,Version,ensure_unicode,ZipFile,force_utf8_no_bom
+from waptutils import create_recursive_zip,ensure_list,all_files
+from waptutils import datetime2isodate,httpdatetime2isodate,fileutcdate,fileisoutcdate
+from waptutils import default_http_headers,wget
 
+from waptcrypto import EWaptMissingCertificate,EWaptBadCertificate
+from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL
+from waptcrypto import SSLVerifyException,hexdigest_for_data,hexdigest_for_file
+
+logger = logging.getLogger()
 
 def md5_for_file(fname, block_size=2**20):
     """Calculate the md5 hash of file.
@@ -1057,7 +1059,7 @@ class PackageEntry(BaseObjectClass):
             self._md = self._default_md
             return certs[0]
 
-        raise SSLVerifyException('SSL signature verification failed for control %s against embedded certificate %s : %s' % (self.asrequirement(),certs,repr(e)))
+        raise SSLVerifyException('SSL signature verification failed for control %s against embedded certificate %s' % (self.asrequirement(),certs))
 
     def has_file(self,fname):
         """Return None if fname is not in package, else return file datetime
