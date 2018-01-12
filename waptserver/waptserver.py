@@ -1682,6 +1682,7 @@ def get_hosts():
             if 'reachable' in request.args and (request.args['reachable'] == '1'):
                 query = query & (Hosts.reachable == 'OK')
 
+            ## TODO : pylint does not like this block... raises 'Uninferable' object is not iterable
             if 'groups' in request.args:
                 groups = ensure_list(request.args.get('groups', ''))
                 in_group = HostGroups.select(HostGroups.host).where(HostGroups.group_name == groups)
