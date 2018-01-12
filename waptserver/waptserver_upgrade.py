@@ -49,6 +49,7 @@ sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 
 from waptserver_config import __version__
 from waptserver_model import load_db_config
+import platform
 
 import logging
 import ConfigParser
@@ -56,6 +57,8 @@ from optparse import OptionParser
 
 from waptserver_model import *
 from waptserver_utils import *
+
+
 
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
 config_file = DEFAULT_CONFIG_FILE
@@ -67,47 +70,42 @@ logging.basicConfig()
 # TODO : move to waptserver_upgrade with plain mongo connection.
 
 
-def create_import_data(ip='127.0.0.1', fn=None):
+def create_import_data():
     """Connect to a mongo instance and write all wapt.hosts collection as json into a file"""
-    print('Read mongo data from %s...' % ip)
-    d = json.load(os.popen('mongoexport -h %s -d wapt -c hosts  --jsonArray' % ip))
-    print('%s records read.' % len(d))
-    if fn is None:
-        fn = '%s.json' % ip
-    # 0000 is not accepted by postgresql
-    open(fn, 'wb').write(json.dumps(d).replace('\u0000', ' '))
-    print('File %s done.' % fn)
-    return fn
+    if platform.system()=='Linux':
+        mongo_datadir = '/var/lib/mongodb/'
+        data = subprocess.check_output('mongoexport -d wapt -c hosts --jsonArray --dbpath=%s' % mongo_datadir,shell=True)
+        data = data.replace('\u0000', ' ')
+        jsondata = json.load()
+    elif platform.system()=='Windows':
+        win_mongo_dir ="c:\\wapt\\waptserver\\mongodb"
+        cmd  = '%s -d wapt -c hosts --jsonArray --dbpath=%s' % (os.path.join(win_mongo_dir,'mongoexport.exe'),os.path.join(win_mongo_dir,'data'))
+        print ('executing mongodb dump using command line : %s' % cmd)
+        data = subprocess.check_output(cmd,shell=True)
+        data = data.replace('\u0000', ' ')
+        jsondata = json.loads(data)
+    else:
+        print "unsupported platform"
+        sys.exit(1)
+    return jsondata
 
 
-def load_json(filenames=r'c:\tmp\*.json', add_test_prefix=None):
+def load_json(json_data):
     """Read a json host collection exported from wapt mongo and creates
             Wapt PG Host DB instances"""
-    for fn in glob.glob(filenames):
-        print('Loading %s' % fn)
-        recs = json.load(codecs.open(fn, 'rb', encoding='utf8'))
-        if isinstance(recs, dict):
-            recs = [recs]
-        print('%s recs to load' % len(recs))
-
-        for rec in recs:
-            try:
-                # to duplicate data for testing
-                if add_test_prefix:
-                    rec['host_info']['computer_fqdn'] = add_test_prefix + '-' + rec['host_info']['computer_fqdn']
-                    rec['uuid'] = add_test_prefix + '-' + rec['uuid']
-
-                uuid = rec.get('uuid')
-                if not uuid:
-                    uuid = rec['wmi']['Win32_ComputerSystemProduct']['UUID']
-                if not 'uuid' in rec:
-                    rec['uuid'] = uuid
-                computer_fqdn = rec.get('host_info', rec.get('host'))['computer_fqdn']
-                print update_host_data(rec)
-                wapt_db.commit()
-            except Exception as e:
-                print(u'Error for %s : %s' % (ensure_unicode(computer_fqdn), ensure_unicode(e)))
-                wapt_db.rollback()
+    for rec in json_data:
+        try:
+            uuid = rec['uuid']
+            if not uuid:
+                uuid = rec['wmi']['Win32_ComputerSystemProduct']['UUID']
+            if not 'uuid' in rec:
+                rec['uuid'] = uuid
+            computer_fqdn = rec.get('host_info', rec.get('host'))['computer_fqdn']
+            print update_host_data(rec)
+            wapt_db.commit()
+        except Exception as e:
+            print(u'Error for %s : %s' % (ensure_unicode(computer_fqdn), ensure_unicode(e)))
+            wapt_db.rollback()
 
 
 def comment_mongodb_lines(conf_filename='/opt/wapt/conf/waptserver.ini'):
@@ -138,24 +136,37 @@ def upgrade2postgres():
     # check if mongo is runnina
     print 'upgrading data from mongodb to postgresql'
     mongo_running = False
+    if platform.system()=='Linux':
+        mongo_procname = 'mongod'
+        psql_path = 'psql'
+
+        mongoclient_path = 'mongoexport'
+    elif platform.system()=='Windows':
+        mongo_procname = 'mongod.exe'
+        psql_path = r'c:\wapt\waptserver\pgsql\bin\psql.exe'
+    else:
+        print('unsupported OS %s' % str(platform.system()))
+        sys.exit(1)
+
     for proc in psutil.process_iter():
-        if proc.name() == 'mongod':
+        if proc.name() == mongo_procname:
             mongo_running = True
+
     if not mongo_running:
         print ('mongodb process not running, please check your configuration. Perhaps migration of data has already been done...')
         sys.exit(1)
-    val = subprocess.check_output("""  psql wapt -c " SELECT datname FROM pg_database WHERE datname='wapt';   " """, shell=True)
+    cmd ="""  "%s" -U wapt -c " SELECT datname FROM pg_database WHERE datname='wapt';   " """ % psql_path
+    val = subprocess.check_output(cmd, shell=True)
     if 'wapt' not in val:
         print ('missing wapt database, please create database first')
         sys.exit(1)
 
-    data_import_filename = '/tmp/waptupgrade_%s.json' % datetime.datetime.today().strftime('%Y%m%d-%h:%M:%s')
-    print ('dumping mongodb data in %s ' % data_import_filename)
-    create_import_data(ip='127.0.0.1', fn=data_import_filename)
+
+    print ('dumping mongodb data ')
+    jsondata = create_import_data()
     try:
-        load_json(filenames=data_import_filename)
-        # TODO : check that data is properly imported
-        os.unlink(data_import_filename)
+        load_json(jsondata)
+
     except Exception as e:
         traceback.print_exc(file=sys.stdout)
         print ('Exception while loading data, please check current configuration')
@@ -170,32 +181,15 @@ if __name__ == '__main__':
         dest='configfile',
         default=DEFAULT_CONFIG_FILE,
         help='Config file full path (default: %default)')
-    parser.add_option(
-        '-l',
-        '--loglevel',
-        dest='loglevel',
-        default='info',
-        type='choice',
-        choices=[
-            'debug',
-            'warning',
-            'info',
-            'error',
-            'critical'],
-        metavar='LOGLEVEL',
-        help='Loglevel (default: warning)')
-    parser.add_option(
-        '-d',
-        '--devel',
-        dest='devel',
-        default=False,
-        action='store_true',
+
+    parser.add_option('-l', '--loglevel', dest='loglevel', default='info', type='choice',
+        choices=['debug', 'warning', 'info', 'error', 'critical'],
+        metavar='LOGLEVEL', help='Loglevel (default: warning)')
+
+    parser.add_option('-d', '--devel', dest='devel', default=False, action='store_true',
         help='Enable debug mode (for development only)')
-    parser.add_option(
-        '-p',
-        '--test-prefix',
-        dest='test_prefix',
-        default=None,
+
+    parser.add_option('-p', '--test-prefix', dest='test_prefix', default=None,
         help='test prefix for fqdn and uuid for load testing (for development only)')
 
     (options, args) = parser.parse_args()
@@ -210,7 +204,7 @@ if __name__ == '__main__':
 
     if action == 'upgrade2postgres':
         print('Upgrading from mongodb to postgres')
-        comment_mongodb_lines()
+        comment_mongodb_lines(conf_filename=options.configfile)
         upgrade2postgres()
     elif action == 'upgrade_structure':
         print('Updating current PostgreSQL DB Structure')
