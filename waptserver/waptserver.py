@@ -43,30 +43,11 @@ from eventlet import monkey_patch
 # os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
 monkey_patch(os=False)
 
-from flask import request, Flask, Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
-from flask_socketio import SocketIO, disconnect, send, emit
-# from flask_login import LoginManager,login_required,current_user,UserMixin
-
 import time
 import json
-import hashlib
-from passlib.hash import sha512_crypt, bcrypt
-from passlib.hash import pbkdf2_sha256
-
-from peewee import *
-from playhouse.postgres_ext import *
-
-from waptserver_model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups
-from waptserver_model import get_db_version, init_db, wapt_db, model_to_dict, dict_to_model, update_host_data
-from waptserver_model import upgrade_db_structure
-from waptserver_model import load_db_config
-
-from werkzeug.utils import secure_filename
-import functools
 
 import logging
 import logging.handlers
-import ConfigParser
 import codecs
 import base64
 import zlib
@@ -82,21 +63,50 @@ import traceback
 import datetime
 import uuid as uuid_
 import email.utils
-import collections
-from collections import OrderedDict
 import urlparse
 import stat
+import re
+import functools
+
 import pefile
-import itsdangerous
+
 import thread
 import threading
 import Queue
-import re
 
-from waptpackage import *
-from waptcrypto import *
+import hashlib
+from passlib.hash import sha512_crypt, bcrypt
+from passlib.hash import pbkdf2_sha256
 
-from waptserver_utils import *
+import ConfigParser
+from optparse import OptionParser
+
+import itsdangerous
+from werkzeug.utils import secure_filename
+
+from flask import request, Flask, Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
+from flask_socketio import SocketIO, disconnect, send, emit
+# from flask_login import LoginManager,login_required,current_user,UserMixin
+
+from peewee import *
+from playhouse.postgres_ext import *
+
+from waptserver_model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups
+from waptserver_model import get_db_version, init_db, wapt_db, model_to_dict, dict_to_model, update_host_data
+from waptserver_model import upgrade_db_structure
+from waptserver_model import load_db_config
+
+from waptpackage import PackageEntry,update_packages,WaptLocalRepo,EWaptBadSignature,EWaptMissingCertificate
+from waptcrypto import SSLCertificate,SSLVerifyException,InvalidSignature,sha256_for_file
+from waptcrypto import sha256_for_data
+
+from waptutils import datetime2isodate,ensure_list,ensure_unicode,Version,setloglevel
+
+from waptserver_utils import make_response,make_response_from_exception
+from waptserver_utils import EWaptAuthenticationFailure,EWaptForbiddden,EWaptHostUnreachable,EWaptMissingHostData
+from waptserver_utils import EWaptMissingParameter,EWaptSignalReceived,EWaptTimeoutWaitingForResult,EWaptUnknownHost
+from waptserver_utils import get_disk_space,jsondump,mkdir_p,utils_devel_mode,utils_set_devel_mode
+
 import waptserver_config
 
 import wakeonlan.wol
@@ -110,7 +120,6 @@ except ImportError:
 _ = gettext
 
 
-from optparse import OptionParser
 
 # Ensure that any created files have sane permissions.
 # uWSGI implicitely sets umask(0).
@@ -775,6 +784,7 @@ def upload_host():
 
                             # get host cert to encrypt package with public key
                             if app.conf['encrypt_host_packages']:
+                                host_id = entry.package
                                 host = Hosts.select(Hosts.uuid, Hosts.computer_fqdn, Hosts.host_certificate) \
                                     .where((Hosts.uuid == host_id) | (Hosts.computer_fqdn == host_id)) \
                                     .dicts().first()
@@ -900,7 +910,7 @@ def change_password():
                     # change master password
                     if 'new_password' in post_data and post_data['user'] == 'admin':
                         if len(post_data['new_password']) < app.conf.get('min_password_length',10):
-                            raise EWaptForbiddden('The password must be at least %s characters' % app.onf.get('min_password_length',10))
+                            raise EWaptForbiddden('The password must be at least %s characters' % app.conf.get('min_password_length',10))
                         new_hash = pbkdf2_sha256.hash(post_data['new_password'].encode('utf8'))
                         rewrite_config_item(config_file, 'options', 'wapt_password', new_hash)
                         app.conf['wapt_password'] = new_hash
@@ -1471,7 +1481,7 @@ def build_hosts_filter(model, filter_expr):
                 if clause is not None:
                     result = result | clause
         if result is not None and not_filter:
-            result = ~result
+            result = ~result # pylint: disable=invalid-unary-operand-type
         return result
     else:
         raise Exception('Invalid filter provided in query. Should be f1,f2,f3:regexp ')
@@ -1687,7 +1697,7 @@ def get_hosts():
                 query = query & (Hosts.computer_ad_site  == request.args.get('ad_site'))
 
             if query is not None and not_filter:
-                query = ~ query
+                query = ~ query  # pylint: disable=invalid-unary-operand-type
 
             limit = int(request.args.get('limit', 1000))
 
@@ -2029,7 +2039,7 @@ def on_wapt_pong():
     try:
         uuid = session.get('uuid')
         if not uuid:
-            logger.critical(u'SocketIO connected but no host uuid in session: asking connected host to update status' % (uuid,request.sid))
+            logger.critical(u'SocketIO %s connected but no host uuid in session: asking connected host to update status' % (request.sid))
             emit('wapt_trigger_update_status')
             return False
         else:

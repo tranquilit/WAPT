@@ -38,17 +38,22 @@ sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 
 from waptserver_config import __version__
 
-from waptserver_utils import *
-import waptserver_config
 from optparse import OptionParser
 import logging
 import subprocess
 import setuphelpers
 import datetime
-from waptcrypto import SSLPrivateKey,SSLCertificate
+
 import jinja2
 import time
+
+
 from setuphelpers import run
+from waptutils import setloglevel
+from waptcrypto import SSLPrivateKey,SSLCertificate
+
+import waptserver_config
+from waptserver_utils import logger,mkdir_p
 
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
 config_file = DEFAULT_CONFIG_FILE
@@ -106,7 +111,7 @@ def install_windows_nssm_service(
         setuphelpers.run('sc delete "%s"' % service_name)
 
     if not setuphelpers.iswin64():
-        raise Error('Windows 32bit install not supported')
+        raise Exception('Windows 32bit install not supported')
 
     nssm = os.path.join(wapt_root_dir, 'waptservice', 'win64', 'nssm.exe')
 

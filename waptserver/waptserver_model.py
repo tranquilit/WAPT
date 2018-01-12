@@ -33,7 +33,6 @@ sys.path.insert(0, os.path.join(wapt_root_dir))
 sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
 sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 
-from waptserver_config import __version__
 
 import psutil
 import datetime
@@ -43,6 +42,8 @@ import traceback
 import platform
 
 from peewee import *
+from waptserver_config import __version__
+
 from playhouse.postgres_ext import *
 from playhouse.pool import PooledPostgresqlExtDatabase
 
@@ -51,7 +52,6 @@ from playhouse.signals import Model as SignaledModel, pre_save, post_save
 
 from waptutils import Version
 from waptutils import ensure_unicode
-
 
 from waptserver_utils import setloglevel
 
@@ -94,13 +94,13 @@ def load_db_config(server_config):
     wapt_db.initialize(pgdb)
     return pgdb
 
-class BaseModel(SignaledModel):
+class WaptBaseModel(SignaledModel):
     """A base model that will use our Postgresql database"""
     class Meta:
         database = wapt_db
 
 
-class ServerAttribs(BaseModel):
+class ServerAttribs(WaptBaseModel):
     """key/value registry"""
     key = CharField(primary_key=True, null=False, index=True)
     value = BinaryJSONField(null=True)
@@ -126,7 +126,7 @@ class ServerAttribs(BaseModel):
             except IntegrityError:
                 cls.update(value=value).where(cls.key == key).execute()
 
-class Hosts(BaseModel):
+class Hosts(WaptBaseModel):
     """
     Inventory informations of a host
     """
@@ -203,7 +203,7 @@ class Hosts(BaseModel):
         return cls._meta.fields[fieldname]
 
 
-class HostPackagesStatus(BaseModel):
+class HostPackagesStatus(WaptBaseModel):
 
     """
     Stores the status of packages installed on a host
@@ -238,7 +238,7 @@ class HostPackagesStatus(BaseModel):
         return '<HostPackageStatus uuid=%s packages=%s (%s) install_status=%s>' % (self.id, self.package, self.version, self.install_status)
 
 
-class HostSoftwares(BaseModel):
+class HostSoftwares(WaptBaseModel):
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
     name = CharField(max_length=2000, null=True, index=True)
     version = CharField(max_length=1000, null=True)
@@ -259,7 +259,7 @@ class HostSoftwares(BaseModel):
         return '<HostSoftwares uuid=%s name=%s (%s) key=%s>' % (self.uuid, self.name, self.version, self.key)
 
 
-class HostGroups(BaseModel):
+class HostGroups(WaptBaseModel):
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
     group_name = CharField(null=False, index=True)
 
@@ -273,7 +273,7 @@ class HostGroups(BaseModel):
         return '<HostGroups uuid=%s group_name=%s>' % (self.uuid, self.group_name)
 
 
-class HostJsonRaw(BaseModel):
+class HostJsonRaw(WaptBaseModel):
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
 
     # audit data
@@ -283,7 +283,7 @@ class HostJsonRaw(BaseModel):
     updated_by = DateTimeField(null=True)
 
 
-class HostWsus(BaseModel):
+class HostWsus(WaptBaseModel):
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
     # windows updates
     wsus = BinaryJSONField(null=True)
