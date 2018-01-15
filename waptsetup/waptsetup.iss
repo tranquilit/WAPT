@@ -156,13 +156,13 @@ Filename: {app}\wapt-get.ini; Section: global; Key: hiberboot_enabled; String: {
 Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhidden; StatusMsg: {cm:UpdatePkgUponShutdown}; Description: "{cm:UpdatePkgUponShutdown}"
 
 #if edition != "waptstarter"
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Flags: runasoriginaluser; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
 #endif
 
 #if set_start_packages != "" 
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct --update install {code:GetStartPackages}"; Flags: runasoriginaluser; Tasks: installStartPackages; StatusMsg: {cm:InstallStartPackages}; Description: "{cm:InstallStartPackages}"
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct --update install {code:GetStartPackages}"; Tasks: installStartPackages; StatusMsg: {cm:InstallStartPackages}; Description: "{cm:InstallStartPackages}"
 #else
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runasoriginaluser runhidden; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
 #endif
 
 #endif
