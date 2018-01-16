@@ -947,8 +947,15 @@ def test_inter():
     print catestbundle.check_certificates_chain(test2_cert)
 
 
-
-
+def test_tableprovider():
+    hosts = TableProvider(Hosts,columns=[
+        ColumnDef(Hosts.connected_ips),
+        ColumnDef(Hosts.computer_fqdn),
+        ColumnDef(Hosts.description),
+        ColumnDef(Hosts.uuid)],
+        where=Hosts.computer_fqdn=='htlaptop.ad.tranquil.it')
+    print hosts.get_data()
+    hosts.apply_updates([['update',{'uuid':'4C4C4544-004E-3510-8051-C7C04F325131'},{'description':u'Test hubert'}]])
 
 
 if __name__ == '__main__':

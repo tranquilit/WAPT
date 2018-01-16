@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=3.0.2.0
+Version=3.1.0.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -205,8 +205,31 @@ WorkingDirectory=$[ActiveScript-Dir]
 ShortCut=0
 MessagesFormat=$[FileName] $[LineNumber]
 
+[Project\ChildNodes\Node1\ChildNodes\Node4]
+ClassName=TProjectRunConfiguationNode
+Name=waptmodel
+
+[Project\ChildNodes\Node1\ChildNodes\Node4\RunConfig]
+ScriptName=C:\tranquilit\wapt\waptserver\waptserver_model.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=-c c:\wapt\conf\waptserver.ini
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node4\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
+
 [Project\ChildNodes\Node1\ChildNodes]
-Count=4
+Count=5
 
 [Project\ChildNodes]
 Count=2
