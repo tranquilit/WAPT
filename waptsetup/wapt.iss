@@ -258,6 +258,9 @@ begin
     Exec('net', 'stop waptnginx', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec('net', 'stop waptmongodb', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec('net', 'stop waptpostgresql', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+
+    Exec('sc', 'delete waptapache', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec('sc', 'delete waptmongodb', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   #endif
 
     Exec('taskkill', '/t /im "wapttray.exe" /f', '', SW_HIDE,
