@@ -252,7 +252,8 @@ begin
     // Proceed Setup
     Exec('net', 'stop waptservice', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
    
-  #ifdef "waptserver"
+  #ifdef waptserver
+
     Exec('net', 'stop waptserver', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec('net', 'stop waptapache', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec('net', 'stop waptnginx', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
@@ -260,6 +261,7 @@ begin
     Exec('net', 'stop waptpostgresql', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec('cmd', 'sc delete waptapache', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec('cmd', 'sc delete waptmongodb', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+
   #endif
 
     Exec('taskkill', '/t /im "wapttray.exe" /f', '', SW_HIDE,
