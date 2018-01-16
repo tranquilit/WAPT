@@ -582,6 +582,166 @@ def wapthosts_json(model_class, instance, created):
             instance.host_status = 'OK'
 
 
+class ColumnDef(object):
+    """Holds definitin of column for updatable remote GUI table
+    """
+
+    def __init__(self,field,in_update=None,in_where=None,in_key=None):
+        assert(isinstance(field,Field))
+        self.field = field
+        if in_update is not None:
+            self.in_update = in_update
+        else:
+            self.in_update = not isinstance(field,ForeignKeyField)
+
+        self.in_where = None
+        if in_where is not None:
+            self.in_where = in_where
+
+        self.in_key = field.primary_key
+        self.visible = False
+        self.default_width = None
+
+    def as_metadata(self):
+        result = dict()
+        for att in ('type','name','primary_key','description','help_text','choice',
+           'default','sequence','max_length'):
+            if hasattr(self.field,att):
+                value = getattr(self.field,att)
+                if value is not None:
+                    result[att] = value
+
+        for att in ('visible','default_width'):
+            value = getattr(self,att)
+            if value is not None:
+                result[att] = value
+
+        result['required'] = not self.field.is_null()
+        return result
+
+    def to_client(self,data):
+        """Return a serialization of data, suitable for client application"""
+        if isinstance(data,list):
+            return json.dumps(data)
+        else:
+            return data
+
+    def from_client(self,data):
+        """Return db suitable value from a serialization from client application"""
+        if isinstance(self.field,ArrayField):
+            return json.loads(data)
+        else:
+            return data
+
+class TableProvider(object):
+    """Updatable dataset provider based on a list of column defs and
+    a where clause.
+
+    >>>
+    """
+    def __init__(self,model,columns=None,where=None):
+        self.model = model
+        self.columns = columns
+        self.where = where
+        self._columns_idx = None
+
+    def get_data(self,start=0,count=None):
+        """Build query, retrieve rows"""
+
+        fields_list = []
+        query = self.model.select(* [f.field for f in self.columns])
+        if self.where:
+            query = query.where(self.where)
+
+        columns_names = [column.field.db_column for column in self.columns]
+        rows = []
+        for row in query.dicts():
+            rows.append([column.to_client(row[column.field.db_column]) for column in self.columns])
+
+        return dict(
+            metadata = [c.as_metadata() for c in self.columns],
+            rows = rows
+        )
+
+    def column_by_name(self,name):
+        """Return ColumnDef for field name"""
+        if self._columns_idx is None:
+            self._columns_idx = dict([(c.field.db_column,c) for c in self.columns])
+        return self._columns_idx.get(name,None)
+
+    def _where_from_values(self,old_values={}):
+        """Return a where clause from old and new dict for update and delete"""
+        result = None
+        for (column_name,column_value) in old_values.iteritems():
+            column = self.column_by_name(column_name)
+            if column:
+                if column.in_key or column.in_where:
+                    if result is None:
+                        result = column.field == column_value
+                    else:
+                        result = result & column.field == column_value
+        return result
+
+    def _record_values_from_values(self,new_values={}):
+        """Return a dict for the insert/update into database from supplkied dict
+        filtering out non updateable values.
+        """
+        result = {}
+        for (column_name,column_value) in new_values.iteritems():
+            column = self.column_by_name(column_name)
+            if column:
+                if column.in_update:
+                    result[column_name] = column.from_client(column_value)
+        return result
+
+    def _values_from_record_values(self,values):
+        """Return a dict
+        """
+        result = {}
+        for (column_name,column_value) in values.iteritems():
+            column = self.column_by_name(column_name)
+            if column:
+                result[column_name] = column.to_client(column_value)
+        return result
+
+    def _update_set_from_values(self,new_values={}):
+        """Return a dict for the insert/update into database from supplkied dict
+        filtering out non updateable values.
+        """
+        result = {}
+        for (column_name,column_value) in new_values.iteritems():
+            column = self.column_by_name(column_name)
+            if column:
+                if column.in_update:
+                    result[column.field] = column.from_client(column_value)
+        return result
+
+    def apply_updates(self,delta):
+        """Build update queries from delta
+
+        Args:
+            delta (list): list of (update_type,old_data,new_data)
+                update_type (str) = ('insert','update','delete')
+                old_data (dict)  = empty dict for insert, list of old values for update / delete.
+                           must include in_key, in_where, and updated fields with in_update flag
+                new_data (dict) = dict for updated / inserted data, empty for delete
+
+        """
+        with self.model._meta.database.atomic():
+            for (update_type,old,new) in delta:
+                # translates old / new value to
+                if update_type == 'insert':
+                    query = self.model.insert(self._update_set_from_values(new))
+                elif update_type == 'update':
+                    old_db_values = self._record_values_from_values(old)
+                    query = self.model.update(self._update_set_from_values(new)).where(self._where_from_values(old_db_values))
+                elif update_type == 'delete':
+                    old_db_values = self._record_values_from_values(old)
+                    query = self.model.delete().where(self._where_from_values(old_db_values))
+                query.execute()
+        return result
+
+
 def get_db_version():
     try:
         return Version(ServerAttribs.get(key='db_version').value, 4)
@@ -790,6 +950,7 @@ if __name__ == '__main__':
     load_db_config(conf)
 
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+
 
     if options.loglevel is not None:
         setloglevel(logger, options.loglevel)

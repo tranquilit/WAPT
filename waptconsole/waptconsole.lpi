@@ -42,61 +42,64 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="18">
+    <RequiredPackages Count="19">
       <Item1>
-        <PackageName Value="RunTimeTypeInfoControls"/>
+        <PackageName Value="MemDSLaz"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_fzcontrols"/>
+        <PackageName Value="RunTimeTypeInfoControls"/>
       </Item2>
       <Item3>
-        <PackageName Value="pl_exdesign"/>
+        <PackageName Value="pl_fzcontrols"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_luicontrols"/>
+        <PackageName Value="pl_exdesign"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_lclextensions"/>
+        <PackageName Value="pl_luicontrols"/>
       </Item5>
       <Item6>
-        <PackageName Value="pl_lazsolutions"/>
+        <PackageName Value="pl_lclextensions"/>
       </Item6>
       <Item7>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="pl_lazsolutions"/>
       </Item7>
       <Item8>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="pl_indy"/>
       </Item8>
       <Item9>
-        <PackageName Value="pl_excontrols"/>
+        <PackageName Value="pltis_wapt"/>
       </Item9>
       <Item10>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pl_excontrols"/>
       </Item10>
       <Item11>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="pltis_utils"/>
       </Item11>
       <Item12>
-        <PackageName Value="pl_virtualtrees"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item12>
       <Item13>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pl_virtualtrees"/>
       </Item13>
       <Item14>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="pltis_superobject"/>
       </Item14>
       <Item15>
-        <PackageName Value="pl_virtualtreesextra"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item15>
       <Item16>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item16>
       <Item17>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="FCL"/>
       </Item17>
       <Item18>
-        <PackageName Value="LCL"/>
+        <PackageName Value="SynEdit"/>
       </Item18>
+      <Item19>
+        <PackageName Value="LCL"/>
+      </Item19>
     </RequiredPackages>
     <Units Count="29">
       <Unit0>
@@ -329,8 +332,20 @@
       <OtherUnitFiles Value="..\wapt-get"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <IncludeAssertionCode Value="True"/>
+      </SyntaxOptions>
+    </Parsing>
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+      <VerifyObjMethodCallValidity Value="True"/>
       <Optimizations>
         <OptimizationLevel Value="0"/>
       </Optimizations>
