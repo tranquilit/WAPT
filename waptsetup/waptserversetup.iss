@@ -128,10 +128,6 @@ en.InstallWaptServer=Wapt server installieren
 
 
 [Code]
-#include "services.iss"
-var
-  edWaptRepoUrl:TEdit;
-
  
 function RunCmd(cmd:AnsiString;RaiseOnError:Boolean):AnsiString;
 var
