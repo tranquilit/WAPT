@@ -1,8 +1,5 @@
-msgid ""
-msgstr "Content-Type: text/plain; charset=UTF-8"
-
 msgid "Only suitable for development hosts."
-msgstr ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tform1.buttonpanel1.helpbutton.caption
 msgctxt "TFORM1.BUTTONPANEL1.HELPBUTTON.CAPTION"
@@ -1567,6 +1564,10 @@ msgstr ""
 msgid "Download Updates listing from Microsoft"
 msgstr ""
 
+#: tviswaptgui.button2.caption
+msgid "Button2"
+msgstr ""
+
 #: tviswaptgui.caption
 msgid "WAPT console"
 msgstr ""
@@ -1689,6 +1690,12 @@ msgid "mywapt.update()"
 msgstr ""
 
 #: tviswaptgui.edsearchhost.hint
+msgctxt "tviswaptgui.edsearchhost.hint"
+msgid "Regular expressions allowed"
+msgstr ""
+
+#: tviswaptgui.edsearchhost1.hint
+msgctxt "TVISWAPTGUI.EDSEARCHHOST1.HINT"
 msgid "Regular expressions allowed"
 msgstr ""
 
@@ -1941,10 +1948,6 @@ msgstr ""
 #: tviswaptgui.panel7.caption
 msgctxt "tviswaptgui.panel7.caption"
 msgid "Panel7"
-msgstr ""
-
-#: tviswaptgui.panleft.caption
-msgid "PanLeft"
 msgstr ""
 
 #: tviswaptgui.pggroups.caption
@@ -2617,6 +2620,14 @@ msgctxt "uwaptconsoleres.rscompletionprogress"
 msgid "%s : %.0f%% completed"
 msgstr ""
 
+#: uwaptconsoleres.rsconfirmburstupdate
+msgid "Are you sure you want to trigger Status Update on %d hosts ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmburstupgrades
+msgid "Are you sure you want to Apply Upgrades on %d hosts ?"
+msgstr ""
+
 #: uwaptconsoleres.rsconfirmcaption
 msgctxt "uwaptconsoleres.rsconfirmcaption"
 msgid "Confirm"
@@ -2625,6 +2636,10 @@ msgstr ""
 #: uwaptconsoleres.rsconfirmdeletion
 msgctxt "uwaptconsoleres.rsconfirmdeletion"
 msgid "Confirm removal"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmgpupdate
+msgid "Are you sure you want to update Group Policies status on %d hosts ?"
 msgstr ""
 
 #: uwaptconsoleres.rsconfirmhostforgetspackages
@@ -2680,6 +2695,10 @@ msgstr ""
 #: uwaptconsoleres.rsconfirmrmpackagesfromhost
 msgctxt "uwaptconsoleres.rsconfirmrmpackagesfromhost"
 msgid "Are you sure you want to remove %s package(s) from the selected host(s) %s ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmwaptexit
+msgid "Are you sure you want to propose Packages Upgrades on %d hosts ?"
 msgstr ""
 
 #: uwaptconsoleres.rscreationinprogress
@@ -2959,9 +2978,13 @@ msgctxt "uwaptconsoleres.rsmainrepourl"
 msgid "Main repo url: %s"
 msgstr ""
 
+#: uwaptconsoleres.rsmessagetosend
+msgid "Message to send"
+msgstr ""
+
 #: uwaptconsoleres.rsnbmodifiedhosts
 msgctxt "uwaptconsoleres.rsnbmodifiedhosts"
-msgid "%s hosts affected."
+msgid "%d hosts affected. %d hosts discarded (errors). %d hosts unchanged"
 msgstr ""
 
 #: uwaptconsoleres.rsnobundle
@@ -3084,6 +3107,10 @@ msgstr ""
 msgid "Confirm the unregistration of repository %s"
 msgstr ""
 
+#: uwaptconsoleres.rsrunninggpupdate
+msgid "Running GPUpdate"
+msgstr ""
+
 #: uwaptconsoleres.rsrunningtask
 msgctxt "uwaptconsoleres.rsrunningtask"
 msgid "Running task %d: %s, status:%s"
@@ -3108,6 +3135,10 @@ msgstr ""
 
 #: uwaptconsoleres.rsselectremovedepends
 msgid "Select packages to remove from hosts configuration"
+msgstr ""
+
+#: uwaptconsoleres.rsshowmessageforusers
+msgid "Send message to users"
 msgstr ""
 
 #: uwaptconsoleres.rssrv

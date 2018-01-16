@@ -9,7 +9,7 @@ uses
   Translations, LCLProc,
 
   Interfaces, // this includes the LCL widgetset
-  Forms, runtimetypeinfocontrols, uwaptconsole,
+  Forms, runtimetypeinfocontrols, memdslaz, uwaptconsole,
   uVisCreateKey, waptcommon, waptwinutils, dmwaptpython, uVisEditPackage,
   uviscreatewaptsetup, uvislogin, uvisprivatekeyauth, uvisloading,
   uviswaptconfig, uvischangepassword, uvishostsupgrade,

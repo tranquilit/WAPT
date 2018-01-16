@@ -1,8 +1,5 @@
-msgid ""
-msgstr "Content-Type: text/plain; charset=UTF-8"
-
 msgid "Only suitable for development hosts."
-msgstr "Seulement valable pour les postes de développement"
+msgstr "Content-Type: text/plain; charset=UTF-8Seulement valable pour les postes de développement"
 
 #: tform1.buttonpanel1.helpbutton.caption
 msgctxt "tform1.buttonpanel1.helpbutton.caption"
@@ -1585,6 +1582,10 @@ msgstr "Actualiser l'historique des Listes de Mises à jour"
 msgid "Download Updates listing from Microsoft"
 msgstr "Télécharger une liste de mises à jour."
 
+#: tviswaptgui.button2.caption
+msgid "Button2"
+msgstr ""
+
 #: tviswaptgui.caption
 msgid "WAPT console"
 msgstr "Console WAPT"
@@ -1711,6 +1712,12 @@ msgid "mywapt.update()"
 msgstr ""
 
 #: tviswaptgui.edsearchhost.hint
+msgctxt "tviswaptgui.edsearchhost.hint"
+msgid "Regular expressions allowed"
+msgstr "Expressions régulières autorisées"
+
+#: tviswaptgui.edsearchhost1.hint
+msgctxt "tviswaptgui.edsearchhost1.hint"
 msgid "Regular expressions allowed"
 msgstr "Expressions régulières autorisées"
 
@@ -1977,10 +1984,6 @@ msgstr ""
 #: tviswaptgui.panel7.caption
 msgctxt "tviswaptgui.panel7.caption"
 msgid "Panel7"
-msgstr ""
-
-#: tviswaptgui.panleft.caption
-msgid "PanLeft"
 msgstr ""
 
 #: tviswaptgui.pggroups.caption
@@ -2654,6 +2657,14 @@ msgctxt "uwaptconsoleres.rscompletionprogress"
 msgid "%s : %.0f%% completed"
 msgstr "%s : %.0f%% terminé"
 
+#: uwaptconsoleres.rsconfirmburstupdate
+msgid "Are you sure you want to trigger Status Update on %d hosts ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmburstupgrades
+msgid "Are you sure you want to Apply Upgrades on %d hosts ?"
+msgstr ""
+
 #: uwaptconsoleres.rsconfirmcaption
 msgctxt "uwaptconsoleres.rsconfirmcaption"
 msgid "Confirm"
@@ -2664,12 +2675,24 @@ msgctxt "uwaptconsoleres.rsconfirmdeletion"
 msgid "Confirm removal"
 msgstr "Confirmer la suppression"
 
+#: uwaptconsoleres.rsconfirmgpupdate
+msgid "Are you sure you want to update Group Policies status on %d hosts ?"
+msgstr ""
+
 #: uwaptconsoleres.rsconfirmhostforgetspackages
 msgctxt "uwaptconsoleres.rsconfirmhostforgetspackages"
 msgid "Are you sure you want to forget %s packages from host %s ?"
 msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 
 #: uwaptconsoleres.rsconfirmimport
+#, fuzzy
+#| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 msgctxt "uwaptconsoleres.rsconfirmimport"
 msgid ""
 "Are you sure you want to import\n"
@@ -2718,6 +2741,10 @@ msgstr "Confirmer la suppression"
 msgctxt "uwaptconsoleres.rsconfirmrmpackagesfromhost"
 msgid "Are you sure you want to remove %s package(s) from the selected host(s) %s ?"
 msgstr "Êtes-vous sûr(e) de vouloir supprimer %s paquet(s) de la/des machine(s) sélectionnée(s) ?"
+
+#: uwaptconsoleres.rsconfirmwaptexit
+msgid "Are you sure you want to propose Packages Upgrades on %d hosts ?"
+msgstr ""
 
 #: uwaptconsoleres.rscreationinprogress
 msgctxt "uwaptconsoleres.rscreationinprogress"
@@ -2996,11 +3023,15 @@ msgctxt "uwaptconsoleres.rsmainrepourl"
 msgid "Main repo url: %s"
 msgstr "URL du dépôt principal : %s"
 
+#: uwaptconsoleres.rsmessagetosend
+msgid "Message to send"
+msgstr ""
+
 #: uwaptconsoleres.rsnbmodifiedhosts
 #, fuzzy
-#| msgid "%d hosts affected. %d hosts discarded (errors). %d hosts unchanged"
+#| msgid "%s hosts affected."
 msgctxt "uwaptconsoleres.rsnbmodifiedhosts"
-msgid "%s hosts affected."
+msgid "%d hosts affected. %d hosts discarded (errors). %d hosts unchanged"
 msgstr "%d machines modifiées, %d machines ignorées (erreur), %d machines inchangées"
 
 #: uwaptconsoleres.rsnobundle
@@ -3036,6 +3067,14 @@ msgid "Error while building package : %s"
 msgstr "Erreur lors de la compilation du paquet : %s"
 
 #: uwaptconsoleres.rspackageduplicateconfirm
+#, fuzzy
+#| msgid ""
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -3130,6 +3169,10 @@ msgstr ""
 msgid "Confirm the unregistration of repository %s"
 msgstr ""
 
+#: uwaptconsoleres.rsrunninggpupdate
+msgid "Running GPUpdate"
+msgstr ""
+
 #: uwaptconsoleres.rsrunningtask
 msgctxt "uwaptconsoleres.rsrunningtask"
 msgid "Running task %d: %s, status:%s"
@@ -3154,6 +3197,10 @@ msgstr ""
 
 #: uwaptconsoleres.rsselectremovedepends
 msgid "Select packages to remove from hosts configuration"
+msgstr ""
+
+#: uwaptconsoleres.rsshowmessageforusers
+msgid "Send message to users"
 msgstr ""
 
 #: uwaptconsoleres.rssrv
@@ -3267,6 +3314,14 @@ msgid "Warning, waptagent.exe installer is not present on server, please build w
 msgstr "Attention, l'installeur waptagent.exe n'est pas présent sur le serveur. Veuillez le générer pour le déploiement de Wapt sur les clients"
 
 #: uwaptconsoleres.rswaptagentoldversion
+#, fuzzy
+#| msgid ""
+#| "Warning, the version of the waptagent.exe installer is too old.\n"
+#| "Current waptagent.exe version: %s\n"
+#| "waptsetup-tis.exe version: %s\n"
+#| "Warning, the version of the waptagent.exe installer is too old.\n"
+#| "Current waptagent.exe version: %s\n"
+#| "waptsetup-tis.exe version: %s\n"
 msgid ""
 "Warning, the version of the waptagent.exe installer is too old.\n"
 "Current waptagent.exe version: %s\n"
@@ -3315,6 +3370,12 @@ msgstr "Vous devez d'abord définir le préfixe des paquets dans les préférenc
 #| msgid ""
 #| "Error on WAPT server:\n"
 #| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -3325,6 +3386,15 @@ msgstr ""
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
 #| msgid ""
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
 #| "Required server version: %s\n"
@@ -3345,6 +3415,12 @@ msgstr "Erreur lors de la création de l'agent : %s"
 #: uwaptconsoleres.rswaptsetupuploadsuccess
 #, fuzzy
 #| msgid ""
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 #| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
 #| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"

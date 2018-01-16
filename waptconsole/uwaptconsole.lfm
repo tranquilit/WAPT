@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 347
+  Left = 354
   Height = 630
-  Top = 169
+  Top = 155
   Width = 1003
   AllowDropFiles = True
   Caption = 'WAPT console'
@@ -53,6 +53,7 @@ object VisWaptGUI: TVisWaptGUI
             Top = 127
             Width = 564
             OnGetText = GridHostPackagesGetText
+            ShowAdvancedColumnsCustomize = False
             Align = alClient
             BorderSpacing.Top = 2
             Color = clWhite
@@ -607,6 +608,7 @@ object VisWaptGUI: TVisWaptGUI
             Height = 268
             Top = 27
             Width = 564
+            ShowAdvancedColumnsCustomize = False
             Align = alClient
             Color = clWhite
             Header.AutoSizeIndex = -1
@@ -751,6 +753,7 @@ object VisWaptGUI: TVisWaptGUI
             Top = 26
             Width = 564
             OnGetText = GridHostWinUpdatesGetText
+            ShowAdvancedColumnsCustomize = False
             Align = alBottom
             Anchors = [akTop, akLeft, akRight, akBottom]
             BorderSpacing.Top = 2
@@ -974,6 +977,7 @@ object VisWaptGUI: TVisWaptGUI
                 Height = 110
                 Top = 2
                 Width = 556
+                ShowAdvancedColumnsCustomize = False
                 Align = alClient
                 BorderSpacing.Top = 2
                 Color = clWhite
@@ -1117,6 +1121,7 @@ object VisWaptGUI: TVisWaptGUI
                 Height = 110
                 Top = 2
                 Width = 556
+                ShowAdvancedColumnsCustomize = False
                 Align = alClient
                 BorderSpacing.Top = 2
                 Color = clWhite
@@ -1259,6 +1264,7 @@ object VisWaptGUI: TVisWaptGUI
                 Height = 110
                 Top = 2
                 Width = 556
+                ShowAdvancedColumnsCustomize = False
                 Align = alClient
                 BorderSpacing.Top = 2
                 Color = clWhite
@@ -1441,7 +1447,6 @@ object VisWaptGUI: TVisWaptGUI
         Width = 418
         Align = alClient
         BevelOuter = bvNone
-        Caption = ''
         ClientHeight = 321
         ClientWidth = 418
         TabOrder = 2
@@ -1471,11 +1476,12 @@ object VisWaptGUI: TVisWaptGUI
           end
         end
         object GridHosts: TSOGrid
-          Left = 0
+          Left = 199
           Height = 302
           Top = 0
-          Width = 418
+          Width = 219
           OnGetText = GridHostsGetText
+          ShowAdvancedColumnsCustomize = False
           Align = alClient
           ChangeDelay = 50
           Color = clWhite
@@ -1719,6 +1725,81 @@ object VisWaptGUI: TVisWaptGUI
           OnNewText = GridHostsNewText
           ZebraPaint = True
         end
+        object PanUnits: TPanel
+          Left = 0
+          Height = 302
+          Top = 0
+          Width = 194
+          Align = alLeft
+          ClientHeight = 302
+          ClientWidth = 194
+          TabOrder = 2
+          object PanOUFilter: TPanel
+            Left = 1
+            Height = 34
+            Top = 1
+            Width = 192
+            Align = alTop
+            BevelOuter = bvNone
+            ChildSizing.LeftRightSpacing = 4
+            ChildSizing.TopBottomSpacing = 2
+            ChildSizing.HorizontalSpacing = 4
+            ChildSizing.VerticalSpacing = 2
+            ChildSizing.Layout = cclLeftToRightThenTopToBottom
+            ChildSizing.ControlsPerLine = 1
+            ClientHeight = 34
+            ClientWidth = 192
+            TabOrder = 0
+            object EdSearchHost1: TSearchEdit
+              Left = 4
+              Height = 21
+              Hint = 'Regular expressions allowed'
+              Top = 2
+              Width = 180
+              EmptyText = 'Search keywords'
+              ExecuteDelay = 650
+              Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
+              BorderSpacing.Top = 2
+              Constraints.MaxHeight = 21
+              Constraints.MinWidth = 180
+              Font.Color = clGray
+              OnKeyPress = EdSearchHostKeyPress
+              ParentFont = False
+              TabOrder = 0
+            end
+          end
+          object VirtualDBTreeEx1: TVirtualDBTreeEx
+            Left = 1
+            Height = 266
+            Top = 35
+            Width = 192
+            Align = alClient
+            BorderStyle = bsSingle
+            Color = clWhite
+            DBOptions = [dboAlwaysStructured, dboCheckDBStructure, dboParentStructure, dboTrackActive, dboTrackChanges, dboTrackCursor, dboViewAll, dboWriteLevel, dboWriteSecondary]
+            DataSource = SrcOrgUnits
+            DefaultText = 'Node'
+            Header.AutoSizeIndex = 0
+            Header.Columns = <>
+            Header.DefaultHeight = 17
+            Header.MainColumn = -1
+            KeyFieldName = 'ID'
+            OnColumnDblClick = VirtualDBTreeEx1ColumnDblClick
+            ParentFieldName = 'ParentID'
+            TabOrder = 1
+            TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toWheelPanning]
+            TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+            TreeOptions.SelectionOptions = [toMultiSelect]
+            ViewFieldName = 'Description'
+            DBDataFieldNames = 'DN;Description'
+          end
+        end
+        object Splitter7: TSplitter
+          Left = 194
+          Height = 302
+          Top = 0
+          Width = 5
+        end
       end
       object PanHostsFilters: TPanel
         Left = 0
@@ -1732,7 +1813,7 @@ object VisWaptGUI: TVisWaptGUI
         ClientWidth = 995
         TabOrder = 3
         object PanFilterGroups: TPanel
-          Left = 567
+          Left = 595
           Height = 75
           Top = 0
           Width = 371
@@ -1825,7 +1906,7 @@ object VisWaptGUI: TVisWaptGUI
           Left = 0
           Height = 75
           Top = 0
-          Width = 426
+          Width = 454
           Align = alLeft
           AutoSize = True
           BevelOuter = bvNone
@@ -1833,7 +1914,7 @@ object VisWaptGUI: TVisWaptGUI
           ChildSizing.TopBottomSpacing = 2
           ChildSizing.VerticalSpacing = 2
           ClientHeight = 75
-          ClientWidth = 426
+          ClientWidth = 454
           TabOrder = 1
           object PanSearch: TPanel
             Left = 6
@@ -2016,9 +2097,17 @@ object VisWaptGUI: TVisWaptGUI
             OnClick = CBInverseSelectClick
             TabOrder = 2
           end
+          object Button2: TButton
+            Left = 373
+            Height = 25
+            Top = 39
+            Width = 75
+            Caption = 'Button2'
+            TabOrder = 3
+          end
         end
         object panFilterStatus: TPanel
-          Left = 426
+          Left = 454
           Height = 75
           Top = 0
           Width = 141
@@ -2529,6 +2618,7 @@ object VisWaptGUI: TVisWaptGUI
         Top = 40
         Width = 995
         OnGetText = GridGroupsGetText
+        ShowAdvancedColumnsCustomize = False
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = -1
@@ -2952,6 +3042,7 @@ object VisWaptGUI: TVisWaptGUI
         Top = 40
         Width = 989
         OnGetText = GridGroupsGetText
+        ShowAdvancedColumnsCustomize = False
         Align = alClient
         Color = clWhite
         Header.AutoSizeIndex = -1
@@ -3506,6 +3597,7 @@ object VisWaptGUI: TVisWaptGUI
         Height = 168
         Top = 50
         Width = 984
+        ShowAdvancedColumnsCustomize = False
         Align = alCustom
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 2
@@ -3642,6 +3734,7 @@ object VisWaptGUI: TVisWaptGUI
         Height = 354
         Top = 242
         Width = 288
+        ShowAdvancedColumnsCustomize = False
         Align = alCustom
         Anchors = [akTop, akLeft, akBottom]
         BorderSpacing.Top = 2
@@ -3712,6 +3805,7 @@ object VisWaptGUI: TVisWaptGUI
         Height = 354
         Top = 242
         Width = 560
+        ShowAdvancedColumnsCustomize = False
         Anchors = [akTop, akLeft, akBottom]
         BorderSpacing.Top = 2
         Color = clWhite
@@ -3851,6 +3945,7 @@ object VisWaptGUI: TVisWaptGUI
         Height = 354
         Top = 242
         Width = 115
+        ShowAdvancedColumnsCustomize = False
         Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Top = 2
         Color = clWhite
@@ -5129,7 +5224,7 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupMenuPackages: TPopupMenu
     Images = ActionsImages24
-    left = 144
+    left = 200
     top = 168
     object MenuItem22: TMenuItem
       Action = ActDeletePackage
@@ -5292,7 +5387,7 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object PopupMenuEditDepends: TPopupMenu
-    left = 144
+    left = 200
     top = 224
     object MenuItem4: TMenuItem
       Caption = 'Remove'
@@ -5943,7 +6038,7 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupMenuHosts: TPopupMenu
     Images = ActionsImages24
-    left = 144
+    left = 200
     top = 296
     object MenuItem18: TMenuItem
       Action = ActEditHostPackage
@@ -7848,7 +7943,7 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupMenuGroups: TPopupMenu
     Images = ActionsImages24
-    left = 144
+    left = 200
     top = 360
     object MenuItem36: TMenuItem
       Action = ActAddGroup
@@ -7970,7 +8065,7 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupHostPackages: TPopupMenu
     Images = ActionsImages24
-    left = 144
+    left = 200
     top = 416
     object MenuItem20: TMenuItem
       Action = ActPackagesInstall
@@ -8310,7 +8405,7 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object PopupGridWSUSScan: TPopupMenu
-    left = 144
+    left = 200
     top = 120
     object MenuItem74: TMenuItem
       Caption = 'Delete task'
@@ -8319,7 +8414,7 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object PopupDelete: TPopupMenu
-    left = 144
+    left = 200
     top = 472
     object MenuItem76: TMenuItem
       Caption = 'Remove'
@@ -9937,5 +10032,49 @@ object VisWaptGUI: TVisWaptGUI
       8FB0F7FF919BF6FF8E6FF9FF8C280000000000000000FFFF800C000000000000
       0000000000000000000000000000
     }
+  end
+  object PopupMenu1: TPopupMenu
+    left = 132
+    top = 266
+  end
+  object SrcOrgUnits: TDataSource
+    DataSet = DBOrgUnits
+    left = 32
+    top = 384
+  end
+  object DBOrgUnits: TMemDataset
+    FieldDefs = <    
+      item
+        Name = 'ID'
+        DataType = ftInteger
+        Precision = 0
+        Size = 0
+      end    
+      item
+        Name = 'ParentID'
+        DataType = ftInteger
+        Precision = 0
+        Size = 0
+      end    
+      item
+        Name = 'DN'
+        DataType = ftString
+        Precision = 0
+        Size = 400
+      end    
+      item
+        Name = 'Description'
+        DataType = ftString
+        Precision = 0
+        Size = 255
+      end    
+      item
+        Name = 'ParentDN'
+        DataType = ftString
+        Precision = 0
+        Size = 400
+      end>
+    left = 33
+    top = 448
   end
 end
