@@ -99,12 +99,13 @@ Name: InstallWaptserver; Description: "{cm:InstallWaptServer}"; GroupDescription
 #endif
 
 [UninstallRun]
+Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Arret du service waptserver"
 Filename: "net"; Parameters: "stop waptnginx"; Flags: runhidden; StatusMsg: "Arret du service waptnginx"
 Filename: "net"; Parameters: "stop waptpostgresql"; Flags: runhidden; StatusMsg: "Arret du service waptpostgresql"
 Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Arret du service waptserver"
+Filename: "sc"; Parameters: "delete waptserver"; Flags: runhidden; StatusMsg: "Désinstallation du service waptserver"
 Filename: "sc"; Parameters: "delete waptnginx"; Flags: runhidden; StatusMsg: "Désinstallation du service waptnginx"
 Filename: "sc"; Parameters: "delete waptpostgresql"; Flags: runhidden; StatusMsg: "Désinstallation du service waptpostgresql"
-Filename: "sc"; Parameters: "delete waptserver"; Flags: runhidden; StatusMsg: "Désinstallation du service waptserver"
 
 [CustomMessages]
 fr.RegisteringService=Mise en place du service WaptServer
