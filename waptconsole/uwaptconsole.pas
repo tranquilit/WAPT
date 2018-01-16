@@ -3277,8 +3277,6 @@ begin
   if AppLoading then
     Exit;
 
-  LoadOrgUnitsTree(Sender);
-
   EdSearchHost.Modified:=False;
   columns := TSuperObject.Create(stArray);
   for i:=0 to GridHosts.Header.Columns.Count-1 do
@@ -3384,6 +3382,9 @@ begin
       GridHosts.Data := Nil;
       ShowMessageFmt('Unable to get hosts list : %s',[soresult.S['msg']]);
     end;
+
+    LoadOrgUnitsTree(Sender);
+
   finally
     Screen.Cursor:=crDefault;
   end;
@@ -3484,10 +3485,14 @@ var
   OU,OUDN:ISuperObject;
   oldSelect:String;
   DNParts,ParentDNParts: TDynStringArray;
-  DN,ParentDN:String;
+  PreviousDN,DN,ParentDN:String;
 begin
   {$ifdef ENTERPRISE}
   try
+    if DBOrgUnits.Active then
+      PreviousDN := DBOrgUnits['DN']
+    else
+      PreviousDN:='';
     Screen.Cursor:=crHourGlass;
     OUDN := WAPTServerJsonGet('api/v3/get_ad_ou',[])['result'];
     if OUDN<>Nil then
@@ -3529,6 +3534,7 @@ begin
       end;
     end;
   finally
+    DBOrgUnits.Locate('DN',PreviousDN,[]);
     Screen.Cursor:=crdefault;
   end;
   {$endif}
