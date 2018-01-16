@@ -108,7 +108,7 @@ def load_json(json_data):
             wapt_db.rollback()
 
 
-def comment_mongodb_lines(conf_filename='/opt/wapt/conf/waptserver.ini'):
+def comment_mongodb_lines(conf_filename=DEFAULT_CONFIG_FILE):
     if not os.path.exists(conf_filename):
         print ('file %s does not exists!! Exiting ' % conf_filename)
         sys.exit(1)
