@@ -192,7 +192,7 @@ add_symlink('./opt/wapt/wapt-scanpackages.py', './usr/bin/wapt-scanpackages')
 
 eprint('copying the waptserver files')
 rsync(source_dir, './builddir/opt/wapt/',
-      excludes=['postconf', 'repository', 'rpm', 'uninstall-services.bat', 'deb', 'spnego-http-auth-nginx-module'])
+      excludes=['postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module'])
 
 for lib in ('dialog.py', ):
     rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),

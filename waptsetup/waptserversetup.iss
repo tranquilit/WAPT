@@ -75,9 +75,6 @@ Source: "..\waptserver\pgsql\*"; DestDir: "{app}\waptserver\pgsql"; Flags: creat
 Source: "..\waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: createallsubdirs recursesubdirs;
 #endif
 
-; For UninstallRun
-Source: "..\waptserver\uninstall-services.bat"; Destdir: "{app}\waptserver\"
-
 [Dirs]
 Name: "{app}\waptserver\repository"
 Name: "{app}\waptserver\log"
@@ -102,7 +99,12 @@ Name: InstallWaptserver; Description: "{cm:InstallWaptServer}"; GroupDescription
 #endif
 
 [UninstallRun]
-Filename: "{app}\waptserver\uninstall-services.bat"; Flags: runhidden; StatusMsg: "Stopping and deregistering waptserver"
+Filename: "net"; Parameters: "stop waptnginx"; Flags: runhidden; StatusMsg: "Arret du service waptnginx"
+Filename: "net"; Parameters: "stop waptpostgresql"; Flags: runhidden; StatusMsg: "Arret du service waptpostgresql"
+Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Arret du service waptserver"
+Filename: "sc"; Parameters: "delete waptnginx"; Flags: runhidden; StatusMsg: "Désinstallation du service waptnginx"
+Filename: "sc"; Parameters: "delete waptpostgresql"; Flags: runhidden; StatusMsg: "Désinstallation du service waptpostgresql"
+Filename: "sc"; Parameters: "delete waptserver"; Flags: runhidden; StatusMsg: "Désinstallation du service waptserver"
 
 [CustomMessages]
 fr.RegisteringService=Mise en place du service WaptServer
