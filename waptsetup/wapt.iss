@@ -252,8 +252,7 @@ begin
     // Proceed Setup
     Exec('net', 'stop waptservice', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     
-  #ifdef waptserver
-
+  #ifdef waptserversetup
     Exec('net', 'stop waptserver', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec('net', 'stop waptapache', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec('net', 'stop waptnginx', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
