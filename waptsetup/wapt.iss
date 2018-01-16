@@ -259,8 +259,8 @@ begin
     Exec('net', 'stop waptnginx', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec('net', 'stop waptmongodb', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec('net', 'stop waptpostgresql', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-    Exec('cmd', 'sc delete waptapache', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-    Exec('cmd', 'sc delete waptmongodb', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec('cmd', '/c sc delete waptapache', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec('cmd', '/c sc delete waptmongodb', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
 
   #endif
 
