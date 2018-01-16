@@ -128,48 +128,82 @@ en.InstallWaptServer=Wapt server installieren
 
 [Code]
 
-function NextButtonClick(CurPageID: Integer):Boolean;
+
+procedure CurStepChanged(CurStep: TSetupStep);
 var
-  Reply: Integer;
+  Reply, ResultCode: Integer;
+  ServiceStatus: LongWord;
   NetstatOutput, ConflictingService: AnsiString;
 begin
-
-  if CurPageID <> wpSelectTasks then
+  if CurStep = ssInstall then
   begin
-    Result := True;
-    Exit;
-  end;
+    // terminate waptconsole
+    Exec('taskkill', '/t /im "waptconsole.exe" /f', '', SW_HIDE,
+       ewWaitUntilTerminated, ResultCode);
 
-  if not IsTaskSelected('installApache') then
+    // Proceed Setup
+    Exec('net', 'stop waptservice', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    
+  #ifdef waptserver
+
+    Exec('net', 'stop waptserver', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec('net', 'stop waptnginx', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec('net', 'stop waptpostgresql', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+
+  #if old waptserver
+    Exec('net', 'stop waptmongodb', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec('net', 'stop waptapache', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+
+    Exec('sc', 'delete waptmongodb', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec('sc', 'delete waptapache', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+
+
+
+  #endif
+
+    Exec('taskkill', '/t /im "wapttray.exe" /f', '', SW_HIDE,
+       ewWaitUntilTerminated, ResultCode);
+
+    Exec('taskkill', '/t /im "waptexit.exe" /f', '', SW_HIDE,
+       ewWaitUntilTerminated, ResultCode);
+
+    // terminate additional waptpython
+    Exec('taskkill', '/t /im "waptpython.exe" /f', '', SW_HIDE,
+       ewWaitUntilTerminated, ResultCode);
+
+    Exec('taskkill', '/t /im "pyscripter.exe" /f', '', SW_HIDE,
+       ewWaitUntilTerminated, ResultCode);
+
+    repeat
+      ConflictingService := '';
+
+      NetstatOutput := RunCmd('netstat -a -n -p tcp', True);
+      if Pos('0.0.0.0:443 ', NetstatOutput) > 0 then
+        ConflictingService := '443'
+  #ifdef waptserver
+      else if Pos('0.0.0.0:443 ', NetstatOutput) > 0 then
+        ConflictingService := '443'
+  #endif
+      ;
+
+      if ConflictingService <> '' then
+      begin
+        Reply := MsgBox('A conflicting service is running on port '+ConflictingService+'. '+
+                        'This is not supported and you should probably abort the installer. '+
+                        'Visit http://dev.tranquil.it/ for documentation about WAPT.',
+                        mbError, MB_ABORTRETRYIGNORE);
+        if Reply = IDABORT then
+          Abort;
+      end;
+    until (ConflictingService = '') or (Reply = IDIGNORE);
+    
+    //Result := True;
+  end
+  else if CurStep = ssDone then
   begin
-    Result := True;
-    Exit;
+    if ServiceExists('waptservice') then
+      SimpleStartService('waptservice',True,True);
   end;
-
-  ConflictingService := '';
-
-  NetstatOutput := RunCmd('netstat -a -n -p tcp', True);
-  if Pos('0.0.0.0:443 ', NetstatOutput) > 0 then
-    ConflictingService := '443'
-  else if Pos('0.0.0.0:80 ', NetstatOutput) > 0 then
-    ConflictingService := '80'
-  ;
-
-  if ConflictingService = '' then
-  begin
-    Result := True;
-    Exit;
-  end;
-
-  Reply := MsgBox('There already is a Web server listening on port '+ ConflictingService +'. ' +
-   'You have several choices: abort the installation, ignore this warning (NOT RECOMMENDED), ' +
-   'deactivate the conflicting service and replace it with our bundled Apache server, or choose ' +
-   'not to install Apache.  In the latter case it is advised to set up your Web server as a reverse ' +
-   'proxy to http://localhost:8080/.' , mbError, MB_ABORTRETRYIGNORE);
-  if Reply = IDABORT then
-    Abort;
-
-  Result := Reply = IDIGNORE;
-
 end;
+
 
