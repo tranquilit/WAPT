@@ -234,16 +234,15 @@ def check_mongo2pgsql_upgrade_needed(waptserver_ini):
                 2 if something is not clear
     """
     mongodb_configured=0
-    for proc in psutil.process_iter():
-        if proc.name() == 'mongod':
-            if postconf.yesno("It is necessary to migrate current database backend from mongodb to postgres. Press yes to start migration",no_label='cancel')== postconf.DIALOG_OK:
-                print ("mongodb process running, need to migrate")
-                run_verbose("sudo -u wapt /usr/bin/python /opt/wapt/waptserver/waptserver_upgrade.py upgrade2postgres")
-                run_verbose("systemctl stop mongodb")
-                run_verbose("systemctl disable mongodb")
-            else:
-                print ("Post configuration aborted")
-                sys.exit(1)
+    if waptserver_ini.has_option('options', 'mongodb_port'):
+        if postconf.yesno("It is necessary to migrate current database backend from mongodb to postgres. Press yes to start migration",no_label='cancel')== postconf.DIALOG_OK:
+            print ("mongodb process running, need to migrate")
+            run_verbose("sudo -u wapt /usr/bin/python /opt/wapt/waptserver/waptserver_upgrade.py upgrade2postgres")
+            run_verbose("systemctl stop mongodb")
+            run_verbose("systemctl disable mongodb")
+        else:
+            print ("Post configuration aborted")
+            sys.exit(1)
 
 def nginx_set_worker_limit(nginx_conf):
     already_set=False

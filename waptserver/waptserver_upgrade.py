@@ -25,7 +25,7 @@ usage = """\
 %prog [-c configfile] [-l loglevel] action
 
 Action:
-    upgrade2postgres: import data from running mongodb (wapt <1.4)
+    upgrade2postgres: import data from mongodb (wapt <1.4)
     upgrade_structure : update the table structure to most current one.
     reset_database : empty the db and recreate tables.
     import_data : import json files
@@ -133,9 +133,6 @@ def comment_mongodb_lines(conf_filename=DEFAULT_CONFIG_FILE):
 
 def upgrade2postgres():
     """Dump current mongo wapt.hosts collection and feed it to PG DB"""
-    # check if mongo is runnina
-    print 'upgrading data from mongodb to postgresql'
-    mongo_running = False
     if platform.system()=='Linux':
         mongo_procname = 'mongod'
         psql_path = 'psql'
@@ -148,13 +145,6 @@ def upgrade2postgres():
         print('unsupported OS %s' % str(platform.system()))
         sys.exit(1)
 
-    for proc in psutil.process_iter():
-        if proc.name() == mongo_procname:
-            mongo_running = True
-
-    if not mongo_running:
-        print ('mongodb process not running, please check your configuration. Perhaps migration of data has already been done...')
-        sys.exit(1)
     cmd ="""  "%s" -U wapt -c " SELECT datname FROM pg_database WHERE datname='wapt';   " """ % psql_path
     val = subprocess.check_output(cmd, shell=True)
     if 'wapt' not in val:
