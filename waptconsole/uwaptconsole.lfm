@@ -1,12 +1,12 @@
 object VisWaptGUI: TVisWaptGUI
   Left = 354
-  Height = 630
+  Height = 721
   Top = 155
-  Width = 1003
+  Width = 1190
   AllowDropFiles = True
   Caption = 'WAPT console'
-  ClientHeight = 610
-  ClientWidth = 1003
+  ClientHeight = 701
+  ClientWidth = 1190
   Constraints.MinHeight = 600
   Constraints.MinWidth = 800
   Menu = MainMenu1
@@ -20,9 +20,9 @@ object VisWaptGUI: TVisWaptGUI
   LCLVersion = '1.3'
   object MainPages: TPageControl
     Left = 0
-    Height = 467
+    Height = 558
     Top = 0
-    Width = 1003
+    Width = 1190
     ActivePage = pgInventory
     Align = alClient
     TabIndex = 0
@@ -30,26 +30,26 @@ object VisWaptGUI: TVisWaptGUI
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
       Caption = 'Inventory'
-      ClientHeight = 441
-      ClientWidth = 995
+      ClientHeight = 532
+      ClientWidth = 1182
       object HostPages: TPageControl
-        Left = 423
-        Height = 321
+        Left = 610
+        Height = 412
         Top = 120
         Width = 572
-        ActivePage = pgPackages
+        ActivePage = pgHostInventory
         Align = alRight
-        TabIndex = 0
+        TabIndex = 1
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
           AnchorSideTop.Side = asrBottom
           Caption = 'Overview'
-          ClientHeight = 295
+          ClientHeight = 386
           ClientWidth = 564
           object GridHostPackages: TSOGrid
             Left = 0
-            Height = 73
+            Height = 164
             Top = 127
             Width = 564
             OnGetText = GridHostPackagesGetText
@@ -255,7 +255,7 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 200
+            Top = 291
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
@@ -263,7 +263,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel5: TPanel
             Left = 0
             Height = 90
-            Top = 205
+            Top = 296
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -511,7 +511,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostInventory: TTabSheet
           Caption = 'Hardware inventory'
-          ClientHeight = 295
+          ClientHeight = 386
           ClientWidth = 564
           object Panel14: TPanel
             Left = 0
@@ -567,7 +567,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object GridhostInventory: TVirtualJSONInspector
             Left = 0
-            Height = 266
+            Height = 357
             Top = 29
             Width = 564
             PropertyDefs = <>
@@ -1433,8 +1433,8 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object Splitter4: TSplitter
-        Left = 418
-        Height = 321
+        Left = 605
+        Height = 412
         Top = 120
         Width = 5
         Align = alRight
@@ -1442,19 +1442,19 @@ object VisWaptGUI: TVisWaptGUI
       end
       object PanHosts: TPanel
         Left = 0
-        Height = 321
+        Height = 412
         Top = 120
-        Width = 418
+        Width = 605
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 321
-        ClientWidth = 418
+        ClientHeight = 412
+        ClientWidth = 605
         TabOrder = 2
         object Panel15: TPanel
           Left = 0
           Height = 19
-          Top = 302
-          Width = 418
+          Top = 393
+          Width = 605
           Align = alBottom
           AutoSize = True
           BevelOuter = bvNone
@@ -1463,10 +1463,10 @@ object VisWaptGUI: TVisWaptGUI
           ChildSizing.HorizontalSpacing = 6
           ChildSizing.VerticalSpacing = 6
           ClientHeight = 19
-          ClientWidth = 418
+          ClientWidth = 605
           TabOrder = 0
           object LabelComputersNumber: TLabel
-            Left = 283
+            Left = 470
             Height = 13
             Top = 3
             Width = 129
@@ -1477,9 +1477,9 @@ object VisWaptGUI: TVisWaptGUI
         end
         object GridHosts: TSOGrid
           Left = 199
-          Height = 302
+          Height = 393
           Top = 0
-          Width = 219
+          Width = 406
           OnGetText = GridHostsGetText
           ShowAdvancedColumnsCustomize = False
           Align = alClient
@@ -1725,18 +1725,18 @@ object VisWaptGUI: TVisWaptGUI
           OnNewText = GridHostsNewText
           ZebraPaint = True
         end
-        object PanUnits: TPanel
+        object PanOrgUnits: TPanel
           Left = 0
-          Height = 302
+          Height = 393
           Top = 0
           Width = 194
           Align = alLeft
-          ClientHeight = 302
+          ClientHeight = 393
           ClientWidth = 194
           TabOrder = 2
           object PanOUFilter: TPanel
             Left = 1
-            Height = 34
+            Height = 41
             Top = 1
             Width = 192
             Align = alTop
@@ -1747,56 +1747,68 @@ object VisWaptGUI: TVisWaptGUI
             ChildSizing.VerticalSpacing = 2
             ChildSizing.Layout = cclLeftToRightThenTopToBottom
             ChildSizing.ControlsPerLine = 1
-            ClientHeight = 34
+            ClientHeight = 41
             ClientWidth = 192
             TabOrder = 0
-            object EdSearchHost1: TSearchEdit
+            object EdSearchOrgUnits: TEdit
               Left = 4
               Height = 21
               Hint = 'Regular expressions allowed'
               Top = 2
-              Width = 180
-              EmptyText = 'Search keywords'
-              ExecuteDelay = 650
-              Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
+              Width = 189
               BorderSpacing.Top = 2
               Constraints.MaxHeight = 21
               Constraints.MinWidth = 180
               Font.Color = clGray
-              OnKeyPress = EdSearchHostKeyPress
+              OnChange = EdSearchOrgUnitsChange
+              OnKeyPress = EdSearchOrgUnitsKeyPress
               ParentFont = False
               TabOrder = 0
             end
+            object CBIncludeSubOU: TCheckBox
+              Left = 4
+              Height = 17
+              Top = 25
+              Width = 189
+              Caption = 'Include computers from  subfolders'
+              OnClick = CBIncludeSubOUClick
+              TabOrder = 1
+            end
           end
-          object VirtualDBTreeEx1: TVirtualDBTreeEx
+          object GridOrgUnits: TVirtualDBTreeEx
             Left = 1
-            Height = 266
-            Top = 35
+            Height = 350
+            Top = 42
             Width = 192
             Align = alClient
             BorderStyle = bsSingle
+            ChangeDelay = 100
             Color = clWhite
             DBOptions = [dboAlwaysStructured, dboCheckDBStructure, dboParentStructure, dboTrackActive, dboTrackChanges, dboTrackCursor, dboViewAll, dboWriteLevel, dboWriteSecondary]
             DataSource = SrcOrgUnits
             DefaultText = 'Node'
-            Header.AutoSizeIndex = 0
+            Header.AutoSizeIndex = -1
             Header.Columns = <>
             Header.DefaultHeight = 17
             Header.MainColumn = -1
+            HintMode = hmHint
+            Images = ImageList1
             KeyFieldName = 'ID'
-            OnColumnDblClick = VirtualDBTreeEx1ColumnDblClick
+            OnChange = GridOrgUnitsChange
+            OnGetHint = GridOrgUnitsGetHint
             ParentFieldName = 'ParentID'
             TabOrder = 1
             TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toWheelPanning]
             TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-            TreeOptions.SelectionOptions = [toMultiSelect]
+            TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect]
             ViewFieldName = 'Description'
-            DBDataFieldNames = 'DN;Description'
+            ImgIdxFieldName = 'ImageID'
+            DBDataFieldNames = 'DN;ParentDN;Description'
           end
         end
         object Splitter7: TSplitter
           Left = 194
-          Height = 302
+          Height = 393
           Top = 0
           Width = 5
         end
@@ -1805,18 +1817,18 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 75
         Top = 45
-        Width = 995
+        Width = 1182
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
         ClientHeight = 75
-        ClientWidth = 995
+        ClientWidth = 1182
         TabOrder = 3
         object PanFilterGroups: TPanel
-          Left = 595
+          Left = 567
           Height = 75
           Top = 0
-          Width = 371
+          Width = 214
           Align = alLeft
           AutoSize = True
           BevelOuter = bvNone
@@ -1826,24 +1838,24 @@ object VisWaptGUI: TVisWaptGUI
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 2
           ClientHeight = 75
-          ClientWidth = 371
+          ClientWidth = 214
           TabOrder = 0
           object Label15: TLabel
             Left = 12
             Height = 21
             Top = 6
-            Width = 91
+            Width = 34
             Alignment = taRightJustify
             Caption = 'Groups'
             Layout = tlCenter
             ParentColor = False
           end
           object cbGroups: TComboBox
-            Left = 109
+            Left = 52
             Height = 21
             Hint = 'Filter hosts which have this direct package dependency'
             Top = 6
-            Width = 250
+            Width = 150
             Constraints.MinWidth = 150
             ItemHeight = 13
             OnDropDown = cbGroupsDropDown
@@ -1855,7 +1867,7 @@ object VisWaptGUI: TVisWaptGUI
             Left = 12
             Height = 21
             Top = 27
-            Width = 91
+            Width = 34
             Alignment = taRightJustify
             Caption = 'Site'
             Layout = tlCenter
@@ -1863,11 +1875,11 @@ object VisWaptGUI: TVisWaptGUI
             Visible = False
           end
           object cbADSite: TComboBox
-            Left = 109
+            Left = 52
             Height = 21
             Hint = 'Filter hosts which have this direct package dependency'
             Top = 27
-            Width = 250
+            Width = 150
             Constraints.MinWidth = 150
             ItemHeight = 13
             OnDropDown = cbADSiteDropDown
@@ -1876,37 +1888,12 @@ object VisWaptGUI: TVisWaptGUI
             TabOrder = 1
             Visible = False
           end
-          object Label21: TLabel
-            Left = 12
-            Height = 21
-            Top = 48
-            Width = 91
-            Alignment = taRightJustify
-            Caption = 'Organizational Unit'
-            Layout = tlCenter
-            ParentColor = False
-            Visible = False
-          end
-          object cbADOU: TComboBox
-            Left = 109
-            Height = 21
-            Hint = 'Filter hosts which have this direct package dependency'
-            Top = 48
-            Width = 250
-            Constraints.MinWidth = 250
-            ItemHeight = 13
-            OnDropDown = cbADOUDropDown
-            OnSelect = cbADOUSelect
-            Style = csDropDownList
-            TabOrder = 2
-            Visible = False
-          end
         end
         object PanHostsSubFilters: TPanel
           Left = 0
           Height = 75
           Top = 0
-          Width = 454
+          Width = 426
           Align = alLeft
           AutoSize = True
           BevelOuter = bvNone
@@ -1914,7 +1901,7 @@ object VisWaptGUI: TVisWaptGUI
           ChildSizing.TopBottomSpacing = 2
           ChildSizing.VerticalSpacing = 2
           ClientHeight = 75
-          ClientWidth = 454
+          ClientWidth = 426
           TabOrder = 1
           object PanSearch: TPanel
             Left = 6
@@ -2097,17 +2084,9 @@ object VisWaptGUI: TVisWaptGUI
             OnClick = CBInverseSelectClick
             TabOrder = 2
           end
-          object Button2: TButton
-            Left = 373
-            Height = 25
-            Top = 39
-            Width = 75
-            Caption = 'Button2'
-            TabOrder = 3
-          end
         end
         object panFilterStatus: TPanel
-          Left = 454
+          Left = 426
           Height = 75
           Top = 0
           Width = 141
@@ -2305,15 +2284,15 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 45
         Top = 0
-        Width = 995
+        Width = 1182
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 45
-        ClientWidth = 995
+        ClientWidth = 1182
         TabOrder = 4
         object Image1: TImage
           Cursor = crHandPoint
-          Left = 831
+          Left = 1018
           Height = 45
           Top = 0
           Width = 164
@@ -2557,7 +2536,7 @@ object VisWaptGUI: TVisWaptGUI
           Left = 0
           Height = 45
           Top = 0
-          Width = 831
+          Width = 1018
           Align = alClient
           AutoSize = True
           ButtonHeight = 45
@@ -4669,29 +4648,29 @@ object VisWaptGUI: TVisWaptGUI
   object PanDebug: TPanel
     Left = 0
     Height = 118
-    Top = 472
-    Width = 1003
+    Top = 563
+    Width = 1190
     Align = alBottom
     ClientHeight = 118
-    ClientWidth = 1003
+    ClientWidth = 1190
     TabOrder = 2
     Visible = False
     object Panel7: TPanel
       Left = 1
       Height = 116
       Top = 1
-      Width = 1001
+      Width = 1188
       Align = alClient
       BevelOuter = bvNone
       Caption = 'Panel7'
       ClientHeight = 116
-      ClientWidth = 1001
+      ClientWidth = 1188
       TabOrder = 0
       object MemoLog: TMemo
         Left = 0
         Height = 100
         Top = 0
-        Width = 390
+        Width = 577
         Align = alClient
         Lines.Strings = (
           ''
@@ -4699,7 +4678,7 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 0
       end
       object jsonlog: TVirtualJSONInspector
-        Left = 395
+        Left = 582
         Height = 100
         Top = 0
         Width = 606
@@ -4727,7 +4706,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.SelectionOptions = [toExtendedFocus]
       end
       object Splitter2: TSplitter
-        Left = 390
+        Left = 577
         Height = 100
         Top = 0
         Width = 5
@@ -4738,14 +4717,14 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 16
         Top = 100
-        Width = 1001
+        Width = 1188
         Align = alBottom
         BevelOuter = bvNone
         ClientHeight = 16
-        ClientWidth = 1001
+        ClientWidth = 1188
         TabOrder = 3
         object cbShowLog: TCheckBox
-          Left = 210
+          Left = 397
           Height = 17
           Top = -2
           Width = 79
@@ -4761,23 +4740,23 @@ object VisWaptGUI: TVisWaptGUI
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 467
-    Width = 1003
+    Top = 558
+    Width = 1190
     Align = alBottom
     ResizeAnchor = akBottom
   end
   object plStatusBar1: TplStatusBar
     Left = 0
     Height = 20
-    Top = 590
-    Width = 1003
+    Top = 681
+    Width = 1190
     Panels = <    
       item
         Width = 200
       end>
     SimplePanel = False
     object ProgressBar1: TProgressBar
-      Left = 715
+      Left = 902
       Height = 16
       Top = 3
       Width = 264
@@ -7586,7 +7565,7 @@ object VisWaptGUI: TVisWaptGUI
     left = 440
     top = 336
     Bitmap = {
-      4C690B0000001000000010000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      4C690F0000001000000010000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000093
@@ -7938,7 +7917,135 @@ object VisWaptGUI: TVisWaptGUI
       FF00000000000000000000000000000000000000000000000000FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-      FF00FFFFFF00FFFFFF00FFFFFF00
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00874A
+      2000874A2000894C22988B4E24D48B4E24D1894C2296874A2000874A2000FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00874A20008752
+      29ED8C8364F770A189FE59B29DFF92B9A1FFBE9476FEA87755F58B4F26EB874A
+      2000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00894C2293757B5BF988AA
+      91FF91AB91FF7CA98FFF62B097FFAAAB8CFFD3A987FF90BBA2FF79B69FFF876B
+      47F78A4D2388FFFFFF00FFFFFF00FFFFFF00874A20007B7555F764B39DFF77AD
+      91FF7AB094FFBD9F7BFFD3A581FFCBA987FFA6AC8CFF7FB89CFF3EC5B2FF3FBD
+      A9FF856945F7874A2000FFFFFF00874A2000875027EC37AF9BFF2FB9A6FF41BC
+      A7FF9DA483FFCF9F7AFFD5A884FFD9AE8CFF74C7AEFF3FD0BDFF3AC8B5FF34C0
+      ADFF45B49FFF895026E9874A2000874A20007F8668F72AB19EFF39B49FFFAD93
+      6DFFC7956DFFCD9D77FFD2A37FFFB6B190FF88BEA3FFA8A988FF73B297FF3CBC
+      A8FF2EB8A5FF818263F7874A2000884B21995EA088FF6B9D81FF968E69FFBE89
+      5FFFC49068FFC99770FFCC9C76FF95B597FF42D4C1FF50C6B1FF5EB89FFF46B7
+      A1FF3CB39EFF659D84FE874A208E894B21D555A891FF928661FFB67D51FFBB84
+      59FFC08B61FFC49068FFC5946CFF48CDB8FF3FD0BDFF3BCBB8FF37C4B1FF57AD
+      93FF35B19DFF939D82FF894C22CB894C21D3AD9678FF709171FF7E8F6CFF8195
+      73FFBB8459FFBE885EFFBA8D65FF45C7B2FF3BCBB8FF39C7B4FF35C1AEFF34B7
+      A4FF5E9F83FFBD9474FF894C21C9884B2097B18260FEB27B52FF47A288FF2EB7
+      A4FF66A285FFB38257FFBA8358FF9E906BFF929673FF4FB49DFF32BDAAFF2EB7
+      A4FF73987AFFAF815EFD874A208C874A2000A3714CF4B68762FF2FAC97FF2BB3
+      A0FF2FB8A5FF40B59FFFB17A4EFFB47B4EFFB37A4DFF6E9C7DFF2FB9A6FF2DB2
+      9FFFB88D6AFF9F6C47F4874A2000874A20008A4E24EBBB9070FF798B68FF29B0
+      9DFF2BB4A1FF52A287FFAD7143FFAD7244FFAD7143FF758F6CFF2CB4A1FF34AB
+      96FFB78D6DFF894D22E7874A2000FFFFFF00874A2000945D37F4BF9574FF38A9
+      93FF2AAE9BFF867951FFA76938FFA76939FFA76938FF79815CFF29B09DFF859F
+      83FF925933F6874A2000FFFFFF00FFFFFF00FFFFFF00884B218D945C35F442AA
+      94FF5AA288FFAF774CFFA86D3FFFA86D3FFFAF784DFFAC8C68FF61A28AFF8E5E
+      38F4884B2182FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00874A20007D5A
+      32EC9C714DF3AF805DFEBA9070FFBA8F6FFFAF805DFDA06D48F38A4E23E6874A
+      2000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00874A
+      2000874A2000884B2090894C21CD894C21CB874A208D874A2000874A2000FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0034B4D9D05EC2E1FA60C3E2FA60C3
+      E2FA60C3E2FA5FC3E2FA3CB6DBDD2CB2D8002CB2D8002CB2D8002CB2D8002CB2
+      D8002CB3D8002CB3D800FFFFFF00FFFFFF0036B3DAF8FDFEFEFFFEFFFFFFFEFE
+      FFFFFDFEFFFFFEFFFFFFEAF7FBFF6BC7E4F96BC7E3F86BC7E3F86BC7E3F879CD
+      E6F774CAE5E132B1D900FFFFFF00FFFFFF0035AFDAF0F7FCFEFF8EE4F8FF91DE
+      F5FF9FE0F5FFACE1F6FFEFFBFEFFF4FDFEFFF3FCFEFFF1FCFEFFEFFBFEFFEEFB
+      FEFFFAFDFFF936AFDAD4FFFFFF00FFFFFF0036AADAF2F1FAFDFF94DEF5FF93DC
+      F4FF81D5F2FF6ACAEDFF6CCBEAFF85D3EFFF80D2EFFF7AD0EFFF76CFEEFF72CF
+      EEFFE9F7FBFF34AEDAF3FFFFFF00FFFFFF0035ABDAFAE8F6FBFF94D4EFFF88CE
+      EEFF73C1E9FFC9E9F6FFF2FCFEFFF3FCFEFFF2FCFEFFF0FCFEFFEFFBFEFFEEFB
+      FEFFFEFFFFFF36ABDAF7FFFFFF00FFFFFF0037A6DAFAFEFFFFFFF8FDFFFFF6FD
+      FFFFF5FCFFFFF3FCFEFFD8F6FCFF94E6F8FF85E3F7FF76DFF6FF68DBF5FF5CD8
+      F4FFD7F4FCFF35A4DAF7FFFFFF00FFFFFF0036A1DAF9F6FCFEFFC8F2FCFFB9EF
+      FBFFACECFAFF9CE8F9FF8BE3F7FF7CE0F6FF6CDCF6FF5DD9F5FF4FD6F4FF44D3
+      F3FFD0F3FCFF359FDAF7FFFFFF00FFFFFF00369ADAF8F2FAFDFFB3EDFAFFA4E9
+      F9FF95E6F8FF85E2F7FF76DEF6FF65DBF5FF57D7F4FF49D4F3FF3BD1F2FF30CE
+      F1FFCCF2FBFF3598DAF7FFFFFF00FFFFFF003594DAF7EFFAFEFFA1E9F9FF91E5
+      F8FF81E1F7FF72DEF6FF63DAF5FF54D7F4FF47D3F3FF39D0F2FF2ECDF1FF26CB
+      F0FFCAF2FBFF3594DAF7FFFFFF00FFFFFF00338ED9E6DCF0FAF0A7DDF4FD9EDB
+      F4FF96DAF3FF8ED8F3FF86D7F3FF7FD4F2FF79D3F2FF72D2F1FF6CD0F1FF69CF
+      F1FFC2EAF8FE338ED9F0FFFFFF00FFFFFF002C86D8002D88D8A62D87D8EA2D88
+      D8F72D88D8F72D88D8F72D88D8F72D88D8F72D88D8F72D88D8F72D88D8F72D87
+      D8F72D88D8F12C86D893FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF005347
+      35D7655B48F0655B48F0655B48F0655B48F0655B48F0655B48F0655B48F0655B
+      48F0655B48F0534735D7FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00655B
+      48F0D4CDBDFFD4CDBDFFD4CDBDFFD4CDBDFFD4CDBDFFD4CDBDFFD4CDBDFFD4CD
+      BDFFD4CDBDFF655B48F0FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00655B
+      48F0D4CDBDFFA63E03FFA43D02FFB95208FFC15A0CFFCE6A15FFE28F34FFEAA1
+      46FFD4CDBDFF655B48F0FFFFFF00FFFFFF00534735D7655B48F0655B48F0645C
+      48FF6C634FFF685A44FF685A44FF695B44FF6A5B44FF6B5C44FF654B2EFFD472
+      18FFD4CDBDFF655B48F0FFFFFF00FFFFFF00655B48F0D4CDBDFFD4CDBDFFD4CD
+      BDFFD4CDBDFFD4CDBDFFD4CDBDFFD4CDBDFFD4CDBDFFD4CDBDFF6B5C44FFC760
+      09FFD4CDBDFF655B48F0FFFFFF00FFFFFF00655B48F0D4CDBDFFA63E03FFA43D
+      02FFB95208FFC15A0CFFCE6A15FFE28F34FFEAA146FFD4CDBDFF6B5C44FFCC66
+      0BFFD4CDBDFF655B48F0FFFFFF00FFFFFF00655B48F0D4CDBDFF9D3701FF9F38
+      01FFAA4204FFB44D07FFC45A06FFCA630AFFD47218FFD4CDBDFF6B5D44FFCF6A
+      0FFFD4CDBDFF655B48F0FFFFFF00FFFFFF00655B48F0D4CDBDFFA63D02FFA33B
+      01FFAE4505FFBF5606FFC75F08FFC75F08FFC76009FFD4CDBDFF6C634FFFD5CC
+      BBFFD4CDBDFF655B48F0FFFFFF00FFFFFF00655B48F0D4CDBDFFBD5408FFB54E
+      06FFBF5606FFC86008FFC85F08FFC55C07FFCC660BFFD4CDBDFF645B47FF655B
+      48F0655B48F0534735D7FFFFFF00FFFFFF00655B48F0D4CDBDFFDD8C35FFD372
+      18FFCB640CFFCE670DFFCD670CFFCF690DFFCF6A0FFFD4CDBDFF625945FF2D1F
+      0E00FFFFFF00FFFFFF00FFFFFF00FFFFFF00655B48F0D4CDBDFFD4CDBDFFD4CD
+      BDFFD4CDBDFFD4CDBDFFD4CCBDFFD5CDBBFFD5CCBBFFD4CDBDFF655B48F0FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00534735D7655B48F0655B48F0584D
+      3AFC5D5440FE5D5440FE5D5440FE5B523EFA655B48F0655B48F0534735D7FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF002D230E923C33
+      1DFB4B412CFD4B412CFD4B412CFD3B301BF52D1F0E00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF0000000000000000000000000000000000594E
+      3600594E369F594E36DF594E36FF594E36FF594E36DF594E369F594E36000000
+      00000000000000000000000000000000000000000000594E3600594E368F6359
+      43FFA29B8EFFD6D3CDFFF5F4F2FFFFFFFFFFD6D3CDFFACA79BFF635943FF594E
+      36AF594E3600000000000000000000000000594E3600594E36CF8D8575FFF5F4
+      F2FFFBE8C5FFF3BF60FFEFAE34FFEEA826FFF3BF60FFF8DCA8FFF5F4F2FF9790
+      81FF594E36CF594E36000000000000000000594E368F8D8575FFFEF9F1FFF3BF
+      60FFEDA217FFF4C56EFFF8DCA8FFF7D69AFFF2B951FFEDA217FFF2B951FFFEF9
+      F1FF979081FF594E36BF00000000594E3600635943FFF5F4F2FFF3BF60FFEDA2
+      17FFF7D69AFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF4C56EFFEDA217FFF2B9
+      51FFF5F4F2FF6E644FFF594E3600594E369FA29B8EFFFBE8C5FFEDA217FFEDA2
+      17FFF4C56EFFFEF9F1FFF4C56EFFFCEED4FFFFFFFFFFFBE8C5FFEDA217FFEDA2
+      17FFF8DCA8FFB6B2A7FF594E36AF594E36DFD6D3CDFFF3BF60FFEDA217FFEDA2
+      17FFEDA217FFEEA826FFEDA217FFF9E2B7FFFFFFFFFFF9E2B7FFEDA217FFEDA2
+      17FFF2B951FFEAE9E6FF594E36EF594E36FFFFFFFFFFEFAE34FFEDA217FFEDA2
+      17FFEDA217FFEDA217FFFCEED4FFFFFFFFFFFDF3E2FFF0B343FFEDA217FFEDA2
+      17FFEDA217FFFFFFFFFF594E36FF594E36FFFFFFFFFFEEA826FFEDA217FFEDA2
+      17FFEDA217FFF2B951FFFFFFFFFFFEF9F1FFEEA826FFEDA217FFEDA217FFEDA2
+      17FFEDA217FFFFFFFFFF594E36FF594E36DFD6D3CDFFF3BF60FFEDA217FFEDA2
+      17FFEDA217FFEFAE34FFFBE8C5FFF7D69AFFEDA217FFEDA217FFEDA217FFEDA2
+      17FFF0B343FFEAE9E6FF594E36FF594E369FACA79BFFF8DCA8FFEDA217FFEDA2
+      17FFEDA217FFEFAE34FFF9E2B7FFF9E2B7FFEEA826FFEDA217FFEDA217FFEDA2
+      17FFF8DCA8FFC1BDB4FF594E36AF594E3600635943FFF5F4F2FFF2B951FFEDA2
+      17FFEDA217FFF6D18BFFFFFFFFFFFFFFFFFFF2B951FFEDA217FFEDA217FFF0B3
+      43FFFFFFFFFF6E644FFF594E360000000000594E36AF979081FFFEF9F1FFF2B9
+      51FFEDA217FFEFAE34FFFCEED4FFFBE8C5FFEEA826FFEDA217FFF0B343FFFEF9
+      F1FF979081FF594E36BF0000000000000000594E3600594E36CF979081FFF5F4
+      F2FFF8DCA8FFF2B951FFEDA217FFEDA217FFF0B343FFF8DCA8FFFFFFFFFF9790
+      81FF594E36CF594E3600000000000000000000000000594E3600594E36BF6E64
+      4FFFB6B2A7FFEAE9E6FFFFFFFFFFFFFFFFFFEAE9E6FFC1BDB4FF6E644FFF594E
+      36BF594E3600000000000000000000000000000000000000000000000000594E
+      3600594E36AF594E36EF594E36FF594E36FF594E36FF594E36AF594E36000000
+      0000000000000000000000000000
     }
   end
   object PopupMenuGroups: TPopupMenu
@@ -10042,39 +10149,84 @@ object VisWaptGUI: TVisWaptGUI
     left = 32
     top = 384
   end
-  object DBOrgUnits: TMemDataset
-    FieldDefs = <    
-      item
-        Name = 'ID'
-        DataType = ftInteger
-        Precision = 0
-        Size = 0
-      end    
-      item
-        Name = 'ParentID'
-        DataType = ftInteger
-        Precision = 0
-        Size = 0
-      end    
-      item
-        Name = 'DN'
-        DataType = ftString
-        Precision = 0
-        Size = 400
-      end    
-      item
-        Name = 'Description'
-        DataType = ftString
-        Precision = 0
-        Size = 255
-      end    
-      item
-        Name = 'ParentDN'
-        DataType = ftString
-        Precision = 0
-        Size = 400
-      end>
+  object DBOrgUnits: TBufDataset
+    FieldDefs = <>
+    Filtered = True
+    OnFilterRecord = DBOrgUnitsFilterRecord
     left = 33
     top = 448
+    object DBOrgUnitsID: TLongintField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'ID'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object DBOrgUnitsParentID: TLongintField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'ParentID'
+      Index = 1
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object DBOrgUnitsDN: TStringField
+      DisplayWidth = 400
+      FieldKind = fkData
+      FieldName = 'DN'
+      Index = 2
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 400
+    end
+    object DBOrgUnitsDescription: TStringField
+      DisplayWidth = 255
+      FieldKind = fkData
+      FieldName = 'Description'
+      Index = 3
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 255
+    end
+    object DBOrgUnitsParentDN: TStringField
+      DisplayWidth = 400
+      FieldKind = fkData
+      FieldName = 'ParentDN'
+      Index = 4
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+      Size = 400
+    end
+    object DBOrgUnitsImageID: TLongintField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'ImageID'
+      Index = 5
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
+    object DBOrgUnitsDepth: TLongintField
+      DisplayWidth = 10
+      FieldKind = fkData
+      FieldName = 'Depth'
+      Index = 6
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = False
+    end
   end
 end
