@@ -139,8 +139,10 @@ en.InstallWaptServer=Wapt server installieren
 function ifmongodexist : Boolean;
 begin
    if (FileExists('c:\wapt\waptserver\mongodb\mongod.exe')) then
+   begin
       Result := True;
-    end; else begin
+   end else
+   begin
       Result := False;
    end;
 end;
