@@ -1409,7 +1409,14 @@ def get_ad_ou():
     """
     try:
         starttime = time.time()
-        result = [ r[0] for r in Hosts.select(fn.distinct(Hosts.computer_ad_ou)).where(~Hosts.computer_ad_ou.is_null()).tuples()]
+        result = [r[0] for r in Hosts.select(
+            Hosts.computer_ad_ou,
+            fn.COUNT(Hosts.uuid))
+            .where(
+            ~Hosts.computer_ad_ou.is_null())
+            .group_by(Hosts.computer_ad_ou)
+            .tuples()
+            ]
 
         message = 'AD OU DN List'
         return make_response(result=result, msg=message, request_time=time.time() - starttime)
@@ -1689,10 +1696,14 @@ def get_hosts():
                 query = query & (Hosts.uuid << in_group )
 
             if 'organizational_unit' in request.args:
-                if request.args.get('sub_ou_in_active_directory','1') == '1':
-                    query = query & (Hosts.computer_ad_ou.endswith(request.args.get('organizational_unit')))
+                ou_list = request.args.get('organizational_unit').split('||')
+                if request.args.get('include_childs_ou','1') == '1':
+                    or_list = Hosts.computer_ad_ou.endswith(ou_list[0])
+                    for ou in ou_list[1:]:
+                       or_list = or_list | Hosts.computer_ad_ou.endswith(ou)
+                    query = query & (or_list)
                 else:
-                    query = query & (Hosts.computer_ad_ou  == request.args.get('organizational_unit'))
+                    query = query & (Hosts.computer_ad_ou.in_(ou_list))
 
             if 'ad_site' in request.args:
                 query = query & (Hosts.computer_ad_site  == request.args.get('ad_site'))
@@ -1792,6 +1803,15 @@ def host_data():
 
     return make_response(result=result, msg=msg, success=success,
                          error_code=error_code, status=200, request_time=time.time() - start_time)
+
+
+def packages_install_stats():
+    SQL = """select * from crosstab(
+                'select package||'' (=''||version||'')'',install_status,count(*) as value from hostpackagesstatus where section <>''host'' group by 1,2 order by 1,2',
+                'select status from (VALUES (''ERROR''),(''MISSING''),(''NEED-UPGRADE''),(''OK''),(''TO-UPDATE'')) t (status)')
+            AS ct(computer_ad_ou varchar(255), "ERROR" integer,"MISSING" integer, "NEED-UPGRADE" integer, "OK" integer, "TO-UPGRADE" integer);
+            """
+    cur = wapt_db.execute_sql(SQL)
 
 
 @app.route('/api/v1/usage_statistics')
@@ -2211,3 +2231,4 @@ if __name__ == '__main__':
     else:
         socketio.run(app, host='127.0.0.1', log=logger,  port=port, debug=options.devel, log_output = True,  use_reloader=options.devel, max_size=app.conf['max_clients'])
     logger.info('Waptserver stopped')
+

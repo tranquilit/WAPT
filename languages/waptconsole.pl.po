@@ -1213,6 +1213,10 @@ msgctxt "TVISWAPTGUI.ACTEDITHOSTPACKAGE.HINT"
 msgid "Edit host configuration"
 msgstr ""
 
+#: tviswaptgui.acteditorgunitpackage.caption
+msgid "Create or Edit Organizational Unit package"
+msgstr ""
+
 #: tviswaptgui.acteditpackage.caption
 msgctxt "tviswaptgui.acteditpackage.caption"
 msgid "Edit package"
@@ -1565,17 +1569,8 @@ msgstr ""
 msgid "Download Updates listing from Microsoft"
 msgstr ""
 
-#: tviswaptgui.button2.caption
-msgid "Button2"
-msgstr ""
-
 #: tviswaptgui.caption
 msgid "WAPT console"
-msgstr ""
-
-#: tviswaptgui.cbadou.hint
-msgctxt "tviswaptgui.cbadou.hint"
-msgid "Filter hosts which have this direct package dependency"
 msgstr ""
 
 #: tviswaptgui.cbadsite.hint
@@ -1599,6 +1594,10 @@ msgstr ""
 #: tviswaptgui.cbhaserrors.caption
 msgctxt "TVISWAPTGUI.CBHASERRORS.CAPTION"
 msgid "Has errors"
+msgstr ""
+
+#: tviswaptgui.cbincludesubou.caption
+msgid "Include computers from  subfolders"
 msgstr ""
 
 #: tviswaptgui.cbinverseselect.caption
@@ -1695,8 +1694,8 @@ msgctxt "tviswaptgui.edsearchhost.hint"
 msgid "Regular expressions allowed"
 msgstr ""
 
-#: tviswaptgui.edsearchhost1.hint
-msgctxt "tviswaptgui.edsearchhost1.hint"
+#: tviswaptgui.edsearchorgunits.hint
+msgctxt "tviswaptgui.edsearchorgunits.hint"
 msgid "Regular expressions allowed"
 msgstr ""
 
@@ -1753,10 +1752,6 @@ msgstr ""
 
 #: tviswaptgui.label20.caption
 msgid "Site"
-msgstr ""
-
-#: tviswaptgui.label21.caption
-msgid "Organizational Unit"
 msgstr ""
 
 #: tviswaptgui.label23.caption

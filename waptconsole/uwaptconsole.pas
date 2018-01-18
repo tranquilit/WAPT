@@ -11,7 +11,7 @@ uses
   vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, jsonparser,
   superobject, VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading, IdComponent,
   DefaultTranslator, IniPropStorage, DBGrids, GetText, uWaptConsoleRes, db,
-  memds, SearchEdit, MenuButton;
+  BufDataset, memds, SearchEdit, MenuButton, tisstrings;
 
 type
 
@@ -23,6 +23,7 @@ type
     ActExternalRepositoriesSettings: TAction;
     ActAddHWPropertyToGrid: TAction;
     ActDisplayUserMessage: TAction;
+    ActEditOrgUnitPackage: TAction;
     ActLaunchGPUpdate: TAction;
     ActLaunchWaptExit: TAction;
     ActTriggerBurstUpgrades: TAction;
@@ -72,11 +73,11 @@ type
     ButPackagesUpdate1: TBitBtn;
     butSearchGroups: TBitBtn;
     Button1: TButton;
-    Button2: TButton;
     cbAdvancedSearch: TCheckBox;
     cbForcedWSUSscanDownload: TCheckBox;
     cbGroups: TComboBox;
     cbHasErrors: TCheckBox;
+    CBIncludeSubOU: TCheckBox;
     CBInverseSelect: TCheckBox;
     cbMaskSystemComponents: TCheckBox;
     cbNeedUpgrade: TCheckBox;
@@ -87,14 +88,24 @@ type
     cbSearchPackages: TCheckBox;
     cbSearchSoftwares: TCheckBox;
     cbADSite: TComboBox;
-    cbADOU: TComboBox;
     cbNewestOnly: TCheckBox;
-    DBOrgUnits: TMemDataset;
+    DBOrgUnits: TBufDataset;
+    DBOrgUnitsDepth: TLongintField;
+    DBOrgUnitsDescription: TStringField;
+    DBOrgUnitsDN: TStringField;
+    DBOrgUnitsID: TLongintField;
+    DBOrgUnitsImageID: TLongintField;
+    DBOrgUnitsParentDN: TStringField;
+    DBOrgUnitsParentID: TLongintField;
+    EdSearchOrgUnits: TEdit;
+    MenuItem88: TMenuItem;
+    MenuItem89: TMenuItem;
+    MenuItem90: TMenuItem;
+    PopupMenuOrgUnits: TPopupMenu;
     SrcOrgUnits: TDataSource;
     EdDescription: TEdit;
     EdHardwareFilter: TEdit;
     EdHostname: TEdit;
-    EdSearchHost1: TSearchEdit;
     EdUUID: TEdit;
     EdIPAddress: TEdit;
     EdManufacturer: TEdit;
@@ -128,7 +139,6 @@ type
     Label19: TLabel;
     Label2: TLabel;
     Label20: TLabel;
-    Label21: TLabel;
     Label23: TLabel;
     Label3: TLabel;
     Label5: TLabel;
@@ -166,7 +176,7 @@ type
     MenuItem87: TMenuItem;
     odSelectInstaller: TOpenDialog;
     PanOUFilter: TPanel;
-    PanUnits: TPanel;
+    PanOrgUnits: TPanel;
     PanTopHosts: TPanel;
     panFilterStatus: TPanel;
     PanHostsFilters: TPanel;
@@ -197,7 +207,7 @@ type
     ToolButtonUpdate: TToolButton;
     ToolButton6: TToolButton;
     ToolButtonSep1: TToolButton;
-    VirtualDBTreeEx1: TVirtualDBTreeEx;
+    GridOrgUnits: TVirtualDBTreeEx;
     WSUSActions: TActionList;
     ActWUANewGroup: TAction;
     ActWUAProductsSelection: TAction;
@@ -497,10 +507,10 @@ type
     procedure cbAdvancedSearchClick(Sender: TObject);
     procedure cbGroupsDropDown(Sender: TObject);
     procedure cbGroupsSelect(Sender: TObject);
+    procedure CBIncludeSubOUClick(Sender: TObject);
     procedure CBInverseSelectClick(Sender: TObject);
     procedure cbMaskSystemComponentsClick(Sender: TObject);
     procedure cbNewestOnlyClick(Sender: TObject);
-    procedure cbADOUDropDown(Sender: TObject);
     procedure cbSearchAllClick(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure cbADSiteDropDown(Sender: TObject);
@@ -510,10 +520,13 @@ type
     procedure CheckBoxMajChange(Sender: TObject);
     procedure cbNeedUpgradeClick(Sender: TObject);
     procedure CheckBox_errorChange(Sender: TObject);
+    procedure DBOrgUnitsFilterRecord(DataSet: TDataSet; var Accept: Boolean);
     procedure EdDescriptionExit(Sender: TObject);
     procedure EdDescriptionKeyPress(Sender: TObject; var Key: char);
     procedure EdHardwareFilterChange(Sender: TObject);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
+    procedure EdSearchOrgUnitsChange(Sender: TObject);
+    procedure EdSearchOrgUnitsKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchPackageExecute(Sender: TObject);
     procedure EdSearchGroupsExecute(Sender: TObject);
     procedure EdSearchGroupsKeyPress(Sender: TObject; var Key: char);
@@ -578,6 +591,10 @@ type
     procedure GridHostWinUpdatesGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; RowData, CellData: ISuperObject;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+    procedure GridOrgUnitsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure GridOrgUnitsGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
+      var HintText: String);
     procedure GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
     procedure GridPackagesPaintText(Sender: TBaseVirtualTree;
@@ -602,16 +619,13 @@ type
     procedure MenuItem74Click(Sender: TObject);
     procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
     procedure TimerTasksTimer(Sender: TObject);
-    procedure VirtualDBTreeEx1ColumnDblClick(Sender: TBaseVirtualTree;
-      Column: TColumnIndex; Shift: TShiftState);
   private
     { private declarations }
     CurrentVisLoading: TVisLoading;
-    FOrganisationalUnits:ISuperobject;
     procedure DoProgress(ASender: TObject);
-    procedure FillcbADOUDropDown;
     procedure FillcbADSiteDropDown;
     procedure FillcbGroups;
+    procedure FilterDBOrgUnits;
     function FilterSoftwares(softs: ISuperObject): ISuperObject;
     function FilterHardware(data: ISuperObject): ISuperObject;
     function FilterHostWinUpdates(wua: ISuperObject): ISuperObject;
@@ -619,6 +633,8 @@ type
     function FilterWinProducts(products: ISuperObject): ISuperObject;
     function OneHostHasConnectedIP: Boolean;
     function OneHostIsConnected: Boolean;
+    function GetSelectedOrgUnits: TDynStringArray;
+    procedure SelectOrgUnits(Search: String);
     procedure SetIsEnterpriseEdition(AValue: Boolean);
     function GetIsEnterpriseEdition: Boolean;
     function GetSelectedUUID: ISuperObject;
@@ -633,13 +649,10 @@ type
     procedure PythonOutputSendData(Sender: TObject; const Data: ansistring);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: ISuperObject);
 
-    procedure SetOrganizationalUnits(AValue: ISuperobject);
-    function GetOrganizationalUnits: ISuperobject;
     procedure LoadOrgUnitsTree(Sender: TObject);
   public
     { public declarations }
     PackageEdited: ISuperObject;
-
     MainRepoUrl, WAPTServer, TemplatesRepoUrl: string;
 
     {$ifdef wsus}
@@ -651,6 +664,11 @@ type
     HostsLimit: Integer;
 
     AppLoading:Boolean;
+    inSearchHosts:Boolean;
+
+    OrgUnitsHash:Integer;
+    OrgUnitsSelectionHash:Integer;
+    FilteredOrgUnits:TDynStringArray;
 
     constructor Create(TheOwner: TComponent); override;
 
@@ -661,7 +679,6 @@ type
     procedure TriggerActionOnHostPackages(AAction, title, errortitle: String;Force:Boolean=False);
 
     property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
-    property OrganizationalUnits:ISuperobject read GetOrganizationalUnits write SetOrganizationalUnits;
 
   end;
 
@@ -670,7 +687,7 @@ var
 
 implementation
 
-uses LCLIntf, LCLType, IniFiles, variants, uvisprivatekeyauth, tisstrings, soutils,
+uses LCLIntf, LCLType, IniFiles, variants, uvisprivatekeyauth, soutils,
   waptcommon, waptwinutils, tiscommon, uVisCreateKey, uVisCreateWaptSetup,
   dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
   uvisgroupchoice, uvishostsupgrade, uVisAPropos,
@@ -785,6 +802,12 @@ begin
   ActHostSearchPackage.Execute;
 end;
 
+procedure TVisWaptGUI.DBOrgUnitsFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+begin
+  Accept := (EdSearchOrgUnits.Text='') or StrIsOneOf(DBOrgUnits['ID'],FilteredOrgUnits);
+end;
+
 procedure TVisWaptGUI.EdDescriptionExit(Sender: TObject);
 begin
   if GridHosts.FocusedRow<>Nil then
@@ -829,6 +852,26 @@ begin
     ActEvaluate.Execute;
 end;
 
+procedure TVisWaptGUI.EdSearchOrgUnitsChange(Sender: TObject);
+begin
+  if EdSearchOrgUnits.Modified and DBOrgUnits.Active then
+  try
+    inSearchHosts:=True;
+    FilterDBOrgUnits;
+    EdSearchOrgUnits.Modified := False;
+    GridOrgUnits.ExpandAll;
+    GridOrgUnits.ClearSelection;
+  finally
+    inSearchHosts:=False;
+  end;
+end;
+
+procedure TVisWaptGUI.EdSearchOrgUnitsKeyPress(Sender: TObject; var Key: char);
+begin
+  if Key=#13 then
+    SelectOrgUnits(EdSearchOrgUnits.Text);
+end;
+
 procedure TVisWaptGUI.EdSearchPackageExecute(Sender: TObject);
 begin
   if EdSearchPackage.Modified then
@@ -870,7 +913,6 @@ procedure TVisWaptGUI.EdSoftwaresFilterChange(Sender: TObject);
 begin
   if (Gridhosts.FocusedRow <> nil) then
     GridHostSoftwares.Data := FilterSoftwares(Gridhosts.FocusedRow['installed_softwares']);
-
 end;
 
 
@@ -908,7 +950,9 @@ begin
 
     {$ifdef ENTERPRISE}
     ini.WriteString(self.name,cbADSite.Text,'cbADSite.Text');
-    ini.WriteString(self.name,cbADOU.Text,'cbADOU.Text');
+    ini.WriteString(self.name,'OrgUnitsDN',StrJoin('||',GetSelectedOrgUnits));
+    ini.WriteInteger(PanOrgUnits.Name,'Width',PanOrgUnits.Width);
+    ini.WriteBool(self.Name,CBIncludeSubOU.Name,self.CBIncludeSubOU.Checked);;
     {$endif}
 
     ini.WriteString(self.name,'waptconsole.version',GetApplicationVersion);
@@ -1362,13 +1406,6 @@ begin
     UpdateHostPages(Self);
 end;
 
-procedure TVisWaptGUI.VirtualDBTreeEx1ColumnDblClick(Sender: TBaseVirtualTree;
-  Column: TColumnIndex; Shift: TShiftState);
-begin
-  self.cbADOU.ItemIndex  := self.cbADOU.Items.IndexOf(DBOrgUnits['DN']);
-  ActSearchHost.Execute;
-end;
-
 procedure TVisWaptGUI.ActAddGroupExecute(Sender: TObject);
 begin
   if WaptIniReadString(AppIniFilename,'global','default_sources_root')<>'' then
@@ -1394,6 +1431,8 @@ begin
       //update groups filter combobox
       if cbGroups.ItemIndex>=0 then
         FillcbGroups;
+
+      LoadOrgUnitsTree(Sender);
       ActSearchHost.Execute
     end
     else
@@ -3276,21 +3315,20 @@ const
 begin
   if AppLoading then
     Exit;
-
-  EdSearchHost.Modified:=False;
-  columns := TSuperObject.Create(stArray);
-  for i:=0 to GridHosts.Header.Columns.Count-1 do
-    if coVisible in GridHosts.Header.Columns[i].Options then
-      columns.AsArray.Add(TSOGridColumn(GridHosts.Header.Columns[i]).PropertyName);
-
-  for prop in DefaultColumns do
-  begin
-    if not StrIn(prop,Columns) then
-      columns.AsArray.Add(prop);
-	end;
-
   try
+    inSearchHosts := True;
     Screen.cursor := crHourGlass;
+    EdSearchHost.Modified:=False;
+    columns := TSuperObject.Create(stArray);
+    for i:=0 to GridHosts.Header.Columns.Count-1 do
+      if coVisible in GridHosts.Header.Columns[i].Options then
+        columns.AsArray.Add(TSOGridColumn(GridHosts.Header.Columns[i]).PropertyName);
+
+    for prop in DefaultColumns do
+    begin
+      if not StrIn(prop,Columns) then
+        columns.AsArray.Add(prop);
+	  end;
 
     urlParams := TSuperObject.Create(stArray);
     fields := TSuperObject.Create(stArray);
@@ -3344,10 +3382,17 @@ begin
       urlParams.AsArray.Add(Format('groups=%s',[EncodeURIComponent(cbGroups.Text)]));
 
     {$ifdef ENTERPRISE }
-    if cbADOU.ItemIndex>=0 then
-      urlParams.AsArray.Add(Format('organizational_unit=%s',[EncodeURIComponent(cbADOU.Text)]));
+    if length(GetSelectedOrgUnits)>0 then
+    begin
+      urlParams.AsArray.Add(Format('organizational_unit=%s',[EncodeURIComponent(StrJoin( '||',GetSelectedOrgUnits))]));
+      if CBIncludeSubOU.Checked then
+        urlParams.AsArray.Add(Format('include_childs_ou=1',[]))
+      else
+        urlParams.AsArray.Add(Format('include_childs_ou=0',[]));
+    end;
 
-    if cbADSite.ItemIndex>=0 then
+    // ItemIndex=0 > All, no filter.
+    if cbADSite.ItemIndex>0 then
       urlParams.AsArray.Add(Format('ad_site=%s',[EncodeURIComponent(cbADSite.Text)]));
     {$endif}
 
@@ -3383,10 +3428,9 @@ begin
       ShowMessageFmt('Unable to get hosts list : %s',[soresult.S['msg']]);
     end;
 
-    LoadOrgUnitsTree(Sender);
-
   finally
     Screen.Cursor:=crDefault;
+    inSearchHosts:=False;;
   end;
 end;
 
@@ -3480,65 +3524,6 @@ begin
   MessageDlg('Error in application','An unhandled exception has occured'#13#10#13#10+E.Message,mtError,[mbOK],'');
 end;
 
-procedure TVisWaptGUI.LoadOrgUnitsTree(Sender: TObject);
-var
-  OU,OUDN:ISuperObject;
-  oldSelect:String;
-  DNParts,ParentDNParts: TDynStringArray;
-  PreviousDN,DN,ParentDN:String;
-begin
-  {$ifdef ENTERPRISE}
-  try
-    if DBOrgUnits.Active then
-      PreviousDN := DBOrgUnits['DN']
-    else
-      PreviousDN:='';
-    Screen.Cursor:=crHourGlass;
-    OUDN := WAPTServerJsonGet('api/v3/get_ad_ou',[])['result'];
-    if OUDN<>Nil then
-    begin
-      cbADOU.Items.Clear;
-      DBOrgUnits.Close;
-      DBOrgUnits.CreateTable;
-      DBOrgUnits.Open;
-      for OU in OUDN do
-      begin
-        DN := OU.AsString;
-        DNParts := StrSplit(DN,',');
-        ParentDNParts := copy(DNParts,1,length(DNParts));
-        ParentDN:=StrJoin(',',ParentDNParts);
-        while DN<>'' do
-        begin
-          if not DBOrgUnits.Locate('DN',DN,[]) then
-          begin
-            cbADOU.Items.Add(DN);
-
-            DBOrgUnits.Append;
-            DBOrgUnits['id'] := Hash(dn);
-            DBOrgUnits['DN'] := DN;
-            DBOrgUnits['ParentDN'] := ParentDN;
-            if ParentDN<>'' then
-              DBOrgUnits['ParentID'] := Hash(ParentDN);
-            DBOrgUnits['Description'] := DNParts[0];
-
-            DBOrgUnits.Post;
-          end
-          else
-            Break;
-
-          DN := ParentDN;
-          DNParts := StrSplit(DN,',');
-          ParentDNParts := copy(DNParts,1,length(DNParts));
-          ParentDN := StrJoin(',',ParentDNParts);
-        end;
-      end;
-    end;
-  finally
-    DBOrgUnits.Locate('DN',PreviousDN,[]);
-    Screen.Cursor:=crdefault;
-  end;
-  {$endif}
-end;
 
 procedure TVisWaptGUI.cbADOUSelect(Sender: TObject);
 begin
@@ -3573,7 +3558,6 @@ begin
 
     {$ifdef ENTERPRISE}
     cbADSite.ItemIndex:=-1;
-    cbADOU.ItemIndex:=-1;
     {$endif}
 
     panFilterStatus.ChildSizing.ControlsPerLine:=6;
@@ -3594,6 +3578,11 @@ end;
 procedure TVisWaptGUI.cbGroupsSelect(Sender: TObject);
 begin
   ActSearchHost.Execute;
+end;
+
+procedure TVisWaptGUI.CBIncludeSubOUClick(Sender: TObject);
+begin
+  GridOrgUnits.OnChange(GridOrgUnits,GridOrgUnits.FocusedNode);
 end;
 
 type
@@ -3685,17 +3674,6 @@ end;
 procedure TVisWaptGUI.cbNewestOnlyClick(Sender: TObject);
 begin
   ActSearchPackage.Execute;
-end;
-
-procedure TVisWaptGUI.cbADOUDropDown(Sender: TObject);
-begin
-  {$ifdef ENTERPRISE}
-  try
-    FillcbADOUDropDown;
-  except
-    ShowMessage('Please upgrade your server');
-  end;
-  {$endif}
 end;
 
 procedure TVisWaptGUI.cbSearchAllClick(Sender: TObject);
@@ -3902,13 +3880,16 @@ begin
         Self.Width := ini.ReadInteger(self.name,'Width',Integer(Self.Width));
         Self.Height := ini.ReadInteger(self.name,'Height',Integer(Self.Height));
 
-        Self.WindowState := TWindowState(ini.ReadInteger(self.name,'WindowState',Integer(Self.WindowState)));
+        Self.WindowState := TWindowState(ini.ReadInteger(self.Name,'WindowState',Integer(Self.WindowState)));
 
-        self.cbGroups.Text := ini.ReadString(self.name,'cbGroups.Text',self.cbGroups.Text);
+        self.cbGroups.Text := ini.ReadString(self.Name,'cbGroups.Text',self.cbGroups.Text);
 
         {$ifdef ENTERPRISE}
-        self.cbADSite.Text := ini.ReadString(self.name,'cbADSite.Text',self.cbADSite.Text);
-        self.cbADOU.Text := ini.ReadString(self.name,'cbADOU.Text',self.cbADOU.Text);
+        LoadOrgUnitsTree(Sender);
+        self.cbADSite.Text :=  ini.ReadString(self.Name,'cbADSite.Text',self.cbADSite.Text);
+        self.DBOrgUnits.Locate('DN',ini.ReadString(self.Name,'OrgUnitsDN',''),[]);
+        self.PanOrgUnits.Width := ini.ReadInteger(self.Name,PanOrgUnits.Name+'.Width',PanOrgUnits.Width);
+        self.CBIncludeSubOU.Checked:= ini.ReadBool(self.Name,CBIncludeSubOU.Name,self.CBIncludeSubOU.Checked);;
         {$endif}
 
       finally
@@ -3942,6 +3923,7 @@ begin
     AppLoading:=False;
     ProgressTitle(rsLoadInventory);
     ProgressStep(3,3);
+
     ActSearchHost.Execute;
 
     // check waptagent version
@@ -4441,8 +4423,7 @@ begin
   if dmpython.IsEnterpriseEdition<>AValue then
     dmpython.IsEnterpriseEdition:=AValue;
   Label20.Visible:=IsEnterpriseEdition;
-  cbADOU.Visible:=IsEnterpriseEdition;
-  Label21.Visible:=IsEnterpriseEdition;
+  PanOrgUnits.Visible:=IsEnterpriseEdition;
   cbADSite.Visible:=IsEnterpriseEdition;
   ActLaunchGPUpdate.Visible:=IsEnterpriseEdition;
   ActDisplayUserMessage.Visible:=IsEnterpriseEdition;
@@ -4609,34 +4590,6 @@ begin
   {$ifdef wsus}
   GridWinproducts.Data := FilterWinProducts(WUAProducts);
   {$endif wsus}
-end;
-
-
-procedure TVisWaptGUI.FillcbADOUDropDown;
-var
-  OU,OUDN:ISuperObject;
-  oldSelect:String;
-begin
-  {$ifdef ENTERPRISE}
-  try
-    Screen.Cursor:=crHourGlass;
-
-    oldSelect:=cbADOU.Text;
-    cbADOU.Items.Clear;
-    cbADOU.Items.Add(rsFilterAll);
-
-    OUDN := WAPTServerJsonGet('api/v3/get_ad_ou',[])['result'];
-    if OUDN<>Nil then
-    begin
-      for OU in OUDN do
-        cbADOU.Items.Add(OU.AsString{%H-});
-    end;
-    cbADOU.Text:= oldSelect;
-
-  finally
-    Screen.Cursor:=crdefault;
-  end;
-  {$endif}
 end;
 
 
@@ -4830,19 +4783,222 @@ begin
   {$endif ENTERPRISE}
 end;
 
-function TVisWaptGUI.GetOrganizationalUnits: ISuperobject;
+function TVisWaptGUI.GetSelectedOrgUnits:TDynStringArray;
+var
+  N: PVirtualNode;
+  i:integer;
+  data:Variant;
 begin
+  {$ifdef ENTERPRISE}
+  N := GridOrgUnits.GetFirstSelected;
+  SetLength(Result,GridOrgUnits.SelectedCount);
+  i:=0;
+  while (N <> nil) do
+  begin
+    Data := PDBNodeData(GridOrgUnits.GetDBNodeData(N))^.DBData;
+    if Not VarIsNull(Data) and Not VarIsNull(Data[0])then
+    begin
+      Result[i] := Data[0];
+      // we got the (all) filter, assume all is selected.
+      if Result[i] = '' then
+      begin
+        SetLength(result,0);
+        Break;
+      end;
+    end;
+    N := GridOrgUnits.GetNextSelected(N);
+    inc(i);
+  end;
+  {$endif}
 end;
 
-procedure TVisWaptGUI.SetOrganizationalUnits(AValue: ISuperobject);
+procedure TVisWaptGUI.GridOrgUnitsChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+var
+  NewOrgUnitsSelectionHash:Integer;
 begin
-  if AValue <> FOrganisationalUnits then
+  {$ifdef ENTERPRISE}
+  if not inSearchHosts and (Node<>Nil) and DBOrgUnits.Active and not AppLoading then
   begin
-    FOrganisationalUnits := AValue;
-    ;
+    NewOrgUnitsSelectionHash := Hash(StrJoin('||',GetSelectedOrgUnits)+'&'+BoolToStr(CBIncludeSubOU.Checked));
+    if OrgUnitsSelectionHash <> NewOrgUnitsSelectionHash then
+      ActSearchHost.Execute;
+    OrgUnitsSelectionHash := NewOrgUnitsSelectionHash;
+  end;
+  {$endif}
+end;
+
+procedure TVisWaptGUI.GridOrgUnitsGetHint(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex;
+  var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: String);
+begin
+  if Node <> Nil then
+    HintText := VarToStr(PDBNodeData(GridOrgUnits.GetDBNodeData(Node))^.DBData[0]);
+end;
+
+function DNToFQDN(DN:TDynStringArray):String;
+var
+  i:integer;
+begin
+  Result := '';
+  for i:=0 to Length(DN)-1 do
+  begin
+    if result<>'' then
+      Result := Result+'.';
+    Result := Result+StrSplit(DN[i],'=')[1];
   end;
 end;
 
+procedure TVisWaptGUI.LoadOrgUnitsTree(Sender: TObject);
+var
+  OU,OUDN:ISuperObject;
+  oldSelect:String;
+  DNParts,ParentDNParts: TDynStringArray;
+  PreviousDN,DN,ParentDN,RecType:String;
+  NewOrgUnitsHash:Integer;
+begin
+  {$ifdef ENTERPRISE}
+  try
+    Screen.Cursor:=crHourGlass;
+    OUDN := WAPTServerJsonGet('api/v3/get_ad_ou',[])['result'];
+    NewOrgUnitsHash:=hash(OUDN.AsJSon());
+    if (OUDN<>Nil) and (NewOrgUnitsHash <> OrgUnitsHash) then
+    try
+      DBOrgUnits.DisableControls;
+      if DBOrgUnits.Active then
+        PreviousDN := VarToStr(DBOrgUnits['DN'])
+      else
+        PreviousDN:='';
+
+      OrgUnitsHash := NewOrgUnitsHash;
+      if DBOrgUnits.Active then
+        DBOrgUnits.Close;
+      DBOrgUnits.CreateDataset;
+      //DBOrgUnits.Open;
+
+      // Add a first (all) to allow  no filtering on OU
+      DBOrgUnits.Append;
+      dn:='';
+      DBOrgUnits['ID'] := Hash(dn);
+      DBOrgUnits['DN'] := DN;
+      DBOrgUnits['Description'] := rsFilterAll;
+      DBOrgUnits['Depth'] := Length(DNParts);
+      DBOrgUnits.Post;
+
+      for OU in OUDN do
+      begin
+        DN := OU.AsString;
+        // Creates parent records up to first encountered DC
+        while (DN<>'') do
+        begin
+          DNParts := StrSplit(DN,',');
+          ParentDNParts := copy(DNParts,1,length(DNParts));
+          ParentDN:=StrJoin(',',ParentDNParts);
+          RecType:=StrSplit(DNParts[0],'=')[0];
+
+          if not DBOrgUnits.Locate('DN',DN,[]) then
+          begin
+            DBOrgUnits.Append;
+            DBOrgUnits['ID'] := Hash(dn);
+            DBOrgUnits['DN'] := DN;
+            DBOrgUnits['ParentDN'] := ParentDN;
+            DBOrgUnits['Depth'] := Length(DNParts);
+            if RecType<>'DC' then
+            begin
+              DBOrgUnits['ParentID'] := Hash(ParentDN);
+              DBOrgUnits['Description'] := StrSplit(DNParts[0],'=')[1];
+            end
+            else
+            begin
+              DBOrgUnits['Description'] := DNToFQDN(DNParts);
+            end;
+
+            if ParentDN<>'' then
+            begin
+              if RecType='OU' then
+                DBOrgUnits['ImageID'] := 12
+              else if RecType='CN' then
+                  DBOrgUnits['ImageID'] := 13
+              else if RecType='DC' then
+                DBOrgUnits['ImageID'] := 11
+              else
+                DBOrgUnits['ImageID'] := 14;
+            end
+            else
+              DBOrgUnits['ImageID'] := 11;
+            DBOrgUnits.Post;
+          end
+          else
+            Break;
+
+          if RecType='DC' then
+            Break;
+
+          DN := ParentDN;
+        end;
+      end;
+    finally
+      DBOrgUnits.Locate('DN',PreviousDN,[]);
+      DBOrgUnits.EnableControls;
+    end;
+  finally
+    Screen.Cursor:=crdefault;
+  end;
+  {$endif}
+end;
+
+procedure TVisWaptGUI.FilterDBOrgUnits;
+var
+  i:integer;
+begin
+  SetLength(FilteredOrgUnits,0);
+  try
+    GridOrgUnits.DataSource := Nil;
+    DBOrgUnits.Filtered:=False;
+
+    if EdSearchOrgUnits.Text<>'' then
+    begin
+      // include in list selected nodes + parents
+      DBOrgUnits.IndexFieldNames:='Depth';
+      DBOrgUnits.Last;
+      while not DBOrgUnits.BOF do
+      begin
+        if pos(Lowercase(EdSearchOrgUnits.Text),Lowercase(DBOrgUnits['Description']))>0 then
+          StrAppend(FilteredOrgUnits,DBOrgUnits['ID']);
+        if not VarIsNull(DBOrgUnits['ParentID']) and StrIsOneOf(DBOrgUnits['ID'],FilteredOrgUnits) and not StrIsOneOf(DBOrgUnits['ParentID'],FilteredOrgUnits) then
+          StrAppend(FilteredOrgUnits,DBOrgUnits['ParentID']);
+        DBOrgUnits.Prior;
+      end;
+      DBOrgUnits.Filtered:=True;
+    end;
+
+  finally
+    GridOrgUnits.DataSource := SrcOrgUnits;
+  end;
+end;
+
+Procedure TVisWaptGUI.SelectOrgUnits(Search:String);
+var
+  N: PVirtualNode;
+  i:integer;
+  data:Variant;
+  Desc:String;
+begin
+  {$ifdef ENTERPRISE}
+  N := GridOrgUnits.GetFirst;
+  i:=0;
+  GridOrgUnits.ClearSelection;
+  while (N <> nil) do
+  begin
+    Desc := PDBNodeData(GridOrgUnits.GetDBNodeData(N))^.Text;
+    if Pos(lowercase(Search),LowerCase(Desc))>0  then
+    begin
+      GridOrgUnits.Selected[N] := True;
+    end;
+    N := GridOrgUnits.GetNext(N);
+  end;
+  {$endif}
+end;
 
 
 end.
