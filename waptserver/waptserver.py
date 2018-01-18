@@ -2049,7 +2049,7 @@ def on_waptclient_connect():
             raise EWaptForbiddden('Host is not registered')
 
     except Exception as e:
-        logger.warning(u'SocketIO connection refused for uuid %s, sid %s, IP : %s' % (uuid,request.sid,request,e))
+        logger.warning(u'SocketIO connection refused for uuid %s, sid %s: %s' % (uuid,request.sid,e))
         wapt_db.rollback()
         wapt_db.close()
         return False
