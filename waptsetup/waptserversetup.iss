@@ -73,7 +73,7 @@ Source: "..\waptserver\translations\*"; DestDir: "{app}\waptserver\translations"
 Source: "..\waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs;
 Source: "..\waptserver\pgsql\*"; DestDir: "{app}\waptserver\pgsql"; Flags: createallsubdirs recursesubdirs;
 Source: "..\waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: createallsubdirs recursesubdirs;
-Source: "..\waptserver\mongodb\*"; DestDir: "{app}\waptserver\mongodb"; Flags: createallsubdirs recursesubdirs; Check: ifmongodexist
+Source: "..\waptserver\mongodb\mongoexport.exe"; DestDir: "{app}\waptserver\mongodb"; Check: DirExists(ExpandConstant('{app}\waptserver\mongodb'))
 #endif
 
 
@@ -134,20 +134,6 @@ en.InstallWaptServer=Wapt server installieren
 
 
 [Code]
-
-
-function ifmongodexist : Boolean;
-begin
-   if (FileExists('c:\wapt\waptserver\mongodb\mongod.exe')) then
-   begin
-      Result := True;
-   end else
-   begin
-      Result := False;
-   end;
-end;
-
-
 
 function NextButtonClick(CurPageID: Integer):Boolean;
 var
