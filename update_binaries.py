@@ -99,7 +99,7 @@ mongoexport_files = unzip(nssm_zip,filenames=['*/bin/mongoexport.exe'])
 for f in mongoexport_files :
     if not os.path.isdir(makepath(wapt_base_dir,'waptserver','mongodb')):
         os.makedirs(os.path.dirname(makepath(wapt_base_dir,'waptserver','mongodb'))
-    new_name = makepath(wapt_base_dir,'waptserveur','mongodb',* f.split(os.path.sep)[-2:])
+    new_name = makepath(wapt_base_dir,'waptserveur','mongodb','mongoexport.exe')
     os.renames(f,new_name)
 
 
