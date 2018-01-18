@@ -107,7 +107,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\waptserverpostconf"/>
+      <Filename Value="c:\wapt\waptserverpostconf"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>

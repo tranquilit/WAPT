@@ -23,6 +23,8 @@ resourcestring
   rsConfirmCancelPostConfig = 'Are you sure you want to cancel configuring WAPT server ?';
   rsInvalidDNS = 'Invalid DNS';
   rsInvalidDNSfallback = 'This DNS name is not valid, would you like to use the IP address instead ?';
+  rsMongoDetect = 'Detected Mongodb Base';
+  rsRunMongo2Postgresql = 'Do you want to start migrating the mongodb database to postgresql ?';
 
   rsCreationInProgress = 'Creation in progress.';
   rsProgressTitle = 'Started uploading to WAPT server...';  // TODO more meaningful var name
@@ -36,6 +38,8 @@ resourcestring
   rsStartingPostgreSQL = 'Starting PostgreSQL';
   rsStartingNGINX = 'Starting NGINX';
   rsStartingWaptServer = 'Starting WaptServer';
+
+  rsMigration15 = 'Migrate Mongodb to PostgreSQL database';
 
 implementation
 

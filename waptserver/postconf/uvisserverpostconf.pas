@@ -461,13 +461,41 @@ begin
       // reread config fir waptcommon
       WaptCommon.ReadWaptConfig(WaptIniFilename);
 
-      ProgressStep(5,10);
-      ProgressTitle(rsStartingPostgreSQL);
-      Run('cmd /C net start waptpostgresql');
-      ProgressTitle(rsStartingWaptServer);
+      if GetServiceStatusByName('','waptserver') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
+      begin
+        ProgressTitle(rsWaptServiceStopping);
+        Run('cmd /C net stop waptserver');
+      end;
+
+      if GetServiceStatusByName('','waptpostgresql') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
+      begin
+        ProgressTitle(rsWaptServiceStopping);
+        Run('cmd /C net stop waptpostgresql');
+      end;
+
+      if GetServiceStatusByName('','waptnginx') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
+      begin
+        ProgressTitle(rsWaptServiceStopping);
+        Run('cmd /C net stop waptnginx');
+      end;
+
       Run('cmd /C net start waptserver');
-      ProgressTitle(rsStartingNGINX);
       Run('cmd /C net start waptnginx');
+
+      ProgressTitle(rsMigration15);
+      ProgressStep(2,10);
+
+      if FileExists(WaptBaseDir+'\waptserver\mongodb\mongoexport.exe') AND
+        (Dialogs.MessageDlg(rsMongoDetect,rsRunMongo2Postgresql,mtInformation,mbYesNoCancel,0) = mrYes) then
+      begin
+        runwapt('{app}\waptpython {app}\waptserver\waptserver_upgrade.py upgrade2postgres');
+
+        if DirectoryExistsUTF8(WaptBaseDir+'\waptserver\mongodb') then
+           fileutil.DeleteDirectory(WaptBaseDir+'\waptserver\mongodb', false);
+
+        if DirectoryExistsUTF8(WaptBaseDir+'\waptserver\apache-win32') then
+           fileutil.DeleteDirectory(WaptBaseDir+'\waptserver\apache-win32\', false);
+      end;
 
       retry := 3;
       repeat
