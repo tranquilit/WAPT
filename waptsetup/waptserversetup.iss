@@ -140,7 +140,7 @@ function ifmongodexist : Boolean;
 begin
    if (FileExists('c:\wapt\waptserver\mongodb\mongod.exe')) then
       Result := True;
-    end else begin
+    end; else begin
       Result := False;
    end;
 end;
