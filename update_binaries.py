@@ -97,8 +97,6 @@ print('Get Mongodb zip')
 mongodb_zip = wget('http://downloads.mongodb.org/win32/mongodb-win32-i386-2.6.3.zip',resume=True,md5='f855e903617ff1c85eb808c58d1d6cfa',cache_dir=binaries_cache)
 mongoexport_files = unzip(mongodb_zip,filenames=['*/bin/mongoexport.exe'])
 for f in mongoexport_files :
-    if not os.path.isdir(makepath(wapt_base_dir,'waptserver','mongodb')):
-        os.makedirs(os.path.dirname(makepath(wapt_base_dir,'waptserver','mongodb')))
     new_name = makepath(wapt_base_dir,'waptserveur','mongodb','mongoexport.exe')
     os.renames(f,new_name)
 
