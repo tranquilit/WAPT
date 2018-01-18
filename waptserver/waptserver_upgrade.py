@@ -78,7 +78,7 @@ def create_import_data():
         data = data.replace('\u0000', ' ')
         jsondata = json.load()
     elif platform.system()=='Windows':
-        win_mongo_dir ="c:\\wapt\\waptserver\\mongodb"
+        win_mongo_dir = os.path.join(wapt_root_dir,"waptserver", "mongodb")
         cmd  = '%s -d wapt -c hosts --jsonArray --dbpath=%s' % (os.path.join(win_mongo_dir,'mongoexport.exe'),os.path.join(win_mongo_dir,'data'))
         print ('executing mongodb dump using command line : %s' % cmd)
         data = subprocess.check_output(cmd,shell=True)
@@ -140,7 +140,7 @@ def upgrade2postgres():
         mongoclient_path = 'mongoexport'
     elif platform.system()=='Windows':
         mongo_procname = 'mongod.exe'
-        psql_path = r'c:\wapt\waptserver\pgsql\bin\psql.exe'
+        psql_path = os.path.join(wapt_root_dir,'waptserver','pgsql','bin','psql.exe')
     else:
         print('unsupported OS %s' % str(platform.system()))
         sys.exit(1)
