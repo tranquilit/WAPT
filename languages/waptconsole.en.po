@@ -1213,6 +1213,10 @@ msgctxt "TVISWAPTGUI.ACTEDITHOSTPACKAGE.HINT"
 msgid "Edit host configuration"
 msgstr ""
 
+#: tviswaptgui.acteditorgunitpackage.caption
+msgid "Create or Edit Organizational Unit package"
+msgstr ""
+
 #: tviswaptgui.acteditpackage.caption
 msgctxt "tviswaptgui.acteditpackage.caption"
 msgid "Edit package"

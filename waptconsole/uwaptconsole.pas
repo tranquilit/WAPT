@@ -23,6 +23,7 @@ type
     ActExternalRepositoriesSettings: TAction;
     ActAddHWPropertyToGrid: TAction;
     ActDisplayUserMessage: TAction;
+    ActEditOrgUnitPackage: TAction;
     ActLaunchGPUpdate: TAction;
     ActLaunchWaptExit: TAction;
     ActTriggerBurstUpgrades: TAction;
@@ -97,6 +98,10 @@ type
     DBOrgUnitsParentDN: TStringField;
     DBOrgUnitsParentID: TLongintField;
     EdSearchOrgUnits: TEdit;
+    MenuItem88: TMenuItem;
+    MenuItem89: TMenuItem;
+    MenuItem90: TMenuItem;
+    PopupMenuOrgUnits: TPopupMenu;
     SrcOrgUnits: TDataSource;
     EdDescription: TEdit;
     EdHardwareFilter: TEdit;
@@ -946,6 +951,8 @@ begin
     {$ifdef ENTERPRISE}
     ini.WriteString(self.name,cbADSite.Text,'cbADSite.Text');
     ini.WriteString(self.name,'OrgUnitsDN',StrJoin('||',GetSelectedOrgUnits));
+    ini.WriteInteger(PanOrgUnits.Name,'Width',PanOrgUnits.Width);
+    ini.WriteBool(self.Name,CBIncludeSubOU.Name,self.CBIncludeSubOU.Checked);;
     {$endif}
 
     ini.WriteString(self.name,'waptconsole.version',GetApplicationVersion);
@@ -3384,7 +3391,8 @@ begin
         urlParams.AsArray.Add(Format('include_childs_ou=0',[]));
     end;
 
-    if cbADSite.ItemIndex>=0 then
+    // ItemIndex=0 > All, no filter.
+    if cbADSite.ItemIndex>0 then
       urlParams.AsArray.Add(Format('ad_site=%s',[EncodeURIComponent(cbADSite.Text)]));
     {$endif}
 
@@ -3872,14 +3880,16 @@ begin
         Self.Width := ini.ReadInteger(self.name,'Width',Integer(Self.Width));
         Self.Height := ini.ReadInteger(self.name,'Height',Integer(Self.Height));
 
-        Self.WindowState := TWindowState(ini.ReadInteger(self.name,'WindowState',Integer(Self.WindowState)));
+        Self.WindowState := TWindowState(ini.ReadInteger(self.Name,'WindowState',Integer(Self.WindowState)));
 
-        self.cbGroups.Text := ini.ReadString(self.name,'cbGroups.Text',self.cbGroups.Text);
+        self.cbGroups.Text := ini.ReadString(self.Name,'cbGroups.Text',self.cbGroups.Text);
 
         {$ifdef ENTERPRISE}
         LoadOrgUnitsTree(Sender);
-        self.cbADSite.Text :=  ini.ReadString(self.name,'cbADSite.Text',self.cbADSite.Text);
-        self.DBOrgUnits.Locate('DN',ini.ReadString(self.name,'OrgUnitsDN',''),[]);
+        self.cbADSite.Text :=  ini.ReadString(self.Name,'cbADSite.Text',self.cbADSite.Text);
+        self.DBOrgUnits.Locate('DN',ini.ReadString(self.Name,'OrgUnitsDN',''),[]);
+        self.PanOrgUnits.Width := ini.ReadInteger(self.Name,PanOrgUnits.Name+'.Width',PanOrgUnits.Width);
+        self.CBIncludeSubOU.Checked:= ini.ReadBool(self.Name,CBIncludeSubOU.Name,self.CBIncludeSubOU.Checked);;
         {$endif}
 
       finally
