@@ -93,6 +93,18 @@ if os.path.isdir(makepath(wapt_base_dir,'waptserver','nginx')):
 nginx_files = unzip(nginx_zip,target=makepath(wapt_base_dir,'waptserver'))
 os.renames(makepath(wapt_base_dir,'waptserver','nginx-1.13.5'),makepath(wapt_base_dir,'waptserver','nginx'))
 
+print('Get Mongodb zip')
+mongodb_zip = wget('http://downloads.mongodb.org/win32/mongodb-win32-i386-2.6.3.zip',resume=True,md5='f855e903617ff1c85eb808c58d1d6cfa',cache_dir=binaries_cache)
+mongoexport_files = unzip(nssm_zip,filenames=['*/bin/mongoexport.exe'])
+for f in mongoexport_files :
+    if not os.path.isdir(makepath(wapt_base_dir,'waptserver','mongodb')):
+        os.makedirs(os.path.dirname(makepath(wapt_base_dir,'waptserver','mongodb'))
+    new_name = makepath(wapt_base_dir,'waptserveur','mongodb',* f.split(os.path.sep)[-2:])
+    os.renames(f,new_name)
+
+
+
+
 print('Get innosetup compiler setup and extract files to waptsetup')
 innosetup_install = wget('http://www.jrsoftware.org/download.php/is-unicode.exe',resume=True,md5='42b9c2fcfdd96b79aeef49029ce776d4',cache_dir=binaries_cache)
 
