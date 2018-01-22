@@ -99,7 +99,7 @@ from waptservice_common import WaptRegisterComputer,WaptPackageRemove,WaptPackag
 from waptservice_socketio import WaptSocketIOClient
 
 if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
-    from waptenterprise.waptservice.enterprise import *
+    from waptenterprise.waptservice.enterprise import *  # pylint: disable=import-error
 
 from plugins import *
 
