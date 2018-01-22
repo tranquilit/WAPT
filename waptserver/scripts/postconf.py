@@ -322,7 +322,7 @@ def main():
     waptserver_ini.readfp(file('/opt/wapt/conf/waptserver.ini', 'rU'))
 
     if waptserver_ini.has_option('options', 'wapt_folder'):
-        wapt_folder = waptserver_ini.get('options', 'wapt_folder') 
+        wapt_folder = waptserver_ini.get('options', 'wapt_folder')
 
     if waptserver_ini.has_section('uwsgi'):
         print ('Remove uwsgi options, not used anymore')
@@ -457,8 +457,8 @@ def main():
             if not os.path.exists(dh_filename):
                 run_verbose('openssl dhparam -out %s  2048' % dh_filename)
 
-            os.chown(dh_filename, 0, NGINX_GID)
-            os.chmod(dh_filename, 0o640)
+            os.chown(dh_filename, 0, NGINX_GID) #pylint: disable=no-member
+            os.chmod(dh_filename, 0o640)        #pylint: disable=no-member
 
             # cleanup of nginx.conf file
             with open('/etc/nginx/nginx.conf','r') as read_conf:
@@ -476,7 +476,7 @@ def main():
                 elif type_redhat():
                     import yum
                     yb = yum.YumBase()
-                    yb.conf.cache = os.geteuid() != 1
+                    yb.conf.cache = os.geteuid() != 1  #pylint: disable=no-member
                     pkgs = yb.rpmdb.returnPackages()
                     found = False
                     for pkg in  pkgs:
