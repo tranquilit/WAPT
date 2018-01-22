@@ -905,7 +905,7 @@ class PackageEntry(BaseObjectClass):
 
         self.localpath = result_filename
         with ZipFile(result_filename,'w',allowZip64=True,compression=zipfile.ZIP_DEFLATED) as wapt_zip:
-            wapt_zip.writestr('WAPT/control',control_data)
+            wapt_zip.writestr('WAPT/control',control_data.encode('utf8'))
         return result_filename
 
     def build_package(self,excludes=['.svn','.git','.gitignore','setup.pyc'],target_directory=None):
