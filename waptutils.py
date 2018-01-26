@@ -595,7 +595,7 @@ def _hash_file(fname, block_size=2**20,hash_func=hashlib.md5):
             hash_obj.update(data)
     return hash_obj.hexdigest()
 
-def s_check_hash_for_file(fname, block_size=2**20,md5=None,sha1=None,sha256=None):
+def _check_hash_for_file(fname, block_size=2**20,md5=None,sha1=None,sha256=None):
     if sha256 is not None:
         return _hash_file(fname, block_size,hashlib.sha256) == sha256
     elif sha1 is not None:
