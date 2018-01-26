@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.1.16"
+__version__ = "1.5.1.17"
 
 import os
 import sys
@@ -585,17 +585,27 @@ def get_disk_free_space(filepath):
         total, used, free = disk_usage(filepath)
         return free
 
-def _md5_for_file(fname, block_size=2**20):
+def _hash_file(fname, block_size=2**20,hash_func=hashlib.md5):
     f = open(fname,'rb')
-    md5 = hashlib.md5()
+    hash_obj = hash_func()
     while True:
         data = f.read(block_size)
         if not data:
             break
-        md5.update(data)
-    return md5.hexdigest()
+        hash_obj.update(data)
+    return hash_obj.hexdigest()
 
-def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False,referer=None,user_agent=None,cert=None,resume=False,md5=None,cache_dir=None):
+def _check_hash_for_file(fname, block_size=2**20,md5=None,sha1=None,sha256=None):
+    if sha256 is not None:
+        return _hash_file(fname, block_size,hashlib.sha256) == sha256
+    elif sha1 is not None:
+        return _hash_file(fname, block_size,hashlib.sha1) == sha1
+    elif sha1 is not None:
+        return _hash_file(fname, block_size,hashlib.md5) == md5
+    else:
+        raise Exception('No hash to check file')
+
+def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False,referer=None,user_agent=None,cert=None,resume=False,md5=None,sha1=None,sha256=None,cache_dir=None):
     r"""Copy the contents of a file from a given URL to a local file.
 
     Args:
@@ -611,6 +621,8 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         user_agent:
         resume (bool):
         md5 (str) :
+        sha1 (str) :
+        sha256 (str) :
         cache_dir (str) : if file exists here, and md5 matches, copy from here instead of downloading. If not, put a copy of the file here after downloading.
 
     Returns:
@@ -676,18 +688,16 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
     target_fn = os.path.join(dir,filename)
 
     # return cached file if md5 matches.
-    if md5 is not None and cache_dir is not None and os.path.isdir(cache_dir):
+    if (md5 is not None or sha1 is not None or sha256 is not None) and cache_dir is not None and os.path.isdir(cache_dir):
         cached_filename = os.path.join(cache_dir,filename)
         if os.path.isfile(cached_filename):
-            cached_md5 = _md5_for_file(cached_filename)
-            if cached_md5 == md5:
+            if _check_hash_for_file(cached_filename,md5=md5,sha1=sha1,sha256=sha256):
                 resume = False
                 if cached_filename != target_fn:
                     shutil.copy2(cached_filename,target_fn)
                 return target_fn
     else:
         cached_filename = None
-        cached_md5 = None
 
     if os.path.isfile(target_fn) and resume:
         try:
@@ -719,10 +729,9 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         target_size = None
         write_mode = 'wb'
 
-    # check md5 if size equal
-    if resume and md5 is not None and target_size is not None and (target_size == actual_size):
-        actual_md5 = _md5_for_file(target_fn)
-        if actual_md5 != md5:
+    # check hashes if size equal
+    if resume and (md5 is not None or sha1 is not None or sha256 is not None) and target_size is not None and (target_size == actual_size):
+        if not _check_hash_for_file(target_fn,md5=md5,sha1=sha1,sha256=sha256):
             # restart download...
             target_size = None
             write_mode = 'wb'
@@ -777,11 +786,15 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
                 elif reporthook(last_downloaded,total_bytes):
                     last_time_display = time.time()
 
-        # check md5
-        if md5 is not None:
-            actual_md5 = _md5_for_file(target_fn)
-            if actual_md5 != md5:
-                raise Exception(u'Downloaded file %s md5 %s does not match expected %s' % (url,actual_md5,md5))
+        # check hashes
+        if (md5 is not None or sha1 is not None or sha256 is not None):
+            file_hash = _hash_file(target_fn,md5=md5,sha1=sha1,sha256=sha256)
+            if sha256 is not None and file_hash != sha256:
+                raise Exception(u'Downloaded file %s sha256 %s does not match expected %s' % (url,file_hash,sha256))
+            elif sha1:
+                raise Exception(u'Downloaded file %s sha1 %s does not match expected %s' % (url,file_hash,sha1))
+            elif md5:
+                raise Exception(u'Downloaded file %s sha1 %s does not match expected %s' % (url,file_hash,md5))
 
         file_date = httpreq.headers.get('last-modified',None)
 
