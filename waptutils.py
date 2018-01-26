@@ -586,16 +586,16 @@ def get_disk_free_space(filepath):
         return free
 
 def _hash_file(fname, block_size=2**20,hash_func=hashlib.md5):
-    f = open(fname,'rb')
-    hash_obj = hash_func()
-    while True:
-        data = f.read(block_size)
-        if not data:
-            break
-        hash_obj.update(data)
+    with open(fname,'rb') as f:
+        hash_obj = hash_func()
+        while True:
+            data = f.read(block_size)
+            if not data:
+                break
+            hash_obj.update(data)
     return hash_obj.hexdigest()
 
-def _check_hash_for_file(fname, block_size=2**20,md5=None,sha1=None,sha256=None):
+def s_check_hash_for_file(fname, block_size=2**20,md5=None,sha1=None,sha256=None):
     if sha256 is not None:
         return _hash_file(fname, block_size,hashlib.sha256) == sha256
     elif sha1 is not None:
@@ -788,15 +788,15 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
 
         # check hashes
         if sha256 is not None:
-            file_hash =  _hash_file(target_fn,hashlib.sha256)
+            file_hash =  _hash_file(target_fn,hash_func=hashlib.sha256)
             if file_hash != sha256:
                 raise Exception(u'Downloaded file %s sha256 %s does not match expected %s' % (url,file_hash,sha256))
         elif sha1 is not None:
-            file_hash = _hash_file(target_fn,hashlib.sha1)
+            file_hash = _hash_file(target_fn,hash_func=hashlib.sha1)
             if file_hash != sha1:
                 raise Exception(u'Downloaded file %s sha1 %s does not match expected %s' % (url,file_hash,sha1))
         elif md5 is not None:
-            file_hash = _hash_file(target_fn,hashlib.md5)
+            file_hash = _hash_file(target_fn,hash_func=hashlib.md5)
             if file_hash != md5:
                 raise Exception(u'Downloaded file %s md5 %s does not match expected %s' % (url,file_hash,md5))
 
