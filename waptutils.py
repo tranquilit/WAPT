@@ -787,14 +787,18 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
                     last_time_display = time.time()
 
         # check hashes
-        if (md5 is not None or sha1 is not None or sha256 is not None):
-            file_hash = _hash_file(target_fn,md5=md5,sha1=sha1,sha256=sha256)
-            if sha256 is not None and file_hash != sha256:
+        if sha256 is not None:
+            file_hash =  _hash_file(target_fn,hashlib.sha256)
+            if file_hash != sha256:
                 raise Exception(u'Downloaded file %s sha256 %s does not match expected %s' % (url,file_hash,sha256))
-            elif sha1:
+        elif sha1 is not None:
+            file_hash = _hash_file(target_fn,hashlib.sha1)
+            if file_hash != sha1:
                 raise Exception(u'Downloaded file %s sha1 %s does not match expected %s' % (url,file_hash,sha1))
-            elif md5:
-                raise Exception(u'Downloaded file %s sha1 %s does not match expected %s' % (url,file_hash,md5))
+        elif md5 is not None:
+            file_hash = _hash_file(target_fn,hashlib.md5)
+            if file_hash != md5:
+                raise Exception(u'Downloaded file %s md5 %s does not match expected %s' % (url,file_hash,md5))
 
         file_date = httpreq.headers.get('last-modified',None)
 
