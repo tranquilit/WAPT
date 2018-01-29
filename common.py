@@ -83,11 +83,7 @@ import win32api
 import ntsecuritycon
 import win32security
 import win32net
-import win32ts
-import win32con
-import win32process
 import pywintypes
-from ntsecuritycon import SECURITY_NT_AUTHORITY,SECURITY_BUILTIN_DOMAIN_RID
 from ntsecuritycon import DOMAIN_GROUP_RID_ADMINS,DOMAIN_GROUP_RID_USERS
 
 import ctypes
@@ -96,7 +92,7 @@ from ctypes import wintypes
 logger = logging.getLogger()
 
 try:
-    from requests_kerberos import HTTPKerberosAuth,DISABLED
+    import requests_kerberos
     has_kerberos = True
 except:
     has_kerberos = False
@@ -132,46 +128,6 @@ class EWaptBadServerAuthentication(EWaptException):
 
 def is_system_user():
     return setuphelpers.get_current_user() == 'system'
-
-
-def adjust_privileges():
-    flags = ntsecuritycon.TOKEN_ADJUST_PRIVILEGES | ntsecuritycon.TOKEN_QUERY
-    htoken = win32security.OpenProcessToken(win32api.GetCurrentProcess(),flags)
-
-    privileges = [
-        (win32security.LookupPrivilegeValue(None, 'SeSystemProfilePrivilege'), ntsecuritycon.SE_PRIVILEGE_ENABLED),
-        (win32security.LookupPrivilegeValue(None, 'SeSecurityPrivilege'), ntsecuritycon.SE_PRIVILEGE_ENABLED),
-        (win32security.LookupPrivilegeValue(None, 'SeRestorePrivilege'), ntsecuritycon.SE_PRIVILEGE_ENABLED),
-        (win32security.LookupPrivilegeValue(None, 'SeBackupPrivilege'), ntsecuritycon.SE_PRIVILEGE_ENABLED),
-        ]
-
-    return win32security.AdjustTokenPrivileges(htoken, 0, privileges)
-
-
-def start_interactive_process(app_filename,cmdline=None,session_id=None):
-    """Starts a process in the context of opened interactive session if any"""
-    if session_id is None:
-        session_id = win32ts.WTSGetActiveConsoleSessionId()
-    # not logged.
-    if session_id == 0xffffffff:
-        return None
-
-    priority = win32con.NORMAL_PRIORITY_CLASS | win32con.CREATE_NEW_CONSOLE
-    startup = win32process.STARTUPINFO()
-    startup.lpDesktop = r'winsta0\default'
-
-    token = win32ts.WTSQueryUserToken(session_id)
-    if token:
-        new_token = win32security.DuplicateTokenEx(token,win32security.SecurityDelegation,win32security.TOKEN_ALL_ACCESS,win32security.TokenPrimary)
-
-        process_info = win32process.CreateProcessAsUser(new_token, app_filename, cmdline, None, None, True, priority, None, None, startup)
-        if token:
-            win32api.CloseHandle(token)
-        if new_token:
-            win32api.CloseHandle(new_token)
-    else:
-        process_info = win32process.CreateProcess(app_filename,cmdline, None, None, True, priority, None, None, startup)
-    return process_info
 
 
 ###########################"
@@ -1356,7 +1312,7 @@ class WaptServer(BaseObjectClass):
             if action in ('register','add_host'):
                 scheme = urlparse.urlparse(self._server_url).scheme
                 if scheme == 'https' and has_kerberos and self.use_kerberos:
-                    return HTTPKerberosAuth(mutual_authentication=DISABLED,principal=self.get_computer_principal())
+                    return requests_kerberos.HTTPKerberosAuth(mutual_authentication=requests_kerberos.DISABLED,principal=self.get_computer_principal())
                     # TODO : simple auth if kerberos is not available...
                 elif self.client_certificate:
                     return (self.client_certificate,self.client_private_key)
@@ -1777,6 +1733,9 @@ class WaptServer(BaseObjectClass):
 
 class WaptRepo(WaptRemoteRepo):
     """Gives access to a remote http repository, with a zipped Packages packages index
+    Find its repo_url based on
+    * repo_url explicit setting in ini config section [<name>]
+    * dnsdomain: if repo_url is empty, lookup a _<name>._tcp.<dnsdomain> SRV record
 
     >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=4)
     >>> packages = repo.packages()
