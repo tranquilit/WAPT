@@ -1,4 +1,4 @@
-pyad==0.5.16
+pyad==0.5.20
 pyzmq==16.0.2
 requests-kerberos==0.11.0
 kerberos-sspi==0.2 
