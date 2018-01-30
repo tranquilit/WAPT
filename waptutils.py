@@ -600,7 +600,7 @@ def _check_hash_for_file(fname, block_size=2**20,md5=None,sha1=None,sha256=None)
         return _hash_file(fname, block_size,hashlib.sha256) == sha256
     elif sha1 is not None:
         return _hash_file(fname, block_size,hashlib.sha1) == sha1
-    elif sha1 is not None:
+    elif md5 is not None:
         return _hash_file(fname, block_size,hashlib.md5) == md5
     else:
         raise Exception('No hash to check file')
