@@ -24,7 +24,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="5"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="16"/>
+      <BuildNr Value="17"/>
       <StringTable CompanyName="Tranquil IT Systems" ProductName="WAPT Installation" ProductVersion="1.5.0"/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -38,7 +38,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="dnsdebug"/>
+        <CommandLineParams Value="--service upgrade"/>
       </local>
     </RunParams>
     <RequiredPackages Count="7">
@@ -72,8 +72,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="474"/>
-        <CursorPos X="40" Y="322"/>
+        <TopLine Value="471"/>
+        <CursorPos X="26" Y="489"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -239,9 +239,9 @@
         <Filename Value="..\..\pltis_utils\tisstrings.pas"/>
         <UnitName Value="tisstrings"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="611"/>
-        <CursorPos X="55" Y="632"/>
-        <UsageCount Value="7"/>
+        <TopLine Value="572"/>
+        <CursorPos X="1" Y="583"/>
+        <UsageCount Value="10"/>
       </Unit20>
       <Unit21>
         <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp"/>
@@ -304,9 +304,9 @@
         <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdHTTP.pas"/>
         <UnitName Value="IdHTTP"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="2501"/>
-        <CursorPos X="63" Y="2522"/>
-        <UsageCount Value="9"/>
+        <TopLine Value="2756"/>
+        <CursorPos X="9" Y="2768"/>
+        <UsageCount Value="10"/>
       </Unit28>
       <Unit29>
         <Filename Value="..\..\pltis_delphizmq\zmqapi.pas"/>
@@ -552,11 +552,15 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit58>
     </Units>
-    <JumpHistory Count="1" HistoryIndex="0">
+    <JumpHistory Count="2" HistoryIndex="1">
       <Position1>
         <Filename Value="waptget.lpr"/>
         <Caret Line="622" Column="10" TopLine="581"/>
       </Position1>
+      <Position2>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="489" Column="26" TopLine="471"/>
+      </Position2>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -597,7 +601,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="15">
+    <BreakPoints Count="13">
       <Item1>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsGlobal"/>
@@ -679,30 +683,16 @@
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="..\..\pltis_utils\tisstrings.pas"/>
-        <Line Value="628"/>
+        <Source Value="waptdb.pas"/>
+        <Line Value="63"/>
       </Item12>
       <Item13>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="..\..\pltis_utils\tisstrings.pas"/>
-        <Line Value="583"/>
-      </Item13>
-      <Item14>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="waptdb.pas"/>
-        <Line Value="63"/>
-      </Item14>
-      <Item15>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
         <Source Value="waptcommon.pas"/>
         <Line Value="444"/>
-      </Item15>
+      </Item13>
     </BreakPoints>
     <Exceptions Count="3">
       <Item1>

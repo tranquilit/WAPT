@@ -7,11 +7,12 @@ interface
 uses
   Classes, SysUtils, Windows, ActiveX, Types, Forms, Controls, Graphics,
   Dialogs, Buttons, FileUtil, LazFileUtils, LazUTF8, SynEdit,
-  SynHighlighterPython, LSControls, TplStatusBarUnit, vte_json, vte_dbtree,
-  vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, jsonparser,
-  superobject, VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading, IdComponent,
-  DefaultTranslator, IniPropStorage, DBGrids, GetText, uWaptConsoleRes, db,
-  BufDataset, memds, SearchEdit, MenuButton, tisstrings;
+  SynHighlighterPython, LSControls, TplStatusBarUnit,
+  vte_json, vte_dbtree, vte_dbtreeex, ExtCtrls, StdCtrls,
+  ComCtrls, ActnList, Menus, jsonparser, superobject, VirtualTrees, VarPyth,
+  ImgList, SOGrid, uvisloading, IdComponent, DefaultTranslator, IniPropStorage,
+  DBGrids, GetText, uWaptConsoleRes, db, BufDataset, memds, SearchEdit,
+  MenuButton, tisstrings;
 
 type
 
@@ -24,6 +25,8 @@ type
     ActAddHWPropertyToGrid: TAction;
     ActDisplayUserMessage: TAction;
     ActEditOrgUnitPackage: TAction;
+    ActAddNewNetwork: TAction;
+    ActDeleteNetwork: TAction;
     ActLaunchGPUpdate: TAction;
     ActLaunchWaptExit: TAction;
     ActTriggerBurstUpgrades: TAction;
@@ -72,6 +75,9 @@ type
     ButPackagesUpdate: TBitBtn;
     ButPackagesUpdate1: TBitBtn;
     butSearchGroups: TBitBtn;
+    butSearchPackages1: TBitBtn;
+    butSearchPackages2: TBitBtn;
+    butSearchPackages3: TBitBtn;
     Button1: TButton;
     cbAdvancedSearch: TCheckBox;
     cbForcedWSUSscanDownload: TCheckBox;
@@ -98,10 +104,16 @@ type
     DBOrgUnitsParentDN: TStringField;
     DBOrgUnitsParentID: TLongintField;
     EdSearchOrgUnits: TEdit;
+    EdSearchPackage1: TSearchEdit;
+    GridNetworks: TSOGrid;
     MenuItem88: TMenuItem;
     MenuItem89: TMenuItem;
     MenuItem90: TMenuItem;
+    Panel8: TPanel;
+    PgNetworksConfig: TTabSheet;
     PopupMenuOrgUnits: TPopupMenu;
+    SOWaptServer: TSOConnection;
+    SrcNetworks: TSODataSource;
     SrcOrgUnits: TDataSource;
     EdDescription: TEdit;
     EdHardwareFilter: TEdit;
@@ -199,6 +211,7 @@ type
     ProgressBar1: TProgressBar;
     Splitter6: TSplitter;
     Splitter7: TSplitter;
+    PgReports: TTabSheet;
     TimerWUALoadWinUpdates: TTimer;
     ToolBar1: TToolBar;
     ToolButtonUpgrade: TToolButton;
@@ -399,6 +412,7 @@ type
     procedure ActAddDependsUpdate(Sender: TObject);
     procedure ActAddHWPropertyToGridExecute(Sender: TObject);
     procedure ActAddHWPropertyToGridUpdate(Sender: TObject);
+    procedure ActAddNewNetworkExecute(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
     procedure ActChangePasswordUpdate(Sender: TObject);
@@ -417,6 +431,7 @@ type
     procedure ActCreateWaptSetupUpdate(Sender: TObject);
     procedure ActDeleteGroupExecute(Sender: TObject);
     procedure ActDeleteGroupUpdate(Sender: TObject);
+    procedure ActDeleteNetworkExecute(Sender: TObject);
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActDisplayPreferencesExecute(Sender: TObject);
@@ -591,6 +606,8 @@ type
     procedure GridHostWinUpdatesGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; RowData, CellData: ISuperObject;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+    procedure GridNetworksEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; var Allowed: Boolean);
     procedure GridOrgUnitsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridOrgUnitsGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
@@ -653,7 +670,7 @@ type
   public
     { public declarations }
     PackageEdited: ISuperObject;
-    MainRepoUrl, WAPTServer, TemplatesRepoUrl: string;
+    MainRepoUrl, WaptServer, TemplatesRepoUrl: string;
 
     {$ifdef wsus}
     WUAProducts : ISuperObject;
@@ -821,11 +838,13 @@ begin
     begin
        if TriggerChangeHostDescription(GridHosts.FocusedRow.S['uuid'],UTF8Decode(EdDescription.Text)) then
        begin
-          GridHosts.FocusedRow.S['description'] := UTF8Decode(EdDescription.Text);
+          if GridHosts.FocusedRow<>Nil then
+            GridHosts.FocusedRow.S['description'] := UTF8Decode(EdDescription.Text);
           GridHosts.InvalidateFordata(GridHosts.FocusedRow);
        end
        else
-          EdDescription.Text := UTF8Encode(GridHosts.FocusedRow.S['description']);
+          if GridHosts.FocusedRow<>Nil then
+            EdDescription.Text := UTF8Encode(GridHosts.FocusedRow.S['description']);
     end;
 end;
 
@@ -949,9 +968,9 @@ begin
     ini.WriteString(self.name,cbGroups.Text,'cbGroups.Text');
 
     {$ifdef ENTERPRISE}
-    ini.WriteString(self.name,cbADSite.Text,'cbADSite.Text');
+    ini.WriteString(self.name,'cbADSite',cbADSite.Text);
     ini.WriteString(self.name,'OrgUnitsDN',StrJoin('||',GetSelectedOrgUnits));
-    ini.WriteInteger(PanOrgUnits.Name,'Width',PanOrgUnits.Width);
+    ini.WriteInteger(self.Name,PanOrgUnits.Name+'.Width',PanOrgUnits.Width);
     ini.WriteBool(self.Name,CBIncludeSubOU.Name,self.CBIncludeSubOU.Checked);;
     {$endif}
 
@@ -1847,6 +1866,11 @@ begin
   ActAddHWPropertyToGrid.Enabled := (propname <>'') and (GridHosts.FindColumnByPropertyName(propname) = nil);
 end;
 
+procedure TVisWaptGUI.ActAddNewNetworkExecute(Sender: TObject);
+begin
+  SrcNetworks.AppendRecord(SO());
+end;
+
 procedure TVisWaptGUI.ActCancelRunningTaskExecute(Sender: TObject);
 var
   uuids: ISuperObject;
@@ -2048,6 +2072,11 @@ end;
 procedure TVisWaptGUI.ActDeleteGroupUpdate(Sender: TObject);
 begin
   ActDeleteGroup.Enabled := GridGroups.Focused and (GridGroups.SelectedCount>0);
+end;
+
+procedure TVisWaptGUI.ActDeleteNetworkExecute(Sender: TObject);
+begin
+  SrcNetworks.DeleteRecord(GridNetworks.FocusedRow);
 end;
 
 procedure TVisWaptGUI.ActDeletePackageExecute(Sender: TObject);
@@ -3886,7 +3915,7 @@ begin
 
         {$ifdef ENTERPRISE}
         LoadOrgUnitsTree(Sender);
-        self.cbADSite.Text :=  ini.ReadString(self.Name,'cbADSite.Text',self.cbADSite.Text);
+        self.cbADSite.Text :=  ini.ReadString(self.Name,'cbADSite',self.cbADSite.Text);
         self.DBOrgUnits.Locate('DN',ini.ReadString(self.Name,'OrgUnitsDN',''),[]);
         self.PanOrgUnits.Width := ini.ReadInteger(self.Name,PanOrgUnits.Name+'.Width',PanOrgUnits.Width);
         self.CBIncludeSubOU.Checked:= ini.ReadBool(self.Name,CBIncludeSubOU.Name,self.CBIncludeSubOU.Checked);;
@@ -4406,6 +4435,12 @@ begin
 
 end;
 
+procedure TVisWaptGUI.GridNetworksEditing(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
+begin
+  Allowed := True;
+end;
+
 procedure TVisWaptGUI.GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
 begin
@@ -4429,6 +4464,11 @@ begin
   ActDisplayUserMessage.Visible:=IsEnterpriseEdition;
   ActLaunchWaptExit.Visible:=IsEnterpriseEdition;
   ActTISHelp.Visible:=IsEnterpriseEdition and FileExists(GetTisSupportPath);
+
+  //PgNetworksConfig.TabVisible:=IsEnterpriseEdition;
+  //PgReports.TabVisible:=IsEnterpriseEdition;
+  PgNetworksConfig.TabVisible:=False;
+  PgReports.TabVisible:=False;
 
 end;
 
@@ -4524,6 +4564,11 @@ begin
     if GridGroups.Data = nil then
       ActSearchGroups.Execute;
     EdSearchGroups.SetFocus;
+  end
+  else if MainPages.ActivePage = PgNetworksConfig then
+  begin
+    if not SrcNetworks.Active then
+      SrcNetworks.open;
   end
   {$ifdef wsus}
   else if MainPages.ActivePage = pgWindowsUpdates then

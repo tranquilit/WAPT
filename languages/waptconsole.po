@@ -1122,6 +1122,10 @@ msgstr ""
 msgid "Add item as grid column"
 msgstr ""
 
+#: tviswaptgui.actaddnewnetwork.caption
+msgid "Add new network"
+msgstr ""
+
 #: tviswaptgui.actcancelrunningtask.caption
 msgctxt "tviswaptgui.actcancelrunningtask.caption"
 msgid "Cancel current task"
@@ -1181,6 +1185,10 @@ msgstr ""
 #: tviswaptgui.actdeletehostspackageandinventory.hint
 msgctxt "TVISWAPTGUI.ACTDELETEHOSTSPACKAGEANDINVENTORY.HINT"
 msgid "Remove from inventory"
+msgstr ""
+
+#: tviswaptgui.actdeletenetwork.caption
+msgid "Delete network"
 msgstr ""
 
 #: tviswaptgui.actdeletepackage.caption
@@ -1566,6 +1574,11 @@ msgstr ""
 
 #: tviswaptgui.bitbtn9.caption
 msgid "Download Updates listing from Microsoft"
+msgstr ""
+
+#: tviswaptgui.butsearchpackages1.caption
+msgctxt "TVISWAPTGUI.BUTSEARCHPACKAGES1.CAPTION"
+msgid "Search"
 msgstr ""
 
 #: tviswaptgui.caption
@@ -1962,12 +1975,20 @@ msgstr ""
 msgid "Inventory"
 msgstr ""
 
+#: tviswaptgui.pgnetworksconfig.caption
+msgid "Sites / networks configuration"
+msgstr ""
+
 #: tviswaptgui.pgpackages.caption
 msgid "Overview"
 msgstr ""
 
 #: tviswaptgui.pgprivaterepo.caption
 msgid "Softwares repository"
+msgstr ""
+
+#: tviswaptgui.pgreports.caption
+msgid "Reports"
 msgstr ""
 
 #: tviswaptgui.pgsoftwares.caption

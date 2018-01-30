@@ -26,7 +26,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="5"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="16"/>
+      <BuildNr Value="17"/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -42,64 +42,67 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="19">
+    <RequiredPackages Count="20">
       <Item1>
-        <PackageName Value="MemDSLaz"/>
+        <PackageName Value="TAChartLazarusPkg"/>
       </Item1>
       <Item2>
-        <PackageName Value="RunTimeTypeInfoControls"/>
+        <PackageName Value="MemDSLaz"/>
       </Item2>
       <Item3>
-        <PackageName Value="pl_fzcontrols"/>
+        <PackageName Value="RunTimeTypeInfoControls"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_exdesign"/>
+        <PackageName Value="pl_fzcontrols"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_luicontrols"/>
+        <PackageName Value="pl_exdesign"/>
       </Item5>
       <Item6>
-        <PackageName Value="pl_lclextensions"/>
+        <PackageName Value="pl_luicontrols"/>
       </Item6>
       <Item7>
-        <PackageName Value="pl_lazsolutions"/>
+        <PackageName Value="pl_lclextensions"/>
       </Item7>
       <Item8>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="pl_lazsolutions"/>
       </Item8>
       <Item9>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="pl_indy"/>
       </Item9>
       <Item10>
-        <PackageName Value="pl_excontrols"/>
+        <PackageName Value="pltis_wapt"/>
       </Item10>
       <Item11>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pl_excontrols"/>
       </Item11>
       <Item12>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="pltis_utils"/>
       </Item12>
       <Item13>
-        <PackageName Value="pl_virtualtrees"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item13>
       <Item14>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pl_virtualtrees"/>
       </Item14>
       <Item15>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="pltis_superobject"/>
       </Item15>
       <Item16>
-        <PackageName Value="pl_virtualtreesextra"/>
+        <PackageName Value="pltis_python4delphi"/>
       </Item16>
       <Item17>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item17>
       <Item18>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="FCL"/>
       </Item18>
       <Item19>
-        <PackageName Value="LCL"/>
+        <PackageName Value="SynEdit"/>
       </Item19>
+      <Item20>
+        <PackageName Value="LCL"/>
+      </Item20>
     </RequiredPackages>
     <Units Count="29">
       <Unit0>
