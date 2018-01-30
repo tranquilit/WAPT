@@ -37,4 +37,4 @@ sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 from huey.bin import huey_consumer
 
 if __name__ == '__main__':
-    huey_consumer.main()
+    huey_consumer.consumer_main()

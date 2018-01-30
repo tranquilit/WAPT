@@ -8,7 +8,7 @@ Flask==0.12.2
 Flask-Babel==0.11.2
 Flask-Login==0.4.0
 Flask-SocketIO==2.9.2
-huey==1.5.2
+huey==1.6.1
 iniparse==0.4
 itsdangerous==0.24
 Jinja2==2.9.6
