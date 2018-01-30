@@ -18,19 +18,18 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Height = 369
     Top = 0
     Width = 508
-    ActivePage = pgFinish
+    ActivePage = pgParameters
     Align = alClient
     MultiLine = True
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 0
     OnChange = PagesControlChange
     Options = [nboMultiLine]
     object pgParameters: TTabSheet
       Caption = 'Parameters'
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
-      ClientHeight = 341
+      ClientHeight = 343
       ClientWidth = 500
-      OnContextPopup = pgParametersContextPopup
       object Panel3: TPanel
         Left = 0
         Height = 32
@@ -64,7 +63,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           Left = 212
           Height = 26
           Top = 3
-          Width = 138
+          Width = 127
           Action = ActCheckDNS
           AutoSize = True
           Glyph.Data = {
@@ -106,7 +105,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           TabOrder = 1
         end
         object EdWaptServerIP: TEdit
-          Left = 356
+          Left = 345
           Height = 26
           Top = 3
           Width = 120
@@ -118,24 +117,25 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object Panel4: TPanel
         Left = 0
-        Height = 309
+        Height = 311
         Top = 32
         Width = 500
         Align = alClient
-        ClientHeight = 309
+        BevelOuter = bvNone
+        ClientHeight = 311
         ClientWidth = 500
         TabOrder = 1
         object cbManualURL: TCheckBox
           Left = 4
-          Height = 19
+          Height = 17
           Top = 54
-          Width = 124
+          Width = 113
           Action = ActManual
           TabOrder = 0
         end
         object edWAPTRepoURL: TLabeledEdit
           Left = 33
-          Height = 23
+          Height = 21
           Top = 90
           Width = 314
           EditLabel.AnchorSideLeft.Control = edWAPTRepoURL
@@ -143,8 +143,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           EditLabel.AnchorSideRight.Side = asrBottom
           EditLabel.AnchorSideBottom.Control = edWAPTRepoURL
           EditLabel.Left = 33
-          EditLabel.Height = 15
-          EditLabel.Top = 72
+          EditLabel.Height = 13
+          EditLabel.Top = 74
           EditLabel.Width = 314
           EditLabel.Caption = 'URL of the WAPT package repository'
           EditLabel.ParentColor = False
@@ -152,7 +152,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         end
         object edWAPTServerURL: TLabeledEdit
           Left = 34
-          Height = 23
+          Height = 21
           Top = 134
           Width = 313
           EditLabel.AnchorSideLeft.Control = edWAPTServerURL
@@ -160,8 +160,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           EditLabel.AnchorSideRight.Side = asrBottom
           EditLabel.AnchorSideBottom.Control = edWAPTServerURL
           EditLabel.Left = 34
-          EditLabel.Height = 15
-          EditLabel.Top = 116
+          EditLabel.Height = 13
+          EditLabel.Top = 118
           EditLabel.Width = 313
           EditLabel.Caption = 'URL of the WAPT server'
           EditLabel.ParentColor = False
@@ -171,7 +171,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgPassword: TTabSheet
       Caption = 'Password'
-      ClientHeight = 341
+      ClientHeight = 343
       ClientWidth = 500
       object Panel5: TPanel
         Left = 0
@@ -191,15 +191,15 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         TabOrder = 0
         object Label1: TLabel
           Left = 6
-          Height = 23
+          Height = 21
           Top = 3
-          Width = 123
+          Width = 116
           Caption = 'WAPT server password:'
           ParentColor = False
         end
         object EdPwd1: TEdit
-          Left = 135
-          Height = 23
+          Left = 128
+          Height = 21
           Hint = 'This is the password used to connect to the WAPT server via the WAPT console.'#13#10'For further information :'#13#10'http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html'
           Top = 3
           Width = 120
@@ -210,16 +210,16 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         end
         object Label2: TLabel
           Left = 6
-          Height = 23
-          Top = 32
-          Width = 123
+          Height = 21
+          Top = 30
+          Width = 116
           Caption = 'Confirm password:'
           ParentColor = False
         end
         object EdPwd2: TEdit
-          Left = 135
-          Height = 23
-          Top = 32
+          Left = 128
+          Height = 21
+          Top = 30
           Width = 120
           Constraints.MinWidth = 120
           EchoMode = emPassword
@@ -230,7 +230,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgStartServices: TTabSheet
       Caption = 'Start'
-      ClientHeight = 341
+      ClientHeight = 343
       ClientWidth = 500
       object EdWaptInifile: TMemo
         Left = 4
@@ -248,7 +248,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Left = 8
         Height = 26
         Top = 198
-        Width = 352
+        Width = 328
         Action = actWriteConfStartServe
         AutoSize = True
         Glyph.Data = {
@@ -291,9 +291,9 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object CBOpenFirewall: TCheckBox
         Left = 8
-        Height = 19
+        Height = 17
         Top = 234
-        Width = 407
+        Width = 378
         Caption = 'Open firewall ports 80 and 443 to allow access for packages and inventory'
         Checked = True
         State = cbChecked
@@ -302,12 +302,12 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgFinish: TTabSheet
       Caption = 'Fin'
-      ClientHeight = 341
+      ClientHeight = 343
       ClientWidth = 500
       object Panel2: TPanel
         Left = 0
         Height = 23
-        Top = 318
+        Top = 320
         Width = 500
         Align = alBottom
         BevelOuter = bvNone
@@ -316,9 +316,9 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         TabOrder = 0
         object cbLaunchWaptConsoleOnExit: TCheckBox
           Left = 4
-          Height = 19
+          Height = 17
           Top = 4
-          Width = 180
+          Width = 167
           Caption = 'Run WAPT console after setup'
           Checked = True
           State = cbChecked
@@ -327,12 +327,12 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object panFinish: TPanel
         Left = 0
-        Height = 318
+        Height = 320
         Top = 0
         Width = 500
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 318
+        ClientHeight = 320
         ClientWidth = 500
         TabOrder = 1
         object Memo7: TMemo
@@ -384,10 +384,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     ClientWidth = 754
     TabOrder = 1
     object BitBtn3: TBitBtn
-      Left = 666
+      Left = 670
       Height = 24
       Top = 3
-      Width = 82
+      Width = 78
       Align = alRight
       AutoSize = True
       Caption = 'Cancel'
@@ -440,10 +440,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       TabOrder = 1
     end
     object ButPrevious: TBitBtn
-      Left = 493
+      Left = 502
       Height = 24
       Top = 3
-      Width = 91
+      Width = 87
       Action = actPrevious
       Align = alRight
       AutoSize = True
@@ -486,10 +486,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       TabOrder = 2
     end
     object ButNext: TBitBtn
-      Left = 590
+      Left = 595
       Height = 24
       Top = 3
-      Width = 70
+      Width = 69
       Action = ActNext
       Align = alRight
       AutoSize = True

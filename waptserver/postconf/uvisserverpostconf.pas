@@ -71,8 +71,6 @@ type
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode;
       AWorkCount: Int64);
     procedure PagesControlChange(Sender: TObject);
-    procedure pgParametersContextPopup(Sender: TObject; MousePos: TPoint;
-      var Handled: Boolean);
   private
     CurrentVisLoading:TVisLoading;
     procedure OpenFirewall;
@@ -205,12 +203,6 @@ begin
     HTMLViewer1.Align:=alClient;
   end
   else
-end;
-
-procedure TVisWAPTServerPostConf.pgParametersContextPopup(Sender: TObject;
-  MousePos: TPoint; var Handled: Boolean);
-begin
-
 end;
 
 procedure TVisWAPTServerPostConf.OpenFirewall;
