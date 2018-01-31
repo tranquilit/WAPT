@@ -2411,7 +2411,7 @@ def win_startup_info():
             result['run'].append({'name':name,'command':value})
     for lnk in glob.glob(makepath(startup(1),'*.lnk')):
         sc = winshell.shortcut(lnk)
-        result['common_startup'].append({'name':lnk,'command':'"%s" %s' % (sc.path,sc.arguments)})
+        result['common_startup'].append({'name':ensure_unicode(lnk),'command':u'"%s" %s' % (ensure_unicode(sc.path),ensure_unicode(sc.arguments))})
     return result
 
 
