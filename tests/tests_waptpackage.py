@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.1.14"
+__version__ = "1.5.1.17"
 import logging
 import sys
 import tempfile
@@ -958,7 +958,33 @@ def test_tableprovider():
     hosts.apply_updates([['update',{'uuid':'4C4C4544-004E-3510-8051-C7C04F325131'},{'description':u'Test hubert'}]])
 
 
+def test_crl():
+    cakey = SSLPrivateKey().create()
+    cacert = cakey.build_sign_certificate(cn='testca')
+    mykey = SSLPrivateKey().create()
+    mycsr = mykey.build_csr(cn='Myself')
+    mycert = cacert.build_certificate_from_csr(mycsr,cakey)
+    serial = mycert.serial_number
+
+    ca = SSLCABundle(certificates=[cacert])
+    print ca.check_certificates_chain(mycert)
+
+    cacrl = cacert.build_crl(cakey,[serial])
+    cacrl_pem = cacrl.as_pem()
+    print cacrl_pem
+    cacrl.verify_signature_with(ca)
+
+    ca.add_crl(cacrl)
+    try:
+        print ca.check_certificates_chain(mycert)
+        raise Exception('ERROR should be revoked...')
+    except EWaptCertificateRevoked as e:
+        print('OK revoked')
+
+
 if __name__ == '__main__':
+    test_crl()
+
     setup_test()
     test_inter()
 

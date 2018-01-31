@@ -307,7 +307,7 @@ class WaptSocketIOClient(threading.Thread):
                             kwargs['proxies'] = self.config.waptserver.proxies
 
 
-                        signed_connect_params = host_key.sign_claim(connect_params,certificate = host_cert)
+                        signed_connect_params = host_key.sign_claim(connect_params,signer_certificate_chain = host_cert)
 
                         self.socketio_client = SocketIO(
                                 host="%s://%s" % (self.config.websockets_proto,self.config.websockets_host),
@@ -326,7 +326,7 @@ class WaptSocketIOClient(threading.Thread):
 
                     if self.socketio_client and self.config.websockets_host:
                         if not self.socketio_client.connected:
-                            signed_connect_params = host_key.sign_claim(connect_params,certificate = host_cert)
+                            signed_connect_params = host_key.sign_claim(connect_params,signer_certificate_chain = host_cert)
 
                             self.socketio_client._http_session.params.update({'uuid': tmp_wapt.host_uuid,'login':jsondump(signed_connect_params)})
                             self.socketio_client.define(WaptSocketIORemoteCalls)

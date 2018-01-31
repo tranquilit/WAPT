@@ -644,7 +644,7 @@ def sign_actions(actions,certfilename,key_password=None):
 
     result = []
     for action in actions:
-        result.append(key.sign_claim(action,certificate=certs))
+        result.append(key.sign_claim(action,signer_certificate_chain=certs))
     return json.dumps(result)
 
 def change_key_password(private_key_path,old_password=None,new_password=None):

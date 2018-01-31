@@ -186,6 +186,15 @@ class SSLCABundle(BaseObjectClass):
     md = 'sha256'
 
     def __init__(self,cert_pattern_or_dir=None,callback=None,certificates=None):
+        """Handle certificates checks giving a list of trusted certificates.
+        Can load and save PEM encoded CA certificates from directory and from supplied certificates list.
+
+        Args:
+            cert_pattern_or_dir (str): Loads CA trusted certs from here. Path to a directory or files pattern like c:/wapt/ssl/*.crt
+            callback (func):  callback to decrypt keys in supplied PEM.
+            certificates (list) : list of *trusted* SSLCertificate to include.
+
+        """
         self._keys = []
         self._certificates = []
         self._certs_subject_hash_idx = {}
@@ -229,6 +238,9 @@ class SSLCABundle(BaseObjectClass):
     def add_certificates(self,certificates):
         """Add a list of certificates to the bundle and index them.
 
+        Args:
+            certificates (list): certificates (SSLCertificate instances) to add to the bundle.
+
         Returns:
             list of SSLCertificates actually added
         """
@@ -248,7 +260,7 @@ class SSLCABundle(BaseObjectClass):
         return result
 
     def add_pem(self,pem_data=None,load_keys=False,pem_filename=None):
-        """Parse a bundle PEM with multiple certificates, CRL and keys.
+        """Parse a PEM encoded bundle with multiple certificates, CRL and keys.
         If key needs to be decrypted, password callback property must be assigned.
 
         Returns:
@@ -322,6 +334,14 @@ class SSLCABundle(BaseObjectClass):
         return None
 
     def certificate(self,fingerprint):
+        """Returns the certificate matching the supplied sha256 fingerprint
+
+        Args;
+            fingerprint (str): hex encoded sha256 certificate fingerprint to lookup
+
+        Returns:
+            SSLCertificate
+        """
         if not isinstance(fingerprint,(str,unicode)):
             raise EWaptCryptoException(u'A certificate fingerprint as bytes str is expected, %s supplied' % fingerprint)
         return self._certs_fingerprint_idx.get(fingerprint,None)
@@ -415,7 +435,7 @@ class SSLCABundle(BaseObjectClass):
 
         Args:
             certificate: certificate to check
-            include_self: if certificate is in bunclde, accept it (pining)
+            include_self: if certificate is in bundle, accept it (pining)
 
         Returns:
             SSLCertificate: issuer certificate or None
@@ -446,10 +466,10 @@ class SSLCABundle(BaseObjectClass):
             raise
 
     def check_certificates_chain(self,cert_chain,verify_expiry=True,verify_revoke=True,allow_pinned=True):
-        """Check that first certificate in cert_chain is approved
+        """Check if first certificate in cert_chain is approved
         by one of the CA certificate from this bundle.
 
-        If intermdiate issuers can not be found in this ca bundle, try to get them from
+        If intermediate issuers can not be found in this ca bundle, try to get them from
         supplied cert_chain.
 
         Args:
@@ -465,7 +485,7 @@ class SSLCABundle(BaseObjectClass):
         def check_cert(cert):
             if verify_expiry and not cert.is_valid():
                 raise EWaptCertificateExpired(u'Certificate %s is expired' % cert)
-            if verify_revoke and cert.crl_urls():
+            if verify_revoke:
                 self.check_if_revoked(cert)
             return cert
 
@@ -798,6 +818,7 @@ class SSLPrivateKey(BaseObjectClass):
             public_exponent=65537,
             key_size=bits,
             backend=default_backend())
+        return self
 
 
     def as_pem(self,password=None):
@@ -1022,7 +1043,7 @@ class SSLPrivateKey(BaseObjectClass):
     def __repr__(self):
         return '<SSLPrivateKey %s>' % repr(self.private_key_filename)
 
-    def sign_claim(self,claim,attributes=None,certificate=None):
+    def sign_claim(self,claim,attributes=None,signer_certificate_chain=None):
         """Sign a set of attributes of a dict
 
         Args:
@@ -1038,8 +1059,8 @@ class SSLPrivateKey(BaseObjectClass):
         assert(isinstance(claim,dict))
         if attributes is None:
             attributes = claim.keys()
-        if not isinstance(certificate,list):
-            certificate = [certificate]
+        if not isinstance(signer_certificate_chain,list):
+            signer_certificate_chain = [signer_certificate_chain]
 
         signature_attributes = ['signed_attributes','signer','signature_date','signer_certificate']
         for att in signature_attributes:
@@ -1050,7 +1071,7 @@ class SSLPrivateKey(BaseObjectClass):
         reclaim['signed_attributes'] = attributes+signature_attributes
         reclaim['signer'] = certificate[0].cn
         reclaim['signature_date'] = datetime.datetime.utcnow().isoformat()
-        reclaim['signer_certificate'] = '\n'.join(cert.as_pem() for cert in certificate)
+        reclaim['signer_certificate'] = '\n'.join(cert.as_pem() for cert in signer_certificate_chain)
         signature = base64.b64encode(self.sign_content(reclaim))
         reclaim['signature'] = signature
         return reclaim
@@ -1348,7 +1369,35 @@ class SSLCertificateSigningRequest(BaseObjectClass):
             f.write(self.as_pem())
 
 class SSLCertificate(BaseObjectClass):
-    """Hold a X509 public certificate"""
+    """Hold a X509 public certificate
+
+    Global usage:
+
+    >>> cakey = SSLPrivateKey().create()
+    >>> cacert = cakey.build_sign_certificate(cn='testca')
+    >>> cacert.is_ca
+    True
+
+    >>> mykey = SSLPrivateKey().create()
+    >>> mycsr = mykey.build_csr(cn='Myself')
+    >>> mycert = cacert.build_certificate_from_csr(mycsr,cakey)
+    >>> mycert.cn
+    u'Myself'
+
+    >>> mycert.issuer
+    {'commonName': u'testca'}
+
+    >>> ca = SSLCABundle(certificates=[cacert])
+    >>> ca.check_certificates_chain([mycert])
+    [<SSLCertificate cn=u'Myself' issuer=u'testca' validity=2018-01-30 - 2019-01-30 Code-Signing=True CA=False>,
+    <SSLCertificate cn=u'testca' issuer=u'testca' validity=2018-01-30 - 2028-01-28 Code-Signing=False CA=True>]
+
+    >>> ca = SSLCABundle(certificates=[])
+    >>> ca.check_certificates_chain([mycert,cacert])
+    Traceback (most recent call last):
+    EWaptCertificateUnknownIssuer: Unknown issuer testca for certificate testca
+
+    """
     def __init__(self,crt_filename=None,crt=None,crt_string=None,ignore_validity_checks=False):
         """\
         Args:
@@ -1847,7 +1896,7 @@ class SSLCertificate(BaseObjectClass):
              'signed_attributes': ['action', 'package'],
              'signer': '150',
              'signer_fingerprint': '88654A5A946B8BFFFAC7F61A2E21B7F02168D5E4'}
-        >>> action_signed = key.sign_claim(action,certificate=crt)
+        >>> action_signed = key.sign_claim(action,signer_certificate_chain=crt)
         >>> print crt.verify_claim(action_signed)
         {'signer': '150', 'verified_by': '150', 'signature_date': '20170606-163401'}
         """
@@ -1880,11 +1929,13 @@ class SSLCertificate(BaseObjectClass):
     def build_certificate_from_csr(self,csr,ca_signing_key,validity_duration=365):
         """
         Args:
-            csr (SSLCertificateSigningRequest):
-            ca_signing_key (SSLPrivateKey): sign the resulting certificate with this CA Key
+            csr (SSLCertificateSigningRequest): The certificate signing request to be signed.
+            ca_signing_key (SSLPrivateKey): CA Key to sign the resulting certificate.
 
         Returns:
             SSLCertificate
+
+        >>>
         """
         if not csr.csr.is_signature_valid:
             raise EWaptCryptoException('CSR signature check failed')
@@ -1924,9 +1975,47 @@ class SSLCertificate(BaseObjectClass):
         crypto_crt = builder.sign(ca_signing_key.rsa,algorithm=hashes.SHA256(), backend=default_backend())
         return SSLCertificate(crt = crypto_crt)
 
+    def build_crl(self,ca_signing_key,revoked_serial_numbers=[],validity_duration=30):
+        revoked_certificates = []
+        for serial in revoked_serial_numbers:
+            revoked = x509.RevokedCertificateBuilder(serial,datetime.datetime.utcnow())
+            revoked_certificates.append(revoked.build(backend=default_backend()))
+
+        extensions = []
+        issuer = self.crt.subject
+        extensions.append(
+            dict(extension=x509.AuthorityKeyIdentifier.from_issuer_subject_key_identifier(
+                self.crt.extensions.get_extension_for_oid(x509.OID_SUBJECT_KEY_IDENTIFIER)),
+            critical=False))
+
+        crl_builder = x509.CertificateRevocationListBuilder(self._crt.subject,
+            last_update=datetime.datetime.utcnow(),
+            next_update=datetime.datetime.utcnow() + datetime.timedelta(days=validity_duration),
+            revoked_certificates=revoked_certificates)
+
+        for ext in extensions:
+            crl_builder = crl_builder.add_extension(
+                ext.get('extension'), ext.get('critical')
+            )
+
+        crypto_crl = crl_builder.sign(ca_signing_key.rsa,algorithm=hashes.SHA256(), backend=default_backend())
+        return SSLCRL(crl=crypto_crl)
+
 class SSLCRL(BaseObjectClass):
-    def __init__(self,filename=None,pem_data=None,der_data=None):
-        self._crl = None
+    """
+
+    >>> cakey = SSLPrivateKey().create()
+    >>> cacert = cakey.build_sign_certificate(cn='testca')
+    >>> mykey = SSLPrivateKey().create()
+    >>> mycsr = mykey.build_csr(cn='Myself')
+    >>> mycert = cacert.build_certificate_from_csr(mycsr,cakey)
+    >>> mycert.serial_number
+    261540517078156283789121921716039590055012744199L
+
+    """
+
+    def __init__(self,filename=None,pem_data=None,der_data=None,crl=None):
+        self._crl = crl
         self.filename = filename
         if pem_data is not None:
             self._load_pem_data(pem_data)
