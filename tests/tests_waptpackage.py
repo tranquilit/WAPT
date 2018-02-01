@@ -960,7 +960,7 @@ def test_tableprovider():
 
 def test_crl():
     cakey = SSLPrivateKey().create()
-    cacert = cakey.build_sign_certificate(cn='testca')
+    cacert = cakey.build_sign_certificate(cn='testca',crl_url='http://127.0.0.1/wapt/cacrl.crl')
     mykey = SSLPrivateKey().create()
     mycsr = mykey.build_csr(cn='Myself')
     mycert = cacert.build_certificate_from_csr(mycsr,cakey)
@@ -982,10 +982,17 @@ def test_crl():
         print('OK revoked')
 
 
-if __name__ == '__main__':
-    test_crl()
+def start_waptserver():
+    global waptserver_process
+    waptserver_process = subprocess.Popen(r'c:\tranquilit\wapt\waptpython.exe c:\tranquilit\wapt\waptserver\waptserver.py -p 8080',shell=True)
 
+
+if __name__ == '__main__':
     setup_test()
+
+
+
+    test_crl()
     test_inter()
 
     test_host_repo()

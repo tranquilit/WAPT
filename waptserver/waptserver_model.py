@@ -23,6 +23,7 @@
 
 import os
 import sys
+import uuid as _uuid
 
 try:
     wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -42,6 +43,7 @@ import traceback
 import platform
 
 from peewee import *
+from peewee import Func
 from waptserver_config import __version__
 
 from playhouse.postgres_ext import *
@@ -71,7 +73,7 @@ logger = logging.getLogger()
 
 wapt_db = Proxy()
 
-def load_db_config(server_config):
+def load_db_config(server_config=None):
     """Initialise db proxy with parameters from inifile
 
     Args:
@@ -81,6 +83,9 @@ def load_db_config(server_config):
         configured db : db which has been put in wapt_db proxy
     """
     global wapt_db
+    if server_config is None:
+        server_config = waptserver_config.load_config()
+
     logger.info('Initializing a DB connection pool for db host:%s db_name:%s. Size:%s' %
         (server_config['db_host'],server_config['db_name'],server_config['db_max_connections']))
     pgdb = PooledPostgresqlExtDatabase(
@@ -98,6 +103,18 @@ class WaptBaseModel(SignaledModel):
     """A base model that will use our Postgresql database"""
     class Meta:
         database = wapt_db
+
+    # audit data
+    created_on = DateTimeField(null=True, default=datetime.datetime.now)
+    created_by = DateTimeField(null=True)
+    updated_on = DateTimeField(null=True, default=datetime.datetime.now)
+    updated_by = DateTimeField(null=True)
+
+    def __unicode__(self):
+        return u'%s' % (self._data,)
+
+    def __str__(self):
+        return self.__unicode__().encode('utf8')
 
 
 class ServerAttribs(WaptBaseModel):
@@ -127,8 +144,7 @@ class ServerAttribs(WaptBaseModel):
                 cls.update(value=value).where(cls.key == key).execute()
 
 class Hosts(WaptBaseModel):
-    """
-    Inventory informations of a host
+    """Inventory informations of a host
     """
     # from bios
     uuid = CharField(primary_key=True, index=True)
@@ -189,11 +205,10 @@ class Hosts(WaptBaseModel):
     dmi = BinaryJSONField(null=True)
     wmi = BinaryJSONField(null=True)
 
-    # audit data
-    created_on = DateTimeField(null=True, default=datetime.datetime.now)
-    created_by = DateTimeField(null=True)
-    updated_on = DateTimeField(null=True, default=datetime.datetime.now)
-    updated_by = DateTimeField(null=True)
+    def save(self,*args,**argvs):
+        if 'uuid' in self._dirty:
+            argvs['force_insert'] = True
+        return super(WaptBaseModel,self).save(*args,**argvs)
 
     def __repr__(self):
         return '<Host fqdn=%s / uuid=%s>' % (self.computer_fqdn, self.uuid)
@@ -204,10 +219,9 @@ class Hosts(WaptBaseModel):
 
 
 class HostPackagesStatus(WaptBaseModel):
-
+    """Stores the status of packages installed on a host
     """
-    Stores the status of packages installed on a host
-    """
+    id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
     package = CharField(null=True, index=True)
     version = CharField(null=True)
@@ -228,17 +242,12 @@ class HostPackagesStatus(WaptBaseModel):
     depends = CharField(max_length=800,null=True)
     conflicts = CharField(max_length=800,null=True)
 
-    # audit data
-    created_on = DateTimeField(null=True, default=datetime.datetime.now)
-    created_by = DateTimeField(null=True)
-    updated_on = DateTimeField(null=True, default=datetime.datetime.now)
-    updated_by = DateTimeField(null=True)
-
     def __repr__(self):
         return '<HostPackageStatus uuid=%s packages=%s (%s) install_status=%s>' % (self.id, self.package, self.version, self.install_status)
 
 
 class HostSoftwares(WaptBaseModel):
+    id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
     name = CharField(max_length=2000, null=True, index=True)
     version = CharField(max_length=1000, null=True)
@@ -249,50 +258,83 @@ class HostSoftwares(WaptBaseModel):
     install_date = CharField(null=True)
     install_location = CharField(max_length=2000, null=True)
 
-    # audit data
-    created_on = DateTimeField(null=True, default=datetime.datetime.now)
-    created_by = DateTimeField(null=True)
-    updated_on = DateTimeField(null=True, default=datetime.datetime.now)
-    updated_by = DateTimeField(null=True)
-
     def __repr__(self):
         return '<HostSoftwares uuid=%s name=%s (%s) key=%s>' % (self.uuid, self.name, self.version, self.key)
 
 
 class HostGroups(WaptBaseModel):
+    id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
     group_name = CharField(null=False, index=True)
-
-    # audit data
-    created_on = DateTimeField(null=True, default=datetime.datetime.now)
-    created_by = DateTimeField(null=True)
-    updated_on = DateTimeField(null=True, default=datetime.datetime.now)
-    updated_by = DateTimeField(null=True)
 
     def __repr__(self):
         return '<HostGroups uuid=%s group_name=%s>' % (self.uuid, self.group_name)
 
 
 class HostJsonRaw(WaptBaseModel):
+    id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
-
-    # audit data
-    created_on = DateTimeField(null=True, default=datetime.datetime.now)
-    created_by = DateTimeField(null=True)
-    updated_on = DateTimeField(null=True, default=datetime.datetime.now)
-    updated_by = DateTimeField(null=True)
 
 
 class HostWsus(WaptBaseModel):
+    id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
     # windows updates
     wsus = BinaryJSONField(null=True)
 
-    # audit data
-    created_on = DateTimeField(null=True, default=datetime.datetime.now)
-    created_by = DateTimeField(null=True)
-    updated_on = DateTimeField(null=True, default=datetime.datetime.now)
-    updated_by = DateTimeField(null=True)
+class SignedModel(WaptBaseModel):
+    uuid = CharField(primary_key=True,null=False,default=str(_uuid.uuid4()))
+
+    def save(self,*args,**argvs):
+        if 'uuid' in self._dirty:
+            argvs['force_insert'] = True
+        return super(WaptBaseModel,self).save(*args,**argvs)
+
+
+class WsusUpdates(WaptBaseModel):
+    id = PrimaryKeyField(primary_key=True)
+    update_id = CharField()
+    revision_id = CharField()
+    revision_number = IntegerField()
+    title = CharField(null=True)
+    description = CharField(null=True)
+    msrc_severity = CharField(null=True)
+    security_bulletin_id = CharField(null=True)
+    kb_article_id = CharField(null=True)
+    creation_date = CharField(null=True)
+    is_bundle = BooleanField()
+    is_leaf = BooleanField()
+    deployment_action = CharField(null=True)
+    company = CharField(null=True)
+    product = CharField(null=True)
+    product_family = CharField(null=True)
+    update_classification = CharField(null=True)
+    languages = ArrayField(CharField, null=True)
+    prereqs_update_ids = ArrayField(CharField, null=True)
+    payload_files = ArrayField(CharField, null=True)
+
+
+class WsusLocations(WaptBaseModel):
+    id = IntegerField(primary_key=True)
+    url = CharField(null=True)
+
+class WsusScan2History(WaptBaseModel):
+    id = PrimaryKeyField(primary_key=True)
+    run_date = DateTimeField(null=True,index=True)
+    status = CharField(null=True)
+    reason = CharField(null=True)
+    forced = BooleanField(null=True)
+    skipped = BooleanField(null=True)
+    file_date = DateTimeField(null=True)
+    file_size = IntegerField(null=True)
+    target_size = IntegerField(null=True)
+    cablist = ArrayField(CharField, null=True)
+    error = CharField(max_length=1200,null=True)
+
+class WsusCabsInfos(WaptBaseModel):
+    id = PrimaryKeyField(primary_key=True)
+    cab_name = CharField(unique=True,index=True)
+    sha1_ckecksum = CharField(null=True)
 
 
 def dictgetpath(adict, pathstr):
@@ -587,16 +629,18 @@ class ColumnDef(object):
     """
 
     def __init__(self,field,in_update=None,in_where=None,in_key=None):
-        assert(isinstance(field,Field))
         self.field = field
         if in_update is not None:
             self.in_update = in_update
         else:
-            self.in_update = not isinstance(field,ForeignKeyField)
+            self.in_update = not isinstance(field,ForeignKeyField) and not isinstance(field,Func)
 
         self.in_where = None
         if in_where is not None:
             self.in_where = in_where
+
+        if in_where is None:
+            self.in_where = not isinstance(field,ForeignKeyField) and not isinstance(field,Func)
 
         self.in_key = field.primary_key
         self.visible = False
@@ -609,12 +653,19 @@ class ColumnDef(object):
             if hasattr(self.field,att):
                 value = getattr(self.field,att)
                 if value is not None:
-                    result[att] = value
+                    if callable(value):
+                        result[att] = value()
+                    else:
+                        result[att] = value
+
 
         for att in ('visible','default_width'):
             value = getattr(self,att)
             if value is not None:
-                result[att] = value
+                if callable(value):
+                    result[att] = value()
+                else:
+                    result[att] = value
 
         result['required'] = not self.field.is_null()
         return result
@@ -639,24 +690,48 @@ class TableProvider(object):
 
     >>>
     """
-    def __init__(self,model,columns=None,where=None):
+    def __init__(self,query=None,model=None,columns=None,where=None):
+        self.query = query
         self.model = model
         self.columns = columns
         self.where = where
+
+        if not self.model and self.query:
+            (fields,joins) = self.query.get_query_meta()
+            if len(joins) != 1:
+                raise Exception('Unable to guess model from query, please provide a model argument')
+            self.model = joins.keys()[0]
+
+        if not self.query and not self.model:
+            raise Exception('Either query or model must be supplied')
         self._columns_idx = None
+
+
+    def _init_columns_from_query(self,query):
+        if self.columns is None:
+            self.columns = []
+        (fields,joins) = query.get_query_meta()
+        for field in fields:
+            column = ColumnDef(field)
+            self.columns.append(column)
 
     def get_data(self,start=0,count=None):
         """Build query, retrieve rows"""
 
         fields_list = []
-        query = self.model.select(* [f.field for f in self.columns])
-        if self.where:
-            query = query.where(self.where)
+        query = self.query
+        if not query and self.model:
+            query = self.model.select(* [f.field for f in self.columns])
+            if self.where:
+                query = query.where(self.where)
+
+        if not self.columns:
+            self._init_columns_from_query(query)
 
         columns_names = [column.field.db_column for column in self.columns]
         rows = []
         for row in query.dicts():
-            rows.append([column.to_client(row[column.field.db_column]) for column in self.columns])
+            rows.append([column.to_client(row[column.field._alias or column.field.db_column]) for column in self.columns])
 
         return dict(
             metadata = [c.as_metadata() for c in self.columns],
@@ -727,6 +802,7 @@ class TableProvider(object):
                 new_data (dict) = dict for updated / inserted data, empty for delete
 
         """
+        result = []
         with self.model._meta.database.atomic():
             for (update_type,old,new) in delta:
                 # translates old / new value to
@@ -756,9 +832,9 @@ def init_db(drop=False):
     except:
         wapt_db.rollback()
     if drop:
-        for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostJsonRaw, HostWsus,HostGroups]):
+        for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostJsonRaw, HostWsus,HostGroups,WsusScan2History]):
             table.drop_table(fail_silently=True)
-    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostJsonRaw, HostWsus,HostGroups], safe=True)
+    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostJsonRaw, HostWsus,HostGroups,WsusScan2History], safe=True)
 
     if get_db_version() == None:
         # new database install, we setup the db_version key
@@ -913,6 +989,19 @@ def upgrade_db_structure():
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
             v.save()
+
+    next_version = '1.5.1.17'
+    if get_db_version() < next_version:
+        with wapt_db.atomic():
+            logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
+            opes = []
+            migrate(*opes)
+            WsusScan2History.create_table(fail_silently=True)
+
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
 
 if __name__ == '__main__':
     if platform.system() != 'Windows' and getpass.getuser() != 'wapt':

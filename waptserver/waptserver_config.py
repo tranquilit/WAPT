@@ -67,6 +67,10 @@ _defaults = {
     'allow_unauthenticated_registration':False,
     'signature_clockskew':5*60,
     'application_root':'',
+    'wapt_admin_group':'waptadmins',
+    'ldap_auth_url':'',
+    'ldap_auth_base':''
+
 }
 
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
@@ -164,5 +168,8 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
 
     if _config.has_option('options', 'application_root'):
         conf['application_root'] = _config.get('options', 'application_root')
+
+    if _config.has_option('options', 'wapt_admin_group'):
+        conf['wapt_admin_group'] = _config.get('options', 'wapt_admin_group')
 
     return conf
