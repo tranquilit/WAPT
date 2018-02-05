@@ -105,9 +105,9 @@ class WaptBaseModel(SignaledModel):
         database = wapt_db
 
     # audit data
-    created_on = DateTimeField(null=True, default=datetime.datetime.now)
+    created_on = DateTimeField(null=True)
     created_by = DateTimeField(null=True)
-    updated_on = DateTimeField(null=True, default=datetime.datetime.now)
+    updated_on = DateTimeField(null=True)
     updated_by = DateTimeField(null=True)
 
     def __unicode__(self):
@@ -115,6 +115,14 @@ class WaptBaseModel(SignaledModel):
 
     def __str__(self):
         return self.__unicode__().encode('utf8')
+
+
+@pre_save(sender=WaptBaseModel)
+def waptbasemodel_pre_save(model_class, instance, created):
+    if created:
+        instance.created_on = datetime.datetime.now()
+    instance.updated_on = datetime.datetime.now()
+
 
 
 class ServerAttribs(WaptBaseModel):
@@ -216,6 +224,7 @@ class Hosts(WaptBaseModel):
     @classmethod
     def fieldbyname(cls, fieldname):
         return cls._meta.fields[fieldname]
+
 
 
 class HostPackagesStatus(WaptBaseModel):
@@ -533,26 +542,6 @@ def update_host_data(data):
         wapt_db.rollback()
         raise e
 
-
-@pre_save(sender=Hosts)
-def wapthosts_pre_save(model_class, instance, created):
-    if created:
-        instance.created_on = datetime.datetime.now()
-    instance.updated_on = datetime.datetime.now()
-
-
-@pre_save(sender=HostSoftwares)
-def hostsoftwares_pre_save(model_class, instance, created):
-    if created:
-        instance.created_on = datetime.datetime.now()
-    instance.updated_on = datetime.datetime.now()
-
-
-@pre_save(sender=HostPackagesStatus)
-def installstatus_pre_save(model_class, instance, created):
-    if created:
-        instance.created_on = datetime.datetime.now()
-    instance.updated_on = datetime.datetime.now()
 
 
 @pre_save(sender=Hosts)
