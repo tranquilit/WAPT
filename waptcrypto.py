@@ -1069,7 +1069,7 @@ class SSLPrivateKey(BaseObjectClass):
 
         reclaim = {att:claim.get(att,None) for att in attributes}
         reclaim['signed_attributes'] = attributes+signature_attributes
-        reclaim['signer'] = certificate[0].cn
+        reclaim['signer'] = signer_certificate_chain[0].cn
         reclaim['signature_date'] = datetime.datetime.utcnow().isoformat()
         reclaim['signer_certificate'] = '\n'.join(cert.as_pem() for cert in signer_certificate_chain)
         signature = base64.b64encode(self.sign_content(reclaim))
