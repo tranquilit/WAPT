@@ -99,7 +99,7 @@ function KeyPasswordDialog(Self : PPyObject;
 var
   pTitle, pKeypath,pKeyPassword:PAnsiChar;
 begin
-  //title, key path, key passwd
+  //title, key path, key passwd 3 strings thus 'sss'
   PyE.PyArg_ParseTuple(Args, 'sss', @pTitle,@pKeyPath,@pKeyPassword);
   with TVisWaptBuildParams.Create(Nil) do
   try
