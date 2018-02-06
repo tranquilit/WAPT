@@ -1561,21 +1561,25 @@ def hosts_delete():
 
 
 
-def build_fields_list(model, mongoproj):
-    """Returns a list of peewee fields based on a mongo style projection
-            For compatibility with waptconsole <= 1.3.11
+def build_fields_list(model, columns):
+    """Returns a list of peewee fields
     """
     result = []
-    for fn in mongoproj.keys():
-        if fn in model._meta.fields:
-            result.append(model._meta.fields[fn])
+    for fname in columns:
+        if fname in model._meta.fields:
+            result.append(model._meta.fields[fname])
+        elif fname == 'depends':
+            # subquery with result aggregation.
+            result.append(HostGroups.select(fn.string_agg(HostGroups.group_name,',')).where(
+                (HostGroups.host_id==Hosts.uuid)
+                ).alias('depends'))
         else:
             # jsonb sub fields.
-            parts = fn.split('/')
+            parts = fname.split('/')
             root = parts[0]
             if root in model._meta.fields:
                 path = ','.join(parts[1:])
-                result.append(SQL("%s #>>'{%s}' as \"%s\" " % (root, path, fn)))
+                result.append(SQL("%s #>>'{%s}' as \"%s\" " % (root, path, fname)))
     return result
 
 
@@ -1711,14 +1715,20 @@ def get_hosts():
             if query is not None and not_filter:
                 query = ~ query  # pylint: disable=invalid-unary-operand-type
 
+
+
             limit = int(request.args.get('limit', 1000))
 
+            req = Hosts.select(*build_fields_list(Hosts, columns)).limit(limit)
 
-            req = Hosts.select(*build_fields_list(Hosts, {col: 1 for col in columns})).limit(limit).order_by(SQL('last_seen_on desc NULLS LAST')).dicts().dicts()
+            if 'depends' in columns:
+                req = req.join(HostGroups).group_by(Hosts.uuid,Hosts.computer_fqdn)
+
+            req = req.order_by(SQL('last_seen_on desc NULLS LAST'))
             if query:
                 req = req.where(query)
 
-            result = list(req)
+            result = list(req.dicts())
 
             if 'uuid' in request.args:
                 if len(result) == 0:

@@ -124,9 +124,11 @@ def waptbasemodel_pre_save(model_class, instance, created):
     instance.updated_on = datetime.datetime.now()
 
 
-
-class ServerAttribs(WaptBaseModel):
+class ServerAttribs(SignaledModel):
     """key/value registry"""
+    class Meta:
+        database = wapt_db
+
     key = CharField(primary_key=True, null=False, index=True)
     value = BinaryJSONField(null=True)
 
@@ -150,6 +152,12 @@ class ServerAttribs(WaptBaseModel):
                 cls.create(key=key, value=value)
             except IntegrityError:
                 cls.update(value=value).where(cls.key == key).execute()
+
+    def __unicode__(self):
+        return u'%s' % (self._data,)
+
+    def __str__(self):
+        return self.__unicode__().encode('utf8')
 
 class Hosts(WaptBaseModel):
     """Inventory informations of a host

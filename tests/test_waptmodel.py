@@ -34,6 +34,7 @@ Action:
 import os
 import sys
 import glob
+import uuid as _uuid
 
 try:
     wapt_root_dir = os.path.abspath(
@@ -46,20 +47,18 @@ except:
 sys.path.insert(0, os.path.join(wapt_root_dir))
 sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
 sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
-sys.path.insert(0, os.path.join(wapt_root_dir,'waptserver'))
 
 
-from waptserver_config import __version__
-from waptserver_model import load_db_config
+from waptserver.waptserver_config import __version__
+from waptserver.waptserver_model import load_db_config
 import platform
 
 import logging
 import ConfigParser
 from optparse import OptionParser
 
-from waptserver_model import *
-from waptserver_utils import *
-
+from waptserver.waptserver_model import *
+from waptserver.waptserver_utils import *
 
 
 DEFAULT_CONFIG_FILE = os.path.join(r'c:\wapt', 'conf', 'waptserver.ini')
@@ -73,17 +72,22 @@ logging.basicConfig()
 def test_tableprovider():
     q = TableProvider(query = Hosts.select(
                     Hosts.computer_ad_ou,
-                    fn.COUNT(Hosts.uuid))
+                    fn.COUNT(Hosts.uuid).alias('host_count'))
                 .where(
                 ~Hosts.computer_ad_ou.is_null())
                 .group_by(Hosts.computer_ad_ou),
                 model = Hosts)
-    print q
-    q = Hosts.select(Hosts.computer_fqdn,fn.COUNT(HostPackagesStatus.package))
-
+    print q.get_data()
     q = Hosts.select(Hosts.computer_fqdn,fn.COUNT(HostPackagesStatus.package).alias('cnt')).join(HostPackagesStatus).group_by(Hosts.computer_fqdn)
     p = TableProvider(q)
     print(p.get_data())
+
+def test_beforesave():
+    h = Hosts(uuid=str(_uuid.uuid4()),computer_fqdn='Test')
+    print h.created_on
+    h.save()
+    print h.created_on
+
 
 
 if __name__ == '__main__':
@@ -102,5 +106,5 @@ if __name__ == '__main__':
     (options, args) = parser.parse_args()
     conf = waptserver_config.load_config(options.configfile)
     load_db_config(conf)
-
+    test_beforesave()
     test_tableprovider()
