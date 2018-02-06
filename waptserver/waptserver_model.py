@@ -216,7 +216,7 @@ class Hosts(WaptBaseModel):
     def save(self,*args,**argvs):
         if 'uuid' in self._dirty:
             argvs['force_insert'] = True
-        return super(WaptBaseModel,self).save(*args,**argvs)
+        return super(Hosts,self).save(*args,**argvs)
 
     def __repr__(self):
         return '<Host fqdn=%s / uuid=%s>' % (self.computer_fqdn, self.uuid)
@@ -297,7 +297,7 @@ class SignedModel(WaptBaseModel):
     def save(self,*args,**argvs):
         if 'uuid' in self._dirty:
             argvs['force_insert'] = True
-        return super(WaptBaseModel,self).save(*args,**argvs)
+        return super(SignedModel,self).save(*args,**argvs)
 
 
 class WsusUpdates(WaptBaseModel):
@@ -637,15 +637,25 @@ class ColumnDef(object):
 
     def as_metadata(self):
         result = dict()
-        for att in ('type','name','primary_key','description','help_text','choice',
-           'default','sequence','max_length'):
-            if hasattr(self.field,att):
-                value = getattr(self.field,att)
-                if value is not None:
-                    if callable(value):
-                        result[att] = value()
-                    else:
-                        result[att] = value
+        if isinstance(self.field,Func):
+            result = {'name':self.field._alias or self.field.name,'org_name':self.field.name,'type':self.field._node_type}
+        else:
+            result = {'name':self.field._alias or self.field.name,
+                'field_name':self.field.name,
+                'type':self.field.db_field,
+                'table_name':self.field.model_class._meta.db_table,
+                }
+
+            attlist = ('primary_key','description','help_text','choice',
+                        'default','sequence','max_length')
+            for att in attlist:
+                if hasattr(self.field,att):
+                    value = getattr(self.field,att)
+                    if value is not None and not isinstance(value,Func):
+                        if callable(value):
+                            result[att] = value()
+                        else:
+                            result[att] = value
 
 
         for att in ('visible','default_width'):
