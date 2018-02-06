@@ -24,14 +24,11 @@ __version__ = "1.5.1.17"
 
 import os
 import sys
+
 try:
     wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
-
-sys.path.insert(0, os.path.join(wapt_root_dir))
-sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
-sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 
 import ConfigParser
 import tempfile

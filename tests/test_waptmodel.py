@@ -44,10 +44,8 @@ try:
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
-sys.path.insert(0, os.path.join(wapt_root_dir))
-sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
-sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
-
+import site
+site.addsitedir(wapt_root_dir)
 
 from waptserver.waptserver_config import __version__
 from waptserver.waptserver_model import load_db_config
@@ -60,6 +58,7 @@ from optparse import OptionParser
 from waptserver.waptserver_model import *
 from waptserver.waptserver_utils import *
 
+from waptpackage import PackageEntry,WaptLocalRepo
 
 DEFAULT_CONFIG_FILE = os.path.join(r'c:\wapt', 'conf', 'waptserver.ini')
 config_file = DEFAULT_CONFIG_FILE
@@ -67,7 +66,6 @@ config_file = DEFAULT_CONFIG_FILE
 # setup logging
 logger = logging.getLogger()
 logging.basicConfig()
-
 
 def test_tableprovider():
     q = TableProvider(query = Hosts.select(
@@ -88,7 +86,10 @@ def test_beforesave():
     h.save()
     print h.created_on
 
-
+def test_packages():
+    repo = WaptLocalRepo('c:/wapt/cache')
+    new_packages = Packages.update_from_repo(repo)
+    print new_packages
 
 if __name__ == '__main__':
     parser = OptionParser(usage=usage, version=__version__)
@@ -104,7 +105,9 @@ if __name__ == '__main__':
         metavar='LOGLEVEL', help='Loglevel (default: warning)')
 
     (options, args) = parser.parse_args()
+    setloglevel(logger,options.loglevel)
     conf = waptserver_config.load_config(options.configfile)
     load_db_config(conf)
+    test_packages()
     test_beforesave()
     test_tableprovider()

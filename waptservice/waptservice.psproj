@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=3.1.0.0
+Version=3.2.2.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -233,8 +233,5 @@ Count=3
 Count=2
 
 [Project\ExtraPythonPath]
-Item0=C:\tranquilit\wapt
-Item1=C:\tranquilit\wapt\waptservice
-Item2=C:\tranquilit\wapt\lib\site-packages
-Count=3
+Count=0
 

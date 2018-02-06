@@ -32,10 +32,6 @@ try:
 except NameError:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
-sys.path.append(os.path.join(wapt_root_dir))
-sys.path.append(os.path.join(wapt_root_dir,'lib'))
-sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
-
 from waptutils import __version__
 
 import ConfigParser

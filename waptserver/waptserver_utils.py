@@ -73,7 +73,6 @@ def mkdir_p(path):
 
 
 def get_disk_space(directory):
-
     ret = None
 
     if os.name == 'posix':
@@ -91,8 +90,6 @@ def get_disk_space(directory):
                 ret = (int(d.FreeSpace), int(d.Size))
 
     return ret
-
-
 
 def setloglevel(logger, loglevel):
     """set loglevel as string"""

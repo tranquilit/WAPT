@@ -29,11 +29,11 @@ try:
             os.path.dirname(__file__),
             '..'))
 except:
-    wapt_root_dir = 'c:/tranquilit/wapt'
+    wapt_root_dir = u'c:/tranquilit/wapt'
 
-sys.path.insert(0, os.path.join(wapt_root_dir))
-sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
-sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
+#sys.path.insert(1, os.path.join(wapt_root_dir))
+#sys.path.insert(1, os.path.join(wapt_root_dir, 'lib'))
+#sys.path.insert(1, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 
 from waptserver_config import __version__
 
@@ -84,7 +84,7 @@ from optparse import OptionParser
 import itsdangerous
 from werkzeug.utils import secure_filename
 
-from flask import request, Flask, Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
+from flask import request, Flask, Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash,g
 from flask_socketio import SocketIO, disconnect, send, emit
 # from flask_login import LoginManager,login_required,current_user,UserMixin
 
@@ -558,14 +558,24 @@ def update_host():
         logger.critical('update_host failed %s' % (repr(e)))
         return make_response_from_exception(e)
 
+def get_repo_packages():
+    if not hasattr(g,'packages') or g.packages is None:
+        try:
+            g.packages = WaptLocalRepo(app.conf['wapt_folder'])
+        except Exception as e:
+            g.packages = None
+    return g.packages
+
 def sync_host_groups(entry):
     """Update HostGroups table from Host Package depends.
     Add / Remove host <-> group link based on entry.depends csv attribute
 
     Args:
         entry (PackageEntry): Host package entry
+        packages:
 
-    Returs
+    Returns
+
     """
     try:
         host_id = entry.package
@@ -581,7 +591,7 @@ def sync_host_groups(entry):
         if to_delete:
             HostGroups.delete().where((HostGroups.host == host_id) & (HostGroups.group_name.in_(to_delete))).execute()
         if to_add:
-            HostGroups.insert_many([dict(host=host_id, group_name=group) for group in to_add]).execute()
+            HostGroups.insert_many([dict(host=host_id, group_name=group, section= get_package_section(group)) for group in to_add]).execute()
         return (to_add,to_delete)
     except IntegrityError  as e:
         wapt_db.rollback()
@@ -592,6 +602,7 @@ def sync_host_groups(entry):
 @requires_auth
 def upload_package(filename=''):
     try:
+        g.packages = None
         tmp_target = ''
         if request.method == 'POST':
             if filename and allowed_file(filename):
@@ -699,6 +710,7 @@ def upload_packages():
             raise
 
     try:
+
         starttime = time.time()
         done = []
         errors = []
@@ -737,6 +749,7 @@ def upload_packages():
         else:
             pass
 
+        g.packages = None
         spenttime = time.time() - starttime
         return make_response(success=len(errors) == 0 and len(done)>0,
                              result=dict(done=done, errors=errors, packages_index_result = packages_index_result),

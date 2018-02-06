@@ -25,16 +25,6 @@ import os
 import sys
 import uuid as _uuid
 
-try:
-    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-except:
-    wapt_root_dir = 'c:/tranquilit/wapt'
-
-sys.path.insert(0, os.path.join(wapt_root_dir))
-sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
-sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
-
-
 import psutil
 import datetime
 import subprocess
@@ -53,7 +43,7 @@ from playhouse.shortcuts import dict_to_model, model_to_dict
 from playhouse.signals import Model as SignaledModel, pre_save, post_save
 
 from waptutils import Version
-from waptutils import ensure_unicode
+from waptutils import ensure_unicode,ensure_list
 
 from waptserver_utils import setloglevel
 
@@ -151,6 +141,7 @@ class ServerAttribs(SignaledModel):
             try:
                 cls.create(key=key, value=value)
             except IntegrityError:
+                wapt_db.rollback()
                 cls.update(value=value).where(cls.key == key).execute()
 
     def __unicode__(self):
@@ -233,8 +224,6 @@ class Hosts(WaptBaseModel):
     def fieldbyname(cls, fieldname):
         return cls._meta.fields[fieldname]
 
-
-
 class HostPackagesStatus(WaptBaseModel):
     """Stores the status of packages installed on a host
     """
@@ -262,6 +251,58 @@ class HostPackagesStatus(WaptBaseModel):
     def __repr__(self):
         return '<HostPackageStatus uuid=%s packages=%s (%s) install_status=%s>' % (self.id, self.package, self.version, self.install_status)
 
+class Packages(WaptBaseModel):
+    """Stores the content of packages of repositories
+    """
+    id = PrimaryKeyField(primary_key=True)
+    package = CharField(null=False, index=True)
+    version = CharField(null=False)
+    description = CharField(max_length=1200,null=True)
+    architecture = CharField(null=True)
+    locale = CharField(null=True)
+    maturity = CharField(null=True)
+    section = CharField(null=True)
+    priority = CharField(null=True)
+    signer = CharField(null=True)
+    signer_fingerprint = CharField(null=True)
+    description = TextField(null=True)
+    depends = ArrayField(CharField,null=True)
+    conflicts = ArrayField(CharField,null=True)
+
+    @classmethod
+    def _as_attribute(cls,k,v):
+        if k in ['depends','conflicts']:
+            return ensure_list(v or None)
+        else:
+            return v or None
+
+    @classmethod
+    def from_control(cls,entry):
+        package = cls(** dict((a,cls._as_attribute(a,v)) for (a,v) in entry.as_dict().iteritems() if a in cls._meta.columns))
+
+    @classmethod
+    def update_from_repo(cls,repo):
+        """
+        Args:
+            repo (WaptRepo):
+        Returns:
+            list of PackagEntry added to the table
+        """
+        result = []
+        for pe in repo.packages:
+            key = {'package':pe.package,'version':pe.version,'architecture':pe.architecture,'locale':pe.locale,'maturity':pe.maturity}
+            (rec,_isnew) = Packages.get_or_create(**key)
+            for (a,v) in pe.as_dict().iteritems():
+                if a in cls._meta.columns and not a in key:
+                    new_value = cls._as_attribute(a,v)
+                    if new_value != getattr(rec,a):
+                        setattr(rec,a,cls._as_attribute(a,v))
+            if rec.is_dirty():
+                rec.save()
+            if _isnew:
+                result.append(pe)
+        return result
+
 
 class HostSoftwares(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
@@ -283,6 +324,7 @@ class HostGroups(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
     group_name = CharField(null=False, index=True)
+    section = CharField(null=True)
 
     def __repr__(self):
         return '<HostGroups uuid=%s group_name=%s>' % (self.uuid, self.group_name)
@@ -1002,6 +1044,11 @@ def upgrade_db_structure():
         with wapt_db.atomic():
             logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
             opes = []
+            columns = [c.name for c in wapt_db.get_columns('hostgroups')]
+            opes = []
+            if not 'section' in columns:
+                opes.append(migrator.add_column(HostGroups._meta.name, 'section', HostGroups.section))
+
             migrate(*opes)
             WsusScan2History.create_table(fail_silently=True)
 

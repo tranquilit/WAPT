@@ -30,9 +30,6 @@ try:
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
-sys.path.insert(0,os.path.join(wapt_root_dir))
-sys.path.insert(0,os.path.join(wapt_root_dir,'lib'))
-sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
 from waptutils import __version__
 
 from waptutils import setloglevel,ensure_list,ensure_unicode

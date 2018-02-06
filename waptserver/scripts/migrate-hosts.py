@@ -9,7 +9,6 @@ except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
 sys.path.insert(0,os.path.join(wapt_root_dir))
-sys.path.insert(0,os.path.join(wapt_root_dir,'waptserver'))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib'))
 sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
 
