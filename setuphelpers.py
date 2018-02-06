@@ -252,6 +252,7 @@ import sys
 import logging
 import shutil
 import shlex
+import stat
 
 import _subprocess
 import subprocess
@@ -2996,19 +2997,34 @@ def remove_file(path):
 
 def remove_tree(*args, **kwargs):
     r"""Convenience function to delete a directory tree, with any error
-    ignored by default.  Pass ignore_errors=False to access possible
+    not ignored by default.  Pass ignore_errors=False to access possible
     errors.
 
     Args:
         path (str): path to directory to remove
-        ignore_errors (boolean) : default to True to ignore exceptions on children deletion
+        ignore_errors (boolean) : default to False. Set it to True to ignore exceptions on children deletion
         onerror (func) : hook called with (os.path.islink, path, sys.exc_info())
                          on each delete exception. Should raise if stop is required.
 
     >>> remove_tree(r'c:\tmp\target')
+
+    .. versionchanged:: 1.5.1.17
+        ignore_errors default to False
     """
+    def set_rw(operation, name, exc):
+        # access denied... retry after removing readonly flag
+        if isinstance(exc[1],WindowsError) and exc[1].winerror == 5:
+            os.chmod(name, stat.S_IWRITE)
+            os.unlink(name)
+            return True
+        else:
+            raise exc
+
     if 'ignore_errors' not in kwargs:
-        kwargs['ignore_errors'] = True
+        kwargs['ignore_errors'] = False
+    if 'onerror' not in kwargs:
+        kwargs['onerror'] = set_rw
+
     return shutil.rmtree(*args, **kwargs)
 
 def makepath(*p):
