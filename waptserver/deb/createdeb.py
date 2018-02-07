@@ -58,7 +58,7 @@ def debian_major():
     return platform.linux_distribution()[1].split('.')[0]
 
 def git_hash():
-    r = Repo('.')
+    r = Repo('.',search_parent_directories=True)
     return '%04d-%s' % (r.active_branch.commit.count(),r.active_branch.object.name_rev[:8])
 
 def dev_revision():
@@ -164,13 +164,15 @@ open(os.path.join('./builddir/opt/wapt/waptserver','VERSION'),'w').write(full_ve
 eprint(run('sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev'))
 
 eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-run_verbose(r'virtualenv ./builddir/opt/wapt --distribute')
+run_verbose(r'virtualenv ./builddir/opt/wapt')
 
 eprint('Install additional libraries in build environment virtualenv')
 
 run_verbose('./builddir/opt/wapt/bin/pip install pip setuptools --upgrade')
 
-run('./builddir/opt/wapt/bin/pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages')
+run('./builddir/opt/wapt/bin/pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/python2.7/site-packages')
+
+run_verbose(r'virtualenv ./builddir/opt/wapt --relocatable')
 
 eprint('copying the waptrepo files')
 copyfile(makepath(wapt_source_dir, 'waptcrypto.py'),'./builddir/opt/wapt/waptcrypto.py')
@@ -188,7 +190,6 @@ copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.
 eprint('Add symlink for wapt-scanpackages and wapt-signpackages')
 add_symlink('./opt/wapt/wapt-signpackages.py', './usr/bin/wapt-signpackages')
 add_symlink('./opt/wapt/wapt-scanpackages.py', './usr/bin/wapt-scanpackages')
-
 
 eprint('copying the waptserver files')
 rsync(source_dir, './builddir/opt/wapt/',
