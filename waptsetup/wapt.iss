@@ -12,7 +12,7 @@
 Source: "..\waptpython.exe"; DestDir: "{app}";
 Source: "..\waptpythonw.exe"; DestDir: "{app}";
 Source: "..\waptpython.exe"; DestDir: "{app}\Scripts"; DestName: "python.exe"
-Source: "..\waptpythonw.exe"; DestDir: "{app}\Scripts\pythonw.exe"; DestName: "pythonw.exe"
+Source: "..\waptpythonw.exe"; DestDir: "{app}\Scripts"; DestName: "pythonw.exe"
 Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
 Source: "..\libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdirs  ; Excludes: "*.pyc,*.pyo,test,*.~*,pydoc_data,tests,demos,testsuite,doc,samples,pil" 
 Source: "..\python27.dll"; DestDir: "{app}";
