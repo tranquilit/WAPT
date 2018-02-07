@@ -154,7 +154,7 @@ mkdir_p('builddir/DEBIAN')
 mkdir_p('builddir/opt/wapt/conf')
 mkdir_p('builddir/opt/wapt/lib')
 mkdir_p('builddir/opt/wapt/log')
-mkdir_p('builddir/opt/wapt/lib/site-packages')
+mkdir_p('builddir/opt/wapt/lib/python2.7/site-packages')
 mkdir_p('builddir/opt/wapt/waptserver')
 
 open(os.path.join('./builddir/opt/wapt/waptserver','VERSION'),'w').write(full_version)
@@ -183,8 +183,8 @@ copyfile(makepath(wapt_source_dir, 'wapt-scanpackages.py'),'./builddir/opt/wapt/
 copyfile(makepath(wapt_source_dir, 'wapt-signpackages.py'),'./builddir/opt/wapt/wapt-signpackages.py')
 
 eprint('cryptography patches')
-copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', '__init__.py'),'./builddir/opt/wapt/lib/site-packages/cryptography/x509/__init__.py')
-copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.py'),'./builddir/opt/wapt/lib/site-packages/cryptography/x509/verification.py')
+copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', '__init__.py'),'./builddir/opt/wapt/lib/python2.7/site-packages/cryptography/x509/__init__.py')
+copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.py'),'./builddir/opt/wapt/lib/python2.7/site-packages/cryptography/x509/verification.py')
 
 
 eprint('Add symlink for wapt-scanpackages and wapt-signpackages')
@@ -197,7 +197,7 @@ rsync(source_dir, './builddir/opt/wapt/',
 
 for lib in ('dialog.py', ):
     rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),
-          './builddir/opt/wapt/lib/site-packages/')
+          './builddir/opt/wapt/lib/python2.7/site-packages/')
 
 eprint('copying control and postinst package metadata')
 copyfile('./DEBIAN/control', './builddir/DEBIAN/control')
