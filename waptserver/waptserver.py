@@ -31,10 +31,6 @@ try:
 except:
     wapt_root_dir = u'c:/tranquilit/wapt'
 
-#sys.path.insert(1, os.path.join(wapt_root_dir))
-#sys.path.insert(1, os.path.join(wapt_root_dir, 'lib'))
-#sys.path.insert(1, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
-
 from waptserver_config import __version__
 
 # monkeypatching for eventlet greenthreads
@@ -91,7 +87,7 @@ from flask_socketio import SocketIO, disconnect, send, emit
 from peewee import *
 from playhouse.postgres_ext import *
 
-from waptserver_model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups
+from waptserver.waptserver_model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups
 from waptserver_model import get_db_version, init_db, wapt_db, model_to_dict, dict_to_model, update_host_data
 from waptserver_model import upgrade_db_structure
 from waptserver_model import load_db_config
@@ -591,7 +587,7 @@ def sync_host_groups(entry):
         if to_delete:
             HostGroups.delete().where((HostGroups.host == host_id) & (HostGroups.group_name.in_(to_delete))).execute()
         if to_add:
-            HostGroups.insert_many([dict(host=host_id, group_name=group, section= get_package_section(group)) for group in to_add]).execute()
+            HostGroups.insert_many([dict(host=host_id, group_name=group) for group in to_add]).execute()
         return (to_add,to_delete)
     except IntegrityError  as e:
         wapt_db.rollback()

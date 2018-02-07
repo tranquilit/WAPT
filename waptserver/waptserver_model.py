@@ -324,7 +324,6 @@ class HostGroups(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
     group_name = CharField(null=False, index=True)
-    section = CharField(null=True)
 
     def __repr__(self):
         return '<HostGroups uuid=%s group_name=%s>' % (self.uuid, self.group_name)
@@ -1044,12 +1043,9 @@ def upgrade_db_structure():
         with wapt_db.atomic():
             logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
             opes = []
-            columns = [c.name for c in wapt_db.get_columns('hostgroups')]
-            opes = []
-            if not 'section' in columns:
-                opes.append(migrator.add_column(HostGroups._meta.name, 'section', HostGroups.section))
-
+            ##
             migrate(*opes)
+
             WsusScan2History.create_table(fail_silently=True)
 
             (v, created) = ServerAttribs.get_or_create(key='db_version')
