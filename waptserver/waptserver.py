@@ -87,7 +87,7 @@ from flask_socketio import SocketIO, disconnect, send, emit
 from peewee import *
 from playhouse.postgres_ext import *
 
-from waptserver.waptserver_model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups
+from waptserver_model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups
 from waptserver_model import get_db_version, init_db, wapt_db, model_to_dict, dict_to_model, update_host_data
 from waptserver_model import upgrade_db_structure
 from waptserver_model import load_db_config
