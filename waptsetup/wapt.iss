@@ -11,6 +11,8 @@
 ; local python interpreter
 Source: "..\waptpython.exe"; DestDir: "{app}";
 Source: "..\waptpythonw.exe"; DestDir: "{app}";
+Source: "..\waptpython.exe"; DestDir: "{app}\Scripts"; DestName: "python.exe"
+Source: "..\waptpythonw.exe"; DestDir: "{app}\Scripts\pythonw.exe"; DestName: "pythonw.exe"
 Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
 Source: "..\libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdirs  ; Excludes: "*.pyc,*.pyo,test,*.~*,pydoc_data,tests,demos,testsuite,doc,samples,pil" 
 Source: "..\python27.dll"; DestDir: "{app}";
@@ -64,6 +66,11 @@ Source: "..\wapt-get.exe.manifest"; DestDir: "{app}";
 Source: "..\dmidecode.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\waptexit.exe"; DestDir: "{app}"; Flags: ignoreversion
 
+; for local debugging and pyscripter
+Source: "..\wapt.psproj"; DestDir: "{app}"; 
+Source: "..\devwapt.bat"; DestDir: "{app}"; 
+
+
 ; deployment/upgrade tool
 Source: "..\waptdeploy.exe"; DestDir: "{app}"; Flags: ignoreversion
 
@@ -92,6 +99,7 @@ Name: "{app}\ssl"
 Name: "{app}\ssl\server"
 Name: "{app}"; Permissions: everyone-readexec authusers-readexec admins-full   
 Name: "{app}\private"
+Name: "{app}\Scripts"
 
 
 [Setup]

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/opt/wapt/bin/python
 # -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------
 #    This file is part of WAPT
@@ -30,12 +30,6 @@ try:
     wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)),'../..'))
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
-
-
-sys.path.insert(0,os.path.join(wapt_root_dir))
-sys.path.insert(0,os.path.join(wapt_root_dir,'waptserver'))
-sys.path.insert(0,os.path.join(wapt_root_dir,'lib'))
-sys.path.insert(0,os.path.join(wapt_root_dir,'lib','site-packages'))
 
 import iniparse
 import shutil
@@ -229,20 +223,19 @@ def setup_firewall():
             run('firewall-offline-cmd --add-port=80/tcp')
 
 def check_mongo2pgsql_upgrade_needed(waptserver_ini):
-    """ return  0 if nothing needed
-                1 if upgrade needed
-                2 if something is not clear
+    """ return True if upgrade2postgres has been processed.
     """
-    mongodb_configured=0
     if waptserver_ini.has_option('options', 'mongodb_port'):
         if postconf.yesno("It is necessary to migrate current database backend from mongodb to postgres. Press yes to start migration",no_label='cancel')== postconf.DIALOG_OK:
             print ("mongodb process running, need to migrate")
             run_verbose("sudo -u wapt /usr/bin/python /opt/wapt/waptserver/waptserver_upgrade.py upgrade2postgres")
             run_verbose("systemctl stop mongodb")
             run_verbose("systemctl disable mongodb")
+            return True
         else:
             print ("Post configuration aborted")
             sys.exit(1)
+    return False
 
 def nginx_set_worker_limit(nginx_conf):
     already_set=False
@@ -337,16 +330,9 @@ def main():
     print ("create database schema")
     run(" sudo -u wapt python /opt/wapt/waptserver/waptserver_model.py init_db ")
 
-    mongo_update_status = check_mongo2pgsql_upgrade_needed(waptserver_ini)
-    if mongo_update_status==0:
+    if not check_mongo2pgsql_upgrade_needed(waptserver_ini):
         print ("already running postgresql, trying to upgrade structure")
         run("sudo -u wapt python /opt/wapt/waptserver/waptserver_upgrade.py upgrade_structure")
-    elif mongo_update_status==1:
-        print ("need to upgrade from mongodb to postgres, please launch python /opt/wapt/waptserver/waptserver_upgrade.py upgrade2postgres")
-        sys.exit(1)
-    elif mongo_update_status==2:
-        print ("something not normal please check your installation first")
-        sys.exit(1)
 
     if os.path.isdir(wapt_folder):
         waptserver_ini.set('options','wapt_folder',wapt_folder)

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/opt/wapt/python
 # -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------
 #    This file is part of WAPT
