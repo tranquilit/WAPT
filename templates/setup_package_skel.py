@@ -4,17 +4,17 @@ from setuphelpers import *
 uninstallkey = []
 
 def install():
-    print('installing %(packagename)s')
+    print('installing %%s' %% control.asrequirement())
     # put here what to do when package is installed on host
     # implicit context variables are WAPT, basedir, control, user, params, run
 
 def uninstall():
-    print('uninstalling %(packagename)s')
+    print('uninstalling %%s' %% control.asrequirement())
     # put here what to do when package is removed from host
     # implicit context variables are WAPT, control, user, params, run
 
 def session_setup():
-    print('Session setup for %(packagename)s')
+    print('Session setup for %%s' %% control.asrequirement())
     # put here what to do when package is configured inside a user session
     # implicit context variables are WAPT, control, user, params
 

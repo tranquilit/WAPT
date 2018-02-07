@@ -44,8 +44,13 @@ FileName=$[Project-Path]control
 ClassName=TProjectFileNode
 FileName=$[Project-Path]..\setup.py
 
+
+[Project\ChildNodes\Node0\ChildNodes\Node3]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]changelog.txt
+
 [Project\ChildNodes\Node0\ChildNodes]
-Count=3
+Count=4
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
@@ -58,8 +63,8 @@ Name=install
 ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=install "$[ActiveDoc-Dir]"
-WorkingDir=$[ActiveScript-Dir]
+Parameters=install "$[Project-Path].."
+WorkingDir=$[Project-Path]..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
 AppendToFile=FALSE
@@ -81,8 +86,8 @@ Name=remove
 ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=remove "$[ActiveDoc-Dir]"
-WorkingDir=$[ActiveScript-Dir]
+Parameters=remove "$[Project-Path].."
+WorkingDir=$[Project-Path]..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
 AppendToFile=FALSE
@@ -104,8 +109,8 @@ Name=session-setup
 ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=session-setup "$[ActiveDoc-Dir]"
-WorkingDir=$[ActiveScript-Dir]
+Parameters=session-setup "$[Project-Path].."
+WorkingDir=$[Project-Path]..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
 AppendToFile=FALSE
@@ -128,7 +133,7 @@ ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=update
-WorkingDir=$[ActiveScript-Dir]
+WorkingDir=$[Project-Path]..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
 AppendToFile=FALSE
@@ -167,14 +172,14 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node5]
 ClassName=TProjectRunConfiguationNode
-Name=-i build-upload 
+Name=-i build-upload
 
 [Project\ChildNodes\Node1\ChildNodes\Node5\RunConfig]
 ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-i build-upload "$[ActiveDoc-Dir]"
-WorkingDir=$[ActiveScript-Dir]
+Parameters=-i build-upload "$[Project-Path].."
+WorkingDir=$[Project-Path]..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
 AppendToFile=FALSE
@@ -196,8 +201,8 @@ Name=svn update
 ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=sources "$[ActiveDoc-Dir]"
-WorkingDir=$[ActiveScript-Dir]
+Parameters=sources "$[Project-Path].."
+WorkingDir=$[Project-Path]..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
 AppendToFile=FALSE
@@ -219,8 +224,8 @@ Name=uninstall
 ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=uninstall "$[ActiveDoc-Dir]"
-WorkingDir=$[ActiveScript-Dir]
+Parameters=uninstall "$[Project-Path].."
+WorkingDir=$[Project-Path]..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
 AppendToFile=FALSE
@@ -230,12 +235,37 @@ Caption=External Run
 Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[Project-Path]..
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
+
+
+[Project\ChildNodes\Node1\ChildNodes\Node8]
+ClassName=TProjectRunConfiguationNode
+Name=update-package-sources
+
+[Project\ChildNodes\Node1\ChildNodes\Node8\RunConfig]
+ScriptName=%(wapt_base_dir)s\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=update-package-sources "$[Project-Path].."
+WorkingDir=$[Project-Path]..
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node8\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
 ShortCut=0
 MessagesFormat=$[FileName] $[LineNumber]
 
+
 [Project\ChildNodes\Node1\ChildNodes]
-Count=8
+Count=9
 
 [Project\ChildNodes]
 Count=2
