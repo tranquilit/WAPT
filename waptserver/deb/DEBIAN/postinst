@@ -10,11 +10,7 @@ import time
 def run(*args, **kwargs):
     return subprocess.check_output(*args, shell=True, **kwargs)
 
-
-
-
 run('systemctl enable  waptserver')
-
 
 print("Setting up pid and log files")
 run('touch /var/log/waptserver.log')
@@ -53,6 +49,9 @@ run('mkdir -p /var/www/wapt/icons')
 run('mkdir -p /var/www/wapt-host')
 run('mkdir -p /var/www/wapt-hostref')
 
+# fix python2.7 to get installed one in virtualenv
+run('ln -sb /usr/bin/python2 /opt/wapt/bin/python2')
+
 # fix ownership bug of /var/www, need to find where it is screwed up
 run('chown www-data:www-data /var/www')
 run('chmod 755 /var/www')
@@ -63,7 +62,6 @@ run("""echo "User-agent:*\nDisallow: /\n" > /var/www/robots.txt""")
 
 os.chmod('/opt/wapt/wapt-scanpackages.py',0o755)
 os.chmod('/opt/wapt/wapt-signpackages.py',0o755)
-
 
 
 print("Restarting rsyslog")

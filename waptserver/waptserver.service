@@ -8,7 +8,9 @@ Group=www-data
 WorkingDirectory=/opt/wapt
 ExecStart=/usr/bin/python /opt/wapt/waptserver/waptserver.py
 Restart=on-failure
-
+Environment=PYTHONHOME=/opt/wapt
+Environment=PYTHONPATH=/opt/wapt
+Environment=VIRTUAL_ENV=/opt/wapt
 
 [Install]
 WantedBy=multi-user.target

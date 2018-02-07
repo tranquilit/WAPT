@@ -283,5 +283,8 @@ Count=5
 Count=2
 
 [Project\ExtraPythonPath]
-Count=0
+Item0=c:\tranquilit\wapt\waptserver
+Item1=c:\tranquilit\wapt\
+Item2=c:\tranquilit\wapt\lib\site-packages
+Count=3
 
