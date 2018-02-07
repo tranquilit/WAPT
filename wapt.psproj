@@ -50,11 +50,11 @@ FileName=$[Project-Path]waptdevutils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node7]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]wapt-get.ini
+FileName=$[Project-Path]wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node8]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]wapt-get.py
+FileName=$[Project-Path]wapt-get.ini
 
 [Project\ChildNodes\Node0\ChildNodes\Node9]
 ClassName=TProjectFileNode
@@ -87,7 +87,7 @@ ClassName=TProjectRunConfiguationNode
 Name=waptget install tis-7zip
 
 [Project\ChildNodes\Node1\ChildNodes\Node0\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Dir]\wapt-get.py
 Description=install 7zip
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
@@ -114,7 +114,7 @@ ClassName=TProjectRunConfiguationNode
 Name=wapt update
 
 [Project\ChildNodes\Node1\ChildNodes\Node1\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Dir]\wapt-get.py
 Description=wapt-get update
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
@@ -141,7 +141,7 @@ ClassName=TProjectRunConfiguationNode
 Name=waptgetremove tis7zip
 
 [Project\ChildNodes\Node1\ChildNodes\Node2\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug remove tis-7zip
@@ -167,7 +167,7 @@ ClassName=TProjectRunConfiguationNode
 Name=download tis7zip
 
 [Project\ChildNodes\Node1\ChildNodes\Node3\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug download tis-irfanview tis-7zip
@@ -193,7 +193,7 @@ ClassName=TProjectRunConfiguationNode
 Name=listregistry
 
 [Project\ChildNodes\Node1\ChildNodes\Node4\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=list-registry tortoisegit
@@ -219,7 +219,7 @@ ClassName=TProjectRunConfiguationNode
 Name=listinstalled
 
 [Project\ChildNodes\Node1\ChildNodes\Node5\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=list
@@ -245,7 +245,7 @@ ClassName=TProjectRunConfiguationNode
 Name=depends
 
 [Project\ChildNodes\Node1\ChildNodes\Node6\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=install tis-xencenter
@@ -271,7 +271,7 @@ ClassName=TProjectRunConfiguationNode
 Name=wapt upgrade
 
 [Project\ChildNodes\Node1\ChildNodes\Node7\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=upgrade
@@ -297,7 +297,7 @@ ClassName=TProjectRunConfiguationNode
 Name=install off licence
 
 [Project\ChildNodes\Node1\ChildNodes\Node8\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-p "{'licence':'WGHX9MR8YFM9GCFB446YHX6GY','company':'TIS'}" install C:\tranquilit\tis-msoffice2003-wapt
@@ -323,7 +323,7 @@ ClassName=TProjectRunConfiguationNode
 Name=cleanup
 
 [Project\ChildNodes\Node1\ChildNodes\Node9\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug cleanup
@@ -349,7 +349,7 @@ ClassName=TProjectRunConfiguationNode
 Name=test failure
 
 [Project\ChildNodes\Node1\ChildNodes\Node10\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=install tis-error
@@ -375,7 +375,7 @@ ClassName=TProjectRunConfiguationNode
 Name=install python27
 
 [Project\ChildNodes\Node1\ChildNodes\Node11\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=install c:\tranquilit\tis-python27-wapt\
@@ -401,7 +401,7 @@ ClassName=TProjectRunConfiguationNode
 Name=install current
 
 [Project\ChildNodes\Node1\ChildNodes\Node12\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug  -f install $[ActiveDoc-Dir]
@@ -424,7 +424,7 @@ ClassName=TProjectRunConfiguationNode
 Name=build-package test avec inc
 
 [Project\ChildNodes\Node1\ChildNodes\Node13\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug -k "c:\tmp\ko.pem" build-package -i c:\tranquilit\tis-wapttest-wapt
@@ -447,7 +447,7 @@ ClassName=TProjectRunConfiguationNode
 Name=build-package current
 
 [Project\ChildNodes\Node1\ChildNodes\Node14\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug build-upload $[ActiveDoc-Dir]
@@ -470,7 +470,7 @@ ClassName=TProjectRunConfiguationNode
 Name=download-upgrade
 
 [Project\ChildNodes\Node1\ChildNodes\Node15\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug download-upgrade
@@ -493,7 +493,7 @@ ClassName=TProjectRunConfiguationNode
 Name=make-template
 
 [Project\ChildNodes\Node1\ChildNodes\Node16\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug make-template titi
@@ -516,7 +516,7 @@ ClassName=TProjectRunConfiguationNode
 Name=update-packages
 
 [Project\ChildNodes\Node1\ChildNodes\Node17\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug update-packages cache
@@ -539,7 +539,7 @@ ClassName=TProjectRunConfiguationNode
 Name=remove current
 
 [Project\ChildNodes\Node1\ChildNodes\Node18\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug remove $[ActiveDoc-Dir]
@@ -562,7 +562,7 @@ ClassName=TProjectRunConfiguationNode
 Name=upload-package test
 
 [Project\ChildNodes\Node1\ChildNodes\Node19\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=upload-package c:\tranquilit\tis-wapttest_*_all.wapt
@@ -585,7 +585,7 @@ ClassName=TProjectRunConfiguationNode
 Name=list-upgrade
 
 [Project\ChildNodes\Node1\ChildNodes\Node20\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug list-upgrade
@@ -608,7 +608,7 @@ ClassName=TProjectRunConfiguationNode
 Name=install wapttest
 
 [Project\ChildNodes\Node1\ChildNodes\Node21\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-f -ldebug install "tis-wapttest"
@@ -631,7 +631,7 @@ ClassName=TProjectRunConfiguationNode
 Name=search wapttest
 
 [Project\ChildNodes\Node1\ChildNodes\Node22\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug search wapttest
@@ -654,7 +654,7 @@ ClassName=TProjectRunConfiguationNode
 Name=checkinstall current
 
 [Project\ChildNodes\Node1\ChildNodes\Node23\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=checkinstalled $[ActiveDoc-Dir]
@@ -677,7 +677,7 @@ ClassName=TProjectRunConfiguationNode
 Name=sign-package wapttest
 
 [Project\ChildNodes\Node1\ChildNodes\Node24\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-m sha256,sha1 sign-package "C:\tranquilit\tis-wapttest_22_all.wapt"
@@ -700,7 +700,7 @@ ClassName=TProjectRunConfiguationNode
 Name=upgradedb
 
 [Project\ChildNodes\Node1\ChildNodes\Node25\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=upgradedb
@@ -723,7 +723,7 @@ ClassName=TProjectRunConfiguationNode
 Name=install pdfcreator
 
 [Project\ChildNodes\Node1\ChildNodes\Node26\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-f install tis-pdfcreator
@@ -746,7 +746,7 @@ ClassName=TProjectRunConfiguationNode
 Name=session-setup current
 
 [Project\ChildNodes\Node1\ChildNodes\Node27\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-f -ldebug session-setup $[ActiveDoc-Dir]
@@ -769,7 +769,7 @@ ClassName=TProjectRunConfiguationNode
 Name=build-package wapttest
 
 [Project\ChildNodes\Node1\ChildNodes\Node28\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-i build-package c:\tranquilit\tis-wapttest-wapt
@@ -792,7 +792,7 @@ ClassName=TProjectRunConfiguationNode
 Name=uninstall tis-sqliteadmin
 
 [Project\ChildNodes\Node1\ChildNodes\Node29\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=uninstall tis-sqliteadmin
@@ -815,7 +815,7 @@ ClassName=TProjectRunConfiguationNode
 Name=remove tis-sqliteadmin
 
 [Project\ChildNodes\Node1\ChildNodes\Node30\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=remove tis-sqliteadmin
@@ -838,7 +838,7 @@ ClassName=TProjectRunConfiguationNode
 Name=install tis-xencenter
 
 [Project\ChildNodes\Node1\ChildNodes\Node31\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-f install tis-xencenter
@@ -861,7 +861,7 @@ ClassName=TProjectRunConfiguationNode
 Name=make-host-template
 
 [Project\ChildNodes\Node1\ChildNodes\Node32\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=make-host-template test2.tranquilit.local tis-base
@@ -884,7 +884,7 @@ ClassName=TProjectRunConfiguationNode
 Name=remove tis-vc2008redist
 
 [Project\ChildNodes\Node1\ChildNodes\Node33\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug remove tis-vc2008redist
@@ -907,7 +907,7 @@ ClassName=TProjectRunConfiguationNode
 Name=duplicate tis-wapttest tis-wapttest2
 
 [Project\ChildNodes\Node1\ChildNodes\Node34\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=duplicate tis-wapttest tis-wapttest2
@@ -930,7 +930,7 @@ ClassName=TProjectRunConfiguationNode
 Name=duplicate htlaptop
 
 [Project\ChildNodes\Node1\ChildNodes\Node35\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=duplicate htlaptop.tranquilit.local
@@ -953,7 +953,7 @@ ClassName=TProjectRunConfiguationNode
 Name=duplicate tis-firefox
 
 [Project\ChildNodes\Node1\ChildNodes\Node36\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=duplicate tis-firefox testff 20.0.1-55
@@ -976,7 +976,7 @@ ClassName=TProjectRunConfiguationNode
 Name=remove firefox
 
 [Project\ChildNodes\Node1\ChildNodes\Node37\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=remove tis-firefox
@@ -999,7 +999,7 @@ ClassName=TProjectRunConfiguationNode
 Name=uninstall tis-cygwin
 
 [Project\ChildNodes\Node1\ChildNodes\Node38\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-e cp850 uninstall $[ActiveDoc-Dir]
@@ -1022,7 +1022,7 @@ ClassName=TProjectRunConfiguationNode
 Name=registercomputer
 
 [Project\ChildNodes\Node1\ChildNodes\Node39\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=register
@@ -1045,7 +1045,7 @@ ClassName=TProjectRunConfiguationNode
 Name=install tis-base
 
 [Project\ChildNodes\Node1\ChildNodes\Node40\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=install tis-base
@@ -1068,7 +1068,7 @@ ClassName=TProjectRunConfiguationNode
 Name=update json
 
 [Project\ChildNodes\Node1\ChildNodes\Node41\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-j update
@@ -1091,7 +1091,7 @@ ClassName=TProjectRunConfiguationNode
 Name=update-status
 
 [Project\ChildNodes\Node1\ChildNodes\Node42\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug update-status
@@ -1114,7 +1114,7 @@ ClassName=TProjectRunConfiguationNode
 Name=build-upload htlaptop
 
 [Project\ChildNodes\Node1\ChildNodes\Node43\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-l debug build-upload c:\tranquilit\htlaptop.tranquilit.local-wapt
@@ -1137,7 +1137,7 @@ ClassName=TProjectRunConfiguationNode
 Name=install
 
 [Project\ChildNodes\Node1\ChildNodes\Node44\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=install -ldebug tis-7zip
@@ -1160,7 +1160,7 @@ ClassName=TProjectRunConfiguationNode
 Name=edit tis-base
 
 [Project\ChildNodes\Node1\ChildNodes\Node45\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug edit tis-base
@@ -1183,7 +1183,7 @@ ClassName=TProjectRunConfiguationNode
 Name=duplicate tis-xpconfig
 
 [Project\ChildNodes\Node1\ChildNodes\Node46\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=duplicate tis-xp-config
@@ -1206,7 +1206,7 @@ ClassName=TProjectRunConfiguationNode
 Name=make-template directory
 
 [Project\ChildNodes\Node1\ChildNodes\Node47\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=make-template C:\tmp\cert_utils
@@ -1229,7 +1229,7 @@ ClassName=TProjectRunConfiguationNode
 Name=edit adminpak
 
 [Project\ChildNodes\Node1\ChildNodes\Node48\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug edit tis-adminpak2003
@@ -1252,7 +1252,7 @@ ClassName=TProjectRunConfiguationNode
 Name=download htlaptop.tranquilit.local
 
 [Project\ChildNodes\Node1\ChildNodes\Node49\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=download htlaptop.tranquilit.local
@@ -1275,7 +1275,7 @@ ClassName=TProjectRunConfiguationNode
 Name=edit-host +pac
 
 [Project\ChildNodes\Node1\ChildNodes\Node50\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=edit-host htlaptop.tranquilit.local
@@ -1298,7 +1298,7 @@ ClassName=TProjectRunConfiguationNode
 Name=build-upload- current
 
 [Project\ChildNodes\Node1\ChildNodes\Node51\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug build-upload $[ActiveDoc-Dir]
@@ -1321,7 +1321,7 @@ ClassName=TProjectRunConfiguationNode
 Name=upload libre
 
 [Project\ChildNodes\Node1\ChildNodes\Node52\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=upload-package c:\waptdev\tis-libreoffice-stable_5.3.7.2-3_all.wapt --wapt-server-user=admin --wapt-server-passwd=calimero
@@ -1344,7 +1344,7 @@ ClassName=TProjectRunConfiguationNode
 Name=install tis-gow
 
 [Project\ChildNodes\Node1\ChildNodes\Node53\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=install c:\waptdev\tis-gow-wapt
@@ -1367,7 +1367,7 @@ ClassName=TProjectRunConfiguationNode
 Name=uninstall libreoffice
 
 [Project\ChildNodes\Node1\ChildNodes\Node54\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=remove tis-libreoffice
@@ -1390,7 +1390,7 @@ ClassName=TProjectRunConfiguationNode
 Name=edit "tis-vlc(=2.2.1-1)"
 
 [Project\ChildNodes\Node1\ChildNodes\Node55\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug edit "tis-vlc(=2.2.1-1)"
@@ -1413,7 +1413,7 @@ ClassName=TProjectRunConfiguationNode
 Name=add-icon tis-vlc
 
 [Project\ChildNodes\Node1\ChildNodes\Node56\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=add-icon tis-vlc
@@ -1436,7 +1436,7 @@ ClassName=TProjectRunConfiguationNode
 Name=install tis-waptcertutils
 
 [Project\ChildNodes\Node1\ChildNodes\Node57\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-ldebug install c:\tranquilit\tis-certutils-wapt
@@ -1459,7 +1459,7 @@ ClassName=TProjectRunConfiguationNode
 Name=get-server-certificate
 
 [Project\ChildNodes\Node1\ChildNodes\Node58\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=get-server-certificate
@@ -1505,7 +1505,7 @@ ClassName=TProjectRunConfiguationNode
 Name=register
 
 [Project\ChildNodes\Node1\ChildNodes\Node60\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=register
@@ -1528,7 +1528,7 @@ ClassName=TProjectRunConfiguationNode
 Name=build-package dual sha
 
 [Project\ChildNodes\Node1\ChildNodes\Node61\RunConfig]
-ScriptName=[$Project-Path]wapt-get.py
+ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-m sha256,sha1 build-package C:\tranquilit\tis-wapttest-wapt
