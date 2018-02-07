@@ -58,7 +58,7 @@ def debian_major():
     return platform.linux_distribution()[1].split('.')[0]
 
 def git_hash():
-    r = Repo('.',search_parent_directories = True)
+    r = Repo('.')
     return '%04d-%s' % (r.active_branch.commit.count(),r.active_branch.object.name_rev[:8])
 
 def dev_revision():

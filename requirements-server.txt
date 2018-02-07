@@ -18,6 +18,7 @@ netifaces==0.10.6
 passlib==1.7.1
 peewee==2.10.2
 pefile==2016.3.28
+psutil==3.4.2
 psycopg2==2.7.3.1
 pyOpenSSL==17.3.0
 pyparsing==2.2.0
