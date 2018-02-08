@@ -236,8 +236,8 @@ except Exception as e:
     eprint('error: \n%s' % e)
     exit(1)
 
-add_symlink('opt/wapt/waptserver/scripts/postconf.py', '/usr/bin/wapt-serverpostconf')
-os.chmod('./builddir/opt/wapt/waptserver/scripts/postconf.py', 0o755)
+os.chmod('./builddir/opt/wapt/waptserver/scripts/postconf.sh', 0o755)
+add_symlink('opt/wapt/waptserver/scripts/postconf.sh', '/usr/bin/wapt-serverpostconf')
 
 eprint('copying nginx-related goo')
 try:
