@@ -98,3 +98,4 @@ openssl.exe
 /waptserver/repository/wapt
 /ssl/*.crt
 /waptguihelper.pyd
+/python.exe
