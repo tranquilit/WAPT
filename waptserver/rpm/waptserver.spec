@@ -13,7 +13,7 @@ URL:		https://wapt.fr
 Source0:	./waptserver/
 Prefix:		/opt
 
-Requires:  nginx dialog pytz cabextract python-psutil python2-dialog msktutil krb5-workstation pyparsing policycoreutils-python
+Requires:  nginx dialog cabextract python-psutil python2-dialog msktutil krb5-workstation pyparsing policycoreutils-python
 
 # Turn off the brp-python-bytecompile script
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
@@ -81,3 +81,12 @@ mkdir -p /var/www/html/wapt-hostref
 chown -R wapt:nginx /var/www/html/*
 echo "User-agent:*\nDisallow: /\n" > /var/www/html/robots.txt
 
+# fix python in wapt virtual env and set PATH
+ln -sb /usr/bin/python2 /opt/wapt/bin/python2
+cat << EOF > /opt/wapt/.profile
+# for python virtualenv
+export PYTHONHOME=/opt/wapt
+export PYTHONPATH=/opt/wapt
+export PATH=/opt/wapt/bin:$PATH
+EOF
+### end

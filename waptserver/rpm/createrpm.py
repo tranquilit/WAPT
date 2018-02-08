@@ -139,7 +139,7 @@ if os.path.exists('builddir'):
 mkdir_p('builddir/opt/wapt/lib')
 mkdir_p('builddir/opt/wapt/conf')
 mkdir_p('builddir/opt/wapt/log')
-mkdir_p('builddir/opt/wapt/lib/site-packages')
+mkdir_p('builddir/opt/wapt/lib/python2.7/site-packages')
 
 # we use pip and virtualenv to get the wapt dependencies. virtualenv usage here is a bit awkward, it can probably be improved. For instance, it install a outdated version of pip that cannot install Rocket dependencies...
 # for some reason the virtualenv does not build itself right if we don't
@@ -156,9 +156,9 @@ run_verbose(r'source ./pylibs/bin/activate ;pip install pip setuptools --upgrade
 
 # fix for psycopg install because of ImportError: libpq-9c51d239.so.5.9: ELF load command address/offset not properly aligned
 #run_verbose(r'yum install postgresql.x86_64 postgresql-devel.x86_64 -y')
-run_verbose(r'pip install -t ./builddir/opt/wapt/lib/site-packages psycopg2==2.7.3.2 --no-binary :all: ')
+run_verbose(r'pip install -t ./builddir/opt/wapt/lib/python2.7/site-packages psycopg2==2.7.3.2 --no-binary :all: ')
 
-run_verbose(r'source ./pylibs/bin/activate ; pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/site-packages')
+run_verbose(r'source ./pylibs/bin/activate ; pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/python2.7/site-packages')
 
 rsync('./pylibs/lib/', './builddir/opt/wapt/lib/')
 
@@ -167,11 +167,11 @@ eprint('copying the waptserver files')
 rsync(source_dir, './builddir/opt/wapt/',excludes=['postconf', 'mongod.exe', 'bin', 'include','spnego-http-auth-nginx-module'])
 
 eprint('cryptography patches')
-mkdir_p('./builddir/opt/wapt/lib/site-packages/cryptography/x509/')
+mkdir_p('./builddir/opt/wapt/lib/python2.7/site-packages/cryptography/x509/')
 copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', '__init__.py'),
-         'builddir/opt/wapt/lib/site-packages/cryptography/x509/__init__.py')
+         'builddir/opt/wapt/lib/python2.7/site-packages/cryptography/x509/__init__.py')
 copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.py'),
-         'builddir/opt/wapt/lib/site-packages/cryptography/x509/verification.py')
+         'builddir/opt/wapt/lib/python2.7/site-packages/cryptography/x509/verification.py')
 
 
 eprint('copying files formerly from waptrepo')
