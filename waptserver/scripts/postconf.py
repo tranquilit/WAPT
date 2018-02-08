@@ -54,6 +54,9 @@ from optparse import OptionParser
 import nginxparser
 from passlib.hash import pbkdf2_sha256
 
+from waptpackage import WaptLocalRepo
+from waptserver import waptserver_config
+from waptserver.waptserver_model import init_db,upgrade_db_structure,load_db_config
 
 def run(*args, **kwargs):
     return subprocess.check_output(*args, shell=True, **kwargs)
@@ -270,6 +273,12 @@ def main():
 
     parser = OptionParser(usage=usage, version='waptserver.py ' + __version__)
     parser.add_option(
+        '-c',
+        '--config',
+        dest='configfile',
+        default=waptserver_config.DEFAULT_CONFIG_FILE,
+        help='Config file full path (default: %default)')
+    parser.add_option(
         "-k",
         "--use-kerberos",
         dest="use_kerberos",
@@ -311,9 +320,7 @@ def main():
         shutil.copyfile('/opt/wapt/conf/waptserver.ini','/opt/wapt/conf/waptserver.ini.bck_%s'%  datetime_now.isoformat() )
 
     waptserver_ini = iniparse.RawConfigParser()
-
-    waptserver_ini.readfp(file('/opt/wapt/conf/waptserver.ini', 'rU'))
-
+    waptserver_ini.read(options.configfile)
     if waptserver_ini.has_option('options', 'wapt_folder'):
         wapt_folder = waptserver_ini.get('options', 'wapt_folder')
 
@@ -328,11 +335,15 @@ def main():
     # add user db and password in ini file
     ensure_postgresql_db()
     print ("create database schema")
-    run(" sudo -u wapt python /opt/wapt/waptserver/waptserver_model.py init_db ")
+    server_config = waptserver_config.load_config(waptserver_config_filename)
+    load_db_config()
+    init_db()
+    #run("sudo -i -u wapt python /opt/wapt/waptserver/waptserver_model.py init_db ")
 
     if not check_mongo2pgsql_upgrade_needed(waptserver_ini):
         print ("already running postgresql, trying to upgrade structure")
-        run("sudo -u wapt python /opt/wapt/waptserver/waptserver_upgrade.py upgrade_structure")
+        upgrade_db_structure()
+        #run("sudo -i -u wapt python /opt/wapt/waptserver/waptserver_upgrade.py upgrade_structure")
 
     if os.path.isdir(wapt_folder):
         waptserver_ini.set('options','wapt_folder',wapt_folder)
@@ -400,13 +411,13 @@ def main():
 
 
 
-    with open('/opt/wapt/conf/waptserver.ini','w') as inifile:
+    with open(options.config,'w') as inifile:
        waptserver_ini.write(inifile)
     run("/bin/chmod 640 /opt/wapt/conf/waptserver.ini")
     run("/bin/chown wapt /opt/wapt/conf/waptserver.ini")
 
     # Restart Apache screen
-    run('python /opt/wapt/wapt-scanpackages.py %s ' % wapt_folder)
+    run('/opt/wapt/wapt-scanpackages.py %s ' % wapt_folder)
 
     final_msg = ['Postconfiguration completed.',]
     postconf.msgbox("Press ok to start waptserver")

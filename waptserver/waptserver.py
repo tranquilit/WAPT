@@ -105,6 +105,12 @@ from waptserver_utils import get_disk_space,jsondump,mkdir_p,utils_devel_mode,ut
 
 import waptserver_config
 
+try:
+    from waptenterprise.waptserver import auth_module_ad
+except ImportError as e:
+    logger.debug('LDAP Auth disabled: %s' % e)
+    auth_module_ad = None
+
 import wakeonlan.wol
 
 # i18n
@@ -205,7 +211,6 @@ def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-
     def any_(l):
         """Check if any element in the list is true, in constant time.
         """
@@ -237,11 +242,14 @@ def check_auth(username, password):
                 pass_bcrypt_crypt_ok = bcrypt.verify(
                     password,
                     app.conf['wapt_password'])
+
         except Exception:
             pass
 
-    return any_([pbkdf2_sha256_ok, pass_sha1_ok, pass_sha512_ok,
+    basic_auth = any_([pbkdf2_sha256_ok, pass_sha1_ok, pass_sha512_ok,
                  pass_sha512_crypt_ok, pass_bcrypt_crypt_ok]) and user_ok
+
+    return basic_auth or (auth_module_ad is not None and auth_module_ad.check_credentials_ad(app.conf, username, password))
 
 
 def check_auth_is_provided(f):

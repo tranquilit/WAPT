@@ -45,7 +45,6 @@ _defaults = {
     'wapt_password': '',
     'wapt_user': 'admin',
     'waptserver_port': 8080,
-    'waptservice_port': 8088,
     'waptwua_folder': '',  # default: wapt_folder + 'wua'
     'db_name': 'wapt',
     'db_host': None,
@@ -64,10 +63,10 @@ _defaults = {
     'allow_unauthenticated_registration':False,
     'signature_clockskew':5*60,
     'application_root':'',
-    'wapt_admin_group':'waptadmins',
-    'ldap_auth_url':'',
-    'ldap_auth_base':''
-
+    'wapt_admin_group_dn':None,
+    'ldap_auth_server':None,
+    'ldap_auth_base_dn':None,
+    'ldap_auth_ssl_enabled':True,
 }
 
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
@@ -166,7 +165,27 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
     if _config.has_option('options', 'application_root'):
         conf['application_root'] = _config.get('options', 'application_root')
 
-    if _config.has_option('options', 'wapt_admin_group'):
-        conf['wapt_admin_group'] = _config.get('options', 'wapt_admin_group')
+    for option in ('wapt_admin_group_dn','ldap_auth_server','ldap_auth_base_dn'):
+        if _config.has_option('options',option):
+            conf[option] = _config.get('options', option)
+
+    if _config.has_option('options', 'ldap_auth_ssl_enabled'):
+        conf['ldap_auth_ssl_enabled'] = _config.getboolean('options', 'ldap_auth_ssl_enabled')
 
     return conf
+
+def write_config_file(cfgfile=DEFAULT_CONFIG_FILE,server_config=None,non_default_values_only=True):
+    if server_config is None:
+        server_config = _defaults.copy()
+
+    # read configuration from waptserver.ini
+    _config = ConfigParser.RawConfigParser()
+    if os.path.isfile(cfgfile):
+        _config.read(cfgfile)
+
+    for key in server_config:
+        if not non_default_values_only or server_config[key] != _defaults.get(key):
+            _config.set('options',key,server_config[key])
+
+    with open('/opt/wapt/conf/waptserver.ini','w') as inifile:
+       _config.write(inifile)

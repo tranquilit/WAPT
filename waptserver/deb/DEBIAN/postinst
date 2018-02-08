@@ -18,6 +18,13 @@ run('touch /var/run/waptserver.pid')
 run('chown wapt:root /var/log/waptserver.log')
 run('chmod 640 /var/log/waptserver.log')
 
+# minimal .profile script to setup python path
+open('/opt/wapt/.profile','w').write("""#
+export PYTHONHOME=/opt/wapt
+export PYTHONPATH=/opt/wapt
+export PATH=/opt/wapt/bin:$PATH
+""")
+
 print("Cleaning up leftovers")
 for cleanup_dir in ('rpm','mongodb','spool','uninstall_service.bat'):
     mypath = os.path.join('/opt/wapt/waptserver',cleanup_dir)
