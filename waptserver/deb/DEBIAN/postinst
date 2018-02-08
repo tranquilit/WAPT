@@ -51,7 +51,6 @@ run('chown -R wapt:root /opt/wapt/conf')
 run('chmod 750 /opt/wapt/conf')
 run('chown -R wapt:root /opt/wapt/log')
 run('chmod 755 /opt/wapt/log')
-run('chmod 755 /opt/wapt/waptserver/scripts/postconf.py')
 run('mkdir -p /var/www/wapt/icons')
 run('mkdir -p /var/www/wapt-host')
 run('mkdir -p /var/www/wapt-hostref')
@@ -69,12 +68,15 @@ run("""echo "User-agent:*\nDisallow: /\n" > /var/www/robots.txt""")
 
 os.chmod('/opt/wapt/wapt-scanpackages.py',0o755)
 os.chmod('/opt/wapt/wapt-signpackages.py',0o755)
+os.chmod('/opt/wapt/waptserver/scripts/postconf',0o755)
+os.chmod('/opt/wapt/waptserver/scripts/postconf.py',0o755)
 
+run('ln -sb /opt/wapt/wapt-scanpackages.py /usr/bin/wapt-scanpackages')
+run('ln -sb /opt/wapt/wapt-signpackages.py /usr/bin/wapt-signpackages')
 
 print("Restarting rsyslog")
 run('systemctl restart rsyslog')
-
-
+s
 def check_if_running(process_name):
     try:
         run('pgrep -f "%s" ' % process_name)
@@ -95,7 +97,7 @@ print("""
 Installation/Upgrade of waptserver is finished.
 
 For postconfiguration please run:
-/opt/wapt/waptserver/scripts/postconf.py
+/opt/wapt/waptserver/scripts/postconf
 
 ########################################################
  """)
