@@ -312,12 +312,13 @@ def main():
                 run('restorecon -R -v /var/www/html/%s' %sepath)
             postconf.msgbox('SELinux correctly configured for Nginx reverse proxy')
 
-    if not os.path.isfile('/opt/wapt/conf/waptserver.ini'):
-        shutil.copyfile('/opt/wapt/waptserver/waptserver.ini.template','/opt/wapt/conf/waptserver.ini')
+    if not os.path.isfile(options.configfile):
+        waptserver_config.write_config_file(options.configfile,non_default_values_only=True)
+        #shutil.copyfile('/opt/wapt/waptserver/waptserver.ini.template',options.configfile)
     else:
         print('making a backup copy of the configuration file')
         datetime_now = datetime.datetime.now()
-        shutil.copyfile('/opt/wapt/conf/waptserver.ini','/opt/wapt/conf/waptserver.ini.bck_%s'%  datetime_now.isoformat() )
+        shutil.copyfile(options.configfile,'%s.bck_%s'%  (options.configfile,datetime_now.isoformat()) )
 
     waptserver_ini = iniparse.RawConfigParser()
     waptserver_ini.read(options.configfile)
@@ -329,28 +330,22 @@ def main():
         waptserver_ini.remove_section('uwsgi')
 
     # add secret key initialisation string (for session token)
-    if not waptserver_ini.has_option('options','secret_key'):
+    if not waptserver_ini.has_option('options','secret_key') or not waptserver_ini.get('options','secret_key') :
         waptserver_ini.set('options','secret_key',''.join(random.SystemRandom().choice(string.letters + string.digits) for _ in range(64)))
 
     # add user db and password in ini file
     ensure_postgresql_db()
+
     print ("create database schema")
-    server_config = waptserver_config.load_config(waptserver_config_filename)
-    load_db_config()
+    server_config = waptserver_config.load_config(options.configfile)
+    load_db_config(server_config)
     init_db()
     #run("sudo -i -u wapt python /opt/wapt/waptserver/waptserver_model.py init_db ")
 
-    if not check_mongo2pgsql_upgrade_needed(waptserver_ini):
-        print ("already running postgresql, trying to upgrade structure")
-        upgrade_db_structure()
-        #run("sudo -i -u wapt python /opt/wapt/waptserver/waptserver_upgrade.py upgrade_structure")
+    if check_mongo2pgsql_upgrade_needed(waptserver_ini):
+        print ("MongoDB migrated to PostgreSQL and disabled ")
 
-    if os.path.isdir(wapt_folder):
-        waptserver_ini.set('options','wapt_folder',wapt_folder)
-    else:
-        # for install on windows
-        # keep in sync with waptserver.py
-        wapt_folder = os.path.join(wapt_root_dir,'waptserver','repository','wapt')
+    waptserver_ini.set('options','wapt_folder',wapt_folder)
 
     # Password setup/reset screen
     if not waptserver_ini.has_option('options', 'wapt_password') or \
@@ -381,7 +376,7 @@ def main():
         password = pbkdf2_sha256.hash(wapt_password.encode('utf8'))
         waptserver_ini.set('options','wapt_password',password)
 
-    if not waptserver_ini.has_option('options', 'server_uuid'):
+    if not waptserver_ini.has_option('options', 'server_uuid') or not waptserver_ini.get('options', 'server_uuid'):
         waptserver_ini.set('options', 'server_uuid', str(uuid.uuid1()))
 
     if options.use_kerberos:
@@ -409,15 +404,14 @@ def main():
         waptserver_ini.set('options','allow_unauthenticated_registration','False')
         waptserver_ini.set('options','use_kerberos','True')
 
-
-
-    with open(options.config,'w') as inifile:
+    with open(options.configfile,'w') as inifile:
        waptserver_ini.write(inifile)
-    run("/bin/chmod 640 /opt/wapt/conf/waptserver.ini")
-    run("/bin/chown wapt /opt/wapt/conf/waptserver.ini")
 
-    # Restart Apache screen
-    run('/opt/wapt/wapt-scanpackages.py %s ' % wapt_folder)
+    run("/bin/chmod 640 %s" % options.configfile)
+    run("/bin/chown wapt %s" % options.configfile)
+
+    repo = WaptLocalRepo(wapt_folder)
+    repo.update_packages_index()
 
     final_msg = ['Postconfiguration completed.',]
     postconf.msgbox("Press ok to start waptserver")
