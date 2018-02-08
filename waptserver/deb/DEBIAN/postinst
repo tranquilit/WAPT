@@ -76,7 +76,7 @@ run('ln -sb /opt/wapt/wapt-signpackages.py /usr/bin/wapt-signpackages')
 
 print("Restarting rsyslog")
 run('systemctl restart rsyslog')
-s
+
 def check_if_running(process_name):
     try:
         run('pgrep -f "%s" ' % process_name)
