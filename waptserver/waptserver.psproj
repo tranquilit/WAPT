@@ -129,34 +129,38 @@ FileName=$[Project-Path]..\wapt-scanpackages.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node11]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver_config.py
+FileName=$[Project-Path]waptserver.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node12]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver_model.py
+FileName=$[Project-Path]waptserver_config.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node13]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver_upgrade.py
+FileName=$[Project-Path]waptserver_model.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node14]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver_utils.py
+FileName=$[Project-Path]waptserver_upgrade.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node15]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver_winsetup.py
+FileName=$[Project-Path]waptserver_utils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node16]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\wapt-signpackages.py
+FileName=$[Project-Path]waptserver_winsetup.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node17]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]..\wapt-signpackages.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node18]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]..\waptutils.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=18
+Count=19
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode

@@ -6037,15 +6037,23 @@ def wapt_sources_edit(wapt_sources_dir):
     setup_filename = os.path.join(wapt_sources_dir,'setup.py')
     pyscripter_filename = os.path.join(setuphelpers.programfiles32,
                                        'PyScripter', 'PyScripter.exe')
+    wapt_base_dir = os.path.dirname(__file__)
+    env = os.environ
+    env.update(dict(
+        PYTHONHOME=wapt_base_dir,
+        PYTHONPATH=wapt_base_dir,
+        VIRTUAL_ENV=wapt_base_dir
+        ))
+
     if os.path.isfile(pyscripter_filename) and os.path.isfile(psproj_filename):
-        import psutil
-        p = psutil.Popen((u'"%s" --newinstance --project "%s" "%s" "%s"' % (
+        p = psutil.Popen((u'"%s" --pythondllpath "%s" --python27 -N --project "%s" "%s" "%s"' % (
                          pyscripter_filename,
+                         wapt_base_dir,
                          psproj_filename,
                          setup_filename,
                          control_filename)).encode(sys.getfilesystemencoding()),
-                         cwd=os.path.join(setuphelpers.programfiles32,
-                                          'PyScripter'))
+                         cwd=wapt_sources_dir,
+                         env=env)
     else:
         os.startfile(wapt_sources_dir)
     return wapt_sources_dir

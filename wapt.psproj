@@ -50,11 +50,11 @@ FileName=$[Project-Path]waptdevutils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node7]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]wapt-get.py
+FileName=$[Project-Path]wapt-get.ini
 
 [Project\ChildNodes\Node0\ChildNodes\Node8]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]wapt-get.ini
+FileName=$[Project-Path]wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node9]
 ClassName=TProjectFileNode
@@ -1163,7 +1163,7 @@ Name=edit tis-base
 ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug edit tis-base
+Parameters=-ldebug edit socle
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
