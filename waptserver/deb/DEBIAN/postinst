@@ -97,7 +97,7 @@ print("""
 Installation/Upgrade of waptserver is finished.
 
 For postconfiguration please run:
-/opt/wapt/waptserver/scripts/postconf
+/opt/wapt/waptserver/scripts/postconf.sh
 
 ########################################################
  """)
