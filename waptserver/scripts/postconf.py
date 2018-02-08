@@ -231,7 +231,7 @@ def check_mongo2pgsql_upgrade_needed(waptserver_ini):
     if waptserver_ini.has_option('options', 'mongodb_port'):
         if postconf.yesno("It is necessary to migrate current database backend from mongodb to postgres. Press yes to start migration",no_label='cancel')== postconf.DIALOG_OK:
             print ("mongodb process running, need to migrate")
-            run_verbose("sudo -u wapt /usr/bin/python /opt/wapt/waptserver/waptserver_upgrade.py upgrade2postgres")
+            run_verbose("sudo -i -u wapt /usr/bin/python /opt/wapt/waptserver/waptserver_upgrade.py upgrade2postgres")
             run_verbose("systemctl stop mongodb")
             run_verbose("systemctl disable mongodb")
             return True
@@ -338,9 +338,9 @@ def main():
 
     print ("create database schema")
     server_config = waptserver_config.load_config(options.configfile)
-    load_db_config(server_config)
-    init_db()
-    #run("sudo -i -u wapt python /opt/wapt/waptserver/waptserver_model.py init_db ")
+    #load_db_config(server_config)
+    #init_db()
+    run("sudo -i -u wapt /opt/wapt/bin/python /opt/wapt/waptserver/waptserver_model.py init_db ")
 
     if check_mongo2pgsql_upgrade_needed(waptserver_ini):
         print ("MongoDB migrated to PostgreSQL and disabled ")
