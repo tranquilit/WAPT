@@ -3,12 +3,17 @@ Description=WAPT Server startup script
 After=syslog.target
 After=postgresql-9.4.service
 
+
 [Service]
 Type=simple
-PIDFile=/var/run/waptserver.pid
 User=wapt
-ExecStart=/usr/bin/python2 /opt/wapt/waptserver/waptserver.py
-Restart=on-abort
+Group=www-data
+WorkingDirectory=/opt/wapt
+ExecStart=/usr/bin/python /opt/wapt/waptserver/waptserver.py
+Restart=on-failure
+Environment=PYTHONHOME=/opt/wapt
+Environment=PYTHONPATH=/opt/wapt
+Environment=VIRTUAL_ENV=/opt/wapt
 LimitNOFILE=32768
 
 [Install]
