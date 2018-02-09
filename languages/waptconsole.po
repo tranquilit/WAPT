@@ -2821,6 +2821,10 @@ msgid ""
 "If package is signed with a foreign key, you may want to delete host package first to workaround the issue...\n"
 msgstr ""
 
+#: uwaptconsoleres.rseditunitbundle
+msgid "Edit Organizational Unit bundle."
+msgstr ""
+
 #: uwaptconsoleres.rsedpackage
 msgctxt "uwaptconsoleres.rsedpackage"
 msgid "Package bundle"

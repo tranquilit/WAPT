@@ -31,6 +31,9 @@
 #define set_start_packages ""
 #endif
 
+
+;#define waptenterprise
+
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
 ; for fast compile in developent mode

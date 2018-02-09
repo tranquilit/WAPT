@@ -99,7 +99,7 @@ interface
 
   function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8String='';
             default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;WaptEdition:Utf8String='waptagent';
-            VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True):Utf8String;
+            VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True; EnterpriseEdition:Boolean=False):Utf8String;
 
   function pyformat(template:String;params:ISuperobject):String;
   function pyformat(template:Utf8String;params:ISuperobject):Utf8String; overload;
@@ -1759,7 +1759,7 @@ end;
 
 function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8String='';
           default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;WaptEdition:Utf8String='waptagent';
-          VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True):Utf8String;
+          VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True; EnterpriseEdition:Boolean=False):Utf8String;
 var
   iss_template,custom_iss,source,target : utf8String;
   iss,new_iss,line : ISuperObject;
@@ -1808,6 +1808,13 @@ begin
         end
         else if startswith(line,'#define set_verify_cert') then
           new_iss.AsArray.Add(format('#define set_verify_cert "%s"',[VerifyCert]))
+        else if startswith(line,';#define waptenterprise') then
+        begin
+            if EnterpriseEdition then
+              new_iss.AsArray.Add(format('#define waptenterprise',[]))
+            else
+              new_iss.AsArray.Add(format('#undef waptenterprise',[]))
+        end
         else if startswith(line,'WizardImageFile=') then
 
         else if startswith(line,'#define edition') and (waptedition <> '') then

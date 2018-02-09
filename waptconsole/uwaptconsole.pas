@@ -1636,7 +1636,8 @@ begin
                 edRepoUrl.Text, edWaptServerUrl.Text, fnWaptDirectory.Directory, edOrgName.Text, @DoProgress, 'waptagent',
                 EdServerCertificate.Text,
                 CBUseKerberos.Checked,
-                CBCheckCertificatesValidity.Checked
+                CBCheckCertificatesValidity.Checked,
+                IsEnterpriseEdition
                 );
 
             except
@@ -4465,10 +4466,10 @@ begin
   ActLaunchWaptExit.Visible:=IsEnterpriseEdition;
   ActTISHelp.Visible:=IsEnterpriseEdition and FileExists(GetTisSupportPath);
 
-  //PgNetworksConfig.TabVisible:=IsEnterpriseEdition;
-  //PgReports.TabVisible:=IsEnterpriseEdition;
-  PgNetworksConfig.TabVisible:=False;
-  PgReports.TabVisible:=False;
+  PgNetworksConfig.TabVisible:=IsEnterpriseEdition;
+  PgReports.TabVisible:=IsEnterpriseEdition;
+  //PgNetworksConfig.TabVisible:=False;
+  //PgReports.TabVisible:=False;
 
 end;
 

@@ -33,4 +33,6 @@
 ; for fast compile in developent mode
 ;#define FastDebug
 
+;#define waptenterprise
+
 #include "waptsetup.iss"

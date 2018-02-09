@@ -56,6 +56,14 @@ Source: "..\waptservice\templates\*"; DestDir: "{app}\waptservice\templates"; Fl
 Source: "..\waptservice\translations\*"; DestDir: "{app}\waptservice\translations"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
 Source: "..\waptservice\plugins\*"; DestDir: "{app}\waptservice\plugins"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
 
+; waptenterprise only
+#ifdef waptenterprise
+Source: "..\waptenterprise\waptservice\*"; DestDir: "{app}\waptenterprise\waptservice\";  Flags: createallsubdirs recursesubdirs;
+Source: "..\waptenterprise\waptconsole\*"; DestDir: "{app}\waptenterprise\waptconsole\";  Flags: createallsubdirs recursesubdirs;
+Source: "..\waptenterprise\__init__.py"; DestDir: "{app}\waptenterprise\";
+#endif
+
+
 ; user feedback of waptservice activity
 Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe'); Flags: ignoreversion 
 
