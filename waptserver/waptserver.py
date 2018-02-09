@@ -1741,9 +1741,6 @@ def get_hosts():
 
             req = Hosts.select(*build_fields_list(Hosts, columns)).limit(limit)
 
-            if 'depends' in columns:
-                req = req.join(HostGroups).group_by(Hosts.uuid,Hosts.computer_fqdn)
-
             req = req.order_by(SQL('last_seen_on desc NULLS LAST'))
             if query:
                 req = req.where(query)

@@ -212,10 +212,12 @@ class Hosts(WaptBaseModel):
     dmi = BinaryJSONField(null=True)
     wmi = BinaryJSONField(null=True)
 
+    """
     def save(self,*args,**argvs):
         if 'uuid' in self._dirty:
             argvs['force_insert'] = True
         return super(Hosts,self).save(*args,**argvs)
+    """
 
     def __repr__(self):
         return '<Host fqdn=%s / uuid=%s>' % (self.computer_fqdn, self.uuid)
