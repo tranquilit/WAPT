@@ -5,12 +5,10 @@ unit uviseditpackage;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, SynHighlighterPython, SynEdit,
-  Forms, Controls, Graphics,
-  Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, Buttons,
-  superobject, VirtualTrees,
-  VarPyth, types, ActiveX, LCLIntf, LCL, sogrid, vte_json, DefaultTranslator,
-  SearchEdit;
+  Classes, SysUtils, FileUtil, SynHighlighterPython, SynEdit, Forms, Controls,
+  Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, Buttons,
+  superobject, VirtualTrees, VarPyth, PythonEngine, types, ActiveX, LCLIntf,
+  LCL, sogrid, vte_json, DefaultTranslator, SearchEdit;
 
 type
 
@@ -153,10 +151,10 @@ type
 
 function EditPackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreatePackage(packagename: string; advancedMode: boolean): ISuperObject;
-function CreateGroup(packagename: string; advancedMode: boolean): ISuperObject;
+function CreateGroup(packagename: string; advancedMode: boolean=False; section: String ='group'): ISuperObject;
 function EditHost(hostuuid: ansistring; advancedMode: boolean; var ApplyUpdates:Boolean; description:ansiString=''; HostReachable:Boolean=False;computer_fqdn_hint:ansiString='';ForceMinVersion:ansiString=''): ISuperObject;
 function EditHostDepends(hostname: string; newDependsStr: string): ISuperObject;
-function EditGroup(group: string; advancedMode: boolean): ISuperObject;
+function EditGroup(group: string; advancedMode: boolean=False): ISuperObject;
 
 
 var
@@ -203,18 +201,22 @@ begin
     end;
 end;
 
-function CreateGroup(packagename: string; advancedMode: boolean): ISuperObject;
+function CreateGroup(packagename: string; advancedMode: boolean=False; section: String ='group'): ISuperObject;
 begin
   with TVisEditPackage.Create(nil) do
     try
-      Caption:= rsEditBundle;
+      if section='group' then
+        Caption:= rsEditBundle
+      else if section='unit' then
+        Caption:= rsEditUnitBundle;
+
       LabPackage.Caption := rsEdPackage;
       pgDepends.Caption := rsPackagesNeededCaption;
 
       isAdvancedMode := advancedMode;
       IsNewPackage := True;
       PackageRequest := packagename;
-      EdSection.ItemIndex := 4;
+      EdSection.ItemIndex := EdSection.Items.IndexOf(section);
       ActBUApply.Visible:=False;
       EdVersion.Enabled:=advancedMode;
       EdVersion.ReadOnly:=not advancedMode;

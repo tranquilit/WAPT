@@ -37,6 +37,7 @@ object VisEditPackage: TVisEditPackage
         Height = 315
         Top = 0
         Width = 487
+        ShowAdvancedColumnsCustomize = False
         Align = alClient
         BorderStyle = bsNone
         Color = clWhite
@@ -98,6 +99,7 @@ object VisEditPackage: TVisEditPackage
         Height = 315
         Top = 0
         Width = 487
+        ShowAdvancedColumnsCustomize = False
         Align = alClient
         BorderStyle = bsNone
         Color = clWhite
@@ -985,6 +987,7 @@ object VisEditPackage: TVisEditPackage
         'restricted'
         'host'
         'group'
+        'unit'
       )
       OnChange = EdSectionChange
       TabOrder = 4
@@ -1106,6 +1109,7 @@ object VisEditPackage: TVisEditPackage
       Height = 268
       Top = 44
       Width = 300
+      ShowAdvancedColumnsCustomize = False
       Align = alClient
       BorderStyle = bsNone
       Color = clWhite
