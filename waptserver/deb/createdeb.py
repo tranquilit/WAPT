@@ -195,6 +195,10 @@ eprint('copying the waptserver files')
 rsync(source_dir, './builddir/opt/wapt/',
       excludes=['postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module'])
 
+# script to run waptserver in foreground mode
+copyfile(makepath(wapt_source_dir, 'runwaptserver.sh'),'./builddir/opt/wapt/runwaptserver.sh')	
+os.chmod('./builddir/opt/wapt/runwaptserver.sh', 0o755)
+ 
 for lib in ('dialog.py', ):
     rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),
           './builddir/opt/wapt/lib/python2.7/site-packages/')
