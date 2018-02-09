@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/opt/wapt/bin/python
 # -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------
 #    This file is part of WAPT
@@ -1408,9 +1408,12 @@ def get_groups():
     """List of packages having section == group
     """
     try:
+        groups = list(HostGroups.select(fn.DISTINCT(HostGroups.group_name).alias('package')).order_by(1).dicts())
+        """
         packages = WaptLocalRepo(app.conf['wapt_folder'])
         groups = [p.as_dict()
                   for p in packages.packages if p.section == 'group']
+        """
         msg = '{} Packages for section group'.format(len(groups))
 
     except Exception as e:
@@ -1713,7 +1716,7 @@ def get_hosts():
             ## TODO : pylint does not like this block... raises 'Uninferable' object is not iterable
             if 'groups' in request.args:
                 groups = ensure_list(request.args.get('groups', ''))
-                in_group = HostGroups.select(HostGroups.host).where(HostGroups.group_name == groups)
+                in_group = HostGroups.select(HostGroups.host).where(HostGroups.group_name << groups)
                 query = query & (Hosts.uuid << in_group )
 
             if 'organizational_unit' in request.args:
