@@ -379,7 +379,7 @@ object VisLogin: TVisLogin
       OnExit = CBConfigurationSelect
       OnKeyPress = CBConfigurationKeyPress
       OnSelect = CBConfigurationSelect
-      TabOrder = 3
+      TabOrder = 0
       Text = 'waptconsole'
       Visible = False
     end
@@ -409,7 +409,7 @@ object VisLogin: TVisLogin
       ChildSizing.ControlsPerLine = 2
       ClientHeight = 22
       ClientWidth = 175
-      TabOrder = 0
+      TabOrder = 1
       object edWaptServerName: TEdit
         Left = 0
         Height = 21
@@ -554,7 +554,7 @@ object VisLogin: TVisLogin
       EchoMode = emPassword
       OnKeyDown = edPasswordKeyDown
       PasswordChar = '*'
-      TabOrder = 1
+      TabOrder = 3
     end
   end
   object Panel2: TPanel

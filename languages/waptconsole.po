@@ -655,12 +655,21 @@ msgstr ""
 msgid "Loading"
 msgstr ""
 
+#: tvislogin.actselectconf.caption
+msgctxt "TVISLOGIN.ACTSELECTCONF.CAPTION"
+msgid "OK"
+msgstr ""
+
 #: tvislogin.bitbtn1.hint
 msgid "Configure WAPT console"
 msgstr ""
 
 #: tvislogin.caption
 msgid "WAPT authentication"
+msgstr ""
+
+#: tvislogin.cbconfiguration.text
+msgid "waptconsole"
 msgstr ""
 
 #: tvislogin.labserver.caption
@@ -675,6 +684,10 @@ msgstr ""
 
 #: tvislogin.labversion.caption
 msgid "LabVersion"
+msgstr ""
+
+#: tvislogin.laconfiguration.caption
+msgid "Configuration"
 msgstr ""
 
 #: tvislogin.lapassword.caption
