@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.1"
+__version__ = "1.5.1.17"
 
 usage = """\
 %prog [--use-kerberos] [--force-https]"""
@@ -321,6 +321,7 @@ def main():
         shutil.copyfile(options.configfile,'%s.bck_%s'%  (options.configfile,datetime_now.isoformat()) )
 
     waptserver_ini = iniparse.RawConfigParser()
+    waptserver_ini.add_section('options')
     waptserver_ini.read(options.configfile)
     if waptserver_ini.has_option('options', 'wapt_folder'):
         wapt_folder = waptserver_ini.get('options', 'wapt_folder')
@@ -340,7 +341,7 @@ def main():
     server_config = waptserver_config.load_config(options.configfile)
     #load_db_config(server_config)
     #init_db()
-    run("sudo -i -u wapt /opt/wapt/bin/python /opt/wapt/waptserver/waptserver_model.py init_db ")
+    run("sudo -u wapt PYTHONHOME=/opt/wapt PYTHONPATH=/opt/wapt /opt/wapt/bin/python /opt/wapt/waptserver/waptserver_model.py init_db ")
 
     if check_mongo2pgsql_upgrade_needed(waptserver_ini):
         print ("MongoDB migrated to PostgreSQL and disabled ")
