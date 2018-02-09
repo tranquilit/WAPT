@@ -966,7 +966,7 @@ begin
     ini.WriteInteger(self.name,'Width',Self.Width);
     ini.WriteInteger(self.name,'Height',Self.Height);
 
-    ini.WriteString(self.name,cbGroups.Text,'cbGroups.Text');
+    ini.WriteString(self.name,'cbGroups.Text',cbGroups.Text);
 
     {$ifdef ENTERPRISE}
     ini.WriteString(self.name,'cbADSite',cbADSite.Text);
@@ -3586,6 +3586,7 @@ begin
     cbSearchSoftwares.Checked:=False;
 
     cbGroups.ItemIndex:=-1;
+    cbGroups.Text:='';
 
     {$ifdef ENTERPRISE}
     cbADSite.ItemIndex:=-1;
