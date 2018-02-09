@@ -50,11 +50,11 @@ FileName=$[Project-Path]waptdevutils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node7]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]wapt-get.ini
+FileName=$[Project-Path]wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node8]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]wapt-get.py
+FileName=$[Project-Path]wapt-get.ini
 
 [Project\ChildNodes\Node0\ChildNodes\Node9]
 ClassName=TProjectFileNode
@@ -1574,5 +1574,8 @@ Count=63
 Count=2
 
 [Project\ExtraPythonPath]
-Count=0
+Item0=c:\tranquilit\wapt
+Item1=c:\tranquilit\wapt\waptserver
+Item2=c:\tranquilit\wapt\waptservice
+Count=3
 

@@ -87,7 +87,7 @@ from flask_socketio import SocketIO, disconnect, send, emit
 from peewee import *
 from playhouse.postgres_ext import *
 
-from waptserver_model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups
+from waptserver_model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups,HostWsus
 from waptserver_model import get_db_version, init_db, wapt_db, model_to_dict, dict_to_model, update_host_data
 from waptserver_model import upgrade_db_structure
 from waptserver_model import load_db_config
@@ -1735,8 +1735,6 @@ def get_hosts():
             if query is not None and not_filter:
                 query = ~ query  # pylint: disable=invalid-unary-operand-type
 
-
-
             limit = int(request.args.get('limit', 1000))
 
             req = Hosts.select(*build_fields_list(Hosts, columns)).limit(limit)
@@ -1802,6 +1800,8 @@ def host_data():
             result = list(HostSoftwares.select().where(HostSoftwares.host == uuid).dicts())
         elif field == 'installed_packages':
             result = list(HostPackagesStatus.select().where(HostPackagesStatus.host == uuid).dicts())
+        elif field == 'waptwua':
+            result = list(HostWsus.select().where(HostWsus.host == uuid).dicts())
         else:
             data = Hosts\
                 .select(Hosts.uuid, Hosts.computer_fqdn, Hosts.fieldbyname(field))\

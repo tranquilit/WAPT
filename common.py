@@ -1314,12 +1314,8 @@ class WaptServer(BaseObjectClass):
                 if scheme == 'https' and has_kerberos and self.use_kerberos:
                     return requests_kerberos.HTTPKerberosAuth(mutual_authentication=requests_kerberos.DISABLED,principal=self.get_computer_principal())
                     # TODO : simple auth if kerberos is not available...
-                elif self.client_certificate:
-                    return (self.client_certificate,self.client_private_key)
                 else:
                     return self.ask_user_password(action)
-            elif self.client_certificate:
-                return (self.client_certificate,self.client_private_key)
             else:
                 return self.ask_user_password(action)
         else:
@@ -1521,6 +1517,7 @@ class WaptServer(BaseObjectClass):
             req = requests.get("%s/%s" % (surl,action),
                 proxies=self.proxies,verify=self.verify_cert,
                 timeout=timeout or self.timeout,auth=auth,
+                cert=self.client_auth(),
                 headers=default_http_headers(),
                 allow_redirects=True)
             if req.status_code == 401:
@@ -1592,6 +1589,7 @@ class WaptServer(BaseObjectClass):
                             timeout=timeout or self.timeout,
                             headers=headers,
                             auth=auth,
+                            cert=self.client_auth(),
                             allow_redirects=True)
                     if req.status_code == 401:
                         retry_count += 1
@@ -1609,6 +1607,7 @@ class WaptServer(BaseObjectClass):
                     verify=self.verify_cert,
                     timeout=timeout or self.timeout,
                     auth=auth,
+                    cert=self.client_auth(),
                     headers=headers,
                     allow_redirects=True)
 
@@ -1624,6 +1623,15 @@ class WaptServer(BaseObjectClass):
         else:
             raise Exception(u'Wapt server url not defined or not found in DNS')
 
+    def client_auth(self):
+        """Return SSL pair (cert,key) filenames for client side SSL auth
+        """
+        if self.client_certificate and os.path.isfile(self.client_certificate) and os.path.isfile(self.client_private_key):
+            return (self.client_certificate,self.client_private_key)
+        else:
+            return None
+
+
     def available(self):
         try:
             if self.server_url:
@@ -1631,6 +1639,7 @@ class WaptServer(BaseObjectClass):
                     verify=self.verify_cert,
                     timeout=self.timeout,
                     auth=None,
+                    cert=self.client_auth(),
                     headers=default_http_headers(),
                     allow_redirects=True)
                 if req.status_code == 401:
@@ -1638,6 +1647,7 @@ class WaptServer(BaseObjectClass):
                         verify=self.verify_cert,
                         timeout=self.timeout,
                         auth=self.auth(action='ping'),
+                        cert=self.client_auth(),
                         headers=default_http_headers(),
                         allow_redirects=True)
                 req.raise_for_status()
