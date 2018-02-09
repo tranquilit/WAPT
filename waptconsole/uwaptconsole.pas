@@ -3607,9 +3607,26 @@ begin
 end;
 
 procedure TVisWaptGUI.cbGroupsKeyPress(Sender: TObject; var Key: char);
+var
+  st:String;
+  select:TDynStringArray;
 begin
   if key=#13 then
+  begin
+    if cbGroups.Items.IndexOf(cbGroups.Text)<0 then
+    begin
+      if StrRight(cbGroups.Text,1)='*' then
+        cbGroups.Text := StrLeft(cbGroups.Text,length(cbGroups.Text)-1);
+      if cbGroups.Items.Count=0 then
+        FillcbGroups;
+      for st in cbGroups.Items do
+        if pos(lowercase(cbGroups.Text),lowercase(st))>0 then
+          StrAppend(Select,St);
+      cbGroups.Text:=StrJoin(',',Select);
+      cbGroups.SelectAll;
+    end;
     ActSearchHost.Execute;
+  end;
 end;
 
 procedure TVisWaptGUI.cbGroupsSelect(Sender: TObject);
