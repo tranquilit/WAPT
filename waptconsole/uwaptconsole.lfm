@@ -1861,8 +1861,8 @@ object VisWaptGUI: TVisWaptGUI
             Constraints.MinWidth = 150
             ItemHeight = 13
             OnDropDown = cbGroupsDropDown
+            OnKeyPress = cbGroupsKeyPress
             OnSelect = cbGroupsSelect
-            Style = csDropDownList
             TabOrder = 0
           end
           object Label20: TLabel

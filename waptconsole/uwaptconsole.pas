@@ -521,6 +521,7 @@ type
     procedure cbADSiteSelect(Sender: TObject);
     procedure cbAdvancedSearchClick(Sender: TObject);
     procedure cbGroupsDropDown(Sender: TObject);
+    procedure cbGroupsKeyPress(Sender: TObject; var Key: char);
     procedure cbGroupsSelect(Sender: TObject);
     procedure CBIncludeSubOUClick(Sender: TObject);
     procedure CBInverseSelectClick(Sender: TObject);
@@ -3408,7 +3409,7 @@ begin
     if cbNeedUpgrade.Checked then
       urlParams.AsArray.Add('need_upgrade=1');
 
-    if cbGroups.ItemIndex>=0 then
+    if (cbGroups.Text<>rsFilterAll) and (cbGroups.Text<>'*') and (cbGroups.Text<>'') then
       urlParams.AsArray.Add(Format('groups=%s',[EncodeURIComponent(cbGroups.Text)]));
 
     {$ifdef ENTERPRISE }
@@ -3603,6 +3604,12 @@ procedure TVisWaptGUI.cbGroupsDropDown(Sender: TObject);
 begin
   if cbGroups.ItemIndex<0 then
     FillCBGroups;
+end;
+
+procedure TVisWaptGUI.cbGroupsKeyPress(Sender: TObject; var Key: char);
+begin
+  if key=#13 then
+    ActSearchHost.Execute;
 end;
 
 procedure TVisWaptGUI.cbGroupsSelect(Sender: TObject);
