@@ -68,6 +68,13 @@ Source: "..\waptenterprise\__init__.py"; DestDir: "{app}\waptenterprise\";
 Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe'); Flags: ignoreversion 
 
 ; command line tools
+Source: "..\wapt-scanpackages.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\wapt-scanpackages.py"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\wapt-signpackages.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\wapt-signpackages.py"; DestDir: "{app}"; Flags: ignoreversion
+
+Source: "..\runwaptservice.bat"; DestDir: "{app}"; Flags: ignoreversion
+
 Source: "..\wapt-get.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\waptguihelper.pyd"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\wapt-get.exe.manifest"; DestDir: "{app}";
@@ -77,7 +84,7 @@ Source: "..\waptexit.exe"; DestDir: "{app}"; Flags: ignoreversion
 ; for local debugging and pyscripter
 Source: "..\wapt.psproj"; DestDir: "{app}"; 
 Source: "..\devwapt.bat"; DestDir: "{app}"; 
-
+Source: "..\waptpyscripter.bat"; DestDir: "{app}"; 
 
 ; deployment/upgrade tool
 Source: "..\waptdeploy.exe"; DestDir: "{app}"; Flags: ignoreversion

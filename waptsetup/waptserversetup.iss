@@ -55,6 +55,8 @@ Source: "..\waptserverpostconf.exe"; DestDir: "{app}"; Flags: ignoreversion;
 ; deployment/upgrade tool
 Source: "..\waptdeploy.exe"; DestDir: "{app}\waptserver\repository\wapt\"; Flags: ignoreversion
 
+Source: "..\runwaptservice.bat"; DestDir: "{app}"; Flags: ignoreversion
+
 #ifdef choose_components
 Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName: "waptserver.ini"; Tasks: InstallWaptserver
 Source: "..\waptserver\*.py"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver       

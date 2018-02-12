@@ -182,23 +182,23 @@ copyfile(makepath(wapt_source_dir, 'waptpackage.py'),'./builddir/opt/wapt/waptpa
 copyfile(makepath(wapt_source_dir, 'wapt-scanpackages.py'),'./builddir/opt/wapt/wapt-scanpackages.py')
 copyfile(makepath(wapt_source_dir, 'wapt-signpackages.py'),'./builddir/opt/wapt/wapt-signpackages.py')
 
+copyfile(makepath(wapt_source_dir, 'wapt-scanpackages'),'./usr/bin/wapt-scanpackages')
+copyfile(makepath(wapt_source_dir, 'wapt-signpackages'),'./usr/bin/wapt-signpackages')
+
 eprint('cryptography patches')
 copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', '__init__.py'),'./builddir/opt/wapt/lib/python2.7/site-packages/cryptography/x509/__init__.py')
 copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.py'),'./builddir/opt/wapt/lib/python2.7/site-packages/cryptography/x509/verification.py')
-
-
-eprint('Add symlink for wapt-scanpackages and wapt-signpackages')
-add_symlink('./opt/wapt/wapt-signpackages.py', './usr/bin/wapt-signpackages')
-add_symlink('./opt/wapt/wapt-scanpackages.py', './usr/bin/wapt-scanpackages')
+os.chmod('./usr/bin/wapt-scanpackages', 0o755)
+os.chmod('./usr/bin/wapt-signpackages', 0o755)
 
 eprint('copying the waptserver files')
 rsync(source_dir, './builddir/opt/wapt/',
       excludes=['postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module'])
 
 # script to run waptserver in foreground mode
-copyfile(makepath(wapt_source_dir, 'runwaptserver.sh'),'./builddir/opt/wapt/runwaptserver.sh')	
+copyfile(makepath(wapt_source_dir, 'runwaptserver.sh'),'./builddir/opt/wapt/runwaptserver.sh')
 os.chmod('./builddir/opt/wapt/runwaptserver.sh', 0o755)
- 
+
 for lib in ('dialog.py', ):
     rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),
           './builddir/opt/wapt/lib/python2.7/site-packages/')

@@ -1,7 +1,7 @@
 object VisCreateWaptSetup: TVisCreateWaptSetup
-  Left = 411
+  Left = 412
   Height = 305
-  Top = 217
+  Top = 218
   Width = 510
   Caption = 'Create WAPT agent'
   ClientHeight = 305
