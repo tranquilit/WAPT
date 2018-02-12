@@ -327,8 +327,8 @@ class PackageEntry(BaseObjectClass):
     # minim attributes for a valid control file
     required_attributes = ['package','version','architecture','section','priority']
     optional_attributes = ['maintainer','description','depends','conflicts','maturity',
-        'locale','min_os_version','max_os_version','min_wapt_version',
-        'sources','installed_size']
+        'locale','target_os','min_os_version','max_os_version','min_wapt_version',
+        'sources','installed_size','impacted_process']
     # attributes which are added by _sign_control
     signature_attributes = ['signer','signer_fingerprint','signature','signature_date','signed_attributes']
 
@@ -391,10 +391,13 @@ class PackageEntry(BaseObjectClass):
         self.signed_attributes=None
 
         self.locale=''
+        self.target_os=''
         self.min_os_version=''
         self.max_os_version=''
         self.min_wapt_version=''
         self.installed_size=''
+
+        self.impacted_process=''
 
         self.md5sum=''
         self.repo_url=''
@@ -1654,7 +1657,11 @@ class WaptBaseRepo(BaseObjectClass):
         self.discarded = []
 
     def _get_packages_index_data(self):
-        """Abstract"""
+        """Method to get packages index as bytes from repository and last update date of ths index
+
+        Returns:
+            tuple (bytes,datetime) : data and last update datetime UTC
+        """
         return (None,datetime.datetime.utcnow())
 
     def get_certificates(self,packages_zipfile=None):
@@ -1691,13 +1698,25 @@ class WaptBaseRepo(BaseObjectClass):
         #logger.debug('Packages embedded certificates : %s' % signer_certificates.certificates())
         return signer_certificates
 
+    def invalidate_packages_cache(self):
+        """Reset in memory packages index"""
+        old_status = dict(_packages=self._packages,_packages_date=self._packages_date,discarded=self.discarded)
+        self._packages = None
+        self._packages_date = None
+        self._index = {}
+        self.discarded = []
+        return old_status
+
     def update(self):
         """Update local index of packages from source index"""
         return self._load_packages_index()
 
     @property
     def packages(self):
-        """Local list of packages"""
+        """Return list of packages, load it from repository if not yet available in memory
+        To force the reload, call invalidate_index_cache() first or update()
+
+        """
         if self._packages is None:
             self._load_packages_index()
         return self._packages
@@ -1959,9 +1978,7 @@ class WaptLocalRepo(WaptBaseRepo):
             # last one
             add(startline,endline)
         else:
-            self._packages = []
-            self._index.clear()
-            self._packages_date = None
+            self.invalidate_packages_cache()
             logger.info('Index file %s does not yet exist' % self.packages_path)
 
     def update_packages_index(self,force_all=False):
@@ -2171,8 +2188,6 @@ class WaptRemoteRepo(WaptBaseRepo):
 
         # create additional properties
         self._repo_url = None
-        self._packages_date = None
-        self._packages = None
         self.http_proxy = None
         self.verify_cert = None
 
@@ -2215,8 +2230,7 @@ class WaptRemoteRepo(WaptBaseRepo):
 
         if value != self._repo_url:
             self._repo_url = value
-            self._packages = None
-            self._packages_date = None
+            self.invalidate_packages_cache()
 
     def load_config(self,config=None,section=None):
         """Load waptrepo configuration from inifile section.

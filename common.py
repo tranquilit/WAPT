@@ -565,7 +565,7 @@ PackageKey = namedtuple('package',('packagename','version'))
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
 
-    curr_db_version = '20180104'
+    curr_db_version = '20180212'
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
@@ -598,8 +598,10 @@ class WaptDB(WaptBaseDB):
           maturity varchar(255),
           locale varchar(255),
           installed_size integer,
+          target_os varchar(255),
           max_os_version varchar(255),
-          min_os_version varchar(255)
+          min_os_version varchar(255),
+          impacted_process varchar(255)
         )"""
                         )
         self.db.execute("""
@@ -728,6 +730,8 @@ class WaptDB(WaptBaseDB):
                     installed_size=None,
                     max_os_version='',
                     min_os_version='',
+                    target_os='',
+                    impacted_process='',
                     ):
 
         with self:
@@ -758,8 +762,10 @@ class WaptDB(WaptBaseDB):
                     min_wapt_version,
                     installed_size,
                     max_os_version,
-                    min_os_version
-                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    min_os_version,
+                    target_os,
+                    impacted_process
+                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,(
                      package,
                      version,
@@ -786,7 +792,9 @@ class WaptDB(WaptBaseDB):
                      min_wapt_version,
                      installed_size,
                      max_os_version,
-                     min_os_version
+                     min_os_version,
+                     target_os,
+                     impacted_process
                      )
                    )
             return cur.lastrowid
@@ -822,6 +830,8 @@ class WaptDB(WaptBaseDB):
                              installed_size=package_entry.installed_size,
                              max_os_version=package_entry.max_os_version,
                              min_os_version=package_entry.min_os_version,
+                             target_os=package_entry.target_os,
+                             impacted_process=package_entry.impacted_process
                              )
 
     def add_start_install(self,package,version,architecture,params_dict={},explicit_by=None,maturity='',locale='',depends='',conflicts=''):
@@ -1093,37 +1103,6 @@ class WaptDB(WaptBaseDB):
             available.reverse()
             if available and (available[0] > p) or (include_errors and (p.install_status == 'ERROR')):
                 result[p.package] = available
-        return result
-
-    def update_repos_list(self,repos_list,force=False,filter_on_host_cap=True):
-        """update the packages database with Packages files from the url repos_list
-            removes obsolete records for repositories which are no more referenced
-            repos_list : list of all the repositories objects referenced by the system
-                          as returned by Wapt.repositories
-            force : update repository even if date of packages index is same as
-                    last retrieved date
-
-        return a dictionary of update_db results for each repository name
-            which has been accessed.
-        >>> wapt = Wapt(config_filename = 'c:/tranquilit/wapt/tests/wapt-get.ini' )
-        >>> res = wapt.waptdb.update_repos_list(wapt.repositories)
-        """
-        with self:
-            result = {}
-            logger.debug(u'Remove unknown repositories from packages table and params (%s)' %(','.join('"%s"'% r.name for r in repos_list),)  )
-            self.db.execute('delete from wapt_package where repo not in (%s)' % (','.join('"%s"'% r.name for r in repos_list)))
-            self.db.execute('delete from wapt_params where name like "last-http%%" and name not in (%s)' % (','.join('"last-%s"'% r.repo_url for r in repos_list)))
-            self.db.execute('delete from wapt_params where name like "last-url-%%" and name not in (%s)' % (','.join('"last-url-%s"'% r.name for r in repos_list)))
-            for repo in repos_list:
-                # if auto discover, repo_url can be None if no network.
-                if repo.repo_url:
-                    try:
-                        logger.info(u'Getting packages from %s' % repo.repo_url)
-                        result[repo.name] = repo.update_db(waptdb=self,force=force,filter_on_host_cap=filter_on_host_cap)
-                    except Exception as e:
-                        logger.critical(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
-                else:
-                    logger.info('No location found for repository %s, skipping' % (repo.name))
         return result
 
     def build_depends(self,packages):
@@ -1988,84 +1967,6 @@ class WaptRepo(WaptRemoteRepo):
             logger.debug(u'Waptrepo.find_wapt_repo_url: exception: %s' % (e,))
             raise
 
-    def update_db(self,force=False,waptdb=None,filter_on_host_cap=True):
-        """Get Packages from http repo and update local package database
-        return last-update header
-
-        The local status DB is updated. Date of index is stored in params table
-        for further checks.
-
-        Args:
-            force (bool): get index from remote repo even if creation date is not newer
-                          than the datetime stored in local status database
-            waptdb (WaptDB): instance of Wapt status database.
-
-        Returns:
-            isodatetime: date of Packages index
-
-        >>> import common
-        >>> repo = common.WaptRepo('wapt','http://wapt/wapt')
-        >>> localdb = common.WaptDB('c:/wapt/db/waptdb.sqlite')
-        >>> last_update = repo.is_available()
-        >>> repo.update_db(waptdb=localdb) == last_update
-        True
-        """
-
-        result = None
-        last_modified = waptdb.get_param('last-%s'%(self.repo_url[:59]))
-        last_url = waptdb.get_param('last-url-%s' % self.name)
-
-        # Check if updated
-        if force or self.repo_url != last_url or self.need_update(last_modified):
-            old_packages = self._packages
-            old_packages_date = self._packages_date
-            os_version = setuphelpers.windows_version()
-
-            with waptdb:
-                try:
-                    logger.debug(u'Read remote Packages index file %s' % self.packages_url)
-                    self._packages = None
-                    self._packages_date = None
-
-                    last_modified = self.packages_date
-
-                    waptdb.purge_repo(self.name)
-                    for package in self.packages:
-                        if filter_on_host_cap:
-                            if package.min_wapt_version and Version(package.min_wapt_version)>Version(setuphelpers.__version__):
-                                logger.debug('Skipping package %s on repo %s, requires a newer Wapt agent. Minimum version: %s' % (package.asrequirement(),self.name,package.min_wapt_version))
-                                continue
-                            if package.min_os_version and os_version < Version(package.min_os_version):
-                                logger.debug('Discarding package %s on repo %s, requires OS version > %s' % (package.asrequirement(),self.name,package.min_os_version))
-                                continue
-                            if package.max_os_version and os_version > Version(package.max_os_version):
-                                logger.debug('Discarding package %s on repo %s, requires OS version < %s' % (package.asrequirement(),self.name,package.max_os_version))
-                                continue
-                            if package.architecture == 'x64' and not setuphelpers.iswin64():
-                                logger.debug('Discarding package %s on repo %s, requires OS with x64 architecture' % (package.asrequirement(),self.name,))
-                                continue
-                            if package.architecture == 'x86' and setuphelpers.iswin64():
-                                logger.debug('Discarding package %s on repo %s, target OS with x86-32 architecture' % (package.asrequirement(),self.name,))
-                                continue
-
-                        try:
-                            waptdb.add_package_entry(package)
-                        except:
-                            logger.critical('Invalid signature for package control entry %s on repo %s : discarding' % (package.asrequirement(),self.name) )
-
-                    logger.debug(u'Storing last-modified header for repo_url %s : %s' % (self.repo_url,self.packages_date))
-                    waptdb.set_param('last-%s' % self.repo_url[:59],self.packages_date)
-                    waptdb.set_param('last-url-%s' % self.name, self.repo_url)
-                    return last_modified
-                except Exception as e:
-                    logger.info(u'Unable to update repository status of %s, error %s'%(self._repo_url,e))
-                    self._packages = old_packages
-                    self._packages_date = old_packages_date
-                    raise
-        else:
-            return waptdb.get_param('last-%s' % self.repo_url[:59])
-
-
     def load_config(self,config,section=None):
         """Load waptrepo configuration from inifile section.
 
@@ -2415,6 +2316,7 @@ class Wapt(BaseObjectClass):
         self.after_upload = None
         self.proxies = None
         self.language = None
+        self.locales = []
 
         self.use_http_proxy_for_repo = False
         self.use_http_proxy_for_server = False
@@ -3227,6 +3129,8 @@ class Wapt(BaseObjectClass):
                 raise EWaptDiskSpace('This package requires at least %s free space. The "Program File"s drive has only %s free space' %
                     (format_bytes(entry.installed_size),format_bytes(free_disk_space)))
 
+            if entry.target_os and entry.target_os != 'windows':
+                raise EWaptBadTargetOS('This package is designed for OS %s' % entry.target_os)
             os_version = setuphelpers.windows_version()
             if entry.min_os_version and os_version < Version(entry.min_os_version):
                 raise EWaptBadTargetOS('This package requires that OS be at least %s' % entry.min_os_version)
@@ -3623,6 +3527,118 @@ class Wapt(BaseObjectClass):
                         logger.warning(u'Unable to remove %s : %s' % (f,ensure_unicode(e)))
         return result
 
+    def _update_db(self,repo,force=False,filter_on_host_cap=True):
+        """Get Packages from http repo and update local package database
+        return last-update header
+
+        The local status DB is updated. Date of index is stored in params table
+        for further checks.
+
+        Args:
+            force (bool): get index from remote repo even if creation date is not newer
+                          than the datetime stored in local status database
+            waptdb (WaptDB): instance of Wapt status database.
+
+        Returns:
+            isodatetime: date of Packages index
+
+        >>> import common
+        >>> repo = common.WaptRepo('wapt','http://wapt/wapt')
+        >>> localdb = common.WaptDB('c:/wapt/db/waptdb.sqlite')
+        >>> last_update = repo.is_available()
+        >>> repo.update_db(waptdb=localdb) == last_update
+        True
+        """
+
+        result = None
+        last_modified = self.waptdb.get_param('last-%s'%(repo.repo_url[:59]))
+        last_url = self.waptdb.get_param('last-url-%s' % repo.name)
+
+        # Check if updated
+        if force or repo.repo_url != last_url or repo.need_update(last_modified):
+            os_version = setuphelpers.windows_version()
+            old_status = repo.invalidate_packages_cache()
+
+            with self.waptdb:
+                try:
+                    logger.debug(u'Read remote Packages index file %s' % repo.packages_url)
+                    last_modified = repo.packages_date
+
+                    self.waptdb.purge_repo(repo.name)
+                    for package in repo.packages:
+                        if filter_on_host_cap:
+                            if package.min_wapt_version and Version(package.min_wapt_version)>Version(setuphelpers.__version__):
+                                logger.debug('Skipping package %s on repo %s, requires a newer Wapt agent. Minimum version: %s' % (package.asrequirement(),repo.name,package.min_wapt_version))
+                                continue
+                            if package.locale and self.locales and not package.locale in self.locales:
+                                logger.debug('Skipping package %s on repo %s, designed for locale %s' %(package.asrequirement(),repo.name,package.locale))
+                                continue
+                            if package.target_os and package.target_os != 'windows':
+                                logger.debug('Skipping package %s on repo %s, designed for OS %s' %(package.asrequirement(),repo.name,package.target_os))
+                                continue
+                            if package.min_os_version and os_version < Version(package.min_os_version):
+                                logger.debug('Discarding package %s on repo %s, requires OS version > %s' % (package.asrequirement(),repo.name,package.min_os_version))
+                                continue
+                            if package.max_os_version and os_version > Version(package.max_os_version):
+                                logger.debug('Discarding package %s on repo %s, requires OS version < %s' % (package.asrequirement(),repo.name,package.max_os_version))
+                                continue
+                            if package.architecture == 'x64' and not setuphelpers.iswin64():
+                                logger.debug('Discarding package %s on repo %s, requires OS with x64 architecture' % (package.asrequirement(),repo.name,))
+                                continue
+                            if package.architecture == 'x86' and setuphelpers.iswin64():
+                                logger.debug('Discarding package %s on repo %s, target OS with x86-32 architecture' % (package.asrequirement(),repo.name,))
+                                continue
+
+                        try:
+                            self.waptdb.add_package_entry(package)
+                        except:
+                            logger.critical('Invalid signature for package control entry %s on repo %s : discarding' % (package.asrequirement(),repo.name) )
+
+                    logger.debug(u'Storing last-modified header for repo_url %s : %s' % (repo.repo_url,repo.packages_date))
+                    self.waptdb.set_param('last-%s' % repo.repo_url[:59],repo.packages_date)
+                    self.waptdb.set_param('last-url-%s' % repo.name, repo.repo_url)
+                    return last_modified
+                except Exception as e:
+                    logger.info(u'Unable to update repository status of %s, error %s'%(repo._repo_url,e))
+                    # put back cached status data
+                    for (k,v) in old_status.iteritems():
+                        setattr(repo,k,v)
+                    raise
+        else:
+            return self.waptdb.get_param('last-%s' % repo.repo_url[:59])
+
+    def _update_repos_list(self,force=False,filter_on_host_cap=True):
+        """update the packages database with Packages files from the url repos_list
+            removes obsolete records for repositories which are no more referenced
+            repos_list : list of all the repositories objects referenced by the system
+                          as returned by Wapt.repositories
+            force : update repository even if date of packages index is same as
+                    last retrieved date
+
+        return a dictionary of update_db results for each repository name
+            which has been accessed.
+        >>> wapt = Wapt(config_filename = 'c:/tranquilit/wapt/tests/wapt-get.ini' )
+        >>> res = wapt.waptdb.update_repos_list(wapt.repositories)
+        """
+        with self.waptdb:
+            result = {}
+            logger.debug(u'Remove unknown repositories from packages table and params (%s)' %(','.join('"%s"'% r.name for r in self.repositories),)  )
+            self.waptdb.db.execute('delete from wapt_package where repo not in (%s)' % (','.join('"%s"'% r.name for r in self.repositories)))
+            self.waptdb.db.execute('delete from wapt_params where name like "last-http%%" and name not in (%s)' % (','.join('"last-%s"'% r.repo_url for r in self.repositories)))
+            self.waptdb.db.execute('delete from wapt_params where name like "last-url-%%" and name not in (%s)' % (','.join('"last-url-%s"'% r.name for r in self.repositories)))
+            for repo in self.repositories:
+                # if auto discover, repo_url can be None if no network.
+                if repo.repo_url:
+                    try:
+                        logger.info(u'Getting packages from %s' % repo.repo_url)
+                        result[repo.name] = self._update_db(repo,force=force,filter_on_host_cap=filter_on_host_cap)
+                    except Exception as e:
+                        logger.critical(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
+                else:
+                    logger.info('No location found for repository %s, skipping' % (repo.name))
+        return result
+
+
     def update(self,force=False,register=True,filter_on_host_cap=True):
         """Update local database with packages definition from repositories
 
@@ -3647,8 +3663,7 @@ class Wapt(BaseObjectClass):
         """
         previous = self.waptdb.known_packages()
         # (main repo is at the end so that it will used in priority)
-        self.waptdb.update_repos_list(self.repositories,force=force,
-            filter_on_host_cap=filter_on_host_cap)
+        self._update_repos_list(force=force,filter_on_host_cap=filter_on_host_cap)
 
         current = self.waptdb.known_packages()
         result = {
