@@ -184,12 +184,12 @@ copyfile(makepath(wapt_source_dir, 'wapt-signpackages.py'),'./builddir/opt/wapt/
 
 copyfile(makepath(wapt_source_dir, 'wapt-scanpackages'),'./builddir/usr/bin/wapt-scanpackages')
 copyfile(makepath(wapt_source_dir, 'wapt-signpackages'),'./builddir/usr/bin/wapt-signpackages')
+os.chmod('./builddir/usr/bin/wapt-scanpackages', 0o755)
+os.chmod('./builddir/usr/bin/wapt-signpackages', 0o755)
 
 eprint('cryptography patches')
 copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', '__init__.py'),'./builddir/opt/wapt/lib/python2.7/site-packages/cryptography/x509/__init__.py')
 copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.py'),'./builddir/opt/wapt/lib/python2.7/site-packages/cryptography/x509/verification.py')
-os.chmod('./builddir/usr/bin/wapt-scanpackages', 0o755)
-os.chmod('./builddir/usr/bin/wapt-signpackages', 0o755)
 
 eprint('copying the waptserver files')
 rsync(source_dir, './builddir/opt/wapt/',
