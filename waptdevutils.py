@@ -675,9 +675,6 @@ def render_jinja2_template(template_str,json_data):
         return json_data
 
 if __name__ == '__main__':
-    edit_hosts_depends(r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini',['C5921400-3476-11E2-9D6F-F806DF88E3E5','54313B54-F9E3-DC41-9EE5-EBBE7A9BB584'],
-        append_depends='socle',key_password='test',wapt_server_user='admin',wapt_server_passwd='calimero')
-
     import doctest
     import sys
     reload(sys)
