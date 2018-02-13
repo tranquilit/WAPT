@@ -248,7 +248,7 @@ Name=update-package-sources
 ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=update-package-sources "$[Project-Path].."
+Parameters=update-package-sources -j "$[Project-Path].."
 WorkingDir=$[Project-Path]..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -271,7 +271,5 @@ Count=9
 Count=2
 
 [Project\ExtraPythonPath]
-Item0=%(wapt_base_dir)s
-Item1=%(wapt_base_dir)s\lib\site-packages
-Count=2
+Count=0
 

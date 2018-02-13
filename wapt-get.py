@@ -737,7 +737,8 @@ def main():
                     jsonresult['result'] = result
                 else:
                     print(u"Packages updated :\n%s" % ' '.join(result))
-                    common.wapt_sources_edit(result)
+                    if len(result) == 1:
+                        common.wapt_sources_edit(result[0])
 
             elif action == 'make-template':
                 if len(args) < 2:
