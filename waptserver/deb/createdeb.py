@@ -156,6 +156,7 @@ mkdir_p('builddir/opt/wapt/lib')
 mkdir_p('builddir/opt/wapt/log')
 mkdir_p('builddir/opt/wapt/lib/python2.7/site-packages')
 mkdir_p('builddir/opt/wapt/waptserver')
+mkdir_p('builddir/usr/bin/')
 
 open(os.path.join('./builddir/opt/wapt/waptserver','VERSION'),'w').write(full_version)
 

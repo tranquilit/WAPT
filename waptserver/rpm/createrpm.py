@@ -140,6 +140,7 @@ mkdir_p('builddir/opt/wapt/lib')
 mkdir_p('builddir/opt/wapt/conf')
 mkdir_p('builddir/opt/wapt/log')
 mkdir_p('builddir/opt/wapt/lib/python2.7/site-packages')
+mkdir_p('builddir/usr/bin')
 
 # we use pip and virtualenv to get the wapt dependencies. virtualenv usage here is a bit awkward, it can probably be improved. For instance, it install a outdated version of pip that cannot install Rocket dependencies...
 # for some reason the virtualenv does not build itself right if we don't
