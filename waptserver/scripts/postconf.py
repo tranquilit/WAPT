@@ -412,7 +412,7 @@ def main():
     run("/bin/chown wapt %s" % options.configfile)
 
     repo = WaptLocalRepo(wapt_folder)
-    repo.update_packages_index()
+    repo.update_packages_index(force_all=True)
 
     final_msg = ['Postconfiguration completed.',]
     postconf.msgbox("Press ok to start waptserver")

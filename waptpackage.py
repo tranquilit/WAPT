@@ -2010,20 +2010,20 @@ class WaptLocalRepo(WaptBaseRepo):
         signer_certificates = SSLCABundle()
 
         old_entries = {}
-        for package in self.packages:
-            # keep only entries which are older than index. Other should be recalculated.
-            localwaptfile = os.path.abspath(os.path.join(self.localpath,os.path.basename(package.filename)))
-            if os.path.isfile(localwaptfile):
-                if fileisoutcdate(localwaptfile) <= self._packages_date:
-                    old_entries[os.path.basename(package.filename)] = package
+        if self._packages:
+            for package in self.packages:
+                # keep only entries which are older than index. Other should be recalculated.
+                localwaptfile = os.path.abspath(os.path.join(self.localpath,os.path.basename(package.filename)))
+                if os.path.isfile(localwaptfile):
+                    if fileisoutcdate(localwaptfile) <= self._packages_date:
+                        old_entries[os.path.basename(package.filename)] = package
+                    else:
+                        logger.info("Don't keep old entry for %s, wapt package is newer than index..." % package.asrequirement())
                 else:
-                    logger.info("Don't keep old entry for %s, wapt package is newer than index..." % package.asrequirement())
-            else:
-                logger.info('Stripping entry without matching file : %s'%localwaptfile)
+                    logger.info('Stripping entry without matching file : %s'%localwaptfile)
 
         if not os.path.isdir(self.localpath):
             raise Exception(u'%s is not a directory' % (self.localpath))
-
         waptlist = glob.glob(os.path.abspath(os.path.join(self.localpath,'*.wapt')))
         packages_lines = []
         kept = []
