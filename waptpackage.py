@@ -517,7 +517,13 @@ class PackageEntry(BaseObjectClass):
                 i1,i2  = d1.get(key), d2.get(key)
                 # compare to partial version number (kind of wilcard)
                 if i1 is not None and i2 is None and not isinstance(entry_or_version,PackageEntry):
-                    return 0
+                    if d2.get('packaging') is None:
+                        return 0
+                    else:
+                        # assume None is 0 and compare packaging
+                        i2=0
+                if i1 is None and i2 is not None and not isinstance(entry_or_version,PackageEntry):
+                    i1 = 0
                 v = cmp(i1,i2)
                 if v:
                     return v
