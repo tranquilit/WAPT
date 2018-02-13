@@ -163,10 +163,15 @@ parser.add_option("--log-to-windows-events",dest="log_to_windows_events",    def
 
 encoding = options.encoding
 if not encoding:
-    encoding = sys.stdout.encoding or 'cp850'
+    # only if not in pyscripter (rpyc)
+    if not hasattr(sys.stdout,'conn'):
+        encoding = sys.stdout.encoding or 'cp850'
+    else:
+        encoding = 'cp850'
 
-sys.stdout = codecs.getwriter(encoding)(sys.stdout,'replace')
-sys.stderr = codecs.getwriter(encoding)(sys.stderr,'replace')
+if not hasattr(sys.stdout,'conn'):
+    sys.stdout = codecs.getwriter(encoding)(sys.stdout,'replace')
+    sys.stderr = codecs.getwriter(encoding)(sys.stderr,'replace')
 
 # setup Logger
 logger = logging.getLogger()
