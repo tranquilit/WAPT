@@ -42,7 +42,9 @@ import datetime
 
 import jinja2
 import time
-
+import random
+import string
+import iniparse
 
 from setuphelpers import run
 from waptutils import setloglevel
@@ -336,6 +338,14 @@ def install_waptserver_service():
     service_logfile = os.path.join(log_directory, 'nssm_waptserver.log')
     service_dependencies = 'WAPTPostgresql'
     install_windows_nssm_service('WAPTServer',service_binary,service_parameters,service_logfile,service_dependencies)
+
+    waptserver_ini = iniparse.RawConfigParser()
+    waptserver_ini.add_section('options')
+    waptserver_ini.read(DEFAULT_CONFIG_FILE)
+    if not waptserver_ini.has_option('options','secret_key') or not waptserver_ini.get('options','secret_key') :
+        waptserver_ini.set('options','secret_key',''.join(random.SystemRandom().choice(string.letters + string.digits) for _ in range(64)))
+        with open(DEFAULT_CONFIG_FILE,'w') as inifile:
+           waptserver_ini.write(inifile)
 
 if __name__ == '__main__':
     usage = """\
