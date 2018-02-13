@@ -2325,6 +2325,8 @@ class Wapt(BaseObjectClass):
         self.forced_uuid = None
         self.use_fqdn_as_uuid = False
 
+        self.forced_host_dn = None
+
         try:
             self.wapt_base_dir = os.path.dirname(__file__)
         except NameError:
@@ -2545,6 +2547,17 @@ class Wapt(BaseObjectClass):
         if self.config.has_option('global','sign_digests'):
             self.sign_digests = ensure_list(self.config.get('global','sign_digests'))
 
+
+        if self.config.has_option('global','host_dn'):
+            self.forced_host_dn = self.config.get('global','host_dn')
+            if self.forced_host_dn != self.host_dn:
+                logger.debug('Storing new forced hos_dn DB %s' % self.forced_host_dn)
+                self.host_dn = self.forced_host_dn
+        else:
+            # force reset to None if config file is changed at runtime
+            self.forced_host_dn = None
+
+
         # Get the configuration of all repositories (url, ...)
         self.repositories = []
         # secondary
@@ -2726,11 +2739,13 @@ class Wapt(BaseObjectClass):
 
     @host_uuid.setter
     def host_uuid(self,value):
+        self.forced_uuid = value
         self.write_param('uuid',value)
 
 
     @host_uuid.deleter
     def host_uuid(self):
+        self.forced_uuid = None
         self.delete_param('uuid')
 
     def generate_host_uuid(self,forced_uuid=None):
@@ -2758,6 +2773,7 @@ class Wapt(BaseObjectClass):
 
     def reset_host_uuid(self):
         """Reset host uuid to bios provided UUID.
+        If it was forced in ini file, remove setting from ini file.
         """
         del(self.host_uuid)
         ini = RawConfigParser()
@@ -2766,6 +2782,50 @@ class Wapt(BaseObjectClass):
             ini.remove_option('global','uuid')
             ini.write(open(self.config_filename,'w'))
         return self.host_uuid
+
+
+    @property
+    def host_dn(self):
+        """Get host DN from wapt-get.ini [global] host_dn if defined
+        or from registry as supplied by AD / GPO process
+        """
+
+        previous_host_dn = self.read_param('host_dn')
+        default_host_dn = setuphelpers.registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Distinguished-Name')
+        new_host_dn = None
+
+        if self.forced_host_dn:
+            new_host_dn = self.forced_host_dn
+        elif previous_host_dn:
+            new_host_dn = previous_host_dn
+        else:
+            new_host_dn = default_host_dn
+
+        if not previous_host_dn or previous_host_dn != new_host_dn:
+            self.write_param('host_dn',new_host_dn)
+        return new_host_dn
+
+    @host_dn.setter
+    def host_dn(self,value):
+        self.forced_host_dn = value
+        self.write_param('host_dn',value)
+
+    @host_dn.deleter
+    def host_dn(self):
+        self.forced_host_dn = None
+        self.delete_param('host_dn')
+
+    def reset_host_dn(self):
+        """Reset forced host to AD / GPO registry defaults.
+        If it was forced in ini file, remove setting from ini file.
+        """
+        del(self.host_dn)
+        ini = RawConfigParser()
+        ini.read(self.config_filename)
+        if ini.has_option('global','host_dn'):
+            ini.remove_option('global','host_dn')
+            ini.write(open(self.config_filename,'w'))
+        return self.host_dn
 
 
     def http_upload_package(self,packages,wapt_server_user=None,wapt_server_passwd=None):
@@ -3633,7 +3693,7 @@ class Wapt(BaseObjectClass):
             authorized_certs=[c.fingerprint for c in self.authorized_certificates()],
             #authorized_maturities=self.get_host_maturities(),
             wapt_version=setuphelpers.__version__,
-            host_dn=self.get_host_dn(),
+            host_dn=self.host_dn,
             host_site=self.get_host_site(),
         )
         return hashlib.sha256(jsondump(host_capa)).hexdigest()
@@ -4162,7 +4222,7 @@ class Wapt(BaseObjectClass):
             try:
                 self.check_cancelled()
                 # development mode, remove a package by its directory
-                if os.path.isfile(os.path.join(package,'WAPT','control')):
+                if isinstance(package,(str,unicode)) and os.path.isfile(os.path.join(package,'WAPT','control')):
                     package = PackageEntry().load_control_from_wapt(package).package
                 elif isinstance(package,PackageEntry):
                     package = package.package
@@ -4261,29 +4321,22 @@ class Wapt(BaseObjectClass):
         #return "%s" % (setuphelpers.get_hostname().lower())
         return "%s" % (self.host_uuid,)
 
-    def get_host_dn(self):
-        """Returns last known computer Distinguished-Name as a cn=id,ou=suborg,ou=org,dc=domain,dc=tld
+    def get_host_packages_names(self):
+        """Return list of implicit host package names based on computer UUID and AD Org Units
 
         Returns:
-            str
-
-        >>>
+            list: list of str package names.
         """
-        return setuphelpers.registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Distinguished-Name')
-
-    def get_host_packages(self):
-        """Return list of implicit host packages based on computer UUID and AD Org Units
+        """Return list of implicit available host packages based on computer UUID and AD Org Units
 
         Returns:
             list: list of PackageEntry.
         """
         result = []
         host_package = self.host_packagename()
-        packages = self.is_available(host_package)
-        if packages and packages[-1].section == 'host':
-            result.append(packages[-1])
+        result.append(host_package)
 
-        host_dn = self.get_host_dn()
+        host_dn = self.host_dn
         if host_dn:
             dn_parts = host_dn.split(',')
             for i in range(1,len(dn_parts)):
@@ -4292,11 +4345,22 @@ class Wapt(BaseObjectClass):
                 if dn_part_type.lower() == 'dc' and  dn_part_type == previous_dn_part_type:
                     break
                 level_dn = ','.join(dn_parts[i:])
-                logger.debug('Checking if %s is available'% level_dn)
-                packages = self.is_available(level_dn)
-                if packages and packages[-1].section == 'unit':
-                    result.append(packages[-1])
+                result.append(level_dn)
                 previous_dn_part_type = dn_part_type
+        return result
+
+    def get_host_packages(self):
+        """Return list of implicit available host packages based on computer UUID and AD Org Units
+
+        Returns:
+            list: list of PackageEntry.
+        """
+        result = []
+        package_names = self.get_host_packages_names()
+        for pn in package_names:
+            packages = self.is_available(pn)
+            if packages and packages[-1].section in ('host','unit'):
+                result.append(packages[-1])
         return result
 
     def get_outdated_host_packages(self):
@@ -4312,6 +4376,13 @@ class Wapt(BaseObjectClass):
                 result.append(package)
         return result
 
+    def get_unrelevant_host_packages(self):
+        """Uninstall host and unit packages which are no longer relevant
+        """
+        installed_host_packages = [p.package for p in self.installed(True).values() if p.section in ('host','unit')]
+        expected_host_packages = self.get_host_packages_names()
+        return [pn for pn in installed_host_packages if pn not in expected_host_packages]
+
     def upgrade(self):
         """Install "well known" host package from main repository if not already installed
         then query localstatus database for packages with a version older than repository
@@ -4323,11 +4394,20 @@ class Wapt(BaseObjectClass):
                      'remove': [], 'skipped': [], 'install': [], 'errors': [], 'unavailable': []}
         """
         self.runstatus='Upgrade system'
+        result = dict(
+            install=[],
+            upgrade=[],
+            additional=[],
+            remove=[],
+            errors=[])
         try:
             if self.use_hostpackages:
-                host_packages = self.get_outdated_host_packages()
-                if host_packages:
-                    logger.info(u'Host packages %s are available and not installed, installing host packages...' % (' '.join(h.package for h in host_packages),))
+                unrelevant_host_packages = self.get_unrelevant_host_packages()
+                if unrelevant_host_packages:
+                    result = merge_dict(result,self.remove(unrelevant_host_packages,force=True))
+                install_host_packages = self.get_outdated_host_packages()
+                if install_host_packages:
+                    logger.info(u'Host packages %s are available and not installed, installing host packages...' % (' '.join(h.package for h in install_host_packages),))
                     hostresult = self.install(host_packages,force=True)
                 else:
                     hostresult = {}
@@ -4336,7 +4416,7 @@ class Wapt(BaseObjectClass):
 
             upgrades = self.waptdb.upgradeable()
             logger.debug(u'upgrades : %s' % upgrades.keys())
-            result = self.install(upgrades.keys(),force=True)
+            result = merge_dict(result,self.install(upgrades.keys(),force=True))
             self.store_upgrade_status()
 
             # merge results
@@ -4359,6 +4439,9 @@ class Wapt(BaseObjectClass):
         # put 'host' package at the end.
         result['upgrade'].extend([p[0].asrequirement() for p in self.waptdb.upgradeable().values() if p and not p[0].section in ('host','unit')])
         if self.use_hostpackages:
+            to_remove = self.get_unrelevant_host_packages()
+            result['remove'].extend(to_remove)
+
             host_packages = self.get_outdated_host_packages()
             if host_packages:
                 for p in host_packages:
@@ -4373,7 +4456,7 @@ class Wapt(BaseObjectClass):
                 req = candidate.asrequirement()
                 if not req in result['install']+result['upgrade']+result['additional']:
                     result[l].append(req)
-        result['remove'] = [p[1].asrequirement() for p in depends['remove']]
+        result['remove'].extend([p[1].asrequirement() for p in depends['remove'] if p.package not in result['remove']])
         return result
 
     def search(self,searchwords=[],exclude_host_repo=True,section_filter=None,newest_only=False):
@@ -4690,6 +4773,7 @@ class Wapt(BaseObjectClass):
                     # stores for next round.
                     old_hashes.update(new_hashes)
                     self._update_server_hashes = old_hashes
+                    self.write_param('last_update_server_status_timestamp',str(datetime.datetime.utcnow()))
                     logger.info(u'Status on server %s updated properly'%self.waptserver.server_url)
                 else:
                     logger.info(u'Error updating Status on server %s: %s' % (self.waptserver.server_url,result and result['msg'] or 'No message'))
