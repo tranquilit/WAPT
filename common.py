@@ -1666,7 +1666,7 @@ class WaptServer(BaseObjectClass):
 
             # TODO : issue if more hosts to upload than allowed open file handles.
             if pe.localpath and os.path.isfile(pe.localpath):
-                if pe.section in ['host','group']:
+                if pe.section in ['host','group','unit']:
                     # small local files, don't stream, we will upload many at once with form encoded files
                     files[os.path.basename(package_filename)] = open(pe.localpath,'rb').read()
                 else:
@@ -4221,16 +4221,56 @@ class Wapt(BaseObjectClass):
         #return "%s" % (setuphelpers.get_hostname().lower())
         return "%s" % (self.host_uuid,)
 
-    def check_host_package_outdated(self):
-        """Check and return the host package if available and not installed"""
-        logger.debug(u'Check if host package "%s" is available' % (self.host_packagename(), ))
-        host_packages = self.is_available(self.host_packagename())
-        installed_host_package = self.is_installed(self.host_packagename())
+    def get_host_dn(self):
+        """Returns last known computer Distinguished-Name as a cn=id,ou=suborg,ou=org,dc=domain,dc=tld
 
-        if host_packages and (not installed_host_package or installed_host_package < host_packages[-1]):
-            return host_packages[-1]
-        else:
-            return None
+        Returns:
+            str
+
+        >>>
+        """
+        return setuphelpers.registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Distinguished-Name')
+
+    def get_host_packages(self):
+        """Return list of implicit host packages based on computer UUID and AD Org Units
+
+        Returns:
+            list: list of PackageEntry.
+        """
+        result = []
+        host_package = self.host_packagename()
+        packages = self.is_available(host_package)
+        if packages and packages[-1].section == 'host':
+            result.append(packages[-1])
+
+        host_dn = self.get_host_dn()
+        if host_dn:
+            dn_parts = host_dn.split(',')
+            for i in range(1,len(dn_parts)):
+                dn_part = dn_parts[i]
+                dn_part_type,value = dn_part.split('=',1)
+                if dn_part_type.lower() == 'dc' and  dn_part_type == previous_dn_part_type:
+                    break
+                level_dn = ','.join(dn_parts[i:])
+                logger.debug('Checking if %s is available'% level_dn)
+                packages = self.is_available(level_dn)
+                if packages and packages[-1].section == 'unit':
+                    result.append(packages[-1])
+                previous_dn_part_type = dn_part_type
+        return result
+
+    def get_outdated_host_packages(self):
+        """Check and return the vailable host packages available and not installed"""
+
+        logger.debug(u'Check if host package "%s" is available' % (self.host_packagename(), ))
+        result = []
+        host_packages = self.get_host_packages()
+        for package in host_packages:
+            logger.debug('Checking if %s is installed/outdated' % package.asrequirement())
+            installed_package = self.is_installed(package.asrequirement())
+            if not installed_package or installed_package < package:
+                result.append(package)
+        return result
 
     def upgrade(self):
         """Install "well known" host package from main repository if not already installed
@@ -4245,15 +4285,14 @@ class Wapt(BaseObjectClass):
         self.runstatus='Upgrade system'
         try:
             if self.use_hostpackages:
-                host_package = self.check_host_package_outdated()
-                if host_package:
-                    logger.info(u'Host package %s is available and not installed, installing host package...' % (host_package.package,) )
-                    hostresult = self.install(host_package,force=True)
+                host_packages = self.get_outdated_host_packages()
+                if host_packages:
+                    logger.info(u'Host packages %s are available and not installed, installing host packages...' % (' '.join(h.package for h in host_packages),))
+                    hostresult = self.install(host_packages,force=True)
                 else:
                     hostresult = {}
             else:
                 hostresult = {}
-
 
             upgrades = self.waptdb.upgradeable()
             logger.debug(u'upgrades : %s' % upgrades.keys())
@@ -4278,13 +4317,14 @@ class Wapt(BaseObjectClass):
             remove=[])
         # only most up to date (first one in list)
         # put 'host' package at the end.
-        result['upgrade'].extend([p[0].asrequirement() for p in self.waptdb.upgradeable().values() if p and not p[0].section == 'host'])
+        result['upgrade'].extend([p[0].asrequirement() for p in self.waptdb.upgradeable().values() if p and not p[0].section in ('host','unit')])
         if self.use_hostpackages:
-            host_package = self.check_host_package_outdated()
-            if host_package:
-                host_package_req = host_package.asrequirement()
-                if not host_package_req in result['install']+result['upgrade']+result['additional']:
-                    result['install'].append(host_package_req)
+            host_packages = self.get_outdated_host_packages()
+            if host_packages:
+                for p in host_packages:
+                    req = p.asrequirement()
+                    if not req in result['install']+result['upgrade']+result['additional']:
+                        result['install'].append(req)
 
         # get additional packages to install/upgrade based on new upgrades
         depends = self.check_depends(result['install']+result['upgrade']+result['additional'])
@@ -5405,6 +5445,8 @@ class Wapt(BaseObjectClass):
                           * install_params
                           * install_status
         """
+        if isinstance(packagename,PackageEntry):
+            packagename = packagename.asrequirement()
         return self.waptdb.installed_matching(packagename,include_errors=include_errors)
 
     def installed(self,include_errors=False):

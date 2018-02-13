@@ -803,14 +803,17 @@ class PackageEntry(BaseObjectClass):
                   - packagename_arch_maturity_locale.wapt for group
                   - packagename_version_arch_maturity_locale.wapt for others
         """
-        if self.section not in ['host','group'] and not (self.package and self.version and self.architecture):
+        if self.section not in ['host','group','unit'] and not (self.package and self.version and self.architecture):
             raise Exception(u'Not enough information to build the package filename for %s (%s)'%(self.package,self.version))
 
         if self.section == 'host':
             return self.package+'.wapt'
-        elif self.section ==  'group':
+        elif self.section == 'group':
             # we don't keep version for group
             return self.package + '_'.join([f for f in (self.architecture,self.maturity,self.locale) if (f and f != 'all')]) + '.wapt'
+        elif self.section == 'unit':
+            # we have to hash the name.
+            return hashlib.md5(self.package).hexdigest()+ '_'.join([f for f in (self.architecture,self.maturity,self.locale) if (f and f != 'all')]) + '.wapt'
         else:
             # includes only non empty fields
             return '_'.join([f for f in (self.package,self.version,self.architecture,self.maturity,self.locale) if f]) + '.wapt'
@@ -2081,7 +2084,7 @@ class WaptLocalRepo(WaptBaseRepo):
 
                 # looks for an icon in wapt package
                 icon_fn = os.path.join(icons_path,"%s.png"%entry.package)
-                if entry.section not in ['group','host'] and (force_all or not os.path.isfile(icon_fn)):
+                if entry.section not in ['group','host','unit'] and (force_all or not os.path.isfile(icon_fn)):
                     try:
                         icon = extract_iconpng_from_wapt(fname)
                         open(icon_fn,'wb').write(icon)
