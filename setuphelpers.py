@@ -3068,29 +3068,29 @@ def service_delete(service_name):
         win32service.CloseServiceHandle(hscm)
 
 
-def service_start(service_name):
+def service_start(service_name,timeout=4):
     """Start a service by its service name
     """
     logger.debug(u'Starting service %s' % service_name)
     win32serviceutil.StartService(service_name)
-    return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_RUNNING, waitSecs=4)
+    return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_RUNNING, waitSecs=timeout)
 
 
-def service_stop(service_name):
+def service_stop(service_name,timeout=4):
     """Stop a service by its service name
     """
     logger.debug(u'Stopping service %s' % service_name)
     win32serviceutil.StopService(service_name)
     win32api.Sleep(2000)
-    return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_STOPPED, waitSecs=4)
+    return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_STOPPED, waitSecs=timeout)
 
-def service_restart(service_name):
+def service_restart(service_name,timeout=4):
     """Restart a service by its service name
     """
     logger.debug(u'Restarting service %s' % service_name)
     win32serviceutil.RestartService(service_name)
     win32api.Sleep(2000)
-    return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_RUNNING, waitSecs=4)
+    return win32serviceutil.WaitForServiceStatus(service_name, win32service.SERVICE_RUNNING, waitSecs=timeout)
 
 
 def service_is_running(service_name):
