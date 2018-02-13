@@ -4,5 +4,5 @@ net stop waptserver
 pushd %~dp0
 SET VIRTUAL_ENV=%CD%
 SET PYTHONHOME=%VIRTUAL_ENV%
-%PYTHONHOME%\waptpython.exe %PYTHONHOME%\waptserver\waptserver.py %*
+"%PYTHONHOME%\waptpython.exe" "%PYTHONHOME%\waptserver\waptserver.py" %*
 popd
