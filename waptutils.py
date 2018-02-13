@@ -402,7 +402,16 @@ def ensure_unicode(data):
             raise
 
 def ensure_list(csv_or_list,ignore_empty_args=True,allow_none = False):
-    """if argument is not a list, return a list from a csv string"""
+    """if argument is not a list, return a list from a csv string
+
+    Args:
+        csv_or_list (list or str):
+        ignore_empty_args (bool): if True, empty string found in csv are not appended to the list.
+        allow_none (bool): if True, if csv_or_list is None, return None, else return empty list/
+
+    Returns:
+        list
+    """
     if csv_or_list is None:
         if allow_none:
             return None

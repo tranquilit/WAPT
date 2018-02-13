@@ -3607,21 +3607,61 @@ class Wapt(BaseObjectClass):
         else:
             return self.waptdb.get_param('last-%s' % repo.repo_url[:59])
 
+    def get_host_architecture(self):
+        if setuphelpers.iswin64():
+            return 'x64'
+        else:
+            return 'x86'
+
+    def get_host_locales(self):
+        return ensure_list(self.locales)
+
+    def get_host_site(self):
+        return setuphelpers.registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Site-Name')
+
+    def host_capabilities_fingerprint(self):
+        """Return a fingerprint representing the current capabilities of host
+        This includes host certificate,architecture,locale,authorized certificates
+
+        Returns:
+            str
+
+        """
+        host_capa = dict(
+            host_cert=self.get_host_certificate().fingerprint,
+            host_arch=self.get_host_architecture(),
+            authorized_certs=[c.fingerprint for c in self.authorized_certificates()],
+            #authorized_maturities=self.get_host_maturities(),
+            wapt_version=setuphelpers.__version__,
+            host_dn=self.get_host_dn(),
+            host_site=self.get_host_site(),
+        )
+        return hashlib.sha256(jsondump(host_capa)).hexdigest()
+
     def _update_repos_list(self,force=False,filter_on_host_cap=True):
-        """update the packages database with Packages files from the url repos_list
-            removes obsolete records for repositories which are no more referenced
-            repos_list : list of all the repositories objects referenced by the system
-                          as returned by Wapt.repositories
+        """update the packages database with Packages files from the Wapt repos list
+        removes obsolete records for repositories which are no more referenced
+
+        Args:
             force : update repository even if date of packages index is same as
                     last retrieved date
 
-        return a dictionary of update_db results for each repository name
-            which has been accessed.
+        Returns:
+            dict:   update_db results for each repository name
+                    which has been accessed.
+
         >>> wapt = Wapt(config_filename = 'c:/tranquilit/wapt/tests/wapt-get.ini' )
-        >>> res = wapt.waptdb.update_repos_list(wapt.repositories)
+        >>> res = wapt._update_repos_list()
+        {'wapt': '2018-02-13T11:22:00', 'wapt-host': u'2018-02-09T10:55:04'}
         """
         with self.waptdb:
             result = {}
+            # force update if host capabilities have changed and requires a new filering of packages
+            new_capa = self.host_capabilities_fingerprint()
+            old_capa = self.read_param('host_capabilities_fingerprint')
+            if not force and old_capa != new_capa:
+                logger.info('Host capabilities have changed since last update, forcing update')
+                force = True
             logger.debug(u'Remove unknown repositories from packages table and params (%s)' %(','.join('"%s"'% r.name for r in self.repositories),)  )
             self.waptdb.db.execute('delete from wapt_package where repo not in (%s)' % (','.join('"%s"'% r.name for r in self.repositories)))
             self.waptdb.db.execute('delete from wapt_params where name like "last-http%%" and name not in (%s)' % (','.join('"last-%s"'% r.repo_url for r in self.repositories)))
@@ -3636,6 +3676,7 @@ class Wapt(BaseObjectClass):
                         logger.critical(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
                 else:
                     logger.info('No location found for repository %s, skipping' % (repo.name))
+            self.write_param('host_capabilities_fingerprint',new_capa)
         return result
 
 
@@ -3676,7 +3717,6 @@ class Wapt(BaseObjectClass):
             }
 
         self.store_upgrade_status(result['upgrades'])
-
 
         if self.waptserver and not self.disable_update_server_status and register:
             try:
