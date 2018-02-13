@@ -157,6 +157,10 @@ class LogInstallOutput(BaseObjectClass):
                 if threading.current_thread() == self.threadid:
                     self.waptdb.update_install_status(self.rowid,'RUNNING',txtdb if not txtdb == None else None)
 
+    def writing(self):
+        with self.lock:
+            return False
+
     def __getattrib__(self, name):
         if hasattr(self.console,'__getattrib__'):
             return self.console.__getattrib__(name)
@@ -4335,7 +4339,7 @@ class Wapt(BaseObjectClass):
         result = []
         host_package = self.host_packagename()
         result.append(host_package)
-
+        previous_dn_part_type = ''
         host_dn = self.host_dn
         if host_dn:
             dn_parts = host_dn.split(',')
@@ -4408,7 +4412,8 @@ class Wapt(BaseObjectClass):
                 install_host_packages = self.get_outdated_host_packages()
                 if install_host_packages:
                     logger.info(u'Host packages %s are available and not installed, installing host packages...' % (' '.join(h.package for h in install_host_packages),))
-                    hostresult = self.install(host_packages,force=True)
+                    hostresult = self.install(install_host_packages,force=True)
+                    result = merge_dict(result,hostresult)
                 else:
                     hostresult = {}
             else:
