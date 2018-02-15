@@ -185,8 +185,6 @@ copyfile(makepath(wapt_source_dir, 'wapt-signpackages.py'),'./builddir/opt/wapt/
 
 copyfile(makepath(wapt_source_dir, 'wapt-scanpackages'),'./builddir/usr/bin/wapt-scanpackages')
 copyfile(makepath(wapt_source_dir, 'wapt-signpackages'),'./builddir/usr/bin/wapt-signpackages')
-os.chmod('./builddir/usr/bin/wapt-scanpackages', 0o755)
-os.chmod('./builddir/usr/bin/wapt-signpackages', 0o755)
 
 eprint('cryptography patches')
 copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', '__init__.py'),'./builddir/opt/wapt/lib/python2.7/site-packages/cryptography/x509/__init__.py')
@@ -198,7 +196,6 @@ rsync(source_dir, './builddir/opt/wapt/',
 
 # script to run waptserver in foreground mode
 copyfile(makepath(wapt_source_dir, 'runwaptserver.sh'),'./builddir/opt/wapt/runwaptserver.sh')
-os.chmod('./builddir/opt/wapt/runwaptserver.sh', 0o755)
 
 for lib in ('dialog.py', ):
     rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),
