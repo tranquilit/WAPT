@@ -346,6 +346,9 @@ class WaptSocketIOClient(threading.Thread):
                                 raise Exception('Websocket client seems disconnected. Force Websocket connection to be recreated')
                     elif not self.config.websockets_host:
                         self.socketio_client = None
+                        time.sleep(self.config.websockets_retry_delay)
+                    else:
+                        time.sleep(self.config.websockets_retry_delay)
 
                     if self.config.reload_if_updated():
                         if self.socketio_client:
@@ -354,14 +357,16 @@ class WaptSocketIOClient(threading.Thread):
 
 
                 except Exception as e:
-                    logger.info('Error in socket io connection %s' % repr(e))
-                    self.config.reload_if_updated()
-                    if self.socketio_client:
-                        logger.debug('stop sio client')
-                        self.socketio_client = None
-                    logger.debug('Socket IO Stopped, waiting %ss before retrying' %
-                        self.config.websockets_retry_delay)
-                    time.sleep(self.config.websockets_retry_delay)
+                    try:
+                        logger.info('Error in socket io connection %s' % repr(e))
+                        self.config.reload_if_updated()
+                        if self.socketio_client:
+                            logger.debug('stop sio client')
+                            self.socketio_client = None
+                    finally:
+                        logger.debug('Socket IO Stopped, waiting %ss before retrying' %
+                            self.config.websockets_retry_delay)
+                        time.sleep(self.config.websockets_retry_delay)
 
 if __name__ == "__main__":
     pass
