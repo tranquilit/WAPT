@@ -1988,6 +1988,7 @@ class WaptLocalRepo(WaptBaseRepo):
             add(startline,endline)
         else:
             self.invalidate_packages_cache()
+            self._packages = []
             logger.info('Index file %s does not yet exist' % self.packages_path)
 
     def update_packages_index(self,force_all=False):
@@ -2010,17 +2011,17 @@ class WaptLocalRepo(WaptBaseRepo):
         signer_certificates = SSLCABundle()
 
         old_entries = {}
-        if self._packages:
-            for package in self.packages:
-                # keep only entries which are older than index. Other should be recalculated.
-                localwaptfile = os.path.abspath(os.path.join(self.localpath,os.path.basename(package.filename)))
-                if os.path.isfile(localwaptfile):
-                    if fileisoutcdate(localwaptfile) <= self._packages_date:
-                        old_entries[os.path.basename(package.filename)] = package
-                    else:
-                        logger.info("Don't keep old entry for %s, wapt package is newer than index..." % package.asrequirement())
+
+        for package in self.packages:
+            # keep only entries which are older than index. Other should be recalculated.
+            localwaptfile = os.path.abspath(os.path.join(self.localpath,os.path.basename(package.filename)))
+            if os.path.isfile(localwaptfile):
+                if fileisoutcdate(localwaptfile) <= self._packages_date:
+                    old_entries[os.path.basename(package.filename)] = package
                 else:
-                    logger.info('Stripping entry without matching file : %s'%localwaptfile)
+                    logger.info("Don't keep old entry for %s, wapt package is newer than index..." % package.asrequirement())
+            else:
+                logger.info('Stripping entry without matching file : %s'%localwaptfile)
 
         if not os.path.isdir(self.localpath):
             raise Exception(u'%s is not a directory' % (self.localpath))
@@ -2056,11 +2057,11 @@ class WaptLocalRepo(WaptBaseRepo):
                         kept.append(fname)
                         entry = old_entries[package_filename]
                     else:
-                        logger.info(u"  Processing %s" % fname)
+                        logger.info(u"  Reprocessing %s" % fname)
                         entry.load_control_from_wapt(fname)
                         processed.append(fname)
                 else:
-                    logger.info(u"  Processing %s" % fname)
+                    logger.info(u"  Processing new %s" % fname)
                     entry.load_control_from_wapt(fname)
                     processed.append(fname)
                     theoritical_package_filename =  entry.make_package_filename()
