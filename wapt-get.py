@@ -292,11 +292,20 @@ def main():
                 config_file = default_waptservice_ini
                 logger.info(u'Using local waptservice configuration %s '%config_file)
         else:
-            config_file = options.config
+            if os.path.isfile(options.config):
+                config_file = options.config
+            else:
+                other_waptconsole_ini=setuphelpers.makepath(setuphelpers.user_local_appdata(),'waptconsole','%s.ini' % options.config)
+                if os.path.isfile(other_waptconsole_ini):
+                    config_file = other_waptconsole_ini
+                else:
+                    config_file = options.config
+
         # Config file
         if not os.path.isfile(config_file):
             logger.error((u"Error : could not find file : %s"
                           ", please check the path") % config_file)
+            sys.exit(1)
 
         logger.debug(u'Config file: %s' % config_file)
 
