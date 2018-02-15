@@ -13,7 +13,7 @@ URL:		https://wapt.fr
 Source0:	./waptserver/
 Prefix:		/opt
 
-Requires:  nginx dialog cabextract python2-dialog pyparsing policycoreutils-python
+Requires:  nginx dialog cabextract policycoreutils-python
 
 # Turn off the brp-python-bytecompile script
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
@@ -29,6 +29,7 @@ set -e
 mkdir -p %{buildroot}/opt/wapt
 mkdir -p %{buildroot}/opt/wapt/log
 mkdir -p %{buildroot}/opt/wapt/conf
+mkdir -p %{buildroot}/opt/wapt/bin
 
 mkdir -p %{buildroot}/opt/wapt/waptserver
 mkdir -p %{buildroot}/opt/wapt/waptserver/scripts
@@ -43,6 +44,7 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 /usr/lib/systemd/system/waptserver.service
 /opt/wapt/waptserver/*
 /opt/wapt/lib/*
+/opt/wapt/bin/*
 /etc/logrotate.d/waptserver
 /etc/rsyslog.d/waptserver.conf
 /etc/systemd/system/nginx.service.d/nginx_worker_files_limit.conf

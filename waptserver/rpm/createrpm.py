@@ -165,7 +165,7 @@ rsync('./pylibs/lib/', './builddir/opt/wapt/lib/')
 
 eprint('copying the waptserver files')
 
-rsync(source_dir, './builddir/opt/wapt/',excludes=['postconf', 'mongod.exe', 'bin', 'include','spnego-http-auth-nginx-module'])
+rsync(source_dir, './builddir/opt/wapt/',excludes=['postconf', 'mongod.exe', 'include','spnego-http-auth-nginx-module'])
 
 eprint('cryptography patches')
 mkdir_p('./builddir/opt/wapt/lib/python2.7/site-packages/cryptography/x509/')
