@@ -9,8 +9,65 @@ ShowFileExtensions=FALSE
 [Project\ChildNodes\Node0]
 ClassName=TProjectFilesNode
 
+[Project\ChildNodes\Node0\ChildNodes\Node0]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]common.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node1]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]setuphelpers.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node2]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]waptcrypto.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node3]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]waptdevutils.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node4]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]wapt-get.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node5]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]waptpackage.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node6]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]waptutils.py
+
+[Project\ChildNodes\Node0\ChildNodes]
+Count=7
+
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
+
+[Project\ChildNodes\Node1\ChildNodes\Node0]
+ClassName=TProjectRunConfiguationNode
+Name=update
+
+[Project\ChildNodes\Node1\ChildNodes\Node0\RunConfig]
+ScriptName=$[Project-Path]wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=update
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node0\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
+
+[Project\ChildNodes\Node1\ChildNodes]
+Count=1
 
 [Project\ChildNodes]
 Count=2
