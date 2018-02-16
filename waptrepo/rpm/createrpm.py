@@ -93,17 +93,6 @@ if new_umask != old_umask:
     eprint('umask fixed (previous %03o, current %03o)' %
           (old_umask, new_umask))
 
-for line in open('%s/waptserver_config.py' % source_dir):
-    if line.strip().startswith('__version__'):
-        wapt_version = line.split('=')[
-            1].strip().replace('"', '').replace("'", '')
-
-if not wapt_version:
-    eprint(u'version not found in %s/waptserver.py' %
-          os.path.abspath('..'))
-    sys.exit(1)
-
-
 def check_if_package_is_installed(package_name):
     # issue with yum module in buildbot, using dirty subprocess way...
     try:
@@ -158,7 +147,7 @@ run_verbose(r'source ./builddir/opt/wapt/bin/activate ;pip install pip setuptool
 run_verbose(r'source ./builddir/opt/wapt/bin/activate ;pip install psycopg2==2.7.3.2 --no-binary :all: ')
 run_verbose(r'source ./builddir/opt/wapt/bin/activate; pip install -r ../../requirements-server.txt')
 
-eprint('copying the waptserver files')
+eprint('copying the waptrepo files')
 
 rsync(source_dir, './builddir/opt/wapt/',excludes=['postconf', 'mongod.exe', 'include','spnego-http-auth-nginx-module'])
 
