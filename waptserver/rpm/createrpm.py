@@ -145,8 +145,6 @@ mkdir_p('builddir/usr/bin')
 # we use pip and virtualenv to get the wapt dependencies. virtualenv usage here is a bit awkward, it can probably be improved. For instance, it install a outdated version of pip that cannot install Rocket dependencies...
 # for some reason the virtualenv does not build itself right if we don't
 # have pip systemwide...
-if os.path.exists('pylibs'):
-    shutil.rmtree('pylibs')
 eprint(
     'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
 
@@ -157,11 +155,8 @@ run_verbose(r'source ./builddir/opt/wapt/bin/activate ;curl https://bootstrap.py
 run_verbose(r'source ./builddir/opt/wapt/bin/activate ;pip install pip setuptools --upgrade')
 
 # fix for psycopg install because of ImportError: libpq-9c51d239.so.5.9: ELF load command address/offset not properly aligned
-#run_verbose(r'yum install postgresql.x86_64 postgresql-devel.x86_64 -y')
 run_verbose(r'source ./builddir/opt/wapt/bin/activate ;pip install psycopg2==2.7.3.2 --no-binary :all: ')
 run_verbose(r'source ./builddir/opt/wapt/bin/activate; pip install -r ../../requirements-server.txt')
-
-#rsync('./pylibs/lib/', './builddir/opt/wapt/lib/')
 
 eprint('copying the waptserver files')
 

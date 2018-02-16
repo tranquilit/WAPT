@@ -19,30 +19,34 @@ Requires:  nginx dialog pytz python
 %description
 
 %install
-cd .. && python createrpm.py
+set -e
+
+mkdir -p %{buildroot}/opt/wapt
+mkdir -p %{buildroot}/opt/wapt/log
+mkdir -p %{buildroot}/opt/wapt/conf
+mkdir -p %{buildroot}/opt/wapt/bin
+(cd .. && python ./createrpm.py)
 
 %files
-
 %defattr(644,root,root,755)
-
-/opt/wapt/waptrepo/VERSION
+/opt/wapt/lib/*
+/opt/wapt/bin/*
+/opt/wapt/waptpackage.py
 /opt/wapt/waptcrypto.py
 /opt/wapt/waptutils.py
-/opt/wapt/waptpackage.py
 /opt/wapt/custom_zip.py
-/opt/wapt/lib/*
-/var/www/html/wapt
-/var/www/html/waptwua
-/var/www/html/wapt-host
-/var/www/html/wapt-group
+/usr/bin/wapt-scanpackages
+/usr/bin/wapt-signpackages
+/usr/bin/waptpython
 
-%attr(755,wapt,nginx)/var/www/html/wapt/
-%attr(755,wapt,nginx)/var/www/html/waptdev/
-%attr(755,wapt,nginx)/var/www/html/wapt-group/
-%attr(755,wapt,nginx)/var/www/html/wapt-host/
-%attr(755,wapt,nginx)/var/www/html/waptwua/
 %attr(755,root,root)/opt/wapt/wapt-scanpackages.py
 %attr(755,root,root)/opt/wapt/wapt-signpackages.py
+%attr(755,root,root)/usr/bin/wapt-scanpackages
+%attr(755,root,root)/usr/bin/wapt-signpackages
+%attr(755,root,root)/usr/bin/waptpython
+%attr(755,wapt,root)/opt/wapt/conf
+%attr(755,wapt,root)/opt/wapt/log
+%attr(750,root,nginx)/opt/wapt/waptserver/ssl/
 
 %pre
 getent passwd wapt >/dev/null || \
@@ -51,9 +55,18 @@ getent passwd wapt >/dev/null || \
 exit 0
 
 %post
-ln -sf /opt/wapt/wapt-scanpackages.py /usr/bin/wapt-scanpackages
-ln -sf /opt/wapt/wapt-signpackages.py /usr/bin/wapt-signpackages
-python /opt/wapt/wapt-scanpackages.py /var/www/html/wapt
+mkdir -p /var/www/html/wapt
+mkdir -p /var/www/html/wapt-host
+mkdir -p /var/www/html/wapt-hostref
 chown -R wapt:nginx /var/www/html/*
+echo "User-agent:*\nDisallow: /\n" > /var/www/html/robots.txt
 
-exit 0
+# fix python in wapt virtual env and set PATH
+ln -sb /usr/bin/python2 /opt/wapt/bin/python2
+cat << EOF > /opt/wapt/.profile
+# for python virtualenv
+export PYTHONHOME=/opt/wapt
+export PYTHONPATH=/opt/wapt
+export PATH=/opt/wapt/bin:$PATH
+EOF
+### end

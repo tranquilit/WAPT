@@ -21,143 +21,171 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import print_function
-import fileinput
-import glob
 import os
-import shutil
-import stat
-import subprocess
+import glob
 import sys
+import stat
+import shutil
+import fileinput
+import subprocess
 import platform
+import errno
+
+def run(*args, **kwargs):
+    return subprocess.check_output(*args, shell=True, **kwargs)
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-def replaceAll(file,searchExp,replaceExp):
+def run_verbose(*args, **kwargs):
+    output =  subprocess.check_output(*args, shell=True, **kwargs)
+    eprint(output)
+    return output
+
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
+
+def replaceAll(file, searchExp, replaceExp):
     for line in fileinput.input(file, inplace=1):
         if searchExp in line:
-            line = line.replace(searchExp,replaceExp)
+            line = line.replace(searchExp, replaceExp)
         sys.stdout.write(line)
 
-def rsync(src,dst):
-    rsync_option = ' '.join([
-        "--exclude '.svn'",
-        "--exclude 'deb'",
-        "--exclude 'rpm'",
-        "--exclude '.git'",
-        "--exclude '.gitignore'",
-        "-aP",
-    ])
+def rsync(src, dst, excludes=[]):
+    rsync_option = " --exclude 'postconf' --exclude 'mongodb' --exclude 'rpm' --exclude '*.pyc' --exclude '*.pyo' --exclude '.svn' --exclude 'apache-win32' --exclude 'deb' --exclude '.git' --exclude '.gitignore' -a --stats"
+    if excludes:
+        rsync_option = rsync_option + \
+            ' '.join(" --exclude '%s'" % x for x in excludes)
     rsync_source = src
     rsync_destination = dst
     rsync_command = '/usr/bin/rsync %s "%s" "%s" 1>&2' % (
-        rsync_option,rsync_source,rsync_destination)
+        rsync_option, rsync_source, rsync_destination)
+    eprint(rsync_command)
     os.system(rsync_command)
 
-if os.name!='posix':
-    eprint("script has to be run on CentOS")
-    sys.exit(1)
 
 makepath = os.path.join
 from shutil import copyfile
 
 # wapt
-wapt_source_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+wapt_source_dir = os.path.abspath('../..')
 
 # waptrepo
-source_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-eprint('Source dir: ',wapt_source_dir)
-sys.path.insert(0, wapt_source_dir)
+source_dir = os.path.abspath('..')
 
-def get_wapt_version():
-    """get wapt version from waptpackage file without importing it (otherwinse
-       we get import error on build farm due to M2Crypto
-       it would be better to reimplement this using an AST
-       """
-    with open('%s/waptutils.py' % wapt_source_dir,'r') as file_source :
-        for line in file_source.readlines():
-            if line.strip().startswith('__version__'):
-                version =  line.split('=')[1].strip()
-                break
-    # we should check the version number is well formated
-    return version
+if platform.system() != 'Linux':
+    eprint('this script should be used on debian linux')
+    sys.exit(1)
 
-wapt_version = get_wapt_version()
-
-if not wapt_version:
-    eprint('version "%s" incorrecte dans waptutils.py' % (wapt_version,))
+if len(sys.argv) > 2:
+    eprint('wrong number of parameters (0 or 1)')
     sys.exit(1)
 
 new_umask = 022
 old_umask = os.umask(new_umask)
 if new_umask != old_umask:
-    print >> sys.stderr, 'umask fixed (previous %03o, current %03o)' % (old_umask, new_umask)
+    eprint('umask fixed (previous %03o, current %03o)' %
+          (old_umask, new_umask))
 
-if os.path.exists('BUILDROOT'):
-    shutil.rmtree('BUILDROOT')
+for line in open('%s/waptserver_config.py' % source_dir):
+    if line.strip().startswith('__version__'):
+        wapt_version = line.split('=')[
+            1].strip().replace('"', '').replace("'", '')
 
-eprint(u'creation de l\'arborescence')
-os.makedirs("BUILDROOT")
-os.makedirs("BUILDROOT/opt")
-os.makedirs("BUILDROOT/opt/wapt")
-os.makedirs("BUILDROOT/opt/wapt/waptrepo/")
+if not wapt_version:
+    eprint(u'version not found in %s/waptserver.py' %
+          os.path.abspath('..'))
+    sys.exit(1)
 
-version_file = open(os.path.join('BUILDROOT/opt/wapt/waptrepo','VERSION'),'w')
-version_file.write(wapt_version)
-version_file.close()
 
-os.makedirs("BUILDROOT/opt/wapt/lib/site-packages")
+def check_if_package_is_installed(package_name):
+    # issue with yum module in buildbot, using dirty subprocess way...
+    try:
+        data = run('rpm -q %s' % package_name)
+    except:
+        return False
+    if data.strip().startswith('%s-' % package_name):
+        return True
+    else:
+        return False
+
+
+if (not check_if_package_is_installed('python-virtualenv')
+    or not check_if_package_is_installed('gcc')
+    or not check_if_package_is_installed('openssl-devel')
+    or not check_if_package_is_installed('libffi-devel')
+    or not check_if_package_is_installed('openldap-devel')
+    ):
+    eprint("""
+#########################################################################################################################
+     Please install build time packages first:
+        yum install -y python-virtualenv gcc libffi-devel openssl-devel openldap-devel python-pip postgresql-devel.x86_64
+#########################################################################################################################
+""")
+    sys.exit(1)
+
+eprint('creating the package tree')
+
+if os.path.exists('builddir'):
+    eprint('cleaning up builddir directory')
+    shutil.rmtree('builddir')
+
+mkdir_p('builddir/opt/wapt/lib')
+mkdir_p('builddir/opt/wapt/conf')
+mkdir_p('builddir/opt/wapt/log')
+mkdir_p('builddir/opt/wapt/lib/python2.7/site-packages')
+mkdir_p('builddir/usr/bin')
 
 # we use pip and virtualenv to get the wapt dependencies. virtualenv usage here is a bit awkward, it can probably be improved. For instance, it install a outdated version of pip that cannot install Rocket dependencies...
 # for some reason the virtualenv does not build itself right if we don't
 # have pip systemwide...
-
-if os.path.exists("pylibs"):
-    shutil.rmtree("pylibs")
 eprint(
     'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-subprocess.check_output(
-    r'virtualenv ./pylibs --system-site-packages', shell=True)
+
+run_verbose(r'virtualenv ./builddir/opt/wapt/')
+run_verbose('pip install --upgrade pip')
 eprint('Install additional libraries in build environment virtualenv')
-eprint(subprocess.check_output(
-    r'source ./pylibs/bin/activate ; pip install --upgrade pip', shell=True))
-eprint(subprocess.check_output(
-    r'source ./pylibs/bin/activate ; pip install -r ../../requirements-repo.txt -t ./BUILDROOT/opt/wapt/lib/site-packages', shell=True))
-rsync('./pylibs/lib/', './BUILDROOT/opt/wapt/lib/')
+run_verbose(r'source ./builddir/opt/wapt/bin/activate ;curl https://bootstrap.pypa.io/ez_setup.py | python')
+run_verbose(r'source ./builddir/opt/wapt/bin/activate ;pip install pip setuptools --upgrade')
 
-eprint('copie des fichiers waptrepo')
-rsync(source_dir,'BUILDROOT/opt/wapt/')
-copyfile(makepath(wapt_source_dir,'waptcrypto.py'),
-         'BUILDROOT/opt/wapt/waptcrypto.py')
-copyfile(makepath(wapt_source_dir,'waptutils.py'),
-         'BUILDROOT/opt/wapt/waptutils.py')
-copyfile(makepath(wapt_source_dir,'waptpackage.py'),
-         'BUILDROOT/opt/wapt/waptpackage.py')
-copyfile(makepath(wapt_source_dir,'wapt-scanpackages.py'),
-         'BUILDROOT/opt/wapt/wapt-scanpackages.py')
-copyfile(makepath(wapt_source_dir,'wapt-signpackages.py'),
-         'BUILDROOT/opt/wapt/wapt-signpackages.py')
-copyfile(makepath(wapt_source_dir,'custom_zip.py'),
-         'BUILDROOT/opt/wapt/custom_zip.py')
+# fix for psycopg install because of ImportError: libpq-9c51d239.so.5.9: ELF load command address/offset not properly aligned
+run_verbose(r'source ./builddir/opt/wapt/bin/activate ;pip install psycopg2==2.7.3.2 --no-binary :all: ')
+run_verbose(r'source ./builddir/opt/wapt/bin/activate; pip install -r ../../requirements-server.txt')
 
-print('cryptography patches')
-copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','__init__.py'),
-         'BUILDROOT/opt/wapt/lib/site-packages/cryptography/x509/__init__.py')
-copyfile(makepath(wapt_source_dir,'utils','patch-cryptography','verification.py'),
-         'BUILDROOT/opt/wapt/lib/site-packages/cryptography/x509/verification.py')
+eprint('copying the waptserver files')
 
-if platform.dist()[0] in ('debian','ubuntu'):
-    os.makedirs('BUILDROOT/var/www/wapt')
-    os.makedirs('BUILDROOT/var/www/waptwua')
-    os.makedirs('BUILDROOT/var/www/waptdev')
-    os.makedirs('BUILDROOT/var/www/wapt-host')
-    os.makedirs('BUILDROOT/var/www/wapt-group')
-elif platform.dist()[0] in ('centos','redhat','ubuntu'):
-    os.makedirs('BUILDROOT/var/www/html/wapt')
-    os.makedirs('BUILDROOT/var/www/html/waptwua')
-    os.makedirs('BUILDROOT/var/www/html/waptdev')
-    os.makedirs('BUILDROOT/var/www/html/wapt-host')
-    os.makedirs('BUILDROOT/var/www/html/wapt-group')
-else:
-    eprint("distrib not supported")
-    sys.exit(1)
+rsync(source_dir, './builddir/opt/wapt/',excludes=['postconf', 'mongod.exe', 'include','spnego-http-auth-nginx-module'])
+
+eprint('cryptography patches')
+mkdir_p('./builddir/opt/wapt/lib/python2.7/site-packages/cryptography/x509/')
+copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', '__init__.py'),
+         'builddir/opt/wapt/lib/python2.7/site-packages/cryptography/x509/__init__.py')
+copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.py'),
+         'builddir/opt/wapt/lib/python2.7/site-packages/cryptography/x509/verification.py')
+
+eprint('copying files formerly from waptrepo')
+copyfile(makepath(wapt_source_dir, 'waptcrypto.py'),
+         'builddir/opt/wapt/waptcrypto.py')
+copyfile(makepath(wapt_source_dir, 'waptutils.py'),
+         'builddir/opt/wapt/waptutils.py')
+copyfile(makepath(wapt_source_dir, 'waptpackage.py'),
+         'builddir/opt/wapt/waptpackage.py')
+copyfile(makepath(wapt_source_dir, 'wapt-scanpackages.py'),
+         'builddir/opt/wapt/wapt-scanpackages.py')
+copyfile(makepath(wapt_source_dir, 'wapt-signpackages.py'),
+         'builddir/opt/wapt/wapt-signpackages.py')
+copyfile(makepath(wapt_source_dir, 'custom_zip.py'),
+         'builddir/opt/wapt/custom_zip.py')
+
+copyfile(makepath(wapt_source_dir, 'wapt-scanpackages'),'./builddir/usr/bin/wapt-scanpackages')
+copyfile(makepath(wapt_source_dir, 'wapt-signpackages'),'./builddir/usr/bin/wapt-signpackages')
+copyfile(makepath(wapt_source_dir, 'waptpython'),'./builddir/usr/bin/waptpython')
+os.chmod('./builddir/usr/bin/wapt-scanpackages', 0o755)
+os.chmod('./builddir/usr/bin/wapt-signpackages', 0o755)
+os.chmod('./builddir/usr/bin/waptpython', 0o755)
