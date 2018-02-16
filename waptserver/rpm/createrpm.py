@@ -149,19 +149,19 @@ if os.path.exists('pylibs'):
     shutil.rmtree('pylibs')
 eprint(
     'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-run_verbose(r'virtualenv ./pylibs')
+
+run_verbose(r'virtualenv ./builddir/opt/wapt/')
 run_verbose('pip install --upgrade pip')
 eprint('Install additional libraries in build environment virtualenv')
-run_verbose(r'source ./pylibs/bin/activate ;curl https://bootstrap.pypa.io/ez_setup.py | python')
-run_verbose(r'source ./pylibs/bin/activate ;pip install pip setuptools --upgrade')
+run_verbose(r'source ./builddir/opt/wapt/bin/activate ;curl https://bootstrap.pypa.io/ez_setup.py | python')
+run_verbose(r'source ./builddir/opt/wapt/bin/activate ;pip install pip setuptools --upgrade')
 
 # fix for psycopg install because of ImportError: libpq-9c51d239.so.5.9: ELF load command address/offset not properly aligned
 #run_verbose(r'yum install postgresql.x86_64 postgresql-devel.x86_64 -y')
-run_verbose(r'pip install -t ./builddir/opt/wapt/lib/python2.7/site-packages psycopg2==2.7.3.2 --no-binary :all: ')
+run_verbose(r'source ./builddir/opt/wapt/bin/activate ;pip install psycopg2==2.7.3.2 --no-binary :all: ')
+run_verbose(r'source ./builddir/opt/wapt/bin/activate; pip install -r ../../requirements-server.txt')
 
-run_verbose(r'source ./pylibs/bin/activate ; pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/python2.7/site-packages')
-
-rsync('./pylibs/lib/', './builddir/opt/wapt/lib/')
+#rsync('./pylibs/lib/', './builddir/opt/wapt/lib/')
 
 eprint('copying the waptserver files')
 
@@ -173,7 +173,6 @@ copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', '__init__.py')
          'builddir/opt/wapt/lib/python2.7/site-packages/cryptography/x509/__init__.py')
 copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.py'),
          'builddir/opt/wapt/lib/python2.7/site-packages/cryptography/x509/verification.py')
-
 
 eprint('copying files formerly from waptrepo')
 copyfile(makepath(wapt_source_dir, 'waptcrypto.py'),
