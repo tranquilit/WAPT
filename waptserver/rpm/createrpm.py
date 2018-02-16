@@ -188,10 +188,14 @@ copyfile(makepath(wapt_source_dir, 'wapt-signpackages.py'),
 copyfile(makepath(wapt_source_dir, 'custom_zip.py'),
          'builddir/opt/wapt/custom_zip.py')
 
+copyfile(makepath(wapt_source_dir, 'runwaptserver.sh'),'./builddir/opt/wapt/runwaptserver.sh')
 copyfile(makepath(wapt_source_dir, 'wapt-scanpackages'),'./builddir/usr/bin/wapt-scanpackages')
 copyfile(makepath(wapt_source_dir, 'wapt-signpackages'),'./builddir/usr/bin/wapt-signpackages')
+copyfile(makepath(wapt_source_dir, 'waptpython'),'./builddir/usr/bin/waptpython')
+os.chmod('./builddir/opt/wapt/runwaptserver.sh', 0o755)
 os.chmod('./builddir/usr/bin/wapt-scanpackages', 0o755)
 os.chmod('./builddir/usr/bin/wapt-signpackages', 0o755)
+os.chmod('./builddir/usr/bin/waptpython', 0o755)
 
 eprint('copying systemd startup script')
 build_dest_dir = './builddir/usr/lib/systemd/system/'

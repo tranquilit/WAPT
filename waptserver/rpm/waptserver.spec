@@ -52,15 +52,19 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 /opt/wapt/waptcrypto.py
 /opt/wapt/waptutils.py
 /opt/wapt/custom_zip.py
+/opt/wapt/runwaptserver.sh
 /usr/bin/wapt-serverpostconf
 /usr/bin/wapt-scanpackages
 /usr/bin/wapt-signpackages
+/usr/bin/waptpython
 
 %attr(755,root,root)/opt/wapt/waptserver/scripts/postconf.py
 %attr(755,root,root)/opt/wapt/wapt-scanpackages.py
 %attr(755,root,root)/opt/wapt/wapt-signpackages.py
+%attr(755,root,root)/opt/wapt/runwaptserver.sh
 %attr(755,root,root)/usr/bin/wapt-scanpackages
 %attr(755,root,root)/usr/bin/wapt-signpackages
+%attr(755,root,root)/usr/bin/waptpython
 %attr(755,wapt,root)/opt/wapt/conf
 %attr(755,wapt,root)/opt/wapt/log
 %attr(750,root,nginx)/opt/wapt/waptserver/ssl/
