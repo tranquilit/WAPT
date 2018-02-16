@@ -196,6 +196,7 @@ rsync(source_dir, './builddir/opt/wapt/',
 
 # script to run waptserver in foreground mode
 copyfile(makepath(wapt_source_dir, 'runwaptserver.sh'),'./builddir/opt/wapt/runwaptserver.sh')
+copyfile(makepath(wapt_source_dir, 'waptpython'),'./builddir/usr/bin/waptpython')
 
 for lib in ('dialog.py', ):
     rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),

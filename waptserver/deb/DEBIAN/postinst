@@ -74,10 +74,10 @@ os.chmod('/opt/wapt/waptserver/scripts/postconf.py',0o755)
 os.chmod('/usr/bin/wapt-scanpackages',0o755)
 os.chmod('/usr/bin/wapt-signpackages',0o755)
 
-os.chmod('/opt/wapt/waptpython',0o755)
 os.chmod('/opt/wapt/runwaptserver.sh',0o755)
 os.chmod('/usr/bin/wapt-scanpackages', 0o755)
 os.chmod('/usr/bin/wapt-signpackages', 0o755)
+os.chmod('/usr/bin/waptpython',0o755)
 
 
 print("Restarting rsyslog")
