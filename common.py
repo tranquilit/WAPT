@@ -1289,7 +1289,7 @@ class WaptServer(BaseObjectClass):
 
     def auth(self,action=None):
         if self._server_url:
-            if action in ('register','add_host'):
+            if action in ('add_host_kerberos','add_host'):
                 scheme = urlparse.urlparse(self._server_url).scheme
                 if scheme == 'https' and has_kerberos and self.use_kerberos:
                     return requests_kerberos.HTTPKerberosAuth(mutual_authentication=requests_kerberos.DISABLED,principal=self.get_computer_principal())
@@ -4609,7 +4609,11 @@ class Wapt(BaseObjectClass):
         inv['host_certificate'] = self.create_or_update_host_certificate()
         data = jsondump(inv)
         if self.waptserver:
-            return self.waptserver.post('add_host',
+            if not self.waptserver.use_kerberos:
+                urladdhost = 'add_host'
+            else:
+                urladdhost = 'add_host_kerberos'
+            return self.waptserver.post(urladdhost,
                 data = data ,
                 signature = self.sign_host_content(data),
                 signer = self.get_host_certificate().cn

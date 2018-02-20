@@ -368,7 +368,7 @@ def index():
     }
     return render_template('index.html', data=data)
 
-
+@app.route('/add_host_kerberos',methods=['HEAD','POST'])
 @app.route('/add_host',methods=['HEAD','POST'])
 @check_auth_is_provided
 def register_host():
