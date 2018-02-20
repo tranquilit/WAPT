@@ -22,15 +22,14 @@ Requires:  nginx dialog pytz python
 set -e
 
 mkdir -p %{buildroot}/opt/wapt
+mkdir -p %{buildroot}/opt/wapt/bin
+mkdir -p %{buildroot}/opt/wapt/lib
 mkdir -p %{buildroot}/opt/wapt/log
 mkdir -p %{buildroot}/opt/wapt/conf
-mkdir -p %{buildroot}/opt/wapt/bin
 (cd .. && python ./createrpm.py)
 
 %files
 %defattr(644,root,root,755)
-/opt/wapt/lib/*
-/opt/wapt/bin/*
 /opt/wapt/waptpackage.py
 /opt/wapt/waptcrypto.py
 /opt/wapt/waptutils.py
@@ -38,6 +37,8 @@ mkdir -p %{buildroot}/opt/wapt/bin
 /usr/bin/wapt-scanpackages
 /usr/bin/wapt-signpackages
 /usr/bin/waptpython
+/opt/wapt/bin/*
+/opt/wapt/lib/*
 
 %attr(755,root,root)/opt/wapt/wapt-scanpackages.py
 %attr(755,root,root)/opt/wapt/wapt-signpackages.py
