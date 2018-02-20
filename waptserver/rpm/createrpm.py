@@ -183,6 +183,18 @@ copyfile(makepath(wapt_source_dir, 'wapt-signpackages.py'),
 copyfile(makepath(wapt_source_dir, 'custom_zip.py'),
          'builddir/opt/wapt/custom_zip.py')
 
+# cleanup
+for fn in (
+   "builddir/opt/wapt/include",
+   "builddir/opt/wapt/lib64",
+   "builddir/opt/wapt/pip-selfcheck.json",
+   "builddir/opt/wapt/share"):
+   try:
+       shutil.rmtree(fn)
+   except:
+       os.unlink(fn)
+
+
 copyfile(makepath(wapt_source_dir, 'runwaptserver.sh'),'./builddir/opt/wapt/runwaptserver.sh')
 copyfile(makepath(wapt_source_dir, 'wapt-scanpackages'),'./builddir/usr/bin/wapt-scanpackages')
 copyfile(makepath(wapt_source_dir, 'wapt-signpackages'),'./builddir/usr/bin/wapt-signpackages')
@@ -223,7 +235,7 @@ except Exception as e:
 
 eprint('adding symlink for wapt-serverpostconf')
 mkdir_p('builddir/usr/bin')
-os.symlink('/opt/wapt/waptserver/scripts/postconf.py',
+os.symlink('/opt/wapt/waptserver/scripts/postconf.sh',
            'builddir/usr/bin/wapt-serverpostconf')
 
 eprint('copying nginx-related goo')
