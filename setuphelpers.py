@@ -987,8 +987,8 @@ def run_notfatal(*cmd,**args):
 def shell_launch(cmd):
     """Launch a command (without arguments) but doesn't wait for its termination
 
-    .>>> open('c:/tmp/test.txt','w').write('Test line')
-    .>>> shell_launch('c:/tmp/test.txt')
+    >>> open('c:/tmp/test.txt','w').write('Test line')
+    >>> shell_launch('c:/tmp/test.txt')
     """
     os.startfile(cmd)
 
