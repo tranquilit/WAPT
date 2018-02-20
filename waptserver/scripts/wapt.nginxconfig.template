@@ -48,7 +48,7 @@ server {
         client_body_timeout 1800;
 
 {% if use_kerberos  %}
-        location /add_host {
+        location /add_host_kerberos {
             auth_gss on;
             auth_gss_keytab  /etc/nginx/http-krb5.keytab;
             proxy_pass http://127.0.0.1:8080;
