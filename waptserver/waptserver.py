@@ -254,15 +254,13 @@ def check_auth(username, password):
 
 def check_auth_is_provided(f):
     """Check if there is at least basic-auth or kerberos or ssl signature if
-    allow_unautheticated_registration is False
+    allow_unauthenticated_registration is False
     """
     @functools.wraps(f)
     def decorated(*args, **kwargs):
         auth = session.get('user',None)
         if not auth:
             auth = request.headers.get('Authorization', None)
-        if not auth:
-            auth = request.authorization
         if not auth:
             auth = request.authorization
         if not auth:

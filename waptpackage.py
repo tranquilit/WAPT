@@ -832,7 +832,7 @@ class PackageEntry(BaseObjectClass):
         return '_'.join([f for f in (self.package,self.architecture,self.maturity,self.locale) if (f and f != 'all')]) + '-wapt'
 
     def asrequirement(self):
-        """resturn package and version for designing this package in depends or install actions
+        """Return package and version for designing this package in depends or install actions
 
         Returns:
             str: "packagename (=version)"
@@ -864,6 +864,7 @@ class PackageEntry(BaseObjectClass):
     def build_management_package(self,target_directory=None):
         """Build the WAPT package from attributes only, without setup.py
         stores the result in target_directory.
+
         self.sourcespath must be None.
         Package will contain only a control file.
 
