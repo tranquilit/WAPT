@@ -569,7 +569,7 @@ PackageKey = namedtuple('package',('packagename','version'))
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
 
-    curr_db_version = '20180212'
+    curr_db_version = '20180220'
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
@@ -630,15 +630,12 @@ class WaptDB(WaptBaseDB):
           setuppy TEXT,
           process_id integer,
           depends varchar(800),
-          conflicts varchar(800)
-          )"""
-
-        # TODO Audit :
-
-        # last_audit_on
-        # last_audit_status
-        # next_audit_on
-                        )
+          conflicts varchar(800),
+          last_audit_on varchar(255),
+          last_audit_status TEXT,
+          next_audit_on varchar(255)
+          )
+          """)
         self.db.execute("""
         create index if not exists idx_localstatus_name on wapt_localstatus(package);""")
 
