@@ -44,17 +44,17 @@ except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
 
-from waptserver.waptserver_config import __version__
-from waptserver.waptserver_config import DEFAULT_CONFIG_FILE
-from waptserver.waptserver_model import load_db_config
+from waptserver_config import __version__
+from waptserver_config import DEFAULT_CONFIG_FILE
+from waptserver_model import load_db_config
 import platform
 
 import logging
 import ConfigParser
 from optparse import OptionParser
 
-from waptserver.waptserver_model import *
-from waptserver.waptserver_utils import *
+from waptserver_model import *
+from waptserver_utils import *
 
 # setup logging
 logger = logging.getLogger()
@@ -71,7 +71,6 @@ def create_import_data():
             data = subprocess.check_output('mongoexport -d wapt -c hosts --jsonArray --dbpath=%s' % mongo_datadir,shell=True)
         else:
             data = subprocess.check_output('mongoexport -d wapt -c hosts --jsonArray --db wapt',shell=True)
-        data = subprocess.check_output('mongoexport -d wapt -c hosts --jsonArray --dbpath=%s' % mongo_datadir,shell=True)
         data = data.replace('\u0000', ' ')
         jsondata = json.loads(data)
     elif platform.system()=='Windows':

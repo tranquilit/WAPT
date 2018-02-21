@@ -176,7 +176,7 @@ def ensure_postgresql_db(db_name='wapt',db_owner='wapt',db_password=''):
         print ("user wapt already exists, skipping creating user  ")
     else:
         print ("we suppose that the db does not exist either (or the installation has been screwed up")
-        if db_password.strip()=='':
+        if not db_password:
             run(""" sudo -u postgres psql template1 -c "create user %s ; " """ % (db_owner), cwd='/opt/wapt/')
         else:
             run(""" sudo -u postgres psql template1 -c "create user %s with password '%s'; " """ % (db_owner,db_password), cwd='/opt/wapt/')
@@ -234,14 +234,13 @@ def check_mongo2pgsql_upgrade_needed(waptserver_ini):
     ini = ConfigParser.RawConfigParser()
     ini.read(waptserver_ini)
 
-    return ini.has_option('options', 'mongodb_port') and len(mongod_running)>0
+    return ini.has_option('options', 'mongodb_port') and len(mongod_running())>0
 
 def upgrade2postgres(configfilename):
     print ("mongodb process running, need to migrate")
-    run_verbose('sudo -i -u wapt /usr/bin/python /opt/wapt/waptserver/waptserver_upgrade.py upgrade2postgres -c "%s"' % configfilename)
+    run_verbose('sudo -u wapt PYTHONPATH=/opt/wapt PYTHONHOME=/opt/wapt /opt/wapt/bin/python /opt/wapt/waptserver/waptserver_upgrade.py upgrade2postgres -c "%s"' % configfilename)
     run_verbose("systemctl stop mongodb")
     run_verbose("systemctl disable mongodb")
-    return True
 
 def nginx_set_worker_limit(nginx_conf):
     already_set=False
@@ -249,7 +248,7 @@ def nginx_set_worker_limit(nginx_conf):
         if entries[0]=='worker_rlimit_nofile':
             print( "worker_rlimit_nofile already set")
             already_set=True
-    if already_set==False:
+    if not already_set:
         nginx_conf.insert(3,['worker_rlimit_nofile', '32768'])
     return nginx_conf
 
@@ -459,7 +458,7 @@ def main():
                     for pkg in  pkgs:
                         if pkg.name=='nginx-mod-http-auth-spnego':
                             found = True
-                    if found==False:
+                    if not found:
                         print('missing dependency nginx-mod-http-auth-spnego, please install first before configuring kerberos')
                         sys.exit(1)
 
@@ -488,8 +487,7 @@ def main():
 
     if check_mongo2pgsql_upgrade_needed(options.configfile) and\
             postconf.yesno("It is necessary to migrate current database backend from mongodb to postgres. Press yes to start migration",no_label='cancel') == postconf.DIALOG_OK:
-
-        print ("MongoDB migrated to PostgreSQL and disabled ")
+        upgrade2postgres(options.configfile)       
 
     width = 4 + max(10, len(max(final_msg, key=len)))
     height = 2 + max(20, len(final_msg))
