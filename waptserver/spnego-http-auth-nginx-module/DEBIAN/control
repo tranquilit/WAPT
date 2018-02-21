@@ -4,6 +4,6 @@ Section: base
 Priority: optional
 Architecture: amd64
 Depends: nginx (>=1.10.3),nginx (<<1.10.4)
-Recommends: tis-waptsetup
+Recommends: 
 Maintainer: TIS <technique@tranquil-it-systems.fr>
 Description: SPNego module for Nginx for WAPT Server on Debian
