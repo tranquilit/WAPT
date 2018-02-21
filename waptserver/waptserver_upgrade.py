@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/opt/wapt/bin/python
 # -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------
 #    This file is part of WAPT
@@ -44,21 +44,17 @@ except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
 
-from waptserver_config import __version__
-from waptserver_model import load_db_config
+from waptserver.waptserver_config import __version__
+from waptserver.waptserver_config import DEFAULT_CONFIG_FILE
+from waptserver.waptserver_model import load_db_config
 import platform
 
 import logging
 import ConfigParser
 from optparse import OptionParser
 
-from waptserver_model import *
-from waptserver_utils import *
-
-
-
-DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
-config_file = DEFAULT_CONFIG_FILE
+from waptserver.waptserver_model import *
+from waptserver.waptserver_utils import *
 
 # setup logging
 logger = logging.getLogger()
@@ -180,9 +176,6 @@ if __name__ == '__main__':
     parser.add_option('-d', '--devel', dest='devel', default=False, action='store_true',
         help='Enable debug mode (for development only)')
 
-    parser.add_option('-p', '--test-prefix', dest='test_prefix', default=None,
-        help='test prefix for fqdn and uuid for load testing (for development only)')
-
     (options, args) = parser.parse_args()
     conf = waptserver_config.load_config(options.configfile)
     load_db_config(conf)
@@ -207,4 +200,5 @@ if __name__ == '__main__':
     elif action == 'import_data':
         print('import json data from files %s' % (' '.join(args[1:])))
         for f in args[1:]:
-            load_json(f, add_test_prefix=options.test_prefix)
+            load_json(f)
+

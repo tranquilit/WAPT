@@ -228,17 +228,20 @@ def setup_firewall():
 def check_mongo2pgsql_upgrade_needed(waptserver_ini):
     """ return True if upgrade2postgres has been processed.
     """
-    if waptserver_ini.has_option('options', 'mongodb_port'):
-        if postconf.yesno("It is necessary to migrate current database backend from mongodb to postgres. Press yes to start migration",no_label='cancel')== postconf.DIALOG_OK:
-            print ("mongodb process running, need to migrate")
-            run_verbose("sudo -i -u wapt /usr/bin/python /opt/wapt/waptserver/waptserver_upgrade.py upgrade2postgres")
-            run_verbose("systemctl stop mongodb")
-            run_verbose("systemctl disable mongodb")
-            return True
-        else:
-            print ("Post configuration aborted")
-            sys.exit(1)
-    return False
+    def mongod_running():
+        return [p for p in psutil.process_iter() if p.name().lower() in ('mongod','mongod.exe')]
+
+    ini = ConfigParser.RawConfigParser()
+    ini.read(waptserver_ini)
+
+    return ini.has_option('options', 'mongodb_port') and len(mongod_running)>0
+
+def upgrade2postgres(configfilename):
+    print ("mongodb process running, need to migrate")
+    run_verbose('sudo -i -u wapt /usr/bin/python /opt/wapt/waptserver/waptserver_upgrade.py upgrade2postgres -c "%s"' % configfilename)
+    run_verbose("systemctl stop mongodb")
+    run_verbose("systemctl disable mongodb")
+    return True
 
 def nginx_set_worker_limit(nginx_conf):
     already_set=False
@@ -268,7 +271,7 @@ def check_if_deb_installed(package_name):
    return False
 
 def main():
-    global wapt_folder,MONGO_SVC,APACHE_SVC, NGINX_GID
+    global wapt_folder,NGINX_GID
 
 
     parser = OptionParser(usage=usage, version='waptserver.py ' + __version__)
@@ -312,45 +315,27 @@ def main():
                 run('restorecon -R -v /var/www/html/%s' %sepath)
             postconf.msgbox('SELinux correctly configured for Nginx reverse proxy')
 
-    if not os.path.isfile(options.configfile):
-        waptserver_config.write_config_file(options.configfile,non_default_values_only=True)
-        #shutil.copyfile('/opt/wapt/waptserver/waptserver.ini.template',options.configfile)
-    else:
+    server_config = waptserver_config.load_config(options.configfile)
+
+    if os.path.isfile(options.configfile):
         print('making a backup copy of the configuration file')
         datetime_now = datetime.datetime.now()
         shutil.copyfile(options.configfile,'%s.bck_%s'%  (options.configfile,datetime_now.isoformat()) )
 
-    waptserver_ini = iniparse.RawConfigParser()
-    waptserver_ini.add_section('options')
-    waptserver_ini.read(options.configfile)
-    if waptserver_ini.has_option('options', 'wapt_folder'):
-        wapt_folder = waptserver_ini.get('options', 'wapt_folder')
-
-    if waptserver_ini.has_section('uwsgi'):
-        print ('Remove uwsgi options, not used anymore')
-        waptserver_ini.remove_section('uwsgi')
+    wapt_folder = server_config['wapt_folder']
 
     # add secret key initialisation string (for session token)
-    if not waptserver_ini.has_option('options','secret_key') or not waptserver_ini.get('options','secret_key') :
-        waptserver_ini.set('options','secret_key',''.join(random.SystemRandom().choice(string.letters + string.digits) for _ in range(64)))
+    if not server_config['secret_key']:
+        server_config['secret_key'] = ''.join(random.SystemRandom().choice(string.letters + string.digits) for _ in range(64))
 
     # add user db and password in ini file
-    ensure_postgresql_db()
+    if server_config['db_host'] in (None,'','localhost','127.0.0.1','::1'):
+        ensure_postgresql_db(db_name=server_config['db_name'],db_owner=server_config['db_name'],db_password=server_config['db_password'])
 
-    print ("create database schema")
-    server_config = waptserver_config.load_config(options.configfile)
-    #load_db_config(server_config)
-    #init_db()
-    run("sudo -u wapt PYTHONHOME=/opt/wapt PYTHONPATH=/opt/wapt /opt/wapt/bin/python /opt/wapt/waptserver/waptserver_model.py init_db ")
-
-    if check_mongo2pgsql_upgrade_needed(waptserver_ini):
-        print ("MongoDB migrated to PostgreSQL and disabled ")
-
-    waptserver_ini.set('options','wapt_folder',wapt_folder)
+    run('sudo -u wapt PYTHONHOME=/opt/wapt PYTHONPATH=/opt/wapt /opt/wapt/bin/python /opt/wapt/waptserver/waptserver_model.py init_db -c "%s"' % options.configfile)
 
     # Password setup/reset screen
-    if not waptserver_ini.has_option('options', 'wapt_password') or \
-            not waptserver_ini.get('options', 'wapt_password') or \
+    if not server_config['wapt_password'] or \
             postconf.yesno("Do you want to reset admin password ?",yes_label='skip',no_label='reset') != postconf.DIALOG_OK:
         wapt_password_ok = False
         while not wapt_password_ok:
@@ -375,21 +360,21 @@ def main():
                 wapt_password_ok = True
 
         password = pbkdf2_sha256.hash(wapt_password.encode('utf8'))
-        waptserver_ini.set('options','wapt_password',password)
+        server_config['wapt_password'] = password
 
-    if not waptserver_ini.has_option('options', 'server_uuid') or not waptserver_ini.get('options', 'server_uuid'):
-        waptserver_ini.set('options', 'server_uuid', str(uuid.uuid1()))
+    if not server_config['server_uuid']:
+        server_config['server_uuid'] = str(uuid.uuid1())
 
     if options.use_kerberos:
-        waptserver_ini.set('options','use_kerberos','True')
+        server_config['use_kerberos'] = True
     else:
-        waptserver_ini.set('options','use_kerberos','False')
+        server_config['use_kerberos'] = False
 
     # waptagent authentication method
     choices = [
             ("1","Allow unauthenticated registration, same behavior as wapt 1.3", True),
-            ("2","Enable kerberos authentication required for machines registration. Registration will ask for password if kerberos not working",        False),
-            ("3","Disable Kerberos but registration require strong authentication",        False),
+            ("2","Enable kerberos authentication required for machines registration. Registration will ask for password if kerberos not working", False),
+            ("3","Disable Kerberos but registration require strong authentication", False),
             ]
 
     code, t = postconf.radiolist("WaptAgent Authentication type?", choices=choices,width=120)
@@ -397,16 +382,16 @@ def main():
         print("\n\npostconfiguration canceled\n\n")
         sys.exit(1)
     if t=="1":
-        waptserver_ini.set('options','allow_unauthenticated_registration','True')
+        server_config['allow_unauthenticated_registration'] = True
     if t=="3":
-        waptserver_ini.set('options','allow_unauthenticated_registration','False')
-        waptserver_ini.set('options','use_kerberos','False')
+        server_config['allow_unauthenticated_registration'] = False
+        server_config['use_kerberos'] = False
     if t=="2":
-        waptserver_ini.set('options','allow_unauthenticated_registration','False')
-        waptserver_ini.set('options','use_kerberos','True')
+        server_config['allow_unauthenticated_registration'] = False
+        server_config['use_kerberos'] = True
 
-    with open(options.configfile,'w') as inifile:
-       waptserver_ini.write(inifile)
+
+    waptserver_config.write_config_file(cfgfile=options.configfile,server_config=server_config,non_default_values_only=True)
 
     run("/bin/chmod 640 %s" % options.configfile)
     run("/bin/chown wapt %s" % options.configfile)
@@ -499,6 +484,12 @@ def main():
             'Error while trying to configure Nginx!',
             traceback.format_exc()
             ]
+
+
+    if check_mongo2pgsql_upgrade_needed(options.configfile) and\
+            postconf.yesno("It is necessary to migrate current database backend from mongodb to postgres. Press yes to start migration",no_label='cancel') == postconf.DIALOG_OK:
+
+        print ("MongoDB migrated to PostgreSQL and disabled ")
 
     width = 4 + max(10, len(max(final_msg, key=len)))
     height = 2 + max(20, len(final_msg))
