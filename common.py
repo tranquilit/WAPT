@@ -1292,7 +1292,8 @@ class WaptServer(BaseObjectClass):
             if action in ('add_host_kerberos','add_host'):
                 scheme = urlparse.urlparse(self._server_url).scheme
                 if scheme == 'https' and has_kerberos and self.use_kerberos:
-                    return requests_kerberos.HTTPKerberosAuth(mutual_authentication=requests_kerberos.DISABLED,principal=self.get_computer_principal())
+                    return requests_kerberos.HTTPKerberosAuth(mutual_authentication=requests_kerberos.DISABLED)
+
                     # TODO : simple auth if kerberos is not available...
                 else:
                     return self.ask_user_password(action)
