@@ -411,7 +411,9 @@ def register_host():
 
         # with nginx kerberos module, auth user name is stored as Basic auth in the
         # 'Authorisation' header with password 'bogus_auth_gss_passwd'
-        if app.conf['use_kerberos'] or not app.conf['allow_unauthenticated_registration']:
+        print request.path
+        print request.headers
+        if request.path=='/add_host_kerberos' and app.conf['use_kerberos']:
             authenticated_user = request.headers.get('Authorization', None)
             if authenticated_user and authenticated_user.endswith(':bogus_auth_gss_passwd'):
                     authenticated_user = authenticated_user.replace(':bogus_auth_gss_passwd', '')
@@ -430,15 +432,16 @@ def register_host():
             if auth and check_auth(auth.username, auth.password):
                 # assume authenticated user is the fqdn provided in the data
                 logger.debug('Basic auth registration for %s with user %s' % (computer_fqdn,auth.username))
-                authenticated_user = computer_fqdn
+                authenticated_user =  auth.username
                 registration_auth_user = u'Basic:%s' % auth.username
 
-            existing_host = Hosts.select(Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
+            existing_host = Hosts.select(Hosts.host_certificate, Hosts.computer_fqdn, Hosts.registration_auth_user).where(Hosts.uuid == uuid).first()
             if not authenticated_user and existing_host and existing_host.host_certificate:
                 # check if existing record, and in this case, check signature with existing certificate
                 host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
                 try:
                     authenticated_user = host_cert.verify_content(sha256_for_data(raw_data), signature)
+                    registration_auth_user =  Hosts.registration_auth_user
                 except (InvalidSignature,SSLVerifyException) as e:
                     authenticated_user = None
 
