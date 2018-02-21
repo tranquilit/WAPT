@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/opt/wapt/bin/python
 # -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------
 #    This file is part of WAPT
@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = '1.5.0'
+__version__ = '1.5.1'
 usage = """
 This script if aimed at triggering package upgrade through direct http call
 for client waptagent <=1.4. It is usefull for triggering upgrades from earlier
@@ -44,10 +44,6 @@ try:
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
-sys.path.insert(0, os.path.join(wapt_root_dir))
-sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
-sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
-
 import glob
 import requests
 
@@ -60,7 +56,6 @@ from waptserver_model import *
 from waptserver_utils import *
 from waptutils import *
 from waptserver_config import *
-
 
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
 config_file = DEFAULT_CONFIG_FILE
@@ -119,7 +114,7 @@ if __name__ == '__main__':
                          Hosts.listening_address, Hosts.listening_port, Hosts.connected_ips, Hosts.wapt_status).where(~Hosts.listening_protocol.is_null() and ~Hosts.connected_ips.is_null())
     try:
         for host in hosts:
-            if Version(host.wapt_status['wapt-exe-version']) < Version('1.5.0'):
+            if not isinstance(host.wapt_status,dict) or Version(host.wapt_status['wapt-exe-version']) < Version('1.5.0'):
                 print('processing %s %s' % (host.computer_fqdn, host.connected_ips))
                 params = {}
                 params['uuid'] = host.uuid
