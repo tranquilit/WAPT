@@ -474,12 +474,12 @@ begin
       Run('cmd /C net start waptserver');
       Run('cmd /C net start waptnginx');
 
-      ProgressTitle(rsMigration15);
-      ProgressStep(2,10);
-
       if FileExists(WaptBaseDir+'\waptserver\mongodb\mongoexport.exe') AND
         (Dialogs.MessageDlg(rsMongoDetect,rsRunMongo2Postgresql,mtInformation,mbYesNoCancel,0) = mrYes) then
       begin
+        ProgressTitle(rsMigration15);
+        ProgressStep(2,10);
+
         runwapt('{app}\waptpython {app}\waptserver\waptserver_upgrade.py upgrade2postgres');
 
         if DirectoryExistsUTF8(WaptBaseDir+'\waptserver\mongodb') then
