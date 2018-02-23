@@ -1992,7 +1992,7 @@ class WaptRepo(WaptRemoteRepo):
         return self
 
     def as_dict(self):
-        result = super(WaptRemoteRepo,self).as_dict()
+        result = super(WaptRepo,self).as_dict()
         result.update(
             {
             'repo_url':self._repo_url or self._cached_dns_repo_url,
