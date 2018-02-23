@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 0
+  Left = 355
   Height = 721
-  Top = 156
+  Top = 155
   Width = 1072
   AllowDropFiles = True
   Caption = 'WAPT console'
@@ -5608,6 +5608,13 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 3
       OnExecute = ActDeleteNetworkExecute
     end
+    object ActTriggerWaptServiceRestart: TAction
+      Category = 'Enterprise'
+      Caption = 'Trigger a restart of waptservice'
+      ImageIndex = 19
+      OnExecute = ActTriggerWaptServiceRestartExecute
+      OnUpdate = ActHostsActionsUpdate
+    end
   end
   object PopupMenuPackages: TPopupMenu
     Images = ActionsImages24
@@ -8195,6 +8202,9 @@ object VisWaptGUI: TVisWaptGUI
         4A5AFF944A8AFF944DA0FF944DA0FF954D8BFF944D5DFF805512000000000000
         0000FF99660F0000000000000000000000000000000000000000
       }
+    end
+    object MenuItem92: TMenuItem
+      Action = ActTriggerWaptServiceRestart
     end
   end
   object ImageList1: TImageList
@@ -11355,6 +11365,9 @@ object VisWaptGUI: TVisWaptGUI
   object PopupMenu1: TPopupMenu
     left = 132
     top = 266
+    object MenuItem91: TMenuItem
+      Caption = 'New Item1'
+    end
   end
   object SrcOrgUnits: TDataSource
     DataSet = DBOrgUnits

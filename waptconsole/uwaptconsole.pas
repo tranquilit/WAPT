@@ -27,6 +27,7 @@ type
     ActEditOrgUnitPackage: TAction;
     ActAddNewNetwork: TAction;
     ActDeleteNetwork: TAction;
+    ActTriggerWaptServiceRestart: TAction;
     ActLaunchGPUpdate: TAction;
     ActLaunchWaptExit: TAction;
     ActTriggerBurstUpgrades: TAction;
@@ -109,6 +110,8 @@ type
     MenuItem88: TMenuItem;
     MenuItem89: TMenuItem;
     MenuItem90: TMenuItem;
+    MenuItem91: TMenuItem;
+    MenuItem92: TMenuItem;
     Panel8: TPanel;
     PgNetworksConfig: TTabSheet;
     PopupMenuOrgUnits: TPopupMenu;
@@ -459,6 +462,7 @@ type
     procedure ActTriggerBurstUpdatesExecute(Sender: TObject);
     procedure ActTriggerBurstUpgradesExecute(Sender: TObject);
     procedure ActTriggerWakeOnLanExecute(Sender: TObject);
+    procedure ActTriggerWaptServiceRestartExecute(Sender: TObject);
     procedure ActTriggerWaptwua_downloadExecute(Sender: TObject);
     procedure ActTriggerWaptwua_installExecute(Sender: TObject);
     procedure ActTriggerWaptwua_scanExecute(Sender: TObject);
@@ -2381,6 +2385,13 @@ begin
   data := SO();
   data['uuids'] := GetSelectedUUID;
   HandleServerResult(WAPTServerJsonPost('api/v3/trigger_wakeonlan',[],data));
+end;
+
+procedure TVisWaptGUI.ActTriggerWaptServiceRestartExecute(Sender: TObject);
+begin
+  if (GridHosts.SelectedCount>=1) and
+    (MessageDlg(Format(rsConfirmWaptServiceRestart,[GridHosts.SelectedCount]),mtConfirmation,mbYesNoCancel, 0) = mrYes) then
+      TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_waptservicerestart',Nil,rsRestartingWaptservice,'Error restarting waptservice %s',True)
 end;
 
 procedure TVisWaptGUI.ActTriggerWaptwua_downloadExecute(Sender: TObject);

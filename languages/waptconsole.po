@@ -1450,6 +1450,10 @@ msgstr ""
 msgid "Power ON with WakeOnLan"
 msgstr ""
 
+#: tviswaptgui.acttriggerwaptservicerestart.caption
+msgid "Trigger a restart of waptservice"
+msgstr ""
+
 #: tviswaptgui.acttriggerwaptwua_download.caption
 msgctxt "tviswaptgui.acttriggerwaptwua_download.caption"
 msgid "Trigger the download of pending Windows Updates"
@@ -1952,6 +1956,10 @@ msgstr ""
 
 #: tviswaptgui.menuitem9.caption
 msgid "Reopen"
+msgstr ""
+
+#: tviswaptgui.menuitem91.caption
+msgid "New Item1"
 msgstr ""
 
 #: tviswaptgui.odselectinstaller.title
@@ -2730,6 +2738,10 @@ msgstr ""
 msgid "Are you sure you want to propose Packages Upgrades on %d hosts ?"
 msgstr ""
 
+#: uwaptconsoleres.rsconfirmwaptservicerestart
+msgid "Are you sure you want to restart waptservice on %d hosts ?"
+msgstr ""
+
 #: uwaptconsoleres.rscreationinprogress
 msgctxt "uwaptconsoleres.rscreationinprogress"
 msgid "Build in progress."
@@ -3138,6 +3150,10 @@ msgstr ""
 
 #: uwaptconsoleres.rsrepositoryunregisterconfirm
 msgid "Confirm the unregistration of repository %s"
+msgstr ""
+
+#: uwaptconsoleres.rsrestartingwaptservice
+msgid "Waptservice restart triggered on the remote hosts."
 msgstr ""
 
 #: uwaptconsoleres.rsrunninggpupdate

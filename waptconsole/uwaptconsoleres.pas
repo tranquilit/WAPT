@@ -78,6 +78,7 @@ resourcestring
 
   rsConfirmBurstUpdate = 'Are you sure you want to trigger Status Update on %d hosts ?';
   rsConfirmBurstUpgrades = 'Are you sure you want to Apply Upgrades on %d hosts ?';
+  rsConfirmWaptServiceRestart = 'Are you sure you want to restart waptservice on %d hosts ?';
 
   rsConfirmGPUpdate = 'Are you sure you want to update Group Policies status on %d hosts ?';
   rsRunningGPUpdate = 'Running GPUpdate';
@@ -164,6 +165,8 @@ resourcestring
   rsUpgradingHost = 'Upgrade triggered on the remote host.';
   rsUpgradeHostError = 'Failed to trigger upgrade : %s';
   rsEditHostError =  'Unable to edit the host profile %s.'#13#10'If package is signed with a foreign key, you may want to delete host package first to workaround the issue...';
+
+  rsRestartingWaptservice = 'Waptservice restart triggered on the remote hosts.';
 
   rsSaveMods = 'Save changes ?';
   rsUploading = 'Uploading';

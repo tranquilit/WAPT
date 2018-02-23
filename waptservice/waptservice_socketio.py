@@ -214,6 +214,9 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                         task.created_by=verified_by
 
                         result.append(self.task_manager.add_task(task).as_dict())
+                elif name == 'trigger_waptservicerestart':
+                    msg = setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice')
+                    result.append(dict(success=True,msg = msg,result = msg))
                 elif name in waptservice_remote_actions:
                     waptservice_remote_actions[name].trigger_action(self,action,verified_by)
                 else:
