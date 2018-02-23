@@ -1992,13 +1992,12 @@ class WaptRepo(WaptRemoteRepo):
         return self
 
     def as_dict(self):
-        result = {
-            'name':self.name,
+        result = super(WaptRemoteRepo,self).as_dict()
+        result.update(
+            {
             'repo_url':self._repo_url or self._cached_dns_repo_url,
-            'proxies':self.proxies,
             'dnsdomain':self.dnsdomain,
-            'timeout':self.timeout,
-            }
+            })
         return result
 
     def __repr__(self):
@@ -2152,22 +2151,26 @@ class WaptHostRepo(WaptRepo):
                         logger.warning('Error reading host package certificate: %s'%repr(e))
                         signers_bundle = None
 
-                try:
-                    if self.cabundle is not None:
-                        package.check_control_signature(self.cabundle,signers_bundle = signers_bundle)
-                    self._packages.append(package)
-                    if package.package not in self._index or self._index[package.package] < package:
-                        self._index[package.package] = package
+                if self.is_locally_allowed_package(package):
+                    try:
+                        if self.cabundle is not None:
+                            package.check_control_signature(self.cabundle,signers_bundle = signers_bundle)
+                        self._packages.append(package)
+                        if package.package not in self._index or self._index[package.package] < package:
+                            self._index[package.package] = package
 
-                    # keep content with index as it should be small
-                    package._package_content = _host_package_content
-                    package._packages_date = httpdatetime2isodate(host_package.headers.get('last-modified',None))
+                        # keep content with index as it should be small
+                        package._package_content = _host_package_content
+                        package._packages_date = httpdatetime2isodate(host_package.headers.get('last-modified',None))
 
-                    # TODO better
-                    self._packages_date = package._packages_date
+                        # TODO better
+                        self._packages_date = package._packages_date
 
-                except (SSLVerifyException,EWaptNotSigned) as e:
-                    logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.cabundle))
+                    except (SSLVerifyException,EWaptNotSigned) as e:
+                        logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.cabundle))
+                        self.discarded.append(package)
+                else:
+                    logger.info('Discarding %s on repo "%s" because of local whitelist of blacklist rules' % (package.asrequirement(),self.name))
                     self.discarded.append(package)
 
 
@@ -2365,6 +2368,9 @@ class Wapt(BaseObjectClass):
         self.waptserver = None
         self.config_filedate = None
 
+        self.packages_whitelist = None
+        self.packages_blacklist = None
+
         self.load_config(config_filename = self.config_filename)
 
         self.options = OptionParser()
@@ -2549,7 +2555,7 @@ class Wapt(BaseObjectClass):
         if self.config.has_option('global','sign_digests'):
             self.sign_digests = ensure_list(self.config.get('global','sign_digests'))
 
-
+        # allow to force a host_dn when the computer is not part of an AD, but we want to put host in a OR.
         if self.config.has_option('global','host_dn'):
             self.forced_host_dn = self.config.get('global','host_dn')
             if self.forced_host_dn != self.host_dn:
@@ -2559,6 +2565,11 @@ class Wapt(BaseObjectClass):
             # force reset to None if config file is changed at runtime
             self.forced_host_dn = None
 
+        if self.config.has_option('global','packages_whitelist'):
+            self.packages_whitelist = ensure_list(self.config.get('global','packages_whitelist'),allow_none=True)
+
+        if self.config.has_option('global','packages_blacklist'):
+            self.packages_blacklist = ensure_list(self.config.get('global','packages_blacklist'),allow_none=True)
 
         # Get the configuration of all repositories (url, ...)
         self.repositories = []
@@ -3629,6 +3640,9 @@ class Wapt(BaseObjectClass):
                     self.waptdb.purge_repo(repo.name)
                     for package in repo.packages:
                         if filter_on_host_cap:
+                            if not self.is_locally_allowed_package(package):
+                                logger.info('Discarding %s on repo "%s" because of local whitelist of blacklist rules' % (package.asrequirement(),repo.name))
+                                continue
                             if package.min_wapt_version and Version(package.min_wapt_version)>Version(setuphelpers.__version__):
                                 logger.debug('Skipping package %s on repo %s, requires a newer Wapt agent. Minimum version: %s' % (package.asrequirement(),repo.name,package.min_wapt_version))
                                 continue
@@ -3697,8 +3711,28 @@ class Wapt(BaseObjectClass):
             wapt_version=setuphelpers.__version__,
             host_dn=self.host_dn,
             host_site=self.get_host_site(),
+            packages_blacklist=self.packages_blacklist,
+            packages_whitelist=self.packages_whitelist,
         )
         return hashlib.sha256(jsondump(host_capa)).hexdigest()
+
+    def is_locally_allowed_package(self,package):
+        """Return True if package is not in blacklist and is in whitelist if whitelist is not None
+        packages_whitelist and packages_blacklist are list of package name wildcards (file style wildcards)
+        blacklist is taken in account first if defined.
+        whitelist is taken in acoount if not None, else all not blacklisted package names are allowed.
+        """
+        if self.packages_blacklist is not None:
+            for bl in self.packages_blacklist:
+                if glob.fnmatch.fnmatch(package.package,bl):
+                    return False
+        if self.packages_whitelist is None:
+            return True
+        else:
+            for wl in self.packages_whitelist:
+                if glob.fnmatch.fnmatch(package.package,wl):
+                    return True
+        return False
 
     def _update_repos_list(self,force=False,filter_on_host_cap=True):
         """update the packages database with Packages files from the Wapt repos list
@@ -4366,20 +4400,24 @@ class Wapt(BaseObjectClass):
         return result
 
     def get_outdated_host_packages(self):
-        """Check and return the vailable host packages available and not installed"""
+        """Check and return the available host packages available and not installed"""
 
         logger.debug(u'Check if host package "%s" is available' % (self.host_packagename(), ))
         result = []
         host_packages = self.get_host_packages()
         for package in host_packages:
-            logger.debug('Checking if %s is installed/outdated' % package.asrequirement())
-            installed_package = self.is_installed(package.asrequirement())
-            if not installed_package or installed_package < package:
-                result.append(package)
+            if self.is_locally_allowed_package(package):
+                logger.debug('Checking if %s is installed/outdated' % package.asrequirement())
+                installed_package = self.is_installed(package.asrequirement())
+                if not installed_package or installed_package < package:
+                    result.append(package)
         return result
 
     def get_unrelevant_host_packages(self):
-        """Uninstall host and unit packages which are no longer relevant
+        """Get the implicit package names (host and unit packages) which are installed but no longer relevant
+
+        Returns:
+            list: of installed package names
         """
         installed_host_packages = [p.package for p in self.installed(True).values() if p.section in ('host','unit')]
         expected_host_packages = self.get_host_packages_names()
@@ -4448,9 +4486,10 @@ class Wapt(BaseObjectClass):
             host_packages = self.get_outdated_host_packages()
             if host_packages:
                 for p in host_packages:
-                    req = p.asrequirement()
-                    if not req in result['install']+result['upgrade']+result['additional']:
-                        result['install'].append(req)
+                    if self.is_locally_allowed_package(p):
+                        req = p.asrequirement()
+                        if not req in result['install']+result['upgrade']+result['additional']:
+                            result['install'].append(req)
 
         # get additional packages to install/upgrade based on new upgrades
         depends = self.check_depends(result['install']+result['upgrade']+result['additional'])
@@ -4903,6 +4942,9 @@ class Wapt(BaseObjectClass):
         # memory usage
         current_process = psutil.Process()
         result['wapt-memory-usage'] = vars(current_process.memory_info())
+
+        result['packages_whitelist'] = self.packages_whitelist
+        result['packages_blacklist'] = self.packages_blacklist
 
         return result
 

@@ -1595,6 +1595,9 @@ class WaptBaseRepo(BaseObjectClass):
         self.public_certs_dir = None
         self.cabundle = None
 
+        self.packages_whitelist = None
+        self.packages_blacklist = None
+
         self.load_config(config=config)
 
         if self.public_certs_dir:
@@ -1638,6 +1641,12 @@ class WaptBaseRepo(BaseObjectClass):
 
         if config.has_option(section,'check_certificates_validity'):
             self.check_certificates_validity = config.getboolean(section,'check_certificates_validity')
+
+        if config.has_option(section,'packages_whitelist'):
+            self.packages_whitelist = ensure_list(config.get(section,'packages_whitelist'),allow_none=True)
+
+        if config.has_option(section,'packages_blacklist'):
+            self.packages_blacklist = ensure_list(config.get(section,'packages_blacklist'),allow_none=True)
 
         return self
 
@@ -1720,6 +1729,25 @@ class WaptBaseRepo(BaseObjectClass):
     def update(self):
         """Update local index of packages from source index"""
         return self._load_packages_index()
+
+    def is_locally_allowed_package(self,package):
+        """Return True if package is not in blacklist and is in whitelist if whitelist is not None
+        packages_whitelist and packages_blacklist are list of package name wildcards (file style wildcards)
+        blacklist is taken in account first if defined.
+        whitelist is taken in acoount if not None, else all not blacklisted package names are allowed.
+        """
+        if self.packages_blacklist is not None:
+            for bl in self.packages_blacklist:
+                if glob.fnmatch.fnmatch(package.package,bl):
+                    return False
+        if self.packages_whitelist is None:
+            return True
+        else:
+            for wl in self.packages_whitelist:
+                if glob.fnmatch.fnmatch(package.package,wl):
+                    return True
+        return False
+
 
     @property
     def packages(self):
@@ -1887,6 +1915,17 @@ class WaptBaseRepo(BaseObjectClass):
             self._load_packages_index()
         return self._index.get(packagename,default)
 
+    def as_dict(self):
+        result = {
+            'name':self.name,
+            'packages_whitelist':self.packages_whitelist,
+            'packages_blacklist':self.packages_blacklist,
+            'check_certificates_validity':self.check_certificates_validity,
+            'authorized_certificates':([dict(c) for c in self.cabundle.certificates()] if self.cabundle else None),
+             }
+        return result
+
+
 
 class WaptLocalRepo(WaptBaseRepo):
     """Index of Wapt local repository.
@@ -1966,15 +2005,19 @@ class WaptLocalRepo(WaptBaseRepo):
                     package.repo = self.name
                     package.filename = package.make_package_filename()
                     package.localpath = os.path.join(self.localpath,package.filename)
-                    try:
-                        if self.cabundle is not None:
-                            package.check_control_signature(self.cabundle)
-                        self._packages.append(package)
-                        # index last version
-                        if package.package not in self._index or self._index[package.package] < package:
-                            self._index[package.package] = package
-                    except Exception as e:
-                        logger.critical(u'Package %s discarded because: %s'% (package.localpath,e))
+                    if self.is_locally_allowed_package(package):
+                        try:
+                            if self.cabundle is not None:
+                                package.check_control_signature(self.cabundle)
+                            self._packages.append(package)
+                            # index last version
+                            if package.package not in self._index or self._index[package.package] < package:
+                                self._index[package.package] = package
+                        except Exception as e:
+                            logger.critical(u'Package %s discarded because: %s'% (package.localpath,e))
+                            self.discarded.append(package)
+                    else:
+                        logger.info('Discarding %s on repo "%s" because of local whitelist of blacklist rules' % (package.asrequirement(),self.name))
                         self.discarded.append(package)
 
             for line in packages_lines:
@@ -2166,6 +2209,13 @@ class WaptLocalRepo(WaptBaseRepo):
             self.localpath = config.get(section,'localpath')
 
         return self
+
+    def as_dict(self):
+        result = super(WaptLocalRepo,self).as_dict()
+        result.update(
+            {'localpath':self.localpath,
+            })
+        return result
 
 
 class WaptRemoteRepo(WaptBaseRepo):
@@ -2398,15 +2448,19 @@ class WaptRemoteRepo(WaptBaseRepo):
                 package.repo_url = self.repo_url
                 package.repo = self.name
 
-                try:
-                    if self.cabundle is not None:
-                        package.check_control_signature(trusted_bundle=self.cabundle,signers_bundle = signer_certificates)
-                    new_packages.append(package)
-                    if package.package not in self._index or self._index[package.package] < package:
-                        self._index[package.package] = package
-                except Exception as e:
-                    logger.critical('Discarding %s on repo "%s": %s' % (package.asrequirement(),self.name,e))
-                    logger.debug('Certificate bundle : %s' % self.cabundle)
+                if self.is_locally_allowed_package(package):
+                    try:
+                        if self.cabundle is not None:
+                            package.check_control_signature(trusted_bundle=self.cabundle,signers_bundle = signer_certificates)
+                        new_packages.append(package)
+                        if package.package not in self._index or self._index[package.package] < package:
+                            self._index[package.package] = package
+                    except Exception as e:
+                        logger.critical('Discarding %s on repo "%s": %s' % (package.asrequirement(),self.name,e))
+                        logger.debug('Certificate bundle : %s' % self.cabundle)
+                        self.discarded.append(package)
+                else:
+                    logger.info('Discarding %s on repo "%s" because of local whitelist of blacklist rules' % (package.asrequirement(),self.name))
                     self.discarded.append(package)
 
         for line in packages_lines:
@@ -2451,12 +2505,12 @@ class WaptRemoteRepo(WaptBaseRepo):
         return self._packages
 
     def as_dict(self):
-        result = {
-            'name':self.name,
+        result = super(WaptRemoteRepo,self).as_dict()
+        result.update({
             'repo_url':self._repo_url,
             'proxies':self.proxies,
             'timeout':self.timeout,
-            }
+             })
         return result
 
     def download_packages(self,package_requests,target_dir=None,usecache=True,printhook=None):
