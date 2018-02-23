@@ -1,7 +1,7 @@
-msgid ""
+msgid "This can be changed later in Waptconsole"
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-msgid "This can be changed later in Waptconsole"
+msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
 msgstr ""
 
 #: tvisloading.amessage.caption
@@ -67,84 +67,12 @@ msgstr ""
 msgid "Open firewall ports 80 and 443 to allow access for packages and inventory"
 msgstr ""
 
-#: tviswaptserverpostconf.edcommonname.hint
-msgid "This information will be used as Signer identification in packages"
-msgstr ""
-
-#: tviswaptserverpostconf.edcountry.text
-msgid "FR"
-msgstr ""
-
-#: tviswaptserverpostconf.eddefaultprefix.editlabel.caption
-msgid "Default prefix to use on new packages"
-msgstr ""
-
-#: tviswaptserverpostconf.eddefaultprefix.text
-msgid "test"
-msgstr ""
-
-#: tviswaptserverpostconf.edemail.hint
-msgid "E.g. : technique@tranquil-it-systems.fr"
-msgstr ""
-
-#: tviswaptserverpostconf.edkeyname.hint
-msgid "E.g. : tranquilit"
-msgstr ""
-
-#: tviswaptserverpostconf.edlocality.hint
-msgid "E.g. : Nantes"
-msgstr ""
-
-#: tviswaptserverpostconf.edorganization.hint
-msgid "E.g. : Tranquil It Systems"
-msgstr ""
-
-#: tviswaptserverpostconf.edorgname.hint
-msgid "E.g. : Tranquil IT Systems"
-msgstr ""
-
 #: tviswaptserverpostconf.edpwd1.hint
 msgid "This is the password used to connect to the WAPT server via the WAPT console."
 msgstr ""
 
-#: tviswaptserverpostconf.edrepourl.hint
-msgid "E.g. : http://wapt.tranquilit.local/wapt"
-msgstr ""
-
-#: tviswaptserverpostconf.edsourcesroot.editlabel.caption
-msgid "Base directory for package development"
-msgstr ""
-
-#: tviswaptserverpostconf.edsourcesroot.text
-msgid "c:\\waptdev"
-msgstr ""
-
-#: tviswaptserverpostconf.edtemplatesrepourl.editlabel.caption
-msgid "URL to the package model repository"
-msgstr ""
-
-#: tviswaptserverpostconf.edtemplatesrepourl.hint
-msgid "URL to the the public repository whence base packages should be duplicated."
-msgstr ""
-
-#: tviswaptserverpostconf.edtemplatesrepourl.text
-msgid "https://store.wapt.fr/wapt"
-msgstr ""
-
-#: tviswaptserverpostconf.edunit.hint
-msgid "E.g. : IT"
-msgstr ""
-
 #: tviswaptserverpostconf.edwaptrepourl.editlabel.caption
 msgid "URL of the WAPT package repository"
-msgstr ""
-
-#: tviswaptserverpostconf.edwaptserverip.editlabel.caption
-msgid "IP of the WAPT server"
-msgstr ""
-
-#: tviswaptserverpostconf.edwaptservername.editlabel.caption
-msgid "DNS name of the WAPT server"
 msgstr ""
 
 #: tviswaptserverpostconf.edwaptservername.hint
@@ -152,135 +80,19 @@ msgid "WAPT clients make requests to the server. In order to connect to the WAPT
 msgstr ""
 
 #: tviswaptserverpostconf.edwaptservername.text
-msgid "srvwapt.mondomaine.local"
+msgid "srvwapt.mydomain.lan"
 msgstr ""
 
 #: tviswaptserverpostconf.edwaptserverurl.editlabel.caption
 msgid "URL of the WAPT server"
 msgstr ""
 
-#: tviswaptserverpostconf.edwaptserverurl1.hint
-msgid "E.g. : https://wapt"
-msgstr ""
-
 #: tviswaptserverpostconf.label1.caption
-msgid "WAPT server password"
-msgstr ""
-
-#: tviswaptserverpostconf.label10.caption
-msgid "Country (2 chars. E.g. : FR):"
-msgstr ""
-
-#: tviswaptserverpostconf.label10.hint
-msgid "Main site country code"
-msgstr ""
-
-#: tviswaptserverpostconf.label11.caption
-msgid "Note: Personal Key will be encrypted with same password as server."
-msgstr ""
-
-#: tviswaptserverpostconf.label12.caption
-msgid "City :"
-msgstr ""
-
-#: tviswaptserverpostconf.label13.caption
-msgctxt "tviswaptserverpostconf.label13.caption"
-msgid "Organisation:"
-msgstr ""
-
-#: tviswaptserverpostconf.label13.hint
-msgctxt "tviswaptserverpostconf.label13.hint"
-msgid "Your company name"
-msgstr ""
-
-#: tviswaptserverpostconf.label14.caption
-msgid "Service:"
-msgstr ""
-
-#: tviswaptserverpostconf.label14.hint
-msgid "E.g. : IT department."
-msgstr ""
-
-#: tviswaptserverpostconf.label15.caption
-msgid "Common Name(CN) :"
-msgstr ""
-
-#: tviswaptserverpostconf.label16.caption
-msgid "E-mail address :"
-msgstr ""
-
-#: tviswaptserverpostconf.label16.hint
-msgid "Technical department e-mail address."
+msgid "WAPT server password:"
 msgstr ""
 
 #: tviswaptserverpostconf.label2.caption
-msgid "Confirm password"
-msgstr ""
-
-#: tviswaptserverpostconf.label3.caption
-msgid "Target directory:"
-msgstr ""
-
-#: tviswaptserverpostconf.label3.hint
-msgid "Where to save the private key. This directory must be secure."
-msgstr ""
-
-#: tviswaptserverpostconf.label4.caption
-msgid "Public certificate : "
-msgstr ""
-
-#: tviswaptserverpostconf.label4.hint
-msgid "The certificate you just created (.crt key)."
-msgstr ""
-
-#: tviswaptserverpostconf.label5.caption
-msgid "Address of the main WAPT repository :"
-msgstr ""
-
-#: tviswaptserverpostconf.label5.hint
-msgid "Address of your WAPT repository (https://wapt/wapt)"
-msgstr ""
-
-#: tviswaptserverpostconf.label6.caption
-msgctxt "TVISWAPTSERVERPOSTCONF.LABEL6.CAPTION"
-msgid "Organisation:"
-msgstr ""
-
-#: tviswaptserverpostconf.label6.hint
-msgctxt "TVISWAPTSERVERPOSTCONF.LABEL6.HINT"
-msgid "Your company name"
-msgstr ""
-
-#: tviswaptserverpostconf.label7.caption
-msgid "Save waptagent.exe as...  "
-msgstr ""
-
-#: tviswaptserverpostconf.label7.hint
-msgid "Where waptagent.exe will be saved."
-msgstr ""
-
-#: tviswaptserverpostconf.label8.caption
-msgid "Adressof the WAPT server :"
-msgstr ""
-
-#: tviswaptserverpostconf.label8.hint
-msgid "Address of your WAPT server (https://wapt)."
-msgstr ""
-
-#: tviswaptserverpostconf.label9.caption
-msgid "Key name :"
-msgstr ""
-
-#: tviswaptserverpostconf.label9.hint
-msgid "Please don't use any special characters (e.g.:tranquilit)"
-msgstr ""
-
-#: tviswaptserverpostconf.pgcreatewaptsetup.caption
-msgid "Create installer for client hosts"
-msgstr ""
-
-#: tviswaptserverpostconf.pgdevparam.caption
-msgid "Development"
+msgid "Confirm password:"
 msgstr ""
 
 #: tviswaptserverpostconf.pgfinish.caption
@@ -295,16 +107,8 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
-#: tviswaptserverpostconf.pgprivatekey.caption
-msgid "Private Key generation"
-msgstr ""
-
 #: tviswaptserverpostconf.pgstartservices.caption
 msgid "Start"
-msgstr ""
-
-#: tviswaptserverpostconf.statictext1.caption
-msgid "Optional information"
 msgstr ""
 
 #: uwaptres.rscanceled

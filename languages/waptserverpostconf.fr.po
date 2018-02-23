@@ -69,231 +69,37 @@ msgstr "Lancer la console WAPT après l'installation"
 msgid "Open firewall ports 80 and 443 to allow access for packages and inventory"
 msgstr "Ouvrir les ports firewall 80 et 443 pour permettre l'accès aux paquets et à l'inventaire"
 
-#: tviswaptserverpostconf.edcommonname.hint
-msgid "This information will be used as Signer identification in packages"
-msgstr "Cette information sera utilisée pour l'identification du signataire des paquets"
-
-#: tviswaptserverpostconf.edcountry.text
-msgid "FR"
-msgstr "FR"
-
-#: tviswaptserverpostconf.eddefaultprefix.editlabel.caption
-msgid "Default prefix to use on new packages"
-msgstr "Préfixe par défaut à utiliser pour les nouveaux paquets"
-
-#: tviswaptserverpostconf.eddefaultprefix.text
-msgid "test"
-msgstr "test"
-
-#: tviswaptserverpostconf.edemail.hint
-msgid "E.g. : technique@tranquil-it-systems.fr"
-msgstr "Exemple : technique@tranquil-it-systems.fr"
-
-#: tviswaptserverpostconf.edkeyname.hint
-msgid "E.g. : tranquilit"
-msgstr "Exemple : tranquilit"
-
-#: tviswaptserverpostconf.edlocality.hint
-msgid "E.g. : Nantes"
-msgstr "Exemple : Nantes"
-
-#: tviswaptserverpostconf.edorganization.hint
-msgid "E.g. : Tranquil It Systems"
-msgstr "Exemple : Tranquil IT Systems"
-
-#: tviswaptserverpostconf.edorgname.hint
-msgid "E.g. : Tranquil IT Systems"
-msgstr "Exemple : Tranquil IT Systems"
-
 #: tviswaptserverpostconf.edpwd1.hint
 msgid "This is the password used to connect to the WAPT server via the WAPT console."
 msgstr "C'est le mot de passe qui sera utilisé pour se connecter au serveur WAPT par la console WAPT."
 
-#: tviswaptserverpostconf.edrepourl.hint
-msgid "E.g. : http://wapt.tranquilit.local/wapt"
-msgstr "Par exemple : http://wapt.tranquilit.local/wapt"
-
-#: tviswaptserverpostconf.edsourcesroot.editlabel.caption
-msgid "Base directory for package development"
-msgstr "Répertoire de base pour le développement de paquets"
-
-#: tviswaptserverpostconf.edsourcesroot.text
-msgid "c:\\waptdev"
-msgstr ""
-
-#: tviswaptserverpostconf.edtemplatesrepourl.editlabel.caption
-msgid "URL to the package model repository"
-msgstr "URL du dépôt de modèles principal"
-
-#: tviswaptserverpostconf.edtemplatesrepourl.hint
-msgid "URL to the the public repository whence base packages should be duplicated."
-msgstr "URL du dépôt public pour la duplication des paquets de base."
-
-#: tviswaptserverpostconf.edtemplatesrepourl.text
-msgid "https://store.wapt.fr/wapt"
-msgstr ""
-
-#: tviswaptserverpostconf.edunit.hint
-msgid "E.g. : IT"
-msgstr "Exemple : numérique"
-
 #: tviswaptserverpostconf.edwaptrepourl.editlabel.caption
 msgid "URL of the WAPT package repository"
 msgstr "URL du dépôt de paquets WAPT"
-
-#: tviswaptserverpostconf.edwaptserverip.editlabel.caption
-msgid "IP of the WAPT server"
-msgstr "Adresse IP du serveur WAPT"
-
-#: tviswaptserverpostconf.edwaptservername.editlabel.caption
-msgid "DNS name of the WAPT server"
-msgstr "Nom DNS du serveur WAPT"
 
 #: tviswaptserverpostconf.edwaptservername.hint
 msgid "WAPT clients make requests to the server. In order to connect to the WAPT server,"
 msgstr ""
 
 #: tviswaptserverpostconf.edwaptservername.text
-msgid "srvwapt.mondomaine.local"
+msgid "srvwapt.mydomain.lan"
 msgstr ""
 
 #: tviswaptserverpostconf.edwaptserverurl.editlabel.caption
 msgid "URL of the WAPT server"
 msgstr "URL du serveur WAPT"
 
-#: tviswaptserverpostconf.edwaptserverurl1.hint
-msgid "E.g. : https://wapt"
-msgstr "Par exemple : http://wapt."
-
 #: tviswaptserverpostconf.label1.caption
-msgid "WAPT server password"
+#, fuzzy
+#| msgid "WAPT server password"
+msgid "WAPT server password:"
 msgstr "Mot de passe serveur WAPT"
 
-#: tviswaptserverpostconf.label10.caption
-msgid "Country (2 chars. E.g. : FR):"
-msgstr "Pays (2 caractères, par ex. : FR)"
-
-#: tviswaptserverpostconf.label10.hint
-msgid "Main site country code"
-msgstr "Code pays du site principal"
-
-#: tviswaptserverpostconf.label11.caption
-#, fuzzy
-#| msgid ""
-#| "Note: Personal Key will be encrypted with same password as server.\n"
-#| "This can be changed later in Waptconsole\n"
-#| "Note: Personal Key will be encrypted with same password as server.\n"
-msgid "Note: Personal Key will be encrypted with same password as server."
-msgstr ""
-"Note: La clé personnelle sera chiffrée avec le même mot de passe que le serveur\n"
-"Cela peut être changé dans Waptconsole\n"
-
-#: tviswaptserverpostconf.label12.caption
-msgid "City :"
-msgstr "Ville :"
-
-#: tviswaptserverpostconf.label13.caption
-msgctxt "tviswaptserverpostconf.label13.caption"
-msgid "Organisation:"
-msgstr "Organisation :"
-
-#: tviswaptserverpostconf.label13.hint
-msgctxt "tviswaptserverpostconf.label13.hint"
-msgid "Your company name"
-msgstr "Nom de votre entreprise :"
-
-#: tviswaptserverpostconf.label14.caption
-msgid "Service:"
-msgstr "Service :"
-
-#: tviswaptserverpostconf.label14.hint
-msgid "E.g. : IT department."
-msgstr "E.g. : DSI"
-
-#: tviswaptserverpostconf.label15.caption
-msgid "Common Name(CN) :"
-msgstr "Common Name (CN) :"
-
-#: tviswaptserverpostconf.label16.caption
-msgid "E-mail address :"
-msgstr "Adresse électronique :"
-
-#: tviswaptserverpostconf.label16.hint
-msgid "Technical department e-mail address."
-msgstr "Adresse électronique du service technique."
-
 #: tviswaptserverpostconf.label2.caption
-msgid "Confirm password"
+#, fuzzy
+#| msgid "Confirm password"
+msgid "Confirm password:"
 msgstr "Confirmer le mot de passe"
-
-#: tviswaptserverpostconf.label3.caption
-msgid "Target directory:"
-msgstr "Répertoire de destination :"
-
-#: tviswaptserverpostconf.label3.hint
-msgid "Where to save the private key. This directory must be secure."
-msgstr "Emplacement de la clé privée. Ce répertoire doit être sécurisé."
-
-#: tviswaptserverpostconf.label4.caption
-#, fuzzy
-#| msgid "Public key : "
-msgid "Public certificate : "
-msgstr "Clé publique :"
-
-#: tviswaptserverpostconf.label4.hint
-msgid "The certificate you just created (.crt key)."
-msgstr "Le certificat que vous venez de créer (clé .crt)"
-
-#: tviswaptserverpostconf.label5.caption
-msgid "Address of the main WAPT repository :"
-msgstr "Adresse du dépôt principal WAPT :"
-
-#: tviswaptserverpostconf.label5.hint
-msgid "Address of your WAPT repository (https://wapt/wapt)"
-msgstr "Adresse de votre dépôt WAPT (https://wapt/wapt)"
-
-#: tviswaptserverpostconf.label6.caption
-msgctxt "tviswaptserverpostconf.label6.caption"
-msgid "Organisation:"
-msgstr "Organisation :"
-
-#: tviswaptserverpostconf.label6.hint
-msgctxt "tviswaptserverpostconf.label6.hint"
-msgid "Your company name"
-msgstr "Nom de votre entreprise :"
-
-#: tviswaptserverpostconf.label7.caption
-msgid "Save waptagent.exe as...  "
-msgstr "Enregistrer waptagent.exe sous..."
-
-#: tviswaptserverpostconf.label7.hint
-msgid "Where waptagent.exe will be saved."
-msgstr "Emplacement où waptagent.exe sera enregistré."
-
-#: tviswaptserverpostconf.label8.caption
-#, fuzzy
-msgid "Adressof the WAPT server :"
-msgstr "Adresse du serveur WAPT :"
-
-#: tviswaptserverpostconf.label8.hint
-msgid "Address of your WAPT server (https://wapt)."
-msgstr "Adresse de votre serveur WAPT (https://wapt)."
-
-#: tviswaptserverpostconf.label9.caption
-msgid "Key name :"
-msgstr "Nom de la clé :"
-
-#: tviswaptserverpostconf.label9.hint
-msgid "Please don't use any special characters (e.g.:tranquilit)"
-msgstr "Ne pas utiliser de caractères spéciaux (e.g.:tranquilit)"
-
-#: tviswaptserverpostconf.pgcreatewaptsetup.caption
-msgid "Create installer for client hosts"
-msgstr "Créer un installeur pour les machines clientes"
-
-#: tviswaptserverpostconf.pgdevparam.caption
-msgid "Development"
-msgstr "Développement"
 
 #: tviswaptserverpostconf.pgfinish.caption
 msgid "Fin"
@@ -307,17 +113,9 @@ msgstr "Paramètres"
 msgid "Password"
 msgstr "Mot de passe"
 
-#: tviswaptserverpostconf.pgprivatekey.caption
-msgid "Private Key generation"
-msgstr "Génération de la clé privée"
-
 #: tviswaptserverpostconf.pgstartservices.caption
 msgid "Start"
 msgstr "Démarrer"
-
-#: tviswaptserverpostconf.statictext1.caption
-msgid "Optional information"
-msgstr "Informations facultatives"
 
 #: uwaptres.rscanceled
 msgid "canceled"
