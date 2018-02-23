@@ -531,6 +531,7 @@ def update_host():
                 host_cert_cn = host_cert.verify_content(sha256_for_data(raw_data), signature)
             except Exception as e:
                 # for pre 1.5 wapt clients
+                host_cert_cn = 'unknown'
                 if not app.conf['allow_unsigned_status_data']:
                     raise
             logger.info('Data successfully checked with certificate CN %s for %s' % (host_cert_cn, uuid))
