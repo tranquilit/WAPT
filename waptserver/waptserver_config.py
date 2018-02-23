@@ -187,5 +187,5 @@ def write_config_file(cfgfile=DEFAULT_CONFIG_FILE,server_config=None,non_default
         if not non_default_values_only or server_config[key] != _defaults.get(key):
             _config.set('options',key,server_config[key])
 
-    with open('/opt/wapt/conf/waptserver.ini','w') as inifile:
+    with open(cfgfile,'w') as inifile:
        _config.write(inifile)

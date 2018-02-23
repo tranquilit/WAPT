@@ -53,9 +53,8 @@ from waptcrypto import SSLPrivateKey,SSLCertificate
 import waptserver_config
 from waptserver_utils import logger,mkdir_p
 
-DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
-config_file = DEFAULT_CONFIG_FILE
-conf = waptserver_config.load_config(config_file)
+config_filename  = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
+conf = waptserver_config.load_config(config_filename)
 
 def fqdn():
     result = None
@@ -339,7 +338,7 @@ def install_waptserver_service():
 
     if not conf.get('secret_key'):
         conf['secret_key'] = ''.join(random.SystemRandom().choice(string.letters + string.digits) for _ in range(64))
-        waptserver_config.write_config_file(DEFAULT_CONFIG_FILE,conf)
+        waptserver_config.write_config_file(config_filename,conf)
 
 if __name__ == '__main__':
     usage = """\
@@ -355,7 +354,7 @@ if __name__ == '__main__':
     """
 
     parser = OptionParser(usage=usage, version='waptserver_winsetup.py ' + __version__)
-    parser.add_option('-c','--config',dest='configfile',default=DEFAULT_CONFIG_FILE,
+    parser.add_option('-c','--config',dest='configfile',default=config_filename,
            help='Config file full path (default: %default)')
 
     parser.add_option('-l','--loglevel',dest='loglevel',default=None,type='choice',
