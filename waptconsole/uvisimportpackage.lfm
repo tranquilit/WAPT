@@ -217,6 +217,7 @@ object VisImportPackage: TVisImportPackage
     Top = 66
     Width = 853
     OnGetText = GridExternalPackagesGetText
+    ShowAdvancedColumnsCustomize = False
     Align = alClient
     Color = clWhite
     Header.AutoSizeIndex = -1

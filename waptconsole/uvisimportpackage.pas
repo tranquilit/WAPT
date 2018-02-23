@@ -147,6 +147,8 @@ begin
     inifile.ReadSections(EdRepoName.Items);
     if EdRepoName.Items.IndexOf('global') >= 0 then
       EdRepoName.Items.Delete(EdRepoName.Items.IndexOf('global'));
+    if EdRepoName.Items.IndexOf('options') >= 0 then
+      EdRepoName.Items.Delete(EdRepoName.Items.IndexOf('options'));
   finally
     inifile.Free;
   end;
