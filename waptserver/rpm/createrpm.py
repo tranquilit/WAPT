@@ -121,11 +121,12 @@ if (not check_if_package_is_installed('python-virtualenv')
     or not check_if_package_is_installed('openssl-devel')
     or not check_if_package_is_installed('libffi-devel')
     or not check_if_package_is_installed('openldap-devel')
+    or not check_if_package_is_installed('python-psycopg2')
     ):
     eprint("""
 #########################################################################################################################
      Please install build time packages first:
-        yum install -y python-virtualenv gcc libffi-devel openssl-devel openldap-devel python-pip postgresql-devel.x86_64
+        yum install -y python-virtualenv gcc libffi-devel openssl-devel openldap-devel python-pip postgresql-devel.x86_64 python-psycopg2
 #########################################################################################################################
 """)
     sys.exit(1)
@@ -151,19 +152,21 @@ eprint(
 run_verbose('pip install --upgrade pip')
 
 run_verbose(r'virtualenv ./builddir/opt/wapt/')
+run_verbose(r'virtualenv ./builddir/opt/wapt/ --always-copy')
 eprint('Install additional libraries in build environment virtualenv')
 
 run_verbose(r'source ./builddir/opt/wapt/bin/activate ;curl https://bootstrap.pypa.io/ez_setup.py | python')
 run_verbose(r'source ./builddir/opt/wapt/bin/activate ;pip install pip setuptools --upgrade')
 
 # fix for psycopg install because of ImportError: libpq-9c51d239.so.5.9: ELF load command address/offset not properly aligned
-run_verbose(r'source ./builddir/opt/wapt/bin/activate ;pip install psycopg2==2.7.3.2 --no-binary :all: ')
+run_verbose(r'source ./builddir/opt/wapt/bin/activate ;pip install --upgrade psycopg2')
 run_verbose(r'source ./builddir/opt/wapt/bin/activate; pip install -r ../../requirements-server.txt')
 
 eprint('copying the waptserver files')
 
 # python dialog
 copyfile(makepath(wapt_source_dir, 'lib', 'site-packages', 'dialog.py'),'builddir/opt/wapt/lib/python2.7/site-packages/dialog.py')
+rsync('/usr/lib64/python2.7/site-packages/psycopg2','./builddir/opt/wapt/lib/python2.7/site-packages/')
 
 
 rsync(source_dir, './builddir/opt/wapt/',excludes=['postconf', 'mongod.exe', 'include','spnego-http-auth-nginx-module'])
