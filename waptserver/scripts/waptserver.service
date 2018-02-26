@@ -7,9 +7,8 @@ After=postgresql-9.4.service
 [Service]
 Type=simple
 User=wapt
-Group=www-data
 WorkingDirectory=/opt/wapt
-ExecStart=/usr/bin/python /opt/wapt/waptserver/waptserver.py
+ExecStart=/opt/wapt/bin/python /opt/wapt/waptserver/waptserver.py
 Restart=on-failure
 Environment=PYTHONHOME=/opt/wapt
 Environment=PYTHONPATH=/opt/wapt
