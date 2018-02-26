@@ -48,7 +48,6 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 /opt/wapt/waptserver/*
 /opt/wapt/lib/*
 /opt/wapt/lib64
-/opt/wapt/bin/*
 /etc/logrotate.d/waptserver
 /etc/rsyslog.d/waptserver.conf
 /etc/systemd/system/nginx.service.d/nginx_worker_files_limit.conf
@@ -58,6 +57,7 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 /opt/wapt/custom_zip.py
 /usr/bin/wapt-serverpostconf
 
+%attr(755,root,root)/opt/wapt/bin/*
 %attr(755,root,root)/opt/wapt/waptserver/scripts/postconf.sh
 %attr(755,root,root)/opt/wapt/wapt-scanpackages.py
 %attr(755,root,root)/opt/wapt/wapt-signpackages.py

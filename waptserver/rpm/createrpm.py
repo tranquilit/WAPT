@@ -155,19 +155,20 @@ run_verbose(r'virtualenv ./builddir/opt/wapt/')
 run_verbose(r'virtualenv ./builddir/opt/wapt/ --always-copy')
 eprint('Install additional libraries in build environment virtualenv')
 
-run_verbose(r'source ./builddir/opt/wapt/bin/activate ;curl https://bootstrap.pypa.io/ez_setup.py | python')
-run_verbose(r'source ./builddir/opt/wapt/bin/activate ;pip install pip setuptools --upgrade')
+#run_verbose(r'source ./builddir/opt/wapt/bin/activate ;curl https://bootstrap.pypa.io/ez_setup.py | python')
+#run_verbose(r'source ./builddir/opt/wapt/bin/activate ;pip install pip setuptools --upgrade')
 
 # fix for psycopg install because of ImportError: libpq-9c51d239.so.5.9: ELF load command address/offset not properly aligned
-run_verbose(r'source ./builddir/opt/wapt/bin/activate ;pip install --upgrade psycopg2')
+#run_verbose(r'source ./builddir/opt/wapt/bin/activate ;pip install --upgrade psycopg2')
 run_verbose(r'source ./builddir/opt/wapt/bin/activate; pip install -r ../../requirements-server.txt')
 
 eprint('copying the waptserver files')
 
 # python dialog
 copyfile(makepath(wapt_source_dir, 'lib', 'site-packages', 'dialog.py'),'builddir/opt/wapt/lib/python2.7/site-packages/dialog.py')
-rsync('/usr/lib64/python2.7/site-packages/psycopg2','./builddir/opt/wapt/lib/python2.7/site-packages/')
 
+# psycopg2 from distribution RPM into virtualenv...
+rsync('/usr/lib64/python2.7/site-packages/psycopg2','./builddir/opt/wapt/lib/python2.7/site-packages/')
 
 rsync(source_dir, './builddir/opt/wapt/',excludes=['postconf', 'mongod.exe', 'include','spnego-http-auth-nginx-module'])
 
