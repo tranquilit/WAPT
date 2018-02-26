@@ -56,6 +56,7 @@ from passlib.hash import pbkdf2_sha256
 
 from waptpackage import WaptLocalRepo
 from waptserver import waptserver_config
+from waptserver.waptserver_config import type_debian,type_redhat
 from waptserver.waptserver_model import init_db,upgrade_db_structure,load_db_config
 
 def run(*args, **kwargs):
@@ -65,12 +66,6 @@ def run_verbose(*args, **kwargs):
     output = subprocess.check_output(*args, shell=True, **kwargs)
     print output
     return output
-
-def type_debian():
-    return platform.dist()[0].lower() in ('debian','ubuntu')
-
-def type_redhat():
-    return platform.dist()[0].lower() in ('redhat','centos','fedora')
 
 if type_debian():
     MONGO_SVC='mongodb'
@@ -331,7 +326,7 @@ def main():
     if server_config['db_host'] in (None,'','localhost','127.0.0.1','::1'):
         ensure_postgresql_db(db_name=server_config['db_name'],db_owner=server_config['db_name'],db_password=server_config['db_password'])
 
-    run('sudo -u wapt PYTHONHOME=/opt/wapt PYTHONPATH=/opt/wapt /opt/wapt/bin/python /opt/wapt/waptserver/waptserver_model.py init_db -c "%s"' % options.configfile)
+    #run('sudo -u wapt PYTHONHOME=/opt/wapt PYTHONPATH=/opt/wapt /opt/wapt/bin/python /opt/wapt/waptserver/waptserver_model.py init_db -c "%s"' % options.configfile)
 
     # Password setup/reset screen
     if not server_config['wapt_password'] or \
@@ -487,7 +482,7 @@ def main():
 
     if check_mongo2pgsql_upgrade_needed(options.configfile) and\
             postconf.yesno("It is necessary to migrate current database backend from mongodb to postgres. Press yes to start migration",no_label='cancel') == postconf.DIALOG_OK:
-        upgrade2postgres(options.configfile)       
+        upgrade2postgres(options.configfile)
 
     width = 4 + max(10, len(max(final_msg, key=len)))
     height = 2 + max(20, len(final_msg))

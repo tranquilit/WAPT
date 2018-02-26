@@ -32,7 +32,23 @@ except:
 
 import ConfigParser
 import tempfile
+import platform
 
+def type_windows():
+    return platform.win32_ver()[0] != ''
+
+def type_debian():
+    return platform.dist()[0].lower() in ('debian','ubuntu')
+
+def type_redhat():
+    return platform.dist()[0].lower() in ('redhat','centos','fedora')
+
+if type_debian():
+    DEFAULT_WAPT_FOLDER = '/var/www/wapt'
+elif type_redhat():
+    DEFAULT_WAPT_FOLDER = '/var/www/html/wapt'
+else:
+    DEFAULT_WAPT_FOLDER = os.path.join(wapt_root_dir, 'waptserver', 'repository', 'wapt')
 
 _defaults = {
     'client_tasks_timeout': 5,
@@ -40,7 +56,7 @@ _defaults = {
     'loglevel': 'warning',
     'secret_key': None,
     'server_uuid': None,
-    'wapt_folder': os.path.join(wapt_root_dir, 'waptserver', 'repository', 'wapt'),
+    'wapt_folder': DEFAULT_WAPT_FOLDER,
     'wapt_huey_db': os.path.join(tempfile.gettempdir(), 'wapthuey.db'),
     'wapt_password': None,
     'wapt_user': 'admin',
@@ -52,7 +68,7 @@ _defaults = {
     'db_password': None,
     'db_max_connections': 100,
     'db_stale_timeout': 300,
-    'db_connect_timeout': 3.0,
+    'db_connect_timeout': 3,
     'use_kerberos': False,
     'max_clients': 4096,
     'encrypt_host_packages':False,
@@ -183,9 +199,15 @@ def write_config_file(cfgfile=DEFAULT_CONFIG_FILE,server_config=None,non_default
     if os.path.isfile(cfgfile):
         _config.read(cfgfile)
 
+    if not _config.has_section('options'):
+        _config.add_section('options')
+
     for key in server_config:
         if not non_default_values_only or server_config[key] != _defaults.get(key):
-            _config.set('options',key,server_config[key])
+            if server_config[key] is None:
+                _config.set('options',key,'')
+            else:
+                _config.set('options',key,server_config[key])
 
     with open(cfgfile,'w') as inifile:
        _config.write(inifile)
