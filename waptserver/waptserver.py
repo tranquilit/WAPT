@@ -2179,7 +2179,11 @@ if __name__ == '__main__':
     app.config['APPLICATION_ROOT'] = app.conf.get('application_root','')
 
     load_db_config(app.conf)
-    upgrade_db_structure()
+    try:
+        upgrade_db_structure()
+    except:
+        wapt_db.rollback()
+        init_db()
 
     utils_set_devel_mode(options.devel)
 
