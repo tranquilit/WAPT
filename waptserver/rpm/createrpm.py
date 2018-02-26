@@ -132,9 +132,9 @@ if (not check_if_package_is_installed('python-virtualenv')
 
 eprint('creating the package tree')
 
-if os.path.exists('builddir'):
-    eprint('cleaning up builddir directory')
-    shutil.rmtree('builddir')
+#if os.path.exists('builddir'):
+#    eprint('cleaning up builddir directory')
+#    shutil.rmtree('builddir')
 
 mkdir_p('builddir/opt/wapt/lib')
 mkdir_p('builddir/opt/wapt/conf')
@@ -148,9 +148,11 @@ mkdir_p('builddir/usr/bin')
 eprint(
     'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
 
-run_verbose(r'virtualenv ./builddir/opt/wapt/')
 run_verbose('pip install --upgrade pip')
+
+run_verbose(r'virtualenv ./builddir/opt/wapt/')
 eprint('Install additional libraries in build environment virtualenv')
+
 run_verbose(r'source ./builddir/opt/wapt/bin/activate ;curl https://bootstrap.pypa.io/ez_setup.py | python')
 run_verbose(r'source ./builddir/opt/wapt/bin/activate ;pip install pip setuptools --upgrade')
 
@@ -159,6 +161,10 @@ run_verbose(r'source ./builddir/opt/wapt/bin/activate ;pip install psycopg2==2.7
 run_verbose(r'source ./builddir/opt/wapt/bin/activate; pip install -r ../../requirements-server.txt')
 
 eprint('copying the waptserver files')
+
+# python dialog
+copyfile(makepath(wapt_source_dir, 'lib', 'site-packages', 'dialog.py'),'builddir/opt/wapt/lib/python2.7/site-packages/dialog.py')
+
 
 rsync(source_dir, './builddir/opt/wapt/',excludes=['postconf', 'mongod.exe', 'include','spnego-http-auth-nginx-module'])
 
@@ -186,14 +192,12 @@ copyfile(makepath(wapt_source_dir, 'custom_zip.py'),
 # cleanup
 for fn in (
    "builddir/opt/wapt/include",
-   "builddir/opt/wapt/lib64",
    "builddir/opt/wapt/pip-selfcheck.json",
    "builddir/opt/wapt/share"):
    try:
        shutil.rmtree(fn)
    except:
        os.unlink(fn)
-
 
 copyfile(makepath(wapt_source_dir, 'runwaptserver.sh'),'./builddir/opt/wapt/runwaptserver.sh')
 copyfile(makepath(wapt_source_dir, 'wapt-scanpackages'),'./builddir/usr/bin/wapt-scanpackages')
@@ -218,7 +222,6 @@ try:
     mkdir_p('./builddir/etc/logrotate.d/')
     shutil.copyfile('../scripts/waptserver-logrotate',
                     './builddir/etc/logrotate.d/waptserver')
-    run('chown root:root ./builddir/etc/logrotate.d/waptserver')
 except Exception as e:
     eprint ('error: \n%s' % e)
     exit(1)
@@ -228,7 +231,6 @@ try:
     mkdir_p('./builddir/etc/rsyslog.d/')
     shutil.copyfile('../scripts/waptserver-rsyslog',
                     './builddir/etc/rsyslog.d/waptserver.conf')
-    run('chown root:root ./builddir/etc/rsyslog.d/waptserver.conf')
 except Exception as e:
     eprint('error: \n%s' % e)
     exit(1)
@@ -242,7 +244,6 @@ eprint('copying nginx-related goo')
 try:
     ssl_dir = './builddir/opt/wapt/waptserver/ssl/'
     mkdir_p(ssl_dir)
-    run('chmod 0700 "%s"' % ssl_dir)
     mkdir_p('./builddir/etc/systemd/system/nginx.service.d')
     copyfile('../scripts/nginx_worker_files_limit.conf', './builddir/etc/systemd/system/nginx.service.d/nginx_worker_files_limit.conf')
 except Exception as e:

@@ -1,17 +1,17 @@
 %define _topdir   .
 %define buildroot ./builddir
 
-Name:	tis-waptserver
-Version:	%{_version}
-Release:	1%{?dist}
-Summary:	WAPT Server
-BuildArch:	x86_64
+Name:   tis-waptserver
+Version:        %{_version}
+Release:        1%{?dist}
+Summary:        WAPT Server
+BuildArch:      x86_64
 
-Group:	        Development/Tools
-License:	GPL
-URL:		https://wapt.fr
-Source0:	./waptserver/
-Prefix:		/opt
+Group:          Development/Tools
+License:        GPL
+URL:            https://wapt.fr
+Source0:        ./waptserver/
+Prefix:         /opt
 
 Requires:  nginx dialog cabextract policycoreutils-python
 
@@ -22,6 +22,9 @@ Requires:  nginx dialog cabextract policycoreutils-python
 %global __requires_exclude_from /
 
 %description
+
+%clean
+echo "No clean"
 
 %install
 set -e
@@ -44,6 +47,7 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 /usr/lib/systemd/system/waptserver.service
 /opt/wapt/waptserver/*
 /opt/wapt/lib/*
+/opt/wapt/lib64
 /opt/wapt/bin/*
 /etc/logrotate.d/waptserver
 /etc/rsyslog.d/waptserver.conf
@@ -75,7 +79,7 @@ old_ini='/opt/wapt/waptserver/waptserver.ini'
 new_ini='/opt/wapt/conf/waptserver.ini'
 if [ -e "$old_ini" ] && ! [ -L "$old_ini" ]; then
     if mv -n "$old_ini" "$new_ini"; then
-	ln -s "$new_ini" "$old_ini"
+        ln -s "$new_ini" "$old_ini"
     fi
 fi
 # Allow nginx to set higher limit for number of file handles
@@ -95,4 +99,5 @@ export PYTHONHOME=/opt/wapt
 export PYTHONPATH=/opt/wapt
 export PATH=/opt/wapt/bin:$PATH
 EOF
+
 ### end
