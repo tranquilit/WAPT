@@ -637,7 +637,8 @@ class SSLCABundle(BaseObjectClass):
 
                 if force or not ssl_crl or ssl_crl.next_update < datetime.datetime.utcnow():
                     try:
-                        self._check_url_in_negative_cache(url)
+                        if not force:
+                            self._check_url_in_negative_cache(url)
                         logger.debug(u'Download CRL %s' % (url,))
                         if cache_dir:
                             crl_filename =  os.path.join(cache_dir,urlparse.urlparse(url).path.split('/')[-1])
