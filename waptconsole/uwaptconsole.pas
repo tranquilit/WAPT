@@ -4936,6 +4936,7 @@ var
   DNParts,ParentDNParts: TDynStringArray;
   PreviousDN,DN,ParentDN,RecType:String;
   NewOrgUnitsHash:Integer;
+  DNW: UnicodeString;
 begin
   {$ifdef ENTERPRISE}
   try
@@ -4946,7 +4947,7 @@ begin
     try
       DBOrgUnits.DisableControls;
       if DBOrgUnits.Active then
-        PreviousDN := VarToStr(DBOrgUnits['DN'])
+        PreviousDN := DBOrgUnitsDN.AsString
       else
         PreviousDN:='';
 
@@ -4959,53 +4960,57 @@ begin
       // Add a first (all) to allow  no filtering on OU
       DBOrgUnits.Append;
       dn:='';
-      DBOrgUnits['ID'] := Hash(dn);
-      DBOrgUnits['DN'] := UTF8Encode(DN);
-      DBOrgUnits['Description'] := rsFilterAll;
-      DBOrgUnits['Depth'] := 0;
+      DBOrgUnitsID.AsInteger := Hash(dn);
+      DBOrgUnitsDN.Value := UTF8Encode(DN);
+      DBOrgUnitsDescription.Value := rsFilterAll;
+      DBOrgUnitsDepth.Value := 0;
       DBOrgUnits.Post;
 
       for OU in OUDN do
       begin
-        DN := UTF8Encode(OU.AsString);
+        DNW := OU.AsString;
+        DN := UTF8Encode(DNW);
+
         // Creates parent records up to first encountered DC
         while (DN<>'') do
         begin
           DNParts := StrSplit(DN,',');
-          ParentDNParts := copy(DNParts,1,length(DNParts));
-          ParentDN:=StrJoin(',',ParentDNParts);
+          ParentDNParts := copy(DNParts,1,length(DNParts)-1);
+          //ParentDN:= StrJoin(',',ParentDNParts);
+          ParentDN:= copy(DN,pos(',',DN)+1,length(DN));
+
           RecType:=StrSplit(DNParts[0],'=')[0];
 
           if not DBOrgUnits.Locate('DN',DN,[]) then
           begin
             DBOrgUnits.Append;
-            DBOrgUnits['ID'] := Hash(dn);
-            DBOrgUnits['DN'] := DN;
-            DBOrgUnits['ParentDN'] := ParentDN;
-            DBOrgUnits['Depth'] := Length(DNParts);
+            DBOrgUnitsID.Value := Hash(dn);
+            DBOrgUnitsDN.Value := DN;
+            DBOrgUnitsParentDN.AsString := ParentDN;
+            DBOrgUnitsDepth.Value := Length(DNParts);
             if RecType<>'DC' then
             begin
-              DBOrgUnits['ParentID'] := Hash(ParentDN);
-              DBOrgUnits['Description'] := StrSplit(DNParts[0],'=')[1];
+              DBOrgUnitsParentID.Value := Hash(ParentDN);
+              DBOrgUnitsDescription.Value := StrSplit(DNParts[0],'=')[1];
             end
             else
             begin
-              DBOrgUnits['Description'] := DNToFQDN(DNParts);
+              DBOrgUnitsDescription.Value := DNToFQDN(DNParts);
             end;
 
             if ParentDN<>'' then
             begin
               if RecType='OU' then
-                DBOrgUnits['ImageID'] := 12
+                DBOrgUnitsImageID.Value := 12
               else if RecType='CN' then
-                  DBOrgUnits['ImageID'] := 13
+                  DBOrgUnitsImageID.Value := 13
               else if RecType='DC' then
-                DBOrgUnits['ImageID'] := 11
+                DBOrgUnitsImageID.Value := 11
               else
-                DBOrgUnits['ImageID'] := 14;
+                DBOrgUnitsImageID.Value := 14;
             end
             else
-              DBOrgUnits['ImageID'] := 11;
+              DBOrgUnitsImageID.Value := 11;
             DBOrgUnits.Post;
           end
           else
