@@ -85,7 +85,7 @@ var
 
 implementation
 
-uses uwaptconsole, tiscommon, soutils, VarPyth, PythonEngine,
+uses Variants, VarPyth, PythonEngine, uwaptconsole, tiscommon, soutils,
   dmwaptpython, uvisloading, uvisprivatekeyauth, uWaptRes, md5, uScaleDPI,
   uWaptConsoleRes, uvisrepositories, inifiles, tisinifiles,LCLIntf;
 
@@ -243,7 +243,8 @@ begin
     waptcommon.ReadWaptConfig(AppIniFilename);
     dmpython.WaptConfigFileName:=AppIniFilename;
     { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
-    DMPython.WAPT.update(Register := False);
+    if not VarIsEmpty(DMPython.WAPT) then
+      DMPython.WAPT := Unassigned;
   end;
 end;
 
@@ -435,7 +436,7 @@ end;
 procedure TVisImportPackage.ActPackageEditExecute(Sender: TObject);
 var
   SourceDir,target,DevDirectory: string;
-  Sources,package,FileName, FileNames, listPackages: ISuperObject;
+  package,FileName, FileNames, listPackages: ISuperObject;
 
   ListPackagesVar: Variant;
 
@@ -465,7 +466,6 @@ begin
   try
     with  TVisLoading.Create(Self) do
     try
-      Sources := TSuperObject.Create(stArray) ;
       //Téléchargement en batchs
       for Filename in FileNames do
       begin

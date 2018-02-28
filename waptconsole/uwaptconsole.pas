@@ -1472,7 +1472,6 @@ end;
 
 procedure TVisWaptGUI.ActEditPackageExecute(Sender: TObject);
 var
-  res_var : Variant;
   Selpackage: string;
   Devpath : UnicodeString;
   res: ISuperObject;
@@ -3554,7 +3553,7 @@ begin
     GridHostSoftwares.Clear;
     { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
     if not VarIsEmpty(DMPython.WAPT) then
-      DMPython.WAPT.update(register:=False);
+      DMPython.WAPT := Unassigned;
     // put somewhere else
     MainPagesChange(MainPages);
   end;
@@ -4934,7 +4933,6 @@ end;
 procedure TVisWaptGUI.LoadOrgUnitsTree(Sender: TObject);
 var
   OU,OUDN:ISuperObject;
-  oldSelect:String;
   DNParts,ParentDNParts: TDynStringArray;
   PreviousDN,DN,ParentDN,RecType:String;
   NewOrgUnitsHash:Integer;
@@ -4964,7 +4962,7 @@ begin
       DBOrgUnits['ID'] := Hash(dn);
       DBOrgUnits['DN'] := DN;
       DBOrgUnits['Description'] := rsFilterAll;
-      DBOrgUnits['Depth'] := Length(DNParts);
+      DBOrgUnits['Depth'] := 0;
       DBOrgUnits.Post;
 
       for OU in OUDN do
@@ -5030,8 +5028,6 @@ begin
 end;
 
 procedure TVisWaptGUI.FilterDBOrgUnits;
-var
-  i:integer;
 begin
   SetLength(FilteredOrgUnits,0);
   try
@@ -5062,13 +5058,10 @@ end;
 Procedure TVisWaptGUI.SelectOrgUnits(Search:String);
 var
   N: PVirtualNode;
-  i:integer;
-  data:Variant;
   Desc:String;
 begin
   {$ifdef ENTERPRISE}
   N := GridOrgUnits.GetFirst;
-  i:=0;
   GridOrgUnits.ClearSelection;
   while (N <> nil) do
   begin
