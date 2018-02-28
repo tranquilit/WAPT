@@ -4960,14 +4960,14 @@ begin
       DBOrgUnits.Append;
       dn:='';
       DBOrgUnits['ID'] := Hash(dn);
-      DBOrgUnits['DN'] := DN;
+      DBOrgUnits['DN'] := UTF8Encode(DN);
       DBOrgUnits['Description'] := rsFilterAll;
       DBOrgUnits['Depth'] := 0;
       DBOrgUnits.Post;
 
       for OU in OUDN do
       begin
-        DN := OU.AsString;
+        DN := UTF8Encode(OU.AsString);
         // Creates parent records up to first encountered DC
         while (DN<>'') do
         begin
