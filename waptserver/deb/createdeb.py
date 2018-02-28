@@ -165,7 +165,7 @@ open(os.path.join('./builddir/opt/wapt/waptserver','VERSION'),'w').write(full_ve
 eprint(run('sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev'))
 
 eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-run_verbose(r'virtualenv ./builddir/opt/wapt')
+run_verbose(r'virtualenv ./builddir/opt/wapt --always-copy')
 
 eprint('Install additional libraries in build environment virtualenv')
 
@@ -224,7 +224,7 @@ try:
     mkdir_p('./builddir/etc/logrotate.d/')
     shutil.copyfile('../scripts/waptserver-logrotate',
                     './builddir/etc/logrotate.d/waptserver')
-    eprint(run('chown root:root ./builddir/etc/logrotate.d/waptserver'))
+    #eprint(run('chown root:root ./builddir/etc/logrotate.d/waptserver'))
 except Exception as e:
     eprint('error: \n%s' % e)
     exit(1)
@@ -234,12 +234,15 @@ try:
     mkdir_p('./builddir/etc/rsyslog.d/')
     shutil.copyfile('../scripts/waptserver-rsyslog',
                     './builddir/etc/rsyslog.d/waptserver.conf')
-    eprint(run('chown root:root ./builddir/etc/rsyslog.d/waptserver.conf'))
+    #eprint(run('chown root:root ./builddir/etc/rsyslog.d/waptserver.conf'))
 except Exception as e:
     eprint('error: \n%s' % e)
     exit(1)
 
 os.chmod('./builddir/opt/wapt/waptserver/scripts/postconf.sh', 0o755)
+for fn in glob.glob('./builddir/opt/wapt/bin/*'):
+    os.chmod(fn, 0o755)
+
 add_symlink('opt/wapt/waptserver/scripts/postconf.sh', '/usr/bin/wapt-serverpostconf')
 
 eprint('copying nginx-related goo')
