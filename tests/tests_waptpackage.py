@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.1.17"
+__version__ = "1.5.1.18"
 import logging
 import sys
 import tempfile
@@ -986,10 +986,19 @@ def start_waptserver():
     global waptserver_process
     waptserver_process = subprocess.Popen(r'c:\tranquilit\wapt\waptpython.exe c:\tranquilit\wapt\waptserver\waptserver.py -p 8080',shell=True)
 
+def test_proxy():
+    w = Wapt(config_filename=r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini')
+    w.update()
+    print(w.repositories[0].http_proxy)
+    print(w.repositories[1].http_proxy)
+    w.update_server_status()
+    w.repositories
+
 
 if __name__ == '__main__':
     setup_test()
 
+    test_proxy()
 
 
     test_crl()

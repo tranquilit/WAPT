@@ -2333,7 +2333,8 @@ class WaptRemoteRepo(WaptBaseRepo):
         #    self.verify_cert = self._default_config['verify_cert']
 
         if config.has_option(section,'http_proxy'):
-            self.http_proxy = config.get(section,'http_proxy')
+            if not config.has_option(section,'use_http_proxy_for_repo') or config.getboolean(section,'use_http_proxy_for_repo'):
+                self.http_proxy = config.get(section,'http_proxy')
 
         if config.has_option(section,'timeout'):
             self.timeout = config.getfloat(section,'timeout')

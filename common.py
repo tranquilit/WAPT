@@ -4498,7 +4498,7 @@ class Wapt(BaseObjectClass):
                 req = candidate.asrequirement()
                 if not req in result['install']+result['upgrade']+result['additional']:
                     result[l].append(req)
-        result['remove'].extend([p[1].asrequirement() for p in depends['remove'] if p.package not in result['remove']])
+        result['remove'].extend([p[1].asrequirement() for p in depends['remove'] if p[1].package not in result['remove']])
         return result
 
     def search(self,searchwords=[],exclude_host_repo=True,section_filter=None,newest_only=False):
