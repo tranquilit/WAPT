@@ -60,6 +60,7 @@ Source: "..\runwaptservice.bat"; DestDir: "{app}"; Flags: ignoreversion
 #ifdef choose_components
 Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName: "waptserver.ini"; Tasks: InstallWaptserver
 Source: "..\waptserver\*.py"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver       
+Source: "..\waptserver\*.bat"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver       
 Source: "..\waptserver\*.template"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver
 Source: "..\waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
 Source: "..\waptserver\translations\*"; DestDir: "{app}\waptserver\translations"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
@@ -69,6 +70,7 @@ Source: "..\waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: creat
 #else
 Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName: "waptserver.ini"; 
 Source: "..\waptserver\*.py"; DestDir: "{app}\waptserver";   
+Source: "..\waptserver\*.bat"; DestDir: "{app}\waptserver";   
 Source: "..\waptserver\*.template"; DestDir: "{app}\waptserver"; 
 Source: "..\waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs;
 Source: "..\waptserver\translations\*"; DestDir: "{app}\waptserver\translations"; Flags: createallsubdirs recursesubdirs; 
