@@ -1,5 +1,8 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
 msgid "Only suitable for development hosts."
-msgstr "Content-Type: text/plain; charset=UTF-8Seulement valable pour les postes de développement"
+msgstr "Seulement valable pour les postes de développement"
 
 #: tform1.buttonpanel1.helpbutton.caption
 msgctxt "tform1.buttonpanel1.helpbutton.caption"
@@ -9,10 +12,6 @@ msgstr "&Voir le fichier de configuration"
 #: tform1.caption
 msgid "Form1"
 msgstr ""
-
-#: tvisapropos.button1.caption
-msgid "Close"
-msgstr "Fermer"
 
 #: tvisapropos.caption
 msgid "About WAPTConsole"
@@ -225,6 +224,11 @@ msgstr "Service :"
 msgctxt "tviscreatekey.labunit.hint"
 msgid "E.g. : IT department."
 msgstr "E.g. : DSI"
+
+#: tviscreatewaptsetup.actgetservercertificate.caption
+msgctxt "tviscreatewaptsetup.actgetservercertificate.caption"
+msgid "Get Server https Certificate"
+msgstr "Récupérer le bundle de certificats du serveur"
 
 #: tviscreatewaptsetup.caption
 msgctxt "tviscreatewaptsetup.caption"
@@ -921,8 +925,10 @@ msgid "Browse certificates"
 msgstr "Parcourir les certificats"
 
 #: tviswaptconfig.actgetservercertificate.caption
+#, fuzzy
+#| msgid "Get Server https Certitificate"
 msgctxt "tviswaptconfig.actgetservercertificate.caption"
-msgid "Get Server https Certitificate"
+msgid "Get Server https Certificate"
 msgstr "Récupération certificat serveur"
 
 #: tviswaptconfig.actopencertdir.caption
@@ -3024,6 +3030,14 @@ msgctxt "uwaptconsoleres.rsinstallon"
 msgid "  install on c:\\wapt : --setup -s"
 msgstr "  installation sur c:\\wapt : --setup -s"
 
+#: uwaptconsoleres.rsinvalidservercertificate
+msgid "The https server trusted certificates bundle \"%s\" can not verify the server https connection. Check your bundle"
+msgstr "Le bundle de certificats de confiance \"%s\" ne permet pas de vérifier la connection https vers le serveur. Vérifier votre bundle. "
+
+#: uwaptconsoleres.rsinvalidservercertificatedir
+msgid "The https server trusted certificates bundle \"%s\" is not located in a valid directory. It should be in \"<waptbasedir>\\ssl\\server\" directory"
+msgstr "Le bundle de certificats de confiance \"%s\" n'est pas dans un répertoire correct. Il devrait être dans le répertoire \"<waptbasedir>\\ssl\\server\""
+
 #: uwaptconsoleres.rsinvalidwaptsetupdir
 msgctxt "uwaptconsoleres.rsinvalidwaptsetupdir"
 msgid "WAPTsetup directory is not valid : %s"
@@ -3393,16 +3407,7 @@ msgid "You must first define the Package prefix in preferences"
 msgstr "Vous devez d'abord définir le préfixe des paquets dans les préférences"
 
 #: uwaptconsoleres.rswaptservererror
-#, fuzzy
-#| msgid ""
-#| "Error on WAPT server:\n"
-#| "%s\n"
-#| "Error on WAPT server:\n"
-#| "%s\n"
-#| "Error on WAPT server:\n"
-#| "%s\n"
-#| "Error on WAPT server:\n"
-#| "%s\n"
+
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -3412,18 +3417,6 @@ msgstr ""
 
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
-#| msgid ""
-#| "Warning, the version of the server is too old.\n"
-#| "Current server version: %s\n"
-#| "Required server version: %s\n"
-#| "Warning, the version of the server is too old.\n"
-#| "Current server version: %s\n"
-#| "Required server version: %s\n"
-#| "Warning, the version of the server is too old.\n"
-#| "Current server version: %s\n"
-#| "Required server version: %s\n"
-#| "Warning, the version of the server is too old.\n"
-#| "Current server version: %s\n"
 #| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
@@ -3441,15 +3434,7 @@ msgstr "Erreur lors de la création de l'agent : %s"
 
 #: uwaptconsoleres.rswaptsetupuploadsuccess
 #, fuzzy
-#| msgid ""
-#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
-#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
-#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
-#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
-#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
-#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
-#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
-#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
+
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"
 msgid ""
 "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"

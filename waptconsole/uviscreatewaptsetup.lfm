@@ -185,6 +185,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     NumGlyphs = 1
     Flat = True
     MaxLength = 0
+    PopupMenu = PopupMenu1
     TabOrder = 5
   end
   object CBVerifyCert: TCheckBox
@@ -194,6 +195,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Width = 161
     Caption = 'Verify https server certificate'
     OnClick = CBVerifyCertClick
+    PopupMenu = PopupMenu1
     TabOrder = 4
   end
   object CBUseKerberos: TCheckBox
@@ -227,5 +229,16 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object ActionList1: TActionList
     left = 16
     top = 208
+    object ActGetServerCertificate: TAction
+      Caption = 'Get Server https Certificate'
+      OnExecute = ActGetServerCertificateExecute
+    end
+  end
+  object PopupMenu1: TPopupMenu
+    left = 96
+    top = 208
+    object MenuItem1: TMenuItem
+      Action = ActGetServerCertificate
+    end
   end
 end

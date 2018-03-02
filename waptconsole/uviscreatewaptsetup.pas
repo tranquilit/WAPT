@@ -6,13 +6,14 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  EditBtn, ExtCtrls, Buttons, ActnList, DefaultTranslator;
+  EditBtn, ExtCtrls, Buttons, ActnList, DefaultTranslator, Menus;
 
 type
 
   { TVisCreateWaptSetup }
 
   TVisCreateWaptSetup = class(TForm)
+    ActGetServerCertificate: TAction;
     ActionList1: TActionList;
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
@@ -32,7 +33,10 @@ type
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
+    MenuItem1: TMenuItem;
     Panel1: TPanel;
+    PopupMenu1: TPopupMenu;
+    procedure ActGetServerCertificateExecute(Sender: TObject);
     procedure CBVerifyCertClick(Sender: TObject);
     procedure fnPublicCertEditingDone(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -52,10 +56,13 @@ implementation
 {$R *.lfm}
 
 uses
-  uWaptConsoleRes,uWaptRes,UScaleDPI, dmwaptpython,waptcommon,VarPyth;
+  Variants,dmwaptpython,IdUri,IdSSLOpenSSLHeaders,uWaptConsoleRes,uWaptRes,UScaleDPI, tiscommon,
+  tisstrings,waptcommon,VarPyth,superobject;
 
 { TVisCreateWaptSetup }
 procedure TVisCreateWaptSetup.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+var
+  pingResult: ISuperobject;
 begin
   CanClose:= True;
   if (ModalResult=mrOk) then
@@ -69,7 +76,22 @@ begin
     begin
       ShowMessageFmt(rsInvalidWaptSetupDir, [fnWaptDirectory.Directory]);
       CanClose:=False;
-    end
+    end;
+    if (CBCheckCertificatesValidity.Checked) and (pos(lowercase(WaptBaseDir),lowercase(EdServerCertificate.Text))<>1) then
+    begin
+      ShowMessageFmt(rsInvalidServerCertificateDir, [EdServerCertificate.Text]);
+      CanClose:=False;
+    end;
+    // check ssl cert is OK
+    try
+      PingResult := SO(IdhttpGetString(edWaptServerUrl.Text+'/ping','',4000,60000,60000,'','','GET','',EdServerCertificate.Text));
+    except
+      on E:EIdOpenSSLAPICryptoError do
+      begin
+        ShowMessageFmt(rsInvalidServerCertificate, [EdServerCertificate.Text]);
+        CanClose:=False;
+      end;
+    end;
   end;
 end;
 
@@ -90,6 +112,37 @@ begin
       EdServerCertificate.Text:=CARoot();
 
   EdServerCertificate.Enabled:=CBVerifyCert.Checked;
+end;
+
+procedure TVisCreateWaptSetup.ActGetServerCertificateExecute(Sender: TObject);
+var
+  i:integer;
+  certfn: String;
+  url,certchain,pem_data,certbundle,certs,cert:Variant;
+begin
+  url := edWaptServerUrl.Text;
+  With TIdURI.Create(url) do
+  try
+    try
+      certfn:= AppendPathDelim(WaptBaseDir)+'ssl\server\'+Host+'.crt';
+      certchain := dmpython.waptcrypto.get_peer_cert_chain_from_server(url);
+      pem_data := dmpython.waptcrypto.SSLCABundle(certificates:=certchain).as_pem('--noarg--');
+      if not VarIsNull(pem_data) then
+      begin
+        if not DirectoryExists(ExtractFileDir(certfn)) then
+          ForceDirectory(ExtractFileDir(certfn));
+        StringToFile(certfn,pem_data);
+        EdServerCertificate.Text := certfn;
+        CBVerifyCert.Checked:=True;
+      end
+      else
+        raise Exception.Create('No certificate returned from  get_pem_server_certificate');
+    except
+      on E:Exception do ShowMessage('Unable to get https server certificate for url '+url+' '+E.Message);
+    end;
+  finally
+    Free;
+  end;
 end;
 
 procedure TVisCreateWaptSetup.FormCreate(Sender: TObject);

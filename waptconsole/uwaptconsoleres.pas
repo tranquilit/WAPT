@@ -184,6 +184,8 @@ resourcestring
   { Messages dans uVisEditPackage.pas }
   rsInputPubKeyPath = 'Please input path to public key';
   rsInvalidWaptSetupDir = 'WAPTsetup directory is not valid : %s';
+  rsInvalidServerCertificateDir = 'The https server trusted certificates bundle "%s" is not located in a valid directory. It should be in "<waptbasedir>\ssl\server" directory';
+  rsInvalidServerCertificate = 'The https server trusted certificates bundle "%s" can not verify the server https connection. Check your bundle';
 
   { Messages dans uVisChangePassword.pas }
   rsDiffPwError = 'Passwords do not match.';

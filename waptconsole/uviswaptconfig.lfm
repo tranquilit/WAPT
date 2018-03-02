@@ -499,7 +499,7 @@ object VisWAPTConfig: TVisWAPTConfig
       Caption = 'Explore dir'
     end
     object ActGetServerCertificate: TAction
-      Caption = 'Get Server https Certitificate'
+      Caption = 'Get Server https Certificate'
       OnExecute = ActGetServerCertificateExecute
       OnUpdate = ActGetServerCertificateUpdate
     end
