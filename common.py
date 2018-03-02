@@ -569,7 +569,7 @@ PackageKey = namedtuple('package',('packagename','version'))
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
 
-    curr_db_version = '20180220'
+    curr_db_version = '20180303'
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
@@ -632,8 +632,10 @@ class WaptDB(WaptBaseDB):
           depends varchar(800),
           conflicts varchar(800),
           last_audit_on varchar(255),
-          last_audit_status TEXT,
-          next_audit_on varchar(255)
+          last_audit_status varchar(255),
+          last_audit_output TEXT,
+          next_audit_on varchar(255),
+          impacted_process varchar(255)
           )
           """)
         self.db.execute("""
@@ -835,7 +837,7 @@ class WaptDB(WaptBaseDB):
                              impacted_process=package_entry.impacted_process
                              )
 
-    def add_start_install(self,package,version,architecture,params_dict={},explicit_by=None,maturity='',locale='',depends='',conflicts=''):
+    def add_start_install(self,package,version,architecture,params_dict={},explicit_by=None,maturity='',locale='',depends='',conflicts='',impacted_process=None):
         """Register the start of installation in local db
 
         Args:
@@ -862,8 +864,9 @@ class WaptDB(WaptBaseDB):
                     maturity,
                     locale,
                     depends,
-                    conflicts
-                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    conflicts,
+                    impacted_process
+                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,(
                      package,
                      version,
@@ -877,7 +880,8 @@ class WaptDB(WaptBaseDB):
                      maturity,
                      locale,
                      depends,
-                     conflicts
+                     conflicts,
+                     impacted_process
                    ))
             return cur.lastrowid
 
@@ -3177,7 +3181,8 @@ class Wapt(BaseObjectClass):
                 maturity=entry.maturity,
                 locale=entry.locale,
                 depends=entry.depends,
-                conflicts=entry.conflicts
+                conflicts=entry.conflicts,
+                impacted_process=entry.impacted_process,
                 )
 
             if entry.min_wapt_version and Version(entry.min_wapt_version)>Version(setuphelpers.__version__):
@@ -4312,6 +4317,9 @@ class Wapt(BaseObjectClass):
                         if isinstance(guids,(unicode,str)):
                             guids = [guids]
 
+                        if mydict.get('impacted_process',None):
+                            setuphelpers.killalltasks(ensure_list(mydict['impacted_process']))
+
                         for guid in guids:
                             if guid:
                                 try:
@@ -4319,6 +4327,7 @@ class Wapt(BaseObjectClass):
                                     uninstall_cmd = self.uninstall_cmd(guid)
                                     if uninstall_cmd:
                                         logger.info(u'Launch uninstall cmd %s' % (uninstall_cmd,))
+                                        # if running porcesses, kill them before launching uninstaller
                                         print(self.run(uninstall_cmd))
                                 except Exception as e:
                                     logger.critical(u"Critical error during uninstall cmd %s: %s" % (uninstall_cmd,ensure_unicode(e)))
