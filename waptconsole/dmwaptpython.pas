@@ -5,8 +5,9 @@ unit dmwaptpython;
 interface
 
 uses
-  Classes, SysUtils, FileUtil,LazFileUtils, PythonEngine, PythonGUIInputOutput, VarPyth,
-  vte_json, superobject, fpjson, jsonparser, DefaultTranslator,WrapDelphi;
+  Classes, SysUtils, FileUtil, LazFileUtils, PythonEngine, PythonGUIInputOutput,
+  VarPyth, vte_json, superobject, fpjson, jsonparser, DefaultTranslator,
+  Controls, WrapDelphi;
 
 type
 
@@ -33,6 +34,7 @@ type
     Fsetuphelpers: Variant;
     Fwaptpackage: Variant;
     Fwaptdevutils: Variant;
+    Flicencing: Variant;
     jsondata:TJSONData;
 
     FWaptConfigFileName: Utf8String;
@@ -45,6 +47,7 @@ type
     function Getwaptcrypto: Variant;
     function Getwaptdevutils: Variant;
     function Getwaptpackage: Variant;
+    function Getlicencing: Variant;
     procedure LoadJson(data: UTF8String);
     procedure Setcommon(AValue: Variant);
     procedure SetIsEnterpriseEdition(AValue: Boolean);
@@ -76,6 +79,7 @@ type
     property waptpackage:Variant read Getwaptpackage;
     property waptdevutils:Variant read Getwaptdevutils;
     property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
+    property licencing:Variant read Getlicencing;
 
   end;
 
@@ -105,12 +109,16 @@ type
   function SuperObjectToPyObject(aso:ISuperObject):PPyObject;
   function SuperObjectToPyVar(aso:ISuperObject):Variant;
 
+  function ExtractResourceString(Ident:String):RawByteString;
+
+
 var
   DMPython: TDMPython;
 
 implementation
-uses variants, waptcommon, uvisprivatekeyauth,inifiles,forms,controls,Dialogs,uvisloading;
+uses variants, waptcommon, uvisprivatekeyauth,inifiles,forms,Dialogs,uvisloading;
 {$R *.lfm}
+{$R catis.rc}
 
 function pyObjectToSuperObject(pvalue:PPyObject):ISuperObject;
 var
@@ -219,6 +227,27 @@ begin
   result := VarPyth.VarPythonCreate(SuperObjectToPyObject(aso));
 end;
 
+function ExtractResourceString(Ident: String): RawByteString;
+var
+  S: TResourceStream;
+  data:RawByteString;
+begin
+  S := TResourceStream.Create(HInstance, Ident, MAKEINTRESOURCE(10)); // RT_RCDATA
+  try
+    SetLength(Result,S.Size);
+    S.Seek(0,soFromBeginning);
+    S.Read(PChar(Result)^,S.Size);
+  finally
+    S.Free; // destroy the resource stream
+  end;
+end;
+
+function CheckGetLicence(LicenceFilename: String): Variant;
+
+begin
+
+end;
+
 procedure TDMPython.SetWaptConfigFileName(AValue: Utf8String);
 var
   St:TStringList;
@@ -313,7 +342,6 @@ begin
   PyWaptWrapper.Engine := PythonEng;
   PyWaptWrapper.Module := PythonModuleDMWaptPython;
   PyWaptWrapper.Initialize;  // Should only be called if PyDelphiWrapper is created at run time
-
 end;
 
 procedure TDMPython.DataModuleDestroy(Sender: TObject);
@@ -531,6 +559,14 @@ begin
   if VarIsEmpty(Fwaptpackage) or VarIsNull(Fwaptpackage) then
     Fwaptpackage:= VarPyth.Import('waptpackage');
   Result := Fwaptpackage;
+
+end;
+
+function TDMPython.Getlicencing: Variant;
+begin
+  if IsEnterpriseEdition and VarIsEmpty(Flicencing) or VarIsNull(Flicencing) then
+    Flicencing:= VarPyth.Import('waptenterprise.licencing');
+  Result := Flicencing;
 
 end;
 
