@@ -192,7 +192,7 @@ copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.
 
 eprint('copying the waptserver files')
 rsync(source_dir, './builddir/opt/wapt/',
-      excludes=['postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module'])
+      excludes=['postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module', '*.bat'])
 
 # script to run waptserver in foreground mode
 copyfile(makepath(wapt_source_dir, 'runwaptserver.sh'),'./builddir/opt/wapt/runwaptserver.sh')

@@ -170,7 +170,7 @@ copyfile(makepath(wapt_source_dir, 'lib', 'site-packages', 'dialog.py'),'builddi
 # psycopg2 from distribution RPM into virtualenv...
 rsync('/usr/lib64/python2.7/site-packages/psycopg2','./builddir/opt/wapt/lib/python2.7/site-packages/')
 
-rsync(source_dir, './builddir/opt/wapt/',excludes=['postconf', 'mongod.exe', 'include','spnego-http-auth-nginx-module'])
+rsync(source_dir, './builddir/opt/wapt/',excludes=['postconf', 'mongod.exe', 'include','spnego-http-auth-nginx-module','*.bat'])
 
 eprint('cryptography patches')
 mkdir_p('./builddir/opt/wapt/lib/python2.7/site-packages/cryptography/x509/')

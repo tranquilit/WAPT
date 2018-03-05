@@ -130,11 +130,11 @@ if __name__ == '__main__':
                         try:
                             client_result = json.loads(client_result)
                             result_ok.append(host.computer_fqdn)
-                        except ValueError:
+                        except ValueError as e:
                             if 'Restricted access' in client_result:
                                 print('Forbidden %s' % host.computer_fqdn)
                             else:
-                                print('Error %s : %s' % repr(e))
+                                print('Error %s : %s' % (host.computer_fqdn,repr(e)))
 
                         if packages:
                             print ('sending install command')
@@ -145,11 +145,11 @@ if __name__ == '__main__':
                                 print json.dumps(client_result, indent=True)
                                 print 'OK'
                                 break
-                            except ValueError:
+                            except ValueError as e:
                                 if 'Restricted access' in client_result:
                                     print('Forbidden %s' % host.computer_fqdn)
                                 else:
-                                    print('Error %s : %s' % repr(e))
+                                    print('Error %s : %s' % (host.computer_fqdn,repr(e)))
                     except (requests.ConnectTimeout, requests.ConnectionError, requests.ReadTimeout):
                         print('No answer %s' % address)
 

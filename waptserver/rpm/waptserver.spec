@@ -61,6 +61,7 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 %attr(755,root,root)/opt/wapt/waptserver/scripts/postconf.sh
 %attr(755,root,root)/opt/wapt/wapt-scanpackages.py
 %attr(755,root,root)/opt/wapt/wapt-signpackages.py
+%attr(755,root,root)/opt/wapt/waptserver/trigger_action.sh
 %attr(755,root,root)/opt/wapt/runwaptserver.sh
 %attr(755,root,root)/usr/bin/wapt-scanpackages
 %attr(755,root,root)/usr/bin/wapt-signpackages
