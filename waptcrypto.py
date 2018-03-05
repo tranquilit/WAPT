@@ -1050,6 +1050,7 @@ class SSLPrivateKey(BaseObjectClass):
         Args:
             claim (dict) : data structure to sign
             attributes (list): list of attributes to include in signature
+                               if None, include all attributes.
             certificate (list) : certificate chain of signer
 
         Returns:
@@ -1057,18 +1058,17 @@ class SSLPrivateKey(BaseObjectClass):
                     'signed_attributes','signer','signature_date','signer_certificate'
 
         """
-        assert(isinstance(claim,dict))
         if attributes is None:
             attributes = claim.keys()
         if not isinstance(signer_certificate_chain,list):
             signer_certificate_chain = [signer_certificate_chain]
 
         signature_attributes = ['signed_attributes','signer','signature_date','signer_certificate']
-        for att in signature_attributes:
+        for att in signature_attributes+['signature']:
             if att in attributes:
                 attributes.remove(att)
 
-        reclaim = {att:claim.get(att,None) for att in attributes}
+        reclaim = {att:claim.get(att,None) for att in attributes if att not in signature_attributes and att != 'signature'}
         reclaim['signed_attributes'] = attributes+signature_attributes
         reclaim['signer'] = signer_certificate_chain[0].cn
         reclaim['signature_date'] = datetime.datetime.utcnow().isoformat()
@@ -1884,7 +1884,7 @@ class SSLCertificate(BaseObjectClass):
             claim (dict) : with keys signature,signed_attributes,signer,signature_date
 
         Returns:
-            dict: signature_date,signer,verified_by(cn)
+            dict: signature_date,signer,verified_by(cn),signer_fingerprint
 
         >>> key = SSLPrivateKey('c:/private/150.pem')
         >>> crt = SSLCertificate('c:/private/150.crt')
@@ -1901,7 +1901,6 @@ class SSLCertificate(BaseObjectClass):
         >>> print crt.verify_claim(action_signed)
         {'signer': '150', 'verified_by': '150', 'signature_date': '20170606-163401'}
         """
-        assert(isinstance(claim,dict))
         attributes = claim['signed_attributes']
 
         for att in ['signed_attributes','signer','signature_date','signer_certificate']:
@@ -1912,7 +1911,7 @@ class SSLCertificate(BaseObjectClass):
             if not att in attributes:
                 raise SSLVerifyException(u'Missing required attribute "%s" in signed claim' % att)
 
-        reclaim = {att:claim.get(att,None) for att in attributes}
+        reclaim = {att:claim.get(att,None) for att in attributes if att != 'signature' }
         signature = claim['signature'].decode('base64')
 
         if max_age_secs is not None:
