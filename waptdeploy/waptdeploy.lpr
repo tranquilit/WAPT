@@ -12,7 +12,8 @@ uses
   soutils,
   tisstrings,
   tiscommon,
-  waptwinutils;
+  waptwinutils,
+  waptcrypto;
 
   procedure WaitPendingTasks(timeout:Integer);
   var

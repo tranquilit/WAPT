@@ -222,7 +222,7 @@ const
 
 implementation
 
-uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,tisinifiles,tislogging,
+uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,waptcrypto,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2,
   IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,IdURI,
   gettext,IdStack,IdCompressorZLib,IdAuthentication,shfolder,IniFiles,tiscommon,strutils,tisstrings;

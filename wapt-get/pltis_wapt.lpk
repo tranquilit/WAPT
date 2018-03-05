@@ -17,8 +17,8 @@
       </Other>
     </CompilerOptions>
     <Description Value="Common files for wapt fpc"/>
-    <Version Major="1" Minor="5" Release="1" Build="17"/>
-    <Files Count="5">
+    <Version Major="1" Minor="5" Release="1" Build="18"/>
+    <Files Count="6">
       <Item1>
         <Filename Value="waptwinutils.pas"/>
         <UnitName Value="waptwinutils"/>
@@ -39,6 +39,10 @@
         <Filename Value="waptdb.pas"/>
         <UnitName Value="waptdb"/>
       </Item5>
+      <Item6>
+        <Filename Value="waptcrypto.pas"/>
+        <UnitName Value="waptcrypto"/>
+      </Item6>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="4">
