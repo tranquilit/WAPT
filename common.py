@@ -3265,6 +3265,17 @@ class Wapt(BaseObjectClass):
                     # redefine run to add reference to wapt.pidlist
                     setattr(setup,'run',self.run)
                     setattr(setup,'run_notfatal',self.run_notfatal)
+
+                    # to set default killbefore with content of package impacted_process attribute
+                    def with_impacted_process(func,impacted_process):
+                        def new_func(*args,**kwargs):
+                            if impacted_process and not 'killbefore' in kwargs:
+                                kwargs['killbefore'] = impacted_process
+                            return func(*args,**kwargs)
+                        return new_func
+
+                    setattr(setup,'install_msi_if_needed',with_impacted_process(setuphelpers.install_msi_if_needed,entry.impacted_process))
+                    setattr(setup,'install_exe_if_needed',with_impacted_process(setuphelpers.install_exe_if_needed,entry.impacted_process))
                     setattr(setup,'WAPT',self)
                     setattr(setup,'control',entry)
                     setattr(setup,'language',self.language or setuphelpers.get_language() )
@@ -4287,6 +4298,9 @@ class Wapt(BaseObjectClass):
                     # removes recursively meta packages which are not satisfied anymore
                     additional_removes = self.check_remove(package)
 
+                    if mydict.get('impacted_process',None):
+                        setuphelpers.killalltasks(ensure_list(mydict['impacted_process']))
+
                     if mydict['uninstall_string']:
                         if mydict['uninstall_string'][0] not in ['[','"',"'"]:
                             guids = mydict['uninstall_string']
@@ -4316,9 +4330,6 @@ class Wapt(BaseObjectClass):
 
                         if isinstance(guids,(unicode,str)):
                             guids = [guids]
-
-                        if mydict.get('impacted_process',None):
-                            setuphelpers.killalltasks(ensure_list(mydict['impacted_process']))
 
                         for guid in guids:
                             if guid:
