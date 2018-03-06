@@ -108,6 +108,9 @@ begin
   with TIdURI.Create(edServerAddress.Text) do
   try
     edServerAddress.Text:=Host;
+    if Port<>'' then
+      edServerAddress.Text:=edServerAddress.Text + ':' + Port;
+
     if Document<>'' then
       edServerAddress.Text:=edServerAddress.Text+'/'+Document;
   finally
