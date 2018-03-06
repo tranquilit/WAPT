@@ -77,12 +77,13 @@ begin
       ShowMessageFmt(rsInvalidWaptSetupDir, [fnWaptDirectory.Directory]);
       CanClose:=False;
     end;
-    if (CBCheckCertificatesValidity.Checked) and (pos(lowercase(WaptBaseDir),lowercase(EdServerCertificate.Text))<>1) then
+    if (CBVerifyCert.Checked) and (pos(lowercase(WaptBaseDir),lowercase(EdServerCertificate.Text))<>1) then
     begin
       ShowMessageFmt(rsInvalidServerCertificateDir, [EdServerCertificate.Text]);
       CanClose:=False;
     end;
     // check ssl cert is OK
+    if (CBVerifyCert.Checked) then
     try
       PingResult := SO(IdhttpGetString(edWaptServerUrl.Text+'/ping','',4000,60000,60000,'','','GET','',EdServerCertificate.Text));
     except
