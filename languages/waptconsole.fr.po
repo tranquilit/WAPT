@@ -276,8 +276,10 @@ msgid "E.g. : https://wapt.mydomain.lan/wapt"
 msgstr "Par exemple : https://wapt.mondomaine.lan/wapt."
 
 #: tviscreatewaptsetup.edservercertificate.hint
+#, fuzzy
+#| msgid "E.g. : c:\\private\\tranquilit.crt"
 msgctxt "tviscreatewaptsetup.edservercertificate.hint"
-msgid "E.g. : c:\\private\\tranquilit.crt"
+msgid "E.g. : c:\\wapt\\ssl\\server\\tranquilit.crt  Path to trusted certificates bundle"
 msgstr "Par ex. c:\\private\\tranquilit.crt"
 
 #: tviscreatewaptsetup.edwaptserverurl.hint
@@ -926,7 +928,7 @@ msgstr "Parcourir les certificats"
 
 #: tviswaptconfig.actgetservercertificate.caption
 #, fuzzy
-#| msgid "Get Server https Certitificate"
+#| msgid "Get Server https Certificate"
 msgctxt "tviswaptconfig.actgetservercertificate.caption"
 msgid "Get Server https Certificate"
 msgstr "Récupération certificat serveur"
@@ -1316,6 +1318,10 @@ msgstr "Importer depuis un fichier"
 msgctxt "tviswaptgui.actimportfromrepo.caption"
 msgid "Import from internet"
 msgstr "Importer depuis internet"
+
+#: tviswaptgui.actinstalllicence.caption
+msgid "Install a licence file"
+msgstr "Installer un fichier de licence"
 
 #: tviswaptgui.actlaunchgpupdate.caption
 msgid "Update AD Group Policies on hosts"
@@ -3030,14 +3036,6 @@ msgctxt "uwaptconsoleres.rsinstallon"
 msgid "  install on c:\\wapt : --setup -s"
 msgstr "  installation sur c:\\wapt : --setup -s"
 
-#: uwaptconsoleres.rsinvalidservercertificate
-msgid "The https server trusted certificates bundle \"%s\" can not verify the server https connection. Check your bundle"
-msgstr "Le bundle de certificats de confiance \"%s\" ne permet pas de vérifier la connection https vers le serveur. Vérifier votre bundle. "
-
-#: uwaptconsoleres.rsinvalidservercertificatedir
-msgid "The https server trusted certificates bundle \"%s\" is not located in a valid directory. It should be in \"<waptbasedir>\\ssl\\server\" directory"
-msgstr "Le bundle de certificats de confiance \"%s\" n'est pas dans un répertoire correct. Il devrait être dans le répertoire \"<waptbasedir>\\ssl\\server\""
-
 #: uwaptconsoleres.rsinvalidwaptsetupdir
 msgctxt "uwaptconsoleres.rsinvalidwaptsetupdir"
 msgid "WAPTsetup directory is not valid : %s"
@@ -3407,7 +3405,6 @@ msgid "You must first define the Package prefix in preferences"
 msgstr "Vous devez d'abord définir le préfixe des paquets dans les préférences"
 
 #: uwaptconsoleres.rswaptservererror
-
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -3417,6 +3414,10 @@ msgstr ""
 
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
+#| msgid ""
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
 #| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
@@ -3434,7 +3435,6 @@ msgstr "Erreur lors de la création de l'agent : %s"
 
 #: uwaptconsoleres.rswaptsetupuploadsuccess
 #, fuzzy
-
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"
 msgid ""
 "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
