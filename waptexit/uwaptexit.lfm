@@ -317,6 +317,7 @@ object VisWaptExit: TVisWaptExit
       Height = 233
       Top = 5
       Width = 196
+      ShowAdvancedColumnsCustomize = False
       Align = alLeft
       BorderSpacing.Top = 2
       BorderSpacing.Around = 3

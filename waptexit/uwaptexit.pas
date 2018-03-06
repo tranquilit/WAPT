@@ -263,8 +263,8 @@ begin
       if (running<>Nil) and (running.DataType<>stNull) then
       begin
         //ProgressBar.Position:=running.I['progress'];
-        EdRunning.Text := running.S['description'];
-        MemoLog.Items.Text := running.S['runstatus'];
+        EdRunning.Text := UTF8Encode(running.S['description']);
+        MemoLog.Items.Text := UTF8Encode(running.S['runstatus']);
       end;
 
       //GridTasks.Data:=pending;
