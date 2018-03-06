@@ -277,7 +277,7 @@ def install_postgresql_service():
 
     # need to have specific write acls for current user otherwise initdb fails...
     setuphelpers.run(r'icacls %s /t /grant  "%s":(OI)(CI)(M)' % (pg_data_dir,GetUserName()))
-    setuphelpers.run(r'c:\wapt\waptserver\pgsql\bin\initdb -U postgres -E=UTF8 -D c:\wapt\waptserver\pgsql_data')
+    setuphelpers.run(r'%s\waptserver\pgsql\bin\initdb -U postgres -E=UTF8 -D %s\waptserver\pgsql_data' % (wapt_root_dir,wapt_root_dir))
 
     setuphelpers.run(r'icacls %s /t /grant  "*S-1-5-20":(OI)(CI)(M)' % pg_data_dir)
 
