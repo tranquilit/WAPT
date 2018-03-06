@@ -3978,7 +3978,7 @@ begin
       (WSUSActions.Actions[i] as TAction).Visible:=waptcommon.waptwua_enabled;
     end;
 
-    plStatusBar1.Panels[0].Text := ApplicationName+' '+GetApplicationVersion+' WAPT '+wapt_edition+' Edition, (c) 2012-2017 Tranquil IT Systems. (Configuration:'+AppIniFilename+')';
+    plStatusBar1.Panels[0].Text := WaptServerUser+' on '+ApplicationName+' '+GetApplicationVersion+' WAPT '+wapt_edition+' Edition, (c) 2012-2017 Tranquil IT Systems. (Configuration:'+AppIniFilename+')';
 
     //ProgressTitle(rsLoadPackages);
     ProgressStep(2,3);
