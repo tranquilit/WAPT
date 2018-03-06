@@ -597,6 +597,7 @@ object VisApropos: TVisApropos
     Top = 146
     Width = 316
     Align = alClient
+    BevelOuter = bvNone
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ClientHeight = 148
     ClientWidth = 316

@@ -175,7 +175,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object EdServerCertificate: TFileNameEdit
     Left = 262
     Height = 21
-    Hint = 'E.g. : c:\private\tranquilit.crt'#13#10'Path to certificate for signing new packages.'#13#10'Only suitable for development hosts.'
+    Hint = 'E.g. : c:\wapt\ssl\server\tranquilit.crt  Path to trusted certificates bundle'
     Top = 142
     Width = 216
     Filter = 'CA Certificates bundles PEM|*.crt|Tous les fichiers|*.*'

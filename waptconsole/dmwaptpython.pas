@@ -118,7 +118,11 @@ var
 implementation
 uses variants, waptcommon, uvisprivatekeyauth,inifiles,forms,Dialogs,uvisloading;
 {$R *.lfm}
-{$R catis.rc}
+{$ifdef ENTERPRISE }
+{$R res_enterprise.rc}
+{$else}
+{$R res_community.rc}
+{$endif}
 
 function pyObjectToSuperObject(pvalue:PPyObject):ISuperObject;
 var

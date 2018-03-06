@@ -96,6 +96,7 @@ end;
 
 procedure TVisLogin.FormShow(Sender: TObject);
 begin
+  Image1.Picture.LoadFromResourceName(HINSTANCE,'WAPT_PNG',TPortableNetworkGraphic);
   {$ifdef ENTERPRISE }
   CBConfiguration.Text := AppIniFilename;
   {$endif}
