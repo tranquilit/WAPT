@@ -49,6 +49,7 @@ from waptcrypto import *
 from waptpackage import *
 from common import *
 from waptdevutils import *
+from waptenterprise import licencing
 
 import urllib3
 
@@ -995,7 +996,43 @@ def test_proxy():
     w.repositories
 
 
+def test_licencing():
+    #ca_key = SSLPrivateKey('c:/private/htouvet.pem',password=open('c:/tmp/tmppassword').read())
+    #ca_cert = SSLCertificate('c:/private/htouvet.crt')
+    k = SSLPrivateKey('c:/private/htouvet.pem',password=open('c:/tmp/tmppassword').read())
+    c = SSLCertificate('c:/private/htouvet.crt')
+    l = licencing.WaptLicence(product='WAPT Enterprise',hosts_count=1000,licenced_to='Tranquil Test bench',features=['full'])
+    lic = l.sign(c,k)
+    print jsondump(lic)
+    print l.check_licence(c.as_pem())
+    print l.check_licence(c)
+    print l.check_licence([c])
+    setuphelpers.mkdirs('c:/tranquilit/wapt/licences')
+    l.save_to_file('c:/tranquilit/wapt/licences/wapt.lic')
+
+    l2 = licencing.WaptLicence(filename='c:/tranquilit/wapt/licences/wapt.lic')
+    l2.check_licence(c.as_pem())
+    print l2
+
+def gen_perso(cn,email,**kwargs):
+    if not os.path.isfile('c:/private/%s-tis.pem' % cn):
+        k = SSLPrivateKey()
+        k.create()
+        k.save_as_pem('c:/private/%s-tis.pem' % cn)
+    else:
+        k = SSLPrivateKey('c:/private/%s-tis.pem' % cn)
+
+    csr = k.build_csr(cn=cn,email=email,is_code_signing=False,**kwargs)
+    csr.save_as_pem('c:/private/%s-tis.csr' % cn)
+
+    os.startfile('c:/private/%s-tis.csr' % cn)
+
+
 if __name__ == '__main__':
+    gen_perso('htouvet',email='htouvet@tranquil.it')
+    test_licencing()
+    sys.exit(0)
+
     setup_test()
 
     test_proxy()

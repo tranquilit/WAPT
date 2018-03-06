@@ -1747,7 +1747,8 @@ begin
            append_conflicts := VarPackages,
            key_password := dmpython.privateKeyPassword,
            wapt_server_user := waptServerUser,
-           wapt_server_passwd := waptServerPassword
+           wapt_server_passwd := waptServerPassword,
+           cabundle := DMPython.MainWaptRepo.cabundle
            );
 
         res := PyVarToSuperObject(ResVar);
@@ -1822,7 +1823,8 @@ begin
            append_depends := VarPackages,
            key_password := dmpython.privateKeyPassword,
            wapt_server_user := waptServerUser,
-           wapt_server_passwd := waptServerPassword
+           wapt_server_passwd := waptServerPassword,
+           cabundle := DMPython.MainWaptRepo.cabundle
            );
 
         res := PyVarToSuperObject(ResVar);
@@ -3121,7 +3123,8 @@ begin
            remove_conflicts := VarPackages,
            key_password := dmpython.privateKeyPassword,
            wapt_server_user := waptServerUser,
-           wapt_server_passwd := waptServerPassword
+           wapt_server_passwd := waptServerPassword,
+           cabundle := DMPython.MainWaptRepo.cabundle
            );
 
         res := PyVarToSuperObject(ResVar);
@@ -3163,7 +3166,8 @@ begin
            remove_depends := VarPackages,
            key_password := dmpython.privateKeyPassword,
            wapt_server_user := waptServerUser,
-           wapt_server_passwd := waptServerPassword
+           wapt_server_passwd := waptServerPassword,
+           cabundle := DMPython.MainWaptRepo.cabundle
            );
 
         res := PyVarToSuperObject(ResVar);
