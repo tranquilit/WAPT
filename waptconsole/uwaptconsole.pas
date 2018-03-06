@@ -2779,17 +2779,22 @@ begin
       SOActions := SO(signed_actions_json);
 
       result := WAPTServerJsonPost('/api/v3/trigger_host_action?timeout=%D',[waptservice_timeout],SOActions);
-      if (result<>Nil) and result.AsObject.Exists('success') then
+      if (result<>Nil) then
       begin
-        MemoLog.Append(result.AsString);
-        if result.AsObject.Exists('msg') and (title<>'') then
+        if result.AsObject.Exists('success') then
         begin
-          ShowMessage(copy(result.S['msg'],1,250));
-        end;
+          MemoLog.Append(result.AsString);
+          if result.AsObject.Exists('msg') and (title<>'') then
+          begin
+            ShowMessage(copy(result.S['msg'],1,250));
+          end;
+        end
+        else
+          if not result.B['success'] or (result['result'].A['errors'].Length>0) then
+            Raise Exception.Create(result.S['msg']);
       end
       else
-        if not result.B['success'] or (result['result'].A['errors'].Length>0) then
-          Raise Exception.Create(result.S['msg']);
+        Raise Exception.Create('Unknown error. Trigger action returned no result.');
     except
       on E:Exception do
         ShowMessage(Format(errortitle,
@@ -4401,7 +4406,7 @@ begin
     args := SO();
     args.S['computer_description'] := UTF8Decode(description){%H-};
     taskresult := TriggerActionOnHosts(uuids,'trigger_change_description',args,'Change host description and register','Error changing host description');
-    result := taskresult.B['success'];
+    result := (taskresult<>Nil) and taskresult.B['success'];
   end
   else
     result := False;
