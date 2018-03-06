@@ -61,10 +61,7 @@ begin
     end;
   end
   else
-  begin
-    Image1.Picture.LoadFromLazarusResource('WAPTCOMMUNITY_PNG');
     LabInfos.Caption := ApplicationName+' '+GetApplicationVersion+#13#10#13#10'WAPT Community Edition'#13#10'(c) 2012-2017 Tranquil IT Systems.'#13#10#13#10'Configuration:'+AppIniFilename;
-  end;
 end;
 
 procedure TVisApropos.Image1Click(Sender: TObject);
