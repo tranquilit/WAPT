@@ -287,19 +287,16 @@ class WaptServiceConfig(object):
                 self.waptserver = common.WaptServer().load_config(config)
                 if self.waptserver.server_url:
                     waptserver_url = urlparse.urlparse(self.waptserver.server_url)
+                    self.websockets_host = waptserver_url.hostname
+                    self.websockets_proto = waptserver_url.scheme
+
                     if waptserver_url.port is None:
                         if waptserver_url.scheme == 'https':
                             self.websockets_port = 443
-                            self.websockets_host = waptserver_url.hostname
-                            self.websockets_proto = 'https'
                         else:
                             self.websockets_port = 80
-                            self.websockets_host = waptserver_url.hostname
-                            self.websockets_proto = 'http'
                     else:
                         self.websockets_port = waptserver_url.port
-                        self.websockets_host = waptserver_url.hostname
-                        self.websockets_proto = 'http'
 
                     if waptserver_url.path in ('','/'):
                         self.websockets_root = 'socket.io'
