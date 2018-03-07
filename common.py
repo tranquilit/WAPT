@@ -106,7 +106,7 @@ from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,\
 
 from waptutils import BaseObjectClass,ensure_list,ensure_unicode,default_http_headers
 from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,ZipFile
-from waptutils import import_code,import_setup,force_utf8_no_bom,format_bytes,wget,merge_dict,remove_encoding_declaration
+from waptutils import import_code,import_setup,force_utf8_no_bom,format_bytes,wget,merge_dict,remove_encoding_declaration,list_intersection
 
 from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL,SSLVerifyException
 from waptcrypto import get_peer_cert_chain_from_server,default_pwd_callback,hexdigest_for_data
@@ -2325,7 +2325,8 @@ class Wapt(BaseObjectClass):
         self.after_upload = None
         self.proxies = None
         self.language = None
-        self.locales = []
+        self.locales = [setuphelpers.get_language()]
+        self.maturities = None
 
         self.use_http_proxy_for_repo = False
         self.use_http_proxy_for_server = False
@@ -2574,6 +2575,12 @@ class Wapt(BaseObjectClass):
 
         if self.config.has_option('global','packages_blacklist'):
             self.packages_blacklist = ensure_list(self.config.get('global','packages_blacklist'),allow_none=True)
+
+        if self.config.has_option('global','locales'):
+            self.locales = ensure_list(self.config.get('global','locales'),allow_none=True)
+
+        if self.config.has_option('global','maturities'):
+            self.maturities = ensure_list(self.config.get('global','maturities'),allow_none=True)
 
         # Get the configuration of all repositories (url, ...)
         self.repositories = []
@@ -3662,8 +3669,11 @@ class Wapt(BaseObjectClass):
                             if package.min_wapt_version and Version(package.min_wapt_version)>Version(setuphelpers.__version__):
                                 logger.debug('Skipping package %s on repo %s, requires a newer Wapt agent. Minimum version: %s' % (package.asrequirement(),repo.name,package.min_wapt_version))
                                 continue
-                            if package.locale and self.locales and not package.locale in self.locales:
+                            if package.locale and self.locales and not list_intersection(ensure_list(package.locale),self.locales):
                                 logger.debug('Skipping package %s on repo %s, designed for locale %s' %(package.asrequirement(),repo.name,package.locale))
+                                continue
+                            if package.maturity and self.maturities and not package.maturity in self.maturities:
+                                logger.debug('Skipping package %s on repo %s, maturity  %s not enabled on this host' %(package.asrequirement(),repo.name,package.maturity))
                                 continue
                             if package.target_os and package.target_os != 'windows':
                                 logger.debug('Skipping package %s on repo %s, designed for OS %s' %(package.asrequirement(),repo.name,package.target_os))
@@ -3729,6 +3739,8 @@ class Wapt(BaseObjectClass):
             host_site=self.get_host_site(),
             packages_blacklist=self.packages_blacklist,
             packages_whitelist=self.packages_whitelist,
+            host_locales=self.locales,
+            host_maturities=self.maturities,
         )
         return hashlib.sha256(jsondump(host_capa)).hexdigest()
 

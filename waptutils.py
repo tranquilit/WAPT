@@ -1167,7 +1167,8 @@ def remove_encoding_declaration(source):
     result.extend(headers[3:])
     return "\n".join(result)
 
-
+def list_intersection(list1, list2):
+    return [item for item in list1 if item in list2]
 
 class BaseObjectClass(object):
     def _pyobject(self):
