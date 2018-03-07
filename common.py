@@ -2326,7 +2326,7 @@ class Wapt(BaseObjectClass):
         self.proxies = None
         self.language = None
         self.locales = [setuphelpers.get_language()]
-        self.maturities = None
+        self.maturities = ['PROD']
 
         self.use_http_proxy_for_repo = False
         self.use_http_proxy_for_server = False
