@@ -155,6 +155,7 @@ parser.add_option("-g","--usergroups", dest="usergroups", default='[]', help="Gr
 parser.add_option("-t","--maxttl", type='int',  dest="max_ttl", default=60, help="Max run time in minutes of wapt-get process before being killed by subsequent wapt-get (default: %default minutes)")
 parser.add_option("-L","--language",    dest="language",    default=setuphelpers.get_language(), help="Override language for install (example : fr) (default: %default)")
 parser.add_option("-m","--message-digest", dest="md", default=None, help="Message digest type for signatures.  (default: sha256)")
+parser.add_option("--maturity", dest="maturity", default=None, help="Set/change package maturity when building package.  (default: None)")
 parser.add_option("--wapt-server-user", dest="wapt_server_user", default=None, help="User to upload packages to waptserver. (default: %default)")
 parser.add_option("--wapt-server-passwd", dest="wapt_server_passwd", default=None, help="Password to upload packages to waptserver. (default: %default)")
 parser.add_option("--log-to-windows-events",dest="log_to_windows_events",    default=False, action='store_true', help="Log steps to the Windows event log (default: %default)")
@@ -866,7 +867,8 @@ def main():
                             package_fn = mywapt.build_package(
                                 source_dir,
                                 inc_package_release=options.increlease,
-                                excludes=ensure_list(options.excludes))
+                                excludes=ensure_list(options.excludes),
+                                set_maturity=options.maturity)
                             if package_fn:
                                 print('...done building. Package filename %s' % (package_fn,))
                                 print('Signing %s with key %s and certificate %s (%s)' % (package_fn,key,certificates[0].cn,certificates[0].public_cert_filename))
