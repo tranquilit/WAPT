@@ -802,7 +802,7 @@ class WaptDB(WaptBaseDB):
                    )
             return cur.lastrowid
 
-    def add_package_entry(self,package_entry):
+    def add_package_entry(self,package_entry,locale_code=None):
         cur = self.db.execute("""delete from wapt_package where package=? and version=? and architecture=? and maturity=? and locale=?""" ,
             (package_entry.package,package_entry.version,package_entry.architecture,package_entry.maturity,package_entry.locale))
 
@@ -813,7 +813,7 @@ class WaptDB(WaptBaseDB):
                              priority=package_entry.priority,
                              architecture=package_entry.architecture,
                              maintainer=package_entry.maintainer,
-                             description=package_entry.description,
+                             description=package_entry.get_localized_description(locale_code),
                              filename=package_entry.filename,
                              size=package_entry.size,
                              md5sum=package_entry.md5sum,
@@ -3693,8 +3693,8 @@ class Wapt(BaseObjectClass):
 
                         try:
                             self.waptdb.add_package_entry(package)
-                        except:
-                            logger.critical('Invalid signature for package control entry %s on repo %s : discarding' % (package.asrequirement(),repo.name) )
+                        except Exception as e:
+                            logger.critical('Invalid signature for package control entry %s on repo %s : discarding : %s' % (package.asrequirement(),repo.name,e) )
 
                     logger.debug(u'Storing last-modified header for repo_url %s : %s' % (repo.repo_url,repo.packages_date))
                     self.waptdb.set_param('last-%s' % repo.repo_url[:59],repo.packages_date)

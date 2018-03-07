@@ -328,7 +328,7 @@ class PackageEntry(BaseObjectClass):
     required_attributes = ['package','version','architecture','section','priority']
     optional_attributes = ['maintainer','description','depends','conflicts','maturity',
         'locale','target_os','min_os_version','max_os_version','min_wapt_version',
-        'sources','installed_size','impacted_process']
+        'sources','installed_size','impacted_process','description_fr','description_pl','description_de','description_es']
     # attributes which are added by _sign_control
     signature_attributes = ['signer','signer_fingerprint','signature','signature_date','signed_attributes']
 
@@ -368,6 +368,10 @@ class PackageEntry(BaseObjectClass):
         self._calculated_attributes=[]
         self._package_content = None
         self._control_updated = None
+
+        # init package attributes
+        for key in self.required_attributes + self.optional_attributes:
+            setattr(self,key,None)
 
         self.package=package
         self.version=version
@@ -420,6 +424,7 @@ class PackageEntry(BaseObjectClass):
 
         self._default_md = _default_md
         self._md = None
+
 
         if kwargs:
             for key,value in kwargs.iteritems():
@@ -475,6 +480,18 @@ class PackageEntry(BaseObjectClass):
             return getattr(self,name)
         else:
             return default
+
+    def get_localized_description(self,locale_code=None):
+        """locale_code is a 2 chars code like fr or en or de"""
+        if locale_code is None:
+            return self.description
+        else:
+            if hasattr(self,'description_%s'%locale_code):
+                desc = getattr(self,'description_%s' % locale_code)
+                if desc is not None and desc != '':
+                    return desc
+                else:
+                    return self.description
 
     def __setitem__(self,name,value):
         """attribute which are not member of all_attributes list are considered _calculated
