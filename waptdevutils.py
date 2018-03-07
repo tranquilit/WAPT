@@ -467,12 +467,15 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
 
 
                 depends = host.depends
-                depends = add_to_csv_list(depends,append_depends)
-                depends = remove_from_csv_list(depends,remove_depends)
-
                 conflicts = host.conflicts
+
                 conflicts = add_to_csv_list(conflicts,append_conflicts)
                 conflicts = remove_from_csv_list(conflicts,remove_conflicts)
+                depends = remove_from_csv_list(depends,ensure_list(conflicts))
+
+                depends = add_to_csv_list(depends,append_depends)
+                depends = remove_from_csv_list(depends,remove_depends)
+                conflicts = remove_from_csv_list(conflicts,ensure_list(depends))
 
                 if depends != host.depends or conflicts != host.conflicts:
                     host.depends = depends

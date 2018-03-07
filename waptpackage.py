@@ -1807,7 +1807,7 @@ class WaptBaseRepo(BaseObjectClass):
             else:
                 return True
 
-    def search(self,searchwords = [],sections=[],newest_only=False):
+    def search(self,searchwords = [],sections=[],newest_only=False,exclude_sections=[]):
         """Return list of package entries
             with description or name matching all the searchwords and section in
             provided sections list
@@ -1817,6 +1817,8 @@ class WaptBaseRepo(BaseObjectClass):
         """
         searchwords = ensure_list(searchwords)
         sections = ensure_list(sections)
+        exclude_sections = ensure_list(exclude_sections)
+
         words = [ w.lower() for w in searchwords ]
 
         result = []
@@ -1829,6 +1831,10 @@ class WaptBaseRepo(BaseObjectClass):
             if sections:
                 if package.section not in sections:
                     selected = False
+
+            if selected and package.section in exclude_sections:
+                selected = False
+
             if selected:
                 result.append(package)
         if newest_only:

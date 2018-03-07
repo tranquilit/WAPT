@@ -1748,14 +1748,15 @@ begin
            key_password := dmpython.privateKeyPassword,
            wapt_server_user := waptServerUser,
            wapt_server_passwd := waptServerPassword,
-           cabundle := DMPython.MainWaptRepo.cabundle
+           cabundle := DMPython.WaptHostRepo.cabundle
            );
 
         res := PyVarToSuperObject(ResVar);
 
       finally
         Screen.cursor := crDefault;
-        ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
+        if res <> Nil then
+          ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
       end;
     finally
       Free;
@@ -1824,13 +1825,14 @@ begin
            key_password := dmpython.privateKeyPassword,
            wapt_server_user := waptServerUser,
            wapt_server_passwd := waptServerPassword,
-           cabundle := DMPython.MainWaptRepo.cabundle
+           cabundle := DMPython.WaptHostRepo.cabundle
            );
 
         res := PyVarToSuperObject(ResVar);
-        ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
       finally
         Screen.cursor := crDefault;
+        if res <> Nil then
+          ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
       end;
     finally
       Free;
@@ -3129,14 +3131,15 @@ begin
            key_password := dmpython.privateKeyPassword,
            wapt_server_user := waptServerUser,
            wapt_server_passwd := waptServerPassword,
-           cabundle := DMPython.MainWaptRepo.cabundle
+           cabundle := DMPython.WaptHostRepo.cabundle
            );
 
         res := PyVarToSuperObject(ResVar);
 
       finally
         Screen.cursor := crDefault;
-        ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
+        if res <> Nil then
+          ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
       end;
     finally
       Free;
@@ -3172,14 +3175,15 @@ begin
            key_password := dmpython.privateKeyPassword,
            wapt_server_user := waptServerUser,
            wapt_server_passwd := waptServerPassword,
-           cabundle := DMPython.MainWaptRepo.cabundle
+           cabundle := DMPython.WaptHostRepo.cabundle
            );
 
         res := PyVarToSuperObject(ResVar);
 
       finally
         Screen.cursor := crDefault;
-        ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
+        if (res <> Nil) then
+          ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
       end;
     finally
       Free;
@@ -3488,7 +3492,7 @@ end;
 procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
 begin
   EdSearchPackage.Modified:=False;
-  GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchPackage.Text, sections := 'base,restricted', newest_only := cbNewestOnly.Checked));
+  GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchPackage.Text, exclude_sections := 'host,group,unit', newest_only := cbNewestOnly.Checked));
 end;
 
 procedure TVisWaptGUI.ActPackagesUpdateExecute(Sender: TObject);

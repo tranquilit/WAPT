@@ -29,6 +29,7 @@ type
     FLanguage: String;
     FCachedPrivateKeyPassword: Ansistring;
     FMainWaptRepo: Variant;
+    FWaptHostRepo: Variant;
     FWAPT: Variant;
     Fwaptcrypto: Variant;
     Fsetuphelpers: Variant;
@@ -41,6 +42,7 @@ type
     function Getcommon: Variant;
     function GetIsEnterpriseEdition: Boolean;
     function GetMainWaptRepo: Variant;
+    function GetWaptHostRepo: Variant;
     function getprivateKeyPassword: Ansistring;
     function Getsetuphelpers: Variant;
     function GetWAPT: Variant;
@@ -52,6 +54,7 @@ type
     procedure Setcommon(AValue: Variant);
     procedure SetIsEnterpriseEdition(AValue: Boolean);
     procedure SetMainWaptRepo(AValue: Variant);
+    procedure SetWaptHostRepo(AValue: Variant);
     procedure setprivateKeyPassword(AValue: Ansistring);
     procedure SetWAPT(AValue: Variant);
     procedure SetWaptConfigFileName(AValue: Utf8String);
@@ -71,6 +74,7 @@ type
 
     property Language:String read FLanguage write SetLanguage;
     property MainWaptRepo:Variant read GetMainWaptRepo write SetMainWaptRepo;
+    property WaptHostRepo:Variant read GetWaptHostRepo write SetWaptHostRepo;
 
     property WAPT:Variant read GetWAPT write SetWAPT;
     property waptcrypto:Variant read Getwaptcrypto;
@@ -266,6 +270,7 @@ begin
 
   // reset Variant to force recreate Wapt instance
   FMainWaptRepo := Unassigned;
+  FWaptHostRepo := Unassigned;
   FWapt := Unassigned;
 
   if AValue<>'' then
@@ -451,6 +456,12 @@ begin
   FMainWaptRepo:=AValue;
 end;
 
+procedure TDMPython.SetWaptHostRepo(AValue: Variant);
+begin
+  if VarCompareValue(FWaptHostRepo,AValue) = vrEqual  then Exit;
+  FWaptHostRepo:=AValue;
+end;
+
 function TDMPython.getprivateKeyPassword: Ansistring;
 var
   PrivateKeyPath:String;
@@ -575,16 +586,52 @@ begin
 end;
 
 function TDMPython.GetMainWaptRepo: Variant;
+var
+  ini:TIniFile;
+  section:String;
 begin
   if VarIsEmpty(FMainWaptRepo) then
   try
-    ShowLoadWait('Loading main Wapt repo settings',0,4);
-    FMainWaptRepo := dmpython.waptpackage.WaptRemoteRepo(name := 'global');
-    FMainWaptRepo.load_config_from_file(WaptConfigFileName);
+    with TIniFile.Create(WaptConfigFileName) do
+    try
+      ShowLoadWait('Loading main Wapt repo settings',0,4);
+      if SectionExists('wapt') and (ReadString('wapt','repourl','NONE')<>'NONE') then
+        section := 'wapt'
+      else
+        section := 'global';
+      FMainWaptRepo := dmpython.waptpackage.WaptRemoteRepo(name := section);
+      FMainWaptRepo.load_config_from_file(WaptConfigFileName);
+
+    finally
+      Free;
+    end;
   finally
     HideLoadWait;
   end;
   Result := FMainWaptRepo;
+end;
+
+function TDMPython.GetWaptHostRepo: Variant;
+var
+  ini:TIniFile;
+  section:String;
+begin
+  if VarIsEmpty(FWaptHostRepo) then
+  try
+    with TIniFile.Create(WaptConfigFileName) do
+    try
+      if SectionExists('wapt-host') and (ReadString('wapt-host','repourl','NONE')<>'NONE') then
+        section := 'wapt-host'
+      else
+        section := 'global';
+      FWaptHostRepo := dmpython.common.WaptHostRepo(name := section);
+      FWaptHostRepo.load_config_from_file(WaptConfigFileName);
+    finally
+      Free;
+    end;
+  finally
+  end;
+  Result := FWaptHostRepo;
 end;
 
 function TDMPython.Getcommon: Variant;
