@@ -5147,7 +5147,8 @@ class Wapt(BaseObjectClass):
         return result_filename
 
 
-    def build_upload(self,sources_directories,private_key_passwd=None,wapt_server_user=None,wapt_server_passwd=None,inc_package_release=False,target_directory=None):
+    def build_upload(self,sources_directories,private_key_passwd=None,wapt_server_user=None,wapt_server_passwd=None,inc_package_release=False,
+        target_directory=None,set_maturity=None):
         """Build a list of packages and upload the resulting packages to the main repository.
         if section of package is group or host, user specific wapt-host or wapt-group
 
@@ -5163,7 +5164,7 @@ class Wapt(BaseObjectClass):
         for source_dir in [os.path.abspath(p) for p in sources_directories]:
             if os.path.isdir(source_dir):
                 logger.info(u'Building  %s' % source_dir)
-                package_fn = self.build_package(source_dir,inc_package_release=inc_package_release,target_directory=target_directory)
+                package_fn = self.build_package(source_dir,inc_package_release=inc_package_release,target_directory=target_directory,set_maturity=set_maturity)
                 if package_fn:
                     logger.info(u'...done. Package filename %s' % (package_fn,))
                     logger.info('Signing %s with certificate %s' % (package_fn,self.personal_certificate() ))
