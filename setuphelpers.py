@@ -3684,9 +3684,10 @@ def remove_previous_version(key,max_version=None):
             else:
                     run(uninstall_cmd(uninstall['key']))
 
-def install_msi_if_needed(msi,min_version=None,killbefore=None,accept_returncodes=[0,3010],timeout=300,properties=None,get_version=None,remove_old_version=False):
+def install_msi_if_needed(msi,min_version=None,killbefore=None,accept_returncodes=[0,3010],timeout=300,properties=None,get_version=None,remove_old_version=False,
+                            force=False,uninstallkeylist=None,pidlist=None):
     """Install silently the supplied msi file, and add the uninstall key to
-    global uninstall key list
+    uninstallkeylist list
 
     uninstall key, min_version and silent flags are guessed from msi file.
 
@@ -3704,7 +3705,13 @@ def install_msi_if_needed(msi,min_version=None,killbefore=None,accept_returncode
         accept_returncodes (list of int) : return codes which are acceptable and don't raise exception
         timeout int) : maximum run time of command in seconds bfore the child is killed and error is raised.
         properties (dict) : map (key=value) of properties for specific msi installation.
-        remove_old_version (booleen) : Defined if uninstalling the old version of the uninstallkey should be started.
+        remove_old_version (bool) : If True, uninstall the old version explicitely before installing the new one.
+
+    These 3 args are set automatically when run from install() :
+
+        force            (bool) : Value is set automatically when run from install(). install even if already at the right version
+        uninstallkeylist (list) : if the installation is run, add the msi unsinstall key to this list
+        pidlist          (list) : if a process is created, add the pid to this list. (useful for external watchdogs in case of abort)
 
     Returns:
         None
@@ -3718,16 +3725,13 @@ def install_msi_if_needed(msi,min_version=None,killbefore=None,accept_returncode
           error code 1603 is no longer accepted by default.
 
     .. versionchanged:: 1.5
-          added remove_old_version for remove old version uninstallkey
+          added remove_old_version to explicitly remove old version
 
 
     """
     if not isfile(msi):
         error('msi file %s not found in package' % msi)
     key = get_msi_properties(msi)['ProductCode']
-    caller_globals = inspect.stack()[1][0].f_globals
-    WAPT = caller_globals.get('WAPT',None)
-    force = WAPT and WAPT.options.force
 
     if min_version is None:
         min_version = getproductprops(msi)['version']
@@ -3746,18 +3750,20 @@ def install_msi_if_needed(msi,min_version=None,killbefore=None,accept_returncode
         else:
             props = ''
 
-        run(r'msiexec /norestart /q /i "%s" %s' % (msi,props),accept_returncodes=accept_returncodes,timeout=timeout)
+        run(r'msiexec /norestart /q /i "%s" %s' % (msi,props),accept_returncodes=accept_returncodes,timeout=timeout,pidlist=pidlist)
         if key and not installed_softwares(uninstallkey=key):
             error('MSI %s has been installed but the uninstall key %s can not be found' % (msi,key))
         if key and min_version and need_install(key,min_version=min_version or None,force=False,get_version=get_version):
             error('MSI %s has been installed and the uninstall key %s found but version is not good' % (msi,key))
     else:
         print('MSI %s already installed. Skipping msiexec' % msi)
-    if key:
-        if 'uninstallkey' in caller_globals and not key in caller_globals['uninstallkey']:
-            caller_globals['uninstallkey'].append(key)
 
-def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbefore=[],accept_returncodes=[0,3010],timeout=300,get_version=None,remove_old_version=False):
+    # add the key to the caller uninstallkeylist
+    if key and isinstance(uninstallkeylist,list) and not key in uninstallkeylist:
+        uninstallkeylist.append(key)
+
+def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbefore=[],accept_returncodes=[0,3010],timeout=300,get_version=None,remove_old_version=False,
+                            force=False,uninstallkeylist=None,pidlist=None):
     """Install silently the supplied setup executable file, and add the uninstall key to
     global uninstallkey list if it is defined.
 
@@ -3780,7 +3786,7 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
         get_version (callable) : optional func to get installed software version from one entry retunred by installed_softwares
             if not provided, version is taken from 'version' attribute in uninstall registry
 
-        remove_old_version (booleen) : Defined if uninstalling the old version of the uninstallkey should be started.
+        remove_old_version (bool) : If True, uninstall the old version matching the provided key explicitely before installing the new one.
 
     Returns:
         None
@@ -3795,7 +3801,8 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
           error code 1603 is no longer accepted by default.
 
     .. versionchanged:: 1.5
-          added remove_old_version for remove old version uninstallkey
+          added remove_old_version to explicitly remove old version
+
     """
     if not isfile(exe):
         error('setup exe file %s not found in package' % exe)
@@ -3805,10 +3812,6 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
     if min_version is None:
         min_version = getproductprops(exe)['version']
 
-    caller_globals = inspect.stack()[1][0].f_globals
-    WAPT = caller_globals.get('WAPT',None)
-    force = WAPT and WAPT.options.force
-
     if remove_old_version :
         killalltasks(killbefore)
         remove_previous_version(key,min_version)
@@ -3816,17 +3819,17 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
     if need_install(key,min_version=min_version or None,force=force,get_version=get_version):
         if killbefore:
             killalltasks(killbefore)
-        run(r'"%s" %s' % (exe,silentflags),accept_returncodes=accept_returncodes,timeout=timeout)
+        run(r'"%s" %s' % (exe,silentflags),accept_returncodes=accept_returncodes,timeout=timeout,pidlist=pidlist)
         if key and not installed_softwares(uninstallkey=key):
             error('Setup %s has been ran but the uninstall key %s can not be found' % (exe,key))
         if key and min_version is not None and need_install(key,min_version=min_version or None,force=False,get_version=get_version):
             error('Setup %s has been and uninstall key %s found but version is not good' % (exe,key))
     else:
         print('Exe setup %s already installed. Skipping' % exe)
-    if key:
-        # will try to add key in the caller's (setup.py) uninstallkey list
-        if 'uninstallkey' in caller_globals and not key in caller_globals['uninstallkey']:
-            caller_globals['uninstallkey'].append(key)
+
+    # add the key to the caller uninstallkeylist
+    if key and isinstance(uninstallkeylist,list) and not key in uninstallkeylist:
+        uninstallkeylist.append(key)
 
 
 def installed_windows_updates(**queryfilter):

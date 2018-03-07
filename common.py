@@ -3273,16 +3273,22 @@ class Wapt(BaseObjectClass):
                     setattr(setup,'run',self.run)
                     setattr(setup,'run_notfatal',self.run_notfatal)
 
-                    # to set default killbefore with content of package impacted_process attribute
-                    def with_impacted_process(func,impacted_process):
+                    # to set some contextual default arguments
+                    def with_install_context(func,impacted_process=None,uninstallkeylist=None,force=None,pidlist=None):
                         def new_func(*args,**kwargs):
                             if impacted_process and not 'killbefore' in kwargs:
                                 kwargs['killbefore'] = impacted_process
+                            if uninstallkeylist is not None and not 'uninstallkeylist' in kwargs:
+                                kwargs['uninstallkeylist'] = uninstallkeylist
+                            if force is not None and not 'force' in kwargs:
+                                kwargs['force'] = force
+                            if pidlist is not None and not 'pidlist' in kwargs:
+                                kwargs['pidlist'] = pidlist
                             return func(*args,**kwargs)
                         return new_func
 
-                    setattr(setup,'install_msi_if_needed',with_impacted_process(setuphelpers.install_msi_if_needed,entry.impacted_process))
-                    setattr(setup,'install_exe_if_needed',with_impacted_process(setuphelpers.install_exe_if_needed,entry.impacted_process))
+                    setattr(setup,'install_msi_if_needed',with_install_context(setuphelpers.install_msi_if_needed,entry.impacted_process,setup.uninstallkey,self.options.force,self.pidlist))
+                    setattr(setup,'install_exe_if_needed',with_install_context(setuphelpers.install_exe_if_needed,entry.impacted_process,setup.uninstallkey,self.options.force,self.pidlist))
                     setattr(setup,'WAPT',self)
                     setattr(setup,'control',entry)
                     setattr(setup,'language',self.language or setuphelpers.get_language() )
@@ -5100,7 +5106,7 @@ class Wapt(BaseObjectClass):
         return pe.sign_package(private_key=key,certificate = certificate,password_callback=callback,private_key_password=private_key_password,mds = self.sign_digests)
 
     def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','setup.pyc'],
-                target_directory=None):
+                target_directory=None,set_maturity=None):
         """Build the WAPT package from a directory
 
         Call update_control from setup.py if this function is defined.
@@ -5110,6 +5116,7 @@ class Wapt(BaseObjectClass):
         Args:
             directoryname (str): source root directory of package to build
             inc_package_release (boolean): increment the version of package in control file.
+            set_maturity (str): if not None, change package maturity to this. Can be something like DEV, PROD etc..
 
         Returns:
             str: Filename of built WAPT package
@@ -5128,6 +5135,8 @@ class Wapt(BaseObjectClass):
 
         logger.info(u'Load control informations from control file')
         entry = PackageEntry(waptfile = directoryname)
+        if set_maturity is not None:
+            entry.maturity = set_maturity
 
         # increment inconditionally the package buuld nr.
         if inc_package_release:
