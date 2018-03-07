@@ -5141,7 +5141,8 @@ class Wapt(BaseObjectClass):
         # increment inconditionally the package buuld nr.
         if inc_package_release:
             entry.inc_build()
-            entry.save_control_to_wapt()
+
+        entry.save_control_to_wapt()
 
         result_filename = entry.build_package(excludes = excludes,target_directory = target_directory)
         return result_filename
