@@ -3675,7 +3675,7 @@ class Wapt(BaseObjectClass):
                             if package.min_wapt_version and Version(package.min_wapt_version)>Version(setuphelpers.__version__):
                                 logger.debug('Skipping package %s on repo %s, requires a newer Wapt agent. Minimum version: %s' % (package.asrequirement(),repo.name,package.min_wapt_version))
                                 continue
-                            if package.locale and self.locales and not list_intersection(ensure_list(package.locale),self.locales):
+                            if (package.locale and package.locale != 'all') and self.locales and not list_intersection(ensure_list(package.locale),self.locales):
                                 logger.debug('Skipping package %s on repo %s, designed for locale %s' %(package.asrequirement(),repo.name,package.locale))
                                 continue
                             if package.maturity and self.maturities and not package.maturity in self.maturities:
