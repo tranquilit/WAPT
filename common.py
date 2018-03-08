@@ -4557,7 +4557,7 @@ class Wapt(BaseObjectClass):
         for p in available:
             if p.package in installed:
                 current = installed[p.package]
-                if p.version == current.version:
+                if p == current:
                     p['installed'] = current
                     if p.package in upgradable:
                         p['status'] = 'U'

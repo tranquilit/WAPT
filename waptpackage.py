@@ -557,7 +557,10 @@ class PackageEntry(BaseObjectClass):
                 result = cmp(self.package,entry_or_version.package)
                 if result == 0:
                     v1, v2 = self.parse_version(), entry_or_version.parse_version()
-                    return compare_by_keys(v1, v2)
+                    result = compare_by_keys(v1, v2)
+                    if result == 0:
+                        result = cmp(self.maturity,entry_or_version.maturity)
+                    return result
                 else:
                     return result
             else:
