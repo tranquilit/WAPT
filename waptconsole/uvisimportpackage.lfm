@@ -253,7 +253,7 @@ object VisImportPackage: TVisImportPackage
         Tag = 3
         Text = 'Description'
         Width = 203
-        PropertyName = 'description'
+        PropertyName = '_localized_description'
       end    
       item
         MaxWidth = 400

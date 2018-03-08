@@ -608,7 +608,7 @@ end;
 procedure TVisEditPackage.ActEditSearchExecute(Sender: TObject);
 begin
   EdSearch.Modified:=False;
-  GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearch.Text, newest_only := True));
+  GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearch.Text, newest_only := True,description_locale := Language));
 end;
 
 procedure TVisEditPackage.ActBuildUploadExecute(Sender: TObject);

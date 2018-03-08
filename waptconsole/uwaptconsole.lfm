@@ -2546,7 +2546,7 @@ object VisWaptGUI: TVisWaptGUI
     object pgGroups: TTabSheet
       Caption = 'Bundles'
       ClientHeight = 532
-      ClientWidth = 1182
+      ClientWidth = 1064
       object GridGroups: TSOGrid
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Side = asrBottom
@@ -2554,7 +2554,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 492
         Top = 40
-        Width = 1182
+        Width = 1064
         OnGetText = GridGroupsGetText
         ShowAdvancedColumnsCustomize = False
         Align = alClient
@@ -2590,7 +2590,7 @@ object VisWaptGUI: TVisWaptGUI
             Tag = 3
             Text = 'Description'
             Width = 310
-            PropertyName = 'description'
+            PropertyName = '_localized_description'
           end        
           item
             MaxWidth = 400
@@ -2685,7 +2685,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 40
         Top = 0
-        Width = 1182
+        Width = 1064
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
@@ -2695,7 +2695,7 @@ object VisWaptGUI: TVisWaptGUI
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 5
         ClientHeight = 40
-        ClientWidth = 1182
+        ClientWidth = 1064
         TabOrder = 0
         object EdSearchGroups: TSearchEdit
           Left = 6
@@ -2973,12 +2973,12 @@ object VisWaptGUI: TVisWaptGUI
     object pgPrivateRepo: TTabSheet
       Caption = 'Softwares repository'
       ClientHeight = 532
-      ClientWidth = 1182
+      ClientWidth = 1064
       object GridPackages: TSOGrid
         Left = 0
         Height = 492
         Top = 40
-        Width = 1176
+        Width = 1058
         OnGetText = GridGroupsGetText
         ShowAdvancedColumnsCustomize = False
         Align = alClient
@@ -3013,7 +3013,7 @@ object VisWaptGUI: TVisWaptGUI
             Position = 3
             Text = 'Description'
             Width = 333
-            PropertyName = 'description'
+            PropertyName = '_localized_description'
           end        
           item
             MaxWidth = 400
@@ -3117,7 +3117,7 @@ object VisWaptGUI: TVisWaptGUI
         ZebraPaint = True
       end
       object Splitter3: TSplitter
-        Left = 1176
+        Left = 1058
         Height = 492
         Top = 40
         Width = 6
@@ -3128,7 +3128,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 40
         Top = 0
-        Width = 1182
+        Width = 1064
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
@@ -3138,7 +3138,7 @@ object VisWaptGUI: TVisWaptGUI
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 10
         ClientHeight = 40
-        ClientWidth = 1182
+        ClientWidth = 1064
         TabOrder = 0
         object EdSearchPackage: TSearchEdit
           Left = 6

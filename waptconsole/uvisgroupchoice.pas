@@ -49,7 +49,7 @@ var
 
 implementation
 
-uses uSCaleDPI,dmwaptpython,tisinifiles,tiscommon,VirtualTrees;
+uses uSCaleDPI,dmwaptpython,tisinifiles,tiscommon,VirtualTrees,waptcommon;
 
 {$R *.lfm}
 
@@ -68,7 +68,7 @@ begin
   if cbrestricted.Checked then
     sections := sections+',restricted';
   sections := copy(sections,2,255);
-  GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearch.Text, sections := sections, newest_only := True));
+  GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearch.Text, sections := sections, newest_only := True,description_locale := Language));
 end;
 
 procedure TvisGroupChoice.cbBaseClick(Sender: TObject);

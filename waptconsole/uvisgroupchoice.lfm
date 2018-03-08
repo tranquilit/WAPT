@@ -16,6 +16,7 @@ object visGroupChoice: TvisGroupChoice
     Height = 488
     Top = 35
     Width = 749
+    ShowAdvancedColumnsCustomize = False
     Align = alClient
     Color = clWhite
     Header.AutoSizeIndex = -1

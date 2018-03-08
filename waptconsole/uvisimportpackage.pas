@@ -291,7 +291,8 @@ begin
         my_prefix := prefix,
         newer_only := cbNewerThanMine.Checked,
         newest_only := cbNewestOnly.Checked,
-        verify_cert := verify_cert);
+        verify_cert := verify_cert,
+        description_locale := Language);
 
       GridExternalPackages.Data := PyVarToSuperObject(packages_python);
     finally

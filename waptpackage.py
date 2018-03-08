@@ -1830,10 +1830,20 @@ class WaptBaseRepo(BaseObjectClass):
             else:
                 return True
 
-    def search(self,searchwords = [],sections=[],newest_only=False,exclude_sections=[]):
+    def search(self,searchwords = [],sections=[],newest_only=False,exclude_sections=[],description_locale=None):
         """Return list of package entries
             with description or name matching all the searchwords and section in
             provided sections list
+
+        Args:
+            searchwords (list or csv) : list of word to lookup in description and package names
+            sections (list or csv) : list of package sections to use when searching
+            newest_only (bool) : returns only highest version of package
+            exclude_sections (list or csv): list of package sections to exclude when searching
+            description_locale (str): if not None, search in description using this locale
+
+        Returns:
+            list of PackageEntry with additional _localized_description added if description_locale is provided
 
         >>> r = WaptRemoteRepo(name='test',url='http://wapt.tranquil.it/wapt')
         >>> r.search('test')
@@ -1847,8 +1857,14 @@ class WaptBaseRepo(BaseObjectClass):
         result = []
         for package in self.packages:
             selected = True
+            if description_locale is not None:
+                _description = package.get_localized_description(description_locale)
+                package._localized_description = _description
+            else:
+                _description = package.description
+
             for w in words:
-                if w not in (package.description+' '+package.package).lower():
+                if w not in (_description+' '+package.package).lower():
                     selected = False
                     break
             if sections:

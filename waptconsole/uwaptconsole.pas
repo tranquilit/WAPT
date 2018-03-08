@@ -2177,6 +2177,8 @@ begin
         else
           DMPython.Language := '';
 
+        Language := DMPython.Language;
+
         inifile.WriteString('global','language',DMPython.Language);
 
         inifile.WriteBool('global', 'advanced_mode',cbDebugWindow.Checked);
@@ -3256,7 +3258,7 @@ end;
 procedure TVisWaptGUI.ActSearchGroupsExecute(Sender: TObject);
 begin
   EdSearchGroups.Modified := False;
-  GridGroups.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchGroups.Text, sections := 'group'));
+  GridGroups.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchGroups.Text, sections := 'group',description_locale := Language));
 end;
 
 procedure TVisWaptGUI.ActTriggerHostUpdateExecute(Sender: TObject);
@@ -3492,7 +3494,7 @@ end;
 procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
 begin
   EdSearchPackage.Modified:=False;
-  GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchPackage.Text, exclude_sections := 'host,group,unit', newest_only := cbNewestOnly.Checked));
+  GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchPackage.Text, exclude_sections := 'host,group,unit', newest_only := cbNewestOnly.Checked, description_locale := Language));
 end;
 
 procedure TVisWaptGUI.ActPackagesUpdateExecute(Sender: TObject);

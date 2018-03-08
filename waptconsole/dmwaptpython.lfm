@@ -13,14 +13,14 @@ object DMPython: TDMPython
     RegVersion = '2.5'
     UseLastKnownVersion = False
     IO = PythonOutput
-    left = 64
-    top = 32
+    left = 32
+    top = 16
   end
   object PythonOutput: TPythonGUIInputOutput
     UnicodeIO = False
     RawOutput = False
-    left = 64
-    top = 88
+    left = 32
+    top = 72
   end
   object PythonModuleDMWaptPython: TPythonModule
     Engine = PythonEng
@@ -49,6 +49,6 @@ object DMPython: TDMPython
     ModuleName = 'waptconsole'
     Errors = <>
     left = 144
-    top = 32
+    top = 16
   end
 end
