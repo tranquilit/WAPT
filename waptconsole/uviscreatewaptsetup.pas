@@ -39,12 +39,15 @@ type
     PopupMenu1: TPopupMenu;
     procedure ActGetServerCertificateExecute(Sender: TObject);
     procedure CBVerifyCertClick(Sender: TObject);
+    procedure fnPublicCertChange(Sender: TObject);
     procedure fnPublicCertEditingDone(Sender: TObject);
+    procedure fnPublicCertExit(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     { private declarations }
+    ActiveCertBundle: String;
   public
     { public declarations }
   end;
@@ -102,10 +105,10 @@ var
   CertIter, Cert,CertList: Variant;
   SOCert,SOCerts: ISuperObject;
   att:String;
-  atts: Array[0..6] of String=('cn','issuer_cn','subject_dn','issuer_dn','fingerprint','is_ca','is_code_signing');
+  atts: Array[0..7] of String=('cn','issuer_cn','subject_dn','issuer_dn','fingerprint','is_ca','is_code_signing','serial_number');
 
 begin
-  if FileExists(fnPublicCert.FileName) then
+  if FileExists(fnPublicCert.FileName) and ((ActiveCertBundle <> fnPublicCert.FileName) or VarIsEmpty(GridCertificates.Data))  then
   begin
     edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := fnPublicCert.FileName).cn);
     //edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[fnPublicCert.FileName]));
@@ -124,8 +127,13 @@ begin
         on EPyStopIteration do Break;
       end;
     GridCertificates.Data := SOCerts;
+    ActiveCertBundle := fnPublicCert.FileName;
   end;
+end;
 
+procedure TVisCreateWaptSetup.fnPublicCertExit(Sender: TObject);
+begin
+  fnPublicCertEditingDone(Sender);
 end;
 
 procedure TVisCreateWaptSetup.CBVerifyCertClick(Sender: TObject);
@@ -137,6 +145,11 @@ begin
       EdServerCertificate.Text:=CARoot();
 
   EdServerCertificate.Enabled:=CBVerifyCert.Checked;
+end;
+
+procedure TVisCreateWaptSetup.fnPublicCertChange(Sender: TObject);
+begin
+  fnPublicCertEditingDone(Sender);
 end;
 
 procedure TVisCreateWaptSetup.ActGetServerCertificateExecute(Sender: TObject);
