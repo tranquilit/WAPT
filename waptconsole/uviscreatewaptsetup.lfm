@@ -1,11 +1,11 @@
 object VisCreateWaptSetup: TVisCreateWaptSetup
-  Left = 412
-  Height = 305
+  Left = 409
+  Height = 494
   Top = 218
-  Width = 510
+  Width = 513
   Caption = 'Create WAPT agent'
-  ClientHeight = 305
-  ClientWidth = 510
+  ClientHeight = 494
+  ClientWidth = 513
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
@@ -43,15 +43,15 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Left = 262
     Height = 21
     Hint = 'E.g. : https://wapt.mydomain.lan/wapt'
-    Top = 71
+    Top = 252
     Width = 216
-    TabOrder = 2
+    TabOrder = 3
   end
   object Label2: TLabel
     Left = 8
     Height = 13
     Hint = 'Your WAPT repository address (http://wapt/wapt).'
-    Top = 77
+    Top = 258
     Width = 250
     Alignment = taRightJustify
     AutoSize = False
@@ -64,15 +64,15 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Left = 262
     Height = 21
     Hint = 'E.g. : Tranquil IT Systems.'
-    Top = 216
+    Top = 397
     Width = 216
-    TabOrder = 7
+    TabOrder = 9
   end
   object Label3: TLabel
     Left = 8
     Height = 13
     Hint = 'Your company name.'
-    Top = 219
+    Top = 400
     Width = 250
     Alignment = taRightJustify
     AutoSize = False
@@ -82,15 +82,15 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object Panel1: TPanel
     Left = 0
     Height = 27
-    Top = 278
-    Width = 510
+    Top = 467
+    Width = 513
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 27
-    ClientWidth = 510
-    TabOrder = 8
+    ClientWidth = 513
+    TabOrder = 11
     object BitBtn1: TBitBtn
-      Left = 349
+      Left = 352
       Height = 23
       Top = 2
       Width = 75
@@ -102,7 +102,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TabOrder = 0
     end
     object BitBtn2: TBitBtn
-      Left = 429
+      Left = 432
       Height = 23
       Top = 2
       Width = 75
@@ -118,7 +118,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Left = 8
     Height = 13
     Hint = 'Where waptagent.exe will be saved.'
-    Top = 48
+    Top = 229
     Width = 248
     Alignment = taRightJustify
     AutoSize = False
@@ -131,29 +131,29 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object fnWaptDirectory: TDirectoryEdit
     Left = 262
     Height = 21
-    Top = 43
+    Top = 224
     Width = 216
     ShowHidden = False
     ButtonWidth = 23
     NumGlyphs = 1
     Flat = True
     MaxLength = 0
-    TabOrder = 1
+    TabOrder = 2
     Visible = False
   end
   object edWaptServerUrl: TEdit
     Left = 262
     Height = 21
     Hint = 'E.g. : https://wapt.mydomain.lan'
-    Top = 99
+    Top = 280
     Width = 216
-    TabOrder = 3
+    TabOrder = 4
   end
   object Label5: TLabel
     Left = 8
     Height = 13
     Hint = 'Your WAPT server address (http://wapt:8080).'
-    Top = 104
+    Top = 285
     Width = 247
     Alignment = taRightJustify
     AutoSize = False
@@ -165,7 +165,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object Label6: TLabel
     Left = 8
     Height = 13
-    Top = 149
+    Top = 330
     Width = 250
     Alignment = taRightJustify
     AutoSize = False
@@ -176,7 +176,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Left = 262
     Height = 21
     Hint = 'E.g. : c:\wapt\ssl\server\tranquilit.crt  Path to trusted certificates bundle'
-    Top = 142
+    Top = 323
     Width = 216
     Filter = 'CA Certificates bundles PEM|*.crt|Tous les fichiers|*.*'
     FilterIndex = 0
@@ -186,49 +186,120 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Flat = True
     MaxLength = 0
     PopupMenu = PopupMenu1
-    TabOrder = 5
+    TabOrder = 6
   end
   object CBVerifyCert: TCheckBox
     Left = 262
     Height = 17
-    Top = 123
+    Top = 304
     Width = 161
     Caption = 'Verify https server certificate'
     OnClick = CBVerifyCertClick
     PopupMenu = PopupMenu1
-    TabOrder = 4
+    TabOrder = 5
   end
   object CBUseKerberos: TCheckBox
     Left = 262
     Height = 17
     Hint = 'When first registering to waptserver, host will try to authenticate using their kerberos account'
-    Top = 170
+    Top = 351
     Width = 186
     Caption = 'Use Kerberos for initial registration'
-    TabOrder = 6
+    TabOrder = 7
   end
   object CBCheckCertificatesValidity: TCheckBox
     Left = 262
     Height = 17
     Hint = 'Check that certificate dates are valid and  issuer is a know one.'
-    Top = 190
+    Top = 371
     Width = 190
     Caption = 'Check packages certificates validity'
-    TabOrder = 9
+    TabOrder = 8
     Visible = False
   end
   object CBDualSign: TCheckBox
     Left = 262
     Height = 17
     Hint = 'Check that certificate dates are valid and  issuer is a know one.'
-    Top = 248
+    Top = 429
     Width = 240
     Caption = 'Sign waptupgrade with both sha256 and sha1'
     TabOrder = 10
   end
+  object GridCertificates: TSOGrid
+    Left = 10
+    Height = 168
+    Top = 48
+    Width = 492
+    ShowAdvancedColumnsCustomize = False
+    BorderSpacing.Top = 2
+    Color = clWhite
+    Header.AutoSizeIndex = -1
+    Header.Columns = <    
+      item
+        Position = 0
+        Tag = 15
+        Text = 'Certificate Name'
+        Width = 185
+        PropertyName = 'cn'
+      end    
+      item
+        Position = 1
+        Tag = 16
+        Text = 'Issuer'
+        Width = 147
+        PropertyName = 'issuer_cn'
+      end    
+      item
+        Position = 2
+        Tag = 17
+        Text = 'Fingerprint (sha256)'
+        Width = 178
+        PropertyName = 'fingerprint'
+      end    
+      item
+        Position = 3
+        Tag = 18
+        Text = 'Code signing'
+        Width = 74
+        PropertyName = 'is_code_signing'
+      end    
+      item
+        Position = 4
+        Tag = 19
+        Text = 'CA'
+        Width = 58
+        PropertyName = 'is_ca'
+      end    
+      item
+        Position = 5
+        Tag = 20
+        Text = 'subject_dn'
+        Width = 13
+        PropertyName = 'subject_dn'
+      end    
+      item
+        Position = 6
+        Text = 'issuer_dn'
+        PropertyName = 'issuer_dn'
+      end>
+    Header.DefaultHeight = 18
+    Header.Height = 18
+    Header.MinHeight = 18
+    Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+    Header.SortColumn = 0
+    Header.Style = hsFlatButtons
+    TabOrder = 1
+    TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+    TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+    TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+    TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+    WantTabs = True
+    ZebraPaint = True
+  end
   object ActionList1: TActionList
     left = 16
-    top = 208
+    top = 389
     object ActGetServerCertificate: TAction
       Caption = 'Get Server https Certificate'
       OnExecute = ActGetServerCertificateExecute
@@ -236,7 +307,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   end
   object PopupMenu1: TPopupMenu
     left = 96
-    top = 208
+    top = 389
     object MenuItem1: TMenuItem
       Action = ActGetServerCertificate
     end

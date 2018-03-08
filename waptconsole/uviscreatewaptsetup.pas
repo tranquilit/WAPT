@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  EditBtn, ExtCtrls, Buttons, ActnList, DefaultTranslator, Menus;
+  EditBtn, ExtCtrls, Buttons, ActnList, DefaultTranslator, Menus, sogrid;
 
 type
 
@@ -27,6 +27,7 @@ type
     edRepoUrl: TEdit;
     edOrgName: TEdit;
     fnPublicCert: TFileNameEdit;
+    GridCertificates: TSOGrid;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -57,7 +58,7 @@ implementation
 
 uses
   Variants,dmwaptpython,IdUri,IdSSLOpenSSLHeaders,uWaptConsoleRes,uWaptRes,UScaleDPI, tiscommon,
-  tisstrings,waptcommon,VarPyth,superobject;
+  tisstrings,waptcommon,VarPyth,superobject,PythonEngine;
 
 { TVisCreateWaptSetup }
 procedure TVisCreateWaptSetup.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -97,10 +98,33 @@ begin
 end;
 
 procedure TVisCreateWaptSetup.fnPublicCertEditingDone(Sender: TObject);
+var
+  CertIter, Cert,CertList: Variant;
+  SOCert,SOCerts: ISuperObject;
+  att:String;
+  atts: Array[0..6] of String=('cn','issuer_cn','subject_dn','issuer_dn','fingerprint','is_ca','is_code_signing');
+
 begin
   if FileExists(fnPublicCert.FileName) then
+  begin
     edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := fnPublicCert.FileName).cn);
     //edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[fnPublicCert.FileName]));
+    CertList := dmpython.waptcrypto.SSLCABundle(cert_pattern_or_dir := fnPublicCert.FileName).certificates('--noarg--');
+    SOCerts := TSuperObject.Create(stArray);
+    CertIter := iter(CertList);
+    While VarIsPythonIterator(CertIter)  do
+      try
+        Cert := CertIter.next('--noarg--');
+        SOCert := TSuperObject.Create(stObject) ; // PyVarToSuperObject(Cert.as_dict('--noarg--'));
+        for att in atts do
+          SOCert[att] := PyVarToSuperObject(Cert.__getattribute__(att));
+        SOCert.S['x509_pem'] := VarPythonAsString(Cert.as_pem('--noarg--'));
+        SOCerts.AsArray.Add(SOCert);
+      except
+        on EPyStopIteration do Break;
+      end;
+    GridCertificates.Data := SOCerts;
+  end;
 
 end;
 
@@ -153,9 +177,9 @@ end;
 
 procedure TVisCreateWaptSetup.FormShow(Sender: TObject);
 begin
-  if edOrgName.Text='' then
-    if FileExists(fnPublicCert.FileName) then
-      edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := fnPublicCert.FileName).cn);
+  if FileExists(fnPublicCert.FileName) then
+    fnPublicCertEditingDone(Sender);
+      //edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := fnPublicCert.FileName).cn);
       //edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[fnPublicCert.FileName]));
 
   CBVerifyCert.Checked:=(EdServerCertificate.Text<>'') and (EdServerCertificate.Text<>'0');
