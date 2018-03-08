@@ -15,7 +15,7 @@ function DoScaleY(Size: Integer; FromDPI: Integer): integer;
 
 implementation
 
-uses Classes, Graphics, ExtCtrls, sogrid,vte_json;
+uses Classes, Graphics, ExtCtrls, sogrid,vte_json,vte_dbtreeex,vte_dbtree;
 
 procedure HighDPI(FromDPI: Integer);
 var
@@ -168,6 +168,26 @@ begin
       end;
     end;
   end;
+
+  if Control is TVirtualDBTreeEx then
+  begin
+    With Control as TVirtualDBTreeEx do
+    begin
+      DefaultNodeHeight := ScaleY(DefaultNodeHeight,FromDPI);
+      Header.MaxHeight:=ScaleY(Header.MaxHeight,FromDPI);;
+      Header.DefaultHeight:=ScaleY(Header.DefaultHeight,FromDPI);;
+      Header.Height:=ScaleY(Header.Height,FromDPI);;
+      Header.MinHeight:=ScaleY(Header.MinHeight,FromDPI);;
+      Font.Height := 0;
+      for i := 0 to header.Columns.Count-1 do
+      begin
+        header.Columns[i].MaxWidth:=ScaleX(header.Columns[i].MaxWidth,FromDPI);
+        header.Columns[i].Width:=ScaleX(header.Columns[i].Width,FromDPI);
+        header.Columns[i].MinWidth:=ScaleX(header.Columns[i].MinWidth,FromDPI);
+      end;
+    end;
+  end;
+
 
   if Control is TVirtualJSONTreeView then
   begin
