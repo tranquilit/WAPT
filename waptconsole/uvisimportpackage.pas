@@ -436,12 +436,15 @@ end;
 
 procedure TVisImportPackage.ActPackageEditExecute(Sender: TObject);
 var
+  http_proxy:String;
   SourceDir,target,DevDirectory: string;
   package,FileName, FileNames, listPackages: ISuperObject;
 
   ListPackagesVar: Variant;
 
 begin
+  http_proxy:=Waptrepo.HttpProxy;
+
   if DefaultPackagePrefix='' then
   begin
     ShowMessage(rsWaptPackagePrefixMissing);
@@ -478,7 +481,7 @@ begin
           if not FileExists(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
           begin
             IdWget(Waptrepo.RepoURL + '/' + Filename.AsArray[0].AsString,
-              target, ProgressForm, @updateprogress, HttpProxy);
+              target, ProgressForm, @updateprogress, http_proxy);
             if (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
               raise Exception.CreateFmt(rsDownloadCurrupted,[Filename.AsArray[0].AsString]);
           end;
