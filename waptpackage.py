@@ -492,6 +492,9 @@ class PackageEntry(BaseObjectClass):
                     return desc
                 else:
                     return self.description
+            else:
+                return self.description
+
 
     def __setitem__(self,name,value):
         """attribute which are not member of all_attributes list are considered _calculated

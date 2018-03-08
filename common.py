@@ -2324,7 +2324,7 @@ class Wapt(BaseObjectClass):
         self.upload_cmd_host = self.upload_cmd
         self.after_upload = None
         self.proxies = None
-        self.language = None
+        self.language = setuphelpers.get_language()
         self.locales = [setuphelpers.get_language()]
         self.maturities = ['PROD']
 
@@ -3291,7 +3291,7 @@ class Wapt(BaseObjectClass):
                     setattr(setup,'install_exe_if_needed',with_install_context(setuphelpers.install_exe_if_needed,entry.impacted_process,setup.uninstallkey,self.options.force,self.pidlist))
                     setattr(setup,'WAPT',self)
                     setattr(setup,'control',entry)
-                    setattr(setup,'language',self.language or setuphelpers.get_language() )
+                    setattr(setup,'language',self.language)
 
                     setattr(setup,'user',self.user)
                     setattr(setup,'usergroups',self.usergroups)
@@ -3458,7 +3458,7 @@ class Wapt(BaseObjectClass):
                 setattr(setup,'run_notfatal',self.run_notfatal)
                 setattr(setup,'WAPT',self)
                 setattr(setup,'control',entry)
-                setattr(setup,'language',self.language or setuphelpers.get_language() )
+                setattr(setup,'language',self.language)
                 setattr(setup,'user',self.user)
                 setattr(setup,'usergroups',self.usergroups)
 
@@ -3698,7 +3698,7 @@ class Wapt(BaseObjectClass):
                                 continue
 
                         try:
-                            self.waptdb.add_package_entry(package)
+                            self.waptdb.add_package_entry(package,self.language)
                         except Exception as e:
                             logger.critical('Invalid signature for package control entry %s on repo %s : discarding : %s' % (package.asrequirement(),repo.name,e) )
 
@@ -3746,6 +3746,7 @@ class Wapt(BaseObjectClass):
             packages_blacklist=self.packages_blacklist,
             packages_whitelist=self.packages_whitelist,
             host_locales=self.locales,
+            host_language=self.language,
             host_maturities=self.maturities,
         )
         return hashlib.sha256(jsondump(host_capa)).hexdigest()
@@ -5250,7 +5251,7 @@ class Wapt(BaseObjectClass):
                             setattr(setup,'usergroups',self.usergroups)
                             setattr(setup,'control',package_entry)
                             setattr(setup,'WAPT',self)
-                            setattr(setup,'language',self.language or setuphelpers.get_language() )
+                            setattr(setup,'language',self.language)
 
                             # get definitions of required parameters from setup module
                             if hasattr(setup,'required_params'):
@@ -5344,7 +5345,7 @@ class Wapt(BaseObjectClass):
                     setattr(setup,'usergroups',self.usergroups)
                     setattr(setup,'control',entry)
                     setattr(setup,'WAPT',self)
-                    setattr(setup,'language',self.language or setuphelpers.get_language() )
+                    setattr(setup,'language',self.language)
 
                     # get value of required parameters if not already supplied
                     for p in required_params:
