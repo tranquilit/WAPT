@@ -459,9 +459,9 @@ def create_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=
         str: Path to the shortcut
 
     >>> create_programs_menu_shortcut('Dev-TranquilIT', target='http://dev.tranquil.it')
-    u'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Dev-TranquilIT.url'
+    u'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Dev-TranquilIT.url'
     >>> create_programs_menu_shortcut('Console WAPT', target=makepath('c:/wapt','waptconsole.exe'))
-    u'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Console WAPT.lnk'
+    u'C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Console WAPT.lnk'
 
     """
     ext = os.path.splitext(label)[1].lower()
@@ -498,9 +498,9 @@ def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', 
         str: Path to the shortcut
 
     >>> create_user_programs_menu_shortcut('Doc-TranquilIT', target='https://doc.wapt.fr')
-    u'C:\\Users\\htouvet\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Doc-TranquilIT.url'
+    u'C:\\Users\\htouvet\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Doc-TranquilIT.url'
     >>> create_user_programs_menu_shortcut('Console WAPT', target=makepath('c:/wapt','waptconsole.exe'))
-    u'C:\\Users\\htouvet\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Console WAPT.lnk'
+    u'C:\\Users\\htouvet\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Console WAPT.lnk'
     """
     ext = os.path.splitext(label)[1].lower()
     if not ext in ('.lnk','.url'):
