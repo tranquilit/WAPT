@@ -442,7 +442,7 @@ def create_user_desktop_shortcut(label, target='',arguments='', wDir='', icon=''
     return sc_path
 
 
-def create_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=''):
+def create_programs_menu_shortcut(label, target='', arguments='', wDir='', icon='',folder = None):
     r"""Create a program menu shortcut link for all users
 
     if label's extension is url, a http shortcut is created, else creates a file system shortcut.
@@ -453,6 +453,8 @@ def create_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=
         arguments : argument to pass to application
         wDir : working directory
         icon : path to ico file
+        folder (str) : folder of Programs Menu where to put the shortcut.
+
     Returns:
         str: Path to the shortcut
 
@@ -468,7 +470,10 @@ def create_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=
             label += '.url'
         else:
             label += '.lnk'
-    sc = os.path.join(start_menu(1),label)
+    if folder is None:
+        sc = os.path.join(winshell.programs(1),label)
+    else:
+        sc = os.path.join(winshell.programs(1),folder,label)
     ensure_dir(sc)
     if os.path.isfile(sc):
         os.remove(sc)
@@ -476,7 +481,7 @@ def create_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=
     return sc
 
 
-def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=''):
+def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', icon='', folder = None):
     r"""Create a shortcut in the start menu of the current user
 
        If label extension is url, create a Http shortcut, else a file system shortcut.
@@ -487,6 +492,8 @@ def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', 
         arguments : argument to pass to application
         wDir : working directory
         icon : path to ico file
+        folder (str) : folder of User's Programs Menu where to put the shortcut.
+
     Returns:
         str: Path to the shortcut
 
@@ -501,7 +508,10 @@ def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', 
             label += '.url'
         else:
             label += '.lnk'
-    sc = os.path.join(start_menu(0),label)
+    if folder is None:
+        sc = os.path.join(winshell.programs(0),label)
+    else:
+        sc = os.path.join(winshell.programs(0),folder,label)
     ensure_dir(sc)
     if os.path.isfile(sc):
         os.remove(sc)
@@ -509,15 +519,21 @@ def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', 
     return sc
 
 
-def remove_programs_menu_shortcut(label):
+def remove_programs_menu_shortcut(label,folder=None):
     """Remove a shortcut from the start menu of all users
 
     Args:
         label (str): label of shortcut with extension lnk or url
+        folder (str): subfolder of Programs menu where the shortcut resides.
     """
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
-    remove_file(makepath(start_menu(common=1),label))
+    if folder is None:
+        remove_file(makepath(winshell.programs(common=1),label))
+    else:
+        remove_file(makepath(winshell.programs(common=1),folder,label))
+
+
 
 def remove_user_programs_menu_shortcut(label):
     """Remove a shortcut from the start menu of current user
@@ -527,7 +543,10 @@ def remove_user_programs_menu_shortcut(label):
     """
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
-    remove_file(makepath(start_menu(common=0),label))
+    if folder is None:
+        remove_file(makepath(winshell.programs(common=0),label))
+    else:
+        remove_file(makepath(winshell.programs(common=0),folder,label))
 
 def remove_desktop_shortcut(label):
     """Remove a shortcut from the desktop of all users
