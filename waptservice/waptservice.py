@@ -374,7 +374,7 @@ def status():
                                  (select GROUP_CONCAT(p.version,"|") from wapt_package p where p.package=s.package) as repo_versions,
                                  explicit_by as install_par
                                  from wapt_localstatus s
-                                 left join wapt_package r on r.package=s.package and r.version=s.version
+                                 left join wapt_package r on r.package=s.package and r.version=s.version and r.architecture=s.architecture and r.maturity=s.maturity
                                  order by s.package'''
             cur = con.cursor()
             cur.execute(query)
@@ -436,7 +436,7 @@ def all_packages(page=1):
                     s.version as install_version,s.install_status,s.install_date,s.explicit_by
                 from wapt_package r
                 left join wapt_localstatus s on s.package=r.package
-                where r.section<>"host"
+                where not r.section in ("host","unit")
                 order by r.package,r.version'''
             cur = con.cursor()
             cur.execute(query)
