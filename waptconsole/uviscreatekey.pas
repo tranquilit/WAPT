@@ -183,8 +183,8 @@ begin
       EdKeyPassword.Text,
       CBCodeSigning.Checked,
       CBIsCA.Checked,
-      EdCACertificate.Text,
-      EdCAKeyFilename.Text);
+      utf8Decode(EdCACertificate.Text),
+      utf8Decode(EdCAKeyFilename.Text));
 
     FPrivateKeyFilename:=pemfn;
 

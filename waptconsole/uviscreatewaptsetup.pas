@@ -48,9 +48,9 @@ type
     procedure FormShow(Sender: TObject);
   private
     { private declarations }
-    ActiveCertBundle: UnicodeString;
   public
     { public declarations }
+    ActiveCertBundle: UnicodeString;
   end;
 
 var
@@ -72,7 +72,7 @@ begin
   CanClose:= True;
   if (ModalResult=mrOk) then
   begin
-    if fnPublicCert.FileName='' then
+    if ActiveCertBundle = '' then
     begin
       showMessage(rsInputPubKeyPath);
       CanClose:=False;
@@ -112,7 +112,7 @@ var
 
 begin
   NewCertFilename:=UTF8Decode(fnPublicCert.FileName);
-  if FileExists(NewCertFilename) and ((ActiveCertBundle <> NewCertFilename) or VarIsEmpty(GridCertificates.Data))  then
+  if FileExists(NewCertFilename) and ((ActiveCertBundle <> NewCertFilename) or (GridCertificates.Data = Nil) )  then
   try
 
     edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := NewCertFilename).cn);
@@ -137,7 +137,7 @@ begin
         on EPyStopIteration do Break;
       end;
     GridCertificates.Data := SOCerts;
-    ActiveCertBundle := fnPublicCert.FileName;
+    ActiveCertBundle := UTF8Decode(fnPublicCert.FileName);
 
   finally
   end;
@@ -202,7 +202,8 @@ end;
 
 procedure TVisCreateWaptSetup.FormShow(Sender: TObject);
 begin
-  if FileExists(fnPublicCert.FileName) then
+  fnPublicCert.FileName := UTF8Encode(ActiveCertBundle);
+  if FileExists(ActiveCertBundle) then
     fnPublicCertEditingDone(Sender);
       //edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := fnPublicCert.FileName).cn);
       //edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[fnPublicCert.FileName]));

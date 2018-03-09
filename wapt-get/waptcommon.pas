@@ -1761,9 +1761,11 @@ function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8
           default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;WaptEdition:Utf8String='waptagent';
           VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True; EnterpriseEdition:Boolean=False):Utf8String;
 var
-  iss_template,custom_iss,source,target : utf8String;
+  iss_template,custom_iss : utf8String;
   iss,new_iss,line : ISuperObject;
   wapt_base_dir,inno_fn,p12keypath,signtool: Utf8String;
+  // for windows copyfilew
+  source,target: WideString;
 
   function startswith(st:ISuperObject;subst:Utf8String):Boolean;
   begin
@@ -1823,10 +1825,10 @@ begin
             new_iss.AsArray.Add(line);
     end;
 
-    source := default_public_cert;
-    target := ExpandFileName(AppendPathDelim(ExtractFileDir(iss_template))+ '..\ssl\' + ExtractFileName(source));
-    if not FileExistsUTF8(target) then
-      if not CopyFile(PChar(source),PChar(target),True) then
+    source := UTF8Decode(default_public_cert);
+    target := UTF8Decode(ExpandFileName(AppendPathDelim(ExtractFileDir(iss_template))+ '..\ssl\' + ExtractFileName(default_public_cert)));
+    if not FileExists(target) then
+      if not CopyFileW(PWideChar(source),PWideChar(target),True) then
         raise Exception.CreateFmt(rsCertificateCopyFailure,[source,target]);
     StringToFile(custom_iss,SOUtils.Join(#13#10,new_iss));
 
