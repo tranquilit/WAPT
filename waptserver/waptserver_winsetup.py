@@ -277,7 +277,7 @@ def install_postgresql_service():
 
     # need to have specific write acls for current user otherwise initdb fails...
     setuphelpers.run(r'icacls %s /t /grant  "%s":(OI)(CI)(M)' % (pg_data_dir,GetUserName()))
-    setuphelpers.run(r'%s\waptserver\pgsql\bin\initdb -U postgres -E=UTF8 -D %s\waptserver\pgsql_data' % (wapt_root_dir,wapt_root_dir))
+    setuphelpers.run(r'"%s\waptserver\pgsql\bin\initdb" -U postgres -E=UTF8 -D "%s\waptserver\pgsql_data"' % (wapt_root_dir,wapt_root_dir))
 
     setuphelpers.run(r'icacls %s /t /grant  "*S-1-5-20":(OI)(CI)(M)' % pg_data_dir)
 
@@ -288,7 +288,7 @@ def install_postgresql_service():
             setuphelpers.service_stop('waptPostgresql')
         setuphelpers.service_delete('waptPostgresql')
 
-    cmd = r'"%s\bin\pg_ctl" register -N WAPTPostgresql -U "nt authority\networkservice" -S auto -D %s  ' % (pgsql_root_dir ,os.path.join(wapt_root_dir,'waptserver','pgsql_data'))
+    cmd = r'"%s\bin\pg_ctl" register -N WAPTPostgresql -U "nt authority\networkservice" -S auto -D "%s"  ' % (pgsql_root_dir ,os.path.join(wapt_root_dir,'waptserver','pgsql_data'))
     print cmd
     run(cmd)
     setuphelpers.run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % log_directory)
@@ -323,7 +323,7 @@ def install_postgresql_service():
     cur.close()
     conn.close()
 
-    run(r'%s\waptpython.exe %s\waptserver\waptserver_model.py init_db' % (wapt_root_dir, wapt_root_dir))
+    run(r'"%s\waptpython.exe" "%s\waptserver\waptserver_model.py" init_db' % (wapt_root_dir, wapt_root_dir))
     time.sleep(1)
     setuphelpers.service_stop('waptpostgresql')
 
