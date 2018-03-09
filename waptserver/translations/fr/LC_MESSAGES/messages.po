@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-01-09 10:34+0100\n"
+"POT-Creation-Date: 2018-03-09 16:45+0100\n"
 "PO-Revision-Date: 2017-01-12 17:27+0100\n"
 "Last-Translator: \n"
 "Language: fr\n"
@@ -16,70 +16,70 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.1\n"
+"Generated-By: Babel 2.5.3\n"
 
-#: waptserver.py:266
+#: waptserver.py:277
 msgid "You have to login with proper credentials"
 msgstr "Vous devez vous connecter avec les bons identifiants"
 
-#: waptserver.py:601 waptserver.py:838
+#: waptserver.py:622 waptserver.py:860
 msgid "Problem during upload"
 msgstr "Problème au moment de l'upload"
 
-#: waptserver.py:611
+#: waptserver.py:632
 msgid "Not a valid wapt package"
 msgstr "Ce n'est pas un paquet WAPT valide"
 
-#: waptserver.py:614
+#: waptserver.py:635
 msgid "Wrong file type"
 msgstr "Mauvais type de fichier"
 
-#: waptserver.py:616 waptserver.py:862
+#: waptserver.py:637 waptserver.py:868
 msgid "Unsupported method"
 msgstr "Méthode non supportée"
 
-#: waptserver.py:623 waptserver.py:867
+#: waptserver.py:644 waptserver.py:873
 msgid "unexpected: {}"
 msgstr "inattendu : {}"
 
-#: waptserver.py:734
+#: waptserver.py:757
 msgid "{} Packages uploaded, {} errors.{}"
 msgstr ""
 
-#: waptserver.py:814
+#: waptserver.py:838
 msgid "{} Host packages uploaded, {} errors"
 msgstr ""
 
-#: waptserver.py:841
+#: waptserver.py:863
 msgid "{} uploaded"
 msgstr "{} uploadé"
 
-#: waptserver.py:860
+#: waptserver.py:866
 msgid "Wrong file name (version conflict?)"
 msgstr "Mauvais nom de fichier (conflit de version ?)"
 
-#: waptserver.py:1098
+#: waptserver.py:1104
 msgid "WAPT Server running"
 msgstr "Serveur WAPT lancé"
 
-#: waptserver.py:1122
+#: waptserver.py:1128
 #, python-format
 msgid "Hosts connection reset launched for %s host(s)"
 msgstr ""
 
-#: waptserver.py:1124
+#: waptserver.py:1130
 msgid "Hosts connection reset launched for all hosts"
 msgstr ""
 
-#: waptserver.py:1279
+#: waptserver.py:1285
 msgid "Sending magic wakeonlan packets to {} for machine {}"
 msgstr "Envoi du WakeOnlan vers {} pour la machine {}"
 
-#: waptserver.py:1293
+#: waptserver.py:1299
 msgid "Wakeonlan packets sent to {} machines."
 msgstr ""
 
-#: waptserver.py:1826
+#: waptserver.py:1863
 msgid "Anomnymous usage statistics"
 msgstr "Statistiques anonymes"
 
@@ -131,7 +131,7 @@ msgid ""
 msgstr ""
 "L'administration du serveur WAPT se fait à travers la console WAPT qui "
 "s'installe sur un poste Windows.Lors de l'installation du serveur WAPT "
-"sous Windows, la console est installée par défaut et peut être trouvédans"
+"sous Windows, la console est installée par défaut et peut être trouvé dans"
 " le menu 'Démarrer'."
 
 #: templates/index.html:87
@@ -166,7 +166,7 @@ msgstr ""
 
 #: templates/index.html:100
 msgid "WAPT Server version:"
-msgstr "Version WAPT Server :"
+msgstr "Version WAPT Server&nbsp;:"
 
 #: templates/index.html:101
 msgid "WAPT Agent version:"
@@ -178,15 +178,15 @@ msgstr "version WAPT Setup :"
 
 #: templates/index.html:103
 msgid "WAPT Deploy version:"
-msgstr "Version WAPT Deploy :"
+msgstr "Version WAPT Deploy&nbsp;:"
 
 #: templates/index.html:104
 msgid "DB status:"
-msgstr "Statut de la base:"
+msgstr "Statut de la base&nbsp;:"
 
 #: templates/index.html:105
 msgid "Disk space:"
-msgstr "Espace disque:"
+msgstr "Espace disque&nbsp;:"
 
 #: templates/index.html:110
 msgid "For creation of the Wapt agent"
@@ -212,20 +212,24 @@ msgstr "Actualité"
 msgid "Team"
 msgstr "Nos équipes"
 
-#: templates/index.html:147 templates/index.html:152
-msgid "Tranquil IT Systems"
-msgstr "Tranquil IT Systems"
+#: templates/index.html:147
+msgid "Tranquil IT"
+msgstr "Tranquil IT"
 
 #: templates/index.html:148
 msgid ""
+"We are a team of passionate people whose life purpose is to be useful to "
+"others. We make our products with the aim to resolving your IT problems "
+"and optimizing your daily work."
+msgstr ""
 "Nous sommes une équipe de personnes passionnées dont le but est "
 "d'améliorer la vie de chacun. Nous élaborons des produits très "
 "performants pour résoudre vos problèmes. Nos produits sont créés pour "
 "optimiser les performances des PME."
-msgstr ""
-"We are a team of passionate people whose life purpose is to be useful to "
-"others. We make our products with the aim to resolving your IT problems "
-"and optimizing your daily work."
+
+#: templates/index.html:152
+msgid "Tranquil IT Systems"
+msgstr "Tranquil IT Systems"
 
 #~ msgid "Could not connect to database: {}."
 #~ msgstr "Impossible de se connecter à la base de données : {}."
