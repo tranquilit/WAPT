@@ -1,0 +1,205 @@
+description       : Default
+description_aa    : Afar
+description_ab    : Abkhazian
+description_af    : Afrikaans
+description_ak    : Akan
+description_sq    : Albanian
+description_am    : Amharic
+description_ar    : Arabic
+description_an    : Aragonese
+description_hy    : Armenian
+description_as    : Assamese
+description_av    : Avaric
+description_ae    : Avestan
+description_ay    : Aymara
+description_az    : Azerbaijani
+description_ba    : Bashkir
+description_bm    : Bambara
+description_eu    : Basque
+description_be    : Belarusian
+description_bn    : Bengali
+description_bh    : Bihari languages
+description_bi    : Bislama
+description_bo    : Tibetan
+description_bs    : Bosnian
+description_br    : Breton
+description_bg    : Bulgarian
+description_my    : Burmese
+description_ca    : Catalan Valencian
+description_cs    : Czech
+description_ch    : Chamorro
+description_ce    : Chechen
+description_zh    : Chinese
+description_cu    : Church Slavic; Old Slavonic; Church Slavonic; Old Bulgarian; Old Church Slavonic
+description_cv    : Chuvash
+description_kw    : Cornish
+description_co    : Corsican
+description_cr    : Cree
+description_cy    : Welsh
+description_cs    : Czech
+description_da    : Danish
+description_de    : German
+description_dv    : Divehi; Dhivehi; Maldivian
+description_nl    : Dutch; Flemish
+description_dz    : Dzongkha
+description_el    : Greek, Modern (1453-)
+description_en    : English
+description_eo    : Esperanto
+description_et    : Estonian
+description_eu    : Basque
+description_ee    : Ewe
+description_fo    : Faroese
+description_fa    : Persian
+description_fj    : Fijian
+description_fi    : Finnish
+description_fr    : French
+description_fr    : French
+description_fy    : Western Frisian
+description_ff    : Fulah
+description_Ga    : Georgian
+description_de    : German
+description_gd    : Gaelic; Scottish Gaelic
+description_ga    : Irish
+description_gl    : Galician
+description_gv    : Manx
+description_el    : Greek, Modern (1453-)
+description_gn    : Guarani
+description_gu    : Gujarati
+description_ht    : Haitian; Haitian Creole
+description_ha    : Hausa
+description_he    : Hebrew
+description_hz    : Herero
+description_hi    : Hindi
+description_ho    : Hiri Motu
+description_hr    : Croatian
+description_hu    : Hungarian
+description_hy    : Armenian
+description_ig    : Igbo
+description_is    : Icelandic
+description_io    : Ido
+description_ii    : Sichuan Yi; Nuosu
+description_iu    : Inuktitut
+description_ie    : Interlingue; Occidental
+description_ia    : Interlingua (International Auxiliary Language Association)
+description_id    : Indonesian
+description_ik    : Inupiaq
+description_is    : Icelandic
+description_it    : Italian
+description_jv    : Javanese
+description_ja    : Japanese
+description_kl    : Kalaallisut; Greenlandic
+description_kn    : Kannada
+description_ks    : Kashmiri
+description_ka    : Georgian
+description_kr    : Kanuri
+description_kk    : Kazakh
+description_km    : Central Khmer
+description_ki    : Kikuyu; Gikuyu
+description_rw    : Kinyarwanda
+description_ky    : Kirghiz; Kyrgyz
+description_kv    : Komi
+description_kg    : Kongo
+description_ko    : Korean
+description_kj    : Kuanyama; Kwanyama
+description_ku    : Kurdish
+description_lo    : Lao
+description_la    : Latin
+description_lv    : Latvian
+description_li    : Limburgan; Limburger; Limburgish
+description_ln    : Lingala
+description_lt    : Lithuanian
+description_lb    : Luxembourgish; Letzeburgesch
+description_lu    : Luba-Katanga
+description_lg    : Ganda
+description_mk    : Macedonian
+description_mh    : Marshallese
+description_ml    : Malayalam
+description_mi    : Maori
+description_mr    : Marathi
+description_ms    : Malay
+description_Mi    : Micmac
+description_mk    : Macedonian
+description_mg    : Malagasy
+description_mt    : Maltese
+description_mn    : Mongolian
+description_mi    : Maori
+description_ms    : Malay
+description_my    : Burmese
+description_na    : Nauru
+description_nv    : Navajo; Navaho
+description_nr    : Ndebele, South; South Ndebele
+description_nd    : Ndebele, North; North Ndebele
+description_ng    : Ndonga
+description_ne    : Nepali
+description_nl    : Dutch; Flemish
+description_nn    : Norwegian Nynorsk; Nynorsk, Norwegian
+description_nb    : Bokmål, Norwegian; Norwegian Bokmål
+description_no    : Norwegian
+description_oc    : Occitan (post 1500)
+description_oj    : Ojibwa
+description_or    : Oriya
+description_om    : Oromo
+description_os    : Ossetian; Ossetic
+description_pa    : Panjabi; Punjabi
+description_fa    : Persian
+description_pi    : Pali
+description_pl    : Polish
+description_pt    : Portuguese
+description_ps    : Pushto; Pashto
+description_qu    : Quechua
+description_rm    : Romansh
+description_ro    : Romanian; Moldavian; Moldovan
+description_ro    : Romanian; Moldavian; Moldovan
+description_rn    : Rundi
+description_ru    : Russian
+description_sg    : Sango
+description_sa    : Sanskrit
+description_si    : Sinhala; Sinhalese
+description_sk    : Slovak
+description_sk    : Slovak
+description_sl    : Slovenian
+description_se    : Northern Sami
+description_sm    : Samoan
+description_sn    : Shona
+description_sd    : Sindhi
+description_so    : Somali
+description_st    : Sotho, Southern
+description_es    : Spanish; Castilian
+description_sq    : Albanian
+description_sc    : Sardinian
+description_sr    : Serbian
+description_ss    : Swati
+description_su    : Sundanese
+description_sw    : Swahili
+description_sv    : Swedish
+description_ty    : Tahitian
+description_ta    : Tamil
+description_tt    : Tatar
+description_te    : Telugu
+description_tg    : Tajik
+description_tl    : Tagalog
+description_th    : Thai
+description_bo    : Tibetan
+description_ti    : Tigrinya
+description_to    : Tonga (Tonga Islands)
+description_tn    : Tswana
+description_ts    : Tsonga
+description_tk    : Turkmen
+description_tr    : Turkish
+description_tw    : Twi
+description_ug    : Uighur; Uyghur
+description_uk    : Ukrainian
+description_ur    : Urdu
+description_uz    : Uzbek
+description_ve    : Venda
+description_vi    : Vietnamese
+description_vo    : Volapük
+description_cy    : Welsh
+description_wa    : Walloon
+description_wo    : Wolof
+description_xh    : Xhosa
+description_yi    : Yiddish
+description_yo    : Yoruba
+description_za    : Zhuang; Chuang
+description_zh    : Chinese
+description_zu    : Zulu
