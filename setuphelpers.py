@@ -535,7 +535,7 @@ def remove_programs_menu_shortcut(label,folder=None):
 
 
 
-def remove_user_programs_menu_shortcut(label):
+def remove_user_programs_menu_shortcut(label,folder=None):
     """Remove a shortcut from the start menu of current user
 
     Args:
