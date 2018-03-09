@@ -102,23 +102,32 @@ end;
 
 procedure TVisCreateWaptSetup.fnPublicCertEditingDone(Sender: TObject);
 var
+  id: Integer;
   CertIter, Cert,CertList: Variant;
   SOCert,SOCerts: ISuperObject;
   att:String;
-  atts: Array[0..7] of String=('cn','issuer_cn','subject_dn','issuer_dn','fingerprint','is_ca','is_code_signing','serial_number');
+  atts: Array[0..8] of String=('cn','issuer_cn','subject_dn','issuer_dn','fingerprint','not_after','is_ca','is_code_signing','serial_number');
+
+  CertFilenames:TStringList;
 
 begin
   if FileExists(fnPublicCert.FileName) and ((ActiveCertBundle <> fnPublicCert.FileName) or VarIsEmpty(GridCertificates.Data))  then
   begin
     edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := fnPublicCert.FileName).cn);
-    //edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[fnPublicCert.FileName]));
-    CertList := dmpython.waptcrypto.SSLCABundle(cert_pattern_or_dir := fnPublicCert.FileName).certificates('--noarg--');
     SOCerts := TSuperObject.Create(stArray);
+
+    CertFilenames := FindAllFiles(AuthorizedCertsDir );
+
+    for
+    CertList := dmpython.waptcrypto.SSLCABundle(cert_pattern_or_dir := fnPublicCert.FileName).certificates('--noarg--');
     CertIter := iter(CertList);
+    id := 0;
     While VarIsPythonIterator(CertIter)  do
       try
         Cert := CertIter.next('--noarg--');
         SOCert := TSuperObject.Create(stObject) ; // PyVarToSuperObject(Cert.as_dict('--noarg--'));
+        SOCert.I['id'] := id;
+        inc(id);
         for att in atts do
           SOCert[att] := PyVarToSuperObject(Cert.__getattribute__(att));
         SOCert.S['x509_pem'] := VarPythonAsString(Cert.as_pem('--noarg--'));

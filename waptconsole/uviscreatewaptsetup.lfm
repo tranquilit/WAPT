@@ -240,55 +240,69 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Header.Columns = <    
       item
         Position = 0
-        Text = 'Certificate Name'
-        Width = 185
-        PropertyName = 'cn'
+        Text = 'id'
+        Width = 40
+        PropertyName = 'id'
       end    
       item
         Position = 1
         Tag = 1
-        Text = 'Issuer'
-        Width = 147
-        PropertyName = 'issuer_cn'
+        Text = 'Certificate Name'
+        Width = 152
+        PropertyName = 'cn'
       end    
       item
         Position = 2
         Tag = 2
+        Text = 'Issuer'
+        Width = 132
+        PropertyName = 'issuer_cn'
+      end    
+      item
+        Position = 3
+        Tag = 3
+        Text = 'Valid until'
+        Width = 90
+        PropertyName = 'not_after'
+      end    
+      item
+        Position = 4
+        Tag = 4
         Text = 'Serial number'
         Width = 95
         PropertyName = 'serial_number'
       end    
       item
-        Position = 3
-        Tag = 3
+        Position = 5
+        Tag = 5
         Text = 'Fingerprint (sha256)'
         Width = 178
         PropertyName = 'fingerprint'
       end    
       item
-        Position = 4
-        Tag = 4
+        Position = 6
+        Tag = 6
         Text = 'Code signing'
         Width = 74
         PropertyName = 'is_code_signing'
       end    
       item
-        Position = 5
-        Tag = 5
+        Position = 7
+        Tag = 7
         Text = 'CA'
         Width = 58
         PropertyName = 'is_ca'
       end    
       item
-        Position = 6
-        Tag = 6
+        Position = 8
+        Tag = 8
         Text = 'subject_dn'
         Width = 77
         PropertyName = 'subject_dn'
       end    
       item
-        Position = 7
-        Tag = 7
+        Position = 9
+        Tag = 9
         Text = 'issuer_dn'
         PropertyName = 'issuer_dn'
       end>
