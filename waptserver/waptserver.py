@@ -846,8 +846,6 @@ def upload_host():
 @requires_auth
 def upload_waptsetup():
     waptagent = os.path.join(app.conf['wapt_folder'], 'waptagent.exe')
-    waptsetup = os.path.join(app.conf['wapt_folder'], 'waptsetup-tis.exe')
-
     logger.debug('Entering upload_waptsetup')
     tmp_target = None
     try:
@@ -863,22 +861,6 @@ def upload_waptsetup():
                 else:
                     os.rename(tmp_target, target)
                     result = dict(status='OK', message=_('{} uploaded').format((filename,)))
-
-                # Compat with older clients: provide a waptsetup.exe -> waptagent.exe alias
-                if os.path.exists(waptsetup):
-                    if not os.path.exists(waptsetup + '.old'):
-                        try:
-                            os.rename(waptsetup, waptsetup + '.old')
-                        except:
-                            pass
-                    try:
-                        os.unlink(waptsetup)
-                    except:
-                        pass
-                try:
-                    os.symlink(waptagent, waptsetup) # pylint: disable=no-member
-                except:
-                    shutil.copyfile(waptagent, waptsetup)
 
             else:
                 result = dict(status='ERROR', message=_('Wrong file name (version conflict?)'))
