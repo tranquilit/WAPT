@@ -469,6 +469,7 @@ def create_programs_menu_shortcut(label, target='', arguments='', wDir='', icon=
         else:
             label += '.lnk'
     sc = os.path.join(start_menu(1),label)
+    ensure_dir(sc)
     if os.path.isfile(sc):
         os.remove(sc)
     create_shortcut(sc,target,arguments,wDir,icon)
@@ -501,6 +502,7 @@ def create_user_programs_menu_shortcut(label, target='', arguments='', wDir='', 
         else:
             label += '.lnk'
     sc = os.path.join(start_menu(0),label)
+    ensure_dir(sc)
     if os.path.isfile(sc):
         os.remove(sc)
     create_shortcut(sc,target,arguments,wDir,icon)
