@@ -165,6 +165,12 @@ TASK_TEMPLATE="""\
       <ExecutionTimeLimit>PT1H</ExecutionTimeLimit>
       <Enabled>true</Enabled>
     </TimeTrigger>
+    <BootTrigger>
+      <StartBoundary>%(run_on)s</StartBoundary>
+      <EndBoundary>%(expired_on)s</EndBoundary>
+      <ExecutionTimeLimit>PT1H</ExecutionTimeLimit>
+      <Enabled>true</Enabled>
+    </BootTrigger>
   </Triggers>
   <Principals>
     <Principal id="Author">
@@ -219,7 +225,7 @@ def create_onetime_task(name,cmd,parameters=None, delay_minutes=2,max_runtime=10
         xmlfile = tempfile.mktemp('.xml')
         created_on = time.strftime('%Y-%m-%dT%H:%M:%S',time.localtime(time.time()))
         run_on = time.strftime('%Y-%m-%dT%H:%M:%S',run_time)
-        expired_on = time.strftime('%Y-%m-%dT%H:%M:%S',time.localtime(time.time() + 24*3600))
+        expired_on = time.strftime('%Y-%m-%dT%H:%M:%S',time.localtime(time.time() + 90*24*3600))
         codecs.open(xmlfile,'wb',encoding='utf8').write(TASK_TEMPLATE % locals())
         result = run('schtasks /Create /F /TN "%s" /XML "%s"' % (name,xmlfile))
         if isfile(xmlfile):
