@@ -1602,12 +1602,10 @@ begin
     try
       ini := TIniFile.Create(AppIniFilename);
       if ini.ReadString('global', 'default_ca_cert_path', '') <> '' then
-        fnPublicCert.Text := ini.ReadString('global', 'default_ca_cert_path', '')
+        ActiveCertBundle := UTF8Decode(ini.ReadString('global', 'default_ca_cert_path', ''))
       else
-        fnPublicCert.Text := ini.ReadString('global', 'personal_certificate_path', '');
+        ActiveCertBundle := UTF8Decode(ini.ReadString('global', 'personal_certificate_path', ''));
 
-      if not FileExists(fnPublicCert.Text) then
-        fnPublicCert.Clear;
       edWaptServerUrl.Text := ini.ReadString('global', 'wapt_server', '');
       edRepoUrl.Text := ini.ReadString('global', 'repo_url', '');
       EdServerCertificate.Text := ini.ReadString('global', 'verify_cert', '0'); ;
@@ -1637,7 +1635,7 @@ begin
 
             try
               ProgressTitle(rsCreationInProgress);
-              waptsetupPath := CreateWaptSetup(fnPublicCert.FileName,
+              waptsetupPath := CreateWaptSetup(UTF8Encode(ActiveCertBundle),
                 edRepoUrl.Text, edWaptServerUrl.Text, fnWaptDirectory.Directory, edOrgName.Text, @DoProgress, 'waptagent',
                 EdServerCertificate.Text,
                 CBUseKerberos.Checked,

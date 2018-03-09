@@ -98,11 +98,11 @@ type
           orgunit,
           commonname,
           email,
-          keypassword:String;
+          keypassword:UnicodeString;
           codesigning:Boolean;
           IsCACert:Boolean;
-          CACertificateFilename:String='';
-          CAKeyFilename:String=''
+          CACertificateFilename:UnicodeString='';
+          CAKeyFilename:UnicodeString=''
       ):String;
 
 
@@ -673,14 +673,14 @@ function CreateSignedCert(keyfilename,
         orgunit,
         commonname,
         email,
-        keypassword:String;
+        keypassword:UnicodeString;
         codesigning:Boolean;
         IsCACert:Boolean;
-        CACertificateFilename:String='';
-        CAKeyFilename:String=''
+        CACertificateFilename:UnicodeString='';
+        CAKeyFilename:UnicodeString=''
     ):String;
 var
-  destpem,destcrt : Variant;
+  CAKeyFilenameU,destpem,destcrt : Variant;
   params : ISuperObject;
   returnCode:integer;
   rsa,key,cert,cakey,cacert:Variant;
@@ -705,7 +705,8 @@ begin
     begin
       if InputQuery('CA Private key password','Password',True,cakey_pwd) then
       begin
-        cakey:= dmpython.waptcrypto.SSLPrivateKey(filename := CAKeyFilename, password := cakey_pwd);
+        CAKeyFilenameU := CAKeyFilename;
+        cakey:= dmpython.waptcrypto.SSLPrivateKey(filename := CAKeyFilenameU, password := cakey_pwd);
         rsa := cakey.as_pem;
       end
       else

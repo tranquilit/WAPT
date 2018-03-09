@@ -230,7 +230,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   end
   object GridCertificates: TSOGrid
     Left = 10
-    Height = 160
+    Height = 162
     Top = 56
     Width = 492
     ShowAdvancedColumnsCustomize = False
