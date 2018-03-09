@@ -2490,25 +2490,25 @@ class Wapt(BaseObjectClass):
             self.config_filedate = None
 
         if self.config.has_option('global','dbpath'):
-            self.dbpath =  self.config.get('global','dbpath')
+            self.dbpath =  self.config.get('global','dbpath').decode('utf8')
         else:
             self.dbpath = os.path.join(self.wapt_base_dir,'db','waptdb.sqlite')
 
         # must have a matching key eithe rin same file or in same directory
         # see self.private_key()
         if self.config.has_option('global','personal_certificate_path'):
-            self.personal_certificate_path = self.config.get('global','personal_certificate_path')
+            self.personal_certificate_path = self.config.get('global','personal_certificate_path').decode('utf8')
 
         # be smart with old config
         if not self.personal_certificate_path and self.config.has_option('global','private_key'):
-            pk = self.config.get('global','private_key')
+            pk = self.config.get('global','private_key').decode('utf8')
             if pk and os.path.isfile(pk):
                 (root,ext) = os.path.splitext(pk)
                 if os.path.isfile(root+'.crt'):
                     self.personal_certificate_path = root+'.crt'
 
         if self.config.has_option('global','public_certs_dir'):
-            self.public_certs_dir = self.config.get('global','public_certs_dir')
+            self.public_certs_dir = self.config.get('global','public_certs_dir').decode('utf8')
         else:
             self.public_certs_dir = os.path.join(self.wapt_base_dir,'ssl')
 
@@ -5072,7 +5072,7 @@ class Wapt(BaseObjectClass):
         if not self._private_key_cache or not cert.match_key(self._private_key_cache):
             self._private_key_cache = cert.matching_key_in_dirs(password_callback=passwd_callback,private_key_password=private_key_password)
         if self._private_key_cache is None:
-            raise EWaptMissingPrivateKey(u'The key matching ther certificate %s can not be found or decrypted' % (cert.public_cert_filename or cert.subject))
+            raise EWaptMissingPrivateKey(u'The key matching the certificate %s can not be found or decrypted' % (cert.public_cert_filename or cert.subject))
         return self._private_key_cache
 
     def sign_package(self,zip_or_directoryname,certificate=None,callback=None,private_key_password=None):

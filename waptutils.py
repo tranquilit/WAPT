@@ -515,9 +515,18 @@ def force_utf8_no_bom(filename):
 
 def expand_args(args):
     """Return list of unicode file paths expanded from wildcard list args"""
+    def from_system_encoding(t):
+        if isinstance(t,unicode):
+            return t
+        else:
+            try:
+                return t.decode(sys.getfilesystemencoding())
+            except:
+                return ensure_unicode(t)
+
     all_args = []
     for a in ensure_list(args):
-        all_args.extend([os.path.abspath(p) for p in glob.glob(ensure_unicode(a))])
+        all_args.extend([os.path.abspath(p) for p in glob.glob(from_system_encoding(a))])
     return all_args
 
 def default_http_headers():

@@ -2503,7 +2503,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                             self._index[package.package] = package
                     except Exception as e:
                         logger.critical('Discarding %s on repo "%s": %s' % (package.asrequirement(),self.name,e))
-                        logger.debug('Certificate bundle : %s' % self.cabundle)
+                        #logger.debug('Certificate bundle : %s' % self.cabundle)
                         self.discarded.append(package)
                 else:
                     logger.info('Discarding %s on repo "%s" because of local whitelist of blacklist rules' % (package.asrequirement(),self.name))
