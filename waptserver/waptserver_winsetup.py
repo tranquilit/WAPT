@@ -238,11 +238,11 @@ def install_nginx_service():
     repository_path = os.path.join(wapt_root_dir,'waptserver','repository')
     for repo_path in ('wapt','wapt-host','wapt-hostref'):
         mkdir_p(os.path.join(repository_path,repo_path))
-        run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(repository_path,repo_path))
+        run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(repository_path,repo_path))
     mkdir_p(os.path.join(wapt_root_dir,'waptserver','nginx','temp'))
-    run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % (os.path.join(wapt_root_dir,'waptserver','nginx','temp')))
+    run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % (os.path.join(wapt_root_dir,'waptserver','nginx','temp')))
 
-    run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(
+    run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(
                 wapt_root_dir,'waptserver','nginx','logs'))
 
     make_nginx_config(wapt_root_dir, conf['wapt_folder'])
@@ -276,10 +276,10 @@ def install_postgresql_service():
     setuphelpers.mkdirs(pg_data_dir)
 
     # need to have specific write acls for current user otherwise initdb fails...
-    setuphelpers.run(r'icacls %s /t /grant  "%s":(OI)(CI)(M)' % (pg_data_dir,GetUserName()))
+    setuphelpers.run(r'icacls "%s" /t /grant  "%s":(OI)(CI)(M)' % (pg_data_dir,GetUserName()))
     setuphelpers.run(r'"%s\waptserver\pgsql\bin\initdb" -U postgres -E=UTF8 -D "%s\waptserver\pgsql_data"' % (wapt_root_dir,wapt_root_dir))
 
-    setuphelpers.run(r'icacls %s /t /grant  "*S-1-5-20":(OI)(CI)(M)' % pg_data_dir)
+    setuphelpers.run(r'icacls "%s" /t /grant  "*S-1-5-20":(OI)(CI)(M)' % pg_data_dir)
 
     print("start postgresql database")
 
@@ -291,8 +291,8 @@ def install_postgresql_service():
     cmd = r'"%s\bin\pg_ctl" register -N WAPTPostgresql -U "nt authority\networkservice" -S auto -D "%s"  ' % (pgsql_root_dir ,os.path.join(wapt_root_dir,'waptserver','pgsql_data'))
     print cmd
     run(cmd)
-    setuphelpers.run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % log_directory)
-    setuphelpers.run(r'icacls %s /grant  "*S-1-5-20":(OI)(CI)(M)' % pgsql_data_dir)
+    setuphelpers.run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % log_directory)
+    setuphelpers.run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % pgsql_data_dir)
 
     print('starting postgresql')
     run('net start waptpostgresql')
