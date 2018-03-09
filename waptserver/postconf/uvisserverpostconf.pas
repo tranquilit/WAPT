@@ -424,11 +424,11 @@ begin
 
       ProgressTitle(rsUpdatingPackageIndex);
       ProgressStep(1,10);
-      runwapt('{app}\wapt-get.exe update-packages "{app}\waptserver\repository\wapt"');
+      runwapt('"{app}\wapt-get.exe" update-packages "{app}\waptserver\repository\wapt"');
 
       ProgressTitle(rsConfigurePostgreSQL);
       ProgressStep(2,10);
-      runwapt('{app}\waptpython {app}\waptserver\waptserver_winsetup.py all');
+      runwapt('"{app}\waptpython" "{app}\waptserver\waptserver_winsetup.py" all');
 
 
       ProgressTitle(rsReplacingTIScertificate);
@@ -440,7 +440,7 @@ begin
       ProgressStep(4,10);
 
       IniWriteString(WaptBaseDir+'\conf\waptserver.ini' ,'options','wapt_password',
-        Run(AppendPathDelim(WaptBaseDir)+'waptpython.exe -c "from passlib.hash import pbkdf2_sha256; print(pbkdf2_sha256.hash('''+EdPwd1.Text+'''))"')
+        RunWapt('"{app}\waptpython" -c "from passlib.hash import pbkdf2_sha256; print(pbkdf2_sha256.hash('''+EdPwd1.Text+'''))"')
         );
 
       if CBOpenFirewall.Checked then
@@ -480,7 +480,7 @@ begin
         ProgressTitle(rsMigration15);
         ProgressStep(2,10);
 
-        runwapt('{app}\waptpython {app}\waptserver\waptserver_upgrade.py upgrade2postgres');
+        runwapt('"{app}\waptpython" {app}\waptserver\waptserver_upgrade.py upgrade2postgres');
 
         if DirectoryExistsUTF8(WaptBaseDir+'\waptserver\mongodb') then
            fileutil.DeleteDirectory(WaptBaseDir+'\waptserver\mongodb', false);
