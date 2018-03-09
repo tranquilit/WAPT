@@ -15,23 +15,23 @@ Name=wapt
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node0]
 ClassName=TProjectFileNode
-FileName=C:\WAPT\common.py
+FileName=%(wapt_base_dir)s\common.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node1]
 ClassName=TProjectFileNode
-FileName=C:\WAPT\setuphelpers.py
+FileName=%(wapt_base_dir)s\setuphelpers.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node2]
 ClassName=TProjectFileNode
-FileName=C:\WAPT\wapt-get.ini
+FileName=%(wapt_base_dir)s\wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=C:\WAPT\wapt-get.py
+FileName=%(wapt_base_dir)s\wapt-get.ini
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node4]
 ClassName=TProjectFileNode
-FileName=C:\WAPT\waptpackage.py
+FileName=%(wapt_base_dir)s\waptpackage.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes]
 Count=5
@@ -44,8 +44,13 @@ FileName=$[Project-Path]control
 ClassName=TProjectFileNode
 FileName=$[Project-Path]..\setup.py
 
+
+[Project\ChildNodes\Node0\ChildNodes\Node3]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]changelog.txt
+
 [Project\ChildNodes\Node0\ChildNodes]
-Count=3
+Count=4
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
@@ -55,11 +60,11 @@ ClassName=TProjectRunConfiguationNode
 Name=install
 
 [Project\ChildNodes\Node1\ChildNodes\Node0\RunConfig]
-ScriptName=C:\wapt\wapt-get.py
+ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug install $[ActiveDoc-Dir]
-WorkingDir=$[ActiveScript-Dir]
+Parameters=install "$[Project-Path].."
+WorkingDir=$[Project-Path]..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
 AppendToFile=FALSE
@@ -78,11 +83,11 @@ ClassName=TProjectRunConfiguationNode
 Name=remove
 
 [Project\ChildNodes\Node1\ChildNodes\Node1\RunConfig]
-ScriptName=C:\wapt\wapt-get.py
+ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug remove $[ActiveDoc-Dir]
-WorkingDir=$[ActiveScript-Dir]
+Parameters=remove "$[Project-Path].."
+WorkingDir=$[Project-Path]..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
 AppendToFile=FALSE
@@ -101,11 +106,11 @@ ClassName=TProjectRunConfiguationNode
 Name=session-setup
 
 [Project\ChildNodes\Node1\ChildNodes\Node2\RunConfig]
-ScriptName=C:\WAPT\wapt-get.py
+ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug session-setup $[ActiveDoc-Dir]
-WorkingDir=$[ActiveScript-Dir]
+Parameters=session-setup "$[Project-Path].."
+WorkingDir=$[Project-Path]..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
 AppendToFile=FALSE
@@ -124,11 +129,11 @@ ClassName=TProjectRunConfiguationNode
 Name=update
 
 [Project\ChildNodes\Node1\ChildNodes\Node3\RunConfig]
-ScriptName=C:\WAPT\wapt-get.py
+ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug update
-WorkingDir=$[ActiveScript-Dir]
+Parameters=update
+WorkingDir=$[Project-Path]..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
 AppendToFile=FALSE
@@ -147,10 +152,10 @@ ClassName=TProjectRunConfiguationNode
 Name=upgrade
 
 [Project\ChildNodes\Node1\ChildNodes\Node4\RunConfig]
-ScriptName=C:\WAPT\wapt-get.py
+ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-f -ldebug upgrade
+Parameters=-f upgrade
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -170,11 +175,11 @@ ClassName=TProjectRunConfiguationNode
 Name=-i build-upload
 
 [Project\ChildNodes\Node1\ChildNodes\Node5\RunConfig]
-ScriptName=C:\WAPT\wapt-get.py
+ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug -i build-upload $[ActiveDoc-Dir]
-WorkingDir=$[ActiveScript-Dir]
+Parameters=-i build-upload "$[Project-Path].."
+WorkingDir=$[Project-Path]..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
 AppendToFile=FALSE
@@ -193,11 +198,11 @@ ClassName=TProjectRunConfiguationNode
 Name=svn update
 
 [Project\ChildNodes\Node1\ChildNodes\Node6\RunConfig]
-ScriptName=C:\WAPT\wapt-get.py
+ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug sources $[ActiveDoc-Dir]
-WorkingDir=$[ActiveScript-Dir]
+Parameters=sources "$[Project-Path].."
+WorkingDir=$[Project-Path]..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
 AppendToFile=FALSE
@@ -213,14 +218,14 @@ MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node7]
 ClassName=TProjectRunConfiguationNode
-Name=build
+Name=uninstall
 
 [Project\ChildNodes\Node1\ChildNodes\Node7\RunConfig]
-ScriptName=C:\WAPT\wapt-get.py
+ScriptName=%(wapt_base_dir)s\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=build-package $[ActiveDoc-Dir]
-WorkingDir=$[ActiveScript-Dir]
+Parameters=uninstall "$[Project-Path].."
+WorkingDir=$[Project-Path]..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
 AppendToFile=FALSE
@@ -230,18 +235,41 @@ Caption=External Run
 Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[Project-Path]..
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
+
+
+[Project\ChildNodes\Node1\ChildNodes\Node8]
+ClassName=TProjectRunConfiguationNode
+Name=update-package-sources
+
+[Project\ChildNodes\Node1\ChildNodes\Node8\RunConfig]
+ScriptName=%(wapt_base_dir)s\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=update-package-sources -j "$[Project-Path].."
+WorkingDir=$[Project-Path]..
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node8\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
 ShortCut=0
 MessagesFormat=$[FileName] $[LineNumber]
 
+
 [Project\ChildNodes\Node1\ChildNodes]
-Count=8
+Count=9
 
 [Project\ChildNodes]
 Count=2
 
 [Project\ExtraPythonPath]
-Item0=C:\wapt
-Item1=C:\wapt\lib\site-packages
-Count=2
+Count=0
 
