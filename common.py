@@ -6341,7 +6341,7 @@ def wapt_sources_edit(wapt_sources_dir):
                          psproj_filename,
                          setup_filename,
                          control_filename)).encode(sys.getfilesystemencoding()),
-                         cwd=wapt_sources_dir,
+                         cwd=wapt_sources_dir.encode(sys.getfilesystemencoding()),
                          env=env)
     else:
         os.startfile(wapt_sources_dir)
