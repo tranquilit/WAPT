@@ -16,7 +16,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Left = 262
     Height = 21
     Hint = 'X509 PEM encoded file with CA certificates which are trusted'
-    Top = 16
+    Top = 8
     Width = 216
     Filter = '*.crt|*.crt'
     FilterIndex = 0
@@ -31,9 +31,9 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     OnExit = fnPublicCertExit
   end
   object Label1: TLabel
-    Left = 24
+    Left = 12
     Height = 13
-    Top = 21
+    Top = 13
     Width = 228
     Alignment = taRightJustify
     Caption = 'Authorized Packages Certificates Bundle'
@@ -230,8 +230,8 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   end
   object GridCertificates: TSOGrid
     Left = 10
-    Height = 168
-    Top = 48
+    Height = 160
+    Top = 56
     Width = 492
     ShowAdvancedColumnsCustomize = False
     BorderSpacing.Top = 2
@@ -319,6 +319,14 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
     WantTabs = True
     ZebraPaint = True
+  end
+  object Label7: TLabel
+    Left = 12
+    Height = 13
+    Top = 40
+    Width = 407
+    Caption = 'Authorized packages Certificates which will be bundled with the Wapt Agent  installer'
+    ParentColor = False
   end
   object ActionList1: TActionList
     left = 16

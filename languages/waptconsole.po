@@ -226,6 +226,10 @@ msgctxt "TVISCREATEKEY.LABUNIT.HINT"
 msgid "E.g. : IT department."
 msgstr ""
 
+#: tviscreatewaptsetup.actgetservercertificate.caption
+msgid "Get Server https Certificate"
+msgstr ""
+
 #: tviscreatewaptsetup.caption
 msgctxt "tviscreatewaptsetup.caption"
 msgid "Create WAPT agent"
@@ -272,7 +276,7 @@ msgstr ""
 
 #: tviscreatewaptsetup.edservercertificate.hint
 msgctxt "TVISCREATEWAPTSETUP.EDSERVERCERTIFICATE.HINT"
-msgid "E.g. : c:\\private\\tranquilit.crt"
+msgid "E.g. : c:\\wapt\\ssl\\server\\tranquilit.crt  Path to trusted certificates bundle"
 msgstr ""
 
 #: tviscreatewaptsetup.edwaptserverurl.hint
@@ -322,6 +326,10 @@ msgstr ""
 #: tviscreatewaptsetup.label6.caption
 msgctxt "TVISCREATEWAPTSETUP.LABEL6.CAPTION"
 msgid "Path to https Servers CA certificates bundle"
+msgstr ""
+
+#: tviscreatewaptsetup.label7.caption
+msgid "Authorized packages Certificates which will be bundled with the Wapt Agent  installer"
 msgstr ""
 
 #: tvisdisplaypreferences.caption

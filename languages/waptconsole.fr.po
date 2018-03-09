@@ -13,6 +13,10 @@ msgstr "&Voir le fichier de configuration"
 msgid "Form1"
 msgstr ""
 
+#: tvisapropos.button1.caption
+msgid "Close"
+msgstr "Fermer"
+
 #: tvisapropos.caption
 msgid "About WAPTConsole"
 msgstr "Apropos de WAPTConsole"
@@ -333,6 +337,10 @@ msgstr "L'adresse de votre serveur WAPT (par exemple http://wapt:8080)."
 msgctxt "tviscreatewaptsetup.label6.caption"
 msgid "Path to https Servers CA certificates bundle"
 msgstr "Chemin vers le bundle de CA serveurs https"
+
+#: tviscreatewaptsetup.label7.caption
+msgid "Authorized packages Certificates which will be bundled with the Wapt Agent  installer"
+msgstr "Certificats de paquets qui vont être déployés avec l'agent Wapt"
 
 #: tvisdisplaypreferences.caption
 msgctxt "tvisdisplaypreferences.caption"
@@ -1318,10 +1326,6 @@ msgstr "Importer depuis un fichier"
 msgctxt "tviswaptgui.actimportfromrepo.caption"
 msgid "Import from internet"
 msgstr "Importer depuis internet"
-
-#: tviswaptgui.actinstalllicence.caption
-msgid "Install a licence file"
-msgstr "Installer un fichier de licence"
 
 #: tviswaptgui.actlaunchgpupdate.caption
 msgid "Update AD Group Policies on hosts"
@@ -3415,6 +3419,12 @@ msgstr ""
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
 #| msgid ""
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
 #| "Required server version: %s\n"
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"

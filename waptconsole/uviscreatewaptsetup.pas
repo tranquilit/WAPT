@@ -34,6 +34,7 @@ type
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
+    Label7: TLabel;
     MenuItem1: TMenuItem;
     Panel1: TPanel;
     PopupMenu1: TPopupMenu;
@@ -103,23 +104,20 @@ end;
 procedure TVisCreateWaptSetup.fnPublicCertEditingDone(Sender: TObject);
 var
   id: Integer;
-  CertIter, Cert,CertList: Variant;
+  CABundle,CertIter, Cert,CertList: Variant;
   SOCert,SOCerts: ISuperObject;
   att:String;
   atts: Array[0..8] of String=('cn','issuer_cn','subject_dn','issuer_dn','fingerprint','not_after','is_ca','is_code_signing','serial_number');
 
-  CertFilenames:TStringList;
-
 begin
   if FileExists(fnPublicCert.FileName) and ((ActiveCertBundle <> fnPublicCert.FileName) or VarIsEmpty(GridCertificates.Data))  then
-  begin
+  try
     edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := fnPublicCert.FileName).cn);
     SOCerts := TSuperObject.Create(stArray);
+    CABundle:=dmpython.waptcrypto.SSLCABundle(cert_pattern_or_dir := fnPublicCert.FileName);
+    CABundle.add_pems(IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl\*.crt');
 
-    CertFilenames := FindAllFiles(AuthorizedCertsDir );
-
-    for
-    CertList := dmpython.waptcrypto.SSLCABundle(cert_pattern_or_dir := fnPublicCert.FileName).certificates('--noarg--');
+    CertList := CABundle.certificates('--noarg--');
     CertIter := iter(CertList);
     id := 0;
     While VarIsPythonIterator(CertIter)  do
@@ -137,6 +135,8 @@ begin
       end;
     GridCertificates.Data := SOCerts;
     ActiveCertBundle := fnPublicCert.FileName;
+
+  finally
   end;
 end;
 
