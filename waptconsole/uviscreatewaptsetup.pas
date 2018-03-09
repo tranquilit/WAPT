@@ -48,7 +48,7 @@ type
     procedure FormShow(Sender: TObject);
   private
     { private declarations }
-    ActiveCertBundle: String;
+    ActiveCertBundle: UnicodeString;
   public
     { public declarations }
   end;
@@ -107,14 +107,17 @@ var
   CABundle,CertIter, Cert,CertList: Variant;
   SOCert,SOCerts: ISuperObject;
   att:String;
+  NewCertFilename:UnicodeString;
   atts: Array[0..8] of String=('cn','issuer_cn','subject_dn','issuer_dn','fingerprint','not_after','is_ca','is_code_signing','serial_number');
 
 begin
-  if FileExists(fnPublicCert.FileName) and ((ActiveCertBundle <> fnPublicCert.FileName) or VarIsEmpty(GridCertificates.Data))  then
+  NewCertFilename:=UTF8Decode(fnPublicCert.FileName);
+  if FileExists(NewCertFilename) and ((ActiveCertBundle <> NewCertFilename) or VarIsEmpty(GridCertificates.Data))  then
   try
-    edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := fnPublicCert.FileName).cn);
+
+    edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := NewCertFilename).cn);
     SOCerts := TSuperObject.Create(stArray);
-    CABundle:=dmpython.waptcrypto.SSLCABundle(cert_pattern_or_dir := fnPublicCert.FileName);
+    CABundle:=dmpython.waptcrypto.SSLCABundle(cert_pattern_or_dir := NewCertFilename);
     CABundle.add_pems(IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl\*.crt');
 
     CertList := CABundle.certificates('--noarg--');
