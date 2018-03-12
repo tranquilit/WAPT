@@ -558,7 +558,7 @@ def main():
                     raise Exception('Running wapt processes (%s) in progress, please wait...' % (running_install,))
                 removed = []
                 errors = []
-                for packagename in args[1:]:
+                for packagename in expand_args(args[1:]):
                     print(u"Removing %s ..." % (packagename,))
                     try:
                         packagename = guess_package_root_dir(packagename)
@@ -616,7 +616,7 @@ def main():
                     print(u"You must provide at least one package to be uninstalled")
                     sys.exit(1)
 
-                for packagename in args[1:]:
+                for packagename in expand_args(args[1:]):
                     print(u"Uninstalling %s ..." % (packagename,))
                     packagename = guess_package_root_dir(packagename)
                     print(mywapt.uninstall(packagename,params_dict=params_dict))
@@ -741,7 +741,7 @@ def main():
                     print(u"You must provide the package directory")
                     sys.exit(1)
                 result= []
-                for package_dir in args[1:]:
+                for package_dir in expand_args(args[1:]):
                     is_updated = mywapt.call_setup_hook(package_dir,'update_package')
                     if is_updated:
                         result.append(package_dir)

@@ -2340,7 +2340,7 @@ class Wapt(BaseObjectClass):
         try:
             self.wapt_base_dir = os.path.dirname(__file__)
         except NameError:
-            self.wapt_base_dir = os.getcwd()
+            self.wapt_base_dir = os.getcwdu()
 
         self.disable_update_server_status = disable_update_server_status
 
@@ -3247,7 +3247,7 @@ class Wapt(BaseObjectClass):
                 raise EWaptNotAPackage(u'%s is not a file nor a directory, aborting.' % ensure_unicode(fname))
 
             try:
-                previous_cwd = os.getcwd()
+                previous_cwd = os.getcwdu()
                 self.check_cancelled()
 
                 exitstatus = None
@@ -3435,21 +3435,21 @@ class Wapt(BaseObjectClass):
         oldpath = sys.path
 
         try:
-            previous_cwd = os.getcwd()
+            previous_cwd = os.getcwdu()
             setup_filename = os.path.join( wapt_package_dir,'setup.py')
 
             # take in account the case we have no setup.py
             if os.path.isfile(setup_filename):
                 os.chdir(os.path.dirname(setup_filename))
-                if not os.getcwd() in sys.path:
-                    sys.path.append(os.getcwd())
+                if not os.getcwdu() in sys.path:
+                    sys.path.append(os.getcwdu())
 
                 # import the setup module from package file
                 logger.info(u"  sourcing install file %s " % ensure_unicode(setup_filename) )
                 setup = import_setup(setup_filename)
                 hook_func = getattr(setup,hook_name,None)
                 if hook_func is None:
-                    raise Exception('Function %s can not be found in setup module')
+                    raise Exception('Function %s can not be found in setup module' % hook_name)
 
                 # be sure some minimal functions are available in setup module at install step
                 setattr(setup,'basedir',os.path.dirname(setup_filename))
@@ -5218,7 +5218,7 @@ class Wapt(BaseObjectClass):
         with session_db:
             if force or os.path.isdir(packagename) or not session_db.is_installed(package_entry.package,package_entry.version):
                 try:
-                    previous_cwd = os.getcwd()
+                    previous_cwd = os.getcwdu()
 
                     # source setup.py to get session_setup func
                     if os.path.isdir(packagename):
@@ -5323,7 +5323,7 @@ class Wapt(BaseObjectClass):
         oldpath = sys.path
         try:
             setup = None
-            previous_cwd = os.getcwd()
+            previous_cwd = os.getcwdu()
             if os.path.isdir(packagename):
                 entry = PackageEntry().load_control_from_wapt(packagename)
                 setup = import_setup(os.path.join(packagename,'setup.py'))
@@ -5338,7 +5338,7 @@ class Wapt(BaseObjectClass):
                  # be sure some minimal functions are available in setup module at install step
                 logger.debug(u'Source import OK')
                 if hasattr(setup,'uninstall'):
-                    logger.info('Launch uninstall')
+                    logger.info(u'Launch uninstall')
                     setattr(setup,'run',self.run)
                     setattr(setup,'run_notfatal',self.run_notfatal)
                     setattr(setup,'user',self.user)
