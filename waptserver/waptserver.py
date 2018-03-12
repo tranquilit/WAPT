@@ -130,7 +130,7 @@ try:
 except Exception:
     pass
 
-ALLOWED_EXTENSIONS = set(['wapt'])
+ALLOWED_EXTENSIONS = set(['.wapt'])
 
 # allow chunked uploads when no nginx reverse proxy server server (see https://github.com/pallets/flask/issues/367)
 class FlaskApp(Flask):
@@ -567,6 +567,17 @@ def get_repo_packages():
             g.packages = None
     return g.packages
 
+
+def allowed_file(filename):
+    """Ensure filename is safe and ascii only
+    """
+    try:
+        as_ascii = filename.decode('ascii')
+        return filename == secure_filename(filename) and os.path.splitext(filename)[1] in ALLOWED_EXTENSIONS
+    except:
+        return False
+
+
 def sync_host_groups(entry):
     """Update HostGroups table from Host Package depends.
     Add / Remove host <-> group link based on entry.depends csv attribute
@@ -670,6 +681,9 @@ def upload_packages():
             packagefile.save(tmp_target)
             # test if package is OK.
             entry = PackageEntry(waptfile=tmp_target)
+            if not allowed_file(entry.make_package_filename()):
+                raise EWaptForbiddden(u'Package filename / name is forbidden : %s' % entry.make_package_filename())
+
             if entry.has_file('setup.py'):
                 # check if certificate has code_signing extended attribute
                 signer_certs = entry.package_certificate()
@@ -711,7 +725,6 @@ def upload_packages():
             raise
 
     try:
-
         starttime = time.time()
         done = []
         errors = []
@@ -965,30 +978,6 @@ def login():
         return make_response_from_exception(e)
 
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
-
-
-@app.route('/delete_package/<string:filename>')
-@requires_auth
-def delete_package(filename=''):
-    fullpath = os.path.join(app.conf['wapt_folder'], filename)
-    try:
-        if os.path.isfile(fullpath):
-            os.unlink(fullpath)
-            data = update_packages(app.conf['wapt_folder'])
-            result = dict(status='OK', message='Package deleted %s' % (fullpath,), result=data)
-        else:
-            result = dict(status='ERROR', message="The file %s doesn't exist in wapt folder (%s)" % (filename, app.conf['wapt_folder']))
-
-    except Exception as e:
-        result = {'status': 'ERROR', 'message': u'%s' % e}
-
-    return Response(response=json.dumps(result),
-                    status=200,
-                    mimetype='application/json')
-
 @app.route('/api/v3/packages_delete',methods=['HEAD','POST'])
 @requires_auth
 def packages_delete():
@@ -999,6 +988,8 @@ def packages_delete():
         filenames = request.get_json()
         for filename in filenames:
             try:
+                if not allowed_file(filename):
+                    raise EWaptForbiddden(u'Bad filename: %s' % filename)
                 package_path = os.path.join(app.conf['wapt_folder'], secure_filename(filename))
                 if os.path.isfile(package_path):
                     os.unlink(package_path)
@@ -1015,6 +1006,7 @@ def packages_delete():
     if errors:
         msg.append('ERROR : %s packages could not be deleted' % len(errors))
     return make_response(result=result, msg='\n'.join(msg), status=200)
+
 
 @app.route('/wapt/')
 def wapt_listing():
