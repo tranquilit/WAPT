@@ -968,6 +968,7 @@ def get_wapt_package(input_package_name):
 class WaptTaskManager(threading.Thread):
     def __init__(self,config_filename = 'c:/wapt/wapt-get.ini'):
         threading.Thread.__init__(self)
+        self.name = 'WaptTaskManager'
         self.status_lock = threading.RLock()
 
         self.wapt=None
@@ -1281,7 +1282,7 @@ class WaptTaskManager(threading.Thread):
                 nac(0, 0)
                 wapt.add_task(WaptNetworkReconfig())
 
-        nm = threading.Thread(target=addr_change,args=(self,))
+        nm = threading.Thread(target=addr_change,args=(self,),name='ip_monitoring')
         nm.daemon = True
         nm.start()
         logger.debug(u"Wapt network address monitoring started")
@@ -1293,7 +1294,7 @@ class WaptTaskManager(threading.Thread):
                 nrc(0, 0)
                 taskman.add_task(WaptNetworkReconfig())
 
-        nm = threading.Thread(target=connected_change,args=(self,))
+        nm = threading.Thread(target=connected_change,args=(self,),name='network_monitoring')
         nm.daemon = True
         nm.start()
         logger.debug(u"Wapt connection monitor started")
