@@ -123,6 +123,7 @@ object VisWAPTTray: TVisWAPTTray
     Top = 96
     Width = 376
     ActivePage = pgStatus
+    Align = alClient
     TabIndex = 0
     TabOrder = 0
     object pgStatus: TTabSheet

@@ -1,8 +1,6 @@
 unit uDMWAPTTray;
 
-// dans cet ordre impérativement
-{$mode delphiunicode}
-{$codepage UTF8}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -90,9 +88,9 @@ type
     Ftasks: ISuperObject;
     FtrayMode: TTrayMode;
     FWaptServiceRunning: Boolean;
-    function GetrayHint: WideString;
+    function GetrayHint: String;
     procedure Settasks(AValue: ISuperObject);
-    procedure SettrayHint(AValue: WideString);
+    procedure SettrayHint(AValue: String);
     procedure SetTrayIcon(idx: integer);
     procedure SettrayMode(AValue: TTrayMode);
     procedure SetWaptServiceRunning(AValue: Boolean);
@@ -115,7 +113,7 @@ type
     property tasks:ISuperObject read Ftasks write Settasks;
     property WaptServiceRunning:Boolean read FWaptServiceRunning write SetWaptServiceRunning;
     property trayMode:TTrayMode read FtrayMode write SettrayMode;
-    property trayHint:WideString read GetrayHint write SettrayHint;
+    property trayHint:String read GetrayHint write SettrayHint;
 
   end;
 
@@ -194,7 +192,7 @@ begin
         tasks := Nil;
       end;
     end;
-    Synchronize(UpdateTasks);
+    Synchronize(@UpdateTasks);
     Sleep(PollTimeout);
   end;
 end;
@@ -256,7 +254,7 @@ begin
       msg:=msg+#13#10+part;
     end;
     message.Text:=msg;
-    Synchronize(HandleMessage);
+    Synchronize(@HandleMessage);
     {if not Terminated then
       Sleep(PollTimeout);}
   end;
@@ -413,10 +411,10 @@ end;
 
 procedure TDMWaptTray.ActLaunchWaptConsoleExecute(Sender: TObject);
 var
-  cmd:WideString;
+  cmd:UnicodeString;
 begin
-  cmd := WaptConsoleFileName;
-  ShellExecuteW(0,Pchar('open'),PChar(cmd),Nil,Nil,0);
+  cmd := UTF8Decode(WaptConsoleFileName);
+  ShellExecuteW(0,'open',PWideChar(cmd),Nil,Nil,0);
 end;
 
 procedure TDMWaptTray.ActLaunchWaptConsoleUpdate(Sender: TObject);
@@ -433,6 +431,7 @@ end;
 procedure TDMWaptTray.pollerEvent(message:TStringList);
 var
   msg,msg_type,topic:String;
+  desc,summary:Utf8String;
   runstatus:String;
   upgrade_status,running,upgrades,errors,taskresult : ISuperObject;
   task_notify_user:Boolean;
@@ -448,7 +447,7 @@ begin
       // changement hint et balloonhint
       if (msg_type='WARNING') or (msg_type='CRITICAL') then
       begin
-          TrayIcon1.BalloonHint := UTF8Encode(msg);
+          TrayIcon1.BalloonHint := msg;
           TrayIcon1.BalloonFlags:=bfError;
           if not popupvisible and notify_user then
             TrayIcon1.ShowBalloonHint;
@@ -456,15 +455,15 @@ begin
       else
       if msg_type='STATUS' then
       begin
-        upgrade_status := SO(msg);
-        runstatus := upgrade_status.S['runstatus'];
+        upgrade_status := SO(utf8Decode(msg));
+        runstatus := UTF8Encode(upgrade_status.S['runstatus']);
         running := upgrade_status['running_tasks'];
         upgrades := upgrade_status['upgrades'];
         errors := upgrade_status['errors'];
         if (running<>Nil) and (running.AsArray.Length>0) then
         begin
           trayMode:=tmRunning;
-          trayHint:=format(utf8Decode(rsInstalling), [running.AsString]);
+          trayHint:=format(rsInstalling, [utf8Encode(running.AsString)]);
         end
         else
         if runstatus<>'' then
@@ -475,14 +474,14 @@ begin
         else
         if (errors<>Nil) and (errors.AsArray.Length>0) then
         begin
-          trayHint:= format(utf8Decode(rsErrorFor),[Join(#13#10,errors)]);
+          trayHint:= format(rsErrorFor,[utf8Decode(Join(#13#10,errors))]);
           trayMode:=tmErrors;
         end
         else
         if (upgrades<>Nil) and (upgrades.AsArray.Length>0) then
         begin
           trayMode:=tmUpgrades;
-          trayHint:= format(utf8Decode(rsUpdatesAvailableFor),[soutils.join(#13#10'-',upgrades)]);
+          trayHint:= format(rsUpdatesAvailableFor,[utf8Encode(soutils.join(#13#10'-',upgrades))]);
         end
         else
         begin
@@ -497,7 +496,7 @@ begin
         begin
           if TrayIcon1.BalloonHint<>msg then
           begin
-            TrayIcon1.BalloonHint := UTF8Encode(msg);
+            TrayIcon1.BalloonHint := msg;
             TrayIcon1.BalloonFlags:=bfNone;
             if not popupvisible and notify_user then
               TrayIcon1.ShowBalloonHint;
@@ -510,10 +509,13 @@ begin
         topic := message[0];
         message.Delete(0);
         msg := message.Text;
-        taskresult := SO(message.Text);
+        taskresult := SO(Utf8Decode(message.Text));
+        desc := UTF8Encode(taskresult.S['description']);
+        summary := UTF8Encode(taskresult.S['summary']);
+
         if taskresult<>Nil then
         begin
-          trayHint:= taskresult.S['runstatus'];
+          trayHint:= UTF8Encode(taskresult.S['runstatus']);
           if taskresult.B['notify_user'] then
             task_notify_user:=True
           else
@@ -530,7 +532,7 @@ begin
           trayMode:= tmErrors;
           current_task := Nil;
           if taskresult<>Nil then
-            TrayIcon1.BalloonHint := utf8Encode(format(utf8Decode(rsErrorFor), [taskresult.S['description']]))
+            TrayIcon1.BalloonHint := format(rsErrorFor, [desc])
           else
             TrayIcon1.BalloonHint := rsError;
           TrayIcon1.BalloonFlags:=bfError;
@@ -542,7 +544,7 @@ begin
         begin
           trayMode:= tmRunning;
           if taskresult<>Nil then
-            TrayIcon1.BalloonHint :=  utf8Encode(format(utf8Decode(rsTaskStarted), [taskresult.S['description']]))
+            TrayIcon1.BalloonHint :=  format(rsTaskStarted, [desc])
           else
             TrayIcon1.BalloonHint := '';
 
@@ -555,7 +557,7 @@ begin
         if topic='PROGRESS' then
         begin
           trayMode:= tmRunning;
-          TrayIcon1.BalloonHint :=  utf8Encode(taskresult.S['description']+#13#10+Format('%.0f%%',[taskresult.D['progress']]));
+          TrayIcon1.BalloonHint := desc+#13#10+Format('%.0f%%',[taskresult.D['progress']]);
           TrayIcon1.BalloonFlags:=bfInfo;
           if not popupvisible and notify_user and task_notify_user then
             TrayIcon1.ShowBalloonHint;
@@ -565,7 +567,7 @@ begin
         if topic='FINISH' then
         begin
           trayMode:= tmOK;
-          TrayIcon1.BalloonHint := utf8Encode(format(utf8Decode(rsTaskDone), [taskresult.S['description'], taskresult.S['summary']]));
+          TrayIcon1.BalloonHint := format(rsTaskDone, [desc, summary]);
           TrayIcon1.BalloonFlags:=bfInfo;
           if not popupvisible and task_notify_user then
             TrayIcon1.ShowBalloonHint;
@@ -624,7 +626,7 @@ end;
 
 procedure TDMWaptTray.ActServiceEnableExecute(Sender: TObject);
 var
-  res:WideString;
+  res:String;
 begin
   ActServiceEnable.Checked :=  GetServiceStatusByName('','waptservice') <> ssStopped;
   if ActServiceEnable.Checked then
@@ -648,10 +650,10 @@ end;
 
 procedure TDMWaptTray.ActSessionSetupExecute(Sender: TObject);
 var
-  res : WideString;
+  res : String;
 begin
   try
-    res := Run( WaptgetPath+' session-setup ALL','',120*1000);
+    res := Run(UTF8Decode(WaptgetPath+' session-setup ALL'),'',120*1000);
     ShowMessage(rsPackageConfigDone)
   except
     MessageDlg(rsError,rsPackageConfigError,mtError,[mbOK],0);
@@ -673,9 +675,9 @@ begin
   end;
 end;
 
-function TDMWaptTray.GetrayHint: WideString;
+function TDMWaptTray.GetrayHint: String;
 begin
-  Result := UTF8Decode(TrayIcon1.Hint);
+  Result := TrayIcon1.Hint;
 end;
 
 procedure TDMWaptTray.Settasks(AValue: ISuperObject);
@@ -684,12 +686,12 @@ begin
   Ftasks:=AValue;
 end;
 
-procedure TDMWaptTray.SettrayHint(AValue: WideString);
+procedure TDMWaptTray.SettrayHint(AValue: String);
 begin
-  if UTF8Decode(TrayIcon1.Hint)<>AValue then
+  if TrayIcon1.Hint<>AValue then
   begin
-    TrayIcon1.Hint:= utf8Encode(AValue);
-    TrayIcon1.BalloonHint:=utf8Encode(AValue);
+    TrayIcon1.Hint := AValue;
+    TrayIcon1.BalloonHint := AValue;
     {if not popupvisible and (AValue<>'') and notify_user then
       TrayIcon1.ShowBalloonHint;}
   end;
@@ -729,7 +731,7 @@ begin
   if not FWaptServiceRunning then
   begin
     trayMode:=tmErrors;
-    trayHint:=UTF8Decode(rsWaptServiceTerminated);
+    trayHint:=rsWaptServiceTerminated;
   end;
 end;
 
