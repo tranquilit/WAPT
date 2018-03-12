@@ -6,7 +6,7 @@ interface
 
 uses
   SysUtils, Forms, Controls, ButtonPanel, ExtCtrls, EditBtn, StdCtrls, Classes,
-  DefaultTranslator, Buttons, ActnList;
+  DefaultTranslator, Buttons, ActnList,LazUTF8,LazFileUtils;
 
 type
 
@@ -33,6 +33,7 @@ type
     Label3: TLabel;
     Panel1: TPanel;
     Panel2: TPanel;
+    Panel3: TPanel;
     procedure ActMakeAndEditExecute(Sender: TObject);
     procedure ActMakeAndEditUpdate(Sender: TObject);
     procedure ActMakeUploadExecute(Sender: TObject);
@@ -82,8 +83,8 @@ end;
 
 procedure TVisPackageWizard.ActMakeUploadExecute(Sender: TObject);
 var
-  packageSources,PackageName,Version,Description,Section,UninstallKey: String;
-  wapt,SilentFlags:Variant;
+  packageSources,PackageName,Version,Description,Section,UninstallKey: Variant;
+  wapt,SilentFlags,VInstallerFilename:Variant;
   UploadResult : ISuperObject;
 begin
   Screen.cursor := crHourGlass;
@@ -92,18 +93,20 @@ begin
   else
     SilentFlags := None();
 
-  if FileExists(EdInstallerPath.FileName) then
+  if FileExistsUTF8(EdInstallerPath.FileName) then
   try
     wapt := dmpython.WAPT;
     Version := EdVersion.Text;
-    PackageName := EdPackageName.Text;
-    Description := EdDescription.Text;
-    UninstallKey := EdUninstallKey.Text;
-    Section:=EdSection.Text;
+    PackageName := PyUTF8Decode(EdPackageName.Text);
+    Description := PyUTF8Decode(EdDescription.Text);
+    UninstallKey := PyUTF8Decode(EdUninstallKey.Text);
+    Section :=  PyUTF8Decode(EdSection.Text);
+
+    VInstallerFilename := PyUTF8Decode(InstallerFilename);
 
     packageSources := VarPythonAsString(wapt.make_package_template(
-      installer_path := InstallerFilename,
-      packagename := PackageName,
+      installer_path := VInstallerFilename,
+      packagename :=PackageName,
       description := Description,
       version := Version,
       uninstallkey := UninstallKey,
@@ -147,13 +150,15 @@ end;
 procedure TVisPackageWizard.SetInstallerFilename(AValue: String);
 var
   installInfos:ISUperObject;
+  VInstallerPath:Variant;
 begin
   if FInstallerFilename=AValue then Exit;
   FInstallerFilename:=AValue;
   EdInstallerPath.FileName:=FInstallerFilename;
-  if (AValue <> '') and FileExists(AValue) then
+  if (AValue <> '') and FileExistsUTF8(AValue) then
   begin
-    installInfos := PyVarToSuperObject(DMPython.setuphelpers.get_installer_defaults(AValue));
+    VInstallerPath:=PyUTF8Decode(AValue);
+    installInfos := PyVarToSuperObject(DMPython.setuphelpers.get_installer_defaults(VInstallerPath));
     EdPackageName.text := DefaultPackagePrefix+'-'+installInfos.S['simplename'];
     EdDescription.Text := UTF8Encode(installInfos.S['description']);
     EdVersion.Text := installInfos.S['version'];
