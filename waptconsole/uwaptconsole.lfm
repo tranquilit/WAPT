@@ -3511,7 +3511,7 @@ object VisWaptGUI: TVisWaptGUI
     object pgWindowsUpdates: TTabSheet
       Caption = 'Windows Updates'
       ClientHeight = 532
-      ClientWidth = 1182
+      ClientWidth = 1064
       object BitBtn9: TBitBtn
         Left = 316
         Height = 32
@@ -3534,7 +3534,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 4
         Height = 168
         Top = 50
-        Width = 1171
+        Width = 1053
         ShowAdvancedColumnsCustomize = False
         Align = alCustom
         Anchors = [akTop, akLeft, akRight]
@@ -3882,7 +3882,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 868
         Height = 248
         Top = 242
-        Width = 302
+        Width = 184
         ShowAdvancedColumnsCustomize = False
         Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Top = 2

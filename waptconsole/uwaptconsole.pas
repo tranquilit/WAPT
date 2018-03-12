@@ -7,12 +7,11 @@ interface
 uses
   Classes, SysUtils, Windows, ActiveX, Types, Forms, Controls, Graphics,
   Dialogs, Buttons, FileUtil, LazFileUtils, LazUTF8, SynEdit,
-  SynHighlighterPython, LSControls, TplStatusBarUnit,
-  vte_json, vte_dbtree, vte_dbtreeex, ExtCtrls, StdCtrls,
-  ComCtrls, ActnList, Menus, jsonparser, superobject, VirtualTrees, VarPyth,
-  ImgList, SOGrid, uvisloading, IdComponent, DefaultTranslator, IniPropStorage,
-  DBGrids, GetText, uWaptConsoleRes, db, BufDataset, memds, SearchEdit,
-  MenuButton, tisstrings;
+  SynHighlighterPython, LSControls, TplStatusBarUnit, vte_json, vte_dbtree,
+  vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, jsonparser,
+  superobject, VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading, IdComponent,
+  DefaultTranslator, IniPropStorage, DBGrids, ShellCtrls, GetText,
+  uWaptConsoleRes, db, BufDataset, memds, SearchEdit, MenuButton, tisstrings;
 
 type
 
@@ -2041,10 +2040,7 @@ end;
 procedure TVisWaptGUI.ActDeleteGroupExecute(Sender: TObject);
 var
   message: string = rsConfirmRmOnePackage;
-  res: ISuperObject;
-  group: string;
-  i: integer;
-  N: PVirtualNode;
+  packages,res: ISuperObject;
 begin
   if GridGroups.SelectedCount > 1 then
     message := format(rsConfirmRmMultiplePackages,[GridGroups.SelectedCount]);
@@ -2055,19 +2051,11 @@ begin
     with TVisLoading.Create(Self) do
       try
         ProgressTitle(rsDeletionInProgress);
-        N := GridGroups.GetFirstSelected;
-        i := 0;
-        while (N <> nil) and not StopRequired do
-        begin
-          Inc(i);
-          group := GridPackages.GetCellStrValue(N, 'filename');
-          ProgressTitle(format(rsDeletingElement, [group]));
-          res := WAPTServerJsonGet('delete_package/%S',[group]);
-          if not ObjectIsNull(res['error']) then
-            raise Exception.Create(res.S['error']);
-          N := GridGroups.GetNextSelected(N);
-          ProgressStep(i, GridGroups.SelectedCount);
-        end;
+        packages := soutils.ExtractField(GridGroups.SelectedRows,'filename');
+        ProgressTitle(format(rsDeletingElement, [Join(',',packages) ]));
+        res := WAPTServerJsonPost('/api/v3/packages_delete',[],packages);
+        if not res.B['success'] then
+           ShowMessageFmt('Error deleting packages: %S',[UTF8Encode(res.S['msg'])]);
         ProgressTitle(rsUpdatingPackageList);
         ActPackagesUpdate.Execute;
         ProgressTitle(rsDisplaying);
