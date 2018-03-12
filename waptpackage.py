@@ -762,7 +762,7 @@ class PackageEntry(BaseObjectClass):
                         previous_zi = waptzip.getinfo(u'WAPT/control')
                         waptzip.remove(u'WAPT/control')
                     except Exception as e:
-                        logger.debug("OK %s" % repr(e))
+                        logger.debug(u"OK %s" % repr(e))
                     waptzip.writestr(u'WAPT/control',self.ascontrol().encode('utf8'))
                     if not self.localpath:
                         self.localpath = fname
@@ -833,13 +833,13 @@ class PackageEntry(BaseObjectClass):
             return self.package+'.wapt'
         elif self.section == 'group':
             # we don't keep version for group
-            return self.package + '_'.join([f for f in (self.architecture,self.maturity,'-'.join(ensure_list(self.locale))) if (f and f != 'all')]) + '.wapt'
+            return self.package + u'_'.join([f for f in (self.architecture,self.maturity,'-'.join(ensure_list(self.locale))) if (f and f != 'all')]) + '.wapt'
         elif self.section == 'unit':
             # we have to hash the name.
-            return hashlib.md5(self.package).hexdigest()+ '_'.join([f for f in (self.architecture,self.maturity,'-'.join(ensure_list(self.locale))) if (f and f != 'all')]) + '.wapt'
+            return hashlib.md5(self.package).hexdigest()+ u'_'.join([f for f in (self.architecture,self.maturity,u'-'.join(ensure_list(self.locale))) if (f and f != 'all')]) + '.wapt'
         else:
             # includes only non empty fields
-            return '_'.join([f for f in (self.package,self.version,self.architecture,self.maturity,'-'.join(ensure_list(self.locale))) if f]) + '.wapt'
+            return u'_'.join([f for f in (self.package,self.version,self.architecture,self.maturity,'-'.join(ensure_list(self.locale))) if f]) + '.wapt'
 
     def make_package_edit_directory(self):
         """Return the standard package directory to edit the package based on current attributes
@@ -852,7 +852,7 @@ class PackageEntry(BaseObjectClass):
         if not (self.package):
             raise Exception(u'Not enough information to build the package directory for %s'%(self.package))
             # includes only non empty fields
-        return '_'.join([f for f in (self.package,self.architecture,self.maturity,self.locale) if (f and f != 'all')]) + '-wapt'
+        return u'_'.join([f for f in (self.package,self.architecture,self.maturity,self.locale) if (f and f != 'all')]) + '-wapt'
 
     def asrequirement(self):
         """Return package and version for designing this package in depends or install actions
@@ -860,7 +860,7 @@ class PackageEntry(BaseObjectClass):
         Returns:
             str: "packagename (=version)"
         """
-        return "%s (=%s)" % (self.package,self.version)
+        return u"%s (=%s)" % (self.package,self.version)
 
     @property
     def download_url(self):
@@ -931,12 +931,12 @@ class PackageEntry(BaseObjectClass):
             target_directory = tempfile.gettempdir()
 
         if not os.path.isdir(target_directory):
-            raise Exception('Bad target directory %s for package build' % target_directory)
+            raise Exception(u'Bad target directory %s for package build' % target_directory)
 
         result_filename = os.path.abspath(os.path.join(target_directory,self.filename))
 
         if os.path.isfile(result_filename):
-            logger.warning('Target package already exists, removing %s' % result_filename)
+            logger.warning(u'Target package already exists, removing %s' % result_filename)
             os.unlink(result_filename)
 
         self.localpath = result_filename
@@ -965,14 +965,14 @@ class PackageEntry(BaseObjectClass):
 
         # some checks
         if not self.sourcespath:
-            raise EWaptNotSourcesDirPackage('Error building package : There is no WAPT directory in %s' % self.sourcespath)
+            raise EWaptNotSourcesDirPackage(u'Error building package : There is no WAPT directory in %s' % self.sourcespath)
 
         if not os.path.isdir(os.path.join(self.sourcespath,'WAPT')):
-            raise EWaptNotSourcesDirPackage('Error building package : There is no WAPT directory in %s' % self.sourcespath)
+            raise EWaptNotSourcesDirPackage(u'Error building package : There is no WAPT directory in %s' % self.sourcespath)
 
         control_filename = os.path.join(self.sourcespath,'WAPT','control')
         if not os.path.isfile(control_filename):
-            raise EWaptNotSourcesDirPackage('Error building package : There is no control file in WAPT directory')
+            raise EWaptNotSourcesDirPackage(u'Error building package : There is no control file in WAPT directory')
 
         force_utf8_no_bom(control_filename)
 
@@ -990,11 +990,11 @@ class PackageEntry(BaseObjectClass):
             target_directory = os.path.abspath(os.path.join(self.sourcespath,'..'))
 
         if not os.path.isdir(target_directory):
-            raise Exception('Bad target directory %s for package build' % target_directory)
+            raise Exception(u'Bad target directory %s for package build' % target_directory)
 
         result_filename = os.path.abspath(os.path.join(target_directory,self.filename))
         if os.path.isfile(result_filename):
-            logger.warning('Target package already exists, removing %s' % result_filename)
+            logger.warning(u'Target package already exists, removing %s' % result_filename)
             os.unlink(result_filename)
 
         self.localpath = result_filename
@@ -1019,7 +1019,7 @@ class PackageEntry(BaseObjectClass):
         """Return the signed control informations"""
         # workaround for migration
         if not self.signed_attributes and self.signature_date < '20170609':
-            logger.warning('Package %s has old control signature style, some attributes are not checked. Please re-sign package' % (self.localpath or self.sourcespath or self.asrequirement()))
+            logger.warning(u'Package %s has old control signature style, some attributes are not checked. Please re-sign package' % (self.localpath or self.sourcespath or self.asrequirement()))
             effective_signed_attributes = ['package','version','architecture','section','priority','depends','conflicts','maturity']
         else:
             effective_signed_attributes = self.signed_attributes
@@ -1073,7 +1073,7 @@ class PackageEntry(BaseObjectClass):
 
         """
         if not self.signature:
-            raise EWaptNotSigned('Package control %s on repo %s is not signed' % (self.asrequirement(),self.repo))
+            raise EWaptNotSigned(u'Package control %s on repo %s is not signed' % (self.asrequirement(),self.repo))
         assert(isinstance(trusted_bundle,SSLCABundle))
 
         certs = self.package_certificate()
@@ -1082,7 +1082,7 @@ class PackageEntry(BaseObjectClass):
         if not certs and trusted_bundle:
             certs = trusted_bundle.certificate_chain(fingerprint = self.signer_fingerprint)
         if not certs:
-            raise EWaptMissingCertificate('Control %s data has no matching certificate in Packages index or Package, please rescan your Packages index.' % self.asrequirement())
+            raise EWaptMissingCertificate(u'Control %s data has no matching certificate in Packages index or Package, please rescan your Packages index.' % self.asrequirement())
 
         #append trusted to ca
 
@@ -1095,7 +1095,7 @@ class PackageEntry(BaseObjectClass):
             self._md = self._default_md
             return certs[0]
 
-        raise SSLVerifyException('SSL signature verification failed for control %s against embedded certificate %s' % (self.asrequirement(),certs))
+        raise SSLVerifyException(u'SSL signature verification failed for control %s against embedded certificate %s' % (self.asrequirement(),certs))
 
     def has_file(self,fname):
         """Return None if fname is not in package, else return file datetime
@@ -1137,7 +1137,7 @@ class PackageEntry(BaseObjectClass):
                 certs.add_pem(cert_pem)
                 return certs.certificates()
             except Exception as e:
-                logger.warning('No certificate found in %s : %s'% (self.localpath,repr(e)))
+                logger.warning(u'No certificate found in %s : %s'% (self.localpath,repr(e)))
                 return None
         elif self.sourcespath and os.path.isdir(self.sourcespath) and os.path.isfile(os.path.join(self.sourcespath,'WAPT','certificate.crt')):
             # unzipped sources
@@ -1217,7 +1217,7 @@ class PackageEntry(BaseObjectClass):
 
         start_time = time.time()
         package_fn = self.localpath
-        logger.debug('Signing %s with key %s, and certificate CN "%s"' % (package_fn,private_key,signer_cert.cn))
+        logger.debug(u'Signing %s with key %s, and certificate CN "%s"' % (package_fn,private_key,signer_cert.cn))
         # sign the control (one md only, so take default if many)
         if len(mds) == 1:
             self._default_md = mds[0]
@@ -1452,14 +1452,14 @@ class PackageEntry(BaseObjectClass):
             certs = self.package_certificate()
             if certs:
                 issued_by = ', '.join('%s' % ca.cn for ca in trusted_bundle.check_certificates_chain(certs))
-                logger.debug('Certificate %s is trusted by root CA %s' % (certs[0].subject,issued_by))
+                logger.debug(u'Certificate %s is trusted by root CA %s' % (certs[0].subject,issued_by))
 
             if certs:
                 signer_cert = certs[0]
-                logger.debug('Checking signature with %s' % signer_cert)
+                logger.debug(u'Checking signature with %s' % signer_cert)
                 signer_cert.verify_content(manifest_data,signature,md = self._md)
                 if not has_setup_py or signer_cert.is_code_signing:
-                    logger.debug('OK with %s' % signer_cert)
+                    logger.debug(u'OK with %s' % signer_cert)
                     verified_by = signer_cert
                 else:
                     raise SSLVerifyException(u'Signature OK but not a code signing certificate: %s' % signer_cert)
@@ -1469,7 +1469,7 @@ class PackageEntry(BaseObjectClass):
                 raise SSLVerifyException(u'No certificate found in the package. Is the package signed with Wapt version prior to 1.5 ?' % signer_cert)
 
         except Exception as e:
-            logger.debug('Check_package_signature failed for %s. Signer:%s, trusted_bundle: %s :  %s' % (
+            logger.debug(u'Check_package_signature failed for %s. Signer:%s, trusted_bundle: %s :  %s' % (
                     self.asrequirement(),
                     self.signer,u'\n'.join([u'%s' % cert for cert in trusted_bundle.certificates()]),
                     traceback.format_exc()))
@@ -2062,7 +2062,7 @@ class WaptLocalRepo(WaptBaseRepo):
                             logger.critical(u'Package %s discarded because: %s'% (package.localpath,e))
                             self.discarded.append(package)
                     else:
-                        logger.info('Discarding %s on repo "%s" because of local whitelist of blacklist rules' % (package.asrequirement(),self.name))
+                        logger.info(u'Discarding %s on repo "%s" because of local whitelist of blacklist rules' % (package.asrequirement(),self.name))
                         self.discarded.append(package)
 
             for line in packages_lines:
@@ -2078,7 +2078,7 @@ class WaptLocalRepo(WaptBaseRepo):
         else:
             self.invalidate_packages_cache()
             self._packages = []
-            logger.info('Index file %s does not yet exist' % self.packages_path)
+            logger.info(u'Index file %s does not yet exist' % self.packages_path)
 
     def update_packages_index(self,force_all=False):
         """Scan self.localpath directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash
@@ -2108,9 +2108,9 @@ class WaptLocalRepo(WaptBaseRepo):
                 if fileisoutcdate(localwaptfile) <= self._packages_date:
                     old_entries[os.path.basename(package.filename)] = package
                 else:
-                    logger.info("Don't keep old entry for %s, wapt package is newer than index..." % package.asrequirement())
+                    logger.info(u"Don't keep old entry for %s, wapt package is newer than index..." % package.asrequirement())
             else:
-                logger.info('Stripping entry without matching file : %s'%localwaptfile)
+                logger.info(u'Stripping entry without matching file : %s'%localwaptfile)
 
         if not os.path.isdir(self.localpath):
             raise Exception(u'%s is not a directory' % (self.localpath))
@@ -2155,7 +2155,7 @@ class WaptLocalRepo(WaptBaseRepo):
                     processed.append(fname)
                     theoritical_package_filename =  entry.make_package_filename()
                     if package_filename != theoritical_package_filename:
-                        logger.warning('Package filename %s should be %s to comply with control metadata. Renaming...'%(package_filename,theoritical_package_filename))
+                        logger.warning(u'Package filename %s should be %s to comply with control metadata. Renaming...'%(package_filename,theoritical_package_filename))
                         os.rename(fname,os.path.join(os.path.dirname(fname),theoritical_package_filename))
 
                 packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
@@ -2481,7 +2481,7 @@ class WaptRemoteRepo(WaptBaseRepo):
             # load certificates and CRLs
             signer_certificates = self.get_certificates(packages_zipfile = waptzip)
 
-        logger.debug('Packages index from repo %s has %s embedded certificates' % (self.name,len(signer_certificates._certificates)))
+        logger.debug(u'Packages index from repo %s has %s embedded certificates' % (self.name,len(signer_certificates._certificates)))
 
         startline = 0
         endline = 0
@@ -2502,11 +2502,11 @@ class WaptRemoteRepo(WaptBaseRepo):
                         if package.package not in self._index or self._index[package.package] < package:
                             self._index[package.package] = package
                     except Exception as e:
-                        logger.critical('Discarding %s on repo "%s": %s' % (package.asrequirement(),self.name,e))
+                        logger.critical(u'Discarding %s on repo "%s": %s' % (package.asrequirement(),self.name,e))
                         #logger.debug('Certificate bundle : %s' % self.cabundle)
                         self.discarded.append(package)
                 else:
-                    logger.info('Discarding %s on repo "%s" because of local whitelist of blacklist rules' % (package.asrequirement(),self.name))
+                    logger.info(u'Discarding %s on repo "%s" because of local whitelist of blacklist rules' % (package.asrequirement(),self.name))
                     self.discarded.append(package)
 
         for line in packages_lines:

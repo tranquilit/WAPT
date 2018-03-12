@@ -558,7 +558,7 @@ def main():
                     raise Exception('Running wapt processes (%s) in progress, please wait...' % (running_install,))
                 removed = []
                 errors = []
-                for packagename in expand_args(args[1:]):
+                for packagename in expand_args(args[1:],expand_file_wildcards=False):
                     print(u"Removing %s ..." % (packagename,))
                     try:
                         packagename = guess_package_root_dir(packagename)
@@ -616,7 +616,7 @@ def main():
                     print(u"You must provide at least one package to be uninstalled")
                     sys.exit(1)
 
-                for packagename in expand_args(args[1:]):
+                for packagename in expand_args(args[1:],expand_file_wildcards=False):
                     print(u"Uninstalling %s ..." % (packagename,))
                     packagename = guess_package_root_dir(packagename)
                     print(mywapt.uninstall(packagename,params_dict=params_dict))
@@ -706,11 +706,11 @@ def main():
                 if len(args) < 2:
                     print(u"You must provide the package names to forget")
                     sys.exit(1)
-                result = mywapt.forget_packages(args[1:])
+                result = mywapt.forget_packages(expand_args(args[1:],expand_file_wildcards=False))
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
-                    print(u"\n=== Packages removed from status ===\n%s" % ('\n'.join( ["  %-30s " % (p) for p in  result]),))
+                    print(u"\n=== Packages removed from status ===\n%s" % (u'\n'.join( [u"  %-30s " % (p) for p in  result]),))
 
             elif action == 'update-packages':
                 if len(args) < 2:
@@ -725,7 +725,7 @@ def main():
                     print(u"Processed packages :\n%s" % "\n".join(["  %s" % p for p in result['processed']]))
                     print(u"Skipped packages :\n%s" % "\n".join(["  %s" % p for p in result['kept']]))
                     if result['errors']:
-                        logger.critical(u'Unable to process some files :\n%s' % "\n".join(["  %s" % p for p in result['kept']]))
+                        logger.critical(u'Unable to process some files :\n%s' % u"\n".join([u"  %s" % p for p in result['kept']]))
                         sys.exit(1)
 
             elif action == 'sources':
@@ -1126,7 +1126,7 @@ def main():
                         return value[0:16]
                     else:
                         return value
-                result = mywapt.list(args[1:])
+                result = mywapt.list(expand_args(args[1:],expand_file_wildcards=False))
                 if options.json_output:
                     jsonresult['result'] = result
                 else:

@@ -512,21 +512,21 @@ def package_icon():
                 repo_url = wapt().repositories[0].repo_url
                 timeout = wapt().repositories[0].timeout
 
-                remote_icon_path = "{repo}/icons/{package}.png".format(repo=repo_url,package=package)
+                remote_icon_path = u"{repo}/icons/{package}.png".format(repo=repo_url,package=package)
                 icon = requests.get(remote_icon_path,proxies=proxies,timeout=timeout,verify=False)
                 icon.raise_for_status()
                 open(icon_local_filename,'wb').write(icon.content)
                 return StringIO.StringIO(icon.content)
             else:
-                raise requests.HTTPError('Unavailable icon')
+                raise requests.HTTPError(u'Unavailable icon')
         else:
             return open(icon_local_filename,'rb')
 
     try:
         icon = get_icon(package)
-        return send_file(icon,'image/png',as_attachment=True,attachment_filename='{}.png'.format(package),cache_timeout=43200)
+        return send_file(icon,'image/png',as_attachment=True,attachment_filename=u'{}.png'.format(package).encode('utf8'),cache_timeout=43200)
     except requests.RequestException as e:
-        return send_from_directory(app.static_folder+'/images','unknown.png',mimetype='image/png',as_attachment=True,attachment_filename='{}.png'.format(package),cache_timeout=43200)
+        return send_from_directory(app.static_folder+'/images','unknown.png',mimetype='image/png',as_attachment=True,attachment_filename=u'{}.png'.format(package).encode('utf8'),cache_timeout=43200)
 
 @app.route('/package_details')
 @app.route('/package_details.json')
@@ -572,7 +572,7 @@ def get_checkupgrades():
         con.row_factory=sqlite3.Row
         data = ""
         try:
-            query ="""select * from wapt_params where name="last_update_status" limit 1"""
+            query = u"""select * from wapt_params where name="last_update_status" limit 1"""
             cur = con.cursor()
             cur.execute(query)
             data = json.loads(cur.fetchone()['value'])

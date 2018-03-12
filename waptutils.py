@@ -513,7 +513,7 @@ def force_utf8_no_bom(filename):
             content = codecs.open(filename, encoding='iso8859-15').read()
             codecs.open(filename, mode='wb', encoding='utf8').write(content)
 
-def expand_args(args):
+def expand_args(args,expand_file_wildcards=True):
     """Return list of unicode file paths expanded from wildcard list args"""
     def from_system_encoding(t):
         if isinstance(t,unicode):
@@ -525,9 +525,15 @@ def expand_args(args):
                 return ensure_unicode(t)
 
     all_args = []
-    for a in ensure_list(args):
-        all_args.extend([os.path.abspath(p) for p in glob.glob(from_system_encoding(a))])
+    if expand_file_wildcards:
+        for a in ensure_list(args):
+            all_args.extend([os.path.abspath(p) for p in glob.glob(from_system_encoding(a))])
+    else:
+        all_args.extend([from_system_encoding(a) for a in args])
+
     return all_args
+
+
 
 def default_http_headers():
     return {

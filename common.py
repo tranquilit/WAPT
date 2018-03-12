@@ -1064,11 +1064,11 @@ class WaptDB(WaptBaseDB):
             words = []
             search = ['1=1']
         else:
-            words = [ "%"+w.lower()+"%" for w in searchwords ]
-            search = ["lower(l.package || (case when r.description is NULL then '' else r.description end) ) like ?"] *  len(words)
+            words = [ u"%"+w.lower()+"%" for w in searchwords ]
+            search = [u"lower(l.package || (case when r.description is NULL then '' else r.description end) ) like ?"] *  len(words)
         if not include_errors:
-            search.append('l.install_status in ("OK","UNKNOWN")')
-        q = self.query_package_entry("""\
+            search.append(u'l.install_status in ("OK","UNKNOWN")')
+        q = self.query_package_entry(u"""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,
                 l.depends,l.conflicts,
                 r.section,r.priority,r.maintainer,r.description,r.sources,r.filename,r.size,
@@ -1087,7 +1087,7 @@ class WaptDB(WaptBaseDB):
         else:
             status = '"OK","UNKNOWN"'
 
-        q = self.query_package_entry("""\
+        q = self.query_package_entry(u"""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,l.explicit_by,
                 l.depends,l.conflicts,
                 r.section,r.priority,r.maintainer,r.description,r.sources,r.filename,r.size,
@@ -4302,7 +4302,7 @@ class Wapt(BaseObjectClass):
                     if pe:
                         package = pe.package
 
-                q = self.waptdb.query("""\
+                q = self.waptdb.query(u"""\
                    select * from wapt_localstatus
                     where package=?
                    """ , (package,))
@@ -5584,7 +5584,7 @@ class Wapt(BaseObjectClass):
             entry.section = section
             entry.version = '0'
             entry.architecture='all'
-            entry.description = description or '%s package for %s ' % (section,packagename)
+            entry.description = description or u'%s package for %s ' % (section,packagename)
             try:
                 entry.maintainer = ensure_unicode(win32api.GetUserNameEx(3))
             except:
