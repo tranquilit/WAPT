@@ -386,4 +386,4 @@ if __name__ == '__main__':
         elif action == 'install_waptserver':
             print('Installing WAPT Server as a service managed by nssm')
             install_waptserver_service()
-
+    setuphelpers.run(r'icacls "%s" /t /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(wapt_root_dir,'conf'))
