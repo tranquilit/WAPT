@@ -32,6 +32,7 @@ object VisPackageWizard: TVisPackageWizard
       EditLabel.AnchorSideTop.Control = EdUninstallKey
       EditLabel.AnchorSideTop.Side = asrCenter
       EditLabel.AnchorSideRight.Control = EdUninstallKey
+      EditLabel.AnchorSideBottom.Control = EdUninstallKey
       EditLabel.AnchorSideBottom.Side = asrBottom
       EditLabel.Left = 51
       EditLabel.Height = 13
@@ -76,6 +77,7 @@ object VisPackageWizard: TVisPackageWizard
       EditLabel.AnchorSideTop.Control = EdDescription
       EditLabel.AnchorSideTop.Side = asrCenter
       EditLabel.AnchorSideRight.Control = EdDescription
+      EditLabel.AnchorSideBottom.Control = EdDescription
       EditLabel.AnchorSideBottom.Side = asrBottom
       EditLabel.Left = 58
       EditLabel.Height = 13
@@ -94,6 +96,7 @@ object VisPackageWizard: TVisPackageWizard
       EditLabel.AnchorSideTop.Control = EdSilentFlags
       EditLabel.AnchorSideTop.Side = asrCenter
       EditLabel.AnchorSideRight.Control = EdSilentFlags
+      EditLabel.AnchorSideBottom.Control = EdSilentFlags
       EditLabel.AnchorSideBottom.Side = asrBottom
       EditLabel.Left = 59
       EditLabel.Height = 13
@@ -112,6 +115,7 @@ object VisPackageWizard: TVisPackageWizard
       EditLabel.AnchorSideTop.Control = EdVersion
       EditLabel.AnchorSideTop.Side = asrCenter
       EditLabel.AnchorSideRight.Control = EdVersion
+      EditLabel.AnchorSideBottom.Control = EdVersion
       EditLabel.AnchorSideBottom.Side = asrBottom
       EditLabel.Left = 29
       EditLabel.Height = 13

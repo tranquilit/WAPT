@@ -5,8 +5,8 @@ unit uVisPackageWizard;
 interface
 
 uses
-  SysUtils, Forms, Controls, ButtonPanel, ExtCtrls, EditBtn, StdCtrls, Classes,
-  DefaultTranslator, Buttons, ActnList,LazUTF8,LazFileUtils;
+  SysUtils, Forms, Controls, LazUTF8,LazFileUtils,ButtonPanel, ExtCtrls, EditBtn, StdCtrls, Classes,
+  DefaultTranslator, Buttons, ActnList;
 
 type
 
@@ -157,7 +157,7 @@ begin
   EdInstallerPath.FileName:=FInstallerFilename;
   if (AValue <> '') and FileExistsUTF8(AValue) then
   begin
-    VInstallerPath:=PyUTF8Decode(AValue);
+    VInstallerPath:=UTF8Decode(AValue);
     installInfos := PyVarToSuperObject(DMPython.setuphelpers.get_installer_defaults(VInstallerPath));
     EdPackageName.text := DefaultPackagePrefix+'-'+installInfos.S['simplename'];
     EdDescription.Text := UTF8Encode(installInfos.S['description']);
