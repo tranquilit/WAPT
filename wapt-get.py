@@ -240,7 +240,9 @@ def ask_user_password(title=''):
     user = options.wapt_server_user
     password = options.wapt_server_passwd
     if sys.stdin is not sys.__stdin__ and waptguihelper:
-        res = waptguihelper.login_password_dialog('Credentials for wapt server',title or '',user or 'admin',password or '')
+        if isinstance(title,unicode):
+            title = title.encode('utf8')
+        res = waptguihelper.login_password_dialog('Credentials for wapt server',title.encode('utf8') or '',user or 'admin',password or '')
         if res:
             user = res['user']
             password = res['password']
@@ -341,14 +343,14 @@ def main():
 
         # key password management
         def get_private_key_passwd(*args):
-            """Password callback for opening private keysin suppli password file"""
+            """Passwo²rd callback for opening private keysin suppli password file"""
             global private_key_password_cache
             if options.private_key_passwd and os.path.isfile(options.private_key_passwd):
                 return open(options.private_key_passwd,'r').read().splitlines()[0].strip()
             else:
                 if private_key_password_cache is None:
                     if sys.stdin is not sys.__stdin__ and waptguihelper:
-                        res = waptguihelper.key_password_dialog('Password for orivate key',mywapt.personal_certificate_path,private_key_password_cache or '')
+                        res = waptguihelper.key_password_dialog('Password for orivate key',mywapt.personal_certificate_path.encode('utf8'),private_key_password_cache or '')
                         if res:
                             private_key_password_cache = res['keypassword']
                         else:
