@@ -315,9 +315,9 @@ var
 begin
   http_proxy:=Waptrepo.HttpProxy;
 
-  if not FileExists(GetWaptPersonalCertificatePath) then
+  if not FileExistsUTF8(WaptPersonalCertificatePath) then
   begin
-    ShowMessageFmt(rsPrivateKeyDoesntExist, [GetWaptPersonalCertificatePath]);
+    ShowMessageFmt(rsPrivateKeyDoesntExist, [WaptPersonalCertificatePath]);
     exit;
   end;
 

@@ -38,8 +38,6 @@ interface
         constructor Create(const msg: string;AHTTPStatus:Integer);
       end;
 
-  function GetWaptPersonalCertificatePath: Utf8String;
-
   Function GetWaptLocalURL:String;
 
   function AppLocalDir: Utf8String; // returns Users/<user>/local/appdata/<application_name>
@@ -208,6 +206,9 @@ const
   EnableManagementFeatures:Boolean = True;
 
   HideUnavailableActions:Boolean = False;
+
+  WaptPersonalCertificatePath: String ='';
+
 
   WAPTServerMinVersion='1.5.1.13';
 
@@ -414,8 +415,6 @@ end;
   end;
 
   procedure TWaptRepo.LoadFromInifile(IniFilename: String; Section: String;Reset:Boolean=True);
-  var
-    ini:TIniFile;
   begin
     if Section ='' then
       Section := Name;
@@ -447,8 +446,6 @@ end;
   end;
 
   procedure TWaptRepo.SaveToInifile(IniFilename: String; Section: String);
-  var
-    ini:TIniFile;
   begin
     if Section ='' then
       Section := Name;
@@ -1268,11 +1265,6 @@ begin
 end;
 
 
-function GetWaptPersonalCertificatePath: Utf8String;
-begin
-  result := utf8Decode(IniReadString(WaptIniFilename,'global','personal_certificate_path'));
-end;
-
 function GetWaptLocalURL: String;
 begin
   if waptservice_port >0 then
@@ -1417,6 +1409,8 @@ begin
     DefaultPackagePrefix := ReadString('global','default_package_prefix','');
     DefaultSourcesRoot := ReadString('global','default_sources_root','');
 
+    WaptPersonalCertificatePath :=  ReadString('global','personal_certificate_path','');
+
     Result := True
 
   finally
@@ -1432,8 +1426,6 @@ begin
   else
     result := ExtractFilePath(ParamStr(0))+'db\waptdb.sqlite'
 end;
-
-
 
 //////
 
@@ -1838,7 +1830,7 @@ begin
     Run(format('"%s"  "%s"',[inno_fn,custom_iss]),'',3600000,'','','',OnProgress);
     Result := AppendPathDelim(destination) + WaptEdition + '.exe';
     signtool :=  AppendPathDelim(wapt_base_dir) + 'utils\signtool.exe';
-    p12keyPath := ChangeFileExt(GetWaptPersonalCertificatePath,'.p12');
+    p12keyPath := ChangeFileExt(WaptPersonalCertificatePath,'.p12');
     if FileExists(signtool) and FileExists(p12keypath) then
       Run(format('"%s" sign /f "%s" "%s"',[signtool,p12keypath,Result]),'',3600000,'','','',OnProgress);
 

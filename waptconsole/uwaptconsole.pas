@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Windows, ActiveX, Types, Forms, Controls, Graphics,
-  Dialogs, Buttons, FileUtil, LazFileUtils, LazUTF8, SynEdit,
+  Dialogs, Buttons, LazFileUtils, LazUTF8, FileUtil, SynEdit,
   SynHighlighterPython, LSControls, TplStatusBarUnit, vte_json, vte_dbtree,
   vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, jsonparser,
   superobject, VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading, IdComponent,
@@ -1524,7 +1524,7 @@ begin
     begin
       with TINIFile.Create(AppIniFilename) do
       try
-        if GetWaptPersonalCertificatePath = '' then
+        if WaptPersonalCertificatePath = '' then
         // first use...
           WriteString('global', 'personal_certificate_path', CertificateFilename);
 
@@ -1591,9 +1591,9 @@ begin
     exit;
   end;
 
-  if not FileExists(GetWaptPersonalCertificatePath) then
+  if not FileExistsUTF8(WaptPersonalCertificatePath) then
   begin
-    ShowMessageFmt(rsPrivateKeyDoesntExist, [GetWaptPersonalCertificatePath]);
+    ShowMessageFmt(rsPrivateKeyDoesntExist, [WaptPersonalCertificatePath]);
     exit;
   end;
 
@@ -1714,7 +1714,7 @@ end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupUpdate(Sender: TObject);
 begin
-  ActCreateWaptSetup.Enabled:= DMPython.CertificateIsCodeSigning(GetWaptPersonalCertificatePath) and EnableManagementFeatures;
+  ActCreateWaptSetup.Enabled:= DMPython.CertificateIsCodeSigning(WaptPersonalCertificatePath) and EnableManagementFeatures;
 end;
 
 procedure TVisWaptGUI.ActAddConflictsExecute(Sender: TObject);
@@ -1942,7 +1942,7 @@ end;
 
 procedure TVisWaptGUI.ActChangePrivateKeypasswordUpdate(Sender: TObject);
 begin
-  ActChangePrivateKeypassword.Enabled := FileExists(GetWaptPersonalCertificatePath);
+  ActChangePrivateKeypassword.Enabled := FileExistsUTF8(WaptPersonalCertificatePath);
 end;
 
 procedure TVisWaptGUI.ActCleanCacheExecute(Sender: TObject);
@@ -2283,12 +2283,12 @@ end;
 
 procedure TVisWaptGUI.ActPackagesRemoveUpdate(Sender: TObject);
 begin
-  (Sender as TAction).Enabled:=OneHostIsConnected and FileExists(GetWaptPersonalCertificatePath);
+  (Sender as TAction).Enabled:=OneHostIsConnected and FileExistsUTF8(WaptPersonalCertificatePath);
 end;
 
 procedure TVisWaptGUI.ActPackagesUpdateUpdate(Sender: TObject);
 begin
-  ActPackagesUpdate.Enabled:=FileExists(GetWaptPersonalCertificatePath);
+  ActPackagesUpdate.Enabled:=FileExistsUTF8(WaptPersonalCertificatePath);
 end;
 
 procedure TVisWaptGUI.ActProprietaryExecute(Sender: TObject);
@@ -2684,9 +2684,9 @@ begin
   if GridHosts.FocusedRow<>Nil then
   try
     host := GridHosts.FocusedRow;
-    hostname := host.S['computer_fqdn'];
-    uuid := host.S['uuid'];
-    desc := host.S['description'];
+    hostname := UTF8Encode(host.S['computer_fqdn']);
+    uuid := UTF8Encode(host.S['uuid']);
+    desc := UTF8Encode(host.S['description']);
     uuids := TSuperobject.create(stArray);
     uuids.AsArray.Add(uuid);
 
@@ -2696,7 +2696,7 @@ begin
     begin
       for Package in HostPackages do
       begin
-        if Package.S['package'] = uuid then
+        if UTF8Encode(Package.S['package']) = uuid then
         begin
           HostPackageVersion := Package.S['version'];
           break;
@@ -2704,7 +2704,7 @@ begin
       end;
     end;
 
-    result := EditHost(uuid, AdvancedMode, ApplyUpdatesImmediately, UTF8Encode(desc),host.S['reachable'] = 'OK',hostname,HostPackageVersion);
+    result := EditHost(uuid, AdvancedMode, ApplyUpdatesImmediately, desc,host.S['reachable'] = 'OK',hostname,HostPackageVersion);
     if (result<>Nil) and ApplyUpdatesImmediately and (uuid<>'')  then
       result := TriggerActionOnHosts(uuids,'trigger_host_upgrade',Nil,rsUpgradingHost,rsErrorLaunchingUpgrade);
 
@@ -2743,6 +2743,7 @@ var
   SOAction, SOActions:ISuperObject;
   actions_json,
   signed_actions_json:String;
+  vcertificate_path: Variant;
 begin
   try
     Screen.Cursor:=crHourGlass;
@@ -2764,8 +2765,9 @@ begin
 
       //transfer actions as json string to python
       actions_json := SOActions.AsString;
+      vcertificate_path := PyUTF8Decode(WaptPersonalCertificatePath);
       signed_actions_json := VarPythonAsString(DMPython.waptdevutils.sign_actions(
-        actions:=actions_json, certfilename:=GetWaptPersonalCertificatePath(),key_password:= dmpython.privateKeyPassword));
+        actions:=actions_json, certfilename:=vcertificate_path,key_password:= dmpython.privateKeyPassword));
       SOActions := SO(signed_actions_json);
 
       result := WAPTServerJsonPost('/api/v3/trigger_host_action?timeout=%D',[waptservice_timeout],SOActions);
@@ -2804,6 +2806,7 @@ var
   actions_json,
   keypassword:String;
   signed_actions_json:String;
+  vWaptPersonalCertificatePath:Variant;
 begin
   if GridHostPackages.Focused and (GridHosts.FocusedRow <> Nil) then
   begin
@@ -2832,8 +2835,9 @@ begin
         //transfer actions as json string to python
         actions_json := SOActions.AsString;
         keypassword := dmpython.privateKeyPassword;
+        vWaptPersonalCertificatePath := PyUTF8Decode(WaptPersonalCertificatePath);
         signed_actions_json := VarPythonAsString(DMPython.waptdevutils.sign_actions(
-          actions:=actions_json, certfilename:=GetWaptPersonalCertificatePath(),key_password:=keypassword));
+          actions:=actions_json, certfilename:=vWaptPersonalCertificatePath, key_password:=keypassword));
         SOActions := SO(signed_actions_json);
 
         res := WAPTServerJsonPost('/api/v3/trigger_host_action?timeout=%D',[waptservice_timeout],SOActions);
@@ -2901,7 +2905,7 @@ end;
 
 procedure TVisWaptGUI.ActHostsActionsUpdate(Sender: TObject);
 begin
-  (Sender as TAction).Enabled:= (GridHosts.SelectedCount>0) and OneHostIsConnected and FileExists(GetWaptPersonalCertificatePath);
+  (Sender as TAction).Enabled:= (GridHosts.SelectedCount>0) and OneHostIsConnected and FileExistsUTF8(WaptPersonalCertificatePath);
 end;
 
 procedure TVisWaptGUI.ActImportFromFileExecute(Sender: TObject);
@@ -2912,9 +2916,9 @@ var
   SourcesVar: Variant;
 
 begin
-  if not FileExists(GetWaptPersonalCertificatePath) then
+  if not FileExistsUTF8(WaptPersonalCertificatePath) then
   begin
-    ShowMessageFmt(rsPrivateKeyDoesntExist, [GetWaptPersonalCertificatePath]);
+    ShowMessageFmt(rsPrivateKeyDoesntExist, [WaptPersonalCertificatePath]);
     exit;
   end;
 
@@ -3965,7 +3969,7 @@ begin
     end
     else
       // be sure other forms will not use it.
-      if FileExists(Appuserinipath) then
+      if FileExistsUTF8(Appuserinipath) then
         SysUtils.DeleteFile(Appuserinipath);
 
     pgWindowsUpdates.TabVisible:=waptcommon.waptwua_enabled;
@@ -4962,7 +4966,7 @@ begin
       // Add a first (all) to allow  no filtering on OU
       DBOrgUnits.Append;
       dn:='';
-      DBOrgUnitsID.AsInteger := Hash(dn);
+      DBOrgUnitsID.AsInteger := LongInt(Hash(dn));
       DBOrgUnitsDN.Value := UTF8Encode(DN);
       DBOrgUnitsDescription.Value := rsFilterAll;
       DBOrgUnitsDepth.Value := 0;

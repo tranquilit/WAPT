@@ -5,7 +5,7 @@ unit dmwaptpython;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LazFileUtils, PythonEngine, PythonGUIInputOutput,
+  Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8, PythonEngine, PythonGUIInputOutput,
   VarPyth, vte_json, superobject, fpjson, jsonparser, DefaultTranslator,
   Controls, WrapDelphi;
 
@@ -115,6 +115,7 @@ type
 
   function ExtractResourceString(Ident:String):RawByteString;
 
+  function PyUTF8Decode(s:RawByteString):UnicodeString;
 
 var
   DMPython: TDMPython;
@@ -258,7 +259,6 @@ end;
 
 procedure TDMPython.SetWaptConfigFileName(AValue: Utf8String);
 var
-  St:TStringList;
   ini : TInifile;
   i: integer;
 begin
@@ -325,10 +325,13 @@ end;
 function TDMPython.CertificateIsCodeSigning(crtfilename: String): Boolean;
 var
   crt: Variant;
+  vcrt_filename: Variant;
+
 begin
-  if (crtfilename<>'') and FileExists(crtfilename) then
+  if (crtfilename<>'') and FileExistsUTF8(crtfilename) then
   begin
-    crt := dmpython.waptcrypto.SSLCertificate(crt_filename:=crtfilename);
+    vcrt_filename := PyUTF8Decode(crtfilename);
+    crt := dmpython.waptcrypto.SSLCertificate(crt_filename:=vcrt_filename);
     result := VarPythonAsString(crt.has_usage('code_signing')) <> '';
   end
   else
@@ -467,19 +470,21 @@ var
   PrivateKeyPath:String;
   Password:String;
   RetryCount:integer;
+  vcrt_filename: Variant;
 begin
-  if not FileExists(GetWaptPersonalCertificatePath) then
+  if not FileExistsUTF8(WaptPersonalCertificatePath) then
     FCachedPrivateKeyPassword := ''
   else
   begin
+    vcrt_filename:=PyUTF8Decode(WaptPersonalCertificatePath);
     RetryCount:=3;
     Password:= '';
     // try without password
-    PrivateKeyPath := DMPython.waptdevutils.get_private_key_encrypted(certificate_path:=GetWaptPersonalCertificatePath(),password:=Password);
+    PrivateKeyPath := UTF8Encode(VarPythonAsString(DMPython.waptdevutils.get_private_key_encrypted(certificate_path:=vcrt_filename,password:=Password)));
     if (PrivateKeyPath ='') and (FCachedPrivateKeyPassword<>'') then
     begin
       Password := FCachedPrivateKeyPassword;
-      PrivateKeyPath := DMPython.waptdevutils.get_private_key_encrypted(certificate_path:=GetWaptPersonalCertificatePath(),password:=Password);
+      PrivateKeyPath := UTF8Encode(VarPythonAsString(DMPython.waptdevutils.get_private_key_encrypted(certificate_path:=vcrt_filename,password:=Password)));
       // not found any keys, reset pwd cache to empty.
       if PrivateKeyPath='' then
         FCachedPrivateKeyPassword := '';
@@ -490,11 +495,11 @@ begin
       begin
         with TvisPrivateKeyAuth.Create(Application.MainForm) do
         try
-          laKeyPath.Caption := GetWaptPersonalCertificatePath;
+          laKeyPath.Caption := WaptPersonalCertificatePath;
           if ShowModal = mrOk then
           begin
             Password := edPasswordKey.Text;
-            PrivateKeyPath := DMPython.waptdevutils.get_private_key_encrypted(certificate_path:=GetWaptPersonalCertificatePath(),password:=Password);
+            PrivateKeyPath := UTF8Encode(VarPythonAsString(DMPython.waptdevutils.get_private_key_encrypted(certificate_path:=vcrt_filename,password:=Password)));
             if PrivateKeyPath<>'' then
             begin
               FCachedPrivateKeyPassword:=edPasswordKey.Text;
@@ -513,7 +518,7 @@ begin
       end;
 
     if PrivateKeyPath='' then
-      Raise Exception.CreateFmt('Unable to find and/or decrypt private key for personal certificate %s',[GetWaptPersonalCertificatePath]);
+      Raise Exception.CreateFmt('Unable to find and/or decrypt private key for personal certificate %s',[WaptPersonalCertificatePath]);
   end;
   Result := FCachedPrivateKeyPassword;
 end;
@@ -587,7 +592,6 @@ end;
 
 function TDMPython.GetMainWaptRepo: Variant;
 var
-  ini:TIniFile;
   section:String;
 begin
   if VarIsEmpty(FMainWaptRepo) then
@@ -613,7 +617,6 @@ end;
 
 function TDMPython.GetWaptHostRepo: Variant;
 var
-  ini:TIniFile;
   section:String;
 begin
   if VarIsEmpty(FWaptHostRepo) then
@@ -768,6 +771,11 @@ begin
 
   cert.save_as_pem(filename := destcrt);
   result := utf8encode(destcrt);
+end;
+
+function PyUTF8Decode(s:RawByteString):UnicodeString;
+begin
+  result := UTF8Decode(s);
 end;
 
 end.

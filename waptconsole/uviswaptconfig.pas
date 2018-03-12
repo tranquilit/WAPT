@@ -124,19 +124,22 @@ end;
 
 procedure TVisWAPTConfig.ActCheckPersonalKeyExecute(Sender: TObject);
 var
-  keypath,password: String;
+  keyPath: String;
+  vpassword,vcertificate_path:Variant;
+
 begin
   with TVisPrivateKeyAuth.Create(Application.MainForm) do
   try
     laKeyPath.Caption := edPersonalCertificatePath.text;
     if ShowModal = mrOk then
     begin
-      Password := edPasswordKey.Text;
-      keyPath := VarPythonAsString(DMPython.waptdevutils.get_private_key_encrypted(certificate_path:=edPersonalCertificatePath.Text,password:=password));
+      vpassword := edPasswordKey.Text;
+      vcertificate_path := PyUTF8Decode(edPersonalCertificatePath.Text);
+      keyPath := VarPythonAsString(DMPython.waptdevutils.get_private_key_encrypted(certificate_path:=vcertificate_path,password:=vpassword));
       if keyPath = '' then
         ShowMessageFmt('Error : No private key in directory %s could be decrypted with supplied password, or none matches the certificate.',[ExtractFileDir(edPersonalCertificatePath.Text)])
       else
-        if password='' then
+        if vpassword='' then
           ShowMessageFmt('Success: Matching private key %s found. Warning, key is not encrypted',[keyPath])
         else
           ShowMessageFmt('Success: Matching private key %s decrypted properly and matching the certificate.',[keyPath]);
@@ -148,7 +151,7 @@ end;
 
 procedure TVisWAPTConfig.ActCheckPersonalKeyUpdate(Sender: TObject);
 begin
-  ActCheckPersonalKey.Enabled:= FileExists(edPersonalCertificatePath.FileName);
+  ActCheckPersonalKey.Enabled:= FileExistsUTF8(edPersonalCertificatePath.FileName);
 end;
 
 procedure TVisWAPTConfig.ActGetServerCertificateExecute(Sender: TObject);

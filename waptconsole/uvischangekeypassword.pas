@@ -47,7 +47,7 @@ uses uSCaleDPI,dmwaptpython,VarPyth,waptcommon,variants;
 procedure TVisChangeKeyPassword.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
-  EdKeyFilename.text := VarPythonAsString(DMPython.waptdevutils.get_private_key_encrypted(certificate_path:=GetWaptPersonalCertificatePath(),password:=DMPython.privateKeyPassword));
+  EdKeyFilename.text := VarPythonAsString(DMPython.waptdevutils.get_private_key_encrypted(certificate_path:=FileExistsUTF8(WaptPersonalCertificatePath),password:=DMPython.privateKeyPassword));
   if EdKeyFilename.Text <>'' then
     edOldKeyPassword.Text:= DMPython.privateKeyPassword;
 end;
@@ -90,7 +90,7 @@ begin
     CanClose:=FileExists(filename);
     if CanClose then
     begin
-      if EdKeyFilename.text = GetWaptPersonalCertificatePath then
+      if EdKeyFilename.text = WaptPersonalCertificatePath then
         DMPython.privateKeyPassword := EdKeyPassword.Text;
       ShowMessage('Password changed successfully');
     end;

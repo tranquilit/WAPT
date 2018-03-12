@@ -5,7 +5,7 @@ unit uviseditpackage;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, SynHighlighterPython, SynEdit, Forms, Controls,
+  Classes, SysUtils, LazUTF8, FileUtil, SynHighlighterPython, SynEdit, Forms, Controls,
   Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, Buttons,
   superobject, VirtualTrees, VarPyth, PythonEngine, types, ActiveX, LCLIntf,
   LCL, sogrid, vte_json, DefaultTranslator, SearchEdit;
@@ -152,7 +152,7 @@ type
 function EditPackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreatePackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreateGroup(packagename: string; advancedMode: boolean=False; section: String ='group'): ISuperObject;
-function EditHost(hostuuid: ansistring; advancedMode: boolean; var ApplyUpdates:Boolean; description:ansiString=''; HostReachable:Boolean=False;computer_fqdn_hint:ansiString='';ForceMinVersion:ansiString=''): ISuperObject;
+function EditHost(hostuuid: string; advancedMode: boolean; var ApplyUpdates:Boolean; description:String=''; HostReachable:Boolean=False;computer_fqdn_hint:String='';ForceMinVersion:String=''): ISuperObject;
 function EditHostDepends(hostname: string; newDependsStr: string): ISuperObject;
 function EditGroup(group: string; advancedMode: boolean=False): ISuperObject;
 
@@ -229,7 +229,7 @@ begin
     end;
 end;
 
-function EditHost(hostuuid: ansistring; advancedMode: boolean;var ApplyUpdates:Boolean;description:ansiString='';HostReachable:Boolean=False;computer_fqdn_hint:AnsiString='';ForceMinVersion:ansiString=''): ISuperObject;
+function EditHost(hostuuid: string; advancedMode: boolean;var ApplyUpdates:Boolean;description:String='';HostReachable:Boolean=False;computer_fqdn_hint:String='';ForceMinVersion:String=''): ISuperObject;
 begin
   with TVisEditPackage.Create(nil) do
     try
@@ -435,17 +435,20 @@ begin
 end;
 
 procedure TVisEditPackage.EditPackage;
+var
+  setuppypath:String;
 begin
-  EdPackage.Text := PackageEdited.S['package'];
-  EdVersion.Text := PackageEdited.S['version'];
+  EdPackage.Text := UTF8Encode(PackageEdited.S['package']);
+  EdVersion.Text := UTF8Encode(PackageEdited.S['version']);
   EdDescription.Text := UTF8Encode(PackageEdited.S['description']);
-  EdSection.Text := PackageEdited.S['section'];
+  EdSection.Text := UTF8Encode(PackageEdited.S['section']);
   IsUpdated := False;
   // get a list of package entries given a
-  Depends := PackageEdited.S['depends'];
-  Conflicts := PackageEdited.S['conflicts'];
-  if FileExists(AppendPathDelim(FSourcePath) + 'setup.py') then
-    EdSetupPy.Lines.LoadFromFile(AppendPathDelim(FSourcePath) + 'setup.py')
+  Depends := UTF8Encode(PackageEdited.S['depends']);
+  Conflicts := UTF8Encode(PackageEdited.S['conflicts']);
+  setuppypath := FSourcePath + '\setup.py';
+  if FileExistsUTF8(setuppypath) then
+    EdSetupPy.Lines.LoadFromFile(setuppypath)
   else
     EdSetupPy.Lines.Clear;
   butBUApply.Visible:=IsHost;
@@ -484,7 +487,7 @@ begin
     for i :=0 to List.AsArray.Length-1 do
     begin
       it := List.AsArray[i];
-      if (it.DataType=stString) and (it.AsString=St) then
+      if (it.DataType=stString) and (it.AsString=Utf8Decode(St)) then
       begin
         List.AsArray.Delete(i);
         Exit;
@@ -501,17 +504,17 @@ begin
   oldconflicts := Split(Conflicts, ',');
   for row in GridPackages.SelectedRows do
   begin
-    package := row.S['package'];
+    package := UTF8Encode(row.S['package']);
     if not StrIn(package, olddepends) then
     begin
-      olddepends.AsArray.Add(package);
+      olddepends.AsArray.Add(utf8Decode(package));
       GridDependsUpdated:=True;
     end;
     RemoveString(oldconflicts,package);
     GridConflictsUpdated :=True;
   end;
-  Depends := soutils.Join(',', olddepends);
-  Conflicts := soutils.Join(',', oldconflicts);
+  Depends := UTF8Encode(soutils.Join(',', olddepends));
+  Conflicts := UTF8Encode(soutils.Join(',', oldconflicts));
 end;
 
 procedure TVisEditPackage.GridDependsDragOver(Sender: TBaseVirtualTree;
@@ -550,38 +553,45 @@ end;
 procedure TVisEditPackage.ActEditSavePackageExecute(Sender: TObject);
 var
   res: ISuperObject;
-  description:String;
-  PE,ControlDict:Variant;
+  PE,ControlDict: Variant;
+  vpackagename,vdescription,vsection,vdepends,vconflicts,vsourcepath:Variant;
 begin
   Screen.Cursor := crHourGlass;
   try
     if IsNewPackage then
     begin
-      description := UTF8Decode(Eddescription.Text);
       { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
+      vpackagename:=PyUTF8Decode(Trim(EdPackage.Text));
+      vdepends:=PyUTF8Decode(Depends);
+      vconflicts:=PyUTF8Decode(Conflicts);
+      vsection := EdSection.Text;
+      vdescription:=PyUTF8Decode(trim(Eddescription.Text));
+
       res := PyVarToSuperObject(
         DMPython.WAPT.make_group_template(
-          packagename := Trim(EdPackage.Text),
-          depends := Depends,
-          description := description,
-          section := EdSection.Text
+          packagename := vpackagename,
+          depends := vdepends,
+          conflicts := vconflicts,
+          section := vsection,
+          description := vdescription
         ));
-      FSourcePath := res.S['sourcespath'];
+      FSourcePath := UTF8Encode(res.S['sourcespath']);
       PackageEdited := res;
     end
     else
     begin
-      PackageEdited.S['package'] := StringReplace(trim(EdPackage.Text),' ','',[rfReplaceAll]);
-      PackageEdited.S['version'] := trim(lowercase(EdVersion.Text));
+      PackageEdited.S['package'] := UTF8Decode(StringReplace(trim(EdPackage.Text),' ','',[rfReplaceAll]));
+      PackageEdited.S['version'] := UTF8Decode(trim(lowercase(EdVersion.Text)));
       PackageEdited.S['description'] := UTF8Decode(EdDescription.Text);
-      PackageEdited.S['section'] :=  trim(lowercase(EdSection.Text));
-      PackageEdited.S['depends'] :=  trim(Depends);
-      PackageEdited.S['conflicts'] :=  trim(Conflicts);
+      PackageEdited.S['section'] :=  UTF8Decode(trim(lowercase(EdSection.Text)));
+      PackageEdited.S['depends'] :=  UTF8Decode(trim(Depends));
+      PackageEdited.S['conflicts'] :=  UTF8Decode(trim(Conflicts));
       ControlDict:=SuperObjectToPyVar(PackageEdited);
 
       PE := dmpython.waptpackage.PackageEntry(package := '');
       PE.load_control_from_dict(ControlDict);
-      PE.save_control_to_wapt(SourcePath);
+      vsourcepath := PyUTF8Decode(SourcePath);
+      PE.save_control_to_wapt(vsourcepath);
 
       if EdSetupPy.Lines.Count>0 then
         EdSetupPy.Lines.SaveToFile(AppendPathDelim(FSourcePath) + 'setup.py')
@@ -608,20 +618,21 @@ end;
 procedure TVisEditPackage.ActEditSearchExecute(Sender: TObject);
 begin
   EdSearch.Modified:=False;
-  GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearch.Text, newest_only := True,description_locale := Language));
+  GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearch.Text, newest_only := True,description_locale := Language,exclude_sections := 'host,unit'));
 end;
 
 procedure TVisEditPackage.ActBuildUploadExecute(Sender: TObject);
 var
   Result: ISuperObject;
+  vsourcepath: UnicodeString;
 begin
   Result := Nil;
 
   ActEditSavePackage.Execute;
 
-  if not FileExists(GetWaptPersonalCertificatePath) then
+  if not FileExistsUTF8(WaptPersonalCertificatePath) then
   begin
-    ShowMessageFmt(rsPrivateKeyDoesntExist, [GetWaptPersonalCertificatePath]);
+    ShowMessageFmt(rsPrivateKeyDoesntExist, [WaptPersonalCertificatePath]);
     exit;
   end;
 
@@ -631,9 +642,10 @@ begin
     Application.ProcessMessages;
     try
       { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
+      vsourcepath := PyUTF8Decode(FSourcePath);
       Result := PyVarToSuperObject(
         DMPython.WAPT.build_upload(
-          sources_directories := FSourcePath,
+          sources_directories := vsourcepath,
           private_key_passwd := dmpython.privateKeyPassword,
           wapt_server_user := waptServerUser,
           wapt_server_passwd := waptServerPassword,
@@ -761,7 +773,7 @@ begin
     package := row.S['package'];
     if not StrIn(package, oldconflicts) then
     begin
-      oldconflicts.AsArray.Add(package);
+      oldconflicts.AsArray.Add(UTF8Decode(package));
       GridConflictsUpdated:=True;
     end;
     RemoveString(olddepends,package);
@@ -786,6 +798,7 @@ var
   res: ISuperObject;
   n: PVirtualNode;
   filename, filePath, target_directory,proxy: string;
+  vFilePath: Variant;
   grid: TSOGrid;
   host_repo,host_package,cabundle: Variant;
 begin
@@ -821,7 +834,7 @@ begin
         target_directory := UniqueTempDir();
         FisTempSourcesDir := True;
         mkdir(target_directory);
-        res.S['sourcespath'] := target_directory;
+        res.S['sourcespath'] := UTF8Decode(target_directory);
         LabPackage.Caption := 'UUID';
         Caption := rsHostConfigEditCaption;
         pgDepends.Caption := rsPackagesNeededOnHostCaption;
@@ -856,7 +869,8 @@ begin
                 exit;
               end;
             { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
-            res := PyVarToSuperObject(DMPython.WAPT.edit_package(packagerequest := filePath));
+            vFilePath := PyUTF8Decode(filePath);
+            res := PyVarToSuperObject(DMPython.WAPT.edit_package(packagerequest := vFilePath ));
 
             FisTempSourcesDir := True;
           finally
@@ -864,7 +878,7 @@ begin
           end;
 
       end;
-      FSourcePath := res.S['sourcespath'];
+      FSourcePath := UTF8Encode(res.S['sourcespath']);
       PackageEdited := res;
     end;
   finally
@@ -877,13 +891,15 @@ end;
 procedure TVisEditPackage.SetSourcePath(AValue: string);
 var
   res: ISuperObject;
+  vSourcePath: Variant;
 begin
   if FSourcePath = AValue then
     Exit;
   FSourcePath := AValue;
   try
     { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
-    res := PyVarToSuperObject(DMPython.WAPT.edit_package(FSourcePath));
+    vSourcePath := PyUTF8Decode(FSourcePath);
+    res := PyVarToSuperObject(DMPython.WAPT.edit_package(vSourcePath));
     PackageEdited := res['package'];
   finally
     Screen.Cursor := crDefault;

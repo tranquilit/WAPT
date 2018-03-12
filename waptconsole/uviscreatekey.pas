@@ -367,7 +367,7 @@ var
   pkey:Utf8String;
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
-  pkey := GetWaptPersonalCertificatePath;
+  pkey := WaptPersonalCertificatePath;
   if pkey<>'' then
     DirectoryCert.Text:=ExtractFileDir(pkey)
   else

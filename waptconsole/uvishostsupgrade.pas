@@ -68,10 +68,10 @@ uses tiscommon,waptcommon,IdHTTP,UScaleDPI,dmwaptpython,VarPyth;
 procedure TVisHostsUpgrade.ActUpgradeExecute(Sender: TObject);
 var
   SOAction, SOActions,res,host:ISuperObject;
-  actions_json,
-  keypassword:Variant;
+  actions_json:Variant;
   signed_actions_json:String;
   waptdevutils: Variant;
+  keypassword,uWaptPersonalCertificatePath: UnicodeString;
 begin
   Stopped := False;
 
@@ -115,8 +115,8 @@ begin
 
       //transfer actions as json string to python
       actions_json := SOActions.AsString;
-
-      signed_actions_json := VarPythonAsString(waptdevutils.sign_actions(actions:=actions_json, certfilename:=GetWaptPersonalCertificatePath(),key_password:=keypassword));
+      uWaptPersonalCertificatePath := PyUTF8Decode(WaptPersonalCertificatePath);
+      signed_actions_json := VarPythonAsString(waptdevutils.sign_actions(actions:=actions_json, certfilename:=uWaptPersonalCertificatePath,key_password:=keypassword));
       SOActions := SO(signed_actions_json);
 
       res := WAPTServerJsonPost('/api/v3/trigger_host_action?uuid=%S&timeout=%D',[host.S['uuid'],waptservice_timeout],SOActions);
