@@ -3259,8 +3259,8 @@ class Wapt(BaseObjectClass):
                 # take in account the case we have no setup.py
                 if os.path.isfile(setup_filename):
                     os.chdir(os.path.dirname(setup_filename))
-                    if not os.getcwd() in sys.path:
-                        sys.path.append(os.getcwd())
+                    if not os.getcwdu() in sys.path:
+                        sys.path.append(os.getcwdu())
 
                     # import the setup module from package file
                     logger.info(u"  sourcing install file %s " % ensure_unicode(setup_filename) )

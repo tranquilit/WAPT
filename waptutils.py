@@ -1131,10 +1131,9 @@ def import_code(code,name='',add_to_sys_modules=0):
     import sys,imp
 
     if not name:
-        name = '__waptsetup_%s__'%generate_unique_string()
-        #name = '__waptsetup__'
+        name = u'__waptsetup_%s__'%generate_unique_string()
 
-    logger.debug('Import source code as %s'%(name))
+    logger.debug(u'Import source code as %s'%(name))
     module = imp.new_module(name)
 
     exec(code, module.__dict__)
@@ -1157,10 +1156,10 @@ def import_setup(setupfilename,modulename=''):
         mod_name,file_ext = os.path.splitext(os.path.split(setupfilename)[-1])
         if not modulename:
             #modulename=mod_name
-            modulename = '__waptsetup_%s__'%generate_unique_string()
+            modulename = u'__waptsetup_%s__'%generate_unique_string()
         # can debug but keep module in memory
-        logger.debug('Import source %s as %s'%(setupfilename,modulename))
-        py_mod = imp.load_source(modulename, setupfilename)
+        logger.debug(u'Import source %s as %s'%(setupfilename,modulename))
+        py_mod = imp.load_source(modulename, setupfilename.encode(sys.getfilesystemencoding()))
         # can not debug but memory is not cumbered with setup.py modules
         #py_mod = import_code(codecs.open(setupfilename,'r').read(), modulename)
         return py_mod
