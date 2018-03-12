@@ -108,7 +108,7 @@ import waptserver_config
 try:
     from waptenterprise.waptserver import auth_module_ad
 except ImportError as e:
-    logger.debug('LDAP Auth disabled: %s' % e)
+    logger.debug(u'LDAP Auth disabled: %s' % e)
     auth_module_ad = None
 
 import wakeonlan.wol
@@ -192,17 +192,17 @@ def requires_auth(f):
         auth = request.authorization
 
         if session.get('user',None):
-            logger.debug('connection from user %s ' % session.get('user'))
+            logger.debug(u'connection from user %s ' % session.get('user'))
             return f(*args, **kwargs)
 
         if not auth:
-            logger.info('no credential given')
+            logger.info(u'no credential given')
             return authenticate()
 
         logging.debug('authenticating : %s' % auth.username)
         if not check_auth(auth.username, auth.password):
             return authenticate()
-        logger.info('user %s authenticated' % auth.username)
+        logger.info(u'user %s authenticated' % auth.username)
         return f(*args, **kwargs)
     return decorated
 
@@ -390,7 +390,7 @@ def register_host():
         uuid = data['uuid']
         if not uuid:
             raise Exception('register_host: No uuid supplied')
-        logger.info('Trying to register host %s' % (uuid,))
+        logger.info(u'Trying to register host %s' % (uuid,))
 
         # get request signature
         signature_b64 = request.headers.get('X-Signature', None)
@@ -417,7 +417,7 @@ def register_host():
                     authenticated_user = auth.username.lower().replace('$', '')
                     dns_domain = '.'.join(socket.getfqdn().split('.')[1:])
                     authenticated_user = '%s.%s' % (authenticated_user, dns_domain)
-                    logger.debug('Kerberos authenticated user %s for %s' % (authenticated_user,computer_fqdn))
+                    logger.debug(u'Kerberos authenticated user %s for %s' % (authenticated_user,computer_fqdn))
                     registration_auth_user = u'Kerb:%s' % authenticated_user
             else:
                 authenticated_user = None
@@ -428,7 +428,7 @@ def register_host():
             auth = request.authorization
             if auth and check_auth(auth.username, auth.password):
                 # assume authenticated user is the fqdn provided in the data
-                logger.debug('Basic auth registration for %s with user %s' % (computer_fqdn,auth.username))
+                logger.debug(u'Basic auth registration for %s with user %s' % (computer_fqdn,auth.username))
                 authenticated_user = computer_fqdn
                 registration_auth_user = u'Basic:%s' % auth.username
 
@@ -442,7 +442,7 @@ def register_host():
                     authenticated_user = None
 
             if not authenticated_user and app.conf['allow_unauthenticated_registration']:
-                logger.warning('Unauthenticated registration for %s' % computer_fqdn)
+                logger.warning(u'Unauthenticated registration for %s' % computer_fqdn)
                 # assume authenticated user is the fqdn provided in the data
                 authenticated_user = computer_fqdn #request.headers.get('X-Forwarded-For',None)
                 registration_auth_user = 'None:%s' % request.headers.get('X-Forwarded-For',None)
@@ -455,7 +455,7 @@ def register_host():
             raise EWaptAuthenticationFailure('register_host : Missing authentication header')
 
         if not app.conf['allow_unauthenticated_registration']:
-            logger.debug('Authenticated computer %s with user %s ' % (computer_fqdn,authenticated_user,))
+            logger.debug(u'Authenticated computer %s with user %s ' % (computer_fqdn,authenticated_user,))
             # check that authenticated user matches the CN of the certificate supplied in post data
             supplied_host_cert = SSLCertificate(crt_string=data['host_certificate'])
             if not (supplied_host_cert.cn.lower() == computer_fqdn.lower() or supplied_host_cert.cn.lower() == uuid.lower()):
@@ -501,7 +501,7 @@ def update_host():
         # 'host' is for pre wapt pre 1.4
         computer_fqdn =  (data.get('host_info',None) or data.get('host',{})).get('computer_fqdn',None)
 
-        logger.info('updating host status %s (%s), data:%s' % (uuid,computer_fqdn,data.keys()))
+        logger.info(u'updating host status %s (%s), data:%s' % (uuid,computer_fqdn,data.keys()))
 
         # get request signature
         signature_b64 = request.headers.get('X-Signature', None)
@@ -526,7 +526,7 @@ def update_host():
             raise EWaptUnknownHost('Supplied hostname or uuid does not match known certificate CN, aborting')
 
         if signature:
-            logger.debug('About to check supplied data signature with certificate %s' % host_cert.cn)
+            logger.debug(u'About to check supplied data signature with certificate %s' % host_cert.cn)
             try:
                 host_cert_cn = host_cert.verify_content(sha256_for_data(raw_data), signature)
             except Exception as e:
@@ -534,13 +534,13 @@ def update_host():
                 host_cert_cn = 'unknown'
                 if not app.conf['allow_unsigned_status_data']:
                     raise
-            logger.info('Data successfully checked with certificate CN %s for %s' % (host_cert_cn, uuid))
+            logger.info(u'Data successfully checked with certificate CN %s for %s' % (host_cert_cn, uuid))
             if existing_host and not (host_cert_cn.lower() == existing_host.computer_fqdn.lower() or host_cert_cn.lower() == existing_host.uuid.lower()):
                 raise Exception('update_host: mismatch between host certificate DN %s and existing host hostname %s' % (host_cert_cn,existing_host.computer_fqdn))
         elif app.conf['allow_unsigned_status_data']:
-            logger.warning('No signature for supplied data for %s,%s upgrade the wapt client.' % (uuid,computer_fqdn))
+            logger.warning(u'No signature for supplied data for %s,%s upgrade the wapt client.' % (uuid,computer_fqdn))
         else:
-            raise Exception('update_host: Invalid request')
+            raise Exception(u'update_host: Invalid request')
 
         # be sure to not update host certificate
         if 'host_certificate' in data and not app.conf['allow_unsigned_status_data']:
@@ -626,7 +626,7 @@ def upload_package(filename=''):
                             f.write(data)
                             data = request.stream.read(65535)
                     except:
-                        logger.debug('End of stream')
+                        logger.debug(u'End of stream')
                         raise
 
                 if not os.path.isfile(tmp_target):
@@ -690,7 +690,7 @@ def upload_packages():
                 if not signer_certs or not signer_certs[0].is_code_signing:
                     raise EWaptForbiddden(u'The package %s contains setup.py code but has not been signed with a proper code_signing certificate' % entry.package)
 
-            logger.debug('Saved package %s into %s' % (entry.asrequirement(),tmp_target))
+            logger.debug(u'Saved package %s into %s' % (entry.asrequirement(),tmp_target))
             # TODO check if certificate is allowed on thi server ?
 
             if entry.section == 'host':
@@ -700,7 +700,7 @@ def upload_packages():
 
             if os.path.isfile(target):
                 os.unlink(target)
-            logger.debug('Renaming package %s into %s' % (tmp_target,target))
+            logger.debug(u'Renaming package %s into %s' % (tmp_target,target))
             try:
                 os.rename(tmp_target, target)
             except OSError:
@@ -716,9 +716,8 @@ def upload_packages():
             return entry
 
         except Exception as e:
-            logger.debug('traceback')
             logger.debug(traceback.print_exc())
-            logger.critical('Error uploading package %s: %s' % (target,e,))
+            logger.critical(u'Error uploading package %s: %s' % (target,e,))
             errors.append(target)
             if os.path.isfile(tmp_target):
                 os.unlink(tmp_target)
@@ -735,11 +734,11 @@ def upload_packages():
             if request.files:
                 files = request.files
                 # multipart upload
-                logger.info('Upload of %s packages' % len(files))
+                logger.info(u'Upload of %s packages' % len(files))
                 for fkey in files:
                     try:
                         packagefile = request.files[fkey]
-                        logger.debug('uploading file : %s' % fkey)
+                        logger.debug(u'uploading file : %s' % fkey)
                         if packagefile and allowed_file(packagefile.filename):
                             done.append(read_package(packagefile))
                     except Exception as e:
@@ -753,7 +752,7 @@ def upload_packages():
 
 
             if [e for e in done if e.section != 'host']:
-                logger.debug('Update package index')
+                logger.debug(u'Update package index')
                 packages_index_result = update_packages(app.conf['wapt_folder'])
                 if packages_index_result['errors']:
                     errors_msg.extend(packages_index_result['errors'])
@@ -767,11 +766,10 @@ def upload_packages():
         spenttime = time.time() - starttime
         return make_response(success=len(errors) == 0 and len(done)>0,
                              result=dict(done=done, errors=errors, packages_index_result = packages_index_result),
-                             msg=_('{} Packages uploaded, {} errors.{}').format(len(done), len(errors),'\n'.join(errors_msg)),
+                             msg=_(u'{} Packages uploaded, {} errors.{}').format(len(done), len(errors),u'\n'.join(errors_msg)),
                              request_time=spenttime)
 
     except Exception as e:
-        raise
         return make_response_from_exception(e, status='201')
 
 
@@ -785,10 +783,10 @@ def upload_host():
         errors = []
         if request.method == 'POST':
             files = request.files.keys()
-            logger.info('Upload of %s host packages' % len(files))
+            logger.info(u'Upload of %s host packages' % len(files))
             for fkey in files:
                 hostpackagefile = request.files[fkey]
-                logger.debug('uploading host file : %s' % fkey)
+                logger.debug(u'uploading host file : %s' % fkey)
                 if hostpackagefile and allowed_file(hostpackagefile.filename):
                     filename = secure_filename(hostpackagefile.filename)
                     wapt_host_folder = os.path.join(app.conf['wapt_folder'] + '-host')
@@ -836,9 +834,8 @@ def upload_host():
 
                         except Exception as e:
                             wapt_db.rollback()
-                            logger.debug('traceback')
                             logger.debug(traceback.print_exc())
-                            logger.critical('Error uploading package %s: %s' % (filename, e))
+                            logger.critical(u'Error uploading package %s: %s' % (filename, e))
                             errors.append(filename)
                             if os.path.isfile(tmp_target):
                                 os.unlink(tmp_target)
@@ -859,7 +856,7 @@ def upload_host():
 @requires_auth
 def upload_waptsetup():
     waptagent = os.path.join(app.conf['wapt_folder'], 'waptagent.exe')
-    logger.debug('Entering upload_waptsetup')
+    logger.debug(u'Entering upload_waptsetup')
     tmp_target = None
     try:
         if request.method == 'POST':
@@ -1122,7 +1119,7 @@ def reset_hosts_sid():
             message = _(u'Hosts connection reset launched for all hosts')
 
         def target(uuids):
-            logger.debug('Reset wsocket.io SID and timestamps of hosts')
+            logger.debug(u'Reset wsocket.io SID and timestamps of hosts')
             if uuids:
                 where_clause = Hosts.uuid.in_(uuids)
             else:
@@ -1190,7 +1187,7 @@ def proxy_host_request(request, action):
                             def result_callback(data):
                                 got_result.append(data)
 
-                            logger.debug('Emit %s to %s (%s)' % (action, uuid, computer_fqdn))
+                            logger.debug(u'Emit %s to %s (%s)' % (action, uuid, computer_fqdn))
                             socketio.emit(action, action_args, room=sid, callback=result_callback)
                             # with for asynchronous answer...
                             wait_loop = timeout * 20
@@ -1527,13 +1524,13 @@ def hosts_delete():
                     fqdn_hostpackage = os.path.join(app.conf['wapt_folder'] + '-host',host.computer_fqdn+'.wapt')
 
                     if os.path.isfile(uuid_hostpackage):
-                        logger.debug('Trying to remove %s' % uuid_hostpackage)
+                        logger.debug(u'Trying to remove %s' % uuid_hostpackage)
                         if os.path.isfile(uuid_hostpackage):
                             os.remove(uuid_hostpackage)
                             result['files'].append(uuid_hostpackage)
 
                     if os.path.isfile(fqdn_hostpackage):
-                        logger.debug('Trying to remove %s' % fqdn_hostpackage)
+                        logger.debug(u'Trying to remove %s' % fqdn_hostpackage)
                         if os.path.isfile(fqdn_hostpackage):
                             os.remove(fqdn_hostpackage)
                             result['files'].append(fqdn_hostpackage)
@@ -1988,28 +1985,28 @@ def trigger_host_action():
 @socketio.on('trigger_update_result')
 def on_trigger_update_result(result):
     """Return from update on client"""
-    logger.debug('Trigger Update result : %s (uuid:%s)' % (result, request.args['uuid']))
+    logger.debug(u'Trigger Update result : %s (uuid:%s)' % (result, request.args['uuid']))
     # send to all waptconsole warching this host.
-    socketio.emit('trigger_update_result', result, room=request.args['uuid'], include_self=False)
+    socketio.emit(u'trigger_update_result', result, room=request.args['uuid'], include_self=False)
 
 
 @socketio.on('trigger_upgrade_result')
 def on_trigger_upgrade_result(result):
     """Return from the launch of upgrade on a client"""
-    logger.debug('Trigger Upgrade result : %s (uuid:%s)' % (result, request.args['uuid']))
-    socketio.emit('trigger_upgrade_result', result, room=request.args['uuid'], include_self=False)
+    logger.debug(u'Trigger Upgrade result : %s (uuid:%s)' % (result, request.args['uuid']))
+    socketio.emit(u'trigger_upgrade_result', result, room=request.args['uuid'], include_self=False)
 
 
 @socketio.on('trigger_install_packages_result')
 def on_trigger_install_packages_result(result):
-    logger.debug('Trigger install result : %s (uuid:%s)' % (result, request.args['uuid']))
-    socketio.emit('trigger_install_packages_result', result, room=request.args['uuid'], include_self=False)
+    logger.debug(u'Trigger install result : %s (uuid:%s)' % (result, request.args['uuid']))
+    socketio.emit(u'trigger_install_packages_result', result, room=request.args['uuid'], include_self=False)
 
 
 @socketio.on('trigger_remove_packages_result')
 def on_trigger_remove_packages_result(result):
-    logger.debug('Trigger remove result : %s (uuid:%s)' % (result, request.args['uuid']))
-    socketio.emit('trigger_remove_packages_result', result, room=request.args['uuid'], include_self=False)
+    logger.debug(u'Trigger remove result : %s (uuid:%s)' % (result, request.args['uuid']))
+    socketio.emit(u'trigger_remove_packages_result', result, room=request.args['uuid'], include_self=False)
 
 
 @socketio.on('reconnect')
@@ -2028,7 +2025,7 @@ def on_waptclient_connect():
         else:
             raise EWaptForbiddden('Host is not registered or no host certificate found in database.')
 
-        logger.info('Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
+        logger.info(u'Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
         # stores sid in database
         hostcount = Hosts.update(
             server_uuid=get_server_uuid(),
@@ -2063,7 +2060,7 @@ def on_wapt_pong():
             emit('wapt_trigger_update_status')
             return False
         else:
-            logger.debug('Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid, session.get('uuid',None)))
+            logger.debug(u'Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid, session.get('uuid',None)))
             # stores sid in database
             hostcount = Hosts.update(
                 server_uuid=get_server_uuid(),
@@ -2086,7 +2083,7 @@ def on_wapt_pong():
 def on_waptclient_disconnect():
     try:
         uuid = request.args.get('uuid', None)
-        logger.info('Socket.IO disconnection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
+        logger.info(u'Socket.IO disconnection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
         # clear sid in database
         Hosts.update(
             server_uuid=None,
@@ -2205,11 +2202,11 @@ if __name__ == '__main__':
         # install_windows_service()
         # sys.exit(0)
 
-    logger.info('Waptserver starting...')
+    logger.info(u'Waptserver starting...')
     port = app.conf['waptserver_port']
     while True:
         try:
-            logger.info('Reset connections SID for former hosts on this server')
+            logger.info(u'Reset connections SID for former hosts on this server')
             hosts_count = Hosts.update(
                 reachable='DISCONNECTED',
                 server_uuid=None,
@@ -2232,5 +2229,5 @@ if __name__ == '__main__':
         socketio.run(app, host='0.0.0.0', log=logger, port=port, debug=options.devel,  log_output = True, use_reloader=options.devel, max_size=app.conf['max_clients'])
     else:
         socketio.run(app, host='127.0.0.1', log=logger,  port=port, debug=options.devel, log_output = True,  use_reloader=options.devel, max_size=app.conf['max_clients'])
-    logger.info('Waptserver stopped')
+    logger.info(u'Waptserver stopped')
 
