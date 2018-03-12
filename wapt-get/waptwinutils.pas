@@ -20,7 +20,7 @@ unit waptwinutils;
 #
 # -----------------------------------------------------------------------
 }
-{.$mode delphiunicode}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -57,9 +57,9 @@ function RunAsAdmin(const Handle: Hwnd; aFile : Ansistring; Params: Ansistring):
 /// <returns>True if process could be started and did not reach the
 ///   timeout.</returns>
 // Adapted From http://www.martinstoeckli.ch/delphi/  (
-function Run(CmdLine: WideString;
+function Run(CmdLine: UnicodeString;
   const Input: RawByteString = '';
-  const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString='';onpoll:TNotifyEvent=Nil): RawByteString;
+  const Wait: DWORD = 3600000;user:UnicodeString='';domain:UnicodeString='';password:UnicodeString='';onpoll:TNotifyEvent=Nil): RawByteString;
 
 const
   LOGON_WITH_PROFILE = $00000001;
@@ -820,9 +820,9 @@ begin
   FPipe := 0;
 end;
 
-function Run(CmdLine: WideString;
+function Run(CmdLine: UnicodeString;
   const Input: RawByteString = '';
-  const Wait: DWORD = 3600000;user:WideString='';domain:WideString='';password:WideString='';onpoll:TNotifyEvent=Nil): RawByteString;
+  const Wait: DWORD = 3600000;user:UnicodeString='';domain:UnicodeString='';password:UnicodeString='';onpoll:TNotifyEvent=Nil): RawByteString;
 var
   mySecurityAttributes: SECURITY_ATTRIBUTES;
   myStartupInfo: STARTUPINFO;
@@ -835,7 +835,7 @@ var
   myReadErrorThread: TRunReadPipeThread;
   iWaitRes: Integer;
 
-  wparams:WideString;
+  wparams:UnicodeString;
   output,error:RawByteString;
 
   exitCode:LongWord;
