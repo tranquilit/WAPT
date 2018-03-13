@@ -15,7 +15,7 @@ object VisEditPackage: TVisEditPackage
   OnCreate = FormCreate
   OnShow = FormShow
   PopupMenu = PopupMenu1
-  Position = poDefault
+  Position = poMainFormCenter
   ShowHint = True
   LCLVersion = '1.3'
   object PageControl1: TPageControl

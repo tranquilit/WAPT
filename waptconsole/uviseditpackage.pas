@@ -412,7 +412,7 @@ begin
     Rep := Application.MessageBox(PChar(msg), PChar(rsConfirmCaption), MB_APPLMODAL +
       MB_ICONQUESTION + MB_YESNOCANCEL);
     if (Rep = idYes) then
-      Result := ActEditSavePackage.Execute
+      Result := ActBuildUpload.Execute
     else
     if (Rep = idNo) then
       Result := True;
@@ -741,7 +741,7 @@ end;
 
 procedure TVisEditPackage.FormShow(Sender: TObject);
 begin
-  Top := IniReadInteger(Appuserinipath,Name,'Top',Top);
+  Top :=  IniReadInteger(Appuserinipath,Name,'Top',Top);
   Left := IniReadInteger(Appuserinipath,Name,'Left',Left);
   Width := IniReadInteger(Appuserinipath,Name,'Width',Width);
   Height := IniReadInteger(Appuserinipath,Name,'Height',Height);
@@ -752,6 +752,7 @@ begin
 
   ActEditSearch.Execute;
   EdPackage.SetFocus;
+
 end;
 
 procedure TVisEditPackage.GridConflictsDragDrop(Sender: TBaseVirtualTree;
