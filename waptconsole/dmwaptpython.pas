@@ -69,7 +69,7 @@ type
     property privateKeyPassword: Ansistring read getprivateKeyPassword write setprivateKeyPassword;
 
     property WaptConfigFileName:Utf8String read FWaptConfigFileName write SetWaptConfigFileName;
-    function RunJSON(expr: UTF8String; jsonView: TVirtualJSONInspector=
+    function RunJSON(expr: Utf8String; jsonView: TVirtualJSONInspector=
       nil): ISuperObject;
 
     property Language:String read FLanguage write SetLanguage;
@@ -279,7 +279,7 @@ begin
     if not DirectoryExists(ExtractFileDir(AValue)) then
       mkdir(ExtractFileDir(AValue));
     //Initialize waptconsole parameters with local workstation wapt-get parameters...
-    if not FileExistsUTF8(AValue) then
+    if not FileExists(AValue) then
       CopyFile(Utf8ToAnsi(WaptIniFilename),Utf8ToAnsi(AValue),True);
 
 
@@ -593,6 +593,7 @@ end;
 function TDMPython.GetMainWaptRepo: Variant;
 var
   section:String;
+  VWaptConfigFileName:Variant;
 begin
   if VarIsEmpty(FMainWaptRepo) then
   try
@@ -604,7 +605,8 @@ begin
       else
         section := 'global';
       FMainWaptRepo := dmpython.waptpackage.WaptRemoteRepo(name := section);
-      FMainWaptRepo.load_config_from_file(WaptConfigFileName);
+      VWaptConfigFileName:=PyUTF8Decode(WaptConfigFileName);
+      FMainWaptRepo.load_config_from_file(VWaptConfigFileName);
 
     finally
       Free;
@@ -618,6 +620,7 @@ end;
 function TDMPython.GetWaptHostRepo: Variant;
 var
   section:String;
+  VWaptConfigFileName:Variant;
 begin
   if VarIsEmpty(FWaptHostRepo) then
   try
@@ -628,7 +631,8 @@ begin
       else
         section := 'global';
       FWaptHostRepo := dmpython.common.WaptHostRepo(name := section);
-      FWaptHostRepo.load_config_from_file(WaptConfigFileName);
+      VWaptConfigFileName := PyUTF8Decode(WaptConfigFileName);
+      FWaptHostRepo.load_config_from_file(VWaptConfigFileName);
     finally
       Free;
     end;
