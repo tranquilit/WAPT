@@ -1720,14 +1720,14 @@ end;
 procedure TVisWaptGUI.ActAddConflictsExecute(Sender: TObject);
 var
   Res, packages, hosts: ISuperObject;
-  ResVar,VarHosts,VarPackages: Variant;
+  VHosts,VPackages,VWaptIniFilename,VPrivateKeyPassword,ResVar: Variant;
 begin
   if GridHosts.Focused then
   begin
     with TvisGroupChoice.Create(self) do
     try
       Caption := rsSelectAddConflicts;
-      res := TSuperObject.Create(stArray);
+      res := Nil;
 
       if ShowModal = mrOk then
       try
@@ -1735,21 +1735,23 @@ begin
         packages := SelectedPackages;
         Hosts := ExtractField(GridHosts.SelectedRows,'uuid');
 
-        VarHosts := SuperObjectToPyVar(Hosts);
-        VarPackages := SuperObjectToPyVar(packages);
+        VHosts := SuperObjectToPyVar(Hosts);
+        VPackages := SuperObjectToPyVar(packages);
+        VWaptIniFilename := PyUTF8Decode(AppIniFilename);
+        VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
 
         resVar := DMPython.waptdevutils.edit_hosts_depends(
-           waptconfigfile := AppIniFilename(),
-           hosts_list := VarHosts,
-           append_conflicts := VarPackages,
-           key_password := dmpython.privateKeyPassword,
+           waptconfigfile := VWaptIniFilename,
+           hosts_list := VHosts,
+           add_conflicts := VPackages,
+           sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
+           sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
            wapt_server_user := waptServerUser,
            wapt_server_passwd := waptServerPassword,
            cabundle := DMPython.WaptHostRepo.cabundle
            );
 
         res := PyVarToSuperObject(ResVar);
-
       finally
         Screen.cursor := crDefault;
         if res <> Nil then
@@ -1797,7 +1799,7 @@ end;
 procedure TVisWaptGUI.ActAddDependsExecute(Sender: TObject);
 var
   Res, packages, hosts: ISuperObject;
-  ResVar,VarHosts,VarPackages: Variant;
+  VHosts,VPackages,VWaptIniFilename,VPrivateKeyPassword,ResVar: Variant;
 begin
   if GridHosts.Focused then
   begin
@@ -1812,14 +1814,17 @@ begin
         packages := SelectedPackages;
         Hosts := ExtractField(GridHosts.SelectedRows,'uuid');
 
-        VarHosts := SuperObjectToPyVar(Hosts);
-        VarPackages := SuperObjectToPyVar(packages);
+        VHosts := SuperObjectToPyVar(Hosts);
+        VPackages := SuperObjectToPyVar(packages);
+        VWaptIniFilename := PyUTF8Decode(AppIniFilename);
+        VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
 
         resVar := DMPython.waptdevutils.edit_hosts_depends(
-           waptconfigfile := AppIniFilename(),
-           hosts_list := VarHosts,
-           append_depends := VarPackages,
-           key_password := dmpython.privateKeyPassword,
+           waptconfigfile := VWaptIniFilename,
+           hosts_list := VHosts,
+           append_depends := VPackages,
+           sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
+           sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
            wapt_server_user := waptServerUser,
            wapt_server_passwd := waptServerPassword,
            cabundle := DMPython.WaptHostRepo.cabundle
@@ -3098,14 +3103,14 @@ end;
 procedure TVisWaptGUI.ActRemoveConflictsExecute(Sender: TObject);
 var
   Res, packages, hosts: ISuperObject;
-  ResVar,VarHosts,VarPackages: Variant;
+  VHosts,VPackages,VWaptIniFilename,VPrivateKeyPassword,ResVar: Variant;
 begin
   if GridHosts.Focused then
   begin
     with TvisGroupChoice.Create(self) do
     try
       Caption := rsSelectRemoveConflicts;
-      res := TSuperObject.Create(stArray);
+      res := Nil;
 
       if ShowModal = mrOk then
       try
@@ -3113,21 +3118,23 @@ begin
         packages := SelectedPackages;
         Hosts := ExtractField(GridHosts.SelectedRows,'uuid');
 
-        VarHosts := SuperObjectToPyVar(Hosts);
-        VarPackages := SuperObjectToPyVar(packages);
+        VHosts := SuperObjectToPyVar(Hosts);
+        VPackages := SuperObjectToPyVar(packages);
+        VWaptIniFilename := PyUTF8Decode(AppIniFilename);
+        VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
 
         resVar := DMPython.waptdevutils.edit_hosts_depends(
-           waptconfigfile := AppIniFilename(),
-           hosts_list := VarHosts,
-           remove_conflicts := VarPackages,
-           key_password := dmpython.privateKeyPassword,
+           waptconfigfile := VWaptIniFilename,
+           hosts_list := VHosts,
+           remove_conflicts := VPackages,
+           sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
+           sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
            wapt_server_user := waptServerUser,
            wapt_server_passwd := waptServerPassword,
            cabundle := DMPython.WaptHostRepo.cabundle
            );
 
         res := PyVarToSuperObject(ResVar);
-
       finally
         Screen.cursor := crDefault;
         if res <> Nil then
@@ -3142,14 +3149,14 @@ end;
 procedure TVisWaptGUI.ActRemoveDependsExecute(Sender: TObject);
 var
   Res, packages, hosts: ISuperObject;
-  ResVar,VarHosts,VarPackages: Variant;
+  VHosts,VPackages,VWaptIniFilename,VPrivateKeyPassword,ResVar: Variant;
 begin
   if GridHosts.Focused then
   begin
     with TvisGroupChoice.Create(self) do
     try
       Caption := rsSelectRemoveDepends;
-      res := TSuperObject.Create(stArray);
+      res := Nil;
 
       if ShowModal = mrOk then
       try
@@ -3157,24 +3164,26 @@ begin
         packages := SelectedPackages;
         Hosts := ExtractField(GridHosts.SelectedRows,'uuid');
 
-        VarHosts := SuperObjectToPyVar(Hosts);
-        VarPackages := SuperObjectToPyVar(packages);
+        VHosts := SuperObjectToPyVar(Hosts);
+        VPackages := SuperObjectToPyVar(packages);
+        VWaptIniFilename := PyUTF8Decode(AppIniFilename);
+        VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
 
         resVar := DMPython.waptdevutils.edit_hosts_depends(
-           waptconfigfile := AppIniFilename(),
-           hosts_list := VarHosts,
-           remove_depends := VarPackages,
-           key_password := dmpython.privateKeyPassword,
+           waptconfigfile := VWaptIniFilename,
+           hosts_list := VHosts,
+           remove_depends := VPackages,
+           sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
+           sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
            wapt_server_user := waptServerUser,
            wapt_server_passwd := waptServerPassword,
            cabundle := DMPython.WaptHostRepo.cabundle
            );
 
         res := PyVarToSuperObject(ResVar);
-
       finally
         Screen.cursor := crDefault;
-        if (res <> Nil) then
+        if res <> Nil then
           ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
       end;
     finally
@@ -3182,6 +3191,7 @@ begin
     end;
   end;
 end;
+
 
 procedure TVisWaptGUI.ActWUANewGroupExecute(Sender: TObject);
 begin
@@ -3835,7 +3845,7 @@ begin
   // Initialize user local config file with global wapt settings
   localfn := AppIniFilename;
 
-  if not FileExistsUTF8(localfn) then
+  if not FileExists(localfn) then
   begin
     if not DirectoryExistsUTF8(ExtractFileDir(localFn)) then
        ForceDirectoriesUTF8(ExtractFileDir(localFn));

@@ -393,6 +393,8 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
         remove_depends=[],
         append_conflicts=[],
         remove_conflicts=[],
+        sign_certs=None,
+        sign_key=None,
         key_password=None,
         wapt_server_user=None,wapt_server_passwd=None,
         cabundle = None,
@@ -408,13 +410,19 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
 
     >>> edit_hosts_depends('c:/wapt/wapt-get.ini','htlaptop.tranquilit.local','toto','tis-7zip','admin','password')
     """
-    sign_bundle = SSLCABundle(inifile_readstring(waptconfigfile,'global','personal_certificate_path'))
-    sign_certs = sign_bundle.certificates()
-    sign_key = sign_certs[0].matching_key_in_dirs(private_key_password=key_password)
+    if sign_certs is None:
+        sign_bundle_fn = inifile_readstring(waptconfigfile,u'global',u'personal_certificate_path')
+        sign_bundle = SSLCABundle(sign_bundle_fn)
+        sign_certs = sign_bundle.certificates()
+        # we assume a unique signer.
+        if cabundle is None:
+            cabundle = sign_bundle
 
-    # we assume a unique signer.
-    if cabundle is None:
-        cabundle = sign_bundle
+    if not sign_certs:
+        raise Exception(u'No personal signer certificate found in %s' % sign_bundle_fn)
+
+    if sign_key is None:
+        sign_key = sign_certs[0].matching_key_in_dirs(private_key_password=key_password)
 
     hosts_list = ensure_list(hosts_list)
     host_repo = WaptHostRepo(name='wapt-host',host_id=hosts_list,cabundle = cabundle)

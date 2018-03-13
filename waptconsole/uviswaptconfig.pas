@@ -169,7 +169,7 @@ begin
       pem_data := dmpython.waptcrypto.SSLCABundle(certificates:=certchain).as_pem('--noarg--');
       if not VarIsNull(pem_data) then
       begin
-        if not DirectoryExists(ExtractFileDir(certfn)) then
+        if not DirectoryExistsUtf8(ExtractFileDir(certfn)) then
           ForceDirectory(ExtractFileDir(certfn));
         StringToFile(certfn,pem_data);
         EdServerCertificate.Text := certfn;

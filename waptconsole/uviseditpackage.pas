@@ -114,7 +114,6 @@ type
     FisTempSourcesDir: boolean;
     { private declarations }
     FPackageRequest: string;
-    FSourcePath: string;
     FIsUpdated: boolean;
     GridDependsUpdated: boolean;
     GridConflictsUpdated: boolean;
@@ -123,6 +122,7 @@ type
     procedure AddDepends(Sender: TObject);
     procedure AddConflicts(Sender: TObject);
     function CheckUpdated: boolean;
+    function GetSourcePath: string;
     procedure SetisAdvancedMode(AValue: boolean);
     procedure SetIsUpdated(AValue: boolean);
     function GetIsUpdated: boolean;
@@ -138,14 +138,12 @@ type
     function updateprogress(receiver: TObject; current, total: integer): boolean;
   public
     { public declarations }
-    IsHost: boolean;
-    isGroup: boolean;
     IsNewPackage: boolean;
-    PackageEdited: ISuperObject;
+    PackageEdited: Variant;
     ApplyUpdatesImmediately:Boolean;
     property isAdvancedMode: boolean read FisAdvancedMode write SetisAdvancedMode;
     procedure EditPackage;
-    property SourcePath: string read FSourcePath write SetSourcePath;
+    property SourcePath: string read GetSourcePath write SetSourcePath;
     property PackageRequest: string read FPackageRequest write SetPackageRequest;
   end;
 
@@ -153,8 +151,9 @@ function EditPackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreatePackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreateGroup(packagename: string; advancedMode: boolean=False; section: String ='group'): ISuperObject;
 function EditHost(hostuuid: string; advancedMode: boolean; var ApplyUpdates:Boolean; description:String=''; HostReachable:Boolean=False;computer_fqdn_hint:String='';ForceMinVersion:String=''): ISuperObject;
-function EditHostDepends(hostname: string; newDependsStr: string): ISuperObject;
+
 function EditGroup(group: string; advancedMode: boolean=False): ISuperObject;
+function EditOrgUnit(OrgUnit: string; advancedMode: boolean=False): ISuperObject;
 
 
 var
@@ -163,7 +162,7 @@ var
 implementation
 
 uses uWaptConsoleRes,soutils, LCLType, Variants, waptcommon, dmwaptpython, jwawinuser, uvisloading,
-  uvisprivatekeyauth, uwaptconsole, tiscommon, uWaptRes,UScaleDPI,tisinifiles;
+  uvisprivatekeyauth, uwaptconsole, tiscommon, uWaptRes,UScaleDPI,tisinifiles,tisstrings;
 
 {$R *.lfm}
 
@@ -174,7 +173,7 @@ begin
       isAdvancedMode := advancedMode;
       PackageRequest := packagename;
       if ShowModal = mrOk then
-        Result := PackageEdited
+        Result := PyVarToSuperObject(PackageEdited.as_dict('--noarg--'))
       else
         Result := nil;
     finally
@@ -193,7 +192,7 @@ begin
       EdVersion.Enabled:=advancedMode;
       EdVersion.ReadOnly:=not advancedMode;
       if ShowModal = mrOk then
-        Result := PackageEdited
+        Result := PyVarToSuperObject(PackageEdited.as_dict('--noarg--'))
       else
         Result := nil;
     finally
@@ -210,6 +209,8 @@ begin
       else if section='unit' then
         Caption:= rsEditUnitBundle;
 
+      EdSection.Text:=section;
+
       LabPackage.Caption := rsEdPackage;
       pgDepends.Caption := rsPackagesNeededCaption;
 
@@ -221,7 +222,7 @@ begin
       EdVersion.Enabled:=advancedMode;
       EdVersion.ReadOnly:=not advancedMode;
       if ShowModal = mrOk then
-        Result := PackageEdited
+        Result := PyVarToSuperObject(PackageEdited.as_dict('--noarg--'))
       else
         Result := nil;
     finally
@@ -233,7 +234,7 @@ function EditHost(hostuuid: string; advancedMode: boolean;var ApplyUpdates:Boole
 begin
   with TVisEditPackage.Create(nil) do
     try
-      IsHost := True;
+      EdSection.Text:='host';
       Result := Nil;
       isAdvancedMode := advancedMode;
       PackageRequest := hostuuid;
@@ -267,7 +268,7 @@ begin
 
       if ShowModal = mrOk then
       try
-        Result := PackageEdited;
+        Result := PyVarToSuperObject(PackageEdited.as_dict('--noarg--'));
         ApplyUpdates:=ApplyUpdatesImmediately;
       except
         on E:Exception do
@@ -284,7 +285,7 @@ function EditGroup(group: string; advancedMode: boolean): ISuperObject;
 begin
   with TVisEditPackage.Create(nil) do
     try
-      isGroup := True;
+      EdSection.Text:='group';
       isAdvancedMode := advancedMode;
       PackageRequest := group;
       EdVersion.Enabled:=advancedMode;
@@ -301,7 +302,7 @@ begin
       pgDepends.Caption := rsPackagesNeededCaption;
 
       if ShowModal = mrOk then
-        Result := PackageEdited
+        Result := PyVarToSuperObject(PackageEdited.as_dict('--noarg--'))
       else
         Result := nil;
     finally
@@ -309,28 +310,30 @@ begin
     end;
 end;
 
-function EditHostDepends(hostname: string; newDependsStr: string): ISuperObject;
-var
-  oldDepends, newDepends: ISuperObject;
-  i: word;
+function EditOrgUnit(OrgUnit: string; advancedMode: boolean): ISuperObject;
 begin
   with TVisEditPackage.Create(nil) do
     try
-      IsHost := True;
-      PackageRequest := hostname;
+      EdSection.Text:='unit';
+      isAdvancedMode := advancedMode;
+      PackageRequest := OrgUnit;
+      EdVersion.Enabled:=advancedMode;
+      EdVersion.ReadOnly:=not advancedMode;
+      if EdVersion.ReadOnly then
+        EdVersion.ParentColor:=True;
 
-      oldDepends := Split(Depends, ',');
-      newDepends := Split(newDependsStr, ',');
-      for i := 0 to newDepends.AsArray.Length - 1 do
-      begin
-        if not StrIn(newDepends.AsArray.S[i], olddepends) then
-          olddepends.AsArray.Add(newDepends.AsArray.S[i]);
-      end;
-      Depends := soutils.Join(',', olddepends);
+      EdPackage.ReadOnly:=not IsNewPackage and not advancedMode;
+      if EdPackage.ReadOnly then
+        EdPackage.ParentColor:=True;
 
-      Result := PackageEdited;
-      if Result<>Nil then
-        ActBuildUploadExecute(nil);
+      Caption:=rsEditUnitBundle;
+      LabPackage.Caption := rsEdPackage;
+      pgDepends.Caption := rsPackagesNeededCaption;
+
+      if ShowModal = mrOk then
+        Result := PyVarToSuperObject(PackageEdited.as_dict('--noarg--'))
+      else
+        Result := nil;
     finally
       Free;
     end;
@@ -396,8 +399,8 @@ end;
 procedure TVisEditPackage.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
   CanClose := CheckUpdated;
-  if FisTempSourcesDir and DirectoryExists(FSourcePath) then
-    FileUtil.DeleteDirectory(FSourcePath, False);
+  if FisTempSourcesDir and DirectoryExists(SourcePath) then
+    FileUtil.DeleteDirectory(SourcePath, False);
 end;
 
 function TVisEditPackage.CheckUpdated: boolean;
@@ -419,6 +422,14 @@ begin
   end;
 end;
 
+function TVisEditPackage.GetSourcePath: string;
+begin
+  if not VarIsEmpty(PackageEdited.sourcespath) and not VarIsNone(PackageEdited.sourcespath) and (VarPythonAsString(PackageEdited.sourcespath)<>'') then
+    Result := VarPythonAsString(PackageEdited.sourcespath)
+  else
+    Result := '';
+end;
+
 procedure TVisEditPackage.SetisAdvancedMode(AValue: boolean);
 begin
   if FisAdvancedMode = AValue then
@@ -430,7 +441,7 @@ begin
   EdSection.Visible := isAdvancedMode;
   cbShowLog.Visible := isAdvancedMode;
   pgDevelop.TabVisible := isAdvancedMode;
-  Eddescription.Visible := not IsHost or isAdvancedMode;
+  Eddescription.Visible := (EdSection.Text<>'host') or isAdvancedMode;
 
 end;
 
@@ -438,20 +449,23 @@ procedure TVisEditPackage.EditPackage;
 var
   setuppypath:String;
 begin
-  EdPackage.Text := UTF8Encode(PackageEdited.S['package']);
-  EdVersion.Text := UTF8Encode(PackageEdited.S['version']);
-  EdDescription.Text := UTF8Encode(PackageEdited.S['description']);
-  EdSection.Text := UTF8Encode(PackageEdited.S['section']);
+  EdPackage.Text := UTF8Encode(VarPythonAsString(PackageEdited.package));
+  EdVersion.Text := UTF8Encode(VarPythonAsString(PackageEdited.version));
+  EdDescription.Text := UTF8Encode(VarPythonAsString(PackageEdited.description));
+  EdSection.Text := UTF8Encode(VarPythonAsString(PackageEdited.section));
   IsUpdated := False;
   // get a list of package entries given a
-  Depends := UTF8Encode(PackageEdited.S['depends']);
-  Conflicts := UTF8Encode(PackageEdited.S['conflicts']);
-  setuppypath := FSourcePath + '\setup.py';
-  if FileExistsUTF8(setuppypath) then
-    EdSetupPy.Lines.LoadFromFile(setuppypath)
-  else
-    EdSetupPy.Lines.Clear;
-  butBUApply.Visible:=IsHost;
+  Depends := UTF8Encode(VarPythonAsString(PackageEdited.depends));
+  Conflicts := UTF8Encode(VarPythonAsString(PackageEdited.conflicts));
+  if VarPythonAsString(PackageEdited.sourcespath) <> '' then
+  begin
+    setuppypath := VarPythonAsString(PackageEdited.sourcespath) + '\setup.py';
+    if FileExistsUTF8(setuppypath) then
+      EdSetupPy.Lines.LoadFromFile(setuppypath)
+    else
+      EdSetupPy.Lines.Clear;
+  end;
+  butBUApply.Visible:=EdSection.Text='host';
 end;
 
 function gridFind(grid: TSOGrid; Fieldname, AText: string): PVirtualNode;
@@ -552,51 +566,30 @@ end;
 
 procedure TVisEditPackage.ActEditSavePackageExecute(Sender: TObject);
 var
-  res: ISuperObject;
-  PE,ControlDict: Variant;
-  vpackagename,vdescription,vsection,vdepends,vconflicts,vsourcepath:Variant;
+  vpackagename,vdescription,vsection,vversion,vdepends,vconflicts,vsourcepath:Variant;
 begin
   Screen.Cursor := crHourGlass;
   try
-    if IsNewPackage then
+    vpackagename:=PyUTF8Decode(Trim(EdPackage.Text));
+    vversion:=PyUTF8Decode(Trim(EdVersion.Text));
+    vdepends:=PyUTF8Decode(Depends);
+    vconflicts:=PyUTF8Decode(Conflicts);
+    vsection := PyUTF8Decode(EdSection.Text);
+    vdescription:=PyUTF8Decode(trim(Eddescription.Text));
+
+    PackageEdited.package := vpackagename;
+    PackageEdited.version := vversion;
+    PackageEdited.depends := vdepends;
+    PackageEdited.conflicts := vconflicts;
+    PackageEdited.description := vdescription;
+
+    if SourcePath<>'' then
     begin
-      { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
-      vpackagename:=PyUTF8Decode(Trim(EdPackage.Text));
-      vdepends:=PyUTF8Decode(Depends);
-      vconflicts:=PyUTF8Decode(Conflicts);
-      vsection := EdSection.Text;
-      vdescription:=PyUTF8Decode(trim(Eddescription.Text));
-
-      res := PyVarToSuperObject(
-        DMPython.WAPT.make_group_template(
-          packagename := vpackagename,
-          depends := vdepends,
-          conflicts := vconflicts,
-          section := vsection,
-          description := vdescription
-        ));
-      FSourcePath := UTF8Encode(res.S['sourcespath']);
-      PackageEdited := res;
-    end
-    else
-    begin
-      PackageEdited.S['package'] := UTF8Decode(StringReplace(trim(EdPackage.Text),' ','',[rfReplaceAll]));
-      PackageEdited.S['version'] := UTF8Decode(trim(lowercase(EdVersion.Text)));
-      PackageEdited.S['description'] := UTF8Decode(EdDescription.Text);
-      PackageEdited.S['section'] :=  UTF8Decode(trim(lowercase(EdSection.Text)));
-      PackageEdited.S['depends'] :=  UTF8Decode(trim(Depends));
-      PackageEdited.S['conflicts'] :=  UTF8Decode(trim(Conflicts));
-      ControlDict:=SuperObjectToPyVar(PackageEdited);
-
-      PE := dmpython.waptpackage.PackageEntry(package := '');
-      PE.load_control_from_dict(ControlDict);
-      vsourcepath := PyUTF8Decode(SourcePath);
-      PE.save_control_to_wapt(vsourcepath);
-
+      PackageEdited.save_control_to_wapt('--noarg--');
       if EdSetupPy.Lines.Count>0 then
-        EdSetupPy.Lines.SaveToFile(AppendPathDelim(FSourcePath) + 'setup.py')
+        EdSetupPy.Lines.SaveToFile(AppendPathDelim(SourcePath) + 'setup.py')
       else
-        DeleteFile(AppendPathDelim(FSourcePath) + 'setup.py');
+        DeleteFile(AppendPathDelim(SourcePath) + 'setup.py');
     end;
   finally
     Screen.Cursor := crDefault;
@@ -623,11 +616,11 @@ end;
 
 procedure TVisEditPackage.ActBuildUploadExecute(Sender: TObject);
 var
-  Result: ISuperObject;
-  vsourcepath: UnicodeString;
-begin
-  Result := Nil;
+  vprivatekeypassword, vbuildfilename,vsourcepath,packages: Variant;
+  res: ISuperObject;
 
+begin
+  Res := Nil;
   ActEditSavePackage.Execute;
 
   if not FileExistsUTF8(WaptPersonalCertificatePath) then
@@ -642,29 +635,37 @@ begin
     Application.ProcessMessages;
     try
       { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
-      vsourcepath := PyUTF8Decode(FSourcePath);
-      Result := PyVarToSuperObject(
-        DMPython.WAPT.build_upload(
-          sources_directories := vsourcepath,
-          private_key_passwd := dmpython.privateKeyPassword,
-          wapt_server_user := waptServerUser,
-          wapt_server_passwd := waptServerPassword,
-          inc_package_release := True));
+      if SourcePath<>'' then
+        vbuildfilename := PackageEdited.build_package('--noarg--')
+      else
+        vbuildfilename := PackageEdited.build_management_package('--noarg--');
 
-      if Result.AsArray.Length=0  then
-        raise Exception.Create('Error when building / uploading package, no result');
+      vprivatekeypassword := PyUTF8Decode(dmpython.privateKeyPassword);
+      PackageEdited.inc_build('--noarg--');
+      PackageEdited.sign_package(
+        certificate := DMPython.WAPT.personal_certificate('--noarg--'),
+        private_key := DMPython.WAPT.private_key(private_key_password := vprivatekeypassword));
+
+      packages := VarPythonCreate([PackageEdited]);
+      res := PyVarToSuperObject(DMPython.WAPT.http_upload_package(
+          packages := packages,
+          wapt_server_user := waptServerUser,
+          wapt_server_passwd := waptServerPassword));
+
+      if (res=Nil) or not Res.B['success']  then
+        raise Exception.Create('Error when uploading package');
+
       if FisTempSourcesDir then
-      begin
-        FileUtil.DeleteDirectory(FSourcePath, False);
-        if (Result.AsArray <> nil) and (FileExistsUTF8(Result.AsArray[0].AsString)) then
-          FileUtil.DeleteFileUTF8(Result.AsArray[0].AsString);
-      end;
+        FileUtil.DeleteDirectory(SourcePath, False);
+      if FileExistsUTF8(vbuildfilename) then
+        FileUtil.DeleteFileUTF8(vbuildfilename);
+
       IsUpdated := False;
     except
       on E:Exception do
       begin
         ShowMessageFmt(rsPackageCreationError, [E.Message]);
-        Result := Nil;
+        Res := Nil;
         ModalResult:=mrNone;
         Abort;
       end;
@@ -672,7 +673,7 @@ begin
   finally
     Free;
   end;
-  if (Result<>Nil) and (Result.AsArray<>Nil) and (Result.AsArray.Length>0) then
+  if (res<>Nil) and Res.B['success'] then
     ModalResult := mrOk
 end;
 
@@ -771,7 +772,7 @@ begin
   oldconflicts := Split(Conflicts, ',');
   for row in GridPackages.SelectedRows do
   begin
-    package := row.S['package'];
+    package := UTF8Encode(row.S['package']);
     if not StrIn(package, oldconflicts) then
     begin
       oldconflicts.AsArray.Add(UTF8Decode(package));
@@ -796,17 +797,16 @@ end;
 
 procedure TVisEditPackage.SetPackageRequest(AValue: string);
 var
-  res: ISuperObject;
-  n: PVirtualNode;
   filename, filePath, target_directory,proxy: string;
   vFilePath: Variant;
-  grid: TSOGrid;
-  host_repo,host_package,cabundle: Variant;
+  PackagesCount: Integer;
+  PyNone,repo,packages,cabundle,VWaptIniFilename: Variant;
 begin
   if FPackageRequest = AValue then
     Exit;
   if AValue='' then
     raise Exception.Create('Can not edit an Empty package name');
+
   Screen.Cursor := crHourGlass;
   try
     if UseProxyForRepo then
@@ -815,93 +815,89 @@ begin
       Proxy := '';
 
     FPackageRequest := AValue;
-    if not IsNewPackage then
+    cabundle := DMPython.WAPT.cabundle;
+
+    VWaptIniFilename := PyUTF8Decode(WaptIniFilename);
+    if EdSection.text='host' then
     begin
-      if IsHost then
-      begin
-        cabundle := DMPython.WAPT.cabundle;
-        host_repo := DMPython.common.WaptHostRepo(name := 'wapt-host', host_id := FPackageRequest, cabundle :=  cabundle );
-        host_repo.load_config_from_file(WaptIniFilename);
-        host_package := host_repo.get(FPackageRequest);
-        if not VarIsEmpty(host_package) and not VarIsNone(host_package) then
-          res := PyVarToSuperObject(host_package)
-        else
-        // empty host package.
-        begin
-          host_package := DMPython.waptpackage.PackageEntry(package := FPackageRequest,version := String('0'),section := 'host');
-          res := PyVarToSuperObject(host_package)
+      LabPackage.Caption := 'UUID';
+      Caption := rsHostConfigEditCaption;
+
+      pgDepends.Caption := rsPackagesNeededOnHostCaption;
+      repo := DMPython.WaptHostRepo;
+      repo.host_id := FPackageRequest;
+      PackageEdited := repo.get(FPackageRequest);
+      // clear cache
+      PyNone := None;
+      repo.host_id := PyNone;
+      IsNewPackage:=VarIsEmpty(PackageEdited) or VarIsNone(PackageEdited);
+      if IsNewPackage then
+        PackageEdited := DMPython.waptpackage.PackageEntry(package := FPackageRequest,version := String('0'),section := 'host')
+    end
+    else
+    begin
+      repo := DMPython.MainWaptRepo;
+      packages := repo.packages_matching(FPackageRequest);
+      PackagesCount := Varpyth.len(packages);
+      IsNewPackage := PackagesCount <= 0;
+      if not IsNewPackage then
+        PackageEdited := packages.__getitem__(-1)
+      else
+        PackageEdited := DMPython.waptpackage.PackageEntry(package := FPackageRequest,version := String('0'),section := EdSection.Text);
+    end;
+
+    if not IsNewPackage
+        and (VarPythonAsString(PackageEdited.section) <> 'host')
+        and  (VarPythonAsString(PackageEdited.section) <> 'unit')
+        and  (VarPythonAsString(PackageEdited.section) <> 'group') then
+      with  TVisLoading.Create(Self) do
+      try
+        ProgressTitle('Téléchargement en cours');
+        Application.ProcessMessages;
+        if EdSection.Text='group' then
+          Caption := rsBundleConfigEditCaption;
+
+        try
+          filename := PackageEdited.filename;
+          filePath := AppLocalDir + 'cache\' + filename;
+          if not DirectoryExists(AppLocalDir + 'cache') then
+            mkdir(AppLocalDir + 'cache');
+
+          IdWget(VarPythonAsString(PackageEdited.download_url), filePath,
+              ProgressForm, @updateprogress, Proxy);
+
+          vFilePath := PyUTF8Decode(filePath);
+          PackageEdited := DMPython.waptpackage.PackageEntry(waptfile := vFilePath);
+          PackageEdited.unzip_package(cabundle := cabundle);
+
+          FisTempSourcesDir := True;
+        except
+          ShowMessage(rsDlCanceled);
+          if FileExists(filePath) then
+            DeleteFile(filePath);
+          raise;
         end;
 
-        target_directory := UniqueTempDir();
-        FisTempSourcesDir := True;
-        mkdir(target_directory);
-        res.S['sourcespath'] := UTF8Decode(target_directory);
-        LabPackage.Caption := 'UUID';
-        Caption := rsHostConfigEditCaption;
-        pgDepends.Caption := rsPackagesNeededOnHostCaption;
-      end
-      else
-      begin
-        with  TVisLoading.Create(Self) do
-          try
-            ProgressTitle('Téléchargement en cours');
-            Application.ProcessMessages;
-            if isGroup then
-            begin
-              Caption := rsBundleConfigEditCaption;
-              grid := uwaptconsole.VisWaptGUI.GridGroups;
-            end
-            else
-              grid := uwaptconsole.VisWaptGUI.GridPackages;
-            n := grid.GetFirstSelected();
-            if n <> nil then
-              try
-                filename := grid.GetCellStrValue(n, 'filename');
-                filePath := AppLocalDir + 'cache\' + filename;
-                if not DirectoryExists(AppLocalDir + 'cache') then
-                  mkdir(AppLocalDir + 'cache');
-
-                IdWget(GetWaptRepoURL + '/' + filename, filePath,
-                  ProgressForm, @updateprogress, Proxy);
-              except
-                ShowMessage(rsDlCanceled);
-                if FileExists(filePath) then
-                  DeleteFile(filePath);
-                exit;
-              end;
-            { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
-            vFilePath := PyUTF8Decode(filePath);
-            res := PyVarToSuperObject(DMPython.WAPT.edit_package(packagerequest := vFilePath ));
-
-            FisTempSourcesDir := True;
-          finally
-            Free;
-          end;
-
-      end;
-      FSourcePath := UTF8Encode(res.S['sourcespath']);
-      PackageEdited := res;
+    finally
+      Free;
     end;
+
   finally
     Screen.Cursor := crDefault;
   end;
-  if not IsNewPackage then
-    EditPackage;
+  EditPackage;
 end;
 
 procedure TVisEditPackage.SetSourcePath(AValue: string);
 var
-  res: ISuperObject;
   vSourcePath: Variant;
 begin
-  if FSourcePath = AValue then
+  if GetSourcePath = AValue then
     Exit;
-  FSourcePath := AValue;
   try
     { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
-    vSourcePath := PyUTF8Decode(FSourcePath);
-    res := PyVarToSuperObject(DMPython.WAPT.edit_package(vSourcePath));
-    PackageEdited := res['package'];
+    vSourcePath := PyUTF8Decode(AValue);
+    PackageEdited := DMPython.waptpackage.PackageEntry(waptfile := vSourcePath);
   finally
     Screen.Cursor := crDefault;
   end;
@@ -931,7 +927,6 @@ begin
   begin
     dependencies := PyVarToSuperObject(DMPython.MainWaptRepo.get_package_entries(FDepends));
     GridDepends.Data := dependencies['packages'];
-    //GridDepends.Header.AutoFitColumns(False);
     if dependencies['missing'].AsArray.Length > 0 then
     begin
       ShowMessageFmt(rsIgnoredPackages,
@@ -952,7 +947,6 @@ begin
   begin
     aconflicts := PyVarToSuperObject(DMPython.MainWaptRepo.get_package_entries(FConflicts));
     GridConflicts.Data := aconflicts['packages'];
-    //GridConflicts.Header.AutoFitColumns(False);
     if aconflicts['missing'].AsArray.Length > 0 then
     begin
       ShowMessageFmt(rsIgnoredConfictingPackages,

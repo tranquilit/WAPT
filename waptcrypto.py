@@ -224,10 +224,10 @@ class SSLCABundle(BaseObjectClass):
         self._crls_negative_cache.clear()
         self._cert_chains_cache.clear()
 
-    def add_pems(self,cert_pattern_or_dir='*.crt',load_keys=False):
+    def add_pems(self,cert_pattern_or_dir=u'*.crt',load_keys=False):
         if os.path.isdir(cert_pattern_or_dir):
             # load pems from provided directory
-            for fn in glob.glob(os.path.join(cert_pattern_or_dir,'*.crt'))+glob.glob(os.path.join(cert_pattern_or_dir,'*.pem')):
+            for fn in glob.glob(os.path.join(cert_pattern_or_dir,u'*.crt'))+glob.glob(os.path.join(cert_pattern_or_dir,u'*.pem')):
                 self.add_pem(pem_filename = fn,load_keys=load_keys)
         else:
             # load pems based on file wildcards

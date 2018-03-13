@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.1.20"
+__version__ = "1.5.1.21"
 
 import os
 import sys
@@ -418,15 +418,15 @@ def ensure_list(csv_or_list,ignore_empty_args=True,allow_none = False):
         else:
             return []
 
-    if isinstance(csv_or_list,tuple):
+    if isinstance(csv_or_list,(tuple,list)):
         return list(csv_or_list)
-    elif not isinstance(csv_or_list,list):
+    elif isinstance(csv_or_list,(str,unicode)):
         if ignore_empty_args:
-            return [s.strip() for s in csv_or_list.split(',') if s.strip() != '']
+            return [s.strip() for s in csv_or_list.split(u',') if s.strip() != '']
         else:
-            return [s.strip() for s in csv_or_list.split(',')]
+            return [s.strip() for s in csv_or_list.split(u',')]
     else:
-        return csv_or_list
+        return [csv_or_list]
 
 def datetime2isodate(adatetime = None):
     if not adatetime:

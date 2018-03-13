@@ -1,5 +1,5 @@
 package           : tis-waptupgrade
-version           : 1.5.1.18-3
+version           : 1.5.1.19-4
 architecture      : all
 section           : base
 priority          : optional
@@ -16,6 +16,10 @@ min_wapt_version  :
 sources           : 
 installed_size    : 
 impacted_process  : 
+description_fr    : 
+description_pl    : 
+description_de    : 
+description_es    : 
 signer            : 
 signer_fingerprint: 
 signature_date    : 
