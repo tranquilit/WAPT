@@ -1983,17 +1983,17 @@ class WaptLocalRepo(WaptBaseRepo):
     >>> localrepo.update()
     """
 
-    def __init__(self,localpath='/var/www/wapt',name='waptlocal',cabundle=None,config=None):
+    def __init__(self,localpath=u'/var/www/wapt',name='waptlocal',cabundle=None,config=None):
         # store defaults at startup
         self._default_config.update({
-            'localpath':localpath,
+            'localpath':ensure_unicode(localpath),
         })
 
         WaptBaseRepo.__init__(self,name=name,cabundle=cabundle,config=None)
 
         # override defaults and config with supplied parameters
         if self.localpath is not None:
-            self.localpath = localpath.rstrip(os.path.sep)
+            self.localpath = ensure_unicode(localpath.rstrip(os.path.sep))
 
     @property
     def packages_path(self):
@@ -2022,7 +2022,7 @@ class WaptLocalRepo(WaptBaseRepo):
         """
         # Packages file is a zipfile with one Packages file inside
         if not os.path.isdir(os.path.dirname(self.packages_path)):
-            raise EWaptException('Directory for wapt local repo %s does not exist' % self.packages_path)
+            raise EWaptException(u'Directory for wapt local repo %s does not exist' % self.packages_path)
 
         if os.path.isfile(self.packages_path):
             (packages_data_str,_packages_datetime) =  self._get_packages_index_data()
@@ -2046,7 +2046,7 @@ class WaptLocalRepo(WaptBaseRepo):
                     package = PackageEntry()
                     package.load_control_from_wapt(packages_lines[start:end])
                     logger.debug(u"%s (%s)" % (package.package,package.version))
-                    package.repo_url = 'file:///%s'%(self.localpath.replace('\\','/'))
+                    package.repo_url = u'file:///%s'%(self.localpath.replace('\\','/'))
                     package.repo = self.name
                     package.filename = package.make_package_filename()
                     package.localpath = os.path.join(self.localpath,package.filename)
@@ -2219,7 +2219,7 @@ class WaptLocalRepo(WaptBaseRepo):
         except Exception as e:
             if os.path.isfile(tmp_packages_fname):
                 os.unlink(tmp_packages_fname)
-            logger.critical('Unable to create new Packages file : %s' % e)
+            logger.critical(u'Unable to create new Packages file : %s' % e)
             raise
         return {'processed':processed,'kept':kept,'errors':errors,'packages_filename':packages_fname}
 
