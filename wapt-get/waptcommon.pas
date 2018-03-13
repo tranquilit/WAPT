@@ -210,7 +210,7 @@ const
   WaptPersonalCertificatePath: String ='';
 
 
-  WAPTServerMinVersion='1.5.1.13';
+  WAPTServerMinVersion='1.5.1.20';
 
   FAppIniFilename:Utf8String = '';
 
@@ -1320,8 +1320,7 @@ begin
       FAppIniFilename := IncludeTrailingPathDelimiter(GetAppConfigDir(False))+FAppIniFilename;
     if ExtractFileExt(FAppIniFilename)='' then
       FAppIniFilename := FAppIniFilename+'.ini';
-    FAppIniFilename := AnsiToUtf8(FAppIniFilename);
-    //Result :=  IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetSpecialFolderPath(CSIDL_LOCAL_APPDATA))+ApplicationName)+ApplicationName+'.ini';
+
   end;
   Result := FAppIniFilename;
 end;
