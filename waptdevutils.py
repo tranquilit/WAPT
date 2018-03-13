@@ -648,16 +648,8 @@ def sign_actions(actions,sign_certs=None,sign_key=None,key_password=None):
           'signer_fingerprint': '195DEFCC322C945018E917BF217CD1323FC4C79F'}]
     >>>
     """
-    if sign_certs is None:
-        sign_bundle_fn = inifile_readstring(waptconfigfile,u'global',u'personal_certificate_path')
-        sign_bundle = SSLCABundle(sign_bundle_fn)
-        sign_certs = sign_bundle.certificates()
-        # we assume a unique signer.
-        if cabundle is None:
-            cabundle = sign_bundle
-
     if not sign_certs:
-        raise Exception(u'No personal signer certificate found in %s' % sign_bundle_fn)
+        raise Exception(u'No personal signer certificates chain provided to sign actions')
 
     if sign_key is None:
         sign_key = sign_certs[0].matching_key_in_dirs(private_key_password=key_password)
