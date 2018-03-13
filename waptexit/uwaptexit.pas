@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms,
   Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, ActnList, Buttons,
-  superobject, DefaultTranslator, ComCtrls, Grids, uWaptExitRes, sogrid;
+  superobject, DefaultTranslator, ComCtrls, uWaptExitRes, sogrid;
 
 type
 

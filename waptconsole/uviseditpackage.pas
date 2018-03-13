@@ -921,11 +921,13 @@ end;
 procedure TVisEditPackage.SetDepends(AValue: string);
 var
   dependencies: ISuperObject;
+  VDepends:Variant;
 begin
   FDepends := AValue;
   if FDepends<>'' then
   begin
-    dependencies := PyVarToSuperObject(DMPython.MainWaptRepo.get_package_entries(FDepends));
+    vDepends := PyUTF8Decode(FDepends);
+    dependencies := PyVarToSuperObject(DMPython.MainWaptRepo.get_package_entries(vDepends));
     GridDepends.Data := dependencies['packages'];
     if dependencies['missing'].AsArray.Length > 0 then
     begin
@@ -941,11 +943,13 @@ end;
 procedure TVisEditPackage.SetConflicts(AValue: string);
 var
   aconflicts: ISuperObject;
+  VConflicts:Variant;
 begin
   FConflicts := AValue;
   if FConflicts<>'' then
   begin
-    aconflicts := PyVarToSuperObject(DMPython.MainWaptRepo.get_package_entries(FConflicts));
+    vConflicts := PyUTF8Decode(FConflicts);
+    aconflicts := PyVarToSuperObject(DMPython.MainWaptRepo.get_package_entries(vconflicts));
     GridConflicts.Data := aconflicts['packages'];
     if aconflicts['missing'].AsArray.Length > 0 then
     begin
