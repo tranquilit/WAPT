@@ -371,7 +371,7 @@ class PackageEntry(BaseObjectClass):
 
         # init package attributes
         for key in self.required_attributes + self.optional_attributes:
-            setattr(self,key,None)
+            setattr(self,key,'')
 
         self.package=package
         self.version=version
