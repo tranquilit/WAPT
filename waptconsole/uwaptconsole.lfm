@@ -5552,6 +5552,8 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'OrgUnits'
       Caption = 'Create or Edit Organizational Unit package'
       ImageIndex = 8
+      OnExecute = ActEditOrgUnitPackageExecute
+      OnUpdate = ActEditOrgUnitPackageUpdate
     end
     object ActAddNewNetwork: TAction
       Category = 'Networks'
@@ -5574,6 +5576,17 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActInstallLicence: TAction
       Caption = 'Install a licence file'
+    end
+    object ActTriggerUpdateOrgUnit: TAction
+      Category = 'OrgUnits'
+      Caption = 'Check updates on all hosts of this OU'
+      ImageIndex = 0
+    end
+    object ActTriggerUpgradesOrgUnit: TAction
+      Category = 'OrgUnits'
+      Caption = 'Apply upgrades on all hosts of this OU'
+      ImageIndex = 26
+      OnUpdate = ActTriggerUpgradesOrgUnitUpdate
     end
   end
   object PopupMenuPackages: TPopupMenu
@@ -11574,7 +11587,7 @@ object VisWaptGUI: TVisWaptGUI
       }
     end
     object MenuItem88: TMenuItem
-      Action = ActTriggerHostUpdate
+      Action = ActTriggerUpdateOrgUnit
       Bitmap.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000064000000640000000000000000000000000000000000
@@ -11653,7 +11666,7 @@ object VisWaptGUI: TVisWaptGUI
       }
     end
     object MenuItem89: TMenuItem
-      Action = ActTriggerHostUpgrade
+      Action = ActTriggerUpgradesOrgUnit
       Bitmap.Data = {
         36090000424D3609000000000000360000002800000018000000180000000100
         2000000000000009000064000000640000000000000000000000000000000000

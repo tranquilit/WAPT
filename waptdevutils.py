@@ -620,7 +620,7 @@ def create_waptwua_package(waptconfigfile,wuagroup='default',wapt_server_user=No
         remove_file(packagefilename)
     return build_res
 
-def sign_actions(actions,certfilename,key_password=None):
+def sign_actions(actions,sign_certs=None,sign_key=None,key_password=None):
     """Sign a list of claims with private key defined in waptconfigfile
 
     Args:
@@ -648,15 +648,27 @@ def sign_actions(actions,certfilename,key_password=None):
           'signer_fingerprint': '195DEFCC322C945018E917BF217CD1323FC4C79F'}]
     >>>
     """
-    certs = SSLCABundle(certfilename).certificates()
-    key = certs[0].matching_key_in_dirs(private_key_password=key_password)
+    if sign_certs is None:
+        sign_bundle_fn = inifile_readstring(waptconfigfile,u'global',u'personal_certificate_path')
+        sign_bundle = SSLCABundle(sign_bundle_fn)
+        sign_certs = sign_bundle.certificates()
+        # we assume a unique signer.
+        if cabundle is None:
+            cabundle = sign_bundle
+
+    if not sign_certs:
+        raise Exception(u'No personal signer certificate found in %s' % sign_bundle_fn)
+
+    if sign_key is None:
+        sign_key = sign_certs[0].matching_key_in_dirs(private_key_password=key_password)
+
     if isinstance(actions,(str,unicode)):
         actions = json.loads(actions)
     assert(isinstance(actions,list))
 
     result = []
     for action in actions:
-        result.append(key.sign_claim(action,signer_certificate_chain=certs))
+        result.append(sign_key.sign_claim(action,signer_certificate_chain=sign_certs))
     return json.dumps(result)
 
 def change_key_password(private_key_path,old_password=None,new_password=None):

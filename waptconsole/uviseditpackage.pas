@@ -152,8 +152,7 @@ function CreatePackage(packagename: string; advancedMode: boolean): ISuperObject
 function CreateGroup(packagename: string; advancedMode: boolean=False; section: String ='group'): ISuperObject;
 function EditHost(hostuuid: string; advancedMode: boolean; var ApplyUpdates:Boolean; description:String=''; HostReachable:Boolean=False;computer_fqdn_hint:String='';ForceMinVersion:String=''): ISuperObject;
 
-function EditGroup(group: string; advancedMode: boolean=False): ISuperObject;
-function EditOrgUnit(OrgUnit: string; advancedMode: boolean=False): ISuperObject;
+function EditGroup(group: string; advancedMode: boolean; section:String = 'group';description:String=''): ISuperObject;
 
 
 var
@@ -281,11 +280,11 @@ begin
     end;
 end;
 
-function EditGroup(group: string; advancedMode: boolean): ISuperObject;
+function EditGroup(group: string; advancedMode: boolean; section:String = 'group';description:String=''): ISuperObject;
 begin
   with TVisEditPackage.Create(nil) do
     try
-      EdSection.Text:='group';
+      EdSection.Text:=section;
       isAdvancedMode := advancedMode;
       PackageRequest := group;
       EdVersion.Enabled:=advancedMode;
@@ -300,6 +299,9 @@ begin
       Caption:=rsEditBundle;
       LabPackage.Caption := rsEdPackage;
       pgDepends.Caption := rsPackagesNeededCaption;
+
+      if description<>'' then
+        EdDescription.Text:=description;
 
       if ShowModal = mrOk then
         Result := PyVarToSuperObject(PackageEdited.as_dict('--noarg--'))
@@ -582,6 +584,7 @@ begin
     PackageEdited.depends := vdepends;
     PackageEdited.conflicts := vconflicts;
     PackageEdited.description := vdescription;
+    PackageEdited.section := vsection;
 
     if SourcePath<>'' then
     begin

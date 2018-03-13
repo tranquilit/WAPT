@@ -15,6 +15,7 @@ object VisHostsUpgrade: TVisHostsUpgrade
     Top = 0
     Width = 669
     OnGetText = ProgressGridGetText
+    ShowAdvancedColumnsCustomize = False
     Align = alClient
     Color = clWhite
     Header.AutoSizeIndex = -1

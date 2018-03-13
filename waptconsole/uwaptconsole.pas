@@ -27,6 +27,8 @@ type
     ActAddNewNetwork: TAction;
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
+    ActTriggerUpgradesOrgUnit: TAction;
+    ActTriggerUpdateOrgUnit: TAction;
     ActTriggerWaptServiceRestart: TAction;
     ActLaunchGPUpdate: TAction;
     ActLaunchWaptExit: TAction;
@@ -441,6 +443,8 @@ type
     procedure ActDisplayUserMessageExecute(Sender: TObject);
     procedure ActEditGroupUpdate(Sender: TObject);
     procedure ActEditHostPackageUpdate(Sender: TObject);
+    procedure ActEditOrgUnitPackageExecute(Sender: TObject);
+    procedure ActEditOrgUnitPackageUpdate(Sender: TObject);
     procedure ActForgetPackagesUpdate(Sender: TObject);
     procedure ActGermanExecute(Sender: TObject);
     procedure ActGermanUpdate(Sender: TObject);
@@ -461,6 +465,7 @@ type
     procedure ActTISHelpUpdate(Sender: TObject);
     procedure ActTriggerBurstUpdatesExecute(Sender: TObject);
     procedure ActTriggerBurstUpgradesExecute(Sender: TObject);
+    procedure ActTriggerUpgradesOrgUnitUpdate(Sender: TObject);
     procedure ActTriggerWakeOnLanExecute(Sender: TObject);
     procedure ActTriggerWaptServiceRestartExecute(Sender: TObject);
     procedure ActTriggerWaptwua_downloadExecute(Sender: TObject);
@@ -1743,7 +1748,7 @@ begin
         resVar := DMPython.waptdevutils.edit_hosts_depends(
            waptconfigfile := VWaptIniFilename,
            hosts_list := VHosts,
-           add_conflicts := VPackages,
+           append_conflicts := VPackages,
            sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
            sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
            wapt_server_user := waptServerUser,
@@ -2230,6 +2235,25 @@ begin
   ActEditHostPackage.Enabled:=(GridHosts.SelectedCount=1);
 end;
 
+procedure TVisWaptGUI.ActEditOrgUnitPackageExecute(Sender: TObject);
+var
+  res:ISuperObject;
+begin
+  {$ifdef ENTERPRISE}
+  res := EditGroup(DBOrgUnitsDN.Value,AdvancedMode,'unit',DBOrgUnitsDescription.Value);
+  //force refresh
+  if res <>Nil then
+    dmpython.MainWaptRepo := Unassigned;
+  {$endif}
+end;
+
+procedure TVisWaptGUI.ActEditOrgUnitPackageUpdate(Sender: TObject);
+begin
+  {$ifdef ENTERPRISE}
+  ActEditOrgUnitPackage.Enabled:=GridOrgUnits.SelectedCount=1;
+  {$endif}
+end;
+
 procedure TVisWaptGUI.ActForgetPackagesUpdate(Sender: TObject);
 begin
   (Sender as TAction).Enabled:=OneHostIsConnected;
@@ -2373,6 +2397,11 @@ begin
     (MessageDlg(Format(rsConfirmBurstUpgrades,[GridHosts.SelectedCount]),mtConfirmation,mbYesNoCancel, 0) = mrYes) then
       TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_host_upgrade',Nil,rsUpgradingHost,'Error applying upgrades %s',True)
 
+end;
+
+procedure TVisWaptGUI.ActTriggerUpgradesOrgUnitUpdate(Sender: TObject);
+begin
+  ActTriggerUpgradesOrgUnit.Enabled := length(GetSelectedOrgUnits)>0;
 end;
 
 procedure TVisWaptGUI.ActTriggerWakeOnLanExecute(Sender: TObject);
@@ -2748,7 +2777,7 @@ var
   SOAction, SOActions:ISuperObject;
   actions_json,
   signed_actions_json:String;
-  vcertificate_path: Variant;
+  VPrivateKeyPassword: Variant;
 begin
   try
     Screen.Cursor:=crHourGlass;
@@ -2770,9 +2799,13 @@ begin
 
       //transfer actions as json string to python
       actions_json := SOActions.AsString;
-      vcertificate_path := PyUTF8Decode(WaptPersonalCertificatePath);
+
+      VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
+
       signed_actions_json := VarPythonAsString(DMPython.waptdevutils.sign_actions(
-        actions:=actions_json, certfilename:=vcertificate_path,key_password:= dmpython.privateKeyPassword));
+          actions:=actions_json,
+          sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
+          sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword)));
       SOActions := SO(signed_actions_json);
 
       result := WAPTServerJsonPost('/api/v3/trigger_host_action?timeout=%D',[waptservice_timeout],SOActions);
@@ -2811,7 +2844,7 @@ var
   actions_json,
   keypassword:String;
   signed_actions_json:String;
-  vWaptPersonalCertificatePath:Variant;
+  VPrivateKeyPassword:Variant;
 begin
   if GridHostPackages.Focused and (GridHosts.FocusedRow <> Nil) then
   begin
@@ -2839,10 +2872,13 @@ begin
 
         //transfer actions as json string to python
         actions_json := SOActions.AsString;
-        keypassword := dmpython.privateKeyPassword;
-        vWaptPersonalCertificatePath := PyUTF8Decode(WaptPersonalCertificatePath);
+
+        VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
+
         signed_actions_json := VarPythonAsString(DMPython.waptdevutils.sign_actions(
-          actions:=actions_json, certfilename:=vWaptPersonalCertificatePath, key_password:=keypassword));
+            actions:=actions_json,
+            sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
+            sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword)));
         SOActions := SO(signed_actions_json);
 
         res := WAPTServerJsonPost('/api/v3/trigger_host_action?timeout=%D',[waptservice_timeout],SOActions);

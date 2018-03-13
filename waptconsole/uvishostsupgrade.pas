@@ -71,7 +71,7 @@ var
   actions_json:Variant;
   signed_actions_json:String;
   waptdevutils: Variant;
-  keypassword,uWaptPersonalCertificatePath: UnicodeString;
+  VPrivateKeyPassword: Variant;
 begin
   Stopped := False;
 
@@ -85,7 +85,6 @@ begin
   end;
   ProgressGrid.Refresh;
 
-  keypassword := dmpython.privateKeyPassword;
   waptdevutils := Import('waptdevutils');
 
   for host in ProgressGrid.Data do
@@ -115,8 +114,14 @@ begin
 
       //transfer actions as json string to python
       actions_json := SOActions.AsString;
-      uWaptPersonalCertificatePath := PyUTF8Decode(WaptPersonalCertificatePath);
-      signed_actions_json := VarPythonAsString(waptdevutils.sign_actions(actions:=actions_json, certfilename:=uWaptPersonalCertificatePath,key_password:=keypassword));
+
+      VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
+
+      signed_actions_json := VarPythonAsString(waptdevutils.sign_actions(
+          actions:=actions_json,
+          sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
+          sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword)));
+
       SOActions := SO(signed_actions_json);
 
       res := WAPTServerJsonPost('/api/v3/trigger_host_action?uuid=%S&timeout=%D',[host.S['uuid'],waptservice_timeout],SOActions);
