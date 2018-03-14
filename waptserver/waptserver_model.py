@@ -33,7 +33,7 @@ import traceback
 import platform
 
 from peewee import *
-from peewee import Func
+from peewee import Function
 from waptserver_config import __version__
 
 from playhouse.postgres_ext import *
@@ -101,7 +101,7 @@ class WaptBaseModel(SignaledModel):
     updated_by = DateTimeField(null=True)
 
     def __unicode__(self):
-        return u'%s' % (self._data,)
+        return u'%s' % (self.__data__,)
 
     def __str__(self):
         return self.__unicode__().encode('utf8')
@@ -145,7 +145,7 @@ class ServerAttribs(SignaledModel):
                 cls.update(value=value).where(cls.key == key).execute()
 
     def __unicode__(self):
-        return u'%s' % (self._data,)
+        return u'%s' % (self.__data__,)
 
     def __str__(self):
         return self.__unicode__().encode('utf8')
@@ -673,14 +673,14 @@ class ColumnDef(object):
         if in_update is not None:
             self.in_update = in_update
         else:
-            self.in_update = not isinstance(field,ForeignKeyField) and not isinstance(field,Func)
+            self.in_update = not isinstance(field,ForeignKeyField) and not isinstance(field,Function)
 
         self.in_where = None
         if in_where is not None:
             self.in_where = in_where
 
         if in_where is None:
-            self.in_where = not isinstance(field,ForeignKeyField) and not isinstance(field,Func)
+            self.in_where = not isinstance(field,ForeignKeyField) and not isinstance(field,Function)
 
         self.in_key = field.primary_key
         self.visible = False
@@ -688,13 +688,13 @@ class ColumnDef(object):
 
     def as_metadata(self):
         result = dict()
-        if isinstance(self.field,Func):
+        if isinstance(self.field,Function):
             result = {'name':self.field._alias or self.field.name,'org_name':self.field.name,'type':self.field._node_type}
         else:
             result = {'name':self.field._alias or self.field.name,
                 'field_name':self.field.name,
-                'type':self.field.db_field,
-                'table_name':self.field.model_class._meta.db_table,
+                'type':self.field.field_type,
+                'table_name':self.field.model._meta.table_name,
                 }
 
             attlist = ('primary_key','description','help_text','choice',
@@ -702,7 +702,7 @@ class ColumnDef(object):
             for att in attlist:
                 if hasattr(self.field,att):
                     value = getattr(self.field,att)
-                    if value is not None and not isinstance(value,Func):
+                    if value is not None and not isinstance(value,Function):
                         if callable(value):
                             result[att] = value()
                         else:
@@ -778,10 +778,10 @@ class TableProvider(object):
         if not self.columns:
             self._init_columns_from_query(query)
 
-        columns_names = [column.field.db_column for column in self.columns]
+        columns_names = [column.field.column_name for column in self.columns]
         rows = []
         for row in query.dicts():
-            rows.append([column.to_client(row[column.field._alias or column.field.db_column]) for column in self.columns])
+            rows.append([column.to_client(row[column.field._alias or column.field.column_name]) for column in self.columns])
 
         return dict(
             metadata = [c.as_metadata() for c in self.columns],
@@ -791,7 +791,7 @@ class TableProvider(object):
     def column_by_name(self,name):
         """Return ColumnDef for field name"""
         if self._columns_idx is None:
-            self._columns_idx = dict([(c.field.db_column,c) for c in self.columns])
+            self._columns_idx = dict([(c.field.column_name,c) for c in self.columns])
         return self._columns_idx.get(name,None)
 
     def _where_from_values(self,old_values={}):
@@ -877,7 +877,7 @@ def get_db_version():
 
 
 def init_db(drop=False):
-    wapt_db.get_conn()
+    wapt_db.connection()
     try:
         wapt_db.execute_sql('CREATE EXTENSION hstore;')
     except:
@@ -906,7 +906,7 @@ def upgrade_db_structure():
     """Upgrade the tables version by version"""
     from playhouse.migrate import PostgresqlMigrator, migrate
     migrator = PostgresqlMigrator(wapt_db)
-    logger.info('Current DB: %s version: %s' % (wapt_db.connect_kwargs, get_db_version()))
+    logger.info('Current DB: %s version: %s' % (wapt_db.connect_params, get_db_version()))
 
     # from 1.4.1 to 1.4.2
     if get_db_version() < '1.4.2':

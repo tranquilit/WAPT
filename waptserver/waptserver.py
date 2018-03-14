@@ -174,15 +174,14 @@ def get_wapt_exe_version(exe):
             pe.close()
     return (present, version)
 
+@app.before_request
+def _db_connect():
+    wapt_db.connect()
 
 @app.teardown_request
-def close_db(error):
+def _db_close(error):
     """Closes the database again at the end of the request."""
-    try:
-        wapt_db.commit()
-    except:
-        wapt_db.rollback()
-    if not wapt_db.is_closed():
+    if wapt_db and wapt_db.obj and not wapt_db.is_closed():
         wapt_db.close()
 
 
