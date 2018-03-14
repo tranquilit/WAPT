@@ -32,13 +32,14 @@
 ; if not empty, a task will propose to install this package or list of packages (comma separated)
 #define set_start_packages ""
 
+#define vcredist
+
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
 ; for fast compile in developent mode
 ;#define FastDebug
 
 ;#define choose_components
-
 #endif
 
 #include "waptsetup.iss"
