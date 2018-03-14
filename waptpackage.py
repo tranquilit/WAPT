@@ -1983,7 +1983,7 @@ class WaptLocalRepo(WaptBaseRepo):
     >>> localrepo.update()
     """
 
-    def __init__(self,localpath=u'/var/www/wapt',name='waptlocal',cabundle=None,config=None):
+    def __init__(self,localpath=u'/var/www/wapt',name='waptlocal',cabundle=None,config=None,proxies=None):
         # store defaults at startup
         self._default_config.update({
             'localpath':ensure_unicode(localpath),
@@ -1994,6 +1994,9 @@ class WaptLocalRepo(WaptBaseRepo):
         # override defaults and config with supplied parameters
         if self.localpath is not None:
             self.localpath = ensure_unicode(localpath.rstrip(os.path.sep))
+
+        # proxies for CRLs updates
+        self.proxies = proxies
 
     @property
     def packages_path(self):
@@ -2188,7 +2191,7 @@ class WaptLocalRepo(WaptBaseRepo):
 
         try:
             logger.info(u"Check / update CRL for embedded certificates")
-            signer_certificates.update_crl(force = force_all)
+            signer_certificates.update_crl(force = force_all,proxies=self.proxies)
         except Exception as e:
             logger.critical(u'Error when updating CRL for signers cerificates : %s' % e)
 

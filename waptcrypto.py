@@ -613,7 +613,7 @@ class SSLCABundle(BaseObjectClass):
         return self.certificate_for_subject_key_identifier(certificate.authority_key_identifier) or self.certificate_for_subject_hash(certificate.issuer_subject_hash)
 
 
-    def update_crl(self,force=False,for_certificates=None,cache_dir=None,timeout=2.0):
+    def update_crl(self,force=False,for_certificates=None,cache_dir=None,timeout=2.0,proxies=None):
         """Download and update all crls for certificates in this bundle or
         for certificates in for_certificates list
 
@@ -657,7 +657,7 @@ class SSLCABundle(BaseObjectClass):
 
                         # get it from remote location
                         if not crl_data:
-                            crl_data = wgets(url,timeout=timeout)
+                            crl_data = wgets(url,timeout=timeout,proxies=proxies)
                         try:
                             ssl_crl = SSLCRL(der_data = crl_data)
                         except Exception as e:
