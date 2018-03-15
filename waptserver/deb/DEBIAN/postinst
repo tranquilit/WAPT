@@ -79,7 +79,7 @@ os.chmod('/usr/bin/wapt-scanpackages', 0o755)
 os.chmod('/usr/bin/wapt-signpackages', 0o755)
 os.chmod('/usr/bin/waptpython',0o755)
 
-aptCache = apt.Cache(
+aptCache = apt.Cache()
 aptCache.open()
 if aptCache['syslog-ng'].is_installed:
     print("Restarting syslog-ng")
