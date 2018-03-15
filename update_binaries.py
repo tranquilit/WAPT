@@ -64,7 +64,7 @@ if os.path.exists(msvc_dst_path):
 os.rename(msvc, msvc_dst_path)
 
 print('Get and unzip nssm')
-nssm_zip = wget('https://nssm.cc/ci/nssm-2.24-101-g897c7ad.zip',resume=True,md5='63175d3830b8a5cfd254353c4f561e5c',cache_dir=binaries_cache,connect_timeout=60,proxies=proxies)
+nssm_zip = wget('https://nssm.cc/ci/nssm-2.24-103-gdee49fc.zip',resume=True,md5='1935c374b84b3ce7f068d87d366810b7',cache_dir=binaries_cache,connect_timeout=60,proxies=proxies)
 nssm_files = unzip(nssm_zip,filenames=['*/win*/nssm.exe'])
 for f in nssm_files:
     new_name = makepath(wapt_base_dir,'waptservice',* f.split(os.path.sep)[-2:])
