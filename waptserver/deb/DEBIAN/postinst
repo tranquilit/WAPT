@@ -83,7 +83,7 @@ aptCache = apt.Cache()
 aptCache.open()
 if aptCache['syslog-ng'].is_installed:
     print("Restarting syslog-ng")
-    runt('systemctl restart syslog-ng')
+    run('systemctl restart syslog-ng')
 elif aptCache['rsyslog'].is_installed:
     print("Restarting rsyslog")
     run('systemctl restart rsyslog')
