@@ -562,7 +562,8 @@ class PackageEntry(BaseObjectClass):
                     v1, v2 = self.parse_version(), entry_or_version.parse_version()
                     result = compare_by_keys(v1, v2)
                     if result == 0:
-                        result = cmp(self.maturity,entry_or_version.maturity)
+                        # when migrating from <1.5.1.21, maturity is None...
+                        result = cmp(self.maturity or '',entry_or_version.maturity or '')
                     return result
                 else:
                     return result
