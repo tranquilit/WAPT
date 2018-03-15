@@ -5,6 +5,7 @@ import os
 import shutil
 import sys
 import time
+import apt
 
 
 def run(*args, **kwargs):
@@ -78,9 +79,14 @@ os.chmod('/usr/bin/wapt-scanpackages', 0o755)
 os.chmod('/usr/bin/wapt-signpackages', 0o755)
 os.chmod('/usr/bin/waptpython',0o755)
 
-
-print("Restarting rsyslog")
-run('systemctl restart rsyslog')
+aptCache = apt.Cache(
+aptCache.open()
+if aptCache['syslog-ng'].is_installed:
+    print("Restarting syslog-ng")
+    runt('systemctl restart syslog-ng')
+elif aptCache['rsyslog'].is_installed:
+    print("Restarting rsyslog")
+    run('systemctl restart rsyslog')
 
 def check_if_running(process_name):
     try:
