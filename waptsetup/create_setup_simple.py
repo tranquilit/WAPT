@@ -3,6 +3,7 @@
 import os
 import subprocess
 import sys
+from git.repo import Repo
 
 def programfiles32():
     """Return 32bits applications folder."""
@@ -16,10 +17,11 @@ if __name__ == '__main__':
     if installer.endswith(".exe"):
         installer = installer[0:installer.rfind(".exe")]
 
-    rev_file = file(os.path.join(os.path.dirname(installer), '..', 'revision.txt'), 'w')
-    git = os.path.join(programfiles32(), 'Git', 'bin', 'git.exe')
-    subprocess.check_call([git, 'rev-parse', '--short', 'HEAD'], stdout=rev_file)
-    rev_file.close()
+    #git = os.path.join(programfiles32(), 'Git', 'bin', 'git.exe')
+    #subprocess.check_call([git, 'rev-parse', '--short', 'HEAD'], stdout=rev_file)
+    r = Repo(search_parent_directories=True)
+    with open(os.path.join(os.path.dirname(installer), '..', 'revision.txt'), 'w') as rev_file:
+        rev_file.write(r.head.object.hexsha[:8])
 
     iss_file = installer + ".iss"
     issc_binary = os.path.join(os.path.dirname(__file__),'innosetup','ISCC.exe')
