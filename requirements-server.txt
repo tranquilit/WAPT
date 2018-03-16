@@ -2,7 +2,7 @@ argparse==1.2.1
 Babel==2.3.4
 cffi==1.11.2
 click==6.7
-cryptography==2.1.1
+cryptography==2.1.4
 eventlet==0.20.1
 Flask==0.12.2
 Flask-Babel==0.11.2
