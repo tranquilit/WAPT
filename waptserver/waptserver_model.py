@@ -483,7 +483,7 @@ def update_installed_packages(uuid, installed_packages):
         # filter out all unknown fields from json data for the SQL insert
         packages.append(dict([(k, encode_value(v)) for k, v in package.iteritems() if k in HostPackagesStatus._meta.fields]))
     if packages:
-        return HostPackagesStatus.insert_many(packages).execute()
+        return HostPackagesStatus.insert_many(packages).execute() # pylint: disable=no-value-for-parameter
     else:
         return True
 
@@ -511,7 +511,7 @@ def update_installed_softwares(uuid, installed_softwares):
         # filter out all unknown fields from json data for the SQL insert
         softwares.append(dict([(k,encode_value(v)) for k, v in software.iteritems() if k in HostSoftwares._meta.fields]))
     if softwares:
-        return HostSoftwares.insert_many(softwares).execute()
+        return HostSoftwares.insert_many(softwares).execute() # pylint: disable=no-value-for-parameter
     else:
         return True
 
