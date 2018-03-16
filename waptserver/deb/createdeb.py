@@ -197,11 +197,11 @@ copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.
 
 eprint('copying the waptserver files')
 rsync(source_dir, './builddir/opt/wapt/',
-      excludes=['waptenterprise','postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module', '*.bat'])
+      excludes=['postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module', '*.bat'])
 
 if WAPTEDITION=='enterprise':
     eprint('copying the waptserver enterprise files')
-    rsync(source_dir+'/waptenterprise', './builddir/opt/wapt/waptenterprise',
+    rsync(wapt_source_dir+'/waptenterprise', './builddir/opt/wapt/waptenterprise',
           excludes=['postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module', '*.bat'])
 
 
