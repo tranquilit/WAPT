@@ -20,8 +20,10 @@ if __name__ == '__main__':
     #git = os.path.join(programfiles32(), 'Git', 'bin', 'git.exe')
     #subprocess.check_call([git, 'rev-parse', '--short', 'HEAD'], stdout=rev_file)
     r = Repo(search_parent_directories=True)
-    with open(os.path.join(os.path.dirname(installer), '..', 'revision.txt'), 'w') as rev_file:
-        rev_file.write(r.head.object.hexsha[:8])
+    rev_file = open(os.path.join(os.path.dirname(installer), '..', 'revision.txt'), 'w')
+    rev_file.write(r.head.object.hexsha[:8])
+    rev_file.close()
+    r.close()
 
     iss_file = installer + ".iss"
     issc_binary = os.path.join(os.path.dirname(__file__),'innosetup','ISCC.exe')
