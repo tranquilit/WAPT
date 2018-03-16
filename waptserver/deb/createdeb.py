@@ -158,6 +158,11 @@ mkdir_p('builddir/opt/wapt/lib/python2.7/site-packages')
 mkdir_p('builddir/opt/wapt/waptserver')
 mkdir_p('builddir/usr/bin/')
 
+WAPTEDITION=os.environ.get('WAPTEDITION','community')
+if WAPTEDITION=='enterprise':
+    mkdir_p('builddir/opt/wapt/waptenterprise')
+
+
 open(os.path.join('./builddir/opt/wapt/waptserver','VERSION'),'w').write(full_version)
 
 # for some reason the virtualenv does not build itself right if we don't
@@ -192,7 +197,13 @@ copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.
 
 eprint('copying the waptserver files')
 rsync(source_dir, './builddir/opt/wapt/',
-      excludes=['postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module', '*.bat'])
+      excludes=['waptenterprise','postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module', '*.bat'])
+
+if WAPTEDITION=='enterprise':
+    eprint('copying the waptserver enterprise files')
+    rsync(source_dir+'/waptenterprise', './builddir/opt/wapt/waptenterprise',
+          excludes=['postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module', '*.bat'])
+
 
 # script to run waptserver in foreground mode
 copyfile(makepath(wapt_source_dir, 'runwaptserver.sh'),'./builddir/opt/wapt/runwaptserver.sh')
