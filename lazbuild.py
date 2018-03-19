@@ -123,7 +123,9 @@ def main():
         print(u'Running: %s' % cmd)
         setuphelpers.run(cmd)
         (fn,ext) = os.path.splitext(get_lpi_output(lpi_path))
-        exe_fn = os.path.abspath(os.path.abspath(os.path.join(lpi_dirname,fn+'.exe')))
+        if ext in ('','.'):
+            ext = '.exe'
+        exe_fn = os.path.abspath(os.path.abspath(os.path.join(lpi_dirname,fn+ext)))
 
         if options.compress:
             print(u'Compress %s  with UPX' % exe_fn)
