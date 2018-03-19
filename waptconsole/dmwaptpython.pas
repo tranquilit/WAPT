@@ -85,6 +85,8 @@ type
     property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
     property licencing:Variant read Getlicencing;
 
+    function CheckLicence(domain: String; var LicencesLog: String): Integer;
+
   end;
 
 
@@ -121,7 +123,7 @@ var
   DMPython: TDMPython;
 
 implementation
-uses variants, waptcommon, uvisprivatekeyauth,inifiles,forms,Dialogs,uvisloading;
+uses variants, waptcommon, uvisprivatekeyauth,inifiles,forms,Dialogs,uvisloading,dateutils;
 {$R *.lfm}
 {$ifdef ENTERPRISE }
 {$R res_enterprise.rc}
@@ -249,12 +251,6 @@ begin
   finally
     S.Free; // destroy the resource stream
   end;
-end;
-
-function CheckGetLicence(LicenceFilename: String): Variant;
-
-begin
-
 end;
 
 procedure TDMPython.SetWaptConfigFileName(AValue: Utf8String);
@@ -405,7 +401,8 @@ begin
 
 end;
 
-function TDMPython.RunJSON(expr: UTF8String; jsonView: TVirtualJSONInspector=Nil): ISuperObject;
+function TDMPython.RunJSON(expr: Utf8String; jsonView: TVirtualJSONInspector
+  ): ISuperObject;
 var
   res:UTF8String;
 begin
@@ -421,6 +418,42 @@ begin
     jsonView.RootData := jsondata;
   end;
 
+end;
+
+function TDMPython.CheckLicence(domain: String; var LicencesLog: String): Integer;
+var
+  lic:ISuperObject;
+  LicFilename:String;
+  LicList:TStringList;
+  Licence: Variant;
+  tisCertPEM:String;
+  tisCert: Variant;
+begin
+  Result:=0;
+  LicencesLog := '';
+  licList := FindAllFiles(AppendPathDelim(WaptBaseDir)+'licences','*.lic');
+  try
+    tisCertPEM := ExtractResourceString('CATIS');
+    tisCert:=waptcrypto.SSLCertificate(crt_string := tisCertPEM);
+    for LicFilename in LicList do
+    begin
+      Licence:=licencing.WaptLicence(filename := LicFilename);
+      try
+        Licence.check_licence(tisCert);
+        if Now >= UniversalTimeToLocal(ISO8601ToDateTime(VarPythonAsString(Licence.valid_until))) then
+          raise Exception.Create('Licence has expired');
+        LicencesLog := LicencesLog+Licence.__unicode__('--noarg--').encode('utf-8')+#13#10;
+        if domain = VarPythonAsString(licence.domain) then
+          Result := Result + VarAsType(Licence.count,vtInteger);
+      except
+        on e:Exception do
+          // Skip because of validation error
+          LicencesLog := LicencesLog+'Licence '+LicFilename+' ERROR '+E.Message+' for '+Licence.__unicode__('--noarg--').encode('utf-8')+' Skipped.'+#13#10
+      end;
+    end;
+  finally
+    licList.Free;
+  end;
 end;
 
 procedure TDMPython.LoadJson(data: UTF8String);

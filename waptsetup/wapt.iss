@@ -34,7 +34,11 @@ Source: "..\keyfinder.py"; DestDir: "{app}";
 Source: "..\setuphelpers.py"; DestDir: "{app}"; 
 Source: "..\windnsquery.py"; DestDir: "{app}"; 
 Source: "..\custom_zip.py"; DestDir: "{app}"; 
+#ifdef waptenterprise
+Source: "..\waptenterprise\COPYING.txt"; DestDir: "{app}";
+#else
 Source: "..\COPYING.txt"; DestDir: "{app}";
+#endif
 Source: "..\version"; DestDir: "{app}";
 Source: "..\revision.txt"; DestDir: "{app}";
 Source: "..\templates\*"; DestDir: "{app}\templates"; Flags: createallsubdirs recursesubdirs
@@ -142,7 +146,11 @@ CloseApplications=Yes
 RestartApplications=No
 PrivilegesRequired=admin
 MinVersion=0,5.0sp4
+#ifdef waptenterprise
+LicenseFile=..\waptenterprise\COPYING.txt
+#else
 LicenseFile=..\COPYING.txt
+#endif
 RestartIfNeededByRun=False
 SetupIconFile=..\wapt.ico
 
