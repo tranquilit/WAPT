@@ -27,7 +27,7 @@
       <MinorVersionNr Value="5"/>
       <RevisionNr Value="1"/>
       <BuildNr Value="21"/>
-      <StringTable LegalCopyright="Tranquil IT Systems 2012-2018" ProductName="WAPT Enterprise Edition" ProductVersion="1.5.1"/>
+      <StringTable LegalCopyright="Tranquil IT Systems 2012-2018" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
