@@ -65,6 +65,7 @@ Source: "..\waptservice\plugins\*"; DestDir: "{app}\waptservice\plugins"; Flags:
 Source: "..\waptenterprise\waptservice\*"; DestDir: "{app}\waptenterprise\waptservice\";  Flags: createallsubdirs recursesubdirs;
 Source: "..\waptenterprise\waptconsole\*"; DestDir: "{app}\waptenterprise\waptconsole\";  Flags: createallsubdirs recursesubdirs;
 Source: "..\waptenterprise\__init__.py"; DestDir: "{app}\waptenterprise\";
+Source: "..\waptenterprise\licencing.py"; DestDir: "{app}\waptenterprise\";
 #endif
 
 
