@@ -25,6 +25,7 @@ Flask-Login==0.4.0
 flask-paginate==0.5.1
 Flask-SocketIO==2.9.2
 future==0.16.0
+gitpython
 greenlet==0.4.12
 huey==1.6.1
 idna==2.6
