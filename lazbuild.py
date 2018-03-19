@@ -12,7 +12,7 @@
 import os
 import sys
 
-from lxml import etree
+import xml.etree.ElementTree as etree
 from datetime import datetime
 
 try:
@@ -47,7 +47,7 @@ def set_lpi_options(lpi_fn,waptedition,waptversion):
         compiler_custom_options.attrib['Value'] = "-dUseCThreads -d%s" % waptedition.upper()
     else:
         print('WARNING: No compiler options')
-    print("Compiler special options: %s" % (compiler_custom_options is not None and compiler_custom_options.values(),))
+    print("Compiler special options: %s" % (compiler_custom_options is not None and compiler_custom_options.items(),))
     lpi.write(lpi_fn)
 
 def update_hash_file(filepath):
