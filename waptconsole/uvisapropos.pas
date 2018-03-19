@@ -52,7 +52,7 @@ begin
   LicenceLog.Clear;
   LicenceLog.Append('Configuration: '+AppIniFilename);
   SLicenceLog:='';
-  {$ifdef enterprise}
+  {$ifdef ENTERPRISE}
   TotalCount:=DMPython.CheckLicence('',SLicenceLog);
   LicenceLog.Lines.AddText(SLicenceLog);
   {$endif}
