@@ -247,8 +247,15 @@ class HostPackagesStatus(WaptBaseModel):
     install_params = CharField(null=True)
     explicit_by = CharField(null=True)
     repo_url = CharField(max_length=600, null=True)
-    depends = CharField(max_length=800,null=True)
-    conflicts = CharField(max_length=800,null=True)
+    depends = ArrayField(CharField,null=True)
+    conflicts = ArrayField(CharField,null=True)
+
+    @classmethod
+    def _as_attribute(cls,k,v):
+        if k in ['depends','conflicts']:
+            return ensure_list(v or None)
+        else:
+            return v or None
 
     def __repr__(self):
         return '<HostPackageStatus uuid=%s packages=%s (%s) install_status=%s>' % (self.id, self.package, self.version, self.install_status)
@@ -1055,6 +1062,20 @@ def upgrade_db_structure():
             v.value = next_version
             v.save()
 
+    next_version = '1.5.1.22'
+    if get_db_version() < next_version:
+        with wapt_db.atomic():
+            logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
+            opes = []
+            opes.append(migrator.drop_column(HostPackagesStatus._meta.name, 'depends'))
+            opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'depends', HostPackagesStatus.depends))
+            opes.append(migrator.drop_column(HostPackagesStatus._meta.name, 'conflicts'))
+            opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'conflicts', HostPackagesStatus.conflicts))
+            migrate(*opes)
+
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
 
 if __name__ == '__main__':
     if platform.system() != 'Windows' and getpass.getuser() != 'wapt':
