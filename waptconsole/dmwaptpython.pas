@@ -37,6 +37,7 @@ type
     Fwaptdevutils: Variant;
     Flicencing: Variant;
     jsondata:TJSONData;
+    FMaxHostsCount:Integer;
 
     FWaptConfigFileName: Utf8String;
     function Getcommon: Variant;
@@ -84,6 +85,9 @@ type
     property waptdevutils:Variant read Getwaptdevutils;
     property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
     property licencing:Variant read Getlicencing;
+
+    property MaxHostsCount:Integer Read FMaxHostsCount;
+
 
     function CheckLicence(domain: String; var LicencesLog: String): Integer;
 
@@ -350,6 +354,12 @@ begin
   PyWaptWrapper.Engine := PythonEng;
   PyWaptWrapper.Module := PythonModuleDMWaptPython;
   PyWaptWrapper.Initialize;  // Should only be called if PyDelphiWrapper is created at run time
+
+  {$ifdef ENTERPRISE}
+  FMaxHostsCount :=0;
+  {else}
+  FMaxHostsCount :=+MaxInt;
+  {$endif}
 end;
 
 procedure TDMPython.DataModuleDestroy(Sender: TObject);
@@ -444,8 +454,8 @@ begin
         if Now >= UniversalTimeToLocal(ISO8601ToDateTime(VarPythonAsString(Licence.valid_until))) then
           raise Exception.Create('Licence has expired');
         LicencesLog := LicencesLog+Licence.__unicode__('--noarg--').encode('utf-8')+#13#10;
-        if domain = VarPythonAsString(licence.domain) then
-          Result := Result + VarAsType(Licence.count,vtInteger);
+        //if domain = VarPythonAsString(licence.domain) then
+          Result := Result + StrToInt(VarPythonAsString(Licence.count));
         if LicList.IndexOf(VarPythonAsString(Licence.licence_nr))>=0 then
           raise Exception.Create('Duplicated Licence nr');
         LicList.Add(VarPythonAsString(Licence.licence_nr));
@@ -455,6 +465,7 @@ begin
           LicencesLog := LicencesLog+'Licence '+LicFilename+' ERROR '+E.Message+' for '+Licence.__unicode__('--noarg--').encode('utf-8')+' Skipped.'+#13#10
       end;
     end;
+    FMaxHostsCount := Result;
   finally
     LicList.Free;
     LicFileList.Free;

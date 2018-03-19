@@ -186,6 +186,7 @@ const
   WaptServerUser: AnsiString ='admin';
   WaptServerPassword: Ansistring ='';
   WaptServerUUID: AnsiString ='';
+  WaptServerEdition: AnsiString ='';
 
   // active session until user or password is changed
   WaptServerSession: TIdCookieManager = Nil;

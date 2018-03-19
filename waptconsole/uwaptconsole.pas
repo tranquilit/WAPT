@@ -3401,7 +3401,7 @@ procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
 var
   soresult,columns,urlParams, Node, Hosts,fields: ISuperObject;
   previous_uuid,prop: string;
-  i: integer;
+  HostsCount,i: integer;
 const
   DefaultColumns:Array[0..13] of String = ('uuid','os_name','connected_ips','computer_fqdn',
     'computer_name','manufacturer','description','productname','serialnr','mac_addresses','connected_users','last_logged_on_user','computer_ad_ou','computer_ad_site');
@@ -3504,7 +3504,14 @@ begin
       GridHosts.Data := hosts;
       if (hosts <> nil) and (hosts.AsArray <> nil) then
       begin
-        LabelComputersNumber.Caption := IntToStr(hosts.AsArray.Length);
+        HostsCount := hosts.AsArray.Length;
+        if HostsCount>DMPython.MaxHostsCount then
+        begin
+          GridHosts.Data := Nil;
+          Raise Exception.CreateFmt('Maximum number of licenced hosts (%d/%d)) reached, aborting',[HostsCount,DMPython.MaxHostsCount]);
+        end;
+        LabelComputersNumber.Caption := IntToStr(HostsCount);
+
         for node in GridHosts.Data do
         begin
           if node.S['uuid'] = previous_uuid then
@@ -3876,6 +3883,8 @@ function TVisWaptGUI.Login: boolean;
 var
   cred, sores: ISuperObject;
   localfn: utf8string;
+  LicencesLog:String;
+  HostsCount: Integer;
 begin
   Result := False;
   // Initialize user local config file with global wapt settings
@@ -3926,7 +3935,17 @@ begin
         sores := WAPTServerJsonPost('api/v3/login', [],cred);
         if sores.B['success'] then
         begin
-            waptServerUUID := sores['result'].S['server_uuid'];
+            WaptServerUUID := sores['result'].S['server_uuid'];
+            WaptServerEdition := sores['result'].S['edition'];
+            HostsCount := sores['result'].I['hosts_count'];
+            {$ifdef ENTERPRISE}
+            Result := DMPython.CheckLicence('',LicencesLog)>0;
+            if DMPython.MaxHostsCount < HostsCount then
+            begin
+              Result := False;
+              Raise Exception.CreateFmt('Maximum number of licenced hosts (%d/%d)) reached, aborting',[HostsCount,DMPython.MaxHostsCount]);
+            end;
+            {$endif}
             Result := True;
             if (CompareVersion(sores['result'].S['version'],WAPTServerMinVersion)<0) then
               ShowMessageFmt(rsWaptServerOldVersion,[sores['result'].S['version'],WAPTServerMinVersion]);

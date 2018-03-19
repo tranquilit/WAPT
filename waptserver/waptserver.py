@@ -908,7 +908,7 @@ def get_dns_domain():
     return socket.getfqdn().lower().split('.',1)[1]
 
 def get_wapt_edition():
-    return 'enterprise' if os.path.isfile(os.path.join(,'waptenterprise','waptserver','__init__.py') else 'community'
+    return 'enterprise' if os.path.isfile(os.path.join(wapt_root_dir,'waptenterprise','waptserver','__init__.py')) else 'community'
 
 @app.route('/api/v3/change_password',methods=['HEAD','POST'])
 @requires_auth
@@ -940,10 +940,11 @@ def change_password():
 
 
 
-@app.route('/api/v3/login',methods=['HEAD','POST'])
+@app.route('/api/v3/login',methods=['HEAD','POST','GET'])
 def login():
     error = ''
     result = None
+    starttime = time.time()
     try:
         # TODO use session...
         post_data = request.get_json()
@@ -953,8 +954,8 @@ def login():
             password = post_data['password']
         else:
             # html form auth
-            user = request.form['user']
-            password = request.form['password']
+            user = request.args['user']
+            password = request.args['password']
 
         # TODO : sanity check on username
         if not re.match('[a-z0-9]+[a-z0-9-_]+[a-z0-9]+$', user, re.IGNORECASE):
@@ -963,16 +964,18 @@ def login():
 
         if user is not None and password is not None:
             if check_auth(user, password):
+                print 'Authenticating'
                 result = dict(
                     server_uuid=get_server_uuid(),
                     version=__version__,
                     hosts_count = Hosts.select(fn.count(Hosts.uuid)).tuples().first()[0],
                     server_domain = get_dns_domain(),
-                    edition =
+                    edition = get_wapt_edition(),
                 )
                 session['user'] = user
                 msg = 'Authentication OK'
-                return make_response(result=result, msg=msg, status=200)
+                spenttime = time.time() - starttime
+                return make_response(result=result, msg=msg, status=200,request_time=spenttime)
             else:
                 raise EWaptAuthenticationFailure('Authentication failed.')
         else:
