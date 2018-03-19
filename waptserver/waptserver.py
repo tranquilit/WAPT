@@ -904,6 +904,12 @@ def reload_config():
         logger.critical('Unable to reload server config : %s' % repr(e))
 
 
+def get_dns_domain():
+    return socket.getfqdn().lower().split('.',1)[1]
+
+def get_wapt_edition():
+    return 'enterprise' if os.path.isfile(os.path.join(,'waptenterprise','waptserver','__init__.py') else 'community'
+
 @app.route('/api/v3/change_password',methods=['HEAD','POST'])
 @requires_auth
 def change_password():
@@ -960,6 +966,9 @@ def login():
                 result = dict(
                     server_uuid=get_server_uuid(),
                     version=__version__,
+                    hosts_count = Hosts.select(fn.count(Hosts.uuid)).tuples().first()[0],
+                    server_domain = get_dns_domain(),
+                    edition =
                 )
                 session['user'] = user
                 msg = 'Authentication OK'

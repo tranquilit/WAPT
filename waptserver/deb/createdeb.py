@@ -201,8 +201,8 @@ rsync(source_dir, './builddir/opt/wapt/',
 
 if WAPTEDITION=='enterprise':
     eprint('copying the waptserver enterprise files')
-    rsync(wapt_source_dir+'/waptenterprise', './builddir/opt/wapt/waptenterprise',
-          excludes=['postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module', '*.bat'])
+    rsync(wapt_source_dir+'/waptenterprise/', './builddir/opt/wapt/waptenterprise/',
+          excludes=[' ','waptservice','postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module', '*.bat'])
 
 
 # script to run waptserver in foreground mode
@@ -214,7 +214,11 @@ for lib in ('dialog.py', ):
           './builddir/opt/wapt/lib/python2.7/site-packages/')
 
 eprint('copying control and postinst package metadata')
-copyfile('./DEBIAN/control', './builddir/DEBIAN/control')
+
+if WAPTEDITION=='enterprise':
+    copyfile('./DEBIAN/control_enterprise', './builddir/DEBIAN/control')
+else:
+    copyfile('./DEBIAN/control', './builddir/DEBIAN/control')
 copyfile('./DEBIAN/postinst', './builddir/DEBIAN/postinst')
 copyfile('./DEBIAN/preinst', './builddir/DEBIAN/preinst')
 
@@ -277,7 +281,10 @@ os.chmod('./builddir/DEBIAN/preinst', stat.S_IRWXU |
          stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
 
 # build
-package_filename = 'tis-waptserver-%s.deb' % full_version
+if WAPTEDITION=='enterprise':
+    package_filename = 'tis-waptserver-enterprise-%s.deb' % full_version
+else:
+    package_filename = 'tis-waptserver-%s.deb' % full_version
 eprint(subprocess.check_output(['dpkg-deb','--build','builddir',package_filename]))
 shutil.rmtree("builddir")
 print(package_filename)
