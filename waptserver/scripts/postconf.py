@@ -444,19 +444,6 @@ def main():
                     if not check_if_deb_installed('libnginx-mod-http-auth-spnego'):
                         print('missing dependency libnginx-mod-http-auth-spnego, please install first before configuring kerberos')
                         sys.exit(1)
-                elif type_redhat():
-                    import yum
-                    yb = yum.YumBase()
-                    yb.conf.cache = os.geteuid() != 1  #pylint: disable=no-member
-                    pkgs = yb.rpmdb.returnPackages()
-                    found = False
-                    for pkg in  pkgs:
-                        if pkg.name=='nginx-mod-http-auth-spnego':
-                            found = True
-                    if not found:
-                        print('missing dependency nginx-mod-http-auth-spnego, please install first before configuring kerberos')
-                        sys.exit(1)
-
 
             make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn, options.use_kerberos, options.force_https)
 
