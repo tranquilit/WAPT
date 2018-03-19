@@ -5,6 +5,7 @@ import subprocess
 import sys
 from optparse import OptionParser
 from git.repo import Repo
+import setuphelpers
 
 import waptutils
 
@@ -62,13 +63,13 @@ def main():
 
         iss_file = iss_rootname + ".iss"
 
-        cmd = '"%(issc_binary)s" %(issfile)s /Dwapt%(waptedition)s' % {
+        cmd = '"%(issc_binary)s" /Dwapt%(waptedition)s %(issfile)s' % {
             'issc_binary':options.iscc_binary,
             'issfile':iss_file,
             'waptedition':options.waptedition.lower()
             }
-        subprocess.check_call(cmd)
-
+        res = setuphelpers.run(cmd)
+        exe_fn = res.splitlines()[-1]
         if options.sign_key_path:
             sign_exe(exe_fn,options.sign_key_path,open(options.sign_key_pwd_path,'rb').read())
 
