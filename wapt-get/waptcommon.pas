@@ -131,6 +131,7 @@ procedure WaptIniWriteBool(const user,item: string; Value: Boolean);
 procedure WaptIniWriteInteger(const user,item: string; Value: Integer);
 procedure WaptIniWriteString(const user,item, Value: string);
 
+Function ISO8601ToDateTime(Value: String):TDateTime;
 
 type
 
@@ -171,6 +172,7 @@ type
     property HttpProxy:String read FHttpProxy write SetHttpProxy;
     property TimeOut:Integer read FTimeOut write SetTimeOut;
   end;
+
 
 const
   waptwua_enabled : boolean = False;
@@ -1981,6 +1983,15 @@ begin
   //WaptServerPassword := password;
 end;
 
+Function ISO8601ToDateTime(Value: String):TDateTime;
+var
+    FormatSettings: TFormatSettings;
+begin
+    GetLocaleFormatSettings(GetThreadLocale, FormatSettings);
+    FormatSettings.DateSeparator := '-';
+    FormatSettings.ShortDateFormat := 'yyyy-MM-dd';
+    Result := StrToDate(copy(Value,1,10),FormatSettings)+StrToTime(copy(Value,12,8));
+end;
 
 initialization
 //  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;

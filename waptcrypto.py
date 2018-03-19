@@ -1886,6 +1886,10 @@ class SSLCertificate(BaseObjectClass):
         Returns:
             dict: signature_date,signer,verified_by(cn),signer_fingerprint
 
+        Raise:
+            SSLVerifyException
+
+
         >>> key = SSLPrivateKey('c:/private/150.pem')
         >>> crt = SSLCertificate('c:/private/150.crt')
         >>> action = dict(action='install',package='tis-7zip')
