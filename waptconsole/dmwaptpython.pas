@@ -123,7 +123,7 @@ var
   DMPython: TDMPython;
 
 implementation
-uses variants, waptcommon, uvisprivatekeyauth,inifiles,forms,Dialogs,uvisloading,dateutils;
+uses variants, waptcommon, uvisprivatekeyauth,inifiles,forms,Dialogs,uvisloading,dateutils,tisstrings;
 {$R *.lfm}
 {$ifdef ENTERPRISE }
 {$R res_enterprise.rc}
@@ -424,18 +424,19 @@ function TDMPython.CheckLicence(domain: String; var LicencesLog: String): Intege
 var
   lic:ISuperObject;
   LicFilename:String;
-  LicList:TStringList;
+  LicFileList,LicList:TStringList;
   Licence: Variant;
   tisCertPEM:String;
   tisCert: Variant;
 begin
   Result:=0;
   LicencesLog := '';
-  licList := FindAllFiles(AppendPathDelim(WaptBaseDir)+'licences','*.lic');
+  LicFileList := FindAllFiles(AppendPathDelim(WaptBaseDir)+'licences','*.lic');
+  LicList:=TStringList.Create;
   try
     tisCertPEM := ExtractResourceString('CATIS');
     tisCert:=waptcrypto.SSLCertificate(crt_string := tisCertPEM);
-    for LicFilename in LicList do
+    for LicFilename in LicFileList do
     begin
       Licence:=licencing.WaptLicence(filename := LicFilename);
       try
@@ -445,6 +446,9 @@ begin
         LicencesLog := LicencesLog+Licence.__unicode__('--noarg--').encode('utf-8')+#13#10;
         if domain = VarPythonAsString(licence.domain) then
           Result := Result + VarAsType(Licence.count,vtInteger);
+        if LicList.IndexOf(VarPythonAsString(Licence.licence_nr))>=0 then
+          raise Exception.Create('Duplicated Licence nr');
+        LicList.Add(VarPythonAsString(Licence.licence_nr));
       except
         on e:Exception do
           // Skip because of validation error
@@ -452,7 +456,8 @@ begin
       end;
     end;
   finally
-    licList.Free;
+    LicList.Free;
+    LicFileList.Free;
   end;
 end;
 
