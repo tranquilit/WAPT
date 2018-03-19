@@ -24,6 +24,7 @@ from optparse import OptionParser
 import waptutils
 import waptcrypto
 import setuphelpers
+import subprocess
 
 __doc__ = """\
 %prog <lazarus_lpi_filepath>
@@ -50,6 +51,10 @@ def set_lpi_options(lpi_fn,waptedition,waptversion):
     print("Compiler special options: %s" % (compiler_custom_options is not None and compiler_custom_options.items(),))
     lpi.write(lpi_fn)
 
+def get_lpi_output(lpi_fn):
+    lpi = etree.parse(lpi_fn)
+    return lpi.find('CompilerOptions/Target/Filename').attrib['Value']
+
 def update_hash_file(filepath):
     if os.path.isfile(filepath):
         files = open(filepath,'r').read().splitlines()
@@ -72,6 +77,22 @@ def update_hash_file(filepath):
     else:
         print('No %s hash file to process' % filepath)
 
+def sign_exe(exe_path,p12path,p12password):
+    KSIGN = os.path.join(setuphelpers.programfiles32,'kSign','kSignCMD.exe')
+
+    for attempt in [1, 2, 3]:
+        try:
+            print "Signing attempt #" + str(attempt)
+            setuphelpers.run(r'"%s" /f "%s" /p"%s" "%s"' % (KSIGN,p12path,p12password,exe_path),return_stderr=False)
+            break
+        except subprocess.CalledProcessError as cpe:
+            cpe.cmd =  cpe.cmd.replace(p12password, '********')
+            cpe.output = cpe.output.replace(p12password, '********')
+            print "Got CalledProcessError from subprocess.check_output: %s" % str(cpe)
+        except Exception as e:
+            print "Got an exception from subprocess.check_output"
+            raise
+
 def main():
     parser=OptionParser(usage=__doc__)
     parser.add_option("-l","--laz-build-path", dest="lazbuildpath", default=r'C:\codetyphon\typhon\bin32\typhonbuild.exe', help="Path to lazbuild or typhonbuild.exe (default: %default)")
@@ -79,6 +100,9 @@ def main():
     parser.add_option("-v","--wapt-version", dest="waptversion", default=waptutils.__version__, help="Wapt edition to build (community, enterprise...).  (default: %default)")
     parser.add_option("-e","--wapt-edition", dest="waptedition", default='community', help="Wapt edition to build (community, enterprise...).  (default: %default)")
     parser.add_option("-u","--update-hash-file", dest="update_hash_filepath", default=r'{lpi_dirname}\\..\\{lpi_name}.sha256',help="Hash file to update vars (lpi_rootname,lpi_name,lpi_path,lpi_dirname,lpi_basename) (default: <lpi-base-name>.sha256")
+    parser.add_option("-c","--compress", action='store_true', dest="compress", default=False, help="Compress with UPX.  (default: %default)")
+    parser.add_option("-k","--sign-key", dest="sign_key_path", help="Sign with this  key.  (default: %default)")
+    parser.add_option("-w","--sign-key-pwd-path", dest="sign_key_pwd_path", help="Path to password file. (default: %default)")
     parser.add_option("-t","--target-dir", dest="target_dir", help="Target exe directory (default: ")
     (options,args) = parser.parse_args()
 
@@ -98,6 +122,16 @@ def main():
         cmd = '"%s" --primary-config-path="%s" -B "%s"'% (os.path.expandvars(options.lazbuildpath),os.path.expandvars(options.primary_config_path),os.path.expandvars(lpi_path))
         print(u'Running: %s' % cmd)
         setuphelpers.run(cmd)
+        (fn,ext) = os.path.splitext(get_lpi_output(lpi_path))
+        exe_fn = os.path.abspath(os.path.abspath(os.path.join(lpi_dirname,fn+'.exe')))
+
+        if options.compress:
+            print(u'Compress %s  with UPX' % exe_fn)
+            setuphelpers.run('"%s" "%s"' % (os.path.join(setuphelpers.programfiles32,'upx','upx.exe'),exe_fn))
+
+        if options.sign_key_path:
+            sign_exe(exe_fn,options.sign_key_path,open(options.sign_key_pwd_path,'rb').read())
+
 
 
 if __name__ == "__main__":
