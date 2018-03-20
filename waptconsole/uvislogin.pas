@@ -113,7 +113,7 @@ end;
 function TVisLogin.GetIsEnterpriseEdition: Boolean;
 begin
   {$ifdef ENTERPRISE}
-  Result := DMPython.IsEnterpriseEdition;
+  Result := (DMPython.MaxHostsCount>0) and (DMPython.IsEnterpriseEdition);
   {$else}
   Result := False;
   {$endif}
@@ -122,6 +122,10 @@ end;
 
 procedure TVisLogin.SetIsEnterpriseEdition(AValue: Boolean);
 begin
+  {$ifdef ENTERPRISE}
+  if AValue and (DMPython.MaxHostsCount<=0) then
+    raise Exception.Create('No valid licence yet');
+  {$endif}
   if dmpython.IsEnterpriseEdition<>AValue then
     dmpython.IsEnterpriseEdition:=AValue;
   ActSelectConf.Checked:= IsEnterpriseEdition;
@@ -168,7 +172,7 @@ end;
 
 procedure TVisLogin.CBConfigurationKeyPress(Sender: TObject; var Key: char);
 begin
-  {$ifdef ENTERPRISE }
+  {$ifdef ENTERPRISE}
   if key = #13 then
   begin
     if (edWaptServerName.Text <>'') and  (EdUser.Text <>'') then

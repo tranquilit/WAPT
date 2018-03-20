@@ -65,7 +65,10 @@ type
   public
     { public declarations }
     PyWaptWrapper : TPyDelphiWrapper;
+    {$ifdef ENTERPRISE}
     LicensedTo: String;
+    ValidLicence: Boolean;
+    {$endif}
 
     function CertificateIsCodeSigning(crtfilename:String):Boolean;
     property privateKeyPassword: Ansistring read getprivateKeyPassword write setprivateKeyPassword;
@@ -91,6 +94,7 @@ type
 
 
     function CheckLicence(domain: String; var LicencesLog: String): Integer;
+    procedure CheckPySources;
 
   end;
 
@@ -128,7 +132,7 @@ var
   DMPython: TDMPython;
 
 implementation
-uses variants, waptcommon, uvisprivatekeyauth,inifiles,forms,Dialogs,uvisloading,dateutils,tisstrings;
+uses variants, waptcommon, waptcrypto, uvisprivatekeyauth,inifiles,forms,Dialogs,uvisloading,dateutils,tisstrings;
 {$R *.lfm}
 {$ifdef ENTERPRISE }
 {$R res_enterprise.rc}
@@ -340,8 +344,9 @@ begin
 end;
 
 procedure TDMPython.DataModuleCreate(Sender: TObject);
-
 begin
+  CheckPySources;
+
   with PythonEng do
   begin
     DllName := 'python27.dll';
@@ -441,6 +446,8 @@ var
   tisCert: Variant;
 begin
   Result:=0;
+  {$ifdef ENTERPRISE}
+  ValidLicence:=False;
   LicencesLog := '';
   LicensedTo := '';
   LicFileList := FindAllFiles(AppendPathDelim(WaptBaseDir)+'licences','*.lic');
@@ -461,6 +468,7 @@ begin
         if LicList.IndexOf(VarPythonAsString(Licence.licence_nr))>=0 then
           raise Exception.Create('Duplicated Licence nr');
         LicList.Add(VarPythonAsString(Licence.licence_nr));
+        ValidLicence:=True;
         if LicensedTo<>'' then
           LicensedTo := LicensedTo+',';
         LicensedTo := LicensedTo + VarPythonAsString(Licence.licenced_to.encode('utf-8'));
@@ -476,6 +484,37 @@ begin
     LicList.Free;
     LicFileList.Free;
   end;
+  {$endif ENTERPRISE}
+end;
+
+procedure TDMPython.CheckPySources;
+var
+  Line,Filename,ExpectedSha256,ActualSha256:String;
+  Errors,Files:TStringList;
+begin
+  {$ifdef ENTERPRISE}
+  try
+    Errors := TStringList.Create;
+    Files := TStringList.Create;
+    Files.Text:=ExtractResourceString('CHECKFILES');
+    for line in Files do
+    try
+      ExpectedSha256:= copy(Line,1,64);
+      Filename := copy(Line,67,length(line));
+      ActualSha256:=SHA256Hash(Filename);
+      if ActualSha256<>ExpectedSha256 then
+        Raise Exception.CreateFmt('%s: file corrupted. Expected %s, Actual %s ',[Filename,ExpectedSha256,ActualSha256]);
+    except
+      on E:Exception do
+        Errors.Add(e.Message);
+    end;
+    if Errors.Count>0 then
+      Raise Exception.CreateFmt('%d validation errors for Python sources: %s',[Errors.Count,#13#10+Errors.Text]);
+  finally
+    Errors.Free;
+    Files.Free;
+  end;
+  {$endif}
 end;
 
 procedure TDMPython.LoadJson(data: UTF8String);

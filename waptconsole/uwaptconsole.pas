@@ -3293,7 +3293,7 @@ end;
 procedure TVisWaptGUI.ActSearchGroupsExecute(Sender: TObject);
 begin
   EdSearchGroups.Modified := False;
-  GridGroups.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchGroups.Text, sections := 'group',description_locale := Language));
+  GridGroups.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchGroups.Text, sections := 'group,unit',description_locale := Language));
 end;
 
 procedure TVisWaptGUI.ActTriggerHostUpdateExecute(Sender: TObject);
@@ -3942,7 +3942,8 @@ begin
             if DMPython.MaxHostsCount < HostsCount then
             begin
               Result := False;
-              Raise Exception.CreateFmt('Maximum number of licenced hosts (%d/%d)) reached, aborting',[HostsCount,DMPython.MaxHostsCount]);
+              raise Exception.CreateFmt('Maximum number of licenced hosts (%d/%d)) reached, aborting. %s',[HostsCount,DMPython.MaxHostsCount,LicencesLog]);
+              IsEnterpriseEdition:=False;
             end;
             {$endif}
             Result := True;
