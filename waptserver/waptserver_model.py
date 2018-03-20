@@ -487,6 +487,10 @@ def update_installed_packages(uuid, installed_packages):
     packages = []
     for package in installed_packages:
         package['host'] = uuid
+        # csv str on the client, Array on the server
+        package['depends'] = ensure_list(package['depends'])
+        package['conflicts'] = ensure_list(package['conflicts'])
+
         # filter out all unknown fields from json data for the SQL insert
         packages.append(dict([(k, encode_value(v)) for k, v in package.iteritems() if k in HostPackagesStatus._meta.fields]))
     if packages:
