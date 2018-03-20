@@ -215,10 +215,7 @@ for lib in ('dialog.py', ):
 
 eprint('copying control and postinst package metadata')
 
-if WAPTEDITION=='enterprise':
-    copyfile('./DEBIAN/control_enterprise', './builddir/DEBIAN/control')
-else:
-    copyfile('./DEBIAN/control', './builddir/DEBIAN/control')
+copyfile('./DEBIAN/control', './builddir/DEBIAN/control')
 copyfile('./DEBIAN/postinst', './builddir/DEBIAN/postinst')
 copyfile('./DEBIAN/preinst', './builddir/DEBIAN/preinst')
 
