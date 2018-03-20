@@ -72,7 +72,7 @@ Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs
 
 [Setup]
 #ifdef waptenterprise
-OutputBaseFilename={#edition}-enterprise
+OutputBaseFilename={#edition}
 #else
 OutputBaseFilename={#edition}
 #endif
