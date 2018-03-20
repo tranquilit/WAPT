@@ -122,7 +122,9 @@ Name: "{app}\ssl\server"
 Name: "{app}"; Permissions: everyone-readexec authusers-readexec admins-full   
 Name: "{app}\private"
 Name: "{app}\Scripts"
-
+#ifdef waptenterprise
+Name: "{app}\licences"
+#endif
 
 [Setup]
 AppName={#AppName}
