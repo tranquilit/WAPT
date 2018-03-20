@@ -345,7 +345,7 @@ end;
 
 procedure TDMPython.DataModuleCreate(Sender: TObject);
 begin
-  CheckPySources;
+  //CheckPySources;
 
   with PythonEng do
   begin
