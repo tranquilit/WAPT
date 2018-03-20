@@ -149,7 +149,7 @@ MinVersion=0,5.0sp4
 
 #ifdef waptenterprise
 LicenseFile=..\waptenterprise\COPYING.txt
-SetupIconFile=..\wapt_enterprise.ico
+SetupIconFile=..\wapt-enterprise.ico
 AppVerName={#AppName} Enterprise {#AppVerStr}
 #else
 LicenseFile=..\COPYING.txt
