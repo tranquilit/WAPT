@@ -112,6 +112,8 @@ BDIR = './builddir/'
 WAPTSETUP = 'waptsetup-tis.exe'
 WAPTDEPLOY = 'waptdeploy.exe'
 
+WAPTEDITION=os.environ.get('WAPTEDITION','community')
+
 #########################################
 logger.debug('Getting version from executable')
 pe = pefile.PE(WAPTSETUP)

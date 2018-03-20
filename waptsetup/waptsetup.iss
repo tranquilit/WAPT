@@ -5,6 +5,7 @@
 #define repo_url ""
 #define wapt_server ""
 #define AppId "WAPT"
+#define AppName "WAPTSetup"
 #define output_dir "."
 #define Company "Tranquil IT Systems"
 #define send_usage_report 0
@@ -31,20 +32,12 @@
 #endif
 
 
-;#define waptenterprise
+#define waptenterprise
 
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
 ; for fast compile in developent mode
-;#define FastDebug
-
-#ifndef AppName
-#ifdef waptenterprise
-#define AppName "WAPTSetupEnterprise"
-#else
-#define AppName "WAPTSetup"
-#endif
-#endif
+; #define FastDebug
 
 #endif
 
@@ -78,7 +71,11 @@ Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs
 #endif
 
 [Setup]
+#ifdef waptenterprise
+OutputBaseFilename={#edition}-enterprise
+#else
 OutputBaseFilename={#edition}
+#endif
 #if edition == 'waptserversetup' 
 DefaultDirName=c:\wapt
 #else
@@ -188,7 +185,7 @@ Name: "{group}\Logiciels installés avec WAPT"; Filename: "http://localhost:8088
 en.StartAfterSetup=Launch WAPT setup session upon session opening
 en.RegisterHostOnServer=Register this computer onto WAPT server
 en.UpdateAvailablePkg=Update the list of packages available on the main repository
-en.UpdatePkgUponShutdown=Update packages upon shutdown
+en.UpdatePkgUponShutdown=Update packages upon shutdown                                   
 en.EnableCheckCertificate=Get and enable the check of WaptServer https certificate
 en.UseWaptServer=Report computer status to a waptserver and enable remote management
 en.InstallSSLCertificates=Install the certificates provided by this installer

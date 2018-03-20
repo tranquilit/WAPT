@@ -128,7 +128,6 @@ AppName={#AppName}
 AppId={#AppId}
 #endif
 AppVersion={#AppVerStr}
-AppVerName={#AppName} {#AppVerStr}
 UninstallDisplayName={#AppName} {#AppVerStr}
 VersionInfoVersion={#FileVerStr}
 VersionInfoTextVersion={#AppVerStr}
@@ -147,13 +146,18 @@ CloseApplications=Yes
 RestartApplications=No
 PrivilegesRequired=admin
 MinVersion=0,5.0sp4
+
 #ifdef waptenterprise
 LicenseFile=..\waptenterprise\COPYING.txt
+SetupIconFile=..\wapt_enterprise.ico
+AppVerName={#AppName} Enterprise {#AppVerStr}
 #else
 LicenseFile=..\COPYING.txt
+SetupIconFile=..\wapt.ico
+AppVerName={#AppName} {#AppVerStr}
 #endif
 RestartIfNeededByRun=False
-SetupIconFile=..\wapt.ico
+
 
 #ifdef signtool
 SignTool={#signtool}
