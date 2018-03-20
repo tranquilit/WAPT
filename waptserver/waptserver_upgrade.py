@@ -70,7 +70,7 @@ def create_import_data():
         if 'dbpath' in subprocess.check_output('mongoexport --help',shell=True):
             data = subprocess.check_output('mongoexport -d wapt -c hosts --jsonArray --dbpath=%s' % mongo_datadir,shell=True)
         else:
-            data = subprocess.check_output('mongoexport -d wapt -c hosts --jsonArray --db wapt',shell=True)
+            data = subprocess.check_output('mongoexport -c hosts --jsonArray --db wapt',shell=True)
         data = data.replace('\u0000', ' ')
         jsondata = json.loads(data)
     elif platform.system()=='Windows':
