@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.1.17"
+__version__ = "1.5.1.22"
 
 usage = """\
 %prog [--use-kerberos] [--force-https]"""
@@ -443,18 +443,6 @@ def main():
                 if type_debian():
                     if not check_if_deb_installed('libnginx-mod-http-auth-spnego'):
                         print('missing dependency libnginx-mod-http-auth-spnego, please install first before configuring kerberos')
-                        sys.exit(1)
-                elif type_redhat():
-                    import yum
-                    yb = yum.YumBase()
-                    yb.conf.cache = os.geteuid() != 1  #pylint: disable=no-member
-                    pkgs = yb.rpmdb.returnPackages()
-                    found = False
-                    for pkg in  pkgs:
-                        if pkg.name=='nginx-mod-http-auth-spnego':
-                            found = True
-                    if not found:
-                        print('missing dependency nginx-mod-http-auth-spnego, please install first before configuring kerberos')
                         sys.exit(1)
 
 
