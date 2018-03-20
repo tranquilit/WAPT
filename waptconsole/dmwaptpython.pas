@@ -37,7 +37,9 @@ type
     Fwaptdevutils: Variant;
     Flicencing: Variant;
     jsondata:TJSONData;
+    {$ifdef ENTERPRISE}
     FMaxHostsCount:Integer;
+    {$endif}
 
     FWaptConfigFileName: Utf8String;
     function Getcommon: Variant;
@@ -88,14 +90,12 @@ type
     property waptpackage:Variant read Getwaptpackage;
     property waptdevutils:Variant read Getwaptdevutils;
     property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
+    {$ifdef ENTERPRISE}
     property licencing:Variant read Getlicencing;
-
     property MaxHostsCount:Integer Read FMaxHostsCount;
-
-
     function CheckLicence(domain: String; var LicencesLog: String): Integer;
     procedure CheckPySources;
-
+    {$endif}
   end;
 
 
@@ -436,6 +436,7 @@ begin
 
 end;
 
+{$ifdef ENTERPRISE}
 function TDMPython.CheckLicence(domain: String; var LicencesLog: String): Integer;
 var
   lic:ISuperObject;
@@ -446,7 +447,6 @@ var
   tisCert: Variant;
 begin
   Result:=0;
-  {$ifdef ENTERPRISE}
   ValidLicence:=False;
   LicencesLog := '';
   LicensedTo := '';
@@ -484,15 +484,15 @@ begin
     LicList.Free;
     LicFileList.Free;
   end;
-  {$endif ENTERPRISE}
 end;
+{$endif ENTERPRISE}
 
+{$ifdef ENTERPRISE}
 procedure TDMPython.CheckPySources;
 var
   Line,Filename,ExpectedSha256,ActualSha256:String;
   Errors,Files:TStringList;
 begin
-  {$ifdef ENTERPRISE}
   try
     Errors := TStringList.Create;
     Files := TStringList.Create;
@@ -514,8 +514,8 @@ begin
     Errors.Free;
     Files.Free;
   end;
-  {$endif}
 end;
+{$endif}
 
 procedure TDMPython.LoadJson(data: UTF8String);
 var

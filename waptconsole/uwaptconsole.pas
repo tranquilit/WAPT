@@ -3504,11 +3504,13 @@ begin
       if (hosts <> nil) and (hosts.AsArray <> nil) then
       begin
         HostsCount := hosts.AsArray.Length;
+        {$ifdef ENTERPRISE }
         if HostsCount>DMPython.MaxHostsCount then
         begin
           GridHosts.Data := Nil;
           Raise Exception.CreateFmt('Maximum number of licenced hosts (%d/%d)) reached, aborting',[HostsCount,DMPython.MaxHostsCount]);
         end;
+        {$endif}
         LabelComputersNumber.Caption := IntToStr(HostsCount);
 
         for node in GridHosts.Data do
