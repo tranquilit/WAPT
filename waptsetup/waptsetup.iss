@@ -32,7 +32,7 @@
 #endif
 
 
-#define waptenterprise
+;#define waptenterprise
 
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
