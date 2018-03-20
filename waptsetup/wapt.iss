@@ -36,6 +36,8 @@ Source: "..\windnsquery.py"; DestDir: "{app}";
 Source: "..\custom_zip.py"; DestDir: "{app}"; 
 #ifdef waptenterprise
 Source: "..\waptenterprise\COPYING.txt"; DestDir: "{app}";
+Source: "..\waptenterprise\COPYING.txt"; DestDir: "{app}\waptenterprise";
+Source: "..\wapt-enterprise.ico"; DestDir: "{app}";
 #else
 Source: "..\COPYING.txt"; DestDir: "{app}";
 #endif
