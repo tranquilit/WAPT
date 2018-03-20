@@ -5100,14 +5100,6 @@ object VisWaptGUI: TVisWaptGUI
         Width = 200
       end>
     SimplePanel = False
-    object ProgressBar1: TProgressBar
-      Left = 784
-      Height = 16
-      Top = 3
-      Width = 264
-      Anchors = [akTop, akRight]
-      TabOrder = 0
-    end
   end
   object SynPythonSyn1: TSynPythonSyn
     DefaultFilter = 'Fichiers Python (*.py)|*.py'

@@ -17,6 +17,7 @@ type
     BitBtn2: TBitBtn;
     Image1: TImage;
     LabInfos: TLabel;
+    LabLicencedTo: TLabel;
     LicenceLog: TMemo;
     Panel1: TPanel;
     Panel2: TPanel;
@@ -55,6 +56,7 @@ begin
   {$ifdef ENTERPRISE}
   TotalCount:=DMPython.CheckLicence('',SLicenceLog);
   LicenceLog.Lines.AddText(SLicenceLog);
+  LabLicencedTo.Caption := Format(rsLicencedTo,[DMPython.LicensedTo]);
   {$endif}
 end;
 

@@ -93,6 +93,15 @@ def sign_exe(exe_path,p12path,p12password):
             print "Got an exception from subprocess.check_output"
             raise
 
+def set_app_ico(lpi_path,edition):
+    (lpi_rootname,lpi_ext) = os.path.splitext(lpi_path)
+    appico_path = lpi_rootname+'.ico'
+    source_ico = setuphelpers.makepath(wapt_root_dir,'wapt-%s.ico'%edition)
+    if not os.path.isfile(source_ico):
+        source_ico = setuphelpers.makepath(wapt_root_dir,'wapt.ico')
+    setuphelpers.filecopyto(source_ico,appico_path)
+
+
 def main():
     parser=OptionParser(usage=__doc__)
     parser.add_option("-l","--laz-build-path", dest="lazbuildpath", default=r'C:\codetyphon\typhon\bin32\typhonbuild.exe', help="Path to lazbuild or typhonbuild.exe (default: %default)")
@@ -118,6 +127,8 @@ def main():
         (lpi_name,lpi_ext) = os.path.splitext(os.path.basename(lpi_path))
         print('Configure %s' % lpi_path)
         set_lpi_options(lpi_path,options.waptedition,waptutils.Version(options.waptversion,4))
+        set_app_ico(lpi_path,options.waptedition)
+
         update_hash_file(os.path.abspath(options.update_hash_filepath.format(**locals())))
         cmd = '"%s" --primary-config-path="%s" -B "%s"'% (os.path.expandvars(options.lazbuildpath),os.path.expandvars(options.primary_config_path),os.path.expandvars(lpi_path))
         print(u'Running: %s' % cmd)

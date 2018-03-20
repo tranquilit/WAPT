@@ -616,13 +616,23 @@ object VisApropos: TVisApropos
     object LicenceLog: TMemo
       Left = 0
       Height = 115
-      Top = 33
+      Top = 56
       Width = 316
       Align = alClient
       Constraints.MinHeight = 115
       ScrollBars = ssAutoBoth
       TabOrder = 0
       WordWrap = False
+    end
+    object LabLicencedTo: TLabel
+      Left = 10
+      Height = 13
+      Top = 33
+      Width = 296
+      Align = alTop
+      BorderSpacing.Around = 10
+      Caption = 'Licensedto'
+      ParentColor = False
     end
   end
 end

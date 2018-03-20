@@ -65,6 +65,7 @@ type
   public
     { public declarations }
     PyWaptWrapper : TPyDelphiWrapper;
+    LicensedTo: String;
 
     function CertificateIsCodeSigning(crtfilename:String):Boolean;
     property privateKeyPassword: Ansistring read getprivateKeyPassword write setprivateKeyPassword;
@@ -441,6 +442,7 @@ var
 begin
   Result:=0;
   LicencesLog := '';
+  LicensedTo := '';
   LicFileList := FindAllFiles(AppendPathDelim(WaptBaseDir)+'licences','*.lic');
   LicList:=TStringList.Create;
   try
@@ -459,6 +461,9 @@ begin
         if LicList.IndexOf(VarPythonAsString(Licence.licence_nr))>=0 then
           raise Exception.Create('Duplicated Licence nr');
         LicList.Add(VarPythonAsString(Licence.licence_nr));
+        if LicensedTo<>'' then
+          LicensedTo := LicensedTo+',';
+        LicensedTo := LicensedTo + VarPythonAsString(Licence.licenced_to.encode('utf-8'));
       except
         on e:Exception do
           // Skip because of validation error
@@ -466,6 +471,7 @@ begin
       end;
     end;
     FMaxHostsCount := Result;
+
   finally
     LicList.Free;
     LicFileList.Free;

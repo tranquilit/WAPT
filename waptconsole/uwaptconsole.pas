@@ -213,7 +213,6 @@ type
     pgWindowsUpdates: TTabSheet;
     PopupDelete: TPopupMenu;
     PopupMenu1: TPopupMenu;
-    ProgressBar1: TProgressBar;
     Splitter6: TSplitter;
     Splitter7: TSplitter;
     PgReports: TTabSheet;
@@ -776,11 +775,11 @@ begin
     CurrentVisLoading.DoProgress(ASender)
   else
   begin
-    if ProgressBar1.Position >= ProgressBar1.Max then
+    {if ProgressBar1.Position >= ProgressBar1.Max then
       ProgressBar1.Position := 0
     else
       ProgressBar1.Position := ProgressBar1.Position + 1;
-    Application.ProcessMessages;
+    Application.ProcessMessages;}
   end;
 end;
 
@@ -792,11 +791,11 @@ begin
     CurrentVisLoading.DoProgress(ASender)
   else
   begin
-    if ProgressBar1.Position >= ProgressBar1.Max then
+    {if ProgressBar1.Position >= ProgressBar1.Max then
       ProgressBar1.Position := 0
     else
       ProgressBar1.Position := ProgressBar1.Position + 1;
-    Application.ProcessMessages;
+    Application.ProcessMessages;}
   end;
 end;
 
@@ -4044,7 +4043,12 @@ begin
       (WSUSActions.Actions[i] as TAction).Visible:=waptcommon.waptwua_enabled;
     end;
 
-    plStatusBar1.Panels[0].Text := WaptServerUser+' on '+ApplicationName+' '+GetApplicationVersion+' WAPT '+wapt_edition+' Edition, (c) 2012-2017 Tranquil IT Systems. (Configuration:'+AppIniFilename+')';
+    plStatusBar1.Panels[0].Text := WaptServerUser+' on '+ApplicationName+' '+
+      GetApplicationVersion+' WAPT '+wapt_edition+' Edition, (c) 2012-2017 Tranquil IT. (Conf:'+
+      AppIniFilename+')';
+    {$ifdef ENTERPRISE}
+    plStatusBar1.Panels[0].Text := plStatusBar1.Panels[0].Text + ' ' + Format(rsLicencedTo,[dmPython.LicensedTo]);
+    {$endif}
 
     //ProgressTitle(rsLoadPackages);
     ProgressStep(2,3);
