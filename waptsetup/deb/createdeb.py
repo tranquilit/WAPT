@@ -142,6 +142,10 @@ shutil.copy(WAPTDEPLOY, BDIR + 'var/www/wapt/')
 os.chmod(BDIR + 'var/www/wapt/' + WAPTDEPLOY, 0644)
 
 # build
-package_filename = 'tis-waptsetup-%s.deb' % (full_version)
+# build
+if WAPTEDITION=='enterprise':
+    package_filename = 'tis-waptsetup-enterprise-%s.deb' % (full_version)
+else:
+    package_filename = 'tis-waptsetup-%s.deb' % (full_version)
 eprint(subprocess.check_output(['dpkg-deb', '--build', BDIR, package_filename]))
 print(package_filename)
