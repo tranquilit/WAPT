@@ -598,29 +598,32 @@ def add_ads_groups(waptconfigfile,
                 hostname = h['computer_fqdn']
                 groups = get_computer_groups(h['computer_name'])
                 host_package = host_repo.get(host_id,PackageEntry(package=host_id,section='host'))
+                if progress_hook(True,i,len(hostdicts_list),'Checking %s' % host_package.package):
+                    break
 
                 wapt_groups = ensure_list(host_package['depends'])
                 additional = [group for group in groups if not group in wapt_groups and main_repo.get(group)]
-
                 if additional:
+                    if progress_hook(True,i,len(hostdicts_list),'Editing %s' % host_package.package):
+                        break
                     host_package.depends = ','.join(wapt_groups.extend(additional))
                     host_package.build_management_package()
                     host_package.inc_build()
                     host_file = host_package.build_management_package()
-                    host.sign_package(sign_certs,sign_key)
+                    host_package.sign_package(sign_certs,sign_key)
                     packages.append(host_package)
                 else:
                     unchanged.append(host_package.package)
             except:
                 discarded.append(host_package.package)
 
-            # upload all in one step...
-            progress_hook(True,3,3,'Upload %s host packages' % len(packages))
-            server = WaptServer().load_config_from_file(waptconfigfile)
-            server.upload_packages(packages,auth=(wapt_server_user,wapt_server_passwd),progress_hook=progress_hook)
-            return dict(updated = [p.package for p in packages],
-                        discarded = discarded,
-                        unchanged = unchanged)
+        # upload all in one step...
+        progress_hook(True,3,3,'Upload %s host packages' % len(packages))
+        server = WaptServer().load_config_from_file(waptconfigfile)
+        server.upload_packages(packages,auth=(wapt_server_user,wapt_server_passwd),progress_hook=progress_hook)
+        return dict(updated = packages,
+                    discarded = discarded,
+                    unchanged = unchanged)
 
     finally:
         logger.debug('Cleanup')

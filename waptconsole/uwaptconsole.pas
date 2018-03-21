@@ -1774,33 +1774,43 @@ end;
 
 procedure TVisWaptGUI.ActAddADSGroupsExecute(Sender: TObject);
 var
-  Res, host, hosts: ISuperObject;
-  args: ansistring;
+  Res, packages, hosts, host,HostMin: ISuperObject;
+  VHosts,VPackages,VWaptIniFilename,VPrivateKeyPassword,ResVar: Variant;
 begin
   if GridHosts.Focused and (MessageDlg(rsAddADSGroups, mtConfirmation, [mbYes, mbNo, mbCancel],0) = mrYes) then
   try
-
     Screen.Cursor := crHourGlass;
     Hosts := TSuperObject.Create(stArray);
-
     for host in GridHosts.SelectedRows do
-      hosts.AsArray.Add(host.S['uuid']);
+    begin
+      HostMin := TSuperObject.Create(stObject);
+      HostMin['uuid'] := host['uuid'];
+      HostMin['computer_fqdn'] := host['computer_fqdn'];
+      HostMin['computer_name'] := host['computer_name'];
+      HostMin['depends'] := host['depends'];
+      HostMin['conflicts'] := host['conflicts'];
+      Hosts.AsArray.Add(HostMin);
+    end;
 
-    //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
-    args := '';
-    args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
-    args := args + format('hosts_list = r"%s".decode(''utf8''),',
-      [soutils.Join(',', hosts)]);
-    if dmpython.privateKeyPassword <> '' then
-      args := args + format('key_password = "%s".decode(''utf8''),',
-        [dmpython.privateKeyPassword]);
-    args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
-    args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
-      [waptServerPassword]);
-    res := DMPython.RunJSON(format('waptdevutils.add_ads_groups(%s)', [args]));
-    ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
+    VHosts := SuperObjectToPyVar(Hosts);
+    VWaptIniFilename := PyUTF8Decode(AppIniFilename);
+    VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
+
+    resVar := DMPython.waptdevutils.add_ads_groups(
+       waptconfigfile := VWaptIniFilename,
+       hostdicts_list := VHosts,
+       sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
+       sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
+       wapt_server_user := waptServerUser,
+       wapt_server_passwd := waptServerPassword,
+       cabundle := DMPython.WaptHostRepo.cabundle
+       );
+
+    res := PyVarToSuperObject(ResVar);
   finally
-    Screen.Cursor := crDefault;
+    Screen.cursor := crDefault;
+    if res <> Nil then
+      ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
   end;
 end;
 

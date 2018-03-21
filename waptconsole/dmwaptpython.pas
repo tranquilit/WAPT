@@ -203,43 +203,48 @@ var
   key: ISuperObject;
 
 begin
-  case aso.DataType of
-    stBoolean: begin
-        if aso.AsBoolean then
-          Result := PPyObject(GetPythonEngine.Py_True)
-        else
-          Result := PPyObject(GetPythonEngine.Py_False);
-        GetPythonEngine.Py_INCREF(result);
-    end;
-    stNull: begin
-        Result := GetPythonEngine.ReturnNone;
+  if aso<>Nil then
+  begin
+    case aso.DataType of
+      stBoolean: begin
+          if aso.AsBoolean then
+            Result := PPyObject(GetPythonEngine.Py_True)
+          else
+            Result := PPyObject(GetPythonEngine.Py_False);
+          GetPythonEngine.Py_INCREF(result);
       end;
-    stInt: begin
-        Result := GetPythonEngine.PyInt_FromLong(aso.AsInteger);
+      stNull: begin
+          Result := GetPythonEngine.ReturnNone;
+        end;
+      stInt: begin
+          Result := GetPythonEngine.PyInt_FromLong(aso.AsInteger);
+        end;
+      stDouble,stCurrency: begin
+        Result := GetPythonEngine.PyFloat_FromDouble(aso.AsDouble);
+        end;
+      stString: begin
+        Result := GetPythonEngine.PyUnicode_FromWideString(aso.AsString);
+        end;
+      stArray: begin
+        Result := GetPythonEngine.PyTuple_New(aso.AsArray.Length);
+        i:=0;
+        for item in aso do
+        begin
+          GetPythonEngine.PyTuple_SetItem(Result,i,SuperObjectToPyObject(item));
+          inc(i);
+        end;
       end;
-    stDouble,stCurrency: begin
-      Result := GetPythonEngine.PyFloat_FromDouble(aso.AsDouble);
-      end;
-    stString: begin
-      Result := GetPythonEngine.PyUnicode_FromWideString(aso.AsString);
-      end;
-    stArray: begin
-      Result := GetPythonEngine.PyTuple_New(aso.AsArray.Length);
-      i:=0;
-      for item in aso do
-      begin
-        GetPythonEngine.PyTuple_SetItem(Result,i,SuperObjectToPyObject(item));
-        inc(i);
-      end;
-    end;
-    stObject: begin
-      Result := GetPythonEngine.PyDict_New();
-      for key in Aso.AsObject.GetNames do
-        GetPythonEngine.PyDict_SetItem(Result, SuperObjectToPyObject(key),SuperObjectToPyObject(Aso[key.AsString]));
+      stObject: begin
+        Result := GetPythonEngine.PyDict_New();
+        for key in Aso.AsObject.GetNames do
+          GetPythonEngine.PyDict_SetItem(Result, SuperObjectToPyObject(key),SuperObjectToPyObject(Aso[key.AsString]));
+      end
+      else
+        Result := GetPythonEngine.VariantAsPyObject(aso);
     end
-    else
-      Result := GetPythonEngine.VariantAsPyObject(aso);
-  end;
+  end
+  else
+    Result := GetPythonEngine.ReturnNone;
 end;
 
 function SuperObjectToPyVar(aso: ISuperObject): Variant;
