@@ -3474,7 +3474,7 @@ begin
       urlParams.AsArray.Add(Format('groups=%s',[EncodeURIComponent(cbGroups.Text)]));
 
     {$ifdef ENTERPRISE }
-    if length(GetSelectedOrgUnits)>0 then
+    if IsEnterpriseEdition and (length(GetSelectedOrgUnits)>0) then
     begin
       urlParams.AsArray.Add(Format('organizational_unit=%s',[EncodeURIComponent(StrJoin( '||',GetSelectedOrgUnits))]));
       if CBIncludeSubOU.Checked then
@@ -3505,7 +3505,7 @@ begin
       begin
         HostsCount := hosts.AsArray.Length;
         {$ifdef ENTERPRISE }
-        if HostsCount>DMPython.MaxHostsCount then
+        if IsEnterpriseEdition and  (HostsCount>DMPython.MaxHostsCount) then
         begin
           GridHosts.Data := Nil;
           Raise Exception.CreateFmt('Maximum number of licenced hosts (%d/%d)) reached, aborting',[HostsCount,DMPython.MaxHostsCount]);
@@ -3941,7 +3941,7 @@ begin
             HostsCount := sores['result'].I['hosts_count'];
             {$ifdef ENTERPRISE}
             Result := DMPython.CheckLicence('',LicencesLog)>0;
-            if DMPython.MaxHostsCount < HostsCount then
+            if IsEnterpriseEdition and (DMPython.MaxHostsCount < HostsCount) then
             begin
               Result := False;
               raise Exception.CreateFmt('Maximum number of licenced hosts (%d/%d)) reached, aborting. %s',[HostsCount,DMPython.MaxHostsCount,LicencesLog]);
@@ -4023,11 +4023,14 @@ begin
         self.cbGroups.Text := ini.ReadString(self.Name,'cbGroups.Text',self.cbGroups.Text);
 
         {$ifdef ENTERPRISE}
-        LoadOrgUnitsTree(Sender);
-        self.cbADSite.Text :=  ini.ReadString(self.Name,'cbADSite',self.cbADSite.Text);
-        self.DBOrgUnits.Locate('DN',ini.ReadString(self.Name,'OrgUnitsDN',''),[]);
-        self.PanOrgUnits.Width := ini.ReadInteger(self.Name,PanOrgUnits.Name+'.Width',PanOrgUnits.Width);
-        self.CBIncludeSubOU.Checked:= ini.ReadBool(self.Name,CBIncludeSubOU.Name,self.CBIncludeSubOU.Checked);;
+        if IsEnterpriseEdition then
+        begin
+          LoadOrgUnitsTree(Sender);
+          self.cbADSite.Text :=  ini.ReadString(self.Name,'cbADSite',self.cbADSite.Text);
+          self.DBOrgUnits.Locate('DN',ini.ReadString(self.Name,'OrgUnitsDN',''),[]);
+          self.PanOrgUnits.Width := ini.ReadInteger(self.Name,PanOrgUnits.Name+'.Width',PanOrgUnits.Width);
+          self.CBIncludeSubOU.Checked:= ini.ReadBool(self.Name,CBIncludeSubOU.Name,self.CBIncludeSubOU.Checked);;
+        end;
         {$endif}
 
       finally
@@ -4721,6 +4724,7 @@ end;
 procedure TVisWaptGUI.cbADSiteDropDown(Sender: TObject);
 begin
   {$ifdef ENTERPRISE}
+  if IsEnterpriseEdition then
   try
     FillcbADSiteDropDown;
   except
@@ -4758,6 +4762,7 @@ var
   oldSelect:String;
 begin
   {$ifdef ENTERPRISE}
+  if IsEnterpriseEdition then
   try
     Screen.Cursor:=crHourGlass;
 

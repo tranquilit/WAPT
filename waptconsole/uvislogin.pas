@@ -98,7 +98,8 @@ procedure TVisLogin.FormShow(Sender: TObject);
 begin
   Image1.Picture.LoadFromResourceName(HINSTANCE,'WAPT_PNG',TPortableNetworkGraphic);
   {$ifdef ENTERPRISE }
-  CBConfiguration.Text := AppIniFilename;
+  if IsEnterpriseEdition then
+    CBConfiguration.Text := AppIniFilename;
   {$endif}
 
   if edUser.Text<>'' then
@@ -113,7 +114,7 @@ end;
 function TVisLogin.GetIsEnterpriseEdition: Boolean;
 begin
   {$ifdef ENTERPRISE}
-  Result := (DMPython.MaxHostsCount>0) and (DMPython.IsEnterpriseEdition);
+  Result := (DMPython.IsEnterpriseEdition);
   {$else}
   Result := False;
   {$endif}

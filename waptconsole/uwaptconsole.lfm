@@ -5399,7 +5399,7 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActCleanCacheExecute
     end
     object ActAddADSGroups: TAction
-      Category = 'External Tools'
+      Category = 'hosts'
       Caption = 'Add ADS Groups as packages'
       Hint = 'Add the WAPT group packages matching the ADS groups of the machines'
       ImageIndex = 9

@@ -360,7 +360,7 @@
       <CompilerMessages>
         <MsgFileName Value=""/>
       </CompilerMessages>
-      <CustomOptions Value="-dUseCThreads"/>
+      <CustomOptions Value="-dUseCThreads -dENTERPRISE"/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>

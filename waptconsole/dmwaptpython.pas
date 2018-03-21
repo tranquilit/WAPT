@@ -363,8 +363,6 @@ begin
 
   {$ifdef ENTERPRISE}
   FMaxHostsCount :=0;
-  {else}
-  FMaxHostsCount :=+MaxInt;
   {$endif}
 end;
 
@@ -445,6 +443,7 @@ var
   Licence: Variant;
   tisCertPEM:String;
   tisCert: Variant;
+  ValidUntil,MaxValidUntil:TDateTime;
 begin
   Result:=0;
   ValidLicence:=False;
@@ -452,6 +451,7 @@ begin
   LicensedTo := '';
   LicFileList := FindAllFiles(AppendPathDelim(WaptBaseDir)+'licences','*.lic');
   LicList:=TStringList.Create;
+  MaxValidUntil := 0;
   try
     tisCertPEM := ExtractResourceString('CATIS');
     tisCert:=waptcrypto.SSLCertificate(crt_string := tisCertPEM);
@@ -460,7 +460,10 @@ begin
       Licence:=licencing.WaptLicence(filename := LicFilename);
       try
         Licence.check_licence(tisCert);
-        if Now >= UniversalTimeToLocal(ISO8601ToDateTime(VarPythonAsString(Licence.valid_until))) then
+        ValidUntil := UniversalTimeToLocal(ISO8601ToDateTime(VarPythonAsString(Licence.valid_until)));
+        if ValidUntil>MaxValidUntil then
+          MaxValidUntil := ValidUntil;
+        if Now >= ValidUntil then
           raise Exception.Create('Licence has expired');
         LicencesLog := LicencesLog+Licence.__unicode__('--noarg--').encode('utf-8')+#13#10;
         //if domain = VarPythonAsString(licence.domain) then
@@ -468,7 +471,7 @@ begin
         if LicList.IndexOf(VarPythonAsString(Licence.licence_nr))>=0 then
           raise Exception.Create('Duplicated Licence nr');
         LicList.Add(VarPythonAsString(Licence.licence_nr));
-        ValidLicence:=True;
+        ValidLicence:=ValidLicence or (StrToInt(VarPythonAsString(Licence.count))>0);
         if LicensedTo<>'' then
           LicensedTo := LicensedTo+',';
         LicensedTo := LicensedTo + VarPythonAsString(Licence.licenced_to.encode('utf-8'));
@@ -478,6 +481,10 @@ begin
           LicencesLog := LicencesLog+'Licence '+LicFilename+' ERROR '+E.Message+' for '+Licence.__unicode__('--noarg--').encode('utf-8')+' Skipped.'+#13#10
       end;
     end;
+    if not ValidLicence then
+      ShowMessage('No valid licence found, switching to Community features only')
+    else if (MaxValidUntil - Now) < 14 then
+      ShowMessageFmt('Licence will expire in %s days, keep in mind to renew them.',[int(MaxValidUntil - Now)]);
     FMaxHostsCount := Result;
 
   finally
@@ -541,7 +548,8 @@ procedure TDMPython.SetIsEnterpriseEdition(AValue: Boolean);
 begin
   {$ifdef ENTERPRISE}
   if FIsEnterpriseEdition=AValue then Exit;
-  FIsEnterpriseEdition:=AValue;
+  if not AValue or ValidLicence then
+    FIsEnterpriseEdition:=AValue;
   {$else}
   FIsEnterpriseEdition := False;
   {$endif}
