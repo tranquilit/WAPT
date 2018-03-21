@@ -23,6 +23,7 @@ resourcestring
   rsUsage7 = ' --tasks=autorunTray,installService,installredist2008,autoUpgradePolicy  : if given, pass this arguments to the /TASKS options of the waptagent installer. Default = installService,installredist2008,autoUpgradePolicy';
   rsUsage8 = ' --hash=<sha256hash> : check that downloaded waptagent.exe setup sha256 hash match this parameter.';
   rsUsage9 = ' --wait=<minutes> : wait running and pending tasks to complete if waptservice is running before install.';
+  rsUsage10 = ' --setupargs=<options> : add this to the command line of waptagent.exe.';
   rsInstall = 'Install ...';
   rsInstallOK = 'Install OK : %s';
   rsInstallError = 'Install Error : %s';
