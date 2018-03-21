@@ -3985,7 +3985,6 @@ def run_powershell(cmd,output_format='json',**kwargs):
 
     #remove comments...
     if output_format.lower() == 'xml':
-        print result
         lines = [l for l in result.splitlines() if not l.strip().startswith('#') and l.strip()]
         import xml.etree.ElementTree as ET
         return ET.fromstringlist(lines)
