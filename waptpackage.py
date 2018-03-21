@@ -428,10 +428,8 @@ class PackageEntry(BaseObjectClass):
 
         if kwargs:
             for key,value in kwargs.iteritems():
-                if key in self.required_attributes + self.optional_attributes:
+                if key in self.required_attributes + self.optional_attributes + self.non_control_attributes:
                     setattr(self,key,value)
-                else:
-                    raise Exception('"%s" is not a control attribute of PackageEntry an can not be set' % key)
 
     def parse_version(self):
         """Parse version to major, minor, patch, pre-release, build parts.

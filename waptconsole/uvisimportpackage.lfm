@@ -336,6 +336,17 @@ object VisImportPackage: TVisImportPackage
         Text = 'Min Wapt version'
         Width = 69
         PropertyName = 'min_wapt_version'
+      end    
+      item
+        Position = 15
+        Text = 'Filename'
+        PropertyName = 'filename'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 16
+        Text = 'md5sum'
+        PropertyName = 'md5sum'
       end>
     Header.DefaultHeight = 18
     Header.Height = 18

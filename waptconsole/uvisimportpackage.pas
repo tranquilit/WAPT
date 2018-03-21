@@ -5,7 +5,7 @@ unit uVisImportPackage;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, RTTICtrls, RTTIGrids, vte_rttigrid, Forms,
+  Classes, SysUtils, FileUtil, LazUTF8, RTTICtrls, RTTIGrids, vte_rttigrid, Forms,
   Controls, Graphics, Dialogs, ExtCtrls, Buttons, ComCtrls, StdCtrls, ActnList,
   Menus, sogrid, DefaultTranslator, VirtualTrees, superobject, SearchEdit,
   waptcommon;
@@ -313,6 +313,9 @@ var
 
   PackageFilename:String;
 begin
+  Sources := Nil;
+  uploadResult := Nil;
+
   http_proxy:=Waptrepo.HttpProxy;
 
   if not FileExistsUTF8(WaptPersonalCertificatePath) then
@@ -330,16 +333,16 @@ begin
 
   ListPackages := TSuperObject.create(stArray);
   for package in GridExternalPackages.SelectedRows do
-    ListPackages.AsArray.Add(package.S['package']+'(='+package.S['version']+')');
+    ListPackages.AsArray.Add(package);
 
   ListPackagesVar := SuperObjectToPyVar(ListPackages);
 
   FileNames := PyVarToSuperObject(DMPython.waptdevutils.get_packages_filenames(
-        packages_names := ListPackagesVar,
+        packages := ListPackagesVar,
         waptconfigfile := AppIniFilename,
         repo_name := RepoName ));
 
-  if MessageDlg(rsPackageDuplicateConfirmCaption, format(rsPackageDuplicateConfirm, [Join(',', ListPackages)+' '+intToStr(Filenames.AsArray.Length)+' packages']),
+  if MessageDlg(rsPackageDuplicateConfirmCaption, format(rsPackageDuplicateConfirm, [Join(',',ExtractField(FileNames,'0')) + ' '+intToStr(Filenames.AsArray.Length)+' packages']),
         mtConfirmation, mbYesNoCancel, 0) <> mrYes then
     Exit;
 
@@ -411,14 +414,18 @@ begin
 
       if (uploadResult <> Nil) and (uploadResult.AsArray.length=Sources.AsArray.Length) then
       begin
-        ShowMessage(format(rsDuplicateSuccess, [ Join(',', ListPackages)])) ;
+        ShowMessageFmt(rsDuplicateSuccess, [ Join(',', ExtractField(FileNames,'0'))]);
         ModalResult := mrOk;
       end
       else
         ShowMessage(rsDuplicateFailure);
     finally
-      for aDir in Sources do
-        DeleteDirectory(copy(aDir.AsString,3,length(aDir.AsString)-3),False);
+      if aDir <> Nil then
+        for aDir in Sources do
+          DeleteDirectory(UTF8Encode(aDir.AsString),False);
+      if uploadResult <> Nil then
+        for aDir in uploadResult do
+          DeleteFileUTF8(UTF8Encode(aDir.AsString));
       Free;
     end;
     ModalResult:=mrOK;
@@ -454,13 +461,12 @@ begin
 
   listPackages := TSuperObject.create(stArray);
   for package in GridExternalPackages.SelectedRows do
-    listPackages.AsArray.Add(package.S['package']+'(='+package.S['version']+')');
-
+    listPackages.AsArray.Add(package);
 
   ListPackagesVar := SuperObjectToPyVar(ListPackages);
 
   FileNames := PyVarToSuperObject(DMPython.waptdevutils.get_packages_filenames(
-        packages_names := ListPackagesVar,
+        packages := ListPackagesVar,
         waptconfigfile := AppIniFilename,
         repo_name := RepoName ));
 
