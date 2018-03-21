@@ -11,7 +11,7 @@ uses
   vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, jsonparser,
   superobject, VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading, IdComponent,
   DefaultTranslator, IniPropStorage, DBGrids, ShellCtrls, GetText,
-  uWaptConsoleRes, db, BufDataset, memds, SearchEdit, MenuButton, tisstrings;
+  uWaptConsoleRes, db, BufDataset, SearchEdit, MenuButton, tisstrings;
 
 type
 
@@ -1003,9 +1003,13 @@ begin
       try
         stats_report_url:=ini.ReadString('global','usage_report_url',rsDefaultUsageStatsURL);
         stats := WAPTServerJsonGet('api/v1/usage_statistics',[])['result'];
+        {$ifdef ENTERPRISE}
+        stats.S['edition'] := 'enterprise';
+        {$else}
+        stats.S['edition'] := 'community';
+        {$endif}
         IdHttpPostData(stats_report_url,stats.AsJSon,Proxy,4000,60000,60000,'','','Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko');
         ini.WriteDateTime('global','last_usage_report',Now);
-
       except
         ini.WriteDateTime('global','last_usage_report',Now);
       end;
@@ -2708,7 +2712,7 @@ end;
 
 procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
 var
-  hostname,uuid,desc,HostPackageVersion: String;
+  hostname,uuid,desc,HostPackageVersion: Utf8String;
   uuids,result: ISuperObject;
   ApplyUpdatesImmediately:Boolean;
   Host: ISuperObject;
@@ -3777,6 +3781,8 @@ begin
           inifile.WriteBool('global', 'send_usage_report',
             cbSendStats.Checked);
           //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
+
+          DMPython.privateKeyPassword:='';
 
           Result := True;
         end;
