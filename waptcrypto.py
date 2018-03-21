@@ -891,7 +891,7 @@ class SSLPrivateKey(BaseObjectClass):
                 break
             except (TypeError,ValueError) as e:
                 if "Password was not given but private key is encrypted" in e.message or\
-                        "Bad decrypt. Incorrect password?" in e.message and self.password_callback is not None:
+                        "Bad decrypt. Incorrect key passphrase ?" in e.message and self.password_callback is not None:
                     retry_cnt -= 1
                     password = self.password_callback(self.private_key_filename)
                     if password == '':
@@ -1677,12 +1677,13 @@ class SSLCertificate(BaseObjectClass):
         for adir in directories:
             for akeyfile in glob.glob(os.path.join(adir,u'*.pem')):
                 try:
-                    logger.debug(u'Testing if key %s match certificate...'% akeyfile)
                     key = SSLPrivateKey(os.path.abspath(akeyfile),callback = password_callback,password = private_key_password)
                     if key.match_cert(self):
+                        logger.debug(u'SUCCESS key %s match certificate %s'% (akeyfile,self.public_cert_filename or self.subject_dn))
                         return key
+                    logger.debug(u'NO MATCH key %s does not match certificate %s'% (akeyfile,self.public_cert_filename or self.subject_dn))
                 except Exception as e:
-                    logger.debug(u'Error for %s: %s'%(akeyfile,e))
+                    logger.debug(u'ERROR for %s: %s'%(akeyfile,e))
         return None
 
     @property
