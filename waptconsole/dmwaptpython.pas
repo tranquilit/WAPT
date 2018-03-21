@@ -344,6 +344,8 @@ begin
 end;
 
 procedure TDMPython.DataModuleCreate(Sender: TObject);
+var
+  st:TStringList;
 begin
   //CheckPySources;
 
@@ -360,6 +362,16 @@ begin
   PyWaptWrapper.Engine := PythonEng;
   PyWaptWrapper.Module := PythonModuleDMWaptPython;
   PyWaptWrapper.Initialize;  // Should only be called if PyDelphiWrapper is created at run time
+
+  st := TStringList.Create;
+  try
+    st.Append('import logging');
+    st.Append('logger = logging.getLogger()');
+    st.Append('logging.basicConfig(level=logging.WARNING)');
+    PythonEng.ExecStrings(St);
+  finally
+    st.free;
+  end;
 
   {$ifdef ENTERPRISE}
   FMaxHostsCount :=0;
