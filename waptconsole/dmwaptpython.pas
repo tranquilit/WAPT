@@ -456,6 +456,7 @@ function TDMPython.CheckLicence(domain: String; var LicencesLog: String): Intege
 var
   lic:ISuperObject;
   LicFilename:String;
+  VLicFilename: Variant;
   LicFileList,LicList:TStringList;
   Licence: Variant;
   tisCertPEM:String;
@@ -474,7 +475,8 @@ begin
     tisCert:=waptcrypto.SSLCertificate(crt_string := tisCertPEM);
     for LicFilename in LicFileList do
     begin
-      Licence:=licencing.WaptLicence(filename := LicFilename);
+      VLicFilename := PyUTF8Decode(LicFilename);
+      Licence:=licencing.WaptLicence(filename := VLicFilename);
       try
         Licence.check_licence(tisCert);
         ValidUntil := UniversalTimeToLocal(ISO8601ToDateTime(VarPythonAsString(Licence.valid_until)));
@@ -703,10 +705,13 @@ end;
 
 function TDMPython.Getlicencing: Variant;
 begin
-  if IsEnterpriseEdition and VarIsEmpty(Flicencing) or VarIsNull(Flicencing) then
+  {$ifdef ENTERPRISE}
+  if VarIsEmpty(Flicencing) or VarIsNull(Flicencing) then
     Flicencing:= VarPyth.Import('waptenterprise.licencing');
   Result := Flicencing;
-
+  {$else}
+  Result := Nil;
+  {$endif}
 end;
 
 function TDMPython.GetMainWaptRepo: Variant;
