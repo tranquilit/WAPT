@@ -13,8 +13,6 @@ type
   { TVisLogin }
 
   TVisLogin = class(TForm)
-    ActSelectConf: TAction;
-    ActionList1: TActionList;
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
@@ -31,7 +29,6 @@ type
     Panel1: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
-    procedure ActSelectConfExecute(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure CBConfigurationDropDown(Sender: TObject);
     procedure CBConfigurationKeyPress(Sender: TObject; var Key: char);
@@ -43,13 +40,9 @@ type
     procedure FormShow(Sender: TObject);
     procedure Image1Click(Sender: TObject);
   private
-    function GetIsEnterpriseEdition: Boolean;
-    procedure SetIsEnterpriseEdition(AValue: Boolean);
     { private declarations }
   public
     { public declarations }
-    property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
-
   end;
 
 var
@@ -91,15 +84,17 @@ procedure TVisLogin.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
   LabVersion.Caption := ApplicationName+' '+wapt_edition+' Edition '+GetApplicationVersion;
-  IsEnterpriseEdition:=DMPython.IsEnterpriseEdition;
 end;
 
 procedure TVisLogin.FormShow(Sender: TObject);
 begin
   Image1.Picture.LoadFromResourceName(HINSTANCE,'WAPT_PNG',TPortableNetworkGraphic);
   {$ifdef ENTERPRISE }
-  if IsEnterpriseEdition then
-    CBConfiguration.Text := AppIniFilename;
+  laConfiguration.Visible := True;
+  CBConfiguration.Visible := True;
+  {$else}
+  laConfiguration.Visible := False;
+  CBConfiguration.Visible := False;
   {$endif}
 
   if edUser.Text<>'' then
@@ -111,28 +106,6 @@ begin
   OpenDocument('https://www.tranquil.it');
 end;
 
-function TVisLogin.GetIsEnterpriseEdition: Boolean;
-begin
-  {$ifdef ENTERPRISE}
-  Result := (DMPython.IsEnterpriseEdition);
-  {$else}
-  Result := False;
-  {$endif}
-
-end;
-
-procedure TVisLogin.SetIsEnterpriseEdition(AValue: Boolean);
-begin
-  {$ifdef ENTERPRISE}
-  if AValue and (DMPython.MaxHostsCount<=0) then
-    raise Exception.Create('No valid licence yet');
-  {$endif}
-  if dmpython.IsEnterpriseEdition<>AValue then
-    dmpython.IsEnterpriseEdition:=AValue;
-  ActSelectConf.Checked:= IsEnterpriseEdition;
-  laConfiguration.Visible := IsEnterpriseEdition;
-  CBConfiguration.Visible := IsEnterpriseEdition;
-end;
 
 procedure TVisLogin.BitBtn1Click(Sender: TObject);
 begin
@@ -141,14 +114,6 @@ begin
     VisWaptGUI.ActReloadConfig.Execute;
     edWaptServerName.Text:=waptcommon.GetWaptServerURL;
   end;
-end;
-
-procedure TVisLogin.ActSelectConfExecute(Sender: TObject);
-begin
-  {$ifdef ENTERPRISE }
-  ActSelectConf.Checked:=not ActSelectConf.Checked;
-  IsEnterpriseEdition:=ActSelectConf.Checked;
-  {$endif}
 end;
 
 procedure TVisLogin.CBConfigurationDropDown(Sender: TObject);

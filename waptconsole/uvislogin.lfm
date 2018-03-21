@@ -300,13 +300,4 @@ object VisLogin: TVisLogin
       ParentColor = False
     end
   end
-  object ActionList1: TActionList
-    left = 160
-    top = 48
-    object ActSelectConf: TAction
-      Caption = 'OK'
-      OnExecute = ActSelectConfExecute
-      ShortCut = 24656
-    end
-  end
 end
