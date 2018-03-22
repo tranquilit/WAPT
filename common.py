@@ -6316,9 +6316,10 @@ def wapt_sources_edit(wapt_sources_dir):
     Returns:
         str: sources path
     """
-    psproj_filename = os.path.join(wapt_sources_dir,'WAPT','wapt.psproj')
-    control_filename = os.path.join(wapt_sources_dir,'WAPT','control')
-    setup_filename = os.path.join(wapt_sources_dir,'setup.py')
+    wapt_sources_dir = ensure_unicode(wapt_sources_dir)
+    psproj_filename = os.path.join(wapt_sources_dir,u'WAPT',u'wapt.psproj')
+    control_filename = os.path.join(wapt_sources_dir,u'WAPT',u'control')
+    setup_filename = os.path.join(wapt_sources_dir,u'setup.py')
     pyscripter_filename = os.path.join(setuphelpers.programfiles32,
                                        'PyScripter', 'PyScripter.exe')
     wapt_base_dir = os.path.dirname(__file__)

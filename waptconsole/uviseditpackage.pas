@@ -812,11 +812,6 @@ begin
 
   Screen.Cursor := crHourGlass;
   try
-    if UseProxyForRepo then
-      Proxy := HttpProxy
-    else
-      Proxy := '';
-
     FPackageRequest := AValue;
     cabundle := DMPython.WAPT.cabundle;
 
@@ -840,6 +835,8 @@ begin
     else
     begin
       repo := DMPython.MainWaptRepo;
+      Proxy := repo.http_proxy;
+
       packages := repo.packages_matching(FPackageRequest);
       PackagesCount := Varpyth.len(packages);
       IsNewPackage := PackagesCount <= 0;

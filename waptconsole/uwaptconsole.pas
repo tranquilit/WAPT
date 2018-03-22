@@ -678,7 +678,6 @@ type
     procedure LoadOrgUnitsTree(Sender: TObject);
   public
     { public declarations }
-    PackageEdited: ISuperObject;
     MainRepoUrl, WaptServer, TemplatesRepoUrl: string;
 
     {$ifdef wsus}
@@ -1480,32 +1479,49 @@ end;
 
 procedure TVisWaptGUI.ActEditPackageExecute(Sender: TObject);
 var
-  Selpackage: string;
-  Devpath : UnicodeString;
+  filename, filePath, target_directory,proxy: string;
+  vFilePath,vDevPath: Variant;
+  PackageEdited,repo,cabundle,VWaptIniFilename: Variant;
+
+  DevRoot,Devpath : String;
   res: ISuperObject;
 begin
   if GridPackages.FocusedNode <> nil then
   begin
-    if IniReadString(AppIniFilename,'global','default_sources_root')<>'' then
+    DevRoot:=IniReadString(AppIniFilename,'global','default_sources_root');
+    if DevRoot<>'' then
     begin
-      Selpackage := format('%s(=%s)', [GridPackages.GetCellStrValue(
-        GridPackages.FocusedNode, 'package'), GridPackages.GetCellStrValue(
-        GridPackages.FocusedNode, 'version')]);
       try
-        { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
-        DevPath := VarPythonAsString(DMPython.WAPT.get_default_development_dir(SelPackage));
-        if DirectoryExistsUTF8(DevPath) then
-          DevPath:=DevPath+'.'+GridPackages.GetCellStrValue(GridPackages.FocusedNode, 'version');
-        { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
-        DMPython.WAPT.update(force := True,register := False,filter_on_host_cap := False);
-        res := PyVarToSuperObject(DMPython.WAPT.edit_package(
-          packagerequest := Selpackage,
-          target_directory:=DevPath,
-          auto_inc_version:=False));
+        with TVisLoading.Create(Self) do
+        try
+          ProgressTitle(rsDownloading);
+          Application.ProcessMessages;
+          try
+            filename := GridPackages.FocusedRow.S['filename'];
+            filePath := AppLocalDir + 'cache\' + filename;
+            if not DirectoryExists(AppLocalDir + 'cache') then
+              mkdir(AppLocalDir + 'cache');
 
-        if not DirectoryExists(res.S['sourcespath']) then
-          raise Exception.Create('Unable to edit package. Development directory '+res.S['sourcespath']+' does not exist');
-        DMPython.common.wapt_sources_edit( wapt_sources_dir := DevPath);
+            Proxy := DMPython.MainWaptRepo.http_proxy;
+            cabundle:= DMPython.MainWaptRepo.cabundle;
+
+            IdWget(VarPythonAsString(GridPackages.FocusedRow.S['repo_url']+'/'+filename), filePath,
+                ProgressForm, @updateprogress, Proxy);
+            vFilePath := PyUTF8Decode(filePath);
+            PackageEdited := DMPython.waptpackage.PackageEntry(waptfile := vFilePath);
+            DevPath := AppendPathDelim(DevRoot)+VarPythonAsString(PackageEdited.make_package_edit_directory('--noarg--'));
+            vDevPath:= PyUTF8Decode(DevPath);
+            PackageEdited.unzip_package(cabundle := cabundle, target_dir := vDevPath);
+            DMPython.common.wapt_sources_edit( wapt_sources_dir := vDevPath);
+          except
+            ShowMessage(rsDlCanceled);
+            if FileExistsUTF8(filePath) then
+              DeleteFileUTF8(filePath);
+            raise;
+          end;
+        finally
+          Free;
+        end;
       except
         on E:Exception do
         begin
