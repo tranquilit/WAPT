@@ -3521,8 +3521,9 @@ begin
         {$ifdef ENTERPRISE }
         if IsEnterpriseEdition and  (HostsCount>DMPython.MaxHostsCount) then
         begin
-          GridHosts.Data := Nil;
-          Raise Exception.CreateFmt('Maximum number of licenced hosts (%d/%d)) reached, aborting',[HostsCount,DMPython.MaxHostsCount]);
+          IsEnterpriseEdition:=False;
+          DMPython.ValidLicence:=False;
+          ShowMessageFmt('Maximum number of licenced hosts (%d/%d)) reached, switching to Community Edition features',[HostsCount,DMPython.MaxHostsCount]);
         end;
         {$endif}
         LabelComputersNumber.Caption := IntToStr(HostsCount);
@@ -3859,13 +3860,6 @@ begin
   HostsLimit := 2000;
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
 
-  {$ifdef ENTERPRISE }
-  IsEnterpriseEdition:=True;
-  {$else}
-  IsEnterpriseEdition:=False;
-  {$endif}
-  ActProprietary.Enabled := IsEnterpriseEdition;
-  ActProprietary.Checked := IsEnterpriseEdition;
 end;
 
 procedure TVisWaptGUI.FormDragOver(Sender, Source: TObject; X, Y: Integer;
@@ -3960,8 +3954,9 @@ begin
             if IsEnterpriseEdition and (DMPython.MaxHostsCount < HostsCount) then
             begin
               Result := False;
-              raise Exception.CreateFmt('Maximum number of licenced hosts (%d/%d)) reached, aborting. %s',[HostsCount,DMPython.MaxHostsCount,LicencesLog]);
+              DMPython.ValidLicence:=False;
               IsEnterpriseEdition:=False;
+              ShowMessageFmt('Maximum number of licenced hosts (%d/%d)) reached, switching to Community Edition features. %s',[HostsCount,DMPython.MaxHostsCount,LicencesLog]);
             end;
             {$endif}
             Result := True;
@@ -3997,6 +3992,16 @@ var
   ini:TIniFile;
 
 begin
+  {$ifdef ENTERPRISE }
+  IsEnterpriseEdition:=True;
+  ActProprietary.Enabled := True;
+  ActProprietary.Checked := True;
+  {$else}
+  IsEnterpriseEdition:=False;
+  ActProprietary.Enabled := False;
+  ActProprietary.Checked := False;
+  {$endif}
+
   CurrentVisLoading := TVisLoading.Create(Nil);
   with CurrentVisLoading do
   try
@@ -4588,8 +4593,7 @@ end;
 
 procedure TVisWaptGUI.SetIsEnterpriseEdition(AValue: Boolean);
 begin
-  if dmpython.IsEnterpriseEdition<>AValue then
-    dmpython.IsEnterpriseEdition:=AValue;
+  dmpython.IsEnterpriseEdition:=AValue;
   Label20.Visible:=IsEnterpriseEdition;
   PanOrgUnits.Visible:=IsEnterpriseEdition;
   cbADSite.Visible:=IsEnterpriseEdition;

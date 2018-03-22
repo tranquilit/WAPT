@@ -566,9 +566,9 @@ end;
 procedure TDMPython.SetIsEnterpriseEdition(AValue: Boolean);
 begin
   {$ifdef ENTERPRISE}
-  if FIsEnterpriseEdition=AValue then Exit;
-  if not AValue or ValidLicence then
-    FIsEnterpriseEdition:=AValue;
+  if AValue and not ValidLicence then
+    Exit;
+  FIsEnterpriseEdition:=AValue;
   {$else}
   FIsEnterpriseEdition := False;
   {$endif}
@@ -775,7 +775,7 @@ end;
 function TDMPython.GetIsEnterpriseEdition: Boolean;
 begin
   {$ifdef ENTERPRISE}
-  Result := FIsEnterpriseEdition;
+  Result := ValidLicence and FIsEnterpriseEdition;
   {$else}
   Result := False;
   {$endif}
