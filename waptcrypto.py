@@ -336,7 +336,7 @@ class SSLCABundle(BaseObjectClass):
     def certificate(self,fingerprint):
         """Returns the certificate matching the supplied sha256 fingerprint
 
-        Args;
+        Args:
             fingerprint (str): hex encoded sha256 certificate fingerprint to lookup
 
         Returns:
@@ -712,7 +712,7 @@ class SSLCABundle(BaseObjectClass):
     def save_as_pem(self,filename,with_keys=True,password=None):
         """Save the RSA  private key as a PEM encoded file
 
-        Optionnaly, encypt the key with a password.
+        Optionnally, encrypt the key with a password.
 
         Args:
             filename (str) : filename of pem file to create. If not provided
@@ -1544,6 +1544,16 @@ class SSLCertificate(BaseObjectClass):
 
         Returns:
             dict
+
+        >>> c = SSLCertificate('c:/private/htouvet-tis-wapt.crt')
+        >>> c.issuer
+        {'commonName': u'TRANQUIL IT SYSTEMS',
+         'countryName': u'FR',
+         'localityName': u'SAINT SEBASTIEN SUR LOIRE',
+         'organizationName': u'TRANQUIL IT SYSTEMS',
+         'postalCode': u'44230',
+         'stateOrProvinceName': u'Loire Atlantique',
+         'streetAddress': u'12 avenue Jules Verne'}
         """
         data = self.crt.issuer
         result = {}
@@ -1573,7 +1583,15 @@ class SSLCertificate(BaseObjectClass):
 
     @property
     def authority_key_identifier(self):
-        """Identify the authority which has signed the certificate"""
+        """Identify the authority which has signed the certificate
+
+        Returns:
+            bytes
+
+        >>> c = SSLCertificate('c:/private/htouvet-tis-wapt.crt')
+        >>> c.authority_key_identifier
+        '\xa7Yx!\x0f\xe8\xe5x\x9c\x9br\x7f|\x7f\x90\x04\xea\x10\x19\xe8'
+        """
         keyid = self.extensions.get('authorityKeyIdentifier',None)
         if keyid:
             return keyid.key_identifier
@@ -1582,7 +1600,14 @@ class SSLCertificate(BaseObjectClass):
 
     @property
     def subject_key_identifier(self):
-        """Identify the certificate"""
+        """Identify the certificate by its subject
+
+        Returns:
+            bytes
+
+        >>> c.subject_key_identifier
+        '\xf2\x99\xd7\xfao\n\xf1\x1e\x03?\xd0\xf2\xff6\xfe\xe8\x8cv\xab\x1a'
+        """
         keyid = self.extensions.get('subjectKeyIdentifier',None)
         if keyid:
             return keyid.digest
@@ -1756,10 +1781,10 @@ class SSLCertificate(BaseObjectClass):
         fernet :  128-bit AES in CBC mode and PKCS7 padding, with HMAC using SHA256 for authentication
 
         Args:
-            content (bytes) : data to encrypt
+            content (bytes): data to encrypt
 
         Returns:
-            crypted_data (bytes) : starts with 'RSAFERNET', then rsa key length (base10) on 3 chars
+            crypted_data (bytes): starts with 'RSAFERNET', then rsa key length (base10) on 3 chars
                                    then rsa encrypted fernet key, then fernet encrypted data
         """
         symkey = Fernet.generate_key()
@@ -1773,6 +1798,7 @@ class SSLCertificate(BaseObjectClass):
 
         Returns:
             dict
+
         """
         return dict([(e.oid._name,e.value) for e in self.crt.extensions])
 
@@ -2069,12 +2095,23 @@ class SSLCRL(BaseObjectClass):
 
         Returns:
             dict
-        """
+
+        >>> c = SSLCertificate('c:/private/htouvet.crt')
+        >>> c.extensions
+        {'basicConstraints': <BasicConstraints(ca=True, path_length=None)>,
+         'extendedKeyUsage': <ExtendedKeyUsage([<ObjectIdentifier(oid=1.3.6.1.5.5.7.3.3, name=codeSigning)>])>,
+         'keyUsage': <KeyUsage(digital_signature=True, content_commitment=True, key_encipherment=False, data_encipherment=True, key_agreement=False, key_cert_sign=True, crl_sign=True, encipher_only=None, decipher_only=None)>,
+         'subjectKeyIdentifier': <SubjectKeyIdentifier(digest='\x83h\x93\x1f%\xc8:\xb5E\xf5\x07b\xb6\x92m\x87Y\x96~\x03')>}
+            """
         return dict([(e.oid._name,e.value) for e in self.crl.extensions])
 
     @property
     def authority_key_identifier(self):
-        """Identify the authrority which has signed the certificate"""
+        """Identify the authority which has signed the CRL
+
+        Returns:
+            bytes
+        """
         keyid = self.extensions.get('authorityKeyIdentifier',None)
         if keyid:
             return keyid.key_identifier
@@ -2083,6 +2120,7 @@ class SSLCRL(BaseObjectClass):
 
     @property
     def last_update(self):
+
         return self.crl.last_update
 
     @property
