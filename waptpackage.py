@@ -1877,7 +1877,7 @@ class WaptBaseRepo(BaseObjectClass):
                 result.append(package)
 
         def sort_no_version(package1,package2):
-            return cmp((package1.package,package1.architecture,package1.locale,package1.maturity),(package2.package,package2.architecture,package2.locale,package2.maturity))
+            return cmp((package1.package,package1.architecture,package1.locale,package1.maturity,Version(package1.version)),(package2.package,package2.architecture,package2.locale,package2.maturity,Version(package2.version)))
 
         if newest_only:
             filtered = []
