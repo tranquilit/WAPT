@@ -40,6 +40,9 @@ type
     PopupMenu1: TPopupMenu;
     procedure ActGetServerCertificateExecute(Sender: TObject);
     procedure CBVerifyCertClick(Sender: TObject);
+    procedure EdServerCertificateAcceptFileName(Sender: TObject;
+      var Value: String);
+    procedure EdServerCertificateExit(Sender: TObject);
     procedure fnPublicCertChange(Sender: TObject);
     procedure fnPublicCertEditingDone(Sender: TObject);
     procedure fnPublicCertExit(Sender: TObject);
@@ -68,6 +71,7 @@ uses
 procedure TVisCreateWaptSetup.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 var
   pingResult: ISuperobject;
+  AbsVerifyCertPath:String;
 begin
   CanClose:= True;
   if (ModalResult=mrOk) then
@@ -82,7 +86,8 @@ begin
       ShowMessageFmt(rsInvalidWaptSetupDir, [fnWaptDirectory.Directory]);
       CanClose:=False;
     end;
-    if (CBVerifyCert.Checked) and (pos(lowercase(WaptBaseDir),lowercase(EdServerCertificate.Text))<>1) then
+    AbsVerifyCertPath := ExpandFileNameUTF8(AppendPathDelim(WaptBaseDir)+EdServerCertificate.Text);
+    if (CBVerifyCert.Checked) and (pos(lowercase(WaptBaseDir),lowercase(AbsVerifyCertPath))<>1) then
     begin
       ShowMessageFmt(rsInvalidServerCertificateDir, [EdServerCertificate.Text]);
       CanClose:=False;
@@ -114,7 +119,6 @@ begin
   NewCertFilename:=UTF8Decode(fnPublicCert.FileName);
   if FileExists(NewCertFilename) and ((ActiveCertBundle <> NewCertFilename) or (GridCertificates.Data = Nil) )  then
   try
-
     edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := NewCertFilename).cn);
     SOCerts := TSuperObject.Create(stArray);
     CABundle:=dmpython.waptcrypto.SSLCABundle(cert_pattern_or_dir := NewCertFilename);
@@ -157,6 +161,19 @@ begin
       EdServerCertificate.Text:=CARoot();
 
   EdServerCertificate.Enabled:=CBVerifyCert.Checked;
+end;
+
+procedure TVisCreateWaptSetup.EdServerCertificateAcceptFileName(
+  Sender: TObject; var Value: String);
+begin
+  if pos(lowercase(WaptBaseDir),lowercase(Value))=1 then
+    Value := ExtractRelativepath(WaptBaseDir,Value);
+end;
+
+procedure TVisCreateWaptSetup.EdServerCertificateExit(Sender: TObject);
+begin
+  if pos(lowercase(WaptBaseDir),lowercase(EdServerCertificate.Text))=1 then
+    EdServerCertificate.Text := ExtractRelativepath(WaptBaseDir,EdServerCertificate.Text);
 end;
 
 procedure TVisCreateWaptSetup.fnPublicCertChange(Sender: TObject);

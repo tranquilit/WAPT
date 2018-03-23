@@ -48,13 +48,18 @@ uses
   var
     port, Data, notify: string;
   begin
-    port := WaptGuessedIniReadString('waptservice_port', '8088');
-    if notify_server then
-      notify:='1'
-    else
-      notify:='0';
-    Data := httpGetString('http://127.0.0.1:' + port + '/update.json?notify_server='+notify+'&notify_user=0');
-    Result := Data;
+    try
+      port := WaptGuessedIniReadString('waptservice_port', '8088');
+      if notify_server then
+        notify:='1'
+      else
+        notify:='0';
+      Data := httpGetString('http://127.0.0.1:' + port + '/update.json?notify_server='+notify+'&notify_user=0');
+      Result := Data;
+
+    except
+      on
+    end;
   end;
 
   function httpGetDate(url: RawByteString): TDateTime;

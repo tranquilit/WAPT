@@ -442,19 +442,21 @@ end;
 
 function GetStartPackages(Param: String):String;
 begin
+    // get suuplied StartPackages from commandline, else take hardcoded in setup 
     result := ExpandConstant('{param:StartPackages|{#set_start_packages}}');
 end;
 
 
 function IsWaptAgent:Boolean;
 begin
-	Result := '{#edition}' = 'waptagent';
+  Result := '{#edition}' = 'waptagent';
 end;
 
 function RelocateCertDirWaptBase(Param: String):String;
 var
   certdir: String;
 begin
+  // get suuplied verify_cert from commandline, else take hardcoded in setup 
   certdir := ExpandConstant('{param:verify_cert|{#set_verify_cert}}');
   if (pos('c:\tranquilit\wapt',lowercase(certdir))=1) then
     result := ExpandConstant('{app}')+'\'+copy(certdir,length('c:\tranquilit\wapt')+1,255)
@@ -464,7 +466,10 @@ begin
     result := ExpandConstant('{app}')+'\'+copy(certdir,length('c:\program files\wapt\')+1,255)
   else if (pos('c:\wapt\',lowercase(certdir))=1) then
     result := ExpandConstant('{app}')+'\'+copy(certdir,length('c:\wapt\')+1,255)
+  else if copy(certdir,2,1) <> ':' then
+    // relative path to wapt base dir
+    result := ExpandFileName(ExpandConstant('{app}')+'\'+certdir)
   else
-    result := certdir;
+    // absolute
+    result := certdir  
 end;
-

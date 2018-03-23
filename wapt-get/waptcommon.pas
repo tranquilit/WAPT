@@ -1772,6 +1772,11 @@ begin
     custom_iss := AppendPathDelim(wapt_base_dir) + 'waptsetup\custom_waptagent.iss';
     iss := SplitLines(FileToString(iss_template));
     new_iss := TSuperObject.Create(stArray);
+
+    // translate to relative path if possible
+    if pos(lowercase(WaptBaseDir),lowercase(VerifyCert))=1 then
+      VerifyCert := ExtractRelativepath(WaptBaseDir,VerifyCert); ;
+
     for line in iss do
     begin
         if startswith(line,'#define default_repo_url') then

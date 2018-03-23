@@ -1678,6 +1678,7 @@ begin
             // create waptupgrade package (after waptagent as we need the updated waptagent.sha1 file)
             ProgressTitle(rsCreationInProgress);
             try
+              BuildRes := Nil;
               buildDir := GetTempDir(False);
               if RightStr(buildDir,1) = '\' then
                 buildDir := copy(buildDir,1,length(buildDir)-1);
@@ -1689,17 +1690,16 @@ begin
                   sign_digests := SignDigests
                   );
 
-              if FileExists(VarToStr(BuildRes.get('localpath'))) then
+              ActPackagesUpdate.Execute;
+              if (BuildRes<>Nil) and FileExistsUTF8(VarPythonAsString(BuildRes.get('localpath'))) then
               begin
                 ProgressTitle(rsWaptUpgradePackageBuilt);
                 DeleteFileUTF8(VarToStr(BuildRes.get('localpath')));
               end;
-
             except
               On E:Exception do
                 ShowMessage(rsWaptUpgradePackageBuildError+#13#10+E.Message);
             end;
-            ActPackagesUpdate.Execute;
             Finish;
             if FileExists(waptsetupPath) then
               try
