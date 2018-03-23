@@ -458,18 +458,23 @@ var
 begin
   // get suuplied verify_cert from commandline, else take hardcoded in setup 
   certdir := ExpandConstant('{param:verify_cert|{#set_verify_cert}}');
-  if (pos('c:\tranquilit\wapt',lowercase(certdir))=1) then
-    result := ExpandConstant('{app}')+'\'+copy(certdir,length('c:\tranquilit\wapt')+1,255)
-  else if (pos('c:\program files (x86)\wapt',lowercase(certdir))=1) then
-    result := ExpandConstant('{app}')+'\'+copy(certdir,length('c:\program files (x86)\wapt')+1,255)
-  else if (pos('c:\program files\wapt\',lowercase(certdir))=1) then
-    result := ExpandConstant('{app}')+'\'+copy(certdir,length('c:\program files\wapt\')+1,255)
-  else if (pos('c:\wapt\',lowercase(certdir))=1) then
-    result := ExpandConstant('{app}')+'\'+copy(certdir,length('c:\wapt\')+1,255)
-  else if copy(certdir,2,1) <> ':' then
-    // relative path to wapt base dir
-    result := ExpandFileName(ExpandConstant('{app}')+'\'+certdir)
+  if (certdir<>'0') and (certdir<>'1') and (lowercase(cerdir)<>'true') and (lowercase(certdir)<>'false') then
+  begin
+      if (pos('c:\tranquilit\wapt',lowercase(certdir))=1) then
+        result := ExpandConstant('{app}')+'\'+copy(certdir,length('c:\tranquilit\wapt')+1,255)
+      else if (pos('c:\program files (x86)\wapt',lowercase(certdir))=1) then
+        result := ExpandConstant('{app}')+'\'+copy(certdir,length('c:\program files (x86)\wapt')+1,255)
+      else if (pos('c:\program files\wapt\',lowercase(certdir))=1) then
+        result := ExpandConstant('{app}')+'\'+copy(certdir,length('c:\program files\wapt\')+1,255)
+      else if (pos('c:\wapt\',lowercase(certdir))=1) then
+        result := ExpandConstant('{app}')+'\'+copy(certdir,length('c:\wapt\')+1,255)
+      else if copy(certdir,2,1) <> ':' then
+        // relative path to wapt base dir
+        result := ExpandFileName(ExpandConstant('{app}')+'\'+certdir)
+      else
+        // absolute
+        result := certdir
   else
-    // absolute
-    result := certdir  
+    result := certdir;
+  
 end;
