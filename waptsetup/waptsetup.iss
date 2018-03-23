@@ -473,7 +473,8 @@ begin
         result := ExpandFileName(ExpandConstant('{app}')+'\'+certdir)
       else
         // absolute
-        result := certdir
+        result := certdir;
+  end
   else
     result := certdir;
   
