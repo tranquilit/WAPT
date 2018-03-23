@@ -851,7 +851,7 @@ class PackageEntry(BaseObjectClass):
         if not (self.package):
             raise Exception(u'Not enough information to build the package directory for %s'%(self.package))
             # includes only non empty fields
-        return u'_'.join([f for f in (self.package,self.architecture,self.maturity,self.locale) if (f and f != 'all')]) + '-wapt'
+        return u'_'.join([f for f in (self.package,self.architecture,self.maturity.replace(',','-'),self.locale.replace(',','-')) if (f and f != 'all')]) + '-wapt'
 
     def asrequirement(self):
         """Return package and version for designing this package in depends or install actions
