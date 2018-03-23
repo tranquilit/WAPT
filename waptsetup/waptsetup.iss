@@ -458,7 +458,7 @@ var
 begin
   // get suuplied verify_cert from commandline, else take hardcoded in setup 
   certdir := ExpandConstant('{param:verify_cert|{#set_verify_cert}}');
-  if (certdir<>'0') and (certdir<>'1') and (lowercase(cerdir)<>'true') and (lowercase(certdir)<>'false') then
+  if (certdir<>'0') and (certdir<>'1') and (lowercase(certdir)<>'true') and (lowercase(certdir)<>'false') then
   begin
       if (pos('c:\tranquilit\wapt',lowercase(certdir))=1) then
         result := ExpandConstant('{app}')+'\'+copy(certdir,length('c:\tranquilit\wapt')+1,255)
