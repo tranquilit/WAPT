@@ -58,7 +58,11 @@ uses
       Result := Data;
 
     except
-      on
+      on E:Exception do
+        begin
+          writeln('Unable to update immediately: '+E.Message);
+          Data := '';
+        end;
     end;
   end;
 
