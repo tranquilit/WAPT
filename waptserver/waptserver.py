@@ -37,7 +37,7 @@ from waptserver_config import __version__
 from eventlet import monkey_patch
 
 # os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
-monkey_patch(os=False)
+monkey_patch(os=False, thread=False, select=True, socket=True, time=True, psycopg=True)
 
 import time
 import json
@@ -65,10 +65,6 @@ import re
 import functools
 
 import pefile
-
-import thread
-import threading
-import Queue
 
 import hashlib
 from passlib.hash import sha512_crypt, bcrypt
