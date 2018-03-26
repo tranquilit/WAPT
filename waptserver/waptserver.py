@@ -766,7 +766,7 @@ def upload_packages():
                              request_time=spenttime)
 
     except Exception as e:
-        return make_response_from_exception(e, status='201')
+        return make_response_from_exception(e, status='500')
 
 
 @app.route('/upload_host',methods=['HEAD','POST'])
