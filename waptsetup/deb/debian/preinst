@@ -1,0 +1,5 @@
+#!/bin/sh
+unlink /var/www/wapt/waptsetup.exe
+unlink /var/www/wapt/waptsetup-tis.exe
+rm -f /var/www/wapt/waptsetup.exe
+rm -f /var/www/wapt/waptsetup-tis.exe 
