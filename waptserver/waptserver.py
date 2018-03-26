@@ -960,7 +960,6 @@ def login():
 
         if user is not None and password is not None:
             if check_auth(user, password):
-                print 'Authenticating'
                 result = dict(
                     server_uuid=get_server_uuid(),
                     version=__version__,
