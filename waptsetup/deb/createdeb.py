@@ -130,6 +130,7 @@ logger.info('Creating .deb')
 shutil.copytree('./debian/', BDIR + 'DEBIAN/')
 os.chmod(BDIR + 'DEBIAN/', 0755)
 os.chmod(BDIR + 'DEBIAN/postinst', 0755)
+os.chmod(BDIR + 'DEBIAN/preinst', 0755)
 
 #########################################
 # update Control version
