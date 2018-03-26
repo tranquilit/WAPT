@@ -405,31 +405,66 @@ var
   Msg: String;
   NbArgs:Integer;
 begin
+  {args :
+    0: ShowHide (bool or None) ,
+    1: Progress(int or None),
+    2: ProgressMax (int or None),
+    3: Message (unicode or None)
+  }
   NbArgs := PythonEng.PyTuple_Size(Args);
-  DoShow := PythonEng.PyObject_IsTrue(PythonEng.PyTuple_GetItem(Args,0)) <> 0;
+
+  if VisLoading = Nil then
+    VisLoading := TVisLoading.Create(Application);
+
+  // Current progress
   if NbArgs>=2 then
-    Progress := PythonEng.PyLong_AsLong(PythonEng.PyTuple_GetItem(Args,1))
+    if PythonEng.PyTuple_GetItem(Args,1) <> PythonEng.Py_None then
+      Progress := PythonEng.PyLong_AsLong(PythonEng.PyTuple_GetItem(Args,1))
+    else
+      Progress := VisLoading.AProgressBar.Position
   else
-    Progress:=0;
+    Progress:=VisLoading.AProgressBar.Position;
+
+  // Max
   if NbArgs>=3 then
-    ProgressMax := PythonEng.PyLong_AsLong(PythonEng.PyTuple_GetItem(Args,2))
+    if PythonEng.PyTuple_GetItem(Args,2) <> PythonEng.Py_None then
+      ProgressMax := PythonEng.PyLong_AsLong(PythonEng.PyTuple_GetItem(Args,2))
+    else
+      ProgressMax :=  VisLoading.AProgressBar.Max
   else
-    ProgressMax := 100;
+    ProgressMax :=  VisLoading.AProgressBar.Max;
 
+  // Message
   if NbArgs>=4 then
-    Msg := PythonEng.PyString_AsDelphiString(PythonEng.PyTuple_GetItem(Args,3))
+    if PythonEng.PyTuple_GetItem(Args,3) <> PythonEng.Py_None then
+      Msg := PythonEng.PyString_AsDelphiString(PythonEng.PyTuple_GetItem(Args,3))
+    else
+      // use current one
+      Msg := VisLoading.AMessage.Caption
   else
-    Msg := '';
+    Msg := VisLoading.AMessage.Caption;
 
-  If DoShow then
-    ShowLoadWait(Msg, Progress,ProgressMax)
+  // show / hide
+  if PythonEng.PyTuple_GetItem(Args,0) <> PythonEng.Py_None then
+  begin
+    DoShow := PythonEng.PyObject_IsTrue(PythonEng.PyTuple_GetItem(Args,0)) <> 0;
+    If DoShow then
+      ShowLoadWait(Msg, Progress,ProgressMax)
+    else
+      HideLoadWait();
+  end
   else
-    HideLoadWait();
+  begin
+    // change only msg and progress bar
+    VisLoading.ProgressTitle(Msg);
+    VisLoading.ProgressStep(Progress,ProgressMax);
+  end;
+
+  // get push on cancel button from user
   if (VisLoading<>Nil)  and (VisLoading.StopRequired) then
     Result := PythonEng.PyBool_FromLong(1)
   else
     Result:=PythonEng.ReturnNone;
-
 end;
 
 function TDMPython.RunJSON(expr: Utf8String; jsonView: TVirtualJSONInspector

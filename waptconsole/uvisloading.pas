@@ -23,6 +23,7 @@ type
     procedure FormCreate(Sender: TObject);
   private
     { private declarations }
+    LastUpdate:TDateTime;
   public
     { public declarations }
     StopRequired : Boolean;
@@ -106,8 +107,12 @@ end;
 procedure TVisLoading.ProgressTitle(Title: String);
 begin
   AMessage.Caption := Title;
-  Application.ProcessMessages;
-  ShowOnTop;
+  if (Now-LastUpdate)*3600*24>=0.5 then
+  begin
+    Application.ProcessMessages;
+    ShowOnTop;
+    LastUpdate:=Now;
+  end;
 end;
 
 procedure TVisLoading.ProgressStep(step, max: integer);
@@ -116,8 +121,12 @@ begin
       StopRequired:=False;
   AProgressBar.Max:=Max;
   AProgressBar.position:=step;
-  ShowOnTop;
-  Application.ProcessMessages;
+  if (Now-LastUpdate)*3600*24>=0.5 then
+  begin
+    ShowOnTop;
+    Application.ProcessMessages;
+    LastUpdate:=Now;
+  end;
 end;
 
 procedure TVisLoading.Start(Max: Integer);
@@ -126,6 +135,7 @@ begin
   AProgressBar.Max:=Max;
   ShowOnTop;
   Application.ProcessMessages;
+  LastUpdate:=Now;
 end;
 
 procedure TVisLoading.Finish;
@@ -133,6 +143,7 @@ begin
   AProgressBar.position:=AProgressBar.Max;
   ShowOnTop;
   Application.ProcessMessages;
+  LastUpdate:=Now;
 end;
 
 procedure TVisLoading.DoProgress(Sender: TObject);
@@ -140,12 +151,17 @@ begin
   if StopRequired and ExceptionOnStop then
     Raise EStopRequest.CreateFmt(rsCanceledByUser,[AMessage.Caption]);
 
-  if AProgressBar.position >= AProgressBar.Max then
-      AProgressBar.position := AProgressBar.Min
-  else
-    AProgressBar.position := AProgressBar.position+1;
-  ShowOnTop;
-  Application.ProcessMessages;
+  // update screen only every half second
+  if (Now-LastUpdate)*3600*24>=0.5 then
+  begin
+    if AProgressBar.position >= AProgressBar.Max then
+        AProgressBar.position := AProgressBar.Min
+    else
+      AProgressBar.position := AProgressBar.position+1;
+    ShowOnTop;
+    Application.ProcessMessages;
+    LastUpdate:=Now;
+  end;
 end;
 
 end.

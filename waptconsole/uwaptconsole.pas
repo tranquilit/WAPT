@@ -1690,17 +1690,18 @@ begin
                   sign_digests := SignDigests
                   );
 
-              ActPackagesUpdate.Execute;
-              if (BuildRes<>Nil) and FileExistsUTF8(VarPythonAsString(BuildRes.get('localpath'))) then
+              if not VarPyth.VarIsNone(BuildRes) and FileExistsUTF8(VarPythonAsString(BuildRes.get('localpath'))) then
               begin
                 ProgressTitle(rsWaptUpgradePackageBuilt);
-                DeleteFileUTF8(VarToStr(BuildRes.get('localpath')));
+                DeleteFileUTF8(VarPythonAsString(BuildRes.get('localpath')));
               end;
+              ActPackagesUpdate.Execute;
             except
               On E:Exception do
-                ShowMessage(rsWaptUpgradePackageBuildError+#13#10+E.Message);
+                Raise Exception.Create(rsWaptUpgradePackageBuildError+#13#10+E.Message);
             end;
             Finish;
+
             if FileExists(waptsetupPath) then
               try
                 Start;

@@ -428,12 +428,6 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
     if sign_key is None:
         sign_key = sign_certs[0].matching_key_in_dirs(private_key_password=key_password)
 
-    hosts_list = ensure_list(hosts_list)
-    host_repo = WaptHostRepo(name='wapt-host',host_id=hosts_list,cabundle = cabundle)
-    host_repo.load_config_from_file(waptconfigfile)
-    total_hosts = len(host_repo.packages)
-    discarded_uuids = [p.package for p in host_repo.discarded]
-
     try:
         import waptconsole
         progress_hook = waptconsole.UpdateProgress
@@ -446,6 +440,15 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
                     msg='Done'
                 print("%s%s"%(msg,' '*(80-len(msg))))
         progress_hook = print_progress
+
+    hosts_list = ensure_list(hosts_list)
+
+    progress_hook(True,0,len(hosts_list),'Loading %s hosts packages' % len(hosts_list))
+
+    host_repo = WaptHostRepo(name='wapt-host',host_id=hosts_list,cabundle = cabundle)
+    host_repo.load_config_from_file(waptconfigfile)
+    total_hosts = len(host_repo.packages)
+    discarded_uuids = [p.package for p in host_repo.discarded]
 
     hosts_list = ensure_list(hosts_list)
     append_depends = ensure_list(append_depends)
