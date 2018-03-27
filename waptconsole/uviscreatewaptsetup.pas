@@ -95,7 +95,7 @@ begin
     // check ssl cert is OK
     if (CBVerifyCert.Checked) then
     try
-      PingResult := SO(IdhttpGetString(edWaptServerUrl.Text+'/ping','',4000,60000,60000,'','','GET','',EdServerCertificate.Text));
+      PingResult := SO(IdhttpGetString(edWaptServerUrl.Text+'/ping','',4000,60000,60000,'','','GET','', AbsVerifyCertPath));
     except
       on E:EIdOpenSSLAPICryptoError do
       begin
