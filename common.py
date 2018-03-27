@@ -2581,6 +2581,8 @@ class Wapt(BaseObjectClass):
 
         if self.config.has_option('global','maturities'):
             self.maturities = ensure_list(self.config.get('global','maturities'),allow_none=True)
+            if not self.maturities:
+                self.maturities=['PROD']
 
         # Get the configuration of all repositories (url, ...)
         self.repositories = []
