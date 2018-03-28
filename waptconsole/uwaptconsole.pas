@@ -2172,7 +2172,7 @@ begin
 
       cbDebugWindow.Checked:= inifile.ReadBool('global','advanced_mode',AdvancedMode);
 
-      lang := inifile.ReadString('global','language','en');
+      lang := inifile.ReadString('global','language',DMPython.Language);
       if lang='en' then
         cbLanguage.ItemIndex:=0
       else if lang='fr' then

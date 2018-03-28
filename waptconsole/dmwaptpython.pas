@@ -132,7 +132,7 @@ var
   DMPython: TDMPython;
 
 implementation
-uses variants, waptcommon, waptcrypto, uvisprivatekeyauth,inifiles,forms,Dialogs,uvisloading,dateutils,tisstrings;
+uses variants, waptcommon, waptcrypto, uvisprivatekeyauth,inifiles,forms,Dialogs,uvisloading,dateutils,tisstrings,gettext;
 {$R *.lfm}
 {$ifdef ENTERPRISE }
 {$R res_enterprise.rc}
@@ -275,7 +275,6 @@ begin
   if FWaptConfigFileName=AValue then
     Exit;
 
-
   FWaptConfigFileName:=AValue;
 
   // reset Variant to force recreate Wapt instance
@@ -292,15 +291,15 @@ begin
     if not FileExists(AValue) then
       CopyFile(Utf8ToAnsi(WaptIniFilename),Utf8ToAnsi(AValue),True);
 
-
     // override lang setting
+    waptcommon.Language := '';
     for i := 1 to Paramcount - 1 do
       if (ParamStrUTF8(i) = '--LANG') or (ParamStrUTF8(i) = '-l') or
         (ParamStrUTF8(i) = '--lang') then
           waptcommon.Language := ParamStrUTF8(i + 1);
 
     // get from ini
-    if Language = '' then
+    if waptcommon.Language = '' then
     begin
       ini := TIniFile.Create(FWaptConfigFileName);
       try
@@ -309,6 +308,10 @@ begin
         ini.Free;
       end;
     end;
+
+    if waptcommon.Language = '' then
+      GetLanguageIDs(waptcommon.LanguageFull, waptcommon.Language);
+    Language:= waptcommon.Language;
   finally
     Screen.Cursor:=crDefault;
   end;
@@ -323,7 +326,6 @@ begin
     GetLocaleFormatSettings($1252, DefaultFormatSettings)
   else
     GetLocaleFormatSettings($409, DefaultFormatSettings);
-
 end;
 
 function TDMPython.CertificateIsCodeSigning(crtfilename: String): Boolean;
