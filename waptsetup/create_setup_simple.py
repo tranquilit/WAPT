@@ -66,7 +66,7 @@ def main():
 
         if options.sign_key_path and options.exe_filenames:
             exes = options.exe_filenames.split(',')
-            for fn in exes:
+            for exe_fn in exes:
                 sign_exe(exe_fn,options.sign_key_path,open(options.sign_key_pwd_path,'rb').read())
 
         cmd = '"%(issc_binary)s" /Dwapt%(waptedition)s %(issfile)s' % {
