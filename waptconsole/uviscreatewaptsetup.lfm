@@ -177,7 +177,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object EdServerCertificate: TFileNameEdit
     Left = 262
     Height = 21
-    Hint = 'E.g. : c:\wapt\ssl\server\tranquilit.crt  Path to trusted certificates bundle'
+    Hint = 'E.g. : c:\wapt\ssl\server\tranquilit.crt  Path to trusted certificates bundle for https connections'
     Top = 323
     Width = 216
     OnAcceptFileName = EdServerCertificateAcceptFileName

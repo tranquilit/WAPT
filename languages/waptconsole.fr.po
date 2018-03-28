@@ -25,6 +25,10 @@ msgstr "Apropos de WAPTConsole"
 msgid "LabInfos"
 msgstr "LabInfos"
 
+#: tvisapropos.lablicencedto.caption
+msgid "Licensedto"
+msgstr ""
+
 #: tvischangekeypassword.caption
 msgid "Change private key password"
 msgstr "Changer le mot de passe de la clef privée"
@@ -281,10 +285,10 @@ msgstr "Par exemple : https://wapt.mondomaine.lan/wapt."
 
 #: tviscreatewaptsetup.edservercertificate.hint
 #, fuzzy
-#| msgid "E.g. : c:\\private\\tranquilit.crt"
+#| msgid "E.g. : c:\\wapt\\ssl\\server\\tranquilit.crt  Path to trusted certificates bundle"
 msgctxt "tviscreatewaptsetup.edservercertificate.hint"
-msgid "E.g. : c:\\wapt\\ssl\\server\\tranquilit.crt  Path to trusted certificates bundle"
-msgstr "Par ex. c:\\private\\tranquilit.crt"
+msgid "E.g. : c:\\wapt\\ssl\\server\\tranquilit.crt  Path to trusted certificates bundle for https connections"
+msgstr "Par ex. c:\\wapt\\ssl\\server\\tranquilit.crt  Chemin vers le bundle de certificats approuvés pour les connections https"
 
 #: tviscreatewaptsetup.edwaptserverurl.hint
 #| msgid "E.g. : http://wapt:8080."
@@ -938,8 +942,8 @@ msgstr "Parcourir les certificats"
 #, fuzzy
 #| msgid "Get Server https Certificate"
 msgctxt "tviswaptconfig.actgetservercertificate.caption"
-msgid "Get Server https Certificate"
-msgstr "Récupération certificat serveur"
+msgid "Get Server https Certitificate"
+msgstr "Récupération du certificat serveur https"
 
 #: tviswaptconfig.actopencertdir.caption
 msgctxt "tviswaptconfig.actopencertdir.caption"
@@ -3419,6 +3423,12 @@ msgstr ""
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
 #| msgid ""
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
 #| "Required server version: %s\n"
 #| "Warning, the version of the server is too old.\n"
 #| "Current server version: %s\n"
