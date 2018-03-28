@@ -86,7 +86,15 @@ begin
       ShowMessageFmt(rsInvalidWaptSetupDir, [fnWaptDirectory.Directory]);
       CanClose:=False;
     end;
-    AbsVerifyCertPath := ExpandFileNameUTF8(AppendPathDelim(WaptBaseDir)+EdServerCertificate.Text);
+
+    if pos(lowercase(WaptBaseDir),lowercase(EdServerCertificate.Text))=1 then
+    begin
+      EdServerCertificate.Text := ExtractRelativepath(WaptBaseDir,EdServerCertificate.Text);
+      AbsVerifyCertPath := ExpandFileNameUTF8(AppendPathDelim(WaptBaseDir)+EdServerCertificate.Text);
+    end
+    else
+      AbsVerifyCertPath := EdServerCertificate.Text;
+
     if (CBVerifyCert.Checked) and (pos(lowercase(WaptBaseDir),lowercase(AbsVerifyCertPath))<>1) then
     begin
       ShowMessageFmt(rsInvalidServerCertificateDir, [EdServerCertificate.Text]);
