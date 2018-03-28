@@ -100,3 +100,4 @@ openssl.exe
 /waptguihelper.pyd
 /python.exe
 /licences/*.lic
+/templates/waptexit-logo.png

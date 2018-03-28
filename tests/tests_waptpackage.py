@@ -1001,7 +1001,13 @@ def test_licencing():
     #ca_cert = SSLCertificate('c:/private/htouvet.crt')
     c = SSLCertificate('c:/private/licencing.pem')
     k = SSLPrivateKey('c:/private/licencing.pem')
-    l = licencing.WaptLicence(licence_nr=str(uuid.uuid4()),product='WAPT Enterprise',count=1000,licenced_to='Tranquil Test bench2',features=['full'])
+    l = licencing.WaptLicence(licence_nr=str(uuid.uuid4()),
+        product='WAPT Enterprise',
+        count=300,
+        licenced_to=u'Arrk Europe Shapers',
+        contact_email=u'thierry.lermite@arrkeurope.com',
+        features=['full'],
+        )
     lic = l.sign(c,k)
     print jsondump(lic)
     print l.check_licence(c.as_pem())
@@ -1029,7 +1035,7 @@ def gen_perso(cn,email,**kwargs):
 
 
 if __name__ == '__main__':
-    gen_perso('htouvet',email='htouvet@tranquil.it')
+    #gen_perso('htouvet',email='htouvet@tranquil.it')
     test_licencing()
     sys.exit(0)
 
