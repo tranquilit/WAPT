@@ -19,8 +19,10 @@ type
     BitBtn2: TBitBtn;
     CBCheckCertificatesValidity: TCheckBox;
     CBDualSign: TCheckBox;
+    CBForceWaptServerURL: TCheckBox;
     CBVerifyCert: TCheckBox;
     CBUseKerberos: TCheckBox;
+    CBForceRepoURL: TCheckBox;
     EdServerCertificate: TFileNameEdit;
     edWaptServerUrl: TEdit;
     fnWaptDirectory: TDirectoryEdit;

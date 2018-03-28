@@ -1663,7 +1663,9 @@ begin
                 EdServerCertificate.Text,
                 CBUseKerberos.Checked,
                 CBCheckCertificatesValidity.Checked,
-                IsEnterpriseEdition
+                IsEnterpriseEdition,
+                CBForceRepoURL.Checked,
+                CBForceWaptServerURL.Checked
                 );
 
             except

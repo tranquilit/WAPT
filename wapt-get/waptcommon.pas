@@ -97,7 +97,8 @@ interface
 
   function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8String='';
             default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;WaptEdition:Utf8String='waptagent';
-            VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True; EnterpriseEdition:Boolean=False):Utf8String;
+            VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True;
+            EnterpriseEdition:Boolean=False; OverwriteRepoURL:Boolean=True;OverwriteWaptServerURL:Boolean=True):Utf8String;
 
   function pyformat(template:String;params:ISuperobject):String;
   function pyformat(template:Utf8String;params:ISuperobject):Utf8String; overload;
@@ -1751,9 +1752,12 @@ begin
 end;
 
 
-function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8String='';
-          default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;WaptEdition:Utf8String='waptagent';
-          VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True; EnterpriseEdition:Boolean=False):Utf8String;
+function CreateWaptSetup(default_public_cert: Utf8String;
+  default_repo_url: Utf8String; default_wapt_server: Utf8String;
+  destination: Utf8String; company: Utf8String; OnProgress: TNotifyEvent;
+  WaptEdition: Utf8String; VerifyCert: Utf8String; UseKerberos: Boolean;
+  CheckCertificatesValidity: Boolean; EnterpriseEdition: Boolean;
+  OverwriteRepoURL: Boolean; OverwriteWaptServerURL: Boolean): Utf8String;
 var
   iss_template,custom_iss : utf8String;
   iss,new_iss,line : ISuperObject;
@@ -1783,9 +1787,9 @@ begin
             new_iss.AsArray.Add(format('#define default_repo_url "%s"',[default_repo_url]))
         else if startswith(line,'#define default_wapt_server') then
             new_iss.AsArray.Add(format('#define default_wapt_server "%s"',[default_wapt_server]))
-        else if startswith(line,'#define repo_url') then
+        else if startswith(line,'#define repo_url') and OverwriteRepoURL then
             new_iss.AsArray.Add(format('#define repo_url "%s"',[default_repo_url]))
-        else if startswith(line,'#define wapt_server') then
+        else if startswith(line,'#define wapt_server') and OverwriteWaptServerURL then
             new_iss.AsArray.Add(format('#define wapt_server "%s"',[default_wapt_server]))
         else if startswith(line,'#define output_dir') then
             new_iss.AsArray.Add(format('#define output_dir "%s"' ,[destination]))
@@ -1989,7 +1993,7 @@ begin
   //WaptServerPassword := password;
 end;
 
-Function ISO8601ToDateTime(Value: String):TDateTime;
+function ISO8601ToDateTime(Value: String): TDateTime;
 var
     FormatSettings: TFormatSettings;
 begin
