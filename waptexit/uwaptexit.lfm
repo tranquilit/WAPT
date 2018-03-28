@@ -18,52 +18,54 @@ object VisWaptExit: TVisWaptExit
   LCLVersion = '1.3'
   object panHaut: TPanel
     Left = 0
-    Height = 162
+    Height = 172
     Top = 0
     Width = 405
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 162
+    ClientHeight = 172
     ClientWidth = 405
     Constraints.MinWidth = 395
     TabOrder = 0
     object CustomLogo: TImage
-      Left = 0
+      Left = 5
       Height = 90
-      Top = 0
+      Top = 5
       Width = 88
       AntialiasingMode = amOn
       Align = alLeft
       AutoSize = True
+      BorderSpacing.Around = 5
+      Center = True
       Proportional = True
     end
     object PanOut: TPanel
-      Left = 88
-      Height = 90
+      Left = 98
+      Height = 100
       Top = 0
-      Width = 317
+      Width = 307
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 90
-      ClientWidth = 317
+      ClientHeight = 100
+      ClientWidth = 307
       TabOrder = 0
       object panTop: TPanel
         Left = 0
         Height = 36
         Top = 0
-        Width = 317
+        Width = 307
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
         ClientHeight = 36
-        ClientWidth = 317
+        ClientWidth = 307
         TabOrder = 0
         object LabDontShutdown: TLabel
           Left = 3
           Height = 30
           Top = 3
-          Width = 311
+          Width = 301
           Align = alClient
           BorderSpacing.Around = 3
           Caption = 'Upgrades in progress...'#13#10'Don''t shutdown your computer !'
@@ -76,7 +78,7 @@ object VisWaptExit: TVisWaptExit
           Left = 3
           Height = 26
           Top = 5
-          Width = 311
+          Width = 301
           Align = alClient
           BorderSpacing.Top = 2
           BorderSpacing.Bottom = 2
@@ -89,7 +91,7 @@ object VisWaptExit: TVisWaptExit
         Left = 3
         Height = 32
         Top = 39
-        Width = 311
+        Width = 301
         Align = alTop
         AutoSize = True
         BorderSpacing.Around = 3
@@ -103,10 +105,10 @@ object VisWaptExit: TVisWaptExit
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 2
         ClientHeight = 32
-        ClientWidth = 311
+        ClientWidth = 301
         TabOrder = 1
         object ButUpgradeNow: TBitBtn
-          Left = 17
+          Left = 14
           Height = 26
           Top = 3
           Width = 174
@@ -151,7 +153,7 @@ object VisWaptExit: TVisWaptExit
           TabOrder = 0
         end
         object ButNotNow: TBitBtn
-          Left = 208
+          Left = 202
           Height = 26
           Top = 3
           Width = 86
@@ -200,7 +202,7 @@ object VisWaptExit: TVisWaptExit
     object PanProgress: TPanel
       Left = 0
       Height = 72
-      Top = 90
+      Top = 100
       Width = 405
       Align = alBottom
       AutoSize = True
@@ -244,20 +246,20 @@ object VisWaptExit: TVisWaptExit
   end
   object panBas: TPanel
     Left = 0
-    Height = 225
-    Top = 162
+    Height = 218
+    Top = 172
     Width = 405
     Align = alClient
     AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 225
+    ClientHeight = 218
     ClientWidth = 405
     Constraints.MinHeight = 218
     TabOrder = 1
     Visible = False
     object MemoLog: TListBox
       Left = 202
-      Height = 219
+      Height = 212
       Top = 3
       Width = 200
       Align = alClient
@@ -267,7 +269,7 @@ object VisWaptExit: TVisWaptExit
     end
     object GridPending: TSOGrid
       Left = 3
-      Height = 217
+      Height = 210
       Top = 5
       Width = 196
       ShowAdvancedColumnsCustomize = False
