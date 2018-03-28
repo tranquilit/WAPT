@@ -309,6 +309,7 @@ def index():
     agent_status = setup_status = deploy_status = db_status = 'N/A'
     agent_style = setup_style = deploy_style = disk_space_style = 'style="color: red;"'
 
+
     setup_present, setup_version = get_wapt_exe_version(waptsetup)
     if setup_present:
         setup_style = ''
@@ -352,12 +353,23 @@ def index():
     except Exception as e:
         disk_space_str = 'error, %s' % str(e)
 
+
+    if os.path.isfile(waptsetup):
+        waptsetup_tis_url = 'waptsetup-tis.exe'
+    else:
+        waptsetup_tis_url = 'https://wapt.tranquil.it/wapt/releases/%s/waptsetup.exe' %  __version__
+
+    if os.path.isfile(waptdeploy):
+        waptdeploy_url = 'waptdeploy.exe'
+    else:
+        waptdeploy_url = 'https://wapt.tranquil.it/wapt/releases/%s/waptdeploy.exe' %  __version__
+
     data = {
         'wapt': {
             'server': {'status': __version__},
             'agent': {'status': agent_status, 'style': agent_style, 'sha256': agent_sha256},
-            'setup': {'status': setup_status, 'style': setup_style},
-            'deploy': {'status': deploy_status, 'style': deploy_style},
+            'setup': {'status': setup_status, 'style': setup_style, 'url':waptsetup_tis_url},
+            'deploy': {'status': deploy_status, 'style': deploy_style, 'url':waptdeploy_url},
             'db': {'status': db_status},
             'disk_space': {'status': disk_space_str, 'style': disk_space_style},
         }
