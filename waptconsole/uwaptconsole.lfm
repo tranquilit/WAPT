@@ -137,65 +137,79 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'section'
               end            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
                 Position = 10
                 Tag = 10
+                Text = 'Arch'
+                Width = 39
+                PropertyName = 'architecture'
+              end            
+              item
+                Position = 11
+                Tag = 11
+                Text = 'Locale'
+                Width = 43
+                PropertyName = 'locale'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 12
+                Tag = 12
                 Text = 'md5sum'
                 Width = 100
                 PropertyName = 'md5sum'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 11
-                Tag = 11
+                Position = 13
+                Tag = 13
                 Text = 'File name'
                 Width = 100
                 PropertyName = 'filename'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 12
-                Tag = 12
+                Position = 14
+                Tag = 14
                 Text = 'Parameters'
                 Width = 100
                 PropertyName = 'install_params'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 13
-                Tag = 13
+                Position = 15
+                Tag = 15
                 Text = 'Log install'
                 Width = 100
                 PropertyName = 'install_output'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 14
-                Tag = 14
+                Position = 16
+                Tag = 16
                 Text = 'maintainer'
                 Width = 100
                 PropertyName = 'maintainer'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 15
-                Tag = 15
+                Position = 17
+                Tag = 17
                 Text = 'conflicts'
                 Width = 100
                 PropertyName = 'conflicts'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 16
-                Tag = 16
+                Position = 18
+                Tag = 18
                 Text = 'Size after install'
                 Width = 100
                 PropertyName = 'installed_size'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 17
-                Tag = 17
+                Position = 19
+                Tag = 19
                 Text = 'URL of repository'
                 Width = 100
                 PropertyName = 'repo_url'
@@ -203,35 +217,34 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Alignment = taRightJustify
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 18
-                Tag = 18
+                Position = 20
+                Tag = 20
                 Text = 'Size'
                 Width = 100
                 PropertyName = 'size'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 19
-                Tag = 19
+                Position = 21
+                Tag = 21
                 Text = 'Name of repository'
                 Width = 100
                 PropertyName = 'repo'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 20
-                Tag = 20
+                Position = 22
+                Tag = 22
                 Text = 'localpath'
                 Width = 100
                 PropertyName = 'localpath'
               end            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-                Position = 21
-                Tag = 21
-                Text = 'Arch'
-                Width = 23
-                PropertyName = 'architecture'
+                Position = 23
+                Tag = 23
+                Text = 'Maturity'
+                Width = 53
+                PropertyName = 'maturity'
               end>
             Header.DefaultHeight = 18
             Header.Height = 18
