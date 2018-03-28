@@ -44,6 +44,7 @@ def main():
     parser.add_option("-e","--wapt-edition", dest="waptedition", default='community', help="Wapt edition to build (community, enterprise...).  (default: %default)")
     parser.add_option("-k","--sign-key", dest="sign_key_path", help="Sign with this  key.  (default: %default)")
     parser.add_option("-w","--sign-key-pwd-path", dest="sign_key_pwd_path", help="Path to password file. (default: %default)")
+    parser.add_option("-x","--sign-exe-filenames", dest="exe_filenames", help="Additional executables to sign.  (default: %default)")
     (options,args) = parser.parse_args()
 
     if len(args) != 1:
@@ -63,6 +64,11 @@ def main():
 
         iss_file = iss_rootname + ".iss"
 
+        if options.sign_key_path and options.exe_filenames:
+            exes = options.exe_filenames.split(',')
+            for fn in exes:
+                sign_exe(exe_fn,options.sign_key_path,open(options.sign_key_pwd_path,'rb').read())
+
         cmd = '"%(issc_binary)s" /Dwapt%(waptedition)s %(issfile)s' % {
             'issc_binary':options.iscc_binary,
             'issfile':iss_file,
@@ -72,6 +78,7 @@ def main():
         exe_fn = res.splitlines()[-1]
         if options.sign_key_path:
             sign_exe(exe_fn,options.sign_key_path,open(options.sign_key_pwd_path,'rb').read())
+
 
 
 if __name__ == "__main__":
