@@ -261,6 +261,26 @@ msgctxt "tviscreatewaptsetup.cbdualsign.hint"
 msgid "Check that certificate dates are valid and  issuer is a know one."
 msgstr "Vérifier que les dates des certificats sont correctes et que l'émetteur est bien connu"
 
+#: tviscreatewaptsetup.cbforcerepourl.caption
+msgctxt "tviscreatewaptsetup.cbforcerepourl.caption"
+msgid "Overwrite"
+msgstr "Ecraser"
+
+#: tviscreatewaptsetup.cbforcerepourl.hint
+msgctxt "tviscreatewaptsetup.cbforcerepourl.hint"
+msgid "Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini"
+msgstr "Lors de l'installation sur un agent existant, remplacer l'URL au lieu de garder l'URL précédemment configurée."
+
+#: tviscreatewaptsetup.cbforcewaptserverurl.caption
+msgctxt "tviscreatewaptsetup.cbforcewaptserverurl.caption"
+msgid "Overwrite"
+msgstr "Ecraser"
+
+#: tviscreatewaptsetup.cbforcewaptserverurl.hint
+msgctxt "tviscreatewaptsetup.cbforcewaptserverurl.hint"
+msgid "Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini"
+msgstr "Lors de l'installation sur un agent existant, remplacer l'URL au lieu de garder l'URL précédemment configurée."
+
 #: tviscreatewaptsetup.cbusekerberos.caption
 msgid "Use Kerberos for initial registration"
 msgstr "Utiliser Kerberos pour l'enregistrement initial"
@@ -279,9 +299,9 @@ msgid "E.g. : Tranquil IT Systems."
 msgstr "Par exemple : Tranquil IT Systems"
 
 #: tviscreatewaptsetup.edrepourl.hint
-#| msgid "E.g. : http://wapt.tranquilit.local/wapt."
-msgid "E.g. : https://wapt.mydomain.lan/wapt"
-msgstr "Par exemple : https://wapt.mondomaine.lan/wapt."
+#| msgid "E.g. : https://wapt.mydomain.lan/wapt"
+msgid "E.g. : https://wapt.mydomain.lan/wapt If empty, use dnsdomain setting"
+msgstr "Par exemple : https://wapt.mondomaine.lan/wapt. Si vode, utilise le paramètre dnsdomain"
 
 #: tviscreatewaptsetup.edservercertificate.hint
 #, fuzzy
@@ -3422,22 +3442,6 @@ msgstr ""
 
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
-#| msgid ""
-#| "Required server version: %s\n"
-#| "Warning, the version of the server is too old.\n"
-#| "Current server version: %s\n"
-#| "Required server version: %s\n"
-#| "Warning, the version of the server is too old.\n"
-#| "Current server version: %s\n"
-#| "Required server version: %s\n"
-#| "Warning, the version of the server is too old.\n"
-#| "Current server version: %s\n"
-#| "Required server version: %s\n"
-#| "Warning, the version of the server is too old.\n"
-#| "Current server version: %s\n"
-#| "Required server version: %s\n"
-#| "Warning, the version of the server is too old.\n"
-#| "Current server version: %s\n"
 #| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
