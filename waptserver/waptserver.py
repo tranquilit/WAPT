@@ -901,7 +901,15 @@ def reload_config():
 
 
 def get_dns_domain():
-    return socket.getfqdn().lower().split('.',1)[1]
+    try:
+        parts = socket.getfqdn().lower().split('.',1)
+        if len(parts)>1:
+            return parts[1]
+        else:
+            return ''
+    except Exception as e:
+        logger.critical(u'Unable to get DNS domain: %s' % e)
+        return None
 
 def get_wapt_edition():
     return 'enterprise' if os.path.isfile(os.path.join(wapt_root_dir,'waptenterprise','waptserver','__init__.py')) else 'community'
@@ -960,10 +968,14 @@ def login():
 
         if user is not None and password is not None:
             if check_auth(user, password):
+                try:
+                    hosts_count = Hosts.select(fn.count(Hosts.uuid)).tuples().first()[0]
+                except:
+                    hosts_count = None
                 result = dict(
                     server_uuid=get_server_uuid(),
                     version=__version__,
-                    hosts_count = Hosts.select(fn.count(Hosts.uuid)).tuples().first()[0],
+                    hosts_count = hosts_count,
                     server_domain = get_dns_domain(),
                     edition = get_wapt_edition(),
                 )
