@@ -34,10 +34,14 @@
 
 ;#define waptenterprise
 
+#ifndef set_disable_hiberboot
+#define set_disable_hiberboot ""
+#endif
+
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
 ; for fast compile in developent mode
-; #define FastDebug
+;#define FastDebug
 
 #endif
 
@@ -69,6 +73,9 @@ Source: "..\ssl\*"; DestDir: "{app}\ssl"; Tasks: installCertificates; Flags: cre
 #else
 Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs; Check: InstallCertCheck();
 #endif
+
+Source: "{param:CopyPackagesTrustedCA}"; DestDir: "{app}\ssl"; Flags: external; Check: CopyPackagesTrustedCACheck();
+Source: "{param:CopyServersTrustedCA}"; DestDir: "{app}\ssl\server"; Flags: external; Check: CopyServersTrustedCACheck();
 
 [Setup]
 #ifdef waptenterprise
@@ -434,10 +441,13 @@ end;
 
 function Gethiberboot_enabled(param:String):String;
 begin
-  if IsTaskSelected('DisableHiberBoot') then
-     Result := '0'
-  else
-     Result := '1'
+  // get supplied verify_cert from commandline, else take hardcoded in setup 
+  Result := ExpandConstant('{param:DisableHiberBoot|{#set_disable_hiberboot}}');
+  if Result = '' then
+    if IsTaskSelected('DisableHiberBoot') then
+       Result := '0'
+    else
+       Result := '1'
 end;
 
 function GetStartPackages(Param: String):String;
@@ -456,7 +466,7 @@ function RelocateCertDirWaptBase(Param: String):String;
 var
   certdir: String;
 begin
-  // get suuplied verify_cert from commandline, else take hardcoded in setup 
+  // get supplied verify_cert from commandline, else take hardcoded in setup 
   certdir := ExpandConstant('{param:verify_cert|{#set_verify_cert}}');
   if (certdir<>'0') and (certdir<>'1') and (lowercase(certdir)<>'true') and (lowercase(certdir)<>'false') then
   begin
@@ -479,3 +489,22 @@ begin
     result := certdir;
   
 end;
+
+
+function CopyPackagesTrustedCACheck:Boolean;
+var
+  value: String;
+begin
+  value := ExpandConstant('{param:CopyPackagesTrustedCA}')
+  Result := (value <> '') and (value<>'0');     
+end;
+
+function CopyServersTrustedCACheck:Boolean;
+var
+  value: String;
+begin
+  value := ExpandConstant('{param:CopyServersTrustedCA}')
+  Result := (value <> '') and (value<>'0');     
+end;
+
+
