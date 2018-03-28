@@ -40,9 +40,6 @@ type
     PopupMenu1: TPopupMenu;
     procedure ActGetServerCertificateExecute(Sender: TObject);
     procedure CBVerifyCertClick(Sender: TObject);
-    procedure EdServerCertificateAcceptFileName(Sender: TObject;
-      var Value: String);
-    procedure EdServerCertificateExit(Sender: TObject);
     procedure fnPublicCertChange(Sender: TObject);
     procedure fnPublicCertEditingDone(Sender: TObject);
     procedure fnPublicCertExit(Sender: TObject);
@@ -65,7 +62,7 @@ implementation
 
 uses
   Variants,dmwaptpython,IdUri,IdSSLOpenSSLHeaders,uWaptConsoleRes,uWaptRes,UScaleDPI, tiscommon,
-  tisstrings,waptcommon,VarPyth,superobject,PythonEngine;
+  tisstrings,waptcommon,VarPyth,superobject,PythonEngine,tisinifiles;
 
 { TVisCreateWaptSetup }
 procedure TVisCreateWaptSetup.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -93,7 +90,7 @@ begin
       AbsVerifyCertPath := ExpandFileNameUTF8(AppendPathDelim(WaptBaseDir)+EdServerCertificate.Text);
     end
     else
-      AbsVerifyCertPath := EdServerCertificate.Text;
+      AbsVerifyCertPath := ExpandFileNameUTF8(EdServerCertificate.Text);
 
     if (CBVerifyCert.Checked) and (pos(lowercase(WaptBaseDir),lowercase(AbsVerifyCertPath))<>1) then
     begin
@@ -166,22 +163,12 @@ begin
     EdServerCertificate.Text:='0'
   else
     if (EdServerCertificate.Text='') or (EdServerCertificate.Text='0') then
-      EdServerCertificate.Text:=CARoot();
-
+    begin
+      EdServerCertificate.Text := IniReadString(WaptIniFilename,'global','verify_cert','0');
+      if (LowerCase(EdServerCertificate.Text) = '0') or (LowerCase(EdServerCertificate.Text) = 'false') then
+        EdServerCertificate.Text:=CARoot();
+    end;
   EdServerCertificate.Enabled:=CBVerifyCert.Checked;
-end;
-
-procedure TVisCreateWaptSetup.EdServerCertificateAcceptFileName(
-  Sender: TObject; var Value: String);
-begin
-  if pos(lowercase(WaptBaseDir),lowercase(Value))=1 then
-    Value := ExtractRelativepath(WaptBaseDir,Value);
-end;
-
-procedure TVisCreateWaptSetup.EdServerCertificateExit(Sender: TObject);
-begin
-  if pos(lowercase(WaptBaseDir),lowercase(EdServerCertificate.Text))=1 then
-    EdServerCertificate.Text := ExtractRelativepath(WaptBaseDir,EdServerCertificate.Text);
 end;
 
 procedure TVisCreateWaptSetup.fnPublicCertChange(Sender: TObject);
@@ -199,11 +186,12 @@ begin
   With TIdURI.Create(url) do
   try
     try
-      certfn:= AppendPathDelim(WaptBaseDir)+'ssl\server\'+Host+'.crt';
       certchain := dmpython.waptcrypto.get_peer_cert_chain_from_server(url);
-      pem_data := dmpython.waptcrypto.SSLCABundle(certificates:=certchain).as_pem('--noarg--');
-      if not VarIsNull(pem_data) then
+      pem_data := dmpython.waptcrypto.get_cert_chain_as_pem(certificates_chain:=certchain);
+      if not VarIsNone(pem_data) then
       begin
+        cert := certchain.__getitem__(0);
+        certfn:= AppendPathDelim(WaptBaseDir)+'ssl\server\'+cert.cn+'.crt';
         if not DirectoryExists(ExtractFileDir(certfn)) then
           ForceDirectory(ExtractFileDir(certfn));
         StringToFile(certfn,pem_data);

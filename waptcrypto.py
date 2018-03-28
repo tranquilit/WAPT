@@ -787,6 +787,19 @@ def get_pem_server_certificate(url,save_to_file=None):
     else:
         return None
 
+def get_cert_chain_as_pem(certificates_chain):
+    """Build a x509 encoded PEM string from a list of certificates
+
+    Args:
+        certificates_chain (list) : list of SSLCertificates
+    Returns
+        str: x509 pem encoded (utf8)
+    """
+    if certificates_chain is None:
+        return None
+    return (u" \n".join(["# CN: %s\n# Issuer CN: %s\n%s" % (crt.cn,crt.issuer_cn,crt.as_pem()) for crt in certificates_chain])).encode('utf-8')
+
+
 class SSLPrivateKey(BaseObjectClass):
     def __init__(self,filename=None,pem_data=None,callback=None,password = None):
         """Args:

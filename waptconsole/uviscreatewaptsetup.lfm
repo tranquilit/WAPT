@@ -180,7 +180,6 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Hint = 'E.g. : c:\wapt\ssl\server\tranquilit.crt  Path to trusted certificates bundle for https connections'
     Top = 323
     Width = 216
-    OnAcceptFileName = EdServerCertificateAcceptFileName
     Filter = 'CA Certificates bundles PEM|*.crt;*.pem|Tous les fichiers|*.*'
     FilterIndex = 0
     HideDirectories = False
@@ -190,7 +189,6 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     MaxLength = 0
     PopupMenu = PopupMenu1
     TabOrder = 6
-    OnExit = EdServerCertificateExit
   end
   object CBVerifyCert: TCheckBox
     Left = 262
