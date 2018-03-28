@@ -1351,6 +1351,10 @@ msgctxt "tviswaptgui.actimportfromrepo.caption"
 msgid "Import from internet"
 msgstr "Importer depuis internet"
 
+#: tviswaptgui.actinstalllicence.caption
+msgid "Install a licence file"
+msgstr "Installer un fichier de licence"
+
 #: tviswaptgui.actlaunchgpupdate.caption
 msgid "Update AD Group Policies on hosts"
 msgstr "Force la mise à jour des GPO sur les machines"
@@ -1503,6 +1507,14 @@ msgstr "Lancer les installations"
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.HINT"
 msgid "Apply updates"
 msgstr "Lancer les installations"
+
+#: tviswaptgui.acttriggerupdateorgunit.caption
+msgid "Check updates on all hosts of this OU"
+msgstr "Vérifier les mises à jour disponibles pour les machines de cette OU"
+
+#: tviswaptgui.acttriggerupgradesorgunit.caption
+msgid "Apply upgrades on all hosts of this OU"
+msgstr "Installer les mises à jour en attente sur les machines de cette OU"
 
 #: tviswaptgui.acttriggerwakeonlan.caption
 msgid "Power ON with WakeOnLan"
@@ -3442,6 +3454,10 @@ msgstr ""
 
 #: uwaptconsoleres.rswaptserveroldversion
 #, fuzzy
+#| msgid ""
+#| "Required server version: %s\n"
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
 #| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"

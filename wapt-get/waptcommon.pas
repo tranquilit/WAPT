@@ -197,7 +197,7 @@ const
   UseProxyForServer: Boolean = False;
 
   Language:String = '';
-  FallBackLanguage:String = '';
+  LanguageFull:String = '';
 
   DefaultPackagePrefix:String = '';
   DefaultSourcesRoot:String = '';
@@ -606,7 +606,7 @@ begin
 
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
-  http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+  http.Request.AcceptLanguage := Language;
 
   if userAgent='' then
     http.Request.UserAgent := DefaultUserAgent
@@ -702,7 +702,7 @@ begin
 
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
-  http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+  http.Request.AcceptLanguage := Language;
   if userAgent='' then
     http.Request.UserAgent := DefaultUserAgent
   else
@@ -771,7 +771,7 @@ begin
 
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
-  http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+  http.Request.AcceptLanguage := Language;
   if userAgent='' then
     http.Request.UserAgent := DefaultUserAgent
   else
@@ -868,7 +868,7 @@ begin
   if CookieManager<>Nil then
     http.CookieManager := CookieManager;
 
-  http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+  http.Request.AcceptLanguage := Language;
   if userAgent='' then
     http.Request.UserAgent := DefaultUserAgent
   else
@@ -1026,7 +1026,7 @@ begin
   http := TIdHTTP.Create;
   try
     try
-      http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+      http.Request.AcceptLanguage := Language;
       http.Request.UserAgent := DefaultUserAgent;
       http.ConnectTimeout := timeout;
       http.ReadTimeout:=timeout;
@@ -1379,23 +1379,15 @@ begin
 
     waptservice_timeout := ReadInteger('global','waptservice_timeout',2);
 
-    Language := '';
+    GetLanguageIDs(LanguageFull,Language);
     // override lang setting
     for i := 1 to Paramcount - 1 do
       if (ParamStrUtf8(i) = '--LANG') or (ParamStrUtf8(i) = '-l') or
         (ParamStr(i) = '--lang') then
-        begin
           Language := ParamStrUTF8(i + 1);
-          FallBackLanguage := copy(ParamStrUTF8(i + 1),1,2);
-        end;
 
     if Language = '' then
-    begin
-      Language := ReadString('global','language','');       ;
-      FallBackLanguage := copy(Language,1,2);
-      //if FallBackLanguage ='' then
-      //    GetLanguageIDs(Language,FallBackLanguage);
-    end;
+      Language := ReadString('global','language','');
 
     waptserver_port := ReadInteger('global','waptserver_port',80);
     waptserver_sslport := ReadInteger('global','waptserver_sslport',443);
@@ -1686,7 +1678,7 @@ begin
   if length(args)>0 then
     action := format(action,args);
   http := TIdHTTP.Create;
-  http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+  http.Request.AcceptLanguage := Language;
   http.Request.UserAgent := DefaultUserAgent;
   http.HandleRedirects:=True;
 
@@ -2006,7 +1998,7 @@ end;
 initialization
 //  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;
     //Raise Exception.Create('Unable to initialize ActiveX layer');
-   GetLanguageIDs(Language,FallBackLanguage);
+   GetLanguageIDs(LanguageFull,Language);
    waptwua_enabled := FileExists(WaptBaseDir+'\waptwua\waptwua.py');
 
 finalization

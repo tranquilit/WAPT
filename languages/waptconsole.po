@@ -1303,6 +1303,10 @@ msgctxt "tviswaptgui.actimportfromrepo.caption"
 msgid "Import from internet"
 msgstr ""
 
+#: tviswaptgui.actinstalllicence.caption
+msgid "Install a licence file"
+msgstr ""
+
 #: tviswaptgui.actlaunchgpupdate.caption
 msgid "Update AD Group Policies on hosts"
 msgstr ""
@@ -1452,6 +1456,14 @@ msgstr ""
 #: tviswaptgui.acttriggerhostupgrade.hint
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.HINT"
 msgid "Apply updates"
+msgstr ""
+
+#: tviswaptgui.acttriggerupdateorgunit.caption
+msgid "Check updates on all hosts of this OU"
+msgstr ""
+
+#: tviswaptgui.acttriggerupgradesorgunit.caption
+msgid "Apply upgrades on all hosts of this OU"
 msgstr ""
 
 #: tviswaptgui.acttriggerwakeonlan.caption

@@ -297,20 +297,14 @@ begin
     for i := 1 to Paramcount - 1 do
       if (ParamStrUTF8(i) = '--LANG') or (ParamStrUTF8(i) = '-l') or
         (ParamStrUTF8(i) = '--lang') then
-        begin
           waptcommon.Language := ParamStrUTF8(i + 1);
-          waptcommon.FallBackLanguage := copy(waptcommon.Language,1,2);
-          Language:=FallBackLanguage;
-        end;
 
     // get from ini
     if Language = '' then
     begin
       ini := TIniFile.Create(FWaptConfigFileName);
       try
-        waptcommon.Language := ini.ReadString('global','language','');
-        waptcommon.FallBackLanguage := copy(waptcommon.Language,1,2);
-        Language := waptcommon.Language;
+        waptcommon.Language := ini.ReadString('global','language',waptcommon.Language);
       finally
         ini.Free;
       end;
