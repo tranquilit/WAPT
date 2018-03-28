@@ -58,10 +58,10 @@ from setuphelpers import registered_organization,makepath,filecopyto,run
 from setuphelpers import mkdirs,isfile,remove_file,get_file_properties,messagebox
 from setuphelpers import uac_enabled,inifile_readstring,shell_launch
 
-from waptutils import ensure_list,ensure_unicode
+from waptutils import ensure_list,ensure_unicode,Version
 from waptcrypto import check_key_password,SSLCABundle,SSLCertificate,SSLPrivateKey
 from waptcrypto import NOPASSWORD_CALLBACK,sha256_for_file
-from waptpackage import Version,PackageEntry,WaptRemoteRepo
+from waptpackage import PackageEntry,WaptRemoteRepo,PackageVersion
 
 from common import Wapt,WaptServer,WaptHostRepo,logger
 
@@ -207,7 +207,7 @@ def update_external_repo(repourl,search_string,proxy=None,myrepo=None,my_prefix=
             else:
                 my_package_name = package.package
             my_package = myrepo.get(my_package_name)
-            if my_package and Version(my_package.version)<Version(package.version):
+            if my_package and PackageVersion(my_package.version)<PackageVersion(package.version):
                 result.append(package.as_dict())
         return result
     else:

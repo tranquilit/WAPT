@@ -222,6 +222,16 @@ class EWaptConfigurationError(EWaptException):
 class EWaptMissingLocalWaptFile(EWaptException):
     pass
 
+
+def PackageVersion(package_or_versionstr):
+    if isinstance(package_or_versionstr,PackageEntry):
+        package_or_versionstr = package_or_versionstr.version
+    version_build = package_or_versionstr.split('-',1)
+    if len(version_build)>1:
+        return (Version(version_build[0],4),int(version_build[1]))
+    else:
+        return (Version(version_build[0],4),0)
+
 class PackageRequest(BaseObjectClass):
     """Package and version request / condition
 
@@ -1877,7 +1887,7 @@ class WaptBaseRepo(BaseObjectClass):
                 result.append(package)
 
         def sort_no_version(package1,package2):
-            return cmp((package1.package,package1.architecture,package1.locale,package1.maturity,Version(package1.version)),(package2.package,package2.architecture,package2.locale,package2.maturity,Version(package2.version)))
+            return cmp((package1.package,package1.architecture,package1.locale,package1.maturity,PackageVersion(package1.version)),(package2.package,package2.architecture,package2.locale,package2.maturity,PackageVersion(package2.version)))
 
         if newest_only:
             filtered = []
