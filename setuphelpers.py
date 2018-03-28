@@ -2431,9 +2431,15 @@ def win_startup_info():
     with reg_openkey_noredir(HKEY_LOCAL_MACHINE,makepath('Software','Microsoft','Windows','CurrentVersion','Run')) as run_key:
         for (name,value,_type) in reg_enum_values(run_key):
             result['run'].append({'name':name,'command':value})
-    for lnk in glob.glob(makepath(startup(1),'*.lnk')):
-        sc = winshell.shortcut(lnk)
-        result['common_startup'].append({'name':ensure_unicode(lnk),'command':u'"%s" %s' % (ensure_unicode(sc.path),ensure_unicode(sc.arguments))})
+    try:
+        for lnk in glob.glob(makepath(startup(1),'*.lnk')):
+            sc = winshell.shortcut(lnk)
+            result['common_startup'].append({'name':ensure_unicode(lnk),'command':u'"%s" %s' % (ensure_unicode(sc.path),ensure_unicode(sc.arguments))})
+    except Exception as e:
+        # we got a bug report with a windows client failing to get the stratip(1) folder : pywintypes.com_error: (-2147024893) Path does not exist.
+        logger.debug(u'Unable to get common startup folder content: %s'% e)
+        pass
+
     return result
 
 
