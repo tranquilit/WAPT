@@ -109,7 +109,7 @@ from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,
 from waptutils import import_code,import_setup,force_utf8_no_bom,format_bytes,wget,merge_dict,remove_encoding_declaration,list_intersection
 
 from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL,SSLVerifyException
-from waptcrypto import get_peer_cert_chain_from_server,default_pwd_callback,hexdigest_for_data
+from waptcrypto import get_peer_cert_chain_from_server,default_pwd_callback,hexdigest_for_data,get_cert_chain_as_pem
 from waptcrypto import sha256_for_data,EWaptMissingPrivateKey,EWaptMissingCertificate
 
 from waptpackage import EWaptException,EWaptMissingLocalWaptFile,EWaptNotAPackage,EWaptNotSigned
@@ -1320,7 +1320,7 @@ class WaptServer(BaseObjectClass):
         if certs:
             new_cert = certs[0]
             url = urlparse.urlparse(self.server_url)
-            pem_fn = os.path.join(server_ssl_dir,url.hostname+'.crt')
+            pem_fn = os.path.join(server_ssl_dir,new_cert.cn+'.crt')
 
             if new_cert.cn != url.hostname:
                 logger.warning('Warning, certificate CN %s sent by server does not match URL host %s' % (new_cert.cn,url.hostname))
@@ -1341,7 +1341,7 @@ class WaptServer(BaseObjectClass):
                     logger.critical('save_server_certificate : %s'% repr(e))
                     raise
             # write full chain
-            open(pem_fn,'wb').write('\n'.join(cert.as_pem() for cert in certs))
+            open(pem_fn,'wb').write(get_cert_chain_as_pem(certs))
             logger.info('New certificate %s with fingerprint %s saved to %s'%(new_cert,new_cert.fingerprint,pem_fn))
             return pem_fn
         else:
