@@ -23,7 +23,7 @@
 #define set_verify_cert "1"
 
 ; default value for detection server and repo URL using dns 
-#define default_dnsdomain "tranquil.it"
+#define default_dnsdomain ""
 
 ; if not empty, a task will propose to install this package or list of packages (comma separated)
 #define set_start_packages "waptstarter,socle"
@@ -32,6 +32,11 @@
 
 ; for fast compile in developent mode
 ;#define FastDebug
+
+#ifndef set_disable_hiberboot
+#define set_disable_hiberboot ""
+#endif
+
 #endif
 
 #include "waptsetup.iss"

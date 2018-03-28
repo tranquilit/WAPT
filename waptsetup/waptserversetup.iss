@@ -36,6 +36,10 @@
 
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
+#ifndef set_disable_hiberboot
+#define set_disable_hiberboot ""
+#endif
+
 ; for fast compile in developent mode
 ;#define FastDebug
 
