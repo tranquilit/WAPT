@@ -3030,10 +3030,13 @@ def remove_tree(*args, **kwargs):
     Args:
         path (str): path to directory to remove
         ignore_errors (boolean) : default to False. Set it to True to ignore exceptions on children deletion
-        onerror (func) : hook called with (os.path.islink, path, sys.exc_info())
+        onerror (func) : hook called with (func, path, exc)
                          on each delete exception. Should raise if stop is required.
 
-    >>> remove_tree(r'c:\tmp\target')
+    >>> def print_error(func, path, error):
+    >>>     print(u'Error when "%s" for "%s": "%s"' % (func.__name__, path, repr(error[1])))
+    >>>
+    >>> remove_tree(r'c:\tmp\target', onerror=print_error)
 
     .. versionchanged:: 1.5.1.17
         ignore_errors default to False
