@@ -2,7 +2,7 @@ pyad==0.5.20
 pyzmq==16.0.2
 requests-kerberos==0.12.0
 kerberos-sspi==0.2 
-winkerberos==0.7.0
-winshell==0.6
-WinSys-3.x==0.5.2
+winkerberos==0.7.0 
+winshell==0.6 
+winsys-3.x==0.5.2
 WMI==1.4.9
