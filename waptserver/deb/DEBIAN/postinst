@@ -5,6 +5,7 @@ import os
 import shutil
 import sys
 import time
+import apt
 
 
 def run(*args, **kwargs):
