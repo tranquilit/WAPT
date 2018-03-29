@@ -597,6 +597,7 @@ object VisApropos: TVisApropos
     Top = 146
     Width = 316
     Align = alClient
+    AutoSize = True
     BevelOuter = bvNone
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ClientHeight = 148
@@ -606,9 +607,31 @@ object VisApropos: TVisApropos
       Left = 10
       Height = 13
       Top = 10
-      Width = 42
+      Width = 296
+      Align = alTop
       BorderSpacing.Around = 10
       Caption = 'LabInfos'
+      ParentColor = False
+    end
+    object LicenceLog: TMemo
+      Left = 0
+      Height = 115
+      Top = 56
+      Width = 316
+      Align = alClient
+      Constraints.MinHeight = 115
+      ScrollBars = ssAutoBoth
+      TabOrder = 0
+      WordWrap = False
+    end
+    object LabLicencedTo: TLabel
+      Left = 10
+      Height = 13
+      Top = 33
+      Width = 296
+      Align = alTop
+      BorderSpacing.Around = 10
+      Caption = 'Licensedto'
       ParentColor = False
     end
   end

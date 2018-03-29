@@ -66,10 +66,6 @@ import functools
 
 import pefile
 
-import thread
-import threading
-import Queue
-
 import hashlib
 from passlib.hash import sha512_crypt, bcrypt
 from passlib.hash import pbkdf2_sha256
@@ -174,9 +170,6 @@ def get_wapt_exe_version(exe):
             pe.close()
     return (present, version)
 
-@app.before_request
-def _db_connect():
-    wapt_db.connect()
 
 @app.teardown_request
 def _db_close(error):
@@ -312,6 +305,7 @@ def index():
     agent_status = setup_status = deploy_status = db_status = 'N/A'
     agent_style = setup_style = deploy_style = disk_space_style = 'style="color: red;"'
 
+
     setup_present, setup_version = get_wapt_exe_version(waptsetup)
     if setup_present:
         setup_style = ''
@@ -355,12 +349,23 @@ def index():
     except Exception as e:
         disk_space_str = 'error, %s' % str(e)
 
+
+    if os.path.isfile(waptsetup):
+        waptsetup_tis_url = 'wapt/waptsetup-tis.exe'
+    else:
+        waptsetup_tis_url = 'https://wapt.tranquil.it/wapt/releases/%s/waptsetup.exe' %  __version__
+
+    if os.path.isfile(waptdeploy):
+        waptdeploy_url = 'wapt/waptdeploy.exe'
+    else:
+        waptdeploy_url = 'https://wapt.tranquil.it/wapt/releases/%s/waptdeploy.exe' %  __version__
+
     data = {
         'wapt': {
             'server': {'status': __version__},
             'agent': {'status': agent_status, 'style': agent_style, 'sha256': agent_sha256},
-            'setup': {'status': setup_status, 'style': setup_style},
-            'deploy': {'status': deploy_status, 'style': deploy_style},
+            'setup': {'status': setup_status, 'style': setup_style, 'url':waptsetup_tis_url},
+            'deploy': {'status': deploy_status, 'style': deploy_style, 'url':waptdeploy_url},
             'db': {'status': db_status},
             'disk_space': {'status': disk_space_str, 'style': disk_space_style},
         }
@@ -769,7 +774,7 @@ def upload_packages():
                              request_time=spenttime)
 
     except Exception as e:
-        return make_response_from_exception(e, status='201')
+        return make_response_from_exception(e, status='500')
 
 
 @app.route('/upload_host',methods=['HEAD','POST'])
@@ -903,6 +908,20 @@ def reload_config():
         logger.critical('Unable to reload server config : %s' % repr(e))
 
 
+def get_dns_domain():
+    try:
+        parts = socket.getfqdn().lower().split('.',1)
+        if len(parts)>1:
+            return parts[1]
+        else:
+            return ''
+    except Exception as e:
+        logger.critical(u'Unable to get DNS domain: %s' % e)
+        return None
+
+def get_wapt_edition():
+    return 'enterprise' if os.path.isfile(os.path.join(wapt_root_dir,'waptenterprise','waptserver','__init__.py')) else 'community'
+
 @app.route('/api/v3/change_password',methods=['HEAD','POST'])
 @requires_auth
 def change_password():
@@ -933,10 +952,11 @@ def change_password():
 
 
 
-@app.route('/api/v3/login',methods=['HEAD','POST'])
+@app.route('/api/v3/login',methods=['HEAD','POST','GET'])
 def login():
     error = ''
     result = None
+    starttime = time.time()
     try:
         # TODO use session...
         post_data = request.get_json()
@@ -946,8 +966,8 @@ def login():
             password = post_data['password']
         else:
             # html form auth
-            user = request.form['user']
-            password = request.form['password']
+            user = request.args['user']
+            password = request.args['password']
 
         # TODO : sanity check on username
         if not re.match('[a-z0-9]+[a-z0-9-_]+[a-z0-9]+$', user, re.IGNORECASE):
@@ -956,13 +976,21 @@ def login():
 
         if user is not None and password is not None:
             if check_auth(user, password):
+                try:
+                    hosts_count = Hosts.select(fn.count(Hosts.uuid)).tuples().first()[0]
+                except:
+                    hosts_count = None
                 result = dict(
                     server_uuid=get_server_uuid(),
                     version=__version__,
+                    hosts_count = hosts_count,
+                    server_domain = get_dns_domain(),
+                    edition = get_wapt_edition(),
                 )
                 session['user'] = user
                 msg = 'Authentication OK'
-                return make_response(result=result, msg=msg, status=200)
+                spenttime = time.time() - starttime
+                return make_response(result=result, msg=msg, status=200,request_time=spenttime)
             else:
                 raise EWaptAuthenticationFailure('Authentication failed.')
         else:

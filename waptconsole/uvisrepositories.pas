@@ -191,15 +191,17 @@ end;
 procedure TVisRepositories.ActGetServerCertificateExecute(Sender: TObject);
 var
   certfn: String;
-  pem_data:Variant;
+  cert,certchain,pem_data:Variant;
   RepoURI:TURI;
 begin
   RepoURI := ParseURI(WaptRepo.RepoURL);
-  certfn:= AppendPathDelim(GetAppUserFolder)+'ssl\server\'+RepoURI.Host+'.crt';
   try
-    pem_data := dmpython.waptcrypto.SSLCABundle(certificates := dmpython.waptcrypto.get_peer_cert_chain_from_server(url := WaptRepo.RepoURL)).as_pem('--noarg--');
-    if not VarIsNull(pem_data) then
+    certchain := dmpython.waptcrypto.get_peer_cert_chain_from_server(url := WaptRepo.RepoURL);
+    pem_data := dmpython.waptcrypto.get_cert_chain_as_pem(certificates_chain:=certchain);
+    if not VarIsNone(pem_data) then
     begin
+      cert := certchain.__getitem__(0);
+      certfn:= AppendPathDelim(GetAppUserFolder)+'ssl\server\'+cert.cn+'.crt';
       if not DirectoryExists(ExtractFileDir(certfn)) then
         ForceDirectory(ExtractFileDir(certfn));
       StringToFile(certfn,pem_data);

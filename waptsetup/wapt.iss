@@ -34,7 +34,13 @@ Source: "..\keyfinder.py"; DestDir: "{app}";
 Source: "..\setuphelpers.py"; DestDir: "{app}"; 
 Source: "..\windnsquery.py"; DestDir: "{app}"; 
 Source: "..\custom_zip.py"; DestDir: "{app}"; 
+#ifdef waptenterprise
+Source: "..\waptenterprise\COPYING.txt"; DestDir: "{app}";
+Source: "..\waptenterprise\COPYING.txt"; DestDir: "{app}\waptenterprise";
+Source: "..\wapt-enterprise.ico"; DestDir: "{app}";
+#else
 Source: "..\COPYING.txt"; DestDir: "{app}";
+#endif
 Source: "..\version"; DestDir: "{app}";
 Source: "..\revision.txt"; DestDir: "{app}";
 Source: "..\templates\*"; DestDir: "{app}\templates"; Flags: createallsubdirs recursesubdirs
@@ -61,6 +67,7 @@ Source: "..\waptservice\plugins\*"; DestDir: "{app}\waptservice\plugins"; Flags:
 Source: "..\waptenterprise\waptservice\*"; DestDir: "{app}\waptenterprise\waptservice\";  Flags: createallsubdirs recursesubdirs;
 Source: "..\waptenterprise\waptconsole\*"; DestDir: "{app}\waptenterprise\waptconsole\";  Flags: createallsubdirs recursesubdirs;
 Source: "..\waptenterprise\__init__.py"; DestDir: "{app}\waptenterprise\";
+Source: "..\waptenterprise\licencing.py"; DestDir: "{app}\waptenterprise\";
 #endif
 
 
@@ -115,7 +122,9 @@ Name: "{app}\ssl\server"
 Name: "{app}"; Permissions: everyone-readexec authusers-readexec admins-full   
 Name: "{app}\private"
 Name: "{app}\Scripts"
-
+#ifdef waptenterprise
+Name: "{app}\licences"
+#endif
 
 [Setup]
 AppName={#AppName}
@@ -123,7 +132,6 @@ AppName={#AppName}
 AppId={#AppId}
 #endif
 AppVersion={#AppVerStr}
-AppVerName={#AppName} {#AppVerStr}
 UninstallDisplayName={#AppName} {#AppVerStr}
 VersionInfoVersion={#FileVerStr}
 VersionInfoTextVersion={#AppVerStr}
@@ -142,9 +150,18 @@ CloseApplications=Yes
 RestartApplications=No
 PrivilegesRequired=admin
 MinVersion=0,5.0sp4
+
+#ifdef waptenterprise
+LicenseFile=..\waptenterprise\COPYING.txt
+SetupIconFile=..\wapt-enterprise.ico
+AppVerName={#AppName} Enterprise {#AppVerStr}
+#else
 LicenseFile=..\COPYING.txt
-RestartIfNeededByRun=False
 SetupIconFile=..\wapt.ico
+AppVerName={#AppName} {#AppVerStr}
+#endif
+RestartIfNeededByRun=False
+
 
 #ifdef signtool
 SignTool={#signtool}

@@ -97,7 +97,8 @@ interface
 
   function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8String='';
             default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;WaptEdition:Utf8String='waptagent';
-            VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True; EnterpriseEdition:Boolean=False):Utf8String;
+            VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True;
+            EnterpriseEdition:Boolean=False; OverwriteRepoURL:Boolean=True;OverwriteWaptServerURL:Boolean=True):Utf8String;
 
   function pyformat(template:String;params:ISuperobject):String;
   function pyformat(template:Utf8String;params:ISuperobject):Utf8String; overload;
@@ -131,6 +132,7 @@ procedure WaptIniWriteBool(const user,item: string; Value: Boolean);
 procedure WaptIniWriteInteger(const user,item: string; Value: Integer);
 procedure WaptIniWriteString(const user,item, Value: string);
 
+Function ISO8601ToDateTime(Value: String):TDateTime;
 
 type
 
@@ -172,6 +174,7 @@ type
     property TimeOut:Integer read FTimeOut write SetTimeOut;
   end;
 
+
 const
   waptwua_enabled : boolean = False;
 
@@ -184,6 +187,7 @@ const
   WaptServerUser: AnsiString ='admin';
   WaptServerPassword: Ansistring ='';
   WaptServerUUID: AnsiString ='';
+  WaptServerEdition: AnsiString ='';
 
   // active session until user or password is changed
   WaptServerSession: TIdCookieManager = Nil;
@@ -193,7 +197,7 @@ const
   UseProxyForServer: Boolean = False;
 
   Language:String = '';
-  FallBackLanguage:String = '';
+  LanguageFull:String = '';
 
   DefaultPackagePrefix:String = '';
   DefaultSourcesRoot:String = '';
@@ -602,7 +606,7 @@ begin
 
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
-  http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+  http.Request.AcceptLanguage := Language;
 
   if userAgent='' then
     http.Request.UserAgent := DefaultUserAgent
@@ -698,7 +702,7 @@ begin
 
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
-  http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+  http.Request.AcceptLanguage := Language;
   if userAgent='' then
     http.Request.UserAgent := DefaultUserAgent
   else
@@ -767,7 +771,7 @@ begin
 
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
-  http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+  http.Request.AcceptLanguage := Language;
   if userAgent='' then
     http.Request.UserAgent := DefaultUserAgent
   else
@@ -864,7 +868,7 @@ begin
   if CookieManager<>Nil then
     http.CookieManager := CookieManager;
 
-  http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+  http.Request.AcceptLanguage := Language;
   if userAgent='' then
     http.Request.UserAgent := DefaultUserAgent
   else
@@ -1022,7 +1026,7 @@ begin
   http := TIdHTTP.Create;
   try
     try
-      http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+      http.Request.AcceptLanguage := Language;
       http.Request.UserAgent := DefaultUserAgent;
       http.ConnectTimeout := timeout;
       http.ReadTimeout:=timeout;
@@ -1375,23 +1379,15 @@ begin
 
     waptservice_timeout := ReadInteger('global','waptservice_timeout',2);
 
-    Language := '';
+    GetLanguageIDs(LanguageFull,Language);
     // override lang setting
     for i := 1 to Paramcount - 1 do
       if (ParamStrUtf8(i) = '--LANG') or (ParamStrUtf8(i) = '-l') or
         (ParamStr(i) = '--lang') then
-        begin
           Language := ParamStrUTF8(i + 1);
-          FallBackLanguage := copy(ParamStrUTF8(i + 1),1,2);
-        end;
 
     if Language = '' then
-    begin
-      Language := ReadString('global','language','');       ;
-      FallBackLanguage := copy(Language,1,2);
-      //if FallBackLanguage ='' then
-      //    GetLanguageIDs(Language,FallBackLanguage);
-    end;
+      Language := ReadString('global','language','');
 
     waptserver_port := ReadInteger('global','waptserver_port',80);
     waptserver_sslport := ReadInteger('global','waptserver_sslport',443);
@@ -1682,7 +1678,7 @@ begin
   if length(args)>0 then
     action := format(action,args);
   http := TIdHTTP.Create;
-  http.Request.AcceptLanguage := StrReplaceChar(Language,'_','-')+','+ FallBackLanguage;
+  http.Request.AcceptLanguage := Language;
   http.Request.UserAgent := DefaultUserAgent;
   http.HandleRedirects:=True;
 
@@ -1748,9 +1744,12 @@ begin
 end;
 
 
-function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8String='';
-          default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;WaptEdition:Utf8String='waptagent';
-          VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True; EnterpriseEdition:Boolean=False):Utf8String;
+function CreateWaptSetup(default_public_cert: Utf8String;
+  default_repo_url: Utf8String; default_wapt_server: Utf8String;
+  destination: Utf8String; company: Utf8String; OnProgress: TNotifyEvent;
+  WaptEdition: Utf8String; VerifyCert: Utf8String; UseKerberos: Boolean;
+  CheckCertificatesValidity: Boolean; EnterpriseEdition: Boolean;
+  OverwriteRepoURL: Boolean; OverwriteWaptServerURL: Boolean): Utf8String;
 var
   iss_template,custom_iss : utf8String;
   iss,new_iss,line : ISuperObject;
@@ -1769,15 +1768,20 @@ begin
     custom_iss := AppendPathDelim(wapt_base_dir) + 'waptsetup\custom_waptagent.iss';
     iss := SplitLines(FileToString(iss_template));
     new_iss := TSuperObject.Create(stArray);
+
+    // translate to relative path if possible
+    if pos(lowercase(WaptBaseDir),lowercase(VerifyCert))=1 then
+      VerifyCert := ExtractRelativepath(WaptBaseDir,VerifyCert); ;
+
     for line in iss do
     begin
         if startswith(line,'#define default_repo_url') then
             new_iss.AsArray.Add(format('#define default_repo_url "%s"',[default_repo_url]))
         else if startswith(line,'#define default_wapt_server') then
             new_iss.AsArray.Add(format('#define default_wapt_server "%s"',[default_wapt_server]))
-        else if startswith(line,'#define repo_url') then
+        else if startswith(line,'#define repo_url') and OverwriteRepoURL then
             new_iss.AsArray.Add(format('#define repo_url "%s"',[default_repo_url]))
-        else if startswith(line,'#define wapt_server') then
+        else if startswith(line,'#define wapt_server') and OverwriteWaptServerURL then
             new_iss.AsArray.Add(format('#define wapt_server "%s"',[default_wapt_server]))
         else if startswith(line,'#define output_dir') then
             new_iss.AsArray.Add(format('#define output_dir "%s"' ,[destination]))
@@ -1981,11 +1985,20 @@ begin
   //WaptServerPassword := password;
 end;
 
+function ISO8601ToDateTime(Value: String): TDateTime;
+var
+    FormatSettings: TFormatSettings;
+begin
+    GetLocaleFormatSettings(GetThreadLocale, FormatSettings);
+    FormatSettings.DateSeparator := '-';
+    FormatSettings.ShortDateFormat := 'yyyy-MM-dd';
+    Result := StrToDate(copy(Value,1,10),FormatSettings)+StrToTime(copy(Value,12,8));
+end;
 
 initialization
 //  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;
     //Raise Exception.Create('Unable to initialize ActiveX layer');
-   GetLanguageIDs(Language,FallBackLanguage);
+   GetLanguageIDs(LanguageFull,Language);
    waptwua_enabled := FileExists(WaptBaseDir+'\waptwua\waptwua.py');
 
 finalization

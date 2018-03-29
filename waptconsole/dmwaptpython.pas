@@ -37,6 +37,9 @@ type
     Fwaptdevutils: Variant;
     Flicencing: Variant;
     jsondata:TJSONData;
+    {$ifdef ENTERPRISE}
+    FMaxHostsCount:Integer;
+    {$endif}
 
     FWaptConfigFileName: Utf8String;
     function Getcommon: Variant;
@@ -64,6 +67,10 @@ type
   public
     { public declarations }
     PyWaptWrapper : TPyDelphiWrapper;
+    {$ifdef ENTERPRISE}
+    LicensedTo: String;
+    ValidLicence: Boolean;
+    {$endif}
 
     function CertificateIsCodeSigning(crtfilename:String):Boolean;
     property privateKeyPassword: Ansistring read getprivateKeyPassword write setprivateKeyPassword;
@@ -83,8 +90,12 @@ type
     property waptpackage:Variant read Getwaptpackage;
     property waptdevutils:Variant read Getwaptdevutils;
     property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
+    {$ifdef ENTERPRISE}
     property licencing:Variant read Getlicencing;
-
+    property MaxHostsCount:Integer Read FMaxHostsCount;
+    function CheckLicence(domain: String; var LicencesLog: String): Integer;
+    procedure CheckPySources;
+    {$endif}
   end;
 
 
@@ -121,7 +132,7 @@ var
   DMPython: TDMPython;
 
 implementation
-uses variants, waptcommon, uvisprivatekeyauth,inifiles,forms,Dialogs,uvisloading;
+uses variants, waptcommon, waptcrypto, uvisprivatekeyauth,inifiles,forms,Dialogs,uvisloading,dateutils,tisstrings,gettext;
 {$R *.lfm}
 {$ifdef ENTERPRISE }
 {$R res_enterprise.rc}
@@ -192,43 +203,48 @@ var
   key: ISuperObject;
 
 begin
-  case aso.DataType of
-    stBoolean: begin
-        if aso.AsBoolean then
-          Result := PPyObject(GetPythonEngine.Py_True)
-        else
-          Result := PPyObject(GetPythonEngine.Py_False);
-        GetPythonEngine.Py_INCREF(result);
-    end;
-    stNull: begin
-        Result := GetPythonEngine.ReturnNone;
+  if aso<>Nil then
+  begin
+    case aso.DataType of
+      stBoolean: begin
+          if aso.AsBoolean then
+            Result := PPyObject(GetPythonEngine.Py_True)
+          else
+            Result := PPyObject(GetPythonEngine.Py_False);
+          GetPythonEngine.Py_INCREF(result);
       end;
-    stInt: begin
-        Result := GetPythonEngine.PyInt_FromLong(aso.AsInteger);
+      stNull: begin
+          Result := GetPythonEngine.ReturnNone;
+        end;
+      stInt: begin
+          Result := GetPythonEngine.PyInt_FromLong(aso.AsInteger);
+        end;
+      stDouble,stCurrency: begin
+        Result := GetPythonEngine.PyFloat_FromDouble(aso.AsDouble);
+        end;
+      stString: begin
+        Result := GetPythonEngine.PyUnicode_FromWideString(aso.AsString);
+        end;
+      stArray: begin
+        Result := GetPythonEngine.PyTuple_New(aso.AsArray.Length);
+        i:=0;
+        for item in aso do
+        begin
+          GetPythonEngine.PyTuple_SetItem(Result,i,SuperObjectToPyObject(item));
+          inc(i);
+        end;
       end;
-    stDouble,stCurrency: begin
-      Result := GetPythonEngine.PyFloat_FromDouble(aso.AsDouble);
-      end;
-    stString: begin
-      Result := GetPythonEngine.PyUnicode_FromWideString(aso.AsString);
-      end;
-    stArray: begin
-      Result := GetPythonEngine.PyTuple_New(aso.AsArray.Length);
-      i:=0;
-      for item in aso do
-      begin
-        GetPythonEngine.PyTuple_SetItem(Result,i,SuperObjectToPyObject(item));
-        inc(i);
-      end;
-    end;
-    stObject: begin
-      Result := GetPythonEngine.PyDict_New();
-      for key in Aso.AsObject.GetNames do
-        GetPythonEngine.PyDict_SetItem(Result, SuperObjectToPyObject(key),SuperObjectToPyObject(Aso[key.AsString]));
+      stObject: begin
+        Result := GetPythonEngine.PyDict_New();
+        for key in Aso.AsObject.GetNames do
+          GetPythonEngine.PyDict_SetItem(Result, SuperObjectToPyObject(key),SuperObjectToPyObject(Aso[key.AsString]));
+      end
+      else
+        Result := GetPythonEngine.VariantAsPyObject(aso);
     end
-    else
-      Result := GetPythonEngine.VariantAsPyObject(aso);
-  end;
+  end
+  else
+    Result := GetPythonEngine.ReturnNone;
 end;
 
 function SuperObjectToPyVar(aso: ISuperObject): Variant;
@@ -251,12 +267,6 @@ begin
   end;
 end;
 
-function CheckGetLicence(LicenceFilename: String): Variant;
-
-begin
-
-end;
-
 procedure TDMPython.SetWaptConfigFileName(AValue: Utf8String);
 var
   ini : TInifile;
@@ -264,7 +274,6 @@ var
 begin
   if FWaptConfigFileName=AValue then
     Exit;
-
 
   FWaptConfigFileName:=AValue;
 
@@ -282,29 +291,27 @@ begin
     if not FileExists(AValue) then
       CopyFile(Utf8ToAnsi(WaptIniFilename),Utf8ToAnsi(AValue),True);
 
-
     // override lang setting
+    waptcommon.Language := '';
     for i := 1 to Paramcount - 1 do
       if (ParamStrUTF8(i) = '--LANG') or (ParamStrUTF8(i) = '-l') or
         (ParamStrUTF8(i) = '--lang') then
-        begin
           waptcommon.Language := ParamStrUTF8(i + 1);
-          waptcommon.FallBackLanguage := copy(waptcommon.Language,1,2);
-          Language:=FallBackLanguage;
-        end;
 
     // get from ini
-    if Language = '' then
+    if waptcommon.Language = '' then
     begin
       ini := TIniFile.Create(FWaptConfigFileName);
       try
-        waptcommon.Language := ini.ReadString('global','language','');
-        waptcommon.FallBackLanguage := copy(waptcommon.Language,1,2);
-        Language := waptcommon.Language;
+        waptcommon.Language := ini.ReadString('global','language',waptcommon.Language);
       finally
         ini.Free;
       end;
     end;
+
+    if waptcommon.Language = '' then
+      GetLanguageIDs(waptcommon.LanguageFull, waptcommon.Language);
+    Language:= waptcommon.Language;
   finally
     Screen.Cursor:=crDefault;
   end;
@@ -319,7 +326,6 @@ begin
     GetLocaleFormatSettings($1252, DefaultFormatSettings)
   else
     GetLocaleFormatSettings($409, DefaultFormatSettings);
-
 end;
 
 function TDMPython.CertificateIsCodeSigning(crtfilename: String): Boolean;
@@ -339,8 +345,11 @@ begin
 end;
 
 procedure TDMPython.DataModuleCreate(Sender: TObject);
-
+var
+  st:TStringList;
 begin
+  //CheckPySources;
+
   with PythonEng do
   begin
     DllName := 'python27.dll';
@@ -354,6 +363,20 @@ begin
   PyWaptWrapper.Engine := PythonEng;
   PyWaptWrapper.Module := PythonModuleDMWaptPython;
   PyWaptWrapper.Initialize;  // Should only be called if PyDelphiWrapper is created at run time
+
+  st := TStringList.Create;
+  try
+    st.Append('import logging');
+    st.Append('logger = logging.getLogger()');
+    st.Append('logging.basicConfig(level=logging.WARNING)');
+    PythonEng.ExecStrings(St);
+  finally
+    st.free;
+  end;
+
+  {$ifdef ENTERPRISE}
+  FMaxHostsCount :=0;
+  {$endif}
 end;
 
 procedure TDMPython.DataModuleDestroy(Sender: TObject);
@@ -378,34 +401,70 @@ var
   Msg: String;
   NbArgs:Integer;
 begin
+  {args :
+    0: ShowHide (bool or None) ,
+    1: Progress(int or None),
+    2: ProgressMax (int or None),
+    3: Message (unicode or None)
+  }
   NbArgs := PythonEng.PyTuple_Size(Args);
-  DoShow := PythonEng.PyObject_IsTrue(PythonEng.PyTuple_GetItem(Args,0)) <> 0;
+
+  if VisLoading = Nil then
+    VisLoading := TVisLoading.Create(Application);
+
+  // Current progress
   if NbArgs>=2 then
-    Progress := PythonEng.PyLong_AsLong(PythonEng.PyTuple_GetItem(Args,1))
+    if PythonEng.PyTuple_GetItem(Args,1) <> PythonEng.Py_None then
+      Progress := PythonEng.PyLong_AsLong(PythonEng.PyTuple_GetItem(Args,1))
+    else
+      Progress := VisLoading.AProgressBar.Position
   else
-    Progress:=0;
+    Progress:=VisLoading.AProgressBar.Position;
+
+  // Max
   if NbArgs>=3 then
-    ProgressMax := PythonEng.PyLong_AsLong(PythonEng.PyTuple_GetItem(Args,2))
+    if PythonEng.PyTuple_GetItem(Args,2) <> PythonEng.Py_None then
+      ProgressMax := PythonEng.PyLong_AsLong(PythonEng.PyTuple_GetItem(Args,2))
+    else
+      ProgressMax :=  VisLoading.AProgressBar.Max
   else
-    ProgressMax := 100;
+    ProgressMax :=  VisLoading.AProgressBar.Max;
 
+  // Message
   if NbArgs>=4 then
-    Msg := PythonEng.PyString_AsDelphiString(PythonEng.PyTuple_GetItem(Args,3))
+    if PythonEng.PyTuple_GetItem(Args,3) <> PythonEng.Py_None then
+      Msg := PythonEng.PyString_AsDelphiString(PythonEng.PyTuple_GetItem(Args,3))
+    else
+      // use current one
+      Msg := VisLoading.AMessage.Caption
   else
-    Msg := '';
+    Msg := VisLoading.AMessage.Caption;
 
-  If DoShow then
-    ShowLoadWait(Msg, Progress,ProgressMax)
+  // show / hide
+  if PythonEng.PyTuple_GetItem(Args,0) <> PythonEng.Py_None then
+  begin
+    DoShow := PythonEng.PyObject_IsTrue(PythonEng.PyTuple_GetItem(Args,0)) <> 0;
+    If DoShow then
+      ShowLoadWait(Msg, Progress,ProgressMax)
+    else
+      HideLoadWait();
+  end
   else
-    HideLoadWait();
+  begin
+    // change only msg and progress bar
+    VisLoading.ProgressTitle(Msg);
+    VisLoading.ProgressStep(Progress,ProgressMax);
+  end;
+
+  // get push on cancel button from user
   if (VisLoading<>Nil)  and (VisLoading.StopRequired) then
     Result := PythonEng.PyBool_FromLong(1)
   else
     Result:=PythonEng.ReturnNone;
-
 end;
 
-function TDMPython.RunJSON(expr: UTF8String; jsonView: TVirtualJSONInspector=Nil): ISuperObject;
+function TDMPython.RunJSON(expr: Utf8String; jsonView: TVirtualJSONInspector
+  ): ISuperObject;
 var
   res:UTF8String;
 begin
@@ -422,6 +481,98 @@ begin
   end;
 
 end;
+
+{$ifdef ENTERPRISE}
+function TDMPython.CheckLicence(domain: String; var LicencesLog: String): Integer;
+var
+  lic:ISuperObject;
+  LicFilename:String;
+  VLicFilename: Variant;
+  LicFileList,LicList:TStringList;
+  Licence: Variant;
+  tisCertPEM:String;
+  tisCert: Variant;
+  ValidUntil,MaxValidUntil:TDateTime;
+begin
+  Result:=0;
+  ValidLicence:=False;
+  LicencesLog := '';
+  LicensedTo := '';
+  LicFileList := FindAllFiles(AppendPathDelim(WaptBaseDir)+'licences','*.lic');
+  LicList:=TStringList.Create;
+  MaxValidUntil := 0;
+  try
+    tisCertPEM := ExtractResourceString('CATIS');
+    tisCert:=waptcrypto.SSLCertificate(crt_string := tisCertPEM);
+    for LicFilename in LicFileList do
+    begin
+      VLicFilename := PyUTF8Decode(LicFilename);
+      Licence:=licencing.WaptLicence(filename := VLicFilename);
+      try
+        Licence.check_licence(tisCert);
+        ValidUntil := UniversalTimeToLocal(ISO8601ToDateTime(VarPythonAsString(Licence.valid_until)));
+        if ValidUntil>MaxValidUntil then
+          MaxValidUntil := ValidUntil;
+        if Now >= ValidUntil then
+          raise Exception.Create('Licence has expired');
+        LicencesLog := LicencesLog+Licence.__unicode__('--noarg--').encode('utf-8')+#13#10;
+        //if domain = VarPythonAsString(licence.domain) then
+          Result := Result + StrToInt(VarPythonAsString(Licence.count));
+        if LicList.IndexOf(VarPythonAsString(Licence.licence_nr))>=0 then
+          raise Exception.Create('Duplicated Licence nr');
+        LicList.Add(VarPythonAsString(Licence.licence_nr));
+        ValidLicence:=ValidLicence or (StrToInt(VarPythonAsString(Licence.count))>0);
+        if LicensedTo<>'' then
+          LicensedTo := LicensedTo+',';
+        LicensedTo := LicensedTo + VarPythonAsString(Licence.licenced_to.encode('utf-8'));
+      except
+        on e:Exception do
+          // Skip because of validation error
+          LicencesLog := LicencesLog+'Licence '+LicFilename+' ERROR '+E.Message+' for '+Licence.__unicode__('--noarg--').encode('utf-8')+' Skipped.'+#13#10
+      end;
+    end;
+    if not ValidLicence then
+      ShowMessage('No valid licence found, switching to Community features only')
+    else if (MaxValidUntil - Now) < 14 then
+      ShowMessageFmt('Licence will expire in %s days, keep in mind to renew them.',[int(MaxValidUntil - Now)]);
+    FMaxHostsCount := Result;
+
+  finally
+    LicList.Free;
+    LicFileList.Free;
+  end;
+end;
+{$endif ENTERPRISE}
+
+{$ifdef ENTERPRISE}
+procedure TDMPython.CheckPySources;
+var
+  Line,Filename,ExpectedSha256,ActualSha256:String;
+  Errors,Files:TStringList;
+begin
+  try
+    Errors := TStringList.Create;
+    Files := TStringList.Create;
+    Files.Text:=ExtractResourceString('CHECKFILES');
+    for line in Files do
+    try
+      ExpectedSha256:= copy(Line,1,64);
+      Filename := copy(Line,67,length(line));
+      ActualSha256:=SHA256Hash(Filename);
+      if ActualSha256<>ExpectedSha256 then
+        Raise Exception.CreateFmt('%s: file corrupted. Expected %s, Actual %s ',[Filename,ExpectedSha256,ActualSha256]);
+    except
+      on E:Exception do
+        Errors.Add(e.Message);
+    end;
+    if Errors.Count>0 then
+      Raise Exception.CreateFmt('%d validation errors for Python sources: %s',[Errors.Count,#13#10+Errors.Text]);
+  finally
+    Errors.Free;
+    Files.Free;
+  end;
+end;
+{$endif}
 
 procedure TDMPython.LoadJson(data: UTF8String);
 var
@@ -446,7 +597,8 @@ end;
 procedure TDMPython.SetIsEnterpriseEdition(AValue: Boolean);
 begin
   {$ifdef ENTERPRISE}
-  if FIsEnterpriseEdition=AValue then Exit;
+  if AValue and not ValidLicence then
+    Exit;
   FIsEnterpriseEdition:=AValue;
   {$else}
   FIsEnterpriseEdition := False;
@@ -584,10 +736,13 @@ end;
 
 function TDMPython.Getlicencing: Variant;
 begin
-  if IsEnterpriseEdition and VarIsEmpty(Flicencing) or VarIsNull(Flicencing) then
+  {$ifdef ENTERPRISE}
+  if VarIsEmpty(Flicencing) or VarIsNull(Flicencing) then
     Flicencing:= VarPyth.Import('waptenterprise.licencing');
   Result := Flicencing;
-
+  {$else}
+  Result := Nil;
+  {$endif}
 end;
 
 function TDMPython.GetMainWaptRepo: Variant;
@@ -651,7 +806,7 @@ end;
 function TDMPython.GetIsEnterpriseEdition: Boolean;
 begin
   {$ifdef ENTERPRISE}
-  Result := FIsEnterpriseEdition;
+  Result := ValidLicence and FIsEnterpriseEdition;
   {$else}
   Result := False;
   {$endif}

@@ -3,12 +3,12 @@
 
 Name:   tis-waptserver
 Version:        %{_version}
-Release:        1%{?dist}
+Release:        %{waptedition}%{?dist}
 Summary:        WAPT Server
 BuildArch:      x86_64
 
 Group:          Development/Tools
-License:        GPL
+License:        %{licence}
 URL:            https://wapt.fr
 Source0:        ./waptserver/
 Prefix:         /opt
@@ -26,6 +26,9 @@ Requires:  nginx dialog cabextract policycoreutils-python
 %clean
 echo "No clean"
 
+%build
+%define is_enterprise %( if [ '%{waptedition}' = 'enterprise' ]; then echo 1; else echo 0; fi; )
+
 %install
 set -e
 
@@ -36,11 +39,10 @@ mkdir -p %{buildroot}/opt/wapt/bin
 
 mkdir -p %{buildroot}/opt/wapt/waptserver
 mkdir -p %{buildroot}/opt/wapt/waptserver/scripts
-ln -sf ../conf/waptserver.ini %{buildroot}/opt/wapt/waptserver/waptserver.ini
 
 mkdir -p %{buildroot}/usr/lib/systemd/
 
-(cd .. && python ./createrpm.py)
+(cd .. && python ./createrpm.py %{waptedition} )
 
 %files
 %defattr(644,root,root,755)
@@ -56,6 +58,9 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 /opt/wapt/waptutils.py
 /opt/wapt/custom_zip.py
 /usr/bin/wapt-serverpostconf
+%if %is_enterprise
+/opt/wapt/waptenterprise
+%endif
 
 %attr(755,root,root)/opt/wapt/bin/*
 %attr(755,root,root)/opt/wapt/waptserver/scripts/postconf.sh

@@ -23,12 +23,13 @@ type
     CheckBox1: TCheckBox;
     EdRunning: TEdit;
     GridPending: TSOGrid;
-    Image1: TImage;
+    CustomLogo: TImage;
     LabDontShutdown: TLabel;
     LabIntro: TLabel;
     PanButtons: TPanel;
     ImageList1: TImageList;
     MemoLog: TListBox;
+    PanOut: TPanel;
     panTop: TPanel;
     PanProgress: TPanel;
     panHaut: TPanel;
@@ -67,6 +68,11 @@ implementation
 
 uses soutils,IniFiles,waptcommon,uScaleDPI;
 {$R *.lfm}
+{$ifdef ENTERPRISE }
+{$R res_enterprise.rc}
+{$else}
+{$R res_community.rc}
+{$endif}
 
 { TVisWaptExit }
 
@@ -148,6 +154,11 @@ procedure TVisWaptExit.FormCreate(Sender: TObject);
 var
   ini:TIniFile;
 begin
+  if FileExistsUTF8(AppendPathDelim(WaptBaseDir)+'templates\waptexit-logo.png') then
+    CustomLogo.Picture.LoadFromFile(AppendPathDelim(WaptBaseDir)+'templates\waptexit-logo.png')
+  else
+    CustomLogo.Picture.LoadFromResourceName(HINSTANCE,'WAPT_PNG',TPortableNetworkGraphic);
+
   ScaleDPI(Self,96); // 96 is the DPI you designed
   ScaleImageList(ImageList1,96);
   waptservice_timeout := 2;
@@ -182,6 +193,7 @@ procedure TVisWaptExit.FormShow(Sender: TObject);
 var
   aso: ISuperObject;
 begin
+
   ActShowDetails.Checked:=False;
 
   aso := Nil;

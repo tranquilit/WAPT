@@ -2,10 +2,10 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   Left = 409
   Height = 494
   Top = 218
-  Width = 513
+  Width = 560
   Caption = 'Create WAPT agent'
   ClientHeight = 494
-  ClientWidth = 513
+  ClientWidth = 560
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
@@ -44,13 +44,13 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object edRepoUrl: TEdit
     Left = 262
     Height = 21
-    Hint = 'E.g. : https://wapt.mydomain.lan/wapt'
+    Hint = 'E.g. : https://wapt.mydomain.lan/wapt If empty, use dnsdomain setting'
     Top = 252
     Width = 216
     TabOrder = 3
   end
   object Label2: TLabel
-    Left = 8
+    Left = 5
     Height = 13
     Hint = 'Your WAPT repository address (http://wapt/wapt).'
     Top = 258
@@ -85,15 +85,15 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Left = 0
     Height = 27
     Top = 467
-    Width = 513
+    Width = 560
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 27
-    ClientWidth = 513
+    ClientWidth = 560
     TabOrder = 11
     object BitBtn1: TBitBtn
-      Left = 352
-      Height = 23
+      Left = 399
+      Height = 24
       Top = 2
       Width = 75
       Anchors = [akTop, akRight]
@@ -104,8 +104,8 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TabOrder = 0
     end
     object BitBtn2: TBitBtn
-      Left = 432
-      Height = 23
+      Left = 479
+      Height = 24
       Top = 2
       Width = 75
       Anchors = [akTop, akRight]
@@ -117,7 +117,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     end
   end
   object Label4: TLabel
-    Left = 8
+    Left = 10
     Height = 13
     Hint = 'Where waptagent.exe will be saved.'
     Top = 229
@@ -177,10 +177,10 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object EdServerCertificate: TFileNameEdit
     Left = 262
     Height = 21
-    Hint = 'E.g. : c:\wapt\ssl\server\tranquilit.crt  Path to trusted certificates bundle'
+    Hint = 'E.g. : c:\wapt\ssl\server\tranquilit.crt  Path to trusted certificates bundle for https connections'
     Top = 323
     Width = 216
-    Filter = 'CA Certificates bundles PEM|*.crt|Tous les fichiers|*.*'
+    Filter = 'CA Certificates bundles PEM|*.crt;*.pem|Tous les fichiers|*.*'
     FilterIndex = 0
     HideDirectories = False
     ButtonWidth = 23
@@ -232,7 +232,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Left = 10
     Height = 162
     Top = 56
-    Width = 492
+    Width = 542
     ShowAdvancedColumnsCustomize = False
     BorderSpacing.Top = 2
     Color = clWhite
@@ -327,6 +327,28 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Width = 407
     Caption = 'Authorized packages Certificates which will be bundled with the Wapt Agent  installer'
     ParentColor = False
+  end
+  object CBForceRepoURL: TCheckBox
+    Left = 483
+    Height = 17
+    Hint = 'Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini'
+    Top = 254
+    Width = 68
+    Caption = 'Overwrite'
+    Checked = True
+    State = cbChecked
+    TabOrder = 12
+  end
+  object CBForceWaptServerURL: TCheckBox
+    Left = 483
+    Height = 17
+    Hint = 'Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini'
+    Top = 281
+    Width = 68
+    Caption = 'Overwrite'
+    Checked = True
+    State = cbChecked
+    TabOrder = 13
   end
   object ActionList1: TActionList
     left = 16

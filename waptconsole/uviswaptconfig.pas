@@ -82,7 +82,8 @@ var
   VisWAPTConfig: TVisWAPTConfig;
 
 implementation
-uses tiscommon,waptcommon,LCLIntf,IDURI,superobject,uWaptConsoleRes,uScaleDPI,tisstrings,dmwaptpython,variants,VarPyth,uvisprivatekeyauth;
+uses tiscommon,waptcommon,LCLIntf,IDURI,superobject,uWaptConsoleRes,
+    uScaleDPI,tisstrings,dmwaptpython,variants,VarPyth,uvisprivatekeyauth,tisinifiles;
 {$R *.lfm}
 
 { TVisWAPTConfig }
@@ -164,12 +165,13 @@ begin
   With TIdURI.Create(url) do
   try
     try
-      certfn:=  AppendPathDelim(GetAppUserFolder)+'ssl\server\'+Host+'.crt';
       certchain := dmpython.waptcrypto.get_peer_cert_chain_from_server(url);
-      pem_data := dmpython.waptcrypto.SSLCABundle(certificates:=certchain).as_pem('--noarg--');
+      pem_data := dmpython.waptcrypto.get_cert_chain_as_pem(certificates_chain:=certchain);
       if not VarIsNull(pem_data) then
       begin
-        if not DirectoryExistsUtf8(ExtractFileDir(certfn)) then
+        cert := certchain.__getitem__(0);
+        certfn:= AppendPathDelim(WaptBaseDir)+'ssl\server\'+cert.cn+'.crt';
+        if not DirectoryExists(ExtractFileDir(certfn)) then
           ForceDirectory(ExtractFileDir(certfn));
         StringToFile(certfn,pem_data);
         EdServerCertificate.Text := certfn;
@@ -216,7 +218,11 @@ begin
     EdServerCertificate.Text:='0'
   else
     if (EdServerCertificate.Text='') or (EdServerCertificate.Text='0') then
-      EdServerCertificate.Text:=CARoot();
+    begin
+      EdServerCertificate.Text := IniReadString(WaptIniFilename,'global','verify_cert','0');
+      if (LowerCase(EdServerCertificate.Text) = '0') or (LowerCase(EdServerCertificate.Text) = 'false') then
+        EdServerCertificate.Text:=CARoot();
+    end;
 
   EdServerCertificate.Enabled:=CBVerifyCert.Checked;
   ActGetServerCertificate.Enabled:=CBVerifyCert.Checked;

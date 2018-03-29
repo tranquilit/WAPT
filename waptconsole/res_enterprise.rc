@@ -1,2 +1,3 @@
+CHECKFILES RCDATA "../waptconsole.sha256"
 WAPT_PNG RCDATA "../arts/wapt_enterprise.png"
 CATIS RCDATA "catis.crt"

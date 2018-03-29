@@ -376,6 +376,7 @@ begin
 
   IsEnterpriseEdition:=DMPython.IsEnterpriseEdition;
   {$ifdef ENTERPRISE}
+  if IsEnterpriseEdition then
   with TINIFile.Create(AppIniFilename) do
   try
     EdCAKeyFilename.Text := ReadString('global', 'default_ca_key_path', '');

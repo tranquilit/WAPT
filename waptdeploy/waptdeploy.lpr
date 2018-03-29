@@ -48,13 +48,22 @@ uses
   var
     port, Data, notify: string;
   begin
-    port := WaptGuessedIniReadString('waptservice_port', '8088');
-    if notify_server then
-      notify:='1'
-    else
-      notify:='0';
-    Data := httpGetString('http://127.0.0.1:' + port + '/update.json?notify_server='+notify+'&notify_user=0');
-    Result := Data;
+    try
+      port := WaptGuessedIniReadString('waptservice_port', '8088');
+      if notify_server then
+        notify:='1'
+      else
+        notify:='0';
+      Data := httpGetString('http://127.0.0.1:' + port + '/update.json?notify_server='+notify+'&notify_user=0');
+      Result := Data;
+
+    except
+      on E:Exception do
+        begin
+          writeln('Unable to update immediately: '+E.Message);
+          Data := '';
+        end;
+    end;
   end;
 
   function httpGetDate(url: RawByteString): TDateTime;
@@ -207,6 +216,7 @@ Connection: Keep-Alive}
   function CommandOptions: ISuperObject;
   var
     i: integer;
+    CurrOptions: ISuperObject;
     line, key, Value: ansistring;
   begin
     Result := TSuperObject.Create(stObject);
@@ -220,7 +230,19 @@ Connection: Keep-Alive}
           line := copy(line, 3, length(line));
           key := StrToken(line, '=');
           Value := line;
-          Result.S[key] := Value;
+          CurrOptions := Result[key];
+          if (CurrOptions<>Nil) then
+          begin
+            // convert to array
+            if CurrOptions.DataType<>stArray then
+            begin
+              Result[key] := TSuperObject.Create(stArray);
+              Result[key].AsArray.Add(CurrOptions);
+            end;
+            Result[key].AsArray.Add(Value);
+          end
+          else
+            Result.S[key] := Value;
         end
         else
         if pos('-', line) = 1 then
@@ -228,7 +250,19 @@ Connection: Keep-Alive}
           line := copy(line, 2, length(line));
           key := line[1];
           Value := trim(copy(line, 2, length(line)));
-          Result.S[key] := Value;
+          CurrOptions := Result[key];
+          if (CurrOptions<>Nil) then
+          begin
+            // convert to array
+            if CurrOptions.DataType<>stArray then
+            begin
+              Result[key] := TSuperObject.Create(stArray);
+              Result[key].AsArray.Add(CurrOptions);
+            end;
+            Result[key].AsArray.Add(Value);
+          end
+          else
+            Result.S[key] := Value;
         end;
       end;
     end;
@@ -244,7 +278,7 @@ var
 
 const
   defaultwapt: ansistring = 'wapt';
-  minversion: ansistring = '1.5.1.21';
+  minversion: ansistring = '1.5.1.23';
   _mainrepo: ansistring = '';
   wait_minutes: integer = 0;
   isTemporary: Boolean = False;
@@ -253,6 +287,7 @@ var
   cmdparams: TDynStringArray;
   cmdoptions: ISuperObject;
   mergetasks: Ansistring;
+  setupargs: Ansistring;
   setuphash:AnsiString;
   setupcmdline:AnsiString;
 
@@ -330,6 +365,7 @@ begin
     Writeln(rsUsage7);
     Writeln(rsUsage8);
     Writeln(rsUsage9);
+    Writeln(rsUsage10);
     Exit;
   end;
 
@@ -377,6 +413,16 @@ begin
   mergetasks := 'useWaptServer';
   if cmdoptions.AsObject.Exists('tasks') then
     mergetasks := cmdoptions.S['tasks'];
+
+  setupargs := '';
+  if cmdoptions.AsObject.Exists('setupargs') then
+  begin
+    if cmdoptions['setupargs'].DataType = stArray then
+      // Multiple --setupargs
+      setupargs := soutils.Join(' ',cmdoptions['setupargs'])
+    else
+      setupargs := cmdoptions.S['setupargs'];
+  end;
 
   waptsetupurl := '';
   writeln('WAPT version: ' + localVersion);
@@ -453,7 +499,7 @@ begin
         if wait_minutes>0 then
           WaitPendingTasks(wait_minutes);
 
-        setupcmdline:=waptsetupPath + ' /VERYSILENT /MERGETASKS=""' + mergetasks + '""';
+        setupcmdline:=waptsetupPath + ' /VERYSILENT /MERGETASKS=""' + mergetasks + '"" '+setupargs;
         writeln(Format(rsInstall,[setupcmdline]));
         res := '';
         writeln('Launching '+setupcmdline);

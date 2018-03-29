@@ -336,7 +336,7 @@ class SSLCABundle(BaseObjectClass):
     def certificate(self,fingerprint):
         """Returns the certificate matching the supplied sha256 fingerprint
 
-        Args;
+        Args:
             fingerprint (str): hex encoded sha256 certificate fingerprint to lookup
 
         Returns:
@@ -613,7 +613,7 @@ class SSLCABundle(BaseObjectClass):
         return self.certificate_for_subject_key_identifier(certificate.authority_key_identifier) or self.certificate_for_subject_hash(certificate.issuer_subject_hash)
 
 
-    def update_crl(self,force=False,for_certificates=None,cache_dir=None,timeout=2.0,proxies=None):
+    def update_crl(self,force=False,for_certificates=None,cache_dir=None,timeout=2.0):
         """Download and update all crls for certificates in this bundle or
         for certificates in for_certificates list
 
@@ -657,7 +657,7 @@ class SSLCABundle(BaseObjectClass):
 
                         # get it from remote location
                         if not crl_data:
-                            crl_data = wgets(url,timeout=timeout,proxies=proxies)
+                            crl_data = wgets(url,timeout=timeout)
                         try:
                             ssl_crl = SSLCRL(der_data = crl_data)
                         except Exception as e:
@@ -712,7 +712,7 @@ class SSLCABundle(BaseObjectClass):
     def save_as_pem(self,filename,with_keys=True,password=None):
         """Save the RSA  private key as a PEM encoded file
 
-        Optionnaly, encypt the key with a password.
+        Optionnally, encrypt the key with a password.
 
         Args:
             filename (str) : filename of pem file to create. If not provided
@@ -786,6 +786,19 @@ def get_pem_server_certificate(url,save_to_file=None):
         return pem_data
     else:
         return None
+
+def get_cert_chain_as_pem(certificates_chain):
+    """Build a x509 encoded PEM string from a list of certificates
+
+    Args:
+        certificates_chain (list) : list of SSLCertificates
+    Returns
+        str: x509 pem encoded (utf8)
+    """
+    if certificates_chain is None:
+        return None
+    return (u" \n".join(["# CN: %s\n# Issuer CN: %s\n%s" % (crt.cn,crt.issuer_cn,crt.as_pem()) for crt in certificates_chain])).encode('utf-8')
+
 
 class SSLPrivateKey(BaseObjectClass):
     def __init__(self,filename=None,pem_data=None,callback=None,password = None):
@@ -891,7 +904,7 @@ class SSLPrivateKey(BaseObjectClass):
                 break
             except (TypeError,ValueError) as e:
                 if "Password was not given but private key is encrypted" in e.message or\
-                        "Bad decrypt. Incorrect password?" in e.message and self.password_callback is not None:
+                        "Bad decrypt. Incorrect key passphrase ?" in e.message and self.password_callback is not None:
                     retry_cnt -= 1
                     password = self.password_callback(self.private_key_filename)
                     if password == '':
@@ -1544,6 +1557,16 @@ class SSLCertificate(BaseObjectClass):
 
         Returns:
             dict
+
+        >>> c = SSLCertificate('c:/private/htouvet-tis-wapt.crt')
+        >>> c.issuer
+        {'commonName': u'TRANQUIL IT SYSTEMS',
+         'countryName': u'FR',
+         'localityName': u'SAINT SEBASTIEN SUR LOIRE',
+         'organizationName': u'TRANQUIL IT SYSTEMS',
+         'postalCode': u'44230',
+         'stateOrProvinceName': u'Loire Atlantique',
+         'streetAddress': u'12 avenue Jules Verne'}
         """
         data = self.crt.issuer
         result = {}
@@ -1573,7 +1596,15 @@ class SSLCertificate(BaseObjectClass):
 
     @property
     def authority_key_identifier(self):
-        """Identify the authority which has signed the certificate"""
+        """Identify the authority which has signed the certificate
+
+        Returns:
+            bytes
+
+        >>> c = SSLCertificate('c:/private/htouvet-tis-wapt.crt')
+        >>> c.authority_key_identifier
+        '\xa7Yx!\x0f\xe8\xe5x\x9c\x9br\x7f|\x7f\x90\x04\xea\x10\x19\xe8'
+        """
         keyid = self.extensions.get('authorityKeyIdentifier',None)
         if keyid:
             return keyid.key_identifier
@@ -1582,7 +1613,14 @@ class SSLCertificate(BaseObjectClass):
 
     @property
     def subject_key_identifier(self):
-        """Identify the certificate"""
+        """Identify the certificate by its subject
+
+        Returns:
+            bytes
+
+        >>> c.subject_key_identifier
+        '\xf2\x99\xd7\xfao\n\xf1\x1e\x03?\xd0\xf2\xff6\xfe\xe8\x8cv\xab\x1a'
+        """
         keyid = self.extensions.get('subjectKeyIdentifier',None)
         if keyid:
             return keyid.digest
@@ -1677,12 +1715,13 @@ class SSLCertificate(BaseObjectClass):
         for adir in directories:
             for akeyfile in glob.glob(os.path.join(adir,u'*.pem')):
                 try:
-                    logger.debug(u'Testing if key %s match certificate...'% akeyfile)
                     key = SSLPrivateKey(os.path.abspath(akeyfile),callback = password_callback,password = private_key_password)
                     if key.match_cert(self):
+                        logger.debug(u'SUCCESS key %s match certificate %s'% (akeyfile,self.public_cert_filename or self.subject_dn))
                         return key
+                    logger.debug(u'NO MATCH key %s does not match certificate %s'% (akeyfile,self.public_cert_filename or self.subject_dn))
                 except Exception as e:
-                    logger.debug(u'Error for %s: %s'%(akeyfile,e))
+                    logger.debug(u'ERROR for %s: %s'%(akeyfile,e))
         return None
 
     @property
@@ -1755,10 +1794,10 @@ class SSLCertificate(BaseObjectClass):
         fernet :  128-bit AES in CBC mode and PKCS7 padding, with HMAC using SHA256 for authentication
 
         Args:
-            content (bytes) : data to encrypt
+            content (bytes): data to encrypt
 
         Returns:
-            crypted_data (bytes) : starts with 'RSAFERNET', then rsa key length (base10) on 3 chars
+            crypted_data (bytes): starts with 'RSAFERNET', then rsa key length (base10) on 3 chars
                                    then rsa encrypted fernet key, then fernet encrypted data
         """
         symkey = Fernet.generate_key()
@@ -1772,6 +1811,7 @@ class SSLCertificate(BaseObjectClass):
 
         Returns:
             dict
+
         """
         return dict([(e.oid._name,e.value) for e in self.crt.extensions])
 
@@ -1885,6 +1925,10 @@ class SSLCertificate(BaseObjectClass):
 
         Returns:
             dict: signature_date,signer,verified_by(cn),signer_fingerprint
+
+        Raise:
+            SSLVerifyException
+
 
         >>> key = SSLPrivateKey('c:/private/150.pem')
         >>> crt = SSLCertificate('c:/private/150.crt')
@@ -2064,12 +2108,23 @@ class SSLCRL(BaseObjectClass):
 
         Returns:
             dict
-        """
+
+        >>> c = SSLCertificate('c:/private/htouvet.crt')
+        >>> c.extensions
+        {'basicConstraints': <BasicConstraints(ca=True, path_length=None)>,
+         'extendedKeyUsage': <ExtendedKeyUsage([<ObjectIdentifier(oid=1.3.6.1.5.5.7.3.3, name=codeSigning)>])>,
+         'keyUsage': <KeyUsage(digital_signature=True, content_commitment=True, key_encipherment=False, data_encipherment=True, key_agreement=False, key_cert_sign=True, crl_sign=True, encipher_only=None, decipher_only=None)>,
+         'subjectKeyIdentifier': <SubjectKeyIdentifier(digest='\x83h\x93\x1f%\xc8:\xb5E\xf5\x07b\xb6\x92m\x87Y\x96~\x03')>}
+            """
         return dict([(e.oid._name,e.value) for e in self.crl.extensions])
 
     @property
     def authority_key_identifier(self):
-        """Identify the authrority which has signed the certificate"""
+        """Identify the authority which has signed the CRL
+
+        Returns:
+            bytes
+        """
         keyid = self.extensions.get('authorityKeyIdentifier',None)
         if keyid:
             return keyid.key_identifier
@@ -2078,6 +2133,7 @@ class SSLCRL(BaseObjectClass):
 
     @property
     def last_update(self):
+
         return self.crl.last_update
 
     @property

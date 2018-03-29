@@ -19,8 +19,10 @@ type
     BitBtn2: TBitBtn;
     CBCheckCertificatesValidity: TCheckBox;
     CBDualSign: TCheckBox;
+    CBForceWaptServerURL: TCheckBox;
     CBVerifyCert: TCheckBox;
     CBUseKerberos: TCheckBox;
+    CBForceRepoURL: TCheckBox;
     EdServerCertificate: TFileNameEdit;
     edWaptServerUrl: TEdit;
     fnWaptDirectory: TDirectoryEdit;
@@ -62,12 +64,13 @@ implementation
 
 uses
   Variants,dmwaptpython,IdUri,IdSSLOpenSSLHeaders,uWaptConsoleRes,uWaptRes,UScaleDPI, tiscommon,
-  tisstrings,waptcommon,VarPyth,superobject,PythonEngine;
+  tisstrings,waptcommon,VarPyth,superobject,PythonEngine,tisinifiles;
 
 { TVisCreateWaptSetup }
 procedure TVisCreateWaptSetup.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 var
   pingResult: ISuperobject;
+  AbsVerifyCertPath:String;
 begin
   CanClose:= True;
   if (ModalResult=mrOk) then
@@ -82,7 +85,16 @@ begin
       ShowMessageFmt(rsInvalidWaptSetupDir, [fnWaptDirectory.Directory]);
       CanClose:=False;
     end;
-    if (CBVerifyCert.Checked) and (pos(lowercase(WaptBaseDir),lowercase(EdServerCertificate.Text))<>1) then
+
+    if pos(lowercase(WaptBaseDir),lowercase(EdServerCertificate.Text))=1 then
+    begin
+      EdServerCertificate.Text := ExtractRelativepath(WaptBaseDir,EdServerCertificate.Text);
+      AbsVerifyCertPath := ExpandFileNameUTF8(AppendPathDelim(WaptBaseDir)+EdServerCertificate.Text);
+    end
+    else
+      AbsVerifyCertPath := ExpandFileNameUTF8(EdServerCertificate.Text);
+
+    if (CBVerifyCert.Checked) and (pos(lowercase(WaptBaseDir),lowercase(AbsVerifyCertPath))<>1) then
     begin
       ShowMessageFmt(rsInvalidServerCertificateDir, [EdServerCertificate.Text]);
       CanClose:=False;
@@ -90,7 +102,7 @@ begin
     // check ssl cert is OK
     if (CBVerifyCert.Checked) then
     try
-      PingResult := SO(IdhttpGetString(edWaptServerUrl.Text+'/ping','',4000,60000,60000,'','','GET','',EdServerCertificate.Text));
+      PingResult := SO(IdhttpGetString(edWaptServerUrl.Text+'/ping','',4000,60000,60000,'','','GET','', AbsVerifyCertPath));
     except
       on E:EIdOpenSSLAPICryptoError do
       begin
@@ -114,7 +126,6 @@ begin
   NewCertFilename:=UTF8Decode(fnPublicCert.FileName);
   if FileExists(NewCertFilename) and ((ActiveCertBundle <> NewCertFilename) or (GridCertificates.Data = Nil) )  then
   try
-
     edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := NewCertFilename).cn);
     SOCerts := TSuperObject.Create(stArray);
     CABundle:=dmpython.waptcrypto.SSLCABundle(cert_pattern_or_dir := NewCertFilename);
@@ -154,8 +165,11 @@ begin
     EdServerCertificate.Text:='0'
   else
     if (EdServerCertificate.Text='') or (EdServerCertificate.Text='0') then
-      EdServerCertificate.Text:=CARoot();
-
+    begin
+      EdServerCertificate.Text := IniReadString(WaptIniFilename,'global','verify_cert','0');
+      if (LowerCase(EdServerCertificate.Text) = '0') or (LowerCase(EdServerCertificate.Text) = 'false') then
+        EdServerCertificate.Text:=CARoot();
+    end;
   EdServerCertificate.Enabled:=CBVerifyCert.Checked;
 end;
 
@@ -174,11 +188,12 @@ begin
   With TIdURI.Create(url) do
   try
     try
-      certfn:= AppendPathDelim(WaptBaseDir)+'ssl\server\'+Host+'.crt';
       certchain := dmpython.waptcrypto.get_peer_cert_chain_from_server(url);
-      pem_data := dmpython.waptcrypto.SSLCABundle(certificates:=certchain).as_pem('--noarg--');
-      if not VarIsNull(pem_data) then
+      pem_data := dmpython.waptcrypto.get_cert_chain_as_pem(certificates_chain:=certchain);
+      if not VarIsNone(pem_data) then
       begin
+        cert := certchain.__getitem__(0);
+        certfn:= AppendPathDelim(WaptBaseDir)+'ssl\server\'+cert.cn+'.crt';
         if not DirectoryExists(ExtractFileDir(certfn)) then
           ForceDirectory(ExtractFileDir(certfn));
         StringToFile(certfn,pem_data);

@@ -15,6 +15,8 @@ resourcestring
   rsLoadInventory = 'Loading hosts inventory';
   rsLoadSettings = 'Loading application settings';
 
+  rsLicencedTo = 'Licenced to %s';
+
   rsFatalError = 'Failed to retrieve task.';
   rsInstalling = 'Installing %s...';
   rsDefineWaptdevPath = 'Please select a directory on your package development host before editing a package bundle.';

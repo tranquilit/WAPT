@@ -999,18 +999,24 @@ def test_proxy():
 def test_licencing():
     #ca_key = SSLPrivateKey('c:/private/htouvet.pem',password=open('c:/tmp/tmppassword').read())
     #ca_cert = SSLCertificate('c:/private/htouvet.crt')
-    k = SSLPrivateKey('c:/private/htouvet.pem',password=open('c:/tmp/tmppassword').read())
-    c = SSLCertificate('c:/private/htouvet.crt')
-    l = licencing.WaptLicence(product='WAPT Enterprise',hosts_count=1000,licenced_to='Tranquil Test bench',features=['full'])
+    c = SSLCertificate('c:/private/licencing.pem')
+    k = SSLPrivateKey('c:/private/licencing.pem')
+    l = licencing.WaptLicence(licence_nr=str(uuid.uuid4()),
+        product='WAPT Enterprise',
+        count=0,
+        licenced_to=u'xxx',
+        contact_email=u'thierry.lermite@arrkeurope.com',
+        features=['full'],
+        )
     lic = l.sign(c,k)
     print jsondump(lic)
     print l.check_licence(c.as_pem())
     print l.check_licence(c)
     print l.check_licence([c])
     setuphelpers.mkdirs('c:/tranquilit/wapt/licences')
-    l.save_to_file('c:/tranquilit/wapt/licences/wapt.lic')
+    l.save_to_file('c:/tranquilit/wapt/licences/%s.lic'%l.licence_nr)
 
-    l2 = licencing.WaptLicence(filename='c:/tranquilit/wapt/licences/wapt.lic')
+    l2 = licencing.WaptLicence(filename='c:/tranquilit/wapt/licences/%s.lic'%l.licence_nr)
     l2.check_licence(c.as_pem())
     print l2
 
@@ -1028,10 +1034,16 @@ def gen_perso(cn,email,**kwargs):
     os.startfile('c:/private/%s-tis.csr' % cn)
 
 
+def test_packagenewestversion():
+    r = WaptRemoteRepo('https://wapt.lesfourmisduweb.org/wapt',http_proxy='http://proxy:3128')
+    scp = r.search('winscp',newest_only=True)
+    print(scp)
+
 if __name__ == '__main__':
-    gen_perso('htouvet',email='htouvet@tranquil.it')
-    test_licencing()
+    #gen_perso('htouvet',email='htouvet@tranquil.it')
+    test_packagenewestversion()
     sys.exit(0)
+    test_licencing()
 
     setup_test()
 

@@ -247,10 +247,24 @@ object VisImportPackage: TVisImportPackage
         PropertyName = 'version'
       end    
       item
-        MaxWidth = 400
-        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
         Position = 3
         Tag = 3
+        Text = 'Arch'
+        Width = 41
+        PropertyName = 'architecture'
+      end    
+      item
+        Position = 4
+        Tag = 4
+        Text = 'Locale'
+        Width = 41
+        PropertyName = 'locale'
+      end    
+      item
+        MaxWidth = 400
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+        Position = 5
+        Tag = 5
         Text = 'Description'
         Width = 203
         PropertyName = '_localized_description'
@@ -258,16 +272,16 @@ object VisImportPackage: TVisImportPackage
       item
         MaxWidth = 400
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-        Position = 4
-        Tag = 4
+        Position = 6
+        Tag = 6
         Text = 'Dependencies'
         Width = 197
         PropertyName = 'depends'
       end    
       item
         Alignment = taRightJustify
-        Position = 5
-        Tag = 5
+        Position = 7
+        Tag = 7
         Text = 'Size'
         Width = 88
         PropertyName = 'size'
@@ -275,25 +289,11 @@ object VisImportPackage: TVisImportPackage
       item
         Alignment = taRightJustify
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-        Position = 6
-        Tag = 6
+        Position = 8
+        Tag = 8
         Text = 'Installed Size'
         Width = 127
         PropertyName = 'installed_size'
-      end    
-      item
-        Position = 7
-        Tag = 7
-        Text = 'Arch'
-        Width = 53
-        PropertyName = 'architecture'
-      end    
-      item
-        Position = 8
-        Tag = 8
-        Text = 'Locale'
-        Width = 53
-        PropertyName = 'locale'
       end    
       item
         Position = 9
@@ -336,6 +336,19 @@ object VisImportPackage: TVisImportPackage
         Text = 'Min Wapt version'
         Width = 69
         PropertyName = 'min_wapt_version'
+      end    
+      item
+        Position = 15
+        Tag = 15
+        Text = 'Filename'
+        PropertyName = 'filename'
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 16
+        Tag = 16
+        Text = 'md5sum'
+        PropertyName = 'md5sum'
       end>
     Header.DefaultHeight = 18
     Header.Height = 18

@@ -143,6 +143,10 @@ mkdir_p('builddir/opt/wapt/log')
 mkdir_p('builddir/opt/wapt/lib/python2.7/site-packages')
 mkdir_p('builddir/usr/bin')
 
+WAPTEDITION=os.environ.get('WAPTEDITION','community')
+if WAPTEDITION=='enterprise':
+    mkdir_p('builddir/opt/wapt/waptenterprise')
+
 # we use pip and virtualenv to get the wapt dependencies. virtualenv usage here is a bit awkward, it can probably be improved. For instance, it install a outdated version of pip that cannot install Rocket dependencies...
 # for some reason the virtualenv does not build itself right if we don't
 # have pip systemwide...
@@ -192,6 +196,11 @@ copyfile(makepath(wapt_source_dir, 'wapt-signpackages.py'),
          'builddir/opt/wapt/wapt-signpackages.py')
 copyfile(makepath(wapt_source_dir, 'custom_zip.py'),
          'builddir/opt/wapt/custom_zip.py')
+
+if WAPTEDITION=='enterprise':
+    eprint('copying the waptserver enterprise files')
+    rsync(wapt_source_dir+'/waptenterprise/', './builddir/opt/wapt/waptenterprise/',
+          excludes=[' ','waptservice','postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module', '*.bat'])
 
 # cleanup
 for fn in (

@@ -11,7 +11,7 @@ uses
   vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, jsonparser,
   superobject, VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading, IdComponent,
   DefaultTranslator, IniPropStorage, DBGrids, ShellCtrls, GetText,
-  uWaptConsoleRes, db, BufDataset, memds, SearchEdit, MenuButton, tisstrings;
+  uWaptConsoleRes, db, BufDataset, SearchEdit, MenuButton, tisstrings;
 
 type
 
@@ -213,7 +213,6 @@ type
     pgWindowsUpdates: TTabSheet;
     PopupDelete: TPopupMenu;
     PopupMenu1: TPopupMenu;
-    ProgressBar1: TProgressBar;
     Splitter6: TSplitter;
     Splitter7: TSplitter;
     PgReports: TTabSheet;
@@ -679,7 +678,6 @@ type
     procedure LoadOrgUnitsTree(Sender: TObject);
   public
     { public declarations }
-    PackageEdited: ISuperObject;
     MainRepoUrl, WaptServer, TemplatesRepoUrl: string;
 
     {$ifdef wsus}
@@ -776,11 +774,11 @@ begin
     CurrentVisLoading.DoProgress(ASender)
   else
   begin
-    if ProgressBar1.Position >= ProgressBar1.Max then
+    {if ProgressBar1.Position >= ProgressBar1.Max then
       ProgressBar1.Position := 0
     else
       ProgressBar1.Position := ProgressBar1.Position + 1;
-    Application.ProcessMessages;
+    Application.ProcessMessages;}
   end;
 end;
 
@@ -792,11 +790,11 @@ begin
     CurrentVisLoading.DoProgress(ASender)
   else
   begin
-    if ProgressBar1.Position >= ProgressBar1.Max then
+    {if ProgressBar1.Position >= ProgressBar1.Max then
       ProgressBar1.Position := 0
     else
       ProgressBar1.Position := ProgressBar1.Position + 1;
-    Application.ProcessMessages;
+    Application.ProcessMessages;}
   end;
 end;
 
@@ -1004,9 +1002,13 @@ begin
       try
         stats_report_url:=ini.ReadString('global','usage_report_url',rsDefaultUsageStatsURL);
         stats := WAPTServerJsonGet('api/v1/usage_statistics',[])['result'];
+        {$ifdef ENTERPRISE}
+        stats.S['edition'] := 'enterprise';
+        {$else}
+        stats.S['edition'] := 'community';
+        {$endif}
         IdHttpPostData(stats_report_url,stats.AsJSon,Proxy,4000,60000,60000,'','','Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko');
         ini.WriteDateTime('global','last_usage_report',Now);
-
       except
         ini.WriteDateTime('global','last_usage_report',Now);
       end;
@@ -1477,32 +1479,49 @@ end;
 
 procedure TVisWaptGUI.ActEditPackageExecute(Sender: TObject);
 var
-  Selpackage: string;
-  Devpath : UnicodeString;
+  filename, filePath, target_directory,proxy: string;
+  vFilePath,vDevPath: Variant;
+  PackageEdited,repo,cabundle,VWaptIniFilename: Variant;
+
+  DevRoot,Devpath : String;
   res: ISuperObject;
 begin
   if GridPackages.FocusedNode <> nil then
   begin
-    if IniReadString(AppIniFilename,'global','default_sources_root')<>'' then
+    DevRoot:=IniReadString(AppIniFilename,'global','default_sources_root');
+    if DevRoot<>'' then
     begin
-      Selpackage := format('%s(=%s)', [GridPackages.GetCellStrValue(
-        GridPackages.FocusedNode, 'package'), GridPackages.GetCellStrValue(
-        GridPackages.FocusedNode, 'version')]);
       try
-        { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
-        DevPath := VarPythonAsString(DMPython.WAPT.get_default_development_dir(SelPackage));
-        if DirectoryExistsUTF8(DevPath) then
-          DevPath:=DevPath+'.'+GridPackages.GetCellStrValue(GridPackages.FocusedNode, 'version');
-        { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
-        DMPython.WAPT.update(force := True,register := False,filter_on_host_cap := False);
-        res := PyVarToSuperObject(DMPython.WAPT.edit_package(
-          packagerequest := Selpackage,
-          target_directory:=DevPath,
-          auto_inc_version:=False));
+        with TVisLoading.Create(Self) do
+        try
+          ProgressTitle(rsDownloading);
+          Application.ProcessMessages;
+          try
+            filename := GridPackages.FocusedRow.S['filename'];
+            filePath := AppLocalDir + 'cache\' + filename;
+            if not DirectoryExists(AppLocalDir + 'cache') then
+              mkdir(AppLocalDir + 'cache');
 
-        if not DirectoryExists(res.S['sourcespath']) then
-          raise Exception.Create('Unable to edit package. Development directory '+res.S['sourcespath']+' does not exist');
-        DMPython.common.wapt_sources_edit( wapt_sources_dir := DevPath);
+            Proxy := DMPython.MainWaptRepo.http_proxy;
+            cabundle:= DMPython.MainWaptRepo.cabundle;
+
+            IdWget(VarPythonAsString(GridPackages.FocusedRow.S['repo_url']+'/'+filename), filePath,
+                ProgressForm, @updateprogress, Proxy);
+            vFilePath := PyUTF8Decode(filePath);
+            PackageEdited := DMPython.waptpackage.PackageEntry(waptfile := vFilePath);
+            DevPath := AppendPathDelim(DevRoot)+VarPythonAsString(PackageEdited.make_package_edit_directory('--noarg--'));
+            vDevPath:= PyUTF8Decode(DevPath);
+            PackageEdited.unzip_package(cabundle := cabundle, target_dir := vDevPath);
+            DMPython.common.wapt_sources_edit( wapt_sources_dir := vDevPath);
+          except
+            ShowMessage(rsDlCanceled);
+            if FileExistsUTF8(filePath) then
+              DeleteFileUTF8(filePath);
+            raise;
+          end;
+        finally
+          Free;
+        end;
       except
         on E:Exception do
         begin
@@ -1644,7 +1663,9 @@ begin
                 EdServerCertificate.Text,
                 CBUseKerberos.Checked,
                 CBCheckCertificatesValidity.Checked,
-                IsEnterpriseEdition
+                IsEnterpriseEdition,
+                CBForceRepoURL.Checked,
+                CBForceWaptServerURL.Checked
                 );
 
             except
@@ -1659,6 +1680,7 @@ begin
             // create waptupgrade package (after waptagent as we need the updated waptagent.sha1 file)
             ProgressTitle(rsCreationInProgress);
             try
+              BuildRes := Nil;
               buildDir := GetTempDir(False);
               if RightStr(buildDir,1) = '\' then
                 buildDir := copy(buildDir,1,length(buildDir)-1);
@@ -1670,18 +1692,18 @@ begin
                   sign_digests := SignDigests
                   );
 
-              if FileExists(VarToStr(BuildRes.get('localpath'))) then
+              if not VarPyth.VarIsNone(BuildRes) and FileExistsUTF8(VarPythonAsString(BuildRes.get('localpath'))) then
               begin
                 ProgressTitle(rsWaptUpgradePackageBuilt);
-                DeleteFileUTF8(VarToStr(BuildRes.get('localpath')));
+                DeleteFileUTF8(VarPythonAsString(BuildRes.get('localpath')));
               end;
-
+              ActPackagesUpdate.Execute;
             except
               On E:Exception do
-                ShowMessage(rsWaptUpgradePackageBuildError+#13#10+E.Message);
+                Raise Exception.Create(rsWaptUpgradePackageBuildError+#13#10+E.Message);
             end;
-            ActPackagesUpdate.Execute;
             Finish;
+
             if FileExists(waptsetupPath) then
               try
                 Start;
@@ -1771,33 +1793,43 @@ end;
 
 procedure TVisWaptGUI.ActAddADSGroupsExecute(Sender: TObject);
 var
-  Res, host, hosts: ISuperObject;
-  args: ansistring;
+  Res, packages, hosts, host,HostMin: ISuperObject;
+  VHosts,VPackages,VWaptIniFilename,VPrivateKeyPassword,ResVar: Variant;
 begin
   if GridHosts.Focused and (MessageDlg(rsAddADSGroups, mtConfirmation, [mbYes, mbNo, mbCancel],0) = mrYes) then
   try
-
     Screen.Cursor := crHourGlass;
     Hosts := TSuperObject.Create(stArray);
-
     for host in GridHosts.SelectedRows do
-      hosts.AsArray.Add(host.S['uuid']);
+    begin
+      HostMin := TSuperObject.Create(stObject);
+      HostMin['uuid'] := host['uuid'];
+      HostMin['computer_fqdn'] := host['computer_fqdn'];
+      HostMin['computer_name'] := host['computer_name'];
+      HostMin['depends'] := host['depends'];
+      HostMin['conflicts'] := host['conflicts'];
+      Hosts.AsArray.Add(HostMin);
+    end;
 
-    //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
-    args := '';
-    args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
-    args := args + format('hosts_list = r"%s".decode(''utf8''),',
-      [soutils.Join(',', hosts)]);
-    if dmpython.privateKeyPassword <> '' then
-      args := args + format('key_password = "%s".decode(''utf8''),',
-        [dmpython.privateKeyPassword]);
-    args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
-    args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
-      [waptServerPassword]);
-    res := DMPython.RunJSON(format('waptdevutils.add_ads_groups(%s)', [args]));
-    ShowMessageFmt(rsNbModifiedHosts, [IntToStr(res.AsArray.Length)]);
+    VHosts := SuperObjectToPyVar(Hosts);
+    VWaptIniFilename := PyUTF8Decode(AppIniFilename);
+    VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
+
+    resVar := DMPython.waptdevutils.add_ads_groups(
+       waptconfigfile := VWaptIniFilename,
+       hostdicts_list := VHosts,
+       sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
+       sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
+       wapt_server_user := waptServerUser,
+       wapt_server_passwd := waptServerPassword,
+       cabundle := DMPython.WaptHostRepo.cabundle
+       );
+
+    res := PyVarToSuperObject(ResVar);
   finally
-    Screen.Cursor := crDefault;
+    Screen.cursor := crDefault;
+    if res <> Nil then
+      ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
   end;
 end;
 
@@ -2140,7 +2172,7 @@ begin
 
       cbDebugWindow.Checked:= inifile.ReadBool('global','advanced_mode',AdvancedMode);
 
-      lang := inifile.ReadString('global','language','en');
+      lang := inifile.ReadString('global','language',DMPython.Language);
       if lang='en' then
         cbLanguage.ItemIndex:=0
       else if lang='fr' then
@@ -2709,7 +2741,7 @@ end;
 
 procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
 var
-  hostname,uuid,desc,HostPackageVersion: String;
+  hostname,uuid,desc,HostPackageVersion: Utf8String;
   uuids,result: ISuperObject;
   ApplyUpdatesImmediately:Boolean;
   Host: ISuperObject;
@@ -3401,7 +3433,7 @@ procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
 var
   soresult,columns,urlParams, Node, Hosts,fields: ISuperObject;
   previous_uuid,prop: string;
-  i: integer;
+  HostsCount,i: integer;
 const
   DefaultColumns:Array[0..13] of String = ('uuid','os_name','connected_ips','computer_fqdn',
     'computer_name','manufacturer','description','productname','serialnr','mac_addresses','connected_users','last_logged_on_user','computer_ad_ou','computer_ad_site');
@@ -3475,7 +3507,7 @@ begin
       urlParams.AsArray.Add(Format('groups=%s',[EncodeURIComponent(cbGroups.Text)]));
 
     {$ifdef ENTERPRISE }
-    if length(GetSelectedOrgUnits)>0 then
+    if IsEnterpriseEdition and (length(GetSelectedOrgUnits)>0) then
     begin
       urlParams.AsArray.Add(Format('organizational_unit=%s',[EncodeURIComponent(StrJoin( '||',GetSelectedOrgUnits))]));
       if CBIncludeSubOU.Checked then
@@ -3504,7 +3536,17 @@ begin
       GridHosts.Data := hosts;
       if (hosts <> nil) and (hosts.AsArray <> nil) then
       begin
-        LabelComputersNumber.Caption := IntToStr(hosts.AsArray.Length);
+        HostsCount := hosts.AsArray.Length;
+        {$ifdef ENTERPRISE }
+        if IsEnterpriseEdition and  (HostsCount>DMPython.MaxHostsCount) then
+        begin
+          IsEnterpriseEdition:=False;
+          DMPython.ValidLicence:=False;
+          ShowMessageFmt('Maximum number of licenced hosts (%d/%d)) reached, switching to Community Edition features',[HostsCount,DMPython.MaxHostsCount]);
+        end;
+        {$endif}
+        LabelComputersNumber.Caption := IntToStr(HostsCount);
+
         for node in GridHosts.Data do
         begin
           if node.S['uuid'] = previous_uuid then
@@ -3770,6 +3812,8 @@ begin
             cbSendStats.Checked);
           //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
 
+          DMPython.privateKeyPassword:='';
+
           Result := True;
         end;
       finally
@@ -3835,13 +3879,6 @@ begin
   HostsLimit := 2000;
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
 
-  {$ifdef ENTERPRISE }
-  IsEnterpriseEdition:=True;
-  {$else}
-  IsEnterpriseEdition:=False;
-  {$endif}
-  ActProprietary.Enabled := IsEnterpriseEdition;
-  ActProprietary.Checked := IsEnterpriseEdition;
 end;
 
 procedure TVisWaptGUI.FormDragOver(Sender, Source: TObject; X, Y: Integer;
@@ -3876,6 +3913,8 @@ function TVisWaptGUI.Login: boolean;
 var
   cred, sores: ISuperObject;
   localfn: utf8string;
+  LicencesLog:String;
+  HostsCount: Integer;
 begin
   Result := False;
   // Initialize user local config file with global wapt settings
@@ -3926,7 +3965,19 @@ begin
         sores := WAPTServerJsonPost('api/v3/login', [],cred);
         if sores.B['success'] then
         begin
-            waptServerUUID := sores['result'].S['server_uuid'];
+            WaptServerUUID := sores['result'].S['server_uuid'];
+            WaptServerEdition := sores['result'].S['edition'];
+            HostsCount := sores['result'].I['hosts_count'];
+            {$ifdef ENTERPRISE}
+            Result := DMPython.CheckLicence('',LicencesLog)>0;
+            if IsEnterpriseEdition and (DMPython.MaxHostsCount < HostsCount) then
+            begin
+              Result := False;
+              DMPython.ValidLicence:=False;
+              IsEnterpriseEdition:=False;
+              ShowMessageFmt('Maximum number of licenced hosts (%d/%d)) reached, switching to Community Edition features. %s',[HostsCount,DMPython.MaxHostsCount,LicencesLog]);
+            end;
+            {$endif}
             Result := True;
             if (CompareVersion(sores['result'].S['version'],WAPTServerMinVersion)<0) then
               ShowMessageFmt(rsWaptServerOldVersion,[sores['result'].S['version'],WAPTServerMinVersion]);
@@ -3960,6 +4011,16 @@ var
   ini:TIniFile;
 
 begin
+  {$ifdef ENTERPRISE }
+  IsEnterpriseEdition:=True;
+  ActProprietary.Enabled := True;
+  ActProprietary.Checked := True;
+  {$else}
+  IsEnterpriseEdition:=False;
+  ActProprietary.Enabled := False;
+  ActProprietary.Checked := False;
+  {$endif}
+
   CurrentVisLoading := TVisLoading.Create(Nil);
   with CurrentVisLoading do
   try
@@ -4002,11 +4063,14 @@ begin
         self.cbGroups.Text := ini.ReadString(self.Name,'cbGroups.Text',self.cbGroups.Text);
 
         {$ifdef ENTERPRISE}
-        LoadOrgUnitsTree(Sender);
-        self.cbADSite.Text :=  ini.ReadString(self.Name,'cbADSite',self.cbADSite.Text);
-        self.DBOrgUnits.Locate('DN',ini.ReadString(self.Name,'OrgUnitsDN',''),[]);
-        self.PanOrgUnits.Width := ini.ReadInteger(self.Name,PanOrgUnits.Name+'.Width',PanOrgUnits.Width);
-        self.CBIncludeSubOU.Checked:= ini.ReadBool(self.Name,CBIncludeSubOU.Name,self.CBIncludeSubOU.Checked);;
+        if IsEnterpriseEdition then
+        begin
+          LoadOrgUnitsTree(Sender);
+          self.cbADSite.Text :=  ini.ReadString(self.Name,'cbADSite',self.cbADSite.Text);
+          self.DBOrgUnits.Locate('DN',ini.ReadString(self.Name,'OrgUnitsDN',''),[]);
+          self.PanOrgUnits.Width := ini.ReadInteger(self.Name,PanOrgUnits.Name+'.Width',PanOrgUnits.Width);
+          self.CBIncludeSubOU.Checked:= ini.ReadBool(self.Name,CBIncludeSubOU.Name,self.CBIncludeSubOU.Checked);;
+        end;
         {$endif}
 
       finally
@@ -4025,7 +4089,12 @@ begin
       (WSUSActions.Actions[i] as TAction).Visible:=waptcommon.waptwua_enabled;
     end;
 
-    plStatusBar1.Panels[0].Text := WaptServerUser+' on '+ApplicationName+' '+GetApplicationVersion+' WAPT '+wapt_edition+' Edition, (c) 2012-2017 Tranquil IT Systems. (Configuration:'+AppIniFilename+')';
+    plStatusBar1.Panels[0].Text := WaptServerUser+' on '+ApplicationName+' '+
+      GetApplicationVersion+' WAPT '+wapt_edition+' Edition, (c) 2012-2017 Tranquil IT. (Conf:'+
+      AppIniFilename+')';
+    {$ifdef ENTERPRISE}
+    plStatusBar1.Panels[0].Text := plStatusBar1.Panels[0].Text + ' ' + Format(rsLicencedTo,[dmPython.LicensedTo]);
+    {$endif}
 
     //ProgressTitle(rsLoadPackages);
     ProgressStep(2,3);
@@ -4543,8 +4612,7 @@ end;
 
 procedure TVisWaptGUI.SetIsEnterpriseEdition(AValue: Boolean);
 begin
-  if dmpython.IsEnterpriseEdition<>AValue then
-    dmpython.IsEnterpriseEdition:=AValue;
+  dmpython.IsEnterpriseEdition:=AValue;
   Label20.Visible:=IsEnterpriseEdition;
   PanOrgUnits.Visible:=IsEnterpriseEdition;
   cbADSite.Visible:=IsEnterpriseEdition;
@@ -4695,6 +4763,7 @@ end;
 procedure TVisWaptGUI.cbADSiteDropDown(Sender: TObject);
 begin
   {$ifdef ENTERPRISE}
+  if IsEnterpriseEdition then
   try
     FillcbADSiteDropDown;
   except
@@ -4732,6 +4801,7 @@ var
   oldSelect:String;
 begin
   {$ifdef ENTERPRISE}
+  if IsEnterpriseEdition then
   try
     Screen.Cursor:=crHourGlass;
 

@@ -1,9 +1,9 @@
-[submodule "waptenterprise"]
-	path = waptenterprise
-	url = git://git.ad.tranquil.it/wapt/waptenterprise.git
-	branch = master
-
 [submodule "waptwua"]
 	path = waptwua
 	url = git://git.ad.tranquil.it/wapt/waptwua.git
+	branch = master
+
+[submodule "waptenterprise"]
+	path = waptenterprise
+	url = git://git.ad.tranquil.it/wapt/waptenterprise.git
 	branch = master

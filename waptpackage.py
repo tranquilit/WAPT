@@ -222,6 +222,16 @@ class EWaptConfigurationError(EWaptException):
 class EWaptMissingLocalWaptFile(EWaptException):
     pass
 
+
+def PackageVersion(package_or_versionstr):
+    if isinstance(package_or_versionstr,PackageEntry):
+        package_or_versionstr = package_or_versionstr.version
+    version_build = package_or_versionstr.split('-',1)
+    if len(version_build)>1:
+        return (Version(version_build[0],4),int(version_build[1]))
+    else:
+        return (Version(version_build[0],4),0)
+
 class PackageRequest(BaseObjectClass):
     """Package and version request / condition
 
@@ -428,10 +438,8 @@ class PackageEntry(BaseObjectClass):
 
         if kwargs:
             for key,value in kwargs.iteritems():
-                if key in self.required_attributes + self.optional_attributes:
+                if key in self.required_attributes + self.optional_attributes + self.non_control_attributes:
                     setattr(self,key,value)
-                else:
-                    raise Exception('"%s" is not a control attribute of PackageEntry an can not be set' % key)
 
     def parse_version(self):
         """Parse version to major, minor, patch, pre-release, build parts.
@@ -853,7 +861,7 @@ class PackageEntry(BaseObjectClass):
         if not (self.package):
             raise Exception(u'Not enough information to build the package directory for %s'%(self.package))
             # includes only non empty fields
-        return u'_'.join([f for f in (self.package,self.architecture,self.maturity,self.locale) if (f and f != 'all')]) + '-wapt'
+        return u'_'.join([f for f in (self.package,self.architecture,self.maturity.replace(',','-'),self.locale.replace(',','-')) if (f and f != 'all')]) + '-wapt'
 
     def asrequirement(self):
         """Return package and version for designing this package in depends or install actions
@@ -1877,13 +1885,17 @@ class WaptBaseRepo(BaseObjectClass):
 
             if selected:
                 result.append(package)
+
+        def sort_no_version(package1,package2):
+            return cmp((package1.package,package1.architecture,package1.locale,package1.maturity,PackageVersion(package1.version)),(package2.package,package2.architecture,package2.locale,package2.maturity,PackageVersion(package2.version)))
+
         if newest_only:
             filtered = []
-            last_package_name = None
-            for package in sorted(result,reverse=True):
-                if package.package != last_package_name:
+            last_package = ('','','','')
+            for package in sorted(result,reverse=True,cmp=sort_no_version):
+                if (package.package,package.architecture,package.locale,package.maturity) != last_package:
                     filtered.append(package)
-                last_package_name = package.package
+                last_package = (package.package,package.architecture,package.locale,package.maturity)
             return list(reversed(filtered))
         else:
             return sorted(result)
@@ -1984,7 +1996,7 @@ class WaptLocalRepo(WaptBaseRepo):
     >>> localrepo.update()
     """
 
-    def __init__(self,localpath=u'/var/www/wapt',name='waptlocal',cabundle=None,config=None,proxies=None):
+    def __init__(self,localpath=u'/var/www/wapt',name='waptlocal',cabundle=None,config=None):
         # store defaults at startup
         self._default_config.update({
             'localpath':ensure_unicode(localpath),
@@ -1995,9 +2007,6 @@ class WaptLocalRepo(WaptBaseRepo):
         # override defaults and config with supplied parameters
         if self.localpath is not None:
             self.localpath = ensure_unicode(localpath.rstrip(os.path.sep))
-
-        # proxies for CRLs updates
-        self.proxies = proxies
 
     @property
     def packages_path(self):
@@ -2192,7 +2201,7 @@ class WaptLocalRepo(WaptBaseRepo):
 
         try:
             logger.info(u"Check / update CRL for embedded certificates")
-            signer_certificates.update_crl(force = force_all,proxies=self.proxies)
+            signer_certificates.update_crl(force = force_all)
         except Exception as e:
             logger.critical(u'Error when updating CRL for signers cerificates : %s' % e)
 

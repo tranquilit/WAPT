@@ -828,7 +828,7 @@ def remove():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('install.html',data=data)
+        return render_template('remove.html',data=data)
 
 
 @app.route('/forget', methods=['GET'])

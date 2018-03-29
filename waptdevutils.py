@@ -58,10 +58,10 @@ from setuphelpers import registered_organization,makepath,filecopyto,run
 from setuphelpers import mkdirs,isfile,remove_file,get_file_properties,messagebox
 from setuphelpers import uac_enabled,inifile_readstring,shell_launch
 
-from waptutils import ensure_list,ensure_unicode
+from waptutils import ensure_list,ensure_unicode,Version
 from waptcrypto import check_key_password,SSLCABundle,SSLCertificate,SSLPrivateKey
 from waptcrypto import NOPASSWORD_CALLBACK,sha256_for_file
-from waptpackage import Version,PackageEntry,WaptRemoteRepo
+from waptpackage import PackageEntry,WaptRemoteRepo,PackageVersion
 
 from common import Wapt,WaptServer,WaptHostRepo,logger
 
@@ -207,18 +207,18 @@ def update_external_repo(repourl,search_string,proxy=None,myrepo=None,my_prefix=
             else:
                 my_package_name = package.package
             my_package = myrepo.get(my_package_name)
-            if my_package and Version(my_package.version)<Version(package.version):
+            if my_package and PackageVersion(my_package.version)<PackageVersion(package.version):
                 result.append(package.as_dict())
         return result
     else:
         return [p.as_dict() for p in packages]
 
-def get_packages_filenames(packages_names,with_depends=True,waptconfigfile=None,repo_name='wapt-templates',remoterepo=None):
+def get_packages_filenames(packages,with_depends=True,waptconfigfile=None,repo_name='wapt-templates',remoterepo=None):
     """Returns list of package filenames (latest version) and md5 matching comma separated list of packages names and their dependencies
     helps to batch download a list of selected packages using tools like curl or wget
 
     Args:
-        packages_names (list or csv str): list of package names
+        packages (list): list of package entries as dicts or PackageEntry
         with_depends (bool): get recursively the all depends filenames
         waptconfigfile (str): path to wapt ini file
         repo_name : section name in wapt ini file for repo parameters (repo_url, http_proxy, timeout, verify_cert)
@@ -244,16 +244,20 @@ def get_packages_filenames(packages_names,with_depends=True,waptconfigfile=None,
         remoterepo = WaptRemoteRepo(name=repo_name,config=config)
         remoterepo.update()
 
-    packages_names = ensure_list(packages_names)
-    for name in packages_names:
-        entries = remoterepo.packages_matching(name)
-        if entries:
-            pe = entries[-1]
-            result.append((pe.filename,pe.md5sum,))
-            if with_depends and pe.depends:
-                for (fn,md5) in get_packages_filenames(pe.depends,remoterepo = remoterepo):
-                    if not fn in result:
-                        result.append((fn,md5,))
+    for pe in packages:
+        if not isinstance(pe,PackageEntry):
+            pe = PackageEntry(**pe)
+
+        result.append((pe.filename,pe.md5sum,))
+        if with_depends and pe.depends:
+            depends_list = []
+            for depname in ensure_list(pe.depends):
+                pe_dep = remoterepo.packages_matching(depname)
+                if pe_dep:
+                    depends_list.append(pe_dep[-1])
+            for (fn,md5) in get_packages_filenames(depends_list,remoterepo = remoterepo):
+                if not fn in result:
+                    result.append((fn,md5,))
     return result
 
 def duplicate_from_file(package_filename,new_prefix='test',target_directory=None,authorized_certs=None):
@@ -424,12 +428,6 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
     if sign_key is None:
         sign_key = sign_certs[0].matching_key_in_dirs(private_key_password=key_password)
 
-    hosts_list = ensure_list(hosts_list)
-    host_repo = WaptHostRepo(name='wapt-host',host_id=hosts_list,cabundle = cabundle)
-    host_repo.load_config_from_file(waptconfigfile)
-    total_hosts = len(host_repo.packages)
-    discarded_uuids = [p.package for p in host_repo.discarded]
-
     try:
         import waptconsole
         progress_hook = waptconsole.UpdateProgress
@@ -442,6 +440,15 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
                     msg='Done'
                 print("%s%s"%(msg,' '*(80-len(msg))))
         progress_hook = print_progress
+
+    hosts_list = ensure_list(hosts_list)
+
+    progress_hook(True,0,len(hosts_list),'Loading %s hosts packages' % len(hosts_list))
+
+    host_repo = WaptHostRepo(name='wapt-host',host_id=hosts_list,cabundle = cabundle)
+    host_repo.load_config_from_file(waptconfigfile)
+    total_hosts = len(host_repo.packages)
+    discarded_uuids = [p.package for p in host_repo.discarded]
 
     hosts_list = ensure_list(hosts_list)
     append_depends = ensure_list(append_depends)
@@ -536,59 +543,104 @@ def get_computer_groups(computername):
                 groups.append(cn)
     return groups
 
-def add_ads_groups(waptconfigfile,hosts_list,wapt_server_user,wapt_server_passwd,key_password=None):
-    # initialise wapt api with local config file
-    wapt = Wapt(config_filename = waptconfigfile)
-    wapt.dbpath=':memory:'
+def add_ads_groups(waptconfigfile,
+        hostdicts_list,
+        sign_certs=None,
+        sign_key=None,
+        key_password=None,
+        wapt_server_user=None,wapt_server_passwd=None,
+        cabundle = None):
 
-    # get current packages status from repositories
-    wapt.update(register=False,filter_on_host_cap=False)
+    if sign_certs is None:
+        sign_bundle_fn = inifile_readstring(waptconfigfile,u'global',u'personal_certificate_path')
+        sign_bundle = SSLCABundle(sign_bundle_fn)
+        sign_certs = sign_bundle.certificates()
+        # we assume a unique signer.
+        if cabundle is None:
+            cabundle = sign_bundle
 
-    hosts_list = ensure_list(hosts_list)
+    if not sign_certs:
+        raise Exception(u'No personal signer certificate found in %s' % sign_bundle_fn)
 
-    # get the collection of hosts from waptserver inventory
-    all_hosts = wapt.waptserver.get('api/v1/hosts?columns=uuid,computer_fqdn,depends',auth=(wapt_server_user,wapt_server_passwd))['result']
-    if hosts_list:
-        hosts = [ h for h in all_hosts if h['computer_fqdn'] in hosts_list]
-    else:
-        hosts = hosts_list
+    if sign_key is None:
+        sign_key = sign_certs[0].matching_key_in_dirs(private_key_password=key_password)
 
-    result = []
+    main_repo = WaptHostRepo(name='wapt',cabundle = cabundle)
+    main_repo.load_config_from_file(waptconfigfile)
 
-    for h in hosts:
+    host_repo = WaptHostRepo(name='wapt-host',host_id=[h['uuid'] for h in hostdicts_list],cabundle = cabundle)
+    host_repo.load_config_from_file(waptconfigfile)
+
+    total_hosts = len(host_repo.packages)
+    discarded_uuids = [p.package for p in host_repo.discarded]
+
+
+    try:
+        import waptconsole
+        progress_hook = waptconsole.UpdateProgress
+    except ImportError as e:
+        def print_progress(show=False,n=0,max=100,msg=''):
+            if show:
+                print('%s %s/%s\r' % (msg,n,max),end='')
+            else:
+                if not msg:
+                    msg='Done'
+                print("%s%s"%(msg,' '*(80-len(msg))))
+        progress_hook = print_progress
+
+    packages = []
+    discarded = []
+    unchanged = []
+
+    try:
+        progress_hook(True,0,len(hostdicts_list),'Editing %s hosts' % len(hostdicts_list))
+        i = 0
+        for h in hostdicts_list:
+            try:
+                host_id = h['uuid']
+                hostname = h['computer_fqdn']
+                groups = get_computer_groups(h['computer_name'])
+                host_package = host_repo.get(host_id,PackageEntry(package=host_id,section='host'))
+                if progress_hook(True,i,len(hostdicts_list),'Checking %s' % host_package.package):
+                    break
+
+                wapt_groups = ensure_list(host_package['depends'])
+                additional = [group for group in groups if not group in wapt_groups and main_repo.get(group)]
+                if additional:
+                    if progress_hook(True,i,len(hostdicts_list),'Editing %s' % host_package.package):
+                        break
+                    host_package.depends = ','.join(wapt_groups.extend(additional))
+                    host_package.build_management_package()
+                    host_package.inc_build()
+                    host_file = host_package.build_management_package()
+                    host_package.sign_package(sign_certs,sign_key)
+                    packages.append(host_package)
+                else:
+                    unchanged.append(host_package.package)
+            except:
+                discarded.append(host_package.package)
+
+        # upload all in one step...
+        progress_hook(True,3,3,'Upload %s host packages' % len(packages))
+        server = WaptServer().load_config_from_file(waptconfigfile)
+        server.upload_packages(packages,auth=(wapt_server_user,wapt_server_passwd),progress_hook=progress_hook)
+        return dict(updated = packages,
+                    discarded = discarded,
+                    unchanged = unchanged)
+
+    finally:
+        logger.debug('Cleanup')
         try:
-            hostname = h['computer_fqdn']
-            print('Computer %s... \r' % hostname,end='')
-
-            groups = get_computer_groups(h['computer_name'])
-            wapt_groups = h['depends']
-            additional = [ group for group in groups if not group in wapt_groups and wapt.is_available(group) ]
-
-            if additional:
-                # now update the host package : download and append missing packages
-                tmpdir = mkdtemp()
-                try:
-                    package = wapt.edit_host(hostname,target_directory = tmpdir)
-                    control = package['package']
-                    depends =  ensure_list(control.depends)
-
-                    control.depends = ','.join(depends+additional)
-                    control.save_control_to_wapt(package.sourcespath)
-                    buid_res = wapt.build_upload(package.sourcespath, private_key_passwd = key_password, wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd,
-                        inc_package_release=True)[0]
-                    print("  done, new packages: %s" % (','.join(additional)))
-                    if os.path.isfile(buid_res):
-                        os.remove(buid_res)
-                    result.append(hostname)
-                finally:
-                    # cleanup of temporary
-                    if os.path.isdir(tmpdir):
-                        rmtree(tmpdir)
-        except Exception as e:
-            print(" error %s" % e)
-            raise
-
-    return result
+            i = 0
+            for s in packages:
+                i+=1
+                progress_hook(True,i,len(packages),'Cleanup')
+                if os.path.isfile(s.localpath):
+                    os.remove(s.localpath)
+            progress_hook(False)
+        except WindowsError as e:
+            logger.critical('Unable to remove temporary directory %s: %s'% (s,repr(e)))
+            progress_hook(False)
 
 def create_waptwua_package(waptconfigfile,wuagroup='default',wapt_server_user=None,wapt_server_passwd=None,key_password=None):
     """Create/update - upload a package to enable waptwua and set windows_updates_rules
