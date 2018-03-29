@@ -1003,8 +1003,8 @@ def test_licencing():
     k = SSLPrivateKey('c:/private/licencing.pem')
     l = licencing.WaptLicence(licence_nr=str(uuid.uuid4()),
         product='WAPT Enterprise',
-        count=300,
-        licenced_to=u'Arrk Europe Shapers',
+        count=0,
+        licenced_to=u'xxx',
         contact_email=u'thierry.lermite@arrkeurope.com',
         features=['full'],
         )
@@ -1034,10 +1034,16 @@ def gen_perso(cn,email,**kwargs):
     os.startfile('c:/private/%s-tis.csr' % cn)
 
 
+def test_packagenewestversion():
+    r = WaptRemoteRepo('https://wapt.lesfourmisduweb.org/wapt',http_proxy='http://proxy:3128')
+    scp = r.search('winscp',newest_only=True)
+    print(scp)
+
 if __name__ == '__main__':
     #gen_perso('htouvet',email='htouvet@tranquil.it')
-    test_licencing()
+    test_packagenewestversion()
     sys.exit(0)
+    test_licencing()
 
     setup_test()
 
