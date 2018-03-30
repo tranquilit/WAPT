@@ -3672,7 +3672,7 @@ def need_install(key,min_version=None,force=False,get_version=None):
 
     Args:
         key (str) : uninstall key
-        min_version (str) : minimum version or None if don't check verion (like when key is specific for each soft version)
+        min_version (str) : minimum version or None if don't check version (like when key is specific for each soft version)
         get_version (callable) : optional func to get installed software version from one installed_softwares item
             if not provided, version is taken from 'version' attribute in uninstall registry
     Returns:
@@ -3853,7 +3853,7 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
         if key and not installed_softwares(uninstallkey=key):
             error('Setup %s has been ran but the uninstall key %s can not be found' % (exe,key))
         if key and min_version is not None and need_install(key,min_version=min_version or None,force=False,get_version=get_version):
-            error('Setup %s has been and uninstall key %s found but version is not good' % (exe,key))
+            error('%s has been executed and UninstallKey %s has been found in the registry, but version in registry does not match requirements of min_version=%s' % (exe,key,min_version))
     else:
         print('Exe setup %s already installed. Skipping' % exe)
 
