@@ -35,10 +35,17 @@ Configure and Build a Lazarus app
 def set_lpi_options(lpi_fn,waptedition,waptversion):
     """Change the product name and product version of lazarus lpi project"""
     lpi = etree.parse(lpi_fn)
+    vi = lpi.find('ProjectOptions/VersionInfo')
     major = lpi.find('ProjectOptions/VersionInfo/MajorVersionNr').attrib['Value'] = waptversion.members[0]
     minor = lpi.find('ProjectOptions/VersionInfo/MinorVersionNr').attrib['Value'] = waptversion.members[1]
-    revision = lpi.find('ProjectOptions/VersionInfo/RevisionNr').attrib['Value'] = waptversion.members[2]
-    build = lpi.find('ProjectOptions/VersionInfo/BuildNr').attrib['Value'] = waptversion.members[3]
+    et_revision = lpi.find('ProjectOptions/VersionInfo/RevisionNr')
+    if et_revision is None:
+        et_revision = etree.SubElement(vi,'RevisionNr')
+    revision = et_revision.attrib['Value'] = waptversion.members[2]
+    et_build = lpi.find('ProjectOptions/VersionInfo/BuildNr')
+    if et_build is None:
+        et_build = etree.SubElement(vi,'BuildNr')
+    build = et_build.attrib['Value'] = waptversion.members[3]
     st = lpi.find('ProjectOptions/VersionInfo/StringTable')
     st.attrib['ProductName'] = 'WAPT %s Edition' % waptedition.capitalize()
     st.attrib['ProductVersion'] = '%s.%s.%s' % (major,minor,revision)
@@ -106,7 +113,7 @@ def main():
     parser=OptionParser(usage=__doc__)
     parser.add_option("-l","--laz-build-path", dest="lazbuildpath", default=r'C:\codetyphon\typhon\bin32\typhonbuild.exe', help="Path to lazbuild or typhonbuild.exe (default: %default)")
     parser.add_option("-p","--primary-config-path", dest="primary_config_path", default='%APPDATA%\\typhon32', help="Path to lazbuild primary config dir. (default: %default)")
-    parser.add_option("-v","--wapt-version", dest="waptversion", default=waptutils.__version__, help="Wapt edition to build (community, enterprise...).  (default: %default)")
+    parser.add_option("-v","--wapt-version", dest="waptversion", default=waptutils.__version__, help="Wapt version to put in exe metadata. (default: %default)")
     parser.add_option("-e","--wapt-edition", dest="waptedition", default='community', help="Wapt edition to build (community, enterprise...).  (default: %default)")
     parser.add_option("-u","--update-hash-file", dest="update_hash_filepath", default=r'{lpi_dirname}\\..\\{lpi_name}.sha256',help="Hash file to update vars (lpi_rootname,lpi_name,lpi_path,lpi_dirname,lpi_basename) (default: <lpi-base-name>.sha256")
     parser.add_option("-c","--compress", action='store_true', dest="compress", default=False, help="Compress with UPX.  (default: %default)")
