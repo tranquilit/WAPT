@@ -152,6 +152,15 @@ except Exception as e:
     wsus = False
 
 def get_wapt_exe_version(exe):
+    """Returns FileVersion or ProductVersion of windows executables
+
+    Args:
+        exe (str): path to executable
+
+    Returns:
+        str: version string
+    """
+
     present = False
     version = None
     if os.path.exists(exe):
@@ -179,6 +188,9 @@ def _db_close(error):
 
 
 def requires_auth(f):
+    """Flask route decorator which requires Basic Auth http header
+    If not header, returns a 401 http status.
+    """
     @functools.wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
@@ -291,7 +303,8 @@ def get_timezone():
 
 
 def get_server_uuid():
-    """Create and/or returns this server UUID"""
+    """Returns this server UUID as configured in configuration file waptserver.ini
+    """
     server_uuid = app.conf.get('server_uuid', None)
     return server_uuid
 
@@ -377,6 +390,8 @@ def index():
 @check_auth_is_provided
 def register_host():
     """Add a new host into database, and return registration info
+    If path is add_host_kerberos, assume there is (already validated by NGINX) computer kerberos SPN in the user part of Authorization http header else
+    if path is add_host, requires a valid user/password combination in Authorization http header
     """
     try:
         starttime = time.time()
@@ -484,6 +499,13 @@ def register_host():
 @app.route('/update_host',methods=['HEAD','POST'])
 def update_host():
     """Update localstatus of computer, and return known registration info
+    Requires a base64 encoded signature in X-Signature http header (unless allow_unsigned_status_data config is True)
+    This signature is checked using the host certificate stored in Hosts.host_certificate field in database.
+    Data is supplied as a JSon (optionnaly gzipped) POST data.
+    Required keys are:
+        uuid
+        host_info.computer_fqdn
+
     """
     try:
         starttime = time.time()
@@ -564,6 +586,11 @@ def update_host():
         return make_response_from_exception(e)
 
 def get_repo_packages():
+    """Returns list of package entries for this server main packages repository
+
+    Returns:
+        list: of PackageEntry
+    """
     if not hasattr(g,'packages') or g.packages is None:
         try:
             g.packages = WaptLocalRepo(app.conf['wapt_folder'])
@@ -616,6 +643,14 @@ def sync_host_groups(entry):
 @app.route('/upload_package/<string:filename>', methods=['HEAD','POST'])
 @requires_auth
 def upload_package(filename=''):
+    """Handles the upload of a single package
+
+    Args:
+        filename (str): base filename of the uploaded package.
+
+    Returns:
+        Response: json response with keys 'status': ('OK','ERROR') and message (str)
+    """
     try:
         g.packages = None
         tmp_target = ''
@@ -664,6 +699,19 @@ def upload_package(filename=''):
 @app.route('/api/v3/upload_packages',methods=['HEAD','POST'])
 @requires_auth
 def upload_packages():
+    """Handle the streamed upload of multiple packages
+
+    Args:
+        POST body are packages file handles
+
+    Returns:
+        Response: json message with keys:
+                    'success' (bool)
+                    'error_code' if success is False
+                    'msg' (str)
+                    'result' (data)
+                    'request_time' (float)
+    """
     class PackageStream(object):
         def __init__(self,stream,chunk_size=10*1024*1024):
             self.stream = stream
@@ -780,6 +828,18 @@ def upload_packages():
 @app.route('/api/v3/upload_hosts',methods=['HEAD','POST'])
 @requires_auth
 def upload_host():
+    """Handle the upload of multiple host packages
+
+    Args:
+
+    Returns:
+        Response: json message with keys:
+                    'success' (bool)
+                    'error_code' if success is False
+                    'msg' (str)
+                    'result' (data)
+                    'request_time' (float)
+    """
     try:
         starttime = time.time()
         done = []
