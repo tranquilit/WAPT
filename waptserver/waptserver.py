@@ -1884,7 +1884,7 @@ def host_data():
                 .select(Hosts.uuid, Hosts.computer_fqdn, Hosts.fieldbyname(field))\
                 .where(Hosts.uuid == uuid)\
                 .dicts()\
-                .first(1)
+                .first()
 
             if data is None:
                 raise EWaptUnknownHost(
@@ -1978,7 +1978,7 @@ def host_tasks_status():
                     )\
             .where(Hosts.uuid == uuid)\
             .dicts()\
-            .first(1)
+            .first()
         if host_data and host_data.get('listening_address', None):
             result = []
 
