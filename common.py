@@ -157,15 +157,8 @@ class LogInstallOutput(BaseObjectClass):
                 if threading.current_thread() == self.threadid:
                     self.waptdb.update_install_status(self.rowid,'RUNNING',txtdb if not txtdb == None else None)
 
-    def writing(self):
-        with self.lock:
-            return False
-
-    def __getattrib__(self, name):
-        if hasattr(self.console,'__getattrib__'):
-            return self.console.__getattrib__(name)
-        else:
-            return self.console.__getattribute__(name)
+    def __getattr__(self, name):
+        return getattr(self.console,name)
 
 
 ##################
