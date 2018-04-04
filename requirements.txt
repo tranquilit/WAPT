@@ -23,7 +23,7 @@ Flask-Babel==0.11.2
 flask-hmacauth==0.3.9
 Flask-Login==0.4.0
 flask-paginate==0.5.1
-Flask-SocketIO==2.9.2
+Flask-SocketIO==2.9.6
 future==0.16.0
 gitpython
 greenlet==0.4.13
@@ -49,7 +49,7 @@ pylint==1.7.4
 pyOpenSSL==17.5.0
 pyparsing==2.2.0
 python-engineio==2.0.4
-python-socketio==1.8.3
+python-socketio==1.9.0
 pytz==2017.2
 requests==2.18.4
 Rocket==1.2.4
