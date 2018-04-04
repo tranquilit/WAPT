@@ -918,6 +918,8 @@ def upload_host():
 @app.route('/upload_waptsetup',methods=['HEAD','POST'])
 @requires_auth
 def upload_waptsetup():
+    """Handle the uplaod of customized waptagent.exe into wapt repository
+    """
     waptagent = os.path.join(app.conf['wapt_folder'], 'waptagent.exe')
     logger.debug(u'Entering upload_waptsetup')
     tmp_target = None
@@ -968,6 +970,11 @@ def reload_config():
 
 
 def get_dns_domain():
+    """Get DNS domain part of the FQDN
+
+    Returns:
+        str
+    """
     try:
         parts = socket.getfqdn().lower().split('.',1)
         if len(parts)>1:
@@ -984,6 +991,7 @@ def get_wapt_edition():
 @app.route('/api/v3/change_password',methods=['HEAD','POST'])
 @requires_auth
 def change_password():
+    """Handle change of admin master password"""
     if request.method == 'POST':
         try:
             config_file = app.config['CONFIG_FILE']
@@ -1064,6 +1072,13 @@ def login():
 @app.route('/api/v3/packages_delete',methods=['HEAD','POST'])
 @requires_auth
 def packages_delete():
+    """Removes a list of packages by filenames
+    After removal, the repository package index "Packages" is updated.
+
+    Args:
+        POST body is a json list of packages filenames
+
+    """
     errors = []
     deleted = []
 
@@ -1222,13 +1237,21 @@ def reset_hosts_sid():
 
 def proxy_host_request(request, action):
     """Proxy a waptconsole action to wapt clients using websockets
-            uuid: can be a list or a single uuid
-            notify_user: 0/1
-            notify_server: 0/1
+
+    Args:
+        uuid: can be a list or a single uuid
+        notify_user: 0/1
+        notify_server: 0/1
+
     Returns:
         dict:
-            'success':
-            'errors':
+            'result':
+                'success' (list)
+                'errors' (list)
+            'msg' (str)
+            'success'(bool)
+            'request_time' (float)
+            'error_code'
     """
     try:
         start_time = time.time()
