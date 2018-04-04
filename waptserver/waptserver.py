@@ -37,7 +37,7 @@ from waptserver_config import __version__
 from eventlet import monkey_patch
 
 # os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
-monkey_patch(os=False,thread=False)
+monkey_patch()
 
 import time
 import json
