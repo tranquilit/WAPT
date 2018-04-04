@@ -588,10 +588,9 @@ def sync_host_groups(entry):
 
     Args:
         entry (PackageEntry): Host package entry
-        packages:
 
     Returns
-
+        tuple: (added depends, removed depends)
     """
     try:
         host_id = entry.package
@@ -607,7 +606,7 @@ def sync_host_groups(entry):
         if to_delete:
             HostGroups.delete().where((HostGroups.host == host_id) & (HostGroups.group_name.in_(to_delete))).execute()
         if to_add:
-            HostGroups.insert_many([dict(host=host_id, group_name=group) for group in to_add]).execute()
+            HostGroups.insert_many([dict(host=host_id, group_name=group) for group in to_add]).execute() #pylint: disable=no-value-for-parameter
         return (to_add,to_delete)
     except IntegrityError  as e:
         wapt_db.rollback()
@@ -977,7 +976,7 @@ def login():
         if user is not None and password is not None:
             if check_auth(user, password):
                 try:
-                    hosts_count = Hosts.select(fn.count(Hosts.uuid)).tuples().first()[0]
+                    hosts_count = Hosts.select(fn.COUNT(Hosts.uuid)).tuples().first()[0]
                 except:
                     hosts_count = None
                 result = dict(
@@ -1446,7 +1445,7 @@ def get_ad_sites():
     """
     try:
         starttime = time.time()
-        result = [r[0] for r in Hosts.select(fn.distinct(Hosts.computer_ad_site)).where(~Hosts.computer_ad_site.is_null()).tuples()]
+        result = [r[0] for r in Hosts.select(fn.DISTINCT(Hosts.computer_ad_site)).where(~Hosts.computer_ad_site.is_null()).tuples()] #pylint: disable=too-many-function-args
 
         message = 'AD Sites List'
         return make_response(result=result, msg=message, request_time=time.time() - starttime)
@@ -1585,7 +1584,7 @@ def build_fields_list(model, columns):
             result.append(model._meta.fields[fname])
         elif fname == 'depends':
             # subquery with result aggregation.
-            result.append(HostGroups.select(fn.string_agg(HostGroups.group_name,',')).where(
+            result.append(HostGroups.select(fn.STRING_AGG(HostGroups.group_name,',')).where(
                 (HostGroups.host_id==Hosts.uuid)
                 ).alias('depends'))
         else:
@@ -1842,14 +1841,14 @@ def usage_statistics():
     """returns some anonymous usage statistics to give an idea of depth of use"""
     try:
         host_data = Hosts.select(
-            fn.count(Hosts.uuid).alias('hosts_count'),
-            fn.min(Hosts.last_seen_on).alias('oldest_query'),
-            fn.max(Hosts.last_seen_on).alias('newest_query'),
-        ).dicts().first()
+            fn.COUNT(Hosts.uuid).alias('hosts_count'),
+            fn.MIN(Hosts.last_seen_on).alias('oldest_query'),
+            fn.MAX(Hosts.last_seen_on).alias('newest_query'),
+        ).where(Hosts.server_uuid == server_uuid).dicts().first()
 
         installed_packages = HostPackagesStatus.select(
             HostPackagesStatus.install_status,
-            fn.count(HostPackagesStatus.id),  # pylint: disable=no-member
+            fn.COUNT(HostPackagesStatus.id),  # pylint: disable=no-member
         )\
             .group_by(HostPackagesStatus.install_status)\
             .dicts()
