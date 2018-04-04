@@ -28,6 +28,7 @@ type
     Fcommon: Variant;
     FLanguage: String;
     FCachedPrivateKeyPassword: Ansistring;
+    FPackagesAuthorizedCA: Variant;
     FMainWaptRepo: Variant;
     FWaptHostRepo: Variant;
     FWAPT: Variant;
@@ -45,6 +46,7 @@ type
     function Getcommon: Variant;
     function GetIsEnterpriseEdition: Boolean;
     function GetMainWaptRepo: Variant;
+    function GetPackagesAuthorizedCA: Variant;
     function GetWaptHostRepo: Variant;
     function getprivateKeyPassword: Ansistring;
     function Getsetuphelpers: Variant;
@@ -57,6 +59,7 @@ type
     procedure Setcommon(AValue: Variant);
     procedure SetIsEnterpriseEdition(AValue: Boolean);
     procedure SetMainWaptRepo(AValue: Variant);
+    procedure SetPackagesAuthorizedCA(AValue: Variant);
     procedure SetWaptHostRepo(AValue: Variant);
     procedure setprivateKeyPassword(AValue: Ansistring);
     procedure SetWAPT(AValue: Variant);
@@ -82,6 +85,7 @@ type
     property Language:String read FLanguage write SetLanguage;
     property MainWaptRepo:Variant read GetMainWaptRepo write SetMainWaptRepo;
     property WaptHostRepo:Variant read GetWaptHostRepo write SetWaptHostRepo;
+    property PackagesAuthorizedCA:Variant read GetPackagesAuthorizedCA write SetPackagesAuthorizedCA;
 
     property WAPT:Variant read GetWAPT write SetWAPT;
     property waptcrypto:Variant read Getwaptcrypto;
@@ -278,6 +282,7 @@ begin
   FWaptConfigFileName:=AValue;
 
   // reset Variant to force recreate Wapt instance
+  FPackagesAuthorizedCA := Unassigned;
   FMainWaptRepo := Unassigned;
   FWaptHostRepo := Unassigned;
   FWapt := Unassigned;
@@ -611,6 +616,12 @@ begin
   FMainWaptRepo:=AValue;
 end;
 
+procedure TDMPython.SetPackagesAuthorizedCA(AValue: Variant);
+begin
+  if VarCompareValue(FPackagesAuthorizedCA,AValue) = vrEqual  then Exit;
+  FPackagesAuthorizedCA := AValue;
+end;
+
 procedure TDMPython.SetWaptHostRepo(AValue: Variant);
 begin
   if VarCompareValue(FWaptHostRepo,AValue) = vrEqual  then Exit;
@@ -748,7 +759,7 @@ end;
 function TDMPython.GetMainWaptRepo: Variant;
 var
   section:String;
-  VWaptConfigFileName:Variant;
+  VWaptConfigFileName,cabundle:Variant;
 begin
   if VarIsEmpty(FMainWaptRepo) then
   try
@@ -759,10 +770,10 @@ begin
         section := 'wapt'
       else
         section := 'global';
-      FMainWaptRepo := dmpython.waptpackage.WaptRemoteRepo(name := section);
+      cabundle := PackagesAuthorizedCA;
+      FMainWaptRepo := dmpython.waptpackage.WaptRemoteRepo(name := section {, cabundle := cabundle});
       VWaptConfigFileName:=PyUTF8Decode(WaptConfigFileName);
       FMainWaptRepo.load_config_from_file(VWaptConfigFileName);
-
     finally
       Free;
     end;
@@ -772,10 +783,21 @@ begin
   Result := FMainWaptRepo;
 end;
 
+function TDMPython.GetPackagesAuthorizedCA: Variant;
+begin
+  if VarIsEmpty(FPackagesAuthorizedCA) then
+  try
+      FPackagesAuthorizedCA := waptcrypto.SSLCABundle(cert_pattern_or_dir := PyUTF8Decode(AuthorizedCertsDir));
+      FPackagesAuthorizedCA.add_pems(IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl\*.crt');
+  finally
+  end;
+  Result := FPackagesAuthorizedCA;
+end;
+
 function TDMPython.GetWaptHostRepo: Variant;
 var
   section:String;
-  VWaptConfigFileName:Variant;
+  VWaptConfigFileName,cabundle:Variant;
 begin
   if VarIsEmpty(FWaptHostRepo) then
   try
@@ -785,7 +807,11 @@ begin
         section := 'wapt-host'
       else
         section := 'global';
-      FWaptHostRepo := dmpython.common.WaptHostRepo(name := section);
+
+      cabundle := VarPyth.None;
+      // if check package signatures...
+      //cabundle := PackagesAuthorizedCA;
+      FWaptHostRepo := dmpython.common.WaptHostRepo(name := section, cabundle := cabundle );
       VWaptConfigFileName := PyUTF8Decode(WaptConfigFileName);
       FWaptHostRepo.load_config_from_file(VWaptConfigFileName);
     finally

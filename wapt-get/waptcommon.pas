@@ -1405,7 +1405,7 @@ begin
     DefaultSourcesRoot := ReadString('global','default_sources_root','');
 
     WaptPersonalCertificatePath :=  ReadString('global','personal_certificate_path','');
-
+    AuthorizedCertsDir := ReadString('global','public_certs_dir',MakePath([WaptBaseDir,'ssl']));
     Result := True
 
   finally

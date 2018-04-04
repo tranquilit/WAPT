@@ -1503,7 +1503,9 @@ begin
               mkdir(AppLocalDir + 'cache');
 
             Proxy := DMPython.MainWaptRepo.http_proxy;
-            cabundle:= DMPython.MainWaptRepo.cabundle;
+            cabundle:= VarPyth.None;
+            // if check package signature...
+            //cabundle:=DMPython.PackagesAuthorizedCA;
 
             IdWget(VarPythonAsString(GridPackages.FocusedRow.S['repo_url']+'/'+filename), filePath,
                 ProgressForm, @updateprogress, Proxy);
