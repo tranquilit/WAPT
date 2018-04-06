@@ -5457,6 +5457,8 @@ class Wapt(BaseObjectClass):
                 setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_msu.py')
             elif installer_ext == '.exe':
                 setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_exe.py')
+            elif os.path.isdir(installer_path):
+                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_dir.py')
             else:
                 setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template.py')
         else:

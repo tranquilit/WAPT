@@ -16,18 +16,18 @@ def is_x64(exefilename):
 def find_exes(root):
     """ Returns all .exe in root directory and subdirs"""
     result = []
-    for entry in os.listdir(makepath(root,adir)):
+    for entry in os.listdir(root):
         if os.path.isdir(entry):
             result.extend(find_exes(makepath(root,entry)))
         elif glob.fnmatch.fnmatch(entry,'*.exe'):
             result.append(makepath(root,entry))
-    result = result
+    return result
 
 def sort_path_length(exes):
-    return exes.sort(key=lambda a:len(os.path.splitext(a)))
+    return sorted(exes,key=lambda a:len(os.path.splitext(a)))
 
 def find_app(adir):
-    exes = reversed(sort_path_length(find_exes(adir))).sort(key = lambda a: -os.stat(a).st_size)
+    exes = sorted(sort_path_length(find_exes(adir)),key = lambda a: -os.stat(a).st_size)
     return exes[0]
 
 """
@@ -50,7 +50,7 @@ def install():
         destdir = makepath(programfiles32,install_dir)
 
     print('Installing %(packagename)s into {}'.format(destdir))
-    mkdirs(destdir())
+    mkdirs(destdir)
 
     copytree2(install_dir,destdir)
     applabel = get_file_properties(app)['FileDescription'] or get_file_properties(app)['ProductName']
@@ -59,6 +59,6 @@ def install():
     register_windows_uninstall(control)
 
 def uninstall():
-    remove_programs_menu_shortcut()
+    #remove_programs_menu_shortcut(applabel)
     unregister_uninstall(control.package)
 
