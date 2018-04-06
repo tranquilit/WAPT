@@ -21,8 +21,7 @@ program waptget;
 # -----------------------------------------------------------------------
 }
 
-{$mode delphiunicode}
-{.$mode objfpc}{$H+}
+{$mode objfpc}{$H+}
 
 uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
@@ -400,7 +399,7 @@ begin
         if action='register' then
         begin
           Logger('Call register URL...',DEBUG);
-          res := WAPTLocalJsonGet('register.json?notify_user=0&notify_server=1','admin','',1000,HTTPLogin);
+          res := WAPTLocalJsonGet('register.json?notify_user=0&notify_server=1','admin','',1000,@HTTPLogin);
           if (res = Nil) or (res.AsObject=Nil) or not res.AsObject.Exists('id') then
             WriteLn(utf8decode(format(rsErrorLaunchingRegister, [res.AsString])))
           else
@@ -414,9 +413,9 @@ begin
           begin
             Logger('Call '+action+'?package='+package.AsString,DEBUG);
             if HasOption('f','force') then
-              res := WAPTLocalJsonGet(Action+'.json?package='+package.AsString+'&force=1&notify_user=0','admin','',1000,HTTPLogin)
+              res := WAPTLocalJsonGet(Action+'.json?package='+package.AsString+'&force=1&notify_user=0','admin','',1000,@HTTPLogin)
             else
-              res := WAPTLocalJsonGet(Action+'.json?package='+package.AsString+'&notify_user=0','admin','',1000,HTTPLogin);
+              res := WAPTLocalJsonGet(Action+'.json?package='+package.AsString+'&notify_user=0','admin','',1000,@HTTPLogin);
             if (action='install') or (action='forget')  then
             begin
               // single action
@@ -521,15 +520,9 @@ begin
     with ApythonEngine do
     begin
       DllName := 'python27.dll';
-      //APIVersion := 1013;
-      RegVersion := '2.7';
       UseLastKnownVersion := False;
-      Initialize;
+      LoadDLL;
       Py_SetProgramName(PAnsiChar(ParamStr(0)));
-      SetFlag(Py_VerboseFlag,     False);
-      SetFlag(Py_InteractiveFlag, True);
-      SetFlag(Py_NoSiteFlag,      True);
-      SetFlag(Py_IgnoreEnvironmentFlag, True);
     end;
 
     // Load main python application

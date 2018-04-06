@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8, PythonEngine, PythonGUIInputOutput,
-  VarPyth, vte_json, superobject, fpjson, jsonparser, DefaultTranslator,
+  VarPyth, vte_json, superobject, fpjson, jsonparser, DefaultTranslator,LCLTranslator,
   Controls, WrapDelphi;
 
 type

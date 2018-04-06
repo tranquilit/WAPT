@@ -56,7 +56,7 @@ type
 
 implementation
 
-uses FileUtil, soutils,sodbutils, Variants;
+uses LazFileUtils, soutils,sodbutils, Variants;
 
 constructor TWAPTDB.create(dbpath:String);
 begin

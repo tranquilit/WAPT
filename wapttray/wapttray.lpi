@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="9"/>
+    <Version Value="10"/>
     <PathDelim Value="\"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
@@ -22,7 +22,7 @@
       <MinorVersionNr Value="5"/>
       <RevisionNr Value="1"/>
       <BuildNr Value="23"/>
-      <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Tray Icon" ProductName="WAPT" ProductVersion=""/>
+      <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Tray Icon" ProductName="WAPT"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
@@ -38,34 +38,30 @@
         <CommandLineParams Value="--lang=en"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="7">
+    <RequiredPackages Count="6">
       <Item1>
         <PackageName Value="pltis_wapt"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="pltis_delphizmq"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_delphizmq"/>
+        <PackageName Value="pltis_utils"/>
       </Item3>
       <Item4>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_superobject"/>
       </Item4>
       <Item5>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="FCL"/>
       </Item5>
       <Item6>
-        <PackageName Value="FCL"/>
-      </Item6>
-      <Item7>
         <PackageName Value="LCL"/>
-      </Item7>
+      </Item6>
     </RequiredPackages>
     <Units Count="6">
       <Unit0>
         <Filename Value="wapttray.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="wapttray"/>
       </Unit0>
       <Unit1>
         <Filename Value="udmwapttray.pas"/>
@@ -89,7 +85,6 @@
         <ComponentName Value="VisWAPTTray"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uwapttray"/>
       </Unit4>
       <Unit5>
         <Filename Value="uwapttrayres.pas"/>
@@ -131,11 +126,7 @@
         <ShowHints Value="False"/>
         <ShowHintsForUnusedUnitsInMainSrc Value="True"/>
       </Verbosity>
-      <CompilerMessages>
-        <MsgFileName Value=""/>
-      </CompilerMessages>
-      <CustomOptions Value="-dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
+      <CustomOptions Value="-dUseCThreads -dENTERPRISE"/>
     </Other>
   </CompilerOptions>
   <Debugging>

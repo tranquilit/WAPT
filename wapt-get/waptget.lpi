@@ -1,709 +1,805 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="9" />
-    <PathDelim Value="\" />
+    <Version Value="10"/>
+    <PathDelim Value="\"/>
     <General>
       <Flags>
-        <MainUnitHasCreateFormStatements Value="False" />
+        <MainUnitHasCreateFormStatements Value="False"/>
       </Flags>
-      <MainUnit Value="0" />
-      <Title Value="wapt-get" />
-      <UseAppBundle Value="False" />
-      <ResourceType Value="res" />
-      <Icon Value="0" />
-      <ActiveWindowIndexAtStart Value="0" />
+      <MainUnit Value="0"/>
+      <Title Value="wapt-get"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+      <Icon Value="0"/>
     </General>
     <i18n>
-      <EnableI18N LFM="False" Value="True" />
-      <OutDir Value="..\languages" />
+      <EnableI18N Value="True" LFM="False"/>
+      <OutDir Value="..\languages"/>
     </i18n>
     <VersionInfo>
-      <UseVersionInfo Value="True" />
-      <AutoIncrementBuild Value="True" />
-      <MajorVersionNr Value="1" />
-      <MinorVersionNr Value="6" />
-      <BuildNr Value="0" />
-      <StringTable CompanyName="Tranquil IT Systems" LegalCopyright="Tranquil IT Systems 2012-2018" ProductName="WAPT Enterprise Edition" ProductVersion="1.6.0" />
-    <RevisionNr Value="0" /></VersionInfo>
-    <BuildModes Active="Default" Count="1">
-      <Item1 Default="True" Name="Default" />
+      <UseVersionInfo Value="True"/>
+      <AutoIncrementBuild Value="True"/>
+      <MajorVersionNr Value="1"/>
+      <MinorVersionNr Value="6"/>
+      <StringTable CompanyName="Tranquil IT Systems" LegalCopyright="Tranquil IT Systems 2012-2018" ProductName="WAPT Enterprise Edition" ProductVersion="1.6.0"/>
+    </VersionInfo>
+    <BuildModes Count="1" Active="Default">
+      <Item1 Name="Default" Default="True"/>
     </BuildModes>
     <PublishOptions>
-      <Version Value="2" />
-      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)" />
-      <ExcludeFileFilter Value="*.(bak|ppu|o|so);*~;backup" />
+      <Version Value="2"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|o|so);*~;backup"/>
     </PublishOptions>
     <RunParams>
       <local>
-        <FormatVersion Value="1" />
-        <CommandLineParams Value="--service upgrade" />
+        <FormatVersion Value="1"/>
+        <CommandLineParams Value="update"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="7">
+    <RequiredPackages Count="6">
       <Item1>
-        <PackageName Value="pltis_wapt" />
+        <PackageName Value="dcpcrypt_laz"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_indy" />
+        <PackageName Value="pltis_wapt"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_delphizmq" />
+        <PackageName Value="pltis_delphizmq"/>
       </Item3>
       <Item4>
-        <PackageName Value="pltis_utils" />
+        <PackageName Value="pltis_utils"/>
       </Item4>
       <Item5>
-        <PackageName Value="FCL" />
+        <PackageName Value="FCL"/>
       </Item5>
       <Item6>
-        <PackageName Value="pltis_python4delphi" />
+        <PackageName Value="pltis_superobject"/>
       </Item6>
-      <Item7>
-        <PackageName Value="pltis_superobject" />
-      </Item7>
     </RequiredPackages>
-    <Units Count="59">
+    <Units Count="67">
       <Unit0>
-        <Filename Value="waptget.lpr" />
-        <IsPartOfProject Value="True" />
-        <UnitName Value="waptget" />
-        <IsVisibleTab Value="True" />
-        <EditorIndex Value="0" />
-        <WindowIndex Value="0" />
-        <TopLine Value="468" />
-        <CursorPos X="102" Y="475" />
-        <UsageCount Value="222" />
-        <Loaded Value="True" />
-        <DefaultSyntaxHighlighter Value="Delphi" />
+        <Filename Value="waptget.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="527"/>
+        <CursorPos X="8" Y="528"/>
+        <UsageCount Value="222"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
-        <Filename Value="waptcommon.pas" />
-        <UnitName Value="waptcommon" />
-        <WindowIndex Value="0" />
-        <TopLine Value="979" />
-        <CursorPos X="5" Y="1007" />
-        <UsageCount Value="205" />
+        <Filename Value="waptcommon.pas"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="205"/>
         <Bookmarks Count="1">
-          <Item0 ID="2" X="43" Y="878" />
+          <Item0 X="43" Y="878" ID="2"/>
         </Bookmarks>
-        <DefaultSyntaxHighlighter Value="Delphi" />
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
-        <Filename Value="..\..\indy\IdDNSResolver.pas" />
-        <UnitName Value="IdDNSResolver" />
-        <WindowIndex Value="0" />
-        <TopLine Value="507" />
-        <CursorPos X="25" Y="544" />
-        <UsageCount Value="18" />
+        <Filename Value="..\..\indy\IdDNSResolver.pas"/>
+        <TopLine Value="507"/>
+        <CursorPos X="25" Y="544"/>
+        <UsageCount Value="18"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
-        <Filename Value="..\jcl\source\common\JclSysInfo.pas" />
-        <UnitName Value="JclSysInfo" />
-        <WindowIndex Value="0" />
-        <TopLine Value="5575" />
-        <CursorPos X="47" Y="5598" />
-        <UsageCount Value="192" />
+        <Filename Value="..\jcl\source\common\JclSysInfo.pas"/>
+        <TopLine Value="5575"/>
+        <CursorPos X="47" Y="5598"/>
+        <UsageCount Value="192"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit3>
       <Unit4>
-        <Filename Value="..\jcl\source\include\jcl.inc" />
-        <WindowIndex Value="0" />
-        <TopLine Value="1" />
-        <CursorPos X="1" Y="1" />
-        <UsageCount Value="192" />
+        <Filename Value="..\jcl\source\include\jcl.inc"/>
+        <UsageCount Value="192"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit4>
       <Unit5>
-        <Filename Value="..\superobject\superobject.pas" />
-        <UnitName Value="superobject" />
-        <WindowIndex Value="0" />
-        <TopLine Value="3146" />
-        <CursorPos X="31" Y="3164" />
-        <UsageCount Value="181" />
+        <Filename Value="..\superobject\superobject.pas"/>
+        <TopLine Value="3146"/>
+        <CursorPos X="31" Y="3164"/>
+        <UsageCount Value="181"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit5>
       <Unit6>
-        <Filename Value="soutils.pas" />
-        <UnitName Value="soutils" />
-        <WindowIndex Value="0" />
-        <TopLine Value="37" />
-        <CursorPos X="1" Y="44" />
-        <UsageCount Value="182" />
+        <Filename Value="soutils.pas"/>
+        <TopLine Value="37"/>
+        <CursorPos Y="44"/>
+        <UsageCount Value="182"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit6>
       <Unit7>
-        <Filename Value="tiscommon.pas" />
-        <UnitName Value="tiscommon" />
-        <WindowIndex Value="0" />
-        <TopLine Value="39" />
-        <CursorPos X="46" Y="55" />
-        <UsageCount Value="192" />
+        <Filename Value="tiscommon.pas"/>
+        <TopLine Value="39"/>
+        <CursorPos X="46" Y="55"/>
+        <UsageCount Value="192"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit7>
       <Unit8>
-        <Filename Value="..\jcl\source\common\JclUnicode.pas" />
-        <UnitName Value="JclUnicode" />
-        <WindowIndex Value="0" />
-        <TopLine Value="4724" />
-        <CursorPos X="33" Y="4747" />
-        <UsageCount Value="7" />
+        <Filename Value="..\jcl\source\common\JclUnicode.pas"/>
+        <TopLine Value="4724"/>
+        <CursorPos X="33" Y="4747"/>
+        <UsageCount Value="7"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit8>
       <Unit9>
-        <Filename Value="tisstrings.pas" />
-        <UnitName Value="tisstrings" />
-        <WindowIndex Value="0" />
-        <TopLine Value="35" />
-        <CursorPos X="28" Y="45" />
-        <UsageCount Value="252" />
+        <Filename Value="tisstrings.pas"/>
+        <TopLine Value="35"/>
+        <CursorPos X="28" Y="45"/>
+        <UsageCount Value="252"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit9>
       <Unit10>
-        <Filename Value="tisinifiles.pas" />
-        <UnitName Value="tisinifiles" />
-        <WindowIndex Value="0" />
-        <TopLine Value="49" />
-        <CursorPos X="1" Y="49" />
-        <UsageCount Value="251" />
+        <Filename Value="tisinifiles.pas"/>
+        <TopLine Value="49"/>
+        <CursorPos Y="49"/>
+        <UsageCount Value="251"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit10>
       <Unit11>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas" />
-        <UnitName Value="IdDNSResolver" />
-        <WindowIndex Value="0" />
-        <TopLine Value="455" />
-        <CursorPos X="14" Y="449" />
-        <UsageCount Value="12" />
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSResolver.pas"/>
+        <TopLine Value="455"/>
+        <CursorPos X="14" Y="449"/>
+        <UsageCount Value="12"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit11>
       <Unit12>
-        <Filename Value="networkadapterinfo.pas" />
-        <UnitName Value="NetworkAdapterInfo" />
-        <WindowIndex Value="0" />
-        <TopLine Value="106" />
-        <CursorPos X="24" Y="133" />
-        <UsageCount Value="247" />
-        <DefaultSyntaxHighlighter Value="Delphi" />
+        <Filename Value="networkadapterinfo.pas"/>
+        <UnitName Value="NetworkAdapterInfo"/>
+        <TopLine Value="106"/>
+        <CursorPos X="24" Y="133"/>
+        <UsageCount Value="247"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit12>
       <Unit13>
-        <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\objpash.inc" />
-        <WindowIndex Value="0" />
-        <TopLine Value="176" />
-        <CursorPos X="23" Y="193" />
-        <UsageCount Value="41" />
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\objpash.inc"/>
+        <TopLine Value="176"/>
+        <CursorPos X="23" Y="193"/>
+        <UsageCount Value="41"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit13>
       <Unit14>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\ldapsend.pas" />
-        <UnitName Value="ldapsend" />
-        <WindowIndex Value="0" />
-        <TopLine Value="151" />
-        <CursorPos X="15" Y="16" />
-        <UsageCount Value="5" />
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Synapse\source\ldapsend.pas"/>
+        <TopLine Value="151"/>
+        <CursorPos X="15" Y="16"/>
+        <UsageCount Value="5"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit14>
       <Unit15>
-        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSCommon.pas" />
-        <UnitName Value="IdDNSCommon" />
-        <WindowIndex Value="0" />
-        <TopLine Value="598" />
-        <CursorPos X="1" Y="600" />
-        <UsageCount Value="10" />
+        <Filename Value="C:\codetyphon\lazarus\components\pl_Indy\source\base\IdDNSCommon.pas"/>
+        <TopLine Value="598"/>
+        <CursorPos Y="600"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit15>
       <Unit16>
-        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\osutilsh.inc" />
-        <WindowIndex Value="0" />
-        <TopLine Value="29" />
-        <CursorPos X="20" Y="44" />
-        <UsageCount Value="2" />
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\osutilsh.inc"/>
+        <TopLine Value="29"/>
+        <CursorPos X="20" Y="44"/>
+        <UsageCount Value="2"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit16>
       <Unit17>
-        <Filename Value="..\..\pltis_superobject\soutils.pas" />
-        <UnitName Value="soutils" />
-        <WindowIndex Value="0" />
-        <TopLine Value="226" />
-        <CursorPos X="3" Y="254" />
-        <UsageCount Value="5" />
+        <Filename Value="..\..\pltis_superobject\soutils.pas"/>
+        <TopLine Value="226"/>
+        <CursorPos X="3" Y="254"/>
+        <UsageCount Value="5"/>
       </Unit17>
       <Unit18>
-        <Filename Value="..\..\pltis_superobject\soclipbrd.pas" />
-        <UnitName Value="soclipbrd" />
-        <WindowIndex Value="0" />
-        <TopLine Value="1" />
-        <CursorPos X="33" Y="16" />
-        <UsageCount Value="4" />
+        <Filename Value="..\..\pltis_superobject\soclipbrd.pas"/>
+        <CursorPos X="33" Y="16"/>
+        <UsageCount Value="4"/>
       </Unit18>
       <Unit19>
-        <Filename Value="..\..\pltis_utils\tiscommon.pas" />
-        <UnitName Value="tiscommon" />
-        <WindowIndex Value="0" />
-        <TopLine Value="141" />
-        <CursorPos X="1" Y="164" />
-        <UsageCount Value="15" />
+        <Filename Value="..\..\pltis_utils\tiscommon.pas"/>
+        <TopLine Value="141"/>
+        <CursorPos Y="164"/>
+        <UsageCount Value="15"/>
         <Bookmarks Count="1">
-          <Item0 ID="1" X="74" Y="303" />
+          <Item0 X="74" Y="303" ID="1"/>
         </Bookmarks>
       </Unit19>
       <Unit20>
-        <Filename Value="..\..\pltis_utils\tisstrings.pas" />
-        <UnitName Value="tisstrings" />
-        <WindowIndex Value="0" />
-        <TopLine Value="572" />
-        <CursorPos X="1" Y="583" />
-        <UsageCount Value="10" />
+        <Filename Value="..\..\pltis_utils\tisstrings.pas"/>
+        <TopLine Value="572"/>
+        <CursorPos Y="583"/>
+        <UsageCount Value="10"/>
       </Unit20>
       <Unit21>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp" />
-        <UnitName Value="CustApp" />
-        <WindowIndex Value="0" />
-        <TopLine Value="227" />
-        <CursorPos X="24" Y="252" />
-        <UsageCount Value="8" />
+        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-base\src\custapp.pp"/>
+        <UnitName Value="CustApp"/>
+        <TopLine Value="227"/>
+        <CursorPos X="24" Y="252"/>
+        <UsageCount Value="8"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit21>
       <Unit22>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwawindns.pas" />
-        <UnitName Value="JwaWinDNS" />
-        <WindowIndex Value="0" />
-        <TopLine Value="1415" />
-        <CursorPos X="12" Y="1429" />
-        <UsageCount Value="3" />
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwawindns.pas"/>
+        <UnitName Value="JwaWinDNS"/>
+        <TopLine Value="1415"/>
+        <CursorPos X="12" Y="1429"/>
+        <UsageCount Value="3"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit22>
       <Unit23>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas" />
-        <UnitName Value="superobject" />
-        <WindowIndex Value="0" />
-        <TopLine Value="1659" />
-        <CursorPos X="1" Y="1676" />
-        <UsageCount Value="19" />
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <TopLine Value="1659"/>
+        <CursorPos Y="1676"/>
+        <UsageCount Value="19"/>
       </Unit23>
       <Unit24>
-        <Filename Value="..\..\internettools\internet\simpleinternet.pas" />
-        <UnitName Value="simpleinternet" />
-        <WindowIndex Value="0" />
-        <TopLine Value="13" />
-        <CursorPos X="3" Y="35" />
-        <UsageCount Value="25" />
+        <Filename Value="..\..\internettools\internet\simpleinternet.pas"/>
+        <TopLine Value="13"/>
+        <CursorPos X="3" Y="35"/>
+        <UsageCount Value="25"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit24>
       <Unit25>
-        <Filename Value="UnitRedirect.pas" />
-        <UnitName Value="UnitRedirect" />
-        <WindowIndex Value="0" />
-        <TopLine Value="1" />
-        <CursorPos X="5" Y="11" />
-        <UsageCount Value="2" />
-        <DefaultSyntaxHighlighter Value="Delphi" />
+        <Filename Value="UnitRedirect.pas"/>
+        <CursorPos X="5" Y="11"/>
+        <UsageCount Value="2"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit25>
       <Unit26>
-        <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\getopts.pp" />
-        <UnitName Value="getopts" />
-        <WindowIndex Value="0" />
-        <TopLine Value="73" />
-        <CursorPos X="1" Y="1" />
-        <UsageCount Value="2" />
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\getopts.pp"/>
+        <TopLine Value="73"/>
+        <UsageCount Value="2"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit26>
       <Unit27>
-        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\pl_indycomp.pas" />
-        <UnitName Value="pl_indycomp" />
-        <WindowIndex Value="0" />
-        <TopLine Value="1" />
-        <CursorPos X="12" Y="22" />
-        <UsageCount Value="2" />
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\pl_indycomp.pas"/>
+        <CursorPos X="12" Y="22"/>
+        <UsageCount Value="2"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit27>
       <Unit28>
-        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdHTTP.pas" />
-        <UnitName Value="IdHTTP" />
-        <WindowIndex Value="0" />
-        <TopLine Value="2756" />
-        <CursorPos X="9" Y="2768" />
-        <UsageCount Value="10" />
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdHTTP.pas"/>
+        <TopLine Value="2756"/>
+        <CursorPos X="9" Y="2768"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit28>
       <Unit29>
-        <Filename Value="..\..\pltis_delphizmq\zmqapi.pas" />
-        <UnitName Value="zmqapi" />
-        <WindowIndex Value="0" />
-        <TopLine Value="892" />
-        <CursorPos X="20" Y="907" />
-        <UsageCount Value="2" />
+        <Filename Value="..\..\pltis_delphizmq\zmqapi.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="7"/>
+        <CursorPos X="23" Y="19"/>
+        <UsageCount Value="10"/>
       </Unit29>
       <Unit30>
-        <Filename Value="..\..\pltis_utils\tisutils.pas" />
-        <UnitName Value="tisutils" />
-        <WindowIndex Value="0" />
-        <TopLine Value="55" />
-        <CursorPos X="1" Y="66" />
-        <UsageCount Value="5" />
+        <Filename Value="..\..\pltis_utils\tisutils.pas"/>
+        <TopLine Value="55"/>
+        <CursorPos Y="66"/>
+        <UsageCount Value="5"/>
       </Unit30>
       <Unit31>
-        <Filename Value="C:\codetyphon\fpcsrc\rtl\win\sysutils.pp" />
-        <UnitName Value="sysutils" />
-        <WindowIndex Value="0" />
-        <TopLine Value="1190" />
-        <CursorPos X="3" Y="1193" />
-        <UsageCount Value="2" />
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\win\sysutils.pp"/>
+        <TopLine Value="1190"/>
+        <CursorPos X="3" Y="1193"/>
+        <UsageCount Value="2"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit31>
       <Unit32>
-        <Filename Value="..\..\virtualtreeview\VirtualTrees.pas" />
-        <UnitName Value="VirtualTrees" />
-        <WindowIndex Value="0" />
-        <TopLine Value="131" />
-        <CursorPos X="26" Y="134" />
-        <UsageCount Value="4" />
-        <DefaultSyntaxHighlighter Value="Delphi" />
+        <Filename Value="..\..\virtualtreeview\VirtualTrees.pas"/>
+        <TopLine Value="131"/>
+        <CursorPos X="26" Y="134"/>
+        <UsageCount Value="4"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit32>
       <Unit33>
-        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas" />
-        <UnitName Value="VirtualTrees" />
-        <WindowIndex Value="0" />
-        <TopLine Value="121" />
-        <CursorPos X="1" Y="121" />
-        <UsageCount Value="5" />
+        <Filename Value="C:\codetyphon\typhon\components\pl_VirtualTrees\source\VirtualTrees.pas"/>
+        <TopLine Value="121"/>
+        <CursorPos Y="121"/>
+        <UsageCount Value="5"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit33>
       <Unit34>
-        <Filename Value="uwaptres.pas" />
-        <UnitName Value="uWaptRes" />
-        <WindowIndex Value="0" />
-        <TopLine Value="11" />
-        <CursorPos X="18" Y="26" />
-        <UsageCount Value="21" />
-        <DefaultSyntaxHighlighter Value="Delphi" />
+        <Filename Value="uwaptres.pas"/>
+        <UnitName Value="uWaptRes"/>
+        <TopLine Value="11"/>
+        <CursorPos X="18" Y="26"/>
+        <UsageCount Value="21"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit34>
       <Unit35>
-        <Filename Value="..\..\pltis_utils\tishttp.pas" />
-        <UnitName Value="tishttp" />
-        <WindowIndex Value="0" />
-        <TopLine Value="448" />
-        <CursorPos X="7" Y="448" />
-        <UsageCount Value="2" />
+        <Filename Value="..\..\pltis_utils\tishttp.pas"/>
+        <TopLine Value="448"/>
+        <CursorPos X="7" Y="448"/>
+        <UsageCount Value="2"/>
       </Unit35>
       <Unit36>
-        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdStack.pas" />
-        <UnitName Value="IdStack" />
-        <WindowIndex Value="0" />
-        <TopLine Value="131" />
-        <CursorPos X="3" Y="146" />
-        <UsageCount Value="3" />
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdStack.pas"/>
+        <TopLine Value="131"/>
+        <CursorPos X="3" Y="146"/>
+        <UsageCount Value="3"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit36>
       <Unit37>
-        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdStackWindows.pas" />
-        <UnitName Value="IdStackWindows" />
-        <WindowIndex Value="0" />
-        <TopLine Value="1866" />
-        <CursorPos X="1" Y="1880" />
-        <UsageCount Value="3" />
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdStackWindows.pas"/>
+        <TopLine Value="1866"/>
+        <CursorPos Y="1880"/>
+        <UsageCount Value="3"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit37>
       <Unit38>
-        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdExceptionCore.pas" />
-        <UnitName Value="IdExceptionCore" />
-        <WindowIndex Value="0" />
-        <TopLine Value="93" />
-        <CursorPos X="3" Y="107" />
-        <UsageCount Value="3" />
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdExceptionCore.pas"/>
+        <TopLine Value="93"/>
+        <CursorPos X="3" Y="107"/>
+        <UsageCount Value="3"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit38>
       <Unit39>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwaiphlpapi.pas" />
-        <UnitName Value="jwaiphlpapi" />
-        <WindowIndex Value="0" />
-        <TopLine Value="331" />
-        <CursorPos X="26" Y="346" />
-        <UsageCount Value="3" />
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwaiphlpapi.pas"/>
+        <TopLine Value="331"/>
+        <CursorPos X="26" Y="346"/>
+        <UsageCount Value="3"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit39>
       <Unit40>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-db\src\sqldb\sqldb.pp" />
-        <UnitName Value="sqldb" />
-        <WindowIndex Value="0" />
-        <TopLine Value="644" />
-        <CursorPos X="11" Y="658" />
-        <UsageCount Value="3" />
+        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-db\src\sqldb\sqldb.pp"/>
+        <TopLine Value="644"/>
+        <CursorPos X="11" Y="658"/>
+        <UsageCount Value="3"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit40>
       <Unit41>
-        <Filename Value="..\..\pltis_superobject\sodbutils.pas" />
-        <UnitName Value="soutils" />
-        <WindowIndex Value="0" />
-        <TopLine Value="87" />
-        <CursorPos X="1" Y="116" />
-        <UsageCount Value="2" />
+        <Filename Value="..\..\pltis_superobject\sodbutils.pas"/>
+        <UnitName Value="soutils"/>
+        <TopLine Value="87"/>
+        <CursorPos Y="116"/>
+        <UsageCount Value="2"/>
       </Unit41>
       <Unit42>
-        <Filename Value="waptdb.pas" />
-        <UnitName Value="waptdb" />
-        <WindowIndex Value="0" />
-        <TopLine Value="53" />
-        <CursorPos X="20" Y="48" />
-        <UsageCount Value="6" />
-        <DefaultSyntaxHighlighter Value="Delphi" />
+        <Filename Value="waptdb.pas"/>
+        <TopLine Value="53"/>
+        <CursorPos X="20" Y="48"/>
+        <UsageCount Value="6"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit42>
       <Unit43>
-        <Filename Value="waptwinutils.pas" />
-        <UnitName Value="waptwinutils" />
-        <WindowIndex Value="0" />
-        <TopLine Value="597" />
-        <CursorPos X="14" Y="611" />
-        <UsageCount Value="2" />
-        <DefaultSyntaxHighlighter Value="Delphi" />
+        <Filename Value="waptwinutils.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="597"/>
+        <CursorPos X="14" Y="611"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit43>
       <Unit44>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwaiptypes.pas" />
-        <UnitName Value="jwaiptypes" />
-        <WindowIndex Value="0" />
-        <TopLine Value="101" />
-        <CursorPos X="5" Y="116" />
-        <UsageCount Value="2" />
+        <Filename Value="C:\codetyphon\fpcsrc\packages\winunits-jedi\src\jwaiptypes.pas"/>
+        <TopLine Value="101"/>
+        <CursorPos X="5" Y="116"/>
+        <UsageCount Value="2"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit44>
       <Unit45>
-        <Filename Value="..\..\pltis_utils\tislogging.pas" />
-        <UnitName Value="tislogging" />
-        <WindowIndex Value="0" />
-        <TopLine Value="1" />
-        <CursorPos X="1" Y="1" />
-        <UsageCount Value="2" />
+        <Filename Value="..\..\pltis_utils\tislogging.pas"/>
+        <UsageCount Value="2"/>
       </Unit45>
       <Unit46>
-        <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\systemh.inc" />
-        <WindowIndex Value="0" />
-        <TopLine Value="683" />
-        <CursorPos X="3" Y="703" />
-        <UsageCount Value="2" />
+        <Filename Value="C:\codetyphon\fpcsrc\rtl\inc\systemh.inc"/>
+        <TopLine Value="683"/>
+        <CursorPos X="3" Y="703"/>
+        <UsageCount Value="2"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit46>
       <Unit47>
-        <Filename Value="..\..\pltis_delphizmq\zhelpers.pas" />
-        <UnitName Value="zhelpers" />
-        <WindowIndex Value="0" />
-        <TopLine Value="73" />
-        <CursorPos X="3" Y="88" />
-        <UsageCount Value="2" />
+        <Filename Value="..\..\pltis_delphizmq\zhelpers.pas"/>
+        <TopLine Value="73"/>
+        <CursorPos X="3" Y="88"/>
+        <UsageCount Value="2"/>
       </Unit47>
       <Unit48>
-        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\TinyWideStrings.pas" />
-        <UnitName Value="TinyWideStrings" />
-        <WindowIndex Value="0" />
-        <TopLine Value="1" />
-        <CursorPos X="1" Y="5" />
-        <UsageCount Value="2" />
-        <DefaultSyntaxHighlighter Value="Delphi" />
+        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\TinyWideStrings.pas"/>
+        <CursorPos Y="5"/>
+        <UsageCount Value="2"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit48>
       <Unit49>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-registry\src\registry.pp" />
-        <UnitName Value="registry" />
-        <WindowIndex Value="0" />
-        <TopLine Value="1" />
-        <CursorPos X="16" Y="9" />
-        <UsageCount Value="2" />
+        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-registry\src\registry.pp"/>
+        <CursorPos X="16" Y="9"/>
+        <UsageCount Value="2"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit49>
       <Unit50>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-registry\src\winreg.inc" />
-        <WindowIndex Value="0" />
-        <TopLine Value="37" />
-        <CursorPos X="1" Y="1" />
-        <UsageCount Value="2" />
+        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-registry\src\winreg.inc"/>
+        <TopLine Value="37"/>
+        <UsageCount Value="2"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit50>
       <Unit51>
-        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-registry\src\regdef.inc" />
-        <WindowIndex Value="0" />
-        <TopLine Value="15" />
-        <CursorPos X="1" Y="1" />
-        <UsageCount Value="2" />
+        <Filename Value="C:\codetyphon\fpcsrc\packages\fcl-registry\src\regdef.inc"/>
+        <TopLine Value="15"/>
+        <UsageCount Value="2"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit51>
       <Unit52>
-        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdHTTPHeaderInfo.pas" />
-        <UnitName Value="IdHTTPHeaderInfo" />
-        <WindowIndex Value="0" />
-        <TopLine Value="226" />
-        <CursorPos X="16" Y="242" />
-        <UsageCount Value="7" />
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdHTTPHeaderInfo.pas"/>
+        <TopLine Value="226"/>
+        <CursorPos X="16" Y="242"/>
+        <UsageCount Value="7"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit52>
       <Unit53>
-        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdAuthentication.pas" />
-        <UnitName Value="IdAuthentication" />
-        <WindowIndex Value="0" />
-        <TopLine Value="68" />
-        <CursorPos X="15" Y="85" />
-        <UsageCount Value="6" />
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdAuthentication.pas"/>
+        <TopLine Value="68"/>
+        <CursorPos X="15" Y="85"/>
+        <UsageCount Value="6"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit53>
       <Unit54>
-        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdURI.pas" />
-        <UnitName Value="IdURI" />
-        <WindowIndex Value="0" />
-        <TopLine Value="1" />
-        <CursorPos X="1" Y="1" />
-        <UsageCount Value="5" />
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdURI.pas"/>
+        <UsageCount Value="5"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit54>
       <Unit55>
-        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdAuthenticationSSPI.pas" />
-        <UnitName Value="IdAuthenticationSSPI" />
-        <WindowIndex Value="0" />
-        <TopLine Value="1183" />
-        <CursorPos X="11" Y="1183" />
-        <UsageCount Value="5" />
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdAuthenticationSSPI.pas"/>
+        <TopLine Value="1183"/>
+        <CursorPos X="11" Y="1183"/>
+        <UsageCount Value="5"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit55>
       <Unit56>
-        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdAuthenticationManager.pas" />
-        <UnitName Value="IdAuthenticationManager" />
-        <WindowIndex Value="0" />
-        <TopLine Value="61" />
-        <CursorPos X="1" Y="77" />
-        <UsageCount Value="5" />
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdAuthenticationManager.pas"/>
+        <TopLine Value="61"/>
+        <CursorPos Y="77"/>
+        <UsageCount Value="5"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit56>
       <Unit57>
-        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas" />
-        <UnitName Value="IdSSLOpenSSL" />
-        <WindowIndex Value="0" />
-        <TopLine Value="167" />
-        <CursorPos X="48" Y="185" />
-        <UsageCount Value="7" />
+        <Filename Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdSSLOpenSSL.pas"/>
+        <TopLine Value="167"/>
+        <CursorPos X="48" Y="185"/>
+        <UsageCount Value="7"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit57>
       <Unit58>
-        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas" />
-        <UnitName Value="PythonEngine" />
-        <WindowIndex Value="0" />
-        <TopLine Value="1" />
-        <CursorPos X="1" Y="1" />
-        <UsageCount Value="17" />
-        <DefaultSyntaxHighlighter Value="Delphi" />
+        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\PythonEngine.pas"/>
+        <UsageCount Value="17"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit58>
+      <Unit59>
+        <Filename Value="..\..\pltis_python4delphi\PythonForDelphi\Components\Sources\Core\VarPyth.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="171"/>
+        <CursorPos X="16" Y="172"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit59>
+      <Unit60>
+        <Filename Value="waptcrypto.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="33" Y="8"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit60>
+      <Unit61>
+        <Filename Value="..\..\pltis_dcpcrypt\Hashes\dcpsha1.pas"/>
+        <UnitName Value="DCPsha1"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit61>
+      <Unit62>
+        <Filename Value="..\..\pltis_dcpcrypt\dcpreg.pas"/>
+        <UnitName Value="DCPreg"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <CursorPos X="16" Y="8"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit62>
+      <Unit63>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="3461"/>
+        <CursorPos X="14" Y="3485"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit63>
+      <Unit64>
+        <Filename Value="C:\lazarus\fpc\3.0.4\source\rtl\objpas\objpas.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="246"/>
+        <CursorPos Y="255"/>
+        <UsageCount Value="10"/>
+      </Unit64>
+      <Unit65>
+        <Filename Value="..\waptconsole\dmwaptpython.pas"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit65>
+      <Unit66>
+        <Filename Value="C:\lazarus\fpc\3.0.4\source\packages\fcl-base\src\custapp.pp"/>
+        <UnitName Value="CustApp"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="323"/>
+        <CursorPos Y="338"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit66>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="waptget.lpr" />
-        <Caret Column="10" Line="622" TopLine="581" />
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="3548" Column="20" TopLine="3518"/>
       </Position1>
       <Position2>
-        <Filename Value="waptget.lpr" />
-        <Caret Column="26" Line="489" TopLine="471" />
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="3549" Column="62" TopLine="3519"/>
       </Position2>
+      <Position3>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="3753" Column="53" TopLine="3724"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="4029" Column="54" TopLine="4000"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="4547" Column="14" TopLine="4517"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="4593" Column="75" TopLine="4563"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="4603" Column="16" TopLine="4573"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="4607" Column="24" TopLine="4577"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="4611" Column="16" TopLine="4581"/>
+      </Position9>
+      <Position10>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="525" Column="49" TopLine="506"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="4658" TopLine="4634"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="3352" TopLine="3338"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="3402" TopLine="3387"/>
+      </Position13>
+      <Position14>
+        <Filename Value="C:\lazarus\fpc\3.0.4\source\packages\fcl-base\src\custapp.pp"/>
+        <Caret Line="338" TopLine="323"/>
+      </Position14>
+      <Position15>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="527" TopLine="506"/>
+      </Position15>
+      <Position16>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="526" TopLine="506"/>
+      </Position16>
+      <Position17>
+        <Filename Value="C:\lazarus\fpc\3.0.4\source\packages\fcl-base\src\custapp.pp"/>
+        <Caret Line="338" TopLine="323"/>
+      </Position17>
+      <Position18>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="526" TopLine="506"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="3402" TopLine="3387"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="3352" TopLine="3338"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="4658" Column="38" TopLine="4643"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="2176" Column="16" TopLine="2162"/>
+      </Position22>
+      <Position23>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="4810" TopLine="4801"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="4946" TopLine="4931"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="4947" TopLine="4931"/>
+      </Position25>
+      <Position26>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="521" Column="30" TopLine="506"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="1473" Column="14" TopLine="1460"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="1434" Column="16" TopLine="1419"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="1473" Column="68" TopLine="1449"/>
+      </Position29>
+      <Position30>
+        <Filename Value="..\waptconsole\dmwaptpython.pas"/>
+        <Caret Line="143" Column="24" TopLine="134"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="11" />
-    <PathDelim Value="\" />
+    <Version Value="11"/>
+    <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\wapt-get" />
+      <Filename Value="..\wapt-get"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir)" />
-      <UnitOutputDirectory Value="lib" />
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <UnitOutputDirectory Value="lib"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
-        <SyntaxMode Value="Delphi" />
+        <SyntaxMode Value="Delphi"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
-      <SmartLinkUnit Value="True" />
-      <RelocatableUnit Value="True" />
-      <SmallerCode Value="True" />
+      <SmartLinkUnit Value="True"/>
+      <RelocatableUnit Value="True"/>
+      <SmallerCode Value="True"/>
     </CodeGeneration>
     <Linking>
       <Debugging>
-        <StripSymbols Value="True" />
-        <UseExternalDbgSyms Value="True" />
+        <StripSymbols Value="True"/>
+        <UseExternalDbgSyms Value="True"/>
       </Debugging>
-      <LinkSmart Value="True" />
+      <LinkSmart Value="True"/>
     </Linking>
     <Other>
       <Verbosity>
-        <ShowHintsForUnusedUnitsInMainSrc Value="True" />
+        <ShowHintsForUnusedUnitsInMainSrc Value="True"/>
       </Verbosity>
-      <CompilerMessages>
-        <UseMsgFile Value="True" />
-      </CompilerMessages>
-      <CustomOptions Value="-dUseCThreads -dENTERPRISE" />
-      <CompilerPath Value="$(CompPath)" />
+      <CustomOptions Value="-dUseCThreads -dENTERPRISE"/>
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="13">
+    <BreakPoints Count="15">
       <Item1>
-        <Kind Value="bpkSource" />
-        <WatchScope Value="wpsGlobal" />
-        <WatchKind Value="wpkWrite" />
-        <Source Value="C:\lazarus\fpc\2.6.0\source\packages\paszlib\src\zipper.pp" />
-        <Line Value="1757" />
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsGlobal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="C:\lazarus\fpc\2.6.0\source\packages\paszlib\src\zipper.pp"/>
+        <Line Value="1757"/>
       </Item1>
       <Item2>
-        <Kind Value="bpkSource" />
-        <WatchScope Value="wpsGlobal" />
-        <WatchKind Value="wpkWrite" />
-        <Source Value="C:\lazarus\fpc\2.6.0\source\packages\paszlib\src\zipper.pp" />
-        <Line Value="1853" />
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsGlobal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="C:\lazarus\fpc\2.6.0\source\packages\paszlib\src\zipper.pp"/>
+        <Line Value="1853"/>
       </Item2>
       <Item3>
-        <Kind Value="bpkSource" />
-        <WatchScope Value="wpsLocal" />
-        <WatchKind Value="wpkWrite" />
-        <Source Value="C:\codetyphon\fpcsrc\rtl\objpas\objpas.pp" />
-        <Line Value="230" />
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="C:\codetyphon\fpcsrc\rtl\objpas\objpas.pp"/>
+        <Line Value="230"/>
       </Item3>
       <Item4>
-        <Kind Value="bpkSource" />
-        <WatchScope Value="wpsLocal" />
-        <WatchKind Value="wpkWrite" />
-        <Source Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\fina.inc" />
-        <Line Value="36" />
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="C:\codetyphon\fpcsrc\rtl\objpas\sysutils\fina.inc"/>
+        <Line Value="36"/>
       </Item4>
       <Item5>
-        <Kind Value="bpkSource" />
-        <WatchScope Value="wpsLocal" />
-        <WatchKind Value="wpkWrite" />
-        <Source Value="C:\codetyphon\fpcsrc\rtl\inc\ustrings.inc" />
-        <Line Value="2003" />
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="C:\codetyphon\fpcsrc\rtl\inc\ustrings.inc"/>
+        <Line Value="2003"/>
       </Item5>
       <Item6>
-        <Kind Value="bpkSource" />
-        <WatchScope Value="wpsLocal" />
-        <WatchKind Value="wpkWrite" />
-        <Source Value="C:\codetyphon\fpcsrc\packages\fcl-registry\src\winreg.inc" />
-        <Line Value="151" />
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="C:\codetyphon\fpcsrc\packages\fcl-registry\src\winreg.inc"/>
+        <Line Value="151"/>
       </Item6>
       <Item7>
-        <Kind Value="bpkSource" />
-        <WatchScope Value="wpsLocal" />
-        <WatchKind Value="wpkWrite" />
-        <Source Value="C:\codetyphon\fpcsrc\rtl\objpas\classes\stringl.inc" />
-        <Line Value="978" />
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="C:\codetyphon\fpcsrc\rtl\objpas\classes\stringl.inc"/>
+        <Line Value="978"/>
       </Item7>
       <Item8>
-        <Kind Value="bpkSource" />
-        <WatchScope Value="wpsLocal" />
-        <WatchKind Value="wpkWrite" />
-        <Source Value="..\..\internettools\internet\simpleinternet.pas" />
-        <Line Value="265" />
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\..\internettools\internet\simpleinternet.pas"/>
+        <Line Value="265"/>
       </Item8>
       <Item9>
-        <Kind Value="bpkSource" />
-        <WatchScope Value="wpsLocal" />
-        <WatchKind Value="wpkWrite" />
-        <Source Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdHTTP.pas" />
-        <Line Value="2050" />
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdHTTP.pas"/>
+        <Line Value="2050"/>
       </Item9>
       <Item10>
-        <Kind Value="bpkSource" />
-        <WatchScope Value="wpsLocal" />
-        <WatchKind Value="wpkWrite" />
-        <Source Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdHTTP.pas" />
-        <Line Value="2060" />
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdHTTP.pas"/>
+        <Line Value="2060"/>
       </Item10>
       <Item11>
-        <Kind Value="bpkSource" />
-        <WatchScope Value="wpsLocal" />
-        <WatchKind Value="wpkWrite" />
-        <Source Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdHTTP.pas" />
-        <Line Value="2065" />
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="C:\codetyphon\typhon\components\pl_Indy\source\base\IdHTTP.pas"/>
+        <Line Value="2065"/>
       </Item11>
       <Item12>
-        <Kind Value="bpkSource" />
-        <WatchScope Value="wpsLocal" />
-        <WatchKind Value="wpkWrite" />
-        <Source Value="waptdb.pas" />
-        <Line Value="63" />
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="waptdb.pas"/>
+        <Line Value="63"/>
       </Item12>
       <Item13>
-        <Kind Value="bpkSource" />
-        <WatchScope Value="wpsLocal" />
-        <WatchKind Value="wpkWrite" />
-        <Source Value="waptcommon.pas" />
-        <Line Value="444" />
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="waptcommon.pas"/>
+        <Line Value="444"/>
       </Item13>
+      <Item14>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Line Value="4658"/>
+      </Item14>
+      <Item15>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\..\PythonForLazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Line Value="4810"/>
+      </Item15>
     </BreakPoints>
     <Exceptions Count="3">
       <Item1>
-        <Name Value="EAbort" />
+        <Name Value="EAbort"/>
       </Item1>
       <Item2>
-        <Name Value="ECodetoolError" />
+        <Name Value="ECodetoolError"/>
       </Item2>
       <Item3>
-        <Name Value="EFOpenError" />
+        <Name Value="EFOpenError"/>
       </Item3>
     </Exceptions>
   </Debugging>
-  <EditorMacros Count="0" />
 </CONFIG>

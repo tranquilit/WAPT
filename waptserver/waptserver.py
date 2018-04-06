@@ -37,6 +37,7 @@ from waptserver_config import __version__
 from eventlet import monkey_patch
 
 # os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
+#monkey_patch(os=False,thread=False)
 monkey_patch()
 
 import time
@@ -73,7 +74,7 @@ from passlib.hash import pbkdf2_sha256
 import ConfigParser
 from optparse import OptionParser
 
-import itsdangerous
+from itsdangerous import TimedJSONWebSignatureSerializer
 from werkzeug.utils import secure_filename
 
 from flask import request, Flask, Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash,g
@@ -2262,7 +2263,6 @@ if __name__ == '__main__':
     try:
         upgrade_db_structure()
     except:
-        wapt_db.rollback()
         init_db()
 
     utils_set_devel_mode(options.devel)

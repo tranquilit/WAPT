@@ -30,7 +30,7 @@ uses
   {$ENDIF}{$ENDIF}
   Translations, Forms,Interfaces,
   uDMWAPTTray, uwapttray, uwapttrayres,
-  DefaultTranslator,waptcommon;
+  LCLTranslator,waptcommon;
 
 {$R *.res}
 

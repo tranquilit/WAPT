@@ -5,7 +5,7 @@ unit uVisCreateWaptSetup;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   EditBtn, ExtCtrls, Buttons, ActnList, DefaultTranslator, Menus, sogrid;
 
 type
@@ -89,10 +89,10 @@ begin
     if pos(lowercase(WaptBaseDir),lowercase(EdServerCertificate.Text))=1 then
     begin
       EdServerCertificate.Text := ExtractRelativepath(WaptBaseDir,EdServerCertificate.Text);
-      AbsVerifyCertPath := ExpandFileNameUTF8(AppendPathDelim(WaptBaseDir)+EdServerCertificate.Text);
+      AbsVerifyCertPath := ExpandFileName(AppendPathDelim(WaptBaseDir)+EdServerCertificate.Text);
     end
     else
-      AbsVerifyCertPath := ExpandFileNameUTF8(EdServerCertificate.Text);
+      AbsVerifyCertPath := ExpandFileName(EdServerCertificate.Text);
 
     if (CBVerifyCert.Checked) and (pos(lowercase(WaptBaseDir),lowercase(AbsVerifyCertPath))<>1) then
     begin

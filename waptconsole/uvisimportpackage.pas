@@ -5,7 +5,7 @@ unit uVisImportPackage;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LazUTF8, RTTICtrls, RTTIGrids, vte_rttigrid, Forms,
+  Classes, SysUtils, LazUTF8, RTTICtrls, RTTIGrids, Forms,
   Controls, Graphics, Dialogs, ExtCtrls, Buttons, ComCtrls, StdCtrls, ActnList,
   Menus, sogrid, DefaultTranslator, VirtualTrees, superobject, SearchEdit,
   waptcommon;
@@ -87,7 +87,7 @@ implementation
 
 uses Variants, VarPyth, PythonEngine, uwaptconsole, tiscommon, soutils,
   dmwaptpython, uvisloading, uvisprivatekeyauth, uWaptRes, md5, uScaleDPI,
-  uWaptConsoleRes, uvisrepositories, inifiles, tisinifiles,LCLIntf;
+  uWaptConsoleRes, uvisrepositories, inifiles, tisinifiles,LCLIntf,LazFileUtils,FileUtil;
 
 {$R *.lfm}
 
@@ -318,7 +318,7 @@ begin
 
   http_proxy:=Waptrepo.HttpProxy;
 
-  if not FileExistsUTF8(WaptPersonalCertificatePath) then
+  if not FileExists(WaptPersonalCertificatePath) then
   begin
     ShowMessageFmt(rsPrivateKeyDoesntExist, [WaptPersonalCertificatePath]);
     exit;
@@ -373,7 +373,7 @@ begin
           begin
             ShowMessage(rsDlCanceled+' : '+e.Message);
             if FileExists(target) then
-              DeleteFileUTF8(Target);
+              DeleteFile(Target);
             exit;
           end;
         end;
@@ -425,7 +425,7 @@ begin
           DeleteDirectory(UTF8Encode(aDir.AsString),False);
       if uploadResult <> Nil then
         for aDir in uploadResult do
-          DeleteFileUTF8(UTF8Encode(aDir.AsString));
+          DeleteFile(UTF8Encode(aDir.AsString));
       Free;
     end;
     ModalResult:=mrOK;
@@ -496,7 +496,7 @@ begin
           begin
             ShowMessage(rsDlCanceled+' : '+e.Message);
             if FileExists(target) then
-              DeleteFileUTF8(Target);
+              DeleteFile(Target);
             exit;
           end;
         end;
@@ -507,7 +507,7 @@ begin
         ProgressTitle(format(rsDuplicating, [Filename.AsArray[0].AsString]));
         Application.ProcessMessages;
         target := AppLocalDir + 'cache\' + Filename.AsArray[0].AsString;
-        DevDirectory :=  AppendPathDelim(DefaultSourcesRoot)+ExtractFileNameWithoutExt(Filename.AsArray[0].AsString)+'-wapt';
+        DevDirectory := AppendPathDelim(DefaultSourcesRoot)+ExtractFileNameWithoutExt(Filename.AsArray[0].AsString)+'-wapt';
         sourceDir := VarPythonAsString(DMPython.waptdevutils.duplicate_from_file(
           package_filename := target,
           new_prefix := DefaultPackagePrefix,

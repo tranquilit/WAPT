@@ -15,7 +15,7 @@ function DoScaleY(Size: Integer; FromDPI: Integer): integer;
 
 implementation
 
-uses Classes, Graphics, ExtCtrls, sogrid,vte_json,vte_dbtreeex,vte_dbtree;
+uses Classes, Graphics, ExtCtrls, sogrid, vte_dbtree, vte_dbtreeex, vte_json;
 
 procedure HighDPI(FromDPI: Integer);
 var

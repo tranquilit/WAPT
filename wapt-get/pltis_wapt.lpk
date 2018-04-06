@@ -3,18 +3,13 @@
   <Package Version="4">
     <PathDelim Value="\"/>
     <Name Value="pltis_wapt"/>
+    <Type Value="RunAndDesignTime"/>
     <CompilerOptions>
       <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\$(LCLWidgetType)"/>
       </SearchPaths>
-      <Other>
-        <CompilerMessages>
-          <MsgFileName Value=""/>
-        </CompilerMessages>
-        <CompilerPath Value="$(CompPath)"/>
-      </Other>
     </CompilerOptions>
     <Description Value="Common files for wapt fpc"/>
     <Version Major="1" Minor="5" Release="1" Build="19"/>
@@ -44,20 +39,22 @@
         <UnitName Value="waptcrypto"/>
       </Item6>
     </Files>
-    <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="4">
+    <RequiredPkgs Count="5">
       <Item1>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="dcpcrypt"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_dcp"/>
+        <PackageName Value="indylaz"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="python4lazarus_package"/>
       </Item3>
       <Item4>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_superobject"/>
       </Item4>
+      <Item5>
+        <PackageName Value="pltis_utils"/>
+      </Item5>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

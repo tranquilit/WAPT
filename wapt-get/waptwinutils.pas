@@ -825,7 +825,7 @@ function Run(CmdLine: UnicodeString;
   const Wait: DWORD = 3600000;user:UnicodeString='';domain:UnicodeString='';password:UnicodeString='';onpoll:TNotifyEvent=Nil): RawByteString;
 var
   mySecurityAttributes: SECURITY_ATTRIBUTES;
-  myStartupInfo: STARTUPINFO;
+  myStartupInfo: windows.STARTUPINFOW;
   myProcessInfo: PROCESS_INFORMATION;
   hPipeInputRead, hPipeInputWrite: THandle;
   hPipeOutputRead, hPipeOutputWrite: THandle;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="9"/>
+    <Version Value="10"/>
     <PathDelim Value="\"/>
     <General>
       <Flags>
@@ -22,7 +22,6 @@
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="6"/>
-      <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
@@ -37,26 +36,25 @@
     </RunParams>
     <RequiredPackages Count="5">
       <Item1>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="python4lazarus_package"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="pltis_utils"/>
       </Item2>
       <Item3>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pltis_wapt"/>
       </Item3>
       <Item4>
-        <PackageName Value="LCL"/>
+        <PackageName Value="FCL"/>
       </Item4>
       <Item5>
-        <PackageName Value="pltis_python4delphi"/>
+        <PackageName Value="LCL"/>
       </Item5>
     </RequiredPackages>
     <Units Count="3">
       <Unit0>
         <Filename Value="waptguihelper.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="waptguihelper"/>
       </Unit0>
       <Unit1>
         <Filename Value="uwaptbuildparams.pas"/>
@@ -111,11 +109,7 @@
     </Linking>
     <Other>
       <WriteFPCLogo Value="False"/>
-      <CompilerMessages>
-        <MsgFileName Value=""/>
-      </CompilerMessages>
       <CustomOptions Value="-dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
       <ExecuteAfter>
         <CompileReasons Run="False"/>
       </ExecuteAfter>

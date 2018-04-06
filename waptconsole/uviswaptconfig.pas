@@ -5,7 +5,7 @@ unit uviswaptconfig;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LSControls, Forms,
+  Classes, SysUtils, Forms,
   Controls, Graphics, Dialogs, ButtonPanel,
   StdCtrls, ExtCtrls,EditBtn, DefaultTranslator, ComCtrls, ActnList, types;
 
@@ -83,7 +83,7 @@ var
 
 implementation
 uses tiscommon,waptcommon,LCLIntf,IDURI,superobject,uWaptConsoleRes,
-    uScaleDPI,tisstrings,dmwaptpython,variants,VarPyth,uvisprivatekeyauth,tisinifiles;
+    uScaleDPI,tisstrings,dmwaptpython,variants,VarPyth,uvisprivatekeyauth,tisinifiles,LazFileUtils,FileUtil;
 {$R *.lfm}
 
 { TVisWAPTConfig }
@@ -152,7 +152,7 @@ end;
 
 procedure TVisWAPTConfig.ActCheckPersonalKeyUpdate(Sender: TObject);
 begin
-  ActCheckPersonalKey.Enabled:= FileExistsUTF8(edPersonalCertificatePath.FileName);
+  ActCheckPersonalKey.Enabled:= FileExists(edPersonalCertificatePath.FileName);
 end;
 
 procedure TVisWAPTConfig.ActGetServerCertificateExecute(Sender: TObject);

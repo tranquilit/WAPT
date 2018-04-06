@@ -5,7 +5,7 @@ unit uvislogin;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   ExtCtrls, Buttons, ButtonPanel, LCLType, EditBtn, ActnList;
 
 type
@@ -49,7 +49,7 @@ var
   VisLogin: TVisLogin;
 
 implementation
-uses LCLIntf,  uwaptconsole,waptcommon, DefaultTranslator,UScaleDPI,tiscommon,tisinifiles,dmwaptpython;
+uses LCLIntf,  uwaptconsole,waptcommon, DefaultTranslator,UScaleDPI,tiscommon,tisinifiles,dmwaptpython,LazFileUtils, FileUtil;
 {$R *.lfm}
 
 { TVisLogin }

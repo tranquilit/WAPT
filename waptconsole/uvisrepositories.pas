@@ -5,7 +5,7 @@ unit uvisrepositories;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, RTTICtrls, Forms, Controls, Graphics,
+  Classes, SysUtils, RTTICtrls, Forms, Controls, Graphics,
   Dialogs, ExtCtrls, Buttons, DefaultTranslator, StdCtrls, EditBtn, ActnList,
   waptcommon;
 
@@ -99,7 +99,7 @@ var
   VisRepositories: TVisRepositories;
 
 implementation
-uses uSCaleDPI,LCLIntf,tisinifiles,IniFiles,tiscommon,URIParser,dmwaptpython,variants,VarPyth,tisstrings,uWaptConsoleRes;
+uses uSCaleDPI,LCLIntf,tisinifiles,IniFiles,tiscommon,URIParser,dmwaptpython,variants,VarPyth,tisstrings,uWaptConsoleRes,LazFileUtils;
 {$R *.lfm}
 
 { TVisRepositories }

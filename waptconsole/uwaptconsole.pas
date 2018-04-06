@@ -6,9 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Windows, ActiveX, Types, Forms, Controls, Graphics,
-  Dialogs, Buttons, LazFileUtils, LazUTF8, FileUtil, SynEdit,
-  SynHighlighterPython, LSControls, TplStatusBarUnit, vte_json, vte_dbtree,
-  vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, jsonparser,
+  Dialogs, Buttons, LazUTF8, SynEdit,
+  SynHighlighterPython, vte_json, vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, jsonparser,
   superobject, VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading, IdComponent,
   DefaultTranslator, IniPropStorage, DBGrids, ShellCtrls, GetText,
   uWaptConsoleRes, db, BufDataset, SearchEdit, MenuButton, tisstrings;
@@ -343,7 +342,7 @@ type
     Panel3: TPanel;
     Panel5: TPanel;
     Panel6: TPanel;
-    plStatusBar1: TplStatusBar;
+    plStatusBar1: TPanel;
     PopupHostPackages: TPopupMenu;
     PopupWUAUpdates: TPopupMenu;
     PopupMenuGroups: TPopupMenu;
@@ -718,7 +717,7 @@ uses LCLIntf, LCLType, IniFiles, variants, uvisprivatekeyauth, soutils,
   uvisgroupchoice, uvishostsupgrade, uVisAPropos,
   uVisImportPackage, PythonEngine, Clipbrd, RegExpr, tisinifiles, IdURI,
   uScaleDPI, uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
-  uvisrepositories, uVisHostDelete, windirs
+  uvisrepositories, uVisHostDelete, windirs,LazFileUtils, FileUtil
   {$ifdef wsus}
   ,uVisWUAGroup, uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect
@@ -3866,7 +3865,7 @@ begin
   try
     fn := LazFileUtils.GetTempFileNameUTF8(dir, 'test');
     StringToFile(fn, '');
-    FileUtil.DeleteFileUTF8(fn);
+    DeleteFileUTF8(fn);
     Result := True;
   except
     Result := False;
@@ -3926,7 +3925,7 @@ begin
   begin
     if not DirectoryExistsUTF8(ExtractFileDir(localFn)) then
        ForceDirectoriesUTF8(ExtractFileDir(localFn));
-    CopyFile(Utf8ToAnsi(WaptIniFilename), Utf8ToAnsi(localfn), True);
+    FileUtil.CopyFile(Utf8ToAnsi(WaptIniFilename), Utf8ToAnsi(localfn), True);
   end;
 
   ActReloadConfig.Execute;
@@ -4091,11 +4090,11 @@ begin
       (WSUSActions.Actions[i] as TAction).Visible:=waptcommon.waptwua_enabled;
     end;
 
-    plStatusBar1.Panels[0].Text := WaptServerUser+' on '+ApplicationName+' '+
+    plStatusBar1.Caption := WaptServerUser+' on '+ApplicationName+' '+
       GetApplicationVersion+' WAPT '+wapt_edition+' Edition, (c) 2012-2017 Tranquil IT. (Conf:'+
       AppIniFilename+')';
     {$ifdef ENTERPRISE}
-    plStatusBar1.Panels[0].Text := plStatusBar1.Panels[0].Text + ' ' + Format(rsLicencedTo,[dmPython.LicensedTo]);
+    plStatusBar1.Caption := plStatusBar1.Caption + ' ' + Format(rsLicencedTo,[dmPython.LicensedTo]);
     {$endif}
 
     //ProgressTitle(rsLoadPackages);

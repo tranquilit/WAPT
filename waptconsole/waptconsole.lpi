@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="9"/>
+    <Version Value="10"/>
     <PathDelim Value="\"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
@@ -12,7 +12,7 @@
       <ResourceType Value="res"/>
       <XPManifest>
         <DpiAware Value="True"/>
-        <ExecutionLevel Value="1"/>
+        <ExecutionLevel Value="highestAvailable"/>
       </XPManifest>
       <Icon Value="0"/>
     </General>
@@ -25,6 +25,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="6"/>
+      <BuildNr Value="2"/>
       <StringTable LegalCopyright="Tranquil IT Systems 2012-2018" ProductName="WAPT Enterprise Edition" ProductVersion="1.5.1"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -40,73 +41,54 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="20">
+    <RequiredPackages Count="14">
       <Item1>
-        <PackageName Value="TAChartLazarusPkg"/>
+        <PackageName Value="pl_virtualtreesextra"/>
       </Item1>
       <Item2>
-        <PackageName Value="MemDSLaz"/>
+        <PackageName Value="python4lazarus_package"/>
       </Item2>
       <Item3>
-        <PackageName Value="RunTimeTypeInfoControls"/>
+        <PackageName Value="pltis_sogrid_laz"/>
       </Item3>
       <Item4>
-        <PackageName Value="pl_fzcontrols"/>
+        <PackageName Value="virtualtreeview_package"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_exdesign"/>
+        <PackageName Value="luicontrols"/>
       </Item5>
       <Item6>
-        <PackageName Value="pl_luicontrols"/>
+        <PackageName Value="TAChartLazarusPkg"/>
       </Item6>
       <Item7>
-        <PackageName Value="pl_lclextensions"/>
+        <PackageName Value="MemDSLaz"/>
       </Item7>
       <Item8>
-        <PackageName Value="pl_lazsolutions"/>
+        <PackageName Value="RunTimeTypeInfoControls"/>
       </Item8>
       <Item9>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="pltis_wapt"/>
       </Item9>
       <Item10>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="pltis_utils"/>
       </Item10>
       <Item11>
-        <PackageName Value="pl_excontrols"/>
+        <PackageName Value="pltis_superobject"/>
       </Item11>
       <Item12>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="FCL"/>
       </Item12>
       <Item13>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="SynEdit"/>
       </Item13>
       <Item14>
-        <PackageName Value="pl_virtualtrees"/>
-      </Item14>
-      <Item15>
-        <PackageName Value="pltis_superobject"/>
-      </Item15>
-      <Item16>
-        <PackageName Value="pltis_python4delphi"/>
-      </Item16>
-      <Item17>
-        <PackageName Value="pl_virtualtreesextra"/>
-      </Item17>
-      <Item18>
-        <PackageName Value="FCL"/>
-      </Item18>
-      <Item19>
-        <PackageName Value="SynEdit"/>
-      </Item19>
-      <Item20>
         <PackageName Value="LCL"/>
-      </Item20>
+      </Item14>
     </RequiredPackages>
-    <Units Count="29">
+    <Units Count="27">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="waptconsole"/>
       </Unit0>
       <Unit1>
         <Filename Value="uwaptconsole.pas"/>
@@ -114,7 +96,6 @@
         <ComponentName Value="VisWaptGUI"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uwaptconsole"/>
       </Unit1>
       <Unit2>
         <Filename Value="uviscreatekey.pas"/>
@@ -130,7 +111,6 @@
         <ComponentName Value="DMPython"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <UnitName Value="dmwaptpython"/>
       </Unit3>
       <Unit4>
         <Filename Value="uviseditpackage.pas"/>
@@ -138,7 +118,6 @@
         <ComponentName Value="VisEditPackage"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uviseditpackage"/>
       </Unit4>
       <Unit5>
         <Filename Value="uviscreatewaptsetup.pas"/>
@@ -154,7 +133,6 @@
         <ComponentName Value="VisLogin"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uvislogin"/>
       </Unit6>
       <Unit7>
         <Filename Value="uvisprivatekeyauth.pas"/>
@@ -162,7 +140,6 @@
         <ComponentName Value="VisPrivateKeyAuth"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uvisprivatekeyauth"/>
       </Unit7>
       <Unit8>
         <Filename Value="uvisloading.pas"/>
@@ -170,7 +147,6 @@
         <ComponentName Value="VisLoading"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uvisloading"/>
       </Unit8>
       <Unit9>
         <Filename Value="uviswaptconfig.pas"/>
@@ -178,7 +154,6 @@
         <ComponentName Value="VisWAPTConfig"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uviswaptconfig"/>
       </Unit9>
       <Unit10>
         <Filename Value="uvischangepassword.pas"/>
@@ -186,7 +161,6 @@
         <ComponentName Value="VisChangePassword"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uvischangepassword"/>
       </Unit10>
       <Unit11>
         <Filename Value="uvisgroupchoice.pas"/>
@@ -194,7 +168,6 @@
         <ComponentName Value="visGroupChoice"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uvisgroupchoice"/>
       </Unit11>
       <Unit12>
         <Filename Value="uvishostsupgrade.pas"/>
@@ -202,7 +175,6 @@
         <ComponentName Value="VisHostsUpgrade"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uvishostsupgrade"/>
       </Unit12>
       <Unit13>
         <Filename Value="uvisapropos.pas"/>
@@ -247,7 +219,6 @@
         <ComponentName Value="VisWUARules"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uviswuarules"/>
       </Unit18>
       <Unit19>
         <Filename Value="uviswuaclassificationsselect.pas"/>
@@ -263,63 +234,51 @@
         <ComponentName Value="VisWUAPackageSelect"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uviswuapackageselect"/>
       </Unit20>
       <Unit21>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="waptcommon"/>
-      </Unit21>
-      <Unit22>
         <Filename Value="uvispackagewizard.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisPackageWizard"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisPackageWizard"/>
-      </Unit22>
-      <Unit23>
-        <Filename Value="..\wapt-get\waptwinutils.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="waptwinutils"/>
-      </Unit23>
-      <Unit24>
+      </Unit21>
+      <Unit22>
         <Filename Value="uscaledpi.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UScaleDPI"/>
-      </Unit24>
-      <Unit25>
+      </Unit22>
+      <Unit23>
         <Filename Value="uvischangekeypassword.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisChangeKeyPassword"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisChangeKeyPassword"/>
-      </Unit25>
-      <Unit26>
+      </Unit23>
+      <Unit24>
         <Filename Value="uvisrepositories.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisRepositories"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uvisrepositories"/>
-      </Unit26>
-      <Unit27>
+      </Unit24>
+      <Unit25>
         <Filename Value="uvisdisplaypreferences.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisDisplayPreferences"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisDisplayPreferences"/>
-      </Unit27>
-      <Unit28>
+      </Unit25>
+      <Unit26>
         <Filename Value="uvishostdelete.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisHostDelete"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisHostDelete"/>
-      </Unit28>
+      </Unit26>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -330,7 +289,6 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\wapt-get"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
@@ -355,11 +313,7 @@
       <Verbosity>
         <ShowHints Value="False"/>
       </Verbosity>
-      <CompilerMessages>
-        <MsgFileName Value=""/>
-      </CompilerMessages>
       <CustomOptions Value="-dUseCThreads -dENTERPRISE"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>

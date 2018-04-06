@@ -5,7 +5,7 @@ unit uviseditpackage;
 interface
 
 uses
-  Classes, SysUtils, LazUTF8, FileUtil, SynHighlighterPython, SynEdit, Forms, Controls,
+  Classes, SysUtils, LazUTF8, LazFileUtils, SynHighlighterPython, SynEdit, Forms, Controls,
   Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, Buttons,
   superobject, VirtualTrees, VarPyth, PythonEngine, types, ActiveX, LCLIntf,
   LCL, sogrid, vte_json, DefaultTranslator, SearchEdit;
@@ -161,7 +161,7 @@ var
 implementation
 
 uses uWaptConsoleRes,soutils, LCLType, Variants, waptcommon, dmwaptpython, jwawinuser, uvisloading,
-  uvisprivatekeyauth, uwaptconsole, tiscommon, uWaptRes,UScaleDPI,tisinifiles,tisstrings;
+  uvisprivatekeyauth, uwaptconsole, tiscommon, uWaptRes,UScaleDPI,tisinifiles,tisstrings,FileUtil;
 
 {$R *.lfm}
 
@@ -462,7 +462,7 @@ begin
   if VarPythonAsString(PackageEdited.sourcespath) <> '' then
   begin
     setuppypath := VarPythonAsString(PackageEdited.sourcespath) + '\setup.py';
-    if FileExistsUTF8(setuppypath) then
+    if FileExists(setuppypath) then
       EdSetupPy.Lines.LoadFromFile(setuppypath)
     else
       EdSetupPy.Lines.Clear;
@@ -661,7 +661,7 @@ begin
       if FisTempSourcesDir then
         FileUtil.DeleteDirectory(SourcePath, False);
       if FileExistsUTF8(vbuildfilename) then
-        FileUtil.DeleteFileUTF8(vbuildfilename);
+        DeleteFile(vbuildfilename);
 
       IsUpdated := False;
     except

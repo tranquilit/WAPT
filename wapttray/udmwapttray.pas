@@ -5,7 +5,7 @@ unit uDMWAPTTray;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, ExtCtrls, Menus, ActnList, Controls,
+  Classes, SysUtils, LazFileUtils, ExtCtrls, Menus, ActnList, Controls,
   zmqapi, superobject, DefaultTranslator, uWaptTrayRes;
 
 type
