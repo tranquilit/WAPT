@@ -694,6 +694,7 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'system_component'
               end>
             Header.DefaultHeight = 17
+            Header.Height = 17
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
             Header.SortColumn = 2
             Header.Style = hsFlatButtons
@@ -1103,6 +1104,7 @@ object VisWaptGUI: TVisWaptGUI
                     Width = 66
                     PropertyName = 'created_by'
                   end>
+                Header.DefaultHeight = 18
                 Header.MinHeight = 19
                 Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
                 Header.SortColumn = 0
@@ -1833,7 +1835,7 @@ object VisWaptGUI: TVisWaptGUI
         ClientWidth = 1064
         TabOrder = 3
         object PanFilterGroups: TPanel
-          Left = 567
+          Left = 575
           Height = 75
           Top = 0
           Width = 214
@@ -1901,7 +1903,7 @@ object VisWaptGUI: TVisWaptGUI
           Left = 0
           Height = 75
           Top = 0
-          Width = 426
+          Width = 434
           Align = alLeft
           AutoSize = True
           BevelOuter = bvNone
@@ -1909,13 +1911,13 @@ object VisWaptGUI: TVisWaptGUI
           ChildSizing.TopBottomSpacing = 2
           ChildSizing.VerticalSpacing = 2
           ClientHeight = 75
-          ClientWidth = 426
+          ClientWidth = 434
           TabOrder = 1
           object PanSearch: TPanel
             Left = 6
-            Height = 28
+            Height = 36
             Top = 2
-            Width = 414
+            Width = 422
             AutoSize = True
             BevelOuter = bvNone
             ChildSizing.LeftRightSpacing = 6
@@ -1923,8 +1925,8 @@ object VisWaptGUI: TVisWaptGUI
             ChildSizing.EnlargeHorizontal = crsHomogenousSpaceResize
             ChildSizing.Layout = cclLeftToRightThenTopToBottom
             ChildSizing.ControlsPerLine = 3
-            ClientHeight = 28
-            ClientWidth = 414
+            ClientHeight = 36
+            ClientWidth = 422
             TabOrder = 0
             object EdSearchHost: TSearchEdit
               Left = 6
@@ -1945,16 +1947,16 @@ object VisWaptGUI: TVisWaptGUI
             end
             object ButHostSearch: TBitBtn
               Left = 196
-              Height = 26
+              Height = 34
               Top = 2
-              Width = 120
+              Width = 128
               Action = ActSearchHost
               AutoSize = True
               TabOrder = 1
             end
             object cbAdvancedSearch: TCheckBox
-              Left = 326
-              Height = 26
+              Left = 334
+              Height = 34
               Top = 2
               Width = 82
               Caption = 'More options'
@@ -2058,7 +2060,7 @@ object VisWaptGUI: TVisWaptGUI
           end
         end
         object panFilterStatus: TPanel
-          Left = 426
+          Left = 434
           Height = 75
           Top = 0
           Width = 141

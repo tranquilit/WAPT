@@ -5,7 +5,7 @@ unit uviseditpackage;
 interface
 
 uses
-  Classes, SysUtils, LazUTF8, LazFileUtils, SynHighlighterPython, SynEdit, Forms, Controls,
+  Classes, SysUtils, LazUTF8, SynHighlighterPython, SynEdit, Forms, Controls,
   Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, Buttons,
   superobject, VirtualTrees, VarPyth, PythonEngine, types, ActiveX, LCLIntf,
   LCL, sogrid, vte_json, DefaultTranslator, SearchEdit;
@@ -161,7 +161,7 @@ var
 implementation
 
 uses uWaptConsoleRes,soutils, LCLType, Variants, waptcommon, dmwaptpython, jwawinuser, uvisloading,
-  uvisprivatekeyauth, uwaptconsole, tiscommon, uWaptRes,UScaleDPI,tisinifiles,tisstrings,FileUtil;
+  uvisprivatekeyauth, uwaptconsole, tiscommon, uWaptRes,UScaleDPI,tisinifiles,tisstrings,LazFileUtils, FileUtil;
 
 {$R *.lfm}
 
@@ -626,7 +626,7 @@ begin
   Res := Nil;
   ActEditSavePackage.Execute;
 
-  if not FileExistsUTF8(WaptPersonalCertificatePath) then
+  if not FileExists(WaptPersonalCertificatePath) then
   begin
     ShowMessageFmt(rsPrivateKeyDoesntExist, [WaptPersonalCertificatePath]);
     exit;
@@ -660,8 +660,8 @@ begin
 
       if FisTempSourcesDir then
         FileUtil.DeleteDirectory(SourcePath, False);
-      if FileExistsUTF8(vbuildfilename) then
-        DeleteFile(vbuildfilename);
+      if FileExists(vbuildfilename) then
+        DeleteFileUTF8(vbuildfilename);
 
       IsUpdated := False;
     except
@@ -874,7 +874,7 @@ begin
         except
           ShowMessage(rsDlCanceled);
           if FileExists(filePath) then
-            DeleteFile(filePath);
+            DeleteFileUTF8(filePath);
           raise;
         end;
 

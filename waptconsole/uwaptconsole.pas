@@ -711,13 +711,13 @@ var
 
 implementation
 
-uses LCLIntf, LCLType, IniFiles, variants, uvisprivatekeyauth, soutils,
+uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, uvisprivatekeyauth, soutils,
   waptcommon, waptwinutils, tiscommon, uVisCreateKey, uVisCreateWaptSetup,
   dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
   uvisgroupchoice, uvishostsupgrade, uVisAPropos,
   uVisImportPackage, PythonEngine, Clipbrd, RegExpr, tisinifiles, IdURI,
   uScaleDPI, uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
-  uvisrepositories, uVisHostDelete, windirs,LazFileUtils, FileUtil
+  uvisrepositories, uVisHostDelete, windirs
   {$ifdef wsus}
   ,uVisWUAGroup, uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect
@@ -1516,7 +1516,7 @@ begin
             DMPython.common.wapt_sources_edit( wapt_sources_dir := vDevPath);
           except
             ShowMessage(rsDlCanceled);
-            if FileExistsUTF8(filePath) then
+            if FileExists(filePath) then
               DeleteFileUTF8(filePath);
             raise;
           end;
@@ -1616,7 +1616,7 @@ begin
     exit;
   end;
 
-  if not FileExistsUTF8(WaptPersonalCertificatePath) then
+  if not FileExists(WaptPersonalCertificatePath) then
   begin
     ShowMessageFmt(rsPrivateKeyDoesntExist, [WaptPersonalCertificatePath]);
     exit;
@@ -1693,7 +1693,7 @@ begin
                   sign_digests := SignDigests
                   );
 
-              if not VarPyth.VarIsNone(BuildRes) and FileExistsUTF8(VarPythonAsString(BuildRes.get('localpath'))) then
+              if not VarPyth.VarIsNone(BuildRes) and FileExists(VarPythonAsString(BuildRes.get('localpath'))) then
               begin
                 ProgressTitle(rsWaptUpgradePackageBuilt);
                 DeleteFileUTF8(VarPythonAsString(BuildRes.get('localpath')));
@@ -1985,13 +1985,13 @@ end;
 
 procedure TVisWaptGUI.ActChangePrivateKeypasswordUpdate(Sender: TObject);
 begin
-  ActChangePrivateKeypassword.Enabled := FileExistsUTF8(WaptPersonalCertificatePath);
+  ActChangePrivateKeypassword.Enabled := FileExists(WaptPersonalCertificatePath);
 end;
 
 procedure TVisWaptGUI.ActCleanCacheExecute(Sender: TObject);
 var
   waptpackages:TStringList;
-  fn:Utf8String;
+  fn:String;
 begin
   waptpackages := FindAllFiles(AppLocalDir + 'cache','*.wapt',False);
   try
@@ -2014,7 +2014,7 @@ begin
   begin
     ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],135);
     if ip <> '' then
-      ShellExecute(0, '', PAnsiChar('compmgmt.msc'), PAnsichar(' -a /computer=' + ip), nil, SW_SHOW)
+      ShellExecuteW(0, '', PWideChar('compmgmt.msc'), PWideChar(' -a /computer=' + ip), nil, SW_SHOW)
     else
       ShowMessage(rsNoreachableIP);
   end;
@@ -2742,7 +2742,7 @@ end;
 
 procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
 var
-  hostname,uuid,desc,HostPackageVersion: Utf8String;
+  hostname,uuid,desc,HostPackageVersion: String;
   uuids,result: ISuperObject;
   ApplyUpdatesImmediately:Boolean;
   Host: ISuperObject;
@@ -3858,9 +3858,9 @@ begin
   end;
 end;
 
-function checkReadWriteAccess(dir: Utf8string): boolean;
+function checkReadWriteAccess(dir: String): boolean;
 var
-  fn: Utf8string;
+  fn: String;
 begin
   try
     fn := LazFileUtils.GetTempFileNameUTF8(dir, 'test');
@@ -3913,7 +3913,7 @@ end;
 function TVisWaptGUI.Login: boolean;
 var
   cred, sores: ISuperObject;
-  localfn: utf8string;
+  localfn: String;
   LicencesLog:String;
   HostsCount: Integer;
 begin
@@ -3923,7 +3923,7 @@ begin
 
   if not FileExists(localfn) then
   begin
-    if not DirectoryExistsUTF8(ExtractFileDir(localFn)) then
+    if not DirectoryExists(ExtractFileDir(localFn)) then
        ForceDirectoriesUTF8(ExtractFileDir(localFn));
     FileUtil.CopyFile(Utf8ToAnsi(WaptIniFilename), Utf8ToAnsi(localfn), True);
   end;
@@ -4273,7 +4273,7 @@ procedure TVisWaptGUI.GridHostsCompareNodes(Sender: TBaseVirtualTree;
   Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: integer);
 var
   n1, n2, d1, d2: ISuperObject;
-  propname: string;
+  propname: Unicodestring;
   compresult: TSuperCompareResult;
 begin
   Result := 0;
@@ -4386,7 +4386,7 @@ procedure TVisWaptGUI.GridLoadData(grid: TSOGrid; jsondata: string);
 begin
   if (jsondata <> '') then
     try
-      Grid.Data := SO(jsondata);
+      Grid.Data := SO(UTF8Decode(jsondata));
     finally
     end;
 end;
@@ -4544,7 +4544,7 @@ procedure TVisWaptGUI.GridHostTasksPendingChange(Sender: TBaseVirtualTree;
 begin
   if (Sender as TSOGrid).FocusedRow <> nil then
   begin
-    MemoTaskLog.Text := (Sender as TSOGrid).FocusedRow.S['logs'];
+    MemoTaskLog.Text := UTF8Encode((Sender as TSOGrid).FocusedRow.S['logs']);
     MemoTaskLog.SelStart := 65535;
     MemoTaskLog.ScrollBy(0, 65535);
   end
@@ -4967,7 +4967,7 @@ end;
 procedure TVisWaptGUI.ActTISHelpExecute(Sender: TObject);
 var
   taskresult,uuids: ISuperObject;
-  currhost,computer_name: ansistring;
+  currhost,computer_name: String;
 begin
   {$ifdef ENTERPRISE}
   if GridHosts.FocusedRow<>Nil then
@@ -5193,7 +5193,7 @@ begin
   GridOrgUnits.ClearSelection;
   while (N <> nil) do
   begin
-    Desc := PDBNodeData(GridOrgUnits.GetDBNodeData(N))^.Text;
+    Desc := UTF8Encode(PDBNodeData(GridOrgUnits.GetDBNodeData(N))^.Text);
     if Pos(lowercase(Search),LowerCase(Desc))>0  then
     begin
       GridOrgUnits.Selected[N] := True;

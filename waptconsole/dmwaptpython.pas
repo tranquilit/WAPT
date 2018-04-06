@@ -42,7 +42,7 @@ type
     FMaxHostsCount:Integer;
     {$endif}
 
-    FWaptConfigFileName: Utf8String;
+    FWaptConfigFileName: String;
     function Getcommon: Variant;
     function GetIsEnterpriseEdition: Boolean;
     function GetMainWaptRepo: Variant;
@@ -55,7 +55,7 @@ type
     function Getwaptdevutils: Variant;
     function Getwaptpackage: Variant;
     function Getlicencing: Variant;
-    procedure LoadJson(data: UTF8String);
+    procedure LoadJson(data: String);
     procedure Setcommon(AValue: Variant);
     procedure SetIsEnterpriseEdition(AValue: Boolean);
     procedure SetMainWaptRepo(AValue: Variant);
@@ -63,7 +63,7 @@ type
     procedure SetWaptHostRepo(AValue: Variant);
     procedure setprivateKeyPassword(AValue: Ansistring);
     procedure SetWAPT(AValue: Variant);
-    procedure SetWaptConfigFileName(AValue: Utf8String);
+    procedure SetWaptConfigFileName(AValue: String);
     procedure SetLanguage(AValue: String);
 
     { private declarations }
@@ -78,8 +78,8 @@ type
     function CertificateIsCodeSigning(crtfilename:String):Boolean;
     property privateKeyPassword: Ansistring read getprivateKeyPassword write setprivateKeyPassword;
 
-    property WaptConfigFileName:Utf8String read FWaptConfigFileName write SetWaptConfigFileName;
-    function RunJSON(expr: Utf8String; jsonView: TVirtualJSONInspector=
+    property WaptConfigFileName:String read FWaptConfigFileName write SetWaptConfigFileName;
+    function RunJSON(expr: String; jsonView: TVirtualJSONInspector=
       nil): ISuperObject;
 
     property Language:String read FLanguage write SetLanguage;
@@ -271,7 +271,7 @@ begin
   end;
 end;
 
-procedure TDMPython.SetWaptConfigFileName(AValue: Utf8String);
+procedure TDMPython.SetWaptConfigFileName(AValue: String);
 var
   ini : TInifile;
   i: integer;
@@ -294,7 +294,7 @@ begin
       mkdir(ExtractFileDir(AValue));
     //Initialize waptconsole parameters with local workstation wapt-get parameters...
     if not FileExists(AValue) then
-      CopyFile(Utf8ToAnsi(WaptIniFilename),Utf8ToAnsi(AValue),True);
+      CopyFile(WaptIniFilename,AValue,True);
 
     // override lang setting
     waptcommon.Language := '';
@@ -339,7 +339,7 @@ var
   vcrt_filename: Variant;
 
 begin
-  if (crtfilename<>'') and FileExistsUTF8(crtfilename) then
+  if (crtfilename<>'') and FileExists(crtfilename) then
   begin
     vcrt_filename := PyUTF8Decode(crtfilename);
     crt := dmpython.waptcrypto.SSLCertificate(crt_filename:=vcrt_filename);
@@ -468,10 +468,10 @@ begin
     Result:=PythonEng.ReturnNone;
 end;
 
-function TDMPython.RunJSON(expr: Utf8String; jsonView: TVirtualJSONInspector
+function TDMPython.RunJSON(expr: String; jsonView: TVirtualJSONInspector
   ): ISuperObject;
 var
-  res:UTF8String;
+  res:String;
 begin
   if Assigned(jsonView) then
     jsonView.Clear;
@@ -579,7 +579,7 @@ begin
 end;
 {$endif}
 
-procedure TDMPython.LoadJson(data: UTF8String);
+procedure TDMPython.LoadJson(data: String);
 var
   P:TJSONParser;
 begin
@@ -635,7 +635,7 @@ var
   RetryCount:integer;
   vcrt_filename: Variant;
 begin
-  if not FileExistsUTF8(WaptPersonalCertificatePath) then
+  if not FileExists(WaptPersonalCertificatePath) then
     FCachedPrivateKeyPassword := ''
   else
   begin

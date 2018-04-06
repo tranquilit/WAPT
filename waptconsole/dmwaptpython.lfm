@@ -6,6 +6,7 @@ object DMPython: TDMPython
   HorizontalOffset = 347
   VerticalOffset = 423
   Width = 233
+  PPI = 96
   object PythonEng: TPythonEngine
     AutoLoad = False
     DllName = 'python27.dll'
