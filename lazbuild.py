@@ -111,8 +111,8 @@ def set_app_ico(lpi_path,edition):
 
 def main():
     parser=OptionParser(usage=__doc__)
-    parser.add_option("-l","--laz-build-path", dest="lazbuildpath", default=r'C:\codetyphon\typhon\bin32\typhonbuild.exe', help="Path to lazbuild or typhonbuild.exe (default: %default)")
-    parser.add_option("-p","--primary-config-path", dest="primary_config_path", default='%APPDATA%\\typhon32', help="Path to lazbuild primary config dir. (default: %default)")
+    parser.add_option("-l","--laz-build-path", dest="lazbuildpath", default=r'C:\lazarus\lazbuild.exe', help="Path to lazbuild or lazbuild.exe (default: %default)")
+    parser.add_option("-p","--primary-config-path", dest="primary_config_path", default='%LOCALAPPDATA%\\lazarus', help="Path to lazbuild primary config dir. (default: %default)")
     parser.add_option("-v","--wapt-version", dest="waptversion", default=waptutils.__version__, help="Wapt version to put in exe metadata. (default: %default)")
     parser.add_option("-e","--wapt-edition", dest="waptedition", default='community', help="Wapt edition to build (community, enterprise...).  (default: %default)")
     parser.add_option("-u","--update-hash-file", dest="update_hash_filepath", default=r'{lpi_dirname}\\..\\{lpi_name}.sha256',help="Hash file to update vars (lpi_rootname,lpi_name,lpi_path,lpi_dirname,lpi_basename) (default: <lpi-base-name>.sha256")
