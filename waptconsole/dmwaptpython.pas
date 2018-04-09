@@ -102,7 +102,6 @@ type
     {$endif}
   end;
 
-
   function CreateSignedCert(keyfilename,
           crtbasename,
           wapt_base_dir,
@@ -487,97 +486,6 @@ begin
 
 end;
 
-{$ifdef ENTERPRISE}
-function TDMPython.CheckLicence(domain: String; var LicencesLog: String): Integer;
-var
-  lic:ISuperObject;
-  LicFilename:String;
-  VLicFilename: Variant;
-  LicFileList,LicList:TStringList;
-  Licence: Variant;
-  tisCertPEM:String;
-  tisCert: Variant;
-  ValidUntil,MaxValidUntil:TDateTime;
-begin
-  Result:=0;
-  ValidLicence:=False;
-  LicencesLog := '';
-  LicensedTo := '';
-  LicFileList := FindAllFiles(AppendPathDelim(WaptBaseDir)+'licences','*.lic');
-  LicList:=TStringList.Create;
-  MaxValidUntil := 0;
-  try
-    tisCertPEM := ExtractResourceString('CATIS');
-    tisCert:=waptcrypto.SSLCertificate(crt_string := tisCertPEM);
-    for LicFilename in LicFileList do
-    begin
-      VLicFilename := PyUTF8Decode(LicFilename);
-      Licence:=licencing.WaptLicence(filename := VLicFilename);
-      try
-        Licence.check_licence(tisCert);
-        ValidUntil := UniversalTimeToLocal(ISO8601ToDateTime(VarPythonAsString(Licence.valid_until)));
-        if ValidUntil>MaxValidUntil then
-          MaxValidUntil := ValidUntil;
-        if Now >= ValidUntil then
-          raise Exception.Create('Licence has expired');
-        LicencesLog := LicencesLog+Licence.__unicode__('--noarg--').encode('utf-8')+#13#10;
-        //if domain = VarPythonAsString(licence.domain) then
-          Result := Result + StrToInt(VarPythonAsString(Licence.count));
-        if LicList.IndexOf(VarPythonAsString(Licence.licence_nr))>=0 then
-          raise Exception.Create('Duplicated Licence nr');
-        LicList.Add(VarPythonAsString(Licence.licence_nr));
-        ValidLicence:=ValidLicence or (StrToInt(VarPythonAsString(Licence.count))>0);
-        if LicensedTo<>'' then
-          LicensedTo := LicensedTo+',';
-        LicensedTo := LicensedTo + VarPythonAsString(Licence.licenced_to.encode('utf-8'));
-      except
-        on e:Exception do
-          // Skip because of validation error
-          LicencesLog := LicencesLog+'Licence '+LicFilename+' ERROR '+E.Message+' for '+Licence.__unicode__('--noarg--').encode('utf-8')+' Skipped.'+#13#10
-      end;
-    end;
-    if not ValidLicence then
-      ShowMessage('No valid licence found, switching to Community features only')
-    else if (MaxValidUntil - Now) < 14 then
-      ShowMessageFmt('Licence will expire in %s days, keep in mind to renew them.',[int(MaxValidUntil - Now)]);
-    FMaxHostsCount := Result;
-
-  finally
-    LicList.Free;
-    LicFileList.Free;
-  end;
-end;
-{$endif ENTERPRISE}
-
-{$ifdef ENTERPRISE}
-procedure TDMPython.CheckPySources;
-var
-  Line,Filename,ExpectedSha256,ActualSha256:String;
-  Errors,Files:TStringList;
-begin
-  try
-    Errors := TStringList.Create;
-    Files := TStringList.Create;
-    Files.Text:=ExtractResourceString('CHECKFILES');
-    for line in Files do
-    try
-      ExpectedSha256:= copy(Line,1,64);
-      Filename := copy(Line,67,length(line));
-      ActualSha256:=SHA256Hash(Filename);
-      if ActualSha256<>ExpectedSha256 then
-        Raise Exception.CreateFmt('%s: file corrupted. Expected %s, Actual %s ',[Filename,ExpectedSha256,ActualSha256]);
-    except
-      on E:Exception do
-        Errors.Add(e.Message);
-    end;
-    if Errors.Count>0 then
-      Raise Exception.CreateFmt('%d validation errors for Python sources: %s',[Errors.Count,#13#10+Errors.Text]);
-  finally
-    Errors.Free;
-    Files.Free;
-  end;
-end;
-{$endif}
 
 procedure TDMPython.LoadJson(data: String);
 var
@@ -743,17 +651,6 @@ begin
     Fwaptpackage:= VarPyth.Import('waptpackage');
   Result := Fwaptpackage;
 
-end;
-
-function TDMPython.Getlicencing: Variant;
-begin
-  {$ifdef ENTERPRISE}
-  if VarIsEmpty(Flicencing) or VarIsNull(Flicencing) then
-    Flicencing:= VarPyth.Import('waptenterprise.licencing');
-  Result := Flicencing;
-  {$else}
-  Result := Nil;
-  {$endif}
 end;
 
 function TDMPython.GetMainWaptRepo: Variant;
@@ -962,6 +859,28 @@ function PyUTF8Decode(s:RawByteString):UnicodeString;
 begin
   result := UTF8Decode(s);
 end;
+
+{$ifdef ENTERPRISE}
+{$include ..\waptenterprise\includes\dmwaptpython.inc}
+{$else}
+function TDMPython.CheckLicence(domain: String; var LicencesLog: String): Integer;
+begin
+  LicencesLog := 'WAPT Community Edition';
+  if domain <> '' then
+     LicencesLog := LicencesLog + ' for ' + domain;
+  Result := -1;
+end;
+
+procedure TDMPython.CheckPySources;
+begin
+end;
+
+function TDMPython.Getlicencing: Variant;
+begin
+  Result := Nil;
+end;
+
+{$endif}
 
 end.
 

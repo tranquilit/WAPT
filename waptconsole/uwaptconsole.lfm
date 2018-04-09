@@ -3513,13 +3513,13 @@ object VisWaptGUI: TVisWaptGUI
     object pgSources: TTabSheet
       Caption = 'Sources'
       ClientHeight = 532
-      ClientWidth = 1182
+      ClientWidth = 1064
       TabVisible = False
       inline testedit: TSynEdit
         Left = 0
         Height = 498
         Top = 34
-        Width = 1182
+        Width = 1064
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -4043,11 +4043,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 34
         Top = 0
-        Width = 1182
+        Width = 1064
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 1182
+        ClientWidth = 1064
         TabOrder = 1
         object butInitWapt: TBitBtn
           Left = 4

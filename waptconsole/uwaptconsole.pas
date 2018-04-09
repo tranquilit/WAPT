@@ -843,7 +843,7 @@ begin
   if (Key=#13) then
     if GridHosts.FocusedRow<>Nil then
     begin
-       if TriggerChangeHostDescription(GridHosts.FocusedRow.S['uuid'],UTF8Decode(EdDescription.Text)) then
+       if TriggerChangeHostDescription(UTF8Decode(GridHosts.FocusedRow.S['uuid']),EdDescription.Text) then
        begin
           if GridHosts.FocusedRow<>Nil then
             GridHosts.FocusedRow.S['description'] := UTF8Decode(EdDescription.Text);
@@ -975,10 +975,7 @@ begin
     ini.WriteString(self.name,'cbGroups.Text',cbGroups.Text);
 
     {$ifdef ENTERPRISE}
-    ini.WriteString(self.name,'cbADSite',cbADSite.Text);
-    ini.WriteString(self.name,'OrgUnitsDN',StrJoin('||',GetSelectedOrgUnits));
-    ini.WriteInteger(self.Name,PanOrgUnits.Name+'.Width',PanOrgUnits.Width);
-    ini.WriteBool(self.Name,CBIncludeSubOU.Name,self.CBIncludeSubOU.Checked);;
+    {$include ..\waptenterprise\includes\uwaptconsole.formclose.inc};
     {$endif}
 
     ini.WriteString(self.name,'waptconsole.version',GetApplicationVersion);
@@ -1648,7 +1645,7 @@ begin
           try
             ExceptionOnStop := True;
             Screen.Cursor := crHourGlass;
-            ProgressTitle(rsCreationInProgress);
+            ProgressTitle(rsBuildInProgress);
             Start;
             waptsetupPath := '';
 
@@ -1658,7 +1655,7 @@ begin
               SignDigests := 'sha256';
 
             try
-              ProgressTitle(rsCreationInProgress);
+              ProgressTitle(rsBuildInProgress);
               waptsetupPath := CreateWaptSetup(UTF8Encode(ActiveCertBundle),
                 edRepoUrl.Text, edWaptServerUrl.Text, fnWaptDirectory.Directory, edOrgName.Text, @DoProgress, 'waptagent',
                 EdServerCertificate.Text,
@@ -1679,7 +1676,7 @@ begin
             Application.ProcessMessages;
 
             // create waptupgrade package (after waptagent as we need the updated waptagent.sha1 file)
-            ProgressTitle(rsCreationInProgress);
+            ProgressTitle(rsBuildInProgress);
             try
               BuildRes := Nil;
               buildDir := GetTempDir(False);
@@ -2268,24 +2265,6 @@ begin
   ActEditHostPackage.Enabled:=(GridHosts.SelectedCount=1);
 end;
 
-procedure TVisWaptGUI.ActEditOrgUnitPackageExecute(Sender: TObject);
-var
-  res:ISuperObject;
-begin
-  {$ifdef ENTERPRISE}
-  res := EditGroup(DBOrgUnitsDN.Value,AdvancedMode,'unit',DBOrgUnitsDescription.Value);
-  //force refresh
-  if res <>Nil then
-    dmpython.MainWaptRepo := Unassigned;
-  {$endif}
-end;
-
-procedure TVisWaptGUI.ActEditOrgUnitPackageUpdate(Sender: TObject);
-begin
-  {$ifdef ENTERPRISE}
-  ActEditOrgUnitPackage.Enabled:=GridOrgUnits.SelectedCount=1;
-  {$endif}
-end;
 
 procedure TVisWaptGUI.ActForgetPackagesUpdate(Sender: TObject);
 begin
@@ -2351,14 +2330,6 @@ end;
 procedure TVisWaptGUI.ActPackagesUpdateUpdate(Sender: TObject);
 begin
   ActPackagesUpdate.Enabled:=FileExistsUTF8(WaptPersonalCertificatePath);
-end;
-
-procedure TVisWaptGUI.ActProprietaryExecute(Sender: TObject);
-begin
-  {$ifdef ENTERPRISE}
-  IsEnterpriseEdition := not IsEnterpriseEdition;
-  ActProprietary.Checked := IsEnterpriseEdition;
-  {$endif}
 end;
 
 procedure TVisWaptGUI.ActRemoteAssistExecute(Sender: TObject);
@@ -3505,28 +3476,17 @@ begin
       urlParams.AsArray.Add('need_upgrade=1');
 
     if (cbGroups.Text<>rsFilterAll) and (cbGroups.Text<>'*') and (cbGroups.Text<>'') then
-      urlParams.AsArray.Add(Format('groups=%s',[EncodeURIComponent(cbGroups.Text)]));
+      urlParams.AsArray.Add(UTF8Decode(Format('groups=%s',[EncodeURIComponent(cbGroups.Text)])));
 
-    {$ifdef ENTERPRISE }
-    if IsEnterpriseEdition and (length(GetSelectedOrgUnits)>0) then
-    begin
-      urlParams.AsArray.Add(Format('organizational_unit=%s',[EncodeURIComponent(StrJoin( '||',GetSelectedOrgUnits))]));
-      if CBIncludeSubOU.Checked then
-        urlParams.AsArray.Add(Format('include_childs_ou=1',[]))
-      else
-        urlParams.AsArray.Add(Format('include_childs_ou=0',[]));
-    end;
-
-    // ItemIndex=0 > All, no filter.
-    if cbADSite.ItemIndex>0 then
-      urlParams.AsArray.Add(Format('ad_site=%s',[EncodeURIComponent(cbADSite.Text)]));
+    {$ifdef ENTERPRISE}
+    {$include ..\waptenterprise\includes\uwaptconsole.searchhost.filter.inc}
     {$endif}
 
-    urlParams.AsArray.Add('columns='+join(',',columns));
-    urlParams.AsArray.Add(Format('limit=%d',[HostsLimit]));
+    urlParams.AsArray.Add(UTF8Decode('columns='+join(',',columns)));
+    urlParams.AsArray.Add(UTF8Decode(Format('limit=%d',[HostsLimit])));
 
     if GridHosts.FocusedRow <> nil then
-      previous_uuid := GridHosts.FocusedRow.S['uuid']
+      previous_uuid := UTF8Encode(GridHosts.FocusedRow.S['uuid'])
     else
       previous_uuid := '';
 
@@ -3538,13 +3498,8 @@ begin
       if (hosts <> nil) and (hosts.AsArray <> nil) then
       begin
         HostsCount := hosts.AsArray.Length;
-        {$ifdef ENTERPRISE }
-        if IsEnterpriseEdition and  (HostsCount>DMPython.MaxHostsCount) then
-        begin
-          IsEnterpriseEdition:=False;
-          DMPython.ValidLicence:=False;
-          ShowMessageFmt('Maximum number of licenced hosts (%d/%d)) reached, switching to Community Edition features',[HostsCount,DMPython.MaxHostsCount]);
-        end;
+        {$ifdef ENTERPRISE}
+        {$include ..\waptenterprise\includes\uwaptconsole.searchhost.check_count.inc}
         {$endif}
         LabelComputersNumber.Caption := IntToStr(HostsCount);
 
@@ -3660,20 +3615,6 @@ begin
   MessageDlg('Error in application','An unhandled exception has occured'#13#10#13#10+E.Message,mtError,[mbOK],'');
 end;
 
-
-procedure TVisWaptGUI.cbADOUSelect(Sender: TObject);
-begin
-  {$ifdef ENTERPRISE}
-  ActSearchHost.Execute;
-  {$endif}
-end;
-
-procedure TVisWaptGUI.cbADSiteSelect(Sender: TObject);
-begin
-  {$ifdef ENTERPRISE}
-  ActSearchHost.Execute;
-  {$endif}
-end;
 
 procedure TVisWaptGUI.cbAdvancedSearchClick(Sender: TObject);
 begin
@@ -3970,14 +3911,7 @@ begin
             WaptServerEdition := sores['result'].S['edition'];
             HostsCount := sores['result'].I['hosts_count'];
             {$ifdef ENTERPRISE}
-            Result := DMPython.CheckLicence('',LicencesLog)>0;
-            if IsEnterpriseEdition and (DMPython.MaxHostsCount < HostsCount) then
-            begin
-              Result := False;
-              DMPython.ValidLicence:=False;
-              IsEnterpriseEdition:=False;
-              ShowMessageFmt('Maximum number of licenced hosts (%d/%d)) reached, switching to Community Edition features. %s',[HostsCount,DMPython.MaxHostsCount,LicencesLog]);
-            end;
+            {$include ..\waptenterprise\includes\uwaptconsole.login.check_licence.inc}
             {$endif}
             Result := True;
             if (CompareVersion(sores['result'].S['version'],WAPTServerMinVersion)<0) then
@@ -4064,14 +3998,7 @@ begin
         self.cbGroups.Text := ini.ReadString(self.Name,'cbGroups.Text',self.cbGroups.Text);
 
         {$ifdef ENTERPRISE}
-        if IsEnterpriseEdition then
-        begin
-          LoadOrgUnitsTree(Sender);
-          self.cbADSite.Text :=  ini.ReadString(self.Name,'cbADSite',self.cbADSite.Text);
-          self.DBOrgUnits.Locate('DN',ini.ReadString(self.Name,'OrgUnitsDN',''),[]);
-          self.PanOrgUnits.Width := ini.ReadInteger(self.Name,PanOrgUnits.Name+'.Width',PanOrgUnits.Width);
-          self.CBIncludeSubOU.Checked:= ini.ReadBool(self.Name,CBIncludeSubOU.Name,self.CBIncludeSubOU.Checked);;
-        end;
+        {$include ..\waptenterprise\includes\uwaptconsole.formshow.inc}
         {$endif}
 
       finally
@@ -4514,7 +4441,7 @@ begin
   if MessageDlg(rsConfirmCaption,'Do you really want to change description to '+description+' ?',mtConfirmation, mbYesNoCancel,0) = mrYes then
   begin
     uuids := TSuperObject.Create(stArray);;
-    uuids.AsArray.Add(uuid);
+    uuids.AsArray.Add(UTF8Decode(uuid));
     args := SO();
     args.S['computer_description'] := UTF8Decode(description){%H-};
     taskresult := TriggerActionOnHosts(uuids,'trigger_change_description',args,'Change host description and register','Error changing host description');
@@ -4529,7 +4456,7 @@ procedure TVisWaptGUI.GridHostsNewText(Sender: TBaseVirtualTree;
 begin
   if (GridHosts.Header.Columns[Column]  as TSOGridColumn).PropertyName = 'description' then
   begin
-    if not TriggerChangeHostDescription(GridHosts.FocusedRow.S['uuid'],newtext) then
+    if not TriggerChangeHostDescription(UTF8Encode(GridHosts.FocusedRow.S['uuid']),newtext) then
     begin
       GridHosts.CancelEditNode;
       Abort;
@@ -4613,20 +4540,20 @@ end;
 
 procedure TVisWaptGUI.SetIsEnterpriseEdition(AValue: Boolean);
 begin
-  dmpython.IsEnterpriseEdition:=AValue;
-  Label20.Visible:=IsEnterpriseEdition;
-  PanOrgUnits.Visible:=IsEnterpriseEdition;
-  cbADSite.Visible:=IsEnterpriseEdition;
-  ActLaunchGPUpdate.Visible:=IsEnterpriseEdition;
-  ActDisplayUserMessage.Visible:=IsEnterpriseEdition;
-  ActLaunchWaptExit.Visible:=IsEnterpriseEdition;
-  ActTISHelp.Visible:=IsEnterpriseEdition and FileExists(GetTisSupportPath);
-
-  //PgNetworksConfig.TabVisible:=IsEnterpriseEdition;
-  //PgReports.TabVisible:=IsEnterpriseEdition;
+  {$ifdef ENTERPRISE}
+  {$include ..\waptenterprise\includes\uwaptconsole.setenterprise.inc}
+  {$else}
+  dmpython.IsEnterpriseEdition:=False;
+  Label20.Visible:=False;
+  PanOrgUnits.Visible:=False;
+  cbADSite.Visible:=False;
+  ActLaunchGPUpdate.Visible:=False;
+  ActDisplayUserMessage.Visible:=False;
+  ActLaunchWaptExit.Visible:=False;
+  ActTISHelp.Visible:=False;
   PgNetworksConfig.TabVisible:=False;
   PgReports.TabVisible:=False;
-
+  {$endif}
 end;
 
 procedure TVisWaptGUI.GridPackagesPaintText(Sender: TBaseVirtualTree;
@@ -4761,447 +4688,137 @@ begin
     Result := True;
 end;
 
-procedure TVisWaptGUI.cbADSiteDropDown(Sender: TObject);
-begin
-  {$ifdef ENTERPRISE}
-  if IsEnterpriseEdition then
-  try
-    FillcbADSiteDropDown;
-  except
-    ShowMessage('Please upgrade your server');
-  end;
-  {$endif}
-end;
 
-procedure TVisWaptGUI.cbWUAPendingChange(Sender: TObject);
+{$ifdef ENTERPRISE}
+{$include ..\waptenterprise\includes\uwaptconsole.inc}
+{$else}
+procedure TVisWaptGUI.GridOrgUnitsGetHint(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex;
+  var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: String);
 begin
-  {$ifdef wsus}
-  if (Gridhosts.FocusedRow <> nil) then
-    GridHostWinUpdates.Data := FilterHostWinUpdates(Gridhosts.FocusedRow['waptwua.updates']);
-  {$endif wsus}
-end;
-
-procedure TVisWaptGUI.cbWUCriticalClick(Sender: TObject);
-begin
-  {$ifdef wsus}
-  TimerWUALoadWinUpdatesTimer(sender);
-  {$endif wsus}
-end;
-
-procedure TVisWaptGUI.CBWUProductsShowAllClick(Sender: TObject);
-begin
-  {$ifdef wsus}
-  GridWinproducts.Data := FilterWinProducts(WUAProducts);
-  {$endif wsus}
 end;
 
 
-procedure TVisWaptGUI.FillcbADSiteDropDown;
-var
-  Site,Sites:ISuperObject;
-  oldSelect:String;
+procedure TVisWaptGUI.ActEditOrgUnitPackageExecute(Sender: TObject);
 begin
-  {$ifdef ENTERPRISE}
-  if IsEnterpriseEdition then
-  try
-    Screen.Cursor:=crHourGlass;
-
-    oldSelect:=cbADSite.Text;
-    cbADSite.Items.Clear;
-    cbADSite.Items.Add(rsFilterAll);
-
-    Sites := WAPTServerJsonGet('api/v3/get_ad_sites',[])['result'];
-    if Sites <> Nil then
-    begin
-      for Site in Sites do
-        cbADSite.Items.Add(Site.AsString{%H-});
-    end;
-    cbADSite.Text:= oldSelect;
-
-  finally
-    Screen.Cursor:=crdefault;
-  end;
-  {$endif}
 end;
 
-procedure TVisWaptGUI.GridWinproductsChange(Sender: TBaseVirtualTree;
+procedure TVisWaptGUI.ActEditOrgUnitPackageUpdate(Sender: TObject);
+begin
+  ActEditOrgUnitPackageUpdate.Enabled := False
+end;
+
+procedure TVisWaptGUI.ActProprietaryExecute(Sender: TObject);
+begin
+end;
+
+
+Procedure TVisWaptGUI.SelectOrgUnits(Search:String);
+begin
+end;
+
+procedure TVisWaptGUI.LoadOrgUnitsTree(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.GridOrgUnitsChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
-  {$ifdef wsus}
-  GridWSUSAllowedWindowsUpdates.Data := Nil;
-  TimerWUALoadWinUpdates.Enabled:=False;
-  TimerWUALoadWinUpdates.Enabled:=True;
-  {$endif}
+end;
+
+function TVisWaptGUI.GetSelectedOrgUnits:TDynStringArray;
+begin
+end;
+
+procedure TVisWaptGUI.ActTISHelpExecute(Sender: TObject);
+begin
+end;
+
+function TVisWaptGUI.FilterWinProducts(products: ISuperObject): ISuperObject;
+begin
+  result := Nil;
+end;
+
+function TVisWaptGUI.FilterWindowsUpdate(wua: ISuperObject
+  ): ISuperObject;
+begin
+  Result := Nil;
+end;
+
+function TVisWaptGUI.FilterHostWinUpdates(wua: ISuperObject): ISuperObject;
+begin
+  Result := Nil;
+end;
+
+procedure TVisWaptGUI.GridWSUSForbiddenWindowsUpdatesFreeNode(
+  Sender: TBaseVirtualTree; Node: PVirtualNode);
+begin
+end;
+
+procedure TVisWaptGUI.GridWSUSAllowedWindowsUpdatesFreeNode(
+  Sender: TBaseVirtualTree; Node: PVirtualNode);
+begin
+end;
+
+procedure TVisWaptGUI.GridWSUSAllowedClassificationsFreeNode(
+  Sender: TBaseVirtualTree; Node: PVirtualNode);
+begin
 end;
 
 procedure TVisWaptGUI.GridWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: Boolean; var ImageIndex: Integer; var ImageList: TCustomImageList
   );
-var
-  row: ISuperObject;
 begin
-  {$ifdef wsus}
-  if Column = 0 then
-  begin
-    row := (Sender as TSOGrid).GetNodeSOData(Node);
-    case row.S['status'] of
-      'ALLOWED': ImageIndex := 0;
-      'FORBIDDEN': ImageIndex := 8;
-    else
-      ImageIndex := -1;
-    end;
-  end;
-  {$endif}
 end;
 
-procedure TVisWaptGUI.GridWSUSAllowedClassificationsFreeNode(
-  Sender: TBaseVirtualTree; Node: PVirtualNode);
-begin
-  {$ifdef wsus}
-  windows_updates_rulesUpdated:=True;
-  {$endif wsus}
-end;
-
-procedure TVisWaptGUI.GridWSUSAllowedWindowsUpdatesFreeNode(
-  Sender: TBaseVirtualTree; Node: PVirtualNode);
-begin
-   {$ifdef wsus}
-   windows_updates_rulesUpdated:=True;
-   {$endif wsus}
-end;
-
-procedure TVisWaptGUI.GridWSUSForbiddenWindowsUpdatesFreeNode(
-  Sender: TBaseVirtualTree; Node: PVirtualNode);
-begin
-  {$ifdef wsus}
-  windows_updates_rulesUpdated:=True;
-  {$endif wsus}
-end;
-
-function TVisWaptGUI.FilterHostWinUpdates(wua: ISuperObject): ISuperObject;
-{$ifdef wsus}
-var
-  wupdate: ISuperObject;
-  accept: boolean;
-  {$endif wsus}
-begin
-  Result := TSuperObject.Create(stArray);
-  {$ifdef wsus}
-  if (wua = nil) or (wua.AsArray = Nil) then
-    Exit;
-  for wupdate in wua do
-  begin
-    Accept := False;
-
-    if cbWUADiscarded.Checked then
-      accept := accept or (wupdate.B['hidden'] and not wupdate.B['installed']);
-
-    if cbWUAInstalled.Checked then
-      accept := accept or ( wupdate.B['installed']);
-
-    if cbWUAPending.Checked then
-      accept := accept or ( not wupdate.B['installed'] and not wupdate.B['hidden']);
-
-    accept := accept and (not cbWUACriticalOnly.Checked or (wupdate.S['severity'] ='Critical'));
-    if accept then
-      Result.AsArray.Add(wupdate);
-  end;
-  {$endif wsus}
-end;
-
-function TVisWaptGUI.FilterWindowsUpdate(wua: ISuperObject
-  ): ISuperObject;
-{$ifdef wsus}
-var
-  wupdate: ISuperObject;
-  accept: boolean;
-  {$endif wsus}
-begin
-  Result := TSuperObject.Create(stArray);
-  {$ifdef wsus}
-  if (wua = nil) or (wua.AsArray = Nil) then
-    Exit;
-  for wupdate in wua do
-  begin
-    Accept := False;
-
-    if cbWUADiscarded.Checked then
-      accept := accept or (wupdate.B['hidden']);
-
-    if cbWUAInstalled.Checked then
-      accept := accept or ( wupdate.B['installed']);
-
-    if cbWUAPending.Checked then
-      accept := accept or ( not wupdate.B['installed'] and not wupdate.B['hidden']);
-
-    accept := accept and (not cbWUACriticalOnly.Checked or (wupdate.S['severity'] ='Critical'));
-    if accept then
-      Result.AsArray.Add(wupdate);
-  end;
-  {$endif wsus}
-end;
-
-function TVisWaptGUI.FilterWinProducts(products: ISuperObject): ISuperObject;
-{$ifdef wsus}
-var
-  wproduct: ISuperObject;
-  accept: boolean;
-  {$endif wsus}
-begin
-  {$ifdef wsus}
-  Result := TSuperObject.Create(stArray);
-  if (products = nil) or (products.AsArray = Nil) then
-    Exit;
-  for wproduct in products do
-  begin
-    Accept := CBWUProductsShowAll.Checked or wproduct.B['favourite'];
-    if accept then
-      Result.AsArray.Add(wproduct);
-  end;
-  {$else}
-  result := Nil;
-  {$endif wsus}
-end;
-
-procedure TVisWaptGUI.ActTISHelpExecute(Sender: TObject);
-var
-  taskresult,uuids: ISuperObject;
-  currhost,computer_name: String;
-begin
-  {$ifdef ENTERPRISE}
-  if GridHosts.FocusedRow<>Nil then
-  try
-    Screen.Cursor:=crHourGlass;
-    uuids := TSuperObject.Create(stArray);;
-    currhost := GridHosts.FocusedRow.S['uuid'];
-    computer_name := lowercase(GridHosts.FocusedRow.S['computer_name']);
-    uuids.AsArray.Add(currhost);
-    taskresult := TriggerActionOnHosts(uuids,'trigger_start_tishelp',Nil,'','Error starting TISHelp',False,False);
-    if taskresult.B['success'] then
-      ShellExecute(0, '', PAnsiChar(GetTisSupportPath),
-        PAnsichar('-open '+computer_name), nil, SW_SHOW);
-  finally
-    Screen.Cursor := crDefault;
-  end;
-  {$endif ENTERPRISE}
-end;
-
-function TVisWaptGUI.GetSelectedOrgUnits:TDynStringArray;
-var
-  N: PVirtualNode;
-  i:integer;
-  data:Variant;
-begin
-  {$ifdef ENTERPRISE}
-  N := GridOrgUnits.GetFirstSelected;
-  SetLength(Result,GridOrgUnits.SelectedCount);
-  i:=0;
-  while (N <> nil) do
-  begin
-    Data := PDBNodeData(GridOrgUnits.GetDBNodeData(N))^.DBData;
-    if Not VarIsNull(Data) and Not VarIsNull(Data[0])then
-    begin
-      Result[i] := Data[0];
-      // we got the (all) filter, assume all is selected.
-      if Result[i] = '' then
-      begin
-        SetLength(result,0);
-        Break;
-      end;
-    end;
-    N := GridOrgUnits.GetNextSelected(N);
-    inc(i);
-  end;
-  {$endif}
-end;
-
-procedure TVisWaptGUI.GridOrgUnitsChange(Sender: TBaseVirtualTree;
+procedure TVisWaptGUI.GridWinproductsChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
-var
-  NewOrgUnitsSelectionHash:Integer;
 begin
-  {$ifdef ENTERPRISE}
-  if not inSearchHosts and (Node<>Nil) and DBOrgUnits.Active and not AppLoading then
-  begin
-    NewOrgUnitsSelectionHash := Hash(StrJoin('||',GetSelectedOrgUnits)+'&'+BoolToStr(CBIncludeSubOU.Checked));
-    if OrgUnitsSelectionHash <> NewOrgUnitsSelectionHash then
-      ActSearchHost.Execute;
-    OrgUnitsSelectionHash := NewOrgUnitsSelectionHash;
-  end;
-  {$endif}
 end;
 
-procedure TVisWaptGUI.GridOrgUnitsGetHint(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Column: TColumnIndex;
-  var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: String);
+procedure TVisWaptGUI.FillcbADSiteDropDown;
 begin
-  if Node <> Nil then
-    HintText := VarToStr(PDBNodeData(GridOrgUnits.GetDBNodeData(Node))^.DBData[0]);
 end;
 
-function DNToFQDN(DN:TDynStringArray):String;
-var
-  i:integer;
+procedure TVisWaptGUI.CBWUProductsShowAllClick(Sender: TObject);
 begin
-  Result := '';
-  for i:=0 to Length(DN)-1 do
-  begin
-    if result<>'' then
-      Result := Result+'.';
-    Result := Result+StrSplit(DN[i],'=')[1];
-  end;
+end;
+
+procedure TVisWaptGUI.cbWUCriticalClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.cbWUAPendingChange(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.cbADSiteDropDown(Sender: TObject);
+begin
 end;
 
 procedure TVisWaptGUI.LoadOrgUnitsTree(Sender: TObject);
-var
-  OU,OUDN:ISuperObject;
-  DNParts,ParentDNParts: TDynStringArray;
-  PreviousDN,DN,ParentDN,RecType:String;
-  NewOrgUnitsHash:Integer;
-  DNW: UnicodeString;
 begin
-  {$ifdef ENTERPRISE}
-  try
-    Screen.Cursor:=crHourGlass;
-    OUDN := WAPTServerJsonGet('api/v3/get_ad_ou',[])['result'];
-    NewOrgUnitsHash:=hash(OUDN.AsJSon());
-    if (OUDN<>Nil) and (NewOrgUnitsHash <> OrgUnitsHash) then
-    try
-      DBOrgUnits.DisableControls;
-      if DBOrgUnits.Active then
-        PreviousDN := DBOrgUnitsDN.AsString
-      else
-        PreviousDN:='';
-
-      OrgUnitsHash := NewOrgUnitsHash;
-      if DBOrgUnits.Active then
-        DBOrgUnits.Close;
-      DBOrgUnits.CreateDataset;
-      //DBOrgUnits.Open;
-
-      // Add a first (all) to allow  no filtering on OU
-      DBOrgUnits.Append;
-      dn:='';
-      DBOrgUnitsID.AsInteger := LongInt(Hash(dn));
-      DBOrgUnitsDN.Value := UTF8Encode(DN);
-      DBOrgUnitsDescription.Value := rsFilterAll;
-      DBOrgUnitsDepth.Value := 0;
-      DBOrgUnits.Post;
-
-      for OU in OUDN do
-      begin
-        DNW := OU.AsString;
-        DN := UTF8Encode(DNW);
-
-        // Creates parent records up to first encountered DC
-        while (DN<>'') do
-        begin
-          DNParts := StrSplit(DN,',');
-          ParentDNParts := copy(DNParts,1,length(DNParts)-1);
-          //ParentDN:= StrJoin(',',ParentDNParts);
-          ParentDN:= copy(DN,pos(',',DN)+1,length(DN));
-
-          RecType:=StrSplit(DNParts[0],'=')[0];
-
-          if not DBOrgUnits.Locate('DN',DN,[]) then
-          begin
-            DBOrgUnits.Append;
-            DBOrgUnitsID.Value := Hash(dn);
-            DBOrgUnitsDN.Value := DN;
-            DBOrgUnitsParentDN.AsString := ParentDN;
-            DBOrgUnitsDepth.Value := Length(DNParts);
-            if RecType<>'DC' then
-            begin
-              DBOrgUnitsParentID.Value := Hash(ParentDN);
-              DBOrgUnitsDescription.Value := StrSplit(DNParts[0],'=')[1];
-            end
-            else
-            begin
-              DBOrgUnitsDescription.Value := DNToFQDN(DNParts);
-            end;
-
-            if ParentDN<>'' then
-            begin
-              if RecType='OU' then
-                DBOrgUnitsImageID.Value := 12
-              else if RecType='CN' then
-                  DBOrgUnitsImageID.Value := 13
-              else if RecType='DC' then
-                DBOrgUnitsImageID.Value := 11
-              else
-                DBOrgUnitsImageID.Value := 14;
-            end
-            else
-              DBOrgUnitsImageID.Value := 11;
-            DBOrgUnits.Post;
-          end
-          else
-            Break;
-
-          if RecType='DC' then
-            Break;
-
-          DN := ParentDN;
-        end;
-      end;
-    finally
-      DBOrgUnits.Locate('DN',PreviousDN,[]);
-      DBOrgUnits.EnableControls;
-    end;
-  finally
-    Screen.Cursor:=crdefault;
-  end;
-  {$endif}
 end;
 
 procedure TVisWaptGUI.FilterDBOrgUnits;
 begin
-  SetLength(FilteredOrgUnits,0);
-  try
-    GridOrgUnits.DataSource := Nil;
-    DBOrgUnits.Filtered:=False;
-
-    if EdSearchOrgUnits.Text<>'' then
-    begin
-      // include in list selected nodes + parents
-      DBOrgUnits.IndexFieldNames:='Depth';
-      DBOrgUnits.Last;
-      while not DBOrgUnits.BOF do
-      begin
-        if pos(Lowercase(EdSearchOrgUnits.Text),Lowercase(DBOrgUnits['Description']))>0 then
-          StrAppend(FilteredOrgUnits,DBOrgUnits['ID']);
-        if not VarIsNull(DBOrgUnits['ParentID']) and StrIsOneOf(DBOrgUnits['ID'],FilteredOrgUnits) and not StrIsOneOf(DBOrgUnits['ParentID'],FilteredOrgUnits) then
-          StrAppend(FilteredOrgUnits,DBOrgUnits['ParentID']);
-        DBOrgUnits.Prior;
-      end;
-      DBOrgUnits.Filtered:=True;
-    end;
-
-  finally
-    GridOrgUnits.DataSource := SrcOrgUnits;
-  end;
 end;
 
 Procedure TVisWaptGUI.SelectOrgUnits(Search:String);
-var
-  N: PVirtualNode;
-  Desc:String;
 begin
-  {$ifdef ENTERPRISE}
-  N := GridOrgUnits.GetFirst;
-  GridOrgUnits.ClearSelection;
-  while (N <> nil) do
-  begin
-    Desc := UTF8Encode(PDBNodeData(GridOrgUnits.GetDBNodeData(N))^.Text);
-    if Pos(lowercase(Search),LowerCase(Desc))>0  then
-    begin
-      GridOrgUnits.Selected[N] := True;
-    end;
-    N := GridOrgUnits.GetNext(N);
-  end;
-  {$endif}
 end;
+
+procedure TVisWaptGUI.cbADOUSelect(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.cbADSiteSelect(Sender: TObject);
+begin
+end;
+
+
+{$endif}
 
 
 end.
