@@ -4841,8 +4841,8 @@ class Wapt(BaseObjectClass):
                 _add_data_if_updated(inv,'last_update_status', self.get_last_update_status(),old_hashes,new_hashes)
                 if self.waptwua_enabled:
                     try:
-                        from waptwua import waptwua
-                        wapwua_status = waptwua.WaptWUA(self).stored_status()
+                        import waptenterprise.waptwua.client
+                        wapwua_status = waptenterprise.waptwua.client.WaptWUA(self).stored_status()
                         _add_data_if_updated(inv,'waptwua', wapwua_status,old_hashes,new_hashes)
                     except ImportError as e:
                         logger.warning('waptwua module not installed')
