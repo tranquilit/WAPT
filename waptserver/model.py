@@ -588,6 +588,15 @@ def update_host_data(data):
         except Exception as e:
             logger.critical(u'Unable to update installed_packages for %s: %s' % (uuid,traceback.format_exc()))
 
+        try:
+            if ('waptwua' in data):
+                waptwua_data = data.get('waptwua', None)
+                (rec,_) = HostWsus.get_or_create(host=uuid)
+                rec.wsus = waptwua_data
+                rec.save()
+        except Exception as e:
+            logger.critical(u'Unable to update wsus data for %s: %s' % (uuid,traceback.format_exc()))
+
         result_query = Hosts.select(Hosts.uuid, Hosts.computer_fqdn)
         return result_query.where(Hosts.uuid == uuid).dicts().first()
 

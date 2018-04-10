@@ -1880,7 +1880,7 @@ def host_data():
         elif field == 'installed_packages':
             result = list(HostPackagesStatus.select().where(HostPackagesStatus.host == uuid).dicts())
         elif field == 'waptwua':
-            result = list(HostWsus.select().where(HostWsus.host == uuid).dicts())
+            result = HostWsus.select(HostWsus.wsus).where(HostWsus.host == uuid).dicts().first()['wsus']
         else:
             data = Hosts\
                 .select(Hosts.uuid, Hosts.computer_fqdn, Hosts.fieldbyname(field))\
@@ -2338,6 +2338,6 @@ if __name__ == '__main__':
     if options.devel:
         socketio.run(app, host='0.0.0.0', log=logger, port=port, debug=options.devel,  log_output = True, use_reloader=options.devel, max_size=app.conf['max_clients'])
     else:
-        socketio.run(app, host='127.0.0.1', log=logger,  port=port, debug=options.devel, log_output = True,  use_reloader=options.devel, max_size=app.conf['max_clients'])
+        socketio.run(app, host='0.0.0.0', log=logger,  port=port, debug=options.devel, log_output = True,  use_reloader=options.devel, max_size=app.conf['max_clients'])
     logger.info(u'Waptserver stopped')
 

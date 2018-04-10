@@ -122,7 +122,6 @@ from waptpackage import REGEX_PACKAGE_CONDITION,WaptRemoteRepo,PackageEntry
 import setuphelpers
 import netifaces
 
-
 class EWaptBadServerAuthentication(EWaptException):
     pass
 
@@ -4840,6 +4839,14 @@ class Wapt(BaseObjectClass):
                 _add_data_if_updated(inv,'installed_softwares',setuphelpers.installed_softwares(''),old_hashes,new_hashes)
                 _add_data_if_updated(inv,'installed_packages',[p.as_dict() for p in self.waptdb.installed(include_errors=True).values()],old_hashes,new_hashes)
                 _add_data_if_updated(inv,'last_update_status', self.get_last_update_status(),old_hashes,new_hashes)
+                if self.waptwua_enabled:
+                    try:
+                        from waptwua import waptwua
+                        wapwua_status = waptwua.WaptWUA(self).stored_status()
+                        _add_data_if_updated(inv,'waptwua', wapwua_status,old_hashes,new_hashes)
+                    except ImportError as e:
+                        logger.warning('waptwua module not installed')
+
 
                 data = jsondump(inv)
                 signature = self.sign_host_content(data,)
