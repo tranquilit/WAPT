@@ -44,17 +44,17 @@ except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
 
-from waptserver_config import __version__
-from waptserver_config import DEFAULT_CONFIG_FILE
-from waptserver_model import load_db_config
+from waptserver.config import __version__
+from waptserver.config import DEFAULT_CONFIG_FILE
+from waptserver.model import load_db_config
 import platform
 
 import logging
 import ConfigParser
 from optparse import OptionParser
 
-from waptserver_model import *
-from waptserver_utils import *
+from waptserver.model import *
+from waptserver.utils import *
 
 # setup logging
 logger = logging.getLogger()
@@ -176,7 +176,7 @@ if __name__ == '__main__':
         help='Enable debug mode (for development only)')
 
     (options, args) = parser.parse_args()
-    conf = waptserver_config.load_config(options.configfile)
+    conf = waptserver.config.load_config(options.configfile)
     load_db_config(conf)
 
     utils_set_devel_mode(options.devel)

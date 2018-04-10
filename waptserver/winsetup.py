@@ -32,7 +32,7 @@ try:
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
-from waptserver_config import __version__
+from waptserver.config import __version__
 
 from optparse import OptionParser
 import logging
@@ -50,11 +50,11 @@ from setuphelpers import run
 from waptutils import setloglevel
 from waptcrypto import SSLPrivateKey,SSLCertificate
 
-import waptserver_config
-from waptserver_utils import logger,mkdir_p
+import waptserver.config
+from waptserver.utils import logger,mkdir_p
 
 config_filename  = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
-conf = waptserver_config.load_config(config_filename)
+conf = waptserver.config.load_config(config_filename)
 
 def fqdn():
     result = None
@@ -338,7 +338,7 @@ def install_waptserver_service():
 
     if not conf.get('secret_key'):
         conf['secret_key'] = ''.join(random.SystemRandom().choice(string.letters + string.digits) for _ in range(64))
-        waptserver_config.write_config_file(config_filename,conf)
+        waptserver.config.write_config_file(config_filename,conf)
 
 if __name__ == '__main__':
     usage = """\

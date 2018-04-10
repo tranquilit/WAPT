@@ -52,9 +52,10 @@ import ConfigParser
 from optparse import OptionParser
 
 from playhouse.migrate import *
-from waptserver_model import *
-from waptserver_utils import *
+from waptserver.model import *
+from waptserver.utils import *
 from waptutils import *
+import waptserver.config
 
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
 config_file = DEFAULT_CONFIG_FILE
@@ -98,7 +99,7 @@ if __name__ == '__main__':
         print(parser.usage)
         sys.exit(1)
 
-    conf = waptserver_config.load_config(options.configfile)
+    conf = waptserver.config.load_config(options.configfile)
     load_db_config(conf)
 
     timeout = 0.5

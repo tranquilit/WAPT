@@ -55,9 +55,9 @@ import nginxparser
 from passlib.hash import pbkdf2_sha256
 
 from waptpackage import WaptLocalRepo
-from waptserver import waptserver_config
-from waptserver.waptserver_config import type_debian,type_redhat
-from waptserver.waptserver_model import init_db,upgrade_db_structure,load_db_config
+import waptserver.config
+from waptserver.config import type_debian,type_redhat
+from waptserver.model import init_db,upgrade_db_structure,load_db_config
 
 def run(*args, **kwargs):
     return subprocess.check_output(*args, shell=True, **kwargs)
@@ -268,12 +268,12 @@ def main():
     global wapt_folder,NGINX_GID
 
 
-    parser = OptionParser(usage=usage, version='waptserver.py ' + __version__)
+    parser = OptionParser(usage=usage, version=__version__)
     parser.add_option(
         '-c',
         '--config',
         dest='configfile',
-        default=waptserver_config.DEFAULT_CONFIG_FILE,
+        default=waptserver.config.DEFAULT_CONFIG_FILE,
         help='Config file full path (default: %default)')
     parser.add_option(
         "-k",
@@ -309,7 +309,7 @@ def main():
                 run('restorecon -R -v /var/www/html/%s' %sepath)
             postconf.msgbox('SELinux correctly configured for Nginx reverse proxy')
 
-    server_config = waptserver_config.load_config(options.configfile)
+    server_config = waptserver.config.load_config(options.configfile)
 
     if os.path.isfile(options.configfile):
         print('making a backup copy of the configuration file')
@@ -385,7 +385,7 @@ def main():
         server_config['use_kerberos'] = True
 
 
-    waptserver_config.write_config_file(cfgfile=options.configfile,server_config=server_config,non_default_values_only=True)
+    waptserver.config.write_config_file(cfgfile=options.configfile,server_config=server_config,non_default_values_only=True)
 
     run("/bin/chmod 640 %s" % options.configfile)
     run("/bin/chown wapt %s" % options.configfile)

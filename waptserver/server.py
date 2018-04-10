@@ -31,14 +31,14 @@ try:
 except:
     wapt_root_dir = u'c:/tranquilit/wapt'
 
-from waptserver_config import __version__
+from waptserver.config import __version__
 
 # monkeypatching for eventlet greenthreads
 from eventlet import monkey_patch
 
 # os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
 #monkey_patch(os=False,thread=False)
-monkey_patch()
+monkey_patch(thread=False)
 
 import time
 import json
@@ -84,10 +84,10 @@ from flask_socketio import SocketIO, disconnect, send, emit
 from peewee import *
 from playhouse.postgres_ext import *
 
-from waptserver_model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups,HostWsus
-from waptserver_model import get_db_version, init_db, wapt_db, model_to_dict, dict_to_model, update_host_data
-from waptserver_model import upgrade_db_structure
-from waptserver_model import load_db_config
+from waptserver.model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups,HostWsus
+from waptserver.model import get_db_version, init_db, wapt_db, model_to_dict, dict_to_model, update_host_data
+from waptserver.model import upgrade_db_structure
+from waptserver.model import load_db_config
 
 from waptpackage import PackageEntry,update_packages,WaptLocalRepo,EWaptBadSignature,EWaptMissingCertificate
 from waptcrypto import SSLCertificate,SSLVerifyException,InvalidSignature,sha256_for_file
@@ -95,12 +95,12 @@ from waptcrypto import sha256_for_data
 
 from waptutils import datetime2isodate,ensure_list,ensure_unicode,Version,setloglevel
 
-from waptserver_utils import make_response,make_response_from_exception
-from waptserver_utils import EWaptAuthenticationFailure,EWaptForbiddden,EWaptHostUnreachable,EWaptMissingHostData
-from waptserver_utils import EWaptMissingParameter,EWaptSignalReceived,EWaptTimeoutWaitingForResult,EWaptUnknownHost
-from waptserver_utils import get_disk_space,jsondump,mkdir_p,utils_devel_mode,utils_set_devel_mode
+from waptserver.utils import make_response,make_response_from_exception,gzipped
+from waptserver.utils import EWaptAuthenticationFailure,EWaptForbiddden,EWaptHostUnreachable,EWaptMissingHostData
+from waptserver.utils import EWaptMissingParameter,EWaptSignalReceived,EWaptTimeoutWaitingForResult,EWaptUnknownHost
+from waptserver.utils import get_disk_space,jsondump,mkdir_p,utils_devel_mode,utils_set_devel_mode
 
-import waptserver_config
+import waptserver.config
 
 try:
     from waptenterprise.waptserver import auth_module_ad
@@ -965,7 +965,7 @@ def rewrite_config_item(cfg_file, *args):
 def reload_config():
     try:
         global conf
-        conf = waptserver_config.load_config(app.config['CONFIG_FILE'])
+        conf = waptserver.config.load_config(app.config['CONFIG_FILE'])
     except Exception as e:
         logger.critical('Unable to reload server config : %s' % repr(e))
 
@@ -1683,6 +1683,7 @@ def build_fields_list(model, columns):
 
 @app.route('/api/v1/hosts', methods=['HEAD','GET'])
 @requires_auth
+@gzipped
 def get_hosts():
     """Get registration data of one or several hosts
 
@@ -2245,7 +2246,7 @@ if __name__ == '__main__':
         '-c',
         '--config',
         dest='configfile',
-        default=waptserver_config.DEFAULT_CONFIG_FILE,
+        default=waptserver.config.DEFAULT_CONFIG_FILE,
         help='Config file full path (default: %default)')
     parser.add_option('-l','--loglevel',dest='loglevel',default=None,type='choice',
             choices=['debug',   'warning','info','error','critical'],
@@ -2255,7 +2256,7 @@ if __name__ == '__main__':
 
     (options, args) = parser.parse_args()
     app.config['CONFIG_FILE'] = options.configfile
-    app.conf = waptserver_config.load_config(options.configfile)
+    app.conf = waptserver.config.load_config(options.configfile)
     app.config['SECRET_KEY'] = app.conf.get('secret_key')
     app.config['APPLICATION_ROOT'] = app.conf.get('application_root','')
 

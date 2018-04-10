@@ -34,7 +34,7 @@ import platform
 
 from peewee import *
 from peewee import Function
-from waptserver_config import __version__
+from waptserver.config import __version__
 
 from playhouse.postgres_ext import *
 from playhouse.pool import PooledPostgresqlExtDatabase
@@ -45,7 +45,7 @@ from playhouse.signals import Model as SignaledModel, pre_save, post_save
 from waptutils import Version
 from waptutils import ensure_unicode,ensure_list
 
-from waptserver_utils import setloglevel
+from waptserver.utils import setloglevel
 
 import json
 import codecs
@@ -54,7 +54,7 @@ import os
 
 from optparse import OptionParser
 
-import waptserver_config
+import waptserver.config
 
 # You must be sure your database is an instance of PostgresqlExtDatabase in order to use the JSONField.
 
@@ -74,7 +74,7 @@ def load_db_config(server_config=None):
     """
     global wapt_db
     if server_config is None:
-        server_config = waptserver_config.load_config()
+        server_config = waptserver.config.load_config()
 
     logger.info('Initializing a DB connection pool for db host:%s db_name:%s. Size:%s' %
         (server_config['db_host'],server_config['db_name'],server_config['db_max_connections']))
@@ -1077,7 +1077,7 @@ def upgrade_db_structure():
 if __name__ == '__main__':
     if platform.system() != 'Windows' and getpass.getuser() != 'wapt':
         print """you should run this program as wapt:
-                     sudo -u wapt python /opt/wapt/waptserver/waptserver_model.py  <action>
+                     sudo -u wapt python /opt/wapt/waptserver/model.py  <action>
                  actions : init_db
                            upgrade2postgres"""
         sys.exit(1)
@@ -1091,12 +1091,12 @@ if __name__ == '__main__':
        init_db: initialize or upgrade an existing DB without dropping data
        reset_db: initiliaze or recreate an empty database dropping the data.
     """
-    parser = OptionParser(usage=usage, version='waptserver_model.py ' + __version__)
+    parser = OptionParser(usage=usage, version=__version__)
     parser.add_option(
         '-c',
         '--config',
         dest='configfile',
-        default=waptserver_config.DEFAULT_CONFIG_FILE,
+        default=waptserver.config.DEFAULT_CONFIG_FILE,
         help='Config file full path (default: %default)')
     parser.add_option('-l','--loglevel',dest='loglevel',default=None,type='choice',
             choices=['debug',   'warning','info','error','critical'],
@@ -1106,7 +1106,7 @@ if __name__ == '__main__':
 
 
     (options, args) = parser.parse_args()
-    conf = waptserver_config.load_config(options.configfile)
+    conf = waptserver.config.load_config(options.configfile)
     load_db_config(conf)
 
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')

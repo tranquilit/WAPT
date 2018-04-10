@@ -16,7 +16,7 @@ import shutil
 
 from waptpackage import *
 from waptcrypto import *
-from waptserver import waptserver_config
+import waptserver.config
 from optparse import OptionParser
 import getpass
 
@@ -27,12 +27,12 @@ if __name__ == '__main__':
     Renames host packages from fqdn to UUID.
 
     """
-    parser = OptionParser(usage=usage, version='waptserver_model.py ' + __version__)
+    parser = OptionParser(usage=usage, version=__version__)
     parser.add_option(
         '-c',
         '--config',
         dest='configfile',
-        default=waptserver_config.DEFAULT_CONFIG_FILE,
+        default=waptserver.config.DEFAULT_CONFIG_FILE,
         help='Config file full path (default: %default)')
     parser.add_option('-d','--devel',dest='devel',default=False,action='store_true',
             help='Enable debug mode (for development only)')
@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
 
     (options, args) = parser.parse_args()
-    conf = waptserver_config.load_config(options.configfile)
+    conf = waptserver.config.load_config(options.configfile)
 
     instance = conf.get('application_root','')
     wapt_host_dir =  conf.get('wapt_folder')+'-host'

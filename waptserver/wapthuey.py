@@ -20,19 +20,15 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from waptserver_config import __version__
+from waptserver.config import __version__
 
 import os
 import sys
-
+print(sys.path)
 try:
     wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
-
-sys.path.insert(0, os.path.join(wapt_root_dir))
-sys.path.insert(0, os.path.join(wapt_root_dir, 'lib'))
-sys.path.insert(0, os.path.join(wapt_root_dir, 'lib', 'site-packages'))
 
 from huey.bin import huey_consumer
 

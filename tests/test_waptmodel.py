@@ -47,16 +47,16 @@ except:
 import site
 site.addsitedir(wapt_root_dir)
 
-from waptserver.waptserver_config import __version__
-from waptserver.waptserver_model import load_db_config
+from waptserver.config import __version__
+from waptserver.model import load_db_config
 import platform
 
 import logging
 import ConfigParser
 from optparse import OptionParser
 
-from waptserver.waptserver_model import *
-from waptserver.waptserver_utils import *
+from waptserver.model import *
+from waptserver.utils import *
 
 from waptpackage import PackageEntry,WaptLocalRepo
 
@@ -106,7 +106,7 @@ if __name__ == '__main__':
 
     (options, args) = parser.parse_args()
     setloglevel(logger,options.loglevel)
-    conf = waptserver_config.load_config(options.configfile)
+    conf = waptserver.config.load_config(options.configfile)
     load_db_config(conf)
     test_packages()
     test_beforesave()

@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=3.2.2.0
+Version=3.3.2.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -101,63 +101,63 @@ FileName=$[Project-Path]..\common.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node4]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]scripts\migrate-hosts.py
+FileName=$[Project-Path]config.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node5]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]scripts\postconf.py
+FileName=$[Project-Path]scripts\migrate-hosts.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node6]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\setuphelpers.py
+FileName=$[Project-Path]model.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node7]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptcrypto.py
+FileName=$[Project-Path]scripts\postconf.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node8]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]wapthuey.py
+FileName=$[Project-Path]server.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node9]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptpackage.py
+FileName=$[Project-Path]..\setuphelpers.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node10]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\wapt-scanpackages.py
+FileName=$[Project-Path]upgrade.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node11]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver.py
+FileName=$[Project-Path]utils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node12]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver_config.py
+FileName=$[Project-Path]..\waptcrypto.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node13]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver_model.py
+FileName=$[Project-Path]wapthuey.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node14]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver_upgrade.py
+FileName=$[Project-Path]..\waptpackage.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node15]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver_utils.py
+FileName=$[Project-Path]..\wapt-scanpackages.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node16]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptserver_winsetup.py
+FileName=$[Project-Path]..\wapt-signpackages.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node17]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\wapt-signpackages.py
+FileName=$[Project-Path]..\waptutils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node18]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptutils.py
+FileName=$[Project-Path]winsetup.py
 
 [Project\ChildNodes\Node0\ChildNodes]
 Count=19
@@ -170,11 +170,11 @@ ClassName=TProjectRunConfiguationNode
 Name=debug
 
 [Project\ChildNodes\Node1\ChildNodes\Node0\RunConfig]
-ScriptName=$[Project-Path]waptserver.py
+ScriptName=$[Project-Path]server.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-c c:\wapt\conf\waptserver.ini
-WorkingDir=$[ActiveScript-Dir]
+WorkingDir=$[Project-Dir]\..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
 AppendToFile=FALSE
@@ -193,11 +193,11 @@ ClassName=TProjectRunConfiguationNode
 Name=run_huey_consumer
 
 [Project\ChildNodes\Node1\ChildNodes\Node1\RunConfig]
-ScriptName=$[Project-Path]waptserver\wapthuey.py
+ScriptName=$[Project-Path]wapthuey.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=waptenterprise.waptserver.wsus_tasks.huey -v -w 2 -l debug
-WorkingDir=$[ActiveScript-Dir]
+Parameters=waptenterprise.waptserver.wsus_tasks.huey -v -w 2
+WorkingDir=$[Project-Dir]\..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
 AppendToFile=FALSE
@@ -216,7 +216,7 @@ ClassName=TProjectRunConfiguationNode
 Name=import_data
 
 [Project\ChildNodes\Node1\ChildNodes\Node2\RunConfig]
-ScriptName=$[Project-Path]waptserver\waptserver_upgrade.py
+ScriptName=$[Project-Path]waptserver\upgrade.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=import_data c:\tmp\longue.json
@@ -239,7 +239,7 @@ ClassName=TProjectRunConfiguationNode
 Name=upgrade
 
 [Project\ChildNodes\Node1\ChildNodes\Node3\RunConfig]
-ScriptName=$[Project-Path]waptserver\waptserver_upgrade.py
+ScriptName=$[Project-Path]waptserver\upgrade.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=upgrade_structure
@@ -262,7 +262,7 @@ ClassName=TProjectRunConfiguationNode
 Name=waptmodel
 
 [Project\ChildNodes\Node1\ChildNodes\Node4\RunConfig]
-ScriptName=$[Project-Path]waptserver\waptserver_model.py
+ScriptName=$[Project-Path]waptserver\model.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-c c:\wapt\conf\waptserver.ini
@@ -287,8 +287,5 @@ Count=5
 Count=2
 
 [Project\ExtraPythonPath]
-Item0=c:\tranquilit\wapt\waptserver
-Item1=c:\tranquilit\wapt\
-Item2=c:\tranquilit\wapt\lib\site-packages
-Count=3
+Count=0
 
