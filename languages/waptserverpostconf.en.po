@@ -1,8 +1,5 @@
-msgid "This can be changed later in Waptconsolehttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
+msgid "This can be changed later in Waptconsolehttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
 msgstr "Content-Type: text/plain; charset=UTF-8"
-
-msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
-msgstr ""
 
 #: tvisloading.amessage.caption
 msgid "Loading..."
@@ -257,6 +254,14 @@ msgctxt "uwaptserverres.rsinvaliddnsfallback"
 msgid "This DNS name is not valid, would you like to use the IP address instead ?"
 msgstr ""
 
+#: uwaptserverres.rsmigration15
+msgid "Migrate Mongodb to PostgreSQL database"
+msgstr ""
+
+#: uwaptserverres.rsmongodetect
+msgid "Detected Mongodb Base"
+msgstr ""
+
 #: uwaptserverres.rsopeningfirewall
 msgctxt "uwaptserverres.rsopeningfirewall"
 msgid "Opening firewall for WaptServer"
@@ -283,6 +288,10 @@ msgstr ""
 
 #: uwaptserverres.rsretryregisteringhostonserver
 msgid "%D retry on registering host on server"
+msgstr ""
+
+#: uwaptserverres.rsrunmongo2postgresql
+msgid "Do you want to start migrating the mongodb database to postgresql ?"
 msgstr ""
 
 #: uwaptserverres.rssettingserverpassword

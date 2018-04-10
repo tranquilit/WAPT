@@ -5,7 +5,7 @@ unit uwaptexit;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms,
+  Classes, SysUtils, FileUtil, LazFileUtils, Forms,
   Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, ActnList, Buttons,
   superobject, DefaultTranslator, ComCtrls, uWaptExitRes, sogrid;
 
@@ -154,7 +154,7 @@ procedure TVisWaptExit.FormCreate(Sender: TObject);
 var
   ini:TIniFile;
 begin
-  if FileExistsUTF8(AppendPathDelim(WaptBaseDir)+'templates\waptexit-logo.png') then
+  if FileExists(AppendPathDelim(WaptBaseDir)+'templates\waptexit-logo.png') then
     CustomLogo.Picture.LoadFromFile(AppendPathDelim(WaptBaseDir)+'templates\waptexit-logo.png')
   else
     CustomLogo.Picture.LoadFromResourceName(HINSTANCE,'WAPT_PNG',TPortableNetworkGraphic);

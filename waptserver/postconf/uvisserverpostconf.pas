@@ -5,10 +5,10 @@ unit uVisServerPostconf;
 interface
 
 uses
-  Classes, SysUtils, FileUtil,
+  Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8,
   Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls,
   Buttons, ActnList, htmlview, Readhtml, IdHTTP,
-  IdComponent,uvisLoading, DefaultTranslator, LCLProc, uWaptServerRes, types;
+  IdComponent,uvisLoading, DefaultTranslator, LCLTranslator, LCLProc, uWaptServerRes, types;
 
 type
 
@@ -159,7 +159,7 @@ var
 begin
   { XXX This is not what I'd call clean language detection... }
 
-  LCLGetLanguageIDs(Lang, FallbackLang);
+  LazGetLanguageIDs(Lang, FallbackLang);
   LangOffset := PAGES_EN_OFFSET;
   if FallbackLang = 'fr' then
     LangOffset := PAGES_FR_OFFSET
@@ -434,7 +434,7 @@ begin
       ProgressTitle(rsReplacingTIScertificate);
       ProgressStep(3,10);
       if FileExists(WaptBaseDir+'\ssl\tranquilit.crt') then
-        FileUtil.DeleteFileUTF8(WaptBaseDir+'\ssl\tranquilit.crt');
+        DeleteFileUTF8(WaptBaseDir+'\ssl\tranquilit.crt');
 
       ProgressTitle(rsSettingServerPassword);
       ProgressStep(4,10);

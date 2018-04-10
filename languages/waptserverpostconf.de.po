@@ -1,4 +1,4 @@
-msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in Waptconsolehttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
+msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in WaptconsoleThis can be changed later in Waptconsolehttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.htmlhttp://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
@@ -21,9 +21,6 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
 "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html\n"
-
-msgid "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html"
-msgstr ""
 
 #: tvisloading.amessage.caption
 msgid "Loading..."
@@ -281,6 +278,14 @@ msgstr "Ungültige DNS"
 msgid "This DNS name is not valid, would you like to use the IP address instead ?"
 msgstr "Dieser DNS Name ist nicht gültig, wollen Sie lieber stattdessen die IP-Adresse verwenden ?"
 
+#: uwaptserverres.rsmigration15
+msgid "Migrate Mongodb to PostgreSQL database"
+msgstr ""
+
+#: uwaptserverres.rsmongodetect
+msgid "Detected Mongodb Base"
+msgstr ""
+
 #: uwaptserverres.rsopeningfirewall
 msgid "Opening firewall for WaptServer"
 msgstr "Firewall für WaptServer öffnen "
@@ -304,6 +309,10 @@ msgstr "waptservice neustarten"
 #: uwaptserverres.rsretryregisteringhostonserver
 msgid "%D retry on registering host on server"
 msgstr "%D die Registrierung des Hosts auf dem Server wiederholen"
+
+#: uwaptserverres.rsrunmongo2postgresql
+msgid "Do you want to start migrating the mongodb database to postgresql ?"
+msgstr ""
 
 #: uwaptserverres.rssettingserverpassword
 msgid "Setting up server password"

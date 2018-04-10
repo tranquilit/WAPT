@@ -9,10 +9,10 @@ uses
   Translations, LCLProc,
 
   Interfaces, // this includes the LCL widgetset
-  Forms, pl_indy, pl_dcp, uVisServerPostconf, uwaptserverres,
+  Forms, uVisServerPostconf, uwaptserverres,
   waptcommon, uvisloading, UScaleDPI,
   { you can add units after this }
-  DefaultTranslator;
+  DefaultTranslator, indylaz;
 
 {$R *.res}
 {$R languages.rc}

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="9"/>
+    <Version Value="10"/>
     <PathDelim Value="\"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
@@ -21,7 +21,6 @@
       <MinorVersionNr Value="5"/>
       <RevisionNr Value="1"/>
       <BuildNr Value="21"/>
-      <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
@@ -34,46 +33,39 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="11">
+    <RequiredPackages Count="9">
       <Item1>
-        <PackageName Value="pl_DCP"/>
+        <PackageName Value="pltis_virtualtreesextra"/>
       </Item1>
       <Item2>
-        <PackageName Value="pl_virtualtreesextra"/>
+        <PackageName Value="HtmlComp"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="dcpcrypt_laz"/>
       </Item3>
       <Item4>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="indylaz"/>
       </Item4>
       <Item5>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="pltis_sogrid_laz"/>
       </Item5>
       <Item6>
-        <PackageName Value="HtmlComp"/>
+        <PackageName Value="pltis_wapt"/>
       </Item6>
       <Item7>
-        <PackageName Value="pl_richview"/>
+        <PackageName Value="pltis_utils"/>
       </Item7>
       <Item8>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_superobject"/>
       </Item8>
       <Item9>
-        <PackageName Value="pltis_superobject"/>
-      </Item9>
-      <Item10>
-        <PackageName Value="pl_luicontrols"/>
-      </Item10>
-      <Item11>
         <PackageName Value="LCL"/>
-      </Item11>
+      </Item9>
     </RequiredPackages>
     <Units Count="5">
       <Unit0>
         <Filename Value="waptserverpostconf.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="waptserverpostconf"/>
       </Unit0>
       <Unit1>
         <Filename Value="uvisserverpostconf.pas"/>
@@ -99,7 +91,6 @@
         <ComponentName Value="VisLoading"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uvisloading"/>
       </Unit4>
     </Units>
   </ProjectOptions>
@@ -132,11 +123,7 @@
       </Options>
     </Linking>
     <Other>
-      <CompilerMessages>
-        <MsgFileName Value=""/>
-      </CompilerMessages>
       <CustomOptions Value="-dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>

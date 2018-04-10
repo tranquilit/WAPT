@@ -1,4 +1,3 @@
-
 msgid "Do you wish to apply them now ?"
 msgstr "Voulez-vous les appliquer maintenant ?"
 
@@ -21,14 +20,22 @@ msgid "Launching updates..."
 msgstr "Lancement des mises à jour..."
 
 #: tviswaptexit.labdontshutdown.caption
-msgid "Upgrades in progress..."
+#, fuzzy
+#| msgid "Upgrades in progress..."
+msgid ""
+"Upgrades in progress...\n"
+"Don't shutdown your computer !\n"
 msgstr ""
 "Mises à jour en cours\n"
 "Ne pas arrêter votre ordinateur\n"
 
 #: tviswaptexit.labintro.caption
+#, fuzzy
+#| msgid "There are %d installs or updates pending."
 msgctxt "tviswaptexit.labintro.caption"
-msgid "There are %d installs or updates pending."
+msgid ""
+"There are %d installs or updates pending.\n"
+"Do you wish to apply them now ?\n"
 msgstr "%d installations ou mises à jour sont en attente."
 
 #: uwaptexitres.rserrorwininetflags

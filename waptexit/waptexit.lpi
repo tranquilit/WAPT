@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="9"/>
+    <Version Value="10"/>
     <PathDelim Value="\"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
@@ -23,7 +23,7 @@
       <RevisionNr Value="1"/>
       <BuildNr Value="23"/>
       <Language Value="040C"/>
-      <StringTable CompanyName="Tranquil IT Systems" FileDescription="check and launch packages upgrades at Windows Shutdown" InternalName="waptexit" LegalCopyright="Tranquil IT Systems" OriginalFilename="waptexit.exe" ProductName="WAPT" ProductVersion=""/>
+      <StringTable CompanyName="Tranquil IT Systems" FileDescription="check and launch packages upgrades at Windows Shutdown" InternalName="waptexit" LegalCopyright="Tranquil IT Systems" OriginalFilename="waptexit.exe" ProductName="WAPT"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
@@ -40,13 +40,13 @@
     </RunParams>
     <RequiredPackages Count="6">
       <Item1>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="pltis_sogrid_laz"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="indylaz"/>
       </Item2>
       <Item3>
-        <PackageName Value="pl_indy"/>
+        <PackageName Value="pltis_wapt"/>
       </Item3>
       <Item4>
         <PackageName Value="pltis_utils"/>
@@ -62,7 +62,6 @@
       <Unit0>
         <Filename Value="waptexit.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="waptexit"/>
       </Unit0>
       <Unit1>
         <Filename Value="uwaptexit.pas"/>
@@ -70,7 +69,6 @@
         <ComponentName Value="VisWaptExit"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uwaptexit"/>
       </Unit1>
       <Unit2>
         <Filename Value="uwaptexitres.pas"/>
@@ -113,11 +111,7 @@
       </Options>
     </Linking>
     <Other>
-      <CompilerMessages>
-        <MsgFileName Value=""/>
-      </CompilerMessages>
       <CustomOptions Value="-dUseCThreads"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>

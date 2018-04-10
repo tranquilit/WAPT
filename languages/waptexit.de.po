@@ -52,14 +52,18 @@ msgid "Launching updates..."
 msgstr "Start der Updates..."
 
 #: tviswaptexit.labdontshutdown.caption
-msgid "Upgrades in progress..."
+msgid ""
+"Upgrades in progress...\n"
+"Don't shutdown your computer !\n"
 msgstr ""
 
 #: tviswaptexit.labintro.caption
 #, fuzzy
-#| msgid "There are installs or updates pending."
+#| msgid "There are %d installs or updates pending."
 msgctxt "tviswaptexit.labintro.caption"
-msgid "There are %d installs or updates pending."
+msgid ""
+"There are %d installs or updates pending.\n"
+"Do you wish to apply them now ?\n"
 msgstr "Es gibt ausstehende Installationen oder Updates"
 
 #: uwaptexitres.rserrorwininetflags
