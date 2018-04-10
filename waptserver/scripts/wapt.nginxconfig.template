@@ -27,6 +27,13 @@ server {
     ssl_stapling_verify         on;
     ssl_session_cache           none;
     ssl_session_tickets         off;
+
+    gzip_min_length     1000;
+    gzip_buffers        4 8k;
+    gzip_http_version   1.0;
+    gzip_disable        "msie6";
+    gzip_types          text/plain text/css application/json;
+    gzip_vary           on;
     
     index index.html;
 
