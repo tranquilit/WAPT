@@ -23,6 +23,8 @@
 
 import os
 import sys
+import platform
+
 try:
     wapt_root_dir = os.path.abspath(
         os.path.join(
@@ -37,8 +39,10 @@ from waptserver.config import __version__
 from eventlet import monkey_patch
 
 # os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
-#monkey_patch(os=False,thread=False)
-monkey_patch(thread=False)
+if platform.system() == 'Windows':
+    monkey_patch(os=False,thread=False)
+else:
+    monkey_patch()
 
 import time
 import json
