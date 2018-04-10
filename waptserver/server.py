@@ -146,7 +146,7 @@ logger = logging.getLogger()
 socketio = SocketIO(app, logger = logger, engineio_logger = logger)
 
 try:
-    import wsus
+    from waptenterprise.waptserver import wsus
     app.register_blueprint(wsus.wsus)
 except Exception as e:
     logger.info(str(e))
