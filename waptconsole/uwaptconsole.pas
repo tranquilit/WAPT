@@ -4010,7 +4010,7 @@ begin
       if FileExistsUTF8(Appuserinipath) then
         SysUtils.DeleteFile(Appuserinipath);
 
-    pgWindowsUpdates.TabVisible:=waptcommon.waptwua_enabled;
+    pgWindowsUpdates.TabVisible:=IsEnterpriseEdition and waptcommon.waptwua_enabled;
     pgHostWUA.TabVisible:=waptcommon.waptwua_enabled;
     for i:=0 to WSUSActions.ActionCount-1 do
     begin
@@ -4705,19 +4705,10 @@ end;
 
 procedure TVisWaptGUI.ActEditOrgUnitPackageUpdate(Sender: TObject);
 begin
-  ActEditOrgUnitPackageUpdate.Enabled := False
+  ActEditOrgUnitPackage.Enabled := False
 end;
 
 procedure TVisWaptGUI.ActProprietaryExecute(Sender: TObject);
-begin
-end;
-
-
-Procedure TVisWaptGUI.SelectOrgUnits(Search:String);
-begin
-end;
-
-procedure TVisWaptGUI.LoadOrgUnitsTree(Sender: TObject);
 begin
 end;
 

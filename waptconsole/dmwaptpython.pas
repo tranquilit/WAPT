@@ -97,9 +97,9 @@ type
     {$ifdef ENTERPRISE}
     property licencing:Variant read Getlicencing;
     property MaxHostsCount:Integer Read FMaxHostsCount;
+    {$endif}
     function CheckLicence(domain: String; var LicencesLog: String): Integer;
     procedure CheckPySources;
-    {$endif}
   end;
 
   function CreateSignedCert(keyfilename,
