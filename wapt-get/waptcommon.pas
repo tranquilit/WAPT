@@ -134,6 +134,8 @@ procedure WaptIniWriteString(const user,item, Value: string);
 
 Function ISO8601ToDateTime(Value: String):TDateTime;
 
+Function wapt_edition:String;
+
 type
 
   { TWaptRepo }
@@ -217,12 +219,6 @@ const
   WAPTServerMinVersion='1.5.1.20';
 
   FAppIniFilename:Utf8String = '';
-
-  {$ifdef ENTERPRISE}
-  wapt_edition = 'Enterprise';
-  {$else}
-  wapt_edition = 'Community';
-  {$endif}
 
 
 implementation
@@ -1993,6 +1989,14 @@ begin
     FormatSettings.DateSeparator := '-';
     FormatSettings.ShortDateFormat := 'yyyy-MM-dd';
     Result := StrToDate(copy(Value,1,10),FormatSettings)+StrToTime(copy(Value,12,8));
+end;
+
+function wapt_edition: String;
+begin
+  if FileExists(MakePath([WaptBaseDir,'waptenterprise','licencing.py'])) then
+    Result := 'enterprise'
+  else
+    Result := 'community';
 end;
 
 initialization

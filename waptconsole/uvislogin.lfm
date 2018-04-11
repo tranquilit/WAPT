@@ -15,7 +15,7 @@ object VisLogin: TVisLogin
   Position = poScreenCenter
   ShowHint = True
   ShowInTaskBar = stAlways
-  LCLVersion = '1.3'
+  LCLVersion = '1.8.2.0'
   object Image1: TImage
     Cursor = crHandPoint
     Left = 4

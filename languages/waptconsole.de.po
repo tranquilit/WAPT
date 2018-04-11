@@ -699,11 +699,6 @@ msgstr "Abbrechen"
 msgid "Loading"
 msgstr "Laden"
 
-#: tvislogin.actselectconf.caption
-msgctxt "tvislogin.actselectconf.caption"
-msgid "OK"
-msgstr "OK"
-
 #: tvislogin.bitbtn1.hint
 msgid "Configure WAPT console"
 msgstr "WAPT Konsole konfigurieren"

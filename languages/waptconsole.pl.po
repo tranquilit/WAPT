@@ -663,11 +663,6 @@ msgstr ""
 msgid "Loading"
 msgstr ""
 
-#: tvislogin.actselectconf.caption
-msgctxt "tvislogin.actselectconf.caption"
-msgid "OK"
-msgstr ""
-
 #: tvislogin.bitbtn1.hint
 msgid "Configure WAPT console"
 msgstr ""

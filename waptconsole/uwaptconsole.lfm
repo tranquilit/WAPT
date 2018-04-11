@@ -4434,6 +4434,7 @@ object VisWaptGUI: TVisWaptGUI
     Top = 681
     Width = 1072
     Align = alBottom
+    BevelOuter = bvNone
     TabOrder = 3
   end
   object SynPythonSyn1: TSynPythonSyn
