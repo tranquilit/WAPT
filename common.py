@@ -6365,9 +6365,9 @@ def wapt_sources_edit(wapt_sources_dir):
                     setuphelpers.filecopyto(os.path.join(wapt_base_dir,'Scripts','python.exe'),os.path.join(wapt_base_dir,'python.exe'))
                 except Exception as e:
                     os.startfile(wapt_sources_dir)
-                    raise Exception('Unable to start PySctipter properly. You should have python.exe in wapt base directory %s : %s' % (wapt_base_dir,e))
+                    raise Exception('Unable to start PyScripter properly. You should have python.exe in wapt base directory %s : %s' % (wapt_base_dir,e))
 
-        p = psutil.Popen((u'"%s" --pythondllpath "%s" --python27 -N --project "%s" "%s" "%s"' % (
+        p = psutil.Popen((u'"%s" --PYTHONDLLPATH "%s" --python27 -N --project "%s" "%s" "%s"' % (
                         pyscripter_filename,
                         wapt_base_dir,
                         psproj_filename,
