@@ -66,6 +66,7 @@ Source: "..\waptservice\plugins\*"; DestDir: "{app}\waptservice\plugins"; Flags:
 #ifdef waptenterprise
 Source: "..\waptenterprise\waptservice\*"; DestDir: "{app}\waptenterprise\waptservice\";  Flags: createallsubdirs recursesubdirs;
 Source: "..\waptenterprise\waptconsole\*"; DestDir: "{app}\waptenterprise\waptconsole\";  Flags: createallsubdirs recursesubdirs;
+Source: "..\waptenterprise\waptwua\*"; DestDir: "{app}\waptenterprise\waptwua\";  Flags: createallsubdirs recursesubdirs;
 Source: "..\waptenterprise\__init__.py"; DestDir: "{app}\waptenterprise\";
 Source: "..\waptenterprise\licencing.py"; DestDir: "{app}\waptenterprise\";
 #endif
@@ -132,7 +133,11 @@ AppName={#AppName}
 AppId={#AppId}
 #endif
 AppVersion={#AppVerStr}
-UninstallDisplayName={#AppName} {#AppVerStr}
+#ifdef waptenterprise
+UninstallDisplayName={#AppName} Enterprise {#AppVerStr} 
+#else
+UninstallDisplayName={#AppName} Community {#AppVerStr} 
+#endif
 VersionInfoVersion={#FileVerStr}
 VersionInfoTextVersion={#AppVerStr}
 AppCopyright={#Company}
@@ -141,9 +146,9 @@ ChangesEnvironment=True
 AppPublisher={#Company}
 OutputDir={#output_dir}
 SolidCompression=True
-AppPublisherURL=http://www.tranquil.it
-AppUpdatesURL=http://wapt.tranquil.it/wapt
-AppSupportURL=http://dev.tranquil.it/index.php/WAPT_-_apt-get_pour_Windows
+AppPublisherURL=https://www.tranquil.it
+AppUpdatesURL=https://wapt.tranquil.it/wapt/releases/latest
+AppSupportURL=https://www.wapt.fr
 AppContact=wapt@lists.tranquil.it
 AppSupportPhone=+33 2 40 97 57 55
 CloseApplications=Yes
@@ -158,7 +163,7 @@ AppVerName={#AppName} Enterprise {#AppVerStr}
 #else
 LicenseFile=..\COPYING.txt
 SetupIconFile=..\wapt.ico
-AppVerName={#AppName} {#AppVerStr}
+AppVerName={#AppName} Community {#AppVerStr}
 #endif
 RestartIfNeededByRun=False
 
