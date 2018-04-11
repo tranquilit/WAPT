@@ -213,10 +213,12 @@ for fn in (
        os.unlink(fn)
 
 copyfile(makepath(wapt_source_dir, 'runwaptserver.sh'),'./builddir/opt/wapt/runwaptserver.sh')
+copyfile(makepath(wapt_source_dir, 'runwapttasks.sh'),'./builddir/opt/wapt/runwapttasks.sh')
 copyfile(makepath(wapt_source_dir, 'wapt-scanpackages'),'./builddir/usr/bin/wapt-scanpackages')
 copyfile(makepath(wapt_source_dir, 'wapt-signpackages'),'./builddir/usr/bin/wapt-signpackages')
 copyfile(makepath(wapt_source_dir, 'waptpython'),'./builddir/usr/bin/waptpython')
 os.chmod('./builddir/opt/wapt/runwaptserver.sh', 0o755)
+os.chmod('./builddir/opt/wapt/runwapttasks.sh', 0o755)
 os.chmod('./builddir/usr/bin/wapt-scanpackages', 0o755)
 os.chmod('./builddir/usr/bin/wapt-signpackages', 0o755)
 os.chmod('./builddir/usr/bin/waptpython', 0o755)
@@ -226,6 +228,7 @@ build_dest_dir = './builddir/usr/lib/systemd/system/'
 try:
     mkdir_p(build_dest_dir)
     copyfile('../scripts/waptserver.service', os.path.join(build_dest_dir, 'waptserver.service'))
+    copyfile('../scripts/wapttasks.service', os.path.join(build_dest_dir, 'wapttasks.service'))
 except Exception as e:
     eprint (sys.stderr, 'error: \n%s' % e)
     exit(1)

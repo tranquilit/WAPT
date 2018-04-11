@@ -47,6 +47,7 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 %files
 %defattr(644,root,root,755)
 /usr/lib/systemd/system/waptserver.service
+/usr/lib/systemd/system/wapttasks.service
 /opt/wapt/waptserver/*
 /opt/wapt/lib/*
 /opt/wapt/lib64
@@ -68,6 +69,7 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 %attr(755,root,root)/opt/wapt/wapt-signpackages.py
 %attr(755,root,root)/opt/wapt/waptserver/trigger_action.sh
 %attr(755,root,root)/opt/wapt/runwaptserver.sh
+%attr(755,root,root)/opt/wapt/runwapttasks.sh
 %attr(755,root,root)/usr/bin/wapt-scanpackages
 %attr(755,root,root)/usr/bin/wapt-signpackages
 %attr(755,root,root)/usr/bin/waptpython
