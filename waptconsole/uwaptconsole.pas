@@ -4011,8 +4011,9 @@ begin
       if FileExistsUTF8(Appuserinipath) then
         SysUtils.DeleteFile(Appuserinipath);
 
-    pgWindowsUpdates.TabVisible:=IsEnterpriseEdition and waptcommon.waptwua_enabled;
-    pgHostWUA.TabVisible:=waptcommon.waptwua_enabled;
+    pgWindowsUpdates.TabVisible:=IsEnterpriseEdition;
+    pgHostWUA.TabVisible:=IsEnterpriseEdition;
+
     for i:=0 to WSUSActions.ActionCount-1 do
     begin
       (WSUSActions.Actions[i] as TAction).Visible:=waptcommon.waptwua_enabled;
