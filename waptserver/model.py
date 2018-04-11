@@ -67,7 +67,7 @@ def load_db_config(server_config=None):
     """Initialise db proxy with parameters from inifile
 
     Args:
-        serverconfig (dict): dict of server parameters as returned by waptserver_config.load_config(ainifilename)
+        serverconfig (dict): dict of server parameters as returned by waptserver.config.load_config(ainifilename)
 
     Returns
         configured db : db which has been put in wapt_db proxy

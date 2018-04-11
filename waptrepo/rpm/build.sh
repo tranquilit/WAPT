@@ -1,6 +1,6 @@
 #!/bin/sh
 set -ex
-VERSION=$(python ../../waptserver/rpm/get_version.py ../../waptserver/waptserver_config.py)
+VERSION=$(python ../../waptserver/rpm/get_version.py ../../waptserver/config.py)
 mkdir -p BUILD BUILDROOT RPMS
 QA_SKIP_BUILD_ROOT=1 rpmbuild -bb --define "_version $VERSION" --buildroot $PWD/BUILDROOT -v --clean waptrepo.spec 1>&2
 rm -f tis-waptrepo.rpm

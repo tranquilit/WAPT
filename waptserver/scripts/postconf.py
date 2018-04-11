@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.1.22"
+__version__ = "1.6.0.0"
 
 usage = """\
 %prog [--use-kerberos] [--force-https]"""

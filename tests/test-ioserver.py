@@ -32,8 +32,8 @@ from flask_socketio import SocketIO
 from flask_socketio import send, emit,rooms,join_room, close_room,disconnect
 from flask_login import current_user
 
-from waptserver_utils import *
-import waptserver_config
+from waptserver.utils import *
+import waptserver.config
 
 import logging
 import logging.handlers
@@ -46,7 +46,7 @@ config_file = DEFAULT_CONFIG_FILE
 app = Flask(__name__, static_folder='./templates/static')
 app.config['CONFIG_FILE'] = config_file
 
-conf = waptserver_config.load_config(config_file)
+conf = waptserver.config.load_config(config_file)
 app.config['SECRET_KEY'] = conf.get('secret_key','secretkey!!')
 
 ALLOWED_EXTENSIONS = set(['wapt'])
