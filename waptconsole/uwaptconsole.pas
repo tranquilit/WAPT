@@ -1510,6 +1510,7 @@ begin
             DevPath := AppendPathDelim(DevRoot)+VarPythonAsString(PackageEdited.make_package_edit_directory('--noarg--'));
             vDevPath:= PyUTF8Decode(DevPath);
             PackageEdited.unzip_package(cabundle := cabundle, target_dir := vDevPath);
+            DMPython.WAPT.add_pyscripter_project(vDevPath);
             DMPython.common.wapt_sources_edit( wapt_sources_dir := vDevPath);
           except
             ShowMessage(rsDlCanceled);
