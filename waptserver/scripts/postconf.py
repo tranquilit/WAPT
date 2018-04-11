@@ -201,10 +201,12 @@ def restart_nginx():
     run_verbose('systemctl restart nginx')
 
 def enable_waptserver():
-    run_verbose('systemctl restart waptserver')
+    run_verbose('systemctl enable waptserver')
+    run_verbose('systemctl enable wapttasks')
 
 def start_waptserver():
     run_verbose("systemctl restart waptserver")
+    run_verbose("systemctl restart wapttasks")
 
 def setup_firewall():
     if type_redhat():
@@ -326,8 +328,6 @@ def main():
     if server_config['db_host'] in (None,'','localhost','127.0.0.1','::1'):
         ensure_postgresql_db(db_name=server_config['db_name'],db_owner=server_config['db_name'],db_password=server_config['db_password'])
 
-    #run('sudo -u wapt PYTHONHOME=/opt/wapt PYTHONPATH=/opt/wapt /opt/wapt/bin/python /opt/wapt/waptserver/waptserver_model.py init_db -c "%s"' % options.configfile)
-
     # Password setup/reset screen
     if not server_config['wapt_password'] or \
             postconf.yesno("Do you want to reset admin password ?",yes_label='skip',no_label='reset') != postconf.DIALOG_OK:
@@ -394,7 +394,7 @@ def main():
     repo.update_packages_index(force_all=True)
 
     final_msg = ['Postconfiguration completed.',]
-    postconf.msgbox("Press ok to start waptserver")
+    postconf.msgbox("Press ok to start waptserver and wapttasks daemons")
     enable_waptserver()
     start_waptserver()
 

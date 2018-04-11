@@ -207,6 +207,7 @@ if WAPTEDITION=='enterprise':
 
 # script to run waptserver in foreground mode
 copyfile(makepath(wapt_source_dir, 'runwaptserver.sh'),'./builddir/opt/wapt/runwaptserver.sh')
+copyfile(makepath(wapt_source_dir, 'runwapttasks.sh'),'./builddir/opt/wapt/runwapttasks.sh')
 copyfile(makepath(wapt_source_dir, 'waptpython'),'./builddir/usr/bin/waptpython')
 
 for lib in ('dialog.py', ):
@@ -227,6 +228,7 @@ systemd_build_dest_dir = './builddir/usr/lib/systemd/system/'
 try:
     mkdir_p(systemd_build_dest_dir)
     copyfile('../scripts/waptserver.service', os.path.join(systemd_build_dest_dir, 'waptserver.service'))
+    copyfile('../scripts/wapttasks.service', os.path.join(systemd_build_dest_dir, 'wapttasks.service'))
 except Exception as e:
     eprint('error: \n%s' % e)
     exit(1)

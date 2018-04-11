@@ -74,6 +74,7 @@ os.chmod('/usr/bin/wapt-scanpackages',0o755)
 os.chmod('/usr/bin/wapt-signpackages',0o755)
 
 os.chmod('/opt/wapt/runwaptserver.sh',0o755)
+os.chmod('/opt/wapt/runwapttasks.sh',0o755)
 os.chmod('/usr/bin/wapt-scanpackages', 0o755)
 os.chmod('/usr/bin/wapt-signpackages', 0o755)
 os.chmod('/usr/bin/waptpython',0o755)
@@ -95,6 +96,7 @@ def check_if_running(process_name):
 if os.path.exists('/opt/wapt/conf/waptserver.ini'):
     print("Restarting server")
     run('systemctl restart waptserver')
+    run('systemctl restart wapttasks')
 
 print("""
 ########################################################
