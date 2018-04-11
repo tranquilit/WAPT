@@ -2650,7 +2650,8 @@ class Wapt(BaseObjectClass):
             section = None
 
         try:
-            host_key = self.get_host_key()
+            # don't create key if not exist at this step
+            host_key = self.get_host_key(False)
         except Exception as e:
             # unable to access or create host key
             host_key = None
@@ -3721,6 +3722,38 @@ class Wapt(BaseObjectClass):
     def get_host_site(self):
         return setuphelpers.registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Site-Name')
 
+    def host_capabilities(self):
+        """Return the current capabilities of host taken in account to dtermine packages list and whether update should be forced (when filter criteria are updated)
+        This includes host certificate,architecture,locale,authorized certificates
+
+        Returns:
+            dict
+        """
+
+        host_capa = dict(
+            uuid=self.host_uuid,
+            language=self.language,
+            os='windows',
+            os_version=setuphelpers.windows_version(),
+            arch=self.get_host_architecture(),
+            dn=self.host_dn,
+            fqdn=setuphelpers.get_computername(),
+            site=self.get_host_site(),
+            wapt_version=Version(setuphelpers.__version__,4),
+            wapt_edition=self.get_wapt_edition(),
+            packages_trusted_ca=[c.fingerprint for c in self.authorized_certificates()],
+            packages_blacklist=self.packages_blacklist,
+            packages_whitelist=self.packages_whitelist,
+            packages_locales=self.locales,
+            packages_maturities=self.maturities,
+            #authorized_maturities=self.get_host_maturities(),
+        )
+
+        return host_capa
+
+    def get_wapt_edition(self):
+        return 'enterprise' if os.path.isfile(os.path.join(self.wapt_base_dir,'waptenterprise','licencing.py')) else 'community'
+
     def host_capabilities_fingerprint(self):
         """Return a fingerprint representing the current capabilities of host
         This includes host certificate,architecture,locale,authorized certificates
@@ -3729,21 +3762,7 @@ class Wapt(BaseObjectClass):
             str
 
         """
-        host_capa = dict(
-            host_cert=self.get_host_certificate().fingerprint,
-            host_arch=self.get_host_architecture(),
-            authorized_certs=[c.fingerprint for c in self.authorized_certificates()],
-            #authorized_maturities=self.get_host_maturities(),
-            wapt_version=setuphelpers.__version__,
-            host_dn=self.host_dn,
-            host_site=self.get_host_site(),
-            packages_blacklist=self.packages_blacklist,
-            packages_whitelist=self.packages_whitelist,
-            host_locales=self.locales,
-            host_language=self.language,
-            host_maturities=self.maturities,
-        )
-        return hashlib.sha256(jsondump(host_capa)).hexdigest()
+        return hashlib.sha256(jsondump(self.host_capabilities())).hexdigest()
 
     def is_locally_allowed_package(self,package):
         """Return True if package is not in blacklist and is in whitelist if whitelist is not None
@@ -4721,6 +4740,8 @@ class Wapt(BaseObjectClass):
         Returns:
             SSLCertificate: host public certificate.
         """
+        if not os.path.isfile(self.get_host_certificate_filename()):
+            self.create_or_update_host_certificate()
         return SSLCertificate(self.get_host_certificate_filename())
 
 
@@ -4745,17 +4766,11 @@ class Wapt(BaseObjectClass):
 
         crt_filename = self.get_host_certificate_filename()
 
-        # clear cache
-        self._host_key = None
-
-        if force_recreate or not os.path.isfile(key_filename) or not os.path.isfile(crt_filename):
+        if force_recreate or not os.path.isfile(crt_filename):
             logger.info('Creates host keys pair and x509 certificate %s' % crt_filename)
+            self._host_key = self.get_host_key()
 
-            key = SSLPrivateKey(key_filename)
-            key.create()
-            key.save_as_pem()
-
-            crt = key.build_sign_certificate(None,None,
+            crt = self._host_key.build_sign_certificate(None,None,
                 cn = self.host_uuid,
                 dnsname = setuphelpers.get_hostname(),
                 organization = setuphelpers.registered_organization() or None,
@@ -4766,17 +4781,23 @@ class Wapt(BaseObjectClass):
         # check validity
         return open(crt_filename,'rb').read()
 
-    def get_host_key(self):
+    def get_host_key(self,create=True):
         """Return private key used to sign uploaded data from host
+        Create key if it does not exists yet.
 
         Returns:
             SSLPrivateKey: Private key used to sign data posted by host.
         """
         if self._host_key is None:
             # create keys pair / certificate if not yet initialised
-            if not os.path.isfile(self.get_host_key_filename()):
-                self.create_or_update_host_certificate()
-            self._host_key = SSLPrivateKey(self.get_host_key_filename())
+            key_filename = self.get_host_key_filename()
+            if create and not os.path.isfile(key_filename):
+                self._host_key = SSLPrivateKey(key_filename)
+                self._host_key.create()
+                self._host_key.save_as_pem()
+            elif os.path.isfile(key_filename):
+                self._host_key = SSLPrivateKey(key_filename)
+
         return self._host_key
 
     def sign_host_content(self,data,md='sha256'):
@@ -4877,7 +4898,7 @@ class Wapt(BaseObjectClass):
                     logger.warning('Host on the server is not known or not known under this FQDN name (known as %s). Trying to register the computer...'%(db_data and db_data.get('computer_fqdn',None) or None))
                     result = self.register_computer()
                     if result and result['success']:
-                        logger.warning('New registration successful')
+                        logger.info('New registration successful')
                     else:
                         logger.critical('Unable to register: %s' % result and result['msg'])
             elif not result:
@@ -6339,15 +6360,21 @@ def wapt_sources_edit(wapt_sources_dir):
             try:
                 setuphelpers.run(r'mklink "%s\python.exe" "%s\Scripts\python.exe"' % (wapt_base_dir,wapt_base_dir))
             except Exception as e:
-                raise Exception('Unable to start PySctipter properly. You should have python.exe in wapt base directory %s : %s' % (wapt_base_dir,e))
+                try:
+                    # For Win XP
+                    setuphelpers.filecopyto(os.path.join(wapt_base_dir,'Scripts','python.exe'),os.path.join(wapt_base_dir,'python.exe'))
+                except Exception as e:
+                    os.startfile(wapt_sources_dir)
+                    raise Exception('Unable to start PySctipter properly. You should have python.exe in wapt base directory %s : %s' % (wapt_base_dir,e))
+
         p = psutil.Popen((u'"%s" --pythondllpath "%s" --python27 -N --project "%s" "%s" "%s"' % (
-                         pyscripter_filename,
-                         wapt_base_dir,
-                         psproj_filename,
-                         setup_filename,
-                         control_filename)).encode(sys.getfilesystemencoding()),
-                         cwd=wapt_sources_dir.encode(sys.getfilesystemencoding()),
-                         env=env)
+                        pyscripter_filename,
+                        wapt_base_dir,
+                        psproj_filename,
+                        setup_filename,
+                        control_filename)).encode(sys.getfilesystemencoding()),
+                        cwd=wapt_sources_dir.encode(sys.getfilesystemencoding()),
+                        env=env)
     else:
         os.startfile(wapt_sources_dir)
     return wapt_sources_dir
