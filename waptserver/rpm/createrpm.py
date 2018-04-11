@@ -140,6 +140,7 @@ eprint('creating the package tree')
 mkdir_p('builddir/opt/wapt/lib')
 mkdir_p('builddir/opt/wapt/conf')
 mkdir_p('builddir/opt/wapt/log')
+mkdir_p('builddir/opt/wapt/db')
 mkdir_p('builddir/opt/wapt/lib/python2.7/site-packages')
 mkdir_p('builddir/usr/bin')
 
