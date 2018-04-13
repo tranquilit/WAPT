@@ -109,6 +109,8 @@ for f in mongoexport_files :
     new_name = makepath(wapt_base_dir,'waptserver','mongodb','mongoexport.exe')
     if not os.path.isdir(os.path.dirname(makepath(wapt_base_dir,'waptserver','mongodb'))):
         os.makedirs(os.path.dirname(makepath(wapt_base_dir,'waptserver','mongodb')))
+    if os.path.isfile(new_name):
+        os.remove(new_name)
     os.renames(f,new_name)
 
 
