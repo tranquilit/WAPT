@@ -35,6 +35,7 @@ type
     panHaut: TPanel;
     panBas: TPanel;
     ProgressBar: TProgressBar;
+    Splitter1: TSplitter;
     Timer1: TTimer;
     procedure ActShowDetailsExecute(Sender: TObject);
     procedure actSkipExecute(Sender: TObject);

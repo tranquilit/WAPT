@@ -83,10 +83,13 @@ msgid "Updating software in %s sec..."
 msgstr "Akutalisierung der Sofware in %s sec..."
 
 #: uwaptexitres.rsupdatesavailable
+#, fuzzy
+#| msgid "There are %d installs or updates pending."
+msgctxt "uwaptexitres.rsupdatesavailable"
 msgid ""
 "There are %d installs or updates pending.\n"
 "Do you wish to apply them now ?\n"
-msgstr ""
+msgstr "Es gibt ausstehende Installationen oder Updates"
 
 #: uwaptexitres.rsupdatingsoftware
 msgid "Updating software"

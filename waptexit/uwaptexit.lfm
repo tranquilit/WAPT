@@ -186,10 +186,10 @@ object VisWaptExit: TVisWaptExit
     TabOrder = 1
     Visible = False
     object MemoLog: TListBox
-      Left = 202
+      Left = 251
       Height = 212
       Top = 3
-      Width = 200
+      Width = 151
       Align = alClient
       BorderSpacing.Around = 3
       ItemHeight = 0
@@ -199,7 +199,7 @@ object VisWaptExit: TVisWaptExit
       Left = 3
       Height = 210
       Top = 5
-      Width = 196
+      Width = 241
       ShowAdvancedColumnsCustomize = False
       Align = alLeft
       BorderSpacing.Top = 2
@@ -328,6 +328,12 @@ object VisWaptExit: TVisWaptExit
       TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
       WantTabs = True
     end
+    object Splitter1: TSplitter
+      Left = 247
+      Height = 218
+      Top = 0
+      Width = 1
+    end
   end
   object Timer1: TTimer
     Enabled = False
@@ -337,7 +343,7 @@ object VisWaptExit: TVisWaptExit
   end
   object ImageList1: TImageList
     left = 28
-    top = 212
+    top = 208
     Bitmap = {
       4C69040000001000000010000000FFFFFF00FFFFFF00FFFFFF00A465341DA769
       3A9FA76A3ADEA56736F6A76939E5A76A3ABCA4653453A4653405FFFFFF00FFFF

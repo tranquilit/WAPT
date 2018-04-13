@@ -22,6 +22,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="6"/>
+      <BuildNr Value="1"/>
       <StringTable CompanyName="Tranquil IT Systems" LegalCopyright="Tranquil IT Systems 2012-2018" ProductName="WAPT Enterprise Edition" ProductVersion="1.6.0"/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -59,8 +60,9 @@
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
-        <TopLine Value="621"/>
-        <CursorPos Y="645"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="509"/>
+        <CursorPos X="21" Y="512"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -518,124 +520,135 @@
       </Unit66>
       <Unit67>
         <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="4963"/>
-        <CursorPos X="52" Y="4982"/>
+        <TopLine Value="5205"/>
+        <CursorPos Y="5220"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit67>
     </Units>
-    <JumpHistory Count="27" HistoryIndex="26">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="525" Column="49" TopLine="506"/>
+        <Caret Line="523" TopLine="507"/>
       </Position1>
       <Position2>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="527" TopLine="506"/>
+        <Caret Line="524" TopLine="507"/>
       </Position2>
       <Position3>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="526" TopLine="506"/>
+        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="3397" Column="39" TopLine="3386"/>
       </Position3>
       <Position4>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="526" TopLine="506"/>
+        <Caret Line="522" Column="22" TopLine="507"/>
       </Position4>
       <Position5>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="521" Column="30" TopLine="506"/>
+        <Caret Line="523" TopLine="507"/>
       </Position5>
       <Position6>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="43" Column="10" TopLine="94"/>
+        <Caret Line="524" TopLine="507"/>
       </Position6>
       <Position7>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="522" TopLine="515"/>
+        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="3402" TopLine="3386"/>
       </Position7>
       <Position8>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="523" TopLine="515"/>
+        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="3326" TopLine="3311"/>
       </Position8>
       <Position9>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="524" TopLine="515"/>
+        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="3327" TopLine="3311"/>
       </Position9>
       <Position10>
         <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4658" TopLine="4643"/>
+        <Caret Line="3329" TopLine="3311"/>
       </Position10>
       <Position11>
         <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4810" TopLine="4796"/>
+        <Caret Line="3331" TopLine="3311"/>
       </Position11>
       <Position12>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="532" Column="43" TopLine="515"/>
+        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="3333" TopLine="3311"/>
       </Position12>
       <Position13>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="531" TopLine="515"/>
+        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="4671" TopLine="4656"/>
       </Position13>
       <Position14>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="529" Column="15" TopLine="524"/>
+        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="4672" TopLine="4656"/>
       </Position14>
       <Position15>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="645" TopLine="621"/>
+        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="4686" TopLine="4661"/>
       </Position15>
       <Position16>
         <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4658" TopLine="4643"/>
+        <Caret Line="3288" TopLine="3273"/>
       </Position16>
       <Position17>
         <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4810" Column="11" TopLine="4796"/>
+        <Caret Line="3289" TopLine="3273"/>
       </Position17>
       <Position18>
         <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4946" TopLine="4931"/>
+        <Caret Line="3291" TopLine="3273"/>
       </Position18>
       <Position19>
         <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4953" TopLine="4931"/>
+        <Caret Line="3292" Column="6" TopLine="3273"/>
       </Position19>
       <Position20>
         <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4954" TopLine="4931"/>
+        <Caret Line="1452" Column="15" TopLine="1439"/>
       </Position20>
       <Position21>
         <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4955" TopLine="4939"/>
+        <Caret Line="3313" Column="3" TopLine="3303"/>
       </Position21>
       <Position22>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4957" TopLine="4939"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="522" Column="7" TopLine="507"/>
       </Position22>
       <Position23>
         <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4958" TopLine="4939"/>
+        <Caret Line="3402" TopLine="3386"/>
       </Position23>
       <Position24>
         <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4963" Column="7" TopLine="4939"/>
+        <Caret Line="4658" TopLine="4643"/>
       </Position24>
       <Position25>
         <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4962" Column="9" TopLine="4939"/>
+        <Caret Line="4810" TopLine="4796"/>
       </Position25>
       <Position26>
         <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4965" Column="10" TopLine="4939"/>
+        <Caret Line="5401" TopLine="5383"/>
       </Position26>
       <Position27>
         <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4962" TopLine="4939"/>
+        <Caret Line="6409" TopLine="6393"/>
       </Position27>
+      <Position28>
+        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="5207" TopLine="5193"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="5173" TopLine="5157"/>
+      </Position29>
+      <Position30>
+        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Caret Line="5220" TopLine="5205"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -783,8 +796,8 @@
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
-        <Source Value="waptget.lpr"/>
-        <Line Value="530"/>
+        <Source Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
+        <Line Value="3402"/>
       </Item16>
     </BreakPoints>
     <Exceptions Count="3">
