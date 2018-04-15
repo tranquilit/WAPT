@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=3.2.2.0
+Version=3.3.2.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -158,11 +158,11 @@ ClassName=TProjectRunConfiguationNode
 Name=debug
 
 [Project\ChildNodes\Node1\ChildNodes\Node0\RunConfig]
-ScriptName=$[Project-Path]waptservice\waptservice.py
+ScriptName=$[Project-Path]waptservice.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-d -ldebug
-WorkingDir=$[Project-Path]waptservice
+WorkingDir=$[Project-Path]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
 AppendToFile=FALSE

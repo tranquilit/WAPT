@@ -160,7 +160,7 @@ app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['SECRET_KEY'] = waptconfig.secret_key
 
 try:
-    from waptwua import WaptWUA # pylint: disable=import-error
+    from waptenterprise.waptwua import WaptWUA # pylint: disable=import-error
     app.register_blueprint(WaptWUA.waptwua)
 except Exception as e:
     pass
