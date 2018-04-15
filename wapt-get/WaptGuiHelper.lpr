@@ -151,7 +151,14 @@ exports
 
 initialization
   PyE := TPythonEngine.Create(Nil);
-  PyE.Initialize;
+  With PyE do
+  begin
+    DllName := 'python27.dll';
+    UseLastKnownVersion := False;
+    RegVersion:='2.7';
+    LoadDLL;
+    Py_SetProgramName(PAnsiChar(ParamStr(0)));
+  end;
   Application.Initialize;
 
 finalization
