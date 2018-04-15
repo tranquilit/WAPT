@@ -20,11 +20,11 @@ REM get  pywin32-220.win32-py2.7.exe from internet
 waptpython -c "from waptutils import wget; from subprocess import check_output; pywin32=wget('https://github.com/mhammond/pywin32/releases/download/b223/pywin32-223.win32-py2.7.exe',resume=True,cache_dir='c:\\binaries',md5='366d181c39169d3b0c0e1d25f781d1d6'); print check_output('Scripts\easy_install.exe ""%%s""' %% pywin32,shell=True)"
 Scripts\pip.exe install -r requirements.txt -r requirements-windows.txt
 
-copy /Y lib\site-packages\pywin32-220-py2.7-win32.egg\py*.dll .
+rem copy /Y lib\site-packages\pywin32-220-py2.7-win32.egg\py*.dll .
 copy /Y c:\windows\SysWOW64\python27.dll .
-copy /Y c:\windows\SysWOW64\pythoncom27.dll .
-copy /Y c:\windows\SysWOW64\pythoncomloader27.dll .
-copy /Y c:\windows\SysWOW64\pywintypes27.dll .
+rem copy /Y c:\windows\SysWOW64\pythoncom27.dll .
+rem /Y c:\windows\SysWOW64\pythoncomloader27.dll .
+rem /Y c:\windows\SysWOW64\pywintypes27.dll .
 
 copy /Y Scripts\python.exe waptpython.exe
 copy /Y Scripts\pythonw.exe waptpythonw.exe

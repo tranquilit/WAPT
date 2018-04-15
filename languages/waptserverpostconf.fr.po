@@ -67,7 +67,12 @@ msgid "Open firewall ports 80 and 443 to allow access for packages and inventory
 msgstr "Ouvrir les ports firewall 80 et 443 pour permettre l'accès aux paquets et à l'inventaire"
 
 #: tviswaptserverpostconf.edpwd1.hint
-msgid "This is the password used to connect to the WAPT server via the WAPT console."
+#, fuzzy
+#| msgid "This is the password used to connect to the WAPT server via the WAPT console."
+msgid ""
+"This is the password used to connect to the WAPT server via the WAPT console.\n"
+"For further information :\n"
+"http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html\n"
 msgstr "C'est le mot de passe qui sera utilisé pour se connecter au serveur WAPT par la console WAPT."
 
 #: tviswaptserverpostconf.edwaptrepourl.editlabel.caption
@@ -75,7 +80,15 @@ msgid "URL of the WAPT package repository"
 msgstr "URL du dépôt de paquets WAPT"
 
 #: tviswaptserverpostconf.edwaptservername.hint
-msgid "WAPT clients make requests to the server. In order to connect to the WAPT server,"
+msgid ""
+"WAPT clients make requests to the server. In order to connect to the WAPT server,\n"
+"it is advisable that a DNS name be used, as long as it has been correctly\n"
+"configured in your network's DNS environment. We suggest naming your WAPT server\n"
+"'srvwapt.mydomain.local' (A record type), then binding an alias\n"
+"(CNAME record type, e.g. 'wapt.mondomain.local') to srvwapt.\n"
+"In case you don't trust your DNS, or you are just setting up a testing environment,\n"
+"you can fall back to the server IP address. For further information :\n"
+"'http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'\n"
 msgstr ""
 
 #: tviswaptserverpostconf.edwaptservername.text

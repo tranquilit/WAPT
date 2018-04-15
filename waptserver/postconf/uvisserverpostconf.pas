@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8,
   Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls,
   Buttons, ActnList, htmlview, Readhtml, IdHTTP,
-  IdComponent,uvisLoading, DefaultTranslator, LCLTranslator, LCLProc, uWaptServerRes, types;
+  IdComponent,uvisLoading, DefaultTranslator, LCLTranslator, LCLProc, uWaptServerRes;
 
 type
 

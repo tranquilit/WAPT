@@ -88,7 +88,12 @@ msgid "Open firewall ports 80 and 443 to allow access for packages and inventory
 msgstr "Firewall Ports 80 und 443 öffnen, um den Zugang für Pakete und den Inventar zu erlauben "
 
 #: tviswaptserverpostconf.edpwd1.hint
-msgid "This is the password used to connect to the WAPT server via the WAPT console."
+#, fuzzy
+#| msgid "This is the password used to connect to the WAPT server via the WAPT console."
+msgid ""
+"This is the password used to connect to the WAPT server via the WAPT console.\n"
+"For further information :\n"
+"http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html\n"
 msgstr "Passwort um sich auf den WAPT Server über die WAPT Konsole zu verbinden."
 
 #: tviswaptserverpostconf.edwaptrepourl.editlabel.caption
@@ -96,7 +101,17 @@ msgid "URL of the WAPT package repository"
 msgstr "URL vom WAPT Paket Repository"
 
 #: tviswaptserverpostconf.edwaptservername.hint
-msgid "WAPT clients make requests to the server. In order to connect to the WAPT server,"
+#, fuzzy
+#| msgid "WAPT clients make requests to the server. In order to connect to the WAPT server,"
+msgid ""
+"WAPT clients make requests to the server. In order to connect to the WAPT server,\n"
+"it is advisable that a DNS name be used, as long as it has been correctly\n"
+"configured in your network's DNS environment. We suggest naming your WAPT server\n"
+"'srvwapt.mydomain.local' (A record type), then binding an alias\n"
+"(CNAME record type, e.g. 'wapt.mondomain.local') to srvwapt.\n"
+"In case you don't trust your DNS, or you are just setting up a testing environment,\n"
+"you can fall back to the server IP address. For further information :\n"
+"'http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'\n"
 msgstr "WAPT Kunden machen Anfragen an den Server. um sich mit dem WAPT Server zu verbinden,"
 
 #: tviswaptserverpostconf.edwaptservername.text
