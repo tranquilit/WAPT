@@ -6,6 +6,10 @@ REM  ##########################################"
 
 set PYTHON_PATH=c:\python27
 
+REM uncomment and modify the following lines if you need proxy for internet access
+REM set http_proxy=http://proxy:3128
+REM set https_proxy=http://proxy:3128
+
 git clean -xfd
 %PYTHON_PATH%\Scripts\pip.exe install -U pip distribute
 %PYTHON_PATH%\Scripts\pip.exe install virtualenv
