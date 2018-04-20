@@ -202,6 +202,8 @@ class Hosts(WaptBaseModel):
     last_seen_on = CharField(null=True)
     last_logged_on_user = CharField(null=True)
 
+    audit_status = CharField(null=True)
+
     # raw json data
     wapt_status = BinaryJSONField(null=True)
     # running, pending, errors, finished , upgradable, errors,
@@ -1092,6 +1094,8 @@ def upgrade_db_structure():
         with wapt_db.atomic():
             logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
             opes = []
+            opes.append(migrator.add_column(Hosts._meta.name, 'audit_status', Hosts.audit_status))
+
             opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'last_audit_status', HostPackagesStatus.last_audit_status))
             opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'last_audit_on', HostPackagesStatus.last_audit_on))
             opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'last_audit_output', HostPackagesStatus.last_audit_output))

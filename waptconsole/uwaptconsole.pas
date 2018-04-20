@@ -4127,7 +4127,10 @@ procedure TVisWaptGUI.GridHostPackagesChange(Sender: TBaseVirtualTree;
 begin
   if (GridHostPackages.FocusedRow <> nil) then
   begin
-    MemoInstallOutput.Text := UTF8Encode(GridHostPackages.FocusedRow.S['install_output']);
+    if GridHostPackages.FocusedColumnObject.PropertyName = 'last_audit_status' then
+      MemoInstallOutput.Text := UTF8Encode(GridHostPackages.FocusedRow.S['last_audit_output'])
+    else
+      MemoInstallOutput.Text := UTF8Encode(GridHostPackages.FocusedRow.S['install_output']);
     MemoInstallOutput.CaretPos := Point(1, 65535);
     MemoInstallOutput.SelStart := 65535;
     MemoInstallOutput.SelLength := 0;
@@ -4142,8 +4145,11 @@ procedure TVisWaptGUI.GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
   var Ghosted: boolean; var ImageIndex: integer; var ImageList: TCustomImageList);
 var
   install_status: ISuperObject;
+  propname: String;
 begin
-  if Column = 0 then
+  propName:=TSOGridColumn(GridHostPackages.Header.Columns[Column]).PropertyName;
+
+  if propName='install_status' then
   begin
     install_status := GridHostPackages.GetCellData(Node, 'install_status', nil);
     if (install_status <> nil) then
@@ -4154,6 +4160,21 @@ begin
         'NEED-UPGRADE': ImageIndex := 1;
         'RUNNING': ImageIndex := 6;
         'MISSING': ImageIndex := 7;
+      end;
+    end;
+  end
+  else
+  if propName='last_audit_status' then
+  begin
+    install_status := GridHostPackages.GetCellData(Node, 'last_audit_status', nil);
+    if (install_status <> nil) then
+    begin
+      case install_status.AsString of
+        'OK': ImageIndex := 0;
+        'ERROR': ImageIndex := 2;
+        'WARNING': ImageIndex := 1;
+        'UNKNOWN': ImageIndex := 14;
+        'RUNNING': ImageIndex := 6;
       end;
     end;
   end;
@@ -4174,7 +4195,7 @@ begin
     if (CellData <> nil) and (CellData.DataType = stArray) then
       CellText := soutils.Join(',', CellData);
 
-    if (propName='install_date') then
+    if (propName='install_date') or (propName='last_audit_on') or (propName='next_audit_on') then
         CellText := Copy(StrReplaceChar(CellText,'T',' '),1,16);
   end;
 end;
@@ -4388,7 +4409,22 @@ begin
       ImageIndex := 9
     else
       ImageIndex := 10
+  end
+  else if TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'audit_status' then
+  begin
+    status := GridHostPackages.GetCellData(Node, 'audit_status', nil);
+    if (status <> nil) then
+    begin
+      case status.AsString of
+        'OK': ImageIndex := 0;
+        'ERROR': ImageIndex := 2;
+        'WARNING': ImageIndex := 1;
+        'UNKNOWN': ImageIndex := 14;
+        'RUNNING': ImageIndex := 6;
+      end;
+    end;
   end;
+
 
 end;
 

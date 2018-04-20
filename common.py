@@ -1053,6 +1053,16 @@ class WaptDB(WaptBaseDB):
                 result[p.package] = available
         return result
 
+    def audit_status(self):
+        """Return WORST audit status among properly installed packages"""
+        errors = self.query("""select count(*) from wapt_localstatus where install_status="OK" and last_audit_status="ERROR" """,one=True,as_dict=False)[0]
+        if errors and errors>0:
+            return 'ERROR'
+        warnings = self.query("""select count(*) from wapt_localstatus where install_status="OK" and (last_audit_status is NULL or last_audit_status in ("WARNING","UNKNOWN"))""",one=True,as_dict=False)[0]
+        if warnings and warnings>0:
+            return 'WARNING'
+        return 'OK'
+
     def build_depends(self,packages):
         """Given a list of packages conditions (packagename (optionalcondition))
         return a list of dependencies (packages conditions) to install
@@ -4916,6 +4926,7 @@ class Wapt(BaseObjectClass):
                 old_hashes = getattr(self,'_update_server_hashes',{})
                 inv = {'uuid': self.host_uuid}
                 inv['wapt_status'] = self.wapt_status()
+                inv['audit_status'] = self.get_audit_status()
 
                 _add_data_if_updated(inv,'host_info',setuphelpers.host_info(),old_hashes,new_hashes)
                 _add_data_if_updated(inv,'installed_softwares',setuphelpers.installed_softwares(''),old_hashes,new_hashes)
@@ -5317,6 +5328,9 @@ class Wapt(BaseObjectClass):
         finally:
             sys.path = oldpath
 
+
+    def get_audit_status(self):
+        return self.waptdb.audit_status()
 
     def audit(self,packagename,force=False):
         """Run the audit hook for the installed packagename"
