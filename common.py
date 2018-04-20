@@ -476,7 +476,7 @@ class WaptSessionDB(WaptBaseDB):
                 pid = os.getpid()
             cur = self.db.execute("""\
                   update wapt_sessionsetup
-                    set install_status=?,install_output = coalesce(install_output,'') || ?,process_id=?
+                    set install_status=coalesce(?,install_status),install_output = coalesce(install_output,'') || ?,process_id=?
                     where rowid = ?
                 """,(
                      set_status,
@@ -492,7 +492,7 @@ class WaptSessionDB(WaptBaseDB):
         with self:
             cur = self.db.execute("""\
                   update wapt_sessionsetup
-                    set install_status=? where process_id = ?
+                    set install_status=coalesce(?,install_status) where process_id = ?
                 """,(
                      set_status,
                      pid,
@@ -668,38 +668,11 @@ class WaptDB(WaptBaseDB):
         self.db_version = self.curr_db_version
         return self.curr_db_version
 
-    def add_package(self,
-                    package='',
-                    version='',
-                    section='',
-                    priority='',
-                    architecture='',
-                    maintainer='',
-                    description='',
-                    filename='',
-                    size='',
-                    md5sum='',
-                    depends='',
-                    conflicts='',
-                    sources='',
-                    repo_url='',
-                    repo='',
-                    signer='',
-                    signer_fingerprint='',
-                    maturity='',
-                    locale='',
-                    signature='',
-                    signature_date='',
-                    signed_attributes='',
-                    min_wapt_version='',
-                    installed_size=None,
-                    max_os_version='',
-                    min_os_version='',
-                    target_os='',
-                    impacted_process='',
-                    ):
 
+    def add_package_entry(self,package_entry,locale_code=None):
         with self:
+            cur = self.db.execute("""delete from wapt_package where package=? and version=? and architecture=? and maturity=? and locale=?""" ,
+                (package_entry.package,package_entry.version,package_entry.architecture,package_entry.maturity,package_entry.locale))
             cur = self.db.execute("""\
                   insert into wapt_package (
                     package,
@@ -732,72 +705,37 @@ class WaptDB(WaptBaseDB):
                     impacted_process
                     ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,(
-                     package,
-                     version,
-                     section,
-                     priority,
-                     architecture,
-                     maintainer,
-                     description,
-                     filename,
-                     size,
-                     md5sum,
-                     depends,
-                     conflicts,
-                     sources,
-                     repo_url,
-                     repo,
-                     signer,
-                     signer_fingerprint,
-                     maturity,
-                     locale,
-                     signature,
-                     signature_date,
-                     signed_attributes,
-                     min_wapt_version,
-                     installed_size,
-                     max_os_version,
-                     min_os_version,
-                     target_os,
-                     impacted_process
-                     )
-                   )
+                    package_entry.package,
+                    package_entry.version,
+                    package_entry.section,
+                    package_entry.priority,
+                    package_entry.architecture,
+                    package_entry.maintainer,
+                    package_entry.get_localized_description(locale_code),
+                    package_entry.filename,
+                    package_entry.size,
+                    package_entry.md5sum,
+                    package_entry.depends,
+                    package_entry.conflicts,
+                    package_entry.sources,
+                    package_entry.repo_url,
+                    package_entry.repo,
+                    package_entry.signer,
+                    package_entry.signer_fingerprint,
+                    package_entry.maturity,
+                    package_entry.locale,
+                    package_entry.signature,
+                    package_entry.signature_date,
+                    package_entry.signed_attributes,
+                    package_entry.min_wapt_version,
+                    package_entry.installed_size,
+                    package_entry.max_os_version,
+                    package_entry.min_os_version,
+                    package_entry.target_os,
+                    package_entry.impacted_process,
+                    )
+                )
             return cur.lastrowid
-
-    def add_package_entry(self,package_entry,locale_code=None):
-        cur = self.db.execute("""delete from wapt_package where package=? and version=? and architecture=? and maturity=? and locale=?""" ,
-            (package_entry.package,package_entry.version,package_entry.architecture,package_entry.maturity,package_entry.locale))
-
-        with self:
-            self.add_package(package=package_entry.package,
-                             version=package_entry.version,
-                             section=package_entry.section,
-                             priority=package_entry.priority,
-                             architecture=package_entry.architecture,
-                             maintainer=package_entry.maintainer,
-                             description=package_entry.get_localized_description(locale_code),
-                             filename=package_entry.filename,
-                             size=package_entry.size,
-                             md5sum=package_entry.md5sum,
-                             depends=package_entry.depends,
-                             conflicts=package_entry.conflicts,
-                             sources=package_entry.sources,
-                             repo_url=package_entry.repo_url,
-                             repo=package_entry.repo,
-                             signer=package_entry.signer,
-                             signer_fingerprint=package_entry.signer_fingerprint,
-                             maturity=package_entry.maturity,
-                             locale=package_entry.locale,
-                             signature=package_entry.signature,
-                             signature_date=package_entry.signature_date,
-                             signed_attributes=package_entry.signed_attributes,
-                             min_wapt_version=package_entry.min_wapt_version,
-                             installed_size=package_entry.installed_size,
-                             max_os_version=package_entry.max_os_version,
-                             min_os_version=package_entry.min_os_version,
-                             target_os=package_entry.target_os,
-                             impacted_process=package_entry.impacted_process
-                             )
 
     def add_start_install(self,package,version,architecture,params_dict={},explicit_by=None,maturity='',locale='',depends='',conflicts='',impacted_process=None):
         """Register the start of installation in local db
@@ -856,7 +794,7 @@ class WaptDB(WaptBaseDB):
                 pid = os.getpid()
             cur = self.db.execute("""\
                   update wapt_localstatus
-                    set install_status=?,install_output = coalesce(install_output,'') || ?,uninstall_key=?,uninstall_string=?,process_id=?
+                    set install_status=coalesce(?,install_status),install_output = coalesce(install_output,'') || ?,uninstall_key=?,uninstall_string=?,process_id=?
                     where rowid = ?
                 """,(
                      set_status,
@@ -909,7 +847,7 @@ class WaptDB(WaptBaseDB):
         with self:
             cur = self.db.execute("""\
                   update wapt_localstatus
-                    set install_status=? where process_id = ?
+                    set install_status=coalesce(?,install_status) where process_id = ?
                 """,(
                      set_status,
                      pid,
@@ -2385,9 +2323,6 @@ class WaptPackageSessionSetupLogger(LogInstallOutput):
         self.waptsessiondb = waptsessiondb
         self.install_id = install_id
 
-        if self.install_id is None:
-            raise EWaptException('Package %s is not in local session status database' % package_name)
-
         def update_install_status(append_output=None,set_status=None,context=None):
             # waptdb.update_package_install_status(rowid,set_status,append_output=None,uninstall_key=None,uninstall_string=None
             self.waptsessiondb.update_install_status(
@@ -3385,6 +3320,9 @@ class Wapt(BaseObjectClass):
                         # redefine run to add reference to wapt.pidlist
                         setattr(setup,'run',self.run)
                         setattr(setup,'run_notfatal',self.run_notfatal)
+
+                        if not hasattr(setup,'uninstallkey'):
+                            setup.uninstallkey = []
 
                         # to set some contextual default arguments
                         def with_install_context(func,impacted_process=None,uninstallkeylist=None,force=None,pidlist=None):

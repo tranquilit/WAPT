@@ -1540,8 +1540,8 @@ class PackageEntry(BaseObjectClass):
                     try:
                         shutil.rmtree(target_dir)
                     except Exception as e:
-                        logger.critical(u'Unable to remove temprary files %s' % repr(target_dir))
-                raise
+                        logger.critical(u'Unable to remove temporary files %s' % repr(target_dir))
+                raise e
         return self.sourcespath
 
     def delete_localsources(self):
@@ -1632,6 +1632,10 @@ class PackageEntry(BaseObjectClass):
             # be sure some minimal functions are available in setup module at install step
             setattr(setup,'basedir',self.sourcespath)
             setattr(setup,'control',self)
+
+            if not hasattr(setup,'uninstallkey'):
+                setup.uninstallkey = []
+
             if wapt_context:
                 setattr(setup,'run',wapt_context.run)
                 setattr(setup,'run_notfatal',wapt_context.run_notfatal)
@@ -2198,7 +2202,7 @@ class WaptLocalRepo(WaptBaseRepo):
                             if package.package not in self._index or self._index[package.package] < package:
                                 self._index[package.package] = package
                         except Exception as e:
-                            logger.critical(u'Package %s discarded because: %s'% (package.localpath,e))
+                            logger.info(u'Package %s discarded because: %s'% (package.localpath,e))
                             self.discarded.append(package)
                     else:
                         logger.info(u'Discarding %s on repo "%s" because of local whitelist of blacklist rules' % (package.asrequirement(),self.name))
@@ -2275,7 +2279,7 @@ class WaptLocalRepo(WaptBaseRepo):
                         try:
                             entry.check_control_signature(self.cabundle)
                         except (EWaptNotSigned,SSLVerifyException) as e:
-                            logger.critical(u'Package %s discarded because: %s'% (package_filename,e))
+                            logger.info(u'Package %s discarded because: %s'% (package_filename,e))
                             continue
 
                     if not force_all and entry == old_entries[package_filename] and \
@@ -2321,7 +2325,6 @@ class WaptLocalRepo(WaptBaseRepo):
                         logger.debug(r"Unable to extract icon for %s:%s"%(fname,e))
 
             except Exception as e:
-                print(e)
                 logger.critical("package %s: %s" % (fname,e))
                 errors.append(fname)
 
@@ -2329,7 +2332,7 @@ class WaptLocalRepo(WaptBaseRepo):
             logger.info(u"Check / update CRL for embedded certificates")
             signer_certificates.update_crl(force = force_all)
         except Exception as e:
-            logger.critical(u'Error when updating CRL for signers cerificates : %s' % e)
+            logger.critical(u'Error when updating CRL for signers certificates : %s' % e)
 
         logger.info(u"Writing new %s" % packages_fname)
         tmp_packages_fname = packages_fname+'.%s'%datetime.datetime.now().strftime("%Y%m%d%H%M%S")
@@ -2359,7 +2362,7 @@ class WaptLocalRepo(WaptBaseRepo):
             if os.path.isfile(tmp_packages_fname):
                 os.unlink(tmp_packages_fname)
             logger.critical(u'Unable to create new Packages file : %s' % e)
-            raise
+            raise e
         return {'processed':processed,'kept':kept,'errors':errors,'packages_filename':packages_fname}
 
     def load_config(self,config=None,section=None):
@@ -2641,7 +2644,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                         if package.package not in self._index or self._index[package.package] < package:
                             self._index[package.package] = package
                     except Exception as e:
-                        logger.critical(u'Discarding %s on repo "%s": %s' % (package.asrequirement(),self.name,e))
+                        logger.info(u'Discarding %s on repo "%s": %s' % (package.asrequirement(),self.name,e))
                         #logger.debug('Certificate bundle : %s' % self.cabundle)
                         self.discarded.append(package)
                 else:
@@ -2735,6 +2738,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                 packages.append(p)
             else:
                 raise Exception('Invalid package request %s' % p)
+
         for entry in packages:
             packagefilename = entry.filename.strip('./')
             download_url = entry.repo_url+'/'+packagefilename
