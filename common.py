@@ -602,7 +602,11 @@ class WaptDB(WaptBaseDB):
           """)
         self.db.execute("""
         create index if not exists idx_localstatus_name on wapt_localstatus(package);
+        """)
+        self.db.execute("""
         create index if not exists idx_localstatus_status on wapt_localstatus(install_status);
+        """)
+        self.db.execute("""
         create index if not exists idx_localstatus_next_audit_on on wapt_localstatus(next_audit_on);
         """)
 
