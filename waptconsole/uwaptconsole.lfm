@@ -282,6 +282,7 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
             WantTabs = True
             OnChange = GridHostPackagesChange
+            OnFocusChanged = GridHostPackagesFocusChanged
             OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
             ZebraPaint = True
           end
@@ -1767,6 +1768,7 @@ object VisWaptGUI: TVisWaptGUI
           OnDragOver = GridHostsDragOver
           OnDragDrop = GridHostsDragDrop
           OnEditing = GridHostsEditing
+          OnFocusChanged = GridHostsFocusChanged
           OnGetImageIndexEx = GridHostsGetImageIndexEx
           OnGetHint = GridHostsGetHint
           OnHeaderDblClick = GridHostsHeaderDblClick

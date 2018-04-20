@@ -572,6 +572,8 @@ type
     procedure GridGroupsMeasureItem(Sender: TBaseVirtualTree;
       TargetCanvas: TCanvas; Node: PVirtualNode; var NodeHeight: integer);
     procedure GridHostPackagesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure GridHostPackagesFocusChanged(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Column: TColumnIndex);
     procedure GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: boolean; var ImageIndex: integer;
@@ -592,6 +594,8 @@ type
       Mode: TDropMode; var Effect: DWORD; var Accept: boolean);
     procedure GridHostsEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var Allowed: boolean);
+    procedure GridHostsFocusChanged(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Column: TColumnIndex);
     procedure GridHostsGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
       var HintText: String);
@@ -4140,6 +4144,13 @@ begin
     MemoInstallOutput.Clear;
 end;
 
+procedure TVisWaptGUI.GridHostPackagesFocusChanged(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex);
+begin
+  GridHostPackagesChange(Sender,Node);
+end;
+
+
 procedure TVisWaptGUI.GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: boolean; var ImageIndex: integer; var ImageList: TCustomImageList);
@@ -4316,6 +4327,11 @@ begin
   else
     Allowed := False;
 
+end;
+
+procedure TVisWaptGUI.GridHostsFocusChanged(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex);
+begin
 end;
 
 procedure TVisWaptGUI.GridHostsGetHint(Sender: TBaseVirtualTree;

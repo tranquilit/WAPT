@@ -637,9 +637,17 @@ def main():
                         result.append(mywapt.audit(packagename,force=options.force))
                         print("Done")
                     except Exception as e:
-                        logger.critical(ensure_unicode(e))
+                      logger.critical(ensure_unicode(e))
+
+                if mywapt.waptserver:
+                    try:
+                        mywapt.update_server_status(force=options.force)
+                    except Exception as e:
+                        logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
+
                 if options.json_output:
                     jsonresult['result'] = result
+
 
             elif action == 'uninstall':
                 # launch the setup.uninstall() procedure for the given packages

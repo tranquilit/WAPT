@@ -960,7 +960,8 @@ class WaptDB(WaptBaseDB):
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,
                 l.depends,l.conflicts,
                 r.section,r.priority,r.maintainer,r.description,r.sources,r.filename,r.size,
-                r.repo_url,r.md5sum,r.repo,l.maturity,l.locale
+                r.repo_url,r.md5sum,r.repo,l.maturity,l.locale,
+                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on
                 from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and
                     (l.architecture is null or l.architecture=r.architecture) and
@@ -2247,9 +2248,9 @@ class LogInstallOutput(BaseObjectClass):
 
         self.lock = threading.RLock()
 
-        self.running_status = 'RUNNING'
-        self.error_status = 'ERROR'
-        self.exit_status = 'OK'
+        self.running_status = running_status
+        self.error_status = error_status
+        self.exit_status = exit_status
 
     def write(self,txt):
         with self.lock:
@@ -2361,7 +2362,7 @@ class WaptPackageAuditLogger(LogInstallOutput):
         install_id (int): name of running or installed package local status where to log status and output
     >>>
     """
-    def __init__(self,console,wapt_context=None,install_id=None,user=None,running_status='RUNNING',exit_status='OK',error_status='ERROR'):
+    def __init__(self,console,wapt_context=None,install_id=None,user=None,running_status='RUNNING',exit_status=None,error_status='ERROR'):
         self.wapt_context = wapt_context
         self.install_id = install_id
 
@@ -4344,6 +4345,7 @@ class Wapt(BaseObjectClass):
 
             if isinstance(guids,(unicode,str)):
                 guids = [guids]
+            return guids
         else:
             return []
 
@@ -5354,37 +5356,43 @@ class Wapt(BaseObjectClass):
             if not package_entry:
                 raise Exception('Package %s is not installed' % packagename)
 
-            if package_entry.has_setup_py():
-                # initialize a session db for the user
-                install_id =  self._get_package_status_rowid(package_entry)
-                package_install = self.waptdb.install_status(install_id)
-                self.waptdb.update_audit_status(install_id,set_status='RUNNING',set_output='',set_last_audit_on=setuphelpers.currentdatetime())
-                with WaptPackageAuditLogger(console=sys.stderr,wapt_context=self,install_id=install_id,user=self.user) as dblog:
-                    try:
+            install_id =  self._get_package_status_rowid(package_entry)
+            package_install = self.waptdb.install_status(install_id)
+            self.waptdb.update_audit_status(install_id,set_status='RUNNING',set_output='',set_last_audit_on=setuphelpers.currentdatetime())
+            with WaptPackageAuditLogger(console=sys.stderr,wapt_context=self,install_id=install_id,user=self.user) as dblog:
+                try:
+                    # check if registered uninstalley are still there
+                    uninstallkeys = self._get_uninstallkeylist(package_install['uninstall_key'])
+                    for key in uninstallkeys:
+                        uninstallkey_exists = setuphelpers.installed_softwares(uninstallkey=key)
+                        if not uninstallkey_exists:
+                            print(u'ERROR: Uninstall Key %s is not in Windows Registry.' % key)
+                            dblog.exit_status='ERROR'
+                        else:
+                            print(u'OK: Uninstall Key %s in Windows Registry.' % key)
+
+                    result = None
+                    if package_entry.has_setup_py():
                         # get value of required parameters from system wide install
                         params = self.get_previous_package_params(package_entry)
-
                         # this call return None if not audit hook or if hook has no return value.
                         result = package_entry.call_setup_hook('audit',self,params)
+                        if dblog.exit_status is None and result != 'OK':
+                            dblog.exit_status = result
+                    else:
+                        logger.debug('No setup.py, skipping session-setup')
+                        print(u'OK: No setup.py')
 
-                        # check if registered uninstalley are still there
-                        uninstallkeys = self._get_uninstallkeylist(package_install['uninstall_key'])
-                        for key in uninstallkeys:
-                            uninstallkey_exists = setuphelpers.installed_softwares(uninstallkey=key)
-                            if not uninstallkey_exists:
-                                print(u'Uninstall Key %s is not in Windows Registry.' % key)
-                                dblog.exit_status='ERROR'
+                    if dblog.exit_status is None:
+                        dblog.exit_status = result or 'OK'
 
-                        if result:
-                            self.waptdb.update_audit_status(install_id,result)
-                        return result
-                    except Exception as e:
-                        print('Audit aborted due to exception')
-                        self.waptdb.update_audit_status(install_id,set_status='ERROR')
-                        pass
+                    return result
 
-            else:
-                logger.debug('No setup.py, skipping session-setup')
+                except Exception as e:
+                    print('Audit aborted due to exception: %s' % e)
+                    self.waptdb.update_audit_status(install_id,set_status='ERROR')
+                    pass
+
         finally:
             sys.path = oldpath
 

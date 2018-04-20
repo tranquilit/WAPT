@@ -1178,7 +1178,7 @@ def remove_encoding_declaration(source):
     headers = source.split('\n',3)
     result = []
     for h in headers[0:3]:
-        result.append(h.replace('coding:','coding is').replace('coding=','coding is'))
+        result.append(h.replace('coding:','coding is').replace('coding=','coding is').replace(u'\ufeff',''))
     result.extend(headers[3:])
     return "\n".join(result)
 
