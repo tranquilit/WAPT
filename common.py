@@ -601,7 +601,10 @@ class WaptDB(WaptBaseDB):
           )
           """)
         self.db.execute("""
-        create index if not exists idx_localstatus_name on wapt_localstatus(package);""")
+        create index if not exists idx_localstatus_name on wapt_localstatus(package);
+        create index if not exists idx_localstatus_status on wapt_localstatus(install_status);
+        create index if not exists idx_localstatus_next_audit_on on wapt_localstatus(next_audit_on);
+        """)
 
         self.db.execute("""
         create table if not exists wapt_params (
@@ -807,7 +810,7 @@ class WaptDB(WaptBaseDB):
                    )
             return cur.lastrowid
 
-    def update_audit_status(self,rowid,set_status=None,append_output=None,set_next_audit_on=None):
+    def update_audit_status(self,rowid,set_status=None,set_output=None,append_output=None,set_last_audit_on=None,set_next_audit_on=None):
         """Update status of package installation on localdb"""
         with self:
             if set_status in ('OK','WARNING','ERROR'):
@@ -816,24 +819,28 @@ class WaptDB(WaptBaseDB):
                 pid = os.getpid()
 
             # retrieve last status
-            cur = self.db.execute("""select last_audit_status,last_audit_on,next_audit_on from wapt_localstatus where rowid = ?""",(rowid,))
-            (last_audit_status,last_audit_on,next_audit_on) = cur.fetchone()
-            if last_audit_on is None:
-                last_audit_on = datetime2isodate()
+            #cur = self.db.execute("""select last_audit_status,last_audit_on,next_audit_on from wapt_localstatus where rowid = ?""",(rowid,))
+            #(last_audit_status,last_audit_on,next_audit_on) = cur.fetchone()
+            #if last_audit_on is None:
+            #    last_audit_on = datetime2isodate()
+            #
+            #if set_status is None:
+            #    set_status = last_audit_status
 
-            if set_status is None:
-                set_status = last_audit_status
-
-            if set_status is None:
-                set_status = 'RUNNING'
+            #if set_status is None:
+            #    set_status = 'RUNNING'
 
             cur = self.db.execute("""\
-                  update wapt_localstatus
-                    set last_audit_status=?,last_audit_on=?,last_audit_output = coalesce(last_audit_output,'') || ?,process_id=?,next_audit_on=?
+                  update wapt_localstatus set
+                    last_audit_status=coalesce(?,last_audit_status,'RUNNING'),
+                    last_audit_on=coalesce(?,last_audit_on),
+                    last_audit_output = coalesce(?,last_audit_output,'') || ?,
+                    process_id=?,next_audit_on=coalesce(?,next_audit_on)
                     where rowid = ?
                 """,(
                      set_status,
-                     last_audit_on,
+                     set_last_audit_on,
+                     set_output,
                      append_output if append_output is not None else '',
                      pid,
                      set_next_audit_on,
@@ -973,7 +980,8 @@ class WaptDB(WaptBaseDB):
         """
         sql = ["""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,l.setuppy,
-                l.depends,l.conflicts,
+                l.depends,l.conflicts,l.uninstall_key,
+                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,
                 r.section,r.priority,r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo,l.maturity,l.locale
                 from wapt_localstatus l
@@ -2282,16 +2290,9 @@ class WaptPackageInstallLogger(LogInstallOutput):
         package_name (str): name of running or installed package local status where to log status and output
     >>>
     """
-    def __init__(self,console,wapt_context=None,package_name=None,install_id=None,user=None,running_status='RUNNING',exit_status='OK',error_status='ERROR'):
+    def __init__(self,console,wapt_context=None,install_id=None,user=None,running_status='RUNNING',exit_status='OK',error_status='ERROR'):
         self.wapt_context = wapt_context
-        self.package_name = package_name
-        if install_id is None and package_name:
-            self.install_id = self.wapt_context._get_package_status_rowid(self.package_name)
-        else:
-            self.install_id = install_id
-
-        if self.install_id is None:
-            raise EWaptException('Package %s is not in local package status database' % package_name)
+        self.install_id = install_id
 
         self.user = user
         if self.user is None:
@@ -2332,6 +2333,37 @@ class WaptPackageSessionSetupLogger(LogInstallOutput):
 
         LogInstallOutput.__init__(self,console=console,
             update_status_hook=update_install_status,
+            context=self,
+            running_status=running_status,
+            exit_status=exit_status,
+            error_status=error_status)
+
+class WaptPackageAuditLogger(LogInstallOutput):
+    """Context handler to log all print messages to a wapt package install log
+
+    Args:
+        console (file) : sys.stderr
+        wapt_context (Wapt): Wapt instance
+        install_id (int): name of running or installed package local status where to log status and output
+    >>>
+    """
+    def __init__(self,console,wapt_context=None,install_id=None,user=None,running_status='RUNNING',exit_status='OK',error_status='ERROR'):
+        self.wapt_context = wapt_context
+        self.install_id = install_id
+
+        self.user = user
+        if self.user is None:
+            self.user = setuphelpers.get_current_user()
+
+        def update_audit_status(append_output=None,set_status=None,context=None):
+            # waptdb.update_package_install_status(rowid,set_status,append_output=None,uninstall_key=None,uninstall_string=None
+            self.wapt_context.waptdb.update_audit_status(
+                rowid=context.install_id,
+                set_status=set_status,
+                append_output=append_output)
+
+        LogInstallOutput.__init__(self,console=console,
+            update_status_hook=update_audit_status,
             context=self,
             running_status=running_status,
             exit_status=exit_status,
@@ -3559,7 +3591,8 @@ class Wapt(BaseObjectClass):
         """
         q = self.waptdb.query("""\
            select package,version,architecture,maturity,locale,install_status,
-                    install_output,install_params,explicit_by,install_date
+                    install_output,install_params,explicit_by,uninstall_key,install_date,
+                    last_audit_status,last_audit_on,last_audit_output,next_audit_on
            from wapt_localstatus
            where package=? order by install_date desc limit 1
            """ , (packagename,) )
@@ -4247,7 +4280,6 @@ class Wapt(BaseObjectClass):
         for entry in packages:
             self.check_cancelled()
 
-
             def report(received,total,speed,url):
                 self.check_cancelled()
                 try:
@@ -4279,6 +4311,27 @@ class Wapt(BaseObjectClass):
             if r.name == repo_name:
                 return r
         return None
+
+    def _get_uninstallkeylist(self,uninstall_key_str):
+        """Decode uninstallkey list from db field
+        For historical reasons, this field is encoded as str(pythonlist)
+
+        Returns:
+            list
+        """
+        if uninstall_key_str:
+            if uninstall_key_str[0] not in ['[','"',"'"]:
+                guids = uninstall_key_str
+            else:
+                try:
+                    guids = eval(uninstall_key_str)
+                except:
+                    guids = uninstall_key_str
+
+            if isinstance(guids,(unicode,str)):
+                guids = [guids]
+        else:
+            return []
 
     def remove(self,packages_list,force=False):
         """Removes a package giving its package name, unregister from local status DB
@@ -4325,6 +4378,7 @@ class Wapt(BaseObjectClass):
                     if mydict.get('impacted_process',None):
                         setuphelpers.killalltasks(ensure_list(mydict['impacted_process']))
 
+
                     if mydict['uninstall_string']:
                         if mydict['uninstall_string'][0] not in ['[','"',"'"]:
                             guids = mydict['uninstall_string']
@@ -4344,17 +4398,7 @@ class Wapt(BaseObjectClass):
                                     logger.warning(u"Warning : %s" % ensure_unicode(e))
 
                     elif mydict['uninstall_key']:
-                        if mydict['uninstall_key'][0] not in ['[','"',"'"]:
-                            guids = mydict['uninstall_key']
-                        else:
-                            try:
-                                guids = eval(mydict['uninstall_key'])
-                            except:
-                                guids = mydict['uninstall_key']
-
-                        if isinstance(guids,(unicode,str)):
-                            guids = [guids]
-
+                        guid = self._get_uninstallkeylist(mydict['uninstall_key'])
                         for guid in guids:
                             if guid:
                                 try:
@@ -4818,17 +4862,18 @@ class Wapt(BaseObjectClass):
         return json.loads(jsondump(status))
 
 
-    def _get_package_status_rowid(self,package_name):
+    def _get_package_status_rowid(self,package_entry):
         """Return ID of package_status record for package_name
 
         Args:
-            package_name (str): package name.
+            package_entry (PackageEntry): package
+            # todo: should be a PackageRequest
 
         Returns:
             int: rowid in local wapt_localstatus table
         """
         with self.waptdb as waptdb:
-            cur = waptdb.db.execute("""select rowid from wapt_localstatus where package=?""" ,(package_name,))
+            cur = waptdb.db.execute("""select rowid from wapt_localstatus where package=?""" ,(package_entry.package,))
             pe = cur.fetchone()
             if not pe:
                 return None
@@ -5258,7 +5303,7 @@ class Wapt(BaseObjectClass):
                         with WaptPackageSessionSetupLogger(console=sys.stderr,waptsessiondb=session_db,install_id=install_id) as dblog:
                             # get value of required parameters from system wide install
                             params = self.get_previous_package_params(package_entry)
-                            result = package_entry._call_setup_hook('session_setup',self,params)
+                            result = package_entry.call_setup_hook('session_setup',self,params)
 
                             if result:
                                 session_db.update_install_status(install_id,'RETRY','session_setup() done\n')
@@ -5272,11 +5317,58 @@ class Wapt(BaseObjectClass):
         finally:
             sys.path = oldpath
 
+
     def audit(self,packagename,force=False):
-        """Setup the user session for a specific system wide installed package"
-           Source setup.py from database or filename
+        """Run the audit hook for the installed packagename"
+        Source setup.py from database or filename
         """
-        pass
+
+        install_id = None
+        logger.info(u"Audit run for package %s and user %s" % (packagename,self.user))
+
+        oldpath = sys.path
+        try:
+            if os.path.isdir(packagename):
+                package_entry = PackageEntry().load_control_from_wapt(packagename)
+            else:
+                package_entry = self.is_installed(packagename)
+
+            if not package_entry:
+                raise Exception('Package %s is not installed' % packagename)
+
+            if package_entry.has_setup_py():
+                # initialize a session db for the user
+                install_id =  self._get_package_status_rowid(package_entry)
+                package_install = self.waptdb.install_status(install_id)
+                self.waptdb.update_audit_status(install_id,set_status='RUNNING',set_output='',set_last_audit_on=setuphelpers.currentdatetime())
+                with WaptPackageAuditLogger(console=sys.stderr,wapt_context=self,install_id=install_id,user=self.user) as dblog:
+                    try:
+                        # get value of required parameters from system wide install
+                        params = self.get_previous_package_params(package_entry)
+
+                        # this call return None if not audit hook or if hook has no return value.
+                        result = package_entry.call_setup_hook('audit',self,params)
+
+                        # check if registered uninstalley are still there
+                        uninstallkeys = self._get_uninstallkeylist(package_install['uninstall_key'])
+                        for key in uninstallkeys:
+                            uninstallkey_exists = setuphelpers.installed_softwares(uninstallkey=key)
+                            if not uninstallkey_exists:
+                                print(u'Uninstall Key %s is not in Windows Registry.' % key)
+                                dblog.exit_status='ERROR'
+
+                        if result:
+                            self.waptdb.update_audit_status(install_id,result)
+                        return result
+                    except Exception as e:
+                        print('Audit aborted due to exception')
+                        self.waptdb.update_audit_status(install_id,set_status='ERROR')
+                        pass
+
+            else:
+                logger.debug('No setup.py, skipping session-setup')
+        finally:
+            sys.path = oldpath
 
     def get_previous_package_params(self,package_entry):
         """Return the params used when previous install of package_entry.package
@@ -5313,7 +5405,7 @@ class Wapt(BaseObjectClass):
 
             if entry.has_setup_py():
                 logger.info(u'Launch uninstall')
-                result = entry._call_setup_hook('uninstall',self,params=params)
+                result = entry.call_setup_hook('uninstall',self,params=params)
                 return result
             else:
                 logger.info('Uninstall: no setup.py source in database.')

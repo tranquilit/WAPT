@@ -552,8 +552,15 @@ def main():
                     if options.json_output:
                         jsonresult['result'].append(result)
                     else:
-                        print(u"Package : %s (%s) %s\n-------------------\nStatus : %s\n\nInstallation log:\n-------------------\n%s\n\nInstallation Parameters:\n-------------------\n%s" %
-                            (result['package'],result['version'],result['maturity'],result['install_status'],result['install_output'],result['install_params']))
+                        print(u"Package: %s (%s) %s\n-------------------\nStatus: %s\n\n"
+                               "Installation log:\n-------------------\n%s\n\n"
+                               "Installation Parameters:\n-------------------\n%s\n\n"
+                               "Last audit:\n-------------------\nStatus: %s\nDate: %s\n\nOutput:\n%s\n\nNext audit on: %s"
+                                %
+                            (result['package'],result['version'],result['maturity'],
+                             result['install_status'],result['install_output'],result['install_params'],
+                             result['last_audit_status'],result['last_audit_on'],result['last_audit_output'],result['next_audit_on'],
+                             ))
 
             elif action == 'remove':
                 if len(args) < 2:
@@ -611,6 +618,26 @@ def main():
                 if args[1] == 'ALL':
                     logger.debug('cleanup session db, removed not installed package entries')
                     mywapt.cleanup_session_setup()
+                if options.json_output:
+                    jsonresult['result'] = result
+
+            elif action == 'audit':
+                if len(args) < 2:
+                    print(u"You must provide at least one package to be audited")
+                    sys.exit(1)
+                result = []
+                if args[1] == 'ALL':
+                    packages_list = mywapt.installed().keys()
+                else:
+                    packages_list = args[1:]
+                for packagename in packages_list:
+                    try:
+                        print(u"Auditing %s ..." % (packagename,))
+                        packagename = guess_package_root_dir(packagename)
+                        result.append(mywapt.audit(packagename,force=options.force))
+                        print("Done")
+                    except Exception as e:
+                        logger.critical(ensure_unicode(e))
                 if options.json_output:
                     jsonresult['result'] = result
 
@@ -749,7 +776,7 @@ def main():
                 result= []
                 for package_dir in expand_args(args[1:]):
                     pe = PackageEntry(waptfile=package_dir)
-                    is_updated = pe._call_setup_hook('update_package')
+                    is_updated = pe.call_setup_hook('update_package')
                     if is_updated:
                         result.append(package_dir)
                 if options.json_output:
