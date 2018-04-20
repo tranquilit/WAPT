@@ -531,7 +531,7 @@ PackageKey = namedtuple('package',('packagename','version'))
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
 
-    curr_db_version = '20180303'
+    curr_db_version = '20180420'
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
@@ -567,7 +567,8 @@ class WaptDB(WaptBaseDB):
           target_os varchar(255),
           max_os_version varchar(255),
           min_os_version varchar(255),
-          impacted_process varchar(255)
+          impacted_process varchar(255),
+          audit_schedule varchar(255)
         )"""
                         )
         self.db.execute("""
@@ -581,6 +582,8 @@ class WaptDB(WaptBaseDB):
           version_pinning varchar(255),
           explicit_by varchar(255),
           architecture varchar(255),
+          section varchar(255),
+          priority varchar(255),
           maturity varchar(255),
           locale varchar(255),
           install_date varchar(255),
@@ -597,7 +600,8 @@ class WaptDB(WaptBaseDB):
           last_audit_status varchar(255),
           last_audit_output TEXT,
           next_audit_on varchar(255),
-          impacted_process varchar(255)
+          impacted_process varchar(255),
+          audit_schedule varchar(255)
           )
           """)
         self.db.execute("""
@@ -709,8 +713,9 @@ class WaptDB(WaptBaseDB):
                     max_os_version,
                     min_os_version,
                     target_os,
-                    impacted_process
-                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    impacted_process,
+                    audit_schedule
+                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,(
                     package_entry.package,
                     package_entry.version,
@@ -740,11 +745,13 @@ class WaptDB(WaptBaseDB):
                     package_entry.min_os_version,
                     package_entry.target_os,
                     package_entry.impacted_process,
+                    package_entry.audit_schedule,
                     )
                 )
             return cur.lastrowid
 
-    def add_start_install(self,package,version,architecture,params_dict={},explicit_by=None,maturity='',locale='',depends='',conflicts='',impacted_process=None):
+    def add_start_install(self,package_entry,version,section,priority,architecture,params_dict={},explicit_by=None,maturity='',locale='',depends='',conflicts='',
+            impacted_process=None,audit_schedule=None):
         """Register the start of installation in local db
 
         Args:
@@ -761,6 +768,8 @@ class WaptDB(WaptBaseDB):
                   insert into wapt_localstatus (
                     package,
                     version,
+                    section,
+                    priority,
                     architecture,
                     install_date,
                     install_status,
@@ -772,11 +781,14 @@ class WaptDB(WaptBaseDB):
                     locale,
                     depends,
                     conflicts,
-                    impacted_process
-                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    impacted_process,
+                    audit_schedule
+                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,(
                      package,
                      version,
+                     section,
+                     priority,
                      architecture,
                      datetime2isodate(),
                      'INIT',
@@ -788,7 +800,8 @@ class WaptDB(WaptBaseDB):
                      locale,
                      depends,
                      conflicts,
-                     impacted_process
+                     impacted_process,
+                     audit_schedule,
                    ))
             return cur.lastrowid
 
@@ -1060,10 +1073,10 @@ class WaptDB(WaptBaseDB):
 
     def audit_status(self):
         """Return WORST audit status among properly installed packages"""
-        errors = self.query("""select count(*) from wapt_localstatus where install_status="OK" and last_audit_status="ERROR" """,one=True,as_dict=False)[0]
+        errors = self.query("""select count(*) from wapt_localstatus where install_status="OK" and last_audit_status="ERROR"  """,one=True,as_dict=False)[0]
         if errors and errors>0:
             return 'ERROR'
-        warnings = self.query("""select count(*) from wapt_localstatus where install_status="OK" and (last_audit_status is NULL or last_audit_status in ("WARNING","UNKNOWN"))""",one=True,as_dict=False)[0]
+        warnings = self.query("""select count(*) from wapt_localstatus where install_status="OK" and (last_audit_status is NULL or last_audit_status in ("WARNING","UNKNOWN")) """,one=True,as_dict=False)[0]
         if warnings and warnings>0:
             return 'WARNING'
         return 'OK'
@@ -3278,6 +3291,8 @@ class Wapt(BaseObjectClass):
             install_id = self.waptdb.add_start_install(
                 package=entry.package ,
                 version=entry.version,
+                section=entry.section,
+                priority=entry.priority,
                 architecture=entry.architecture,
                 params_dict=params,explicit_by=explicit_by,
                 maturity=entry.maturity,
@@ -3285,6 +3300,7 @@ class Wapt(BaseObjectClass):
                 depends=entry.depends,
                 conflicts=entry.conflicts,
                 impacted_process=entry.impacted_process,
+                audit_schedule=entry.audit_schedule,
                 )
 
             # we setup a redirection of stdout to catch print output from install scripts
