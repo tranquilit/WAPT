@@ -48,7 +48,7 @@ type
     function GetMainWaptRepo: Variant;
     function GetPackagesAuthorizedCA: Variant;
     function GetWaptHostRepo: Variant;
-    function getprivateKeyPassword: Ansistring;
+    function getprivateKeyPassword: RawByteString;
     function Getsetuphelpers: Variant;
     function GetWAPT: Variant;
     function Getwaptcrypto: Variant;
@@ -145,8 +145,8 @@ uses variants, waptcommon, waptcrypto, uvisprivatekeyauth,inifiles,forms,Dialogs
 
 function pyObjectToSuperObject(pvalue:PPyObject):ISuperObject;
 var
-  i,j,k: Integer;
-  pyKeys,pyKey,pyDict,pyValue: PPyObject;
+  j,k: Integer;
+  pyKey,pyDict,pyValue: PPyObject;
 begin
   if GetPythonEngine.PyUnicode_Check(pvalue) or GetPythonEngine.PyString_Check(pvalue) then
     Result := TSuperObject.Create(GetPythonEngine.PyString_AsDelphiString(pvalue))
@@ -169,7 +169,6 @@ begin
   else if GetPythonEngine.PyDict_Check(pvalue) then
   begin
     Result := TSuperObject.Create(stObject);
-    pyKeys := GetPythonEngine.PyDict_Keys(pvalue);
     j := 0;
     pyKey := Nil;
     pyValue := Nil;
@@ -180,7 +179,6 @@ begin
   begin
     Result := TSuperObject.Create(stObject);
     pyDict := GetPythonEngine.PyObject_CallMethodStr(pvalue,'as_dict',Nil,Nil);
-    pyKeys := GetPythonEngine.PyDict_Keys(pyDict);
     j := 0;
     pyKey := Nil;
     pyValue := Nil;
@@ -201,7 +199,6 @@ end;
 function SuperObjectToPyObject(aso: ISuperObject): PPyObject;
 var
   i:integer;
-  _list : PPyObject;
   item: ISuperObject;
   key: ISuperObject;
 
@@ -258,7 +255,6 @@ end;
 function ExtractResourceString(Ident: String): RawByteString;
 var
   S: TResourceStream;
-  data:RawByteString;
 begin
   S := TResourceStream.Create(HInstance, Ident, MAKEINTRESOURCE(10)); // RT_RCDATA
   try
@@ -292,7 +288,7 @@ begin
     if not DirectoryExists(ExtractFileDir(AValue)) then
       mkdir(ExtractFileDir(AValue));
     //Initialize waptconsole parameters with local workstation wapt-get parameters...
-    if not FileExists(AValue) then
+    if not FileExistsUTF8(AValue) then
       CopyFile(WaptIniFilename,AValue,True);
 
     // override lang setting
@@ -338,7 +334,7 @@ var
   vcrt_filename: Variant;
 
 begin
-  if (crtfilename<>'') and FileExists(crtfilename) then
+  if (crtfilename<>'') and FileExistsUTF8(crtfilename) then
   begin
     vcrt_filename := PyUTF8Decode(crtfilename);
     crt := dmpython.waptcrypto.SSLCertificate(crt_filename:=vcrt_filename);
@@ -536,14 +532,14 @@ begin
   FWaptHostRepo:=AValue;
 end;
 
-function TDMPython.getprivateKeyPassword: Ansistring;
+function TDMPython.getprivateKeyPassword: RawByteString;
 var
   PrivateKeyPath:String;
   Password:String;
   RetryCount:integer;
   vcrt_filename: Variant;
 begin
-  if not FileExists(WaptPersonalCertificatePath) then
+  if not FileExistsUTF8(WaptPersonalCertificatePath) then
     FCachedPrivateKeyPassword := ''
   else
   begin
@@ -766,9 +762,7 @@ function CreateSignedCert(keyfilename,
     ):String;
 var
   CAKeyFilenameU,destpem,destcrt : Variant;
-  params : ISuperObject;
-  returnCode:integer;
-  rsa,key,cert,cakey,cacert:Variant;
+  key,cert,cakey,cacert:Variant;
   cakey_pwd: String;
 
 begin
@@ -792,7 +786,6 @@ begin
       begin
         CAKeyFilenameU := CAKeyFilename;
         cakey:= dmpython.waptcrypto.SSLPrivateKey(filename := CAKeyFilenameU, password := cakey_pwd);
-        rsa := cakey.as_pem;
       end
       else
         raise Exception.CreateFmt('No password for decryption of %s',[CAKeyFilename]);

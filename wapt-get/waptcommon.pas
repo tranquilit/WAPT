@@ -40,21 +40,19 @@ interface
 
   Function GetWaptLocalURL:String;
 
-  function AppLocalDir: Utf8String; // returns Users/<user>/local/appdata/<application_name>
-  function AppIniFilename: Utf8String; // returns Users/<user>/local/appdata/<application_name>/<application_name>.ini
-  function WaptIniFilename: Utf8String; // for local wapt install directory
+  function AppLocalDir: String; // returns Users/<user>/local/appdata/<application_name>
+  function AppIniFilename: String; // returns Users/<user>/local/appdata/<application_name>/<application_name>.ini
+  function WaptIniFilename: String; // for local wapt install directory
 
-  function AppUserDir: Utf8String; // returns Users/<user>/Roaming/AppData/<application_name>
+  function WaptBaseDir: String; // c:\wapt
+  function WaptgetPath: String; // c:\wapt\wapt-get.exe
+  function WaptDBPath: String;
 
-  function WaptBaseDir: Utf8String; // c:\wapt
-  function WaptgetPath: Utf8String; // c:\wapt\wapt-get.exe
-  function WaptDBPath: Utf8String;
-
-  function GetWaptRepoURL: Utf8String; // from wapt-get.ini, can be empty
+  function GetWaptRepoURL: String; // from wapt-get.ini, can be empty
   Function GetMainWaptRepo:String;   // read from ini, if empty, do a discovery using dns
   Function GetWaptServerURL:String;  // read ini. if no wapt_server key -> return '', return value in inifile or perform a DNS discovery
 
-  function GetWaptServerCertificateFilename(inifilename:AnsiString=''):AnsiString;
+  function GetWaptServerCertificateFilename(inifilename:String=''):String;
 
   function ReadWaptConfig(inifilename:String = ''): Boolean; //read global parameters from wapt-get ini file
 
@@ -216,7 +214,7 @@ const
   WaptPersonalCertificatePath: String ='';
 
 
-  WAPTServerMinVersion='1.5.1.20';
+  WAPTServerMinVersion='1.5.1.23';
 
   FAppIniFilename:Utf8String = '';
 
@@ -1255,7 +1253,7 @@ begin
 end;
 
 
-function GetWaptRepoURL: Utf8String;
+function GetWaptRepoURL: String;
 begin
   result := IniReadString(WaptIniFilename,'global','repo_url');
   if Result = '' then
@@ -1273,45 +1271,40 @@ begin
     result :='';
 end;
 
-function AppUserDir: Utf8String;
+function WaptBaseDir: String;
 begin
-
+  result := ExtractFilePath(ParamStrUTF8(0));
 end;
 
-function WaptBaseDir: Utf8String;
-begin
-  result := ExtractFilePath(ParamStr(0));
-end;
-
-function WaptgetPath: Utf8String;
+function WaptgetPath: String;
 begin
   result := ExtractFilePath(ParamStrUtf8(0))+'wapt-get.exe'
 end;
 
-function WaptservicePath: Utf8String;
+function WaptservicePath: String;
 begin
   result := ExtractFilePath(ParamStrUtf8(0))+'waptservice.exe'
 end;
 
-function GetSpecialFolderPath(folder : integer) : widestring;
+function GetSpecialFolderPath(folder : integer) : String;
 const
   SHGFP_TYPE_CURRENT = 0;
 var
   path: array [0..MAX_PATH] of widechar;
 begin
   if SUCCEEDED(SHGetFolderPathW(0,folder,0,SHGFP_TYPE_CURRENT, @path[0])) then
-    Result := IncludeTrailingPathDelimiter(path)
+    Result := IncludeTrailingPathDelimiter(UTF8Encode(WideString(path)))
   else
     Result := '';
 end;
 
-function AppLocalDir: Utf8String;
+function AppLocalDir: String;
 begin
-  //Result :=  IncludeTrailingPathDelimiter(UTF16ToUTF8(GetSpecialFolderPath(CSIDL_LOCAL_APPDATA)))+ApplicationName;
+  //Result :=  GetSpecialFolderPath(CSIDL_LOCAL_APPDATA))+ApplicationName;
   result := AnsiToUtf8(GetAppConfigDir(False));
 end;
 
-function AppIniFilename: Utf8String;
+function AppIniFilename: String;
 begin
   if FAppIniFilename = '' then
   begin
@@ -1325,14 +1318,14 @@ begin
   Result := FAppIniFilename;
 end;
 
-function WaptIniFilename: Utf8String;
+function WaptIniFilename: String;
 begin
   if wapt_config_filename = '' then
       wapt_config_filename := ExtractFilePath(ParamStrUTF8(0))+'wapt-get.ini';
   result :=  wapt_config_filename;
 end;
 
-function GetWaptServerCertificateFilename(inifilename:AnsiString=''): AnsiString;
+function GetWaptServerCertificateFilename(inifilename:String=''): String;
 begin
   if inifilename='' then
      inifilename:=WaptIniFilename;
@@ -1409,7 +1402,7 @@ begin
   end;
 end;
 
-function WaptDBPath: Utf8String;
+function WaptDBPath: String;
 begin
   Result := IniReadString(WaptIniFilename,'global','dbdir');
   if Result<>'' then
@@ -2003,7 +1996,7 @@ initialization
 //  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;
     //Raise Exception.Create('Unable to initialize ActiveX layer');
    GetLanguageIDs(LanguageFull,Language);
-   waptwua_enabled := FileExists(WaptBaseDir+'\waptwua\waptwua.py');
+   waptwua_enabled := IniReadBool(AppIniFilename,'global','waptwua_enabled');
 
 finalization
 //  CoUninitialize();

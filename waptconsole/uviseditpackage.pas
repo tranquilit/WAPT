@@ -462,7 +462,7 @@ begin
   if VarPythonAsString(PackageEdited.sourcespath) <> '' then
   begin
     setuppypath := VarPythonAsString(PackageEdited.sourcespath) + '\setup.py';
-    if FileExists(setuppypath) then
+    if FileExistsUTF8(setuppypath) then
       EdSetupPy.Lines.LoadFromFile(setuppypath)
     else
       EdSetupPy.Lines.Clear;
@@ -626,7 +626,7 @@ begin
   Res := Nil;
   ActEditSavePackage.Execute;
 
-  if not FileExists(WaptPersonalCertificatePath) then
+  if not FileExistsUTF8(WaptPersonalCertificatePath) then
   begin
     ShowMessageFmt(rsPrivateKeyDoesntExist, [WaptPersonalCertificatePath]);
     exit;
@@ -660,7 +660,7 @@ begin
 
       if FisTempSourcesDir then
         FileUtil.DeleteDirectory(SourcePath, False);
-      if FileExists(vbuildfilename) then
+      if FileExistsUTF8(vbuildfilename) then
         DeleteFileUTF8(vbuildfilename);
 
       IsUpdated := False;
@@ -795,7 +795,7 @@ begin
     prefix := 'wapt';
   repeat
     Result := GetTempDir(False) + prefix + IntToStr(Random(maxint));
-  until not DirectoryExists(Result) and not FileExists(Result);
+  until not DirectoryExistsUTF8(Result) and not FileExistsUTF8(Result);
 end;
 
 procedure TVisEditPackage.SetPackageRequest(AValue: string);
@@ -873,7 +873,7 @@ begin
           FisTempSourcesDir := True;
         except
           ShowMessage(rsDlCanceled);
-          if FileExists(filePath) then
+          if FileExistsUTF8(filePath) then
             DeleteFileUTF8(filePath);
           raise;
         end;

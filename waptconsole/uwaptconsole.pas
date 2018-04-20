@@ -759,7 +759,7 @@ var
   p:String;
 begin
   for p in vncpathes do
-    if FileExists(p) then
+    if FileExistsUTF8(p) then
     begin
       Result := p;
       Break;
@@ -843,7 +843,7 @@ begin
   if (Key=#13) then
     if GridHosts.FocusedRow<>Nil then
     begin
-       if TriggerChangeHostDescription(UTF8Decode(GridHosts.FocusedRow.S['uuid']),EdDescription.Text) then
+       if TriggerChangeHostDescription(UTF8Encode(GridHosts.FocusedRow.S['uuid']),EdDescription.Text) then
        begin
           if GridHosts.FocusedRow<>Nil then
             GridHosts.FocusedRow.S['description'] := UTF8Decode(EdDescription.Text);
@@ -1077,7 +1077,7 @@ function TVisWaptGUI.FilterHardware(data: ISuperObject): ISuperObject;
       for k in item.AsObject.GetNames do
       begin
         try
-          if ExecRegExpr('(?i)' +EdHardwareFilter.Text, k.AsString) then
+          if ExecRegExpr('(?i)' +EdHardwareFilter.Text, Utf8Encode(k.AsString)) then
             res[k.AsString] := item[k.AsString]
           else
           begin
@@ -1144,7 +1144,7 @@ begin
 
   if (RowSO <> nil) then
   begin
-    currhost := RowSO.S['uuid'];
+    currhost := UTF8Encode(RowSO.S['uuid']);
     pgTasks.TabVisible := RowSO.S['reachable'] = 'OK';
     if not pgTasks.TabVisible and (HostPages.ActivePage = pgTasks) then
       HostPages.ActivePage := pgPackages;
@@ -1186,7 +1186,7 @@ begin
             begin
               for packagereq in upgrades do
               begin
-                packagename:= Trim(copy(packagereq.AsString,1,pos('(',packagereq.AsString)-1));
+                packagename:= Trim(copy(UTF8Encode(packagereq.AsString),1,pos('(',packagereq.AsString)-1));
                 if package.S['package'] = packagename then
                   package.S['install_status'] := 'NEED-UPGRADE';
               end;
@@ -1200,7 +1200,7 @@ begin
             begin
               for packagereq in errors do
               begin
-                packagename:= Trim(copy(packagereq.AsString,1,pos('(',packagereq.AsString)-1));
+                packagename:= Trim(copy(UTF8Encode(packagereq.AsString),1,pos('(',packagereq.AsString)-1));
                 if package.S['package'] = packagename then
                   package.S['install_status'] := 'ERROR-UPGRADE';
               end;
@@ -1215,7 +1215,7 @@ begin
       EdUUID.Text := UTF8Encode(RowSO.S['uuid']);
       EdHostname.Text := UTF8Encode(RowSO.S['computer_name']);
       EdDescription.Text := UTF8Encode(RowSO.S['description']);
-      EdOS.Text := RowSO.S['os_name'];
+      EdOS.Text := UTF8Encode(RowSO.S['os_name']);
       if RowSO['connected_ips'].DataType=stArray then
         EdIPAddress.Text := soutils.join(',',RowSO['connected_ips'])
       else
@@ -1329,7 +1329,7 @@ begin
           end
           else
           begin
-            HostRunningTask.Text := rsFatalError+' '+sores.S['msg'];
+            HostRunningTask.Text := rsFatalError+' '+UTF8Encode(sores.S['msg']);
             HostTaskRunningProgress.Position := 0;
             HostRunningTaskLog.Clear;
             GridHostTasksPending.Data := nil;
@@ -1378,7 +1378,7 @@ begin
   ActAddADSGroups.Visible := OneIsFocused  and EnableExternalTools;
 
   ActRDP.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
-  ActVNC.Visible := OneIsFocused  and OneHasConnectedIP and FileExists(GetVNCViewerPath) and EnableExternalTools;
+  ActVNC.Visible := OneIsFocused  and OneHasConnectedIP and FileExistsUTF8(GetVNCViewerPath) and EnableExternalTools;
   ActComputerServices.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
   ActComputerUsers.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
   ActComputerMgmt.Visible := OneIsFocused  and OneHasConnectedIP and EnableExternalTools;
@@ -1475,12 +1475,11 @@ end;
 
 procedure TVisWaptGUI.ActEditPackageExecute(Sender: TObject);
 var
-  filename, filePath, target_directory,proxy: string;
+  filename, filePath, proxy: string;
   vFilePath,vDevPath: Variant;
-  PackageEdited,repo,cabundle,VWaptIniFilename: Variant;
+  PackageEdited,cabundle: Variant;
 
   DevRoot,Devpath : String;
-  res: ISuperObject;
 begin
   if GridPackages.FocusedNode <> nil then
   begin
@@ -1493,7 +1492,7 @@ begin
           ProgressTitle(rsDownloading);
           Application.ProcessMessages;
           try
-            filename := GridPackages.FocusedRow.S['filename'];
+            filename := UTF8Encode(GridPackages.FocusedRow.S['filename']);
             filePath := AppLocalDir + 'cache\' + filename;
             if not DirectoryExists(AppLocalDir + 'cache') then
               mkdir(AppLocalDir + 'cache');
@@ -1503,7 +1502,7 @@ begin
             // if check package signature...
             //cabundle:=DMPython.PackagesAuthorizedCA;
 
-            IdWget(VarPythonAsString(GridPackages.FocusedRow.S['repo_url']+'/'+filename), filePath,
+            IdWget(UTF8Encode(GridPackages.FocusedRow.S['repo_url'])+'/'+filename, filePath,
                 ProgressForm, @updateprogress, Proxy);
             vFilePath := PyUTF8Decode(filePath);
             PackageEdited := DMPython.waptpackage.PackageEntry(waptfile := vFilePath);
@@ -1514,7 +1513,7 @@ begin
             DMPython.common.wapt_sources_edit( wapt_sources_dir := vDevPath);
           except
             ShowMessage(rsDlCanceled);
-            if FileExists(filePath) then
+            if FileExistsUTF8(filePath) then
               DeleteFileUTF8(filePath);
             raise;
           end;
@@ -1562,8 +1561,8 @@ begin
       // If this a CA cert, we should perhaps take it in account right now...
       if CBIsCA.Checked and (MessageDlg(Format(rsWriteCertOnLocalMachine,[AppendPathDelim(WaptBaseDir)+'ssl']), mtConfirmation, [mbYes, mbNo],0) = mrYes) then
       begin
-        if CopyFile(PChar(CertificateFilename),
-          PChar(WaptBaseDir() + '\ssl\' + ExtractFileName(CertificateFilename)), True) then
+        if CopyFile(CertificateFilename,
+          WaptBaseDir() + '\ssl\' + ExtractFileName(CertificateFilename), True) then
         begin
           CurrentVisLoading := TVisLoading.Create(Self);
           with CurrentVisLoading do
@@ -1614,7 +1613,7 @@ begin
     exit;
   end;
 
-  if not FileExists(WaptPersonalCertificatePath) then
+  if not FileExistsUTF8(WaptPersonalCertificatePath) then
   begin
     ShowMessageFmt(rsPrivateKeyDoesntExist, [WaptPersonalCertificatePath]);
     exit;
@@ -1691,7 +1690,7 @@ begin
                   sign_digests := SignDigests
                   );
 
-              if not VarPyth.VarIsNone(BuildRes) and FileExists(VarPythonAsString(BuildRes.get('localpath'))) then
+              if not VarPyth.VarIsNone(BuildRes) and FileExistsUTF8(VarPythonAsString(BuildRes.get('localpath'))) then
               begin
                 ProgressTitle(rsWaptUpgradePackageBuilt);
                 DeleteFileUTF8(VarPythonAsString(BuildRes.get('localpath')));
@@ -1703,7 +1702,7 @@ begin
             end;
             Finish;
 
-            if FileExists(waptsetupPath) then
+            if FileExistsUTF8(waptsetupPath) then
               try
                 Start;
                 ProgressTitle(rsProgressTitle);
@@ -1792,8 +1791,8 @@ end;
 
 procedure TVisWaptGUI.ActAddADSGroupsExecute(Sender: TObject);
 var
-  Res, packages, hosts, host,HostMin: ISuperObject;
-  VHosts,VPackages,VWaptIniFilename,VPrivateKeyPassword,ResVar: Variant;
+  Res, hosts, host,HostMin: ISuperObject;
+  VHosts,VWaptIniFilename,VPrivateKeyPassword,ResVar: Variant;
 begin
   if GridHosts.Focused and (MessageDlg(rsAddADSGroups, mtConfirmation, [mbYes, mbNo, mbCancel],0) = mrYes) then
   try
@@ -1922,12 +1921,12 @@ end;
 procedure TVisWaptGUI.ActCancelRunningTaskExecute(Sender: TObject);
 var
   uuids: ISuperObject;
-  currhost: ansistring;
+  currhost: String;
 begin
   if GridHosts.FocusedRow<>Nil then
   begin
     uuids := TSuperObject.Create(stArray);;
-    currhost := GridHosts.FocusedRow.S['uuid'];
+    currhost := UTF8Encode(GridHosts.FocusedRow.S['uuid']);
     uuids.AsArray.Add(currhost);
     TriggerActionOnHosts(uuids,'trigger_cancel_all_tasks',Nil,'Cancel all tasks','Error cancelling tasks');
   end;
@@ -1983,7 +1982,7 @@ end;
 
 procedure TVisWaptGUI.ActChangePrivateKeypasswordUpdate(Sender: TObject);
 begin
-  ActChangePrivateKeypassword.Enabled := FileExists(WaptPersonalCertificatePath);
+  ActChangePrivateKeypassword.Enabled := FileExistsUTF8(WaptPersonalCertificatePath);
 end;
 
 procedure TVisWaptGUI.ActCleanCacheExecute(Sender: TObject);
@@ -2239,7 +2238,6 @@ end;
 procedure TVisWaptGUI.ActDisplayUserMessageExecute(Sender: TObject);
 var
   AMessage: String;
-  DisplayTime:Integer;
   args:ISuperObject;
 begin
   if (GridHosts.SelectedCount>=1) then
@@ -2386,7 +2384,7 @@ end;
 
 procedure TVisWaptGUI.ActTISHelpUpdate(Sender: TObject);
 begin
-  ActTISHelp.Enabled:=FileExists(GetTisSupportPath) and OneHostHasConnectedIP;
+  ActTISHelp.Enabled:=FileExistsUTF8(GetTisSupportPath) and OneHostHasConnectedIP;
 end;
 
 procedure TVisWaptGUI.ActTriggerBurstUpdatesExecute(Sender: TObject);
@@ -2737,7 +2735,7 @@ begin
       begin
         if UTF8Encode(Package.S['package']) = uuid then
         begin
-          HostPackageVersion := Package.S['version'];
+          HostPackageVersion := UTF8Encode(Package.S['version']);
           break;
         end;
       end;
@@ -2762,13 +2760,13 @@ procedure TVisWaptGUI.HandleServerResult(ServerResult:ISuperObject);
 begin
   if (ServerResult<>Nil) and ServerResult.AsObject.Exists('success') then
   begin
-    MemoLog.Append(ServerResult.AsString);
+    MemoLog.Append(UTF8Encode(ServerResult.AsString));
     if ServerResult.AsObject.Exists('msg') then
-      ShowMessage(ServerResult.S['msg']);
+      ShowMessage(UTF8Encode(ServerResult.S['msg']));
   end
   else
     if not ServerResult.B['success'] or (ServerResult['result'].A['errors'].Length>0) then
-      Raise Exception.Create(ServerResult.S['msg']);
+      Raise Exception.Create(UTF8Encode(ServerResult.S['msg']));
 end;
 
 procedure TVisWaptGUI.ActEnglishUpdate(Sender: TObject);
@@ -2818,15 +2816,15 @@ begin
       begin
         if result.AsObject.Exists('success') then
         begin
-          MemoLog.Append(result.AsString);
+          MemoLog.Append(UTF8Encode(result.AsString));
           if result.AsObject.Exists('msg') and (title<>'') then
           begin
-            ShowMessage(copy(result.S['msg'],1,250));
+            ShowMessage(copy(UTF8Encode(result.S['msg']),1,250));
           end;
         end
         else
           if not result.B['success'] or (result['result'].A['errors'].Length>0) then
-            Raise Exception.Create(result.S['msg']);
+            Raise Exception.Create(UTF8Encode(result.S['msg']));
       end
       else
         Raise Exception.Create('Unknown error. Trigger action returned no result.');
@@ -2847,7 +2845,6 @@ var
   sel, packages : ISuperObject;
   SOAction, SOActions,res,host:ISuperObject;
   actions_json,
-  keypassword:String;
   signed_actions_json:String;
   VPrivateKeyPassword:Variant;
 begin
@@ -2889,13 +2886,13 @@ begin
         res := WAPTServerJsonPost('/api/v3/trigger_host_action?timeout=%D',[waptservice_timeout],SOActions);
         if (res<>Nil) and res.AsObject.Exists('success') then
         begin
-          MemoLog.Append(res.AsString);
+          MemoLog.Append(UTF8Encode(res.AsString));
           if res.AsObject.Exists('msg') then
-            ShowMessage(res.S['msg']);
+            ShowMessage(UTF8Encode(res.S['msg']));
         end
         else
           if not res.B['success'] or (res['result'].A['errors'].Length>0) then
-            Raise Exception.Create(res.S['msg']);
+            Raise Exception.Create(UTF8Encode(res.S['msg']));
       except
         on E:Exception do
           ShowMessage(Format(errortitle,
@@ -3299,7 +3296,7 @@ end;
 procedure TVisWaptGUI.ActSearchGroupsExecute(Sender: TObject);
 begin
   EdSearchGroups.Modified := False;
-  GridGroups.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchGroups.Text, sections := 'group,unit',description_locale := Language));
+  GridGroups.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchGroups.Text, sections := 'group,unit', description_locale := Language));
 end;
 
 procedure TVisWaptGUI.ActTriggerHostUpdateExecute(Sender: TObject);
@@ -3585,7 +3582,7 @@ begin
   try
     ActVNC.Enabled := (Gridhosts.FocusedRow <> nil) and
       (Gridhosts.FocusedRow.S['connected_ips'] <> '') and
-      FileExists(GetVNCViewerPath);
+      FileExistsUTF8(GetVNCViewerPath);
   except
     ActVNC.Enabled := False;
   end;
@@ -3863,11 +3860,11 @@ begin
   // Initialize user local config file with global wapt settings
   localfn := AppIniFilename;
 
-  if not FileExists(localfn) then
+  if not FileExistsUTF8(localfn) then
   begin
-    if not DirectoryExists(ExtractFileDir(localFn)) then
+    if not DirectoryExistsUTF8(ExtractFileDir(localFn)) then
        ForceDirectoriesUTF8(ExtractFileDir(localFn));
-    FileUtil.CopyFile(Utf8ToAnsi(WaptIniFilename), Utf8ToAnsi(localfn), True);
+    CopyFile(WaptIniFilename,localfn, True);
   end;
 
   ActReloadConfig.Execute;
@@ -4009,9 +4006,9 @@ begin
     else
       // be sure other forms will not use it.
       if FileExistsUTF8(Appuserinipath) then
-        SysUtils.DeleteFile(Appuserinipath);
+        DeleteFileUTF8(Appuserinipath);
 
-    pgWindowsUpdates.TabVisible:=IsEnterpriseEdition;
+    pgWindowsUpdates.TabVisible:=IsEnterpriseEdition and waptwua_enabled;
     pgHostWUA.TabVisible:=IsEnterpriseEdition;
 
     for i:=0 to WSUSActions.ActionCount-1 do
@@ -4130,7 +4127,7 @@ procedure TVisWaptGUI.GridHostPackagesChange(Sender: TBaseVirtualTree;
 begin
   if (GridHostPackages.FocusedRow <> nil) then
   begin
-    MemoInstallOutput.Text := GridHostPackages.FocusedRow.S['install_output'];
+    MemoInstallOutput.Text := UTF8Encode(GridHostPackages.FocusedRow.S['install_output']);
     MemoInstallOutput.CaretPos := Point(1, 65535);
     MemoInstallOutput.SelStart := 65535;
     MemoInstallOutput.SelLength := 0;
@@ -4202,7 +4199,7 @@ procedure TVisWaptGUI.GridHostsCompareNodes(Sender: TBaseVirtualTree;
   Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: integer);
 var
   n1, n2, d1, d2: ISuperObject;
-  propname: Unicodestring;
+  propname: String;
   compresult: TSuperCompareResult;
 begin
   Result := 0;
@@ -4235,7 +4232,7 @@ begin
           cpLess: Result := -1;
           cpEqu: Result := 0;
           cpGreat: Result := 1;
-          cpError: Result := UTF8CompareText(n1.S[propname], n2.S[propname]);
+          cpError: Result := UTF8CompareText(UTF8Encode(n1.S[propname]), UTF8Encode(n2.S[propname]));
         end;
       end;
     end
@@ -4416,7 +4413,7 @@ begin
           propname:=propName;
         propName := StrReplaceChar(propName,'.','-');
         if RowData.AsObject.Find(propName,Celldata) then
-          CellText := CellData.AsString;
+          CellText := UTF8Encode(CellData.AsString);
       end;
     end;
 
