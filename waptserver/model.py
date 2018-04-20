@@ -249,6 +249,10 @@ class HostPackagesStatus(WaptBaseModel):
     repo_url = CharField(max_length=600, null=True)
     depends = ArrayField(CharField,null=True)
     conflicts = ArrayField(CharField,null=True)
+    last_audit_status = CharField(null=True)
+    last_audit_on = CharField(null=True)
+    last_audit_output = TextField(null=True)
+    next_audit_on = CharField(null=True)
 
     def __repr__(self):
         return '<HostPackageStatus uuid=%s packages=%s (%s) install_status=%s>' % (self.id, self.package, self.version, self.install_status)
@@ -1077,6 +1081,21 @@ def upgrade_db_structure():
             opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'depends', HostPackagesStatus.depends))
             opes.append(migrator.drop_column(HostPackagesStatus._meta.name, 'conflicts'))
             opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'conflicts', HostPackagesStatus.conflicts))
+            migrate(*opes)
+
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
+    next_version = '1.6.0.0'
+    if get_db_version() < next_version:
+        with wapt_db.atomic():
+            logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
+            opes = []
+            opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'last_audit_status', HostPackagesStatus.last_audit_status))
+            opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'last_audit_on', HostPackagesStatus.last_audit_on))
+            opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'last_audit_output', HostPackagesStatus.last_audit_output))
+            opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'next_audit_on', HostPackagesStatus.next_audit_on))
             migrate(*opes)
 
             (v, created) = ServerAttribs.get_or_create(key='db_version')
