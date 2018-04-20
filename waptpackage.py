@@ -1409,6 +1409,14 @@ class PackageEntry(BaseObjectClass):
         errors.extend([ fn for fn in files if fn not in expected])
         return errors
 
+
+    def has_setup_py(self):
+        if not self.sourcespath and not self.localpath and hasattr(self,'setuppy'):
+            return self.get('setuppy',None) is not None
+        elif self.sourcespath or self.localpath:
+            return self.has_file('setup.py')
+            raise EWaptBadSetup('Unable to determine if this package has a setup.py file. No sources, no local package and no setuppy attribute')
+
     def check_package_signature(self,trusted_bundle):
         """Check
         - hash of files in unzipped package_dir with list in package's manifest file
@@ -1450,8 +1458,7 @@ class PackageEntry(BaseObjectClass):
         manifest_data = open(manifest_filename,'r').read()
         manifest_filelist = json.loads(manifest_data)
 
-        has_setup_py = os.path.isfile(os.path.join(self.sourcespath,'setup.py'))
-        if has_setup_py:
+        if self.has_setup_py():
             logger.info(u'Package has a setup.py, code signing certificate is required.')
 
         signature_filename = os.path.abspath(os.path.join(self.sourcespath,self.get_signature_filename(self._md)))
@@ -1471,7 +1478,7 @@ class PackageEntry(BaseObjectClass):
                 signer_cert = certs[0]
                 logger.debug(u'Checking signature with %s' % signer_cert)
                 signer_cert.verify_content(manifest_data,signature,md = self._md)
-                if not has_setup_py or signer_cert.is_code_signing:
+                if not self.has_setup_py() or signer_cert.is_code_signing:
                     logger.debug(u'OK with %s' % signer_cert)
                     verified_by = signer_cert
                 else:
@@ -1557,7 +1564,7 @@ class PackageEntry(BaseObjectClass):
             raise EWaptMissingLocalWaptFile('This PackageEntry has no local content for zip operations %s' % self.asrequirement())
 
 
-    def _call_setup_hook(self,hook_name='session_setup',wapt_context=None,*args,**kwargs):
+    def _call_setup_hook(self,hook_name='session_setup',wapt_context=None,params=None):
         """Calls a hook in setuppy given a wapt_context
 
         Set basedir, control, and run context within the function context.
@@ -1569,11 +1576,6 @@ class PackageEntry(BaseObjectClass):
         Returns:
             output of hook.
         """
-        install_id = None
-        old_hdlr = None
-        old_stdout = None
-        old_stderr = None
-
         setuppy = None
 
         if self.sourcespath:
@@ -1614,7 +1616,8 @@ class PackageEntry(BaseObjectClass):
 
             hook_func = getattr(setup,hook_name,None)
             if hook_func is None:
-                raise Exception('Function %s can not be found in setup module' % hook_name)
+                logger.debug('No hook %s found in setup module for %s' % (hook_name,setup_filename or self.asrequirement()))
+                return None
 
             # get definitions of required parameters from setup module
             if hasattr(setup,'required_params'):
@@ -1641,37 +1644,29 @@ class PackageEntry(BaseObjectClass):
                 setattr(setup,'WAPT',None)
                 setattr(setup,'language',get_language())
                 # todo
-                setattr(setup,'user','')
+                setattr(setup,'user',None)
                 setattr(setup,'usergroups',[])
 
             # set params dictionary
             if not hasattr(setup,'params'):
-                # create a params variable for the setup module
+                # create a params variable for the setup.install func call
                 setattr(setup,'params',required_params)
             else:
                 # update the already created params with additional params from command line
                 setup.params.update(required_params)
 
             # add specific hook call arguments
-            setup.params.update(kwargs)
+            if params is not None:
+                setup.params.update(params)
 
-            if wapt_context:
-                try:
-                    logger.info(u"  executing setup.%s(%s,%s) " % (hook_name,repr(args),repr(kwargs)))
-                    hookdata = hook_func(*args,**kwargs)
-                except Exception as e:
-                    logger.critical(u'Fatal error in %s function: %s:\n%s' % (hook_name,ensure_unicode(e),ensure_unicode(traceback.format_exc())))
-                    raise
+            try:
+                logger.info(u"  executing setup.%s(%s) " % (hook_name,repr(setup.params)))
+                hookdata = hook_func()
+                return hookdata
+            except Exception as e:
+                logger.critical(u'Fatal error in %s function: %s:\n%s' % (hook_name,ensure_unicode(e),ensure_unicode(traceback.format_exc())))
+                raise e
 
-            else:
-                try:
-                    logger.info(u"  executing setup.%s(%s,%s) " % (hook_name,repr(args),repr(kwargs)))
-                    hookdata = hook_func(*args,**kwargs)
-                except Exception as e:
-                    logger.critical(u'Fatal error in %s function: %s:\n%s' % (hook_name,ensure_unicode(e),ensure_unicode(traceback.format_exc())))
-                    raise
-
-            return hookdata
         finally:
             os.chdir(previous_cwd)
             gc.collect()

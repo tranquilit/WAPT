@@ -545,9 +545,15 @@ def main():
                 if len(args) < 2:
                     print(u"You must provide at least one package name")
                     sys.exit(1)
+                if options.json_output:
+                    jsonresult['result']=[]
                 for packagename in args[1:]:
                     result = mywapt.last_install_log(packagename)
-                    print(u"Package : %s\nStatus : %s\n\nInstallation log:\n%s" % (packagename,result['status'],result['log']))
+                    if options.json_output:
+                        jsonresult['result'].append(result)
+                    else:
+                        print(u"Package : %s (%s) %s\n-------------------\nStatus : %s\n\nInstallation log:\n-------------------\n%s\n\nInstallation Parameters:\n-------------------\n%s" %
+                            (result['package'],result['version'],result['maturity'],result['install_status'],result['install_output'],result['install_params']))
 
             elif action == 'remove':
                 if len(args) < 2:
@@ -742,7 +748,8 @@ def main():
                     sys.exit(1)
                 result= []
                 for package_dir in expand_args(args[1:]):
-                    is_updated = mywapt.call_setup_hook(package_dir,'update_package')
+                    pe = PackageEntry(waptfile=package_dir)
+                    is_updated = pe._call_setup_hook('update_package')
                     if is_updated:
                         result.append(package_dir)
                 if options.json_output:

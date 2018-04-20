@@ -107,7 +107,6 @@ from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,\
 from waptutils import BaseObjectClass,ensure_list,ensure_unicode,default_http_headers
 from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,ZipFile
 from waptutils import import_code,import_setup,force_utf8_no_bom,format_bytes,wget,merge_dict,remove_encoding_declaration,list_intersection
-from waptutils import LogInstallOutput,WaptPackageLogger
 
 from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL,SSLVerifyException
 from waptcrypto import get_peer_cert_chain_from_server,default_pwd_callback,hexdigest_for_data,get_cert_chain_as_pem
@@ -2251,6 +2250,158 @@ class WaptHostRepo(WaptRepo):
             return '<WaptHostRepo %s for domain %s and host id %s >' % ('unknown',self.dnsdomain,self.host_id)
 
 
+class LogInstallOutput(BaseObjectClass):
+    """File like contextual object to log print output to a db installstatus
+    using update_status_hook
+
+    output list gather all the stout / stderr output
+
+    Args:
+        console (fileout): print message here
+        update_status_hook (func): hook to call when printing.
+                                            Must accept "append_output" and "set_status" kwargs
+                                            and will get context "**hook_args" at each call.
+
+    Returns:
+        stout file like object
+
+
+    >>> def update_status(append_output,set_status=None,**kwargs):
+            if set_status is not None:
+                print('+ Status to: %s' % set_status)
+            print(u'+out %s: %s' % (kwargs,append_output))
+    >>> with LogInstallOutput(sys.stdout,update_status_hook=update_status,install_id=12,user='moi'):
+            print('Install in progress')
+
+    """
+    def __init__(self,console=None,update_status_hook=None,running_status='RUNNING',exit_status='OK',error_status='ERROR',**hook_args):
+        self.old_stdout = None
+        self.old_stderr = None
+
+        self.output = []
+        self.console = console
+
+        self.update_status_hook = update_status_hook
+        self.hook_args = hook_args
+        self.threadid = threading.current_thread()
+
+        self.lock = threading.RLock()
+
+        self.running_status = 'RUNNING'
+        self.error_status = 'ERROR'
+        self.exit_status = 'OK'
+
+    def write(self,txt):
+        with self.lock:
+            txt = ensure_unicode(txt)
+            if self.console:
+                try:
+                    self.console.write(txt)
+                except:
+                    self.console.write(repr(txt))
+
+            if txt != '\n':
+                self.output.append(txt)
+                if txt and txt[-1] != u'\n':
+                    txtdb = txt+u'\n'
+                else:
+                    txtdb = txt
+                if self.update_status_hook and threading.current_thread() == self.threadid:
+                    self.update_status_hook(append_output=txtdb,set_status=self.running_status,**self.hook_args)
+
+    def __enter__(self):
+        if self.update_status_hook:
+            self.old_stdout = sys.stdout
+            self.old_stderr = sys.stderr
+            sys.stderr = sys.stdout = self
+        return self
+
+    def __exit__(self, type, value, tb):
+        if self.old_stdout:
+            sys.stdout = self.old_stdout
+        if self.old_stderr:
+            sys.stderr = self.old_stderr
+
+        if self.update_status_hook:
+            if tb:
+                self.update_status_hook(set_status=self.error_status,append_output=traceback.format_exc(),**self.hook_args)
+            else:
+                if self.exit_status is not None:
+                    self.update_status_hook(set_status=self.exit_status,**self.hook_args)
+
+        self.update_status_hook = None
+        self.console = None
+
+    def __getattr__(self, name):
+        return getattr(self.console,name)
+
+
+class WaptPackageInstallLogger(LogInstallOutput):
+    """Context handler to log all print messages to a wapt package install log
+
+    Args:
+        wapt_context (Wapt): Wapt instance
+        package_name (str): name of running or installed package local status where to log status and output
+    >>>
+    """
+    def __init__(self,console,wapt_context=None,package_name=None,install_id=None,user=None,running_status='RUNNING',exit_status='OK',error_status='ERROR'):
+        self.wapt_context = wapt_context
+        self.package_name = package_name
+        if install_id is None and package_name:
+            self.install_id = self.wapt_context._get_package_status_rowid(self.package_name)
+        else:
+            self.install_id = install_id
+
+        if self.install_id is None:
+            raise EWaptException('Package %s is not in local package status database' % package_name)
+
+        self.user = user
+        if self.user is None:
+            self.user = setuphelpers.get_current_user()
+
+        def update_install_status(append_output=None,set_status=None,context=None):
+            # waptdb.update_package_install_status(rowid,set_status,append_output=None,uninstall_key=None,uninstall_string=None
+            self.wapt_context.update_package_install_status(
+                rowid=context.install_id,
+                set_status=set_status,
+                append_output=append_output)
+
+        LogInstallOutput.__init__(self,console=console,
+            update_status_hook=update_install_status,
+            context=self,
+            running_status=running_status,
+            exit_status=exit_status,
+            error_status=error_status)
+
+class WaptPackageSessionSetupLogger(LogInstallOutput):
+    """Context handler to log all print messages to a wapt package install log
+
+    Args:
+        wapt_context (Wapt): Wapt instance
+        package_name (str): name of running or installed package local status where to log status and output
+    >>>
+    """
+    def __init__(self,console,waptsessiondb,install_id,running_status='RUNNING',exit_status=None,error_status='ERROR'):
+        self.waptsessiondb = waptsessiondb
+        self.install_id = install_id
+
+        if self.install_id is None:
+            raise EWaptException('Package %s is not in local session status database' % package_name)
+
+        def update_install_status(append_output=None,set_status=None,context=None):
+            # waptdb.update_package_install_status(rowid,set_status,append_output=None,uninstall_key=None,uninstall_string=None
+            self.waptsessiondb.update_install_status(
+                rowid=context.install_id,
+                set_status=set_status,
+                append_output=append_output)
+
+        LogInstallOutput.__init__(self,console=console,
+            update_status_hook=update_install_status,
+            context=self,
+            running_status=running_status,
+            exit_status=exit_status,
+            error_status=error_status)
+
 ######################"""
 
 class Wapt(BaseObjectClass):
@@ -3122,10 +3273,6 @@ class Wapt(BaseObjectClass):
             various Exception depending on setup script
         """
         install_id = None
-        old_hdlr = None
-        old_stdout = sys.stdout
-        old_stderr = sys.stderr
-
         # we  record old sys.path as we will include current setup.py
         oldpath = sys.path
 
@@ -3133,11 +3280,9 @@ class Wapt(BaseObjectClass):
         logger.info(u"Register start of install %s as user %s to local DB with params %s" % (ensure_unicode(fname), setuphelpers.get_current_user(), params_dict))
         logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
 
-
         previous_uninstall = self.registry_uninstall_snapshot()
 
         try:
-
             status = 'INIT'
             if not self.cabundle:
                 raise EWaptMissingCertificate(u'install_wapt %s: No public Key provided for package signature checking.'%(fname,))
@@ -3145,19 +3290,14 @@ class Wapt(BaseObjectClass):
             entry = PackageEntry(waptfile=fname)
             self.runstatus=u"Installing package %s version %s ..." % (entry.package,entry.version)
 
-            # get old install params if the package has been already installed
-            old_install = self.is_installed(entry.package)
-            if old_install:
-                old_install_params = json.loads(old_install['install_params'])
-                for name in old_install_params:
-                    if not name in params_dict:
-                        params_dict[name] = old_install_params[name]
+            params = self.get_previous_package_params(entry)
+            params.update(params_dict)
 
             install_id = self.waptdb.add_start_install(
                 package=entry.package ,
                 version=entry.version,
                 architecture=entry.architecture,
-                params_dict=params_dict,explicit_by=explicit_by,
+                params_dict=params,explicit_by=explicit_by,
                 maturity=entry.maturity,
                 locale=entry.locale,
                 depends=entry.depends,
@@ -3165,204 +3305,204 @@ class Wapt(BaseObjectClass):
                 impacted_process=entry.impacted_process,
                 )
 
-            if entry.min_wapt_version and Version(entry.min_wapt_version)>Version(setuphelpers.__version__):
-                raise EWaptNeedsNewerAgent('This package requires a newer Wapt agent. Minimum version: %s' % entry.min_wapt_version)
-
-            depends = ensure_list(entry.depends)
-            conflicts = ensure_list(entry.conflicts)
-
-            missing_depends = [ p for p in depends if not self.is_installed(p)]
-            installed_conflicts = [ p for p in conflicts if self.is_installed(p)]
-
-            if missing_depends:
-                raise EWaptUnavailablePackage('Missing dependencies: %s' % (','.join(missing_depends,)))
-
-            if installed_conflicts:
-                raise EWaptConflictingPackage('Conflicting packages installed: %s' % (','.join(installed_conflicts,)))
-
-            # check if there is enough space for final install
-            # TODO : space for the temporary unzip ?
-            free_disk_space = setuphelpers.get_disk_free_space(setuphelpers.programfiles)
-            if entry.installed_size and free_disk_space < entry.installed_size:
-                raise EWaptDiskSpace('This package requires at least %s free space. The "Program File"s drive has only %s free space' %
-                    (format_bytes(entry.installed_size),format_bytes(free_disk_space)))
-
-            if entry.target_os and entry.target_os != 'windows':
-                raise EWaptBadTargetOS('This package is designed for OS %s' % entry.target_os)
-            os_version = setuphelpers.windows_version()
-            if entry.min_os_version and os_version < Version(entry.min_os_version):
-                raise EWaptBadTargetOS('This package requires that OS be at least %s' % entry.min_os_version)
-            if entry.max_os_version and os_version > Version(entry.max_os_version):
-                raise EWaptBadTargetOS('This package requires that OS be at most %s' % entry.min_os_version)
-
-            # don't check in developper mode
-            if os.path.isfile(fname):
-                cert = entry.check_control_signature(self.cabundle)
-                logger.info(u'Control data for package %s verified by certificate %s' % (setuphelpers.ensure_unicode(fname),cert))
-            else:
-                logger.info(u'Developper mode, don''t check control signature for %s' % setuphelpers.ensure_unicode(fname))
-
             # we setup a redirection of stdout to catch print output from install scripts
-            sys.stderr = sys.stdout = install_output = LogInstallOutput(sys.stderr,self,'install',install_id)
+            with WaptPackageInstallLogger(sys.stderr,self,install_id=install_id,user=self.user,exit_status=None):
+                if entry.min_wapt_version and Version(entry.min_wapt_version)>Version(setuphelpers.__version__):
+                    raise EWaptNeedsNewerAgent('This package requires a newer Wapt agent. Minimum version: %s' % entry.min_wapt_version)
 
-            self.check_cancelled()
-            logger.info(u"Installing package %s"%(ensure_unicode(fname),))
-            # case where fname is a wapt zipped file, else directory (during developement)
-            istemporary = False
+                depends = ensure_list(entry.depends)
+                conflicts = ensure_list(entry.conflicts)
 
-            if os.path.isfile(fname):
-                # check signature and files when unzipping
-                packagetempdir = entry.unzip_package(cabundle=self.cabundle)
-                istemporary = True
-            elif os.path.isdir(fname):
-                packagetempdir = fname
-            else:
-                raise EWaptNotAPackage(u'%s is not a file nor a directory, aborting.' % ensure_unicode(fname))
+                missing_depends = [ p for p in depends if not self.is_installed(p)]
+                installed_conflicts = [ p for p in conflicts if self.is_installed(p)]
 
-            try:
-                previous_cwd = os.getcwdu()
+                if missing_depends:
+                    raise EWaptUnavailablePackage('Missing dependencies: %s' % (','.join(missing_depends,)))
+
+                if installed_conflicts:
+                    raise EWaptConflictingPackage('Conflicting packages installed: %s' % (','.join(installed_conflicts,)))
+
+                # check if there is enough space for final install
+                # TODO : space for the temporary unzip ?
+                free_disk_space = setuphelpers.get_disk_free_space(setuphelpers.programfiles)
+                if entry.installed_size and free_disk_space < entry.installed_size:
+                    raise EWaptDiskSpace('This package requires at least %s free space. The "Program File"s drive has only %s free space' %
+                        (format_bytes(entry.installed_size),format_bytes(free_disk_space)))
+
+                if entry.target_os and entry.target_os != 'windows':
+                    raise EWaptBadTargetOS('This package is designed for OS %s' % entry.target_os)
+                os_version = setuphelpers.windows_version()
+                if entry.min_os_version and os_version < Version(entry.min_os_version):
+                    raise EWaptBadTargetOS('This package requires that OS be at least %s' % entry.min_os_version)
+                if entry.max_os_version and os_version > Version(entry.max_os_version):
+                    raise EWaptBadTargetOS('This package requires that OS be at most %s' % entry.min_os_version)
+
+                # don't check in developper mode
+                if os.path.isfile(fname):
+                    cert = entry.check_control_signature(self.cabundle)
+                    logger.info(u'Control data for package %s verified by certificate %s' % (setuphelpers.ensure_unicode(fname),cert))
+                else:
+                    logger.info(u'Developper mode, don''t check control signature for %s' % setuphelpers.ensure_unicode(fname))
+
                 self.check_cancelled()
 
-                exitstatus = None
-                new_uninstall_key = None
-                uninstallstring = None
+                logger.info(u"Installing package %s"%(ensure_unicode(fname),))
+                # case where fname is a wapt zipped file, else directory (during developement)
+                istemporary = False
 
-                setup_filename = os.path.join( packagetempdir,'setup.py')
-
-                # take in account the case we have no setup.py
-                if os.path.isfile(setup_filename):
-                    os.chdir(os.path.dirname(setup_filename))
-                    if not os.getcwdu() in sys.path:
-                        sys.path.append(os.getcwdu())
-
-                    # import the setup module from package file
-                    logger.info(u"  sourcing install file %s " % ensure_unicode(setup_filename) )
-                    setup = import_setup(setup_filename)
-                    required_params = []
-
-                    # be sure some minimal functions are available in setup module at install step
-                    setattr(setup,'basedir',os.path.dirname(setup_filename))
-                    # redefine run to add reference to wapt.pidlist
-                    setattr(setup,'run',self.run)
-                    setattr(setup,'run_notfatal',self.run_notfatal)
-
-                    # to set some contextual default arguments
-                    def with_install_context(func,impacted_process=None,uninstallkeylist=None,force=None,pidlist=None):
-                        def new_func(*args,**kwargs):
-                            if impacted_process and not 'killbefore' in kwargs:
-                                kwargs['killbefore'] = impacted_process
-                            if uninstallkeylist is not None and not 'uninstallkeylist' in kwargs:
-                                kwargs['uninstallkeylist'] = uninstallkeylist
-                            if force is not None and not 'force' in kwargs:
-                                kwargs['force'] = force
-                            if pidlist is not None and not 'pidlist' in kwargs:
-                                kwargs['pidlist'] = pidlist
-                            return func(*args,**kwargs)
-                        return new_func
-
-                    setattr(setup,'install_msi_if_needed',with_install_context(setuphelpers.install_msi_if_needed,entry.impacted_process,setup.uninstallkey,self.options.force,self.pidlist))
-                    setattr(setup,'install_exe_if_needed',with_install_context(setuphelpers.install_exe_if_needed,entry.impacted_process,setup.uninstallkey,self.options.force,self.pidlist))
-                    setattr(setup,'WAPT',self)
-                    setattr(setup,'control',entry)
-                    setattr(setup,'language',self.language)
-
-                    setattr(setup,'user',self.user)
-                    setattr(setup,'usergroups',self.usergroups)
-
-                    # get definitions of required parameters from setup module
-                    if hasattr(setup,'required_params'):
-                        required_params = setup.required_params
-
-                    # get value of required parameters if not already supplied
-                    for p in required_params:
-                        if not p in params_dict:
-                            if not is_system_user():
-                                params_dict[p] = raw_input(u"%s: " % p)
-                            else:
-                                raise EWaptException(u'Required parameters %s is not supplied' % p)
-                    logger.info(u'Install parameters : %s' % (params_dict,))
-
-                    # set params dictionary
-                    if not hasattr(setup,'params'):
-                        # create a params variable for the setup module
-                        setattr(setup,'params',params_dict)
-                    else:
-                        # update the already created params with additional params from command line
-                        setup.params.update(params_dict)
-
-                    # store source of install and params in DB for future use (upgrade, session_setup, uninstall)
-                    self.waptdb.store_setuppy(install_id, setuppy = codecs.open(setup_filename,'r',encoding='utf-8').read(),install_params=params_dict)
-
-                    if not self.dry_run:
-                        try:
-                            logger.info(u"  executing install script")
-                            exitstatus = setup.install()
-                        except Exception as e:
-                            logger.critical(u'Fatal error in install script: %s:\n%s' % (ensure_unicode(e),ensure_unicode(traceback.format_exc())))
-                            raise
-                    else:
-                        logger.warning(u'Dry run, not actually running setup.install()')
-                        exitstatus = None
-
-                    if exitstatus is None or exitstatus == 0:
-                        status = 'OK'
-                    else:
-                        status = exitstatus
-
-                    # get uninstallkey from setup module (string or array of strings)
-                    if hasattr(setup,'uninstallkey'):
-                        new_uninstall_key = ensure_list(setup.uninstallkey)[:]
-                        # check that uninstallkey(s) are in registry
-                        if not self.dry_run:
-                            key_errors = []
-                            for key in new_uninstall_key:
-                                if not setuphelpers.uninstall_key_exists(uninstallkey=key):
-                                    key_errors.append(key)
-                            if key_errors:
-                                if len(key_errors)>1:
-                                    raise EWaptException(u'The uninstall keys: \n%s\n have not been found in system registry after softwares installation.' % ('\n'.join(key_errors),))
-                                else:
-                                    raise EWaptException(u'The uninstall key: %s has not been found in system registry after software installation.' % (' '.join(key_errors),))
-
-                    else:
-                        new_uninstall = self.registry_uninstall_snapshot()
-                        new_uninstall_key = [ k for k in new_uninstall if not k in previous_uninstall]
-
-                    # get uninstallstring from setup module (string or array of strings)
-                    if hasattr(setup,'uninstallstring'):
-                        uninstallstring = setup.uninstallstring[:]
-                    else:
-                        uninstallstring = None
-                    logger.info(u'  uninstall keys : %s' % (new_uninstall_key,))
-                    logger.info(u'  uninstall strings : %s' % (uninstallstring,))
-
-                    logger.info(u"Install script finished with status %s" % status)
+                if os.path.isfile(fname):
+                    # check signature and files when unzipping
+                    packagetempdir = entry.unzip_package(cabundle=self.cabundle)
+                    istemporary = True
+                elif os.path.isdir(fname):
+                    packagetempdir = fname
                 else:
-                    logger.info(u'No setup.py')
-                    status = 'OK'
+                    raise EWaptNotAPackage(u'%s is not a file nor a directory, aborting.' % ensure_unicode(fname))
 
-            finally:
-                if istemporary:
-                    os.chdir(previous_cwd)
-                    logger.debug(u"Cleaning package tmp dir")
-                    # trying 3 times to remove
-                    cnt = 3
-                    while cnt>0:
-                        try:
-                            shutil.rmtree(packagetempdir)
-                            break
-                        except:
-                            cnt -= 1
-                            time.sleep(2)
+                try:
+                    previous_cwd = os.getcwdu()
+                    self.check_cancelled()
+
+                    exitstatus = None
+                    new_uninstall_key = None
+                    uninstallstring = None
+
+                    setup_filename = os.path.join( packagetempdir,'setup.py')
+
+                    # take in account the case we have no setup.py
+                    if os.path.isfile(setup_filename):
+                        os.chdir(os.path.dirname(setup_filename))
+                        if not os.getcwdu() in sys.path:
+                            sys.path.append(os.getcwdu())
+
+                        # import the setup module from package file
+                        logger.info(u"  sourcing install file %s " % ensure_unicode(setup_filename) )
+                        setup = import_setup(setup_filename)
+                        required_params = []
+
+                        # be sure some minimal functions are available in setup module at install step
+                        setattr(setup,'basedir',os.path.dirname(setup_filename))
+                        # redefine run to add reference to wapt.pidlist
+                        setattr(setup,'run',self.run)
+                        setattr(setup,'run_notfatal',self.run_notfatal)
+
+                        # to set some contextual default arguments
+                        def with_install_context(func,impacted_process=None,uninstallkeylist=None,force=None,pidlist=None):
+                            def new_func(*args,**kwargs):
+                                if impacted_process and not 'killbefore' in kwargs:
+                                    kwargs['killbefore'] = impacted_process
+                                if uninstallkeylist is not None and not 'uninstallkeylist' in kwargs:
+                                    kwargs['uninstallkeylist'] = uninstallkeylist
+                                if force is not None and not 'force' in kwargs:
+                                    kwargs['force'] = force
+                                if pidlist is not None and not 'pidlist' in kwargs:
+                                    kwargs['pidlist'] = pidlist
+                                return func(*args,**kwargs)
+                            return new_func
+
+                        setattr(setup,'install_msi_if_needed',with_install_context(setuphelpers.install_msi_if_needed,entry.impacted_process,setup.uninstallkey,self.options.force,self.pidlist))
+                        setattr(setup,'install_exe_if_needed',with_install_context(setuphelpers.install_exe_if_needed,entry.impacted_process,setup.uninstallkey,self.options.force,self.pidlist))
+                        setattr(setup,'WAPT',self)
+                        setattr(setup,'control',entry)
+                        setattr(setup,'language',self.language)
+
+                        setattr(setup,'user',self.user)
+                        setattr(setup,'usergroups',self.usergroups)
+
+                        # get definitions of required parameters from setup module
+                        if hasattr(setup,'required_params'):
+                            required_params = setup.required_params
+
+                        # get value of required parameters if not already supplied
+                        for p in required_params:
+                            if not p in params:
+                                if not is_system_user():
+                                    params[p] = raw_input(u"%s: " % p)
+                                else:
+                                    raise EWaptException(u'Required parameters %s is not supplied' % p)
+                        logger.info(u'Install parameters : %s' % (params,))
+
+                        # set params dictionary
+                        if not hasattr(setup,'params'):
+                            # create a params variable for the setup module
+                            setattr(setup,'params',params)
+                        else:
+                            # update the already created params with additional params from command line
+                            setup.params.update(params)
+
+                        # store source of install and params in DB for future use (upgrade, session_setup, uninstall)
+                        self.waptdb.store_setuppy(install_id, setuppy = codecs.open(setup_filename,'r',encoding='utf-8').read(),install_params=params)
+
+                        if not self.dry_run:
+                            try:
+                                logger.info(u"  executing install script")
+                                exitstatus = setup.install()
+                            except Exception as e:
+                                logger.critical(u'Fatal error in install script: %s:\n%s' % (ensure_unicode(e),ensure_unicode(traceback.format_exc())))
+                                raise
+                        else:
+                            logger.warning(u'Dry run, not actually running setup.install()')
+                            exitstatus = None
+
+                        if exitstatus is None or exitstatus == 0:
+                            status = 'OK'
+                        else:
+                            status = exitstatus
+
+                        # get uninstallkey from setup module (string or array of strings)
+                        if hasattr(setup,'uninstallkey'):
+                            new_uninstall_key = ensure_list(setup.uninstallkey)[:]
+                            # check that uninstallkey(s) are in registry
+                            if not self.dry_run:
+                                key_errors = []
+                                for key in new_uninstall_key:
+                                    if not setuphelpers.uninstall_key_exists(uninstallkey=key):
+                                        key_errors.append(key)
+                                if key_errors:
+                                    if len(key_errors)>1:
+                                        raise EWaptException(u'The uninstall keys: \n%s\n have not been found in system registry after softwares installation.' % ('\n'.join(key_errors),))
+                                    else:
+                                        raise EWaptException(u'The uninstall key: %s has not been found in system registry after software installation.' % (' '.join(key_errors),))
+
+                        else:
+                            new_uninstall = self.registry_uninstall_snapshot()
+                            new_uninstall_key = [ k for k in new_uninstall if not k in previous_uninstall]
+
+                        # get uninstallstring from setup module (string or array of strings)
+                        if hasattr(setup,'uninstallstring'):
+                            uninstallstring = setup.uninstallstring[:]
+                        else:
+                            uninstallstring = None
+                        logger.info(u'  uninstall keys : %s' % (new_uninstall_key,))
+                        logger.info(u'  uninstall strings : %s' % (uninstallstring,))
+
+                        logger.info(u"Install script finished with status %s" % status)
                     else:
-                        logger.warning(u"Unable to clean tmp dir")
+                        logger.info(u'No setup.py')
+                        status = 'OK'
 
-            # rowid,install_status,install_output,uninstall_key=None,uninstall_string=None
-            self.waptdb.update_install_status(install_id,
-                set_status=status,
-                uninstall_key=str(new_uninstall_key) if new_uninstall_key else '',
-                uninstall_string=str(uninstallstring) if uninstallstring else '')
-            return self.waptdb.install_status(install_id)
+                finally:
+                    if istemporary:
+                        os.chdir(previous_cwd)
+                        logger.debug(u"Cleaning package tmp dir")
+                        # trying 3 times to remove
+                        cnt = 3
+                        while cnt>0:
+                            try:
+                                shutil.rmtree(packagetempdir)
+                                break
+                            except:
+                                cnt -= 1
+                                time.sleep(2)
+                        else:
+                            logger.warning(u"Unable to clean tmp dir")
+
+                # rowid,install_status,install_output,uninstall_key=None,uninstall_string=None
+                self.waptdb.update_install_status(install_id,
+                    set_status=status,
+                    uninstall_key=str(new_uninstall_key) if new_uninstall_key else '',
+                    uninstall_string=str(uninstallstring) if uninstallstring else '')
+                return self.waptdb.install_status(install_id)
 
         except Exception as e:
             if install_id:
@@ -3373,6 +3513,7 @@ class Wapt(BaseObjectClass):
             else:
                 logger.critical(ensure_unicode(e))
             raise e
+
         finally:
             gc.collect()
             if 'setup' in dir() and setup is not None:
@@ -3382,10 +3523,7 @@ class Wapt(BaseObjectClass):
                 if setup_name in sys.modules:
                     del sys.modules[setup_name]
 
-            sys.stdout = old_stdout
-            sys.stderr = old_stderr
             sys.path = oldpath
-
             self.store_upgrade_status()
             self.runstatus=''
 
@@ -3478,16 +3616,18 @@ class Wapt(BaseObjectClass):
         >>> w = Wapt()
         >>> w.last_install_log('tis-7zip')
         ???
-        {'status': u'OK', 'log': u'Installing 7-Zip 9.38.0-1\n7-Zip already installed, skipping msi install\n'}
+        {'install_status': u'OK', 'install_output': u'Installing 7-Zip 9.38.0-1\n7-Zip already installed, skipping msi install\n',install_params: ''}
 
         """
         q = self.waptdb.query("""\
-           select install_status,install_output from wapt_localstatus
-            where package=? order by install_date desc limit 1
+           select package,version,architecture,maturity,locale,install_status,
+                    install_output,install_params,explicit_by,install_date
+           from wapt_localstatus
+           where package=? order by install_date desc limit 1
            """ , (packagename,) )
         if not q:
             raise Exception("Package %s not found in local DB status" % packagename)
-        return {"status" : q[0]['install_status'], "log":q[0]['install_output']}
+        return q[0]
 
     def cleanup(self,obsolete_only=False):
         """Remove cached WAPT files from local disk
@@ -4757,24 +4897,11 @@ class Wapt(BaseObjectClass):
             else:
                 return pe[0]
 
-    def update_package_status(self,step='install',**kwargs):
-        """Update the status and the log of package for the step
-
-        Args:
-            id (int): unique id of package status in local wapt db
-            step (str): install, audit
-            status (str): PENDING,RUNNING,OK,WARNING,ERROR
-
-
-        Returns:
-            None
+    def update_package_install_status(self,**kwargs):
+        """Update the install status
         """
-        if step == 'install':
-            return self.waptdb.update_install_status(**kwargs)
-        elif step == 'audit':
-            return self.waptdb.update_audit_status(**kwargs)
-        elif step == 'session_setup':
-            return self.waptsessiondb.update_install_status(**kwargs)
+
+        return self.waptdb.update_install_status(**kwargs)
 
     def update_server_status(self,force=False):
         """Send host_info, installed packages and installed softwares,
@@ -5172,311 +5299,88 @@ class Wapt(BaseObjectClass):
            Source setup.py from database or filename
         """
         install_id = None
-        old_stdout = sys.stdout
-        old_stderr = sys.stderr
-
         logger.info(u"Session setup for package %s and user %s" % (packagename,self.user))
 
         oldpath = sys.path
+        try:
+            if os.path.isdir(packagename):
+                package_entry = PackageEntry().load_control_from_wapt(packagename)
+            else:
+                package_entry = self.is_installed(packagename)
 
-        if os.path.isdir(packagename):
-            package_entry = PackageEntry().load_control_from_wapt(packagename)
-        else:
-            package_entry = self.is_installed(packagename)
+            if not package_entry:
+                raise Exception('Package %s is not installed' % packagename)
 
-        if not package_entry:
-            raise Exception('Package %s is not installed' % packagename)
-
-        # initialize a session db for the user
-        session_db =  WaptSessionDB(self.user)  # WaptSessionDB()
-        with session_db:
-            if force or os.path.isdir(packagename) or not session_db.is_installed(package_entry.package,package_entry.version):
-                try:
-                    previous_cwd = os.getcwdu()
-
-                    # source setup.py to get session_setup func
-                    if os.path.isdir(packagename):
-                        package_fn = os.path.join(packagename,'setup.py')
-                        setup = import_setup(package_fn)
-                        logger.debug(u'Source import OK from %s' % package_fn)
-                    else:
-                        logger.debug(u'Sourcing setup from DB (only if session_setup found)')
-                        setuppy = package_entry['setuppy']
-                        if setuppy and 'session_setup()' in setuppy:
-                            setup = import_code(setuppy)
-                            logger.debug(u'Source setup.py import OK from database')
-                        else:
-                            setup = None
-
-                    required_params = []
-
-                     # be sure some minimal functions are available in setup module at install step
-                    if setup and hasattr(setup,'session_setup'):
-                        logger.info(u'Launch session_setup')
-                        # initialize a session record for this package
+            if package_entry.has_setup_py():
+                # initialize a session db for the user
+                session_db = WaptSessionDB(self.user)  # WaptSessionDB()
+                with session_db:
+                    if force or os.path.isdir(packagename) or not session_db.is_installed(package_entry.package,package_entry.version):
                         install_id = session_db.add_start_install(package_entry.package,package_entry.version,package_entry.architecture)
-
-                        # redirect output to get print into session db log
-                        sys.stderr = sys.stdout = install_output = LogInstallOutput(sys.stderr,self,'session_setup',install_id)
-                        try:
-                            setattr(setup,'run',self.run)
-                            setattr(setup,'run_notfatal',self.run_notfatal)
-                            setattr(setup,'user',self.user)
-                            setattr(setup,'usergroups',self.usergroups)
-                            setattr(setup,'control',package_entry)
-                            setattr(setup,'WAPT',self)
-                            setattr(setup,'language',self.language)
-
-                            # get definitions of required parameters from setup module
-                            if hasattr(setup,'required_params'):
-                                required_params = setup.required_params
-
+                        with WaptPackageSessionSetupLogger(console=sys.stderr,waptsessiondb=session_db,install_id=install_id) as dblog:
                             # get value of required parameters from system wide install
-                            try:
-                                params_dict=json.loads(self.waptdb.query("select install_params from wapt_localstatus where package=?",[package_entry.package,])[0]['install_params'])
-                            except:
-                                logger.warning(u'Unable to get installation parameters from wapt database for package %s' % package_entry.package)
-                                params_dict={}
+                            params = self.get_previous_package_params(package_entry)
+                            result = package_entry._call_setup_hook('session_setup',self,params)
 
-                            # set params dictionary
-                            if not hasattr(setup,'params'):
-                                # create a params variable for the setup module
-                                setattr(setup,'params',params_dict)
-                            else:
-                                # update the already created params with additional params from command line
-                                setup.params.update(params_dict)
-
-                            session_db.update_install_status(install_id,'RUNNING','Launch session_setup()\n')
-                            result = setup.session_setup()
                             if result:
                                 session_db.update_install_status(install_id,'RETRY','session_setup() done\n')
                             else:
                                 session_db.update_install_status(install_id,'OK','session_setup() done\n')
                             return result
-
-                        except Exception as e:
-                            if install_id:
-                                try:
-                                    try:
-                                        uerror = repr(e).decode(locale.getpreferredencoding())
-                                    except:
-                                        uerror = ensure_unicode(e)
-                                    session_db.update_install_status(install_id,'ERROR',uerror)
-                                except Exception as e2:
-                                    logger.critical(ensure_unicode(e2))
-                            else:
-                                logger.critical(ensure_unicode(e))
-                            raise e
-                        finally:
-                            # restore normal output
-                            sys.stdout = old_stdout
-                            sys.stderr = old_stderr
-                            sys.path = oldpath
-
                     else:
-                        print('No session-setup.')
-                finally:
-                    # cleanup
-                    if 'setup' in dir() and setup is not None:
-                        setup_name = setup.__name__
-                        logger.debug('Removing module %s'%setup_name)
-                        del setup
-                        if setup_name in sys.modules:
-                            del sys.modules[setup_name]
-                    sys.path = oldpath
-                    logger.debug(u'  Change current directory to %s.' % previous_cwd)
-                    os.chdir(previous_cwd)
+                        print('Already installed.')
             else:
-                print('Already installed.')
-
+                logger.debug('No setup.py, skipping session-setup')
+        finally:
+            sys.path = oldpath
 
     def audit(self,packagename,force=False):
         """Setup the user session for a specific system wide installed package"
            Source setup.py from database or filename
         """
-        install_id = None
-        old_stdout = sys.stdout
-        old_stderr = sys.stderr
+        pass
 
-        logger.info(u"Session setup for package %s and user %s" % (packagename,self.user))
+    def get_previous_package_params(self,package_entry):
+        """Return the params used when previous install of package_entry.package
+        If no previous install, return {}
+        The params are stored as json string in local package status table.
 
-        oldpath = sys.path
+        Args:
+            package_entry (PackageEntry): package request to lookup.
 
-        if os.path.isdir(packagename):
-            package_entry = PackageEntry().load_control_from_wapt(packagename)
+        Returns:
+            dict
+        """
+        # get old install params if the package has been already installed
+        old_install = self.is_installed(package_entry.package)
+        if old_install:
+            return json.loads(old_install['install_params'])
         else:
-            package_entry = self.is_installed(packagename)
-
-        if not package_entry:
-            raise Exception('Package %s is not installed' % packagename)
-
-        # initialize a session db for the user
-        session_db =  WaptSessionDB(self.user)  # WaptSessionDB()
-        with session_db:
-            if force or os.path.isdir(packagename) or not session_db.is_installed(package_entry.package,package_entry.version):
-                try:
-                    previous_cwd = os.getcwdu()
-
-                    # source setup.py to get session_setup func
-                    if os.path.isdir(packagename):
-                        package_fn = os.path.join(packagename,'setup.py')
-                        setup = import_setup(package_fn)
-                        logger.debug(u'Source import OK from %s' % package_fn)
-                    else:
-                        logger.debug(u'Sourcing setup from DB (only if session_setup found)')
-                        setuppy = package_entry['setuppy']
-                        if setuppy and 'session_setup()' in setuppy:
-                            setup = import_code(setuppy)
-                            logger.debug(u'Source setup.py import OK from database')
-                        else:
-                            setup = None
-
-                    required_params = []
-
-                     # be sure some minimal functions are available in setup module at install step
-                    if setup and hasattr(setup,'session_setup'):
-                        logger.info(u'Launch session_setup')
-                        # initialize a session record for this package
-                        install_id = session_db.add_start_install(package_entry.package,package_entry.version,package_entry.architecture)
-
-                        # redirect output to get print into session db log
-                        sys.stderr = sys.stdout = install_output = LogInstallOutput(sys.stderr,session_db,install_id)
-                        try:
-                            setattr(setup,'run',self.run)
-                            setattr(setup,'run_notfatal',self.run_notfatal)
-                            setattr(setup,'user',self.user)
-                            setattr(setup,'usergroups',self.usergroups)
-                            setattr(setup,'control',package_entry)
-                            setattr(setup,'WAPT',self)
-                            setattr(setup,'language',self.language)
-
-                            # get definitions of required parameters from setup module
-                            if hasattr(setup,'required_params'):
-                                required_params = setup.required_params
-
-                            # get value of required parameters from system wide install
-                            try:
-                                params_dict=json.loads(self.waptdb.query("select install_params from wapt_localstatus where package=?",[package_entry.package,])[0]['install_params'])
-                            except:
-                                logger.warning(u'Unable to get installation parameters from wapt database for package %s' % package_entry.package)
-                                params_dict={}
-
-                            # set params dictionary
-                            if not hasattr(setup,'params'):
-                                # create a params variable for the setup module
-                                setattr(setup,'params',params_dict)
-                            else:
-                                # update the already created params with additional params from command line
-                                setup.params.update(params_dict)
-
-                            session_db.update_install_status(install_id,'RUNNING','Launch session_setup()\n')
-                            result = setup.session_setup()
-                            if result:
-                                session_db.update_install_status(install_id,'RETRY','session_setup() done\n')
-                            else:
-                                session_db.update_install_status(install_id,'OK','session_setup() done\n')
-                            return result
-
-                        except Exception as e:
-                            if install_id:
-                                try:
-                                    try:
-                                        uerror = repr(e).decode(locale.getpreferredencoding())
-                                    except:
-                                        uerror = ensure_unicode(e)
-                                    session_db.update_install_status(install_id,'ERROR',uerror)
-                                except Exception as e2:
-                                    logger.critical(ensure_unicode(e2))
-                            else:
-                                logger.critical(ensure_unicode(e))
-                            raise e
-                        finally:
-                            # restore normal output
-                            sys.stdout = old_stdout
-                            sys.stderr = old_stderr
-                            sys.path = oldpath
-
-                    else:
-                        print('No session-setup.')
-                finally:
-                    # cleanup
-                    if 'setup' in dir() and setup is not None:
-                        setup_name = setup.__name__
-                        logger.debug('Removing module %s'%setup_name)
-                        del setup
-                        if setup_name in sys.modules:
-                            del sys.modules[setup_name]
-                    sys.path = oldpath
-                    logger.debug(u'  Change current directory to %s.' % previous_cwd)
-                    os.chdir(previous_cwd)
-            else:
-                print('Already installed.')
-
+            return {}
 
     def uninstall(self,packagename,params_dict={}):
         """Launch the uninstall script of an installed package"
         Source setup.py from database or filename
         """
-        logger.info(u"setup.uninstall for package %s with params %s" % (packagename,params_dict))
-        oldpath = sys.path
         try:
-            setup = None
             previous_cwd = os.getcwdu()
             if os.path.isdir(packagename):
                 entry = PackageEntry().load_control_from_wapt(packagename)
-                setup = import_setup(os.path.join(packagename,'setup.py'))
             else:
                 logger.debug(u'Sourcing setup from DB')
                 entry = self.is_installed(packagename)
-                if entry['setuppy'] is not None:
-                    setup = import_code(entry['setuppy'])
 
-            if setup:
-                required_params = []
-                 # be sure some minimal functions are available in setup module at install step
-                logger.debug(u'Source import OK')
-                if hasattr(setup,'uninstall'):
-                    logger.info(u'Launch uninstall')
-                    setattr(setup,'run',self.run)
-                    setattr(setup,'run_notfatal',self.run_notfatal)
-                    setattr(setup,'user',self.user)
-                    setattr(setup,'usergroups',self.usergroups)
-                    setattr(setup,'control',entry)
-                    setattr(setup,'WAPT',self)
-                    setattr(setup,'language',self.language)
+            params = self.get_previous_package_params(entry)
+            params.update(params_dict)
 
-                    # get value of required parameters if not already supplied
-                    for p in required_params:
-                        if not p in params_dict:
-                            if not is_system_user():
-                                params_dict[p] = raw_input("%s: " % p)
-                            else:
-                                raise Exception(u'Required parameters %s is not supplied' % p)
-
-                    # set params dictionary
-                    if not hasattr(setup,'params'):
-                        # create a params variable for the setup module
-                        setattr(setup,'params',params_dict)
-                    else:
-                        # update the already created params with additional params from command line
-                        setup.params.update(params_dict)
-
-                    result = setup.uninstall()
-                    return result
-                else:
-                    logger.debug(u'No uninstall() function in setup.py for package %s' % packagename)
-                    #raise Exception(u'No uninstall() function in setup.py for package %s' % packagename)
+            if entry.has_setup_py():
+                logger.info(u'Launch uninstall')
+                result = entry._call_setup_hook('uninstall',self,params=params)
+                return result
             else:
                 logger.info('Uninstall: no setup.py source in database.')
 
         finally:
-            if 'setup' in dir() and setup is not None:
-                setup_name = setup.__name__
-                del setup
-                if setup_name in sys.modules:
-                    del sys.modules[setup_name]
-
-            sys.path = oldpath
             logger.debug(u'  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
 
