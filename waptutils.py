@@ -49,6 +49,7 @@ import hashlib
 import traceback
 import imp
 import shutil
+import threading
 
 if hasattr(sys.stdout,'name') and sys.stdout.name == '<stdout>':
     # not in pyscripter debugger
@@ -594,7 +595,7 @@ def get_disk_free_space(filepath):
     """
     if os.name == 'nt':
         import win32file
-        secs_per_cluster, bytes_per_sector, free_clusters, total_clusters = win32file.GetDiskFreeSpace(filepath)
+        secs_per_cluster, bytes_per_sector, free_clusters, total_clusters = win32file.GetDiskFreeSpace(filepath) #pylint: disable=no-member
         return secs_per_cluster * bytes_per_sector * free_clusters
     else:
         # like shutil
@@ -1184,10 +1185,88 @@ def remove_encoding_declaration(source):
 def list_intersection(list1, list2):
     return [item for item in list1 if item in list2]
 
+def get_language():
+    """Get the default locale like fr, en, pl etc..  etc
+
+    >>> get_language()
+    'fr'
+    """
+    return locale.getdefaultlocale()[0].split('_')[0]
+
+
 class BaseObjectClass(object):
     def _pyobject(self):
         """Return pure python reference for calls in FreePascal"""
         return self
+
+
+class LogInstallOutput(BaseObjectClass):
+    """file like to log print output to db installstatus"""
+    def __init__(self,console,wapt_context=None,step='install',status_id=None):
+        self.output = []
+        self.console = console
+        self.wapt_context = wapt_context
+        self.step = step
+        self.status_id = status_id
+        self.threadid = threading.current_thread()
+        self.lock = threading.RLock()
+
+    def write(self,txt):
+        with self.lock:
+            txt = ensure_unicode(txt)
+            try:
+                self.console.write(txt)
+            except:
+                self.console.write(repr(txt))
+            if txt != '\n':
+                self.output.append(txt)
+                if txt and txt[-1] != u'\n':
+                    txtdb = txt+u'\n'
+                else:
+                    txtdb = txt
+                if self.wapt_context and threading.current_thread() == self.threadid:
+                    self.wapt_context.update_package_status(rowid=self.status_id,step=self.step,set_status='RUNNING',append_output=txtdb)
+
+    def __getattr__(self, name):
+        return getattr(self.console,name)
+
+
+class WaptPackageLogger(object):
+    """Context handler to log all print messages to a wapt package install log
+
+    Args:
+        wapt_context (Wapt): Wapt instance
+        package_name (str): name of running or installed package local status where to log status and output
+        step (str) : name of running step. match hook in setup.py. 'install','session_setup','audit' (todo: 'uninstall')
+    >>>
+    """
+    def __init__(self,wapt_context=None,package_name=None,step='install'):
+        self.wapt_context = wapt_context
+        self.package_name = package_name
+        self.step = step
+        self.old_stdout = None
+        self.old_stderr = None
+        self.output = None
+        self.status_id = self.wapt_context._get_package_status_rowid(self.package_name)
+
+    def __enter__(self):
+        if self.wapt_context and self.package_name and self.status_id is not None:
+            self.old_stdout = sys.stdout
+            self.old_stderr = sys.stderr
+            sys.stderr = sys.stdout = self.status_output = LogInstallOutput(sys.stderr,self.wapt_context,self.step,self.status_id)
+        return self
+
+    def __exit__(self, type, value, tb):
+        if self.wapt_context and self.package_name and self.status_id is not None:
+            sys.stdout = self.old_stdout
+            sys.stderr = self.old_stderr
+            if not tb:
+                self.wapt_context.update_package_status(self.status_id,self.step,set_status='OK')
+            else:
+                self.wapt_context.update_package_status(self.status_id,self.step,set_status='ERROR',append_output=traceback.format_exc())
+            self.status_id = None
+            self.status_output = None
+            self.wapt_context = None
 
 if __name__ == '__main__':
     import doctest

@@ -78,13 +78,16 @@ import tempfile
 import email.utils
 import shutil
 import base64
+import copy
+import gc
+
 from iniparse import RawConfigParser
 import traceback
 
 from waptutils import BaseObjectClass,Version,ensure_unicode,ZipFile,force_utf8_no_bom
 from waptutils import create_recursive_zip,ensure_list,all_files
 from waptutils import datetime2isodate,httpdatetime2isodate,fileutcdate,fileisoutcdate
-from waptutils import default_http_headers,wget
+from waptutils import default_http_headers,wget,get_language,import_setup,import_code
 
 from waptcrypto import EWaptMissingCertificate,EWaptBadCertificate
 from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL
@@ -953,6 +956,7 @@ class PackageEntry(BaseObjectClass):
             wapt_zip.writestr('WAPT/control',control_data.encode('utf8'))
         return result_filename
 
+
     def build_package(self,excludes=['.svn','.git','.gitignore','setup.pyc'],target_directory=None):
         """Build the WAPT package, stores the result in target_directory
         Zip the content of self.sourcespath directory into a zipfile
@@ -1553,6 +1557,133 @@ class PackageEntry(BaseObjectClass):
             raise EWaptMissingLocalWaptFile('This PackageEntry has no local content for zip operations %s' % self.asrequirement())
 
 
+    def _call_setup_hook(self,hook_name='session_setup',wapt_context=None,*args,**kwargs):
+        """Calls a hook in setuppy given a wapt_context
+
+        Set basedir, control, and run context within the function context.
+
+        Args:
+            hook_name (str): name of function to call in setuppy
+            wapt_context (Wapt) : run context
+
+        Returns:
+            output of hook.
+        """
+        install_id = None
+        old_hdlr = None
+        old_stdout = None
+        old_stderr = None
+
+        setuppy = None
+
+        if self.sourcespath:
+            setup_filename = os.path.join(self.sourcespath,'setup.py')
+            # PackageEntry from developement or temporary directory with setup.py in a file
+            if not os.path.isfile(setup_filename):
+                raise EWaptNotAPackage(u'There is no setup.py file in %s, aborting.' % ensure_unicode(self.sourcespath))
+            else:
+                setuppy = codecs.open(setup_filename,'r',encoding='utf8').read()
+        else:
+            # PackageENtry from database with stored setup.py as a field
+            setuppy = getattr(self,'setuppy',None)
+            setup_filename = None
+
+        if setuppy is None:
+            if self.localpath:
+                # we have a zipped package file, but it is not unzipped in a temporary directory
+                raise EWaptBadSetup('Package %s has not been unzipped yet, unable to call %s' % (self.asrequirement(),hook_name))
+            else:
+                # we have a PackageEntry without setuppy
+                raise EWaptBadSetup('No setup.py source for package %s, unable to call %s' % (self.asrequirement(),hook_name))
+
+        # we  record old sys.path as we will include current setup.py
+        oldpath = sys.path
+
+        try:
+            previous_cwd = os.getcwdu()
+            if self.sourcespath :
+                os.chdir(self.sourcespath)
+
+            # import the setup module from package file
+            logger.info(u"  sourcing setuppy file %s " % ensure_unicode(setup_filename))
+            if setup_filename:
+                # import code as file to allow debugging.
+                setup = import_setup(setup_filename)
+            else:
+                setup = import_code(setuppy)
+
+            hook_func = getattr(setup,hook_name,None)
+            if hook_func is None:
+                raise Exception('Function %s can not be found in setup module' % hook_name)
+
+            # get definitions of required parameters from setup module
+            if hasattr(setup,'required_params'):
+                required_params = setup.required_params
+                if not isinstance(required_params,dict):
+                    required_params = {k:None for k in required_params}
+                else:
+                    required_params = copy.deepcopy(required_params)
+            else:
+                required_params = {}
+
+            # be sure some minimal functions are available in setup module at install step
+            setattr(setup,'basedir',self.sourcespath)
+            setattr(setup,'control',self)
+            if wapt_context:
+                setattr(setup,'run',wapt_context.run)
+                setattr(setup,'run_notfatal',wapt_context.run_notfatal)
+                setattr(setup,'WAPT',wapt_context)
+                setattr(setup,'language',wapt_context.language)
+                setattr(setup,'user',wapt_context.user)
+                setattr(setup,'usergroups',wapt_context.usergroups)
+
+            else:
+                setattr(setup,'WAPT',None)
+                setattr(setup,'language',get_language())
+                # todo
+                setattr(setup,'user','')
+                setattr(setup,'usergroups',[])
+
+            # set params dictionary
+            if not hasattr(setup,'params'):
+                # create a params variable for the setup module
+                setattr(setup,'params',required_params)
+            else:
+                # update the already created params with additional params from command line
+                setup.params.update(required_params)
+
+            # add specific hook call arguments
+            setup.params.update(kwargs)
+
+            if wapt_context:
+                try:
+                    logger.info(u"  executing setup.%s(%s,%s) " % (hook_name,repr(args),repr(kwargs)))
+                    hookdata = hook_func(*args,**kwargs)
+                except Exception as e:
+                    logger.critical(u'Fatal error in %s function: %s:\n%s' % (hook_name,ensure_unicode(e),ensure_unicode(traceback.format_exc())))
+                    raise
+
+            else:
+                try:
+                    logger.info(u"  executing setup.%s(%s,%s) " % (hook_name,repr(args),repr(kwargs)))
+                    hookdata = hook_func(*args,**kwargs)
+                except Exception as e:
+                    logger.critical(u'Fatal error in %s function: %s:\n%s' % (hook_name,ensure_unicode(e),ensure_unicode(traceback.format_exc())))
+                    raise
+
+            return hookdata
+        finally:
+            os.chdir(previous_cwd)
+            gc.collect()
+            if 'setup' in dir() and setup is not None:
+                setup_name = setup.__name__[:]
+                logger.debug('Removing module: %s, refcnt: %s'%(setup_name,sys.getrefcount(setup)))
+                del setup
+                if setup_name in sys.modules:
+                    del sys.modules[setup_name]
+            sys.path = oldpath
+
+
 class WaptPackageDev(PackageEntry):
     """Source package directory"""
 
@@ -1603,7 +1734,7 @@ class WaptBaseRepo(BaseObjectClass):
 
     _default_config = {
         'public_certs_dir': '',
-        'check_certificates_validity':'1',
+        'check_certificates_validity':'True',
     }
 
     def __init__(self,name='abstract',cabundle=None,config=None):
