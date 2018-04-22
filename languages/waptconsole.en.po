@@ -2677,6 +2677,10 @@ msgctxt "uwaptconsoleres.rsconfirmimportcaption"
 msgid "Confirm import"
 msgstr ""
 
+#: uwaptconsoleres.rsconfirmpackageaudit
+msgid "Are you sure you want to audit %s package(s) for the selected host(s) %s ?"
+msgstr ""
+
 #: uwaptconsoleres.rsconfirmpackageedit
 msgid "Do you want to download and edit the package %s ?"
 msgstr ""
@@ -3040,6 +3044,10 @@ msgstr ""
 #: uwaptconsoleres.rsoptrepo
 msgctxt "uwaptconsoleres.rsoptrepo"
 msgid " -r --repo : URL of dependencies libs"
+msgstr ""
+
+#: uwaptconsoleres.rspackageauditerror
+msgid "Error while triggering package audit %s: %s"
 msgstr ""
 
 #: uwaptconsoleres.rspackagebuiltsourcesavailable

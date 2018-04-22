@@ -112,6 +112,9 @@ resourcestring
   rsConfirmPackageInstall = 'Are you sure you want to install/upgrade %s package(s) for the selected host(s) %s ?';
   rsPackageInstallError = 'Error while triggering package install/upgrade %s: %s';
 
+  rsConfirmPackageAudit = 'Are you sure you want to audit %s package(s) for the selected host(s) %s ?';
+  rsPackageAuditError = 'Error while triggering package audit %s: %s';
+
   rsSelectAddDepends = 'Select packages to append to hosts configuration';
   rsSelectRemoveDepends = 'Select packages to remove from hosts configuration';
 

@@ -4942,6 +4942,8 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'Host'
       Caption = 'Audit package'
       ImageIndex = 30
+      OnExecute = ActPackagesAuditExecute
+      OnUpdate = ActPackagesRemoveUpdate
     end
   end
   object PopupMenuPackages: TPopupMenu

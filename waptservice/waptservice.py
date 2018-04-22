@@ -1011,6 +1011,8 @@ class WaptTaskManager(threading.Thread):
         self.running_task = None
         self.config_filename = config_filename
 
+        self.last_update_server_date = None
+
         self.last_upgrade = None
         self.last_update = None
         self.last_audit = None
@@ -1115,10 +1117,11 @@ class WaptTaskManager(threading.Thread):
     def run_scheduled_audits(self):
         """Add packages audit tasks to the queue"""
         now = setuphelpers.currentdatetime()
+        self.last_audit = time.time()
         for package_status in self.wapt.installed().values():
             if not package_status.next_audit_on or now >= package_status.next_audit_on:
                 task = WaptAuditPackage(package_status.package)
-                result.append(self.task_manager.add_task(task))
+                self.add_task(task)
 
 
     def check_scheduled_tasks(self):

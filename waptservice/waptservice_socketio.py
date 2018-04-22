@@ -157,7 +157,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     data = [t.as_dict() for t in self.task_manager.cancel_all_tasks()]
                     result.append(data)
 
-                elif name in ['trigger_host_update','trigger_host_register','trigger_host_audit']:
+                elif name in ['trigger_host_update','trigger_host_register']:
                     if name == 'trigger_host_update':
                         task = WaptUpdate()
                     elif name == 'trigger_host_register':
@@ -207,7 +207,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     for package_status in self.wapt.installed().values():
                         if force or not package_status.next_audit_on or (now >= package_status.next_audit_on):
                             task = WaptAuditPackage(package_status.package)
-                            result.append(self.task_manager.add_task(task))
+                            result.append(self.task_manager.add_task(task).as_dict())
 
                 elif name in  ['trigger_install_packages','trigger_remove_packages','trigger_forget_packages']:
                     packagenames = ensure_list(action['packages'])

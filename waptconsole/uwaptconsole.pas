@@ -455,6 +455,7 @@ type
     procedure ActLaunchGPUpdateExecute(Sender: TObject);
     procedure ActLaunchWaptExitExecute(Sender: TObject);
     procedure ActmakePackageTemplateExecute(Sender: TObject);
+    procedure ActPackagesAuditExecute(Sender: TObject);
     procedure ActPackagesForceInstallExecute(Sender: TObject);
     procedure ActPackagesInstallUpdate(Sender: TObject);
     procedure ActPackagesRemoveUpdate(Sender: TObject);
@@ -2318,6 +2319,11 @@ end;
 procedure TVisWaptGUI.ActmakePackageTemplateExecute(Sender: TObject);
 begin
   MakePackageTemplate('');
+end;
+
+procedure TVisWaptGUI.ActPackagesAuditExecute(Sender: TObject);
+begin
+  TriggerActionOnHostPackages('trigger_audit_packages',rsConfirmPackageAudit,rsPackageAuditError,True);
 end;
 
 procedure TVisWaptGUI.ActPackagesForceInstallExecute(Sender: TObject);
