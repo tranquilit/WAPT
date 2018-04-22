@@ -42,7 +42,7 @@ import ConfigParser
 from optparse import OptionParser
 
 # wapt specific stuff
-from waptutils import ensure_unicode
+from waptutils import ensure_unicode,LogOutput
 import common
 from common import Wapt
 import setuphelpers
@@ -468,7 +468,9 @@ class WaptTask(object):
                 self.wapt.task_is_cancelled.clear()
             # to keep track of external processes launched by Wapt.run()
             self.wapt.pidlist = self.external_pids
-            self._run()
+            with LogOutput(sys.stderr) as printout:
+                self._run()
+                self.logs.extend(printout.output)
             self.progress=100
         finally:
             self.finish_date = datetime.datetime.now()
@@ -703,9 +705,11 @@ class WaptUpdateServerStatus(WaptTask):
 
     def _run(self):
         if self.wapt.waptserver_available():
+            print('Sending host status to server')
             try:
                 self.result = self.wapt.update_server_status()
                 self.summary = _(u'WAPT Server has been notified')
+                print('Done.')
             except Exception as e:
                 self.result = {}
                 self.summary = _(u"Error while sending to the server : {}").format(ensure_unicode(e))

@@ -1199,6 +1199,93 @@ class BaseObjectClass(object):
         """Return pure python reference for calls in FreePascal"""
         return self
 
+
+class LogOutput(BaseObjectClass):
+    """File like contextual object to log print output to a db installstatus
+    using update_status_hook
+
+    output list gather all the stout / stderr output
+
+    Args:
+        console (fileout): print message here
+        update_status_hook (func): hook to call when printing.
+                                            Must accept "append_output" and "set_status" kwargs
+                                            and will get context "**hook_args" at each call.
+
+    Returns:
+        stout file like object
+
+
+    >>> def update_status(append_output,set_status=None,**kwargs):
+            if set_status is not None:
+                print('+ Status to: %s' % set_status)
+            print(u'+out %s: %s' % (kwargs,append_output))
+    >>> with LogInstallOutput(sys.stdout,update_status_hook=update_status,install_id=12,user='moi'):
+            print('Install in progress')
+
+    """
+    def __init__(self,console=None,update_status_hook=None,running_status='RUNNING',exit_status='OK',error_status='ERROR',**hook_args):
+        self.old_stdout = None
+        self.old_stderr = None
+
+        self.output = []
+        self.console = console
+
+        self.update_status_hook = update_status_hook
+        self.hook_args = hook_args
+        self.threadid = threading.current_thread()
+
+        self.lock = threading.RLock()
+
+        self.running_status = running_status
+        self.error_status = error_status
+        self.exit_status = exit_status
+
+    def write(self,txt):
+        with self.lock:
+            txt = ensure_unicode(txt)
+            if self.console:
+                try:
+                    self.console.write(txt)
+                except:
+                    self.console.write(repr(txt))
+
+            if txt != '\n':
+                self.output.append(txt)
+                if self.update_status_hook and threading.current_thread() == self.threadid:
+                    if txt and txt[-1] != u'\n':
+                        txtdb = txt+u'\n'
+                    else:
+                        txtdb = txt
+                    self.update_status_hook(append_output=txtdb,set_status=self.running_status,**self.hook_args)
+
+    def __enter__(self):
+        self.old_stdout = sys.stdout
+        self.old_stderr = sys.stderr
+        sys.stderr = sys.stdout = self
+        return self
+
+    def __exit__(self, type, value, tb):
+        if self.old_stdout:
+            sys.stdout = self.old_stdout
+        if self.old_stderr:
+            sys.stderr = self.old_stderr
+
+        if self.update_status_hook:
+            if tb:
+                self.update_status_hook(set_status=self.error_status,append_output=traceback.format_exc(),**self.hook_args)
+            else:
+                if self.exit_status is not None:
+                    self.update_status_hook(set_status=self.exit_status,**self.hook_args)
+
+        self.update_status_hook = None
+        self.console = None
+
+    def __getattr__(self, name):
+        return getattr(self.console,name)
+
+
+
 if __name__ == '__main__':
     import doctest
     import sys

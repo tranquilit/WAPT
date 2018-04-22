@@ -105,7 +105,7 @@ from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,\
 # end of windows stuff
 
 from waptutils import BaseObjectClass,ensure_list,ensure_unicode,default_http_headers
-from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,ZipFile
+from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,ZipFile,LogOutput
 from waptutils import import_code,import_setup,force_utf8_no_bom,format_bytes,wget,merge_dict,remove_encoding_declaration,list_intersection
 
 from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL,SSLVerifyException
@@ -2225,93 +2225,7 @@ class WaptHostRepo(WaptRepo):
             return '<WaptHostRepo %s for domain %s and host id %s >' % ('unknown',self.dnsdomain,self.host_id)
 
 
-class LogInstallOutput(BaseObjectClass):
-    """File like contextual object to log print output to a db installstatus
-    using update_status_hook
-
-    output list gather all the stout / stderr output
-
-    Args:
-        console (fileout): print message here
-        update_status_hook (func): hook to call when printing.
-                                            Must accept "append_output" and "set_status" kwargs
-                                            and will get context "**hook_args" at each call.
-
-    Returns:
-        stout file like object
-
-
-    >>> def update_status(append_output,set_status=None,**kwargs):
-            if set_status is not None:
-                print('+ Status to: %s' % set_status)
-            print(u'+out %s: %s' % (kwargs,append_output))
-    >>> with LogInstallOutput(sys.stdout,update_status_hook=update_status,install_id=12,user='moi'):
-            print('Install in progress')
-
-    """
-    def __init__(self,console=None,update_status_hook=None,running_status='RUNNING',exit_status='OK',error_status='ERROR',**hook_args):
-        self.old_stdout = None
-        self.old_stderr = None
-
-        self.output = []
-        self.console = console
-
-        self.update_status_hook = update_status_hook
-        self.hook_args = hook_args
-        self.threadid = threading.current_thread()
-
-        self.lock = threading.RLock()
-
-        self.running_status = running_status
-        self.error_status = error_status
-        self.exit_status = exit_status
-
-    def write(self,txt):
-        with self.lock:
-            txt = ensure_unicode(txt)
-            if self.console:
-                try:
-                    self.console.write(txt)
-                except:
-                    self.console.write(repr(txt))
-
-            if txt != '\n':
-                self.output.append(txt)
-                if txt and txt[-1] != u'\n':
-                    txtdb = txt+u'\n'
-                else:
-                    txtdb = txt
-                if self.update_status_hook and threading.current_thread() == self.threadid:
-                    self.update_status_hook(append_output=txtdb,set_status=self.running_status,**self.hook_args)
-
-    def __enter__(self):
-        if self.update_status_hook:
-            self.old_stdout = sys.stdout
-            self.old_stderr = sys.stderr
-            sys.stderr = sys.stdout = self
-        return self
-
-    def __exit__(self, type, value, tb):
-        if self.old_stdout:
-            sys.stdout = self.old_stdout
-        if self.old_stderr:
-            sys.stderr = self.old_stderr
-
-        if self.update_status_hook:
-            if tb:
-                self.update_status_hook(set_status=self.error_status,append_output=traceback.format_exc(),**self.hook_args)
-            else:
-                if self.exit_status is not None:
-                    self.update_status_hook(set_status=self.exit_status,**self.hook_args)
-
-        self.update_status_hook = None
-        self.console = None
-
-    def __getattr__(self, name):
-        return getattr(self.console,name)
-
-
-class WaptPackageInstallLogger(LogInstallOutput):
+class WaptPackageInstallLogger(LogOutput):
     """Context handler to log all print messages to a wapt package install log
 
     Args:
@@ -2334,14 +2248,14 @@ class WaptPackageInstallLogger(LogInstallOutput):
                 set_status=set_status,
                 append_output=append_output)
 
-        LogInstallOutput.__init__(self,console=console,
+        LogOutput.__init__(self,console=console,
             update_status_hook=update_install_status,
             context=self,
             running_status=running_status,
             exit_status=exit_status,
             error_status=error_status)
 
-class WaptPackageSessionSetupLogger(LogInstallOutput):
+class WaptPackageSessionSetupLogger(LogOutput):
     """Context handler to log all print messages to a wapt package install log
 
     Args:
@@ -2360,14 +2274,14 @@ class WaptPackageSessionSetupLogger(LogInstallOutput):
                 set_status=set_status,
                 append_output=append_output)
 
-        LogInstallOutput.__init__(self,console=console,
+        LogOutput.__init__(self,console=console,
             update_status_hook=update_install_status,
             context=self,
             running_status=running_status,
             exit_status=exit_status,
             error_status=error_status)
 
-class WaptPackageAuditLogger(LogInstallOutput):
+class WaptPackageAuditLogger(LogOutput):
     """Context handler to log all print messages to a wapt package install log
 
     Args:
@@ -2391,7 +2305,7 @@ class WaptPackageAuditLogger(LogInstallOutput):
                 set_status=set_status,
                 append_output=append_output)
 
-        LogInstallOutput.__init__(self,console=console,
+        LogOutput.__init__(self,console=console,
             update_status_hook=update_audit_status,
             context=self,
             running_status=running_status,
@@ -5385,7 +5299,31 @@ class Wapt(BaseObjectClass):
 
             install_id =  self._get_package_status_rowid(package_entry)
             package_install = self.waptdb.install_status(install_id)
-            self.waptdb.update_audit_status(install_id,set_status='RUNNING',set_output='',set_last_audit_on=setuphelpers.currentdatetime())
+
+            next_audit = None
+
+            if package_install.audit_schedule:
+                audit_period = package_install.audit_schedule
+            elif self.config.has_option('global','waptaudit_task_period'):
+                audit_period = self.config.get('global','waptaudit_task_period')
+            else:
+                audit_period = None
+
+            if audit_period is not None:
+                if audit_period.endswith('m'):
+                    timedelta = datetime.timedelta(minutes=int(audit_period[:-2]))
+                elif audit_period.endswith('h'):
+                    timedelta = datetime.timedelta(hours=int(audit_period[:-2]))
+                elif audit_period.endswith('d'):
+                    timedelta = datetime.timedelta(days=int(audit_period[:-2]))
+                else:
+                    timedelta = datetime.timedelta(minutes=int(audit_period[:-2]))
+                next_audit = datetime.datetime.now()+timedelta
+
+            self.waptdb.update_audit_status(install_id,set_status='RUNNING',set_output='',
+                set_last_audit_on=setuphelpers.currentdatetime(),
+                set_next_audit_on=datetime2isodate(next_audit))
+
             with WaptPackageAuditLogger(console=sys.stderr,wapt_context=self,install_id=install_id,user=self.user) as dblog:
                 try:
                     # check if registered uninstalley are still there

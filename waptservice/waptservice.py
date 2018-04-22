@@ -694,7 +694,7 @@ def audit():
             task.notify_server_on_finish=False
             tasks.append(task_manager.add_task(task).as_dict())
 
-    tasks.append(task_manager.add_task(WaptUpdateServerStatus()).as_dict())
+    tasks.append(task_manager.add_task(WaptUpdateServerStatus(priority=100)).as_dict())
 
     data = {'result':'OK','content':tasks,'message':'%s auditing tasks queued' % len(tasks)}
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -1122,7 +1122,7 @@ class WaptTaskManager(threading.Thread):
             if not package_status.next_audit_on or now >= package_status.next_audit_on:
                 task = WaptAuditPackage(package_status.package)
                 self.add_task(task)
-
+        self.add_task(WaptUpdateServerStatus(priority=100))
 
     def check_scheduled_tasks(self):
         """Add update/upgrade tasks if elapsed time since last update/upgrade is over"""
@@ -1151,7 +1151,7 @@ class WaptTaskManager(threading.Thread):
                     reqs = self.wapt.check_downloads()
                     for req in reqs:
                         self.add_task(WaptDownloadPackage(req.asrequirement(),notify_user=True,created_by='SCHEDULER'))
-                    self.add_task(WaptUpdate(notify_user=False,created_by='SCHEDULER'))
+                    self.add_task(WaptUpdate(notify_user=False,notify_server_on_finish=True,created_by='SCHEDULER'))
                 except Exception as e:
                     logger.debug(u'Error for update in check_scheduled_tasks: %s'%e)
 

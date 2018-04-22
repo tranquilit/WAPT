@@ -2659,9 +2659,9 @@ def host_info():
 
 def wua_agent_version():
     try:
-        return get_file_properties(makepath(system32(),'wuapi.dll'))['ProductVersion']
+        return Version(get_file_properties(makepath(system32(),'wuapi.dll'))['ProductVersion'])
     except Exception as e:
-        return '0.0.0'
+        return Version('0.0.0')
 
 def get_profile_path(sid):
     """Return the filesystem path to profile of user with SID sid"""
@@ -3864,6 +3864,20 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
 
 def installed_windows_updates(**queryfilter):
     """Return list of installed updates, indepently from WUA agent
+        Example :
+             [...
+             {u'CSName': u'WSDCARDON',
+              u'Caption': u'http://support.microsoft.com/?kbid=3207752',
+              u'Description': u'Security Update',
+              u'FixComments': u'',
+              u'HotFixID': u'KB3207752',
+              u'InstallDate': None,
+              u'InstalledBy': u'TRANQUILIT\\dcardon-adm',
+              u'InstalledOn': u'12/28/2016',
+              u'Name': None,
+              u'ServicePackInEffect': u'',
+              u'Status': None}
+             ...]
 
     Args:
         queryfilter (dict)
