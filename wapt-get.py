@@ -622,11 +622,8 @@ def main():
                     jsonresult['result'] = result
 
             elif action == 'audit':
-                if len(args) < 2:
-                    print(u"You must provide at least one package to be audited")
-                    sys.exit(1)
                 result = []
-                if args[1] == 'ALL':
+                if len(args) < 2:
                     packages_list = mywapt.installed().keys()
                 else:
                     packages_list = args[1:]
@@ -634,8 +631,9 @@ def main():
                     try:
                         print(u"Auditing %s ..." % (packagename,))
                         packagename = guess_package_root_dir(packagename)
-                        result.append(mywapt.audit(packagename,force=options.force))
-                        print("Done")
+                        audit_result = mywapt.audit(packagename,force=options.force)
+                        result.append([packagename,audit_result])
+                        print("-> %s" % audit_result)
                     except Exception as e:
                       logger.critical(ensure_unicode(e))
 

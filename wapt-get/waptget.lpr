@@ -314,7 +314,7 @@ begin
   else
   // use http service mode if --service or not --direct or not (--service and isadmin
   if  ((not IsAdminLoggedOn or HasOption('S','service')) and not HasOption('D','direct')) and
-      StrIsOneOf(action,['update','upgrade','register','install','remove','forget','longtask','cancel','cancel-all','tasks','wuascan','wuadownload','wuainstall']) and
+      StrIsOneOf(action,['update','upgrade','register','install','remove','forget','longtask','cancel','cancel-all','tasks','wuascan','wuadownload','wuainstall','audit']) and
       CheckOpenPort(waptservice_port,'127.0.0.1',waptservice_timeout) then
   begin
     writeln('About to speak to waptservice...');
@@ -394,6 +394,21 @@ begin
           else
             tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
+        end
+        else
+        if action='audit' then
+        begin
+          Logger('Call audit URL...',DEBUG);
+          if HasOption('f','force') then
+            res := WAPTLocalJsonGet('audit.json?notify_user=0&force=1')
+          else
+            res := WAPTLocalJsonGet('audit.json?notify_user=0');
+          WriteLn(utf8decode(res.S['message']));
+          for task in res['content'] do
+          begin
+            tasks.AsArray.Add(task);
+            Logger('Task '+task.S['id']+' added to queue',DEBUG);
+          end;
         end
         else
         if action='register' then
@@ -483,10 +498,10 @@ begin
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
         end;
 
-        while (tasks.AsArray.Length > 0) and not (Terminated) and not check_thread.Finished do
+        while (remainingtasks.AsArray.Length > 0) and not (Terminated) and not check_thread.Finished do
         try
           //if no message from service since more that 1 min, check if remaining tasks in queue...
-          if (now-lastMessageTime>1*1/24/60) and (remainingtasks.AsArray.Length=0) then
+          if (now-lastMessageTime>1*1/24/60) then
             raise Exception.create('Timeout waiting for events')
           else
           begin
@@ -632,12 +647,18 @@ end;
 
 function pwaptget.remainingtasks: ISuperObject;
 var
-  res:ISuperObject;
+  task,pending,res:ISuperObject;
 begin
   res := WAPTLocalJsonGet('tasks.json');
-  Result := res['pending'];
+  pending := res['pending'];
   if res['running'] <> Nil then
-    Result.AsArray.Add(res['running']);
+    pending.AsArray.Add(res['running']);
+
+  Result := TSuperObject.Create(stArray);
+  if pending.AsArray.Length > 0 then
+    for task in Self.tasks do
+      if SOArrayFindFirst(task,pending,['id']) <> Nil then
+        Result.AsArray.Add(task);
 end;
 
 {$R *.res}

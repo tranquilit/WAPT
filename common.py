@@ -115,7 +115,7 @@ from waptcrypto import sha256_for_data,EWaptMissingPrivateKey,EWaptMissingCertif
 from waptpackage import EWaptException,EWaptMissingLocalWaptFile,EWaptNotAPackage,EWaptNotSigned
 from waptpackage import EWaptBadTargetOS,EWaptNeedsNewerAgent,EWaptDiskSpace
 from waptpackage import EWaptUnavailablePackage,EWaptConflictingPackage
-from waptpackage import EWaptDownloadError
+from waptpackage import EWaptDownloadError,EWaptMissingPackageHook
 
 from waptpackage import REGEX_PACKAGE_CONDITION,WaptRemoteRepo,PackageEntry
 
@@ -439,11 +439,11 @@ class WaptSessionDB(WaptBaseDB):
         self.db_version = self.curr_db_version
         return self.curr_db_version
 
-    def add_start_install(self,package,version,architecture):
+    def add_start_install(self,package_entry):
         """Register the start of installation in local db
         """
         with self:
-            cur = self.db.execute("""delete from wapt_sessionsetup where package=?""" ,(package,))
+            cur = self.db.execute("""delete from wapt_sessionsetup where package=?""" ,(package_entry.package,))
             cur = self.db.execute("""\
                   insert into wapt_sessionsetup (
                     username,
@@ -457,9 +457,9 @@ class WaptSessionDB(WaptBaseDB):
                     ) values (?,?,?,?,?,?,?,?)
                 """,(
                      self.username,
-                     package,
-                     version,
-                     architecture,
+                     package_entry.package,
+                     package_entry.version,
+                     package_entry.architecture,
                      datetime2isodate(),
                      'INIT',
                      '',
@@ -750,8 +750,7 @@ class WaptDB(WaptBaseDB):
                 )
             return cur.lastrowid
 
-    def add_start_install(self,package_entry,version,section,priority,architecture,params_dict={},explicit_by=None,maturity='',locale='',depends='',conflicts='',
-            impacted_process=None,audit_schedule=None):
+    def add_start_install(self,package_entry,params_dict={},explicit_by=None):
         """Register the start of installation in local db
 
         Args:
@@ -763,7 +762,7 @@ class WaptDB(WaptBaseDB):
                             package content is no longer available at this step.
         """
         with self:
-            cur = self.db.execute("""delete from wapt_localstatus where package=?""" ,(package,))
+            cur = self.db.execute("""delete from wapt_localstatus where package=?""" ,(package_entry.package,))
             cur = self.db.execute("""\
                   insert into wapt_localstatus (
                     package,
@@ -783,25 +782,25 @@ class WaptDB(WaptBaseDB):
                     conflicts,
                     impacted_process,
                     audit_schedule
-                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,(
-                     package,
-                     version,
-                     section,
-                     priority,
-                     architecture,
+                     package_entry.package,
+                     package_entry.version,
+                     package_entry.section,
+                     package_entry.priority,
+                     package_entry.architecture,
                      datetime2isodate(),
                      'INIT',
                      '',
                      jsondump(params_dict),
                      explicit_by,
                      os.getpid(),
-                     maturity,
-                     locale,
-                     depends,
-                     conflicts,
-                     impacted_process,
-                     audit_schedule,
+                     package_entry.maturity,
+                     package_entry.locale,
+                     package_entry.depends,
+                     package_entry.conflicts,
+                     package_entry.impacted_process,
+                     package_entry.audit_schedule,
                    ))
             return cur.lastrowid
 
@@ -3291,18 +3290,9 @@ class Wapt(BaseObjectClass):
             params.update(params_dict)
 
             install_id = self.waptdb.add_start_install(
-                package=entry.package ,
-                version=entry.version,
-                section=entry.section,
-                priority=entry.priority,
-                architecture=entry.architecture,
-                params_dict=params,explicit_by=explicit_by,
-                maturity=entry.maturity,
-                locale=entry.locale,
-                depends=entry.depends,
-                conflicts=entry.conflicts,
-                impacted_process=entry.impacted_process,
-                audit_schedule=entry.audit_schedule,
+                entry ,
+                params_dict=params,
+                explicit_by=explicit_by,
                 )
 
             # we setup a redirection of stdout to catch print output from install scripts
@@ -4432,7 +4422,7 @@ class Wapt(BaseObjectClass):
                                     logger.warning(u"Warning : %s" % ensure_unicode(e))
 
                     elif mydict['uninstall_key']:
-                        guid = self._get_uninstallkeylist(mydict['uninstall_key'])
+                        guids = self._get_uninstallkeylist(mydict['uninstall_key'])
                         for guid in guids:
                             if guid:
                                 try:
@@ -5334,11 +5324,14 @@ class Wapt(BaseObjectClass):
                 session_db = WaptSessionDB(self.user)  # WaptSessionDB()
                 with session_db:
                     if force or os.path.isdir(packagename) or not session_db.is_installed(package_entry.package,package_entry.version):
-                        install_id = session_db.add_start_install(package_entry.package,package_entry.version,package_entry.architecture)
+                        install_id = session_db.add_start_install(package_entry)
                         with WaptPackageSessionSetupLogger(console=sys.stderr,waptsessiondb=session_db,install_id=install_id) as dblog:
                             # get value of required parameters from system wide install
                             params = self.get_previous_package_params(package_entry)
-                            result = package_entry.call_setup_hook('session_setup',self,params)
+                            try:
+                                result = package_entry.call_setup_hook('session_setup',self,params)
+                            except EWaptMissingPackageHook:
+                                result = None
 
                             if result:
                                 session_db.update_install_status(install_id,'RETRY','session_setup() done\n')
@@ -5361,6 +5354,22 @@ class Wapt(BaseObjectClass):
         Source setup.py from database or filename
         """
 
+        def worst(r1,r2):
+            states = ['OK','WARNING','ERROR','UNKNOWN']
+            try:
+                idxr1 = states.index(r1)
+            except ValueError:
+                idxr1 = states.index('UNKNOWN')
+            try:
+                idxr2 = states.index(r2)
+            except ValueError:
+                idxr2 = states.index('UNKNOWN')
+            if idxr1 > idxr2:
+                return states[idxr1]
+            else:
+                return states[idxr2]
+
+
         install_id = None
         logger.info(u"Audit run for package %s and user %s" % (packagename,self.user))
 
@@ -5381,30 +5390,32 @@ class Wapt(BaseObjectClass):
                 try:
                     # check if registered uninstalley are still there
                     uninstallkeys = self._get_uninstallkeylist(package_install['uninstall_key'])
+                    dblog.exit_status = 'OK'
+
                     for key in uninstallkeys:
                         uninstallkey_exists = setuphelpers.installed_softwares(uninstallkey=key)
                         if not uninstallkey_exists:
                             print(u'ERROR: Uninstall Key %s is not in Windows Registry.' % key)
-                            dblog.exit_status='ERROR'
+                            dblog.exit_status = worst(dblog.exit_status,'ERROR')
                         else:
                             print(u'OK: Uninstall Key %s in Windows Registry.' % key)
+                            dblog.exit_status = worst(dblog.exit_status,'OK')
 
-                    result = None
                     if package_entry.has_setup_py():
                         # get value of required parameters from system wide install
                         params = self.get_previous_package_params(package_entry)
                         # this call return None if not audit hook or if hook has no return value.
-                        result = package_entry.call_setup_hook('audit',self,params)
-                        if dblog.exit_status is None and result != 'OK':
-                            dblog.exit_status = result
+                        try:
+                            result = package_entry.call_setup_hook('audit',self,params)
+                        except EWaptMissingPackageHook:
+                            result = 'OK'
+                        dblog.exit_status = worst(dblog.exit_status,result)
                     else:
                         logger.debug('No setup.py, skipping session-setup')
                         print(u'OK: No setup.py')
+                        dblog.exit_status = worst(dblog.exit_status,'OK')
 
-                    if dblog.exit_status is None:
-                        dblog.exit_status = result or 'OK'
-
-                    return result
+                    return dblog.exit_status
 
                 except Exception as e:
                     print('Audit aborted due to exception: %s' % e)
@@ -5448,9 +5459,10 @@ class Wapt(BaseObjectClass):
             params.update(params_dict)
 
             if entry.has_setup_py():
-                logger.info(u'Launch uninstall')
-                result = entry.call_setup_hook('uninstall',self,params=params)
-                return result
+                try:
+                    result = entry.call_setup_hook('uninstall',self,params=params)
+                except EWaptMissingPackageHook:
+                    pass
             else:
                 logger.info('Uninstall: no setup.py source in database.')
 

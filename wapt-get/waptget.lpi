@@ -36,7 +36,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="install C:\waptdév\tis-cudatext-wapt"/>
+        <CommandLineParams Value="-S audit"/>
       </local>
     </RunParams>
     <RequiredPackages Count="5">
@@ -61,8 +61,8 @@
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="509"/>
-        <CursorPos X="21" Y="512"/>
+        <TopLine Value="641"/>
+        <CursorPos Y="658"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -182,9 +182,11 @@
       </Unit16>
       <Unit17>
         <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <TopLine Value="226"/>
-        <CursorPos X="3" Y="254"/>
-        <UsageCount Value="5"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="345"/>
+        <CursorPos X="23" Y="350"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit17>
       <Unit18>
         <Filename Value="..\..\pltis_superobject\soclipbrd.pas"/>
@@ -224,9 +226,11 @@
       </Unit22>
       <Unit23>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <TopLine Value="1659"/>
-        <CursorPos Y="1676"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="2132"/>
+        <CursorPos Y="2151"/>
         <UsageCount Value="19"/>
+        <Loaded Value="True"/>
       </Unit23>
       <Unit24>
         <Filename Value="..\..\internettools\internet\simpleinternet.pas"/>
@@ -297,9 +301,11 @@
       <Unit34>
         <Filename Value="uwaptres.pas"/>
         <UnitName Value="uWaptRes"/>
-        <TopLine Value="11"/>
-        <CursorPos X="18" Y="26"/>
-        <UsageCount Value="21"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="15"/>
+        <CursorPos Y="43"/>
+        <UsageCount Value="22"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit34>
       <Unit35>
@@ -513,17 +519,18 @@
       <Unit66>
         <Filename Value="C:\lazarus\fpc\3.0.4\source\packages\fcl-base\src\custapp.pp"/>
         <UnitName Value="CustApp"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="323"/>
-        <CursorPos Y="338"/>
-        <UsageCount Value="10"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="77"/>
+        <CursorPos X="14" Y="90"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
       </Unit66>
       <Unit67>
         <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="5"/>
         <TopLine Value="5205"/>
         <CursorPos Y="5220"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit67>
@@ -531,123 +538,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="523" TopLine="507"/>
+        <Caret Line="648" Column="33" TopLine="632"/>
       </Position1>
       <Position2>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="524" TopLine="507"/>
+        <Caret Line="58" Column="28" TopLine="44"/>
       </Position2>
       <Position3>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="3397" Column="39" TopLine="3386"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="516" Column="46" TopLine="487"/>
       </Position3>
       <Position4>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="522" Column="22" TopLine="507"/>
+        <Caret Line="652" TopLine="641"/>
       </Position4>
       <Position5>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="523" TopLine="507"/>
+        <Caret Line="653" TopLine="641"/>
       </Position5>
       <Position6>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="524" TopLine="507"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3537" TopLine="3523"/>
       </Position6>
       <Position7>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="3402" TopLine="3386"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3538" TopLine="3523"/>
       </Position7>
       <Position8>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="3326" TopLine="3311"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3539" TopLine="3523"/>
       </Position8>
       <Position9>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="3327" TopLine="3311"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="653" Column="3" TopLine="641"/>
       </Position9>
       <Position10>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="3329" TopLine="3311"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3537" TopLine="3523"/>
       </Position10>
       <Position11>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="3331" TopLine="3311"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3538" TopLine="3523"/>
       </Position11>
       <Position12>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="3333" TopLine="3311"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3539" TopLine="3523"/>
       </Position12>
       <Position13>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4671" TopLine="4656"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="655" TopLine="641"/>
       </Position13>
       <Position14>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4672" TopLine="4656"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="2147" TopLine="2131"/>
       </Position14>
       <Position15>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4686" TopLine="4661"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="2148" TopLine="2131"/>
       </Position15>
       <Position16>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="3288" TopLine="3273"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="2149" TopLine="2131"/>
       </Position16>
       <Position17>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="3289" TopLine="3273"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="2151" TopLine="2131"/>
       </Position17>
       <Position18>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="3291" TopLine="3273"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3537" TopLine="3523"/>
       </Position18>
       <Position19>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="3292" Column="6" TopLine="3273"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3538" TopLine="3523"/>
       </Position19>
       <Position20>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="1452" Column="15" TopLine="1439"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="3539" TopLine="3523"/>
       </Position20>
       <Position21>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="3313" Column="3" TopLine="3303"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="658" TopLine="641"/>
       </Position21>
       <Position22>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="522" Column="7" TopLine="507"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="2131" TopLine="2115"/>
       </Position22>
       <Position23>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="3402" TopLine="3386"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="2132" TopLine="2115"/>
       </Position23>
       <Position24>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4658" TopLine="4643"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="2133" TopLine="2115"/>
       </Position24>
       <Position25>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="4810" TopLine="4796"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="659" TopLine="641"/>
       </Position25>
       <Position26>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="5401" TopLine="5383"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="660" TopLine="641"/>
       </Position26>
       <Position27>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="6409" TopLine="6393"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="2147" TopLine="2132"/>
       </Position27>
       <Position28>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="5207" TopLine="5193"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="2148" TopLine="2132"/>
       </Position28>
       <Position29>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="5173" TopLine="5157"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="2149" TopLine="2132"/>
       </Position29>
       <Position30>
-        <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <Caret Line="5220" TopLine="5205"/>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="2151" TopLine="2132"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>

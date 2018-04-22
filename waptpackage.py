@@ -189,6 +189,9 @@ class EWaptNotAPackage(EWaptException):
 class EWaptNotSourcesDirPackage(EWaptException):
     pass
 
+class EWaptMissingPackageHook(EWaptException):
+    pass
+
 
 class EWaptPackageSignError(EWaptException):
     pass
@@ -1618,8 +1621,7 @@ class PackageEntry(BaseObjectClass):
 
             hook_func = getattr(setup,hook_name,None)
             if hook_func is None:
-                logger.debug('No hook %s found in setup module for %s' % (hook_name,setup_filename or self.asrequirement()))
-                return None
+                raise EWaptMissingPackageHook(u'No %s function found in setup module for %s' % (hook_name,setup_filename or self.asrequirement()))
 
             # get definitions of required parameters from setup module
             if hasattr(setup,'required_params'):

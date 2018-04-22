@@ -67,7 +67,7 @@ from common import Wapt
 
 from waptservice_common import waptservice_remote_actions,waptconfig,WaptServiceConfig
 from waptservice_common import WaptUpdate,WaptUpgrade,WaptUpdateServerStatus,WaptRegisterComputer
-from waptservice_common import WaptCleanup,WaptPackageInstall,WaptPackageRemove,WaptPackageForget,WaptLongTask
+from waptservice_common import WaptCleanup,WaptPackageInstall,WaptPackageRemove,WaptPackageForget,WaptLongTask,WaptAuditPackage
 
 from plugins import *
 
@@ -157,7 +157,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     data = [t.as_dict() for t in self.task_manager.cancel_all_tasks()]
                     result.append(data)
 
-                elif name in ['trigger_host_update','trigger_host_register']:
+                elif name in ['trigger_host_update','trigger_host_register','trigger_host_audit']:
                     if name == 'trigger_host_update':
                         task = WaptUpdate()
                     elif name == 'trigger_host_register':
@@ -198,6 +198,16 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
 
                     result.append(self.task_manager.add_task(WaptUpgrade(notify_user=notify_user,created_by=verified_by)).as_dict())
                     result.append(self.task_manager.add_task(WaptCleanup(notify_user=False,created_by=verified_by)).as_dict())
+
+                elif name == 'trigger_host_audit':
+                    notify_user = action.get('notify_user',False)
+                    notify_server_on_finish = action.get('notify_server',False)
+                    force = action.get('force',False)
+                    now = setuphelpers.currentdatetime()
+                    for package_status in self.wapt.installed().values():
+                        if force or not package_status.next_audit_on or (now >= package_status.next_audit_on):
+                            task = WaptAuditPackage(package_status.package)
+                            result.append(self.task_manager.add_task(task))
 
                 elif name in  ['trigger_install_packages','trigger_remove_packages','trigger_forget_packages']:
                     packagenames = ensure_list(action['packages'])

@@ -183,6 +183,8 @@ class WaptServiceConfig(object):
         self.waptupdate_task_period = 120
         self.waptupgrade_task_period = None
 
+        self.waptaudit_task_period = 240
+
         self.config_filedate = None
 
         self.hiberboot_enabled = None
@@ -261,6 +263,11 @@ class WaptServiceConfig(object):
                 self.waptupdate_task_period = int(config.get('global','waptupdate_task_period'))
             else:
                 self.waptupdate_task_period = 120
+
+            if config.has_option('global','waptaudit_task_period'):
+                self.waptaudit_task_period = int(config.get('global','waptaudit_task_period'))
+            else:
+                self.waptaudit_task_period = 240
 
             if config.has_option('global','dbpath'):
                 self.dbpath =  config.get('global','dbpath')
@@ -941,6 +948,34 @@ class WaptPackageForget(WaptTask):
 
     def same_action(self,other):
         return (self.__class__ == other.__class__) and (self.packagenames == other.packagenames)
+
+
+class WaptAuditPackage(WaptTask):
+    def __init__(self,packagename,force=False,**args):
+        super(WaptAuditPackage,self).__init__()
+        self.packagename = packagename
+        self.force = force
+
+        self.notify_server_on_start = False
+        self.notify_server_on_finish = False
+        self.notify_user = False
+
+        for k in args:
+            setattr(self,k,args[k])
+
+    def _run(self):
+        self.result = self.wapt.audit(self.packagename,force = self.force)
+        if self.result:
+            self.summary = _(u"Audit result for %s : %s") % (self.packagename,self.result)
+        else:
+            self.summary = _(u"No audit result for %s") % (self.packagename,)
+
+    def __unicode__(self):
+        return _(u"Audit of {packagename} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
+
+    def same_action(self,other):
+        return (self.__class__ == other.__class__) and (self.packagename == other.packagename)
+
 
 def babel_translations(lang = ''):
     dirname = os.path.join(os.path.dirname(__file__), 'translations')

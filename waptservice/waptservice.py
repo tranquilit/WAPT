@@ -89,7 +89,7 @@ from waptcrypto import SSLVerifyException,SSLCABundle,SSLCertificate,SSLPrivateK
 
 from waptservice_common import waptconfig
 from waptservice_common import WaptClientUpgrade,WaptServiceRestart,WaptNetworkReconfig,WaptPackageInstall
-from waptservice_common import WaptUpgrade,WaptUpdate,WaptUpdateServerStatus,WaptCleanup,WaptDownloadPackage,WaptLongTask
+from waptservice_common import WaptUpgrade,WaptUpdate,WaptUpdateServerStatus,WaptCleanup,WaptDownloadPackage,WaptLongTask,WaptAuditPackage
 from waptservice_common import WaptRegisterComputer,WaptPackageRemove,WaptPackageRemove,WaptPackageForget,WaptServiceRestart
 
 from waptservice_socketio import WaptSocketIOClient
@@ -677,6 +677,32 @@ def update():
         return render_template('default.html',data=data,title=_(u'Installed software update'))
 
 
+@app.route('/audit')
+@app.route('/audit.json')
+@allow_local
+def audit():
+    tasks = []
+    notify_user = int(request.args.get('force','0')) != 0
+    notify_server_on_finish = int(request.args.get('notify_user','1')) != 0
+    force = int(request.args.get('force','0')) != 0
+
+    now = setuphelpers.currentdatetime()
+    for package_status in wapt().installed().values():
+        if force or not package_status.next_audit_on or (now >= package_status.next_audit_on):
+            task = WaptAuditPackage(package_status.package)
+            task.notify_user=notify_user
+            task.notify_server_on_finish=False
+            tasks.append(task_manager.add_task(task).as_dict())
+
+    tasks.append(task_manager.add_task(WaptUpdateServerStatus()).as_dict())
+
+    data = {'result':'OK','content':tasks,'message':'%s auditing tasks queued' % len(tasks)}
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('default.html',data=data,title=_(u'Triggered packages audits'))
+
+
 @app.route('/update_status')
 @app.route('/update_status.json')
 @allow_local
@@ -987,6 +1013,7 @@ class WaptTaskManager(threading.Thread):
 
         self.last_upgrade = None
         self.last_update = None
+        self.last_audit = None
 
     def setup_event_queue(self):
         if waptconfig.zmq_port:
@@ -1085,6 +1112,15 @@ class WaptTaskManager(threading.Thread):
         except:
             pass
 
+    def run_scheduled_audits(self):
+        """Add packages audit tasks to the queue"""
+        now = setuphelpers.currentdatetime()
+        for package_status in self.wapt.installed().values():
+            if not package_status.next_audit_on or now >= package_status.next_audit_on:
+                task = WaptAuditPackage(package_status.package)
+                result.append(self.task_manager.add_task(task))
+
+
     def check_scheduled_tasks(self):
         """Add update/upgrade tasks if elapsed time since last update/upgrade is over"""
         logger.debug(u'Check scheduled tasks')
@@ -1115,6 +1151,14 @@ class WaptTaskManager(threading.Thread):
                     self.add_task(WaptUpdate(notify_user=False,created_by='SCHEDULER'))
                 except Exception as e:
                     logger.debug(u'Error for update in check_scheduled_tasks: %s'%e)
+
+        if waptconfig.waptaudit_task_period is not None:
+            if self.last_audit is None or (time.time()-self.last_audit)/60>waptconfig.waptaudit_task_period:
+                try:
+                    self.run_scheduled_audits()
+                except Exception as e:
+                    logger.debug(u'Error checking audit: %s' % e)
+
 
     def run(self):
         """Queue management, event processing"""
