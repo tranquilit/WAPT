@@ -26,6 +26,8 @@ type
     ActAddNewNetwork: TAction;
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
+    ActPackagesAudit: TAction;
+    ActTriggerHostAudit: TAction;
     ActTriggerUpgradesOrgUnit: TAction;
     ActTriggerUpdateOrgUnit: TAction;
     ActTriggerWaptServiceRestart: TAction;
@@ -113,6 +115,8 @@ type
     MenuItem90: TMenuItem;
     MenuItem91: TMenuItem;
     MenuItem92: TMenuItem;
+    MenuItem93: TMenuItem;
+    MenuItem94: TMenuItem;
     Panel8: TPanel;
     PgNetworksConfig: TTabSheet;
     PopupMenuOrgUnits: TPopupMenu;
@@ -463,6 +467,7 @@ type
     procedure ActTISHelpUpdate(Sender: TObject);
     procedure ActTriggerBurstUpdatesExecute(Sender: TObject);
     procedure ActTriggerBurstUpgradesExecute(Sender: TObject);
+    procedure ActTriggerHostAuditExecute(Sender: TObject);
     procedure ActTriggerUpgradesOrgUnitUpdate(Sender: TObject);
     procedure ActTriggerWakeOnLanExecute(Sender: TObject);
     procedure ActTriggerWaptServiceRestartExecute(Sender: TObject);
@@ -2403,6 +2408,14 @@ begin
   if (GridHosts.SelectedCount>=1) and
     (MessageDlg(Format(rsConfirmBurstUpgrades,[GridHosts.SelectedCount]),mtConfirmation,mbYesNoCancel, 0) = mrYes) then
       TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_host_upgrade',Nil,rsUpgradingHost,'Error applying upgrades %s',True)
+
+end;
+
+procedure TVisWaptGUI.ActTriggerHostAuditExecute(Sender: TObject);
+begin
+  if (GridHosts.SelectedCount>=1) and
+    (MessageDlg(Format(rsConfirmHostsAudit,[GridHosts.SelectedCount]),mtConfirmation,mbYesNoCancel, 0) = mrYes) then
+      TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_host_audit',Nil,rsUpgradingHost,'Error triggering audit %s',True)
 
 end;
 

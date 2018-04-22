@@ -82,6 +82,8 @@ resourcestring
   rsConfirmBurstUpgrades = 'Are you sure you want to Apply Upgrades on %d hosts ?';
   rsConfirmWaptServiceRestart = 'Are you sure you want to restart waptservice on %d hosts ?';
 
+  rsConfirmHostsAudit = 'Are you sure you want to run packages Audit on %d hosts ?';
+
   rsConfirmGPUpdate = 'Are you sure you want to update Group Policies status on %d hosts ?';
   rsRunningGPUpdate = 'Running GPUpdate';
   rsConfirmWaptExit = 'Are you sure you want to propose Packages Upgrades on %d hosts ?';

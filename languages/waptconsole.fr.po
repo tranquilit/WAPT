@@ -1338,6 +1338,10 @@ msgstr "Proposer la mise à jour aux utilisateurs"
 msgid "Make package template from setup file"
 msgstr "Générer un modèle de paquet"
 
+#: tviswaptgui.actpackagesaudit.caption
+msgid "Audit package"
+msgstr ""
+
 #: tviswaptgui.actpackagesforceinstall.caption
 msgid "Force install"
 msgstr "Installation forcée"
@@ -1456,6 +1460,10 @@ msgstr "Lancer TISHelp"
 #: tviswaptgui.acttriggerburstupgrades.caption
 msgid "Apply Burst Upgrades"
 msgstr "Lancer en masse les installations"
+
+#: tviswaptgui.acttriggerhostaudit.caption
+msgid "Run packages audit "
+msgstr ""
 
 #: tviswaptgui.acttriggerhostupdate.caption
 msgctxt "tviswaptgui.acttriggerhostupdate.caption"
@@ -2682,6 +2690,10 @@ msgstr ""
 msgctxt "uwaptconsoleres.rsconfirmhostforgetspackages"
 msgid "Are you sure you want to forget %s packages from host %s ?"
 msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
+
+#: uwaptconsoleres.rsconfirmhostsaudit
+msgid "Are you sure you want to run packages Audit on %d hosts ?"
+msgstr ""
 
 #: uwaptconsoleres.rsconfirmimport
 msgctxt "uwaptconsoleres.rsconfirmimport"

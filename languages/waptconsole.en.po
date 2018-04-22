@@ -1318,6 +1318,10 @@ msgstr ""
 msgid "Make package template from setup file"
 msgstr ""
 
+#: tviswaptgui.actpackagesaudit.caption
+msgid "Audit package"
+msgstr ""
+
 #: tviswaptgui.actpackagesforceinstall.caption
 msgid "Force install"
 msgstr ""
@@ -1435,6 +1439,10 @@ msgstr ""
 
 #: tviswaptgui.acttriggerburstupgrades.caption
 msgid "Apply Burst Upgrades"
+msgstr ""
+
+#: tviswaptgui.acttriggerhostaudit.caption
+msgid "Run packages audit "
 msgstr ""
 
 #: tviswaptgui.acttriggerhostupdate.caption
@@ -2650,6 +2658,10 @@ msgstr ""
 #: uwaptconsoleres.rsconfirmhostforgetspackages
 msgctxt "uwaptconsoleres.rsconfirmhostforgetspackages"
 msgid "Are you sure you want to forget %s packages from host %s ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmhostsaudit
+msgid "Are you sure you want to run packages Audit on %d hosts ?"
 msgstr ""
 
 #: uwaptconsoleres.rsconfirmimport
