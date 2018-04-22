@@ -971,8 +971,8 @@ class WaptDB(WaptBaseDB):
         """
         sql = ["""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,
-                l.depends,l.conflicts,
-                r.section,r.priority,r.maintainer,r.description,r.sources,r.filename,r.size,
+                coalesce(l.depends,r.depends),coalesce(l.conflicts,r.conflicts),coalesce(l.section,r.section),coalesce(l.priority,r.priority),
+                r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo,l.maturity,l.locale,
                 l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on
                 from wapt_localstatus l
@@ -1031,10 +1031,11 @@ class WaptDB(WaptBaseDB):
             search.append(u'l.install_status in ("OK","UNKNOWN")')
         q = self.query_package_entry(u"""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,
-                l.depends,l.conflicts,
-                r.section,r.priority,r.maintainer,r.description,r.sources,r.filename,r.size,
+                coalesce(l.depends,r.depends),coalesce(l.conflicts,r.conflicts),coalesce(l.section,r.section),coalesce(l.priority,r.priority),
+                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,
+                r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo
-                 from wapt_localstatus l
+              from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
               where %s
            """ % " and ".join(search),words)
@@ -1050,8 +1051,9 @@ class WaptDB(WaptBaseDB):
 
         q = self.query_package_entry(u"""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,l.explicit_by,
-                l.depends,l.conflicts,
-                r.section,r.priority,r.maintainer,r.description,r.sources,r.filename,r.size,
+                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,
+                coalesce(l.depends,r.depends),coalesce(l.conflicts,r.conflicts),coalesce(l.section,r.section),coalesce(l.priority,r.priority),
+                r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo
                 from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
