@@ -813,7 +813,7 @@ class WaptDB(WaptBaseDB):
                 pid = os.getpid()
             cur = self.db.execute("""\
                   update wapt_localstatus
-                    set install_status=coalesce(?,install_status),install_output = coalesce(install_output,'') || ?,uninstall_key=?,uninstall_string=?,process_id=?
+                    set install_status=coalesce(?,install_status),install_output = coalesce(install_output,'') || ?,uninstall_key=coalesce(?,uninstall_key),uninstall_string=coalesce(?,uninstall_string),process_id=?
                     where rowid = ?
                 """,(
                      set_status,
