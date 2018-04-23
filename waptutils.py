@@ -1282,21 +1282,23 @@ class LogOutput(BaseObjectClass):
         return self
 
     def __exit__(self, type, value, tb):
-        if self.old_stdout:
-            sys.stdout = self.old_stdout
-        if self.old_stderr:
-            sys.stderr = self.old_stderr
+        try:
+            if self.update_status_hook:
+                self._send_tail_to_updatehook()
+                if tb:
+                    self.update_status_hook(set_status=self.error_status,append_output=traceback.format_exc(),**self.hook_args)
+                else:
+                    if self.exit_status is not None:
+                        self.update_status_hook(set_status=self.exit_status,**self.hook_args)
+        finally:
+            self.update_status_hook = None
+            self.console = None
 
-        if self.update_status_hook:
-            self._send_tail_to_updatehook()
-            if tb:
-                self.update_status_hook(set_status=self.error_status,append_output=traceback.format_exc(),**self.hook_args)
-            else:
-                if self.exit_status is not None:
-                    self.update_status_hook(set_status=self.exit_status,**self.hook_args)
+            if self.old_stdout:
+                sys.stdout = self.old_stdout
+            if self.old_stderr:
+                sys.stderr = self.old_stderr
 
-        self.update_status_hook = None
-        self.console = None
 
     def __getattr__(self, name):
         return getattr(self.console,name)

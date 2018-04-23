@@ -804,7 +804,7 @@ class WaptDB(WaptBaseDB):
                    ))
             return cur.lastrowid
 
-    def update_install_status(self,rowid,set_status,append_output=None,uninstall_key=None,uninstall_string=None):
+    def update_install_status(self,rowid,set_status=None,append_output=None,uninstall_key=None,uninstall_string=None):
         """Update status of package installation on localdb"""
         with self:
             if set_status in ('OK','WARNING','ERROR'):
@@ -3193,7 +3193,6 @@ class Wapt(BaseObjectClass):
         previous_uninstall = self.registry_uninstall_snapshot()
 
         try:
-            status = 'INIT'
             if not self.cabundle:
                 raise EWaptMissingCertificate(u'install_wapt %s: No public Key provided for package signature checking.'%(fname,))
 
@@ -3210,7 +3209,7 @@ class Wapt(BaseObjectClass):
                 )
 
             # we setup a redirection of stdout to catch print output from install scripts
-            with WaptPackageInstallLogger(sys.stderr,self,install_id=install_id,user=self.user,exit_status=None):
+            with WaptPackageInstallLogger(sys.stderr,self,install_id=install_id,user=self.user,exit_status=None) as dblogger:
                 if entry.min_wapt_version and Version(entry.min_wapt_version)>Version(setuphelpers.__version__):
                     raise EWaptNeedsNewerAgent('This package requires a newer Wapt agent. Minimum version: %s' % entry.min_wapt_version)
 
@@ -3352,9 +3351,9 @@ class Wapt(BaseObjectClass):
                             exitstatus = None
 
                         if exitstatus is None or exitstatus == 0:
-                            status = 'OK'
+                            dblogger.exit_status = 'OK'
                         else:
-                            status = exitstatus
+                            dblogger.exit_status = exitstatus
 
                         # get uninstallkey from setup module (string or array of strings)
                         if hasattr(setup,'uninstallkey'):
@@ -3380,13 +3379,19 @@ class Wapt(BaseObjectClass):
                             uninstallstring = setup.uninstallstring[:]
                         else:
                             uninstallstring = None
+
                         logger.info(u'  uninstall keys : %s' % (new_uninstall_key,))
                         logger.info(u'  uninstall strings : %s' % (uninstallstring,))
 
-                        logger.info(u"Install script finished with status %s" % status)
+                        logger.info(u"Install script finished with status %s" % dblogger.exit_status )
                     else:
                         logger.info(u'No setup.py')
-                        status = 'OK'
+                        dblogger.exit_status = 'OK'
+
+                    # rowid,set_status,append_output=None,uninstall_key=None,uninstall_string=None
+                    self.waptdb.update_install_status(install_id,
+                        uninstall_key=str(new_uninstall_key) if new_uninstall_key else '',
+                        uninstall_string=str(uninstallstring) if uninstallstring else '')
 
                 finally:
                     if istemporary:
@@ -3404,17 +3409,13 @@ class Wapt(BaseObjectClass):
                         else:
                             logger.warning(u"Unable to clean tmp dir")
 
-                # rowid,install_status,install_output,uninstall_key=None,uninstall_string=None
-                self.waptdb.update_install_status(install_id,
-                    set_status=status,
-                    uninstall_key=str(new_uninstall_key) if new_uninstall_key else '',
-                    uninstall_string=str(uninstallstring) if uninstallstring else '')
-                return self.waptdb.install_status(install_id)
+            # end
+            return self.waptdb.install_status(install_id)
 
         except Exception as e:
             if install_id:
                 try:
-                    self.waptdb.update_install_status(install_id,'ERROR',ensure_unicode(e))
+                    self.waptdb.update_install_status(install_id,set_status='ERROR',append_output=ensure_unicode(e))
                 except Exception as e2:
                     logger.critical(ensure_unicode(e2))
             else:

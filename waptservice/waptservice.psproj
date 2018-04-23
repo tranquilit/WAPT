@@ -161,7 +161,6 @@ Name=debug
 ScriptName=$[Project-Path]waptservice.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-d -ldebug
 WorkingDir=$[Project-Path]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
