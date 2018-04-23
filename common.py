@@ -5321,7 +5321,7 @@ class Wapt(BaseObjectClass):
                 next_audit = datetime.datetime.now()+timedelta
 
             self.waptdb.update_audit_status(install_id,set_status='RUNNING',set_output='',
-                set_last_audit_on=setuphelpers.currentdatetime(),
+                set_last_audit_on=datetime2isodate(),
                 set_next_audit_on=datetime2isodate(next_audit))
 
             with WaptPackageAuditLogger(console=sys.stderr,wapt_context=self,install_id=install_id,user=self.user) as dblog:
