@@ -247,6 +247,7 @@ class HostPackagesStatus(WaptBaseModel):
     install_date = CharField(null=True)
     install_output = TextField(null=True)
     install_params = CharField(null=True)
+    uninstall_key = CharField(null=True)
     explicit_by = CharField(null=True)
     repo_url = CharField(max_length=600, null=True)
     depends = ArrayField(CharField,null=True)
@@ -1105,6 +1106,19 @@ def upgrade_db_structure():
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
             v.save()
+
+    next_version = '1.6.0.1'
+    if get_db_version() < next_version:
+        with wapt_db.atomic():
+            logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
+            opes = []
+            opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'uninstall_key', HostPackagesStatus.uninstall_key))
+            migrate(*opes)
+
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
 
 if __name__ == '__main__':
     if platform.system() != 'Windows' and getpass.getuser() != 'wapt':

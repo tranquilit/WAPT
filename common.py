@@ -969,7 +969,8 @@ class WaptDB(WaptBaseDB):
             dict: installed packages keys=package, values = PackageEntry
         """
         sql = ["""\
-              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,
+              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,
+                l.uninstall_key,l.explicit_by,
                 coalesce(l.depends,r.depends),coalesce(l.conflicts,r.conflicts),coalesce(l.section,r.section),coalesce(l.priority,r.priority),
                 r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo,l.maturity,l.locale,
@@ -1029,7 +1030,8 @@ class WaptDB(WaptBaseDB):
         if not include_errors:
             search.append(u'l.install_status in ("OK","UNKNOWN")')
         q = self.query_package_entry(u"""\
-              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,
+              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,
+                l.uninstall_key,l.explicit_by,
                 coalesce(l.depends,r.depends),coalesce(l.conflicts,r.conflicts),coalesce(l.section,r.section),coalesce(l.priority,r.priority),
                 l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,
                 r.maintainer,r.description,r.sources,r.filename,r.size,
@@ -1049,7 +1051,8 @@ class WaptDB(WaptBaseDB):
             status = '"OK","UNKNOWN"'
 
         q = self.query_package_entry(u"""\
-              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,l.explicit_by,
+              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,
+                l.uninstall_key,l.explicit_by,
                 l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,
                 coalesce(l.depends,r.depends),coalesce(l.conflicts,r.conflicts),coalesce(l.section,r.section),coalesce(l.priority,r.priority),
                 r.maintainer,r.description,r.sources,r.filename,r.size,
