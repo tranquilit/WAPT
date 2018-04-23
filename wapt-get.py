@@ -626,7 +626,7 @@ def main():
                 if len(args) < 2:
                     packages_list = mywapt.installed().keys()
                 else:
-                    packages_list = args[1:]
+                    packages_list = expand_args(args[1:])
                 for packagename in packages_list:
                     try:
                         print(u"Auditing %s ..." % (packagename,))
@@ -635,7 +635,7 @@ def main():
                         result.append([packagename,audit_result])
                         print("-> %s" % audit_result)
                     except Exception as e:
-                      logger.critical(ensure_unicode(e))
+                        logger.critical(ensure_unicode(e))
 
                 if mywapt.waptserver:
                     try:
