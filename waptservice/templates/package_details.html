@@ -5,6 +5,7 @@
 {% for attrib in ['package','version','architecture','locale','maturity','description','maintainer','repo_url','filename'] %}
     <li><strong>{{ _(attrib) }}</strong> : {{data[attrib]}}</li>
 {% endfor %}
+</ul>
 {%if data.depends %}
     <ul>
     {%for dep in data.depends.split(',')%}
@@ -12,7 +13,25 @@
     {%endfor%}
     </ul>
 {%endif%}
+
+{%if data['install_status'] %}
+<h2>Install status</h2>
+<ul>
+{% for attrib in ['install_status','install_date','install_output'] %}
+    <li><strong>{{ _(attrib) }}</strong> : {{data[attrib]}}</li>
+{% endfor %}
 </ul>
+{%endif%}
+
+{%if data['last_audit_status'] %}
+<h2>Audit status</h2>
+<ul>
+{% for attrib in ['last_audit_status','last_audit_on','last_audit_output','next_audit_on'] %}
+    <li><strong>{{ _(attrib) }}</strong> : {{data[attrib]}}</li>
+{% endfor %}
+</ul>
+{%endif%}
+
 <input class="col-md-3 btn btn-default" type="button" value={{ _("Download") }} onclick="location.href='package_download?package={{"%s(=%s)" % (data.package,data.version)}}'">
 <input class="col-md-3 btn btn-success" type="button" value={{ _("Install") }} onclick="location.href='install?package={{"%s(=%s)" % (data.package,data.version)}}'">
 <input class="col-md-3 btn btn-default" type="button" value={{ _("Uninstall") }} onclick="location.href='remove?package={{"%s" % (data.package,) }}'">

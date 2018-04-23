@@ -1241,6 +1241,25 @@ class LogOutput(BaseObjectClass):
         self.error_status = error_status
         self.exit_status = exit_status
 
+        self.update_buffer_time = 2
+        self.last_update_time = 0
+        self.last_update_idx = 0
+
+    def _send_tail_to_updatehook(self):
+        """send pending output to hook"""
+        append_txt = u'\n'.join(self.output[self.last_update_idx:])
+
+        if append_txt and append_txt[-1] != u'\n':
+            txtdb = append_txt+u'\n'
+        else:
+            txtdb = append_txt
+        try:
+            self.update_status_hook(append_output=txtdb,set_status=self.running_status,**self.hook_args)
+            self.last_update_idx = len(self.output)
+            self.last_update_time = time.time()
+        except Exception as e:
+            logger.info('Unable to update db status')
+
     def write(self,txt):
         with self.lock:
             txt = ensure_unicode(txt)
@@ -1252,12 +1271,9 @@ class LogOutput(BaseObjectClass):
 
             if txt != '\n':
                 self.output.append(txt)
-                if self.update_status_hook and threading.current_thread() == self.threadid:
-                    if txt and txt[-1] != u'\n':
-                        txtdb = txt+u'\n'
-                    else:
-                        txtdb = txt
-                    self.update_status_hook(append_output=txtdb,set_status=self.running_status,**self.hook_args)
+                if self.update_status_hook and threading.current_thread() == self.threadid and (time.time()-self.last_update_time>=self.update_buffer_time):
+                    # wait update_buffer_time before sending data to update_hook to avoid high frequency I/O
+                    self._send_tail_to_updatehook()
 
     def __enter__(self):
         self.old_stdout = sys.stdout
@@ -1272,6 +1288,7 @@ class LogOutput(BaseObjectClass):
             sys.stderr = self.old_stderr
 
         if self.update_status_hook:
+            self._send_tail_to_updatehook()
             if tb:
                 self.update_status_hook(set_status=self.error_status,append_output=traceback.format_exc(),**self.hook_args)
             else:

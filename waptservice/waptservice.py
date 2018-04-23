@@ -535,12 +535,15 @@ def package_details():
     #wapt=Wapt(config_filename=app.waptconfig.config_filename)
     package = request.args.get('package')
     try:
-        data = wapt().is_available(package)
+        w = wapt()
+        data = w.waptdb.installed_matching(package)
+        if not data:
+            data = w.is_available(package)
+            # take the newest...
+            data = data and data[-1].as_dict()
     except Exception as e:
         data = {'errors':[ ensure_unicode(e) ]}
 
-    # take the newest...
-    data = data and data[-1].as_dict()
     if request.args.get('format','html')=='json':
         return Response(common.jsondump(dict(result=data,errors=[])), mimetype='application/json')
     else:
