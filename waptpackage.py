@@ -27,6 +27,7 @@ __all__ = [
     'md5_for_file',
     'parse_major_minor_patch_build',
     'make_version',
+    'PackageVersion',
     'PackageRequest',
     'PackageEntry',
     'WaptBaseRepo',
@@ -85,7 +86,7 @@ from iniparse import RawConfigParser
 import traceback
 
 from waptutils import BaseObjectClass,Version,ensure_unicode,ZipFile,force_utf8_no_bom
-from waptutils import create_recursive_zip,ensure_list,all_files
+from waptutils import create_recursive_zip,ensure_list,all_files,list_intersection
 from waptutils import datetime2isodate,httpdatetime2isodate,fileutcdate,fileisoutcdate
 from waptutils import default_http_headers,wget,get_language,import_setup,import_code
 
@@ -120,6 +121,8 @@ REGEX_PACKAGE_VERSION = re.compile(r'^(?P<major>[0-9]+)'
 
 # tis-exodus (>2.3.4-10)
 REGEX_PACKAGE_CONDITION = re.compile(r'(?P<package>[^\s()]+)\s*(\(\s*(?P<operator>[<=>]?)\s*(?P<version>\S+)\s*\))?')
+
+REGEX_VERSION_CONDITION = re.compile(r'(?P<operator>[<=>]?=?)\s*(?P<version>\S+)')
 
 
 def parse_major_minor_patch_build(version):
@@ -232,6 +235,8 @@ class EWaptMissingLocalWaptFile(EWaptException):
 def PackageVersion(package_or_versionstr):
     if isinstance(package_or_versionstr,PackageEntry):
         package_or_versionstr = package_or_versionstr.version
+    if isinstance(package_or_versionstr,Version):
+        return (Version(package_or_versionstr,4),0)
     version_build = package_or_versionstr.split('-',1)
     if len(version_build)>1:
         return (Version(version_build[0],4),int(version_build[1]))
@@ -240,27 +245,117 @@ def PackageVersion(package_or_versionstr):
 
 class PackageRequest(BaseObjectClass):
     """Package and version request / condition
-
-    >>> PackageRequest('7-zip( >= 7.2)')
-    PackageRequest('7-zip (>=7.2)')
     """
-    def __init__(self,package_request):
-        self.package_request = package_request
-        parts = REGEX_PACKAGE_CONDITION.match(self.package_request).groupdict()
-        self.package = parts['package']
-        self.operator = parts['operator'] or '='
-        self.version = Version(parts['version'])
+    def __init__(self,**kwargs):
+        self.package = None
+        self.version = None
+        self.architecture = None
+        self.locale = None
+        self.maturity = None
+
+        self._packages = None
+        self._version_operator = None
+        self._version = None
+        self._architectures = None
+        self._locales = None
+        self._maturities = None
+
+        for (k,v) in kwargs.iteritems():
+            if hasattr(self,k):
+                setattr(self,k,v)
+            else:
+                raise Exception('PackageRequest has no attribute %s' % k)
+
+    def __setattribute__(self,k,v):
+        if k in ['package','version','architecture','locale','maturity']:
+            self._packages = None
+            self._version_operator = None
+            self._version = None
+            self._architectures = None
+            self._locales = None
+            self._maturities = None
+        super(PackageRequest).__setattribute__(self,k,v)
+
+    @property
+    def packages(self):
+        if self.package is not None and self._packages is None:
+            self._packages = ensure_list(self.package)
+        return self._packages
+
+    def match_version(self,version):
+        if self.version is not None and self._version is None:
+            parts = REGEX_VERSION_CONDITION.match(self.version).groupdict()
+            self._version_operator = parts['operator'] or '='
+            self._version = Version(parts['version'])
+
+        if self.version is None:
+            return True
+        else:
+            possibilities_dict = {
+                '>': (1,),
+                '<': (-1,),
+                '=': (0,),
+                '==': (0,),
+                '>=': (0, 1),
+                '<=': (-1, 0)
+            }
+            possibilities = possibilities_dict[self._version_operator]
+            if not isinstance(version,Version):
+                version = Version(version)
+            cmp_res = version.__cmp__(self._version)
+            return cmp_res in possibilities
+
+    @property
+    def architectures(self):
+        if self.architecture is not None and self._architectures is None:
+            if self.architecture in ('all',''):
+                self._architectures=None
+            else:
+                self._architectures = ensure_list(self.architecture)
+
+        return self._architectures
+
+    @property
+    def maturities(self):
+        if self.maturity is not None and self._maturities is None:
+            if self.maturity in ('all',''):
+                self._maturities = None
+            else:
+                self._maturities = ensure_list(self.maturity,allow_none=True)
+        return self._maturities
+
+    @property
+    def locales(self):
+        if self.locale is not None and self._locales is None:
+            if self.locale in ('all',''):
+                self._locales = None
+            else:
+                self._locales = ensure_list(self.locale)
+        return self._locales
+
+    def match(self,package_entry):
+        return  ((self.package is None or package_entry.package in self.packages) and
+                self.match_version(package_entry.version) and
+                (self.architecture is None or package_entry.architecture in ('','all') or package_entry.architecture in self.architectures) and
+                (self.locale is None or package_entry.locale in ('','all') or len(list_intersection(ensure_list(package_entry.locale),self.locales))>0) and
+                (self.maturity is None or (package_entry.maturity == '' and  (self.maturities is None or 'PROD' in self.maturities)) or package_entry.maturity in self.maturities))
 
     def __cmp__(self,other):
         if isinstance(other,str) or isinstance(other,unicode):
-            other = PackageRequest(other)
-        return cmp((self.package,self.version,self.operator),(other.package,other.version,other.operator))
-
-    def __str__(self):
-        return self.package_request
+            other = PackageRequest(package=other)
+        return 0 if self.match(other) else cmp((self.package,self.version,self.architecture,self.locale,self.maturity),(other.package,other.version,other.architecture,other.locale,other.maturity))
 
     def __repr__(self):
-        return "PackageRequest('{package} ({operator}{version})')".format(package=self.package,operator=self.operator,version=self.version)
+        def or_list(v):
+            if isinstance(v,list) or isinstance(v,tuple):
+                return u'|'.join(ensure_list(v))
+            else:
+                return v
+        attribs=[]
+        attribs.extend(["%s=%s" % (a,repr(or_list(getattr(self,a)))) for a in ['package','version','architecture','locale','maturity'] if getattr(self,a) is not None and getattr(self,a) != '' and getattr(self,a) != 'all'])
+        attribs = ','.join(attribs)
+        return "PackageRequest(%s)" % attribs
+
 
 def control_to_dict(control,int_params=('size','installed_size')):
     """Convert a control file like object
@@ -449,6 +544,15 @@ class PackageEntry(BaseObjectClass):
                 if key in self.required_attributes + self.optional_attributes + self.non_control_attributes:
                     setattr(self,key,value)
 
+    def as_package_request(self):
+        return PackageRequest(
+            package = self.package,
+            version=self.version,
+            architecture=self.architecture,
+            locale=self.locale,
+            maturity=self.maturity,
+            )
+
     def parse_version(self):
         """Parse version to major, minor, patch, pre-release, build parts.
 
@@ -470,15 +574,17 @@ class PackageEntry(BaseObjectClass):
     def as_dict(self):
         return dict(self)
 
+    """
     def __unicode__(self):
         return self.ascontrol(with_non_control_attributes=True)
 
     def __str__(self):
         return self.__unicode__()
+    """
 
     def __repr__(self):
-        return u"PackageEntry('%s','%s') %s" % (self.package,self.version,
-            ','.join(["%s=%s"%(key,getattr(self,key)) for key in ('architecture','maturity','locale') if (getattr(self,key) and getattr(self,key) != 'all')]))
+        return "PackageEntry(%s,%s) %s" % (repr(self.package),repr(self.version),
+            ','.join(["%s=%s"%(key,getattr(self,key)) for key in ('architecture','maturity','locale') if (getattr(self,key) is not None and getattr(self,key) != '' and getattr(self,key) != 'all')]))
 
     def get(self,name,default=None):
         """Get PackageEntry property.
@@ -597,14 +703,19 @@ class PackageEntry(BaseObjectClass):
         """Return True if package entry match a package string like 'tis-package (>=1.0.1-00)
 
         """
-        pcv = REGEX_PACKAGE_CONDITION.match(match_expr).groupdict()
-        if pcv['package'] != self.package:
-            return False
-        else:
-            if 'operator' in pcv and pcv['operator']:
-                return self.match_version(pcv['operator']+pcv['version'])
+        if isinstance(match_expr,PackageRequest):
+            return match_expr.match(self)
+        elif isinstance(match_expr,(str,unicode)):
+            pcv = REGEX_PACKAGE_CONDITION.match(match_expr).groupdict()
+            if pcv['package'] != self.package:
+                return False
             else:
-                return True
+                if 'operator' in pcv and pcv['operator']:
+                    return self.match_version(pcv['operator']+pcv['version'])
+                else:
+                    return True
+        else:
+            raise Exception(u'Unsupported match operand %s' % match_expr)
 
     def match_version(self, match_expr):
         """Return True if package entry match a version string condition like '>=1.0.1-00'
@@ -1915,7 +2026,6 @@ class WaptBaseRepo(BaseObjectClass):
         return False
 
 
-    @property
     def packages(self):
         """Return list of packages, load it from repository if not yet available in memory
         To force the reload, call invalidate_index_cache() first or update()
@@ -1925,7 +2035,6 @@ class WaptBaseRepo(BaseObjectClass):
             self._load_packages_index()
         return self._packages
 
-    @property
     def packages_date(self):
         """Date of last known packages index"""
         if self._packages is None:
@@ -1935,7 +2044,7 @@ class WaptBaseRepo(BaseObjectClass):
     def is_available(self):
         """Return isodate of last updates of the repo is available else None
         """
-        return self.packages_date
+        return self.packages_date()
 
     def need_update(self,last_modified=None):
         """Check if packages index has changed on repo and local index needs an update
@@ -1998,7 +2107,7 @@ class WaptBaseRepo(BaseObjectClass):
         words = [ w.lower() for w in searchwords ]
 
         result = []
-        for package in self.packages:
+        for package in self.packages():
             selected = True
             if description_locale is not None:
                 _description = package.get_localized_description(description_locale)
@@ -2076,14 +2185,17 @@ class WaptBaseRepo(BaseObjectClass):
          PackageEntry('tis-firefox','21.0.0-00'),
          ...]
         """
-        pcv_match = REGEX_PACKAGE_CONDITION.match(package_cond)
-        if pcv_match:
-            pcv = pcv_match.groupdict()
-            result = [ pe for pe in self.packages if pe.package == pcv['package'] and pe.match(package_cond)]
-            result.sort()
-            return result
+        if isinstance(package_cond,PackageRequest):
+            return [p for p in self.packages() if p.match(package_cond)]
         else:
-            return []
+            pcv_match = REGEX_PACKAGE_CONDITION.match(package_cond)
+            if pcv_match:
+                pcv = pcv_match.groupdict()
+                result = [ pe for pe in self.packages() if pe.package == pcv['package'] and pe.match(package_cond)]
+                result.sort()
+                return result
+            else:
+                return []
 
     def __iter__(self):
         """Return an iterator for package names (higer version)"""
@@ -2248,11 +2360,11 @@ class WaptLocalRepo(WaptBaseRepo):
 
         old_entries = {}
 
-        for package in self.packages:
+        for package in self.packages():
             # keep only entries which are older than index. Other should be recalculated.
             localwaptfile = os.path.abspath(os.path.join(self.localpath,os.path.basename(package.filename)))
             if os.path.isfile(localwaptfile):
-                if fileisoutcdate(localwaptfile) <= self._packages_date:
+                if fileisoutcdate(localwaptfile) <= self._packages_date():
                     old_entries[os.path.basename(package.filename)] = package
                 else:
                     logger.info(u"Don't keep old entry for %s, wapt package is newer than index..." % package.asrequirement())
@@ -2669,7 +2781,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         removed = [ p for p in self._packages if p not in new_packages]
         self._packages = new_packages
         self._packages_date = datetime2isodate(_packages_index_date)
-        return {'added':added,'removed':removed,'last-modified': self.packages_date, 'discarded':self.discarded }
+        return {'added':added,'removed':removed,'last-modified': self.packages_date(), 'discarded':self.discarded }
 
     def _get_packages_index_data(self):
         """Download or load local Packages index raw zipped data
@@ -2690,7 +2802,6 @@ class WaptRemoteRepo(WaptBaseRepo):
         _packages_index_date = datetime.datetime(*email.utils.parsedate(packages_answer.headers['last-modified'])[:6])
         return (str(packages_answer.content),_packages_index_date)
 
-    @property
     def packages(self):
         if self._packages is None:
             self._load_packages_index()
@@ -2821,9 +2932,9 @@ def update_packages(adir,force=False):
     >>> os.path.isfile(res['packages_filename'])
     True
     >>> r = WaptLocalRepo(localpath=repopath)
-    >>> l1 = r.packages
+    >>> l1 = r.packages()
     >>> res = r.update_packages_index()
-    >>> l2 = r.packages
+    >>> l2 = r.packages()
     >>> [p for p in l2 if p not in l1]
     ["test (=10)"]
     """

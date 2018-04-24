@@ -1185,6 +1185,8 @@ def remove_encoding_declaration(source):
     return "\n".join(result)
 
 def list_intersection(list1, list2):
+    if list1 is None or list2 is None:
+        return []
     return [item for item in list1 if item in list2]
 
 def get_language():

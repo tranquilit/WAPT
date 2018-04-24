@@ -41,7 +41,7 @@ def setloglevel(logger,loglevel):
             raise ValueError(_('Invalid log level: {}').format(loglevel))
         logger.setLevel(numeric_level)
 
-setloglevel(logger,'warning')
+setloglevel(logger,'debug')
 
 
 from waptutils import *
@@ -160,8 +160,6 @@ def test_build_sign_verify_package():
         raise Exception('Should fail corrupted file')
     except (EWaptCorruptedFiles,IOError) as e:
         print('OK : %s' % e)
-
-
 
     p2.build_package()
     p2.sign_package(codeur,key)
@@ -1003,9 +1001,9 @@ def test_licencing():
     k = SSLPrivateKey('c:/private/licencing.pem')
     l = licencing.WaptLicence(licence_nr=str(uuid.uuid4()),
         product='WAPT Enterprise',
-        count=0,
-        licenced_to=u'xxx',
-        contact_email=u'thierry.lermite@arrkeurope.com',
+        count=400,
+        licenced_to=u'Rectorat de Corse',
+        contact_email=u'jean-michel.lujan@ac-corse.fr',
         features=['full'],
         )
     lic = l.sign(c,k)
@@ -1014,11 +1012,11 @@ def test_licencing():
     print l.check_licence(c)
     print l.check_licence([c])
     setuphelpers.mkdirs('c:/tranquilit/wapt/licences')
-    l.save_to_file('c:/tranquilit/wapt/licences/%s.lic'%l.licence_nr)
+    l.save_to_file(r'C:\Users\htouvet\Seafile\licences-wapt\%s-%s.lic' % (l.licenced_to,l.licence_nr))
 
-    l2 = licencing.WaptLicence(filename='c:/tranquilit/wapt/licences/%s.lic'%l.licence_nr)
-    l2.check_licence(c.as_pem())
-    print l2
+    #l2 = licencing.WaptLicence(filename='c:/tranquilit/wapt/licences/%s.lic'%l.licence_nr)
+    #l2.check_licence(c.as_pem())
+    #print l2
 
 def gen_perso(cn,email,**kwargs):
     if not os.path.isfile('c:/private/%s-tis.pem' % cn):
@@ -1039,11 +1037,114 @@ def test_packagenewestversion():
     scp = r.search('winscp',newest_only=True)
     print(scp)
 
+
+def test_packagehook():
+    w = Wapt()
+    pe = PackageEntry(waptfile=r'c:\tranquilit\tis-paquetdedev_0-1_all_PROD.wapt')
+    pe.unzip_package()
+    try:
+        result = pe.call_setup_hook('session_setup',w)
+    finally:
+        pe.delete_localsources()
+    w.maturities.append('DEV')
+    w.write_config()
+    w.install(pe,force=True)
+    print(w.is_installed('tis-paquetdedev'))
+
+
+def test_logoutput():
+    outlog = []
+    def update_status(append_output=None,set_status=None,**kwargs):
+        if set_status is not None:
+            outlog.append('+ Status to: %s' % set_status)
+        if append_output is None:
+            outlog.append(u'+out %s: %s' % (kwargs,append_output))
+    with LogInstallOutput(sys.stdout,update_status_hook=update_status,install_id=12,user='moi'):
+        print('Install in progress')
+
+    print('\n'.join(outlog))
+
+def test_waptinstalllog():
+    w = Wapt()
+    w.install('tis-7zip',force=True)
+
+    with WaptPackageInstallLogger(sys.stderr,w,'tis-7zip') as l:
+        ps = w.waptdb.install_status(l.install_id)
+        sys.stderr.write("%s %s" % (ps.install_status,ps.install_output))
+
+        print('Je reinstalle...')
+
+        ps = w.waptdb.install_status(l.install_id)
+        sys.stderr.write("%s %s" % (ps.install_status,ps.install_output))
+
+    ps = w.is_installed('tis-7zip')
+    print(ps.install_status,ps.install_output)
+
+def test_install_uninstall():
+
+    devdir = r'c:\tranquilit\essai-wapt'
+    pe = PackageEntry(waptfile=devdir)
+    is_updated = pe.call_setup_hook('update_package')
+
+    w = Wapt()
+    w.audit('tis-notepadplusplus')
+
+    print('install depuis depot')
+    w.install('essai',force=True,params_dict={'test':'toto'})
+    print('install dev')
+    w.install_wapt(devdir,params_dict={'licence':'azklehakz'})
+    print(w.audit(devdir))
+    print(w.get_audit_status())
+
+    print('audit')
+    print(w.audit('essai'))
+
+
+
+    print('session setup 1')
+    w.session_setup(devdir)
+    print('session setup 2')
+    w.session_setup('essai',force=True)
+    print('desinstall dev')
+    w.remove(devdir)
+    print('install dev')
+
+    w.install_wapt(devdir,params_dict={'licence':'azklehakz'})
+    print('desinstall bd')
+    w.remove('essai')
+    print('Done')
+
+
+def test_package_request():
+    r =  PackageRequest(package='tis-7zip',version='>=1.18.2')
+    assert(r.match_version ('1.18.2'))
+    assert(r.match_version('1.18.3'))
+    assert(not r.match_version('1.18.1'))
+
+    assert(PackageEntry('tis-7zip','1.18.3').match(r))
+    assert(not PackageEntry('tis-7zip','1.18.1').match(r))
+    assert(PackageEntry('tis-7zip','1.18.4').match(r))
+    assert(PackageEntry('tis-7zip','1.18.4').match(r))
+
+    r =  PackageRequest(package='tis-7zip',locale='fr')
+    assert(PackageEntry('tis-7zip','1.18.4').match(r))
+
+    r = WaptRemoteRepo('http://srvwapt/wapt')
+    pe = r.packages_matching('tis-test-local')[-1]
+    assert(pe.match(PackageRequest(package='tis-test-local',locale='fr')))
+
+    print('OK with PackageRequest')
+
+
 if __name__ == '__main__':
     #gen_perso('htouvet',email='htouvet@tranquil.it')
-    test_packagenewestversion()
+    #test_packagenewestversion()
+    #test_licencing()
+    #test_logoutput()
+    #test_waptinstalllog()
+    #test_install_uninstall()
+    test_package_request()
     sys.exit(0)
-    test_licencing()
 
     setup_test()
 

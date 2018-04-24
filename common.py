@@ -2010,7 +2010,7 @@ class WaptHostRepo(WaptRepo):
 
     >>> host_repo = WaptHostRepo(name='wapt-host',host_id=['0D2972AC-0993-0C61-9633-529FB1A177E3','4C4C4544-004E-3510-8051-C7C04F325131'])
     >>> host_repo.load_config_from_file(r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini')
-    >>> host_repo.packages
+    >>> host_repo.packages()
     [PackageEntry('0D2972AC-0993-0C61-9633-529FB1A177E3','10') ,
      PackageEntry('4C4C4544-004E-3510-8051-C7C04F325131','30') ]
     """
@@ -2183,7 +2183,7 @@ class WaptHostRepo(WaptRepo):
             printhook (callable): to show progress of download
 
         Returns:
-            dict: {"downloaded":[local filenames],"skipped":[filenames in cache],"errors":[],"packages":self.packages}
+            dict: {"downloaded":[local filenames],"skipped":[filenames in cache],"errors":[],"packages":self.packages()}
         """
         if not isinstance(package_requests,(list,tuple)):
             package_requests = [ package_requests ]
@@ -2196,7 +2196,7 @@ class WaptHostRepo(WaptRepo):
 
         # if multithread... we don't have host package in memory cache from last self._load_packages_index
         for pr in package_requests:
-            for pe in self.packages:
+            for pe in self.packages():
                 if ((isinstance(pr,PackageEntry) and (pe == pr)) or
                    (isinstance(pr,(str,unicode)) and pe.match(pr))):
                     pfn = os.path.join(target_dir,pe.make_package_filename())
@@ -2215,7 +2215,7 @@ class WaptHostRepo(WaptRepo):
                         logger.warning('No host package content for %s' % (pr.asrequirement(),))
                     break
 
-        return {"downloaded":downloaded,"skipped":[],"errors":[],"packages":self.packages}
+        return {"downloaded":downloaded,"skipped":[],"errors":[],"packages":self.packages()}
 
     @property
     def repo_url(self):
@@ -3646,10 +3646,10 @@ class Wapt(BaseObjectClass):
             with self.waptdb:
                 try:
                     logger.debug(u'Read remote Packages index file %s' % repo.packages_url)
-                    last_modified = repo.packages_date
+                    last_modified = repo.packages_date()
 
                     self.waptdb.purge_repo(repo.name)
-                    for package in repo.packages:
+                    for package in repo.packages():
                         if filter_on_host_cap:
                             if not self.is_locally_allowed_package(package):
                                 logger.info('Discarding %s on repo "%s" because of local whitelist of blacklist rules' % (package.asrequirement(),repo.name))
@@ -3684,8 +3684,8 @@ class Wapt(BaseObjectClass):
                         except Exception as e:
                             logger.critical('Invalid signature for package control entry %s on repo %s : discarding : %s' % (package.asrequirement(),repo.name,e) )
 
-                    logger.debug(u'Storing last-modified header for repo_url %s : %s' % (repo.repo_url,repo.packages_date))
-                    self.waptdb.set_param('last-%s' % repo.repo_url[:59],repo.packages_date)
+                    logger.debug(u'Storing last-modified header for repo_url %s : %s' % (repo.repo_url,repo.packages_date()))
+                    self.waptdb.set_param('last-%s' % repo.repo_url[:59],repo.packages_date())
                     self.waptdb.set_param('last-url-%s' % repo.name, repo.repo_url)
                     return last_modified
                 except Exception as e:
@@ -6272,11 +6272,11 @@ class Wapt(BaseObjectClass):
 
     def set_package_attribute(self,package,key,value):
         """Store in local db a key/value pair for later use"""
-        self.waptdb.set_param(name,value)
+        self.waptdb.set_param(package+'.'+key,jsondump(value))
 
     def get_package_attribute(self,package,key,default_value=None):
         """Store in local db a key/value pair for later use"""
-        self.waptdb.set_param(name,value)
+        return json.loads(self.waptdb.get_param(package+'.'+key,default_value))
 
     def read_param(self,name,default=None):
         """read a param value from local db

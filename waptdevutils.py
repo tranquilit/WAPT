@@ -447,7 +447,7 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
 
     host_repo = WaptHostRepo(name='wapt-host',host_id=hosts_list,cabundle = cabundle)
     host_repo.load_config_from_file(waptconfigfile)
-    total_hosts = len(host_repo.packages)
+    total_hosts = len(host_repo.packages())
     discarded_uuids = [p.package for p in host_repo.discarded]
 
     hosts_list = ensure_list(hosts_list)
@@ -571,7 +571,7 @@ def add_ads_groups(waptconfigfile,
     host_repo = WaptHostRepo(name='wapt-host',host_id=[h['uuid'] for h in hostdicts_list],cabundle = cabundle)
     host_repo.load_config_from_file(waptconfigfile)
 
-    total_hosts = len(host_repo.packages)
+    total_hosts = len(host_repo.packages())
     discarded_uuids = [p.package for p in host_repo.discarded]
 
 
