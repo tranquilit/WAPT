@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=2.5.3.0
+Version=3.3.2.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -23,11 +23,11 @@ FileName=%(wapt_base_dir)s\setuphelpers.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node2]
 ClassName=TProjectFileNode
-FileName=%(wapt_base_dir)s\wapt-get.py
+FileName=%(wapt_base_dir)s\wapt-get.ini
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=%(wapt_base_dir)s\wapt-get.ini
+FileName=%(wapt_base_dir)s\wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node4]
 ClassName=TProjectFileNode
@@ -38,16 +38,15 @@ Count=5
 
 [Project\ChildNodes\Node0\ChildNodes\Node1]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]control
+FileName=$[Project-Path]changelog.txt
 
 [Project\ChildNodes\Node0\ChildNodes\Node2]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\setup.py
-
+FileName=$[Project-Path]control
 
 [Project\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]changelog.txt
+FileName=$[Project-Path]..\setup.py
 
 [Project\ChildNodes\Node0\ChildNodes]
 Count=4
@@ -239,7 +238,6 @@ WorkingDirectory=$[Project-Path]..
 ShortCut=0
 MessagesFormat=$[FileName] $[LineNumber]
 
-
 [Project\ChildNodes\Node1\ChildNodes\Node8]
 ClassName=TProjectRunConfiguationNode
 Name=update-package-sources
@@ -263,9 +261,31 @@ WorkingDirectory=$[ActiveScript-Dir]
 ShortCut=0
 MessagesFormat=$[FileName] $[LineNumber]
 
+[Project\ChildNodes\Node1\ChildNodes\Node9]
+ClassName=TProjectRunConfiguationNode
+Name=audit
+
+[Project\ChildNodes\Node1\ChildNodes\Node9\RunConfig]
+ScriptName=%(wapt_base_dir)s\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=uninstall "$[Project-Path].."
+WorkingDir=$[Project-Path]..
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node9\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes]
-Count=9
+Count=10
 
 [Project\ChildNodes]
 Count=2
