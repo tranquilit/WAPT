@@ -996,17 +996,21 @@ class WaptDB(WaptBaseDB):
         return result
 
     def install_status(self,id):
-        """Return a PackageEntry of the local install status for id
+        """Return a the local install status for id
 
         Args:
             id: sql rowid
+
+        Returns:
+            dict : merge of package local install, audit and package attributes.
+
         """
         sql = ["""\
-              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,l.setuppy,
-                l.depends,l.conflicts,l.uninstall_key,
-                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,
-                r.section,r.priority,r.maintainer,r.description,r.sources,r.filename,r.size,
-                r.repo_url,r.md5sum,r.repo,l.maturity,l.locale
+              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,
+                    l.depends,l.conflicts,l.uninstall_key,
+                    l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,
+                    r.section,r.priority,r.maintainer,r.description,r.sources,r.filename,r.size,
+                    r.repo_url,r.md5sum,r.repo,l.maturity,l.locale
                 from wapt_localstatus l
                 left join wapt_package r on
                     r.package=l.package and l.version=r.version and
@@ -1023,7 +1027,13 @@ class WaptDB(WaptBaseDB):
             return None
 
     def installed_search(self,searchwords=[],include_errors=False):
-        """Return a list of installed package entries based on search keywords"""
+        """Return a list of installed package entries based on search keywords
+
+
+        Returns:
+            list of PackageEntry merge with localstatus attributes without setuppy
+
+        """
         if not isinstance(searchwords,list) and not isinstance(searchwords,tuple):
             searchwords = [searchwords]
         if not searchwords:
@@ -1048,7 +1058,12 @@ class WaptDB(WaptBaseDB):
         return q
 
     def installed_matching(self,package_cond,include_errors=False):
-        """Return True if one properly installed (if include_errors=False) package match the package condition 'tis-package (>=version)' """
+        """Return True if one properly installed (if include_errors=False) package match the package condition 'tis-package (>=version)'
+
+        Returns:
+            list of PackageEntry merge with localstatus attributes without setuppy
+
+        """
         package = REGEX_PACKAGE_CONDITION.match(package_cond).groupdict()['package']
         if include_errors:
             status = '"OK","UNKNOWN","ERROR"'
@@ -1056,7 +1071,7 @@ class WaptDB(WaptBaseDB):
             status = '"OK","UNKNOWN"'
 
         q = self.query_package_entry(u"""\
-              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,
+              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,
                 l.uninstall_key,l.explicit_by,
                 l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,
                 coalesce(l.depends,r.depends),coalesce(l.conflicts,r.conflicts),coalesce(l.section,r.section),coalesce(l.priority,r.priority),
@@ -3537,7 +3552,7 @@ class Wapt(BaseObjectClass):
 
         """
         q = self.waptdb.query("""\
-           select package,version,architecture,maturity,locale,install_status,
+           select   rowid,package,version,architecture,maturity,locale,install_status,
                     install_output,install_params,explicit_by,uninstall_key,install_date,
                     last_audit_status,last_audit_on,last_audit_output,next_audit_on
            from wapt_localstatus

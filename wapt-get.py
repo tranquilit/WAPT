@@ -606,7 +606,7 @@ def main():
                 if args[1] == 'ALL':
                     packages_list = mywapt.installed().keys()
                 else:
-                    packages_list = args[1:]
+                    packages_list = expand_args(args[1:])
                 for packagename in packages_list:
                     try:
                         print(u"Configuring %s ..." % (packagename,))
@@ -626,7 +626,7 @@ def main():
                 if len(args) < 2:
                     packages_list = mywapt.installed().keys()
                 else:
-                    packages_list = expand_args(args[1:])
+                    packages_list = expand_args(args[1:],expand_file_wildcards=False)
                 for packagename in packages_list:
                     try:
                         print(u"Auditing %s ..." % (packagename,))
@@ -655,7 +655,7 @@ def main():
                     print(u"You must provide at least one package to be uninstalled")
                     sys.exit(1)
 
-                for packagename in expand_args(args[1:],expand_file_wildcards=False):
+                for packagename in expand_args(args[1:]):
                     print(u"Uninstalling %s ..." % (packagename,))
                     packagename = guess_package_root_dir(packagename)
                     print(mywapt.uninstall(packagename,params_dict=params_dict))
@@ -745,7 +745,7 @@ def main():
                 if len(args) < 2:
                     print(u"You must provide the package names to forget")
                     sys.exit(1)
-                result = mywapt.forget_packages(expand_args(args[1:],expand_file_wildcards=False))
+                result = mywapt.forget_packages(expand_args(args[1:]))
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
