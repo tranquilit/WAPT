@@ -8,77 +8,264 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-09-08 10:18+0200\n"
+"POT-Creation-Date: 2018-04-24 08:23+0200\n"
 "PO-Revision-Date: 2015-09-10 15:16+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: pl\n"
 "Language-Team: pl <LL@li.org>\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && "
 "(n%100<10 || n%100>=20) ? 1 : 2)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 1.3\n"
+"Generated-By: Babel 2.5.1\n"
 
-#: waptservice.py:138
-msgid "Invalid log level: {}"
+#: waptservice.py:587
+msgid "Update status"
 msgstr ""
 
-#: waptservice.py:276
+#: waptservice.py:625
+msgid "Reload configuration"
+msgstr ""
+
+#: waptservice.py:665
+msgid "Download upgrades"
+msgstr ""
+
+#: waptservice.py:680
+msgid "Installed software update"
+msgstr ""
+
+#: waptservice.py:706
+msgid "Triggered packages audits"
+msgstr ""
+
+#: waptservice.py:736
+msgid "LongTask"
+msgstr ""
+
+#: waptservice.py:751
+msgid "Cleanup"
+msgstr ""
+
+#: waptservice.py:767
+msgid "Trace of the installation of {}"
+msgstr ""
+
+#: waptservice.py:797
+msgid "Saving host to the WAPT server"
+msgstr ""
+
+#: waptservice.py:810
+msgid "Inventory of the host"
+msgstr ""
+
+#: waptservice.py:1198
+msgid "Running: {description}"
+msgstr ""
+
+#: waptservice.py:1206
+msgid ""
+"Done: {description}\n"
+"{summary}"
+msgstr ""
+
+#: waptservice.py:1212
+msgid "Canceled"
+msgstr ""
+
+#: waptservice_common.py:215
 msgid "FATAL. Couldn't open config file : {}"
 msgstr ""
 
-#: waptservice.py:360
+#: waptservice_common.py:363
 msgid ""
 "FATAL, configuration file {} has no section [global]. Please check "
 "Waptserver documentation"
 msgstr ""
 
-#: waptservice.py:866
-msgid "Update status"
+#: waptservice_common.py:496
+msgid ""
+"{classname} {id} created {create_date} started:{start_date} "
+"finished:{finish_date} "
 msgstr ""
 
-#: waptservice.py:904
-msgid "Reload configuration"
+#: waptservice_common.py:551
+msgid "Reconfiguring network access"
 msgstr ""
 
-#: waptservice.py:944
-msgid "Download upgrades"
+#: waptservice_common.py:570
+msgid "Upgrading WAPT client"
 msgstr ""
 
-#: waptservice.py:975
-msgid "Installed software update"
+#: waptservice_common.py:586
+#, python-format
+msgid "WaptService restart planned: %s"
 msgstr ""
 
-#: waptservice.py:1005
-msgid "LongTask"
+#: waptservice_common.py:590
+msgid "Restarting local WAPT service"
 msgstr ""
 
-#: waptservice.py:1020
-msgid "Cleanup"
+#: waptservice_common.py:619
+msgid "{} new package(s)"
 msgstr ""
 
-#: waptservice.py:1036
-msgid "Trace of the installation of {}"
+#: waptservice_common.py:621
+msgid "{} removed package(s)"
 msgstr ""
 
-#: waptservice.py:1066
-msgid "Saving host to the WAPT server"
+#: waptservice_common.py:622
+msgid "{} package(s) in the repository"
 msgstr ""
 
-#: waptservice.py:1079
-msgid "Inventory of the host"
+#: waptservice_common.py:629
+msgid "Packages to be updated : {}"
 msgstr ""
 
-#: waptservice.py:1258
-msgid "Installed Windows Updates"
+#: waptservice_common.py:631
+msgid "Packages with errors : {}"
 msgstr ""
 
-#: waptservice.py:1277
-msgid "Pending Windows Updates"
+#: waptservice_common.py:633 waptservice_common.py:688
+msgid "System up-to-date"
 msgstr ""
 
-#: waptservice.py:1295
-msgid "Discarded Windows Updates"
+#: waptservice_common.py:637
+msgid "Updating available packages"
+msgstr ""
+
+#: waptservice_common.py:680 waptservice_common.py:884
+msgid "Installed : {}"
+msgstr ""
+
+#: waptservice_common.py:682 waptservice_common.py:886
+msgid "Updated : {}"
+msgstr ""
+
+#: waptservice_common.py:684 waptservice_common.py:888
+#: waptservice_common.py:928
+msgid "Errors : {}"
+msgstr ""
+
+#: waptservice_common.py:686 waptservice_common.py:890
+msgid "Unavailable : {}"
+msgstr ""
+
+#: waptservice_common.py:693
+msgid "Upgrade packages installed on host"
+msgstr ""
+
+#: waptservice_common.py:711
+msgid "WAPT Server has been notified"
+msgstr ""
+
+#: waptservice_common.py:715
+msgid "Error while sending to the server : {}"
+msgstr ""
+
+#: waptservice_common.py:718 waptservice_common.py:747
+msgid "WAPT Server is not available"
+msgstr ""
+
+#: waptservice_common.py:721
+msgid "Update server with this host's status"
+msgstr ""
+
+#: waptservice_common.py:740
+msgid "Inventory has been sent to the WAPT server"
+msgstr ""
+
+#: waptservice_common.py:743
+msgid "Error while sending inventory to the server : {}"
+msgstr ""
+
+#: waptservice_common.py:751
+msgid "Update server with this host's inventory"
+msgstr ""
+
+#: waptservice_common.py:771
+msgid "Packages erased : {}"
+msgstr ""
+
+#: waptservice_common.py:774
+msgid "Error while clearing local cache : {}"
+msgstr ""
+
+#: waptservice_common.py:778
+msgid "Clear local package cache"
+msgstr ""
+
+#: waptservice_common.py:803
+msgid "raising an error for Test WaptLongTask"
+msgstr ""
+
+#: waptservice_common.py:809
+msgid "Test long running task of {}s"
+msgstr ""
+
+#: waptservice_common.py:830
+#, python-format
+msgid "Downloading %s : %s"
+msgstr ""
+
+#: waptservice_common.py:837
+msgid "Error while downloading {packagename}: {error}"
+msgstr ""
+
+#: waptservice_common.py:840
+msgid "Done downloading {packagename}. {speed} kB/s"
+msgstr ""
+
+#: waptservice_common.py:842
+msgid "Done downloading {packagename}."
+msgstr ""
+
+#: waptservice_common.py:855
+msgid "Download of {packagename} (tâche #{id})"
+msgstr ""
+
+#: waptservice_common.py:893
+msgid "Error during install of {}: errors in packages {}"
+msgstr ""
+
+#: waptservice_common.py:907
+msgid "Installation of {packagename} (task #{id})"
+msgstr ""
+
+#: waptservice_common.py:926
+msgid "Removed : {}"
+msgstr ""
+
+#: waptservice_common.py:932
+msgid "Uninstall of {packagename} (task #{id})"
+msgstr ""
+
+#: waptservice_common.py:945
+#, python-format
+msgid "Packages removed from database : %s"
+msgstr ""
+
+#: waptservice_common.py:947
+msgid "No package removed from database."
+msgstr ""
+
+#: waptservice_common.py:950
+msgid "Forget {packagenames} (task #{id})"
+msgstr ""
+
+#: waptservice_common.py:973
+#, python-format
+msgid "Audit result for %s : %s"
+msgstr ""
+
+#: waptservice_common.py:975
+#, python-format
+msgid "No audit result for %s"
+msgstr ""
+
+#: waptservice_common.py:978
+msgid "Audit of {packagename} (task #{id})"
 msgstr ""
 
 #: templates/download.html:4
@@ -97,7 +284,7 @@ msgstr ""
 msgid "Error: {0}"
 msgstr ""
 
-#: templates/download.html:20 templates/package_details.html:20
+#: templates/download.html:20 templates/package_details.html:40
 msgid "Back"
 msgstr ""
 
@@ -154,34 +341,42 @@ msgid "Errors: {0}"
 msgstr ""
 
 #: templates/index.html:23
+msgid "Authorized Packages's Signer certificates:"
+msgstr ""
+
+#: templates/index.html:37
+msgid "Repositories:"
+msgstr ""
+
+#: templates/index.html:51
 msgid "Computer information"
 msgstr ""
 
-#: templates/index.html:25
+#: templates/index.html:53
 msgid "Machine: {0}"
 msgstr ""
 
-#: templates/index.html:26
+#: templates/index.html:54
 msgid "Current users: {0}"
 msgstr ""
 
-#: templates/index.html:27
+#: templates/index.html:55
 msgid "Workgroup: {0}"
 msgstr ""
 
-#: templates/index.html:28
+#: templates/index.html:56
 msgid "DNS Domain: {0}"
 msgstr ""
 
-#: templates/index.html:29
+#: templates/index.html:57
 msgid "IP Addresses: {0}"
 msgstr ""
 
-#: templates/index.html:30
+#: templates/index.html:58
 msgid "System manufacturer : {0}"
 msgstr ""
 
-#: templates/index.html:31
+#: templates/index.html:59
 msgid "System product name : {0}"
 msgstr ""
 
@@ -189,113 +384,99 @@ msgstr ""
 msgid "Installing {0} <a href=\"task?id={1}\">task {1}"
 msgstr ""
 
-#: templates/layout.html:19
+#: templates/layout.html:12
 msgid "WAPT Service status"
 msgstr ""
 
-#: templates/layout.html:37
-msgid "WAPT Service"
-msgstr ""
-
-#: templates/layout.html:38
-msgid "design by TIS"
-msgstr ""
-
-#: templates/layout.html:44
+#: templates/layout.html:40
 msgid "WAPT"
 msgstr ""
 
-#: templates/layout.html:45 templates/status.html:6
+#: templates/layout.html:41 templates/status.html:6
 msgid "Installed packages"
 msgstr ""
 
-#: templates/layout.html:46
+#: templates/layout.html:42
 msgid "List of packages"
 msgstr ""
 
-#: templates/layout.html:47
+#: templates/layout.html:43
 msgid "Tasks"
-msgstr ""
-
-#: templates/layout.html:48
-msgid "Windows updates"
-msgstr ""
-
-#: templates/layout.html:76
-msgid ""
-"Copyright (c) 2012 Tranquil IT Systems. All rights reserved. Design by <a"
-" href=\"http://www.tranquil-it-systems.fr/\">TIS</a>."
 msgstr ""
 
 #: templates/list.html:27
 msgid "Available packages"
 msgstr ""
 
-#: templates/list.html:28
+#: templates/list.html:29
 msgid "Update available packages"
 msgstr ""
 
-#: templates/list.html:29
+#: templates/list.html:30
 msgid "Clear package cache"
 msgstr ""
 
-#: templates/list.html:30
+#: templates/list.html:31
 msgid "Upgrade system"
 msgstr ""
 
-#: templates/list.html:32 templates/package_details.html:5
+#: templates/list.html:38
+msgid "Show all versions?"
+msgstr ""
+
+#: templates/list.html:45
 msgid "package"
 msgstr ""
 
-#: templates/list.html:32
+#: templates/list.html:45
 msgid "install_version"
 msgstr ""
 
-#: templates/list.html:32
+#: templates/list.html:45
 msgid "install_status"
 msgstr ""
 
-#: templates/list.html:32
+#: templates/list.html:45
 msgid "install_date"
 msgstr ""
 
-#: templates/list.html:38 templates/status.html:13
+#: templates/list.html:51 templates/status.html:13
 msgid "Action"
 msgstr ""
 
-#: templates/list.html:71 templates/status.html:51
+#: templates/list.html:87 templates/status.html:53
 msgid "Remove"
 msgstr ""
 
-#: templates/list.html:73
+#: templates/list.html:89
 msgid "Downgrade"
 msgstr ""
 
-#: templates/list.html:75
+#: templates/list.html:91
 msgid "Upgrade"
 msgstr ""
 
-#: templates/list.html:77 templates/package_details.html:17
+#: templates/list.html:93 templates/package_details.html:37
 msgid "Install"
 msgstr ""
 
-#: templates/package_details.html:5
-msgid "version"
+#: templates/package_details.html:10
+msgid "Dependencies"
 msgstr ""
 
-#: templates/package_details.html:5
-msgid "description"
+#: templates/package_details.html:19
+msgid "Install status"
 msgstr ""
 
-#: templates/package_details.html:5
-msgid "maintainer"
+#: templates/package_details.html:28
+msgid "Audit status"
 msgstr ""
 
-#: templates/package_details.html:16
+#: templates/package_details.html:36
 msgid "Download"
 msgstr ""
 
-#: templates/package_details.html:18
+#: templates/package_details.html:38
 msgid "Uninstall"
 msgstr ""
 
@@ -331,16 +512,9 @@ msgstr ""
 msgid "Task n.{0} : {1}"
 msgstr ""
 
-#: templates/tasks.html:3
-msgid "Tasks manager"
-msgstr ""
-
-#: templates/tasks.html:5
+#: templates/tasks.html:31 templates/tasks.html:33 templates/tasks.html:34
+#: templates/tasks.html:35
 msgid "Running: {0}"
-msgstr ""
-
-#: templates/tasks.html:18
-msgid "Cancel"
 msgstr ""
 
 #: templates/waptwua.html:19
@@ -382,4 +556,46 @@ msgstr ""
 #: templates/waptwua.html:24
 msgid "Downloaded"
 msgstr ""
+
+#~ msgid "Invalid log level: {}"
+#~ msgstr ""
+
+#~ msgid "Installed Windows Updates"
+#~ msgstr ""
+
+#~ msgid "Pending Windows Updates"
+#~ msgstr ""
+
+#~ msgid "Discarded Windows Updates"
+#~ msgstr ""
+
+#~ msgid "WAPT Service"
+#~ msgstr ""
+
+#~ msgid "design by TIS"
+#~ msgstr ""
+
+#~ msgid "Windows updates"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Copyright (c) 2012 Tranquil IT Systems."
+#~ " All rights reserved. Design by <a"
+#~ " href=\"http://www.tranquil-it-systems.fr/\">TIS</a>."
+#~ msgstr ""
+
+#~ msgid "version"
+#~ msgstr ""
+
+#~ msgid "description"
+#~ msgstr ""
+
+#~ msgid "maintainer"
+#~ msgstr ""
+
+#~ msgid "Tasks manager"
+#~ msgstr ""
+
+#~ msgid "Cancel"
+#~ msgstr ""
 

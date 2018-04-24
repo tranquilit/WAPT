@@ -22,15 +22,15 @@ h1, h2, h3 {
 }
 
 h1 {
-	font-size: 2em;
-}
-
-h2 {
 	font-size: 1.5em;
 }
 
+h2 {
+	font-size: 1em;
+}
+
 h3 {
-	font-size: 1.2em;
+	font-size: 0.8em;
 }
 
 p, ul, ol {
