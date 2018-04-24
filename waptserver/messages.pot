@@ -8,77 +8,77 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-03-09 16:45+0100\n"
+"POT-Creation-Date: 2018-04-24 08:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.3\n"
+"Generated-By: Babel 2.5.1\n"
 
-#: waptserver.py:277
+#: server.py:286
 msgid "You have to login with proper credentials"
 msgstr ""
 
-#: waptserver.py:622 waptserver.py:860
+#: server.py:676 server.py:940
 msgid "Problem during upload"
 msgstr ""
 
-#: waptserver.py:632
+#: server.py:686
 msgid "Not a valid wapt package"
 msgstr ""
 
-#: waptserver.py:635
+#: server.py:689
 msgid "Wrong file type"
 msgstr ""
 
-#: waptserver.py:637 waptserver.py:868
+#: server.py:691 server.py:948
 msgid "Unsupported method"
 msgstr ""
 
-#: waptserver.py:644 waptserver.py:873
+#: server.py:698 server.py:953
 msgid "unexpected: {}"
 msgstr ""
 
-#: waptserver.py:757
+#: server.py:825
 msgid "{} Packages uploaded, {} errors.{}"
 msgstr ""
 
-#: waptserver.py:838
+#: server.py:916
 msgid "{} Host packages uploaded, {} errors"
 msgstr ""
 
-#: waptserver.py:863
+#: server.py:943
 msgid "{} uploaded"
 msgstr ""
 
-#: waptserver.py:866
+#: server.py:946
 msgid "Wrong file name (version conflict?)"
 msgstr ""
 
-#: waptserver.py:1104
+#: server.py:1199
 msgid "WAPT Server running"
 msgstr ""
 
-#: waptserver.py:1128
+#: server.py:1223
 #, python-format
 msgid "Hosts connection reset launched for %s host(s)"
 msgstr ""
 
-#: waptserver.py:1130
+#: server.py:1225
 msgid "Hosts connection reset launched for all hosts"
 msgstr ""
 
-#: waptserver.py:1285
+#: server.py:1388
 msgid "Sending magic wakeonlan packets to {} for machine {}"
 msgstr ""
 
-#: waptserver.py:1299
+#: server.py:1402
 msgid "Wakeonlan packets sent to {} machines."
 msgstr ""
 
-#: waptserver.py:1863
+#: server.py:1967
 msgid "Anomnymous usage statistics"
 msgstr ""
 
@@ -90,7 +90,7 @@ msgstr ""
 msgid "WAPT Server"
 msgstr ""
 
-#: templates/index.html:35 templates/index.html:141
+#: templates/index.html:35 templates/index.html:142
 msgid "Contact Us"
 msgstr ""
 
@@ -175,42 +175,42 @@ msgstr ""
 msgid "Disk space:"
 msgstr ""
 
-#: templates/index.html:110
+#: templates/index.html:111
 msgid "For creation of the Wapt agent"
 msgstr ""
 
-#: templates/index.html:115
+#: templates/index.html:116
 msgid "For setting up deployment GPO"
 msgstr ""
 
-#: templates/index.html:127
+#: templates/index.html:128
 msgid "For deploying onto user desktop"
 msgstr ""
 
-#: templates/index.html:142
+#: templates/index.html:143
 msgid "References"
 msgstr ""
 
-#: templates/index.html:143
+#: templates/index.html:144
 msgid "Actuality"
 msgstr ""
 
-#: templates/index.html:144
+#: templates/index.html:145
 msgid "Team"
 msgstr ""
 
-#: templates/index.html:147
+#: templates/index.html:148
 msgid "Tranquil IT"
 msgstr ""
 
-#: templates/index.html:148
+#: templates/index.html:149
 msgid ""
 "We are a team of passionate people whose life purpose is to be useful to "
 "others. We make our products with the aim to resolving your IT problems "
 "and optimizing your daily work."
 msgstr ""
 
-#: templates/index.html:152
+#: templates/index.html:153
 msgid "Tranquil IT Systems"
 msgstr ""
 
