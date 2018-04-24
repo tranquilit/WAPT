@@ -955,14 +955,14 @@ class WaptPackageForget(WaptTask):
 
 
 class WaptAuditPackage(WaptTask):
-    def __init__(self,packagename,force=False,**args):
+    def __init__(self,packagename,**args):
         super(WaptAuditPackage,self).__init__()
         self.packagename = packagename
-        self.force = force
 
         self.notify_server_on_start = False
         self.notify_server_on_finish = False
         self.notify_user = False
+        self.force=False
 
         for k in args:
             setattr(self,k,args[k])

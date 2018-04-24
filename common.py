@@ -302,6 +302,11 @@ class WaptBaseDB(BaseObjectClass):
         with self:
             self.db.execute('insert or replace into wapt_params(name,value,create_date) values (?,?,?)',(name,value,datetime2isodate()))
 
+    def set_package_attribute(self,install_id,key,value):
+        """Store permanently a (key/value) pair in database for a given package, replace existing one"""
+        with self:
+            self.db.execute('insert or replace into wapt_package_attributes(install_id,key,value,create_date) values (?,?,?,?)',(install_id,key,value,datetime2isodate()))
+
     def get_param(self,name,default=None):
         """Retrieve the value associated with name from database"""
         q = self.db.execute('select value from wapt_params where name=? order by create_date desc limit 1',(name,)).fetchone()
@@ -3406,9 +3411,10 @@ class Wapt(BaseObjectClass):
                             try:
                                 shutil.rmtree(packagetempdir)
                                 break
-                            except:
+                            except Exception as e:
                                 cnt -= 1
                                 time.sleep(2)
+                                print(e)
                         else:
                             logger.warning(u"Unable to clean tmp dir")
 
@@ -6246,6 +6252,14 @@ class Wapt(BaseObjectClass):
         return result
 
     def write_param(self,name,value):
+        """Store in local db a key/value pair for later use"""
+        self.waptdb.set_param(name,value)
+
+    def set_package_attribute(self,package,key,value):
+        """Store in local db a key/value pair for later use"""
+        self.waptdb.set_param(name,value)
+
+    def get_package_attribute(self,package,key,default_value=None):
         """Store in local db a key/value pair for later use"""
         self.waptdb.set_param(name,value)
 

@@ -190,14 +190,18 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     notify_user = action.get('notify_user',False)
                     notify_server_on_finish = action.get('notify_server',False)
                     force = action.get('force',False)
-                    self.wapt.update(force=force)
+                    self.wapt.update(force=False)
                     upgrades = self.wapt.list_upgrade()
                     to_install = upgrades['upgrade']+upgrades['additional']+upgrades['install']
                     for req in to_install:
                         result.append(self.task_manager.add_task(WaptPackageInstall(req,force=force,notify_user=notify_user,created_by=verified_by)).as_dict())
-
-                    result.append(self.task_manager.add_task(WaptUpgrade(notify_user=notify_user,created_by=verified_by)).as_dict())
-                    result.append(self.task_manager.add_task(WaptCleanup(notify_user=False,created_by=verified_by)).as_dict())
+                        self.task_manager.add_task(WaptAuditPackage(packagename=req,force=False,
+                            notify_user=notify_user,
+                            notify_server_on_finish=False,
+                            priority=200,
+                            created_by=verified_by)).as_dict()
+                    result.append(self.task_manager.add_task(WaptUpgrade(notify_user=notify_user,created_by=verified_by,priority=200)).as_dict())
+                    result.append(self.task_manager.add_task(WaptCleanup(notify_user=False,created_by=verified_by,priority=200)).as_dict())
 
                 elif name in ('trigger_host_audit','trigger_audit_packages'):
                     notify_user = action.get('notify_user',False)
@@ -211,7 +215,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                             continue
 
                         if force or not package_status.next_audit_on or (now >= package_status.next_audit_on):
-                            task = WaptAuditPackage(package_status.package)
+                            task = WaptAuditPackage(packagename=package_status.package)
                             result.append(self.task_manager.add_task(task).as_dict())
                     if notify_server_on_finish:
                         result.append(self.task_manager.add_task(WaptUpdateServerStatus(priority=100)).as_dict())
@@ -231,6 +235,12 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                         task.created_by=verified_by
 
                         result.append(self.task_manager.add_task(task).as_dict())
+                        if name == 'trigger_install_packages':
+                            self.task_manager.add_task(WaptAuditPackage(packagename=packagename,force=task.force,
+                                    notify_user=task.notify_user,
+                                    notify_server_on_finish=task.notify_server_on_finish,
+                                    priority=200)).as_dict()
+
                 elif name == 'trigger_waptservicerestart':
                     msg = setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice')
                     result.append(dict(success=True,msg = msg,result = msg))

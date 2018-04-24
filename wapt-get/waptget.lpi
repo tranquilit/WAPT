@@ -61,8 +61,8 @@
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="641"/>
-        <CursorPos Y="658"/>
+        <TopLine Value="642"/>
+        <CursorPos X="16" Y="649"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -182,11 +182,10 @@
       </Unit16>
       <Unit17>
         <Filename Value="..\..\pltis_superobject\soutils.pas"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="345"/>
         <CursorPos X="23" Y="350"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit17>
       <Unit18>
         <Filename Value="..\..\pltis_superobject\soclipbrd.pas"/>
@@ -226,11 +225,10 @@
       </Unit22>
       <Unit23>
         <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="2132"/>
         <CursorPos Y="2151"/>
         <UsageCount Value="19"/>
-        <Loaded Value="True"/>
       </Unit23>
       <Unit24>
         <Filename Value="..\..\internettools\internet\simpleinternet.pas"/>
@@ -301,11 +299,10 @@
       <Unit34>
         <Filename Value="uwaptres.pas"/>
         <UnitName Value="uWaptRes"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="15"/>
         <CursorPos Y="43"/>
         <UsageCount Value="22"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit34>
       <Unit35>
@@ -519,23 +516,21 @@
       <Unit66>
         <Filename Value="C:\lazarus\fpc\3.0.4\source\packages\fcl-base\src\custapp.pp"/>
         <UnitName Value="CustApp"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="77"/>
         <CursorPos X="14" Y="90"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit66>
       <Unit67>
         <Filename Value="..\..\Python-for-Lazarus\python4lazarus\Sources\Core\PythonEngine.pas"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="5205"/>
         <CursorPos Y="5220"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit67>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="10" HistoryIndex="9">
       <Position1>
         <Filename Value="waptget.lpr"/>
         <Caret Line="648" Column="33" TopLine="632"/>
@@ -557,105 +552,25 @@
         <Caret Line="653" TopLine="641"/>
       </Position5>
       <Position6>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="3537" TopLine="3523"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="653" Column="3" TopLine="641"/>
       </Position6>
       <Position7>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="3538" TopLine="3523"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="655" TopLine="641"/>
       </Position7>
       <Position8>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="3539" TopLine="3523"/>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="658" TopLine="641"/>
       </Position8>
       <Position9>
         <Filename Value="waptget.lpr"/>
-        <Caret Line="653" Column="3" TopLine="641"/>
+        <Caret Line="659" TopLine="641"/>
       </Position9>
       <Position10>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="3537" TopLine="3523"/>
-      </Position10>
-      <Position11>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="3538" TopLine="3523"/>
-      </Position11>
-      <Position12>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="3539" TopLine="3523"/>
-      </Position12>
-      <Position13>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="655" TopLine="641"/>
-      </Position13>
-      <Position14>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="2147" TopLine="2131"/>
-      </Position14>
-      <Position15>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="2148" TopLine="2131"/>
-      </Position15>
-      <Position16>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="2149" TopLine="2131"/>
-      </Position16>
-      <Position17>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="2151" TopLine="2131"/>
-      </Position17>
-      <Position18>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="3537" TopLine="3523"/>
-      </Position18>
-      <Position19>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="3538" TopLine="3523"/>
-      </Position19>
-      <Position20>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="3539" TopLine="3523"/>
-      </Position20>
-      <Position21>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="658" TopLine="641"/>
-      </Position21>
-      <Position22>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="2131" TopLine="2115"/>
-      </Position22>
-      <Position23>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="2132" TopLine="2115"/>
-      </Position23>
-      <Position24>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="2133" TopLine="2115"/>
-      </Position24>
-      <Position25>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="659" TopLine="641"/>
-      </Position25>
-      <Position26>
         <Filename Value="waptget.lpr"/>
         <Caret Line="660" TopLine="641"/>
-      </Position26>
-      <Position27>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="2147" TopLine="2132"/>
-      </Position27>
-      <Position28>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="2148" TopLine="2132"/>
-      </Position28>
-      <Position29>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="2149" TopLine="2132"/>
-      </Position29>
-      <Position30>
-        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
-        <Caret Line="2151" TopLine="2132"/>
-      </Position30>
+      </Position10>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

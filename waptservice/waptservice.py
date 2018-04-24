@@ -819,6 +819,8 @@ def install():
     force = int(request.args.get('force','0')) == 1
     notify_user = int(request.args.get('notify_user','0')) == 1
     data = task_manager.add_task(WaptPackageInstall(package,force=force),notify_user=notify_user).as_dict()
+    for apackage in ensure_list(package):
+        task_manager.add_task(WaptAuditPackage(packagename=apackage,force=force),notify_user=notify_user,priority=100).as_dict()
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
