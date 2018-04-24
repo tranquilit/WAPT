@@ -8,10 +8,20 @@ import os
 uninstallkey = []
 
 install_dir = '%(installer)s'
+applabel = None
 
 def is_x64(exefilename):
     with disable_file_system_redirection():
-        return pefile.PE(exefilename).FILE_HEADER.Machine == 0x8664
+        pe = pefile.PE(exefilename,fast_load=True)
+        try:
+            if pe.FILE_HEADER.Machine == 0x8664:
+                result = True
+            else:
+                result = False
+        finally:
+            # be sure to release exe
+            pe.close()
+        return result
 
 def find_exes(root):
     """ Returns all .exe in root directory and subdirs"""
@@ -41,6 +51,8 @@ Available template vars:
 """
 
 def install():
+    global applabel
+
     app = find_app(install_dir)
     if is_x64(app):
         if not iswin64():
@@ -53,12 +65,16 @@ def install():
     mkdirs(destdir)
 
     copytree2(install_dir,destdir)
-    applabel = get_file_properties(app)['FileDescription'] or get_file_properties(app)['ProductName']
+    if applabel is None:
+        applabel = get_file_properties(app)['FileDescription'] or get_file_properties(app)['ProductName']
 
-    create_programs_menu_shortcut('{}.lnk'.format(applabel),makepath(destdir,os.path.basename(app)))
+    if applabel is not None:
+        create_programs_menu_shortcut('{}.lnk'.format(applabel),makepath(destdir,os.path.basename(app)))
     register_windows_uninstall(control)
 
 def uninstall():
-    #remove_programs_menu_shortcut(applabel)
+    global applabel
+    if applabel is not None:
+        remove_programs_menu_shortcut(applabel)
     unregister_uninstall(control.package)
 
