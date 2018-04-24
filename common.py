@@ -1008,7 +1008,7 @@ class WaptDB(WaptBaseDB):
         sql = ["""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,
                     l.depends,l.conflicts,l.uninstall_key,
-                    l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,
+                    l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.audit_schedule,
                     r.section,r.priority,r.maintainer,r.description,r.sources,r.filename,r.size,
                     r.repo_url,r.md5sum,r.repo,l.maturity,l.locale
                 from wapt_localstatus l
@@ -1048,7 +1048,7 @@ class WaptDB(WaptBaseDB):
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,
                 l.uninstall_key,l.explicit_by,
                 coalesce(l.depends,r.depends),coalesce(l.conflicts,r.conflicts),coalesce(l.section,r.section),coalesce(l.priority,r.priority),
-                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,
+                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.audit_schedule,
                 r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo
               from wapt_localstatus l
@@ -5336,13 +5336,13 @@ class Wapt(BaseObjectClass):
 
             if audit_period is not None:
                 if audit_period.endswith('m'):
-                    timedelta = datetime.timedelta(minutes=int(audit_period[:-2]))
+                    timedelta = datetime.timedelta(minutes=float(audit_period[:-1]))
                 elif audit_period.endswith('h'):
-                    timedelta = datetime.timedelta(hours=int(audit_period[:-2]))
+                    timedelta = datetime.timedelta(hours=float(audit_period[:-1]))
                 elif audit_period.endswith('d'):
-                    timedelta = datetime.timedelta(days=int(audit_period[:-2]))
+                    timedelta = datetime.timedelta(days=float(audit_period[:-1]))
                 else:
-                    timedelta = datetime.timedelta(minutes=int(audit_period[:-2]))
+                    timedelta = datetime.timedelta(minutes=float(audit_period[:-1]))
                 next_audit = datetime.datetime.now()+timedelta
 
             self.waptdb.update_audit_status(install_id,set_status='RUNNING',set_output='',
