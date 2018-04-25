@@ -4108,8 +4108,8 @@ begin
 
     // awfull hack to workaround the bad wordwrap break of last line for multilines cells...
     // the problem is probably in the LCL... ?
-    {if  (colname = 'description') or (colname = 'depends') or (colname = 'conflicts') then
-      CellText := CellText + #13#10;}
+    if  (colname = 'description') or (colname = 'depends') or (colname = 'conflicts') then
+      CellText := CellText + #13#10;
 
     if (colname = 'description') then
       CellText := UTF8Encode(Celltext);
