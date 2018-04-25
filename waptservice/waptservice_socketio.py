@@ -210,7 +210,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     now = setuphelpers.currentdatetime()
                     packagenames = ensure_list(action.get('packages',None),allow_none=True)
 
-                    for package_status in self.wapt.installed().values():
+                    for package_status in self.wapt.installed():
                         if name == 'trigger_audit_packages' and not package_status.package in packagenames:
                             continue
 
