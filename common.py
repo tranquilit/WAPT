@@ -5417,7 +5417,7 @@ class Wapt(BaseObjectClass):
                     except Exception as e:
                         print('Audit aborted due to exception: %s' % e)
                         dblog.exit_status = 'ERROR'
-                        raise
+                        return dblog.exit_status
             else:
                 print('Skipping audit of %s, returning last audit from %s' % (package_install.asrequirement(),package_install.last_audit_on))
                 return package_install.last_audit_status
