@@ -43,13 +43,13 @@
     </RunParams>
     <RequiredPackages Count="12">
       <Item1>
-        <PackageName Value="pltis_virtualtreesextra"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item1>
       <Item2>
-        <PackageName Value="python4lazarus_package"/>
+        <PackageName Value="pltis_virtualtreesextra"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_sogrid_laz"/>
+        <PackageName Value="python4lazarus_package"/>
       </Item3>
       <Item4>
         <PackageName Value="luicontrols"/>

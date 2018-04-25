@@ -36,19 +36,19 @@
     </RunParams>
     <RequiredPackages Count="9">
       <Item1>
-        <PackageName Value="pltis_virtualtreesextra"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item1>
       <Item2>
-        <PackageName Value="HtmlComp"/>
+        <PackageName Value="pltis_virtualtreesextra"/>
       </Item2>
       <Item3>
-        <PackageName Value="dcpcrypt_laz"/>
+        <PackageName Value="HtmlComp"/>
       </Item3>
       <Item4>
-        <PackageName Value="indylaz"/>
+        <PackageName Value="dcpcrypt_laz"/>
       </Item4>
       <Item5>
-        <PackageName Value="pltis_sogrid_laz"/>
+        <PackageName Value="indylaz"/>
       </Item5>
       <Item6>
         <PackageName Value="pltis_wapt"/>
