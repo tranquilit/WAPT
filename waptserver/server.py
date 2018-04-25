@@ -1933,7 +1933,7 @@ def usage_statistics():
             fn.COUNT(Hosts.uuid).alias('hosts_count'),
             fn.MIN(Hosts.last_seen_on).alias('oldest_query'),
             fn.MAX(Hosts.last_seen_on).alias('newest_query'),
-        ).where(Hosts.server_uuid == server_uuid).dicts().first()
+        ).where(Hosts.server_uuid == get_server_uuid()).dicts().first()
 
         installed_packages = HostPackagesStatus.select(
             HostPackagesStatus.install_status,

@@ -1084,7 +1084,7 @@ class WaptDB(WaptBaseDB):
             status = '"OK","UNKNOWN"'
 
         q = self.query_package_entry(u"""\
-              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,
+              select l.rowid,l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,
                 l.uninstall_key,l.explicit_by,
                 l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,
                 coalesce(l.depends,r.depends),coalesce(l.conflicts,r.conflicts),coalesce(l.section,r.section),coalesce(l.priority,r.priority),
@@ -5311,6 +5311,7 @@ class Wapt(BaseObjectClass):
     def get_audit_status(self):
         return self.waptdb.audit_status()
 
+
     def audit(self,package,force=False):
         """Run the audit hook for the installed package"
         Source setup.py from database, filename, or packageEntry
@@ -5333,7 +5334,7 @@ class Wapt(BaseObjectClass):
 
 
         install_id = None
-        logger.info(u"Audit run for package %s and user %s" % (package,self.user))
+        now = datetime2isodate()
 
         oldpath = sys.path
         try:
@@ -5349,67 +5350,76 @@ class Wapt(BaseObjectClass):
             if not package_entry:
                 raise Exception('Package %s is not installed' % package)
 
-            install_id =  self._get_package_status_rowid(package_entry)
-            package_install = self.waptdb.install_status(install_id)
-
-            next_audit = None
-
-            if package_install.audit_schedule:
-                audit_period = package_install.audit_schedule
-            elif self.config.has_option('global','waptaudit_task_period'):
-                audit_period = self.config.get('global','waptaudit_task_period')
+            if hasattr(package_entry,'install_status') and hasattr(package_entry,'rowid'):
+                install_id = package_entry.rowid
+                package_install = package_entry
             else:
-                audit_period = None
+                install_id =  self._get_package_status_rowid(package_entry)
+                package_install = self.waptdb.install_status(install_id)
 
-            if audit_period is not None:
-                if audit_period.endswith('m'):
-                    timedelta = datetime.timedelta(minutes=float(audit_period[:-1]))
-                elif audit_period.endswith('h'):
-                    timedelta = datetime.timedelta(hours=float(audit_period[:-1]))
-                elif audit_period.endswith('d'):
-                    timedelta = datetime.timedelta(days=float(audit_period[:-1]))
+            if force or not package_install.next_audit_on or now >= package_install.next_audit_on:
+                logger.info(u"Audit run for package %s and user %s" % (package,self.user))
+                next_audit = None
+
+                if package_install.audit_schedule:
+                    audit_period = package_install.audit_schedule
+                elif self.config.has_option('global','waptaudit_task_period'):
+                    audit_period = self.config.get('global','waptaudit_task_period')
                 else:
-                    timedelta = datetime.timedelta(minutes=float(audit_period[:-1]))
-                next_audit = datetime.datetime.now()+timedelta
+                    audit_period = '240m'
 
-            self.waptdb.update_audit_status(install_id,set_status='RUNNING',set_output='',
-                set_last_audit_on=datetime2isodate(),
-                set_next_audit_on=datetime2isodate(next_audit))
+                if audit_period is not None:
+                    if audit_period.endswith('m'):
+                        timedelta = datetime.timedelta(minutes=float(audit_period[:-1]))
+                    elif audit_period.endswith('h'):
+                        timedelta = datetime.timedelta(hours=float(audit_period[:-1]))
+                    elif audit_period.endswith('d'):
+                        timedelta = datetime.timedelta(days=float(audit_period[:-1]))
+                    else:
+                        timedelta = datetime.timedelta(minutes=float(audit_period))
+                    next_audit = datetime.datetime.now()+timedelta
 
-            with WaptPackageAuditLogger(console=sys.stderr,wapt_context=self,install_id=install_id,user=self.user) as dblog:
-                try:
-                    # check if registered uninstalley are still there
-                    uninstallkeys = self._get_uninstallkeylist(package_install['uninstall_key'])
-                    dblog.exit_status = 'OK'
+                self.waptdb.update_audit_status(install_id,set_status='RUNNING',set_output='',
+                    set_last_audit_on=datetime2isodate(),
+                    set_next_audit_on=datetime2isodate(next_audit))
 
-                    for key in uninstallkeys:
-                        uninstallkey_exists = setuphelpers.installed_softwares(uninstallkey=key)
-                        if not uninstallkey_exists:
-                            print(u'ERROR: Uninstall Key %s is not in Windows Registry.' % key)
-                            dblog.exit_status = worst(dblog.exit_status,'ERROR')
+                with WaptPackageAuditLogger(console=sys.stderr,wapt_context=self,install_id=install_id,user=self.user) as dblog:
+                    try:
+                        # check if registered uninstalley are still there
+                        uninstallkeys = self._get_uninstallkeylist(package_install['uninstall_key'])
+                        dblog.exit_status = 'OK'
+
+                        for key in uninstallkeys:
+                            uninstallkey_exists = setuphelpers.installed_softwares(uninstallkey=key)
+                            if not uninstallkey_exists:
+                                print(u'ERROR: Uninstall Key %s is not in Windows Registry.' % key)
+                                dblog.exit_status = worst(dblog.exit_status,'ERROR')
+                            else:
+                                print(u'OK: Uninstall Key %s in Windows Registry.' % key)
+                                dblog.exit_status = worst(dblog.exit_status,'OK')
+
+                        if package_entry.has_setup_py():
+                            # get value of required parameters from system wide install
+                            params = self.get_previous_package_params(package_entry)
+                            # this call return None if not audit hook or if hook has no return value.
+                            try:
+                                result = package_entry.call_setup_hook('audit',self,params)
+                            except EWaptMissingPackageHook:
+                                result = 'OK'
+                            dblog.exit_status = worst(dblog.exit_status,result)
                         else:
-                            print(u'OK: Uninstall Key %s in Windows Registry.' % key)
+                            logger.debug('No setup.py, skipping session-setup')
+                            print(u'OK: No setup.py')
                             dblog.exit_status = worst(dblog.exit_status,'OK')
 
-                    if package_entry.has_setup_py():
-                        # get value of required parameters from system wide install
-                        params = self.get_previous_package_params(package_entry)
-                        # this call return None if not audit hook or if hook has no return value.
-                        try:
-                            result = package_entry.call_setup_hook('audit',self,params)
-                        except EWaptMissingPackageHook:
-                            result = 'OK'
-                        dblog.exit_status = worst(dblog.exit_status,result)
-                    else:
-                        logger.debug('No setup.py, skipping session-setup')
-                        print(u'OK: No setup.py')
-                        dblog.exit_status = worst(dblog.exit_status,'OK')
+                        return dblog.exit_status
 
-                    return dblog.exit_status
-
-                except Exception as e:
-                    print('Audit aborted due to exception: %s' % e)
-                    dblog.exit_status = 'ERROR'
+                    except Exception as e:
+                        print('Audit aborted due to exception: %s' % e)
+                        dblog.exit_status = 'ERROR'
+            else:
+                logger.info('Skipping audit of %s, returning last audit from %s' % (package_install.asrequirement(),package_install.last_audit_on))
+                return package_install.last_audit_status
 
         finally:
             sys.path = oldpath

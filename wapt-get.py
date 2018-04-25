@@ -490,13 +490,11 @@ def main():
                     mywapt.update()
 
                 all_args = expand_args(args[1:])
-                if all_args:
-                    for arg in all_args:
-                        if os.path.isdir(arg) or os.path.isfile(arg):
-                            control = PackageEntry().load_control_from_wapt(arg)
-                            result.append(control)
-                else:
-                    for arg in args[1:]:
+                for arg in all_args:
+                    if os.path.isdir(arg) or os.path.isfile(arg):
+                        control = PackageEntry().load_control_from_wapt(arg)
+                        result.append(control)
+                    else:
                         result.extend(mywapt.waptdb.packages_matching(arg))
 
                 if options.json_output:
@@ -633,16 +631,17 @@ def main():
             elif action == 'audit':
                 result = []
                 if len(args) < 2:
-                    packages_list = mywapt.installed().keys()
+                    packages_list = mywapt.waptdb.installed_package_names()
                 else:
                     packages_list = expand_args(args[1:],expand_file_wildcards=False)
+
                 for packagename in packages_list:
                     try:
                         print(u"Auditing %s ..." % (packagename,))
                         packagename = guess_package_root_dir(packagename)
                         audit_result = mywapt.audit(packagename,force=options.force)
                         result.append([packagename,audit_result])
-                        print("-> %s" % audit_result)
+                        print("%s -> %s" % (packagename,audit_result))
                     except Exception as e:
                         logger.critical(ensure_unicode(e))
 
