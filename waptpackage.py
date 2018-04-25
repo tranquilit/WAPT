@@ -2372,7 +2372,7 @@ class WaptLocalRepo(WaptBaseRepo):
             # keep only entries which are older than index. Other should be recalculated.
             localwaptfile = os.path.abspath(os.path.join(self.localpath,os.path.basename(package.filename)))
             if os.path.isfile(localwaptfile):
-                if fileisoutcdate(localwaptfile) <= self._packages_date():
+                if fileisoutcdate(localwaptfile) <= self._packages_date:
                     old_entries[os.path.basename(package.filename)] = package
                 else:
                     logger.info(u"Don't keep old entry for %s, wapt package is newer than index..." % package.asrequirement())
