@@ -40,7 +40,7 @@
     </RunParams>
     <RequiredPackages Count="6">
       <Item1>
-        <PackageName Value="pltis_sogrid_laz"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item1>
       <Item2>
         <PackageName Value="indylaz"/>

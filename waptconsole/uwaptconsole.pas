@@ -739,6 +739,20 @@ uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, uvisprivatekey
 
 type TComponentsArray=Array of TComponent;
 
+procedure SetSOGridVisible(Grid:TSOGrid;PropertyName:String;Visible:Boolean);
+var
+  Acol: TSOGridColumn;
+begin
+  ACol := Grid.FindColumnByPropertyName(PropertyName);
+  If Acol<>Nil then
+  begin
+    if Visible then
+      ACol.Options := ACol.Options+[coVisible]
+    else
+      ACol.Options := ACol.Options-[coVisible]
+  end;
+end;
+
 function VarArrayOf(items: Array of const):TComponentsArray;
 var
   i:integer;
@@ -2321,11 +2335,6 @@ begin
   MakePackageTemplate('');
 end;
 
-procedure TVisWaptGUI.ActPackagesAuditExecute(Sender: TObject);
-begin
-  TriggerActionOnHostPackages('trigger_audit_packages',rsConfirmPackageAudit,rsPackageAuditError,True);
-end;
-
 procedure TVisWaptGUI.ActPackagesForceInstallExecute(Sender: TObject);
 begin
   TriggerActionOnHostPackages('trigger_install_packages',rsConfirmPackageInstall,rsPackageInstallError,True);
@@ -2414,14 +2423,6 @@ begin
   if (GridHosts.SelectedCount>=1) and
     (MessageDlg(Format(rsConfirmBurstUpgrades,[GridHosts.SelectedCount]),mtConfirmation,mbYesNoCancel, 0) = mrYes) then
       TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_host_upgrade',Nil,rsUpgradingHost,'Error applying upgrades %s',True)
-
-end;
-
-procedure TVisWaptGUI.ActTriggerHostAuditExecute(Sender: TObject);
-begin
-  if (GridHosts.SelectedCount>=1) and
-    (MessageDlg(Format(rsConfirmHostsAudit,[GridHosts.SelectedCount]),mtConfirmation,mbYesNoCancel, 0) = mrYes) then
-      TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_host_audit',Nil,rsUpgradingHost,'Error triggering audit %s',True)
 
 end;
 
@@ -3965,7 +3966,7 @@ var
   sores: ISuperObject;
   CB:TComponent;
   ini:TIniFile;
-
+  ACol: TSOGridColumn;
 begin
   {$ifdef ENTERPRISE }
   IsEnterpriseEdition:=True;
@@ -4107,8 +4108,9 @@ begin
 
     // awfull hack to workaround the bad wordwrap break of last line for multilines cells...
     // the problem is probably in the LCL... ?
-    if  (colname = 'description') or (colname = 'depends') or (colname = 'conflicts') then
-      CellText := CellText + #13#10;
+    {if  (colname = 'description') or (colname = 'depends') or (colname = 'conflicts') then
+      CellText := CellText + #13#10;}
+
     if (colname = 'description') then
       CellText := UTF8Encode(Celltext);
 
@@ -4150,7 +4152,7 @@ procedure TVisWaptGUI.GridHostPackagesChange(Sender: TBaseVirtualTree;
 begin
   if (GridHostPackages.FocusedRow <> nil) then
   begin
-    if GridHostPackages.FocusedColumnObject.PropertyName = 'last_audit_status' then
+    if IsEnterpriseEdition and (GridHostPackages.FocusedColumnObject.PropertyName = 'last_audit_status') then
       MemoInstallOutput.Text := UTF8Encode(GridHostPackages.FocusedRow.S['last_audit_output'])
     else
       MemoInstallOutput.Text := UTF8Encode(GridHostPackages.FocusedRow.S['install_output']);
@@ -4194,7 +4196,7 @@ begin
     end;
   end
   else
-  if propName='last_audit_status' then
+  if IsEnterpriseEdition and (propName='last_audit_status') then
   begin
     install_status := GridHostPackages.GetCellData(Node, 'last_audit_status', nil);
     if (install_status <> nil) then
@@ -4445,7 +4447,7 @@ begin
     else
       ImageIndex := 10
   end
-  else if TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'audit_status' then
+  else if IsEnterpriseEdition and (TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'audit_status') then
   begin
     status := GridHostPackages.GetCellData(Node, 'audit_status', nil);
     if (status <> nil) then
@@ -4609,9 +4611,12 @@ begin
 end;
 
 procedure TVisWaptGUI.SetIsEnterpriseEdition(AValue: Boolean);
+var
+  ACol: TSOGridColumn;
 begin
   {$ifdef ENTERPRISE}
   {$include ..\waptenterprise\includes\uwaptconsole.setenterprise.inc}
+
   {$else}
   dmpython.IsEnterpriseEdition:=False;
   Label20.Visible:=False;
@@ -4623,6 +4628,8 @@ begin
   ActTISHelp.Visible:=False;
   PgNetworksConfig.TabVisible:=False;
   PgReports.TabVisible:=False;
+  ActTriggerHostAudit.Visible:=False;
+  ActPackagesAudit.Visible:=False;
   {$endif}
 end;
 
@@ -4875,6 +4882,14 @@ begin
 end;
 
 procedure TVisWaptGUI.cbADSiteSelect(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActPackagesAuditExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActTriggerHostAuditExecute(Sender: TObject);
 begin
 end;
 
