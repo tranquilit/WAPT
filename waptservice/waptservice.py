@@ -618,7 +618,7 @@ def reload_config():
     """trigger reload of wapt-get.ini file for the service"""
     force = int(request.args.get('force','0')) == 1
     notify_user = int(request.args.get('notify_user','0')) == 1
-    data = task_manager.add_task(WaptNetworkReconfig(),notify_user=notify_user).as_dict()
+    data = task_manager.add_task(WaptNetworkReconfig(notify_user=notify_user)).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -637,9 +637,9 @@ def upgrade():
     actions = wapt().list_upgrade()
     to_install = actions['upgrade']+actions['additional']+actions['install']
     for req in to_install:
-        all_tasks.append(task_manager.add_task(WaptPackageInstall(req,force=force),notify_user=notify_user).as_dict())
-    all_tasks.append(task_manager.add_task(WaptUpgrade(),notify_user=notify_user).as_dict())
-    all_tasks.append(task_manager.add_task(WaptCleanup(),notify_user=False))
+        all_tasks.append(task_manager.add_task(WaptPackageInstall(req,force=force,notify_user=notify_user)).as_dict())
+    all_tasks.append(task_manager.add_task(WaptUpgrade(notify_user=notify_user)).as_dict())
+    all_tasks.append(task_manager.add_task(WaptCleanup(notify_user=False)))
     data = {'result':'OK','content':all_tasks}
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -657,7 +657,7 @@ def download_upgrades():
     wapt().update()
     reqs = wapt().check_downloads()
     for req in reqs:
-        all_tasks.append(task_manager.add_task(WaptDownloadPackage(req.asrequirement(),usecache=not force),notify_user=notify_user).as_dict())
+        all_tasks.append(task_manager.add_task(WaptDownloadPackage(req.asrequirement(),usecache=not force,notify_user=notify_user)).as_dict())
     data = {'result':'OK','content':all_tasks}
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -728,8 +728,8 @@ def longtask():
     data = task_manager.add_task(
         WaptLongTask(
             duration=int(request.args.get('duration','60')),
-            raise_error=int(request.args.get('raise_error',0))),
-        notify_user=notify_user)
+            raise_error=int(request.args.get('raise_error',0)),
+            notify_user=notify_user)).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -820,7 +820,7 @@ def install():
     notify_user = int(request.args.get('notify_user','0')) == 1
     data = task_manager.add_task(WaptPackageInstall(package,force=force),notify_user=notify_user).as_dict()
     for apackage in ensure_list(package):
-        task_manager.add_task(WaptAuditPackage(packagename=apackage,force=force),notify_user=notify_user,priority=100).as_dict()
+        task_manager.add_task(WaptAuditPackage(packagename=apackage,force=force,notify_user=notify_user,priority=100)).as_dict()
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -836,7 +836,7 @@ def package_download():
     logger.info(u"download package %s" % package)
     notify_user = int(request.args.get('notify_user','0')) == 1
     usecache = int(request.args.get('usecache','1')) == 1
-    data = task_manager.add_task(WaptDownloadPackage(package,usecache=usecache),notify_user=notify_user).as_dict()
+    data = task_manager.add_task(WaptDownloadPackage(package,usecache=usecache,notify_user=notify_user)).as_dict()
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -1123,9 +1123,9 @@ class WaptTaskManager(threading.Thread):
         """Add packages audit tasks to the queue"""
         now = setuphelpers.currentdatetime()
         self.last_audit = time.time()
-        for package_status in self.wapt.installed().values():
-            if not package_status.next_audit_on or now >= package_status.next_audit_on:
-                task = WaptAuditPackage(package_status.package)
+        for installed_package in self.wapt.installed():
+            if not installed_package.next_audit_on or now >= installed_package.next_audit_on:
+                task = WaptAuditPackage(installed_package.package)
                 self.add_task(task)
         self.add_task(WaptUpdateServerStatus(priority=100))
 

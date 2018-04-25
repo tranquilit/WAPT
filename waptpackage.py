@@ -266,6 +266,14 @@ class PackageRequest(BaseObjectClass):
             else:
                 raise Exception('PackageRequest has no attribute %s' % k)
 
+        # split package name and package version if version operator is given "tis-7zip(>=1.5.0)"
+        if self.package:
+            package_version = REGEX_PACKAGE_CONDITION.match(self.package).groupdict()
+            self.package=package_version['package']
+            if package_version['operator'] is not None:
+                self.version=package_version['operator']+package_version['version']
+
+
     def __setattribute__(self,k,v):
         if k in ['package','version','architecture','locale','maturity']:
             self._packages = None

@@ -38,7 +38,7 @@ def setloglevel(logger,loglevel):
     if loglevel in ('debug','warning','info','error','critical'):
         numeric_level = getattr(logging, loglevel.upper(), None)
         if not isinstance(numeric_level, int):
-            raise ValueError(_('Invalid log level: {}').format(loglevel))
+            raise ValueError('Invalid log level: {}'.format(loglevel))
         logger.setLevel(numeric_level)
 
 setloglevel(logger,'debug')
@@ -1059,7 +1059,7 @@ def test_logoutput():
             outlog.append('+ Status to: %s' % set_status)
         if append_output is None:
             outlog.append(u'+out %s: %s' % (kwargs,append_output))
-    with LogInstallOutput(sys.stdout,update_status_hook=update_status,install_id=12,user='moi'):
+    with LogOutput(sys.stdout,update_status_hook=update_status,install_id=12,user='moi'):
         print('Install in progress')
 
     print('\n'.join(outlog))

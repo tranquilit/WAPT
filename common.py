@@ -117,7 +117,7 @@ from waptpackage import EWaptBadTargetOS,EWaptNeedsNewerAgent,EWaptDiskSpace
 from waptpackage import EWaptUnavailablePackage,EWaptConflictingPackage
 from waptpackage import EWaptDownloadError,EWaptMissingPackageHook
 
-from waptpackage import REGEX_PACKAGE_CONDITION,WaptRemoteRepo,PackageEntry
+from waptpackage import REGEX_PACKAGE_CONDITION,WaptRemoteRepo,PackageEntry,PackageRequest
 
 import setuphelpers
 import netifaces
@@ -472,7 +472,7 @@ class WaptSessionDB(WaptBaseDB):
                    ))
             return cur.lastrowid
 
-    def update_install_status(self,rowid,set_status,append_output=None):
+    def update_install_status(self,rowid,set_status=None,append_output=None):
         """Update status of package installation on localdb"""
         with self:
             if set_status in ('OK','WARNING','ERROR'):
@@ -963,18 +963,27 @@ class WaptDB(WaptBaseDB):
         result.sort()
         return result
 
+    def installed_package_names(self,include_errors=False):
+        """
+        """
+        sql = ["select l.package from wapt_localstatus l"]
+        if not include_errors:
+            sql.append('where l.install_status in ("OK","UNKNOWN")')
+        return [p['package'] for p in self.query('\n'.join(sql))]
+
+
     def installed(self,include_errors=False):
-        """Return a dict of installed packages on this host
+        """Return a list of installed packages on this host
 
         Args:
             include_errors (bool) : if False, only packages with status 'OK' and 'UNKNOWN' are returned
                                     if True, all packages are installed.
 
         Returns:
-            dict: installed packages keys=package, values = PackageEntry
+            list: of installed PackageEntry
         """
         sql = ["""\
-              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,
+              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,
                 l.uninstall_key,l.explicit_by,
                 coalesce(l.depends,r.depends),coalesce(l.conflicts,r.conflicts),coalesce(l.section,r.section),coalesce(l.priority,r.priority),
                 r.maintainer,r.description,r.sources,r.filename,r.size,
@@ -990,9 +999,9 @@ class WaptDB(WaptBaseDB):
             sql.append('where l.install_status in ("OK","UNKNOWN")')
 
         q = self.query_package_entry('\n'.join(sql))
-        result = {}
+        result = []
         for p in q:
-            result[p.package]= p
+            result.append(p)
         return result
 
     def install_status(self,id):
@@ -1061,17 +1070,21 @@ class WaptDB(WaptBaseDB):
         """Return True if one properly installed (if include_errors=False) package match the package condition 'tis-package (>=version)'
 
         Returns:
-            list of PackageEntry merge with localstatus attributes without setuppy
+            list of PackageEntry merge with localstatus attributes WITH setuppy
 
         """
-        package = REGEX_PACKAGE_CONDITION.match(package_cond).groupdict()['package']
+        if isinstance(package_cond,(str,unicode)):
+            package = REGEX_PACKAGE_CONDITION.match(package_cond).groupdict()['package']
+        elif isinstance(package_cond,PackageRequest):
+            package = package_cond.packages
+
         if include_errors:
             status = '"OK","UNKNOWN","ERROR"'
         else:
             status = '"OK","UNKNOWN"'
 
         q = self.query_package_entry(u"""\
-              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,
+              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,
                 l.uninstall_key,l.explicit_by,
                 l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,
                 coalesce(l.depends,r.depends),coalesce(l.conflicts,r.conflicts),coalesce(l.section,r.section),coalesce(l.priority,r.priority),
@@ -1086,7 +1099,7 @@ class WaptDB(WaptBaseDB):
     def upgradeable(self,include_errors=True):
         """Return a dictionary of upgradable Package entries"""
         result = {}
-        allinstalled = self.installed(include_errors=True).values()
+        allinstalled = self.installed(include_errors=True)
         for p in allinstalled:
             available = self.query_package_entry("""select * from wapt_package where package=?""",(p.package,))
             available.sort()
@@ -4029,7 +4042,7 @@ class Wapt(BaseObjectClass):
         if not isinstance(apackages,list):
             apackages = [apackages]
         result = []
-        installed = [ p.asrequirement() for p in self.installed().values() if p.asrequirement() not in apackages ]
+        installed = [ p.asrequirement() for p in self.installed() if p.asrequirement() not in apackages ]
         for packagename in installed:
             # test for each installed package if the removal would imply a reinstall
             test = self.check_depends(packagename,assume_removed=apackages)
@@ -4470,7 +4483,7 @@ class Wapt(BaseObjectClass):
         Returns:
             list: of installed package names
         """
-        installed_host_packages = [p.package for p in self.installed(True).values() if p.section in ('host','unit')]
+        installed_host_packages = [p.package for p in self.installed(True) if p.section in ('host','unit')]
         expected_host_packages = self.get_host_packages_names()
         return [pn for pn in installed_host_packages if pn not in expected_host_packages]
 
@@ -4565,7 +4578,7 @@ class Wapt(BaseObjectClass):
 
         """
         available = self.waptdb.packages_search(searchwords=searchwords,exclude_host_repo=exclude_host_repo,section_filter=section_filter)
-        installed = self.waptdb.installed(include_errors=True)
+        installed = {p.package:p for p in self.waptdb.installed(include_errors=True)}
         upgradable =  self.waptdb.upgradeable()
         for p in available:
             if p.package in installed:
@@ -4883,7 +4896,7 @@ class Wapt(BaseObjectClass):
 
                 _add_data_if_updated(inv,'host_info',setuphelpers.host_info(),old_hashes,new_hashes)
                 _add_data_if_updated(inv,'installed_softwares',setuphelpers.installed_softwares(''),old_hashes,new_hashes)
-                _add_data_if_updated(inv,'installed_packages',[p.as_dict() for p in self.waptdb.installed(include_errors=True).values()],old_hashes,new_hashes)
+                _add_data_if_updated(inv,'installed_packages',[p.as_dict() for p in self.waptdb.installed(include_errors=True)],old_hashes,new_hashes)
                 _add_data_if_updated(inv,'last_update_status', self.get_last_update_status(),old_hashes,new_hashes)
                 if self.waptwua_enabled:
                     try:
@@ -5084,7 +5097,7 @@ class Wapt(BaseObjectClass):
 
         inv['wapt_status'] = self.wapt_status()
         inv['installed_softwares'] = setuphelpers.installed_softwares('')
-        inv['installed_packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True).values()]
+        inv['installed_packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True)]
         """
         try:
             inv['qfe'] = setuphelpers.installed_windows_updates()
@@ -5238,45 +5251,55 @@ class Wapt(BaseObjectClass):
     def cleanup_session_setup(self):
         """Remove all current user session_setup informations for removed packages
         """
-        installed = self.installed(False)
-        self.waptsessiondb.remove_obsolete_install_status(installed.keys())
+        installed = self.waptdb.installed_package_names(False)
+        self.waptsessiondb.remove_obsolete_install_status(installed)
 
-    def session_setup(self,packagename,force=False):
+    def session_setup(self,package,force=False):
         """Setup the user session for a specific system wide installed package"
            Source setup.py from database or filename
         """
         install_id = None
-        logger.info(u"Session setup for package %s and user %s" % (packagename,self.user))
-
         oldpath = sys.path
         try:
-            if os.path.isdir(packagename):
-                package_entry = PackageEntry().load_control_from_wapt(packagename)
+            is_dev_mode = False
+            if isinstance(package,PackageEntry):
+                package_entry = package
+            elif os.path.isdir(package):
+                package_entry = PackageEntry().load_control_from_wapt(package)
+                is_dev_mode = True
             else:
-                package_entry = self.is_installed(packagename)
+                package_entry = self.is_installed(package)
 
             if not package_entry:
-                raise Exception('Package %s is not installed' % packagename)
+                raise Exception('Package %s is not installed' % package)
 
             if package_entry.has_setup_py():
                 # initialize a session db for the user
                 session_db = WaptSessionDB(self.user)  # WaptSessionDB()
                 with session_db:
-                    if force or os.path.isdir(packagename) or not session_db.is_installed(package_entry.package,package_entry.version):
+                    if force or is_dev_mode or not session_db.is_installed(package_entry.package,package_entry.version):
+                        logger.info(u"Running session_setup for package %s and user %s" % (package,self.user))
                         install_id = session_db.add_start_install(package_entry)
                         with WaptPackageSessionSetupLogger(console=sys.stderr,waptsessiondb=session_db,install_id=install_id) as dblog:
-                            # get value of required parameters from system wide install
-                            params = self.get_previous_package_params(package_entry)
                             try:
-                                result = package_entry.call_setup_hook('session_setup',self,params)
-                            except EWaptMissingPackageHook:
-                                result = None
+                                # get value of required parameters from system wide install
+                                params = self.get_previous_package_params(package_entry)
+                                try:
+                                    result = package_entry.call_setup_hook('session_setup',self,params)
+                                except EWaptMissingPackageHook:
+                                    result = None
 
-                            if result:
-                                session_db.update_install_status(install_id,'RETRY','session_setup() done\n')
-                            else:
-                                session_db.update_install_status(install_id,'OK','session_setup() done\n')
-                            return result
+                                if result:
+                                    dblog.exit_status = 'RETRY'
+                                    session_db.update_install_status(install_id,append_output = u'session_setup() done\n')
+                                else:
+                                    dblog.exit_status = 'OK'
+                                    session_db.update_install_status(install_id,append_output = u'session_setup() done\n')
+                                return result
+                            except Exception as e:
+                                session_db.update_install_status(install_id,append_output = traceback.format_tb())
+                                dblog.exit_status = 'ERROR'
+
                     else:
                         print('Already installed.')
             else:
@@ -5288,9 +5311,9 @@ class Wapt(BaseObjectClass):
     def get_audit_status(self):
         return self.waptdb.audit_status()
 
-    def audit(self,packagename,force=False):
-        """Run the audit hook for the installed packagename"
-        Source setup.py from database or filename
+    def audit(self,package,force=False):
+        """Run the audit hook for the installed package"
+        Source setup.py from database, filename, or packageEntry
         """
 
         def worst(r1,r2):
@@ -5310,17 +5333,21 @@ class Wapt(BaseObjectClass):
 
 
         install_id = None
-        logger.info(u"Audit run for package %s and user %s" % (packagename,self.user))
+        logger.info(u"Audit run for package %s and user %s" % (package,self.user))
 
         oldpath = sys.path
         try:
-            if os.path.isdir(packagename):
-                package_entry = PackageEntry().load_control_from_wapt(packagename)
+            is_dev_mode = False
+            if isinstance(package,PackageEntry):
+                package_entry = package
+            elif os.path.isdir(package):
+                package_entry = PackageEntry().load_control_from_wapt(package)
+                is_dev_mode = True
             else:
-                package_entry = self.is_installed(packagename)
+                package_entry = self.is_installed(package)
 
             if not package_entry:
-                raise Exception('Package %s is not installed' % packagename)
+                raise Exception('Package %s is not installed' % package)
 
             install_id =  self._get_package_status_rowid(package_entry)
             package_install = self.waptdb.install_status(install_id)
@@ -5382,8 +5409,7 @@ class Wapt(BaseObjectClass):
 
                 except Exception as e:
                     print('Audit aborted due to exception: %s' % e)
-                    self.waptdb.update_audit_status(install_id,set_status='ERROR')
-                    pass
+                    dblog.exit_status = 'ERROR'
 
         finally:
             sys.path = oldpath
