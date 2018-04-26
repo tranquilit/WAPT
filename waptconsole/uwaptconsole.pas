@@ -727,7 +727,7 @@ uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, uvisprivatekey
   uvisgroupchoice, uvishostsupgrade, uVisAPropos,
   uVisImportPackage, PythonEngine, Clipbrd, RegExpr, tisinifiles, IdURI,
   uScaleDPI, uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
-  uvisrepositories, uVisHostDelete, windirs
+  uvisrepositories, uVisHostDelete, windirs,winutils
   {$ifdef wsus}
   ,uVisWUAGroup, uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect
@@ -1583,6 +1583,12 @@ begin
       end;
 
       // If this a CA cert, we should perhaps take it in account right now...
+      if not winutils.IsWindowsAdmin() then
+      begin
+        ShowMessageFmt(rsNotRunningAsAdminCanNotSSL,[AppendPathDelim(WaptBaseDir)+'ssl']);
+        Exit;
+      end
+      else
       if CBIsCA.Checked and (MessageDlg(Format(rsWriteCertOnLocalMachine,[AppendPathDelim(WaptBaseDir)+'ssl']), mtConfirmation, [mbYes, mbNo],0) = mrYes) then
       begin
         if CopyFile(CertificateFilename,
@@ -1629,6 +1635,12 @@ var
   FatUpgrade:Boolean;
   BuildRes:Variant;
 begin
+  if not winutils.IsWindowsAdmin() then
+  begin
+    ShowMessage(rsNotRunningAsAdmin);
+    Exit;
+  end;
+
   FatUpgrade := True;
   if (waptcommon.DefaultPackagePrefix = '') then
   begin

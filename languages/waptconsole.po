@@ -3040,6 +3040,14 @@ msgctxt "uwaptconsoleres.rsnorunningtask"
 msgid "No running tasks"
 msgstr ""
 
+#: uwaptconsoleres.rsnotrunningasadmin
+msgid "Waptconsole is not running with Admin priviledges. Please restart with elevated rights"
+msgstr ""
+
+#: uwaptconsoleres.rsnotrunningasadmincannotssl
+msgid "Waptconsole is not running with Admin priviledges. Will not be able to copy certificate to %s"
+msgstr ""
+
 #: uwaptconsoleres.rsoptrepo
 msgctxt "uwaptconsoleres.rsoptrepo"
 msgid " -r --repo : URL of dependencies libs"

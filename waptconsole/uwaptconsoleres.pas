@@ -92,6 +92,9 @@ resourcestring
 
   rsPrivateKeyDoesntExist = 'Private key doesn''t exist : %s';
 
+  rsNotRunningAsAdmin = 'Waptconsole is not running with Admin priviledges. Please restart with elevated rights';
+  rsNotRunningAsAdminCanNotSSL = 'Waptconsole is not running with Admin priviledges. Will not be able to copy certificate to %s';
+
   rsConfirmImportCaption = 'Confirm import';
   rsConfirmImport = 'Are you sure you want to import'#13#10'%s'#13#10' to your repository ?';
   rsImportingFile = 'Importing %s';
