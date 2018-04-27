@@ -253,6 +253,26 @@ msgctxt "tviscreatewaptsetup.cbdualsign.hint"
 msgid "Check that certificate dates are valid and  issuer is a know one."
 msgstr ""
 
+#: tviscreatewaptsetup.cbforcerepourl.caption
+msgctxt "tviscreatewaptsetup.cbforcerepourl.caption"
+msgid "Overwrite"
+msgstr ""
+
+#: tviscreatewaptsetup.cbforcerepourl.hint
+msgctxt "tviscreatewaptsetup.cbforcerepourl.hint"
+msgid "Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini"
+msgstr ""
+
+#: tviscreatewaptsetup.cbforcewaptserverurl.caption
+msgctxt "tviscreatewaptsetup.cbforcewaptserverurl.caption"
+msgid "Overwrite"
+msgstr ""
+
+#: tviscreatewaptsetup.cbforcewaptserverurl.hint
+msgctxt "tviscreatewaptsetup.cbforcewaptserverurl.hint"
+msgid "Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini"
+msgstr ""
+
 #: tviscreatewaptsetup.cbusekerberos.caption
 msgid "Use Kerberos for initial registration"
 msgstr ""
@@ -271,12 +291,12 @@ msgid "E.g. : Tranquil IT Systems."
 msgstr ""
 
 #: tviscreatewaptsetup.edrepourl.hint
-msgid "E.g. : https://wapt.mydomain.lan/wapt"
+msgid "E.g. : https://wapt.mydomain.lan/wapt If empty, use dnsdomain setting"
 msgstr ""
 
 #: tviscreatewaptsetup.edservercertificate.hint
 msgctxt "tviscreatewaptsetup.edservercertificate.hint"
-msgid "E.g. : c:\\wapt\\ssl\\server\\tranquilit.crt  Path to trusted certificates bundle"
+msgid "E.g. : c:\\wapt\\ssl\\server\\tranquilit.crt  Path to trusted certificates bundle for https connections"
 msgstr ""
 
 #: tviscreatewaptsetup.edwaptserverurl.hint
@@ -2623,6 +2643,10 @@ msgctxt "uwaptconsoleres.rscertificatecopyfailure"
 msgid "Couldn't copy certificate %s to %s."
 msgstr ""
 
+#: uwaptconsoleres.rscleanuptemporaryfiles
+msgid "Remove temporary files"
+msgstr ""
+
 #: uwaptconsoleres.rscname
 msgctxt "uwaptconsoleres.rscname"
 msgid "CNAME: %s"
@@ -3360,6 +3384,10 @@ msgstr ""
 #: uwaptconsoleres.rswaptsetuperror
 msgctxt "uwaptconsoleres.rswaptsetuperror"
 msgid "Error while creating agent : %s"
+msgstr ""
+
+#: uwaptconsoleres.rswaptsetupfilenotfound
+msgid "WAPTSetup file %s has not been found"
 msgstr ""
 
 #: uwaptconsoleres.rswaptsetupuploadsuccess

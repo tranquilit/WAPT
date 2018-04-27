@@ -37,6 +37,9 @@ resourcestring
   rsWaptUpgradePackageBuilt = 'WAPT Upgrade package built and uploaded successfully';
   rsWaptUpgradePackageBuildError = 'Unable to create WAPT Upgrade package';
 
+  rsCleanupTemporaryFiles = 'Remove temporary files';
+  rsWaptSetupfileNotFound = 'WAPTSetup file %s has not been found';
+
   rsForcedUninstallPackages = 'Selection of packages to force-remove from the hosts';
   rsDependencies = 'Selection of packages to add to the hosts as dependencies';
   rsNbModifiedHosts = '%d hosts affected. %d hosts discarded (errors). %d hosts unchanged';

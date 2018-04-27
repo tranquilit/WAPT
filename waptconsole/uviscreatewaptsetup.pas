@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  EditBtn, ExtCtrls, Buttons, ActnList, DefaultTranslator, Menus, sogrid;
+  EditBtn, ExtCtrls, Buttons, ActnList, DefaultTranslator, Menus, sogrid,
+  uVisLoading,IdComponent;
 
 type
 
@@ -47,12 +48,22 @@ type
     procedure fnPublicCertExit(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
+    FCurrentVisLoading: TVisLoading;
+    function GetCurrentVisLoading: TVisLoading;
     { private declarations }
+    procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
   public
     { public declarations }
     ActiveCertBundle: UnicodeString;
+    property CurrentVisLoading: TVisLoading read GetCurrentVisLoading;
+
+    Function BuildWaptSetup: String;
+    procedure UploadWaptSetup(SetupFilename:String);
+    Function BuildWaptUpgrade(SetupFilename: String):String;
+
   end;
 
 var
@@ -64,7 +75,7 @@ implementation
 
 uses
   Variants,dmwaptpython,IdUri,IdSSLOpenSSLHeaders,uWaptConsoleRes,uWaptRes,UScaleDPI, tiscommon,
-  tisstrings,waptcommon,VarPyth,superobject,PythonEngine,tisinifiles;
+  tisstrings,waptcommon,VarPyth,superobject,PythonEngine,inifiles,tisinifiles;
 
 { TVisCreateWaptSetup }
 procedure TVisCreateWaptSetup.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -215,20 +226,156 @@ begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
 end;
 
-procedure TVisCreateWaptSetup.FormShow(Sender: TObject);
+procedure TVisCreateWaptSetup.FormDestroy(Sender: TObject);
 begin
-  fnPublicCert.FileName := UTF8Encode(ActiveCertBundle);
-  if FileExists(ActiveCertBundle) then
-    fnPublicCertEditingDone(Sender);
-      //edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := fnPublicCert.FileName).cn);
-      //edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[fnPublicCert.FileName]));
+  if FCurrentVisLoading <> Nil then
+    FreeAndNil(FCurrentVisLoading);
+end;
 
-  CBVerifyCert.Checked:=(EdServerCertificate.Text<>'') and (EdServerCertificate.Text<>'0');
-  CBVerifyCertClick(Sender);
+procedure TVisCreateWaptSetup.FormShow(Sender: TObject);
+var
+  ini: TIniFile;
+begin
+  try
+    ini := TIniFile.Create(AppIniFilename);
+    if ini.ReadString('global', 'default_ca_cert_path', '') <> '' then
+      ActiveCertBundle := UTF8Decode(ini.ReadString('global', 'default_ca_cert_path', ''))
+    else
+      ActiveCertBundle := UTF8Decode(ini.ReadString('global', 'personal_certificate_path', ''));
 
-  if not CBCheckCertificatesValidity.Checked then
-    CBCheckCertificatesValidity.Visible := True;
+    edWaptServerUrl.Text := ini.ReadString('global', 'wapt_server', '');
+    edRepoUrl.Text := ini.ReadString('global', 'repo_url', '');
+    EdServerCertificate.Text := ini.ReadString('global', 'verify_cert', '0'); ;
+    CBUseKerberos.Checked:=ini.ReadBool('global', 'use_kerberos', False );
+    CBCheckCertificatesValidity.Checked:=ini.ReadBool('global', 'check_certificates_validity',True );
+    CBDualSign.Checked:= (ini.ReadString('global', 'sign_digests','') = 'sha256,sha1');
+    fnWaptDirectory.Directory := WaptBaseDir()+'\waptupgrade';
 
+    fnPublicCert.FileName := UTF8Encode(ActiveCertBundle);
+    if FileExists(ActiveCertBundle) then
+      fnPublicCertEditingDone(Sender);
+        //edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := fnPublicCert.FileName).cn);
+        //edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[fnPublicCert.FileName]));
+
+    CBVerifyCert.Checked:=(EdServerCertificate.Text<>'') and (EdServerCertificate.Text<>'0');
+    CBVerifyCertClick(Sender);
+
+    if not CBCheckCertificatesValidity.Checked then
+      CBCheckCertificatesValidity.Visible := True;
+
+  finally
+    ini.Free;
+  end;
+end;
+
+function TVisCreateWaptSetup.GetCurrentVisLoading: TVisLoading;
+begin
+  if FCurrentVisLoading=Nil then
+    FCurrentVisLoading:=TVisLoading.Create(Nil);
+  Result := FCurrentVisLoading;
+end;
+
+
+function TVisCreateWaptSetup.BuildWaptSetup: String;
+var
+  WAPTSetupPath: string;
+begin
+  with CurrentVisLoading do
+  try
+    Screen.Cursor := crHourGlass;
+    ProgressTitle(rsBuildInProgress);
+    waptsetupPath := CreateWaptSetup(UTF8Encode(ActiveCertBundle),
+      edRepoUrl.Text, edWaptServerUrl.Text, fnWaptDirectory.Directory, edOrgName.Text, @DoProgress, 'waptagent',
+      EdServerCertificate.Text,
+      CBUseKerberos.Checked,
+      CBCheckCertificatesValidity.Checked,
+      DMPython.IsEnterpriseEdition,
+      CBForceRepoURL.Checked,
+      CBForceWaptServerURL.Checked
+      );
+    Result := WAPTSetupPath;
+  finally
+    Screen.Cursor := crDefault;
+  end;
+end;
+
+procedure TVisCreateWaptSetup.UploadWaptSetup(SetupFilename: String);
+var
+  SORes: ISuperObject;
+begin
+  if FileExistsUTF8(SetupFilename) then
+    With CurrentVisLoading do
+    try
+      Screen.Cursor := crHourGlass;
+      ProgressTitle(rsProgressTitle);
+      SORes := WAPTServerJsonMultipartFilePost(
+        GetWaptServerURL, 'upload_waptsetup', [], 'file', SetupFilename,
+        WaptServerUser, WaptServerPassword, @IdHTTPWork,GetWaptServerCertificateFilename);
+      Finish;
+      if SORes.S['status'] = 'OK' then
+        ShowMessage(format(rsWaptSetupUploadSuccess, []))
+      else
+        ShowMessage(format(rsWaptUploadError, [SORes.S['message']]));
+    finally
+      Screen.Cursor := crDefault;
+    end
+  else
+    raise Exception.CreateFmt(rsWaptSetupfileNotFound,[SetupFilename]);
+end;
+
+// Return base filename of built package. Empty string if no package built.
+Function TVisCreateWaptSetup.BuildWaptUpgrade(SetupFilename: String):String;
+var
+  BuildDir, SignDigests: String;
+  BuildResult: Variant;
+begin
+  // create waptupgrade package (after waptagent as we need the updated waptagent.sha1 file)
+  with CurrentVisLoading do
+  begin
+    ProgressTitle(rsBuildInProgress);
+    try
+      if CBDualSign.Checked then
+        SignDigests := 'sha256,sha1'
+      else
+        SignDigests := 'sha256';
+
+      BuildResult := Nil;
+      BuildDir := GetTempDir(False);
+
+      if RightStr(buildDir,1) = '\' then
+        buildDir := copy(buildDir,1,length(buildDir)-1);
+
+      //BuildResult is a PackageEntry instance
+      BuildResult := DMPython.waptdevutils.build_waptupgrade_package(
+          waptconfigfile := AppIniFilename(),
+          wapt_server_user := WaptServerUser,
+          wapt_server_passwd := WaptServerPassword,
+          key_password := dmpython.privateKeyPassword,
+          sign_digests := SignDigests
+          );
+
+      if not VarPyth.VarIsNone(BuildResult) and FileExistsUTF8(VarPythonAsString(BuildResult.get('localpath'))) then
+      begin
+        Result := BuildResult.get('filename');
+        ProgressTitle(rsCleanupTemporaryFiles);
+        DeleteFileUTF8(VarPythonAsString(BuildResult.get('localpath')));
+        ProgressTitle(rsWaptUpgradePackageBuilt);
+      end
+      else
+        Result := '';
+    except
+      On E:Exception do
+        Raise Exception.Create(rsWaptUpgradePackageBuildError+#13#10+E.Message);
+    end;
+    Finish;
+  end;
+end;
+
+procedure TVisCreateWaptSetup.IdHTTPWork(ASender: TObject;
+  AWorkMode: TWorkMode; AWorkCount: int64);
+begin
+  if CurrentVisLoading <> nil then
+    CurrentVisLoading.DoProgress(ASender)
 end;
 
 end.

@@ -3510,7 +3510,7 @@ object VisWaptGUI: TVisWaptGUI
         OnFreeNode = GridWSUSForbiddenWindowsUpdatesFreeNode
       end
       object ButHostSearch1: TBitBtn
-        Left = 908
+        Left = 868
         Height = 33
         Top = 10
         Width = 180

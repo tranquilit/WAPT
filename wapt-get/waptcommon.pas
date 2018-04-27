@@ -1752,82 +1752,82 @@ var
   end;
 
 begin
-    wapt_base_dir:= WaptBaseDir;
-    iss_template := AppendPathDelim(wapt_base_dir) + 'waptsetup\waptagent.iss';
-    custom_iss := AppendPathDelim(wapt_base_dir) + 'waptsetup\custom_waptagent.iss';
-    iss := SplitLines(FileToString(iss_template));
-    new_iss := TSuperObject.Create(stArray);
+  wapt_base_dir:= WaptBaseDir;
+  iss_template := AppendPathDelim(wapt_base_dir) + 'waptsetup\waptagent.iss';
+  custom_iss := AppendPathDelim(wapt_base_dir) + 'waptsetup\custom_waptagent.iss';
+  iss := SplitLines(FileToString(iss_template));
+  new_iss := TSuperObject.Create(stArray);
 
-    // translate to relative path if possible
-    if pos(lowercase(WaptBaseDir),lowercase(VerifyCert))=1 then
-      VerifyCert := ExtractRelativepath(WaptBaseDir,VerifyCert); ;
+  // translate to relative path if possible
+  if pos(lowercase(WaptBaseDir),lowercase(VerifyCert))=1 then
+    VerifyCert := ExtractRelativepath(WaptBaseDir,VerifyCert); ;
 
-    for line in iss do
-    begin
-        if startswith(line,'#define default_repo_url') then
-            new_iss.AsArray.Add(format('#define default_repo_url "%s"',[default_repo_url]))
-        else if startswith(line,'#define default_wapt_server') then
-            new_iss.AsArray.Add(format('#define default_wapt_server "%s"',[default_wapt_server]))
-        else if startswith(line,'#define repo_url') and OverwriteRepoURL then
-            new_iss.AsArray.Add(format('#define repo_url "%s"',[default_repo_url]))
-        else if startswith(line,'#define wapt_server') and OverwriteWaptServerURL then
-            new_iss.AsArray.Add(format('#define wapt_server "%s"',[default_wapt_server]))
-        else if startswith(line,'#define output_dir') then
-            new_iss.AsArray.Add(format('#define output_dir "%s"' ,[destination]))
-        else if startswith(line,'#define Company') then
-            new_iss.AsArray.Add(format('#define Company "%s"' ,[company]))
-        else if startswith(line,'#define set_install_certs') then
-            new_iss.AsArray.Add(format('#define set_install_certs "1"' ,[]))
-        else if startswith(line,'#define set_use_kerberos') then
-        begin
-            if UseKerberos then
-              new_iss.AsArray.Add(format('#define set_use_kerberos "1"' ,[]))
-            else
-              new_iss.AsArray.Add(format('#define set_use_kerberos "0"' ,[]))
-        end
-        else if startswith(line,'#define check_certificates_validity') then
-        begin
-            if CheckCertificatesValidity then
-              new_iss.AsArray.Add(format('#define check_certificates_validity 1' ,[]))
-            else
-              new_iss.AsArray.Add(format('#define check_certificates_validity 0' ,[]))
-        end
-        else if startswith(line,'#define set_verify_cert') then
-          new_iss.AsArray.Add(format('#define set_verify_cert "%s"',[VerifyCert]))
-        else if startswith(line,';#define waptenterprise') then
-        begin
-            if EnterpriseEdition then
-              new_iss.AsArray.Add(format('#define waptenterprise',[]))
-            else
-              new_iss.AsArray.Add(format('#undef waptenterprise',[]))
-        end
-        else if startswith(line,'WizardImageFile=') then
+  for line in iss do
+  begin
+      if startswith(line,'#define default_repo_url') then
+          new_iss.AsArray.Add(format('#define default_repo_url "%s"',[default_repo_url]))
+      else if startswith(line,'#define default_wapt_server') then
+          new_iss.AsArray.Add(format('#define default_wapt_server "%s"',[default_wapt_server]))
+      else if startswith(line,'#define repo_url') and OverwriteRepoURL then
+          new_iss.AsArray.Add(format('#define repo_url "%s"',[default_repo_url]))
+      else if startswith(line,'#define wapt_server') and OverwriteWaptServerURL then
+          new_iss.AsArray.Add(format('#define wapt_server "%s"',[default_wapt_server]))
+      else if startswith(line,'#define output_dir') then
+          new_iss.AsArray.Add(format('#define output_dir "%s"' ,[destination]))
+      else if startswith(line,'#define Company') then
+          new_iss.AsArray.Add(format('#define Company "%s"' ,[company]))
+      else if startswith(line,'#define set_install_certs') then
+          new_iss.AsArray.Add(format('#define set_install_certs "1"' ,[]))
+      else if startswith(line,'#define set_use_kerberos') then
+      begin
+          if UseKerberos then
+            new_iss.AsArray.Add(format('#define set_use_kerberos "1"' ,[]))
+          else
+            new_iss.AsArray.Add(format('#define set_use_kerberos "0"' ,[]))
+      end
+      else if startswith(line,'#define check_certificates_validity') then
+      begin
+          if CheckCertificatesValidity then
+            new_iss.AsArray.Add(format('#define check_certificates_validity 1' ,[]))
+          else
+            new_iss.AsArray.Add(format('#define check_certificates_validity 0' ,[]))
+      end
+      else if startswith(line,'#define set_verify_cert') then
+        new_iss.AsArray.Add(format('#define set_verify_cert "%s"',[VerifyCert]))
+      else if startswith(line,';#define waptenterprise') then
+      begin
+          if EnterpriseEdition then
+            new_iss.AsArray.Add(format('#define waptenterprise',[]))
+          else
+            new_iss.AsArray.Add(format('#undef waptenterprise',[]))
+      end
+      else if startswith(line,'WizardImageFile=') then
 
-        else if startswith(line,'#define edition') and (waptedition <> '') then
-          new_iss.AsArray.Add(format('#define edition "%s"' ,[waptedition]))
-        else if not startswith(line,'#define signtool') then
-            new_iss.AsArray.Add(line);
-    end;
+      else if startswith(line,'#define edition') and (waptedition <> '') then
+        new_iss.AsArray.Add(format('#define edition "%s"' ,[waptedition]))
+      else if not startswith(line,'#define signtool') then
+          new_iss.AsArray.Add(line);
+  end;
 
-    source := UTF8Decode(default_public_cert);
-    target := UTF8Decode(ExpandFileName(AppendPathDelim(ExtractFileDir(iss_template))+ '..\ssl\' + ExtractFileName(default_public_cert)));
-    if not FileExists(target) then
-      if not CopyFileW(PWideChar(source),PWideChar(target),True) then
-        raise Exception.CreateFmt(rsCertificateCopyFailure,[source,target]);
-    StringToFile(custom_iss,SOUtils.Join(#13#10,new_iss));
+  source := UTF8Decode(default_public_cert);
+  target := UTF8Decode(ExpandFileName(AppendPathDelim(ExtractFileDir(iss_template))+ '..\ssl\' + ExtractFileName(default_public_cert)));
+  if not FileExists(target) then
+    if not CopyFileW(PWideChar(source),PWideChar(target),True) then
+      raise Exception.CreateFmt(rsCertificateCopyFailure,[source,target]);
+  StringToFile(custom_iss,SOUtils.Join(#13#10,new_iss));
 
-    inno_fn :=  AppendPathDelim(wapt_base_dir) + 'waptsetup\innosetup\ISCC.exe';
-    if not FileExists(inno_fn) then
-        raise Exception.CreateFmt(rsInnoSetupUnavailable, [inno_fn]);
-    Run(format('"%s"  "%s"',[inno_fn,custom_iss]),'',3600000,'','','',OnProgress);
-    Result := AppendPathDelim(destination) + WaptEdition + '.exe';
-    signtool :=  AppendPathDelim(wapt_base_dir) + 'utils\signtool.exe';
-    p12keyPath := ChangeFileExt(WaptPersonalCertificatePath,'.p12');
-    if FileExists(signtool) and FileExists(p12keypath) then
-      Run(format('"%s" sign /f "%s" "%s"',[signtool,p12keypath,Result]),'',3600000,'','','',OnProgress);
+  inno_fn :=  AppendPathDelim(wapt_base_dir) + 'waptsetup\innosetup\ISCC.exe';
+  if not FileExists(inno_fn) then
+      raise Exception.CreateFmt(rsInnoSetupUnavailable, [inno_fn]);
+  Run(format('"%s"  "%s"',[inno_fn,custom_iss]),'',3600000,'','','',OnProgress);
+  Result := AppendPathDelim(destination) + WaptEdition + '.exe';
+  signtool :=  AppendPathDelim(wapt_base_dir) + 'utils\signtool.exe';
+  p12keyPath := ChangeFileExt(WaptPersonalCertificatePath,'.p12');
+  if FileExists(signtool) and FileExists(p12keypath) then
+    Run(format('"%s" sign /f "%s" "%s"',[signtool,p12keypath,Result]),'',3600000,'','','',OnProgress);
 
-    // Create waptagent.sha256
-    StringToFile(AppendPathDelim(wapt_base_dir) + 'waptupgrade\waptagent.sha256',SHA256Hash(Result)+'  waptagent.exe');
+  // Create waptagent.sha256
+  StringToFile(AppendPathDelim(wapt_base_dir) + 'waptupgrade\waptagent.sha256',SHA256Hash(Result)+'  waptagent.exe');
 end;
 
 function GetReachableIP(IPS:ISuperObject;port:word;Timeout:Integer=200):String;

@@ -254,6 +254,26 @@ msgctxt "tviscreatewaptsetup.cbdualsign.hint"
 msgid "Check that certificate dates are valid and  issuer is a know one."
 msgstr "Vérifier que les dates des certificats sont correctes et que l'émetteur est bien connu"
 
+#: tviscreatewaptsetup.cbforcerepourl.caption
+msgctxt "tviscreatewaptsetup.cbforcerepourl.caption"
+msgid "Overwrite"
+msgstr "Forcer"
+
+#: tviscreatewaptsetup.cbforcerepourl.hint
+msgctxt "tviscreatewaptsetup.cbforcerepourl.hint"
+msgid "Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini"
+msgstr "Force la valeur de l'URL lors de l'installation même si il y a déjà une valeur différente dans wapt-get.ini"
+
+#: tviscreatewaptsetup.cbforcewaptserverurl.caption
+msgctxt "tviscreatewaptsetup.cbforcewaptserverurl.caption"
+msgid "Overwrite"
+msgstr "Forcer"
+
+#: tviscreatewaptsetup.cbforcewaptserverurl.hint
+msgctxt "tviscreatewaptsetup.cbforcewaptserverurl.hint"
+msgid "Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini"
+msgstr "Force la valeur de l'URL lors de l'installation même si il y a déjà une valeur différente dans wapt-get.ini"
+
 #: tviscreatewaptsetup.cbusekerberos.caption
 msgid "Use Kerberos for initial registration"
 msgstr "Utiliser Kerberos pour l'enregistrement initial"
@@ -272,15 +292,13 @@ msgid "E.g. : Tranquil IT Systems."
 msgstr "Par exemple : Tranquil IT Systems"
 
 #: tviscreatewaptsetup.edrepourl.hint
-#| msgid "E.g. : http://wapt.tranquilit.local/wapt."
-msgid "E.g. : https://wapt.mydomain.lan/wapt"
+#| msgid "E.g. : https://wapt.mydomain.lan/wapt"
+msgid "E.g. : https://wapt.mydomain.lan/wapt If empty, use dnsdomain setting"
 msgstr "Par exemple : https://wapt.mondomaine.lan/wapt."
 
 #: tviscreatewaptsetup.edservercertificate.hint
-#, fuzzy
-#| msgid "E.g. : c:\\private\\tranquilit.crt"
 msgctxt "tviscreatewaptsetup.edservercertificate.hint"
-msgid "E.g. : c:\\wapt\\ssl\\server\\tranquilit.crt  Path to trusted certificates bundle"
+msgid "E.g. : c:\\wapt\\ssl\\server\\tranquilit.crt  Path to trusted certificates bundle for https connections"
 msgstr "Par ex. c:\\private\\tranquilit.crt"
 
 #: tviscreatewaptsetup.edwaptserverurl.hint
@@ -2654,6 +2672,10 @@ msgctxt "uwaptconsoleres.rscertificatecopyfailure"
 msgid "Couldn't copy certificate %s to %s."
 msgstr "Echec de la copie du certificat %s vers %s."
 
+#: uwaptconsoleres.rscleanuptemporaryfiles
+msgid "Remove temporary files"
+msgstr "Suppression des fichiers temporaires"
+
 #: uwaptconsoleres.rscname
 msgctxt "uwaptconsoleres.rscname"
 msgid "CNAME: %s"
@@ -3423,6 +3445,10 @@ msgstr ""
 msgctxt "uwaptconsoleres.rswaptsetuperror"
 msgid "Error while creating agent : %s"
 msgstr "Erreur lors de la création de l'agent : %s"
+
+#: uwaptconsoleres.rswaptsetupfilenotfound
+msgid "WAPTSetup file %s has not been found"
+msgstr "Le fichier WAPTSetup %s n'a pas été trouvé"
 
 #: uwaptconsoleres.rswaptsetupuploadsuccess
 #, fuzzy

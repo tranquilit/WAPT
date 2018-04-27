@@ -2922,7 +2922,7 @@ class Wapt(BaseObjectClass):
         return self.host_dn
 
 
-    def http_upload_package(self,packages,wapt_server_user=None,wapt_server_passwd=None):
+    def http_upload_package(self,packages,wapt_server_user=None,wapt_server_passwd=None,progress_hook=None):
         r"""Upload a package or host package to the waptserver.
 
         Args:
@@ -2971,7 +2971,7 @@ class Wapt(BaseObjectClass):
             else:
                 # stream
                 #files[os.path.basename(package_filename)] = open(package_filename,'rb')
-                files[os.path.basename(package_filename)] = FileChunks(package_filename)
+                files[os.path.basename(package_filename)] = FileChunks(package_filename,progress_hook=progress_hook)
 
         if files:
             try:

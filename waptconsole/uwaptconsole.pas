@@ -810,15 +810,7 @@ procedure TVisWaptGUI.IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode;
   AWorkCount: int64);
 begin
   if CurrentVisLoading <> nil then
-    CurrentVisLoading.DoProgress(ASender)
-  else
-  begin
-    {if ProgressBar1.Position >= ProgressBar1.Max then
-      ProgressBar1.Position := 0
-    else
-      ProgressBar1.Position := ProgressBar1.Position + 1;
-    Application.ProcessMessages;}
-  end;
+    CurrentVisLoading.DoProgress(ASender);
 end;
 
 procedure TVisWaptGUI.cbShowLogClick(Sender: TObject);
@@ -1629,11 +1621,7 @@ end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 var
-  waptsetupPath, buildDir, SignDigests: string;
-  ini: TIniFile;
-  SORes: ISuperObject;
-  FatUpgrade:Boolean;
-  BuildRes:Variant;
+  WAPTSetupPath: string;
 begin
   if not winutils.IsWindowsAdmin() then
   begin
@@ -1641,7 +1629,6 @@ begin
     Exit;
   end;
 
-  FatUpgrade := True;
   if (waptcommon.DefaultPackagePrefix = '') then
   begin
     ShowMessage(rsWaptPackagePrefixMissing);
@@ -1656,121 +1643,27 @@ begin
   end;
 
   with TVisCreateWaptSetup.Create(self) do
+  try
+    if ShowModal = mrOk then
     try
-      ini := TIniFile.Create(AppIniFilename);
-      if ini.ReadString('global', 'default_ca_cert_path', '') <> '' then
-        ActiveCertBundle := UTF8Decode(ini.ReadString('global', 'default_ca_cert_path', ''))
-      else
-        ActiveCertBundle := UTF8Decode(ini.ReadString('global', 'personal_certificate_path', ''));
+      try
+        CurrentVisLoading.Start;
+        CurrentVisLoading.ExceptionOnStop := True;
 
-      edWaptServerUrl.Text := ini.ReadString('global', 'wapt_server', '');
-      edRepoUrl.Text := ini.ReadString('global', 'repo_url', '');
-      EdServerCertificate.Text := ini.ReadString('global', 'verify_cert', '0'); ;
-      CBUseKerberos.Checked:=ini.ReadBool('global', 'use_kerberos', False );
-      CBCheckCertificatesValidity.Checked:=ini.ReadBool('global', 'check_certificates_validity',True );
-      CBDualSign.Checked:= (ini.ReadString('global', 'sign_digests','') = 'sha256,sha1');
-      if FatUpgrade then
-        // include waptagent.exe in waptupgrade package...
-        fnWaptDirectory.Directory := WaptBaseDir()+'\waptupgrade'
-      else
-        fnWaptDirectory.Directory := GetTempDir(False);
-      if ShowModal = mrOk then
-      begin
-        CurrentVisLoading := TVisLoading.Create(Self);
-        with CurrentVisLoading do
-          try
-            ExceptionOnStop := True;
-            Screen.Cursor := crHourGlass;
-            ProgressTitle(rsBuildInProgress);
-            Start;
-            waptsetupPath := '';
-
-            if CBDualSign.Checked then
-              SignDigests := 'sha256,sha1'
-            else
-              SignDigests := 'sha256';
-
-            try
-              ProgressTitle(rsBuildInProgress);
-              waptsetupPath := CreateWaptSetup(UTF8Encode(ActiveCertBundle),
-                edRepoUrl.Text, edWaptServerUrl.Text, fnWaptDirectory.Directory, edOrgName.Text, @DoProgress, 'waptagent',
-                EdServerCertificate.Text,
-                CBUseKerberos.Checked,
-                CBCheckCertificatesValidity.Checked,
-                IsEnterpriseEdition,
-                CBForceRepoURL.Checked,
-                CBForceWaptServerURL.Checked
-                );
-
-            except
-              on E:Exception do
-              begin
-                ShowMessageFmt(rsWaptAgentSetupError,[E.Message]);
-                exit;
-              end;
-            end;
-            Application.ProcessMessages;
-
-            // create waptupgrade package (after waptagent as we need the updated waptagent.sha1 file)
-            ProgressTitle(rsBuildInProgress);
-            try
-              BuildRes := Nil;
-              buildDir := GetTempDir(False);
-              if RightStr(buildDir,1) = '\' then
-                buildDir := copy(buildDir,1,length(buildDir)-1);
-              BuildRes := DMPython.waptdevutils.build_waptupgrade_package(
-                  waptconfigfile := AppIniFilename(),
-                  wapt_server_user := WaptServerUser,
-                  wapt_server_passwd := WaptServerPassword,
-                  key_password := dmpython.privateKeyPassword,
-                  sign_digests := SignDigests
-                  );
-
-              if not VarPyth.VarIsNone(BuildRes) and FileExistsUTF8(VarPythonAsString(BuildRes.get('localpath'))) then
-              begin
-                ProgressTitle(rsWaptUpgradePackageBuilt);
-                DeleteFileUTF8(VarPythonAsString(BuildRes.get('localpath')));
-              end;
-              ActPackagesUpdate.Execute;
-            except
-              On E:Exception do
-                Raise Exception.Create(rsWaptUpgradePackageBuildError+#13#10+E.Message);
-            end;
-            Finish;
-
-            if FileExistsUTF8(waptsetupPath) then
-              try
-                Start;
-                ProgressTitle(rsProgressTitle);
-                SORes := WAPTServerJsonMultipartFilePost(
-                  GetWaptServerURL, 'upload_waptsetup', [], 'file', waptsetupPath,
-                  WaptServerUser, WaptServerPassword, @IdHTTPWork,GetWaptServerCertificateFilename);
-                Finish;
-                if SORes.S['status'] = 'OK' then
-                begin
-                  ShowMessage(format(rsWaptSetupUploadSuccess, []));
-                  if not FatUpgrade then
-                    DeleteFileUTF8(waptsetupPath);
-                end
-                else
-                  ShowMessage(format(rsWaptUploadError, [SORes.S['message']]));
-              except
-                on e: Exception do
-                begin
-                  ShowMessage(format(rsWaptSetupError, [e.Message]));
-                  Finish;
-                end;
-              end;
-          finally
-            Finish;
-            Screen.Cursor := crDefault;
-            FreeAndNil(CurrentVisLoading);
-          end;
+        WAPTSetupPath := BuildWaptSetup;
+        BuildWaptUpgrade(WAPTSetupPath);
+        UploadWaptSetup(WAPTSetupPath);
+        ActPackagesUpdate.Execute;
+      except
+        on E:Exception do
+          ShowMessageFmt(rsWaptAgentSetupError,[E.Message]);
       end;
     finally
-      ini.Free;
-      Free;
+      CurrentVisLoading.Finish;
     end;
+  finally
+    Free;
+  end;
 end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupUpdate(Sender: TObject);
@@ -2457,279 +2350,6 @@ begin
   if (GridHosts.SelectedCount>=1) and
     (MessageDlg(Format(rsConfirmWaptServiceRestart,[GridHosts.SelectedCount]),mtConfirmation,mbYesNoCancel, 0) = mrYes) then
       TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_waptservicerestart',Nil,rsRestartingWaptservice,'Error restarting waptservice %s',True)
-end;
-
-procedure TVisWaptGUI.ActTriggerWaptwua_downloadExecute(Sender: TObject);
-begin
-    with TVisHostsUpgrade.Create(Self) do
-    try
-      Caption:= rsTriggerWAPTWUA_Scan;
-      action := 'api/v3/trigger_waptwua_download';
-      hosts := Gridhosts.SelectedRows;
-
-      if ShowModal = mrOk then
-        actRefresh.Execute;
-    finally
-      Free;
-    end;
-
-end;
-
-procedure TVisWaptGUI.ActTriggerWaptwua_installExecute(Sender: TObject);
-begin
-    with TVisHostsUpgrade.Create(Self) do
-    try
-      Caption:= rsTriggerWAPTWUA_Scan;
-      action := 'api/v3/trigger_waptwua_install';
-      hosts := Gridhosts.SelectedRows;
-
-      if ShowModal = mrOk then
-        actRefresh.Execute;
-    finally
-      Free;
-    end;
-
-end;
-
-procedure TVisWaptGUI.ActTriggerWaptwua_scanExecute(Sender: TObject);
-begin
-  with TVisHostsUpgrade.Create(Self) do
-    try
-      Caption:= rsTriggerWAPTWUA_Scan;
-      action := 'api/v3/trigger_waptwua_scan';
-      hosts := Gridhosts.SelectedRows;
-
-      if ShowModal = mrOk then
-        actRefresh.Execute;
-    finally
-      Free;
-    end;
-
-end;
-
-procedure TVisWaptGUI.ActWSUSDowloadWSUSScanExecute(Sender: TObject);
-{$ifdef wsus}
-var
-  res:ISuperObject;
-  skipped:Boolean;
-  cabsize,forced:Integer;
-  cabdate:String;
-{$endif wsus}
-begin
-  {$ifdef wsus}
-  forced := 0;
-  if cbForcedWSUSscanDownload.Checked then
-    forced:=1
-  else
-  begin
-    res := WAPTServerJsonGet('api/v2/wsusscan2_history?limit=1&skipped=0',[]);
-    if res.B['success'] and (res.A['result'].Length>0) and not StrIsOneOf(res.S['result[0].status'],['finished','error'],False) then
-    begin
-      if MessageDlg(rsConfirmCaption,'A download task is already in progress, do you still want to append a task ?',mtConfirmation, mbYesNoCancel,0) <> mrYes then
-        Exit;
-    end;
-  end;
-  res := WAPTServerJsonGet('api/v2/download_wsusscan?force=%D',[forced]);
-  ActWSUSRefreshCabHistory.Execute;
-  skipped := res.B['result.skipped'];
-  if skipped then
-    wsusResult.Text := 'Download skipped'
-  else
-  begin
-    cabsize := res.I['result.file_size'];
-    cabdate := DateTimeToStr(FileDateToDateTime(res.I['result.file_timestamp']));
-    wsusResult.Text := res.S['result.status']+' started on '+res.S['result.run_date']+' file size:'+IntToStr(cabsize)+' wsusscan date:'+cabdate;
-  end;
-  {$endif wsus}
-end;
-
-procedure TVisWaptGUI.ActWSUSRefreshCabHistoryExecute(Sender: TObject);
-{$ifdef wsus}
-var
-  res,wuares:ISuperObject;
-  {$endif wsus}
-begin
-  {$ifdef wsus}
-  res := WAPTServerJsonGet('api/v2/wsusscan2_history?limit=30',[]);
-  if res.B['success'] then
-  begin
-    Clipboard.AsText:=res['result'].AsJSon(True);
-    GridWSUSScan.Data := res['result']
-  end
-  else
-    GridWSUSScan.Data := Nil;
-
-  if not windows_updates_rulesUpdated then
-  begin
-    res := WAPTServerJsonGet('api/v2/windows_updates_rules?group=default',[]);
-    if res.B['success'] and (res.A['result']<>Nil) and (res.A['result'].Length>0) then
-    begin
-      GridWSUSAllowedClassifications.Data := WAPTServerJsonGet('api/v2/windows_updates_classifications?id=%s',[join(',',res.A['result'][0]['rules.allowed_classifications'])])['result'];
-      GridWSUSAllowedWindowsUpdates.Data := WAPTServerJsonGet('api/v2/windows_updates?update_ids=%s',[join(',',res.A['result'][0]['rules.allowed_windows_updates'])])['result'];
-      GridWSUSForbiddenWindowsUpdates.Data := WAPTServerJsonGet('api/v2/windows_updates?update_ids=%s',[join(',',res.A['result'][0]['rules.forbidden_windows_updates'])])['result'];
-      windows_updates_rulesUpdated := False;
-    end
-    else
-    begin
-      GridWSUSAllowedClassifications.Data := Nil;
-      GridWSUSAllowedWindowsUpdates.Data := Nil;
-      GridWSUSForbiddenWindowsUpdates.Data := Nil;
-      windows_updates_rulesUpdated := False;
-    end;
-  end
-  else
-    ShowMessage('Warning : Windows updates rules not saved');
-  {$endif wsus}
-end;
-
-procedure TVisWaptGUI.ActWSUSSaveBuildRulesExecute(Sender: TObject);
-{$ifdef wsus}
-var
-  wsus_rules,WUAGroupRules,res,sores :ISuperObject;
-  args:AnsiString;
-  {$endif wsus}
-begin
-  {$ifdef wsus}
-  wsus_rules := TSuperObject.Create();
-  WUAGroupRules := TSuperObject.Create();
-  WUAGroupRules['allowed_classifications'] := ExtractField(GridWSUSAllowedClassifications.Data,'id');
-  WUAGroupRules['allowed_windows_updates'] := ExtractField(GridWSUSAllowedWindowsUpdates.Data,'update_id');
-  WUAGroupRules['forbidden_windows_updates'] := ExtractField(GridWSUSForbiddenWindowsUpdates.Data,'update_id');
-  wsus_rules.S['group'] := 'default';//WUAGroup;
-  wsus_rules['rules']   := WUAGroupRules;
-  res := WAPTServerJsonPost('api/v2/windows_updates_rules?group=%s',[wsus_rules.S['group']],wsus_rules);
-
-  windows_updates_rulesUpdated := not res.B['success'];
-
-  if res.B['success'] then
-  //update the wua package...
-  try
-    Screen.Cursor := crHourGlass;
-    //edit_hosts_depends(waptconfigfile,hosts_list,appends,removes,key_password=None,wapt_server_user=None,wapt_server_passwd=None)
-    args := '';
-    args := args + format('waptconfigfile = r"%s".decode(''utf8''),', [AppIniFilename]);
-    args := args + format('wuagroup = r"%s".decode(''utf8''),',
-      ['default']);
-    if dmpython.privateKeyPassword <> '' then
-      args := args + format('key_password = "%s".decode(''utf8''),',
-        [dmpython.privateKeyPassword]);
-    args := args + format('wapt_server_user = r"%s".decode(''utf8''),', [waptServerUser]);
-    args := args + format('wapt_server_passwd = r"%s".decode(''utf8''),',
-      [waptServerPassword]);
-    res := DMPython.RunJSON(format('waptdevutils.create_waptwua_package(%s)', [args]));
-    ShowMessage('WUA Package properly created');
-  finally
-    Screen.Cursor := crDefault;
-  end
-  else
-  begin
-    ShowMessageFmt('Unable to save Windows Updates Rules : %s'#13#10'data:%s',[res.B['error'],wsus_rules.AsJSon(True)]);
-    Clipboard.AsText:=wsus_rules.AsJSon(True);
-  end;
-  {$endif wsus}
-end;
-
-procedure TVisWaptGUI.ActWSUSSaveBuildRulesUpdate(Sender: TObject);
-begin
-  {$ifdef wsus}
-  ActWSUSSaveBuildRules.Enabled := windows_updates_rulesUpdated;
-  {$endif wsus}
-end;
-
-procedure TVisWaptGUI.ActWUAAddAllowedClassificationExecute(Sender: TObject);
-{$ifdef wsus}
-var
-  r:ISuperObject;
-  {$endif wsus}
-begin
-  {$ifdef wsus}
-  With TVisWUAClassificationsSelect.Create(Self) do
-  try
-    if ShowModal = mrOk then
-    begin
-      if GridWSUSAllowedClassifications.Data = Nil then
-        GridWSUSAllowedClassifications.Data :=  TSuperObject.Create(stArray);
-      for r in GridWinClassifications.SelectedRows do
-      begin
-        if SOArrayFindFirst(r,GridWSUSAllowedClassifications.Data,['id']) = Nil then
-        begin
-          GridWSUSAllowedClassifications.Data.AsArray.Add(r);
-          windows_updates_rulesUpdated := True;
-        end;
-      end;
-    end;
-  finally
-    GridWSUSAllowedClassifications.LoadData;
-    Free;
-  end;
-  {$endif wsus}
-end;
-
-
-procedure TVisWaptGUI.ActWUAAddAllowedUpdateExecute(Sender: TObject);
-{$ifdef wsus}
-var
-  r:ISuperObject;
-  {$endif wsus}
-begin
-  {$ifdef wsus}
-  With TVisWUAPackageSelect.Create(Self) do
-  try
-    if ShowModal = mrOk then
-    begin
-      if GridWSUSAllowedWindowsUpdates.Data = Nil then
-        GridWSUSAllowedWindowsUpdates.Data :=  TSuperObject.Create(stArray);
-      for r in GridWinUpdates.SelectedRows do
-      begin
-        if SOArrayFindFirst(r,GridWSUSAllowedWindowsUpdates.Data,['update_id']) = Nil then
-        begin
-          GridWSUSAllowedWindowsUpdates.Data.AsArray.Add(r);
-          windows_updates_rulesUpdated := True;
-        end;
-      end;
-    end;
-  finally
-    GridWSUSAllowedWindowsUpdates.LoadData;
-    Free;
-  end;
-  {$endif wsus}
-end;
-
-procedure TVisWaptGUI.ActWUAAddForbiddenUpdateExecute(Sender: TObject);
-{$ifdef wsus}
-var
-  r:ISuperObject;
-  {$endif wsus}
-begin
-  {$ifdef wsus}
-  With TVisWUAPackageSelect.Create(Self) do
-  try
-    if ShowModal = mrOk then
-    begin
-      if GridWSUSForbiddenWindowsUpdates.Data = Nil then
-        GridWSUSForbiddenWindowsUpdates.Data :=  TSuperObject.Create(stArray);
-      for r in GridWinUpdates.SelectedRows do
-      begin
-        if SOArrayFindFirst(r,GridWSUSForbiddenWindowsUpdates.Data,['update_id']) = Nil then
-        begin
-          GridWSUSForbiddenWindowsUpdates.Data.AsArray.Add(r);
-          windows_updates_rulesUpdated := True;
-        end;
-      end;
-    end;
-  finally
-    GridWSUSForbiddenWindowsUpdates.LoadData;
-    Free;
-  end;
-  {$endif wsus}
-end;
-
-
-procedure TVisWaptGUI.ActWUADownloadSelectedUpdateUpdate(Sender: TObject);
-begin
-  {$ifdef wsus}
-  (Sender as TAction).Enabled:=GridWSUSAllowedWindowsUpdates.SelectedCount>0;
-  {$endif wsus}
 end;
 
 procedure TVisWaptGUI.ActEditGroupExecute(Sender: TObject);
@@ -4904,6 +4524,53 @@ end;
 procedure TVisWaptGUI.ActTriggerHostAuditExecute(Sender: TObject);
 begin
 end;
+
+############################### WSUS
+procedure TVisWaptGUI.ActTriggerWaptwua_downloadExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActTriggerWaptwua_installExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActTriggerWaptwua_scanExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActWSUSDowloadWSUSScanExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActWSUSRefreshCabHistoryExecute(Sender: TObject);
+end;
+
+procedure TVisWaptGUI.ActWSUSSaveBuildRulesExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActWSUSSaveBuildRulesUpdate(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActWUAAddAllowedClassificationExecute(Sender: TObject);
+begin
+end;
+
+
+procedure TVisWaptGUI.ActWUAAddAllowedUpdateExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActWUAAddForbiddenUpdateExecute(Sender: TObject);
+begin
+end;
+
+
+procedure TVisWaptGUI.ActWUADownloadSelectedUpdateUpdate(Sender: TObject);
+begin
+end;
+
 
 
 {$endif}
