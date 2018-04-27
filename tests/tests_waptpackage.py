@@ -998,6 +998,7 @@ def test_licencing():
     #l2 = licencing.WaptLicence(filename='c:/tranquilit/wapt/licences/%s.lic'%l.licence_nr)
     #l2.check_licence(c.as_pem())
     #print l2
+    pass
 
 def gen_perso(cn,email,**kwargs):
     if not os.path.isfile('c:/private/%s-tis.pem' % cn):
@@ -1123,6 +1124,7 @@ def test_wua():
     print(setuphelpers.service_is_running('wuauserv'))
     with client.WaptWUA(w) as c:
         print(setuphelpers.service_is_running('wuauserv'))
+        print(c.download_updates())
         print(c.scan_updates_status())
 
     print(setuphelpers.service_is_running('wuauserv'))
@@ -1130,7 +1132,7 @@ def test_wua():
 
 if __name__ == '__main__':
     #gen_perso('htouvet',email='htouvet@tranquil.it')
-    #test_wua()
+    test_wua()
     #test_packagenewestversion()
     #test_licencing()
     #test_logoutput()
