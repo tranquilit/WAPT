@@ -4838,7 +4838,7 @@ class Wapt(BaseObjectClass):
         return json.loads(jsondump(status))
 
 
-    def _get_package_status_rowid(self,package_entry):
+    def _get_package_status_rowid(self,package_entry=None,package_name=None):
         """Return ID of package_status record for package_name
 
         Args:
@@ -4849,7 +4849,7 @@ class Wapt(BaseObjectClass):
             int: rowid in local wapt_localstatus table
         """
         with self.waptdb as waptdb:
-            cur = waptdb.db.execute("""select rowid from wapt_localstatus where package=?""" ,(package_entry.package,))
+            cur = waptdb.db.execute("""select rowid from wapt_localstatus where package=?""" ,(package_entry.package if package_entry is not None else package_name,))
             pe = cur.fetchone()
             if not pe:
                 return None
