@@ -126,7 +126,7 @@ class EWaptBadServerAuthentication(EWaptException):
     pass
 
 def is_system_user():
-    return setuphelpers.get_current_user() == 'system'
+    return setuphelpers.get_current_user().lower() == 'system'
 
 
 ###########################"
@@ -1111,7 +1111,7 @@ class WaptDB(WaptBaseDB):
     def audit_status(self):
         """Return WORST audit status among properly installed packages"""
         errors = self.query("""select count(*) from wapt_localstatus where install_status="OK" and last_audit_status="ERROR"  """,one=True,as_dict=False)[0]
-        if errors and errors>0:
+        if errors>0:
             return 'ERROR'
         warnings = self.query("""select count(*) from wapt_localstatus where install_status="OK" and (last_audit_status is NULL or last_audit_status in ("WARNING","UNKNOWN")) """,one=True,as_dict=False)[0]
         if warnings and warnings>0:
