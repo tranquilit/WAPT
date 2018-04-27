@@ -1190,15 +1190,15 @@ msgid "Remove all packages locall cached by WaptConsole"
 msgstr ""
 
 #: tviswaptgui.actcomputermgmt.caption
-msgid "Gérer l'ordinateur"
+msgid "Computer management"
 msgstr ""
 
 #: tviswaptgui.actcomputerservices.caption
-msgid "Gérer les services"
+msgid "Services management"
 msgstr ""
 
 #: tviswaptgui.actcomputerusers.caption
-msgid "Gérer les utilisateur et groupes"
+msgid "Local users and groups management"
 msgstr ""
 
 #: tviswaptgui.actcreatecertificate.caption
@@ -1405,7 +1405,7 @@ msgid "Reload preferences"
 msgstr ""
 
 #: tviswaptgui.actremoteassist.caption
-msgid "Assistance à distance"
+msgid "Remote Assistance"
 msgstr ""
 
 #: tviswaptgui.actremoveconflicts.caption
@@ -2865,6 +2865,10 @@ msgstr ""
 #: uwaptconsoleres.rsemptyoldpwerror
 msgctxt "uwaptconsoleres.rsemptyoldpwerror"
 msgid "Old password must not be empty."
+msgstr ""
+
+#: uwaptconsoleres.rserrorbuildinguploadpackage
+msgid "Error building or uploading package %s"
 msgstr ""
 
 #: uwaptconsoleres.rserrorcanceling

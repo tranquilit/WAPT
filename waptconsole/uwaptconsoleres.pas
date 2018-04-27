@@ -251,6 +251,7 @@ resourcestring
 
 
   rsDefaultUsageStatsURL = 'http://wapt.tranquil.it/usage_stats';
+  rsErrorBuildingUploadPackage = 'Error building or uploading package %s';
 
 implementation
 

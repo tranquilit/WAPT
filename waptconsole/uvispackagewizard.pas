@@ -128,9 +128,8 @@ begin
         inc_package_release := True));
 
       if (uploadResult.AsArray=nil) or (uploadResult.AsArray.Length <=0) then
-        raise Exception.Create('Error building or uploading package');
+        raise Exception.CreateFmt(rsErrorBuildingUploadPackage,[packageSources]);
       ShowMessageFmt(rsPackageBuiltSourcesAvailable,[packageSources]);
-      ModalResult := mrOk;
     end;
   finally
     Screen.cursor := crDefault;

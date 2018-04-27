@@ -638,7 +638,7 @@ msgstr "Importer..."
 
 #: tvisimportpackage.actpackageduplicate.hint
 msgid "Download, rename, sign and upload to private repository"
-msgstr ""
+msgstr "Télécharge, renomme, signe et upload vers le dépôt privé"
 
 #: tvisimportpackage.actpackageedit.caption
 msgid "Download and Edit"
@@ -720,7 +720,7 @@ msgstr "LabVersion"
 
 #: tvislogin.laconfiguration.caption
 msgid "Configuration"
-msgstr ""
+msgstr "Configuration"
 
 #: tvislogin.lapassword.caption
 msgid "Password"
@@ -728,11 +728,11 @@ msgstr "Mot de passe"
 
 #: tvispackagewizard.actmakeandedit.caption
 msgid "Make and edit..."
-msgstr ""
+msgstr "Créer et éditer..."
 
 #: tvispackagewizard.actmakeupload.caption
 msgid "Make and upload"
-msgstr ""
+msgstr "Créer et uploader"
 
 #: tvispackagewizard.butcancel.caption
 msgctxt "tvispackagewizard.butcancel.caption"
@@ -741,11 +741,11 @@ msgstr "Annuler"
 
 #: tvispackagewizard.caption
 msgid "Package Wizard"
-msgstr ""
+msgstr "Assistant de paquet"
 
 #: tvispackagewizard.edarchitecture.text
 msgid "all"
-msgstr ""
+msgstr "all"
 
 #: tvispackagewizard.eddescription.editlabel.caption
 msgctxt "tvispackagewizard.eddescription.editlabel.caption"
@@ -755,7 +755,7 @@ msgstr "Description"
 #: tvispackagewizard.edpackagename.editlabel.caption
 msgctxt "tvispackagewizard.edpackagename.editlabel.caption"
 msgid "Package name"
-msgstr ""
+msgstr "Nom du paquet"
 
 #: tvispackagewizard.edsection.text
 msgctxt "tvispackagewizard.edsection.text"
@@ -764,16 +764,16 @@ msgstr "base"
 
 #: tvispackagewizard.edsilentflags.editlabel.caption
 msgid "Silent flags"
-msgstr ""
+msgstr "Flags silencieux"
 
 #: tvispackagewizard.eduninstallkey.editlabel.caption
 msgctxt "tvispackagewizard.eduninstallkey.editlabel.caption"
 msgid "Uninstall key"
-msgstr ""
+msgstr "Clé de désinstallation"
 
 #: tvispackagewizard.edversion.editlabel.caption
 msgid "Software Version"
-msgstr ""
+msgstr "Version du logiciel"
 
 #: tvispackagewizard.edversion.text
 msgid "0"
@@ -781,11 +781,11 @@ msgstr ""
 
 #: tvispackagewizard.label1.caption
 msgid "Installer / Setup"
-msgstr ""
+msgstr "Installeur"
 
 #: tvispackagewizard.label2.caption
 msgid "Architecture"
-msgstr ""
+msgstr "Architecture"
 
 #: tvispackagewizard.label3.caption
 msgctxt "tvispackagewizard.label3.caption"
@@ -857,11 +857,11 @@ msgstr "Paramètre du dépôt"
 
 #: tvisrepositories.cbadvanced2.caption
 msgid "Advanced parameters"
-msgstr ""
+msgstr "Paramètres avancés"
 
 #: tvisrepositories.cbcheckhttps.caption
 msgid "Check HTTPS server certificate"
-msgstr ""
+msgstr "Vérifier le certificat serveur HTTPS"
 
 #: tvisrepositories.cbchecksignature.caption
 msgctxt "tvisrepositories.cbchecksignature.caption"
@@ -1209,15 +1209,21 @@ msgid "Remove all packages locall cached by WaptConsole"
 msgstr "Effacer les paquets mis en cache localement par WaptConsole"
 
 #: tviswaptgui.actcomputermgmt.caption
-msgid "Gérer l'ordinateur"
+#, fuzzy
+#| msgid "Gérer l'ordinateur"
+msgid "Computer management"
 msgstr "Gérer l'ordinateur"
 
 #: tviswaptgui.actcomputerservices.caption
-msgid "Gérer les services"
+#, fuzzy
+#| msgid "Gérer les services"
+msgid "Services management"
 msgstr "Gérer les services"
 
 #: tviswaptgui.actcomputerusers.caption
-msgid "Gérer les utilisateur et groupes"
+#, fuzzy
+#| msgid "Gérer les utilisateur et groupes"
+msgid "Local users and groups management"
 msgstr "Gérer les utilisateurs et groupes"
 
 #: tviswaptgui.actcreatecertificate.caption
@@ -1342,7 +1348,7 @@ msgstr "Importer depuis internet"
 
 #: tviswaptgui.actinstalllicence.caption
 msgid "Install a licence file"
-msgstr ""
+msgstr "Installer un fichier de licence"
 
 #: tviswaptgui.actlaunchgpupdate.caption
 msgid "Update AD Group Policies on hosts"
@@ -1358,7 +1364,7 @@ msgstr "Générer un modèle de paquet"
 
 #: tviswaptgui.actpackagesaudit.caption
 msgid "Audit package"
-msgstr ""
+msgstr "Auditer le paquets"
 
 #: tviswaptgui.actpackagesforceinstall.caption
 msgid "Force install"
@@ -1424,7 +1430,9 @@ msgid "Reload preferences"
 msgstr "Recharger les préférences"
 
 #: tviswaptgui.actremoteassist.caption
-msgid "Assistance à distance"
+#, fuzzy
+#| msgid "Assistance à distance"
+msgid "Remote Assistance"
 msgstr "Assistance à distance"
 
 #: tviswaptgui.actremoveconflicts.caption
@@ -1481,7 +1489,7 @@ msgstr "Lancer en masse les installations"
 
 #: tviswaptgui.acttriggerhostaudit.caption
 msgid "Run packages audit "
-msgstr ""
+msgstr "Lancer l'audit des paquets"
 
 #: tviswaptgui.acttriggerhostupdate.caption
 msgctxt "tviswaptgui.acttriggerhostupdate.caption"
@@ -1507,11 +1515,11 @@ msgstr "Lancer les installations"
 
 #: tviswaptgui.acttriggerupdateorgunit.caption
 msgid "Check updates on all hosts of this OU"
-msgstr ""
+msgstr "Vérifier les mises à jour des machines de cette OU"
 
 #: tviswaptgui.acttriggerupgradesorgunit.caption
 msgid "Apply upgrades on all hosts of this OU"
-msgstr ""
+msgstr "Lancer les installations de paquets pour les machines de cette OU"
 
 #: tviswaptgui.acttriggerwakeonlan.caption
 msgid "Power ON with WakeOnLan"
@@ -1898,10 +1906,6 @@ msgctxt "tviswaptgui.labuser.caption"
 msgid "User"
 msgstr "Utilisateur"
 
-#: tviswaptgui.menuexternaltools.caption
-msgctxt "tviswaptgui.menuexternaltools.caption"
-msgid "Gestion Windows de l'ordinateur"
-msgstr ""
 
 #: tviswaptgui.menuitem10.caption
 msgid "Save ..."
@@ -2688,11 +2692,11 @@ msgstr "%s : %.0f%% terminé"
 
 #: uwaptconsoleres.rsconfirmburstupdate
 msgid "Are you sure you want to trigger Status Update on %d hosts ?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir mettre à jour le status de %s machines ?"
 
 #: uwaptconsoleres.rsconfirmburstupgrades
 msgid "Are you sure you want to Apply Upgrades on %d hosts ?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir installer les mises à jour sur %s machines ?"
 
 #: uwaptconsoleres.rsconfirmcaption
 msgctxt "uwaptconsoleres.rsconfirmcaption"
@@ -2706,7 +2710,7 @@ msgstr "Confirmer la suppression"
 
 #: uwaptconsoleres.rsconfirmgpupdate
 msgid "Are you sure you want to update Group Policies status on %d hosts ?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir mettre à jour les Group Policies sur %s machines ?"
 
 #: uwaptconsoleres.rsconfirmhostforgetspackages
 msgctxt "uwaptconsoleres.rsconfirmhostforgetspackages"
@@ -2715,7 +2719,7 @@ msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 
 #: uwaptconsoleres.rsconfirmhostsaudit
 msgid "Are you sure you want to run packages Audit on %d hosts ?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir lancer l'audit de paquets sur %s machines ?"
 
 #: uwaptconsoleres.rsconfirmimport
 msgctxt "uwaptconsoleres.rsconfirmimport"
@@ -2732,7 +2736,7 @@ msgstr "Confirmer l'import"
 
 #: uwaptconsoleres.rsconfirmpackageaudit
 msgid "Are you sure you want to audit %s package(s) for the selected host(s) %s ?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir auditer %s paquet(s) pour les machines sélectionnées %s ?"
 
 #: uwaptconsoleres.rsconfirmpackageedit
 msgid "Do you want to download and edit the package %s ?"
@@ -2773,7 +2777,7 @@ msgstr "Êtes-vous sûr(e) de vouloir supprimer %s paquet(s) de la/des machine(s
 
 #: uwaptconsoleres.rsconfirmwaptexit
 msgid "Are you sure you want to propose Packages Upgrades on %d hosts ?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir proposer l'installation des paquets sur %s machines ?"
 
 #: uwaptconsoleres.rsconfirmwaptservicerestart
 msgid "Are you sure you want to restart waptservice on %d hosts ?"
@@ -2876,11 +2880,11 @@ msgstr "Editer la machine %s"
 msgid ""
 "Unable to edit the host profile %s.\n"
 "If package is signed with a foreign key, you may want to delete host package first to workaround the issue...\n"
-msgstr ""
+msgstr "Si le paquet est signé avec une clé inconnue, vous pourriez peut-être effacer la configuration machine pour contourner ce problème..."
 
 #: uwaptconsoleres.rseditunitbundle
 msgid "Edit Organizational Unit bundle."
-msgstr ""
+msgstr "Editer le paquet de configuration de l'OU"
 
 #: uwaptconsoleres.rsedpackage
 msgctxt "uwaptconsoleres.rsedpackage"
@@ -2896,6 +2900,10 @@ msgstr "Le nouveau mot de passe ne doit pas être vide."
 msgctxt "uwaptconsoleres.rsemptyoldpwerror"
 msgid "Old password must not be empty."
 msgstr "L'ancien mot de passe ne doit pas être vide."
+
+#: uwaptconsoleres.rserrorbuildinguploadpackage
+msgid "Error building or uploading package %s"
+msgstr "Erreur lors du build ou de l'upload du paquet %s"
 
 #: uwaptconsoleres.rserrorcanceling
 msgctxt "uwaptconsoleres.rserrorcanceling"
@@ -2993,7 +3001,7 @@ msgstr "Innosetup n'est pas disponible (emplacement : %s), veuillez l'installer 
 
 #: uwaptconsoleres.rsinputcommonname
 msgid "Please input a Common Name to identify signer"
-msgstr ""
+msgstr "Merci d'indiquer un Common Name pour identifier le signataire"
 
 #: uwaptconsoleres.rsinputkeyname
 msgctxt "uwaptconsoleres.rsinputkeyname"
@@ -3021,11 +3029,11 @@ msgstr "  installation sur c:\\wapt : --setup -s"
 
 #: uwaptconsoleres.rsinvalidservercertificate
 msgid "The https server trusted certificates bundle \"%s\" can not verify the server https connection. Check your bundle"
-msgstr ""
+msgstr "Le bundle de certificats de confiance %s ne permet pas de vérifier le certificat serveur de la connection https. Vérifier votre bundle."
 
 #: uwaptconsoleres.rsinvalidservercertificatedir
 msgid "The https server trusted certificates bundle \"%s\" is not located in a valid directory. It should be in \"<waptbasedir>\\ssl\\server\" directory"
-msgstr ""
+msgstr "Le bundle de certificats de confiance %s n'est pas dans un répertoire valide. Il devrait se trouver de préférence dans \"<waptbasedir>\\ssl\\server\""
 
 #: uwaptconsoleres.rsinvalidwaptsetupdir
 msgctxt "uwaptconsoleres.rsinvalidwaptsetupdir"

@@ -341,10 +341,6 @@ msgstr "Installation de %s..."
 msgid "  install on c:\\wapt : --setup -s"
 msgstr "  installation sur c:\\wapt : --setup -s"
 
-#: uwaptres.rsinterruptupdate
-msgid "Stopper la mise Ã  jour"
-msgstr ""
-
 #: uwaptres.rsinvaliddns
 msgid "Invalid DNS"
 msgstr "DNS invalide"
@@ -361,9 +357,6 @@ msgstr "Le répertoire de WAPTsetup n'est pas valide : %s"
 msgid "Key %s already exists, please pick another name."
 msgstr "La clé %s existe déjà, merci de choisir un nom différent."
 
-#: uwaptres.rslaunchsoftwareupdate
-msgid "Lancer la mise Ã  jour des logiciels"
-msgstr ""
 
 #: uwaptres.rslongtaskerror
 msgid "Error launching longtask: %s"
@@ -481,14 +474,6 @@ msgstr "Enregistrement de la machine sur le serveur"
 msgid "Deleting TIS certificate and copying new certificate"
 msgstr "Suppression du certificat TIS et copie du nouveau certificat"
 
-#: uwaptres.rsrestartingwaptserver
-msgid "RedÃ©marrage service waptserver"
-msgstr ""
-
-#: uwaptres.rsrestartingwaptservice
-msgid "RedÃ©marrage waptservice"
-msgstr ""
-
 #: uwaptres.rsrmbundlefromhosts
 msgid "Selection of package bundles for removing from the selected hosts"
 msgstr "Choix des groupes de paquets à supprimer des machines sélectionnées"
@@ -566,10 +551,6 @@ msgstr "Mise à jour de l'index des paquets"
 #: uwaptres.rsupdatingpackagelist
 msgid "Updating package list"
 msgstr "Mise à jour de la liste des paquets"
-
-#: uwaptres.rsupdatingsoftware
-msgid "Mise Ã  jour des logiciels en cours"
-msgstr ""
 
 #: uwaptres.rsupgradehosterror
 msgid "Failed to trigger upgrade : %s"
@@ -656,6 +637,6 @@ msgid "Win32 Exe wrapper: %s %s"
 msgstr "wrapper Win32 Exe : %s %s"
 
 #: uwaptres.rswinterruptreceived
-msgid "W: interrupt received, killing serverâ¦"
+msgid "W: interrupt received, killing serverâ?¦"
 msgstr "W: interruption reçue, arrêt du serveur"
 

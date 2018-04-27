@@ -4779,28 +4779,28 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActRemoteAssist: TAction
       Category = 'External Tools'
-      Caption = 'Assistance à distance'
+      Caption = 'Remote Assistance'
       ImageIndex = 10
       OnExecute = ActRemoteAssistExecute
       OnUpdate = ActRemoteAssistUpdate
     end
     object ActComputerMgmt: TAction
       Category = 'External Tools'
-      Caption = 'Gérer l''ordinateur'
+      Caption = 'Computer management'
       ImageIndex = 10
       OnExecute = ActComputerMgmtExecute
       OnUpdate = ActComputerMgmtUpdate
     end
     object ActComputerUsers: TAction
       Category = 'External Tools'
-      Caption = 'Gérer les utilisateur et groupes'
+      Caption = 'Local users and groups management'
       ImageIndex = 10
       OnExecute = ActComputerUsersExecute
       OnUpdate = ActComputerUsersUpdate
     end
     object ActComputerServices: TAction
       Category = 'External Tools'
-      Caption = 'Gérer les services'
+      Caption = 'Services management'
       ImageIndex = 10
       OnExecute = ActComputerServicesExecute
       OnUpdate = ActComputerServicesUpdate
