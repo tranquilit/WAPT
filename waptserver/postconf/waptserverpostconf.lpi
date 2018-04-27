@@ -36,13 +36,13 @@
     </RunParams>
     <RequiredPackages Count="9">
       <Item1>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="FrameViewer09"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_virtualtreesextra"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item2>
       <Item3>
-        <PackageName Value="HtmlComp"/>
+        <PackageName Value="pltis_virtualtreesextra"/>
       </Item3>
       <Item4>
         <PackageName Value="dcpcrypt_laz"/>

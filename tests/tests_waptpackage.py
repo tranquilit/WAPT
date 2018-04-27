@@ -995,25 +995,6 @@ def test_proxy():
 
 
 def test_licencing():
-    #ca_key = SSLPrivateKey('c:/private/htouvet.pem',password=open('c:/tmp/tmppassword').read())
-    #ca_cert = SSLCertificate('c:/private/htouvet.crt')
-    c = SSLCertificate('c:/private/licencing.pem')
-    k = SSLPrivateKey('c:/private/licencing.pem')
-    l = licencing.WaptLicence(licence_nr=str(uuid.uuid4()),
-        product='WAPT Enterprise',
-        count=400,
-        licenced_to=u'Rectorat de Corse',
-        contact_email=u'jean-michel.lujan@ac-corse.fr',
-        features=['full'],
-        )
-    lic = l.sign(c,k)
-    print jsondump(lic)
-    print l.check_licence(c.as_pem())
-    print l.check_licence(c)
-    print l.check_licence([c])
-    setuphelpers.mkdirs('c:/tranquilit/wapt/licences')
-    l.save_to_file(r'C:\Users\htouvet\Seafile\licences-wapt\%s-%s.lic' % (l.licenced_to,l.licence_nr))
-
     #l2 = licencing.WaptLicence(filename='c:/tranquilit/wapt/licences/%s.lic'%l.licence_nr)
     #l2.check_licence(c.as_pem())
     #print l2
@@ -1136,14 +1117,26 @@ def test_package_request():
     print('OK with PackageRequest')
 
 
+def test_wua():
+    from waptenterprise.waptwua import client
+    w = Wapt()
+    print(setuphelpers.service_is_running('wuauserv'))
+    with client.WaptWUA(w) as c:
+        print(setuphelpers.service_is_running('wuauserv'))
+        print(c.scan_updates_status())
+
+    print(setuphelpers.service_is_running('wuauserv'))
+
+
 if __name__ == '__main__':
     #gen_perso('htouvet',email='htouvet@tranquil.it')
+    #test_wua()
     #test_packagenewestversion()
     #test_licencing()
     #test_logoutput()
     #test_waptinstalllog()
     #test_install_uninstall()
-    test_package_request()
+    #test_package_request()
     sys.exit(0)
 
     setup_test()
