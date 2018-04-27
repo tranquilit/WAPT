@@ -92,8 +92,35 @@ FileName=$[Project-Path]..\waptenterprise\waptservice\wsus_common.py
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node2\ChildNodes]
 Count=2
 
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node3]
+ClassName=TProjectFolderNode
+Name=waptwua
+
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node3\ChildNodes\Node0]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptenterprise\waptwua\__init__.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node3\ChildNodes\Node1]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptenterprise\waptwua\client.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node3\ChildNodes\Node2]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptenterprise\waptwua\constants.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node3\ChildNodes\Node3]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptenterprise\waptwua\fixwua.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node3\ChildNodes\Node4]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptenterprise\waptwua\utils.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node3\ChildNodes]
+Count=5
+
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes]
-Count=3
+Count=4
 
 [Project\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode
