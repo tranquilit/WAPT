@@ -131,6 +131,7 @@ type
 
   function PyUTF8Decode(s:RawByteString):UnicodeString;
 
+  function ExtractCertificateOptionalsFields( cert_filename : String ) : ISuperObject;
 var
   DMPython: TDMPython;
 
@@ -851,6 +852,27 @@ end;
 function PyUTF8Decode(s:RawByteString):UnicodeString;
 begin
   result := UTF8Decode(s);
+end;
+
+function ExtractCertificateOptionalsFields( cert_filename : String ) : ISuperObject;
+var
+  crt : Variant;
+begin
+
+  result := nil;
+
+  if cert_filename = '' then
+    exit;
+
+  if FileExists(cert_filename) = false then
+    exit;
+
+  crt := dmpython.waptcrypto.SSLCertificate(crt_filename:=cert_filename);
+
+  if VarIsNone( crt ) then
+    exit;
+
+  result := PyVarToSuperObject( crt.issuer );
 end;
 
 {$ifdef ENTERPRISE}
