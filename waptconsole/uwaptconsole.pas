@@ -4543,6 +4543,7 @@ begin
 end;
 
 procedure TVisWaptGUI.ActWSUSRefreshCabHistoryExecute(Sender: TObject);
+begin
 end;
 
 procedure TVisWaptGUI.ActWSUSSaveBuildRulesExecute(Sender: TObject);
