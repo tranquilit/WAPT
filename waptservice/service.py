@@ -160,7 +160,7 @@ app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['SECRET_KEY'] = waptconfig.secret_key
 
 try:
-    from waptenterprise.waptwua import WaptWUA # pylint: disable=import-error
+    from waptenterprise.waptwua.client import WaptWUA # pylint: disable=no-name-in-module
     app.register_blueprint(WaptWUA.waptwua)
 except Exception as e:
     pass
@@ -1442,7 +1442,7 @@ if __name__ == "__main__":
 
     """
 
-    parser=OptionParser(usage=usage,version='waptservice.py ' + __version__+' common.py '+common.__version__+' setuphelpers.py '+setuphelpers.__version__)
+    parser=OptionParser(usage=usage,version='service ' + __version__+' common.py '+common.__version__+' setuphelpers.py '+setuphelpers.__version__)
     parser.add_option("-c","--config", dest="config", default=os.path.join(wapt_root_dir,'wapt-get.ini') , help="Config file full path (default: %default)")
     parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
     parser.add_option("-d","--devel", dest="devel", default=False,action='store_true', help="Enable debug mode (for development only)")

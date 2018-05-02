@@ -2060,6 +2060,12 @@ msgstr "Wiederöffnen"
 msgid "New Item1"
 msgstr ""
 
+#: tviswaptgui.menuitemwaptwua.caption
+#, fuzzy
+msgctxt "tviswaptgui.menuitemwaptwua.caption"
+msgid "Windows Updates"
+msgstr "Windows Updates"
+
 #: tviswaptgui.odselectinstaller.title
 msgid "Select an installer executable or msi"
 msgstr ""
@@ -3999,6 +4005,18 @@ msgstr "Sind Sie sich sicher, dass Sie %s die Pakete vom Host %s vergessen wolle
 
 #: uwaptconsoleres.rsconfirmhostsaudit
 msgid "Are you sure you want to run packages Audit on %d hosts ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmhostswaptwuadownload
+msgid "Are you sure you want to scan and download Windows updates on %d hosts ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmhostswaptwuainstall
+msgid "Are you sure you want to scan and install Windows updates on %d hosts ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmhostswaptwuascan
+msgid "Are you sure you want to scan pending Windows updates on %d hosts ?"
 msgstr ""
 
 #: uwaptconsoleres.rsconfirmimport

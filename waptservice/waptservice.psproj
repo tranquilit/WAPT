@@ -101,31 +101,31 @@ FileName=$[Project-Path]network_monitor.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node9]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\setuphelpers.py
+FileName=$[Project-Path]service.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node10]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptcrypto.py
+FileName=$[Project-Path]..\setuphelpers.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node11]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptdevutils.py
+FileName=$[Project-Path]..\waptcrypto.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node12]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\wapt-get.py
+FileName=$[Project-Path]..\waptdevutils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node13]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptpackage.py
+FileName=$[Project-Path]..\wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node14]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\wapt-scanpackages.py
+FileName=$[Project-Path]..\waptpackage.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node15]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptservice.py
+FileName=$[Project-Path]..\wapt-scanpackages.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node16]
 ClassName=TProjectFileNode
@@ -158,7 +158,7 @@ ClassName=TProjectRunConfiguationNode
 Name=debug
 
 [Project\ChildNodes\Node1\ChildNodes\Node0\RunConfig]
-ScriptName=$[Project-Path]waptservice.py
+ScriptName=$[Project-Path]service.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 WorkingDir=$[Project-Path]
@@ -203,7 +203,7 @@ ClassName=TProjectRunConfiguationNode
 Name=rocket
 
 [Project\ChildNodes\Node1\ChildNodes\Node2\RunConfig]
-ScriptName=$[Project-Path]waptservice\waptservice.py
+ScriptName=$[Project-Path]service.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-l debug

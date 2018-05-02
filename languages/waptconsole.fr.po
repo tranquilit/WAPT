@@ -1906,6 +1906,9 @@ msgctxt "tviswaptgui.labuser.caption"
 msgid "User"
 msgstr "Utilisateur"
 
+#: tviswaptgui.menuexternaltools.caption
+msgid "Gestion Windows de l'ordinateur"
+msgstr ""
 
 #: tviswaptgui.menuitem10.caption
 msgid "Save ..."
@@ -1983,6 +1986,12 @@ msgstr "Ré-ouvrir"
 #: tviswaptgui.menuitem91.caption
 msgid "New Item1"
 msgstr ""
+
+#: tviswaptgui.menuitemwaptwua.caption
+#, fuzzy
+msgctxt "tviswaptgui.menuitemwaptwua.caption"
+msgid "Windows Updates"
+msgstr "Windows Updates"
 
 #: tviswaptgui.odselectinstaller.title
 msgid "Select an installer executable or msi"
@@ -2720,6 +2729,18 @@ msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 #: uwaptconsoleres.rsconfirmhostsaudit
 msgid "Are you sure you want to run packages Audit on %d hosts ?"
 msgstr "Êtes-vous sûr de vouloir lancer l'audit de paquets sur %s machines ?"
+
+#: uwaptconsoleres.rsconfirmhostswaptwuadownload
+msgid "Are you sure you want to scan and download Windows updates on %d hosts ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmhostswaptwuainstall
+msgid "Are you sure you want to scan and install Windows updates on %d hosts ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmhostswaptwuascan
+msgid "Are you sure you want to scan pending Windows updates on %d hosts ?"
+msgstr ""
 
 #: uwaptconsoleres.rsconfirmimport
 msgctxt "uwaptconsoleres.rsconfirmimport"

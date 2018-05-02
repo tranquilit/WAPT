@@ -1952,6 +1952,11 @@ msgstr ""
 msgid "New Item1"
 msgstr ""
 
+#: tviswaptgui.menuitemwaptwua.caption
+msgctxt "tviswaptgui.menuitemwaptwua.caption"
+msgid "Windows Updates"
+msgstr ""
+
 #: tviswaptgui.odselectinstaller.title
 msgid "Select an installer executable or msi"
 msgstr ""
@@ -2685,6 +2690,18 @@ msgstr ""
 
 #: uwaptconsoleres.rsconfirmhostsaudit
 msgid "Are you sure you want to run packages Audit on %d hosts ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmhostswaptwuadownload
+msgid "Are you sure you want to scan and download Windows updates on %d hosts ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmhostswaptwuainstall
+msgid "Are you sure you want to scan and install Windows updates on %d hosts ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmhostswaptwuascan
+msgid "Are you sure you want to scan pending Windows updates on %d hosts ?"
 msgstr ""
 
 #: uwaptconsoleres.rsconfirmimport

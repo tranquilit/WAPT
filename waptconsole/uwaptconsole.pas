@@ -117,6 +117,10 @@ type
     MenuItem92: TMenuItem;
     MenuItem93: TMenuItem;
     MenuItem94: TMenuItem;
+    MenuItemWaptWUA: TMenuItem;
+    MenuItem96: TMenuItem;
+    MenuItem97: TMenuItem;
+    MenuItem98: TMenuItem;
     Panel8: TPanel;
     PgNetworksConfig: TTabSheet;
     PopupMenuOrgUnits: TPopupMenu;
@@ -3669,7 +3673,7 @@ begin
 
     for i:=0 to WSUSActions.ActionCount-1 do
     begin
-      (WSUSActions.Actions[i] as TAction).Visible:=waptcommon.waptwua_enabled;
+      (WSUSActions.Actions[i] as TAction).Visible:=IsEnterpriseEdition;
     end;
 
     plStatusBar1.Caption := WaptServerUser+' on '+ApplicationName+' '+
