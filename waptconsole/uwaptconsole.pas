@@ -4525,7 +4525,7 @@ procedure TVisWaptGUI.ActTriggerHostAuditExecute(Sender: TObject);
 begin
 end;
 
-############################### WSUS
+// WSUS
 procedure TVisWaptGUI.ActTriggerWaptwua_downloadExecute(Sender: TObject);
 begin
 end;
