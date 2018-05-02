@@ -128,6 +128,13 @@ iscfiles_path = makepath(os.path.dirname(innosetup_install),'iscc','app')
 for fn in ['Default.isl', 'isbunzip.dll', 'isbzip.dll', 'ISCC.exe', 'ISCmplr.dll', 'islzma.dll', 'islzma32.exe', 'islzma64.exe', 'ISPP.dll', 'ISPPBuiltins.iss', 'isscint.dll', 'isunzlib.dll', 'iszlib.dll', 'license.txt', 'Setup.e32', 'SetupLdr.e32', 'WizModernImage-IS.bmp', 'WizModernImage.bmp', 'WizModernSmallImage-IS.bmp', 'WizModernSmallImage.bmp']:
     filecopyto(makepath(iscfiles_path,fn),makepath(wapt_base_dir,'waptsetup','innosetup'))
 
+print('Get signtool from Microsot')
+# https://docs.microsoft.com/en-us/dotnet/framework/tools/signtool-exe
+mkdirs(makepath(binaries_cache,'winsdk_amd64'))
+sdkcab1 = wget('https://download.microsoft.com/download/A/6/A/A6AC035D-DA3F-4F0C-ADA4-37C8E5D34E3D/setup/WinSDK_amd64/cab1.cab',resume=True,md5='8ba21a636cbc8749cd4ed1a98499c3e8',cache_dir=makepath(binaries_cache,'winsdk_amd64'),proxies=proxies)
+sdkutils = wget('https://download.microsoft.com/download/A/6/A/A6AC035D-DA3F-4F0C-ADA4-37C8E5D34E3D/setup/WinSDK_amd64/WinSDK_amd64.msi',resume=True,md5='5f8dfd64e0c503c300ca23d306cdea5b',cache_dir=makepath(binaries_cache,'winsdk_amd64'),proxies=proxies)
+run('msiexec /qn /norestart /i "%s"' % sdkutils)
+
 
 print('Get and unzip libzmq.dll')
 zmq_exe = wget('http://miru.hk/archive/ZeroMQ-4.0.4~miru1.0-x86.exe',resume=True,md5='699b63085408cd7bfcde5d3d62077f4e',cache_dir=binaries_cache,proxies=proxies)
