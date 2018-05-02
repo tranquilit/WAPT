@@ -253,7 +253,7 @@ class PackageRequest(BaseObjectClass):
         self.locale = None
         self.maturity = None
 
-        self._packages = None
+        self._package_names = None
         self._version_operator = None
         self._version = None
         self._architectures = None
@@ -276,7 +276,7 @@ class PackageRequest(BaseObjectClass):
 
     def __setattribute__(self,k,v):
         if k in ['package','version','architecture','locale','maturity']:
-            self._packages = None
+            self._package_names = None
             self._version_operator = None
             self._version = None
             self._architectures = None
@@ -285,12 +285,22 @@ class PackageRequest(BaseObjectClass):
         super(PackageRequest).__setattribute__(self,k,v)
 
     @property
-    def packages(self):
-        if self.package is not None and self._packages is None:
-            self._packages = ensure_list(self.package)
-        return self._packages
+    def package_names(self):
+        """Return list of package names from initial csv package criteria"""
+        if self.package is not None and self._package_names is None:
+            self._package_names = ensure_list(self.package)
+        return self._package_names
 
-    def match_version(self,version):
+    def is_matched_version(self,version):
+        """Return True if this request is verified by the provided version
+
+        Args:
+            version (str or Version): version to check against this request
+
+        Returns:
+            bool : True if version is verified by this request
+        """
+
         if self.version is not None and self._version is None:
             parts = REGEX_VERSION_CONDITION.match(self.version).groupdict()
             self._version_operator = parts['operator'] or '='
@@ -315,6 +325,7 @@ class PackageRequest(BaseObjectClass):
 
     @property
     def architectures(self):
+        """List of accepted architecturs"""
         if self.architecture is not None and self._architectures is None:
             if self.architecture in ('all',''):
                 self._architectures=None
@@ -325,6 +336,7 @@ class PackageRequest(BaseObjectClass):
 
     @property
     def maturities(self):
+        """List of accepted maturities"""
         if self.maturity is not None and self._maturities is None:
             if self.maturity in ('all',''):
                 self._maturities = None
@@ -341,9 +353,10 @@ class PackageRequest(BaseObjectClass):
                 self._locales = ensure_list(self.locale)
         return self._locales
 
-    def match(self,package_entry):
-        return  ((self.package is None or package_entry.package in self.packages) and
-                self.match_version(package_entry.version) and
+    def is_matched_by(self,package_entry):
+        """Check if package_entry is matching this request"""
+        return  ((self.package is None or package_entry.package in self.package_names) and
+                self.is_matched_version(package_entry.version) and
                 (self.architecture is None or package_entry.architecture in ('','all') or package_entry.architecture in self.architectures) and
                 (self.locale is None or package_entry.locale in ('','all') or len(list_intersection(ensure_list(package_entry.locale),self.locales))>0) and
                 (self.maturity is None or (package_entry.maturity == '' and  (self.maturities is None or 'PROD' in self.maturities)) or package_entry.maturity in self.maturities))
@@ -351,7 +364,7 @@ class PackageRequest(BaseObjectClass):
     def __cmp__(self,other):
         if isinstance(other,str) or isinstance(other,unicode):
             other = PackageRequest(package=other)
-        return 0 if self.match(other) else cmp((self.package,self.version,self.architecture,self.locale,self.maturity),(other.package,other.version,other.architecture,other.locale,other.maturity))
+        return 0 if self.is_matched_by(other) else cmp((self.package,self.version,self.architecture,self.locale,self.maturity),(other.package,other.version,other.architecture,other.locale,other.maturity))
 
     def __repr__(self):
         def or_list(v):
@@ -712,7 +725,7 @@ class PackageEntry(BaseObjectClass):
 
         """
         if isinstance(match_expr,PackageRequest):
-            return match_expr.match(self)
+            return match_expr.is_matched_by(self)
         elif isinstance(match_expr,(str,unicode)):
             pcv = REGEX_PACKAGE_CONDITION.match(match_expr).groupdict()
             if pcv['package'] != self.package:
@@ -725,20 +738,20 @@ class PackageEntry(BaseObjectClass):
         else:
             raise Exception(u'Unsupported match operand %s' % match_expr)
 
-    def match_version(self, match_expr):
+    def match_version(self, version_expr):
         """Return True if package entry match a version string condition like '>=1.0.1-00'
 
         """
-        prefix = match_expr[:2]
+        prefix = version_expr[:2]
         if prefix in ('>=', '<=', '=='):
-            match_version = match_expr[2:]
+            match_version = version_expr[2:]
         elif prefix and prefix[0] in ('>', '<', '='):
             prefix = prefix[0]
-            match_version = match_expr[1:]
+            match_version = version_expr[1:]
         else:
-            raise ValueError(u"match_expr parameter should be in format <op><ver>, "
+            raise ValueError(u"version_expr parameter should be in format <op><ver>, "
                              "where <op> is one of ['<', '>', '==', '<=', '>=']. "
-                             "You provided: %r" % match_expr)
+                             "You provided: %r" % version_expr)
 
         possibilities_dict = {
             '>': (1,),
