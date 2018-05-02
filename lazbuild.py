@@ -85,12 +85,12 @@ def update_hash_file(filepath):
         print('No %s hash file to process' % filepath)
 
 def sign_exe(exe_path,p12path,p12password):
-    KSIGN = os.path.join(setuphelpers.programfiles32,'kSign','kSignCMD.exe')
+    SIGNTOOL = os.path.join(setuphelpers.programfiles64,'Microsoft SDKs','Windows','v7.1','Bin','signtool.exe')
 
     for attempt in [1, 2, 3]:
         try:
             print "Signing attempt #" + str(attempt)
-            setuphelpers.run(r'"%s" /f "%s" /p"%s" "%s"' % (KSIGN,p12path,p12password,exe_path),return_stderr=False)
+            setuphelpers.run(r'"%s" sign /f "%s" /p "%s" /t http://timestamp.verisign.com/scripts/timstamp.dll "%s"' % (SIGNTOOL,p12path,p12password,exe_path),return_stderr=False)
             break
         except subprocess.CalledProcessError as cpe:
             cpe.cmd =  cpe.cmd.replace(p12password, '********')
@@ -139,7 +139,7 @@ def main():
         update_hash_file(os.path.abspath(options.update_hash_filepath.format(**locals())))
         cmd = '"%s" --primary-config-path="%s" -B "%s"'% (os.path.expandvars(options.lazbuildpath),os.path.expandvars(options.primary_config_path),os.path.expandvars(lpi_path))
         print(u'Running: %s' % cmd)
-        setuphelpers.run(cmd)
+        setuphelpers.run(cmd,cwd = os.path.dirname(os.path.expandvars(options.lazbuildpath)))
         (fn,ext) = os.path.splitext(get_lpi_output(lpi_path))
         if ext in ('','.'):
             ext = '.exe'
