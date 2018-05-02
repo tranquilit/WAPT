@@ -11,16 +11,16 @@ REM set http_proxy=http://proxy:3128
 REM set https_proxy=http://proxy:3128
 
 git clean -xfd
-%PYTHON_PATH%\Scripts\pip.exe install -U pip distribute
+%PYTHON_PATH%\python.exe -m pip install -U pip distribute
 %PYTHON_PATH%\Scripts\pip.exe install virtualenv
 %PYTHON_PATH%\Scripts\virtualenv.exe .
 xcopy /I /E /F /Y c:\python27\libs libs
 xcopy /I /E /F /Y c:\python27\DLLs DLLs
 xcopy /I /E /F /Y /EXCLUDE:libexcludes.txt c:\python27\lib lib
 
-Scripts\pip.exe install --upgrade pip distribute wheel virtualenv six	
+Scripts\python.exe -m pip install --upgrade pip distribute wheel virtualenv six
 
-REM get  pywin32-220.win32-py2.7.exe from internet
+REM get  pywin32-220.win32Sc            -py2.7.exe from internet
 waptpython -c "from waptutils import wget; from subprocess import check_output; pywin32=wget('https://github.com/mhammond/pywin32/releases/download/b223/pywin32-223.win32-py2.7.exe',resume=True,cache_dir='c:\\binaries',md5='366d181c39169d3b0c0e1d25f781d1d6'); print check_output('Scripts\easy_install.exe ""%%s""' %% pywin32,shell=True)"
 Scripts\pip.exe install -r requirements.txt -r requirements-windows.txt
 
