@@ -3655,6 +3655,7 @@ class Wapt(BaseObjectClass):
         if force or repo.repo_url != last_url or repo.need_update(last_modified):
             os_version = setuphelpers.windows_version()
             old_status = repo.invalidate_packages_cache()
+            discarded = []
 
             with self.waptdb:
                 try:
@@ -3662,44 +3663,57 @@ class Wapt(BaseObjectClass):
                     last_modified = repo.packages_date()
 
                     self.waptdb.purge_repo(repo.name)
-                    for package in repo.packages():
+                    repo_packages =  repo.packages()
+                    discarded.extend(repo.discarded)
+                    for package in repo_packages:
                         if filter_on_host_cap:
                             if not self.is_locally_allowed_package(package):
                                 logger.info('Discarding %s on repo "%s" because of local whitelist of blacklist rules' % (package.asrequirement(),repo.name))
+                                discarded.append(package)
                                 continue
                             if package.min_wapt_version and Version(package.min_wapt_version)>Version(setuphelpers.__version__):
-                                logger.debug('Skipping package %s on repo %s, requires a newer Wapt agent. Minimum version: %s' % (package.asrequirement(),repo.name,package.min_wapt_version))
+                                logger.debug('Discarding package %s on repo %s, requires a newer Wapt agent. Minimum version: %s' % (package.asrequirement(),repo.name,package.min_wapt_version))
+                                discarded.append(package)
                                 continue
                             if (package.locale and package.locale != 'all') and self.locales and not list_intersection(ensure_list(package.locale),self.locales):
-                                logger.debug('Skipping package %s on repo %s, designed for locale %s' %(package.asrequirement(),repo.name,package.locale))
+                                logger.debug('Discarding package %s on repo %s, designed for locale %s' %(package.asrequirement(),repo.name,package.locale))
+                                discarded.append(package)
                                 continue
                             if package.maturity and self.maturities and not package.maturity in self.maturities:
-                                logger.debug('Skipping package %s on repo %s, maturity  %s not enabled on this host' %(package.asrequirement(),repo.name,package.maturity))
+                                logger.debug('Discarding package %s on repo %s, maturity  %s not enabled on this host' %(package.asrequirement(),repo.name,package.maturity))
+                                discarded.append(package)
                                 continue
                             if package.target_os and package.target_os != 'windows':
-                                logger.debug('Skipping package %s on repo %s, designed for OS %s' %(package.asrequirement(),repo.name,package.target_os))
+                                logger.debug('Discarding package %s on repo %s, designed for OS %s' %(package.asrequirement(),repo.name,package.target_os))
+                                discarded.append(package)
                                 continue
                             if package.min_os_version and os_version < Version(package.min_os_version):
                                 logger.debug('Discarding package %s on repo %s, requires OS version > %s' % (package.asrequirement(),repo.name,package.min_os_version))
+                                discarded.append(package)
                                 continue
                             if package.max_os_version and os_version > Version(package.max_os_version):
                                 logger.debug('Discarding package %s on repo %s, requires OS version < %s' % (package.asrequirement(),repo.name,package.max_os_version))
+                                discarded.append(package)
                                 continue
                             if package.architecture == 'x64' and not setuphelpers.iswin64():
                                 logger.debug('Discarding package %s on repo %s, requires OS with x64 architecture' % (package.asrequirement(),repo.name,))
+                                discarded.append(package)
                                 continue
                             if package.architecture == 'x86' and setuphelpers.iswin64():
                                 logger.debug('Discarding package %s on repo %s, target OS with x86-32 architecture' % (package.asrequirement(),repo.name,))
+                                discarded.append(package)
                                 continue
 
                         try:
                             self.waptdb.add_package_entry(package,self.language)
                         except Exception as e:
                             logger.critical('Invalid signature for package control entry %s on repo %s : discarding : %s' % (package.asrequirement(),repo.name,e) )
+                            discarded.append(package)
 
                     logger.debug(u'Storing last-modified header for repo_url %s : %s' % (repo.repo_url,repo.packages_date()))
                     self.waptdb.set_param('last-%s' % repo.repo_url[:59],repo.packages_date())
                     self.waptdb.set_param('last-url-%s' % repo.name, repo.repo_url)
+                    self.waptdb.set_param('last-discarded-%s' % repo.name, jsondump([p.as_key() for p in discarded]))
                     return last_modified
                 except Exception as e:
                     logger.info(u'Unable to update repository status of %s, error %s'%(repo._repo_url,e))
@@ -3810,6 +3824,7 @@ class Wapt(BaseObjectClass):
             self.waptdb.db.execute('delete from wapt_package where repo not in (%s)' % (','.join('"%s"'% r.name for r in self.repositories)))
             self.waptdb.db.execute('delete from wapt_params where name like "last-http%%" and name not in (%s)' % (','.join('"last-%s"'% r.repo_url for r in self.repositories)))
             self.waptdb.db.execute('delete from wapt_params where name like "last-url-%%" and name not in (%s)' % (','.join('"last-url-%s"'% r.name for r in self.repositories)))
+            self.waptdb.db.execute('delete from wapt_params where name like "last-discarded-%%-" and name not in (%s)' % (','.join('"last-discarded-%s"'% r.name for r in self.repositories)))
             for repo in self.repositories:
                 # if auto discover, repo_url can be None if no network.
                 if repo.repo_url:
@@ -3852,8 +3867,9 @@ class Wapt(BaseObjectClass):
 
         current = self.waptdb.known_packages()
         result = {
-            "added":   [ p for p in current if not p in previous ],
+            "added":   [ p for p in current if not p in previous],
             "removed": [ p for p in previous if not p in current],
+            "discarded_count": len(json.loads(self.read_param('last-discarded-wapt',[]))),
             "count" : len(current),
             "repos" : [r.repo_url for r in self.repositories],
             "upgrades": self.list_upgrade(),
@@ -5297,7 +5313,7 @@ class Wapt(BaseObjectClass):
                                     session_db.update_install_status(install_id,append_output = u'session_setup() done\n')
                                 return result
                             except Exception as e:
-                                session_db.update_install_status(install_id,append_output = traceback.format_tb())
+                                session_db.update_install_status(install_id,append_output = traceback.format_exc())
                                 dblog.exit_status = 'ERROR'
 
                     else:

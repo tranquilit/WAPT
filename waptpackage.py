@@ -565,6 +565,15 @@ class PackageEntry(BaseObjectClass):
                 if key in self.required_attributes + self.optional_attributes + self.non_control_attributes:
                     setattr(self,key,value)
 
+    def as_key(self):
+        return dict(
+            package=self.package,
+            version=self.version,
+            architecture=self.architecture,
+            locale=self.locale if (self.locale is not None and self.locale != '' and self.locale != 'all') else '',
+            maturity=self.maturity if (self.maturity is not None and self.maturity != '' and self.maturity != 'all') else '',
+            )
+
     def as_package_request(self):
         return PackageRequest(
             package = self.package,

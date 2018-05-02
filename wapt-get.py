@@ -378,10 +378,10 @@ def main():
             mywapt.dbpath = r':memory:'
             mywapt.use_hostpackages = False
             logger.info('Updating in-memory packages index from repositories...')
-            update_result = mywapt.update(register=False,filter_on_host_cap=False)
             logger.info('Configuration file : %s' % config_file)
             logger.info('  waptserver     : %s' % mywapt.waptserver)
             logger.info('  repositories   : %s' % mywapt.repositories)
+            update_result = mywapt.update(register=False,filter_on_host_cap=False)
             logger.info('  packages count : %s' % update_result['count'])
 
         logger.debug(u'WAPT base directory : %s' % mywapt.wapt_base_dir)
@@ -681,6 +681,7 @@ def main():
                     print(u"Total packages : %i" % result['count'])
                     print(u"Added packages : \n%s" % "\n".join(["  %s (%s)" % p for p in result['added']]))
                     print(u"Removed packages : \n%s" % "\n".join(["  %s (%s)" % p for p in result['removed']]))
+                    print(u"Discarded packages count : %s" % result['discarded_count'])
                     print(u"Pending operations : \n%s" %  "\n".join( ["  %s: %s" % (k,' '.join(result['upgrades'][k])) for k in result['upgrades']]) )
                     print(u"Repositories URL : \n%s" % "\n".join(["  %s" % p for p in result['repos']]))
 
@@ -790,7 +791,7 @@ def main():
                 result= []
                 for package_dir in expand_args(args[1:]):
                     pe = PackageEntry(waptfile=package_dir)
-                    is_updated = pe.call_setup_hook('update_package')
+                    is_updated = pe.call_setup_hook('update_package',wapt_context=mywapt)
                     if is_updated:
                         result.append(package_dir)
                 if options.json_output:
