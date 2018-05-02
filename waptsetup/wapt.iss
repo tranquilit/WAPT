@@ -54,8 +54,7 @@ Source: "..\openssl.exe" ; DestDir: "{app}";
 Source: "..\libzmq.dll"; DestDir: "{app}";
 Source: "..\waptservice\win32\*"; DestDir: "{app}\waptservice\win32\";  Flags: createallsubdirs recursesubdirs; Tasks: installService 
 Source: "..\waptservice\win64\*"; DestDir: "{app}\waptservice\win64\";  Flags: createallsubdirs recursesubdirs; Tasks: installService
-Source: "..\waptservice\waptservice*.py"; DestDir: "{app}\waptservice\"; Tasks: installService
-Source: "..\waptservice\network_manager.py"; DestDir: "{app}\waptservice\"; Tasks: installService
+Source: "..\waptservice\*.py"; DestDir: "{app}\waptservice\"; Tasks: installService
 Source: "..\waptservice\static\*"; DestDir: "{app}\waptservice\static"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
 Source: "..\waptservice\ssl\*"; DestDir: "{app}\waptservice\ssl"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
 Source: "..\waptservice\templates\*"; DestDir: "{app}\waptservice\templates"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
@@ -195,7 +194,7 @@ Filename: "cmd"; Parameters: "/C icacls.exe ""{app}\private"" /inheritance:r  /g
 Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe ""{app}\private"" /inheritance:r /grant *S-1-5-32-544:(OI)(CI)F  /grant *S-1-5-18:(OI)(CI)F"; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt private..."; Description: "Mise en place des droits sur le répertoire wapt private..."
 
 ; if waptservice
-Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptservice\waptservice.py"" install"; Tasks:installService ; Flags: runhidden; StatusMsg: "Installation du service WAPT"; Description: "Installation du service WAPT"
+Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptservice\service.py"" install"; Tasks:installService ; Flags: runhidden; StatusMsg: "Installation du service WAPT"; Description: "Installation du service WAPT"
 Filename: "sc"; Parameters: "delete waptservice"; Flags: runhidden; Tasks: not installService; WorkingDir: "{tmp}"; StatusMsg: "Suppression du service wapt..."; Description: "Suppression du service wapt..."
 Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser skipifsilent postinstall; StatusMsg: "Lancement de l'icône de notification"; Description: "Lancement de l'icône de notification"
 
