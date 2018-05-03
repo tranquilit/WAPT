@@ -1125,9 +1125,9 @@ class WaptTaskManager(threading.Thread):
         self.last_audit = time.time()
         for installed_package in self.wapt.installed():
             if not installed_package.next_audit_on or now >= installed_package.next_audit_on:
-                task = WaptAuditPackage(installed_package.package)
+                task = WaptAuditPackage(installed_package.package,created_by='SCHEDULER')
                 self.add_task(task)
-        self.add_task(WaptUpdateServerStatus(priority=100))
+        self.add_task(WaptUpdateServerStatus(priority=100,created_by='SCHEDULER'))
 
     def check_scheduled_tasks(self):
         """Add update/upgrade tasks if elapsed time since last update/upgrade is over"""
