@@ -65,9 +65,9 @@ from waptcrypto import SSLVerifyException,SSLCABundle,SSLCertificate,SSLPrivateK
 
 from common import Wapt
 
-from waptservice_common import waptservice_remote_actions,waptconfig,WaptServiceConfig
-from waptservice_common import WaptUpdate,WaptUpgrade,WaptUpdateServerStatus,WaptRegisterComputer
-from waptservice_common import WaptCleanup,WaptPackageInstall,WaptPackageRemove,WaptPackageForget,WaptLongTask,WaptAuditPackage
+from waptservice.waptservice_common import waptservice_remote_actions,waptconfig,WaptServiceConfig
+from waptservice.waptservice_common import WaptUpdate,WaptUpgrade,WaptUpdateServerStatus,WaptRegisterComputer
+from waptservice.waptservice_common import WaptCleanup,WaptPackageInstall,WaptPackageRemove,WaptPackageForget,WaptLongTask,WaptAuditPackage
 
 from plugins import *
 
@@ -308,6 +308,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
 class WaptSocketIOClient(threading.Thread):
     def __init__(self,config_filename = 'c:/wapt/wapt-get.ini',task_manager=None):
         threading.Thread.__init__(self)
+        self.name = 'SocketIOClient'
         self.config_filename = config_filename
         self.task_manager = task_manager
         self.config = WaptServiceConfig(config_filename)

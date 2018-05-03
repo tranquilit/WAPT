@@ -87,12 +87,12 @@ from setuphelpers import Version
 from waptpackage import PackageEntry,WaptLocalRepo,WaptPackage,EWaptException
 from waptcrypto import SSLVerifyException,SSLCABundle,SSLCertificate,SSLPrivateKey
 
-from waptservice_common import waptconfig
-from waptservice_common import WaptClientUpgrade,WaptServiceRestart,WaptNetworkReconfig,WaptPackageInstall
-from waptservice_common import WaptUpgrade,WaptUpdate,WaptUpdateServerStatus,WaptCleanup,WaptDownloadPackage,WaptLongTask,WaptAuditPackage
-from waptservice_common import WaptRegisterComputer,WaptPackageRemove,WaptPackageRemove,WaptPackageForget,WaptServiceRestart
+from waptservice.waptservice_common import waptconfig
+from waptservice.waptservice_common import WaptClientUpgrade,WaptServiceRestart,WaptNetworkReconfig,WaptPackageInstall
+from waptservice.waptservice_common import WaptUpgrade,WaptUpdate,WaptUpdateServerStatus,WaptCleanup,WaptDownloadPackage,WaptLongTask,WaptAuditPackage
+from waptservice.waptservice_common import WaptRegisterComputer,WaptPackageRemove,WaptPackageRemove,WaptPackageForget,WaptServiceRestart
 
-from waptservice_socketio import WaptSocketIOClient
+from waptservice.waptservice_socketio import WaptSocketIOClient
 
 if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
     from waptenterprise.waptservice.enterprise import *  # pylint: disable=import-error
