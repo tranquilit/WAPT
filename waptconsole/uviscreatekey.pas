@@ -172,7 +172,6 @@ begin
     certFile := CreateSignedCert(
       utf8Decode(pemfn),
       utf8Decode(edCertBaseName.Text),
-      WaptBaseDir(),
       utf8Decode(DirectoryCert.Text),
       utf8Decode(edCountry.Text),
       utf8Decode(edLocality.Text),

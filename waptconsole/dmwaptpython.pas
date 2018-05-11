@@ -104,7 +104,6 @@ type
 
   function CreateSignedCert(keyfilename,
           crtbasename,
-          wapt_base_dir,
           destdir,
           country,
           locality,
@@ -747,7 +746,6 @@ end;
 
 function CreateSignedCert(keyfilename,
         crtbasename,
-        wapt_base_dir,
         destdir,
         country,
         locality,
