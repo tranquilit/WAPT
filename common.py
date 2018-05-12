@@ -3869,7 +3869,7 @@ class Wapt(BaseObjectClass):
         result = {
             "added":   [ p for p in current if not p in previous],
             "removed": [ p for p in previous if not p in current],
-            "discarded_count": len(json.loads(self.read_param('last-discarded-wapt',[]))),
+            "discarded_count": len(json.loads(self.read_param('last-discarded-wapt','[]'))),
             "count" : len(current),
             "repos" : [r.repo_url for r in self.repositories],
             "upgrades": self.list_upgrade(),
