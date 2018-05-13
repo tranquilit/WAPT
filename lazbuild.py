@@ -85,7 +85,8 @@ def update_hash_file(filepath):
         print('No %s hash file to process' % filepath)
 
 def sign_exe(exe_path,p12path,p12password):
-    SIGNTOOL = os.path.join(setuphelpers.programfiles64,'Microsoft SDKs','Windows','v7.1','Bin','signtool.exe')
+    #SIGNTOOL = os.path.join(setuphelpers.programfiles64,'Microsoft SDKs','Windows','v7.1','Bin','signtool.exe')
+    SIGNTOOL = os.path.join('c:\\wapt','utils','signtool.exe')
 
     for attempt in [1, 2, 3]:
         try:

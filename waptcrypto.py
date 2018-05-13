@@ -1688,7 +1688,7 @@ class SSLCertificate(BaseObjectClass):
             self.rsa.verify(signature,content,apadding,get_hash_algo(md))
             return self.cn
         except InvalidSignature as e:
-            raise SSLVerifyException(u'SSL signature verification failed for certificate %s'%self.subject)
+            raise SSLVerifyException(u'SSL signature verification failed for certificate %s issued by %s' % (self.subject,self.issuer_cn))
 
     def match_key(self,key):
         """Check if certificate matches the given private key"""

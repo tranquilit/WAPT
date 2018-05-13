@@ -25,6 +25,12 @@ def update_package():
     # implicit context variables are WAPT, basedir, control, user, params, run
     # if attributes in control are changed, they should be explicitly saved to package file with control.save_control_to_wapt()
 
+def audit():
+    print('Auditing %%s' %% control.asrequirement())
+    # put here code to check periodically that state is matching expectations
+    # return "OK", "WARNING" or "ERROR" to report status in console.
+    # all print statement are reported too
+
 if __name__ == '__main__':
     update_package()
 
