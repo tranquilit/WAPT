@@ -20,12 +20,13 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.1.18"
+__version__ = "1.5.1.3"
 import logging
 import sys
 import tempfile
 import codecs
 import certifi
+import cProfile
 
 from OpenSSL import crypto
 from OpenSSL import SSL
@@ -41,7 +42,7 @@ def setloglevel(logger,loglevel):
             raise ValueError('Invalid log level: {}'.format(loglevel))
         logger.setLevel(numeric_level)
 
-setloglevel(logger,'debug')
+setloglevel(logger,'info')
 
 
 from waptutils import *
@@ -1129,10 +1130,19 @@ def test_wua():
 
     print(setuphelpers.service_is_running('wuauserv'))
 
+def test_discarded():
+    #cProfile.run('w = Wapt();w.update(force=True)')
+    #print w.waptdb.get_param('last-discarded-wapt')
+    w = Wapt()
+    ca = w.cabundle
+    signers = w.repositories[0].get_certificates()
+    pe = w.repositories[0].packages()[0]
+    cProfile.runctx('for i in range(0,200): pe.check_control_signature(ca,signers)',globals=globals(),locals=dict(ca=ca,pe=pe,signers=signers),sort=2)
 
 if __name__ == '__main__':
     #gen_perso('htouvet',email='htouvet@tranquil.it')
-    test_wua()
+    test_discarded()
+    #test_wua()
     #test_packagenewestversion()
     #test_licencing()
     #test_logoutput()

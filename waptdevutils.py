@@ -33,6 +33,7 @@
     exported functions instead of local Wapt functions (except crypto signatures)
 
 """
+from __future__ import absolute_import
 from __future__ import print_function
 from waptutils import __version__
 

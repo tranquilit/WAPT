@@ -19,6 +19,8 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+from __future__ import absolute_import
+
 import os
 import sys
 import types
@@ -1160,7 +1162,7 @@ class WaptTaskManager(threading.Thread):
                 except Exception as e:
                     logger.debug(u'Error for update in check_scheduled_tasks: %s'%e)
 
-        if waptconfig.waptaudit_task_period is not None:
+        if waptconfig.waptaudit_task_period is not None and waptconfig.waptaudit_task_period > 0:
             if self.last_audit is None or (time.time()-self.last_audit)/60>waptconfig.waptaudit_task_period:
                 try:
                     self.run_scheduled_audits()

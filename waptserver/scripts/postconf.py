@@ -20,7 +20,9 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.6.0.1"
+from __future__ import absolute_import
+from waptserver.config import __version__
+
 
 usage = """\
 %prog [--use-kerberos] [--force-https]"""

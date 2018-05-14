@@ -1,5 +1,5 @@
 """Implementation of ISesNework in Python."""
-
+from __future__ import absolute_import
 import logging
 import logging.handlers
 
