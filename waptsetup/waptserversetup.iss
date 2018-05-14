@@ -142,6 +142,9 @@ de.InstallPostgreSQL=PostgreSQL Server installieren
 en.InstallWaptServer=Wapt server installieren
 
 
+[InstallDelete]
+Type: files; Name: "{app}\waptserver\waptserver.py*"
+
 [Code]
 
 function NextButtonClick(CurPageID: Integer):Boolean;

@@ -217,8 +217,9 @@ Name: installredist2008unchecked; Description: "{cm:ForceVCppReinstall}"; Check:
 #endif
 
 [InstallDelete]
-Type: filesandordirs; Name: {app}\lib\site-packages
-Type: files; Name: {app}\*.pyc
+Type: filesandordirs; Name: "{app}\lib\site-packages"
+Type: files; Name: "{app}\*.pyc"
+Type: files; Name: "{app}\waptservice\waptservice.py*"
 
 [UninstallRun]
 Filename: "taskkill"; Parameters: "/t /im ""waptconsole.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de waptconsole"
