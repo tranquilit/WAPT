@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=3.3.2.0
+Version=3.4.1.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -30,125 +30,186 @@ Count=3
 
 [Project\ChildNodes\Node0\ChildNodes\Node1]
 ClassName=TProjectFolderNode
+Name=enterprise
+
+[Project\ChildNodes\Node0\ChildNodes\Node2]
+ClassName=TProjectFolderNode
 Name=templates
 
-[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node0]
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node0]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]templates\index.html
 
-[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node1]
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]templates\install.html
 
-[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node2]
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node2]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]templates\layout.html
 
-[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node3]
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node3]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]templates\list.html
 
-[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node4]
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node4]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]templates\package_details.html
 
-[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node5]
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node5]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]templates\remove.html
 
-[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node6]
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node6]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]templates\status.html
 
-[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node7]
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node7]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]templates\task.html
 
-[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node8]
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node8]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]templates\tasks.html
 
-[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes]
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes]
 Count=9
 
-[Project\ChildNodes\Node0\ChildNodes\Node2]
-ClassName=TProjectFileNode
-FileName=$[Project-Path]__init__.py
-
 [Project\ChildNodes\Node0\ChildNodes\Node3]
+ClassName=TProjectFolderNode
+Name=waptenterprise
+
+[Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node0]
+ClassName=TProjectFolderNode
+Name=waptservice
+
+[Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node0\ChildNodes\Node0]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\common.py
+FileName=C:\tranquilit\wapt\waptenterprise\waptservice\__init__.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node0\ChildNodes\Node1]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptenterprise\waptservice\enterprise.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node0\ChildNodes]
+Count=2
+
+[Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node1]
+ClassName=TProjectFolderNode
+Name=waptwua
+
+[Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node1\ChildNodes\Node0]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptenterprise\waptwua\__init__.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node1\ChildNodes\Node1]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptenterprise\waptwua\client.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node1\ChildNodes\Node2]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptenterprise\waptwua\constants.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node1\ChildNodes\Node3]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptenterprise\waptwua\fixwua.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node1\ChildNodes\Node4]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptenterprise\waptwua\utils.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node1\ChildNodes]
+Count=5
+
+[Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node2]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptenterprise\__init__.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node3]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptenterprise\licencing.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes]
+Count=4
 
 [Project\ChildNodes\Node0\ChildNodes\Node4]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\custom_zip.py
+FileName=$[Project-Path]__init__.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node5]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\keyfinder.py
+FileName=$[Project-Path]..\common.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node6]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\ms_installers_errors.py
+FileName=$[Project-Path]..\custom_zip.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node7]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]network_manager.py
+FileName=$[Project-Path]..\keyfinder.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node8]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]network_monitor.py
+FileName=$[Project-Path]..\ms_installers_errors.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node9]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]service.py
+FileName=$[Project-Path]network_manager.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node10]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\setuphelpers.py
+FileName=$[Project-Path]network_monitor.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node11]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptcrypto.py
+FileName=$[Project-Path]service.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node12]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptdevutils.py
+FileName=$[Project-Path]..\setuphelpers.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node13]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\wapt-get.py
+FileName=$[Project-Path]..\waptcrypto.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node14]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptpackage.py
+FileName=$[Project-Path]..\waptdevutils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node15]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\wapt-scanpackages.py
+FileName=$[Project-Path]..\wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node16]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptservice_common.py
+FileName=$[Project-Path]..\waptpackage.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node17]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptservice_socketio.py
+FileName=$[Project-Path]..\wapt-scanpackages.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node18]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\wapt-signpackages.py
+FileName=$[Project-Path]waptservice_common.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node19]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptutils.py
+FileName=$[Project-Path]waptservice_socketio.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node20]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]..\wapt-signpackages.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node21]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]..\waptutils.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node22]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]..\windnsquery.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=21
+Count=23
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
@@ -172,8 +233,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationNode
@@ -195,8 +254,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node2]
 ClassName=TProjectRunConfiguationNode
@@ -218,8 +275,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes]
 Count=3
