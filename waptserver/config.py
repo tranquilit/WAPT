@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
-__version__ = "1.6.0.3"
+__version__ = "1.6.0.4"
 
 import os
 import sys
