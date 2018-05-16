@@ -94,7 +94,7 @@ type
   begin
     while not Terminated do
     try
-      Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',100,Nil,0);
+      Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',1000,Nil,0);
       if Events <> Nil then
       begin
         If Events.AsArray.Length>0 then

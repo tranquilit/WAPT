@@ -1002,16 +1002,25 @@ def get_wapt_package(input_package_name):
 @app.route('/events.json')
 @allow_local
 def events():
+    """Get the last waptservice events.
+    Blocking call for timeout seconds.
+
+    Args:
+        last_read (int): id of last read event.
+        timeout (int): time to wait until new events come in
+    """
     last_read = int(request.args.get('last_read',session.get('last_read_event_id','0')))
     timeout = int(request.args.get('timeout','10'))
+    max_count = int(request.args.get('max_count','0')) or None
     if task_manager.wapt.events:
-        data = task_manager.wapt.events.get_missed(last_read=last_read)
-        start_time = time.time()
-        while not data and time.time() - start_time <= timeout:
-            time.sleep(1.0)
-            data = task_manager.wapt.events.get_missed(last_read=last_read)
-        if task_manager.wapt.events.events:
-            session['last_read_event_id'] = task_manager.wapt.events.events[-1].id
+        data = task_manager.wapt.events.get_missed(last_read=last_read,max_count=max_count)
+        if timeout>0:
+            start_time = time.time()
+            while not data and time.time() - start_time <= timeout:
+                time.sleep(1.0)
+                data = task_manager.wapt.events.get_missed(last_read=last_read,max_count=max_count)
+            if task_manager.wapt.events.events:
+                session['last_read_event_id'] = task_manager.wapt.events.events[-1].id
     else:
         data = None
     return Response(jsondump(data), mimetype='application/json')

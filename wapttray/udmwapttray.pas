@@ -85,11 +85,11 @@ type
     procedure TrayIcon1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
   private
-    Ftasks: ISuperObject;
+    FLastUpdateStatus: ISuperObject;
     FtrayMode: TTrayMode;
     FWaptServiceRunning: Boolean;
     function GetrayHint: String;
-    procedure Settasks(AValue: ISuperObject);
+    procedure SetLastUpdateStatus(AValue: ISuperObject);
     procedure SettrayHint(AValue: String);
     procedure SetTrayIcon(idx: integer);
     procedure SettrayMode(AValue: TTrayMode);
@@ -109,7 +109,7 @@ type
     notify_user:Boolean;
     lastButton:TMouseButton;
 
-    property tasks:ISuperObject read Ftasks write Settasks;
+    property LastUpdateStatus: ISuperObject read FLastUpdateStatus write SetLastUpdateStatus;
     property WaptServiceRunning:Boolean read FWaptServiceRunning write SetWaptServiceRunning;
     property trayMode:TTrayMode read FtrayMode write SettrayMode;
     property trayHint:String read GetrayHint write SettrayHint;
@@ -132,7 +132,7 @@ type
   TCheckWaptservice = Class(TThread)
   private
     WaptServiceRunning:Boolean;
-    tasks : ISuperObject;
+    LastUpdateStatus : ISuperObject;
     procedure UpdateTasks;
   public
     PollTimeout:Integer;
@@ -164,7 +164,7 @@ type
 procedure TCheckWaptservice.UpdateTasks;
 begin
   DMTray.WaptServiceRunning := WaptServiceRunning;
-  DMTray.Tasks := tasks;
+  DMTray.LastUpdateStatus := LastUpdateStatus;
 end;
 
 constructor TCheckWaptservice.Create(aDMWaptTray: TDMWaptTray);
@@ -179,14 +179,13 @@ begin
   While not Terminated do
   begin
     try
-      //if CheckOpenPort(waptservice_port,'127.0.0.1',500) then
-        tasks := WAPTLocalJsonGet('tasks_status.json','','',200);
-        WaptServiceRunning:=True;
+      LastUpdateStatus := WAPTLocalJsonGet('checkupgrades.json','','',200);
+      WaptServiceRunning:=True;
     except
       on E:EIdException do
       begin
         WaptServiceRunning:=False;
-        tasks := Nil;
+        LastUpdateStatus := Nil;
       end;
     end;
     Synchronize(@UpdateTasks);
@@ -206,6 +205,7 @@ constructor TPollThread.Create(aDMWaptTray:TDMWaptTray);
 begin
   inherited Create(True);
   DMTray := aDMWaptTray;
+  LastReadEventId:=-1;
 end;
 
 destructor TPollThread.Destroy;
@@ -217,7 +217,11 @@ procedure TPollThread.Execute;
 begin
   while not Terminated do
   try
-    Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',10000,Nil,0);
+    if LastReadEventId<0 then
+      // first time, get just last event
+      Events := WAPTLocalJsonGet(Format('events?max_count=1',[]),'','',10000,Nil,0)
+    else
+      Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',10000,Nil,0);
     if Events <> Nil then
     begin
       If Events.AsArray.Length>0 then
@@ -413,7 +417,6 @@ begin
   result:=AppendPathDelim(ExtractFileDir(ParamStr(0)))+'waptconsole.exe';
 end;
 
-// Called whenever a zeromq message is published
 procedure TDMWaptTray.pollerEvent(Events:ISuperObject);
 var
   Step,EventType,msg,desc,summary:String;
@@ -647,10 +650,12 @@ begin
   Result := TrayIcon1.Hint;
 end;
 
-procedure TDMWaptTray.Settasks(AValue: ISuperObject);
+procedure TDMWaptTray.SetLastUpdateStatus(AValue: ISuperObject);
+var
+  summary:String;
 begin
-  if Ftasks=AValue then Exit;
-  Ftasks:=AValue;
+  if LastUpdateStatus=AValue then Exit;
+  LastUpdateStatus:=AValue;
 end;
 
 procedure TDMWaptTray.SettrayHint(AValue: String);
