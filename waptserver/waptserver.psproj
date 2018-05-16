@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=3.3.2.0
+Version=3.4.1.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -85,12 +85,8 @@ Name=waptservice
 ClassName=TProjectFileNode
 FileName=$[Project-Path]..\waptenterprise\waptservice\enterprise.py
 
-[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node2\ChildNodes\Node1]
-ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptenterprise\waptservice\wsus_common.py
-
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node2\ChildNodes]
-Count=2
+Count=1
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node3]
 ClassName=TProjectFolderNode
@@ -212,8 +208,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationNode
@@ -235,8 +229,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node2]
 ClassName=TProjectRunConfiguationNode
@@ -258,8 +250,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node3]
 ClassName=TProjectRunConfiguationNode
@@ -281,8 +271,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node4]
 ClassName=TProjectRunConfiguationNode
@@ -304,8 +292,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes]
 Count=5

@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=3.3.2.0
+Version=3.4.1.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -46,11 +46,11 @@ FileName=C:\tranquilit\wapt\waptdevutils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node5]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-get.ini
+FileName=C:\tranquilit\wapt\wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node6]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-get.py
+FileName=C:\tranquilit\wapt\wapt-get.ini
 
 [Project\ChildNodes\Node0\ChildNodes\Node7]
 ClassName=TProjectFileNode
@@ -95,8 +95,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 CaptureOutput=FALSE
 ConsoleHidden=FALSE
 WaitForTerminate=FALSE
@@ -122,8 +120,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 CaptureOutput=FALSE
 ConsoleHidden=FALSE
 WaitForTerminate=FALSE
@@ -148,8 +144,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 CaptureOutput=FALSE
 ConsoleHidden=FALSE
 WaitForTerminate=FALSE
@@ -174,8 +168,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 CaptureOutput=FALSE
 ConsoleHidden=FALSE
 WaitForTerminate=FALSE
@@ -200,8 +192,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 CaptureOutput=FALSE
 ConsoleHidden=FALSE
 WaitForTerminate=FALSE
@@ -226,8 +216,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 CaptureOutput=FALSE
 ConsoleHidden=FALSE
 WaitForTerminate=FALSE
@@ -252,8 +240,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 CaptureOutput=FALSE
 ConsoleHidden=FALSE
 WaitForTerminate=FALSE
@@ -278,8 +264,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 CaptureOutput=FALSE
 ConsoleHidden=FALSE
 WaitForTerminate=FALSE
@@ -304,8 +288,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 CaptureOutput=FALSE
 ConsoleHidden=FALSE
 WaitForTerminate=FALSE
@@ -330,8 +312,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 CaptureOutput=FALSE
 ConsoleHidden=FALSE
 WaitForTerminate=FALSE
@@ -356,8 +336,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 CaptureOutput=FALSE
 ConsoleHidden=FALSE
 WaitForTerminate=FALSE
@@ -382,8 +360,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 CaptureOutput=FALSE
 ConsoleHidden=FALSE
 WaitForTerminate=FALSE
@@ -408,8 +384,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node13]
 ClassName=TProjectRunConfiguationNode
@@ -431,8 +405,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node14]
 ClassName=TProjectRunConfiguationNode
@@ -454,8 +426,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node15]
 ClassName=TProjectRunConfiguationNode
@@ -477,8 +447,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node16]
 ClassName=TProjectRunConfiguationNode
@@ -500,8 +468,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node17]
 ClassName=TProjectRunConfiguationNode
@@ -523,8 +489,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node18]
 ClassName=TProjectRunConfiguationNode
@@ -546,8 +510,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node19]
 ClassName=TProjectRunConfiguationNode
@@ -569,8 +531,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node20]
 ClassName=TProjectRunConfiguationNode
@@ -592,8 +552,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node21]
 ClassName=TProjectRunConfiguationNode
@@ -615,8 +573,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node22]
 ClassName=TProjectRunConfiguationNode
@@ -638,8 +594,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node23]
 ClassName=TProjectRunConfiguationNode
@@ -661,8 +615,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node24]
 ClassName=TProjectRunConfiguationNode
@@ -684,8 +636,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node25]
 ClassName=TProjectRunConfiguationNode
@@ -707,8 +657,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node26]
 ClassName=TProjectRunConfiguationNode
@@ -730,8 +678,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node27]
 ClassName=TProjectRunConfiguationNode
@@ -753,8 +699,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node28]
 ClassName=TProjectRunConfiguationNode
@@ -776,8 +720,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node29]
 ClassName=TProjectRunConfiguationNode
@@ -799,8 +741,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node30]
 ClassName=TProjectRunConfiguationNode
@@ -822,8 +762,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node31]
 ClassName=TProjectRunConfiguationNode
@@ -845,8 +783,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node32]
 ClassName=TProjectRunConfiguationNode
@@ -868,8 +804,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node33]
 ClassName=TProjectRunConfiguationNode
@@ -891,8 +825,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node34]
 ClassName=TProjectRunConfiguationNode
@@ -914,8 +846,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node35]
 ClassName=TProjectRunConfiguationNode
@@ -937,8 +867,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node36]
 ClassName=TProjectRunConfiguationNode
@@ -960,8 +888,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node37]
 ClassName=TProjectRunConfiguationNode
@@ -983,8 +909,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node38]
 ClassName=TProjectRunConfiguationNode
@@ -1006,8 +930,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node39]
 ClassName=TProjectRunConfiguationNode
@@ -1029,8 +951,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node40]
 ClassName=TProjectRunConfiguationNode
@@ -1052,8 +972,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node41]
 ClassName=TProjectRunConfiguationNode
@@ -1063,7 +981,7 @@ Name=update-status
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug update-status
+Parameters=update-status
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1075,8 +993,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node42]
 ClassName=TProjectRunConfiguationNode
@@ -1098,8 +1014,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node43]
 ClassName=TProjectRunConfiguationNode
@@ -1121,8 +1035,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node44]
 ClassName=TProjectRunConfiguationNode
@@ -1144,8 +1056,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node45]
 ClassName=TProjectRunConfiguationNode
@@ -1167,8 +1077,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node46]
 ClassName=TProjectRunConfiguationNode
@@ -1190,8 +1098,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node47]
 ClassName=TProjectRunConfiguationNode
@@ -1213,8 +1119,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node48]
 ClassName=TProjectRunConfiguationNode
@@ -1236,8 +1140,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node49]
 ClassName=TProjectRunConfiguationNode
@@ -1259,8 +1161,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node50]
 ClassName=TProjectRunConfiguationNode
@@ -1282,8 +1182,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node51]
 ClassName=TProjectRunConfiguationNode
@@ -1293,7 +1191,7 @@ Name=edit "tis-vlc(=2.2.1-1)"
 ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug edit "tis-vlc(=2.2.1-1)"
+Parameters=edit "tis-vlc(=2.2.1-1)"
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1305,8 +1203,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node52]
 ClassName=TProjectRunConfiguationNode
@@ -1328,8 +1224,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node53]
 ClassName=TProjectRunConfiguationNode
@@ -1351,8 +1245,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node54]
 ClassName=TProjectRunConfiguationNode
@@ -1374,8 +1266,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node55]
 ClassName=TProjectRunConfiguationNode
@@ -1397,8 +1287,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node56]
 ClassName=TProjectRunConfiguationNode
@@ -1420,8 +1308,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node57]
 ClassName=TProjectRunConfiguationNode
@@ -1443,8 +1329,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node58]
 ClassName=TProjectRunConfiguationNode
@@ -1466,8 +1350,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node59]
 ClassName=TProjectRunConfiguationNode
@@ -1489,8 +1371,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node60]
 ClassName=TProjectRunConfiguationNode
@@ -1512,8 +1392,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node61]
 ClassName=TProjectRunConfiguationNode
@@ -1535,8 +1413,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node62]
 ClassName=TProjectRunConfiguationNode
@@ -1558,8 +1434,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes]
 Count=63
