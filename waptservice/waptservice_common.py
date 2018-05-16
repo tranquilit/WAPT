@@ -106,13 +106,16 @@ class WaptEvents(object):
         self.subscribers = []
 
 
-    def get_missed(self,last_read=None):
+    def get_missed(self,last_read=None,max_count=None):
         """returns events since last_read"""
         with self.get_lock:
             if last_read is None:
                 return self.events[:]
             else:
-                return [e for e in self.events if e.id>last_read]
+                if max_count is not None:
+                    return [e for e in self.events[-max_count:] if e.id>last_read]
+                else:
+                    return [e for e in self.events if e.id>last_read]
 
     def put(self, item):
         with self.get_lock:
@@ -155,7 +158,7 @@ class WaptServiceConfig(object):
 
     global_attributes = ['config_filename','waptservice_user','waptservice_password',
          'MAX_HISTORY','waptservice_port',
-         'dbpath','loglevel','log_directory','waptserver','authorized_callers_ip',
+         'dbpath','loglevel','log_directory','waptserver',
          'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout','log_to_windows_events',
          'allow_user_service_restart','signature_clockskew']
 
@@ -191,13 +194,12 @@ class WaptServiceConfig(object):
         self.log_to_windows_events = False
 
         self.waptserver = None
-        self.authorized_callers_ip = []
 
         self.waptservice_poll_timeout = 10
         self.waptupdate_task_period = 120
         self.waptupgrade_task_period = None
 
-        self.waptaudit_task_period = 240
+        self.waptaudit_task_period = None
 
         self.config_filedate = None
 
@@ -272,8 +274,6 @@ class WaptServiceConfig(object):
 
             if config.has_option('global','waptaudit_task_period'):
                 self.waptaudit_task_period = int(config.get('global','waptaudit_task_period'))
-            else:
-                self.waptaudit_task_period = 240
 
             if config.has_option('global','dbpath'):
                 self.dbpath =  config.get('global','dbpath')

@@ -5383,7 +5383,7 @@ class Wapt(BaseObjectClass):
                 elif self.config.has_option('global','waptaudit_task_period'):
                     audit_period = self.config.get('global','waptaudit_task_period')
                 else:
-                    audit_period = '240m'
+                    audit_period = None
 
                 if audit_period is not None:
                     if audit_period.endswith('m'):
