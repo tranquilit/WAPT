@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, LazFileUtils, ExtCtrls, Menus, ActnList, Controls,
-  zmqapi, superobject, DefaultTranslator, uWaptTrayRes;
+  superobject, DefaultTranslator, IdAntiFreeze, uWaptTrayRes;
 
 type
 
@@ -95,7 +95,7 @@ type
     procedure SettrayMode(AValue: TTrayMode);
     procedure SetWaptServiceRunning(AValue: Boolean);
     function  WaptConsoleFileName: String;
-    procedure pollerEvent(message:TStringList);
+    procedure pollerEvent(Events:ISuperObject);
     { private declarations }
   public
     { public declarations }
@@ -103,12 +103,11 @@ type
     check_waptservice:TThread;
 
     lastServiceMessage:TDateTime;
+    LastEventId:Integer;
+
     popupvisible:Boolean;
     notify_user:Boolean;
     lastButton:TMouseButton;
-
-    current_task:ISuperObject;
-
 
     property tasks:ISuperObject read Ftasks write Settasks;
     property WaptServiceRunning:Boolean read FWaptServiceRunning write SetWaptServiceRunning;
@@ -143,24 +142,22 @@ type
   end;
 
 
-  { TZMQPollThread }
+  { TPollThread }
 
-  TZMQPollThread = Class(TThread)
+  TPollThread = Class(TThread)
     procedure HandleMessage;
 
   public
     PollTimeout:Integer;
-    zmq_context:TZMQContext;
-    zmq_socket :TZMQSocket;
 
     DMTray:TDMWaptTray;
-    message : TStringList;
-    msg:Utf8String;
+    Events: ISuperObject;
+    LastReadEventId: Integer;
 
     constructor Create(aDMWaptTray:TDMWaptTray);
     destructor Destroy; override;
     procedure Execute; override;
-end;
+  end;
 
 { TCheckWaptservice }
 
@@ -174,7 +171,7 @@ constructor TCheckWaptservice.Create(aDMWaptTray: TDMWaptTray);
 begin
   inherited Create(True);
   DMTray := aDMWaptTray;
-  PollTimeout:=5000;
+  PollTimeout:=3000;
 end;
 
 procedure TCheckWaptservice.Execute;
@@ -197,66 +194,39 @@ begin
   end;
 end;
 
-{ TZMQPollThread }
+{ TPollThread }
 
-procedure TZMQPollThread.HandleMessage;
+procedure TPollThread.HandleMessage;
 begin
   if Assigned(DMTray) then
-    DMTray.pollerEvent(message);
+    DMTray.pollerEvent(Events);
 end;
 
-constructor TZMQPollThread.Create(aDMWaptTray:TDMWaptTray);
+constructor TPollThread.Create(aDMWaptTray:TDMWaptTray);
 begin
   inherited Create(True);
-  message := TStringList.Create;
   DMTray := aDMWaptTray;
-  // create ZMQ context.
-  zmq_context := TZMQContext.Create;
-
-  zmq_socket := zmq_context.Socket( stSub );
-  zmq_socket.RcvHWM:= 10000;
-  zmq_socket.SndHWM:= 10000;
-  zmq_socket.connect( 'tcp://127.0.0.1:'+inttostr(zmq_port));
-  //zmq_socket.Subscribe('TASKS');
-  zmq_socket.Subscribe('');
-  {zmq_socket.Subscribe('INFO');
-  zmq_socket.Subscribe('TASKS');
-  zmq_socket.Subscribe('PRINT');
-  zmq_socket.Subscribe('CRITICAL');
-  zmq_socket.Subscribe('WARNING');
-  zmq_socket.Subscribe('STATUS');}
 end;
 
-destructor TZMQPollThread.Destroy;
+destructor TPollThread.Destroy;
 begin
-  message.Free;
-
-  if Assigned(zmq_socket) then
-    FreeAndNil(zmq_socket);
-  if Assigned(zmq_context) then
-    FreeAndNil(zmq_context);
-
   inherited Destroy;
 end;
 
-procedure TZMQPollThread.Execute;
-var
-  res : integer;
-  part:Utf8String;
+procedure TPollThread.Execute;
 begin
   while not Terminated do
-  begin
-    //zmq_socket.recv(message);
-    res := zmq_socket.recv(msg);
-    while zmq_socket.RcvMore do
+  try
+    Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',10000,Nil,0);
+    if Events <> Nil then
     begin
-      res := zmq_socket.recv(part);
-      msg:=msg+#13#10+part;
+      If Events.AsArray.Length>0 then
+        LastReadEventId := Events.AsArray.O[Events.AsArray.Length-1].I['id'];
     end;
-    message.Text:=msg;
     Synchronize(@HandleMessage);
-    {if not Terminated then
-      Sleep(PollTimeout);}
+  except
+    if not Terminated then
+      Sleep(PollTimeout);
   end;
 end;
 
@@ -315,13 +285,18 @@ begin
 end;
 
 procedure TDMWaptTray.DataModuleCreate(Sender: TObject);
-begin
+var
+  ActionName,SHiddenActions:String;
+  HiddenActions:TDynStringArray;
+  Action:TAction;
 
+
+begin
   lastServiceMessage:=Now;
 
   //UniqueInstance1.Enabled:=True;
   if lowercase(GetUserName)='system' then exit;
-  check_thread :=TZMQPollThread.Create(Self);
+  check_thread :=TPollThread.Create(Self);
   check_thread.Start;
 
   check_waptservice := TCheckWaptservice.Create(Self);
@@ -331,6 +306,17 @@ begin
 
   ActForceRegister.Visible := waptcommon.GetWaptServerURL <>'';
 
+  SHiddenActions := IniReadString(WaptIniFilename,'global','hidden_wapttray_actions','');
+  if SHiddenActions<>'' then
+  begin
+    HiddenActions := StrSplit(SHiddenActions,',');
+    for ActionName in HiddenActions do
+    begin
+      Action := FindComponent('Act'+ActionName) as TAction;
+      if Action <> Nil then
+        Action.Visible:=False;
+    end;
+  end;
 end;
 
 procedure TDMWaptTray.DataModuleDestroy(Sender: TObject);
@@ -428,38 +414,27 @@ begin
 end;
 
 // Called whenever a zeromq message is published
-procedure TDMWaptTray.pollerEvent(message:TStringList);
+procedure TDMWaptTray.pollerEvent(Events:ISuperObject);
 var
-  msg,msg_type,topic:String;
-  desc,summary:Utf8String;
+  Step,EventType,msg,desc,summary:String;
   runstatus:String;
-  upgrade_status,running,upgrades,errors,taskresult : ISuperObject;
+  running,upgrades,errors,taskresult : ISuperObject;
   task_notify_user:Boolean;
+  Event,EventData:ISuperObject;
 begin
-  try
-    WaptServiceRunning:=True;
-    lastServiceMessage := Now;
-    if message.Count>0 then
-    begin
-      msg_type := message[0];
-      message.Delete(0);
-      msg := message.Text;
-      // changement hint et balloonhint
-      if (msg_type='WARNING') or (msg_type='CRITICAL') then
+  If Events <> Nil then
+    for Event in Events do
+    try
+      WaptServiceRunning:=True;
+      lastServiceMessage := Now;
+      EventType := Event.S['event_type'];
+      EventData := Event['data'];
+      if EventType='STATUS' then
       begin
-          TrayIcon1.BalloonHint := msg;
-          TrayIcon1.BalloonFlags:=bfError;
-          if not popupvisible and notify_user then
-            TrayIcon1.ShowBalloonHint;
-      end
-      else
-      if msg_type='STATUS' then
-      begin
-        upgrade_status := SO(utf8Decode(msg));
-        runstatus := UTF8Encode(upgrade_status.S['runstatus']);
-        running := upgrade_status['running_tasks'];
-        upgrades := upgrade_status['upgrades'];
-        errors := upgrade_status['errors'];
+        runstatus := UTF8Encode(EventData.S['runstatus']);
+        running := EventData['running_tasks'];
+        upgrades := EventData['upgrades'];
+        errors := EventData['errors'];
         if (running<>Nil) and (running.AsArray.Length>0) then
         begin
           trayMode:=tmRunning;
@@ -490,8 +465,9 @@ begin
         end;
       end
       else
-      if msg_type='PRINT' then
+      if EventType='PRINT' then
       begin
+        msg := UTF8Encode(EventData.AsString);
         if TrayIcon1.BalloonHint<>msg then
         begin
           if TrayIcon1.BalloonHint<>msg then
@@ -504,12 +480,10 @@ begin
         end;
       end
       else
-      if msg_type='TASKS' then
+      if EventType.StartsWith('TASK_') then
       begin
-        topic := message[0];
-        message.Delete(0);
-        msg := message.Text;
-        taskresult := SO(Utf8Decode(message.Text));
+        Step := EventType.Substring(5);
+        taskresult := EventData;
         desc := UTF8Encode(taskresult.S['description']);
         summary := UTF8Encode(taskresult.S['summary']);
 
@@ -527,10 +501,9 @@ begin
           trayHint := '';
         end;
 
-        if topic='ERROR' then
+        if Step='ERROR' then
         begin
           trayMode:= tmErrors;
-          current_task := Nil;
           if taskresult<>Nil then
             TrayIcon1.BalloonHint := format(rsErrorFor, [desc])
           else
@@ -540,7 +513,7 @@ begin
             TrayIcon1.ShowBalloonHint;
         end
         else
-        if topic='START' then
+        if Step='START' then
         begin
           trayMode:= tmRunning;
           if taskresult<>Nil then
@@ -549,36 +522,31 @@ begin
             TrayIcon1.BalloonHint := '';
 
           TrayIcon1.BalloonFlags:=bfInfo;
-          current_task := taskresult;
           if not popupvisible and notify_user and task_notify_user then
             TrayIcon1.ShowBalloonHint;
         end
         else
-        if topic='PROGRESS' then
+        if (Step='PROGRESS') or (Step='STATUS') then
         begin
           trayMode:= tmRunning;
           TrayIcon1.BalloonHint := desc+#13#10+Format('%.0f%%',[taskresult.D['progress']]);
           TrayIcon1.BalloonFlags:=bfInfo;
           if not popupvisible and notify_user and task_notify_user then
             TrayIcon1.ShowBalloonHint;
-          current_task := taskresult;
         end
         else
-        if topic='FINISH' then
+        if Step='FINISH' then
         begin
           trayMode:= tmOK;
           TrayIcon1.BalloonHint := format(rsTaskDone, [desc, summary]);
           TrayIcon1.BalloonFlags:=bfInfo;
           if not popupvisible and task_notify_user then
             TrayIcon1.ShowBalloonHint;
-          current_task := Nil;
         end
         else
-        if topic='CANCEL' then
+        if Step='CANCEL' then
         begin
           trayMode:= tmErrors;
-          current_task := Nil;
-
           if taskresult.DataType = stObject then
           begin
              TrayIcon1.BalloonHint := utf8Encode(format(rsCanceling, [taskresult.S['description']]));
@@ -595,9 +563,8 @@ begin
           end
         end;
       end;
+    finally
     end;
-  finally
-  end;
 end;
 
 procedure TDMWaptTray.ActLocalInfoExecute(Sender: TObject);

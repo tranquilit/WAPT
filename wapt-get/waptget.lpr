@@ -29,12 +29,12 @@ uses
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp,
   { you can add units after this }
-  Interfaces,Windows, PythonEngine, zmqapi, superobject,soutils,
+  Interfaces,Windows, PythonEngine, superobject,soutils,
   tislogging,uWaptRes,waptcommon,waptwinutils,tiscommon,tisstrings,IdAuthentication;
 type
-  { pwaptget }
+  { PWaptGet }
 
-  pwaptget = class(TCustomApplication)
+  PWaptGet = class(TCustomApplication)
   private
     localuser,localpassword:AnsiString;
     FRepoURL: String;
@@ -54,98 +54,65 @@ type
     destructor Destroy; override;
     procedure WriteHelp; virtual;
     property RepoURL:String read GetRepoURL write SetRepoURL;
-    procedure pollerEvent(message:TStringList);
+    procedure pollerEvent(Events:ISuperObject);
     function remainingtasks:ISuperObject;
   end;
 
+  { TPollThread }
 
-
-  { TZMQPollThread }
-  TZMQPollThread = Class(TThread)
+  TPollThread = Class(TThread)
     procedure HandleMessage;
 
   public
     PollTimeout:Integer;
-    zmq_context:TZMQContext;
-    zmq_socket :TZMQSocket;
 
-    message : TStringList;
-    msg:Utf8String;
-    app:pwaptget;
+    App:PWaptGet;
+    Events: ISuperObject;
+    LastReadEventId: Integer;
 
-    constructor Create(anapp:pwaptget);
-    destructor Destroy; override;
+    constructor Create(anapp:PWaptGet);
     procedure Execute; override;
-end;
-
-{ TZMQPollThread }
-
-procedure TZMQPollThread.HandleMessage;
-begin
-  if Assigned(app) then
-    app.pollerEvent(message);
-end;
-
-constructor TZMQPollThread.Create(anapp:pwaptget);
-begin
-  inherited Create(True);
-  message := TStringList.Create;
-  app := anapp;
-  // create ZMQ context.
-  zmq_context := TZMQContext.Create;
-
-  zmq_socket := zmq_context.Socket( stSub );
-  zmq_socket.RcvHWM:= 1000001;
-  Logger('Connecting to Waptservice event queue...',DEBUG);
-  zmq_socket.connect( 'tcp://127.0.0.1:5000' );
-  zmq_socket.Subscribe('');
-  Logger('Connected to Waptservice event queue',DEBUG);
-end;
-
-destructor TZMQPollThread.Destroy;
-begin
-  message.Free;
-  Logger('Leaving Waptservice event queue',DEBUG);
-  if Assigned(zmq_socket) then
-    FreeAndNil(zmq_socket);
-  if Assigned(zmq_context) then
-    FreeAndNil(zmq_context);
-
-  inherited Destroy;
-end;
-
-procedure TZMQPollThread.Execute;
-var
-  res : integer;
-  part:Utf8String;
-begin
-  try
-    while not Terminated and not  zmq_socket.context.Terminated do
-    begin
-      res := zmq_socket.recv(msg);
-      while zmq_socket.RcvMore do
-      begin
-        res := zmq_socket.recv(part);
-        msg:=msg+#13#10+part;
-      end;
-      message.Text:=msg;
-      HandleMessage;
-      if zmq_socket.context.Terminated then
-      begin
-        Writeln(utf8decode(rsWinterruptReceived));
-        break;
-      end;
-    end;
-  finally
-    writeln(utf8decode(rsStopListening));
   end;
-end;
+
+  { TPollThread }
+
+  procedure TPollThread.HandleMessage;
+  begin
+    if Assigned(app) then
+      app.pollerEvent(Events);
+  end;
+
+  constructor TPollThread.Create(anapp:PWaptGet);
+  begin
+    inherited Create(True);
+    app := anapp;
+    PollTimeout:=3000;
+    LastReadEventId := 0;
+  end;
+
+  procedure TPollThread.Execute;
+  begin
+    while not Terminated do
+    try
+      Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',100,Nil,0);
+      if Events <> Nil then
+      begin
+        If Events.AsArray.Length>0 then
+          LastReadEventId := Events.AsArray.O[Events.AsArray.Length-1].I['id'];
+      end;
+      Synchronize(@HandleMessage);
+    except
+      on e:Exception do
+        if not Terminated then
+          Sleep(PollTimeout);
+    end;
+  end;
 
 
-{ pwaptget }
+{ PWaptGet }
 
 var
-  Application: pwaptget;
+  Application: PWaptGet;
 
   function GetPassword(const InputMask: Char = '*'): string;
   var
@@ -180,7 +147,7 @@ var
     end;
   end;
 
-procedure pwaptget.HTTPLogin(Sender: TObject; Authentication: TIdAuthentication; var Handled: Boolean);
+procedure PWaptGet.HTTPLogin(Sender: TObject; Authentication: TIdAuthentication; var Handled: Boolean);
 var
   newuser:AnsiString;
 begin
@@ -207,20 +174,20 @@ begin
   end;
 end;
 
-function pwaptget.GetRepoURL: String;
+function PWaptGet.GetRepoURL: String;
 begin
   if FRepoURL='' then
     FRepoURL:=GetMainWaptRepo;
   result := FRepoURL;
 end;
 
-procedure pwaptget.SetRepoURL(AValue: String);
+procedure PWaptGet.SetRepoURL(AValue: String);
 begin
   if FRepoURL=AValue then Exit;
   FRepoURL:=AValue;
 end;
 
-procedure pwaptget.DoRun;
+procedure PWaptGet.DoRun;
 var
   MainModule : TStringList;
   logleveloption : String;
@@ -319,8 +286,9 @@ begin
   begin
     writeln('About to speak to waptservice...');
     // launch task in waptservice, waits for its termination
-    check_thread :=TZMQPollThread.Create(Self);
+    check_thread :=TPollThread.Create(Self);
     check_thread.Start;
+    lastMessageTime := Now;
     tasks := TSuperObject.create(stArray);
     try
       try
@@ -329,7 +297,7 @@ begin
         if action='longtask' then
         begin
           Logger('Call longtask URL...',DEBUG);
-          res := WAPTLocalJsonGet('longtask.json');
+          res := WAPTLocalJsonGet('longtask.json?notify_user=1','admin','',1000,@HTTPLogin);
           if res = Nil then
             WriteLn(utf8decode((format(rsLongtaskError, [res.S['message']]))))
           else
@@ -498,21 +466,28 @@ begin
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
         end;
 
-        while (remainingtasks.AsArray.Length > 0) and not (Terminated) and not check_thread.Finished do
+        while (remainingtasks.AsArray.Length>0)  and  not check_thread.Finished do
         try
           //if no message from service since more that 1 min, check if remaining tasks in queue...
           if (now-lastMessageTime>1*1/24/60) then
             raise Exception.create('Timeout waiting for events')
           else
           begin
-            Sleep(1000);
             write('.');
+            While CheckSynchronize(100) do;
+            sleep(1000)
           end;
         except
-          writeln(rsCanceled);
-          for task in tasks do
-              WAPTLocalJsonGet('cancel_task.json?id='+task.S['id']);
+          on E:Exception do
+            begin
+              writeln(Format(rsCanceledTask,[E.Message]));
+              for task in tasks do
+                  WAPTLocalJsonGet('cancel_task.json?id='+task.S['id']);
+            end;
         end;
+
+        while CheckSynchronize(100) do;
+
       except
         localpassword := '';
         ExitCode:=3;
@@ -555,7 +530,7 @@ begin
   Terminate;
 end;
 
-constructor pwaptget.Create(TheOwner: TComponent);
+constructor PWaptGet.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
   StopOnException:=True;
@@ -563,7 +538,7 @@ begin
 
 end;
 
-destructor pwaptget.Destroy;
+destructor PWaptGet.Destroy;
 begin
   if Assigned(APythonEngine) then
     APythonEngine.Free;
@@ -571,17 +546,19 @@ begin
   inherited Destroy;
 end;
 
-procedure pwaptget.WriteHelp;
+procedure PWaptGet.WriteHelp;
 begin
   { add your help code here }
   writeln(utf8decode(format(rsUsage, [ExeName])));
   writeln(rsInstallOn);
 end;
 
-procedure pwaptget.pollerEvent(message: TStringList);
+procedure PWaptGet.pollerEvent(Events:ISuperObject);
 var
-  msg:ISuperobject;
-  status:String;
+  Step,EventType:String;
+  runstatus:String;
+  running,upgrades,errors,taskresult : ISuperObject;
+  Event,EventData:ISuperObject;
 
   //check if task with id id is in tasks list
   function isInTasksList(id:integer):boolean;
@@ -614,38 +591,47 @@ var
 begin
   EnterCriticalSection(lock);
   try
-    //writeln(message.Text);
-    //display messages if event task is in my list
-
     lastMessageTime := Now;
-
-    if message[0]='TASKS' then
-    begin
-      status := message[1];
-      msg := SO(message[2]);
-      //writeln(msg.asJson());
-      if isInTasksList(msg.I['id']) then
-      begin
-        if (status = 'START') then
-          writeln(msg.S['description']);
-        if (status = 'PROGRESS') then
-          write(utf8decode(format(rsCompletionProgress,[msg.S['runstatus'], msg.D['progress']])+#13));
-        //catch finish of task
-        if (status = 'FINISH') or (status = 'ERROR') or (status = 'CANCEL') then
+    If Events <> Nil then
+      for Event in Events do
+      try
+        EventType := Event.S['event_type'];
+        EventData := Event['data'];
+        if EventType.StartsWith('TASK_') then
         begin
-          removeTask(msg.I['id']);
-          WriteLn(msg.S['summary']);
-          if (status = 'ERROR') or (status = 'CANCEL') then
-            ExitCode:=3;
-        end;
+          Step := EventType.Substring(5);
+          taskresult := EventData;
+          //Writeln(EventType,' ',taskresult.S['id'],' ',taskresult.S['summary']);
+          if isInTasksList(taskresult.I['id']) then
+          begin
+            //writeln(taskresult.AsString);
+            if (Step = 'START') then
+              writeln(#13+UTF8Encode(taskresult.S['description']));
+            if (Step = 'PROGRESS') then
+              write(#13+utf8Encode(format(rsCompletionProgress,[taskresult.S['runstatus'], taskresult.D['progress']])+#13));
+            if (Step = 'STATUS') then
+              write(#13+utf8Encode(format(rsCompletionProgress,[taskresult.S['runstatus'], taskresult.D['progress']])+#13));
+            //catch finish of task
+            if (Step = 'FINISH') or (Step = 'ERROR') or (Step = 'CANCEL') then
+            begin
+              WriteLn(UTF8Encode(taskresult.S['summary']));
+              if (Step = 'ERROR') or (Step = 'CANCEL') then
+                ExitCode:=3;
+              removeTask(taskresult.I['id']);
+            end;
+          end;
+        end
+        else if (EventType = 'PRINT') then
+          Writeln(#13+UTF8Encode(EventData.AsString));
+      except
+        on E:Exception do WriteLn(#13+Format('Error listening to events: %s',[e.Message]));
       end;
-    end
   finally
     LeaveCriticalSection(lock);
   end;
 end;
 
-function pwaptget.remainingtasks: ISuperObject;
+function PWaptGet.remainingtasks: ISuperObject;
 var
   task,pending,res:ISuperObject;
 begin
@@ -664,7 +650,7 @@ end;
 {$R *.res}
 
 begin
-  Application:=pwaptget.Create(nil);
+  Application:=PWaptGet.Create(nil);
   Application.Title:='wapt-get';
   Application.Run;
   Application.Free;

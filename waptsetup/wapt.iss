@@ -51,7 +51,6 @@ Source: "..\ssleay32.dll" ; DestDir: "{app}";
 Source: "..\openssl.exe" ; DestDir: "{app}";
 
 ; for local waptservice
-Source: "..\libzmq.dll"; DestDir: "{app}";
 Source: "..\waptservice\win32\*"; DestDir: "{app}\waptservice\win32\";  Flags: createallsubdirs recursesubdirs; Tasks: installService 
 Source: "..\waptservice\win64\*"; DestDir: "{app}\waptservice\win64\";  Flags: createallsubdirs recursesubdirs; Tasks: installService
 Source: "..\waptservice\*.py"; DestDir: "{app}\waptservice\"; Tasks: installService

@@ -344,7 +344,7 @@ def main():
 
         # key password management
         def get_private_key_passwd(*args):
-            """Passwo²rd callback for opening private keysin suppli password file"""
+            """Password callback for opening private key in supplied password file"""
             global private_key_password_cache
             if options.private_key_passwd and os.path.isfile(options.private_key_passwd):
                 return open(options.private_key_passwd,'r').read().splitlines()[0].strip()

@@ -213,7 +213,7 @@ object VisWaptExit: TVisWaptExit
           Alignment = taRightJustify
           Position = 0
           Text = 'id'
-          Width = 39
+          Width = 26
           PropertyName = 'id'
         end      
         item
@@ -238,7 +238,7 @@ object VisWaptExit: TVisWaptExit
           Position = 3
           Tag = 3
           Text = 'description'
-          Width = 132
+          Width = 190
           PropertyName = 'description'
         end      
         item

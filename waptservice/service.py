@@ -63,8 +63,6 @@ import StringIO
 
 import thread
 import threading
-import zmq
-from zmq.log.handlers import PUBHandler
 import Queue
 import traceback
 import locale
@@ -80,7 +78,7 @@ import windnsquery
 import tempfile
 
 # wapt specific stuff
-from waptutils import setloglevel,ensure_list,ensure_unicode
+from waptutils import setloglevel,ensure_list,ensure_unicode,jsondump
 
 import common
 from common import Wapt
@@ -93,6 +91,7 @@ from waptservice.waptservice_common import waptconfig
 from waptservice.waptservice_common import WaptClientUpgrade,WaptServiceRestart,WaptNetworkReconfig,WaptPackageInstall
 from waptservice.waptservice_common import WaptUpgrade,WaptUpdate,WaptUpdateServerStatus,WaptCleanup,WaptDownloadPackage,WaptLongTask,WaptAuditPackage
 from waptservice.waptservice_common import WaptRegisterComputer,WaptPackageRemove,WaptPackageRemove,WaptPackageForget,WaptServiceRestart
+from waptservice.waptservice_common import WaptEvents,WaptEvent
 
 from waptservice.waptservice_socketio import WaptSocketIOClient
 
@@ -998,6 +997,25 @@ def get_wapt_package(input_package_name):
     else:
         return Response(status=404)
 
+
+@app.route('/events')
+@app.route('/events.json')
+@allow_local
+def events():
+    last_read = int(request.args.get('last_read',session.get('last_read_event_id','0')))
+    timeout = int(request.args.get('timeout','10'))
+    if task_manager.wapt.events:
+        data = task_manager.wapt.events.get_missed(last_read=last_read)
+        start_time = time.time()
+        while not data and time.time() - start_time <= timeout:
+            time.sleep(1.0)
+            data = task_manager.wapt.events.get_missed(last_read=last_read)
+        if task_manager.wapt.events.events:
+            session['last_read_event_id'] = task_manager.wapt.events.events[-1].id
+    else:
+        data = None
+    return Response(jsondump(data), mimetype='application/json')
+
 class WaptTaskManager(threading.Thread):
     def __init__(self,config_filename = 'c:/wapt/wapt-get.ini'):
         threading.Thread.__init__(self)
@@ -1025,28 +1043,7 @@ class WaptTaskManager(threading.Thread):
         self.last_audit = None
 
     def setup_event_queue(self):
-        if waptconfig.zmq_port:
-            # init zeromq events broadcast
-            try:
-                zmq_context = zmq.Context()
-                event_queue = zmq_context.socket(zmq.PUB) # pylint: disable=no-member
-                event_queue.hwm = 10000
-
-                logger.debug('Starting ZMQ on port %i' % waptconfig.zmq_port)
-                # start event broadcasting
-                event_queue.bind("tcp://127.0.0.1:{}".format(waptconfig.zmq_port))
-
-                # add logger through zmq events
-                handler = PUBHandler(event_queue)
-                logger.addHandler(handler)
-
-                self.events = event_queue
-            except Exception as e:
-                logger.warning('Unable to start Event queue : %s'%e)
-                self.events = None
-        else:
-            self.events = None
-            logger.info('zmq_port not set, no Event queue setup.')
+        self.events = WaptEvents()
         self.wapt.events = self.events
         return self.events
 
@@ -1055,8 +1052,7 @@ class WaptTaskManager(threading.Thread):
         self.wapt.runstatus = status
         if self.events:
             # dispatch event to listening parties
-            msg = common.jsondump(self.wapt.get_last_update_status())
-            self.wapt.events.send_multipart([str("STATUS"),msg])
+            self.wapt.events.post_event("STATUS",self.wapt.get_last_update_status())
 
     def update_server_status(self):
         if self.wapt.waptserver_available():
@@ -1071,14 +1067,14 @@ class WaptTaskManager(threading.Thread):
             except Exception as e:
                 logger.debug('Unable to update server status: %s' % repr(e))
 
-    def broadcast_tasks_status(self,topic,task):
-        """topic : ADD START FINISH CANCEL ERROR
+    def broadcast_tasks_status(self,event_type,task):
+        """topic : ADD START FINISH CANCEL ERROR STATUS
         """
         # ignore broadcast for this..
         if isinstance(task,WaptUpdateServerStatus):
             return
         if self.events and task:
-            self.wapt.events.send_multipart([str("TASKS"),topic,common.jsondump(task)])
+            self.wapt.events.post_event(event_type,task.as_dict())
 
     def add_task(self,task,notify_user=None):
         """Adds a new WaptTask for processing"""
@@ -1105,7 +1101,7 @@ class WaptTaskManager(threading.Thread):
                     task.notify_user = notify_user
                 self.tasks_queue.put(task)
                 self.tasks.append(task)
-                self.broadcast_tasks_status(str('ADD'),task)
+                self.broadcast_tasks_status('TASK_ADD',task)
                 return task
             else:
                 return same[0]
@@ -1197,7 +1193,7 @@ class WaptTaskManager(threading.Thread):
                 self.running_task = self.tasks_queue.get(timeout=waptconfig.waptservice_poll_timeout)
                 try:
                     # don't send update_run status for updatestatus itself...
-                    self.broadcast_tasks_status(str('START'),self.running_task)
+                    self.broadcast_tasks_status('TASK_START',self.running_task)
                     if self.running_task.notify_server_on_start:
                         self.update_runstatus(_(u'Running: {description}').format(description=self.running_task) )
                         self.update_server_status()
@@ -1205,7 +1201,7 @@ class WaptTaskManager(threading.Thread):
                         self.running_task.run()
                         if self.running_task:
                             self.tasks_done.append(self.running_task)
-                            self.broadcast_tasks_status(str('FINISH'),self.running_task)
+                            self.broadcast_tasks_status('TASK_FINISH',self.running_task)
                             if self.running_task.notify_server_on_finish:
                                 self.update_runstatus(_(u'Done: {description}\n{summary}').format(description=self.running_task,summary=self.running_task.summary) )
                                 self.update_server_status()
@@ -1215,14 +1211,14 @@ class WaptTaskManager(threading.Thread):
                             self.running_task.logs.append(u"{}".format(ensure_unicode(e)))
                             self.running_task.summary = _(u"Canceled")
                             self.tasks_cancelled.append(self.running_task)
-                            self.broadcast_tasks_status(str('CANCEL'),self.running_task)
+                            self.broadcast_tasks_status('TASK_CANCEL',self.running_task)
                     except Exception as e:
                         if self.running_task:
                             self.running_task.logs.append(u"{}".format(ensure_unicode(e)))
                             self.running_task.logs.append(ensure_unicode(traceback.format_exc()))
                             self.running_task.summary = u"{}".format(ensure_unicode(e))
                             self.tasks_error.append(self.running_task)
-                            self.broadcast_tasks_status(str('ERROR'),self.running_task)
+                            self.broadcast_tasks_status('TASK_ERROR',self.running_task)
                         logger.critical(ensure_unicode(e))
                         try:
                             logger.debug(ensure_unicode(traceback.format_exc()))
@@ -1275,7 +1271,7 @@ class WaptTaskManager(threading.Thread):
                     self.running_task = None
                 if cancelled:
                     self.tasks_cancelled.append(cancelled)
-                    self.broadcast_tasks_status('CANCEL',cancelled)
+                    self.broadcast_tasks_status('TASK_CANCEL',cancelled)
                 return cancelled
             else:
                 return None
@@ -1305,7 +1301,7 @@ class WaptTaskManager(threading.Thread):
                     except:
                         pass
             if cancelled:
-                self.broadcast_tasks_status('CANCEL',cancelled)
+                self.broadcast_tasks_status('TASK_CANCEL',cancelled)
             return cancelled
 
     def cancel_all_tasks(self):
@@ -1326,7 +1322,7 @@ class WaptTaskManager(threading.Thread):
                     self.running_task = None
             for task in cancelled:
                 self.tasks_cancelled.append(task)
-                self.broadcast_tasks_status('CANCEL',task)
+                self.broadcast_tasks_status('TASK_CANCEL',task)
             return cancelled
 
     def start_ipaddr_monitoring(self):

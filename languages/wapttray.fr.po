@@ -78,41 +78,6 @@ msgstr "Mettre à jour le logiciel WAPT sur cet hôte"
 msgid "Configuration"
 msgstr "Configuration"
 
-#: tdmwapttray.menuitem11.caption
-msgctxt "tdmwapttray.menuitem11.caption"
-msgid "-"
-msgstr ""
-
-#: tdmwapttray.menuitem15.caption
-msgctxt "tdmwapttray.menuitem15.caption"
-msgid "-"
-msgstr ""
-
-#: tdmwapttray.menuitem17.caption
-msgctxt "tdmwapttray.menuitem17.caption"
-msgid "-"
-msgstr ""
-
-#: tdmwapttray.menuitem21.caption
-msgctxt "tdmwapttray.menuitem21.caption"
-msgid "-"
-msgstr ""
-
-#: tdmwapttray.menuitem23.caption
-msgctxt "tdmwapttray.menuitem23.caption"
-msgid "-"
-msgstr ""
-
-#: tdmwapttray.menuitem7.caption
-msgctxt "tdmwapttray.menuitem7.caption"
-msgid "-"
-msgstr ""
-
-#: tdmwapttray.menuitem8.caption
-msgctxt "tdmwapttray.menuitem8.caption"
-msgid "-"
-msgstr ""
-
 #: tdmwapttray.menuwaptversion.caption
 msgid "Version"
 msgstr "Version"
@@ -673,6 +638,7 @@ msgstr "Tâche annulée."
 #| "%s\n"
 #| "%s done\n"
 #| "%s\n"
+msgctxt "uwaptres.rstaskdone"
 msgid ""
 "%s done\n"
 "%s\n"
@@ -708,6 +674,7 @@ msgstr "Désinstallation de %s..."
 #| "-%s\n"
 #| "Available updates for :\n"
 #| "-%s\n"
+msgctxt "uwaptres.rsupdatesavailablefor"
 msgid ""
 "Available updates for :\n"
 "-%s\n"
@@ -881,10 +848,35 @@ msgid "Error while configuring packages for the current user session"
 msgstr "Erreur lors de la configuration des paquets pour la session utilisateur"
 
 #: uwapttrayres.rstaskdone
+#, fuzzy
+#| msgid ""
+#| "%s done\n"
+#| "%s\n"
+#| "%s done\n"
+#| "%s\n"
+#| "%s done\n"
+#| "%s\n"
+#| "%s done\n"
+#| "%s\n"
+#| "%s done\n"
+#| "%s\n"
+#| "%s done\n"
+#| "%s\n"
+#| "%s done\n"
+#| "%s\n"
+#| "%s done\n"
+#| "%s\n"
+#| "%s done\n"
+#| "%s\n"
+#| "%s done\n"
+#| "%s\n"
+msgctxt "uwapttrayres.rstaskdone"
 msgid ""
 "%s done\n"
 "%s\n"
 msgstr ""
+"%s terminé\n"
+"%s\n"
 
 #: uwapttrayres.rstaskstarted
 msgctxt "uwapttrayres.rstaskstarted"
@@ -892,10 +884,21 @@ msgid "%s started"
 msgstr "%s lancé"
 
 #: uwapttrayres.rsupdatesavailablefor
+#, fuzzy
+#| msgid ""
+#| "Available updates for :\n"
+#| "%s\n"
+#| "Available updates for :\n"
+#| "-%s\n"
+#| "Available updates for :\n"
+#| "-%s\n"
+#| "Available updates for :\n"
+#| "-%s\n"
+msgctxt "uwapttrayres.rsupdatesavailablefor"
 msgid ""
 "Available updates for :\n"
 "-%s\n"
-msgstr ""
+msgstr "Mises à jour disponibles pour :"
 
 #: uwapttrayres.rswaptserviceterminated
 msgctxt "uwapttrayres.rswaptserviceterminated"

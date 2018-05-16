@@ -1047,10 +1047,11 @@ begin
         try
           strresult := http.Get(url);
         except
-          Sleep(1000);
           Dec(RetryCount);
           if (RetryCount<=0) then
-            raise;
+            raise
+          else
+            Sleep(1000);
         end;
       until (strresult<>'') or (RetryCount<=0);
       Result := SO(strresult);

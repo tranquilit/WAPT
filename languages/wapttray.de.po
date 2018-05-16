@@ -38,7 +38,9 @@ msgid "Quit"
 msgstr "Beenden"
 
 #: tdmwapttray.actreloadconfig.caption
-msgid "Reload service configuration"
+#, fuzzy
+#| msgid "Reload service configuration"
+msgid "Reload network related service configuration"
 msgstr "Dienstkonfigurationen neu laden"
 
 #: tdmwapttray.actserviceenable.caption
@@ -76,41 +78,6 @@ msgstr "Aktualisiere WAPT Software auf diesem Host"
 #: tdmwapttray.menuitem10.caption
 msgid "Configuration"
 msgstr "Konfiguration"
-
-#: tdmwapttray.menuitem11.caption
-msgctxt "TDMWAPTTRAY.MENUITEM11.CAPTION"
-msgid "-"
-msgstr "-"
-
-#: tdmwapttray.menuitem15.caption
-msgctxt "TDMWAPTTRAY.MENUITEM15.CAPTION"
-msgid "-"
-msgstr "-"
-
-#: tdmwapttray.menuitem17.caption
-msgctxt "TDMWAPTTRAY.MENUITEM17.CAPTION"
-msgid "-"
-msgstr "-"
-
-#: tdmwapttray.menuitem21.caption
-msgctxt "TDMWAPTTRAY.MENUITEM21.CAPTION"
-msgid "-"
-msgstr "-"
-
-#: tdmwapttray.menuitem23.caption
-msgctxt "TDMWAPTTRAY.MENUITEM23.CAPTION"
-msgid "-"
-msgstr "-"
-
-#: tdmwapttray.menuitem7.caption
-msgctxt "tdmwapttray.menuitem7.caption"
-msgid "-"
-msgstr "-"
-
-#: tdmwapttray.menuitem8.caption
-msgctxt "TDMWAPTTRAY.MENUITEM8.CAPTION"
-msgid "-"
-msgstr "-"
 
 #: tdmwapttray.menuwaptversion.caption
 msgid "Version"
@@ -175,9 +142,7 @@ msgstr "Bestätigen"
 #: uwaptres.rsconfirmcancelpostconfig
 #, fuzzy
 msgid "Are you sure you want to cancel configuring WAPT server ?"
-msgstr ""
-"Sind Sie sich sicher das du die Konfiguartion vom WAPT Server abbrechen "
-"wollen?"
+msgstr "Sind Sie sich sicher das du die Konfiguartion vom WAPT Server abbrechen wollen?"
 
 #: uwaptres.rsconfirmcaption
 #, fuzzy
@@ -192,8 +157,7 @@ msgstr "Entfernen bestätigen"
 
 #: uwaptres.rsconfirmhostforgetspackages
 msgid "Are you sure you want to forget %s packages from host %s ?"
-msgstr ""
-"Sind Sie sich sicher, dass Sie %s die Pakete vom Host %s vergessen wollen?"
+msgstr "Sind Sie sich sicher, dass Sie %s die Pakete vom Host %s vergessen wollen?"
 
 #: uwaptres.rsconfirmimport
 msgid ""
@@ -203,7 +167,7 @@ msgid ""
 msgstr ""
 "Sind Sie sich sicher, dass Sie es auf Ihren Aufbewahrungsort\n"
 "%s\n"
-"importieren wollen?"
+"importieren wollen?\n"
 
 #: uwaptres.rsconfirmimportcaption
 msgid "Confirm import"
@@ -211,18 +175,15 @@ msgstr "Einführen bestätigen"
 
 #: uwaptres.rsconfirmrmhostsfromlist
 msgid "Are you sure you want to remove %s hosts from the list ?"
-msgstr ""
-"Sind Sie sich sicher, dass Sie %s Hosts von der Liste entfernen möchten?"
+msgstr "Sind Sie sich sicher, dass Sie %s Hosts von der Liste entfernen möchten?"
 
 #: uwaptres.rsconfirmrmmultiplepackages
 msgid "Are you sure you want to remove the selected packages from the server ?"
-msgstr ""
-"Sind Sie sich sicher, dass Sie die ausgewählten Pakete entfernen möchten?"
+msgstr "Sind Sie sich sicher, dass Sie die ausgewählten Pakete entfernen möchten?"
 
 #: uwaptres.rsconfirmrmonepackage
 msgid "Are you sure you want to remove this package from the server ?"
-msgstr ""
-"Sind Sie sich sicher, dass Sie dieses Paket vom Server entfernen möchten?"
+msgstr "Sind Sie sich sicher, dass Sie dieses Paket vom Server entfernen möchten?"
 
 #: uwaptres.rsconfirmrmpackagecaption
 msgctxt "uwaptres.rsconfirmrmpackagecaption"
@@ -231,9 +192,7 @@ msgstr "Entfernen bestätigen "
 
 #: uwaptres.rsconfirmrmpackagesfromhost
 msgid "Are you sure you want to remove %s package(s) from the selected host(s) %s ?"
-msgstr ""
-"Sind Sie sich sicher, dass Sie %s Pakete von den ausgewählten Hosts %s "
-"enfernen möchten?"
+msgstr "Sind Sie sich sicher, dass Sie %s Pakete von den ausgewählten Hosts %s enfernen möchten?"
 
 #: uwaptres.rscreationinprogress
 msgid "Creation in progress."
@@ -241,9 +200,7 @@ msgstr "Die Kreation ist im Gange."
 
 #: uwaptres.rsdefinewaptdevpath
 msgid "Please select a directory on your package development host before editing a package bundle."
-msgstr ""
-"Bitte wählen Sie ein Verzeichnis in Ihrer Paketentwicklung Host aus bevor "
-"der Berarbeitung eines Packet-Bündel."
+msgstr "Bitte wählen Sie ein Verzeichnis in Ihrer Paketentwicklung Host aus bevor der Berarbeitung eines Packet-Bündel."
 
 #: uwaptres.rsdeletingelement
 msgid "Removing %s"
@@ -384,9 +341,7 @@ msgstr "Host konfiguration bearbeiten"
 
 #: uwaptres.rsignoredconfictingpackages
 msgid "Warning : couldn't find package(s) %s ; conflicting package(s) have been ignored."
-msgstr ""
-"Warnung: konnte das Packet nicht finden %s ; widersprüchliche Pakete wurden "
-"ignoriert."
+msgstr "Warnung: konnte das Packet nicht finden %s ; widersprüchliche Pakete wurden ignoriert."
 
 #: uwaptres.rsignoredpackages
 msgid "Warning : couldn't find package(s) %s ; ignoring them."
@@ -407,8 +362,7 @@ msgstr "Falsches Passwort."
 
 #: uwaptres.rsinnosetupunavailable
 msgid "Innosetup is unavailable (path : %s), please install it first."
-msgstr ""
-"Innosetup ist nicht verfügbar (Pfad : %s), installieren Sie es bitte zuerst."
+msgstr "Innosetup ist nicht verfügbar (Pfad : %s), installieren Sie es bitte zuerst."
 
 #: uwaptres.rsinputkeyname
 msgid "Please input a key name."
@@ -432,9 +386,7 @@ msgstr "Ungültige DNS"
 
 #: uwaptres.rsinvaliddnsfallback
 msgid "This DNS name is not valid, would you like to use the IP address instead ?"
-msgstr ""
-"Dieser DNS Name ist nicht gültig, wollen Sie lieber stattdessen die IP-"
-"Adresse verwenden ?"
+msgstr "Dieser DNS Name ist nicht gültig, wollen Sie lieber stattdessen die IP-Adresse verwenden ?"
 
 #: uwaptres.rsinvalidwaptsetupdir
 msgid "WAPTsetup directory is not valid : %s"
@@ -486,8 +438,7 @@ msgstr "Die fertige Konfiguration der Pakete für die Benutzersitzung"
 #: uwaptres.rspackageconfigerror
 msgctxt "uwaptres.rspackageconfigerror"
 msgid "Error while configuring packages for the current user session"
-msgstr ""
-"Fehler bei der Konfiguration der Pakete für die aktuelle Benutzersitzung"
+msgstr "Fehler bei der Konfiguration der Pakete für die aktuelle Benutzersitzung"
 
 #: uwaptres.rspackagecreationerror
 msgid "Error while creating package : %s"
@@ -501,7 +452,7 @@ msgid ""
 msgstr ""
 "Sind Sie sich sicher das Sie die Pakete verdoppeln wollen\n"
 "%s\n"
-"in Ihre Repository?"
+"in Ihre Repository?\n"
 
 #: uwaptres.rspackageduplicateconfirmcaption
 msgid "Confirm duplication of package"
@@ -789,8 +740,7 @@ msgstr "Die fertige Konfiguration der Pakete für die Benutzersitzung"
 #: uwapttrayres.rspackageconfigerror
 msgctxt "uwapttrayres.rspackageconfigerror"
 msgid "Error while configuring packages for the current user session"
-msgstr ""
-"Fehler bei der Konfiguration der Pakete für die aktuelle Benutzersitzung"
+msgstr "Fehler bei der Konfiguration der Pakete für die aktuelle Benutzersitzung"
 
 #: uwapttrayres.rstaskdone
 msgctxt "uwapttrayres.rstaskdone"
@@ -819,3 +769,4 @@ msgstr ""
 msgctxt "uwapttrayres.rswaptserviceterminated"
 msgid "WAPTService terminated"
 msgstr "WAPTService beendet"
+

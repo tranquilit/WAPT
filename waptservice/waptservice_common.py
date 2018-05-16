@@ -43,7 +43,7 @@ import ConfigParser
 from optparse import OptionParser
 
 # wapt specific stuff
-from waptutils import ensure_unicode,LogOutput
+from waptutils import ensure_unicode,LogOutput,jsondump
 import common
 from common import Wapt
 import setuphelpers
@@ -73,11 +73,9 @@ class WaptEvent(object):
     """Store single event with list of subscribers"""
     DEFAULT_TTL = 20 * 60
 
-    def __init__(self,topic,subject,data=None,runstatus = ''):
-        self.topic = topic
-        self.subject = subject
+    def __init__(self,event_type,data=None):
+        self.event_type = event_type
         self.data = copy.deepcopy(data)
-        self.runstatus = runstatus
 
         self.id = None
         self.ttl = self.DEFAULT_TTL
@@ -85,12 +83,23 @@ class WaptEvent(object):
         # list of ids of subscribers which have not yet retrieved the event
         self.subscribers = []
 
+    def as_dict(self):
+        return dict(
+            id=self.id,
+            event_type=self.event_type,
+            date=self.date,
+            data=self.data,
+            )
+
+    def __cmp__(self,other):
+        return dict(event_type=self.event_type,data=self.data).__cmp__(dict(event_type=other.event_type,data=other.data))
+
+
 class WaptEvents(object):
     """Thread safe central list of last events so that consumer can get list
         of latest events using http long poll requests"""
 
     def __init__(self,max_history=300):
-        self.last = -1
         self.max_history = max_history
         self.get_lock = threading.RLock()
         self.events = []
@@ -103,25 +112,32 @@ class WaptEvents(object):
             if last_read is None:
                 return self.events[:]
             else:
-                first = self.last-len(self.events)+1
-                if last_read <= first:
-                    return self.events[:]
-                else:
-                    return self.events[last_read-first:]
+                return [e for e in self.events if e.id>last_read]
 
     def put(self, item):
         with self.get_lock:
+            if self.events:
+                last_event = self.events[-1]
+                if last_event == item:
+                    return last_event
+            else:
+                last_event = None
+
+            if last_event:
+                item.id = last_event.id + 1
+            else:
+                item.id = 0
+
             self.events.append(item)
             item.subscribers.extend(self.subscribers)
             # keep track of a global position for consumers
-            self.last +=1
-            item.id = self.last
             if len(self.events) > self.max_history:
                 del self.events[:len(self.events) - self.max_history]
 
-    def add_event(self,topic,subject,data=None,runstatus = ''):
-        item = WaptEvent(topic,subject,data,runstatus)
-        self.put(item)
+    def post_event(self,event_type,data=None):
+        item = WaptEvent(event_type,data)
+        return self.put(item)
+
 
     def cleanup(self):
         """Remove events with age>ttl"""
@@ -159,9 +175,6 @@ class WaptServiceConfig(object):
 
         # http localserver
         self.waptservice_port = 8088
-
-        # zeroMQ publishing socket
-        self.zmq_port = None
 
         # default language
         self.language = locale.getdefaultlocale()[0]
@@ -235,14 +248,6 @@ class WaptServiceConfig(object):
                     self.waptservice_port = None
             else:
                 self.waptservice_port=8088
-
-            if config.has_option('global','zmq_port'):
-                if config.get('global','zmq_port'):
-                    self.zmq_port = int(config.get('global','zmq_port'))
-                else:
-                    self.zmq_port = None
-            else:
-                self.zmq_port=5000
 
             if config.has_option('global','language'):
                 self.language = config.get('global','language')
@@ -398,7 +403,7 @@ class EventsPrinter:
         '''Logs written output to listeners'''
         if text and text != '\n':
             if self.events:
-                self.events.send_multipart([str('PRINT'),(ensure_unicode(text)).encode('utf8')])
+                self.events.post_event('PRINT',ensure_unicode(text))
             self.logs.append(ensure_unicode(text))
 
 
@@ -446,7 +451,7 @@ class WaptTask(object):
             self.runstatus = status
             self.wapt.runstatus = status
             if self.wapt.events:
-                self.wapt.events.send_multipart(["TASKS",'PROGRESS',common.jsondump(self.as_dict())])
+                self.wapt.events.post_event('TASK_STATUS',self.as_dict())
 
     def can_run(self,explain=False):
         """Return True if all the requirements for the task are met

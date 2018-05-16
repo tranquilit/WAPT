@@ -22,7 +22,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="6"/>
-      <BuildNr Value="4"/>
+      <RevisionNr Value="1"/>
       <StringTable CompanyName="Tranquil IT Systems" LegalCopyright="Tranquil IT Systems 2012-2018" ProductName="WAPT Enterprise Edition" ProductVersion="1.6.0"/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -36,39 +36,210 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="-S install tis-disable-uac"/>
+        <CommandLineParams Value="-f -S update"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="5">
+    <RequiredPackages Count="4">
       <Item1>
         <PackageName Value="pltis_wapt"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_delphizmq"/>
+        <PackageName Value="pltis_utils"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="FCL"/>
       </Item3>
       <Item4>
-        <PackageName Value="FCL"/>
-      </Item4>
-      <Item5>
         <PackageName Value="pltis_superobject"/>
-      </Item5>
+      </Item4>
     </RequiredPackages>
-    <Units Count="1">
+    <Units Count="7">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="641"/>
-        <CursorPos X="54" Y="656"/>
+        <TopLine Value="602"/>
+        <CursorPos X="49" Y="617"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
+      <Unit1>
+        <Filename Value="..\wapttray\udmwapttray.pas"/>
+        <ComponentName Value="DMWaptTray"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <UnitName Value="uDMWAPTTray"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="147"/>
+        <CursorPos X="88" Y="163"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="3594"/>
+        <CursorPos Y="3609"/>
+        <UsageCount Value="19"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="uwaptres.pas"/>
+        <UnitName Value="uWaptRes"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="21"/>
+        <CursorPos X="3" Y="42"/>
+        <UsageCount Value="19"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\..\pltis_indy\Core\IdAntiFreeze.pas"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="118"/>
+        <CursorPos Y="123"/>
+        <UsageCount Value="19"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="C:\lazarus\fpc\3.0.4\source\rtl\objpas\classes\classesh.inc"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="2045"/>
+        <CursorPos X="10" Y="2064"/>
+        <UsageCount Value="18"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="C:\lazarus\fpc\3.0.4\source\rtl\objpas\classes\classes.inc"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="169"/>
+        <CursorPos X="31" Y="196"/>
+        <UsageCount Value="18"/>
+        <Loaded Value="True"/>
+      </Unit6>
     </Units>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="467" Column="17" TopLine="464"/>
+      </Position1>
+      <Position2>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="494" Column="19" TopLine="470"/>
+      </Position2>
+      <Position3>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="51" Column="10" TopLine="34"/>
+      </Position3>
+      <Position4>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="58" Column="28" TopLine="34"/>
+      </Position4>
+      <Position5>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="469" Column="30" TopLine="443"/>
+      </Position5>
+      <Position6>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="473" Column="15" TopLine="461"/>
+      </Position6>
+      <Position7>
+        <Filename Value="waptget.lpr"/>
+      </Position7>
+      <Position8>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="135" Column="19" TopLine="108"/>
+      </Position8>
+      <Position9>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="547" Column="9" TopLine="520"/>
+      </Position9>
+      <Position10>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="585" TopLine="558"/>
+      </Position10>
+      <Position11>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="606" Column="20" TopLine="580"/>
+      </Position11>
+      <Position12>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="619" Column="15" TopLine="588"/>
+      </Position12>
+      <Position13>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="606" Column="34" TopLine="599"/>
+      </Position13>
+      <Position14>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="638" Column="37" TopLine="549"/>
+      </Position14>
+      <Position15>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="489" Column="9" TopLine="466"/>
+      </Position15>
+      <Position16>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="487" Column="42" TopLine="379"/>
+      </Position16>
+      <Position17>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="623" Column="51" TopLine="624"/>
+      </Position17>
+      <Position18>
+        <Filename Value="waptget.lpr"/>
+      </Position18>
+      <Position19>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="193" Column="17" TopLine="166"/>
+      </Position19>
+      <Position20>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="295" Column="22" TopLine="446"/>
+      </Position20>
+      <Position21>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="616" Column="59" TopLine="602"/>
+      </Position21>
+      <Position22>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="448" Column="17" TopLine="329"/>
+      </Position22>
+      <Position23>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="612" Column="53" TopLine="604"/>
+      </Position23>
+      <Position24>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="424" Column="21" TopLine="407"/>
+      </Position24>
+      <Position25>
+        <Filename Value="waptget.lpr"/>
+      </Position25>
+      <Position26>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="475" Column="26" TopLine="451"/>
+      </Position26>
+      <Position27>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="477" Column="26" TopLine="451"/>
+      </Position27>
+      <Position28>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="489" Column="22" TopLine="463"/>
+      </Position28>
+      <Position29>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="477" Column="26" TopLine="463"/>
+      </Position29>
+      <Position30>
+        <Filename Value="waptget.lpr"/>
+      </Position30>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
