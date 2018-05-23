@@ -41,4 +41,3 @@ How to contribute?
 ==================
 
 You may want to have a look at our contribution guide: https://www.wapt.fr/en/doc-1.5/Contribute/index.html
-
