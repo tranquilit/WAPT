@@ -63,6 +63,7 @@ __all__ = \
  'create_user',
  'create_user_desktop_shortcut',
  'create_user_programs_menu_shortcut',
+ 'get_shortcut_properties',
  'critical_system_pending_updates',
  'currentdate',
  'currentdatetime',
@@ -568,6 +569,34 @@ def remove_user_desktop_shortcut(label):
     if not (label.endswith('.lnk') or label.endswith('.url')):
         label += '.lnk'
     remove_file(os.path.join(desktop(0),label))
+
+def get_shortcut_properties(shortcut_filename):
+    r"""Return a dict of shortcut properties
+
+    Args:
+        shortcut_filename (str): path to shortcut
+
+    Returns:
+        dict: properties of shortcut
+             'description','hotkey','icon_location','lnk_filepath','show_cmd','show_cmd','show_states','working_directory'
+
+    >>> lnk = get_shortcut_properties(shortcut_filename)
+    >>> 'path' in lnk and 'description' in lnk
+    True
+    """
+    result = {}
+    frmlnk = winshell.Shortcut.from_lnk(shortcut_filename)
+    result = {'arguments':frmlnk.arguments,
+        'description':frmlnk.description,
+        'hotkey':frmlnk.hotkey,
+        'icon_location':frmlnk.icon_location,
+        'lnk_filepath':frmlnk.lnk_filepath,
+        'path':frmlnk.path,
+        'lnk_filepath':frmlnk.lnk_filepath,
+        'show_cmd':frmlnk.show_cmd,
+        'show_states':frmlnk.show_states,
+        'working_directory':frmlnk.working_directory}
+    return result`
 
 def filecopyto(filename,target):
     """Copy file from absolute or package temporary directory to target directory
