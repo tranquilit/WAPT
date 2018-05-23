@@ -25,14 +25,6 @@ import os
 import sys
 import platform
 
-try:
-    wapt_root_dir = os.path.abspath(
-        os.path.join(
-            os.path.dirname(__file__),
-            '..'))
-except:
-    wapt_root_dir = u'c:/tranquilit/wapt'
-
 from waptserver.config import __version__
 
 # monkeypatching for eventlet greenthreads
@@ -69,7 +61,6 @@ import stat
 import re
 import functools
 
-import pefile
 
 import hashlib
 from passlib.hash import sha512_crypt, bcrypt
@@ -103,7 +94,7 @@ from waptserver.utils import make_response,make_response_from_exception,gzipped
 from waptserver.utils import EWaptAuthenticationFailure,EWaptForbiddden,EWaptHostUnreachable,EWaptMissingHostData
 from waptserver.utils import EWaptMissingParameter,EWaptSignalReceived,EWaptTimeoutWaitingForResult,EWaptUnknownHost
 from waptserver.utils import get_disk_space,jsondump,mkdir_p,utils_devel_mode,utils_set_devel_mode
-from waptserver.utils import get_dns_domain,get_wapt_edition,get_wapt_exe_version
+from waptserver.utils import get_dns_domain,get_wapt_edition,get_wapt_exe_version,wapt_root_dir
 
 from waptserver.app import app,socketio
 from waptserver.auth import check_auth,change_admin_password
@@ -829,7 +820,6 @@ def change_password():
     """Handle change of admin master password"""
     if request.method == 'POST':
         try:
-            config_file = app.config['CONFIG_FILE']
             post_data = request.get_json()
             if 'user' in post_data and 'password' in post_data:
                 if check_auth(post_data['user'], post_data['password']):

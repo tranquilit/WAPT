@@ -43,7 +43,7 @@ from waptserver.utils import EWaptAuthenticationFailure
 
 from waptserver.app import app
 
-import waptserver.config
+from waptserver.config import DEFAULT_CONFIG_FILE,rewrite_config_item
 
 logger = logging.getLogger()
 
@@ -100,6 +100,6 @@ def check_auth(username, password):
 
 def change_admin_password(newpassword):
     new_hash = pbkdf2_sha256.hash(newpassword.encode('utf8'))
-    rewrite_config_item(config_file, 'options', 'wapt_password', new_hash)
+    rewrite_config_item(app.config['CONFIG_FILE'],'options', 'wapt_password', new_hash)
     app.conf['wapt_password'] = new_hash
 

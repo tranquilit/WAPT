@@ -31,6 +31,9 @@ import os
 import requests
 import traceback
 import time
+import socket
+import pefile
+
 from waptutils import jsondump
 
 from cStringIO import StringIO as IO
@@ -38,6 +41,7 @@ import gzip
 import functools
 
 __all__ = [
+    'wapt_root_dir',
     'mkdir_p',
     'utils_set_devel_mode',
     'utils_devel_mode',
@@ -63,6 +67,15 @@ __all__ = [
 utils_devel_mode = False
 
 logger = logging.getLogger('waptserver')
+
+try:
+    wapt_root_dir = os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            '..'))
+except:
+    wapt_root_dir = u'c:/tranquilit/wapt'
+
 
 def utils_set_devel_mode(devel):
     global utils_devel_mode
