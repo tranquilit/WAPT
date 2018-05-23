@@ -3197,7 +3197,7 @@ class Wapt(BaseObjectClass):
             return ''
 
 
-    def install_wapt(self,fname,params_dict={},explicit_by=None):
+    def install_wapt(self,fname,params_dict={},explicit_by=None,force=None):
         """Install a single wapt package given its WAPT filename.
         return install status
 
@@ -3348,6 +3348,7 @@ class Wapt(BaseObjectClass):
                         setattr(setup,'WAPT',self)
                         setattr(setup,'control',entry)
                         setattr(setup,'language',self.language)
+                        setattr(setup,'force',force)
 
                         setattr(setup,'user',self.user)
                         setattr(setup,'usergroups',self.usergroups)
@@ -4210,7 +4211,8 @@ class Wapt(BaseObjectClass):
                     print(u"Installing %s" % (p.package,))
                     result = self.install_wapt(full_fname(p.filename),
                         params_dict = params_dict,
-                        explicit_by=(installed_by or self.user) if request in apackages else None
+                        explicit_by=(installed_by or self.user) if request in apackages else None,
+                        force=force
                         )
                     if result:
                         for k in result.as_dict():

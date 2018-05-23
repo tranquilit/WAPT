@@ -414,7 +414,7 @@ def main():
                             raise Exception(u'Running wapt progresses (%s), please wait...' % (running_install,))
                         for fn in all_args:
                             fn = guess_package_root_dir(fn)
-                            res = mywapt.install_wapt(fn,params_dict = params_dict)
+                            res = mywapt.install_wapt(fn,params_dict = params_dict,force=options.force)
                             result['install'].append((fn,res))
                     else:
                         print(u"%sing WAPT packages %s" % (action,','.join(args[1:])))

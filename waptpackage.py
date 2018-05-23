@@ -1711,7 +1711,7 @@ class PackageEntry(BaseObjectClass):
             raise EWaptMissingLocalWaptFile('This PackageEntry has no local content for zip operations %s' % self.asrequirement())
 
 
-    def call_setup_hook(self,hook_name='session_setup',wapt_context=None,params=None):
+    def call_setup_hook(self,hook_name='session_setup',wapt_context=None,params=None,force=None):
         """Calls a hook in setuppy given a wapt_context
 
         Set basedir, control, and run context within the function context.
@@ -1778,6 +1778,7 @@ class PackageEntry(BaseObjectClass):
             # be sure some minimal functions are available in setup module at install step
             setattr(setup,'basedir',self.sourcespath)
             setattr(setup,'control',self)
+            setattr(setup,'force',force)
 
             if not hasattr(setup,'uninstallkey'):
                 setup.uninstallkey = []
