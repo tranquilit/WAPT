@@ -212,3 +212,11 @@ def write_config_file(cfgfile=DEFAULT_CONFIG_FILE,server_config=None,non_default
 
     with open(cfgfile,'w') as inifile:
        _config.write(inifile)
+
+def rewrite_config_item(cfg_file=DEFAULT_CONFIG_FILE, *args):
+    config = ConfigParser.RawConfigParser()
+    config.read(cfg_file)
+    config.set(*args)
+    with open(cfg_file, 'wb') as cfg:
+        config.write(cfg)
+

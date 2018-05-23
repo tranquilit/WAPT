@@ -81,8 +81,8 @@ from optparse import OptionParser
 from itsdangerous import TimedJSONWebSignatureSerializer
 from werkzeug.utils import secure_filename
 
-from flask import request, Flask, Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash,g
-from flask_socketio import SocketIO, disconnect, send, emit
+from flask import request, Flask, Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
+from flask_socketio import disconnect, send, emit
 # from flask_login import LoginManager,login_required,current_user,UserMixin
 
 from peewee import *
@@ -103,6 +103,11 @@ from waptserver.utils import make_response,make_response_from_exception,gzipped
 from waptserver.utils import EWaptAuthenticationFailure,EWaptForbiddden,EWaptHostUnreachable,EWaptMissingHostData
 from waptserver.utils import EWaptMissingParameter,EWaptSignalReceived,EWaptTimeoutWaitingForResult,EWaptUnknownHost
 from waptserver.utils import get_disk_space,jsondump,mkdir_p,utils_devel_mode,utils_set_devel_mode
+from waptserver.utils import get_dns_domain,get_wapt_edition,get_wapt_exe_version
+
+from waptserver.app import app,socketio
+from waptserver.auth import check_auth,change_admin_password
+from waptserver.decorators import requires_auth,check_auth_is_provided,authenticate
 
 import waptserver.config
 
@@ -123,7 +128,6 @@ except ImportError:
 _ = gettext
 
 
-
 # Ensure that any created files have sane permissions.
 # uWSGI implicitely sets umask(0).
 try:
@@ -133,21 +137,9 @@ except Exception:
 
 ALLOWED_EXTENSIONS = set(['.wapt'])
 
-# allow chunked uploads when no nginx reverse proxy server server (see https://github.com/pallets/flask/issues/367)
-class FlaskApp(Flask):
-    def request_context(self, environ):
-        # it's the only way I've found to handle chunked encoding request (otherwise flask.request.stream is empty)
-        environ['wsgi.input_terminated'] = 1
-        return super(FlaskApp, self).request_context(environ)
-
-
-app = FlaskApp(__name__, static_folder='./templates/static')
 babel = Babel(app)
 
 logger = logging.getLogger()
-
-# chain SocketIO server
-socketio = SocketIO(app, logger = logger, engineio_logger = logger)
 
 try:
     from waptenterprise.waptserver import wsus
@@ -156,136 +148,11 @@ except Exception as e:
     logger.info(str(e))
     wsus = False
 
-def get_wapt_exe_version(exe):
-    """Returns FileVersion or ProductVersion of windows executables
-
-    Args:
-        exe (str): path to executable
-
-    Returns:
-        str: version string
-    """
-
-    present = False
-    version = None
-    if os.path.exists(exe):
-        present = True
-        pe = None
-        try:
-            pe = pefile.PE(exe)
-            version = pe.FileInfo[0].StringTable[
-                0].entries['FileVersion'].strip()
-            if not version:
-                version = pe.FileInfo[0].StringTable[
-                    0].entries['ProductVersion'].strip()
-        except:
-            pass
-        if pe is not None:
-            pe.close()
-    return (present, version)
-
-
 @app.teardown_request
 def _db_close(error):
     """Closes the database again at the end of the request."""
     if wapt_db and wapt_db.obj and not wapt_db.is_closed():
         wapt_db.close()
-
-
-def requires_auth(f):
-    """Flask route decorator which requires Basic Auth http header
-    If not header, returns a 401 http status.
-    """
-    @functools.wraps(f)
-    def decorated(*args, **kwargs):
-        auth = request.authorization
-
-        if session.get('user',None):
-            logger.debug(u'connection from user %s ' % session.get('user'))
-            return f(*args, **kwargs)
-
-        if not auth:
-            logger.info(u'no credential given')
-            return authenticate()
-
-        logging.debug('authenticating : %s' % auth.username)
-        if not check_auth(auth.username, auth.password):
-            return authenticate()
-        logger.info(u'user %s authenticated' % auth.username)
-        return f(*args, **kwargs)
-    return decorated
-
-
-def check_auth(username, password):
-    """This function is called to check if a username /
-    password combination is valid.
-    """
-    def any_(l):
-        """Check if any element in the list is true, in constant time.
-        """
-        ret = False
-        for e in l:
-            if e:
-                ret = True
-        return ret
-
-    user_ok = False
-    pass_sha1_ok = pbkdf2_sha256_ok = pass_sha512_ok = pass_sha512_crypt_ok = pass_bcrypt_crypt_ok = False
-
-    user_ok = app.conf['wapt_user'] == username
-
-    pass_sha1_ok = app.conf['wapt_password'] == hashlib.sha1(
-        password.encode('utf8')).hexdigest()
-    pass_sha512_ok = app.conf['wapt_password'] == hashlib.sha512(
-        password.encode('utf8')).hexdigest()
-
-    if '$pbkdf2-sha256$' in app.conf['wapt_password']:
-        pbkdf2_sha256_ok = pbkdf2_sha256.verify(password, app.conf['wapt_password'])
-    elif sha512_crypt.identify(app.conf['wapt_password']):
-        pass_sha512_crypt_ok = sha512_crypt.verify(
-            password,
-            app.conf['wapt_password'])
-    else:
-        try:
-            if bcrypt.identify(app.conf['wapt_password']):
-                pass_bcrypt_crypt_ok = bcrypt.verify(
-                    password,
-                    app.conf['wapt_password'])
-
-        except Exception:
-            pass
-
-    basic_auth = any_([pbkdf2_sha256_ok, pass_sha1_ok, pass_sha512_ok,
-                 pass_sha512_crypt_ok, pass_bcrypt_crypt_ok]) and user_ok
-
-    return basic_auth or (auth_module_ad is not None and auth_module_ad.check_credentials_ad(app.conf, username, password))
-
-
-def check_auth_is_provided(f):
-    """Check if there is at least basic-auth or kerberos or ssl signature if
-    allow_unauthenticated_registration is False
-    """
-    @functools.wraps(f)
-    def decorated(*args, **kwargs):
-        auth = session.get('user',None)
-        if not auth:
-            auth = request.headers.get('Authorization', None)
-        if not auth:
-            auth = request.authorization
-        if not auth:
-            auth = request.headers.get('X-Signature', None)
-        if not auth and not app.conf['allow_unauthenticated_registration']:
-            return authenticate()
-        return f(*args, **kwargs)
-    return decorated
-
-
-def authenticate():
-    """Sends a 401 response that enables basic auth"""
-    return Response(
-        _('You have to login with proper credentials'), 401,
-        {'WWW-Authenticate': 'Basic realm="Login Required"'})
-
 
 @babel.localeselector
 def get_locale():
@@ -956,43 +823,6 @@ def upload_waptsetup():
                     mimetype='application/json')
 
 
-def rewrite_config_item(cfg_file, *args):
-    config = ConfigParser.RawConfigParser()
-    config.read(cfg_file)
-    config.set(*args)
-    with open(cfg_file, 'wb') as cfg:
-        config.write(cfg)
-
-# Reload config file.
-
-
-def reload_config():
-    try:
-        global conf
-        conf = waptserver.config.load_config(app.config['CONFIG_FILE'])
-    except Exception as e:
-        logger.critical('Unable to reload server config : %s' % repr(e))
-
-
-def get_dns_domain():
-    """Get DNS domain part of the FQDN
-
-    Returns:
-        str
-    """
-    try:
-        parts = socket.getfqdn().lower().split('.',1)
-        if len(parts)>1:
-            return parts[1]
-        else:
-            return ''
-    except Exception as e:
-        logger.critical(u'Unable to get DNS domain: %s' % e)
-        return None
-
-def get_wapt_edition():
-    return 'enterprise' if os.path.isfile(os.path.join(wapt_root_dir,'waptenterprise','waptserver','__init__.py')) else 'community'
-
 @app.route('/api/v3/change_password',methods=['HEAD','POST'])
 @requires_auth
 def change_password():
@@ -1007,10 +837,7 @@ def change_password():
                     if 'new_password' in post_data and post_data['user'] == 'admin':
                         if len(post_data['new_password']) < app.conf.get('min_password_length',10):
                             raise EWaptForbiddden('The password must be at least %s characters' % app.conf.get('min_password_length',10))
-                        new_hash = pbkdf2_sha256.hash(post_data['new_password'].encode('utf8'))
-                        rewrite_config_item(config_file, 'options', 'wapt_password', new_hash)
-                        app.conf['wapt_password'] = new_hash
-                        reload_config()
+                        change_admin_password(post_data['new_password'])
                         msg = 'Password for %s updated successfully' % post_data['user']
                     else:
                         raise EWaptMissingParameter('Bad or missing parameter')
@@ -1049,7 +876,7 @@ def login():
         if user is not None and password is not None:
             if check_auth(user, password):
                 try:
-                    hosts_count = Hosts.select(fn.COUNT(Hosts.uuid)).tuples().first()[0]
+                    hosts_count = Hosts.select(fn.COUNT(Hosts.uuid)).tuples().first()[0] # pylint: disable=no-value-for-parameter
                 except:
                     hosts_count = None
                 result = dict(
@@ -2147,6 +1974,7 @@ def on_waptclient_connect():
             listening_timestamp=datetime2isodate(),
             listening_protocol='websockets',
             listening_address=request.sid,
+            last_seen_on=datetime2isodate(),
             reachable='OK',
         ).where(Hosts.uuid == uuid).execute()
         wapt_db.commit()
@@ -2260,7 +2088,7 @@ if __name__ == '__main__':
 
     (options, args) = parser.parse_args()
     app.config['CONFIG_FILE'] = options.configfile
-    app.conf = waptserver.config.load_config(options.configfile)
+    app.conf.update(**waptserver.config.load_config(options.configfile))
     app.config['SECRET_KEY'] = app.conf.get('secret_key')
     app.config['APPLICATION_ROOT'] = app.conf.get('application_root','')
 

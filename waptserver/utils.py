@@ -46,6 +46,9 @@ __all__ = [
     'setloglevel',
     'make_response',
     'make_response_from_exception',
+    'get_wapt_edition',
+    'get_dns_domain',
+    'get_wapt_exe_version',
     'EWaptMissingHostData',
     'EWaptUnknownHost',
     'EWaptHostUnreachable',
@@ -178,6 +181,54 @@ def make_response_from_exception(exception, error_code='', status=200):
         mimetype='application/json')
 
 
+def get_dns_domain():
+    """Get DNS domain part of the FQDN
+
+    Returns:
+        str
+    """
+    try:
+        parts = socket.getfqdn().lower().split('.',1)
+        if len(parts)>1:
+            return parts[1]
+        else:
+            return ''
+    except Exception as e:
+        logger.critical(u'Unable to get DNS domain: %s' % e)
+        return None
+
+def get_wapt_edition():
+    return 'enterprise' if os.path.isfile(os.path.join(wapt_root_dir,'waptenterprise','waptserver','__init__.py')) else 'community'
+
+
+def get_wapt_exe_version(exe):
+    """Returns FileVersion or ProductVersion of windows executables
+
+    Args:
+        exe (str): path to executable
+
+    Returns:
+        str: version string
+    """
+
+    present = False
+    version = None
+    if os.path.exists(exe):
+        present = True
+        pe = None
+        try:
+            pe = pefile.PE(exe)
+            version = pe.FileInfo[0].StringTable[
+                0].entries['FileVersion'].strip()
+            if not version:
+                version = pe.FileInfo[0].StringTable[
+                    0].entries['ProductVersion'].strip()
+        except:
+            pass
+        if pe is not None:
+            pe.close()
+    return (present, version)
+
 # Custom exceptions #####
 class EWaptMissingHostData(Exception):
     pass
@@ -213,3 +264,5 @@ class EWaptAuthenticationFailure(Exception):
 
 class EWaptTimeoutWaitingForResult(Exception):
     pass
+
+
