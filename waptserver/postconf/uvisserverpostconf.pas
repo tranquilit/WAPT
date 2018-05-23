@@ -83,7 +83,7 @@ var
 
 implementation
 uses LCLIntf, Windows, waptcommon, waptwinutils, UScaleDPI, tisinifiles,
-  superobject, tiscommon, tisstrings, IniFiles;
+  superobject, tiscommon, tisstrings, IniFiles,DCPsha256,dcpcrypt2,DCPbase64,Math;
 
 {$R *.lfm}
 
@@ -296,7 +296,6 @@ begin
 end;
 
 
-{
 function RPad(x: string; c: Char; s: Integer): string;
 var
   i: Integer;
@@ -353,7 +352,6 @@ begin
     Result := CalcDigest(Result, hash);
 end;
 
-
 function PBKDF2(pass, salt: ansistring; count, kLen: Integer; hash: TDCP_hashclass): ansistring;
 
   function IntX(i: Integer): ansistring; inline;
@@ -378,9 +376,9 @@ begin
     end;
     T := T + F;
   end;
-  Result := Copy(T, 1, kLen);
+  Result := '$pbkdf2-'+LowerCase(hash.GetAlgorithm)+'$'+IntToStr(count)+'$'+DCPbase64.Base64EncodeStr(salt)+'$'+DCPbase64.Base64EncodeStr(Copy(T, 1, kLen));
 end;
-}
+
 
 function MakeRandomString(const ALength: Integer;
                           const ACharSequence: String = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'): String;
@@ -394,6 +392,28 @@ begin
     result[C1] := ACharSequence[Random(sequence_length) + 1];
 end;
 
+function DigestToStr(Digest: array of byte): string;
+var
+  i: Integer;
+begin
+  Result := '';
+  for i := 0 to Length(Digest) -1 do
+    Result := Result + LowerCase(IntToHex(Digest[i], 2));
+end;
+
+function GetStringHash(Source: string): string;
+var
+  Hash: TDCP_sha256;
+  Digest: array[0..31] of Byte;
+begin
+  Hash := TDCP_sha256.Create(nil);
+  Hash.Init;
+  Hash.UpdateStr(Source);
+  Hash.Final(Digest);
+  Hash.Free;
+  Result := DigestToStr(Digest);
+end;
+
 procedure TVisWAPTServerPostConf.actWriteConfStartServeExecute(Sender: TObject);
 var
   retry:integer;
@@ -401,6 +421,8 @@ var
   sores: ISuperobject;
   taskid:integer;
   done:boolean;
+  sha: TDCP_sha256;
+  dig:AnsiString;
 begin
   CurrentVisLoading := TVisLoading.Create(Self);
   with CurrentVisLoading do
@@ -408,16 +430,20 @@ begin
     try
       ExceptionOnStop:=True;
       if GetServiceStatusByName('','WAPTService') in [ssRunning,ssPaused,ssPausePending,ssStartPending]  then
-      begin
+      try
         ProgressTitle(rsWaptServiceStopping);
         Run('cmd /C net stop waptservice');
-      end;
-      if GetServiceStatusByName('','WAPTServer') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
-      begin
-        ProgressTitle(rsWaptServiceStopping);
-        Run('cmd /C net stop waptserver');
+      except
       end;
 
+      if GetServiceStatusByName('','WAPTServer') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
+      try
+        ProgressTitle(rsWaptServiceStopping);
+        Run('cmd /C net stop waptserver');
+      except
+      end;
+
+      IniWriteString(WaptBaseDir+'\conf\waptserver.ini' ,'options','wapt_password',PBKDF2(EdPwd1.Text,MakeRandomString(5),29000,32,TDCP_sha256));
 
       if IniReadString(WaptBaseDir+'\conf\waptserver.ini' ,'options','server_uuid')='' then
         iniWriteString(WaptBaseDir+'\conf\waptserver.ini','options', 'server_uuid', Lowercase(Copy(GUIDToString(GUID), 2, Length(GUIDToString(GUID)) - 2)));
@@ -439,9 +465,6 @@ begin
       ProgressTitle(rsSettingServerPassword);
       ProgressStep(4,10);
 
-      IniWriteString(WaptBaseDir+'\conf\waptserver.ini' ,'options','wapt_password',
-        RunWapt('"{app}\waptpython" -c "from passlib.hash import pbkdf2_sha256; print(pbkdf2_sha256.hash('''+EdPwd1.Text+'''))"')
-        );
 
       if CBOpenFirewall.Checked then
       begin
