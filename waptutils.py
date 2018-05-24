@@ -1309,6 +1309,21 @@ class LogOutput(BaseObjectClass):
         return getattr(self.console,name)
 
 
+def get_time_delta(schedule):
+    if schedule is not None:
+        if schedule.endswith('m'):
+            timedelta = datetime.timedelta(minutes=float(schedule[:-1]))
+        elif schedule.endswith('h'):
+            timedelta = datetime.timedelta(hours=float(schedule[:-1]))
+        elif schedule.endswith('d'):
+            timedelta = datetime.timedelta(days=float(schedule[:-1]))
+        else:
+            timedelta = datetime.timedelta(minutes=float(schedule))
+    else:
+        timedelta = None
+    return timedelta
+
+
 
 if __name__ == '__main__':
     import doctest

@@ -105,7 +105,7 @@ from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,\
 
 # end of windows stuff
 
-from waptutils import BaseObjectClass,ensure_list,ensure_unicode,default_http_headers
+from waptutils import BaseObjectClass,ensure_list,ensure_unicode,default_http_headers,get_time_delta
 from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,ZipFile,LogOutput
 from waptutils import import_code,import_setup,force_utf8_no_bom,format_bytes,wget,merge_dict,remove_encoding_declaration,list_intersection
 
@@ -5388,14 +5388,7 @@ class Wapt(BaseObjectClass):
                     audit_period = None
 
                 if audit_period is not None:
-                    if audit_period.endswith('m'):
-                        timedelta = datetime.timedelta(minutes=float(audit_period[:-1]))
-                    elif audit_period.endswith('h'):
-                        timedelta = datetime.timedelta(hours=float(audit_period[:-1]))
-                    elif audit_period.endswith('d'):
-                        timedelta = datetime.timedelta(days=float(audit_period[:-1]))
-                    else:
-                        timedelta = datetime.timedelta(minutes=float(audit_period))
+                    timedelta = get_time_delta(audit_period)
                     next_audit = datetime.datetime.now()+timedelta
 
                 self.waptdb.update_audit_status(install_id,set_status='RUNNING',set_output='',

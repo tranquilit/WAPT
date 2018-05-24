@@ -78,7 +78,7 @@ import windnsquery
 import tempfile
 
 # wapt specific stuff
-from waptutils import setloglevel,ensure_list,ensure_unicode,jsondump,LogOutput
+from waptutils import setloglevel,ensure_list,ensure_unicode,jsondump,LogOutput,get_time_delta
 
 import common
 from common import Wapt
@@ -1140,7 +1140,7 @@ class WaptTaskManager(threading.Thread):
     def run_scheduled_audits(self):
         """Add packages audit tasks to the queue"""
         now = setuphelpers.datetime2isodate()
-        self.last_audit = time.time()
+        self.last_audit = datetime.datetime.now()
         for installed_package in self.wapt.installed():
             if not installed_package.next_audit_on or now >= installed_package.next_audit_on:
                 task = WaptAuditPackage(installed_package.package,created_by='SCHEDULER')
@@ -1169,7 +1169,7 @@ class WaptTaskManager(threading.Thread):
                 self.add_task(WaptCleanup(notifyuser=False,created_by='SCHEDULER'))
 
         if waptconfig.waptupdate_task_period is not None:
-            if self.last_update is None or (time.time()-self.last_update)/60>waptconfig.waptupdate_task_period:
+            if self.last_update is None or (time.time() - self.last_update)/60>waptconfig.waptupdate_task_period:
                 try:
                     self.wapt.update()
                     reqs = self.wapt.check_downloads()
@@ -1179,8 +1179,8 @@ class WaptTaskManager(threading.Thread):
                 except Exception as e:
                     logger.debug(u'Error for update in check_scheduled_tasks: %s'%e)
 
-        if waptconfig.waptaudit_task_period is not None and waptconfig.waptaudit_task_period > 0:
-            if self.last_audit is None or (time.time()-self.last_audit)/60>waptconfig.waptaudit_task_period:
+        if waptconfig.waptaudit_task_period:
+            if self.last_audit is None or (datetime.datetime.now() - self.last_audit > get_time_delta(waptconfig.waptaudit_task_period)):
                 try:
                     self.run_scheduled_audits()
                 except Exception as e:

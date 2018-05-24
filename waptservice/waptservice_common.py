@@ -43,7 +43,7 @@ import ConfigParser
 from optparse import OptionParser
 
 # wapt specific stuff
-from waptutils import ensure_unicode,ensure_list,LogOutput,jsondump
+from waptutils import ensure_unicode,ensure_list,LogOutput,jsondump,get_time_delta
 import common
 from common import Wapt
 import setuphelpers
@@ -285,7 +285,7 @@ class WaptServiceConfig(object):
                 self.waptupdate_task_period = 120
 
             if config.has_option('global','waptaudit_task_period'):
-                self.waptaudit_task_period = int(config.get('global','waptaudit_task_period'))
+                self.waptaudit_task_period = config.get('global','waptaudit_task_period')
 
             if config.has_option('global','dbpath'):
                 self.dbpath =  config.get('global','dbpath')
