@@ -865,6 +865,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.SortColumn = 1
             Header.Style = hsFlatButtons
             Images = ImageList1
+            PopupMenu = PopupWUAUpdates
             TabOrder = 0
             TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
             TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
@@ -5825,6 +5826,10 @@ object VisWaptGUI: TVisWaptGUI
     object MenuItem61: TMenuItem
       Action = ActWUAResetSelectedUpdates
     end
+    object MenuItem95: TMenuItem
+      Action = ActWUAShowMSUpdatesHelp
+      Caption = 'Information about KB on MS Web site'
+    end
   end
   object PopupWUAProducts: TPopupMenu
     left = 664
@@ -5885,6 +5890,7 @@ object VisWaptGUI: TVisWaptGUI
     object ActWUADownloadSelectedUpdate: TAction
       Category = 'wua'
       Caption = 'Download selected'
+      OnExecute = ActWUADownloadSelectedUpdateExecute
     end
     object ActWUAAllowSelectedUpdates: TAction
       Category = 'wua'
@@ -5973,6 +5979,10 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 35
       OnExecute = ActWSUSSaveBuildRulesExecute
       OnUpdate = ActWSUSSaveBuildRulesUpdate
+    end
+    object ActWUAShowMSUpdatesHelp: TAction
+      Caption = 'ActWUAShowMSUpdatesHelp'
+      OnExecute = ActWUAShowMSUpdatesHelpExecute
     end
   end
   object PopupGridWSUSScan: TPopupMenu

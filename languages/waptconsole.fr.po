@@ -1667,6 +1667,10 @@ msgctxt "tviswaptgui.actwuasaveupdatesgroup.caption"
 msgid "Save"
 msgstr "Enregistrer"
 
+#: tviswaptgui.actwuashowmsupdateshelp.caption
+msgid "ActWUAShowMSUpdatesHelp"
+msgstr ""
+
 #: tviswaptgui.bitbtn10.caption
 msgid "Refresh Updates listing retrieval history"
 msgstr "Actualiser l'historique des Listes de Mises à jour"
@@ -1914,8 +1918,8 @@ msgid "User"
 msgstr "Utilisateur"
 
 #: tviswaptgui.menuexternaltools.caption
-msgid "Gestion Windows de l'ordinateur"
-msgstr ""
+msgid "Windows Computer management"
+msgstr "Gestion Windows de l'ordinateur"
 
 #: tviswaptgui.menuitem10.caption
 msgid "Save ..."
@@ -1993,6 +1997,10 @@ msgstr "Ré-ouvrir"
 #: tviswaptgui.menuitem91.caption
 msgid "New Item1"
 msgstr ""
+
+#: tviswaptgui.menuitem95.caption
+msgid "Information about KB on MS Web site"
+msgstr "Information MS sur la mise à jour"
 
 #: tviswaptgui.menuitemwaptwua.caption
 #, fuzzy

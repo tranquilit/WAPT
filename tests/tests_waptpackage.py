@@ -1122,13 +1122,17 @@ def test_package_request():
 def test_wua():
     from waptenterprise.waptwua import client
     w = Wapt()
-    print(setuphelpers.service_is_running('wuauserv'))
     with client.WaptWUA(w) as c:
-        print(setuphelpers.service_is_running('wuauserv'))
         print(c.download_updates())
         print(c.scan_updates_status())
 
-    print(setuphelpers.service_is_running('wuauserv'))
+        missing = []
+        for update in c.updates():
+            if not update.IsInstalled and not update.IsHidden:
+                missing.extend(c.get_downloads_for_update(update))
+        print(missing)
+
+
 
 def test_discarded():
     #cProfile.run('w = Wapt();w.update(force=True)')
@@ -1141,8 +1145,8 @@ def test_discarded():
 
 if __name__ == '__main__':
     #gen_perso('htouvet',email='htouvet@tranquil.it')
-    test_discarded()
-    #test_wua()
+    #test_discarded()
+    test_wua()
     #test_packagenewestversion()
     #test_licencing()
     #test_logoutput()

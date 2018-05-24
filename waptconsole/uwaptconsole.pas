@@ -26,6 +26,7 @@ type
     ActAddNewNetwork: TAction;
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
+    ActWUAShowMSUpdatesHelp: TAction;
     ActPackagesAudit: TAction;
     ActTriggerHostAudit: TAction;
     ActTriggerUpgradesOrgUnit: TAction;
@@ -117,6 +118,7 @@ type
     MenuItem92: TMenuItem;
     MenuItem93: TMenuItem;
     MenuItem94: TMenuItem;
+    MenuItem95: TMenuItem;
     MenuItemWaptWUA: TMenuItem;
     MenuItem96: TMenuItem;
     MenuItem97: TMenuItem;
@@ -486,6 +488,7 @@ type
     procedure ActWUAAddAllowedClassificationExecute(Sender: TObject);
     procedure ActWUAAddAllowedUpdateExecute(Sender: TObject);
     procedure ActWUAAddForbiddenUpdateExecute(Sender: TObject);
+    procedure ActWUADownloadSelectedUpdateExecute(Sender: TObject);
     procedure ActWUADownloadSelectedUpdateUpdate(Sender: TObject);
     procedure ActEditGroupExecute(Sender: TObject);
     procedure ActEditHostPackageExecute(Sender: TObject);
@@ -533,6 +536,7 @@ type
     procedure ActVNCExecute(Sender: TObject);
     procedure ActVNCUpdate(Sender: TObject);
     procedure ActWAPTConsoleConfigExecute(Sender: TObject);
+    procedure ActWUAShowMSUpdatesHelpExecute(Sender: TObject);
     procedure ApplicationProperties1Exception(Sender: TObject; E: Exception);
     procedure cbADOUSelect(Sender: TObject);
     procedure cbADSiteSelect(Sender: TObject);
@@ -3267,6 +3271,7 @@ begin
   end;
 end;
 
+
 procedure TVisWaptGUI.ApplicationProperties1Exception(Sender: TObject;
   E: Exception);
 begin
@@ -4576,6 +4581,9 @@ procedure TVisWaptGUI.ActWUADownloadSelectedUpdateUpdate(Sender: TObject);
 begin
 end;
 
+procedure TVisWaptGUI.ActWUAShowMSUpdatesHelpExecute(Sender: TObject);
+begin
+end;
 
 
 {$endif}
