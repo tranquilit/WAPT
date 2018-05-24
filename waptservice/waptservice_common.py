@@ -43,7 +43,7 @@ import ConfigParser
 from optparse import OptionParser
 
 # wapt specific stuff
-from waptutils import ensure_unicode,LogOutput,jsondump
+from waptutils import ensure_unicode,ensure_list,LogOutput,jsondump
 import common
 from common import Wapt
 import setuphelpers
@@ -113,7 +113,7 @@ class WaptEvents(object):
                 return self.events[:]
             else:
                 if max_count is not None:
-                    return [e for e in self.events[-max_count:] if e.id>last_read]
+                    return [e for e in self.events[-max_count:] if e.id>last_read] # pylint: disable=invalid-unary-operand-type
                 else:
                     return [e for e in self.events if e.id>last_read]
 
@@ -160,7 +160,7 @@ class WaptServiceConfig(object):
          'MAX_HISTORY','waptservice_port',
          'dbpath','loglevel','log_directory','waptserver',
          'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout','log_to_windows_events',
-         'allow_user_service_restart','signature_clockskew']
+         'allow_user_service_restart','signature_clockskew','waptwua_enabled']
 
     def __init__(self,config_filename=None):
         if not config_filename:
@@ -199,7 +199,6 @@ class WaptServiceConfig(object):
         self.waptupdate_task_period = 120
         self.waptupgrade_task_period = None
 
-        self.waptaudit_task_period = None
 
         self.config_filedate = None
 
@@ -219,6 +218,19 @@ class WaptServiceConfig(object):
 
         # tolerance time replay limit for signed actions from server
         self.signature_clockskew = 5*60
+
+        # for Wapt Windows updates service (enterprise)
+        self.waptwua_enabled = None
+        self.waptwua_allowed_updates = None
+        self.waptwua_forbidden_updates = None
+        self.waptwua_allowed_severities = None
+        self.waptwua_allowed_classifications = None
+
+        self.waptwua_download_scheduling = None
+        self.waptwua_install_scheduling = None
+
+        # for Wapt Windows updates service (enterprise)
+        self.waptaudit_task_period = None
 
 
     def load(self):
@@ -365,6 +377,17 @@ class WaptServiceConfig(object):
                 else:
                     setattr(self,param,None)
 
+            if config.has_option('global','waptwua_enabled'):
+                setattr(self,'waptwua_enabled',config.getboolean('global','waptwua_enabled'))
+            else:
+                setattr(self,'waptwua_enabled',None)
+
+            for param in ['waptwua_allowed_updates','waptwua_forbidden_updates','waptwua_allowed_severities','waptwua_allowed_classifications']:
+                if config.has_option('global',param):
+                    setattr(self,param,ensure_list(config.get('global',param)))
+                else:
+                    setattr(self,param,None)
+
         else:
             raise Exception (_("FATAL, configuration file {} has no section [global]. Please check Waptserver documentation").format(self.config_filename))
 
@@ -406,19 +429,6 @@ class EventsPrinter:
                 self.events.post_event('PRINT',ensure_unicode(text))
             self.logs.append(ensure_unicode(text))
 
-
-def eventprintinfo(func):
-    '''Wraps a method so that any calls made to print get logged instead'''
-    def pwrapper(*arg, **kwargs):
-        stdobak = sys.stdout
-        if arg[0].wapt is not None:
-            lpinstance = EventsPrinter(arg[0].wapt.events,arg[0].logs)
-            sys.stdout = lpinstance
-        try:
-            return func(*arg, **kwargs)
-        finally:
-            sys.stdout = stdobak
-    return pwrapper
 
 class WaptTask(object):
     """Base object class for all wapt task : download, install, remove, upgrade..."""
@@ -462,7 +472,6 @@ class WaptTask(object):
         """method to override in descendant to do the actual work"""
         pass
 
-    @eventprintinfo
     def run(self):
         """register start and finish time, call _run, redirect stdout and stderr to events broadcaster
             result of task should be stored in self.result
@@ -547,9 +556,11 @@ class WaptNetworkReconfig(WaptTask):
 
     def _run(self):
         logger.debug(u'Reloading config file')
+        self.update_status(_(u'Reloading config file'))
         self.wapt.load_config(waptconfig.config_filename)
         self.wapt.network_reconfigure()
         waptconfig.load()
+        self.update_status(_(u'Config file reloaded'))
         self.result = waptconfig.as_dict()
         self.notify_server_on_finish = self.wapt.waptserver_available()
 
@@ -608,6 +619,7 @@ class WaptUpdate(WaptTask):
 
     def _run(self):
         self.wapt.check_install_running()
+        print(_(u'Get packages index'))
         self.result = self.wapt.update(force=self.force,register=self.notify_server_on_finish)
         """result: {
             count: 176,
@@ -637,6 +649,7 @@ class WaptUpdate(WaptTask):
             s.append(_(u'Packages with errors : {}').format(errors))
         if not installs and not errors:
             s.append(_(u'System up-to-date'))
+        print(u'\n'.join(s))
         self.summary = u'\n'.join(s)
 
     def __unicode__(self):
@@ -741,6 +754,7 @@ class WaptRegisterComputer(WaptTask):
 
     def _run(self):
         if self.wapt.waptserver_available():
+            self.update_status(_(u'Sending computer status to waptserver'))
             try:
                 self.result = self.wapt.register_computer(description = self.computer_description)
                 self.summary = _(u"Inventory has been sent to the WAPT server")
@@ -836,6 +850,7 @@ class WaptDownloadPackage(WaptTask):
         self.update_status(_(u'Downloading %s : %s' % (url,stat)))
 
     def _run(self):
+        self.update_status(_(u'Downloading %s') % self.packagename)
         start = time.time()
         self.result = self.wapt.download_packages(self.packagename,usecache=self.usecache,printhook=self.printhook)
         end = time.time()
@@ -874,6 +889,7 @@ class WaptPackageInstall(WaptTask):
             setattr(self,k,args[k])
 
     def _run(self):
+        self.update_status(_(u'Installing %s') % self.packagename)
         def cjoin(l):
             return u','.join([u"%s" % (p[1].asrequirement() if p[1] else p[0],) for p in l])
         self.result = self.wapt.install(self.packagename,force = self.force)
@@ -946,6 +962,7 @@ class WaptPackageForget(WaptTask):
             setattr(self,k,args[k])
 
     def _run(self):
+        self.update_status(_(u'Forgetting %s') % self.packagenames)
         self.result = self.wapt.forget_packages(self.packagenames)
         if self.result:
             self.summary = _(u"Packages removed from database : %s") % (u"\n".join(self.result),)
@@ -974,6 +991,7 @@ class WaptAuditPackage(WaptTask):
             setattr(self,k,args[k])
 
     def _run(self):
+        self.update_status(_(u'Auditing %s') % self.packagename)
         self.result = self.wapt.audit(self.packagename,force = self.force)
         if self.result:
             self.summary = _(u"Audit result for %s : %s") % (self.packagename,self.result)

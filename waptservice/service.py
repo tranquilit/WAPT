@@ -78,7 +78,7 @@ import windnsquery
 import tempfile
 
 # wapt specific stuff
-from waptutils import setloglevel,ensure_list,ensure_unicode,jsondump
+from waptutils import setloglevel,ensure_list,ensure_unicode,jsondump,LogOutput
 
 import common
 from common import Wapt
@@ -98,7 +98,7 @@ from waptservice.waptservice_socketio import WaptSocketIOClient
 if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
     from waptenterprise.waptservice.enterprise import *  # pylint: disable=import-error
 
-from plugins import *
+from waptservice.plugins import *
 
 from flask_babel import Babel
 try:
@@ -162,8 +162,9 @@ app.config['SECRET_KEY'] = waptconfig.secret_key
 
 try:
     from waptenterprise.waptwua.client import WaptWUA # pylint: disable=no-name-in-module
-    app.register_blueprint(WaptWUA.waptwua)
+    #app.register_blueprint(WaptWUA.waptwua)
 except Exception as e:
+    WaptWUA = None
     pass
 
 app.jinja_env.filters['beautify'] = beautify # pylint: disable=no-member
@@ -185,6 +186,17 @@ def apply_host_settings(waptconfig):
         if waptconfig.hiberboot_enabled is not None and wapt.hiberboot_enabled != waptconfig.hiberboot_enabled:
             logger.info('Setting hiberboot_enabled to %s'%waptconfig.hiberboot_enabled)
             wapt.hiberboot_enabled = waptconfig.hiberboot_enabled
+
+        if waptconfig.waptwua_enabled is not None:
+            logger.info('Setting waptwua_enabled to %s'%waptconfig.waptwua_enabled)
+            wapt.waptwua_enabled = waptconfig.waptwua_enabled
+            if WaptWUA is not None:
+                c = WaptWUA(wapt)
+                if waptconfig.waptwua_enabled:
+                    c.disable_ms_windows_update_service()
+                elif not waptconfig.waptwua_enabled:
+                    c.enable_ms_windows_update_service()
+
     except Exception as e:
         logger.critical('Unable to set shutdown policies : %s' % e)
 
@@ -1012,15 +1024,15 @@ def events():
     last_read = int(request.args.get('last_read',session.get('last_read_event_id','0')))
     timeout = int(request.args.get('timeout','10'))
     max_count = int(request.args.get('max_count','0')) or None
-    if task_manager.wapt.events:
-        data = task_manager.wapt.events.get_missed(last_read=last_read,max_count=max_count)
+    if task_manager.events:
+        data = task_manager.events.get_missed(last_read=last_read,max_count=max_count)
         if timeout>0:
             start_time = time.time()
             while not data and time.time() - start_time <= timeout:
                 time.sleep(1.0)
-                data = task_manager.wapt.events.get_missed(last_read=last_read,max_count=max_count)
-            if task_manager.wapt.events.events:
-                session['last_read_event_id'] = task_manager.wapt.events.events[-1].id
+                data = task_manager.events.get_missed(last_read=last_read,max_count=max_count)
+            if task_manager.events.events:
+                session['last_read_event_id'] = task_manager.events.events[-1].id
     else:
         data = None
     return Response(jsondump(data), mimetype='application/json')
@@ -1053,7 +1065,6 @@ class WaptTaskManager(threading.Thread):
 
     def setup_event_queue(self):
         self.events = WaptEvents()
-        self.wapt.events = self.events
         return self.events
 
     def update_runstatus(self,status):
@@ -1061,7 +1072,7 @@ class WaptTaskManager(threading.Thread):
         self.wapt.runstatus = status
         if self.events:
             # dispatch event to listening parties
-            self.wapt.events.post_event("STATUS",self.wapt.get_last_update_status())
+            self.events.post_event("STATUS",self.wapt.get_last_update_status())
 
     def update_server_status(self):
         if self.wapt.waptserver_available():
@@ -1077,13 +1088,13 @@ class WaptTaskManager(threading.Thread):
                 logger.debug('Unable to update server status: %s' % repr(e))
 
     def broadcast_tasks_status(self,event_type,task):
-        """topic : ADD START FINISH CANCEL ERROR STATUS
+        """event_type : TASK_ADD TASK_START TASK_STATUS TASK_FINISH TASK_CANCEL TASK_ERROR
         """
         # ignore broadcast for this..
         if isinstance(task,WaptUpdateServerStatus):
             return
         if self.events and task:
-            self.wapt.events.post_event(event_type,task.as_dict())
+            self.events.post_event(event_type,task.as_dict())
 
     def add_task(self,task,notify_user=None):
         """Adds a new WaptTask for processing"""
@@ -1136,6 +1147,7 @@ class WaptTaskManager(threading.Thread):
                 self.add_task(task)
         self.add_task(WaptUpdateServerStatus(priority=100,created_by='SCHEDULER'))
 
+
     def check_scheduled_tasks(self):
         """Add update/upgrade tasks if elapsed time since last update/upgrade is over"""
         logger.debug(u'Check scheduled tasks')
@@ -1185,7 +1197,8 @@ class WaptTaskManager(threading.Thread):
 
         self.start_time = datetime.datetime.now()
         self.wapt = Wapt(config_filename=self.config_filename)
-        self.events = self.setup_event_queue()
+        self.setup_event_queue()
+
         logger.info(u'Wapt tasks management initialized with {} configuration, thread ID {}'.format(self.config_filename,threading.current_thread().ident))
 
         self.start_network_monitoring()
@@ -1207,7 +1220,15 @@ class WaptTaskManager(threading.Thread):
                         self.update_runstatus(_(u'Running: {description}').format(description=self.running_task) )
                         self.update_server_status()
                     try:
-                        self.running_task.run()
+                        def update_events(append_output=None,set_status=None):
+                            if self.events and self.running_task:
+                                self.events.post_event('TASK_STATUS',self.running_task.as_dict())
+                            if append_output and self.running_task:
+                                self.running_tasks.logs.append(append_output)
+
+                        with LogOutput(console=sys.stderr,update_status_hook=update_events):
+                            self.running_task.run()
+
                         if self.running_task:
                             self.tasks_done.append(self.running_task)
                             self.broadcast_tasks_status('TASK_FINISH',self.running_task)

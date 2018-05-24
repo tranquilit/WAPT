@@ -70,7 +70,7 @@ from waptservice.waptservice_common import waptservice_remote_actions,waptconfig
 from waptservice.waptservice_common import WaptUpdate,WaptUpgrade,WaptUpdateServerStatus,WaptRegisterComputer
 from waptservice.waptservice_common import WaptCleanup,WaptPackageInstall,WaptPackageRemove,WaptPackageForget,WaptLongTask,WaptAuditPackage
 
-from plugins import *
+from waptservice.plugins import *
 
 logger = logging.getLogger()
 
