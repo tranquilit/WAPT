@@ -2669,7 +2669,7 @@ class Wapt(BaseObjectClass):
         if self.config.has_option('global','use_hostpackages'):
             self.use_hostpackages = self.config.getboolean('global','use_hostpackages')
 
-        self.waptwua_enabled = False
+        self.waptwua_enabled = None
         if self.config.has_option('global','waptwua_enabled'):
             self.waptwua_enabled = self.config.getboolean('global','waptwua_enabled')
 
