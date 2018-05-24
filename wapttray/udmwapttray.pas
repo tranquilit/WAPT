@@ -352,7 +352,8 @@ var
   ActionName,SHiddenActions:String;
   HiddenActions:TDynStringArray;
   Action:TAction;
-
+  amenuitem,prevvisible: TMenuItem;
+  i:Integer;
 
 begin
   lastServiceMessage:=Now;
@@ -367,8 +368,6 @@ begin
 
   notify_user:= IniReadBool(WaptIniFilename,'global','notify_user',Win32MajorVersion<=6 );
 
-  ActForceRegister.Visible := waptcommon.GetWaptServerURL <>'';
-
   SHiddenActions := IniReadString(WaptIniFilename,'global','hidden_wapttray_actions','');
   if SHiddenActions<>'' then
   begin
@@ -378,7 +377,18 @@ begin
       Action := FindComponent('Act'+ActionName) as TAction;
       if Action <> Nil then
         Action.Visible:=False;
+      if Action = ActForceRegister then
+        Action.Visible:=Action.Visible and (waptcommon.GetWaptServerURL <>'');
+
+      if Action = ActLaunchWaptConsole then
+        Action.Visible:=Action.Visible and FileExists(AppendPathDelim(ExtractFileDir(ParamStr(0)))+'waptconsole.exe');
     end;
+  end;
+  for i:=PopupMenu1.Items.Count-1 downto 0 do
+  begin
+    amenuitem := PopupMenu1.Items[i];
+    if amenuitem.IsLine and (i>0) and not popupMenu1.Items[i-1].Visible then
+      amenuitem.Visible:=False;
   end;
 end;
 
@@ -454,7 +464,6 @@ end;
 
 procedure TDMWaptTray.ActForceRegisterUpdate(Sender: TObject);
 begin
-  ActForceRegister.Visible := waptcommon.GetWaptServerURL <>'';
   (Sender as TAction).Enabled := WaptServiceRunning;
 end;
 
@@ -468,7 +477,6 @@ end;
 
 procedure TDMWaptTray.ActLaunchWaptConsoleUpdate(Sender: TObject);
 begin
-  ActLaunchWaptConsole.Visible:=FileExists(AppendPathDelim(ExtractFileDir(ParamStr(0)))+'waptconsole.exe');
 end;
 
 function TDMWaptTray.WaptConsoleFileName: String;
