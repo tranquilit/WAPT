@@ -707,6 +707,14 @@ msgctxt "uwapttrayres.rspackageconfigerror"
 msgid "Error while configuring packages for the current user session"
 msgstr ""
 
+#: uwapttrayres.rsstartingwaptservice
+msgid "Starting WAPTService"
+msgstr ""
+
+#: uwapttrayres.rsstoppingwaptservice
+msgid "Stopping WAPTService"
+msgstr ""
+
 #: uwapttrayres.rstaskdone
 msgctxt "uwapttrayres.rstaskdone"
 msgid ""
@@ -724,6 +732,14 @@ msgctxt "uwapttrayres.rsupdatesavailablefor"
 msgid ""
 "Available updates for :\n"
 "-%s\n"
+msgstr ""
+
+#: uwapttrayres.rswaptservicestarted
+msgid "WAPTService started"
+msgstr ""
+
+#: uwapttrayres.rswaptservicestopped
+msgid "WAPTService stopped"
 msgstr ""
 
 #: uwapttrayres.rswaptserviceterminated

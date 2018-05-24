@@ -126,7 +126,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="4">
+    <Exceptions Count="7">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -139,6 +139,15 @@
       <Item4>
         <Name Value="HTTPException"/>
       </Item4>
+      <Item5>
+        <Name Value="EIdConnectTimeout"/>
+      </Item5>
+      <Item6>
+        <Name Value="EIdSocketError"/>
+      </Item6>
+      <Item7>
+        <Name Value="EIdNotASocket"/>
+      </Item7>
     </Exceptions>
   </Debugging>
 </CONFIG>

@@ -109,6 +109,8 @@ type
     notify_user:Boolean;
     lastButton:TMouseButton;
 
+    procedure ShowBalloon(Msg:String;BalloonFlags:TBalloonFlags=bfNone);
+
     property LastUpdateStatus: ISuperObject read FLastUpdateStatus write SetLastUpdateStatus;
     property WaptServiceRunning:Boolean read FWaptServiceRunning write SetWaptServiceRunning;
     property trayMode:TTrayMode read FtrayMode write SettrayMode;
@@ -131,7 +133,7 @@ type
 
   TCheckWaptservice = Class(TThread)
   private
-    WaptServiceRunning:Boolean;
+    IsWaptServiceRunning:Boolean;
     LastUpdateStatus : ISuperObject;
     procedure UpdateTasks;
   public
@@ -159,11 +161,67 @@ type
     procedure Execute; override;
   end;
 
+  { TRunWaptService }
+
+  TRunWaptService = Class(TThread)
+  private
+    procedure UpdateTray;
+  public
+    DMTray:TDMWaptTray;
+    MustStartService:Boolean;
+    TrayMessage: String;
+    constructor Create(aDMWaptTray:TDMWaptTray;StartService:Boolean);
+    procedure Execute; override;
+  end;
+
+{ TRunWaptService }
+
+procedure TRunWaptService.UpdateTray;
+begin
+  if TrayMessage.StartsWith('ERROR') then
+    DMTray.ShowBalloon(TrayMessage,bfError)
+  else
+    DMTray.ShowBalloon(TrayMessage,bfInfo);
+end;
+
+constructor TRunWaptService.Create(aDMWaptTray: TDMWaptTray;StartService:Boolean);
+begin
+  inherited Create(False);
+  DMTray := aDMWaptTray;
+  MustStartService:=StartService;
+  TrayMessage := '';
+  FreeOnTerminate:=True;
+end;
+
+procedure TRunWaptService.Execute;
+begin
+  try
+    if MustStartService then
+    begin
+      TrayMessage:=rsStartingWaptService;
+      Synchronize(@UpdateTray);
+      run('net start waptservice');
+      TrayMessage:=rsWaptServiceStarted;
+    end
+    else
+    begin
+      TrayMessage:=rsStoppingWaptService;
+      Synchronize(@UpdateTray);
+      run('net stop waptservice');
+      TrayMessage:=rsWaptServiceStopped;
+    end;
+  except
+    on E:Exception do
+      TrayMessage := 'ERROR: ' + E.Message;
+  end;
+  Synchronize(@UpdateTray);
+end;
+
 { TCheckWaptservice }
 
 procedure TCheckWaptservice.UpdateTasks;
 begin
-  DMTray.WaptServiceRunning := WaptServiceRunning;
+  DMTray.WaptServiceRunning := IsWaptServiceRunning;
   DMTray.LastUpdateStatus := LastUpdateStatus;
 end;
 
@@ -172,6 +230,7 @@ begin
   inherited Create(True);
   DMTray := aDMWaptTray;
   PollTimeout:=3000;
+
 end;
 
 procedure TCheckWaptservice.Execute;
@@ -180,11 +239,11 @@ begin
   begin
     try
       LastUpdateStatus := WAPTLocalJsonGet('checkupgrades.json','','',200);
-      WaptServiceRunning:=True;
+      IsWaptServiceRunning:=True;
     except
       on E:EIdException do
       begin
-        WaptServiceRunning:=False;
+        IsWaptServiceRunning:=False;
         LastUpdateStatus := Nil;
       end;
     end;
@@ -570,6 +629,17 @@ begin
     end;
 end;
 
+procedure TDMWaptTray.ShowBalloon(Msg: String; BalloonFlags: TBalloonFlags);
+begin
+  if TrayIcon1.BalloonHint<>msg then
+  begin
+    TrayIcon1.BalloonHint := msg;
+    TrayIcon1.BalloonFlags:=bfNone;
+    if not popupvisible and notify_user then
+      TrayIcon1.ShowBalloonHint;
+  end;
+end;
+
 procedure TDMWaptTray.ActLocalInfoExecute(Sender: TObject);
 begin
   OpenURL(GetWaptLocalURL+'/inventory');
@@ -595,22 +665,9 @@ begin
 end;
 
 procedure TDMWaptTray.ActServiceEnableExecute(Sender: TObject);
-var
-  res:String;
 begin
-  ActServiceEnable.Checked :=  GetServiceStatusByName('','waptservice') <> ssStopped;
-  if ActServiceEnable.Checked then
-  begin
-    Run('net stop waptservice');
-    lastServiceMessage:=0;
-    ActServiceEnable.Update;
-  end
-  else
-  begin
-    res := Run('net start waptservice');
-    lastServiceMessage:=Now;
-    ActServiceEnable.Update;
-  end;
+  ActServiceEnable.Checked:=not ActServiceEnable.Checked;
+  TRunWaptService.Create(Self,ActServiceEnable.Checked);
 end;
 
 procedure TDMWaptTray.ActServiceEnableUpdate(Sender: TObject);
@@ -651,11 +708,9 @@ begin
 end;
 
 procedure TDMWaptTray.SetLastUpdateStatus(AValue: ISuperObject);
-var
-  summary:String;
 begin
   if LastUpdateStatus=AValue then Exit;
-  LastUpdateStatus:=AValue;
+  FLastUpdateStatus:=AValue;
 end;
 
 procedure TDMWaptTray.SettrayHint(AValue: String);
@@ -698,13 +753,17 @@ end;
 
 procedure TDMWaptTray.SetWaptServiceRunning(AValue: Boolean);
 begin
-  if FWaptServiceRunning=AValue then Exit;
-  FWaptServiceRunning:=AValue;
   if not FWaptServiceRunning then
   begin
     trayMode:=tmErrors;
     trayHint:=rsWaptServiceTerminated;
   end;
+  if (FWaptServiceRunning<>AValue) and AValue then
+  begin
+    trayMode:=tmOK;
+    trayHint:='';
+  end;
+  FWaptServiceRunning:=AValue;
 end;
 
 procedure TDMWaptTray.TrayIcon1DblClick(Sender: TObject);

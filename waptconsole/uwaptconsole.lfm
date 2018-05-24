@@ -5222,7 +5222,7 @@ object VisWaptGUI: TVisWaptGUI
       Action = ActRemoteAssist
     end
     object MenuExternalTools: TMenuItem
-      Caption = 'Gestion Windows de l''ordinateur'
+      Caption = 'Windows Computer management'
       object MenuItem87: TMenuItem
         Action = ActLaunchGPUpdate
       end

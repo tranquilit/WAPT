@@ -71,6 +71,12 @@ msgstr "Confirmer le mot de passe :"
 msgid "Old password :"
 msgstr "Ancien mot de passe :"
 
+#: tviscreatekey.actadvanced.caption
+#, fuzzy
+msgctxt "tviscreatekey.actadvanced.caption"
+msgid "Advanced"
+msgstr "Avancé"
+
 #: tviscreatekey.caption
 msgid "Generate private key and self signed certificate"
 msgstr "Générer une clé privée et un certificat auto-signé"
@@ -1097,6 +1103,7 @@ msgid "Status"
 msgstr "Status"
 
 #: tviswaptconfig.pgadvanced.caption
+msgctxt "tviswaptconfig.pgadvanced.caption"
 msgid "Advanced"
 msgstr "Avancé"
 

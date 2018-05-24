@@ -71,6 +71,11 @@ msgstr ""
 msgid "Old password :"
 msgstr ""
 
+#: tviscreatekey.actadvanced.caption
+msgctxt "tviscreatekey.actadvanced.caption"
+msgid "Advanced"
+msgstr ""
+
 #: tviscreatekey.caption
 msgid "Generate private key and self signed certificate"
 msgstr ""
@@ -1084,6 +1089,7 @@ msgid "Status"
 msgstr ""
 
 #: tviswaptconfig.pgadvanced.caption
+msgctxt "tviswaptconfig.pgadvanced.caption"
 msgid "Advanced"
 msgstr ""
 

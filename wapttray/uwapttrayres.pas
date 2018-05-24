@@ -23,6 +23,10 @@ resourcestring
   rsChecking = 'Checking...';
   rsErrorWhileChecking = 'Error while checking...';
   rsInstalling = 'Installation en cours';
+  rsStartingWaptService = 'Starting WAPTService';
+  rsStoppingWaptService = 'Stopping WAPTService';
+  rsWaptServiceStarted = 'WAPTService started';
+  rsWaptServiceStopped = 'WAPTService stopped';
 
 implementation
 
