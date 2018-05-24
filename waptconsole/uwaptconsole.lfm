@@ -800,6 +800,7 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Position = 0
                 Text = 'Status'
+                Width = 51
                 PropertyName = 'status'
               end            
               item
@@ -857,6 +858,34 @@ object VisWaptGUI: TVisWaptGUI
                 Text = 'downloaded'
                 Width = 69
                 PropertyName = 'downloaded'
+              end            
+              item
+                Position = 9
+                Text = 'hidden'
+                Width = 100
+                PropertyName = 'hidden'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 10
+                Text = 'download_urls'
+                Width = 100
+                PropertyName = 'download_urls'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 11
+                Text = 'uuid'
+                Width = 100
+                PropertyName = 'uuid'
+              end            
+              item
+                Alignment = taRightJustify
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 12
+                Text = 'type'
+                Width = 35
+                PropertyName = 'type'
               end>
             Header.DefaultHeight = 17
             Header.Height = 19
