@@ -115,6 +115,11 @@ class WaptEvents(object):
                 if max_count is not None:
                     return [e for e in self.events[-max_count:] if e.id>last_read] # pylint: disable=invalid-unary-operand-type
                 else:
+                    if not self.events or last_read>self.events[-1].id:
+                        if not self.events:
+                            last_read=0
+                        else:
+                            last_read = self.events[-1].id-1
                     return [e for e in self.events if e.id>last_read]
 
     def put(self, item):
