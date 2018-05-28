@@ -4581,10 +4581,14 @@ procedure TVisWaptGUI.ActWUADownloadSelectedUpdateUpdate(Sender: TObject);
 begin
 end;
 
-procedure TVisWaptGUI.ActWUAShowMSUpdatesHelpExecute(Sender: TObject);
+procedure TVisWaptGUI.ActWUADownloadSelectedUpdateExecute(Sender: TObject);
 begin
 end;
 
+
+procedure TVisWaptGUI.ActWUAShowMSUpdatesHelpExecute(Sender: TObject);
+begin
+end;
 
 {$endif}
 
