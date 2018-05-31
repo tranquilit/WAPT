@@ -2074,12 +2074,6 @@ msgstr ""
 msgid "Information about KB on MS Web site"
 msgstr ""
 
-#: tviswaptgui.menuitemwaptwua.caption
-#, fuzzy
-msgctxt "tviswaptgui.menuitemwaptwua.caption"
-msgid "Windows Updates"
-msgstr "Windows Updates"
-
 #: tviswaptgui.odselectinstaller.title
 msgid "Select an installer executable or msi"
 msgstr ""

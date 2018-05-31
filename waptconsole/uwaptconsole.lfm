@@ -1584,10 +1584,11 @@ object VisWaptGUI: TVisWaptGUI
               PropertyName = 'audit_status'
             end          
             item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coFixed, coAllowFocus]
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed, coAllowFocus]
               Position = 3
               Tag = 3
               Text = 'WUA'
+              Width = 68
               PropertyName = 'waptwua.status'
             end          
             item
@@ -1781,7 +1782,7 @@ object VisWaptGUI: TVisWaptGUI
           Header.Height = 18
           Header.MinHeight = 18
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-          Header.SortColumn = 3
+          Header.SortColumn = 4
           Header.Style = hsFlatButtons
           HintMode = hmHintAndDefault
           Images = ImageList1
@@ -5292,18 +5293,6 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem92: TMenuItem
       Action = ActTriggerWaptServiceRestart
-    end
-    object MenuItemWaptWUA: TMenuItem
-      Caption = 'Windows Updates'
-      object MenuItem96: TMenuItem
-        Action = ActTriggerWaptwua_scan
-      end
-      object MenuItem97: TMenuItem
-        Action = ActTriggerWaptwua_download
-      end
-      object MenuItem98: TMenuItem
-        Action = ActTriggerWaptwua_install
-      end
     end
   end
   object ImageList1: TImageList

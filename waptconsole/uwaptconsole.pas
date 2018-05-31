@@ -119,10 +119,6 @@ type
     MenuItem93: TMenuItem;
     MenuItem94: TMenuItem;
     MenuItem95: TMenuItem;
-    MenuItemWaptWUA: TMenuItem;
-    MenuItem96: TMenuItem;
-    MenuItem97: TMenuItem;
-    MenuItem98: TMenuItem;
     Panel8: TPanel;
     PgNetworksConfig: TTabSheet;
     PopupMenuOrgUnits: TPopupMenu;
@@ -3153,7 +3149,7 @@ begin
       previous_uuid := '';
 
     soresult := WAPTServerJsonGet('api/v1/hosts?%s',[soutils.Join('&', urlParams)]);
-    if soresult.B['success'] then
+    if (soresult<>Nil) and (soresult.B['success']) then
     begin
       hosts := soresult['result'];
       GridHosts.Data := hosts;
@@ -3178,7 +3174,10 @@ begin
     else
     begin
       GridHosts.Data := Nil;
-      ShowMessageFmt('Unable to get hosts list : %s',[soresult.S['msg']]);
+      if soresult <> Nil then
+        ShowMessageFmt('Unable to get hosts list : %s',[soresult.S['msg']])
+      else
+        ShowMessageFmt('Unable to get hosts list : %s',['Invalid data']);
     end;
 
   finally
@@ -4101,6 +4100,21 @@ begin
         'RUNNING': ImageIndex := 6;
       end;
     end;
+  end
+  else if IsEnterpriseEdition and (TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'waptwua.status') then
+  begin
+    status := GridHostPackages.GetCellData(Node, 'waptwua.status', nil);
+    if (status <> nil) then
+    begin
+      case status.AsString of
+        'OK': ImageIndex := 0;
+        'ERROR': ImageIndex := 2;
+        'PENDING_UPDATES': ImageIndex := 1;
+      else
+        ImageIndex := 14;
+      end
+
+    end;
   end;
 
 
@@ -4125,7 +4139,7 @@ begin
       begin
         if pos('computer_fqdn',propName)>0 then
           propname:=propName;
-        propName := StrReplaceChar(propName,'.','-');
+        propName := StrReplaceChar(propName,'.','~');
         if RowData.AsObject.Find(propName,Celldata) then
           CellText := UTF8Encode(CellData.AsString);
       end;
@@ -4134,7 +4148,7 @@ begin
     if (CellData <> nil) and (CellData.DataType = stArray) then
       CellText := soutils.Join(',', CellData);
 
-    if (propName='last_seen_on') or (propName='listening_timestamp') then
+    if (propName='last_seen_on') or (propName='listening_timestamp') or (propName='last_audit_on') then
         CellText := Copy(StrReplaceChar(CellText,'T',' '),1,16);
   end;
 end;
