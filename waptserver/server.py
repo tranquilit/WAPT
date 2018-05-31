@@ -499,7 +499,8 @@ def sync_host_groups(entry):
             HostGroups.insert_many([dict(host=host_id, group_name=group) for group in to_add]).execute() #pylint: disable=no-value-for-parameter
         return (to_add,to_delete)
     except IntegrityError  as e:
-        wapt_db.rollback()
+        if wapt_db and wapt_db.obj:
+            wapt_db.rollback()
         return (0,0)
 
 
@@ -759,7 +760,8 @@ def upload_host():
                             wapt_db.commit()
 
                         except Exception as e:
-                            wapt_db.rollback()
+                            if wapt_db and wapt_db.obj:
+                                wapt_db.rollback()
                             logger.debug(traceback.print_exc())
                             logger.critical(u'Error uploading package %s: %s' % (filename, e))
                             errors.append(filename)
@@ -1474,7 +1476,8 @@ def hosts_delete():
                 msg.append('{} hosts removed from DB'.format(remove_result))
 
         except Exception as e:
-            wapt_db.rollback()
+            if wapt_db and wapt_db.obj:
+                wapt_db.rollback()
             return make_response_from_exception(e)
     return make_response(result=result, msg='\n'.join(msg), status=200)
 
@@ -1978,8 +1981,9 @@ def on_waptclient_connect():
 
     except Exception as e:
         logger.warning(u'SocketIO connection refused for uuid %s, sid %s: %s' % (uuid,request.sid,e))
-        wapt_db.rollback()
-        wapt_db.close()
+        if wapt_db and wapt_db.obj:
+            wapt_db.rollback()
+            wapt_db.close()
         return False
 
 
@@ -2009,7 +2013,8 @@ def on_wapt_pong():
                 emit('wapt_trigger_update_status')
                 return False
     except Exception as e:
-        wapt_db.rollback()
+        if wapt_db and wapt_db.obj:
+            wapt_db.rollback()
         logger.critical(u'SocketIO pong error for uuid %s and sid %s : %s' % (uuid,request.sid,traceback.format_exc()))
 
 @socketio.on('disconnect')
@@ -2027,7 +2032,8 @@ def on_waptclient_disconnect():
         ).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
         wapt_db.commit()
     except:
-        wapt_db.rollback()
+        if wapt_db and wapt_db.obj:
+            wapt_db.rollback()
 
 """
 @socketio.on('join')
@@ -2150,11 +2156,12 @@ if __name__ == '__main__':
             wapt_db.commit()
             break
         except Exception as e:
-            wapt_db.rollback()
+            if wapt_db and wapt_db.obj:
+                wapt_db.rollback()
             logger.critical('Trying to upgrade database structure, error was : %s' % repr(e))
             upgrade_db_structure()
 
-    if not wapt_db.is_closed():
+    if wapt_db and wapt_db.obj and not wapt_db.is_closed():
         wapt_db.close()
 
     if options.devel:
