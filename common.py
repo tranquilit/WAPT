@@ -986,7 +986,7 @@ class WaptDB(WaptBaseDB):
         sql = ["""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,
                 l.uninstall_key,l.explicit_by,
-                coalesce(l.depends,r.depends),coalesce(l.conflicts,r.conflicts),coalesce(l.section,r.section),coalesce(l.priority,r.priority),
+                coalesce(l.depends,r.depends) as depends,coalesce(l.conflicts,r.conflicts) as conflicts,coalesce(l.section,r.section) as section,coalesce(l.priority,r.priority) as priority,
                 r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo,l.maturity,l.locale,
                 l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on
@@ -1057,7 +1057,7 @@ class WaptDB(WaptBaseDB):
         q = self.query_package_entry(u"""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,
                 l.uninstall_key,l.explicit_by,
-                coalesce(l.depends,r.depends),coalesce(l.conflicts,r.conflicts),coalesce(l.section,r.section),coalesce(l.priority,r.priority),
+                coalesce(l.depends,r.depends) as depends,coalesce(l.conflicts,r.conflicts) as conflicts,coalesce(l.section,r.section) as section,coalesce(l.priority,r.priority) as priority,
                 l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.audit_schedule,
                 r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo
@@ -1088,7 +1088,7 @@ class WaptDB(WaptBaseDB):
               select l.rowid,l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,
                 l.uninstall_key,l.explicit_by,
                 l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,
-                coalesce(l.depends,r.depends),coalesce(l.conflicts,r.conflicts),coalesce(l.section,r.section),coalesce(l.priority,r.priority),
+                coalesce(l.depends,r.depends) as depends,coalesce(l.conflicts,r.conflicts) as conflicts,coalesce(l.section,r.section) as section,coalesce(l.priority,r.priority) as priority,
                 r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo
                 from wapt_localstatus l
@@ -2280,10 +2280,14 @@ class WaptPackageInstallLogger(LogOutput):
 
         def update_install_status(append_output=None,set_status=None,context=None):
             # waptdb.update_package_install_status(rowid,set_status,append_output=None,uninstall_key=None,uninstall_string=None
-            self.wapt_context.update_package_install_status(
-                rowid=context.install_id,
-                set_status=set_status,
-                append_output=append_output)
+            if self.wapt_context:
+                self.wapt_context.update_package_install_status(
+                    rowid=context.install_id,
+                    set_status=set_status,
+                    append_output=append_output)
+
+                if self.wapt_context.events:
+                    self.wapt_context.events.post_event('PRINT',ensure_unicode(append_output))
 
         LogOutput.__init__(self,console=console,
             update_status_hook=update_install_status,
@@ -3246,7 +3250,7 @@ class Wapt(BaseObjectClass):
                 )
 
             # we setup a redirection of stdout to catch print output from install scripts
-            with WaptPackageInstallLogger(sys.stderr,self,install_id=install_id,user=self.user,exit_status=None) as dblogger:
+            with WaptPackageInstallLogger(sys.stderr,wapt_context=self,install_id=install_id,user=self.user,exit_status=None) as dblogger:
                 if entry.min_wapt_version and Version(entry.min_wapt_version)>Version(setuphelpers.__version__):
                     raise EWaptNeedsNewerAgent('This package requires a newer Wapt agent. Minimum version: %s' % entry.min_wapt_version)
 
