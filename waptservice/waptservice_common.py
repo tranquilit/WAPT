@@ -822,7 +822,7 @@ class WaptLongTask(WaptTask):
             #print u"Step {}".format(i)
             self.update_status(u"Step {}".format(i))
             self.progress = 100.0 /self.duration * i
-            #print "test {:.0f}%".format(self.progress)
+            print("test {:.0f}%".format(self.progress))
             time.sleep(1)
         if self.raise_error:
             raise Exception(_('raising an error for Test WaptLongTask'))

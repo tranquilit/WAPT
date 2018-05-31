@@ -1225,6 +1225,9 @@ class WaptTaskManager(threading.Thread):
                                 self.events.post_event('TASK_STATUS',self.running_task.as_dict())
                             if append_output and self.running_task:
                                 self.running_task.logs.append(append_output)
+                            if append_output and self.running_task and self.events:
+                                logger.debug(append_output)
+                                self.event.post_event('PRINT',ensure_unicode(append_output))
 
                         with LogOutput(console=sys.stderr,update_status_hook=update_events):
                             self.running_task.run()
