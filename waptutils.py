@@ -1317,6 +1317,8 @@ def get_time_delta(schedule):
             timedelta = datetime.timedelta(hours=float(schedule[:-1]))
         elif schedule.endswith('d'):
             timedelta = datetime.timedelta(days=float(schedule[:-1]))
+        elif schedule.endswith('w'):
+            timedelta = datetime.timedelta(days=7*float(schedule[:-1]))
         else:
             timedelta = datetime.timedelta(minutes=float(schedule))
     else:

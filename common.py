@@ -2395,8 +2395,6 @@ class Wapt(BaseObjectClass):
         self.forced_uuid = None
         self.use_fqdn_as_uuid = False
 
-        self.forced_host_dn = None
-
         try:
             self.wapt_base_dir = os.path.dirname(__file__)
         except NameError:
@@ -2619,15 +2617,15 @@ class Wapt(BaseObjectClass):
         if self.config.has_option('global','sign_digests'):
             self.sign_digests = ensure_list(self.config.get('global','sign_digests'))
 
-        # allow to force a host_dn when the computer is not part of an AD, but we want to put host in a OR.
-        if self.config.has_option('global','host_dn'):
-            self.forced_host_dn = self.config.get('global','host_dn')
-            if self.forced_host_dn != self.host_dn:
-                logger.debug('Storing new forced hos_dn DB %s' % self.forced_host_dn)
-                self.host_dn = self.forced_host_dn
+        # allow to fake a host Oragnaizational Unit when the computer is not part of an AD, but we want to put host in a OU.
+        if self.config.has_option('global','host_organizational_unit_dn'):
+            forced_host_organizational_unit_dn = self.config.get('global','host_organizational_unit_dn')
+            if forced_host_organizational_unit_dn != self.host_organizational_unit_dn:
+                logger.info('Forced forced_host_organizational_unit_dn DB %s' % forced_host_organizational_unit_dn)
+                self.host_organizational_unit_dn = forced_host_organizational_unit_dn
         else:
             # force reset to None if config file is changed at runtime
-            self.forced_host_dn = None
+            del(self.host_organizational_unit_dn)
 
         if self.config.has_option('global','packages_whitelist'):
             self.packages_whitelist = ensure_list(self.config.get('global','packages_whitelist'),allow_none=True)
@@ -2882,50 +2880,57 @@ class Wapt(BaseObjectClass):
             ini.write(open(self.config_filename,'w'))
         return self.host_uuid
 
-
     @property
-    def host_dn(self):
-        """Get host DN from wapt-get.ini [global] host_dn if defined
+    def host_organizational_unit_dn(self):
+        """Get host org unit DN from wapt-get.ini [global] host_organizational_unit_dn if defined
         or from registry as supplied by AD / GPO process
         """
 
-        previous_host_dn = self.read_param('host_dn')
-        default_host_dn = setuphelpers.registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Distinguished-Name')
-        new_host_dn = None
+        host_organizational_unit_dn = self.read_param('host_organizational_unit_dn',None)
+        if host_organizational_unit_dn:
+            return host_organizational_unit_dn
 
-        if self.forced_host_dn:
-            new_host_dn = self.forced_host_dn
-        elif previous_host_dn:
-            new_host_dn = previous_host_dn
+        gpo_host_dn = setuphelpers.registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Distinguished-Name')
+        if gpo_host_dn:
+            try:
+                default_organizational_unit_dn = ','.join(gpo_host_dn.split(',')[1:])
+            except:
+                default_organizational_unit_dn = None
         else:
-            new_host_dn = default_host_dn
+            default_organizational_unit_dn = None
 
-        if not previous_host_dn or previous_host_dn != new_host_dn:
-            self.write_param('host_dn',new_host_dn)
-        return new_host_dn
+        return default_organizational_unit_dn
 
-    @host_dn.setter
-    def host_dn(self,value):
-        self.forced_host_dn = value
-        self.write_param('host_dn',value)
+    @host_organizational_unit_dn.setter
+    def host_organizational_unit_dn(self,value):
+        self.write_param('host_organizational_unit_dn',value)
 
-    @host_dn.deleter
-    def host_dn(self):
-        self.forced_host_dn = None
-        self.delete_param('host_dn')
+    @host_organizational_unit_dn.deleter
+    def host_organizational_unit_dn(self):
+        self.delete_param('host_organizational_unit_dn')
 
-    def reset_host_dn(self):
-        """Reset forced host to AD / GPO registry defaults.
+    def reset_host_organizational_unit_dn(self):
+        """Reset forced host_organizational_unit_dn to AD / GPO registry defaults.
         If it was forced in ini file, remove setting from ini file.
         """
-        del(self.host_dn)
+        del(self.host_organizational_unit_dn)
         ini = RawConfigParser()
         ini.read(self.config_filename)
-        if ini.has_option('global','host_dn'):
-            ini.remove_option('global','host_dn')
-            ini.write(open(self.config_filename,'w'))
+        if ini.has_option('global','host_organizational_unit_dn'):
+            ini.remove_option('global','host_organizational_unit_dn')
+            with open(self.config_filename,'w') as f:
+                ini.write(f)
+                f.close()
+
         return self.host_dn
 
+    @property
+    def host_dn(self):
+        result = u'CN=%s' % setuphelpers.get_computername().upper()
+        org_unit = self.host_organizational_unit_dn
+        if org_unit:
+            result = result + ',' + org_unit
+        return result
 
     def http_upload_package(self,packages,wapt_server_user=None,wapt_server_passwd=None,progress_hook=None):
         r"""Upload a package or host package to the waptserver.
@@ -4917,7 +4922,11 @@ class Wapt(BaseObjectClass):
                 inv['wapt_status'] = self.wapt_status()
                 inv['audit_status'] = self.get_audit_status()
 
-                _add_data_if_updated(inv,'host_info',setuphelpers.host_info(),old_hashes,new_hashes)
+                host_info = setuphelpers.host_info()
+                # optionally forced dn
+                host_info['computer_ad_dn'] = self.host_dn
+
+                _add_data_if_updated(inv,'host_info',host_info,old_hashes,new_hashes)
                 _add_data_if_updated(inv,'installed_softwares',setuphelpers.installed_softwares(''),old_hashes,new_hashes)
                 _add_data_if_updated(inv,'installed_packages',[p.as_dict() for p in self.waptdb.installed(include_errors=True)],old_hashes,new_hashes)
                 _add_data_if_updated(inv,'last_update_status', self.get_last_update_status(),old_hashes,new_hashes)
