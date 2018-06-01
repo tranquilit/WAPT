@@ -5817,11 +5817,6 @@ object VisWaptGUI: TVisWaptGUI
       Action = ActPackagesAudit
     end
   end
-  object TimerTasks: TTimer
-    OnTimer = TimerTasksTimer
-    left = 440
-    top = 264
-  end
   object OpenDialogWapt: TOpenDialog
     Title = 'Select WAPT file'
     DefaultExt = '.wapt'

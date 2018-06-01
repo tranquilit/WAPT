@@ -368,7 +368,6 @@ type
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
     pgHostWUA: TTabSheet;
-    TimerTasks: TTimer;
     MainMenu1: TMainMenu;
     MemoLog: TMemo;
     MenuItem10: TMenuItem;
@@ -1282,7 +1281,6 @@ var
   currhost,packagename : ansistring;
   RowSO, package,packagereq, packages, softwares, waptwua,tasksresult, running,sores,all_missing,pending_install,additional,upgrades,errors: ISuperObject;
 begin
-  TimerTasks.Enabled := False;
   RowSO := Gridhosts.FocusedRow;
 
   if (RowSO <> nil) then
@@ -1574,8 +1572,6 @@ end;
 
 procedure TVisWaptGUI.TimerTasksTimer(Sender: TObject);
 begin
-  if (HostPages.ActivePage = pgTasks) and (MainPages.ActivePage=pgInventory) then
-    UpdateHostPages(Self);
 end;
 
 procedure TVisWaptGUI.ActAddGroupExecute(Sender: TObject);
