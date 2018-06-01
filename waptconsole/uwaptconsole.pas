@@ -890,21 +890,24 @@ begin
         if sores.B['success'] then
         begin
           Tasks := sores['result'];
-          If Tasks <> Nil then
-            LastEventId := Tasks.I['last_event_id'];
           ErrorMessage := '';
-          // Old client without long polling
-          if Tasks['last_event_id'] = Nil then
-            Sleep(ErrorSleepTime);
+          If Tasks <> Nil then
+          begin
+            LastEventId := Tasks.I['last_event_id'];
+            Synchronize(@HandleTasks);
+            // Old client without long polling
+            if Tasks['last_event_id'] = Nil then
+              Sleep(ErrorSleepTime);
+          end;
         end
         else
         begin
           Tasks := Nil;
           ErrorMessage := rsFatalError+' '+UTF8Encode(sores.S['msg']);
+          Synchronize(@HandleTasks);
           Sleep(ErrorSleepTime);
         end;
       end;
-      Synchronize(@HandleTasks);
     except
       on E:Exception do
       begin

@@ -1971,8 +1971,6 @@ begin
   if WaptServerSession = Nil then
     WaptServerSession := TIdCookieManager.Create();
   Result := WaptServerSession;
-  //WaptServerUser := user;
-  //WaptServerPassword := password;
 end;
 
 function ISO8601ToDateTime(Value: String): TDateTime;
