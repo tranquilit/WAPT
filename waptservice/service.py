@@ -1244,16 +1244,16 @@ class WaptTaskManager(threading.Thread):
                         self.update_runstatus(_(u'Running: {description}').format(description=self.running_task) )
                         self.update_server_status()
                     try:
-                        def update_events(append_output=None,set_status=None):
+                        def update_running_status(append_output=None,set_status=None):
+                            if append_output:
+                                if self.running_task:
+                                    self.running_task.logs.append(append_output)
+                                if self.events:
+                                    self.events.post_event('PRINT',ensure_unicode(append_output))
                             if self.events and self.running_task:
-                                self.events.post_event('TASK_STATUS',self.running_task.as_dict())
-                            if append_output and self.running_task:
-                                self.running_task.logs.append(append_output)
-                            if append_output and self.running_task and self.events:
-                                logger.debug(append_output)
-                                self.events.post_event('PRINT',ensure_unicode(append_output))
+                                self.broadcast_tasks_status('TASK_STATUS',self.running_task)
 
-                        with LogOutput(console=sys.stderr,update_status_hook=update_events):
+                        with LogOutput(console=sys.stderr,update_status_hook=update_running_status):
                             self.running_task.run()
 
                         if self.running_task:

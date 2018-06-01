@@ -495,9 +495,7 @@ class WaptTask(object):
                 self.wapt.task_is_cancelled.clear()
             # to keep track of external processes launched by Wapt.run()
             self.wapt.pidlist = self.external_pids
-            with LogOutput(sys.stderr) as printout:
-                self._run()
-                self.logs.extend(printout.output)
+            self._run()
             self.progress=100
         finally:
             self.finish_date = datetime.datetime.now()

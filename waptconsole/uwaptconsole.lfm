@@ -1031,18 +1031,18 @@ object VisWaptGUI: TVisWaptGUI
             Height = 229
             Top = 102
             Width = 564
-            ActivePage = TabSheet3
+            ActivePage = TabSheet1
             Align = alBottom
             Anchors = [akTop, akLeft, akBottom]
-            TabIndex = 2
+            TabIndex = 0
             TabOrder = 3
             object TabSheet1: TTabSheet
               Caption = 'Pending'
-              ClientHeight = 112
+              ClientHeight = 203
               ClientWidth = 556
               object GridHostTasksPending: TSOGrid
                 Left = 0
-                Height = 110
+                Height = 201
                 Top = 2
                 Width = 556
                 ShowAdvancedColumnsCustomize = False
@@ -1183,11 +1183,11 @@ object VisWaptGUI: TVisWaptGUI
             end
             object TabSheet2: TTabSheet
               Caption = 'Done'
-              ClientHeight = 112
+              ClientHeight = 203
               ClientWidth = 556
               object GridHostTasksDone: TSOGrid
                 Left = 0
-                Height = 110
+                Height = 201
                 Top = 2
                 Width = 556
                 ShowAdvancedColumnsCustomize = False

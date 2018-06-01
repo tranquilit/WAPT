@@ -3285,6 +3285,11 @@ begin
         {$include ..\waptenterprise\includes\uwaptconsole.searchhost.check_count.inc}
         {$endif}
         LabelComputersNumber.Caption := IntToStr(HostsCount);
+        if PollTasksThread <> Nil then
+        begin
+          PollTasksThread.Terminate;
+          PollTasksThread := Nil;
+        end;
 
         for node in GridHosts.Data do
         begin
