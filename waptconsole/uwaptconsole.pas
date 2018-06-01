@@ -844,14 +844,15 @@ begin
       currhost := '';
 
     // Drop result of the request as it is no more needed.
-    if (CurrHost<>HostUUID) or (Waptconsole.PollTasksThread<>Self) then
+    if  (CurrHost='') or (CurrHost<>HostUUID) or (Waptconsole.PollTasksThread<>Self) or
+        (WaptConsole.HostPages.ActivePage <> WaptConsole.pgTasks) or
+        (WaptConsole.MainPages.ActivePage <> WaptConsole.pgInventory) then
     begin
       if Waptconsole.PollTasksThread = Self then
         Waptconsole.PollTasksThread := Nil;
       Terminate;
     end
     else
-    if (CurrHost<>'') and (WaptConsole.HostPages.ActivePage = WaptConsole.pgTasks) and (WaptConsole.MainPages.ActivePage=WaptConsole.pgInventory) and (CurrHost=HostUUID)  then
     begin
       WaptConsole.UpdateTasksReport(Tasks);
       if ErrorMessage<>'' then
@@ -3190,7 +3191,8 @@ var
   HostsCount,i: integer;
 const
   DefaultColumns:Array[0..13] of String = ('uuid','os_name','connected_ips','computer_fqdn',
-    'computer_name','manufacturer','description','productname','serialnr','mac_addresses','connected_users','last_logged_on_user','computer_ad_ou','computer_ad_site');
+    'computer_name','manufacturer','description','productname','serialnr','mac_addresses','connected_users','last_logged_on_user',
+    'computer_ad_ou','computer_ad_site');
 begin
   if AppLoading then
     Exit;
@@ -3208,6 +3210,9 @@ begin
       if not StrIn(prop,Columns) then
         columns.AsArray.Add(prop);
 	  end;
+
+    if IsEnterpriseEdition then
+      columns.AsArray.Add('waptwua_status');
 
     urlParams := TSuperObject.Create(stArray);
     fields := TSuperObject.Create(stArray);
