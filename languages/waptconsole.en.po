@@ -3046,6 +3046,10 @@ msgstr ""
 msgid "Licenced to %s"
 msgstr ""
 
+#: uwaptconsoleres.rsloadinghosttasks
+msgid "Downloading %s tasks..."
+msgstr ""
+
 #: uwaptconsoleres.rsloadinventory
 msgid "Loading hosts inventory"
 msgstr ""

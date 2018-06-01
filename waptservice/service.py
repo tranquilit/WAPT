@@ -908,6 +908,19 @@ def index():
 @app.route('/tasks.json')
 @allow_local
 def tasks():
+    last_event_id = int(request.args.get('last_event_id','-1'))
+    timeout = int(request.args.get('timeout','30'))
+    if (last_event_id >= 0) and task_manager.events:
+        start = time.time()
+        if task_manager.events.last_event_id() < last_event_id:
+            last_event_id = task_manager.events.last_event_id()
+        while task_manager.events.last_event_id() <= last_event_id:
+            if time.time() - start > timeout:
+                break
+                raise EWaptException('timeout waiting for events')
+            time.sleep(0.2)
+
+
     data = task_manager.tasks_status()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -919,6 +932,17 @@ def tasks():
 @app.route('/tasks_status.json')
 @allow_local
 def tasks_status():
+    last_event_id = int(request.args.get('last_event_id','-1'))
+    timeout = int(request.args.get('timeout','-1'))
+    if (last_event_id >= 0) and task_manager.events:
+        if task_manager.events.last_event_id() < last_event_id:
+            last_event_id = task_manager.events.last_event_id()
+        while task_manager.events.last_event_id() <= last_event_id:
+            if time.time() - start > timeout:
+                break
+                raise EWaptException('timeout waiting for events')
+            time.sleep(0.2)
+
     all = task_manager.tasks_status()
     data = []
     data.extend(all['pending'])
@@ -1227,7 +1251,7 @@ class WaptTaskManager(threading.Thread):
                                 self.running_task.logs.append(append_output)
                             if append_output and self.running_task and self.events:
                                 logger.debug(append_output)
-                                self.event.post_event('PRINT',ensure_unicode(append_output))
+                                self.events.post_event('PRINT',ensure_unicode(append_output))
 
                         with LogOutput(console=sys.stderr,update_status_hook=update_events):
                             self.running_task.run()
@@ -1278,6 +1302,10 @@ class WaptTaskManager(threading.Thread):
                     logger.warning(u'Error checking scheduled tasks : %s' % ensure_unicode(traceback.format_exc()))
                 logger.debug(u"{} i'm still alive... but nothing to do".format(datetime.datetime.now()))
 
+    def current_task_counter(self):
+        with self.status_lock:
+            return self.tasks_counter
+
     def tasks_status(self):
         """Returns list of pending, error, done tasks, and current running one"""
         with self.status_lock:
@@ -1287,6 +1315,8 @@ class WaptTaskManager(threading.Thread):
                 done = [task.as_dict() for task in self.tasks_done],
                 cancelled = [ task.as_dict() for task in self.tasks_cancelled],
                 errors = [ task.as_dict() for task in self.tasks_error],
+                last_task_id = self.tasks_counter,
+                last_event_id = self.events.last_event_id() if self.events else None,
                 )
 
     def cancel_running_task(self):

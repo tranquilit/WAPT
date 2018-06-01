@@ -18,6 +18,8 @@ resourcestring
   rsLicencedTo = 'Licenced to %s';
 
   rsFatalError = 'Failed to retrieve task.';
+  rsLoadingHostTasks = 'Downloading %s tasks...';
+
   rsInstalling = 'Installing %s...';
   rsDefineWaptdevPath = 'Please select a directory on your package development host before editing a package bundle.';
 

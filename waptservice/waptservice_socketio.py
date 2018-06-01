@@ -251,7 +251,27 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
             if uuid != self.wapt.host_uuid:
                 raise Exception('Task is not targeted to this host. task''s uuid does not match host''uuid')
 
-            data = self.task_manager.tasks_status()
+            data = None
+
+            last_event_id = int(args.get('last_event_id','-1'))
+            timeout = int(args.get('timeout','10'))
+            if (last_event_id >= 0) and self.task_manager.events:
+                start = time.time()
+                actual_last = self.task_manager.events.last_event_id()
+                if actual_last is not None and actual_last >= last_event_id:
+                    while self.task_manager.events.last_event_id() <= last_event_id:
+                        if time.time() - start > timeout:
+                            data = {'last_event_id':self.task_manager.events.last_event_id()}
+                            break
+                            #raise EWaptException('timeout waiting for events')
+                        time.sleep(0.2)
+            else:
+                # send inconditionally
+                pass
+
+
+            if data is None:
+                data = self.task_manager.tasks_status()
             if result_callback:
                 result_callback(make_response(data,uuid=self.wapt.host_uuid,))
 

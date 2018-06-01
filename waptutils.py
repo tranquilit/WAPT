@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
-__version__ = "1.6.1.0"
+__version__ = "1.6.2.0"
 
 import os
 import sys
@@ -1263,7 +1263,7 @@ class LogOutput(BaseObjectClass):
             self.last_update_idx = len(self.output)
             self.last_update_time = time.time()
         except Exception as e:
-            logger.info('Unable to update db status')
+            logger.info(u'Unable to update db status %s' % e)
 
     def write(self,txt):
         with self.lock:

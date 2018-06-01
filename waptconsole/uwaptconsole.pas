@@ -14,6 +14,9 @@ uses
 
 type
 
+
+  TPollTasksThread = Class;
+
   { TVisWaptGUI }
 
   TVisWaptGUI = class(TForm)
@@ -568,6 +571,7 @@ type
     procedure EdSoftwaresFilterChange(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormDragOver(Sender, Source: TObject; X, Y: Integer;
       State: TDragState; var Accept: Boolean);
     procedure FormDropFiles(Sender: TObject; const FileNames: array of String);
@@ -689,6 +693,7 @@ type
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: ISuperObject);
 
     procedure LoadOrgUnitsTree(Sender: TObject);
+    procedure UpdateTasksReport(tasksresult: ISuperObject);
   public
     { public declarations }
     MainRepoUrl, WaptServer, TemplatesRepoUrl: string;
@@ -708,6 +713,8 @@ type
     OrgUnitsSelectionHash:Integer;
     FilteredOrgUnits:TDynStringArray;
 
+    PollTasksThread: TPollTasksThread;
+
     constructor Create(TheOwner: TComponent); override;
 
     function Login: boolean;
@@ -719,6 +726,28 @@ type
     property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
 
   end;
+
+
+  { TPollTasksThread }
+  TPollTasksThread = Class(TThread)
+    procedure HandleTasks;
+
+  public
+    PollTimeout:Integer;
+    ErrorSleepTime:Integer;
+
+    ErrorMessage:String;
+
+    WaptConsole:TVisWaptGUI;
+    Tasks: ISuperObject;
+    HostUUID:String;
+    LastEventId: Integer;
+
+    constructor Create(aWaptconsole:TVisWaptGUI;aHostUUID:String);
+    destructor Destroy; override;
+    procedure Execute; override;
+  end;
+
 
 var
   VisWaptGUI: TVisWaptGUI;
@@ -742,6 +771,7 @@ uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, uvisprivatekey
 { TVisWaptGUI }
 
 type TComponentsArray=Array of TComponent;
+
 
 procedure SetSOGridVisible(Grid:TSOGrid;PropertyName:String;Visible:Boolean);
 var
@@ -791,6 +821,99 @@ begin
     begin
       Result := p;
       Break;
+    end;
+end;
+
+{ TPollTasksThread }
+
+procedure TPollTasksThread.HandleTasks;
+var
+  RowSO:ISuperObject;
+  CurrHost:String;
+begin
+  if Terminated then
+  begin
+    if Waptconsole.PollTasksThread = Self then
+      Waptconsole.PollTasksThread := Nil;
+  end
+  else
+  begin
+    RowSO := WaptConsole.Gridhosts.FocusedRow;
+    if (RowSO <> nil) then
+      currhost := UTF8Encode(RowSO.S['uuid'])
+    else
+      currhost := '';
+
+    // Drop result of the request as it is no more needed.
+    if (CurrHost<>HostUUID) or (Waptconsole.PollTasksThread<>Self) then
+    begin
+      if Waptconsole.PollTasksThread = Self then
+        Waptconsole.PollTasksThread := Nil;
+      Terminate;
+    end
+    else
+    if (CurrHost<>'') and (WaptConsole.HostPages.ActivePage = WaptConsole.pgTasks) and (WaptConsole.MainPages.ActivePage=WaptConsole.pgInventory) and (CurrHost=HostUUID)  then
+    begin
+      WaptConsole.UpdateTasksReport(Tasks);
+      if ErrorMessage<>'' then
+        WaptConsole.HostRunningTask.Text:=ErrorMessage;
+    end
+  end;
+end;
+
+constructor TPollTasksThread.Create(aWaptconsole: TVisWaptGUI;aHostUUID:String);
+begin
+  WaptConsole := aWaptconsole;
+  PollTimeout := 10;
+  ErrorSleepTime := 1000;
+  ErrorMessage:= '';
+  HostUUID:=aHostUUID;
+  LastEventId:=-1;
+  FreeOnTerminate:=True;
+  inherited Create(False);
+end;
+
+destructor TPollTasksThread.Destroy;
+begin
+  Synchronize(@HandleTasks);
+  inherited Destroy;
+end;
+
+procedure TPollTasksThread.Execute;
+var
+  sores:ISuperObject;
+begin
+  while not Terminated do
+    try
+      if HostUUID <> '' then
+      begin
+        sores := WAPTServerJsonGet('api/v3/host_tasks_status?uuid=%S&timeout=%D&client_tasks_timeout=%D&last_event_id=%D', [HostUUID,PollTimeout,PollTimeout+5,LastEventId],'GET',4000,60000,PollTimeout*1000);
+        if sores.B['success'] then
+        begin
+          Tasks := sores['result'];
+          If Tasks <> Nil then
+            LastEventId := Tasks.I['last_event_id'];
+          ErrorMessage := '';
+          // Old client without long polling
+          if Tasks['last_event_id'] = Nil then
+            Sleep(ErrorSleepTime);
+        end
+        else
+        begin
+          Tasks := Nil;
+          ErrorMessage := rsFatalError+' '+UTF8Encode(sores.S['msg']);
+          Sleep(ErrorSleepTime);
+        end;
+      end;
+      Synchronize(@HandleTasks);
+    except
+      on E:Exception do
+      begin
+        Tasks := Nil;
+        ErrorMessage := rsFatalError+' '+E.Message;
+        Synchronize(@HandleTasks);
+        Sleep(ErrorSleepTime);
+      end;
     end;
 end;
 
@@ -1306,62 +1429,15 @@ begin
     end
     else if HostPages.ActivePage = pgTasks then
     begin
-      try
-        try
-          sores := WAPTServerJsonGet('api/v3/host_tasks_status?uuid=%S', [currhost]);
-          if sores.B['success'] then
-          begin
-            tasksresult := sores['result'];
-            if tasksresult <> nil then
-            begin
-              running := tasksresult['running'];
-              if not GridHostTasksPending.Focused and not MemoTaskLog.Focused then
-                GridHostTasksPending.Data := tasksresult['pending'];
-              if not GridHostTasksDone.Focused and not MemoTaskLog.Focused then
-                GridHostTasksDone.Data := tasksresult['done'];
-              if not GridHostTasksErrors.Focused and not MemoTaskLog.Focused then
-                GridHostTasksErrors.Data := tasksresult['errors'];
-              if running <> nil then
-              begin
-                ActCancelRunningTask.Enabled:= running['description'] <> Nil;
+      if (PollTasksThread<>Nil) and (PollTasksThread.HostUUID<>currhost) then
+        PollTasksThread := Nil;
 
-                HostTaskRunningProgress.Position := running.I['progress'];
-                HostRunningTask.Text := UTF8Encode(running.S['description']);
-                if not HostRunningTaskLog.Focused then
-                  HostRunningTaskLog.Text := UTF8Encode(running.S['logs']);
-              end
-              else
-              begin
-                ActCancelRunningTask.Enabled:=False;
-                HostTaskRunningProgress.Position := 0;
-                HostRunningTask.Text := 'Idle';
-                if not HostRunningTaskLog.Focused then
-                  HostRunningTaskLog.Clear;
-              end;
-
-              with HostRunningTaskLog do
-              begin
-                selstart := GetTextLen; // MUCH more efficient then Length(text)!
-                SelLength := 0;
-                ScrollBy(0, 65535);
-              end;
-            end
-          end
-          else
-          begin
-            HostRunningTask.Text := rsFatalError+' '+UTF8Encode(sores.S['msg']);
-            HostTaskRunningProgress.Position := 0;
-            HostRunningTaskLog.Clear;
-            GridHostTasksPending.Data := nil;
-            GridHostTasksDone.Data := nil;
-            GridHostTasksErrors.Data := nil;
-          end;
-        except
-          on E:Exception do
-            HostRunningTask.Text := rsFatalError+' '+E.Message;
-        end
-      finally
-        TimerTasks.Enabled := True;
+      if (PollTasksThread = Nil) then
+      begin
+        UpdateTasksReport(Nil);
+        HostRunningTask.Text:=Format(rsLoadingHostTasks,[currhost]);
+        Application.ProcessMessages;
+        PollTasksThread := TPollTasksThread.Create(Self,CurrHost);
       end;
     end;
   end
@@ -1371,6 +1447,55 @@ begin
     HostTaskRunningProgress.Position := 0;
     GridHostPackages.Clear;
     GridHostSoftwares.Clear;
+    HostRunningTaskLog.Clear;
+    GridHostTasksPending.Data := nil;
+    GridHostTasksDone.Data := nil;
+    GridHostTasksErrors.Data := nil;
+  end;
+end;
+
+
+// Update the tasks page with informations retrieved from host .
+procedure TVisWaptGUI.UpdateTasksReport(tasksresult:ISuperObject);
+var
+  running:ISuperObject;
+begin
+  if tasksresult <> nil then
+  begin
+    running := tasksresult['running'];
+    if (tasksresult['pending']<>Nil) or (GridHostTasksPending.Data=Nil) then
+      GridHostTasksPending.Data := tasksresult['pending'];
+    if (tasksresult['done']<>Nil) or (GridHostTasksDone.Data=Nil) then
+      GridHostTasksDone.Data := tasksresult['done'];
+    if (tasksresult['errors']<>Nil) or (GridHostTasksErrors.Data=Nil) then
+      GridHostTasksErrors.Data := tasksresult['errors'];
+    if running <> nil then
+    begin
+      ActCancelRunningTask.Enabled:= running['description'] <> Nil;
+
+      HostTaskRunningProgress.Position := running.I['progress'];
+      HostRunningTask.Text := UTF8Encode(running.S['description']);
+      HostRunningTaskLog.Text := UTF8Encode(running.S['logs']);
+    end
+    else
+    begin
+      ActCancelRunningTask.Enabled:=False;
+      HostTaskRunningProgress.Position := 0;
+      HostRunningTask.Text := 'Idle';
+      HostRunningTaskLog.Clear;
+    end;
+
+    with HostRunningTaskLog do
+    begin
+      selstart := GetTextLen; // MUCH more efficient then Length(text)!
+      SelLength := 0;
+      ScrollBy(0, 65535);
+    end;
+  end
+  else
+  begin
+    HostRunningTask.Text := '';
+    HostTaskRunningProgress.Position := 0;
     HostRunningTaskLog.Clear;
     GridHostTasksPending.Data := nil;
     GridHostTasksDone.Data := nil;
@@ -3483,6 +3608,12 @@ begin
   HostsLimit := 2000;
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
 
+end;
+
+procedure TVisWaptGUI.FormDestroy(Sender: TObject);
+begin
+  If PollTasksThread <> Nil then
+    PollTasksThread.Terminate;
 end;
 
 procedure TVisWaptGUI.FormDragOver(Sender, Source: TObject; X, Y: Integer;

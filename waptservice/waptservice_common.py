@@ -122,6 +122,13 @@ class WaptEvents(object):
                             last_read = self.events[-1].id-1
                     return [e for e in self.events if e.id>last_read]
 
+    def last_event_id(self):
+        with self.get_lock:
+            if not self.events:
+                return None
+            else:
+                return self.events[-1].id
+
     def put(self, item):
         with self.get_lock:
             if self.events:

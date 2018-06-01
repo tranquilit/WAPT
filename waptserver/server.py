@@ -1793,7 +1793,7 @@ def host_tasks_status():
     """Proxy the get tasks status action to the client"""
     try:
         uuid = request.args['uuid']
-        timeout = float(request.args.get('timeout', app.conf['client_tasks_timeout']))
+        client_tasks_timeout = float(request.args.get('client_tasks_timeout', app.conf['client_tasks_timeout']))
         start_time = time.time()
         host_data = Hosts\
             .select(Hosts.uuid, Hosts.computer_fqdn, Hosts.wapt_status,
@@ -1813,11 +1813,10 @@ def host_tasks_status():
 
             socketio.emit('get_tasks_status', request.args, room=host_data['listening_address'], callback=result_callback)
 
-            wait_loop = timeout * 20
+            start_waiting = time.time()
             while not result:
-                wait_loop -= 1
-                if wait_loop < 0:
-                    raise EWaptTimeoutWaitingForResult('Timeout, client did not send result within %s s' % timeout)
+                if time.time() - start_waiting > client_tasks_timeout:
+                    raise EWaptTimeoutWaitingForResult('Timeout, client did not send result within %s s' % client_tasks_timeout)
                 socketio.sleep(0.05)
 
             msg = 'Tasks status for %s' % host_data['computer_fqdn']

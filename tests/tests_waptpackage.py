@@ -1143,10 +1143,25 @@ def test_discarded():
     pe = w.repositories[0].packages()[0]
     cProfile.runctx('for i in range(0,200): pe.check_control_signature(ca,signers)',globals=globals(),locals=dict(ca=ca,pe=pe,signers=signers),sort=2)
 
+
+def install_host():
+    w = Wapt()
+    w.update()
+    w.install('4C4C4544-004E-3510-8051-C7C04F325131',force=True)
+
+
+def build_error():
+    pe = PackageEntry(waptfile=r'c:\tranquilit\chimm-winrest_new')
+    w = Wapt()
+    p = w.build_package(r'c:\tranquilit\chimm-winrest_new')
+    print(p)
+
 if __name__ == '__main__':
     #gen_perso('htouvet',email='htouvet@tranquil.it')
     #test_discarded()
-    test_wua()
+    #test_wua()
+    #install_host()
+    build_error()
     #test_packagenewestversion()
     #test_licencing()
     #test_logoutput()

@@ -461,7 +461,8 @@ class PackageEntry(BaseObjectClass):
     required_attributes = ['package','version','architecture','section','priority']
     optional_attributes = ['maintainer','description','depends','conflicts','maturity',
         'locale','target_os','min_os_version','max_os_version','min_wapt_version',
-        'sources','installed_size','impacted_process','description_fr','description_pl','description_de','description_es','audit_schedule']
+        'sources','installed_size','impacted_process','description_fr','description_pl','description_de','description_es','audit_schedule',
+        'keywords','licence']
     # attributes which are added by _sign_control
     signature_attributes = ['signer','signer_fingerprint','signature','signature_date','signed_attributes']
 
@@ -537,6 +538,8 @@ class PackageEntry(BaseObjectClass):
         self.audit_schedule=''
 
         self.impacted_process=''
+        self.keywords=''
+        self.licence=''
 
         self.md5sum=''
         self.repo_url=''
