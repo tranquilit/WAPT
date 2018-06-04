@@ -1817,8 +1817,10 @@ def host_tasks_status():
             while not result:
                 if time.time() - start_waiting > client_tasks_timeout:
                     raise EWaptTimeoutWaitingForResult('Timeout, client did not send result within %s s' % client_tasks_timeout)
-                socketio.sleep(0.05)
-
+                socketio.sleep(0.1)
+            # be sure to not eat cpu in case host return empty result
+            if not 'running' in result:
+                time.sleep(0.1)
             msg = 'Tasks status for %s' % host_data['computer_fqdn']
             return make_response(result[0]['result'],
                                  msg=msg,
@@ -1830,6 +1832,7 @@ def host_tasks_status():
 
     except Exception as e:
         return make_response_from_exception(e)
+
 
 
 @app.route('/api/v3/trigger_host_action', methods=['HEAD','POST'])
