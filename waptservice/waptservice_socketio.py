@@ -105,6 +105,61 @@ def make_response_from_exception(exception,error_code='',uuid=None,request_time=
             )
     return data
 
+def wait_for_event_send_tasks(task_manager,last_received_event_id,timeout,uuid,result_callback):
+    data = None
+    start_time = time.time()
+    while True:
+        actual_last_event_id = task_manager.events.last_event_id()
+        if actual_last_event_id is not None and actual_last_event_id <= last_received_event_id:
+            data = {'last_event_id':task_manager.events.last_event_id()}
+            if time.time() - start_time > timeout:
+                break
+        elif actual_last_event_id is None or actual_last_event_id > last_received_event_id:
+            data = task_manager.tasks_status()
+            break
+
+        if time.time() - start_time > timeout:
+            break
+
+        # avoid eating cpu
+        time.sleep(0.1)
+
+    result_callback(make_response(data,uuid=uuid,))
+
+
+class ThreadPool(object):
+    """Pool of threads consuming tasks from a queue"""
+    def __init__(self, num_threads):
+        self.tasks = Queue.Queue(num_threads)
+        for _ in range(num_threads):
+            Worker(self.tasks)
+
+    def add_task(self, func, *args, **kargs):
+        """Add a task to the queue"""
+        self.tasks.put((func, args, kargs))
+
+    def wait_completion(self):
+        """Wait for completion of all the tasks in the queue"""
+        self.tasks.join()
+
+class Worker(threading.Thread):
+    """Thread executing tasks from a given tasks queue"""
+    def __init__(self, tasks):
+        threading.Thread.__init__(self)
+        self.tasks = tasks
+        self.daemon = True
+        self.start()
+
+    def run(self):
+        while True:
+            func, args, kargs = self.tasks.get()
+            try:
+                func(*args, **kargs)
+            except Exception, e:
+                print e
+            finally:
+                self.tasks.task_done()
+
 
 class WaptSocketIORemoteCalls(SocketIONamespace):
 
@@ -114,6 +169,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
         logger.debug('New waptremotecall instance created...')
         self.task_manager = None
         self.wapt = None
+        self.pool = ThreadPool(5)
 
     def on_trigger_host_action(self,args,result_callback=None):
         try:
@@ -251,28 +307,17 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
             if uuid != self.wapt.host_uuid:
                 raise Exception('Task is not targeted to this host. task''s uuid does not match host''uuid')
 
+            timeout = float(args.get('timeout','10.0'))
+            last_received_event_id = int(args.get('last_event_id','-1'))
+
             data = None
-
-            last_event_id = int(args.get('last_event_id','-1'))
-            timeout = int(args.get('timeout','10'))
-            if (last_event_id >= 0) and self.task_manager.events:
-                start = time.time()
-                actual_last = self.task_manager.events.last_event_id()
-                if actual_last is not None and actual_last >= last_event_id:
-                    while self.task_manager.events.last_event_id() <= last_event_id:
-                        if time.time() - start > timeout:
-                            data = {'last_event_id':self.task_manager.events.last_event_id()}
-                            break
-                            #raise EWaptException('timeout waiting for events')
-                        time.sleep(0.2)
+            # wait for tasks and send them using websockets in a separate Thread
+            if self.task_manager.events and result_callback:
+                self.pool.add_task(wait_for_event_send_tasks,self.task_manager,last_received_event_id,timeout,self.wapt.host_uuid,result_callback)
             else:
-                # send inconditionally
-                pass
-
-
-            if data is None:
                 data = self.task_manager.tasks_status()
-            if result_callback:
+                time.sleep(0.1)
+            if data and result_callback:
                 result_callback(make_response(data,uuid=self.wapt.host_uuid,))
 
         except BaseException as e:

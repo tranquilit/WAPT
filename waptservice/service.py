@@ -908,20 +908,28 @@ def index():
 @app.route('/tasks.json')
 @allow_local
 def tasks():
-    last_event_id = int(request.args.get('last_event_id','-1'))
-    timeout = int(request.args.get('timeout','30'))
-    if (last_event_id >= 0) and task_manager.events:
-        start = time.time()
-        if task_manager.events.last_event_id() < last_event_id:
-            last_event_id = task_manager.events.last_event_id()
-        while task_manager.events.last_event_id() <= last_event_id:
-            if time.time() - start > timeout:
+    last_received_event_id = int(request.args.get('last_event_id','-1'))
+    timeout = int(request.args.get('timeout','-1'))
+
+    data = None
+    start_time = time.time()
+
+    while True:
+        actual_last_event_id = task_manager.events.last_event_id()
+        if actual_last_event_id is not None and actual_last_event_id <= last_received_event_id:
+            data = {'last_event_id':task_manager.events.last_event_id()}
+            if time.time() - start_time > timeout:
                 break
-                raise EWaptException('timeout waiting for events')
-            time.sleep(0.2)
+        elif actual_last_event_id is None or actual_last_event_id > last_received_event_id:
+            data = task_manager.tasks_status()
+            break
 
+        if time.time() - start_time > timeout:
+            break
 
-    data = task_manager.tasks_status()
+        # avoid eating cpu
+        time.sleep(0.1)
+
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -932,29 +940,38 @@ def tasks():
 @app.route('/tasks_status.json')
 @allow_local
 def tasks_status():
-    last_event_id = int(request.args.get('last_event_id','-1'))
+    last_received_event_id = int(request.args.get('last_event_id','-1'))
     timeout = int(request.args.get('timeout','-1'))
-    if (last_event_id >= 0) and task_manager.events:
-        if task_manager.events.last_event_id() < last_event_id:
-            last_event_id = task_manager.events.last_event_id()
-        while task_manager.events.last_event_id() <= last_event_id:
-            if time.time() - start > timeout:
+
+    data = None
+    start_time = time.time()
+
+    while True:
+        actual_last_event_id = task_manager.events.last_event_id()
+        if actual_last_event_id is not None and actual_last_event_id <= last_received_event_id:
+            data = {'last_event_id':task_manager.events.last_event_id()}
+            if time.time() - start_time > timeout:
                 break
-                raise EWaptException('timeout waiting for events')
-            time.sleep(0.2)
+        elif actual_last_event_id is None or actual_last_event_id > last_received_event_id:
+            data = task_manager.tasks_status()
+            break
 
-    all = task_manager.tasks_status()
-    data = []
-    data.extend(all['pending'])
-    if all['running']:
-        data.append(all['running'])
-    data.extend(all['done'])
-    data.extend(all['errors'])
+        if time.time() - start_time > timeout:
+            break
 
+        # avoid eating cpu
+        time.sleep(0.1)
+
+    result = []
+    result.extend(data['pending'])
+    if data['running']:
+        result.append(data['running'])
+    result.extend(data['done'])
+    result.extend(data['errors'])
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
-        return Response(common.jsondump(data), mimetype='application/json')
+        return Response(common.jsondump(result), mimetype='application/json')
     else:
-        return render_template('tasks.html',data=data)
+        return render_template('tasks.html',data=result)
 
 
 @app.route('/task')

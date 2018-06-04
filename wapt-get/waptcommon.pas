@@ -214,7 +214,7 @@ const
   WaptPersonalCertificatePath: String ='';
 
 
-  WAPTServerMinVersion='1.5.1.23';
+  WAPTServerMinVersion='1.6.2.0';
 
   FAppIniFilename:Utf8String = '';
 

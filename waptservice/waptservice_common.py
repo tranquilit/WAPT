@@ -131,23 +131,29 @@ class WaptEvents(object):
 
     def put(self, item):
         with self.get_lock:
-            if self.events:
-                last_event = self.events[-1]
-                if last_event == item:
-                    return last_event
-            else:
-                last_event = None
+            try:
+                if self.events:
+                    last_event = self.events[-1]
+                    if last_event == item:
+                        return last_event
+                else:
+                    last_event = None
 
-            if last_event:
-                item.id = last_event.id + 1
-            else:
-                item.id = 0
+                if last_event:
+                    item.id = last_event.id + 1
+                else:
+                    item.id = 0
 
-            self.events.append(item)
-            item.subscribers.extend(self.subscribers)
-            # keep track of a global position for consumers
-            if len(self.events) > self.max_history:
-                del self.events[:len(self.events) - self.max_history]
+                self.events.append(item)
+                item.subscribers.extend(self.subscribers)
+                # keep track of a global position for consumers
+                if len(self.events) > self.max_history:
+                    del self.events[:len(self.events) - self.max_history]
+                return item
+            finally:
+                pass
+                #self.event_available.notify_all()
+
 
     def post_event(self,event_type,data=None):
         item = WaptEvent(event_type,data)
