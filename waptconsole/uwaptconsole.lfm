@@ -39,9 +39,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 412
         Top = 120
         Width = 572
-        ActivePage = pgPackages
+        ActivePage = pgHostWUA
         Align = alRight
-        TabIndex = 0
+        TabIndex = 3
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -895,7 +895,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.SortColumn = 1
             Header.Style = hsFlatButtons
             Images = ImageList1
-            PopupMenu = PopupWUAUpdates
+            PopupMenu = PopupHostWUAUpdates
             TabOrder = 0
             TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
             TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
@@ -4572,7 +4572,7 @@ object VisWaptGUI: TVisWaptGUI
     object ActTriggerHostUpgrade: TAction
       Category = 'hosts'
       Caption = 'Apply upgrades'
-      Hint = 'Apply updates'
+      Hint = 'Launch pending packages upgrades'
       ImageIndex = 26
       OnExecute = ActTriggerBurstUpgradesExecute
       OnUpdate = ActHostsActionsUpdate
@@ -8401,5 +8401,27 @@ object VisWaptGUI: TVisWaptGUI
   object SOWaptServer: TSOConnection
     left = 624
     top = 104
+  end
+  object PopupHostWUAUpdates: TPopupMenu
+    left = 664
+    top = 296
+    object MenuItem97: TMenuItem
+      Action = ActWUAAllowSelectedUpdates
+    end
+    object MenuItem98: TMenuItem
+      Action = ActWUAForbidSelectedUpdates
+    end
+    object MenuItem99: TMenuItem
+      Action = ActTriggerWaptwua_download
+    end
+    object MenuItem102: TMenuItem
+      Action = ActTriggerWaptwua_install
+    end
+    object MenuItem100: TMenuItem
+      Action = ActWUAResetSelectedUpdates
+    end
+    object MenuItem101: TMenuItem
+      Action = ActWUAShowMSUpdatesHelp
+    end
   end
 end

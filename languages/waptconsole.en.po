@@ -1492,7 +1492,7 @@ msgstr ""
 
 #: tviswaptgui.acttriggerhostupgrade.hint
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.HINT"
-msgid "Apply updates"
+msgid "Launch pending packages upgrades"
 msgstr ""
 
 #: tviswaptgui.acttriggerupdateorgunit.caption

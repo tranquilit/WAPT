@@ -115,6 +115,9 @@ type
     EdSearchOrgUnits: TEdit;
     EdSearchPackage1: TSearchEdit;
     GridNetworks: TSOGrid;
+    MenuItem100: TMenuItem;
+    MenuItem101: TMenuItem;
+    MenuItem102: TMenuItem;
     MenuItem88: TMenuItem;
     MenuItem89: TMenuItem;
     MenuItem90: TMenuItem;
@@ -124,9 +127,13 @@ type
     MenuItem94: TMenuItem;
     MenuItem95: TMenuItem;
     MenuItem96: TMenuItem;
+    MenuItem97: TMenuItem;
+    MenuItem98: TMenuItem;
+    MenuItem99: TMenuItem;
     Panel8: TPanel;
     PgNetworksConfig: TTabSheet;
     PopupMenuOrgUnits: TPopupMenu;
+    PopupHostWUAUpdates: TPopupMenu;
     SOWaptServer: TSOConnection;
     SrcNetworks: TSODataSource;
     SrcOrgUnits: TDataSource;

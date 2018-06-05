@@ -1514,15 +1514,17 @@ msgstr "Vérifier les mises à jour"
 
 #: tviswaptgui.acttriggerhostupgrade.caption
 #, fuzzy
-#| msgid "Apply updates"
+#| msgid "Apply upgrade"
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.CAPTION"
 msgid "Apply upgrades"
 msgstr "Lancer les installations"
 
 #: tviswaptgui.acttriggerhostupgrade.hint
+#, fuzzy
+#| msgid "Apply updates"
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.HINT"
-msgid "Apply updates"
-msgstr "Lancer les installations"
+msgid "Launch pending packages upgrades"
+msgstr "Lancer les installations en attente"
 
 #: tviswaptgui.acttriggerupdateorgunit.caption
 msgid "Check updates on all hosts of this OU"

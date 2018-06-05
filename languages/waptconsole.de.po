@@ -1573,14 +1573,16 @@ msgstr "Verfügbare Aktualisierung der Pakete an die Hosts einleiten"
 
 #: tviswaptgui.acttriggerhostupgrade.caption
 #, fuzzy
-#| msgid "Apply updates"
+#| msgid "Apply upgrade"
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.CAPTION"
 msgid "Apply upgrades"
 msgstr "Updates anwenden"
 
 #: tviswaptgui.acttriggerhostupgrade.hint
+#, fuzzy
+#| msgid "Apply updates"
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.HINT"
-msgid "Apply updates"
+msgid "Launch pending packages upgrades"
 msgstr "Updates anwenden"
 
 #: tviswaptgui.acttriggerupdateorgunit.caption
