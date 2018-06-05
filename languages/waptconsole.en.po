@@ -1439,6 +1439,10 @@ msgstr ""
 msgid "Revoke a Certificate"
 msgstr ""
 
+#: tviswaptgui.actruncleanmgr.caption
+msgid "Run CleanMgr on host"
+msgstr ""
+
 #: tviswaptgui.actsearchgroups.caption
 msgctxt "TVISWAPTGUI.ACTSEARCHGROUPS.CAPTION"
 msgid "Search"
@@ -2682,6 +2686,10 @@ msgstr ""
 #: uwaptconsoleres.rsconfirmcaption
 msgctxt "uwaptconsoleres.rsconfirmcaption"
 msgid "Confirm"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmcleanmgr
+msgid "Are you sure you want to run CleanMgr on %d hosts ?"
 msgstr ""
 
 #: uwaptconsoleres.rsconfirmdeletion

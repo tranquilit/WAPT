@@ -29,6 +29,7 @@ type
     ActAddNewNetwork: TAction;
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
+    ActRunCleanMgr: TAction;
     ActWUAShowMSUpdatesHelp: TAction;
     ActPackagesAudit: TAction;
     ActTriggerHostAudit: TAction;
@@ -122,6 +123,7 @@ type
     MenuItem93: TMenuItem;
     MenuItem94: TMenuItem;
     MenuItem95: TMenuItem;
+    MenuItem96: TMenuItem;
     Panel8: TPanel;
     PgNetworksConfig: TTabSheet;
     PopupMenuOrgUnits: TPopupMenu;
@@ -468,6 +470,7 @@ type
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
     procedure ActExternalRepositoriesSettingsExecute(Sender: TObject);
+    procedure ActRunCleanMgrExecute(Sender: TObject);
     procedure ActTISHelpExecute(Sender: TObject);
     procedure ActTISHelpUpdate(Sender: TObject);
     procedure ActTriggerBurstUpdatesExecute(Sender: TObject);
@@ -2349,20 +2352,6 @@ begin
 
 end;
 
-procedure TVisWaptGUI.ActLaunchGPUpdateExecute(Sender: TObject);
-begin
-  if (GridHosts.SelectedCount>=1) and
-    (MessageDlg(Format(rsConfirmGPUpdate,[GridHosts.SelectedCount]),mtConfirmation,mbYesNoCancel, 0) = mrYes) then
-      TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_gpupdate',Nil,rsRunningGPUpdate,'Error updating Group Policies',True,False)
-end;
-
-procedure TVisWaptGUI.ActLaunchWaptExitExecute(Sender: TObject);
-begin
-  if (GridHosts.SelectedCount>=1) and
-    (MessageDlg(Format(rsConfirmWaptExit,[GridHosts.SelectedCount]),mtConfirmation,mbYesNoCancel, 0) = mrYes) then
-      TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'start_waptexit',Nil,rsUpgradingHost,'Error starting waptexit.exe',True,False)
-
-end;
 
 procedure TVisWaptGUI.ActmakePackageTemplateExecute(Sender: TObject);
 begin
@@ -4743,6 +4732,21 @@ end;
 procedure TVisWaptGUI.ActWUAShowMSUpdatesHelpExecute(Sender: TObject);
 begin
 end;
+
+
+procedure TVisWaptGUI.ActLaunchGPUpdateExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActLaunchWaptExitExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActRunCleanMgrExecute(Sender: TObject);
+begin
+
+end;
+
 
 {$endif}
 

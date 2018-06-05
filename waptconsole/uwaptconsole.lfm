@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 355
+  Left = 2115
   Height = 721
-  Top = 155
+  Top = 181
   Width = 1072
   AllowDropFiles = True
   Caption = 'WAPT console'
@@ -4977,6 +4977,12 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActPackagesAuditExecute
       OnUpdate = ActPackagesRemoveUpdate
     end
+    object ActRunCleanMgr: TAction
+      Category = 'Enterprise'
+      Caption = 'Run CleanMgr on host'
+      OnExecute = ActRunCleanMgrExecute
+      OnUpdate = ActHostsActionsUpdate
+    end
   end
   object PopupMenuPackages: TPopupMenu
     Images = ActionsImages24
@@ -5257,6 +5263,9 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Windows Computer management'
       object MenuItem87: TMenuItem
         Action = ActLaunchGPUpdate
+      end
+      object MenuItem96: TMenuItem
+        Action = ActRunCleanMgr
       end
       object MenuItem23: TMenuItem
         Action = ActComputerMgmt

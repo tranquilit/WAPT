@@ -1466,6 +1466,10 @@ msgstr "Restaure la configuration par défaut des colonnes de toutes les grilles
 msgid "Revoke a Certificate"
 msgstr "Révoquer un certificat"
 
+#: tviswaptgui.actruncleanmgr.caption
+msgid "Run CleanMgr on host"
+msgstr "Lancer CleanMgr sur la machine"
+
 #: tviswaptgui.actsearchgroups.caption
 msgctxt "TVISWAPTGUI.ACTSEARCHGROUPS.CAPTION"
 msgid "Search"
@@ -2720,6 +2724,10 @@ msgstr "Êtes-vous sûr de vouloir installer les mises à jour sur %s machines ?
 msgctxt "uwaptconsoleres.rsconfirmcaption"
 msgid "Confirm"
 msgstr "Confirmer"
+
+#: uwaptconsoleres.rsconfirmcleanmgr
+msgid "Are you sure you want to run CleanMgr on %d hosts ?"
+msgstr "Êtes-vous sûr de vouloir lancer CleanMgr sur %s machines ?"
 
 #: uwaptconsoleres.rsconfirmdeletion
 msgctxt "uwaptconsoleres.rsconfirmdeletion"

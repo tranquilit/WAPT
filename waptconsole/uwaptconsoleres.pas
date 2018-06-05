@@ -96,6 +96,7 @@ resourcestring
   rsConfirmGPUpdate = 'Are you sure you want to update Group Policies status on %d hosts ?';
   rsRunningGPUpdate = 'Running GPUpdate';
   rsConfirmWaptExit = 'Are you sure you want to propose Packages Upgrades on %d hosts ?';
+  rsConfirmCleanMgr = 'Are you sure you want to run CleanMgr on %d hosts ?';
   rsShowMessageForUsers = 'Send message to users';
   rsMessageToSend = 'Message to send';
 
