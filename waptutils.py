@@ -1246,7 +1246,7 @@ class LogOutput(BaseObjectClass):
         self.error_status = error_status
         self.exit_status = exit_status
 
-        self.update_buffer_time = 2
+        self.update_buffer_time = 5
         self.last_update_time = 0
         self.last_update_idx = 0
 
@@ -1268,17 +1268,17 @@ class LogOutput(BaseObjectClass):
     def write(self,txt):
         with self.lock:
             txt = ensure_unicode(txt)
-            if self.console:
-                try:
-                    self.console.write(txt)
-                except:
-                    self.console.write(repr(txt))
-
             if txt != '\n':
                 self.output.append(txt)
                 if self.update_status_hook and threading.current_thread() == self.threadid and (time.time()-self.last_update_time>=self.update_buffer_time):
                     # wait update_buffer_time before sending data to update_hook to avoid high frequency I/O
                     self._send_tail_to_updatehook()
+
+            if self.console:
+                try:
+                    self.console.write(txt)
+                except:
+                    self.console.write(repr(txt))
 
     def __enter__(self):
         self.old_stdout = sys.stdout
