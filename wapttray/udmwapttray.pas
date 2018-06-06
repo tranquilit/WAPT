@@ -265,6 +265,7 @@ begin
   inherited Create(True);
   DMTray := aDMWaptTray;
   LastReadEventId:=-1;
+  PollTimeout:=1000;
 end;
 
 destructor TPollThread.Destroy;
