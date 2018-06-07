@@ -46,6 +46,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
+    procedure OnRunNotify(Sender: TObject);
   private
     FCountDown: Integer;
     FInitialCountDown: Integer;
@@ -58,6 +59,8 @@ type
     upgrades,tasks,running,pending : ISuperObject;
     // wait for waptservice answer in seconds
     waptservice_timeout: Integer;
+    WAPTServiceRunning:Boolean;
+
     property InitialCountDown:Integer read FInitialCountDown write SetInitialCountDown;
     property CountDown:Integer read FCountDown write SetCountDown;
   end;
@@ -67,7 +70,7 @@ var
 
 implementation
 
-uses soutils,IniFiles,waptcommon,uScaleDPI;
+uses soutils,IniFiles,waptcommon,uScaleDPI,waptwinutils,tiscommon;
 {$R *.lfm}
 {$ifdef ENTERPRISE }
 {$R res_enterprise.rc}
@@ -106,20 +109,43 @@ var
 begin
   Timer1.Enabled := False;
   try
-    aso := WAPTLocalJsonGet('upgrade.json','','',waptservice_timeout*1000);
-    MemoLog.Items.Text:=aso.AsJSon();
-    tasks := aso['content'];
-    pending := tasks;
-    ProgressBar.Max:=tasks.AsArray.Length;
-    ProgressBar.Position:=0;
-    //GridTasks.Data := tasks;
-    upgrades := Nil;
-    CountDown := 0;
-    ActUpgrade.Caption:=rsUpdatingSoftware;
-    actSkip.Caption:=rsInterruptUpdate;
-    ButUpgradeNow.Visible := False;
-    LabIntro.Visible := False;
-    LabDontShutdown.Visible := True;
+    if WAPTServiceRunning then
+    begin
+      aso := WAPTLocalJsonGet('upgrade.json','','',waptservice_timeout*1000);
+      if aso <> Nil then
+      begin
+        MemoLog.Items.Text:=aso.AsJSon();
+        tasks := aso['content'];
+        pending := tasks;
+        if (tasks <> Nil) and (tasks.AsArray<>Nil) then
+          ProgressBar.Max:=tasks.AsArray.Length;
+        ProgressBar.Position:=0;
+        //GridTasks.Data := tasks;
+        upgrades := Nil;
+        CountDown := 0;
+        ActUpgrade.Caption:=rsUpdatingSoftware;
+        actSkip.Caption:=rsInterruptUpdate;
+        ButUpgradeNow.Visible := False;
+        LabIntro.Visible := False;
+        LabDontShutdown.Visible := True;
+      end
+    end
+    else
+      // try using direct call
+      try
+        //GridTasks.Data := tasks;
+        upgrades := Nil;
+        CountDown := 0;
+        ActUpgrade.Caption:=rsUpdatingSoftware;
+        actSkip.Caption:=rsInterruptUpdate;
+        ButUpgradeNow.Visible := False;
+        LabIntro.Visible := False;
+        LabDontShutdown.Visible := True;
+        Application.ProcessMessages;
+        Run('wapt-get -D upgrade','',3600000,'','','',@OnRunNotify);
+      Finally
+        Close;
+      end;
   finally
     Timer1.Enabled := True;
   end;
@@ -143,7 +169,7 @@ begin
   end;
 
   if ((running<>Nil) and (running.dataType<>stNull)) or
-      ((pending<>Nil) and (pending.AsArray.Length>0))  then
+      ((pending<>Nil) and (pending.dataType=stArray) and (pending.AsArray.Length>0))  then
 
     if allow_cancel_upgrade then
       WAPTLocalJsonGet('cancel_all_tasks.json','','',waptservice_timeout*1000)
@@ -193,6 +219,7 @@ end;
 procedure TVisWaptExit.FormShow(Sender: TObject);
 var
   aso: ISuperObject;
+  TasksCount:Integer;
 begin
 
   ActShowDetails.Checked:=False;
@@ -207,40 +234,50 @@ begin
 
   //Check if pending upgrades
   try
+    if not (GetServiceStatusByName('','WAPTService') in [ssRunning])  then
+      Raise Exception.Create('WAPTService is not running');
     aso := WAPTLocalJsonGet('checkupgrades.json','','',waptservice_timeout*1000);
     if aso<>Nil then
-      upgrades := aso['upgrades']
-    else
-      upgrades := Nil;
-
-    //check if running or pending tasks.
-    aso := WAPTLocalJsonGet('tasks.json','','',waptservice_timeout*1000);
-    if aso<>Nil then
     begin
-      running := aso['running'];;
-      pending := aso['pending'];
-      GridPending.data := pending;
+      WAPTServiceRunning:=True;
+      upgrades := aso['upgrades'];
+      //check if running or pending tasks.
+      aso := WAPTLocalJsonGet('tasks.json','','',waptservice_timeout*1000);
+      if aso<>Nil then
+      begin
+        running := aso['running'];;
+        pending := aso['pending'];
+        GridPending.data := pending;
+      end;
     end;
-
-    //check if upgrades
-    if ((upgrades=Nil) or (upgrades.AsArray.Length = 0)) and  ((running=Nil) or (running.DataType=stNull))  and ((pending = Nil) or (pending.AsArray.Length = 0)) then
-     //Système à jour
-      Application.terminate
-    else
-    begin
-      ActUpgrade.Enabled:=True;
-      MemoLog.Items.Text:= Join(#13#10, upgrades);
-      LabIntro.Caption:=Format(rsUpdatesAvailable,[upgrades.AsArray.Length]);
-    end;
-    if allow_cancel_upgrade then
-      CountDown:=InitialCountDown
-    else
-      CountDown:=0;
-    Timer1.Enabled := True;
-
   except
-    application.Terminate;
+    // timeout on waptservice, trying direct call...
+    WAPTServiceRunning:=False;
+    try
+      aso := SO(Run('wapt-get -j check-upgrades','',10000));
+      if aso<>Nil then
+        upgrades := aso['result.upgrades'];
+    except
+      upgrades := Nil;
+    end;
   end;
+
+  //check if upgrades
+  if ((upgrades=Nil) or (upgrades.AsArray = Nil) or (upgrades.AsArray.Length = 0)) and  ((running=Nil) or (running.DataType=stNull))  and ((pending = Nil) or (pending.AsArray.Length = 0)) then
+   //Système à jour ou erreur
+    Application.terminate
+  else
+  begin
+    ActUpgrade.Enabled:=True;
+    MemoLog.Items.Text:= Join(#13#10, upgrades);
+    LabIntro.Caption:=Format(rsUpdatesAvailable,[upgrades.AsArray.Length]);
+  end;
+
+  if allow_cancel_upgrade then
+    CountDown:=InitialCountDown
+  else
+    CountDown:=0;
+  Timer1.Enabled := True;
 end;
 
 procedure TVisWaptExit.Timer1Timer(Sender: TObject);
@@ -249,38 +286,43 @@ var
 begin
   timer1.Enabled:=False;
   try
-    // get current tasks manager status
-    aso := WAPTLocalJsonGet('tasks.json','','',waptservice_timeout*1000);
-    if aso <> Nil then
+    If WAPTServiceRunning then
     begin
-      running := aso['running'];
-      if (running<>Nil) and (running.DataType=stNull) then
+      // get current tasks manager status
+      aso := WAPTLocalJsonGet('tasks.json','','',waptservice_timeout*1000);
+      if aso <> Nil then
+      begin
+        running := aso['running'];
+        if (running<>Nil) and (running.DataType=stNull) then
+          running := Nil;
+        pending := aso['pending'];
+        if (pending<>Nil) and (pending.DataType=stArray) and (pending.AsArray.Length=0) then
+          pending := Nil;
+
+        //tasks are remaining
+        if (upgrades = Nil) and (
+          ((running<>Nil) and (running.dataType<>stNull)) or
+          ((pending<>Nil) and (pending.AsArray.Length>0)))
+        then
+        begin
+          GridPending.Data := pending;
+          if (running<>Nil) and (running.DataType<>stNull) then
+          begin
+            EdRunning.Text := UTF8Encode(running.S['description']);
+            MemoLog.Items.Text := UTF8Encode(running.S['runstatus']);
+          end;
+        end;
+      end
+      else
+      begin
         running := Nil;
-      pending := aso['pending'];
-      if (pending<>Nil) and (pending.AsArray.Length=0) then
         pending := Nil;
+      end;
     end
     else
     begin
       running := Nil;
       pending := Nil;
-    end;
-
-    //tasks are remaining
-    if (upgrades = Nil) and (
-      ((running<>Nil) and (running.dataType<>stNull)) or
-      ((pending<>Nil) and (pending.AsArray.Length>0)))
-    then
-    begin
-      GridPending.Data := pending;
-      if (running<>Nil) and (running.DataType<>stNull) then
-      begin
-        //ProgressBar.Position:=running.I['progress'];
-        EdRunning.Text := UTF8Encode(running.S['description']);
-        MemoLog.Items.Text := UTF8Encode(running.S['runstatus']);
-      end;
-
-      //GridTasks.Data:=pending;
     end;
 
     //No tasks and no upgrades
@@ -294,19 +336,20 @@ begin
     if (upgrades<>Nil) then
     begin
       if CountDown<=0 then
-      begin
-        ActUpgrade.Execute;
-        //ProgressBar.Position := 0;
-      end
+        ActUpgrade.Execute
       else
-        //ProgressBar.Position := ProgressBar.Position+1;
         CountDown:=CountDown-1;
     end;
-
   finally
     Timer1.Enabled:=True;
     Application.ProcessMessages;
   end;
+end;
+
+procedure TVisWaptExit.OnRunNotify(Sender: TObject);
+begin
+  EdRunning.Text:= 'Upgrade running...';
+  Application.ProcessMessages;
 end;
 
 procedure TVisWaptExit.SetCountDown(AValue: Integer);

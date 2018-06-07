@@ -282,7 +282,7 @@ begin
       Events := WAPTLocalJsonGet(Format('events?max_count=1',[]),'','',10000,Nil,0)
     else
       Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',10000,Nil,0);
-    if Events <> Nil then
+    if (Events <> Nil) and (Events.DataType=stArray) then
     begin
       If Events.AsArray.Length>0 then
         LastReadEventId := Events.AsArray.O[Events.AsArray.Length-1].I['id'];

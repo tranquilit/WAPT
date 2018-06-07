@@ -911,7 +911,7 @@ begin
           // wait unitl there is no more data to receive, or the timeout is reached
           iWaitRes := WaitForSingleObject(myProcessInfo.hProcess, pollwait);
           if Assigned(onpoll) then
-            onpoll(Nil);
+            onpoll(myReadOutputThread);
           // timeout reached ?
         until ((GetTickCount-start_ms > Wait) and  (iWaitRes = WAIT_TIMEOUT)) or (iWaitRes <> WAIT_TIMEOUT);
       except

@@ -74,6 +74,7 @@ action is either :
 
   list [keywords]   : list installed packages containing keywords
   list-upgrade      : list upgradable packages
+  check-upgrades    : show last update/upgrade status
   download-upgrade  : download available upgradable packages
   search [keywords] : search installable packages whose description contains keywords
   clean             : remove all WAPT cached files from local drive
@@ -721,16 +722,26 @@ def main():
                         logger.critical('Unable to update server with current status : %s' % ensure_unicode(e))
                 sys.exit(0)
 
+            elif action == 'check-upgrades':
+                if options.update_packages:
+                    print(u"Update package list")
+                    mywapt.update()
+                result = mywapt.read_upgrade_status()
+                if options.json_output:
+                    jsonresult['result'] = result
+                else:
+                    print(json.dumps(result,indent=True))
+
             elif action == 'list-upgrade':
                 if options.update_packages:
                     print(u"Update package list")
                     mywapt.update()
                 result = mywapt.list_upgrade()
-                if not result:
-                    print(u"Nothing to upgrade")
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
+                    if not result:
+                        print(u"Nothing to upgrade")
                     for l in ('install','additional','upgrade','remove'):
                         if result[l]:
                             print(u"\n=== %s packages ===\n%s" % (l,'\n'.join( ["  %-30s " % (p) for p in  result[l]]),))

@@ -3522,6 +3522,16 @@ class Wapt(BaseObjectClass):
             if logger.level == logging.DEBUG:
                 raise
 
+
+    def read_upgrade_status(self):
+        """Return last stored pending updates status
+
+        Returns:
+            dict: {running_tasks errors pending (dict) upgrades (list)}
+
+        """
+        return json.loads(self.read_param('last_update_status'))
+
     def get_sources(self,package):
         """Download sources of package (if referenced in package as a https svn)
            in the current directory"""
@@ -6424,6 +6434,7 @@ class Wapt(BaseObjectClass):
 
 
     def show_progress(self,show_box=False,msg='Loading...',progress = None,progress_max = None):
+        """Global hook to report progress feedback to the user"""
         if self.progress_hook:
             self.progress_hook(show_box,msg,progress,progress_max)  # pylint: disable=not-callable
         else:
