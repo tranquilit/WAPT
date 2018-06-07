@@ -187,18 +187,28 @@ def apply_host_settings(waptconfig):
             logger.info('Setting hiberboot_enabled to %s'%waptconfig.hiberboot_enabled)
             wapt.hiberboot_enabled = waptconfig.hiberboot_enabled
 
-        if waptconfig.waptwua_enabled is not None:
-            logger.info('Setting waptwua_enabled to %s'%waptconfig.waptwua_enabled)
-            wapt.waptwua_enabled = waptconfig.waptwua_enabled
-            if WaptWUA is not None:
-                c = WaptWUA(wapt)
-                if waptconfig.waptwua_enabled:
-                    c.disable_ms_windows_update_service()
-                elif not waptconfig.waptwua_enabled:
-                    c.enable_ms_windows_update_service()
 
     except Exception as e:
         logger.critical('Unable to set shutdown policies : %s' % e)
+
+def apply_waptwua_settings(waptconfig):
+    """Apply waptwua service specific settings
+    """
+    wapt = Wapt(config_filename = waptconfig.config_filename)
+    try:
+        # check waptwua
+        if waptconfig.waptwua_enabled is not None:
+            wapt.waptwua_enabled = waptconfig.waptwua_enabled
+        if WaptWUA is not None:
+            c = WaptWUA(wapt)
+            if waptconfig.waptwua_enabled:
+                logger.info('Disabling Windows auto update service, using WaptWUA instead')
+                c.disable_ms_windows_update_service()
+            elif not waptconfig.waptwua_enabled:
+                logger.info('Enabling Windows update service')
+                c.enable_ms_windows_update_service()
+    except Exception as e:
+        logger.critical('Unable to set waptwua policies : %s' % e)
 
 
 def wapt():
@@ -233,6 +243,12 @@ def close_connection(exception):
 
     except Exception as e:
         logger.debug('Error in teardown, please consider upgrading Flask if <0.10. %s' % e)
+
+#@app.after_request
+#def add_header(response):
+#    if is_static():
+#       response.cache_control.max_age = 300
+#    return response
 
 def forbidden():
     """Sends a 403 response that enables basic auth"""
@@ -536,6 +552,7 @@ def package_icon():
             return open(icon_local_filename,'rb')
 
     try:
+        return send_from_directory(icon_local_cache,u'%s.png' % package,mimetype='image/png',as_attachment=True,attachment_filename=u'{}.png'.format(package).encode('utf8'),cache_timeout=43200)
         icon = get_icon(package)
         return send_file(icon,'image/png',as_attachment=True,attachment_filename=u'{}.png'.format(package).encode('utf8'),cache_timeout=43200)
     except requests.RequestException as e:
@@ -1559,6 +1576,9 @@ if __name__ == "__main__":
 
     # setup basic settings
     apply_host_settings(waptconfig)
+
+    # waptwua
+    apply_waptwua_settings(waptconfig)
 
     # starts one WaptTasksManager
     logger.info('Starting task queue')
