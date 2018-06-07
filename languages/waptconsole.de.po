@@ -2174,6 +2174,10 @@ msgstr "ToolButton6"
 msgid "ToolButtonSep1"
 msgstr ""
 
+#: tviswaptgui.wsusresult.text
+msgid "wsusResult"
+msgstr ""
+
 #: tviswuaclassificationsselect.caption
 msgid "Windows Updates Classification selection"
 msgstr "Auswahl der Widows Updates Klassifikation"

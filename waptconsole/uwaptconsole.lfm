@@ -25,9 +25,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 558
     Top = 0
     Width = 1072
-    ActivePage = pgInventory
+    ActivePage = pgWindowsUpdates
     Align = alClient
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -3584,6 +3584,14 @@ object VisWaptGUI: TVisWaptGUI
           FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
         }
         TabOrder = 3
+      end
+      object wsusResult: TEdit
+        Left = 680
+        Height = 21
+        Top = 501
+        Width = 80
+        TabOrder = 11
+        Text = 'wsusResult'
       end
     end
     object pgSources: TTabSheet

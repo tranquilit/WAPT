@@ -112,6 +112,7 @@ type
     DBOrgUnitsImageID: TLongintField;
     DBOrgUnitsParentDN: TStringField;
     DBOrgUnitsParentID: TLongintField;
+    wsusResult: TEdit;
     EdSearchOrgUnits: TEdit;
     EdSearchPackage1: TSearchEdit;
     GridNetworks: TSOGrid;
@@ -2816,13 +2817,13 @@ begin
 end;
 
 procedure TVisWaptGUI.ActWUALoadUpdatesExecute(Sender: TObject);
-{$ifdef wsus}
+{$ifdef wsus2}
 var
   soresult,winupdates,winupdate,urlParams,product,products,idx,severities: ISuperObject;
   update_id:String;
-{$endif wsus}
+{$endif wsus2}
 begin
-  {$ifdef wsus}
+  {$ifdef wsus2}
   Screen.Cursor:=crHourGlass;
   if GridWinproducts.SelectedCount>0 then
   try
@@ -2859,14 +2860,14 @@ begin
   finally
     Screen.Cursor:=crDefault;
   end;
-  {$endif wsus}
+  {$endif wsus2}
 end;
 
 procedure TVisWaptGUI.ActWUALoadUpdatesUpdate(Sender: TObject);
 begin
-  {$ifdef wsus}
+  {$ifdef wsus2}
   ActWUALoadUpdates.Enabled:=GridWinproducts.SelectedCount>0;
-  {$endif wsus}
+  {$endif wsus2}
 end;
 
 procedure TVisWaptGUI.ActPackagesInstallExecute(Sender: TObject);
@@ -3027,29 +3028,29 @@ begin
 end;
 
 procedure TVisWaptGUI.ActWUAProductHideExecute(Sender: TObject);
-{$ifdef wsus}
+{$ifdef wsus2}
 var
   wproduct:ISuperobject;
-{$endif wsus}
+{$endif wsus2}
 begin
-  {$ifdef wsus}
+  {$ifdef wsus2}
   for wproduct in GridWinproducts.SelectedRows do
     wproduct.B['favourite'] := False;
   GridWinproducts.Data := FilterWinProducts(WUAProducts);
-  {$endif wsus}
+  {$endif wsus2}
 end;
 
 procedure TVisWaptGUI.ActWUAProductShowExecute(Sender: TObject);
 {$ifdef wsus}
 var
   wproduct:ISuperobject;
-{$endif wsus}
+{$endif wsus2}
 begin
-  {$ifdef wsus}
+  {$ifdef wsus2}
   for wproduct in GridWinproducts.SelectedRows do
     wproduct.B['favourite'] := True;
   GridWinproducts.Data := FilterWinProducts(WUAProducts);
-  {$endif wsus}
+  {$endif wsus2}
 end;
 
 procedure TVisWaptGUI.ActWUAProductsSelectionExecute(Sender: TObject);
@@ -3808,7 +3809,7 @@ begin
       if FileExistsUTF8(Appuserinipath) then
         DeleteFileUTF8(Appuserinipath);
 
-    pgWindowsUpdates.TabVisible:=IsEnterpriseEdition and waptwua_enabled;
+    pgWindowsUpdates.TabVisible:=IsEnterpriseEdition;
     pgHostWUA.TabVisible:=IsEnterpriseEdition;
 
     for i:=0 to WSUSActions.ActionCount-1 do
@@ -4529,6 +4530,7 @@ begin
     ActWSUSRefreshCabHistory.Execute;
   end
 
+  {$ifdef wsus2}
   else if MainPages.ActivePage = pgWUAProducts then
   begin
     WUAProducts := WAPTServerJsonGet('api/v2/windows_products',[])['result'];
@@ -4540,6 +4542,7 @@ begin
       wsus_rules := WAPTServerJsonGet('api/v2/windows_updates_rules',[])['result'];
       GridWUAGroups.data := wsus_rules;
   end}
+  {$endif wsus2}
   {$endif wsus}
 end;
 

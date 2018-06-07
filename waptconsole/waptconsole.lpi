@@ -307,7 +307,7 @@
       <Verbosity>
         <ShowHints Value="False"/>
       </Verbosity>
-      <CustomOptions Value="-dUseCThreads -dENTERPRISE"/>
+      <CustomOptions Value="-dUseCThreads -dENTERPRISE -dwsus"/>
     </Other>
   </CompilerOptions>
   <Debugging>

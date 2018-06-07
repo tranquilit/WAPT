@@ -1156,18 +1156,32 @@ def build_error():
     p = w.build_package(r'c:\tranquilit\chimm-winrest_new')
     print(p)
 
+def test_wua_single_install():
+    w = Wapt()
+    from waptenterprise.waptwua.client import WaptWUA,EnsureWUAServRunning
+    with EnsureWUAServRunning():
+        c = WaptWUA(w,{
+                'forbidden_updates':None,
+                'allowed_updates':['8bdc279b-231a-48de-92f1-6027f441d92b','719584bc-2208-4bc9-a650-d3d6347eb32e'],
+                'allowed_severities':[],
+                'allowed_classifications':[],
+                })
+        c.install_updates()
+
+
 if __name__ == '__main__':
     #gen_perso('htouvet',email='htouvet@tranquil.it')
     #test_discarded()
     #test_wua()
     #install_host()
-    build_error()
+    #build_error()
     #test_packagenewestversion()
     #test_licencing()
     #test_logoutput()
     #test_waptinstalllog()
     #test_install_uninstall()
     #test_package_request()
+    test_wua_single_install()
     sys.exit(0)
 
     setup_test()
