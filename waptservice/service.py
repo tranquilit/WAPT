@@ -552,7 +552,6 @@ def package_icon():
             return open(icon_local_filename,'rb')
 
     try:
-        return send_from_directory(icon_local_cache,u'%s.png' % package,mimetype='image/png',as_attachment=True,attachment_filename=u'{}.png'.format(package).encode('utf8'),cache_timeout=43200)
         icon = get_icon(package)
         return send_file(icon,'image/png',as_attachment=True,attachment_filename=u'{}.png'.format(package).encode('utf8'),cache_timeout=43200)
     except requests.RequestException as e:
