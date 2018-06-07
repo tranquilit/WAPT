@@ -215,6 +215,10 @@ class Hosts(WaptBaseModel):
     dmi = BinaryJSONField(null=True)
     wmi = BinaryJSONField(null=True)
 
+    #
+    waptwua = BinaryJSONField(null=True)
+
+
     """
     def save(self,*args,**argvs):
         if 'uuid' in self._dirty:
@@ -343,11 +347,11 @@ class HostJsonRaw(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
 
-
 class HostWsus(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
     # windows updates
+
     wsus = BinaryJSONField(null=True)
 
 class SignedModel(WaptBaseModel):
@@ -359,27 +363,7 @@ class SignedModel(WaptBaseModel):
         return super(SignedModel,self).save(*args,**argvs)
 
 
-class WsusUpdates(WaptBaseModel):
-    id = PrimaryKeyField(primary_key=True)
-    update_id = CharField()
-    revision_id = CharField()
-    revision_number = IntegerField()
-    title = CharField(null=True)
-    description = CharField(null=True)
-    msrc_severity = CharField(null=True)
-    security_bulletin_id = CharField(null=True)
-    kb_article_id = CharField(null=True)
-    creation_date = CharField(null=True)
-    is_bundle = BooleanField()
-    is_leaf = BooleanField()
-    deployment_action = CharField(null=True)
-    company = CharField(null=True)
-    product = CharField(null=True)
-    product_family = CharField(null=True)
-    update_classification = CharField(null=True)
-    languages = ArrayField(CharField, null=True)
-    prereqs_update_ids = ArrayField(CharField, null=True)
-    payload_files = ArrayField(CharField, null=True)
+class WindowsUpdates(WaptBaseModel):
 
 
 class WsusLocations(WaptBaseModel):
@@ -527,6 +511,42 @@ def update_installed_softwares(uuid, installed_softwares):
     else:
         return True
 
+def update_waptwua(uuid,waptwua):
+    """Stores discovered windows update into WindowsUpdates table and
+    links between host and updates into HostWsus
+
+    Args:
+        uuid (str) : unique ID of host
+        waptwua (list): data from host
+
+    Returns:
+        None
+    """
+    # inser
+
+    # TODO : be smarter : insert / update / delete instead of delete all / insert all ?
+    HostWsus.delete().where(HostWsus.host == uuid).execute()
+
+    def encode_value(value):
+        if isinstance(value,unicode):
+            value = value.replace(u'\x00', ' ')
+        return value
+
+    # potential new updates
+    windows_updates = []
+    host_wsus = []
+
+    for update in waptwua['updates']:
+        update['host'] = uuid
+        # filter out all unknown fields from json data for the SQL insert
+        windows_updates.append(dict([(k,encode_value(v)) for k, v in winupdate.iteritems() if k in HostWsus._meta.fields]))
+
+
+
+    if winupdates:
+        return HostSoftwares.insert_many(softwares).execute() # pylint: disable=no-value-for-parameter
+    else:
+        return True
 
 def update_host_data(data):
     """Helper function to insert or update host data in db
