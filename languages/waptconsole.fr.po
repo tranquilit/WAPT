@@ -1703,6 +1703,14 @@ msgstr "Sélectionne les machines qui ont cette dépendance directe"
 msgid "More options"
 msgstr "Plus d'options"
 
+#: tviswaptgui.cbauthorizedhosts.caption
+msgid "Only authorized computers"
+msgstr ""
+
+#: tviswaptgui.cbauthorizedhosts.hint
+msgid "Returns only computers accepting current personal certificate"
+msgstr ""
+
 #: tviswaptgui.cbforcedwsusscandownload.caption
 msgid "Force download even if already up to date"
 msgstr "Forcer le téléchargement même si déjà à jour"
@@ -1881,6 +1889,12 @@ msgstr "Constructeur"
 #: tviswaptgui.label20.caption
 msgid "Site"
 msgstr "Site"
+
+#: tviswaptgui.label21.caption
+#, fuzzy
+msgctxt "tviswaptgui.label21.caption"
+msgid "Groups"
+msgstr "Groupes"
 
 #: tviswaptgui.label23.caption
 msgctxt "tviswaptgui.label23.caption"

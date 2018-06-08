@@ -97,6 +97,7 @@ type
     cbMaskSystemComponents: TCheckBox;
     cbNeedUpgrade: TCheckBox;
     cbReachable: TCheckBox;
+    cbAuthorizedHosts: TCheckBox;
     cbSearchAll: TCheckBox;
     cbSearchDMI: TCheckBox;
     cbSearchHost: TCheckBox;
@@ -112,6 +113,8 @@ type
     DBOrgUnitsImageID: TLongintField;
     DBOrgUnitsParentDN: TStringField;
     DBOrgUnitsParentID: TLongintField;
+    Label21: TLabel;
+    Label22: TLabel;
     wsusResult: TEdit;
     EdSearchOrgUnits: TEdit;
     EdSearchPackage1: TSearchEdit;
@@ -974,7 +977,7 @@ begin
   Gridhosts.Clear;
   if ((length(EdSearchHost.Text)>5)  and
     (cbSearchDMI.Checked or cbSearchSoftwares.Checked or cbSearchPackages.Checked or cbSearchHost.Checked)) or
-    (cbHasErrors.Checked or cbNeedUpgrade.Checked or cbReachable.Checked) then
+    (cbHasErrors.Checked or cbNeedUpgrade.Checked or cbReachable.Checked or cbAuthorizedHosts.Checked) then
         ActSearchHostExecute(Sender);
 end;
 
@@ -3186,6 +3189,7 @@ var
   soresult,columns,urlParams, Node, Hosts,fields: ISuperObject;
   previous_uuid,prop: string;
   HostsCount,i: integer;
+  PersonalCertificate: Variant;
 const
   DefaultColumns:Array[0..13] of String = ('uuid','os_name','connected_ips','computer_fqdn',
     'computer_name','manufacturer','description','productname','serialnr','mac_addresses','connected_users','last_logged_on_user',
@@ -4414,6 +4418,7 @@ begin
   Label20.Visible:=False;
   PanOrgUnits.Visible:=False;
   cbADSite.Visible:=False;
+  cbAuthorizedHosts.Visible:=False;
   ActLaunchGPUpdate.Visible:=False;
   ActDisplayUserMessage.Visible:=False;
   ActLaunchWaptExit.Visible:=False;

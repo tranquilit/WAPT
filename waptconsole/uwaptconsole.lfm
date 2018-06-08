@@ -19,7 +19,7 @@ object VisWaptGUI: TVisWaptGUI
   Position = poScreenCenter
   SessionProperties = 'PanOrgUnits.Width'
   ShowHint = True
-  LCLVersion = '1.8.2.0'
+  LCLVersion = '1.8.4.0'
   object MainPages: TPageControl
     Left = 0
     Height = 558
@@ -2062,6 +2062,27 @@ object VisWaptGUI: TVisWaptGUI
             Style = csDropDownList
             TabOrder = 1
             Visible = False
+          end
+          object Label22: TLabel
+            Left = 12
+            Height = 17
+            Top = 48
+            Width = 34
+            Alignment = taRightJustify
+            Layout = tlCenter
+            ParentColor = False
+          end
+          object cbAuthorizedHosts: TCheckBox
+            Left = 52
+            Height = 17
+            Hint = 'Returns only computers accepting current personal certificate'
+            Top = 48
+            Width = 150
+            Caption = 'Only authorized computers'
+            Checked = True
+            OnClick = cbNeedUpgradeClick
+            State = cbChecked
+            TabOrder = 2
           end
         end
         object PanHostsSubFilters: TPanel
@@ -4596,6 +4617,16 @@ object VisWaptGUI: TVisWaptGUI
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 3
+  end
+  object Label21: TLabel
+    Left = 12
+    Height = 13
+    Top = 6
+    Width = 34
+    Alignment = taRightJustify
+    Caption = 'Groups'
+    Layout = tlCenter
+    ParentColor = False
   end
   object SynPythonSyn1: TSynPythonSyn
     DefaultFilter = 'Fichiers Python (*.py)|*.py'

@@ -1671,6 +1671,14 @@ msgstr ""
 msgid "More options"
 msgstr ""
 
+#: tviswaptgui.cbauthorizedhosts.caption
+msgid "Only authorized computers"
+msgstr ""
+
+#: tviswaptgui.cbauthorizedhosts.hint
+msgid "Returns only computers accepting current personal certificate"
+msgstr ""
+
 #: tviswaptgui.cbforcedwsusscandownload.caption
 msgid "Force download even if already up to date"
 msgstr ""
@@ -1844,6 +1852,11 @@ msgstr ""
 
 #: tviswaptgui.label20.caption
 msgid "Site"
+msgstr ""
+
+#: tviswaptgui.label21.caption
+msgctxt "tviswaptgui.label21.caption"
+msgid "Groups"
 msgstr ""
 
 #: tviswaptgui.label23.caption
