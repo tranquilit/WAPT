@@ -614,7 +614,9 @@ def get_shortcut_properties(shortcut_filename):
         'show_cmd':frmlnk.show_cmd,
         'show_states':frmlnk.show_states,
         'working_directory':frmlnk.working_directory}
-    return result`
+    return result
+
+
 
 def filecopyto(filename,target):
     """Copy file from absolute or package temporary directory to target directory
