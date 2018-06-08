@@ -100,6 +100,7 @@ __all__ = \
  'get_task',
  'getproductprops',
  'getsilentflags',
+ 'get_computer_groups',
  'InstallerTypes',
  'get_installer_defaults',
  'glob',
@@ -350,6 +351,23 @@ class CalledProcessErrorOutput(subprocess.CalledProcessError):
             return "Command %s returned non-zero exit status %d.\nOutput:%s" % (repr(self.cmd), self.returncode,ensure_unicode(self.output).encode('utf8'))
         except UnicodeDecodeError:
             return "Command %s returned non-zero exit status %d.\nOutput:%s" % (repr(self.cmd), self.returncode,repr(self.output))
+
+def get_computer_groups():
+    """Try to finc the computer in the Active Directory
+        and return the list of groups
+    """
+    groups = []
+    computer = find_computer()
+    if computer:
+        computer_groups = computer.memberOf
+        if computer_groups:
+            if not isinstance(computer_groups,(tuple,list)):
+                computer_groups = [computer_groups]
+            for group in computer_groups:
+                # extract first component of group's DN
+                cn = group.split(',')[0].split('=')[1]
+                groups.append(cn.lower())
+    return groups
 
 
 def create_shortcut(path, target='', arguments='', wDir='', icon=''):
