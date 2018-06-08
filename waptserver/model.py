@@ -171,6 +171,7 @@ class Hosts(WaptBaseModel):
     registration_auth_user = CharField(null=True)
 
     #authorized_certificates = ArrayField(CharField, null=True, help_text='authorized packages signers certificates sha1 fingerprint')
+    authorized_certificates_sha256 = ArrayField(CharField, null=True, help_text='authorized packages signers certificates sha256 fingerprint')
 
     os_name = CharField(null=True)
     os_version = CharField(null=True)
@@ -216,7 +217,7 @@ class Hosts(WaptBaseModel):
     wmi = BinaryJSONField(null=True)
 
     #
-    waptwua = BinaryJSONField(null=True)
+    #waptwua = BinaryJSONField(null=True)
 
 
     """
@@ -363,7 +364,28 @@ class SignedModel(WaptBaseModel):
         return super(SignedModel,self).save(*args,**argvs)
 
 
-class WindowsUpdates(WaptBaseModel):
+class WsusUpdates(WaptBaseModel):
+    id = PrimaryKeyField(primary_key=True)
+    update_id = CharField()
+    revision_id = CharField()
+    revision_number = IntegerField()
+    title = CharField(null=True)
+    description = CharField(null=True)
+    msrc_severity = CharField(null=True)
+    security_bulletin_id = CharField(null=True)
+    kb_article_id = CharField(null=True)
+    creation_date = CharField(null=True)
+    is_bundle = BooleanField()
+    is_leaf = BooleanField()
+    deployment_action = CharField(null=True)
+    company = CharField(null=True)
+    product = CharField(null=True)
+    product_family = CharField(null=True)
+    update_classification = CharField(null=True)
+    languages = ArrayField(CharField, null=True)
+    prereqs_update_ids = ArrayField(CharField, null=True)
+    payload_files = ArrayField(CharField, null=True)
+
 
 
 class WsusLocations(WaptBaseModel):
@@ -689,6 +711,10 @@ def wapthosts_json(model_class, instance, created):
                 setattr(instance, field, attribute(instance.dmi))
             else:
                 setattr(instance, field, dictgetpath(instance.dmi, attribute))
+
+    # extract list for fast query.
+    if instance.wapt_status:
+        instance.authorized_certificates_sha256 = dictgetpath(instance.wapt_status, 'authorized_certificates_sha256')
 
     if not instance.connected_ips:
         instance.connected_ips = dictgetpath(instance.host_info, 'networking.*.addr')
@@ -1134,6 +1160,18 @@ def upgrade_db_structure():
             logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
             opes = []
             opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'uninstall_key', HostPackagesStatus.uninstall_key))
+            migrate(*opes)
+
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
+    next_version = '1.6.2.0'
+    if get_db_version() < next_version:
+        with wapt_db.atomic():
+            logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
+            opes = []
+            opes.append(migrator.add_column(Hosts._meta.name, 'authorized_certificates_sha256', Hosts.authorized_certificates_sha256))
             migrate(*opes)
 
             (v, created) = ServerAttribs.get_or_create(key='db_version')

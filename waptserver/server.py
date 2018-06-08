@@ -1520,6 +1520,7 @@ def get_hosts():
         filter (csvlist of field):regular expression: filter based on attributes
         not_filter (0,1):
         limit (int) : 1000
+        trusted_certs_sha256 (csvlist): filter out machines based on their trusted package certs
 
     Returns:
         result (dict): {'records':[],'files':[]}
@@ -1621,6 +1622,10 @@ def get_hosts():
                 groups = ensure_list(request.args.get('groups', ''))
                 in_group = HostGroups.select(HostGroups.host).where(HostGroups.group_name << groups)
                 query = query & (Hosts.uuid << in_group )
+
+            if 'trusted_certs_sha256' in request.args:
+                trusted_certs_sha256 = ensure_list(request.args.get('trusted_certs_sha256', ''))
+                query = query & (Hosts.authorized_certificates_sha256.contains(trusted_certs_sha256[0]))
 
             if 'organizational_unit' in request.args:
                 ou_list = request.args.get('organizational_unit').split('||')
