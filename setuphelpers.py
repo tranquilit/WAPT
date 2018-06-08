@@ -357,6 +357,7 @@ def get_computer_groups():
     """Try to finc the computer in the Active Directory
         and return the list of groups
     """
+    from active_directory import find_computer
     groups = []
     computer = find_computer()
     if computer:
