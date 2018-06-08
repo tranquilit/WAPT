@@ -894,7 +894,9 @@ class FileChunks(object):
             while len(data)>0:
                 self.amount_seen += len(data)
                 if self.progress_hook is not None:
-                    self.progress_hook(self.filename,self.amount_seen,self.file_size)
+                    cancel_request = self.progress_hook(self.filename,self.amount_seen,self.file_size)
+                    if cancel_request:
+                        raise Exception('Post canceled by user')
                 if self.progress_bar is not None:
                     self.progress_bar.show(self.amount_seen)
                 if self.progress_bar is None and self.progress_hook is None:

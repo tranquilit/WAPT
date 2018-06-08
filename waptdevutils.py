@@ -214,7 +214,7 @@ def update_external_repo(repourl,search_string,proxy=None,myrepo=None,my_prefix=
     else:
         return [p.as_dict() for p in packages]
 
-def get_packages_filenames(packages,with_depends=True,waptconfigfile=None,repo_name='wapt-templates',remoterepo=None):
+def get_packages_filenames(packages,with_depends=True,waptconfigfile=None,repo_name='wapt-templates',localrepo=None,remoterepo=None):
     """Returns list of package filenames (latest version) and md5 matching comma separated list of packages names and their dependencies
     helps to batch download a list of selected packages using tools like curl or wget
 
@@ -237,6 +237,13 @@ def get_packages_filenames(packages,with_depends=True,waptconfigfile=None,repo_n
         'http_proxy':'',
         'verify_cert':'0',
         }
+
+    if localrepo is None:
+        config = RawConfigParser(defaults=defaults)
+        config.read(waptconfigfile)
+
+        localrepo = WaptRemoteRepo(name='global',config=config)
+        localrepo.update()
 
     if remoterepo is None:
         config = RawConfigParser(defaults=defaults)
@@ -339,6 +346,22 @@ def build_waptupgrade_package(waptconfigfile,target_directory=None,wapt_server_u
     wapt.dbpath = r':memory:'
     wapt.use_hostpackages = False
 
+    # try to get a progress hook inside waptconsole
+    try:
+        import waptconsole
+        progress_hook = waptconsole.UpdateProgress
+    except ImportError:
+        def print_progress(show=False,n=0,max=100,msg=''):
+            if show:
+                print('%s %s/%s\r' % (msg,n,max),end='')
+            else:
+                if not msg:
+                    msg='Done'
+                print("%s%s"%(msg,' '*(80-len(msg))))
+        progress_hook = print_progress
+
+    wapt.progress_hook = progress_hook
+
     if sign_digests is None:
         sign_digests = wapt.sign_digests
 
@@ -363,7 +386,7 @@ def build_waptupgrade_package(waptconfigfile,target_directory=None,wapt_server_u
         raise Exception(u'%s is not a code signing certificate' % wapt.personal_certificate_path)
     entry.sign_package(private_key=key,certificate = certs,private_key_password=key_password,mds = ensure_list(sign_digests))
 
-    wapt.http_upload_package(entry.localpath,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd)
+    wapt.http_upload_package(entry.localpath,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd,progress_hook=progress_hook)
     return entry.as_dict()
 
 

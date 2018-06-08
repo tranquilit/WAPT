@@ -2963,6 +2963,16 @@ class Wapt(BaseObjectClass):
         files = {}
         is_hosts = None
 
+        def upload_progress_hook(filename,amount_seen,file_size):
+            if progress_hook:
+                return progress_hook(True,amount_seen,file_size,u'Uploading package %s' % filename)
+            else:
+                return False
+
+        if not progress_hook:
+            upload_progress_hook = None
+
+
         for package in packages:
             if not isinstance(package,PackageEntry):
                 pe = PackageEntry(waptfile = package)
@@ -2981,7 +2991,8 @@ class Wapt(BaseObjectClass):
             else:
                 # stream
                 #files[os.path.basename(package_filename)] = open(package_filename,'rb')
-                files[os.path.basename(package_filename)] = FileChunks(package_filename,progress_hook=progress_hook)
+                files[os.path.basename(package_filename)] = FileChunks(package_filename,progress_hook=upload_progress_hook)
+
 
         if files:
             try:
@@ -5052,7 +5063,18 @@ class Wapt(BaseObjectClass):
         result['setuphelpers-version'] = setuphelpers.__version__
         result['wapt-py-version'] = __version__
         result['common-version'] = __version__
-        result['authorized-certificates'] = [dict(crt) for crt in self.authorized_certificates()]
+
+        trusted_certs_sha256 = []
+        trusted_certs_cn = []
+        for c in self.authorized_certificates():
+            for c2 in self.cabundle.check_certificates_chain(c):
+                if not c2.fingerprint in trusted_certs_sha256:
+                    trusted_certs_sha256.append(c2.fingerprint)
+                    trusted_certs_cn.append(c2.cn)
+
+        result['authorized_certificates'] = [c.as_pem() for c in self.authorized_certificates()]
+        result['authorized_certificates_sha256'] = trusted_certs_sha256
+        result['authorized_certificates_cn'] = trusted_certs_cn
         result['maturities'] = self.maturities
         result['locales'] = self.locales
 
