@@ -212,7 +212,10 @@ begin
     end;
   except
     on E:Exception do
+    begin
+      WAPTLocalJsonGet('waptservicerestart.json');
       TrayMessage := 'ERROR: ' + E.Message;
+    end;
   end;
   Synchronize(@UpdateTray);
 end;
