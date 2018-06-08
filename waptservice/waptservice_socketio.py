@@ -431,6 +431,7 @@ class WaptSocketIOClient(threading.Thread):
                         time.sleep(self.config.websockets_retry_delay)
 
                     if self.config.reload_if_updated():
+                        tmp_wapt.reload_config_if_updated()
                         if self.socketio_client:
                             self.socketio_client.disconnect()
                         raise EWaptException('Configuration changed, force Websocket connection to be recreated')

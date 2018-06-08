@@ -977,7 +977,7 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,3010],on_write=None,pid
     if proc.pid in pidlist:
         pidlist.remove(proc.pid)
         killtree(proc.pid)
-    if not proc.returncode in accept_returncodes:
+    if accept_returncodes is not None and not proc.returncode in accept_returncodes:
         if return_stderr != output:
             raise CalledProcessErrorOutput(proc.returncode,cmd,''.join(output+return_stderr))
         else:
@@ -1000,10 +1000,11 @@ def run_notfatal(*cmd,**args):
           output is not enforced to unicode
     """
     try:
-        return run(*cmd,**args)
+        return run(*cmd,accept_returncodes=None,**args)
     except Exception as e:
-        print('Warning : %s' % repr(e))
-        return ''
+        return ensure_unicode(e)
+
+
 
 
 def shell_launch(cmd):

@@ -3200,10 +3200,9 @@ class Wapt(BaseObjectClass):
         """Runs the command and wait for it termination
         returns output, don't raise exception if exitcode is not null but return '' """
         try:
-            return self.run(*cmd,**args)
+            return self.run(*cmd,accept_returncodes=None,**args)
         except Exception as e:
-            print('Warning : %s' % repr(e))
-            return ''
+            return ensure_unicode(e)
 
 
     def install_wapt(self,fname,params_dict={},explicit_by=None,force=None):
@@ -5054,6 +5053,8 @@ class Wapt(BaseObjectClass):
         result['wapt-py-version'] = __version__
         result['common-version'] = __version__
         result['authorized-certificates'] = [dict(crt) for crt in self.authorized_certificates()]
+        result['maturities'] = self.maturities
+        result['locales'] = self.locales
 
         # read from config
         if self.config.has_option('global','waptservice_sslport'):

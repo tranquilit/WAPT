@@ -4350,13 +4350,13 @@ procedure TVisWaptGUI.GridHostWinUpdatesGetImageIndexEx(
 var
   row: ISuperObject;
 begin
-  if Column = 0 then
+  if TSOGridColumn((Sender as TSOGrid).Header.Columns[Column]).PropertyName = 'local_status.status' then
   begin
-    row := GridHostPackages.GetNodeSOData(Node);
-    if row.B['installed'] then
+    row := (Sender as TSOGrid).GetNodeSOData(Node);
+    if row.B['local_status.installed'] then
       ImageIndex := 0
     else
-    if not row.B['installed'] and not row.B['hidden'] then
+    if not row.B['local_status.installed'] and not row.B['local_status.hidden'] then
       ImageIndex := 7
     else
       ImageIndex := 8
