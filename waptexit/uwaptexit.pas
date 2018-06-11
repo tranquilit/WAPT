@@ -70,7 +70,7 @@ var
 
 implementation
 
-uses soutils,IniFiles,waptcommon,uScaleDPI,waptwinutils,tiscommon;
+uses soutils,IniFiles,waptcommon,uScaleDPI,waptwinutils,tiscommon,typinfo;
 {$R *.lfm}
 {$ifdef ENTERPRISE }
 {$R res_enterprise.rc}
@@ -110,7 +110,7 @@ begin
   Timer1.Enabled := False;
   try
     if WAPTServiceRunning then
-    begin
+    try
       aso := WAPTLocalJsonGet('upgrade.json','','',waptservice_timeout*1000);
       if aso <> Nil then
       begin
@@ -129,6 +129,9 @@ begin
         LabIntro.Visible := False;
         LabDontShutdown.Visible := True;
       end
+    except
+      // TODO: handle properly the exception..
+      Close;
     end
     else
       // try using direct call
@@ -235,7 +238,7 @@ begin
   //Check if pending upgrades
   try
     if not (GetServiceStatusByName('','WAPTService') in [ssRunning])  then
-      Raise Exception.Create('WAPTService is not running');
+      Raise Exception.Create('WAPTService is not running: '+GetEnumName(TypeInfo(TServiceState),ord(GetServiceStatusByName('','WAPTService'))));
     aso := WAPTLocalJsonGet('checkupgrades.json','','',waptservice_timeout*1000);
     if aso<>Nil then
     begin
@@ -251,14 +254,17 @@ begin
       end;
     end;
   except
-    // timeout on waptservice, trying direct call...
-    WAPTServiceRunning:=False;
-    try
-      aso := SO(Run('wapt-get -j check-upgrades','',10000));
-      if aso<>Nil then
-        upgrades := aso['result.upgrades'];
-    except
-      upgrades := Nil;
+    on E:Exception do
+    begin
+      // timeout on waptservice, trying direct call...
+      WAPTServiceRunning:=False;
+      try
+        aso := SO(Run('wapt-get -j check-upgrades','',10000));
+        if aso<>Nil then
+          upgrades := aso['result.upgrades'];
+      except
+        upgrades := Nil;
+      end;
     end;
   end;
 
