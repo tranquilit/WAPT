@@ -318,7 +318,9 @@ class WaptBaseDB(BaseObjectClass):
 
     def delete_param(self,name):
         with self:
-            self.db.execute('delete from wapt_params where name=?',(name,))
+            row =  self.db.execute('select value from wapt_params where name=? limit 1',(name,)).fetchone()
+            if row:
+                self.db.execute('delete from wapt_params where name=?',(name,))
 
     def query(self,query, args=(), one=False,as_dict=True):
         """
@@ -2625,7 +2627,11 @@ class Wapt(BaseObjectClass):
                 self.host_organizational_unit_dn = forced_host_organizational_unit_dn
         else:
             # force reset to None if config file is changed at runtime
-            del(self.host_organizational_unit_dn)
+            try:
+                del(self.host_organizational_unit_dn)
+            except:
+                # error writing to db because of write access ?
+                logger.warning('forced OU DN in local wapt db is not matching wapt-get.ini value')
 
         if self.config.has_option('global','packages_whitelist'):
             self.packages_whitelist = ensure_list(self.config.get('global','packages_whitelist'),allow_none=True)
