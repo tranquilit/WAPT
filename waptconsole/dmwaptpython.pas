@@ -290,6 +290,8 @@ begin
   FWaptHostRepo := Unassigned;
   FWapt := Unassigned;
 
+  FPersonalCertificate := Unassigned;
+
   if AValue<>'' then
   try
     Screen.Cursor:=crHourGlass;

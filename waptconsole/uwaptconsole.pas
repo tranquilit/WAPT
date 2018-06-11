@@ -3409,7 +3409,7 @@ end;
 procedure TVisWaptGUI.ApplicationProperties1Exception(Sender: TObject;
   E: Exception);
 begin
-  MessageDlg('Error in application','An unhandled exception has occured'#13#10#13#10+E.Message,mtError,[mbOK],'');
+  MessageDlg('Error in application',E.Message,mtError,[mbOK],'');
 end;
 
 
