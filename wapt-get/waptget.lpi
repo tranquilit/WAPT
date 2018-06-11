@@ -53,19 +53,180 @@
         <PackageName Value="pltis_superobject"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="1">
+    <Units Count="6">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="602"/>
-        <CursorPos X="86" Y="627"/>
+        <TopLine Value="481"/>
+        <CursorPos Y="500"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
+      <Unit1>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="2132"/>
+        <CursorPos Y="2148"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="C:\lazarus\fpc\3.0.4\source\rtl\objpas\classes\classesh.inc"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="1608"/>
+        <CursorPos X="15" Y="1623"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="C:\lazarus\fpc\3.0.4\source\rtl\win\wininc\func.inc"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="121"/>
+        <CursorPos X="10" Y="135"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="C:\lazarus\fpc\3.0.4\source\rtl\inc\objpash.inc"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="188"/>
+        <CursorPos X="21" Y="203"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="C:\lazarus\fpc\3.0.4\source\rtl\win\tthread.inc"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="41"/>
+        <CursorPos X="3" Y="43"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit5>
     </Units>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="2151" TopLine="2132"/>
+      </Position1>
+      <Position2>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="489" Column="15" TopLine="475"/>
+      </Position2>
+      <Position3>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="74" Column="16" TopLine="58"/>
+      </Position3>
+      <Position4>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="94" Column="12" TopLine="91"/>
+      </Position4>
+      <Position5>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="355" TopLine="341"/>
+      </Position5>
+      <Position6>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="98" TopLine="83"/>
+      </Position6>
+      <Position7>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="100" TopLine="83"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="2147" TopLine="2132"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <Caret Line="2148" TopLine="2132"/>
+      </Position9>
+      <Position10>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="97" Column="30" TopLine="83"/>
+      </Position10>
+      <Position11>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="64" Column="15" TopLine="49"/>
+      </Position11>
+      <Position12>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="87" Column="5" TopLine="79"/>
+      </Position12>
+      <Position13>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="57" Column="15" TopLine="43"/>
+      </Position13>
+      <Position14>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="608" Column="12" TopLine="601"/>
+      </Position14>
+      <Position15>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="475" Column="23" TopLine="372"/>
+      </Position15>
+      <Position16>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="73" Column="15" TopLine="46"/>
+      </Position16>
+      <Position17>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="104" Column="13" TopLine="85"/>
+      </Position17>
+      <Position18>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="505" Column="11" TopLine="488"/>
+      </Position18>
+      <Position19>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="54" Column="5" TopLine="34"/>
+      </Position19>
+      <Position20>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="547" Column="33" TopLine="545"/>
+      </Position20>
+      <Position21>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="49" Column="5" TopLine="34"/>
+      </Position21>
+      <Position22>
+        <Filename Value="C:\lazarus\fpc\3.0.4\source\rtl\objpas\classes\classesh.inc"/>
+        <Caret Line="1636" Column="20" TopLine="1623"/>
+      </Position22>
+      <Position23>
+        <Filename Value="C:\lazarus\fpc\3.0.4\source\rtl\win\tthread.inc"/>
+        <Caret Line="48" Column="3" TopLine="46"/>
+      </Position23>
+      <Position24>
+        <Filename Value="C:\lazarus\fpc\3.0.4\source\rtl\objpas\classes\classesh.inc"/>
+        <Caret Line="1636" Column="15" TopLine="1621"/>
+      </Position24>
+      <Position25>
+        <Filename Value="C:\lazarus\fpc\3.0.4\source\rtl\win\tthread.inc"/>
+        <Caret Line="49" Column="18" TopLine="46"/>
+      </Position25>
+      <Position26>
+        <Filename Value="C:\lazarus\fpc\3.0.4\source\rtl\objpas\classes\classesh.inc"/>
+        <Caret Line="1623" Column="15" TopLine="1608"/>
+      </Position26>
+      <Position27>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="49" Column="17" TopLine="34"/>
+      </Position27>
+      <Position28>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="292" Column="17" TopLine="268"/>
+      </Position28>
+      <Position29>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="293" Column="17" TopLine="269"/>
+      </Position29>
+      <Position30>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="472" Column="71" TopLine="448"/>
+      </Position30>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>

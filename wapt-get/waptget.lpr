@@ -87,7 +87,7 @@ type
     inherited Create(True);
     app := anapp;
     PollTimeout:=3000;
-    LastReadEventId := 0;
+    LastReadEventId := MaxInt;
   end;
 
   procedure TPollThread.Execute;
@@ -103,8 +103,11 @@ type
       Synchronize(@HandleMessage);
     except
       on e:Exception do
+      begin
+        WriteLn('exception '+e.Message );
         if not Terminated then
           Sleep(PollTimeout);
+      end;
     end;
   end;
 
@@ -495,12 +498,7 @@ begin
       end;
     finally
       for task in tasks do
-          WAPTLocalJsonGet('cancel_task.json?id='+task.S['id']);
-      if Assigned(check_thread) then
-      begin
-        TerminateThread(check_thread.Handle,0);
-        FreeAndNil(check_thread);
-      end;
+        WAPTLocalJsonGet('cancel_task.json?id='+task.S['id']);
     end;
   end
   else
@@ -540,6 +538,8 @@ end;
 
 destructor PWaptGet.Destroy;
 begin
+  if Assigned(check_thread) then
+    check_thread.Free;
   if Assigned(APythonEngine) then
     APythonEngine.Free;
   DeleteCriticalSection(lock);
