@@ -984,14 +984,14 @@ class Version(object):
         return "Version('{}')".format('.'.join(self.members))
 
 def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.svn',u'.git',u'.gitignore',u'*.pyc',u'*.dbg',u'src'],
-        excludes_full=[os.path.join('WAPT','manifest.sha256'),os.path.join('WAPT','manifest.sha1'),os.path.join('WAPT','signature')]):
+        excludes_full=[os.path.join(u'WAPT','manifest.sha256'),os.path.join(u'WAPT','manifest.sha1'),os.path.join(u'WAPT','signature')]):
     """Create a zip file with filename zipf from source_root directory with target_root as new root.
     Don't include file which match excludes file pattern
 
     Args;
-        zipfn (str) : filename for zip file to create
-        source_root (str) : root directory of filetree to zip
-        target_root (str) ! root directory for all in zip file
+        zipfn (unicode or ZipFile) : filename for zip file to create
+        source_root (unicode) : root directory of filetree to zip
+        target_root (unicode) ! root directory for all in zip file
         excludes (list)  : list of glob pattern of files to excludes
         excludes_full (list) : full relative filepath of files to exclude
 
@@ -1001,8 +1001,8 @@ def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.sv
     result = []
     if not isinstance(source_root,unicode):
         source_root = unicode(source_root)
-    if not isinstance(source_root,unicode):
-        source_root = unicode(source_root)
+    if not isinstance(target_root,unicode):
+        target_root = unicode(target_root)
 
     if isinstance(zipfn,str) or isinstance(zipfn,unicode):
         if logger: logger.debug(u'Create zip file %s' % zipfn)
@@ -1025,11 +1025,11 @@ def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.sv
         if zip_item_fn in excludes_full:
             continue
         if os.path.isfile(source_item_fn):
-            if logger: logger.debug(u' adding file %s' % source_item_fn)
+            #if logger: logger.debug(u' adding file %s' % source_item_fn)
             zipf.write(source_item_fn, zip_item_fn)
             result.append(zip_item_fn)
         elif os.path.isdir(source_item_fn):
-            if logger: logger.debug(u'Add directory %s' % source_item_fn)
+            #if logger: logger.debug(u'Add directory %s' % source_item_fn)
             result.extend(create_recursive_zip(zipf, source_item_fn, zip_item_fn,excludes=excludes,excludes_full=excludes_full))
     if isinstance(zipfn,str) or isinstance(zipfn,unicode):
         zipf.close()
