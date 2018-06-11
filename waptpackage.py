@@ -1155,7 +1155,7 @@ class PackageEntry(BaseObjectClass):
         if not os.path.isdir(target_directory):
             raise Exception(u'Bad target directory %s for package build' % target_directory)
 
-        result_filename = os.path.abspath(os.path.join(target_directory,self.filename))
+        result_filename = ensure_unicode(os.path.abspath(os.path.join(target_directory,self.filename)))
         if os.path.isfile(result_filename):
             logger.warning(u'Target package already exists, removing %s' % result_filename)
             os.unlink(result_filename)
@@ -1164,8 +1164,8 @@ class PackageEntry(BaseObjectClass):
 
         allfiles = create_recursive_zip(
             zipfn = result_filename,
-            source_root = self.sourcespath,
-            target_root = '' ,
+            source_root = ensure_unicode(self.sourcespath),
+            target_root = u'' ,
             excludes=excludes)
 
         self._invalidate_package_content()
@@ -1310,7 +1310,7 @@ class PackageEntry(BaseObjectClass):
             # package is not yet built/signed.
             return None
 
-    def build_manifest(self,exclude_filenames = None,block_size=2**20,forbidden_files=[],md='sha256'):
+    def build_manifest(self,exclude_filenames = None,block_size=2**20,forbidden_files=[],md='sha256',waptzip=None):
         """Calc the manifest of an already built (zipped) wapt package
 
         Returns:
@@ -1324,24 +1324,35 @@ class PackageEntry(BaseObjectClass):
 
         if exclude_filenames is None:
             exclude_filenames = self.manifest_filename_excludes
-        waptzip = zipfile.ZipFile(self.localpath,'r',allowZip64=True)
-        manifest = {}
-        for fn in waptzip.filelist:
-            if not fn.filename in exclude_filenames:
-                if fn.filename in forbidden_files:
-                    raise EWaptPackageSignError('File %s is not allowed.'% fn.filename)
 
-                shasum = hashlib.new(md)
+        if waptzip is None:
+            waptzip = zipfile.ZipFile(self.localpath,'r',allowZip64=True)
+            _close_zip = True
+        else:
+            _close_zip = False
 
-                file_data = waptzip.open(fn)
-                while True:
-                    data = file_data.read(block_size)
-                    if not data:
-                        break
+        try:
+            manifest = {}
+            for fn in waptzip.filelist:
+                if not fn.filename in exclude_filenames:
+                    if fn.filename in forbidden_files:
+                        raise EWaptPackageSignError('File %s is not allowed.'% fn.filename)
+
+                    shasum = hashlib.new(md)
+
+                    file_data = waptzip.open(fn)
+                    while True:
+                        data = file_data.read(block_size)
+                        if not data:
+                            break
+                        shasum.update(data)
                     shasum.update(data)
-                shasum.update(data)
-                manifest[fn.filename] = shasum.hexdigest()
-        return manifest
+                    manifest[fn.filename] = shasum.hexdigest()
+            return manifest
+        finally:
+            if _close_zip:
+                waptzip.close()
+
 
     def sign_package(self,certificate,private_key=None,password_callback=None,private_key_password=None,mds=['sha256']):
         """Sign an already built package.
@@ -1400,8 +1411,7 @@ class PackageEntry(BaseObjectClass):
         self._invalidate_package_content()
 
         # clear existing signatures
-        waptzip = zipfile.ZipFile(self.localpath,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
-        with waptzip:
+        with zipfile.ZipFile(self.localpath,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED) as waptzip:
             filenames = waptzip.namelist()
             for md in hashlib.algorithms:
                 if self.get_signature_filename(md) in filenames:
@@ -1419,32 +1429,29 @@ class PackageEntry(BaseObjectClass):
             cert_chain_str = '\n'.join([cert.as_pem() for cert in certificate_chain])
             waptzip.writestr('WAPT/certificate.crt',cert_chain_str)
 
-        # add manifest and signature for each digest
-        for md in mds:
-            try:
-                # need read access to ZIP file.
-                manifest_data = self.build_manifest(exclude_filenames = excludes,forbidden_files = forbidden_files,md=md)
-            except EWaptPackageSignError as e:
-                raise EWaptBadCertificate('Certificate %s doesn''t allow to sign packages with setup.py file.' % signer_cert.cn)
+            # add manifest and signature for each digest
+            for md in mds:
+                try:
+                    # need read access to ZIP file.
+                    manifest_data = self.build_manifest(exclude_filenames = excludes,forbidden_files = forbidden_files,md=md,waptzip=waptzip)
+                except EWaptPackageSignError as e:
+                    raise EWaptBadCertificate('Certificate %s doesn''t allow to sign packages with setup.py file.' % signer_cert.cn)
 
-            manifest_data['WAPT/control'] = hexdigest_for_data(control,md = md)
+                manifest_data['WAPT/control'] = hexdigest_for_data(control,md = md)
 
-            new_cert_hash = hexdigest_for_data(cert_chain_str,md = md)
-            if manifest_data.get('WAPT/certificate.crt',None) != new_cert_hash:
-                # need to replace certificate in Wapt package
-                manifest_data['WAPT/certificate.crt'] = new_cert_hash
-            else:
-                new_cert_hash = None
+                new_cert_hash = hexdigest_for_data(cert_chain_str,md = md)
+                if manifest_data.get('WAPT/certificate.crt',None) != new_cert_hash:
+                    # need to replace certificate in Wapt package
+                    manifest_data['WAPT/certificate.crt'] = new_cert_hash
+                else:
+                    new_cert_hash = None
 
-            # convert to list of list...
-            wapt_manifest = json.dumps( manifest_data.items())
+                # convert to list of list...
+                wapt_manifest = json.dumps( manifest_data.items())
 
-            # sign with default md
-            signature = private_key.sign_content(wapt_manifest,md = md)
+                # sign with default md
+                signature = private_key.sign_content(wapt_manifest,md = md)
 
-            # add in Zip
-            waptzip = zipfile.ZipFile(self.localpath,'a',allowZip64=True)
-            with waptzip:
                 waptzip.writestr(self.get_manifest_filename(md=md),wapt_manifest)
                 waptzip.writestr(self.get_signature_filename(md),signature.encode('base64'))
 
