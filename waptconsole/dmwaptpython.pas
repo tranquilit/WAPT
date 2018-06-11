@@ -356,7 +356,9 @@ procedure TDMPython.DataModuleCreate(Sender: TObject);
 var
   st:TStringList;
 begin
+  {$ifdef ENTERPRISE}
   CheckPySources;
+  {$endif}
 
   with PythonEng do
   begin

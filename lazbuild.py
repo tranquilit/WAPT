@@ -73,9 +73,7 @@ def update_hash_file(filepath):
                     fn_rel_path = os.path.relpath(fn,os.path.dirname(filepath))
                     if os.path.isfile(fn):
                         filesha256 = waptcrypto.sha256_for_file(fn)
-                    else:
-                        filesha256 = waptcrypto.sha256_for_data('')
-                    new.write((u'%s  %s\n' % (filesha256,fn_rel_path)).encode('utf8'))
+                        new.write((u'%s  %s\n' % (filesha256,fn_rel_path)).encode('utf8'))
                 elif hash_fn.strip():
                     raise Exception('Bad line format for %s' % hash_fn)
         if os.path.exists(filepath+'.bak'):
