@@ -78,6 +78,9 @@ _defaults = {
     'allow_unsigned_status_data':False,
     'min_password_length':10,
     'allow_unauthenticated_registration':False,
+    'allow_unauthenticated_connect':False,
+    'clients_signing_key':None,
+    'clients_signing_certificate':None,
     'signature_clockskew':5*60,
     'application_root':'',
     'wapt_admin_group_dn':None,
@@ -176,6 +179,15 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
 
     if _config.has_option('options', 'allow_unauthenticated_registration'):
         conf['allow_unauthenticated_registration'] = _config.getboolean('options', 'allow_unauthenticated_registration')
+
+    if _config.has_option('options', 'allow_unauthenticated_connect'):
+        conf['allow_unauthenticated_connect'] = _config.getboolean('options', 'allow_unauthenticated_connect')
+
+    if _config.has_option('options', 'clients_signing_certificate'):
+        conf['clients_signing_certificate'] = _config.get('options', 'clients_signing_certificate')
+
+    if _config.has_option('options', 'clients_signing_key'):
+        conf['clients_signing_key'] = _config.get('options', 'clients_signing_key')
 
     if _config.has_option('options', 'signature_clockskew'):
         conf['signature_clockskew'] = _config.getint('options', 'signature_clockskew')

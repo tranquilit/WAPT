@@ -27,7 +27,7 @@ resourcestring
   rsKeyPairGenSuccess = 'Private key %s and public certificate %s have been successfully created.';
   rsPublicKeyGenFailure = 'The generation of the public certificate has failed.';
   rsPublicKeyGenError = 'Error during key generation : %s';
-
+  rsSpecifyCertificateForFulter = 'Please specify a personal certificate in configuration first, in order to be able to filter hosts on it';
   rsWriteCertOnLocalMachine = 'Do you want to copy this certificate to ssl Authorized Package Certificate store (%s) ?';
 
   rsBuildInProgress = 'Build in progress.';

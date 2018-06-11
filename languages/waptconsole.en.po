@@ -3276,6 +3276,10 @@ msgstr ""
 msgid "Send message to users"
 msgstr ""
 
+#: uwaptconsoleres.rsspecifycertificateforfulter
+msgid "Please specify a personal certificate in configuration first, in order to be able to filter hosts on it"
+msgstr ""
+
 #: uwaptconsoleres.rssrv
 msgctxt "uwaptconsoleres.rssrv"
 msgid "SRV: %s"

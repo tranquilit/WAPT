@@ -1811,7 +1811,8 @@ end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupUpdate(Sender: TObject);
 begin
-  ActCreateWaptSetup.Enabled:= DMPython.CertificateIsCodeSigning(WaptPersonalCertificatePath) and EnableManagementFeatures;
+  ActCreateWaptSetup.Enabled:= dmpython.PersonalCertificateIsCodeSigning and EnableManagementFeatures;
+      //    CertificateIsCodeSigning(WaptPersonalCertificatePath)
 end;
 
 procedure TVisWaptGUI.ActAddConflictsExecute(Sender: TObject);
@@ -3189,7 +3190,6 @@ var
   soresult,columns,urlParams, Node, Hosts,fields: ISuperObject;
   previous_uuid,prop: string;
   HostsCount,i: integer;
-  PersonalCertificate: Variant;
 const
   DefaultColumns:Array[0..13] of String = ('uuid','os_name','connected_ips','computer_fqdn',
     'computer_name','manufacturer','description','productname','serialnr','mac_addresses','connected_users','last_logged_on_user',

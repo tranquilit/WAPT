@@ -255,6 +255,19 @@ def register_host():
     """Add a new host into database, and return registration info
     If path is add_host_kerberos, assume there is (already validated by NGINX) computer kerberos SPN in the user part of Authorization http header else
     if path is add_host, requires a valid user/password combination in Authorization http header
+    If data contains a host_certificate_csr, sign it a returns it to the caller.
+
+
+    Specific headers:
+        'X-Signature':  base64 encoded signature of payload. Can be checked with public key in host_certificate_csr
+                        required if 'allow_unsigned_status_data' conf is False
+        'Content-Encoding' : if == 'gzip', payload in decompressed before process
+
+    Args:
+        hea
+
+    Returns:
+
     """
     try:
         starttime = time.time()
@@ -1958,14 +1971,17 @@ def on_waptclient_connect():
         uuid = request.args.get('uuid', None)
         if not uuid:
             raise EWaptForbiddden('Missing source host uuid')
-        host_cert = Hosts.select(Hosts.host_certificate).where(Hosts.uuid == uuid).first()
 
-        if host_cert and host_cert.host_certificate:
-            host_certificate = SSLCertificate(crt_string=host_cert.host_certificate)
-            host_cert_issuer = host_certificate.verify_claim(json.loads(request.args['login']), max_age_secs=app.conf['signature_clockskew'],required_attributes=['uuid'])
-            logger.debug(u'Socket IO %s connect checked. issuer : %s' % ( request.sid,host_cert_issuer))
-        else:
-            raise EWaptForbiddden('Host is not registered or no host certificate found in database.')
+        allow_unauthenticated_connect = app.conf.get('allow_unauthenticated_connect',False)
+        if not allow_unauthenticated_connect:
+            host_cert = Hosts.select(Hosts.host_certificate).where(Hosts.uuid == uuid).first()
+
+            if host_cert and host_cert.host_certificate:
+                host_certificate = SSLCertificate(crt_string=host_cert.host_certificate)
+                host_cert_issuer = host_certificate.verify_claim(json.loads(request.args['login']), max_age_secs=app.conf['signature_clockskew'],required_attributes=['uuid'])
+                logger.debug(u'Socket IO %s connect checked. issuer : %s' % ( request.sid,host_cert_issuer))
+            else:
+                raise EWaptForbiddden('Host is not registered or no host certificate found in database.')
 
         logger.info(u'Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
         # stores sid in database
@@ -1980,7 +1996,6 @@ def on_waptclient_connect():
         wapt_db.commit()
         wapt_db.close()
         session['uuid'] = uuid
-
 
         # if not known, reject the connection
         if hostcount == 0:

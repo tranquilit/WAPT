@@ -30,6 +30,7 @@ type
     FCachedPrivateKeyPassword: Ansistring;
     FPackagesAuthorizedCA: Variant;
     FMainWaptRepo: Variant;
+    FPersonalCertificate: Variant;
     FWaptHostRepo: Variant;
     FWAPT: Variant;
     Fwaptcrypto: Variant;
@@ -47,6 +48,7 @@ type
     function GetIsEnterpriseEdition: Boolean;
     function GetMainWaptRepo: Variant;
     function GetPackagesAuthorizedCA: Variant;
+    function GetPersonalCertificate: Variant;
     function GetWaptHostRepo: Variant;
     function getprivateKeyPassword: RawByteString;
     function Getsetuphelpers: Variant;
@@ -60,6 +62,7 @@ type
     procedure SetIsEnterpriseEdition(AValue: Boolean);
     procedure SetMainWaptRepo(AValue: Variant);
     procedure SetPackagesAuthorizedCA(AValue: Variant);
+    procedure SetPersonalCertificate(AValue: Variant);
     procedure SetWaptHostRepo(AValue: Variant);
     procedure setprivateKeyPassword(AValue: Ansistring);
     procedure SetWAPT(AValue: Variant);
@@ -94,12 +97,17 @@ type
     property waptpackage:Variant read Getwaptpackage;
     property waptdevutils:Variant read Getwaptdevutils;
     property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
+
+    property PersonalCertificate:Variant read GetPersonalCertificate write SetPersonalCertificate;
+    function PersonalCertificateIsCodeSigning:Boolean;
+
     {$ifdef ENTERPRISE}
     property licencing:Variant read Getlicencing;
     property MaxHostsCount:Integer Read FMaxHostsCount;
     {$endif}
     function CheckLicence(domain: String; var LicencesLog: String): Integer;
     procedure CheckPySources;
+
   end;
 
   function CreateSignedCert(keyfilename,
@@ -348,7 +356,7 @@ procedure TDMPython.DataModuleCreate(Sender: TObject);
 var
   st:TStringList;
 begin
-  //CheckPySources;
+  CheckPySources;
 
   with PythonEng do
   begin
@@ -524,6 +532,14 @@ procedure TDMPython.SetPackagesAuthorizedCA(AValue: Variant);
 begin
   if VarCompareValue(FPackagesAuthorizedCA,AValue) = vrEqual  then Exit;
   FPackagesAuthorizedCA := AValue;
+end;
+
+procedure TDMPython.SetPersonalCertificate(AValue: Variant);
+begin
+  if FPersonalCertificate=AValue then Exit;
+  if not VarIsEmpty(FPersonalCertificate) then
+    FPersonalCertificate:=Nil;
+  FPersonalCertificate:=AValue;
 end;
 
 procedure TDMPython.SetWaptHostRepo(AValue: Variant);
@@ -872,6 +888,28 @@ begin
 
   result := PyVarToSuperObject( crt.issuer );
 end;
+
+function TDMPython.PersonalCertificateIsCodeSigning: Boolean;
+begin
+  Result := not VarIsEmpty(DMPython.PersonalCertificate) and not VarIsNull(DMPython.PersonalCertificate) and (VarPythonAsString(DMPython.PersonalCertificate.has_usage('code_signing'))<>'')
+end;
+
+function TDMPython.GetPersonalCertificate: Variant;
+var
+  vcrt_filename: Variant;
+begin
+  if VarIsEmpty(FPersonalCertificate) or VarIsNull(FPersonalCertificate) then
+  begin
+    if (waptcommon.WaptPersonalCertificatePath <> '') and FileExistsUTF8(waptcommon.WaptPersonalCertificatePath) then
+    begin
+      vcrt_filename := PyUTF8Decode(waptcommon.WaptPersonalCertificatePath);
+      FPersonalCertificate := waptcrypto.SSLCertificate(crt_filename:=vcrt_filename);
+    end;
+  end;
+  Result := FPersonalCertificate;
+end;
+
+
 
 {$ifdef ENTERPRISE}
 {$include ..\waptenterprise\includes\dmwaptpython.inc}

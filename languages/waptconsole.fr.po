@@ -1705,11 +1705,11 @@ msgstr "Plus d'options"
 
 #: tviswaptgui.cbauthorizedhosts.caption
 msgid "Only authorized computers"
-msgstr ""
+msgstr "Seulement les machines autorisées"
 
 #: tviswaptgui.cbauthorizedhosts.hint
 msgid "Returns only computers accepting current personal certificate"
-msgstr ""
+msgstr "Ne liste que les machines qui acceptent le certificat personnel actif"
 
 #: tviswaptgui.cbforcedwsusscandownload.caption
 msgid "Force download even if already up to date"
@@ -2769,15 +2769,15 @@ msgstr "Êtes-vous sûr de vouloir lancer l'audit de paquets sur %s machines ?"
 
 #: uwaptconsoleres.rsconfirmhostswaptwuadownload
 msgid "Are you sure you want to scan and download Windows updates on %d hosts ?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir lancer le scan et téléchargement des mises à jour Windows sur %s machines ?"
 
 #: uwaptconsoleres.rsconfirmhostswaptwuainstall
 msgid "Are you sure you want to scan and install Windows updates on %d hosts ?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir lancer le scan et l'installation des mises à jour Windows sur %s machines ?"
 
 #: uwaptconsoleres.rsconfirmhostswaptwuascan
 msgid "Are you sure you want to scan pending Windows updates on %d hosts ?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir lancer le scan des mises à jour Windows sur %s machines ?"
 
 #: uwaptconsoleres.rsconfirmimport
 msgctxt "uwaptconsoleres.rsconfirmimport"
@@ -3105,15 +3105,15 @@ msgstr "La clé %s existe déjà, merci de choisir un nom différent."
 
 #: uwaptconsoleres.rskeypairgensuccess
 msgid "Private key %s and public certificate %s have been successfully created."
-msgstr ""
+msgstr "La clé privée %s et le certificat %s ont été créés avec succès."
 
 #: uwaptconsoleres.rslicencedto
 msgid "Licenced to %s"
-msgstr ""
+msgstr "Licence concédée à %s"
 
 #: uwaptconsoleres.rsloadinghosttasks
 msgid "Downloading %s tasks..."
-msgstr ""
+msgstr "Téléchargement de %s tâches..."
 
 #: uwaptconsoleres.rsloadinventory
 msgid "Loading hosts inventory"
@@ -3278,15 +3278,15 @@ msgstr "La clé %s a bien été créée."
 
 #: uwaptconsoleres.rsreloadwaptconsoleconfig
 msgid "Reloading WaptConsole configuration"
-msgstr ""
+msgstr "Rechargement de la configuration de la console"
 
 #: uwaptconsoleres.rsreloadwaptserviceconfig
 msgid "Reloading WaptService configuration"
-msgstr ""
+msgstr "Recharger la configuration du service Wapt"
 
 #: uwaptconsoleres.rsrepositoryunregisterconfirm
 msgid "Confirm the unregistration of repository %s"
-msgstr ""
+msgstr "Confirmer le retrait du dépôt %s"
 
 #: uwaptconsoleres.rsrestartingwaptservice
 msgid "Waptservice restart triggered on the remote hosts."
@@ -3308,23 +3308,27 @@ msgstr "Enregistrer les modifications ?"
 
 #: uwaptconsoleres.rsselectaddconflicts
 msgid "Select packages to append to hosts conflicts"
-msgstr ""
+msgstr "Sélectionner les paquets à ajouter aux conflits sur les machines"
 
 #: uwaptconsoleres.rsselectadddepends
 msgid "Select packages to append to hosts configuration"
-msgstr ""
+msgstr "Sélectionner les paquets à ajouter aux dépendances des machines"
 
 #: uwaptconsoleres.rsselectremoveconflicts
 msgid "Select packages to remove from hosts conflicts"
-msgstr ""
+msgstr "Sélectionner les paquets à enlever des conflits des machines"
 
 #: uwaptconsoleres.rsselectremovedepends
 msgid "Select packages to remove from hosts configuration"
-msgstr ""
+msgstr "Sélectionner les paquets à enlever des dépendances des machines"
 
 #: uwaptconsoleres.rsshowmessageforusers
 msgid "Send message to users"
-msgstr ""
+msgstr "Envoyer un message aux utilisateurs"
+
+#: uwaptconsoleres.rsspecifycertificateforfulter
+msgid "Please specify a personal certificate in configuration first, in order to be able to filter hosts on it"
+msgstr "Spécifier un certificat personnel dans la configuration de la console pour pouvoir filtrer les machines gérables"
 
 #: uwaptconsoleres.rssrv
 msgctxt "uwaptconsoleres.rssrv"
