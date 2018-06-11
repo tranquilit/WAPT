@@ -90,6 +90,7 @@ from waptutils import BaseObjectClass,Version,ensure_unicode,ZipFile,force_utf8_
 from waptutils import create_recursive_zip,ensure_list,all_files,list_intersection
 from waptutils import datetime2isodate,httpdatetime2isodate,fileutcdate,fileisoutcdate
 from waptutils import default_http_headers,wget,get_language,import_setup,import_code
+from waptutils import _disable_file_system_redirection
 
 from waptcrypto import EWaptMissingCertificate,EWaptBadCertificate
 from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL
@@ -1732,6 +1733,10 @@ class PackageEntry(BaseObjectClass):
 
         Returns:
             output of hook.
+
+        Changes:
+
+            1.6.2.1: the called hook is run with Disabled win6432 FileSystem redirection
         """
         setuppy = None
 
@@ -1822,7 +1827,8 @@ class PackageEntry(BaseObjectClass):
 
             try:
                 logger.info(u"  executing setup.%s(%s) " % (hook_name,repr(setup.params)))
-                hookdata = hook_func()
+                with _disable_file_system_redirection():
+                    hookdata = hook_func()
                 return hookdata
             except Exception as e:
                 logger.critical(u'Fatal error in %s function: %s:\n%s' % (hook_name,ensure_unicode(e),ensure_unicode(traceback.format_exc())))

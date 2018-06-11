@@ -108,6 +108,7 @@ from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,\
 from waptutils import BaseObjectClass,ensure_list,ensure_unicode,default_http_headers,get_time_delta
 from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,ZipFile,LogOutput
 from waptutils import import_code,import_setup,force_utf8_no_bom,format_bytes,wget,merge_dict,remove_encoding_declaration,list_intersection
+from waptutils import _disable_file_system_redirection
 
 from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL,SSLVerifyException
 from waptcrypto import get_peer_cert_chain_from_server,default_pwd_callback,hexdigest_for_data,get_cert_chain_as_pem
@@ -3403,12 +3404,13 @@ class Wapt(BaseObjectClass):
                         self.waptdb.store_setuppy(install_id, setuppy = codecs.open(setup_filename,'r',encoding='utf-8').read(),install_params=params)
 
                         if not self.dry_run:
-                            try:
-                                logger.info(u"  executing install script")
-                                exitstatus = setup.install()
-                            except Exception as e:
-                                logger.critical(u'Fatal error in install script: %s:\n%s' % (ensure_unicode(e),ensure_unicode(traceback.format_exc())))
-                                raise
+                            with _disable_file_system_redirection():
+                                try:
+                                    logger.info(u"  executing install script")
+                                    exitstatus = setup.install()
+                                except Exception as e:
+                                    logger.critical(u'Fatal error in install script: %s:\n%s' % (ensure_unicode(e),ensure_unicode(traceback.format_exc())))
+                                    raise
                         else:
                             logger.warning(u'Dry run, not actually running setup.install()')
                             exitstatus = None
