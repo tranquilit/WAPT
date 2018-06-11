@@ -1491,7 +1491,7 @@ class ZipFile(object):
                         self._filePassed = 0
                     raise BadZipFile(
                           'File name in directory %r and header %r differ.'
-                          % (zinfo.orig_filename, fname))
+                          % (info.orig_filename, fname))
 
                 # read the actual data
                 data = fp.read(fheader[_FH_COMPRESSED_SIZE])
@@ -1503,7 +1503,7 @@ class ZipFile(object):
                 # write fileheader and data
                 fp.write(fileheader)
                 fp.write(data)
-                if zinfo.flag_bits & _FHF_HAS_DATA_DESCRIPTOR:
+                if info.flag_bits & _FHF_HAS_DATA_DESCRIPTOR:
                     # Write CRC and file sizes after the file data
                     fp.write(struct.pack("<LLL", info.CRC, info.compress_size,
                             info.file_size))
