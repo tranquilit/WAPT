@@ -746,6 +746,15 @@ class SSLCABundle(BaseObjectClass):
                 certificates.append(cert)
         return SSLCABundle(certificates=certificates)
 
+    def certificates_sha256_fingerprints(self):
+        """Returns csv of sha256 fingerprints
+
+        Returns:
+            str
+        """
+        return ','.join([cert.fingerprint for cert in self.certificates()])
+
+
 def get_peer_cert_chain_from_server(url):
     """Returns list of SSLCertificates from initial handshake of https server
     Add certificates to current SSLCAchain

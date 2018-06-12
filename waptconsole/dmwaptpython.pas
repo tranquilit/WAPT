@@ -783,6 +783,7 @@ var
   CAKeyFilenameU,destpem,destcrt : Variant;
   key,cert,cakey,cacert:Variant;
   cakey_pwd: String;
+  ca_pem: RawByteString;
 
 begin
   result := '';
@@ -864,6 +865,18 @@ begin
       is_code_signing := codesigning);
 
   cert.save_as_pem(filename := destcrt);
+
+  if not VarIsNull(cacert) and not VarIsEmpty(cacert) then
+    // append CA
+    with TFileStream.Create(destcrt,fmOpenReadWrite) do
+    try
+      Seek(0,soEnd);
+      ca_pem := VarToStr(cacert.as_pem('--noarg--'));
+      WriteBuffer(ca_pem[1],length(ca_pem));
+    finally
+      Free;
+    end;
+
   result := utf8encode(destcrt);
 end;
 
@@ -895,19 +908,29 @@ end;
 
 function TDMPython.PersonalCertificateIsCodeSigning: Boolean;
 begin
-  Result := not VarIsEmpty(DMPython.PersonalCertificate) and not VarIsNull(DMPython.PersonalCertificate) and (VarPythonAsString(DMPython.PersonalCertificate.has_usage('code_signing'))<>'')
+  try
+    Result := not VarIsEmpty(DMPython.PersonalCertificate) and not VarIsNull(DMPython.PersonalCertificate) and
+      (VarPythonAsString(DMPython.PersonalCertificate.certificates('--noarg--').__getitem__(0).has_usage('code_signing'))<>'')
+  except
+    //Unable to load certificate...
+    Result := False;
+  end;
 end;
 
 function TDMPython.GetPersonalCertificate: Variant;
 var
   vcrt_filename: Variant;
+  bundle: Variant;
 begin
   if VarIsEmpty(FPersonalCertificate) or VarIsNull(FPersonalCertificate) then
   begin
     if (waptcommon.WaptPersonalCertificatePath <> '') and FileExistsUTF8(waptcommon.WaptPersonalCertificatePath) then
-    begin
+    try
       vcrt_filename := PyUTF8Decode(waptcommon.WaptPersonalCertificatePath);
-      FPersonalCertificate := waptcrypto.SSLCertificate(crt_filename:=vcrt_filename);
+      FPersonalCertificate := waptcrypto.SSLCABundle(vcrt_filename);
+
+    except
+      Result := Unassigned;
     end;
   end;
   Result := FPersonalCertificate;
