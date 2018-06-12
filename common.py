@@ -2535,6 +2535,9 @@ class Wapt(BaseObjectClass):
             'personal_certificate_path':'',
             'check_certificates_validity':'1',
             'sign_digests':'sha256',
+
+            'forced_uuid':'',
+            'use_fqdn_as_uuid':'0',
             }
 
         if not self.config:
@@ -2605,8 +2608,8 @@ class Wapt(BaseObjectClass):
         if self.config.has_option('global','language'):
             self.language = self.config.get('global','language')
 
-        if self.config.has_option('global','uuid'):
-            self.forced_uuid = self.config.get('global','uuid')
+        if self.config.has_option('global','forced_uuid'):
+            self.forced_uuid = self.config.get('global','forced_uuid')
             if self.forced_uuid != self.host_uuid:
                 logger.debug('Storing new uuid in DB %s' % self.forced_uuid)
                 self.host_uuid = self.forced_uuid
@@ -2821,21 +2824,17 @@ class Wapt(BaseObjectClass):
         elif self.use_fqdn_as_uuid:
             new_uuid = current_hostname
         else:
-            new_uuid = previous_uuid
-
-        if not previous_uuid or previous_uuid != new_uuid or registered_hostname != current_hostname:
-            if previous_uuid != new_uuid:
-                # forget old host package if any as it is not relevant anymore
-                self.forget_packages(previous_uuid)
-            logger.info('Unknown UUID or hostname has changed: reading host UUID')
-            if new_uuid is None:
-                logger.info('reading custom host UUID from WMI System Information.')
-                try:
-                    inv = setuphelpers.wmi_info_basic()
-                    new_uuid = inv['System_Information']['UUID']
-                except:
+            try:
+                inv = setuphelpers.wmi_info_basic()
+                new_uuid = inv['System_Information']['UUID']
+            except:
+                if previous_uuid is None or registered_hostname != current_hostname:
                     # random uuid if wmi is not working
                     new_uuid = str(uuid.uuid4())
+                else:
+                    new_uuid = previous_uuid
+
+        if previous_uuid is None or previous_uuid != new_uuid or registered_hostname != current_hostname:
             self.write_param('uuid',new_uuid)
             self.write_param('hostname',current_hostname)
         return new_uuid
@@ -2845,7 +2844,6 @@ class Wapt(BaseObjectClass):
     def host_uuid(self,value):
         self.forced_uuid = value
         self.write_param('uuid',value)
-
 
     @host_uuid.deleter
     def host_uuid(self):
