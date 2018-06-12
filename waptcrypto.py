@@ -1367,6 +1367,7 @@ class SSLPrivateKey(BaseObjectClass):
 
 class SSLCertificateSigningRequest(BaseObjectClass):
     def __init__(self,csr=None,csr_filename=None,csr_pem_string=None):
+        self._rsa = None
         self.csr_filename = csr_filename
         if csr:
             self.csr = csr
@@ -1382,6 +1383,152 @@ class SSLCertificateSigningRequest(BaseObjectClass):
     def save_as_pem(self,filename):
         with open(filename, "wb") as f:
             f.write(self.as_pem())
+
+    @property
+    def rsa(self):
+        """Return public RSA key"""
+        if not self._rsa:
+            self._rsa = self.csr.public_key()
+        return self._rsa
+
+    @property
+    def modulus(self):
+        return format(self.rsa.public_numbers().n, "x")
+
+    def _subject_attribute(self,oid):
+        att = self.csr.subject.get_attributes_for_oid(oid)
+        if att:
+            return att[0].value
+        else:
+            return None
+
+    @property
+    def subject_dn(self):
+        return self._subject_attribute(x509.NameOID.DN_QUALIFIER)
+
+    @property
+    def cn(self):
+        return self._subject_attribute(x509.NameOID.COMMON_NAME)
+
+    @property
+    def subject(self):
+        """Returns subject of the certificate as a Dict"""
+        subject = self.csr.subject
+        result = {}
+        for attribute in subject:
+            result[attribute.oid._name]= attribute.value
+        return result
+
+    @property
+    def subject_key_identifier(self):
+        """Identify the certificate by its subject
+
+        Returns:
+            bytes
+
+        >>> c.subject_key_identifier
+        '\xf2\x99\xd7\xfao\n\xf1\x1e\x03?\xd0\xf2\xff6\xfe\xe8\x8cv\xab\x1a'
+        """
+        keyid = self.extensions.get('subjectKeyIdentifier',None)
+        if keyid:
+            return keyid.digest
+        else:
+            return None
+
+    @property
+    def key_usage(self):
+        keyusage = self.extensions.get('keyUsage',None)
+        if keyusage:
+            result = []
+            for att in ('digital_signature','content_commitment','key_encipherment',
+                'data_encipherment','key_agreement','key_cert_sign','crl_sign','encipher_only','decipher_only'):
+                if hasattr(keyusage,att) and getattr(keyusage,att):
+                    result.append(att)
+            return result
+        else:
+            return None
+
+
+    @property
+    def subject_alt_names(self):
+        """Other names of the subject (in addition to cn)"""
+        names = self.extensions.get('subjectAltName',None)
+        if names:
+            return [n.value for n in names]
+        else:
+            return None
+
+    def verify_content(self,content,signature,md='sha256',block_size=2**20):
+        """Check that the signature matches the content
+
+        Args:
+            content (str) : content to check. if not str, the structure will be converted to json first
+            signature (str) : ssl signature of the content
+
+        Returns:
+            str: subject (CN) of current certificate or raise an exception if no match
+
+        Raises SSLVerifyException
+        """
+        if isinstance(content,unicode):
+            content = content.encode('utf8')
+        elif isinstance(content,(list,dict)):
+            content = jsondump(content)
+
+        if not isinstance(content,str):
+            raise InvalidSignature('Bad content type for verify_content, should be either str or file like')
+
+        # todo : recommended for new projects...
+        #apadding = padding.PSS(
+        #    mgf=padding.MGF1(get_hash_algo(md)),
+        #    salt_length=padding.PSS.MAX_LENGTH)
+
+        # compatible with openssl sign
+        apadding = padding.PKCS1v15()
+
+        try:
+            self.rsa.verify(signature,content,apadding,get_hash_algo(md))
+            return self.cn
+        except InvalidSignature as e:
+            raise SSLVerifyException(u'SSL signature verification failed for CSR %s ' % (self.subject))
+
+    @property
+    def extensions(self):
+        """Returns certificates extensions as a dict
+
+        Returns:
+            dict
+
+        """
+        return dict([(e.oid._name,e.value) for e in self.csr.extensions])
+
+    @property
+    def is_ca(self):
+        """Return Tue if certificate has CA:TRUE baisc contraints"""
+        return 'basicConstraints' in self.extensions and self.extensions['basicConstraints'].ca
+
+    @property
+    def is_code_signing(self):
+        """Return True if certificate has 'Code Signing' in its extendedKeyUsage"""
+        ext_key_usages = 'extendedKeyUsage' in self.extensions and self.extensions['extendedKeyUsage']
+        if ext_key_usages:
+            return len([usage for usage in ext_key_usages if usage._name == 'codeSigning'])>0
+        else:
+            return False
+
+    def has_usage(self,usage):
+        """Return usage if certificate has the requested usage
+
+        Args:
+            usage (str): ca or code_signing
+
+        """
+        if usage == 'ca' and self.is_ca:
+            return usage
+        elif  usage == 'code_signing' and self.is_code_signing:
+            return usage
+        else:
+            return ''
 
 class SSLCertificate(BaseObjectClass):
     """Hold a X509 public certificate
