@@ -1638,7 +1638,13 @@ def get_hosts():
 
             if 'trusted_certs_sha256' in request.args:
                 trusted_certs_sha256 = ensure_list(request.args.get('trusted_certs_sha256', ''))
-                query = query & (Hosts.authorized_certificates_sha256.contains(trusted_certs_sha256[0]))
+                certs_sub = None
+                for cert_fingerprint in trusted_certs_sha256:
+                    if certs_sub is None:
+                        certs_sub = Hosts.authorized_certificates_sha256.contains(cert_fingerprint)
+                    else:
+                        certs_sub = certs_sub | Hosts.authorized_certificates_sha256.contains(cert_fingerprint)
+                query = query & certs_sub
 
             if 'organizational_unit' in request.args:
                 ou_list = request.args.get('organizational_unit').split('||')
