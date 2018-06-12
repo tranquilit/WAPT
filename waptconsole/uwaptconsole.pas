@@ -975,10 +975,9 @@ end;
 procedure TVisWaptGUI.cbNeedUpgradeClick(Sender: TObject);
 begin
   Gridhosts.Clear;
-  if ((length(EdSearchHost.Text)>5)  and
-    (cbSearchDMI.Checked or cbSearchSoftwares.Checked or cbSearchPackages.Checked or cbSearchHost.Checked)) or
-    (cbHasErrors.Checked or cbNeedUpgrade.Checked or cbReachable.Checked or cbAuthorizedHosts.Checked) then
-        ActSearchHostExecute(Sender);
+  {if ((length(EdSearchHost.Text)>5) and (cbSearchDMI.Checked or cbSearchSoftwares.Checked or cbSearchPackages.Checked or cbSearchHost.Checked)) or
+    (cbHasErrors.Checked or cbNeedUpgrade.Checked or cbReachable.Checked or cbAuthorizedHosts.Checked) then}
+  ActSearchHostExecute(Sender);
 end;
 
 procedure TVisWaptGUI.CheckBox_errorChange(Sender: TObject);
@@ -1719,11 +1718,8 @@ begin
 
       // If this a CA cert, we should perhaps take it in account right now...
       if not winutils.IsWindowsAdmin() then
-      begin
         ShowMessageFmt(rsNotRunningAsAdminCanNotSSL,[AppendPathDelim(WaptBaseDir)+'ssl']);
-        Exit;
-      end
-      else
+
       if CBIsCA.Checked and (MessageDlg(Format(rsWriteCertOnLocalMachine,[AppendPathDelim(WaptBaseDir)+'ssl']), mtConfirmation, [mbYes, mbNo],0) = mrYes) then
       begin
         if CopyFile(CertificateFilename,
@@ -1767,10 +1763,7 @@ var
   WAPTSetupPath: string;
 begin
   if not winutils.IsWindowsAdmin() then
-  begin
     ShowMessage(rsNotRunningAsAdmin);
-    Exit;
-  end;
 
   if (waptcommon.DefaultPackagePrefix = '') then
   begin
