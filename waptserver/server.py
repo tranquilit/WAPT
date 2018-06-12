@@ -85,8 +85,8 @@ from waptserver.model import upgrade_db_structure
 from waptserver.model import load_db_config
 
 from waptpackage import PackageEntry,update_packages,WaptLocalRepo,EWaptBadSignature,EWaptMissingCertificate
-from waptcrypto import SSLCertificate,SSLVerifyException,InvalidSignature,sha256_for_file
-from waptcrypto import sha256_for_data
+from waptcrypto import SSLCertificate,SSLVerifyException,SSLCertificateSigningRequest,InvalidSignature,SSLPrivateKey
+from waptcrypto import sha256_for_file,sha256_for_data
 
 from waptutils import datetime2isodate,ensure_list,ensure_unicode,Version,setloglevel
 
@@ -248,6 +248,16 @@ def index():
     }
     return render_template('index.html', data=data)
 
+def sign_host_csr(host_certificate_csr):
+    """Sign the CSR with server key and retirn a certificate for further host auth on nginx server"""
+    host_cert = None
+    if os.path.isfile(conf['clients_signing_key']) and os.path.isfile(conf['clients_signing_certificate']):
+        signing_key = SSLPrivateKey(conf['clients_signing_key'])
+        signing_cert = SSLCertificate(conf['clients_signing_certificate'])
+        host_cert = signing_cert.build_certificate_from_csr(host_certificate_csr,signing_key,3650)
+    return host_cert
+
+
 @app.route('/add_host_kerberos',methods=['HEAD','POST'])
 @app.route('/add_host',methods=['HEAD','POST'])
 @check_auth_is_provided
@@ -261,10 +271,18 @@ def register_host():
     Specific headers:
         'X-Signature':  base64 encoded signature of payload. Can be checked with public key in host_certificate_csr
                         required if 'allow_unsigned_status_data' conf is False
+        'X-Signer': indication of signer (not authoritative)
         'Content-Encoding' : if == 'gzip', payload in decompressed before process
+        'authorization' : basic auth
+        'X-Forwarded-For' :
+
 
     Args:
-        hea
+        posted body (json encoded dict):
+            uuid
+            host_info.computer_fqdn
+            host_certificate_csr
+            host_certificate
 
     Returns:
 
@@ -349,6 +367,15 @@ def register_host():
         if not authenticated_user:
             raise EWaptAuthenticationFailure('register_host : Missing authentication header')
 
+        # sign the CSR if present
+        if 'host_certificate_csr' in data:
+            host_certificate_csr = SSLCertificateSigningRequest(csr_pem_string=data['host_certificate_csr'])
+            if host_certificate_csr.cn.lower() == computer_fqdn.lower() or host_certificate_csr.cn.lower() == uuid.lower():
+                host_cert = sign_host_csr(host_certificate_csr)
+            else:
+                host_cert = None
+            data['host_certificate'] = host_cert
+
         if not app.conf['allow_unauthenticated_registration']:
             logger.debug(u'Authenticated computer %s with user %s ' % (computer_fqdn,authenticated_user,))
             # check that authenticated user matches the CN of the certificate supplied in post data
@@ -361,6 +388,10 @@ def register_host():
         data['last_seen_on'] = datetime2isodate()
         data['registration_auth_user'] = registration_auth_user
         db_data = update_host_data(data)
+
+        if 'host_certificate_csr' in data and host_cert:
+            # return back signed host certificate
+            db_data['host_certificate'] = host_cert.as_pem()
 
         result = db_data
         message = 'register_host'
