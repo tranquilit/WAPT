@@ -2813,7 +2813,7 @@ class Wapt(BaseObjectClass):
 
     @property
     def host_uuid(self):
-        previous_uuid = self.read_param('uuid')
+        previous_uuid = self.read_param('uuid') or None
         new_uuid = None
 
         registered_hostname = self.read_param('hostname')
@@ -2830,7 +2830,11 @@ class Wapt(BaseObjectClass):
             except:
                 if previous_uuid is None or registered_hostname != current_hostname:
                     # random uuid if wmi is not working
-                    new_uuid = str(uuid.uuid4())
+                    self.forced_uuid = str(uuid.uuid4())
+                    new_uuid = self.forced_uuid
+                    self.config.set('global','forced_uuid',new_uuid)
+                    if self.config_filename is not None:
+                        self.config.write(open(self.config_filename,'wb'))
                 else:
                     new_uuid = previous_uuid
 
