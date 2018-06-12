@@ -3331,19 +3331,26 @@ def run_task(name):
     """Launch immediately the Windows Scheduled task
 
     """
-    task = get_task(name)
-    task.Run()
-    return task
-
+    return ensure_unicode(run(ur'schtasks /Run /TN "%s"' % name))
 
 def task_exists(name):
     """Return true if a sheduled task names 'name.job' is defined
+
+    """
+    try:
+        run(ur'schtasks /Query /TN "%s"' % name)
+        return True
+    except CalledProcessError as e:
+        if e.returncode == 1:
+            return False
+        raise e
 
     """
     ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler,None,
                                     pythoncom.CLSCTX_INPROC_SERVER,
                                     taskscheduler.IID_ITaskScheduler)
     return '%s.job' % name in ts.Enum()
+    """
 
 
 def delete_task(name):
@@ -3352,8 +3359,12 @@ def delete_task(name):
     Args:
         name (str) : name of the tasks as created in create_daily_task
     """
-    return  ensure_unicode(run('schtasks /Delete /F /TN "%s"' % name))
-
+    try:
+        return ensure_unicode(run(ur'schtasks /Delete /F /TN "%s"' % name))
+    except CalledProcessError as e:
+        if e.returncode == 1:
+            return ensure_unicode(e)
+        raise e
     # old task sheduler interface deprecated by microsoft.
     """
     ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler,None,
@@ -3366,7 +3377,7 @@ def delete_task(name):
 
 def disable_task(name):
     """Disable a Windows scheduled task"""
-    return ensure_unicode(run('schtasks /Change /TN "%s" /DISABLE' % name))
+    return ensure_unicode(run(ur'schtasks /Change /TN "%s" /DISABLE' % name))
     """
     task = get_task(name)
     task.SetFlags(task.GetFlags() | taskscheduler.TASK_FLAG_DISABLED)
