@@ -111,6 +111,14 @@ if platform.system() == 'Windows':
             return os.environ['PROGRAMFILES']
 
 
+else:
+    class _disable_file_system_redirection:
+        def __enter__(self):
+            pass
+
+        def __exit__(self, type, value, traceback):
+            pass
+
 #####################################
 # http://code.activestate.com/recipes/498181-add-thousands-separator-commas-to-formatted-number/
 # Code from Michael Robellard's comment made 28 Feb 2010
