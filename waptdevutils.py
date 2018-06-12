@@ -214,7 +214,7 @@ def update_external_repo(repourl,search_string,proxy=None,myrepo=None,my_prefix=
     else:
         return [p.as_dict() for p in packages]
 
-def get_packages_filenames(packages,with_depends=True,waptconfigfile=None,repo_name='wapt-templates',localrepo=None,remoterepo=None):
+def get_packages_filenames(packages,with_depends=True,waptconfigfile=None,repo_name='wapt-templates',remoterepo=None):
     """Returns list of package filenames (latest version) and md5 matching comma separated list of packages names and their dependencies
     helps to batch download a list of selected packages using tools like curl or wget
 
@@ -237,13 +237,6 @@ def get_packages_filenames(packages,with_depends=True,waptconfigfile=None,repo_n
         'http_proxy':'',
         'verify_cert':'0',
         }
-
-    if localrepo is None:
-        config = RawConfigParser(defaults=defaults)
-        config.read(waptconfigfile)
-
-        localrepo = WaptRemoteRepo(name='global',config=config)
-        localrepo.update()
 
     if remoterepo is None:
         config = RawConfigParser(defaults=defaults)
