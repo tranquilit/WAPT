@@ -96,10 +96,6 @@ msgid ""
 "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html\n"
 msgstr "Passwort um sich auf den WAPT Server über die WAPT Konsole zu verbinden."
 
-#: tviswaptserverpostconf.edwaptrepourl.editlabel.caption
-msgid "URL of the WAPT package repository"
-msgstr "URL vom WAPT Paket Repository"
-
 #: tviswaptserverpostconf.edwaptservername.hint
 #, fuzzy
 #| msgid "WAPT clients make requests to the server. In order to connect to the WAPT server,"
@@ -119,10 +115,6 @@ msgstr "WAPT Kunden machen Anfragen an den Server. um sich mit dem WAPT Server z
 #| msgid "srvwapt.mondomaine.local"
 msgid "srvwapt.mydomain.lan"
 msgstr "srvwapt.mondomaine.local"
-
-#: tviswaptserverpostconf.edwaptserverurl.editlabel.caption
-msgid "URL of the WAPT server"
-msgstr "URL vom WAPT Server"
 
 #: tviswaptserverpostconf.label1.caption
 #, fuzzy
@@ -269,6 +261,10 @@ msgstr "Win32 Exe wrapper: %s %s"
 msgid "W: interrupt received, killing serverâ¦"
 msgstr "Unterbrechung empfangen, zerstört serverâ¦"
 
+#: uwaptserverres.rscheckingwaptserver
+msgid "Checking WaptServer"
+msgstr ""
+
 #: uwaptserverres.rsconfigurepostgresql
 msgid "Configure NGINX server and PostgreSQL database"
 msgstr ""
@@ -343,6 +339,18 @@ msgstr ""
 
 #: uwaptserverres.rsstartingwaptserver
 msgid "Starting WaptServer"
+msgstr ""
+
+#: uwaptserverres.rsstoppingnginx
+msgid "Stopping NGINX"
+msgstr ""
+
+#: uwaptserverres.rsstoppingpostgresql
+msgid "Stopping PostgreSQL"
+msgstr ""
+
+#: uwaptserverres.rsstoppingwaptserver
+msgid "Stopping WaptServer"
 msgstr ""
 
 #: uwaptserverres.rsupdatinglocalpackages

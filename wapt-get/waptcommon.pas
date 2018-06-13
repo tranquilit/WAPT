@@ -147,7 +147,7 @@ type
     FRepoURL: String;
     FServerCABundle: String;
     FSignersCABundle: String;
-    FTimeOut: Integer;
+    FTimeOut: Double;
     function GetRepoURL: String;
     procedure SetDNSDomain(AValue: String);
     procedure SetHttpProxy(AValue: String);
@@ -157,7 +157,7 @@ type
     procedure SetRepoURL(AValue: String);
     procedure SetServerCABundle(AValue: String);
     procedure SetSignersCABundle(AValue: String);
-    procedure SetTimeOut(AValue: Integer);
+    procedure SetTimeOut(AValue: Double);
   public
     constructor Create(AName:String='';ARepoURL:String='');
     procedure LoadFromInifile(IniFilename:String;Section:String;Reset:Boolean=True);
@@ -171,7 +171,7 @@ type
     property SignersCABundle:String read FSignersCABundle write SetSignersCABundle;
     property ServerCABundle:String read FServerCABundle write SetServerCABundle;
     property HttpProxy:String read FHttpProxy write SetHttpProxy;
-    property TimeOut:Integer read FTimeOut write SetTimeOut;
+    property TimeOut:Double read FTimeOut write SetTimeOut;
   end;
 
 
@@ -396,7 +396,7 @@ end;
     FIsUpdated:=True;
   end;
 
-procedure TWaptRepo.SetTimeOut(AValue: Integer);
+procedure TWaptRepo.SetTimeOut(AValue: DOuble);
 begin
   if FTimeOut=AValue then Exit;
   FTimeOut:=AValue;
@@ -408,7 +408,7 @@ end;
     inherited Create;
     RepoURL:=ARepoURL;
     Name := AName;
-    TimeOut := 2;
+    TimeOut := 5;
     FIsUpdated := False;
   end;
 
@@ -423,7 +423,7 @@ end;
       HttpProxy:='';
       ServerCABundle:='';
       SignersCABundle:='';
-      TimeOut:=2;
+      TimeOut:=5.0;
       FIsUpdated:=False;
     end;
     if section <> '' then
@@ -435,7 +435,7 @@ end;
           HttpProxy:= ReadString(Section,'http_proxy',ReadString('global','http_proxy',HttpProxy));
           ServerCABundle:=ReadString(Section,'verify_cert',ReadString('global','verify_cert',ServerCABundle));
           SignersCABundle:=ReadString(Section,'public_certs_dir',ReadString('global','public_certs_dir',SignersCABundle));
-          TimeOut:=ReadInteger(Section,'timeout',ReadInteger('global','timeout',TimeOut));
+          TimeOut:=ReadFloat(Section,'timeout',ReadFloat('global','timeout',TimeOut));
           FIsUpdated:=False;
         end;
       finally
@@ -458,7 +458,7 @@ end;
       WriteString(Section,'http_proxy',HttpProxy);
       WriteString(Section,'verify_cert',ServerCABundle);
       WriteString(Section,'public_certs_dir',SignersCABundle);
-      WriteInteger(Section,'timeout',TimeOut);
+      WriteFloat(Section,'timeout',TimeOut);
       FIsUpdated:=False;
     finally
       Free;

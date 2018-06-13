@@ -35,9 +35,13 @@ resourcestring
   rsWaptSetupNext = 'Next';
 
   rsConfigurePostgreSQL = 'Configure NGINX server and PostgreSQL database';
+  rsStoppingPostgreSQL = 'Stopping PostgreSQL';
+  rsStoppingNGINX = 'Stopping NGINX';
+  rsStoppingWaptServer = 'Stopping WaptServer';
   rsStartingPostgreSQL = 'Starting PostgreSQL';
   rsStartingNGINX = 'Starting NGINX';
   rsStartingWaptServer = 'Starting WaptServer';
+  rsCheckingWaptServer = 'Checking WaptServer';
 
   rsMigration15 = 'Migrate Mongodb to PostgreSQL database';
 

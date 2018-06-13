@@ -324,7 +324,7 @@ def install_postgresql_service():
     cur.close()
     conn.close()
 
-    run(r'"%s\waptpython.exe" "%s\waptserver\waptserver_model.py" init_db' % (wapt_root_dir, wapt_root_dir))
+    run(r'"%s\waptpython.exe" "%s\waptserver\model.py" init_db' % (wapt_root_dir, wapt_root_dir))
     time.sleep(1)
     setuphelpers.service_stop('waptpostgresql')
 
@@ -332,7 +332,7 @@ def install_postgresql_service():
 def install_waptserver_service():
     print("install waptserver")
     service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe'))
-    service_parameters = '"%s"' % os.path.join(wapt_root_dir,'waptserver','waptserver.py')
+    service_parameters = '"%s"' % os.path.join(wapt_root_dir,'waptserver','server.py')
     service_logfile = os.path.join(log_directory, 'nssm_waptserver.log')
     service_dependencies = 'WAPTPostgresql'
     install_windows_nssm_service('WAPTServer',service_binary,service_parameters,service_logfile,service_dependencies)
@@ -354,7 +354,7 @@ if __name__ == '__main__':
 
     """
 
-    parser = OptionParser(usage=usage, version='waptserver_winsetup.py ' + __version__)
+    parser = OptionParser(usage=usage, version='winsetup.py ' + __version__)
     parser.add_option('-c','--config',dest='configfile',default=config_filename,
            help='Config file full path (default: %default)')
 

@@ -31,8 +31,8 @@ type
     ExceptionOnStop:Boolean;
     ShowCount:Integer;
     function ProgressForm:TVisLoading;
-    procedure ProgressTitle(Title:String);
-    procedure ProgressStep(step,max:integer);
+    procedure ProgressTitle(Title:String;ForceRefresh:Boolean=True);
+    procedure ProgressStep(step,max:integer;ForceRefresh:Boolean=True);
     procedure Start(Max:Integer=100);
     procedure Finish;
     procedure DoProgress(Sender:TObject);
@@ -104,10 +104,10 @@ begin
   result := Self;
 end;
 
-procedure TVisLoading.ProgressTitle(Title: String);
+procedure TVisLoading.ProgressTitle(Title: String;ForceRefresh:Boolean=True);
 begin
   AMessage.Caption := Title;
-  if (Now-LastUpdate)*3600*24>=0.5 then
+  if ForceRefresh or ((Now-LastUpdate)*3600*24>=0.5) then
   begin
     Application.ProcessMessages;
     ShowOnTop;
@@ -115,13 +115,13 @@ begin
   end;
 end;
 
-procedure TVisLoading.ProgressStep(step, max: integer);
+procedure TVisLoading.ProgressStep(step, max: integer;ForceRefresh:Boolean=True);
 begin
   if Step <= 0 then
       StopRequired:=False;
   AProgressBar.Max:=Max;
   AProgressBar.position:=step;
-  if (Now-LastUpdate)*3600*24>=0.5 then
+  if ForceRefresh or ((Now-LastUpdate)*3600*24>=0.5) then
   begin
     ShowOnTop;
     Application.ProcessMessages;

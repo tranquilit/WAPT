@@ -30,16 +30,12 @@ type
     ButNext: TBitBtn;
     ButPrevious: TBitBtn;
     cbLaunchWaptConsoleOnExit: TCheckBox;
-    cbManualURL: TCheckBox;
     CBOpenFirewall: TCheckBox;
     EdPwd1: TEdit;
     EdPwd2: TEdit;
     EdWaptServerIP: TEdit;
     EdWAPTServerName: TEdit;
     HTMLViewer1: THTMLViewer;
-    edWAPTRepoURL: TLabeledEdit;
-    edWAPTServerURL: TLabeledEdit;
-    EdWaptInifile: TMemo;
     Label1: TLabel;
     Label2: TLabel;
     Memo7: TMemo;
@@ -47,7 +43,6 @@ type
     Panel1: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
-    Panel4: TPanel;
     Panel5: TPanel;
     panFinish: TPanel;
     pgParameters: TTabSheet;
@@ -57,7 +52,6 @@ type
     pgFinish: TTabSheet;
     procedure ActCheckDNSExecute(Sender: TObject);
     procedure ActManualExecute(Sender: TObject);
-    procedure ActManualUpdate(Sender: TObject);
     procedure ActNextExecute(Sender: TObject);
     procedure ActNextUpdate(Sender: TObject);
     procedure actPreviousExecute(Sender: TObject);
@@ -100,9 +94,6 @@ end;
 
 procedure TVisWAPTServerPostConf.FormShow(Sender: TObject);
 begin
-  if GetServiceStatusByName('','WAPTServer') in  [ssRunning,ssPaused,ssPausePending,ssStartPending] then
-    Run('cmd /C net stop waptserver');
-
   EdWAPTServerName.Text:=LowerCase(GetComputerName)+'.'+GetDNSDomain;
   PagesControlChange(Self);
 end;
@@ -184,19 +175,6 @@ begin
   HTMLViewer1.LoadFromStream(Page);
   Page.Free;
 
-  if PagesControl.ActivePage = pgStartServices then
-  try
-    ini := TMemIniFile.Create(WaptIniFilename);
-    ini.WriteString('global','repo_url',edWAPTRepoURL.Text);
-    ini.WriteString('global','wapt_server',edWAPTServerURL.Text);
-    ini.WriteString('global','verify_cert','0');
-    ini.WriteString('wapt-templates','verify_cert','1');
-    EdWaptInifile.Lines.Clear;
-    TMemIniFile(ini).GetStrings(EdWaptInifile.Lines);
-  finally
-    ini.Free;
-  end
-  else
   if PagesControl.ActivePage = pgFinish then
   begin
     HTMLViewer1.Parent := panFinish;
@@ -235,30 +213,18 @@ begin
   end;
 end;
 
-procedure TVisWAPTServerPostConf.ActManualUpdate(Sender: TObject);
-begin
-  if not ActManual.Checked then
-  begin
-    edWAPTRepoURL.Enabled := False;
-    edWAPTServerURL.Enabled := False;
-    edWAPTRepoURL.Text := Format('https://%s/wapt',[EdWAPTServerName.Text]);
-    edWAPTServerURL.Text := Format('https://%s',[EdWAPTServerName.Text]);
-  end
-  else
-  begin
-    edWAPTRepoURL.Enabled := True;
-    edWAPTServerURL.Enabled := True;
-  end;
-end;
-
 procedure TVisWAPTServerPostConf.ActNextExecute(Sender: TObject);
+var
+  cmd,param:WideString;
 begin
   if PagesControl.ActivePage<>pgFinish then
     PagesControl.ActivePageIndex := PagesControl.ActivePageIndex + 1
   else
   begin
+    cmd := WaptBaseDir+'waptconsole.exe';
+    param := '-c';
     if cbLaunchWaptConsoleOnExit.Checked then
-      OpenDocument(WaptBaseDir+'waptconsole.exe');
+      ShellExecuteW(0,'open',PWidechar(cmd),PWidechar(param),Nil,SW_SHOW);
     ExitProcess(0);
   end;
 end;
@@ -429,42 +395,40 @@ begin
   try
     try
       ExceptionOnStop:=True;
-      if GetServiceStatusByName('','WAPTService') in [ssRunning,ssPaused,ssPausePending,ssStartPending]  then
-      try
-        ProgressTitle(rsWaptServiceStopping);
-        Run('cmd /C net stop waptservice');
-      except
-      end;
 
       if GetServiceStatusByName('','WAPTServer') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
       try
-        ProgressTitle(rsWaptServiceStopping);
+        ProgressTitle(rsStoppingWaptServer);
         Run('cmd /C net stop waptserver');
       except
       end;
 
-      IniWriteString(WaptBaseDir+'\conf\waptserver.ini' ,'options','wapt_password',PBKDF2(EdPwd1.Text,MakeRandomString(5),29000,32,TDCP_sha256));
+      if GetServiceStatusByName('','waptpostgresql') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
+      begin
+        ProgressTitle(rsStoppingPostgreSQL);
+        Run('cmd /C net stop waptpostgresql');
+      end;
 
+      if GetServiceStatusByName('','waptnginx') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
+      begin
+        ProgressTitle(rsStoppingNGINX);
+        Run('cmd /C net stop waptnginx');
+      end;
+
+      ProgressTitle(rsSettingServerPassword);
+      ProgressStep(1,10);
+      IniWriteString(WaptBaseDir+'\conf\waptserver.ini' ,'options','wapt_password',PBKDF2(EdPwd1.Text,MakeRandomString(5),29000,32,TDCP_sha256));
       if IniReadString(WaptBaseDir+'\conf\waptserver.ini' ,'options','server_uuid')='' then
         iniWriteString(WaptBaseDir+'\conf\waptserver.ini','options', 'server_uuid', Lowercase(Copy(GUIDToString(GUID), 2, Length(GUIDToString(GUID)) - 2)));
-
-      ProgressTitle(rsUpdatingPackageIndex);
-      ProgressStep(1,10);
-      runwapt('"{app}\wapt-get.exe" update-packages "{app}\waptserver\repository\wapt"');
 
       ProgressTitle(rsConfigurePostgreSQL);
       ProgressStep(2,10);
       runwapt('"{app}\waptpython" "{app}\waptserver\winsetup.py" all');
 
-
       ProgressTitle(rsReplacingTIScertificate);
       ProgressStep(3,10);
       if FileExists(WaptBaseDir+'\ssl\tranquilit.crt') then
         DeleteFileUTF8(WaptBaseDir+'\ssl\tranquilit.crt');
-
-      ProgressTitle(rsSettingServerPassword);
-      ProgressStep(4,10);
-
 
       if CBOpenFirewall.Checked then
       begin
@@ -473,35 +437,23 @@ begin
         OpenFirewall;
       end;
 
-      // reread config fir waptcommon
-      WaptCommon.ReadWaptConfig(WaptIniFilename);
+      ProgressTitle(rsStartingPostgreSQL);
+      ProgressStep(5,10);
+      Run('cmd /C net start waptpostgresql');
 
-      if GetServiceStatusByName('','waptserver') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
-      begin
-        ProgressTitle(rsWaptServiceStopping);
-        Run('cmd /C net stop waptserver');
-      end;
-
-      if GetServiceStatusByName('','waptpostgresql') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
-      begin
-        ProgressTitle(rsWaptServiceStopping);
-        Run('cmd /C net stop waptpostgresql');
-      end;
-
-      if GetServiceStatusByName('','waptnginx') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
-      begin
-        ProgressTitle(rsWaptServiceStopping);
-        Run('cmd /C net stop waptnginx');
-      end;
-
+      ProgressTitle(rsStartingWaptServer);
+      ProgressStep(6,10);
       Run('cmd /C net start waptserver');
+
+      ProgressTitle(rsStartingNGINX);
+      ProgressStep(7,10);
       Run('cmd /C net start waptnginx');
 
       if FileExists(WaptBaseDir+'\waptserver\mongodb\mongoexport.exe') AND
         (Dialogs.MessageDlg(rsMongoDetect,rsRunMongo2Postgresql,mtInformation,mbYesNoCancel,0) = mrYes) then
       begin
         ProgressTitle(rsMigration15);
-        ProgressStep(2,10);
+        ProgressStep(8,10);
 
         runwapt('"{app}\waptpython" {app}\waptserver\waptserver_upgrade.py upgrade2postgres');
 
@@ -514,66 +466,22 @@ begin
 
       retry := 3;
       repeat
-        sores := WAPTServerJsonGet('ping',[],'GET',6000);
+        ProgressTitle(rsCheckingWaptServer);
+        ProgressStep(8,10);
+        try
+          sores := SO(IdhttpGetString('https://127.0.0.1/ping'));
+        except
+          sores := Nil;
+        end;
         if sores<>Nil then
           ProgressTitle(sores.S['msg'])
         else
           sleep(2000);
         dec(Retry);
-      until (retry<=0) or((sores<>Nil) and sores.B['success']);
+      until (retry<=0) or ((sores<>Nil) and sores.B['success']);
       Sleep(2000);
 
-      if GetServiceStatusByName('','WAPTService') <> ssUnknown then
-      begin
-        if GetServiceStatusByName('','WAPTService') in [ssStopped]  then
-        begin
-		        ProgressTitle(rsRestartingWaptService);
-		        ProgressStep(6,8);
-		        Run('cmd /C net start waptservice');
-        end;
-		        retry := 3;
-		        repeat
-		          sores := WAPTLocalJsonGet('runstatus','','',5000);
-		          if sores<>Nil then
-		            ProgressTitle(sores.S['0.value'])
-		          else
-		            sleep(2000);
-		          dec(Retry);
-		        until (retry<=0) or (sores<>Nil);
-
-		        ProgressTitle(rsRegisteringHostOnServer);
-		        retry := 3;
-		        taskid:=-1;
-		        repeat
-		          sores := WAPTLocalJsonGet('update.json?notify_server=1','','',5000);
-		          if sores<>Nil then
-		          begin
-		            ProgressTitle(sores.S['description']);
-		            taskid := sores.I['id'];
-		          end;
-		          if not taskid<0 then
-		            Sleep(2000);
-		          dec(Retry);
-		        until (retry<=0) or (taskid>=0);
-
-		        ProgressTitle(rsUpdatingLocalPackages);
-		        repeat
-		          sores := WAPTLocalJsonGet('task.json?id='+inttostr(taskid),'','',5000);
-		          if sores<>Nil then
-		          begin
-		            ProgressTitle(sores.S['summary']);
-		            done := sores.S['finish_date'] <> '';
-		          end;
-		          if not done then
-		            Sleep(2000);
-		          dec(Retry);
-		        until (retry<=0) or done;
-		        ProgressStep(8,8);
-		        //runwapt('{app}\wapt-get.exe -D update');
-		        //ProgressTitle(WAPTLocalJsonGet('update.json?notify_server=1','','',5000).S['description']);
-      end;
       ActNext.Execute;
-
 
     except
       on E:Exception do
@@ -622,7 +530,6 @@ begin
     else
       EdWaptServerIP.text := '';
   end;
-
 end;
 
 function MakeIdent(st:String):String;

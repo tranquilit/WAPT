@@ -115,59 +115,6 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           TabOrder = 2
         end
       end
-      object Panel4: TPanel
-        Left = 0
-        Height = 311
-        Top = 32
-        Width = 500
-        Align = alClient
-        BevelOuter = bvNone
-        ClientHeight = 311
-        ClientWidth = 500
-        TabOrder = 1
-        object cbManualURL: TCheckBox
-          Left = 4
-          Height = 17
-          Top = 54
-          Width = 113
-          Action = ActManual
-          TabOrder = 0
-        end
-        object edWAPTRepoURL: TLabeledEdit
-          Left = 33
-          Height = 21
-          Top = 90
-          Width = 314
-          EditLabel.AnchorSideLeft.Control = edWAPTRepoURL
-          EditLabel.AnchorSideRight.Control = edWAPTRepoURL
-          EditLabel.AnchorSideRight.Side = asrBottom
-          EditLabel.AnchorSideBottom.Control = edWAPTRepoURL
-          EditLabel.Left = 33
-          EditLabel.Height = 13
-          EditLabel.Top = 74
-          EditLabel.Width = 314
-          EditLabel.Caption = 'URL of the WAPT package repository'
-          EditLabel.ParentColor = False
-          TabOrder = 1
-        end
-        object edWAPTServerURL: TLabeledEdit
-          Left = 34
-          Height = 21
-          Top = 134
-          Width = 313
-          EditLabel.AnchorSideLeft.Control = edWAPTServerURL
-          EditLabel.AnchorSideRight.Control = edWAPTServerURL
-          EditLabel.AnchorSideRight.Side = asrBottom
-          EditLabel.AnchorSideBottom.Control = edWAPTServerURL
-          EditLabel.Left = 34
-          EditLabel.Height = 13
-          EditLabel.Top = 118
-          EditLabel.Width = 313
-          EditLabel.Caption = 'URL of the WAPT server'
-          EditLabel.ParentColor = False
-          TabOrder = 2
-        end
-      end
     end
     object pgPassword: TTabSheet
       Caption = 'Password'
@@ -232,22 +179,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Caption = 'Start'
       ClientHeight = 343
       ClientWidth = 500
-      object EdWaptInifile: TMemo
-        Left = 4
-        Height = 185
-        Top = 6
-        Width = 519
-        Lines.Strings = (
-          '[global]'
-          'repo_url='
-        )
-        TabOrder = 0
-        WordWrap = False
-      end
       object BitBtn6: TBitBtn
         Left = 8
         Height = 26
-        Top = 198
+        Top = 16
         Width = 328
         Action = actWriteConfStartServe
         AutoSize = True
@@ -287,17 +222,17 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
           FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
         }
-        TabOrder = 1
+        TabOrder = 0
       end
       object CBOpenFirewall: TCheckBox
         Left = 8
         Height = 17
-        Top = 234
+        Top = 52
         Width = 378
         Caption = 'Open firewall ports 80 and 443 to allow access for packages and inventory'
         Checked = True
         State = cbChecked
-        TabOrder = 2
+        TabOrder = 1
       end
     end
     object pgFinish: TTabSheet
@@ -311,19 +246,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Width = 500
         Align = alBottom
         BevelOuter = bvNone
-        ClientHeight = 23
-        ClientWidth = 500
         TabOrder = 0
-        object cbLaunchWaptConsoleOnExit: TCheckBox
-          Left = 4
-          Height = 17
-          Top = 4
-          Width = 167
-          Caption = 'Run WAPT console after setup'
-          Checked = True
-          State = cbChecked
-          TabOrder = 0
-        end
       end
       object panFinish: TPanel
         Left = 0
@@ -364,6 +287,16 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           TabOrder = 0
           Visible = False
           WordWrap = False
+        end
+        object cbLaunchWaptConsoleOnExit: TCheckBox
+          Left = 4
+          Height = 17
+          Top = 0
+          Width = 167
+          Caption = 'Run WAPT console after setup'
+          Checked = True
+          State = cbChecked
+          TabOrder = 1
         end
       end
     end
@@ -574,7 +507,6 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     object ActManual: TAction
       Caption = 'Input URL manually'
       OnExecute = ActManualExecute
-      OnUpdate = ActManualUpdate
     end
     object ActCreateKey: TAction
       Caption = 'Generate keypair'

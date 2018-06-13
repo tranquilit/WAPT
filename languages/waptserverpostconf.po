@@ -71,10 +71,6 @@ msgid ""
 "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html\n"
 msgstr ""
 
-#: tviswaptserverpostconf.edwaptrepourl.editlabel.caption
-msgid "URL of the WAPT package repository"
-msgstr ""
-
 #: tviswaptserverpostconf.edwaptservername.hint
 msgid ""
 "WAPT clients make requests to the server. In order to connect to the WAPT server,\n"
@@ -89,10 +85,6 @@ msgstr ""
 
 #: tviswaptserverpostconf.edwaptservername.text
 msgid "srvwapt.mydomain.lan"
-msgstr ""
-
-#: tviswaptserverpostconf.edwaptserverurl.editlabel.caption
-msgid "URL of the WAPT server"
 msgstr ""
 
 #: tviswaptserverpostconf.label1.caption
@@ -236,6 +228,10 @@ msgstr ""
 msgid "W: interrupt received, killing serverâ¦"
 msgstr ""
 
+#: uwaptserverres.rscheckingwaptserver
+msgid "Checking WaptServer"
+msgstr ""
+
 #: uwaptserverres.rsconfigurepostgresql
 msgid "Configure NGINX server and PostgreSQL database"
 msgstr ""
@@ -310,6 +306,18 @@ msgstr ""
 
 #: uwaptserverres.rsstartingwaptserver
 msgid "Starting WaptServer"
+msgstr ""
+
+#: uwaptserverres.rsstoppingnginx
+msgid "Stopping NGINX"
+msgstr ""
+
+#: uwaptserverres.rsstoppingpostgresql
+msgid "Stopping PostgreSQL"
+msgstr ""
+
+#: uwaptserverres.rsstoppingwaptserver
+msgid "Stopping WaptServer"
 msgstr ""
 
 #: uwaptserverres.rsupdatinglocalpackages
