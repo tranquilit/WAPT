@@ -621,8 +621,6 @@ type
       Mode: TDropMode; var Effect: DWORD; var Accept: boolean);
     procedure GridHostsEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var Allowed: boolean);
-    procedure GridHostsFocusChanged(Sender: TBaseVirtualTree;
-      Node: PVirtualNode; Column: TColumnIndex);
     procedure GridHostsGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
       var HintText: String);
@@ -674,7 +672,6 @@ type
     procedure MenuItem27Click(Sender: TObject);
     procedure MenuItem74Click(Sender: TObject);
     procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
-    procedure TimerTasksTimer(Sender: TObject);
   private
     { private declarations }
     CurrentVisLoading: TVisLoading;
@@ -1585,10 +1582,6 @@ procedure TVisWaptGUI.TimerWUALoadWinUpdatesTimer(Sender: TObject);
 begin
   TimerWUALoadWinUpdates.Enabled:=False;
   ActWUALoadUpdates.Execute;
-end;
-
-procedure TVisWaptGUI.TimerTasksTimer(Sender: TObject);
-begin
 end;
 
 procedure TVisWaptGUI.ActAddGroupExecute(Sender: TObject);
@@ -4122,11 +4115,6 @@ begin
   else
     Allowed := False;
 
-end;
-
-procedure TVisWaptGUI.GridHostsFocusChanged(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Column: TColumnIndex);
-begin
 end;
 
 procedure TVisWaptGUI.GridHostsGetHint(Sender: TBaseVirtualTree;

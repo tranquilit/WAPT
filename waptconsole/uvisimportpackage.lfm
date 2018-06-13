@@ -10,7 +10,7 @@ object VisImportPackage: TVisImportPackage
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '1.8.2.0'
+  LCLVersion = '1.8.4.0'
   object Panel1: TPanel
     Left = 0
     Height = 38
@@ -68,6 +68,7 @@ object VisImportPackage: TVisImportPackage
     ShowAdvancedColumnsCustomize = False
     Align = alClient
     Color = clWhite
+    Colors.UnfocusedColor = clMedGray
     Header.AutoSizeIndex = -1
     Header.Columns = <    
       item

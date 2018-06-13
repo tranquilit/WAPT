@@ -292,7 +292,8 @@ begin
         newer_only := cbNewerThanMine.Checked,
         newest_only := cbNewestOnly.Checked,
         verify_cert := verify_cert,
-        description_locale := Language);
+        description_locale := Language,
+        timeout := Waptrepo.timeout);
 
       GridExternalPackages.Data := PyVarToSuperObject(packages_python);
     finally
@@ -340,7 +341,7 @@ begin
   FileNames := PyVarToSuperObject(DMPython.waptdevutils.get_packages_filenames(
         packages := ListPackagesVar,
         waptconfigfile := AppIniFilename,
-        repo_name := RepoName ));
+        repo_name := RepoName));
 
   if MessageDlg(rsPackageDuplicateConfirmCaption, format(rsPackageDuplicateConfirm, [Join(',',ExtractField(FileNames,'0')) + ' '+intToStr(Filenames.AsArray.Length)+' packages']),
         mtConfirmation, mbYesNoCancel, 0) <> mrYes then
