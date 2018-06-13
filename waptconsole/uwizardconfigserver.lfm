@@ -1,0 +1,17 @@
+inherited WizardConfigServer: TWizardConfigServer
+  Left = 833
+  Top = 346
+  inherited PageControl: TPageControl
+    ActivePage = ts_finish
+    TabIndex = 1
+    object ts_welcome: TTabSheet[0]
+      Caption = 'ts_welcome'
+    end
+    object ts_finish: TTabSheet[1]
+      Caption = 'ts_finish'
+    end
+  end
+  inherited WizardManager: TWizardManager
+    DisplayOptions.Parent = Owner
+  end
+end
