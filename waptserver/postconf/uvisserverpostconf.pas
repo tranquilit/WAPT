@@ -454,7 +454,7 @@ begin
 
       ProgressTitle(rsConfigurePostgreSQL);
       ProgressStep(2,10);
-      runwapt('"{app}\waptpython" "{app}\waptserver\waptserver_winsetup.py" all');
+      runwapt('"{app}\waptpython" "{app}\waptserver\winsetup.py" all');
 
 
       ProgressTitle(rsReplacingTIScertificate);

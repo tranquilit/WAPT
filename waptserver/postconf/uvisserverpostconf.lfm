@@ -12,16 +12,16 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
   OnShow = FormShow
   Position = poDefaultPosOnly
   ShowHint = True
-  LCLVersion = '1.8.2.0'
+  LCLVersion = '1.8.4.0'
   object PagesControl: TPageControl
     Left = 0
     Height = 369
     Top = 0
     Width = 508
-    ActivePage = pgPassword
+    ActivePage = pgParameters
     Align = alClient
     MultiLine = True
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     OnChange = PagesControlChange
     Options = [nboMultiLine]
