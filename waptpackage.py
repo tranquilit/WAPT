@@ -2578,7 +2578,7 @@ class WaptRemoteRepo(WaptBaseRepo):
     True
     """
 
-    def __init__(self,url=None,name='',verify_cert=None,http_proxy=None,timeout = 2,cabundle=None,config=None):
+    def __init__(self,url=None,name='',verify_cert=None,http_proxy=None,timeout=None,cabundle=None,config=None):
         """Initialize a repo at url "url".
 
         Args:
