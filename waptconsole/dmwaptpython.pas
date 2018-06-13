@@ -679,7 +679,7 @@ begin
     with TIniFile.Create(WaptConfigFileName) do
     try
       ShowLoadWait('Loading main Wapt repo settings',0,4);
-      if SectionExists('wapt') and (ReadString('wapt','repourl','NONE')<>'NONE') then
+      if SectionExists('wapt') and (ReadString('wapt','repo_url','NONE')<>'NONE') then
         section := 'wapt'
       else
         section := 'global';
@@ -716,7 +716,7 @@ begin
   try
     with TIniFile.Create(WaptConfigFileName) do
     try
-      if SectionExists('wapt-host') and (ReadString('wapt-host','repourl','NONE')<>'NONE') then
+      if SectionExists('wapt-host') and (ReadString('wapt-host','repo_url','NONE')<>'NONE') then
         section := 'wapt-host'
       else
         section := 'global';
