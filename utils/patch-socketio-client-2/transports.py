@@ -54,7 +54,8 @@ class AbstractTransport(object):
         pass
 
     def close(self):
-        pass
+        # Send the "close" packet type
+        self.send_packet(1)
 
 
 class XHR_PollingTransport(AbstractTransport):
@@ -116,6 +117,9 @@ class XHR_PollingTransport(AbstractTransport):
             self._request_index += 1
         return timestamp
 
+    def close(self):
+        super(XHR_PollingTransport, self).close()
+        self.http_session.__exit__()
 
 class WebsocketTransport(AbstractTransport):
 
@@ -188,8 +192,8 @@ class WebsocketTransport(AbstractTransport):
         self._connection.settimeout(seconds or self._timeout)
 
     def close(self):
+        super(WebsocketTransport, self).close()
         self._connection.close()
-
 
 def get_response(request, *args, **kw):
     try:

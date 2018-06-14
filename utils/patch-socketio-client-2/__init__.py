@@ -386,8 +386,8 @@ class SocketIO(EngineIO):
 
     # Define
 
-    def define(self, Namespace, path=''):
-        self._namespace_by_path[path] = namespace = Namespace(self, path)
+    def define(self, Namespace, path='', *args):
+        self._namespace_by_path[path] = namespace = Namespace(self, path, *args)
         if path:
             self.connect(path)
             self.wait(for_connect=True)
