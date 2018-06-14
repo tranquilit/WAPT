@@ -604,7 +604,8 @@ class PackageEntry(BaseObjectClass):
 
     def __iter__(self):
         for key in self.all_attributes:
-            yield (key, getattr(self,key))
+            if not key.startswith('_'):
+                yield (key, getattr(self,key))
 
     def as_dict(self):
         return dict(self)
