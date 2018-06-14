@@ -102,3 +102,4 @@ openssl.exe
 /licences/*.lic
 /templates/waptexit-logo.png
 .gdb_history
+*.lrj
