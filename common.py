@@ -445,6 +445,7 @@ class WaptSessionDB(WaptBaseDB):
         self.db.execute("""
           create unique index if not exists idx_params_name on wapt_params(name);
           """)
+
         self.db_version = self.curr_db_version
         return self.curr_db_version
 
@@ -540,7 +541,7 @@ PackageKey = namedtuple('package',('packagename','version'))
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
 
-    curr_db_version = '20180420'
+    curr_db_version = '20180613'
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
@@ -634,6 +635,33 @@ class WaptDB(WaptBaseDB):
         self.db.execute("""
           create unique index if not exists idx_params_name on wapt_params(name);
           """)
+
+        self.db.execute("""CREATE TRIGGER IF NOT EXISTS inc_rev_ins_status
+            AFTER INSERT ON wapt_params
+            WHEN NEW.name <> 'status_revision'
+            BEGIN
+                update wapt_params set value=cast(value as integer)+1
+                where name='status_revision';
+            END
+            """)
+
+        self.db.execute("""CREATE TRIGGER IF NOT EXISTS inc_rev_upd_status
+            AFTER UPDATE ON wapt_params
+            WHEN NEW.name <> 'status_revision'
+            BEGIN
+                update wapt_params set value=cast(value as integer)+1
+                where name='status_revision';
+            END
+            """)
+
+        self.db.execute("""CREATE TRIGGER IF NOT EXISTS inc_rev_del_status
+            AFTER DELETE ON wapt_params
+            WHEN OLD.name <> 'status_revision'
+            BEGIN
+                update wapt_params set value=cast(value as integer)+1
+                where name='status_revision';
+            END
+            """)
 
         # action : install, remove, check, session_setup, update, upgrade
         # state : draft, planned, postponed, running, done, error, canceled
@@ -976,7 +1004,7 @@ class WaptDB(WaptBaseDB):
         return [p['package'] for p in self.query('\n'.join(sql))]
 
 
-    def installed(self,include_errors=False):
+    def installed(self,include_errors=False,include_setup=True):
         """Return a list of installed packages on this host
 
         Args:
@@ -987,7 +1015,7 @@ class WaptDB(WaptBaseDB):
             list: of installed PackageEntry
         """
         sql = ["""\
-              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,
+              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,%s
                 l.uninstall_key,l.explicit_by,
                 coalesce(l.depends,r.depends) as depends,coalesce(l.conflicts,r.conflicts) as conflicts,coalesce(l.section,r.section) as section,coalesce(l.priority,r.priority) as priority,
                 r.maintainer,r.description,r.sources,r.filename,r.size,
@@ -998,7 +1026,7 @@ class WaptDB(WaptBaseDB):
                     (l.architecture is null or l.architecture=r.architecture) and
                     (l.maturity is null or l.maturity=r.maturity) and
                     (l.locale is null or l.locale=r.locale)
-           """]
+           """ % ( ('l.setuppy,' if include_setup else ''),) ]
         if not include_errors:
             sql.append('where l.install_status in ("OK","UNKNOWN")')
 
@@ -1270,7 +1298,7 @@ class WaptDB(WaptBaseDB):
 class WaptServer(BaseObjectClass):
     """Manage connection to waptserver"""
 
-    def __init__(self,url=None,proxies={'http':None,'https':None},timeout = 2,dnsdomain=None):
+    def __init__(self,url=None,proxies={'http':None,'https':None},timeout = 5.0,dnsdomain=None):
         if url and url[-1]=='/':
             url = url.rstrip('/')
         self._server_url = url
@@ -4769,6 +4797,7 @@ class Wapt(BaseObjectClass):
         inv = self.inventory()
         inv['uuid'] = self.host_uuid
         inv['host_certificate'] = self.create_or_update_host_certificate()
+
         data = jsondump(inv)
         if self.waptserver:
             if not self.waptserver.use_kerberos:
@@ -4920,6 +4949,49 @@ class Wapt(BaseObjectClass):
 
         return self.waptdb.update_install_status(**kwargs)
 
+
+    def _get_host_status_data(self,force=False):
+        """Build the data to send to server where update_server_status required
+
+        Returns:
+            dict
+        """
+
+        def _add_data_if_updated(inv,key,data,old_hashes,new_hashes):
+            """Add the data to inv as key if modified since last update_server_status"""
+            newhash = hashlib.sha1(cPickle.dumps(data)).digest()
+            oldhash = old_hashes.get(key,None)
+            if force or oldhash != newhash:
+                inv[key] = data
+                new_hashes[key] = newhash
+
+        new_hashes = {}
+        old_hashes = json.loads(self.read_param('update_server_hashes','{}'))
+
+        inv = {'uuid': self.host_uuid}
+        inv['wapt_status'] = self.wapt_status()
+        inv['audit_status'] = self.get_audit_status()
+        inv['status_revision'] = int(self.read_param('status_revision','0'))
+
+        host_info = setuphelpers.host_info()
+        # optionally forced dn
+        host_info['computer_ad_dn'] = self.host_dn
+
+        _add_data_if_updated(inv,'host_info',host_info,old_hashes,new_hashes)
+        _add_data_if_updated(inv,'installed_softwares',setuphelpers.installed_softwares(''),old_hashes,new_hashes)
+        _add_data_if_updated(inv,'installed_packages',[p.as_dict() for p in self.waptdb.installed(include_errors=True,include_setup=False)],old_hashes,new_hashes)
+        _add_data_if_updated(inv,'last_update_status', self.get_last_update_status(),old_hashes,new_hashes)
+        if self.waptwua_enabled:
+            try:
+                import waptenterprise.waptwua.client
+                wapwua_status = waptenterprise.waptwua.client.WaptWUA(self).stored_status()
+                _add_data_if_updated(inv,'waptwua', wapwua_status,old_hashes,new_hashes)
+            except ImportError as e:
+                logger.warning('waptwua module not installed')
+
+        return inv
+
+
     def update_server_status(self,force=False):
         """Send host_info, installed packages and installed softwares,
             and last update status informations to WAPT Server,
@@ -4934,41 +5006,11 @@ class Wapt(BaseObjectClass):
         >>> s = wapt.update_server_status()
         >>>
         """
-        def _add_data_if_updated(inv,key,data,old_hashes,new_hashes):
-            """Add the data to inv as key if modified since last update_server_status"""
-            newhash = hashlib.sha1(cPickle.dumps(data)).digest()
-            oldhash = old_hashes.get(key,None)
-            if force or oldhash != newhash:
-                inv[key] = data
-                new_hashes[key] = newhash
-
         result = None
         if self.waptserver_available():
             # avoid sending data to the server if it has not been updated.
             try:
-                new_hashes = {}
-                old_hashes = getattr(self,'_update_server_hashes',{})
-                inv = {'uuid': self.host_uuid}
-                inv['wapt_status'] = self.wapt_status()
-                inv['audit_status'] = self.get_audit_status()
-
-                host_info = setuphelpers.host_info()
-                # optionally forced dn
-                host_info['computer_ad_dn'] = self.host_dn
-
-                _add_data_if_updated(inv,'host_info',host_info,old_hashes,new_hashes)
-                _add_data_if_updated(inv,'installed_softwares',setuphelpers.installed_softwares(''),old_hashes,new_hashes)
-                _add_data_if_updated(inv,'installed_packages',[p.as_dict() for p in self.waptdb.installed(include_errors=True)],old_hashes,new_hashes)
-                _add_data_if_updated(inv,'last_update_status', self.get_last_update_status(),old_hashes,new_hashes)
-                if self.waptwua_enabled:
-                    try:
-                        import waptenterprise.waptwua.client
-                        wapwua_status = waptenterprise.waptwua.client.WaptWUA(self).stored_status()
-                        _add_data_if_updated(inv,'waptwua', wapwua_status,old_hashes,new_hashes)
-                    except ImportError as e:
-                        logger.warning('waptwua module not installed')
-
-
+                inv = self._get_host_status_data(force=force)
                 data = jsondump(inv)
                 signature = self.sign_host_content(data,)
 
@@ -4977,10 +5019,12 @@ class Wapt(BaseObjectClass):
                     signature = signature,
                     signer = self.get_host_certificate().cn
                     )
+
                 if result and result['success']:
                     # stores for next round.
                     old_hashes.update(new_hashes)
-                    self._update_server_hashes = old_hashes
+                    self.write_param('last_update_server_hashes',jsondump(old_hashes))
+                    #self._update_server_hashes = old_hashes
                     self.write_param('last_update_server_status_timestamp',str(datetime.datetime.utcnow()))
                     logger.info(u'Status on server %s updated properly'%self.waptserver.server_url)
                 else:
@@ -5018,6 +5062,12 @@ class Wapt(BaseObjectClass):
             boolean: True if server is defined and actually reachable
         """
         return self.waptserver and self.waptserver.available()
+
+    def inc_status_revision(self,inc=1):
+        rev = int(self.read_param('status_revision','0'))+inc
+        self.write_param('status_revision',rev)
+        return rev
+
 
     def wapt_status(self):
         """Wapt configuration and version informations
@@ -5173,12 +5223,6 @@ class Wapt(BaseObjectClass):
         inv['wapt_status'] = self.wapt_status()
         inv['installed_softwares'] = setuphelpers.installed_softwares('')
         inv['installed_packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True)]
-        """
-        try:
-            inv['qfe'] = setuphelpers.installed_windows_updates()
-        except:
-            pass
-        """
         return inv
 
     def personal_certificate(self):
