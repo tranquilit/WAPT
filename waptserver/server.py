@@ -73,6 +73,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer
 from werkzeug.utils import secure_filename
 
 from flask import request, Flask, Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
+
 from flask_socketio import disconnect, send, emit
 # from flask_login import LoginManager,login_required,current_user,UserMixin
 
@@ -2169,7 +2170,7 @@ if __name__ == '__main__':
 
 
     # setup logging
-    for log in (app.logger_name,'wapt','peewee'):
+    for log in ('flask.app','wapt','peewee'):
         logger = logging.getLogger(log)
         if logger:
             setloglevel(logger,options.loglevel)
