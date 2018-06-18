@@ -14,24 +14,28 @@ uses
 function wizard_validate_str_not_empty_when_trimmed( w : TWizard; control : TControl; failed_description : String ) : Boolean;
 function wizard_validate_str_length_not_zero( w : TWizard; control : TControl; failed_description : String ) : Boolean;
 function wizard_validate_str_is_alphanum( w : TWizard;  const str : String; control : TControl ) :  Boolean;
+function wizard_validate_str_password_are_equals( w : TWizard; const s1 : String; const s2 : String; control : TControl ) : Boolean;
 
 function wizard_validate_waptserver_ping( w : TWizard; const server_url : String; control : TControl ) : Boolean;
 function wizard_validate_waptserver_version_not_less( w : TWizard; const  server_url : String; version : String; control : TControl ) : Boolean;
-function wizard_validate_waptserver_login( w : TWizard;  const server_url : String; const login : String; const password : String; control : TControl ) : boolean;
+function wizard_validate_waptserver_login( w : TWizard;  const server_url : String; verify_cert : boolean; const login : String; const password : String; control : TControl ) : boolean;
 function wizard_validate_waptserver_waptagent_is_not_present( w : TWizard;  const server_url : String; control : TControl ) : Boolean;
 
 function wizard_validate_fs_directory_exist( w : TWizard;  const path : String; control : TControl ) : boolean;
 function wizard_validate_fs_can_create_file( w : TWizard;  const path : String; control : TControl ) : boolean;
 function wizard_validate_fs_can_create_directory( w :TWizard; const path : String; control : TControl ) : boolean;
 function wizard_validate_fs_file_not_exist( w : TWizard; const filename :PChar; const validation_description : PChar; const validation_error : PChar; control : TControl ) : Boolean;
+function wizard_validate_fs_ensure_directory( w : TWizard; const path : String; control : TControl ) : Boolean;
 
 
 function wizard_validate_change_current_user( w : TWizard; const login : PChar; const password : PChar; const failed_string : PChar; control : TControl ) : Boolean;
+function wizard_validate_crypto_decrypt_key( w :TWizard; const key_filename : String; const password : String ) : Boolean;
 
 
 implementation
 
 uses
+  Dialogs,
   {$ifdef windows}
   windows,
   {$endif}
@@ -61,7 +65,7 @@ begin
 
   if Length(s) = 0 then
   begin
-    w.ShowValidationError( control, failed_description );
+    w.show_validation_error( control, failed_description );
     exit(false);
   end;
 
@@ -86,7 +90,7 @@ begin
 
   if Length(s) = 0 then
   begin
-    w.ShowValidationError( control, failed_description );
+    w.show_validation_error( control, failed_description );
     exit(false);
   end;
 
@@ -103,12 +107,25 @@ begin
   for i := 1 to Length(str) do
     if not IsLetterOrDigit( str[i] ) then
     begin
-      w.ShowValidationError( control, 'Only alpha numeric characters are allowed' );
+      w.show_validation_error( control, 'Only alpha numeric characters are allowed' );
       exit( false );
     end;
 
   w.ClearValidationDescription();
   exit( true );
+end;
+
+
+function wizard_validate_str_password_are_equals(w: TWizard; const s1: String; const s2: String; control: TControl): Boolean;
+begin
+  w.SetValidationDescription('Validating passwords are equals');
+  if s1 <> s2 then
+  begin
+    w.show_validation_error( control, 'Supplied password differs');
+    exit(false);
+  end;
+  w.ClearValidationDescription();
+  exit( true) ;
 end;
 
 function wizard_validate_waptserver_ping( w : TWizard; const server_url: String; control: TControl): Boolean;
@@ -126,7 +143,7 @@ begin
   r := http_get( s, s );
   if r <> 0 then
   begin
-    w.ShowValidationError( control, 'Failed to connect to wapt server');
+    w.show_validation_error( control, 'Failed to connect to wapt server');
     exit( false );
   end;
 
@@ -147,7 +164,7 @@ begin
   exit( true );
 
 LBL_NOT_A_WAPTSERVER:
-  w.ShowValidationError( control, 'Host is not a wapt server');
+  w.show_validation_error( control, 'Host is not a wapt server');
   exit(false);
 end;
 
@@ -160,6 +177,7 @@ var
   so  : ISuperObject;
   s   : String;
   r   : integer;
+  msg : String;
 begin
   w.SetValidationDescription( 'Validating server version' );
 
@@ -180,10 +198,13 @@ begin
     goto LBL_FAILED_TO_OBTAIN_VERSION;
 
   s := UTF8Encode( so.O['result'].S['version'] );
-  r := CompareVersion( s, version );
-  if r < 0 then
+  if trim(s) <> trim(version) then
   begin
-    w.ShowValidationError( control, Format('Wapt  version is too old ( %s < %s )', [ s, WAPTServerMinVersion])  );
+    msg :=       'Wapt server version does not match wizard version ( %s != %s )' + #13#10;
+    msg := msg + 'Download the waptsetup from the server to use the correct version' + #13#10;
+    msg := msg + 'or specify another server url';
+    msg := Format( msg, [ s, WAPTServerMinVersion] );
+    w.show_validation_error( control, msg  );
     exit(false);
   end;
 
@@ -191,13 +212,13 @@ begin
   exit( true );
 
 LBL_FAILED_TO_OBTAIN_VERSION:
-  w.ShowValidationError( control, 'Failed to obtain WAPT server version' + #13#10 + 'Installation may be broken, reinstall server' );
+  w.show_validation_error( control, 'Failed to obtain WAPT server version' + #13#10 + 'Installation may be broken, reinstall server' );
   exit(false);
 end;
 
 
 
-function wizard_validate_waptserver_login( w : TWizard; const server_url: String; const login: String; const password: String; control: TControl): boolean;
+function wizard_validate_waptserver_login(w: TWizard; const server_url: String; verify_cert: boolean; const login: String; const password: String; control: TControl): boolean;
 var
   so  : ISuperObject;
   r   : integer;
@@ -214,23 +235,23 @@ begin
 
   url := url_force_protocol( server_url, 'https' );
   url := url_concat( url , '/api/v3/login' );
-  r := https_post_json ( s, url, true, UTF8Encode(so.AsJSon(false)) );
+  r := https_post_json ( s, url, verify_cert, UTF8Encode(so.AsJSon(false)) );
   if r <> 0 then
   begin
-    w.ShowError( 'A problem has occured when trying to login to server' );
+    w.show_Error( 'A problem has occured when trying to login to server' );
     exit( false  );
   end;
 
   r := wapt_json_response_is_success( b, s );
   if r <> 0 then
   begin
-    w.ShowValidationError( nil, 'Wapt server installation may be broken'  );
+    w.show_validation_error( nil, 'Wapt server installation may be broken'  );
     exit( false  );
   end;
 
   if not b then
   begin
-    w.ShowValidationError( control, 'Bad username/password' );
+    w.show_validation_error( control, 'Bad username/password' );
     exit(false);
   end;
 
@@ -251,19 +272,19 @@ begin
   r := http_reponse_code( rc, url );
   if r <> 0 then
   begin
-    w.ShowError( 'An problem has occured while try to download wapt agent' );
+    w.show_error( 'An problem has occured while try to download wapt agent' );
     exit( false );
   end;
 
   if 200 = rc then
   begin
-    w.ShowValidationError( control, 'Wapt agent has been found on the server' );
+    w.show_validation_error( control, 'Wapt agent has been found on the server' );
     exit( false );
   end;
 
   if 404 <> rc then
   begin
-    w.ShowError( 'An problem has occured while try to download wapt agent' );
+    w.show_error( 'An problem has occured while try to download wapt agent' );
     exit( false  );
   end;
 
@@ -279,7 +300,7 @@ begin
 
   if not DirectoryExists( path) then
   begin
-    w.ShowValidationError( control, Format('"%s" is not a directory', [path]) );
+    w.show_validation_error( control, Format('"%s" is not a directory', [path]) );
     exit( false );
   end;
 
@@ -296,9 +317,9 @@ begin
 
   w.SetValidationDescription( Format('Validating directory %s is writable', [path]) );
 
-  if not fs_directory_is_file_writable( path ) then
+  if not fs_directory_is_writable( path ) then
   begin
-    w.ShowValidationError( control, Format('"%s" is not a writable directory', [path]) );
+    w.show_validation_error( control, Format('"%s" is not a writable directory', [path]) );
     exit( false );
   end;
 
@@ -312,9 +333,9 @@ begin
   if not wizard_validate_fs_directory_exist( w, path, control ) then
     exit( false );
 
-  if not fs_directory_is_dir_writable( path ) then
+  if not fs_directory_is_writable( path ) then
   begin
-    w.ShowValidationError( control, Format('"%s" is not a writable directory', [path]) );
+    w.show_validation_error( control, Format('"%s" is not a writable directory', [path]) );
     exit( false );
   end;
 
@@ -332,14 +353,47 @@ begin
   if FileExists( filename) then
   begin
     if Assigned( validation_error ) then
-      w.ShowValidationError( control, validation_error )
+      w.show_validation_error( control, validation_error )
     else
-      w.ShowValidationError( control, Format('"%s" already exist', [filename] ) );
+      w.show_validation_error( control, Format('"%s" already exist', [filename] ) );
     exit( false );
   end;
 
   w.ClearValidationDescription();
   exit( true );
+end;
+
+function wizard_validate_fs_ensure_directory(w: TWizard; const path: String; control: TControl ): Boolean;
+var
+  s : String;
+begin
+  s := Format( 'Validating %s exist and is a writable directory', [path] );
+  w.SetValidationDescription(s);
+
+  if not DirectoryExists( path ) then
+  begin
+    s := Format( 'Create directory %s ?', [path] );
+    if mrNo = w.show_question( s, mbYesNo ) then
+    begin
+      w.show_validation_error( control, 'A writable directory is need to continue' );
+      exit(false);
+    end;
+
+    if not CreateDir( path ) then
+    begin
+      w.show_validation_error( control, Format('Failed to create directory %s', [path]) );
+      exit(false);
+    end;
+  end;
+
+  if not fs_directory_is_writable(path) then
+  begin
+    w.show_validation_error( control, Format('Directory %s is not writable',[path]) );
+    exit(false);
+  end;
+
+    w.ClearValidationDescription();
+  exit(true);
 end;
 
 function wizard_validate_change_current_user(w: TWizard; const login: PChar; const password: PChar; const failed_string: PChar; control: TControl ): Boolean;
@@ -362,15 +416,21 @@ begin
   end;
 
   if Assigned(failed_string) then
-    w.ShowValidationError( control, failed_string )
+    w.show_validation_error( control, failed_string )
   else
-    w.ShowValidationError( control, 'Bad login/password' );
+    w.show_validation_error( control, 'Bad login/password' );
   exit( false );
 
 {$else}
-  w.ShowValidationError( control, 'Validation not yet implemented');
+  w.show_validation_error( control, 'Validation not yet implemented');
   exit(false);
 {$endif}
+end;
+
+
+function wizard_validate_crypto_decrypt_key(w: TWizard; const key_filename: String; const password: String): Boolean;
+begin
+  exit(false);
 end;
 
 

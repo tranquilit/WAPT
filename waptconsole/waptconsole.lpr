@@ -9,6 +9,7 @@ uses
   Translations, LCLProc,
 
   sysutils,
+  process,
 
   Interfaces, // this includes the LCL widgetset
   Forms, luicontrols, runtimetypeinfocontrols, memdslaz,
@@ -42,43 +43,37 @@ begin
 
   options.show_help             := Application.HasOption(     'h', 'help');
   options.start_configuration   := Application.HasOption(     'c', 'console' );
-  options.wapt_server_hostname  := Application.GetOptionValue('s', 'server' );
 end;
 
 
 procedure show_help;
 const
   msg : String ='-h  : Show help' + sLineBreak +
-                '-c  : Start console easy configuration '  + sLineBreak +
-                '-s  : Start server easy configuration ';
+                '-c  : Start console easy configuration '  + sLineBreak;
 begin
   ShowMessage( msg );
 end;
 
-function start_configuration( options : PCmdLineOptions )  : TModalResult;
+
+
+
+
+procedure start_configuration( options : PCmdLineOptions );
 var
-  ws        : TWizardConfigServer;
-  ws_params : TWizardConfigServerParams;
-  wc        : TWizardConfigConsole;
+  w : TWizardConfigConsole;
 begin
 
   if not IsAdmin then
   begin
-    MessageDlg( 'Error', 'Configuration helper need administrator priviliges', mtError, [mbOK], 0 );
-    exit( mrAbort );
+    MessageDlg( ApplicationName, 'Configuration wizard need administrator priviliges', mtError, [mbOK], 0 );
+    halt(0);
   end;
 
-
-  // Config console
-  wc := TWizardConfigConsole.create( nil );
-  try
-    result := wc.ShowModal;
-    if result = mrClose then
-      halt;
-  finally
-    wc.Free;
-  end;
-
+  // Start console config
+  w := TWizardConfigConsole.create( nil );
+  w.ShowModal;
+  w.Free;
+  halt(0);
 end;
 
 
@@ -99,8 +94,8 @@ begin
   // option first time wizard
   if CmdLineOptions.start_configuration then
   begin
-    if mrOK <> start_configuration( @CmdLineOptions ) then
-        halt(0);
+    start_configuration( @CmdLineOptions );
+    halt(0);
   end;
 
 end;

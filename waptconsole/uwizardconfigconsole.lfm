@@ -5,6 +5,7 @@ inherited WizardConfigConsole: TWizardConfigConsole
   Width = 638
   ClientHeight = 454
   ClientWidth = 638
+  OnClose = FormClose
   inherited WizardButtonPanel: TWizardButtonPanel
     Top = 404
     Width = 638

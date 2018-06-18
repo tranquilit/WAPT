@@ -29,7 +29,11 @@ type
     IsCACert              : Boolean;
     CACertificateFilename : UnicodeString;
     CAKeyFilename         : UnicodeString;
+
+    _certificate          : String;
+    _error_message        : String;
   end;
+  PCreateSignedCertParams = ^TCreateSignedCertParams;
 
   TCreateWaptSetupParams = record
     default_public_cert       : Utf8String;
@@ -64,7 +68,7 @@ type
 
 
 function CreateWaptSetupParams( params : PCreateWaptSetupParams ) : integer;
-function CreateSignedCertParams( params : TCreateSignedCertParams ) : String;
+function CreateSignedCertParams( params : PCreateSignedCertParams ) : integer;
 
 function ServerCertificatSaveChain( var filename : String; const url : String; destdir : String ) : integer;
 function check_key_password(key_filename: String; password: String): boolean;
@@ -79,8 +83,8 @@ function sys_killall( const ExeFileName: string ) : integer;
 
 function ExtractFileNameNoExt( filename : String ) : string;
 function fs_path_exists( const path : String ) : boolean;
-function fs_directory_is_file_writable( const path : String ): boolean;
-function fs_directory_is_dir_writable( const path : String ): boolean;
+function fs_path_concat( const p1 : String; const p2 : String ) : String;
+function fs_directory_is_writable( const path : String ): boolean;
 
 function random_alphanum( size : integer ) : String;
 
@@ -89,7 +93,8 @@ function wapt_json_response_is_success( var success : boolean; const json : Stri
 
 function url_force_protocol( const url : String; const protocol : String ) : String;
 function url_concat( const left : String; const right : String ) : String;
-
+function url_resolv_to_same_ip( var same : boolean; const url1 : String ; const url2 : String ) : integer;
+function url_hostname( const url : String ) : String;
 
 function http_get(var output: String; const url: String): integer;
 function http_reponse_code( var response_code : integer; const url : String ) : integer;
@@ -105,13 +110,19 @@ function https_certificate_pin( const https_url : String ) : integer;
 function https_certificate_pinned_filename( var filename : String; const https_url : String ) : integer;
 
 
+function crypto_check_key_password(var success: boolean; const key_filename: String; const password: String): integer;
+
+
+function process_launch( const command_line : String ) : integer;
 
 
 implementation
 
 uses
+  PythonEngine,
   windows,
   JwaWindows,
+  process,
   Forms,
   Controls,
   Dialogs,
@@ -196,7 +207,7 @@ begin
       h_process := OpenProcess( PROCESS_TERMINATE or SYNCHRONIZE, BOOL(0), process_entry.th32ProcessID);
       if h_process = 0 then
         goto LBL_FAILED;
-      b := TerminateProcess( h_process, -1 );
+      b := TerminateProcess( h_process, 1 );
       if b = WINBOOL(0) then
         goto LBL_FAILED;
       if WAIT_OBJECT_0 <> WaitForSingleObject( h_process, WAIT_TERMINATION_TIME_MS ) then
@@ -252,7 +263,31 @@ begin
 
   exit( false );
 end;
-function fs_directory_is_file_writable( const path : String ): boolean;
+
+function fs_path_concat(const p1: String; const p2: String): String;
+var
+  s : integer;
+  c : integer;
+begin
+  result := ExcludeTrailingPathDelimiter(p1);
+  c := Length(p2);
+  if c = 0 then
+    exit;
+  if p2[c] = PathDelim then
+    c := c -1;
+
+  s := 1;
+  if p2[1] = PathDelim then
+  begin
+    s := 2;
+    c := c -1;
+  end;
+
+  if c > 0 then
+    result := result +  PathDelim + Copy( p2, s, c );
+end;
+
+function fs_directory_is_writable(const path: String): boolean;
 var
   h : THandle;
   f : RawByteString;
@@ -261,44 +296,22 @@ begin
   if not DirectoryExists(path) then
     exit( false );
 
-  while true do
-  begin
+  repeat
     f := IncludeTrailingPathDelimiter(path) +  random_alphanum( 20 );
-    if not FileExists(f) then
-      break;
-  end;
+  until not FileExists(f);
 
   h := FileCreate(f);
   if h = THandle(-1) then
     exit( false );
 
   FileClose(h);
-  DeleteFile( @f[1] );
-  exit(true);
 
-end;
-
-function fs_directory_is_dir_writable(const path: String): boolean;
-var
-  d : String;
-begin
-
-  if not DirectoryExists(path) then
+  if not DeleteFile( @f[1] ) then
     exit( false );
 
-  while true do
-  begin
-    d := IncludeTrailingPathDelimiter(path) +  random_alphanum( 20 );
-    if not DirectoryExists(d) then
-      break;
-  end;
-
-  if not CreateDir( d ) then
-    exit( false );
-
-  RemoveDir( d );
   exit(true);
 end;
+
 
 function random_alphanum( size: integer): String;
 var
@@ -327,8 +340,6 @@ end;
 
 
 function wapt_json_response_is_success(var success: boolean; const json: String  ): integer;
-const
-  PROP_SUCCESS : String = 'success';
 var
   so : ISuperObject;
 begin
@@ -337,7 +348,7 @@ begin
   if not assigned( so ) then
     exit( -1 );
 
-  so := so.O[ PROP_SUCCESS ];
+  so := so.O[ 'success' ];
   if not assigned( so ) then
       exit( -1 );
 
@@ -387,24 +398,32 @@ LBL_FAIL:
 end;
 
 
-function CreateSignedCertParams( params : TCreateSignedCertParams ) : String;
+function CreateSignedCertParams(params: PCreateSignedCertParams): integer;
 begin
-  result := CreateSignedCert(
-    params.keyfilename,
-    params.crtbasename,
-    params.destdir,
-    params.country,
-    params.locality,
-    params.organization,
-    params.orgunit,
-    params.commonname,
-    params.email,
-    params.keypassword,
-    params.codesigning,
-    params.IsCACert,
-    params.CACertificateFilename,
-    params.CAKeyFilename
-  );
+  try
+      params^._certificate := CreateSignedCert(
+      params^.keyfilename,
+      params^.crtbasename,
+      params^.destdir,
+      params^.country,
+      params^.locality,
+      params^.organization,
+      params^.orgunit,
+      params^.commonname,
+      params^.email,
+      params^.keypassword,
+      params^.codesigning,
+      params^.IsCACert,
+      params^.CACertificateFilename,
+      params^.CAKeyFilename
+    );
+    result := 0;
+  except on Ex : Exception do
+    begin
+      params^._error_message := ex.Message;
+      result := -1;
+    end;
+  end;
 end;
 
 
@@ -419,13 +438,7 @@ begin
   params^._err_message := '';
 
 
-  if not fs_directory_is_dir_writable('ssl') then
-  begin
-    params^._err_message := 'ssl directory is writeable !';
-    exit;
-  end;
-
-  agent := IncludeTrailingBackslash(params^.destination) + 'waptagent.exe';
+  agent := fs_path_concat( params^.destination, 'waptagent.exe' );
   if FileExists(agent) then
     DeleteFile(@agent[1]);
   agent := '';
@@ -573,6 +586,49 @@ begin
     result := result + right;
 end;
 
+function url_resolv_to_same_ip(var same: boolean; const url1: String;  const url2: String): integer;
+var
+  uri : TIdURI;
+  s1 : String;
+  s2 : String;
+begin
+  uri := nil;
+  s1 := url_force_protocol( url1, 'p' );
+  s2 := url_force_protocol( url2, 'p' );
+
+  uri := TIdURI.Create();
+  try
+    uri.URI := s1;
+    s1 := GetIPFromHost( uri.Host );
+
+    uri.URI := s2;
+    s2 := GetIPFromHost( uri.Host );
+
+    uri.Free;
+
+    same := s1 = s2;
+
+    exit(0);
+  except
+  end;
+
+  if Assigned(uri) then
+    uri.Free;
+
+  exit(-1);
+end;
+
+function url_hostname(const url: String): String;
+var
+  s : String;
+  uri : TIdURI;
+begin
+  s := url_force_protocol( url, 'p' );
+  uri := TIdURI.Create(s);
+  result := uri.Host;
+  uri.Free;
+end;
+
 
 
 function http_get(var output: String; const url: String): integer;
@@ -701,17 +757,35 @@ end;
 
 function https_certificate_extract_hostname( var hostname : String; const https_url : String ) : integer;
 var
-  url       : String;
-  cert_chain: Variant;
+  url: String;
+  v  : Variant;
+  s : String;
 begin
   if not Assigned(DMPython) then
     exit(-1);
+
   url := url_force_protocol( https_url, 'https' );
+
   try
-    cert_chain := DMPython.waptcrypto.get_peer_cert_chain_from_server( url );
-    if VarIsNone( cert_chain ) then
+    v := DMPython.waptcrypto.get_peer_cert_chain_from_server( url );
+    if VarIsNone( v ) then
       exit(-1);
-    hostname := cert_chain.__getitem__(0).cn;
+
+    v := v.__getitem__(0);
+    if VarIsNone(v) then
+      exit(-1);
+
+    v := v.cn;
+    if VarIsNone(v) then
+      exit(-1);
+
+    s := v;
+    s := trim(s);
+
+    if Length(s) = 0 then
+      exit(-1);
+
+    hostname := s;
     exit(0);
   except
   end;
@@ -767,7 +841,6 @@ end;
 
 function https_certificate_pin( const https_url : String ) : integer;
 var
-  h : String;
   r : integer;
   f : String;
 begin
@@ -792,6 +865,54 @@ begin
     exit( r );
   filename := h + '.crt';
   exit( 0 );
+end;
+
+function crypto_check_key_password(var success: boolean; const key_filename: String; const password: String): integer;
+const
+  _FAILED = -1;
+  _TRUE   =  1;
+  _FALSE  =  0;
+var
+  r : Variant;
+  pe : TPythonEngine;
+begin
+  pe := GetPythonEngine();
+  if not Assigned(pe) then
+    exit(-1);
+
+  try
+    r := DMPython.waptcrypto.check_key_password( key_filename := key_filename, password := password );
+  except
+    exit(-1);
+  end;
+
+  if VarIsNone(r) then
+    exit(-1);
+
+  if not VarIsBool(r) then
+    exit(-1);
+
+  result := pe.PyObject_IsTrue( ExtractPythonObjectFrom(r));
+  if _FAILED = result  then
+    exit;
+
+  success := _TRUE = result;
+  exit(0);
+end;
+
+function process_launch(const command_line: String): integer;
+var
+  p  : TProcess;
+begin
+  p := TProcess.Create( nil );
+  p.Executable := command_line;
+  try
+    p.Execute;
+    result := 0;
+  Except on E : EProcess do
+    result := -1;
+  end;
+  p.Free;
 end;
 
 end.

@@ -7,7 +7,7 @@ interface
 uses
   IdComponent,
   dmwaptpython,
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, uwizard,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, uwizard,
   ComCtrls, ExtCtrls, StdCtrls, PopupNotifier, EditBtn, WizardControls;
 
 type
@@ -43,8 +43,10 @@ type
     ts_package_configuration: TTabSheet;
     ts_server_info: TTabSheet;
     ts_welcome: TTabSheet;
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
   private
 
+  m_check_certificates_validity : boolean;
 
 
   protected
@@ -59,6 +61,8 @@ type
   function filename_private_key() : String;
   function filename_certificate_package() : String;
   function filename_certificate_server() : String;
+
+  function config_verify_cert() : String;
 
   // Steps function
   function on_step_welcome( mode : TWizardStepFuncMode ) : integer;
@@ -91,21 +95,31 @@ implementation
 
 uses
   tiscommon,
-  windows,
   waptcommon,
   uwizardutil,
   uwizardvalidattion,
   superobject,
+  FileUtil,
   IniFiles;
 
 {$R *.lfm}
 
 const
-  INIFILE_WAPTGET     : String = 'wapt-get.ini';
-  INIFILE_WAPTCONSOLE : String = 'waptconsole.ini';
   DEFAULT_COUNTRY_CODE: String = 'FR';
 
 { TWizardConfigConsole }
+
+procedure TWizardConfigConsole.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+var
+  r : integer;
+begin
+  if (self.PageControl.ActivePage = ts_finished) and self.cb_launch_console.Checked then
+  begin
+    r := process_launch( Application.ExeName );
+    if r <> 0 then
+      self.show_error( 'An error has occured while launching the console');
+  end;
+end;
 
 procedure TWizardConfigConsole.register_steps();
 const
@@ -133,10 +147,6 @@ end;
 
 procedure TWizardConfigConsole.on_wizard_finish(var mr: TModalResult);
 begin
-  if self.cb_launch_console.Checked = false then
-    mr := mrClose
-  else
-    mr := mrOK;
 end;
 
 
@@ -164,6 +174,8 @@ var
   s : String;
 begin
 
+    m_check_certificates_validity := true;
+
     // ts_server_info
     self.ed_server_login.Text := 'admin';
 
@@ -172,9 +184,11 @@ begin
 
     // ts_private
     i := 50;
+    {
     SetLength( s, i );
     if GetUserName( @s[1], i) and (i>0) then
       self.ed_private_key_name.Text := s;
+    }
     self.ed_private_key_directory.Text  := 'C:\private';
 
 end;
@@ -206,17 +220,27 @@ end;
 
 function TWizardConfigConsole.filename_private_key(): String;
 begin
-  result := IncludeTrailingPathDelimiter( self.ed_private_key_directory.text ) + self.ed_private_key_name.Text + '.pem';
+  result := self.ed_private_key_name.Text + '.pem';
 end;
 
 function TWizardConfigConsole.filename_certificate_package(): String;
 begin
-  result := IncludeTrailingPathDelimiter( self.ed_private_key_directory.text ) + self.ed_private_key_name.Text + '.crt';
+  result := self.ed_private_key_name.Text + '.crt';
 end;
 
 function TWizardConfigConsole.filename_certificate_server(): String;
 begin
   https_certificate_pinned_filename( result, self.ed_server_url.Text );
+end;
+
+function TWizardConfigConsole.config_verify_cert(): String;
+begin
+  // Check certficate CA
+  result := '0';
+{$ifdef ENTERPRISE}
+  if self.m_check_certificates_validity then
+    result := '1';
+{$endif}
 end;
 
 
@@ -284,10 +308,14 @@ begin
 
 end;
 
+
+
+
 function TWizardConfigConsole.on_step_server_info(mode: TWizardStepFuncMode ): integer;
+
 var
   hostname: String;
-  s     : String;
+  s       : String;
   r       : integer;
   b       : boolean;
   i       : integer;
@@ -300,6 +328,8 @@ begin
 
   if wf_validate = mode then
   begin
+    m_check_certificates_validity := true;
+
     // Check fields content length
     SetValidationDescription( 'Checking fields validity' );
     if not wizard_validate_str_not_empty_when_trimmed( self, self.ed_server_url,     'Server url cannot be empty' ) then
@@ -309,115 +339,101 @@ begin
     if not wizard_validate_str_length_not_zero( self, self.ed_server_password,'Password cannot be empty' ) then
       exit(-1);
 
-    // Ensure we have an https url
-    s := url_force_protocol( trim(self.ed_server_url.Text), 'https' );
-
     // Check ping
-    if not wizard_validate_waptserver_ping( self, s, self.ed_server_url ) then
+    if not wizard_validate_waptserver_ping( self, self.ed_server_url.Text , self.ed_server_url ) then
       exit(-1);
 
-    // Extract hostname from https
+    // Get certificate hostname
     self.SetValidationDescription( 'Retrieving server certificate');
-    r := https_certificate_extract_hostname( hostname, s );
+    r := https_certificate_extract_hostname( hostname, self.ed_server_url.Text );
     if r <> 0 then
     begin
-      self.ShowValidationError( self.ed_server_url, 'A problem has happenend while validating server certificat' );
+      self.show_validation_error( self.ed_server_url, 'A problem has happenend while validating server certificat' );
       exit(-1);
     end;
-    // Ensure we have a fqdn hostname
-    s := 'https://' + hostname;
-    self.ed_server_url.Text := s;
+
+    b := false;
+    r := url_resolv_to_same_ip( b, self.ed_server_url.Text, hostname );
+    if (r <> 0) or not b then
+    begin
+      s := 'Server certficate cannot be verified' + #13#10;
+      s := s + 'Do you want to continue without certificate verification ?';
+      if mrNo = self.show_question( s, mbYesNo ) then
+      begin
+        self.show_validation_error( self.ed_server_url, 'Certificate verification failed, try configure name resolution properly' );
+        exit(-1);
+      end;
+      self.m_check_certificates_validity := false;
+
+      hostname := url_hostname( self.ed_server_url.Text );
+    end;
+
+
+    self.ed_server_url.Text := 'https://' + hostname;
     Application.ProcessMessages;
+
 
     // Check version
     if not wizard_validate_waptserver_version_not_less( self, self.ed_server_url.Text, WAPTServerMinVersion, self.ed_server_url ) then
       exit(-1);
 
-    // Check certifcate validity
-    self.SetValidationDescription( 'Validating certificate' );
-    r := https_certificate_is_valid( b, s );
-    if r <> 0 then
+    if selF.m_check_certificates_validity then
     begin
-      self.ShowError( 'A problem has occured while checking if certificat is valid' );
-      exit(-1);
-    end;
-    if not b then
-    begin
-      // Was pinned ?
-      r := https_certificate_is_pinned( b, s );
-      if r <> 0 then
-      begin
-        self.ShowError( 'A problem has occured while checking if certificat is pinned' );
-        exit(-1);
-      end;
-      if b then
-      begin
-        self.ShowValidationError( self.ed_server_url, 'Certificat is pinned but invalid' + #13#10 + 'Maybe you could try delete certificat first' );
-        exit(-1);
-      end;
-      // Pin it ?
-      if mrNo =  MessageDlg( 'Question', 'Certificate is not valided, do you want to pin it ?', mtConfirmation, mbYesNo, 0 ) then
-      begin
-        Self.ShowValidationError( self.ed_server_url, 'A self signed certicate must be pinned to be verified' );
-        exit(-1);
-      end;
-      // Pin it !
-      r := https_certificate_pin( s );
-      if r <> 0 then
-      begin
-        self.ShowError( 'A problem has occured while pinning certificate' );
-        exit(-1);
-      end;
-      // Re check certificate validity
-      r := https_certificate_is_valid( b, s );
-      if r <> 0 then
-      begin
-        self.ShowError( 'A problem has occured while verified pinned certificat' );
-        exit(-1);
-      end;
 
+      // Check certifcate validity
+      self.SetValidationDescription( 'Validating certificate' );
+      r := https_certificate_is_valid( b, self.ed_server_url.Text );
+      if r <> 0 then
+      begin
+        self.show_error( 'A problem has occured while checking if certificat is valid' );
+        exit(-1);
+      end;
       if not b then
       begin
-        self.ShowValidationError( self.ed_server_url, 'Pinned certificate  verification failed, cannot continue' );
-        exit(-1);
+        // Was pinned ?
+        r := https_certificate_is_pinned( b, self.ed_server_url.Text );
+        if r <> 0 then
+        begin
+          self.show_error( 'A problem has occured while checking if certificat is pinned' );
+          exit(-1);
+        end;
+        if b then
+        begin
+          self.show_validation_error( self.ed_server_url, 'Certificat is pinned but invalid' + #13#10 + 'Maybe you could try delete certificat first' );
+          exit(-1);
+        end;
+        // Pin it ?
+        if mrNo =  MessageDlg( 'Question', 'Certificate is not valided, do you want to pin it ?', mtConfirmation, mbYesNo, 0 ) then
+        begin
+          Self.show_validation_error( self.ed_server_url, 'A self signed certicate must be pinned to be verified' );
+          exit(-1);
+        end;
+        // Pin it !
+        r := https_certificate_pin( self.ed_server_url.Text );
+        if r <> 0 then
+        begin
+          self.show_error( 'A problem has occured while pinning certificate' );
+          exit(-1);
+        end;
+        // Re check certificate validity
+        r := https_certificate_is_valid( b, self.ed_server_url.Text );
+        if r <> 0 then
+        begin
+          self.show_error( 'A problem has occured while verified pinned certificat' );
+          exit(-1);
+        end;
+
+        if not b then
+        begin
+          self.show_validation_error( self.ed_server_url, 'Pinned certificate  verification failed, cannot continue' );
+          exit(-1);
+        end;
       end;
     end;
 
     // Check Login
-    if not wizard_validate_waptserver_login( self, s, self.ed_server_login.Text, self.ed_server_password.Text, self.ed_server_password ) then
+    if not wizard_validate_waptserver_login( self, self.ed_server_url.Text, self.m_check_certificates_validity, self.ed_server_login.Text, self.ed_server_password.Text, self.ed_server_password ) then
       exit(-1);
-
-    // Check waptagent is not present
-    self.SetValidationDescription( 'Checking if waptagent exist on server' );
-    s := url_concat( self.ed_server_url.Text, '/wapt/waptagent.exe' );
-    r := -1;
-    i := http_reponse_code( r, s );
-    if i <> 0 then
-    begin
-      self.ShowValidationError( nil, 'A Problem has occurred while checking if waptagent exist on server' + #13#10 + 'Server installation may be broken, you could try reinstall waptserver' );
-      exit(-1);
-    end;
-
-    if r = 200 then
-    begin
-      s := 'waptagent has been found on the server.'+ #13#10;
-      s := s + 'Do really want to reupload the agent ?' + #13#10;
-      s := s + 'Click on Yes to continue and overwrite waptagent' + #13#10;
-      s := s + 'Click on Abort will close this assitant';
-      r := MessageDlg( Self.Caption, s, mtConfirmation, [mbYes,mbAbort], 0);
-      if r = mrAbort then
-      begin
-        self.ModalResult:= mrAbort;
-        exit(-1);
-      end;
-    end
-    else if r <> 404 then
-    begin
-      s := 'A Problem has occurred while checking if waptagent exist on server' + #13#10;
-      s := 'Server installation may be broken, you could try reinstall waptserver';
-      self.ShowValidationError( nil, s );
-      exit(-1);
-    end;
 
     self.ClearValidationDescription();
     exit( 0 );
@@ -448,10 +464,49 @@ begin
 end;
 
 function TWizardConfigConsole.on_step_private_key_configuration( mode: TWizardStepFuncMode): integer;
+type
+  TStep = ( sFieldsNotEmpty, sPasswordsEquals, sKeyIsAlphanum, sKeyExist, sKeyDestination, sCreatePrivateKey, sExistingKeyCheckPassword, sCheckExistingCertificate, sCopyCertToSSLDirectory, sFinish );
+  TStepSet = set of TStep;
+const
+  valide_stepset_1 : TStepSet = [ sFieldsNotEmpty, sPasswordsEquals, sKeyIsAlphanum, sKeyDestination, sCreatePrivateKey, sCopyCertToSSLDirectory, sFinish ];
+  valide_stepset_2 : TStepSet = [ sFieldsNotEmpty, sPasswordsEquals, sKeyIsAlphanum, sExistingKeyCheckPassword, sCheckExistingCertificate, sFinish ];
+var
+  s       : String;
+  msg     : String;
+  r       : integer;
+  b       : boolean;
+  params  : PCreateSignedCertParams;
+  step    : TStep;
+  completed_steps   : TStepSet;
+procedure debug_show_step;
 var
   s : String;
-  params : TCreateSignedCertParams;
-  cert : String;
+begin
+  s := '';
+  if sFieldsNotEmpty in completed_steps then
+    s := s + 'sFieldsNotEmpty' + #13#10;
+  if sPasswordsEquals in completed_steps then
+    s := s + 'sPasswordsEquals' + #13#10;
+  if sKeyIsAlphanum in completed_steps then
+    s := s + 'sKeyIsAlphanum' + #13#10;
+  if sKeyExist in completed_steps then
+    s := s + 'sKeyExist' + #13#10;
+  if sKeyDestination in completed_steps then
+    s := s + 'sKeyDestination' + #13#10;
+  if sCreatePrivateKey in completed_steps then
+    s := s + 'sCreatePrivateKey' + #13#10;
+  if sExistingKeyCheckPassword in completed_steps then
+    s := s + 'sExistingKeyCheckPassword' + #13#10;
+  if sCheckExistingCertificate in completed_steps then
+    s := s + 'sCheckExistingCertificate' + #13#10;
+  if sCopyCertToSSLDirectory in completed_steps then
+    s := s + 'sCopyCertToSSLDirectory' + #13#10;
+  if sFinish in completed_steps then
+    s := s + 'sFinish' + #13#10;
+
+  ShowMessage( s );
+end;
+
 begin
 
   if wf_enter = mode then
@@ -459,76 +514,208 @@ begin
 
   if wf_validate = mode then
   begin
-    self.ed_private_key_name.Text:= trim(self.ed_private_key_name.Text );
-    self.ed_private_key_directory.Text := trim(self.ed_private_key_directory.Text);
+    params := nil;
+    self.ed_private_key_name.Text:= ExcludeTrailingPathDelimiter( trim(self.ed_private_key_name.Text ) );
+    self.ed_private_key_directory.Text := ExcludeTrailingPathDelimiter( trim(self.ed_private_key_directory.Text) );
+    Application.ProcessMessages;
 
-    // Validate not empty
-    if not wizard_validate_str_not_empty_when_trimmed( self, self.ed_private_key_name, 'Private key identifier cannot be empty' ) then
-      exit(-1);
-    if not wizard_validate_str_not_empty_when_trimmed( self, self.ed_private_key_directory, 'Private key destination directory cannot be empty' ) then
-      exit(-1);
-    if not wizard_validate_str_length_not_zero( self, self.ed_private_key_password_1, 'Private key password cannot be empty' ) then
-      exit(-1);
-    if not wizard_validate_str_length_not_zero( self, self.ed_private_key_password_2, 'Private key password cannot be empty' ) then
-      exit(-1);
+    step := sFieldsNotEmpty;
+    completed_steps := [];
 
-    // Validate key name is alphanum
-    if not wizard_validate_str_is_alphanum( self, self.ed_private_key_name.text, self.ed_private_key_name ) then
-      exit(-1);
-
-    // Validate private key destination directory destination
-    if fs_path_exists(self.ed_private_key_directory.Text) then
+    while True do
     begin
-      if not wizard_validate_fs_can_create_file( self, self.ed_private_key_directory.Text, self.ed_private_key_directory ) then
-        exit(-1);
-    end
-    else
-    begin
-      s := ExtractFileDir(self.ed_private_key_directory.Text);
-      if not wizard_validate_fs_can_create_directory( self, s, self.ed_private_key_directory ) then
-        exit(-1);
-    end;
+
+      if completed_steps >= valide_stepset_1 then
+        break;
+      if completed_steps >= valide_stepset_2 then
+        break;
+
+      Include( completed_steps, step );
+
+      case step of
+
+        // Validate fields aren't empty
+        sFieldsNotEmpty :
+          begin
+            if not wizard_validate_str_not_empty_when_trimmed( self, self.ed_private_key_name, 'Private key identifier cannot be empty' ) then
+              exit(-1);
+            if not wizard_validate_str_not_empty_when_trimmed( self, self.ed_private_key_directory, 'Private key destination directory cannot be empty' ) then
+              exit(-1);
+            if not wizard_validate_str_length_not_zero( self, self.ed_private_key_password_1, 'Private key password cannot be empty' ) then
+              exit(-1);
+            if not wizard_validate_str_length_not_zero( self, self.ed_private_key_password_2, 'Private key password cannot be empty' ) then
+              exit(-1);
+
+            inc(step);
+          end;
+
+        // Validate password and password confirm are equals
+        sPasswordsEquals :
+          begin
+            if not wizard_validate_str_password_are_equals( self, self.ed_private_key_password_1.Text, self.ed_private_key_password_2.Text, self.ed_private_key_password_2 ) then
+              exit(-1);
+
+            inc(step);
+          end;
+
+        // Validate key name is alphanum  ( ie valid filename )
+        sKeyIsAlphanum :
+          begin
+            if not wizard_validate_str_is_alphanum( self, self.ed_private_key_name.text, self.ed_private_key_name ) then
+              exit(-1);
+
+            inc(step);
+          end;
+
+        // Check if key exist
+        sKeyExist:
+          begin
+            s := fs_path_concat( self.ed_private_key_directory.Text, filename_private_key() );
+            if FileExists( s ) then
+              step := sExistingKeyCheckPassword
+            else
+              step := sKeyDestination;;
+          end;
+
+        // Private key destination directory exist and writable or parent dir is directory writable
+        sKeyDestination :
+          begin
+            self.SetValidationDescription('Checking private key destination directory' );
+            if not wizard_validate_fs_ensure_directory( self, self.ed_private_key_directory.Text, self.ed_private_key_directory ) then
+              exit(-1);
+            inc(step);
+          end;
 
 
 
+        // Validate private key creation
+        sCreatePrivateKey :
+        begin
+          // TODO : Do you want to customize certificate default values
+          self.SetValidationDescription( Format('Creating private key %s', [self.filename_private_key()]) );
 
-    // Validating key file not exist
-    s := self.filename_private_key();
-    if not wizard_validate_fs_file_not_exist( self, PChar(s), 'Validating key file doesn''t exist', 'A key with this name exist, please choose another name', self.ed_private_key_name ) then
-      exit(-1);
+          params := GetMem( sizeof(TCreateSignedCertParams) );
+          FillChar( params^, sizeof(TCreateSignedCertParams), 0 );
+          params^.keyfilename           := UTF8Decode( fs_path_concat( self.ed_private_key_directory.Text, self.filename_private_key()) );
+          params^.crtbasename           := ''; // if empty, it will take key filename
+          params^.destdir               := UTF8Decode( self.ed_private_key_directory.Text );
+          params^.country               := UTF8Decode( DEFAULT_COUNTRY_CODE );
+          params^.locality              := '';
+          params^.organization          := '';
+          params^.orgunit               := '';
+          params^.commonname            := UTF8Decode( self.ed_private_key_name.Text );
+          params^.email                 := '';
+          params^.keypassword           := UTF8Decode( self.ed_private_key_password_1.Text );
+          params^.codesigning           := false;
+          params^.IsCACert              := false;
+          params^.CACertificateFilename := '';
+          params^.CAKeyFilename         := '';
+          r := CreateSignedCertParams( params);
+          if r <> 0 then
+          begin
+            self.show_validation_error( nil, params^._error_message );
+            FreeMemAndNil( params );
+            exit(-1);
+          end;
+          FreeMemAndNil( params );
+          step := sCopyCertToSSLDirectory;
+        end;
 
-    // FMOR :> test if
-          // a key exist and can be decrypted
-          // a cert exist that correspon to the supplied key
-    // if true then skip key and cert creatation
+        // Validate check supplied password for existing key
+        sExistingKeyCheckPassword :
+          begin
+            self.SetValidationDescription('Key exist, checking supplied password can decrypt' );
+            r := crypto_check_key_password(b, s, self.ed_private_key_password_1.Text );
+            if r <> 0 then
+            begin
+              self.show_validation_error( self.ed_private_key_password_1, 'A key with this name exist but an error has occured when checking password.' + #13#10 + 'Move or delete key manually to continue.' );
+              exit(-1);
+            end;
 
+            if not b then
+            begin
+              self.show_validation_error( self.ed_private_key_password_1, 'A key with this name exist but supplied password is wrong.' + #13#10 + 'Check your password or move or delete key manually to continue.' );
+              exit(-1);
+            end;
+            step := sCheckExistingCertificate;
+          end;
 
-    FillChar( params, sizeof(TCreateSignedCertParams), 0 );
+        // Validate  certificate ...
+        sCheckExistingCertificate :
+          begin
+            self.SetValidationDescription( 'Validing existing certificate' );
+            s := fs_path_concat( 'ssl', filename_certificate_package() );
+            // A cert not exist in ssl dir ?
+            if FileExists(s) then
+            begin
+              step := sFinish;
+              Continue;
+            end;
 
-    params.keyfilename           := UTF8Decode( self.filename_private_key() );
-    params.crtbasename           := ''; // if empty, it will take key filename
-    params.destdir               := UTF8Decode( self.ed_private_key_directory.Text );
-    params.country               := UTF8Decode( DEFAULT_COUNTRY_CODE );
-    params.locality              := '';
-    params.organization          := '';
-    params.orgunit               := '';
-    params.commonname            := UTF8Decode( self.ed_private_key_name.Text );
-    params.email                 := '';
-    params.keypassword           := UTF8Decode( self.ed_private_key_password_1.Text );
-    params.codesigning           := false;
-    params.IsCACert              := false;
-    params.CACertificateFilename := '';
-    params.CAKeyFilename         := '';
-    try
-      cert := CreateSignedCertParams( params );
-    except on Ex : Exception do
-      begin
-        self.ShowValidationError( nil, ex.Message );
-        exit(-1);
+            // ... and not in private key dir ?
+            s := fs_path_concat( self.ed_private_key_directory.Text, filename_certificate_package() );
+            if FileExists(s) then
+            begin
+              step := sCopyCertToSSLDirectory;
+              Continue;
+            end;
+
+            msg :=       'The certificate %s corresponding' + #13#10;
+            msg := msg + 'to this key cannot be find. You can either' + #13#10;
+            msg := msg + 'recreate the key or place the certificate' + #13#10;
+            msg := msg + 'in the private key directory';
+            msg := Format( msg, [filename_certificate_package()] );
+            self.show_validation_error( self.ed_private_key_directory, s );
+            exit(-1);
+          end;
+
+        // Copy certificate to authorized certificates directory
+        sCopyCertToSSLDirectory :
+        begin
+          self.SetValidationDescription( 'Copying certificat to authorized certificate directory');
+
+          s := fs_path_concat( 'ssl', self.filename_certificate_package() );
+          if FileExists( s ) then
+          begin
+            msg := 'A certificat with this name %s exist in the directory' + #13#10#13#10;
+            msg := msg + '%s' + #13#10#13#10;
+            msg := msg + 'Replace it with the new one ?';
+            if mrNo = self.show_question( Format( msg, [ExtractFileName(params^._certificate),fs_path_concat(GetCurrentDir, 'ssl')]), mbYesNo) then
+            begin
+              self.show_validation_error( nil, 'Certificate cannot be copied to authorized certificate directory' );
+              exit(-1);
+            end;
+
+            if not DeleteFile(s) then
+            begin
+              msg := 'An error has occured when copying certificate to global authorized directory';
+              self.show_validation_error( nil, s );
+              exit( -1 );
+            end;
+          end;
+
+          s := fs_path_concat( self.ed_private_key_directory.Text, self.filename_certificate_package() );
+          if not CopyFile(  s, fs_path_concat( 'ssl', self.filename_certificate_package() ), true, false) then
+          begin
+            self.show_validation_error( nil, 'An error has occured while copying certificate into authorized certificates directory');
+            exit(-1);
+          end;
+
+          step := sFinish;
+        end;
+
+        sFinish:
+        begin
+          // noop
+        end;
+
       end;
     end;
 
 
+//    debug_show_step;
+
+    self.ClearValidationDescription();
     exit(0);
   end;
 
@@ -563,7 +750,7 @@ function TWizardConfigConsole.on_step_building_waptagent( mode: TWizardStepFuncM
   procedure building_show_error( control : TControl; const msg : String );
   begin
     selF.progress_building_waptagent.Visible := false;
-    self.ShowValidationError( control, msg );
+    self.show_validation_error( control, msg );
   end;
 
 const
@@ -578,7 +765,6 @@ var
   r : integer;
   i : integer;
   j : integer;
-  e : Extended;
 begin
   if wf_enter = mode then
   begin
@@ -589,27 +775,59 @@ begin
   if wf_validate = mode then
   begin
 
-    //
-    building_init_ui( MSG_BUILDING, 100 );
-    if not ensure_process_not_running('ISCC.exe') then
+    self.progress_building_waptagent.Visible := false;
+    self.lbl_building_waptagent_info.Caption := 'Prepare building waptagent';
+
+    // Check if waptagent already exist on server
+    self.SetValidationDescription( 'Checking if waptagent exist on server' );
+    s := url_concat( self.ed_server_url.Text, '/wapt/waptagent.exe' );
+    r := -1;
+    i := http_reponse_code( r, s );
+    if i <> 0 then
     begin
-      self.ShowValidationError( nil, 'A instance of ISCC as been found, cannot continue.');
+      self.show_validation_error( nil, 'A Problem has occurred while checking if waptagent exist on server' + #13#10 + 'Server installation may be broken, you could try reinstall waptserver' );
       exit(-1);
     end;
 
-    // Building
+    if r = 200 then
+    begin
+      s := 'Waptagent has been found on the server.'+ #13#10#13#10;
+      s := s + 'Rebuild and overwrite it ?';
+      if mrNo = self.show_question( s, mbYesNo ) then
+        exit(0);
+    end
+    else if r <> 404 then
+    begin
+      s := 'A Problem has occurred while checking if waptagent exist on server' + #13#10;
+      s := 'Server installation may be broken, you could try reinstall waptserver';
+      self.show_validation_error( nil, s );
+      exit(-1);
+    end;
+    self.ClearValidationDescription();
+
+
+    // Check there is no other inno setup process running
+    self.SetValidationDescription( 'Checking if there is no inno setup process running' );
+    if not ensure_process_not_running('ISCC.exe') then
+    begin
+      self.show_validation_error( nil, 'A instance of ISCC as been found, cannot continue.');
+      exit(-1);
+    end;
+    self.ClearValidationDescription();
+
+    // Building waptagent
+    building_init_ui( MSG_BUILDING, 100 );
     params := GetMem( sizeof(TCreateWaptSetupParams) );
     FillChar( params^, sizeof(TCreateWaptSetupParams), 0 );
 
-
-    params^.default_public_cert       := self.filename_certificate_package();
+    params^.default_public_cert       := fs_path_concat( 'ssl', self.filename_certificate_package() );
     params^.default_repo_url          := self.ed_server_url.Text + '/wapt';
     params^.default_wapt_server       := self.ed_server_url.Text;
     params^.destination               := GetTempDir(true);
     params^.company                   := '';
     params^.OnProgress                := @on_building_waptagent_tick;
     params^.WaptEdition               := 'waptagent';
-    params^.VerifyCert                := '1';
+    params^.VerifyCert                := config_verify_cert();
     params^.UseKerberos               := false;
     params^.CheckCertificatesValidity := true;
     params^.EnterpriseEdition         := DMPython.IsEnterpriseEdition;
@@ -646,9 +864,10 @@ begin
 
 
     //
-
     building_init_ui( 'Uploading to server...', FileSize(params^._agent_filename) );
-    s := '';
+    s := 'ssl\server\' + self.filename_certificate_server();
+    if not FileExists(s) then
+      s := '';
     try
       so := WAPTServerJsonMultipartFilePost(
         self.ed_server_url.Text,
@@ -659,7 +878,7 @@ begin
         self.ed_server_login.Text,
         self.ed_server_password.Text,
         @on_workevent,
-        'ssl\server\' + self.filename_certificate_server()
+        s
         );
       if so.S['status'] <> 'OK' then
         Raise Exception.Create( UTF8Encode(so.S['message']) );
@@ -670,43 +889,77 @@ begin
         exit(-1);
       end;
     end;
+
+    self.SetValidationDescription( 'Deleting temp files');
+    if not DeleteFile( params^._agent_filename ) then
+    begin
+      building_show_error( nil, 'An error has occured while deleting temp files');
+      FreeMemAndNil(params);
+      exit(-1);
+    end;
+
     FreeMemAndNil(params);
     exit(0);
+
   end;
 
 
-  exit(-1);
+
 end;
 
 function TWizardConfigConsole.on_step_finished(mode: TWizardStepFuncMode): integer;
+const
+  GLOBAL : String = 'global';
 var
   ini : TIniFile;
   s : String;
+
+  check_certificates_validity : String;
+  repo_url                    : String;
+  personal_certificate_path   : String;
+
 begin
   if wf_enter = mode then
   begin
     self.SetValidationDescription( 'Writing configuration settings' );
+
+
+    // Check certificate validity
+    check_certificates_validity := '1';
+    if not self.m_check_certificates_validity then
+      check_certificates_validity := '0';
+
+
+    // repo_url
+    repo_url := url_concat( self.ed_server_url.Text, '/wapt') ;
+
+    // personal_certificate_path
+    personal_certificate_path := self.filename_certificate_package();
+
     // Now Writing settings
     try
-      s := WaptIniFilename;
-
+      // wapt-get.ini
       s := 'wapt-get.ini';
       ini := TIniFile.Create( s );
-      ini.WriteInteger('global', 'check_certificates_validity', 1 );
-      ini.WriteInteger('global', 'verify_cert', 1 );
-      ini.WriteString( 'global', 'wapt_server', self.ed_server_url.Text );
-      ini.WriteString( 'global', 'repo_url', url_concat( self.ed_server_url.Text, '/wapt') );
+      ini.WriteString( GLOBAL, 'check_certificates_validity', check_certificates_validity );
+      ini.WriteString( GLOBAL, 'verify_cert',                  config_verify_cert() );
+      ini.WriteString( GLOBAL, 'wapt_server',                 self.ed_server_url.Text );
+      ini.WriteString( GLOBAL, 'repo_url',                    repo_url );
       ini.Free;
 
-      s := AppIniFilename();
+      // waptconsole.ini
+      s := IncludeTrailingBackslash(ExtractFileDir(AppIniFilename())) + 'waptconsole.ini';
       ini := TIniFile.Create( s );
-      ini.WriteInteger('global', 'check_certificates_validity', 1 );
-      ini.WriteInteger('global', 'verify_cert', 1 );
-      ini.WriteString( 'global', 'wapt_server', self.ed_server_url.Text );
-      ini.WriteString( 'global', 'repo_url', url_concat( self.ed_server_url.Text, '/wapt') );
+      ini.WriteString( GLOBAL, 'check_certificates_validity', check_certificates_validity );
+      ini.WriteString( GLOBAL, 'verify_cert',                  config_verify_cert() );
+      ini.WriteString( GLOBAL, 'wapt_server',                 self.ed_server_url.Text );
+      ini.WriteString( GLOBAL, 'repo_url',                    repo_url );
+      ini.WriteString( GLOBAL, 'default_package_prefix',      self.ed_package_prefix.Text );
+      ini.WriteString( GLOBAL, 'personal_certificate_path',   personal_certificate_path );
       ini.Free;
 
       ini := nil;
+      self.ClearValidationDescription();
     finally
       if Assigned(ini) then
         FreeAndNil(ini);

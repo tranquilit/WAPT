@@ -56,16 +56,17 @@ type
     procedure WizardManagerPageShow(Sender: TObject; Page: TWizardPage);
 
 
-    procedure ShowValidationError( ctrl : TControl; msg : String ); virtual; final;
     procedure SetValidationDescription( description : String ); virtual; final;
     procedure ClearValidationError(); virtual; final;
     procedure ClearValidationDescription(); virtual; final;
-
+{
     procedure ShowError( msg : String ); virtual; final;
-
+}
   private
-    m_step_funcs : TWizardStepFuncArray;
+    m_step_funcs      : TWizardStepFuncArray;
     m_fake_wizard_page : TFakeWizardPage;
+    m_validating       : Boolean;
+
 
     function validate() : boolean;
     procedure on_button_next(Sender: TObject); virtual; final;
@@ -83,11 +84,16 @@ type
 
 
 
-
   public
     // IWizardPage
     procedure GetPageInfo(var PageInfo: TWizardPageInfo); virtual; final;
 
+    function  show_info(    const msg : String; buttons : TMsgDlgButtons ) : TModalResult; virtual; final;
+    function  show_question(const msg : String; buttons : TMsgDlgButtons ) : TModalResult; virtual; final;
+    function  show_warning( const msg : String; buttons : TMsgDlgButtons ) : TModalResult; virtual; final;
+    function  show_error(   const msg : String; buttons : TMsgDlgButtons ) : TModalResult; virtual; final;
+    procedure show_error(   const msg : String ); virtual overload; final;
+    procedure show_validation_error( ctrl : TControl; msg : String ); virtual; final;
 
 
   end;
@@ -143,6 +149,8 @@ begin
   self.register_steps();
   self.PageControl.TabIndex    := 0;
   self.WizardManager.PageIndex := 0;
+
+  self.m_validating := false;
 
   self.on_wizard_start();
 end;
@@ -214,6 +222,32 @@ begin
 
 
 
+end;
+
+function TWizard.show_info(const msg: String; buttons: TMsgDlgButtons ): TModalResult;
+begin
+  result := MessageDlg( self.Caption, msg, mtInformation, buttons, 0 );
+end;
+
+function TWizard.show_question(const msg: String; buttons: TMsgDlgButtons ): TModalResult;
+begin
+  result := MessageDlg( self.Caption, msg, mtConfirmation, buttons, 0 );
+end;
+
+
+function TWizard.show_warning(const msg: String; buttons: TMsgDlgButtons ): TModalResult;
+begin
+  result := MessageDlg( self.Caption, msg, mtWarning, buttons, 0 );
+end;
+
+function TWizard.show_error(const msg: String; buttons: TMsgDlgButtons ): TModalResult;
+begin
+  result := MessageDlg( self.Caption, msg, mtError, buttons, 0 );
+end;
+
+procedure TWizard.show_error(const msg: String);
+begin
+  self.show_error( msg, [mbOK] );
 end;
 
 
@@ -294,12 +328,15 @@ begin
 end;
 
 
+
 function TWizard.validate(): boolean;
 var
   t : TTabSheet;
   f : TWizardStepFunc;
   i : integer;
 begin
+  self.m_validating := true;
+
   i := self.PageControl.TabIndex;
   t := TTabSheet(self.PageControl.Page[i]);
   self.lbl_current_task.Parent.RemoveControl( self.lbl_current_task );
@@ -308,25 +345,30 @@ begin
   self.WizardButtonPanel.Enabled := false;
   Application.ProcessMessages;
 
+
   result := true;
   f := self.m_step_funcs[i];
   if Assigned(f) then
     result := f( wf_validate ) = 0;
 
-
   self.WizardButtonPanel.Enabled := true;
   Application.ProcessMessages;
 
+  self.m_validating := false;
 end;
 
 
 
 procedure TWizard.on_button_next(Sender: TObject);
 begin
+  if m_validating then
+    exit;
+
   if self.validate() = false then
     exit;
 
   self.WizardManager.DoAction(waNext);
+
 end;
 
 procedure TWizard.on_button_finish(Sender: TObject);
@@ -338,7 +380,7 @@ begin
 end;
 
 
-procedure TWizard.ShowValidationError(ctrl: TControl; msg: String);
+procedure TWizard.show_validation_error(ctrl: TControl; msg: String);
 var
   x : integer;
   y : integer;
@@ -384,12 +426,12 @@ procedure TWizard.ClearValidationDescription();
 begin
   SetValidationDescription('');
 end;
-
+{
 procedure TWizard.ShowError(msg: String);
 begin
   self.ShowValidationError( nil, msg );
 end;
-
+ }
 
 
 
