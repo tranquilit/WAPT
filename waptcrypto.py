@@ -964,25 +964,13 @@ class SSLPrivateKey(BaseObjectClass):
         apadding = padding.PKCS1v15()
         algo = get_hash_algo(md)
 
-        signer = self.rsa.signer(apadding,algo)
         if isinstance(content,unicode):
             content = content.encode('utf8')
         elif isinstance(content,(list,dict)):
             content = jsondump(content)
-        if isinstance(content,str):
-            signer.update(content)
-            """
-        elif hasattr(content,'read'):
-            # file like objetc
-            while True:
-                data = content.read(block_size)
-                if not data:
-                    break
-                signer.update(data)
-            """
-        else:
-            raise Exception(u'Bad content type for sign_content, should be either str or file like')
-        signature = signer.finalize()
+        if not isinstance(content,str):
+            raise Exception(u'Bad content type for sign_content, should be str')
+        signature = self.rsa.sign(content,apadding,algo)
         return signature
 
     def match_cert(self,crt):
