@@ -490,7 +490,7 @@ class WaptSessionDB(WaptBaseDB):
                     where rowid = ?
                 """,(
                      set_status,
-                     append_output if append_output is not None else '',
+                     ensure_unicode(append_output) if append_output is not None else '',
                      pid,
                      rowid,
                      )
@@ -854,7 +854,7 @@ class WaptDB(WaptBaseDB):
                     where rowid = ?
                 """,(
                      set_status,
-                     append_output if append_output is not None else '',
+                     ensure_unicode(append_output) if append_output is not None else u'',
                      uninstall_key,
                      uninstall_string,
                      pid,
