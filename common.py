@@ -4950,7 +4950,7 @@ class Wapt(BaseObjectClass):
         return self.waptdb.update_install_status(**kwargs)
 
 
-    def _get_host_status_data(self,force=False):
+    def _get_host_status_data(self,old_hashes,new_hashes,force=False):
         """Build the data to send to server where update_server_status required
 
         Returns:
@@ -4959,14 +4959,11 @@ class Wapt(BaseObjectClass):
 
         def _add_data_if_updated(inv,key,data,old_hashes,new_hashes):
             """Add the data to inv as key if modified since last update_server_status"""
-            newhash = hashlib.sha1(cPickle.dumps(data)).digest()
+            newhash = hashlib.sha1(cPickle.dumps(data)).hexdigest()
             oldhash = old_hashes.get(key,None)
             if force or oldhash != newhash:
                 inv[key] = data
                 new_hashes[key] = newhash
-
-        new_hashes = {}
-        old_hashes = json.loads(self.read_param('update_server_hashes','{}'))
 
         inv = {'uuid': self.host_uuid}
         inv['wapt_status'] = self.wapt_status()
@@ -5010,7 +5007,10 @@ class Wapt(BaseObjectClass):
         if self.waptserver_available():
             # avoid sending data to the server if it has not been updated.
             try:
-                inv = self._get_host_status_data(force=force)
+                new_hashes = {}
+                old_hashes = json.loads(self.read_param('update_server_hashes','{}'))
+
+                inv = self._get_host_status_data(old_hashes, new_hashes, force=force)
                 data = jsondump(inv)
                 signature = self.sign_host_content(data,)
 
