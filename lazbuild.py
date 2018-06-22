@@ -8,6 +8,7 @@
 # Copyright:   (c) htouvet 2018
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
+from __future__ import absolute_import
 
 import os
 import sys
@@ -35,10 +36,17 @@ Configure and Build a Lazarus app
 def set_lpi_options(lpi_fn,waptedition,waptversion):
     """Change the product name and product version of lazarus lpi project"""
     lpi = etree.parse(lpi_fn)
+    vi = lpi.find('ProjectOptions/VersionInfo')
     major = lpi.find('ProjectOptions/VersionInfo/MajorVersionNr').attrib['Value'] = waptversion.members[0]
     minor = lpi.find('ProjectOptions/VersionInfo/MinorVersionNr').attrib['Value'] = waptversion.members[1]
-    revision = lpi.find('ProjectOptions/VersionInfo/RevisionNr').attrib['Value'] = waptversion.members[2]
-    build = lpi.find('ProjectOptions/VersionInfo/BuildNr').attrib['Value'] = waptversion.members[3]
+    et_revision = lpi.find('ProjectOptions/VersionInfo/RevisionNr')
+    if et_revision is None:
+        et_revision = etree.SubElement(vi,'RevisionNr')
+    revision = et_revision.attrib['Value'] = waptversion.members[2]
+    et_build = lpi.find('ProjectOptions/VersionInfo/BuildNr')
+    if et_build is None:
+        et_build = etree.SubElement(vi,'BuildNr')
+    build = et_build.attrib['Value'] = waptversion.members[3]
     st = lpi.find('ProjectOptions/VersionInfo/StringTable')
     st.attrib['ProductName'] = 'WAPT %s Edition' % waptedition.capitalize()
     st.attrib['ProductVersion'] = '%s.%s.%s' % (major,minor,revision)
@@ -65,9 +73,7 @@ def update_hash_file(filepath):
                     fn_rel_path = os.path.relpath(fn,os.path.dirname(filepath))
                     if os.path.isfile(fn):
                         filesha256 = waptcrypto.sha256_for_file(fn)
-                    else:
-                        filesha256 = waptcrypto.sha256_for_data('')
-                    new.write((u'%s  %s\n' % (filesha256,fn_rel_path)).encode('utf8'))
+                        new.write((u'%s  %s\n' % (filesha256,fn_rel_path)).encode('utf8'))
                 elif hash_fn.strip():
                     raise Exception('Bad line format for %s' % hash_fn)
         if os.path.exists(filepath+'.bak'):
@@ -78,12 +84,13 @@ def update_hash_file(filepath):
         print('No %s hash file to process' % filepath)
 
 def sign_exe(exe_path,p12path,p12password):
-    KSIGN = os.path.join(setuphelpers.programfiles32,'kSign','kSignCMD.exe')
+    #SIGNTOOL = os.path.join(setuphelpers.programfiles64,'Microsoft SDKs','Windows','v7.1','Bin','signtool.exe')
+    SIGNTOOL = os.path.join('c:\\wapt','utils','signtool.exe')
 
     for attempt in [1, 2, 3]:
         try:
             print "Signing attempt #" + str(attempt)
-            setuphelpers.run(r'"%s" /f "%s" /p"%s" "%s"' % (KSIGN,p12path,p12password,exe_path),return_stderr=False)
+            setuphelpers.run(r'"%s" sign /f "%s" /p "%s" /t http://timestamp.verisign.com/scripts/timstamp.dll "%s"' % (SIGNTOOL,p12path,p12password,exe_path),return_stderr=False)
             break
         except subprocess.CalledProcessError as cpe:
             cpe.cmd =  cpe.cmd.replace(p12password, '********')
@@ -106,7 +113,7 @@ def main():
     parser=OptionParser(usage=__doc__)
     parser.add_option("-l","--laz-build-path", dest="lazbuildpath", default=r'C:\codetyphon\typhon\bin32\typhonbuild.exe', help="Path to lazbuild or typhonbuild.exe (default: %default)")
     parser.add_option("-p","--primary-config-path", dest="primary_config_path", default='%APPDATA%\\typhon32', help="Path to lazbuild primary config dir. (default: %default)")
-    parser.add_option("-v","--wapt-version", dest="waptversion", default=waptutils.__version__, help="Wapt edition to build (community, enterprise...).  (default: %default)")
+    parser.add_option("-v","--wapt-version", dest="waptversion", default=waptutils.__version__, help="Wapt version to put in exe metadata. (default: %default)")
     parser.add_option("-e","--wapt-edition", dest="waptedition", default='community', help="Wapt edition to build (community, enterprise...).  (default: %default)")
     parser.add_option("-u","--update-hash-file", dest="update_hash_filepath", default=r'{lpi_dirname}\\..\\{lpi_name}.sha256',help="Hash file to update vars (lpi_rootname,lpi_name,lpi_path,lpi_dirname,lpi_basename) (default: <lpi-base-name>.sha256")
     parser.add_option("-c","--compress", action='store_true', dest="compress", default=False, help="Compress with UPX.  (default: %default)")
@@ -132,7 +139,7 @@ def main():
         update_hash_file(os.path.abspath(options.update_hash_filepath.format(**locals())))
         cmd = '"%s" --primary-config-path="%s" -B "%s"'% (os.path.expandvars(options.lazbuildpath),os.path.expandvars(options.primary_config_path),os.path.expandvars(lpi_path))
         print(u'Running: %s' % cmd)
-        setuphelpers.run(cmd)
+        setuphelpers.run(cmd,cwd = os.path.dirname(os.path.expandvars(options.lazbuildpath)))
         (fn,ext) = os.path.splitext(get_lpi_output(lpi_path))
         if ext in ('','.'):
             ext = '.exe'
