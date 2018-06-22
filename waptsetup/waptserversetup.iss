@@ -107,6 +107,7 @@ Name: "{app}\waptserver\log"
 Name: "{app}\waptserver\repository\wapt"
 Name: "{app}\waptserver\repository\wapt-host"
 Name: "{app}\waptserver\repository\wapt-group"
+Name: "{app}\waptserver\repository\waptwua"
 Name: "{app}\waptserver\nginx\ssl"
 
 [INI]
@@ -115,6 +116,7 @@ Filename: {app}\conf\waptserver.ini; Section: options; Key: allow_unauthenticate
 
 [RUN]
 Filename: "{app}\waptserver\pgsql\vcredist_x64.exe"; Parameters: "/passive /quiet"; StatusMsg: {cm:InstallMSVC2013}; Description: "{cm:InstallMSVC2013}";  
+Filename: "{app}\wapt-get.exe"; Parameters: " update-packages {app}\waptserver\repository\wapt"; StatusMsg: {cm:ScanPackages}; Description: "{cm:ScanPackages}"
 Filename: "{app}\waptserverpostconf.exe"; Parameters: "-l {code:CurrentLanguage}"; Flags: nowait postinstall runascurrentuser skipifsilent; StatusMsg: {cm:LaunchingPostconf}; Description: "{cm:LaunchingPostconf}"
 
 [Tasks]
@@ -140,6 +142,7 @@ fr.LaunchingPostconf=Lancement de la post-configuration du serveur
 fr.InstallNGINX=Installer le serveur http NGINX (utlise les ports 80 et 443)
 fr.InstallPostgreSQL=Installer le serveur PostgreSQL
 fr.InstallWaptServer=Installer le serveur Wapt
+fr.ScanPackages=Scan des paquets actuels
 
 en.RegisteringService=Setup WaptServer Service
 en.InstallMSVC2013=Installing MSVC++ 2013 Redistribuable
@@ -147,6 +150,7 @@ en.LaunchingPostconf=Launch server post-configuration
 en.InstallNGINX=Install NGINX http server(will use ports 80 and 443)
 en.InstallPostgreSQL=Install PostgreSQL Server
 en.InstallWaptServer=Install Wapt server
+en.ScanPackages=Scan packages
 
 de.RegisteringService=Setup WaptServer Service
 de.InstallMSVC2013=MSVC++ 2013 Redistribuable installieren
