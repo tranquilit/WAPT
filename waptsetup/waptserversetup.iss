@@ -61,6 +61,7 @@ Source: "..\waptserverpostconf.exe"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\waptdeploy.exe"; DestDir: "{app}\waptserver\repository\wapt\"; Flags: ignoreversion
 
 Source: "..\runwaptservice.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\runwaptserver.bat"; DestDir: "{app}"; Flags: ignoreversion
 
 #ifdef choose_components
 Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName: "waptserver.ini"; Tasks: InstallWaptserver
@@ -72,6 +73,13 @@ Source: "..\waptserver\translations\*"; DestDir: "{app}\waptserver\translations"
 Source: "..\waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
 Source: "..\waptserver\pgsql\*"; DestDir: "{app}\waptserver\pgsql"; Flags: createallsubdirs recursesubdirs; Tasks: InstallPostgreSQL
 Source: "..\waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: createallsubdirs recursesubdirs; Tasks: InstallNGINX
+Source: "..\waptserver\mongodb\mongoexport.exe"; DestDir: "{app}\waptserver\mongodb"; Check: DirExists(ExpandConstant('{app}\waptserver\mongodb'));  Tasks: InstallWaptserver
+
+; waptenterprise only
+#ifdef waptenterprise
+Source: "..\waptenterprise\waptserver\*"; DestDir: "{app}\waptenterprise\waptserver\";  Flags: createallsubdirs recursesubdirs;Tasks: InstallWaptserver
+#endif
+
 #else
 Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName: "waptserver.ini"; 
 Source: "..\waptserver\*.py"; DestDir: "{app}\waptserver";   
@@ -83,6 +91,12 @@ Source: "..\waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: c
 Source: "..\waptserver\pgsql\*"; DestDir: "{app}\waptserver\pgsql"; Flags: createallsubdirs recursesubdirs;
 Source: "..\waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: createallsubdirs recursesubdirs;
 Source: "..\waptserver\mongodb\mongoexport.exe"; DestDir: "{app}\waptserver\mongodb"; Check: DirExists(ExpandConstant('{app}\waptserver\mongodb'))
+
+; waptenterprise only
+#ifdef waptenterprise
+Source: "..\waptenterprise\waptserver\*"; DestDir: "{app}\waptenterprise\waptserver\";  Flags: createallsubdirs recursesubdirs;
+#endif
+
 #endif
 
 
