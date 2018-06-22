@@ -159,3 +159,13 @@ print('Install ldap wheel')
 print(run([makepath(wapt_base_dir,'Scripts','pip.exe'),'install',python_ldap,'--target',site_packages,'--upgrade']))
 
 
+print('Rocket 1.2.8 workaround (until pip is fixed...)')
+fn = wget('https://github.com/explorigin/Rocket/archive/master.zip')
+tmpdir = tempfile.mktemp('rockettmp')
+try:
+    unzip(fn,target=tmpdir)
+    copytree2(makepath(tmpdir,'Rocket-master','rocket'),makepath(site_packages,'rocket'))
+finally:
+    if os.path.isdir(tmpdir):
+        shutil.rmtree(tmpdir)
+
