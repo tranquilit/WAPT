@@ -2594,7 +2594,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         # additional properties
         self._default_config.update({
             'repo_url':'',
-            'timeout':2,
+            'timeout':5.0,
             'verify_cert':'1', # default is to check repo https certificates
             'http_proxy':'',
         })
@@ -2606,6 +2606,8 @@ class WaptRemoteRepo(WaptBaseRepo):
 
         self.client_certificate = None
         self.client_private_key = None
+
+        self.timeout = None
 
         # this load and empty config
         WaptBaseRepo.__init__(self,name=name,cabundle=cabundle,config=config)
