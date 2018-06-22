@@ -4289,7 +4289,7 @@ class Wapt(BaseObjectClass):
                         actions['errors'].append([request,p])
                         logger.critical(u'Package %s not installed due to errors' %(request,))
                 except Exception as e:
-                    actions['errors'].append([request,p])
+                    actions['errors'].append([request,p,ensure_unicode(traceback.format_exc())])
                     logger.critical(u'Package %s not installed due to errors : %s' %(request,ensure_unicode(e)))
                     if logger.level == logging.DEBUG:
                         raise
