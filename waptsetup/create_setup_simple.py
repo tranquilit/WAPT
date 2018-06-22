@@ -21,12 +21,13 @@ Build installer
 """
 
 def sign_exe(exe_path,p12path,p12password):
-    KSIGN = os.path.join(setuphelpers.programfiles32,'kSign','kSignCMD.exe')
+    #SIGNTOOL = os.path.join(setuphelpers.programfiles64,'Microsoft SDKs','Windows','v7.1','Bin','signtool.exe')
+    SIGNTOOL = os.path.join('c:\\wapt','utils','signtool.exe')
 
     for attempt in [1, 2, 3]:
         try:
             print "Signing attempt #" + str(attempt)
-            setuphelpers.run(r'"%s" /f "%s" /p"%s" "%s"' % (KSIGN,p12path,p12password,exe_path),return_stderr=False)
+            setuphelpers.run(r'"%s" sign /f "%s" /p "%s" /t http://timestamp.verisign.com/scripts/timstamp.dll "%s"' % (SIGNTOOL,p12path,p12password,exe_path),return_stderr=False)
             break
         except subprocess.CalledProcessError as cpe:
             cpe.cmd =  cpe.cmd.replace(p12password, '********')
@@ -35,7 +36,6 @@ def sign_exe(exe_path,p12path,p12password):
         except Exception as e:
             print "Got an exception from subprocess.check_output"
             raise
-
 
 def main():
     parser=OptionParser(usage=__doc__)
