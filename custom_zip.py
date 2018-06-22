@@ -62,6 +62,8 @@ import stat
 import shutil
 import struct
 import binascii
+import copy
+import string
 
 try:
     import zlib # We may need its compression method
@@ -758,6 +760,15 @@ class ZipExtFile(io.BufferedIOBase):
         self._offset += len(data)
         return data
 
+    def read_raw(self, n):
+        """Read up to n bytes of the file data without applying any filters"""
+        if n < 0:
+            raise ValueError('n must be positive')
+        amount = min(self._compress_left, n)
+        self._compress_left -= amount
+        self._eol = not self._compress_left
+        return self._fileobj.read(amount)
+
     def close(self):
         try:
             if self._close_fileobj:
@@ -782,6 +793,8 @@ class ZipFile(object):
     """
 
     fp = None                   # Set here since __del__ checks it
+    # Copy data 16 blocks at a time
+    COPY_READ_SIZE = 16 * ZipExtFile.MIN_READ_SIZE
 
     def __init__(self, file, mode="r", compression=ZIP_STORED, allowZip64=False):
         """Open the ZIP file with mode read "r", write "w" or append "a"."""
@@ -849,6 +862,7 @@ class ZipFile(object):
             if not self._filePassed:
                 self.fp.close()
                 self.fp = None
+                self._filePassed = 0
             raise RuntimeError('Mode must be "r", "w" or "a"')
 
     def __enter__(self):
@@ -866,6 +880,7 @@ class ZipFile(object):
             if not self._filePassed:
                 self.fp.close()
                 self.fp = None
+                self._filePassed = 0
             raise
 
     def _RealGetContents(self):
@@ -1063,6 +1078,7 @@ class ZipFile(object):
             if fname_str != zinfo.orig_filename:
                 if not self._filePassed:
                     zef_file.close()
+                    self._filePassed = 0
                 raise BadZipFile(
                       'File name in directory %r and header %r differ.'
                       % (zinfo.orig_filename, fname))
@@ -1076,6 +1092,7 @@ class ZipFile(object):
                 if not pwd:
                     if not self._filePassed:
                         zef_file.close()
+                        self._filePassed = 0
                     raise RuntimeError("File %s is encrypted, "
                                        "password required for extraction" % name)
 
@@ -1096,6 +1113,7 @@ class ZipFile(object):
                 if h[11] != check_byte:
                     if not self._filePassed:
                         zef_file.close()
+                        self._filePassed = 0
                     raise RuntimeError("Bad password for file", name)
 
             return ZipExtFile(zef_file, mode, zinfo, zd,
@@ -1130,6 +1148,60 @@ class ZipFile(object):
 
         for zipinfo in members:
             self.extract(zipinfo, path, pwd)
+
+    def filter(self, pathname, filterfunc):
+        """Copy all the members of the zipfile to the target pathname that
+            return True when passed to the filter_function.
+
+        pathname: A path for a new zipfile.
+
+        filter_function: filterfunc(member_pathname) returns a boolean if the
+            member should be added to the destination.
+        """
+        with ZipFile(pathname, 'w', compression=self.compression, allowZip64=self._allowZip64) as new_zip:
+            for zinfo in self.filelist:
+                if filterfunc(zinfo.filename):
+                    self._copy_compressed(zinfo, new_zip)
+
+    def _copy_compressed(self, member, target_zip):
+        """copy ZipInfo member from the archive using the already
+        compressed bytes.
+
+        member: a ZipInfo of this ZipFile
+
+        target_zip: An existing ZipFile to receive the member
+        """
+        target_zip._didModify = True
+        central_zinfo = copy.copy(member)
+        central_zinfo.header_offset = target_zip.fp.tell()    # update start of header
+        target_zip.filelist.append(central_zinfo)
+        file_zinfo = copy.copy(central_zinfo)
+
+        zip64 = file_zinfo.file_size > ZIP64_LIMIT or file_zinfo.compress_size > ZIP64_LIMIT
+        if zip64 and not self._allowZip64:
+            raise LargeZipFile("Filesize would require ZIP64 extensions")
+        if file_zinfo.file_size <= ZIP64_LIMIT:
+            # extra is optional outside the master contents, so like many
+            # implementations we omit it when we can. It is only needed
+            # for recovery of large files.
+            file_zinfo.extra = b''
+
+        target_zip.fp.write(file_zinfo.FileHeader(zip64))
+        with self.open(member, 'r') as zipped_file:
+            while True:
+                data = zipped_file.read_raw(self.COPY_READ_SIZE)
+                if not data:
+                    break
+                target_zip.fp.write(data)
+
+        if file_zinfo.flag_bits & 0x08:
+             # Write CRC and file sizes after the file data
+             fmt = '<LQQ' if zip64 else '<LLL'
+             target_zip.fp.write(struct.pack(fmt, file_zinfo.CRC,
+                 file_zinfo.compress_size, file_zinfo.file_size))
+        target_zip.fp.flush()
+        target_zip.start_dir = target_zip.fp.tell()
+
 
     def _extract_member(self, member, targetpath, pwd):
         """Extract the ZipInfo object 'member' to a physical
@@ -1407,7 +1479,7 @@ class ZipFile(object):
                 if fheader[_FH_EXTRA_FIELD_LENGTH]:
                     fp.read(fheader[_FH_EXTRA_FIELD_LENGTH])
 
-                if zinfo.flag_bits & 0x800:
+                if info.flag_bits & 0x800:
                     # UTF-8 filename
                     fname_str = fname.decode("utf-8")
                 else:
@@ -1416,9 +1488,10 @@ class ZipFile(object):
                 if fname_str != info.orig_filename:
                     if not self._filePassed:
                         fp.close()
+                        self._filePassed = 0
                     raise BadZipFile(
                           'File name in directory %r and header %r differ.'
-                          % (zinfo.orig_filename, fname))
+                          % (info.orig_filename, fname))
 
                 # read the actual data
                 data = fp.read(fheader[_FH_COMPRESSED_SIZE])
@@ -1430,7 +1503,7 @@ class ZipFile(object):
                 # write fileheader and data
                 fp.write(fileheader)
                 fp.write(data)
-                if zinfo.flag_bits & _FHF_HAS_DATA_DESCRIPTOR:
+                if info.flag_bits & _FHF_HAS_DATA_DESCRIPTOR:
                     # Write CRC and file sizes after the file data
                     fp.write(struct.pack("<LLL", info.CRC, info.compress_size,
                             info.file_size))
