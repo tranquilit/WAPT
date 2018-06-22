@@ -2638,9 +2638,6 @@ class Wapt(BaseObjectClass):
 
         if self.config.has_option('global','forced_uuid'):
             self.forced_uuid = self.config.get('global','forced_uuid')
-            if self.forced_uuid != self.host_uuid:
-                logger.debug('Storing new uuid in DB %s' % self.forced_uuid)
-                self.host_uuid = self.forced_uuid
         else:
             # force reset to None if config file is changed at runtime
             self.forced_uuid = None
@@ -2862,20 +2859,26 @@ class Wapt(BaseObjectClass):
                     new_uuid = self.forced_uuid
                     self.config.set('global','forced_uuid',new_uuid)
                     if self.config_filename is not None:
-                        self.config.write(open(self.config_filename,'wb'))
+                        try:
+                            self.config.write(open(self.config_filename,'wb'))
+                        except:
+                            pass
                 else:
                     new_uuid = previous_uuid
 
         if previous_uuid is None or previous_uuid != new_uuid or registered_hostname != current_hostname:
-            self.write_param('uuid',new_uuid)
-            self.write_param('hostname',current_hostname)
+            try:
+                self.write_param('uuid',new_uuid)
+                self.write_param('hostname',current_hostname)
+            except:
+                # no write access
+                pass
         return new_uuid
 
 
     @host_uuid.setter
     def host_uuid(self,value):
         self.forced_uuid = value
-        self.write_param('uuid',value)
 
     @host_uuid.deleter
     def host_uuid(self):
