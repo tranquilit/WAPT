@@ -118,9 +118,9 @@ Filename: {app}\conf\waptserver.ini; Section: options; Key: allow_unauthenticate
 Filename: "{app}\waptserver\pgsql\vcredist_x64.exe"; Parameters: "/passive /quiet"; StatusMsg: {cm:InstallMSVC2013}; Description: "{cm:InstallMSVC2013}";  
 Filename: "{app}\wapt-get.exe"; Parameters: " update-packages {app}\waptserver\repository\wapt"; StatusMsg: {cm:ScanPackages}; Description: "{cm:ScanPackages}"
 Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\winsetup.py all -c {app}\conf\waptserver.ini -f"; StatusMsg: {cm:ScanPackages}; Description: "{cm:InstallingServerServices}"
-Filename: "net"; Parameters: "stop waptpostgresql"; Flags: runhidden; StatusMsg: "Démarrage du service waptpostgresql"
-Filename: "net"; Parameters: "stop waptnginx"; Flags: runhidden; StatusMsg: "Démarrage du service waptnginx"
-Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Démarrage du service waptserver"
+Filename: "net"; Parameters: "start waptpostgresql"; Flags: runhidden; StatusMsg: "Démarrage du service waptpostgresql"
+Filename: "net"; Parameters: "start waptnginx"; Flags: runhidden; StatusMsg: "Démarrage du service waptnginx"
+Filename: "net"; Parameters: "start waptserver"; Flags: runhidden; StatusMsg: "Démarrage du service waptserver"
 
 Filename: "{app}\waptserverpostconf.exe"; Parameters: "-l {code:CurrentLanguage}"; Flags: nowait postinstall runascurrentuser skipifsilent; StatusMsg: {cm:LaunchingPostconf}; Description: "{cm:LaunchingPostconf}"
 
