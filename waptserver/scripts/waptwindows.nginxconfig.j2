@@ -53,15 +53,14 @@ http {
         ssl_session_cache           none;
         ssl_session_tickets         off;
 
+        gzip_min_length     1000;
+        gzip_buffers        4 8k;
+        gzip_http_version   1.0;
+        gzip_disable        "msie6";
+        gzip_types          text/plain text/css application/json;
+        gzip_vary           on;
+
         index index.html;
-
-
-        location ~ ^/wapt.* {
-            proxy_set_header Cache-Control "store, no-cache, must-revalidate, post-check=0, pre-check=0";
-            proxy_set_header Pragma "no-cache";
-            proxy_set_header Expires "Sun, 19 Nov 1978 05:00:00 GMT";
-            root "{{ wapt_repository_path }}";
-        }
 
         location / {
             proxy_set_header X-Real-IP  $remote_addr;
@@ -69,28 +68,36 @@ http {
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
 
-    {% if use_kerberos  %}
-            location /add_host {
+            client_max_body_size 4096m;
+            client_body_timeout 1800;
+
+            location ~ ^/(wapt|wapt-host)/(.*)$ {
+                proxy_set_header Cache-Control "store, no-cache, must-revalidate, post-check=0, pre-check=0";
+                proxy_set_header Pragma "no-cache";
+                proxy_set_header Expires "Sun, 19 Nov 1978 05:00:00 GMT";
+
+                rewrite ^/(wapt|wapt-host)/(.*)$ /$1/$2 break;
+                root "{{ wapt_repository_path }}";
+            }
+
+        {% if use_kerberos  %}
+            location /add_host_kerberos {
                 auth_gss on;
-                auth_gss_keytab  /etc/nginx/http-krb5.keytab;
-                proxy_pass http://127.0.0.1:8080;
+                auth_gss_keytab {{ wapt_root_dir}}/waptserver/nginx/http-krb5.keytab;
+                proxy_pass http://127.0.0.1:{{waptserver_port}};
             }
-    {% endif %} {# if use_kerberos #}
-
-
-
-            location  ~ ^/(api/v3/upload_packages|api/v3/upload_hosts/|upload_waptsetup)  {
-                proxy_pass http://127.0.0.1:8080;
-                client_max_body_size 4096m;
-                client_body_timeout 1800;
+        {% else %}
+            location /add_host_kerberos {
+                return 403;
             }
+        {% endif %} {# if use_kerberos #}
 
             location /wapt-host/Packages {
                     return 403;
             }
 
             location / {
-                proxy_pass http://127.0.0.1:8080;
+                proxy_pass http://127.0.0.1:{{waptserver_port}};
             }
 
             location /socket.io {
@@ -98,7 +105,7 @@ http {
                 proxy_buffering off;
                 proxy_set_header Upgrade $http_upgrade;
                 proxy_set_header Connection "Upgrade";
-                proxy_pass http://127.0.0.1:8080/socket.io;
+                proxy_pass http://127.0.0.1:{{waptserver_port}}/socket.io;
             }
         }
     }
