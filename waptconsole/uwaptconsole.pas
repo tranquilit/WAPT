@@ -3799,7 +3799,9 @@ begin
       if FileExistsUTF8(Appuserinipath) then
         DeleteFileUTF8(Appuserinipath);
 
+    {$ifdef wsus2}
     pgWindowsUpdates.TabVisible:=IsEnterpriseEdition;
+    {$endif}
     pgHostWUA.TabVisible:=IsEnterpriseEdition;
 
     for i:=0 to WSUSActions.ActionCount-1 do

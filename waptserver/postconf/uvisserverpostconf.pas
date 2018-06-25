@@ -35,7 +35,6 @@ type
     EdPwd2: TEdit;
     EdWaptServerIP: TEdit;
     EdWAPTServerName: TEdit;
-    HTMLViewer1: THTMLViewer;
     Label1: TLabel;
     Label2: TLabel;
     Memo7: TMemo;
@@ -86,7 +85,7 @@ uses LCLIntf, Windows, waptcommon, waptwinutils, UScaleDPI, tisinifiles,
 procedure TVisWAPTServerPostConf.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96);
-  HTMLViewer1.DefFontSize := ScaleY(HTMLViewer1.DefFontSize,96);
+  //HTMLViewer1.DefFontSize := ScaleY(HTMLViewer1.DefFontSize,96);
   ReadWaptConfig(WaptBaseDir+'wapt-get.ini');
   PagesControl.ShowTabs:=False;
   PagesControl.ActivePageIndex:=0;
@@ -169,7 +168,7 @@ begin
         LangOffset := PAGES_EN_OFFSET;
     end;
 
-  PageContent := GetString(langOffset + PagesControl.ActivePageIndex * PAGES_INDEX_STEP);
+  {PageContent := GetString(langOffset + PagesControl.ActivePageIndex * PAGES_INDEX_STEP);
   Page := TMemoryStream.Create;
   Page.WriteAnsiString(PageContent);
   HTMLViewer1.LoadFromStream(Page);
@@ -180,7 +179,7 @@ begin
     HTMLViewer1.Parent := panFinish;
     HTMLViewer1.Align:=alClient;
   end
-  else
+  }
 end;
 
 procedure TVisWAPTServerPostConf.OpenFirewall;
@@ -222,7 +221,8 @@ begin
   else
   begin
     cmd := WaptBaseDir+'waptconsole.exe';
-    param := '-c';
+    param := '';
+    //param := '-c';
     if cbLaunchWaptConsoleOnExit.Checked then
       ShellExecuteW(0,'open',PWidechar(cmd),PWidechar(param),Nil,SW_SHOW);
     ExitProcess(0);
@@ -430,13 +430,6 @@ begin
       begin
         ProgressTitle(rsStartingPostgreSQL);
         Run('cmd /C net start waptpostgresql');
-      end
-      else
-      if GetServiceStatusByName('','waptpostgresql') in [ssRunning] then
-      begin
-        ProgressTitle(rsStartingWaptServer);
-        Run('cmd /C net stop waptpostgresql');
-        Run('cmd /C net start waptpostgresql');
       end;
 
       ProgressStep(6,10);
@@ -448,8 +441,9 @@ begin
       else
       if GetServiceStatusByName('','waptserver') in [ssRunning] then
       begin
-        ProgressTitle(rsStartingWaptServer);
+        ProgressTitle(rsStoppingWaptServer);
         Run('cmd /C net stop waptserver');
+        ProgressTitle(rsStartingWaptServer);
         Run('cmd /C net start waptserver');
       end;
 
@@ -462,9 +456,17 @@ begin
       else
       if GetServiceStatusByName('','waptnginx') in [ssRunning] then
       begin
-        ProgressTitle(rsStartingNGINX);
+        ProgressTitle(rsStoppingNGINX);
         Run('cmd /C net stop waptnginx');
+        ProgressTitle(rsStartingNGINX);
         Run('cmd /C net start waptnginx');
+      end;
+
+      if GetServiceStatusByName('','waptservice') in [ssRunning] then
+      begin
+        ProgressTitle(rsRestartingWaptService);
+        Run('cmd /C net stop waptservice');
+        Run('cmd /C net start waptservice');
       end;
 
       if FileExists(WaptBaseDir+'\waptserver\mongodb\mongoexport.exe') AND
@@ -498,7 +500,6 @@ begin
         dec(Retry);
       until (retry<=0) or ((sores<>Nil) and sores.B['success']);
       Sleep(2000);
-
       ActNext.Execute;
 
     except

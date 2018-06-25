@@ -2,10 +2,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
   Left = 643
   Height = 399
   Top = 295
-  Width = 754
+  Width = 680
   Caption = 'Configuration of WAPT server for Windows'
   ClientHeight = 399
-  ClientWidth = 754
+  ClientWidth = 680
   Constraints.MinHeight = 345
   Constraints.MinWidth = 680
   OnCreate = FormCreate
@@ -17,7 +17,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Left = 0
     Height = 369
     Top = 0
-    Width = 508
+    Width = 680
     ActivePage = pgParameters
     Align = alClient
     MultiLine = True
@@ -29,12 +29,12 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Caption = 'Parameters'
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ClientHeight = 343
-      ClientWidth = 500
+      ClientWidth = 672
       object Panel3: TPanel
         Left = 0
         Height = 32
         Top = 0
-        Width = 500
+        Width = 672
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
@@ -45,7 +45,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 3
         ClientHeight = 32
-        ClientWidth = 500
+        ClientWidth = 672
         TabOrder = 0
         object EdWAPTServerName: TEdit
           Left = 6
@@ -174,7 +174,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     object pgStartServices: TTabSheet
       Caption = 'Start'
       ClientHeight = 343
-      ClientWidth = 500
+      ClientWidth = 672
       object BitBtn6: TBitBtn
         Left = 8
         Height = 26
@@ -234,12 +234,12 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     object pgFinish: TTabSheet
       Caption = 'Fin'
       ClientHeight = 343
-      ClientWidth = 500
+      ClientWidth = 672
       object Panel2: TPanel
         Left = 0
         Height = 23
         Top = 320
-        Width = 500
+        Width = 672
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 0
@@ -248,11 +248,11 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Left = 0
         Height = 320
         Top = 0
-        Width = 500
+        Width = 672
         Align = alClient
         BevelOuter = bvNone
         ClientHeight = 320
-        ClientWidth = 500
+        ClientWidth = 672
         TabOrder = 1
         object Memo7: TMemo
           Left = 16
@@ -301,7 +301,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Left = 0
     Height = 30
     Top = 369
-    Width = 754
+    Width = 680
     Align = alBottom
     BevelOuter = bvNone
     ChildSizing.LeftRightSpacing = 6
@@ -310,10 +310,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     ChildSizing.VerticalSpacing = 3
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ClientHeight = 30
-    ClientWidth = 754
+    ClientWidth = 680
     TabOrder = 1
     object BitBtn3: TBitBtn
-      Left = 670
+      Left = 596
       Height = 24
       Top = 3
       Width = 78
@@ -369,7 +369,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       TabOrder = 1
     end
     object ButPrevious: TBitBtn
-      Left = 502
+      Left = 428
       Height = 24
       Top = 3
       Width = 87
@@ -415,7 +415,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       TabOrder = 2
     end
     object ButNext: TBitBtn
-      Left = 595
+      Left = 521
       Height = 24
       Top = 3
       Width = 69
@@ -460,28 +460,6 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       }
       TabOrder = 3
     end
-  end
-  object HTMLViewer1: THtmlViewer
-    Left = 508
-    Height = 369
-    Top = 0
-    Width = 246
-    BorderStyle = htFocused
-    CharSet = 4
-    DefBackground = clWhite
-    DefFontName = 'Arial'
-    DefFontSize = 8
-    DefPreFontName = 'Courier New'
-    HistoryMaxCount = 0
-    NoSelect = False
-    PrintMarginBottom = 2
-    PrintMarginLeft = 2
-    PrintMarginRight = 2
-    PrintMarginTop = 2
-    PrintScale = 1
-    OnHotSpotClick = HTMLViewer1HotSpotClick
-    Align = alRight
-    TabOrder = 2
   end
   object ActionList1: TActionList
     left = 333
