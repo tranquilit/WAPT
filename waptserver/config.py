@@ -65,7 +65,7 @@ _defaults = {
     'waptwua_folder': '',  # default: wapt_folder + 'wua'
     'db_name': 'wapt',
     'db_host': None,
-    'db_user': None,
+    'db_user': 'wapt',
     'db_password': None,
     'db_max_connections': 100,
     'db_stale_timeout': 300,
