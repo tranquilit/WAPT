@@ -54,8 +54,6 @@ from waptcrypto import SSLPrivateKey,SSLCertificate
 import waptserver.config
 from waptserver.utils import logger,mkdir_p
 
-config_filename  = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
-conf = waptserver.config.load_config(config_filename)
 
 def fqdn():
     result = None
@@ -170,10 +168,18 @@ def install_windows_nssm_service(
         # registry_set(root,path,keyname,service_dependencies,REG_MULTI_SZ)
 
 
-def make_nginx_config(wapt_root_dir, wapt_folder):
+def make_nginx_config(wapt_root_dir, wapt_folder, force = False):
+    """Create a nginx default config file to server wapt_folder and reverse proxy waptserver
+    Create a key and self signed certificate.
 
-    if conf['wapt_folder'].endswith('\\') or conf['wapt_folder'].endswith('/'):
-        conf['wapt_folder'] = conf['wapt_folder'][:-1]
+    Args:
+        wapt_root_dir (str)
+        wapt_folder (str) : local path to wapt rdirectory for packages
+                             wapt-host and waptwua are derived from this.
+
+    Returns:
+        str: path to nginx conf file
+    """
 
     ap_conf_dir = os.path.join(
         wapt_root_dir,
@@ -183,6 +189,10 @@ def make_nginx_config(wapt_root_dir, wapt_folder):
     ap_file_name = 'nginx.conf'
     ap_conf_file = os.path.join(ap_conf_dir, ap_file_name)
     ap_ssl_dir = os.path.join(wapt_root_dir,'waptserver','nginx','ssl')
+
+    if os.path.isfile(ap_conf_file) and not force:
+        if 'waptserver' in open(ap_conf_file,'r').read():
+            return ap_conf_file
 
     setuphelpers.mkdirs(ap_ssl_dir)
 
@@ -211,6 +221,7 @@ def make_nginx_config(wapt_root_dir, wapt_folder):
     template = jinja_env.get_template('waptwindows.nginxconfig.j2')
     template_variables = {
         'wapt_repository_path': os.path.dirname(conf['wapt_folder']).replace('\\','/'),
+        'waptserver_port': conf['waptserver_port'],
         'windows': True,
         'ssl': True,
         'force_https': False,
@@ -225,19 +236,16 @@ def make_nginx_config(wapt_root_dir, wapt_folder):
     print('Create nginx conf file %s' % ap_conf_file)
     with open(ap_conf_file, 'wt') as dst_file:
         dst_file.write(config_string)
+    return ap_conf_file
 
 
+def install_nginx_service(options,conf=None):
+    if conf is None:
+        conf = waptserver.config.load_config(options.configfile)
 
-def install_windows_service():
-    """Setup waptserver, waptapache as a windows Service managed by nssm
-    >>> install_windows_service([])
-    """
-    pass
-
-def install_nginx_service():
     print("register nginx frontend")
     repository_path = os.path.join(wapt_root_dir,'waptserver','repository')
-    for repo_path in ('wapt','wapt-host','wapt-hostref'):
+    for repo_path in ('wapt','wapt-host','waptwua'):
         mkdir_p(os.path.join(repository_path,repo_path))
         run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(repository_path,repo_path))
     mkdir_p(os.path.join(wapt_root_dir,'waptserver','nginx','temp'))
@@ -246,17 +254,21 @@ def install_nginx_service():
     run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(
                 wapt_root_dir,'waptserver','nginx','logs'))
 
-    make_nginx_config(wapt_root_dir, conf['wapt_folder'])
+    make_nginx_config(wapt_root_dir, conf['wapt_folder'],force=options.force)
     service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptserver','nginx','nginx.exe'))
     service_parameters = ''
     service_logfile = os.path.join(log_directory, 'nssm_nginx.log')
 
     service_name = 'WAPTNginx'
+    if setuphelpers.service_installed(service_name) and setuphelpers.service_is_running(service_name):
+        setuphelpers.service_stop(service_name)
     #print('Register "%s" in registry' % service_name)
     install_windows_nssm_service(service_name,service_binary,service_parameters,service_logfile)
     time.sleep(5)
 
-def install_postgresql_service():
+def install_postgresql_service(options,conf=None):
+    if conf is None:
+        conf = waptserver.config.load_config(options.configfile)
     print ("install postgres database")
 
     pgsql_root_dir = r'%s\waptserver\pgsql' % wapt_root_dir
@@ -265,71 +277,73 @@ def install_postgresql_service():
 
 
     print ("build database directory")
-    if os.path.exists(os.path.join(pgsql_data_dir,'postgresql.conf')):
+    if not os.path.exists(os.path.join(pgsql_data_dir,'postgresql.conf')):
+        print ("init pgsql data directory")
+        pg_data_dir = os.path.join(wapt_root_dir,'waptserver','pgsql_data')
+
+        setuphelpers.mkdirs(pg_data_dir)
+
+        # need to have specific write acls for current user otherwise initdb fails...
+        setuphelpers.run(r'icacls "%s" /t /grant  "%s":(OI)(CI)(M)' % (pg_data_dir,GetUserName()))
+        setuphelpers.run(r'"%s\waptserver\pgsql\bin\initdb" -U postgres -E=UTF8 -D "%s\waptserver\pgsql_data"' % (wapt_root_dir,wapt_root_dir))
+
+        setuphelpers.run(r'icacls "%s" /t /grant  "*S-1-5-20":(OI)(CI)(M)' % pg_data_dir)
+
+        print("start postgresql database")
+
+        if setuphelpers.service_installed('WaptPostgresql'):
+            if setuphelpers.service_is_running('WaptPostgresql'):
+                setuphelpers.service_stop('waptPostgresql')
+            setuphelpers.service_delete('waptPostgresql')
+
+        cmd = r'"%s\bin\pg_ctl" register -N WAPTPostgresql -U "nt authority\networkservice" -S auto -D "%s"  ' % (pgsql_root_dir ,os.path.join(wapt_root_dir,'waptserver','pgsql_data'))
+        print cmd
+        run(cmd)
+        setuphelpers.run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % log_directory)
+        setuphelpers.run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % pgsql_data_dir)
+    else:
         print("database already instanciated, doing nothing")
-        # TODO: check that database is fully working and up to date
-        # TODO: add a force option
-        return
-
-    print ("init pgsql data directory")
-    pg_data_dir = os.path.join(wapt_root_dir,'waptserver','pgsql_data')
-
-    setuphelpers.mkdirs(pg_data_dir)
-
-    # need to have specific write acls for current user otherwise initdb fails...
-    setuphelpers.run(r'icacls "%s" /t /grant  "%s":(OI)(CI)(M)' % (pg_data_dir,GetUserName()))
-    setuphelpers.run(r'"%s\waptserver\pgsql\bin\initdb" -U postgres -E=UTF8 -D "%s\waptserver\pgsql_data"' % (wapt_root_dir,wapt_root_dir))
-
-    setuphelpers.run(r'icacls "%s" /t /grant  "*S-1-5-20":(OI)(CI)(M)' % pg_data_dir)
-
-    print("start postgresql database")
-
-    if setuphelpers.service_installed('WaptPostgresql'):
-        if setuphelpers.service_is_running('WaptPostgresql'):
-            setuphelpers.service_stop('waptPostgresql')
-        setuphelpers.service_delete('waptPostgresql')
-
-    cmd = r'"%s\bin\pg_ctl" register -N WAPTPostgresql -U "nt authority\networkservice" -S auto -D "%s"  ' % (pgsql_root_dir ,os.path.join(wapt_root_dir,'waptserver','pgsql_data'))
-    print cmd
-    run(cmd)
-    setuphelpers.run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % log_directory)
-    setuphelpers.run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % pgsql_data_dir)
 
     print('starting postgresql')
-    run('net start waptpostgresql')
-
-    #cmd = r"%s\bin\pg_ctl.exe -D %s start" % (pgsql_root_dir, pgsql_data_dir)
-    #devnull = open(os.devnull,'wb')
-    #print(subprocess.Popen(cmd,shell=True))
-
-    # waiting for postgres to be ready
-    time.sleep(1)
+    if not setuphelpers.service_is_running('waptpostgresql'):
+        setuphelpers.service_start('waptpostgresql')
+        # waiting for postgres to be ready
+        time.sleep(2)
 
     print("creating wapt database")
     import psycopg2
     from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-    conn = psycopg2.connect('dbname=template1 user=postgres')
-    conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-    cur = conn.cursor()
-    cur.execute("select 1 from pg_roles where rolname='wapt'")
-    val = cur.fetchone()
-    if val!=1:
-        print("wapt pgsql user does not exists, creating wapt user")
-        cur.execute("create user wapt")
-    val = cur.execute("select 1 from pg_database where datname='wapt'")
-    if val!=1:
-        print ("database wapt does not exists, creating wapt db")
-        cur.execute(r"create extension hstore")
-        cur.execute("create database wapt owner wapt")
-    cur.close()
-    conn.close()
+    conn = None
+    cur = None
+    try:
+        conn = psycopg2.connect('dbname=template1 user=postgres')
+        conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        cur = conn.cursor()
+        cur.execute("select 1 from pg_roles where rolname='%(db_user)s'" % conf)
+        val = cur.fetchone()
+        if val is None:
+            print("%(db_user)s pgsql user does not exists, creating %(db_user)s user" % conf)
+            cur.execute("create user %(db_user)s" % conf)
 
-    run(r'"%s\waptpython.exe" "%s\waptserver\model.py" init_db' % (wapt_root_dir, wapt_root_dir))
-    time.sleep(1)
-    setuphelpers.service_stop('waptpostgresql')
+        cur.execute("select 1 from pg_database where datname='%(db_name)s'" % conf)
+        val = cur.fetchone()
+        if val is None:
+            print ("database %(db_name)s does not exists, creating %(db_name)s db" % conf)
+            cur.execute("create database %(db_name)s owner %(db_user)s" % conf)
 
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
-def install_waptserver_service():
+    print("Creating/upgrading wapt tables")
+    run(r'"%s\waptpython.exe" "%s\waptserver\model.py" init_db -c "%s"' % (wapt_root_dir, wapt_root_dir, options.configfile ))
+    print("Done")
+
+def install_waptserver_service(options,conf=None):
+    if conf is None:
+        conf = waptserver.config.load_config(options.configfile)
     print("install waptserver")
     service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe'))
     service_parameters = '"%s"' % os.path.join(wapt_root_dir,'waptserver','server.py')
@@ -339,7 +353,7 @@ def install_waptserver_service():
 
     if not conf.get('secret_key'):
         conf['secret_key'] = ''.join(random.SystemRandom().choice(string.letters + string.digits) for _ in range(64))
-        waptserver.config.write_config_file(config_filename,conf)
+        waptserver.config.write_config_file(options.configfile,conf)
 
 if __name__ == '__main__':
     usage = """\
@@ -354,6 +368,8 @@ if __name__ == '__main__':
 
     """
 
+    config_filename  = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
+
     parser = OptionParser(usage=usage, version='winsetup.py ' + __version__)
     parser.add_option('-c','--config',dest='configfile',default=config_filename,
            help='Config file full path (default: %default)')
@@ -363,12 +379,19 @@ if __name__ == '__main__':
             metavar='LOGLEVEL',help='Loglevel (default: warning)')
     parser.add_option('-d','--devel',dest='devel',default=False,action='store_true',
             help='Enable debug mode (for development only)')
+    parser.add_option('-f','--force',dest='force',default=False,action='store_true',
+            help='Force rewrite nginx config')
 
     (options, args) = parser.parse_args()
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
 
     if options.loglevel is not None:
         setloglevel(logger, options.loglevel)
+
+    conf = waptserver.config.load_config(options.configfile)
+
+    if conf['wapt_folder'].endswith('\\') or conf['wapt_folder'].endswith('/'):
+        conf['wapt_folder'] = conf['wapt_folder'][:-1]
 
     log_directory = os.path.join(wapt_root_dir, 'log')
     if not os.path.exists(log_directory):
@@ -380,12 +403,13 @@ if __name__ == '__main__':
     for action in args:
         if action == 'install_nginx':
             print('Installing postgresql as a service managed by nssm')
-            install_nginx_service()
+            install_nginx_service(options,conf)
         elif action == 'install_postgresql':
             print('Installing NGINX as a service managed by nssm')
-            install_postgresql_service()
+            install_postgresql_service(options,conf)
         elif action == 'install_waptserver':
             print('Installing WAPT Server as a service managed by nssm')
-            install_waptserver_service()
+            install_waptserver_service(options,conf)
     setuphelpers.run(r'icacls "%s" /t /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(wapt_root_dir,'conf'))
     setuphelpers.run(r'icacls "%s" /t /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(wapt_root_dir,'log'))
+

@@ -117,6 +117,11 @@ Filename: {app}\conf\waptserver.ini; Section: options; Key: allow_unauthenticate
 [RUN]
 Filename: "{app}\waptserver\pgsql\vcredist_x64.exe"; Parameters: "/passive /quiet"; StatusMsg: {cm:InstallMSVC2013}; Description: "{cm:InstallMSVC2013}";  
 Filename: "{app}\wapt-get.exe"; Parameters: " update-packages {app}\waptserver\repository\wapt"; StatusMsg: {cm:ScanPackages}; Description: "{cm:ScanPackages}"
+Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\winsetup.py all -c {app}\conf\waptserver.ini -f"; StatusMsg: {cm:ScanPackages}; Description: "{cm:InstallingServerServices}"
+Filename: "net"; Parameters: "stop waptpostgresql"; Flags: runhidden; StatusMsg: "Démarrage du service waptpostgresql"
+Filename: "net"; Parameters: "stop waptnginx"; Flags: runhidden; StatusMsg: "Démarrage du service waptnginx"
+Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Démarrage du service waptserver"
+
 Filename: "{app}\waptserverpostconf.exe"; Parameters: "-l {code:CurrentLanguage}"; Flags: nowait postinstall runascurrentuser skipifsilent; StatusMsg: {cm:LaunchingPostconf}; Description: "{cm:LaunchingPostconf}"
 
 [Tasks]
@@ -130,7 +135,6 @@ Name: InstallWaptserver; Description: "{cm:InstallWaptServer}"; GroupDescription
 Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Arret du service waptserver"
 Filename: "net"; Parameters: "stop waptnginx"; Flags: runhidden; StatusMsg: "Arret du service waptnginx"
 Filename: "net"; Parameters: "stop waptpostgresql"; Flags: runhidden; StatusMsg: "Arret du service waptpostgresql"
-Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Arret du service waptserver"
 Filename: "sc"; Parameters: "delete waptserver"; Flags: runhidden; StatusMsg: "Désinstallation du service waptserver"
 Filename: "sc"; Parameters: "delete waptnginx"; Flags: runhidden; StatusMsg: "Désinstallation du service waptnginx"
 Filename: "sc"; Parameters: "delete waptpostgresql"; Flags: runhidden; StatusMsg: "Désinstallation du service waptpostgresql"
@@ -143,6 +147,7 @@ fr.InstallNGINX=Installer le serveur http NGINX (utlise les ports 80 et 443)
 fr.InstallPostgreSQL=Installer le serveur PostgreSQL
 fr.InstallWaptServer=Installer le serveur Wapt
 fr.ScanPackages=Scan des paquets actuels
+fr.InstallingServerServices=Installation des services Serveur
 
 en.RegisteringService=Setup WaptServer Service
 en.InstallMSVC2013=Installing MSVC++ 2013 Redistribuable
@@ -151,6 +156,7 @@ en.InstallNGINX=Install NGINX http server(will use ports 80 and 443)
 en.InstallPostgreSQL=Install PostgreSQL Server
 en.InstallWaptServer=Install Wapt server
 en.ScanPackages=Scan packages
+en.InstallingServerServices=Installing Server services...
 
 de.RegisteringService=Setup WaptServer Service
 de.InstallMSVC2013=MSVC++ 2013 Redistribuable installieren
