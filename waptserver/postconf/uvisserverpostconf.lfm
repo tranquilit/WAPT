@@ -18,10 +18,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Height = 369
     Top = 0
     Width = 680
-    ActivePage = pgParameters
+    ActivePage = pgPassword
     Align = alClient
     MultiLine = True
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     OnChange = PagesControlChange
     Options = [nboMultiLine]
@@ -115,12 +115,12 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     object pgPassword: TTabSheet
       Caption = 'Password'
       ClientHeight = 343
-      ClientWidth = 500
+      ClientWidth = 672
       object Panel5: TPanel
         Left = 0
         Height = 98
         Top = 0
-        Width = 500
+        Width = 672
         Align = alTop
         BevelOuter = bvNone
         ChildSizing.LeftRightSpacing = 6
@@ -130,7 +130,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 2
         ClientHeight = 98
-        ClientWidth = 500
+        ClientWidth = 672
         TabOrder = 0
         object Label1: TLabel
           Left = 6

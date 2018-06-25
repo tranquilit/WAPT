@@ -50,6 +50,7 @@ import iniparse
 from setuphelpers import run
 from waptutils import setloglevel
 from waptcrypto import SSLPrivateKey,SSLCertificate
+from passlib.hash import pbkdf2_sha256
 
 import waptserver.config
 from waptserver.utils import logger,mkdir_p
@@ -301,6 +302,8 @@ def install_postgresql_service(options,conf=None):
         run(cmd)
         setuphelpers.run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % log_directory)
         setuphelpers.run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % pgsql_data_dir)
+
+
     else:
         print("database already instanciated, doing nothing")
 
@@ -351,8 +354,15 @@ def install_waptserver_service(options,conf=None):
     service_dependencies = 'WAPTPostgresql'
     install_windows_nssm_service('WAPTServer',service_binary,service_parameters,service_logfile,service_dependencies)
 
+    tasks_db = os.path.join(wapt_root_dir,'db')
+    setuphelpers.run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % tasks_db)
+
     if not conf.get('secret_key'):
         conf['secret_key'] = ''.join(random.SystemRandom().choice(string.letters + string.digits) for _ in range(64))
+        waptserver.config.write_config_file(options.configfile,conf)
+
+    if options.setpassword:
+        conf['wapt_password'] = pbkdf2_sha256.hash(options.setpassword.encode('utf8'))
         waptserver.config.write_config_file(options.configfile,conf)
 
 if __name__ == '__main__':
@@ -381,6 +391,8 @@ if __name__ == '__main__':
             help='Enable debug mode (for development only)')
     parser.add_option('-f','--force',dest='force',default=False,action='store_true',
             help='Force rewrite nginx config')
+    parser.add_option('-p','--setpassword',dest='setpassword',default=None,
+           help='Set wapt server admin password (default: %default)')
 
     (options, args) = parser.parse_args()
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')

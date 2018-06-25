@@ -117,7 +117,7 @@ Filename: {app}\conf\waptserver.ini; Section: options; Key: allow_unauthenticate
 [RUN]
 Filename: "{app}\waptserver\pgsql\vcredist_x64.exe"; Parameters: "/passive /quiet"; StatusMsg: {cm:InstallMSVC2013}; Description: "{cm:InstallMSVC2013}";  
 Filename: "{app}\wapt-get.exe"; Parameters: " update-packages {app}\waptserver\repository\wapt"; StatusMsg: {cm:ScanPackages}; Description: "{cm:ScanPackages}"
-Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\winsetup.py all -c {app}\conf\waptserver.ini -f"; StatusMsg: {cm:ScanPackages}; Description: "{cm:InstallingServerServices}"
+Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\winsetup.py all -c {app}\conf\waptserver.ini -f --setpassword={code:GetServerPassword}"; StatusMsg: {cm:ScanPackages}; Description: "{cm:InstallingServerServices}"
 Filename: "net"; Parameters: "start waptpostgresql"; Flags: runhidden; StatusMsg: "Démarrage du service waptpostgresql"
 Filename: "net"; Parameters: "start waptnginx"; Flags: runhidden; StatusMsg: "Démarrage du service waptnginx"
 Filename: "net"; Parameters: "start waptserver"; Flags: runhidden; StatusMsg: "Démarrage du service waptserver"
@@ -170,6 +170,10 @@ en.InstallWaptServer=Wapt server installieren
 Type: files; Name: "{app}\waptserver\waptserver.py*"
 
 [Code]
+var
+    labServerPassword,labServerPassword2: TLabel;
+    edServerPassword,edServerPassword2: TEdit;
+    
 
 function NextButtonClick(CurPageID: Integer):Boolean;
 var
@@ -177,13 +181,22 @@ var
   NetstatOutput, ConflictingService: AnsiString;
 begin
 
-  if CurPageID <> wpSelectTasks then
+  if CurPageID = CustomPage.Id then
   begin
-    Result := True;
-    Exit;
+    if edServerPassword.text = edServerPassword2.text then
+    begin
+      Result := True;
+      Exit;
+    end
+    else
+    begin
+      MsgBox('Check both password', mbError, MB_ABORTRETRYIGNORE);
+      Result := False;
+      Exit;
+    end;
   end;
 
-  if not IsTaskSelected('installApache') then
+  if CurPageID <> wpSelectTasks then
   begin
     Result := True;
     Exit;
@@ -216,6 +229,11 @@ begin
 
 end;
 
+function GetServerPassword(Param: String):String;
+begin
+  Result := edServerPassword.Text;
+end;
+
 procedure InitializeWizard;
 begin
   CustomPage := CreateCustomPage(wpSelectTasks, 'Server options', '');
@@ -225,60 +243,25 @@ begin
   labServerPassword.Caption := 'WAPT Server Admin password:';
 
   edServerPassword := TEdit.Create(WizardForm);
-  edDNSDomain.Parent := CustomPage.Surface; 
-  edDNSDomain.Left := labDNSDomain.Left + labDNSDomain.Width + 5;
-  edDNSDomain.Width := CustomPage.SurfaceWidth - labDNSDomain.Width;
-  edDNSDomain.Top := labDNSDomain.Top;
-  edDNSDomain.text := 'unknown';
+  edServerPassword.PasswordChar := '*';
+  edServerPassword.Parent := CustomPage.Surface; 
+  edServerPassword.Left := labServerPassword.Left + labServerPassword.Width + 5;
+  edServerPassword.Width := CustomPage.SurfaceWidth - labServerPassword.Width;
+  edServerPassword.Top := labServerPassword.Top;
+  edServerPassword.text := '';
   
-  cbStaticUrl := TNewRadioButton.Create(WizardForm);
-  cbStaticUrl.Parent := CustomPage.Surface; 
-  cbStaticUrl.Caption := 'Static WAPT Info';
-  cbStaticUrl.Top := cbStaticUrl.Top + cbDnsServer.Height + 3 * ScaleY(15);
-  cbStaticUrl.Onclick := @OnServerClicked;
+  labServerPassword2 := TLabel.Create(WizardForm);
+  labServerPassword2.Parent := CustomPage.Surface; 
+  labServerPassword2.Caption := 'Confirm password:';
+  labServerPassword2.Top := edServerPassword.Top + edServerPassword.Height + 5;
 
-  labRepo := TLabel.Create(WizardForm);
-  labRepo.Parent := CustomPage.Surface; 
-  labRepo.Left := cbStaticUrl.Left + 14;
-  labRepo.Caption := 'Repos URL:';
-  labRepo.Top := labRepo.Top + cbDnsServer.Height + 5 * ScaleY(15);
-  
-  #if edition != "waptstarter"
-  labServer := TLabel.Create(WizardForm);
-  labServer.Parent := CustomPage.Surface; 
-  labServer.Left := cbStaticUrl.Left + 14; 
-  labServer.Caption := 'Server URL:';
-  labServer.Top := labServer.Top + cbDnsServer.Height + 9 * ScaleY(15);
-  #endif
-
-  edWaptRepoUrl := TEdit.Create(WizardForm);
-  edWaptRepoUrl.Parent := CustomPage.Surface; 
-  edWaptRepoUrl.Left :=labRepo.Left + labRepo.Width + 5;
-  edWaptRepoUrl.Width :=CustomPage.SurfaceWidth - cbStaticUrl.Width;
-  edWaptRepoUrl.Top := edWaptRepoUrl.Top + cbDnsServer.Height + 5 * ScaleY(15);
-  edWaptRepoUrl.text := 'unknown';
-
-  labRepo := TLabel.Create(WizardForm);
-  labRepo.Parent := CustomPage.Surface; 
-  labRepo.Left := edWaptRepoUrl.Left + 5;
-  labRepo.Caption := 'example: https://srvwapt.domain.lan/wapt';
-  labRepo.Top := edWaptRepoUrl.Top + edWaptRepoUrl.Height + ScaleY(2);
-
-  #if edition != "waptstarter"
-  edWaptServerUrl := TEdit.Create(WizardForm);;
-  edWaptServerUrl.Parent := CustomPage.Surface; 
-  edWaptServerUrl.Left :=labServer.Left + labServer.Width+5;
-  edWaptServerUrl.Width :=CustomPage.SurfaceWidth - cbStaticUrl.Width;
-  edWaptServerUrl.Top := edWaptServerUrl.Top + edWaptRepoUrl.Height + 9 * ScaleY(15); 
-  edWaptServerUrl.Text := 'unknown';  
-
-  labServer := TLabel.Create(WizardForm);
-  labServer.Parent := CustomPage.Surface; 
-  labServer.Left := edWaptServerUrl.Left + 5; 
-  labServer.Caption := 'example: https://srvwapt.domain.lan';
-  labServer.Top := edWaptServerUrl.Top + edWaptServerUrl.Height + ScaleY(2);
-  #endif
+  edServerPassword2 := TEdit.Create(WizardForm);
+  edServerPassword2.PasswordChar := '*';
+  edServerPassword2.Parent := CustomPage.Surface; 
+  edServerPassword2.Left := edServerPassword.Left;
+  edServerPassword2.Width := edServerPassword.Width;
+  edServerPassword2.Top := labServerPassword2.Top;
+  edServerPassword2.text := '';
 end;
-#endif
 
 
