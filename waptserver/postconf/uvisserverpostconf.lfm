@@ -53,9 +53,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           Hint = 'WAPT clients make requests to the server. In order to connect to the WAPT server,'#13#10'it is advisable that a DNS name be used, as long as it has been correctly'#13#10'configured in your network''s DNS environment. We suggest naming your WAPT server'#13#10'''srvwapt.mydomain.local'' (A record type), then binding an alias'#13#10'(CNAME record type, e.g. ''wapt.mondomain.local'') to srvwapt.'#13#10'In case you don''t trust your DNS, or you are just setting up a testing environment,'#13#10'you can fall back to the server IP address. For further information :'#13#10'''http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'''
           Top = 3
           Width = 200
-          Color = clForm
           Constraints.MinWidth = 200
-          ReadOnly = True
           TabOrder = 0
           Text = 'srvwapt.mydomain.lan'
         end
@@ -109,9 +107,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           Height = 26
           Top = 3
           Width = 120
-          Color = clForm
           Constraints.MinWidth = 120
-          ReadOnly = True
           TabOrder = 2
         end
       end

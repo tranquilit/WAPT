@@ -234,7 +234,7 @@ begin
   if PagesControl.ActivePage = pgParameters then
     ActNext.Enabled := EdWaptServerIP.Text<>''
   else if PagesControl.ActivePage = pgPassword then
-    ActNext.Enabled := (EdPwd1.Text<>'') and (EdPwd1.Text = EdPwd2.Text)
+    ActNext.Enabled := (EdPwd1.Text='') or (EdPwd1.Text = EdPwd2.Text)
   else if PagesControl.ActivePage = pgStartServices then
     ActNext.Enabled := GetServiceStatusByName('','waptserver') = ssRunning
   else
@@ -396,34 +396,22 @@ begin
     try
       ExceptionOnStop:=True;
 
-      if GetServiceStatusByName('','WAPTServer') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
-      try
-        ProgressTitle(rsStoppingWaptServer);
-        Run('cmd /C net stop waptserver');
-      except
-      end;
-
-      if GetServiceStatusByName('','waptpostgresql') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
-      begin
-        ProgressTitle(rsStoppingPostgreSQL);
-        Run('cmd /C net stop waptpostgresql');
-      end;
-
-      if GetServiceStatusByName('','waptnginx') in [ssRunning,ssPaused,ssPausePending,ssStartPending] then
-      begin
-        ProgressTitle(rsStoppingNGINX);
-        Run('cmd /C net stop waptnginx');
-      end;
-
       ProgressTitle(rsSettingServerPassword);
       ProgressStep(1,10);
-      IniWriteString(WaptBaseDir+'\conf\waptserver.ini' ,'options','wapt_password',PBKDF2(EdPwd1.Text,MakeRandomString(5),29000,32,TDCP_sha256));
-      if IniReadString(WaptBaseDir+'\conf\waptserver.ini' ,'options','server_uuid')='' then
+      if (EdPwd1.Text<>'') then
+        IniWriteString(WaptBaseDir+'\conf\waptserver.ini' ,'options','wapt_password',PBKDF2(EdPwd1.Text,MakeRandomString(5),29000,32,TDCP_sha256));
+
+      if IniReadString(WaptBaseDir+'\conf\waptserver.ini' ,'options','server_uuid') = '' then
         iniWriteString(WaptBaseDir+'\conf\waptserver.ini','options', 'server_uuid', Lowercase(Copy(GUIDToString(GUID), 2, Length(GUIDToString(GUID)) - 2)));
 
-      ProgressTitle(rsConfigurePostgreSQL);
-      ProgressStep(2,10);
-      runwapt('"{app}\waptpython" "{app}\waptserver\winsetup.py" all');
+      if (GetServiceStatusByName('','WAPTServer')= ssUnknown) or
+         (GetServiceStatusByName('','waptpostgresql')= ssUnknown) or
+         (GetServiceStatusByName('','waptnginx')= ssUnknown) then
+      begin
+        ProgressTitle(rsConfigurePostgreSQL);
+        ProgressStep(2,10);
+        runwapt(Format('"{app}waptpython.exe" "{app}waptserver\winsetup.py" all -c "%s"',[WaptBaseDir+'conf\waptserver.ini']));
+      end;
 
       ProgressTitle(rsReplacingTIScertificate);
       ProgressStep(3,10);
@@ -437,17 +425,47 @@ begin
         OpenFirewall;
       end;
 
-      ProgressTitle(rsStartingPostgreSQL);
       ProgressStep(5,10);
-      Run('cmd /C net start waptpostgresql');
+      if GetServiceStatusByName('','waptpostgresql') in [ssStopped] then
+      begin
+        ProgressTitle(rsStartingPostgreSQL);
+        Run('cmd /C net start waptpostgresql');
+      end
+      else
+      if GetServiceStatusByName('','waptpostgresql') in [ssRunning] then
+      begin
+        ProgressTitle(rsStartingWaptServer);
+        Run('cmd /C net stop waptpostgresql');
+        Run('cmd /C net start waptpostgresql');
+      end;
 
-      ProgressTitle(rsStartingWaptServer);
       ProgressStep(6,10);
-      Run('cmd /C net start waptserver');
+      if GetServiceStatusByName('','waptserver') in [ssStopped] then
+      begin
+        ProgressTitle(rsStartingWaptServer);
+        Run('cmd /C net start waptserver');
+      end
+      else
+      if GetServiceStatusByName('','waptserver') in [ssRunning] then
+      begin
+        ProgressTitle(rsStartingWaptServer);
+        Run('cmd /C net stop waptserver');
+        Run('cmd /C net start waptserver');
+      end;
 
-      ProgressTitle(rsStartingNGINX);
       ProgressStep(7,10);
-      Run('cmd /C net start waptnginx');
+      if GetServiceStatusByName('','waptnginx') in [ssStopped] then
+      begin
+        ProgressTitle(rsStartingNGINX);
+        Run('cmd /C net start waptnginx');
+      end
+      else
+      if GetServiceStatusByName('','waptnginx') in [ssRunning] then
+      begin
+        ProgressTitle(rsStartingNGINX);
+        Run('cmd /C net stop waptnginx');
+        Run('cmd /C net start waptnginx');
+      end;
 
       if FileExists(WaptBaseDir+'\waptserver\mongodb\mongoexport.exe') AND
         (Dialogs.MessageDlg(rsMongoDetect,rsRunMongo2Postgresql,mtInformation,mbYesNoCancel,0) = mrYes) then
@@ -455,7 +473,7 @@ begin
         ProgressTitle(rsMigration15);
         ProgressStep(8,10);
 
-        runwapt('"{app}\waptpython" {app}\waptserver\waptserver_upgrade.py upgrade2postgres');
+        runwapt('"{app}\waptpython" {app}\waptserver\upgrade.py upgrade2postgres');
 
         if DirectoryExistsUTF8(WaptBaseDir+'\waptserver\mongodb') then
            fileutil.DeleteDirectory(WaptBaseDir+'\waptserver\mongodb', false);
