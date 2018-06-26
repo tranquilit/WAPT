@@ -2049,6 +2049,7 @@ def on_waptclient_connect():
             uuid = request.args.get('uuid', None)
             if not uuid:
                 raise EWaptForbiddden('Missing source host uuid')
+
             """
             host_cert = Hosts.select(Hosts.host_certificate).where(Hosts.uuid == uuid).first()
 
@@ -2069,13 +2070,12 @@ def on_waptclient_connect():
                 listening_address=request.sid,
                 reachable='OK',
             ).where(Hosts.uuid == uuid).execute()
-            session['uuid'] = uuid
-
 
             # if not known, reject the connection
             if hostcount == 0:
                 raise EWaptForbiddden('Host is not registered')
 
+            session['uuid'] = uuid
             return True
 
         except Exception as e:
@@ -2104,8 +2104,6 @@ def on_wapt_pong():
                     listening_address=request.sid,
                     reachable='OK',
                 ).where(Hosts.uuid == uuid).execute()
-                wapt_db.commit()
-                wapt_db.close()
                 # if not known, reject the connection
                 if hostcount == 0:
                     logger.warning(u'SocketIO sid %s connected but no match in database for uuid %s : asking to update status' % (request.sid,uuid))
@@ -2132,8 +2130,6 @@ def on_waptclient_disconnect():
                 listening_address=None,
                 reachable='DISCONNECTED',
             ).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
-            wapt_db.commit()
-            wapt_db.close()
         except:
             trans.rollback()
 
