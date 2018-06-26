@@ -37,7 +37,7 @@ from waptserver_config import __version__
 from eventlet import monkey_patch
 
 # os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
-monkey_patch(os=False)
+monkey_patch()
 
 import time
 import json
@@ -175,12 +175,12 @@ def get_wapt_exe_version(exe):
 def close_db(error):
     """Closes the database again at the end of the request."""
     try:
-        wapt_db.commit()
-    except:
-        wapt_db.rollback()
-    if not wapt_db.is_closed():
+        try:
+            wapt_db.commit()
+        except:
+            wapt_db.rollback()
+    finally:
         wapt_db.close()
-
 
 def requires_auth(f):
     @functools.wraps(f)
@@ -2047,6 +2047,7 @@ def on_waptclient_connect():
         uuid = request.args.get('uuid', None)
         if not uuid:
             raise EWaptForbiddden('Missing source host uuid')
+        """
         host_cert = Hosts.select(Hosts.host_certificate).where(Hosts.uuid == uuid).first()
 
         if host_cert and host_cert.host_certificate:
@@ -2055,6 +2056,7 @@ def on_waptclient_connect():
             logger.debug(u'Socket IO %s connect checked. issuer : %s' % ( request.sid,host_cert_issuer))
         else:
             raise EWaptForbiddden('Host is not registered or no host certificate found in database.')
+        """
 
         logger.info(u'Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
         # stores sid in database
@@ -2074,10 +2076,14 @@ def on_waptclient_connect():
         if hostcount == 0:
             raise EWaptForbiddden('Host is not registered')
 
+        return True
+
     except Exception as e:
         logger.warning(u'SocketIO connection refused for uuid %s, sid %s: %s' % (uuid,request.sid,e))
-        wapt_db.rollback()
-        wapt_db.close()
+        try:
+            wapt_db.rollback()
+        finally:
+            wapt_db.close()
         return False
 
 
@@ -2101,14 +2107,21 @@ def on_wapt_pong():
                 reachable='OK',
             ).where(Hosts.uuid == uuid).execute()
             wapt_db.commit()
+            wapt_db.close()
             # if not known, reject the connection
             if hostcount == 0:
                 logger.warning(u'SocketIO sid %s connected but no match in database for uuid %s : asking to update status' % (request.sid,uuid))
                 emit('wapt_trigger_update_status')
                 return False
+
+        return True
     except Exception as e:
-        wapt_db.rollback()
+        try:
+            wapt_db.rollback()
+        finally:
+            wapt_db.close()
         logger.critical(u'SocketIO pong error for uuid %s and sid %s : %s' % (uuid,request.sid,traceback.format_exc()))
+        return False
 
 @socketio.on('disconnect')
 def on_waptclient_disconnect():
@@ -2124,8 +2137,12 @@ def on_waptclient_disconnect():
             reachable='DISCONNECTED',
         ).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
         wapt_db.commit()
+        wapt_db.close()
     except:
-        wapt_db.rollback()
+        try:
+            wapt_db.rollback()
+        finally:
+            wapt_db.close()
 
 """
 @socketio.on('join')
