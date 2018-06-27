@@ -178,7 +178,7 @@ class WaptServiceConfig(object):
          'MAX_HISTORY','waptservice_port',
          'dbpath','loglevel','log_directory','waptserver',
          'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout','log_to_windows_events',
-         'allow_user_service_restart','signature_clockskew','waptwua_enabled']
+         'allow_user_service_restart','signature_clockskew','waptwua_enabled','notify_user']
 
     def __init__(self,config_filename=None):
         if not config_filename:
@@ -250,6 +250,7 @@ class WaptServiceConfig(object):
         # for Wapt Windows updates service (enterprise)
         self.waptaudit_task_period = None
 
+        self.notify_user = False
 
     def load(self):
         """Load waptservice parameters from global wapt-get.ini file"""
@@ -325,6 +326,9 @@ class WaptServiceConfig(object):
 
             if config.has_option('global','allow_user_service_restart'):
                 self.allow_user_service_restart = config.getboolean('global','allow_user_service_restart')
+
+            if config.has_option('global','notify_user'):
+                self.notify_user = config.getboolean('global','notify_user')
 
             if config.has_option('global','wapt_server'):
                 self.waptserver = common.WaptServer().load_config(config)

@@ -700,7 +700,7 @@ def download_upgrades():
 def update():
     task = WaptUpdate()
     task.force = int(request.args.get('force','0')) != 0
-    task.notify_user = int(request.args.get('notify_user','1')) != 0
+    task.notify_user = int(request.args.get('notify_user','0' if not waptconfig.notify_user else '1')) != 0
     task.notify_server_on_finish = int(request.args.get('notify_server','0')) != 0
     data = task_manager.add_task(task).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -714,16 +714,16 @@ def update():
 @allow_local
 def audit():
     tasks = []
-    notify_user = int(request.args.get('force','0')) != 0
-    notify_server_on_finish = int(request.args.get('notify_user','1')) != 0
+    notify_user = int(request.args.get('notify_user','0' if not waptconfig.notify_user else '1')) != 0
+    notify_server_on_finish = int(request.args.get('notify_server','1')) != 0
     force = int(request.args.get('force','0')) != 0
 
     now = setuphelpers.currentdatetime()
-    for package_status in wapt().installed().values():
+    for package_status in wapt().installed():
         if force or not package_status.next_audit_on or (now >= package_status.next_audit_on):
-            task = WaptAuditPackage(package_status.package)
+            task = WaptAuditPackage(package_status.package,force=force)
             task.notify_user=notify_user
-            task.notify_server_on_finish=False
+            task.notify_server_on_finish=notify_server_on_finish
             tasks.append(task_manager.add_task(task).as_dict())
 
     tasks.append(task_manager.add_task(WaptUpdateServerStatus(priority=100)).as_dict())
