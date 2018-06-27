@@ -288,120 +288,122 @@ def register_host():
     Returns:
 
     """
-    try:
-        starttime = time.time()
+    with wapt_db.atomic() as trans:
+        try:
+            starttime = time.time()
 
-        # unzip if post data is gzipped
-        if request.headers.get('Content-Encoding') == 'gzip':
-            raw_data = zlib.decompress(request.data)
-        else:
-            raw_data = request.data
-
-        data = json.loads(raw_data)
-        if not data:
-            raise Exception('register_host: No data supplied')
-
-        uuid = data['uuid']
-        if not uuid:
-            raise Exception('register_host: No uuid supplied')
-        logger.info(u'Trying to register host %s' % (uuid,))
-
-        # get request signature
-        signature_b64 = request.headers.get('X-Signature', None)
-        if signature_b64:
-            signature = signature_b64.decode('base64')
-        else:
-            signature = None
-        if not signature and not app.conf['allow_unsigned_status_data']:
-            raise Exception('register_host: Missing signature')
-        signer = request.headers.get('X-Signer', None)
-
-        # Registering a host requires authentication; Either signatue is Ok or Kerberos or basic
-        authenticated_user = None
-        registration_auth_user = None
-
-        # 'host' is for pre wapt pre 1.4
-        computer_fqdn =  (data.get('host_info',None) or data.get('host',{})).get('computer_fqdn',None)
-
-        # with nginx kerberos module, auth user name is stored as Basic auth in the
-        # 'Authorisation' header with password 'bogus_auth_gss_passwd'
-        if request.path=='/add_host_kerberos' and (app.conf['use_kerberos'] or not app.conf['allow_unauthenticated_registration']):
-            auth = request.authorization
-            if auth and auth.password == 'bogus_auth_gss_passwd' and auth.username:
-                    authenticated_user = auth.username.lower().replace('$', '')
-                    dns_domain = '.'.join(socket.getfqdn().split('.')[1:])
-                    authenticated_user = '%s.%s' % (authenticated_user, dns_domain)
-                    logger.debug(u'Kerberos authenticated user %s for %s' % (authenticated_user,computer_fqdn))
-                    registration_auth_user = u'Kerb:%s' % authenticated_user
+            # unzip if post data is gzipped
+            if request.headers.get('Content-Encoding') == 'gzip':
+                raw_data = zlib.decompress(request.data)
             else:
-                authenticated_user = None
+                raw_data = request.data
 
+            data = json.loads(raw_data)
+            if not data:
+                raise Exception('register_host: No data supplied')
 
-        if not authenticated_user:
-            # get authentication from basic auth. Check against waptserver admins
-            auth = request.authorization
-            if auth and check_auth(auth.username, auth.password):
-                # assume authenticated user is the fqdn provided in the data
-                logger.debug(u'Basic auth registration for %s with user %s' % (computer_fqdn,auth.username))
-                authenticated_user = computer_fqdn
-                registration_auth_user = u'Basic:%s' % auth.username
+            uuid = data['uuid']
+            if not uuid:
+                raise Exception('register_host: No uuid supplied')
+            logger.info(u'Trying to register host %s' % (uuid,))
 
-            existing_host = Hosts.select(Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
-            if not authenticated_user and existing_host and existing_host.host_certificate:
-                # check if existing record, and in this case, check signature with existing certificate
-                host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
-                try:
-                    authenticated_user = host_cert.verify_content(sha256_for_data(raw_data), signature)
-                except (InvalidSignature,SSLVerifyException) as e:
+            # get request signature
+            signature_b64 = request.headers.get('X-Signature', None)
+            if signature_b64:
+                signature = signature_b64.decode('base64')
+            else:
+                signature = None
+            if not signature and not app.conf['allow_unsigned_status_data']:
+                raise Exception('register_host: Missing signature')
+            signer = request.headers.get('X-Signer', None)
+
+            # Registering a host requires authentication; Either signatue is Ok or Kerberos or basic
+            authenticated_user = None
+            registration_auth_user = None
+
+            # 'host' is for pre wapt pre 1.4
+            computer_fqdn =  (data.get('host_info',None) or data.get('host',{})).get('computer_fqdn',None)
+
+            # with nginx kerberos module, auth user name is stored as Basic auth in the
+            # 'Authorisation' header with password 'bogus_auth_gss_passwd'
+            if request.path=='/add_host_kerberos' and (app.conf['use_kerberos'] or not app.conf['allow_unauthenticated_registration']):
+                auth = request.authorization
+                if auth and auth.password == 'bogus_auth_gss_passwd' and auth.username:
+                        authenticated_user = auth.username.lower().replace('$', '')
+                        dns_domain = '.'.join(socket.getfqdn().split('.')[1:])
+                        authenticated_user = '%s.%s' % (authenticated_user, dns_domain)
+                        logger.debug(u'Kerberos authenticated user %s for %s' % (authenticated_user,computer_fqdn))
+                        registration_auth_user = u'Kerb:%s' % authenticated_user
+                else:
                     authenticated_user = None
 
-            if not authenticated_user and app.conf['allow_unauthenticated_registration']:
-                logger.warning(u'Unauthenticated registration for %s' % computer_fqdn)
-                # assume authenticated user is the fqdn provided in the data
-                authenticated_user = computer_fqdn #request.headers.get('X-Forwarded-For',None)
-                registration_auth_user = 'None:%s' % request.headers.get('X-Forwarded-For',None)
 
             if not authenticated_user:
-                # use basic auth
-                return authenticate()
+                # get authentication from basic auth. Check against waptserver admins
+                auth = request.authorization
+                if auth and check_auth(auth.username, auth.password):
+                    # assume authenticated user is the fqdn provided in the data
+                    logger.debug(u'Basic auth registration for %s with user %s' % (computer_fqdn,auth.username))
+                    authenticated_user = computer_fqdn
+                    registration_auth_user = u'Basic:%s' % auth.username
 
-        if not authenticated_user:
-            raise EWaptAuthenticationFailure('register_host : Missing authentication header')
+                existing_host = Hosts.select(Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
+                if not authenticated_user and existing_host and existing_host.host_certificate:
+                    # check if existing record, and in this case, check signature with existing certificate
+                    host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
+                    try:
+                        authenticated_user = host_cert.verify_content(sha256_for_data(raw_data), signature)
+                    except (InvalidSignature,SSLVerifyException) as e:
+                        authenticated_user = None
 
-        # sign the CSR if present
-        if 'host_certificate_csr' in data:
-            host_certificate_csr = SSLCertificateSigningRequest(csr_pem_string=data['host_certificate_csr'])
-            if host_certificate_csr.cn.lower() == computer_fqdn.lower() or host_certificate_csr.cn.lower() == uuid.lower():
-                host_cert = sign_host_csr(host_certificate_csr)
+                if not authenticated_user and app.conf['allow_unauthenticated_registration']:
+                    logger.warning(u'Unauthenticated registration for %s' % computer_fqdn)
+                    # assume authenticated user is the fqdn provided in the data
+                    authenticated_user = computer_fqdn #request.headers.get('X-Forwarded-For',None)
+                    registration_auth_user = 'None:%s' % request.headers.get('X-Forwarded-For',None)
+
+                if not authenticated_user:
+                    # use basic auth
+                    return authenticate()
+
+            if not authenticated_user:
+                raise EWaptAuthenticationFailure('register_host : Missing authentication header')
+
+            # sign the CSR if present
+            if 'host_certificate_csr' in data:
+                host_certificate_csr = SSLCertificateSigningRequest(csr_pem_string=data['host_certificate_csr'])
+                if host_certificate_csr.cn.lower() == computer_fqdn.lower() or host_certificate_csr.cn.lower() == uuid.lower():
+                    host_cert = sign_host_csr(host_certificate_csr)
+                else:
+                    host_cert = None
+                data['host_certificate'] = host_cert
+
+            if not app.conf['allow_unauthenticated_registration']:
+                logger.debug(u'Authenticated computer %s with user %s ' % (computer_fqdn,authenticated_user,))
+                # check that authenticated user matches the CN of the certificate supplied in post data
+                supplied_host_cert = SSLCertificate(crt_string=data['host_certificate'])
+                if not (supplied_host_cert.cn.lower() == computer_fqdn.lower() or supplied_host_cert.cn.lower() == uuid.lower()):
+                    raise EWaptAuthenticationFailure('register_host : Mismatch between certificate Certificate commonName %s and supplied fqdn or uuid %s / %s' % (supplied_host_cert.cn,computer_fqdn,uuid))
             else:
-                host_cert = None
-            data['host_certificate'] = host_cert
+                supplied_host_cert = None
 
-        if not app.conf['allow_unauthenticated_registration']:
-            logger.debug(u'Authenticated computer %s with user %s ' % (computer_fqdn,authenticated_user,))
-            # check that authenticated user matches the CN of the certificate supplied in post data
-            supplied_host_cert = SSLCertificate(crt_string=data['host_certificate'])
-            if not (supplied_host_cert.cn.lower() == computer_fqdn.lower() or supplied_host_cert.cn.lower() == uuid.lower()):
-                raise EWaptAuthenticationFailure('register_host : Mismatch between certificate Certificate commonName %s and supplied fqdn or uuid %s / %s' % (supplied_host_cert.cn,computer_fqdn,uuid))
-        else:
-            supplied_host_cert = None
+            data['last_seen_on'] = datetime2isodate()
+            data['registration_auth_user'] = registration_auth_user
+            db_data = update_host_data(data)
 
-        data['last_seen_on'] = datetime2isodate()
-        data['registration_auth_user'] = registration_auth_user
-        db_data = update_host_data(data)
+            if 'host_certificate_csr' in data and host_cert:
+                # return back signed host certificate
+                db_data['host_certificate'] = host_cert.as_pem()
 
-        if 'host_certificate_csr' in data and host_cert:
-            # return back signed host certificate
-            db_data['host_certificate'] = host_cert.as_pem()
+            result = db_data
+            message = 'register_host'
+            return make_response(result=result, msg=message, request_time=time.time() - starttime)
 
-        result = db_data
-        message = 'register_host'
-        return make_response(result=result, msg=message, request_time=time.time() - starttime)
-
-    except Exception as e:
-        logger.debug(traceback.format_exc())
-        logger.critical('add_host failed %s' % (repr(e)))
-        return make_response_from_exception(e)
+        except Exception as e:
+            logger.debug(traceback.format_exc())
+            logger.critical('add_host failed %s' % (repr(e)))
+            trans.rollback()
+            return make_response_from_exception(e)
 
 
 @app.route('/update_host',methods=['HEAD','POST'])
@@ -527,26 +529,26 @@ def sync_host_groups(entry):
     Returns
         tuple: (added depends, removed depends)
     """
-    try:
-        host_id = entry.package
+    with wapt_db.atomic() as trans:
+        try:
+            host_id = entry.package
 
-        # insert /delete depends as groups
-        if entry.depends:
-            depends = [s.strip() for s in entry.depends.split(',')]
-        else:
-            depends = []
-        old_groups = [h['group_name'] for h in HostGroups.select(HostGroups.group_name).where(HostGroups.host == host_id).dicts()]
-        to_delete = [g for g in old_groups if not g in depends]
-        to_add = [g for g in depends if not g in old_groups]
-        if to_delete:
-            HostGroups.delete().where((HostGroups.host == host_id) & (HostGroups.group_name.in_(to_delete))).execute()
-        if to_add:
-            HostGroups.insert_many([dict(host=host_id, group_name=group) for group in to_add]).execute() #pylint: disable=no-value-for-parameter
-        return (to_add,to_delete)
-    except IntegrityError  as e:
-        if wapt_db and wapt_db.obj:
-            wapt_db.rollback()
-        return (0,0)
+            # insert /delete depends as groups
+            if entry.depends:
+                depends = [s.strip() for s in entry.depends.split(',')]
+            else:
+                depends = []
+            old_groups = [h['group_name'] for h in HostGroups.select(HostGroups.group_name).where(HostGroups.host == host_id).dicts()]
+            to_delete = [g for g in old_groups if not g in depends]
+            to_add = [g for g in depends if not g in old_groups]
+            if to_delete:
+                HostGroups.delete().where((HostGroups.host == host_id) & (HostGroups.group_name.in_(to_delete))).execute()
+            if to_add:
+                HostGroups.insert_many([dict(host=host_id, group_name=group) for group in to_add]).execute() #pylint: disable=no-value-for-parameter
+            return (to_add,to_delete)
+        except IntegrityError  as e:
+            trans.rollback()
+            return (0,0)
 
 
 @app.route('/upload_package/<string:filename>', methods=['HEAD','POST'])
@@ -764,7 +766,7 @@ def upload_host():
                     wapt_host_folder = os.path.join(app.conf['wapt_folder'] + '-host')
                     target = os.path.join(wapt_host_folder, filename)
                     tmp_target = tempfile.mktemp(dir=wapt_host_folder,prefix='wapt')
-                    with wapt_db.atomic():
+                    with wapt_db.atomic() as trans:
                         try:
 
                             # if encrypted host packages, store the clear copy in a protected area for further edit...
@@ -802,14 +804,12 @@ def upload_host():
                             #logger.debug(subprocess.check_output('chcon -R -t httpd_sys_content_t %s' % target,shell=True))
 
                             done.append(filename)
-                            wapt_db.commit()
 
                         except Exception as e:
-                            if wapt_db and wapt_db.obj:
-                                wapt_db.rollback()
                             logger.debug(traceback.print_exc())
                             logger.critical(u'Error uploading package %s: %s' % (filename, e))
                             errors.append(filename)
+                            trans.rollback()
                             if os.path.isfile(tmp_target):
                                 os.unlink(tmp_target)
         else:
@@ -1479,52 +1479,53 @@ def hosts_delete():
     result = dict(files=[], records=[])
 
     if request.method == 'POST':
-        try:
-            # build filter
-            post_data = request.get_json()
+        with wapt_db.atomic() as trans:
+            try:
+                # build filter
+                post_data = request.get_json()
 
-            if 'uuids' in post_data:
-                query = Hosts.uuid.in_(ensure_list(post_data['uuids']))
-            elif 'filter' in post_data:
-                query = build_hosts_filter(Hosts, post_data['filter'])
-            else:
-                raise Exception('Neither uuid nor filter provided in query')
+                if 'uuids' in post_data:
+                    query = Hosts.uuid.in_(ensure_list(post_data['uuids']))
+                elif 'filter' in post_data:
+                    query = build_hosts_filter(Hosts, post_data['filter'])
+                else:
+                    raise Exception('Neither uuid nor filter provided in query')
 
 
-            if 'delete_packages' in post_data and post_data['delete_packages']:
-                selected = Hosts.select(Hosts.uuid, Hosts.computer_fqdn).where(query)
-                for host in selected:
-                    result['records'].append(
-                        dict(
-                            uuid=host.uuid,
-                            computer_fqdn=host.computer_fqdn))
-                    uuid_hostpackage = os.path.join(app.conf['wapt_folder'] + '-host',host.uuid+'.wapt')
-                    fqdn_hostpackage = os.path.join(app.conf['wapt_folder'] + '-host',host.computer_fqdn+'.wapt')
+                if 'delete_packages' in post_data and post_data['delete_packages']:
+                    selected = Hosts.select(Hosts.uuid, Hosts.computer_fqdn).where(query)
+                    for host in selected:
+                        result['records'].append(
+                            dict(
+                                uuid=host.uuid,
+                                computer_fqdn=host.computer_fqdn))
+                        uuid_hostpackage = os.path.join(app.conf['wapt_folder'] + '-host',host.uuid+'.wapt')
+                        fqdn_hostpackage = os.path.join(app.conf['wapt_folder'] + '-host',host.computer_fqdn+'.wapt')
 
-                    if os.path.isfile(uuid_hostpackage):
-                        logger.debug(u'Trying to remove %s' % uuid_hostpackage)
                         if os.path.isfile(uuid_hostpackage):
-                            os.remove(uuid_hostpackage)
-                            result['files'].append(uuid_hostpackage)
+                            logger.debug(u'Trying to remove %s' % uuid_hostpackage)
+                            if os.path.isfile(uuid_hostpackage):
+                                os.remove(uuid_hostpackage)
+                                result['files'].append(uuid_hostpackage)
 
-                    if os.path.isfile(fqdn_hostpackage):
-                        logger.debug(u'Trying to remove %s' % fqdn_hostpackage)
                         if os.path.isfile(fqdn_hostpackage):
-                            os.remove(fqdn_hostpackage)
-                            result['files'].append(fqdn_hostpackage)
+                            logger.debug(u'Trying to remove %s' % fqdn_hostpackage)
+                            if os.path.isfile(fqdn_hostpackage):
+                                os.remove(fqdn_hostpackage)
+                                result['files'].append(fqdn_hostpackage)
 
-                msg.append(
-                    '{} files removed from host repository'.format(len(result['files'])))
+                    msg.append(
+                        '{} files removed from host repository'.format(len(result['files'])))
 
-            if 'delete_inventory' in post_data and post_data['delete_inventory']:
-                remove_result = Hosts.delete().where(query).execute()
-                msg.append('{} hosts removed from DB'.format(remove_result))
+                if 'delete_inventory' in post_data and post_data['delete_inventory']:
+                    remove_result = Hosts.delete().where(query).execute()
+                    msg.append('{} hosts removed from DB'.format(remove_result))
 
-        except Exception as e:
-            if wapt_db and wapt_db.obj:
-                wapt_db.rollback()
-            return make_response_from_exception(e)
-    return make_response(result=result, msg='\n'.join(msg), status=200)
+            except Exception as e:
+                trans.rollback()
+                return make_response_from_exception(e)
+
+        return make_response(result=result, msg='\n'.join(msg), status=200)
 
 
 
@@ -2005,95 +2006,95 @@ def on_trigger_remove_packages_result(result):
 @socketio.on('reconnect')
 @socketio.on('connect')
 def on_waptclient_connect():
-    try:
-        uuid = request.args.get('uuid', None)
-        if not uuid:
-            raise EWaptForbiddden('Missing source host uuid')
+    with wapt_db.atomic() as trans:
+        try:
+            uuid = request.args.get('uuid', None)
+            if not uuid:
+                raise EWaptForbiddden('Missing source host uuid')
 
-        allow_unauthenticated_connect = app.conf.get('allow_unauthenticated_connect',False)
-        if not allow_unauthenticated_connect:
-            host_cert = Hosts.select(Hosts.host_certificate).where(Hosts.uuid == uuid).first()
+            allow_unauthenticated_connect = app.conf.get('allow_unauthenticated_connect',False)
+            if not allow_unauthenticated_connect:
+                host_cert = Hosts.select(Hosts.host_certificate).where(Hosts.uuid == uuid).first()
 
-            if host_cert and host_cert.host_certificate:
-                host_certificate = SSLCertificate(crt_string=host_cert.host_certificate)
-                host_cert_issuer = host_certificate.verify_claim(json.loads(request.args['login']), max_age_secs=app.conf['signature_clockskew'],required_attributes=['uuid'])
-                logger.debug(u'Socket IO %s connect checked. issuer : %s' % ( request.sid,host_cert_issuer))
-            else:
-                raise EWaptForbiddden('Host is not registered or no host certificate found in database.')
+                if host_cert and host_cert.host_certificate:
+                    host_certificate = SSLCertificate(crt_string=host_cert.host_certificate)
+                    host_cert_issuer = host_certificate.verify_claim(json.loads(request.args['login']), max_age_secs=app.conf['signature_clockskew'],required_attributes=['uuid'])
+                    logger.debug(u'Socket IO %s connect checked. issuer : %s' % ( request.sid,host_cert_issuer))
+                else:
+                    raise EWaptForbiddden('Host is not registered or no host certificate found in database.')
 
-        logger.info(u'Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
-        # stores sid in database
-        hostcount = Hosts.update(
-            server_uuid=get_server_uuid(),
-            listening_timestamp=datetime2isodate(),
-            listening_protocol='websockets',
-            listening_address=request.sid,
-            last_seen_on=datetime2isodate(),
-            reachable='OK',
-        ).where(Hosts.uuid == uuid).execute()
-        wapt_db.commit()
-        wapt_db.close()
-        session['uuid'] = uuid
-
-        # if not known, reject the connection
-        if hostcount == 0:
-            raise EWaptForbiddden('Host is not registered')
-
-    except Exception as e:
-        logger.warning(u'SocketIO connection refused for uuid %s, sid %s: %s' % (uuid,request.sid,e))
-        if wapt_db and wapt_db.obj:
-            wapt_db.rollback()
-            wapt_db.close()
-        return False
-
-
-@socketio.on('wapt_pong')
-def on_wapt_pong():
-    uuid = None
-    try:
-        uuid = session.get('uuid')
-        if not uuid:
-            logger.critical(u'SocketIO %s connected but no host uuid in session: asking connected host to update status' % (request.sid))
-            emit('wapt_trigger_update_status')
-            return False
-        else:
-            logger.debug(u'Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid, session.get('uuid',None)))
+            logger.info(u'Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
             # stores sid in database
             hostcount = Hosts.update(
                 server_uuid=get_server_uuid(),
                 listening_timestamp=datetime2isodate(),
                 listening_protocol='websockets',
                 listening_address=request.sid,
+                last_seen_on=datetime2isodate(),
                 reachable='OK',
             ).where(Hosts.uuid == uuid).execute()
-            wapt_db.commit()
+            session['uuid'] = uuid
+
             # if not known, reject the connection
             if hostcount == 0:
-                logger.warning(u'SocketIO sid %s connected but no match in database for uuid %s : asking to update status' % (request.sid,uuid))
+                raise EWaptForbiddden('Host is not registered')
+
+            return True
+
+        except Exception as e:
+            logger.warning(u'SocketIO connection refused for uuid %s, sid %s: %s' % (uuid,request.sid,e))
+            trans.rollback()
+            return False
+
+@socketio.on('wapt_pong')
+def on_wapt_pong():
+    uuid = None
+    with wapt_db.atomic() as trans:
+        try:
+            uuid = session.get('uuid')
+            if not uuid:
+                logger.critical(u'SocketIO %s connected but no host uuid in session: asking connected host to update status' % (request.sid))
                 emit('wapt_trigger_update_status')
                 return False
-    except Exception as e:
-        if wapt_db and wapt_db.obj:
-            wapt_db.rollback()
-        logger.critical(u'SocketIO pong error for uuid %s and sid %s : %s' % (uuid,request.sid,traceback.format_exc()))
+            else:
+                logger.debug(u'Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid, session.get('uuid',None)))
+                # stores sid in database
+                hostcount = Hosts.update(
+                    server_uuid=get_server_uuid(),
+                    listening_timestamp=datetime2isodate(),
+                    listening_protocol='websockets',
+                    listening_address=request.sid,
+                    reachable='OK',
+                ).where(Hosts.uuid == uuid).execute()
+                # if not known, reject the connection
+                if hostcount == 0:
+                    logger.warning(u'SocketIO sid %s connected but no match in database for uuid %s : asking to update status' % (request.sid,uuid))
+                    emit('wapt_trigger_update_status')
+                    return False
+            return True
+        except Exception as e:
+            trans.rollback()
+            logger.critical(u'SocketIO pong error for uuid %s and sid %s : %s' % (uuid,request.sid,traceback.format_exc()))
+            return False
 
 @socketio.on('disconnect')
 def on_waptclient_disconnect():
-    try:
-        uuid = request.args.get('uuid', None)
-        logger.info(u'Socket.IO disconnection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
-        # clear sid in database
-        Hosts.update(
-            server_uuid=None,
-            listening_timestamp=datetime2isodate(),
-            listening_protocol=None,
-            listening_address=None,
-            reachable='DISCONNECTED',
-        ).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
-        wapt_db.commit()
-    except:
-        if wapt_db and wapt_db.obj:
-            wapt_db.rollback()
+    with wapt_db.atomic() as trans:
+        try:
+            uuid = request.args.get('uuid', None)
+            logger.info(u'Socket.IO disconnection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
+            # clear sid in database
+            Hosts.update(
+                server_uuid=None,
+                listening_timestamp=datetime2isodate(),
+                listening_protocol=None,
+                listening_address=None,
+                reachable='DISCONNECTED',
+            ).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
+            return True
+        except:
+            trans.rollback()
+            return False
 
 """
 @socketio.on('join')
@@ -2202,24 +2203,23 @@ if __name__ == '__main__':
 
     logger.info(u'Waptserver starting...')
     port = app.conf['waptserver_port']
-    while True:
-        try:
-            logger.info(u'Reset connections SID for former hosts on this server')
-            hosts_count = Hosts.update(
-                reachable='DISCONNECTED',
-                server_uuid=None,
-                listening_protocol=None,
-                listening_address=None,
-            ).where(
-                (Hosts.listening_protocol == 'websockets') & (Hosts.server_uuid == get_server_uuid())
-            ).execute()
-            wapt_db.commit()
-            break
-        except Exception as e:
-            if wapt_db and wapt_db.obj:
-                wapt_db.rollback()
-            logger.critical('Trying to upgrade database structure, error was : %s' % repr(e))
-            upgrade_db_structure()
+    with wapt_db.atomic() as trans:
+        while True:
+            try:
+                logger.info(u'Reset connections SID for former hosts on this server')
+                hosts_count = Hosts.update(
+                    reachable='DISCONNECTED',
+                    server_uuid=None,
+                    listening_protocol=None,
+                    listening_address=None,
+                ).where(
+                    (Hosts.listening_protocol == 'websockets') & (Hosts.server_uuid == get_server_uuid())
+                ).execute()
+                break
+            except Exception as e:
+                trans.rollback()
+                logger.critical('Trying to upgrade database structure, error was : %s' % repr(e))
+                upgrade_db_structure()
 
     if wapt_db and wapt_db.obj and not wapt_db.is_closed():
         wapt_db.close()

@@ -595,66 +595,67 @@ def update_host_data(data):
     }
 
     uuid = data['uuid']
-    try:
-        existing = Hosts.select(Hosts.uuid, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
-        if not existing:
-            logger.debug('Inserting new host %s with fields %s' % (uuid, data.keys()))
-            # wapt update_status packages softwares host
-            newhost = Hosts()
-            for k in data.keys():
-                # manage field renaming between 1.3 and >= 1.4
-                target_key = migrate_map_13_14.get(k, k)
-                if target_key and hasattr(newhost, target_key):
-                    set_host_field(newhost, target_key, data[k])
-
-            newhost.save(force_insert=True)
-        else:
-            logger.debug('Updating %s for fields %s' % (uuid, data.keys()))
-
-            updhost = Hosts.get(uuid=uuid)
-            for k in data.keys():
-                # manage field renaming between 1.3 and >= 1.4
-                target_key = migrate_map_13_14.get(k, k)
-                if target_key and hasattr(updhost, target_key):
-                    set_host_field(updhost, target_key, data[k])
-            updhost.save()
-
-        # separate tables
-        # we are tolerant on errors here a we don't know exactly if client send good encoded data
-        # but we still want to get host in table
+    with wapt_db.atomic() as trans:
         try:
-            if ('installed_softwares' in data) or ('softwares' in data):
-                installed_softwares = data.get('installed_softwares', data.get('softwares', None))
-                if not update_installed_softwares(uuid, installed_softwares):
-                    logger.critical('Unable to update installed_softwares for %s' % uuid)
+            existing = Hosts.select(Hosts.uuid, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
+            if not existing:
+                logger.debug('Inserting new host %s with fields %s' % (uuid, data.keys()))
+                # wapt update_status packages softwares host
+                newhost = Hosts()
+                for k in data.keys():
+                    # manage field renaming between 1.3 and >= 1.4
+                    target_key = migrate_map_13_14.get(k, k)
+                    if target_key and hasattr(newhost, target_key):
+                        set_host_field(newhost, target_key, data[k])
+
+                newhost.save(force_insert=True)
+            else:
+                logger.debug('Updating %s for fields %s' % (uuid, data.keys()))
+
+                updhost = Hosts.get(uuid=uuid)
+                for k in data.keys():
+                    # manage field renaming between 1.3 and >= 1.4
+                    target_key = migrate_map_13_14.get(k, k)
+                    if target_key and hasattr(updhost, target_key):
+                        set_host_field(updhost, target_key, data[k])
+                updhost.save()
+
+            # separate tables
+            # we are tolerant on errors here a we don't know exactly if client send good encoded data
+            # but we still want to get host in table
+            try:
+                if ('installed_softwares' in data) or ('softwares' in data):
+                    installed_softwares = data.get('installed_softwares', data.get('softwares', None))
+                    if not update_installed_softwares(uuid, installed_softwares):
+                        logger.critical('Unable to update installed_softwares for %s' % uuid)
+            except Exception as e:
+                logger.critical(u'Unable to update installed_softwares for %s: %s' % (uuid,traceback.format_exc()))
+
+            try:
+                if ('installed_packages' in data) or ('packages' in data):
+                    installed_packages = data.get('installed_packages', data.get('packages', None))
+                    if not update_installed_packages(uuid, installed_packages):
+                        logger.critical('Unable to update installed_packages for %s' % uuid)
+            except Exception as e:
+                logger.critical(u'Unable to update installed_packages for %s: %s' % (uuid,traceback.format_exc()))
+
+            try:
+                if ('waptwua' in data):
+                    waptwua_data = data.get('waptwua', None)
+                    (rec,_) = HostWsus.get_or_create(host=uuid)
+                    rec.wsus = waptwua_data
+                    rec.save()
+            except Exception as e:
+                logger.critical(u'Unable to update wsus data for %s: %s' % (uuid,traceback.format_exc()))
+
+            result_query = Hosts.select(Hosts.uuid, Hosts.computer_fqdn)
+            return result_query.where(Hosts.uuid == uuid).dicts().first()
+
         except Exception as e:
-            logger.critical(u'Unable to update installed_softwares for %s: %s' % (uuid,traceback.format_exc()))
-
-        try:
-            if ('installed_packages' in data) or ('packages' in data):
-                installed_packages = data.get('installed_packages', data.get('packages', None))
-                if not update_installed_packages(uuid, installed_packages):
-                    logger.critical('Unable to update installed_packages for %s' % uuid)
-        except Exception as e:
-            logger.critical(u'Unable to update installed_packages for %s: %s' % (uuid,traceback.format_exc()))
-
-        try:
-            if ('waptwua' in data):
-                waptwua_data = data.get('waptwua', None)
-                (rec,_) = HostWsus.get_or_create(host=uuid)
-                rec.wsus = waptwua_data
-                rec.save()
-        except Exception as e:
-            logger.critical(u'Unable to update wsus data for %s: %s' % (uuid,traceback.format_exc()))
-
-        result_query = Hosts.select(Hosts.uuid, Hosts.computer_fqdn)
-        return result_query.where(Hosts.uuid == uuid).dicts().first()
-
-    except Exception as e:
-        logger.warning(traceback.format_exc())
-        logger.critical(u'Error updating data for %s : %s' % (uuid, ensure_unicode(e)))
-        wapt_db.rollback()
-        raise e
+            logger.warning(traceback.format_exc())
+            logger.critical(u'Error updating data for %s : %s' % (uuid, ensure_unicode(e)))
+            trans.rollback()
+            raise e
 
 
 
