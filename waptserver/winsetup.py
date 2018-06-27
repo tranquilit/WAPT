@@ -365,6 +365,19 @@ def install_waptserver_service(options,conf=None):
         conf['wapt_password'] = pbkdf2_sha256.hash(options.setpassword.encode('utf8'))
         waptserver.config.write_config_file(options.configfile,conf)
 
+def install_wapttasks_service(options,conf=None):
+    if conf is None:
+        conf = waptserver.config.load_config(options.configfile)
+    print("install wapttasks")
+    service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe'))
+    service_parameters = '"%s" %s' % (os.path.join(wapt_root_dir,'waptserver','wapthuey.py'),'waptenterprise.waptserver.wsus_tasks.huey -w 2')
+    service_logfile = os.path.join(log_directory, 'nssm_wapttasks.log')
+    service_dependencies = 'WAPTPostgresql'
+    install_windows_nssm_service('WAPTTasks',service_binary,service_parameters,service_logfile,service_dependencies)
+
+    tasks_db = os.path.join(wapt_root_dir,'db')
+    setuphelpers.run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % tasks_db)
+
 if __name__ == '__main__':
     usage = """\
     %prog [-c configfile] [install_nginx install_postgresql install_waptserver]
@@ -422,6 +435,9 @@ if __name__ == '__main__':
         elif action == 'install_waptserver':
             print('Installing WAPT Server as a service managed by nssm')
             install_waptserver_service(options,conf)
+            if os.path.isfile(os.path.join(wapt_root_dir,'waptenterprise','waptserver','wsus_tasks.py')):
+                install_wapttasks_service(options,conf)
+
     setuphelpers.run(r'icacls "%s" /t /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(wapt_root_dir,'conf'))
     setuphelpers.run(r'icacls "%s" /t /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(wapt_root_dir,'log'))
 

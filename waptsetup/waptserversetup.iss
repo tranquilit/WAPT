@@ -118,10 +118,12 @@ Filename: {app}\conf\waptserver.ini; Section: options; Key: allow_unauthenticate
 Filename: "{app}\waptserver\pgsql\vcredist_x64.exe"; Parameters: "/passive /quiet"; StatusMsg: {cm:InstallMSVC2013}; Description: "{cm:InstallMSVC2013}";  
 Filename: "{app}\wapt-get.exe"; Parameters: " update-packages {app}\waptserver\repository\wapt"; StatusMsg: {cm:ScanPackages}; Description: "{cm:ScanPackages}"
 Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\winsetup.py all -c {app}\conf\waptserver.ini -f --setpassword={code:GetServerPassword}"; StatusMsg: {cm:ScanPackages}; Description: "{cm:InstallingServerServices}"
-Filename: "net"; Parameters: "start waptpostgresql"; Flags: runhidden; StatusMsg: "Démarrage du service waptpostgresql"
-Filename: "net"; Parameters: "start waptnginx"; Flags: runhidden; StatusMsg: "Démarrage du service waptnginx"
-Filename: "net"; Parameters: "start waptserver"; Flags: runhidden; StatusMsg: "Démarrage du service waptserver"
-
+Filename: "net"; Parameters: "start waptpostgresql"; Flags: runhidden; StatusMsg: "Starting service waptpostgresql"
+Filename: "net"; Parameters: "start waptnginx"; Flags: runhidden; StatusMsg: "Starting service waptnginx"
+Filename: "net"; Parameters: "start waptserver"; Flags: runhidden; StatusMsg: "Starting service waptserver"
+#ifdef waptenterprise
+Filename: "net"; Parameters: "start wapttasks"; Flags: runhidden; StatusMsg: "Starting service wapttasks"
+#endif
 Filename: "{app}\waptserverpostconf.exe"; Parameters: "-l {code:CurrentLanguage}"; Flags: nowait postinstall runascurrentuser skipifsilent; StatusMsg: {cm:LaunchingPostconf}; Description: "{cm:LaunchingPostconf}"
 
 [Tasks]
@@ -132,12 +134,17 @@ Name: InstallWaptserver; Description: "{cm:InstallWaptServer}"; GroupDescription
 #endif
 
 [UninstallRun]
-Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Arret du service waptserver"
-Filename: "net"; Parameters: "stop waptnginx"; Flags: runhidden; StatusMsg: "Arret du service waptnginx"
-Filename: "net"; Parameters: "stop waptpostgresql"; Flags: runhidden; StatusMsg: "Arret du service waptpostgresql"
-Filename: "sc"; Parameters: "delete waptserver"; Flags: runhidden; StatusMsg: "Désinstallation du service waptserver"
-Filename: "sc"; Parameters: "delete waptnginx"; Flags: runhidden; StatusMsg: "Désinstallation du service waptnginx"
-Filename: "sc"; Parameters: "delete waptpostgresql"; Flags: runhidden; StatusMsg: "Désinstallation du service waptpostgresql"
+#ifdef waptenterprise
+Filename: "net"; Parameters: "stop wapttasks"; Flags: runhidden; StatusMsg: "Stopping service wapttasks"
+Filename: "sc"; Parameters: "delete wapttasks"; Flags: runhidden; StatusMsg: "Removing service wapttasks"
+#endif
+Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Stopping service waptserver"
+Filename: "net"; Parameters: "stop waptnginx"; Flags: runhidden; StatusMsg: "Stopping service waptnginx"
+Filename: "net"; Parameters: "stop waptpostgresql"; Flags: runhidden; StatusMsg: "Stopping service waptpostgresql"
+
+Filename: "sc"; Parameters: "delete waptserver"; Flags: runhidden; StatusMsg: "Removing service waptserver"
+Filename: "sc"; Parameters: "delete waptnginx"; Flags: runhidden; StatusMsg: "Removing service waptnginx"
+Filename: "sc"; Parameters: "delete waptpostgresql"; Flags: runhidden; StatusMsg: "Removing service waptpostgresql"
 
 [CustomMessages]
 fr.RegisteringService=Mise en place du service WaptServer
