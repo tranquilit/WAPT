@@ -597,7 +597,7 @@ def update_host_data(data):
                 logger.critical(u'Unable to update installed_packages for %s: %s' % (uuid,traceback.format_exc()))
 
             result_query = Hosts.select(Hosts.uuid, Hosts.computer_fqdn)
-            return result_query.where(Hosts.uuid == uuid).dicts().dicts().first(1)
+            return result_query.where(Hosts.uuid == uuid).dicts().first(1)
 
         except Exception as e:
             logger.warning(traceback.format_exc())
