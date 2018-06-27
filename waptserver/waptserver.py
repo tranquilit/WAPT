@@ -2241,23 +2241,23 @@ if __name__ == '__main__':
 
     logger.info(u'Waptserver starting...')
     port = app.conf['waptserver_port']
-    while True:
-        try:
-            logger.info(u'Reset connections SID for former hosts on this server')
-            hosts_count = Hosts.update(
-                reachable='DISCONNECTED',
-                server_uuid=None,
-                listening_protocol=None,
-                listening_address=None,
-            ).where(
-                (Hosts.listening_protocol == 'websockets') & (Hosts.server_uuid == get_server_uuid())
-            ).execute()
-            wapt_db.commit()
-            break
-        except Exception as e:
-            wapt_db.rollback()
-            logger.critical('Trying to upgrade database structure, error was : %s' % repr(e))
-            upgrade_db_structure()
+    with wapt_db.atomic() as trans:
+        while True:
+            try:
+                logger.info(u'Reset connections SID for former hosts on this server')
+                hosts_count = Hosts.update(
+                    reachable='DISCONNECTED',
+                    server_uuid=None,
+                    listening_protocol=None,
+                    listening_address=None,
+                ).where(
+                    (Hosts.listening_protocol == 'websockets') & (Hosts.server_uuid == get_server_uuid())
+                ).execute()
+                break
+            except Exception as e:
+                wapt_db.rollback()
+                logger.critical('Trying to upgrade database structure, error was : %s' % repr(e))
+                upgrade_db_structure()
 
     if not wapt_db.is_closed():
         wapt_db.close()
