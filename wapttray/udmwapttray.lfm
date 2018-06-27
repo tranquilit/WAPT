@@ -166,7 +166,6 @@ object DMWaptTray: TDMWaptTray
     object ActLaunchWaptConsole: TAction
       Caption = 'Run WAPT Console'
       OnExecute = ActLaunchWaptConsoleExecute
-      OnUpdate = ActLaunchWaptConsoleUpdate
     end
     object ActWaptUpgrade: TAction
       Caption = 'Update WAPT software on this host'

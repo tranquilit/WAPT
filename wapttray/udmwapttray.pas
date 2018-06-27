@@ -64,7 +64,6 @@ type
     procedure ActForceRegisterExecute(Sender: TObject);
     procedure ActForceRegisterUpdate(Sender: TObject);
     procedure ActLaunchWaptConsoleExecute(Sender: TObject);
-    procedure ActLaunchWaptConsoleUpdate(Sender: TObject);
     procedure ActLocalInfoExecute(Sender: TObject);
     procedure ActQuitExecute(Sender: TObject);
     procedure ActReloadConfigExecute(Sender: TObject);
@@ -314,7 +313,7 @@ var
   res : ISUperObject;
 begin
   try
-    res := WAPTLocalJsonGet('update.json');
+    res := WAPTLocalJsonGet('update.json?notify_user=1');
   except
     on E:EIdException do
       WaptServiceRunning:=False;
@@ -332,7 +331,7 @@ var
   res : ISUperObject;
 begin
   try
-    res := WAPTLocalJsonGet('upgrade.json');
+    res := WAPTLocalJsonGet('upgrade.json?notify_user=1');
   except
     on E:EIdException do
       WaptServiceRunning:=False;
@@ -344,7 +343,7 @@ var
   res : ISuperObject;
 begin
   try
-    res := WAPTLocalJsonGet('waptupgrade.json');
+    res := WAPTLocalJsonGet('waptupgrade.json?notify_user=1');
   except
     on E:EIdException do
       WaptServiceRunning:=False;
@@ -447,7 +446,7 @@ var
   res : ISuperObject;
 begin
   try
-    res := WAPTLocalJsonGet('cancel_running_task.json');
+    res := WAPTLocalJsonGet('cancel_running_task.json?notify_user=1');
   except
     on E:EIdException do
       WaptServiceRunning:=False;
@@ -459,7 +458,7 @@ var
   res : ISuperObject;
 begin
   try
-    res := WAPTLocalJsonGet('register.json');
+    res := WAPTLocalJsonGet('register.json?notify_user=1');
   except
     on E:EIdException do
       WaptServiceRunning:=False;
@@ -477,10 +476,6 @@ var
 begin
   cmd := UTF8Decode(WaptConsoleFileName);
   ShellExecuteW(0,'open',PWideChar(cmd),Nil,Nil,0);
-end;
-
-procedure TDMWaptTray.ActLaunchWaptConsoleUpdate(Sender: TObject);
-begin
 end;
 
 function TDMWaptTray.WaptConsoleFileName: String;
@@ -669,7 +664,7 @@ var
   res:ISuperObject;
 begin
   try
-    res := WAPTLocalJsonGet('reload_config.json');
+    res := WAPTLocalJsonGet('reload_config.json?notify_user=1');
   except
     on E:EIdException do
       WaptServiceRunning:=False;
@@ -784,7 +779,7 @@ var
 begin
   if lastButton=mbLeft then
   try
-    res := WAPTLocalJsonGet('update.json');
+    res := WAPTLocalJsonGet('update.json?notify_user=1');
     if (res<>Nil) and  (pos('ERROR',uppercase(res.AsJSon ))<=0) then
       TrayIcon1.BalloonHint:=rsChecking
     else

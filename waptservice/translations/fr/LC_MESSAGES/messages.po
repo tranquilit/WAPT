@@ -159,7 +159,7 @@ msgstr "Indisponible(s) : {}"
 
 #: waptservice_common.py:693
 msgid "Upgrade packages installed on host"
-msgstr "Mettre à jour les paquets installés sur le poste"
+msgstr "Installation des mises à jour"
 
 #: waptservice_common.py:711
 msgid "WAPT Server has been notified"
