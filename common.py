@@ -2464,6 +2464,7 @@ class Wapt(BaseObjectClass):
 
         self.packages_whitelist = None
         self.packages_blacklist = None
+        self.host_profiles = None
 
         self.load_config(config_filename = self.config_filename)
 
@@ -2668,6 +2669,9 @@ class Wapt(BaseObjectClass):
         if self.config.has_option('global','packages_blacklist'):
             self.packages_blacklist = ensure_list(self.config.get('global','packages_blacklist'),allow_none=True)
 
+        if self.config.has_option('global','host_profiles'):
+            self.host_profiles = ensure_list(self.config.get('global','host_profiles'),allow_none=True)
+
         if self.config.has_option('global','locales'):
             self.locales = ensure_list(self.config.get('global','locales'),allow_none=True)
 
@@ -2762,22 +2766,26 @@ class Wapt(BaseObjectClass):
         else:
             section = None
 
-        try:
-            # don't create key if not exist at this step
-            host_key = self.get_host_key(False)
-        except Exception as e:
-            # unable to access or create host key
-            host_key = None
+        if main or section:
+            try:
+                # don't create key if not exist at this step
+                host_key = self.get_host_key(False)
+            except Exception as e:
+                # unable to access or create host key
+                host_key = None
 
-        host_repo = WaptHostRepo(name='wapt-host',config=self.config,host_id=self.host_packagename(),host_key=host_key)
-        self.repositories.append(host_repo)
-        if host_repo.cabundle is None:
-            host_repo.cabundle = self.cabundle
+            host_repo = WaptHostRepo(name='wapt-host',config=self.config,host_id=self.host_packagename(),host_key=host_key)
+            self.repositories.append(host_repo)
+            if host_repo.cabundle is None:
+                host_repo.cabundle = self.cabundle
 
-        # in case host repo is guessed from main repo (no specific section) ans main repor_url is set
-        if section is None and main and main._repo_url:
-            host_repo.repo_url = main._repo_url+'-host'
+            # in case host repo is guessed from main repo (no specific section) ans main repor_url is set
+            if section is None and main and main._repo_url:
+                host_repo.repo_url = main._repo_url+'-host'
+        else:
+            host_repo = None
 
+        return host_repo
 
     def reload_config_if_updated(self):
         """Check if config file has been updated,
@@ -4524,6 +4532,11 @@ class Wapt(BaseObjectClass):
         result = []
         host_package = self.host_packagename()
         result.append(host_package)
+
+        # ini configured profiles
+        if self.host_profiles:
+            result.extend(self.host_profiles)
+
         previous_dn_part_type = ''
         host_dn = self.host_dn
         if host_dn:
@@ -4548,7 +4561,7 @@ class Wapt(BaseObjectClass):
         package_names = self.get_host_packages_names()
         for pn in package_names:
             packages = self.is_available(pn)
-            if packages and packages[-1].section in ('host','unit'):
+            if packages and packages[-1].section in ('host','unit','profile'):
                 result.append(packages[-1])
         return result
 
@@ -4572,7 +4585,7 @@ class Wapt(BaseObjectClass):
         Returns:
             list: of installed package names
         """
-        installed_host_packages = [p.package for p in self.installed(True) if p.section in ('host','unit')]
+        installed_host_packages = [p.package for p in self.installed(True) if p.section in ('host','unit','profile')]
         expected_host_packages = self.get_host_packages_names()
         return [pn for pn in installed_host_packages if pn not in expected_host_packages]
 
@@ -4631,7 +4644,7 @@ class Wapt(BaseObjectClass):
             remove=[])
         # only most up to date (first one in list)
         # put 'host' package at the end.
-        result['upgrade'].extend([p[0].asrequirement() for p in self.waptdb.upgradeable().values() if p and not p[0].section in ('host','unit')])
+        result['upgrade'].extend([p[0].asrequirement() for p in self.waptdb.upgradeable().values() if p and not p[0].section in ('host','unit','profile')])
         if self.use_hostpackages:
             to_remove = self.get_unrelevant_host_packages()
             result['remove'].extend(to_remove)
