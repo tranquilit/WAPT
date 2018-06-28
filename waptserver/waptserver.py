@@ -35,6 +35,7 @@ from waptserver_config import __version__
 
 # monkeypatching for eventlet greenthreads
 from eventlet import monkey_patch
+import platform
 
 # os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
 if platform.system() == 'Windows':
@@ -52,7 +53,6 @@ import base64
 import zlib
 
 import zipfile
-import platform
 import socket
 import requests
 import shutil
