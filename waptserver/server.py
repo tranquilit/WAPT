@@ -252,9 +252,9 @@ def index():
 def sign_host_csr(host_certificate_csr):
     """Sign the CSR with server key and retirn a certificate for further host auth on nginx server"""
     host_cert = None
-    if os.path.isfile(conf['clients_signing_key']) and os.path.isfile(conf['clients_signing_certificate']):
-        signing_key = SSLPrivateKey(conf['clients_signing_key'])
-        signing_cert = SSLCertificate(conf['clients_signing_certificate'])
+    if os.path.isfile(app.conf['clients_signing_key']) and os.path.isfile(app.conf['clients_signing_certificate']):
+        signing_key = SSLPrivateKey(app.conf['clients_signing_key'])
+        signing_cert = SSLCertificate(app.conf['clients_signing_certificate'])
         host_cert = signing_cert.build_certificate_from_csr(host_certificate_csr,signing_key,3650)
     return host_cert
 
