@@ -3673,6 +3673,12 @@ begin
     try
       edWaptServerName.Text := GetWaptServerURL;
       edUser.Text:= WaptServerUser;
+      {$ifdef ENTERPRISE }
+      if ExtractFileDir(AppIniFilename)+'\' = GetAppConfigDir(False) then
+        CBConfiguration.Text := ExtractFileNameWithoutExt(ExtractFileNameOnly(AppIniFilename))
+      else
+        CBConfiguration.Text := AppIniFilename;
+      {$endif}
       if ShowModal = mrOk then
       begin
         // reload config file if another is choosen in login dialog

@@ -30,7 +30,7 @@ type
     Panel2: TPanel;
     Panel3: TPanel;
     procedure BitBtn1Click(Sender: TObject);
-    procedure CBConfigurationDropDown(Sender: TObject);
+    procedure CBConfigurationEnter(Sender: TObject);
     procedure CBConfigurationKeyPress(Sender: TObject; var Key: char);
     procedure CBConfigurationSelect(Sender: TObject);
     procedure edPasswordKeyDown(Sender: TObject; var Key: Word;
@@ -116,10 +116,9 @@ begin
   end;
 end;
 
-procedure TVisLogin.CBConfigurationDropDown(Sender: TObject);
+procedure TVisLogin.CBConfigurationEnter(Sender: TObject);
 var
   ConfigList:TStringList;
-  i:integer;
   conf:String;
 begin
   {$ifdef ENTERPRISE }
@@ -156,6 +155,14 @@ begin
   else
     FAppIniFilename := CBConfiguration.Text;
   edWaptServerName.Text:=IniReadString(FAppIniFilename,'global','wapt_server');
+
+  if FAppIniFilename<>dmpython.WaptConfigFileName  then
+  begin
+    dmpython.WaptConfigFileName:='';
+    waptcommon.ReadWaptConfig(FAppIniFilename);
+    dmpython.WaptConfigFileName:=FAppIniFilename;
+  end;
+
   {$endif}
 end;
 

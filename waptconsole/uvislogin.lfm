@@ -15,7 +15,7 @@ object VisLogin: TVisLogin
   Position = poScreenCenter
   ShowHint = True
   ShowInTaskBar = stAlways
-  LCLVersion = '1.8.2.0'
+  LCLVersion = '1.8.4.0'
   object Image1: TImage
     Cursor = crHandPoint
     Left = 4
@@ -68,9 +68,8 @@ object VisLogin: TVisLogin
       Width = 175
       AutoComplete = True
       AutoCompleteText = [cbactEnabled, cbactEndOfLineComplete, cbactSearchAscending]
-      AutoDropDown = True
       ItemHeight = 13
-      OnDropDown = CBConfigurationDropDown
+      OnEnter = CBConfigurationEnter
       OnExit = CBConfigurationSelect
       OnKeyPress = CBConfigurationKeyPress
       OnSelect = CBConfigurationSelect
