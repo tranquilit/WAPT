@@ -238,7 +238,10 @@ end;
 
 function GetServerPassword(Param: String):String;
 begin
-  Result := edServerPassword.Text;
+  if (edServerPassword.Text<>'') and (edServerPassword.Text = edServerPassword2.Text) then
+    Result := edServerPassword.Text
+  else
+    Result := ''
 end;
 
 procedure InitializeWizard;
