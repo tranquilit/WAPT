@@ -25,9 +25,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 558
     Top = 0
     Width = 1072
-    ActivePage = pgWindowsUpdates
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -39,9 +39,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 412
         Top = 120
         Width = 572
-        ActivePage = pgHostWUA
+        ActivePage = pgPackages
         Align = alRight
-        TabIndex = 3
+        TabIndex = 0
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -3220,57 +3220,58 @@ object VisWaptGUI: TVisWaptGUI
             Position = 1
             Tag = 1
             Text = 'Date'
-            Width = 124
-            PropertyName = 'run_date'
+            Width = 142
+            PropertyName = 'created_on'
           end        
           item
+            Alignment = taRightJustify
             Position = 2
             Tag = 2
+            Text = 'WSUS Cab Date'
+            Width = 122
+            PropertyName = 'file_date'
+          end        
+          item
+            Position = 3
+            Tag = 4
             Text = 'Status'
             Width = 61
             PropertyName = 'status'
           end        
           item
-            Position = 3
-            Tag = 3
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 4
+            Tag = 5
             Text = 'Result'
             Width = 171
             PropertyName = 'result'
           end        
           item
             Alignment = taRightJustify
-            Position = 4
-            Tag = 4
-            Text = 'WSUS Cab Date'
-            Width = 121
-            PropertyName = 'file_date'
-          end        
-          item
-            Alignment = taRightJustify
             Position = 5
-            Tag = 5
+            Tag = 6
             Text = 'WSUS Cab Size'
             Width = 128
             PropertyName = 'file_size'
           end        
           item
             Position = 6
-            Tag = 6
+            Tag = 7
             Text = 'Error'
-            Width = 155
+            Width = 204
             PropertyName = 'error'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 7
-            Tag = 7
+            Tag = 8
             Text = 'Forced'
             PropertyName = 'forced'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 8
-            Tag = 8
+            Tag = 9
             Text = 'Skipped'
             Width = 52
             PropertyName = 'skipped'
@@ -3278,14 +3279,15 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 9
-            Tag = 9
+            Tag = 10
             Text = 'cablist'
             Width = 100
             PropertyName = 'cablist'
           end        
           item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus]
             Position = 10
+            Tag = 11
             Text = 'Reason'
             Width = 100
             PropertyName = 'reason'
@@ -3293,6 +3295,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 11
+            Tag = 12
             Text = 'uuid'
             Width = 100
             PropertyName = 'uuid'
@@ -3301,6 +3304,7 @@ object VisWaptGUI: TVisWaptGUI
             Alignment = taRightJustify
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 12
+            Tag = 13
             Text = 'Expected File size'
             Width = 100
             PropertyName = 'target_size'
@@ -3308,9 +3312,43 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 13
+            Tag = 14
             Text = 'file_timestamp'
             Width = 13
             PropertyName = 'file_timestamp'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 14
+            Tag = 15
+            Text = 'updated_on'
+            Width = 100
+            PropertyName = 'updated_on'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 15
+            Tag = 16
+            Text = 'updated_by'
+            Width = 100
+            PropertyName = 'updated_by'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 16
+            Tag = 17
+            Text = 'created_by'
+            Width = 100
+            PropertyName = 'created_by'
+          end        
+          item
+            Alignment = taRightJustify
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 17
+            Tag = 18
+            Text = 'id'
+            Width = 25
+            PropertyName = 'id'
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]

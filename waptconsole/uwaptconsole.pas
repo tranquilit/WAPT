@@ -4416,6 +4416,13 @@ begin
   PgReports.TabVisible:=False;
   ActTriggerHostAudit.Visible:=False;
   ActPackagesAudit.Visible:=False;
+
+  SetSOGridVisible(GridHosts,'audit_status',False);
+  SetSOGridVisible(GridHosts,'waptwua.status',False);
+
+  SetSOGridVisible(GridHostPackages,'last_audit_status',False);
+  SetSOGridVisible(GridHostPackages,'last_audit_on',False);
+  SetSOGridVisible(GridHostPackages,'next_audit_on',False);
   {$endif}
 end;
 
