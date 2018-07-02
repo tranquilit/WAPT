@@ -1865,14 +1865,6 @@ msgctxt "tviswaptgui.label15.caption"
 msgid "Groups"
 msgstr "Groupes"
 
-#: tviswaptgui.label16.caption
-msgid "Label16"
-msgstr ""
-
-#: tviswaptgui.label17.caption
-msgid "Label17"
-msgstr ""
-
 #: tviswaptgui.label18.caption
 msgid "Allowed Windows Updates"
 msgstr "Mises à jour autorisées"
@@ -1889,12 +1881,6 @@ msgstr "Constructeur"
 #: tviswaptgui.label20.caption
 msgid "Site"
 msgstr "Site"
-
-#: tviswaptgui.label21.caption
-#, fuzzy
-msgctxt "tviswaptgui.label21.caption"
-msgid "Groups"
-msgstr "Groupes"
 
 #: tviswaptgui.label23.caption
 msgctxt "tviswaptgui.label23.caption"
@@ -2112,10 +2098,6 @@ msgstr ""
 
 #: tviswaptgui.toolbuttonsep1.caption
 msgid "ToolButtonSep1"
-msgstr ""
-
-#: tviswaptgui.wsusresult.text
-msgid "wsusResult"
 msgstr ""
 
 #: tviswuaclassificationsselect.caption

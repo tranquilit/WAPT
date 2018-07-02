@@ -113,9 +113,7 @@ type
     DBOrgUnitsImageID: TLongintField;
     DBOrgUnitsParentDN: TStringField;
     DBOrgUnitsParentID: TLongintField;
-    Label21: TLabel;
     Label22: TLabel;
-    wsusResult: TEdit;
     EdSearchOrgUnits: TEdit;
     EdSearchPackage1: TSearchEdit;
     GridNetworks: TSOGrid;
@@ -171,8 +169,6 @@ type
     Label11: TLabel;
     Label12: TLabel;
     Label15: TLabel;
-    Label16: TLabel;
-    Label17: TLabel;
     Label18: TLabel;
     Label19: TLabel;
     Label2: TLabel;
@@ -3805,8 +3801,10 @@ begin
       if FileExistsUTF8(Appuserinipath) then
         DeleteFileUTF8(Appuserinipath);
 
-    {$ifdef wsus2}
+    {$ifdef ENTERPRISE}
     pgWindowsUpdates.TabVisible:=IsEnterpriseEdition;
+    {$else}
+    pgWindowsUpdates.TabVisible:=False;
     {$endif}
     pgHostWUA.TabVisible:=IsEnterpriseEdition;
 

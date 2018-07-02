@@ -3411,22 +3411,6 @@ object VisWaptGUI: TVisWaptGUI
         WantTabs = True
         OnFreeNode = GridWSUSAllowedClassificationsFreeNode
       end
-      object Label16: TLabel
-        Left = 10
-        Height = 13
-        Top = 10
-        Width = 37
-        Caption = 'Label16'
-        ParentColor = False
-      end
-      object Label17: TLabel
-        Left = 25
-        Height = 13
-        Top = 17
-        Width = 37
-        Caption = 'Label17'
-        ParentColor = False
-      end
       object Label10: TLabel
         Left = 4
         Height = 13
@@ -3733,14 +3717,6 @@ object VisWaptGUI: TVisWaptGUI
           FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
         }
         TabOrder = 3
-      end
-      object wsusResult: TEdit
-        Left = 680
-        Height = 21
-        Top = 501
-        Width = 80
-        TabOrder = 11
-        Text = 'wsusResult'
       end
     end
     object pgSources: TTabSheet
@@ -4654,16 +4630,6 @@ object VisWaptGUI: TVisWaptGUI
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 3
-  end
-  object Label21: TLabel
-    Left = 12
-    Height = 13
-    Top = 6
-    Width = 34
-    Alignment = taRightJustify
-    Caption = 'Groups'
-    Layout = tlCenter
-    ParentColor = False
   end
   object SynPythonSyn1: TSynPythonSyn
     DefaultFilter = 'Fichiers Python (*.py)|*.py'
