@@ -15,7 +15,11 @@
 
 ; if empty, a task is added
 ; copy authorized package certificates (CA or signers) in <wapt>\ssl
-#define set_install_certs "0"
+#ifndef set_install_certs
+#define set_install_certs ""
+#endif
+
+;#define set_install_certs "0"
 
 ; if 1, expiry and CRL of package certificates will be checked
 #define check_certificates_validity 1
