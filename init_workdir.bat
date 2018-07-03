@@ -11,7 +11,7 @@ REM set http_proxy=http://proxy:3128
 REM set https_proxy=http://proxy:3128
 
 git clean -xfd
-%PYTHON_PATH%\scripts\python.exe -m pip install --upgrade pip distribute wheel virtualenv six
+%PYTHON_PATH%\python.exe -m pip install --upgrade pip distribute wheel virtualenv six
 %PYTHON_PATH%\Scripts\pip.exe install virtualenv
 %PYTHON_PATH%\Scripts\virtualenv.exe .
 xcopy /I /E /F /Y c:\python27\libs libs

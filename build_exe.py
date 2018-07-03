@@ -17,7 +17,7 @@ def compile_setups(edition='enterprise'):
     for iscc in ('waptstarter','waptsetup','waptserversetup'):
         run(ISCCBUILD + r" -e {edition} --sign-exe-filenames=waptservice\win32\nssm.exe,waptservice\win64\nssm.exe waptsetup\{iscc}".format(**locals()))
 
-os.chdir(os.path.dirname(__file__))
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 if len(sys.argv) == 1:
     editions = ['enterprise','community']
 else:

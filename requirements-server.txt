@@ -26,7 +26,7 @@ python-engineio==2.0.1
 python-socketio==1.8.3
 python-ldap==2.4.44
 pytz==2017.2
-requests==2.18.4
+requests==2.19.1
 six==1.11.0
 urllib3==1.22
 wakeonlan==0.2.2
