@@ -217,7 +217,7 @@ class Hosts(WaptBaseModel):
     wmi = BinaryJSONField(null=True)
 
     #
-    #waptwua = BinaryJSONField(null=True)
+    waptwua = BinaryJSONField(null=True)
 
 
     """
@@ -344,16 +344,37 @@ class HostGroups(WaptBaseModel):
         return '<HostGroups uuid=%s group_name=%s>' % (self.uuid, self.group_name)
 
 
-class HostJsonRaw(WaptBaseModel):
-    id = PrimaryKeyField(primary_key=True)
-    host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
+class WsusUpdates(WaptBaseModel):
+    update_id = CharField(primary_key=True, index=True)
+    title = CharField()
+    update_type = CharField(),
+    kbids = ArrayField(CharField, index=True),
+    severity = CharField(null=True),
+    changetime = CharField(null=True),
+    product = CharField(null=True, index=True),
+    classification = CharField(null=True),
+    download_urls = ArrayField(CharField),
+    min_download_size = IntegerField(null=True),
+    max_download_size = IntegerField(null=True),
+    superseded_update_ids = ArrayField(CharField),
+    security_bulletin_ids = ArrayField(CharField),
+    cve_ids = ArrayField(CharField),
+    is_mandatory = BooleanField(null=True),
+    reboot_behaviour = CharField(null=True),
+    can_request_user_input = CharField(null=True),
+    requires_network_connectivity = BooleanField(null=True)
 
 class HostWsus(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
-    # windows updates
+    win_update = ForeignKeyField(WsusUpdates, on_delete='CASCADE', on_update='CASCADE')
+    status = CharField(null=True)
+    allowed = BooleanField(null=True)
+    installed = BooleanField(null=True)
+    present = BooleanField(null=True)
+    hidden = BooleanField(null=True)
+    downloaded = BooleanField(null=True)
 
-    wsus = BinaryJSONField(null=True)
 
 class SignedModel(WaptBaseModel):
     uuid = CharField(primary_key=True,null=False,default=str(_uuid.uuid4()))
@@ -363,34 +384,6 @@ class SignedModel(WaptBaseModel):
             argvs['force_insert'] = True
         return super(SignedModel,self).save(*args,**argvs)
 
-
-class WsusUpdates(WaptBaseModel):
-    id = PrimaryKeyField(primary_key=True)
-    update_id = CharField()
-    revision_id = CharField()
-    revision_number = IntegerField()
-    title = CharField(null=True)
-    description = CharField(null=True)
-    msrc_severity = CharField(null=True)
-    security_bulletin_id = CharField(null=True)
-    kb_article_id = CharField(null=True)
-    creation_date = CharField(null=True)
-    is_bundle = BooleanField()
-    is_leaf = BooleanField()
-    deployment_action = CharField(null=True)
-    company = CharField(null=True)
-    product = CharField(null=True)
-    product_family = CharField(null=True)
-    update_classification = CharField(null=True)
-    languages = ArrayField(CharField, null=True)
-    prereqs_update_ids = ArrayField(CharField, null=True)
-    payload_files = ArrayField(CharField, null=True)
-
-
-
-class WsusLocations(WaptBaseModel):
-    id = IntegerField(primary_key=True)
-    url = CharField(null=True)
 
 class WsusScan2History(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
@@ -404,6 +397,7 @@ class WsusScan2History(WaptBaseModel):
     target_size = IntegerField(null=True)
     cablist = ArrayField(CharField, null=True)
     error = CharField(max_length=1200,null=True)
+
 
 class WsusCabsInfos(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
@@ -951,9 +945,9 @@ def init_db(drop=False):
     except:
         wapt_db.rollback()
     if drop:
-        for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostJsonRaw, HostWsus,HostGroups,WsusScan2History]):
+        for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostWsus,HostGroups,WsusUpdates,WsusScan2History]):
             table.drop_table(fail_silently=True)
-    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostJsonRaw, HostWsus,HostGroups,WsusScan2History], safe=True)
+    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostWsus,HostGroups,WsusUpdates,WsusScan2History], safe=True)
 
     if get_db_version() == None:
         # new database install, we setup the db_version key
@@ -989,7 +983,6 @@ def upgrade_db_structure():
                 migrator.rename_column(Hosts._meta.name, 'packages', 'installed_packages'),
             )
             HostGroups.create_table(fail_silently=True)
-            HostJsonRaw.create_table(fail_silently=True)
             HostWsus.create_table(fail_silently=True)
 
             (v, created) = ServerAttribs.get_or_create(key='db_version')
@@ -1179,6 +1172,23 @@ def upgrade_db_structure():
             v.value = next_version
             v.save()
 
+    next_version = '1.6.2.1'
+    if get_db_version() < next_version:
+        with wapt_db.atomic():
+            logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
+
+            HostWsus.drop_table()
+            WsusUpdates.drop_table()
+
+            wapt_db.create_tables([WsusUpdates,HostWsus],safe=True)
+
+            opes = []
+            opes.append(migrator.add_column(Hosts._meta.name, 'waptwua', Hosts.waptwua))
+            migrate(*opes)
+
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
 
 if __name__ == '__main__':
     if platform.system() != 'Windows' and getpass.getuser() != 'wapt':

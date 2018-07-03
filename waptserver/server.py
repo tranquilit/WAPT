@@ -80,7 +80,7 @@ from flask_socketio import disconnect, send, emit
 from peewee import *
 from playhouse.postgres_ext import *
 
-from waptserver.model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups,HostWsus
+from waptserver.model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups,HostWsus,WsusUpdates
 from waptserver.model import get_db_version, init_db, wapt_db, model_to_dict, dict_to_model, update_host_data
 from waptserver.model import upgrade_db_structure
 from waptserver.model import load_db_config
