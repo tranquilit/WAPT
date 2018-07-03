@@ -19,8 +19,6 @@
 #define set_install_certs ""
 #endif
 
-;#define set_install_certs "0"
-
 ; if 1, expiry and CRL of package certificates will be checked
 #define check_certificates_validity 1
 
@@ -110,7 +108,7 @@ Name: DisableHiberboot; Description: "{cm:DisableHiberBoot}"; GroupDescription: 
 #endif
 
 #if set_install_certs == ""
-Name: InstallCertificates; Description: "{cm:InstallSSLCertificates}";  GroupDescription: "Advanced";
+Name: InstallCertificates; Description: "{cm:InstallSSLCertificates}";  GroupDescription: "Advanced"; Flags: unchecked;
 #endif
 
 #if set_start_packages != ""
@@ -162,7 +160,7 @@ Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: {code:V
 
 
 #if edition != "waptserversetup"
-Filename: {app}\wapt-get.ini; Section: global; Key: dnsdomain; String: {code:GetDNSDomain}; 
+Filename: {app}\wapt-get.ini; Section: global; Key: dnsdomain; String: {code:GetDNSDomain}; Check: MustChangeServerConfig;
 
 Filename: {app}\wapt-get.ini; Section: global; Key: max_gpo_script_wait; String: 180; Tasks: DisableHiberboot;
 Filename: {app}\wapt-get.ini; Section: global; Key: pre_shutdown_timeout; String: 180; Tasks: DisableHiberboot; 
@@ -204,6 +202,11 @@ en.InstallStartPackages=Install right now the packages {#set_start_packages}
 en.UseKerberosForRegister=Use machine kerberos account for registration on WaptServer
 en.VerifyServerCertificates=Verify https server certificates
 en.DisableHiberBoot=Disable hiberboot, and increase shudown GPO timeout (recommended)
+en.RemoveAllFiles=Do you want to delete all remaining files in WAPT directory {app} ?
+en.DontChangeServerSetup=Don''t change current setup
+en.DNSDetect=Detect WAPT Info with DNS records
+en.DNSDomainLookup=DNS Domain to lookup
+en.StaticURLS=Static WAPT Info
 
 ;French translations here
 fr.StartAfterSetup=Lancer WAPT session setup à l'ouverture de session
@@ -217,6 +220,11 @@ fr.InstallStartPackages=Installer maintenant les paquets {#set_start_packages}
 fr.UseKerberosForRegister=Utiliser le compte Kerberos de la machine pour l'enregistrement sur le WaptServer
 fr.VerifyServerCertificates=Vérifier les certificats https
 fr.DisableHiberBoot=Désactiver l'hiberboot, et augmenter le temps pour les GPO (recommandé)
+fr.RemoveAllFiles=Des fichiers restent présents dans votre répertoire {app}, souhaitez-vous le supprimer ainsi que tous les fichiers qu''il contient ?'
+fr.DontChangeServerSetup=Ne pas modifier la configuration actuelle
+fr.DNSDetect=Détecter les URLS WAPT avec des requêtes DNS
+fr.DNSDomainLookup=Domaine DNS à interroger
+fr.StaticURLS=URLS WAPT statiques
 
 ;German translation here
 de.StartAfterSetup=WAPT Setup-Sitzung bei Sitzungseröffnung starten
@@ -281,9 +289,6 @@ end;
 
 function GetDNSDomain(Param: String):String;
 begin
-  if not cbDnsServer.Checked and not cbStaticUrl.Checked then
-    result := ''
-  else
   if edDNSDomain.Text <> 'unknown' then
     result := edDNSDomain.Text
   else
@@ -312,20 +317,20 @@ begin
   cbDontChangeServer := TNewRadioButton.Create(WizardForm);
   cbDontChangeServer.Parent := CustomPage.Surface;
   cbDontChangeServer.Width := CustomPage.SurfaceWidth;
-  cbDontChangeServer.Caption := 'Don''t change current setup';
+  cbDontChangeServer.Caption := ExpandConstant('{cm:DontChangeServerSetup}');
   cbDontChangeServer.Onclick := @OnServerClicked;
 
   cbDnsServer := TNewRadioButton.Create(WizardForm);
   cbDnsServer.Parent := CustomPage.Surface;
   cbDnsServer.Width := CustomPage.SurfaceWidth;
-  cbDnsServer.Caption := 'Detect WAPT Info with DNS records';
+  cbDnsServer.Caption := ExpandConstant('{cm:DNSDetect}');
   cbDnsServer.Onclick := @OnServerClicked;
   cbDnsServer.Top := cbDontChangeServer.Top + cbDontChangeServer.Height + 5;
   
   labDNSDomain := TLabel.Create(WizardForm);
   labDNSDomain.Parent := CustomPage.Surface; 
   labDNSDomain.Left := cbDnsServer.Left + 14;
-  labDNSDomain.Caption := 'DNS Domain to lookup:';
+  labDNSDomain.Caption := ExpandConstant('{cm:DNSDomainLookup}');
   labDNSDomain.Top := cbDnsServer.Top + cbDnsServer.Height + 5;
 
   edDNSDomain := TEdit.Create(WizardForm);
@@ -337,7 +342,7 @@ begin
   
   cbStaticUrl := TNewRadioButton.Create(WizardForm);
   cbStaticUrl.Parent := CustomPage.Surface; 
-  cbStaticUrl.Caption := 'Static WAPT Info';
+  cbStaticUrl.Caption := ExpandConstant('{cm:StaticURLS}');
   cbStaticUrl.Top := cbStaticUrl.Top + cbDnsServer.Height + 3 * ScaleY(15);
   cbStaticUrl.Onclick := @OnServerClicked;
 
@@ -394,7 +399,7 @@ begin
     installdir := ExpandConstant('{app}');
     if DirExists(installdir) then
     begin
-      if (not runningSilently() and  (MsgBox('Des fichiers restent présents dans votre répertoire ' + installdir + ', souhaitez-vous le supprimer ainsi que tous les fichiers qu''il contient ?',
+      if (not runningSilently() and  (MsgBox(ExpandConstant('{cm:RemoveAllFiles}'),
                mbConfirmation, MB_YESNO) = IDYES))
                
          or (ExpandConstant('{param:purge_wapt_dir|0}')='1') then
@@ -415,7 +420,8 @@ begin
     #if edition != "waptstarter"
     edWaptServerUrl.Text := GetWaptServerURL('');  
     #endif
-    cbDnsServer.Checked := (edWaptRepoUrl.Text='');
+    cbDontChangeServer.Checked := (GetRepoURL('') <> '') or (GetIniString('Global', 'dnsdomain','', ExpandConstant('{app}\wapt-get.ini'))<>'');
+    cbDnsServer.Checked := not cbDontChangeServer.Checked and (edWaptRepoUrl.Text='');
     cbStaticUrl.Checked := (edWaptRepoUrl.Text<>'') and (edWaptRepoUrl.Text<>'unknown');
     edDNSDomain.Text := GetDNSDomain('');  
 
@@ -436,7 +442,7 @@ end;
 
 function MustChangeServerConfig:Boolean;
 begin
-  Result := not cbDontChangeServer.Checked;     
+  Result := runningSilently() or not cbDontChangeServer.Checked;     
 end;
 
 function UseKerberosCheck(param:String):String;

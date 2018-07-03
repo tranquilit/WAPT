@@ -250,7 +250,7 @@ begin
   
   labServerPassword := TLabel.Create(WizardForm);
   labServerPassword.Parent := CustomPage.Surface; 
-  labServerPassword.Caption := 'WAPT Server Admin password:';
+  labServerPassword.Caption := 'WAPT Server Admin password (leave blank to not change password):';
 
   edServerPassword := TEdit.Create(WizardForm);
   edServerPassword.PasswordChar := '*';
