@@ -123,15 +123,15 @@ Name: UseKerberos; Description: "{cm:UseKerberosForRegister}";  GroupDescription
 
 [INI]
 #if edition != "waptserversetup"
-Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL};
+Filename: {app}\wapt-get.ini; Section: global; Key: repo_url; String: {code:GetRepoURL}; Check: MustChangeServerConfig;
 #endif
 Filename: {app}\wapt-get.ini; Section: global; Key: send_usage_report; String:  {#send_usage_report}; 
 
 #if edition != "waptstarter"
-Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: 1;
+Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: 1; 
 
 #if edition != "waptserversetup"
-Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL};
+Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL}; Check: MustChangeServerConfig;
 #endif
 
 #if set_use_kerberos == ''
@@ -222,7 +222,7 @@ de.UpdatePkgUponShutdown=Packete aktualisieren beim herunterfahren
 
 [Code]
 var
-  cbStaticUrl,cbDnsServer: TNewRadioButton;
+  cbDontChangeServer, cbStaticUrl,cbDnsServer: TNewRadioButton;
   CustomPage: TWizardPage;
   edWaptServerUrl,edDNSDomain:TEdit;
   labRepo,labServer,labDNSDomain: TLabel;
@@ -230,9 +230,9 @@ var
 procedure OnServerClicked(Sender:TObject);
 begin
    #if edition != "waptstarter"
-   edWaptServerUrl.Enabled:= not cbDnsServer.Checked;
+   edWaptServerUrl.Enabled:= cbStaticUrl.Checked;
    #endif
-   edWaptRepoUrl.Enabled:= not cbDnsServer.Checked;
+   edWaptRepoUrl.Enabled:= cbStaticUrl.Checked;
    edDNSDomain.Enabled := cbDnsServer.Checked;
 end;
 
@@ -305,12 +305,19 @@ procedure InitializeWizard;
 begin
   CustomPage := CreateCustomPage(wpSelectTasks, 'Installation options', '');
   
+  cbDontChangeServer := TNewRadioButton.Create(WizardForm);
+  cbDontChangeServer.Parent := CustomPage.Surface;
+  cbDontChangeServer.Width := CustomPage.SurfaceWidth;
+  cbDontChangeServer.Caption := 'Don''t change current setup';
+  cbDontChangeServer.Onclick := @OnServerClicked;
+
   cbDnsServer := TNewRadioButton.Create(WizardForm);
   cbDnsServer.Parent := CustomPage.Surface;
   cbDnsServer.Width := CustomPage.SurfaceWidth;
   cbDnsServer.Caption := 'Detect WAPT Info with DNS records';
   cbDnsServer.Onclick := @OnServerClicked;
-
+  cbDnsServer.Top := cbDontChangeServer.Top + cbDontChangeServer.Height + 5;
+  
   labDNSDomain := TLabel.Create(WizardForm);
   labDNSDomain.Parent := CustomPage.Surface; 
   labDNSDomain.Left := cbDnsServer.Left + 14;
@@ -420,7 +427,12 @@ var
   value:String;
 begin
   value := ExpandConstant('{param:InstallCerts|{#set_install_certs}}');
-  Result := value <> '0';     
+  Result := value <> '0';
+end;
+
+function MustChangeServerConfig:Boolean;
+begin
+  Result := not cbDontChangeServer.Checked;     
 end;
 
 function UseKerberosCheck(param:String):String;
