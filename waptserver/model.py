@@ -682,7 +682,7 @@ def wapthosts_json(model_class, instance, created):
             ['last_logged_on_user', 'last_logged_on_user'],
             ['mac_addresses', 'mac'],
             ['dnsdomain', ('dnsdomain', 'dns_domain')],
-            ['gateways', 'gateways'],
+            ['gateways', ['gateways','default_gateways']],
             ['computer_ad_site', 'computer_ad_site'],
             ['computer_ad_ou', extract_ou],
             ['computer_ad_groups', 'computer_ad_groups'],

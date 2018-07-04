@@ -2690,8 +2690,11 @@ def host_info():
         info['domain_info_source'] = 'history'
 
     info['networking'] = networking()
-    info['default_gateway'] = default_gateway()
-    #info['default_gateways'] = get_default_gateways()
+
+    try:
+        info['gateways'] = get_default_gateways()
+    except:
+        info['gateways'] = [default_gateway()]
 
     info['connected_ips'] = socket.gethostbyname_ex(socket.gethostname())[2]
     info['mac'] = [ c['mac'] for c in networking() if 'mac' in c and 'addr' in c and c['addr'] in info['connected_ips']]
