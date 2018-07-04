@@ -1,4 +1,4 @@
-Welcome to WAPT API's documentation!
+Welcome to WAPT 1.6 API's documentation!
 =============================
 
 Contents:

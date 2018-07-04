@@ -1,6 +1,6 @@
 waptserver package
 ===================
 
-.. autoflask:: waptserver.waptserver:app
+.. autoflask:: waptserver.server:app
    :undoc-static:
   

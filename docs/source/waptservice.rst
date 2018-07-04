@@ -1,6 +1,6 @@
 waptservice package
 ===================
 
-.. autoflask:: waptservice.waptservice:app
+.. autoflask:: waptservice.service:app
    :undoc-static:
   

@@ -50,7 +50,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'WAPT'
-copyright = u'2015, Tranquil IT Systems'
+copyright = u'2018, Tranquil IT Systems'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -270,7 +270,7 @@ texinfo_documents = [
 epub_title = u'WAPT'
 epub_author = u'Tranquil IT Systems'
 epub_publisher = u'Tranquil IT Systems'
-epub_copyright = u'2015, Tranquil IT Systems'
+epub_copyright = u'2018, Tranquil IT Systems'
 
 # The basename for the epub file. It defaults to the project name.
 #epub_basename = u'WAPT'
