@@ -71,6 +71,7 @@ __all__ = \
  'default_overwrite',
  'default_overwrite_older',
  'default_skip',
+ 'default_gateway',
  'delete_at_next_reboot',
  'delete_group',
  'delete_task',
@@ -2363,6 +2364,20 @@ wincomputername = win32api.GetComputerName
 windomainname = win32api.GetDomainName
 
 
+def default_gateway():
+    """Returns default ipv4 current gateway"""
+    gateways = netifaces.gateways()
+    if gateways:
+        default_gw = gateways.get('default',None)
+        if default_gw:
+            default_inet_gw = default_gw.get(netifaces.AF_INET,None)
+        else:
+            default_inet_gw = None
+    if default_gateway:
+        return default_inet_gw[0]
+    else:
+        return None
+
 def networking():
     """return a list of (iface,mac,{addr,broadcast,netmask})
     """
@@ -2675,6 +2690,9 @@ def host_info():
         info['domain_info_source'] = 'history'
 
     info['networking'] = networking()
+    info['default_gateway'] = default_gateway()
+    #info['default_gateways'] = get_default_gateways()
+
     info['connected_ips'] = socket.gethostbyname_ex(socket.gethostname())[2]
     info['mac'] = [ c['mac'] for c in networking() if 'mac' in c and 'addr' in c and c['addr'] in info['connected_ips']]
 
