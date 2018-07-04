@@ -3738,7 +3738,7 @@ class Wapt(BaseObjectClass):
 
         """
         host_capa = dict(
-            host_cert=self.get_host_certificate().fingerprint,
+            host_cert=self.get_host_certificate().fingerprint if os.path.isfile(self.get_host_certificate_filename()) else None,
             host_arch=self.get_host_architecture(),
             authorized_certs=[c.fingerprint for c in self.authorized_certificates()],
             #authorized_maturities=self.get_host_maturities(),
@@ -4729,7 +4729,10 @@ class Wapt(BaseObjectClass):
         Returns:
             SSLCertificate: host public certificate.
         """
-        return SSLCertificate(self.get_host_certificate_filename())
+        if os.path.isfile(self.get_host_certificate_filename()):
+            return SSLCertificate(self.get_host_certificate_filename())
+        else:
+            return None
 
 
     def create_or_update_host_certificate(self,force_recreate=False):
