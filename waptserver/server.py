@@ -143,9 +143,8 @@ except Exception as e:
 @app.teardown_request
 def _db_close(error):
     """Closes the database again at the end of the request."""
-    #if wapt_db and wapt_db.obj and not wapt_db.is_closed():
-    #    wapt_db.close()
-    pass
+    if wapt_db and wapt_db.obj and not wapt_db.is_closed():
+        wapt_db.close()
 
 @babel.localeselector
 def get_locale():
@@ -1812,7 +1811,7 @@ def host_data():
 
         if 'field' in request.args:
             field = request.args['field']
-            if not field in Hosts._meta.fields.keys() + ['installed_softwares', 'installed_packages', 'waptwua']: # pylint: disable=no-member
+            if not field in Hosts._meta.fields.keys() + ['installed_softwares', 'installed_packages', 'wsusupdates']: # pylint: disable=no-member
                 raise EWaptMissingParameter('Parameter field %s is unknown' % field)
         else:
             raise EWaptMissingParameter('Parameter field is missing')
@@ -1821,8 +1820,36 @@ def host_data():
             result = list(HostSoftwares.select().where(HostSoftwares.host == uuid).dicts())
         elif field == 'installed_packages':
             result = list(HostPackagesStatus.select().where(HostPackagesStatus.host == uuid).dicts())
-        elif field == 'waptwua':
-            result = HostWsus.select(HostWsus.wsus).where(HostWsus.host == uuid).dicts().first()['wsus']
+        elif field == 'wsusupdates':
+            local_status = HostWsus.alias('local_status')
+            fields = [
+                local_status.id.alias('local_status_id'),
+                local_status.status.alias('local_status_status'),
+                local_status.allowed.alias('local_status_allowed'),
+                local_status.installed.alias('local_status_installed'),
+                local_status.present.alias('local_status_present'),
+                local_status.hidden.alias('local_status_hidden'),
+                local_status.downloaded.alias('local_status_downloaded'),
+                WsusUpdates.update_id,
+                WsusUpdates.title,
+                WsusUpdates.update_type,
+                WsusUpdates.kbids,
+                WsusUpdates.severity,
+                WsusUpdates.changetime,
+                WsusUpdates.product,
+                WsusUpdates.classification,
+                WsusUpdates.download_urls,
+                WsusUpdates.min_download_size,
+                WsusUpdates.max_download_size,
+                WsusUpdates.superseded_update_ids,
+                WsusUpdates.security_bulletin_ids,
+                WsusUpdates.cve_ids,
+                WsusUpdates.is_mandatory,
+                WsusUpdates.reboot_behaviour,
+                WsusUpdates.can_request_user_input,
+                WsusUpdates.requires_network_connectivity,
+                ]
+            result = list(local_status.select(*fields).join(WsusUpdates).where(local_status.host == uuid).order_by(WsusUpdates.changetime).dicts())
         else:
             data = Hosts\
                 .select(Hosts.uuid, Hosts.computer_fqdn, Hosts.fieldbyname(field))\
@@ -2084,7 +2111,7 @@ def on_waptclient_connect():
                     if token_data['server_uuid'] != get_server_uuid():
                         raise EWaptAuthenticationFailure('Bad server UUID')
                 except Exception as e:
-                    
+
                     raise EWaptAuthenticationFailure(u'SocketIO connection not authorized, invalid token: %s' % e)
             else:
                 token_data = {}

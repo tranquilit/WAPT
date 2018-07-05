@@ -187,7 +187,8 @@ def make_response_from_exception(exception, error_code='', status=200):
     if utils_devel_mode:
         raise exception
     else:
-        data['msg'] = u'Error on server: %s' % (exception,)
+        #data['msg'] = u'Error on server: %s\n%s' % (repr(exception),traceback.format_exc())
+        data['msg'] = u'Error on server: %s\n%s' % (repr(exception))
     return flask.Response(
         response=jsondump(data),
         status=status,

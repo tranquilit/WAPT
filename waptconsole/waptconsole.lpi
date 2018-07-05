@@ -40,7 +40,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="/ConfigFilename=locale -w"/>
+        <CommandLineParams Value="/ConfigFilename=localserver -w"/>
       </local>
     </RunParams>
     <RequiredPackages Count="12">

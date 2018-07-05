@@ -1289,7 +1289,7 @@ end;
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
   currhost,packagename : ansistring;
-  RowSO, package,packagereq, packages, softwares, waptwua,tasksresult, running,sores,all_missing,pending_install,additional,upgrades,errors: ISuperObject;
+  RowSO, package,packagereq, packages, softwares, waptwua,wsusupdates,tasksresult, running,sores,all_missing,pending_install,additional,upgrades,errors: ISuperObject;
 begin
   RowSO := Gridhosts.FocusedRow;
 
@@ -1411,20 +1411,20 @@ begin
     else if HostPages.ActivePage = pgHostWUA then
     begin
       //Cache collection in grid data
-      waptwua := RowSO['waptwua'];
-      if (waptwua = nil) or (waptwua.AsArray = nil) then
+      wsusupdates := RowSO['wsusupdates'];
+      if (wsusupdates = nil) or (wsusupdates.AsArray = nil) then
       try
-        sores := WAPTServerJsonGet('api/v1/host_data?field=waptwua&uuid=%S',[currhost]);
+        sores := WAPTServerJsonGet('api/v1/host_data?field=wsusupdates&uuid=%S',[currhost]);
         if sores.B['success'] then
-          waptwua := sores['result']
+          wsusupdates := sores['result']
         else
-          waptwua := nil;
+          wsusupdates := nil;
       except
-        waptwua := nil;
+        wsusupdates := nil;
       end;
-      RowSO['waptwua'] := waptwua;
-      if waptwua<>Nil then
-        GridHostWinUpdates.Data := FilterHostWinUpdates(waptwua['updates'])
+      RowSO['wsusupdates'] := wsusupdates;
+      if wsusupdates<>Nil then
+        GridHostWinUpdates.Data := FilterHostWinUpdates(wsusupdates)
       else
         GridHostWinUpdates.Data := Nil;
 
@@ -3195,7 +3195,10 @@ begin
 	  end;
 
     if IsEnterpriseEdition then
-      columns.AsArray.Add('waptwua_status');
+    begin
+      columns.AsArray.Add('waptwua');
+      columns.AsArray.Add('waptwua.status');
+    end;
 
     urlParams := TSuperObject.Create(stArray);
     fields := TSuperObject.Create(stArray);
@@ -4341,13 +4344,13 @@ procedure TVisWaptGUI.GridHostWinUpdatesGetImageIndexEx(
 var
   row: ISuperObject;
 begin
-  if TSOGridColumn((Sender as TSOGrid).Header.Columns[Column]).PropertyName = 'local_status.status' then
+  if TSOGridColumn((Sender as TSOGrid).Header.Columns[Column]).PropertyName = 'local_status_status' then
   begin
     row := (Sender as TSOGrid).GetNodeSOData(Node);
-    if row.B['local_status.installed'] then
+    if row.B['local_status_installed'] then
       ImageIndex := 0
     else
-    if not row.B['local_status.installed'] and not row.B['local_status.hidden'] then
+    if not row.B['local_status_installed'] and not row.B['local_status_hidden'] then
       ImageIndex := 7
     else
       ImageIndex := 8

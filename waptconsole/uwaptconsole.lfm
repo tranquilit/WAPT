@@ -39,9 +39,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 412
         Top = 120
         Width = 572
-        ActivePage = pgPackages
+        ActivePage = pgHostWUA
         Align = alRight
-        TabIndex = 0
+        TabIndex = 3
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -806,183 +806,192 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'download_urls'
               end            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
                 Position = 1
                 Tag = 1
-                Text = 'uuid'
-                Width = 100
-                PropertyName = 'uuid'
+                Text = 'Status'
+                Width = 69
+                PropertyName = 'local_status_status'
               end            
               item
-                Alignment = taRightJustify
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
                 Position = 2
                 Tag = 2
-                Text = 'type'
-                Width = 35
-                PropertyName = 'type'
+                Text = 'Update ID'
+                Width = 60
+                PropertyName = 'update_id'
               end            
               item
                 Position = 3
                 Tag = 3
-                Text = 'Status'
-                Width = 77
-                PropertyName = 'local_status.status'
+                Text = 'kbids'
+                Width = 82
+                PropertyName = 'kbids'
               end            
               item
                 Position = 4
                 Tag = 4
-                Text = 'kbids'
-                Width = 81
-                PropertyName = 'kbids'
-              end            
-              item
-                Position = 5
-                Tag = 5
                 Text = 'Published on'
                 Width = 94
                 PropertyName = 'changetime'
               end            
               item
-                Position = 6
-                Tag = 6
+                Position = 5
+                Tag = 5
                 Text = 'Severity'
-                Width = 100
+                Width = 71
                 PropertyName = 'severity'
               end            
               item
-                Position = 7
-                Tag = 7
+                Position = 6
+                Tag = 6
                 Text = 'Classification'
-                Width = 108
+                Width = 93
                 PropertyName = 'classification'
               end            
               item
-                Position = 8
-                Tag = 8
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 7
+                Tag = 7
                 Text = 'Product'
                 Width = 83
                 PropertyName = 'product'
               end            
               item
-                Position = 9
-                Tag = 9
+                Position = 8
+                Tag = 8
                 Text = 'Title'
                 Width = 248
                 PropertyName = 'title'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 10
-                Tag = 10
-                Text = 'local_status'
-                Width = 261
-                PropertyName = 'local_status'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 11
-                Tag = 11
+                Position = 9
+                Tag = 9
                 Text = 'cve_ids'
                 Width = 100
                 PropertyName = 'cve_ids'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 12
-                Tag = 12
+                Position = 10
+                Tag = 10
                 Text = 'can_request_user_input'
                 Width = 100
                 PropertyName = 'can_request_user_input'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 13
-                Tag = 13
+                Position = 11
+                Tag = 11
                 Text = 'security_bulletin_ids'
                 Width = 100
                 PropertyName = 'security_bulletin_ids'
               end            
               item
-                Position = 14
-                Tag = 14
+                Position = 12
+                Tag = 12
                 Text = 'Download size'
-                Width = 101
+                Width = 82
                 PropertyName = 'max_download_size'
               end            
               item
-                Position = 15
-                Tag = 15
-                Text = 'update_id'
-                Width = 82
-                PropertyName = 'update_id'
-              end            
-              item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 16
-                Tag = 16
+                Position = 13
+                Tag = 13
                 Text = 'is_mandatory'
                 Width = 100
                 PropertyName = 'is_mandatory'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 17
-                Tag = 17
+                Position = 14
+                Tag = 14
                 Text = 'Superseded update ids'
                 Width = 100
                 PropertyName = 'superseded_update_ids'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 18
-                Tag = 18
+                Position = 15
+                Tag = 15
                 Text = 'Requires network'
                 Width = 100
                 PropertyName = 'requires_network_connectivity'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 19
-                Tag = 19
+                Position = 16
+                Tag = 16
                 Text = 'min_download_size'
                 Width = 100
                 PropertyName = 'min_download_size'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 20
-                Tag = 20
+                Position = 17
+                Tag = 17
                 Text = 'Reboot behaviour'
                 Width = 100
                 PropertyName = 'reboot_behaviour'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 18
+                Tag = 18
+                Text = 'Discarded'
+                PropertyName = 'local_status_hidden'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 19
+                Tag = 19
+                Text = 'Installed'
+                PropertyName = 'local_status_installed'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 20
+                Tag = 20
+                Text = 'Dowloaded'
+                PropertyName = 'local_status_downloaded'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
                 Position = 21
                 Tag = 21
-                Text = 'Discarded'
-                PropertyName = 'local_status.hidden'
+                Text = 'Present'
+                Width = 62
+                PropertyName = 'local_status_present'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
                 Position = 22
                 Tag = 22
-                Text = 'Installed'
-                PropertyName = 'local_status.installed'
+                Text = 'Update type'
+                Width = 73
+                PropertyName = 'update_type'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
                 Position = 23
                 Tag = 23
-                Text = 'Dowloaded'
-                PropertyName = 'local_status.downloaded'
+                Text = 'Allowed'
+                Width = 52
+                PropertyName = 'local_status_allowed'
+              end            
+              item
+                Alignment = taRightJustify
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 24
+                Tag = 24
+                Text = 'local_status_id'
+                Width = 47
+                PropertyName = 'local_status_id'
               end>
             Header.DefaultHeight = 17
             Header.Height = 19
             Header.MinHeight = 19
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-            Header.SortColumn = 5
+            Header.SortColumn = 3
             Header.SortDirection = sdDescending
             Header.Style = hsFlatButtons
             Images = ImageList1
