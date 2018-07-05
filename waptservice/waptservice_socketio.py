@@ -338,6 +338,10 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
         logger.debug('wapt_ping... %s'% (args,))
         self.emit('wapt_pong')
 
+    def on_wapt_force_reconnect(self,args):
+        logger.debug('Force disconnect from server... %s'% (args,))
+        self.disconnect()
+
     def on_message(self,message):
         logger.debug(u'socket.io message : %s' % message)
 
@@ -363,6 +367,7 @@ class WaptSocketIOClient(threading.Thread):
         self.config = WaptServiceConfig(config_filename)
         self.socketio_client = None
         self.wapt_remote_calls = None
+        self.server_authorization_token = None
 
 
     def run(self):
@@ -370,14 +375,22 @@ class WaptSocketIOClient(threading.Thread):
         with Wapt(config_filename = self.config.config_filename) as tmp_wapt:
             logger.info('Starting socketio on "%s://%s:%s" ...' % (self.config.websockets_proto,self.config.websockets_host,self.config.websockets_port))
             logger.debug('Certificate checking : %s' %  self.config.websockets_verify_cert)
+
+            def get_connect_params(wapt):
+                connect_params = {'uuid': wapt.host_uuid}
+                if not self.server_authorization_token:
+                    try:
+                        self.server_authorization_token = wapt.get_auth_token('websocket')
+                        logger.info('Websocket token: %s' % self.server_authorization_token)
+                        connect_params['token'] = self.server_authorization_token
+                    except Exception as e:
+                        logger.warning('Websocket connect params: %s' % e)
+                        self.server_authorization_token = None
+                return {'params':connect_params,
+                        'cert'  :(wapt.get_host_certificate_filename(),wapt.get_host_key_filename())}
             while True:
                 try:
-                    connect_params = dict(
-                        uuid = tmp_wapt.host_uuid,
-                    )
-                    host_key = tmp_wapt.get_host_key()
-                    host_cert = tmp_wapt.get_host_certificate()
-
+                    connect_params = get_connect_params(tmp_wapt)
                     if not self.socketio_client and self.config.websockets_host:
                         logger.debug('Creating socketio client')
                         logger.debug('Proxies : %s'%self.config.waptserver.proxies)
@@ -386,9 +399,7 @@ class WaptSocketIOClient(threading.Thread):
                         if self.config.waptserver.proxies and self.config.waptserver.proxies.get(self.config.websockets_proto,None) is not None:
                             kwargs['proxies'] = self.config.waptserver.proxies
 
-
-                        signed_connect_params = host_key.sign_claim(connect_params,signer_certificate_chain = host_cert)
-
+                        kwargs.update(connect_params)
                         self.socketio_client = SocketIO(
                                 host="%s://%s" % (self.config.websockets_proto,self.config.websockets_host),
                                 port=self.config.websockets_port,
@@ -399,16 +410,13 @@ class WaptSocketIOClient(threading.Thread):
                                 transport = ['websocket'],
                                 ping_interval = self.config.websockets_ping,
                                 hurry_interval_in_seconds = self.config.websockets_hurry_interval,
-                                params = {'uuid': tmp_wapt.host_uuid, 'login':jsondump(signed_connect_params)},
                                 **kwargs)
                         self.socketio_client.get_namespace().wapt = tmp_wapt
                         self.socketio_client.get_namespace().task_manager = self.task_manager
 
                     if self.socketio_client and self.config.websockets_host:
                         if not self.socketio_client.connected:
-                            signed_connect_params = host_key.sign_claim(connect_params,signer_certificate_chain = host_cert)
-
-                            self.socketio_client._http_session.params.update({'uuid': tmp_wapt.host_uuid,'login':jsondump(signed_connect_params)})
+                            self.socketio_client._http_session.update(connect_params)
                             self.socketio_client.define(WaptSocketIORemoteCalls)
                             self.socketio_client.get_namespace().wapt = tmp_wapt
                             self.socketio_client.get_namespace().task_manager = self.task_manager
@@ -439,7 +447,9 @@ class WaptSocketIOClient(threading.Thread):
 
                 except Exception as e:
                     try:
-                        logger.info('Error in socket io connection %s' % repr(e))
+                        print(repr(e))
+                        # reset token
+                        self.server_authorization_token = None
                         self.config.reload_if_updated()
                         if self.socketio_client:
                             logger.debug('stop sio client')

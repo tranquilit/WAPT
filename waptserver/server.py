@@ -143,8 +143,9 @@ except Exception as e:
 @app.teardown_request
 def _db_close(error):
     """Closes the database again at the end of the request."""
-    if wapt_db and wapt_db.obj and not wapt_db.is_closed():
-        wapt_db.close()
+    #if wapt_db and wapt_db.obj and not wapt_db.is_closed():
+    #    wapt_db.close()
+    pass
 
 @babel.localeselector
 def get_locale():
@@ -172,6 +173,8 @@ def get_server_uuid():
     server_uuid = app.conf.get('server_uuid', None)
     return server_uuid
 
+def get_secured_token_generator():
+    return TimedJSONWebSignatureSerializer(app.conf['secret_key'], expires_in = app.conf['signature_clockskew'])
 
 @app.route('/')
 def index():
@@ -395,6 +398,10 @@ def register_host():
                 # return back signed host certificate
                 db_data['host_certificate'] = host_cert.as_pem()
 
+            # return a token for websocket auth
+            token_gen = get_secured_token_generator()
+            db_data['authorization_token'] = token_gen.dumps({'uuid':uuid,'server_uuid':get_server_uuid()})
+
             result = db_data
             message = 'register_host'
             return make_response(result=result, msg=message, request_time=time.time() - starttime)
@@ -485,6 +492,9 @@ def update_host():
         data['last_seen_on'] = datetime2isodate()
         db_data = update_host_data(data)
 
+        token_gen = get_secured_token_generator()
+        db_data['authorization_token'] = token_gen.dumps({'uuid':uuid,'server_uuid':get_server_uuid()})
+
         result = db_data
         message = 'update_host'
 
@@ -494,6 +504,57 @@ def update_host():
         logger.debug(traceback.format_exc())
         logger.critical('update_host failed %s' % (repr(e)))
         return make_response_from_exception(e)
+
+@app.route('/get_websocket_auth_token',methods=['HEAD','POST'])
+def get_websocket_auth_token():
+    try:
+        starttime = time.time()
+        # unzip if post data is gzipped
+        if request.headers.get('Content-Encoding') == 'gzip':
+            raw_data = zlib.decompress(request.data)
+        else:
+            raw_data = request.data
+
+        data = json.loads(raw_data)
+        if not data:
+            raise EWaptAuthenticationFailure('No data supplied')
+
+        uuid = data['uuid']
+        if not uuid:
+            raise EWaptAuthenticationFailure('No uuid supplied')
+
+        if data.get('purpose') != 'websocket':
+            raise EWaptAuthenticationFailure('Bad purpose')
+
+        # get request signature
+        signature_b64 = request.headers.get('X-Signature', None)
+        if signature_b64:
+            signature = signature_b64.decode('base64')
+        else:
+            raise EWaptAuthenticationFailure('No signature in request')
+
+        existing_host = Hosts.select(Hosts.uuid, Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
+        if not existing_host or not existing_host.host_certificate or existing_host.computer_fqdn != data.get('computer_fqdn',''):
+            raise EWaptAuthenticationFailure('Unknown host UUID %s. Please register first.' % (uuid, ))
+
+        host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
+        try:
+            host_cert_cn = host_cert.verify_content(sha256_for_data(raw_data), signature)
+        except Exception as e:
+            raise EWaptAuthenticationFailure(u'Request signature verification failed: %s' % e)
+
+        token_gen = get_secured_token_generator()
+        result = {
+            'authorization_token': token_gen.dumps({'uuid':uuid,'server_uuid':get_server_uuid()}),
+            }
+        message = 'Authorization token'
+        return make_response(result=result, msg=message, request_time=time.time() - starttime)
+
+    except Exception as e:
+        logger.debug(traceback.format_exc())
+        logger.critical('Get_websocket_auth_token failed %s' % (repr(e)))
+        return make_response_from_exception(e)
+
 
 def get_repo_packages():
     """Returns list of package entries for this server main packages repository
@@ -2014,16 +2075,22 @@ def on_waptclient_connect():
 
             allow_unauthenticated_connect = app.conf.get('allow_unauthenticated_connect',False)
             if not allow_unauthenticated_connect:
-                host_cert = Hosts.select(Hosts.host_certificate).where(Hosts.uuid == uuid).first()
+                try:
+                    token_gen = get_secured_token_generator()
+                    token_data = token_gen.loads(request.args['token'])
+                    uuid = token_data.get('uuid', None)
+                    if not uuid:
+                        raise EWaptAuthenticationFailure('Bad host UUID')
+                    if token_data['server_uuid'] != get_server_uuid():
+                        raise EWaptAuthenticationFailure('Bad server UUID')
+                except Exception as e:
+                    
+                    raise EWaptAuthenticationFailure(u'SocketIO connection not authorized, invalid token: %s' % e)
+            else:
+                token_data = {}
 
-                if host_cert and host_cert.host_certificate:
-                    host_certificate = SSLCertificate(crt_string=host_cert.host_certificate)
-                    host_cert_issuer = host_certificate.verify_claim(json.loads(request.args['login']), max_age_secs=app.conf['signature_clockskew'],required_attributes=['uuid'])
-                    logger.debug(u'Socket IO %s connect checked. issuer : %s' % ( request.sid,host_cert_issuer))
-                else:
-                    raise EWaptForbiddden('Host is not registered or no host certificate found in database.')
+            logger.info(u'Socket.IO connection from wapt client sid %s (uuid: %s fqdn:%s)' % (request.sid,uuid,token_data.get('computer_fqdn')))
 
-            logger.info(u'Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
             # stores sid in database
             hostcount = Hosts.update(
                 server_uuid=get_server_uuid(),
@@ -2042,6 +2109,8 @@ def on_waptclient_connect():
             return True
 
         except Exception as e:
+            if 'uuid' in session:
+                session.pop('uuid')
             logger.warning(u'SocketIO connection refused for uuid %s, sid %s: %s' % (uuid,request.sid,e))
             trans.rollback()
             return False
@@ -2053,8 +2122,8 @@ def on_wapt_pong():
         try:
             uuid = session.get('uuid')
             if not uuid:
-                logger.critical(u'SocketIO %s connected but no host uuid in session: asking connected host to update status' % (request.sid))
-                emit('wapt_trigger_update_status')
+                logger.critical(u'SocketIO %s connected but no host uuid in session: asking connected host to reconnect' % (request.sid))
+                emit('wapt_force_reconnect')
                 return False
             else:
                 logger.debug(u'Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid, session.get('uuid',None)))
@@ -2068,8 +2137,8 @@ def on_wapt_pong():
                 ).where(Hosts.uuid == uuid).execute()
                 # if not known, reject the connection
                 if hostcount == 0:
-                    logger.warning(u'SocketIO sid %s connected but no match in database for uuid %s : asking to update status' % (request.sid,uuid))
-                    emit('wapt_trigger_update_status')
+                    logger.warning(u'SocketIO sid %s connected but no match in database for uuid %s : asking to reconnect' % (request.sid,uuid))
+                    emit('wapt_force_reconnect')
                     return False
             return True
         except Exception as e:
@@ -2081,7 +2150,7 @@ def on_wapt_pong():
 def on_waptclient_disconnect():
     with wapt_db.atomic() as trans:
         try:
-            uuid = request.args.get('uuid', None)
+            uuid = session.get('uuid', None)
             logger.info(u'Socket.IO disconnection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
             # clear sid in database
             Hosts.update(
@@ -2096,25 +2165,9 @@ def on_waptclient_disconnect():
             trans.rollback()
             return False
 
-"""
-@socketio.on('join')
-def on_join(data):
-    room = request.args.get('uuid', None)
-    if room:
-        socketio.join_room(room)
-
-
-@socketio.on('leave')
-def on_leave(data):
-    room = request.args.get('uuid', None)
-    if room:
-        socketio.leave_room(room) # pylint: disable=no-member
-"""
-
 @socketio.on_error()
 def on_wapt_socketio_error(e):
     logger.critical('Socket IO : An error has occurred for sid %s, uuid:%s : %s' % (request.sid, request.args.get('uuid', None), repr(e)))
-
 
 # end websockets
 
