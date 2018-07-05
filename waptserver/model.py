@@ -594,6 +594,8 @@ def update_host_data(data):
                     winupdates = data['waptwua'].pop('updates')
                 else:
                     winupdates = None
+                if 'update_history' in data['waptwua']:
+                    data['waptwua'].pop('update_history')
             else:
                 winupdates = None
 

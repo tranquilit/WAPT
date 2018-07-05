@@ -285,7 +285,7 @@ ClassName=TProjectRunConfiguationNode
 Name=waptmodel
 
 [Project\ChildNodes\Node1\ChildNodes\Node4\RunConfig]
-ScriptName=$[Project-Path]waptserver\model.py
+ScriptName=$[Project-Path]model.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-c c:\wapt\conf\waptserver.ini

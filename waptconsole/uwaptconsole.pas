@@ -3196,8 +3196,8 @@ begin
 
     if IsEnterpriseEdition then
     begin
-      columns.AsArray.Add('waptwua');
-      columns.AsArray.Add('waptwua.status');
+      //columns.AsArray.Add('waptwua');
+      //columns.AsArray.Add('waptwua.status');
     end;
 
     urlParams := TSuperObject.Create(stArray);
