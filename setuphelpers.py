@@ -92,6 +92,7 @@ __all__ = \
  'get_computername',
  'get_current_user',
  'get_default_gateways',
+ 'get_dns_servers',
  'get_domain_fromregistry',
  'get_file_properties',
  'get_hostname',
@@ -2646,6 +2647,18 @@ def get_default_gateways():
                 result.append(connection.DefaultIPGateway[0])
     return result
 
+
+def get_dns_servers():
+    result = []
+    if wmi:
+        wmi_obj = wmi.WMI()
+        connections = wmi_obj.query("select IPAddress,DefaultIPGateway,DNSServerSearchOrder from Win32_NetworkAdapterConfiguration where IPEnabled=TRUE")
+        for connection in connections:
+            if connection.DNSServerSearchOrder:
+                result.extend(connection.DNSServerSearchOrder)
+    return result
+
+
 def host_info():
     """Read main workstation informations, returned as a dict
 
@@ -2693,6 +2706,7 @@ def host_info():
 
     try:
         info['gateways'] = get_default_gateways()
+        info['dns_servers'] = get_dns_servers()
     except:
         info['gateways'] = [default_gateway()]
 
