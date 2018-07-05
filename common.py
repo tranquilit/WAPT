@@ -157,7 +157,7 @@ def host_ipv4():
     return res
 
 
-def tryurl(url,proxies=None,timeout=2,auth=None,verify_cert=False,cert=None):
+def tryurl(url,proxies=None,timeout=5.0,auth=None,verify_cert=False,cert=None):
     # try to get header for the supplied URL, returns None if no answer within the specified timeout
     # else return time to get he answer.
     try:
@@ -1777,7 +1777,7 @@ class WaptRepo(WaptRemoteRepo):
     >>> len(packages)
     """
 
-    def __init__(self,url=None,name='wapt',verify_cert=None,http_proxy=None,timeout = 2,dnsdomain=None,cabundle=None,config=None):
+    def __init__(self,url=None,name='wapt',verify_cert=None,http_proxy=None,timeout=None,dnsdomain=None,cabundle=None,config=None):
         """Initialize a repo at url "url".
 
         Args:
@@ -2547,8 +2547,8 @@ class Wapt(BaseObjectClass):
             'tray_check_interval':2,
             'service_interval':2,
             'use_hostpackages':'0',
-            'timeout':5.0,
-            'wapt_server_timeout':10.0,
+            'timeout':10.0,
+            'wapt_server_timeout':30.0,
             'maturities':'PROD',
             'waptwua_enabled':'0',
             'http_proxy':'',
@@ -4820,11 +4820,13 @@ class Wapt(BaseObjectClass):
                 urladdhost = 'add_host'
             else:
                 urladdhost = 'add_host_kerberos'
-            return self.waptserver.post(urladdhost,
+            result = self.waptserver.post(urladdhost,
                 data = data ,
                 signature = self.sign_host_content(data),
                 signer = self.get_host_certificate().cn
                 )
+            return result
+
         else:
             return dict(
                 success = False,
@@ -5004,6 +5006,26 @@ class Wapt(BaseObjectClass):
 
         return inv
 
+    def get_auth_token(self,purpose='websocket'):
+        """Get an auth token from server providing signed uuid by provite host key.
+
+        Returns:
+            dict
+        """
+        # avoid sending data to the server if it has not been updated.
+        data = jsondump({'uuid':self.host_uuid,'purpose':purpose,'computer_fqdn':setuphelpers.get_hostname()})
+        signature = self.sign_host_content(data)
+
+        result = self.waptserver.post('get_websocket_auth_token',
+            data = data,
+            signature = signature,
+            signer = self.get_host_certificate().cn
+            )
+
+        if result and result['success']:
+            return result['result']['authorization_token']
+        else:
+            raise EWaptException(u'Unable to get auth token: %s' % result['msg'])
 
     def update_server_status(self,force=False):
         """Send host_info, installed packages and installed softwares,
@@ -5040,7 +5062,6 @@ class Wapt(BaseObjectClass):
                     # stores for next round.
                     old_hashes.update(new_hashes)
                     self.write_param('last_update_server_hashes',jsondump(old_hashes))
-                    #self._update_server_hashes = old_hashes
                     self.write_param('last_update_server_status_timestamp',str(datetime.datetime.utcnow()))
                     logger.info(u'Status on server %s updated properly'%self.waptserver.server_url)
                 else:
