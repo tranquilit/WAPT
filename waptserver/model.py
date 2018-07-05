@@ -347,27 +347,27 @@ class HostGroups(WaptBaseModel):
 class WsusUpdates(WaptBaseModel):
     update_id = CharField(primary_key=True, index=True)
     title = CharField()
-    update_type = CharField(),
-    kbids = ArrayField(CharField, index=True),
-    severity = CharField(null=True),
-    changetime = CharField(null=True),
-    product = CharField(null=True, index=True),
-    classification = CharField(null=True),
-    download_urls = ArrayField(CharField),
-    min_download_size = IntegerField(null=True),
-    max_download_size = IntegerField(null=True),
-    superseded_update_ids = ArrayField(CharField),
-    security_bulletin_ids = ArrayField(CharField),
-    cve_ids = ArrayField(CharField),
-    is_mandatory = BooleanField(null=True),
-    reboot_behaviour = CharField(null=True),
-    can_request_user_input = CharField(null=True),
+    update_type = CharField()
+    kbids = ArrayField(CharField, index=True)
+    severity = CharField(null=True)
+    changetime = CharField(null=True)
+    product = CharField(null=True, index=True)
+    classification = CharField(null=True)
+    download_urls = ArrayField(CharField)
+    min_download_size = IntegerField(null=True)
+    max_download_size = IntegerField(null=True)
+    superseded_update_ids = ArrayField(CharField)
+    security_bulletin_ids = ArrayField(CharField)
+    cve_ids = ArrayField(CharField)
+    is_mandatory = BooleanField(null=True)
+    reboot_behaviour = CharField(null=True)
+    can_request_user_input = CharField(null=True)
     requires_network_connectivity = BooleanField(null=True)
 
 class HostWsus(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
-    win_update = ForeignKeyField(WsusUpdates, on_delete='CASCADE', on_update='CASCADE')
+    update_id = ForeignKeyField(WsusUpdates, on_delete='CASCADE', on_update='CASCADE')
     status = CharField(null=True)
     allowed = BooleanField(null=True)
     installed = BooleanField(null=True)
@@ -527,7 +527,7 @@ def update_installed_softwares(uuid, installed_softwares):
     else:
         return True
 
-def update_waptwua(uuid,waptwua):
+def update_waptwua(uuid,winupdates):
     """Stores discovered windows update into WindowsUpdates table and
     links between host and updates into HostWsus
 
@@ -538,31 +538,28 @@ def update_waptwua(uuid,waptwua):
     Returns:
         None
     """
-    # inser
-
-    # TODO : be smarter : insert / update / delete instead of delete all / insert all ?
-    HostWsus.delete().where(HostWsus.host == uuid).execute()
-
     def encode_value(value):
         if isinstance(value,unicode):
             value = value.replace(u'\x00', ' ')
         return value
 
-    # potential new updates
-    windows_updates = []
+    HostWsus.delete().where(HostWsus.host == uuid).execute()
     host_wsus = []
+    windows_updates = []
 
-    for update in waptwua['updates']:
-        update['host'] = uuid
+    for update in winupdates:
+        local_status = update.pop('local_status')
+        local_status['host'] = uuid
+        local_status['update_id'] = update['update_id']
+        windows_updates.append(update)
+
         # filter out all unknown fields from json data for the SQL insert
-        windows_updates.append(dict([(k,encode_value(v)) for k, v in winupdate.iteritems() if k in HostWsus._meta.fields]))
+        host_wsus.append(dict([(k,encode_value(v)) for k, v in local_status.iteritems() if k in HostWsus._meta.fields]))
 
+    WsusUpdates.insert_many(windows_updates).on_conflict('IGNORE').execute()
+    HostWsus.insert_many(host_wsus).execute()
+    return True
 
-
-    if winupdates:
-        return HostSoftwares.insert_many(softwares).execute() # pylint: disable=no-value-for-parameter
-    else:
-        return True
 
 def update_host_data(data):
     """Helper function to insert or update host data in db
@@ -591,6 +588,15 @@ def update_host_data(data):
     uuid = data['uuid']
     with wapt_db.atomic() as trans:
         try:
+            # extract winupdates local status to put them in separate table
+            if 'waptwua' in data:
+                if 'updates' in data['waptwua']:
+                    winupdates = data['waptwua'].pop('updates')
+                else:
+                    winupdates = None
+            else:
+                winupdates = None
+
             existing = Hosts.select(Hosts.uuid, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
             if not existing:
                 logger.debug('Inserting new host %s with fields %s' % (uuid, data.keys()))
@@ -614,6 +620,9 @@ def update_host_data(data):
                         set_host_field(updhost, target_key, data[k])
                 updhost.save()
 
+            if winupdates:
+                update_waptwua(uuid,winupdates)
+
             # separate tables
             # we are tolerant on errors here a we don't know exactly if client send good encoded data
             # but we still want to get host in table
@@ -632,15 +641,6 @@ def update_host_data(data):
                         logger.critical('Unable to update installed_packages for %s' % uuid)
             except Exception as e:
                 logger.critical(u'Unable to update installed_packages for %s: %s' % (uuid,traceback.format_exc()))
-
-            try:
-                if ('waptwua' in data):
-                    waptwua_data = data.get('waptwua', None)
-                    (rec,_) = HostWsus.get_or_create(host=uuid)
-                    rec.wsus = waptwua_data
-                    rec.save()
-            except Exception as e:
-                logger.critical(u'Unable to update wsus data for %s: %s' % (uuid,traceback.format_exc()))
 
             result_query = Hosts.select(Hosts.uuid, Hosts.computer_fqdn)
             return result_query.where(Hosts.uuid == uuid).dicts().first()
@@ -947,7 +947,7 @@ def init_db(drop=False):
     if drop:
         for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostWsus,HostGroups,WsusUpdates,WsusScan2History]):
             table.drop_table(fail_silently=True)
-    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostWsus,HostGroups,WsusUpdates,WsusScan2History], safe=True)
+    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,WsusScan2History], safe=True)
 
     if get_db_version() == None:
         # new database install, we setup the db_version key
