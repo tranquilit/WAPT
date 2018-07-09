@@ -106,7 +106,7 @@ from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,\
 # end of windows stuff
 
 from waptutils import BaseObjectClass,ensure_list,ensure_unicode,default_http_headers,get_time_delta
-from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,ZipFile,LogOutput
+from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,ZipFile,LogOutput,isodate2datetime
 from waptutils import import_code,import_setup,force_utf8_no_bom,format_bytes,wget,merge_dict,remove_encoding_declaration,list_intersection
 from waptutils import _disable_file_system_redirection
 
@@ -299,21 +299,53 @@ class WaptBaseDB(BaseObjectClass):
     def initdb(self):
         pass
 
-    def set_param(self,name,value):
-        """Store permanently a (name/value) pair in database, replace existing one"""
-        with self:
-            self.db.execute('insert or replace into wapt_params(name,value,create_date) values (?,?,?)',(name,value,datetime2isodate()))
-
     def set_package_attribute(self,install_id,key,value):
         """Store permanently a (key/value) pair in database for a given package, replace existing one"""
         with self:
             self.db.execute('insert or replace into wapt_package_attributes(install_id,key,value,create_date) values (?,?,?,?)',(install_id,key,value,datetime2isodate()))
 
+    def set_param(self,name,value,ptype=None):
+        """Store permanently a (name/value) pair in database, replace existing one"""
+        with self:
+            if not value is None:
+                if ptype is None:
+                    if isinstance(value,(str,unicode)):
+                        ptype = 'str'
+                    # bool before int !
+                    elif isinstance(value,bool):
+                        ptype = 'bool'
+                    elif isinstance(value,int):
+                        ptype = 'int'
+                    elif isinstance(value,float):
+                        ptype = 'float'
+                    elif isinstance(value,datetime.datetime):
+                        ptype = 'datetime'
+                    else:
+                        ptype = 'json'
+
+                if ptype in ('int','float'):
+                    value = str(value)
+                elif ptype in ('json','bool'):
+                    value = jsondump(value)
+                elif ptype == 'datetime':
+                    value = datetime2isodate(value)
+            self.db.execute('insert or replace into wapt_params(name,value,create_date,ptype) values (?,?,?,?)',(name,value,datetime2isodate(),ptype))
+
     def get_param(self,name,default=None):
         """Retrieve the value associated with name from database"""
-        q = self.db.execute('select value from wapt_params where name=? order by create_date desc limit 1',(name,)).fetchone()
+        q = self.db.execute('select value,ptype from wapt_params where name=? order by create_date desc limit 1',(name,)).fetchone()
         if q:
-            return q[0]
+            (value,ptype) = q
+            if not value is None:
+                if ptype == 'int':
+                    value = int(value)
+                elif ptype == 'float':
+                    value = float(value)
+                elif ptype in ('json','bool'):
+                    value = json.loads(value)
+                elif ptype == 'datetime':
+                    value = isodate2datetime(value)
+            return value
         else:
             return default
 
@@ -404,7 +436,7 @@ class WaptBaseDB(BaseObjectClass):
                 raise
 
 class WaptSessionDB(WaptBaseDB):
-    curr_db_version = '20161103'
+    curr_db_version = '20180709'
 
     def __init__(self,username=''):
         super(WaptSessionDB,self).__init__(None)
@@ -439,6 +471,7 @@ class WaptSessionDB(WaptBaseDB):
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name  varchar(64),
           value text,
+          ptype varchar(10),
           create_date varchar(255)
           ) """)
 
@@ -541,7 +574,7 @@ PackageKey = namedtuple('package',('packagename','version'))
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
 
-    curr_db_version = '20180613'
+    curr_db_version = '20180709'
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
@@ -629,6 +662,7 @@ class WaptDB(WaptBaseDB):
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name  varchar(64),
           value text,
+          ptype varchar(10),
           create_date varchar(255)
           ) """)
 
@@ -3574,7 +3608,7 @@ class Wapt(BaseObjectClass):
             status["upgrades"] = upgrades['upgrade']+upgrades['install']+upgrades['additional']
             status["pending"] = upgrades
             logger.debug(u"store status in DB")
-            self.write_param('last_update_status',jsondump(status))
+            self.write_param('last_update_status',status)
             return status
         except Exception as e:
             logger.critical(u'Unable to store status of update in DB : %s'% ensure_unicode(e))
@@ -3589,7 +3623,7 @@ class Wapt(BaseObjectClass):
             dict: {running_tasks errors pending (dict) upgrades (list)}
 
         """
-        return json.loads(self.read_param('last_update_status'))
+        return self.read_param('last_update_status')
 
     def get_sources(self,package):
         """Download sources of package (if referenced in package as a https svn)
@@ -3793,7 +3827,7 @@ class Wapt(BaseObjectClass):
                     logger.debug(u'Storing last-modified header for repo_url %s : %s' % (repo.repo_url,repo.packages_date()))
                     self.waptdb.set_param('last-%s' % repo.repo_url[:59],repo.packages_date())
                     self.waptdb.set_param('last-url-%s' % repo.name, repo.repo_url)
-                    self.waptdb.set_param('last-discarded-%s' % repo.name, jsondump([p.as_key() for p in discarded]))
+                    self.waptdb.set_param('last-discarded-%s' % repo.name, [p.as_key() for p in discarded])
                     return last_modified
                 except Exception as e:
                     logger.info(u'Unable to update repository status of %s, error %s'%(repo._repo_url,e))
@@ -3949,7 +3983,7 @@ class Wapt(BaseObjectClass):
         result = {
             "added":   [ p for p in current if not p in previous],
             "removed": [ p for p in previous if not p in current],
-            "discarded_count": len(json.loads(self.read_param('last-discarded-wapt','[]'))),
+            "discarded_count": len(self.read_param('last-discarded-wapt',[])),
             "count" : len(current),
             "repos" : [r.repo_url for r in self.repositories],
             "upgrades": self.list_upgrade(),
@@ -4938,9 +4972,9 @@ class Wapt(BaseObjectClass):
                 'errors': list of packages not installed properly
                 'upgrades': list of packages which need to be upgraded
         """
-        status = json.loads(self.read_param('last_update_status','{"date": "", "running_tasks": [], "errors": [], "upgrades": []}'))
+        status = self.read_param('last_update_status',{"date": "", "running_tasks": [], "errors": [], "upgrades": []})
         status['runstatus'] = self.read_param('runstatus','')
-        return json.loads(jsondump(status))
+        return status
 
 
     def _get_package_status_rowid(self,package_entry=None,package_name=None):
@@ -4986,7 +5020,7 @@ class Wapt(BaseObjectClass):
         inv = {'uuid': self.host_uuid}
         inv['wapt_status'] = self.wapt_status()
         inv['audit_status'] = self.get_audit_status()
-        inv['status_revision'] = int(self.read_param('status_revision','0'))
+        inv['status_revision'] = self.read_param('status_revision',0)
 
         host_info = setuphelpers.host_info()
         # optionally forced dn
@@ -5046,7 +5080,7 @@ class Wapt(BaseObjectClass):
             # avoid sending data to the server if it has not been updated.
             try:
                 new_hashes = {}
-                old_hashes = json.loads(self.read_param('update_server_hashes','{}'))
+                old_hashes = self.read_param('update_server_hashes','{}')
 
                 inv = self._get_host_status_data(old_hashes, new_hashes, force=force)
                 data = jsondump(inv)
@@ -5061,7 +5095,7 @@ class Wapt(BaseObjectClass):
                 if result and result['success']:
                     # stores for next round.
                     old_hashes.update(new_hashes)
-                    self.write_param('last_update_server_hashes',jsondump(old_hashes))
+                    self.write_param('last_update_server_hashes',old_hashes)
                     self.write_param('last_update_server_status_timestamp',str(datetime.datetime.utcnow()))
                     logger.info(u'Status on server %s updated properly'%self.waptserver.server_url)
                 else:
@@ -5101,7 +5135,7 @@ class Wapt(BaseObjectClass):
         return self.waptserver and self.waptserver.available()
 
     def inc_status_revision(self,inc=1):
-        rev = int(self.read_param('status_revision','0'))+inc
+        rev = self.read_param('status_revision',0)+inc
         self.write_param('status_revision',rev)
         return rev
 
@@ -6458,11 +6492,11 @@ class Wapt(BaseObjectClass):
 
     def set_package_attribute(self,package,key,value):
         """Store in local db a key/value pair for later use"""
-        self.waptdb.set_param(package+'.'+key,jsondump(value))
+        self.waptdb.set_param(package+'.'+key,value)
 
     def get_package_attribute(self,package,key,default_value=None):
         """Store in local db a key/value pair for later use"""
-        return json.loads(self.waptdb.get_param(package+'.'+key,default_value))
+        return self.waptdb.get_param(package+'.'+key,default_value)
 
     def read_param(self,name,default=None):
         """read a param value from local db
