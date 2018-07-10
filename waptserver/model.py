@@ -753,9 +753,9 @@ class ColumnDef(object):
     def as_metadata(self):
         result = dict()
         if isinstance(self.field,Function):
-            result = {'name':self.field._alias or self.field.name,'org_name':self.field.name,'type':self.field._node_type}
+            result = {'name':getattr(self.field,'_alias',self.field.name),'org_name':self.field.name,'type':self.field._node_type}
         else:
-            result = {'name':self.field._alias or self.field.name,
+            result = {'name':getattr(self.field,'_alias',self.field.name),
                 'field_name':self.field.name,
                 'type':self.field.field_type,
                 'table_name':self.field.model._meta.table_name,
@@ -810,24 +810,29 @@ class TableProvider(object):
         self.columns = columns
         self.where = where
 
-        if not self.model and self.query:
+        if (not self.model or not self.columns) and self.query:
             (fields,joins) = self.query.get_query_meta()
-            if len(joins) != 1:
-                raise Exception('Unable to guess model from query, please provide a model argument')
-            self.model = joins.keys()[0]
+            if not self.model:
+                if len(joins) != 1:
+                    raise Exception('Unable to guess model from query, please provide a model argument')
+                self.model = joins.keys()[0]
+            if not self.columns:
+                self.columns = []
+                for field in fields:
+                    column = ColumnDef(field)
+                    self.columns.append(column)
 
         if not self.query and not self.model:
             raise Exception('Either query or model must be supplied')
+
+        if not self.columns and self.model:
+            if not self.columns:
+                self.columns = []
+                for field in self.model._meta.sorted_fields:
+                    column = ColumnDef(field)
+                    self.columns.append(column)
+
         self._columns_idx = None
-
-
-    def _init_columns_from_query(self,query):
-        if self.columns is None:
-            self.columns = []
-        (fields,joins) = query.get_query_meta()
-        for field in fields:
-            column = ColumnDef(field)
-            self.columns.append(column)
 
     def get_data(self,start=0,count=None):
         """Build query, retrieve rows"""
@@ -839,13 +844,10 @@ class TableProvider(object):
             if self.where:
                 query = query.where(self.where)
 
-        if not self.columns:
-            self._init_columns_from_query(query)
-
         columns_names = [column.field.column_name for column in self.columns]
         rows = []
         for row in query.dicts():
-            rows.append([column.to_client(row[column.field._alias or column.field.column_name]) for column in self.columns])
+            rows.append([column.to_client(row[getattr(column.field,'_alias',column.field.name)]) for column in self.columns])
 
         return dict(
             metadata = [c.as_metadata() for c in self.columns],
@@ -872,7 +874,7 @@ class TableProvider(object):
         return result
 
     def _record_values_from_values(self,new_values={}):
-        """Return a dict for the insert/update into database from supplkied dict
+        """Return a dict for the insert/update into database from supplied dict
         filtering out non updateable values.
         """
         result = {}
