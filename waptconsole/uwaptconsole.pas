@@ -4599,11 +4599,6 @@ procedure TVisWaptGUI.GridWSUSForbiddenWindowsUpdatesFreeNode(
 begin
 end;
 
-procedure TVisWaptGUI.GridWSUSAllowedWindowsUpdatesFreeNode(
-  Sender: TBaseVirtualTree; Node: PVirtualNode);
-begin
-end;
-
 procedure TVisWaptGUI.GridWSUSAllowedClassificationsFreeNode(
   Sender: TBaseVirtualTree; Node: PVirtualNode);
 begin
@@ -4683,14 +4678,6 @@ begin
 end;
 
 procedure TVisWaptGUI.ActWSUSDowloadWSUSScanExecute(Sender: TObject);
-begin
-end;
-
-procedure TVisWaptGUI.ActWSUSRefreshCabHistoryExecute(Sender: TObject);
-begin
-end;
-
-procedure TVisWaptGUI.ActWSUSSaveBuildRulesExecute(Sender: TObject);
 begin
 end;
 
@@ -4774,6 +4761,23 @@ procedure TVisWaptGUI.TimerWUALoadWinUpdatesTimer(Sender: TObject);
 begin
 end;
 
+procedure TVisWaptGUI.ActWSUSRefreshExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActWSUSSaveBuildRulesExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.CBWUClassificationsClick(Sender: TObject);
+begin
+end;
+
+
+procedure TVisWaptGUI.GridWUUpdatesFreeNode(
+  Sender: TBaseVirtualTree; Node: PVirtualNode);
+begin
+end;
 
 {$endif}
 
