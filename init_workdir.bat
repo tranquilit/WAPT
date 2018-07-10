@@ -18,11 +18,8 @@ xcopy /I /E /F /Y c:\python27\libs libs
 xcopy /I /E /F /Y c:\python27\DLLs DLLs
 xcopy /I /E /F /Y /EXCLUDE:libexcludes.txt c:\python27\lib lib
 
-scripts\python.exe -m pip install --upgrade pip distribute wheel virtualenv six
+scripts\python.exe -m pip install --upgrade pip distribute wheel virtualenv six requests
 
-REM get  pywin32-220.win32-py2.7.exe from internet
-waptpython -c "from waptutils import wget; from subprocess import check_output; pywin32=wget('https://downloads.sourceforge.net/project/pywin32/pywin32/Build%%20221/pywin32-221.win32-py2.7.exe?r=&ts=1508231209&use_mirror=freefr',resume=True,md5='90a3853325c2c9322c5cc2d09682cfe4'); print check_output('Scripts\easy_install.exe ""%%s""' %% pywin32,shell=True)"
-Scripts\pip.exe install -r requirements.txt -r requirements-windows.txt
 
 copy /Y lib\site-packages\pywin32-220-py2.7-win32.egg\py*.dll .
 copy /Y c:\windows\SysWOW64\python27.dll .
@@ -32,6 +29,11 @@ copy /Y c:\windows\SysWOW64\pywintypes27.dll .
 
 copy /Y Scripts\python.exe waptpython.exe
 copy /Y Scripts\pythonw.exe waptpythonw.exe
+
+REM get  pywin32-220.win32-py2.7.exe from internet
+waptpython -c "from waptutils import wget; from subprocess import check_output; pywin32=wget('https://downloads.sourceforge.net/project/pywin32/pywin32/Build%%20221/pywin32-221.win32-py2.7.exe?r=&ts=1508231209&use_mirror=freefr',resume=True,md5='90a3853325c2c9322c5cc2d09682cfe4'); print check_output('Scripts\easy_install.exe ""%%s""' %% pywin32,shell=True)"
+
+Scripts\pip.exe install -r requirements.txt -r requirements-windows.txt
 
 REM Patch memory leak
 copy /Y utils\patch-socketio-client-2\__init__.py  lib\site-packages\socketIO_client\
