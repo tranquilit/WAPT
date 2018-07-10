@@ -331,11 +331,13 @@ class WaptBaseDB(BaseObjectClass):
                     value = datetime2isodate(value)
             self.db.execute('insert or replace into wapt_params(name,value,create_date,ptype) values (?,?,?,?)',(name,value,datetime2isodate(),ptype))
 
-    def get_param(self,name,default=None):
+    def get_param(self,name,default=None,ptype=None):
         """Retrieve the value associated with name from database"""
         q = self.db.execute('select value,ptype from wapt_params where name=? order by create_date desc limit 1',(name,)).fetchone()
         if q:
-            (value,ptype) = q
+            (value,sptype) = q
+            if ptype is None:
+                ptype = sptype
             if not value is None:
                 if ptype == 'int':
                     value = int(value)
@@ -3623,7 +3625,7 @@ class Wapt(BaseObjectClass):
             dict: {running_tasks errors pending (dict) upgrades (list)}
 
         """
-        return self.read_param('last_update_status')
+        return self.read_param('last_update_status',ptype='json')
 
     def get_sources(self,package):
         """Download sources of package (if referenced in package as a https svn)
@@ -3983,7 +3985,7 @@ class Wapt(BaseObjectClass):
         result = {
             "added":   [ p for p in current if not p in previous],
             "removed": [ p for p in previous if not p in current],
-            "discarded_count": len(self.read_param('last-discarded-wapt',[])),
+            "discarded_count": len(self.read_param('last-discarded-wapt',[],'json')),
             "count" : len(current),
             "repos" : [r.repo_url for r in self.repositories],
             "upgrades": self.list_upgrade(),
@@ -4972,7 +4974,7 @@ class Wapt(BaseObjectClass):
                 'errors': list of packages not installed properly
                 'upgrades': list of packages which need to be upgraded
         """
-        status = self.read_param('last_update_status',{"date": "", "running_tasks": [], "errors": [], "upgrades": []})
+        status = self.read_param('last_update_status',{"date": "", "running_tasks": [], "errors": [], "upgrades": []},ptype='json')
         status['runstatus'] = self.read_param('runstatus','')
         return status
 
@@ -5020,7 +5022,7 @@ class Wapt(BaseObjectClass):
         inv = {'uuid': self.host_uuid}
         inv['wapt_status'] = self.wapt_status()
         inv['audit_status'] = self.get_audit_status()
-        inv['status_revision'] = self.read_param('status_revision',0)
+        inv['status_revision'] = self.read_param('status_revision',0,'int')
 
         host_info = setuphelpers.host_info()
         # optionally forced dn
@@ -5080,7 +5082,7 @@ class Wapt(BaseObjectClass):
             # avoid sending data to the server if it has not been updated.
             try:
                 new_hashes = {}
-                old_hashes = self.read_param('update_server_hashes','{}')
+                old_hashes = self.read_param('update_server_hashes',{},ptype='json')
 
                 inv = self._get_host_status_data(old_hashes, new_hashes, force=force)
                 data = jsondump(inv)
@@ -5096,13 +5098,14 @@ class Wapt(BaseObjectClass):
                     # stores for next round.
                     old_hashes.update(new_hashes)
                     self.write_param('last_update_server_hashes',old_hashes)
-                    self.write_param('last_update_server_status_timestamp',str(datetime.datetime.utcnow()))
-                    logger.info(u'Status on server %s updated properly'%self.waptserver.server_url)
+                    self.write_param('last_update_server_status_timestamp',datetime.datetime.utcnow())
+                    logger.info(u'Status on server %s updated properly' % self.waptserver.server_url)
                 else:
                     logger.info(u'Error updating Status on server %s: %s' % (self.waptserver.server_url,result and result['msg'] or 'No message'))
 
             except Exception as e:
                 logger.warning(u'Unable to update server status : %s' % ensure_unicode(e))
+                logger.debug(traceback.format_exc())
 
             # force register if computer has not been registered or hostname has changed
             # this should work only if computer can authenticate on wapt server using
@@ -5135,7 +5138,7 @@ class Wapt(BaseObjectClass):
         return self.waptserver and self.waptserver.available()
 
     def inc_status_revision(self,inc=1):
-        rev = self.read_param('status_revision',0)+inc
+        rev = self.read_param('status_revision',0,ptype='int')+inc
         self.write_param('status_revision',rev)
         return rev
 
@@ -6498,13 +6501,13 @@ class Wapt(BaseObjectClass):
         """Store in local db a key/value pair for later use"""
         return self.waptdb.get_param(package+'.'+key,default_value)
 
-    def read_param(self,name,default=None):
+    def read_param(self,name,default=None,ptype=None):
         """read a param value from local db
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> wapt.read_param('db_version')
         u'20140410'
         """
-        return self.waptdb.get_param(name,default)
+        return self.waptdb.get_param(name,default,ptype)
 
     def delete_param(self,name):
         """Remove a key from local db"""

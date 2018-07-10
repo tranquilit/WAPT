@@ -1633,10 +1633,11 @@ msgctxt "tviswaptgui.actwsusdowloadwsusscan.caption"
 msgid "Download WSUSScan cab from Microsoft Web site"
 msgstr "WSUSScan kann auf der Seite von Microsoft Web gedownloadet werden"
 
-#: tviswaptgui.actwsusrefreshcabhistory.caption
-msgctxt "tviswaptgui.actwsusrefreshcabhistory.caption"
-msgid "Refresh WSUSscan cab history"
-msgstr "WSUScan cab Geschichte aktualisieren"
+#: tviswaptgui.actwsusrefresh.caption
+#, fuzzy
+msgctxt "tviswaptgui.actwsusrefresh.caption"
+msgid "Refresh"
+msgstr "Aktualisieren"
 
 #: tviswaptgui.actwsussavebuildrules.caption
 msgid "Save and build rules package"
@@ -1741,16 +1742,8 @@ msgid "Save"
 msgstr "Speichern"
 
 #: tviswaptgui.actwuashowmsupdateshelp.caption
-msgid "ActWUAShowMSUpdatesHelp"
+msgid "Show MS Update Help"
 msgstr ""
-
-#: tviswaptgui.bitbtn10.caption
-msgid "Refresh Updates listing retrieval history"
-msgstr "Updates Auflistung Abruf Geschichte aktualisieren"
-
-#: tviswaptgui.bitbtn9.caption
-msgid "Download Updates listing from Microsoft"
-msgstr "Updates auf der Auflistung von Microsoft herunterladen"
 
 #: tviswaptgui.butsearchpackages1.caption
 msgctxt "tviswaptgui.butsearchpackages1.caption"
@@ -1868,6 +1861,7 @@ msgid "Show debug"
 msgstr "Zeige Fehler"
 
 #: tviswaptgui.cbwuacriticalonly.caption
+msgctxt "tviswaptgui.cbwuacriticalonly.caption"
 msgid "Critical only"
 msgstr "Nur kritisch"
 
@@ -1883,6 +1877,12 @@ msgstr "Installiert"
 msgctxt "TVISWAPTGUI.CBWUAPENDING.CAPTION"
 msgid "Pending"
 msgstr "Ausstehend"
+
+#: tviswaptgui.cbwucritical.caption
+#, fuzzy
+msgctxt "tviswaptgui.cbwucritical.caption"
+msgid "Critical only"
+msgstr "Nur kritisch"
 
 #: tviswaptgui.edrun.text
 msgid "mywapt.update()"
@@ -1907,11 +1907,6 @@ msgstr "Aktueller Task"
 msgid "IP address"
 msgstr "IP Adresse"
 
-#: tviswaptgui.label10.caption
-#| msgid "Label10"
-msgid "Allowed Windows Updates Classifications"
-msgstr "Windows Updates Klassifikation erlauben"
-
 #: tviswaptgui.label11.caption
 msgid "UUID"
 msgstr ""
@@ -1932,10 +1927,6 @@ msgstr "Filter :"
 msgctxt "tviswaptgui.label15.caption"
 msgid "Groups"
 msgstr "Gruppen"
-
-#: tviswaptgui.label18.caption
-msgid "Allowed Windows Updates"
-msgstr "Windows Updates erlauben"
 
 #: tviswaptgui.label19.caption
 msgid "Forbidden Windows Updates"
@@ -2003,6 +1994,27 @@ msgstr ""
 #: tviswaptgui.menuitem10.caption
 msgid "Save ..."
 msgstr "Speichern..."
+
+#: tviswaptgui.menuitem103checkall.caption
+msgctxt "tviswaptgui.menuitem103checkall.caption"
+msgid "Check all"
+msgstr ""
+
+#: tviswaptgui.menuitem103checkall.hint
+#, fuzzy
+msgctxt "tviswaptgui.menuitem103checkall.hint"
+msgid "Add the WAPT group packages matching the ADS groups of the machines"
+msgstr "Gruppenpakete zu den passenden Gruppenmaschine der ADS hinzufügen"
+
+#: tviswaptgui.menuitem104.caption
+msgctxt "tviswaptgui.menuitem104.caption"
+msgid "Uncheck all"
+msgstr ""
+
+#: tviswaptgui.menuitem105uncheclall.caption
+msgctxt "tviswaptgui.menuitem105uncheclall.caption"
+msgid "Uncheck all"
+msgstr ""
 
 #: tviswaptgui.menuitem11.caption
 msgid "Save as"
@@ -2072,12 +2084,13 @@ msgstr "Öffnen..."
 msgid "Reopen"
 msgstr "Wiederöffnen"
 
-#: tviswaptgui.menuitem91.caption
-msgid "New Item1"
-msgstr ""
-
 #: tviswaptgui.menuitem95.caption
 msgid "Information about KB on MS Web site"
+msgstr ""
+
+#: tviswaptgui.menuitemproductscheckall.caption
+msgctxt "tviswaptgui.menuitemproductscheckall.caption"
+msgid "Check all"
 msgstr ""
 
 #: tviswaptgui.odselectinstaller.title
@@ -2088,6 +2101,10 @@ msgstr ""
 msgid "Select WAPT file"
 msgstr "WAPT Datei auswählen"
 
+#: tviswaptgui.panel2.caption
+msgid "Panel2"
+msgstr ""
+
 #: tviswaptgui.panel6.caption
 msgid "Panel6"
 msgstr "Forum6"
@@ -2096,6 +2113,10 @@ msgstr "Forum6"
 msgctxt "tviswaptgui.panel7.caption"
 msgid "Panel7"
 msgstr "Forum7"
+
+#: tviswaptgui.panwualeft.caption
+msgid "PanWUALeft"
+msgstr ""
 
 #: tviswaptgui.pggroups.caption
 msgid "Bundles"

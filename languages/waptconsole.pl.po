@@ -1541,9 +1541,9 @@ msgctxt "tviswaptgui.actwsusdowloadwsusscan.caption"
 msgid "Download WSUSScan cab from Microsoft Web site"
 msgstr ""
 
-#: tviswaptgui.actwsusrefreshcabhistory.caption
-msgctxt "tviswaptgui.actwsusrefreshcabhistory.caption"
-msgid "Refresh WSUSscan cab history"
+#: tviswaptgui.actwsusrefresh.caption
+msgctxt "tviswaptgui.actwsusrefresh.caption"
+msgid "Refresh"
 msgstr ""
 
 #: tviswaptgui.actwsussavebuildrules.caption
@@ -1643,15 +1643,7 @@ msgid "Save"
 msgstr ""
 
 #: tviswaptgui.actwuashowmsupdateshelp.caption
-msgid "ActWUAShowMSUpdatesHelp"
-msgstr ""
-
-#: tviswaptgui.bitbtn10.caption
-msgid "Refresh Updates listing retrieval history"
-msgstr ""
-
-#: tviswaptgui.bitbtn9.caption
-msgid "Download Updates listing from Microsoft"
+msgid "Show MS Update Help"
 msgstr ""
 
 #: tviswaptgui.butsearchpackages1.caption
@@ -1768,6 +1760,7 @@ msgid "Show debug"
 msgstr ""
 
 #: tviswaptgui.cbwuacriticalonly.caption
+msgctxt "tviswaptgui.cbwuacriticalonly.caption"
 msgid "Critical only"
 msgstr ""
 
@@ -1782,6 +1775,11 @@ msgstr ""
 #: tviswaptgui.cbwuapending.caption
 msgctxt "TVISWAPTGUI.CBWUAPENDING.CAPTION"
 msgid "Pending"
+msgstr ""
+
+#: tviswaptgui.cbwucritical.caption
+msgctxt "tviswaptgui.cbwucritical.caption"
+msgid "Critical only"
 msgstr ""
 
 #: tviswaptgui.edrun.text
@@ -1807,10 +1805,6 @@ msgstr ""
 msgid "IP address"
 msgstr ""
 
-#: tviswaptgui.label10.caption
-msgid "Allowed Windows Updates Classifications"
-msgstr ""
-
 #: tviswaptgui.label11.caption
 msgid "UUID"
 msgstr ""
@@ -1828,10 +1822,6 @@ msgstr ""
 #: tviswaptgui.label15.caption
 msgctxt "tviswaptgui.label15.caption"
 msgid "Groups"
-msgstr ""
-
-#: tviswaptgui.label18.caption
-msgid "Allowed Windows Updates"
 msgstr ""
 
 #: tviswaptgui.label19.caption
@@ -1895,6 +1885,26 @@ msgstr ""
 
 #: tviswaptgui.menuitem10.caption
 msgid "Save ..."
+msgstr ""
+
+#: tviswaptgui.menuitem103checkall.caption
+msgctxt "tviswaptgui.menuitem103checkall.caption"
+msgid "Check all"
+msgstr ""
+
+#: tviswaptgui.menuitem103checkall.hint
+msgctxt "tviswaptgui.menuitem103checkall.hint"
+msgid "Add the WAPT group packages matching the ADS groups of the machines"
+msgstr ""
+
+#: tviswaptgui.menuitem104.caption
+msgctxt "tviswaptgui.menuitem104.caption"
+msgid "Uncheck all"
+msgstr ""
+
+#: tviswaptgui.menuitem105uncheclall.caption
+msgctxt "tviswaptgui.menuitem105uncheclall.caption"
+msgid "Uncheck all"
 msgstr ""
 
 #: tviswaptgui.menuitem11.caption
@@ -1963,12 +1973,13 @@ msgstr ""
 msgid "Reopen"
 msgstr ""
 
-#: tviswaptgui.menuitem91.caption
-msgid "New Item1"
-msgstr ""
-
 #: tviswaptgui.menuitem95.caption
 msgid "Information about KB on MS Web site"
+msgstr ""
+
+#: tviswaptgui.menuitemproductscheckall.caption
+msgctxt "tviswaptgui.menuitemproductscheckall.caption"
+msgid "Check all"
 msgstr ""
 
 #: tviswaptgui.odselectinstaller.title
@@ -1979,6 +1990,10 @@ msgstr ""
 msgid "Select WAPT file"
 msgstr ""
 
+#: tviswaptgui.panel2.caption
+msgid "Panel2"
+msgstr ""
+
 #: tviswaptgui.panel6.caption
 msgid "Panel6"
 msgstr ""
@@ -1986,6 +2001,10 @@ msgstr ""
 #: tviswaptgui.panel7.caption
 msgctxt "tviswaptgui.panel7.caption"
 msgid "Panel7"
+msgstr ""
+
+#: tviswaptgui.panwualeft.caption
+msgid "PanWUALeft"
 msgstr ""
 
 #: tviswaptgui.pggroups.caption

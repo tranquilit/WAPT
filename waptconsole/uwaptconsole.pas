@@ -9,7 +9,7 @@ uses
   Dialogs, Buttons, LazUTF8, SynEdit,
   SynHighlighterPython, vte_json, vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, jsonparser,
   superobject, VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading, IdComponent,
-  DefaultTranslator, IniPropStorage, DBGrids, ShellCtrls, GetText,
+  DefaultTranslator, IniPropStorage, DBGrids, ShellCtrls, CheckLst, GetText,
   uWaptConsoleRes, db, BufDataset, SearchEdit, MenuButton, tisstrings;
 
 type
@@ -69,18 +69,14 @@ type
     ActTriggerWaptwua_install: TAction;
     ActTriggerWaptwua_download: TAction;
     ActTriggerWaptwua_scan: TAction;
-    ActWSUSRefreshCabHistory: TAction;
+    ActWSUSRefresh: TAction;
     ApplicationProperties1: TApplicationProperties;
     BitBtn1: TBitBtn;
     BitBtn10: TBitBtn;
-    BitBtn11: TBitBtn;
-    BitBtn13: TBitBtn;
-    BitBtn15: TBitBtn;
     BitBtn2: TBitBtn;
     BitBtn9: TBitBtn;
     btAddGroup: TBitBtn;
     ButHostSearch: TBitBtn;
-    ButHostSearch1: TBitBtn;
     ButPackagesUpdate: TBitBtn;
     ButPackagesUpdate1: TBitBtn;
     butSearchGroups: TBitBtn;
@@ -105,6 +101,9 @@ type
     cbSearchSoftwares: TCheckBox;
     cbADSite: TComboBox;
     cbNewestOnly: TCheckBox;
+    CBWUClassifications: TCheckListBox;
+    cbWUCritical: TCheckBox;
+    CBWUProducts: TCheckListBox;
     DBOrgUnits: TBufDataset;
     DBOrgUnitsDepth: TLongintField;
     DBOrgUnitsDescription: TStringField;
@@ -113,6 +112,7 @@ type
     DBOrgUnitsImageID: TLongintField;
     DBOrgUnitsParentDN: TStringField;
     DBOrgUnitsParentID: TLongintField;
+    GridWUUpdates: TSOGrid;
     Label22: TLabel;
     EdSearchOrgUnits: TEdit;
     EdSearchPackage1: TSearchEdit;
@@ -120,6 +120,10 @@ type
     MenuItem100: TMenuItem;
     MenuItem101: TMenuItem;
     MenuItem102: TMenuItem;
+    MenuItem103CheckAll: TMenuItem;
+    MenuItem105UncheclAll: TMenuItem;
+    MenuItemProductsCheckAll: TMenuItem;
+    MenuItem104: TMenuItem;
     MenuItem88: TMenuItem;
     MenuItem89: TMenuItem;
     MenuItem90: TMenuItem;
@@ -132,8 +136,13 @@ type
     MenuItem97: TMenuItem;
     MenuItem98: TMenuItem;
     MenuItem99: TMenuItem;
+    PanWUALeft: TPanel;
+    Panel2: TPanel;
     Panel8: TPanel;
+    PanWUAMain: TPanel;
+    PanWUASearch: TPanel;
     PgNetworksConfig: TTabSheet;
+    PopupWUAClassifications: TPopupMenu;
     PopupMenuOrgUnits: TPopupMenu;
     PopupHostWUAUpdates: TPopupMenu;
     SOWaptServer: TSOConnection;
@@ -155,21 +164,16 @@ type
     EdUser: TEdit;
     GridhostInventory: TVirtualJSONInspector;
     GridHosts: TSOGrid;
-    GridWSUSAllowedWindowsUpdates: TSOGrid;
     GridWSUSScan: TSOGrid;
-    GridWSUSAllowedClassifications: TSOGrid;
-    GridWSUSForbiddenWindowsUpdates: TSOGrid;
     ActionsImages24: TImageList;
     Image1: TImage;
     Image2: TImage;
     Image3: TImage;
     Image4: TImage;
     Label1: TLabel;
-    Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
     Label15: TLabel;
-    Label18: TLabel;
     Label19: TLabel;
     Label2: TLabel;
     Label20: TLabel;
@@ -229,7 +233,6 @@ type
     MenuItem73: TMenuItem;
     pgWindowsUpdates: TTabSheet;
     PopupDelete: TPopupMenu;
-    PopupMenu1: TPopupMenu;
     Splitter6: TSplitter;
     Splitter7: TSplitter;
     PgReports: TTabSheet;
@@ -294,7 +297,7 @@ type
     ActSearchHost: TAction;
     ActPackagesUpdate: TAction;
     ActSearchPackage: TAction;
-    ActionList1: TActionList;
+    MainActionList: TActionList;
     butInitWapt: TBitBtn;
     butRun: TBitBtn;
     butSearchPackages: TBitBtn;
@@ -490,7 +493,7 @@ type
     procedure ActTriggerWaptwua_installExecute(Sender: TObject);
     procedure ActTriggerWaptwua_scanExecute(Sender: TObject);
     procedure ActWSUSDowloadWSUSScanExecute(Sender: TObject);
-    procedure ActWSUSRefreshCabHistoryExecute(Sender: TObject);
+    procedure ActWSUSRefreshExecute(Sender: TObject);
     procedure ActWSUSSaveBuildRulesExecute(Sender: TObject);
     procedure ActWSUSSaveBuildRulesUpdate(Sender: TObject);
     procedure ActWUAAddAllowedClassificationExecute(Sender: TObject);
@@ -560,6 +563,7 @@ type
     procedure cbShowLogClick(Sender: TObject);
     procedure cbADSiteDropDown(Sender: TObject);
     procedure cbWUAPendingChange(Sender: TObject);
+    procedure CBWUClassificationsClick(Sender: TObject);
     procedure cbWUCriticalClick(Sender: TObject);
     procedure CBWUProductsShowAllClick(Sender: TObject);
     procedure CheckBoxMajChange(Sender: TObject);
@@ -658,19 +662,27 @@ type
       var ImageList: TCustomImageList);
     procedure GridWSUSAllowedClassificationsFreeNode(Sender: TBaseVirtualTree;
       Node: PVirtualNode);
-    procedure GridWSUSAllowedWindowsUpdatesFreeNode(Sender: TBaseVirtualTree;
+    procedure GridWUUpdatesFreeNode(Sender: TBaseVirtualTree;
       Node: PVirtualNode);
     procedure GridWSUSForbiddenWindowsUpdatesFreeNode(Sender: TBaseVirtualTree;
       Node: PVirtualNode);
     procedure HostPagesChange(Sender: TObject);
     procedure Image1Click(Sender: TObject);
     procedure MainPagesChange(Sender: TObject);
+    procedure MenuItem103CheckAllClick(Sender: TObject);
+    procedure MenuItem104Click(Sender: TObject);
+    procedure MenuItem105UncheclAllClick(Sender: TObject);
     procedure MenuItem27Click(Sender: TObject);
     procedure MenuItem74Click(Sender: TObject);
+    procedure MenuItemProductsCheckAllClick(Sender: TObject);
     procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
   private
     { private declarations }
     CurrentVisLoading: TVisLoading;
+    FWUAClassifications: ISuperObject;
+    FWUAProducts: ISuperObject;
+    FWUAWinUpdates: ISuperObject;
+    FWUAWinUpdatesLookup: ISuperObject;
     procedure DoProgress(ASender: TObject);
     procedure FillcbADSiteDropDown;
     procedure FillcbGroups;
@@ -680,6 +692,9 @@ type
     function FilterHostWinUpdates(wua: ISuperObject): ISuperObject;
     function FilterWindowsUpdate(wua: ISuperObject): ISuperObject;
     function FilterWinProducts(products: ISuperObject): ISuperObject;
+    function GetWUAClassifications: ISuperObject;
+    function GetWUAProducts: ISuperObject;
+    function GetWUAWinUpdates: ISuperObject;
     function OneHostHasConnectedIP: Boolean;
     function OneHostIsConnected: Boolean;
     function GetSelectedOrgUnits: TDynStringArray;
@@ -703,13 +718,6 @@ type
   public
     { public declarations }
     MainRepoUrl, WaptServer, TemplatesRepoUrl: string;
-
-    {$ifdef wsus}
-    WUAProducts : ISuperObject;
-    WUAWinUpdates : ISuperObject;
-    windows_updates_rulesUpdated: Boolean;
-    {$endif}
-
     HostsLimit: Integer;
 
     AppLoading:Boolean;
@@ -720,6 +728,10 @@ type
     FilteredOrgUnits:TDynStringArray;
 
     PollTasksThread: TPollTasksThread;
+
+    property WUAClassifications : ISuperObject read GetWUAClassifications;
+    property WUAProducts : ISuperObject read GetWUAProducts;
+    property WUAWinUpdates : ISuperObject read GetWUAWinUpdates;
 
     constructor Create(TheOwner: TComponent); override;
 
@@ -1569,15 +1581,9 @@ begin
   args['ids'] := ids;
   res := WAPTServerJsonGet('api/v2/wsusscan2_history?uuid=%S',[Join(',',ids)],'DELETE');
   if res.B['success'] then
-    ActWSUSRefreshCabHistory.Execute
+    ActWSUSRefresh.Execute
   else
     ShowMessageFmt(rsErrorWithMessage,[res.S['error']]);
-end;
-
-procedure TVisWaptGUI.TimerWUALoadWinUpdatesTimer(Sender: TObject);
-begin
-  TimerWUALoadWinUpdates.Enabled:=False;
-  ActWUALoadUpdates.Execute;
 end;
 
 procedure TVisWaptGUI.ActAddGroupExecute(Sender: TObject);
@@ -2841,7 +2847,7 @@ begin
     soresult := WAPTServerJsonGet('api/v2/windows_updates?%s',[soutils.Join('&', urlParams)]);
     winupdates := soResult['result'];
 
-    GridWSUSAllowedWindowsUpdates.Data := winupdates;
+    GridWUUpdates.Data := winupdates;
 
   finally
     Screen.Cursor:=crDefault;
@@ -4366,14 +4372,11 @@ begin
   else
   begin
     if (TSOGridColumn(TSOGrid(Sender).Header.Columns[Column]).PropertyName='changetime') then
-        CellText := Copy(StrReplaceChar(CellText,'T',' '),1,19);
-
-    if (TSOGridColumn(TSOGrid(Sender).Header.Columns[Column]).PropertyName='kbids') then
-      CellText := 'KB'+soutils.Join(',KB', CellData);
-
-    {if (CellData <> nil) and (CellData.DataType = stArray) then
-      CellText := soutils.Join(',', CellData);}
-
+        CellText := Copy(StrReplaceChar(CellText,'T',' '),1,19)
+    else if (TSOGridColumn(TSOGrid(Sender).Header.Columns[Column]).PropertyName='kbids') then
+      CellText := 'KB'+soutils.Join(',KB', CellData)
+    else if (CellData <> nil) and (CellData.DataType = stArray) then
+      CellText := soutils.Join(',', CellData);
   end;
 
 end;
@@ -4491,10 +4494,6 @@ begin
 end;
 
 procedure TVisWaptGUI.MainPagesChange(Sender: TObject);
-{$ifdef wsus}
-var
-  wsus_restrictions,wsus_rules,WUAClassifications:ISuperObject;
-{$endif}
 begin
   if MainPages.ActivePage = pgInventory then
   try
@@ -4525,27 +4524,8 @@ begin
     if not SrcNetworks.Active then
       SrcNetworks.open;
   end
-  {$ifdef wsus}
   else if MainPages.ActivePage = pgWindowsUpdates then
-  begin
-    WUAClassifications := WAPTServerJsonGet('api/v2/windows_updates_classifications',[])['result'];
-    ActWSUSRefreshCabHistory.Execute;
-  end
-
-  {$ifdef wsus2}
-  else if MainPages.ActivePage = pgWUAProducts then
-  begin
-    WUAProducts := WAPTServerJsonGet('api/v2/windows_products',[])['result'];
-    GridWinproducts.Data := FilterWinproducts(WUAProducts);
-    ActWUALoadUpdates.Execute;
-  end
-  else if MainPages.ActivePage = pgWUABundles then
-  begin
-      wsus_rules := WAPTServerJsonGet('api/v2/windows_updates_rules',[])['result'];
-      GridWUAGroups.data := wsus_rules;
-  end}
-  {$endif wsus2}
-  {$endif wsus}
+    ActWSUSRefresh.Execute;
 end;
 
 function TVisWaptGUI.updateprogress(receiver: TObject;
@@ -4757,6 +4737,41 @@ end;
 procedure TVisWaptGUI.ActRunCleanMgrExecute(Sender: TObject);
 begin
 
+end;
+
+function TVisWaptGUI.GetWUAClassifications: ISuperObject;
+begin
+
+end;
+
+function TVisWaptGUI.GetWUAProducts: ISuperObject;
+begin
+
+end;
+
+function TVisWaptGUI.GetWUAWinUpdates: ISuperObject;
+begin
+
+end;
+
+procedure TVisWaptGUI.MenuItem103CheckAllClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.MenuItem104Click(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.MenuItem105UncheclAllClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.MenuItemProductsCheckAllClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.TimerWUALoadWinUpdatesTimer(Sender: TObject);
+begin
 end;
 
 

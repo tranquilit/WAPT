@@ -1572,10 +1572,11 @@ msgctxt "tviswaptgui.actwsusdowloadwsusscan.caption"
 msgid "Download WSUSScan cab from Microsoft Web site"
 msgstr "Télécharger le cab WSUSScan depuis le site de Microsoft"
 
-#: tviswaptgui.actwsusrefreshcabhistory.caption
-msgctxt "tviswaptgui.actwsusrefreshcabhistory.caption"
-msgid "Refresh WSUSscan cab history"
-msgstr "Actualiser l'historique des WSUSscan cab"
+#: tviswaptgui.actwsusrefresh.caption
+#, fuzzy
+msgctxt "tviswaptgui.actwsusrefresh.caption"
+msgid "Refresh"
+msgstr "Actualiser"
 
 #: tviswaptgui.actwsussavebuildrules.caption
 msgid "Save and build rules package"
@@ -1674,16 +1675,8 @@ msgid "Save"
 msgstr "Enregistrer"
 
 #: tviswaptgui.actwuashowmsupdateshelp.caption
-msgid "ActWUAShowMSUpdatesHelp"
-msgstr ""
-
-#: tviswaptgui.bitbtn10.caption
-msgid "Refresh Updates listing retrieval history"
-msgstr "Actualiser l'historique des Listes de Mises à jour"
-
-#: tviswaptgui.bitbtn9.caption
-msgid "Download Updates listing from Microsoft"
-msgstr "Télécharger une liste de mises à jour."
+msgid "Show MS Update Help"
+msgstr "Voir l'information MS sur la mise à jour."
 
 #: tviswaptgui.butsearchpackages1.caption
 msgctxt "tviswaptgui.butsearchpackages1.caption"
@@ -1803,6 +1796,7 @@ msgid "Show debug"
 msgstr "Afficher les informations de débogage"
 
 #: tviswaptgui.cbwuacriticalonly.caption
+msgctxt "tviswaptgui.cbwuacriticalonly.caption"
 msgid "Critical only"
 msgstr "Critiques seulement"
 
@@ -1818,6 +1812,12 @@ msgstr "Installées"
 msgctxt "tviswaptgui.cbwuapending.caption"
 msgid "Pending"
 msgstr "En attente"
+
+#: tviswaptgui.cbwucritical.caption
+#, fuzzy
+msgctxt "tviswaptgui.cbwucritical.caption"
+msgid "Critical only"
+msgstr "Critiques seulement"
 
 #: tviswaptgui.edrun.text
 msgid "mywapt.update()"
@@ -1842,10 +1842,6 @@ msgstr "Tâche en cours"
 msgid "IP address"
 msgstr "Adresse IP"
 
-#: tviswaptgui.label10.caption
-msgid "Allowed Windows Updates Classifications"
-msgstr "Classifications de Mises à jour autorisées"
-
 #: tviswaptgui.label11.caption
 msgid "UUID"
 msgstr ""
@@ -1864,10 +1860,6 @@ msgstr "Filtre :"
 msgctxt "tviswaptgui.label15.caption"
 msgid "Groups"
 msgstr "Groupes"
-
-#: tviswaptgui.label18.caption
-msgid "Allowed Windows Updates"
-msgstr "Mises à jour autorisées"
 
 #: tviswaptgui.label19.caption
 msgid "Forbidden Windows Updates"
@@ -1930,6 +1922,27 @@ msgstr "Gestion Windows de l'ordinateur"
 #: tviswaptgui.menuitem10.caption
 msgid "Save ..."
 msgstr "Enregistrer..."
+
+#: tviswaptgui.menuitem103checkall.caption
+msgctxt "tviswaptgui.menuitem103checkall.caption"
+msgid "Check all"
+msgstr "Cocher tout"
+
+#: tviswaptgui.menuitem103checkall.hint
+#, fuzzy
+msgctxt "tviswaptgui.menuitem103checkall.hint"
+msgid "Add the WAPT group packages matching the ADS groups of the machines"
+msgstr "Ajoute les groupes WAPT qui correspondent avec les groupes Active Directory des machines"
+
+#: tviswaptgui.menuitem104.caption
+msgctxt "tviswaptgui.menuitem104.caption"
+msgid "Uncheck all"
+msgstr "Décocher tout"
+
+#: tviswaptgui.menuitem105uncheclall.caption
+msgctxt "tviswaptgui.menuitem105uncheclall.caption"
+msgid "Uncheck all"
+msgstr "Décocher tout"
 
 #: tviswaptgui.menuitem11.caption
 msgid "Save as"
@@ -2000,13 +2013,14 @@ msgstr "Ouvrir..."
 msgid "Reopen"
 msgstr "Ré-ouvrir"
 
-#: tviswaptgui.menuitem91.caption
-msgid "New Item1"
-msgstr ""
-
 #: tviswaptgui.menuitem95.caption
 msgid "Information about KB on MS Web site"
 msgstr "Information MS sur la mise à jour"
+
+#: tviswaptgui.menuitemproductscheckall.caption
+msgctxt "tviswaptgui.menuitemproductscheckall.caption"
+msgid "Check all"
+msgstr "Cocher tout"
 
 #: tviswaptgui.odselectinstaller.title
 msgid "Select an installer executable or msi"
@@ -2016,6 +2030,10 @@ msgstr "Sélectionner un fichier d'installation exe ou msi"
 msgid "Select WAPT file"
 msgstr "Sélectionner un fichier WAPT"
 
+#: tviswaptgui.panel2.caption
+msgid "Panel2"
+msgstr ""
+
 #: tviswaptgui.panel6.caption
 msgid "Panel6"
 msgstr ""
@@ -2023,6 +2041,10 @@ msgstr ""
 #: tviswaptgui.panel7.caption
 msgctxt "tviswaptgui.panel7.caption"
 msgid "Panel7"
+msgstr ""
+
+#: tviswaptgui.panwualeft.caption
+msgid "PanWUALeft"
 msgstr ""
 
 #: tviswaptgui.pggroups.caption
