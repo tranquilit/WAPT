@@ -57,7 +57,7 @@ server {
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
 
-            proxy_pass http://127.0.0.1:{{waptserver_port}}/;
+            proxy_pass http://127.0.0.1:{{ waptserver_port }}/;
             client_max_body_size 4096m;
             client_body_timeout 1800;
         }
@@ -66,7 +66,7 @@ server {
         location /(add_host|/api/v3/register) {
             auth_gss on;
             auth_gss_keytab  /etc/nginx/http-krb5.keytab;
-            proxy_pass http://127.0.0.1:{{waptserver_port}}/;
+            proxy_pass http://127.0.0.1:{{ waptserver_port }}/;
         }
         {% endif %} {# if use_kerberos #}
 
@@ -75,7 +75,7 @@ server {
             proxy_buffering off;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "Upgrade";
-            proxy_pass http://127.0.0.1:{{waptserver_port}}/socket.io;
+            proxy_pass http://127.0.0.1:{{ waptserver_port }}/socket.io;
         }
     }
 

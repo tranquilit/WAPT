@@ -90,7 +90,7 @@ def mkdir(path):
     if not os.path.isdir(path):
         os.makedirs(path)
 
-def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force_https):
+def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force_https, waptserver_port):
     if wapt_folder.endswith('\\') or wapt_folder.endswith('/'):
         wapt_folder = wapt_folder[:-1]
 
@@ -106,6 +106,7 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force
     krb5_realm = '.'.join(fqdn.split('.')[1:]).upper()
 
     template_vars = {
+        'waptserver_port': waptserver_port,
         'wapt_repository_path': os.path.dirname(wapt_folder),
         'apache_root_folder': '/not/used',
         'windows': False,
@@ -447,7 +448,7 @@ def main():
                         print('missing dependency libnginx-mod-http-auth-spnego, please install first before configuring kerberos')
                         sys.exit(1)
 
-            make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn, options.use_kerberos, options.force_https)
+            make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn, options.use_kerberos, options.force_https,server_config['waptserver_port'])
 
             final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
 

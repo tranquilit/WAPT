@@ -143,10 +143,10 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
         conf['wapt_user'] = _config.get('options', 'wapt_user')
 
     if _config.has_option('options', 'waptserver_port'):
-        conf['waptserver_port'] = _config.get('options', 'waptserver_port')
+        conf['waptserver_port'] = _config.getint('options', 'waptserver_port')
 
     if _config.has_option('options', 'waptservice_port'):
-        conf['waptservice_port'] = _config.get('options', 'waptservice_port')
+        conf['waptservice_port'] = _config.getint('options', 'waptservice_port')
 
     # XXX must be processed after conf['wapt_folder']
     if _config.has_option('options', 'waptwua_folder'):
