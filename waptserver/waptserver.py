@@ -358,12 +358,12 @@ def index():
     if os.path.isfile(waptsetup):
         waptsetup_tis_url = 'wapt/waptsetup-tis.exe'
     else:
-        waptsetup_tis_url = 'https://wapt.tranquil.it/wapt/releases/%s/waptsetup.exe' %  __version__
+        waptsetup_tis_url = 'https://wapt.tranquil.it/wapt/releases/wapt-%s/waptsetup.exe' %  __version__
 
     if os.path.isfile(waptdeploy):
         waptdeploy_url = 'wapt/waptdeploy.exe'
     else:
-        waptdeploy_url = 'https://wapt.tranquil.it/wapt/releases/%s/waptdeploy.exe' %  __version__
+        waptdeploy_url = 'https://wapt.tranquil.it/wapt/releases/wapt-%s/waptdeploy.exe' %  __version__
 
     data = {
         'wapt': {
