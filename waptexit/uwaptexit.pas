@@ -196,9 +196,9 @@ begin
   //Load config
   ini := TIniFile.Create(WaptIniFilename);
   try
-    Fallow_cancel_upgrade := ini.ReadBool('global','allow_cancel_upgrade',allow_cancel_upgrade);
+    Fallow_cancel_upgrade := FindCmdLineSwitch('allow_cancel_upgrade') or ini.ReadBool('global','allow_cancel_upgrade',True);
     waptservice_timeout := ini.ReadInteger('global','waptservice_timeout',2);
-    InitialCountDown := ini.ReadInteger('global','waptexit_countdown',10);
+    InitialCountDown := StrToInt(GetCmdParams('waptexit_countdown',ini.ReadString('global','waptexit_countdown','10')));
   finally
     ini.Free;
   end;
