@@ -534,7 +534,7 @@ begin
     if not ValidLicence then
       ShowMessage('No valid licence found, switching to Community features only')
     else if (MaxValidUntil - Now) < 7 then
-      ShowMessageFmt('Licence will expire in %d days, keep in mind to renew them.',[int(MaxValidUntil - Now)]);
+      ShowMessageFmt('Licence will expire in %d days, keep in mind to renew them.',[round(MaxValidUntil - Now)]);
     FMaxHostsCount := Result;
 
   finally
