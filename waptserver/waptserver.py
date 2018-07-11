@@ -560,9 +560,9 @@ def update_host():
         data['last_seen_on'] = datetime2isodate()
         db_data = update_host_data(data)
 
+        result = db_data
         result['authorization_token'] = TimedJSONWebSignatureSerializer(app.conf['secret_key']).dumps({'uuid':uuid,'server_uuid':app.conf['server_uuid']})
 
-        result = db_data
         message = 'update_host'
 
         return make_response(result=result, msg=message, request_time=time.time() - starttime)
