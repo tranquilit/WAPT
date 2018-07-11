@@ -153,7 +153,7 @@ if WAPTEDITION=='enterprise':
 eprint(
     'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
 
-run_verbose('pip install --upgrade pip')
+run_verbose('sudo pip install --upgrade pip')
 
 run_verbose(r'virtualenv ./builddir/opt/wapt/')
 run_verbose(r'virtualenv ./builddir/opt/wapt/ --always-copy')
