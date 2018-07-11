@@ -31,5 +31,5 @@ rsync -aP *.rpm  buildbot:/home/tisadmin/public_html/wapt-1.5.1.24/$WAPTEDITION/
 cd ../../waptsetup/rpm/
 wget http://buildbot.ad.tranquil.it/~tisadmin/wapt-1.5.1.24/$WAPTEDITION/waptdeploy.exe -O waptdeploy.exe
 wget http://buildbot.ad.tranquil.it/~tisadmin/wapt-1.5.1.24/$WAPTEDITION/waptsetup.exe -O waptsetup-tis.exe
-sh ./build.shsh
+sh ./build.sh
 rsync -aP *.rpm  buildbot:/home/tisadmin/public_html/wapt-1.5.1.24/$WAPTEDITION/
