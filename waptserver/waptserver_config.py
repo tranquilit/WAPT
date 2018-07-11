@@ -175,6 +175,9 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
     if _config.has_option('options', 'allow_unauthenticated_registration'):
         conf['allow_unauthenticated_registration'] = _config.getboolean('options', 'allow_unauthenticated_registration')
 
+    if _config.has_option('options', 'allow_unauthenticated_connect'):
+        conf['allow_unauthenticated_connect'] = _config.getboolean('options', 'allow_unauthenticated_connect')
+
     if _config.has_option('options', 'signature_clockskew'):
         conf['signature_clockskew'] = _config.getint('options', 'signature_clockskew')
 
