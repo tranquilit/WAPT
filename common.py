@@ -2601,7 +2601,7 @@ class Wapt(BaseObjectClass):
             'check_certificates_validity':'1',
             'sign_digests':'sha256',
 
-            'forced_uuid':'',
+            'uuid':'',
             'use_fqdn_as_uuid':'0',
             }
 
@@ -2673,8 +2673,8 @@ class Wapt(BaseObjectClass):
         if self.config.has_option('global','language'):
             self.language = self.config.get('global','language')
 
-        if self.config.has_option('global','forced_uuid'):
-            self.forced_uuid = self.config.get('global','forced_uuid')
+        if self.config.has_option('global','uuid'):
+            self.forced_uuid = self.config.get('global','uuid')
         else:
             # force reset to None if config file is changed at runtime
             self.forced_uuid = None
@@ -2901,7 +2901,7 @@ class Wapt(BaseObjectClass):
                     # random uuid if wmi is not working
                     self.forced_uuid = str(uuid.uuid4())
                     new_uuid = self.forced_uuid
-                    self.config.set('global','forced_uuid',new_uuid)
+                    self.config.set('global','uuid',new_uuid)
                     if self.config_filename is not None:
                         try:
                             self.config.write(open(self.config_filename,'wb'))
@@ -5716,7 +5716,7 @@ class Wapt(BaseObjectClass):
             silentflags = ''
 
         if not packagename:
-            simplename = re.sub(r'[\s\(\)]+','',props['product'].lower())
+            simplename = re.sub(r'[\s\(\)\|\,\.\%]+','_',props['product'].lower())
             packagename = '%s-%s' %  (self.config.get('global','default_package_prefix'),simplename)
 
         description = description or 'Package for %s ' % props['description']
@@ -5730,6 +5730,7 @@ class Wapt(BaseObjectClass):
 
         if installer_path:
             (installer_name,installer_ext) = os.path.splitext(installer)
+            installer_ext = installer_ext.lower()
             if installer_ext == '.msi':
                 setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_msi.py')
             elif installer_ext == '.msu':
