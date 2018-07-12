@@ -561,8 +561,6 @@ def update_host():
         db_data = update_host_data(data)
 
         result = db_data
-        result['authorization_token'] = TimedJSONWebSignatureSerializer(app.conf['secret_key']).dumps({'uuid':uuid,'server_uuid':app.conf['server_uuid']})
-
         message = 'update_host'
 
         return make_response(result=result, msg=message, request_time=time.time() - starttime)
@@ -2057,21 +2055,13 @@ def on_waptclient_connect():
 
             allow_unauthenticated_connect = app.conf.get('allow_unauthenticated_connect',False)
             if not allow_unauthenticated_connect:
-                if 'token' in request.args:
-                    try:
-                        token_data = TimedJSONWebSignatureSerializer(app.conf['secret_key']).loads(request.args['token'])
-                        if token_data['server_uuid'] != get_server_uuid():
-                            raise Exception('Bad server UUID')
-                    except Exception as e:
-                        raise EWaptForbiddden(u'SocketIO connection not authorized, invalid token: %s' % e)
+                host_cert = Hosts.select(Hosts.host_certificate).where(Hosts.uuid == uuid).first()
+                if host_cert and host_cert.host_certificate:
+                    host_certificate = SSLCertificate(crt_string=host_cert.host_certificate)
+                    host_cert_issuer = host_certificate.verify_claim(json.loads(request.args['login']), max_age_secs=app.conf['signature_clockskew'],required_attributes=['uuid'])
+                    logger.debug(u'Socket IO %s connect checked. issuer : %s' % ( request.sid,host_cert_issuer))
                 else:
-                    host_cert = Hosts.select(Hosts.host_certificate).where(Hosts.uuid == uuid).first()
-                    if host_cert and host_cert.host_certificate:
-                        host_certificate = SSLCertificate(crt_string=host_cert.host_certificate)
-                        host_cert_issuer = host_certificate.verify_claim(json.loads(request.args['login']), max_age_secs=app.conf['signature_clockskew'],required_attributes=['uuid'])
-                        logger.debug(u'Socket IO %s connect checked. issuer : %s' % ( request.sid,host_cert_issuer))
-                    else:
-                        raise EWaptForbiddden('Host is not registered or no host certificate found in database.')
+                    raise EWaptForbiddden('Host is not registered or no host certificate found in database.')
 
             logger.info(u'Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
             # stores sid in database
