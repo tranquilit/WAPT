@@ -604,7 +604,7 @@ class PackageEntry(BaseObjectClass):
 
     def __iter__(self):
         for key in self.all_attributes:
-            if not key.startswith('_'):
+            if not key.startswith('_') or key == '_localized_description':
                 yield (key, getattr(self,key))
 
     def as_dict(self):
