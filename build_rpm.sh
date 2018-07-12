@@ -11,12 +11,12 @@ export REV=$(git rev-list --count HEAD)-$(git rev-parse --short HEAD)
 export WAPTEDITION=community
 
 cd waptserver/rpm && sh ./build.sh
-rsync -aP *.rpm  buildbot:/home/tisadmin/public_html/wapt-1.5.1.25/$WAPTEDITION/
+rsync -aP *.rpm  buildbot:/home/tisadmin/public_html/wapt-1.5.1.26/$WAPTEDITION/
 cd ../../waptsetup/rpm/
-wget http://buildbot.ad.tranquil.it/~tisadmin/wapt-1.5.1.25/$WAPTEDITION/waptdeploy.exe -O waptdeploy.exe
-wget http://buildbot.ad.tranquil.it/~tisadmin/wapt-1.5.1.25/$WAPTEDITION/waptsetup.exe -O waptsetup-tis.exe
+wget http://buildbot.ad.tranquil.it/~tisadmin/wapt-1.5.1.26/$WAPTEDITION/waptdeploy.exe -O waptdeploy.exe
+wget http://buildbot.ad.tranquil.it/~tisadmin/wapt-1.5.1.26/$WAPTEDITION/waptsetup.exe -O waptsetup-tis.exe
 sh ./build.sh
-rsync -aP *.rpm  buildbot:/home/tisadmin/public_html/wapt-1.5.1.25/$WAPTEDITION/
+rsync -aP *.rpm  buildbot:/home/tisadmin/public_html/wapt-1.5.1.26/$WAPTEDITION/
 
 cd /home/tisadmin/tmp/buildbot/basedir/wapt-build-rpm-packages/build
 git fetch
@@ -27,9 +27,9 @@ git clean -fx -d
 
 export WAPTEDITION=enterprise
 cd waptserver/rpm && sh ./build.sh
-rsync -aP *.rpm  buildbot:/home/tisadmin/public_html/wapt-1.5.1.25/$WAPTEDITION/
+rsync -aP *.rpm  buildbot:/home/tisadmin/public_html/wapt-1.5.1.26/$WAPTEDITION/
 cd ../../waptsetup/rpm/
-wget http://buildbot.ad.tranquil.it/~tisadmin/wapt-1.5.1.25/$WAPTEDITION/waptdeploy.exe -O waptdeploy.exe
-wget http://buildbot.ad.tranquil.it/~tisadmin/wapt-1.5.1.25/$WAPTEDITION/waptsetup.exe -O waptsetup-tis.exe
+wget http://buildbot.ad.tranquil.it/~tisadmin/wapt-1.5.1.26/$WAPTEDITION/waptdeploy.exe -O waptdeploy.exe
+wget http://buildbot.ad.tranquil.it/~tisadmin/wapt-1.5.1.26/$WAPTEDITION/waptsetup.exe -O waptsetup-tis.exe
 sh ./build.sh
-rsync -aP *.rpm  buildbot:/home/tisadmin/public_html/wapt-1.5.1.25/$WAPTEDITION/
+rsync -aP *.rpm  buildbot:/home/tisadmin/public_html/wapt-1.5.1.26/$WAPTEDITION/
