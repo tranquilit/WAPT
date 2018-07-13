@@ -298,6 +298,7 @@ begin
    
   #ifdef waptserver
 
+    Exec('net', 'stop wapttasks', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec('net', 'stop waptserver', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec('net', 'stop waptapache', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec('net', 'stop waptnginx', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
