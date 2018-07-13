@@ -5783,7 +5783,7 @@ class Wapt(BaseObjectClass):
             entry.version = version+'-0'
             entry.depends = depends
             if self.config.has_option('global','default_sources_url'):
-                entry.sources = self.config.get('global','default_sources_url') % {'packagename':packagename}
+                entry.sources = self.config.get('global','default_sources_url') % entry.as_dict()
             codecs.open(control_filename,'w',encoding='utf8').write(entry.ascontrol())
         else:
             logger.info(u'control file already exists, skip create')
