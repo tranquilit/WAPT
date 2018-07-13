@@ -489,17 +489,25 @@ def all_packages(page=1):
 
             if not request.args.get('all_versions',''):
                 rows = sorted(latest_only(rows))
-            for pe in rows:
-                # hack to enable proper version comparison in templates
-                pe.install_version = Version(pe.install_version)
-                pe.version = Version(pe.version)
-
 
         except sqlite3.Error as e:
             logger.critical(u"*********** Error %s:" % e.args[0])
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        for pe in rows:
+            # some basic search scoring
+            score = 0
+            if search in pe.package:
+                score += 3
+            if search in pe.description:
+                score += 2
+            pe.score = score
+        rows = sorted(rows,key=lambda r:(r.score,r.signature_date,r.filename),reverse=True)
         return Response(common.jsondump(rows), mimetype='application/json')
     else:
+        for pe in rows:
+            # hack to enable proper version comparison in templates
+            pe.install_version = Version(pe.install_version)
+            pe.version = Version(pe.version)
         total = len(rows)
         per_page = 30
 
