@@ -5035,8 +5035,13 @@ class Wapt(BaseObjectClass):
         if self.waptwua_enabled:
             try:
                 import waptenterprise.waptwua.client
-                wapwua_status = waptenterprise.waptwua.client.WaptWUA(self).stored_status()
-                _add_data_if_updated(inv,'waptwua', wapwua_status,old_hashes,new_hashes)
+                waptwua_status = waptenterprise.waptwua.client.WaptWUA(self).stored_waptwua_status()
+                waptwua_updates = waptenterprise.waptwua.client.WaptWUA(self).stored_updates()
+                waptwua_updates_localstatus = waptenterprise.waptwua.client.WaptWUA(self).stored_updates_localstatus()
+
+                _add_data_if_updated(inv,'waptwua_status', waptwua_status,old_hashes,new_hashes)
+                _add_data_if_updated(inv,'waptwua_updates', waptwua_updates,old_hashes,new_hashes)
+                _add_data_if_updated(inv,'waptwua_updates_localstatus', waptwua_updates_localstatus,old_hashes,new_hashes)
             except ImportError as e:
                 logger.warning('waptwua module not installed')
 

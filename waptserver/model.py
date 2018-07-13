@@ -216,9 +216,6 @@ class Hosts(WaptBaseModel):
     dmi = BinaryJSONField(null=True)
     wmi = BinaryJSONField(null=True)
 
-    #
-    waptwua = BinaryJSONField(null=True)
-
 
     """
     def save(self,*args,**argvs):
@@ -363,6 +360,26 @@ class WsusUpdates(WaptBaseModel):
     reboot_behaviour = CharField(null=True)
     can_request_user_input = CharField(null=True)
     requires_network_connectivity = BooleanField(null=True)
+
+
+class HostWuaStatus(WaptBaseModel):
+    """Local state of Windows update engine
+    """
+    host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE',primary_key=True)
+    status =  CharField(null=True)
+    wua_agent_version = CharField(null=True)
+    wsusscn2cab_date =  CharField(null=True)
+
+    windows_updates_rules = BinaryJSONField(null=True)
+
+    last_scan_date = CharField(null=True)
+    last_scan_duration = IntegerField(null=True)
+
+    last_install_result = CharField(null=True)
+    last_install_date = CharField(null=True)
+    last_install_batch = ArrayField(null=True)
+    last_install_reboot_required = CharField(null=True)
+
 
 class HostWsus(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
@@ -527,7 +544,7 @@ def update_installed_softwares(uuid, installed_softwares):
     else:
         return True
 
-def update_waptwua(uuid,winupdates):
+def update_waptwua(uuid,data):
     """Stores discovered windows update into WindowsUpdates table and
     links between host and updates into HostWsus
 
@@ -543,21 +560,27 @@ def update_waptwua(uuid,winupdates):
             value = value.replace(u'\x00', ' ')
         return value
 
-    HostWsus.delete().where(HostWsus.host == uuid).execute()
-    host_wsus = []
-    windows_updates = []
+    if 'waptwua_status' in data:
+        waptwua_status = dict([(k,encode_value(v)) for k, v in data['waptwua_status'].iteritems() if k in HostWuaStatus._meta.fields])
+        (hostwua_status,_) = HostWuaStatus.get_or_create(host=uuid)
+        hostwua_status.update(**waptwua_status)
+        hostwua_status.save()
 
-    for update in winupdates:
-        local_status = update.pop('local_status')
-        local_status['host'] = uuid
-        local_status['update_id'] = update['update_id']
-        windows_updates.append(update)
+    if 'waptwua_updates' in data:
+        windows_updates = []
+        for w in data['waptwua_updates']:
+            windows_updates.append(dict([(k,encode_value(v)) for k, v in w.iteritems() if k in WsusUpdates._meta.fields]))
+        WsusUpdates.insert_many(windows_updates).on_conflict('IGNORE').execute()
 
-        # filter out all unknown fields from json data for the SQL insert
-        host_wsus.append(dict([(k,encode_value(v)) for k, v in local_status.iteritems() if k in HostWsus._meta.fields]))
+    if 'waptwua_updates_localstatus' in data:
+        HostWsus.delete().where(HostWsus.host == uuid).execute()
+        #
+        host_wsus = []
+        for h in data['waptwua_updates_localstatus']:
+            h['host'] = uuid
+            host_wsus.append(dict([(k,encode_value(v)) for k, v in h.iteritems() if k in HostWsus._meta.fields]))
+        HostWsus.insert_many(host_wsus).execute()
 
-    WsusUpdates.insert_many(windows_updates).on_conflict('IGNORE').execute()
-    HostWsus.insert_many(host_wsus).execute()
     return True
 
 
@@ -588,17 +611,6 @@ def update_host_data(data):
     uuid = data['uuid']
     with wapt_db.atomic() as trans:
         try:
-            # extract winupdates local status to put them in separate table
-            if 'waptwua' in data:
-                if 'updates' in data['waptwua']:
-                    winupdates = data['waptwua'].pop('updates')
-                else:
-                    winupdates = None
-                if 'update_history' in data['waptwua']:
-                    data['waptwua'].pop('update_history')
-            else:
-                winupdates = None
-
             existing = Hosts.select(Hosts.uuid, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
             if not existing:
                 logger.debug('Inserting new host %s with fields %s' % (uuid, data.keys()))
@@ -622,8 +634,7 @@ def update_host_data(data):
                         set_host_field(updhost, target_key, data[k])
                 updhost.save()
 
-            if winupdates:
-                update_waptwua(uuid,winupdates)
+            update_waptwua(uuid,data)
 
             # separate tables
             # we are tolerant on errors here a we don't know exactly if client send good encoded data
@@ -1193,6 +1204,24 @@ def upgrade_db_structure():
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
             v.save()
+
+    next_version = '1.6.2.2'
+    if get_db_version() < next_version:
+        with wapt_db.atomic():
+            logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
+
+            wapt_db.create_tables([HostWuaStatus],safe=True)
+
+            opes = []
+            columns = [c.name for c in wapt_db.get_columns('hosts')]
+            if 'waptwua' in columns:
+                opes.append(migrator.drop_column(Hosts._meta.name, 'waptwua'))
+            migrate(*opes)
+
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
 
 if __name__ == '__main__':
     if platform.system() != 'Windows' and getpass.getuser() != 'wapt':
