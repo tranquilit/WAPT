@@ -55,7 +55,8 @@ run('chmod 755 /opt/wapt/log')
 run('chmod 755 /opt/wapt/bin/*')
 run('mkdir -p /var/www/wapt/icons')
 run('mkdir -p /var/www/wapt-host')
-run('mkdir -p /var/www/wapt-hostref')
+run('mkdir -p /var/www/wapt')
+run('mkdir -p /var/www/waptwua')
 
 # fix ownership bug of /var/www, need to find where it is screwed up
 run('chown www-data:www-data /var/www')

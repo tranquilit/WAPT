@@ -96,7 +96,7 @@ fi
 systemctl daemon-reload
 mkdir -p /var/www/html/wapt
 mkdir -p /var/www/html/wapt-host
-mkdir -p /var/www/html/wapt-hostref
+mkdir -p /var/www/html/waptwua
 chown -R wapt:nginx /var/www/html/*
 echo "User-agent:*\nDisallow: /\n" > /var/www/html/robots.txt
 
