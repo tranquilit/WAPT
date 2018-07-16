@@ -32,7 +32,11 @@ from eventlet import monkey_patch
 
 # os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
 if platform.system() == 'Windows':
-    monkey_patch(os=False)
+    # interactive debug mode
+    if os.path.dirname(__file__) == 'C:\\tranquilit\\wapt\\waptserver':
+        monkey_patch(os=False,thread=False)
+    else:
+        monkey_patch(os=False)
 else:
     monkey_patch()
 
@@ -491,9 +495,6 @@ def update_host():
         data['last_seen_on'] = datetime2isodate()
         db_data = update_host_data(data)
 
-        token_gen = get_secured_token_generator()
-        db_data['authorization_token'] = token_gen.dumps({'uuid':uuid,'server_uuid':get_server_uuid()})
-
         result = db_data
         message = 'update_host'
 
@@ -609,6 +610,20 @@ def sync_host_groups(entry):
         except IntegrityError  as e:
             trans.rollback()
             return (0,0)
+
+@app.route('/api/v3/packages')
+@requires_auth
+def localrepo_packages():
+    try:
+        start_time = time.time()
+        query = ensure_list(request.args.get('q',None),allow_none=True)
+        local_repo = WaptLocalRepo(app.conf['wapt_folder'])
+        packages = local_repo.search(searchwords=query,newest_only=True,exclude_sections=['group','unit','host','restricted','profile'])
+        return make_response(packages,
+                             msg = '%s packages in local repository matching the keywords %s' % (len(packages),query),
+                             request_time=time.time() - start_time)
+    except Exception as e:
+        return make_response_from_exception(e)
 
 
 @app.route('/upload_package/<string:filename>', methods=['HEAD','POST'])

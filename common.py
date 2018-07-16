@@ -576,7 +576,7 @@ PackageKey = namedtuple('package',('packagename','version'))
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
 
-    curr_db_version = '20180709'
+    curr_db_version = '20180716'
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
@@ -674,7 +674,7 @@ class WaptDB(WaptBaseDB):
 
         self.db.execute("""CREATE TRIGGER IF NOT EXISTS inc_rev_ins_status
             AFTER INSERT ON wapt_params
-            WHEN NEW.name <> 'status_revision'
+            WHEN NEW.name not in ('status_revision','last_update_server_hashes')
             BEGIN
                 update wapt_params set value=cast(value as integer)+1
                 where name='status_revision';
@@ -5021,7 +5021,6 @@ class Wapt(BaseObjectClass):
 
         inv = {'uuid': self.host_uuid}
         inv['wapt_status'] = self.wapt_status()
-        inv['audit_status'] = self.get_audit_status()
         inv['status_revision'] = self.read_param('status_revision',0,'int')
 
         host_info = setuphelpers.host_info()
@@ -5029,19 +5028,25 @@ class Wapt(BaseObjectClass):
         host_info['computer_ad_dn'] = self.host_dn
 
         _add_data_if_updated(inv,'host_info',host_info,old_hashes,new_hashes)
+        _add_data_if_updated(inv,'audit_status',self.get_audit_status(),old_hashes,new_hashes)
         _add_data_if_updated(inv,'installed_softwares',setuphelpers.installed_softwares(''),old_hashes,new_hashes)
         _add_data_if_updated(inv,'installed_packages',[p.as_dict() for p in self.waptdb.installed(include_errors=True,include_setup=False)],old_hashes,new_hashes)
         _add_data_if_updated(inv,'last_update_status', self.get_last_update_status(),old_hashes,new_hashes)
         if self.waptwua_enabled:
             try:
                 import waptenterprise.waptwua.client
-                waptwua_status = waptenterprise.waptwua.client.WaptWUA(self).stored_waptwua_status()
-                waptwua_updates = waptenterprise.waptwua.client.WaptWUA(self).stored_updates()
-                waptwua_updates_localstatus = waptenterprise.waptwua.client.WaptWUA(self).stored_updates_localstatus()
+                wua_client = waptenterprise.waptwua.client.WaptWUA(self)
+                try:
+                    waptwua_status = wua_client.stored_waptwua_status()
+                    waptwua_updates = wua_client.stored_updates()
+                    waptwua_updates_localstatus = wua_client.stored_updates_localstatus()
 
-                _add_data_if_updated(inv,'waptwua_status', waptwua_status,old_hashes,new_hashes)
-                _add_data_if_updated(inv,'waptwua_updates', waptwua_updates,old_hashes,new_hashes)
-                _add_data_if_updated(inv,'waptwua_updates_localstatus', waptwua_updates_localstatus,old_hashes,new_hashes)
+                    _add_data_if_updated(inv,'waptwua_status', waptwua_status,old_hashes,new_hashes)
+                    _add_data_if_updated(inv,'waptwua_updates', waptwua_updates,old_hashes,new_hashes)
+                    _add_data_if_updated(inv,'waptwua_updates_localstatus', waptwua_updates_localstatus,old_hashes,new_hashes)
+                finally:
+                    wua_client = None
+
             except ImportError as e:
                 logger.warning('waptwua module not installed')
 
@@ -5087,9 +5092,10 @@ class Wapt(BaseObjectClass):
             # avoid sending data to the server if it has not been updated.
             try:
                 new_hashes = {}
-                old_hashes = self.read_param('update_server_hashes',{},ptype='json')
+                old_hashes = self.read_param('last_update_server_hashes',{},ptype='json')
 
                 inv = self._get_host_status_data(old_hashes, new_hashes, force=force)
+                inv['status_hashes'] = new_hashes
                 data = jsondump(inv)
                 signature = self.sign_host_content(data,)
 
@@ -5102,8 +5108,14 @@ class Wapt(BaseObjectClass):
                 if result and result['success']:
                     # stores for next round.
                     old_hashes.update(new_hashes)
-                    self.write_param('last_update_server_hashes',old_hashes)
                     self.write_param('last_update_server_status_timestamp',datetime.datetime.utcnow())
+                    if 'status_hashes' in result.get('result',{}):
+                        # invalidate unmatching hashes for next round.
+                        self.write_param('last_update_server_hashes',result['result']['status_hashes'])
+                    else:
+                        self.write_param('last_update_server_hashes',old_hashes)
+
+
                     logger.info(u'Status on server %s updated properly' % self.waptserver.server_url)
                 else:
                     logger.info(u'Error updating Status on server %s: %s' % (self.waptserver.server_url,result and result['msg'] or 'No message'))

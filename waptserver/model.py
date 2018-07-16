@@ -216,6 +216,8 @@ class Hosts(WaptBaseModel):
     dmi = BinaryJSONField(null=True)
     wmi = BinaryJSONField(null=True)
 
+    #
+    status_hashes = BinaryJSONField(null=True)
 
     """
     def save(self,*args,**argvs):
@@ -550,7 +552,7 @@ def update_waptwua(uuid,data):
 
     Args:
         uuid (str) : unique ID of host
-        waptwua (list): data from host
+        data (dict): data from host
 
     Returns:
         None
@@ -570,7 +572,8 @@ def update_waptwua(uuid,data):
         windows_updates = []
         for w in data['waptwua_updates']:
             windows_updates.append(dict([(k,encode_value(v)) for k, v in w.iteritems() if k in WsusUpdates._meta.fields]))
-        WsusUpdates.insert_many(windows_updates).on_conflict('IGNORE').execute()
+        if windows_updates:
+            WsusUpdates.insert_many(windows_updates).on_conflict('IGNORE').execute()
 
     if 'waptwua_updates_localstatus' in data:
         HostWsus.delete().where(HostWsus.host == uuid).execute()
@@ -579,9 +582,8 @@ def update_waptwua(uuid,data):
         for h in data['waptwua_updates_localstatus']:
             h['host'] = uuid
             host_wsus.append(dict([(k,encode_value(v)) for k, v in h.iteritems() if k in HostWsus._meta.fields]))
-        HostWsus.insert_many(host_wsus).execute()
-
-    return True
+        if host_wsus:
+            HostWsus.insert_many(host_wsus).execute()
 
 
 def update_host_data(data):
@@ -611,7 +613,7 @@ def update_host_data(data):
     uuid = data['uuid']
     with wapt_db.atomic() as trans:
         try:
-            existing = Hosts.select(Hosts.uuid, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
+            existing = Hosts.select(Hosts.uuid, Hosts.computer_fqdn,Hosts.status_hashes).where(Hosts.uuid == uuid).first()
             if not existing:
                 logger.debug('Inserting new host %s with fields %s' % (uuid, data.keys()))
                 # wapt update_status packages softwares host
@@ -623,18 +625,25 @@ def update_host_data(data):
                         set_host_field(newhost, target_key, data[k])
 
                 newhost.save(force_insert=True)
+                status_hashes = newhost.status_hashes
             else:
                 logger.debug('Updating %s for fields %s' % (uuid, data.keys()))
 
                 updhost = Hosts.get(uuid=uuid)
+                if not updhost.status_hashes:
+                    updhost.status_hashes = {}
+
+                # merge already known data with new set
+                if 'status_hashes' in data:
+                    updhost.status_hashes.update(data['status_hashes'])
+                    data['status_hashes'] = updhost.status_hashes
+
                 for k in data.keys():
                     # manage field renaming between 1.3 and >= 1.4
                     target_key = migrate_map_13_14.get(k, k)
                     if target_key and hasattr(updhost, target_key):
                         set_host_field(updhost, target_key, data[k])
                 updhost.save()
-
-            update_waptwua(uuid,data)
 
             # separate tables
             # we are tolerant on errors here a we don't know exactly if client send good encoded data
@@ -655,7 +664,10 @@ def update_host_data(data):
             except Exception as e:
                 logger.critical(u'Unable to update installed_packages for %s: %s' % (uuid,traceback.format_exc()))
 
-            result_query = Hosts.select(Hosts.uuid, Hosts.computer_fqdn)
+            # update waptwua state tables
+            update_waptwua(uuid,data)
+
+            result_query = Hosts.select(Hosts.uuid, Hosts.computer_fqdn,Hosts.status_hashes)
             return result_query.where(Hosts.uuid == uuid).dicts().first()
 
         except Exception as e:
@@ -960,9 +972,9 @@ def init_db(drop=False):
     except:
         wapt_db.rollback()
     if drop:
-        for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostWsus,HostGroups,WsusUpdates,WsusScan2History]):
+        for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,WsusScan2History,HostWuaStatus]):
             table.drop_table(fail_silently=True)
-    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,WsusScan2History], safe=True)
+    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,WsusScan2History,HostWuaStatus], safe=True)
 
     if get_db_version() == None:
         # new database install, we setup the db_version key
@@ -1198,7 +1210,7 @@ def upgrade_db_structure():
             wapt_db.create_tables([WsusUpdates,HostWsus],safe=True)
 
             opes = []
-            opes.append(migrator.add_column(Hosts._meta.name, 'waptwua', Hosts.waptwua))
+            #opes.append(migrator.add_column(Hosts._meta.name, 'waptwua', Hosts.waptwua))
             migrate(*opes)
 
             (v, created) = ServerAttribs.get_or_create(key='db_version')
@@ -1216,6 +1228,8 @@ def upgrade_db_structure():
             columns = [c.name for c in wapt_db.get_columns('hosts')]
             if 'waptwua' in columns:
                 opes.append(migrator.drop_column(Hosts._meta.name, 'waptwua'))
+            if not 'status_hashes' in columns:
+                opes.append(migrator.add_column(Hosts._meta.name, 'status_hashes',Hosts.status_hashes))
             migrate(*opes)
 
             (v, created) = ServerAttribs.get_or_create(key='db_version')
