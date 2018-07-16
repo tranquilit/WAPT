@@ -421,8 +421,6 @@ class WaptSocketIOClient(threading.Thread):
                             self.socketio_client.get_namespace().wapt = tmp_wapt
                             self.socketio_client.get_namespace().task_manager = self.task_manager
                             self.socketio_client.connect('')
-                        else:
-                            self.socketio_client.emit('wapt_pong')
 
                         if self.socketio_client.connected:
                             logger.info('Socket IO listening for %ss' % self.config.websockets_check_config_interval )

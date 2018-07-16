@@ -33,10 +33,7 @@ from eventlet import monkey_patch
 # os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
 if platform.system() == 'Windows':
     # interactive debug mode
-    if os.path.dirname(__file__) == 'C:\\tranquilit\\wapt\\waptserver':
-        monkey_patch(os=False,thread=False)
-    else:
-        monkey_patch(os=False)
+    monkey_patch(os=False)
 else:
     monkey_patch()
 
@@ -2151,10 +2148,13 @@ def on_waptclient_connect():
             return True
 
         except Exception as e:
-            if 'uuid' in session:
-                session.pop('uuid')
-            logger.warning(u'SocketIO connection refused for uuid %s, sid %s: %s' % (uuid,request.sid,e))
-            trans.rollback()
+            try:
+                if 'uuid' in session:
+                    session.pop('uuid')
+                logger.warning(u'SocketIO connection refused for uuid %s, sid %s: %s' % (uuid,request.sid,e))
+                trans.rollback()
+            finally:
+                disconnect()
             return False
 
 @socketio.on('wapt_pong')
