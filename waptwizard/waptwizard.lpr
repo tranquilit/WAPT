@@ -103,7 +103,6 @@ end;
 
 
 begin
-  Application.Title:='waptwizard';
   RequireDerivedFormResource := True;
   Application.Initialize;
   Application.CreateForm(TDMPython, DMPython);
