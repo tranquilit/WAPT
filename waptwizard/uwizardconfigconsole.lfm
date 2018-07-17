@@ -1,0 +1,71 @@
+inherited WizardConfigConsole: TWizardConfigConsole
+  Left = 1943
+  Height = 476
+  Top = 530
+  Width = 828
+  Caption = 'TWizardConsole'
+  ClientHeight = 476
+  ClientWidth = 828
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnShow = FormShow
+  inherited WizardButtonPanel: TWizardButtonPanel
+    Top = 426
+    Width = 828
+    ClientWidth = 828
+  end
+  inherited TopPanel: TPanel
+    Width = 828
+    ClientWidth = 828
+    inherited img_logo: TImage
+      Left = 770
+    end
+  end
+  inherited lbl_current_task: TLabel
+    Top = 411
+    Width = 828
+  end
+  inherited panel_center: TPanel
+    Height = 353
+    Width = 828
+  end
+  inherited WizardManager: TWizardManager
+    DisplayOptions.Parent = Owner
+    Pages = <    
+      item
+        Caption = 'Welcome'
+        ControlClassName = 'TWizardStepFrameConsoleWelcome'
+        Name = 'welcome'
+        Description = 'Welcome description'
+        EnabledButtons = [wbNext, wbCancel]
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end    
+      item
+        Caption = 'Server info'
+        ControlClassName = 'TWizardStepFrameConsoleServer'
+        Description = 'Server info description'
+        EnabledButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end    
+      item
+        Caption = 'Package configuration'
+        ControlClassName = 'TWizardStepFramePackage'
+        Description = 'Package configuration description'
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end    
+      item
+        Caption = 'Build agent'
+        ControlClassName = 'TWizardStepFrameBuildAgent'
+        Description = 'Build agent description'
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end    
+      item
+        Caption = 'Finished'
+        Description = 'Console configuration finished'
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end>
+  end
+  inherited PopupNotifier: TPopupNotifier
+    OnClose = nil
+  end
+end

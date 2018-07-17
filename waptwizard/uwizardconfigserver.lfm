@@ -1,0 +1,92 @@
+inherited WizardConfigServer: TWizardConfigServer
+  Left = 1929
+  Height = 498
+  Top = 268
+  Width = 947
+  Caption = 'TWizardServer'
+  ClientHeight = 498
+  ClientWidth = 947
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnShow = FormShow
+  inherited WizardButtonPanel: TWizardButtonPanel
+    Top = 448
+    Width = 947
+    ClientWidth = 947
+  end
+  inherited TopPanel: TPanel
+    Width = 947
+    ClientWidth = 947
+    inherited img_logo: TImage
+      Left = 889
+    end
+  end
+  inherited lbl_current_task: TLabel
+    Top = 433
+    Width = 947
+  end
+  inherited panel_center: TPanel
+    Height = 375
+    Width = 947
+  end
+  inherited WizardManager: TWizardManager
+    Pages = <    
+      item
+        Caption = 'Wapt server configuration wizard'
+        ControlClassName = 'TWizardStepFrameServerWelcome'
+        Name = 'welcome'
+        Description = 'Welcome step description'
+        EnabledButtons = [wbNext, wbCancel]
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end    
+      item
+        Caption = 'Certificate options'
+        ControlClassName = 'TWizardStepFrameServerCertificate'
+        Name = 'certficate_options'
+        Description = 'Certificate options description'
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end    
+      item
+        Caption = 'Admin password'
+        ControlClassName = 'TWizardStepFramePassword'
+        Name = 'set_admin_password'
+        Description = 'Admin password description'
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end    
+      item
+        Caption = 'Firewall'
+        ControlClassName = 'TWizardStepFrameFirewall'
+        Name = 'configure_firewall'
+        Description = 'Configure firewall'
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end    
+      item
+        Caption = 'Post setup'
+        ControlClassName = 'TWizardStepFrameRunServerPostSetup'
+        Name = 'run_post_setup_scripts'
+        Description = 'Running post script configuration'
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end    
+      item
+        Caption = 'Package configuration'
+        ControlClassName = 'TWizardStepFramePackage'
+        Name = 'package'
+        Description = 'Package configuration description'
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end    
+      item
+        Caption = 'Build agent and upgrade package'
+        ControlClassName = 'TWizardStepFrameBuildAgent'
+        Name = 'build_agent'
+        Description = 'Description'
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end    
+      item
+        Caption = 'Finish'
+        ControlClassName = 'TWizardStepFrameServerFinish'
+        Name = 'finish'
+        EnabledButtons = [wbFinish]
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end>
+  end
+end

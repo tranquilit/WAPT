@@ -1,0 +1,122 @@
+inherited WizardStepFramePackage: TWizardStepFramePackage
+  Height = 671
+  Width = 1399
+  Anchors = []
+  AutoSize = True
+  ClientHeight = 671
+  ClientWidth = 1399
+  DesignLeft = 435
+  DesignTop = 227
+  object GroupBox1: TGroupBox[0]
+    Left = 8
+    Height = 139
+    Top = 96
+    Width = 412
+    Align = alCustom
+    Caption = 'Package signing'
+    ClientHeight = 119
+    ClientWidth = 408
+    TabOrder = 0
+    object lbl_private_key_name: TLabel
+      Left = 58
+      Height = 15
+      Top = 4
+      Width = 58
+      Caption = 'Key name :'
+      ParentColor = False
+    end
+    object ed_private_key_name: TEdit
+      Left = 128
+      Height = 23
+      Top = 0
+      Width = 160
+      TabOrder = 0
+      Text = 'ed_private_key_name'
+    end
+    object lbl_private_key_dir: TLabel
+      Left = 0
+      Height = 15
+      Top = 100
+      Width = 116
+      Caption = 'Private key  directory :'
+      ParentColor = False
+    end
+    object ed_private_key_directory: TDirectoryEdit
+      Left = 128
+      Height = 23
+      Top = 96
+      Width = 264
+      Directory = 'ed_private_key_directory'
+      ShowHidden = False
+      ButtonWidth = 23
+      NumGlyphs = 1
+      MaxLength = 0
+      TabOrder = 3
+      Text = 'ed_private_key_directory'
+    end
+    object lbl_private_key_password_1: TLabel
+      Left = 60
+      Height = 15
+      Top = 36
+      Width = 56
+      Caption = 'Password :'
+      ParentColor = False
+    end
+    object ed_private_key_password_1: TEdit
+      Left = 128
+      Height = 23
+      Top = 32
+      Width = 160
+      EchoMode = emPassword
+      PasswordChar = '*'
+      TabOrder = 1
+      Text = 'ed_private_key_password_1'
+    end
+    object lbl_private_key_password_2: TLabel
+      Left = 15
+      Height = 15
+      Top = 68
+      Width = 101
+      Caption = 'Password confirm :'
+      ParentColor = False
+    end
+    object ed_private_key_password_2: TEdit
+      Left = 128
+      Height = 23
+      Top = 64
+      Width = 160
+      EchoMode = emPassword
+      PasswordChar = '*'
+      TabOrder = 2
+      Text = 'ed_private_key_password_2'
+    end
+  end
+  object GroupBox2: TGroupBox[1]
+    Left = 8
+    Height = 56
+    Top = 16
+    Width = 412
+    Align = alCustom
+    Caption = 'Package generation option'
+    ClientHeight = 36
+    ClientWidth = 408
+    TabOrder = 1
+    object lbl_package_prefix: TLabel
+      Left = 81
+      Height = 15
+      Top = 0
+      Width = 35
+      Caption = 'Prefix :'
+      ParentColor = False
+    end
+    object ed_package_prefix: TEdit
+      Left = 128
+      Height = 23
+      Top = 0
+      Width = 163
+      AutoSize = False
+      TabOrder = 0
+      Text = 'ed_package_prefix'
+    end
+  end
+end

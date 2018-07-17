@@ -1,0 +1,15 @@
+inherited WizardStepFrameConsoleFinished: TWizardStepFrameConsoleFinished
+  AutoSize = True
+  DesignLeft = 2274
+  DesignTop = 361
+  object cb_launch_console: TCheckBox[0]
+    Left = 0
+    Height = 19
+    Top = 0
+    Width = 103
+    Caption = 'Launch console'
+    Checked = True
+    State = cbChecked
+    TabOrder = 0
+  end
+end

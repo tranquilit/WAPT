@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="10"/>
+    <PathDelim Value="\"/>
+    <General>
+      <SessionStorage Value="InProjectDir"/>
+      <MainUnit Value="0"/>
+      <Title Value="waptwizard"/>
+      <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <Icon Value="0"/>
+    </General>
+    <BuildModes Count="1">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <CommandLineParams Value="-h"/>
+        <WorkingDirectory Value=""/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="9">
+      <Item1>
+        <PackageName Value="pltis_utils"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="pltis_wapt"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="pltis_virtualtreesextra"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="pltis_sogrid"/>
+      </Item4>
+      <Item5>
+        <PackageName Value="python4lazarus_package"/>
+      </Item5>
+      <Item6>
+        <PackageName Value="RunTimeTypeInfoControls"/>
+      </Item6>
+      <Item7>
+        <PackageName Value="luicontrols"/>
+      </Item7>
+      <Item8>
+        <PackageName Value="pltis_superobject"/>
+      </Item8>
+      <Item9>
+        <PackageName Value="LCL"/>
+      </Item9>
+    </RequiredPackages>
+    <Units Count="21">
+      <Unit0>
+        <Filename Value="waptwizard.lpr"/>
+        <IsPartOfProject Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="ucrypto_pbkdf2.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="uwizard.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Wizard"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="uwizardconfigconsole.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardConfigConsole"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="uwizardconfigserver.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardConfigServer"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="uwizardstepframe.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardStepFrame"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="uwizardstepframebuildagent.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardStepFrameBuildAgent"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="uwizardstepframefirewall.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="uwizardstepframepackage.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardStepFramePackage"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="uwizardstepframepassword.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="uwizardstepframerunserverpostsetup.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="uwizardstepframeserverwelcome.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardStepFrameServerWelcome"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="uwizardutil.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="uwizardvalidattion.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="..\waptconsole\dmwaptpython.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DMPython"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="uwizardstepframeserverfinish.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardStepFrameServerFinish"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="uwizardstepframeservercertificate.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardStepFrameServerCertificate"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="uwizardstepframeconsolewelcome.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardStepFrameConsoleWelcome"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="uwizardstepframeconsoleserver.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardStepFrameConsoleServer"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="uwizardstepframeconsolefinished.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardStepFrameConsoleFinished"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="uwizardresetserverpassword.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardResetServerPassword"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit20>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="..\waptwizard"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="..\waptconsole"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="7">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+      <Item4>
+        <Name Value="EClassNotFound"/>
+      </Item4>
+      <Item5>
+        <Name Value="EIdDnsResolverError"/>
+      </Item5>
+      <Item6>
+        <Name Value="EIdSocketError"/>
+      </Item6>
+      <Item7>
+        <Name Value="EIdHTTPProtocolException"/>
+      </Item7>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

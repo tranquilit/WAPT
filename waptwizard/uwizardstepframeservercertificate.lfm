@@ -1,0 +1,23 @@
+inherited WizardStepFrameServerCertificate: TWizardStepFrameServerCertificate
+  Height = 206
+  Width = 300
+  ClientHeight = 206
+  ClientWidth = 300
+  object rg_hostnames: TRadioGroup[0]
+    Left = 0
+    Height = 206
+    Top = 0
+    Width = 300
+    Align = alClient
+    AutoFill = True
+    Caption = 'Select server hostname'
+    ChildSizing.LeftRightSpacing = 6
+    ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+    ChildSizing.EnlargeVertical = crsHomogenousChildResize
+    ChildSizing.ShrinkHorizontal = crsScaleChilds
+    ChildSizing.ShrinkVertical = crsScaleChilds
+    ChildSizing.Layout = cclLeftToRightThenTopToBottom
+    ChildSizing.ControlsPerLine = 1
+    TabOrder = 0
+  end
+end

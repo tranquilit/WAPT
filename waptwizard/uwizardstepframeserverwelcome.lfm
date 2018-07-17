@@ -1,0 +1,22 @@
+inherited WizardStepFrameServerWelcome: TWizardStepFrameServerWelcome
+  Height = 29
+  Width = 116
+  Anchors = []
+  AutoSize = True
+  ClientHeight = 29
+  ClientWidth = 116
+  ParentColor = False
+  DesignLeft = 2395
+  DesignTop = 391
+  object m_label: TLabel[0]
+    Left = 0
+    Height = 29
+    Top = 0
+    Width = 116
+    Align = alClient
+    Alignment = taCenter
+    Caption = 'Welcome server'
+    Layout = tlCenter
+    ParentColor = False
+  end
+end

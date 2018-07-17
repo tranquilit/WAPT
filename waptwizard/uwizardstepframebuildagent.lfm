@@ -1,0 +1,27 @@
+inherited WizardStepFrameBuildAgent: TWizardStepFrameBuildAgent
+  Height = 65
+  Width = 577
+  ClientHeight = 65
+  ClientWidth = 577
+  DesignLeft = 2243
+  DesignTop = 336
+  object lbl: TLabel[0]
+    Left = 0
+    Height = 15
+    Top = 0
+    Width = 577
+    Align = alTop
+    Alignment = taCenter
+    Caption = 'Now building waptagent...'
+    Layout = tlCenter
+    ParentColor = False
+  end
+  object progress: TProgressBar[1]
+    Left = 0
+    Height = 20
+    Top = 15
+    Width = 577
+    Align = alTop
+    TabOrder = 0
+  end
+end
