@@ -103,3 +103,5 @@ openssl.exe
 /templates/waptexit-logo.png
 .gdb_history
 *.lrj
+waptwizard.exe
+waptwizard/lib
