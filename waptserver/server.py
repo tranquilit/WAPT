@@ -33,7 +33,10 @@ from eventlet import monkey_patch
 # os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
 if platform.system() == 'Windows':
     # interactive debug mode
-    monkey_patch(os=False)
+    if 'rpyc' in sys.modules:
+        monkey_patch(os=False,thread=False)
+    else:
+        monkey_patch(os=False)
 else:
     monkey_patch()
 

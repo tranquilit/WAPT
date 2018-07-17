@@ -766,7 +766,7 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         write_mode = 'wb'
 
     # check hashes if size equal
-    if resume and (md5 is not None or sha1 is not None or sha256 is not None) and target_size is not None and (target_size == actual_size):
+    if resume and (md5 is not None or sha1 is not None or sha256 is not None) and target_size is not None and (target_size <= actual_size):
         if not _check_hash_for_file(target_fn,md5=md5,sha1=sha1,sha256=sha256):
             # restart download...
             target_size = None
