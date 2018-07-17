@@ -70,7 +70,11 @@ end;
 procedure TWizardStepFrameBuildAgent.wizard_show();
 begin
   inherited wizard_show();
-  self.m_wizard.WizardButtonPanel.NextButton.Click;
+
+  // Dont wait user to click on next to start
+  // working
+  m_wizard.click_next_async();
+
 end;
 
 function TWizardStepFrameBuildAgent.wizard_validate(): integer;
@@ -91,10 +95,12 @@ var
   package_certificate : String;
 begin
 
-  server_url := UTF8Encode(m_data.S['server_url']);
+  server_url := UTF8Encode(m_data.S['wapt_server']);
   Assert( Length(Trim(server_url)) > 0 ) ;
   verify_cert:= '0';
-  package_certificate := UTF8Encode( m_data.S['package_certificate'] );
+  package_certificate := UTF8Encode( m_data.S['personal_certificate_path'] );
+
+
 
 
 
@@ -172,8 +178,8 @@ LBL_BUILD_WAPTAGENT:
       [],
       'file',
       params_waptagent._agent_filename,
-      UTF8Encode(m_data.S['server_login']),
-      UTF8Encode(m_data.S['server_password']),
+      UTF8Encode(m_data.S['wapt_user']),
+      UTF8Encode(m_data.S['wapt_password']),
       @on_workevent,
       s
       );
@@ -186,39 +192,50 @@ LBL_BUILD_WAPTAGENT:
     end;
   end;
 
+
+
+  ////////////////////// Building waptupgrade
+  LBL_BUILD_WAPTUPGRADE:
+    self.progress.Visible := false;
+    self.lbl.Caption := 'Prepare building waptupgrade';
+
+
+    // Check there is no other inno setup process running
+    if not wizard_validate_sys_no_innosetup_process( m_wizard ) then
+      exit( -1 );
+
+
+    // Now building
+    building_init_ui( MSG_BUILDING, 100 );
+    r := wapt_ini_waptconsole( s );
+    if r <> 0 then
+    begin
+      building_show_error( m_wizard, nil, 'configuration file waptconsole.ini have not been found, build cannot continue');
+      exit(-1);
+    end;
+    params_waptupgrade.server_username := UTF8Encode( m_data.S['wapt_user'] );
+    params_waptupgrade.server_password := UTF8Encode( m_data.S['wapt_password'] );
+    params_waptupgrade.config_filename := s;
+    params_waptupgrade.dualsign        := false;
+    params_waptupgrade.private_key_password := UTF8Encode( m_data.S['package_private_key_password'] );
+    Build( 'waptupgrade', @CreateSetupParams_waptupgrade, @params_waptupgrade, nil);
+    if params_waptupgrade._result <> 0 then
+    begin
+      building_show_error( m_wizard, nil, params_waptupgrade._err_message );
+      exit(-1);
+    end;
+
+
+
   m_wizard.SetValidationDescription( 'Deleting temp files');
   if not DeleteFile( params_waptagent._agent_filename ) then
   begin
     building_show_error( m_wizard, nil, 'An error has occured while deleting temp files');
     exit(-1);
   end;
+  m_wizard.ClearValidationDescription();
 
 
-////////////////////// Building waptupgrade
-LBL_BUILD_WAPTUPGRADE:
-  self.progress.Visible := false;
-  self.lbl.Caption := 'Prepare building waptupgrade';
-
-
-  // Check there is no other inno setup process running
-  if not wizard_validate_sys_no_innosetup_process( m_wizard ) then
-    exit( -1 );
-
-  // Now building
-  building_init_ui( MSG_BUILDING, 100 );
-  params_waptupgrade.server_username := UTF8Encode( m_data.S['server_login'] );
-  params_waptupgrade.server_password := UTF8Encode( m_data.S['server_password'] );
-  params_waptupgrade.config_filename := IncludeTrailingBackslash(ExtractFileDir(AppIniFilename())) + 'waptconsole.ini';
-  params_waptupgrade.dualsign        := false;
-  params_waptupgrade.private_key_password := UTF8Encode( m_data.S['package_private_key_password'] );
-
-
-  Build( 'waptupgrade', @CreateSetupParams_waptupgrade, @params_waptupgrade, nil);
-  if params_waptupgrade._result <> 0 then
-  begin
-    building_show_error( m_wizard, nil, params_waptupgrade._err_message );
-    exit(-1);
-  end;
 
 
   exit(0);

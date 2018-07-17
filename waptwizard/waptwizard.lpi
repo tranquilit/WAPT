@@ -29,7 +29,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="-h"/>
+        <CommandLineParams Value="-s"/>
       </local>
     </RunParams>
     <RequiredPackages Count="9">
@@ -196,7 +196,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\waptwizard"/>
+      <Filename Value="c:\wapt\waptwizard"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
@@ -212,28 +212,19 @@
     </Linking>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="7">
+    <Exceptions Count="4">
       <Item1>
-        <Name Value="EAbort"/>
+        <Name Value="EIdDnsResolverError"/>
       </Item1>
       <Item2>
-        <Name Value="ECodetoolError"/>
+        <Name Value="EIdSocketError"/>
       </Item2>
       <Item3>
-        <Name Value="EFOpenError"/>
+        <Name Value="EIdHTTPProtocolException"/>
       </Item3>
       <Item4>
-        <Name Value="EClassNotFound"/>
+        <Name Value="EOSError"/>
       </Item4>
-      <Item5>
-        <Name Value="EIdDnsResolverError"/>
-      </Item5>
-      <Item6>
-        <Name Value="EIdSocketError"/>
-      </Item6>
-      <Item7>
-        <Name Value="EIdHTTPProtocolException"/>
-      </Item7>
     </Exceptions>
   </Debugging>
 </CONFIG>

@@ -381,9 +381,11 @@ begin
 
 //    debug_show_step;
 
-  m_data.S['package_certificate'] := filename_certificate_package;
-  m_data.S['package_private_key'] := filename_private_key;;
-  m_data.S['package_private_key_password'] := self.ed_private_key_password_1.Text;
+  m_data.S['default_package_prefix']        := UTF8Decode(self.ed_package_prefix.Text);
+  m_data.S['personal_certificate_path']     := UTF8Decode( IncludeTrailingBackslash(self.ed_private_key_directory.Text) + filename_certificate_package );
+  m_data.S['package_certificate']           := UTF8Decode(filename_certificate_package);
+  m_data.S['package_private_key']           := UTF8Decode(filename_private_key);
+  m_data.S['package_private_key_password']  := UTF8Decode(self.ed_private_key_password_1.Text);
 
     m_wizard.ClearValidationDescription();
     exit(0);

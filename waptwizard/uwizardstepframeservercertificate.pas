@@ -68,8 +68,8 @@ begin
   end;
 
   s := self.rg_hostnames.Items[ self.rg_hostnames.ItemIndex ];
-  self.m_data.S['server_hostname'] := UTF8Decode(s);
-  self.m_data.S['server_url'] := UTF8Decode('https://' + s );
+    self.m_data.S['server_hostname'] := UTF8Decode(s);
+  self.m_data.S['wapt_server'] := UTF8Decode('https://' + s );
   self.m_data.S['server_certificate'] := UTF8Decode( s  + '.crt' );
 
   exit( 0 );

@@ -1,7 +1,7 @@
 inherited WizardConfigServer: TWizardConfigServer
-  Left = 1929
+  Left = 868
   Height = 498
-  Top = 268
+  Top = 266
   Width = 947
   Caption = 'TWizardServer'
   ClientHeight = 498
@@ -30,6 +30,8 @@ inherited WizardConfigServer: TWizardConfigServer
     Width = 947
   end
   inherited WizardManager: TWizardManager
+    OnPageHide = WizardManagerPageHide
+    OnPageShow = WizardManagerPageShow
     Pages = <    
       item
         Caption = 'Wapt server configuration wizard'

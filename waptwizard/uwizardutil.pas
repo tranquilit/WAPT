@@ -179,6 +179,8 @@ function wapt_server_configure_firewall() : integer;
 
 function wapt_server_mongodb_to_postgresql() : integer;
 
+function wapt_ini_waptconsole( var s : String ) : integer;
+
 
 function flip( a : TStringArray ) : TStringArray;
 
@@ -578,10 +580,11 @@ var
   SignDigests : String;
   v: Variant;
   s : String;
-
+  p : PShowLoadingFrameParams;
 begin
   v := nil;
 
+//  show_loading_frame_threadsafe( p );
   // Create waptupgrade package (after waptagent as we need the updated waptagent.sha1 file)
   SignDigests := 'sha256';
   if params^.dualsign then
@@ -765,6 +768,9 @@ begin
 
   http.Free;
 end;
+
+
+
 
 function http_reponse_code(var response_code: integer; const url: String ): integer;
 var
@@ -1466,6 +1472,19 @@ begin
      fileutil.DeleteDirectory(WaptBaseDir+'\waptserver\apache-win32\', false);
 
   exit(0);
+end;
+
+function wapt_ini_waptconsole(var s: String): integer;
+begin
+  s := ExcludeTrailingBackslash( GetAppConfigDir(False) );
+  s := ExtractFileDir(s);
+  s := IncludeTrailingBackslash(s) + 'waptconsole';
+  s := IncludeTrailingBackslash(s) + 'waptconsole.ini';
+  if FileExists(s) then
+    result := 0
+  else
+    result := -1;
+
 end;
 
 

@@ -6,8 +6,8 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
+  dynlibs,
   Interfaces, // this includes the LCL widgetset
-
   tiscommon, uwizard, dmwaptpython,
   Dialogs, Forms, runtimetypeinfocontrols, luicontrols,
   uwizardresetserverpassword,

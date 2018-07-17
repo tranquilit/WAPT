@@ -1,7 +1,7 @@
 inherited WizardConfigConsole: TWizardConfigConsole
-  Left = 1943
+  Left = 583
   Height = 476
-  Top = 530
+  Top = 529
   Width = 828
   Caption = 'TWizardConsole'
   ClientHeight = 476
@@ -61,6 +61,7 @@ inherited WizardConfigConsole: TWizardConfigConsole
       end    
       item
         Caption = 'Finished'
+        ControlClassName = 'TWizardStepFrameConsoleFinished'
         Description = 'Console configuration finished'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end>

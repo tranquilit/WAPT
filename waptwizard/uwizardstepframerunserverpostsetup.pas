@@ -53,7 +53,10 @@ begin
   inherited wizard_show();
   self.Align := alClient;
 
-  self.m_wizard.WizardButtonPanel.NextButton.Click;
+  // Dont wait user to click on next to start
+  // working
+  m_wizard.click_next_async();
+
 end;
 
 procedure TWizardStepFrameRunServerPostSetup.on_run_tick(sender: TObject);
@@ -119,13 +122,10 @@ begin
   end;
 
   // ping
-  s := 'http://' + UTF8Encode(self.m_data.S['server_hostname']);
+  s := UTF8Encode(self.m_data.S['wapt_server']);
   if not wizard_validate_waptserver_ping( m_wizard, s, nil ) then
     exit( -1 );
 
-  s := 'https://' + UTF8Encode(self.m_data.S['server_hostname']);
-  if not wizard_validate_waptserver_ping( m_wizard, s, nil ) then
-    exit( -1 );
 
   exit( 0 );
 

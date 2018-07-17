@@ -56,6 +56,7 @@ type
     procedure on_button_next_click( sender : TObject );
     procedure set_buttons_enable( enable : Boolean );
 
+    procedure _click_next_async( data : PtrInt );
 
   protected
     m_data : ISuperObject;
@@ -69,6 +70,7 @@ type
     procedure show_error(   const msg : String ); virtual overload; final;
     procedure show_validation_error( ctrl : TControl; msg : String ); virtual; final;
 
+    procedure click_next_async();
 
   end;
 
@@ -314,9 +316,17 @@ begin
   Application.ProcessMessages;
 end;
 
+procedure TWizard._click_next_async(data: PtrInt);
+begin
+  self.WizardButtonPanel.NextButton.Click;
+end;
 
 
+procedure TWizard.click_next_async();
+begin
+  Application.QueueAsyncCall( @_click_next_async, 0 );
 
+end;
 
 
 
@@ -353,6 +363,12 @@ begin
   self.lbl_current_task.Caption :=  msg;
 
 end;
+
+
+
+
+
+
 
 
 procedure TWizard.SetValidationDescription(description: String);

@@ -77,8 +77,8 @@ begin
   m_wizard.ClearValidationDescription();
 
 
-  self.m_data.S['server_user'] := 'admin';
-  self.m_data.S['server_password'] := self.ed_password_1.Text;
+  self.m_data.S['wapt_user'] := 'admin';
+  self.m_data.S['wapt_password'] := self.ed_password_1.Text;
 
   exit(0);
 

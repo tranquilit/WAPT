@@ -6,8 +6,7 @@ interface
 
 uses
   dmwaptpython, Classes, SysUtils, Forms, Controls, Graphics, Dialogs, uwizard,
-  uwizardstepframebuildagent, uwizardstepframepackage, ComCtrls,
-  ExtCtrls, StdCtrls, PopupNotifier, EditBtn, WizardControls;
+  ComCtrls,ExtCtrls, StdCtrls, PopupNotifier, EditBtn, WizardControls;
 
 type
 
@@ -32,8 +31,6 @@ type
     ts_package_configuration: TTabSheet;
     ts_server_info: TTabSheet;
     ts_welcome: TTabSheet;
-    frm_WizardStepFrameBuildAgent: TWizardStepFrameBuildAgent;
-    frm_WizardStepFramePackage: TWizardStepFramePackage;
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -73,6 +70,11 @@ var
 implementation
 
 uses
+  uwizardstepframeconsoleserver,
+  uwizardstepframeconsolewelcome,
+  uwizardstepframepackage,
+  uwizardstepframebuildagent,
+  uwizardstepframeconsolefinished,
   waptcommon,
   tiscommon,
   uwizardutil,
@@ -174,9 +176,6 @@ begin
   // ts_package_prefix
   self.ed_package_prefix.Clear;
 
-
-  self.frm_WizardStepFrameBuildAgent.clear();
-  self.frm_WizardStepFramePackage.clear();
 
   // ts_building_waptagent
 
@@ -303,7 +302,7 @@ begin
     repo_url := url_concat( self.ed_server_url.Text, '/wapt') ;
 
     // personal_certificate_path
-    personal_certificate_path :=  fs_path_concat('c:\private', self.frm_WizardStepFramePackage.package_certificate() );
+//    personal_certificate_path :=  fs_path_concat('c:\private', self.frm_WizardStepFramePackage.package_certificate() );
 
     // Now Writing settings
     try
