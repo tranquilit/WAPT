@@ -11,6 +11,15 @@
       <UseXPManifest Value="True"/>
       <Icon Value="0"/>
     </General>
+    <VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <AutoIncrementBuild Value="True"/>
+      <MajorVersionNr Value="1"/>
+      <MinorVersionNr Value="6"/>
+      <RevisionNr Value="2"/>
+      <BuildNr Value="1"/>
+      <StringTable LegalCopyright="Tranquil IT Systems 2012-2018" ProductVersion="1.6.2"/>
+    </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
     </BuildModes>
@@ -21,7 +30,6 @@
       <local>
         <FormatVersion Value="1"/>
         <CommandLineParams Value="-h"/>
-        <WorkingDirectory Value=""/>
       </local>
     </RunParams>
     <RequiredPackages Count="9">
