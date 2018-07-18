@@ -55,6 +55,7 @@ type
     m_wizard_panel_proc_next_onclick : TNotifyEvent;
     procedure on_button_next_click( sender : TObject );
     procedure on_button_finish_click( sender : TObject );
+    procedure on_button_cancel_click( sender : TObject );
     procedure set_buttons_enable( enable : Boolean );
     procedure _click_next_async( data : PtrInt );
 
@@ -115,7 +116,8 @@ begin
   m_wizard_panel_proc_next_onclick := self.WizardButtonPanel.NextButton.OnClick;
   self.WizardButtonPanel.NextButton.OnClick := @on_button_next_click;
 
-  self.WizardButtonPanel.FinishButton.OnClick:= @on_button_finish_click;
+  self.WizardButtonPanel.FinishButton.OnClick := @on_button_finish_click;
+  self.WizardButtonPanel.CancelButton.OnClick := @on_button_cancel_click;
 
   //
   self.panel_center.Caption := '';
@@ -321,6 +323,17 @@ procedure TWizard.on_button_finish_click(sender: TObject);
 begin
   current_step(self).wizard_finish();
   Close;
+end;
+
+procedure TWizard.on_button_cancel_click(sender: TObject);
+var
+  b : boolean;
+begin
+  b := true;
+  current_step(self).wizard_cancel(b);
+  self.WizardManager.DoAction(waCancel);
+  if b then
+    Close;
 end;
 
 procedure TWizard.set_buttons_enable( enable : Boolean);

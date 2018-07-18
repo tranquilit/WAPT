@@ -31,6 +31,7 @@ type
     procedure wizard_hide(); virtual;
     function  wizard_validate() : integer; virtual; abstract;
     procedure wizard_finish(); virtual;
+    procedure wizard_cancel( var bClose : boolean ); virtual;
     procedure clear(); virtual;
     procedure GetPageInfo(var PageInfo: TWizardPageInfo); virtual;
 
@@ -83,6 +84,10 @@ begin
 end;
 
 procedure TWizardStepFrame.wizard_finish();
+begin
+end;
+
+procedure TWizardStepFrame.wizard_cancel(var bClose: boolean);
 begin
 end;
 
