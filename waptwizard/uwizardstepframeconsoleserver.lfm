@@ -18,7 +18,7 @@ inherited WizardStepFrameConsoleServer: TWizardStepFrameConsoleServer
     Left = 67
     Height = 23
     Top = 0
-    Width = 168
+    Width = 280
     TabOrder = 0
     Text = 'ed_server_url'
   end
@@ -34,7 +34,7 @@ inherited WizardStepFrameConsoleServer: TWizardStepFrameConsoleServer
     Left = 67
     Height = 23
     Top = 28
-    Width = 168
+    Width = 280
     TabOrder = 1
     Text = 'ed_server_username'
   end
@@ -50,7 +50,7 @@ inherited WizardStepFrameConsoleServer: TWizardStepFrameConsoleServer
     Left = 67
     Height = 23
     Top = 58
-    Width = 168
+    Width = 280
     EchoMode = emPassword
     PasswordChar = '*'
     TabOrder = 2

@@ -36,6 +36,7 @@ type
 implementation
 
 uses
+  IniFiles,
   uwizardutil,
   uwizardvalidattion,
   Dialogs,
@@ -47,12 +48,35 @@ uses
 { TWizardStepFrameConsoleServer }
 
 procedure TWizardStepFrameConsoleServer.wizard_load(w: TWizard; data: ISuperObject);
+const
+  GLOBAL : String = 'global';
+var
+  r : integer;
+  s : String;
+  ini : TIniFile;
 begin
   inherited wizard_load( w, data );
 
   self.ed_server_url.Text := '';
   self.ed_server_username.Text := 'admin';
   self.ed_server_password.Text := '';
+
+  //
+  ini := nil;
+  r := wapt_ini_waptconsole(s);
+  // r = 0 -> file exist
+  if r = 0 then
+  begin
+    try
+      ini := TIniFile.Create(s);
+      self.ed_server_url.Text := ini.ReadString( GLOBAL, 'wapt_server', self.ed_server_url.Text );
+    finally
+      if Assigned(ini) then
+        FreeAndNil(ini);
+    end;
+  end;
+
+
 
 end;
 
