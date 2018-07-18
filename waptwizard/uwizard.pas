@@ -300,7 +300,11 @@ begin
 
 
   set_buttons_enable( false );
+  try
     i := step.wizard_validate();
+  except on Ex : Exception do
+    self.show_validation_error( nil, ex.Message );
+  end;
   set_buttons_enable( true );
 
   if i <> 0 then

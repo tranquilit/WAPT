@@ -17,7 +17,8 @@ type
 
   end;
 
-
+var
+  WizardResetServerPassword  : TWizardResetServerPassword;
   // 1 Welcome
   // 2 Set password
   // 3 Restart services

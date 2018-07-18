@@ -219,6 +219,7 @@ uses
   uvisloading,
   dmwaptpython;
 
+
 const
   HTTP_TIMEOUT : integer = 4 * 1000;
 
@@ -583,6 +584,8 @@ var
   p : PShowLoadingFrameParams;
 begin
   v := nil;
+
+
 
 //  show_loading_frame_threadsafe( p );
   // Create waptupgrade package (after waptagent as we need the updated waptagent.sha1 file)

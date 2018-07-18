@@ -6,9 +6,13 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
+  sysutils,
   dynlibs,
+
+  Classes,
+  windows,
   Interfaces, // this includes the LCL widgetset
-  tiscommon, uwizard, dmwaptpython,
+  tiscommon, uwizard, dmwaptpython, uvisloading,
   Dialogs, Forms, runtimetypeinfocontrols, luicontrols,
   uwizardresetserverpassword,
   uwizardconfigconsole,
@@ -29,83 +33,38 @@ begin
   halt(0);
 end;
 
-
-
-
-
-procedure start_configuration_console();
-var
-  w : TWizardConfigConsole;
-begin
-
-  if not IsAdmin then
-  begin
-    MessageDlg( Application.Name, 'Console configuration wizard need administrator priviliges', mtError, [mbOK], 0 );
-    halt(0);
-  end;
-
-  w := TWizardConfigConsole.create( nil );
-  w.ShowModal;
-  w.Free;
-  halt(0);
-end;
-
-procedure start_configuration_server();
-var
-  w : TWizardConfigServer;
+procedure ensure_prerequisites;
 begin
   if not IsAdmin then
   begin
-      MessageDlg( Application.Name, 'Server configuration wizard need administrator priviliges', mtError, [mbOK], 0 );
-      halt(0);
+      MessageDlg( Application.Name, 'Administror privileges are required', mtError, [mbOK], 0 );
+      halt(-1);
   end;
 
-  w := TWizardConfigServer.create( nil );
-  w.ShowModal;
-  w.Free;
-  halt(0);
 end;
-
-procedure start_reset_password();
-var
-    w : TWizardResetServerPassword;
-begin
-  if not IsAdmin then
-  begin
-      MessageDlg( Application.Name, 'Reset password wizard need ', mtError, [mbOK], 0 );
-      halt(0);
-  end;
-
-  w := TWizardResetServerPassword.create( nil );
-  w.ShowModal;
-  w.Free;
-  halt(0);
-end;
-
-procedure process_options;
-begin
-
-  // -c : config console
-  if Application.HasOption('c') then
-    start_configuration_console();
-
-  // -s : config server
-  if Application.HasOption('s') then
-    start_configuration_server();
-
-  // -r : reset server password
-  if Application.HasOption('r') then
-    start_reset_password();
-
-  show_help;
-end;
-
-
 
 begin
   RequireDerivedFormResource := True;
   Application.Initialize;
+
+    // -c : config console
+  if Application.HasOption('c') then
+    Application.CreateForm( TWizardConfigConsole,  WizardConfigConsole )
+
+  // -s : config server
+  else if Application.HasOption('s') then
+  Application.CreateForm( TWizardConfigServer,  WizardConfigServer )
+
+  // -r : reset server password
+  else if Application.HasOption('r') then
+    Application.CreateForm( TWizardResetServerPassword, WizardResetServerPassword )
+
+  else
+    show_help;
+
   Application.CreateForm(TDMPython, DMPython);
-  process_options;
+
+  ensure_prerequisites;
+  Application.Run;
 end.
 

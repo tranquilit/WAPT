@@ -102,9 +102,6 @@ begin
 
 
 
-
-
-
 ////////////////////// Building waptagent
 LBL_BUILD_WAPTAGENT:
   progress.Visible := false;
@@ -191,7 +188,6 @@ LBL_BUILD_WAPTAGENT:
       exit(-1);
     end;
   end;
-
 
 
   ////////////////////// Building waptupgrade
