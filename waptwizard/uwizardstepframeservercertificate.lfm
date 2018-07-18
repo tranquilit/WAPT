@@ -1,16 +1,17 @@
 inherited WizardStepFrameServerCertificate: TWizardStepFrameServerCertificate
-  Height = 206
-  Width = 300
-  ClientHeight = 206
-  ClientWidth = 300
+  Height = 174
+  Width = 317
+  ClientHeight = 174
+  ClientWidth = 317
   object rg_hostnames: TRadioGroup[0]
     Left = 0
-    Height = 206
+    Height = 174
     Top = 0
-    Width = 300
+    Width = 317
     Align = alClient
     AutoFill = True
-    Caption = 'Select server hostname'
+    AutoSize = True
+    Caption = 'Select server url that wapt client can contact server'
     ChildSizing.LeftRightSpacing = 6
     ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
     ChildSizing.EnlargeVertical = crsHomogenousChildResize

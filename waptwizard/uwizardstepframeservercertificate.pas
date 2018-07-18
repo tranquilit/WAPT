@@ -51,7 +51,11 @@ begin
   if i = 0 then
   begin
     for i := 0 to sl.Count -1 do
+    begin
+      if 'localhost' = sl.Strings[i] then
+        continue;
       self.rg_hostnames.Items.AddObject( sl.Strings[i], sl.Objects[i] );
+    end;
   end;
 
 end;
