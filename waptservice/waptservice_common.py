@@ -503,8 +503,8 @@ class WaptTask(object):
         try:
             if self.wapt:
                 self.wapt.task_is_cancelled.clear()
-            # to keep track of external processes launched by Wapt.run()
-            self.wapt.pidlist = self.external_pids
+                # to keep track of external processes launched by Wapt.run()
+                self.wapt.pidlist = self.external_pids
             self._run()
             self.progress=100
         finally:
