@@ -52,11 +52,7 @@ uses
   IniFiles,
   ucrypto_pbkdf2,
   uwizardutil,
-  uwizardvalidattion,
-  tiscommon,
-  waptcommon,
-  waptwinutils,
-  uwizardstep;
+  waptcommon;
 
 
 
@@ -77,18 +73,18 @@ begin
 end;
 
 
+
+
 procedure TWizardConfigServer.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
   r : integer;
 begin
-  {
-  if (self.PageControl.ActivePage = ts_finished) and self.cb_launch_console.Checked then
+  if self.m_data.B['launch_console'] then
   begin
     r := process_launch( 'waptconsole.exe' );
     if r <> 0 then
       self.show_error( 'An error has occured while launching the console');
   end;
-  }
 end;
 
 

@@ -54,9 +54,11 @@ type
   private
     m_wizard_panel_proc_next_onclick : TNotifyEvent;
     procedure on_button_next_click( sender : TObject );
+    procedure on_button_finish_click( sender : TObject );
     procedure set_buttons_enable( enable : Boolean );
-
     procedure _click_next_async( data : PtrInt );
+
+
 
   protected
     m_data : ISuperObject;
@@ -108,9 +110,12 @@ end;
 procedure TWizard.FormCreate(Sender: TObject);
 begin
 
+
   // Trick Next
   m_wizard_panel_proc_next_onclick := self.WizardButtonPanel.NextButton.OnClick;
   self.WizardButtonPanel.NextButton.OnClick := @on_button_next_click;
+
+  self.WizardButtonPanel.FinishButton.OnClick:= @on_button_finish_click;
 
   //
   self.panel_center.Caption := '';
@@ -132,9 +137,6 @@ procedure TWizard.PopupNotifierClose(Sender: TObject; var CloseAction: TCloseAct
 begin
   self.ClearValidationError();
 end;
-
-
-
 
 function TWizard.show_info(const msg: String; buttons: TMsgDlgButtons ): TModalResult;
 begin
@@ -312,6 +314,11 @@ begin
 
   self.m_wizard_panel_proc_next_onclick( sender );
 
+end;
+procedure TWizard.on_button_finish_click(sender: TObject);
+begin
+  current_step(self).wizard_finish();
+  Close;
 end;
 
 procedure TWizard.set_buttons_enable( enable : Boolean);

@@ -8,13 +8,14 @@ uses
   uwizard,
   uwizardstepframe,
   superobject,
-  Classes, SysUtils, FileUtil, Forms, Controls;
+  Classes, SysUtils, FileUtil, Forms, Controls, StdCtrls;
 
 type
 
   { TWizardStepFrameServerFinish }
 
   TWizardStepFrameServerFinish = class(TWizardStepFrame)
+    cb_start_console: TCheckBox;
   private
 
   public
@@ -22,6 +23,7 @@ type
     // TWizardStepFrame
     procedure wizard_load( w : TWizard; data : ISuperObject );   override; final;
     function wizard_validate() : integer;  override; final;
+    procedure wizard_finish(); override; final;
 
   end;
 
@@ -39,6 +41,11 @@ end;
 function TWizardStepFrameServerFinish.wizard_validate(): integer;
 begin
   exit(0);
+end;
+
+procedure TWizardStepFrameServerFinish.wizard_finish();
+begin
+  self.m_data.B['launch_console'] := self.cb_start_console.Checked;
 end;
 
 

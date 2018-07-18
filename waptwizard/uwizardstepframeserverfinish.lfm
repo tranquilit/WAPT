@@ -1,9 +1,12 @@
-object WizardStepFrameServerFinish: TWizardStepFrameServerFinish
-  Left = 0
-  Height = 240
-  Top = 0
-  Width = 320
-  TabOrder = 0
-  DesignLeft = 349
-  DesignTop = 27
+inherited WizardStepFrameServerFinish: TWizardStepFrameServerFinish
+  object cb_start_console: TCheckBox[0]
+    Left = 112
+    Height = 19
+    Top = 88
+    Width = 88
+    Caption = 'Start console'
+    Checked = True
+    State = cbChecked
+    TabOrder = 0
+  end
 end
