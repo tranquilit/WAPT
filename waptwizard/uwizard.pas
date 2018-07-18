@@ -282,6 +282,8 @@ begin
   self.TitleLabel.Caption := Page.Caption;
   self.DescriptionLabel.Caption := Page.Description;
 
+  self.ClearValidationDescription();
+  self.ClearValidationError();
 
   step.wizard_show();
 
