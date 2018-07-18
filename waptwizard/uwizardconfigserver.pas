@@ -146,10 +146,7 @@ begin
   try
 
     // waptconsole.ini
-    s := ExtractFileDir(AppIniFilename() );
-    s := ExtractFileDir(s);
-    s := IncludeTrailingBackslash(s) + 'waptconsole';
-    s := IncludeTrailingBackslash(s) + 'waptconsole.ini';
+    wapt_ini_waptconsole(s);
     ini := TIniFile.Create( s );
     ini.WriteString( GLOB, 'check_certificates_validity', UTF8Encode(self.m_data.S['check_certificates_validity']) );
     ini.WriteString( GLOB, 'verify_cert',                 UTF8Encode(self.m_data.S['verify_cert']) );
