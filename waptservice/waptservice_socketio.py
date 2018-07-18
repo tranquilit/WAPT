@@ -430,6 +430,7 @@ class WaptSocketIOClient(threading.Thread):
                             # In this case; wait() immediately returns, leading to an indefinite loop eating 1 core.
                             if time.time() - startwait < self.config.websockets_check_config_interval-2:
                                 raise Exception('Websocket client seems disconnected. Force Websocket connection to be recreated')
+
                     elif not self.config.websockets_host:
                         self.socketio_client = None
                         time.sleep(self.config.websockets_retry_delay)

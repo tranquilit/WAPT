@@ -1108,7 +1108,7 @@ class WaptTaskManager(threading.Thread):
         self.name = 'WaptTaskManager'
         self.status_lock = threading.RLock()
 
-        self.wapt=None
+        self.wapt = None
         self.tasks = []
 
         self.tasks_queue = Queue.PriorityQueue()
@@ -1431,10 +1431,10 @@ class WaptTaskManager(threading.Thread):
 
     def start_ipaddr_monitoring(self):
         nac = ctypes.windll.iphlpapi.NotifyAddrChange
-        def addr_change(wapt):
+        def addr_change(taskman):
             while True:
                 nac(0, 0)
-                wapt.add_task(WaptNetworkReconfig())
+                taskman.add_task(WaptNetworkReconfig())
 
         nm = threading.Thread(target=addr_change,args=(self,),name='ip_monitoring')
         nm.daemon = True
