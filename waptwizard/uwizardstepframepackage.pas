@@ -22,8 +22,6 @@ type
     ed_private_key_name: TEdit;
     ed_private_key_password_1: TEdit;
     ed_private_key_password_2: TEdit;
-    GroupBox1: TGroupBox;
-    GroupBox2: TGroupBox;
     lbl_package_prefix: TLabel;
     lbl_private_key_dir: TLabel;
     lbl_private_key_name: TLabel;
