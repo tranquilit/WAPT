@@ -5032,7 +5032,7 @@ class Wapt(BaseObjectClass):
         _add_data_if_updated(inv,'installed_softwares',setuphelpers.installed_softwares(''),old_hashes,new_hashes)
         _add_data_if_updated(inv,'installed_packages',[p.as_dict() for p in self.waptdb.installed(include_errors=True,include_setup=False)],old_hashes,new_hashes)
         _add_data_if_updated(inv,'last_update_status', self.get_last_update_status(),old_hashes,new_hashes)
-        if self.waptwua_enabled:
+        if self.get_wapt_edition() == 'enterprise':
             try:
                 import waptenterprise.waptwua.client
                 wua_client = waptenterprise.waptwua.client.WaptWUA(self)
@@ -5041,9 +5041,11 @@ class Wapt(BaseObjectClass):
                     waptwua_updates = wua_client.stored_updates()
                     waptwua_updates_localstatus = wua_client.stored_updates_localstatus()
 
+                    _add_data_if_updated(inv,'wuaserv_status', wua_client.get_wuauserv_status(),old_hashes,new_hashes)
                     _add_data_if_updated(inv,'waptwua_status', waptwua_status,old_hashes,new_hashes)
                     _add_data_if_updated(inv,'waptwua_updates', waptwua_updates,old_hashes,new_hashes)
                     _add_data_if_updated(inv,'waptwua_updates_localstatus', waptwua_updates_localstatus,old_hashes,new_hashes)
+
                 finally:
                     wua_client = None
 
