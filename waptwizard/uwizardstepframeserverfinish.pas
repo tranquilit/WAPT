@@ -23,7 +23,7 @@ type
     // TWizardStepFrame
     procedure wizard_load( w : TWizard; data : ISuperObject );   override; final;
     function wizard_validate() : integer;  override; final;
-    procedure wizard_finish(); override; final;
+    procedure wizard_finish( var bClose : boolean ); override; final;
 
   end;
 
@@ -43,9 +43,10 @@ begin
   exit(0);
 end;
 
-procedure TWizardStepFrameServerFinish.wizard_finish();
+procedure TWizardStepFrameServerFinish.wizard_finish(var bClose: boolean);
 begin
   self.m_data.B['launch_console'] := self.cb_start_console.Checked;
+  bClose := true;
 end;
 
 

@@ -320,9 +320,13 @@ begin
 
 end;
 procedure TWizard.on_button_finish_click(sender: TObject);
+var
+  b : boolean;
 begin
-  current_step(self).wizard_finish();
-  Close;
+  b := true;
+  current_step(self).wizard_finish(b);
+  if b then
+    Close;
 end;
 
 procedure TWizard.on_button_cancel_click(sender: TObject);
