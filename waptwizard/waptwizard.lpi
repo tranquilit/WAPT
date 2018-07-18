@@ -8,7 +8,6 @@
       <MainUnit Value="0"/>
       <Title Value="waptwizard"/>
       <ResourceType Value="res"/>
-      <UseXPManifest Value="True"/>
       <Icon Value="0"/>
     </General>
     <VersionInfo>
