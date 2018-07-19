@@ -50,19 +50,12 @@ uses
   uwizardstepframebuildagent,
   uwizardstepframeconsolefinished,
   waptcommon,
-  tiscommon,
   uwizardutil,
-  uwizardvalidattion,
-  uwizardstep,
   superobject,
   FileUtil,
   IniFiles;
 
 {$R *.lfm}
-
-const
-  DEFAULT_COUNTRY_CODE: String = 'FR';
-
 
 { TWizardConfigConsole }
 
@@ -80,16 +73,12 @@ procedure TWizardConfigConsole.FormClose(Sender: TObject; var CloseAction: TClos
 var
   r : integer;
 begin
-
-
-  {
-  if (self.PageControl.ActivePage = ts_finished) and self.cb_launch_console.Checked then
+  if self.m_data.B['launch_console'] then
   begin
     r := process_launch( 'waptconsole.exe' );
     if r <> 0 then
       self.show_error( 'An error has occured while launching the console');
   end;
-  }
 end;
 
 
@@ -173,12 +162,14 @@ begin
     if not self.m_check_certificates_validity then
       check_certificates_validity := '0';
 
-    r := https_certificate_pinned_filename( verify_cert, wapt_server );
-    verify_cert := '0';
 
     wapt_server     := UTF8Encode(self.m_data.S[UTF8Decode(INI_WAPT_SERVER)]);
     repo_url        := url_concat( wapt_server, '/wapt') ;
     package_prefix  := UTF8Encode(self.m_data.S[UTF8Decode(INI_DEFAULT_PACKAGE_PREFIX)]);
+    personal_certificate_path := UTF8Encode(self.m_data.S[UTF8Decode(INI_PERSONAL_CERTIFICATE_PATH)]);
+
+    r := https_certificate_pinned_filename( verify_cert, wapt_server );
+    verify_cert := '0';
 
     // Now Writing settings
     try

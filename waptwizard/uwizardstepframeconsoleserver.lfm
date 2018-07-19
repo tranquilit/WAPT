@@ -4,8 +4,8 @@ inherited WizardStepFrameConsoleServer: TWizardStepFrameConsoleServer
   AutoSize = True
   ClientHeight = 237
   ClientWidth = 655
-  DesignLeft = 1986
-  DesignTop = 275
+  DesignLeft = 1144
+  DesignTop = 273
   object lbl_server_url: TLabel[0]
     Left = 4
     Height = 15

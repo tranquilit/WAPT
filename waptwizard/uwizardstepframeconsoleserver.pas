@@ -28,6 +28,7 @@ type
   public
   // TWizardStepFrame
   procedure wizard_load(w: TWizard; data: ISuperObject);  override; final;
+  procedure wizard_show(); override; final;
   function wizard_validate() : integer;  override; final;
   procedure clear();  override; final;
 
@@ -77,6 +78,19 @@ begin
 
 
 
+end;
+
+procedure TWizardStepFrameConsoleServer.wizard_show();
+begin
+  inherited;
+  self.ed_server_url.SetFocus;
+
+  self.ed_server_url.TabOrder                             := 0;
+  self.ed_server_username.TabOrder                        := 1;
+  self.ed_server_password.TabOrder                        := 3;
+  self.m_wizard.WizardButtonPanel.NextButton.TabOrder     := 4;
+  self.m_wizard.WizardButtonPanel.PreviousButton.TabOrder := 5;
+  self.m_wizard.WizardButtonPanel.CancelButton.TabOrder   := 6;
 end;
 
 function TWizardStepFrameConsoleServer.wizard_validate(): integer;
@@ -202,8 +216,8 @@ begin
     exit(-1);
 
 
-  m_data.S[UTF8Decode(INI_WAPT_SERVER)] := UTF8Decode(self.ed_server_url.Text);
-  m_data.S[UTF8Decode(INI_WAPT_USER)]   := UTF8Decode(self.ed_server_username.Text);
+  m_data.S[UTF8Decode(INI_WAPT_SERVER)]  := UTF8Decode(self.ed_server_url.Text);
+  m_data.S[UTF8Decode(INI_WAPT_USER)]    := UTF8Decode(self.ed_server_username.Text);
   m_data.S[UTF8Decode(INI_WAPT_PASSWORD)]:= UTF8Decode(self.ed_server_password.Text);
 
   m_wizard.ClearValidationDescription();
