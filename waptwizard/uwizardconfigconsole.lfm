@@ -9,6 +9,7 @@ inherited WizardConfigConsole: TWizardConfigConsole
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
+  Position = poWorkAreaCenter
   inherited WizardButtonPanel: TWizardButtonPanel
     Top = 426
     Width = 828
