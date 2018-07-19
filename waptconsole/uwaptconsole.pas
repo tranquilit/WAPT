@@ -1029,15 +1029,23 @@ end;
 
 procedure TVisWaptGUI.EdHardwareFilterChange(Sender: TObject);
 var
-  data : ISuperObject;
+  host_infos,data,inventory_keys,key : ISuperObject;
 begin
   if (Gridhosts.FocusedRow <> nil) then
   begin
-    data := Gridhosts.FocusedRow['_host_infos'];
-    if data = Nil then
+    host_infos := Gridhosts.FocusedRow;
+    inventory_keys := host_infos['_inventory_keys'];
+    if (inventory_keys = Nil) then
     begin
-      data := InventoryData(GridHosts.FocusedRow.S['uuid']);
-      Gridhosts.FocusedRow['_host_infos'] := data;
+      data := InventoryData(host_infos.S['uuid']);
+      host_infos.Merge(data);
+      host_infos['_inventory_keys'] := data.AsObject.GetNames;
+    end
+    else
+    begin
+      data := TSuperObject.Create(stObject);
+      for key in inventory_keys do
+        data[key.AsString] := host_infos[key.AsString];
     end;
     TreeLoadData(GridhostInventory, FilterHardware(data));
     GridhostInventory.FullExpand;

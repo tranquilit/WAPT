@@ -375,6 +375,7 @@ class WsusUpdates(WaptBaseModel):
     reboot_behaviour = CharField(null=True)
     can_request_user_input = CharField(null=True)
     requires_network_connectivity = BooleanField(null=True)
+    downloaded_on = CharField(null=True)
 
 
 class HostWuaStatus(WaptBaseModel):
@@ -1248,6 +1249,10 @@ def upgrade_db_structure():
                 opes.append(migrator.add_column(Hosts._meta.name, 'waptwua_status',Hosts.waptwua_status))
             if not 'wuauserv_status' in columns:
                 opes.append(migrator.add_column(Hosts._meta.name, 'wuauserv_status',Hosts.wuauserv_status))
+
+            columns = [c.name for c in wapt_db.get_columns('wsusupdates')]
+            if not 'downloaded_on' in columns:
+                opes.append(migrator.add_column(WsusUpdates._meta.name, 'downloaded_on',WsusUpdates.downloaded_on))
             migrate(*opes)
 
             (v, created) = ServerAttribs.get_or_create(key='db_version')
