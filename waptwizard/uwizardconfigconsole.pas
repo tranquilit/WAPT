@@ -70,7 +70,7 @@ var
 implementation
 
 uses
-  uwapt_ini_conts,
+  uwapt_ini,
   uwizardstepframeconsoleserver,
   uwizardstepframeconsolewelcome,
   uwizardstepframepackage,

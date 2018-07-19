@@ -48,7 +48,7 @@ implementation
 {$R *.lfm}
 
 uses
-  uwapt_ini_conts,
+  uwapt_ini,
   DCPsha256,
   IniFiles,
   ucrypto_pbkdf2,
