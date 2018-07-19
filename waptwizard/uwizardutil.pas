@@ -178,6 +178,7 @@ function wapt_server_firewall_is_configured( var is_configured : boolean ) : int
 function wapt_server_configure_firewall() : integer;
 
 function wapt_server_mongodb_to_postgresql() : integer;
+function wapt_server_installation( var path : String ) : integer;
 
 
 
@@ -1474,6 +1475,74 @@ begin
      fileutil.DeleteDirectory(WaptBaseDir+'\waptserver\apache-win32\', false);
 
   exit(0);
+end;
+
+function wapt_server_installation(var path: String): integer;
+label
+  LBL_FAILED;
+const
+  SERVICE_WAPTSERVER : String = 'WAPTServer';
+var
+   h_manager : SC_HANDLE;
+   h_service : SC_HANDLE;
+   lpsc      : LPQUERY_SERVICE_CONFIG;
+   dwBytesNeeded : DWORD;
+   s : String;
+   b: BOOL;
+   r : integer;
+begin
+
+  h_manager     := 0;
+  h_service     := 0;
+  lpsc          := nil;
+  dwBytesNeeded := 0;
+
+  h_manager:= OpenSCManager( nil, nil, SC_MANAGER_ALL_ACCESS );
+  if h_manager = 0 then
+    goto LBL_FAILED;
+
+  s := SERVICE_WAPTSERVER;
+  SetLength(s, Length(s) + 1 );
+  s[Length(s)] := #0;
+
+  h_service := OpenService( h_manager, PChar(@s[1]), SERVICE_QUERY_CONFIG );
+  if h_service = 0 then
+    goto LBL_FAILED;
+
+  b := QueryServiceConfig( h_service, nil, 0, dwBytesNeeded );
+  if b then
+    goto LBL_FAILED;
+  lpsc := LPQUERY_SERVICE_CONFIG( GetMem(dwBytesNeeded));
+  FillChar( lpsc^, dwBytesNeeded, 0 );
+
+  b := QueryServiceConfig( h_service, lpsc, dwBytesNeeded, dwBytesNeeded );
+  if not b then
+    goto LBL_FAILED;
+
+
+  s := String(lpsc^.lpBinaryPathName);
+  r := Pos( 'waptservice', s );
+  if r = 0 then
+    goto LBL_FAILED;
+
+  s := Copy( s, 1, r -1 );
+  path := ExcludeTrailingBackslash(s);
+
+  Freemem(lpsc);
+  CloseServiceHandle(h_service);
+  CloseServiceHandle(h_manager);
+  exit(0);
+
+LBL_FAILED:
+  if lpsc <> nil then
+    Freemem(lpsc);
+
+  if h_service <> 0 then
+    CloseServiceHandle( h_service );
+  if h_manager <> 0 then
+  CloseServiceHandle( h_manager );
+
+  exit(-1);
 end;
 
 
