@@ -29,6 +29,7 @@ type
     procedure wizard_load( w : TWizard; data : ISuperObject ); virtual;
     procedure wizard_show(); virtual;
     procedure wizard_hide(); virtual;
+    procedure wizard_previous( var bCanPrevious : boolean ); virtual;
     function  wizard_validate() : integer; virtual; abstract;
     procedure wizard_finish( var bClose : boolean ); virtual;
     procedure wizard_cancel( var bClose : boolean ); virtual;
@@ -80,6 +81,10 @@ begin
 end;
 
 procedure TWizardStepFrame.wizard_hide();
+begin
+end;
+
+procedure TWizardStepFrame.wizard_previous(var bCanPrevious: boolean);
 begin
 end;
 
