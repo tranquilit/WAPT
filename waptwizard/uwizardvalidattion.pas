@@ -45,6 +45,9 @@ function wizard_validate_os_version_for_server( w : TWizard; control : TControl 
 
 function wizard_validate_run_command_sync( w : TWizard; params : PRunParamatersSync;  const description : String; const error : String; control : TControl ) : boolean;
 
+function wizard_validate_path_is_waptserver( w : TWizard; control : TControl; const path : String ) : boolean;
+
+
 implementation
 
 uses
@@ -589,6 +592,21 @@ begin
   end;
 
   exit( true );
+end;
+
+function wizard_validate_path_is_waptserver(w: TWizard; control: TControl; const path: String): boolean;
+var
+  s : String;
+begin
+  w.SetValidationDescription( 'Validating path is a valid waptserver path' );
+  s := fs_path_concat( path, 'conf/waptserver.ini');
+  if not FileExists(s) then
+  begin
+    w.show_validation_error( control, 'Not a valid waptserver path');
+    exit(false);
+  end;
+  w.ClearValidationDescription();
+  exit(true);
 end;
 
 

@@ -29,10 +29,12 @@ const
 
 
   function wapt_ini_waptconsole(var s: String): integer;
+  function wapt_ini_waptserver( const base_path :String; var s : String ) : integer;
 
 implementation
 
-
+uses
+  uwizardutil;
 
 function wapt_ini_waptconsole(var s: String): integer;
 begin
@@ -41,10 +43,17 @@ begin
   s := IncludeTrailingBackslash(s) + 'waptconsole';
   s := IncludeTrailingBackslash(s) + 'waptconsole.ini';
   if FileExists(s) then
-    result := 0
-  else
-    result := -1;
-
+    exit(0);
+  exit(-1);
 end;
+
+function wapt_ini_waptserver(const base_path: String; var s: String): integer;
+begin
+  s := fs_path_concat( base_path, 'conf/waptserver.ini' );
+  if FileExists(s) then
+      exit(0);
+  exit(-1);
+end;
+
 end.
 

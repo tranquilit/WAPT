@@ -12,11 +12,11 @@ uses
   Classes,
   windows,
   Interfaces, // this includes the LCL widgetset
-  tiscommon, uwizard, dmwaptpython, uvisloading,
-  Dialogs, Forms, runtimetypeinfocontrols, luicontrols,
-  uwizardresetserverpassword,
-  uwizardconfigconsole,
-  uwizardconfigserver;
+  tiscommon, uwizard, dmwaptpython, uvisloading, Dialogs, Forms,
+  runtimetypeinfocontrols, luicontrols, uwizardresetserverpassword,
+  uwizardconfigconsole, uwizardconfigserver, uwizardresetserverpassword_welcome,
+  uwizardresetserverpassword_setpassword,
+  uwizardresetserverpassword_restartserver, uwizardresetserverpassword_finish;
 
 {$R *.res}
 

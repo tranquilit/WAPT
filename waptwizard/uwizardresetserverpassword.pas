@@ -6,6 +6,10 @@ interface
 
 uses
   uwizard,
+  uwizardresetserverpassword_welcome,
+  uwizardresetserverpassword_setpassword,
+  uwizardresetserverpassword_restartserver,
+  uwizardresetserverpassword_finish,
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs;
 
 type
@@ -20,6 +24,7 @@ type
 var
   WizardResetServerPassword  : TWizardResetServerPassword;
   // 1 Welcome
+  // 2 Ensure server
   // 2 Set password
   // 3 Restart services
 
