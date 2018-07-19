@@ -14,46 +14,19 @@ type
   { TWizardConfigConsole }
 
   TWizardConfigConsole = class(TWizard)
-    cb_launch_console: TCheckBox;
-    ed_package_prefix: TEdit;
-    ed_server_password: TEdit;
-    ed_server_url: TEdit;
-    ed_server_login: TEdit;
-    Label1: TLabel;
-    lbl_finished_congratulation: TLabel;
-    lbl_package_prefix: TLabel;
-    lbl_server_password: TLabel;
-    lbl_server_url: TLabel;
-    lbl_server_login: TLabel;
-    ts_building_waptagent: TTabSheet;
-    ts_finished: TTabSheet;
-    ts_private_key_configuration: TTabSheet;
-    ts_package_configuration: TTabSheet;
-    ts_server_info: TTabSheet;
-    ts_welcome: TTabSheet;
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+
+
+    procedure WizardManagerPageHide(Sender: TObject; Page: TWizardPage);
 
   private
 
   m_check_certificates_validity : boolean;
 
-
-  protected
-
   private
-  function filename_certificate_server() : String;
-  function config_verify_cert() : String;
 
-
-
-  // Steps function
-  function on_step_server_info( mode : TWizardStepFuncMode ) : integer;
-  function on_step_building_waptagent( mode : TWizardStepFuncMode ) : integer;
-  function on_step_finished( mode : TWizardStepFuncMode ) : integer;
-
-  procedure clear();
 
   function write_configuration_files() : integer;
 
@@ -90,13 +63,6 @@ uses
 const
   DEFAULT_COUNTRY_CODE: String = 'FR';
 
-{
-  self.register_step( 'Welcome',                  'Welcome description',                  [wbNext,wbCancel], @on_step_welcome );
-  self.register_step( 'Server information',       'Server information description',       pnc, @on_step_server_info);
-  self.register_step( 'Package configuration',    'Package configuration description',    pnc, @on_step_package_configuration);
-  self.register_step( 'Building waptagent',       'Building waptagent description',       pnc, @on_step_building_waptagent);
-  self.register_step( 'Congratulation',           'Configuration terminated !',           [wbFinish], @on_step_finished );
-}
 
 { TWizardConfigConsole }
 
@@ -167,31 +133,11 @@ begin
 
 
 
-procedure TWizardConfigConsole.clear();
-begin
-  // ts_server_info
-  self.ed_server_url.Clear;
-  self.ed_server_login.Clear;
-  self.ed_server_password.Clear;
-
-  // ts_package_prefix
-  self.ed_package_prefix.Clear;
-
-
-  // ts_building_waptagent
-
-  // ts_finished
-
-
-end;
 
 
 
-function TWizardConfigConsole.filename_certificate_server(): String;
-begin
-  https_certificate_pinned_filename( result, self.ed_server_url.Text );
-end;
 
+{
 function TWizardConfigConsole.config_verify_cert(): String;
 begin
   // Check certficate CA
@@ -201,82 +147,10 @@ begin
     result := '1';
 {$endif}
 end;
-
-
-
-
-
-function TWizardConfigConsole.on_step_server_info(mode: TWizardStepFuncMode ): integer;
-
-var
-  hostname: String;
-  s       : String;
-  r       : integer;
-  b       : boolean;
-begin
-  hostname := '';
-  s := '';
-
-  if wf_validate = mode then
-  begin
-
-  end;
-
-end;
-
-
-
-
-
-
-
-
-
-
-function TWizardConfigConsole.on_step_building_waptagent( mode: TWizardStepFuncMode): integer;
-var
-  r : integer;
-begin
-{
-    if wf_enter = mode then
-    begin
-      // Writing configuration files
-      self.SetValidationDescription( 'Witing configuration files');
-      r := self.write_configuration_files();
-      if r <> 0 then
-      begin
-        self.show_validation_error( nil, 'An error has occured while wrting configuration files' );
-        exit(-1);
-      end;
-
-
-      r := self.frm_WizardStepFrameBuildAgent.wizard_enter( self, nil);
-      exit(r)
-    end;
-
-
-    if wf_validate = mode then
-    begin
-      params := GetMem( sizeof(TWizardStepFrameBuildAgentParams) );
-      FillChar( params^, sizeof(TWizardStepFrameBuildAgentParams), 0 );
-
-      params^.server_url             := self.ed_server_url.Text;
-      params^.server_certificate     := self.filename_certificate_server();
-      params^.server_login           := self.ed_server_login.Text;
-      params^.server_password        := self.ed_server_password.Text;
-      params^.package_certificate    := self.frm_WizardStepFramePackage.package_certificate();
-      params^.private_key_name       := self.frm_WizardStepFramePackage.package_private_key();
-      params^.verify_cert            := config_verify_cert();
-      params^.is_enterprise_edition  := DMPython.IsEnterpriseEdition;
-
-      r := self.frm_WizardStepFrameBuildAgent.wizard_validate( self, params );
-
-      FillChar( params^, sizeof(TWizardStepFrameBuildAgentParams), 0 );
-      Freemem( params );
-      exit(r)
-    end;
 }
-end;
+
+
+
 
 
 
@@ -290,39 +164,43 @@ var
   check_certificates_validity : String;
   repo_url                    : String;
   personal_certificate_path   : String;
-
+  verify_cert : String;
+  wapt_server : String;
+  package_prefix : String;
 begin
     // Check certificate validity
     check_certificates_validity := '1';
     if not self.m_check_certificates_validity then
       check_certificates_validity := '0';
 
+    r := https_certificate_pinned_filename( verify_cert, wapt_server );
+    verify_cert := '0';
 
-    // repo_url
-    repo_url := url_concat( self.ed_server_url.Text, '/wapt') ;
-
-    // personal_certificate_path
-//    personal_certificate_path :=  fs_path_concat('c:\private', self.frm_WizardStepFramePackage.package_certificate() );
+    wapt_server     := UTF8Encode(self.m_data.S[UTF8Decode(INI_WAPT_SERVER)]);
+    repo_url        := url_concat( wapt_server, '/wapt') ;
+    package_prefix  := UTF8Encode(self.m_data.S[UTF8Decode(INI_DEFAULT_PACKAGE_PREFIX)]);
 
     // Now Writing settings
     try
+      {
       // wapt-get.ini
       s := 'wapt-get.ini';
       ini := TIniFile.Create( s );
       ini.WriteString( INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, check_certificates_validity );
-      ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                config_verify_cert() );
-      ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 self.ed_server_url.Text );
+      ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                verify_cert);
+      ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 wapt_server);
       ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    repo_url );
       ini.Free;
+      }
 
       // waptconsole.ini
       wapt_ini_waptconsole(s);
       ini := TIniFile.Create( s );
       ini.WriteString( INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, check_certificates_validity );
-      ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                  config_verify_cert() );
-      ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 self.ed_server_url.Text );
+      ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                verify_cert);
+      ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 wapt_server );
       ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    repo_url );
-      ini.WriteString( INI_GLOBAL, INI_DEFAULT_PACKAGE_PREFIX,      self.ed_package_prefix.Text );
+      ini.WriteString( INI_GLOBAL, INI_DEFAULT_PACKAGE_PREFIX,      package_prefix );
       ini.WriteString( INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH,   personal_certificate_path );
       ini.Free;
 
@@ -335,29 +213,11 @@ begin
 
 end;
 
-
-
-function TWizardConfigConsole.on_step_finished(mode: TWizardStepFuncMode): integer;
+procedure TWizardConfigConsole.WizardManagerPageHide(Sender: TObject; Page: TWizardPage);
 begin
-
-  if wf_enter = mode then
-    exit(0);
-
-
-  if wf_validate = mode then
-    exit(0);
+    if 'TWizardStepFramePackage' = page.ControlClassName then
+      self.write_configuration_files();
 end;
-
-
-
-
-
-
-
-
-
-
-
 
 
 end.
