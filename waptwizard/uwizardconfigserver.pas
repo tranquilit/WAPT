@@ -67,9 +67,9 @@ procedure TWizardConfigServer.FormShow(Sender: TObject);
 begin
   self.WizardButtonPanel.NextButton.SetFocus;
 
-  self.m_data.S['check_certificates_validity'] := '0';
-  self.m_data.S['verify_cert'] := '0';
-  self.m_data.S['personal_certificate_path'] := '';
+  self.m_data.S[UTF8Decode(INI_CHECK_CERTIFICATES_VALIDITY)] := '0';
+  self.m_data.S[UTF8Decode(INI_VERIFIY_CERT)] := '0';
+  self.m_data.S[UTF8Decode(INI_PERSONAL_CERTIFICATE_PATH)] := '';
 
 end;
 
