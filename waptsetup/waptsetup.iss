@@ -71,6 +71,7 @@ Source: "..\waptdevutils.py"; DestDir: "{app}";
 
 ; tools
 Source: "..\waptwizard.exe"; DestDir: "{app}";
+Source: "..\waptwizard.exe.manifest"; DestDir: "{app}";
 
 
 ; authorized public keys
