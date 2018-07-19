@@ -216,6 +216,9 @@ class Hosts(WaptBaseModel):
     dmi = BinaryJSONField(null=True)
     wmi = BinaryJSONField(null=True)
 
+    wuauserv_status = BinaryJSONField(null=True)
+    waptwua_status = BinaryJSONField(null=True)
+
     #
     status_hashes = BinaryJSONField(null=True)
 
@@ -282,6 +285,9 @@ class Packages(WaptBaseModel):
     description = TextField(null=True)
     depends = ArrayField(CharField,null=True)
     conflicts = ArrayField(CharField,null=True)
+    impacted_process = ArrayField(CharField,null=True)
+    keywords = ArrayField(CharField,null=True)
+    licence = CharField(null=True)
 
     @classmethod
     def _as_attribute(cls,k,v):
@@ -319,6 +325,8 @@ class Packages(WaptBaseModel):
 
 
 class HostSoftwares(WaptBaseModel):
+    """Content of Hots's softwares uninstall registry
+    """
     id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
     name = CharField(max_length=2000, null=True, index=True)
@@ -335,6 +343,11 @@ class HostSoftwares(WaptBaseModel):
 
 
 class HostGroups(WaptBaseModel):
+    """Mirror of the depends attribut of Hots's packages
+
+    Updated when a host package is uploaded to the server
+    Helps to speed up filtering Hosts list on groups.
+    """
     id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
     group_name = CharField(null=False, index=True)
@@ -379,11 +392,13 @@ class HostWuaStatus(WaptBaseModel):
 
     last_install_result = CharField(null=True)
     last_install_date = CharField(null=True)
-    last_install_batch = ArrayField(null=True)
+    last_install_batch = ArrayField(CharField,null=True)
     last_install_reboot_required = CharField(null=True)
 
 
 class HostWsus(WaptBaseModel):
+    """List of Windows Update discovered by waptwua for a Host with install status
+    """
     id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
     update_id = ForeignKeyField(WsusUpdates, on_delete='CASCADE', on_update='CASCADE')
@@ -416,12 +431,6 @@ class WsusScan2History(WaptBaseModel):
     target_size = IntegerField(null=True)
     cablist = ArrayField(CharField, null=True)
     error = CharField(max_length=1200,null=True)
-
-
-class WsusCabsInfos(WaptBaseModel):
-    id = PrimaryKeyField(primary_key=True)
-    cab_name = CharField(unique=True,index=True)
-    sha1_ckecksum = CharField(null=True)
 
 
 def dictgetpath(adict, pathstr):
@@ -488,7 +497,9 @@ def update_installed_packages(uuid, installed_packages):
     Args:
         uuid (str) : unique ID of host
         installed_packages (list): data from host
+
     Returns:
+        None
 
     """
     # TODO : be smarter : insert / update / delete instead of delete all / insert all ?
@@ -513,10 +524,9 @@ def update_installed_packages(uuid, installed_packages):
 
         # filter out all unknown fields from json data for the SQL insert
         packages.append(dict([(k, encode_value(v)) for k, v in package.iteritems() if k in HostPackagesStatus._meta.fields]))
+
     if packages:
-        return HostPackagesStatus.insert_many(packages).execute() # pylint: disable=no-value-for-parameter
-    else:
-        return True
+        HostPackagesStatus.insert_many(packages).execute() # pylint: disable=no-value-for-parameter
 
 
 def update_installed_softwares(uuid, installed_softwares):
@@ -525,8 +535,9 @@ def update_installed_softwares(uuid, installed_softwares):
     Args:
         uuid (str) : unique ID of host
         installed_packages (list): data from host
-    Returns:
 
+    Returns:
+        None
     """
     # TODO : be smarter : insert / update / delete instead of delete all / insert all ?
     HostSoftwares.delete().where(HostSoftwares.host == uuid).execute()
@@ -541,10 +552,9 @@ def update_installed_softwares(uuid, installed_softwares):
         software['host'] = uuid
         # filter out all unknown fields from json data for the SQL insert
         softwares.append(dict([(k,encode_value(v)) for k, v in software.iteritems() if k in HostSoftwares._meta.fields]))
+
     if softwares:
-        return HostSoftwares.insert_many(softwares).execute() # pylint: disable=no-value-for-parameter
-    else:
-        return True
+        HostSoftwares.insert_many(softwares).execute() # pylint: disable=no-value-for-parameter
 
 def update_waptwua(uuid,data):
     """Stores discovered windows update into WindowsUpdates table and
@@ -562,28 +572,31 @@ def update_waptwua(uuid,data):
             value = value.replace(u'\x00', ' ')
         return value
 
+    """
+    # moved into a json field
     if 'waptwua_status' in data:
         waptwua_status = dict([(k,encode_value(v)) for k, v in data['waptwua_status'].iteritems() if k in HostWuaStatus._meta.fields])
-        (hostwua_status,_) = HostWuaStatus.get_or_create(host=uuid)
-        hostwua_status.update(**waptwua_status)
-        hostwua_status.save()
+        waptwua_status['host'] = uuid
+        if not HostWuaStatus.update(**waptwua_status).where(HostWuaStatus.host==uuid).execute():
+            HostWuaStatus.insert(**waptwua_status).execute()
+    """
 
     if 'waptwua_updates' in data:
         windows_updates = []
         for w in data['waptwua_updates']:
             windows_updates.append(dict([(k,encode_value(v)) for k, v in w.iteritems() if k in WsusUpdates._meta.fields]))
         if windows_updates:
+            # if win update has already been registered, we don't update it, but simply ignore th einsert
             WsusUpdates.insert_many(windows_updates).on_conflict('IGNORE').execute()
 
     if 'waptwua_updates_localstatus' in data:
         HostWsus.delete().where(HostWsus.host == uuid).execute()
-        #
         host_wsus = []
         for h in data['waptwua_updates_localstatus']:
             h['host'] = uuid
             host_wsus.append(dict([(k,encode_value(v)) for k, v in h.iteritems() if k in HostWsus._meta.fields]))
         if host_wsus:
-            HostWsus.insert_many(host_wsus).execute()
+            HostWsus.insert_many(host_wsus).execute() # pylint: disable=no-value-for-parameter
 
 
 def update_host_data(data):
@@ -595,6 +608,7 @@ def update_host_data(data):
                         eld insert
                       only keys in data are pushed to DB.
                         Other data (fields) are left untouched
+
     Returns:
         dict : with uuid,computer_fqdn,host_info from db after update
     """
@@ -646,27 +660,29 @@ def update_host_data(data):
                 updhost.save()
 
             # separate tables
-            # we are tolerant on errors here a we don't know exactly if client send good encoded data
+            # we are tolerant on errors here as we don't know exactly if client send good encoded data
             # but we still want to get host in table
             try:
                 if ('installed_softwares' in data) or ('softwares' in data):
                     installed_softwares = data.get('installed_softwares', data.get('softwares', None))
-                    if not update_installed_softwares(uuid, installed_softwares):
-                        logger.critical('Unable to update installed_softwares for %s' % uuid)
+                    update_installed_softwares(uuid, installed_softwares)
             except Exception as e:
                 logger.critical(u'Unable to update installed_softwares for %s: %s' % (uuid,traceback.format_exc()))
 
             try:
                 if ('installed_packages' in data) or ('packages' in data):
                     installed_packages = data.get('installed_packages', data.get('packages', None))
-                    if not update_installed_packages(uuid, installed_packages):
-                        logger.critical('Unable to update installed_packages for %s' % uuid)
+                    update_installed_packages(uuid, installed_packages)
             except Exception as e:
                 logger.critical(u'Unable to update installed_packages for %s: %s' % (uuid,traceback.format_exc()))
 
-            # update waptwua state tables
-            update_waptwua(uuid,data)
+            try:
+                # update waptwua state tables
+                update_waptwua(uuid,data)
+            except Exception as e:
+                logger.critical(u'Unable to update wuauserv_status or waptwua_status for %s: %s' % (uuid,traceback.format_exc()))
 
+            # returns actual registered fqdn and status hashes so that host can omit to send some data next time if they have not changed
             result_query = Hosts.select(Hosts.uuid, Hosts.computer_fqdn,Hosts.status_hashes)
             return result_query.where(Hosts.uuid == uuid).dicts().first()
 
@@ -1218,18 +1234,20 @@ def upgrade_db_structure():
             v.save()
 
     next_version = '1.6.2.2'
-    if get_db_version() < next_version:
+    if get_db_version() <= next_version:
         with wapt_db.atomic():
             logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
 
-            wapt_db.create_tables([HostWuaStatus],safe=True)
+            #wapt_db.create_tables([HostWuaStatus],safe=True)
 
             opes = []
             columns = [c.name for c in wapt_db.get_columns('hosts')]
-            if 'waptwua' in columns:
-                opes.append(migrator.drop_column(Hosts._meta.name, 'waptwua'))
             if not 'status_hashes' in columns:
                 opes.append(migrator.add_column(Hosts._meta.name, 'status_hashes',Hosts.status_hashes))
+            if not 'waptwua_status' in columns:
+                opes.append(migrator.add_column(Hosts._meta.name, 'waptwua_status',Hosts.waptwua_status))
+            if not 'wuauserv_status' in columns:
+                opes.append(migrator.add_column(Hosts._meta.name, 'wuauserv_status',Hosts.wuauserv_status))
             migrate(*opes)
 
             (v, created) = ServerAttribs.get_or_create(key='db_version')

@@ -84,7 +84,7 @@ from flask_socketio import disconnect, send, emit
 from peewee import *
 from playhouse.postgres_ext import *
 
-from waptserver.model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups,HostWsus,WsusUpdates
+from waptserver.model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups,HostWsus,WsusUpdates,HostWuaStatus,Packages
 from waptserver.model import get_db_version, init_db, wapt_db, model_to_dict, dict_to_model, update_host_data
 from waptserver.model import upgrade_db_structure
 from waptserver.model import load_db_config
@@ -400,10 +400,6 @@ def register_host():
             if 'host_certificate_csr' in data and host_cert:
                 # return back signed host certificate
                 db_data['host_certificate'] = host_cert.as_pem()
-
-            # return a token for websocket auth
-            token_gen = get_secured_token_generator()
-            db_data['authorization_token'] = token_gen.dumps({'uuid':uuid,'server_uuid':get_server_uuid()})
 
             result = db_data
             message = 'register_host'
@@ -1772,7 +1768,17 @@ def get_hosts():
 
             limit = int(request.args.get('limit', 1000))
 
-            req = Hosts.select(*build_fields_list(Hosts, columns)).limit(limit)
+            fields = build_fields_list(Hosts, columns)
+            """
+            if 'waptwua_status' in columns:
+                fields.append(HostWuaStatus)
+            """
+            req = Hosts.select(*fields)
+            """
+            if 'waptwua_status' in columns:
+                req = req.join(HostWuaStatus,'RIGHT OUTER')
+            """
+            req = req.limit(limit)
 
             req = req.order_by(SQL('last_seen_on desc NULLS LAST'))
             if query:
@@ -1864,7 +1870,7 @@ def host_data():
                 WsusUpdates.can_request_user_input,
                 WsusUpdates.requires_network_connectivity,
                 ]
-            result = list(local_status.select(*fields).join(WsusUpdates).where(local_status.host == uuid).order_by(WsusUpdates.changetime).dicts())
+            result = list(local_status.select(*fields).join(WsusUpdates,'RIGHT OUTER').where(local_status.host == uuid).order_by(WsusUpdates.changetime).dicts()) # pylint: disable=no-member
         else:
             data = Hosts\
                 .select(Hosts.uuid, Hosts.computer_fqdn, Hosts.fieldbyname(field))\

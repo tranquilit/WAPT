@@ -1802,10 +1802,16 @@ msgid "Current task"
 msgstr ""
 
 #: tviswaptgui.label1.caption
+msgctxt "tviswaptgui.label1.caption"
 msgid "IP address"
 msgstr ""
 
+#: tviswaptgui.label10.caption
+msgid "WUA Status"
+msgstr ""
+
 #: tviswaptgui.label11.caption
+msgctxt "tviswaptgui.label11.caption"
 msgid "UUID"
 msgstr ""
 
@@ -1824,6 +1830,16 @@ msgctxt "tviswaptgui.label15.caption"
 msgid "Groups"
 msgstr ""
 
+#: tviswaptgui.label17.caption
+msgctxt "tviswaptgui.label17.caption"
+msgid "WSUS Scan Cab Date"
+msgstr ""
+
+#: tviswaptgui.label18.caption
+msgctxt "tviswaptgui.label18.caption"
+msgid "Last scan date"
+msgstr ""
+
 #: tviswaptgui.label19.caption
 msgid "Forbidden Windows Updates"
 msgstr ""
@@ -1837,6 +1853,11 @@ msgstr ""
 msgid "Site"
 msgstr ""
 
+#: tviswaptgui.label21.caption
+msgctxt "tviswaptgui.label21.caption"
+msgid "WAPT WUA Enabled"
+msgstr ""
+
 #: tviswaptgui.label23.caption
 msgctxt "tviswaptgui.label23.caption"
 msgid "Filter : "
@@ -1845,6 +1866,10 @@ msgstr ""
 #: tviswaptgui.label3.caption
 msgctxt "tviswaptgui.label3.caption"
 msgid "Model"
+msgstr ""
+
+#: tviswaptgui.label4.caption
+msgid "Windows Agent version"
 msgstr ""
 
 #: tviswaptgui.label5.caption
@@ -1856,6 +1881,7 @@ msgid "Name"
 msgstr ""
 
 #: tviswaptgui.label7.caption
+msgctxt "tviswaptgui.label7.caption"
 msgid "Operating system"
 msgstr ""
 
@@ -1865,6 +1891,7 @@ msgid "Description"
 msgstr ""
 
 #: tviswaptgui.label9.caption
+msgctxt "tviswaptgui.label9.caption"
 msgid "Last seen"
 msgstr ""
 
@@ -1876,6 +1903,11 @@ msgstr ""
 #: tviswaptgui.labuser.caption
 msgctxt "tviswaptgui.labuser.caption"
 msgid "User"
+msgstr ""
+
+#: tviswaptgui.labuser1.caption
+msgctxt "tviswaptgui.labuser1.caption"
+msgid "Last scan duration"
 msgstr ""
 
 #: tviswaptgui.menuexternaltools.caption

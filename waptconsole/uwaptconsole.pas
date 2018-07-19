@@ -6,8 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Windows, ActiveX, Types, Forms, Controls, Graphics,
-  Dialogs, Buttons, LazUTF8, SynEdit,
-  SynHighlighterPython, vte_json, vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, jsonparser,
+  Dialogs, Buttons, LazUTF8, SynEdit, SynHighlighterPython, vte_json,
+  vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, jsonparser,
   superobject, VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading, IdComponent,
   DefaultTranslator, IniPropStorage, DBGrids, ShellCtrls, CheckLst, GetText,
   uWaptConsoleRes, db, BufDataset, SearchEdit, MenuButton, tisstrings;
@@ -101,6 +101,10 @@ type
     cbSearchSoftwares: TCheckBox;
     cbADSite: TComboBox;
     cbNewestOnly: TCheckBox;
+    cbWUACriticalOnly: TCheckBox;
+    cbWUADiscarded: TCheckBox;
+    cbWUAInstalled: TCheckBox;
+    cbWUAPending: TCheckBox;
     CBWUClassifications: TCheckListBox;
     cbWUCritical: TCheckBox;
     CBWUProducts: TCheckListBox;
@@ -112,11 +116,23 @@ type
     DBOrgUnitsImageID: TLongintField;
     DBOrgUnitsParentDN: TStringField;
     DBOrgUnitsParentID: TLongintField;
+    EdWUAStatus: TEdit;
+    EdWAPTWUAEnabled: TEdit;
+    EdWUAAgentVersion: TEdit;
+    EdWsusscn2cabDate: TEdit;
+    EdLastScanDate: TEdit;
+    EdLastScanDuration: TEdit;
     GridWUUpdates: TSOGrid;
+    Label10: TLabel;
+    Label17: TLabel;
+    Label18: TLabel;
+    Label21: TLabel;
     Label22: TLabel;
     EdSearchOrgUnits: TEdit;
     EdSearchPackage1: TSearchEdit;
     GridNetworks: TSOGrid;
+    Label4: TLabel;
+    LabUser1: TLabel;
     MenuItem100: TMenuItem;
     MenuItem101: TMenuItem;
     MenuItem102: TMenuItem;
@@ -136,6 +152,8 @@ type
     MenuItem97: TMenuItem;
     MenuItem98: TMenuItem;
     MenuItem99: TMenuItem;
+    Panel17: TPanel;
+    Panel9: TPanel;
     PanWUALeft: TPanel;
     Panel2: TPanel;
     Panel8: TPanel;
@@ -305,10 +323,6 @@ type
     cbShowHostPackagesSoft: TCheckBox;
     cbShowHostPackagesGroup: TCheckBox;
     cbShowLog: TCheckBox;
-    cbWUACriticalOnly: TCheckBox;
-    cbWUAInstalled: TCheckBox;
-    cbWUAPending: TCheckBox;
-    cbWUADiscarded: TCheckBox;
     GridGroups: TSOGrid;
     GridHostWinUpdates: TSOGrid;
     GridHostTasksPending: TSOGrid;
@@ -660,12 +674,6 @@ type
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer;
       var ImageList: TCustomImageList);
-    procedure GridWSUSAllowedClassificationsFreeNode(Sender: TBaseVirtualTree;
-      Node: PVirtualNode);
-    procedure GridWUUpdatesFreeNode(Sender: TBaseVirtualTree;
-      Node: PVirtualNode);
-    procedure GridWSUSForbiddenWindowsUpdatesFreeNode(Sender: TBaseVirtualTree;
-      Node: PVirtualNode);
     procedure HostPagesChange(Sender: TObject);
     procedure Image1Click(Sender: TObject);
     procedure MainPagesChange(Sender: TObject);
@@ -729,9 +737,9 @@ type
 
     PollTasksThread: TPollTasksThread;
 
-    property WUAClassifications : ISuperObject read GetWUAClassifications;
-    property WUAProducts : ISuperObject read GetWUAProducts;
-    property WUAWinUpdates : ISuperObject read GetWUAWinUpdates;
+    property WUAClassifications : ISuperObject read GetWUAClassifications write FWUAClassifications;
+    property WUAProducts : ISuperObject read GetWUAProducts write FWUAProducts;
+    property WUAWinUpdates : ISuperObject read GetWUAWinUpdates write FWUAWinUpdates;
 
     constructor Create(TheOwner: TComponent); override;
 
@@ -1285,7 +1293,7 @@ var
   sores:ISuperObject;
 begin
   try
-    sores := WAPTServerJsonGet('api/v1/hosts?columns=dmi,wmi,host_info&uuid=%S',[uuid]);
+    sores := WAPTServerJsonGet('api/v1/hosts?columns=dmi,wmi,host_info,waptwua_status,wuauserv_status&uuid=%S',[uuid]);
     if (sores<>nil) and sores.B['success'] then
     begin
       if sores['result'].AsArray.Length>0 then
@@ -1301,7 +1309,9 @@ end;
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
   currhost,packagename : ansistring;
-  RowSO, package,packagereq, packages, softwares, waptwua,wsusupdates,tasksresult, running,sores,all_missing,pending_install,additional,upgrades,errors: ISuperObject;
+  RowSO, package,packagereq, packages, softwares: ISuperObject;
+  waptwua_status,wuauserv_status,wsusupdates,tasksresult, running: ISuperObject;
+  sores,all_missing,pending_install,additional,upgrades,errors: ISuperObject;
 begin
   RowSO := Gridhosts.FocusedRow;
 
@@ -1434,11 +1444,47 @@ begin
       except
         wsusupdates := nil;
       end;
+
       RowSO['wsusupdates'] := wsusupdates;
       if wsusupdates<>Nil then
         GridHostWinUpdates.Data := FilterHostWinUpdates(wsusupdates)
       else
         GridHostWinUpdates.Data := Nil;
+
+      // get wuauserv and waptwua status if they have not been already retrieved
+      waptwua_status := RowSO['waptwua_status'];
+      if (waptwua_status = nil) then
+      try
+        sores := WAPTServerJsonGet('api/v1/host_data?field=waptwua_status&uuid=%S',[currhost]);
+        if sores.B['success'] then
+          waptwua_status := sores['result']
+        else
+          waptwua_status := TSuperObject.Create(stObject);
+      except
+        waptwua_status := TSuperObject.Create(stObject);
+      end;
+      RowSO['waptwua_status'] := waptwua_status;
+
+      wuauserv_status := RowSO['wuauserv_status'];
+      if (wuauserv_status = nil) then
+      try
+        sores := WAPTServerJsonGet('api/v1/host_data?field=wuauserv_status&uuid=%S',[currhost]);
+        if sores.B['success'] then
+          wuauserv_status := sores['result']
+        else
+          wuauserv_status := TSuperObject.Create(stObject);
+      except
+        wuauserv_status := TSuperObject.Create(stObject);
+      end;
+      RowSO['wuauserv_status'] := wuauserv_status;
+
+      EdWUAStatus.Text := waptwua_status.S['status'];
+      EdWAPTWUAEnabled.Text := waptwua_status.S['waptwua_enabled'];
+      EdWsusscn2cabDate.Text:= waptwua_status.S['wsusscn2cab_date'];
+      EdLastScanDate.Text:= waptwua_status.S['last_scan_date'];
+      EdLastScanDuration.Text:= waptwua_status.S['last_scan_duration'];
+
+      EdWUAAgentVersion.Text := wuauserv_status.S['agent_version'];
 
     end
     else if HostPages.ActivePage = pgHostInventory then
@@ -3202,8 +3248,8 @@ begin
 
     if IsEnterpriseEdition then
     begin
-      //columns.AsArray.Add('waptwua');
-      //columns.AsArray.Add('waptwua.status');
+      columns.AsArray.Add('waptwua_status');
+      columns.AsArray.Add('wuauserv_status');
     end;
 
     urlParams := TSuperObject.Create(stArray);
@@ -4238,9 +4284,9 @@ begin
       end;
     end;
   end
-  else if IsEnterpriseEdition and (TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'waptwua.status') then
+  else if IsEnterpriseEdition and (TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'waptwua_status.status') then
   begin
-    status := GridHostPackages.GetCellData(Node, 'waptwua.status', nil);
+    status := GridHostPackages.GetCellData(Node, 'waptwua_status.status', nil);
     if (status <> nil) then
     begin
       case status.AsString of
@@ -4594,16 +4640,6 @@ begin
   Result := Nil;
 end;
 
-procedure TVisWaptGUI.GridWSUSForbiddenWindowsUpdatesFreeNode(
-  Sender: TBaseVirtualTree; Node: PVirtualNode);
-begin
-end;
-
-procedure TVisWaptGUI.GridWSUSAllowedClassificationsFreeNode(
-  Sender: TBaseVirtualTree; Node: PVirtualNode);
-begin
-end;
-
 procedure TVisWaptGUI.GridWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: Boolean; var ImageIndex: Integer; var ImageList: TCustomImageList
@@ -4773,11 +4809,6 @@ procedure TVisWaptGUI.CBWUClassificationsClick(Sender: TObject);
 begin
 end;
 
-
-procedure TVisWaptGUI.GridWUUpdatesFreeNode(
-  Sender: TBaseVirtualTree; Node: PVirtualNode);
-begin
-end;
 
 {$endif}
 

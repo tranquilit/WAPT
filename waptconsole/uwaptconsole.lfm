@@ -39,9 +39,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 412
         Top = 120
         Width = 572
-        ActivePage = pgHostWUA
+        ActivePage = pgHostInventory
         Align = alRight
-        TabIndex = 3
+        TabIndex = 1
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -784,15 +784,13 @@ object VisWaptGUI: TVisWaptGUI
           ClientHeight = 386
           ClientWidth = 564
           object GridHostWinUpdates: TSOGrid
-            AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 360
-            Top = 26
+            Height = 282
+            Top = 104
             Width = 564
             OnGetText = GridHostWinUpdatesGetText
             ShowAdvancedColumnsCustomize = False
-            Align = alBottom
-            Anchors = [akTop, akLeft, akRight, akBottom]
+            Align = alClient
             BorderSpacing.Top = 2
             Color = clWhite
             Colors.UnfocusedColor = clMedGray
@@ -1005,43 +1003,199 @@ object VisWaptGUI: TVisWaptGUI
             OnGetImageIndexEx = GridHostWinUpdatesGetImageIndexEx
             ZebraPaint = True
           end
-          object cbWUACriticalOnly: TCheckBox
-            Left = 7
-            Height = 17
-            Top = 5
-            Width = 75
-            Caption = 'Critical only'
-            OnClick = cbWUAPendingChange
+          object Panel17: TPanel
+            Left = 0
+            Height = 79
+            Top = 0
+            Width = 564
+            Align = alTop
+            AutoSize = True
+            BevelOuter = bvNone
+            ChildSizing.LeftRightSpacing = 6
+            ChildSizing.TopBottomSpacing = 6
+            ChildSizing.HorizontalSpacing = 6
+            ChildSizing.VerticalSpacing = 2
+            ChildSizing.EnlargeHorizontal = crsScaleChilds
+            ChildSizing.EnlargeVertical = crsHomogenousSpaceResize
+            ChildSizing.ShrinkHorizontal = crsHomogenousChildResize
+            ChildSizing.ShrinkVertical = crsHomogenousSpaceResize
+            ChildSizing.Layout = cclLeftToRightThenTopToBottom
+            ChildSizing.ControlsPerLine = 4
+            ClientHeight = 79
+            ClientWidth = 564
             TabOrder = 1
+            object Label10: TLabel
+              Left = 6
+              Height = 21
+              Top = 6
+              Width = 107
+              Alignment = taRightJustify
+              Caption = 'WUA Status'
+              Layout = tlCenter
+              ParentBidiMode = False
+              ParentColor = False
+            end
+            object EdWUAStatus: TEdit
+              Left = 119
+              Height = 21
+              Top = 6
+              Width = 155
+              Color = clForm
+              Constraints.MinWidth = 150
+              ReadOnly = True
+              TabOrder = 0
+            end
+            object Label4: TLabel
+              Left = 280
+              Height = 21
+              Top = 6
+              Width = 117
+              Alignment = taRightJustify
+              Caption = 'Windows Agent version'
+              Layout = tlCenter
+              ParentColor = False
+            end
+            object EdWUAAgentVersion: TEdit
+              Left = 403
+              Height = 21
+              Top = 6
+              Width = 155
+              Color = clForm
+              Constraints.MinWidth = 150
+              ReadOnly = True
+              TabOrder = 3
+            end
+            object Label17: TLabel
+              Left = 6
+              Height = 21
+              Top = 29
+              Width = 107
+              Alignment = taRightJustify
+              Caption = 'WSUS Scan Cab Date'
+              Layout = tlCenter
+              ParentBidiMode = False
+              ParentColor = False
+            end
+            object EdWsusscn2cabDate: TEdit
+              Left = 119
+              Height = 21
+              Top = 29
+              Width = 155
+              Color = clForm
+              Constraints.MinWidth = 150
+              ReadOnly = True
+              TabOrder = 1
+            end
+            object Label18: TLabel
+              Left = 280
+              Height = 21
+              Top = 29
+              Width = 117
+              Alignment = taRightJustify
+              Caption = 'Last scan date'
+              Layout = tlCenter
+              ParentColor = False
+            end
+            object EdLastScanDate: TEdit
+              Left = 403
+              Height = 21
+              Top = 29
+              Width = 155
+              Color = clForm
+              Constraints.MinWidth = 150
+              ReadOnly = True
+              TabOrder = 4
+            end
+            object Label21: TLabel
+              Left = 6
+              Height = 21
+              Top = 52
+              Width = 107
+              Alignment = taRightJustify
+              Caption = 'WAPT WUA Enabled'
+              Layout = tlCenter
+              ParentBidiMode = False
+              ParentColor = False
+            end
+            object EdWAPTWUAEnabled: TEdit
+              Left = 119
+              Height = 21
+              Top = 52
+              Width = 155
+              Color = clForm
+              Constraints.MinWidth = 150
+              ReadOnly = True
+              TabOrder = 2
+            end
+            object LabUser1: TLabel
+              Left = 280
+              Height = 21
+              Top = 52
+              Width = 117
+              Alignment = taRightJustify
+              Caption = 'Last scan duration'
+              Layout = tlCenter
+              ParentColor = False
+            end
+            object EdLastScanDuration: TEdit
+              Left = 403
+              Height = 21
+              Top = 52
+              Width = 155
+              Color = clForm
+              Constraints.MinWidth = 150
+              ReadOnly = True
+              TabOrder = 5
+            end
           end
-          object cbWUAInstalled: TCheckBox
-            Left = 127
-            Height = 17
-            Top = 5
-            Width = 61
-            Caption = 'Installed'
-            OnClick = cbWUAPendingChange
+          object Panel9: TPanel
+            Left = 0
+            Height = 23
+            Top = 79
+            Width = 564
+            Align = alTop
+            BevelOuter = bvNone
+            ClientHeight = 23
+            ClientWidth = 564
             TabOrder = 2
-          end
-          object cbWUAPending: TCheckBox
-            Left = 215
-            Height = 17
-            Top = 5
-            Width = 58
-            Caption = 'Pending'
-            Checked = True
-            OnClick = cbWUAPendingChange
-            State = cbChecked
-            TabOrder = 3
-          end
-          object cbWUADiscarded: TCheckBox
-            Left = 303
-            Height = 17
-            Top = 5
-            Width = 67
-            Caption = 'Discarded'
-            OnClick = cbWUAPendingChange
-            TabOrder = 4
+            object cbWUACriticalOnly: TCheckBox
+              Left = 0
+              Height = 17
+              Top = 4
+              Width = 75
+              Caption = 'Critical only'
+              OnClick = cbWUAPendingChange
+              TabOrder = 0
+            end
+            object cbWUAInstalled: TCheckBox
+              Left = 120
+              Height = 17
+              Top = 4
+              Width = 61
+              Caption = 'Installed'
+              OnClick = cbWUAPendingChange
+              TabOrder = 1
+            end
+            object cbWUAPending: TCheckBox
+              Left = 208
+              Height = 17
+              Top = 4
+              Width = 58
+              Caption = 'Pending'
+              Checked = True
+              OnClick = cbWUAPendingChange
+              State = cbChecked
+              TabOrder = 2
+            end
+            object cbWUADiscarded: TCheckBox
+              Left = 296
+              Height = 17
+              Top = 4
+              Width = 67
+              Caption = 'Discarded'
+              OnClick = cbWUAPendingChange
+              TabOrder = 3
+            end
           end
         end
         object pgTasks: TTabSheet
@@ -1690,7 +1844,7 @@ object VisWaptGUI: TVisWaptGUI
               Tag = 3
               Text = 'WUA'
               Width = 68
-              PropertyName = 'waptwua.status'
+              PropertyName = 'waptwua_status.status'
             end          
             item
               MaxWidth = 400
@@ -3649,7 +3803,6 @@ object VisWaptGUI: TVisWaptGUI
           TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
           TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
           WantTabs = True
-          OnFreeNode = GridWUUpdatesFreeNode
         end
       end
     end

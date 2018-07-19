@@ -5041,7 +5041,7 @@ class Wapt(BaseObjectClass):
                     waptwua_updates = wua_client.stored_updates()
                     waptwua_updates_localstatus = wua_client.stored_updates_localstatus()
 
-                    _add_data_if_updated(inv,'wuaserv_status', wua_client.get_wuauserv_status(),old_hashes,new_hashes)
+                    _add_data_if_updated(inv,'wuauserv_status', wua_client.get_wuauserv_status(),old_hashes,new_hashes)
                     _add_data_if_updated(inv,'waptwua_status', waptwua_status,old_hashes,new_hashes)
                     _add_data_if_updated(inv,'waptwua_updates', waptwua_updates,old_hashes,new_hashes)
                     _add_data_if_updated(inv,'waptwua_updates_localstatus', waptwua_updates_localstatus,old_hashes,new_hashes)

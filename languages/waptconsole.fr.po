@@ -1839,12 +1839,18 @@ msgid "Current task"
 msgstr "Tâche en cours"
 
 #: tviswaptgui.label1.caption
+msgctxt "tviswaptgui.label1.caption"
 msgid "IP address"
 msgstr "Adresse IP"
 
+#: tviswaptgui.label10.caption
+msgid "WUA Status"
+msgstr "Status du WUA"
+
 #: tviswaptgui.label11.caption
+msgctxt "tviswaptgui.label11.caption"
 msgid "UUID"
-msgstr ""
+msgstr "UUID"
 
 #: tviswaptgui.label12.caption
 msgctxt "tviswaptgui.label12.caption"
@@ -1861,6 +1867,20 @@ msgctxt "tviswaptgui.label15.caption"
 msgid "Groups"
 msgstr "Groupes"
 
+#: tviswaptgui.label17.caption
+#, fuzzy
+#| msgid "Operating system"
+msgctxt "tviswaptgui.label17.caption"
+msgid "WSUS Scan Cab Date"
+msgstr "Système d'exploitation"
+
+#: tviswaptgui.label18.caption
+#, fuzzy
+#| msgid "Last seen"
+msgctxt "tviswaptgui.label18.caption"
+msgid "Last scan date"
+msgstr "Dernière connexion"
+
 #: tviswaptgui.label19.caption
 msgid "Forbidden Windows Updates"
 msgstr "Mises à jour interdites"
@@ -1874,6 +1894,13 @@ msgstr "Constructeur"
 msgid "Site"
 msgstr "Site"
 
+#: tviswaptgui.label21.caption
+#, fuzzy
+#| msgid "IP address"
+msgctxt "tviswaptgui.label21.caption"
+msgid "WAPT WUA Enabled"
+msgstr "Adresse IP"
+
 #: tviswaptgui.label23.caption
 msgctxt "tviswaptgui.label23.caption"
 msgid "Filter : "
@@ -1884,6 +1911,10 @@ msgctxt "tviswaptgui.label3.caption"
 msgid "Model"
 msgstr "Modèle"
 
+#: tviswaptgui.label4.caption
+msgid "Windows Agent version"
+msgstr "Version du Windows Update Agent"
+
 #: tviswaptgui.label5.caption
 msgid "Search in"
 msgstr "Critère de recherche"
@@ -1893,6 +1924,7 @@ msgid "Name"
 msgstr "Nom"
 
 #: tviswaptgui.label7.caption
+msgctxt "tviswaptgui.label7.caption"
 msgid "Operating system"
 msgstr "Système d'exploitation"
 
@@ -1902,6 +1934,7 @@ msgid "Description"
 msgstr "Description"
 
 #: tviswaptgui.label9.caption
+msgctxt "tviswaptgui.label9.caption"
 msgid "Last seen"
 msgstr "Dernière connexion"
 
@@ -1913,6 +1946,13 @@ msgstr "Sélectionnés / Total : %d / %d"
 #: tviswaptgui.labuser.caption
 msgctxt "tviswaptgui.labuser.caption"
 msgid "User"
+msgstr "Utilisateur"
+
+#: tviswaptgui.labuser1.caption
+#, fuzzy
+#| msgid "User"
+msgctxt "tviswaptgui.labuser1.caption"
+msgid "Last scan duration"
 msgstr "Utilisateur"
 
 #: tviswaptgui.menuexternaltools.caption
