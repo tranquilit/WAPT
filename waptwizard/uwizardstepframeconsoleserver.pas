@@ -36,7 +36,7 @@ type
 implementation
 
 uses
-  uwapt_ini_conts,
+  uwapt_ini,
   IniFiles,
   uwizardutil,
   uwizardvalidattion,
@@ -200,6 +200,8 @@ begin
   // Check Login
   if not wizard_validate_waptserver_login( m_wizard, self.ed_server_url.Text, self.m_check_certificates_validity, self.ed_server_username.Text, self.ed_server_password.Text, self.ed_server_password ) then
     exit(-1);
+
+
 
   m_wizard.ClearValidationDescription();
   exit( 0 );
