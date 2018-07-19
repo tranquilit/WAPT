@@ -179,7 +179,6 @@ function wapt_server_configure_firewall() : integer;
 
 function wapt_server_mongodb_to_postgresql() : integer;
 
-function wapt_ini_waptconsole( var s : String ) : integer;
 
 
 function flip( a : TStringArray ) : TStringArray;
@@ -1477,18 +1476,7 @@ begin
   exit(0);
 end;
 
-function wapt_ini_waptconsole(var s: String): integer;
-begin
-  s := ExcludeTrailingBackslash( GetAppConfigDir(False) );
-  s := ExtractFileDir(s);
-  s := IncludeTrailingBackslash(s) + 'waptconsole';
-  s := IncludeTrailingBackslash(s) + 'waptconsole.ini';
-  if FileExists(s) then
-    result := 0
-  else
-    result := -1;
 
-end;
 
 
 

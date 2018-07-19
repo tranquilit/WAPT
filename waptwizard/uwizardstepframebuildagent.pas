@@ -43,6 +43,7 @@ type
 implementation
 
 uses
+  uwapt_ini,
   waptcommon,
   dialogs,
   uwizardvalidattion,
@@ -95,10 +96,10 @@ var
   package_certificate : String;
 begin
 
-  server_url := UTF8Encode(m_data.S['wapt_server']);
+  server_url := UTF8Encode(m_data.S[UTF8Decode(INI_WAPT_SERVER)]);
   Assert( Length(Trim(server_url)) > 0 ) ;
   verify_cert:= '0';
-  package_certificate := UTF8Encode( m_data.S['personal_certificate_path'] );
+  package_certificate := UTF8Encode( m_data.S[UTF8Decode(INI_PERSONAL_CERTIFICATE_PATH)] );
 
 
 

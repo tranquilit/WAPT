@@ -48,6 +48,7 @@ implementation
 {$R *.lfm}
 
 uses
+  uwapt_ini_conts,
   DCPsha256,
   IniFiles,
   ucrypto_pbkdf2,
@@ -90,8 +91,6 @@ end;
 
 
 function TWizardConfigServer.write_configuration_file_waptserver(): integer;
-const
-  OPTS : String = 'options';
 var
   ini : TIniFile;
   r   : integer;
@@ -102,21 +101,19 @@ begin
   self.SetValidationDescription( 'Writing wapt server configuration file' );
   try
 
-    s := UTF8Encode( self.m_data.S['wapt_password'] );
+    s := UTF8Encode( self.m_data.S[ UTF8Decode(INI_WAPT_PASSWORD)] );
     s := PBKDF2(s, random_alphanum(5), 29000, 32, TDCP_sha256);
 
     // waptserver.ini
     ini := TIniFile.Create( 'conf\waptserver.ini' );
-    ini.WriteString( OPTS, 'db_name',       'wapt');
-    ini.WriteString( OPTS, 'db_user',       'wapt' );
-    ini.WriteString( OPTS, 'wapt_user',     'admin' );
-    ini.WriteString( OPTS, 'wapt_password', s );
-    ini.WriteString( OPTS, 'allow_unauthenticated_registration', 'True' );
-//    ini.WriteString( OPTS, 'waptwua_folder', '' );
-//    ini.WriteString( OPTS, 'secret_key', '' );
-    r := Length( Trim(ini.ReadString( OPTS, 'server_uuid', '')) );
+    ini.WriteString( INI_OPTIONS, INI_DB_NAME,       'wapt');
+    ini.WriteString( INI_OPTIONS, INI_DB_USER,       'wapt' );
+    ini.WriteString( INI_OPTIONS, INI_WAPT_USER,     'admin' );
+    ini.WriteString( INI_OPTIONS, INI_WAPT_PASSWORD, s );
+    ini.WriteString( INI_OPTIONS, INI_ALLOW_UNAUTHENTICATED_REGISTRATION, 'True' );
+    r := Length( Trim(ini.ReadString( INI_OPTIONS, INI_SERVER_UUID, '')) );
     if r = 0 then
-      ini.WriteString( OPTS, 'server_uuid', random_server_uuid() );
+      ini.WriteString( INI_OPTIONS, INI_SERVER_UUID, random_server_uuid() );
     FreeAndNil( ini );
 
 
@@ -134,8 +131,6 @@ begin
 end;
 
 function TWizardConfigServer.write_configuration_file_waptconsole(): integer;
-const
-  GLOB : String = 'global';
 var
   ini : TIniFile;
   s   : String;
@@ -148,12 +143,12 @@ begin
     // waptconsole.ini
     wapt_ini_waptconsole(s);
     ini := TIniFile.Create( s );
-    ini.WriteString( GLOB, 'check_certificates_validity', UTF8Encode(self.m_data.S['check_certificates_validity']) );
-    ini.WriteString( GLOB, 'verify_cert',                 UTF8Encode(self.m_data.S['verify_cert']) );
-    ini.WriteString( GLOB, 'wapt_server',                 UTF8Encode(self.m_data.S['wapt_server']) );
-    ini.WriteString( GLOB, 'repo_url',                    UTF8Encode(self.m_data.S['wapt_server']) + '/wapt');
-    ini.WriteString( GLOB, 'default_package_prefix',      UTF8Encode(self.m_data.S['default_package_prefix']) );
-    ini.WriteString( GLOB, 'personal_certificate_path',   UTF8Encode(self.m_data.S['personal_certificate_path']) );
+    ini.WriteString( INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, UTF8Encode(self.m_data.S[UTF8decode(INI_CHECK_CERTIFICATES_VALIDITY)]) );
+    ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                UTF8Encode(self.m_data.S[UTF8decode(INI_CHECK_CERTIFICATES_VALIDITY)]) );
+    ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 UTF8Encode(self.m_data.S[UTF8decode(INI_WAPT_SERVER)]) );
+    ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    UTF8Encode(self.m_data.S[UTF8decode(INI_WAPT_SERVER)]) + '/wapt');
+    ini.WriteString( INI_GLOBAL, INI_DEFAULT_PACKAGE_PREFIX,      UTF8Encode(self.m_data.S[UTF8decode(INI_DEFAULT_PACKAGE_PREFIX)]) );
+    ini.WriteString( INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH,   UTF8Encode(self.m_data.S[UTF8decode(INI_PERSONAL_CERTIFICATE_PATH)]) );
     FreeAndNil( ini );
 
     result := 0;
@@ -170,8 +165,6 @@ begin
 end;
 
 function TWizardConfigServer.write_configuration_file_waptget(): integer;
-const
-  GLOB : String = 'global';
 var
   ini : TIniFile;
 begin
@@ -182,12 +175,10 @@ begin
 
     // wapt-get.ini
     ini := TIniFile.Create('wapt-get.ini' );
-    ini.WriteString( GLOB, 'check_certificates_validity', UTF8Encode(self.m_data.S['check_certificates_validity']) );
-    ini.WriteString( GLOB, 'verify_cert',                 UTF8Encode(self.m_data.S['verify_cert']) );
-    ini.WriteString( GLOB, 'wapt_server',                 UTF8Encode(self.m_data.S['wapt_server']) );
-    ini.WriteString( GLOB, 'repo_url',                    UTF8Encode(self.m_data.S['wapt_server']) + '/wapt');
-    ini.WriteString( GLOB, 'default_package_prefix',      UTF8Encode(self.m_data.S['default_package_prefix']) );
-    ini.WriteString( GLOB, 'personal_certificate_path',   UTF8Encode(self.m_data.S['personal_certificate_path']));
+    ini.WriteString( INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, UTF8Encode(self.m_data.S[UTF8decode(INI_CHECK_CERTIFICATES_VALIDITY)]) );
+    ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                UTF8Encode(self.m_data.S[UTF8decode(INI_CHECK_CERTIFICATES_VALIDITY)]) );
+    ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 UTF8Encode(self.m_data.S[UTF8decode(INI_WAPT_SERVER)]) );
+    ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    UTF8Encode(self.m_data.S[UTF8decode(INI_WAPT_SERVER)]) + '/wapt');
     FreeAndNil( ini );
 
     result := 0;

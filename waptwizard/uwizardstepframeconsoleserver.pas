@@ -36,6 +36,7 @@ type
 implementation
 
 uses
+  uwapt_ini_conts,
   IniFiles,
   uwizardutil,
   uwizardvalidattion,
@@ -48,8 +49,6 @@ uses
 { TWizardStepFrameConsoleServer }
 
 procedure TWizardStepFrameConsoleServer.wizard_load(w: TWizard; data: ISuperObject);
-const
-  GLOBAL : String = 'global';
 var
   r : integer;
   s : String;
@@ -69,7 +68,7 @@ begin
   begin
     try
       ini := TIniFile.Create(s);
-      self.ed_server_url.Text := ini.ReadString( GLOBAL, 'wapt_server', self.ed_server_url.Text );
+      self.ed_server_url.Text := ini.ReadString( INI_GLOBAL, INI_WAPT_SERVER, self.ed_server_url.Text );
     finally
       if Assigned(ini) then
         FreeAndNil(ini);

@@ -70,6 +70,7 @@ var
 implementation
 
 uses
+  uwapt_ini_conts,
   uwizardstepframeconsoleserver,
   uwizardstepframeconsolewelcome,
   uwizardstepframepackage,
@@ -281,11 +282,10 @@ end;
 
 
 function TWizardConfigConsole.write_configuration_files(): integer;
-const
-  GLOBAL : String = 'global';
 var
   ini : TIniFile;
   s : String;
+  r : integer;
 
   check_certificates_validity : String;
   repo_url                    : String;
@@ -309,21 +309,21 @@ begin
       // wapt-get.ini
       s := 'wapt-get.ini';
       ini := TIniFile.Create( s );
-      ini.WriteString( GLOBAL, 'check_certificates_validity', check_certificates_validity );
-      ini.WriteString( GLOBAL, 'verify_cert',                  config_verify_cert() );
-      ini.WriteString( GLOBAL, 'wapt_server',                 self.ed_server_url.Text );
-      ini.WriteString( GLOBAL, 'repo_url',                    repo_url );
+      ini.WriteString( INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, check_certificates_validity );
+      ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                config_verify_cert() );
+      ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 self.ed_server_url.Text );
+      ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    repo_url );
       ini.Free;
 
       // waptconsole.ini
-      s := IncludeTrailingBackslash(ExtractFileDir(AppIniFilename())) + 'waptconsole.ini';
+      wapt_ini_waptconsole(s);
       ini := TIniFile.Create( s );
-      ini.WriteString( GLOBAL, 'check_certificates_validity', check_certificates_validity );
-      ini.WriteString( GLOBAL, 'verify_cert',                  config_verify_cert() );
-      ini.WriteString( GLOBAL, 'wapt_server',                 self.ed_server_url.Text );
-      ini.WriteString( GLOBAL, 'repo_url',                    repo_url );
-      ini.WriteString( GLOBAL, 'default_package_prefix',      self.ed_package_prefix.Text );
-      ini.WriteString( GLOBAL, 'personal_certificate_path',   personal_certificate_path );
+      ini.WriteString( INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, check_certificates_validity );
+      ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                  config_verify_cert() );
+      ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 self.ed_server_url.Text );
+      ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    repo_url );
+      ini.WriteString( INI_GLOBAL, INI_DEFAULT_PACKAGE_PREFIX,      self.ed_package_prefix.Text );
+      ini.WriteString( INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH,   personal_certificate_path );
       ini.Free;
 
       ini := nil;
