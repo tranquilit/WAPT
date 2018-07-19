@@ -45,7 +45,6 @@ inherited WizardConfigConsole: TWizardConfigConsole
         Caption = 'Server info'
         ControlClassName = 'TWizardStepFrameConsoleServer'
         Description = 'Server info description'
-        EnabledButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
@@ -64,6 +63,7 @@ inherited WizardConfigConsole: TWizardConfigConsole
         Caption = 'Finished'
         ControlClassName = 'TWizardStepFrameConsoleFinished'
         Description = 'Console configuration finished'
+        EnabledButtons = [wbFinish]
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end>
   end
