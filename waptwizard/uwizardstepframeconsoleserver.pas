@@ -202,6 +202,9 @@ begin
     exit(-1);
 
 
+  m_data.S[UTF8Decode(INI_WAPT_SERVER)] := UTF8Decode(self.ed_server_url.Text);
+  m_data.S[UTF8Decode(INI_WAPT_USER)]   := UTF8Decode(self.ed_server_username.Text);
+  m_data.S[UTF8Decode(INI_WAPT_PASSWORD)]:= UTF8Decode(self.ed_server_password.Text);
 
   m_wizard.ClearValidationDescription();
   exit( 0 );
