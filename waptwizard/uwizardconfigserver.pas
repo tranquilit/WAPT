@@ -35,6 +35,7 @@ type
     function write_configuration_file_waptserver() : integer;
     function write_configuration_file_waptconsole() : integer;
     function write_configuration_file_waptget() : integer;
+    function register_localhost(): integer;
 
 
 
@@ -194,19 +195,35 @@ begin
 
 end;
 
-
-
+function TWizardConfigServer.register_localhost(): integer;
+var
+  params : TRunParametersSync;
+  r : integer;
+begin
+  self.SetValidationDescription( 'Register local machine');
+  params.cmd_line    := 'wapt-get.exe --direct register';
+  params.on_run_tick := nil;
+  params.timout_ms   := 60*1000;
+  r := run_sync( @params );
+  if r <> 0 then
+  begin
+    self.SetValidationDescription( 'An occurred occure while registered local machine' );
+    exit(r);
+  end;
+  exit(0);
+end;
 
 
 procedure TWizardConfigServer.WizardManagerPageHide(Sender: TObject; Page: TWizardPage);
 begin
-
   if 'TWizardStepFrameFirewall' = page.ControlClassName then
     self.write_configuration_file_waptserver()
   else if 'TWizardStepFramePackage' = page.ControlClassName then
   begin
     self.write_configuration_file_waptconsole();
     self.write_configuration_file_waptget();
+    wapt_service_restart();
+    register_localhost();
   end;
 
 
