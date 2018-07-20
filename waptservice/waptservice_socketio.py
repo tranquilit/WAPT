@@ -446,16 +446,14 @@ class WaptSocketIOClient(threading.Thread):
 
                 except Exception as e:
                     try:
-                        print(repr(e))
                         # reset token
                         self.server_authorization_token = None
                         self.config.reload_if_updated()
                         if self.socketio_client:
-                            logger.debug('stop sio client')
                             self.socketio_client = None
                     finally:
-                        logger.debug('Socket IO Stopped, waiting %ss before retrying' %
-                            self.config.websockets_retry_delay)
+                        logger.debug(u'Exception %s, Socket IO Stopped, waiting %ss before retrying' %
+                            (e,self.config.websockets_retry_delay))
                         time.sleep(self.config.websockets_retry_delay)
 
 if __name__ == "__main__":
