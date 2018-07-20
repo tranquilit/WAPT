@@ -48,62 +48,8 @@ var
 implementation
 uses uWaptConsoleRes,uScaleDPI;
 
-
-
-type
-  TShowLoadWaitParams = record
-    msg : String;
-    progress : integer;
-    maxprogress : integer;
-  end;
-  PShowLoadWaitParams = ^TShowLoadWaitParams;
-
-  { TShowLoad }
-  TShowLoad = class
-    public
-      procedure show( data : PtrInt );
-      procedure hide( data : PtrInt );
-  end;
-const
-  BOOL_TRUE : integer = 1;
-var
-  s_showload : TShowLoad;
-
-procedure TShowLoad.show( data : PtrInt );
-var
-  p : PShowLoadWaitParams;
-begin
-  p := PShowLoadWaitParams(data);
-  if p = nil then
-    exit;
-  if TThread.CurrentThread.ThreadID = 0 then
-    ShowLoadWait( p^.msg, p^.progress, p^.maxprogress );
-  Freemem(p);
-
-end;
-
-procedure TShowLoad.hide(data: PtrInt);
-begin
-  if TThread.CurrentThread.ThreadID = 0 then
-    HideLoadWait( data = BOOL_TRUE );
-end;
-
-
-
 procedure ShowLoadWait(Msg: String; Progress: Integer; MaxProgress: Integer);
-var
-  p : PShowLoadWaitParams;
 begin
-  if TThread.CurrentThread.ThreadID <> 0 then
-  begin
-    p := GetMem( sizeof(TShowLoadWaitParams) );
-    p^.msg := msg;
-    p^.progress := Progress;
-    p^.maxprogress := MaxProgress;
-    Application.QueueAsyncCall( @s_showload.show, PtrInt(p) );
-    exit;
-  end;
-
   if VisLoading = Nil then
       VisLoading := TVisLoading.Create(Application);
   VisLoading.Show;
@@ -124,19 +70,7 @@ begin
 end;
 
 procedure HideLoadWait(Force:Boolean=True);
-var
-  i : PtrInt;
 begin
-  if TThread.CurrentThread.ThreadID <> 0 then
-  begin
-    if Force then
-      i := BOOL_TRUE
-    else
-      i := 0;
-    Application.QueueAsyncCall( @s_showload.hide, i );
-    exit;
-  end;
-
   if VisLoading<> Nil then
   begin
     Dec(VisLoading.ShowCount);
@@ -229,14 +163,6 @@ begin
     LastUpdate:=Now;
   end;
 end;
-
-
-initialization
-  VisLoading := nil;
-  s_showload := TShowLoad.Create;
-
-finalization
-  FreeAndNil(s_showload);
 
 end.
 
