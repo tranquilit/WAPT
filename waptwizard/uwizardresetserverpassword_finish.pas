@@ -6,13 +6,14 @@ interface
 
 uses
   uwizardstepframe,
-  Classes, SysUtils, FileUtil, Forms, Controls;
+  Classes, SysUtils, FileUtil, Forms, Controls, StdCtrls;
 
 type
 
   { TWizardResetServerPasswordFinish }
 
   TWizardResetServerPasswordFinish = class(TWizardStepFrame)
+    lbl_center: TLabel;
   private
 
   public
@@ -33,7 +34,6 @@ begin
 end;
 
 initialization
-
 RegisterClass(TWizardResetServerPasswordFinish);
 end.
 

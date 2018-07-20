@@ -37,7 +37,7 @@ uses
 
 procedure TWizardResetServerPasswordRestartServer.wizard_show();
 begin
-  self.m_wizard.WizardButtonPanel.NextButton.Click;
+  self.m_wizard.click_next_async();
 end;
 
 function TWizardResetServerPasswordRestartServer.wizard_validate(): integer;
@@ -46,7 +46,6 @@ var
   s : String;
   ini : TIniFile;
 begin
-
   // Stop serviceS
   m_wizard.SetValidationDescription( 'Stopping waptserver');
   r := wapt_server_set_state( ssStopped );
@@ -54,7 +53,7 @@ begin
     exit(-1);
 
   //
-  s := self.m_data.S['wapt_server_home'];
+  s :=UTF8Encode(self.m_data.S['wapt_server_home']);
   wapt_ini_waptserver( s, s );
   try
     ini := TIniFile.Create(s);
