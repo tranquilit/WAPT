@@ -172,6 +172,8 @@ function  service_exist( const name : String ) : boolean;
 procedure service_stop_no_fail( services_names : TStringArray; timeout_seconds : integer );
 
 
+function wapt_service_restart() : integer;
+function wapt_service_set_state( state: TServiceState ) : integer;
 
 function wapt_server_set_state( state : TServiceState ): integer;
 function wapt_server_firewall_is_configured( var is_configured : boolean ) : integer;
@@ -1352,6 +1354,35 @@ end;
 
 
 
+
+function wapt_service_restart() : integer;
+var
+  r : integer;
+begin
+  r := wapt_service_set_state( ssStopped );
+  if r <> 0 then
+    exit(r);
+  r := wapt_service_set_state( ssRunning );
+  if r <> 0 then
+    exit(r);
+
+  exit(0);
+end;
+
+function wapt_service_set_state( state: TServiceState ) : integer;
+const
+  timeout_seconds : integer = 60; // seconds
+var
+  r : integer;
+begin
+  if not(state in [ ssRunning, ssStopped ]) then
+    exit( -1 );
+  r := service_set_state( 'WAPTService', state, timeout_seconds );
+  if r <> 0 then
+    exit( r );
+
+  exit(0);
+end;
 
 function wapt_server_set_state( state : TServiceState ): integer;
 const
