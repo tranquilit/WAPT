@@ -9,6 +9,7 @@ uses
   uwizard,
   uwizardstepframe,
   superobject,
+  PythonEngine,
   Classes, SysUtils, FileUtil, Forms, Controls, StdCtrls, ComCtrls;
 
 type
@@ -29,11 +30,12 @@ type
 
 
   public
+    procedure on_python_update(Sender: TObject; PSelf, Args: PPyObject; var Result: PPyObject);
 
-  // TWizardStepFrame
+    // TWizardStepFrame
     procedure wizard_show(); override; final;
-  procedure wizard_load( w : TWizard; data : ISuperObject ); override; final;
-  function wizard_validate( ) : integer;  override; final;
+    procedure wizard_load( w : TWizard; data : ISuperObject ); override; final;
+    function wizard_validate( ) : integer;  override; final;
 
 
 
@@ -43,6 +45,7 @@ type
 implementation
 
 uses
+  dmwaptpython,
   uwapt_ini,
   waptcommon,
   dialogs,
@@ -53,9 +56,6 @@ uses
 
 const
 MSG_BUILDING : String = 'Building %s   ';
-MSG_UPLOADING: String = 'Uploading waptagent to server';
-MSG_CONFIRM_BUILDIND : String = '%s has been found on the server.' + #13#10#13#10 + 'Rebuild and overwrite it ?';
-MSG_ERROR_CHECKING_NOT_404 : String = 'A Problem has occurred while checking if %s exist on server' + #13#10 + 'Server installation may be broken, you could try reinstall waptserver';
 
 
 { TWizardStepFrameBuildAgent }
@@ -94,13 +94,14 @@ var
   server_url : String;
   verify_cert: String;
   package_certificate : String;
+
+  old_pythonevent : TPythonEvent;
 begin
 
   server_url := UTF8Encode(m_data.S[UTF8Decode(INI_WAPT_SERVER)]);
   Assert( Length(Trim(server_url)) > 0 ) ;
   verify_cert:= '0';
   package_certificate := UTF8Encode( m_data.S[UTF8Decode(INI_PERSONAL_CERTIFICATE_PATH)] );
-
 
 
 ////////////////////// Building waptagent
@@ -193,34 +194,37 @@ LBL_BUILD_WAPTAGENT:
 
   ////////////////////// Building waptupgrade
   LBL_BUILD_WAPTUPGRADE:
-    self.progress.Visible := false;
-    self.lbl.Caption := 'Prepare building waptupgrade';
+  self.progress.Visible := false;
+  self.lbl.Caption := 'Prepare building waptupgrade';
+  old_pythonevent := DMPython.PythonModuleDMWaptPython.Events.Items[1].OnExecute;
+  DMPython.PythonModuleDMWaptPython.Events.Items[1].OnExecute := @on_python_update;
 
 
-    // Check there is no other inno setup process running
-    if not wizard_validate_sys_no_innosetup_process( m_wizard ) then
-      exit( -1 );
+  // Check there is no other inno setup process running
+  if not wizard_validate_sys_no_innosetup_process( m_wizard ) then
+    exit( -1 );
 
 
-    // Now building
-    building_init_ui( MSG_BUILDING, 100 );
-    r := wapt_ini_waptconsole( s );
-    if r <> 0 then
-    begin
-      building_show_error( m_wizard, nil, 'configuration file waptconsole.ini have not been found, build cannot continue');
-      exit(-1);
-    end;
-    params_waptupgrade.server_username := UTF8Encode( m_data.S['wapt_user'] );
-    params_waptupgrade.server_password := UTF8Encode( m_data.S['wapt_password'] );
-    params_waptupgrade.config_filename := s;
-    params_waptupgrade.dualsign        := false;
-    params_waptupgrade.private_key_password := UTF8Encode( m_data.S['package_private_key_password'] );
-    Build( 'waptupgrade', @CreateSetupParams_waptupgrade, @params_waptupgrade, nil);
-    if params_waptupgrade._result <> 0 then
-    begin
-      building_show_error( m_wizard, nil, params_waptupgrade._err_message );
-      exit(-1);
-    end;
+  // Now building
+  building_init_ui( MSG_BUILDING, 100 );
+  r := wapt_ini_waptconsole( s );
+  if r <> 0 then
+  begin
+    building_show_error( m_wizard, nil, 'configuration file waptconsole.ini have not been found, build cannot continue');
+    exit(-1);
+  end;
+  params_waptupgrade.server_username := UTF8Encode( m_data.S['wapt_user'] );
+  params_waptupgrade.server_password := UTF8Encode( m_data.S['wapt_password'] );
+  params_waptupgrade.config_filename := s;
+  params_waptupgrade.dualsign        := false;
+  params_waptupgrade.private_key_password := UTF8Encode( m_data.S['package_private_key_password'] );
+  Build( 'waptupgrade', @CreateSetupParams_waptupgrade, @params_waptupgrade, nil);
+  if params_waptupgrade._result <> 0 then
+  begin
+    building_show_error( m_wizard, nil, params_waptupgrade._err_message );
+    exit(-1);
+  end;
+  DMPython.PythonModuleDMWaptPython.Events.Items[1].OnExecute := old_pythonevent;
 
 
 
@@ -318,11 +322,16 @@ procedure TWizardStepFrameBuildAgent.building_init_ui( const s : String; max : i
     Application.ProcessMessages;
   end;
 
-    procedure TWizardStepFrameBuildAgent.building_show_error(w: TWizard; control: TControl; const msg: String);
-  begin
-    progress.Visible := false;
-    w.show_validation_error( control, msg );
-  end;
+procedure TWizardStepFrameBuildAgent.building_show_error(w: TWizard; control: TControl; const msg: String);
+begin
+  progress.Visible := false;
+  w.show_validation_error( control, msg );
+end;
+
+procedure TWizardStepFrameBuildAgent.on_python_update(Sender: TObject; PSelf, Args: PPyObject; var Result: PPyObject);
+begin
+  Result:= DMPython.PythonEng.ReturnNone;
+end;
 
 
 
