@@ -45,18 +45,16 @@ uses
 { TWizardResetServerPasswordSetPassword }
 
 procedure TWizardResetServerPasswordSetPassword.cb_show_passwordsChange( Sender: TObject);
+var
+  c : Char;
 begin
   if self.cb_show_passwords.Checked then
-  begin
-    self.ed_password_1.PasswordChar := #0;
-    self.ed_password_2.PasswordChar := #0;
-  end
+    c := #0
   else
-  begin
-    self.ed_password_1.PasswordChar := '*';
-    self.ed_password_2.PasswordChar := '*';
-  end
+    c := '*';
 
+  self.ed_password_1.PasswordChar := c;
+  self.ed_password_2.PasswordChar := c;
 
 end;
 
