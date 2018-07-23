@@ -446,25 +446,33 @@ def datetime2isodate(adatetime = None):
 
 
 def httpdatetime2isodate(httpdate):
-    """convert a date string as returned in http headers or mail headers to isodate
+    """Convert a date string as returned in http headers or mail headers to isodate (UTC)
 
     >>> import requests
     >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
     >>> len(httpdatetime2isodate(last_modified)) == 19
     True
     """
-    return datetime2isodate(datetime.datetime(*email.utils.parsedate(httpdate)[:6]))
+    date_time_tz = email.utils.parsedate_tz(httpdate)
+    return datetime2isodate(datetime.datetime(*date_time_tz[:6]) - datetime.timedelta(seconds=date_time_tz[9]))
 
 
 def httpdatetime2datetime(httpdate):
-    """convert a date string as returned in http headers or mail headers to isodate
+    """convert a date string as returned in http headers or mail headers to isodate (UTC)
+
+    Args:
+        httpdate (str): form '2018-07-11T04:53:01'
+
+    Returns:
+        datetime
 
     >>> import requests
     >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
     >>> len(httpdatetime2isodate(last_modified)) == 19
     True
     """
-    return datetime.datetime(*email.utils.parsedate(httpdate)[:6])
+    date_time_tz = email.utils.parsedate_tz(httpdate)
+    return datetime.datetime(*date_time_tz[:6]) - datetime.timedelta(seconds=date_time_tz[9])
 
 def httpdatetime2time(httpdate):
     """convert a date string as returned in http headers or mail headers to isodate
@@ -474,7 +482,8 @@ def httpdatetime2time(httpdate):
     >>> len(httpdatetime2isodate(last_modified)) == 19
     True
     """
-    return time.mktime(email.utils.parsedate(httpdate)[:9])
+    date_time_tz = email.utils.parsedate_tz(httpdate)
+    return time.mktime(date_time_tz[:9]) - date_time_tz[9]
 
 
 def isodate2datetime(isodatestr):
@@ -494,12 +503,25 @@ def hours_minutes(hours):
 
 
 def fileisodate(filename):
+    """Returns last update date time from filename in local time"""
     return datetime.datetime.fromtimestamp(os.stat(filename).st_mtime).isoformat()
 
 def fileutcdate(filename):
+    """Returns last update date time from filename in UTC
+
+    Returns:
+        datetime
+    """
     return datetime.datetime.utcfromtimestamp(os.stat(filename).st_mtime)
 
+def fileutcmtime(filename):
+    if time.daylight:
+        return os.path.getmtime(filename) + time.altzone
+    else:
+        return os.path.getmtime(filename) + time.zone
+
 def fileisoutcdate(filename):
+    """Returns last update date time from filename in UTC"""
     return datetime2isodate(fileutcdate(filename))
 
 def dateof(adatetime):
@@ -839,8 +861,12 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         file_date = httpreq.headers.get('last-modified',None)
 
     if file_date:
-        file_datetime = httpdatetime2time(file_date)
-        os.utime(target_fn,(file_datetime,file_datetime))
+        file_datetime_utc = httpdatetime2time(file_date)
+        if time.daylight:
+            file_datetime_local = file_datetime_utc - time.altzone
+        else:
+            file_datetime_local = file_datetime_utc - time.zone
+        os.utime(target_fn,(file_datetime_local,file_datetime_local))
 
     # cache result
     if cache_dir:
