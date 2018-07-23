@@ -503,6 +503,26 @@ def update_host():
 
 @app.route('/get_websocket_auth_token',methods=['HEAD','POST'])
 def get_websocket_auth_token():
+    """Returns a token for the authentication of websocket
+
+    Http headers:
+        Content-Encoding : can be gzip
+        X-Signature :
+
+    Args:
+       None
+
+    Post data (json):
+        uuid (str) : host requesting a token
+        purpose (str): must be websocket
+
+    Returns:
+        "success": bool
+        "msg": str
+        "result": dict
+            "authorization_token": str
+        "error": str
+    """
     try:
         starttime = time.time()
         # unzip if post data is gzipped
@@ -620,62 +640,6 @@ def localrepo_packages():
                              request_time=time.time() - start_time)
     except Exception as e:
         return make_response_from_exception(e)
-
-
-@app.route('/upload_package/<string:filename>', methods=['HEAD','POST'])
-@requires_auth
-def upload_package(filename=''):
-    """Handles the upload of a single package
-
-    Args:
-        filename (str): base filename of the uploaded package.
-
-    Returns:
-        Response: json response with keys 'status': ('OK','ERROR') and message (str)
-    """
-    try:
-        g.packages = None
-        tmp_target = ''
-        if request.method == 'POST':
-            if filename and allowed_file(filename):
-                tmp_target = os.path.join(app.conf['wapt_folder'], secure_filename(filename + '.tmp'))
-                with open(tmp_target, 'wb') as f:
-                    data = request.stream.read(65535)
-                    try:
-                        while len(data) > 0:
-                            f.write(data)
-                            data = request.stream.read(65535)
-                    except:
-                        logger.debug(u'End of stream')
-                        raise
-
-                if not os.path.isfile(tmp_target):
-                    result = dict(status='ERROR', message=_('Problem during upload'))
-                else:
-                    if PackageEntry().load_control_from_wapt(tmp_target):
-                        target = os.path.join(app.conf['wapt_folder'], secure_filename(filename))
-                        if os.path.isfile(target):
-                            os.unlink(target)
-                        os.rename(tmp_target, target)
-                        data = update_packages(app.conf['wapt_folder'])
-                        result = dict(status='OK', message='%s uploaded, %i packages analysed' % (filename, len(data['processed'])), result=data)
-                    else:
-                        result = dict(status='ERROR', message=_('Not a valid wapt package'))
-                        os.unlink(tmp_target)
-            else:
-                result = dict(status='ERROR', message=_('Wrong file type'))
-        else:
-            result = dict(status='ERROR', message=_('Unsupported method'))
-    except:
-        # remove temporary
-        if os.path.isfile(tmp_target):
-            os.unlink(tmp_target)
-        e = sys.exc_info()
-        logger.critical(repr(traceback.format_exc()))
-        result = dict(status='ERROR', message=_('unexpected: {}').format((e,)))
-    return Response(response=json.dumps(result),
-                    status=200,
-                    mimetype='application/json')
 
 
 @app.route('/api/v3/upload_packages',methods=['HEAD','POST'])
@@ -1052,12 +1016,6 @@ def wapt_listing():
         'listing.html', dir_listing=os.listdir(app.conf['wapt_folder']))
 
 
-@app.route('/waptwua/')
-def waptwua():
-    return render_template(
-        'listingwua.html', dir_listing=os.listdir(waptwua_folder)) # pylint: disable=undefined-variable
-
-
 @app.route('/wapt/<string:input_package_name>')
 def get_wapt_package(input_package_name):
     package_name = secure_filename(input_package_name)
@@ -1341,27 +1299,6 @@ def trigger_wakeonlan():
                              success=True)
     except Exception as e:
         return make_response_from_exception(e)
-
-
-@app.route('/api/v3/trigger_waptwua_scan', methods=['HEAD','GET', 'POST'])
-@requires_auth
-def trigger_waptwua_scan():
-    """Proxy the wapt update action to the client"""
-    return proxy_host_request(request, 'trigger_waptwua_scan')
-
-
-@app.route('/api/v3/trigger_waptwua_download', methods=['HEAD','GET', 'POST'])
-@requires_auth
-def trigger_waptwua_download():
-    """Proxy the wapt download action to the client"""
-    return proxy_host_request(request, 'trigger_waptwua_download')
-
-
-@app.route('/api/v3/trigger_waptwua_install', methods=['HEAD','GET', 'POST'])
-@requires_auth
-def trigger_waptwua_install():
-    """Proxy the wapt scan action to the client"""
-    return proxy_host_request(request, 'trigger_waptwua_install')
 
 
 @app.route('/api/v2/waptagent_version')
@@ -1899,6 +1836,40 @@ def host_data():
 
     return make_response(result=result, msg=msg, success=success,
                          error_code=error_code, status=200, request_time=time.time() - start_time)
+
+
+@app.route('/api/v3/hosts_for_package')
+@requires_auth
+def hosts_for_package():
+    """Returns list of hosts requiring the supplied windows update
+
+    Args:
+        package (str)
+        limit (int)
+
+    Returns:
+        list of Hosts
+
+    """
+    limit = int(request.args.get('limit','1000'))
+    package = request.args.get('package')
+
+    result = list(
+            HostPackagesStatus.select(
+                HostPackagesStatus,
+                Hosts.computer_name,
+                Hosts.computer_fqdn,
+                Hosts.description,
+                Hosts.connected_ips,
+                Hosts.reachable,
+            )
+            .where(
+                HostPackagesStatus.package == package)
+                .join(Hosts,'RIGHT OUTER')
+                .limit(limit)
+                .dicts())
+
+    return make_response(msg = _('Hosts for package %s, limit %s') % (package,limit), result = result)
 
 
 def packages_install_stats():

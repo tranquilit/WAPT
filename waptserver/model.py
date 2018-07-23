@@ -420,17 +420,20 @@ class SignedModel(WaptBaseModel):
         return super(SignedModel,self).save(*args,**argvs)
 
 
-class WsusScan2History(WaptBaseModel):
+class WsusDownloadTasks(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
-    run_date = DateTimeField(null=True,index=True)
-    status = CharField(null=True)
-    reason = CharField(null=True)
-    forced = BooleanField(null=True)
-    skipped = BooleanField(null=True)
+    kind = CharField(null=True,index=True)
+    url = CharField(null=True)
+    target_size = IntegerField(null=True)
+    local_filename = CharField(null=True)
     file_date = DateTimeField(null=True)
     file_size = IntegerField(null=True)
-    target_size = IntegerField(null=True)
-    cablist = ArrayField(CharField, null=True)
+    status = CharField(null=True)
+    started_on = DateTimeField(null=True,index=True)
+    finished_on = DateTimeField(null=True,index=True)
+    msg = CharField(null=True)
+    forced = BooleanField(null=True)
+    skipped = BooleanField(null=True)
     error = CharField(max_length=1200,null=True)
 
 
@@ -989,9 +992,9 @@ def init_db(drop=False):
     except:
         wapt_db.rollback()
     if drop:
-        for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,WsusScan2History,HostWuaStatus]):
+        for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,HostWuaStatus,WsusDownloadTasks]):
             table.drop_table(fail_silently=True)
-    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,WsusScan2History,HostWuaStatus], safe=True)
+    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,HostWuaStatus,WsusDownloadTasks], safe=True)
 
     if get_db_version() == None:
         # new database install, we setup the db_version key
@@ -1240,6 +1243,8 @@ def upgrade_db_structure():
             logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
 
             #wapt_db.create_tables([HostWuaStatus],safe=True)
+
+            WsusDownloadTasks.create_table(fail_silently=True)
 
             opes = []
             columns = [c.name for c in wapt_db.get_columns('hosts')]
