@@ -48,8 +48,9 @@ interface
   function WaptgetPath: String; // c:\wapt\wapt-get.exe
   function WaptDBPath: String;
 
-  function GetWaptRepoURL: String; // from wapt-get.ini, can be empty
-  Function GetMainWaptRepo:String;   // read from ini, if empty, do a discovery using dns
+  function GetRepoURLFromDNS(RepoName:String;dnsdomain:String='';http_proxy:String=''):String;
+  function GetWaptRepoURLFromIni(RepoName:String='wapt'): String; // from wapt-get.ini, can be empty
+  Function GetMainWaptRepoURL:String;   // read from ini, if empty, do a discovery using dns
   Function GetWaptServerURL:String;  // read ini. if no wapt_server key -> return '', return value in inifile or perform a DNS discovery
 
   function GetWaptServerCertificateFilename(inifilename:String=''):String;
@@ -1081,76 +1082,6 @@ begin
   Result := False;
 end;
 
-function GetMainWaptRepo: String;
-var
-  rec,recs,ConnectedIps,ServerIp : ISuperObject;
-  url,dnsdomain,Proxy:AnsiString;
-
-begin
-  result := IniReadString(WaptIniFilename,'global','repo_url','');
-  if (Result <> '') then
-    exit;
-
-  if UseProxyForRepo then
-    Proxy:=HttpProxy
-  else
-    Proxy:='';
-
-  dnsdomain:=GetDNSDomain;
-  if dnsdomain<>'' then
-  begin
-    ConnectedIps := GetEthernetInfo(True);
-
-    //SRV _wapt._tcp
-    recs := DNSSRVQuery('_wapt._tcp.'+dnsdomain);
-    for rec in recs do
-    begin
-      if rec.I['port'] = 443 then
-        url := 'https://'+rec.S['name']+'/wapt'
-      else
-        url := 'http://'+rec.S['name']+':'+rec.S['port']+'/wapt';
-      rec.S['url'] := url;
-      try
-        ServerIp := DNSAQuery(rec.S['name']);
-        if ServerIp.AsArray.Length > 0 then
-          rec.B['outside'] := not SameNet(ConnectedIps,ServerIp.AsArray.S[0])
-        else
-          rec.B['outside'] := True;
-      except
-        rec.B['outside'] := True;
-      end;
-      // order is priority asc but wieght desc
-      rec.I['weight'] := - rec.I['weight'];
-    end;
-    SortByFields(recs,['outside','priority','weight']);
-
-    for rec in recs do
-    begin
-      Result := rec.S['url'];
-      Logger('trying '+Result,INFO);
-      if IdWget_try(Result,Proxy,'','0') then
-        Exit;
-    end;
-
-    //CNAME wapt.
-    recs := DNSCNAMEQuery('wapt'+dnsdomain);
-    for rec in recs do
-    begin
-      Result := 'http://'+rec.AsString+'/wapt';
-      Logger('trying '+result,INFO);
-      if IdWget_try(result,Proxy,'','0') then
-        Exit;
-    end;
-
-    //A wapt
-    Result := 'http://wapt.'+dnsdomain+'/wapt';
-      Logger('trying '+result,INFO);
-      if IdWget_try(result,Proxy,'','0') then
-        Exit;
-  end;
-  result :='';
-end;
-
 function GetEthernetInfo(ConnectedOnly:Boolean):ISuperObject;
 var
   i:integer;
@@ -1254,13 +1185,136 @@ begin
 end;
 
 
-function GetWaptRepoURL: String;
+function GetRepoURLFromDNS(RepoName:String;dnsdomain:String='';http_proxy:String=''):String;
+var
+  rec,recs,ConnectedIps,ServerIp : ISuperObject;
+  url:AnsiString;
 begin
-  result := IniReadString(WaptIniFilename,'global','repo_url');
-  if Result = '' then
-      Result:='http://wapt/wapt';
-  if result[length(result)] = '/' then
+  result :='';
+  if dnsdomain='' then
+    dnsdomain := GetDNSDomain;
+
+  if dnsdomain <> '' then
+  begin
+    ConnectedIps := GetEthernetInfo(True);
+
+    //SRV _wapt._tcp
+    recs := DNSSRVQuery(Format('_%s._tcp.%s',[lowercase(RepoName),lowercase(dnsdomain)]));
+    for rec in recs do
+    begin
+      if rec.I['port'] = 443 then
+        url := 'https://'+rec.S['name']+'/wapt'
+      else
+        url := 'http://'+rec.S['name']+':'+rec.S['port']+'/wapt';
+      rec.S['url'] := url;
+      try
+        ServerIp := DNSAQuery(rec.S['name']);
+        if ServerIp.AsArray.Length > 0 then
+          rec.B['outside'] := not SameNet(ConnectedIps,ServerIp.AsArray.S[0])
+        else
+          rec.B['outside'] := True;
+      except
+        rec.B['outside'] := True;
+      end;
+      // order is priority asc but wieght desc
+      rec.I['weight'] := - rec.I['weight'];
+    end;
+    SortByFields(recs,['outside','priority','weight']);
+
+    for rec in recs do
+    begin
+      Result := rec.S['url'];
+      Logger('trying '+Result,INFO);
+      if IdWget_try(Result,http_proxy,'','0') then
+        Exit;
+    end;
+
+    //CNAME wapt.
+    recs := DNSCNAMEQuery(RepoName+'.'+dnsdomain);
+    for rec in recs do
+    begin
+      Result := 'http://'+rec.AsString+'/wapt';
+      Logger('trying '+result,INFO);
+      if IdWget_try(result,http_proxy,'','0') then
+        Exit;
+    end;
+
+    //A wapt
+    Result := 'http://'+RepoName+'.'+dnsdomain+'/wapt';
+      Logger('trying '+result,INFO);
+      if IdWget_try(result,http_proxy,'','0') then
+        Exit;
+  end;
+end;
+
+function GetWaptRepoURLFromIni(RepoName:String='wapt'): String;
+var
+  section,key:String;
+  repositories:TDynStringArray;
+begin
+  result := '';
+
+  if (RepoName='wapt') then
+  begin
+    if IniHasKey(WaptIniFilename,'wapt','repo_url') then
+      section:='wapt'
+    else
+    if IniHasKey(WaptIniFilename,'global','repo_url') then
+      section:='global'
+    else
+    begin
+      repositories := StrSplit(IniReadString(WaptIniFilename,'global','repositories'),',',True);
+      if Length(repositories)>0 then
+        section := repositories[0];
+    end;
+  end;
+
+  if (RepoName='wapt-host') then
+  begin
+    if IniHasKey(WaptIniFilename,'wapt-host','repo_url') then
+      section:='wapt-host'
+    else
+    if IniHasKey(WaptIniFilename,'global','repo_url') then
+    begin
+      section:='global';
+      result := IniReadString(WaptIniFilename,section,'repo_url')+'-host';
+    end
+    else
+    begin
+      repositories := StrSplit(IniReadString(WaptIniFilename,'global','repositories'),',',True);
+      if Length(repositories)>0 then
+      begin
+        // Last repo is main fallback so is more entitled to have up-to-date host packages
+        section := repositories[length(repositories)-1];
+        result := IniReadString(WaptIniFilename,section,'repo_url')+'-host';
+      end;
+    end;
+  end;
+
+  if result = '' then
+    result := IniReadString(WaptIniFilename,section,'repo_url');
+
+  if (result <> '') and (RightStr(result,1) = '/') then
     result := copy(result,1,length(result)-1);
+end;
+
+function GetMainWaptRepoURL: String;
+var
+  rec,recs,ConnectedIps,ServerIp : ISuperObject;
+  url,dnsdomain,Proxy:AnsiString;
+begin
+  result := GetWaptRepoURLFromIni('wapt');
+  if (Result <> '') then
+    exit;
+
+  if UseProxyForRepo then
+    Proxy:=HttpProxy
+  else
+    Proxy:='';
+
+  dnsdomain:=GetDNSDomain;
+  if dnsdomain<>'' then
+    Result := GetRepoURLFromDNS('wapt',dnsdomain,Proxy);
 end;
 
 

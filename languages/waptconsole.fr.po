@@ -1790,6 +1790,16 @@ msgstr "Logiciel"
 msgid "Search in installed softwares"
 msgstr "Recherche dans les logiciels référencés"
 
+#: tviswaptgui.cbshowhostsforgroups.caption
+msgctxt "tviswaptgui.cbshowhostsforgroups.caption"
+msgid "Show Hosts"
+msgstr "Afficher les clients"
+
+#: tviswaptgui.cbshowhostsforsofts.caption
+msgctxt "tviswaptgui.cbshowhostsforsofts.caption"
+msgid "Show Hosts"
+msgstr "Afficher les clients"
+
 #: tviswaptgui.cbshowlog.caption
 msgctxt "tviswaptgui.cbshowlog.caption"
 msgid "Show debug"
@@ -2070,6 +2080,10 @@ msgstr "Sélectionner un fichier d'installation exe ou msi"
 msgid "Select WAPT file"
 msgstr "Sélectionner un fichier WAPT"
 
+#: tviswaptgui.panel10.caption
+msgid "Panel10"
+msgstr ""
+
 #: tviswaptgui.panel2.caption
 msgid "Panel2"
 msgstr ""
@@ -2081,6 +2095,11 @@ msgstr ""
 #: tviswaptgui.panel7.caption
 msgctxt "tviswaptgui.panel7.caption"
 msgid "Panel7"
+msgstr ""
+
+#: tviswaptgui.panhostsforpackage.caption
+msgctxt "tviswaptgui.panhostsforpackage.caption"
+msgid "PanHostsForPackage"
 msgstr ""
 
 #: tviswaptgui.panwualeft.caption

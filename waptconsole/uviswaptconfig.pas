@@ -206,7 +206,7 @@ begin
     end
     else
     begin
-      edrepo_url.Text := GetMainWaptRepo;
+      edrepo_url.Text := GetMainWaptRepoURL;
       edwapt_server.Text := GetWaptServerURL;
     end;
   end;
@@ -294,7 +294,7 @@ begin
         end
         else
         begin
-          edrepo_url.Text := GetMainWaptRepo;
+          edrepo_url.Text := GetMainWaptRepoURL;
           edwapt_server.Text := GetWaptServerURL;
         end;
 

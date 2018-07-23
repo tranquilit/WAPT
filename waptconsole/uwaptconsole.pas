@@ -101,6 +101,7 @@ type
     cbSearchSoftwares: TCheckBox;
     cbADSite: TComboBox;
     cbNewestOnly: TCheckBox;
+    CBShowHostsForSofts: TCheckBox;
     cbWUACriticalOnly: TCheckBox;
     cbWUADiscarded: TCheckBox;
     cbWUAInstalled: TCheckBox;
@@ -108,6 +109,7 @@ type
     CBWUClassifications: TCheckListBox;
     cbWUCritical: TCheckBox;
     CBWUProducts: TCheckListBox;
+    CBShowHostsForGroups: TCheckBox;
     DBOrgUnits: TBufDataset;
     DBOrgUnitsDepth: TLongintField;
     DBOrgUnitsDescription: TStringField;
@@ -122,6 +124,7 @@ type
     EdWsusscn2cabDate: TEdit;
     EdLastScanDate: TEdit;
     EdLastScanDuration: TEdit;
+    GridHostsForPackage: TSOGrid;
     GridWUUpdates: TSOGrid;
     Label10: TLabel;
     Label17: TLabel;
@@ -133,6 +136,7 @@ type
     GridNetworks: TSOGrid;
     Label4: TLabel;
     LabUser1: TLabel;
+    MemoInstallOutput1: TMemo;
     MenuItem100: TMenuItem;
     MenuItem101: TMenuItem;
     MenuItem102: TMenuItem;
@@ -152,6 +156,8 @@ type
     MenuItem97: TMenuItem;
     MenuItem98: TMenuItem;
     MenuItem99: TMenuItem;
+    Panel10: TPanel;
+    PanHostsForPackage: TPanel;
     Panel17: TPanel;
     Panel9: TPanel;
     PanWUALeft: TPanel;
@@ -164,6 +170,9 @@ type
     PopupMenuOrgUnits: TPopupMenu;
     PopupHostWUAUpdates: TPopupMenu;
     SOWaptServer: TSOConnection;
+    Splitter10: TSplitter;
+    Splitter8: TSplitter;
+    Splitter9: TSplitter;
     SrcNetworks: TSODataSource;
     SrcOrgUnits: TDataSource;
     EdDescription: TEdit;
@@ -574,6 +583,7 @@ type
     procedure cbMaskSystemComponentsClick(Sender: TObject);
     procedure cbNewestOnlyClick(Sender: TObject);
     procedure cbSearchAllClick(Sender: TObject);
+    procedure CBShowHostsForSoftsClick(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure cbADSiteDropDown(Sender: TObject);
     procedure cbWUAPendingChange(Sender: TObject);
@@ -635,6 +645,10 @@ type
       Mode: TDropMode; var Effect: DWORD; var Accept: boolean);
     procedure GridHostsEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var Allowed: boolean);
+    procedure GridHostsForPackageChange(Sender: TBaseVirtualTree;
+      Node: PVirtualNode);
+    procedure GridHostsForPackageFocusChanged(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Column: TColumnIndex);
     procedure GridHostsGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
       var HintText: String);
@@ -663,6 +677,7 @@ type
     procedure GridOrgUnitsGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
       var HintText: String);
+    procedure GridPackagesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
     procedure GridPackagesPaintText(Sender: TBaseVirtualTree;
@@ -703,8 +718,8 @@ type
     function GetWUAClassifications: ISuperObject;
     function GetWUAProducts: ISuperObject;
     function GetWUAWinUpdates: ISuperObject;
-    function OneHostHasConnectedIP: Boolean;
-    function OneHostIsConnected: Boolean;
+    function OneHostHasConnectedIP(GridHostsIPs:TSOGrid=Nil): Boolean;
+    function OneHostIsConnected(GridHostsReachable:TSOGrid=Nil): Boolean;
     function GetSelectedOrgUnits: TDynStringArray;
     procedure SelectOrgUnits(Search: String);
     procedure SetIsEnterpriseEdition(AValue: Boolean);
@@ -747,7 +762,7 @@ type
     function EditIniFile: boolean;
     function updateprogress(receiver: TObject; current, total: integer): boolean;
     function TriggerActionOnHosts(uuids: ISuperObject;AAction:String;Args:ISuperObject;title,errortitle:String;Force:Boolean=False;NotifyServer:Boolean=True):ISuperObject;
-    procedure TriggerActionOnHostPackages(AAction, title, errortitle: String;Force:Boolean=False);
+    procedure TriggerActionOnHostPackages(APackagesStatusGrid:TSOGrid;HostUUIDs:ISuperObject;AAction, title, errortitle: String;Force:Boolean=False);
 
     property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
 
@@ -1583,8 +1598,8 @@ var
   OneIsConnected,
   OneHasConnectedIP:Boolean;
 begin
-  OneIsConnected:=OneHostIsConnected;
-  OneHasConnectedIP:=OneHostHasConnectedIP;
+  OneIsConnected:=OneHostIsConnected(GridHosts);
+  OneHasConnectedIP:=OneHostHasConnectedIP(GridHosts);
   OneIsFocused:=(Gridhosts.FocusedRow <> nil);
 
   ActTriggerHostUpdate.Visible := not HideUnavailableActions or (OneIsFocused  and OneIsConnected);
@@ -2414,7 +2429,8 @@ end;
 
 procedure TVisWaptGUI.ActPackagesForceInstallExecute(Sender: TObject);
 begin
-  TriggerActionOnHostPackages('trigger_install_packages',rsConfirmPackageInstall,rsPackageInstallError,True);
+  TriggerActionOnHostPackages(GridHostPackages,ExtractField(GridHosts.SelectedRows,'uuid'),
+      'trigger_install_packages',rsConfirmPackageInstall,rsPackageInstallError,True);
 end;
 
 procedure TVisWaptGUI.ActPackagesInstallUpdate(Sender: TObject);
@@ -2424,7 +2440,10 @@ end;
 
 procedure TVisWaptGUI.ActPackagesRemoveUpdate(Sender: TObject);
 begin
-  (Sender as TAction).Enabled:=OneHostIsConnected and FileExistsUTF8(WaptPersonalCertificatePath);
+  if GridHostPackages.Focused then
+    (Sender as TAction).Enabled:=OneHostIsConnected and FileExistsUTF8(WaptPersonalCertificatePath)
+  else if GridHostsForPackage.Focused then
+    (Sender as TAction).Enabled:=FileExistsUTF8(WaptPersonalCertificatePath)
 end;
 
 procedure TVisWaptGUI.ActPackagesUpdateUpdate(Sender: TObject);
@@ -2468,12 +2487,14 @@ begin
   end;
 end;
 
-function TVisWaptGUI.OneHostHasConnectedIP:Boolean;
+function TVisWaptGUI.OneHostHasConnectedIP(GridHostsIPs:TSOGrid=Nil):Boolean;
 var
   host : ISuperObject;
 begin
   Result:=False;
-  for host in GridHosts.SelectedRows do
+  if GridHostsIPs = Nil then
+    GridHostsIPs := GridHosts;
+  for host in GridHostsIPs.SelectedRows do
   begin
     if Host.S['connected_ips'] <> '' then
     begin
@@ -2668,20 +2689,20 @@ begin
 end;
 
 
-procedure TVisWaptGUI.TriggerActionOnHostPackages(AAction,title,errortitle:String;Force:Boolean=False);
+procedure TVisWaptGUI.TriggerActionOnHostPackages(APackagesStatusGrid:TSOGrid;HostUUIDs:ISuperObject;AAction,title,errortitle:String;Force:Boolean=False);
 var
   sel, packages : ISuperObject;
-  SOAction, SOActions,res,host:ISuperObject;
+  SOAction, SOActions,res,HostUUID:ISuperObject;
   actions_json,
   signed_actions_json:String;
   VPrivateKeyPassword:Variant;
 begin
-  if GridHostPackages.Focused and (GridHosts.FocusedRow <> Nil) then
+  if APackagesStatusGrid.Focused and (HostUUIDs.AsArray <> Nil) then
   begin
-    sel := GridHostPackages.SelectedRows;
+    sel := APackagesStatusGrid.SelectedRows;
     if Dialogs.MessageDlg(
        rsConfirmCaption,
-       format(title, [IntToStr(sel.AsArray.Length), Join(',',ExtractField(GridHosts.SelectedRows,'computer_fqdn'))]),
+       format(title, [IntToStr(sel.AsArray.Length), Join(',',HostUUIDs)]),
        mtConfirmation,
        mbYesNoCancel,
        0) = mrYes then
@@ -2689,11 +2710,11 @@ begin
       packages := ExtractField(sel,'package');
       try
         SOActions := TSuperObject.Create(stArray);
-        for host in GridHosts.SelectedRows do
+        for HostUUID in HostUUIDs do
         begin
           SOAction := SO();
           SOAction.S['action'] := AAction;
-          SOAction.S['uuid'] := host.S['uuid'];
+          SOAction['uuid'] := HostUUID;
           SOAction.B['notify_server'] := True;
           SOAction.B['force'] := Force;
           SOAction['packages'] := packages;
@@ -2727,13 +2748,14 @@ begin
               [ Join(',',packages),e.Message]));
       end;
     end;
-    UpdateHostPages(Nil);
+    //UpdateHostPages(Nil);
   end;
 end;
 
 procedure TVisWaptGUI.ActPackagesForgetExecute(Sender: TObject);
 begin
-  TriggerActionOnHostPackages('trigger_forget_packages',rsConfirmHostForgetsPackages,rsForgetPackageError);
+  TriggerActionOnHostPackages(GridHostPackages,ExtractField(GridHosts.SelectedRows,'uuid'),
+    'trigger_forget_packages',rsConfirmHostForgetsPackages,rsForgetPackageError);
 end;
 
 procedure TVisWaptGUI.ActFrenchExecute(Sender: TObject);
@@ -2758,12 +2780,14 @@ begin
 end;
 
 
-function TVisWaptGUI.OneHostIsConnected:Boolean;
+function TVisWaptGUI.OneHostIsConnected(GridHostsReachable:TSOGrid=Nil):Boolean;
 var
   host : ISuperObject;
 begin
+  if GridHostsReachable = Nil then
+    GridHostsReachable := GridHosts;
   Result:=False;
-  for host in GridHosts.SelectedRows do
+  for host in GridHostsReachable.SelectedRows do
   begin
     if Host.S['reachable'] = 'OK' then
     begin
@@ -2918,12 +2942,14 @@ end;
 
 procedure TVisWaptGUI.ActPackagesInstallExecute(Sender: TObject);
 begin
-  TriggerActionOnHostPackages('trigger_install_packages',rsConfirmPackageInstall,rsPackageInstallError);
+  TriggerActionOnHostPackages(GridHostPackages,ExtractField(GridHosts.SelectedRows,'uuid'),
+    'trigger_install_packages',rsConfirmPackageInstall,rsPackageInstallError);
 end;
 
 procedure TVisWaptGUI.ActPackagesRemoveExecute(Sender: TObject);
 begin
-  TriggerActionOnHostPackages('trigger_remove_packages',rsConfirmRmPackagesFromHost,rsPackageRemoveError);
+  TriggerActionOnHostPackages(GridHostPackages,ExtractField(GridHosts.SelectedRows,'uuid'),
+    'trigger_remove_packages',rsConfirmRmPackagesFromHost,rsPackageRemoveError);
 end;
 
 procedure TVisWaptGUI.ActRDPExecute(Sender: TObject);
@@ -3119,6 +3145,7 @@ begin
   GridGroups.LoadSettingsFromIni(Appuserinipath+'.default');
   GridHostPackages.LoadSettingsFromIni(Appuserinipath+'.default');
   GridHostSoftwares.LoadSettingsFromIni(Appuserinipath+'.default');
+  GridHostsForPackage.LoadSettingsFromIni(Appuserinipath+'.default');
 end;
 
 procedure TVisWaptGUI.ActSearchGroupsExecute(Sender: TObject);
@@ -3397,11 +3424,13 @@ begin
   GridGroups.ShowAdvancedColumnsCustomize:=AdvancedMode;
   GridPackages.ShowAdvancedColumnsCustomize:=AdvancedMode;
   GridHostPackages.ShowAdvancedColumnsCustomize:=AdvancedMode;
+  GridHostsForPackage.ShowAdvancedColumnsCustomize:=AdvancedMode;
 
   //ActPackagesUpdate.Execute;
   GridPackages.Data := Nil;
   GridGroups.Data := Nil;
   GridHosts.Data := Nil;
+  GridHostsForPackage.Data := Nil;
 end;
 
 procedure TVisWaptGUI.ActVNCExecute(Sender: TObject);
@@ -3441,6 +3470,7 @@ begin
     GridHosts.Clear;
     GridhostInventory.Clear;
     GridHostPackages.Clear;
+    GridHostsForPackage.Clear;
     GridHostSoftwares.Clear;
     { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
     if not VarIsEmpty(DMPython.WAPT) then
@@ -3641,6 +3671,13 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.CBShowHostsForSoftsClick(Sender: TObject);
+begin
+  PanHostsForPackage.Visible := CBShowHostsForSofts.Checked;
+  if not CBShowHostsForSofts.Checked then
+    GridHostsForPackage.Data := Nil;;
+end;
+
 function checkReadWriteAccess(dir: String): boolean;
 var
   fn: String;
@@ -3823,6 +3860,7 @@ begin
     GridPackages.SaveSettingsToIni(Appuserinipath+'.default');
     GridGroups.SaveSettingsToIni(Appuserinipath+'.default');
     GridHostPackages.SaveSettingsToIni(Appuserinipath+'.default');
+    GridHostsForPackage.SaveSettingsToIni(Appuserinipath+'.default');
     GridHostSoftwares.SaveSettingsToIni(Appuserinipath+'.default');
 
     // don't load grid settings if old ini version
@@ -3832,6 +3870,7 @@ begin
       GridPackages.LoadSettingsFromIni(Appuserinipath);
       GridGroups.LoadSettingsFromIni(Appuserinipath);
       GridHostPackages.LoadSettingsFromIni(Appuserinipath);
+      GridHostsForPackage.LoadSettingsFromIni(Appuserinipath);
       GridHostSoftwares.LoadSettingsFromIni(Appuserinipath);
       ini := TIniFile.Create(Appuserinipath);
       try
@@ -4014,12 +4053,14 @@ procedure TVisWaptGUI.GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
 var
   install_status: ISuperObject;
   propname: String;
+  aGrid:TSOGrid;
 begin
-  propName:=TSOGridColumn(GridHostPackages.Header.Columns[Column]).PropertyName;
+  aGrid := (Sender as TSOGrid);
+  propName:=TSOGridColumn(aGrid.Header.Columns[Column]).PropertyName;
 
   if propName='install_status' then
   begin
-    install_status := GridHostPackages.GetCellData(Node, 'install_status', nil);
+    install_status := aGrid.GetCellData(Node, 'install_status', nil);
     if (install_status <> nil) then
     begin
       case install_status.AsString of
@@ -4034,7 +4075,7 @@ begin
   else
   if IsEnterpriseEdition and (propName='last_audit_status') then
   begin
-    install_status := GridHostPackages.GetCellData(Node, 'last_audit_status', nil);
+    install_status := aGrid.GetCellData(Node, 'last_audit_status', nil);
     if (install_status <> nil) then
     begin
       case install_status.AsString of
@@ -4053,12 +4094,15 @@ procedure TVisWaptGUI.GridHostPackagesGetText(Sender: TBaseVirtualTree;
   TextType: TVSTTextType; var CellText: string);
 var
   propName:String;
+  aGrid:TSOGrid;
 begin
+  aGrid := (Sender as TSOGrid);
+
   if (Node = nil) or (CellData=Nil) then
     CellText := ''
   else
   begin
-    propName:=TSOGridColumn(GridHostPackages.Header.Columns[Column]).PropertyName;
+    propName:=TSOGridColumn(aGrid.Header.Columns[Column]).PropertyName;
 
     if (CellData <> nil) and (CellData.DataType = stArray) then
       CellText := soutils.Join(',', CellData);
@@ -4184,6 +4228,31 @@ begin
   else
     Allowed := False;
 
+end;
+
+procedure TVisWaptGUI.GridHostsForPackageChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+  if (GridHostsForPackage.FocusedRow <> nil) then
+  begin
+    if IsEnterpriseEdition and (GridHostsForPackage.FocusedColumnObject.PropertyName = 'last_audit_status') then
+      MemoInstallOutput1.Text := UTF8Encode(GridHostsForPackage.FocusedRow.S['last_audit_output'])
+    else
+      MemoInstallOutput1.Text := UTF8Encode(GridHostsForPackage.FocusedRow.S['install_output']);
+    MemoInstallOutput1.CaretPos := Point(1, 65535);
+    MemoInstallOutput1.SelStart := 65535;
+    MemoInstallOutput1.SelLength := 0;
+    MemoInstallOutput1.ScrollBy(0, 65535);
+  end
+  else
+    MemoInstallOutput1.Clear;
+
+end;
+
+procedure TVisWaptGUI.GridHostsForPackageFocusChanged(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex);
+begin
+  GridHostsForPackageChange(Sender,Node);
 end;
 
 procedure TVisWaptGUI.GridHostsGetHint(Sender: TBaseVirtualTree;
@@ -4593,6 +4662,23 @@ begin
     end
   else
     Result := True;
+end;
+
+procedure TVisWaptGUI.GridPackagesChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+var
+  PackageName: String;
+  HostPackagesStatus: ISuperObject;
+begin
+  PackageName := GridPackages.FocusedRow.S['package'];
+  if CBShowHostsForSofts.Checked then
+  begin
+    HostPackagesStatus := WAPTServerJsonGet('api/v3/hosts_for_package?package=%s&limit=%d',[PackageName,HostsLimit]);
+    if HostPackagesStatus.B['success'] then
+      GridHostsForPackage.Data := HostPackagesStatus['result']
+    else
+      GridHostsForPackage.Data := Nil;
+  end;
 end;
 
 

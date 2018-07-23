@@ -285,7 +285,9 @@ begin
     Screen.Cursor := crHourGlass;
     ProgressTitle(rsBuildInProgress);
     waptsetupPath := CreateWaptSetup(UTF8Encode(ActiveCertBundle),
-      edRepoUrl.Text, edWaptServerUrl.Text, fnWaptDirectory.Directory, edOrgName.Text, @DoProgress, 'waptagent',
+      edRepoUrl.Text, edWaptServerUrl.Text,
+      fnWaptDirectory.Directory,
+      edOrgName.Text, @DoProgress, 'waptagent',
       EdServerCertificate.Text,
       CBUseKerberos.Checked,
       CBCheckCertificatesValidity.Checked,

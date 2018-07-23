@@ -12,7 +12,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   OnShow = FormShow
   Position = poMainFormCenter
   ShowHint = True
-  LCLVersion = '1.8.2.0'
+  LCLVersion = '1.8.4.0'
   object fnPublicCert: TFileNameEdit
     Left = 262
     Height = 21
