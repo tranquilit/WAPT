@@ -33,7 +33,6 @@ try:
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
-import iniparse
 import shutil
 import fileinput
 import glob
