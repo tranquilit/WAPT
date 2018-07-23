@@ -27,6 +27,7 @@ const
   INI_WAPT_PASSWORD                       : String = 'wapt_password';
   INI_WAPTWUA_FOLDER                      : String = 'waptwua_folder';
 
+  INI_WAPTTEMPLATES                       : String = 'wapt-templates';
 
   function wapt_ini_waptconsole(var s: String): integer;
   function wapt_ini_waptserver( const base_path :String; var s : String ) : integer;
