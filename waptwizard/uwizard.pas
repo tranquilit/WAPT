@@ -5,7 +5,6 @@ unit uwizard;
 interface
 
 uses
-  superobject,
   Classes, SysUtils, FileUtil, RTTICtrls, Forms, Controls, Graphics, Dialogs,
   ExtCtrls, StdCtrls, ComCtrls, EditBtn, Buttons, Menus, PopupNotifier,
   MaskEdit, WizardControls;
@@ -40,6 +39,7 @@ type
 
     procedure FormCreate(Sender: TObject); virtual;
     procedure FormDestroy(Sender: TObject); virtual;
+    procedure panel_centerClick(Sender: TObject);
     procedure PopupNotifierClose(Sender: TObject; var CloseAction: TCloseAction );
     procedure WizardManagerPageHide(Sender: TObject; Page: TWizardPage);
     procedure WizardManagerPageLoad(Sender: TObject; Page: TWizardPage);
@@ -62,10 +62,11 @@ type
 
 
   protected
-    m_data : ISuperObject;
-
 
   public
+
+    function data() : Pointer; virtual; abstract;
+
     function  show_info(    const msg : String; buttons : TMsgDlgButtons ) : TModalResult; virtual; final;
     function  show_question(const msg : String; buttons : TMsgDlgButtons ) : TModalResult; virtual; final;
     function  show_warning( const msg : String; buttons : TMsgDlgButtons ) : TModalResult; virtual; final;
@@ -74,6 +75,9 @@ type
     procedure show_validation_error( ctrl : TControl; msg : String ); virtual; final;
 
     procedure click_next_async();
+
+
+    procedure launch_console();
 
   end;
 
@@ -107,6 +111,18 @@ begin
   result := TWizardStepFrame(w.WizardManager.Pages[r].Control);
 end;
 
+function current_page( w : TWizard ) : TWizardPage;
+var
+  r : integer;
+begin
+  r := w.WizardManager.PageIndex;
+
+  if r < 0 then
+    exit( nil );
+
+  result := w.WizardManager.Pages[r];
+end;
+
 { TWizard }
 procedure TWizard.FormCreate(Sender: TObject);
 begin
@@ -122,17 +138,21 @@ begin
   //
   self.panel_center.Caption := '';
   self.lbl_current_task.Caption := '';
-  self.m_data := TSuperObject.ParseString('{}', false);
-  self.m_data.B['is_enterprise_edition'] := DMPython.IsEnterpriseEdition;
-
 
   if self.WizardManager.Pages.Count > 0 then
     self.WizardManager.PageIndex := 0;
+
+
 
 end;
 
 procedure TWizard.FormDestroy(Sender: TObject);
 begin
+end;
+
+procedure TWizard.panel_centerClick(Sender: TObject);
+begin
+  self.ClearValidationError();
 end;
 
 procedure TWizard.PopupNotifierClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -211,6 +231,7 @@ begin
 
   step.wizard_hide();
   self.ClearValidationDescription();
+
 end;
 
 procedure TWizard.WizardManagerPageLoad(Sender: TObject;  Page: TWizardPage);
@@ -257,7 +278,7 @@ begin
     exit;
 
   step.clear();
-  step.wizard_load(self, m_data );
+  step.wizard_load(self );
   visit_and_init( step );
 
 end;
@@ -299,23 +320,27 @@ procedure TWizard.on_button_next_click(sender: TObject );
 var
   step : TWizardStepFrame;
   i : integer;
+  bCanNext : boolean;
 begin
   step := current_step( self );
   if not assigned(step) then
     exit;
 
+  bCanNext := true;;
 
   set_buttons_enable( false );
   try
-    i := step.wizard_validate();
+    step.wizard_next( bCanNext );
   except on Ex : Exception do
     self.show_validation_error( nil, ex.Message );
   end;
   set_buttons_enable( true );
 
-  if i <> 0 then
+  if not bCanNext then
     exit;
 
+  self.ClearValidationError();
+  self.ClearValidationDescription();
   self.m_wizard_panel_proc_next_onclick( sender );
 
 end;
@@ -358,6 +383,15 @@ begin
 
 end;
 
+procedure TWizard.launch_console();
+var
+  r : integer;
+begin
+  r := process_launch( 'waptconsole.exe' );
+  if r <> 0 then
+    self.show_error( 'An error has occured while launching the console');
+end;
+
 
 
 
@@ -366,6 +400,7 @@ procedure TWizard.show_validation_error(ctrl: TControl; msg: String);
 var
   x : integer;
   y : integer;
+  s: String;
 begin
   //
   if Assigned(ctrl) then
@@ -384,7 +419,9 @@ begin
 
 
     self.lbl_current_task.Font.Color := clRed;
-    self.lbl_current_task.Caption := self.lbl_current_task.Caption + ' ... Failed';
+    s := Trim(self.lbl_current_task.Caption);
+    if Length(s) > 0 then
+      self.lbl_current_task.Caption := self.lbl_current_task.Caption + ' ... Failed';
 
     exit;
   end;

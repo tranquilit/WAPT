@@ -1,4 +1,4 @@
-unit uwizardstepframebuildagent;
+unit uwizardconfigserver_buildagent;
 
 {$mode objfpc}{$H+}
 
@@ -8,7 +8,6 @@ uses
   IdComponent,
   uwizard,
   uwizardstepframe,
-  superobject,
   PythonEngine,
   Classes, SysUtils, FileUtil, Forms, Controls, StdCtrls, ComCtrls;
 
@@ -16,8 +15,8 @@ type
 
 
 
-  { TWizardStepFrameBuildAgent }
-  TWizardStepFrameBuildAgent = class( TWizardStepFrame )
+  { TWizardConfigServer_BuildAgent }
+  TWizardConfigServer_BuildAgent = class( TWizardStepFrame )
     lbl: TLabel;
     progress: TProgressBar;
   private
@@ -34,8 +33,7 @@ type
 
     // TWizardStepFrame
     procedure wizard_show(); override; final;
-    procedure wizard_load( w : TWizard; data : ISuperObject ); override; final;
-    function wizard_validate( ) : integer;  override; final;
+    procedure wizard_next(var bCanNext: boolean); override; final;
 
 
 
@@ -45,10 +43,12 @@ type
 implementation
 
 uses
+  superobject,
   dmwaptpython,
   uwapt_ini,
   waptcommon,
   dialogs,
+  uwizardconfigserver_data,
   uwizardvalidattion,
   uwizardutil;
 
@@ -58,17 +58,12 @@ const
 MSG_BUILDING : String = 'Building %s   ';
 
 
-{ TWizardStepFrameBuildAgent }
+{ TWizardConfigServer_BuildAgent }
 
 
-procedure TWizardStepFrameBuildAgent.wizard_load(w: TWizard; data: ISuperObject);
-begin
-  inherited wizard_load(w, data);
 
 
-end;
-
-procedure TWizardStepFrameBuildAgent.wizard_show();
+procedure TWizardConfigServer_BuildAgent.wizard_show();
 begin
   inherited wizard_show();
 
@@ -78,7 +73,7 @@ begin
 
 end;
 
-function TWizardStepFrameBuildAgent.wizard_validate(): integer;
+procedure TWizardConfigServer_BuildAgent.wizard_next( var bCanNext: boolean );
 label
   LBL_BUILD_WAPTUPGRADE,
   LBL_BUILD_WAPTAGENT;
@@ -90,19 +85,18 @@ var
   r : integer;
   i : integer;
 
+  data : PWizardConfigServerData;
 
-  server_url : String;
-  verify_cert: String;
-  package_certificate : String;
 
   old_pythonevent : TPythonEvent;
 begin
+  bCanNext :=  false;
+  data := m_wizard.data();
 
-  server_url := UTF8Encode(m_data.S[UTF8Decode(INI_WAPT_SERVER)]);
-  Assert( Length(Trim(server_url)) > 0 ) ;
-  verify_cert:= '0';
-  package_certificate := UTF8Encode( m_data.S[UTF8Decode(INI_PERSONAL_CERTIFICATE_PATH)] );
-
+  //
+  r := TWizardConfigServerData_write_ini_waptconsole( data, self.m_wizard );
+  if r <> 0 then
+    exit;
 
 ////////////////////// Building waptagent
 LBL_BUILD_WAPTAGENT:
@@ -111,13 +105,13 @@ LBL_BUILD_WAPTAGENT:
 
   // Check if waptagent already exist on server
   m_wizard.SetValidationDescription( 'Checking if waptagent exist on server' );
-  s := url_concat( server_url, '/wapt/waptagent.exe' );
+  s := url_concat( data^.wapt_server, '/wapt/waptagent.exe' );
   r := -1;
   i := http_reponse_code( r, s );
   if i <> 0 then
   begin
     m_wizard.show_validation_error( nil, 'A Problem has occurred while checking if waptagent exist on server' + #13#10 + 'Server installation may be broken, you could try reinstall waptserver' );
-    exit(-1);
+    exit;
   end;
 
   if r = 200 then
@@ -125,35 +119,35 @@ LBL_BUILD_WAPTAGENT:
     s := 'Waptagent has been found on the server.'+ #13#10#13#10;
     s := s + 'Rebuild and overwrite it ?';
     if mrNo = m_wizard.show_question( s, mbYesNo ) then
-      exit(0);
+      exit;
   end
   else if r <> 404 then
   begin
     s := 'A Problem has occurred while checking if waptagent exist on server' + #13#10;
     s := 'Server installation may be broken, you could try reinstall waptserver';
     m_wizard.show_validation_error( nil, s );
-    exit(-1);
+    exit;
   end;
   m_wizard.ClearValidationDescription();
 
 
   // Check there is no other inno setup process running
   if not wizard_validate_sys_no_innosetup_process( m_wizard ) then
-    exit( -1 );
+    exit;
 
   building_init_ui( MSG_BUILDING, 100 );
 
-  params_waptagent.default_public_cert       := fs_path_concat( 'ssl', package_certificate );
-  params_waptagent.default_repo_url          := server_url + '/wapt';
-  params_waptagent.default_wapt_server       := server_url;
+  params_waptagent.default_public_cert       := fs_path_concat( 'ssl', data^.package_certificate );
+  params_waptagent.default_repo_url          := data^.wapt_server + '/wapt';
+  params_waptagent.default_wapt_server       := data^.wapt_server;
   params_waptagent.destination               := GetTempDir(true);
   params_waptagent.company                   := '';
   params_waptagent.OnProgress                := @on_building_waptagent_tick;
   params_waptagent.WaptEdition               := 'waptagent';
-  params_waptagent.VerifyCert                := UTF8Encode( verify_cert );
+  params_waptagent.VerifyCert                := data^.verify_cert;
   params_waptagent.UseKerberos               := false;
   params_waptagent.CheckCertificatesValidity := true;
-  params_waptagent.EnterpriseEdition         := m_data.B['is_enterprise_edition'];
+  params_waptagent.EnterpriseEdition         := data^.is_enterprise_edition;
   params_waptagent.OverwriteRepoURL          := true;
   params_waptagent.OverwriteWaptServerURL    := true;
   Build( 'Waptagent', @CreateSetupParams_waptagent, @params_waptagent, nil );
@@ -161,24 +155,24 @@ LBL_BUILD_WAPTAGENT:
   if params_waptagent._result <> 0 then
   begin
     building_show_error( m_wizard, nil, params_waptagent._err_message );
-    exit(-1);
+    exit;
   end;
 
 
   //
   building_init_ui( 'Uploading to server...', FileSize(params_waptagent._agent_filename) );
-  s := 'ssl\server\' + UTF8Encode( m_data.S['server_certificate'] );
+  s := 'ssl\server\' + data^.server_certificate;
   if not FileExists(s) then
     s := '';
   try
     so := WAPTServerJsonMultipartFilePost(
-      server_url,
+      data^.wapt_server,
       'upload_waptsetup',
       [],
       'file',
       params_waptagent._agent_filename,
-      UTF8Encode(m_data.S['wapt_user']),
-      UTF8Encode(m_data.S['wapt_password']),
+      data^.wapt_user,
+      data^.wapt_password,
       @on_workevent,
       s
       );
@@ -187,7 +181,7 @@ LBL_BUILD_WAPTAGENT:
   except on Ex : Exception do
     begin
       building_show_error( m_wizard, nil, Ex.Message );
-      exit(-1);
+      exit;
     end;
   end;
 
@@ -202,7 +196,7 @@ LBL_BUILD_WAPTAGENT:
 
   // Check there is no other inno setup process running
   if not wizard_validate_sys_no_innosetup_process( m_wizard ) then
-    exit( -1 );
+    exit;
 
 
   // Now building
@@ -211,18 +205,18 @@ LBL_BUILD_WAPTAGENT:
   if r <> 0 then
   begin
     building_show_error( m_wizard, nil, 'configuration file waptconsole.ini have not been found, build cannot continue');
-    exit(-1);
+    exit;
   end;
-  params_waptupgrade.server_username := UTF8Encode( m_data.S['wapt_user'] );
-  params_waptupgrade.server_password := UTF8Encode( m_data.S['wapt_password'] );
+  params_waptupgrade.server_username := data^.wapt_user;
+  params_waptupgrade.server_password := data^.wapt_password;
   params_waptupgrade.config_filename := s;
   params_waptupgrade.dualsign        := false;
-  params_waptupgrade.private_key_password := UTF8Encode( m_data.S['package_private_key_password'] );
+  params_waptupgrade.private_key_password := data^.package_private_key_password;
   Build( 'waptupgrade', @CreateSetupParams_waptupgrade, @params_waptupgrade, nil);
   if params_waptupgrade._result <> 0 then
   begin
     building_show_error( m_wizard, nil, params_waptupgrade._err_message );
-    exit(-1);
+    exit;
   end;
   DMPython.PythonModuleDMWaptPython.Events.Items[1].OnExecute := old_pythonevent;
 
@@ -232,26 +226,24 @@ LBL_BUILD_WAPTAGENT:
   if not DeleteFile( params_waptagent._agent_filename ) then
   begin
     building_show_error( m_wizard, nil, 'An error has occured while deleting temp files');
-    exit(-1);
+    exit;
   end;
   m_wizard.ClearValidationDescription();
 
 
-
-
-  exit(0);
+  bCanNext:= true;
 end;
 
 
 
 
 
-procedure TWizardStepFrameBuildAgent.on_building_waptagent_tick(sender: TObject );
+procedure TWizardConfigServer_BuildAgent.on_building_waptagent_tick(sender: TObject );
 begin
   Application.QueueAsyncCall( @tick, 0 );
 end;
 
-procedure TWizardStepFrameBuildAgent.tick(data: PtrInt);
+procedure TWizardConfigServer_BuildAgent.tick(data: PtrInt);
 const
   sz_setup : Real = 1024 * 1024 * 23.5;
 var
@@ -270,14 +262,14 @@ begin
   self.progress.Position := Round(sz);
 end;
 
-procedure TWizardStepFrameBuildAgent.on_workevent(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
+procedure TWizardConfigServer_BuildAgent.on_workevent(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
 begin
   self.progress.Position := AWorkCount;
 end;
 
 
 
-procedure TWizardStepFrameBuildAgent.Build( const target : String; func : Pointer; data : Pointer; callback : Tnotifycallback );
+procedure TWizardConfigServer_BuildAgent.Build( const target : String; func : Pointer; data : Pointer; callback : Tnotifycallback );
 var
   r : integer;
   j : integer;
@@ -311,7 +303,7 @@ end;
 
 
 
-procedure TWizardStepFrameBuildAgent.building_init_ui( const s : String; max : integer );
+procedure TWizardConfigServer_BuildAgent.building_init_ui( const s : String; max : integer );
   begin
     progress.Visible := true;
     lbl.Caption := s;
@@ -322,13 +314,13 @@ procedure TWizardStepFrameBuildAgent.building_init_ui( const s : String; max : i
     Application.ProcessMessages;
   end;
 
-procedure TWizardStepFrameBuildAgent.building_show_error(w: TWizard; control: TControl; const msg: String);
+procedure TWizardConfigServer_BuildAgent.building_show_error(w: TWizard; control: TControl; const msg: String);
 begin
   progress.Visible := false;
   w.show_validation_error( control, msg );
 end;
 
-procedure TWizardStepFrameBuildAgent.on_python_update(Sender: TObject; PSelf, Args: PPyObject; var Result: PPyObject);
+procedure TWizardConfigServer_BuildAgent.on_python_update(Sender: TObject; PSelf, Args: PPyObject; var Result: PPyObject);
 begin
   Result:= DMPython.PythonEng.ReturnNone;
 end;
@@ -340,7 +332,7 @@ end;
 
 initialization
 
-  RegisterClass(TWizardStepFrameBuildAgent);
+  RegisterClass(TWizardConfigServer_BuildAgent);
 
 end.
 

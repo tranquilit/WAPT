@@ -17,18 +17,18 @@ type
 
   public
     procedure wizard_show(); override; final;
-    function  wizard_validate() : integer; override; final;
-
+    procedure wizard_next(var bCanNext : boolean ); override; final;
   end;
 
 implementation
 
 uses
-    DCPsha256,
+  DCPsha256,
   uwapt_ini,
   IniFiles,
   ucrypto_pbkdf2,
   tiscommon,
+  uwizardresetserverpassword_data,
   uwizardutil;
 
 {$R *.lfm}
@@ -40,20 +40,25 @@ begin
   self.m_wizard.click_next_async();
 end;
 
-function TWizardResetServerPasswordRestartServer.wizard_validate(): integer;
+procedure TWizardResetServerPasswordRestartServer.wizard_next( var bCanNext: boolean);
 var
   r : integer;
   s : String;
   ini : TIniFile;
+  data : PWizardResetServerPasswordData;
 begin
+  bCanNext := false;
+
+  data := PWizardResetServerPasswordData(m_wizard.data());
+
   // Stop serviceS
   m_wizard.SetValidationDescription( 'Stopping waptserver');
   r := wapt_server_set_state( ssStopped );
   if r <> 0 then
-    exit(-1);
+    exit;
 
   //
-  s :=UTF8Encode(self.m_data.S['wapt_server_home']);
+  s :=UTF8Encode( data^.wapt_server_home );
   wapt_ini_waptserver( s, s );
   try
     ini := TIniFile.Create(s);
@@ -69,10 +74,9 @@ begin
   m_wizard.SetValidationDescription( 'Restarting waptserver');
   r := wapt_server_set_state( ssRunning );
   if r <> 0 then
-    exit(-1);
+    exit;
 
-  m_wizard.ClearValidationDescription();
-  exit(0);
+  bCanNext := true;;
 end;
 
 initialization

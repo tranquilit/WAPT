@@ -1,4 +1,4 @@
-inherited WizardStepFrameBuildAgent: TWizardStepFrameBuildAgent
+inherited WizardConfigServer_BuildAgent: TWizardConfigServer_BuildAgent
   Height = 65
   Width = 577
   ClientHeight = 65

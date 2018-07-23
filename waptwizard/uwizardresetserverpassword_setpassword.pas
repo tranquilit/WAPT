@@ -5,9 +5,9 @@ unit uwizardresetserverpassword_setpassword;
 interface
 
 uses
-  uwizardstepframe,
   uwizard,
-  superobject,
+  uwizardresetserverpassword_data,
+  uwizardstepframe,
   Classes, SysUtils, FileUtil, Forms, Controls, EditBtn, StdCtrls;
 
 type
@@ -26,9 +26,10 @@ type
   private
 
   public
-    procedure wizard_load( w : TWizard; data : ISuperObject ); override; final;
+    procedure clear(); override; final;
+    procedure wizard_load( w : TWizard ); override; final;
     procedure wizard_show(); override; final;
-    function  wizard_validate() : integer; override; final;
+    procedure wizard_next( var bCanNext : boolean ); override; final;
 
   end;
 
@@ -58,16 +59,21 @@ begin
 
 end;
 
-procedure TWizardResetServerPasswordSetPassword.wizard_load(w: TWizard; data: ISuperObject);
+procedure TWizardResetServerPasswordSetPassword.clear();
+begin
+  self.ed_wapt_server_home.Clear;
+  self.ed_password_1.Clear;
+  self.ed_password_2.Clear;
+  self.cb_show_passwords.Checked:= false;
+  self.cb_show_passwordsChange( nil );
+end;
+
+procedure TWizardResetServerPasswordSetPassword.wizard_load(w: TWizard);
 var
   r : integer;
   s : String;
 begin
-  inherited wizard_load(w, data );
-
-  self.ed_wapt_server_home.Clear;
-  self.ed_password_1.Clear;
-  self.ed_password_2.Clear;
+  inherited wizard_load(w);
 
 
   r := wapt_server_installation( s );
@@ -90,21 +96,26 @@ begin
   self.m_wizard.WizardButtonPanel.CancelButton.TabOrder   := 5;
 end;
 
-function TWizardResetServerPasswordSetPassword.wizard_validate(): integer;
+procedure TWizardResetServerPasswordSetPassword.wizard_next( var bCanNext: boolean);
+var
+  data : PWizardResetServerPasswordData;
 begin
-
+  bCanNext := false;
+  data := m_wizard.data();
   if not wizard_validate_path_is_waptserver( self.m_wizard, self.ed_wapt_server_home, self.ed_wapt_server_home.Text ) then
-    exit(-1);
+    exit;
+
 
   if not wizard_validate_str_length_not_zero( self.m_wizard, self.ed_password_1, 'Password cannot be empty' ) then
-    exit(-1);
+    exit;
 
   if not wizard_validate_str_password_are_equals( self.m_wizard, self.ed_password_1.Text, self.ed_password_2.Text, self.ed_password_2 ) then
-    exit(-1);
+    exit;
 
-  self.m_data.S['wapt_server_home'] := self.ed_wapt_server_home.Text ;
+  data^.wapt_server_home := self.ed_wapt_server_home.Text;
 
-  exit(0);
+
+  bCanNext := true;
 end;
 
 initialization

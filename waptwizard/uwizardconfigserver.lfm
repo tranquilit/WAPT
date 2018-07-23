@@ -35,65 +35,62 @@ inherited WizardConfigServer: TWizardConfigServer
     OnPageShow = WizardManagerPageShow
     Pages = <    
       item
-        Caption = 'Wapt server configuration wizard'
-        ControlClassName = 'TWizardStepFrameServerWelcome'
-        Name = 'welcome'
-        Description = 'Welcome step description'
-        EnabledButtons = [wbNext, wbCancel]
+        Caption = 'Welcome'
+        ControlClassName = 'TTWizardConfigServer_Welcome'
+        Description = 'TTWizardConfigServer_Welcome'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
-        Caption = 'Certificate options'
-        ControlClassName = 'TWizardStepFrameServerCertificate'
-        Name = 'certficate_options'
-        Description = 'Certificate options description'
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
-      end    
-      item
-        Caption = 'Admin password'
-        ControlClassName = 'TWizardStepFramePassword'
-        Name = 'set_admin_password'
-        Description = 'Admin password description'
+        Caption = 'Server'
+        ControlClassName = 'TWizardConfigServer_Server'
+        Description = 'TWizardConfigServer_Server'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Firewall'
-        ControlClassName = 'TWizardStepFrameFirewall'
-        Name = 'configure_firewall'
-        Description = 'Configure firewall'
-        EnabledButtons = [wbNext, wbCancel]
+        ControlClassName = 'TWizardConfigServer_Firewall'
+        Description = 'TWizardConfigServer_Firewall'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
-        Caption = 'Post setup'
-        ControlClassName = 'TWizardStepFrameRunServerPostSetup'
-        Name = 'run_post_setup_scripts'
-        Description = 'Running post script configuration'
-        EnabledButtons = [wbNext, wbCancel]
+        Caption = 'Post-setup'
+        ControlClassName = 'TWizardConfigServer_ServerPostSetup'
+        Description = 'TWizardConfigServer_ServerPostSetup'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
-        Caption = 'Package configuration'
-        ControlClassName = 'TWizardStepFramePackage'
-        Name = 'package'
-        Description = 'Package configuration description'
-        EnabledButtons = [wbNext, wbCancel]
+        Caption = 'Key option'
+        ControlClassName = 'TWizardConfigServer_KeyOption'
+        Description = 'TWizardConfigServer_KeyOption'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
-        Caption = 'Build agent and upgrade package'
-        ControlClassName = 'TWizardStepFrameBuildAgent'
-        Name = 'build_agent'
-        Description = 'Description'
-        EnabledButtons = [wbNext, wbCancel]
+        Caption = 'Package ( Create new key )'
+        ControlClassName = 'TWizardConfigServer_PackageCreateNewKey'
+        Description = 'TWizardConfigServer_PackageCreateNewKey'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
-        Caption = 'Finish'
-        ControlClassName = 'TWizardStepFrameServerFinish'
-        Name = 'finish'
-        EnabledButtons = [wbFinish]
-        NextOffset = 0
+        Caption = 'Package ( use existing key )'
+        ControlClassName = 'TWizardConfigServer_PackageUseExistingKey'
+        Description = 'TWizardConfigServer_PackageUseExistingKey'
+        PreviousOffset = 2
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end    
+      item
+        Caption = 'Console'
+        ControlClassName = 'TWizardConfigServer_Console'
+        Description = 'TWizardConfigServer_Console'
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end    
+      item
+        Caption = 'Build agent'
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end    
+      item
+        Caption = 'Finished'
+        ControlClassName = 'TWizardConfigServer_Finish'
+        Description = 'TWizardConfigServer_Finish'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end>
   end

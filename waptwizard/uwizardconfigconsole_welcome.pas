@@ -1,4 +1,4 @@
-unit uwizardstepframeconsolewelcome;
+unit uwizardconfigconsole_welcome;
 
 {$mode objfpc}{$H+}
 
@@ -18,9 +18,6 @@ type
 
   public
 
-  // TWizardStepFrame
-  function wizard_validate() : integer;  override; final;
-
   end;
 
 implementation
@@ -28,11 +25,6 @@ implementation
 {$R *.lfm}
 
 { TWizardStepFrameConsoleWelcome }
-
-function TWizardStepFrameConsoleWelcome.wizard_validate(): integer;
-begin
-  exit( 0 )
-end;
 
 initialization
 

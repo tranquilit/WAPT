@@ -1,4 +1,4 @@
-unit uwizardstepframeconsoleserver;
+unit uwizardconfigserver_console;
 
 {$mode objfpc}{$H+}
 
@@ -7,15 +7,14 @@ interface
 uses
   uwizard,
   uwizardstepframe,
-  superobject,
 
   Classes, SysUtils, FileUtil, Forms, Controls, StdCtrls;
 
 type
 
-  { TWizardStepFrameConsoleServer }
+  { TWizardConfigServer_Console }
 
-  TWizardStepFrameConsoleServer = class(TWizardStepFrame)
+  TWizardConfigServer_Console = class(TWizardStepFrame)
     ed_server_password: TEdit;
     ed_server_url: TEdit;
     ed_server_username: TEdit;
@@ -47,9 +46,9 @@ uses
 
 {$R *.lfm}
 
-{ TWizardStepFrameConsoleServer }
+{ TWizardConfigServer_Console }
 
-procedure TWizardStepFrameConsoleServer.wizard_load(w: TWizard; data: ISuperObject);
+procedure TWizardConfigServer_Console.wizard_load(w: TWizard; data: ISuperObject);
 var
   r : integer;
   s : String;
@@ -80,7 +79,7 @@ begin
 
 end;
 
-procedure TWizardStepFrameConsoleServer.wizard_show();
+procedure TWizardConfigServer_Console.wizard_show();
 begin
   inherited;
   self.ed_server_url.SetFocus;
@@ -93,7 +92,7 @@ begin
   self.m_wizard.WizardButtonPanel.CancelButton.TabOrder   := 6;
 end;
 
-function TWizardStepFrameConsoleServer.wizard_validate(): integer;
+function TWizardConfigServer_Console.wizard_validate(): integer;
 var
   hostname : String;
   r : integer;
@@ -225,7 +224,7 @@ begin
 
 end;
 
-procedure TWizardStepFrameConsoleServer.clear();
+procedure TWizardConfigServer_Console.clear();
 begin
   inherited clear();
 end;
@@ -233,7 +232,7 @@ end;
 
 initialization
 
-RegisterClass(TWizardStepFrameConsoleServer);
+RegisterClass(TWizardConfigServer_Console);
 
 end.
 

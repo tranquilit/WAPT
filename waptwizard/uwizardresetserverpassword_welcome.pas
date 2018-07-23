@@ -17,7 +17,6 @@ type
   private
 
   public
-    function  wizard_validate() : integer; override; final;
 
   end;
 
@@ -26,11 +25,6 @@ implementation
 {$R *.lfm}
 
 { TWizardResetServerPasswordWelcome }
-
-function TWizardResetServerPasswordWelcome.wizard_validate(): integer;
-begin
-  exit(0);
-end;
 
 initialization
 

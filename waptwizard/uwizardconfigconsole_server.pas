@@ -1,4 +1,4 @@
-unit uwizardstepframepassword;
+unit uwizardconfigconsole_server;
 
 {$mode objfpc}{$H+}
 
@@ -26,8 +26,8 @@ type
   public
 
   // TWizardStepFrame
-  function wizard_validate() : integer;  override; final;
-  procedure wizard_show(); override; final;
+    procedure wizard_next(var bCanNext: boolean); override; final;
+    procedure wizard_show(); override; final;
 
   procedure clear();  override; final;
 
@@ -37,6 +37,7 @@ type
 implementation
 
 uses
+  uwizardresetserverpassword_data,
   uwizardvalidattion;
 
 {$R *.lfm}
@@ -57,14 +58,17 @@ begin
 end;
 
 
-function TWizardStepFramePassword.wizard_validate(): integer;
+procedure TWizardStepFramePassword.wizard_next(var bCanNext: boolean);
 var
   ed : TEdit;
+  data : PWizardResetServerPasswordData;
 begin
+  bCanNext := false;
+
 
   m_wizard.SetValidationDescription( 'Validating supplied passwords' );
   if not wizard_validate_str_length_not_zero( m_wizard, self.ed_password_1, 'Password cannot be empty' ) then
-    exit(-1);
+    exit;
 
   if self.ed_password_1.Focused then
     ed := self.ed_password_1
@@ -72,17 +76,17 @@ begin
     ed := self.ed_password_2;
 
   if not wizard_validate_str_password_are_equals( m_wizard, self.ed_password_1.Text, self.ed_password_2.Text, ed ) then
-    exit(-1);
+    exit;
 
   m_wizard.ClearValidationDescription();
 
 
-  self.m_data.S['wapt_user'] := 'admin';
-  self.m_data.S['wapt_password'] := self.ed_password_1.Text;
+  data := PWizardResetServerPasswordData( self.m_wizard.data() );
+  data^.wapt_user     := 'admin';
+  data^.wapt_password := self.ed_password_2.Text;
 
-  exit(0);
 
-
+  bCanNext := true;
 end;
 
 procedure TWizardStepFramePassword.wizard_show();

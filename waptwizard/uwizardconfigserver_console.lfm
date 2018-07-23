@@ -1,4 +1,4 @@
-inherited WizardStepFrameConsoleServer: TWizardStepFrameConsoleServer
+inherited WizardConfigServer_Console: TWizardConfigServer_Console
   Height = 237
   Width = 655
   AutoSize = True

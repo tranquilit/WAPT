@@ -1,4 +1,4 @@
-inherited WizardStepFrameRunServerPostSetup: TWizardStepFrameRunServerPostSetup
+inherited WizardConfigServer_ServerPostSetup: TWizardConfigServer_ServerPostSetup
   Height = 231
   Width = 544
   Align = alClient

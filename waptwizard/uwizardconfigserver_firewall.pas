@@ -1,4 +1,4 @@
-unit uwizardstepframefirewall;
+unit uwizardconfigserver_firewall;
 
 {$mode objfpc}{$H+}
 
@@ -12,13 +12,13 @@ uses
 
 type
 
-  { TWizardStepFrameFirewall }
+  { TWizardConfigServer_Firewall }
 
-  TWizardStepFrameFirewall = class( TWizardStepFrame )
+  TWizardConfigServer_Firewall = class( TWizardStepFrame )
   private
   public
     procedure wizard_show(); override; final;
-    function wizard_validate() : integer;  override; final;
+    procedure wizard_next(var bCanNext: boolean); override; final;
 
   end;
 
@@ -34,9 +34,9 @@ uses
 
 
 
-{ TWizardStepFrameFirewall }
+{ TWizardConfigServer_Firewall }
 
-procedure TWizardStepFrameFirewall.wizard_show();
+procedure TWizardConfigServer_Firewall.wizard_show();
 begin
   inherited wizard_show();
 
@@ -45,12 +45,12 @@ begin
 
 end;
 
-function TWizardStepFrameFirewall.wizard_validate(): integer;
+procedure TWizardConfigServer_Firewall.wizard_next(var bCanNext: boolean);
 var
   b : Boolean;
   r : integer;
 begin
-
+   bCanNext := false;
 
   //
   m_wizard.SetValidationDescription( 'Checking if firewall rules need to be added' );
@@ -58,7 +58,7 @@ begin
   if r <> 0 then
   begin
     m_wizard.show_validation_error( nil, 'Error while checking for firewall rules');
-    exit( -1 );
+    exit;
   end;
   if not b then
   begin
@@ -68,7 +68,7 @@ begin
       if r <> 0 then
       begin
         m_wizard.show_validation_error( nil, 'Error while configuring firewall' );
-        exit( -1 );
+        exit;
       end;
     end;
   end;
@@ -77,18 +77,19 @@ begin
   //
   m_wizard.SetValidationDescription( 'Checking if port 80 and 443 are in use' );
   if not wizard_validate_net_local_port_is_closed( m_wizard, 80, nil ) then
-    exit(-1);
+    exit;
+
   if not wizard_validate_net_local_port_is_closed( m_wizard, 443, nil ) then
-    exit(-1);
+    exit;
 
-  exit( 0 );
 
+  bCanNext := true;
 end;
 
 
 
 initialization
-  RegisterClass(TWizardStepFrameFirewall);
+  RegisterClass(TWizardConfigServer_Firewall);
 
 
 end.

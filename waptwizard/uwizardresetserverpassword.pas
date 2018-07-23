@@ -6,6 +6,7 @@ interface
 
 uses
   uwizard,
+  uwizardresetserverpassword_data,
   uwizardresetserverpassword_welcome,
   uwizardresetserverpassword_setpassword,
   uwizardresetserverpassword_restartserver,
@@ -13,12 +14,15 @@ uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs;
 
 type
+
+  { TWizardResetServerPassword }
+
   TWizardResetServerPassword = class(TWizard)
 
   private
-
+    m_data : TWizardResetServerPasswordData;
   public
-
+    function data() : Pointer; override; final;
   end;
 
 var
@@ -32,6 +36,13 @@ implementation
 
 
 {$R *.lfm}
+
+{ TWizardResetServerPassword }
+
+function TWizardResetServerPassword.data(): Pointer;
+begin
+  exit( @m_data );
+end;
 
 end.
 

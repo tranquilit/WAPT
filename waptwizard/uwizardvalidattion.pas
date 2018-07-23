@@ -34,7 +34,7 @@ function wizard_validate_fs_ensure_directory( w : TWizard; const path : String; 
 
 
 function wizard_validate_change_current_user( w : TWizard; const login : PChar; const password : PChar; const failed_string : PChar; control : TControl ) : Boolean;
-function wizard_validate_crypto_decrypt_key( w :TWizard; const key_filename : String; const password : String ) : Boolean;
+function wizard_validate_crypto_decrypt_key( w :TWizard; control : TControl; const key_filename : String; const password : String ) : Boolean;
 
 
 function wizard_validate_sys_no_innosetup_process( w : TWizard ) : Boolean;
@@ -47,6 +47,8 @@ function wizard_validate_run_command_sync( w : TWizard; params : PRunParamatersS
 
 function wizard_validate_path_is_waptserver( w : TWizard; control : TControl; const path : String ) : boolean;
 
+
+function wizard_validate_package_prefix( w : TWizard; control : TControl; const prefix : String ) : boolean;
 
 implementation
 
@@ -489,9 +491,29 @@ begin
 end;
 
 
-function wizard_validate_crypto_decrypt_key(w: TWizard; const key_filename: String; const password: String): Boolean;
+function wizard_validate_crypto_decrypt_key(w: TWizard; control: TControl; const key_filename: String; const password: String): Boolean;
+var
+  r : integer;
+  b : boolean;
 begin
-  exit(false);
+  w.SetValidationDescription( 'Validating key can be decryted' );
+
+  r := crypto_check_key_password( b, key_filename, password );
+  if r <> 0 then
+  begin
+    w.show_validation_error( control, 'An error has occured while trying key decryption' );
+    exit(false);
+  end;
+
+  if not b then
+  begin
+    w.show_validation_error( control, 'Bad password');
+    exit(false);
+  end;
+
+  w.ClearValidationDescription();
+  exit(true);
+
 end;
 
 function wizard_validate_sys_no_innosetup_process(w: TWizard): Boolean;
@@ -606,6 +628,16 @@ begin
     exit(false);
   end;
   w.ClearValidationDescription();
+  exit(true);
+end;
+
+function wizard_validate_package_prefix(w: TWizard; control: TControl; const prefix: String): boolean;
+begin
+  if not wizard_validate_str_not_empty_when_trimmed( w, control, 'Package prefix cannot be empty' ) then
+    exit( false );
+  if not wizard_validate_str_is_alphanum( w, prefix, control ) then
+    exit(false);
+
   exit(true);
 end;
 

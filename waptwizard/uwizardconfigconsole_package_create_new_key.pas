@@ -1,32 +1,41 @@
-unit uwizardstepframepackage;
+unit uwizardconfigconsole_package_create_new_key; 
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  uwizard,
-  superobject,
-  uwizardstepframe, mysql57conn,
-  Classes, SysUtils, FileUtil, Forms, Controls, StdCtrls, EditBtn;
+  uwizard, uwizardstepframe, mysql57conn, Classes, SysUtils,
+  FileUtil, Forms, Controls, StdCtrls, EditBtn, ComCtrls, ExtCtrls;
 
 type
 
 
 
-  { TWizardStepFramePackage }
+  { TWizardConfigConsole_PackageCreateNewKey }
 
-  TWizardStepFramePackage = class(TWizardStepFrame)
+  TWizardConfigConsole_PackageCreateNewKey = class(TWizardStepFrame)
     ed_package_prefix: TEdit;
     ed_private_key_directory: TDirectoryEdit;
     ed_private_key_name: TEdit;
     ed_private_key_password_1: TEdit;
     ed_private_key_password_2: TEdit;
+    ed_select_key: TFileNameEdit;
+    gb_package_signing: TGroupBox;
     lbl_package_prefix: TLabel;
     lbl_private_key_dir: TLabel;
     lbl_private_key_name: TLabel;
     lbl_private_key_password_1: TLabel;
     lbl_private_key_password_2: TLabel;
+    lbl_select_key: TLabel;
+    Package: TGroupBox;
+    Panel1: TPanel;
+    Panel2: TPanel;
+    p_create_key: TPanel;
+    p_select_key: TPanel;
+    rb_create_new_key: TRadioButton;
+    rb_select_key: TRadioButton;
+    procedure rb_key_Change(Sender: TObject);
   private
 
     function validate_package_generation_options() : integer;
@@ -38,9 +47,9 @@ type
     constructor Create(AOwner: TComponent); override;
 
     // TWizardStepFrame
-    procedure wizard_load( w : TWizard; data : ISuperObject ); override; final;
+    procedure wizard_load( w : TWizard ); override; final;
     procedure wizard_show(); override; final;
-    function wizard_validate() : integer;  override; final;
+    procedure wizard_next(var bCanNext: boolean); override; final;
     procedure clear();  override; final;
 
 
@@ -52,15 +61,18 @@ type
 implementation
 
 uses
+  IniFiles,
+  uwizardconfigconsole_data,
   dialogs,
+  uwapt_ini,
   uwizardutil,
   uwizardvalidattion;
 
 {$R *.lfm}
 
-{ TWizardStepFramePackage }
+{ TWizardConfigConsole_PackageCreateNewKey }
 
-constructor TWizardStepFramePackage.Create( AOwner: TComponent);
+constructor TWizardConfigConsole_PackageCreateNewKey.Create( AOwner: TComponent);
 begin
   inherited Create( AOwner );
 
@@ -72,16 +84,28 @@ begin
 
   self.ed_private_key_directory.Text  := 'C:\private';
 
+
+//  self.p_create_key.Top := self.p_select_key.Top;
+//  self.p_create_key.Left := self.p_select_key.Left;
+//  self.gb_package_signing.Height := self.gb_package_signing.Height - self.p_create_key.Height;
+
+
 end;
 
-procedure TWizardStepFramePackage.wizard_load(w: TWizard; data: ISuperObject);
+procedure TWizardConfigConsole_PackageCreateNewKey.wizard_load(w: TWizard);
 begin
-  inherited wizard_load(w, data);
+  inherited wizard_load(w);
+
+
   self.ed_private_key_directory.Text := 'c:\private';
+  self.rb_select_key.Checked := true;
+  self.rb_key_Change( self.rb_select_key );
+
+
 
 end;
 
-procedure TWizardStepFramePackage.wizard_show();
+procedure TWizardConfigConsole_PackageCreateNewKey.wizard_show();
 begin
   inherited wizard_show();
   self.ed_package_prefix.SetFocus;
@@ -98,24 +122,64 @@ begin
 
 end;
 
-function TWizardStepFramePackage.wizard_validate(): integer;
+procedure TWizardConfigConsole_PackageCreateNewKey.wizard_next(var bCanNext: boolean);
 var
-  r : integer;
+  r     : integer;
+  ini   : TIniFile;
+  data  : PWizardConfigConsoleData;
+  s     : String;
 begin
+  bCanNext := false;
 
   r := self.validate_package_generation_options();
   if r <> 0 then
-    exit( r );
+    exit;
 
   r := self.validate_package_signing();
   if r <> 0 then
-    exit( r );
+    exit;
 
-  exit(0);
 
+  data := PWizardConfigConsoleData(m_wizard.data());
+    r := https_certificate_pinned_filename( data^.verify_cert,  data^.wapt_server );
+
+    // Now Writing settings
+    try
+      {
+      // wapt-get.ini
+      s := 'wapt-get.ini';
+      ini := TIniFile.Create( s );
+      ini.WriteString( INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, check_certificates_validity );
+      ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                verify_cert);
+      ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 wapt_server);
+      ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    repo_url );
+      ini.Free;
+      }
+
+      // waptconsole.ini
+      wapt_ini_waptconsole(s);
+      ini := TIniFile.Create( s );
+      ini.WriteString( INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY,  data^.check_certificates_validity );
+      ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                 data^.verify_cert);
+      ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                  data^.wapt_server );
+      ini.WriteString( INI_GLOBAL, INI_REPO_URL,                     data^.repo_url );
+      ini.WriteString( INI_GLOBAL, INI_DEFAULT_PACKAGE_PREFIX,       data^.default_package_prefix );
+      ini.WriteString( INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH,    data^.personal_certificate_path );
+      ini.Free;
+
+      ini := nil;
+      self.m_wizard.ClearValidationDescription();
+    finally
+      if Assigned(ini) then
+        FreeAndNil(ini);
+    end;
+
+
+
+  bCanNext := true;
 end;
 
-procedure TWizardStepFramePackage.clear();
+procedure TWizardConfigConsole_PackageCreateNewKey.clear();
 begin
   self.ed_package_prefix.Clear;
   self.ed_private_key_name.Clear;
@@ -124,18 +188,37 @@ begin
   self.ed_private_key_password_2.Clear;
 end;
 
-function TWizardStepFramePackage.package_private_key(): String;
+function TWizardConfigConsole_PackageCreateNewKey.package_private_key(): String;
 begin
   result := self.ed_private_key_name.text + '.pem';
 end;
 
-function TWizardStepFramePackage.package_certificate(): String;
+function TWizardConfigConsole_PackageCreateNewKey.package_certificate(): String;
 begin
   result := self.ed_private_key_name.text + '.crt';
 end;
 
+procedure TWizardConfigConsole_PackageCreateNewKey.rb_key_Change(Sender: TObject);
+begin
+  if self.rb_create_new_key.Checked then
+  begin
+    self.p_create_key.Visible := true;
+    self.p_select_key.Visible := false;
+    exit;
+  end;
 
-function TWizardStepFramePackage.validate_package_generation_options(): integer;
+  if self.rb_select_key.Checked then
+  begin
+    self.p_create_key.Visible := false;
+    self.p_select_key.Visible := true;
+    exit;
+  end;
+
+  Assert(false);
+
+end;
+
+function TWizardConfigConsole_PackageCreateNewKey.validate_package_generation_options(): integer;
 begin
   // Validate not empty
   if not wizard_validate_str_not_empty_when_trimmed( m_wizard, self.ed_package_prefix, 'Package prefix cannot be empty') then
@@ -148,7 +231,7 @@ begin
   exit(0);
 end;
 
-function TWizardStepFramePackage.validate_package_signing(): integer;
+function TWizardConfigConsole_PackageCreateNewKey.validate_package_signing(): integer;
 type
   TStep = ( sFieldsNotEmpty, sPasswordsEquals, sKeyIsAlphanum, sKeyExist, sKeyDestination, sCreatePrivateKey, sExistingKeyCheckPassword, sCheckExistingCertificate, sCopyCertToSSLDirectory, sFinish );
   TStepSet = set of TStep;
@@ -165,6 +248,8 @@ var
   completed_steps               : TStepSet;
   filename_private_key          : String;
   filename_certificate_package  : String;
+
+  data : PWizardConfigConsoleData;
 begin
 
   ed_private_key_name.Text:= ExcludeTrailingPathDelimiter( trim(ed_private_key_name.Text ) );
@@ -379,20 +464,24 @@ begin
 
 //    debug_show_step;
 
-  m_data.S['default_package_prefix']        := UTF8Decode(self.ed_package_prefix.Text);
-  m_data.S['personal_certificate_path']     := UTF8Decode( IncludeTrailingBackslash(self.ed_private_key_directory.Text) + filename_certificate_package );
-  m_data.S['package_certificate']           := UTF8Decode(filename_certificate_package);
-  m_data.S['package_private_key']           := UTF8Decode(filename_private_key);
-  m_data.S['package_private_key_password']  := UTF8Decode(self.ed_private_key_password_1.Text);
+  data := m_wizard.data();
 
-    m_wizard.ClearValidationDescription();
-    exit(0);
+  data^.default_package_prefix        := UTF8Decode(self.ed_package_prefix.Text);
+  data^.personal_certificate_path     := UTF8Decode( IncludeTrailingBackslash(self.ed_private_key_directory.Text) + filename_certificate_package );
+  data^.package_certificate           := UTF8Decode(filename_certificate_package);
+  data^.package_private_key           := UTF8Decode(filename_private_key);
+  data^.package_private_key_password  := UTF8Decode(self.ed_private_key_password_1.Text);
+
+
+  //
+
+  exit(0);
 
 end;
 
 initialization
 
-RegisterClass(TWizardStepFramePackage);
+RegisterClass(TWizardConfigConsole_PackageCreateNewKey);
 
 end.
 

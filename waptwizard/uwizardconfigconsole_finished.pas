@@ -1,4 +1,4 @@
-unit uwizardstepframeconsolefinished;
+unit uwizardconfigconsole_finished;
 
 {$mode objfpc}{$H+}
 
@@ -19,26 +19,24 @@ type
   public
 
   // TWizardStepFrame
-  function wizard_validate() : integer;  override; final;
   procedure wizard_finish( var bClose : boolean ); override; final;
 
   end;
 
 implementation
 
+uses
+    uwizardconfigconsole_data;
+
+
 {$R *.lfm}
 
 { TWizardStepFrameConsoleFinished }
 
-function TWizardStepFrameConsoleFinished.wizard_validate(): integer;
-begin
-  exit(0);
-end;
-
 procedure TWizardStepFrameConsoleFinished.wizard_finish(var bClose: boolean);
 begin
   bClose:= true;
-  self.m_data.B['launch_console'] := self.cb_launch_console.Checked;
+  PWizardConfigConsoleData(m_wizard.data())^.launch_console := self.cb_launch_console.Checked;
 end;
 
 

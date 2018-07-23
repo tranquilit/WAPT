@@ -1,4 +1,4 @@
-inherited WizardStepFrameServerFinish: TWizardStepFrameServerFinish
+inherited WizardConfigServer_Finish: TWizardConfigServer_Finish
   object cb_start_console: TCheckBox[0]
     Left = 112
     Height = 19

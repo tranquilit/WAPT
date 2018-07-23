@@ -6,7 +6,6 @@ interface
 
 uses
   WizardControls,
-  superobject,
   uwizard,
   Classes, SysUtils, FileUtil, Forms, Controls;
 
@@ -19,18 +18,16 @@ type
   protected
     m_wizard      : TWizard;
     m_show_count  : integer;
-    m_data        : ISuperObject;
-
 
   public
     constructor Create( AOwner : TComponent ); override;
 
 
-    procedure wizard_load( w : TWizard; data : ISuperObject ); virtual;
+    procedure wizard_load( w : TWizard ); virtual;
     procedure wizard_show(); virtual;
     procedure wizard_hide(); virtual;
     procedure wizard_previous( var bCanPrevious : boolean ); virtual;
-    function  wizard_validate() : integer; virtual; abstract;
+    procedure wizard_next(var bCanNext : boolean ); virtual;
     procedure wizard_finish( var bClose : boolean ); virtual;
     procedure wizard_cancel( var bClose : boolean ); virtual;
     procedure clear(); virtual;
@@ -65,14 +62,12 @@ constructor TWizardStepFrame.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   m_show_count := 0;
-  m_data := nil;
   m_wizard := nil;
 end;
 
-procedure TWizardStepFrame.wizard_load(w: TWizard; data: ISuperObject);
+procedure TWizardStepFrame.wizard_load( w: TWizard );
 begin
   m_wizard := w;
-  m_data := data;
 end;
 
 procedure TWizardStepFrame.wizard_show();
@@ -85,6 +80,10 @@ begin
 end;
 
 procedure TWizardStepFrame.wizard_previous(var bCanPrevious: boolean);
+begin
+end;
+
+procedure TWizardStepFrame.wizard_next(var bCanNext: boolean);
 begin
 end;
 

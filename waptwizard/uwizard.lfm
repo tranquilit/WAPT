@@ -347,6 +347,7 @@ object Wizard: TWizard
     BevelOuter = bvNone
     Caption = 'panel_center'
     TabOrder = 2
+    OnClick = panel_centerClick
   end
   object WizardManager: TWizardManager
     DisplayOptions.Parent = panel_center

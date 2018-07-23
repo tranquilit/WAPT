@@ -1,4 +1,4 @@
-unit uwizardstepframerunserverpostsetup;
+unit uwizardconfigserver_postsetup;
 
 {$mode objfpc}{$H+}
 
@@ -11,9 +11,9 @@ uses
 
 type
 
-  { TWizardStepFrameRunServerPostSetup }
+  { TWizardConfigServer_ServerPostSetup }
 
-  TWizardStepFrameRunServerPostSetup = class( TWizardStepFrame )
+  TWizardConfigServer_ServerPostSetup = class( TWizardStepFrame )
     memo: TMemo;
   private
     procedure on_run_tick( sender : TObject );
@@ -22,7 +22,7 @@ type
 
     // TWizardStepFrame
     procedure wizard_show(); override; final;
-    function wizard_validate() : Integer; override; final;
+    procedure wizard_next(var bCanNext: boolean); override; final;
     procedure clear(); override; final;
 
   end;
@@ -34,21 +34,22 @@ uses
   tiscommon,
   Forms,
   FileUtil,
+  uwizardconfigserver_data,
   uwizardutil,
   uwizardvalidattion;
 
 {$R *.lfm}
 
-{ TWizardStepFrameRunServerPostSetup }
+{ TWizardConfigServer_ServerPostSetup }
 
-constructor TWizardStepFrameRunServerPostSetup.Create(AOwner: TComponent);
+constructor TWizardConfigServer_ServerPostSetup.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   self.clear();
   self.memo.ReadOnly := true;
 end;
 
-procedure TWizardStepFrameRunServerPostSetup.wizard_show();
+procedure TWizardConfigServer_ServerPostSetup.wizard_show();
 begin
   inherited wizard_show();
   self.Align := alClient;
@@ -57,9 +58,10 @@ begin
   // working
   m_wizard.click_next_async();
 
+
 end;
 
-procedure TWizardStepFrameRunServerPostSetup.on_run_tick(sender: TObject);
+procedure TWizardConfigServer_ServerPostSetup.on_run_tick(sender: TObject);
 var
   ss : TStringStream;
 begin
@@ -69,18 +71,35 @@ begin
 end;
 
 
-function TWizardStepFrameRunServerPostSetup.wizard_validate(): Integer;
+procedure TWizardConfigServer_ServerPostSetup.wizard_next(var bCanNext: boolean );
 const
   TIMEOUT_MS : integer = 15 * 60 * 1000;
 var
   run_params : TRunParametersSync;
   r   : integer;
   s   : String;
+  data : PWizardConfigServerData;
 begin
 
+  bCanNext := false;
+
+  data := m_wizard.data();
+
+
+  // Stop server
   wizard_validate_waptserver_stop_services_no_fail( self.m_wizard, self.memo );
 
-  Assert( self.m_data.O['server_hostname'] <> nil );
+  // Write waptserver.ini
+  r := TWizardConfigServerData_write_ini_waptserver( data, self.m_wizard );
+  if r <> 0 then
+    exit;
+
+  // Write wapt-get.ini
+  r := TWizardConfigServerData_write_ini_waptserver( data, self.m_wizard );
+  if r <> 0 then
+    exit;
+
+
 
   //
   FillChar( run_params, sizeof(TRunParametersSync), 0 );
@@ -88,7 +107,7 @@ begin
   run_params.timout_ms:= TIMEOUT_MS;
   run_params.on_run_tick := @on_run_tick;
   if not wizard_validate_run_command_sync( m_wizard, @run_params, 'Running post install scripts', 'Error while running post ', self.memo ) then
-    exit( -1 );
+    exit;
 
 
   // Removing ssl\tranquilit.crt
@@ -101,7 +120,7 @@ begin
   if r <> 0 then
   begin
     m_wizard.show_validation_error( nil, 'Failed to start services' );
-    exit( -1 );
+    exit;
   end;
 
 
@@ -116,29 +135,28 @@ begin
       if r <> 0 then
       begin
         m_wizard.show_validation_error( nil, 'An has occured while migrating from mogodb to postgresql' );
-        exit( -1 );
+        exit;
       end;
     end;
   end;
 
   // ping
-  s := UTF8Encode(self.m_data.S['wapt_server']);
-  if not wizard_validate_waptserver_ping( m_wizard, s, nil ) then
-    exit( -1 );
+  if not wizard_validate_waptserver_ping( m_wizard, data^.wapt_server, nil ) then
+    exit;
 
 
-  exit( 0 );
+  bCanNext := true;
 
 end;
 
-procedure TWizardStepFrameRunServerPostSetup.clear();
+procedure TWizardConfigServer_ServerPostSetup.clear();
 begin
   self.memo.Clear;
 end;
 
 initialization
 
-  RegisterClass(TWizardStepFrameRunServerPostSetup);
+  RegisterClass(TWizardConfigServer_ServerPostSetup);
 
 end.
 
