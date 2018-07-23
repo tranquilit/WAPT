@@ -156,7 +156,7 @@ class Worker(threading.Thread):
             try:
                 func(*args, **kargs)
             except Exception, e:
-                print e
+                logger.info(u"%s" % e)
             finally:
                 self.tasks.task_done()
 

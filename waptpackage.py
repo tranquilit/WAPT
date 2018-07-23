@@ -1260,7 +1260,7 @@ class PackageEntry(BaseObjectClass):
             self._md = self._default_md
             return certs[0]
 
-        raise SSLVerifyException(u'SSL signature verification failed for control %s against embedded certificate %s' % (self.asrequirement(),certs))
+        raise SSLVerifyException(u'SSL signature verification failed for control %s against embedded certificate %s' % (self.asrequirement(),certs[0].cn))
 
     def has_file(self,fname):
         """Return None if fname is not in package, else return file datetime

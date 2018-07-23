@@ -67,7 +67,7 @@ import string
 import locale
 
 import shlex
-from iniparse import RawConfigParser
+from iniparse import RawConfigParser,INIConfig
 from optparse import OptionParser
 
 from collections import namedtuple
@@ -110,7 +110,7 @@ from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,
 from waptutils import import_code,import_setup,force_utf8_no_bom,format_bytes,wget,merge_dict,remove_encoding_declaration,list_intersection
 from waptutils import _disable_file_system_redirection
 
-from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL,SSLVerifyException
+from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL,SSLVerifyException,SSLCertificateSigningRequest
 from waptcrypto import get_peer_cert_chain_from_server,default_pwd_callback,hexdigest_for_data,get_cert_chain_as_pem
 from waptcrypto import sha256_for_data,EWaptMissingPrivateKey,EWaptMissingCertificate
 
@@ -2459,11 +2459,13 @@ class Wapt(BaseObjectClass):
         self.use_http_proxy_for_repo = False
         self.use_http_proxy_for_server = False
 
+        self.public_certs_dir = None
+
         self.forced_uuid = None
         self.use_fqdn_as_uuid = False
 
         try:
-            self.wapt_base_dir = os.path.dirname(__file__)
+            self.wapt_base_dir = os.path.abspath(os.path.dirname(__file__))
         except NameError:
             self.wapt_base_dir = os.getcwdu()
 
@@ -2588,6 +2590,7 @@ class Wapt(BaseObjectClass):
             'maturities':'PROD',
             'waptwua_enabled':'0',
             'http_proxy':'',
+            'public_certs_dir':os.path.join(self.wapt_base_dir,'ssl'),
 
             # optional...
             'default_sources_root':'c:\\waptdev',
@@ -3867,7 +3870,7 @@ class Wapt(BaseObjectClass):
             os_version=setuphelpers.windows_version(),
             arch=self.get_host_architecture(),
             dn=self.host_dn,
-            fqdn=setuphelpers.get_computername(),
+            fqdn=setuphelpers.get_hostname(),
             site=self.get_host_site(),
             wapt_version=Version(setuphelpers.__version__,4),
             wapt_edition=self.get_wapt_edition(),
