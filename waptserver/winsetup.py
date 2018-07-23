@@ -45,7 +45,6 @@ import jinja2
 import time
 import random
 import string
-import iniparse
 
 from setuphelpers import run
 from waptutils import setloglevel

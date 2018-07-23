@@ -180,7 +180,7 @@ end;
 function PWaptGet.GetRepoURL: String;
 begin
   if FRepoURL='' then
-    FRepoURL:=GetMainWaptRepo;
+    FRepoURL:=GetMainWaptRepoURL;
   result := FRepoURL;
 end;
 
