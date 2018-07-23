@@ -226,14 +226,15 @@ class SSLCABundle(BaseObjectClass):
         self._cert_chains_cache.clear()
 
     def add_pems(self,cert_pattern_or_dir=u'*.crt',load_keys=False):
-        if os.path.isdir(cert_pattern_or_dir):
-            # load pems from provided directory
-            for fn in glob.glob(os.path.join(cert_pattern_or_dir,u'*.crt'))+glob.glob(os.path.join(cert_pattern_or_dir,u'*.pem')):
-                self.add_pem(pem_filename = fn,load_keys=load_keys)
-        else:
-            # load pems based on file wildcards
-            for fn in glob.glob(cert_pattern_or_dir):
-                self.add_pem(pem_filename = fn,load_keys=load_keys)
+        if cert_pattern_or_dir:
+            if os.path.isdir(cert_pattern_or_dir):
+                # load pems from provided directory
+                for fn in glob.glob(os.path.join(cert_pattern_or_dir,u'*.crt'))+glob.glob(os.path.join(cert_pattern_or_dir,u'*.pem')):
+                    self.add_pem(pem_filename = fn,load_keys=load_keys)
+            else:
+                # load pems based on file wildcards
+                for fn in glob.glob(cert_pattern_or_dir):
+                    self.add_pem(pem_filename = fn,load_keys=load_keys)
         return self
 
     def add_certificates(self,certificates):
@@ -490,9 +491,9 @@ class SSLCABundle(BaseObjectClass):
                 self.check_if_revoked(cert)
             return cert
 
-        def add_chain_cache(cache_key,chain):
+        def add_chain_cache(cache_key,chain,reason):
             logger.debug('Stores cert chain check in cache')
-            self._cert_chains_cache[cache_key] = (time.time() + self.check_cache_ttl * 60,chain)
+            self._cert_chains_cache[cache_key] = (time.time() + self.check_cache_ttl * 60,chain,reason)
 
         if isinstance(cert_chain,SSLCABundle):
             cert_chain = cert_chain._certificates
@@ -505,7 +506,7 @@ class SSLCABundle(BaseObjectClass):
 
         # try to get a cached result
         cache_key = (cert.fingerprint,verify_expiry,verify_revoke,allow_pinned)
-        (cache_expiration_date,cached_chain) = self._cert_chains_cache.get(cache_key,(None,None))
+        (cache_expiration_date,cached_chain,reason) = self._cert_chains_cache.get(cache_key,(None,None,None))
         if not cache_expiration_date or cache_expiration_date < time.time():
             # build an index of certificates in chain for intermediates CA
             idx = dict([crt.subject_key_identifier,crt] for crt in cert_chain)
@@ -513,10 +514,12 @@ class SSLCABundle(BaseObjectClass):
             result= [cert]
             while cert:
                 try:
-                    # trust the cert if it is the bundle, even if issuer is unknown at this stage.
+                    # trust the cert itself if it is the bundle, even if issuer is unknown at this stage.
                     if allow_pinned and cert in self._certificates:
-                        add_chain_cache(cache_key,result)
+                        reason = u'Certificate "%s" is trusted by himself' % cert.cn
+                        add_chain_cache(cache_key,result,reason)
                         return result
+
                     # append chain of trusted upstream CA certificates
                     issuer_chain = cert.verify_signature_with(self)
                     for issuer in issuer_chain:
@@ -526,31 +529,37 @@ class SSLCABundle(BaseObjectClass):
                         issuer.verify_signature_with(self)
                         result.append(issuer)
 
-                    add_chain_cache(cache_key,result)
+                    reason = u'Certificate "%s" is trusted' % cert.cn
+                    add_chain_cache(cache_key,result,reason)
                     return result
                 except SSLVerifyException as e:
                     # try to use intermediate from supplied list
                     issuer = idx.get(cert.authority_key_identifier,None)
+                    reason = u'None of certificates (%s) are trusted.' % (','.join(['"%s"' % c.cn for c in cert_chain]))
                     if not issuer:
-                        raise EWaptCertificateUnknownIssuer(u'Unknown issuer %s for certificate %s'%(result[-1].issuer_cn,result[-1].cn))
+                        add_chain_cache(cache_key,[],reason)
+                        raise EWaptCertificateUnknownIssuer(reason)
 
                     if issuer == cert:
-                        # self signed untrusted
-                        raise EWaptCertificateUnknownIssuer(u'Self signed certificate %s is not trusted'%(result[-1].cn))
+                        add_chain_cache(cache_key,[],reason)
+                        raise EWaptCertificateUnknownIssuer(reason)
 
                     if cert.verify_signature_with(issuer):
                         check_cert(issuer)
                         if cert != issuer:
                             result.append(issuer)
                             cert = issuer
+
         # return cached checked chain
         elif cached_chain:
             return cached_chain
 
+        #reason = u'None of certificates (%s) are trusted.' % (','.join(['"%s"' % c.cn for c in cert_chain]))
         # store negative caching
         if cached_chain is None:
-            add_chain_cache(cache_key,[])
-        raise EWaptCertificateUntrustedIssuer(u'Issuer %s for certificate %s is not trusted'%(result[-1].issuer_cn,result[-1].cn))
+            add_chain_cache(cache_key,([],reason))
+
+        raise EWaptCertificateUntrustedIssuer(reason)
 
     def add_crl(self,crl):
         """Replace or Add pem encoded CRL"""
