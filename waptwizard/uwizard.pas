@@ -58,6 +58,7 @@ type
     procedure on_button_cancel_click( sender : TObject );
     procedure set_buttons_enable( enable : Boolean );
     procedure _click_next_async( data : PtrInt );
+    procedure _setfocus_async( data : PtrInt );
 
 
 
@@ -74,7 +75,10 @@ type
     procedure show_error(   const msg : String ); virtual overload; final;
     procedure show_validation_error( ctrl : TControl; msg : String ); virtual; final;
 
+
+
     procedure click_next_async();
+    procedure setFocus_async( wc : TWinControl );
 
 
     procedure launch_console();
@@ -376,11 +380,25 @@ begin
   self.WizardButtonPanel.NextButton.Click;
 end;
 
+procedure TWizard._setfocus_async(data: PtrInt);
+begin
+  if data = 0 then
+    exit;
+
+  // todo if
+  TWinControl(data).SetFocus;
+end;
+
 
 procedure TWizard.click_next_async();
 begin
   Application.QueueAsyncCall( @_click_next_async, 0 );
 
+end;
+
+procedure TWizard.setFocus_async(wc: TWinControl);
+begin
+  Application.QueueAsyncCall( @_setfocus_async, PtrInt(wc) );
 end;
 
 procedure TWizard.launch_console();

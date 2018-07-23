@@ -20,6 +20,7 @@ type
 
   public
     // TWizardStepFrame
+    procedure wizard_show(); override; final;
     procedure wizard_next(var bCanNext: boolean); override; final;
   end;
 
@@ -36,6 +37,11 @@ uses
 
 
 
+procedure TTWizardConfigServer_Welcome.wizard_show();
+begin
+  m_wizard.setFocus_async( m_wizard.WizardButtonPanel.NextButton );
+  ;
+end;
 
 procedure TTWizardConfigServer_Welcome.wizard_next(var bCanNext: boolean);
 begin

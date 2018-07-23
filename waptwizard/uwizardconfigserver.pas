@@ -34,7 +34,6 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject); override;
     procedure FormShow(Sender: TObject);
-    procedure WizardManagerPageHide(Sender: TObject; Page: TWizardPage);
 
   private
 
@@ -68,13 +67,15 @@ begin
   inherited;
 
   FillChar( m_data, sizeof(TWizardConfigServerData), 0 );
+
   m_data.is_enterprise_edition := DMPython.IsEnterpriseEdition;
+  m_data.check_certificates_validity := '0';
+  m_data.verify_cert := '0';
 
 end;
 
 procedure TWizardConfigServer.FormShow(Sender: TObject);
 begin
-
 end;
 
 
@@ -113,11 +114,6 @@ end;
 function TWizardConfigServer.data(): Pointer;
 begin
   exit( @m_data );
-end;
-
-
-procedure TWizardConfigServer.WizardManagerPageHide(Sender: TObject; Page: TWizardPage);
-begin
 end;
 
 

@@ -92,6 +92,8 @@ end;
 procedure TWizardStepFramePassword.wizard_show();
 begin
   inherited wizard_show();
+
+
   self.ed_password_1.SetFocus;
 end;
 

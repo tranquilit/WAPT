@@ -25,6 +25,7 @@ type
     server_certificate              : String;
     launch_console                  : boolean;
     check_certificates_validity     : String;
+    repo_url                        : String;
   end;
   PWizardConfigServerData = ^TWizardConfigServerData;
 
@@ -39,8 +40,6 @@ implementation
 
 uses
   uwapt_ini,
-  DCPsha256,
-  ucrypto_pbkdf2,
   uwizardutil,
   IniFiles;
 
@@ -49,21 +48,19 @@ function TWizardConfigServerData_write_ini_waptserver( data : PWizardConfigServe
 var
   ini : TIniFile;
   r   : integer;
-  s   : String;
 begin
   ini := nil;
 
   w.SetValidationDescription( 'Writing wapt server configuration file' );
   try
 
-    s := PBKDF2( data^.wapt_password, random_alphanum(5), 29000, 32, TDCP_sha256);
 
     // waptserver.ini
     ini := TIniFile.Create( 'conf\waptserver.ini' );
     ini.WriteString( INI_OPTIONS, INI_DB_NAME,       'wapt');
     ini.WriteString( INI_OPTIONS, INI_DB_USER,       'wapt' );
     ini.WriteString( INI_OPTIONS, INI_WAPT_USER,     'admin' );
-    ini.WriteString( INI_OPTIONS, INI_WAPT_PASSWORD, s );
+    ini.WriteString( INI_OPTIONS, INI_WAPT_PASSWORD, data^.wapt_password );
     ini.WriteString( INI_OPTIONS, INI_ALLOW_UNAUTHENTICATED_REGISTRATION, 'True' );
     r := Length( Trim(ini.ReadString( INI_OPTIONS, INI_SERVER_UUID, '')) );
     if r = 0 then

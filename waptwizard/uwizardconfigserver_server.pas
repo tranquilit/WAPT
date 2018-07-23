@@ -41,7 +41,9 @@ type
 implementation
 
 uses
-  uwizardconfigconsole_data,
+  DCPsha256,
+  ucrypto_pbkdf2,
+  uwizardconfigserver_data,
   uwizardutil,
   uwizardvalidattion;
 
@@ -97,16 +99,18 @@ begin
   inherited wizard_show();
 
 
-  self.gb_admin_password.TabOrder                         := 1;
-  self.m_wizard.WizardButtonPanel.TabOrder                := 2;
+  self.gb_admin_password.TabOrder                         := 0;
+  self.m_wizard.WizardButtonPanel.TabOrder                := 1;
 
 
   self.rg_server_url.TabOrder                             := 0;
   self.ed_password_1.TabOrder                             := 1;
   self.ed_password_2.TabOrder                             := 2;
-  self.m_wizard.WizardButtonPanel.NextButton.TabOrder     := 3;
-  self.m_wizard.WizardButtonPanel.PreviousButton.TabOrder := 4;
-  self.m_wizard.WizardButtonPanel.CancelButton.TabOrder   := 5;
+  self.cb_password_visible.TabOrder                       := 3;
+
+  self.m_wizard.WizardButtonPanel.NextButton.TabOrder     := 0;
+  self.m_wizard.WizardButtonPanel.PreviousButton.TabOrder := 1;
+  self.m_wizard.WizardButtonPanel.CancelButton.TabOrder   := 2;
 
   self.ed_password_1.SetFocus;
 
@@ -118,7 +122,7 @@ procedure TWizardConfigServer_Server.wizard_next(var bCanNext: boolean);
 var
   ed : TEdit;
   s : String;
-  data : PWizardConfigConsoleData;
+  data : PWizardConfigServerData;
 begin
   bCanNext := false;
 
@@ -132,9 +136,11 @@ begin
   end;
 
   s := self.rg_server_url.Items[ self.rg_server_url.ItemIndex ];
-
   data^.wapt_server := 'https://' + s;
+  data^.repo_url    := 'https://' + s + '/wapt' ;
   data^.server_certificate := s  + '.crt';
+
+
 
   // admin password
   m_wizard.SetValidationDescription( 'Validating supplied passwords' );
@@ -149,11 +155,8 @@ begin
   if not wizard_validate_str_password_are_equals( m_wizard, self.ed_password_1.Text, self.ed_password_2.Text, ed ) then
     exit;
 
-  m_wizard.ClearValidationDescription();
-
-
-  data^.wapt_user :=  'admin';
-  data^.wapt_password := self.ed_password_1.Text;
+  data^.wapt_user     := 'admin';
+  data^.wapt_password := PBKDF2( self.ed_password_1.Text, random_alphanum(5), 29000, 32, TDCP_sha256);
 
 
   bCanNext := true;

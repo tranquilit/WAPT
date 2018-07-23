@@ -95,7 +95,7 @@ begin
     exit;
 
   // Write wapt-get.ini
-  r := TWizardConfigServerData_write_ini_waptserver( data, self.m_wizard );
+  r := TWizardConfigServerData_write_ini_waptget( data, self.m_wizard );
   if r <> 0 then
     exit;
 
