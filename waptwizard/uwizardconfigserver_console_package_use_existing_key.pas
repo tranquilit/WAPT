@@ -162,7 +162,16 @@ begin
   self.m_wizard.WizardButtonPanel.PreviousButton.TabOrder := 1;
   self.m_wizard.WizardButtonPanel.CancelButton.TabOrder   := 2;
 
-  self.ed_package_prefix.SetFocus;
+
+  if Length(self.ed_package_prefix.Text) = 0 then
+    self.ed_package_prefix.SetFocus
+  else if Length(self.ed_key.Text) = 0 then
+    self.ed_key.SetFocus
+  else if Length(self.ed_password.Text) = 0 then
+    self.ed_password.SetFocus
+  else
+    self.m_wizard.WizardButtonPanel.NextButton.SetFocus;
+
 end;
 
 procedure TWizardConfigServer_Console_PackageUseExistingKey.wizard_next( var bCanNext: boolean);
