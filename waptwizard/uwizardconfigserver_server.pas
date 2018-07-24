@@ -21,7 +21,6 @@ type
     gb_admin_password: TGroupBox;
     lbl_password_1: TLabel;
     lbl_password_2: TLabel;
-    rg_server_url: TRadioGroup;
     procedure cb_password_visibleChange(Sender: TObject);
   private
 
@@ -78,19 +77,7 @@ var
 begin
   inherited wizard_load(w);
 
-  // Server url
-  self.rg_server_url .Items.Clear;
-  sl := TStringList.Create;
-  i := net_list_enable_ip( sl );
-  if i = 0 then
-  begin
-    for i := 0 to sl.Count -1 do
-    begin
-      if 'localhost' = sl.Strings[i] then
-        continue;
-      self.rg_server_url.Items.AddObject( sl.Strings[i], sl.Objects[i] );
-    end;
-  end;
+
 
 end;
 
@@ -103,7 +90,6 @@ begin
   self.m_wizard.WizardButtonPanel.TabOrder                := 1;
 
 
-  self.rg_server_url.TabOrder                             := 0;
   self.ed_password_1.TabOrder                             := 1;
   self.ed_password_2.TabOrder                             := 2;
   self.cb_password_visible.TabOrder                       := 3;
@@ -127,18 +113,6 @@ begin
   bCanNext := false;
 
   data := m_wizard.data();
-
-  // server_url
-  if self.rg_server_url.ItemIndex = -1 then
-  begin
-    m_wizard.show_validation_error( self.rg_server_url, 'You must a valid server url' );
-    exit;
-  end;
-
-  s := self.rg_server_url.Items[ self.rg_server_url.ItemIndex ];
-  data^.wapt_server := 'https://' + s;
-  data^.repo_url    := 'https://' + s + '/wapt' ;
-  data^.server_certificate := s  + '.crt';
 
 
 

@@ -60,7 +60,7 @@
         <PackageName Value="LCL"/>
       </Item9>
     </RequiredPackages>
-    <Units Count="34">
+    <Units Count="35">
       <Unit0>
         <Filename Value="waptwizard.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -266,6 +266,12 @@
         <Filename Value="uwizardconfigconsole_data.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit33>
+      <Unit34>
+        <Filename Value="uwizardconfigserver_console_server.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardConfigserver_ConsoleServer"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit34>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

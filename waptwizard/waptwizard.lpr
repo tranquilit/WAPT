@@ -26,7 +26,7 @@ uses
   uwizardconfigserver_keyoption, uwizardconfigserver_package_create_new_key,
   uwizardconfigserver_package_use_existing_key, uwizardconfigserver_postsetup,
   uwizardconfigserver_server, uwizardconfigserver_welcome,
-  uwizardresetserverpassword_data, uwizardconfigserver_console;
+  uwizardresetserverpassword_data, uwizardconfigserver_console, uwizardconfigserver_console_server;
 
 {$R *.res}
 

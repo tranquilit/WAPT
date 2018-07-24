@@ -92,7 +92,12 @@ inherited WizardConfigServer: TWizardConfigServer
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
+        Caption = 'Server url'
+        ControlClassName = 'TWizardConfigserver_ConsoleServer'
+      end    
+      item
         Caption = 'Build agent'
+        ControlClassName = 'TWizardConfigServer_BuildAgent'
         Name = 'build_agent'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
