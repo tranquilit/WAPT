@@ -11,9 +11,9 @@ uses
 
 type
 
-  { TWizardConfigserver_ConsoleServer }
+  { TWizardConfigserver_Console_Server }
 
-  TWizardConfigserver_ConsoleServer = class( TWizardStepFrame )
+  TWizardConfigserver_Console_Server = class( TWizardStepFrame )
     rg_server_url: TRadioGroup;
   private
 
@@ -33,13 +33,13 @@ uses
 
 {$R *.lfm}
 
-{ TWizardConfigserver_ConsoleServer }
+{ TWizardConfigserver_Console_Server }
 
-procedure TWizardConfigserver_ConsoleServer.clear();
+procedure TWizardConfigserver_Console_Server.clear();
 begin
 end;
 
-procedure TWizardConfigserver_ConsoleServer.wizard_show();
+procedure TWizardConfigserver_Console_Server.wizard_show();
 var
   i   : integer;
   h   : String;
@@ -70,7 +70,7 @@ begin
 
 end;
 
-procedure TWizardConfigserver_ConsoleServer.wizard_next(var bCanNext: boolean);
+procedure TWizardConfigserver_Console_Server.wizard_next(var bCanNext: boolean);
 var
   s : String;
   data : PWizardConfigServerData;
@@ -100,7 +100,7 @@ end;
 
 initialization
 
-  RegisterClass(TWizardConfigserver_ConsoleServer);
+  RegisterClass(TWizardConfigserver_Console_Server);
 
 end.
 

@@ -1,4 +1,4 @@
-inherited WizardConfigServer_KeyOption: TWizardConfigServer_KeyOption
+inherited WizardConfigServer_Console_KeyOption: TWizardConfigServer_Console_KeyOption
   DesignLeft = 958
   DesignTop = 238
   object rb_use_existing_key: TRadioButton[0]

@@ -1,4 +1,4 @@
-unit uwizardconfigserver_buildagent;
+unit uwizardconfigserver_console_buildagent;
 
 {$mode objfpc}{$H+}
 
@@ -15,8 +15,8 @@ type
 
 
 
-  { TWizardConfigServer_BuildAgent }
-  TWizardConfigServer_BuildAgent = class( TWizardStepFrame )
+  { TWizardConfigServer_Console_BuildAgent }
+  TWizardConfigServer_Console_BuildAgent = class( TWizardStepFrame )
     lbl: TLabel;
     progress: TProgressBar;
   private
@@ -58,12 +58,12 @@ const
 MSG_BUILDING : String = 'Building %s   ';
 
 
-{ TWizardConfigServer_BuildAgent }
+{ TWizardConfigServer_Console_BuildAgent }
 
 
 
 
-procedure TWizardConfigServer_BuildAgent.wizard_show();
+procedure TWizardConfigServer_Console_BuildAgent.wizard_show();
 begin
   inherited wizard_show();
 
@@ -73,7 +73,7 @@ begin
 
 end;
 
-procedure TWizardConfigServer_BuildAgent.wizard_next( var bCanNext: boolean );
+procedure TWizardConfigServer_Console_BuildAgent.wizard_next( var bCanNext: boolean );
 label
   LBL_BUILD_WAPTUPGRADE,
   LBL_BUILD_WAPTAGENT;
@@ -238,12 +238,12 @@ end;
 
 
 
-procedure TWizardConfigServer_BuildAgent.on_building_waptagent_tick(sender: TObject );
+procedure TWizardConfigServer_Console_BuildAgent.on_building_waptagent_tick(sender: TObject );
 begin
   Application.QueueAsyncCall( @tick, 0 );
 end;
 
-procedure TWizardConfigServer_BuildAgent.tick(data: PtrInt);
+procedure TWizardConfigServer_Console_BuildAgent.tick(data: PtrInt);
 const
   sz_setup : Real = 1024 * 1024 * 23.5;
 var
@@ -262,14 +262,14 @@ begin
   self.progress.Position := Round(sz);
 end;
 
-procedure TWizardConfigServer_BuildAgent.on_workevent(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
+procedure TWizardConfigServer_Console_BuildAgent.on_workevent(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
 begin
   self.progress.Position := AWorkCount;
 end;
 
 
 
-procedure TWizardConfigServer_BuildAgent.Build( const target : String; func : Pointer; data : Pointer; callback : Tnotifycallback );
+procedure TWizardConfigServer_Console_BuildAgent.Build( const target : String; func : Pointer; data : Pointer; callback : Tnotifycallback );
 var
   r : integer;
   j : integer;
@@ -303,7 +303,7 @@ end;
 
 
 
-procedure TWizardConfigServer_BuildAgent.building_init_ui( const s : String; max : integer );
+procedure TWizardConfigServer_Console_BuildAgent.building_init_ui( const s : String; max : integer );
   begin
     progress.Visible := true;
     lbl.Caption := s;
@@ -314,13 +314,13 @@ procedure TWizardConfigServer_BuildAgent.building_init_ui( const s : String; max
     Application.ProcessMessages;
   end;
 
-procedure TWizardConfigServer_BuildAgent.building_show_error(w: TWizard; control: TControl; const msg: String);
+procedure TWizardConfigServer_Console_BuildAgent.building_show_error(w: TWizard; control: TControl; const msg: String);
 begin
   progress.Visible := false;
   w.show_validation_error( control, msg );
 end;
 
-procedure TWizardConfigServer_BuildAgent.on_python_update(Sender: TObject; PSelf, Args: PPyObject; var Result: PPyObject);
+procedure TWizardConfigServer_Console_BuildAgent.on_python_update(Sender: TObject; PSelf, Args: PPyObject; var Result: PPyObject);
 begin
   Result:= DMPython.PythonEng.ReturnNone;
 end;
@@ -332,7 +332,7 @@ end;
 
 initialization
 
-  RegisterClass(TWizardConfigServer_BuildAgent);
+  RegisterClass(TWizardConfigServer_Console_BuildAgent);
 
 end.
 

@@ -1,4 +1,4 @@
-inherited WizardConfigServer_PackageCreateNewKey: TWizardConfigServer_PackageCreateNewKey
+inherited WizardConfigServer_Console_PackageCreateNewKey: TWizardConfigServer_Console_PackageCreateNewKey
   Height = 209
   Width = 480
   Anchors = []

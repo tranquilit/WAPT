@@ -1,4 +1,4 @@
-unit uwizardconfigserver_server;
+unit uwizardconfigserver_password;
 
 {$mode objfpc}{$H+}
 
@@ -12,9 +12,9 @@ uses
 
 type
 
-  { TWizardConfigServer_Server }
+  { TWizardConfigServer_Password }
 
-  TWizardConfigServer_Server = class( TWizardStepFrame)
+  TWizardConfigServer_Password = class( TWizardStepFrame)
     cb_password_visible: TCheckBox;
     ed_password_1: TEdit;
     ed_password_2: TEdit;
@@ -48,9 +48,9 @@ uses
 
 {$R *.lfm}
 
-{ TWizardConfigServer_Server }
+{ TWizardConfigServer_Password }
 
-procedure TWizardConfigServer_Server.cb_password_visibleChange(Sender: TObject);
+procedure TWizardConfigServer_Password.cb_password_visibleChange(Sender: TObject);
 var
   c : Char;
 begin
@@ -63,14 +63,14 @@ begin
   self.ed_password_2.PasswordChar := c;
 end;
 
-procedure TWizardConfigServer_Server.clear();
+procedure TWizardConfigServer_Password.clear();
 begin
   self.ed_password_1.Clear;
   self.ed_password_2.Clear;
 end;
 
 
-procedure TWizardConfigServer_Server.wizard_load(w: TWizard);
+procedure TWizardConfigServer_Password.wizard_load(w: TWizard);
 var
   sl : TStringList;
   i : integer;
@@ -81,7 +81,7 @@ begin
 
 end;
 
-procedure TWizardConfigServer_Server.wizard_show();
+procedure TWizardConfigServer_Password.wizard_show();
 begin
   inherited wizard_show();
 
@@ -104,7 +104,7 @@ end;
 
 
 
-procedure TWizardConfigServer_Server.wizard_next(var bCanNext: boolean);
+procedure TWizardConfigServer_Password.wizard_next(var bCanNext: boolean);
 var
   ed : TEdit;
   s : String;
@@ -140,8 +140,6 @@ end;
 
 
 initialization
-RegisterClass(TWizardConfigServer_Server);
-
-
+  RegisterClass(TWizardConfigServer_Password);
 end.
 

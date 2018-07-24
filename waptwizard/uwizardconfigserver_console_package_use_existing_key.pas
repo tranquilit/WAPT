@@ -1,4 +1,4 @@
-unit uwizardconfigserver_package_use_existing_key;
+unit uwizardconfigserver_console_package_use_existing_key;
 
 {$mode objfpc}{$H+}
 
@@ -11,9 +11,9 @@ uses
 
 type
 
-  { TWizardConfigServer_PackageUseExistingKey }
+  { TWizardConfigServer_Console_PackageUseExistingKey }
 
-  TWizardConfigServer_PackageUseExistingKey = class(TWizardStepFrame)
+  TWizardConfigServer_Console_PackageUseExistingKey = class(TWizardStepFrame)
     cb_show_password: TCheckBox;
     ed_password: TEdit;
     ed_package_prefix: TEdit;
@@ -44,9 +44,9 @@ uses
 
 {$R *.lfm}
 
-{ TWizardConfigServer_PackageUseExistingKey }
+{ TWizardConfigServer_Console_PackageUseExistingKey }
 
-procedure TWizardConfigServer_PackageUseExistingKey.cb_show_passwordChange( Sender: TObject);
+procedure TWizardConfigServer_Console_PackageUseExistingKey.cb_show_passwordChange( Sender: TObject);
 var
   c: Char;
 begin
@@ -57,7 +57,7 @@ begin
   self.ed_password.PasswordChar := c;
 end;
 
-procedure TWizardConfigServer_PackageUseExistingKey.clear();
+procedure TWizardConfigServer_Console_PackageUseExistingKey.clear();
 begin
   inherited clear();
   self.ed_package_prefix.Clear;
@@ -67,7 +67,7 @@ begin
   self.cb_show_passwordChange( nil );
 end;
 
-procedure TWizardConfigServer_PackageUseExistingKey.wizard_load(w: TWizard);
+procedure TWizardConfigServer_Console_PackageUseExistingKey.wizard_load(w: TWizard);
 var
   r   : integer;
   s   : String;
@@ -98,7 +98,7 @@ begin
 
 end;
 
-procedure TWizardConfigServer_PackageUseExistingKey.wizard_show();
+procedure TWizardConfigServer_Console_PackageUseExistingKey.wizard_show();
 begin
   inherited wizard_show();
 
@@ -117,7 +117,7 @@ begin
   self.ed_package_prefix.SetFocus;
 end;
 
-procedure TWizardConfigServer_PackageUseExistingKey.wizard_next( var bCanNext: boolean);
+procedure TWizardConfigServer_Console_PackageUseExistingKey.wizard_next( var bCanNext: boolean);
 begin
   bCanNext := false;
 
@@ -137,6 +137,6 @@ begin
 end;
 
 initialization
-  RegisterClass(TWizardConfigServer_PackageUseExistingKey);
+  RegisterClass(TWizardConfigServer_Console_PackageUseExistingKey);
 end.
 

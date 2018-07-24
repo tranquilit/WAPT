@@ -1,4 +1,4 @@
-unit uwizardconfigserver_keyoption;
+unit uwizardconfigserver_console_keyoption;
 
 {$mode objfpc}{$H+}
 
@@ -11,9 +11,9 @@ uses
 
 type
 
-  { TWizardConfigServer_KeyOption }
+  { TWizardConfigServer_Console_KeyOption }
 
-  TWizardConfigServer_KeyOption = class(TWizardStepFrame)
+  TWizardConfigServer_Console_KeyOption = class(TWizardStepFrame)
     lbl_description: TLabel;
     rb_create_new_key: TRadioButton;
     rb_use_existing_key: TRadioButton;
@@ -32,9 +32,9 @@ uses
 
 {$R *.lfm}
 
-{ TWizardConfigServer_KeyOption }
+{ TWizardConfigServer_Console_KeyOption }
 
-procedure TWizardConfigServer_KeyOption.wizard_show();
+procedure TWizardConfigServer_Console_KeyOption.wizard_show();
 begin
   inherited wizard_show();
 
@@ -47,7 +47,7 @@ begin
   self.rb_use_existing_key.SetFocus;
 end;
 
-procedure TWizardConfigServer_KeyOption.wizard_next(var bCanNext: boolean);
+procedure TWizardConfigServer_Console_KeyOption.wizard_next(var bCanNext: boolean);
 var
   p : TWizardPage;
 begin
@@ -71,7 +71,7 @@ end;
 
 initialization
 
-RegisterClass(TWizardConfigServer_KeyOption);
+RegisterClass(TWizardConfigServer_Console_KeyOption);
 
 
 end.

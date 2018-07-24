@@ -16,7 +16,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="6"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="1"/>
+      <BuildNr Value="2"/>
       <StringTable LegalCopyright="Tranquil IT Systems 2012-2018" ProductVersion="1.6.2"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -151,125 +151,126 @@
         <ResourceBaseClass Value="Frame"/>
       </Unit14>
       <Unit15>
-        <Filename Value="uwizardconfigserver_package_use_existing_key.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="WizardConfigServer_PackageUseExistingKey"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Frame"/>
-      </Unit15>
-      <Unit16>
         <Filename Value="uwizardconfigserver_welcome.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="TWizardConfigServer_Welcome"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
-      </Unit16>
-      <Unit17>
+      </Unit15>
+      <Unit16>
         <Filename Value="uwizardconfigserver_firewall.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-      </Unit17>
-      <Unit18>
+      </Unit16>
+      <Unit17>
         <Filename Value="uwizardconfigserver_postsetup.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="WizardConfigServer_ServerPostSetup"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
-      </Unit18>
-      <Unit19>
-        <Filename Value="uwizardconfigserver_buildagent.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="WizardConfigServer_BuildAgent"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Frame"/>
-      </Unit19>
-      <Unit20>
-        <Filename Value="uwizardconfigserver_package_create_new_key.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="WizardConfigServer_PackageCreateNewKey"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Frame"/>
-      </Unit20>
-      <Unit21>
-        <Filename Value="uwizardconfigserver_server.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="WizardConfigServer_Server"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Frame"/>
-      </Unit21>
-      <Unit22>
+      </Unit17>
+      <Unit18>
         <Filename Value="uwizardconfigconsole_buildagent.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="WizardConfigConsole_BuildAgent"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
-      </Unit22>
-      <Unit23>
+      </Unit18>
+      <Unit19>
         <Filename Value="uwizardconfigconsole_finished.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-      </Unit23>
-      <Unit24>
+      </Unit19>
+      <Unit20>
         <Filename Value="uwizardconfigconsole_server.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="WizardStepFramePassword"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
-      </Unit24>
-      <Unit25>
+      </Unit20>
+      <Unit21>
         <Filename Value="uwizardconfigconsole_welcome.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-      </Unit25>
-      <Unit26>
+      </Unit21>
+      <Unit22>
         <Filename Value="uwizardconfigconsole_package_create_new_key.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="WizardConfigConsole_PackageCreateNewKey"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
-      </Unit26>
-      <Unit27>
-        <Filename Value="uwizardconfigserver_keyoption.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="WizardConfigServer_KeyOption"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Frame"/>
-      </Unit27>
-      <Unit28>
+      </Unit22>
+      <Unit23>
         <Filename Value="uwizardconfigserver_console.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="WizardConfigServer_Console"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
-      </Unit28>
-      <Unit29>
+      </Unit23>
+      <Unit24>
         <Filename Value="uwizardconfigserver_finish.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-      </Unit29>
-      <Unit30>
+      </Unit24>
+      <Unit25>
         <Filename Value="uwizardconfigserver_data.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit30>
-      <Unit31>
+      </Unit25>
+      <Unit26>
         <Filename Value="uwizardresetserverpassword_data.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit31>
-      <Unit32>
+      </Unit26>
+      <Unit27>
         <Filename Value="uwizardconfigconsole_package_use_existing_key.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="TWizardConfigConsole_PackageUseExistingKey"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
-      </Unit32>
-      <Unit33>
+      </Unit27>
+      <Unit28>
         <Filename Value="uwizardconfigconsole_data.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit33>
-      <Unit34>
+      </Unit28>
+      <Unit29>
         <Filename Value="uwizardconfigserver_console_server.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="WizardConfigserver_ConsoleServer"/>
+        <ComponentName Value="WizardConfigserver_Console_Server"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="uwizardconfigserver_console_buildagent.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardConfigServer_Console_BuildAgent"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="uwizardconfigserver_console_keyoption.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardConfigServer_Console_KeyOption"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="uwizardconfigserver_console_package_create_new_key.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardConfigServer_Console_PackageCreateNewKey"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="uwizardconfigserver_console_package_use_existing_key.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardConfigServer_Console_PackageUseExistingKey"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="uwizardconfigserver_password.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardConfigServer_Password"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit34>
     </Units>

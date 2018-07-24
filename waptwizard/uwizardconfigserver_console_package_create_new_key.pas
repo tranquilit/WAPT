@@ -1,4 +1,4 @@
-unit uwizardconfigserver_package_create_new_key;
+unit uwizardconfigserver_console_package_create_new_key;
 
 {$mode objfpc}{$H+}
 
@@ -12,9 +12,9 @@ type
 
 
 
-  { TWizardConfigServer_PackageCreateNewKey }
+  { TWizardConfigServer_Console_PackageCreateNewKey }
 
-  TWizardConfigServer_PackageCreateNewKey = class(TWizardStepFrame)
+  TWizardConfigServer_Console_PackageCreateNewKey = class(TWizardStepFrame)
     ed_package_prefix: TEdit;
     ed_private_key_directory: TDirectoryEdit;
     ed_private_key_name: TEdit;
@@ -60,9 +60,9 @@ uses
 
 {$R *.lfm}
 
-{ TWizardConfigServer_PackageCreateNewKey }
+{ TWizardConfigServer_Console_PackageCreateNewKey }
 
-constructor TWizardConfigServer_PackageCreateNewKey.Create( AOwner: TComponent);
+constructor TWizardConfigServer_Console_PackageCreateNewKey.Create( AOwner: TComponent);
 begin
   inherited Create( AOwner );
 
@@ -82,7 +82,7 @@ begin
 
 end;
 
-procedure TWizardConfigServer_PackageCreateNewKey.wizard_load(w: TWizard);
+procedure TWizardConfigServer_Console_PackageCreateNewKey.wizard_load(w: TWizard);
 begin
   inherited wizard_load(w);
 
@@ -94,7 +94,7 @@ begin
 
 end;
 
-procedure TWizardConfigServer_PackageCreateNewKey.wizard_show();
+procedure TWizardConfigServer_Console_PackageCreateNewKey.wizard_show();
 begin
   inherited wizard_show();
   self.ed_package_prefix.SetFocus;
@@ -111,7 +111,7 @@ begin
 
 end;
 
-procedure TWizardConfigServer_PackageCreateNewKey.wizard_next( var bCanNext: boolean);
+procedure TWizardConfigServer_Console_PackageCreateNewKey.wizard_next( var bCanNext: boolean);
 var
   r : integer;
 begin
@@ -128,7 +128,7 @@ begin
   bCanNext:= true;
 end;
 
-procedure TWizardConfigServer_PackageCreateNewKey.clear();
+procedure TWizardConfigServer_Console_PackageCreateNewKey.clear();
 begin
   self.ed_package_prefix.Clear;
   self.ed_private_key_name.Clear;
@@ -137,19 +137,19 @@ begin
   self.ed_private_key_password_2.Clear;
 end;
 
-function TWizardConfigServer_PackageCreateNewKey.package_private_key(): String;
+function TWizardConfigServer_Console_PackageCreateNewKey.package_private_key(): String;
 begin
   result := self.ed_private_key_name.text + '.pem';
 end;
 
-function TWizardConfigServer_PackageCreateNewKey.package_certificate(): String;
+function TWizardConfigServer_Console_PackageCreateNewKey.package_certificate(): String;
 begin
   result := self.ed_private_key_name.text + '.crt';
 end;
 
 
 
-function TWizardConfigServer_PackageCreateNewKey.validate_package_generation_options(): integer;
+function TWizardConfigServer_Console_PackageCreateNewKey.validate_package_generation_options(): integer;
 begin
   // Validate not empty
   if not wizard_validate_str_not_empty_when_trimmed( m_wizard, self.ed_package_prefix, 'Package prefix cannot be empty') then
@@ -162,7 +162,7 @@ begin
   exit(0);
 end;
 
-function TWizardConfigServer_PackageCreateNewKey.validate_package_signing(): integer;
+function TWizardConfigServer_Console_PackageCreateNewKey.validate_package_signing(): integer;
 type
   TStep = ( sFieldsNotEmpty, sPasswordsEquals, sKeyIsAlphanum, sKeyExist, sKeyDestination, sCreatePrivateKey, sExistingKeyCheckPassword, sCheckExistingCertificate, sCopyCertToSSLDirectory, sFinish );
   TStepSet = set of TStep;
@@ -410,7 +410,7 @@ end;
 
 initialization
 
-RegisterClass(TWizardConfigServer_PackageCreateNewKey);
+RegisterClass(TWizardConfigServer_Console_PackageCreateNewKey);
 
 end.
 

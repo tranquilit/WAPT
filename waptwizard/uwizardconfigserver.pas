@@ -6,21 +6,8 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, uwizard,
-
-  uwizardconfigserver_data,
-
-  uwizardconfigserver_welcome,
-  uwizardconfigserver_server,
-  uwizardconfigserver_firewall,
-  uwizardconfigserver_keyoption,
-  uwizardconfigserver_package_use_existing_key,
-  uwizardconfigserver_package_create_new_key,
-  uwizardconfigserver_postsetup,
-  uwizardconfigserver_buildagent,
-  uwizardconfigserver_finish,
-
-
   ComCtrls, ExtCtrls, StdCtrls,
+  uwizardconfigserver_data,
   WizardControls;
 
 
@@ -55,6 +42,18 @@ implementation
 {$R *.lfm}
 
 uses
+
+  uwizardconfigserver_console,
+  uwizardconfigserver_console_package_create_new_key,
+  uwizardconfigserver_password,
+  uwizardconfigserver_console_buildagent,
+  uwizardconfigserver_console_package_use_existing_key,
+  uwizardconfigserver_finish,
+  uwizardconfigserver_postsetup,
+  uwizardconfigserver_console_keyoption,
+  uwizardconfigserver_console_server,
+  uwizardconfigserver_firewall,
+  uwizardconfigserver_welcome,
   dmwaptpython,
   uwizardutil,
   waptcommon;

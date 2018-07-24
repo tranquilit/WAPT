@@ -1,4 +1,4 @@
-inherited WizardConfigServer_PackageUseExistingKey: TWizardConfigServer_PackageUseExistingKey
+inherited WizardConfigServer_Console_PackageUseExistingKey: TWizardConfigServer_Console_PackageUseExistingKey
   Height = 146
   Width = 496
   ClientHeight = 146

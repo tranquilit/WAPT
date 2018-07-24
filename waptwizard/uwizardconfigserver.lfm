@@ -42,10 +42,10 @@ inherited WizardConfigServer: TWizardConfigServer
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
-        Caption = 'Server'
-        ControlClassName = 'TWizardConfigServer_Server'
+        Caption = 'Admin password'
+        ControlClassName = 'TWizardConfigServer_Password'
         Name = 'server'
-        Description = 'TWizardConfigServer_Server'
+        Description = 'TWizardConfigServer_Password'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
@@ -71,21 +71,21 @@ inherited WizardConfigServer: TWizardConfigServer
       end    
       item
         Caption = 'Key option'
-        ControlClassName = 'TWizardConfigServer_KeyOption'
+        ControlClassName = 'TWizardConfigServer_Console_KeyOption'
         Name = 'key_option'
         Description = 'TWizardConfigServer_KeyOption'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Package ( Create new key )'
-        ControlClassName = 'TWizardConfigServer_PackageCreateNewKey'
+        ControlClassName = 'TWizardConfigServer_Console_PackageCreateNewKey'
         Name = 'package_create_new_key'
         Description = 'TWizardConfigServer_PackageCreateNewKey'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Package ( use existing key )'
-        ControlClassName = 'TWizardConfigServer_PackageUseExistingKey'
+        ControlClassName = 'TWizardConfigServer_Console_PackageUseExistingKey'
         Name = 'package_use_existing_key'
         Description = 'TWizardConfigServer_PackageUseExistingKey'
         PreviousOffset = 2
@@ -93,11 +93,11 @@ inherited WizardConfigServer: TWizardConfigServer
       end    
       item
         Caption = 'Server url'
-        ControlClassName = 'TWizardConfigserver_ConsoleServer'
+        ControlClassName = 'TWizardConfigserver_Console_Server'
       end    
       item
         Caption = 'Build agent'
-        ControlClassName = 'TWizardConfigServer_BuildAgent'
+        ControlClassName = 'TWizardConfigServer_Console_BuildAgent'
         Name = 'build_agent'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    

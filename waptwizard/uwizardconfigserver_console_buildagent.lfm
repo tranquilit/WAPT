@@ -1,4 +1,4 @@
-inherited WizardConfigServer_BuildAgent: TWizardConfigServer_BuildAgent
+inherited WizardConfigServer_Console_BuildAgent: TWizardConfigServer_Console_BuildAgent
   Height = 65
   Width = 577
   ClientHeight = 65
