@@ -1,18 +1,18 @@
 inherited WizardConfigServer_Console_PackageUseExistingKey: TWizardConfigServer_Console_PackageUseExistingKey
-  Height = 146
+  Height = 175
   Width = 496
-  ClientHeight = 146
+  ClientHeight = 175
   ClientWidth = 496
   DesignLeft = 588
   DesignTop = 289
   object gb_package_signing: TGroupBox[0]
     Left = 0
-    Height = 75
+    Height = 119
     Top = 57
     Width = 496
     Align = alTop
     Caption = 'Package signing'
-    ClientHeight = 55
+    ClientHeight = 99
     ClientWidth = 492
     TabOrder = 1
     object lbl_select_key: TLabel
@@ -29,6 +29,7 @@ inherited WizardConfigServer_Console_PackageUseExistingKey: TWizardConfigServer_
       Top = 0
       Width = 345
       FileName = 'ed_key'
+      OnAcceptFileName = ed_keyAcceptFileName
       FilterIndex = 0
       HideDirectories = False
       ButtonWidth = 23
@@ -62,6 +63,30 @@ inherited WizardConfigServer_Console_PackageUseExistingKey: TWizardConfigServer_
       Caption = 'Show'
       OnChange = cb_show_passwordChange
       TabOrder = 1
+    end
+    object lbl_certificate: TLabel
+      Left = 79
+      Height = 15
+      Top = 68
+      Width = 60
+      Caption = 'Certificate :'
+      ParentColor = False
+    end
+    object ed_certificate: TFileNameEdit
+      Left = 143
+      Height = 23
+      Top = 64
+      Width = 345
+      FileName = 'ed_certificate'
+      OnAcceptFileName = ed_certificateAcceptFileName
+      FilterIndex = 0
+      HideDirectories = False
+      ButtonWidth = 23
+      NumGlyphs = 1
+      Anchors = [akTop, akLeft, akRight]
+      MaxLength = 0
+      TabOrder = 3
+      Text = 'ed_certificate'
     end
   end
   object gb_package: TGroupBox[1]

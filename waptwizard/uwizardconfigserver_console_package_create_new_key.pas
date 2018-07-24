@@ -398,8 +398,7 @@ begin
 
 
   data^.default_package_prefix        := self.ed_package_prefix.Text;
-  data^.personal_certificate_path     := IncludeTrailingBackslash(self.ed_private_key_directory.Text) + filename_certificate_package;
-  data^.package_certificate           := filename_certificate_package;
+  data^.package_certificate           := IncludeTrailingBackslash(self.ed_private_key_directory.Text) + filename_certificate_package;
   data^.package_private_key           := filename_private_key;
   data^.package_private_key_password  := self.ed_private_key_password_1.Text;
 

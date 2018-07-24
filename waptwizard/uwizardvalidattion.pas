@@ -35,6 +35,7 @@ function wizard_validate_fs_ensure_directory( w : TWizard; const path : String; 
 
 function wizard_validate_change_current_user( w : TWizard; const login : PChar; const password : PChar; const failed_string : PChar; control : TControl ) : Boolean;
 function wizard_validate_crypto_decrypt_key( w :TWizard; control : TControl; const key_filename : String; const password : String ) : Boolean;
+function wizard_validate_crypto_key_and_certificate_are_related( w : TWizard; control : TControl;  const pem : String; const crt : String ) : Boolean;
 
 
 function wizard_validate_sys_no_innosetup_process( w : TWizard ) : Boolean;
@@ -108,6 +109,8 @@ begin
     s := TEdit(control).Text
   else if control is TDirectoryEdit then
     s := TDirectoryEdit(control).Text
+  else if control is TFileNameEdit then
+    s:= TFileNameEdit(control).Text
   else
     Assert( false );
 
@@ -135,6 +138,8 @@ begin
     s := TEdit(control).Text
   else if control is TDirectoryEdit then
     s := TDirectoryEdit(control).Text
+  else if control is TFileNameEdit then
+    s:= TFileNameEdit(control).Text
   else
     Assert( false );
 
@@ -516,6 +521,24 @@ begin
 
 end;
 
+function wizard_validate_crypto_key_and_certificate_are_related(w: TWizard; control: TControl; const pem: String; const crt: String): Boolean;
+var
+  s : String;
+begin
+  w.SetValidationDescription( 'Validating certificate and key are related' );
+
+  // todo
+  s := ExtractFileNameNoExt(pem);
+  if pos( s, crt ) = 0 then
+  begin
+    w.show_validation_error( control, 'Certificate and key aren''t related' );
+    exit(false);
+  end;
+
+  w.ClearValidationDescription();
+  exit(true);
+end;
+
 function wizard_validate_sys_no_innosetup_process(w: TWizard): Boolean;
 begin
   w.SetValidationDescription( 'Checking if there is no inno setup process running' );
@@ -525,6 +548,7 @@ begin
     exit( false);
   end;
   w.ClearValidationDescription();
+  exit(true);
 end;
 
 

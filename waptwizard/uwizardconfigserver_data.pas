@@ -30,7 +30,6 @@ type
     wapt_user                       : String;
     wapt_password                   : String;
     default_package_prefix          : String;
-    personal_certificate_path       : String;
     package_certificate             : String;
     package_private_key             : String;
     package_private_key_password    : String;
@@ -122,7 +121,7 @@ begin
     ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 data^.wapt_server );
     ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    data^.wapt_server + '/wapt');
     ini.WriteString( INI_GLOBAL, INI_DEFAULT_PACKAGE_PREFIX,      data^.default_package_prefix );
-    ini.WriteString( INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH,   data^.personal_certificate_path );
+    ini.WriteString( INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH,   data^.package_certificate );
     FreeAndNil( ini );
 
     result := 0;
