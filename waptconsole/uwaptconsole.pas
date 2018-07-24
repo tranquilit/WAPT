@@ -2428,8 +2428,21 @@ begin
 end;
 
 procedure TVisWaptGUI.ActPackagesForceInstallExecute(Sender: TObject);
+var
+  FocusedGrid:TSOGrid;
+  HostUUIDKeyname:String;
 begin
-  TriggerActionOnHostPackages(GridHostPackages,ExtractField(GridHosts.SelectedRows,'uuid'),
+  HostUUIDKeyname := 'uuid';
+  if GridHostPackages.Focused then
+    FocusedGrid := GridHostPackages
+  else  if GridHostsForPackage.Focused then
+  begin
+    FocusedGrid := GridHostsForPackage;
+    HostUUIDKeyname := 'host';
+  end
+  else
+    Exit;
+  TriggerActionOnHostPackages(FocusedGrid,ExtractField(FocusedGrid.SelectedRows,HostUUIDKeyname),
       'trigger_install_packages',rsConfirmPackageInstall,rsPackageInstallError,True);
 end;
 
@@ -2753,8 +2766,21 @@ begin
 end;
 
 procedure TVisWaptGUI.ActPackagesForgetExecute(Sender: TObject);
+var
+  FocusedGrid:TSOGrid;
+  HostUUIDKeyname:String;
 begin
-  TriggerActionOnHostPackages(GridHostPackages,ExtractField(GridHosts.SelectedRows,'uuid'),
+  HostUUIDKeyname := 'uuid';
+  if GridHostPackages.Focused then
+    FocusedGrid := GridHostPackages
+  else  if GridHostsForPackage.Focused then
+  begin
+    FocusedGrid := GridHostsForPackage;
+    HostUUIDKeyname := 'host';
+  end
+  else
+    Exit;
+  TriggerActionOnHostPackages(FocusedGrid,ExtractField(FocusedGrid.SelectedRows,HostUUIDKeyname),
     'trigger_forget_packages',rsConfirmHostForgetsPackages,rsForgetPackageError);
 end;
 
@@ -2941,14 +2967,40 @@ begin
 end;
 
 procedure TVisWaptGUI.ActPackagesInstallExecute(Sender: TObject);
+var
+  FocusedGrid:TSOGrid;
+  HostUUIDKeyname:String;
 begin
-  TriggerActionOnHostPackages(GridHostPackages,ExtractField(GridHosts.SelectedRows,'uuid'),
+  HostUUIDKeyname := 'uuid';
+  if GridHostPackages.Focused then
+    FocusedGrid := GridHostPackages
+  else  if GridHostsForPackage.Focused then
+  begin
+    FocusedGrid := GridHostsForPackage;
+    HostUUIDKeyname := 'host';
+  end
+  else
+    Exit;
+  TriggerActionOnHostPackages(FocusedGrid,ExtractField(FocusedGrid.SelectedRows,HostUUIDKeyname),
     'trigger_install_packages',rsConfirmPackageInstall,rsPackageInstallError);
 end;
 
 procedure TVisWaptGUI.ActPackagesRemoveExecute(Sender: TObject);
+var
+  FocusedGrid:TSOGrid;
+  HostUUIDKeyname:String;
 begin
-  TriggerActionOnHostPackages(GridHostPackages,ExtractField(GridHosts.SelectedRows,'uuid'),
+  HostUUIDKeyname := 'uuid';
+  if GridHostPackages.Focused then
+    FocusedGrid := GridHostPackages
+  else  if GridHostsForPackage.Focused then
+  begin
+    FocusedGrid := GridHostsForPackage;
+    HostUUIDKeyname := 'host';
+  end
+  else
+    Exit;
+  TriggerActionOnHostPackages(FocusedGrid,ExtractField(FocusedGrid.SelectedRows,HostUUIDKeyname),
     'trigger_remove_packages',rsConfirmRmPackagesFromHost,rsPackageRemoveError);
 end;
 
@@ -4051,14 +4103,30 @@ procedure TVisWaptGUI.GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: boolean; var ImageIndex: integer; var ImageList: TCustomImageList);
 var
-  install_status: ISuperObject;
+  reachable,install_status: ISuperObject;
   propname: String;
   aGrid:TSOGrid;
 begin
   aGrid := (Sender as TSOGrid);
   propName:=TSOGridColumn(aGrid.Header.Columns[Column]).PropertyName;
 
-  if propName='install_status' then
+  if propName='reachable' then
+  begin
+    ImageIndex:=-1;
+    reachable := aGrid.GetCellData(Node, 'reachable', Nil);
+    if (reachable<>Nil)then
+    begin
+      if (reachable.AsString = 'OK') then
+        ImageIndex := 4
+      else if (reachable.AsString = 'UNREACHABLE') or (reachable.AsString = 'UNKNOWN') or (reachable.AsString = 'DISCONNECTED') then
+        ImageIndex := 5
+      else
+        ImageIndex := 6;
+    end
+    else
+      ImageIndex := 6
+  end
+  else if propName='install_status' then
   begin
     install_status := aGrid.GetCellData(Node, 'install_status', nil);
     if (install_status <> nil) then
