@@ -27,6 +27,8 @@ type
 implementation
 
 uses
+  uwapt_ini,
+  IniFiles,
   uwizardconfigserver_data,
   tiscommon,
   uwizardutil;
@@ -44,9 +46,29 @@ var
   i   : integer;
   h   : String;
   sl  : TStringList;
+  ini : TIniFile;
+  r   : integer;
+  s   : String;
 begin
 
-  h := GetComputerName;
+
+  h := LowerCase(GetComputerName);
+
+  // Try from waptconsole.ini
+  r := wapt_ini_waptconsole( s );
+  if r = 0 then
+  begin
+    ini := TIniFile.Create( s );
+    try
+      s := ini.ReadString( INI_GLOBAL, INI_WAPT_SERVER, '' );
+      if Length(s) > 0 then
+        h := s;
+    finally
+      FreeAndNil(ini);
+    end;
+  end;
+
+
 
   // Server url
   self.rg_server_url .Items.Clear;
@@ -58,8 +80,9 @@ begin
     begin
       if 'localhost' = sl.Strings[i] then
         continue;
-      self.rg_server_url.Items.AddObject( sl.Strings[i], sl.Objects[i] );
-      if Pos( h, sl.Strings[i] ) <> 0 then
+      s := 'https://' + sl.Strings[i];
+      self.rg_server_url.Items.AddObject( s, sl.Objects[i] );
+      if Pos( h, s ) <> 0 then
         self.rg_server_url.ItemIndex := self.rg_server_url.Items.Count -1;
     end;
   end;
