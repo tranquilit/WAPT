@@ -518,7 +518,7 @@ def fileutcmtime(filename):
     if time.daylight:
         return os.path.getmtime(filename) + time.altzone
     else:
-        return os.path.getmtime(filename) + time.zone
+        return os.path.getmtime(filename) + time.timezone
 
 def fileisoutcdate(filename):
     """Returns last update date time from filename in UTC"""
@@ -865,7 +865,7 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         if time.daylight:
             file_datetime_local = file_datetime_utc - time.altzone
         else:
-            file_datetime_local = file_datetime_utc - time.zone
+            file_datetime_local = file_datetime_utc - time.timezone
         os.utime(target_fn,(file_datetime_local,file_datetime_local))
 
     # cache result
