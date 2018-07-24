@@ -85,6 +85,7 @@ begin
 
   data := m_wizard.data();
 
+  self.memo.Clear;
 
   // Stop server
   wizard_validate_waptserver_stop_services_no_fail( self.m_wizard, self.memo );
@@ -106,7 +107,7 @@ begin
   run_params.cmd_line := 'waptpython.exe waptserver\winsetup.py all';
   run_params.timout_ms:= TIMEOUT_MS;
   run_params.on_run_tick := @on_run_tick;
-  if not wizard_validate_run_command_sync( m_wizard, @run_params, 'Running post install scripts', 'Error while running post ', self.memo ) then
+  if not wizard_validate_run_command_sync( m_wizard, @run_params, 'Running post install scripts', 'Error while running post setup scripts', nil ) then
     exit;
 
 
