@@ -26,7 +26,6 @@ type
 
     m_data : TWizardConfigServerData;
 
-    function register_localhost(): integer;
 
   public
 
@@ -70,15 +69,14 @@ begin
   m_data.is_enterprise_edition := DMPython.IsEnterpriseEdition;
   m_data.check_certificates_validity := '0';
   m_data.verify_cert := '0';
+  m_data.wapt_server := 'http://localhost';
+  m_data.repo_url    := 'http://localhost/wapt';
 
 end;
 
 procedure TWizardConfigServer.FormShow(Sender: TObject);
 begin
 end;
-
-
-
 
 procedure TWizardConfigServer.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
@@ -87,28 +85,6 @@ begin
     self.launch_console();
 end;
 
-
-
-
-
-
-function TWizardConfigServer.register_localhost(): integer;
-var
-  params : TRunParametersSync;
-  r : integer;
-begin
-  self.SetValidationDescription( 'Register local machine');
-  params.cmd_line    := 'wapt-get.exe --direct register';
-  params.on_run_tick := nil;
-  params.timout_ms   := 60*1000;
-  r := run_sync( @params );
-  if r <> 0 then
-  begin
-    self.SetValidationDescription( 'An occurred occure while registered local machine' );
-    exit(r);
-  end;
-  exit(0);
-end;
 
 function TWizardConfigServer.data(): Pointer;
 begin

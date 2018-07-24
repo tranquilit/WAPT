@@ -182,6 +182,7 @@ function wapt_server_configure_firewall() : integer;
 function wapt_server_mongodb_to_postgresql() : integer;
 function wapt_server_installation( var path : String ) : integer;
 
+function wapt_register(): integer;
 
 
 function flip( a : TStringArray ) : TStringArray;
@@ -1797,6 +1798,23 @@ begin
   params^.visible := false;
   _show_loading_frame_threadsafe( PtrInt(params) );
 end;
+
+function wapt_register(): integer;
+var
+  params : TRunParametersSync;
+  r : integer;
+begin
+  params.cmd_line    := 'wapt-get.exe --direct register';
+  params.on_run_tick := nil;
+  params.timout_ms   := 60*1000;
+  r := run_sync( @params );
+  if r <> 0 then
+  begin
+    exit(r);
+  end;
+  exit(0);
+end;
+
 
 
 end.

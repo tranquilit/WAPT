@@ -145,6 +145,25 @@ begin
   if not wizard_validate_waptserver_ping( m_wizard, 'https://localhost', nil ) then
     exit;
 
+  // Force restart wapt service
+  self.m_wizard.SetValidationDescription( 'Restarting wapt service' );
+  r := wapt_service_restart();
+  if r <> 0 then
+  begin
+    self.m_wizard.show_validation_error( nil, 'Failed to restart wapt service' );
+    exit;
+  end;
+
+  // Force registration
+  self.m_wizard.SetValidationDescription( 'Registering local machine' );
+  r := wapt_register();
+  if r <> 0 then
+  begin
+    self.m_wizard.show_validation_error( nil, 'An error has occured while registering local machine' );
+    exit;
+  end;
+  self.m_wizard.ClearValidationDescription();
+
 
   bCanNext := true;
 
