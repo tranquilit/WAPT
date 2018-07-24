@@ -38,7 +38,7 @@ from waptserver.config import __version__
 
 from waptutils import datetime2isodate,ensure_list,ensure_unicode,Version,setloglevel
 
-from waptserver.utils import make_response,make_response_from_exception
+from waptserver.common import make_response,make_response_from_exception
 from waptserver.utils import EWaptAuthenticationFailure
 
 from waptserver.app import app

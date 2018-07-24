@@ -73,7 +73,6 @@ from passlib.hash import pbkdf2_sha256
 import ConfigParser
 from optparse import OptionParser
 
-from itsdangerous import TimedJSONWebSignatureSerializer
 from werkzeug.utils import secure_filename
 
 from flask import request, Flask, Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
@@ -95,15 +94,17 @@ from waptcrypto import sha256_for_file,sha256_for_data
 
 from waptutils import datetime2isodate,ensure_list,ensure_unicode,Version,setloglevel
 
-from waptserver.utils import make_response,make_response_from_exception,gzipped
 from waptserver.utils import EWaptAuthenticationFailure,EWaptForbiddden,EWaptHostUnreachable,EWaptMissingHostData
 from waptserver.utils import EWaptMissingParameter,EWaptSignalReceived,EWaptTimeoutWaitingForResult,EWaptUnknownHost
-from waptserver.utils import get_disk_space,jsondump,mkdir_p,utils_devel_mode,utils_set_devel_mode
+from waptserver.utils import get_disk_space,jsondump,mkdir_p
 from waptserver.utils import get_dns_domain,get_wapt_edition,get_wapt_exe_version,wapt_root_dir
+
+from waptserver.common import get_secured_token_generator,get_server_uuid
+from waptserver.common import proxy_host_request,make_response,make_response_from_exception
 
 from waptserver.app import app,socketio
 from waptserver.auth import check_auth,change_admin_password
-from waptserver.decorators import requires_auth,check_auth_is_provided,authenticate
+from waptserver.decorators import requires_auth,check_auth_is_provided,authenticate,gzipped
 
 import waptserver.config
 
@@ -169,15 +170,6 @@ def get_timezone():
     if user is not None:
         return user.timezone
 
-
-def get_server_uuid():
-    """Returns this server UUID as configured in configuration file waptserver.ini
-    """
-    server_uuid = app.conf.get('server_uuid', None)
-    return server_uuid
-
-def get_secured_token_generator():
-    return TimedJSONWebSignatureSerializer(app.conf['secret_key'], expires_in = app.conf['signature_clockskew'])
 
 @app.route('/')
 def index():
@@ -596,37 +588,6 @@ def allowed_file(filename):
         return False
 
 
-def sync_host_groups(entry):
-    """Update HostGroups table from Host Package depends.
-    Add / Remove host <-> group link based on entry.depends csv attribute
-
-    Args:
-        entry (PackageEntry): Host package entry
-
-    Returns
-        tuple: (added depends, removed depends)
-    """
-    with wapt_db.atomic() as trans:
-        try:
-            host_id = entry.package
-
-            # insert /delete depends as groups
-            if entry.depends:
-                depends = [s.strip() for s in entry.depends.split(',')]
-            else:
-                depends = []
-            old_groups = [h['group_name'] for h in HostGroups.select(HostGroups.group_name).where(HostGroups.host == host_id).dicts()]
-            to_delete = [g for g in old_groups if not g in depends]
-            to_add = [g for g in depends if not g in old_groups]
-            if to_delete:
-                HostGroups.delete().where((HostGroups.host == host_id) & (HostGroups.group_name.in_(to_delete))).execute()
-            if to_add:
-                HostGroups.insert_many([dict(host=host_id, group_name=group) for group in to_add]).execute() #pylint: disable=no-value-for-parameter
-            return (to_add,to_delete)
-        except IntegrityError  as e:
-            trans.rollback()
-            return (0,0)
-
 @app.route('/api/v3/packages')
 @requires_auth
 def localrepo_packages():
@@ -706,14 +667,14 @@ def upload_packages():
             # fix context on target file (otherwith tmp context is carried over)
             #logger.debug(subprocess.check_output('chcon -R -t httpd_sys_content_t %s' % target,shell=True))
             if entry.section == 'host':
-                (added,removed) = sync_host_groups(entry)
+                (added,removed) = HostGroups.sync_from_host_package(entry)
                 if added or removed:
                     Hosts.update(host_status='TO-UPGRADE').where(Hosts.uuid == entry.package).execute()
 
             return entry
 
         except Exception as e:
-            logger.debug(traceback.print_exc())
+            logger.debug(traceback.format_exc())
             logger.critical(u'Error uploading package %s: %s' % (target,e,))
             errors.append(target)
             if os.path.isfile(tmp_target):
@@ -814,7 +775,7 @@ def upload_host():
                                 hostpackagefile.save(tmp_target)
                                 entry = PackageEntry(waptfile=tmp_target)
 
-                            sync_host_groups(entry)
+                            HostGroups.sync_from_host_package(entry)
 
                             # get host cert to encrypt package with public key
                             if app.conf['encrypt_host_packages']:
@@ -841,7 +802,7 @@ def upload_host():
                             done.append(filename)
 
                         except Exception as e:
-                            logger.debug(traceback.print_exc())
+                            logger.debug(traceback.format_exc())
                             logger.critical(u'Error uploading package %s: %s' % (filename, e))
                             errors.append(filename)
                             trans.rollback()
@@ -969,7 +930,7 @@ def login():
     except Exception as e:
         if 'auth_token' in session:
             del session['auth_token']
-        logger.debug(traceback.print_exc())
+        logger.debug(traceback.format_exc())
         return make_response_from_exception(e)
 
 
@@ -1131,136 +1092,6 @@ def reset_hosts_sid():
     except Exception as e:
         return make_response_from_exception(e)
     return make_response(msg=message)
-
-
-def proxy_host_request(request, action):
-    """Proxy a waptconsole action to wapt clients using websockets
-
-    Args:
-        uuid: can be a list or a single uuid
-        notify_user: 0/1
-        notify_server: 0/1
-
-    Returns:
-        dict:
-            'result':
-                'success' (list)
-                'errors' (list)
-            'msg' (str)
-            'success'(bool)
-            'request_time' (float)
-            'error_code'
-    """
-    try:
-        start_time = time.time()
-        all_args = {k: v for k, v in request.args.iteritems()}
-        if request.json:
-            all_args.update(request.json)
-
-        uuids = ensure_list(all_args['uuid'])
-        del(all_args['uuid'])
-        timeout = float(request.args.get('timeout', app.conf.get('clients_read_timeout', 5)))
-
-        result = dict(success=[], errors=[])
-        tasks = []
-        for uuid in uuids:
-            try:
-                host_data = Hosts\
-                    .select(Hosts.uuid, Hosts.computer_fqdn,
-                            Hosts.server_uuid,
-                            Hosts.listening_address,
-                            Hosts.listening_port,
-                            Hosts.listening_protocol,
-                            Hosts.listening_timestamp,
-                            )\
-                    .where((Hosts.server_uuid == get_server_uuid()) & (Hosts.uuid == uuid) & (~Hosts.listening_address.is_null()) & (Hosts.listening_protocol == 'websockets'))\
-                    .dicts()\
-                    .first(1)
-
-                if host_data and host_data.get('listening_address', None):
-                    msg = u''
-                    logger.info(
-                        'Launching %s with args %s for %s at address %s...' %
-                        (action, all_args, uuid, host_data['listening_address']))
-
-                    args = dict(all_args)
-                    sid = host_data['listening_address']
-                    computer_fqdn = host_data['computer_fqdn']
-
-                    def emit_action(sid, uuid, action, action_args, computer_fqdn, timeout=5):
-                        try:
-                            got_result = []
-
-                            def result_callback(data):
-                                got_result.append(data)
-
-                            logger.debug(u'Emit %s to %s (%s)' % (action, uuid, computer_fqdn))
-                            socketio.emit(action, action_args, room=sid, callback=result_callback)
-                            # with for asynchronous answer...
-                            wait_loop = timeout * 20
-                            while not got_result:
-                                wait_loop -= 1
-                                if wait_loop < 0:
-                                    raise EWaptTimeoutWaitingForResult('Timeout, client did not send result within %s s' % timeout)
-                                socketio.sleep(0.05)
-
-                            # action succedded
-                            result['success'].append(
-                                dict(
-                                    uuid=uuid,
-                                    msg=msg,
-                                    computer_fqdn=computer_fqdn,
-                                    result=got_result[0],
-                                ))
-                        except Exception as e:
-                            result['errors'].append(
-                                dict(
-                                    uuid=uuid,
-                                    msg='%s' % repr(e),
-                                    computer_fqdn='',
-                                ))
-                    if sid:
-                        tasks.append(socketio.start_background_task(
-                            emit_action, sid=sid, uuid=uuid, action=action, action_args=args, computer_fqdn=computer_fqdn))
-
-                else:
-                    result['errors'].append(
-                        dict(
-                            uuid=uuid,
-                            msg='Host %s is not registered or not connected wia websockets' % uuid,
-                            computer_fqdn='',
-                        ))
-            except Exception as e:
-                result['errors'].append(
-                    dict(
-                        uuid=uuid,
-                        msg='Host %s error %s' % (uuid, repr(e)),
-                        computer_fqdn='',
-                    ))
-
-        # wait for all background tasks to terminate or timeout...
-        # assume the timeout should be longer if more hosts to perform
-        wait_loop = timeout * len(tasks)
-        while True:
-            running = [t for t in tasks if t.is_alive()]
-            if not running:
-                break
-            wait_loop -= 1
-            if wait_loop < 0:
-                break
-            socketio.sleep(0.05)
-
-        msg = ['Success : %s, Errors: %s' % (len(result['success']), len(result['errors']))]
-        if result['errors']:
-            msg.extend(['%s: %s' % (e['computer_fqdn'], e['msg'])
-                        for e in result['errors']])
-
-        return make_response(result,
-                             msg='\n- '.join(msg),
-                             success=len(result['success']) > 0,
-                             request_time=time.time() - start_time)
-    except Exception as e:
-        return make_response_from_exception(e)
 
 
 @app.route('/api/v3/trigger_wakeonlan', methods=['HEAD','POST'])
@@ -1822,8 +1653,7 @@ def host_data():
         msg = '{} data for host {}'.format(field, uuid)
 
     except Exception as e:
-        if utils_devel_mode:
-            raise
+        logger.debug(traceback.format_exc())
         return make_response_from_exception(e)
 
     if result is None:
@@ -2229,8 +2059,6 @@ if __name__ == '__main__':
         upgrade_db_structure()
     except:
         init_db()
-
-    utils_set_devel_mode(options.devel)
 
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
     setloglevel(logger, app.conf['loglevel'])

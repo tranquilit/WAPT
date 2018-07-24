@@ -300,27 +300,43 @@ class Packages(WaptBaseModel):
     def from_control(cls,entry):
         package = cls(** dict((a,cls._as_attribute(a,v)) for (a,v) in entry.as_dict().iteritems() if a in cls._meta.columns))
 
+
+    @classmethod
+    def update_from_control(cls,entry):
+        """Create or update a single package entry in database given a PackageEntry
+
+        """
+        key = {'package':entry.package,'version':entry.version,'architecture':entry.architecture,'locale':entry.locale,'maturity':entry.maturity}
+        (rec,_isnew) = Packages.get_or_create(**key)
+        for (a,v) in entry.as_dict().iteritems():
+            if a in cls._meta.columns and not a in key:
+                new_value = cls._as_attribute(a,v)
+                if new_value != getattr(rec,a):
+                    setattr(rec,a,cls._as_attribute(a,v))
+        if rec.is_dirty():
+            rec.save()
+        return (rec,_isnew)
+
     @classmethod
     def update_from_repo(cls,repo):
-        """
+        """Update Packages table with all the Packages entries from repo WaptRepo
+
         Args:
             repo (WaptRepo):
         Returns:
             list of PackagEntry added to the table
         """
         result = []
-        for pe in repo.packages:
-            key = {'package':pe.package,'version':pe.version,'architecture':pe.architecture,'locale':pe.locale,'maturity':pe.maturity}
-            (rec,_isnew) = Packages.get_or_create(**key)
-            for (a,v) in pe.as_dict().iteritems():
-                if a in cls._meta.columns and not a in key:
-                    new_value = cls._as_attribute(a,v)
-                    if new_value != getattr(rec,a):
-                        setattr(rec,a,cls._as_attribute(a,v))
-            if rec.is_dirty():
-                rec.save()
-            if _isnew:
-                result.append(pe)
+        with cls._meta.database.atomic() as trans:
+            try:
+                for pe in repo.packages():
+                    (rec,_isnew) = cls.update_from_control(pe)
+                    if _isnew:
+                        result.append(pe)
+                trans.commit()
+            except:
+                trans.rollback()
+                raise
         return result
 
 
@@ -354,6 +370,38 @@ class HostGroups(WaptBaseModel):
 
     def __repr__(self):
         return '<HostGroups uuid=%s group_name=%s>' % (self.uuid, self.group_name)
+
+    @classmethod
+    def sync_from_host_package(cls,entry):
+        """Update HostGroups table from Host Package depends.
+        Add / Remove host <-> group link based on entry.depends csv attribute
+
+        Args:
+            entry (PackageEntry): Host package entry
+
+        Returns
+            tuple: (added depends, removed depends)
+        """
+        with cls._meta.database.atomic() as trans:
+            try:
+                host_id = entry.package
+
+                # insert /delete depends as groups
+                if entry.depends:
+                    depends = [s.strip() for s in entry.depends.split(',')]
+                else:
+                    depends = []
+                old_groups = [h['group_name'] for h in HostGroups.select(HostGroups.group_name).where(HostGroups.host == host_id).dicts()]
+                to_delete = [g for g in old_groups if not g in depends]
+                to_add = [g for g in depends if not g in old_groups]
+                if to_delete:
+                    HostGroups.delete().where((HostGroups.host == host_id) & (HostGroups.group_name.in_(to_delete))).execute()
+                if to_add:
+                    HostGroups.insert_many([dict(host=host_id, group_name=group) for group in to_add]).execute() #pylint: disable=no-value-for-parameter
+                return (to_add,to_delete)
+            except IntegrityError  as e:
+                trans.rollback()
+                return (0,0)
 
 
 class WsusUpdates(WaptBaseModel):
@@ -776,7 +824,7 @@ class ColumnDef(object):
     """Holds definitin of column for updatable remote GUI table
     """
 
-    def __init__(self,field,in_update=None,in_where=None,in_key=None):
+    def __init__(self,field,in_update=None,in_where=None,in_key=None,calc_field_name=None):
         self.field = field
         if in_update is not None:
             self.in_update = in_update
@@ -790,32 +838,41 @@ class ColumnDef(object):
         if in_where is None:
             self.in_where = not isinstance(field,ForeignKeyField) and not isinstance(field,Function)
 
-        self.in_key = field.primary_key
+        self.in_key = field and field.primary_key
         self.visible = False
         self.default_width = None
+        self.calc_field_name = calc_field_name
+        if self.calc_field_name is None and self.field is not None:
+            self.calc_field_name = getattr(self.field,'_alias',self.self.field.name)
 
     def as_metadata(self):
         result = dict()
         if isinstance(self.field,Function):
             result = {'name':getattr(self.field,'_alias',self.field.name),'org_name':self.field.name,'type':self.field._node_type}
         else:
-            result = {'name':getattr(self.field,'_alias',self.field.name),
-                'field_name':self.field.name,
-                'type':self.field.field_type,
-                'table_name':self.field.model._meta.table_name,
-                }
+            if self.field:
+                result = {'name':getattr(self.field,'_alias',self.field.name),
+                    'field_name':self.field.name,
+                    'type':self.field.field_type,
+                    'table_name':self.field.model._meta.table_name,
+                    }
+                attlist = ('primary_key','description','help_text','choice',
+                            'default','sequence','max_length')
+                for att in attlist:
+                    if hasattr(self.field,att):
+                        value = getattr(self.field,att)
+                        if value is not None and not isinstance(value,Function):
+                            if callable(value):
+                                result[att] = value()
+                            else:
+                                result[att] = value
 
-            attlist = ('primary_key','description','help_text','choice',
-                        'default','sequence','max_length')
-            for att in attlist:
-                if hasattr(self.field,att):
-                    value = getattr(self.field,att)
-                    if value is not None and not isinstance(value,Function):
-                        if callable(value):
-                            result[att] = value()
-                        else:
-                            result[att] = value
-
+            elif self.calc_field_name:
+                result = {'name':self.calc_field_name,
+                    'field_name':self.calc_field_name,
+                    'type':'calc',
+                    'table_name':None,
+                    }
 
         for att in ('visible','default_width'):
             value = getattr(self,att)
@@ -825,7 +882,7 @@ class ColumnDef(object):
                 else:
                     result[att] = value
 
-        result['required'] = not self.field.is_null()
+        result['required'] = self.field and not self.field.is_null()
         return result
 
     def to_client(self,data):
@@ -851,47 +908,43 @@ class TableProvider(object):
     def __init__(self,query=None,model=None,columns=None,where=None):
         self.query = query
         self.model = model
-        self.columns = columns
+        self._columns = columns
         self.where = where
+        self._columns_idx = None
 
-        if (not self.model or not self.columns) and self.query:
-            (fields,joins) = self.query.get_query_meta()
-            if not self.model:
-                if len(joins) != 1:
-                    raise Exception('Unable to guess model from query, please provide a model argument')
+    @property
+    def columns(self):
+        if not self._columns:
+            self._columns = []
+            if self.model is not None:
                 self.model = joins.keys()[0]
-            if not self.columns:
-                self.columns = []
-                for field in fields:
-                    column = ColumnDef(field)
-                    self.columns.append(column)
-
-        if not self.query and not self.model:
-            raise Exception('Either query or model must be supplied')
-
-        if not self.columns and self.model:
-            if not self.columns:
-                self.columns = []
                 for field in self.model._meta.sorted_fields:
                     column = ColumnDef(field)
-                    self.columns.append(column)
+                    self._columns.append(column)
+            elif self.query is not None:
+                cursor = self.query.execute()
+                cursor._initialize_columns()
+                col = 0
+                for field in cursor.fields:
+                    column = ColumnDef(field,calc_field_name=cursor.columns[col])
+                    col +=1
+                    self._columns.append(column)
+        return self._columns
 
-        self._columns_idx = None
 
     def get_data(self,start=0,count=None):
         """Build query, retrieve rows"""
 
         fields_list = []
         query = self.query
-        if not query and self.model:
+        if query is None and self.model is not None:
             query = self.model.select(* [f.field for f in self.columns])
             if self.where:
                 query = query.where(self.where)
 
-        columns_names = [column.field.column_name for column in self.columns]
         rows = []
         for row in query.dicts():
-            rows.append([column.to_client(row[getattr(column.field,'_alias',column.field.name)]) for column in self.columns])
+            rows.append([column.to_client(row[column.calc_field_name]) for column in self.columns])
 
         return dict(
             metadata = [c.as_metadata() for c in self.columns],
@@ -993,9 +1046,9 @@ def init_db(drop=False):
     except:
         wapt_db.rollback()
     if drop:
-        for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,HostWuaStatus,WsusDownloadTasks]):
+        for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,HostWuaStatus,WsusDownloadTasks,Packages]):
             table.drop_table(fail_silently=True)
-    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,HostWuaStatus,WsusDownloadTasks], safe=True)
+    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,HostWuaStatus,WsusDownloadTasks,Packages], safe=True)
 
     if get_db_version() == None:
         # new database install, we setup the db_version key
@@ -1246,6 +1299,7 @@ def upgrade_db_structure():
             #wapt_db.create_tables([HostWuaStatus],safe=True)
 
             WsusDownloadTasks.create_table(fail_silently=True)
+            Packages.create_table(fail_silently=True)
 
             opes = []
             columns = [c.name for c in wapt_db.get_columns('hosts')]

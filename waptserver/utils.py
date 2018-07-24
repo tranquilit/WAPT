@@ -43,13 +43,9 @@ import functools
 __all__ = [
     'wapt_root_dir',
     'mkdir_p',
-    'utils_set_devel_mode',
-    'utils_devel_mode',
     'get_disk_space',
     'logger',
     'setloglevel',
-    'make_response',
-    'make_response_from_exception',
     'get_wapt_edition',
     'get_dns_domain',
     'get_wapt_exe_version',
@@ -64,8 +60,6 @@ __all__ = [
     'EWaptTimeoutWaitingForResult',
 ]
 
-utils_devel_mode = False
-
 logger = logging.getLogger('waptserver')
 
 try:
@@ -77,11 +71,6 @@ except:
     wapt_root_dir = u'c:/tranquilit/wapt'
 
 
-def utils_set_devel_mode(devel):
-    global utils_devel_mode
-    utils_devel_mode = devel
-
-
 def mkdir_p(path):
     import errno
     try:
@@ -91,7 +80,6 @@ def mkdir_p(path):
             pass
         else:
             raise
-
 
 def get_disk_space(directory):
     ret = None
@@ -119,80 +107,6 @@ def setloglevel(logger, loglevel):
         if not isinstance(numeric_level, int):
             raise ValueError('Invalid log level: {}'.format(loglevel))
         logger.setLevel(numeric_level)
-
-
-def gzipped(f):
-    @functools.wraps(f)
-    def view_func(*args, **kwargs):
-        @flask.after_this_request
-        def zipper(response):
-            accept_encoding = flask.request.headers.get('Accept-Encoding', '')
-
-            if 'gzip' not in accept_encoding.lower():
-                return response
-
-            response.direct_passthrough = False
-
-            if (response.status_code < 200 or
-                response.status_code >= 300 or
-                'Content-Encoding' in response.headers):
-                return response
-            gzip_buffer = IO()
-            gzip_file = gzip.GzipFile(mode='wb',
-                                      fileobj=gzip_buffer)
-            gzip_file.write(response.data)
-            gzip_file.close()
-
-            response.data = gzip_buffer.getvalue()
-            response.headers['Content-Encoding'] = 'gzip'
-            response.headers['Vary'] = 'Accept-Encoding'
-            response.headers['Content-Length'] = len(response.data)
-
-            return response
-
-        return f(*args, **kwargs)
-
-    return view_func
-
-# API V2 #####
-def make_response(result={}, success=True, error_code='', msg='', status=200, request_time=None):
-    data = dict(
-        success=success,
-        msg=msg,
-    )
-    if not success:
-        data['error_code'] = error_code
-    else:
-        data['result'] = result
-    data['request_time'] = request_time
-    return flask.Response(
-        response=jsondump(data),
-        status=status,
-        mimetype='application/json')
-
-
-def make_response_from_exception(exception, error_code='', status=200):
-    """Return a error flask http response from an exception object
-        success : False
-        msg : message from exception
-        error_code : classname of exception if not provided
-        status: 200 if not provided
-    """
-    if not error_code:
-        error_code = type(exception).__name__.lower()
-    data = dict(
-        success=False,
-        error_code=error_code
-    )
-    if utils_devel_mode:
-        raise exception
-    else:
-        #data['msg'] = u'Error on server: %s\n%s' % (repr(exception),traceback.format_exc())
-        data['msg'] = u'Error on server:\n%s' % (repr(exception))
-    return flask.Response(
-        response=jsondump(data),
-        status=status,
-        mimetype='application/json')
 
 
 def get_dns_domain():
@@ -278,5 +192,7 @@ class EWaptAuthenticationFailure(Exception):
 
 class EWaptTimeoutWaitingForResult(Exception):
     pass
+
+
 
 
