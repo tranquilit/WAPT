@@ -77,6 +77,8 @@ begin
 
   self.ed_package_prefix.Text := 'test';
 
+  self.ed_key.Filter := 'Private key file|*.pem';
+
   // Fill from waptconsole.ini
   r := wapt_ini_waptconsole( s );
   if r = 0 then
