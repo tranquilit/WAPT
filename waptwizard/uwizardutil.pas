@@ -1638,6 +1638,22 @@ var
   handles : array[0..2, 0..1] of THandle;
   rr : integer;
 
+  procedure __process_pipes();
+  begin
+    // Read output
+    rr := readfile_available( handles[O,R], buffer, BUFFER_SIZE );
+    if rr > 0 then
+      ss.Write( buffer, rr );
+
+    // Read eror
+    rr := readfile_available( handles[E,R], buffer, BUFFER_SIZE );
+    if rr > 0 then
+      ss.Write( buffer, rr );
+
+    if Assigned( params^.on_run_tick ) then
+      params^.on_run_tick( TObject(ss) );
+  end;
+
 begin
   ss := nil;
 
@@ -1676,18 +1692,7 @@ begin
   while (params^.timout_ms > 0) do
   begin
 
-    // Read output
-    rr := readfile_available( handles[O,R], buffer, BUFFER_SIZE );
-    if rr > 0 then
-      ss.Write( buffer, rr );
-
-    // Read eror
-    rr := readfile_available( handles[E,R], buffer, BUFFER_SIZE );
-    if rr > 0 then
-      ss.Write( buffer, rr );
-
-    if Assigned( params^.on_run_tick ) then
-      params^.on_run_tick( TObject(ss) );
+    __process_pipes();
 
     dw := WaitForSingleObject( pi.hProcess, WAIT_DURATION );
     if WAIT_TIMEOUT = dw then
@@ -1699,10 +1704,14 @@ begin
 
   end;
 
-
   // Terminate process
   if params^.timout_ms < 1 then
     TerminateProcess( pi.hProcess, UINT(ERROR_CANCELLED) );
+
+
+  __process_pipes();
+
+  b := GetExitCodeProcess(pi.hProcess, &dw);
 
 
 
@@ -1711,6 +1720,9 @@ begin
   CloseHandle( handles[E,R] );
 
   FreeAndNil(ss);
+
+  if b then
+    exit(dw);
 
   exit(0);
 
