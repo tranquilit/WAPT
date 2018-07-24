@@ -50,7 +50,7 @@ procedure TWizardConfigServer_Console.wizard_show();
 begin
   inherited;
 
-  self.cb_configure_console.SetFocus;
+  self.m_wizard.WizardButtonPanel.NextButton.SetFocus;
 
 end;
 

@@ -89,7 +89,7 @@ begin
   sl.Free;
 
 
-  self.rg_server_url.SetFocus;
+  self.m_wizard.WizardButtonPanel.NextButton.SetFocus;
 
 end;
 

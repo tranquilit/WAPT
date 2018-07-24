@@ -20,6 +20,7 @@ type
   private
 
   public
+  procedure wizard_load(w: TWizard); override; final;
     procedure wizard_show(); override; final;
     procedure wizard_next(var bCanNext: boolean); override; final;
 
@@ -34,17 +35,22 @@ uses
 
 { TWizardConfigServer_Console_KeyOption }
 
+procedure TWizardConfigServer_Console_KeyOption.wizard_load(w: TWizard);
+begin
+  inherited wizard_load(w);
+
+  self.rb_use_existing_key.Checked := true;
+
+end;
+
 procedure TWizardConfigServer_Console_KeyOption.wizard_show();
 begin
   inherited wizard_show();
 
   self.rb_use_existing_key.TabOrder                       := 0;
   self.rb_create_new_key.TabOrder                         := 1;
-  self.m_wizard.WizardButtonPanel.NextButton.TabOrder     := 2;
-  self.m_wizard.WizardButtonPanel.PreviousButton.TabOrder := 3;
-  self.m_wizard.WizardButtonPanel.CancelButton.TabOrder   := 4;
 
-  self.rb_use_existing_key.SetFocus;
+  self.m_wizard.WizardButtonPanel.NextButton.SetFocus;
 end;
 
 procedure TWizardConfigServer_Console_KeyOption.wizard_next(var bCanNext: boolean);
