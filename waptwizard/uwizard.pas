@@ -265,6 +265,14 @@ procedure TWizard.WizardManagerPageLoad(Sender: TObject;  Page: TWizardPage);
       TDirectoryEdit(c).OnExit   := @OnEditExit;
     end;
 
+    if c is TFileNameEdit then
+    begin
+      TFileNameEdit(c).OnClick  := @OnEditClick;
+      TFileNameEdit(c).OnKeyDown:= @OnEditKeyDown;
+      TFileNameEdit(c).OnEnter  := @OnEditEnter;
+      TFileNameEdit(c).OnExit   := @OnEditExit;
+    end;
+
     for i := 0 to c.ControlCount -1  do
     begin
       if c.Controls[i] is TWinControl then
