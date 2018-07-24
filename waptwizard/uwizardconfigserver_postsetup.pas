@@ -142,7 +142,7 @@ begin
   end;
 
   // ping
-  if not wizard_validate_waptserver_ping( m_wizard, data^.wapt_server, nil ) then
+  if not wizard_validate_waptserver_ping( m_wizard, 'https://localhost', nil ) then
     exit;
 
 
