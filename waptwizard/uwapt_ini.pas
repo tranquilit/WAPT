@@ -26,6 +26,11 @@ const
   INI_WAPT_USER                           : String = 'wapt_user';
   INI_WAPT_PASSWORD                       : String = 'wapt_password';
   INI_WAPTWUA_FOLDER                      : String = 'waptwua_folder';
+  INI_SEND_USAGE_REPORT                   : String = 'send_usage_report';
+  INI_USE_HOSTPACKAGE                     : String = 'use_hostpackages';
+  INI_USE_KERBEROS                        : String = 'use_kerberos';
+
+
 
   INI_WAPTTEMPLATES                       : String = 'wapt-templates';
 
