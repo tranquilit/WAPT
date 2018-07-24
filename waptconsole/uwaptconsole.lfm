@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 350
+  Left = 344
   Height = 721
-  Top = 108
+  Top = 106
   Width = 1159
   AllowDropFiles = True
   Caption = 'WAPT console'
@@ -25,9 +25,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 558
     Top = 0
     Width = 1159
-    ActivePage = pgInventory
+    ActivePage = pgWindowsUpdates
     Align = alClient
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -4208,6 +4208,33 @@ object VisWaptGUI: TVisWaptGUI
               Text = 'download_urls'
               Width = 100
               PropertyName = 'download_urls'
+            end          
+            item
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+              Position = 19
+              Text = 'updated_on'
+              Width = 100
+              PropertyName = 'updated_on'
+            end          
+            item
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+              Position = 20
+              Text = 'updated_by'
+              Width = 100
+              PropertyName = 'updated_by'
+            end          
+            item
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+              Position = 21
+              Text = 'update_type'
+              Width = 100
+              PropertyName = 'update_type'
+            end          
+            item
+              Position = 22
+              Text = 'Downloaded on'
+              Width = 159
+              PropertyName = 'downloaded_on'
             end>
           Header.DefaultHeight = 17
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
@@ -6563,6 +6590,8 @@ object VisWaptGUI: TVisWaptGUI
     object ActWUADownloadSelectedUpdate: TAction
       Category = 'wua'
       Caption = 'Download selected'
+      OnExecute = ActWUADownloadSelectedUpdateExecute
+      OnUpdate = ActWUADownloadSelectedUpdateUpdate
     end
     object ActWUAAllowSelectedUpdates: TAction
       Category = 'wua'

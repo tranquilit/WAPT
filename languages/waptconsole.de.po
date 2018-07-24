@@ -4897,6 +4897,10 @@ msgstr ""
 msgid "Are you sure you want to restart waptservice on %d hosts ?"
 msgstr ""
 
+#: uwaptconsoleres.rsconfirmwuadownload
+msgid "Are you sure you want to download %d Windows updates on the server ?"
+msgstr ""
+
 #: uwaptconsoleres.rsdefaultusagestatsurl
 msgid "http://wapt.tranquil.it/usage_stats"
 msgstr "http://wapt.tranquil.it/usage_stats"

@@ -4726,15 +4726,20 @@ var
   PackageName: String;
   HostPackagesStatus: ISuperObject;
 begin
-  PackageName := GridPackages.FocusedRow.S['package'];
-  if CBShowHostsForSofts.Checked then
+  if GridPackages.FocusedRow <> Nil then
   begin
-    HostPackagesStatus := WAPTServerJsonGet('api/v3/hosts_for_package?package=%s&limit=%d',[PackageName,HostsLimit]);
-    if HostPackagesStatus.B['success'] then
-      GridHostsForPackage.Data := HostPackagesStatus['result']
-    else
-      GridHostsForPackage.Data := Nil;
-  end;
+    PackageName := GridPackages.FocusedRow.S['package'];
+    if CBShowHostsForSofts.Checked then
+    begin
+      HostPackagesStatus := WAPTServerJsonGet('api/v3/hosts_for_package?package=%s&limit=%d',[PackageName,HostsLimit]);
+      if HostPackagesStatus.B['success'] then
+        GridHostsForPackage.Data := HostPackagesStatus['result']
+      else
+        GridHostsForPackage.Data := Nil;
+    end;
+  end
+  else
+    GridHostsForPackage.Data := Nil;
 end;
 
 

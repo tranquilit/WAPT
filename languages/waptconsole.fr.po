@@ -2900,6 +2900,10 @@ msgstr "Êtes-vous sûr de vouloir proposer l'installation des paquets sur %s ma
 msgid "Are you sure you want to restart waptservice on %d hosts ?"
 msgstr "Êtes vous sûr de vouloir redémarrer waptservice sur %d machines ?"
 
+#: uwaptconsoleres.rsconfirmwuadownload
+msgid "Are you sure you want to download %d Windows updates on the server ?"
+msgstr ""
+
 #: uwaptconsoleres.rsdefaultusagestatsurl
 msgid "http://wapt.tranquil.it/usage_stats"
 msgstr ""

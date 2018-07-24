@@ -36,9 +36,6 @@ import pefile
 
 from waptutils import jsondump
 
-from cStringIO import StringIO as IO
-import gzip
-import functools
 
 __all__ = [
     'wapt_root_dir',

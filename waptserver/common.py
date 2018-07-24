@@ -26,12 +26,15 @@ import sys
 import platform
 import time
 import logging
+import traceback
+
+from flask import request, Flask, Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
+from itsdangerous import TimedJSONWebSignatureSerializer
 
 from waptserver.config import __version__
 from waptserver.app import app,socketio
-from itsdangerous import TimedJSONWebSignatureSerializer
 from waptserver.model import Hosts
-from waptutils import ensure_list,ensure_unicode
+from waptutils import jsondump,ensure_list,ensure_unicode
 from waptserver.utils import EWaptMissingParameter,EWaptSignalReceived,EWaptTimeoutWaitingForResult,EWaptUnknownHost
 
 logger = logging.getLogger()
@@ -55,7 +58,7 @@ def make_response(result={}, success=True, error_code='', msg='', status=200, re
     else:
         data['result'] = result
     data['request_time'] = request_time
-    return flask.Response(
+    return Response(
         response=jsondump(data),
         status=status,
         mimetype='application/json')
@@ -74,12 +77,11 @@ def make_response_from_exception(exception, error_code='', status=200):
         success=False,
         error_code=error_code
     )
-    if utils_devel_mode:
-        raise exception
-    else:
-        #data['msg'] = u'Error on server: %s\n%s' % (repr(exception),traceback.format_exc())
-        data['msg'] = u'Error on server:\n%s' % (repr(exception))
-    return flask.Response(
+
+    logger.debug(traceback.format_exc())
+
+    data['msg'] = u'Error on server:\n%s' % (repr(exception))
+    return Response(
         response=jsondump(data),
         status=status,
         mimetype='application/json')

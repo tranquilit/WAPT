@@ -93,6 +93,8 @@ resourcestring
   rsConfirmHostsWaptWUADownload = 'Are you sure you want to scan and download Windows updates on %d hosts ?';
   rsConfirmHostsWaptWUAInstall = 'Are you sure you want to scan and install Windows updates on %d hosts ?';
 
+  rsConfirmWUADownload = 'Are you sure you want to download %d Windows updates on the server ?';
+
   rsConfirmGPUpdate = 'Are you sure you want to update Group Policies status on %d hosts ?';
   rsRunningGPUpdate = 'Running GPUpdate';
   rsConfirmWaptExit = 'Are you sure you want to propose Packages Upgrades on %d hosts ?';

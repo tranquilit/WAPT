@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.5.1.3"
+__version__ = "1.6.2.2"
 import logging
 import sys
 import tempfile
@@ -1123,15 +1123,13 @@ def test_wua():
     from waptenterprise.waptwua import client
     w = Wapt()
     with client.WaptWUA(w) as c:
-        print(c.download_updates())
-        print(c.scan_updates_status())
+        print(c.stored_waptwua_status())
+        print(c.scan_updates_status(force=True))
+        #print(c.download_updates())
 
-        missing = []
-        for update in c.updates():
-            if not update.IsInstalled and not update.IsHidden:
-                missing.extend(c.get_downloads_for_update(update))
-        print(missing)
-
+def test_update_status():
+    w = Wapt(config_filename=r'C:\Users\htouvet\AppData\Local\waptconsole\localserver.ini' )
+    print(w.update_server_status(force=1))
 
 
 def test_discarded():
@@ -1169,10 +1167,59 @@ def test_wua_single_install():
         c.install_updates()
 
 
+def test_make_package_template():
+    w = Wapt()
+    r = w.make_package_template(r'C:\Users\htouvet\Downloads\Dell-Command-Configure_2KRXV_WIN_4.1.0.478_A00.EXE')
+
+
+def test_download_wsusscan():
+    from waptserver.model import *
+    from waptenterprise.waptserver.wsus_tasks import *
+    load_db_config()
+    init_db()
+    huey.always_eager = True
+    download_wsusscan()
+    print(list(WsusDownloadTasks.select().order_by(WsusDownloadTasks.started_on).dicts()))
+
+def test_sync_packages_table():
+    from waptpackage import *
+    from waptserver.model import *
+    load_db_config(waptserver.config.load_config('c:/wapt/conf/waptserver.ini'))
+    init_db()
+    r = WaptRemoteRepo('http://srvwapt.ad.tranquil.it/wapt')
+    print(Packages.update_from_repo(r))
+    return
+
+def test_provider():
+    from waptpackage import *
+    from waptserver.model import *
+    #logging.basicConfig()
+    #logger = logging.getLogger()
+    #logger.setLevel(logging.DEBUG)
+    load_db_config(waptserver.config.load_config('c:/wapt/conf/waptserver.ini'))
+    init_db()
+    #prov = TableProvider(Packages.select(Packages.package,fn.count('')).group_by(Packages.package))
+    #print(prov.get_data())
+    #prov = TableProvider(Packages.select(Packages.package,Packages.version))
+    #print(prov.get_data())
+
+    prov = TableProvider(
+            Packages
+                .select(Packages.package,Packages.version,fn.count(HostPackagesStatus.host))
+                .join(HostPackagesStatus,JOIN.RIGHT_OUTER,
+                    on=((Packages.package == HostPackagesStatus.package) & (Packages.version == HostPackagesStatus.version)))
+                .group_by(Packages.package,Packages.version)
+                )
+    print(prov.get_data())
+
 if __name__ == '__main__':
     #gen_perso('htouvet',email='htouvet@tranquil.it')
     #test_discarded()
     #test_wua()
+    #test_update_status()
+    #test_download_wsusscan()
+    #test_sync_packages_table()
+    test_provider()
     #install_host()
     #build_error()
     #test_packagenewestversion()
@@ -1181,7 +1228,9 @@ if __name__ == '__main__':
     #test_waptinstalllog()
     #test_install_uninstall()
     #test_package_request()
-    test_wua_single_install()
+    #test_wua_single_install()
+    #test_make_package_template()
+
     sys.exit(0)
 
     setup_test()

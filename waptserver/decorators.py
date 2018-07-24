@@ -25,7 +25,10 @@ from waptserver.config import __version__
 import functools
 import logging
 
-from flask import request, Flask, Response, session, g, redirect, url_for, abort, render_template, flash
+from flask import request, Flask, Response, session, g, redirect, url_for, abort, render_template, flash,after_this_request
+
+from cStringIO import StringIO as IO
+import gzip
 
 from waptserver.app import app
 from waptserver.auth import check_auth
@@ -91,9 +94,9 @@ def check_auth_is_provided(f):
 def gzipped(f):
     @functools.wraps(f)
     def view_func(*args, **kwargs):
-        @flask.after_this_request
+        @after_this_request
         def zipper(response):
-            accept_encoding = flask.request.headers.get('Accept-Encoding', '')
+            accept_encoding = request.headers.get('Accept-Encoding', '')
 
             if 'gzip' not in accept_encoding.lower():
                 return response
