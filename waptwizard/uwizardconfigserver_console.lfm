@@ -1,59 +1,17 @@
 inherited WizardConfigServer_Console: TWizardConfigServer_Console
-  Height = 237
-  Width = 655
-  AutoSize = True
-  ClientHeight = 237
-  ClientWidth = 655
-  DesignLeft = 1144
-  DesignTop = 273
-  object lbl_server_url: TLabel[0]
-    Left = 4
-    Height = 15
-    Top = 4
-    Width = 55
-    Caption = 'Server url :'
-    ParentColor = False
-  end
-  object ed_server_url: TEdit[1]
-    Left = 67
-    Height = 23
-    Top = 0
-    Width = 280
+  Height = 143
+  Width = 354
+  ClientHeight = 143
+  ClientWidth = 354
+  DesignLeft = 672
+  DesignTop = 288
+  object cb_configure_console: TCheckBox[0]
+    Left = 112
+    Height = 21
+    Top = 48
+    Width = 145
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Caption = 'Configure console'
     TabOrder = 0
-    Text = 'ed_server_url'
-  end
-  object lbl_server_username: TLabel[2]
-    Left = 0
-    Height = 15
-    Top = 32
-    Width = 59
-    Caption = 'Username :'
-    ParentColor = False
-  end
-  object ed_server_username: TEdit[3]
-    Left = 67
-    Height = 23
-    Top = 28
-    Width = 280
-    TabOrder = 1
-    Text = 'ed_server_username'
-  end
-  object lbl_server_password: TLabel[4]
-    Left = 4
-    Height = 15
-    Top = 60
-    Width = 56
-    Caption = 'Password :'
-    ParentColor = False
-  end
-  object ed_server_password: TEdit[5]
-    Left = 67
-    Height = 23
-    Top = 58
-    Width = 280
-    EchoMode = emPassword
-    PasswordChar = '*'
-    TabOrder = 2
-    Text = 'ed_server_password'
   end
 end

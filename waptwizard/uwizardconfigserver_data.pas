@@ -9,6 +9,20 @@ uses
   uwizard,
   Classes, SysUtils;
 
+
+const
+    TWizardConfigServerPage_page_welcome                 : String = 'welcome';
+    TWizardConfigServerPage_page_server                  : String = 'server';
+    TWizardConfigServerPage_page_firewall                : String = 'firewall';
+    TWizardConfigServerPage_page_postsetup               : String = 'post_setup';
+    TWizardConfigServerPage_page_keyoption               : String = 'key_option';
+    TWizardConfigServerPage_page_console                 : String = 'console';
+    TWizardConfigServerPage_page_package_create_new_key  : String = 'package_create_new_key';
+    TWizardConfigServerPage_page_package_use_existing_key: String = 'package_use_existing_key';
+    TWizardConfigServerPage_page_build_agent             : String = 'build_agent';
+    TWizardConfigServerPage_page_finished                : String = 'finished';
+
+
 type
 
   TWizardConfigServerData = record
@@ -26,6 +40,7 @@ type
     launch_console                  : boolean;
     check_certificates_validity     : String;
     repo_url                        : String;
+    configure_console               : Boolean;
   end;
   PWizardConfigServerData = ^TWizardConfigServerData;
 

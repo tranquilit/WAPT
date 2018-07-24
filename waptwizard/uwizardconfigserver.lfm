@@ -37,59 +37,69 @@ inherited WizardConfigServer: TWizardConfigServer
       item
         Caption = 'Welcome'
         ControlClassName = 'TTWizardConfigServer_Welcome'
+        Name = 'welcome'
         Description = 'TTWizardConfigServer_Welcome'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Server'
         ControlClassName = 'TWizardConfigServer_Server'
+        Name = 'server'
         Description = 'TWizardConfigServer_Server'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Firewall'
         ControlClassName = 'TWizardConfigServer_Firewall'
+        Name = 'firewall'
         Description = 'TWizardConfigServer_Firewall'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Post-setup'
         ControlClassName = 'TWizardConfigServer_ServerPostSetup'
+        Name = 'post_setup'
         Description = 'TWizardConfigServer_ServerPostSetup'
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end    
+      item
+        Caption = 'Configure console'
+        ControlClassName = 'TWizardConfigServer_Console'
+        Name = 'console'
+        Description = 'TWizardConfigServer_Console'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Key option'
         ControlClassName = 'TWizardConfigServer_KeyOption'
+        Name = 'key_option'
         Description = 'TWizardConfigServer_KeyOption'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Package ( Create new key )'
         ControlClassName = 'TWizardConfigServer_PackageCreateNewKey'
+        Name = 'package_create_new_key'
         Description = 'TWizardConfigServer_PackageCreateNewKey'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Package ( use existing key )'
         ControlClassName = 'TWizardConfigServer_PackageUseExistingKey'
+        Name = 'package_use_existing_key'
         Description = 'TWizardConfigServer_PackageUseExistingKey'
         PreviousOffset = 2
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
-        Caption = 'Console'
-        ControlClassName = 'TWizardConfigServer_Console'
-        Description = 'TWizardConfigServer_Console'
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
-      end    
-      item
         Caption = 'Build agent'
+        Name = 'build_agent'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Finished'
         ControlClassName = 'TWizardConfigServer_Finish'
+        Name = 'finished'
         Description = 'TWizardConfigServer_Finish'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end>
