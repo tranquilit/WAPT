@@ -1157,7 +1157,7 @@ def upgrade_db_structure():
             ##
             migrate(*opes)
 
-            WsusScan2History.create_table(fail_silently=True)
+            #WsusScan2History.create_table(fail_silently=True)
 
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version

@@ -557,7 +557,7 @@ class SSLCABundle(BaseObjectClass):
         #reason = u'None of certificates (%s) are trusted.' % (','.join(['"%s"' % c.cn for c in cert_chain]))
         # store negative caching
         if cached_chain is None:
-            add_chain_cache(cache_key,([],reason))
+            add_chain_cache(cache_key,[],reason)
 
         raise EWaptCertificateUntrustedIssuer(reason)
 
