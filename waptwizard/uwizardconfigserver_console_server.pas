@@ -111,8 +111,8 @@ begin
   end;
 
   s := self.rg_server_url.Items[ self.rg_server_url.ItemIndex ];
-  data^.wapt_server := 'https://' + s;
-  data^.repo_url    := 'https://' + s + '/wapt' ;
+  data^.wapt_server := s;
+  data^.repo_url    := s + '/wapt' ;
   data^.server_certificate := s  + '.crt';
 
 
