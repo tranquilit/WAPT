@@ -16,7 +16,17 @@ uses
   runtimetypeinfocontrols, luicontrols, uwizardresetserverpassword,
   uwizardconfigconsole, uwizardconfigserver, uwizardresetserverpassword_welcome,
   uwizardresetserverpassword_setpassword,
-  uwizardresetserverpassword_restartserver, uwizardresetserverpassword_finish;
+  uwizardresetserverpassword_restartserver, uwizardresetserverpassword_finish,
+  uwapt_ini, uwizardconfigconsole_buildagent, uwizardconfigconsole_data,
+  uwizardconfigconsole_finished, uwizardconfigconsole_package_create_new_key,
+  uwizardconfigconsole_package_use_existing_key, uwizardconfigconsole_server,
+  uwizardconfigconsole_welcome, uwizardconfigserver_buildagent,
+  uwizardconfigserver_data,
+  uwizardconfigserver_finish, uwizardconfigserver_firewall,
+  uwizardconfigserver_keyoption, uwizardconfigserver_package_create_new_key,
+  uwizardconfigserver_package_use_existing_key, uwizardconfigserver_postsetup,
+  uwizardconfigserver_server, uwizardconfigserver_welcome,
+  uwizardresetserverpassword_data, uwizardconfigserver_console;
 
 {$R *.res}
 
