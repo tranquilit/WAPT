@@ -130,7 +130,8 @@ begin
     exit;
 
   data^.wapt_user     := 'admin';
-  data^.wapt_password := PBKDF2( self.ed_password_1.Text, random_alphanum(5), 29000, 32, TDCP_sha256);
+  data^.wapt_password := self.ed_password_1.Text;
+  data^.wapt_password_crypted := PBKDF2( self.ed_password_1.Text, random_alphanum(5), 29000, 32, TDCP_sha256);
 
 
   bCanNext := true;

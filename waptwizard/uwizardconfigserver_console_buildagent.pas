@@ -137,7 +137,7 @@ LBL_BUILD_WAPTAGENT:
 
   building_init_ui( MSG_BUILDING, 100 );
 
-  params_waptagent.default_public_cert       := fs_path_concat( 'ssl', data^.package_certificate );
+  params_waptagent.default_public_cert       := data^.package_certificate;
   params_waptagent.default_repo_url          := data^.wapt_server + '/wapt';
   params_waptagent.default_wapt_server       := data^.wapt_server;
   params_waptagent.destination               := GetTempDir(true);
@@ -161,9 +161,6 @@ LBL_BUILD_WAPTAGENT:
 
   //
   building_init_ui( 'Uploading to server...', FileSize(params_waptagent._agent_filename) );
-  s := 'ssl\server\' + data^.server_certificate;
-  if not FileExists(s) then
-    s := '';
   try
     so := WAPTServerJsonMultipartFilePost(
       data^.wapt_server,
@@ -174,10 +171,17 @@ LBL_BUILD_WAPTAGENT:
       data^.wapt_user,
       data^.wapt_password,
       @on_workevent,
-      s
+      ''
       );
-    if so.S['status'] <> 'OK' then
-      Raise Exception.Create( UTF8Encode(so.S['message']) );
+
+    s := UTF8Encode( so.S['status'] );
+    if s <> 'OK' then
+    begin
+      s := UTF8Encode( so.S['message'] );
+      if Length(s) = 0 then
+        s := UTF8Encode(so.AsJSon(false));
+      Raise Exception.Create(s);
+    end;
   except on Ex : Exception do
     begin
       building_show_error( m_wizard, nil, Ex.Message );
