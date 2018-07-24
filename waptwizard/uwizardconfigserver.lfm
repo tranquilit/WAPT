@@ -106,6 +106,7 @@ inherited WizardConfigServer: TWizardConfigServer
         ControlClassName = 'TWizardConfigServer_Finish'
         Name = 'finished'
         Description = 'TWizardConfigServer_Finish'
+        EnabledButtons = [wbFinish]
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end>
   end
