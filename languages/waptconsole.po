@@ -1753,6 +1753,16 @@ msgstr ""
 msgid "Search in installed softwares"
 msgstr ""
 
+#: tviswaptgui.cbshowhostsforgroups.caption
+msgctxt "tviswaptgui.cbshowhostsforgroups.caption"
+msgid "Show Hosts"
+msgstr ""
+
+#: tviswaptgui.cbshowhostsforsofts.caption
+msgctxt "tviswaptgui.cbshowhostsforsofts.caption"
+msgid "Show Hosts"
+msgstr ""
+
 #: tviswaptgui.cbshowlog.caption
 msgctxt "tviswaptgui.cbshowlog.caption"
 msgid "Show debug"
@@ -2032,6 +2042,11 @@ msgstr ""
 #: tviswaptgui.panel7.caption
 msgctxt "tviswaptgui.panel7.caption"
 msgid "Panel7"
+msgstr ""
+
+#: tviswaptgui.panhostsforpackage.caption
+msgctxt "tviswaptgui.panhostsforpackage.caption"
+msgid "PanHostsForPackage"
 msgstr ""
 
 #: tviswaptgui.panwualeft.caption

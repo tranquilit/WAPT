@@ -25,9 +25,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 558
     Top = 0
     Width = 1159
-    ActivePage = pgPrivateRepo
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -4228,13 +4228,13 @@ object VisWaptGUI: TVisWaptGUI
     object pgSources: TTabSheet
       Caption = 'Sources'
       ClientHeight = 532
-      ClientWidth = 1064
+      ClientWidth = 1151
       TabVisible = False
       inline testedit: TSynEdit
         Left = 0
         Height = 498
         Top = 34
-        Width = 1064
+        Width = 1151
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -4758,11 +4758,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 34
         Top = 0
-        Width = 1064
+        Width = 1151
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 1064
+        ClientWidth = 1151
         TabOrder = 1
         object butInitWapt: TBitBtn
           Left = 4
@@ -4794,13 +4794,13 @@ object VisWaptGUI: TVisWaptGUI
     object PgNetworksConfig: TTabSheet
       Caption = 'Sites / networks configuration'
       ClientHeight = 532
-      ClientWidth = 1064
+      ClientWidth = 1151
       TabVisible = False
       object Panel8: TPanel
         Left = 0
         Height = 40
         Top = 0
-        Width = 1064
+        Width = 1151
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
@@ -4810,7 +4810,7 @@ object VisWaptGUI: TVisWaptGUI
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 10
         ClientHeight = 40
-        ClientWidth = 1064
+        ClientWidth = 1151
         TabOrder = 0
         object EdSearchPackage1: TSearchEdit
           Left = 6
@@ -4934,7 +4934,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 492
         Top = 40
-        Width = 1064
+        Width = 1151
         Datasource = SrcNetworks
         ShowAdvancedColumnsCustomize = False
         Align = alClient

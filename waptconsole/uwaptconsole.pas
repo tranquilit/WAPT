@@ -496,9 +496,7 @@ type
     procedure ActmakePackageTemplateExecute(Sender: TObject);
     procedure ActPackagesAuditExecute(Sender: TObject);
     procedure ActPackagesForceInstallExecute(Sender: TObject);
-    procedure ActPackagesInstallUpdate(Sender: TObject);
     procedure ActPackagesRemoveUpdate(Sender: TObject);
-    procedure ActPackagesUpdateUpdate(Sender: TObject);
     procedure ActProprietaryExecute(Sender: TObject);
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
@@ -2446,22 +2444,12 @@ begin
       'trigger_install_packages',rsConfirmPackageInstall,rsPackageInstallError,True);
 end;
 
-procedure TVisWaptGUI.ActPackagesInstallUpdate(Sender: TObject);
-begin
-  (Sender as TAction).Enabled:=OneHostIsConnected;
-end;
-
 procedure TVisWaptGUI.ActPackagesRemoveUpdate(Sender: TObject);
 begin
   if GridHostPackages.Focused then
-    (Sender as TAction).Enabled:=OneHostIsConnected and FileExistsUTF8(WaptPersonalCertificatePath)
+    (Sender as TAction).Enabled:=OneHostIsConnected(GridHostPackages) and FileExistsUTF8(WaptPersonalCertificatePath)
   else if GridHostsForPackage.Focused then
-    (Sender as TAction).Enabled:=FileExistsUTF8(WaptPersonalCertificatePath)
-end;
-
-procedure TVisWaptGUI.ActPackagesUpdateUpdate(Sender: TObject);
-begin
-  ActPackagesUpdate.Enabled:=FileExistsUTF8(WaptPersonalCertificatePath);
+    (Sender as TAction).Enabled:=OneHostIsConnected(GridHostsForPackage) and FileExistsUTF8(WaptPersonalCertificatePath)
 end;
 
 procedure TVisWaptGUI.ActRemoteAssistExecute(Sender: TObject);
