@@ -422,6 +422,7 @@ class SignedModel(WaptBaseModel):
 
 class WsusDownloadTasks(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
+    task_id = CharField(null=True,index=True)
     kind = CharField(null=True,index=True)
     url = CharField(null=True)
     target_size = IntegerField(null=True)
