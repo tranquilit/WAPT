@@ -63,15 +63,21 @@ function TWizardConfigServerData_write_ini_waptserver( data : PWizardConfigServe
 var
   ini : TIniFile;
   r   : integer;
+  s   : String;
 begin
   ini := nil;
 
   w.SetValidationDescription( 'Writing wapt server configuration file' );
+
+  r := wapt_server_installation(s);
+  if r <> 0 then
+    exit(-1);
+  wapt_ini_waptserver( s, s );
   try
 
 
     // waptserver.ini
-    ini := TIniFile.Create( 'conf\waptserver.ini' );
+    ini := TIniFile.Create(s);
     ini.WriteString( INI_OPTIONS, INI_DB_NAME,       'wapt');
     ini.WriteString( INI_OPTIONS, INI_DB_USER,       'wapt' );
     ini.WriteString( INI_OPTIONS, INI_WAPT_USER,     'admin' );
