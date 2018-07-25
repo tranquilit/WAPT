@@ -67,6 +67,7 @@ inherited WizardConfigServer: TWizardConfigServer
         ControlClassName = 'TWizardConfigServer_Console'
         Name = 'console'
         Description = 'TWizardConfigServer_Console'
+        EnabledButtons = [wbNext, wbCancel]
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
