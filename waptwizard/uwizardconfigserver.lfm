@@ -44,7 +44,7 @@ inherited WizardConfigServer: TWizardConfigServer
       item
         Caption = 'Admin password'
         ControlClassName = 'TWizardConfigServer_Password'
-        Name = 'server'
+        Name = 'admin_password'
         Description = 'TWizardConfigServer_Password'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
@@ -81,6 +81,7 @@ inherited WizardConfigServer: TWizardConfigServer
         ControlClassName = 'TWizardConfigServer_Console_PackageCreateNewKey'
         Name = 'package_create_new_key'
         Description = 'TWizardConfigServer_PackageCreateNewKey'
+        NextOffset = 2
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
@@ -94,6 +95,7 @@ inherited WizardConfigServer: TWizardConfigServer
       item
         Caption = 'Server url'
         ControlClassName = 'TWizardConfigserver_Console_Server'
+        Name = 'server_url'
       end    
       item
         Caption = 'Build agent'

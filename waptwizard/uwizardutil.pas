@@ -1268,23 +1268,34 @@ function service_set_state(const service: String; state: TServiceState; timeout_
 var
     t       : integer;
     cmdline : String;
+    ss      : TServiceState;
 begin
   if not ( state in [ssStopped,ssRunning] ) then
     exit( -1 );
+
+  ss := GetServiceStatusByName('', service );
+  if ssUnknown = ss then
+  begin
+    // No fail when service doesn't exist
+    exit(0);
+  end;
+
 
   // First Send command
   case state of
 
     ssRunning :
-    if not (GetServiceStatusByName('', service ) in[ ssStartPending,ssRunning] ) then
     begin
-      cmdline := Format( 'cmd /c net start %s', [LowerCase(service)] );
-      Run( UTF8Decode(cmdline) );
+      if not ( ss in[ ssUnknown,ssStartPending,ssRunning] ) then
+      begin
+        cmdline := Format( 'cmd /c net start %s', [LowerCase(service)] );
+        Run( UTF8Decode(cmdline) );
+      end;
     end;
 
     ssStopped :
     begin
-      if not (GetServiceStatusByName('', service ) in[ ssStopPending,ssStopped] ) then
+      if not ( ss in[ ssUnknown,ssStopPending,ssStopped] ) then
       begin
         cmdline := Format( 'cmd /c net stop %s', [LowerCase(service)] );
         Run( UTF8Decode(cmdline) );

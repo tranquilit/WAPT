@@ -82,13 +82,14 @@ var
   s    : String;
   data : PWizardConfigServerData;
   wd   : String;
+  i    : integer;
 begin
 
   bCanNext := false;
   data := m_wizard.data();
 
 
-  wd := GetCurrentDir;
+    wd := GetCurrentDir;
   r := wapt_server_installation( s);
   if r = 0 then
     SetCurrentDir(s);
@@ -124,12 +125,12 @@ begin
     DeleteFile('ssl\tranquilit.crt' );
 
   // Start services
-  m_wizard.SetValidationDescription( 'Starting wapt services' );
-  r := service_set_state( WAPT_SERVICES, ssRunning, 60 );
-  if r <> 0 then
+  for i := 0 to Length(WAPT_SERVICES) -1 do
   begin
-    m_wizard.show_validation_error( nil, 'Failed to start services' );
-    goto LBL_FAIL;
+     self.m_wizard.SetValidationDescription( Format('Starting service %s', [WAPT_SERVICES[i]]) );
+     r := service_set_state( WAPT_SERVICES[i], ssRunning, 30 );
+     if r <> 0 then
+      goto LBL_FAIL;
   end;
 
 
@@ -154,13 +155,10 @@ begin
     exit;
 
   // Force restart wapt service
-  self.m_wizard.SetValidationDescription( 'Restarting wapt service' );
-  r := wapt_service_restart();
+  self.m_wizard.SetValidationDescription( Format('Restarting service %s', ['WAPTService']) );
+  r := service_set_state( WAPT_SERVICES[i], ssRunning, 30 );
   if r <> 0 then
-  begin
-    self.m_wizard.show_validation_error( nil, 'Failed to restart wapt service' );
-    goto LBL_FAIL;
-  end;
+   goto LBL_FAIL;
 
   // Force registration
   self.m_wizard.SetValidationDescription( 'Registering local machine' );

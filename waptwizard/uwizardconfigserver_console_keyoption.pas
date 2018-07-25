@@ -29,6 +29,7 @@ type
 implementation
 
 uses
+  uwizardconfigserver_data,
   WizardControls;
 
 {$R *.lfm}
@@ -55,7 +56,8 @@ end;
 
 procedure TWizardConfigServer_Console_KeyOption.wizard_next(var bCanNext: boolean);
 var
-  p : TWizardPage;
+  p_key_option                : TWizardPage;
+  p_server_url                : TWizardPage;
 begin
   bCanNext := false;
 
@@ -65,11 +67,21 @@ begin
     exit;
   end;
 
-  p := self.m_wizard.WizardManager.Pages[self.m_wizard.WizardManager.PageIndex];
+
+  p_key_option  := self.m_wizard.WizardManager.PageByName( WizardConfigServerPage_page_keyoption );
+  p_server_url  := self.m_wizard.WizardManager.PageByName( WizardConfigServerPage_page_server_url );
+
+
   if self.rb_use_existing_key.Checked then
-    p.NextOffset := 2
+  begin
+    p_key_option.NextOffset      := 2;
+    p_server_url.PreviousOffset  := 1;
+  end
   else
-    p.NextOffset := 1;
+  begin
+    p_key_option.NextOffset      := 1;
+    p_server_url.PreviousOffset  := 2;
+  end;
 
 
   bCanNext := true;
