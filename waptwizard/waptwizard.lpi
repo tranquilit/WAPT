@@ -16,8 +16,8 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="6"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="2"/>
-      <StringTable LegalCopyright="Tranquil IT Systems 2012-2018" ProductVersion="1.6.2"/>
+      <BuildNr Value="3"/>
+      <StringTable LegalCopyright="Tranquil IT Systems 2012-2018" ProductName="WAPT Enterprise Edition" ProductVersion="1.6.2"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
@@ -301,19 +301,16 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="4">
+    <Exceptions Count="3">
       <Item1>
-        <Name Value="EIdDnsResolverError"/>
+        <Name Value="EIdSocketError"/>
       </Item1>
       <Item2>
-        <Name Value="EIdSocketError"/>
+        <Name Value="EIdDnsResolverError"/>
       </Item2>
       <Item3>
         <Name Value="EIdHTTPProtocolException"/>
       </Item3>
-      <Item4>
-        <Name Value="EOSError"/>
-      </Item4>
     </Exceptions>
   </Debugging>
 </CONFIG>
