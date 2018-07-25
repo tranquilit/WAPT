@@ -51,14 +51,14 @@ Source: "..\ssleay32.dll" ; DestDir: "{app}";
 Source: "..\openssl.exe" ; DestDir: "{app}";
 
 ; for local waptservice
-Source: "..\waptservice\win32\*"; DestDir: "{app}\waptservice\win32\";  Flags: createallsubdirs recursesubdirs; Tasks: installService 
-Source: "..\waptservice\win64\*"; DestDir: "{app}\waptservice\win64\";  Flags: createallsubdirs recursesubdirs; Tasks: installService
-Source: "..\waptservice\*.py"; DestDir: "{app}\waptservice\"; Tasks: installService
-Source: "..\waptservice\static\*"; DestDir: "{app}\waptservice\static"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
-Source: "..\waptservice\ssl\*"; DestDir: "{app}\waptservice\ssl"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
-Source: "..\waptservice\templates\*"; DestDir: "{app}\waptservice\templates"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
-Source: "..\waptservice\translations\*"; DestDir: "{app}\waptservice\translations"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
-Source: "..\waptservice\plugins\*"; DestDir: "{app}\waptservice\plugins"; Flags: createallsubdirs recursesubdirs; Tasks: installService 
+Source: "..\waptservice\win32\*"; DestDir: "{app}\waptservice\win32\";  Flags: createallsubdirs recursesubdirs;
+Source: "..\waptservice\win64\*"; DestDir: "{app}\waptservice\win64\";  Flags: createallsubdirs recursesubdirs;
+Source: "..\waptservice\*.py"; DestDir: "{app}\waptservice\"; 
+Source: "..\waptservice\static\*"; DestDir: "{app}\waptservice\static"; Flags: createallsubdirs recursesubdirs; Tasks: 
+Source: "..\waptservice\ssl\*"; DestDir: "{app}\waptservice\ssl"; Flags: createallsubdirs recursesubdirs;
+Source: "..\waptservice\templates\*"; DestDir: "{app}\waptservice\templates"; Flags: createallsubdirs recursesubdirs; 
+Source: "..\waptservice\translations\*"; DestDir: "{app}\waptservice\translations"; Flags: createallsubdirs recursesubdirs; 
+Source: "..\waptservice\plugins\*"; DestDir: "{app}\waptservice\plugins"; Flags: createallsubdirs recursesubdirs; 
 
 ; waptenterprise only
 #ifdef waptenterprise
