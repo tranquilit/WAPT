@@ -3767,6 +3767,7 @@ begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
   ScaleImageList(ImageList1,96);
   ScaleImageList(ActionsImages24,96);
+  WaptServerUser := IniReadString(Appuserinipath,self.name,'lastwaptserveruser','admin');
   HostsLimit := 2000;
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
 
