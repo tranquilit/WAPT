@@ -72,18 +72,26 @@ end;
 
 
 procedure TWizardConfigServer_ServerPostSetup.wizard_next(var bCanNext: boolean );
+label
+  LBL_FAIL;
 const
   TIMEOUT_MS : integer = 15 * 60 * 1000;
 var
   run_params : TRunParametersSync;
-  r   : integer;
-  s   : String;
+  r    : integer;
+  s    : String;
   data : PWizardConfigServerData;
+  wd   : String;
 begin
 
   bCanNext := false;
-
   data := m_wizard.data();
+
+
+  wd := GetCurrentDir;
+  r := wapt_server_installation( s);
+  if r = 0 then
+    SetCurrentDir(s);
 
   self.memo.Clear;
 
@@ -93,12 +101,12 @@ begin
   // Write waptserver.ini
   r := TWizardConfigServerData_write_ini_waptserver( data, self.m_wizard );
   if r <> 0 then
-    exit;
+    goto LBL_FAIL;
 
   // Write wapt-get.ini
   r := TWizardConfigServerData_write_ini_waptget( data, self.m_wizard );
   if r <> 0 then
-    exit;
+    goto LBL_FAIL;
 
 
 
@@ -108,7 +116,7 @@ begin
   run_params.timout_ms:= TIMEOUT_MS;
   run_params.on_run_tick := @on_run_tick;
   if not wizard_validate_run_command_sync( m_wizard, @run_params, 'Running post install scripts', 'Error while running post setup scripts', nil ) then
-    exit;
+    goto LBL_FAIL;
 
 
   // Removing ssl\tranquilit.crt
@@ -121,7 +129,7 @@ begin
   if r <> 0 then
   begin
     m_wizard.show_validation_error( nil, 'Failed to start services' );
-    exit;
+    goto LBL_FAIL;
   end;
 
 
@@ -136,7 +144,7 @@ begin
       if r <> 0 then
       begin
         m_wizard.show_validation_error( nil, 'An has occured while migrating from mogodb to postgresql' );
-        exit;
+        goto LBL_FAIL;
       end;
     end;
   end;
@@ -151,7 +159,7 @@ begin
   if r <> 0 then
   begin
     self.m_wizard.show_validation_error( nil, 'Failed to restart wapt service' );
-    exit;
+    goto LBL_FAIL;
   end;
 
   // Force registration
@@ -160,13 +168,16 @@ begin
   if r <> 0 then
   begin
     self.m_wizard.show_validation_error( nil, 'An error has occured while registering local machine' );
-    exit;
+    goto LBL_FAIL;
   end;
   self.m_wizard.ClearValidationDescription();
 
-
+  SetCurrentDir(wd);
   bCanNext := true;
+  exit;
 
+LBL_FAIL:
+  SetCurrentDir(wd);
 end;
 
 procedure TWizardConfigServer_ServerPostSetup.clear();
