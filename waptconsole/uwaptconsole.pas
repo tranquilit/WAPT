@@ -29,6 +29,7 @@ type
     ActAddNewNetwork: TAction;
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
+    ActResetWebsocketConnections: TAction;
     ActRunCleanMgr: TAction;
     ActWUAShowMSUpdatesHelp: TAction;
     ActPackagesAudit: TAction;
@@ -142,6 +143,7 @@ type
     MenuItem100: TMenuItem;
     MenuItem101: TMenuItem;
     MenuItem102: TMenuItem;
+    MenuItem103: TMenuItem;
     MenuItem103CheckAll: TMenuItem;
     MenuItem105UncheclAll: TMenuItem;
     MenuItemProductsCheckAll: TMenuItem;
@@ -503,6 +505,7 @@ type
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
     procedure ActExternalRepositoriesSettingsExecute(Sender: TObject);
+    procedure ActResetWebsocketConnectionsExecute(Sender: TObject);
     procedure ActRunCleanMgrExecute(Sender: TObject);
     procedure ActTISHelpExecute(Sender: TObject);
     procedure ActTISHelpUpdate(Sender: TObject);
@@ -2516,6 +2519,15 @@ begin
   finally
     Free;
   end;
+end;
+
+procedure TVisWaptGUI.ActResetWebsocketConnectionsExecute(Sender: TObject);
+var
+  data: ISuperObject;
+begin
+  data := SO();
+  data['uuids'] := GetSelectedUUID;
+  HandleServerResult(WAPTServerJsonPost('api/v3/reset_hosts_sid',[],data));
 end;
 
 function TVisWaptGUI.OneHostHasConnectedIP(GridHostsIPs:TSOGrid=Nil):Boolean;

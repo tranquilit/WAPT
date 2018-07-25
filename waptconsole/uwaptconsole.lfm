@@ -5668,6 +5668,11 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActRunCleanMgrExecute
       OnUpdate = ActHostsActionsUpdate
     end
+    object ActResetWebsocketConnections: TAction
+      Category = 'Tools'
+      Caption = 'Reset Websocket connections'
+      OnExecute = ActResetWebsocketConnectionsExecute
+    end
   end
   object PopupMenuPackages: TPopupMenu
     Images = ActionsImages24
@@ -5773,6 +5778,9 @@ object VisWaptGUI: TVisWaptGUI
       end
       object MenuItem54: TMenuItem
         Action = ActCleanCache
+      end
+      object MenuItem103: TMenuItem
+        Action = ActResetWebsocketConnections
       end
       object MenuItem17: TMenuItem
         Caption = '-'

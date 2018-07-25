@@ -1452,6 +1452,10 @@ msgctxt "tviswaptgui.actremovedepends.caption"
 msgid "Remove packages from host dependencies"
 msgstr "Supprimer des dépendances de paquets ou groupes de paquets"
 
+#: tviswaptgui.actresetwebsocketconnections.caption
+msgid "Reset Websocket connections"
+msgstr "Reset des connections Websockets établies"
+
 #: tviswaptgui.actrestoredefaultlayout.caption
 msgctxt "tviswaptgui.actrestoredefaultlayout.caption"
 msgid "Restore default grid layout"
