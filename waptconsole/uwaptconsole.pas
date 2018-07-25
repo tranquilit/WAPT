@@ -128,6 +128,7 @@ type
     EdLastScanDate: TEdit;
     EdLastScanDuration: TEdit;
     GridHostsForPackage: TSOGrid;
+    GridPackages: TSOGrid;
     GridWUUpdates: TSOGrid;
     Label10: TLabel;
     Label17: TLabel;
@@ -161,9 +162,9 @@ type
     MenuItem98: TMenuItem;
     MenuItem99: TMenuItem;
     Panel10: TPanel;
-    PanHostsForPackage: TPanel;
     Panel17: TPanel;
     Panel9: TPanel;
+    PanHostsForPackage: TPanel;
     PanWUALeft: TPanel;
     Panel2: TPanel;
     Panel8: TPanel;
@@ -174,9 +175,9 @@ type
     PopupMenuOrgUnits: TPopupMenu;
     PopupHostWUAUpdates: TPopupMenu;
     SOWaptServer: TSOConnection;
+    SplitHostsForPackage: TSplitter;
     Splitter10: TSplitter;
     Splitter8: TSplitter;
-    Splitter9: TSplitter;
     SrcNetworks: TSODataSource;
     SrcOrgUnits: TDataSource;
     EdDescription: TEdit;
@@ -453,7 +454,6 @@ type
     pgHostInventory: TTabSheet;
     testedit: TSynEdit;
     jsonlog: TVirtualJSONInspector;
-    GridPackages: TSOGrid;
     GridHostPackages: TSOGrid;
     GridHostSoftwares: TSOGrid;
     procedure ActAddADSGroupsExecute(Sender: TObject);
@@ -2459,28 +2459,21 @@ begin
 end;
 
 procedure TVisWaptGUI.ActPackagesForceInstallExecute(Sender: TObject);
-var
-  FocusedGrid:TSOGrid;
-  HostUUIDKeyname:String;
 begin
-  HostUUIDKeyname := 'uuid';
   if GridHostPackages.Focused then
-    FocusedGrid := GridHostPackages
-  else  if GridHostsForPackage.Focused then
-  begin
-    FocusedGrid := GridHostsForPackage;
-    HostUUIDKeyname := 'host';
-  end
+    TriggerActionOnHostPackages(GridHostPackages,ExtractField(GridHosts.SelectedRows,'uuid'),
+        'trigger_install_packages',rsConfirmPackageInstall,rsPackageInstallError,True)
+  else if GridHostsForPackage.Focused then
+    TriggerActionOnHostPackages(GridHostsForPackage,ExtractField(GridHostsForPackage.SelectedRows,'host'),
+        'trigger_install_packages',rsConfirmPackageInstall,rsPackageInstallError,True)
   else
     Exit;
-  TriggerActionOnHostPackages(FocusedGrid,ExtractField(FocusedGrid.SelectedRows,HostUUIDKeyname),
-      'trigger_install_packages',rsConfirmPackageInstall,rsPackageInstallError,True);
 end;
 
 procedure TVisWaptGUI.ActPackagesRemoveUpdate(Sender: TObject);
 begin
   if GridHostPackages.Focused then
-    (Sender as TAction).Enabled:=OneHostIsConnected(GridHostPackages) and FileExistsUTF8(WaptPersonalCertificatePath)
+    (Sender as TAction).Enabled:=OneHostIsConnected(GridHosts) and FileExistsUTF8(WaptPersonalCertificatePath)
   else if GridHostsForPackage.Focused then
     (Sender as TAction).Enabled:=OneHostIsConnected(GridHostsForPackage) and FileExistsUTF8(WaptPersonalCertificatePath)
 end;
@@ -2796,22 +2789,15 @@ begin
 end;
 
 procedure TVisWaptGUI.ActPackagesForgetExecute(Sender: TObject);
-var
-  FocusedGrid:TSOGrid;
-  HostUUIDKeyname:String;
 begin
-  HostUUIDKeyname := 'uuid';
   if GridHostPackages.Focused then
-    FocusedGrid := GridHostPackages
-  else  if GridHostsForPackage.Focused then
-  begin
-    FocusedGrid := GridHostsForPackage;
-    HostUUIDKeyname := 'host';
-  end
+    TriggerActionOnHostPackages(GridHostPackages,ExtractField(GridHosts.SelectedRows,'uuid'),
+        'trigger_forget_packages',rsConfirmHostForgetsPackages,rsForgetPackageError,True)
+  else if GridHostsForPackage.Focused then
+    TriggerActionOnHostPackages(GridHostsForPackage,ExtractField(GridHostsForPackage.SelectedRows,'host'),
+        'trigger_forget_packages',rsConfirmHostForgetsPackages,rsForgetPackageError,True)
   else
     Exit;
-  TriggerActionOnHostPackages(FocusedGrid,ExtractField(FocusedGrid.SelectedRows,HostUUIDKeyname),
-    'trigger_forget_packages',rsConfirmHostForgetsPackages,rsForgetPackageError);
 end;
 
 procedure TVisWaptGUI.ActFrenchExecute(Sender: TObject);
@@ -2856,7 +2842,7 @@ end;
 
 procedure TVisWaptGUI.ActHostsActionsUpdate(Sender: TObject);
 begin
-  (Sender as TAction).Enabled:= (GridHosts.SelectedCount>0) and OneHostIsConnected and FileExistsUTF8(WaptPersonalCertificatePath);
+  (Sender as TAction).Enabled:= (GridHosts.SelectedCount>0) and OneHostIsConnected(GridHosts) and FileExistsUTF8(WaptPersonalCertificatePath);
 end;
 
 procedure TVisWaptGUI.ActImportFromFileExecute(Sender: TObject);
@@ -2997,41 +2983,23 @@ begin
 end;
 
 procedure TVisWaptGUI.ActPackagesInstallExecute(Sender: TObject);
-var
-  FocusedGrid:TSOGrid;
-  HostUUIDKeyname:String;
 begin
-  HostUUIDKeyname := 'uuid';
   if GridHostPackages.Focused then
-    FocusedGrid := GridHostPackages
-  else  if GridHostsForPackage.Focused then
-  begin
-    FocusedGrid := GridHostsForPackage;
-    HostUUIDKeyname := 'host';
-  end
-  else
-    Exit;
-  TriggerActionOnHostPackages(FocusedGrid,ExtractField(FocusedGrid.SelectedRows,HostUUIDKeyname),
-    'trigger_install_packages',rsConfirmPackageInstall,rsPackageInstallError);
+    TriggerActionOnHostPackages(GridHostPackages,ExtractField(GridHosts.SelectedRows,'uuid'),
+        'trigger_install_packages',rsConfirmPackageInstall,rsPackageInstallError,False)
+  else if GridHostsForPackage.Focused then
+    TriggerActionOnHostPackages(GridHostsForPackage,ExtractField(GridHostsForPackage.SelectedRows,'host'),
+        'trigger_install_packages',rsConfirmPackageInstall,rsPackageInstallError,False)
 end;
 
 procedure TVisWaptGUI.ActPackagesRemoveExecute(Sender: TObject);
-var
-  FocusedGrid:TSOGrid;
-  HostUUIDKeyname:String;
 begin
-  HostUUIDKeyname := 'uuid';
   if GridHostPackages.Focused then
-    FocusedGrid := GridHostPackages
-  else  if GridHostsForPackage.Focused then
-  begin
-    FocusedGrid := GridHostsForPackage;
-    HostUUIDKeyname := 'host';
-  end
-  else
-    Exit;
-  TriggerActionOnHostPackages(FocusedGrid,ExtractField(FocusedGrid.SelectedRows,HostUUIDKeyname),
-    'trigger_remove_packages',rsConfirmRmPackagesFromHost,rsPackageRemoveError);
+    TriggerActionOnHostPackages(GridHostPackages,ExtractField(GridHosts.SelectedRows,'uuid'),
+        'trigger_remove_packages',rsConfirmRmPackagesFromHost,rsPackageRemoveError)
+  else if GridHostsForPackage.Focused then
+    TriggerActionOnHostPackages(GridHostsForPackage,ExtractField(GridHostsForPackage.SelectedRows,'host'),
+        'trigger_remove_packages',rsConfirmRmPackagesFromHost,rsPackageRemoveError)
 end;
 
 procedure TVisWaptGUI.ActRDPExecute(Sender: TObject);
@@ -3755,7 +3723,9 @@ end;
 
 procedure TVisWaptGUI.CBShowHostsForSoftsClick(Sender: TObject);
 begin
+  SplitHostsForPackage.Visible := CBShowHostsForSofts.Checked;
   PanHostsForPackage.Visible := CBShowHostsForSofts.Checked;
+  SplitHostsForPackage.Top := GridPackages.Top+GridPackages.Height;
   if not CBShowHostsForSofts.Checked then
     GridHostsForPackage.Data := Nil;;
 end;
