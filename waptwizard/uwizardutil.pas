@@ -15,9 +15,9 @@ uses
 
 const
 {$ifdef ENTERPRISE}
-  WAPT_SERVICES : array[0..2] of String = ( 'waptpostgresql','wapttasks','WAPTServer','waptnginx'  );
+  WAPT_SERVICES : array[0..2] of String = ( 'WAPTPostgresql','WAPTtasks','WAPTServer','WAPTNginx'  );
 {$else}
-  WAPT_SERVICES : array[0..2] of String = ( 'waptpostgresql', 'WAPTServer','waptnginx' );
+  WAPT_SERVICES : array[0..2] of String = ( 'WAPTPostgresql', 'WAPTServer','WAPTNginx' );
 {$endif}
 
   WAPT_FIREWALL_RULE_080  : String = 'waptserver 80';
