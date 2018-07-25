@@ -161,7 +161,7 @@ function https_certificate_pinned_filename( var filename : String; const https_u
 function crypto_check_key_password(var success: boolean; const key_filename: String; const password: String): integer;
 
 
-function process_launch( const command_line : String ) : integer;
+function process_launch( const command_line : String; const cwd : String = '' ) : integer;
 
 function net_list_enable_ip( sl : TStringList ) : integer;
 
@@ -181,6 +181,8 @@ function wapt_server_configure_firewall() : integer;
 
 function wapt_server_mongodb_to_postgresql() : integer;
 function wapt_server_installation( var path : String ) : integer;
+
+function wapt_console_install_path( var path : String ) : integer;
 
 function wapt_register(): integer;
 
@@ -1028,12 +1030,14 @@ begin
   exit(0);
 end;
 
-function process_launch(const command_line: String): integer;
+function process_launch(const command_line: String; const cwd: String): integer;
 var
   p  : TProcess;
 begin
   p := TProcess.Create( nil );
-  p.Executable := command_line;
+  p.Executable       := command_line;
+  if DirectoryExists(cwd) then
+    p.CurrentDirectory := cwd;
   try
     p.Execute;
     result := 0;
@@ -1791,6 +1795,27 @@ begin
   FillChar( params^, sizeof(TShowLoadingFrameParams), 0 );
   params^.visible := false;
   _show_loading_frame_threadsafe( PtrInt(params) );
+end;
+
+function wapt_console_install_path(var path: String): integer;
+var
+  s : String;
+  r : integer;
+  o : TObject;
+begin
+  r := wapt_server_installation( s );
+  if r = 0 then
+  begin
+    if FileExists(IncludeTrailingBackslash(s) + 'waptconsole.exe') then
+    begin
+      path := s;
+      exit(0);
+    end;
+  end;
+
+  o := nil;
+  o.Destroy;
+
 end;
 
 function wapt_register(): integer;

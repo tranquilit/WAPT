@@ -42,26 +42,46 @@ inherited WizardConfigConsole: TWizardConfigConsole
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
-        Caption = 'Server info'
-        ControlClassName = 'TWizardStepFrameConsoleServer'
+        Caption = 'Server'
+        ControlClassName = 'TWizardConfigConsole_Server'
+        Name = 'server'
         Description = 'Server info description'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
-        Caption = 'Package configuration'
-        ControlClassName = 'TWizardStepFramePackage'
-        Description = 'Package configuration description'
+        Caption = 'Key option'
+        ControlClassName = 'TWizardConfigConsole_KeyOption'
+        Name = 'key_option'
+        Description = 'Description'
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end    
+      item
+        Caption = 'Package'
+        ControlClassName = 'TWizardConfigConsole_PackageUseExistingKey'
+        Name = 'package_use_existing_key'
+        Description = 'Configuring package using existing key'
+        NextOffset = 2
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end    
+      item
+        Caption = 'Package'
+        ControlClassName = 'TWizardConfigConsole_PackageCreateNewKey'
+        Name = 'package_create_new_key'
+        Description = 'Configuring package with a new key'
+        PreviousOffset = 2
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Build agent'
-        ControlClassName = 'TWizardStepFrameBuildAgent'
+        ControlClassName = 'TWizardConfigConsole_BuildAgent'
+        Name = 'build_agent'
         Description = 'Build agent description'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Finished'
         ControlClassName = 'TWizardStepFrameConsoleFinished'
+        Name = 'finished'
         Description = 'Console configuration finished'
         EnabledButtons = [wbFinish]
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]

@@ -158,11 +158,6 @@ begin
   self.ed_certificate.TabOrder                            := 3;
   self.cb_show_password.TabOrder                          := 4;
 
-  self.m_wizard.WizardButtonPanel.NextButton.TabOrder     := 0;
-  self.m_wizard.WizardButtonPanel.PreviousButton.TabOrder := 1;
-  self.m_wizard.WizardButtonPanel.CancelButton.TabOrder   := 2;
-
-
   if Length(self.ed_package_prefix.Text) = 0 then
     self.ed_package_prefix.SetFocus
   else if Length(self.ed_key.Text) = 0 then

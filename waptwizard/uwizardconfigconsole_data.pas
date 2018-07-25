@@ -8,6 +8,16 @@ uses
   uwizard,
   Classes, SysUtils;
 
+const
+
+    WizardConfigConsole_page_welcome                 : String = 'welcome';
+    WizardConfigConsole_page_server                  : String = 'server';
+    WizardConfigConsole_page_keyoption               : String = 'key_option';
+    WizardConfigConsole_page_package_create_new_key  : String = 'package_create_new_key';
+    WizardConfigConsole_page_package_use_existing_key: String = 'package_use_existing_key';
+    WizardConfigConsole_page_build_agent             : String = 'build_agent';
+    WizardConfigConsole_page_finished                : String = 'finished';
+
 type
   TWizardConfigConsoleData = record
     is_enterprise_edition         : boolean;
@@ -26,6 +36,7 @@ type
     repo_url                      : String;
   end;
   PWizardConfigConsoleData = ^TWizardConfigConsoleData;
+
 
 
   function TWizardConfigConsoleData_write_ini_waptconsole( data : PWizardConfigConsoleData; w : TWizard ): integer;

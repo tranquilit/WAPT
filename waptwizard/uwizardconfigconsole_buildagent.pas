@@ -96,8 +96,9 @@ var
   data : PWizardConfigConsoleData;
 
 begin
-
   bCanNext := false;
+
+  data := m_wizard.data();
 
 ////////////////////// Building waptagent
 LBL_BUILD_WAPTAGENT:
@@ -120,7 +121,10 @@ LBL_BUILD_WAPTAGENT:
     s := 'Waptagent has been found on the server.'+ #13#10#13#10;
     s := s + 'Rebuild and overwrite it ?';
     if mrNo = m_wizard.show_question( s, mbYesNo ) then
+    begin
+      bCanNext := true;
       exit;
+    end;
   end
   else if r <> 404 then
   begin
@@ -138,7 +142,7 @@ LBL_BUILD_WAPTAGENT:
 
   building_init_ui( MSG_BUILDING, 100 );
 
-  params_waptagent.default_public_cert       := fs_path_concat( 'ssl', data^.package_certificate );
+  params_waptagent.default_public_cert       := data^.package_certificate;
   params_waptagent.default_repo_url          := data^.wapt_server + '/wapt';
   params_waptagent.default_wapt_server       := data^.wapt_server;
   params_waptagent.destination               := GetTempDir(true);
@@ -234,6 +238,7 @@ LBL_BUILD_WAPTAGENT:
 
 
   bCanNext := true;
+
 end;
 
 

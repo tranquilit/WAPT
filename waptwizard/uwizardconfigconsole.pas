@@ -18,14 +18,13 @@ type
 
   TWizardConfigConsole = class(TWizard)
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
-    procedure FormCreate(Sender: TObject);
+    procedure FormCreate(Sender: TObject);  override;
     procedure FormShow(Sender: TObject);
 
 
 
   private
     m_data : TWizardConfigConsoleData;
-    m_check_certificates_validity : boolean;
 
 
   public
@@ -44,13 +43,14 @@ uses
   uwapt_ini,
   uwizardconfigconsole_server,
   uwizardconfigconsole_welcome,
+  uwizardconfigconsole_keyoption,
+  uwizardconfigconsole_package_use_existing_key,
   uwizardconfigconsole_package_create_new_key,
   uwizardconfigconsole_buildagent,
   uwizardconfigconsole_finished,
   waptcommon,
   uwizardutil,
-  FileUtil,
-  IniFiles;
+  FileUtil;
 
 {$R *.lfm}
 

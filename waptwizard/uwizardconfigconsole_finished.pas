@@ -34,9 +34,12 @@ uses
 { TWizardStepFrameConsoleFinished }
 
 procedure TWizardStepFrameConsoleFinished.wizard_finish(var bClose: boolean);
+var
+  data : PWizardConfigConsoleData;
 begin
   bClose:= true;
-  PWizardConfigConsoleData(m_wizard.data())^.launch_console := self.cb_launch_console.Checked;
+  data := m_wizard.data();
+  data^.launch_console := self.cb_launch_console.Checked;
 end;
 
 

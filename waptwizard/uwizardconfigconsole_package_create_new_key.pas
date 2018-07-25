@@ -1,4 +1,4 @@
-unit uwizardconfigconsole_package_create_new_key; 
+unit uwizardconfigconsole_package_create_new_key;
 
 {$mode objfpc}{$H+}
 
@@ -20,22 +20,14 @@ type
     ed_private_key_name: TEdit;
     ed_private_key_password_1: TEdit;
     ed_private_key_password_2: TEdit;
-    ed_select_key: TFileNameEdit;
     gb_package_signing: TGroupBox;
     lbl_package_prefix: TLabel;
     lbl_private_key_dir: TLabel;
     lbl_private_key_name: TLabel;
     lbl_private_key_password_1: TLabel;
     lbl_private_key_password_2: TLabel;
-    lbl_select_key: TLabel;
     Package: TGroupBox;
-    Panel1: TPanel;
     Panel2: TPanel;
-    p_create_key: TPanel;
-    p_select_key: TPanel;
-    rb_create_new_key: TRadioButton;
-    rb_select_key: TRadioButton;
-    procedure rb_key_Change(Sender: TObject);
   private
 
     function validate_package_generation_options() : integer;
@@ -61,10 +53,8 @@ type
 implementation
 
 uses
-  IniFiles,
-  uwizardconfigconsole_data,
   dialogs,
-  uwapt_ini,
+  uwizardconfigserver_data,
   uwizardutil,
   uwizardvalidattion;
 
@@ -97,10 +87,9 @@ begin
   inherited wizard_load(w);
 
 
+  // default
+  self.ed_package_prefix.Text := 'test';
   self.ed_private_key_directory.Text := 'c:\private';
-  self.rb_select_key.Checked := true;
-  self.rb_key_Change( self.rb_select_key );
-
 
 
 end;
@@ -122,12 +111,9 @@ begin
 
 end;
 
-procedure TWizardConfigConsole_PackageCreateNewKey.wizard_next(var bCanNext: boolean);
+procedure TWizardConfigConsole_PackageCreateNewKey.wizard_next( var bCanNext: boolean);
 var
-  r     : integer;
-  ini   : TIniFile;
-  data  : PWizardConfigConsoleData;
-  s     : String;
+  r : integer;
 begin
   bCanNext := false;
 
@@ -139,44 +125,7 @@ begin
   if r <> 0 then
     exit;
 
-
-  data := PWizardConfigConsoleData(m_wizard.data());
-    r := https_certificate_pinned_filename( data^.verify_cert,  data^.wapt_server );
-
-    // Now Writing settings
-    try
-      {
-      // wapt-get.ini
-      s := 'wapt-get.ini';
-      ini := TIniFile.Create( s );
-      ini.WriteString( INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, check_certificates_validity );
-      ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                verify_cert);
-      ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 wapt_server);
-      ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    repo_url );
-      ini.Free;
-      }
-
-      // waptconsole.ini
-      wapt_ini_waptconsole(s);
-      ini := TIniFile.Create( s );
-      ini.WriteString( INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY,  data^.check_certificates_validity );
-      ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                 data^.verify_cert);
-      ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                  data^.wapt_server );
-      ini.WriteString( INI_GLOBAL, INI_REPO_URL,                     data^.repo_url );
-      ini.WriteString( INI_GLOBAL, INI_DEFAULT_PACKAGE_PREFIX,       data^.default_package_prefix );
-      ini.WriteString( INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH,    data^.personal_certificate_path );
-      ini.Free;
-
-      ini := nil;
-      self.m_wizard.ClearValidationDescription();
-    finally
-      if Assigned(ini) then
-        FreeAndNil(ini);
-    end;
-
-
-
-  bCanNext := true;
+  bCanNext:= true;
 end;
 
 procedure TWizardConfigConsole_PackageCreateNewKey.clear();
@@ -198,25 +147,7 @@ begin
   result := self.ed_private_key_name.text + '.crt';
 end;
 
-procedure TWizardConfigConsole_PackageCreateNewKey.rb_key_Change(Sender: TObject);
-begin
-  if self.rb_create_new_key.Checked then
-  begin
-    self.p_create_key.Visible := true;
-    self.p_select_key.Visible := false;
-    exit;
-  end;
 
-  if self.rb_select_key.Checked then
-  begin
-    self.p_create_key.Visible := false;
-    self.p_select_key.Visible := true;
-    exit;
-  end;
-
-  Assert(false);
-
-end;
 
 function TWizardConfigConsole_PackageCreateNewKey.validate_package_generation_options(): integer;
 begin
@@ -239,26 +170,28 @@ const
   valide_stepset_1 : TStepSet = [ sFieldsNotEmpty, sPasswordsEquals, sKeyIsAlphanum, sKeyDestination, sCreatePrivateKey, sCopyCertToSSLDirectory, sFinish ];
   valide_stepset_2 : TStepSet = [ sFieldsNotEmpty, sPasswordsEquals, sKeyIsAlphanum, sExistingKeyCheckPassword, sCheckExistingCertificate, sFinish ];
 var
-  s                             : String;
-  msg                           : String;
-  r                             : integer;
-  b                             : boolean;
-  params                        : PCreateSignedCertParams;
-  step                          : TStep;
-  completed_steps               : TStepSet;
-  filename_private_key          : String;
-  filename_certificate_package  : String;
-
-  data : PWizardConfigConsoleData;
+  s                 : String;
+  msg               : String;
+  r                 : integer;
+  b                 : boolean;
+  params            : PCreateSignedCertParams;
+  step              : TStep;
+  completed_steps   : TStepSet;
+  pem               : String;
+  crt               : String;
+  data              : PWizardConfigServerData;
 begin
+
+
+  data := m_wizard.data();
 
   ed_private_key_name.Text:= ExcludeTrailingPathDelimiter( trim(ed_private_key_name.Text ) );
   ed_private_key_directory.Text := ExcludeTrailingPathDelimiter( trim(ed_private_key_directory.Text) );
   Application.ProcessMessages;
 
 
-  filename_private_key := ed_private_key_name.Text + '.pem';
-  filename_certificate_package := ed_private_key_name.Text + '.crt';
+  pem := ed_private_key_name.Text + '.pem';
+  crt := ed_private_key_name.Text + '.crt';
 
   step := sFieldsNotEmpty;
   completed_steps := [];
@@ -311,7 +244,7 @@ begin
       // Check if key exist
       sKeyExist:
         begin
-          s := fs_path_concat( ed_private_key_directory.Text, filename_private_key );
+          s := fs_path_concat( ed_private_key_directory.Text, pem );
           if FileExists( s ) then
             step := sExistingKeyCheckPassword
           else
@@ -333,12 +266,12 @@ begin
       sCreatePrivateKey :
       begin
         // TODO : Do you want to customize certificate default values
-        m_wizard.SetValidationDescription( Format('Creating private key %s', [filename_private_key]) );
+        m_wizard.SetValidationDescription( Format('Creating private key %s', [pem]) );
 
         params := GetMem( sizeof(TCreateSignedCertParams) );
         FillChar( params^, sizeof(TCreateSignedCertParams), 0 );
 
-        params^.keyfilename           := UTF8Decode( fs_path_concat( ed_private_key_directory.Text, filename_private_key) );
+        params^.keyfilename           := UTF8Decode( fs_path_concat( ed_private_key_directory.Text, pem) );
         params^.crtbasename           := ''; // if empty, it will take key filename
         params^.destdir               := UTF8Decode( ed_private_key_directory.Text );
         params^.country               := 'FR';
@@ -392,7 +325,7 @@ begin
       sCheckExistingCertificate :
         begin
           m_wizard.SetValidationDescription( 'Validing existing certificate' );
-          s := fs_path_concat( 'ssl', filename_certificate_package );
+          s := fs_path_concat( 'ssl', crt );
           // A cert not exist in ssl dir ?
           if FileExists(s) then
           begin
@@ -401,7 +334,7 @@ begin
           end;
 
           // ... and not in private key dir ?
-          s := fs_path_concat( ed_private_key_directory.Text, filename_certificate_package );
+          s := fs_path_concat( ed_private_key_directory.Text, crt );
           if FileExists(s) then
           begin
             step := sCopyCertToSSLDirectory;
@@ -412,7 +345,7 @@ begin
           msg := msg + 'to this key cannot be find. You can either' + #13#10;
           msg := msg + 'recreate the key or place the certificate' + #13#10;
           msg := msg + 'in the private key directory';
-          msg := Format( msg, [filename_certificate_package] );
+          msg := Format( msg, [crt] );
           m_wizard.show_validation_error( ed_private_key_directory, s );
           exit(-1);
         end;
@@ -422,13 +355,13 @@ begin
       begin
         m_wizard.SetValidationDescription( 'Copying certificat to authorized certificate directory');
 
-        s := fs_path_concat( 'ssl', filename_certificate_package );
+        s := fs_path_concat( 'ssl', crt );
         if FileExists( s ) then
         begin
           msg := 'A certificat with this name %s exist in the directory' + #13#10#13#10;
           msg := msg + '%s' + #13#10#13#10;
           msg := msg + 'Replace it with the new one ?';
-          msg := Format( msg, [filename_certificate_package, fs_path_concat(GetCurrentDir(), 'ssl')] );
+          msg := Format( msg, [crt, fs_path_concat(GetCurrentDir(), 'ssl')] );
           if mrNo = m_wizard.show_question( msg, mbYesNo) then
           begin
             m_wizard.show_validation_error( nil, 'Certificate cannot be copied to authorized certificate directory' );
@@ -443,8 +376,8 @@ begin
           end;
         end;
 
-        s := fs_path_concat( ed_private_key_directory.Text, filename_certificate_package );
-        if not CopyFile(  s, fs_path_concat( 'ssl', filename_certificate_package ), true, false) then
+        s := fs_path_concat( ed_private_key_directory.Text, crt );
+        if not CopyFile(  s, fs_path_concat( 'ssl', crt ), true, false) then
         begin
           m_wizard.show_validation_error( nil, 'An error has occured while copying certificate into authorized certificates directory');
           exit(-1);
@@ -464,17 +397,13 @@ begin
 
 //    debug_show_step;
 
-  data := m_wizard.data();
 
-  data^.default_package_prefix        := UTF8Decode(self.ed_package_prefix.Text);
-  data^.personal_certificate_path     := UTF8Decode( IncludeTrailingBackslash(self.ed_private_key_directory.Text) + filename_certificate_package );
-  data^.package_certificate           := UTF8Decode(filename_certificate_package);
-  data^.package_private_key           := UTF8Decode(filename_private_key);
-  data^.package_private_key_password  := UTF8Decode(self.ed_private_key_password_1.Text);
+  data^.default_package_prefix        := self.ed_package_prefix.Text;
+  data^.package_certificate           := IncludeTrailingBackslash(self.ed_private_key_directory.Text) + crt;
+  data^.package_private_key           := pem;
+  data^.package_private_key_password  := self.ed_private_key_password_1.Text;
 
-
-  //
-
+  m_wizard.ClearValidationDescription();
   exit(0);
 
 end;

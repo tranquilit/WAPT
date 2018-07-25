@@ -78,8 +78,12 @@ begin
   begin
     for i := 0 to sl.Count -1 do
     begin
+
       if 'localhost' = sl.Strings[i] then
         continue;
+      if '127.0.0.1' = sl.Strings[i] then
+        continue;
+
       s := 'https://' + sl.Strings[i];
       self.rg_server_url.Items.AddObject( s, sl.Objects[i] );
       if Pos( h, s ) <> 0 then

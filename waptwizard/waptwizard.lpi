@@ -28,7 +28,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="-s"/>
+        <CommandLineParams Value="-c"/>
       </local>
     </RunParams>
     <RequiredPackages Count="9">
@@ -60,7 +60,7 @@
         <PackageName Value="LCL"/>
       </Item9>
     </RequiredPackages>
-    <Units Count="35">
+    <Units Count="36">
       <Unit0>
         <Filename Value="waptwizard.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -184,7 +184,7 @@
       <Unit20>
         <Filename Value="uwizardconfigconsole_server.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="WizardStepFramePassword"/>
+        <ComponentName Value="WizardConfigConsole_Server"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit20>
@@ -223,7 +223,7 @@
       <Unit27>
         <Filename Value="uwizardconfigconsole_package_use_existing_key.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="TWizardConfigConsole_PackageUseExistingKey"/>
+        <ComponentName Value="WizardConfigConsole_PackageUseExistingKey"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit27>
@@ -273,6 +273,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit34>
+      <Unit35>
+        <Filename Value="uwizardconfigconsole_keyoption.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardConfigConsole_KeyOption"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit35>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

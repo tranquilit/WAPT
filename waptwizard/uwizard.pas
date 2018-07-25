@@ -412,8 +412,17 @@ end;
 procedure TWizard.launch_console();
 var
   r : integer;
+  s : String;
+  cmd : String;
 begin
-  r := process_launch( 'waptconsole.exe' );
+  cmd := 'waptconsole.exe';
+
+  s := '';
+  r := wapt_console_install_path(s);
+  if r = 0 then
+    cmd := IncludeTrailingBackslash(s) + cmd;
+
+  r := process_launch( cmd , s);
   if r <> 0 then
     self.show_error( 'An error has occured while launching the console');
 end;

@@ -18,14 +18,14 @@ uses
   uwizardresetserverpassword_setpassword,
   uwizardresetserverpassword_restartserver, uwizardresetserverpassword_finish,
   uwapt_ini, uwizardconfigconsole_buildagent, uwizardconfigconsole_data,
-  uwizardconfigconsole_finished, uwizardconfigconsole_package_create_new_key,
-  uwizardconfigconsole_package_use_existing_key, uwizardconfigconsole_server,
-  uwizardconfigconsole_welcome,
-  uwizardconfigserver_data,
+  uwizardconfigconsole_finished, uwizardconfigconsole_server,
+  uwizardconfigconsole_welcome, uwizardconfigserver_data,
   uwizardconfigserver_finish, uwizardconfigserver_firewall,
-  uwizardconfigserver_postsetup,
-  uwizardconfigserver_welcome,
-  uwizardresetserverpassword_data, uwizardconfigserver_console, uwizardconfigserver_console_server;
+  uwizardconfigserver_postsetup, uwizardconfigserver_welcome,
+  uwizardresetserverpassword_data, uwizardconfigserver_console,
+  uwizardconfigserver_console_server,
+  uwizardconfigconsole_package_create_new_key,
+  uwizardconfigconsole_package_use_existing_key;
 
 {$R *.res}
 

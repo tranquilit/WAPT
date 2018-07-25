@@ -184,6 +184,8 @@ var
 
 begin
 
+  data := m_wizard.data();
+
   ed_private_key_name.Text:= ExcludeTrailingPathDelimiter( trim(ed_private_key_name.Text ) );
   ed_private_key_directory.Text := ExcludeTrailingPathDelimiter( trim(ed_private_key_directory.Text) );
   Application.ProcessMessages;
