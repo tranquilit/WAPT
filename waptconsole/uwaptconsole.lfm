@@ -2241,9 +2241,7 @@ object VisWaptGUI: TVisWaptGUI
             Top = 48
             Width = 150
             Caption = 'Only authorized computers'
-            Checked = True
             OnClick = cbNeedUpgradeClick
-            State = cbChecked
             TabOrder = 2
           end
         end
@@ -9087,11 +9085,11 @@ object VisWaptGUI: TVisWaptGUI
     ParamsJSON = 'Nil'
     Root = 'content'
     Active = True
-    left = 624
+    left = 584
     top = 168
   end
   object SOWaptServer: TSOConnection
-    left = 624
+    left = 584
     top = 104
   end
   object PopupHostWUAUpdates: TPopupMenu

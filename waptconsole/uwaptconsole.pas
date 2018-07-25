@@ -4637,6 +4637,7 @@ begin
   SetSOGridVisible(GridHostPackages,'last_audit_status',False);
   SetSOGridVisible(GridHostPackages,'last_audit_on',False);
   SetSOGridVisible(GridHostPackages,'next_audit_on',False);
+  cbAuthorizedHosts.Checked := False;
   {$endif}
 end;
 
