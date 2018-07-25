@@ -4815,12 +4815,6 @@ begin
   result := Nil;
 end;
 
-function TVisWaptGUI.FilterWindowsUpdate(wua: ISuperObject
-  ): ISuperObject;
-begin
-  Result := Nil;
-end;
-
 function TVisWaptGUI.FilterHostWinUpdates(wua: ISuperObject): ISuperObject;
 begin
   Result := Nil;
@@ -5004,6 +4998,10 @@ begin
 end;
 
 procedure TVisWaptGUI.cbAllproductsClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.FilterGridWindowsUpdates(Sender: TObject);
 begin
 end;
 
