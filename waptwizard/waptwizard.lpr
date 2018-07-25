@@ -56,6 +56,8 @@ begin
   RequireDerivedFormResource := True;
   Application.Initialize;
 
+  Application.CreateForm(TDMPython, DMPython);
+
     // -c : config console
   if Application.HasOption('c') then
     Application.CreateForm( TWizardConfigConsole,  WizardConfigConsole )
@@ -71,7 +73,6 @@ begin
   else
     show_help;
 
-  Application.CreateForm(TDMPython, DMPython);
 
   ensure_prerequisites;
   Application.Run;
