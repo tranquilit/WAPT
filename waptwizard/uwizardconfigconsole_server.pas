@@ -40,6 +40,7 @@ uses
   tiscommon,
   tisinifiles,
   uwapt_ini,
+  uwizardutil,
   uwizardconfigconsole_data,
   uwizardvalidattion;
 
@@ -94,6 +95,10 @@ var
 begin
   bCanNext := false;
   data := self.m_wizard.data();
+
+
+  self.ed_server_url.Text := url_force_protocol( self.ed_server_url.Text, 'https' );
+  Application.ProcessMessages;
 
   // Ping
   if not wizard_validate_waptserver_ping( self.m_wizard, self.ed_server_url.Text, self.ed_server_url ) then

@@ -54,7 +54,7 @@ implementation
 
 uses
   dialogs,
-  uwizardconfigserver_data,
+  uwizardconfigconsole_data,
   uwizardutil,
   uwizardvalidattion;
 
@@ -105,9 +105,6 @@ begin
   self.ed_private_key_password_1.TabOrder := 2;
   self.ed_private_key_password_2.TabOrder := 3;
   self.ed_private_key_directory.TabOrder  := 4;
-  self.m_wizard.WizardButtonPanel.NextButton.TabOrder     := 5;
-  self.m_wizard.WizardButtonPanel.PreviousButton.TabOrder := 6;
-  self.m_wizard.WizardButtonPanel.CancelButton.TabOrder   := 7;
 
 end;
 
@@ -179,7 +176,7 @@ var
   completed_steps   : TStepSet;
   pem               : String;
   crt               : String;
-  data              : PWizardConfigServerData;
+  data              : PWizardConfigConsoleData;
 begin
 
 

@@ -308,7 +308,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="3">
+    <Exceptions Count="5">
       <Item1>
         <Name Value="EIdSocketError"/>
       </Item1>
@@ -318,6 +318,12 @@
       <Item3>
         <Name Value="EIdHTTPProtocolException"/>
       </Item3>
+      <Item4>
+        <Name Value="EIdNotASocket"/>
+      </Item4>
+      <Item5>
+        <Name Value="EIdConnectTimeout"/>
+      </Item5>
     </Exceptions>
   </Debugging>
 </CONFIG>
