@@ -81,7 +81,7 @@ begin
     ini.WriteString( INI_OPTIONS, INI_DB_NAME,       'wapt');
     ini.WriteString( INI_OPTIONS, INI_DB_USER,       'wapt' );
     ini.WriteString( INI_OPTIONS, INI_WAPT_USER,     'admin' );
-//    ini.WriteString( INI_OPTIONS, INI_WAPT_PASSWORD, data^.wapt_password_crypted );
+    ini.WriteString( INI_OPTIONS, INI_WAPT_PASSWORD, data^.wapt_password_crypted );
     ini.WriteString( INI_OPTIONS, INI_ALLOW_UNAUTHENTICATED_REGISTRATION, 'True' );
     r := Length( Trim(ini.ReadString( INI_OPTIONS, INI_SERVER_UUID, '')) );
     if r = 0 then
