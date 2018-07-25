@@ -5304,6 +5304,9 @@ class Wapt(BaseObjectClass):
         """
         inv = {}
         inv['host_info'] = setuphelpers.host_info()
+        # optionally forced dn
+        inv['computer_ad_dn'] = self.host_dn
+
         try:
             inv['dmi'] = setuphelpers.dmi_info()
         except:
