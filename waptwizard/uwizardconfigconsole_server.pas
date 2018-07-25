@@ -92,17 +92,22 @@ end;
 procedure TWizardConfigConsole_Server.wizard_next(var bCanNext: boolean);
 var
   data : PWizardConfigConsoleData;
+  url  : String;
 begin
   bCanNext := false;
   data := self.m_wizard.data();
 
+  if not wizard_validate_str_not_empty_when_trimmed( self.m_wizard, self.ed_server_url, 'A valid wapt server url is required' ) then
+    exit;
 
-  self.ed_server_url.Text := url_force_protocol( self.ed_server_url.Text, 'https' );
-  Application.ProcessMessages;
+  url := 'https://' + url_hostname( self.ed_server_url.Text );
 
   // Ping
-  if not wizard_validate_waptserver_ping( self.m_wizard, self.ed_server_url.Text, self.ed_server_url ) then
+  if not wizard_validate_waptserver_ping( self.m_wizard, url, self.ed_server_url ) then
     exit;
+
+  self.ed_server_url.Text := url;
+  Application.ProcessMessages;
 
   {
   // Version
@@ -111,10 +116,11 @@ begin
   }
 
   // Login
-  if not wizard_validate_waptserver_login( self.m_wizard, self.ed_server_url.Text, false, 'admin', self.ed_password.Text, self.ed_password ) then
+  if not wizard_validate_waptserver_login( self.m_wizard, url, false, 'admin', self.ed_password.Text, self.ed_password ) then
     exit;
 
-  data^.wapt_server   := self.ed_server_url.Text;
+
+  data^.wapt_server   := url;
   data^.wapt_user     := 'admin';
   data^.wapt_password := self.ed_password.Text;
 
