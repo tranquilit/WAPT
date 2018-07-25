@@ -843,7 +843,7 @@ class ColumnDef(object):
         self.default_width = None
         self.calc_field_name = calc_field_name
         if self.calc_field_name is None and self.field is not None:
-            self.calc_field_name = getattr(self.field,'_alias',self.self.field.name)
+            self.calc_field_name = getattr(self.field,'_alias',self.field.name)
 
     def as_metadata(self):
         result = dict()
@@ -917,7 +917,6 @@ class TableProvider(object):
         if not self._columns:
             self._columns = []
             if self.model is not None:
-                self.model = joins.keys()[0]
                 for field in self.model._meta.sorted_fields:
                     column = ColumnDef(field)
                     self._columns.append(column)

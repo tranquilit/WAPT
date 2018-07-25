@@ -179,7 +179,6 @@ if __name__ == '__main__':
     conf = waptserver.config.load_config(options.configfile)
     load_db_config(conf)
 
-    utils_set_devel_mode(options.devel)
     if options.loglevel is not None:
         setloglevel(logger, options.loglevel)
 

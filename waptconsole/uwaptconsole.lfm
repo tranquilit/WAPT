@@ -25,9 +25,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 558
     Top = 0
     Width = 1159
-    ActivePage = pgWindowsUpdates
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -3091,6 +3091,7 @@ object VisWaptGUI: TVisWaptGUI
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 2
+        Visible = False
       end
       object Splitter8: TSplitter
         Cursor = crVSplit
