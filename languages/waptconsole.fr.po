@@ -1696,6 +1696,14 @@ msgstr "Sélectionne les machines qui ont cette dépendance directe"
 msgid "More options"
 msgstr "Plus d'options"
 
+#: tviswaptgui.cballclassifications.caption
+msgid "All classifications"
+msgstr "Toutes les classifications"
+
+#: tviswaptgui.cballproducts.caption
+msgid "All products"
+msgstr "Tous les produits"
+
 #: tviswaptgui.cbauthorizedhosts.caption
 msgid "Only authorized computers"
 msgstr "Seulement les machines autorisées"
@@ -2079,10 +2087,6 @@ msgstr "Sélectionner un fichier d'installation exe ou msi"
 #: tviswaptgui.opendialogwapt.title
 msgid "Select WAPT file"
 msgstr "Sélectionner un fichier WAPT"
-
-#: tviswaptgui.panel2.caption
-msgid "Panel2"
-msgstr ""
 
 #: tviswaptgui.panel6.caption
 msgid "Panel6"

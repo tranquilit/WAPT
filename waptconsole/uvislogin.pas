@@ -84,14 +84,27 @@ procedure TVisLogin.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed;
   LabVersion.Caption := ApplicationName+' '+wapt_edition+' Edition '+GetApplicationVersion;
+
 end;
 
 procedure TVisLogin.FormShow(Sender: TObject);
+var
+  Lastappinifilename:String;
 begin
   Image1.Picture.LoadFromResourceName(HINSTANCE,'WAPT_PNG',TPortableNetworkGraphic);
   {$ifdef ENTERPRISE }
   laConfiguration.Visible := True;
   CBConfiguration.Visible := True;
+  CBConfiguration.Items.Clear;
+  Lastappinifilename:=IniReadString(Appuserinipath,'VisWaptGUI','lastappinifilename','');
+
+  if (lowercase(ExtractFileNameOnly(AppIniFilename)) = lowercase(ApplicationName)) and (Lastappinifilename<>'') then
+  begin
+    CBConfiguration.Text := ExtractFileNameOnly(Lastappinifilename);
+    CBConfigurationSelect(CBConfiguration);
+  end
+  else
+    CBConfiguration.Text := ExtractFileNameOnly(AppIniFilename);
   {$else}
   laConfiguration.Visible := False;
   CBConfiguration.Visible := False;

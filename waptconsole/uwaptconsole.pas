@@ -85,6 +85,8 @@ type
     butSearchPackages3: TBitBtn;
     Button1: TButton;
     cbAdvancedSearch: TCheckBox;
+    cbAllClassifications: TCheckBox;
+    cbAllproducts: TCheckBox;
     cbForcedWSUSscanDownload: TCheckBox;
     cbGroups: TComboBox;
     cbHasErrors: TCheckBox;
@@ -108,8 +110,8 @@ type
     cbWUAPending: TCheckBox;
     CBWUClassifications: TCheckListBox;
     cbWUCritical: TCheckBox;
-    CBWUProducts: TCheckListBox;
     CBShowHostsForGroups: TCheckBox;
+    CBWUProducts: TCheckListBox;
     DBOrgUnits: TBufDataset;
     DBOrgUnitsDepth: TLongintField;
     DBOrgUnitsDescription: TStringField;
@@ -573,6 +575,8 @@ type
     procedure cbADOUSelect(Sender: TObject);
     procedure cbADSiteSelect(Sender: TObject);
     procedure cbAdvancedSearchClick(Sender: TObject);
+    procedure cbAllClassificationsClick(Sender: TObject);
+    procedure cbAllproductsClick(Sender: TObject);
     procedure cbGroupsDropDown(Sender: TObject);
     procedure cbGroupsKeyPress(Sender: TObject; var Key: char);
     procedure cbGroupsSelect(Sender: TObject);
@@ -587,6 +591,7 @@ type
     procedure cbWUAPendingChange(Sender: TObject);
     procedure CBWUClassificationsClick(Sender: TObject);
     procedure cbWUCriticalClick(Sender: TObject);
+    procedure CBWUProductsClick(Sender: TObject);
     procedure CBWUProductsShowAllClick(Sender: TObject);
     procedure CheckBoxMajChange(Sender: TObject);
     procedure cbNeedUpgradeClick(Sender: TObject);
@@ -711,7 +716,7 @@ type
     function FilterSoftwares(softs: ISuperObject): ISuperObject;
     function FilterHardware(data: ISuperObject): ISuperObject;
     function FilterHostWinUpdates(wua: ISuperObject): ISuperObject;
-    function FilterWindowsUpdate(wua: ISuperObject): ISuperObject;
+    procedure FilterGridWindowsUpdates(Sender: TObject);
     function FilterWinProducts(products: ISuperObject): ISuperObject;
     function GetWUAClassifications: ISuperObject;
     function GetWUAProducts: ISuperObject;
@@ -736,6 +741,7 @@ type
 
     procedure LoadOrgUnitsTree(Sender: TObject);
     procedure UpdateTasksReport(tasksresult: ISuperObject);
+
   public
     { public declarations }
     MainRepoUrl, WaptServer, TemplatesRepoUrl: string;
@@ -747,6 +753,9 @@ type
     OrgUnitsHash:Integer;
     OrgUnitsSelectionHash:Integer;
     FilteredOrgUnits:TDynStringArray;
+
+    WUAPreferredProducts,
+    WUAPreferredClassifications : TDynStringArray;
 
     PollTasksThread: TPollTasksThread;
 
@@ -810,6 +819,25 @@ uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, uvisprivatekey
 { TVisWaptGUI }
 
 type TComponentsArray=Array of TComponent;
+
+function GetCheckListBoxItemsChecked(LB:TCheckListBox):TDynStringArray;
+var
+  i:integer;
+begin
+  SetLength(Result,0);
+  for i := 0 to LB.Items.Count-1 do
+    if LB.Checked[i] then
+      StrAppend(Result,LB.Items[i]);
+end;
+
+Procedure SetCheckListBoxItemsChecked(LB:TCheckListBox;checked:TDynStringArray);
+var
+  i:integer;
+begin
+  for i := 0 to LB.Items.Count-1 do
+    LB.Checked[i] := StrIsOneOf(LB.Items[i],checked);
+end;
+
 
 
 procedure SetSOGridVisible(Grid:TSOGrid;PropertyName:String;Visible:Boolean);
@@ -1172,6 +1200,8 @@ begin
     {$endif}
 
     ini.WriteString(self.name,'waptconsole.version',GetApplicationVersion);
+    ini.WriteString(self.name,'lastappinifilename',AppIniFilename);
+    ini.WriteString(self.name,'lastwaptserveruser',WaptServerUser);
 
   finally
     ini.Free;
@@ -4964,6 +4994,17 @@ procedure TVisWaptGUI.CBWUClassificationsClick(Sender: TObject);
 begin
 end;
 
+procedure TVisWaptGUI.CBWUProductsClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.cbAllClassificationsClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.cbAllproductsClick(Sender: TObject);
+begin
+end;
 
 {$endif}
 

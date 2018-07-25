@@ -1763,6 +1763,14 @@ msgstr ""
 msgid "More options"
 msgstr ""
 
+#: tviswaptgui.cballclassifications.caption
+msgid "All classifications"
+msgstr ""
+
+#: tviswaptgui.cballproducts.caption
+msgid "All products"
+msgstr ""
+
 #: tviswaptgui.cbauthorizedhosts.caption
 msgid "Only authorized computers"
 msgstr ""
@@ -2150,10 +2158,6 @@ msgstr ""
 #: tviswaptgui.opendialogwapt.title
 msgid "Select WAPT file"
 msgstr "WAPT Datei auswählen"
-
-#: tviswaptgui.panel2.caption
-msgid "Panel2"
-msgstr ""
 
 #: tviswaptgui.panel6.caption
 msgid "Panel6"
