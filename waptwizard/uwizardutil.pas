@@ -15,7 +15,7 @@ uses
 
 const
 {$ifdef ENTERPRISE}
-  WAPT_SERVICES : array[0..2] of String = ( 'WAPTPostgresql','WAPTtasks','WAPTServer','WAPTNginx'  );
+  WAPT_SERVICES : array[0..3] of String = ( 'WAPTPostgresql','WAPTtasks','WAPTServer','WAPTNginx'  );
 {$else}
   WAPT_SERVICES : array[0..2] of String = ( 'WAPTPostgresql', 'WAPTServer','WAPTNginx' );
 {$endif}
@@ -1387,12 +1387,6 @@ end;
 
 function wapt_server_set_state( state : TServiceState ): integer;
 const
-{$ifdef ENTERPRISE}
-  services : array[0..2] of String = ( 'waptpostgresql','wapttasks','WAPTServer','waptnginx'  );
-{$else}
-  services : array[0..2] of String = ( 'waptpostgresql', 'WAPTServer','waptnginx' );
-{$endif}
-
   timeout_seconds : integer = 60; // seconds
 var
     i : integer;
@@ -1403,14 +1397,14 @@ begin
   if not(state in [ ssRunning, ssStopped ]) then
     exit( -1 );
 
-  for i := 0 to Length(services) -1 do
+  for i := 0 to Length(WAPT_SERVICES) -1 do
   begin
     if state = ssRunning then
       j := i
     else
-      j := Length(services) -1 - i;
+      j := Length(WAPT_SERVICES) -1 - i;
 
-    j := service_set_state( services[j], state, timeout_seconds );
+    j := service_set_state( WAPT_SERVICES[j], state, timeout_seconds );
     if j <> 0 then
       exit( -1 );
   end;
