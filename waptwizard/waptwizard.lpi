@@ -60,7 +60,7 @@
         <PackageName Value="LCL"/>
       </Item9>
     </RequiredPackages>
-    <Units Count="36">
+    <Units Count="37">
       <Unit0>
         <Filename Value="waptwizard.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -280,6 +280,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit35>
+      <Unit36>
+        <Filename Value="uwizardconfigconsole_restartwaptservice.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardConfigConsole_RestartWaptService"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit36>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
