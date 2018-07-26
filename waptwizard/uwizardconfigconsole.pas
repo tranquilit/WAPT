@@ -47,6 +47,7 @@ uses
   uwizardconfigconsole_package_use_existing_key,
   uwizardconfigconsole_package_create_new_key,
   uwizardconfigconsole_buildagent,
+  uwizardconfigconsole_restartwaptservice,
   uwizardconfigconsole_finished,
   waptcommon,
   uwizardutil,
@@ -57,6 +58,10 @@ uses
 { TWizardConfigConsole }
 
 procedure TWizardConfigConsole.FormCreate(Sender: TObject);
+var
+  s : String;
+  r : integer;
+
 begin
   inherited;
 
@@ -66,6 +71,14 @@ begin
   m_data.is_enterprise_edition := DMPython.IsEnterpriseEdition;
   m_data.check_certificates_validity := '0';
   m_data.verify_cert := '0';
+
+
+  // If no waptservice installed, skip related page
+  r := wapt_installpath_waptservice(s);
+  if r <> 0 then
+    WizardManager.PageByName( WizardConfigConsole_page_build_agent ).NextOffset := 2;
+
+
 
 end;
 

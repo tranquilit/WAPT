@@ -14,8 +14,15 @@ uses
   waptcommon;
 
 const
+
+  WAPT_SERVICE_WAPTPOSTGRESQL : String = 'WAPTPostgresql';
+  WAPT_SERVICE_WAPTTASKS      : String = 'WAPTtasks';
+  WAPT_SERVICE_WAPTSERVER     : String = 'WAPTServer';
+  WAPT_SERVICE_WAPTNGINX      : String = 'WAPTNginx';
+  WAPT_SERVICE_WAPTSERVICE    : String = 'WAPTService';
+
 {$ifdef ENTERPRISE}
-  WAPT_SERVICES : array[0..3] of String = ( 'WAPTPostgresql','WAPTtasks','WAPTServer','WAPTNginx'  );
+  WAPT_SERVICES : array[0..3] of String = ( 'WAPTPostgresql','WAPTtasks','WAPTServer','WAPTNginx' );
 {$else}
   WAPT_SERVICES : array[0..2] of String = ( 'WAPTPostgresql', 'WAPTServer','WAPTNginx' );
 {$endif}
@@ -181,6 +188,7 @@ function wapt_server_configure_firewall() : integer;
 
 function wapt_server_mongodb_to_postgresql() : integer;
 function wapt_server_installation( var path : String ) : integer;
+function wapt_installpath_waptservice( var path : String ) : integer;
 
 function wapt_console_install_path( var path : String ) : integer;
 
@@ -199,6 +207,7 @@ function run_sync( params : PRunParamatersSync ) : integer;
 
 procedure show_loading_frame_threadsafe( params : PShowLoadingFrameParams );
 procedure hide_loading_frame_threadsafe();
+function service_binary_path(var path: String; const service_name : String ): integer;
 
 implementation
 
@@ -227,6 +236,66 @@ uses
 
 const
   HTTP_TIMEOUT : integer = 4 * 1000;
+
+
+function service_binary_path(var path: String; const service_name : String ): integer;
+label
+  LBL_FAILED;
+var
+   h_manager : SC_HANDLE;
+   h_service : SC_HANDLE;
+   lpsc      : LPQUERY_SERVICE_CONFIG;
+   dwBytesNeeded : DWORD;
+   s : String;
+   b: BOOL;
+   r : integer;
+begin
+
+  h_manager     := 0;
+  h_service     := 0;
+  lpsc          := nil;
+  dwBytesNeeded := 0;
+
+  h_manager:= OpenSCManager( nil, nil, SC_MANAGER_ALL_ACCESS );
+  if h_manager = 0 then
+    goto LBL_FAILED;
+
+  s := service_name;
+  SetLength(s, Length(s) + 1 );
+  s[Length(s)] := #0;
+
+  h_service := OpenService( h_manager, PChar(@s[1]), SERVICE_QUERY_CONFIG );
+  if h_service = 0 then
+    goto LBL_FAILED;
+
+  b := QueryServiceConfig( h_service, nil, 0, dwBytesNeeded );
+  if b then
+    goto LBL_FAILED;
+  lpsc := LPQUERY_SERVICE_CONFIG( GetMem(dwBytesNeeded));
+  FillChar( lpsc^, dwBytesNeeded, 0 );
+
+  b := QueryServiceConfig( h_service, lpsc, dwBytesNeeded, dwBytesNeeded );
+  if not b then
+    goto LBL_FAILED;
+
+  path := String(lpsc^.lpBinaryPathName + 1);
+
+  Freemem(lpsc);
+  CloseServiceHandle(h_service);
+  CloseServiceHandle(h_manager);
+  exit(0);
+
+LBL_FAILED:
+  if lpsc <> nil then
+    Freemem(lpsc);
+
+  if h_service <> 0 then
+    CloseServiceHandle( h_service );
+  if h_manager <> 0 then
+  CloseServiceHandle( h_manager );
+
+  exit(-1);
+end;
 
 
 function ensure_process_not_running( const process_name : String ) : boolean;
@@ -1374,14 +1443,14 @@ end;
 function wapt_service_restart() : integer;
 var
   r : integer;
+  services : TStringArray;
 begin
-  r := wapt_service_set_state( ssStopped );
-  if r <> 0 then
-    exit(r);
+  SetLength(  services, 1 );
+  services[0] := 'WAPTService';
+  service_stop_no_fail( services, 60 );
   r := wapt_service_set_state( ssRunning );
   if r <> 0 then
     exit(r);
-
   exit(0);
 end;
 
@@ -1584,6 +1653,24 @@ LBL_FAILED:
   CloseServiceHandle( h_manager );
 
   exit(-1);
+end;
+
+
+
+
+function wapt_installpath_waptservice(var path: String): integer;
+var
+  r : integer;
+  s : String;
+begin
+  r := service_binary_path( s, WAPT_SERVICE_WAPTSERVICE );
+  if r <> 0 then
+    exit(r);
+  r := Pos( 'waptservice', s );
+  if r = 0 then
+    exit(-1);
+  path := Copy( s, 1, r - 1);
+  exit(0);
 end;
 
 

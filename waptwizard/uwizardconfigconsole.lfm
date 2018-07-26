@@ -79,6 +79,11 @@ inherited WizardConfigConsole: TWizardConfigConsole
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
+        Caption = 'Service wapt'
+        ControlClassName = 'TWizardConfigConsole_RestartWaptService'
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end    
+      item
         Caption = 'Finished'
         ControlClassName = 'TWizardStepFrameConsoleFinished'
         Name = 'finished'

@@ -50,82 +50,49 @@ uses
   uwizardutil,
   IniFiles;
 
+// waptconsole.ini
 function TWizardConfigConsoleData_write_ini_waptconsole( data: PWizardConfigConsoleData; w: TWizard): integer;
 var
   ini : TIniFile;
   s   : String;
 begin
-
-    result := -1;
-
-    // Now Writing settings
-    try
-      {
-      // wapt-get.ini
-      s := 'wapt-get.ini';
-      ini := TIniFile.Create( s );
-      ini.WriteString( INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, check_certificates_validity );
-      ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                verify_cert);
-      ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 wapt_server);
-      ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    repo_url );
-      ini.Free;
-      }
-
-      // waptconsole.ini
-      wapt_ini_waptconsole(s);
-      ini := TIniFile.Create( s );
-      ini.WriteString( INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, data^.check_certificates_validity );
-      ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                data^.verify_cert);
-      ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 data^.wapt_server );
-      ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    data^.repo_url );
-      ini.WriteString( INI_GLOBAL, INI_DEFAULT_PACKAGE_PREFIX,      data^.default_package_prefix );
-      ini.WriteString( INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH,   data^.package_certificate );
+  result := -1;
+  try
+    wapt_ini_waptconsole(s);
+    ini := TIniFile.Create( s );
+    ini.WriteString( INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, data^.check_certificates_validity );
+    ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                data^.verify_cert);
+    ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 data^.wapt_server );
+    ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    data^.repo_url );
+    ini.WriteString( INI_GLOBAL, INI_DEFAULT_PACKAGE_PREFIX,      data^.default_package_prefix );
+    ini.WriteString( INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH,   data^.package_certificate );
+    result := 0;
+  finally
+    if Assigned(ini) then
       FreeAndNil(ini);
-
-      w.ClearValidationDescription();
-
-      result := 0;
-
-    finally
-      if Assigned(ini) then
-        FreeAndNil(ini);
-    end;
+  end;
 end;
 
+// wapt-get.ini
 function TWizardConfigConsoleData_write_ini_waptget( data: PWizardConfigConsoleData; w: TWizard): integer;
 var
   ini : TIniFile;
-  r   : integer;
   s   : String;
+  r : integer;
 begin
-
-    result := -1;
-
-    r := https_certificate_pinned_filename( data^.verify_cert, data^.wapt_server  );
-    if r <> 0 then
-    begin
-      w.show_error( 'An error has occurred while writing configuration file waptget.ini' );
-    end;
-
-
-    // Now Writing settings
-    try
-      // wapt-get.ini
-      s := 'wapt-get.ini';
-      ini := TIniFile.Create( s );
-      ini.WriteString( INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, data^.check_certificates_validity );
-      ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                data^.verify_cert);
-      ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 data^.wapt_server);
-      ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    data^.repo_url );
+  result := -1;
+  try
+    r := wapt_ini_waptget(s);
+    ini := TIniFile.Create( s );
+    ini.WriteString( INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, data^.check_certificates_validity );
+    ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                data^.verify_cert);
+    ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 data^.wapt_server);
+    ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    data^.repo_url );
+    result := 0;
+  finally
+    if Assigned(ini) then
       FreeAndNil(ini);
-
-      w.ClearValidationDescription();
-
-      result := 0;
-    finally
-      if Assigned(ini) then
-        FreeAndNil(ini);
-    end;
+  end;
 end;
 
 

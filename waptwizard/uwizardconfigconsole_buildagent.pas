@@ -81,7 +81,8 @@ end;
 procedure TWizardConfigConsole_BuildAgent.wizard_next(var bCanNext: boolean);
 label
   LBL_BUILD_WAPTUPGRADE,
-  LBL_BUILD_WAPTAGENT;
+  LBL_BUILD_WAPTAGENT,
+  LBL_SKIP_BUILD;
 var
   params_waptagent  : TCreateSetupParams_waptagent;
   params_waptupgrade: TCreateSetupParams_waptupgrade;
@@ -100,7 +101,11 @@ begin
 
   data := m_wizard.data();
 
-  TWizardConfigConsoleData_write_ini_waptconsole( data , self.m_wizard );
+  self.m_wizard.SetValidationDescription( 'Writing console configuration' );
+  // Write ini waptconsole
+  r := TWizardConfigConsoleData_write_ini_waptconsole( data , self.m_wizard );
+  if r <> 0 then
+    exit;
 
 
 ////////////////////// Building waptagent
@@ -124,10 +129,7 @@ LBL_BUILD_WAPTAGENT:
     s := 'Waptagent has been found on the server.'+ #13#10#13#10;
     s := s + 'Rebuild and overwrite it ?';
     if mrNo = m_wizard.show_question( s, mbYesNo ) then
-    begin
-      bCanNext := true;
-      exit;
-    end;
+      goto LBL_SKIP_BUILD;
   end
   else if r <> 404 then
   begin
@@ -234,7 +236,7 @@ LBL_BUILD_WAPTAGENT:
   m_wizard.ClearValidationDescription();
 
 
-
+LBL_SKIP_BUILD:
   bCanNext := true;
 
 end;

@@ -36,10 +36,12 @@ const
 
   function wapt_ini_waptconsole(var s: String): integer;
   function wapt_ini_waptserver( const base_path :String; var s : String ) : integer;
+  function wapt_ini_waptget( var s : String ) : integer;
 
 implementation
 
 uses
+  dialogs,
   uwizardutil;
 
 function wapt_ini_waptconsole(var s: String): integer;
@@ -59,6 +61,21 @@ begin
   if FileExists(s) then
       exit(0);
   exit(-1);
+end;
+
+function wapt_ini_waptget(var s: String): integer;
+var
+  p : String;
+  r : integer;
+begin
+  r := wapt_installpath_waptservice( p );
+  if r <> 0 then
+    p := GetCurrentDir;
+
+  s := IncludeTrailingBackslash(p) + 'wapt-get.ini';
+  if FileExists(s) then
+    exit(0);
+  exit(-1)
 end;
 
 end.
