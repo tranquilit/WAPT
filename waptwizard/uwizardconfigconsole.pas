@@ -61,7 +61,11 @@ begin
   inherited;
 
   FillChar( m_data, sizeof(TWizardConfigConsoleData), 0 );
+
+  // Some default settings
   m_data.is_enterprise_edition := DMPython.IsEnterpriseEdition;
+  m_data.check_certificates_validity := '0';
+  m_data.verify_cert := '0';
 
 end;
 

@@ -100,6 +100,9 @@ begin
 
   data := m_wizard.data();
 
+  TWizardConfigConsoleData_write_ini_waptconsole( data , self.m_wizard );
+
+
 ////////////////////// Building waptagent
 LBL_BUILD_WAPTAGENT:
   progress.Visible := false;
@@ -206,12 +209,7 @@ LBL_BUILD_WAPTAGENT:
 
   // Now building
   building_init_ui( MSG_BUILDING, 100 );
-  r := wapt_ini_waptconsole( s );
-  if r <> 0 then
-  begin
-    building_show_error( m_wizard, nil, 'configuration file waptconsole.ini have not been found, build cannot continue');
-    exit;
-  end;
+  wapt_ini_waptconsole( s );
   params_waptupgrade.server_username := data^.wapt_user;
   params_waptupgrade.server_password := data^.wapt_password;
   params_waptupgrade.config_filename := s;

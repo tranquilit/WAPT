@@ -121,8 +121,10 @@ begin
 
 
   data^.wapt_server   := url;
+  data^.repo_url      := url + '/wapt';
   data^.wapt_user     := 'admin';
   data^.wapt_password := self.ed_password.Text;
+  data^.verify_cert   := '0';
 
   bCanNext := true;
 end;
