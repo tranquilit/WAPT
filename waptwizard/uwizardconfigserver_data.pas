@@ -127,9 +127,9 @@ begin
     FreeAndNil( ini );
 
 
-    // write waptconsole template
+    // write wapt-get template
     wapt_installpath_waptserver(s);
-    s := IncludeTrailingBackslash(s) + 'waptconsole.ini';
+    s := IncludeTrailingBackslash(s) + 'wapt-get.ini';
     ini := TIniFile.Create( s );
     ini.WriteString( INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, data^.check_certificates_validity );
     ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                data^.verify_cert );
