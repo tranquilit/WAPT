@@ -1111,7 +1111,10 @@ begin
     p.Execute;
     result := 0;
   Except on E : EProcess do
+  begin
+    MessageDlg( Application.Name, e.Message, mtError, [mbOK], 0 );
     result := -1;
+  end;
   end;
   p.Free;
 end;
