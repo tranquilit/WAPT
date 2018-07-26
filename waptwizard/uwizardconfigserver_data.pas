@@ -126,6 +126,19 @@ begin
     ini.WriteString( INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH,   data^.package_certificate );
     FreeAndNil( ini );
 
+
+    // write waptconsole template
+    wapt_installpath_waptserver(s);
+    s := IncludeTrailingBackslash(s) + 'waptconsole.ini';
+    ini := TIniFile.Create( s );
+    ini.WriteString( INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, data^.check_certificates_validity );
+    ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                data^.verify_cert );
+    ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 data^.wapt_server );
+    ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    data^.wapt_server + '/wapt');
+    ini.WriteString( INI_GLOBAL, INI_DEFAULT_PACKAGE_PREFIX,      data^.default_package_prefix );
+    ini.WriteString( INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH,   data^.package_certificate );
+    FreeAndNil( ini );
+
     result := 0;
   except on Ex : Exception do
     begin

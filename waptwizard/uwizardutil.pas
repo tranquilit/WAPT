@@ -189,7 +189,7 @@ function wapt_server_configure_firewall() : integer;
 function wapt_server_mongodb_to_postgresql() : integer;
 function wapt_server_installation( var path : String ) : integer;
 function wapt_installpath_waptservice( var path : String ) : integer;
-
+function wapt_installpath_waptserver(var path: String): integer;
 function wapt_console_install_path( var path : String ) : integer;
 
 function wapt_register(): integer;
@@ -278,7 +278,7 @@ begin
   if not b then
     goto LBL_FAILED;
 
-  path := String(lpsc^.lpBinaryPathName + 1);
+  path := lpsc^.lpBinaryPathName;
 
   Freemem(lpsc);
   CloseServiceHandle(h_service);
@@ -1658,6 +1658,21 @@ LBL_FAILED:
   exit(-1);
 end;
 
+
+function wapt_installpath_waptserver(var path: String): integer;
+var
+  r : integer;
+  s : String;
+begin
+    r := service_binary_path( s, WAPT_SERVICE_WAPTSERVER );
+  if r <> 0 then
+    exit(r);
+  r := Pos( 'waptservice', s );
+  if r = 0 then
+    exit(-1);
+  path := Copy( s, 1, r - 1);
+  exit(0);
+end;
 
 
 
