@@ -104,10 +104,6 @@ begin
   if r <> 0 then
     goto LBL_FAIL;
 
-  // Write wapt-get.ini
-  r := TWizardConfigServerData_write_ini_waptget( data, self.m_wizard );
-  if r <> 0 then
-    goto LBL_FAIL;
 
 
 
@@ -160,15 +156,6 @@ begin
   if r <> 0 then
    goto LBL_FAIL;
 
-  // Force registration
-  self.m_wizard.SetValidationDescription( 'Registering local machine' );
-  r := wapt_register();
-  if r <> 0 then
-  begin
-    self.m_wizard.show_validation_error( nil, 'An error has occured while registering local machine' );
-    goto LBL_FAIL;
-  end;
-  self.m_wizard.ClearValidationDescription();
 
   SetCurrentDir(wd);
   bCanNext := true;

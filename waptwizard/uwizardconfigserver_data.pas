@@ -20,6 +20,7 @@ const
     WizardConfigServerPage_page_package_use_existing_key: String = 'package_use_existing_key';
     WizardConfigServerPage_page_server_url              : String = 'server_url';
     WizardConfigServerPage_page_build_agent             : String = 'build_agent';
+    WizardConfigServerPage_page_waptservice             : String = 'restart_wapt_service';
     WizardConfigServerPage_page_finished                : String = 'finished';
 
 

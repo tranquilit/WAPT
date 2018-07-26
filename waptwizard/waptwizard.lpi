@@ -16,7 +16,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="6"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="4"/>
+      <BuildNr Value="5"/>
       <StringTable LegalCopyright="Tranquil IT Systems 2012-2018" ProductName="WAPT Enterprise Edition" ProductVersion="1.6.2"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -28,7 +28,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="-c"/>
+        <CommandLineParams Value="-s"/>
       </local>
     </RunParams>
     <RequiredPackages Count="9">
@@ -60,7 +60,7 @@
         <PackageName Value="LCL"/>
       </Item9>
     </RequiredPackages>
-    <Units Count="37">
+    <Units Count="38">
       <Unit0>
         <Filename Value="waptwizard.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -287,6 +287,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit36>
+      <Unit37>
+        <Filename Value="uwizardconfigserver_restartwaptservice.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardConfigServer_RestartWaptService"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit37>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -315,7 +321,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="5">
+    <Exceptions Count="6">
       <Item1>
         <Name Value="EIdSocketError"/>
       </Item1>
@@ -331,6 +337,9 @@
       <Item5>
         <Name Value="EIdConnectTimeout"/>
       </Item5>
+      <Item6>
+        <Name Value="EOSError"/>
+      </Item6>
     </Exceptions>
   </Debugging>
 </CONFIG>

@@ -63,6 +63,12 @@ inherited WizardConfigServer: TWizardConfigServer
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
+        Caption = 'Restart Wapt service'
+        ControlClassName = 'TWizardConfigServer_RestartWaptService'
+        Description = 'Description'
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+      end    
+      item
         Caption = 'Configure console'
         ControlClassName = 'TWizardConfigServer_Console'
         Name = 'console'

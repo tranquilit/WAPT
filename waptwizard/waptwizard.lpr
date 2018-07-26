@@ -25,7 +25,8 @@ uses
   uwizardresetserverpassword_data, uwizardconfigserver_console,
   uwizardconfigserver_console_server,
   uwizardconfigconsole_package_create_new_key,
-  uwizardconfigconsole_package_use_existing_key, uwizardconfigconsole_restartwaptservice;
+  uwizardconfigconsole_package_use_existing_key,
+  uwizardconfigconsole_restartwaptservice, uwizardconfigserver_restartwaptservice;
 
 {$R *.res}
 
