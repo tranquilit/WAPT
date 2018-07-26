@@ -29,6 +29,9 @@ type
 implementation
 
 uses
+  tisinifiles,
+  uwapt_ini,
+  uwizardutil,
   uwizardconfigserver_data,
   WizardControls;
 
@@ -37,10 +40,45 @@ uses
 { TWizardConfigServer_Console_KeyOption }
 
 procedure TWizardConfigServer_Console_KeyOption.wizard_load(w: TWizard);
+var
+  s : String;
+  r : integer;
+
 begin
   inherited wizard_load(w);
 
-  self.rb_use_existing_key.Checked := true;
+  self.rb_use_existing_key.Checked  := false;
+  self.rb_create_new_key.Checked    := true;
+
+  r := wapt_installpath_waptserver( s);
+  if r <> 0 then
+    exit;
+
+  s := IncludeTrailingBackslash(s) +  'waptserver\repository\wapt\waptagent.exe';
+  if  FileExists(s) then
+  begin
+    self.rb_use_existing_key.Checked := true;
+    exit;
+  end;
+
+
+  r := wapt_ini_waptconsole(s);
+  if r <>0  then
+    exit;
+
+
+  s := IniReadString( s, INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH, '' );
+  if not FileExists(s) then
+    exit;
+
+  s :=   ExtractFileNameWithoutExt(s) + '.pem';
+  if not FileExists(s) then
+    exit;
+
+
+  self.rb_use_existing_key.Checked  := true;
+  self.rb_create_new_key.Checked    := false;
+
 
 end;
 
