@@ -103,6 +103,7 @@ inherited WizardConfigServer: TWizardConfigServer
         Caption = 'Server url'
         ControlClassName = 'TWizardConfigserver_Console_Server'
         Name = 'server_url'
+        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Build agent'
