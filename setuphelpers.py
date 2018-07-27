@@ -2336,7 +2336,7 @@ def register_windows_uninstall(package_entry):
         'wapt-get uninstall %s' % package_entry.package,
         display_name=package_entry.description,
         display_version=package_entry.version,
-        publisher=package_entry.maintainer)
+        publisher=package_entry.editor or package_entry.maintainer)
 
 
 def unregister_uninstall(uninstallkey,win64app=False):

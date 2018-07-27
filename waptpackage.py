@@ -463,7 +463,7 @@ class PackageEntry(BaseObjectClass):
     optional_attributes = ['maintainer','description','depends','conflicts','maturity',
         'locale','target_os','min_os_version','max_os_version','min_wapt_version',
         'sources','installed_size','impacted_process','description_fr','description_pl','description_de','description_es','audit_schedule',
-        'keywords','licence']
+        'editor','keywords','licence']
     # attributes which are added by _sign_control
     signature_attributes = ['signer','signer_fingerprint','signature','signature_date','signed_attributes']
 
@@ -540,6 +540,7 @@ class PackageEntry(BaseObjectClass):
 
         self.impacted_process=''
         self.keywords=''
+        self.editor=''
         self.licence=''
 
         self.md5sum=''
