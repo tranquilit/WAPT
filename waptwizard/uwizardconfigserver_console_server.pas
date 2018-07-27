@@ -73,9 +73,10 @@ var
   ini : TIniFile;
   r   : integer;
   s   : String;
-  b_ini_wapt_server : boolean;
+  b_ini_wapt_server : Boolean;
 begin
 
+  b_ini_wapt_server := false;
 
   h := LowerCase(GetComputerName);
 
@@ -85,7 +86,7 @@ begin
   begin
     ini := TIniFile.Create( s );
     try
-      s := ini.ReadString( INI_GLOBAL, INI_WAPT_SERVER, '' );
+      s := Trim(ini.ReadString( INI_GLOBAL, INI_WAPT_SERVER, '' ));
       b_ini_wapt_server := Length(s) > 0;
       if b_ini_wapt_server then
       begin
@@ -116,7 +117,7 @@ begin
       s := 'https://' + sl.Strings[i];
       self.rg_server_url.Items.AddObject( s, sl.Objects[i] );
       if Pos( h, s ) <> 0 then
-        self.rg_server_url.ItemIndex := self.rg_server_url.Items.Count -1;
+        self.rg_server_url.ItemIndex := i;
     end;
   end;
   sl.Free;
@@ -124,8 +125,9 @@ begin
   // Server url custom
   self.rg_server_url.Items.AddObject('Custom url', nil );
   if b_ini_wapt_server then
-    self.rg_server_url.ItemIndex := i;
+    self.rg_server_url.ItemIndex := self.rg_server_url.Items.Count -1;
 
+  self.rg_server_urlSelectionChanged( nil );
 
   self.m_wizard.WizardButtonPanel.NextButton.SetFocus;
 
@@ -153,6 +155,8 @@ begin
   begin
     s := self.ed_custom_server_url.Text;
     c := self.ed_custom_server_url;
+    if not wizard_validate_str_not_empty_when_trimmed( self.m_wizard, self.ed_custom_server_url, 'Server url cannot be empty' ) then
+      exit;
   end
   else
   begin
