@@ -129,6 +129,9 @@ begin
       goto LBL_FAIL;
   end;
 
+  // Gracefull time to make sure that server is up
+  Sleep(1000 * 1);
+
 
   // mongo DB -> postgresql
   if FileExists( 'waptserver\mongodb\mongoexport.exe') then
@@ -150,11 +153,6 @@ begin
   if not wizard_validate_waptserver_ping( m_wizard, 'https://localhost', nil ) then
     exit;
 
-  // Force restart wapt service
-  self.m_wizard.SetValidationDescription( Format('Restarting service %s', ['WAPTService']) );
-  r := service_set_state( WAPT_SERVICES[i], ssRunning, 30 );
-  if r <> 0 then
-   goto LBL_FAIL;
 
 
   SetCurrentDir(wd);
