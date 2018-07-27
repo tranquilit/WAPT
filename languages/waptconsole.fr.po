@@ -637,8 +637,6 @@ msgid "Launch update on hosts"
 msgstr "lancer les mises à jour en attente"
 
 #: tvisimportpackage.actpackageduplicate.caption
-#, fuzzy
-#| msgid "Import..."
 msgid "Import in repository..."
 msgstr "Importer..."
 
@@ -1500,7 +1498,7 @@ msgstr "Lancer TISHelp"
 
 #: tviswaptgui.acttriggerburstupgrades.caption
 msgid "Apply Burst Upgrades"
-msgstr "Lancer en masse les installations"
+msgstr ""
 
 #: tviswaptgui.acttriggerhostaudit.caption
 msgid "Run packages audit "
@@ -1517,15 +1515,11 @@ msgid "Trigger update of available packages on hosts."
 msgstr "Vérifier les mises à jour"
 
 #: tviswaptgui.acttriggerhostupgrade.caption
-#, fuzzy
-#| msgid "Apply upgrade"
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.CAPTION"
 msgid "Apply upgrades"
 msgstr "Lancer les installations"
 
 #: tviswaptgui.acttriggerhostupgrade.hint
-#, fuzzy
-#| msgid "Apply updates"
 msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.HINT"
 msgid "Launch pending packages upgrades"
 msgstr "Lancer les installations en attente"
@@ -2801,11 +2795,11 @@ msgstr "%s : %.0f%% terminé"
 
 #: uwaptconsoleres.rsconfirmburstupdate
 msgid "Are you sure you want to trigger Status Update on %d hosts ?"
-msgstr "Êtes-vous sûr de vouloir mettre à jour le status de %s machines ?"
+msgstr ""
 
 #: uwaptconsoleres.rsconfirmburstupgrades
 msgid "Are you sure you want to Apply Upgrades on %d hosts ?"
-msgstr "Êtes-vous sûr de vouloir installer les mises à jour sur %s machines ?"
+msgstr ""
 
 #: uwaptconsoleres.rsconfirmcaption
 msgctxt "uwaptconsoleres.rsconfirmcaption"
@@ -4310,15 +4304,4 @@ msgstr "waptupgade : upgrade wapt-get.exe et la base de données"
 msgctxt "uwaptres.rswaptuploaderror"
 msgid "Error while uploading WAPT agent to the repository : %s"
 msgstr "Erreur lors du chargement de l'agent WAPT vers le dépôt : %s"
-
-#: uwaptres.rswin32exewrapper
-msgctxt "uwaptres.rswin32exewrapper"
-msgid "Win32 Exe wrapper: %s %s"
-msgstr "Wrapper Win32 Exe  : %s %s"
-
-#: uwaptres.rswinterruptreceived
-#, fuzzy
-msgctxt "uwaptres.rswinterruptreceived"
-msgid "W: interrupt received, killing serverâ¦"
-msgstr "W : interruption reçue, arrêt du serveur"
 

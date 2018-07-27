@@ -1484,17 +1484,15 @@ msgid "Check updates"
 msgstr ""
 
 #: tviswaptgui.acttriggerhostupdate.hint
-msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPDATE.HINT"
+msgctxt "tviswaptgui.acttriggerhostupdate.hint"
 msgid "Trigger update of available packages on hosts."
 msgstr ""
 
 #: tviswaptgui.acttriggerhostupgrade.caption
-msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.CAPTION"
 msgid "Apply upgrades"
 msgstr ""
 
 #: tviswaptgui.acttriggerhostupgrade.hint
-msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.HINT"
 msgid "Launch pending packages upgrades"
 msgstr ""
 
@@ -4211,15 +4209,5 @@ msgstr ""
 #: uwaptres.rswaptuploaderror
 msgctxt "uwaptres.rswaptuploaderror"
 msgid "Error while uploading WAPT agent to the repository : %s"
-msgstr ""
-
-#: uwaptres.rswin32exewrapper
-msgctxt "uwaptres.rswin32exewrapper"
-msgid "Win32 Exe wrapper: %s %s"
-msgstr ""
-
-#: uwaptres.rswinterruptreceived
-msgctxt "uwaptres.rswinterruptreceived"
-msgid "W: interrupt received, killing serverâ¦"
 msgstr ""
 

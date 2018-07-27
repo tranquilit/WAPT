@@ -9163,13 +9163,3 @@ msgctxt "uwaptres.rswaptuploaderror"
 msgid "Error while uploading WAPT agent to the repository : %s"
 msgstr "Fehler beim hochladen des WAPT agent auf Repository : %s"
 
-#: uwaptres.rswin32exewrapper
-msgctxt "uwaptres.rswin32exewrapper"
-msgid "Win32 Exe wrapper: %s %s"
-msgstr "Win32 Exe wrapper: %s %s"
-
-#: uwaptres.rswinterruptreceived
-msgctxt "uwaptres.rswinterruptreceived"
-msgid "W: interrupt received, killing serverâ¦"
-msgstr "W: Unterbrechung empfangen, zerstöre Serverâ¦"
-
