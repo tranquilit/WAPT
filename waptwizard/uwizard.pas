@@ -146,8 +146,6 @@ begin
   if self.WizardManager.Pages.Count > 0 then
     self.WizardManager.PageIndex := 0;
 
-
-
 end;
 
 procedure TWizard.FormDestroy(Sender: TObject);
@@ -410,21 +408,8 @@ begin
 end;
 
 procedure TWizard.launch_console();
-var
-  r : integer;
-  s : String;
-  cmd : String;
 begin
-  cmd := 'waptconsole.exe';
-
-  s := '';
-  r := wapt_console_install_path(s);
-  if r = 0 then
-    cmd := IncludeTrailingBackslash(s) + cmd;
-
-  r := process_launch( cmd , s);
-  if r <> 0 then
-    self.show_error( 'An error has occured while launching the console');
+  process_launch( 'waptconsole.exe' , nil );
 end;
 
 

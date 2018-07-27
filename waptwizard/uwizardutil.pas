@@ -168,7 +168,7 @@ function https_certificate_pinned_filename( var filename : String; const https_u
 function crypto_check_key_password(var success: boolean; const key_filename: String; const password: String): integer;
 
 
-function process_launch( const command_line : String; const cwd : String = '' ) : integer;
+function process_launch( const binary : String; const params : PChar ) : integer;
 
 function net_list_enable_ip( sl : TStringList ) : integer;
 
@@ -1099,14 +1099,70 @@ begin
   exit(0);
 end;
 
-function process_launch(const command_line: String; const cwd: String): integer;
+{$ifdef WINDOWS}
+function process_launch(const binary: String; const params: PChar): integer;
+var
+  r       : HINST;
+  msg     : String;
+  wd      : String;
+begin
+{
+  HINSTANCE ShellExecuteA(
+  HWND   hwnd,
+  LPCSTR lpOperation,
+  LPCSTR lpFile,
+  LPCSTR lpParameters,
+  LPCSTR lpDirectory,
+  INT    nShowCmd
+);
+  }
+  wd := ExtractFilePath(binary);
+  r := ShellExecute(0,'open',PChar(binary), params, PChar(wd), SW_SHOWNORMAL);
+  if r < 32 then
+  begin
+    case r of
+      0                     : msg := 'The operating system is out of memory or resources.';
+      ERROR_FILE_NOT_FOUND  : msg := 'The specified file was not found.';
+      ERROR_PATH_NOT_FOUND  : msg := 'The specified path was not found..';
+      ERROR_BAD_FORMAT      : msg := 'The .exe file is invalid (non-Win32 .exe or error in .exe image)..';
+      5                     : msg := 'The operating system denied access to the specified file..'; {SE_ERR_ACCESSDENIED}
+      SE_ERR_ASSOCINCOMPLETE: msg := 'The file name association is incomplete or invalid..';
+      SE_ERR_DDEBUSY        : msg := 'The DDE transaction could not be completed because other DDE transactions were being processed..';
+      SE_ERR_DDEFAIL        : msg := 'The DDE transaction failed..';
+      SE_ERR_DDETIMEOUT     : msg := 'The DDE transaction could not be completed because the request timed out..';
+      32                    : msg := 'The specified DLL was not found..'; {SE_ERR_DLLNOTFOUND}
+      SE_ERR_NOASSOC        : msg := 'There is no application associated with the given file name extension. This error will also be returned if you attempt to print a file that is not printable..';
+      8                     : msg := 'There was not enough memory to complete the operation..'; {SE_ERR_OOM}
+      SE_ERR_SHARE          : msg := 'A sharing violation occured.';
+      else
+        msg := Format('Unknow error %d', [r] );
+    end;
+    MessageDlg( Application.Name, msg, mtError, [mbOK], 0 );
+    exit( -1 );
+  end;
+
+  exit(0);
+end;
+{$else}
+function process_launch(const binary: String; const params: PChar): integer;
 var
   p  : TProcess;
+  sl : TStringList;
 begin
+
   p := TProcess.Create( nil );
-  p.Executable       := command_line;
-  if DirectoryExists(cwd) then
-    p.CurrentDirectory := cwd;
+  p.Executable       := binary;
+  p.CurrentDirectory := ExtractFilePath(binary);
+
+  if Assigned(params) then
+  begin
+    sl := TStringList.Create;
+    sl.Delimiter := ' ';
+    sl.CommaText := params;
+    p.Parameters.AddStrings( sl );
+    sl.Free;
+  end;
+
   try
     p.Execute;
     result := 0;
@@ -1118,7 +1174,7 @@ begin
   end;
   p.Free;
 end;
-
+{$endif}
 
 {
 /// windows
