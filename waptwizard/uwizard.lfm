@@ -1,13 +1,13 @@
 object Wizard: TWizard
-  Left = 2090
-  Height = 456
-  Top = 185
-  Width = 868
+  Left = 625
+  Height = 480
+  Top = 258
+  Width = 640
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'TWizard'
-  ClientHeight = 456
-  ClientWidth = 868
+  ClientHeight = 480
+  ClientWidth = 640
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   Position = poMainFormCenter
@@ -15,8 +15,8 @@ object Wizard: TWizard
   object WizardButtonPanel: TWizardButtonPanel
     Left = 0
     Height = 50
-    Top = 406
-    Width = 868
+    Top = 430
+    Width = 640
     Manager = WizardManager
     CancelButton.Name = 'CancelButton'
     CancelButton.AnchorSideTop.Control = WizardButtonPanel
@@ -48,18 +48,18 @@ object Wizard: TWizard
     PreviousButton.Caption = 'Previous'
     Align = alBottom
     ClientHeight = 50
-    ClientWidth = 868
+    ClientWidth = 640
     TabOrder = 0
   end
   object TopPanel: TPanel
     Left = 0
     Height = 58
     Top = 0
-    Width = 868
+    Width = 640
     Align = alTop
     BevelOuter = bvNone
     ClientHeight = 58
-    ClientWidth = 868
+    ClientWidth = 640
     Color = clWhite
     ParentColor = False
     TabOrder = 1
@@ -83,7 +83,7 @@ object Wizard: TWizard
       ParentColor = False
     end
     object img_logo: TImage
-      Left = 810
+      Left = 582
       Height = 58
       Top = 0
       Width = 58
@@ -330,8 +330,8 @@ object Wizard: TWizard
   object lbl_current_task: TLabel
     Left = 0
     Height = 15
-    Top = 391
-    Width = 868
+    Top = 415
+    Width = 640
     Align = alBottom
     Alignment = taCenter
     AutoSize = False
@@ -340,9 +340,9 @@ object Wizard: TWizard
   end
   object panel_center: TPanel
     Left = 0
-    Height = 333
+    Height = 357
     Top = 58
-    Width = 868
+    Width = 640
     Align = alClient
     BevelOuter = bvNone
     Caption = 'panel_center'

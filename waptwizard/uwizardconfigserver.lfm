@@ -1,35 +1,11 @@
 inherited WizardConfigServer: TWizardConfigServer
   Left = 868
-  Height = 498
   Top = 266
-  Width = 947
-  Caption = 'TWizardServer'
-  ClientHeight = 498
-  ClientWidth = 947
+  Caption = 'Server configuration tool'
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poWorkAreaCenter
-  inherited WizardButtonPanel: TWizardButtonPanel
-    Top = 448
-    Width = 947
-    ClientWidth = 947
-  end
-  inherited TopPanel: TPanel
-    Width = 947
-    ClientWidth = 947
-    inherited img_logo: TImage
-      Left = 889
-    end
-  end
-  inherited lbl_current_task: TLabel
-    Top = 433
-    Width = 947
-  end
-  inherited panel_center: TPanel
-    Height = 375
-    Width = 947
-  end
   inherited WizardManager: TWizardManager
     OnPageHide = WizardManagerPageHide
     OnPageShow = WizardManagerPageShow
@@ -38,41 +14,35 @@ inherited WizardConfigServer: TWizardConfigServer
         Caption = 'Welcome'
         ControlClassName = 'TTWizardConfigServer_Welcome'
         Name = 'welcome'
-        Description = 'TTWizardConfigServer_Welcome'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Admin password'
         ControlClassName = 'TWizardConfigServer_Password'
         Name = 'admin_password'
-        Description = 'TWizardConfigServer_Password'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Firewall'
         ControlClassName = 'TWizardConfigServer_Firewall'
         Name = 'firewall'
-        Description = 'TWizardConfigServer_Firewall'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Post-setup'
         ControlClassName = 'TWizardConfigServer_ServerPostSetup'
         Name = 'post_setup'
-        Description = 'TWizardConfigServer_ServerPostSetup'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Restart Wapt service'
         ControlClassName = 'TWizardConfigServer_RestartWaptService'
-        Description = 'Description'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Configure console'
         ControlClassName = 'TWizardConfigServer_Console'
         Name = 'console'
-        Description = 'TWizardConfigServer_Console'
         EnabledButtons = [wbNext, wbCancel]
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
@@ -80,14 +50,12 @@ inherited WizardConfigServer: TWizardConfigServer
         Caption = 'Key option'
         ControlClassName = 'TWizardConfigServer_Console_KeyOption'
         Name = 'key_option'
-        Description = 'TWizardConfigServer_KeyOption'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Package ( Create new key )'
         ControlClassName = 'TWizardConfigServer_Console_PackageCreateNewKey'
         Name = 'package_create_new_key'
-        Description = 'TWizardConfigServer_PackageCreateNewKey'
         NextOffset = 2
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
@@ -95,7 +63,6 @@ inherited WizardConfigServer: TWizardConfigServer
         Caption = 'Package ( use existing key )'
         ControlClassName = 'TWizardConfigServer_Console_PackageUseExistingKey'
         Name = 'package_use_existing_key'
-        Description = 'TWizardConfigServer_PackageUseExistingKey'
         PreviousOffset = 2
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
@@ -115,7 +82,6 @@ inherited WizardConfigServer: TWizardConfigServer
         Caption = 'Finished'
         ControlClassName = 'TWizardConfigServer_Finish'
         Name = 'finished'
-        Description = 'TWizardConfigServer_Finish'
         EnabledButtons = [wbFinish]
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end>
