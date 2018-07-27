@@ -76,7 +76,8 @@ end;
 procedure TWizardConfigServer_Console_BuildAgent.wizard_next( var bCanNext: boolean );
 label
   LBL_BUILD_WAPTUPGRADE,
-  LBL_BUILD_WAPTAGENT;
+  LBL_BUILD_WAPTAGENT,
+  LBL_SUCCESS;
 var
   params_waptagent  : TCreateSetupParams_waptagent;
   params_waptupgrade: TCreateSetupParams_waptupgrade;
@@ -119,7 +120,7 @@ LBL_BUILD_WAPTAGENT:
     s := 'Waptagent has been found on the server.'+ #13#10#13#10;
     s := s + 'Rebuild and overwrite it ?';
     if mrNo = m_wizard.show_question( s, mbYesNo ) then
-      exit;
+      goto LBL_SUCCESS;
   end
   else if r <> 404 then
   begin
@@ -234,6 +235,7 @@ LBL_BUILD_WAPTAGENT:
   end;
   m_wizard.ClearValidationDescription();
 
+LBL_SUCCESS:
 
   bCanNext:= true;
 end;
