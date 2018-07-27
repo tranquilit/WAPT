@@ -289,6 +289,7 @@ class Packages(WaptBaseModel):
     impacted_process = ArrayField(CharField,null=True)
     keywords = ArrayField(CharField,null=True)
     licence = CharField(null=True)
+    editor = CharField(null=True)
 
     @classmethod
     def _as_attribute(cls,k,v):
