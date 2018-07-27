@@ -23,7 +23,7 @@ if "/usr/bin/uwsgi-core" in ps_out:
 # check for legacy (<0.9) install if user waptserver exists, then convert to simple wapt, otherwise create
 # gid 33 = www-data
 if check_user_exists('waptserver'):
-    print "Waptserver user exists, renaming to wapt and changing group to www-data"
+    print("Waptserver user exists, renaming to wapt and changing group to www-data")
     cmd = "/usr/sbin/usermod -l wapt waptserver"
     print("EXECUTING : %s " % cmd)
     print(subprocess.check_output(cmd,shell=True))
@@ -34,7 +34,7 @@ if check_user_exists('waptserver'):
 if not check_user_exists('wapt'):
     print("Adding user wapt")
     cmd  = "adduser --system --home /opt/wapt  --gid 33 wapt"
-    print "Executing : %s " % cmd
+    print("Executing : %s " % cmd)
     print(subprocess.check_output(cmd,shell=True))
 else:
     print "User wapt already existing, skipping user creation"

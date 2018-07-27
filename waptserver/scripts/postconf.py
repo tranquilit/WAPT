@@ -308,7 +308,7 @@ def main():
             postconf.msgbox('SELinux detected, tweaking httpd permissions.')
             run('setsebool -P httpd_can_network_connect 1')
             run('setsebool -P httpd_setrlimit on')
-            for sepath in ('wapt','wapt-host','wapt-hostref'):
+            for sepath in ('wapt','wapt-host'):
                 run('semanage fcontext -a -t httpd_sys_content_t "/var/www/html/%s(/.*)?"' %sepath)
                 run('restorecon -R -v /var/www/html/%s' %sepath)
             postconf.msgbox('SELinux correctly configured for Nginx reverse proxy')
