@@ -65,6 +65,7 @@ _defaults = {
     'waptwua_folder': '',  # default: wapt_folder + 'wua'
     'db_name': 'wapt',
     'db_host': None,
+    'db_port': 5432,
     'db_user': 'wapt',
     'db_password': None,
     'db_max_connections': 100,
@@ -158,7 +159,7 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
         if _config.has_option('options', param):
             conf[param] = _config.get('options', param)
 
-    for param in ('db_max_connections', 'db_stale_timeout', 'db_connect_timeout', 'max_clients'):
+    for param in ('db_port', 'db_max_connections', 'db_stale_timeout', 'db_connect_timeout', 'max_clients'):
         if _config.has_option('options', param):
             conf[param] = _config.getint('options', param)
 

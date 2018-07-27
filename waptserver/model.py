@@ -77,11 +77,12 @@ def load_db_config(server_config=None):
     if server_config is None:
         server_config = waptserver.config.load_config()
 
-    logger.info('Initializing a DB connection pool for db host:%s db_name:%s. Size:%s' %
-        (server_config['db_host'],server_config['db_name'],server_config['db_max_connections']))
+    logger.info('Initializing a DB connection pool for db host %s:%s db_name:%s. Size:%s' %
+        (server_config['db_host'],server_config['db_port'],server_config['db_name'],server_config['db_max_connections']))
     pgdb = PooledPostgresqlExtDatabase(
         database=server_config['db_name'],
         host=server_config['db_host'],
+        port=server_config['db_port'],
         user=server_config['db_user'],
         password=server_config['db_password'],
         max_connections=server_config['db_max_connections'],
