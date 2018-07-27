@@ -1505,7 +1505,7 @@ var
   services : TStringArray;
 begin
   SetLength(  services, 1 );
-  services[0] := 'WAPTService';
+  services[0] :=  WAPT_SERVICE_WAPTSERVICE;
   service_stop_no_fail( services, 60 );
   r := wapt_service_set_state( ssRunning );
   if r <> 0 then
@@ -1521,7 +1521,7 @@ var
 begin
   if not(state in [ ssRunning, ssStopped ]) then
     exit( -1 );
-  r := service_set_state( 'WAPTService', state, timeout_seconds );
+  r := service_set_state( WAPT_SERVICE_WAPTSERVICE, state, timeout_seconds );
   if r <> 0 then
     exit( r );
 
