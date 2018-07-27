@@ -81,9 +81,12 @@ os.chmod('/usr/bin/wapt-scanpackages', 0o755)
 os.chmod('/usr/bin/wapt-signpackages', 0o755)
 os.chmod('/usr/bin/waptpython',0o755)
 
-
-print("Restarting rsyslog")
-run('systemctl restart rsyslog')
+try:
+    print "Restarting syslog-ng"
+    run('systemctl restart syslog-ng')
+except subprocess.CalledProcessError:
+    print "Restarting rsyslog"
+    run('systemctl restart rsyslog')
 
 def check_if_running(process_name):
     try:
