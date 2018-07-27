@@ -428,25 +428,6 @@ class WsusUpdates(WaptBaseModel):
     downloaded_on = CharField(null=True)
 
 
-class HostWuaStatus(WaptBaseModel):
-    """Local state of Windows update engine
-    """
-    host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE',primary_key=True)
-    status =  CharField(null=True)
-    wua_agent_version = CharField(null=True)
-    wsusscn2cab_date =  CharField(null=True)
-
-    windows_updates_rules = BinaryJSONField(null=True)
-
-    last_scan_date = CharField(null=True)
-    last_scan_duration = IntegerField(null=True)
-
-    last_install_result = CharField(null=True)
-    last_install_date = CharField(null=True)
-    last_install_batch = ArrayField(CharField,null=True)
-    last_install_reboot_required = CharField(null=True)
-
-
 class HostWsus(WaptBaseModel):
     """List of Windows Update discovered by waptwua for a Host with install status
     """
@@ -626,15 +607,6 @@ def update_waptwua(uuid,data):
         if isinstance(value,unicode):
             value = value.replace(u'\x00', ' ')
         return value
-
-    """
-    # moved into a json field
-    if 'waptwua_status' in data:
-        waptwua_status = dict([(k,encode_value(v)) for k, v in data['waptwua_status'].iteritems() if k in HostWuaStatus._meta.fields])
-        waptwua_status['host'] = uuid
-        if not HostWuaStatus.update(**waptwua_status).where(HostWuaStatus.host==uuid).execute():
-            HostWuaStatus.insert(**waptwua_status).execute()
-    """
 
     if 'waptwua_updates' in data:
         windows_updates = []
@@ -1047,9 +1019,9 @@ def init_db(drop=False):
     except:
         wapt_db.rollback()
     if drop:
-        for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,HostWuaStatus,WsusDownloadTasks,Packages]):
+        for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,WsusDownloadTasks,Packages]):
             table.drop_table(fail_silently=True)
-    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,HostWuaStatus,WsusDownloadTasks,Packages], safe=True)
+    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,WsusDownloadTasks,Packages], safe=True)
 
     if get_db_version() == None:
         # new database install, we setup the db_version key
@@ -1296,8 +1268,6 @@ def upgrade_db_structure():
     if get_db_version() <= next_version:
         with wapt_db.atomic():
             logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
-
-            #wapt_db.create_tables([HostWuaStatus],safe=True)
 
             WsusDownloadTasks.create_table(fail_silently=True)
             Packages.create_table(fail_silently=True)

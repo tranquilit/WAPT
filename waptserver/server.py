@@ -83,7 +83,7 @@ from flask_socketio import disconnect, send, emit
 from peewee import *
 from playhouse.postgres_ext import *
 
-from waptserver.model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups,HostWsus,WsusUpdates,HostWuaStatus,Packages
+from waptserver.model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups,HostWsus,WsusUpdates,Packages
 from waptserver.model import get_db_version, init_db, wapt_db, model_to_dict, dict_to_model, update_host_data
 from waptserver.model import upgrade_db_structure
 from waptserver.model import load_db_config
@@ -1537,15 +1537,7 @@ def get_hosts():
             limit = int(request.args.get('limit', 1000))
 
             fields = build_fields_list(Hosts, columns)
-            """
-            if 'waptwua_status' in columns:
-                fields.append(HostWuaStatus)
-            """
             req = Hosts.select(*fields)
-            """
-            if 'waptwua_status' in columns:
-                req = req.join(HostWuaStatus,'RIGHT OUTER')
-            """
             req = req.limit(limit)
 
             req = req.order_by(SQL('last_seen_on desc NULLS LAST'))
