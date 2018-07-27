@@ -54,17 +54,16 @@ begin
   if r <> 0 then
     exit;
 
-  // Restart waptservice
-  self.m_wizard.SetValidationDescription('Restarting service WAPTService');
-  r := wapt_service_restart();
+  // Force registration
+  self.m_wizard.SetValidationDescription( 'Registering local machine' );
+  r := wapt_register();
   if r <> 0 then
     exit;
 
-  // Register
-  self.m_wizard.SetValidationDescription('Registering');
-  r := wapt_register();
-  if r <> 0 then
-      exit;
+  // Force restart wapt agent service
+  self.m_wizard.SetValidationDescription( 'Restarting wapt agent service');
+  wapt_service_restart();
+
 
   bCanNext := true;
 end;
