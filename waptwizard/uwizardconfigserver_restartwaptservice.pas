@@ -61,6 +61,11 @@ begin
   if r <> 0 then
     exit;
 
+  // Force restart wapt agent service
+  self.m_wizard.SetValidationDescription( 'Restarting wapt agent service');
+  wapt_service_restart();
+
+
   bCanNext := true;
 end;
 
