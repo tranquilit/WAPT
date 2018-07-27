@@ -155,14 +155,20 @@ end;
 function TWizardConfigServerData_write_ini_waptget( data : PWizardConfigServerData; w : TWizard ): integer;
 var
   ini : TIniFile;
+  s   : String;
+  r   : integer;
 begin
   ini := nil;
 
   w.SetValidationDescription( 'Writing wapt-get configuration file' );
-  try
 
+  r := wapt_installpath_waptservice(s);
+  if r <> 0 then
+    exit(-1);
+  s := IncludeTrailingBackslash(s) + 'wapt-get.ini';
+  try
     // wapt-get.ini
-    ini := TIniFile.Create('wapt-get.ini' );
+    ini := TIniFile.Create(s);
     ini.WriteString( INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, data^.check_certificates_validity );
     ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                data^.verify_cert );
     ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 data^.wapt_server );
