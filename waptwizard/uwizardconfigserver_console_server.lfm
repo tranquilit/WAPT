@@ -1,10 +1,14 @@
 inherited WizardConfigserver_Console_Server: TWizardConfigserver_Console_Server
+  Height = 185
+  Width = 367
+  ClientHeight = 185
+  ClientWidth = 367
   DesignLeft = 485
   object rg_server_url: TRadioGroup[0]
     Left = 0
     Height = 107
     Top = 0
-    Width = 320
+    Width = 367
     Align = alTop
     AutoFill = True
     Caption = 'Select server url that wapt client can contact server'
@@ -15,6 +19,42 @@ inherited WizardConfigserver_Console_Server: TWizardConfigserver_Console_Server
     ChildSizing.ShrinkVertical = crsScaleChilds
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
+    ClientHeight = 87
+    ClientWidth = 363
+    Items.Strings = (
+      'localhost'
+      'Manual'
+    )
+    OnSelectionChanged = rg_server_urlSelectionChanged
     TabOrder = 0
+  end
+  object p_custom_server_url: TPanel[1]
+    Left = 0
+    Height = 78
+    Top = 107
+    Width = 367
+    Align = alClient
+    BevelOuter = bvNone
+    Caption = 'p_custom_server_url'
+    ClientHeight = 78
+    ClientWidth = 367
+    TabOrder = 1
+    object ed_custom_server_url: TEdit
+      Left = 80
+      Height = 23
+      Top = 8
+      Width = 283
+      Anchors = [akTop, akLeft, akRight]
+      TabOrder = 0
+      Text = 'ed_custom_server_url'
+    end
+    object lbl_custom_server_url: TLabel
+      Left = 16
+      Height = 15
+      Top = 12
+      Width = 55
+      Caption = 'Server url :'
+      ParentColor = False
+    end
   end
 end
