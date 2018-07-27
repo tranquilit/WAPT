@@ -343,7 +343,7 @@ class Packages(WaptBaseModel):
 
 
 class HostSoftwares(WaptBaseModel):
-    """Content of Hots's softwares uninstall registry
+    """Content of Host's softwares uninstall registry
     """
     id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
