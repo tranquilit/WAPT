@@ -3,7 +3,7 @@
 #define AppName "WAPT Server"
 #define default_repo_url "http://127.0.0.1/wapt/"
 #define default_wapt_server "http://127.0.0.1"
-
+#define default_wapt_password "mywapt"
 #define repo_url ""
 #define wapt_server ""
 
@@ -115,7 +115,7 @@ Filename: {app}\conf\waptserver.ini; Section: options; Key: allow_unauthenticate
 [RUN]
 Filename: "{app}\waptserver\pgsql\vcredist_x64.exe"; Parameters: "/passive /quiet"; StatusMsg: {cm:InstallMSVC2013}; Description: "{cm:InstallMSVC2013}";  
 Filename: "{app}\wapt-get.exe"; Parameters: " update-packages {app}\waptserver\repository\wapt"; StatusMsg: {cm:ScanPackages}; Description: "{cm:ScanPackages}"
-Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\winsetup.py all -c {app}\conf\waptserver.ini -f --setpassword={code:GetServerPassword}"; StatusMsg: {cm:ScanPackages}; Description: "{cm:InstallingServerServices}"
+Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\winsetup.py all -c {app}\conf\waptserver.ini -f --setpassword={#default_wapt_password}"; StatusMsg: {cm:ScanPackages}; Description: "{cm:InstallingServerServices}"
 Filename: "net"; Parameters: "start waptpostgresql"; Flags: runhidden; StatusMsg: "Starting service waptpostgresql"
 Filename: "net"; Parameters: "start waptnginx"; Flags: runhidden; StatusMsg: "Starting service waptnginx"
 Filename: "net"; Parameters: "start waptserver"; Flags: runhidden; StatusMsg: "Starting service waptserver"
@@ -175,31 +175,12 @@ en.InstallWaptServer=Wapt server installieren
 Type: files; Name: "{app}\waptserver\waptserver.py*"
 
 [Code]
-var
-    labServerPassword,labServerPassword2: TLabel;
-    edServerPassword,edServerPassword2: TEdit;
-    
-
 function NextButtonClick(CurPageID: Integer):Boolean;
 var
   Reply: Integer;
   NetstatOutput, ConflictingService: AnsiString;
 begin
 
-  if CurPageID = CustomPage.Id then
-  begin
-    if edServerPassword.text = edServerPassword2.text then
-    begin
-      Result := True;
-      Exit;
-    end
-    else
-    begin
-      MsgBox('Check both password', mbError, MB_ABORTRETRYIGNORE);
-      Result := False;
-      Exit;
-    end;
-  end;
 
   if CurPageID <> wpSelectTasks then
   begin
@@ -234,42 +215,8 @@ begin
 
 end;
 
-function GetServerPassword(Param: String):String;
-begin
-  if (edServerPassword.Text<>'') and (edServerPassword.Text = edServerPassword2.Text) then
-    Result := edServerPassword.Text
-  else
-    Result := ''
-end;
-
 procedure InitializeWizard;
 begin
-  CustomPage := CreateCustomPage(wpSelectTasks, 'Server options', '');
-  
-  labServerPassword := TLabel.Create(WizardForm);
-  labServerPassword.Parent := CustomPage.Surface; 
-  labServerPassword.Caption := 'WAPT Server Admin password (leave blank to not change password):';
-
-  edServerPassword := TEdit.Create(WizardForm);
-  edServerPassword.PasswordChar := '*';
-  edServerPassword.Parent := CustomPage.Surface; 
-  edServerPassword.Left := labServerPassword.Left + labServerPassword.Width + 5;
-  edServerPassword.Width := CustomPage.SurfaceWidth - labServerPassword.Width;
-  edServerPassword.Top := labServerPassword.Top;
-  edServerPassword.text := '';
-  
-  labServerPassword2 := TLabel.Create(WizardForm);
-  labServerPassword2.Parent := CustomPage.Surface; 
-  labServerPassword2.Caption := 'Confirm password:';
-  labServerPassword2.Top := edServerPassword.Top + edServerPassword.Height + 5;
-
-  edServerPassword2 := TEdit.Create(WizardForm);
-  edServerPassword2.PasswordChar := '*';
-  edServerPassword2.Parent := CustomPage.Surface; 
-  edServerPassword2.Left := edServerPassword.Left;
-  edServerPassword2.Width := edServerPassword.Width;
-  edServerPassword2.Top := labServerPassword2.Top;
-  edServerPassword2.text := '';
 end;
 
 
