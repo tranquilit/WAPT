@@ -156,6 +156,7 @@ LBL_BUILD_WAPTAGENT:
   if params_waptagent._result <> 0 then
   begin
     building_show_error( m_wizard, nil, params_waptagent._err_message );
+    self.m_wizard.show_error( params_waptagent._err_message );
     exit;
   end;
 
