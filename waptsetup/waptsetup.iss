@@ -45,3 +45,6 @@
 ;#define FastDebug
 
 #include "common.iss"
+
+[RUN]
+Filename: "{app}\waptwizard.exe"; Parameters: "-c"; Flags: postinstall runascurrentuser skipifsilent shellexec;
