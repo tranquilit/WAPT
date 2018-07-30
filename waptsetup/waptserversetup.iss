@@ -136,8 +136,8 @@ Name: InstallWaptserver; Description: "{cm:InstallWaptServer}"; GroupDescription
 Filename: "net"; Parameters: "stop wapttasks"; Flags: runhidden; StatusMsg: "Stopping service wapttasks"
 Filename: "sc"; Parameters: "delete wapttasks"; Flags: runhidden; StatusMsg: "Removing service wapttasks"
 #endif
-Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Stopping service waptserver"
 Filename: "net"; Parameters: "stop waptnginx"; Flags: runhidden; StatusMsg: "Stopping service waptnginx"
+Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Stopping service waptserver"
 Filename: "net"; Parameters: "stop waptpostgresql"; Flags: runhidden; StatusMsg: "Stopping service waptpostgresql"
 
 Filename: "sc"; Parameters: "delete waptserver"; Flags: runhidden; StatusMsg: "Removing service waptserver"
