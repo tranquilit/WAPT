@@ -1,4 +1,3 @@
-#ifndef edition
 #define edition "waptsetup"
 #define default_repo_url ""
 #define default_wapt_server ""
@@ -44,7 +43,5 @@
 
 ; for fast compile in developent mode
 ;#define FastDebug
-
-#endif
 
 #include "common.iss"

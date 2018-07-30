@@ -1,4 +1,3 @@
-#ifndef edition
 #define waptserver
 #define edition "waptserversetup"
 #define AppName "WAPT Server"
@@ -44,7 +43,6 @@
 ;#define FastDebug
 
 ;#define choose_components
-#endif
 
 #include "common.iss"
 
