@@ -39,4 +39,4 @@
 
 #endif
 
-#include "waptsetup.iss"
+#include "common.iss"

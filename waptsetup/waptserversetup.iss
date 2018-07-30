@@ -46,7 +46,7 @@
 ;#define choose_components
 #endif
 
-#include "waptsetup.iss"
+#include "common.iss"
 
 [Files]
 

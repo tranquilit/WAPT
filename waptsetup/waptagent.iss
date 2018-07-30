@@ -39,4 +39,4 @@
 
 ;#define waptenterprise
 
-#include "waptsetup.iss"
+#include "common.iss"
