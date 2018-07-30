@@ -1,4 +1,4 @@
-﻿#define SrcApp AddBackslash(SourcePath) + "..\wapt-get.exe"
+#define SrcApp AddBackslash(SourcePath) + "..\wapt-get.exe"
 #define FileVerStr GetFileVersion(SrcApp)
 #define AppVerStr FileVerStr
 

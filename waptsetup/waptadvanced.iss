@@ -1,4 +1,4 @@
-﻿#define waptsetup 
+#define waptsetup 
 #define default_repo_url ""
 #define default_wapt_server ""
 #define AppName "WAPT"

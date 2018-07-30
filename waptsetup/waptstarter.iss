@@ -1,4 +1,4 @@
-﻿#ifndef edition
+#ifndef edition
 #define edition "waptstarter"
 #define default_repo_url "https://store.wapt.fr/wapt"
 #define default_wapt_server ""
