@@ -9,6 +9,7 @@
 #ifndef FastDebug
 Source: "innosetup\*"; DestDir: "{app}\waptsetup\innosetup"; Flags: createallsubdirs recursesubdirs ignoreversion;
 #endif
+Source: "common.iss"; DestDir: "{app}\waptsetup";
 Source: "wapt.iss"; DestDir: "{app}\waptsetup";
 Source: "waptsetup.iss"; DestDir: "{app}\waptsetup";
 Source: "waptagent.iss"; DestDir: "{app}\waptsetup";
