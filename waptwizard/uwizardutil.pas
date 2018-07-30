@@ -176,6 +176,7 @@ function net_list_enable_ip( sl : TStringList ) : integer;
 function  service_set_state(const service : String; state : TServiceState; timeout_seconds : integer ) : integer;
 function  service_set_state( services : TStringArray; state : TServiceState; timeout_seconds : integer ) : integer;
 function  service_exist( const name : String ) : boolean;
+function  service_start( const name : String; timeout_seconds : integer ) : boolean;
 procedure service_stop_no_fail( services_names : TStringArray; timeout_seconds : integer );
 
 
@@ -1474,6 +1475,11 @@ begin
   except on Ex : EOSError do
     exit( Pos(  '1060', ex.Message ) = 0 );
   end;
+end;
+
+function service_start(const name: String; timeout_seconds: integer): boolean;
+begin
+  Result := 0 = service_set_state( name, ssRunning, timeout_seconds );
 end;
 
 procedure service_stop_no_fail(services_names: TStringArray; timeout_seconds: integer);

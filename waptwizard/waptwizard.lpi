@@ -60,7 +60,7 @@
         <PackageName Value="LCL"/>
       </Item9>
     </RequiredPackages>
-    <Units Count="38">
+    <Units Count="40">
       <Unit0>
         <Filename Value="waptwizard.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -293,6 +293,18 @@
         <ComponentName Value="WizardConfigServer_RestartWaptService"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit37>
+      <Unit38>
+        <Filename Value="uwizardconfigserver_mongodb.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardConfigServer_MongoDB"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="uwizardconfigserver_start_services.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardConfigServer_StartServices"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit39>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

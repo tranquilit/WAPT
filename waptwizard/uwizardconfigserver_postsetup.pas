@@ -133,21 +133,7 @@ begin
   Sleep(1000 * 1);
 
 
-  // mongo DB -> postgresql
-  if FileExists( 'waptserver\mongodb\mongoexport.exe') then
-  begin
-    m_wizard.SetValidationDescription( 'Migration from MongoDB required');
-    s := 'Upgrade from mongodb to postgresql is required, continue ?';
-    if mrYes = m_wizard.show_question( s , mbYesNo ) then
-    begin
-      r := wapt_server_mongodb_to_postgresql();
-      if r <> 0 then
-      begin
-        m_wizard.show_validation_error( nil, 'An has occured while migrating from mogodb to postgresql' );
-        goto LBL_FAIL;
-      end;
-    end;
-  end;
+
 
   // ping
   if not wizard_validate_waptserver_ping( m_wizard, 'https://localhost', nil ) then

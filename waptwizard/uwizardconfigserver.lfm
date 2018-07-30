@@ -29,14 +29,14 @@ inherited WizardConfigServer: TWizardConfigServer
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
-        Caption = 'Post-setup'
-        ControlClassName = 'TWizardConfigServer_ServerPostSetup'
-        Name = 'post_setup'
+        Caption = 'Migrating from MongoDB'
+        ControlClassName = 'TWizardConfigServer_MongoDB'
+        Name = 'mongodb'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
-        Caption = 'Restart Wapt service'
-        ControlClassName = 'TWizardConfigServer_RestartWaptService'
+        Caption = 'Start services'
+        ControlClassName = 'TWizardConfigServer_StartServices'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
