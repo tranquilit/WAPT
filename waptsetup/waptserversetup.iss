@@ -122,7 +122,7 @@ Filename: "net"; Parameters: "start waptserver"; Flags: runhidden; StatusMsg: "S
 #ifdef waptenterprise
 Filename: "net"; Parameters: "start wapttasks"; Flags: runhidden; StatusMsg: "Starting service wapttasks"
 #endif
-Filename: "{app}\waptwizard.exe"; Parameters: "-s"; Flags: postinstall runascurrentuser skipifsilent shellexec;
+Filename: "{app}\waptwizard.exe"; Parameters: "-s"; Flags: postinstall runascurrentuser skipifsilent shellexec; StatusMsg: {cm:RunConfigTool}; Description: "{cm:RunConfigTool}"
 
 [Tasks]
 #ifdef choose_components
