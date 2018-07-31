@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, RTTICtrls, Forms, Controls, Graphics, Dialogs,
   ExtCtrls, StdCtrls, ComCtrls, EditBtn, Buttons, Menus, PopupNotifier,
-  MaskEdit, WizardControls;
+  MaskEdit, WizardControls,uwizard_waiting;
 
 type
 
@@ -52,7 +52,9 @@ type
     procedure WizardManagerPageStateChange(Sender: TObject; Page: TWizardPage);
 
   private
+    m_form_waiting : TWizard_Waiting;
     m_wizard_panel_proc_next_onclick : TNotifyEvent;
+
     procedure on_button_next_click( sender : TObject );
     procedure on_button_finish_click( sender : TObject );
     procedure on_button_cancel_click( sender : TObject );
@@ -61,8 +63,10 @@ type
     procedure _setfocus_async( data : PtrInt );
 
 
-
   protected
+
+
+
 
   public
 
@@ -74,6 +78,7 @@ type
     function  show_error(   const msg : String; buttons : TMsgDlgButtons ) : TModalResult; virtual; final;
     procedure show_error(   const msg : String ); virtual overload; final;
     procedure show_validation_error( ctrl : TControl; msg : String ); virtual; final;
+    procedure show_loading( enable : boolean );
 
 
 
@@ -82,6 +87,8 @@ type
 
 
     procedure launch_console();
+
+    procedure set_enable( enable : boolean );
 
   end;
 
@@ -146,6 +153,7 @@ begin
   if self.WizardManager.Pages.Count > 0 then
     self.WizardManager.PageIndex := 0;
 
+  m_form_waiting := nil;
 end;
 
 procedure TWizard.FormDestroy(Sender: TObject);
@@ -410,6 +418,47 @@ end;
 procedure TWizard.launch_console();
 begin
   process_launch( 'waptconsole.exe' , nil );
+end;
+
+procedure TWizard.show_loading(enable: boolean);
+begin
+  if not thread_is_gui_thread() then
+    exit;
+
+  if not enable then
+  begin
+    if m_form_waiting = nil then
+      exit;
+    set_enable( true );
+    m_form_waiting.Free;
+    m_form_waiting := nil;
+    exit;
+  end;
+
+
+  if m_form_waiting <> nil then
+    exit;
+
+  set_enable( false );
+  m_form_waiting := TWizard_Waiting.Create(nil);
+  m_form_waiting.Position := poMainFormCenter;
+  m_form_waiting.panel.Caption := '';
+  m_form_waiting.progress.Style := pbstMarquee;
+  m_form_waiting.Label1.Caption := 'Please wait' ;
+  m_form_waiting.panel.BevelColor := clBlack;
+  m_form_waiting.ShowOnTop;
+
+
+  if self.Enabled then
+    exit;
+
+end;
+
+procedure TWizard.set_enable(enable: boolean);
+begin
+  self.panel_center.Enabled := enable;
+  self.WizardButtonPanel.Enabled := enable;
+  Application.ProcessMessages;
 end;
 
 

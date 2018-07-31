@@ -27,7 +27,8 @@ uses
   uwizardconfigconsole_package_create_new_key,
   uwizardconfigconsole_package_use_existing_key,
   uwizardconfigconsole_restartwaptservice,
-  uwizardconfigserver_restartwaptservice, uwizardconfigserver_mongodb, uwizardconfigserver_start_services;
+  uwizardconfigserver_restartwaptservice, uwizardconfigserver_mongodb,
+  uwizardconfigserver_start_services, uwizard_waiting;
 
 {$R *.res}
 
