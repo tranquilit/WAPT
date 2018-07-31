@@ -50,6 +50,7 @@ begin
 
   // Write setting
   TWizardConfigServerData_write_ini_waptserver( m_wizard.data(), m_wizard );
+  TWizardConfigServerData_write_ini_waptget( m_wizard.data(), self.m_wizard );
 
   // Restart server
   if not wizard_validate_waptserver_start_services( m_wizard, nil ) then
@@ -60,10 +61,10 @@ begin
   if r = 0 then
   begin
     Sleep( 1 * 1000 );
-
     self.m_wizard.SetValidationDescription( 'Registration');
     r := wapt_register();
 
+    Sleep( 1 * 1000 );
     self.m_wizard.SetValidationDescription( 'Restarting agent');
     wapt_service_restart();
 
