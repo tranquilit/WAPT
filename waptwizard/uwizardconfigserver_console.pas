@@ -65,8 +65,8 @@ begin
   data^.configure_console := self.cb_configure_console.Checked;
 
 
-  p_console  := self.m_wizard.WizardManager.PageByName( WizardConfigServerPage_page_console);
-  p_finished := self.m_wizard.WizardManager.PageByName( WizardConfigServerPage_page_finished);
+  p_console  := self.m_wizard.WizardManager.PageByName( PAGE_CONSOLE );
+  p_finished := self.m_wizard.WizardManager.PageByName( PAGE_FINISHED );
 
   if data^.configure_console then
   begin

@@ -106,8 +106,8 @@ begin
   end;
 
 
-  p_key_option  := self.m_wizard.WizardManager.PageByName( WizardConfigServerPage_page_keyoption );
-  p_server_url  := self.m_wizard.WizardManager.PageByName( WizardConfigServerPage_page_server_url );
+  p_key_option  := self.m_wizard.WizardManager.PageByName( PAGE_KEYOPTION );
+  p_server_url  := self.m_wizard.WizardManager.PageByName( PAGE_SERVER_URL );
 
 
   if self.rb_use_existing_key.Checked then

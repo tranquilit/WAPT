@@ -70,10 +70,10 @@ begin
   end;
 
 
-  p_key_option                := self.m_wizard.WizardManager.PageByName( WizardConfigConsole_page_keyoption );
-  p_build_agent               := self.m_wizard.WizardManager.PageByName( WizardConfigConsole_page_build_agent );
-  p_package_create_new_key    := self.m_wizard.WizardManager.PageByName( WizardConfigConsole_page_package_create_new_key );
-  p_package_use_existing_key  := self.m_wizard.WizardManager.PageByName( WizardConfigConsole_page_package_use_existing_key );
+  p_key_option                := self.m_wizard.WizardManager.PageByName( PAGE_KEYOPTION );
+  p_build_agent               := self.m_wizard.WizardManager.PageByName( PAGE_BUILD_AGENT );
+  p_package_create_new_key    := self.m_wizard.WizardManager.PageByName( PAGE_PACKAGE_CREATE_NEW_KEY );
+  p_package_use_existing_key  := self.m_wizard.WizardManager.PageByName( PAGE_PACKAGE_USE_EXISTING_KEY );
 
 
   if self.rb_use_existing_key.Checked then

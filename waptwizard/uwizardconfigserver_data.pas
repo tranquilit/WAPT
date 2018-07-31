@@ -11,6 +11,19 @@ uses
 
 
 const
+
+    PAGE_WELCOME                 : String = 'welcome';
+    PAGE_FIREWALL                : String = 'firewall';
+    PAGE_KEYOPTION               : String = 'key_option';
+    PAGE_CONSOLE                 : String = 'console';
+    PAGE_PACKAGE_CREATE_NEW_KEY  : String = 'package_create_new_key';
+    PAGE_PACKAGE_USE_EXISTING_KEY: String = 'package_use_existing_key';
+    PAGE_SERVER_URL              : String = 'server_url';
+    PAGE_BUILD_AGENT             : String = 'build_agent';
+    PAGE_WAPT_SERVICE            : String = 'restart_wapt_service';
+    PAGE_FINISHED                : String = 'finished';
+
+{
     WizardConfigServerPage_page_welcome                 : String = 'welcome';
     WizardConfigServerPage_page_firewall                : String = 'firewall';
     WizardConfigServerPage_page_postsetup               : String = 'post_setup';
@@ -22,7 +35,7 @@ const
     WizardConfigServerPage_page_build_agent             : String = 'build_agent';
     WizardConfigServerPage_page_waptservice             : String = 'restart_wapt_service';
     WizardConfigServerPage_page_finished                : String = 'finished';
-
+}
 
 type
 

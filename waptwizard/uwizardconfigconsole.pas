@@ -76,7 +76,7 @@ begin
   // If no waptservice installed, skip related page
   r := wapt_installpath_waptservice(s);
   if r <> 0 then
-    WizardManager.PageByName( WizardConfigConsole_page_build_agent ).NextOffset := 2;
+    WizardManager.PageByName( PAGE_BUILD_AGENT ).NextOffset := 2;
 
 
 

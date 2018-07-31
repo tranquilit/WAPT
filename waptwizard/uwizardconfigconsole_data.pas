@@ -10,13 +10,13 @@ uses
 
 const
 
-    WizardConfigConsole_page_welcome                 : String = 'welcome';
-    WizardConfigConsole_page_server                  : String = 'server';
-    WizardConfigConsole_page_keyoption               : String = 'key_option';
-    WizardConfigConsole_page_package_create_new_key  : String = 'package_create_new_key';
-    WizardConfigConsole_page_package_use_existing_key: String = 'package_use_existing_key';
-    WizardConfigConsole_page_build_agent             : String = 'build_agent';
-    WizardConfigConsole_page_finished                : String = 'finished';
+    PAGE_WELCOME                 : String = 'welcome';
+    PAGE_SERVER                  : String = 'server';
+    PAGE_KEYOPTION               : String = 'key_option';
+    PAGE_PACKAGE_CREATE_NEW_KEY  : String = 'package_create_new_key';
+    PAGE_PACKAGE_USE_EXISTING_KEY: String = 'package_use_existing_key';
+    PAGE_BUILD_AGENT             : String = 'build_agent';
+    PAGE_FINISHED                : String = 'finished';
 
 type
   TWizardConfigConsoleData = record
