@@ -23,11 +23,14 @@ type
 
     function is_custom_server_url_selected() : boolean;
 
+
+    procedure init_server_url_callback(  data : PtrInt );
+
   public
 
-    procedure clear(); override; final;
     procedure wizard_show(); override; final;
     procedure wizard_next(var bCanNext: boolean); override;
+    procedure clear(); override; final;
   end;
 
 implementation
@@ -56,16 +59,35 @@ begin
   result := (self.rg_server_url.Items.Count-1) = self.rg_server_url.ItemIndex;
 end;
 
-procedure TWizardConfigserver_Console_Server.clear();
+
+
+
+
+
+procedure init_server_url( data : Pointer );
+const
+  TO_EXCLUDE : array[0..1] of String = ('localhost', '127.0.0.1');
+var
+  sl : TStringList;
+  i  : integer;
+  r  : integer;
 begin
-  self.p_custom_server_url.Caption := '';
-  self.rg_server_url.ItemIndex:= -1;
-  self.rg_server_url.Items.Clear;
-  self.ed_custom_server_url.Clear;
-  self.p_custom_server_url.Visible := false;
+  sl := TStringList.Create;
+  net_list_enable_ip( sl );
+
+  for i := 0 to Length(TO_EXCLUDE) -1 do
+  begin
+    r := sl.IndexOf( TO_EXCLUDE[i] );
+    if r <> -1 then
+      sl.Delete(r);
+  end;
+
+  Application.QueueAsyncCall( @TWizardConfigserver_Console_Server(data).init_server_url_callback, PtrInt(sl) );
 end;
 
-procedure TWizardConfigserver_Console_Server.wizard_show();
+
+
+procedure TWizardConfigserver_Console_Server.init_server_url_callback( data : PtrInt );
 var
   i   : integer;
   h   : String;
@@ -75,7 +97,6 @@ var
   s   : String;
   b_ini_wapt_server : Boolean;
 begin
-
   b_ini_wapt_server := false;
 
   h := LowerCase(GetComputerName);
@@ -84,52 +105,52 @@ begin
   r := wapt_ini_waptconsole( s );
   if r = 0 then
   begin
-    ini := TIniFile.Create( s );
-    try
-      s := Trim(ini.ReadString( INI_GLOBAL, INI_WAPT_SERVER, '' ));
-      b_ini_wapt_server := Length(s) > 0;
-      if b_ini_wapt_server then
-      begin
-        h := s;
-        self.ed_custom_server_url.Text := s;
-      end;
-    finally
-      FreeAndNil(ini);
-    end;
+   ini := TIniFile.Create( s );
+   try
+     s := Trim(ini.ReadString( INI_GLOBAL, INI_WAPT_SERVER, '' ));
+     b_ini_wapt_server := Length(s) > 0;
+     if b_ini_wapt_server then
+     begin
+       h := s;
+       self.ed_custom_server_url.Text := s;
+     end;
+   finally
+     FreeAndNil(ini);
+   end;
   end;
 
-
-
   // Server url
-  self.rg_server_url .Items.Clear;
-  sl := TStringList.Create;
-  i := net_list_enable_ip( sl );
-  if i = 0 then
+  sl := TStringList(data);
+  for i := 0 to sl.Count -1 do
   begin
-    for i := 0 to sl.Count -1 do
-    begin
-
-      if 'localhost' = sl.Strings[i] then
-        continue;
-      if '127.0.0.1' = sl.Strings[i] then
-        continue;
-
-      s := 'https://' + sl.Strings[i];
-      self.rg_server_url.Items.AddObject( s, sl.Objects[i] );
-      if Pos( h, s ) <> 0 then
-        self.rg_server_url.ItemIndex := i;
-    end;
+   s := 'https://' + sl.Strings[i];
+   self.rg_server_url.Items.AddObject( s, sl.Objects[i] );
+   if Pos( h, s ) <> 0 then
+     self.rg_server_url.ItemIndex := i;
   end;
   sl.Free;
 
   // Server url custom
   self.rg_server_url.Items.AddObject('Custom url', nil );
   if b_ini_wapt_server then
-    self.rg_server_url.ItemIndex := self.rg_server_url.Items.Count -1;
+   self.rg_server_url.ItemIndex := self.rg_server_url.Items.Count -1;
 
   self.rg_server_urlSelectionChanged( nil );
 
-  self.m_wizard.WizardButtonPanel.NextButton.SetFocus;
+
+  m_wizard.show_loading(false);
+end;
+
+procedure TWizardConfigserver_Console_Server.wizard_show();
+begin
+  inherited;
+
+  if m_show_count = 1 then
+  begin
+   self.clear();
+   m_wizard.show_loading( true );
+   TThread.ExecuteInThread( @init_server_url, self );
+  end;
 
 end;
 
@@ -175,6 +196,14 @@ begin
 
   bCanNext := true;
 
+end;
+procedure TWizardConfigserver_Console_Server.clear();
+begin
+  self.p_custom_server_url.Caption := '';
+  self.rg_server_url.ItemIndex:= -1;
+  self.rg_server_url.Items.Clear;
+  self.ed_custom_server_url.Clear;
+  self.p_custom_server_url.Visible := false;
 end;
 
 
