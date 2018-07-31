@@ -25,7 +25,7 @@ type
 implementation
 
 uses
-
+  uwizardconfigserver_data,
   uwizardvalidattion,
   uwizardutil;
 
@@ -46,6 +46,9 @@ var
   r : integer;
 begin
   bCanNext := false;
+
+  // Write setting
+  TWizardConfigServerData_write_ini_waptserver( m_wizard.data(), m_wizard );
 
   if not wizard_validate_waptserver_start_services( m_wizard, nil ) then
     exit;
