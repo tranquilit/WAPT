@@ -139,6 +139,10 @@ begin
 
 
   m_wizard.show_loading(false);
+
+  if self.rg_server_url.ItemIndex <> -1 then
+    self.m_wizard.WizardButtonPanel.NextButton.SetFocus;
+
 end;
 
 procedure TWizardConfigserver_Console_Server.wizard_show();
