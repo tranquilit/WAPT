@@ -25,6 +25,7 @@ function wizard_validate_waptserver_login( w : TWizard;  const server_url : Stri
 function wizard_validate_waptserver_waptagent_is_not_present( w : TWizard;  const server_url : String; control : TControl ) : Boolean;
 function wizard_validate_waptserver_stop_services_no_fail( w : TWizard; control : TControl ) : Boolean;
 function wizard_validate_waptserver_start_services( w : TWizard; control : TControl ) : Boolean;
+function wizard_validate_waptserver_stop_services( w : TWizard; control : TControl ) : Boolean;
 
 
 function wizard_validate_fs_directory_exist( w : TWizard;  const path : String; control : TControl ) : boolean;
@@ -381,6 +382,27 @@ begin
     r := service_set_state( WAPT_SERVICES[i], ssRunning, TIMEOUT_SECONDS );
     if r <> 0 then
       exit( false );
+  end;
+  w.ClearValidationError();
+  exit( true );
+end;
+
+function wizard_validate_waptserver_stop_services(w: TWizard; control: TControl ): Boolean;
+const
+  TIMEOUT_SECONDS : integer = 60;
+  MSG : String = 'Stopping service %s';
+var
+  i : integer;
+  r : integer;
+  m : integer;
+  s : String;
+begin
+  m := Length(WAPT_SERVICES) -1;
+  for i := m downto 0 do
+  begin
+    s := Format( MSG, [ WAPT_SERVICES[i] ] );
+    w.SetValidationDescription( s );
+    service_stop_no_fail( flip(WAPT_SERVICES), TIMEOUT_SECONDS );
   end;
   w.ClearValidationError();
   exit( true );
