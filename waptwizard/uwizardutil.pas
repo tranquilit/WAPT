@@ -210,6 +210,9 @@ procedure show_loading_frame_threadsafe( params : PShowLoadingFrameParams );
 procedure hide_loading_frame_threadsafe();
 function service_binary_path(var path: String; const service_name : String ): integer;
 
+
+function thread_is_gui_thread() : boolean;
+
 implementation
 
 uses
@@ -296,6 +299,11 @@ LBL_FAILED:
   CloseServiceHandle( h_manager );
 
   exit(-1);
+end;
+
+function thread_is_gui_thread(): boolean;
+begin
+  result := MainThreadID = TThread.CurrentThread.ThreadID;
 end;
 
 
