@@ -61,9 +61,6 @@ uses
 
 { TWizardConfigServer }
 procedure TWizardConfigServer.FormCreate(Sender: TObject);
-var
-  s : String;
-  r : integer;
 begin
   inherited;
 
@@ -74,14 +71,6 @@ begin
   m_data.verify_cert := '0';
   m_data.wapt_server := 'http://localhost';
   m_data.repo_url    := 'http://localhost/wapt';
-
-  // If no waptservice installed, skip related page
-  r := wapt_installpath_waptservice(s);
-  if r <> 0 then
-  begin
-    self.WizardManager.PageByName(WizardConfigServerPage_page_postsetup).NextOffset   := 2;
-    self.WizardManager.PageByName(WizardConfigServerPage_page_console).PreviousOffset := 2;
-  end;
 
 end;
 
