@@ -14,6 +14,7 @@ inherited WizardConfigServer: TWizardConfigServer
         Caption = 'Welcome'
         ControlClassName = 'TTWizardConfigServer_Welcome'
         Name = 'welcome'
+        EnabledButtons = [wbNext, wbCancel]
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
