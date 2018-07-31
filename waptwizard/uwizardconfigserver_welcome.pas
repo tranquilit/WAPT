@@ -50,7 +50,7 @@ begin
   if not wizard_validate_os_version_for_server( m_wizard, nil ) then
     exit;
 
-  wizard_validate_waptserver_stop_services_no_fail( m_wizard, nil );
+  wizard_validate_waptserver_stop_services( m_wizard, nil );
 
   bCanNext:= true;
   exit;
