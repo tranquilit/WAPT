@@ -133,16 +133,22 @@ Name: InstallWaptserver; Description: "{cm:InstallWaptServer}"; GroupDescription
 
 [UninstallRun]
 #ifdef waptenterprise
+Filename: "net"; Parameters: "stop waptnginx"; Flags: runhidden; StatusMsg: "Stopping service waptnginx"
+Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Stopping service waptserver"
 Filename: "net"; Parameters: "stop wapttasks"; Flags: runhidden; StatusMsg: "Stopping service wapttasks"
-Filename: "sc"; Parameters: "delete wapttasks"; Flags: runhidden; StatusMsg: "Removing service wapttasks"
-#endif
+Filename: "net"; Parameters: "stop waptpostgresql"; Flags: runhidden; StatusMsg: "Stopping service waptpostgresql"
+Filename: "sc";  Parameters: "delete waptserver"; Flags: runhidden; StatusMsg: "Removing service waptserver"
+Filename: "sc";  Parameters: "delete waptnginx"; Flags: runhidden; StatusMsg: "Removing service waptnginx"
+Filename: "sc";  Parameters: "delete waptpostgresql"; Flags: runhidden; StatusMsg: "Removing service waptpostgresql"
+Filename: "sc";  Parameters: "delete wapttasks"; Flags: runhidden; StatusMsg: "Removing service wapttasks"
+#else
 Filename: "net"; Parameters: "stop waptnginx"; Flags: runhidden; StatusMsg: "Stopping service waptnginx"
 Filename: "net"; Parameters: "stop waptserver"; Flags: runhidden; StatusMsg: "Stopping service waptserver"
 Filename: "net"; Parameters: "stop waptpostgresql"; Flags: runhidden; StatusMsg: "Stopping service waptpostgresql"
-
-Filename: "sc"; Parameters: "delete waptserver"; Flags: runhidden; StatusMsg: "Removing service waptserver"
-Filename: "sc"; Parameters: "delete waptnginx"; Flags: runhidden; StatusMsg: "Removing service waptnginx"
-Filename: "sc"; Parameters: "delete waptpostgresql"; Flags: runhidden; StatusMsg: "Removing service waptpostgresql"
+Filename: "sc";  Parameters: "delete waptserver"; Flags: runhidden; StatusMsg: "Removing service waptserver"
+Filename: "sc";  Parameters: "delete waptnginx"; Flags: runhidden; StatusMsg: "Removing service waptnginx"
+Filename: "sc";  Parameters: "delete waptpostgresql"; Flags: runhidden; StatusMsg: "Removing service waptpostgresql"
+#endif
 
 [CustomMessages]
 fr.RegisteringService=Mise en place du service WaptServer
