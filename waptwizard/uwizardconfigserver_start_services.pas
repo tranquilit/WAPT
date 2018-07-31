@@ -44,14 +44,31 @@ end;
 procedure TWizardConfigServer_StartServices.wizard_next(var bCanNext: boolean);
 var
   r : integer;
+  s : String;
 begin
   bCanNext := false;
 
   // Write setting
   TWizardConfigServerData_write_ini_waptserver( m_wizard.data(), m_wizard );
 
+  // Restart server
   if not wizard_validate_waptserver_start_services( m_wizard, nil ) then
     exit;
+
+  // Restart agent
+  r := wapt_installpath_waptservice(s);
+  if r = 0 then
+  begin
+    Sleep( 1 * 1000 );
+
+    self.m_wizard.SetValidationDescription( 'Registration');
+    r := wapt_register();
+
+    self.m_wizard.SetValidationDescription( 'Restarting agent');
+    wapt_service_restart();
+
+    self.m_wizard.ClearValidationDescription();
+  end;
 
   bCanNext := true;;
 end;
