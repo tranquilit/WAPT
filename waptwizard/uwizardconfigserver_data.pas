@@ -13,7 +13,7 @@ uses
 const
 
     PAGE_WELCOME                 : String = 'welcome';
-    PAGE_FIREWALL                : String = 'firewall';
+    PAGE_SERVER_OPTIONS          : String = 'server_options';
     PAGE_KEYOPTION               : String = 'key_option';
     PAGE_CONSOLE                 : String = 'console';
     PAGE_PACKAGE_CREATE_NEW_KEY  : String = 'package_create_new_key';

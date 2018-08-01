@@ -1,0 +1,2 @@
+inherited WizardConfigServer_ServerOptions: TWizardConfigServer_ServerOptions
+end

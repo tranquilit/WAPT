@@ -24,9 +24,9 @@ inherited WizardConfigServer: TWizardConfigServer
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
-        Caption = 'Firewall'
-        ControlClassName = 'TWizardConfigServer_Firewall'
-        Name = 'firewall'
+        Caption = 'Server options'
+        ControlClassName = 'TWizardConfigServer_ServerOptions'
+        Name = 'server_options'
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item

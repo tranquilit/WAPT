@@ -1,4 +1,4 @@
-unit uwizardconfigserver_firewall;
+unit uwizardconfigserver_server_options;
 
 {$mode objfpc}{$H+}
 
@@ -12,9 +12,9 @@ uses
 
 type
 
-  { TWizardConfigServer_Firewall }
+  { TWizardConfigServer_ServerOptions }
 
-  TWizardConfigServer_Firewall = class( TWizardStepFrame )
+  TWizardConfigServer_ServerOptions = class( TWizardStepFrame )
   private
   public
     procedure wizard_show(); override; final;
@@ -34,9 +34,9 @@ uses
 
 
 
-{ TWizardConfigServer_Firewall }
+{ TWizardConfigServer_ServerOptions }
 
-procedure TWizardConfigServer_Firewall.wizard_show();
+procedure TWizardConfigServer_ServerOptions.wizard_show();
 begin
   inherited wizard_show();
 
@@ -45,7 +45,7 @@ begin
 
 end;
 
-procedure TWizardConfigServer_Firewall.wizard_next(var bCanNext: boolean);
+procedure TWizardConfigServer_ServerOptions.wizard_next(var bCanNext: boolean);
 var
   b : Boolean;
   r : integer;
@@ -89,7 +89,7 @@ end;
 
 
 initialization
-  RegisterClass(TWizardConfigServer_Firewall);
+  RegisterClass(TWizardConfigServer_ServerOptions);
 
 
 end.

@@ -20,7 +20,7 @@ uses
   uwapt_ini, uwizardconfigconsole_buildagent, uwizardconfigconsole_data,
   uwizardconfigconsole_finished, uwizardconfigconsole_server,
   uwizardconfigconsole_welcome, uwizardconfigserver_data,
-  uwizardconfigserver_finish, uwizardconfigserver_firewall,
+  uwizardconfigserver_finish,
   uwizardconfigserver_postsetup, uwizardconfigserver_welcome,
   uwizardresetserverpassword_data, uwizardconfigserver_console,
   uwizardconfigserver_console_server,

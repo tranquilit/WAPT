@@ -50,7 +50,7 @@ uses
   uwizardconfigserver_postsetup,
   uwizardconfigserver_console_keyoption,
   uwizardconfigserver_console_server,
-  uwizardconfigserver_firewall,
+  uwizardconfigserver_server_options,
   uwizardconfigserver_welcome,
   uwizardconfigserver_restartwaptservice,
   dmwaptpython,
