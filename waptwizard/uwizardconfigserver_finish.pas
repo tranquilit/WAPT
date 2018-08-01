@@ -15,6 +15,7 @@ type
 
   TWizardConfigServer_Finish = class(TWizardStepFrame)
     cb_start_console: TCheckBox;
+    lbl_desc: TLabel;
   private
 
   public

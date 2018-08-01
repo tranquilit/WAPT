@@ -10,7 +10,7 @@ inherited TWizardConfigServer_Welcome: TTWizardConfigServer_Welcome
     Width = 320
     Align = alClient
     Alignment = taCenter
-    Caption = 'Welcome server'
+    Caption = 'Welcome to wapt server configuration tool.'#13#10'Click next to continue.'
     Layout = tlCenter
     ParentColor = False
   end

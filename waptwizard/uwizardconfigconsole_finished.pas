@@ -14,6 +14,7 @@ type
 
   TWizardStepFrameConsoleFinished = class(TWizardStepFrame)
     cb_launch_console: TCheckBox;
+    lbl_desc: TLabel;
   private
 
   public

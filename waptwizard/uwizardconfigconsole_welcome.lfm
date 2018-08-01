@@ -1,21 +1,14 @@
-object WizardStepFrameConsoleWelcome: TWizardStepFrameConsoleWelcome
-  Left = 0
-  Height = 240
-  Top = 0
-  Width = 320
-  ClientHeight = 240
-  ClientWidth = 320
-  TabOrder = 0
+inherited WizardStepFrameConsoleWelcome: TWizardStepFrameConsoleWelcome
   DesignLeft = 2078
   DesignTop = 271
-  object lbl: TLabel
+  object lbl: TLabel[0]
     Left = 0
     Height = 240
     Top = 0
     Width = 320
     Align = alClient
     Alignment = taCenter
-    Caption = 'Welcome on console configuration'
+    Caption = 'Welcome to wapt console configuration tool.'#13#10'Click next to continue.'
     Layout = tlCenter
     ParentColor = False
   end

@@ -19,6 +19,7 @@ type
     ed_password_1: TEdit;
     ed_password_2: TEdit;
     gb_admin_password: TGroupBox;
+    Label1: TLabel;
     lbl_password_1: TLabel;
     lbl_password_2: TLabel;
     procedure cb_password_visibleChange(Sender: TObject);
