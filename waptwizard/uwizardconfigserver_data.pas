@@ -23,20 +23,6 @@ const
     PAGE_WAPT_SERVICE            : String = 'restart_wapt_service';
     PAGE_FINISHED                : String = 'finished';
 
-{
-    WizardConfigServerPage_page_welcome                 : String = 'welcome';
-    WizardConfigServerPage_page_firewall                : String = 'firewall';
-    WizardConfigServerPage_page_postsetup               : String = 'post_setup';
-    WizardConfigServerPage_page_keyoption               : String = 'key_option';
-    WizardConfigServerPage_page_console                 : String = 'console';
-    WizardConfigServerPage_page_package_create_new_key  : String = 'package_create_new_key';
-    WizardConfigServerPage_page_package_use_existing_key: String = 'package_use_existing_key';
-    WizardConfigServerPage_page_server_url              : String = 'server_url';
-    WizardConfigServerPage_page_build_agent             : String = 'build_agent';
-    WizardConfigServerPage_page_waptservice             : String = 'restart_wapt_service';
-    WizardConfigServerPage_page_finished                : String = 'finished';
-}
-
 type
 
   TWizardConfigServerData = record
