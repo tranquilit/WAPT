@@ -337,7 +337,6 @@ end;
 procedure TWizard.on_button_next_click(sender: TObject );
 var
   step : TWizardStepFrame;
-  i : integer;
   bCanNext : boolean;
 begin
   step := current_step( self );
@@ -346,6 +345,7 @@ begin
 
   bCanNext := true;;
 
+  ClearValidationError();
   set_buttons_enable( false );
   try
     step.wizard_next( bCanNext );
