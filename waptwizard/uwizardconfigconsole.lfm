@@ -14,7 +14,7 @@ inherited WizardConfigConsole: TWizardConfigConsole
         ControlClassName = 'TWizardStepFrameConsoleWelcome'
         Name = 'welcome'
         EnabledButtons = [wbNext, wbCancel]
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+        VisibleButtons = [wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Server'

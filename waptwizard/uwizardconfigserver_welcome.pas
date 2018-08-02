@@ -28,6 +28,7 @@ implementation
 
 
 uses
+  uwizardconfigserver_data,
   uwizardvalidattion;
 
 {$R *.lfm}
@@ -40,7 +41,6 @@ uses
 procedure TTWizardConfigServer_Welcome.wizard_show();
 begin
   m_wizard.setFocus_async( m_wizard.WizardButtonPanel.NextButton );
-  ;
 end;
 
 procedure TTWizardConfigServer_Welcome.wizard_next(var bCanNext: boolean);
@@ -58,7 +58,8 @@ end;
 
 
 initialization
-  RegisterClass(TTWizardConfigServer_Welcome);
+
+RegisterClass(TTWizardConfigServer_Welcome);
 
 end.
 

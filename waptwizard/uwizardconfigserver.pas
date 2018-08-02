@@ -52,7 +52,6 @@ uses
   uwizardconfigserver_console_server,
   uwizardconfigserver_server_options,
   uwizardconfigserver_welcome,
-  uwizardconfigserver_restartwaptservice,
   dmwaptpython,
   uwizardutil,
   waptcommon;
@@ -64,13 +63,7 @@ procedure TWizardConfigServer.FormCreate(Sender: TObject);
 begin
   inherited;
 
-  FillChar( m_data, sizeof(TWizardConfigServerData), 0 );
-
-  m_data.is_enterprise_edition := DMPython.IsEnterpriseEdition;
-  m_data.check_certificates_validity := '0';
-  m_data.verify_cert := '0';
-  m_data.wapt_server := 'http://localhost';
-  m_data.repo_url    := 'http://localhost/wapt';
+  data_init( @m_data );
 
 end;
 
@@ -79,9 +72,11 @@ begin
 end;
 
 procedure TWizardConfigServer.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+var
+  b : boolean;
 begin
-
-  if self.m_data.launch_console then
+  b := self.WizardManager.PageByName(PAGE_FINISHED).Index  = WizardManager.PageIndex;
+  if b and self.m_data.launch_console then
     self.launch_console();
 end;
 

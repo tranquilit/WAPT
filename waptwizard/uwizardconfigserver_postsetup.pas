@@ -100,7 +100,7 @@ begin
   wizard_validate_waptserver_stop_services_no_fail( self.m_wizard, self.memo );
 
   // Write waptserver.ini
-  r := TWizardConfigServerData_write_ini_waptserver( data, self.m_wizard );
+  r := data_write_ini_waptserver( data, self.m_wizard );
   if r <> 0 then
     goto LBL_FAIL;
 

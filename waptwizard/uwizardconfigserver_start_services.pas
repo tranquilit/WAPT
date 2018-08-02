@@ -43,29 +43,28 @@ end;
 
 procedure TWizardConfigServer_StartServices.wizard_next(var bCanNext: boolean);
 var
-  r : integer;
-  s : String;
+  data : PWizardConfigServerData;
 begin
   bCanNext := false;
+  data := m_wizard.data();
+
 
   // Write setting
-  TWizardConfigServerData_write_ini_waptserver( m_wizard.data(), m_wizard );
-  TWizardConfigServerData_write_ini_waptget( m_wizard.data(), self.m_wizard );
+  data_write_ini_waptserver( m_wizard.data(), m_wizard );
 
   // Restart server
   if not wizard_validate_waptserver_start_services( m_wizard, nil ) then
     exit;
 
-  // Restart agent
-  r := wapt_installpath_waptservice(s);
-  if r = 0 then
+  // Restart local agent
+  if data^.has_found_waptservice then
   begin
     Sleep( 1 * 1000 );
-    self.m_wizard.SetValidationDescription( 'Registration');
-    r := wapt_register();
+    self.m_wizard.SetValidationDescription( 'Register local machine');
+    wapt_register();
 
     Sleep( 1 * 1000 );
-    self.m_wizard.SetValidationDescription( 'Restarting agent');
+    self.m_wizard.SetValidationDescription( 'Restarting local agent');
     wapt_service_restart();
 
     self.m_wizard.ClearValidationDescription();

@@ -230,6 +230,8 @@ def make_nginx_config(wapt_root_dir, wapt_folder, force = False):
         'wapt_ssl_cert_file': cert_fn.replace('\\','/'),
         'log_dir': os.path.join(wapt_root_dir,'waptserver','nginx','logs').replace('\\','/'),
         'wapt_root_dir' : wapt_root_dir.replace('\\','/'),
+        'nginx_http'  : conf['nginx_http'],
+        'nginx_https' : conf['nginx_https']
     }
 
     config_string = template.render(template_variables)

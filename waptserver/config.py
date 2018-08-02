@@ -89,6 +89,8 @@ _defaults = {
     'ldap_auth_base_dn':None,
     'ldap_auth_ssl_enabled':True,
     'http_proxy':None,
+    'nginx_http' : 80,
+    'nginx_https': 443
 }
 
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')

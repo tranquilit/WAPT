@@ -62,13 +62,12 @@ var
 begin
   bCanNext := true;
   data := self.m_wizard.data();
-  data^.configure_console := self.cb_configure_console.Checked;
 
 
   p_console  := self.m_wizard.WizardManager.PageByName( PAGE_CONSOLE );
   p_finished := self.m_wizard.WizardManager.PageByName( PAGE_FINISHED );
 
-  if data^.configure_console then
+  if self.cb_configure_console.Checked then
   begin
     p_console.NextOffset      := 1;
     p_finished.PreviousOffset := 1;

@@ -29,8 +29,8 @@ http {
 
     {% if force_https %}
     server {
-        listen                      80;
-        listen                      [::]:80;
+        listen                      {{ nginx_http }};
+        listen                      [::]:{{ nginx_http }} ;
         server_name                 _;
         return 301                  https://$host$request_uri;
     }
@@ -39,9 +39,9 @@ http {
     server {
 
     {% if not force_https %}
-        listen                      80;
+        listen                      {{ nginx_http }} ;
     {% endif %} {# if force_https #}
-        listen                      443 ssl;
+        listen                      {{ nginx_https }} ssl;
         server_name                 _;
 
         ssl_certificate             "{{ wapt_ssl_cert_file }}";

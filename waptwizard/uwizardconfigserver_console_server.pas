@@ -36,6 +36,7 @@ type
 implementation
 
 uses
+  uwizardconfigconsole_data,
   dialogs,
   uwapt_ini,
   IniFiles,
@@ -96,34 +97,24 @@ var
   r   : integer;
   s   : String;
   b_ini_wapt_server : Boolean;
+
+  wdata : PWizardConfigServerData;
 begin
   b_ini_wapt_server := false;
 
-  h := LowerCase(GetComputerName);
+  wdata := m_wizard.data();
 
-  // Try from waptconsole.ini
-  r := wapt_ini_waptconsole( s );
-  if r = 0 then
-  begin
-   ini := TIniFile.Create( s );
-   try
-     s := Trim(ini.ReadString( INI_GLOBAL, INI_WAPT_SERVER, '' ));
-     b_ini_wapt_server := Length(s) > 0;
-     if b_ini_wapt_server then
-     begin
-       h := s;
-       self.ed_custom_server_url.Text := s;
-     end;
-   finally
-     FreeAndNil(ini);
-   end;
-  end;
+
+
+  h := LowerCase(GetComputerName);
 
   // Server url
   sl := TStringList(data);
   for i := 0 to sl.Count -1 do
   begin
    s := 'https://' + sl.Strings[i];
+   if wdata^.nginx_https <> 443 then
+     s := s + ':' + IntToStr(wdata^.nginx_https);
    self.rg_server_url.Items.AddObject( s, sl.Objects[i] );
    if Pos( h, s ) <> 0 then
      self.rg_server_url.ItemIndex := i;
@@ -195,7 +186,7 @@ begin
 
   data^.wapt_server := s;
   data^.repo_url    := s + '/wapt' ;
-  data^.server_certificate := s  + '.crt';
+//  data^.server_certificate := s  + '.crt';
 
 
   bCanNext := true;

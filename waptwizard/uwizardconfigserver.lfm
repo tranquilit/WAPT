@@ -15,7 +15,7 @@ inherited WizardConfigServer: TWizardConfigServer
         ControlClassName = 'TTWizardConfigServer_Welcome'
         Name = 'welcome'
         EnabledButtons = [wbNext, wbCancel]
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+        VisibleButtons = [wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Admin password'
@@ -44,7 +44,7 @@ inherited WizardConfigServer: TWizardConfigServer
         Caption = 'Configure console'
         ControlClassName = 'TWizardConfigServer_Console'
         Name = 'console'
-        EnabledButtons = [wbNext, wbCancel]
+        PreviousOffset = 3
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item

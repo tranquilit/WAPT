@@ -95,7 +95,7 @@ begin
   data := m_wizard.data();
 
   //
-  r := TWizardConfigServerData_write_ini_waptconsole( data, self.m_wizard );
+  r := data_write_ini_waptconsole( data, self.m_wizard );
   if r <> 0 then
     exit;
 

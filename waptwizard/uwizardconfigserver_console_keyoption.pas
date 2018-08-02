@@ -29,6 +29,7 @@ type
 implementation
 
 uses
+  dialogs,
   tisinifiles,
   uwapt_ini,
   uwizardutil,
@@ -41,45 +42,18 @@ uses
 
 procedure TWizardConfigServer_Console_KeyOption.wizard_load(w: TWizard);
 var
-  s : String;
-  r : integer;
-
+  s     : String;
+  r     : integer;
+  data  : PWizardConfigServerData;
+  b     : boolean;
 begin
   inherited wizard_load(w);
 
-  self.rb_use_existing_key.Checked  := false;
-  self.rb_create_new_key.Checked    := true;
+  data := m_wizard.data();
 
-  r := wapt_installpath_waptserver( s);
-  if r <> 0 then
-    exit;
-
-  s := IncludeTrailingBackslash(s) +  'waptserver\repository\wapt\waptagent.exe';
-  if  FileExists(s) then
-  begin
-    self.rb_use_existing_key.Checked := true;
-    exit;
-  end;
-
-
-  r := wapt_ini_waptconsole(s);
-  if r <>0  then
-    exit;
-
-
-  s := IniReadString( s, INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH, '' );
-  if not FileExists(s) then
-    exit;
-
-  s :=   ExtractFileNameWithoutExt(s) + '.pem';
-  if not FileExists(s) then
-    exit;
-
-
-  self.rb_use_existing_key.Checked  := true;
-  self.rb_create_new_key.Checked    := false;
-
-
+  b := FileExists(data^.package_certificate);
+  self.rb_use_existing_key.Checked  := b;
+  self.rb_create_new_key.Checked    := not b;
 end;
 
 procedure TWizardConfigServer_Console_KeyOption.wizard_show();
@@ -94,16 +68,30 @@ end;
 
 procedure TWizardConfigServer_Console_KeyOption.wizard_next(var bCanNext: boolean);
 var
-  p_key_option                : TWizardPage;
-  p_server_url                : TWizardPage;
+  p_key_option  : TWizardPage;
+  p_server_url  : TWizardPage;
+  data          : PWizardConfigServerData;
+  msg           : String;
 begin
   bCanNext := false;
+
+  data := m_wizard.data();
+
 
   if (not self.rb_create_new_key.Checked) and (not self.rb_use_existing_key.Checked) then
   begin
     self.m_wizard.show_validation_error( self.rb_create_new_key, 'You must choose');
     exit;
   end;
+
+  if self.rb_create_new_key.Checked and data^.has_found_waptagent then
+  begin
+    msg :=       'A download agent has been detected on the server ';
+    msg := msg + 'Are you sure you want to create a new key ?';
+    if mrNo = self.m_wizard.show_question( msg, mbYesNo ) then
+      exit;
+  end;
+
 
 
   p_key_option  := self.m_wizard.WizardManager.PageByName( PAGE_KEYOPTION );

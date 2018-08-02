@@ -32,6 +32,8 @@ const
 
 
 
+
+
 type
   TShowLoadingFrameParams = record
     position  : integer;
@@ -173,11 +175,13 @@ function process_launch( const binary : String; const params : PChar ) : integer
 function net_list_enable_ip( sl : TStringList ) : integer;
 
 
+
 function  service_set_state(const service : String; state : TServiceState; timeout_seconds : integer ) : integer;
 function  service_set_state( services : TStringArray; state : TServiceState; timeout_seconds : integer ) : integer;
 function  service_exist( const name : String ) : boolean;
 function  service_start( const name : String; timeout_seconds : integer ) : boolean;
 procedure service_stop_no_fail( services_names : TStringArray; timeout_seconds : integer );
+function  service_is_running( const name : String ) : boolean;
 
 
 function wapt_service_restart() : integer;
@@ -185,7 +189,7 @@ function wapt_service_set_state( state: TServiceState ) : integer;
 
 function wapt_server_set_state( state : TServiceState ): integer;
 function wapt_server_firewall_is_configured( var is_configured : boolean ) : integer;
-function wapt_server_configure_firewall() : integer;
+function wapt_server_configure_firewall( http_port : Int16; https_port : Int16 ) : integer;
 
 function wapt_server_mongodb_to_postgresql() : integer;
 function wapt_server_installation( var path : String ) : integer;
@@ -1504,6 +1508,14 @@ begin
   end;
 end;
 
+function service_is_running(const name: String): boolean;
+var
+    ss : TServiceState;
+begin
+  ss := GetServiceStatusByName( '', name );
+  exit( ssRunning = ss );
+end;
+
 
 
 
@@ -1623,7 +1635,7 @@ end;
 
 
 
-function wapt_server_configure_firewall() : integer;
+function wapt_server_configure_firewall(http_port: Int16; https_port: Int16 ): integer;
 var
    cmdline : String;
 begin
@@ -1635,11 +1647,10 @@ begin
   firewall_drop_rule( WAPT_FIREWALL_RULE_443 );
 
 
-  cmdline := Format( 'netsh advfirewall firewall add rule name="%s" dir=in localport=80 protocol=TCP action=allow', [WAPT_FIREWALL_RULE_080] );
+  cmdline := Format( 'netsh advfirewall firewall add rule name="%s" dir=in localport=%d protocol=TCP action=allow', [WAPT_FIREWALL_RULE_080, http_port] );
   Run( UTF8Decode(cmdline) );
 
-
-  cmdline := Format( 'netsh advfirewall firewall add rule name="%s" dir=in localport=443 protocol=TCP action=allow', [WAPT_FIREWALL_RULE_443] );
+  cmdline := Format( 'netsh advfirewall firewall add rule name="%s" dir=in localport=%d protocol=TCP action=allow', [WAPT_FIREWALL_RULE_443, https_port] );
   Run( UTF8Decode(cmdline) );
 
   exit(0);
