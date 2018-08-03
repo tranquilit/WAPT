@@ -233,7 +233,7 @@ begin
     installdir := ExpandConstant('{app}');
     if DirExists(installdir) then
     begin
-      if (not runningSilently() and  (MsgBox('Des fichiers restent prÃ©sents dans votre rÃ©pertoire ' + installdir + ', souhaitez-vous le supprimer ainsi que tous les fichiers qu''il contient ?',
+      if (not runningSilently() and  (MsgBox('Des fichiers restent présents dans votre répertoire ' + installdir + ', souhaitez-vous le supprimer ainsi que tous les fichiers qu''il contient ?',
                mbConfirmation, MB_YESNO) = IDYES))
                
          or (ExpandConstant('{param:purge_wapt_dir|0}')='1') then

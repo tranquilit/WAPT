@@ -176,26 +176,26 @@ Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\wapt-ge
 
 [Run]
 #ifdef vcredist
-Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "Mise Ã  jour des librairies MS VC++ pour openssl"; Description: "Mise Ã  jour des librairies MS VC++"; Tasks: installredist2008
+Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "Mise à jour des librairies MS VC++ pour openssl"; Description: "Mise à jour des librairies MS VC++"; Tasks: installredist2008
 ; Duplication necessaire, cf. [Tasks]
-Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "Mise Ã  jour des librairies MS VC++ pour openssl"; Description: "Mise Ã  jour des librairies MS VC++"; Tasks: installredist2008unchecked
+Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "Mise à jour des librairies MS VC++ pour openssl"; Description: "Mise à jour des librairies MS VC++"; Tasks: installredist2008unchecked
 #endif
 
 ; rights rw for Admins and System, ro for users and authenticated users on wapt directory
-Filename: "cmd"; Parameters: "/C echo O| cacls ""{app}"" /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)(A;OICI;0x1200a9;;;BU)(A;OICI;0x1201a9;;;AU)"""; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le rÃ©pertoire wapt..."; Description: "Mise en place des droits sur le rÃ©pertoire wapt"
-Filename: "cmd"; Parameters: "/C icacls.exe ""{app}"" /inheritance:r"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression hÃ©ritage des droits sur wapt..."; Description: "Suppression hÃ©ritage des droits sur wapt"
-Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe ""{app}"" /inheritance:r"; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression hÃ©ritage des droits sur wapt..."; Description: "Suppression hÃ©ritage des droits sur wapt"
+Filename: "cmd"; Parameters: "/C echo O| cacls ""{app}"" /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)(A;OICI;0x1200a9;;;BU)(A;OICI;0x1201a9;;;AU)"""; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt..."; Description: "Mise en place des droits sur le répertoire wapt"
+Filename: "cmd"; Parameters: "/C icacls.exe ""{app}"" /inheritance:r"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt..."; Description: "Suppression héritage des droits sur wapt"
+Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe ""{app}"" /inheritance:r"; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt..."; Description: "Suppression héritage des droits sur wapt"
 
 ; protect waptagent private directory
 
-Filename: "cmd"; Parameters: "/C icacls.exe ""{app}\private"" /inheritance:r  /grant *S-1-5-32-544:(OI)(CI)F  /grant *S-1-5-18:(OI)(CI)F"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le rÃ©pertoire wapt private..."; Description: "Mise en place des droits sur le rÃ©pertoire wapt private..."
+Filename: "cmd"; Parameters: "/C icacls.exe ""{app}\private"" /inheritance:r  /grant *S-1-5-32-544:(OI)(CI)F  /grant *S-1-5-18:(OI)(CI)F"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt private..."; Description: "Mise en place des droits sur le répertoire wapt private..."
 
-Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe ""{app}\private"" /inheritance:r /grant *S-1-5-32-544:(OI)(CI)F  /grant *S-1-5-18:(OI)(CI)F"; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le rÃ©pertoire wapt private..."; Description: "Mise en place des droits sur le rÃ©pertoire wapt private..."
+Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe ""{app}\private"" /inheritance:r /grant *S-1-5-32-544:(OI)(CI)F  /grant *S-1-5-18:(OI)(CI)F"; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt private..."; Description: "Mise en place des droits sur le répertoire wapt private..."
 
 ; if waptservice
 Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptservice\service.py"" install"; Tasks:installService ; Flags: runhidden; StatusMsg: "Installation du service WAPT"; Description: "Installation du service WAPT"
 Filename: "sc"; Parameters: "delete waptservice"; Flags: runhidden; Tasks: not installService; WorkingDir: "{tmp}"; StatusMsg: "Suppression du service wapt..."; Description: "Suppression du service wapt..."
-Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser skipifsilent postinstall; StatusMsg: "Lancement de l'icÃ´ne de notification"; Description: "Lancement de l'icÃ´ne de notification"
+Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser skipifsilent postinstall; StatusMsg: "Lancement de l'icône de notification"; Description: "Lancement de l'icône de notification"
 
 
 
@@ -221,11 +221,11 @@ Type: files; Name: "{app}\*.pyc"
 Type: files; Name: "{app}\waptservice\waptservice.py*"
 
 [UninstallRun]
-Filename: "taskkill"; Parameters: "/t /im ""waptconsole.exe"" /f"; Flags: runhidden; StatusMsg: "ArrÃªt de waptconsole"
-Filename: "taskkill"; Parameters: "/t /im ""wapttray.exe"" /f"; Flags: runhidden; StatusMsg: "ArrÃªt de l'icÃ´ne de notification"
-Filename: "net"; Parameters: "stop waptservice"; Flags: runhidden; StatusMsg: "ArrÃªt du service WAPT"
-Filename: "sc"; Parameters: "delete waptservice"; Flags: runhidden; StatusMsg: "DÃ©sinstallation du service WAPT"
-Filename: "taskkill"; Parameters: "/t /im ""waptpython.exe"" /f"; Flags: runhidden; StatusMsg: "ArrÃªt de waptpython"
+Filename: "taskkill"; Parameters: "/t /im ""waptconsole.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de waptconsole"
+Filename: "taskkill"; Parameters: "/t /im ""wapttray.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de l'icône de notification"
+Filename: "net"; Parameters: "stop waptservice"; Flags: runhidden; StatusMsg: "Arrêt du service WAPT"
+Filename: "sc"; Parameters: "delete waptservice"; Flags: runhidden; StatusMsg: "Désinstallation du service WAPT"
+Filename: "taskkill"; Parameters: "/t /im ""waptpython.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de waptpython"
 
 [CustomMessages]
 ;French translations here
