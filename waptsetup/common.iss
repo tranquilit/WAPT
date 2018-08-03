@@ -171,30 +171,30 @@ en.StaticURLS=Static WAPT Info
 en.RunConfigTool=Run congifuration tool
 
 ;French translations here
-fr.StartAfterSetup=Lancer WAPT session setup Ã  l'ouverture de session
+fr.StartAfterSetup=Lancer WAPT session setup à l'ouverture de session
 fr.RegisterHostOnServer=Enregistre l'ordinateur sur le serveur WAPT
-fr.UpdateAvailablePkg=Mise Ã  jour des paquets disponibles sur le dÃ©pÃ´t principal
-fr.UpdatePkgUponShutdown=Mise Ã  jour des paquets Ã  l'extinction du poste
-fr.EnableCheckCertificate=Activer la vÃ©rification du certificat https du serveur Wapt
-fr.UseWaptServer=Activer l'utilisation d'un serveur Wapt et la gestion centralisÃ©e de cet ordinateur
+fr.UpdateAvailablePkg=Mise à jour des paquets disponibles sur le dépôt principal
+fr.UpdatePkgUponShutdown=Mise à jour des paquets à l'extinction du poste
+fr.EnableCheckCertificate=Activer la vérification du certificat https du serveur Wapt
+fr.UseWaptServer=Activer l'utilisation d'un serveur Wapt et la gestion centralisée de cet ordinateur
 fr.InstallSSLCertificates=Installer les certificats fournis par cet installeur.
 fr.InstallStartPackages=Installer maintenant les paquets {#set_start_packages}
 fr.UseKerberosForRegister=Utiliser le compte Kerberos de la machine pour l'enregistrement sur le WaptServer
-fr.VerifyServerCertificates=VÃ©rifier les certificats https
-fr.DisableHiberBoot=DÃ©sactiver l'hiberboot, et augmenter le temps pour les GPO (recommandÃ©)
-fr.RemoveAllFiles=Des fichiers restent prÃ©sents dans votre rÃ©pertoire {app}, souhaitez-vous le supprimer ainsi que tous les fichiers qu''il contient ?'
+fr.VerifyServerCertificates=Vérifier les certificats https
+fr.DisableHiberBoot=Désactiver l'hiberboot, et augmenter le temps pour les GPO (recommandé)
+fr.RemoveAllFiles=Des fichiers restent présents dans votre répertoire {app}, souhaitez-vous le supprimer ainsi que tous les fichiers qu''il contient ?'
 fr.DontChangeServerSetup=Ne pas modifier la configuration actuelle
-fr.DNSDetect=DÃ©tecter les URLS WAPT avec des requÃªtes DNS
-fr.DNSDomainLookup=Domaine DNS Ã  interroger
+fr.DNSDetect=Détecter les URLS WAPT avec des requêtes DNS
+fr.DNSDomainLookup=Domaine DNS à  interroger
 fr.StaticURLS=URLS WAPT statiques
 fr.RunConfigTool=Executer l'assitant de configuration
 
 ;German translation here
-de.StartAfterSetup=WAPT Setup-Sitzung bei SitzungserÃ¶ffnung starten
+de.StartAfterSetup=WAPT Setup-Sitzung bei Sitzungseröffnung starten
 de.RegisterHostOnServer=Diesen Computer auf WAPT Server speichern
-de.UpdateAvailablePkg=Liste der verfÃ¼gbaren Pakete auf Main Repostitory aktualisieren
+de.UpdateAvailablePkg=Liste der verfügbaren Pakete auf Main Repostitory aktualisieren
 de.UpdatePkgUponShutdown=Packete aktualisieren beim herunterfahren
-de.RunConfigTool=FÃ¼hren Sie das Konfigurationstool aus
+de.RunConfigTool=Führen Sie das Konfigurationstool aus
 
 [Code]
 var

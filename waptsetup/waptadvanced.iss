@@ -98,24 +98,24 @@ en.checkCertificateValidity=Check package certificate validity
 en.UseHostPackages=Use host packages
 
 ;French translations here
-fr.StartAfterSetup=Lancer WAPT session setup Ã  l'ouverture de session
+fr.StartAfterSetup=Lancer WAPT session setup à  l'ouverture de session
 fr.RegisterHostOnServer=Enregistre l'ordinateur sur le serveur WAPT
-fr.UpdateAvailablePkg=Mise Ã  jour des paquets disponibles sur le dÃ©pÃ´t principal
-fr.UpdatePkgUponShutdown=Mise Ã  jour des paquets Ã  l'extinction du poste
-fr.EnableCheckCertificate=Activer la vÃ©rification du certificat https du serveur Wapt
-fr.UseWaptServer=Activer l'utilisation d'un serveur Wapt et la gestion centralisÃ©e de cet ordinateur
+fr.UpdateAvailablePkg=Mise à jour des paquets disponibles sur le dépôt principal
+fr.UpdatePkgUponShutdown=Mise à jour des paquets à l'extinction du poste
+fr.EnableCheckCertificate=Activer la vérification du certificat https du serveur Wapt
+fr.UseWaptServer=Activer l'utilisation d'un serveur Wapt et la gestion centralisée de cet ordinateur
 fr.InstallSSLCertificates=Installer les certificats fournis par cet installeur.
 fr.UseKerberos=Utiliser le compte Kerberos pour authentifier le register.
-fr.VerifyCert=VÃ©rifier les certificats https
-fr.ForceUrl=Met Ã  jour les URL du dÃ©pot principal et du serveur.
-fr.checkCertificateValidity=VÃ©rifier la validitÃ© des certificat des paquets
+fr.VerifyCert=Vérifier les certificats https
+fr.ForceUrl=Met à jour les URL du dépot principal et du serveur.
+fr.checkCertificateValidity=Vérifier la validité des certificat des paquets
 fr.UseHostPackages=Utiliser les paquets machine
 
 
 ;German translation here
-de.StartAfterSetup=WAPT Setup-Sitzung bei SitzungserÃ¶ffnung starten
+de.StartAfterSetup=WAPT Setup-Sitzung bei Sitzungseröffnung starten
 de.RegisterHostOnServer=Diesen Computer auf WAPT Server speichern
-de.UpdateAvailablePkg=Liste der verfÃ¼gbaren Pakete auf Main Repostitory aktualisieren
+de.UpdateAvailablePkg=Liste der verfügbaren Pakete auf Main Repostitory aktualisieren
 de.UpdatePkgUponShutdown=Packete aktualisieren beim herunterfahren
 
 [Code]

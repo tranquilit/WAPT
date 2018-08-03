@@ -230,11 +230,11 @@ Filename: "taskkill"; Parameters: "/t /im ""waptpython.exe"" /f"; Flags: runhidd
 [CustomMessages]
 ;French translations here
 fr.InstallWAPTservice=Installer le service WAPT
-fr.LaunchIcon=Lancer l'icÃ´ne de notification lors de l'ouverture de session
+fr.LaunchIcon=Lancer l'icône de notification lors de l'ouverture de session
 fr.InstallVCpp=Installer les redistribuables VC++ 2008 (pour openssl)
-fr.ForceVCppReinstall=Forcer la rÃ©installation des redistribuables VC++ 2008 (pour openssl)
-fr.UpdatePkgUponShutdown=Proposer la mise Ã  jour des paquets Ã  l'extinction du poste
-fr.LaunchSession=Lancer WAPT session setup Ã  l'ouverture de session
+fr.ForceVCppReinstall=Forcer la réinstallation des redistribuables VC++ 2008 (pour openssl)
+fr.UpdatePkgUponShutdown=Proposer la mise à  jour des paquets à  l'extinction du poste
+fr.LaunchSession=Lancer WAPT session setup à  l'ouverture de session
 
 ;English translations here
 en.InstallWAPTservice=Install WAPT service
@@ -246,11 +246,11 @@ en.LaunchSession=Launch WAPT setup session upon session opening
 
 ;German translations here
 de.InstallWAPTservice=WAPT service installieren
-de.LaunchIcon=Benachrichtigungssymbol bei SitzungserÃ¶ffnung starten
-de.InstallVCpp=VC++ 2008 die Redistributables (fÃ¼r openssl) installieren
-de.ForceVCppReinstall=Force- VC++ 2008 redistributables (fÃ¼r openssl) deinstallieren
+de.LaunchIcon=Benachrichtigungssymbol bei Sitzungseröffnung  starten
+de.InstallVCpp=VC++ 2008 die Redistributables (für openssl) installieren
+de.ForceVCppReinstall=Force- VC++ 2008 redistributables (für openssl) deinstallieren
 de.UpdatePkgUponShutdown=Bitten, die Packete beim herunterfahren zu aktualisieren
-de.LaunchSession=WAPT setup Sitzung bei erÃ¶ffnung der Sitzung starten
+de.LaunchSession=WAPT setup Sitzung bei eröffnung der Sitzung starten
 
 
 [Code]
