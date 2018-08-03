@@ -194,11 +194,12 @@ var
   s : String;
   r : integer;
   so: ISuperObject;
+  url : String;
 begin
   w.SetValidationDescription( 'Validating connection to wapt server' );
 
-  s := server_url + '/ping';
-  r := http_get( s, s );
+  url := url_concat(server_url, '/ping');
+  r := http_get( s, url );
   if r <> 0 then
   begin
     w.show_validation_error( control, Format( MSG_FAILED_PING, [s]) );
@@ -284,8 +285,9 @@ var
   so  : ISuperObject;
   r   : integer;
   s   : String;
-  url : String;
   b   : boolean;
+  url : String;
+  b_https : boolean;
 begin
   w.SetValidationDescription( 'Validating server authentification' );
 
@@ -294,9 +296,15 @@ begin
   so.S['user'] := UTF8decode(login);
   so.S['password'] := UTF8Decode(password);
 
-  url := url_force_protocol( server_url, 'https' );
-  url := url_concat( url , '/api/v3/login' );
-  r := https_post_json ( s, url, verify_cert, UTF8Encode(so.AsJSon(false)) );
+  r := url_protocol( s, server_url );
+  if r <> 0 then
+    exit(false);
+  b_https := s = 'https';
+
+  verify_cert := verify_cert and b_https;
+  url := url_concat( server_url , '/api/v3/login' );
+  if b_https then
+    r := http_post( s, url, MIME_APPLICATION_JSON, UTF8Encode(so.AsJSon(false)) );
   if r <> 0 then
   begin
     w.show_Error( 'A problem has occured when trying to login to server' );

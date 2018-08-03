@@ -31,6 +31,7 @@ const
   WAPT_FIREWALL_RULE_443  : String = 'waptserver 443';
 
 
+  MIME_APPLICATION_JSON : String = 'application/json';
 
 
 
@@ -152,13 +153,13 @@ function url_force_protocol( const url : String; const protocol : String ) : Str
 function url_concat( const left : String; const right : String ) : String;
 function url_resolv_to_same_ip( var same : boolean; const url1 : String ; const url2 : String ) : integer;
 function url_hostname( const url : String ) : String;
+function url_protocol( var protocol : String; const url : String ) : integer;
 
-function http_get(var output: String; const url: String): integer;
+function http_is_valid_url( const url : String ) : boolean;
+function http_get( var output: String; const url: String): integer;
+function http_post(var output: String; const url: String; const content_type : String; const post_data : String): integer;
+
 function http_reponse_code( var response_code : integer; const url : String ) : integer;
-
-function https_get( var output: String; const https_url: String; certificat_verify : boolean ): integer;
-function https_post(var output: String; const https_url: String; certificat_verify : boolean; const content_type : String; const post_data : String): integer;
-function https_post_json(var output: String; const https_url: String; certificat_verify : boolean; const post_data : String): integer;
 
 function https_certificate_extract_hostname( var hostname : String; const https_url : String ) : integer;
 function https_certificate_is_valid( var valid : boolean; const https_url: String ) : integer;
@@ -841,29 +842,90 @@ begin
   uri.Free;
 end;
 
+function url_protocol(var protocol: String; const url: String): integer;
+var
+  i : integer;
+begin
+  i := Pos('://', url);
+  if i = 0 then
+    exit(-1);
+  dec(i);
+  protocol := Copy( url, 1, i );
+  exit(0);
+end;
 
-function http_get(var output: String; const url: String): integer;
+
+function http_create( https : boolean ) : TIdHTTP;
 var
   http : TIdHTTP;
   ssl  : TIdSSLIOHandlerSocketOpenSSL;
 begin
   ssl := nil;
 
-
-
   http := TIdHTTP.Create;
   http.HandleRedirects  := True;
   http.ConnectTimeout   := HTTP_TIMEOUT;
   http.ReadTimeout      := HTTP_TIMEOUT;
-  http.URL.URI          := url;
   http.IOHandler        := nil;
 
-  if http.URL.Protocol = 'https' then
+  if https then
   begin
     ssl := TIdSSLIOHandlerSocketOpenSSL.Create;
     ssl.SSLOptions.Method := sslvSSLv23;
     http.IOHandler := ssl;
   end;
+
+
+  result := http;
+end;
+
+procedure http_free( var http  : TIdHTTP );
+begin
+  if nil <> http.IOHandler then
+  begin
+    http.IOHandler.Free;
+    http.IOHandler := nil;
+  end;
+  http.Free;
+  http := nil;
+end;
+
+
+
+function http_is_valid_url(const url: String): boolean;
+var
+  proto : String;
+  b_http : boolean;
+  b_https : boolean;
+begin
+  if 0 <> url_protocol( proto, url) then
+    exit( false );
+
+  b_http := proto = 'http';
+  b_https:= proto = 'https';
+
+  result := b_http or b_https;
+end;
+
+function http_get(var output: String; const url: String ): integer;
+var
+  http : TIdHTTP;
+  proto : String;
+  b_http : boolean;
+  b_https : boolean;
+begin
+
+  if not http_is_valid_url(url) then
+  begin
+    output := 'Invalid url';
+    exit( -1 );
+  end;
+
+  url_protocol( proto, url );
+  b_https:= proto = 'https';
+
+  http := http_create( b_https );
+
 
   try
     output := http.Get( url );
@@ -875,12 +937,48 @@ begin
     end;
   end;
 
-  if Assigned(ssl) then
+  http_free( http );
+
+end;
+
+function http_post(var output: String; const url: String; const content_type: String; const post_data: String): integer;
+const
+  proxy         : String    ='';
+  user          : AnsiString='';
+  password      : AnsiString='';
+  userAgent     : String    ='';
+  AcceptType    : String    ='';
+  CookieManager : TIdCookieManager = Nil;
+  VerifyCertificateFilename : String = '0';
+begin
+
+  if not http_is_valid_url(url) then
   begin
-    ssl.Free;
-    http.IOHandler := nil;
+    output := 'Invalid url';
+    exit( -1 );
   end;
-  http.Free;
+
+  try
+    output := IdHttpPostData( url,
+                              post_data,
+                              proxy,
+                              HTTP_TIMEOUT,
+                              HTTP_TIMEOUT,
+                              HTTP_TIMEOUT,
+                              user,
+                              password,
+                              userAgent,
+                              content_type,
+                              VerifyCertificateFilename,
+                              AcceptType,
+                              CookieManager );
+    exit( 0 );
+  except on e : Exception do
+    begin
+      output := e.Message;
+      exit( -1 );
+    end;
+  end;
 end;
 
 
@@ -889,18 +987,20 @@ end;
 function http_reponse_code(var response_code: integer; const url: String ): integer;
 var
   http : TIdHTTP;
-  u : String;
+  proto : String;
+  b_https : Boolean;
 begin
 
-  u := url_force_protocol( url, 'http' );
+  if not http_is_valid_url(url) then
+    exit(-1);
 
-  http := TIdHTTP.Create;
-  http.HandleRedirects  := True;
-  http.ConnectTimeout   := HTTP_TIMEOUT;
-  http.ReadTimeout      := HTTP_TIMEOUT;
+  url_protocol( proto, url );
+  b_https := proto = 'https';
+
+  http := http_create( b_https );
 
   try
-    http.Get( u );
+    http.Get(url);
   except
   end;
 
@@ -932,78 +1032,16 @@ begin
 end;
 
 
-
-
-function https_get(var output: String; const https_url: String; certificat_verify: boolean): integer;
-const
-  proxy         : String = '';
-  user          : String = '';
-  password      : String = '';
-  method        : String = 'GET';
-  userAGent     : String = '';
-  AcceptType    : String = '';
-  CookieManager : TIdCookieManager = Nil;
-var
-  f :  String;
-  c : String;
-  r : integer;
-begin
-  r := https_certificate_pinned_filename( f, https_url );
-  if r <> 0 then
-    exit(r);
-  c := https_certificat_option( certificat_verify, 'ssl/server/' + f  );
-  try
-    output := IdHttpGetString( https_url, proxy, HTTP_TIMEOUT, HTTP_TIMEOUT, HTTP_TIMEOUT, user, password, method, userAGent, C, AcceptType, CookieManager );
-    exit(0);
-  except
-  end;
-  exit(-1);
-end;
-
-function https_post(var output: String; const https_url: String; certificat_verify: boolean; const content_type: String; const post_data: String): integer;
-const
-  proxy         : String    ='';
-  user          : AnsiString='';
-  password      : AnsiString='';
-  userAgent     : String    ='';
-  AcceptType    : String    ='';
-  CookieManager : TIdCookieManager = Nil;
-var
-  f : String;
-  c : String;
-  r : integer;
-begin
-  r := https_certificate_pinned_filename( f, https_url );
-  if r <> 0 then
-    exit( r );
-
-  c := https_certificat_option( certificat_verify, 'ssl/server/' + f );
-  try
-    output := IdHttpPostData( https_url,  post_data, proxy, HTTP_TIMEOUT, HTTP_TIMEOUT, HTTP_TIMEOUT, user, password, userAgent, content_type, C, AcceptType, CookieManager );
-    exit( 0 );
-  except
-    exit( -1 );
-  end;
-end;
-
-function https_post_json(var output: String; const https_url: String; certificat_verify: boolean; const post_data: String): integer;
-begin
-  result := https_post( output, https_url, certificat_verify, 'application/json',  post_data );
-end;
-
 function https_certificate_extract_hostname( var hostname : String; const https_url : String ) : integer;
 var
-  url: String;
   v  : Variant;
   s : String;
 begin
   if not Assigned(DMPython) then
     exit(-1);
 
-  url := url_force_protocol( https_url, 'https' );
-
   try
-    v := DMPython.waptcrypto.get_peer_cert_chain_from_server( url );
+    v := DMPython.waptcrypto.get_peer_cert_chain_from_server( https_url );
     if VarIsNone( v ) then
       exit(-1);
 
@@ -1683,14 +1721,28 @@ end;
 {$endif}
 
 function wapt_server_mongodb_to_postgresql(): integer;
+var
+   install_path : String;
+   s : String;
+   r : integer;
 begin
+
+  r := wapt_installpath_waptserver( install_path );
+  if r <> 0 then
+    exit(r);
+
+  s := IncludeTrailingBackslash(install_path) + '\waptserver\mongodb';
+  if not DirectoryExists(s) then
+    exit(0);
+
   run('waptpython.exe waptserver\waptserver_upgrade.py upgrade2postgres');
 
-  if DirectoryExistsUTF8( '\waptserver\mongodb') then
-     fileutil.DeleteDirectory(WaptBaseDir+'\waptserver\mongodb', false);
+  if DirectoryExistsUTF8(s) then
+     fileutil.DeleteDirectory(s, false);
 
-  if DirectoryExistsUTF8(WaptBaseDir+'\waptserver\apache-win32') then
-     fileutil.DeleteDirectory(WaptBaseDir+'\waptserver\apache-win32\', false);
+  s := IncludeTrailingBackslash(install_path) + '\waptserver\mongodb';
+  if DirectoryExistsUTF8(s) then
+     fileutil.DeleteDirectory(s, false);
 
   exit(0);
 end;
