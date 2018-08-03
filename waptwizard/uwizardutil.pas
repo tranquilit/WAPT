@@ -191,6 +191,7 @@ function wapt_server_set_state( state : TServiceState ): integer;
 function wapt_server_firewall_is_configured( var is_configured : boolean ) : integer;
 function wapt_server_configure_firewall( http_port : Int16; https_port : Int16 ) : integer;
 
+
 function wapt_server_mongodb_to_postgresql() : integer;
 function wapt_server_installation( var path : String ) : integer;
 function wapt_installpath_waptservice( var path : String ) : integer;
@@ -239,7 +240,9 @@ uses
   VarPyth,
   LazFileUtils,
   uvisloading,
-  dmwaptpython;
+  dmwaptpython,
+  IdSSLOpenSSL
+  ;
 
 
 const
@@ -839,23 +842,44 @@ begin
 end;
 
 
-
 function http_get(var output: String; const url: String): integer;
 var
   http : TIdHTTP;
+  ssl  : TIdSSLIOHandlerSocketOpenSSL;
 begin
+  ssl := nil;
+
+
+
   http := TIdHTTP.Create;
   http.HandleRedirects  := True;
   http.ConnectTimeout   := HTTP_TIMEOUT;
   http.ReadTimeout      := HTTP_TIMEOUT;
+  http.URL.URI          := url;
+  http.IOHandler        := nil;
+
+  if http.URL.Protocol = 'https' then
+  begin
+    ssl := TIdSSLIOHandlerSocketOpenSSL.Create;
+    ssl.SSLOptions.Method := sslvSSLv23;
+    http.IOHandler := ssl;
+  end;
 
   try
     output := http.Get( url );
     result := 0;
-  except
-    result := -1;
+  except on E : Exception do
+    begin
+      result := -1;
+      output := e.Message;
+    end;
   end;
 
+  if Assigned(ssl) then
+  begin
+    ssl.Free;
+    http.IOHandler := nil;
+  end;
   http.Free;
 end;
 

@@ -44,13 +44,19 @@ begin
 end;
 
 procedure TTWizardConfigServer_Welcome.wizard_next(var bCanNext: boolean);
+var
+  data : PWizardConfigServerData;
 begin
   bCanNext := false;
+  data := PWizardConfigServerData( m_wizard.data() );
 
   if not wizard_validate_os_version_for_server( m_wizard, nil ) then
     exit;
 
   wizard_validate_waptserver_stop_services( m_wizard, nil );
+
+  data^.can_close := false;
+
 
   bCanNext:= true;
   exit;

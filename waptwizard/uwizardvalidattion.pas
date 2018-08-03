@@ -186,6 +186,8 @@ begin
 end;
 
 function wizard_validate_waptserver_ping( w : TWizard; const server_url: String; control: TControl): Boolean;
+const
+  MSG_FAILED_PING : String = 'Failed to connect to wapt server : %s';
 label
   LBL_NOT_A_WAPTSERVER;
 var
@@ -196,11 +198,10 @@ begin
   w.SetValidationDescription( 'Validating connection to wapt server' );
 
   s := server_url + '/ping';
-  s := url_force_protocol( s, 'http' );
   r := http_get( s, s );
   if r <> 0 then
   begin
-    w.show_validation_error( control, 'Failed to connect to wapt server');
+    w.show_validation_error( control, Format( MSG_FAILED_PING, [s]) );
     exit( false );
   end;
 

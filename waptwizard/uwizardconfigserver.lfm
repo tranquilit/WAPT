@@ -3,6 +3,7 @@ inherited WizardConfigServer: TWizardConfigServer
   Top = 266
   Caption = 'Server configuration tool'
   OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poWorkAreaCenter
@@ -44,7 +45,7 @@ inherited WizardConfigServer: TWizardConfigServer
         Caption = 'Configure console'
         ControlClassName = 'TWizardConfigServer_Console'
         Name = 'console'
-        PreviousOffset = 3
+        PreviousOffset = 2
         VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item

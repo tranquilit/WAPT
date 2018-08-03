@@ -38,9 +38,9 @@ procedure TWizardConfigServer_Finish.wizard_finish(var bClose: boolean);
 var
   data : PWizardConfigServerData;
 begin
-
   data := m_wizard.data();
   data^.launch_console := self.cb_start_console.Checked;
+  data^.can_close := true;
   bClose := true;
 end;
 

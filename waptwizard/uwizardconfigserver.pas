@@ -19,6 +19,7 @@ type
 
   TWizardConfigServer = class(TWizard)
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject); override;
     procedure FormShow(Sender: TObject);
 
@@ -41,6 +42,8 @@ implementation
 {$R *.lfm}
 
 uses
+
+
   uwizardconfigserver_console,
   uwizardconfigserver_console_package_create_new_key,
   uwizardconfigserver_password,
@@ -52,7 +55,6 @@ uses
   uwizardconfigserver_console_server,
   uwizardconfigserver_server_options,
   uwizardconfigserver_welcome,
-  dmwaptpython,
   uwizardutil,
   waptcommon;
 
@@ -64,6 +66,7 @@ begin
   inherited;
 
   data_init( @m_data );
+
 
 end;
 
@@ -78,6 +81,14 @@ begin
   b := self.WizardManager.PageByName(PAGE_FINISHED).Index  = WizardManager.PageIndex;
   if b and self.m_data.launch_console then
     self.launch_console();
+end;
+
+procedure TWizardConfigServer.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+const
+  MSG : String = 'Configuration is not terminated, Are you sure you want to exit ?';
+begin
+  if not m_data.can_close then
+   CanClose := self.show_question_yesno(MSG);
 end;
 
 

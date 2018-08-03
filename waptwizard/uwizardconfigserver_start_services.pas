@@ -70,6 +70,8 @@ begin
     self.m_wizard.ClearValidationDescription();
   end;
 
+  data^.can_close := true;
+
   bCanNext := true;;
 end;
 
