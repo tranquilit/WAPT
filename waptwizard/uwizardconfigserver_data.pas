@@ -45,6 +45,7 @@ type
 
     has_found_waptagent             : boolean;
     has_found_waptservice           : boolean;
+    can_close                       : boolean;
 
   end;
   PWizardConfigServerData = ^TWizardConfigServerData;
@@ -101,12 +102,13 @@ begin
   data^.package_private_key_password := '';
   data^.has_found_waptagent   := false;
   data^.has_found_waptservice := false;
+  data^.can_close := true;
 
 
 
 
-  // Override from waptconsole.ini
-  r := wapt_ini_waptconsole( s );
+  // Override from wapt-get.ini
+  r := wapt_ini_waptget(s);
   if r = 0 then
   begin
     ini := TIniFile.Create( s );
@@ -131,7 +133,6 @@ begin
   if 'https' = uri.Protocol then
     if Length(uri.Port) > 0 then
       data^.nginx_https := StrToInt(uri.Port);
-
   FreeAndNil(uri);
 
 
