@@ -20,6 +20,7 @@ type
 
     // TWizardStepFrame
     procedure wizard_show(); override; final;
+    procedure wizard_previous(var bCanPrevious: boolean); override; final;
     procedure wizard_next(var bCanNext: boolean); override; final;
     procedure clear();  override; final;
 
@@ -54,6 +55,11 @@ begin
 
 end;
 
+procedure TWizardConfigServer_Console.wizard_previous(var bCanPrevious: boolean );
+begin
+  self.m_wizard.WizardManager.PageByName( PAGE_CONSOLE ).PreviousOffset := 3;
+end;
+
 procedure TWizardConfigServer_Console.wizard_next(var bCanNext: boolean);
 var
   data : PWizardConfigServerData;
@@ -71,6 +77,7 @@ begin
   begin
     p_console.NextOffset      := 1;
     p_finished.PreviousOffset := 1;
+    data^.can_close := false;
   end
   else
   begin
