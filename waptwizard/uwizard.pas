@@ -58,6 +58,7 @@ type
     procedure on_button_next_click( sender : TObject );
     procedure on_button_finish_click( sender : TObject );
     procedure on_button_cancel_click( sender : TObject );
+    procedure on_button_previous( sender : TObject );
     procedure set_buttons_enable( enable : Boolean );
     procedure _click_next_async( data : PtrInt );
     procedure _setfocus_async( data : PtrInt );
@@ -74,6 +75,7 @@ type
 
     function  show_info(    const msg : String; buttons : TMsgDlgButtons ) : TModalResult; virtual; final;
     function  show_question(const msg : String; buttons : TMsgDlgButtons ) : TModalResult; virtual; final;
+    function  show_question_yesno( const msg : String ) : boolean; virtual; final;
     function  show_warning( const msg : String; buttons : TMsgDlgButtons ) : TModalResult; virtual; final;
     function  show_error(   const msg : String; buttons : TMsgDlgButtons ) : TModalResult; virtual; final;
     procedure show_error(   const msg : String ); virtual overload; final;
@@ -141,10 +143,11 @@ begin
 
   // Trick Next
   m_wizard_panel_proc_next_onclick := self.WizardButtonPanel.NextButton.OnClick;
-  self.WizardButtonPanel.NextButton.OnClick := @on_button_next_click;
 
-  self.WizardButtonPanel.FinishButton.OnClick := @on_button_finish_click;
-  self.WizardButtonPanel.CancelButton.OnClick := @on_button_cancel_click;
+  self.WizardButtonPanel.NextButton.OnClick     := @on_button_next_click;
+  self.WizardButtonPanel.FinishButton.OnClick   := @on_button_finish_click;
+  self.WizardButtonPanel.CancelButton.OnClick   := @on_button_cancel_click;
+  self.WizardButtonPanel.PreviousButton.OnClick := @on_button_previous;
 
   //
   self.panel_center.Caption := '';
@@ -178,6 +181,11 @@ end;
 function TWizard.show_question(const msg: String; buttons: TMsgDlgButtons ): TModalResult;
 begin
   result := MessageDlg( self.Caption, msg, mtConfirmation, buttons, 0 );
+end;
+
+function TWizard.show_question_yesno(const msg: String): boolean;
+begin
+  result := mrYes = MessageDlg( msg, mtConfirmation, mbYesNo, 0);
 end;
 
 
@@ -381,6 +389,16 @@ begin
   self.WizardManager.DoAction(waCancel);
   if b then
     Close;
+end;
+
+procedure TWizard.on_button_previous(sender: TObject );
+var
+  b :boolean;
+begin
+  b := true;
+  current_step(self).wizard_previous(b);
+  if b then
+    self.WizardManager.DoAction(waPrevious);
 end;
 
 procedure TWizard.set_buttons_enable( enable : Boolean);
