@@ -66,6 +66,7 @@ begin
     ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    data^.repo_url );
     ini.WriteString( INI_GLOBAL, INI_DEFAULT_PACKAGE_PREFIX,      data^.default_package_prefix );
     ini.WriteString( INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH,   data^.package_certificate );
+    wapt_ini_write_tis_repo( ini );
     result := 0;
   finally
     if Assigned(ini) then
@@ -88,6 +89,7 @@ begin
     ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                data^.verify_cert);
     ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 data^.wapt_server);
     ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    data^.repo_url );
+    wapt_ini_write_tis_repo( ini );
     result := 0;
   finally
     if Assigned(ini) then

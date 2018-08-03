@@ -212,6 +212,7 @@ begin
     ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    data^.wapt_server + '/wapt');
     ini.WriteString( INI_GLOBAL, INI_DEFAULT_PACKAGE_PREFIX,      data^.default_package_prefix );
     ini.WriteString( INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH,   data^.package_certificate );
+    wapt_ini_write_tis_repo( ini );
     FreeAndNil( ini );
 
 
@@ -253,6 +254,7 @@ var
     ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    data^.repo_url );
     ini.WriteString( INI_GLOBAL, INI_DEFAULT_PACKAGE_PREFIX,      data^.default_package_prefix );
     ini.WriteString( INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH,   data^.package_certificate );
+    wapt_ini_write_tis_repo( ini );
     FreeAndNil( ini );
     result := 0;
   except on Ex : Exception do

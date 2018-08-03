@@ -5,6 +5,7 @@ unit uwapt_ini;
 interface
 
 uses
+  IniFiles,
   Classes, SysUtils;
 
 
@@ -33,10 +34,12 @@ const
 
 
   INI_WAPTTEMPLATES                       : String = 'wapt-templates';
+  INI_WAPT_STORE_URL                      : String = 'https://store.wapt.fr/wapt';
 
   function wapt_ini_waptconsole(var s: String): integer;
   function wapt_ini_waptserver( const base_path :String; var s : String ) : integer;
   function wapt_ini_waptget( var s : String ) : integer;
+  procedure wapt_ini_write_tis_repo( ini : TIniFile );
 
 implementation
 
@@ -76,6 +79,13 @@ begin
   if FileExists(s) then
     exit(0);
   exit(-1)
+end;
+
+
+procedure wapt_ini_write_tis_repo( ini : TIniFile );
+begin
+  ini.WriteString( INI_WAPTTEMPLATES,  INI_REPO_URL, INI_WAPT_STORE_URL );
+  ini.WriteString( INI_WAPTTEMPLATES,  INI_VERIFIY_CERT, '1' );
 end;
 
 end.
