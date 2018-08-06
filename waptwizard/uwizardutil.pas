@@ -27,8 +27,8 @@ const
   WAPT_SERVICES : array[0..2] of String = ( 'WAPTPostgresql', 'WAPTServer','WAPTNginx' );
 {$endif}
 
-  WAPT_FIREWALL_RULE_080  : String = 'waptserver 80';
-  WAPT_FIREWALL_RULE_443  : String = 'waptserver 443';
+  WAPT_FIREWALL_RULE_HTTP  : String = 'waptserver 80';
+  WAPT_FIREWALL_RULE_HTTPS : String = 'waptserver 443';
 
 
   MIME_APPLICATION_JSON : String = 'application/json';
@@ -140,6 +140,11 @@ function ExtractFileNameNoExt( filename : String ) : string;
 function fs_path_exists( const path : String ) : boolean;
 function fs_path_concat( const p1 : String; const p2 : String ) : String;
 function fs_directory_is_writable( const path : String ): boolean;
+
+function firewall_has_rule( const rulename : String ) : boolean;
+function firewall_drop_rule( const rulename : String ) : boolean;
+function firewall_is_running() : boolean;
+function firewall_add_rule_allow( const name : String; local_port : UINT16 ) : boolean;
 
 function  random_alphanum( size : integer ) : String;
 procedure random_memset( p : pointer; sz : UInt32 );
@@ -1645,8 +1650,12 @@ end;
 
 
 
-
 {$ifdef WINDOWS}
+function firewall_is_running() : boolean;
+begin
+  result := service_is_running('MpsSvc');
+end;
+
 function firewall_has_rule( const rulename : String ) : boolean;
 var
     s : String;
@@ -1673,6 +1682,24 @@ begin
   end;
 end;
 
+function firewall_add_rule_allow( const name : String; local_port : UINT16 ) : boolean;
+var
+  params :  TRunParametersSync;
+  r      : integer;
+begin
+
+  if not firewall_is_running() then
+    exit;
+
+  FillChar( params, sizeof(TRunParametersSync), 0 );
+  params.cmd_line    := Format( 'netsh advfirewall firewall add rule name="%s" dir=in localport=%d protocol=TCP action=allow', [name, local_port] );
+  params.timout_ms   := 3 * 1000;
+  params.on_run_tick := nil;
+
+  r := run_sync( @params );
+
+  result := r = 0;
+end;
 
 
 function wapt_server_firewall_is_configured( var is_configured: boolean ): integer;
@@ -1690,7 +1717,7 @@ begin
   end;
 
   b  :=  ssStopped = ss;
-  is_configured := b or (firewall_has_rule(WAPT_FIREWALL_RULE_080) and firewall_has_rule(WAPT_FIREWALL_RULE_443));
+  is_configured := b or (firewall_has_rule(WAPT_FIREWALL_RULE_HTTP) and firewall_has_rule(WAPT_FIREWALL_RULE_HTTPS));
   result := 0;
 end;
 
@@ -1705,14 +1732,14 @@ begin
   if not (ssRunning = GetServiceStatusByName( '', 'MpsSvc' )) then
     exit( 0 );
 
-  firewall_drop_rule( WAPT_FIREWALL_RULE_080 );
-  firewall_drop_rule( WAPT_FIREWALL_RULE_443 );
+  firewall_drop_rule( WAPT_FIREWALL_RULE_HTTP );
+  firewall_drop_rule( WAPT_FIREWALL_RULE_HTTPS );
 
 
-  cmdline := Format( 'netsh advfirewall firewall add rule name="%s" dir=in localport=%d protocol=TCP action=allow', [WAPT_FIREWALL_RULE_080, http_port] );
+  cmdline := Format( 'netsh advfirewall firewall add rule name="%s" dir=in localport=%d protocol=TCP action=allow', [WAPT_FIREWALL_RULE_HTTP, http_port] );
   Run( UTF8Decode(cmdline) );
 
-  cmdline := Format( 'netsh advfirewall firewall add rule name="%s" dir=in localport=%d protocol=TCP action=allow', [WAPT_FIREWALL_RULE_443, https_port] );
+  cmdline := Format( 'netsh advfirewall firewall add rule name="%s" dir=in localport=%d protocol=TCP action=allow', [WAPT_FIREWALL_RULE_HTTPS, https_port] );
   Run( UTF8Decode(cmdline) );
 
   exit(0);
