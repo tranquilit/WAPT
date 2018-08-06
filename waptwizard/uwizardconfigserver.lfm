@@ -35,6 +35,7 @@ inherited WizardConfigServer: TWizardConfigServer
       item
         Caption = 'Start services'
         ControlClassName = 'TWizardConfigServer_StartServices'
+        Name = 'start_service'
       end    
       item
         Caption = 'Configure console'

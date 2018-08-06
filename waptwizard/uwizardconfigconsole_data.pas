@@ -16,6 +16,7 @@ const
     PAGE_PACKAGE_CREATE_NEW_KEY  : String = 'package_create_new_key';
     PAGE_PACKAGE_USE_EXISTING_KEY: String = 'package_use_existing_key';
     PAGE_BUILD_AGENT             : String = 'build_agent';
+    PAGE_RESTART_WAPT_SERVICE    : String = 'restart_wapt_service';
     PAGE_FINISHED                : String = 'finished';
 
 type

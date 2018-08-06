@@ -46,6 +46,7 @@ inherited WizardConfigConsole: TWizardConfigConsole
       item
         Caption = 'Service wapt'
         ControlClassName = 'TWizardConfigConsole_RestartWaptService'
+        Name = 'restart_wapt_service'
       end    
       item
         Caption = 'Finished'

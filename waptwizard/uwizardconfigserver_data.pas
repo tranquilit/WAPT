@@ -20,7 +20,7 @@ const
     PAGE_PACKAGE_USE_EXISTING_KEY: String = 'package_use_existing_key';
     PAGE_SERVER_URL              : String = 'server_url';
     PAGE_BUILD_AGENT             : String = 'build_agent';
-    PAGE_WAPT_SERVICE            : String = 'restart_wapt_service';
+    PAGE_START_SERVICES          : String = 'start_service';
     PAGE_FINISHED                : String = 'finished';
 
 
