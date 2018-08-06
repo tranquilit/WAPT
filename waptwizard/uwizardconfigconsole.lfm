@@ -14,51 +14,45 @@ inherited WizardConfigConsole: TWizardConfigConsole
         ControlClassName = 'TWizardStepFrameConsoleWelcome'
         Name = 'welcome'
         EnabledButtons = [wbNext, wbCancel]
-        VisibleButtons = [wbNext, wbFinish, wbCancel]
+        VisibleButtons = [wbNext, wbCancel]
       end    
       item
         Caption = 'Server'
         ControlClassName = 'TWizardConfigConsole_Server'
         Name = 'server'
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Key option'
         ControlClassName = 'TWizardConfigConsole_KeyOption'
         Name = 'key_option'
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Package'
         ControlClassName = 'TWizardConfigConsole_PackageUseExistingKey'
         Name = 'package_use_existing_key'
         NextOffset = 2
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Package'
         ControlClassName = 'TWizardConfigConsole_PackageCreateNewKey'
         Name = 'package_create_new_key'
         PreviousOffset = 2
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Build agent'
         ControlClassName = 'TWizardConfigConsole_BuildAgent'
         Name = 'build_agent'
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Service wapt'
         ControlClassName = 'TWizardConfigConsole_RestartWaptService'
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Finished'
         ControlClassName = 'TWizardStepFrameConsoleFinished'
         Name = 'finished'
         EnabledButtons = [wbFinish]
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+        VisibleButtons = [wbFinish]
       end>
   end
   inherited PopupNotifier: TPopupNotifier

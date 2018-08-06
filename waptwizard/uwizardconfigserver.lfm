@@ -15,76 +15,66 @@ inherited WizardConfigServer: TWizardConfigServer
         ControlClassName = 'TTWizardConfigServer_Welcome'
         Name = 'welcome'
         EnabledButtons = [wbNext, wbCancel]
-        VisibleButtons = [wbNext, wbFinish, wbCancel]
+        VisibleButtons = [wbNext, wbCancel]
       end    
       item
         Caption = 'Admin password'
         ControlClassName = 'TWizardConfigServer_Password'
         Name = 'admin_password'
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Server options'
         ControlClassName = 'TWizardConfigServer_ServerOptions'
         Name = 'server_options'
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Migrating from MongoDB'
         ControlClassName = 'TWizardConfigServer_MongoDB'
         Name = 'mongodb'
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Start services'
         ControlClassName = 'TWizardConfigServer_StartServices'
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Configure console'
         ControlClassName = 'TWizardConfigServer_Console'
         Name = 'console'
         PreviousOffset = 2
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Key option'
         ControlClassName = 'TWizardConfigServer_Console_KeyOption'
         Name = 'key_option'
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Package ( Create new key )'
         ControlClassName = 'TWizardConfigServer_Console_PackageCreateNewKey'
         Name = 'package_create_new_key'
         NextOffset = 2
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Package ( use existing key )'
         ControlClassName = 'TWizardConfigServer_Console_PackageUseExistingKey'
         Name = 'package_use_existing_key'
         PreviousOffset = 2
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Server url'
         ControlClassName = 'TWizardConfigserver_Console_Server'
         Name = 'server_url'
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Build agent'
         ControlClassName = 'TWizardConfigServer_Console_BuildAgent'
         Name = 'build_agent'
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
       end    
       item
         Caption = 'Finished'
         ControlClassName = 'TWizardConfigServer_Finish'
         Name = 'finished'
         EnabledButtons = [wbFinish]
-        VisibleButtons = [wbPrevious, wbNext, wbFinish, wbCancel]
+        VisibleButtons = [wbFinish]
       end>
   end
 end
