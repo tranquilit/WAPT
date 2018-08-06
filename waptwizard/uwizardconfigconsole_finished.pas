@@ -20,6 +20,7 @@ type
   public
 
   // TWizardStepFrame
+  procedure wizard_show(); override; final;
   procedure wizard_finish( var bClose : boolean ); override; final;
 
   end;
@@ -33,6 +34,12 @@ uses
 {$R *.lfm}
 
 { TWizardStepFrameConsoleFinished }
+
+procedure TWizardStepFrameConsoleFinished.wizard_show();
+begin
+  inherited wizard_show();
+  m_wizard.m_can_close := true;
+end;
 
 procedure TWizardStepFrameConsoleFinished.wizard_finish(var bClose: boolean);
 var

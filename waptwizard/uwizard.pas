@@ -32,6 +32,7 @@ type
 
 
 
+    procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure OnEditClick(Sender: TObject); virtual; final;
     procedure OnEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState); virtual; final;
     procedure OnEditEnter(Sender: TObject); virtual; final;
@@ -70,6 +71,8 @@ type
 
 
   public
+    m_can_close : boolean;
+    m_can_close_message : String;
 
     function data() : Pointer; virtual; abstract;
 
@@ -157,11 +160,17 @@ begin
     self.WizardManager.PageIndex := 0;
 
   m_form_waiting := nil;
+
+
+  m_can_close := false;
+  m_can_close_message := '';
 end;
 
 procedure TWizard.FormDestroy(Sender: TObject);
 begin
 end;
+
+
 
 procedure TWizard.panel_centerClick(Sender: TObject);
 begin
@@ -215,6 +224,22 @@ end;
 procedure TWizard.OnEditClick(Sender: TObject);
 begin
   ClearValidationError();
+end;
+
+procedure TWizard.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+const
+  MSG_DEFAULT_CLOSE_QUERY : String = 'Configuration is not terminated, Are you sure you want to exit ?';
+begin
+  CanClose := true;
+
+  if m_can_close then
+    exit;
+
+  if Length(m_can_close_message) = 0 then
+    CanClose := self.show_question_yesno( MSG_DEFAULT_CLOSE_QUERY )
+  else
+    CanClose := self.show_question_yesno( m_can_close_message );
+
 end;
 
 procedure TWizard.OnEditEnter(Sender: TObject);
@@ -377,7 +402,10 @@ begin
   b := true;
   current_step(self).wizard_finish(b);
   if b then
+  begin
+    m_can_close := true;
     Close;
+  end;
 end;
 
 procedure TWizard.on_button_cancel_click(sender: TObject);

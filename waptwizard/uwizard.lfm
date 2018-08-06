@@ -8,6 +8,7 @@ object Wizard: TWizard
   Caption = 'TWizard'
   ClientHeight = 480
   ClientWidth = 640
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   Position = poMainFormCenter

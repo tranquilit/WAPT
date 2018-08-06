@@ -45,8 +45,6 @@ type
 
     has_found_waptagent             : boolean;
     has_found_waptservice           : boolean;
-    can_close                       : boolean;
-
   end;
   PWizardConfigServerData = ^TWizardConfigServerData;
 
@@ -102,7 +100,6 @@ begin
   data^.package_private_key_password := '';
   data^.has_found_waptagent   := false;
   data^.has_found_waptservice := false;
-  data^.can_close := true;
 
 
 

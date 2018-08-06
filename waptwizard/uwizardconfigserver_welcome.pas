@@ -55,9 +55,6 @@ begin
 
   wizard_validate_waptserver_stop_services( m_wizard, nil );
 
-  data^.can_close := false;
-
-
   bCanNext:= true;
   exit;
 end;

@@ -21,6 +21,7 @@ type
   public
 
     // TWizardStepFrame
+    procedure wizard_show(); override; final;
     procedure wizard_finish( var bClose : boolean ); override; final;
 
   end;
@@ -34,13 +35,18 @@ uwizardconfigserver_data;
 
 { TWizardConfigServer_Finish }
 
+procedure TWizardConfigServer_Finish.wizard_show();
+begin
+  inherited wizard_show();
+  m_wizard.m_can_close := true;
+end;
+
 procedure TWizardConfigServer_Finish.wizard_finish(var bClose: boolean);
 var
   data : PWizardConfigServerData;
 begin
   data := m_wizard.data();
   data^.launch_console := self.cb_start_console.Checked;
-  data^.can_close := true;
   bClose := true;
 end;
 

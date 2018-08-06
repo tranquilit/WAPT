@@ -3,7 +3,6 @@ inherited WizardConfigServer: TWizardConfigServer
   Top = 266
   Caption = 'Server configuration tool'
   OnClose = FormClose
-  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poWorkAreaCenter

@@ -46,13 +46,11 @@ begin
   self.cb_configure_console.Checked := true;
 end;
 
-
 procedure TWizardConfigServer_Console.wizard_show();
 begin
   inherited;
 
   self.m_wizard.WizardButtonPanel.NextButton.SetFocus;
-
 end;
 
 procedure TWizardConfigServer_Console.wizard_previous(var bCanPrevious: boolean );
@@ -69,7 +67,6 @@ begin
   bCanNext := true;
   data := self.m_wizard.data();
 
-
   p_console  := self.m_wizard.WizardManager.PageByName( PAGE_CONSOLE );
   p_finished := self.m_wizard.WizardManager.PageByName( PAGE_FINISHED );
 
@@ -77,7 +74,6 @@ begin
   begin
     p_console.NextOffset      := 1;
     p_finished.PreviousOffset := 1;
-    data^.can_close := false;
   end
   else
   begin

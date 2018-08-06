@@ -19,7 +19,6 @@ type
 
   TWizardConfigServer = class(TWizard)
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject); override;
     procedure FormShow(Sender: TObject);
 
@@ -68,6 +67,7 @@ begin
   data_init( @m_data );
 
 
+
 end;
 
 procedure TWizardConfigServer.FormShow(Sender: TObject);
@@ -83,13 +83,6 @@ begin
     self.launch_console();
 end;
 
-procedure TWizardConfigServer.FormCloseQuery(Sender: TObject; var CanClose: boolean);
-const
-  MSG : String = 'Configuration is not terminated, Are you sure you want to exit ?';
-begin
-  if not m_data.can_close then
-   CanClose := self.show_question_yesno(MSG);
-end;
 
 
 function TWizardConfigServer.data(): Pointer;

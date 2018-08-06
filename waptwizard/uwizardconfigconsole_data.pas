@@ -34,6 +34,7 @@ type
     launch_console                : boolean;
     check_certificates_validity   : String;
     repo_url                      : String;
+    can_close                     : boolean;
   end;
   PWizardConfigConsoleData = ^TWizardConfigConsoleData;
 
