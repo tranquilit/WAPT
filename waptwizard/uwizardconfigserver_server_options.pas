@@ -76,22 +76,6 @@ begin
 
 end;
 
-function wizard_validate_str_is_valid_port_number( w : TWizard; ctrl : TControl; const str : String ) : boolean;
-const
-  MSG_NOT_A_VALID_PORT_NUMBER : String = 'Not a valid port number';
-var
-  p : integer;
-begin
-  try
-    p := StrToInt(str);
-    if 65535 <> (65535 or p) then
-     raise Exception.Create('');
-    exit(true);
-  Except
-  end;
-  w.show_validation_error( ctrl, MSG_NOT_A_VALID_PORT_NUMBER);
-  exit(false);
-end;
 
 procedure TWizardConfigServer_ServerOptions.wizard_next(var bCanNext: boolean);
 const

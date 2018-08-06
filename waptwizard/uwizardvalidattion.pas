@@ -18,6 +18,7 @@ function wizard_validate_str_not_empty_when_trimmed( w : TWizard; control : TCon
 function wizard_validate_str_length_not_zero( w : TWizard; control : TControl; failed_description : String ) : Boolean;
 function wizard_validate_str_is_alphanum( w : TWizard;  const str : String; control : TControl ) :  Boolean;
 function wizard_validate_str_password_are_equals( w : TWizard; const s1 : String; const s2 : String; control : TControl ) : Boolean;
+function wizard_validate_str_is_valid_port_number( w : TWizard; ctrl : TControl; const str : String ) : boolean;
 
 function wizard_validate_waptserver_ping( w : TWizard; const server_url : String; control : TControl ) : Boolean;
 function wizard_validate_waptserver_version_not_less( w : TWizard; const  server_url : String; version : String; control : TControl ) : Boolean;
@@ -183,6 +184,23 @@ begin
   end;
   w.ClearValidationDescription();
   exit( true) ;
+end;
+
+function wizard_validate_str_is_valid_port_number( w : TWizard; ctrl : TControl; const str : String ) : boolean;
+const
+  MSG_NOT_A_VALID_PORT_NUMBER : String = 'Not a valid port number';
+var
+  p : integer;
+begin
+  try
+    p := StrToInt(str);
+    if 65535 <> (65535 or p) then
+     raise Exception.Create('');
+    exit(true);
+  Except
+  end;
+  w.show_validation_error( ctrl, MSG_NOT_A_VALID_PORT_NUMBER);
+  exit(false);
 end;
 
 function wizard_validate_waptserver_ping( w : TWizard; const server_url: String; control: TControl): Boolean;
