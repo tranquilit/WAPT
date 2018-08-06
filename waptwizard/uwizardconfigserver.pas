@@ -66,8 +66,6 @@ begin
 
   data_init( @m_data );
 
-
-
 end;
 
 procedure TWizardConfigServer.FormShow(Sender: TObject);

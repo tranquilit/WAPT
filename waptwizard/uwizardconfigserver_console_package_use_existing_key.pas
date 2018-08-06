@@ -16,15 +16,13 @@ type
   TWizardConfigServer_Console_PackageUseExistingKey = class(TWizardStepFrame)
     cb_show_password: TCheckBox;
     ed_certificate: TFileNameEdit;
-    ed_password: TEdit;
-    ed_package_prefix: TEdit;
     ed_key: TFileNameEdit;
-    gb_package_signing: TGroupBox;
-    lbl_password: TLabel;
-    lbl_package_prefix: TLabel;
-    lbl_select_key: TLabel;
-    gb_package: TGroupBox;
+    ed_package_prefix: TEdit;
+    ed_password: TEdit;
     lbl_certificate: TLabel;
+    lbl_package_prefix: TLabel;
+    lbl_password: TLabel;
+    lbl_select_key: TLabel;
     procedure cb_show_passwordChange(Sender: TObject);
     procedure ed_certificateAcceptFileName(Sender: TObject; var Value: String);
     procedure ed_keyAcceptFileName(Sender: TObject; var Value: String);
@@ -148,15 +146,10 @@ procedure TWizardConfigServer_Console_PackageUseExistingKey.wizard_show();
 begin
   inherited wizard_show();
 
-  self.gb_package.TabOrder                                := 0;
-  self.gb_package_signing.TabOrder                        := 1;
-  self.m_wizard.WizardButtonPanel.TabOrder                := 2;
-
   self.ed_package_prefix.TabOrder                         := 0;
   self.ed_key.TabOrder                                    := 1;
-  self.ed_password.TabOrder                               := 2;
-  self.ed_certificate.TabOrder                            := 3;
-  self.cb_show_password.TabOrder                          := 4;
+  self.ed_certificate.TabOrder                            := 2;
+  self.ed_password.TabOrder                               := 3;
 
   if Length(self.ed_package_prefix.Text) = 0 then
     self.ed_package_prefix.SetFocus

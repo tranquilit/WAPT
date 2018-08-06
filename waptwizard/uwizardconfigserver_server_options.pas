@@ -25,6 +25,7 @@ type
     lbl_port_http: TLabel;
     lbl_port_https: TLabel;
     p_firewall: TPanel;
+    procedure cb_add_rule_to_firewallChange(Sender: TObject);
   private
     function fw_add_rule( const rule_name : String; local_port : UInt16; b_is_http : boolean) : boolean;
 
@@ -54,6 +55,11 @@ const
 
 
 { TWizardConfigServer_ServerOptions }
+
+procedure TWizardConfigServer_ServerOptions.cb_add_rule_to_firewallChange( Sender: TObject);
+begin
+  self.p_firewall.Visible := self.cb_add_rule_to_firewall.Checked;
+end;
 
 function TWizardConfigServer_ServerOptions.fw_add_rule(const rule_name: String; local_port: UInt16; b_is_http: boolean): boolean;
 const
@@ -126,9 +132,10 @@ begin
   self.img_firewall_rule_wapt_http.Visible  := false;
   self.img_firewall_rule_wapt_https.Visible := false;
 
-
   if m_show_count = 1 then
-    self.ed_port_http.SetFocus;
+    self.m_wizard.WizardButtonPanel.NextButton.SetFocus;
+
+
 
 end;
 

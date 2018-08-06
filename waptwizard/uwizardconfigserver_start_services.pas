@@ -5,18 +5,21 @@ unit uwizardconfigserver_start_services;
 interface
 
 uses
+  uwizard,
   uwizardstepframe,
-  Classes, SysUtils, FileUtil, Forms, Controls;
+  Classes, SysUtils, FileUtil, Forms, Controls, StdCtrls;
 
 type
 
   { TWizardConfigServer_StartServices }
 
   TWizardConfigServer_StartServices = class(TWizardStepFrame)
+    ImageList1: TImageList;
   private
 
   public
 
+    procedure wizard_load(w: TWizard); override; final;
     procedure wizard_show(); override; final;
     procedure wizard_next(var bCanNext: boolean); override; final;
 
@@ -25,14 +28,45 @@ type
 implementation
 
 uses
+  dialogs,
+  ExtCtrls,
   uwizardconfigserver_data,
   uwizardvalidattion,
   uwizardutil;
 
+
+
 {$R *.lfm}
+
+const
+  IMG_SUCCEED : integer = 0;
+  IMG_FAILED  : integer = 1;
+
 
 { TWizardConfigServer_StartServices }
 
+procedure TWizardConfigServer_StartServices.wizard_load(w: TWizard);
+var
+  i : integer;
+  lbl : TLabel;
+  img : TImage;
+begin
+  inherited wizard_load(w);
+
+  for i := 0 to Length(WAPT_SERVICES) - 1 do
+  begin
+    lbl := TLabel.Create( self );
+    lbl.Caption:= WAPT_SERVICES[i];
+    lbl.Align:= alTop;
+    lbl.Parent := self;
+
+    img := Timage.Create( self );
+    img.Align := alTop;
+    self.ImageList1.GetBitmap( IMG_SUCCEED, img.Picture.Bitmap );
+    img.Parent := self;
+  end;
+
+end;
 
 procedure TWizardConfigServer_StartServices.wizard_show();
 begin

@@ -20,13 +20,11 @@ type
     ed_private_key_name: TEdit;
     ed_private_key_password_1: TEdit;
     ed_private_key_password_2: TEdit;
-    gb_package_signing: TGroupBox;
     lbl_package_prefix: TLabel;
     lbl_private_key_dir: TLabel;
     lbl_private_key_name: TLabel;
     lbl_private_key_password_1: TLabel;
     lbl_private_key_password_2: TLabel;
-    Package: TGroupBox;
     Panel2: TPanel;
   private
 
@@ -66,18 +64,7 @@ constructor TWizardConfigServer_Console_PackageCreateNewKey.Create( AOwner: TCom
 begin
   inherited Create( AOwner );
 
-  // Hints ts_private
-  self.ed_private_key_name.Hint        := 'The name the will be save';
-  self.ed_private_key_directory.Hint   := 'This is the directory where the signing private key will be saved' + #13#10 + 'it should be a very secure location' ;
-  self.ed_private_key_password_1.Hint  := 'Enter your private key password here';
-  self.ed_private_key_password_2.Hint  := 'Confirm your private key password here';
 
-  self.ed_private_key_directory.Text  := 'C:\private';
-
-
-//  self.p_create_key.Top := self.p_select_key.Top;
-//  self.p_create_key.Left := self.p_select_key.Left;
-//  self.gb_package_signing.Height := self.gb_package_signing.Height - self.p_create_key.Height;
 
 
 end;
@@ -86,6 +73,12 @@ procedure TWizardConfigServer_Console_PackageCreateNewKey.wizard_load(w: TWizard
 begin
   inherited wizard_load(w);
 
+
+  // Hints ts_private
+  self.ed_private_key_name.Hint        := 'The name the will be save';
+  self.ed_private_key_directory.Hint   := 'This is the directory where the signing private key will be saved' + #13#10 + 'it should be a very secure location' ;
+  self.ed_private_key_password_1.Hint  := 'Enter your private key password here';
+  self.ed_private_key_password_2.Hint  := 'Confirm your private key password here';
 
   // default
   self.ed_package_prefix.Text := 'test';
@@ -97,17 +90,16 @@ end;
 procedure TWizardConfigServer_Console_PackageCreateNewKey.wizard_show();
 begin
   inherited wizard_show();
-  self.ed_package_prefix.SetFocus;
 
   // Tab order
   self.ed_package_prefix.TabOrder         := 0;
-  self.ed_private_key_name.TabOrder       := 1;
-  self.ed_private_key_password_1.TabOrder := 2;
-  self.ed_private_key_password_2.TabOrder := 3;
-  self.ed_private_key_directory.TabOrder  := 4;
-  self.m_wizard.WizardButtonPanel.NextButton.TabOrder     := 5;
-  self.m_wizard.WizardButtonPanel.PreviousButton.TabOrder := 6;
-  self.m_wizard.WizardButtonPanel.CancelButton.TabOrder   := 7;
+  self.ed_private_key_directory.TabOrder  := 1;
+  self.ed_private_key_name.TabOrder       := 2;
+  self.ed_private_key_password_1.TabOrder := 3;
+  self.ed_private_key_password_2.TabOrder := 4;
+
+  if m_show_count = 1 then
+    self.ed_package_prefix.SetFocus;
 
 end;
 

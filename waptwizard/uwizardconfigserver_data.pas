@@ -339,7 +339,7 @@ begin
     DMPython.PythonEng.ExecStrings( sl );
     result := 0;
   except on E : Exception do
-    w.show_error( e.Message );
+    w.show_validation_error( nil, e.Message );
   end;
 
   sl.Free;

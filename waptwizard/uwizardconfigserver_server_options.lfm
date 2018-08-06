@@ -1,12 +1,12 @@
 inherited WizardConfigServer_ServerOptions: TWizardConfigServer_ServerOptions
-  Height = 202
-  Width = 237
-  ClientHeight = 202
-  ClientWidth = 237
+  Height = 152
+  Width = 394
+  ClientHeight = 152
+  ClientWidth = 394
   DesignLeft = 1126
   DesignTop = 422
   object lbl_port_http: TLabel[0]
-    Left = 38
+    Left = 25
     Height = 15
     Top = 44
     Width = 28
@@ -14,7 +14,7 @@ inherited WizardConfigServer_ServerOptions: TWizardConfigServer_ServerOptions
     ParentColor = False
   end
   object ed_port_http: TEdit[1]
-    Left = 69
+    Left = 56
     Height = 23
     Top = 40
     Width = 56
@@ -22,17 +22,17 @@ inherited WizardConfigServer_ServerOptions: TWizardConfigServer_ServerOptions
     Text = 'ed_port_http'
   end
   object lbl_port_https: TLabel[2]
-    Left = 32
+    Left = 121
     Height = 15
-    Top = 76
+    Top = 44
     Width = 33
     Caption = 'https :'
     ParentColor = False
   end
   object ed_port_https: TEdit[3]
-    Left = 69
+    Left = 160
     Height = 23
-    Top = 72
+    Top = 40
     Width = 56
     TabOrder = 1
     Text = 'ed_port_https'
@@ -41,24 +41,25 @@ inherited WizardConfigServer_ServerOptions: TWizardConfigServer_ServerOptions
     Left = 0
     Height = 30
     Top = 0
-    Width = 237
-    Align = alTop
-    Caption = 'Select ports the wapt server will listen on.'#13#10' If you are not sure then click next.'
+    Width = 216
+    Align = alCustom
+    Caption = 'Select ports the wapt server will listen on.'#13#10
     ParentColor = False
     ParentFont = False
   end
   object cb_add_rule_to_firewall: TCheckBox[5]
-    Left = 69
+    Left = 58
     Height = 19
-    Top = 112
+    Top = 80
     Width = 125
     Caption = 'Add rules to firewall'
+    OnChange = cb_add_rule_to_firewallChange
     TabOrder = 2
   end
   object p_firewall: TPanel[6]
-    Left = 75
+    Left = 97
     Height = 40
-    Top = 144
+    Top = 104
     Width = 119
     BevelOuter = bvNone
     ClientHeight = 40
@@ -106,8 +107,8 @@ inherited WizardConfigServer_ServerOptions: TWizardConfigServer_ServerOptions
       Left = 30
       Height = 15
       Top = 25
-      Width = 56
-      Caption = 'wapt https'
+      Width = 82
+      Caption = 'Rule wapt https'
       ParentColor = False
     end
     object img_firewall_rule_wapt_http: TImage
@@ -152,16 +153,16 @@ inherited WizardConfigServer_ServerOptions: TWizardConfigServer_ServerOptions
       Left = 30
       Height = 15
       Top = 1
-      Width = 51
-      Caption = 'wapt http'
+      Width = 77
+      Caption = 'Rule wapt http'
       ParentColor = False
     end
   end
   object ImageList1: TImageList[7]
     Height = 32
     Width = 32
-    left = 8
-    top = 144
+    left = 16
+    top = 80
     Bitmap = {
       4C69020000002000000020000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF

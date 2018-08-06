@@ -1,19 +1,44 @@
 inherited WizardConfigServer: TWizardConfigServer
-  Left = 868
+  Left = 480
+  Height = 320
   Top = 266
+  Width = 480
   Caption = 'Server configuration tool'
+  ClientHeight = 320
+  ClientWidth = 480
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poWorkAreaCenter
+  inherited WizardButtonPanel: TWizardButtonPanel
+    Top = 270
+    Width = 480
+    ClientWidth = 480
+  end
+  inherited TopPanel: TPanel
+    Width = 480
+    ClientWidth = 480
+    inherited img_logo: TImage
+      Left = 422
+    end
+  end
+  inherited lbl_current_task: TLabel
+    Top = 255
+    Width = 480
+  end
+  inherited panel_center: TPanel
+    Height = 197
+    Width = 480
+  end
   inherited WizardManager: TWizardManager
     OnPageHide = WizardManagerPageHide
     OnPageShow = WizardManagerPageShow
     Pages = <    
       item
-        Caption = 'Welcome'
+        Caption = 'Welcome !'
         ControlClassName = 'TTWizardConfigServer_Welcome'
         Name = 'welcome'
+        Description = 'Click next to continue'
         EnabledButtons = [wbNext, wbCancel]
         VisibleButtons = [wbNext, wbCancel]
       end    
@@ -21,11 +46,13 @@ inherited WizardConfigServer: TWizardConfigServer
         Caption = 'Admin password'
         ControlClassName = 'TWizardConfigServer_Password'
         Name = 'admin_password'
+        Description = 'Please keep in mind that this password should be  complex !'
       end    
       item
         Caption = 'Server options'
         ControlClassName = 'TWizardConfigServer_ServerOptions'
         Name = 'server_options'
+        Description = 'Click next to use defaults settings'
       end    
       item
         Caption = 'Migrating from MongoDB'
@@ -49,21 +76,24 @@ inherited WizardConfigServer: TWizardConfigServer
         Name = 'key_option'
       end    
       item
-        Caption = 'Package ( Create new key )'
+        Caption = 'Package configuration'
         ControlClassName = 'TWizardConfigServer_Console_PackageCreateNewKey'
         Name = 'package_create_new_key'
+        Description = 'Create a new key'
         NextOffset = 2
       end    
       item
-        Caption = 'Package ( use existing key )'
+        Caption = 'Package configuration'
         ControlClassName = 'TWizardConfigServer_Console_PackageUseExistingKey'
         Name = 'package_use_existing_key'
+        Description = 'Using existing key'
         PreviousOffset = 2
       end    
       item
-        Caption = 'Server url'
+        Caption = 'Choose wapt server url'
         ControlClassName = 'TWizardConfigserver_Console_Server'
         Name = 'server_url'
+        Description = 'If not sure click next'
       end    
       item
         Caption = 'Build agent'

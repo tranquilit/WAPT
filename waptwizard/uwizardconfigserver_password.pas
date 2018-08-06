@@ -18,10 +18,9 @@ type
     cb_password_visible: TCheckBox;
     ed_password_1: TEdit;
     ed_password_2: TEdit;
-    gb_admin_password: TGroupBox;
-    Label1: TLabel;
     lbl_password_1: TLabel;
     lbl_password_2: TLabel;
+    Panel1: TPanel;
     procedure cb_password_visibleChange(Sender: TObject);
   private
 
@@ -72,14 +71,8 @@ end;
 
 
 procedure TWizardConfigServer_Password.wizard_load(w: TWizard);
-var
-  sl : TStringList;
-  i : integer;
 begin
   inherited wizard_load(w);
-
-
-
 end;
 
 procedure TWizardConfigServer_Password.wizard_show();
@@ -87,17 +80,9 @@ begin
   inherited wizard_show();
 
 
-  self.gb_admin_password.TabOrder                         := 0;
-  self.m_wizard.WizardButtonPanel.TabOrder                := 1;
-
-
-  self.ed_password_1.TabOrder                             := 1;
-  self.ed_password_2.TabOrder                             := 2;
-  self.cb_password_visible.TabOrder                       := 3;
-
-  self.m_wizard.WizardButtonPanel.NextButton.TabOrder     := 0;
-  self.m_wizard.WizardButtonPanel.PreviousButton.TabOrder := 1;
-  self.m_wizard.WizardButtonPanel.CancelButton.TabOrder   := 2;
+  self.ed_password_1.TabOrder                             := 0;
+  self.ed_password_2.TabOrder                             := 1;
+  self.cb_password_visible.TabOrder                       := 2;
 
   self.ed_password_1.SetFocus;
 

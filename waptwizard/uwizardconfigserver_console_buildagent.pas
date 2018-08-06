@@ -287,7 +287,10 @@ begin
   r := 0;
   j := 0;
   s := Format( MSG_BUILDING, [target] );
-  lbl.Caption := s;
+  m_wizard.TitleLabel.Caption := s;
+  m_wizard.DescriptionLabel.Caption := '0 %';
+  lbl.Caption := '';
+
   w := TThread.ExecuteInThread( TThreadExecuteCallback(func), data, TNotifyCallBack(nil) );
   while not w.Finished do
   begin
@@ -299,7 +302,9 @@ begin
       r := 0;
       for i := 0 to j do
         s[Length(s)-2+i] := '.';
-      lbl.Caption := s;
+
+      m_wizard.TitleLabel.Caption := s;
+      m_wizard.DescriptionLabel.Caption := Format( '%s %%', [Inttostr( Round(Real(progress.Position) / Real(progress.Max) * 100.0) ) ] );
       inc(j);
       if j > 2 then
         j := -1;
