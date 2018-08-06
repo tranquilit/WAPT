@@ -76,7 +76,6 @@ var
   s : String;
   r : integer;
   ini : TIniFile;
-  uri : TIdURI;
 begin
   FillChar( data^, sizeof(TWizardConfigServerData), 0 );
 
@@ -118,19 +117,6 @@ begin
       FreeAndNil(ini);
     end;
   end;
-
-
-  uri := TIdURI.Create();
-  uri.URI := data^.wapt_server;
-
-  if 'http' = uri.Protocol then
-    if Length(uri.Port) > 0 then
-      data^.nginx_http := StrToInt(uri.port);
-
-  if 'https' = uri.Protocol then
-    if Length(uri.Port) > 0 then
-      data^.nginx_https := StrToInt(uri.Port);
-  FreeAndNil(uri);
 
 
   // Has an downloadable agent ?
@@ -328,6 +314,8 @@ var
 begin
   result := -1;
   wapt_folder := '';
+
+  w.SetValidationDescription( 'Writing nginx configuration file');
 
   r := wapt_installpath_waptserver( wapt_root_dir );
   if r <> 0 then
