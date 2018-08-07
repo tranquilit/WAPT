@@ -1957,6 +1957,7 @@ var
   end;
 
 begin
+
   ss := nil;
 
   //
@@ -2126,7 +2127,7 @@ var
   params : TRunParametersSync;
   r : integer;
 begin
-  params.cmd_line    := 'wapt-get.exe --direct register';
+  params.cmd_line    := 'wapt-get.exe register';
   params.on_run_tick := nil;
   params.timout_ms   := 60*1000;
   r := run_sync( @params );

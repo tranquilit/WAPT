@@ -52,7 +52,7 @@ end;
 
 procedure TWizardConfigServer_StartServices.wizard_next(var bCanNext: boolean);
 const
-  GRACEFULL_TIME_MS : integer = 1 * 1000;
+  GRACEFULL_TIME_MS : integer = 3 * 1000;
 var
   data : PWizardConfigServerData;
   i : integer;
@@ -60,6 +60,7 @@ begin
   bCanNext := false;
   data := m_wizard.data();
 
+  self.progress.Position := 0;
   self.progress.Max := Length(WAPT_SERVICES);
   if data^.has_found_waptservice then
     self.progress.Max := self.progress.Max + 2;
@@ -78,8 +79,9 @@ begin
   // Restart local agent
   if data^.has_found_waptservice then
   begin
+
     Sleep( GRACEFULL_TIME_MS );
-    self.m_wizard.SetValidationDescription( 'Register local machine');
+    self.m_wizard.SetValidationDescription( 'Registering local machine');
     wapt_register();
     self.progress.Position := self.progress.Position + 1;
 
@@ -88,8 +90,8 @@ begin
     wapt_service_restart();
     self.progress.Position := self.progress.Position + 1;
 
-    self.m_wizard.ClearValidationDescription();
   end;
+  self.m_wizard.ClearValidationDescription();
 
   bCanNext := true;;
 end;
