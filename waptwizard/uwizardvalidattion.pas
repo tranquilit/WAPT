@@ -438,22 +438,21 @@ end;
 
 function wizard_validate_service_start(w: TWizard; control: TControl; const name: String): Boolean;
 const
-  TIMEOUT_SECONDS : integer = 60;
+  TIMEOUT_SECONDS : integer = 15;
   MSG : String = 'Starting service %s';
 var
-  i : integer;
   r : integer;
-  m : integer;
   s : String;
 begin
-  for i := 0 to m do
+  s := Format( MSG, [ name ] );
+  w.SetValidationDescription( s );
+  r := service_set_state( name, ssRunning, TIMEOUT_SECONDS );
+  if r <> 0 then
   begin
-    s := Format( MSG, [ name ] );
-    w.SetValidationDescription( s );
-    r := service_set_state( name, ssRunning, TIMEOUT_SECONDS );
-    if r <> 0 then
-      exit( false );
+    w.show_validation_error( control, 'An error has occured while starting service ' + name );
+    exit( false );
   end;
+
   w.ClearValidationError();
   exit( true );
 end;
