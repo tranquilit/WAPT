@@ -16,10 +16,12 @@ type
 
   TWizardConfigServer_Console = class(TWizardStepFrame)
     cb_configure_console: TCheckBox;
+    procedure cb_configure_consoleChange(Sender: TObject);
   public
 
     // TWizardStepFrame
     procedure wizard_show(); override; final;
+    procedure wizard_hide(); override; final;
     procedure wizard_previous(var bCanPrevious: boolean); override; final;
     procedure wizard_next(var bCanNext: boolean); override; final;
     procedure clear();  override; final;
@@ -46,11 +48,44 @@ begin
   self.cb_configure_console.Checked := true;
 end;
 
+
+
+procedure TWizardConfigServer_Console.cb_configure_consoleChange(Sender: TObject );
+var
+  p         : TWizardPage;
+begin
+  p := self.m_wizard.WizardManager.PageByName(PAGE_CONSOLE);
+
+  if self.cb_configure_console.Checked then
+  begin
+      p.VisibleButtons := [ wbNext ];
+      p.EnabledButtons := [ wbNext ];
+      m_wizard.setFocus_async( m_wizard.WizardButtonPanel.NextButton );
+      m_wizard.m_can_close := false;
+  end
+  else
+  begin
+    p.VisibleButtons := [ wbFinish ];
+    p.EnabledButtons := [ wbFinish ];
+    m_wizard.setFocus_async( m_wizard.WizardButtonPanel.FinishButton );
+    m_wizard.m_can_close := true;
+  end;
+
+  self.m_wizard.WizardManager.PageStateChanged;
+end;
+
 procedure TWizardConfigServer_Console.wizard_show();
 begin
   inherited;
+  self.cb_configure_console.OnChange := @cb_configure_consoleChange;
+  self.cb_configure_consoleChange( nil );
 
-  self.m_wizard.WizardButtonPanel.NextButton.SetFocus;
+end;
+
+procedure TWizardConfigServer_Console.wizard_hide();
+begin
+  inherited wizard_hide();
+  self.cb_configure_console.OnChange := nil;
 end;
 
 procedure TWizardConfigServer_Console.wizard_previous(var bCanPrevious: boolean );

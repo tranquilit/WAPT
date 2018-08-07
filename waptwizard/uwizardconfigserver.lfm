@@ -68,7 +68,9 @@ inherited WizardConfigServer: TWizardConfigServer
         Caption = 'Configure console'
         ControlClassName = 'TWizardConfigServer_Console'
         Name = 'console'
+        EnabledButtons = [wbNext, wbCancel]
         PreviousOffset = 2
+        VisibleButtons = [wbNext, wbCancel]
       end    
       item
         Caption = 'Key option'
