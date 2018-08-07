@@ -2123,18 +2123,29 @@ begin
 end;
 
 function wapt_register(): integer;
+const
+  TIMEOUT_MS = 15 * 1000;
 var
   params : TRunParametersSync;
   r : integer;
+  cmdlines  : array of String;
+  i : integer;
 begin
-  params.cmd_line    := 'wapt-get.exe register';
-  params.on_run_tick := nil;
-  params.timout_ms   := 60*1000;
-  r := run_sync( @params );
-  if r <> 0 then
+
+  SetLength( cmdlines, 2);
+  cmdlines[0] := 'wapt-get.exe --direct register';
+  cmdlines[1] := 'wapt-get.exe --direct update';
+
+  for i := 0 to Length(cmdlines) -1 do
   begin
-    exit(r);
+    params.cmd_line    := cmdlines[i];
+    params.on_run_tick := nil;
+    params.timout_ms   := TIMEOUT_MS;
+    r := run_sync( @params );
+    if r <> 0 then
+      exit(r);
   end;
+
   exit(0);
 end;
 

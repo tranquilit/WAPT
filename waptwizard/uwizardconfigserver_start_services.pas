@@ -81,14 +81,15 @@ begin
   begin
 
     Sleep( GRACEFULL_TIME_MS );
+    self.m_wizard.SetValidationDescription( 'Restarting local agent');
+    wapt_service_restart();
+    self.progress.Position := self.progress.Position + 1;
+
+    Sleep( GRACEFULL_TIME_MS );
     self.m_wizard.SetValidationDescription( 'Registering local machine');
     wapt_register();
     self.progress.Position := self.progress.Position + 1;
 
-    Sleep( GRACEFULL_TIME_MS );
-    self.m_wizard.SetValidationDescription( 'Restarting local agent');
-    wapt_service_restart();
-    self.progress.Position := self.progress.Position + 1;
 
   end;
   self.m_wizard.ClearValidationDescription();
