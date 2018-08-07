@@ -29,6 +29,7 @@ function wizard_validate_waptserver_start_services( w : TWizard; control : TCont
 function wizard_validate_waptserver_stop_services( w : TWizard; control : TControl ) : Boolean;
 
 function wizard_validate_service_start( w : TWizard; control : TControl; const name : String ) : Boolean;
+function wizard_validate_service_stop( w : TWizard; control : TControl; const name : String ) : Boolean;
 
 function wizard_validate_fs_directory_exist( w : TWizard;  const path : String; control : TControl ) : boolean;
 function wizard_validate_fs_can_create_file( w : TWizard;  const path : String; control : TControl ) : boolean;
@@ -447,6 +448,27 @@ begin
   s := Format( MSG, [ name ] );
   w.SetValidationDescription( s );
   r := service_set_state( name, ssRunning, TIMEOUT_SECONDS );
+  if r <> 0 then
+  begin
+    w.show_validation_error( control, 'An error has occured while starting service ' + name );
+    exit( false );
+  end;
+
+  w.ClearValidationError();
+  exit( true );
+end;
+
+function wizard_validate_service_stop(w: TWizard; control: TControl; const name: String): Boolean;
+const
+  TIMEOUT_SECONDS : integer = 15;
+  MSG : String = 'Stopping service %s';
+var
+  r : integer;
+  s : String;
+begin
+  s := Format( MSG, [ name ] );
+  w.SetValidationDescription( s );
+  r := service_set_state( name, ssStopped, TIMEOUT_SECONDS );
   if r <> 0 then
   begin
     w.show_validation_error( control, 'An error has occured while starting service ' + name );

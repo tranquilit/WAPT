@@ -28,6 +28,8 @@ implementation
 
 
 uses
+  tiscommon,
+  uwizardutil,
   uwizardconfigserver_data,
   uwizardvalidattion;
 
@@ -50,10 +52,14 @@ begin
   bCanNext := false;
   data := PWizardConfigServerData( m_wizard.data() );
 
+
   if not wizard_validate_os_version_for_server( m_wizard, nil ) then
     exit;
 
   wizard_validate_waptserver_stop_services( m_wizard, nil );
+
+  if data^.has_found_waptservice then
+    service_set_state( WAPT_SERVICE_WAPTSERVICE, ssStopped, 15  );
 
   bCanNext:= true;
   exit;

@@ -191,6 +191,7 @@ function  service_is_running( const name : String ) : boolean;
 
 
 function wapt_service_restart() : integer;
+function wapt_service_restart_and_register() : integer;
 function wapt_service_set_state( state: TServiceState ) : integer;
 
 function wapt_server_set_state( state : TServiceState ): integer;
@@ -1607,6 +1608,20 @@ begin
   if r <> 0 then
     exit(r);
   exit(0);
+end;
+
+function wapt_service_restart_and_register(): integer;
+begin
+  result := wapt_service_set_state( ssStopped );
+  if result <> 0 then
+    exit;
+
+  result := wapt_register();
+  if Result <> 0 then
+    exit;
+
+  result := wapt_service_set_state( ssRunning );
+
 end;
 
 function wapt_service_set_state( state: TServiceState ) : integer;

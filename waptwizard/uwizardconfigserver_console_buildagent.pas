@@ -99,6 +99,8 @@ begin
   if r <> 0 then
     exit;
 
+
+
 ////////////////////// Building waptagent
 LBL_BUILD_WAPTAGENT:
   progress.Visible := false;

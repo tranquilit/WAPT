@@ -239,6 +239,7 @@ var
     ini.WriteString( INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH,   data^.package_certificate );
     wapt_ini_write_tis_repo( ini );
     FreeAndNil( ini );
+
     result := 0;
   except on Ex : Exception do
     begin
