@@ -17,13 +17,14 @@ type
     ed_port_http: TEdit;
     ed_port_https: TEdit;
     ImageList1: TImageList;
-    img_firewall_rule_wapt_https: TImage;
     img_firewall_rule_wapt_http: TImage;
-    llb_select_ports: TLabel;
-    lbl_firewall_rule_wapt_https: TLabel;
+    img_firewall_rule_wapt_https: TImage;
     lbl_firewall_rule_wapt_http: TLabel;
+    lbl_firewall_rule_wapt_https: TLabel;
     lbl_port_http: TLabel;
     lbl_port_https: TLabel;
+    llb_select_ports: TLabel;
+    Panel1: TPanel;
     p_firewall: TPanel;
     procedure cb_add_rule_to_firewallChange(Sender: TObject);
   private
