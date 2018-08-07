@@ -76,9 +76,14 @@ procedure TWizardConfigServer.FormClose(Sender: TObject; var CloseAction: TClose
 var
   b : boolean;
 begin
+
+  wapt_service_restart_and_register();
+
   b := self.WizardManager.PageByName(PAGE_FINISHED).Index  = WizardManager.PageIndex;
   if b and self.m_data.launch_console then
     self.launch_console();
+
+
 end;
 
 

@@ -165,8 +165,6 @@ begin
     end;
   end;
 
-  // wapt-get.ini
-  data_write_ini_waptget( data, w );
 
 
   if Assigned(ini) then
@@ -233,12 +231,18 @@ var
     ini := TIniFile.Create( s );
     ini.WriteString( INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, data^.check_certificates_validity );
     ini.WriteString( INI_GLOBAL, INI_VERIFIY_CERT,                data^.verify_cert );
-    ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 data^.wapt_server );
-    ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    data^.repo_url );
     ini.WriteString( INI_GLOBAL, INI_DEFAULT_PACKAGE_PREFIX,      data^.default_package_prefix );
     ini.WriteString( INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH,   data^.package_certificate );
+    if (data^.wapt_server <> 'https://localhost)') then
+    begin
+      ini.WriteString( INI_GLOBAL, INI_WAPT_SERVER,                 data^.wapt_server );
+      ini.WriteString( INI_GLOBAL, INI_REPO_URL,                    data^.repo_url );
+    end;
     wapt_ini_write_tis_repo( ini );
     FreeAndNil( ini );
+
+
+    wapt_service_restart_and_register();
 
     result := 0;
   except on Ex : Exception do
