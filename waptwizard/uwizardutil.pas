@@ -1475,8 +1475,8 @@ end;
 function service_set_state(const service: String; state: TServiceState; timeout_seconds: integer): integer;
 var
     t       : integer;
-    cmdline : String;
     ss      : TServiceState;
+    params  : TRunParametersSync;
 begin
   if not ( state in [ssStopped,ssRunning] ) then
     exit( -1 );
@@ -1489,6 +1489,9 @@ begin
   end;
 
 
+  params.on_run_tick:= nil;
+  params.timout_ms:= timeout_seconds * 1000;
+
   // First Send command
   case state of
 
@@ -1496,8 +1499,8 @@ begin
     begin
       if not ( ss in[ ssUnknown,ssStartPending,ssRunning] ) then
       begin
-        cmdline := Format( 'cmd /c net start %s', [LowerCase(service)] );
-        Run( UTF8Decode(cmdline) );
+        params.cmd_line := Format( 'cmd /c net start %s', [LowerCase(service)] );
+        run_sync( @params );
       end;
     end;
 
@@ -1505,8 +1508,8 @@ begin
     begin
       if not ( ss in[ ssUnknown,ssStopPending,ssStopped] ) then
       begin
-        cmdline := Format( 'cmd /c net stop %s', [LowerCase(service)] );
-        Run( UTF8Decode(cmdline) );
+        params.cmd_line  := Format( 'cmd /c net stop %s', [LowerCase(service)] );
+        run_sync( @params );
       end;
     end;
 
