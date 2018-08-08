@@ -15,25 +15,15 @@ uses
 
 const
 
-  WAPT_SERVICE_WAPTPOSTGRESQL : String = 'WAPTPostgresql';
-  WAPT_SERVICE_WAPTTASKS      : String = 'WAPTtasks';
-  WAPT_SERVICE_WAPTSERVER     : String = 'WAPTServer';
-  WAPT_SERVICE_WAPTNGINX      : String = 'WAPTNginx';
-  WAPT_SERVICE_WAPTSERVICE    : String = 'WAPTService';
 
-{$ifdef ENTERPRISE}
-  WAPT_SERVICES : array[0..3] of String = ( 'WAPTPostgresql','WAPTtasks','WAPTServer','WAPTNginx' );
-{$else}
-  WAPT_SERVICES : array[0..2] of String = ( 'WAPTPostgresql', 'WAPTServer','WAPTNginx' );
-{$endif}
 
-  WAPT_FIREWALL_RULE_HTTP  : String = 'waptserver 80';
-  WAPT_FIREWALL_RULE_HTTPS : String = 'waptserver 443';
+  WAPT_FIREWALL_RULE_HTTP  : String = 'waptserver http';
+  WAPT_FIREWALL_RULE_HTTPS : String = 'waptserver https';
 
 
   MIME_APPLICATION_JSON : String = 'application/json';
 
-
+{$define TIMEOUT_SERVICE_SEC 15}
 
 type
   TShowLoadingFrameParams = record
@@ -182,19 +172,7 @@ function net_list_enable_ip( sl : TStringList ) : integer;
 
 
 
-function  service_set_state(const service : String; state : TServiceState; timeout_seconds : integer ) : integer;
-function  service_set_state( services : TStringArray; state : TServiceState; timeout_seconds : integer ) : integer;
-function  service_exist( const name : String ) : boolean;
-function  service_start( const name : String; timeout_seconds : integer ) : boolean;
-procedure service_stop_no_fail( services_names : TStringArray; timeout_seconds : integer );
-function  service_is_running( const name : String ) : boolean;
 
-
-function wapt_service_restart() : integer;
-function wapt_service_restart_and_register() : integer;
-function wapt_service_set_state( state: TServiceState ) : integer;
-
-function wapt_server_set_state( state : TServiceState ): integer;
 function wapt_server_firewall_is_configured( var is_configured : boolean ) : integer;
 function wapt_server_configure_firewall( http_port : Int16; https_port : Int16 ) : integer;
 
@@ -208,7 +186,9 @@ function wapt_console_install_path( var path : String ) : integer;
 function wapt_register(): integer;
 
 
-function flip( a : TStringArray ) : TStringArray;
+
+function sa_flip( const a : TStringArray ) : TStringArray;
+function sa_concat( const a : TStringArray; const b : TStringArray ) : TStringArray;
 
 
 
@@ -224,6 +204,7 @@ function service_binary_path(var path: String; const service_name : String ): in
 
 
 function thread_is_gui_thread() : boolean;
+
 
 implementation
 
@@ -248,7 +229,8 @@ uses
   LazFileUtils,
   uvisloading,
   dmwaptpython,
-  IdSSLOpenSSL
+  IdSSLOpenSSL,
+  uwapt_services
   ;
 
 
@@ -1472,206 +1454,12 @@ begin
 end;
 
 
-{$ifdef WINDOWS}
-function service_set_state(const service: String; state: TServiceState; timeout_seconds: integer): integer;
-var
-    t       : integer;
-    ss      : TServiceState;
-    params  : TRunParametersSync;
-begin
-  if not ( state in [ssStopped,ssRunning] ) then
-    exit( -1 );
-
-  ss := GetServiceStatusByName('', service );
-  if ssUnknown = ss then
-  begin
-    // No fail when service doesn't exist
-    exit(0);
-  end;
-
-
-  params.on_run_tick:= nil;
-  params.timout_ms:= timeout_seconds * 1000;
-
-  // First Send command
-  case state of
-
-    ssRunning :
-    begin
-      if not ( ss in[ ssUnknown,ssStartPending,ssRunning] ) then
-      begin
-        params.cmd_line := Format( 'cmd /c net start %s', [LowerCase(service)] );
-        run_sync( @params );
-      end;
-    end;
-
-    ssStopped :
-    begin
-      if not ( ss in[ ssUnknown,ssStopPending,ssStopped] ) then
-      begin
-        params.cmd_line  := Format( 'cmd /c net stop %s', [LowerCase(service)] );
-        run_sync( @params );
-      end;
-    end;
-
-  end;
-
-
-  // Wait for state unitl timeout
-  t := timeout_seconds * 1000;
-  while true do
-  begin
-    if state = GetServiceStatusByName( '', service ) then
-      break;
-    if t < 1 then
-      exit( -1 );
-    Sleep( 33 );
-    dec( t, 33 );
-    Application.ProcessMessages;
-  end;
-
-  exit(0);
-end;
-
-function service_set_state( services: TStringArray; state: TServiceState; timeout_seconds: integer): integer;
-var
-    i : integer;
-    r : integer;
-begin
-  for i := 0 to Length(services) -1 do
-  begin
-    r := service_set_state( services[i], state, timeout_seconds );
-    if r <> 0 then
-      exit( r );
-  end;
-  exit( 0 );
-end;
-
-function service_exist(const name: String): boolean;
-var
-  s : String;
-begin
-  s := 'sc query ' + name;
-  try
-    Run( s );
-    exit( true );
-  except on Ex : EOSError do
-    exit( Pos(  '1060', ex.Message ) = 0 );
-  end;
-end;
-
-function service_start(const name: String; timeout_seconds: integer): boolean;
-begin
-  Result := 0 = service_set_state( name, ssRunning, timeout_seconds );
-end;
-
-procedure service_stop_no_fail(services_names: TStringArray; timeout_seconds: integer);
-var
-  i : integer;
-  m : integer;
-begin
-  m := Length(services_names) -1;
-  for i := 0 to m do
-  begin
-    if not service_exist( services_names[i] ) then
-      continue;
-    service_set_state( services_names[i], ssStopped, timeout_seconds );
-  end;
-end;
-
-function service_is_running(const name: String): boolean;
-var
-    ss : TServiceState;
-begin
-  ss := GetServiceStatusByName( '', name );
-  exit( ssRunning = ss );
-end;
-
-
-
-
-{$endif}
-
-
-
-
-
-function wapt_service_restart() : integer;
-var
-  r : integer;
-  services : TStringArray;
-begin
-  SetLength(  services, 1 );
-  services[0] :=  WAPT_SERVICE_WAPTSERVICE;
-  service_stop_no_fail( services, 60 );
-  r := wapt_service_set_state( ssRunning );
-  if r <> 0 then
-    exit(r);
-  exit(0);
-end;
-
-function wapt_service_restart_and_register(): integer;
-begin
-  result := wapt_service_set_state( ssStopped );
-  if result <> 0 then
-    exit;
-
-  result := wapt_register();
-  if Result <> 0 then
-    exit;
-
-  result := wapt_service_set_state( ssRunning );
-
-end;
-
-function wapt_service_set_state( state: TServiceState ) : integer;
-const
-  timeout_seconds : integer = 60; // seconds
-var
-  r : integer;
-begin
-  if not(state in [ ssRunning, ssStopped ]) then
-    exit( -1 );
-  r := service_set_state( WAPT_SERVICE_WAPTSERVICE, state, timeout_seconds );
-  if r <> 0 then
-    exit( r );
-
-  exit(0);
-end;
-
-function wapt_server_set_state( state : TServiceState ): integer;
-const
-  timeout_seconds : integer = 60; // seconds
-var
-    i : integer;
-    j : integer;
-
-begin
-
-  if not(state in [ ssRunning, ssStopped ]) then
-    exit( -1 );
-
-  for i := 0 to Length(WAPT_SERVICES) -1 do
-  begin
-    if state = ssRunning then
-      j := i
-    else
-      j := Length(WAPT_SERVICES) -1 - i;
-
-    j := service_set_state( WAPT_SERVICES[j], state, timeout_seconds );
-    if j <> 0 then
-      exit( -1 );
-  end;
-
-  exit(0);
-end;
-
 
 
 {$ifdef WINDOWS}
 function firewall_is_running() : boolean;
 begin
-  result := service_is_running('MpsSvc');
+  result := srv_is_running('MpsSvc');
 end;
 
 function firewall_has_rule( const rulename : String ) : boolean;
@@ -1730,7 +1518,7 @@ begin
   ss := GetServiceStatusByName( '', SVC );
   if ssStopPending = ss then
   begin
-    service_set_state( SVC, ssStopped, 5 );
+    srv_set_state( SVC, ssStopped, 5 );
     ss := GetServiceStatusByName( '', SVC );
   end;
 
@@ -1898,7 +1686,7 @@ end;
 
 
 
-function flip( a : TStringArray ) : TStringArray;
+function sa_flip(const a: TStringArray): TStringArray;
 var
   i : integer;
   j : integer;
@@ -1910,6 +1698,30 @@ begin
     Result[j] := a[i];
     inc(j);
   end;
+
+end;
+
+function sa_concat( const a: TStringArray; const b: TStringArray): TStringArray;
+var
+  i : integer;
+  o : integer;
+  la : integer;
+  lb : integer;
+begin
+  la := Length(a);
+  lb := Length(b);
+
+  SetLength( result, la + lb );
+
+  la := la -1;
+  lb := lb -1;
+
+  for i := 0 to la  do
+    result[i] := a[i];
+
+  o := la + 1;
+  for i := 0 to lb do
+    result[o+i] := b[i];
 
 end;
 
@@ -2163,6 +1975,8 @@ begin
 
   exit(0);
 end;
+
+
 
 
 

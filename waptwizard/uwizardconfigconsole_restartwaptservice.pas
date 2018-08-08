@@ -26,6 +26,7 @@ type
 implementation
 
 uses
+  uwapt_services,
   uwizardutil,
   uwizardconfigconsole_data;
 
@@ -62,7 +63,8 @@ begin
 
   // Force restart wapt agent service
   self.m_wizard.SetValidationDescription( 'Restarting wapt agent service');
-  wapt_service_restart();
+  if not srv_restart( WAPT_SERVICES_AGENT ) then
+      exit;
 
 
   bCanNext := true;

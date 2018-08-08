@@ -170,7 +170,7 @@ begin
   nginx_http := StrToInt(self.ed_port_http.Text);
   nginx_https:= StrToInt(self.ed_port_https.Text);
 
-  //
+  // Ports
   for r := 0 to Length(RESERVED_PORTS) - 1 do
   begin
     if nginx_http = RESERVED_PORTS[r] then
@@ -187,6 +187,12 @@ begin
 
   end;
 
+  if not wizard_validate_net_port_is_closed_on_all_interfaces( m_wizard, self.ed_port_http, nginx_http ) then
+    exit;
+  if not wizard_validate_net_port_is_closed_on_all_interfaces( m_wizard, self.ed_port_https,  nginx_https ) then
+    exit;
+
+
 
   //  Firewall
   b := self.cb_add_rule_to_firewall.Enabled and self.cb_add_rule_to_firewall.Checked;
@@ -198,11 +204,6 @@ begin
       exit;
   end;
 
-  // Ensure ports aren't filtered and used by another process
-  if not wizard_validate_net_local_port_is_closed( m_wizard, nginx_http, self.ed_port_http ) then
-    exit;
-  if not wizard_validate_net_local_port_is_closed( m_wizard, nginx_https, self.ed_port_https ) then
-    exit;
 
 
   //

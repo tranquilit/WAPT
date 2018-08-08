@@ -45,6 +45,8 @@ type
 
     has_found_waptagent             : boolean;
     has_found_waptservice           : boolean;
+    has_found_mongodb               : boolean;
+    services                        : TStringArray;
   end;
   PWizardConfigServerData = ^TWizardConfigServerData;
 
@@ -59,7 +61,7 @@ implementation
 
 
 uses
-
+  uwapt_services,
   IdURI,
   VarPyth,
   PythonEngine,
@@ -73,6 +75,7 @@ uses
 
 procedure data_init( data : PWizardConfigServerData );
 var
+  install_path_server : String;
   s : String;
   r : integer;
   ini : TIniFile;
@@ -99,6 +102,8 @@ begin
   data^.package_private_key_password := '';
   data^.has_found_waptagent   := false;
   data^.has_found_waptservice := false;
+  data^.has_found_mongodb     := false;
+  setLength(data^.services, 0);
 
 
 
@@ -119,18 +124,26 @@ begin
   end;
 
 
-  // Has an downloadable agent ?
-  r := wapt_installpath_waptserver( s);
+  r := wapt_installpath_waptserver(install_path_server);
   if r = 0 then
   begin
-    s := IncludeTrailingBackslash(s) +  'waptserver\repository\wapt\waptagent.exe';
+    // Has an downloadable agent ?
+    s := IncludeTrailingBackslash(install_path_server) +  'waptserver\repository\wapt\waptagent.exe';
     data^.has_found_waptagent := FileExists(s);
+
+    // Need migration from mongo DB ?
+    s := IncludeTrailingBackslash(install_path_server);
+    data^.has_found_mongodb := FileExists('waptserver\mongodb\mongoexport.exe');
   end;
 
   // Has wapt service installed ?
   r := wapt_installpath_waptservice(s);
   data^.has_found_waptservice := r = 0;
 
+  if data^.has_found_waptservice then
+    data^.services := WAPT_SERVICES_ALL
+  else
+    data^.services := WAPT_SERVICES_SERVER;
 
 
 end;
@@ -241,8 +254,6 @@ var
     wapt_ini_write_tis_repo( ini );
     FreeAndNil( ini );
 
-
-    wapt_service_restart_and_register();
 
     result := 0;
   except on Ex : Exception do

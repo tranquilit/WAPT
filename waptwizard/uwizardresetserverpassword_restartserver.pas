@@ -28,6 +28,7 @@ uses
   IniFiles,
   ucrypto_pbkdf2,
   tiscommon,
+  uwapt_services,
   uwizardresetserverpassword_data,
   uwizardutil;
 
@@ -53,9 +54,7 @@ begin
 
   // Stop serviceS
   m_wizard.SetValidationDescription( 'Stopping waptserver');
-  r := wapt_server_set_state( ssStopped );
-  if r <> 0 then
-    exit;
+  srv_stop( sa_flip(WAPT_SERVICES_SERVER)  );
 
   //
   s :=UTF8Encode( data^.wapt_server_home );
@@ -72,9 +71,9 @@ begin
   end;
   // Starting serviceS
   m_wizard.SetValidationDescription( 'Restarting waptserver');
-  r := wapt_server_set_state( ssRunning );
-  if r <> 0 then
+  if not srv_start( WAPT_SERVICES_SERVER ) then
     exit;
+
 
   bCanNext := true;;
 end;

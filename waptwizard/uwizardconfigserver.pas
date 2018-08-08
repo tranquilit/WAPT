@@ -49,7 +49,6 @@ uses
   uwizardconfigserver_console_buildagent,
   uwizardconfigserver_console_package_use_existing_key,
   uwizardconfigserver_finish,
-  uwizardconfigserver_postsetup,
   uwizardconfigserver_console_keyoption,
   uwizardconfigserver_console_server,
   uwizardconfigserver_server_options,
@@ -76,8 +75,6 @@ procedure TWizardConfigServer.FormClose(Sender: TObject; var CloseAction: TClose
 var
   b : boolean;
 begin
-
-  wapt_service_restart_and_register();
 
   b := self.WizardManager.PageByName(PAGE_FINISHED).Index  = WizardManager.PageIndex;
   if b and self.m_data.launch_console then

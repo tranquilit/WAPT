@@ -28,6 +28,8 @@ implementation
 
 
 uses
+  uwizard_strings,
+  uwapt_services,
   tiscommon,
   uwizardutil,
   uwizardconfigserver_data,
@@ -48,6 +50,9 @@ end;
 procedure TTWizardConfigServer_Welcome.wizard_next(var bCanNext: boolean);
 var
   data : PWizardConfigServerData;
+  i    : integer;
+  msg : String;
+  services : TStringArray;
 begin
   bCanNext := false;
   data := PWizardConfigServerData( m_wizard.data() );
@@ -56,10 +61,16 @@ begin
   if not wizard_validate_os_version_for_server( m_wizard, nil ) then
     exit;
 
-  wizard_validate_waptserver_stop_services( m_wizard, nil );
 
-  if data^.has_found_waptservice then
-    service_set_state( WAPT_SERVICE_WAPTSERVICE, ssStopped, 15  );
+  services := sa_flip(data^.services);
+  for i := 0 to Length(services) -1 do
+  begin
+    msg := Format( MSG_STOPPING_SERVICE, [services[i]] );
+    m_wizard.SetValidationDescription( msg );
+    srv_stop( services[i] );
+  end;
+
+  m_wizard.ClearValidationDescription();
 
   bCanNext:= true;
   exit;

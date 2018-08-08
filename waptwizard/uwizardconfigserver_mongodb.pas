@@ -54,7 +54,6 @@ begin
   if not self.migration_needed() then
     goto LBL_SKIP;
 
-  wizard_validate_waptserver_stop_services_no_fail( m_wizard, nil );
 
   m_wizard.SetValidationDescription( 'Migrating from MongoDB to Postgresql');
   r := wapt_server_mongodb_to_postgresql();
@@ -63,9 +62,6 @@ begin
     m_wizard.show_validation_error( nil, 'An has occured while migrating from mogodb to postgresql' );
     exit;
   end;
-
-  if not wizard_validate_waptserver_start_services( self.m_wizard, nil ) then
-    exit;
 
 LBL_SKIP:
   bCanNext := true;

@@ -24,12 +24,11 @@ function wizard_validate_waptserver_ping( w : TWizard; const server_url : String
 function wizard_validate_waptserver_version_not_less( w : TWizard; const  server_url : String; version : String; control : TControl ) : Boolean;
 function wizard_validate_waptserver_login( w : TWizard;  const server_url : String; verify_cert : boolean; const login : String; const password : String; control : TControl ) : boolean;
 function wizard_validate_waptserver_waptagent_is_not_present( w : TWizard;  const server_url : String; control : TControl ) : Boolean;
-function wizard_validate_waptserver_stop_services_no_fail( w : TWizard; control : TControl ) : Boolean;
-function wizard_validate_waptserver_start_services( w : TWizard; control : TControl ) : Boolean;
-function wizard_validate_waptserver_stop_services( w : TWizard; control : TControl ) : Boolean;
 
-function wizard_validate_service_start( w : TWizard; control : TControl; const name : String ) : Boolean;
-function wizard_validate_service_stop( w : TWizard; control : TControl; const name : String ) : Boolean;
+function wizard_validate_service_start( w : TWizard; c : TControl; const name : String ) : Boolean;
+function wizard_validate_service_start( w : TWizard; c : TControl; const names : TStringArray ) : Boolean;
+function wizard_validate_service_stop(  w : TWizard; c : TControl; const name : String ) : Boolean;
+function wizard_validate_service_stop(  w : TWizard; c : TControl; const names : TStringArray ) : Boolean;
 
 function wizard_validate_fs_directory_exist( w : TWizard;  const path : String; control : TControl ) : boolean;
 function wizard_validate_fs_can_create_file( w : TWizard;  const path : String; control : TControl ) : boolean;
@@ -38,15 +37,16 @@ function wizard_validate_fs_file_not_exist( w : TWizard; const filename :PChar; 
 function wizard_validate_fs_ensure_directory( w : TWizard; const path : String; control : TControl ) : Boolean;
 
 
-function wizard_validate_change_current_user( w : TWizard; const login : PChar; const password : PChar; const failed_string : PChar; control : TControl ) : Boolean;
+//function wizard_validate_change_current_user( w : TWizard; const login : PChar; const password : PChar; const failed_string : PChar; control : TControl ) : Boolean;
 function wizard_validate_crypto_decrypt_key( w :TWizard; control : TControl; const key_filename : String; const password : String ) : Boolean;
 function wizard_validate_crypto_key_and_certificate_are_related( w : TWizard; control : TControl;  const pem : String; const crt : String ) : Boolean;
 
 
 function wizard_validate_sys_no_innosetup_process( w : TWizard ) : Boolean;
 
+function wizard_validate_net_port_is_closed_on_all_interfaces( w : TWizard; c : TControl;  port : UInt16 ) : Boolean;
+function wizard_validate_net_port_is_closed(w: TWizard; c : TControl; const hostname : String; port: UInt16 ): Boolean;
 
-function wizard_validate_net_local_port_is_closed( w : TWizard; port : UInt16; control : TControl ) : Boolean;
 function wizard_validate_os_version_for_server( w : TWizard; control : TControl ) : Boolean;
 
 function wizard_validate_run_command_sync( w : TWizard; params : PRunParamatersSync;  const description : String; const error : String; control : TControl ) : boolean;
@@ -59,9 +59,11 @@ function wizard_validate_package_prefix( w : TWizard; control : TControl; const 
 implementation
 
 uses
+  uwizard_strings,
+  uwapt_services,
   {$ifdef windows}
   win32proc,
-  windows,
+//  windows,
   {$endif}
   IdStack,
   IdTCPClient,
@@ -383,74 +385,21 @@ begin
 
 end;
 
-function wizard_validate_waptserver_stop_services_no_fail( w: TWizard; control: TControl ): Boolean;
-const
-  TIMEOUT_SECONDS : integer = 60;
-begin
-  w.SetValidationDescription( 'Stopping WAPT services' );
-  service_stop_no_fail( flip(WAPT_SERVICES), TIMEOUT_SECONDS );
-  w.ClearValidationError();
-  exit( true );
-end;
 
-function wizard_validate_waptserver_start_services(w: TWizard; control: TControl ): Boolean;
-const
-  TIMEOUT_SECONDS : integer = 60;
-  MSG : String = 'Starting service %s';
-var
-  i : integer;
-  r : integer;
-  m : integer;
-  s : String;
-begin
-  m := Length(WAPT_SERVICES) -1;
-  for i := 0 to m do
-  begin
-    s := Format( MSG, [ WAPT_SERVICES[i] ] );
-    w.SetValidationDescription( s );
-    r := service_set_state( WAPT_SERVICES[i], ssRunning, TIMEOUT_SECONDS );
-    if r <> 0 then
-      exit( false );
-  end;
-  w.ClearValidationError();
-  exit( true );
-end;
 
-function wizard_validate_waptserver_stop_services(w: TWizard; control: TControl ): Boolean;
-const
-  TIMEOUT_SECONDS : integer = 60;
-  MSG : String = 'Stopping service %s';
-var
-  i : integer;
-  r : integer;
-  m : integer;
-  s : String;
-begin
-  m := Length(WAPT_SERVICES) -1;
-  for i := m downto 0 do
-  begin
-    s := Format( MSG, [ WAPT_SERVICES[i] ] );
-    w.SetValidationDescription( s );
-    service_stop_no_fail( flip(WAPT_SERVICES), TIMEOUT_SECONDS );
-  end;
-  w.ClearValidationError();
-  exit( true );
-end;
 
-function wizard_validate_service_start(w: TWizard; control: TControl; const name: String): Boolean;
-const
-  TIMEOUT_SECONDS : integer = 15;
-  MSG : String = 'Starting service %s';
+function wizard_validate_service_start(w: TWizard; c: TControl; const name: String): Boolean;
 var
   r : integer;
-  s : String;
+  msg : String;
 begin
-  s := Format( MSG, [ name ] );
-  w.SetValidationDescription( s );
-  r := service_set_state( name, ssRunning, TIMEOUT_SECONDS );
-  if r <> 0 then
+  msg := Format( MSG_STARTING_SERVICE, [ name ] );
+  w.SetValidationDescription( msg );
+  result := srv_start( name );
+  if not result then
   begin
-    w.show_validation_error( control, 'An error has occured while starting service ' + name );
+    msg := Format( MSG_ERROR_WHILE_STARTING_SERVICE, [name] );
+    w.show_validation_error( c, msg );
     exit( false );
   end;
 
@@ -458,25 +407,47 @@ begin
   exit( true );
 end;
 
-function wizard_validate_service_stop(w: TWizard; control: TControl; const name: String): Boolean;
-const
-  TIMEOUT_SECONDS : integer = 15;
-  MSG : String = 'Stopping service %s';
+function wizard_validate_service_start(w: TWizard; c: TControl; const names: TStringArray): Boolean;
+var
+  i : integer;
+begin
+  for i := 0 to Length(names) - 1 do
+  begin
+    result := wizard_validate_service_start(w, c, names[i] );
+    if not result then
+      exit;
+  end;
+end;
+
+function wizard_validate_service_stop(w: TWizard; c: TControl; const name: String): Boolean;
 var
   r : integer;
-  s : String;
+  msg : String;
 begin
-  s := Format( MSG, [ name ] );
-  w.SetValidationDescription( s );
-  r := service_set_state( name, ssStopped, TIMEOUT_SECONDS );
-  if r <> 0 then
+  msg := Format( MSG_STOPPING_SERVICE, [ name ] );
+  w.SetValidationDescription( msg );
+  result := srv_stop( name );
+  if not result then
   begin
-    w.show_validation_error( control, 'An error has occured while starting service ' + name );
+    msg := Format( MSG_ERROR_WHILE_STOPPING_SERVICE, [name] );
+    w.show_validation_error( c, msg );
     exit( false );
   end;
 
   w.ClearValidationError();
   exit( true );
+end;
+
+function wizard_validate_service_stop(w: TWizard; c: TControl; const names: TStringArray): Boolean;
+var
+  i : integer;
+begin
+  for i := 0 to Length(names) - 1 do
+  begin
+    result := wizard_validate_service_stop(w, c, names[i] );
+    if not result then
+      exit;
+  end;
 end;
 
 
@@ -584,6 +555,8 @@ begin
   exit(true);
 end;
 
+
+{
 function wizard_validate_change_current_user(w: TWizard; const login: PChar; const password: PChar; const failed_string: PChar; control: TControl ): Boolean;
 {$ifdef windows}
 var
@@ -614,7 +587,7 @@ begin
   exit(false);
 {$endif}
 end;
-
+}
 
 function wizard_validate_crypto_decrypt_key(w: TWizard; control: TControl; const key_filename: String; const password: String): Boolean;
 var
@@ -671,33 +644,56 @@ begin
   exit(true);
 end;
 
+function wizard_validate_net_port_is_closed_on_all_interfaces(w: TWizard; c: TControl; port: UInt16): Boolean;
+var
+  sl: TStringList;
+  r : integer;
+  msg : String;
+begin
+  msg := Format( MSG_VALIDATE_PORT_IS_CLOSED_ON_ALL_INTERFACES, [port] );
+  w.SetValidationDescription( msg );
 
+  sl := TStringList.Create;
+  r := net_list_enable_ip( sl );
+  if r <> 0 then
+  begin
+    w.show_validation_error( c, MSG_FAILED_TO_OBTAIN_NETWORK_INTERFACES_LIST );
+    exit(false);
+  end;
 
-function wizard_validate_net_local_port_is_closed(w: TWizard; port: UInt16; control: TControl): Boolean;
+  for r := 0 to sl.Count -1 do
+  begin
+    result := wizard_validate_net_port_is_closed( w, c, sl.Strings[r], port );
+    if not result then
+      break;
+  end;
+
+  sl.Free;
+
+end;
+
+function wizard_validate_net_port_is_closed(w: TWizard; c: TControl; const hostname: String; port: UInt16): Boolean;
 var
   tcp_client : TIdTCPClient;
   msg : String;
 begin
-  msg := Format( 'Checking that local port %d is not hold by another process' , [port] );
+  msg := Format( MSG_VALIDATE_PORT_IS_CLOSED, [port] );
   w.SetValidationDescription( msg );
 
   tcp_client := TIdTCPClient.Create( nil );
   try
-    tcp_client.Connect( 'localhost', port  );
+    tcp_client.Connect( hostname , port  );
     result := not tcp_client.Connected;
     if tcp_client.Connected then
     begin
       tcp_client.DisconnectNotifyPeer;
-      msg :=       'Local port %d is used by another process. ';
-      msg := msg + 'Select another port or check your ';
-      msg := msg + 'configuration';
-      msg := Format( msg, [port] );
+      msg := Format( MSG_PORT_IS_NOT_CLOSED, [port, hostname] );
     end
   except on Ex : EIdSocketError do
     begin
       result := 10061 = ex.LastError;
       if not result then
-        msg := Format( 'Error %d - %s', [ ex.LastError, ex.Message] );
+        msg := Format( MSG_SOCKET_ERROR, [ ex.LastError, ex.Message] );
     end;
   end;
   tcp_client.Free;
@@ -705,10 +701,7 @@ begin
   if result then
     w.ClearValidationDescription()
   else
-    w.show_validation_error( control, msg );
-
-
-
+    w.show_validation_error( c, msg );
 end;
 
 {$ifdef WINDOWS}

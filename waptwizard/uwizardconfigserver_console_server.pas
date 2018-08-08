@@ -36,6 +36,7 @@ type
 implementation
 
 uses
+  uwapt_services,
   uwizardconfigconsole_data,
   dialogs,
   uwapt_ini,
@@ -189,7 +190,7 @@ begin
 //  data^.server_certificate := s  + '.crt';
 
   data_write_ini_waptget( data, self.m_wizard );
-  wapt_service_restart_and_register();
+  srv_agent_restart_and_register();
 
   bCanNext := true;
 

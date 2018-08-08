@@ -16,7 +16,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="6"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="7"/>
+      <BuildNr Value="8"/>
       <StringTable LegalCopyright="Tranquil IT Systems 2012-2018" ProductName="WAPT Enterprise Edition" ProductVersion="1.6.2"/>
     </VersionInfo>
     <BuildModes Count="3">
@@ -114,7 +114,7 @@
         <PackageName Value="LCL"/>
       </Item9>
     </RequiredPackages>
-    <Units Count="39">
+    <Units Count="41">
       <Unit0>
         <Filename Value="waptwizard.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -358,13 +358,21 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit38>
+      <Unit39>
+        <Filename Value="uwapt_services.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="uwizard_strings.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit40>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\waptwizard"/>
+      <Filename Value="c:\wapt\waptwizard"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>

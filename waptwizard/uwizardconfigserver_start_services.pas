@@ -27,6 +27,7 @@ type
 implementation
 
 uses
+  uwapt_services,
   dialogs,
   uwizardconfigserver_data,
   uwizardvalidattion,
@@ -51,46 +52,26 @@ begin
 end;
 
 procedure TWizardConfigServer_StartServices.wizard_next(var bCanNext: boolean);
-const
-  GRACEFULL_TIME_MS : integer = 3 * 1000;
 var
-  data : PWizardConfigServerData;
-  i : integer;
+  data      : PWizardConfigServerData;
+  i         : integer;
 begin
   bCanNext := false;
   data := m_wizard.data();
 
   self.progress.Position := 0;
-  self.progress.Max := Length(WAPT_SERVICES);
-  if data^.has_found_waptservice then
-    self.progress.Max := self.progress.Max + 2;
+  self.progress.Max := Length(data^.services);
 
   // Write setting
   data_write_ini_waptserver( m_wizard.data(), m_wizard );
 
-  // Restart services
-  for i := 0 to Length(WAPT_SERVICES) - 1 do
+  for i := 0 to Length(data^.services) - 1 do
   begin
-    if not wizard_validate_service_start( self.m_wizard, nil, WAPT_SERVICES[i] ) then
+    if not wizard_validate_service_start( self.m_wizard, nil, data^.services[i] ) then
       exit;
     self.progress.Position := self.progress.Position + 1;
   end;
 
-  // Restart local agent
-  if data^.has_found_waptservice then
-  begin
-
-    Sleep( GRACEFULL_TIME_MS );
-    self.m_wizard.SetValidationDescription( 'Registering local machine');
-    wapt_register();
-    self.progress.Position := self.progress.Position + 1;
-
-    Sleep( GRACEFULL_TIME_MS );
-    self.m_wizard.SetValidationDescription( 'Restarting local agent');
-    wapt_service_restart();
-    self.progress.Position := self.progress.Position + 1;
-
-  end;
   self.m_wizard.ClearValidationDescription();
 
   bCanNext := true;;
