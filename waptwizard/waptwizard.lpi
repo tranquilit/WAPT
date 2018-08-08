@@ -372,7 +372,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="c:\wapt\waptwizard"/>
+      <Filename Value="..\waptwizard"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
