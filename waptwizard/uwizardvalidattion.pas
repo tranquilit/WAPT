@@ -402,8 +402,7 @@ begin
   end;
 
   w.ClearValidationDescription();
-  exit;
-
+  exit( true );
 end;
 
 function wizard_validate_service_start(w: TWizard; c: TControl; const name: String): Boolean;
