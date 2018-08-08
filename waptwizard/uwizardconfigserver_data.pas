@@ -47,6 +47,7 @@ type
     has_found_waptservice           : boolean;
     has_found_mongodb               : boolean;
     services                        : TStringArray;
+    has_standart_port_closed        : boolean;
   end;
   PWizardConfigServerData = ^TWizardConfigServerData;
 
@@ -74,11 +75,14 @@ uses
   IniFiles;
 
 procedure data_init( data : PWizardConfigServerData );
+const
+    STANDART_PORTS : array[0..1] of integer = (80,443);
 var
   install_path_server : String;
   s : String;
   r : integer;
   ini : TIniFile;
+  i : integer;
 begin
   FillChar( data^, sizeof(TWizardConfigServerData), 0 );
 
@@ -103,6 +107,7 @@ begin
   data^.has_found_waptagent   := false;
   data^.has_found_waptservice := false;
   data^.has_found_mongodb     := false;
+  data^.has_standart_port_closed    := false;
   setLength(data^.services, 0);
 
 
@@ -144,6 +149,21 @@ begin
     data^.services := WAPT_SERVICES_ALL
   else
     data^.services := WAPT_SERVICES_SERVER;
+
+  // Standart ports are unused ?
+  for i := 0 to Length(STANDART_PORTS) do
+  begin
+    r := net_port_is_closed_on_all_interface( data^.has_standart_port_closed, STANDART_PORTS[i] );
+    if r <> 0 then
+    begin
+      data^.has_standart_port_closed := false;
+      break;
+    end;
+
+    if not data^.has_standart_port_closed then
+      break;
+  end;
+
 
 
 end;
