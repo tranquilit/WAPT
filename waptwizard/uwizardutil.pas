@@ -171,6 +171,7 @@ function process_launch( const binary : String; const params : PChar ) : integer
 function net_list_enable_ip( sl : TStringList ) : integer;
 function net_port_is_closed( var b_isclosed : boolean; const hostname: String; port: UInt16): integer;
 function net_port_is_closed_on_all_interface( var b_isclosed : boolean; port: UInt16): integer;
+function net_port_is_close_on_all_interface( var b_isclosed : boolean; ports : PtrInt; ports_count : integer  ) : integer;
 
 
 
@@ -1483,6 +1484,39 @@ LBL_EXIT:
   sl.Free;
 end;
 
+function net_port_is_close_on_all_interface( var b_isclosed : boolean; ports : PtrInt; ports_count : integer  ) : integer;
+label
+  LBL_EXIT;
+var
+  sl : TStringList;
+  r : integer;
+  i : integer;
+  j : integer;
+  port : ^Integer;
+begin
+  sl := TStringList.Create;
+  result := net_list_enable_ip(sl);
+  if result <> 0 then
+    goto LBL_EXIT;
+
+  port := Pointer(ports);
+
+  for i := 0 to sl.Count -1 do
+  begin
+    for j := 0 to ports_count -1 do
+    begin
+      r := net_port_is_closed( b_isclosed, sl.Strings[i], port^ );
+      if r <> 0 then
+        goto LBL_EXIT;
+      if not b_isclosed then
+        goto LBL_EXIT;
+    end;
+    inc(port);
+  end;
+
+LBL_EXIT:
+  sl.Free;
+end;
 
 
 { TObjectProcedureExecutor }
