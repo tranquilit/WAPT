@@ -25,6 +25,8 @@ function wizard_validate_waptserver_version_not_less( w : TWizard; const  server
 function wizard_validate_waptserver_login( w : TWizard;  const server_url : String; verify_cert : boolean; const login : String; const password : String; control : TControl ) : boolean;
 function wizard_validate_waptserver_waptagent_is_not_present( w : TWizard;  const server_url : String; control : TControl ) : Boolean;
 
+function wizard_validate_waptservice_restart( w : TWizard; c : TControl ) : Boolean;
+
 function wizard_validate_service_start( w : TWizard; c : TControl; const name : String ) : Boolean;
 function wizard_validate_service_start( w : TWizard; c : TControl; const names : TStringArray ) : Boolean;
 function wizard_validate_service_stop(  w : TWizard; c : TControl; const name : String ) : Boolean;
@@ -387,6 +389,22 @@ end;
 
 
 
+function wizard_validate_waptservice_restart(w: TWizard; c: TControl): Boolean;
+var
+  r : integer;
+begin
+  w.SetValidationDescription( 'Restart and Register local agent' );
+  r := srv_agent_restart_and_register();
+  if r <> 0 then
+  begin
+    w.SetValidationDescription( 'Failed to restart agent' );
+    exit( false );
+  end;
+
+  w.ClearValidationDescription();
+  exit;
+
+end;
 
 function wizard_validate_service_start(w: TWizard; c: TControl; const name: String): Boolean;
 var
