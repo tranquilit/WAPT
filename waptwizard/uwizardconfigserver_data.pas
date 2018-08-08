@@ -13,7 +13,9 @@ uses
 const
 
     PAGE_WELCOME                 : String = 'welcome';
+    PAGE_ADMIN_PASSWORD          : String = 'admin_password';
     PAGE_SERVER_OPTIONS          : String = 'server_options';
+    PAGE_MONGODB                 : String = 'mongodb';
     PAGE_KEYOPTION               : String = 'key_option';
     PAGE_CONSOLE                 : String = 'console';
     PAGE_PACKAGE_CREATE_NEW_KEY  : String = 'package_create_new_key';
@@ -75,8 +77,6 @@ uses
   IniFiles;
 
 procedure data_init( data : PWizardConfigServerData );
-const
-    STANDART_PORTS : array[0..1] of integer = (80,443);
 var
   install_path_server : String;
   s : String;
@@ -149,21 +149,6 @@ begin
     data^.services := WAPT_SERVICES_ALL
   else
     data^.services := WAPT_SERVICES_SERVER;
-
-  // Standart ports are unused ?
-  for i := 0 to Length(STANDART_PORTS) do
-  begin
-    r := net_port_is_closed_on_all_interface( data^.has_standart_port_closed, STANDART_PORTS[i] );
-    if r <> 0 then
-    begin
-      data^.has_standart_port_closed := false;
-      break;
-    end;
-
-    if not data^.has_standart_port_closed then
-      break;
-  end;
-
 
 
 end;
