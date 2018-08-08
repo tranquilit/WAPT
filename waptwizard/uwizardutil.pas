@@ -169,6 +169,8 @@ function crypto_check_key_password(var success: boolean; const key_filename: Str
 function process_launch( const binary : String; const params : PChar ) : integer;
 
 function net_list_enable_ip( sl : TStringList ) : integer;
+function net_port_is_closed( var b_isclosed : boolean; const hostname: String; port: UInt16): integer;
+function net_port_is_closed_on_all_interface( var b_isclosed : boolean; port: UInt16): integer;
 
 
 
@@ -209,6 +211,8 @@ function thread_is_gui_thread() : boolean;
 implementation
 
 uses
+  IdTCPClient,
+  IdStack,
   {$ifdef WINDOWS}
   waptwinutils,
   windows,
@@ -1434,6 +1438,49 @@ Begin
   CloseSocket (aSocket);
   WSACleanUp;
   exit(0);
+end;
+
+function net_port_is_closed(var b_isclosed: boolean; const hostname: String; port: UInt16): integer;
+var
+  tcp_client : TIdTCPClient;
+begin
+  tcp_client := TIdTCPClient.Create( nil );
+  try
+    tcp_client.Connect( hostname , port  );
+    b_isclosed := not tcp_client.Connected;
+    if tcp_client.Connected then
+      tcp_client.DisconnectNotifyPeer;
+    result := 0;
+  except on Ex : EIdSocketError do
+        b_isclosed := 10061 = ex.LastError;
+  end;
+  tcp_client.Free;
+end;
+
+function net_port_is_closed_on_all_interface(var b_isclosed: boolean; port: UInt16): integer;
+label
+  LBL_EXIT;
+var
+  sl : TStringList;
+  r : integer;
+  i : integer;
+begin
+  sl := TStringList.Create;
+  result := net_list_enable_ip(sl);
+  if result <> 0 then
+    goto LBL_EXIT;
+
+  for i := 0 to sl.Count -1 do
+  begin
+    r := net_port_is_closed( b_isclosed, sl.Strings[i], port );
+    if r <> 0 then
+      goto LBL_EXIT;
+    if not b_isclosed then
+      goto LBL_EXIT;
+  end;
+
+LBL_EXIT:
+  sl.Free;
 end;
 
 
