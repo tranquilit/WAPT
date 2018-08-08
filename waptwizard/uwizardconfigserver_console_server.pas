@@ -187,10 +187,11 @@ begin
 
   data^.wapt_server := s;
   data^.repo_url    := s + '/wapt' ;
-//  data^.server_certificate := s  + '.crt';
 
   data_write_ini_waptget( data, self.m_wizard );
-  srv_agent_restart_and_register();
+
+  if not wizard_validate_waptservice_restart( m_wizard, c ) then
+    exit;
 
   bCanNext := true;
 
