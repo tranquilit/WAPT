@@ -68,6 +68,10 @@ procedure TWizardConfigServer_Password.clear();
 begin
   self.ed_password_1.Clear;
   self.ed_password_2.Clear;
+
+  self.cb_password_visible.Checked := false;
+  self.cb_password_visibleChange( nil );
+
 end;
 
 
