@@ -42,6 +42,7 @@ implementation
 uses
   DCPsha256,
   ucrypto_pbkdf2,
+  uwizard_strings,
   uwizardconfigserver_data,
   uwizardutil,
   uwizardvalidattion;
@@ -93,7 +94,6 @@ end;
 procedure TWizardConfigServer_Password.wizard_next(var bCanNext: boolean);
 var
   ed : TEdit;
-  s : String;
   data : PWizardConfigServerData;
 begin
   bCanNext := false;
@@ -101,12 +101,7 @@ begin
   data := m_wizard.data();
 
 
-
   // admin password
-  m_wizard.SetValidationDescription( 'Validating supplied passwords' );
-  if not wizard_validate_str_length_not_zero( m_wizard, self.ed_password_1, 'Password cannot be empty' ) then
-    exit;
-
   if self.ed_password_1.Focused then
     ed := self.ed_password_1
   else
@@ -114,6 +109,10 @@ begin
 
   if not wizard_validate_str_password_are_equals( m_wizard, self.ed_password_1.Text, self.ed_password_2.Text, ed ) then
     exit;
+
+  if not wizard_validate_password( m_wizard, self.ed_password_1, self.ed_password_1.Text ) then
+    exit;
+
 
   data^.wapt_user     := 'admin';
   data^.wapt_password := self.ed_password_1.Text;

@@ -85,15 +85,10 @@ end;
 procedure TWizardResetServerPasswordSetPassword.wizard_show();
 begin
   inherited wizard_show();
-
   self.ed_wapt_server_home.SetFocus;
-
-  self.ed_wapt_server_home.TabOrder                       := 0;
-  self.ed_password_1.TabOrder                             := 1;
-  self.ed_password_2.TabOrder                             := 2;
-  self.m_wizard.WizardButtonPanel.NextButton.TabOrder     := 3;
-  self.m_wizard.WizardButtonPanel.PreviousButton.TabOrder := 4;
-  self.m_wizard.WizardButtonPanel.CancelButton.TabOrder   := 5;
+  self.ed_wapt_server_home.TabOrder   := 0;
+  self.ed_password_1.TabOrder         := 1;
+  self.ed_password_2.TabOrder         := 2;
 end;
 
 procedure TWizardResetServerPasswordSetPassword.wizard_next( var bCanNext: boolean);
@@ -102,15 +97,16 @@ var
 begin
   bCanNext := false;
   data := m_wizard.data();
+
   if not wizard_validate_path_is_waptserver( self.m_wizard, self.ed_wapt_server_home, self.ed_wapt_server_home.Text ) then
-    exit;
-
-
-  if not wizard_validate_str_length_not_zero( self.m_wizard, self.ed_password_1, 'Password cannot be empty' ) then
     exit;
 
   if not wizard_validate_str_password_are_equals( self.m_wizard, self.ed_password_1.Text, self.ed_password_2.Text, self.ed_password_2 ) then
     exit;
+
+  if not wizard_validate_password( m_wizard, self.ed_password_1, self.ed_password_1.Text ) then
+    exit;
+
 
   data^.wapt_server_home := self.ed_wapt_server_home.Text;
 
