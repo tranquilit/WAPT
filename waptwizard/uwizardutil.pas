@@ -17,8 +17,8 @@ const
 
 
 
-  WAPT_FIREWALL_RULE_HTTP  : String = 'waptserver http';
-  WAPT_FIREWALL_RULE_HTTPS : String = 'waptserver https';
+  WAPT_FIREWALL_RULE_HTTP  : String = 'waptserver_http';
+  WAPT_FIREWALL_RULE_HTTPS : String = 'waptserver_https';
 
 
   MIME_APPLICATION_JSON : String = 'application/json';
