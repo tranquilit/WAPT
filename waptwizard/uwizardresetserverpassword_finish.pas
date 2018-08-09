@@ -6,7 +6,7 @@ interface
 
 uses
   uwizardstepframe,
-  Classes, SysUtils, FileUtil, Forms, Controls, StdCtrls;
+  Classes, SysUtils, FileUtil, Forms, Controls, StdCtrls, ExtCtrls;
 
 type
 

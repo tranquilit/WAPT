@@ -3,7 +3,18 @@ object WizardStepFrame: TWizardStepFrame
   Height = 240
   Top = 0
   Width = 320
+  ClientHeight = 240
+  ClientWidth = 320
+  LCLVersion = '1.8.4.0'
   TabOrder = 0
-  DesignLeft = 349
-  DesignTop = 27
+  DesignLeft = 553
+  DesignTop = 234
+  object panel_frame: TPanel
+    Left = 32
+    Height = 50
+    Top = 48
+    Width = 170
+    Caption = 'panel_frame'
+    TabOrder = 0
+  end
 end

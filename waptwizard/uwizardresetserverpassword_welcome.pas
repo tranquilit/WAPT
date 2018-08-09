@@ -22,6 +22,7 @@ type
   public
 
     procedure wizard_load(w: TWizard); override; final;
+    procedure wizard_show(); override; final;
 
   end;
 
@@ -40,6 +41,14 @@ begin
   inherited wizard_load(w);
 
   self.image.Picture.LoadFromLazarusResource(RES_IMG_WAPT);
+
+end;
+
+procedure TWizardResetServerPasswordWelcome.wizard_show();
+begin
+  inherited wizard_show();
+
+  m_wizard.setFocus_async( self.m_wizard.WizardButtonPanel.NextButton );
 
 end;
 

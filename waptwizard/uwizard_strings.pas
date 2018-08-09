@@ -21,6 +21,8 @@ MSG_ERROR_WHILE_STARTING_SERVICE              : String = 'An error has occured w
 MSG_ERROR_WHILE_STOPPING_SERVICE              : String = 'An error has occured while stapping service %s';
 MSG_VALIDATING_PASSWORD                       : String = 'Validating password';
 MSG_PASSWORD_MUST_BE_AT_LEAST_6_CHARS         : String = 'Password lentgh must be at least 6 characters';
+MSG_UNEXPECTED_ERROR                          : String = 'An unexpected error has occurred %s';
+MSG_WRITE_SERVER_CONFIGURATION                : String = 'Writing configuration file';
 
 implementation
 

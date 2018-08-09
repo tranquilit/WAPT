@@ -7,13 +7,14 @@ interface
 uses
   WizardControls,
   uwizard,
-  Classes, SysUtils, FileUtil, Forms, Controls;
+  Classes, SysUtils, FileUtil, Forms, Controls, ExtCtrls;
 
 type
 
   { TWizardStepFrame }
 
   TWizardStepFrame = class( TFrame, IWizardPage )
+    panel_frame: TPanel;
 
   protected
     m_wizard      : TWizard;
@@ -35,21 +36,6 @@ type
 
   end;
 
-{
-
-  // TWizardStepFrame
-  function wizard_validate() : integer;  override; final;
-
-
-  // TWizardStepFrame
-  procedure wizard_show( w : TWizard; data : ISuperObject ); override; final;
-  procedure wizard_hide(); override; final;
-  procedure wizard_load( w : TWizard; data : ISuperObject);  override; final;
-  function wizard_validate() : integer;  override; final;
-  procedure clear();  override; final;
-  procedure GetPageInfo(var PageInfo: TWizardPageInfo);  override; final;
-}
-
 implementation
 
 
@@ -61,8 +47,13 @@ implementation
 constructor TWizardStepFrame.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  m_show_count := 0;
-  m_wizard := nil;
+
+  self.panel_frame.Caption    := '';
+  self.panel_frame.AutoSize   := false;
+  self.panel_frame.BevelOuter := bvNone;
+  self.AutoSize     := true;
+  self.m_show_count := 0;
+  self.m_wizard     := nil;
 end;
 
 procedure TWizardStepFrame.wizard_load( w: TWizard );

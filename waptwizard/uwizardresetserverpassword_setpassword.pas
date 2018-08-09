@@ -8,7 +8,7 @@ uses
   uwizard,
   uwizardresetserverpassword_data,
   uwizardstepframe,
-  Classes, SysUtils, FileUtil, Forms, Controls, EditBtn, StdCtrls;
+  Classes, SysUtils, FileUtil, Forms, Controls, EditBtn, StdCtrls, ExtCtrls;
 
 type
 
