@@ -65,6 +65,8 @@ type
     procedure _click_next_async( data : PtrInt );
     procedure _setfocus_async( data : PtrInt );
 
+    procedure resize_step();
+
 
   protected
 
@@ -179,20 +181,8 @@ begin
 end;
 
 procedure TWizard.panel_centerResize(Sender: TObject);
-var
-  step : TWizardStepFrame;
-  r    : Real;
 begin
-  step := current_step(self);
-
-  if not Assigned(step) then
-    exit;
-
-  r := Real(self.panel_center.Width)  * 0.5 - Real(step.Width)  * 0.5;
-  step.Left:= Round(r);
-
-  r := Real(self.panel_center.Height) * 0.5 - Real(step.Height) * 0.5;
-  step.top:= Round(r);
+  self.resize_step();
 end;
 
 procedure TWizard.PopupNotifierClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -355,19 +345,18 @@ end;
 procedure TWizard.WizardManagerPageShow(Sender: TObject; Page: TWizardPage);
 var
   step : TWizardStepFrame;
-  r    : Real;
-
 begin
   step := current_step(self);
 
   if not Assigned(step) then
     exit;
 
-  step.AutoSize := true;
-  step.Align := alCustom;
-  step.Parent := self.panel_center;
-  step.BorderStyle := bsNone;
+  step.AutoSize   := true;
+  step.Align      := alCustom;
+  step.Parent     := self.panel_center;
+  step.BorderStyle:= bsNone;
 
+  self.resize_step();
 
   self.TitleLabel.Caption := Page.Caption;
   self.DescriptionLabel.Caption := Page.Description;
@@ -463,6 +452,24 @@ begin
 
   // todo if
   TWinControl(data).SetFocus;
+end;
+
+procedure TWizard.resize_step();
+var
+  step : TWizardStepFrame;
+  r    : Real;
+begin
+  step := current_step(self);
+
+  if not Assigned(step) then
+    exit;
+
+  r := Real(self.panel_center.Width)  * 0.5 - Real(step.Width)  * 0.5;
+  step.Left:= Round(r);
+
+  r := Real(self.panel_center.Height) * 0.5 - Real(step.Height) * 0.5;
+  step.top:= Round(r);
+
 end;
 
 
