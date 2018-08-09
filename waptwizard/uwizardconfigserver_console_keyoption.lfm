@@ -1,29 +1,40 @@
 inherited WizardConfigServer_Console_KeyOption: TWizardConfigServer_Console_KeyOption
+  AutoSize = True
   DesignLeft = 958
   DesignTop = 238
-  object rb_use_existing_key: TRadioButton[0]
-    Left = 104
-    Height = 19
-    Top = 64
-    Width = 97
-    Caption = 'an existing key'
-    TabOrder = 0
-  end
-  object rb_create_new_key: TRadioButton[1]
-    Left = 104
-    Height = 19
-    Top = 120
-    Width = 72
-    Caption = 'a new key'
-    TabOrder = 1
-  end
-  object lbl_description: TLabel[2]
+  object Panel1: TPanel[0]
     Left = 0
-    Height = 15
+    Height = 104
     Top = 0
-    Width = 320
-    Align = alTop
-    Caption = 'I want to sign package with :'
-    ParentColor = False
+    Width = 160
+    BevelOuter = bvNone
+    ClientHeight = 104
+    ClientWidth = 160
+    TabOrder = 0
+    object lbl_description: TLabel
+      Left = 0
+      Height = 15
+      Top = 0
+      Width = 160
+      Align = alTop
+      Caption = 'I want to sign package with :'
+      ParentColor = False
+    end
+    object rb_use_existing_key: TRadioButton
+      Left = 32
+      Height = 19
+      Top = 72
+      Width = 97
+      Caption = 'an existing key'
+      TabOrder = 0
+    end
+    object rb_create_new_key: TRadioButton
+      Left = 32
+      Height = 19
+      Top = 32
+      Width = 72
+      Caption = 'a new key'
+      TabOrder = 1
+    end
   end
 end

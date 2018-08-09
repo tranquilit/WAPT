@@ -15,6 +15,7 @@ type
 
   TWizardConfigServer_Console_KeyOption = class(TWizardStepFrame)
     lbl_description: TLabel;
+    Panel1: TPanel;
     rb_create_new_key: TRadioButton;
     rb_use_existing_key: TRadioButton;
   private
