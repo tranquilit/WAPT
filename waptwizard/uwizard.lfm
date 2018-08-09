@@ -349,6 +349,7 @@ object Wizard: TWizard
     Caption = 'panel_center'
     TabOrder = 2
     OnClick = panel_centerClick
+    OnResize = panel_centerResize
   end
   object WizardManager: TWizardManager
     DisplayOptions.Parent = panel_center

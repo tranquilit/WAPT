@@ -42,6 +42,8 @@ implementation
 function TWizardResetServerPassword.data(): Pointer;
 begin
   exit( @m_data );
+
+
 end;
 
 end.

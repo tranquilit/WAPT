@@ -16,7 +16,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="6"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="8"/>
+      <BuildNr Value="10"/>
       <StringTable LegalCopyright="Tranquil IT Systems 2012-2018" ProductName="WAPT Enterprise Edition" ProductVersion="1.6.2"/>
     </VersionInfo>
     <BuildModes Count="3">
@@ -82,7 +82,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="-s"/>
+        <CommandLineParams Value="-r"/>
       </local>
     </RunParams>
     <RequiredPackages Count="9">
@@ -114,7 +114,7 @@
         <PackageName Value="LCL"/>
       </Item9>
     </RequiredPackages>
-    <Units Count="41">
+    <Units Count="42">
       <Unit0>
         <Filename Value="waptwizard.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -181,6 +181,7 @@
         <Filename Value="uwizardresetserverpassword_welcome.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="WizardResetServerPasswordWelcome"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit11>
       <Unit12>
@@ -233,7 +234,9 @@
       <Unit19>
         <Filename Value="uwizardconfigconsole_welcome.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="WizardStepFrameConsoleWelcome"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
       </Unit19>
       <Unit20>
         <Filename Value="uwizardconfigconsole_package_create_new_key.pas"/>
@@ -366,6 +369,10 @@
         <Filename Value="uwizard_strings.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit40>
+      <Unit41>
+        <Filename Value="resources.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit41>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

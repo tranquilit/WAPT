@@ -20,15 +20,14 @@ uses
   uwapt_ini, uwizardconfigconsole_buildagent, uwizardconfigconsole_data,
   uwizardconfigconsole_finished, uwizardconfigconsole_server,
   uwizardconfigconsole_welcome, uwizardconfigserver_data,
-  uwizardconfigserver_finish,
-  uwizardconfigserver_welcome,
+  uwizardconfigserver_finish, uwizardconfigserver_welcome,
   uwizardresetserverpassword_data, uwizardconfigserver_console,
   uwizardconfigserver_console_server,
   uwizardconfigconsole_package_create_new_key,
   uwizardconfigconsole_package_use_existing_key,
-  uwizardconfigconsole_restartwaptservice,
-  uwizardconfigserver_mongodb,
-  uwizardconfigserver_start_services, uwizard_waiting, uwapt_services, uwizard_strings;
+  uwizardconfigconsole_restartwaptservice, uwizardconfigserver_mongodb,
+  uwizardconfigserver_start_services, uwizard_waiting, uwapt_services,
+  uwizard_strings;
 
 {$R *.res}
 

@@ -41,6 +41,7 @@ type
     procedure FormCreate(Sender: TObject); virtual;
     procedure FormDestroy(Sender: TObject); virtual;
     procedure panel_centerClick(Sender: TObject);
+    procedure panel_centerResize(Sender: TObject);
     procedure PopupNotifierClose(Sender: TObject; var CloseAction: TCloseAction );
     procedure WizardManagerPageHide(Sender: TObject; Page: TWizardPage);
     procedure WizardManagerPageLoad(Sender: TObject; Page: TWizardPage);
@@ -175,6 +176,23 @@ end;
 procedure TWizard.panel_centerClick(Sender: TObject);
 begin
   self.ClearValidationError();
+end;
+
+procedure TWizard.panel_centerResize(Sender: TObject);
+var
+  step : TWizardStepFrame;
+  r    : Real;
+begin
+  step := current_step(self);
+
+  if not Assigned(step) then
+    exit;
+
+  r := Real(self.panel_center.Width)  * 0.5 - Real(step.Width)  * 0.5;
+  step.Left:= Round(r);
+
+  r := Real(self.panel_center.Height) * 0.5 - Real(step.Height) * 0.5;
+  step.top:= Round(r);
 end;
 
 procedure TWizard.PopupNotifierClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -338,20 +356,18 @@ procedure TWizard.WizardManagerPageShow(Sender: TObject; Page: TWizardPage);
 var
   step : TWizardStepFrame;
   r    : Real;
+
 begin
   step := current_step(self);
 
   if not Assigned(step) then
     exit;
 
+  step.AutoSize := true;
+  step.Align := alCustom;
+  step.Parent := self.panel_center;
+  step.BorderStyle := bsNone;
 
-  // Center
-  step.Align:= alNone;
-  r := Real(self.panel_center.Height) * 0.5 - Real(step.Height) * 0.5;
-  step.Top := round(r);
-
-  r := Real(self.panel_center.Width) * 0.5 - Real(step.Width) * 0.5;
-  step.Left := round(r);
 
   self.TitleLabel.Caption := Page.Caption;
   self.DescriptionLabel.Caption := Page.Description;

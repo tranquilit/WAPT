@@ -1,15 +1,44 @@
 inherited WizardStepFrameConsoleWelcome: TWizardStepFrameConsoleWelcome
+  Height = 320
+  Width = 476
+  AutoSize = True
+  ClientHeight = 320
+  ClientWidth = 476
   DesignLeft = 2078
   DesignTop = 271
-  object lbl: TLabel[0]
+  object panel: TPanel[0]
+    AnchorSideLeft.Side = asrCenter
+    AnchorSideTop.Side = asrCenter
+    AnchorSideRight.Side = asrCenter
+    AnchorSideBottom.Side = asrCenter
     Left = 0
-    Height = 240
+    Height = 130
     Top = 0
-    Width = 320
-    Align = alClient
-    Alignment = taCenter
-    Caption = 'Welcome to wapt console configuration tool.'#13#10'Click next to continue.'
-    Layout = tlCenter
-    ParentColor = False
+    Width = 249
+    AutoSize = True
+    BevelOuter = bvNone
+    ClientHeight = 130
+    ClientWidth = 249
+    TabOrder = 0
+    object lbl: TLabel
+      Left = 5
+      Height = 30
+      Top = 95
+      Width = 239
+      Align = alBottom
+      Alignment = taCenter
+      BorderSpacing.Around = 5
+      Caption = 'Welcome to wapt console configuration tool.'#13#10'Click next to continue.'
+      Layout = tlCenter
+      ParentColor = False
+    end
+    object image: TImage
+      Left = 0
+      Height = 90
+      Top = 0
+      Width = 249
+      Align = alClient
+      AutoSize = True
+    end
   end
 end

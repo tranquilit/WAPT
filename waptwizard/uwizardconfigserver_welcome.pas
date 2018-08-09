@@ -8,18 +8,21 @@ uses
   uwizardstepframe,
   uwizard,
   superobject,
-  Classes, SysUtils, FileUtil, Forms, Controls, StdCtrls;
+  Classes, SysUtils, FileUtil, Forms, Controls, StdCtrls, ExtCtrls;
 
 type
 
   { TTWizardConfigServer_Welcome }
 
   TTWizardConfigServer_Welcome = class(TWizardStepFrame)
+    img_logo: TImage;
     m_label: TLabel;
+    panel: TPanel;
   private
 
   public
     // TWizardStepFrame
+    procedure wizard_load(w: TWizard); override; final;
     procedure wizard_show(); override; final;
     procedure wizard_next(var bCanNext: boolean); override; final;
   end;
@@ -28,9 +31,10 @@ implementation
 
 
 uses
+  resources,
+  LResources,
   uwizard_strings,
   uwapt_services,
-  tiscommon,
   uwizardutil,
   uwizardconfigserver_data,
   uwizardvalidattion;
@@ -40,6 +44,13 @@ uses
 
 { TTWizardConfigServer_Welcome }
 
+
+procedure TTWizardConfigServer_Welcome.wizard_load(w: TWizard);
+begin
+  inherited wizard_load(w);
+
+  img_logo.Picture.LoadFromLazarusResource(RES_IMG_WAPT);
+end;
 
 
 procedure TTWizardConfigServer_Welcome.wizard_show();
@@ -92,8 +103,6 @@ end;
 
 
 initialization
-
 RegisterClass(TTWizardConfigServer_Welcome);
-
 end.
 
