@@ -85,10 +85,15 @@ end;
 procedure TWizardResetServerPasswordSetPassword.wizard_show();
 begin
   inherited wizard_show();
-  self.ed_wapt_server_home.SetFocus;
   self.ed_wapt_server_home.TabOrder   := 0;
   self.ed_password_1.TabOrder         := 1;
   self.ed_password_2.TabOrder         := 2;
+
+  if Length(Trim(self.ed_wapt_server_home.Text)) = 0 then
+    self.ed_wapt_server_home.SetFocus
+  else
+    self.ed_password_1.SetFocus;
+
 end;
 
 procedure TWizardResetServerPasswordSetPassword.wizard_next( var bCanNext: boolean);
