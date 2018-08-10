@@ -24,6 +24,7 @@ type
   private
 
   public
+    constructor Create( AOwner : TComponent );
 
   // TWizardStepFrame
     procedure wizard_load(w: TWizard); override; final;
@@ -48,6 +49,10 @@ uses
 
 { TWizardConfigConsole_Server }
 
+constructor TWizardConfigConsole_Server.Create(AOwner: TComponent);
+begin
+  inherited Create( AOwner, PAGE_SERVER );
+end;
 
 procedure TWizardConfigConsole_Server.wizard_load(w: TWizard);
 var
@@ -155,6 +160,7 @@ begin
       c := '*';
   self.ed_password.PasswordChar := c;
 end;
+
 
 
 

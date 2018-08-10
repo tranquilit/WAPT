@@ -19,7 +19,7 @@ type
   private
 
   public
-
+    constructor Create(AOwner: TComponent);
     procedure wizard_load(w: TWizard); override; final;
     procedure wizard_show(); override; final;
 
@@ -28,6 +28,8 @@ type
 implementation
 
 uses
+  WizardControls,
+  uwizardresetserverpassword_data,
   LResources,
   resources;
 
@@ -35,7 +37,14 @@ uses
 
 { TWizardResetServerPasswordWelcome }
 
+constructor TWizardResetServerPasswordWelcome.Create(AOwner: TComponent);
+begin
+  inherited Create( AOwner, PAGE_WELCOME );
+end;
+
 procedure TWizardResetServerPasswordWelcome.wizard_load(w: TWizard);
+var
+  p : TWizardPage;
 begin
   inherited wizard_load(w);
   self.image.Picture.LoadFromLazarusResource(RES_IMG_WAPT);

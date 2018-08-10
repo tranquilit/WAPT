@@ -18,6 +18,7 @@ type
   private
 
   public
+  constructor Create( AOwner : TComponent );
 
   // TWizardStepFrame
   procedure wizard_show(); override; final;
@@ -34,6 +35,11 @@ uses
 {$R *.lfm}
 
 { TWizardStepFrameConsoleFinished }
+
+constructor TWizardStepFrameConsoleFinished.Create(AOwner: TComponent);
+begin
+  inherited Create( AOwner, PAGE_FINISHED );
+end;
 
 procedure TWizardStepFrameConsoleFinished.wizard_show();
 begin

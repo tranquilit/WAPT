@@ -30,6 +30,7 @@ type
 
 
   public
+    constructor Create( AOwner : TComponent );
     procedure on_python_update(Sender: TObject; PSelf, Args: PPyObject; var Result: PPyObject);
 
     // TWizardStepFrame
@@ -60,7 +61,10 @@ MSG_BUILDING : String = 'Building %s   ';
 
 
 { TWizardConfigConsole_BuildAgent }
-
+constructor TWizardConfigConsole_BuildAgent.Create(AOwner: TComponent);
+begin
+  inherited Create( AOwner, PAGE_BUILD_AGENT );
+end;
 
 procedure TWizardConfigConsole_BuildAgent.wizard_load( w: TWizard );
 begin
@@ -244,7 +248,6 @@ end;
 
 
 
-
 procedure TWizardConfigConsole_BuildAgent.on_building_waptagent_tick(sender: TObject );
 begin
   Application.QueueAsyncCall( @tick, 0 );
@@ -326,6 +329,8 @@ begin
   progress.Visible := false;
   w.show_validation_error( control, msg );
 end;
+
+
 
 procedure TWizardConfigConsole_BuildAgent.on_python_update(Sender: TObject; PSelf, Args: PPyObject; var Result: PPyObject);
 begin

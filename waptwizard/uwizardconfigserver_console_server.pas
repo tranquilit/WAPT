@@ -27,7 +27,7 @@ type
     procedure init_server_url_callback(  data : PtrInt );
 
   public
-
+    constructor Create( AOwner: TComponent );
     procedure wizard_show(); override; final;
     procedure wizard_next(var bCanNext: boolean); override;
     procedure clear(); override; final;
@@ -135,6 +135,11 @@ begin
   if self.rg_server_url.ItemIndex <> -1 then
     self.m_wizard.WizardButtonPanel.NextButton.SetFocus;
 
+end;
+
+constructor TWizardConfigserver_Console_Server.Create(AOwner: TComponent);
+begin
+  inherited Create( AOwner, PAGE_SERVER_URL );
 end;
 
 procedure TWizardConfigserver_Console_Server.wizard_show();

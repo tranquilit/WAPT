@@ -17,7 +17,7 @@ type
   private
 
   public
-
+    constructor Create( AOwner : TComponent );
     procedure wizard_show(); override; final;
     procedure wizard_next(var bCanNext: boolean); override; final;
 
@@ -33,6 +33,11 @@ uses
 {$R *.lfm}
 
 { TWizardConfigConsole_RestartWaptService }
+
+constructor TWizardConfigConsole_RestartWaptService.Create(AOwner: TComponent);
+begin
+  inherited Create( AOwner, PAGE_RESTART_WAPT_SERVICE );
+end;
 
 procedure TWizardConfigConsole_RestartWaptService.wizard_show();
 begin

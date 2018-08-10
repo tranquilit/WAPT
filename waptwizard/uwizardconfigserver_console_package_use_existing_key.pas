@@ -29,6 +29,7 @@ type
   private
 
   public
+    constructor Create(AOwner: TComponent);
     procedure clear();  override; final;
     procedure wizard_load( w : TWizard ); override; final;
     procedure wizard_show(); override; final;
@@ -89,6 +90,11 @@ begin
 
   self.m_wizard.ClearValidationError();
   self.ed_password.SetFocus;
+end;
+
+constructor TWizardConfigServer_Console_PackageUseExistingKey.Create( AOwner: TComponent);
+begin
+  inherited Create( AOwner, PAGE_PACKAGE_USE_EXISTING_KEY );
 end;
 
 procedure TWizardConfigServer_Console_PackageUseExistingKey.clear();

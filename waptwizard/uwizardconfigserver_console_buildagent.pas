@@ -29,6 +29,8 @@ type
 
 
   public
+    constructor Create(AOwner: TComponent);
+
     procedure on_python_update(Sender: TObject; PSelf, Args: PPyObject; var Result: PPyObject);
 
     // TWizardStepFrame
@@ -60,8 +62,10 @@ MSG_BUILDING : String = 'Building %s   ';
 
 { TWizardConfigServer_Console_BuildAgent }
 
-
-
+constructor TWizardConfigServer_Console_BuildAgent.Create(AOwner: TComponent);
+begin
+  inherited Create( AOwner, PAGE_BUILD_AGENT );
+end;
 
 procedure TWizardConfigServer_Console_BuildAgent.wizard_show();
 begin
@@ -333,6 +337,7 @@ begin
   progress.Visible := false;
   w.show_validation_error( control, msg );
 end;
+
 
 procedure TWizardConfigServer_Console_BuildAgent.on_python_update(Sender: TObject; PSelf, Args: PPyObject; var Result: PPyObject);
 begin

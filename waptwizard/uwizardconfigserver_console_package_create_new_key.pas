@@ -34,7 +34,7 @@ type
 
   public
 
-    constructor Create(AOwner: TComponent); override;
+    constructor Create(AOwner: TComponent);
 
     // TWizardStepFrame
     procedure wizard_load( w : TWizard ); override; final;
@@ -62,11 +62,7 @@ uses
 
 constructor TWizardConfigServer_Console_PackageCreateNewKey.Create( AOwner: TComponent);
 begin
-  inherited Create( AOwner );
-
-
-
-
+  inherited Create( AOwner, PAGE_PACKAGE_CREATE_NEW_KEY );
 end;
 
 procedure TWizardConfigServer_Console_PackageCreateNewKey.wizard_load(w: TWizard);

@@ -5,7 +5,10 @@ inherited WizardConfigserver_Console_Server: TWizardConfigserver_Console_Server
   ClientWidth = 369
   DesignLeft = 2423
   DesignTop = 558
-  object rg_server_url: TRadioGroup[0]
+  inherited panel_frame: TPanel
+    TabOrder = 2
+  end
+  object rg_server_url: TRadioGroup[1]
     Left = 0
     Height = 107
     Top = 0
@@ -29,7 +32,7 @@ inherited WizardConfigserver_Console_Server: TWizardConfigserver_Console_Server
     OnSelectionChanged = rg_server_urlSelectionChanged
     TabOrder = 0
   end
-  object p_custom_server_url: TPanel[1]
+  object p_custom_server_url: TPanel[2]
     Left = 0
     Height = 27
     Top = 107

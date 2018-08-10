@@ -19,9 +19,10 @@ type
   protected
     m_wizard      : TWizard;
     m_show_count  : integer;
-
+    m_wizard_page : TWizardPage;
+    m_page_name   : String;
   public
-    constructor Create( AOwner : TComponent ); override;
+    constructor Create( AOwner : TComponent; const page_name : String  );
 
 
     procedure wizard_load( w : TWizard ); virtual;
@@ -44,7 +45,7 @@ implementation
 
 { TWizardStepFrame }
 
-constructor TWizardStepFrame.Create(AOwner: TComponent);
+constructor TWizardStepFrame.Create(AOwner: TComponent; const page_name : String );
 begin
   inherited Create(AOwner);
 
@@ -54,11 +55,14 @@ begin
   self.AutoSize     := true;
   self.m_show_count := 0;
   self.m_wizard     := nil;
+  self.m_page_name  := page_name;
 end;
 
-procedure TWizardStepFrame.wizard_load( w: TWizard );
+procedure TWizardStepFrame.wizard_load( w: TWizard);
 begin
   m_wizard := w;
+  m_wizard_page := w.WizardManager.PageByName(m_page_name);
+  Assert( Assigned(m_wizard_page) );
 end;
 
 procedure TWizardStepFrame.wizard_show();

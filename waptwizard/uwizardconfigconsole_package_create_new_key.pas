@@ -36,7 +36,7 @@ type
 
   public
 
-    constructor Create(AOwner: TComponent); override;
+    constructor Create(AOwner: TComponent);
 
     // TWizardStepFrame
     procedure wizard_load( w : TWizard ); override; final;
@@ -64,7 +64,7 @@ uses
 
 constructor TWizardConfigConsole_PackageCreateNewKey.Create( AOwner: TComponent);
 begin
-  inherited Create( AOwner );
+  inherited Create( AOwner, PAGE_PACKAGE_CREATE_NEW_KEY );
 
   // Hints ts_private
   self.ed_private_key_name.Hint        := 'The name the will be save';

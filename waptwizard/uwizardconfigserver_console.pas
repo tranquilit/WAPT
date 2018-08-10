@@ -18,8 +18,7 @@ type
     cb_configure_console: TCheckBox;
     procedure cb_configure_consoleChange(Sender: TObject);
   public
-
-    // TWizardStepFrame
+    constructor Create(AOwner: TComponent);
     procedure wizard_show(); override; final;
     procedure wizard_hide(); override; final;
     procedure wizard_previous(var bCanPrevious: boolean); override; final;
@@ -42,6 +41,11 @@ uses
 {$R *.lfm}
 
 { TWizardConfigServer_Console }
+constructor TWizardConfigServer_Console.Create( AOwner: TComponent );
+begin
+  inherited Create( AOwner, PAGE_CONSOLE );
+end;
+
 
 procedure TWizardConfigServer_Console.clear();
 begin

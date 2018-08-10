@@ -19,7 +19,7 @@ type
   private
 
   public
-
+    constructor Create(AOwner: TComponent);
     procedure wizard_load(w: TWizard); override; final;
 
   end;
@@ -27,6 +27,7 @@ type
 implementation
 
 uses
+  uwizardconfigconsole_data,
   LResources,
   resources;
 {$R *.lfm}
@@ -34,6 +35,11 @@ uses
 
 
 { TWizardStepFrameConsoleWelcome }
+
+constructor TWizardStepFrameConsoleWelcome.Create( AOwner: TComponent );
+begin
+  inherited Create( AOwner, PAGE_WELCOME );
+end;
 
 procedure TWizardStepFrameConsoleWelcome.wizard_load( w: TWizard );
 begin

@@ -20,6 +20,7 @@ type
   private
 
   public
+    constructor Create( AOwner : TComponent );
     procedure wizard_load(w: TWizard); override; final;
     procedure wizard_show(); override; final;
     procedure wizard_next(var bCanNext: boolean); override; final;
@@ -35,6 +36,11 @@ uses
 {$R *.lfm}
 
 { TWizardConfigConsole_KeyOption }
+
+constructor TWizardConfigConsole_KeyOption.Create(AOwner: TComponent);
+begin
+  inherited Create( AOwner, PAGE_KEYOPTION );
+end;
 
 procedure TWizardConfigConsole_KeyOption.wizard_load(w: TWizard);
 begin
